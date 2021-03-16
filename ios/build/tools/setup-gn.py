@@ -359,6 +359,9 @@ def Main(args):
   parser.add_argument(
       '--build-dir', default='out',
       help='path where the build should be created (default: %(default)s)')
+  parser.add_argument(
+      '--no-xcode-project', action='store_true', default=False,
+      help='do not generate the build directory with XCode project')
   args = parser.parse_args(args)
 
   # Load configuration (first global and then any user overrides).
@@ -396,9 +399,10 @@ def Main(args):
   if not os.path.isdir(out_dir):
     os.makedirs(out_dir)
 
-  GenerateXcodeProject(gn_path, args.root, out_dir, settings)
+  if not args.no_xcode_project:
+    GenerateXcodeProject(gn_path, args.root, out_dir, settings)
+    CreateLLDBInitFile(args.root, out_dir, settings)
   GenerateGnBuildRules(gn_path, args.root, out_dir, settings)
-  CreateLLDBInitFile(args.root, out_dir, settings)
 
 
 if __name__ == '__main__':
