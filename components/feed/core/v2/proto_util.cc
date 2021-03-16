@@ -259,15 +259,3 @@ feedwire::Request CreateFeedQueryLoadMoreRequest(
 }
 
 }  // namespace feed
-
-namespace feedstore {
-void SetLastAddedTime(base::Time t, feedstore::StreamData& data) {
-  data.set_last_added_time_millis(
-      (t - base::Time::UnixEpoch()).InMilliseconds());
-}
-
-base::Time GetLastAddedTime(const feedstore::StreamData& data) {
-  return base::Time::UnixEpoch() +
-         base::TimeDelta::FromMilliseconds(data.last_added_time_millis());
-}
-}  // namespace feedstore

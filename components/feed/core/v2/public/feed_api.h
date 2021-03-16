@@ -116,11 +116,37 @@ class FeedApi {
 
   // TODO(crbug/1152592): Implement subscriptions().
   // WebFeedSubscriptions& subscriptions() = 0;
+  // Observes whether there is unread content for a specific stream type.
+  // In some cases, this information will not be known until after stream
+  // data is loaded from the database. This observer will not be notified until
+  // the information is available.
+  class UnreadContentObserver {
+   public:
+    UnreadContentObserver();
+    virtual ~UnreadContentObserver();
+    virtual void HasUnreadContentChanged(bool has_unread_content) = 0;
+    UnreadContentObserver(const UnreadContentObserver&) = delete;
+    UnreadContentObserver& operator=(const UnreadContentObserver&) = delete;
+
+    base::WeakPtr<UnreadContentObserver> GetWeakPtr() {
+      return weak_ptr_factory_.GetWeakPtr();
+    }
+
+   private:
+    base::WeakPtrFactory<UnreadContentObserver> weak_ptr_factory_{this};
+  };
 
   // Attach/detach a surface. Surfaces should be attached when content is
   // required for display, and detached when content is no longer shown.
   virtual void AttachSurface(FeedStreamSurface*) = 0;
   virtual void DetachSurface(FeedStreamSurface*) = 0;
+
+  // Begin/stop observing a stream type. An observer instance should not be
+  // added twice without first being removed.
+  virtual void AddUnreadContentObserver(const StreamType& stream_type,
+                                        UnreadContentObserver* observer) = 0;
+  virtual void RemoveUnreadContentObserver(const StreamType& stream_type,
+                                           UnreadContentObserver* observer) = 0;
 
   virtual bool IsArticlesListVisible() = 0;
 

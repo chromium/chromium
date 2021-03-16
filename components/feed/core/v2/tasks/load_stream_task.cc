@@ -16,6 +16,7 @@
 #include "components/feed/core/proto/v2/wire/request.pb.h"
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feed_stream.h"
+#include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/protocol_translator.h"
@@ -92,6 +93,7 @@ void LoadStreamTask::LoadFromStoreComplete(
   load_from_store_status_ = result.status;
   latencies_->StepComplete(LoadLatencyTimes::kLoadFromStore);
   stored_content_age_ = result.content_age;
+  last_added_time_ = result.last_added_time;
 
   // Phase 2.
   //  - If loading from store works, update the model.
@@ -142,7 +144,7 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
       CreateFeedQueryRefreshRequest(
           GetRequestReason(load_type_),
           stream_->GetRequestMetadata(stream_type_, /*is_for_next_page=*/false),
-          stream_->GetMetadata()->GetConsistencyToken()),
+          stream_->GetMetadata().consistency_token()),
       force_signed_out_request,
       base::BindOnce(&LoadStreamTask::QueryRequestComplete, GetWeakPtr()));
 }
@@ -174,6 +176,8 @@ void LoadStreamTask::QueryRequestComplete(
     return Done(LoadStreamStatus::kProtoTranslationFailed);
 
   loaded_new_content_from_network_ = true;
+  last_added_time_ = feedstore::GetLastAddedTime(
+      response_data.model_update_request->stream_data);
 
   stream_->GetStore()->OverwriteStream(
       stream_type_,
@@ -186,7 +190,12 @@ void LoadStreamTask::QueryRequestComplete(
   stream_->SetLastStreamLoadHadNoticeCard(isNoticeCardFulfilled);
   MetricsReporter::NoticeCardFulfilled(isNoticeCardFulfilled);
 
-  stream_->GetMetadata()->MaybeUpdateSessionId(response_data.session_id);
+  base::Optional<feedstore::Metadata> updated_metadata =
+      feedstore::MaybeUpdateSessionId(stream_->GetMetadata(),
+                                      response_data.session_id);
+  if (updated_metadata) {
+    stream_->SetMetadata(std::move(*updated_metadata));
+  }
   if (response_data.experiments)
     experiments_ = *response_data.experiments;
 
@@ -215,6 +224,7 @@ void LoadStreamTask::Done(LoadStreamStatus status) {
   result.stream_type = stream_type_;
   result.load_from_store_status = load_from_store_status_;
   result.stored_content_age = stored_content_age_;
+  result.last_added_time = last_added_time_;
   result.final_status = status;
   result.load_type = load_type_;
   result.network_response_info = network_response_info_;

@@ -28,6 +28,7 @@
 #include "components/feed/core/v2/tasks/load_stream_task.h"
 #include "components/feed/core/v2/tasks/wait_for_store_initialize_task.h"
 #include "components/feed/core/v2/web_feed_index.h"
+#include "components/feed/core/v2/wire_response_translator.h"
 #include "components/offline_pages/core/prefetch/suggestions_provider.h"
 #include "components/offline_pages/task/task_queue.h"
 
@@ -39,6 +40,9 @@ class PrefetchService;
 }  // namespace offline_pages
 
 namespace feed {
+namespace feed_stream {
+class UnreadContentNotifier;
+}
 class FeedNetwork;
 class FeedStore;
 class ImageFetcher;
@@ -48,7 +52,6 @@ class RefreshTaskScheduler;
 class PersistentKeyValueStoreImpl;
 class StreamModel;
 class SurfaceUpdater;
-struct StreamModelUpdateRequest;
 
 // Implements FeedApi. |FeedStream| additionally exposes functionality
 // needed by other classes within the Feed component.
@@ -69,45 +72,6 @@ class FeedStream : public FeedApi,
     virtual bool IsSignedIn() = 0;
     virtual void PrefetchImage(const GURL& url) = 0;
     virtual void RegisterExperiments(const Experiments& experiments) = 0;
-  };
-
-  // Forwards to |feed::TranslateWireResponse()| by default. Can be overridden
-  // for testing.
-  class WireResponseTranslator {
-   public:
-    WireResponseTranslator() = default;
-    ~WireResponseTranslator() = default;
-    virtual RefreshResponseData TranslateWireResponse(
-        feedwire::Response response,
-        StreamModelUpdateRequest::Source source,
-        bool was_signed_in_request,
-        base::Time current_time) const;
-  };
-
-  class Metadata {
-   public:
-    explicit Metadata(FeedStore* store);
-    ~Metadata();
-
-    void Populate(feedstore::Metadata metadata);
-
-    const std::string& GetConsistencyToken() const;
-    void SetConsistencyToken(std::string consistency_token);
-
-    const std::string& GetSessionIdToken() const;
-    base::Time GetSessionIdExpiryTime() const;
-    void SetSessionId(std::string token, base::Time expiry_time);
-    void MaybeUpdateSessionId(base::Optional<std::string> token);
-
-    LocalActionId GetNextActionId();
-
-    const feedstore::Metadata& GetMetadataProtoForTesting() const {
-      return metadata_;
-    }
-
-   private:
-    FeedStore* store_;
-    feedstore::Metadata metadata_;
   };
 
   FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
@@ -132,6 +96,10 @@ class FeedStream : public FeedApi,
   std::string GetSessionId() const override;
   void AttachSurface(FeedStreamSurface*) override;
   void DetachSurface(FeedStreamSurface*) override;
+  void AddUnreadContentObserver(const StreamType& stream_type,
+                                UnreadContentObserver* observer) override;
+  void RemoveUnreadContentObserver(const StreamType& stream_type,
+                                   UnreadContentObserver* observer) override;
   bool IsArticlesListVisible() override;
   std::string GetClientInstanceId() const override;
   void ExecuteRefreshTask(RefreshTaskId task_id) override;
@@ -223,8 +191,10 @@ class FeedStream : public FeedApi,
   FeedNetwork* GetNetwork() { return feed_network_; }
   FeedStore* GetStore() { return store_; }
   RequestThrottler* GetRequestThrottler() { return &request_throttler_; }
-  Metadata* GetMetadata() { return &metadata_; }
-  const Metadata* GetMetadata() const { return &metadata_; }
+  const feedstore::Metadata& GetMetadata() const { return metadata_; }
+  void SetMetadata(feedstore::Metadata metadata);
+  bool SetMetadata(base::Optional<feedstore::Metadata> metadata);
+
   MetricsReporter* GetMetricsReporter() const { return metrics_reporter_; }
 
   void PrefetchImage(const GURL& url);
@@ -295,8 +265,13 @@ class FeedStream : public FeedApi,
   bool CanUploadActions() const;
   void SetLastStreamLoadHadNoticeCard(bool value);
 
+  base::WeakPtr<FeedStream> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   class OfflineSuggestionsProvider;
+  using UnreadContentNotifier = feed_stream::UnreadContentNotifier;
 
   struct Stream {
     Stream();
@@ -313,11 +288,12 @@ class FeedStream : public FeedApi,
     // |UnloadModel()|.
     std::unique_ptr<StreamModel> model;
     int unload_on_detach_sequence_number = 0;
+    // When new content was last added to this stream. Populated when we attempt
+    // to load the model or background refresh.
+    base::Time last_updated_time;
+    std::vector<UnreadContentNotifier> unread_content_notifiers;
+    std::vector<base::OnceCallback<void(bool)>> load_more_complete_callbacks;
   };
-
-  base::WeakPtr<FeedStream> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
 
   void InitializeComplete(WaitForStoreInitializeTask::Result result);
 
@@ -356,6 +332,7 @@ class FeedStream : public FeedApi,
   bool CanLogViews() const;
 
   void UpdateCanUploadActionsWithNoticeCard();
+  void MaybeNotifyHasUnreadContent(const StreamType& stream_type);
 
   Stream& GetStream(const StreamType& type);
   Stream* FindStream(const StreamType& type);
@@ -387,16 +364,17 @@ class FeedStream : public FeedApi,
   // Mutable state.
   RequestThrottler request_throttler_;
   base::TimeTicks signed_out_for_you_refreshes_until_;
-  std::vector<base::OnceCallback<void(bool)>> load_more_complete_callbacks_;
 
   // State loaded at startup:
-  Metadata metadata_;
+  feedstore::Metadata metadata_;
   WebFeedIndex web_feed_index_;
 
   bool is_activity_logging_enabled_ = false;
   // Whether the feed stream can upload actions with the notice card in the
   // feed.
   bool can_upload_actions_with_notice_card_ = false;
+
+  base::ObserverList<UnreadContentObserver> unread_content_observers_;
 
   // To allow tests to wait on task queue idle.
   base::RepeatingClosure idle_callback_;

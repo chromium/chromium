@@ -19,6 +19,8 @@ source_set("feed_core_v2") {
     "feed_store.h",
     "feed_stream.cc",
     "feed_stream.h",
+    "feedstore_util.cc",
+    "feedstore_util.h",
     "image_fetcher.cc",
     "image_fetcher.h",
     "metrics_reporter.cc",
@@ -42,6 +44,8 @@ source_set("feed_core_v2") {
     "public/web_feed_subscriptions.h",
     "request_throttler.cc",
     "request_throttler.h",
+    "stream/unread_content_notifier.cc",
+    "stream/unread_content_notifier.h",
     "stream_model.cc",
     "stream_model.h",
     "stream_model/ephemeral_change.cc",
@@ -68,6 +72,8 @@ source_set("feed_core_v2") {
     "tasks/wait_for_store_initialize_task.h",
     "web_feed_index.cc",
     "web_feed_index.h",
+    "wire_response_translator.cc",
+    "wire_response_translator.h",
   ]
   deps = [
     ":common",
@@ -141,6 +147,7 @@ source_set("core_unit_tests") {
     "feed_network_impl_unittest.cc",
     "feed_store_unittest.cc",
     "feed_stream_unittest.cc",
+    "feedstore_util_unittest.cc",
     "image_fetcher_unittest.cc",
     "metrics_reporter_unittest.cc",
     "persistent_key_value_store_impl_unittest.cc",
@@ -156,6 +163,7 @@ source_set("core_unit_tests") {
     "test/proto_printer.h",
     "test/stream_builder.cc",
     "test/stream_builder.h",
+    "test/test_util.h",
     "web_feed_index_unittest.cc",
   ]
 

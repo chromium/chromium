@@ -71,6 +71,15 @@ message Metadata {
     int64 expiry_time_ms = 2;
   }
 
+  // Metadata about a specific stream.
+  message StreamMetadata {
+    string stream_id = 1;
+    // If this stream has been viewed before, this timestamp matches the
+    // 'StreamData.last_added_time_millis' value of that stream. This is used to
+    // determine whether the user has already seen a stored stream's data.
+    int64 view_time_millis = 2;
+  }
+
   // Token used to read or write to the same storage.
   bytes consistency_token = 1;
   // ID for the next pending action.
@@ -83,6 +92,7 @@ message Metadata {
   // "shared_state"
   //    records.
   int32 stream_schema_version = 4;
+  repeated StreamMetadata stream_metadata = 5;
 }
 
 // A set of StreamStructures that should be applied to a stream.

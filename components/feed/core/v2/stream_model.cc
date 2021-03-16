@@ -15,6 +15,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/content_id.pb.h"
+#include "components/feed/core/v2/feedstore_util.h"
+#include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/protocol_translator.h"
 
 namespace feed {
@@ -245,6 +247,10 @@ const stream_model::FeatureTree* StreamModel::GetFinalFeatureTree() const {
 
 const std::string& StreamModel::GetNextPageToken() const {
   return stream_data_.next_page_token();
+}
+
+base::Time StreamModel::GetLastAddedTime() const {
+  return feedstore::GetLastAddedTime(stream_data_);
 }
 
 std::string StreamModel::DumpStateForTesting() {

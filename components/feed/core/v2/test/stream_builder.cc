@@ -8,6 +8,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/protocol_translator.h"
 
@@ -187,7 +188,7 @@ StreamModelUpdateRequestGenerator::MakeFirstPage(int first_cluster_id) const {
   initial_update->stream_data.set_logging_enabled(logging_enabled);
   initial_update->stream_data.set_privacy_notice_fulfilled(
       privacy_notice_fulfilled);
-  SetLastAddedTime(last_added_time, initial_update->stream_data);
+  feedstore::SetLastAddedTime(last_added_time, initial_update->stream_data);
 
   return initial_update;
 }
@@ -216,7 +217,7 @@ StreamModelUpdateRequestGenerator::MakeNextPage(int page_number) const {
   initial_update->stream_data.set_logging_enabled(logging_enabled);
   initial_update->stream_data.set_privacy_notice_fulfilled(
       privacy_notice_fulfilled);
-  SetLastAddedTime(last_added_time, initial_update->stream_data);
+  feedstore::SetLastAddedTime(last_added_time, initial_update->stream_data);
 
   return initial_update;
 }

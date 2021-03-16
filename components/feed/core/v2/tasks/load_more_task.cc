@@ -10,15 +10,18 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/time/time.h"
+#include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/client_info.pb.h"
 #include "components/feed/core/proto/v2/wire/feed_request.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feed_stream.h"
+#include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/protocol_translator.h"
 #include "components/feed/core/v2/stream_model.h"
 #include "components/feed/core/v2/tasks/upload_actions_task.h"
+#include "components/feed/core/v2/wire_response_translator.h"
 
 namespace feed {
 
@@ -74,7 +77,7 @@ void LoadMoreTask::UploadActionsComplete(UploadActionsTask::Result result) {
       NetworkRequestType::kNextPage,
       CreateFeedQueryLoadMoreRequest(
           stream_->GetRequestMetadata(stream_type_, /*is_for_next_page=*/true),
-          stream_->GetMetadata()->GetConsistencyToken(),
+          stream_->GetMetadata().consistency_token(),
           stream_->GetModel(stream_type_)->GetNextPageToken()),
       force_signed_out_request,
       base::BindOnce(&LoadMoreTask::QueryRequestComplete, GetWeakPtr()));
@@ -100,7 +103,12 @@ void LoadMoreTask::QueryRequestComplete(
   loaded_new_content_from_network_ =
       !translated_response.model_update_request->stream_structures.empty();
 
-  stream_->GetMetadata()->MaybeUpdateSessionId(translated_response.session_id);
+  base::Optional<feedstore::Metadata> updated_metadata =
+      feedstore::MaybeUpdateSessionId(stream_->GetMetadata(),
+                                      translated_response.session_id);
+  if (updated_metadata) {
+    stream_->SetMetadata(std::move(*updated_metadata));
+  }
 
   model->Update(std::move(translated_response.model_update_request));
 

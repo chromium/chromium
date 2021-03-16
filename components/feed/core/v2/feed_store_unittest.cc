@@ -19,21 +19,13 @@
 #include "components/feed/core/v2/test/callback_receiver.h"
 #include "components/feed/core/v2/test/proto_printer.h"
 #include "components/feed/core/v2/test/stream_builder.h"
+#include "components/feed/core/v2/test/test_util.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/leveldb_proto/testing/fake_db.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace feed {
 namespace {
-
-// This is EXPECT_EQ, but also dumps the string values for ease of reading.
-#define EXPECT_STRINGS_EQUAL(WANT, GOT)                                   \
-  {                                                                       \
-    std::string want_param_ = (WANT), got_param_ = (GOT);                 \
-    EXPECT_EQ(want_param_, got_param_) << "Wanted:\n"                     \
-                                       << (want_param_) << "\nBut got:\n" \
-                                       << (got_param_);                   \
-  }
 
 using LoadStreamResult = FeedStore::LoadStreamResult;
 

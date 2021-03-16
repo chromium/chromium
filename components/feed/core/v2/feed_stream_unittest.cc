@@ -38,6 +38,7 @@
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/feed_network.h"
+#include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/image_fetcher.h"
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/persistent_key_value_store_impl.h"
@@ -52,6 +53,8 @@
 #include "components/feed/core/v2/test/callback_receiver.h"
 #include "components/feed/core/v2/test/proto_printer.h"
 #include "components/feed/core/v2/test/stream_builder.h"
+#include "components/feed/core/v2/test/test_util.h"
+#include "components/feed/core/v2/wire_response_translator.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
@@ -154,24 +157,14 @@ feedwire::ThereAndBackAgainData MakeThereAndBackAgainData(int64_t id) {
   return msg;
 }
 
-// This is EXPECT_EQ, but also dumps the string values for ease of reading.
-#define EXPECT_STRINGS_EQUAL(WANT, GOT)                                       \
-  {                                                                           \
-    std::string want = (WANT), got = (GOT);                                   \
-    EXPECT_EQ(want, got) << "Wanted:\n" << (want) << "\nBut got:\n" << (got); \
+class TestUnreadContentObserver : public FeedApi::UnreadContentObserver {
+ public:
+  void HasUnreadContentChanged(bool has_unread_content) override {
+    calls.push_back(has_unread_content);
   }
 
-// Although time is mocked through TaskEnvironment, it does drift by small
-// amounts.
-const base::TimeDelta kEpsilon = base::TimeDelta::FromMilliseconds(5);
-#define EXPECT_TIME_EQ(WANT, GOT)          \
-  {                                        \
-    base::Time want = (WANT), got = (GOT); \
-    if (got != want) {                     \
-      EXPECT_LT(want - kEpsilon, got);     \
-      EXPECT_GT(want + kEpsilon, got);     \
-    }                                      \
-  }
+  std::vector<bool> calls;
+};
 
 class TestSurfaceBase : public FeedStreamSurface {
  public:
@@ -191,7 +184,7 @@ class TestSurfaceBase : public FeedStreamSurface {
 
   void Attach(FeedStream* stream) {
     EXPECT_FALSE(stream_);
-    stream_ = stream;
+    stream_ = stream->GetWeakPtr();
     stream_->AttachSurface(this);
   }
 
@@ -290,7 +283,7 @@ class TestSurfaceBase : public FeedStreamSurface {
   }
 
   // The stream if it was attached using the constructor.
-  FeedStream* stream_ = nullptr;
+  base::WeakPtr<FeedStream> stream_;
   std::vector<std::string> described_updates_;
   std::map<std::string, std::string> data_store_entries_;
 };
@@ -469,9 +462,9 @@ class TestFeedNetwork : public FeedNetwork {
   base::Optional<feedwire::Response> injected_response_;
 };
 
-// Forwards to |FeedStream::WireResponseTranslator| unless a response is
+// Forwards to |WireResponseTranslator| unless a response is
 // injected.
-class TestWireResponseTranslator : public FeedStream::WireResponseTranslator {
+class TestWireResponseTranslator : public WireResponseTranslator {
  public:
   RefreshResponseData TranslateWireResponse(
       feedwire::Response response,
@@ -485,7 +478,7 @@ class TestWireResponseTranslator : public FeedStream::WireResponseTranslator {
       injected_responses_.erase(injected_responses_.begin());
       return result;
     }
-    return FeedStream::WireResponseTranslator::TranslateWireResponse(
+    return WireResponseTranslator::TranslateWireResponse(
         std::move(response), source, was_signed_in_request, current_time);
   }
   void InjectResponse(std::unique_ptr<StreamModelUpdateRequest> response,
@@ -1096,7 +1089,11 @@ TEST_F(FeedStreamTest, FetchImage) {
 }
 
 TEST_P(FeedStreamTestForAllStreamTypes, LoadFromNetwork) {
-  stream_->GetMetadata()->SetConsistencyToken("token");
+  {
+    auto metadata = stream_->GetMetadata();
+    metadata.set_consistency_token("token");
+    stream_->SetMetadata(metadata);
+  }
 
   // Store is empty, so we should fallback to a network request.
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
@@ -1231,7 +1228,6 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadFromNetworkBecauseStoreIsStale) {
                                       GetFeedConfig().stale_content_threshold -
                                       base::TimeDelta::FromMinutes(1)),
       base::DoNothing());
-  stream_->GetMetadata()->SetConsistencyToken("token-1");
 
   // Store is stale, so we should fallback to a network request.
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
@@ -1239,10 +1235,6 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadFromNetworkBecauseStoreIsStale) {
   WaitForIdleTaskQueue();
 
   ASSERT_TRUE(network_.query_request_sent);
-  // The stored continutation token should be sent.
-  EXPECT_EQ(
-      "token-1",
-      network_.query_request_sent->feed_request().consistency_token().token());
   EXPECT_TRUE(response_translator_.InjectedResponseConsumed());
   ASSERT_TRUE(surface.initial_state);
 }
@@ -1258,7 +1250,6 @@ TEST_F(FeedStreamTest, LoadFromNetworkBecauseStoreIsExpired) {
       MakeTypicalInitialModelState(
           /*first_cluster_id=*/0, kTestTimeEpoch - kContentAge),
       base::DoNothing());
-  stream_->GetMetadata()->SetConsistencyToken("token-1");
 
   // Store is stale, so we should fallback to a network request.
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
@@ -1266,10 +1257,6 @@ TEST_F(FeedStreamTest, LoadFromNetworkBecauseStoreIsExpired) {
   WaitForIdleTaskQueue();
 
   ASSERT_TRUE(network_.query_request_sent);
-  // The stored continutation token should be sent.
-  EXPECT_EQ(
-      "token-1",
-      network_.query_request_sent->feed_request().consistency_token().token());
   EXPECT_TRUE(response_translator_.InjectedResponseConsumed());
   ASSERT_TRUE(surface.initial_state);
   EXPECT_EQ(LoadStreamStatus::kDataInStoreIsExpired,
@@ -1289,7 +1276,6 @@ TEST_F(FeedStreamTest, LoadStaleDataBecauseNetworkRequestFails) {
       MakeTypicalInitialModelState(
           /*first_cluster_id=*/0, kTestTimeEpoch - kContentAge),
       base::DoNothing());
-  stream_->GetMetadata()->SetConsistencyToken("token-1");
 
   // Store is stale, so we should fallback to a network request. Since we didn't
   // inject a network response, the network update will fail.
@@ -1421,7 +1407,7 @@ TEST_F(FeedStreamTest, ForceSignedOutRequestAfterHistoryIsDeleted) {
 
   // Validate the downstream consumption of the response.
   EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
-  EXPECT_EQ(kSessionId, stream_->GetMetadata()->GetSessionIdToken());
+  EXPECT_EQ(kSessionId, stream_->GetMetadata().session_id().token());
   EXPECT_FALSE(stream_->GetModel(surface.GetStreamType())->signed_in());
 
   // Advance the clock beyond the forced signed out period.
@@ -1438,7 +1424,7 @@ TEST_F(FeedStreamTest, ForceSignedOutRequestAfterHistoryIsDeleted) {
   // contained the session id.
   ASSERT_EQ(2, network_.send_query_call_count);
   EXPECT_TRUE(network_.forced_signed_out_request);
-  EXPECT_EQ(kSessionId, stream_->GetMetadata()->GetSessionIdToken());
+  EXPECT_EQ(kSessionId, stream_->GetMetadata().session_id().token());
   EXPECT_EQ(network_.query_request_sent->feed_request()
                 .client_info()
                 .chrome_client_info()
@@ -1462,7 +1448,7 @@ TEST_F(FeedStreamTest, ForceSignedOutRequestAfterHistoryIsDeleted) {
 
   // The model should now be in the signed-in state.
   EXPECT_TRUE(stream_->GetModel(kForYouStream)->signed_in());
-  EXPECT_TRUE(stream_->GetMetadata()->GetSessionIdToken().empty());
+  EXPECT_TRUE(stream_->GetMetadata().session_id().token().empty());
 }
 
 TEST_F(FeedStreamTest, WebFeedUsesSignedInRequestAfterHistoryIsDeleted) {
@@ -1486,7 +1472,7 @@ TEST_F(FeedStreamTest, AllowSignedInRequestAfterHistoryIsDeletedAfterDelay) {
 
   EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
   EXPECT_FALSE(network_.forced_signed_out_request);
-  EXPECT_TRUE(stream_->GetMetadata()->GetSessionIdToken().empty());
+  EXPECT_TRUE(stream_->GetMetadata().session_id().token().empty());
 }
 
 TEST_F(FeedStreamTest, ShouldMakeFeedQueryRequestConsumesQuota) {
@@ -1629,6 +1615,79 @@ TEST_F(FeedStreamTest, ReportOpenInNewTabAction) {
                    "ContentSuggestions.Feed.CardAction.OpenInNewTab"));
 }
 
+TEST_F(FeedStreamTest, HasUnreadContentAfterLoadFromNetwork) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestUnreadContentObserver observer;
+  stream_->AddUnreadContentObserver(kForYouStream, &observer);
+  TestForYouSurface surface(stream_.get());
+
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ(std::vector<bool>({true}), observer.calls);
+}
+
+TEST_F(FeedStreamTest, RemovedUnreadContentObserverDoesNotReceiveCalls) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestUnreadContentObserver observer;
+  stream_->AddUnreadContentObserver(kForYouStream, &observer);
+  stream_->RemoveUnreadContentObserver(kForYouStream, &observer);
+  TestForYouSurface surface(stream_.get());
+
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ(std::vector<bool>(), observer.calls);
+}
+
+TEST_F(FeedStreamTest, DeletedUnreadContentObserverDoesNotCrash) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  {
+    TestUnreadContentObserver observer;
+    stream_->AddUnreadContentObserver(kForYouStream, &observer);
+  }
+  TestForYouSurface surface(stream_.get());
+
+  WaitForIdleTaskQueue();
+}
+
+TEST_F(FeedStreamTest, HasUnreadContentAfterLoadFromStore) {
+  store_->OverwriteStream(kForYouStream, MakeTypicalInitialModelState(),
+                          base::DoNothing());
+
+  TestUnreadContentObserver observer;
+  stream_->AddUnreadContentObserver(kForYouStream, &observer);
+  TestForYouSurface surface(stream_.get());
+
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ(std::vector<bool>({true}), observer.calls);
+}
+
+TEST_F(FeedStreamTest, ReportSliceViewedUpdatesObservers) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestUnreadContentObserver observer;
+  stream_->AddUnreadContentObserver(kForYouStream, &observer);
+  TestForYouSurface surface(stream_.get());
+
+  WaitForIdleTaskQueue();
+
+  stream_->ReportSliceViewed(
+      surface.GetSurfaceId(), surface.GetStreamType(),
+      surface.initial_state->updated_slices(1).slice().slice_id());
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(std::vector<bool>({true, false}), observer.calls);
+
+  // Verify that the fact the stream was viewed persists.
+  CreateStream();
+
+  TestUnreadContentObserver observer2;
+  stream_->AddUnreadContentObserver(kForYouStream, &observer2);
+  TestForYouSurface surface2(stream_.get());
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ(std::vector<bool>({false}), observer2.calls);
+}
+
 TEST_P(FeedStreamTestForAllStreamTypes, LoadMoreAppendsContent) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestSurface surface(stream_.get());
@@ -1715,12 +1774,17 @@ TEST_F(FeedStreamTest, LoadMorePersistAndLoadMore) {
 }
 
 TEST_F(FeedStreamTest, LoadMoreSendsTokens) {
+  {
+    auto metadata = stream_->GetMetadata();
+    metadata.set_consistency_token("token");
+    stream_->SetMetadata(metadata);
+  }
+
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
   ASSERT_EQ("loading -> 2 slices", surface.DescribeUpdates());
 
-  stream_->GetMetadata()->SetConsistencyToken("token-1");
   response_translator_.InjectResponse(MakeTypicalNextPageState(2));
   CallbackReceiver<bool> callback;
   stream_->LoadMore(surface, callback.Bind());
@@ -1729,7 +1793,7 @@ TEST_F(FeedStreamTest, LoadMoreSendsTokens) {
   ASSERT_EQ("2 slices +spinner -> 4 slices", surface.DescribeUpdates());
 
   EXPECT_EQ(
-      "token-1",
+      "token",
       network_.query_request_sent->feed_request().consistency_token().token());
   EXPECT_EQ("page-2", network_.query_request_sent->feed_request()
                           .feed_query()
@@ -1737,7 +1801,6 @@ TEST_F(FeedStreamTest, LoadMoreSendsTokens) {
                           .next_page_token()
                           .next_page_token());
 
-  stream_->GetMetadata()->SetConsistencyToken("token-2");
   response_translator_.InjectResponse(MakeTypicalNextPageState(3));
   stream_->LoadMore(surface, callback.Bind());
 
@@ -1745,7 +1808,7 @@ TEST_F(FeedStreamTest, LoadMoreSendsTokens) {
   ASSERT_EQ("4 slices +spinner -> 6 slices", surface.DescribeUpdates());
 
   EXPECT_EQ(
-      "token-2",
+      "token",
       network_.query_request_sent->feed_request().consistency_token().token());
   EXPECT_EQ("page-3", network_.query_request_sent->feed_request()
                           .feed_query()
@@ -1930,8 +1993,8 @@ TEST_F(FeedStreamTest, ClearAllWipesAllState) {
   ASSERT_EQ("loading -> 2 slices -> loading -> cant-refresh",
             surface.DescribeUpdates());
 
-  EXPECT_EQ("", DumpStoreState());
-  EXPECT_EQ("", stream_->GetMetadata()->GetConsistencyToken());
+  EXPECT_EQ("{\n}\n\n", DumpStoreState());
+  EXPECT_EQ("", stream_->GetMetadata().consistency_token());
   EXPECT_FALSE(stream_->IsActivityLoggingEnabled());
 }
 
@@ -2299,7 +2362,7 @@ TEST_F(FeedStreamTest, LoadMoreUploadsActions) {
   WaitForIdleTaskQueue();
 
   EXPECT_EQ(1, network_.GetActionRequestSent()->feed_actions_size());
-  EXPECT_EQ("token-12", stream_->GetMetadata()->GetConsistencyToken());
+  EXPECT_EQ("token-12", stream_->GetMetadata().consistency_token());
 
   // Uploaded action should have been erased from the store.
   network_.ClearTestData();
@@ -2499,26 +2562,25 @@ TEST_F(FeedStreamTest, UploadActionsErasesStaleActionsByAttempts) {
 }
 
 TEST_F(FeedStreamTest, MetadataLoadedWhenDatabaseInitialized) {
-  ASSERT_TRUE(stream_->GetMetadata());
-  // Verify the schema has been updated to the current version.
-  EXPECT_EQ((int)FeedStore::kCurrentStreamSchemaVersion,
-            stream_->GetMetadata()
-                ->GetMetadataProtoForTesting()
-                .stream_schema_version());
-
   const auto kExpiry = kTestTimeEpoch + base::TimeDelta::FromDays(1234);
-  stream_->GetMetadata()->SetSessionId("session-id", kExpiry);
-  stream_->GetMetadata()->SetConsistencyToken("token");
-  EXPECT_EQ(1, stream_->GetMetadata()->GetNextActionId().GetUnsafeValue());
+  {
+    // Write some metadata so it can be loaded when FeedStream starts up.
+    feedstore::Metadata initial_metadata;
+    feedstore::SetSessionId(initial_metadata, "session-id", kExpiry);
+    initial_metadata.set_consistency_token("token");
+    store_->WriteMetadata(initial_metadata, base::DoNothing());
+  }
 
   // Creating a stream should load metadata.
   CreateStream();
 
-  ASSERT_TRUE(stream_->GetMetadata());
-  EXPECT_EQ("session-id", stream_->GetMetadata()->GetSessionIdToken());
-  EXPECT_TIME_EQ(kExpiry, stream_->GetMetadata()->GetSessionIdExpiryTime());
-  EXPECT_EQ("token", stream_->GetMetadata()->GetConsistencyToken());
-  EXPECT_EQ(2, stream_->GetMetadata()->GetNextActionId().GetUnsafeValue());
+  EXPECT_EQ("session-id", stream_->GetMetadata().session_id().token());
+  EXPECT_TIME_EQ(kExpiry,
+                 feedstore::GetSessionIdExpiryTime(stream_->GetMetadata()));
+  EXPECT_EQ("token", stream_->GetMetadata().consistency_token());
+  // Verify the schema has been updated to the current version.
+  EXPECT_EQ((int)FeedStore::kCurrentStreamSchemaVersion,
+            stream_->GetMetadata().stream_schema_version());
 }
 
 TEST_F(FeedStreamTest, ModelUnloadsAfterTimeout) {
@@ -2775,8 +2837,6 @@ TEST_F(FeedStreamTest, MultipleOfflineBadgesWithSameUrl) {
 }
 
 TEST_F(FeedStreamTest, SendsClientInstanceId) {
-  stream_->GetMetadata()->SetConsistencyToken("token");
-
   // Store is empty, so we should fallback to a network request.
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
@@ -2864,50 +2924,6 @@ TEST_F(FeedStreamTest, LoadStreamSendsNoticeCardAcknowledgement) {
                   .notice_card_acknowledged());
 }
 
-TEST_F(FeedStreamTest, GetSetAndUpdateSessionId) {
-  const std::string kToken1 = "token1";
-  const std::string kToken2 = "token2";
-  const base::Time kExpiryTime1 =
-      kTestTimeEpoch + base::TimeDelta::FromHours(2);
-  const base::Time kExpiryTime2 =
-      kTestTimeEpoch + GetFeedConfig().session_id_max_age;
-  ASSERT_NE(kExpiryTime1, kExpiryTime2);
-
-  // The stream metadata is initialized with an empty token and expiry time.
-  EXPECT_TRUE(stream_->GetMetadata()->GetSessionIdToken().empty());
-  EXPECT_TRUE(stream_->GetMetadata()->GetSessionIdExpiryTime().is_null());
-
-  // Verify that directly calling SetSessionId works as expected.
-  stream_->GetMetadata()->SetSessionId(kToken1, kExpiryTime1);
-  EXPECT_EQ(kToken1, stream_->GetMetadata()->GetSessionIdToken());
-  EXPECT_TIME_EQ(kExpiryTime1,
-                 stream_->GetMetadata()->GetSessionIdExpiryTime());
-
-  // Updating the token with nullopt is a NOP.
-  stream_->GetMetadata()->MaybeUpdateSessionId(base::nullopt);
-  EXPECT_EQ(kToken1, stream_->GetMetadata()->GetSessionIdToken());
-  EXPECT_TIME_EQ(kExpiryTime1,
-                 stream_->GetMetadata()->GetSessionIdExpiryTime());
-
-  // Updating the token with the same value is a NOP.
-  stream_->GetMetadata()->MaybeUpdateSessionId(kToken1);
-  EXPECT_EQ(kToken1, stream_->GetMetadata()->GetSessionIdToken());
-  EXPECT_TIME_EQ(kExpiryTime1,
-                 stream_->GetMetadata()->GetSessionIdExpiryTime());
-
-  // Updating the token with a different value resets the token and assigns a
-  // new expiry time.
-  stream_->GetMetadata()->MaybeUpdateSessionId(kToken2);
-  EXPECT_EQ(kToken2, stream_->GetMetadata()->GetSessionIdToken());
-  EXPECT_TIME_EQ(kExpiryTime2,
-                 stream_->GetMetadata()->GetSessionIdExpiryTime());
-
-  // Updating the token with the empty string clears its value.
-  stream_->GetMetadata()->MaybeUpdateSessionId("");
-  EXPECT_TRUE(stream_->GetMetadata()->GetSessionIdToken().empty());
-  EXPECT_TRUE(stream_->GetMetadata()->GetSessionIdExpiryTime().is_null());
-}
-
 TEST_F(FeedStreamTest, SignedOutSessionIdConsistency) {
   const std::string kSessionToken1("session-token-1");
   const std::string kSessionToken2("session-token-2");
@@ -2934,9 +2950,9 @@ TEST_F(FeedStreamTest, SignedOutSessionIdConsistency) {
   EXPECT_FALSE(network_.query_request_sent->feed_request()
                    .client_info()
                    .has_chrome_client_info());
-  EXPECT_EQ(kSessionToken1, stream_->GetMetadata()->GetSessionIdToken());
+  EXPECT_EQ(kSessionToken1, stream_->GetMetadata().session_id().token());
   const base::Time kSessionToken1ExpiryTime =
-      stream_->GetMetadata()->GetSessionIdExpiryTime();
+      feedstore::GetSessionIdExpiryTime(stream_->GetMetadata());
 
   // (2) LoadMore: the server returns the same session-id token
   //     - this should trigger a network request
@@ -2958,9 +2974,9 @@ TEST_F(FeedStreamTest, SignedOutSessionIdConsistency) {
                                 .client_info()
                                 .chrome_client_info()
                                 .session_id());
-  EXPECT_EQ(kSessionToken1, stream_->GetMetadata()->GetSessionIdToken());
+  EXPECT_EQ(kSessionToken1, stream_->GetMetadata().session_id().token());
   EXPECT_TIME_EQ(kSessionToken1ExpiryTime,
-                 stream_->GetMetadata()->GetSessionIdExpiryTime());
+                 feedstore::GetSessionIdExpiryTime(stream_->GetMetadata()));
 
   // (3) LoadMore: the server omits returning a session-id token
   //     - this should trigger a network request
@@ -2981,9 +2997,9 @@ TEST_F(FeedStreamTest, SignedOutSessionIdConsistency) {
                                 .client_info()
                                 .chrome_client_info()
                                 .session_id());
-  EXPECT_EQ(kSessionToken1, stream_->GetMetadata()->GetSessionIdToken());
+  EXPECT_EQ(kSessionToken1, stream_->GetMetadata().session_id().token());
   EXPECT_TIME_EQ(kSessionToken1ExpiryTime,
-                 stream_->GetMetadata()->GetSessionIdExpiryTime());
+                 feedstore::GetSessionIdExpiryTime(stream_->GetMetadata()));
 
   // (4) LoadMore: the server returns new session id.
   //     - this should trigger a network request
@@ -3005,26 +3021,27 @@ TEST_F(FeedStreamTest, SignedOutSessionIdConsistency) {
                                 .client_info()
                                 .chrome_client_info()
                                 .session_id());
-  EXPECT_EQ(kSessionToken2, stream_->GetMetadata()->GetSessionIdToken());
+  EXPECT_EQ(kSessionToken2, stream_->GetMetadata().session_id().token());
   EXPECT_TIME_EQ(kSessionToken1ExpiryTime + base::TimeDelta::FromSeconds(3),
-                 stream_->GetMetadata()->GetSessionIdExpiryTime());
+                 feedstore::GetSessionIdExpiryTime(stream_->GetMetadata()));
 }
 
 TEST_F(FeedStreamTest, ClearAllResetsSessionId) {
   is_signed_in_ = false;
 
   // Initialize a session id.
-  stream_->GetMetadata()->MaybeUpdateSessionId("session-id");
-  ASSERT_FALSE(stream_->GetMetadata()->GetSessionIdToken().empty());
-  ASSERT_FALSE(stream_->GetMetadata()->GetSessionIdExpiryTime().is_null());
+  feedstore::Metadata metadata = stream_->GetMetadata();
+  metadata = *feedstore::MaybeUpdateSessionId(metadata, "session-id");
+  stream_->SetMetadata(metadata);
 
   // Trigger a ClearAll.
   stream_->OnCacheDataCleared();
   WaitForIdleTaskQueue();
 
   // Session-ID should be wiped.
-  EXPECT_TRUE(stream_->GetMetadata()->GetSessionIdToken().empty());
-  EXPECT_TRUE(stream_->GetMetadata()->GetSessionIdExpiryTime().is_null());
+  EXPECT_TRUE(stream_->GetMetadata().session_id().token().empty());
+  EXPECT_TRUE(
+      feedstore::GetSessionIdExpiryTime(stream_->GetMetadata()).is_null());
 }
 
 TEST_F(FeedStreamTest, SignedOutSessionIdExpiry) {
@@ -3048,7 +3065,7 @@ TEST_F(FeedStreamTest, SignedOutSessionIdExpiry) {
   EXPECT_FALSE(network_.query_request_sent->feed_request()
                    .client_info()
                    .has_chrome_client_info());
-  EXPECT_EQ(kSessionToken1, stream_->GetMetadata()->GetSessionIdToken());
+  EXPECT_EQ(kSessionToken1, stream_->GetMetadata().session_id().token());
 
   // (2) Reload the stream from the network:
   //     - Detach the surface, advance the clock beyond the stale content
@@ -3067,7 +3084,7 @@ TEST_F(FeedStreamTest, SignedOutSessionIdExpiry) {
                                 .client_info()
                                 .chrome_client_info()
                                 .session_id());
-  EXPECT_EQ(kSessionToken1, stream_->GetMetadata()->GetSessionIdToken());
+  EXPECT_EQ(kSessionToken1, stream_->GetMetadata().session_id().token());
 
   // (3) Reload the stream from the network:
   //     - Detach the surface, advance the clock beyond the session id max age
@@ -3078,7 +3095,7 @@ TEST_F(FeedStreamTest, SignedOutSessionIdExpiry) {
   surface.Detach();
   task_environment_.FastForwardBy(GetFeedConfig().session_id_max_age -
                                   GetFeedConfig().stale_content_threshold);
-  ASSERT_LT(stream_->GetMetadata()->GetSessionIdExpiryTime(),
+  ASSERT_LT(feedstore::GetSessionIdExpiryTime(stream_->GetMetadata()),
             base::Time::Now());
   response_translator_.InjectResponse(model_generator.MakeFirstPage(),
                                       kSessionToken2);
@@ -3088,7 +3105,7 @@ TEST_F(FeedStreamTest, SignedOutSessionIdExpiry) {
   EXPECT_FALSE(network_.query_request_sent->feed_request()
                    .client_info()
                    .has_chrome_client_info());
-  EXPECT_EQ(kSessionToken2, stream_->GetMetadata()->GetSessionIdToken());
+  EXPECT_EQ(kSessionToken2, stream_->GetMetadata().session_id().token());
 }
 
 TEST_F(FeedStreamTest, SessionIdPersistsAcrossStreamLoads) {
@@ -3116,8 +3133,9 @@ TEST_F(FeedStreamTest, SessionIdPersistsAcrossStreamLoads) {
   CreateStream();
   WaitForIdleTaskQueue();
   ASSERT_EQ(1, network_.send_query_call_count);
-  EXPECT_EQ(kSessionToken, stream_->GetMetadata()->GetSessionIdToken());
-  EXPECT_TIME_EQ(kExpiryTime, stream_->GetMetadata()->GetSessionIdExpiryTime());
+  EXPECT_EQ(kSessionToken, stream_->GetMetadata().session_id().token());
+  EXPECT_TIME_EQ(kExpiryTime,
+                 feedstore::GetSessionIdExpiryTime(stream_->GetMetadata()));
 }
 
 TEST_F(FeedStreamTest, PersistentKeyValueStoreIsClearedOnClearAll) {

@@ -18,7 +18,6 @@ class Request;
 }  // namespace feedwire
 namespace feedstore {
 class Content;
-class StreamData;
 }  // namespace feedstore
 
 // Helper functions/classes for dealing with feed proto messages.
@@ -61,12 +60,5 @@ feedwire::Request CreateFeedQueryLoadMoreRequest(
     const std::string& next_page_token);
 
 }  // namespace feed
-
-namespace feedstore {
-
-void SetLastAddedTime(base::Time t, feedstore::StreamData& data);
-base::Time GetLastAddedTime(const feedstore::StreamData& data);
-
-}  // namespace feedstore
 
 #endif  // COMPONENTS_FEED_CORE_V2_PROTO_UTIL_H_

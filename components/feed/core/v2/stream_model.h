@@ -131,6 +131,9 @@ class StreamModel {
   bool RejectEphemeralChange(EphemeralChangeId id);
 
   const std::string& GetNextPageToken() const;
+  // Time the client received this stream data. 'NextPage' requests do not
+  // change this time.
+  base::Time GetLastAddedTime() const;
 
   // Outputs a string representing the model state for debugging or testing.
   std::string DumpStateForTesting();

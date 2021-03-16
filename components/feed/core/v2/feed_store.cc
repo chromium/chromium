@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/protocol_translator.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 
@@ -39,15 +40,6 @@ constexpr char kLocalActionPrefix[] = "a/";
 constexpr char kMetadataKey[] = "m";
 constexpr char kSubscribedFeedsKey[] = "subs";
 constexpr char kRecommendedIndexKey[] = "recommendedIndex";
-constexpr base::StringPiece kForYouStreamId{"i"};
-constexpr base::StringPiece kFollowStreamId{"w"};
-
-base::StringPiece StreamId(const StreamType& stream_type) {
-  if (stream_type.IsForYou())
-    return kForYouStreamId;
-  DCHECK(stream_type.IsWebFeed());
-  return kFollowStreamId;
-}
 
 leveldb::ReadOptions CreateReadOptions() {
   leveldb::ReadOptions opts;
@@ -64,7 +56,7 @@ std::string StreamDataKey(const base::StringPiece stream_id) {
   return base::StrCat({"S/", stream_id});
 }
 std::string StreamDataKey(const StreamType& stream_type) {
-  return StreamDataKey(StreamId(stream_type));
+  return StreamDataKey(feedstore::StreamId(stream_type));
 }
 std::string ContentKey(const base::StringPiece stream_type,
                        const feedwire::ContentId& content_id) {
@@ -73,7 +65,7 @@ std::string ContentKey(const base::StringPiece stream_type,
 }
 std::string ContentKey(const StreamType& stream_type,
                        const feedwire::ContentId& content_id) {
-  return ContentKey(StreamId(stream_type), content_id);
+  return ContentKey(feedstore::StreamId(stream_type), content_id);
 }
 std::string SharedStateKey(const base::StringPiece stream_type,
                            const feedwire::ContentId& content_id) {
@@ -82,7 +74,7 @@ std::string SharedStateKey(const base::StringPiece stream_type,
 }
 std::string SharedStateKey(const StreamType& stream_type,
                            const feedwire::ContentId& content_id) {
-  return SharedStateKey(StreamId(stream_type), content_id);
+  return SharedStateKey(feedstore::StreamId(stream_type), content_id);
 }
 std::string LocalActionKey(int64_t id) {
   return kLocalActionPrefix + base::NumberToString(id);
@@ -103,7 +95,7 @@ bool IsAnyStreamRecordKey(const std::string& key) {
 class StreamKeyMatcher {
  public:
   explicit StreamKeyMatcher(const StreamType& stream_type) {
-    stream_id_ = StreamId(stream_type).as_string();
+    stream_id_ = feedstore::StreamId(stream_type).as_string();
     stream_id_plus_slash_ = stream_id_ + '/';
   }
 
@@ -240,7 +232,7 @@ MakeUpdatesForStreamModelUpdateRequest(
     int32_t structure_set_sequence_number,
     const StreamType& stream_type,
     std::unique_ptr<StreamModelUpdateRequest> update_request) {
-  base::StringPiece stream_id = StreamId(stream_type);
+  base::StringPiece stream_id = feedstore::StreamId(stream_type);
   auto updates = std::make_unique<
       std::vector<std::pair<std::string, feedstore::Record>>>();
   update_request->stream_data.set_stream_id(stream_id.as_string());
@@ -371,8 +363,9 @@ void FeedStore::LoadStream(
   };
 
   database_->LoadEntriesWithFilter(
-      base::BindRepeating(filter, StreamDataKey(stream_type),
-                          base::StrCat({"T/", StreamId(stream_type), "/"})),
+      base::BindRepeating(
+          filter, StreamDataKey(stream_type),
+          base::StrCat({"T/", feedstore::StreamId(stream_type), "/"})),
       CreateReadOptions(),
       /*target_prefix=*/"",
       base::BindOnce(&FeedStore::OnLoadStreamFinished, GetWeakPtr(),
@@ -393,13 +386,13 @@ void FeedStore::OnLoadStreamFinished(
       switch (record.data_case()) {
         case feedstore::Record::kStreamData:
           result.stream_data = std::move(*record.mutable_stream_data());
-          DLOG_IF(ERROR,
-                  result.stream_data.stream_id() != StreamId(stream_type))
+          DLOG_IF(ERROR, result.stream_data.stream_id() !=
+                             feedstore::StreamId(stream_type))
               << "Read a record with the wrong stream_id";
           break;
         case feedstore::Record::kStreamStructures:
           DLOG_IF(ERROR, record.stream_structures().stream_id() !=
-                             StreamId(stream_type))
+                             feedstore::StreamId(stream_type))
               << "Read a record with the wrong stream_id";
           result.stream_structures.push_back(
               std::move(*record.mutable_stream_structures()));
@@ -488,7 +481,7 @@ void FeedStore::WriteOperations(
     const StreamType& stream_type,
     int32_t sequence_number,
     std::vector<feedstore::DataOperation> operations) {
-  base::StringPiece stream_id = StreamId(stream_type);
+  base::StringPiece stream_id = feedstore::StreamId(stream_type);
   std::vector<feedstore::Record> records;
   feedstore::Record structures_record;
   feedstore::StreamStructureSet& structure_set =
@@ -502,7 +495,7 @@ void FeedStore::WriteOperations(
       records.push_back(std::move(record));
     }
   }
-  structure_set.set_stream_id(StreamId(stream_type).as_string());
+  structure_set.set_stream_id(feedstore::StreamId(stream_type).as_string());
   structure_set.set_sequence_number(sequence_number);
 
   records.push_back(std::move(structures_record));

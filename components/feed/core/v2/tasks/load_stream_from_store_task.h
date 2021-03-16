@@ -38,6 +38,8 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
     // How long since the loaded content was fetched from the server.
     // May be zero if content is not loaded.
     base::TimeDelta content_age;
+    // Last time the stream was fetched from the network.
+    base::Time last_added_time;
   };
 
   enum class LoadType {
@@ -80,6 +82,7 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
   std::unique_ptr<StreamModelUpdateRequest> update_request_;
   std::vector<feedstore::StoredAction> pending_actions_;
   base::TimeDelta content_age_;
+  base::Time last_added_time_;
 
   base::WeakPtrFactory<LoadStreamFromStoreTask> weak_ptr_factory_{this};
 };

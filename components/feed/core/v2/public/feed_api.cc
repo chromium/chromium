@@ -42,6 +42,9 @@ bool StreamType::GetRefreshTaskId(RefreshTaskId& out_id) const {
 FeedApi::FeedApi() = default;
 FeedApi::~FeedApi() = default;
 
+FeedApi::UnreadContentObserver::UnreadContentObserver() = default;
+FeedApi::UnreadContentObserver::~UnreadContentObserver() = default;
+
 FeedStreamSurface::FeedStreamSurface(StreamType stream_type)
     : stream_type_(stream_type) {
   static SurfaceId::Generator id_generator;

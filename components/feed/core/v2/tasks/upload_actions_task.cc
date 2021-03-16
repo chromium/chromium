@@ -15,6 +15,7 @@
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feed_store.h"
 #include "components/feed/core/v2/feed_stream.h"
+#include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/request_throttler.h"
 
@@ -137,14 +138,15 @@ UploadActionsTask::UploadActionsTask(
 UploadActionsTask::~UploadActionsTask() = default;
 
 void UploadActionsTask::Run() {
-  consistency_token_ = stream_->GetMetadata()->GetConsistencyToken();
+  consistency_token_ = stream_->GetMetadata().consistency_token();
 
   // From constructor 1: If there is an action to store, store it and maybe try
   // to upload all pending actions.
   if (wire_action_) {
     StoredAction action;
-    int32_t action_id =
-        stream_->GetMetadata()->GetNextActionId().GetUnsafeValue();
+    feedstore::Metadata metadata = stream_->GetMetadata();
+    int32_t action_id = feedstore::GetNextActionId(metadata).GetUnsafeValue();
+    stream_->SetMetadata(std::move(metadata));
     action.set_id(action_id);
     wire_action_->mutable_client_data()->set_sequence_number(action_id);
     *action.mutable_action() = std::move(*wire_action_);
@@ -301,8 +303,9 @@ void UploadActionsTask::BatchComplete(UploadActionsBatchStatus status) {
 void UploadActionsTask::UpdateTokenAndFinish() {
   if (consistency_token_.empty())
     return Done(UploadActionsStatus::kFinishedWithoutUpdatingConsistencyToken);
-
-  stream_->GetMetadata()->SetConsistencyToken(consistency_token_);
+  feedstore::Metadata metadata = stream_->GetMetadata();
+  metadata.set_consistency_token(consistency_token_);
+  stream_->SetMetadata(metadata);
   Done(UploadActionsStatus::kUpdatedConsistencyToken);
 }
 
