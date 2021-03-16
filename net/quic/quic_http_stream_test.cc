@@ -446,7 +446,7 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
     push_promise_[":method"] = "GET";
     push_promise_[":scheme"] = "https";
 
-    promised_response_[":status"] = "200 OK";
+    promised_response_[":status"] = "200";
     promised_response_[":version"] = "HTTP/1.1";
     promised_response_["content-type"] = "text/plain";
 
@@ -765,7 +765,7 @@ TEST_P(QuicHttpStreamTest, GetRequest) {
   EXPECT_THAT(stream_->ReadResponseHeaders(callback_.callback()),
               IsError(ERR_IO_PENDING));
 
-  SetResponse("404 Not Found", string());
+  SetResponse("404", string());
   size_t spdy_response_header_frame_length;
   ProcessPacket(ConstructResponseHeadersPacket(
       2, kFin, &spdy_response_header_frame_length));
@@ -846,7 +846,7 @@ TEST_P(QuicHttpStreamTest, LoadTimingTwoRequests) {
   EXPECT_THAT(stream_->ReadResponseHeaders(callback_.callback()),
               IsError(ERR_IO_PENDING));
   size_t spdy_response_header_frame_length;
-  SetResponse("200 OK", string());
+  SetResponse("200", string());
   ProcessPacket(InnerConstructResponseHeadersPacket(
       2, GetNthClientInitiatedBidirectionalStreamId(0), kFin,
       &spdy_response_header_frame_length));
@@ -866,7 +866,7 @@ TEST_P(QuicHttpStreamTest, LoadTimingTwoRequests) {
   ExpectLoadTimingValid(load_timing_info, /*session_reused=*/false);
 
   // SetResponse() again for second request as |response_headers_| was moved.
-  SetResponse("200 OK", string());
+  SetResponse("200", string());
   EXPECT_THAT(stream2.ReadResponseHeaders(callback2.callback()),
               IsError(ERR_IO_PENDING));
 
@@ -919,7 +919,7 @@ TEST_P(QuicHttpStreamTest, GetRequestWithTrailers) {
   EXPECT_THAT(stream_->ReadResponseHeaders(callback_.callback()),
               IsError(ERR_IO_PENDING));
 
-  SetResponse("200 OK", string());
+  SetResponse("200", string());
 
   // Send the response headers.
   size_t spdy_response_header_frame_length;
@@ -1020,7 +1020,7 @@ TEST_P(QuicHttpStreamTest, ElideHeadersInNetLog) {
                                          1));  // Ack the request.
 
   // Process first response.
-  SetResponse("200 OK", string());
+  SetResponse("200", string());
   response_headers_["set-cookie"] = "secret";
   size_t spdy_response_header_frame_length;
   ProcessPacket(ConstructResponseHeadersPacket(
@@ -1054,7 +1054,7 @@ TEST_P(QuicHttpStreamTest, ElideHeadersInNetLog) {
                                          1));  // Ack the request.
 
   // Process second response.
-  SetResponse("200 OK", string());
+  SetResponse("200", string());
   response_headers_["set-cookie"] = "secret";
   ProcessPacket(InnerConstructResponseHeadersPacket(
       incoming_packet_number++, stream_id, kFin,
@@ -1113,7 +1113,7 @@ TEST_P(QuicHttpStreamTest, GetRequestLargeResponse) {
   EXPECT_THAT(stream_->ReadResponseHeaders(callback_.callback()),
               IsError(ERR_IO_PENDING));
 
-  response_headers_[":status"] = "200 OK";
+  response_headers_[":status"] = "200";
   response_headers_[":version"] = "HTTP/1.1";
   response_headers_["content-type"] = "text/plain";
   response_headers_["big6"] = string(1000, 'x');  // Lots of x's.
@@ -1375,7 +1375,7 @@ TEST_P(QuicHttpStreamTest, SendPostRequest) {
   ProcessPacket(ConstructServerAckPacket(1, 1, 1, 1));
 
   // Send the response headers (but not the body).
-  SetResponse("200 OK", string());
+  SetResponse("200", string());
   size_t spdy_response_headers_frame_length;
   ProcessPacket(ConstructResponseHeadersPacket(
       2, !kFin, &spdy_response_headers_frame_length));
@@ -1457,7 +1457,7 @@ TEST_P(QuicHttpStreamTest, SendPostRequestAndReceiveSoloFin) {
   ProcessPacket(ConstructServerAckPacket(1, 1, 1, 1));
 
   // Send the response headers (but not the body).
-  SetResponse("200 OK", string());
+  SetResponse("200", string());
   size_t spdy_response_headers_frame_length;
   ProcessPacket(ConstructResponseHeadersPacket(
       2, !kFin, &spdy_response_headers_frame_length));
@@ -1546,7 +1546,7 @@ TEST_P(QuicHttpStreamTest, SendChunkedPostRequest) {
   ProcessPacket(ConstructServerAckPacket(1, 1, 1, 1));
 
   // Send the response headers (but not the body).
-  SetResponse("200 OK", string());
+  SetResponse("200", string());
   size_t spdy_response_headers_frame_length;
   ProcessPacket(ConstructResponseHeadersPacket(
       2, !kFin, &spdy_response_headers_frame_length));
@@ -1629,7 +1629,7 @@ TEST_P(QuicHttpStreamTest, SendChunkedPostRequestWithFinalEmptyDataPacket) {
   ProcessPacket(ConstructServerAckPacket(1, 1, 1, 1));
 
   // Send the response headers (but not the body).
-  SetResponse("200 OK", string());
+  SetResponse("200", string());
   size_t spdy_response_headers_frame_length;
   ProcessPacket(ConstructResponseHeadersPacket(
       2, !kFin, &spdy_response_headers_frame_length));
@@ -1700,7 +1700,7 @@ TEST_P(QuicHttpStreamTest, SendChunkedPostRequestWithOneEmptyDataPacket) {
   ProcessPacket(ConstructServerAckPacket(1, 1, 1, 1));
 
   // Send the response headers (but not the body).
-  SetResponse("200 OK", string());
+  SetResponse("200", string());
   size_t spdy_response_headers_frame_length;
   ProcessPacket(ConstructResponseHeadersPacket(
       2, !kFin, &spdy_response_headers_frame_length));
@@ -1790,7 +1790,7 @@ TEST_P(QuicHttpStreamTest, SendChunkedPostRequestAbortedByResetStream) {
   ProcessPacket(ConstructServerAckPacket(1, 1, 1, 1));
 
   // Send the response headers (but not the body).
-  SetResponse("200 OK", string());
+  SetResponse("200", string());
   size_t spdy_response_headers_frame_length;
   ProcessPacket(ConstructResponseHeadersPacket(
       2, !kFin, &spdy_response_headers_frame_length));
@@ -1869,7 +1869,7 @@ TEST_P(QuicHttpStreamTest, DestroyedEarly) {
               IsError(ERR_IO_PENDING));
 
   // Send the response with a body.
-  SetResponse("404 OK", "hello world!");
+  SetResponse("404", "hello world!");
   // In the course of processing this packet, the QuicHttpStream close itself.
   size_t response_size = 0;
   ProcessPacket(ConstructResponseHeadersPacket(2, !kFin, &response_size));
@@ -1914,7 +1914,7 @@ TEST_P(QuicHttpStreamTest, Priority) {
               IsError(ERR_IO_PENDING));
 
   // Send the response with a body.
-  SetResponse("404 OK", "hello world!");
+  SetResponse("404", "hello world!");
   size_t response_size = 0;
   ProcessPacket(ConstructResponseHeadersPacket(2, kFin, &response_size));
 
@@ -2586,7 +2586,7 @@ TEST_P(QuicHttpStreamTest, ServerPushVaryCheckFail) {
   // Ack the request.
   ProcessPacket(ConstructServerAckPacket(2, 1, 1, 1));
 
-  SetResponse("404 Not Found", string());
+  SetResponse("404", string());
   size_t spdy_response_header_frame_length;
   ProcessPacket(InnerConstructResponseHeadersPacket(
       3,
@@ -2680,7 +2680,7 @@ TEST_P(QuicHttpStreamTest, DataReadErrorAsynchronous) {
   int result = stream_->SendRequest(headers_, &response_, callback_.callback());
 
   ProcessPacket(ConstructServerAckPacket(1, 1, 1, 1));
-  SetResponse("200 OK", string());
+  SetResponse("200", string());
 
   EXPECT_THAT(result, IsError(ERR_IO_PENDING));
   EXPECT_THAT(callback_.GetResult(result), IsError(ERR_FAILED));
