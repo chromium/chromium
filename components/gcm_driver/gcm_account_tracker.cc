@@ -19,6 +19,7 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/scope_set.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/ip_endpoint.h"
 
@@ -26,10 +27,6 @@ namespace gcm {
 
 namespace {
 
-// Scopes needed by the OAuth2 access tokens.
-const char kGCMGroupServerScope[] = "https://www.googleapis.com/auth/gcm";
-const char kGCMCheckinServerScope[] =
-    "https://www.googleapis.com/auth/android_checkin";
 // Name of the GCM account tracker for fetching access tokens.
 const char kGCMAccountTrackerName[] = "gcm_account_tracker";
 // Minimum token validity when sending to GCM groups server.
@@ -290,8 +287,8 @@ void GCMAccountTracker::GetToken(AccountInfos::iterator& account_iter) {
   DCHECK_EQ(account_iter->second.state, TOKEN_NEEDED);
 
   signin::ScopeSet scopes;
-  scopes.insert(kGCMGroupServerScope);
-  scopes.insert(kGCMCheckinServerScope);
+  scopes.insert(GaiaConstants::kGCMGroupServerOAuth2Scope);
+  scopes.insert(GaiaConstants::kGCMCheckinServerOAuth2Scope);
 
   // NOTE: It is safe to use base::Unretained() here as |token_fetcher| is owned
   // by this object and guarantees that it will not invoke its callback after

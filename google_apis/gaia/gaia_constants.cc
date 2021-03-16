@@ -130,8 +130,10 @@ const char kAssistantOAuth2Scope[] =
 const char kNearbyShareOAuth2Scope[] =
     "https://www.googleapis.com/auth/nearbysharing-pa";
 
-// OAuth2 scope for access to GCM account tracker.
+// OAuth2 scopes for access to GCM account tracker.
 const char kGCMGroupServerOAuth2Scope[] = "https://www.googleapis.com/auth/gcm";
+const char kGCMCheckinServerOAuth2Scope[] =
+    "https://www.googleapis.com/auth/android_checkin";
 
 // OAuth2 scope for access to readonly Chrome web store.
 const char kChromeWebstoreOAuth2Scope[] =
