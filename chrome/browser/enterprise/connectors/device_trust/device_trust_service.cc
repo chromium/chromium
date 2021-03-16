@@ -4,8 +4,6 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
 
-#include "base/base64.h"
-#include "base/logging.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
@@ -26,7 +24,7 @@ DeviceTrustService::DeviceTrustService(Profile* profile)
       signal_report_callback_(
           base::BindOnce(&DeviceTrustService::OnSignalReported,
                          base::Unretained(this))) {
-  key_pair_ = std::make_unique<DeviceTrustKeyPair>(profile);
+  key_pair_ = std::make_unique<DeviceTrustKeyPair>();
   pref_observer_.Init(prefs_);
   pref_observer_.Add(kContextAwareAccessSignalsAllowlistPref,
                      base::BindRepeating(&DeviceTrustService::OnPolicyUpdated,
@@ -49,12 +47,13 @@ bool DeviceTrustService::IsEnabled() const {
 }
 
 void DeviceTrustService::OnPolicyUpdated() {
-  if (!reporter_) {
+  if (!key_pair_ || !reporter_) {
     return;
   }
 
   if (!first_report_sent_ &&
       IsEnabled()) {  // Policy enabled for the first time.
+    key_pair_->Init();
     reporter_->Init(
         base::BindRepeating(
             [](DeviceTrustService* self) { return self->IsEnabled(); },

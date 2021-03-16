@@ -9,6 +9,8 @@
 #include "chrome/browser/enterprise/connectors/device_trust/mock_signal_reporter.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "content/public/test/browser_task_environment.h"
@@ -26,6 +28,8 @@ const base::Value origins[]{base::Value("example1.example.com"),
 namespace policy {
 class DeviceTrustServiceTest : public testing::Test {
  public:
+  DeviceTrustServiceTest() : local_state_(TestingBrowserProcess::GetGlobal()) {}
+
   void SetUp() override {
     testing::Test::SetUp();
     OSCryptMocker::SetUp();
@@ -83,6 +87,7 @@ class DeviceTrustServiceTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_ = std::make_unique<TestingProfile>();
+  ScopedTestingLocalState local_state_;
 };
 
 TEST_F(DeviceTrustServiceTest, StartWithEnabledPolicy) {

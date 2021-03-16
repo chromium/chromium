@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/util/values/values_util.h"
 #include "base/values.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "components/os_crypt/os_crypt.h"
@@ -75,20 +76,15 @@ bool CreatePEMKey(const base::StringPiece& raw_key,
 
 }  // namespace
 
-DeviceTrustKeyPair::DeviceTrustKeyPair(Profile* profile) : profile_(profile) {
-  Init();
-}
+DeviceTrustKeyPair::DeviceTrustKeyPair() = default;
 
 DeviceTrustKeyPair::~DeviceTrustKeyPair() = default;
 
 bool DeviceTrustKeyPair::Init() {
-  PrefService* prefs = profile_->GetPrefs();
-
-  origins_ = prefs->GetList(
-      enterprise_connectors::kContextAwareAccessSignalsAllowlistPref);
+  PrefService* const local_state = g_browser_process->local_state();
 
   std::string base64_encrypted_private_key_info =
-      prefs->GetString(enterprise_connectors::kDeviceTrustPrivateKeyPref);
+      local_state->GetString(enterprise_connectors::kDeviceTrustPrivateKeyPref);
 
   // No key pair stored.
   if (base64_encrypted_private_key_info.empty()) {
@@ -125,8 +121,8 @@ bool DeviceTrustKeyPair::StoreKeyPair() {
     return false;
   }
 
-  PrefService* prefs = profile_->GetPrefs();
-  // Add private encoded encrypted private key to prefs.
+  PrefService* const local_state = g_browser_process->local_state();
+  // Add private encoded encrypted private key to local_state.
   std::vector<uint8_t> private_key;
   if (!key_pair_->ExportPrivateKey(&private_key))
     return false;
@@ -142,11 +138,12 @@ bool DeviceTrustKeyPair::StoreKeyPair() {
   // The string must be encoded as base64 for storage in local state.
   std::string encoded;
   base::Base64Encode(encrypted_key, &encoded);
-  prefs->SetString(enterprise_connectors::kDeviceTrustPrivateKeyPref, encoded);
+  local_state->SetString(enterprise_connectors::kDeviceTrustPrivateKeyPref,
+                         encoded);
 
-  // Add public key to prefs.
-  prefs->SetString(enterprise_connectors::kDeviceTrustPublicKeyPref,
-                   ExportPEMPublicKey());
+  // Add public key to local_state.
+  local_state->SetString(enterprise_connectors::kDeviceTrustPublicKeyPref,
+                         ExportPEMPublicKey());
 
   return true;
 }

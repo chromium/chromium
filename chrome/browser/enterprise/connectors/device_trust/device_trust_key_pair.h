@@ -32,8 +32,7 @@ namespace policy {
 //
 class DeviceTrustKeyPair {
  public:
-  DeviceTrustKeyPair() = delete;
-  explicit DeviceTrustKeyPair(Profile* profile);
+  DeviceTrustKeyPair();
   DeviceTrustKeyPair(const DeviceTrustKeyPair&) = delete;
   DeviceTrustKeyPair& operator=(const DeviceTrustKeyPair&) = delete;
   ~DeviceTrustKeyPair();
@@ -46,16 +45,13 @@ class DeviceTrustKeyPair {
   // string otherwise.
   std::string ExportPEMPublicKey();
 
- private:
-  // TODO(b/181059258) Replace with url_matcher::URLMatcher.
-  const base::ListValue* origins_;
-  std::unique_ptr<crypto::ECPrivateKey> key_pair_;
-  Profile* profile_;
-
   // Load key pair from prefs if available, if not, it will generate a
   // new key pair and store the encoded encrypted version of it into prefs.
   // Return strue on success.
   bool Init();
+
+ private:
+  std::unique_ptr<crypto::ECPrivateKey> key_pair_;
 
   // Store encrypted private key and public key into prefs.
   // Return strue on success.

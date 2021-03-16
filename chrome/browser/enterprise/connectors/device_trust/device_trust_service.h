@@ -14,6 +14,7 @@
 
 #include <memory>
 
+class KeyedService;
 class Profile;
 class PrefService;
 namespace enterprise_connectors {

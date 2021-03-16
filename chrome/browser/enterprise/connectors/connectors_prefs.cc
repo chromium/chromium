@@ -72,12 +72,14 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kOnFileDownloadedScopePref, 0);
   registry->RegisterIntegerPref(kOnBulkDataEntryScopePref, 0);
   registry->RegisterIntegerPref(kOnSecurityEventScopePref, 0);
-  // Device Trust prefs
   registry->RegisterListPref(kContextAwareAccessSignalsAllowlistPref);
-  registry->RegisterStringPref(kDeviceTrustPrivateKeyPref, std::string());
-  registry->RegisterStringPref(kDeviceTrustPublicKeyPref, std::string());
 
   RegisterFileSystemPrefs(registry);
+}
+
+void RegisterLocalPrefs(PrefRegistrySimple* registry) {
+  registry->RegisterStringPref(kDeviceTrustPrivateKeyPref, std::string());
+  registry->RegisterStringPref(kDeviceTrustPublicKeyPref, std::string());
 }
 
 }  // namespace enterprise_connectors
