@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/ranges/ranges.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/accessibility/caption_controller_factory.h"
@@ -13,8 +14,10 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_window.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/caption_bubble_controller.h"
@@ -320,6 +323,7 @@ IN_PROC_BROWSER_TEST_F(CaptionControllerTest, OnBrowserRemoved) {
     //
     // TODO(crbug.com/88586): Remove the other branch once
     // DestroyProfileOnBrowserClose becomes the default.
+    base::RunLoop().RunUntilIdle();
     std::vector<Profile*> loaded_profiles =
         g_browser_process->profile_manager()->GetLoadedProfiles();
     auto it = base::ranges::find(loaded_profiles, profile);
@@ -590,6 +594,13 @@ IN_PROC_BROWSER_TEST_F(CaptionControllerTest,
   Browser* browser2 = CreateBrowser(profile2);
   CaptionController* controller1 = GetControllerForProfile(profile1);
   CaptionController* controller2 = GetControllerForProfile(profile2);
+
+  // TODO(crbug.com/88586): Remove this test when the
+  // DestroyProfileOnBrowserClose flag is removed.
+  ScopedProfileKeepAlive profile1_keep_alive(
+      profile1, ProfileKeepAliveOrigin::kBrowserWindow);
+  ScopedProfileKeepAlive profile2_keep_alive(
+      profile2, ProfileKeepAliveOrigin::kBrowserWindow);
 
   // Enable live caption on both profiles.
   SetLiveCaptionEnabled(true);
