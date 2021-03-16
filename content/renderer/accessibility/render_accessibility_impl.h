@@ -110,7 +110,10 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
 
   // Called when an accessibility notification occurs in Blink.
   void HandleWebAccessibilityEvent(const ui::AXEvent& event);
-  void MarkWebAXObjectDirty(const blink::WebAXObject& obj, bool subtree);
+  void MarkWebAXObjectDirty(
+      const blink::WebAXObject& obj,
+      bool subtree,
+      ax::mojom::Action event_from_action = ax::mojom::Action::kNone);
 
   void HandleAXEvent(const ui::AXEvent& event);
 
@@ -149,6 +152,7 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
     ~DirtyObject();
     blink::WebAXObject obj;
     ax::mojom::EventFrom event_from;
+    ax::mojom::Action event_from_action;
     std::vector<ui::AXEventIntent> event_intents;
   };
 
@@ -189,7 +193,8 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   void StartOrStopLabelingImages(ui::AXMode old_mode, ui::AXMode new_mode);
 
   // Marks all AXObjects with the given role in the current tree dirty.
-  void MarkAllAXObjectsDirty(ax::mojom::Role role);
+  void MarkAllAXObjectsDirty(ax::mojom::Role role,
+                             ax::mojom::Action event_from_action);
 
   void Scroll(const ui::AXActionTarget* target,
               ax::mojom::Action scroll_action);

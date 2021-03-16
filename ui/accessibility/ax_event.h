@@ -20,6 +20,7 @@ struct AX_BASE_EXPORT AXEvent final {
   AXEvent(AXNodeData::AXID id,
           ax::mojom::Event event_type,
           ax::mojom::EventFrom event_from = ax::mojom::EventFrom::kNone,
+          ax::mojom::Action event_from_action = ax::mojom::Action::kNone,
           const std::vector<AXEventIntent>& event_intents = {},
           int action_request_id = -1);
   virtual ~AXEvent();
@@ -34,6 +35,12 @@ struct AX_BASE_EXPORT AXEvent final {
 
   // The source of the event.
   ax::mojom::EventFrom event_from = ax::mojom::EventFrom::kNone;
+
+  // The accessibility action that caused the event. The difference between
+  // event_from_action and event_intents is that event_from_action refers to
+  // an action from an accessibility API call, while event_intents refers to
+  // user actions.
+  ax::mojom::Action event_from_action = ax::mojom::Action::kNone;
 
   // Describes what caused an accessibility event to be raised. For example, in
   // the case of a selection changed event, the selection could have been

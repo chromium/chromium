@@ -4691,13 +4691,15 @@ void RenderFrameImpl::PostAccessibilityEvent(const ui::AXEvent& event) {
       ->HandleWebAccessibilityEvent(event);
 }
 
-void RenderFrameImpl::MarkWebAXObjectDirty(const blink::WebAXObject& obj,
-                                           bool subtree) {
+void RenderFrameImpl::MarkWebAXObjectDirty(
+    const blink::WebAXObject& obj,
+    bool subtree,
+    ax::mojom::Action event_from_action) {
   if (!IsAccessibilityEnabled())
     return;
 
   render_accessibility_manager_->GetRenderAccessibilityImpl()
-      ->MarkWebAXObjectDirty(obj, subtree);
+      ->MarkWebAXObjectDirty(obj, subtree, event_from_action);
 }
 
 void RenderFrameImpl::AddObserver(RenderFrameObserver* observer) {

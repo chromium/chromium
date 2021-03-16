@@ -626,7 +626,10 @@ class BLINK_EXPORT WebLocalFrameClient {
   // Notifies the embedder that a WebAXObject is dirty and its state needs
   // to be serialized again. If |subtree| is true, the entire subtree is
   // dirty.
-  virtual void MarkWebAXObjectDirty(const WebAXObject&, bool subtree) {}
+  virtual void MarkWebAXObjectDirty(
+      const WebAXObject&,
+      bool subtree,
+      ax::mojom::Action event_from_action = ax::mojom::Action::kNone) {}
 
   // Audio Output Devices API --------------------------------------------
 

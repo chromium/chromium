@@ -10,6 +10,7 @@
 goog.provide('BaseAutomationHandler');
 
 goog.scope(function() {
+const ActionType = chrome.automation.ActionType;
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationNode = chrome.automation.AutomationNode;
 const EventType = chrome.automation.EventType;
@@ -100,7 +101,8 @@ BaseAutomationHandler = class {
 
     // Decide whether to announce and sync this event.
     if (!DesktopAutomationHandler.announceActions &&
-        evt.eventFrom === 'action') {
+        evt.eventFrom === 'action' &&
+        evt.eventFromAction !== ActionType.DO_DEFAULT) {
       return;
     }
 

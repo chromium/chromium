@@ -34,6 +34,10 @@ std::string AXTreeUpdate::ToString() const {
 
   if (event_from != ax::mojom::EventFrom::kNone)
     result += "event_from=" + std::string(ui::ToString(event_from)) + "\n";
+  if (event_from_action != ax::mojom::Action::kNone)
+    result +=
+        "event_from_action=" + std::string(ui::ToString(event_from_action)) +
+        "\n";
 
   if (!event_intents.empty()) {
     result += "event_intents=[\n";

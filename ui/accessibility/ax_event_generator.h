@@ -128,6 +128,7 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
     explicit EventParams(Event event);
     EventParams(Event event,
                 ax::mojom::EventFrom event_from,
+                ax::mojom::Action event_from_action,
                 const std::vector<AXEventIntent>& event_intents);
     EventParams(const EventParams& other);
     ~EventParams();
@@ -138,6 +139,7 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
 
     Event event;
     ax::mojom::EventFrom event_from = ax::mojom::EventFrom::kNone;
+    ax::mojom::Action event_from_action;
     std::vector<AXEventIntent> event_intents;
   };
 

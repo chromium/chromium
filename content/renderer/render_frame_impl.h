@@ -610,8 +610,10 @@ class CONTENT_EXPORT RenderFrameImpl
   bool AllowContentInitiatedDataUrlNavigations(
       const blink::WebURL& url) override;
   void PostAccessibilityEvent(const ui::AXEvent& event) override;
-  void MarkWebAXObjectDirty(const blink::WebAXObject& obj,
-                            bool subtree) override;
+  void MarkWebAXObjectDirty(
+      const blink::WebAXObject& obj,
+      bool subtree,
+      ax::mojom::Action event_from_action = ax::mojom::Action::kNone) override;
   void CheckIfAudioSinkExistsAndIsAuthorized(
       const blink::WebString& sink_id,
       blink::WebSetSinkIdCompleteCallback callback) override;

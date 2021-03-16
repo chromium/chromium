@@ -24,6 +24,7 @@ goog.require('ChromeVoxPrefs');
 goog.require('CommandStore');
 
 goog.scope(function() {
+const ActionType = chrome.automation.ActionType;
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationNode = chrome.automation.AutomationNode;
 const Dir = constants.Dir;
@@ -1336,7 +1337,7 @@ CommandHandler.viewGraphicAsBraille_ = function(current) {
   CommandHandler.imageNode_ = imageNode;
   if (imageNode.imageDataUrl) {
     const event = new CustomAutomationEvent(
-        EventType.IMAGE_FRAME_UPDATED, imageNode, 'page', []);
+        EventType.IMAGE_FRAME_UPDATED, imageNode, 'page', '', []);
     CommandHandler.onImageFrameUpdated_(event);
   } else {
     imageNode.getImageData(0, 0);
@@ -1495,5 +1496,4 @@ CommandHandler.init = function() {
         result['sessionType'] === chrome.chromeosInfoPrivate.SessionType.KIOSK;
   });
 };
-
 });  // goog.scope

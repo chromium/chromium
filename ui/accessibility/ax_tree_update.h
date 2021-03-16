@@ -77,6 +77,9 @@ struct AX_BASE_EXPORT AXTreeUpdate {
   // The source of the event which generated this tree update.
   ax::mojom::EventFrom event_from = ax::mojom::EventFrom::kNone;
 
+  // The accessibility action that caused this tree update.
+  ax::mojom::Action event_from_action = ax::mojom::Action::kNone;
+
   // The event intents associated with this tree update.
   std::vector<AXEventIntent> event_intents;
 

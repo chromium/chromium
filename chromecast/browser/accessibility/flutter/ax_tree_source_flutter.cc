@@ -317,6 +317,7 @@ void AXTreeSourceFlutter::NotifyAccessibilityEvent(
     focus_event.event_type = ax::mojom::Event::kFocus;
     focus_event.id = focused_id_;
     focus_event.event_from = ax::mojom::EventFrom::kNone;
+    focus_event.event_from_action = ax::mojom::Action::kNone;
     events.push_back(std::move(focus_event));
   }
 
@@ -613,6 +614,7 @@ void AXTreeSourceFlutter::HandleRoutes(std::vector<ui::AXEvent>* events) {
         focus_event.event_type = ax::mojom::Event::kFocus;
         focus_event.id = focused_id_;
         focus_event.event_from = ax::mojom::EventFrom::kNone;
+        focus_event.event_from_action = ax::mojom::Action::kNone;
       }
     }
   }
@@ -652,6 +654,7 @@ void AXTreeSourceFlutter::HandleRoutes(std::vector<ui::AXEvent>* events) {
     focus_event.event_type = ax::mojom::Event::kFocus;
     focus_event.id = focused_id_;
     focus_event.event_from = ax::mojom::EventFrom::kNone;
+    focus_event.event_from_action = ax::mojom::Action::kNone;
   }
 }
 

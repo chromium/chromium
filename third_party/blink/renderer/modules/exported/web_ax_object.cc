@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_selection.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/skia/include/core/SkMatrix44.h"
+#include "ui/accessibility/ax_action_data.h"
 
 namespace blink {
 
@@ -88,15 +89,22 @@ mojom::blink::ScrollAlignment::Behavior ToBlinkScrollAlignmentBehavior(
 // AXObjCache or AXObjectCacheImpl handles programmatic actions.
 class ScopedActionAnnotator {
  public:
-  explicit ScopedActionAnnotator(AXObject* obj)
+  ScopedActionAnnotator(AXObject* obj,
+                        ax::mojom::blink::Action event_from_action)
       : cache_(&obj->AXObjectCache()) {
-    DCHECK_EQ(cache_->active_event_from(), ax::mojom::blink::EventFrom::kNone)
+    std::pair<ax::mojom::blink::EventFrom, ax::mojom::blink::Action>
+        event_from_data = cache_->active_event_from_data();
+    DCHECK_EQ(event_from_data.first, ax::mojom::blink::EventFrom::kNone)
         << "Multiple ScopedActionAnnotator instances cannot be nested.";
-    cache_->set_active_event_from(ax::mojom::blink::EventFrom::kAction);
+    DCHECK_EQ(event_from_data.second, ax::mojom::blink::Action::kNone)
+        << "event_from_action must not be set before construction.";
+    cache_->set_active_event_from_data(ax::mojom::blink::EventFrom::kAction,
+                                       event_from_action);
   }
 
   ~ScopedActionAnnotator() {
-    cache_->set_active_event_from(ax::mojom::blink::EventFrom::kNone);
+    cache_->set_active_event_from_data(ax::mojom::blink::EventFrom::kNone,
+                                       ax::mojom::blink::Action::kNone);
   }
 
  private:
@@ -517,7 +525,8 @@ WebAXObject WebAXObject::HitTest(const gfx::Point& point) const {
   if (IsDetached())
     return WebAXObject();
 
-  ScopedActionAnnotator annotater(private_.Get());
+  ScopedActionAnnotator annotater(private_.Get(),
+                                  ax::mojom::blink::Action::kHitTest);
   IntPoint contents_point =
       private_->DocumentFrameView()->SoonToBeRemovedUnscaledViewportToContents(
           IntPoint(point));
@@ -599,7 +608,7 @@ bool WebAXObject::PerformAction(const ui::AXActionData& action_data) const {
   if (IsDetached())
     return false;  // Updating lifecycle could detach object.
 
-  ScopedActionAnnotator annotater(private_.Get());
+  ScopedActionAnnotator annotater(private_.Get(), action_data.action);
   return private_->PerformAction(action_data);
 }
 
@@ -718,7 +727,8 @@ bool WebAXObject::SetSelected(bool selected) const {
   if (IsDetached())
     return false;
 
-  ScopedActionAnnotator annotater(private_.Get());
+  ScopedActionAnnotator annotater(private_.Get(),
+                                  ax::mojom::blink::Action::kSetSelection);
   return private_->RequestSetSelectedAction(selected);
 }
 
@@ -729,7 +739,8 @@ bool WebAXObject::SetSelection(const WebAXObject& anchor_object,
   if (IsDetached() || anchor_object.IsDetached() || focus_object.IsDetached())
     return false;
 
-  ScopedActionAnnotator annotater(private_.Get());
+  ScopedActionAnnotator annotater(private_.Get(),
+                                  ax::mojom::blink::Action::kSetSelection);
   AXPosition ax_base, ax_extent;
   if (static_cast<const AXObject*>(anchor_object)->IsTextObject() ||
       static_cast<const AXObject*>(anchor_object)->IsNativeTextControl()) {
@@ -1209,7 +1220,8 @@ bool WebAXObject::ScrollToMakeVisible() const {
   if (IsDetached())
     return false;
 
-  ScopedActionAnnotator annotater(private_.Get());
+  ScopedActionAnnotator annotater(
+      private_.Get(), ax::mojom::blink::Action::kScrollToMakeVisible);
   return private_->RequestScrollToMakeVisibleAction();
 }
 
@@ -1221,7 +1233,8 @@ bool WebAXObject::ScrollToMakeVisibleWithSubFocus(
   if (IsDetached())
     return false;
 
-  ScopedActionAnnotator annotater(private_.Get());
+  ScopedActionAnnotator annotater(
+      private_.Get(), ax::mojom::blink::Action::kScrollToMakeVisible);
   auto horizontal_behavior =
       ToBlinkScrollAlignmentBehavior(horizontal_scroll_alignment);
   auto vertical_behavior =
