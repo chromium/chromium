@@ -42,6 +42,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/range/range.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
@@ -68,6 +69,9 @@ views::Widget* TabGroupEditorBubbleView::Show(
   views::Widget* const widget =
       BubbleDialogDelegateView::CreateBubble(tab_group_editor_bubble_view);
   tab_group_editor_bubble_view->set_adjust_if_offscreen(true);
+  tab_group_editor_bubble_view->GetBubbleFrameView()
+      ->SetPreferredArrowAdjustment(
+          views::BubbleFrameView::PreferredArrowAdjustment::kOffset);
   tab_group_editor_bubble_view->SizeToContents();
   widget->Show();
   return widget;
