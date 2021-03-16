@@ -128,10 +128,7 @@ void WindowCycleEventFilter::OnScrollEvent(ui::ScrollEvent* event) {
 
 void WindowCycleEventFilter::OnGestureEvent(ui::GestureEvent* event) {
   if (features::IsInteractiveWindowCycleListEnabled()) {
-    if (ProcessGestureEvent(event)) {
-      event->SetHandled();
-      event->StopPropagation();
-    }
+    ProcessGestureEvent(event);
   } else {
     // Prevent any form of tap from doing anything while the Alt+Tab UI is
     // active.
@@ -240,7 +237,8 @@ void WindowCycleEventFilter::ProcessMouseEvent(ui::MouseEvent* event) {
   }
 }
 
-bool WindowCycleEventFilter::ProcessGestureEvent(ui::GestureEvent* event) {
+void WindowCycleEventFilter::ProcessGestureEvent(ui::GestureEvent* event) {
+  bool should_complete_cycling = false;
   switch (event->type()) {
     case ui::ET_GESTURE_TAP:
     case ui::ET_GESTURE_TAP_DOWN:
@@ -252,57 +250,62 @@ bool WindowCycleEventFilter::ProcessGestureEvent(ui::GestureEvent* event) {
       tapped_window_ =
           Shell::Get()->window_cycle_controller()->GetWindowAtPoint(
               event->AsLocatedEvent());
-      return true;
+      break;
     }
     case ui::ET_GESTURE_TAP_CANCEL:
       // Do nothing because the event after this one determines whether we
       // scrolled or tapped.
-      return true;
+      break;
     case ui::ET_GESTURE_SCROLL_BEGIN: {
       tapped_window_ = nullptr;
       if (!Shell::Get()->window_cycle_controller()->IsEventInCycleView(event))
-        return false;
+        return;
 
       touch_scrolling_ = true;
-      return true;
+      break;
     }
     case ui::ET_GESTURE_SCROLL_UPDATE: {
       if (!touch_scrolling_)
-        return false;
+        return;
 
       Shell::Get()->window_cycle_controller()->Drag(
           event->details().scroll_x());
-      return true;
+      break;
     }
     case ui::ET_SCROLL_FLING_START: {
       tapped_window_ = nullptr;
       auto* window_cycle_controller = Shell::Get()->window_cycle_controller();
       if (!window_cycle_controller->IsEventInCycleView(event))
-        return false;
+        return;
 
       window_cycle_controller->StartFling(event->details().velocity_x());
-      return true;
+      break;
     }
     case ui::ET_GESTURE_END: {
       if (tapped_window_) {
-        // |this| will be destroyed after this line.
-        Shell::Get()->window_cycle_controller()->CompleteCycling();
+        // Defer calling WindowCycleController::CompleteCycling() until we've
+        // set |event| to handled and stop its propagation.
+        should_complete_cycling = true;
       } else {
         tapped_window_ = nullptr;
         touch_scrolling_ = false;
       }
-      return true;
+      break;
     }
     default:
       if (tapped_window_) {
         Shell::Get()->window_cycle_controller()->SetFocusedWindow(
             tapped_window_);
-        return true;
+        break;
       }
-      break;
+      return;
   }
 
-  return false;
+  event->SetHandled();
+  event->StopPropagation();
+
+  if (should_complete_cycling)
+    Shell::Get()->window_cycle_controller()->CompleteCycling();
 }
 
 bool WindowCycleEventFilter::ProcessEventImpl(int finger_count,
