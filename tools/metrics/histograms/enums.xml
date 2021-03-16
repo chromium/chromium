@@ -2053,6 +2053,16 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="LowMemory"/>
 </enum>
 
+<enum name="AndroidMultiWindowActivityType">
+  <int value="0" label="Enter"/>
+  <int value="1" label="Exit"/>
+</enum>
+
+<enum name="AndroidMultiWindowState">
+  <int value="0" label="SingleWindow"/>
+  <int value="1" label="MultiWindow"/>
+</enum>
+
 <enum name="AndroidProcessedCrashCounts">
   <int value="0" label="Gpu foreground OOM">
     GPU is killed by Android due to OOM while app is foreground.
@@ -17525,6 +17535,13 @@ metrics consent we also won't be able to send UMA metrics. -->
 </enum>
 
 <enum name="DeviceOrientation">
+  <int value="0" label="Landscape"/>
+  <int value="1" label="Portrait"/>
+</enum>
+
+<!-- This is not accessible from where the above enum is defined in code. -->
+
+<enum name="DeviceOrientation2">
   <int value="0" label="Landscape"/>
   <int value="1" label="Portrait"/>
 </enum>
@@ -77676,6 +77693,11 @@ Full version information for the fingerprint enum values:
   <int value="13" label="kExtensionMessagingSenderPrivileged"/>
   <int value="14" label="kExtensionMessagingReceiverPrivileged"/>
   <int value="15" label="kExtensionMessagingNeitherPrivileged"/>
+</enum>
+
+<enum name="UserAgentRequestType">
+  <int value="0" label="RequestDesktop"/>
+  <int value="1" label="RequestMobile"/>
 </enum>
 
 <enum name="UserCertContentDisposition">

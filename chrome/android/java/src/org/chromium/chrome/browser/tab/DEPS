@@ -10,6 +10,7 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/feature_engagement/TrackerFactory.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/incognito/IncognitoUtils.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/media/MediaCaptureNotificationServiceImpl.java",
+  "+chrome/android/java/src/org/chromium/chrome/browser/metrics/UkmRecorder.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/paint_preview/PaintPreviewTabHelper.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/policy/PolicyAuditor.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/previews/Previews.java",

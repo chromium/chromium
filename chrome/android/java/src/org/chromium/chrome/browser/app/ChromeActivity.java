@@ -143,6 +143,7 @@ import org.chromium.chrome.browser.share.ShareDelegateImpl;
 import org.chromium.chrome.browser.share.ShareDelegateSupplier;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.browser.tab.AccessibilityVisibilityHandler;
+import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -898,6 +899,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             }
         }
         VrModuleProvider.getDelegate().onActivityShown(this);
+
+        MultiWindowUtils.getInstance().recordMultiWindowStateUkm(this, tab);
     }
 
     private void onActivityHidden() {
@@ -1227,9 +1230,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      * Actions that may be run at some point after startup for Android N multi-window mode. Should
      * be called from #onDeferredStartup() if the activity is in multi-window mode.
      */
-    protected void onDeferredStartupForMultiWindowMode() {
+    private void onDeferredStartupForMultiWindowMode() {
         // If the Activity was launched in multi-window mode, record a user action.
-        recordMultiWindowModeChangedUserAction(true);
+        recordMultiWindowModeChanged(
+                /* isInMultiWindowMode= */ true, /* isDeferredStartup= */ true);
     }
 
     /**
@@ -1267,6 +1271,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (mCompositorViewHolder != null) mCompositorViewHolder.onStart();
 
         mConfig = getResources().getConfiguration();
+
         mStarted = true;
     }
 
@@ -2022,6 +2027,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 return;
             }
         }
+
+        if (newConfig.orientation != mConfig.orientation) {
+            RequestDesktopUtils.recordScreenOrientationChangedUkm(
+                    newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE, getActivityTab());
+        }
+
         mConfig = newConfig;
     }
 
@@ -2051,7 +2062,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         // will be called in #onResumeWithNative(). Both of these methods require native to be
         // initialized, so do not call here to avoid crashing. See https://crbug.com/797921.
         if (mNativeInitialized) {
-            recordMultiWindowModeChangedUserAction(isInMultiWindowMode);
+            recordMultiWindowModeChanged(isInMultiWindowMode, /* isDeferredStartup= */ false);
 
             if (!isInMultiWindowMode
                     && ApplicationStatus.getStateForActivity(this) == ActivityState.RESUMED) {
@@ -2073,15 +2084,23 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     }
 
     /**
-     * Records user actions associated with entering and exiting Android N multi-window mode
+     * Records user actions and ukms associated with entering and exiting Android N multi-window
+     * mode.
      * @param isInMultiWindowMode True if the activity is in multi-window mode.
+     * @param isDeferredStartup True if the activity is deferred startup.
      */
-    protected void recordMultiWindowModeChangedUserAction(boolean isInMultiWindowMode) {
-        if (isInMultiWindowMode) {
-            RecordUserAction.record("Android.MultiWindowMode.Enter");
-        } else {
-            RecordUserAction.record("Android.MultiWindowMode.Exit");
-        }
+    private void recordMultiWindowModeChanged(
+            boolean isInMultiWindowMode, boolean isDeferredStartup) {
+        MultiWindowUtils.getInstance().recordMultiWindowModeChanged(
+                isInMultiWindowMode, isDeferredStartup, isFirstActivity(), getActivityTab());
+    }
+
+    /**
+     * This method serves to distinguish windows in multi-window mode.
+     * @return True if this activity is the first created activity.
+     */
+    protected boolean isFirstActivity() {
+        return true;
     }
 
     @Override
@@ -2343,9 +2362,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                     currentTab.getWebContents().getNavigationController().getUseDesktopUserAgent();
             usingDesktopUserAgent = !usingDesktopUserAgent;
             TabUtils.switchUserAgent(currentTab, usingDesktopUserAgent, /* forcedByUser */ true);
-            RecordUserAction.record("MobileMenuRequestDesktopSite");
-            RecordHistogram.recordBooleanHistogram(
-                    "Android.RequestDesktopSite.UserSwitchToDesktop", usingDesktopUserAgent);
+            RequestDesktopUtils.recordUserChangeUserAgent(usingDesktopUserAgent, getActivityTab());
             return true;
         }
 
