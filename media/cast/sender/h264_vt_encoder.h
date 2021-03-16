@@ -24,7 +24,7 @@ namespace cast {
 // sizes directly. Implements the base::PowerObserver interface to reset the
 // compression session when the host process is suspended.
 class H264VideoToolboxEncoder : public VideoEncoder,
-                                public base::PowerObserver {
+                                public base::PowerSuspendObserver {
  public:
   // Returns true if the current platform and system configuration supports
   // using H264VideoToolboxEncoder with the given |video_config|.
@@ -45,7 +45,7 @@ class H264VideoToolboxEncoder : public VideoEncoder,
   std::unique_ptr<VideoFrameFactory> CreateVideoFrameFactory() final;
   void EmitFrames() final;
 
-  // base::PowerObserver
+  // base::PowerSuspendObserver
   void OnSuspend() final;
   void OnResume() final;
 

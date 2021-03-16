@@ -34,10 +34,11 @@ class BASE_EXPORT PowerMonitorSource {
 
   // Reads the current DeviceThermalState, if available on the platform.
   // Otherwise, returns kUnknown.
-  virtual PowerObserver::DeviceThermalState GetCurrentThermalState();
+  virtual PowerThermalObserver::DeviceThermalState GetCurrentThermalState();
 
   // Update the result of thermal state.
-  virtual void SetCurrentThermalState(PowerObserver::DeviceThermalState state);
+  virtual void SetCurrentThermalState(
+      PowerThermalObserver::DeviceThermalState state);
 
 #if defined(OS_ANDROID)
   // Read and return the current remaining battery capacity (microampere-hours).
@@ -45,7 +46,7 @@ class BASE_EXPORT PowerMonitorSource {
 #endif  // defined(OS_ANDROID)
 
   static const char* DeviceThermalStateToString(
-      PowerObserver::DeviceThermalState state);
+      PowerThermalObserver::DeviceThermalState state);
 
  protected:
   friend class PowerMonitorTest;
@@ -57,7 +58,7 @@ class BASE_EXPORT PowerMonitorSource {
   // the UI thread or, in child processes, the IO thread.
   static void ProcessPowerEvent(PowerEvent event_id);
   static void ProcessThermalEvent(
-      PowerObserver::DeviceThermalState new_thermal_state);
+      PowerThermalObserver::DeviceThermalState new_thermal_state);
 
   // Platform-specific method to check whether the system is currently
   // running on battery power.  Returns true if running on batteries,

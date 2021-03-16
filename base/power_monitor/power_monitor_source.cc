@@ -17,12 +17,13 @@ bool PowerMonitorSource::IsOnBatteryPower() {
   return on_battery_power_;
 }
 
-PowerObserver::DeviceThermalState PowerMonitorSource::GetCurrentThermalState() {
-  return PowerObserver::DeviceThermalState::kUnknown;
+PowerThermalObserver::DeviceThermalState
+PowerMonitorSource::GetCurrentThermalState() {
+  return PowerThermalObserver::DeviceThermalState::kUnknown;
 }
 
 void PowerMonitorSource::SetCurrentThermalState(
-    PowerObserver::DeviceThermalState state) {}
+    PowerThermalObserver::DeviceThermalState state) {}
 
 #if defined(OS_ANDROID)
 int PowerMonitorSource::GetRemainingBatteryCapacity() {
@@ -74,7 +75,7 @@ void PowerMonitorSource::ProcessPowerEvent(PowerEvent event_id) {
 
 // static
 void PowerMonitorSource::ProcessThermalEvent(
-    PowerObserver::DeviceThermalState new_thermal_state) {
+    PowerThermalObserver::DeviceThermalState new_thermal_state) {
   if (!PowerMonitor::IsInitialized())
     return;
   PowerMonitor::NotifyThermalStateChange(new_thermal_state);
@@ -91,17 +92,17 @@ void PowerMonitorSource::SetInitialOnBatteryPowerState(bool on_battery_power) {
 
 // static
 const char* PowerMonitorSource::DeviceThermalStateToString(
-    PowerObserver::DeviceThermalState state) {
+    PowerThermalObserver::DeviceThermalState state) {
   switch (state) {
-    case PowerObserver::DeviceThermalState::kUnknown:
+    case PowerThermalObserver::DeviceThermalState::kUnknown:
       return "Unknown";
-    case PowerObserver::DeviceThermalState::kNominal:
+    case PowerThermalObserver::DeviceThermalState::kNominal:
       return "Nominal";
-    case PowerObserver::DeviceThermalState::kFair:
+    case PowerThermalObserver::DeviceThermalState::kFair:
       return "Fair";
-    case PowerObserver::DeviceThermalState::kSerious:
+    case PowerThermalObserver::DeviceThermalState::kSerious:
       return "Serious";
-    case PowerObserver::DeviceThermalState::kCritical:
+    case PowerThermalObserver::DeviceThermalState::kCritical:
       return "Critical";
   }
   NOTREACHED();

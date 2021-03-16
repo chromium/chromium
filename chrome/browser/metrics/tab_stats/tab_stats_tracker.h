@@ -42,7 +42,7 @@ FORWARD_DECLARE_TEST(TabStatsTrackerBrowserTest,
 //         std::make_unique<TabStatsTracker>(g_browser_process->local_state()));
 class TabStatsTracker : public TabStripModelObserver,
                         public BrowserListObserver,
-                        public base::PowerObserver {
+                        public base::PowerSuspendObserver {
  public:
   // Constructor. |pref_service| must outlive this object.
   explicit TabStatsTracker(PrefService* pref_service);
@@ -150,7 +150,8 @@ class TabStatsTracker : public TabStripModelObserver,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
-  // base::PowerObserver:
+
+  // base::PowerSuspendObserver:
   void OnResume() override;
 
   // Callback when an interval timer triggers.

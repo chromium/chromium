@@ -40,8 +40,10 @@ TEST_F(PowerMonitorTest, PowerNotifications) {
   PowerMonitorInitialize();
 
   PowerMonitorTestObserver observers[kObservers];
-  for (auto& index : observers)
-    PowerMonitor::AddObserver(&index);
+  for (auto& index : observers) {
+    PowerMonitor::AddPowerSuspendObserver(&index);
+    PowerMonitor::AddPowerStateObserver(&index);
+  }
 
   // Sending resume when not suspended should have no effect.
   source()->GenerateResumeEvent();
@@ -83,22 +85,24 @@ TEST_F(PowerMonitorTest, PowerNotifications) {
   source()->GeneratePowerStateEvent(false);
   EXPECT_EQ(observers[0].power_state_changes(), 2);
 
-  for (auto& index : observers)
-    PowerMonitor::RemoveObserver(&index);
+  for (auto& index : observers) {
+    PowerMonitor::RemovePowerSuspendObserver(&index);
+    PowerMonitor::RemovePowerStateObserver(&index);
+  }
 }
 
 TEST_F(PowerMonitorTest, ThermalThrottling) {
   PowerMonitorTestObserver observer;
-  PowerMonitor::AddObserver(&observer);
+  PowerMonitor::AddPowerThermalObserver(&observer);
 
   PowerMonitorInitialize();
 
-  constexpr PowerObserver::DeviceThermalState kThermalStates[] = {
-      PowerObserver::DeviceThermalState::kUnknown,
-      PowerObserver::DeviceThermalState::kNominal,
-      PowerObserver::DeviceThermalState::kFair,
-      PowerObserver::DeviceThermalState::kSerious,
-      PowerObserver::DeviceThermalState::kCritical};
+  constexpr PowerThermalObserver::DeviceThermalState kThermalStates[] = {
+      PowerThermalObserver::DeviceThermalState::kUnknown,
+      PowerThermalObserver::DeviceThermalState::kNominal,
+      PowerThermalObserver::DeviceThermalState::kFair,
+      PowerThermalObserver::DeviceThermalState::kSerious,
+      PowerThermalObserver::DeviceThermalState::kCritical};
 
   for (const auto state : kThermalStates) {
     source()->GenerateThermalThrottlingEvent(state);
@@ -106,7 +110,7 @@ TEST_F(PowerMonitorTest, ThermalThrottling) {
     EXPECT_EQ(observer.last_thermal_state(), state);
   }
 
-  PowerMonitor::RemoveObserver(&observer);
+  PowerMonitor::RemovePowerThermalObserver(&observer);
 }
 
 TEST_F(PowerMonitorTest, AddObserverBeforeAndAfterInitialization) {
@@ -114,12 +118,12 @@ TEST_F(PowerMonitorTest, AddObserverBeforeAndAfterInitialization) {
   PowerMonitorTestObserver observer2;
 
   // An observer is added before the PowerMonitor initialization.
-  PowerMonitor::AddObserver(&observer1);
+  PowerMonitor::AddPowerSuspendObserver(&observer1);
 
   PowerMonitorInitialize();
 
   // An observer is added after the PowerMonitor initialization.
-  PowerMonitor::AddObserver(&observer2);
+  PowerMonitor::AddPowerSuspendObserver(&observer2);
 
   // Simulate suspend/resume notifications.
   source()->GenerateSuspendEvent();
@@ -132,8 +136,8 @@ TEST_F(PowerMonitorTest, AddObserverBeforeAndAfterInitialization) {
   EXPECT_EQ(observer1.resumes(), 1);
   EXPECT_EQ(observer2.resumes(), 1);
 
-  PowerMonitor::RemoveObserver(&observer1);
-  PowerMonitor::RemoveObserver(&observer2);
+  PowerMonitor::RemovePowerSuspendObserver(&observer1);
+  PowerMonitor::RemovePowerSuspendObserver(&observer2);
 }
 
 }  // namespace base

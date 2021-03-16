@@ -29,7 +29,7 @@ namespace chromeos {
 // cached password before being forced to go through online authentication
 // against GAIA again.
 class OfflineSigninLimiter : public KeyedService,
-                             public base::PowerObserver,
+                             public base::PowerSuspendObserver,
                              public session_manager::SessionManagerObserver {
  public:
   // Called when the user successfully authenticates. `auth_flow` indicates

@@ -235,7 +235,7 @@ LockScreenMediaControlsView::LockScreenMediaControlsView(
 
   // Media controls should observe power events and handle the case of being
   // created in suspended state.
-  base::PowerMonitor::AddObserver(this);
+  base::PowerMonitor::AddPowerSuspendObserver(this);
   if (base::PowerMonitor::IsProcessSuspended()) {
     // Post OnSuspend call to run after LockContentsView is initialized.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -451,7 +451,7 @@ LockScreenMediaControlsView::~LockScreenMediaControlsView() {
     }
   }
 
-  base::PowerMonitor::RemoveObserver(this);
+  base::PowerMonitor::RemovePowerSuspendObserver(this);
 }
 
 gfx::Size LockScreenMediaControlsView::CalculatePreferredSize() const {

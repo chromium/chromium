@@ -19,7 +19,7 @@ namespace content {
 // while the device is not charging and the app is visible. This class is not
 // thread-safe.
 class AndroidBatteryMetrics
-    : public base::PowerObserver,
+    : public base::PowerStateObserver,
       public ProcessVisibilityTracker::ProcessVisibilityObserver {
  public:
   static AndroidBatteryMetrics* GetInstance();
@@ -32,7 +32,7 @@ class AndroidBatteryMetrics
   AndroidBatteryMetrics();
   ~AndroidBatteryMetrics() override;
 
-  // base::PowerObserver implementation:
+  // base::PowerStateObserver implementation:
   void OnPowerStateChange(bool on_battery_power) override;
 
   void UpdateMetricsEnabled();

@@ -212,12 +212,12 @@ SwapChainPresenter::SwapChainPresenter(
       is_on_battery_power_(true) {
   if (base::PowerMonitor::IsInitialized()) {
     is_on_battery_power_ = base::PowerMonitor::IsOnBatteryPower();
-    base::PowerMonitor::AddObserver(this);
+    base::PowerMonitor::AddPowerStateObserver(this);
   }
 }
 
 SwapChainPresenter::~SwapChainPresenter() {
-  base::PowerMonitor::RemoveObserver(this);
+  base::PowerMonitor::RemovePowerStateObserver(this);
 }
 
 DXGI_FORMAT SwapChainPresenter::GetSwapChainFormat(

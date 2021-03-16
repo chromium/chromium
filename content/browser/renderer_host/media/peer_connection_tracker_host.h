@@ -30,7 +30,8 @@ class RenderFrameHost;
 // PeerConnectionTracker as IPC messages that it forwards to WebRTCInternals.
 // It also forwards browser process events to PeerConnectionTracker via IPC.
 class PeerConnectionTrackerHost
-    : public base::PowerObserver,
+    : public base::PowerSuspendObserver,
+      public base::PowerThermalObserver,
       public blink::mojom::PeerConnectionTrackerHost {
  public:
   explicit PeerConnectionTrackerHost(RenderFrameHost* rfh);
@@ -38,10 +39,11 @@ class PeerConnectionTrackerHost
 
   static const std::set<PeerConnectionTrackerHost*>& GetAllHosts();
 
-  // base::PowerObserver override.
+  // base::PowerSuspendObserver override.
   void OnSuspend() override;
+  // base::PowerThermalObserver override.
   void OnThermalStateChange(
-      base::PowerObserver::DeviceThermalState new_state) override;
+      base::PowerThermalObserver::DeviceThermalState new_state) override;
 
   // These methods call out to blink::mojom::PeerConnectionManager on renderer
   // side.

@@ -85,7 +85,7 @@ WebAppMetrics::WebAppMetrics(Profile* profile)
       profile_(profile),
       browser_tab_strip_tracker_(this, nullptr) {
   browser_tab_strip_tracker_.Init();
-  base::PowerMonitor::AddObserver(this);
+  base::PowerMonitor::AddPowerSuspendObserver(this);
   BrowserList::AddObserver(this);
 
   WebAppProvider* provider = WebAppProvider::Get(profile_);
@@ -97,7 +97,7 @@ WebAppMetrics::WebAppMetrics(Profile* profile)
 
 WebAppMetrics::~WebAppMetrics() {
   BrowserList::RemoveObserver(this);
-  base::PowerMonitor::RemoveObserver(this);
+  base::PowerMonitor::RemovePowerSuspendObserver(this);
 }
 
 void WebAppMetrics::OnEngagementEvent(

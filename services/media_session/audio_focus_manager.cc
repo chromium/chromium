@@ -35,16 +35,18 @@ mojom::EnforcementMode GetDefaultEnforcementMode() {
 }  // namespace
 
 // MediaPowerDelegate will pause all playback if the device is suspended.
-class MediaPowerDelegate : public base::PowerObserver {
+class MediaPowerDelegate : public base::PowerSuspendObserver {
  public:
   explicit MediaPowerDelegate(base::WeakPtr<AudioFocusManager> owner)
       : owner_(owner) {
-    base::PowerMonitor::AddObserver(this);
+    base::PowerMonitor::AddPowerSuspendObserver(this);
   }
 
-  ~MediaPowerDelegate() override { base::PowerMonitor::RemoveObserver(this); }
+  ~MediaPowerDelegate() override {
+    base::PowerMonitor::RemovePowerSuspendObserver(this);
+  }
 
-  // base::PowerObserver:
+  // base::PowerSuspendObserver:
   void OnSuspend() override {
     DCHECK(owner_);
     owner_->SuspendAllSessions();

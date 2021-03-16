@@ -10,7 +10,29 @@
 
 namespace base {
 
-class BASE_EXPORT PowerObserver {
+class BASE_EXPORT PowerSuspendObserver {
+ public:
+  // Notification that the system is suspending.
+  virtual void OnSuspend() {}
+
+  // Notification that the system is resuming.
+  virtual void OnResume() {}
+
+ protected:
+  virtual ~PowerSuspendObserver() = default;
+};
+
+class BASE_EXPORT PowerStateObserver {
+ public:
+  // Notification of a change in power status of the computer, such
+  // as from switching between battery and A/C power.
+  virtual void OnPowerStateChange(bool on_battery_power) = 0;
+
+ protected:
+  virtual ~PowerStateObserver() = default;
+};
+
+class BASE_EXPORT PowerThermalObserver {
  public:
   // Values to indicate the system's thermal states: from kNominal onwards to
   // kCritical they represent increasing SoC die temperatures, usually needing
@@ -27,16 +49,6 @@ class BASE_EXPORT PowerObserver {
     kCritical,
   };
 
-  // Notification of a change in power status of the computer, such
-  // as from switching between battery and A/C power.
-  virtual void OnPowerStateChange(bool on_battery_power) {}
-
-  // Notification that the system is suspending.
-  virtual void OnSuspend() {}
-
-  // Notification that the system is resuming.
-  virtual void OnResume() {}
-
   // Notification of a change in the thermal status of the system, such as
   // entering a critical temperature range. Depending on the severity, the SoC
   // or the OS might take steps to reduce said temperature e.g., throttling the
@@ -44,10 +56,10 @@ class BASE_EXPORT PowerObserver {
   // state by reducing expensive computing tasks (e.g. video encoding), or
   // notifying the user. The same |new_state| might be received repeatedly.
   // TODO(crbug.com/1071431): implemented on MacOS, extend to Linux/CrOs.
-  virtual void OnThermalStateChange(DeviceThermalState new_state) {}
+  virtual void OnThermalStateChange(DeviceThermalState new_state) = 0;
 
  protected:
-  virtual ~PowerObserver() = default;
+  virtual ~PowerThermalObserver() = default;
 };
 
 }  // namespace base

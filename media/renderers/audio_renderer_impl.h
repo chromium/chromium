@@ -55,7 +55,7 @@ class SpeechRecognitionClient;
 class MEDIA_EXPORT AudioRendererImpl
     : public AudioRenderer,
       public TimeSource,
-      public base::PowerObserver,
+      public base::PowerSuspendObserver,
       public AudioRendererSink::RenderCallback {
  public:
   using PlayDelayCBForTesting = base::RepeatingCallback<void(base::TimeDelta)>;
@@ -103,7 +103,7 @@ class MEDIA_EXPORT AudioRendererImpl
   void SetPreservesPitch(bool preserves_pitch) override;
   void SetAutoplayInitiated(bool autoplay_initiated) override;
 
-  // base::PowerObserver implementation.
+  // base::PowerSuspendObserver implementation.
   void OnSuspend() override;
   void OnResume() override;
 

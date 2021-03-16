@@ -42,10 +42,13 @@ class BASE_EXPORT PowerMonitor {
   // Must not be called from within a notification callback.
   //
   // It is safe to add observers before the PowerMonitor is initialized. It is
-  // safe to call RemoveObserver with a PowerObserver that was not added as an
-  // observer.
-  static void AddObserver(PowerObserver* observer);
-  static void RemoveObserver(PowerObserver* observer);
+  // safe to remove an observer even if it was not added as an observer.
+  static void AddPowerSuspendObserver(PowerSuspendObserver* observer);
+  static void RemovePowerSuspendObserver(PowerSuspendObserver* observer);
+  static void AddPowerStateObserver(PowerStateObserver* observer);
+  static void RemovePowerStateObserver(PowerStateObserver* observer);
+  static void AddPowerThermalObserver(PowerThermalObserver* observer);
+  static void RemovePowerThermalObserver(PowerThermalObserver* observer);
 
   // Is the computer currently on battery power. May only be called if the
   // PowerMonitor has been initialized.
@@ -59,10 +62,11 @@ class BASE_EXPORT PowerMonitor {
 
   // Read the current DeviceThermalState if known. Can be called on any thread.
   // May only be called if the PowerMonitor has been initialized.
-  static PowerObserver::DeviceThermalState GetCurrentThermalState();
+  static PowerThermalObserver::DeviceThermalState GetCurrentThermalState();
 
   // Update the result of thermal state.
-  static void SetCurrentThermalState(PowerObserver::DeviceThermalState state);
+  static void SetCurrentThermalState(
+      PowerThermalObserver::DeviceThermalState state);
 
 #if defined(OS_ANDROID)
   // Read and return the current remaining battery capacity (microampere-hours).
@@ -74,7 +78,7 @@ class BASE_EXPORT PowerMonitor {
 
   // Uninitializes the PowerMonitor. Should be called at the end of any unit
   // test that mocks out the PowerMonitor, to avoid affecting subsequent tests.
-  // There must be no live PowerObservers when invoked. Safe to call even if the
+  // There must be no live observers when invoked. Safe to call even if the
   // PowerMonitor hasn't been initialized.
   static void ShutdownForTesting();
 
@@ -91,11 +95,16 @@ class BASE_EXPORT PowerMonitor {
   static void NotifySuspend();
   static void NotifyResume();
   static void NotifyThermalStateChange(
-      PowerObserver::DeviceThermalState new_state);
+      PowerThermalObserver::DeviceThermalState new_state);
 
   static PowerMonitor* GetInstance();
 
-  scoped_refptr<ObserverListThreadSafe<PowerObserver>> observers_;
+  scoped_refptr<ObserverListThreadSafe<PowerStateObserver>>
+      power_state_observers_;
+  scoped_refptr<ObserverListThreadSafe<PowerSuspendObserver>>
+      power_suspend_observers_;
+  scoped_refptr<ObserverListThreadSafe<PowerThermalObserver>>
+      thermal_state_observers_;
   std::unique_ptr<PowerMonitorSource> source_;
 
   DISALLOW_COPY_AND_ASSIGN(PowerMonitor);

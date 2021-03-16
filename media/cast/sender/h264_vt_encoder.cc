@@ -182,7 +182,7 @@ H264VideoToolboxEncoder::H264VideoToolboxEncoder(
             weak_factory_.GetWeakPtr(), cast_environment_));
 
     // Register for power state changes.
-    base::PowerMonitor::AddObserver(this);
+    base::PowerMonitor::AddPowerSuspendObserver(this);
     VLOG(1) << "Registered for power state changes.";
   }
 }
@@ -192,7 +192,7 @@ H264VideoToolboxEncoder::~H264VideoToolboxEncoder() {
 
   // Unregister the power observer. It is valid to remove an observer that was
   // not added.
-  base::PowerMonitor::RemoveObserver(this);
+  base::PowerMonitor::RemovePowerSuspendObserver(this);
 }
 
 void H264VideoToolboxEncoder::ResetCompressionSession() {

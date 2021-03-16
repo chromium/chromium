@@ -36,7 +36,7 @@ namespace util {
 // destructor.
 // - The destructor may be called from any sequence when the timer is not
 // running and there is no scheduled task active.
-class WallClockTimer : public base::PowerObserver {
+class WallClockTimer : public base::PowerSuspendObserver {
  public:
   // Constructs a timer. Start() must be called later to start the timer.
   // If |clock| is provided, it's used instead of
@@ -74,7 +74,7 @@ class WallClockTimer : public base::PowerObserver {
   // Returns true if the timer is running.
   bool IsRunning() const;
 
-  // base::PowerObserver:
+  // base::PowerSuspendObserver:
   void OnResume() override;
 
   base::Time desired_run_time() const { return desired_run_time_; }

@@ -80,13 +80,14 @@ AudioRendererImpl::AudioRendererImpl(
   // won't remove the observer until we're destructed on |task_runner_| so we
   // must post it here if we're on the wrong thread.
   if (task_runner_->BelongsToCurrentThread()) {
-    base::PowerMonitor::AddObserver(this);
+    base::PowerMonitor::AddPowerSuspendObserver(this);
   } else {
     // Safe to post this without a WeakPtr because this class must be destructed
     // on the same thread and construction has not completed yet.
     task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(IgnoreResult(&base::PowerMonitor::AddObserver), this));
+        base::BindOnce(
+            IgnoreResult(&base::PowerMonitor::AddPowerSuspendObserver), this));
   }
 
   // Do not add anything below this line since the above actions are only safe
@@ -96,7 +97,7 @@ AudioRendererImpl::AudioRendererImpl(
 AudioRendererImpl::~AudioRendererImpl() {
   DVLOG(1) << __func__;
   DCHECK(task_runner_->BelongsToCurrentThread());
-  base::PowerMonitor::RemoveObserver(this);
+  base::PowerMonitor::RemovePowerSuspendObserver(this);
 
   // If Render() is in progress, this call will wait for Render() to finish.
   // After this call, the |sink_| will not call back into |this| anymore.

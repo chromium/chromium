@@ -90,7 +90,7 @@ void OfflineSigninLimiter::SignedIn(UserContext::AuthFlow auth_flow) {
       base::BindRepeating(&OfflineSigninLimiter::UpdateLimit,
                           base::Unretained(this)));
   // Start listening to power state.
-  base::PowerMonitor::AddObserver(this);
+  base::PowerMonitor::AddPowerSuspendObserver(this);
 
   // Start listening to session lock state
   auto* session_manager = session_manager::SessionManager::Get();
@@ -129,7 +129,7 @@ OfflineSigninLimiter::OfflineSigninLimiter(Profile* profile, base::Clock* clock)
       offline_signin_limit_timer_(std::make_unique<base::OneShotTimer>()) {}
 
 OfflineSigninLimiter::~OfflineSigninLimiter() {
-  base::PowerMonitor::RemoveObserver(this);
+  base::PowerMonitor::RemovePowerSuspendObserver(this);
   auto* session_manager = session_manager::SessionManager::Get();
   if (session_manager) {
     session_manager->RemoveObserver(this);

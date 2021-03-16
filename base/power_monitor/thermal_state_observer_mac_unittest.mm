@@ -13,7 +13,7 @@
 #include "base/power_monitor/power_monitor_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using DeviceThermalState = base::PowerObserver::DeviceThermalState;
+using DeviceThermalState = base::PowerThermalObserver::DeviceThermalState;
 
 namespace base {
 

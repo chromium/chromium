@@ -790,14 +790,16 @@ MediaStreamManager::MediaStreamManager(
 
   audio_service_listener_ = std::make_unique<AudioServiceListener>();
 
-  base::PowerMonitor::AddObserver(this);
+  base::PowerMonitor::AddPowerSuspendObserver(this);
+  base::PowerMonitor::AddPowerThermalObserver(this);
 }
 
 MediaStreamManager::~MediaStreamManager() {
   DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::IO));
   DCHECK(requests_.empty());
 
-  base::PowerMonitor::RemoveObserver(this);
+  base::PowerMonitor::RemovePowerSuspendObserver(this);
+  base::PowerMonitor::RemovePowerThermalObserver(this);
 }
 
 VideoCaptureManager* MediaStreamManager::video_capture_manager() {
@@ -2151,7 +2153,7 @@ void MediaStreamManager::OnResume() {
 }
 
 void MediaStreamManager::OnThermalStateChange(
-    base::PowerObserver::DeviceThermalState new_state) {
+    base::PowerThermalObserver::DeviceThermalState new_state) {
   const char* state_name =
       base::PowerMonitorSource::DeviceThermalStateToString(new_state);
   SendLogMessage(base::StringPrintf(

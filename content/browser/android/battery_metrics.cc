@@ -146,13 +146,13 @@ AndroidBatteryMetrics* AndroidBatteryMetrics::GetInstance() {
 AndroidBatteryMetrics::AndroidBatteryMetrics()
     : app_visible_(false),
       on_battery_power_(base::PowerMonitor::IsOnBatteryPower()) {
-  base::PowerMonitor::AddObserver(this);
+  base::PowerMonitor::AddPowerStateObserver(this);
   content::ProcessVisibilityTracker::GetInstance()->AddObserver(this);
   UpdateMetricsEnabled();
 }
 
 AndroidBatteryMetrics::~AndroidBatteryMetrics() {
-  base::PowerMonitor::RemoveObserver(this);
+  base::PowerMonitor::RemovePowerStateObserver(this);
 }
 
 void AndroidBatteryMetrics::OnVisibilityChanged(bool visible) {

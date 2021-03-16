@@ -51,14 +51,15 @@ PeerConnectionTrackerHost::PeerConnectionTrackerHost(RenderFrameHost* frame)
       peer_pid_(frame->GetProcess()->GetProcess().Pid()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RegisterHost(this);
-  base::PowerMonitor::AddObserver(this);
+  base::PowerMonitor::AddPowerSuspendObserver(this);
+  base::PowerMonitor::AddPowerThermalObserver(this);
   frame->GetRemoteInterfaces()->GetInterface(
       tracker_.BindNewPipeAndPassReceiver());
   // Ensure that the initial thermal state is known by the |tracker_|.
-  base::PowerObserver::DeviceThermalState initial_thermal_state =
+  base::PowerThermalObserver::DeviceThermalState initial_thermal_state =
       base::PowerMonitor::GetCurrentThermalState();
   if (initial_thermal_state !=
-      base::PowerObserver::DeviceThermalState::kUnknown) {
+      base::PowerThermalObserver::DeviceThermalState::kUnknown) {
     OnThermalStateChange(initial_thermal_state);
   }
 }
@@ -66,7 +67,8 @@ PeerConnectionTrackerHost::PeerConnectionTrackerHost(RenderFrameHost* frame)
 PeerConnectionTrackerHost::~PeerConnectionTrackerHost() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RemoveHost(this);
-  base::PowerMonitor::RemoveObserver(this);
+  base::PowerMonitor::RemovePowerSuspendObserver(this);
+  base::PowerMonitor::RemovePowerThermalObserver(this);
 }
 
 void PeerConnectionTrackerHost::AddPeerConnection(
@@ -185,7 +187,7 @@ void PeerConnectionTrackerHost::OnSuspend() {
 }
 
 void PeerConnectionTrackerHost::OnThermalStateChange(
-    base::PowerObserver::DeviceThermalState new_state) {
+    base::PowerThermalObserver::DeviceThermalState new_state) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   tracker_->OnThermalStateChange(
       static_cast<blink::mojom::DeviceThermalState>(new_state));

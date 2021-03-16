@@ -20,11 +20,11 @@ void PowerMonitorTestImpl::MakeSelfOwnedReceiver(
 }
 
 PowerMonitorTestImpl::PowerMonitorTestImpl() {
-  base::PowerMonitor::AddObserver(this);
+  base::PowerMonitor::AddPowerStateObserver(this);
 }
 
 PowerMonitorTestImpl::~PowerMonitorTestImpl() {
-  base::PowerMonitor::RemoveObserver(this);
+  base::PowerMonitor::RemovePowerStateObserver(this);
 }
 
 void PowerMonitorTestImpl::QueryNextState(QueryNextStateCallback callback) {

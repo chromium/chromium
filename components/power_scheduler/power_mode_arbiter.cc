@@ -25,18 +25,18 @@ namespace power_scheduler {
 // Created and owned by the arbiter on thread pool initialization because there
 // has to be exactly one per process, and //base can't depend on the
 // power_scheduler component.
-class PowerModeArbiter::ChargingPowerModeVoter : base::PowerObserver {
+class PowerModeArbiter::ChargingPowerModeVoter : base::PowerStateObserver {
  public:
   ChargingPowerModeVoter()
       : charging_voter_(PowerModeArbiter::GetInstance()->NewVoter(
             "PowerModeVoter.Charging")) {
-    base::PowerMonitor::AddObserver(this);
+    base::PowerMonitor::AddPowerStateObserver(this);
     if (base::PowerMonitor::IsInitialized())
       OnPowerStateChange(base::PowerMonitor::IsOnBatteryPower());
   }
 
   ~ChargingPowerModeVoter() override {
-    base::PowerMonitor::RemoveObserver(this);
+    base::PowerMonitor::RemovePowerStateObserver(this);
   }
 
   void OnPowerStateChange(bool on_battery_power) override {

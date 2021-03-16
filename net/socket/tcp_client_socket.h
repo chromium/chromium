@@ -49,7 +49,7 @@ class NetworkQualityEstimator;
 
 // A client socket that uses TCP as the transport layer.
 class NET_EXPORT TCPClientSocket : public TransportClientSocket,
-                                   public base::PowerObserver {
+                                   public base::PowerSuspendObserver {
  public:
   // The IP address(es) and port number to connect to.  The TCP socket will try
   // each IP address in the list until it succeeds in establishing a
@@ -121,7 +121,7 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
   // release ownership of the descriptor.
   SocketDescriptor SocketDescriptorForTesting() const;
 
-  // base::PowerObserver methods:
+  // base::PowerSuspendObserver methods:
   void OnSuspend() override;
 
  private:

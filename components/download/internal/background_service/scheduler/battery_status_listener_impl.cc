@@ -30,13 +30,13 @@ void BatteryStatusListenerImpl::Start(Observer* observer) {
   observer_ = observer;
 
   DCHECK(base::PowerMonitor::IsInitialized());
-  base::PowerMonitor::AddObserver(this);
+  base::PowerMonitor::AddPowerStateObserver(this);
 
   UpdateBatteryPercentage(true);
 }
 
 void BatteryStatusListenerImpl::Stop() {
-  base::PowerMonitor::RemoveObserver(this);
+  base::PowerMonitor::RemovePowerStateObserver(this);
 }
 
 int BatteryStatusListenerImpl::GetBatteryPercentageInternal() {

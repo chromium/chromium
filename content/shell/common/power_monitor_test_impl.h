@@ -12,7 +12,7 @@
 
 namespace content {
 
-class PowerMonitorTestImpl : public base::PowerObserver,
+class PowerMonitorTestImpl : public base::PowerStateObserver,
                              public mojom::PowerMonitorTest {
  public:
   static void MakeSelfOwnedReceiver(
@@ -25,10 +25,8 @@ class PowerMonitorTestImpl : public base::PowerObserver,
   // mojom::PowerMonitorTest:
   void QueryNextState(QueryNextStateCallback callback) override;
 
-  // base::PowerObserver:
+  // base::PowerStateObserver:
   void OnPowerStateChange(bool on_battery_power) override;
-  void OnSuspend() override {}
-  void OnResume() override {}
 
   void ReportState();
 

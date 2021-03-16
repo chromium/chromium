@@ -94,7 +94,7 @@ GpuWatchdogThread::~GpuWatchdogThread() {
   Stop();  // stop the watchdog thread
 
   base::CurrentThread::Get()->RemoveTaskObserver(this);
-  base::PowerMonitor::RemoveObserver(this);
+  base::PowerMonitor::RemovePowerSuspendObserver(this);
   GpuWatchdogHistogram(GpuWatchdogThreadEvent::kGpuWatchdogEnd);
 #if defined(OS_WIN)
   if (watched_thread_handle_)
@@ -285,7 +285,7 @@ void GpuWatchdogThread::OnAddPowerObserver() {
   DCHECK(watchdog_thread_task_runner_->BelongsToCurrentThread());
   DCHECK(base::PowerMonitor::IsInitialized());
 
-  base::PowerMonitor::AddObserver(this);
+  base::PowerMonitor::AddPowerSuspendObserver(this);
   is_power_observer_added_ = true;
 }
 

@@ -41,7 +41,7 @@ class ASH_EXPORT LockScreenMediaControlsView
     : public views::View,
       public media_session::mojom::MediaControllerObserver,
       public media_session::mojom::MediaControllerImageObserver,
-      public base::PowerObserver,
+      public base::PowerSuspendObserver,
       public ui::ImplicitAnimationObserver {
  public:
   METADATA_HEADER(LockScreenMediaControlsView);
@@ -132,7 +132,7 @@ class ASH_EXPORT LockScreenMediaControlsView
   // ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* event) override;
 
-  // base::PowerObserver:
+  // base::PowerSuspendObserver:
   void OnSuspend() override;
 
   void ButtonPressed(media_session::mojom::MediaSessionAction action);

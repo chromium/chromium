@@ -95,7 +95,7 @@ WifiSyncFeatureManagerImpl::WifiSyncFeatureManagerImpl(
 
   if (pref_service_->GetBoolean(kCanShowAnnouncementPrefName)) {
     session_manager::SessionManager::Get()->AddObserver(this);
-    base::PowerMonitor::AddObserver(this);
+    base::PowerMonitor::AddPowerSuspendObserver(this);
     did_register_session_observers_ = true;
   }
 
@@ -113,7 +113,7 @@ WifiSyncFeatureManagerImpl::~WifiSyncFeatureManagerImpl() {
   device_sync_client_->RemoveObserver(this);
   if (did_register_session_observers_) {
     session_manager::SessionManager::Get()->RemoveObserver(this);
-    base::PowerMonitor::RemoveObserver(this);
+    base::PowerMonitor::RemovePowerSuspendObserver(this);
   }
 }
 

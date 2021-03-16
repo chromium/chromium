@@ -26,7 +26,7 @@ bool g_use_thread_controller_power_monitor_ = false;
 ThreadControllerPowerMonitor::ThreadControllerPowerMonitor() = default;
 
 ThreadControllerPowerMonitor::~ThreadControllerPowerMonitor() {
-  PowerMonitor::RemoveObserver(this);
+  PowerMonitor::RemovePowerSuspendObserver(this);
 }
 
 void ThreadControllerPowerMonitor::BindToCurrentThread() {
@@ -34,10 +34,10 @@ void ThreadControllerPowerMonitor::BindToCurrentThread() {
   // ThreadController::SetDefaultTaskRunner() re-initializes the
   // ThreadController).
   if (is_observer_registered_)
-    PowerMonitor::RemoveObserver(this);
+    PowerMonitor::RemovePowerSuspendObserver(this);
 
   // Register the observer to deliver notifications on the current thread.
-  PowerMonitor::AddObserver(this);
+  PowerMonitor::AddPowerSuspendObserver(this);
   is_observer_registered_ = true;
 }
 

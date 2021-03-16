@@ -10,11 +10,13 @@
 namespace device {
 
 PowerMonitorMessageBroadcaster::PowerMonitorMessageBroadcaster() {
-  base::PowerMonitor::AddObserver(this);
+  base::PowerMonitor::AddPowerSuspendObserver(this);
+  base::PowerMonitor::AddPowerStateObserver(this);
 }
 
 PowerMonitorMessageBroadcaster::~PowerMonitorMessageBroadcaster() {
-  base::PowerMonitor::RemoveObserver(this);
+  base::PowerMonitor::RemovePowerSuspendObserver(this);
+  base::PowerMonitor::RemovePowerStateObserver(this);
 }
 
 // static

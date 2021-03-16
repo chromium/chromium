@@ -109,23 +109,23 @@ PowerManagerClient::TabletMode GetTabletModeFromProtoEnum(
 }
 
 // Converts a ThermalState value from a power_manager::ThermalEvent proto to the
-// corresponding base::PowerObserver::DeviceThermalState value.
-base::PowerObserver::DeviceThermalState GetThermalStateFromProtoEnum(
+// corresponding base::PowerThermalObserver::DeviceThermalState value.
+base::PowerThermalObserver::DeviceThermalState GetThermalStateFromProtoEnum(
     power_manager::ThermalEvent::ThermalState state) {
   switch (state) {
     case power_manager::ThermalEvent_ThermalState_UNKNOWN:
-      return base::PowerObserver::DeviceThermalState::kUnknown;
+      return base::PowerThermalObserver::DeviceThermalState::kUnknown;
     case power_manager::ThermalEvent_ThermalState_NOMINAL:
-      return base::PowerObserver::DeviceThermalState::kNominal;
+      return base::PowerThermalObserver::DeviceThermalState::kNominal;
     case power_manager::ThermalEvent_ThermalState_FAIR:
-      return base::PowerObserver::DeviceThermalState::kFair;
+      return base::PowerThermalObserver::DeviceThermalState::kFair;
     case power_manager::ThermalEvent_ThermalState_SERIOUS:
-      return base::PowerObserver::DeviceThermalState::kSerious;
+      return base::PowerThermalObserver::DeviceThermalState::kSerious;
     case power_manager::ThermalEvent_ThermalState_CRITICAL:
-      return base::PowerObserver::DeviceThermalState::kCritical;
+      return base::PowerThermalObserver::DeviceThermalState::kCritical;
   }
   NOTREACHED() << "Unhandled thermal state " << state;
-  return base::PowerObserver::DeviceThermalState::kUnknown;
+  return base::PowerThermalObserver::DeviceThermalState::kUnknown;
 }
 
 // Callback for D-Bus call made in |CreateArcTimers|.

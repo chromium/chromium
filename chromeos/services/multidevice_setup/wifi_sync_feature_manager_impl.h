@@ -36,7 +36,7 @@ class WifiSyncFeatureManagerImpl
     : public WifiSyncFeatureManager,
       public HostStatusProvider::Observer,
       public device_sync::DeviceSyncClient::Observer,
-      public base::PowerObserver,
+      public base::PowerSuspendObserver,
       public session_manager::SessionManagerObserver {
  public:
   class Factory {
@@ -88,7 +88,7 @@ class WifiSyncFeatureManagerImpl
   // SessionManagerObserver:
   void OnSessionStateChanged() override;
 
-  // PowerObserver:
+  // PowerSuspendObserver:
   void OnResume() override;
 
   // WifiSyncFeatureManager:

@@ -76,10 +76,11 @@ constexpr int kMaxExtraCyclesBeforeKill = 0;
 
 // A thread that intermitently sends tasks to a group of watched message loops
 // and deliberately crashes if one of them does not respond after a timeout.
-class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread : public base::Thread,
-                                                 public base::PowerObserver,
-                                                 public base::TaskObserver,
-                                                 public gl::ProgressReporter {
+class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
+    : public base::Thread,
+      public base::PowerSuspendObserver,
+      public base::TaskObserver,
+      public gl::ProgressReporter {
  public:
   static std::unique_ptr<GpuWatchdogThread> Create(bool start_backgrounded);
 
@@ -135,7 +136,7 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread : public base::Thread,
                        bool was_blocked_or_low_priority) override;
   void DidProcessTask(const base::PendingTask& pending_task) override;
 
-  // Implements base::PowerObserver.
+  // Implements base::PowerSuspendObserver.
   void OnSuspend() override;
   void OnResume() override;
 

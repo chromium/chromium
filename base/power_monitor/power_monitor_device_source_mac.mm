@@ -67,7 +67,7 @@ bool PowerMonitorDeviceSource::IsOnBatteryPowerImpl() {
   return found_battery;
 }
 
-PowerObserver::DeviceThermalState
+PowerThermalObserver::DeviceThermalState
 PowerMonitorDeviceSource::GetCurrentThermalState() {
   return thermal_state_observer_->GetCurrentThermalState();
 }

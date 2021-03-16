@@ -81,7 +81,8 @@ class PermissionControllerImpl;
 class CONTENT_EXPORT MediaStreamManager
     : public MediaStreamProviderListener,
       public base::CurrentThread::DestructionObserver,
-      public base::PowerObserver {
+      public base::PowerSuspendObserver,
+      public base::PowerThermalObserver {
  public:
   // Callback to deliver the result of a media access request.
   using MediaAccessRequestCallback =
@@ -284,11 +285,13 @@ class CONTENT_EXPORT MediaStreamManager
   // webrtcLoggingPrivate API if requested.
   void AddLogMessageOnIOThread(const std::string& message);
 
-  // base::PowerObserver overrides.
+  // base::PowerSuspendObserver overrides.
   void OnSuspend() override;
   void OnResume() override;
+
+  // base::PowerThermalObserver overrides.
   void OnThermalStateChange(
-      base::PowerObserver::DeviceThermalState new_state) override;
+      base::PowerThermalObserver::DeviceThermalState new_state) override;
 
   // Called by the tests to specify a factory for creating
   // FakeMediaStreamUIProxys to be used for generated streams.

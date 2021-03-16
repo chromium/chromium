@@ -438,7 +438,7 @@ static bool GetDeviceChannels(AudioUnit audio_unit,
   return true;
 }
 
-class AudioManagerMac::AudioPowerObserver : public base::PowerObserver {
+class AudioManagerMac::AudioPowerObserver : public base::PowerSuspendObserver {
  public:
   AudioPowerObserver()
       : is_suspending_(false),
@@ -449,14 +449,14 @@ class AudioManagerMac::AudioPowerObserver : public base::PowerObserver {
     // base::PowerMonitorDeviceSource for more details.
     if (!is_monitoring_)
       return;
-    base::PowerMonitor::AddObserver(this);
+    base::PowerMonitor::AddPowerSuspendObserver(this);
   }
 
   ~AudioPowerObserver() override {
     DCHECK(thread_checker_.CalledOnValidThread());
     if (!is_monitoring_)
       return;
-    base::PowerMonitor::RemoveObserver(this);
+    base::PowerMonitor::RemovePowerSuspendObserver(this);
   }
 
   bool IsSuspending() const {

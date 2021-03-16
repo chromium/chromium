@@ -27,12 +27,34 @@ bool PowerMonitor::IsInitialized() {
   return GetInstance()->source_.get() != nullptr;
 }
 
-void PowerMonitor::AddObserver(PowerObserver* obs) {
-  GetInstance()->observers_->AddObserver(obs);
+// static
+void PowerMonitor::AddPowerSuspendObserver(PowerSuspendObserver* obs) {
+  GetInstance()->power_suspend_observers_->AddObserver(obs);
 }
 
-void PowerMonitor::RemoveObserver(PowerObserver* obs) {
-  GetInstance()->observers_->RemoveObserver(obs);
+// static
+void PowerMonitor::RemovePowerSuspendObserver(PowerSuspendObserver* obs) {
+  GetInstance()->power_suspend_observers_->RemoveObserver(obs);
+}
+
+// static
+void PowerMonitor::AddPowerStateObserver(PowerStateObserver* obs) {
+  GetInstance()->power_state_observers_->AddObserver(obs);
+}
+
+// static
+void PowerMonitor::RemovePowerStateObserver(PowerStateObserver* obs) {
+  GetInstance()->power_state_observers_->RemoveObserver(obs);
+}
+
+// static
+void PowerMonitor::AddPowerThermalObserver(PowerThermalObserver* obs) {
+  GetInstance()->thermal_state_observers_->AddObserver(obs);
+}
+
+// static
+void PowerMonitor::RemovePowerThermalObserver(PowerThermalObserver* obs) {
+  GetInstance()->thermal_state_observers_->RemoveObserver(obs);
 }
 
 PowerMonitorSource* PowerMonitor::Source() {
@@ -54,14 +76,15 @@ bool PowerMonitor::IsProcessSuspended() {
 }
 
 // static
-PowerObserver::DeviceThermalState PowerMonitor::GetCurrentThermalState() {
+PowerThermalObserver::DeviceThermalState
+PowerMonitor::GetCurrentThermalState() {
   DCHECK(IsInitialized());
   return GetInstance()->source_->GetCurrentThermalState();
 }
 
 // static
 void PowerMonitor::SetCurrentThermalState(
-    PowerObserver::DeviceThermalState state) {
+    PowerThermalObserver::DeviceThermalState state) {
   DCHECK(IsInitialized());
   GetInstance()->source_->SetCurrentThermalState(state);
 }
@@ -77,8 +100,8 @@ void PowerMonitor::NotifyPowerStateChange(bool battery_in_use) {
   DCHECK(IsInitialized());
   DVLOG(1) << "PowerStateChange: " << (battery_in_use ? "On" : "Off")
            << " battery";
-  GetInstance()->observers_->Notify(
-      FROM_HERE, &PowerObserver::OnPowerStateChange, battery_in_use);
+  GetInstance()->power_state_observers_->Notify(
+      FROM_HERE, &PowerStateObserver::OnPowerStateChange, battery_in_use);
 }
 
 void PowerMonitor::NotifySuspend() {
@@ -87,7 +110,8 @@ void PowerMonitor::NotifySuspend() {
                        TRACE_EVENT_SCOPE_PROCESS);
   DVLOG(1) << "Power Suspending";
   g_is_process_suspended.store(true, std::memory_order_relaxed);
-  GetInstance()->observers_->Notify(FROM_HERE, &PowerObserver::OnSuspend);
+  GetInstance()->power_suspend_observers_->Notify(
+      FROM_HERE, &PowerSuspendObserver::OnSuspend);
 }
 
 void PowerMonitor::NotifyResume() {
@@ -96,16 +120,17 @@ void PowerMonitor::NotifyResume() {
                        TRACE_EVENT_SCOPE_PROCESS);
   DVLOG(1) << "Power Resuming";
   g_is_process_suspended.store(false, std::memory_order_relaxed);
-  GetInstance()->observers_->Notify(FROM_HERE, &PowerObserver::OnResume);
+  GetInstance()->power_suspend_observers_->Notify(
+      FROM_HERE, &PowerSuspendObserver::OnResume);
 }
 
 void PowerMonitor::NotifyThermalStateChange(
-    PowerObserver::DeviceThermalState new_state) {
+    PowerThermalObserver::DeviceThermalState new_state) {
   DCHECK(IsInitialized());
   DVLOG(1) << "ThermalStateChange: "
            << PowerMonitorSource::DeviceThermalStateToString(new_state);
-  GetInstance()->observers_->Notify(
-      FROM_HERE, &PowerObserver::OnThermalStateChange, new_state);
+  GetInstance()->thermal_state_observers_->Notify(
+      FROM_HERE, &PowerThermalObserver::OnThermalStateChange, new_state);
 }
 
 PowerMonitor* PowerMonitor::GetInstance() {
@@ -114,8 +139,13 @@ PowerMonitor* PowerMonitor::GetInstance() {
 }
 
 PowerMonitor::PowerMonitor()
-    : observers_(
-          base::MakeRefCounted<ObserverListThreadSafe<PowerObserver>>()) {}
+    : power_state_observers_(
+          base::MakeRefCounted<ObserverListThreadSafe<PowerStateObserver>>()),
+      power_suspend_observers_(
+          base::MakeRefCounted<ObserverListThreadSafe<PowerSuspendObserver>>()),
+      thermal_state_observers_(
+          base::MakeRefCounted<
+              ObserverListThreadSafe<PowerThermalObserver>>()) {}
 
 PowerMonitor::~PowerMonitor() = default;
 

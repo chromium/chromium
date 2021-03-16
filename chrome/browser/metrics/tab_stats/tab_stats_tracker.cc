@@ -161,7 +161,7 @@ TabStatsTracker::TabStatsTracker(PrefService* pref_service)
   }
 
   browser_list->AddObserver(this);
-  base::PowerMonitor::AddObserver(this);
+  base::PowerMonitor::AddPowerSuspendObserver(this);
 
   // Setup daily reporting of the stats aggregated in |tab_stats_data_store|.
   daily_event_->AddObserver(std::make_unique<TabStatsDailyObserver>(
@@ -206,7 +206,7 @@ TabStatsTracker::TabStatsTracker(PrefService* pref_service)
 TabStatsTracker::~TabStatsTracker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BrowserList::GetInstance()->RemoveObserver(this);
-  base::PowerMonitor::RemoveObserver(this);
+  base::PowerMonitor::RemovePowerSuspendObserver(this);
 }
 
 // static

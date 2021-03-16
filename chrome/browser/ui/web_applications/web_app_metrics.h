@@ -31,7 +31,7 @@ class WebAppMetrics : public KeyedService,
                       public site_engagement::SiteEngagementObserver,
                       public BrowserListObserver,
                       public TabStripModelObserver,
-                      public base::PowerObserver {
+                      public base::PowerSuspendObserver {
  public:
   static WebAppMetrics* Get(Profile* profile);
 
@@ -57,7 +57,7 @@ class WebAppMetrics : public KeyedService,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
 
-  // base::PowerObserver:
+  // base::PowerSuspendObserver:
   void OnSuspend() override;
 
   // Called when a web contents changes associated AppId (may be empty).
