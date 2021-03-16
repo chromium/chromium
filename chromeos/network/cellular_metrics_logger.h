@@ -39,6 +39,25 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
       public LoginState::Observer,
       public NetworkConnectionObserver {
  public:
+  // Histograms associated with SIM Pin operations.
+  static const char kSimPinLockSuccessHistogram[];
+  static const char kSimPinUnlockSuccessHistogram[];
+  static const char kSimPinUnblockSuccessHistogram[];
+  static const char kSimPinChangeSuccessHistogram[];
+
+  // PIN operations that are tracked by metrics.
+  enum class SimPinOperation {
+    kLock = 0,
+    kUnlock = 1,
+    kUnblock = 2,
+    kChange = 3,
+  };
+
+  // Records the result of pin operations performed.
+  static void RecordSimPinOperationResult(
+      const SimPinOperation& pin_operation,
+      const base::Optional<std::string>& shill_error_name = base::nullopt);
+
   CellularMetricsLogger();
   ~CellularMetricsLogger() override;
 
@@ -73,6 +92,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
                            CellularTimeToConnectedTest);
   FRIEND_TEST_ALL_PREFIXES(CellularMetricsLoggerTest,
                            CellularDisconnectionsTest);
+
+  FRIEND_TEST_ALL_PREFIXES(NetworkDeviceHandlerTest, RequirePin);
+  FRIEND_TEST_ALL_PREFIXES(NetworkDeviceHandlerTest, EnterPin);
+  FRIEND_TEST_ALL_PREFIXES(NetworkDeviceHandlerTest, UnblockPin);
+  FRIEND_TEST_ALL_PREFIXES(NetworkDeviceHandlerTest, ChangePin);
 
   // The amount of time after cellular device is added to device list,
   // after which cellular device is considered initialized.
@@ -140,6 +164,29 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
     kDisconnected = 1,
     kMaxValue = kDisconnected
   };
+
+  // Result of PIN operations.
+  // These values are persisted to logs. Entries should not be renumbered
+  // and numeric values should never be reused.
+  // Note: With the exception of Success, enums should match the
+  // error names listed near the top of NetworkDeviceHandler.
+  enum class SimPinOperationResult {
+    kSuccess = 0,
+    kErrorDeviceMissing = 1,
+    kErrorFailure = 2,
+    kErrorIncorrectPin = 3,
+    kErrorNotFound = 4,
+    kErrorNotSupported = 5,
+    kErrorPinBlocked = 6,
+    kErrorPinRequired = 7,
+    kErrorTimeout = 8,
+    kErrorUnknown = 9,
+    kMaxValue = kErrorUnknown,
+  };
+
+  // Convert shill error name string to SimPinOperationResult enum.
+  static SimPinOperationResult GetSimPinOperationResultForShillError(
+      const std::string& shill_error_name);
 
   // Convert shill activation state string to PSimActivationState enum
   PSimActivationState PSimActivationStateToEnum(const std::string& state);

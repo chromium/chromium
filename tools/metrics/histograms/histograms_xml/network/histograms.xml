@@ -179,6 +179,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Network.Cellular.Pin.{SimPinOperation}"
+    enum="SimPinOperationResult" expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-system-services-networking@google.com</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <summary>Tracks the rate of success of various pin operations.</summary>
+  <token key="SimPinOperation">
+    <variant name="ChangeSuccess"/>
+    <variant name="LockSuccess"/>
+    <variant name="UnblockSuccess"/>
+    <variant name="UnlockSuccess"/>
+  </token>
+</histogram>
+
 <histogram name="Network.Cellular.PSim.ServiceAtLogin.Count" units="units"
     expires_after="2022-03-01">
   <owner>azeemarshad@chromium.org</owner>

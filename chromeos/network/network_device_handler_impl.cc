@@ -25,6 +25,7 @@
 #include "base/values.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_ipconfig_client.h"
+#include "chromeos/network/cellular_metrics_logger.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state_handler.h"
@@ -100,6 +101,25 @@ std::unique_ptr<base::DictionaryValue> GetErrorData(const std::string& name) {
   return error_data;
 }
 
+void HandleSimPinOperationSuccess(
+    const CellularMetricsLogger::SimPinOperation& pin_operation,
+    base::OnceClosure callback) {
+  CellularMetricsLogger::RecordSimPinOperationResult(pin_operation);
+  std::move(callback).Run();
+}
+
+void HandleSimPinOperationFailure(
+    const CellularMetricsLogger::SimPinOperation& pin_operation,
+    const std::string& device_path,
+    network_handler::ErrorCallback error_callback,
+    const std::string& shill_error_name,
+    const std::string& shill_error_message) {
+  CellularMetricsLogger::RecordSimPinOperationResult(pin_operation,
+                                                     shill_error_message);
+  HandleShillCallFailure(device_path, std::move(error_callback),
+                         shill_error_name, shill_error_message);
+}
+
 }  // namespace
 
 NetworkDeviceHandlerImpl::NetworkDeviceHandlerImpl() = default;
@@ -161,8 +181,12 @@ void NetworkDeviceHandlerImpl::RequirePin(
     network_handler::ErrorCallback error_callback) {
   NET_LOG(USER) << "Device.RequirePin: " << device_path << ": " << require_pin;
   ShillDeviceClient::Get()->RequirePin(
-      dbus::ObjectPath(device_path), pin, require_pin, std::move(callback),
-      base::BindOnce(&HandleShillCallFailure, device_path,
+      dbus::ObjectPath(device_path), pin, require_pin,
+      base::BindOnce(&HandleSimPinOperationSuccess,
+                     CellularMetricsLogger::SimPinOperation::kLock,
+                     std::move(callback)),
+      base::BindOnce(&HandleSimPinOperationFailure,
+                     CellularMetricsLogger::SimPinOperation::kLock, device_path,
                      std::move(error_callback)));
 }
 
@@ -173,9 +197,13 @@ void NetworkDeviceHandlerImpl::EnterPin(
     network_handler::ErrorCallback error_callback) {
   NET_LOG(USER) << "Device.EnterPin: " << device_path;
   ShillDeviceClient::Get()->EnterPin(
-      dbus::ObjectPath(device_path), pin, std::move(callback),
-      base::BindOnce(&HandleShillCallFailure, device_path,
-                     std::move(error_callback)));
+      dbus::ObjectPath(device_path), pin,
+      base::BindOnce(&HandleSimPinOperationSuccess,
+                     CellularMetricsLogger::SimPinOperation::kUnlock,
+                     std::move(callback)),
+      base::BindOnce(&HandleSimPinOperationFailure,
+                     CellularMetricsLogger::SimPinOperation::kUnlock,
+                     device_path, std::move(error_callback)));
 }
 
 void NetworkDeviceHandlerImpl::UnblockPin(
@@ -186,9 +214,13 @@ void NetworkDeviceHandlerImpl::UnblockPin(
     network_handler::ErrorCallback error_callback) {
   NET_LOG(USER) << "Device.UnblockPin: " << device_path;
   ShillDeviceClient::Get()->UnblockPin(
-      dbus::ObjectPath(device_path), puk, new_pin, std::move(callback),
-      base::BindOnce(&HandleShillCallFailure, device_path,
-                     std::move(error_callback)));
+      dbus::ObjectPath(device_path), puk, new_pin,
+      base::BindOnce(&HandleSimPinOperationSuccess,
+                     CellularMetricsLogger::SimPinOperation::kUnblock,
+                     std::move(callback)),
+      base::BindOnce(&HandleSimPinOperationFailure,
+                     CellularMetricsLogger::SimPinOperation::kUnblock,
+                     device_path, std::move(error_callback)));
 }
 
 void NetworkDeviceHandlerImpl::ChangePin(
@@ -199,9 +231,13 @@ void NetworkDeviceHandlerImpl::ChangePin(
     network_handler::ErrorCallback error_callback) {
   NET_LOG(USER) << "Device.ChangePin: " << device_path;
   ShillDeviceClient::Get()->ChangePin(
-      dbus::ObjectPath(device_path), old_pin, new_pin, std::move(callback),
-      base::BindOnce(&HandleShillCallFailure, device_path,
-                     std::move(error_callback)));
+      dbus::ObjectPath(device_path), old_pin, new_pin,
+      base::BindOnce(&HandleSimPinOperationSuccess,
+                     CellularMetricsLogger::SimPinOperation::kChange,
+                     std::move(callback)),
+      base::BindOnce(&HandleSimPinOperationFailure,
+                     CellularMetricsLogger::SimPinOperation::kChange,
+                     device_path, std::move(error_callback)));
 }
 
 void NetworkDeviceHandlerImpl::SetCellularAllowRoaming(

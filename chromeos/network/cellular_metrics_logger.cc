@@ -30,12 +30,74 @@ bool IsLoggedInUserOwnerOrRegular() {
 }  // namespace
 
 // static
+const char CellularMetricsLogger::kSimPinLockSuccessHistogram[] =
+    "Network.Cellular.Pin.LockSuccess";
+
+// static
+const char CellularMetricsLogger::kSimPinUnlockSuccessHistogram[] =
+    "Network.Cellular.Pin.UnlockSuccess";
+
+// static
+const char CellularMetricsLogger::kSimPinUnblockSuccessHistogram[] =
+    "Network.Cellular.Pin.UnblockSuccess";
+
+// static
+const char CellularMetricsLogger::kSimPinChangeSuccessHistogram[] =
+    "Network.Cellular.Pin.ChangeSuccess";
+
+// static
 const base::TimeDelta CellularMetricsLogger::kInitializationTimeout =
     base::TimeDelta::FromSeconds(15);
 
 // static
 const base::TimeDelta CellularMetricsLogger::kDisconnectRequestTimeout =
     base::TimeDelta::FromSeconds(5);
+
+// static
+CellularMetricsLogger::SimPinOperationResult
+CellularMetricsLogger::GetSimPinOperationResultForShillError(
+    const std::string& shill_error_name) {
+  if (shill_error_name == shill::kErrorResultFailure ||
+      shill_error_name == shill::kErrorResultInvalidArguments) {
+    return SimPinOperationResult::kErrorFailure;
+  }
+  if (shill_error_name == shill::kErrorResultNotSupported)
+    return SimPinOperationResult::kErrorNotSupported;
+  if (shill_error_name == shill::kErrorResultIncorrectPin)
+    return SimPinOperationResult::kErrorIncorrectPin;
+  if (shill_error_name == shill::kErrorResultPinBlocked)
+    return SimPinOperationResult::kErrorPinBlocked;
+  if (shill_error_name == shill::kErrorResultPinRequired)
+    return SimPinOperationResult::kErrorPinRequired;
+  if (shill_error_name == shill::kErrorResultNotFound)
+    return SimPinOperationResult::kErrorDeviceMissing;
+  return SimPinOperationResult::kErrorUnknown;
+}
+
+// static
+void CellularMetricsLogger::RecordSimPinOperationResult(
+    const SimPinOperation& pin_operation,
+    const base::Optional<std::string>& shill_error_name) {
+  SimPinOperationResult result =
+      shill_error_name.has_value()
+          ? GetSimPinOperationResultForShillError(*shill_error_name)
+          : SimPinOperationResult::kSuccess;
+
+  switch (pin_operation) {
+    case SimPinOperation::kLock:
+      UMA_HISTOGRAM_ENUMERATION(kSimPinLockSuccessHistogram, result);
+      return;
+    case SimPinOperation::kUnlock:
+      UMA_HISTOGRAM_ENUMERATION(kSimPinUnlockSuccessHistogram, result);
+      return;
+    case SimPinOperation::kUnblock:
+      UMA_HISTOGRAM_ENUMERATION(kSimPinUnblockSuccessHistogram, result);
+      return;
+    case SimPinOperation::kChange:
+      UMA_HISTOGRAM_ENUMERATION(kSimPinChangeSuccessHistogram, result);
+      return;
+  }
+}
 
 CellularMetricsLogger::ConnectionInfo::ConnectionInfo(
     const std::string& network_guid,

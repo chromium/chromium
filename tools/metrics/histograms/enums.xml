@@ -71490,6 +71490,19 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   </int>
 </enum>
 
+<enum name="SimPinOperationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Error Device Missing"/>
+  <int value="2" label="Error Failure"/>
+  <int value="3" label="Error Incorrect Pin"/>
+  <int value="4" label="Error Not Found"/>
+  <int value="5" label="Error Not Supported"/>
+  <int value="6" label="Error Pin Blocked"/>
+  <int value="7" label="Error Pin Required"/>
+  <int value="8" label="Error Timeout"/>
+  <int value="9" label="Error Unknown"/>
+</enum>
+
 <enum name="SimpleCache.EntryCreatedAndStream2Omitted">
   <int value="0" label="Stream 2 file was present"/>
   <int value="1" label="Empty stream 2 file was omitted"/>
