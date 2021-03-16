@@ -307,7 +307,7 @@ if (current_cpu == "arm" && arm_assembly_sources != []) {
 }
 
 static_library("libvpx") {
-  if (!is_debug && is_win) {
+  if (!is_debug && (is_win || is_chromeos)) {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
   }
