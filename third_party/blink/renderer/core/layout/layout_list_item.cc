@@ -346,7 +346,9 @@ bool LayoutListItem::UpdateMarkerLocation() {
     // If the marker is currently contained inside an anonymous box, then we
     // are the only item in that anonymous box (since no line box parent was
     // found). It's ok to just leave the marker where it is in this case.
-    if (marker_parent && marker_parent->IsAnonymousBlock()) {
+    // Also ok to leave it in a flow thread.
+    if (marker_parent && (marker_parent->IsAnonymousBlock() ||
+                          marker_parent->IsLayoutFlowThread())) {
       line_box_parent = marker_parent;
       // We could use marker_parent as line_box_parent only if marker is the
       // first leaf child of list item.
