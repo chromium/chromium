@@ -45,9 +45,9 @@ class VIEWS_EXPORT TooltipWin : public Tooltip {
 
   // Tooltip:
   int GetMaxWidth(const gfx::Point& location) const override;
-  void SetText(aura::Window* window,
-               const std::u16string& tooltip_text,
-               const gfx::Point& location) override;
+  void Update(aura::Window* window,
+              const std::u16string& tooltip_text,
+              const TooltipPosition& position) override;
   void Show() override;
   void Hide() override;
   bool IsVisible() override;
@@ -68,10 +68,9 @@ class VIEWS_EXPORT TooltipWin : public Tooltip {
   // Is the tooltip showing?
   bool showing_;
 
-  // Location to show the tooltip at. In order to position the tooltip we need
-  // to know the size. The size is only available from TTN_SHOW, so we have to
-  // cache it.
-  gfx::Point location_;
+  // In order to position the tooltip we need to know the size. The size is only
+  // available from TTN_SHOW, so we have to cache it.
+  TooltipPosition position_;
 
   // What the scale was the last time we overrode the font, to see if we can
   // re-use our previous override.

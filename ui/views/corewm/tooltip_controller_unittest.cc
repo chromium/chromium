@@ -19,6 +19,8 @@
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/geometry/point.h"
@@ -260,6 +262,119 @@ TEST_F(TooltipControllerTest, AccessibleNodeData) {
   EXPECT_EQ(ax::mojom::Role::kTooltip, node_data.role);
   EXPECT_EQ(text, base::ASCIIToUTF16(node_data.GetStringAttribute(
                       ax::mojom::StringAttribute::kName)));
+}
+
+TEST_F(TooltipControllerTest, TooltipBounds) {
+  // We don't need a real tootip. Let's just use a custom size and custom point
+  // to test this function.
+  gfx::Size tooltip_size(100, 40);
+  gfx::Rect display_bounds(display::Screen::GetScreen()
+                               ->GetDisplayNearestPoint(gfx::Point(0, 0))
+                               .bounds());
+  gfx::Point anchor_point = display_bounds.CenterPoint();
+
+  // All tests here share the same expected y value.
+  int a_expected_y(anchor_point.y() + TooltipAura::kCursorOffsetY);
+  int b_expected_y(anchor_point.y());
+
+  // 1. The tooltip fits entirely in the window.
+  {
+    // A. When attached to the cursor, the tooltip should be positioned at the
+    // bottom-right corner of the cursor.
+    gfx::Rect bounds =
+        test::TooltipAuraTestApi(tooltip_aura_)
+            .GetTooltipBounds(
+                tooltip_size,
+                {anchor_point, TooltipPositionBehavior::kRelativeToCursor});
+    gfx::Point expected_position(anchor_point.x() + TooltipAura::kCursorOffsetX,
+                                 a_expected_y);
+    EXPECT_EQ(bounds, gfx::Rect(expected_position, tooltip_size));
+
+    // B. When not attached to the cursor, the tooltip should be horizontally
+    // centered with the anchor point.
+    bounds = test::TooltipAuraTestApi(tooltip_aura_)
+                 .GetTooltipBounds(
+                     tooltip_size,
+                     {anchor_point, TooltipPositionBehavior::kCentered});
+    expected_position =
+        gfx::Point(anchor_point.x() - tooltip_size.width() / 2, b_expected_y);
+    EXPECT_EQ(bounds, gfx::Rect(expected_position, tooltip_size));
+  }
+  // 2. The tooltip overflows on the left side of the window.
+  {
+    anchor_point = display_bounds.left_center();
+    anchor_point.Offset(-TooltipAura::kCursorOffsetX - 10, 0);
+
+    // A. When attached to the cursor, the tooltip should be positioned at the
+    // bottom-right corner of the cursor.
+    gfx::Rect bounds =
+        test::TooltipAuraTestApi(tooltip_aura_)
+            .GetTooltipBounds(
+                tooltip_size,
+                {anchor_point, TooltipPositionBehavior::kRelativeToCursor});
+    gfx::Point expected_position(0, a_expected_y);
+    EXPECT_EQ(bounds, gfx::Rect(expected_position, tooltip_size));
+
+    // B. When not attached to the cursor, the tooltip should be horizontally
+    // centered with the anchor point.
+    bounds = test::TooltipAuraTestApi(tooltip_aura_)
+                 .GetTooltipBounds(
+                     tooltip_size,
+                     {anchor_point, TooltipPositionBehavior::kCentered});
+    expected_position = gfx::Point(0, b_expected_y);
+    EXPECT_EQ(bounds, gfx::Rect(expected_position, tooltip_size));
+  }
+  // 3. The tooltip overflows on the right side of the window.
+  {
+    anchor_point = display_bounds.right_center();
+    anchor_point.Offset(10, 0);
+
+    // A. When attached to the cursor, the tooltip should be positioned at the
+    // bottom-right corner of the cursor.
+    gfx::Rect bounds =
+        test::TooltipAuraTestApi(tooltip_aura_)
+            .GetTooltipBounds(
+                tooltip_size,
+                {anchor_point, TooltipPositionBehavior::kRelativeToCursor});
+    gfx::Point expected_position(display_bounds.right() - tooltip_size.width(),
+                                 a_expected_y);
+    EXPECT_EQ(bounds, gfx::Rect(expected_position, tooltip_size));
+
+    // B. When not attached to the cursor, the tooltip should be horizontally
+    // centered with the anchor point.
+    bounds = test::TooltipAuraTestApi(tooltip_aura_)
+                 .GetTooltipBounds(
+                     tooltip_size,
+                     {anchor_point, TooltipPositionBehavior::kCentered});
+    expected_position =
+        gfx::Point(display_bounds.right() - tooltip_size.width(), b_expected_y);
+    EXPECT_EQ(bounds, gfx::Rect(expected_position, tooltip_size));
+  }
+  // 4. The tooltip overflows on the bottom.
+  {
+    anchor_point = display_bounds.bottom_center();
+
+    // A. When attached to the cursor, the tooltip should be positioned at the
+    // bottom-right corner of the cursor.
+    gfx::Rect bounds =
+        test::TooltipAuraTestApi(tooltip_aura_)
+            .GetTooltipBounds(
+                tooltip_size,
+                {anchor_point, TooltipPositionBehavior::kRelativeToCursor});
+    gfx::Point expected_position(anchor_point.x() + TooltipAura::kCursorOffsetX,
+                                 anchor_point.y() - tooltip_size.height());
+    EXPECT_EQ(bounds, gfx::Rect(expected_position, tooltip_size));
+
+    // B. When not attached to the cursor, the tooltip should be horizontally
+    // centered with the anchor point.
+    bounds = test::TooltipAuraTestApi(tooltip_aura_)
+                 .GetTooltipBounds(
+                     tooltip_size,
+                     {anchor_point, TooltipPositionBehavior::kCentered});
+    expected_position = gfx::Point(anchor_point.x() - tooltip_size.width() / 2,
+                                   anchor_point.y() - tooltip_size.height());
+    EXPECT_EQ(bounds, gfx::Rect(expected_position, tooltip_size));
+  }
 }
 #endif
 
@@ -587,21 +702,21 @@ class TestTooltip : public Tooltip {
 
   // Tooltip:
   int GetMaxWidth(const gfx::Point& location) const override { return 100; }
-  void SetText(aura::Window* window,
-               const std::u16string& tooltip_text,
-               const gfx::Point& location) override {
+  void Update(aura::Window* window,
+              const std::u16string& tooltip_text,
+              const TooltipPosition& position) override {
     tooltip_text_ = tooltip_text;
-    location_ = location;
+    position_ = position;
   }
   void Show() override { is_visible_ = true; }
   void Hide() override { is_visible_ = false; }
   bool IsVisible() override { return is_visible_; }
-  const gfx::Point& location() { return location_; }
+  const TooltipPosition& position() { return position_; }
 
  private:
   bool is_visible_ = false;
   std::u16string tooltip_text_;
-  gfx::Point location_;
+  TooltipPosition position_;
 
   DISALLOW_COPY_AND_ASSIGN(TestTooltip);
 };
@@ -795,14 +910,14 @@ TEST_F(TooltipControllerTest3, TooltipPositionChangesOnTwoViewsWithSameLabel) {
   generator_->MoveMouseRelativeTo(GetWindow(), center);
   EXPECT_TRUE(helper_->IsTooltipVisible());
   EXPECT_EQ(reference_string, helper_->GetTooltipText());
-  gfx::Point tooltip_bounds1 = test_tooltip_->location();
+  gfx::Point tooltip_bounds1 = test_tooltip_->position().anchor_point;
 
   // Test whether the toolbar changes position on mouse over v2
   center = v2->bounds().CenterPoint();
   generator_->MoveMouseRelativeTo(GetWindow(), center);
   EXPECT_TRUE(helper_->IsTooltipVisible());
   EXPECT_EQ(reference_string, helper_->GetTooltipText());
-  gfx::Point tooltip_bounds2 = test_tooltip_->location();
+  gfx::Point tooltip_bounds2 = test_tooltip_->position().anchor_point;
 
   EXPECT_NE(tooltip_bounds1, gfx::Point());
   EXPECT_NE(tooltip_bounds2, gfx::Point());
@@ -813,7 +928,7 @@ TEST_F(TooltipControllerTest3, TooltipPositionChangesOnTwoViewsWithSameLabel) {
   center = v2_1->GetLocalBounds().CenterPoint();
   views::View::ConvertPointToTarget(v2_1, view_, &center);
   generator_->MoveMouseRelativeTo(GetWindow(), center);
-  gfx::Point tooltip_bounds2_1 = test_tooltip_->location();
+  gfx::Point tooltip_bounds2_1 = test_tooltip_->position().anchor_point;
 
   EXPECT_NE(tooltip_bounds2, tooltip_bounds2_1);
   EXPECT_TRUE(helper_->IsTooltipVisible());
@@ -824,7 +939,7 @@ TEST_F(TooltipControllerTest3, TooltipPositionChangesOnTwoViewsWithSameLabel) {
   center = v2_2->GetLocalBounds().CenterPoint();
   views::View::ConvertPointToTarget(v2_2, view_, &center);
   generator_->MoveMouseRelativeTo(GetWindow(), center);
-  gfx::Point tooltip_bounds2_2 = test_tooltip_->location();
+  gfx::Point tooltip_bounds2_2 = test_tooltip_->position().anchor_point;
 
   EXPECT_NE(tooltip_bounds2_1, tooltip_bounds2_2);
   EXPECT_TRUE(helper_->IsTooltipVisible());
@@ -835,14 +950,14 @@ TEST_F(TooltipControllerTest3, TooltipPositionChangesOnTwoViewsWithSameLabel) {
   center = v1_1->GetLocalBounds().CenterPoint();
   views::View::ConvertPointToTarget(v1_1, view_, &center);
   generator_->MoveMouseRelativeTo(GetWindow(), center);
-  gfx::Point tooltip_bounds1_1 = test_tooltip_->location();
+  gfx::Point tooltip_bounds1_1 = test_tooltip_->position().anchor_point;
 
   EXPECT_TRUE(helper_->IsTooltipVisible());
   EXPECT_EQ(reference_string, helper_->GetTooltipText());
 
   center = v1->bounds().CenterPoint();
   generator_->MoveMouseRelativeTo(GetWindow(), center);
-  tooltip_bounds1 = test_tooltip_->location();
+  tooltip_bounds1 = test_tooltip_->position().anchor_point;
 
   EXPECT_NE(tooltip_bounds1_1, tooltip_bounds1);
   EXPECT_EQ(reference_string, helper_->GetTooltipText());

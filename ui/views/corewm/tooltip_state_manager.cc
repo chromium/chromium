@@ -105,10 +105,13 @@ void TooltipStateManager::ShowNow(const std::u16string& trimmed_text,
   if (!tooltip_parent_window_)
     return;
 
-  gfx::Point position =
+  gfx::Point anchor_point =
       position_ +
       tooltip_parent_window_->GetBoundsInScreen().OffsetFromOrigin();
-  tooltip_->SetText(tooltip_parent_window_, trimmed_text, position);
+  // TODO(bebeaudr): Don't always pass kRelativeToCursor once we have
+  // keyboard-triggered tooltips.
+  tooltip_->Update(tooltip_parent_window_, trimmed_text,
+                   {anchor_point, TooltipPositionBehavior::kRelativeToCursor});
   tooltip_->Show();
   if (!hide_delay.is_zero()) {
     will_hide_tooltip_timer_.Start(FROM_HERE, hide_delay, this,

@@ -168,6 +168,9 @@ void TooltipController::OnMouseEvent(ui::MouseEvent* event) {
   switch (event->type()) {
     case ui::ET_MOUSE_CAPTURE_CHANGED:
     case ui::ET_MOUSE_EXITED:
+    // TODO(bebeaudr): Keyboard-triggered tooltips that show up right where the
+    // cursor currently is are hidden as soon as they show up because of this
+    // event. Handle this case differently to fix the issue.
     case ui::ET_MOUSE_MOVED:
     case ui::ET_MOUSE_DRAGGED: {
       last_mouse_loc_ = event->location();
