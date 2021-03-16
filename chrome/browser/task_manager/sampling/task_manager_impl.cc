@@ -102,6 +102,11 @@ TaskManagerImpl* TaskManagerImpl::GetInstance() {
   return lazy_task_manager_instance.Pointer();
 }
 
+bool TaskManagerImpl::IsCreated() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  return lazy_task_manager_instance.IsCreated();
+}
+
 void TaskManagerImpl::ActivateTask(TaskId task_id) {
   GetTaskByTaskId(task_id)->Activate();
 }
@@ -447,24 +452,6 @@ TaskId TaskManagerImpl::GetTaskIdForWebContents(
   return task->task_id();
 }
 
-void TaskManagerImpl::UpdateAccumulatedStatsNetworkForRoute(
-    int process_id,
-    int route_id,
-    int64_t recv_bytes,
-    int64_t sent_bytes) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  Task* task = GetTaskByRoute(process_id, route_id);
-  if (!task) {
-    // Orphaned/unaccounted activity is credited to the Browser process.
-    task = GetTaskByRoute(content::ChildProcessHost::kInvalidUniqueID,
-                          MSG_ROUTING_NONE);
-  }
-  if (!task)
-    return;
-  task->OnNetworkBytesRead(recv_bytes);
-  task->OnNetworkBytesSent(sent_bytes);
-}
-
 void TaskManagerImpl::TaskAdded(Task* task) {
   DCHECK(task);
 
@@ -527,6 +514,26 @@ void TaskManagerImpl::TaskRemoved(Task* task) {
 void TaskManagerImpl::TaskUnresponsive(Task* task) {
   DCHECK(task);
   NotifyObserversOnTaskUnresponsive(task->task_id());
+}
+
+void TaskManagerImpl::UpdateAccumulatedStatsNetworkForRoute(
+    int process_id,
+    int route_id,
+    int64_t recv_bytes,
+    int64_t sent_bytes) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!is_running_)
+    return;
+  Task* task = GetTaskByRoute(process_id, route_id);
+  if (!task) {
+    // Orphaned/unaccounted activity is credited to the Browser process.
+    task = GetTaskByRoute(content::ChildProcessHost::kInvalidUniqueID,
+                          MSG_ROUTING_NONE);
+  }
+  if (!task)
+    return;
+  task->OnNetworkBytesRead(recv_bytes);
+  task->OnNetworkBytesSent(sent_bytes);
 }
 
 void TaskManagerImpl::OnVideoMemoryUsageStatsUpdate(

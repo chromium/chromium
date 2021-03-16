@@ -5438,9 +5438,8 @@ void ChromeContentBrowserClient::OnNetworkServiceDataUseUpdate(
                                       recv_bytes, sent_bytes);
   }
 #if !defined(OS_ANDROID)
-  task_manager::TaskManagerInterface::GetTaskManager()
-      ->UpdateAccumulatedStatsNetworkForRoute(process_id, routing_id,
-                                              recv_bytes, sent_bytes);
+  task_manager::TaskManagerInterface::UpdateAccumulatedStatsNetworkForRoute(
+      process_id, routing_id, recv_bytes, sent_bytes);
 #endif
 }
 

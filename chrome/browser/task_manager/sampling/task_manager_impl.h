@@ -42,6 +42,7 @@ class TaskManagerImpl : public TaskManagerInterface,
   ~TaskManagerImpl() override;
 
   static TaskManagerImpl* GetInstance();
+  static bool IsCreated();
 
   // task_manager::TaskManagerInterface:
   void ActivateTask(TaskId task_id) override;
@@ -93,15 +94,16 @@ class TaskManagerImpl : public TaskManagerInterface,
   bool IsRunningInVM(TaskId task_id) const override;
   TaskId GetTaskIdForWebContents(
       content::WebContents* web_contents) const override;
-  void UpdateAccumulatedStatsNetworkForRoute(int process_id,
-                                             int route_id,
-                                             int64_t recv_bytes,
-                                             int64_t sent_bytes) override;
 
   // task_manager::TaskProviderObserver:
   void TaskAdded(Task* task) override;
   void TaskRemoved(Task* task) override;
   void TaskUnresponsive(Task* task) override;
+
+  void UpdateAccumulatedStatsNetworkForRoute(int process_id,
+                                             int route_id,
+                                             int64_t recv_bytes,
+                                             int64_t sent_bytes);
 
  private:
   using PidToTaskGroupMap =
