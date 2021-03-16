@@ -7,8 +7,10 @@
 #include <cstdint>
 #include <memory>
 
+#include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "chromeos/network/cellular_esim_connection_handler.h"
 #include "chromeos/network/cellular_esim_profile.h"
 #include "chromeos/network/cellular_inhibitor.h"
@@ -23,15 +25,35 @@
 #include "dbus/object_path.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
+namespace chromeos {
+namespace cellular_setup {
 namespace {
 
 // Prefix for EID when encoded in QR Code.
 const char kEidQrCodePrefix[] = "EID:";
 
-}  // namespace
+// Measures the time from which this function is called to when |callback|
+// is expected to run. The measured time difference should capture the time it
+// took for a profile to be fully downloaded from a provided activation code.
+Euicc::InstallProfileFromActivationCodeCallback
+CreateTimedInstallProfileCallback(
+    Euicc::InstallProfileFromActivationCodeCallback callback) {
+  return base::BindOnce(
+      [](Euicc::InstallProfileFromActivationCodeCallback callback,
+         base::Time installation_start_time, mojom::ProfileInstallResult result,
+         mojo::PendingRemote<mojom::ESimProfile> esim_profile_pending_remote)
+          -> void {
+        std::move(callback).Run(result, std::move(esim_profile_pending_remote));
+        if (result != mojom::ProfileInstallResult::kSuccess)
+          return;
+        UMA_HISTOGRAM_MEDIUM_TIMES(
+            "Network.Cellular.ESim.ProfileDownload.ActivationCode.Latency",
+            base::Time::Now() - installation_start_time);
+      },
+      std::move(callback), base::Time::Now());
+}
 
-namespace chromeos {
-namespace cellular_setup {
+}  // namespace
 
 Euicc::Euicc(const dbus::ObjectPath& path, ESimManager* esim_manager)
     : esim_manager_(esim_manager),
@@ -89,10 +111,10 @@ void Euicc::InstallProfileFromActivationCode(
   // currently being installed to prevent multiple attempts for the same
   // activation code.
   NET_LOG(USER) << "Attempting installation with code " << activation_code;
-  esim_manager_->cellular_inhibitor()->InhibitCellularScanning(
-      base::BindOnce(&Euicc::PerformInstallProfileFromActivationCode,
-                     weak_ptr_factory_.GetWeakPtr(), activation_code,
-                     confirmation_code, std::move(callback)));
+  esim_manager_->cellular_inhibitor()->InhibitCellularScanning(base::BindOnce(
+      &Euicc::PerformInstallProfileFromActivationCode,
+      weak_ptr_factory_.GetWeakPtr(), activation_code, confirmation_code,
+      CreateTimedInstallProfileCallback(std::move(callback))));
 }
 
 void Euicc::RequestPendingProfiles(RequestPendingProfilesCallback callback) {

@@ -66,6 +66,8 @@ class ESimTestBase : public testing::Test {
     return network_state_handler_.get();
   }
 
+  base::test::TaskEnvironment* task_environment() { return &task_environment_; }
+
  private:
   std::unique_ptr<NetworkStateHandler> network_state_handler_;
   std::unique_ptr<NetworkDeviceHandler> network_device_handler_;

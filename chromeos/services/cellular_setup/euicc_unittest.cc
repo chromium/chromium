@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/network/fake_network_connection_handler.h"
@@ -56,7 +57,8 @@ class EuiccTest : public ESimTestBase {
       const std::string& activation_code,
       const std::string& confirmation_code,
       bool wait_for_connect,
-      bool fail_connect) {
+      bool fail_connect,
+      const uint64_t& connect_latency_in_ms = 0) {
     mojom::ProfileInstallResult out_install_result;
     mojo::PendingRemote<mojom::ESimProfile> out_esim_profile;
 
@@ -73,6 +75,8 @@ class EuiccTest : public ESimTestBase {
 
     if (wait_for_connect) {
       base::RunLoop().RunUntilIdle();
+      task_environment()->AdvanceClock(
+          base::TimeDelta::FromMilliseconds(connect_latency_in_ms));
       EXPECT_LE(1u, network_connection_handler()->connect_calls().size());
       if (fail_connect) {
         network_connection_handler()
@@ -146,13 +150,23 @@ TEST_F(EuiccTest, InstallProfileFromActivationCode) {
   EXPECT_EQ(mojom::ProfileInstallResult::kFailure, result_pair.first);
   ASSERT_FALSE(result_pair.second.is_valid());
 
+  base::HistogramTester histogram_tester;
+
   // Verify that install succeeds when valid activation code is passed.
+  const uint64_t connect_latency_in_ms = 3000;
   result_pair = InstallProfileFromActivationCode(
       euicc, euicc_test->GenerateFakeActivationCode(),
       /*confirmation_code=*/std::string(), /*wait_for_connect=*/true,
-      /*fail_connect=*/false);
+      /*fail_connect=*/false, connect_latency_in_ms);
   EXPECT_EQ(mojom::ProfileInstallResult::kSuccess, result_pair.first);
   ASSERT_TRUE(result_pair.second.is_valid());
+
+  histogram_tester.ExpectTimeBucketCount(
+      "Network.Cellular.ESim.ProfileDownload.ActivationCode.Latency",
+      base::TimeDelta::FromMilliseconds(connect_latency_in_ms), 1);
+
+  histogram_tester.ExpectTotalCount(
+      "Network.Cellular.ESim.ProfileDownload.ActivationCode.Latency", 1);
 }
 
 TEST_F(EuiccTest, InstallPendingProfileFromActivationCode) {

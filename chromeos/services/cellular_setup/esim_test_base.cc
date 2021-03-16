@@ -29,7 +29,8 @@ namespace cellular_setup {
 const char* ESimTestBase::kTestEuiccPath = "/org/chromium/Hermes/Euicc/0";
 const char* ESimTestBase::kTestEid = "12345678901234567890123456789012";
 
-ESimTestBase::ESimTestBase() {
+ESimTestBase::ESimTestBase()
+    : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
   if (!ShillManagerClient::Get())
     shill_clients::InitializeFakes();
   if (!HermesManagerClient::Get())
