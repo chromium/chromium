@@ -230,6 +230,13 @@ void LookalikeUrlNavigationThrottle::OnManifestValidationResult(
     LookalikeUrlMatchType match_type,
     bool validation_succeeded) {
   if (validation_succeeded) {
+    // Add the lookalike URL to the allowlist.
+    // TODO(meacer): Use a proper key for caching here. At the very least, we
+    // should allowlist (lookalike, target) pairs. We should also cache some of
+    // the failure cases, e.g. when the lookalike site serves a manifest but it
+    // doesn't have an entry for the target site.
+    ReputationService::Get(profile_)->SetUserIgnore(lookalike_domain);
+
     Resume();
     return;
   }

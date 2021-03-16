@@ -1795,6 +1795,25 @@ IN_PROC_BROWSER_TEST_P(
   histograms.ExpectBucketCount(
       DigitalAssetLinkCrossValidator::kEventHistogramName,
       DigitalAssetLinkCrossValidator::Event::kValidationSucceeded, 1);
+
+  // Try again. The first try should have added the lookalike site to the
+  // allowlist so we shouldn't fetch the manifests again.
+  TestInterstitialNotShown(browser(), MakeURL("googlé.com"));
+  CheckNoUkm();
+  // Ensure that there was indeed a lookalike match.
+  histograms.ExpectTotalCount(lookalikes::kHistogramName, 1);
+  histograms.ExpectBucketCount(lookalikes::kHistogramName,
+                               NavigationSuggestionEvent::kMatchSkeletonTop500,
+                               1);
+  // Validator histogram should remain unchanged.
+  histograms.ExpectTotalCount(
+      DigitalAssetLinkCrossValidator::kEventHistogramName, 2);
+  histograms.ExpectBucketCount(
+      DigitalAssetLinkCrossValidator::kEventHistogramName,
+      DigitalAssetLinkCrossValidator::Event::kStarted, 1);
+  histograms.ExpectBucketCount(
+      DigitalAssetLinkCrossValidator::kEventHistogramName,
+      DigitalAssetLinkCrossValidator::Event::kValidationSucceeded, 1);
 }
 
 // Similar to ValidAssetLinks_IgnoreInterstitial, but the lookalike manifest
