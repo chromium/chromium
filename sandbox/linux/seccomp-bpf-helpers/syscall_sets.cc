@@ -423,6 +423,9 @@ bool SyscallSets::IsAllowedFutex(int sysno) {
     case __NR_get_robust_list:
     case __NR_set_robust_list:
     case __NR_futex:
+#if defined(__NR_futex_time64)
+    case __NR_futex_time64:
+#endif
     default:
       return false;
   }
