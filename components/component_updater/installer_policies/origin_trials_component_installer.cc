@@ -4,7 +4,9 @@
 
 #include "components/component_updater/installer_policies/origin_trials_component_installer.h"
 
+#include <iterator>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -48,6 +50,20 @@ const uint8_t kOriginTrialSha2Hash[] = {
 
 }  // namespace
 
+// static
+void OriginTrialsComponentInstallerPolicy::GetComponentHash(
+    std::vector<uint8_t>* hash) {
+  if (!hash)
+    return;
+  hash->assign(std::begin(kOriginTrialSha2Hash),
+               std::end(kOriginTrialSha2Hash));
+}
+
+void OriginTrialsComponentInstallerPolicy::GetHash(
+    std::vector<uint8_t>* hash) const {
+  GetComponentHash(hash);
+}
+
 bool OriginTrialsComponentInstallerPolicy::VerifyInstallation(
     const base::DictionaryValue& manifest,
     const base::FilePath& install_dir) const {
@@ -81,14 +97,6 @@ void OriginTrialsComponentInstallerPolicy::ComponentReady(
 base::FilePath OriginTrialsComponentInstallerPolicy::GetRelativeInstallDir()
     const {
   return base::FilePath(FILE_PATH_LITERAL("OriginTrials"));
-}
-
-void OriginTrialsComponentInstallerPolicy::GetHash(
-    std::vector<uint8_t>* hash) const {
-  if (!hash)
-    return;
-  hash->assign(kOriginTrialSha2Hash,
-               kOriginTrialSha2Hash + base::size(kOriginTrialSha2Hash));
 }
 
 std::string OriginTrialsComponentInstallerPolicy::GetName() const {

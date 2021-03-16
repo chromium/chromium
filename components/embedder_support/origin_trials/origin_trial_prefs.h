@@ -2,14 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PREFS_ORIGIN_TRIAL_PREFS_H_
-#define CHROME_BROWSER_PREFS_ORIGIN_TRIAL_PREFS_H_
+#ifndef COMPONENTS_EMBEDDER_SUPPORT_ORIGIN_TRIALS_ORIGIN_TRIAL_PREFS_H_
+#define COMPONENTS_EMBEDDER_SUPPORT_ORIGIN_TRIALS_ORIGIN_TRIAL_PREFS_H_
 
 class PrefRegistrySimple;
+
+namespace embedder_support {
 
 class OriginTrialPrefs {
  public:
   static void RegisterPrefs(PrefRegistrySimple* registry);
 };
 
-#endif  // CHROME_BROWSER_PREFS_ORIGIN_TRIAL_PREFS_H_
+}  // namespace embedder_support
+
+#endif  // COMPONENTS_EMBEDDER_SUPPORT_ORIGIN_TRIALS_ORIGIN_TRIAL_PREFS_H_

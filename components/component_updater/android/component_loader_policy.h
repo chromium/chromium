@@ -16,6 +16,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "components/component_updater/android/component_loader_policy_forward.h"
 
 namespace base {
 class Version;
@@ -73,9 +74,6 @@ class ComponentLoaderPolicy {
   // from the ComponentsProviderService.
   virtual void GetHash(std::vector<uint8_t>* hash) const = 0;
 };
-
-using ComponentLoaderPolicyVector =
-    std::vector<std::unique_ptr<ComponentLoaderPolicy>>;
 
 // Provides a bridge from Java to native to receive callbacks from the Java
 // loader and pass it to the wrapped ComponentLoaderPolicy instance.

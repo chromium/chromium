@@ -21,6 +21,7 @@ namespace component_updater {
 
 class OriginTrialsComponentInstallerPolicy : public ComponentInstallerPolicy {
  public:
+  static void GetComponentHash(std::vector<uint8_t>* hash);
   OriginTrialsComponentInstallerPolicy() = default;
   ~OriginTrialsComponentInstallerPolicy() override = default;
   OriginTrialsComponentInstallerPolicy(

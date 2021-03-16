@@ -32,6 +32,7 @@ static_library("browser_util") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "origin_trials/component_updater_utils_unittest.cc",
     "origin_trials/origin_trial_policy_impl_unittest.cc",
     "user_agent_utils_unittest.cc",
   ]
@@ -40,8 +41,11 @@ source_set("unit_tests") {
     ":browser_util",
     "//base",
     "//base/test:test_support",
+    "//components/component_updater/installer_policies",
     "//components/embedder_support",
     "//components/embedder_support/origin_trials",
+    "//components/prefs",
+    "//components/prefs:test_support",
     "//components/version_info:version_info",
     "//content/public/common",
     "//mojo/core/embedder:embedder",
