@@ -198,6 +198,19 @@ class BlinkScrollbarPartAnimationTimer {
 
   void SetDuration(CFTimeInterval duration) { duration_ = duration; }
 
+  // This is a speculative fix for crbug.com/1183276.
+  // In BlinkScrollbarPainterDelegate::setUpAlphaAnimation we are
+  // deallocating BlinkScrollbarPartAnimation and create a new one.
+  // The problem seems to be with BlinkScrollbarPartAnimation, passing a
+  // pointer to itself to BlinkScrollbarPartAnimationTimer.
+  // BlinkScrollbarPartAnimationTimer uses a TaskRunnerTimer to schedule
+  // the animation to run 60 times second.
+  // When we deallocate BlinkScrollbarPartAnimation,
+  // BlinkScrollbarPartAnimationTimer fires again, I believe because it
+  // uses PostTaskDelayed to schedule the next animation.
+  // Ideally the timer won't fire again.
+  void CancelAnimation() { animation_ = nullptr; }
+
  private:
   void TimerFired(TimerBase*) {
     double current_time = base::Time::Now().ToDoubleT();
@@ -205,6 +218,9 @@ class BlinkScrollbarPartAnimationTimer {
 
     if (delta >= duration_)
       timer_.Stop();
+    // This is a speculative fix for crbug.com/1183276.
+    if (!animation_)
+      return;
 
     double fraction = delta / duration_;
     fraction = clampTo(fraction, 0.0, 1.0);
@@ -224,11 +240,7 @@ class BlinkScrollbarPartAnimationTimer {
 // This class handles the animation of a |_featureToAnimate| part of
 // |_scrollbar|.
 @interface BlinkScrollbarPartAnimation : NSObject {
-  // TODO(crbug.com/1185337): This WeakPersistent was added as a speculative
-  // because fix for crbug.com/1183276.
-  // We need to figure out how to correctly clear the scrollbar manually
-  // instead of relying on WeakPersistent which adds overhead.
-  blink::WeakPersistent<blink::Scrollbar> _scrollbar;
+  blink::Scrollbar* _scrollbar;
   std::unique_ptr<blink::BlinkScrollbarPartAnimationTimer> _timer;
   base::scoped_nsobject<ScrollbarPainter> _scrollbarPainter;
   FeatureToAnimate _featureToAnimate;
@@ -258,7 +270,7 @@ class BlinkScrollbarPartAnimationTimer {
 
   _timer = std::make_unique<blink::BlinkScrollbarPartAnimationTimer>(
       self, duration, std::move(taskRunner));
-  _scrollbar = blink::WeakPersistent<blink::Scrollbar>(scrollbar);
+  _scrollbar = scrollbar;
   _featureToAnimate = featureToAnimate;
   _startValue = startValue;
   _endValue = endValue;
@@ -268,10 +280,6 @@ class BlinkScrollbarPartAnimationTimer {
 
 - (void)startAnimation {
   DCHECK(_scrollbar);
-  // This was added as a speculative fix for crbug.com/1183276.
-  // Accessing scrollbar is problematic in _timer
-  if (!_scrollbar)
-    return;
   _scrollbarPainter.reset(ScrollbarPainterForScrollbar(*_scrollbar),
                           base::scoped_policy::RETAIN);
   _timer->Start();
@@ -295,11 +303,6 @@ class BlinkScrollbarPartAnimationTimer {
 
 - (void)setCurrentProgress:(NSAnimationProgress)progress {
   DCHECK(_scrollbar);
-  // This was added as a speculative fix for crbug.com/1183276.
-  // Accessing scrollbar is problematic in _timer
-  if (!_scrollbar)
-    return;
-
   CGFloat currentValue;
   if (_startValue > _endValue)
     currentValue = 1 - progress;
@@ -333,6 +336,7 @@ class BlinkScrollbarPartAnimationTimer {
   [self stopAnimation];
   END_BLOCK_OBJC_EXCEPTIONS;
   _scrollbar = nullptr;
+  _timer->CancelAnimation();
 }
 @end
 
@@ -437,7 +441,7 @@ class BlinkScrollbarPartAnimationTimer {
 
   // If we are currently animating, stop
   if (scrollbarPartAnimation) {
-    [scrollbarPartAnimation stopAnimation];
+    [scrollbarPartAnimation invalidate];
     scrollbarPartAnimation.reset();
   }
 
