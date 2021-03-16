@@ -73,8 +73,18 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
   // from |profile_path_to_restore_data_| for |profile_path| .
   void RemoveApp(const base::FilePath& profile_path, const std::string& app_id);
 
-  // Gets the window information for |restore_window_id| or |window|.
-  std::unique_ptr<WindowInfo> GetWindowInfo(int32_t restore_window_id);
+  // Returns true if there is a window info for |restore_window_id| from the
+  // full restore file. Otherwise, returns false. This interface can't be used
+  // for Arc app windows.
+  bool HasWindowInfo(int32_t restore_window_id);
+
+  // Gets the window information from |profile_path| for |app_id| and
+  // |restore_window_id|.
+  std::unique_ptr<WindowInfo> GetWindowInfo(const base::FilePath& profile_path,
+                                            const std::string& app_id,
+                                            int32_t restore_window_id);
+
+  // Gets the window information for |window|.
   std::unique_ptr<WindowInfo> GetWindowInfo(aura::Window* window);
 
   // Fetches the restore id for the window from RestoreData for the given
@@ -110,6 +120,9 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
   }
 
  private:
+  // Gets the window information for |restore_window_id|.
+  std::unique_ptr<WindowInfo> GetWindowInfo(int32_t restore_window_id);
+
   // Invoked when reading the restore data from |profile_path| is finished, and
   // calls |callback| to notify that the reading operation is done.
   void OnGetRestoreData(const base::FilePath& profile_path,
