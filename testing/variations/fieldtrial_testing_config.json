@@ -4926,56 +4926,6 @@
             ]
         }
     ],
-    "PartitionAllocGigaCage": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Mobile",
-                    "enable_features": [
-                        "PartitionAllocGigaCage"
-                    ]
-                },
-                {
-                    "name": "Enabled_V3",
-                    "enable_features": [
-                        "PartitionAllocGigaCage"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PartitionAllocGigaCage32bit": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PartitionAllocGigaCage32bit"
-                    ]
-                }
-            ]
-        }
-    ],
     "PartitionAllocThreadCachePeriodicPurge": [
         {
             "platforms": [
