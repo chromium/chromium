@@ -28,9 +28,6 @@ class FakeWebClient : public web::WebClient {
   // Returns true for kTestWebUIScheme URL.
   bool IsAppSpecificURL(const GURL& url) const override;
 
-  bool ShouldBlockUrlDuringRestore(const GURL& url,
-                                   WebState* web_state) const override;
-
   void AddSerializableData(web::SerializableUserDataManager* user_data_manager,
                            web::WebState* web_state) override;
 

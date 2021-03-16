@@ -591,8 +591,8 @@ enum class BackForwardNavigationType {
                   placeholderNavigation:isPlaceholderURL];
 
     if (self.navigationManagerImpl->IsRestoreSessionInProgress()) {
-      if (self.navigationManagerImpl->ShouldBlockUrlDuringRestore(
-              navigationURL)) {
+      if (self.navigationManagerImpl->RestoreSessionFromCache(navigationURL)) {
+        // Return early if the session was restored from cache.
         return;
       }
       [_delegate

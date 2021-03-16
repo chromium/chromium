@@ -29,7 +29,6 @@
   "disable-webrtc-hw-decoding",
   "disable-webrtc-hw-encoding",
   "disallow-doc-written-script-loads",
-  "embedder-block-restore-url",
   "enable-autofill-credit-card-upload",
   "enable-command-line-on-non-rooted-devices",
   "enable-data-reduction-proxy-server-experiment",
