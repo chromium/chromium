@@ -112,6 +112,8 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   sk_sp<SkDeferredDisplayList> EndPaintRenderPassOverlay() override;
 #endif
 
+  void PreserveChildSurfaceControls() override {}
+
   // ExternalUseClient implementation:
   gpu::SyncToken ReleaseImageContexts(
       const std::vector<std::unique_ptr<ImageContext>> image_contexts) override;

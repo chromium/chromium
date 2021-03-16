@@ -63,6 +63,11 @@ interface DisplayPrivate {
   [EnableIf=is_android]
   SetSupportedRefreshRates(array<float> refresh_rates);
 
+  // Notifies associated Display to not detach child surface controls during
+  // destruction.
+  [EnableIf=is_android]
+  PreserveChildSurfaceControls();
+
   // Adds an observer that gets notified about vsync parameter changes. See
   // VSyncParameterObserver for details.
   //

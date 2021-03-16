@@ -920,6 +920,11 @@ void CompositorImpl::EvictCachedBackBuffer() {
   cached_back_buffer_.reset();
 }
 
+void CompositorImpl::PreserveChildSurfaceControls() {
+  if (display_private_)
+    display_private_->PreserveChildSurfaceControls();
+}
+
 void CompositorImpl::RequestPresentationTimeForNextFrame(
     PresentationTimeCallback callback) {
   host_->RequestPresentationTimeForNextFrame(std::move(callback));

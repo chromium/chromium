@@ -55,6 +55,7 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public GLSurfaceEGL {
                             std::unique_ptr<gfx::GpuFence> gpu_fence) override;
   bool IsSurfaceless() const override;
   void* GetHandle() override;
+  void PreserveChildSurfaceControls() override;
 
   // Sync versions of frame update, should never be used.
   gfx::SwapResult SwapBuffers(PresentationCallback callback) override;
@@ -250,6 +251,8 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public GLSurfaceEGL {
   bool surface_lost_ = false;
 
   TransactionAckTimeoutManager transaction_ack_timeout_manager_;
+
+  bool preserve_children_ = false;
 
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
   base::WeakPtrFactory<GLSurfaceEGLSurfaceControl> weak_factory_{this};

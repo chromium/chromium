@@ -410,8 +410,16 @@ public class CompositorView
     }
 
     @Override
-    public void surfaceDestroyed(Surface surface) {
+    public void surfaceDestroyed(Surface surface, boolean androidSurfaceDestroyed) {
         if (mNativeCompositorView == 0) return;
+
+        // When we switch from Chrome to other app we can't detach child surface controls because it
+        // leads to a visible hole: b/157439199. To avoid this we don't detach surfaces if the
+        // surface is going to be destroyed, they will be detached and freed by OS.
+        if (androidSurfaceDestroyed) {
+            CompositorViewJni.get().preserveChildSurfaceControls(
+                    mNativeCompositorView, CompositorView.this);
+        }
 
         CompositorViewJni.get().surfaceDestroyed(mNativeCompositorView, CompositorView.this);
     }
@@ -673,5 +681,6 @@ public class CompositorView
         void cacheBackBufferForCurrentSurface(long nativeCompositorView, CompositorView caller);
         void evictCachedBackBuffer(long nativeCompositorView, CompositorView caller);
         void onTabChanged(long nativeCompositorView, CompositorView caller);
+        void preserveChildSurfaceControls(long nativeCompositorView, CompositorView caller);
     }
 }

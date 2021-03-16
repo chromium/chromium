@@ -212,6 +212,8 @@ class SkiaOutputSurfaceImplOnGpu
 
   void ReleaseFenceSync(uint64_t sync_fence_release);
 
+  void PreserveChildSurfaceControls();
+
  private:
   class OffscreenSurface;
   class DisplayContext;

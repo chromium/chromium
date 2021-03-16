@@ -1313,6 +1313,12 @@ void Display::DisableGPUAccessByDefault() {
   resource_provider_->SetAllowAccessToGPUThread(false);
 }
 
+void Display::PreserveChildSurfaceControls() {
+  if (skia_output_surface_) {
+    skia_output_surface_->PreserveChildSurfaceControls();
+  }
+}
+
 DelegatedInkPointRendererBase* Display::GetDelegatedInkPointRenderer() {
   return renderer_->GetDelegatedInkPointRenderer();
 }

@@ -187,6 +187,7 @@ class InProcessContextFactory::PerCompositorData
   void UpdateRefreshRate(float refresh_rate) override {}
   void SetSupportedRefreshRates(
       const std::vector<float>& refresh_rates) override {}
+  void PreserveChildSurfaceControls() override {}
 #endif
 
   void SetDelegatedInkPointRenderer(

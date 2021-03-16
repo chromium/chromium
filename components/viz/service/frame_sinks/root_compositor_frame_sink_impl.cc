@@ -308,6 +308,10 @@ void RootCompositorFrameSinkImpl::SetSupportedRefreshRates(
   display_->SetSupportedFrameIntervals(supported_frame_intervals);
 }
 
+void RootCompositorFrameSinkImpl::PreserveChildSurfaceControls() {
+  display_->PreserveChildSurfaceControls();
+}
+
 #endif  // defined(OS_ANDROID)
 
 void RootCompositorFrameSinkImpl::AddVSyncParameterObserver(
