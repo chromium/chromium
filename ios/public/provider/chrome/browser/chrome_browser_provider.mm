@@ -83,6 +83,12 @@ bool ChromeBrowserProvider::MightBlockUrlDuringRestore() {
   return false;
 }
 
+bool ChromeBrowserProvider::ShouldBlockUrlDuringRestore(
+    const GURL& url,
+    web::WebState* web_state) {
+  return false;
+}
+
 UITextField* ChromeBrowserProvider::CreateStyledTextField() const {
   return nil;
 }

@@ -67,7 +67,9 @@ NavigationItemStorageBuilder::BuildNavigationItemImpl(
   // because it is already a session restoration item or because it is an
   // external PDF), don't restore it to avoid issues. See
   // http://crbug.com/1017147 , 1076851 and 1065433.
-  if (navigation_item_storage.URL.SchemeIsHTTPOrHTTPS()) {
+  bool should_use_url = navigation_item_storage.URL.SchemeIsHTTPOrHTTPS() ||
+                        web::GetWebClient()->IsEmbedderBlockRestoreUrlEnabled();
+  if (should_use_url) {
     item->SetURL(navigation_item_storage.URL);
     item->SetVirtualURL(navigation_item_storage.virtualURL);
   } else {

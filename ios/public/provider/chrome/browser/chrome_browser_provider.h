@@ -39,6 +39,7 @@ class SerializableUserDataManager;
 class WebState;
 }
 
+class GURL;
 @protocol LogoVendor;
 @class UITextField;
 @class UIView;
@@ -121,6 +122,10 @@ class ChromeBrowserProvider {
 
   // Whether the embedder might block specific URL.
   virtual bool MightBlockUrlDuringRestore();
+
+  // Allow embedders to block a specific URL.
+  virtual bool ShouldBlockUrlDuringRestore(const GURL& url,
+                                           web::WebState* web_state);
 
   // Attaches any embedder-specific tab helpers to the given |web_state|.
   virtual void AttachTabHelpers(web::WebState* web_state) const;

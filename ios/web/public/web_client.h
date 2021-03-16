@@ -85,6 +85,10 @@ class WebClient {
   // browser would return true for "chrome://about" URL.
   virtual bool IsAppSpecificURL(const GURL& url) const;
 
+  // Returns true if URL should not be restored.
+  virtual bool ShouldBlockUrlDuringRestore(const GURL& url,
+                                           WebState* web_state) const;
+
   // Allow embedder to inject data.
   virtual void AddSerializableData(
       web::SerializableUserDataManager* user_data_manager,
@@ -207,6 +211,9 @@ class WebClient {
   // content, based on the size class of |web_view| and the |url|.
   virtual UserAgentType GetDefaultUserAgent(id<UITraitEnvironment> web_view,
                                             const GURL& url);
+
+  // Returns whether the embedders could block restore urls.
+  virtual bool IsEmbedderBlockRestoreUrlEnabled();
 };
 
 }  // namespace web

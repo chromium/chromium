@@ -145,9 +145,9 @@ extern const char kEditBookmarksIOSDescription[];
 extern const char kEditPasswordsInSettingsName[];
 extern const char kEditPasswordsInSettingsDescription[];
 
-// Title and description for the flag to native restore web states.
-extern const char kRestoreSessionFromCacheName[];
-extern const char kRestoreSessionFromCacheDescription[];
+// Title and description for the flag to block restore urls.
+extern const char kEmbedderBlockRestoreUrlName[];
+extern const char kEmbedderBlockRestoreUrlDescription[];
 
 // Title and description for the flag to enable autofill address save prompts.
 extern const char kEnableAutofillAddressSavePromptName[];

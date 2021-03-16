@@ -65,9 +65,6 @@ extern const base::Feature kIOSLegacyTLSInterstitial;
 // generate PDF when Page Snapshot is taken just to record PDF size.
 extern const base::Feature kRecordSnapshotSize;
 
-// Feature flag for to use native session restoration.
-extern const base::Feature kRestoreSessionFromCache;
-
 // When enabled, use the native context menu in web content, for the iOS version
 // that supports it.
 extern const base::Feature kWebViewNativeContextMenu;

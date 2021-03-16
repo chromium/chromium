@@ -1115,6 +1115,20 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
                            loadSuccess:loadSuccess
                                context:context];
 
+  if (web::GetWebClient()->IsEmbedderBlockRestoreUrlEnabled()) {
+    if (@available(iOS 14, *)) {
+    } else {
+      if (@available(iOS 13.5, *)) {
+        // In some cases on iOS 13.5, when restoring about: URL, the load might
+        // never ends. Make sure to mark the load as done here. This is fixed in
+        // iOS 14. See crbug.com/1099235.
+        if (currentURL.SchemeIs(url::kAboutScheme)) {
+          self.webStateImpl->SetIsLoading(false);
+        }
+      }
+    }
+  }
+
   // Execute the pending LoadCompleteActions.
   for (ProceduralBlock action in _pendingLoadCompleteActions) {
     action();

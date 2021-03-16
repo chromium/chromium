@@ -216,6 +216,13 @@ bool ChromeWebClient::IsAppSpecificURL(const GURL& url) const {
   return url.SchemeIs(kChromeUIScheme);
 }
 
+bool ChromeWebClient::ShouldBlockUrlDuringRestore(
+    const GURL& url,
+    web::WebState* web_state) const {
+  return ios::GetChromeBrowserProvider()->ShouldBlockUrlDuringRestore(
+      url, web_state);
+}
+
 void ChromeWebClient::AddSerializableData(
     web::SerializableUserDataManager* user_data_manager,
     web::WebState* web_state) {
@@ -443,4 +450,8 @@ web::UserAgentType ChromeWebClient::GetDefaultUserAgent(
                               UIUserInterfaceSizeClassRegular;
   return isRegularRegular ? web::UserAgentType::DESKTOP
                           : web::UserAgentType::MOBILE;
+}
+
+bool ChromeWebClient::IsEmbedderBlockRestoreUrlEnabled() {
+  return ios::GetChromeBrowserProvider()->MightBlockUrlDuringRestore();
 }

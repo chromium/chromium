@@ -44,6 +44,11 @@ bool WebClient::IsAppSpecificURL(const GURL& url) const {
   return false;
 }
 
+bool WebClient::ShouldBlockUrlDuringRestore(const GURL& url,
+                                            WebState* web_state) const {
+  return false;
+}
+
 void WebClient::AddSerializableData(
     web::SerializableUserDataManager* user_data_manager,
     web::WebState* web_state) {}
@@ -131,6 +136,10 @@ bool WebClient::ForceMobileVersionByDefault(const GURL&) {
 UserAgentType WebClient::GetDefaultUserAgent(id<UITraitEnvironment> web_view,
                                              const GURL& url) {
   return UserAgentType::MOBILE;
+}
+
+bool WebClient::IsEmbedderBlockRestoreUrlEnabled() {
+  return false;
 }
 
 }  // namespace web

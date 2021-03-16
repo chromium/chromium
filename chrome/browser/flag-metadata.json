@@ -1235,6 +1235,12 @@
     "expiry_milestone": 90
   },
   {
+    "name": "embedder-block-restore-url",
+    "owners": [ "justincohen", "rohitrao", "bling-flags@google.com" ],
+    // Needed for manual testing of fallback flow on iOS.
+    "expiry_milestone": -1
+  },
+  {
     "name": "enable-accelerated-video-decode",
     "owners": [ "videostack-eng@google.com" ],
     "expiry_milestone": 90
@@ -4486,12 +4492,6 @@
     "name": "restore-gaia-cookies-on-user-action",
     "owners": ["fernandex", "chrome-signin-team" ],
     "expiry_milestone": 96
-  },
-  {
-    "name": "restore-session-from-cache",
-    "owners": [ "justincohen", "gambard", "bling-flags@google.com" ],
-    // Needed for manual testing of native session restore flow on iOS.
-    "expiry_milestone": 97
   },
   {
     "name": "restrict-gamepad-access",
