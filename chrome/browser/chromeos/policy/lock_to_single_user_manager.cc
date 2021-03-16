@@ -64,7 +64,15 @@ void LockToSingleUserManager::DbusNotifyVmStarting() {
 }
 
 void LockToSingleUserManager::ActiveUserChanged(user_manager::User* user) {
-  if (user->IsAffiliated())
+  user->IsAffiliatedAsync(
+      base::BindOnce(&LockToSingleUserManager::OnUserAffiliationEstablished,
+                     weak_factory_.GetWeakPtr(), user));
+}
+
+void LockToSingleUserManager::OnUserAffiliationEstablished(
+    user_manager::User* user,
+    bool is_affiliated) {
+  if (is_affiliated)
     return;
 
   int policy_value = -1;

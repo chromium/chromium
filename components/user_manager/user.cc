@@ -282,7 +282,15 @@ void User::AddProfileCreatedObserver(base::OnceClosure on_profile_created) {
 }
 
 bool User::IsAffiliated() const {
-  return is_affiliated_;
+  return is_affiliated_.value_or(false);
+}
+
+void User::IsAffiliatedAsync(
+    base::OnceCallback<void(bool)> is_affiliated_callback) {
+  if (is_affiliated_.has_value())
+    std::move(is_affiliated_callback).Run(is_affiliated_.value());
+  else
+    on_affiliation_set_callbacks_.push_back(std::move(is_affiliated_callback));
 }
 
 void User::SetProfileIsCreated() {
@@ -294,6 +302,9 @@ void User::SetProfileIsCreated() {
 
 void User::SetAffiliation(bool is_affiliated) {
   is_affiliated_ = is_affiliated;
+  for (auto& callback : on_affiliation_set_callbacks_)
+    std::move(callback).Run(is_affiliated_.value());
+  on_affiliation_set_callbacks_.clear();
 }
 
 bool User::IsDeviceLocalAccount() const {

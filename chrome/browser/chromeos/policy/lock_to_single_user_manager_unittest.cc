@@ -216,6 +216,13 @@ TEST_F(LockToSingleUserManagerTest, AlwaysLockTest) {
   EXPECT_TRUE(is_device_locked());
 }
 
+TEST_F(LockToSingleUserManagerTest, LateAffilitionNotificationTest) {
+  SetPolicyValue(enterprise_management::DeviceRebootOnUserSignoutProto::ALWAYS);
+  EXPECT_FALSE(is_device_locked());
+  LogInUser(false /* is_affiliated */);
+  EXPECT_TRUE(is_device_locked());
+}
+
 TEST_F(LockToSingleUserManagerTest, NeverLockTest) {
   SetPolicyValue(enterprise_management::DeviceRebootOnUserSignoutProto::NEVER);
   LogInUser(false /* is_affiliated */);

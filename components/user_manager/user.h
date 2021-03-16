@@ -111,8 +111,14 @@ class USER_MANAGER_EXPORT User : public UserInfo {
   // The displayed (non-canonical) user email.
   virtual std::string display_email() const;
 
-  // True if the user is affiliated to the device.
+  // True if the user is affiliated to the device. Returns false if the
+  // affiliation is not known. Use IsAffiliatedAsync if it's possible the call
+  // is done before affiliation is established.
   virtual bool IsAffiliated() const;
+
+  // Runs the callback immediately if the affiliation is known, otherwise later
+  // when the affiliation is established.
+  void IsAffiliatedAsync(base::OnceCallback<void(bool)> is_affiliated_callback);
 
   // True if the user is a device local account user.
   virtual bool IsDeviceLocalAccount() const;
@@ -329,9 +335,11 @@ class USER_MANAGER_EXPORT User : public UserInfo {
   bool profile_is_created_ = false;
 
   // True if the user is affiliated to the device.
-  bool is_affiliated_ = false;
+  base::Optional<bool> is_affiliated_;
 
   std::vector<base::OnceClosure> on_profile_created_observers_;
+  std::vector<base::OnceCallback<void(bool is_affiliated)>>
+      on_affiliation_set_callbacks_;
 
   DISALLOW_COPY_AND_ASSIGN(User);
 };

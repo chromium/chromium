@@ -48,6 +48,10 @@ class LockToSingleUserManager final
   // chromeos::VmStartingObserver:
   void OnVmStarting() override;
 
+  // On affiliation established of the active user.
+  void OnUserAffiliationEstablished(user_manager::User* user,
+                                    bool is_affiliated);
+
   // Add observers for VM starting events
   void AddVmStartingObservers(user_manager::User* user);
 
