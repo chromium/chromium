@@ -41,8 +41,8 @@ bool AssociateCompletionPort(HANDLE job, HANDLE port, void* key) {
              : false;
 }
 
-// the different commands that you can send to the worker thread that
-// executes TargetEventsThread().
+// Commands that can be sent to the completion port serviced by
+// TargetEventsThread().
 enum {
   THREAD_CTRL_NONE,
   THREAD_CTRL_NEW_JOB_TRACKER,
@@ -51,6 +51,27 @@ enum {
   THREAD_CTRL_GET_POLICY_INFO,
   THREAD_CTRL_QUIT,
   THREAD_CTRL_LAST,
+};
+
+// Transfers parameters to the target events thread during Init().
+struct TargetEventsThreadParams {
+  TargetEventsThreadParams(HANDLE iocp,
+                           HANDLE no_targets,
+                           std::unique_ptr<sandbox::ThreadProvider> thread_pool)
+      : iocp(iocp),
+        no_targets(no_targets),
+        thread_pool(std::move(thread_pool)) {}
+  ~TargetEventsThreadParams() {}
+  // IOCP that job notifications and commands are sent to.
+  // Handle is closed when BrokerServices is destroyed.
+  HANDLE iocp;
+  // Event used when jobs cannot be tracked.
+  // Handle is closed when BrokerServices is destroyed.
+  HANDLE no_targets;
+  // Thread pool used to mediate sandbox IPC, owned by the target
+  // events thread but accessed by BrokerServices and TargetProcesses.
+  // Destroyed when TargetEventsThread ends.
+  std::unique_ptr<sandbox::ThreadProvider> thread_pool;
 };
 
 // Helper structure that allows the Broker to associate a job notification
@@ -138,9 +159,16 @@ ResultCode BrokerServicesBase::Init() {
     return SBOX_ERROR_CANNOT_INIT_BROKERSERVICES;
 
   no_targets_.Set(::CreateEventW(nullptr, true, false, nullptr));
+  if (!no_targets_.IsValid())
+    return SBOX_ERROR_CANNOT_INIT_BROKERSERVICES;
 
-  // The thread pool is shared by all the targets.
-  thread_pool_ = std::make_unique<Win2kThreadPool>();
+  // We transfer ownership of this memory to the thread.
+  auto params = std::make_unique<TargetEventsThreadParams>(
+      job_port_.Get(), no_targets_.Get(), std::make_unique<Win2kThreadPool>());
+
+  // We keep the thread alive until our destructor so we can use a raw
+  // pointer to the thread pool.
+  thread_pool_ = params->thread_pool.get();
 
 #if defined(ARCH_CPU_32_BITS)
   // Conserve address space in 32-bit Chrome. This thread uses a small and
@@ -152,10 +180,15 @@ ResultCode BrokerServicesBase::Init() {
   constexpr size_t stack_size = 0;
 #endif
   job_thread_.Set(::CreateThread(nullptr, stack_size,  // Default security.
-                                 TargetEventsThread, this, flags, nullptr));
-  if (!job_thread_.IsValid())
+                                 TargetEventsThread, params.get(), flags,
+                                 nullptr));
+  if (!job_thread_.IsValid()) {
+    thread_pool_ = nullptr;
+    // Returning cleans up params.
     return SBOX_ERROR_CANNOT_INIT_BROKERSERVICES;
+  }
 
+  params.release();
   return SBOX_ALL_OK;
 }
 
@@ -181,7 +214,6 @@ BrokerServicesBase::~BrokerServicesBase() {
     NOTREACHED();
     return;
   }
-  thread_pool_.reset();
 }
 
 scoped_refptr<TargetPolicy> BrokerServicesBase::CreatePolicy() {
@@ -203,24 +235,25 @@ DWORD WINAPI BrokerServicesBase::TargetEventsThread(PVOID param) {
 
   base::PlatformThread::SetName("BrokerEvent");
 
-  BrokerServicesBase* broker = reinterpret_cast<BrokerServicesBase*>(param);
-  HANDLE port = broker->job_port_.Get();
-  HANDLE no_targets = broker->no_targets_.Get();
+  // Take ownership of params so that it is deleted on thread exit.
+  std::unique_ptr<TargetEventsThreadParams> params(
+      reinterpret_cast<TargetEventsThreadParams*>(param));
 
   std::set<DWORD> child_process_ids;
   std::list<std::unique_ptr<JobTracker>> jobs;
   std::list<std::unique_ptr<ProcessTracker>> processes;
   int target_counter = 0;
   int untracked_target_counter = 0;
-  ::ResetEvent(no_targets);
+  ::ResetEvent(params->no_targets);
 
   while (true) {
     DWORD events = 0;
     ULONG_PTR key = 0;
     LPOVERLAPPED ovl = nullptr;
 
-    if (!::GetQueuedCompletionStatus(port, &events, &key, &ovl, INFINITE)) {
-      // this call fails if the port has been closed before we have a
+    if (!::GetQueuedCompletionStatus(params->iocp, &events, &key, &ovl,
+                                     INFINITE)) {
+      // This call fails if the port has been closed before we have a
       // chance to service the last packet which is 'exit' anyway so
       // this is not an error.
       return 1;
@@ -267,7 +300,7 @@ DWORD WINAPI BrokerServicesBase::TargetEventsThread(PVOID param) {
             untracked_target_counter++;
           ++target_counter;
           if (1 == target_counter) {
-            ::ResetEvent(no_targets);
+            ::ResetEvent(params->no_targets);
           }
           break;
         }
@@ -283,7 +316,7 @@ DWORD WINAPI BrokerServicesBase::TargetEventsThread(PVOID param) {
           }
           --target_counter;
           if (0 == target_counter)
-            ::SetEvent(no_targets);
+            ::SetEvent(params->no_targets);
 
           DCHECK(target_counter >= 0);
           break;
@@ -322,10 +355,10 @@ DWORD WINAPI BrokerServicesBase::TargetEventsThread(PVOID param) {
       tracker.reset(reinterpret_cast<ProcessTracker*>(ovl));
 
       if (child_process_ids.empty()) {
-        ::SetEvent(broker->no_targets_.Get());
+        ::SetEvent(params->no_targets);
       }
 
-      tracker->iocp = port;
+      tracker->iocp = params->iocp;
       if (!::RegisterWaitForSingleObject(&(tracker->wait_handle),
                                          tracker->process.Get(),
                                          ProcessEventCallback, tracker.get(),
@@ -490,7 +523,7 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
   base::win::ScopedProcessInformation process_info;
   std::unique_ptr<TargetProcess> target = std::make_unique<TargetProcess>(
       std::move(initial_token), std::move(lockdown_token), job.Get(),
-      thread_pool_.get(),
+      thread_pool_,
       profile ? profile->GetImpersonationCapabilities() : std::vector<Sid>());
 
   result = target->Create(exe_path, command_line, std::move(startup_info),

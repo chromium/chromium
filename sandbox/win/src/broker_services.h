@@ -68,7 +68,8 @@ class BrokerServicesBase final : public BrokerServices,
   base::win::ScopedHandle job_thread_;
 
   // Provides a pool of threads that are used to wait on the IPC calls.
-  std::unique_ptr<ThreadProvider> thread_pool_;
+  // Owned by TargetEventsThread which is alive until our destructor.
+  ThreadProvider* thread_pool_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(BrokerServicesBase);
 };
