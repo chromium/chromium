@@ -106,7 +106,8 @@ TEST_F(SodaClientUnitTest, CreateSodaClient) {
   config_msg.set_language_pack_directory(config_file_path.value().c_str());
   config_msg.set_simulate_realtime_testonly(false);
   config_msg.set_enable_lang_id(false);
-  config_msg.set_recognition_mode(soda::api::SerializedSodaConfigMsg::CAPTION);
+  config_msg.set_recognition_mode(
+      speech::soda::chrome::ExtendedSodaConfigMsg::CAPTION);
 
   // The test binary does not verify the execution context.
   config_msg.set_api_key("");
