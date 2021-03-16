@@ -519,6 +519,7 @@ std::unique_ptr<TracedValue> Data(const StringView&);
 
 CORE_EXPORT String ToHexString(const void* p);
 CORE_EXPORT void SetCallStack(TracedValue*);
+CORE_EXPORT void SetCallStack(perfetto::TracedDictionary&);
 
 }  // namespace blink
 

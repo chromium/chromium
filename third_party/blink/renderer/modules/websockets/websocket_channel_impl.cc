@@ -279,10 +279,9 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
     throttle_passed_ = true;
   }
 
-  TRACE_EVENT_INSTANT1("devtools.timeline", "WebSocketCreate",
-                       TRACE_EVENT_SCOPE_THREAD, "data",
-                       InspectorWebSocketCreateEvent::Data(
-                           execution_context_, identifier_, url, protocol));
+  DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
+      "WebSocketCreate", InspectorWebSocketCreateEvent::Data,
+      execution_context_, identifier_, url, protocol);
   probe::DidCreateWebSocket(execution_context_, identifier_, url, protocol);
   return true;
 }
@@ -413,9 +412,9 @@ void WebSocketChannelImpl::Fail(const String& reason,
 void WebSocketChannelImpl::Disconnect() {
   DVLOG(1) << this << " disconnect()";
   if (identifier_) {
-    TRACE_EVENT_INSTANT1(
-        "devtools.timeline", "WebSocketDestroy", TRACE_EVENT_SCOPE_THREAD,
-        "data", InspectorWebSocketEvent::Data(execution_context_, identifier_));
+    DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT("WebSocketDestroy",
+                                          InspectorWebSocketEvent::Data,
+                                          execution_context_, identifier_);
     probe::DidCloseWebSocket(execution_context_, identifier_);
   }
 
@@ -454,10 +453,9 @@ void WebSocketChannelImpl::OnOpeningHandshakeStarted(
   DVLOG(1) << this << " OnOpeningHandshakeStarted(" << request->url.GetString()
            << ")";
 
-  TRACE_EVENT_INSTANT1(
-      "devtools.timeline", "WebSocketSendHandshakeRequest",
-      TRACE_EVENT_SCOPE_THREAD, "data",
-      InspectorWebSocketEvent::Data(execution_context_, identifier_));
+  DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT("WebSocketSendHandshakeRequest",
+                                        InspectorWebSocketEvent::Data,
+                                        execution_context_, identifier_);
   probe::WillSendWebSocketHandshakeRequest(execution_context_, identifier_,
                                            request.get());
   handshake_request_ = std::move(request);
@@ -483,10 +481,9 @@ void WebSocketChannelImpl::OnConnectionEstablished(
   const String& extensions = response->extensions;
   DVLOG(1) << this << " OnConnectionEstablished(" << protocol << ", "
            << extensions << ")";
-  TRACE_EVENT_INSTANT1(
-      "devtools.timeline", "WebSocketReceiveHandshakeResponse",
-      TRACE_EVENT_SCOPE_THREAD, "data",
-      InspectorWebSocketEvent::Data(execution_context_, identifier_));
+  DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT("WebSocketReceiveHandshakeResponse",
+                                        InspectorWebSocketEvent::Data,
+                                        execution_context_, identifier_);
   probe::DidReceiveWebSocketHandshakeResponse(execution_context_, identifier_,
                                               handshake_request_.get(),
                                               response.get());
@@ -553,9 +550,9 @@ void WebSocketChannelImpl::OnDropChannel(bool was_clean,
            << reason << ")";
 
   if (identifier_) {
-    TRACE_EVENT_INSTANT1(
-        "devtools.timeline", "WebSocketDestroy", TRACE_EVENT_SCOPE_THREAD,
-        "data", InspectorWebSocketEvent::Data(execution_context_, identifier_));
+    DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT("WebSocketDestroy",
+                                          InspectorWebSocketEvent::Data,
+                                          execution_context_, identifier_);
     probe::DidCloseWebSocket(execution_context_, identifier_);
     identifier_ = 0;
   }

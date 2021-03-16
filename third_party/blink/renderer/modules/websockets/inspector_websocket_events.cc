@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/websockets/inspector_websocket_events.h"
 
 #include <memory>
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -15,49 +16,45 @@
 
 namespace blink {
 
-std::unique_ptr<TracedValue> InspectorWebSocketCreateEvent::Data(
-    ExecutionContext* execution_context,
-    uint64_t identifier,
-    const KURL& url,
-    const String& protocol) {
+void InspectorWebSocketCreateEvent::Data(perfetto::TracedValue context,
+                                         ExecutionContext* execution_context,
+                                         uint64_t identifier,
+                                         const KURL& url,
+                                         const String& protocol) {
+  auto dict = std::move(context).WriteDictionary();
   DCHECK(execution_context->IsContextThread());
-  auto value = std::make_unique<TracedValue>();
-  value->SetInteger("identifier", static_cast<int>(identifier));
-  value->SetString("url", url.GetString());
+  dict.Add("identifier", identifier);
+  dict.Add("url", url.GetString());
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
-    value->SetString("frame", IdentifiersFactory::FrameId(window->GetFrame()));
+    dict.Add("frame", IdentifiersFactory::FrameId(window->GetFrame()));
   } else if (auto* scope = DynamicTo<WorkerGlobalScope>(execution_context)) {
-    value->SetString("workerId",
-                     IdentifiersFactory::IdFromToken(
-                         scope->GetThread()->GetDevToolsWorkerToken()));
+    dict.Add("workerId", IdentifiersFactory::IdFromToken(
+                             scope->GetThread()->GetDevToolsWorkerToken()));
   } else {
     NOTREACHED()
         << "WebSocket is available only in Window and WorkerGlobalScope";
   }
   if (!protocol.IsNull())
-    value->SetString("webSocketProtocol", protocol);
-  SetCallStack(value.get());
-  return value;
+    dict.Add("webSocketProtocol", protocol);
+  SetCallStack(dict);
 }
 
-std::unique_ptr<TracedValue> InspectorWebSocketEvent::Data(
-    ExecutionContext* execution_context,
-    uint64_t identifier) {
+void InspectorWebSocketEvent::Data(perfetto::TracedValue context,
+                                   ExecutionContext* execution_context,
+                                   uint64_t identifier) {
   DCHECK(execution_context->IsContextThread());
-  auto value = std::make_unique<TracedValue>();
-  value->SetInteger("identifier", static_cast<int>(identifier));
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("identifier", identifier);
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
-    value->SetString("frame", IdentifiersFactory::FrameId(window->GetFrame()));
+    dict.Add("frame", IdentifiersFactory::FrameId(window->GetFrame()));
   } else if (auto* scope = DynamicTo<WorkerGlobalScope>(execution_context)) {
-    value->SetString("workerId",
-                     IdentifiersFactory::IdFromToken(
-                         scope->GetThread()->GetDevToolsWorkerToken()));
+    dict.Add("workerId", IdentifiersFactory::IdFromToken(
+                             scope->GetThread()->GetDevToolsWorkerToken()));
   } else {
     NOTREACHED()
         << "WebSocket is available only in Window and WorkerGlobalScope";
   }
-  SetCallStack(value.get());
-  return value;
+  SetCallStack(dict);
 }
 
 }  // namespace blink
