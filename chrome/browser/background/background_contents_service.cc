@@ -652,7 +652,7 @@ void BackgroundContentsService::UnregisterBackgroundContents(
   DCHECK(IsTracked(background_contents));
   const std::string& appid = GetParentApplicationId(background_contents);
   DictionaryPrefUpdate update(prefs_, prefs::kRegisteredBackgroundContents);
-  update.Get()->RemoveWithoutPathExpansion(appid, nullptr);
+  update.Get()->RemoveKey(appid);
 }
 
 void BackgroundContentsService::ShutdownAssociatedBackgroundContents(
