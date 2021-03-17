@@ -1824,13 +1824,7 @@ bool ShouldReuseDOMWindow(LocalDOMWindow* window,
 WindowAgent* GetWindowAgentForOrigin(LocalFrame* frame,
                                      SecurityOrigin* origin,
                                      bool is_origin_keyed) {
-  // TODO(keishi): Also check if AllowUniversalAccessFromFileURLs might
-  // dynamically change.
-  bool has_potential_universal_access_privilege =
-      !frame->GetSettings()->GetWebSecurityEnabled() ||
-      frame->GetSettings()->GetAllowUniversalAccessFromFileURLs();
   return frame->window_agent_factory().GetAgentForOrigin(
-      has_potential_universal_access_privilege,
       V8PerIsolateData::MainThreadIsolate(), origin, is_origin_keyed);
 }
 

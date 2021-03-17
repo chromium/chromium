@@ -44,15 +44,7 @@ class WindowAgentFactory final : public GarbageCollected<WindowAgentFactory> {
   // If |is_origin_agent_cluster| is true though, then the same instance will
   // only return the same instance for an exact match (scheme, host, port) to
   // |origin|.
-  //
-  // Set |has_potential_universal_access_privilege| if an agent may be able to
-  // access all other agents synchronously.
-  // I.e. pass true to if either:
-  //   * --disable-web-security is set,
-  //   * --run-web-tests is set,
-  //   * or, the Blink instance is running for Android WebView.
-  WindowAgent* GetAgentForOrigin(bool has_potential_universal_access_privilege,
-                                 v8::Isolate* isolate,
+  WindowAgent* GetAgentForOrigin(v8::Isolate* isolate,
                                  const SecurityOrigin* origin,
                                  bool is_origin_agent_cluster);
 

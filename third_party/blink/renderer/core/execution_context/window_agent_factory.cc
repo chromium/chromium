@@ -16,11 +16,10 @@ namespace blink {
 WindowAgentFactory::WindowAgentFactory() = default;
 
 WindowAgent* WindowAgentFactory::GetAgentForOrigin(
-    bool has_potential_universal_access_privilege,
     v8::Isolate* isolate,
     const SecurityOrigin* origin,
     bool is_origin_agent_cluster) {
-  if (has_potential_universal_access_privilege) {
+  if (origin->IsGrantedUniversalAccess()) {
     if (!universal_access_agent_) {
       universal_access_agent_ = MakeGarbageCollected<WindowAgent>(isolate);
     }
