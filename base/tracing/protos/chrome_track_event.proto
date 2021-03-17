@@ -50,7 +50,7 @@ message ChromeTaskPostedToDisabledQueue {
   optional uint64 source_location_iid = 4;
 }
 
-message ChromeTaskGraphRunner {
+message ChromeRasterTask {
   optional int64 source_frame_number = 1;
 }
 
@@ -150,7 +150,7 @@ message ChromeTrackEvent {
     optional ChromeTaskPostedToDisabledQueue
         chrome_task_posted_to_disabled_queue = 1005;
 
-    optional ChromeTaskGraphRunner chrome_task_graph_runner = 1006;
+    optional ChromeRasterTask chrome_raster_task = 1006;
 
     optional ChromeMessagePumpForUI chrome_message_pump_for_ui = 1007;
 
