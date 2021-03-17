@@ -53,7 +53,7 @@ int main(int argc, const char* argv[]) {
     // TODO(pkasting): Use standard provider setup functions once those exist.
     ui::AddCoreDefaultColorMixer(provider, dark_window, high_contrast);
     ui::AddNativeCoreColorMixer(provider, dark_window, high_contrast);
-    ui::AddUiColorMixer(provider);
+    ui::AddUiColorMixer(provider, dark_window, high_contrast);
     ui::AddNativeUiColorMixer(provider, dark_window, high_contrast);
 #if defined(OS_MAC)
     // Always keep this mixer after all non-embedder ui mixers.

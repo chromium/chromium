@@ -319,13 +319,8 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
           accent, (color_id == kInitial) ? 0x4D : gfx::kGoogleGreyAlpha200);
     }
 
-    // Message Center
-    case NativeTheme::kColorId_MessageCenterSmallImageMaskForeground:
-      return SK_ColorWHITE;
-    case NativeTheme::kColorId_MessageCenterSmallImageMaskBackground:
-      return SkColorSetRGB(0xa3, 0xa3, 0xa3);
-
     // Notification
+    case NativeTheme::kColorId_MessageCenterSmallImageMaskForeground:
     case NativeTheme::kColorId_NotificationBackground:
       return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_WindowBackground, color_scheme);
@@ -347,6 +342,7 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
       return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_HighlightedMenuItemBackgroundColor,
           color_scheme);
+    case NativeTheme::kColorId_MessageCenterSmallImageMaskBackground:
     case NativeTheme::kColorId_NotificationDefaultAccentColor:
       return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_LabelSecondaryColor, color_scheme);
