@@ -108,6 +108,9 @@ class PasswordManager : public PasswordManagerInterface {
       const std::string& frame_id,
       PasswordManagerDriver* driver,
       const autofill::FieldDataManager* field_data_manager) override;
+  void PropagateFieldDataManagerInfo(
+      const autofill::FieldDataManager* field_data_manager,
+      const PasswordManagerDriver* driver) override;
 #endif
 
   // Notifies the renderer to start the generation flow or pops up additional UI

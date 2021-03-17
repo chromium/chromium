@@ -98,6 +98,10 @@ class MockPasswordManager : public PasswordManagerInterface {
                PasswordManagerDriver*,
                const autofill::FieldDataManager*),
               (override));
+  MOCK_METHOD(void,
+              PropagateFieldDataManagerInfo,
+              (const autofill::FieldDataManager*, const PasswordManagerDriver*),
+              (override));
 };
 
 class SharedPasswordControllerTest : public PlatformTest {
@@ -146,6 +150,7 @@ TEST_F(SharedPasswordControllerTest,
   navigation_context.SetIsSameDocument(false);
   navigation_context.SetIsRendererInitiated(true);
 
+  EXPECT_CALL(password_manager_, PropagateFieldDataManagerInfo);
   EXPECT_CALL(password_manager_, DidNavigateMainFrame(true));
   web_state_.OnNavigationFinished(&navigation_context);
 }

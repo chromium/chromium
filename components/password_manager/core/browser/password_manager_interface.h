@@ -98,6 +98,12 @@ class PasswordManagerInterface : public FormSubmissionObserver {
       const std::string& frame_id,
       PasswordManagerDriver* driver,
       const autofill::FieldDataManager* field_data_manager) = 0;
+
+  // Propagates all available field data manager info to existing form managers
+  // and provisionally saves them if the relevant data is retrieved.
+  virtual void PropagateFieldDataManagerInfo(
+      const autofill::FieldDataManager* field_data_manager,
+      const PasswordManagerDriver* driver) = 0;
 #endif
 };
 

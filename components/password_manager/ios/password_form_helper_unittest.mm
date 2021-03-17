@@ -405,9 +405,9 @@ TEST_F(PasswordFormHelperTest, RefillFormWithUserTypedInput) {
   }));
   EXPECT_EQ(success, NO);
 
-  // Make sure that this form can be filled again after a navigation.
-  web::FakeNavigationContext context;
-  [helper_ webState:web_state() didFinishNavigation:&context];
+  // Make sure that this form can be filled again after a navigation when the
+  // field data manager data is cleared.
+  helper_.fieldDataManager->ClearData();
 
   success = NO;
   [helper_ fillPasswordForm:form_data

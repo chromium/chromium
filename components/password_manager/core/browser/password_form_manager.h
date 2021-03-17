@@ -209,9 +209,11 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   void SetDriver(const base::WeakPtr<PasswordManagerDriver>& driver);
 
-  // Copies all known field data from FieldDataManager to |observed_form()|.
-  void UpdateObservedFormDataWithFieldDataManagerInfo(
-      const autofill::FieldDataManager* field_data_manager);
+  // Copies all known field data from FieldDataManager to |observed_form()|
+  // and provisionally saves the manager if the relevant data is found.
+  void ProvisionallySaveFieldDataManagerInfo(
+      const autofill::FieldDataManager* field_data_manager,
+      const PasswordManagerDriver* driver);
 #endif  // defined(OS_IOS)
 
   // Create a copy of |*this| which can be passed to the code handling

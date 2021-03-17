@@ -808,6 +808,14 @@ void PasswordManager::OnIframeDetach(
     }
   }
 }
+
+void PasswordManager::PropagateFieldDataManagerInfo(
+    const FieldDataManager* field_data_manager,
+    const PasswordManagerDriver* driver) {
+  for (auto& manager : form_managers_) {
+    manager->ProvisionallySaveFieldDataManagerInfo(field_data_manager, driver);
+  }
+}
 #endif
 
 bool PasswordManager::IsAutomaticSavePromptAvailable() {
@@ -1293,12 +1301,8 @@ bool PasswordManager::DetectPotentialSubmission(
     PasswordManagerDriver* driver) {
   // If the manager is not submitted, it still can have autofilled data.
   if (!form_manager->is_submitted()) {
-    form_manager->UpdateObservedFormDataWithFieldDataManagerInfo(
-        field_data_manager);
-    // Provisionally save form and set the manager to be submitted if valid
-    // data was recovered.
-    form_manager->ProvisionallySave(*form_manager->observed_form(), driver,
-                                    nullptr);
+    form_manager->ProvisionallySaveFieldDataManagerInfo(field_data_manager,
+                                                        driver);
   }
   // If the manager was set to be submitted, either prior to this function call
   // or on provisional save above, consider submission successful.

@@ -579,8 +579,10 @@ void PasswordFormManager::SetDriver(
   driver_ = driver;
 }
 
-void PasswordFormManager::UpdateObservedFormDataWithFieldDataManagerInfo(
-    const FieldDataManager* field_data_manager) {
+void PasswordFormManager::ProvisionallySaveFieldDataManagerInfo(
+    const FieldDataManager* field_data_manager,
+    const PasswordManagerDriver* driver) {
+  bool data_found = false;
   for (FormFieldData& field : mutable_observed_form()->fields) {
     FieldRendererId field_id = field.unique_renderer_id;
     if (!field_data_manager->HasFieldData(field_id))
@@ -588,7 +590,13 @@ void PasswordFormManager::UpdateObservedFormDataWithFieldDataManagerInfo(
     field.user_input = field_data_manager->GetUserInput(field_id);
     field.properties_mask =
         field_data_manager->GetFieldPropertiesMask(field_id);
+    data_found = true;
   }
+
+  // Provisionally save form and set the manager to be submitted if valid
+  // data was recovered.
+  if (data_found)
+    ProvisionallySave(*observed_form(), driver, nullptr);
 }
 #endif  // defined(OS_IOS)
 

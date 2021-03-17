@@ -158,12 +158,6 @@ constexpr char kCommandPrefix[] = "passwordForm";
   _formActivityObserverBridge.reset();
 }
 
-- (void)webState:(web::WebState*)webState
-    didFinishNavigation:(web::NavigationContext*)navigation {
-  // Delete collected field data.
-  _fieldDataManager->ClearData();
-}
-
 #pragma mark - FormActivityObserver
 
 - (void)webState:(web::WebState*)webState
