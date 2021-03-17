@@ -773,7 +773,7 @@
   {
     "name": "conversion-measurement-debug-mode",
     "owners": [ "//content/browser/conversions/OWNERS" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   },
   {
     "name": "cookie-deprecation-messages",
