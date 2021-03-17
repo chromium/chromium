@@ -244,6 +244,7 @@ void PinStorageCryptohome::CheckCryptohomePinKey(
   if (return_code != cryptohome::MOUNT_ERROR_NONE) {
     can_authenticate_cache_[account_id] = false;
     std::move(callback).Run(false);
+    return;
   }
 
   const std::vector<cryptohome::KeyDefinition>& key_definitions =
