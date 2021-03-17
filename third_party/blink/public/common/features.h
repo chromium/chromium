@@ -367,6 +367,8 @@ BLINK_COMMON_EXPORT extern const base::Feature
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kBackgroundTracingPerformanceMark_AllowList;
 
+BLINK_COMMON_EXPORT extern const base::Feature kCLSM91Improvements;
+
 }  // namespace features
 }  // namespace blink
 

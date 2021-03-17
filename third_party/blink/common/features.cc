@@ -888,5 +888,8 @@ const base::FeatureParam<std::string>
     kBackgroundTracingPerformanceMark_AllowList{
         &kBackgroundTracingPerformanceMark, "allow_list", ""};
 
+const base::Feature kCLSM91Improvements{"CLSM91Improvements",
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

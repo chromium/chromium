@@ -436,7 +436,7 @@ void ScrollableArea::ScrollOffsetChanged(const ScrollOffset& offset,
 
   if (offset_changed && GetLayoutBox() && GetLayoutBox()->GetFrameView()) {
     GetLayoutBox()->GetFrameView()->GetLayoutShiftTracker().NotifyScroll(
-        scroll_type);
+        scroll_type, delta);
   }
 
   GetScrollAnimator().SetCurrentOffset(offset);
