@@ -1,6 +1,5 @@
 import socket
 
-from six import binary_type, text_type
 
 from .logger import get_logger
 
@@ -8,18 +7,18 @@ from .logger import get_logger
 def isomorphic_decode(s):
     """Decodes a binary string into a text string using iso-8859-1.
 
-    Returns `unicode` in Python 2 and `str` in Python 3. The function is a
-    no-op if the argument already has a text type. iso-8859-1 is chosen because
-    it is an 8-bit encoding whose code points range from 0x0 to 0xFF and the
-    values are the same as the binary representations, so any binary string can
-    be decoded into and encoded from iso-8859-1 without any errors or data
-    loss. Python 3 also uses iso-8859-1 (or latin-1) extensively in http:
+    Returns `str`. The function is a no-op if the argument already has a text
+    type. iso-8859-1 is chosen because it is an 8-bit encoding whose code
+    points range from 0x0 to 0xFF and the values are the same as the binary
+    representations, so any binary string can be decoded into and encoded from
+    iso-8859-1 without any errors or data loss. Python 3 also uses iso-8859-1
+    (or latin-1) extensively in http:
     https://github.com/python/cpython/blob/273fc220b25933e443c82af6888eb1871d032fb8/Lib/http/client.py#L213
     """
-    if isinstance(s, text_type):
+    if isinstance(s, str):
         return s
 
-    if isinstance(s, binary_type):
+    if isinstance(s, bytes):
         return s.decode("iso-8859-1")
 
     raise TypeError("Unexpected value (expecting string-like): %r" % s)
@@ -28,14 +27,13 @@ def isomorphic_decode(s):
 def isomorphic_encode(s):
     """Encodes a text-type string into binary data using iso-8859-1.
 
-    Returns `str` in Python 2 and `bytes` in Python 3. The function is a no-op
-    if the argument already has a binary type. This is the counterpart of
-    isomorphic_decode.
+    Returns `bytes`. The function is a no-op if the argument already has a
+    binary type. This is the counterpart of isomorphic_decode.
     """
-    if isinstance(s, binary_type):
+    if isinstance(s, bytes):
         return s
 
-    if isinstance(s, text_type):
+    if isinstance(s, str):
         return s.encode("iso-8859-1")
 
     raise TypeError("Unexpected value (expecting string-like): %r" % s)
@@ -88,6 +86,7 @@ def is_bad_port(port):
         42,    # name
         43,    # nicname
         53,    # domain
+        69,    # tftp
         77,    # priv-rjs
         79,    # finger
         87,    # ttylink
@@ -105,8 +104,10 @@ def is_bad_port(port):
         119,   # nntp
         123,   # ntp
         135,   # loc-srv / epmap
-        139,   # netbios
+        137,   # netbios-ns
+        139,   # netbios-ssn
         143,   # imap2
+        161,   # snmp
         179,   # bgp
         389,   # ldap
         427,   # afp (alternate)
@@ -129,6 +130,7 @@ def is_bad_port(port):
         636,   # ldap+ssl
         993,   # ldap+ssl
         995,   # pop3+ssl
+        1719,  # h323gatestat
         1720,  # h323hostcall
         1723,  # pptp
         2049,  # nfs
@@ -137,6 +139,7 @@ def is_bad_port(port):
         5060,  # sip
         5061,  # sips
         6000,  # x11
+        6566,  # sane-port
         6665,  # irc (alternate)
         6666,  # irc (alternate)
         6667,  # irc (default)

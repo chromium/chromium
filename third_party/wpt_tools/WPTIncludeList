@@ -175,6 +175,7 @@
 ./tools/third_party/webencodings/webencodings/tests.py
 ./tools/third_party/webencodings/webencodings/x_user_defined.py
 ./tools/webdriver/webdriver/__init__.py
+./tools/webdriver/webdriver/bidi.py
 ./tools/webdriver/webdriver/client.py
 ./tools/webdriver/webdriver/error.py
 ./tools/webdriver/webdriver/protocol.py
