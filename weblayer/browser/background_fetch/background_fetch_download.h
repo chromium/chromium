@@ -40,6 +40,8 @@ class BackgroundFetchDownload : public DownloadImpl {
   // DownloadImpl:
   int GetNotificationId() override;
   bool IsTransient() override;
+  GURL GetSourceUrl() override;
+  const SkBitmap* GetLargeIcon() override;
 
  private:
   BackgroundFetchDelegateImpl* controller_;

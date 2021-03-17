@@ -9,11 +9,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
+#include "url/gurl.h"
 #include "weblayer/public/download.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif
+
+class SkBitmap;
 
 namespace weblayer {
 
@@ -39,7 +42,7 @@ class DownloadImpl : public Download, public base::SupportsUserData::Data {
       JNIEnv* env);
   base::android::ScopedJavaLocalRef<jstring> GetMimeTypeImpl(JNIEnv* env);
   int GetErrorImpl(JNIEnv* env) { return static_cast<int>(GetError()); }
-  bool IsTransientImpl(JNIEnv* env) { return IsTransient(); }
+  base::android::ScopedJavaLocalRef<jobject> GetLargeIconImpl(JNIEnv* env);
 
   base::android::ScopedJavaGlobalRef<jobject> java_download() {
     return java_download_;
@@ -50,9 +53,16 @@ class DownloadImpl : public Download, public base::SupportsUserData::Data {
   // unique across all DownloadImpls.
   virtual int GetNotificationId() = 0;
 
-  // A transient download is not persisted to disk, which will affect its UI
+  // A transient download is not persisted to disk, which affects its UI
   // treatment.
   virtual bool IsTransient() = 0;
+
+  // Returns the originating URL for this download.
+  virtual GURL GetSourceUrl() = 0;
+
+  // Gets the icon to display. If the return value is null or draws nothing, no
+  // icon will be displayed.
+  virtual const SkBitmap* GetLargeIcon() = 0;
 
   // Returns whether this download has been added to the UI via
   // DownloadDelegate::OnDownloadStarted.

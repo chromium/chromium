@@ -140,6 +140,14 @@ bool PersistentDownload::IsTransient() {
   return false;
 }
 
+GURL PersistentDownload::GetSourceUrl() {
+  return {};
+}
+
+const SkBitmap* PersistentDownload::GetLargeIcon() {
+  return nullptr;
+}
+
 void PersistentDownload::ResumeInternal() {
   if (resume_pending_) {
     resume_pending_ = false;

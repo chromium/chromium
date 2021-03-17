@@ -398,6 +398,9 @@
       <message name="IDS_DOWNLOAD_NOTIFICATION_CANCEL_BUTTON" desc="Text on the button that cancels a download.">
         Cancel
       </message>
+      <message name="IDS_DOWNLOAD_NOTIFICATION_COMPLETED" desc="Download notification to be displayed when a download completes.">
+        Download complete
+      </message>
       <message name="IDS_DOWNLOAD_NOTIFICATION_COMPLETED_WITH_SIZE" desc="Download notification to be displayed when a download completes, includes the size of the download as well after a separator character.">
         Download complete <ph name="SEPARATOR">•</ph> <ph name="BYTES_DOWNLOADED">%1$s<ex>4.3 MB</ex></ph>
       </message>

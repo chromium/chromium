@@ -23,9 +23,11 @@ android_library("java") {
     "//base:base_java",
     "//cc:cc_java",
     "//components/embedder_support/android:util_java",
+    "//components/url_formatter/android:url_formatter_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_collection_collection_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//url:gurl_java",
   ]
   resources_package = "org.chromium.components.browser_ui.util"
 }

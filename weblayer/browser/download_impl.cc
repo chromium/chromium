@@ -12,6 +12,7 @@
 
 #if defined(OS_ANDROID)
 #include "base/android/jni_string.h"
+#include "ui/gfx/android/java_bitmap.h"
 #include "weblayer/browser/java/jni/DownloadImpl_jni.h"
 #endif
 
@@ -50,6 +51,17 @@ base::android::ScopedJavaLocalRef<jstring> DownloadImpl::GetMimeTypeImpl(
     JNIEnv* env) {
   return base::android::ScopedJavaLocalRef<jstring>(
       base::android::ConvertUTF8ToJavaString(env, GetMimeType()));
+}
+
+base::android::ScopedJavaLocalRef<jobject> DownloadImpl::GetLargeIconImpl(
+    JNIEnv* env) {
+  base::android::ScopedJavaLocalRef<jobject> j_icon;
+  const SkBitmap* icon = GetLargeIcon();
+
+  if (icon && !icon->drawsNothing())
+    j_icon = gfx::ConvertToJavaBitmap(*icon);
+
+  return j_icon;
 }
 #endif
 

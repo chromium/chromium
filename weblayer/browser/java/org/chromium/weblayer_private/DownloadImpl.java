@@ -8,7 +8,9 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.RemoteException;
 import android.text.TextUtils;
 
@@ -25,6 +27,7 @@ import org.chromium.components.browser_ui.notifications.NotificationManagerProxy
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.components.browser_ui.util.DownloadUtils;
+import org.chromium.url.GURL;
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.DownloadError;
 import org.chromium.weblayer_private.interfaces.DownloadState;
@@ -72,6 +75,18 @@ public final class DownloadImpl extends IDownload.Stub {
     // WARNING: DownloadImpl may outlive the native side, in which case this member is set to 0.
     private long mNativeDownloadImpl;
     private boolean mDisableNotification;
+
+    // The time this download started, in milliseconds.
+    private final long mStartTime;
+
+    // A transient download is not persisted to disk, which affects its UI treatment.
+    private final boolean mIsTransient;
+
+    // The originating URL for this download.
+    private final GURL mSourceUrl;
+
+    // The large icon to show. Once this is successfully fetched from native, it won't be updated.
+    private Bitmap mLargeIcon;
 
     private final int mNotificationId;
     private static final HashMap<Integer, DownloadImpl> sMap = new HashMap<Integer, DownloadImpl>();
@@ -149,12 +164,16 @@ public final class DownloadImpl extends IDownload.Stub {
     }
 
     public DownloadImpl(String profileName, boolean isIncognito, IDownloadCallbackClient client,
-            long nativeDownloadImpl, int id) {
+            long nativeDownloadImpl, int id, boolean isTransient, GURL sourceUrl) {
         mProfileName = profileName;
         mIsIncognito = isIncognito;
-        mClient = DownloadImplJni.get().isTransientImpl(nativeDownloadImpl) ? null : client;
+        mClient = isTransient ? null : client;
         mNativeDownloadImpl = nativeDownloadImpl;
         mNotificationId = id;
+        mStartTime = System.currentTimeMillis();
+        mIsTransient = isTransient;
+        mSourceUrl = sourceUrl;
+
         if (mClient == null) {
             mClientDownload = null;
         } else {
@@ -350,6 +369,12 @@ public final class DownloadImpl extends IDownload.Stub {
 
         @DownloadState
         int state = getState();
+        if (state == DownloadState.CANCELLED) {
+            notificationManager.cancel(NOTIFICATION_TAG, mNotificationId);
+            mDisableNotification = true;
+            return;
+        }
+
         String channelId = state == DownloadState.COMPLETE
                 ? WebLayerNotificationChannels.ChannelId.COMPLETED_DOWNLOADS
                 : WebLayerNotificationChannels.ChannelId.ACTIVE_DOWNLOADS;
@@ -357,6 +382,8 @@ public final class DownloadImpl extends IDownload.Stub {
         WebLayerNotificationWrapperBuilder builder = WebLayerNotificationWrapperBuilder.create(
                 channelId, new NotificationMetadata(0, NOTIFICATION_TAG, mNotificationId));
         builder.setOngoing(true)
+                .setWhen(mStartTime)
+                .setShowWhen(true)
                 .setDeleteIntent(deletePendingIntent)
                 .setPriorityBeforeO(NotificationCompat.PRIORITY_DEFAULT);
 
@@ -366,27 +393,40 @@ public final class DownloadImpl extends IDownload.Stub {
             builder.setContentTitle(name);
         }
 
-        if (state == DownloadState.CANCELLED) {
-            notificationManager.cancel(NOTIFICATION_TAG, mNotificationId);
-            mDisableNotification = true;
-            return;
+        // Set the large icon/thumbnail, except when incognito.
+        if (!mIsIncognito && mLargeIcon == null) {
+            mLargeIcon = DownloadImplJni.get().getLargeIconImpl(mNativeDownloadImpl);
         }
+        if (mLargeIcon != null) {
+            builder.setLargeIcon(mLargeIcon);
+        }
+
+        // As with Chrome, transient downloads "promote" the source URL.
+        if (!mIsIncognito && mIsTransient) {
+            String formattedUrl = DownloadUtils.formatUrlForDisplayInNotification(mSourceUrl);
+            if (formattedUrl != null) setSubText(builder, formattedUrl);
+        }
+        // TODO(estade): In incognito, Chrome uses a subtext of "Incognito tab". Should WL display
+        // something similar?
 
         Resources resources = context.getResources();
 
         if (state == DownloadState.COMPLETE) {
-            String contextText =
-                    resources.getString(R.string.download_notification_completed_with_size,
-                            DownloadUtils.getStringForBytes(context, getTotalBytes()));
-            builder.setContentText(contextText)
-                    .setOngoing(false)
+            builder.setOngoing(false)
                     .setSmallIcon(android.R.drawable.stat_sys_download_done)
                     .setAutoCancel(true)
                     .setProgress(0, 0, false);
 
-            // TODO(estade): for transient downloads, create an intent that delegates back to native
-            // code.
-            if (!DownloadImplJni.get().isTransientImpl(mNativeDownloadImpl)) {
+            if (mIsTransient) {
+                builder.setContentText(
+                        resources.getString(R.string.download_notification_completed));
+                // TODO(estade): for transient downloads, create an intent that delegates back to
+                // native code.
+            } else {
+                builder.setContentText(
+                        resources.getString(R.string.download_notification_completed_with_size,
+                                DownloadUtils.getStringForBytes(context, getTotalBytes())));
+
                 Intent openIntent = createIntent(OPEN_INTENT);
                 openIntent.putExtra(EXTRA_NOTIFICATION_LOCATION, getLocation());
                 openIntent.putExtra(EXTRA_NOTIFICATION_MIME_TYPE, getMimeType());
@@ -454,6 +494,19 @@ public final class DownloadImpl extends IDownload.Stub {
     }
 
     /**
+     * Helper method to set the sub text on different versions of Android.
+     * @param builder The builder to build notification.
+     * @param subText A string shown as sub text on the notification.
+     */
+    private static void setSubText(WebLayerNotificationWrapperBuilder builder, String subText) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            builder.setSubText(subText);
+        } else {
+            builder.setContentInfo(subText);
+        }
+    }
+
+    /**
      * Returns the notification manager.
      */
     private static NotificationManagerProxy getNotificationManager() {
@@ -485,6 +538,6 @@ public final class DownloadImpl extends IDownload.Stub {
         String getFileNameToReportToUserImpl(long nativeDownloadImpl);
         String getMimeTypeImpl(long nativeDownloadImpl);
         int getErrorImpl(long nativeDownloadImpl);
-        boolean isTransientImpl(long nativeDownloadImpl);
+        Bitmap getLargeIconImpl(long nativeDownloadImpl);
     }
 }

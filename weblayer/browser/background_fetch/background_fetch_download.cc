@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/background_fetch_description.h"
+#include "url/origin.h"
 #include "weblayer/browser/background_fetch/background_fetch_delegate_impl.h"
 #include "weblayer/browser/background_fetch/job_details.h"
 
@@ -90,6 +91,14 @@ int BackgroundFetchDownload::GetNotificationId() {
 
 bool BackgroundFetchDownload::IsTransient() {
   return true;
+}
+
+GURL BackgroundFetchDownload::GetSourceUrl() {
+  return job_->fetch_description->origin.GetURL();
+}
+
+const SkBitmap* BackgroundFetchDownload::GetLargeIcon() {
+  return &job_->fetch_description->icon;
 }
 
 }  // namespace weblayer
