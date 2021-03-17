@@ -21,6 +21,17 @@ namespace {
 // This is experimentally determined and corresponds to the UA decided
 // parameter as mentioned in spec.
 constexpr float kProximityRatio = 1.0 / 3.0;
+
+cc::SnapAlignment AdjustForRtlWritingMode(cc::SnapAlignment align) {
+  if (align == cc::SnapAlignment::kStart)
+    return cc::SnapAlignment::kEnd;
+
+  if (align == cc::SnapAlignment::kEnd)
+    return cc::SnapAlignment::kStart;
+
+  return align;
+}
+
 }  // namespace
 // TODO(sunyunjia): Move the static functions to an anonymous namespace.
 
@@ -328,25 +339,42 @@ void SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
   }
 }
 
+// https://drafts.csswg.org/css-scroll-snap-1/#scroll-snap-align
+// After normalization:
+//   * inline corresponds to x, and block corresponds to y
+//   * start corresponds to left or top
+//   * end corresponds to right or bottom
+// In other words, the adjusted logical properties map to a physical layout
+// as if the writing mode were horizontal left to right and top to bottom.
 static cc::ScrollSnapAlign GetPhysicalAlignment(
     const ComputedStyle& area_style,
     const ComputedStyle& container_style) {
   cc::ScrollSnapAlign align = area_style.GetScrollSnapAlign();
-  if (container_style.IsHorizontalWritingMode())
-    return align;
-
-  cc::SnapAlignment tmp = align.alignment_inline;
-  align.alignment_inline = align.alignment_block;
-  align.alignment_block = tmp;
-
-  if (container_style.IsFlippedBlocksWritingMode()) {
-    if (align.alignment_inline == cc::SnapAlignment::kStart) {
-      align.alignment_inline = cc::SnapAlignment::kEnd;
-    } else if (align.alignment_inline == cc::SnapAlignment::kEnd) {
-      align.alignment_inline = cc::SnapAlignment::kStart;
-    }
+  cc::ScrollSnapAlign adjusted_alignment;
+  // TODO(crbug.com/1169092): Align choice of box for determining the writing
+  // mode with the spec, which states:
+  //   Start and end alignments are resolved with respect to the writing mode
+  //   of the snap container unless the scroll snap area is larger than the
+  //   snapport, in which case they are resolved with respect to the writing
+  //   mode of the box itself. (This allows items in a container to have
+  //   consistent snap alignment in general, while ensuring that start always
+  //   aligns the item to allow reading its contents from the beginning.)
+  WritingDirectionMode writing_direction =
+      container_style.GetWritingDirection();
+  if (writing_direction.IsHorizontal()) {
+    bool rtl = (writing_direction.IsRtl());
+    adjusted_alignment.alignment_inline =
+        rtl ? AdjustForRtlWritingMode(align.alignment_inline)
+            : align.alignment_inline;
+    adjusted_alignment.alignment_block = align.alignment_block;
+  } else {
+    bool rtl = writing_direction.IsFlippedBlocks();
+    adjusted_alignment.alignment_inline =
+        rtl ? AdjustForRtlWritingMode(align.alignment_block)
+            : align.alignment_block;
+    adjusted_alignment.alignment_block = align.alignment_inline;
   }
-  return align;
+  return adjusted_alignment;
 }
 
 cc::SnapAreaData SnapCoordinator::CalculateSnapAreaData(
@@ -372,9 +400,8 @@ cc::SnapAreaData SnapCoordinator::CalculateSnapAreaData(
   area_rect.Expand(area_margin);
   snap_area_data.rect = FloatRect(area_rect);
 
-  cc::ScrollSnapAlign align =
+  snap_area_data.scroll_snap_align =
       GetPhysicalAlignment(*area_style, *container_style);
-  snap_area_data.scroll_snap_align = align;
 
   snap_area_data.must_snap =
       (area_style->ScrollSnapStop() == EScrollSnapStop::kAlways);

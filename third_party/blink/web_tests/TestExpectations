@@ -2101,9 +2101,6 @@ crbug.com/1040611 external/wpt/uievents/order-of-events/mouse-events/wheel-scrol
 crbug.com/910421 external/wpt/is-input-pending/* [ Skip ]
 crbug.com/910421 virtual/threaded-composited-iframes/external/wpt/is-input-pending/* [ Pass ]
 
-# Need to support 'direction: rtl' for scroll snap
-crbug.com/1012173 external/wpt/css/css-scroll-snap/snap-after-initial-layout/direction-rtl.html [ Failure ]
-
 # WebVTT is off because additional padding
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/2_cues_overlapping_completely_move_up.html [ Failure ]
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/2_cues_overlapping_partially_move_down.html [ Failure ]

@@ -4,13 +4,15 @@
 
 #include "cc/input/scroll_snap_data.h"
 
+#include <algorithm>
+#include <cmath>
+#include <limits>
+#include <memory>
+
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/numerics/ranges.h"
 #include "cc/input/snap_selection_strategy.h"
-
-#include <algorithm>
-#include <cmath>
 
 namespace cc {
 namespace {
@@ -384,6 +386,8 @@ SnapSearchResult SnapContainerData::GetSnapSearchResult(
     result.set_visible_range(gfx::RangeF(area.rect.y() - rect_.bottom(),
                                          area.rect.bottom() - rect_.y()));
     // https://www.w3.org/TR/css-scroll-snap-1/#scroll-snap-align
+    // Snap alignment has been normalized for a horizontal left to right and top
+    // to bottom writing mode.
     switch (area.scroll_snap_align.alignment_inline) {
       case SnapAlignment::kStart:
         result.set_snap_offset(area.rect.x() - rect_.x());
