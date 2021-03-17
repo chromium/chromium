@@ -218,7 +218,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
       const std::string& error_name);
 
   // Helper method to save cellular disconnections histogram.
-  void LogCellularDisconnectionsHistogram(ConnectionState connection_state);
+  void LogCellularDisconnectionsHistogram(
+      ConnectionState connection_state,
+      CellularMetricsLogger::SimType sim_type);
 
   void LogCellularConnectionSuccessHistogram(
       ConnectResult start_connect_result,

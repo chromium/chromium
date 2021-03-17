@@ -313,9 +313,16 @@ void CellularMetricsLogger::CheckForTimeToConnectedMetric(
     return;
 
   if (network->IsConnectedState()) {
-    UMA_HISTOGRAM_MEDIUM_TIMES(
-        "Network.Cellular.Connection.TimeToConnected",
-        base::TimeTicks::Now() - *connection_info->last_connect_start_time);
+    base::TimeDelta time_to_connected =
+        base::TimeTicks::Now() - *connection_info->last_connect_start_time;
+
+    if (GetSimType(network) == SimType::kPSim) {
+      UMA_HISTOGRAM_MEDIUM_TIMES("Network.Cellular.PSim.TimeToConnected",
+                                 time_to_connected);
+    } else {
+      UMA_HISTOGRAM_MEDIUM_TIMES("Network.Cellular.ESim.TimeToConnected",
+                                 time_to_connected);
+    }
   }
 
   // This is hit when the network is no longer in connecting state,
@@ -372,9 +379,15 @@ CellularMetricsLogger::PSimActivationStateToEnum(const std::string& state) {
 }
 
 void CellularMetricsLogger::LogCellularDisconnectionsHistogram(
-    ConnectionState connection_state) {
-  UMA_HISTOGRAM_ENUMERATION("Network.Cellular.Connection.Disconnections",
-                            connection_state);
+    ConnectionState connection_state,
+    CellularMetricsLogger::SimType sim_type) {
+  if (sim_type == SimType::kPSim) {
+    UMA_HISTOGRAM_ENUMERATION("Network.Cellular.PSim.Disconnections",
+                              connection_state);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION("Network.Cellular.ESim.Disconnections",
+                              connection_state);
+  }
 }
 
 void CellularMetricsLogger::CheckForShillConnectionFailureMetric(
@@ -407,7 +420,8 @@ void CellularMetricsLogger::CheckForConnectionStateMetric(
   if (new_is_connected) {
     LogCellularConnectionSuccessHistogram(
         CellularMetricsLogger::ConnectResult::kSuccess, GetSimType(network));
-    LogCellularDisconnectionsHistogram(ConnectionState::kConnected);
+    LogCellularDisconnectionsHistogram(ConnectionState::kConnected,
+                                       GetSimType(network));
     connection_info->last_disconnect_request_time.reset();
     return;
   }
@@ -431,7 +445,8 @@ void CellularMetricsLogger::CheckForConnectionStateMetric(
       time_since_disconnect_requested < kDisconnectRequestTimeout) {
     return;
   }
-  LogCellularDisconnectionsHistogram(ConnectionState::kDisconnected);
+  LogCellularDisconnectionsHistogram(ConnectionState::kDisconnected,
+                                     GetSimType(network));
 }
 
 void CellularMetricsLogger::CheckForESimProfileStatusMetric() {

@@ -47,10 +47,15 @@ const char kPSimStatusAtLoginHistogram[] =
 const char kESimStatusAtLoginHistogram[] =
     "Network.Cellular.ESim.StatusAtLogin";
 
-const char kTimeToConnectedHistogram[] =
-    "Network.Cellular.Connection.TimeToConnected";
-const char kDisconnectionsHistogram[] =
-    "Network.Cellular.Connection.Disconnections";
+const char kPSimTimeToConnectedHistogram[] =
+    "Network.Cellular.PSim.TimeToConnected";
+const char kESimTimeToConnectedHistogram[] =
+    "Network.Cellular.ESim.TimeToConnected";
+
+const char kPSimDisconnectionsHistogram[] =
+    "Network.Cellular.PSim.Disconnections";
+const char kESimDisconnectionsHistogram[] =
+    "Network.Cellular.ESim.Disconnections";
 
 const char kPSimConnectionSuccessHistogram[] =
     "Network.Cellular.PSim.ConnectionSuccess";
@@ -566,7 +571,7 @@ TEST_F(CellularMetricsLoggerTest, CellularTimeToConnectedTest) {
   service_client_test()->SetServiceProperty(
       kTestCellularServicePath, shill::kStateProperty, kOnlineStateValue);
   base::RunLoop().RunUntilIdle();
-  histogram_tester.ExpectTotalCount(kTimeToConnectedHistogram, 0);
+  histogram_tester.ExpectTotalCount(kPSimTimeToConnectedHistogram, 0);
 
   // Set cellular networks to activated state and connecting state.
   service_client_test()->SetServiceProperty(
@@ -586,7 +591,7 @@ TEST_F(CellularMetricsLoggerTest, CellularTimeToConnectedTest) {
   service_client_test()->SetServiceProperty(
       kTestCellularServicePath, shill::kStateProperty, kOnlineStateValue);
   base::RunLoop().RunUntilIdle();
-  histogram_tester.ExpectTimeBucketCount(kTimeToConnectedHistogram,
+  histogram_tester.ExpectTimeBucketCount(kPSimTimeToConnectedHistogram,
                                          kTestConnectionTime, 1);
 
   // Should log second network's connection time independently.
@@ -594,7 +599,7 @@ TEST_F(CellularMetricsLoggerTest, CellularTimeToConnectedTest) {
   service_client_test()->SetServiceProperty(
       kTestCellularServicePath2, shill::kStateProperty, kOnlineStateValue);
   base::RunLoop().RunUntilIdle();
-  histogram_tester.ExpectTimeBucketCount(kTimeToConnectedHistogram,
+  histogram_tester.ExpectTimeBucketCount(kESimTimeToConnectedHistogram,
                                          2 * kTestConnectionTime, 1);
 }
 
@@ -607,9 +612,14 @@ TEST_F(CellularMetricsLoggerTest, CellularDisconnectionsTest) {
   // Should log connected state.
   service_client_test()->SetServiceProperty(
       kTestCellularServicePath, shill::kStateProperty, kOnlineStateValue);
+  service_client_test()->SetServiceProperty(
+      kTestCellularServicePath2, shill::kStateProperty, kOnlineStateValue);
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectBucketCount(
-      kDisconnectionsHistogram,
+      kPSimDisconnectionsHistogram,
+      CellularMetricsLogger::ConnectionState::kConnected, 1);
+  histogram_tester.ExpectBucketCount(
+      kESimDisconnectionsHistogram,
       CellularMetricsLogger::ConnectionState::kConnected, 1);
 
   // Should not log user initiated disconnections.
@@ -620,33 +630,51 @@ TEST_F(CellularMetricsLoggerTest, CellularDisconnectionsTest) {
       kTestCellularServicePath, shill::kStateProperty, kIdleStateValue);
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectBucketCount(
-      kDisconnectionsHistogram,
+      kPSimDisconnectionsHistogram,
+      CellularMetricsLogger::ConnectionState::kDisconnected, 0);
+  histogram_tester.ExpectBucketCount(
+      kESimDisconnectionsHistogram,
       CellularMetricsLogger::ConnectionState::kDisconnected, 0);
 
   // Should log non user initiated disconnects.
   service_client_test()->SetServiceProperty(
       kTestCellularServicePath, shill::kStateProperty, kOnlineStateValue);
+  service_client_test()->SetServiceProperty(
+      kTestCellularServicePath2, shill::kStateProperty, kOnlineStateValue);
   base::RunLoop().RunUntilIdle();
   service_client_test()->SetServiceProperty(
       kTestCellularServicePath, shill::kStateProperty, kIdleStateValue);
+  service_client_test()->SetServiceProperty(
+      kTestCellularServicePath2, shill::kStateProperty, kIdleStateValue);
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectBucketCount(
-      kDisconnectionsHistogram,
+      kPSimDisconnectionsHistogram,
+      CellularMetricsLogger::ConnectionState::kDisconnected, 1);
+  histogram_tester.ExpectBucketCount(
+      kESimDisconnectionsHistogram,
       CellularMetricsLogger::ConnectionState::kDisconnected, 1);
 
   // Should log non user initiated disconnects when a previous
   // disconnect request timed out.
   service_client_test()->SetServiceProperty(
       kTestCellularServicePath, shill::kStateProperty, kOnlineStateValue);
+  service_client_test()->SetServiceProperty(
+      kTestCellularServicePath2, shill::kStateProperty, kOnlineStateValue);
   base::RunLoop().RunUntilIdle();
   cellular_metrics_logger()->DisconnectRequested(kTestCellularServicePath);
+  cellular_metrics_logger()->DisconnectRequested(kTestCellularServicePath2);
   task_environment_.FastForwardBy(
       CellularMetricsLogger::kDisconnectRequestTimeout * 2);
   service_client_test()->SetServiceProperty(
       kTestCellularServicePath, shill::kStateProperty, kIdleStateValue);
+  service_client_test()->SetServiceProperty(
+      kTestCellularServicePath2, shill::kStateProperty, kIdleStateValue);
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectBucketCount(
-      kDisconnectionsHistogram,
+      kPSimDisconnectionsHistogram,
+      CellularMetricsLogger::ConnectionState::kDisconnected, 2);
+  histogram_tester.ExpectBucketCount(
+      kESimDisconnectionsHistogram,
       CellularMetricsLogger::ConnectionState::kDisconnected, 2);
 }
 
