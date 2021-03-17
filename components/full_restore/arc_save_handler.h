@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <utility>
 
 #include "base/component_export.h"
@@ -19,6 +20,8 @@ class Window;
 namespace full_restore {
 
 struct AppLaunchInfo;
+class FullRestoreSaveHandlerTestApi;
+struct WindowInfo;
 
 // ArcSaveHandler is a helper class for FullRestoreSaveHandler to handle ARC app
 // windows special cases, e.g. ARC task creation, ARC session id, etc.
@@ -34,6 +37,9 @@ class COMPONENT_EXPORT(FULL_RESTORE) ArcSaveHandler {
   // Saves |app_launch_info| to |arc_session_id_to_app_launch_info_|, and wait
   // for the ARC task to be created.
   void SaveAppLaunchInfo(AppLaunchInfoPtr app_launch_info);
+
+  // Saves |window_info| for |task_id|.
+  void ModifyWindowInfo(int task_id, const WindowInfo& window_info);
 
   // Invoked when |window| is initialized.
   void OnWindowInitialized(aura::Window* window);
@@ -52,11 +58,9 @@ class COMPONENT_EXPORT(FULL_RESTORE) ArcSaveHandler {
   // Generates the ARC session id (0 - 1,000,000,000) for ARC apps.
   int32_t GetArcSessionId();
 
-  const std::map<int32_t, std::string>& GetArcTaskIdMapForTesting() const {
-    return task_id_to_app_id_;
-  }
-
  private:
+  friend class FullRestoreSaveHandlerTestApi;
+
   // The user profile path for ARC app.
   base::FilePath profile_path_;
 
@@ -68,6 +72,12 @@ class COMPONENT_EXPORT(FULL_RESTORE) ArcSaveHandler {
   // The map from the task id to the app id. The task id is saved in the window
   // property. This map is used to find the app id when save the window info.
   std::map<int32_t, std::string> task_id_to_app_id_;
+
+  // ARC app tasks could be created after the window initialized.
+  // |arc_window_candidates_| is used to record those initialized ARC app
+  // windows, whose tasks have not been created. Once the task for the window is
+  // created, the window is removed from |arc_window_candidates_|.
+  std::set<aura::Window*> arc_window_candidates_;
 };
 
 }  // namespace full_restore

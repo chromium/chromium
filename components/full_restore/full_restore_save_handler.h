@@ -29,6 +29,7 @@ namespace full_restore {
 
 struct AppLaunchInfo;
 class FullRestoreFileHandler;
+class FullRestoreSaveHandlerTestApi;
 class RestoreData;
 struct WindowInfo;
 
@@ -113,6 +114,8 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   base::OneShotTimer* GetTimerForTesting() { return &save_timer_; }
 
  private:
+  friend class FullRestoreSaveHandlerTestApi;
+
   // Map from a profile path to AppLaunchInfos.
   using AppLaunchInfos = std::map<base::FilePath, std::list<AppLaunchInfoPtr>>;
 

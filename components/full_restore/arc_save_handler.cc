@@ -28,10 +28,24 @@ void ArcSaveHandler::SaveAppLaunchInfo(AppLaunchInfoPtr app_launch_info) {
   session_id_to_app_launch_info_[session_id] = std::move(app_launch_info);
 }
 
+void ArcSaveHandler::ModifyWindowInfo(int task_id,
+                                      const WindowInfo& window_info) {
+  auto it = task_id_to_app_id_.find(task_id);
+  if (it == task_id_to_app_id_.end())
+    return;
+
+  FullRestoreSaveHandler::GetInstance()->ModifyWindowInfo(
+      profile_path_, it->second, task_id, window_info);
+}
+
 void ArcSaveHandler::OnWindowInitialized(aura::Window* window) {
   int32_t task_id = window->GetProperty(::full_restore::kWindowIdKey);
-  if (!base::Contains(task_id_to_app_id_, task_id))
+  if (!base::Contains(task_id_to_app_id_, task_id)) {
+    // If the task hasn't been created, add |window| to
+    // |arc_window_candidates_| to wait the task to be created.
+    arc_window_candidates_.insert(window);
     return;
+  }
 
   // If the task has been created, call OnAppLaunched to save the window
   // information.
@@ -39,6 +53,8 @@ void ArcSaveHandler::OnWindowInitialized(aura::Window* window) {
 }
 
 void ArcSaveHandler::OnWindowDestroyed(aura::Window* window) {
+  arc_window_candidates_.erase(window);
+
   int32_t task_id = window->GetProperty(::full_restore::kWindowIdKey);
 
   auto task_it = task_id_to_app_id_.find(task_id);
@@ -64,6 +80,18 @@ void ArcSaveHandler::OnTaskCreated(const std::string& app_id,
   app_launch_info->window_id = task_id;
   FullRestoreSaveHandler::GetInstance()->AddAppLaunchInfo(
       profile_path_, std::move(app_launch_info));
+
+  // Go through |arc_window_candidates_|. If the window for |task_id| has been
+  // created, call OnAppLaunched to save the window info.
+  auto window_it = std::find_if(
+      arc_window_candidates_.begin(), arc_window_candidates_.end(),
+      [task_id](aura::Window* window) {
+        return window->GetProperty(::full_restore::kWindowIdKey) == task_id;
+      });
+  if (window_it != arc_window_candidates_.end()) {
+    FullRestoreInfo::GetInstance()->OnAppLaunched(*window_it);
+    arc_window_candidates_.erase(*window_it);
+  }
 }
 
 void ArcSaveHandler::OnTaskDestroyed(int32_t task_id) {
