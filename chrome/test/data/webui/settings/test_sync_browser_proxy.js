@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {PageStatus, StoredAccount, SyncBrowserProxy, SyncStatus} from 'chrome://settings/settings.js';
-// #import {TestBrowserProxy} from '../test_browser_proxy.m.js';
-// #import {isChromeOS} from 'chrome://resources/js/cr.m.js';
+import {isChromeOS} from 'chrome://resources/js/cr.m.js';
+import {PageStatus, StoredAccount, SyncBrowserProxy, SyncStatus} from 'chrome://settings/settings.js';
+
+import {TestBrowserProxy} from '../test_browser_proxy.m.js';
 // clang-format on
 
-/** @implements {settings.SyncBrowserProxy} */
-/* #export */ class TestSyncBrowserProxy extends TestBrowserProxy {
+/** @implements {SyncBrowserProxy} */
+export class TestSyncBrowserProxy extends TestBrowserProxy {
   constructor() {
     const methodNames = [
       'didNavigateAwayFromSyncPage',
@@ -28,7 +29,7 @@
       'startSyncingWithEmail',
     ];
 
-    if (cr.isChromeOS) {
+    if (isChromeOS) {
       methodNames.push('turnOnSync', 'turnOffSync');
     }
 
@@ -42,10 +43,10 @@
     this.encryptionPassphraseSuccess = false;
     /** @type {boolean} */
     this.decryptionPassphraseSuccess = false;
-    /** @type {!Array<!settings.StoredAccount>} */
+    /** @type {!Array<!StoredAccount>} */
     this.storedAccounts = [];
-    /** @type {!settings.SyncStatus} */
-    this.syncStatus = /** @type {!settings.SyncStatus} */ (
+    /** @type {!SyncStatus} */
+    this.syncStatus = /** @type {!SyncStatus} */ (
         {signedIn: true, signedInUsername: 'fakeUsername'});
   }
 
@@ -110,7 +111,7 @@
   /** @override */
   setSyncDatatypes(syncPrefs) {
     this.methodCalled('setSyncDatatypes', syncPrefs);
-    return Promise.resolve(settings.PageStatus.CONFIGURE);
+    return Promise.resolve(PageStatus.CONFIGURE);
   }
 
   /** @override */
@@ -140,7 +141,7 @@
   startKeyRetrieval() {}
 }
 
-if (cr.isChromeOS) {
+if (isChromeOS) {
   /** @override */
   TestSyncBrowserProxy.prototype.turnOnSync = function() {
     this.methodCalled('turnOnSync');

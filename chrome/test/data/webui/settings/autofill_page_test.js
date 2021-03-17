@@ -6,7 +6,7 @@
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AutofillManagerImpl, PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, MultiStoreExceptionEntry, MultiStorePasswordUiEntry, OpenWindowProxyImpl, PasswordManagerImpl, Router, routes, SettingsPluralStringProxyImpl} from 'chrome://settings/settings.js';
-import {FakeSettingsPrivate} from 'chrome://test/settings/fake_settings_private.m.js';
+import {FakeSettingsPrivate} from 'chrome://test/settings/fake_settings_private.js';
 import {AutofillManagerExpectations, createAddressEntry, createCreditCardEntry, createExceptionEntry, createPasswordEntry, PaymentsManagerExpectations, TestAutofillManager, TestPaymentsManager} from 'chrome://test/settings/passwords_and_autofill_fake_data.js';
 import {makeCompromisedCredential} from 'chrome://test/settings/passwords_and_autofill_fake_data.js';
 import {TestOpenWindowProxy} from 'chrome://test/settings/test_open_window_proxy.js';

@@ -3,79 +3,79 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {TestBrowserProxy} from '../test_browser_proxy.m.js';
-// #import {SearchEnginesBrowserProxy, SearchEnginesInfo, SearchEngine} from 'chrome://settings/settings.js';
+import { SearchEngine,SearchEnginesBrowserProxy, SearchEnginesInfo} from 'chrome://settings/settings.js';
+
+import {TestBrowserProxy} from '../test_browser_proxy.m.js';
 // clang-format on
 
-cr.define('settings_search', function() {
-  /**
-   * A test version of SearchEnginesBrowserProxy. Provides helper methods
-   * for allowing tests to know when a method was called, as well as
-   * specifying mock responses.
-   *
-   * @implements {settings.SearchEnginesBrowserProxy}
-   */
-  /* #export */ class TestSearchEnginesBrowserProxy extends TestBrowserProxy {
-    constructor() {
-      super([
-        'getSearchEnginesList',
-        'removeSearchEngine',
-        'searchEngineEditCancelled',
-        'searchEngineEditCompleted',
-        'searchEngineEditStarted',
-        'setDefaultSearchEngine',
-        'validateSearchEngineInput',
-      ]);
+/**
+ * A test version of SearchEnginesBrowserProxy. Provides helper methods
+ * for allowing tests to know when a method was called, as well as
+ * specifying mock responses.
+ *
+ * @implements {SearchEnginesBrowserProxy}
+ */
+export class TestSearchEnginesBrowserProxy extends TestBrowserProxy {
+  constructor() {
+    super([
+      'getSearchEnginesList',
+      'removeSearchEngine',
+      'searchEngineEditCancelled',
+      'searchEngineEditCompleted',
+      'searchEngineEditStarted',
+      'setDefaultSearchEngine',
+      'validateSearchEngineInput',
+    ]);
 
-      /** @private {!SearchEnginesInfo} */
-      this.searchEnginesInfo_ = {defaults: [], others: [], extensions: []};
-    }
-
-    /** @override */
-    setDefaultSearchEngine(modelIndex) {
-      this.methodCalled('setDefaultSearchEngine', modelIndex);
-    }
-
-    /** @override */
-    removeSearchEngine(modelIndex) {
-      this.methodCalled('removeSearchEngine', modelIndex);
-    }
-
-    /** @override */
-    searchEngineEditStarted(modelIndex) {
-      this.methodCalled('searchEngineEditStarted', modelIndex);
-    }
-
-    /** @override */
-    searchEngineEditCancelled() {
-      this.methodCalled('searchEngineEditCancelled');
-    }
-
-    /** @override */
-    searchEngineEditCompleted(searchEngine, keyword, queryUrl) {
-      this.methodCalled('searchEngineEditCompleted');
-    }
-
-    /** @override */
-    getSearchEnginesList() {
-      this.methodCalled('getSearchEnginesList');
-      return Promise.resolve(this.searchEnginesInfo_);
-    }
-
-    /** @override */
-    validateSearchEngineInput(fieldName, fieldValue) {
-      this.methodCalled('validateSearchEngineInput');
-      return Promise.resolve(true);
-    }
-
-    /**
-     * Sets the response to be returned by |getSearchEnginesList|.
-     * @param {!SearchEnginesInfo} searchEnginesInfo
-     */
-    setSearchEnginesInfo(searchEnginesInfo) {
-      this.searchEnginesInfo_ = searchEnginesInfo;
-    }
+    /** @private {!SearchEnginesInfo} */
+    this.searchEnginesInfo_ = {defaults: [], others: [], extensions: []};
   }
+
+  /** @override */
+  setDefaultSearchEngine(modelIndex) {
+    this.methodCalled('setDefaultSearchEngine', modelIndex);
+  }
+
+  /** @override */
+  removeSearchEngine(modelIndex) {
+    this.methodCalled('removeSearchEngine', modelIndex);
+  }
+
+  /** @override */
+  searchEngineEditStarted(modelIndex) {
+    this.methodCalled('searchEngineEditStarted', modelIndex);
+  }
+
+  /** @override */
+  searchEngineEditCancelled() {
+    this.methodCalled('searchEngineEditCancelled');
+  }
+
+  /** @override */
+  searchEngineEditCompleted(searchEngine, keyword, queryUrl) {
+    this.methodCalled('searchEngineEditCompleted');
+  }
+
+  /** @override */
+  getSearchEnginesList() {
+    this.methodCalled('getSearchEnginesList');
+    return Promise.resolve(this.searchEnginesInfo_);
+  }
+
+  /** @override */
+  validateSearchEngineInput(fieldName, fieldValue) {
+    this.methodCalled('validateSearchEngineInput');
+    return Promise.resolve(true);
+  }
+
+  /**
+   * Sets the response to be returned by |getSearchEnginesList|.
+   * @param {!SearchEnginesInfo} searchEnginesInfo
+   */
+  setSearchEnginesInfo(searchEnginesInfo) {
+    this.searchEnginesInfo_ = searchEnginesInfo;
+  }
+}
 
   /**
    * @param {boolean} canBeDefault
@@ -83,28 +83,21 @@ cr.define('settings_search', function() {
    * @param {boolean} canBeRemoved
    * @return {!SearchEngine}
    */
-  /* #export */ function createSampleSearchEngine(
-      canBeDefault, canBeEdited, canBeRemoved) {
-    return {
-      canBeDefault: canBeDefault,
-      canBeEdited: canBeEdited,
-      canBeRemoved: canBeRemoved,
-      default: false,
-      displayName: 'Google',
-      iconURL: 'http://www.google.com/favicon.ico',
-      id: 0,
-      isOmniboxExtension: false,
-      keyword: 'google.com',
-      modelIndex: 0,
-      name: 'Google',
-      url: 'https://search.foo.com/search?p=%s',
-      urlLocked: false,
-    };
-  }
-
-  // #cr_define_end
+export function createSampleSearchEngine(
+    canBeDefault, canBeEdited, canBeRemoved) {
   return {
-    createSampleSearchEngine: createSampleSearchEngine,
-    TestSearchEnginesBrowserProxy: TestSearchEnginesBrowserProxy,
+    canBeDefault: canBeDefault,
+    canBeEdited: canBeEdited,
+    canBeRemoved: canBeRemoved,
+    default: false,
+    displayName: 'Google',
+    iconURL: 'http://www.google.com/favicon.ico',
+    id: 0,
+    isOmniboxExtension: false,
+    keyword: 'google.com',
+    modelIndex: 0,
+    name: 'Google',
+    url: 'https://search.foo.com/search?p=%s',
+    urlLocked: false,
   };
-});
+}

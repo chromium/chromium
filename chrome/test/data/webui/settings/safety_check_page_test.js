@@ -12,7 +12,7 @@ import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 import {TestBrowserProxy} from '../test_browser_proxy.m.js';
 
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
-import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.m.js';
+import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestOpenWindowProxy} from './test_open_window_proxy.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {FakeSettingsPrivatePref} from 'chrome://test/settings/fake_settings_private.m.js';
+import {FakeSettingsPrivatePref} from 'chrome://test/settings/fake_settings_private.js';
 // clang-format on
 
 /**

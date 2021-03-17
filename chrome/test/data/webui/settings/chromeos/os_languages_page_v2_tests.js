@@ -8,8 +8,8 @@
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {getFakeLanguagePrefs} from '../fake_language_settings_private.m.js'
-// #import {FakeSettingsPrivate} from '../fake_settings_private.m.js';
+// #import {getFakeLanguagePrefs} from '../fake_language_settings_private.js'
+// #import {FakeSettingsPrivate} from '../fake_settings_private.js';
 // #import {TestLanguagesBrowserProxy} from './test_os_languages_browser_proxy.m.js';
 // #import {TestLanguagesMetricsProxy} from './test_os_languages_metrics_proxy.m.js';
 // #import {TestLifetimeBrowserProxy} from './test_os_lifetime_browser_proxy.m.js';

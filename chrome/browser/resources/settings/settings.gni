@@ -9,36 +9,3 @@ settings_closure_flags =
       "js_module_root=../../chrome/browser/resources/settings/",
       "js_module_root=./gen/chrome/browser/resources/settings/",
     ]
-
-# Common namespace rewrites for all polymer_modulizer() or js_modulizer()
-# targets in Settings.
-settings_namespace_rewrites = [
-  "Polymer.DomIf|DomIf",
-  "Polymer.IronResizableBehavior|IronResizableBehavior",
-  "settings.AboutPageBrowserProxy|AboutPageBrowserProxy",
-  "settings.Account|Account",
-  "settings.AccountManagerBrowserProxy|AccountManagerBrowserProxy",
-  "settings.ExtensionControlBrowserProxy|ExtensionControlBrowserProxy",
-  "settings.FontsBrowserProxy|FontsBrowserProxy",
-  "settings.LanguagesBrowserProxy|LanguagesBrowserProxy",
-  "settings.LifetimeBrowserProxy|LifetimeBrowserProxy",
-  "settings.MetricsReporting|MetricsReporting",
-  "settings.MinimumRoutes|MinimumRoutes",
-  "settings.PageStatus|PageStatus",
-  "Settings.PrefUtil.prefToString|prefToString",
-  "Settings.PrefUtil.stringToPrefValue|stringToPrefValue",
-  "settings.PrivacyPageBrowserProxy|PrivacyPageBrowserProxy",
-  "settings.ProfileInfo|ProfileInfo",
-  "settings.ResolverOption|ResolverOption",
-  "settings.Route|Route",
-  "settings.SearchEnginesBrowserProxy|SearchEnginesBrowserProxy",
-  "settings.SearchRequest|SearchRequest",
-  "settings.SecureDnsMode|SecureDnsMode",
-  "settings.SecureDnsSetting|SecureDnsSetting",
-  "settings.SecureDnsUiManagementMode|SecureDnsUiManagementMode",
-  "settings.StatusAction|StatusAction",
-  "settings.StoredAccount|StoredAccount",
-  "settings.SyncBrowserProxy|SyncBrowserProxy",
-  "settings.SyncPrefs|SyncPrefs",
-  "settings.SyncStatus|SyncStatus",
-]

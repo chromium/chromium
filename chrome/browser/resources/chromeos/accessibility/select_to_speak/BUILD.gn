@@ -108,7 +108,7 @@ js2gtest("select_to_speak_extjs_tests") {
     "pipe.jpg",
   ]
   extra_js_files = [
-    "//chrome/test/data/webui/settings/fake_settings_private.js",
+    "fake_settings_private.js",
     "//chrome/test/data/webui/fake_chrome_event.js",
   ]
 

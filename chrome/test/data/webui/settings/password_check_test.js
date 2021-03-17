@@ -17,7 +17,7 @@ import {makeCompromisedCredential, makeInsecureCredential, makePasswordCheckStat
 import {getSyncAllPrefs,simulateSyncStatus} from 'chrome://test/settings/sync_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://test/settings/test_open_window_proxy.js';
 import {TestPasswordManagerProxy} from 'chrome://test/settings/test_password_manager_proxy.js';
-import {TestSyncBrowserProxy} from 'chrome://test/settings/test_sync_browser_proxy.m.js';
+import {TestSyncBrowserProxy} from 'chrome://test/settings/test_sync_browser_proxy.js';
 import {eventToPromise} from 'chrome://test/test_util.m.js';
 
 // clang-format on

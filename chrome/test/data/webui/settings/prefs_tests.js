@@ -4,7 +4,7 @@
 
 // clang-format off
 import {CrSettingsPrefs} from 'chrome://settings/settings.js';
-import {FakeSettingsPrivate} from 'chrome://test/settings/fake_settings_private.m.js';
+import {FakeSettingsPrivate} from 'chrome://test/settings/fake_settings_private.js';
 import {prefsTestCases} from 'chrome://test/settings/prefs_test_cases.js';
 // clang-format on
 

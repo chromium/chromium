@@ -10,9 +10,9 @@ import {CrSettingsPrefs} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 import {fakeDataBind} from '../test_util.m.js';
 
-import {getFakeLanguagePrefs} from './fake_language_settings_private.m.js';
-import {FakeSettingsPrivate} from './fake_settings_private.m.js';
-import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.m.js';
+import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
+import {FakeSettingsPrivate} from './fake_settings_private.js';
+import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
 import {TestLanguagesMetricsProxy} from './test_languages_metrics_proxy.js';
 
 // TODO(crbug/1109431): Remove this test once migration is complete.

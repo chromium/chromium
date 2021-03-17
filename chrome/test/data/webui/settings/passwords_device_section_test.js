@@ -9,7 +9,7 @@ import {MultiStorePasswordUiEntry, PasswordManagerImpl, Router, routes, SyncBrow
 import {createMultiStorePasswordEntry, createPasswordEntry, PasswordDeviceSectionElementFactory} from 'chrome://test/settings/passwords_and_autofill_fake_data.js';
 import {simulateStoredAccounts, simulateSyncStatus} from 'chrome://test/settings/sync_test_util.js';
 import {TestPasswordManagerProxy} from 'chrome://test/settings/test_password_manager_proxy.js';
-import {TestSyncBrowserProxy} from 'chrome://test/settings/test_sync_browser_proxy.m.js';
+import {TestSyncBrowserProxy} from 'chrome://test/settings/test_sync_browser_proxy.js';
 import {eventToPromise} from 'chrome://test/test_util.m.js';
 import {assertEquals, assertTrue} from '../chai_assert.js';
 

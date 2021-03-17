@@ -11,9 +11,9 @@ import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 import {TestBrowserProxy} from '../test_browser_proxy.m.js';
 import {fakeDataBind} from '../test_util.m.js';
 
-import {getFakeLanguagePrefs} from './fake_language_settings_private.m.js';
-import {FakeSettingsPrivate} from './fake_settings_private.m.js';
-import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.m.js';
+import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
+import {FakeSettingsPrivate} from './fake_settings_private.js';
+import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
 
 /**
  * A test version of LanguageSettingsMetricsProxy.

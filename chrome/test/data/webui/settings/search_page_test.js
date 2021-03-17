@@ -11,7 +11,7 @@ import {SearchEnginesBrowserProxyImpl} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertNotReached, assertTrue} from '../chai_assert.js';
 
-import {createSampleSearchEngine, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.m.js';
+import {createSampleSearchEngine, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
 
 // clang-format on
 
