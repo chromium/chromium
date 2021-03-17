@@ -632,12 +632,12 @@ void DesksBarView::InitDragDesk(DeskMiniView* mini_view,
 
   gfx::PointF preview_origin_in_screen(
       drag_view_->GetPreviewBoundsInScreen().origin());
-  gfx::Vector2dF drag_origin_offset =
-      location_in_screen - preview_origin_in_screen;
+  const float init_offset_x =
+      location_in_screen.x() - preview_origin_in_screen.x();
 
   // Create a drag proxy for the dragged desk.
   drag_proxy_ =
-      std::make_unique<DeskDragProxy>(this, drag_view_, drag_origin_offset);
+      std::make_unique<DeskDragProxy>(this, drag_view_, init_offset_x);
 }
 
 void DesksBarView::StartDragDesk(DeskMiniView* mini_view,
@@ -649,9 +649,9 @@ void DesksBarView::StartDragDesk(DeskMiniView* mini_view,
   // Hide the dragged mini view.
   drag_view_->layer()->SetOpacity(0.0f);
 
-  // Create a drag proxy widget, scale it up and move it to the
-  // |location_in_screen|.
-  drag_proxy_->InitAndScaleAndMoveTo(location_in_screen);
+  // Create a drag proxy widget, scale it up and move its x-coordinate according
+  // to the x of |location_in_screen|.
+  drag_proxy_->InitAndScaleAndMoveToX(location_in_screen.x());
 
   Shell::Get()->cursor_manager()->SetCursor(ui::mojom::CursorType::kGrabbing);
 }
@@ -662,7 +662,7 @@ void DesksBarView::ContinueDragDesk(DeskMiniView* mini_view,
   DCHECK(drag_proxy_);
   DCHECK_EQ(mini_view, drag_view_);
 
-  drag_proxy_->DragTo(location_in_screen);
+  drag_proxy_->DragToX(location_in_screen.x());
 
   const auto drag_view_iter =
       std::find(mini_views_.cbegin(), mini_views_.cend(), drag_view_);
@@ -671,16 +671,9 @@ void DesksBarView::ContinueDragDesk(DeskMiniView* mini_view,
   int old_index = drag_view_iter - mini_views_.cbegin();
 
   gfx::Point drag_pos_in_screen = drag_proxy_->GetPositionInScreen();
-  gfx::Rect bar_bounds = scroll_view_contents_->GetBoundsInScreen();
-  float cursor_y = location_in_screen.y();
 
-  // Determine the target location for the desk to be reordered. If the cursor
-  // is outside the desks bar, then the dragged desk will be moved to the end.
-  // Otherwise, the position is determined by the drag proxy's location.
-  int new_index =
-      (cursor_y < bar_bounds.origin().y() || cursor_y > bar_bounds.bottom())
-          ? (GetMirrored() ? 0 : mini_views_.size() - 1)
-          : DetermineMoveIndex(drag_pos_in_screen.x());
+  // Determine the target location for the desk to be reordered.
+  int new_index = DetermineMoveIndex(drag_pos_in_screen.x());
 
   if (old_index != new_index)
     Shell::Get()->desks_controller()->ReorderDesk(old_index, new_index);

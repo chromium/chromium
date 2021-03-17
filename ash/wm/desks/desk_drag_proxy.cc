@@ -32,11 +32,12 @@ constexpr base::TimeDelta kDragProxySnapBackDuration =
 
 DeskDragProxy::DeskDragProxy(DesksBarView* desks_bar_view,
                              DeskMiniView* drag_view,
-                             const gfx::Vector2dF& init_offset)
+                             float init_offset_x)
     : desks_bar_view_(desks_bar_view),
       drag_view_(drag_view),
       drag_preview_size_(drag_view->GetPreviewBoundsInScreen().size()),
-      init_offset_(init_offset) {}
+      preview_screen_y_(drag_view->GetPreviewBoundsInScreen().y()),
+      init_offset_x_(init_offset_x) {}
 
 DeskDragProxy::~DeskDragProxy() = default;
 
@@ -53,8 +54,7 @@ gfx::Point DeskDragProxy::GetPositionInScreen() const {
   return drag_widget_->GetWindowBoundsInScreen().origin();
 }
 
-void DeskDragProxy::InitAndScaleAndMoveTo(
-    const gfx::PointF& location_in_screen) {
+void DeskDragProxy::InitAndScaleAndMoveToX(float location_screen_x) {
   DCHECK(drag_view_);
 
   aura::Window* root_window =
@@ -88,14 +88,15 @@ void DeskDragProxy::InitAndScaleAndMoveTo(
       scale_transform));
 
   // Perform Moving.
-  DragTo(location_in_screen);
+  DragToX(location_screen_x);
 
   state_ = State::kStarted;
 }
 
-void DeskDragProxy::DragTo(const gfx::PointF& location_in_screen) {
+void DeskDragProxy::DragToX(float location_screen_x) {
   drag_widget_->SetBounds(
-      gfx::Rect(gfx::ToRoundedPoint(location_in_screen - init_offset_),
+      gfx::Rect(gfx::Point(base::ClampRound(location_screen_x - init_offset_x_),
+                           preview_screen_y_),
                 drag_preview_size_));
 }
 
