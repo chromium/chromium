@@ -244,6 +244,7 @@ class PageHandler : public DevToolsDomainHandler,
   base::ScopedObservation<RenderWidgetHost, RenderWidgetHostObserver>
       observation_{this};
   JavaScriptDialogCallback pending_dialog_;
+  // Maps DevTools navigation tokens to pending NavigateCallbacks.
   base::flat_map<base::UnguessableToken, std::unique_ptr<NavigateCallback>>
       navigate_callbacks_;
   base::flat_set<download::DownloadItem*> pending_downloads_;
