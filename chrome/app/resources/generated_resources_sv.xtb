@@ -2144,7 +2144,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3390013585654699824">Information om appen</translation>
 <translation id="3390741581549395454">Säkerhetskopieringen av Linux-appar och Linux-filer är klar. Uppgraderingen startar snart.</translation>
 <translation id="3391482648489541560">filredigering</translation>
-<translation id="3391512812407811893">Prova Privacy Sandbox</translation>
+<translation id="3391512812407811893">Provfunktioner i Privacy Sandbox</translation>
 <translation id="339178315942519818">Se aviseringar från chattappar på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="3396800784455899911">När du klickar på Godkänn och fortsätt samtycker du till att dessa tjänster från Google får bearbeta data enligt beskrivningen ovan.</translation>
 <translation id="3399432415385675819">Aviseringar inaktiveras</translation>
@@ -4288,6 +4288,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5856721540245522153">Aktivera felsökningsfunktioner</translation>
 <translation id="5857090052475505287">Ny mapp</translation>
 <translation id="5857171483910641802">Förslag på genvägar visas utifrån webbplatser du ofta besöker</translation>
+<translation id="5857675236236529683">När du är redo hittar du läslistan här</translation>
 <translation id="5858490737742085133">Terminal</translation>
 <translation id="5859603669299126575">Konstgallerialbum</translation>
 <translation id="585979798156957858">Extern metatangent</translation>
@@ -5311,7 +5312,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7018275672629230621">Läsa och ändra din webbhistorik</translation>
 <translation id="7019805045859631636">Snabb</translation>
 <translation id="7022562585984256452">Startsidan har ställts in.</translation>
-<translation id="7023206482239788111">Privacy Sandbox bevarar den öppna webbens vitalitet genom att skapa bättre sätt att tillhandahålla dessa tjänster på – utan att webbplatserna ska sluta att fungera! – så att du inte ska behöva bli spårad från webbplats till webbplats.</translation>
+<translation id="7023206482239788111">Privacy Sandbox bevarar den öppna webben genom att skapa bättre sätt att tillhandahålla dessa tjänster på – utan att försämra webbplatsernas funktion – så att du slipper bli spårad från webbplats till webbplats.</translation>
 <translation id="7025082428878635038">Vi presenterar ett nytt sätt att navigera med rörelser</translation>
 <translation id="7025190659207909717">Hantering av mobil datatjänst</translation>
 <translation id="7025895441903756761">Säkerhet och integritet</translation>

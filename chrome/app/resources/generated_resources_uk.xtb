@@ -4291,13 +4291,14 @@
 <translation id="5856721540245522153">Увімкнути функції налагодження</translation>
 <translation id="5857090052475505287">Нова папка</translation>
 <translation id="5857171483910641802">Ярлики пропонуються на основі веб-сайтів, які ви часто відвідуєте</translation>
+<translation id="5857675236236529683">Тут розміщено ваш список читання</translation>
 <translation id="5858490737742085133">Термінал</translation>
 <translation id="5859603669299126575">Альбом із мистецької галереї</translation>
 <translation id="585979798156957858">Зовнішня мета-клавіша</translation>
 <translation id="5860033963881614850">Вимк.</translation>
 <translation id="5860491529813859533">Увімкнути</translation>
 <translation id="5860494867054883682">На пристрій установлюється <ph name="CHANNEL_NAME" /> версія (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="5862109781435984885">Показувати інструменти стилуса на полиці</translation>
+<translation id="5862109781435984885">Показувати інструменти стилуса на панелі запуску</translation>
 <translation id="5862319196656206789">Налаштувати підключені пристрої</translation>
 <translation id="5863445608433396414">Увімкнути функції налагодження</translation>
 <translation id="5864195618110239517">Використовувати підключення з тарифікацією трафіку</translation>
@@ -5758,7 +5759,7 @@
 <translation id="7548856833046333824">Лимонад</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Не вдалося завантажити файл "<ph name="FILE_NAME" />"</translation>
-<translation id="7551643184018910560">Закріпити на полиці</translation>
+<translation id="7551643184018910560">Закріпити на панелі запуску</translation>
 <translation id="7552846755917812628">Виконайте вказівки нижче.</translation>
 <translation id="7553012839257224005">Перевірка контейнера Linux</translation>
 <translation id="7553242001898162573">Пароль</translation>
@@ -6471,7 +6472,7 @@
 <translation id="8327039559959785305">Помилка підключення файлів Linux. Повторіть спробу.</translation>
 <translation id="8327676037044516220">Дозволи й налаштування контенту</translation>
 <translation id="833256022891467078">Спільні папки Crostini</translation>
-<translation id="8335587457941836791">Відкріпити з полиці</translation>
+<translation id="8335587457941836791">Відкріпити від панелі запуску</translation>
 <translation id="8336407002559723354">Оновлення не надходитимуть після такого часу: <ph name="MONTH_AND_YEAR" /></translation>
 <translation id="8336721153892716270">Перезапустити пристрій, щоб <ph name="LANGUAGE" /> була мовою системи</translation>
 <translation id="8336739000755212683">Змінити зображення облікового запису на пристрої</translation>

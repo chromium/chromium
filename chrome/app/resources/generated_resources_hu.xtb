@@ -4289,6 +4289,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5856721540245522153">Hibakeresési funkciók bekapcsolása</translation>
 <translation id="5857090052475505287">Új mappa</translation>
 <translation id="5857171483910641802">A rendszer az Ön által gyakran felkeresett webhelyek alapján javasol parancsikonokat</translation>
+<translation id="5857675236236529683">Ha végzett, itt találja majd az olvasólistáját</translation>
 <translation id="5858490737742085133">Terminál</translation>
 <translation id="5859603669299126575">Művészeti album</translation>
 <translation id="585979798156957858">Külső meta</translation>
@@ -5489,7 +5490,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7234010996000898150">A Linux-visszaállítás megszakítása…</translation>
 <translation id="7235716375204803342">Tevékenységek lekérése…</translation>
 <translation id="7235737137505019098">A biztonsági hardverkulcson nincs elég hely további fiókok számára.</translation>
-<translation id="7238640585329759787">Ha engedélyezve van, a webhelyek használhatják az itt bemutatott adatvédelem-biztosítási módszereket a tartalmaiknál és szolgáltatásaiknál. Itt találhatók alternatívák a webhelyeken átnyúló nyomon követésre is. Később további próbafunkciók is belekerülhetnek.</translation>
+<translation id="7238640585329759787">Ha engedélyezve van, a webhelyek használhatják az itt bemutatott adatvédelem-biztosítási technikákat a tartalmaiknál és szolgáltatásaiknál. A technikák közt találhatók a webhelyeken átnyúló nyomon követés helyett alkalmazható alternatívák is. Később további próbafunkciók is belekerülhetnek.</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, részletek</translation>
 <translation id="7240339475467890413">Csatlakozik az új hotspothoz?</translation>
 <translation id="7241389281993241388">Kérjük, jelentkezzen be a(z) <ph name="TOKEN_NAME" /> szolgáltatásba az ügyféltanúsítvány importálásához.</translation>

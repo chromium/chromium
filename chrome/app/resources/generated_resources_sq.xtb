@@ -1397,7 +1397,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2532589005999780174">Modaliteti i kontrastit të lartë</translation>
 <translation id="253434972992662860">&amp;Ndërprit</translation>
 <translation id="2534460670861217804">Përfaqësuesi i sigurt i HTTP-së</translation>
-<translation id="253557089021624350">Numërimi i mbajtjes aktive</translation>
+<translation id="253557089021624350">Numërimi i proceseve të mbajtjes aktive</translation>
 <translation id="2535799430745250929">Nuk ekziston ndonjë rrjet celular</translation>
 <translation id="2537178555904266562">Gabim gjatë sinkronizimit të fjalëkalimeve</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> mund të shikojë dhe të modifikojë skedarët dhe dosjet e mëposhtme</translation>
@@ -4285,6 +4285,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5856721540245522153">Aktivizo funksionet e korrigjimit</translation>
 <translation id="5857090052475505287">Skedar i ri</translation>
 <translation id="5857171483910641802">Shkurtoret sugjerohen bazuar në sajtet e uebit që ti viziton shpesh</translation>
+<translation id="5857675236236529683">Kur të jesh gati, mund ta gjesh listën tënde të leximit këtu</translation>
 <translation id="5858490737742085133">Terminali</translation>
 <translation id="5859603669299126575">Albumi i galerisë së artit</translation>
 <translation id="585979798156957858">Çelës meta i jashtëm</translation>
@@ -4701,7 +4702,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6324916366299863871">Modifiko shkurtoren</translation>
 <translation id="6325191661371220117">Çaktivizo hapjen automatike</translation>
 <translation id="6326175484149238433">Hiqe nga Chrome</translation>
-<translation id="6326855256003666642">Numërimi i mbajtjes aktive</translation>
+<translation id="6326855256003666642">Numërimi i proceseve të mbajtjes aktive</translation>
 <translation id="6327785803543103246">Zbulimi automatik i përfaqësuesit të uebit</translation>
 <translation id="6328378651911184878"><ph name="MANAGER" /> të kërkon që ta përditësosh këtë pajisje <ph name="DEVICE_TYPE" /> menjëherë.</translation>
 <translation id="6331566915566907158">Ndihmo në përmirësimin e veçorive dhe të cilësisë së funksionimit të sistemit operativ Chrome</translation>

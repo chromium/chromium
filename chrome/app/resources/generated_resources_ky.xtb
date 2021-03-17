@@ -1060,6 +1060,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="215753907730220065">Толук экран режиминен чыгуу</translation>
 <translation id="2157875535253991059">Бул бет эми толук экранда.</translation>
 <translation id="2158475082070321257">Бөлүнүп көрсөтүлгөн нерсеге шилтемени көчүрүү</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Wi-Fi кошуу…</translation>
 <translation id="2162155940152307086">Шайкештирүү жөндөөлөрүнөн чыгарыңыз менен шайкештирүү башталат</translation>
 <translation id="2162838847352058695">Сайттардын бир нече файлды автоматтык түрдө жүктөп алуусуна тыюу салуу</translation>
@@ -1182,6 +1183,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2297705863329999812">Принтерлерди издөө</translation>
 <translation id="2299734369537008228">Сыдырма: <ph name="MIN_LABEL" /> – <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Debugd топтогон таржымалдагы файлдарды өзүнчө архивде камтуу.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922"><ph name="APP_NAME" /> колдонмосун ыңгайлаштыруу жана көзөмөлдөө</translation>
 <translation id="2301382460326681002">Кеңейтүүнүн түпкү каталогу жараксыз.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" кошумча уруксат сурады.</translation>
@@ -2760,6 +2762,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="404493185430269859">Демейки издөө каражаты</translation>
 <translation id="4046013316139505482">Бул кеңейтүүлөр ушул сайттагы маалыматты көрүп, өзгөртө алышпайт.</translation>
 <translation id="4046123991198612571">Кийинки трек</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Башкы бетке өтүү</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# байланыш жеткиликсиз. Алар менен Nearby Share аркылуу бөлүшүү үчүн байланыштарыңызга алардын Google аккаунту менен байланышкан электрондук почта дарегин кошуңуз.}other{# байланыш жеткиликсиз. Алар менен Nearby Share аркылуу бөлүшүү үчүн байланыштарыңызга алардын Google аккаунттары менен байланышкан электрондук почта даректерин кошуңуз.}}</translation>
 <translation id="4050225813016893843">Аныктыгын текшерүү ыкмасы</translation>
@@ -4285,6 +4288,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5856721540245522153">Мүчүлүштүктөрдү аныктоо өзгөчөлүктөрүн иштетүү</translation>
 <translation id="5857090052475505287">Жаңы папка</translation>
 <translation id="5857171483910641802">Ыкчам баскычтар сиз көп кирген вебсайттардын негизинде сунушталат</translation>
+<translation id="5857675236236529683">Даяр болгонуңузда, окуу тизмеңизди ушул жерден таба аласыз</translation>
 <translation id="5858490737742085133">Терминал</translation>
 <translation id="5859603669299126575">Көркөм галерея альбому</translation>
 <translation id="585979798156957858">Тышкы мета ачкыч</translation>
@@ -6343,7 +6347,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8186609076106987817">Сервер файлды тапкан жок.</translation>
 <translation id="8188389033983459049">Түзмөгүңүздүн жөндөөлөрүн текшерип, улантуу үчүн аны күйгүзүңүз</translation>
 <translation id="8189306097519446565">Мектептин аккаунттары</translation>
-<translation id="8189750580333936930">Купуя сыноо чөйрөсү</translation>
+<translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> менен туташууда</translation>
 <translation id="8191230140820435481">Колдонмолоруңузду, кеңейтүүлөрүңүздү жана темаларыңызды башкарыңыз</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" /> колдонмосу экраныңыздагы мазмундарды бөлүшкүсү келет.</translation>
@@ -7208,6 +7212,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="9168436347345867845">Азыр эмес</translation>
 <translation id="9169496697824289689">Ыкчам баскычтардын айкалышын карап көрүү</translation>
 <translation id="916964310188958970">Бул сунуш эмне үчүн көрсөтүлдү?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Учурдагы көрүнүү жөндөөлөрү "бардык байланыштар" деп коюлган</translation>
 <translation id="9170848237812810038">&amp;Кайтаруу</translation>
 <translation id="9170884462774788842">Chrome'дун ишин өзгөртө турган теманы компьютериңиздеги башка программа кошуп койду.</translation>

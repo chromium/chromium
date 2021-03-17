@@ -1399,7 +1399,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2532589005999780174">Modo de alto contraste</translation>
 <translation id="253434972992662860">&amp;Pausa</translation>
 <translation id="2534460670861217804">Proxy HTTP seguro</translation>
-<translation id="253557089021624350">Reconto de Keepalive</translation>
+<translation id="253557089021624350">Número de conexións permanente</translation>
 <translation id="2535799430745250929">Non hai ningunha rede móbil</translation>
 <translation id="2537178555904266562">Produciuse un erro ao sincronizar os contrasinais</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> pode ver e editar os seguintes ficheiros e cartafoles</translation>
@@ -4287,6 +4287,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5856721540245522153">Activar funcións de depuración</translation>
 <translation id="5857090052475505287">Novo cartafol</translation>
 <translation id="5857171483910641802">Os atallos que se che suxiren están baseados nos sitios web que visitas con frecuencia</translation>
+<translation id="5857675236236529683">Aquí te agarda a túa lista de lectura, para cando teñas un oco</translation>
 <translation id="5858490737742085133">Terminal</translation>
 <translation id="5859603669299126575">Álbum da galería de arte</translation>
 <translation id="585979798156957858">Tecla meta externa</translation>
@@ -4703,7 +4704,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6324916366299863871">Editar atallo</translation>
 <translation id="6325191661371220117">Desactivar inicio automático</translation>
 <translation id="6326175484149238433">Eliminar de Chrome</translation>
-<translation id="6326855256003666642">Reconto de Keepalive</translation>
+<translation id="6326855256003666642">Número de conexións permanente</translation>
 <translation id="6327785803543103246">Detección automática do proxy web</translation>
 <translation id="6328378651911184878"><ph name="MANAGER" /> require que actualices este dispositivo (<ph name="DEVICE_TYPE" />) de inmediato.</translation>
 <translation id="6331566915566907158">Axudar a mellorar funcións e rendemento de Chrome OS</translation>

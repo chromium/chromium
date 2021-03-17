@@ -1057,6 +1057,7 @@
 <translation id="215753907730220065">Толық экраннан шығу</translation>
 <translation id="2157875535253991059">Бұл бет енді толық экранға ауысты.</translation>
 <translation id="2158475082070321257">Бөлектелген мәтіннің сілтемесін көшіру</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Wi-Fi желісін қосу…</translation>
 <translation id="2162155940152307086">Синхрондау, сіз параметрлерден шыққан кезде, басталады.</translation>
 <translation id="2162838847352058695">Сайттардың бірнеше файлды автоматты түрде жүктеп алуына тыйым салу</translation>
@@ -1179,6 +1180,7 @@
 <translation id="2297705863329999812">Принтерлерді іздеу</translation>
 <translation id="2299734369537008228">Сырғытқы: <ph name="MIN_LABEL" /> – <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">debugd арқылы жиналған барлық журнал файлдарын бөлек мұрағат ретінде қамту.</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922"><ph name="APP_NAME" /> қолданбасын реттеу және басқару</translation>
 <translation id="2301382460326681002">Кеңейтімнің түбір каталогы жарамсыз.</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" қосымша рұқсат сұрады.</translation>
@@ -2757,6 +2759,7 @@
 <translation id="404493185430269859">Әдепкі іздеу механизмі</translation>
 <translation id="4046013316139505482">Бұл кеңейтімдерге осы сайттағы ақпаратты көрудің және өзгертудің қажеті жоқ.</translation>
 <translation id="4046123991198612571">Келесі аудиотрек</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Негізгі экранға өту</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# контакт қолжетімді емес. Nearby Share функциясын пайдалану үшін оның Google есептік жазбасымен байланыстырылған электрондық пошта мекенжайын контактілеріңізге енгізіңіз.}other{# контакт қолжетімді емес. Nearby Share функциясын осы контактілермен пайдалану үшін олардың Google есептік жазбаларымен байланыстырылған электрондық пошта мекенжайларын контактілеріңізге қосыңыз.}}</translation>
 <translation id="4050225813016893843">Аутентификация әдісі</translation>
@@ -4282,6 +4285,7 @@
 <translation id="5856721540245522153">Түзету мүмкіндіктерін қосу</translation>
 <translation id="5857090052475505287">Жаңа қалта</translation>
 <translation id="5857171483910641802">Таңбашалар жиі кіретін веб-сайттардың негізінде ұсынылады.</translation>
+<translation id="5857675236236529683">Дайын болған кезде осы жерден оқу тізімін табыңыз.</translation>
 <translation id="5858490737742085133">Terminal</translation>
 <translation id="5859603669299126575">Өнер галереясы альбомы</translation>
 <translation id="585979798156957858">Сыртқы мета кілт</translation>
@@ -7205,6 +7209,7 @@
 <translation id="9168436347345867845">Кейінірек</translation>
 <translation id="9169496697824289689">Пернелер тіркесімін көру</translation>
 <translation id="916964310188958970">Неліктен осы ұсыныс көрсетіліп тұр?</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">Ағымдағы көрсетілу параметрі барлық контактіге арналған.</translation>
 <translation id="9170848237812810038">&amp;Болдырмау</translation>
 <translation id="9170884462774788842">Компьютеріңіздегі басқа бір бағдарлама тақырыпты қосты, ол Chrome жұмысын өзгертуі мүмкін.</translation>
