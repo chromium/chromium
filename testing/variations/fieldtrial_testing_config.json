@@ -3078,8 +3078,7 @@
                         "session_rate": "==0"
                     },
                     "enable_features": [
-                        "IPH_FeedHeaderMenu",
-                        "ReportFeedUserActions"
+                        "IPH_FeedHeaderMenu"
                     ]
                 }
             ]

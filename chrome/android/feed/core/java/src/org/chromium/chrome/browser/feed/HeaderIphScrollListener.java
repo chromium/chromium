@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.feed;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.ScrollListener;
 import org.chromium.chrome.browser.ntp.ScrollListener.ScrollState;
 import org.chromium.chrome.browser.ntp.ScrollableContainerDelegate;
@@ -28,14 +27,13 @@ import org.chromium.components.feature_engagement.TriggerState;
  * that the user wants to interact with the feed are strong.
  */
 public class HeaderIphScrollListener implements ScrollListener {
-    static final String TOOLBAR_TRANSITION_FRACTION_PARAM_NAME = "toolbar-transition-fraction";
-    static final String MIN_SCROLL_FRACTION_PARAM_NAME = "min-scroll-fraction";
-    static final String HEADER_MAX_POSITION_FRACTION_NAME = "header-max-pos-fraction";
+    private static final float MIN_SCROLL_FRACTION = 0.1f;
+    private static final float MAX_HEADER_POS_FRACTION = 0.35f;
 
     /**
      * Delegate to handle actions that are out of the scope of the listener.
      */
-    public static interface Delegate {
+    public interface Delegate {
         /**
          * Gets the feature engagement tracker.
          */
@@ -74,11 +72,8 @@ public class HeaderIphScrollListener implements ScrollListener {
         mDelegate = delegate;
         mScrollableContainerDelegate = scrollableContainerDelegate;
 
-        mMinScrollFraction = (float) ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
-                ChromeFeatureList.REPORT_FEED_USER_ACTIONS, MIN_SCROLL_FRACTION_PARAM_NAME, 0.10);
-        mHeaderMaxPosFraction = (float) ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
-                ChromeFeatureList.REPORT_FEED_USER_ACTIONS, HEADER_MAX_POSITION_FRACTION_NAME,
-                0.35);
+        mMinScrollFraction = MIN_SCROLL_FRACTION;
+        mHeaderMaxPosFraction = MAX_HEADER_POS_FRACTION;
     }
 
     @Override

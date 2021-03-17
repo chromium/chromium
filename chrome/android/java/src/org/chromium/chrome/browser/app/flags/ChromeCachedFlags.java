@@ -72,7 +72,6 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.PAINT_PREVIEW_DEMO,
                 ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP,
                 ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS,
-                ChromeFeatureList.REPORT_FEED_USER_ACTIONS,
                 ChromeFeatureList.SHARE_BY_DEFAULT_IN_CCT,
                 ChromeFeatureList.START_SURFACE_ANDROID,
                 ChromeFeatureList.SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT,

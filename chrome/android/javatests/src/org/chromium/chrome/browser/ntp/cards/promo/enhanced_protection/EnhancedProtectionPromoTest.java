@@ -69,8 +69,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD,
         ChromeFeatureList.SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED})
-@Features.
-DisableFeatures({ChromeFeatureList.QUERY_TILES, ChromeFeatureList.REPORT_FEED_USER_ACTIONS})
+@Features.DisableFeatures({ChromeFeatureList.QUERY_TILES})
 public class EnhancedProtectionPromoTest {
     private static final String METRICS_ENHANCED_PROTECTION_PROMO =
             "NewTabPage.Promo.EnhancedProtectionPromo";

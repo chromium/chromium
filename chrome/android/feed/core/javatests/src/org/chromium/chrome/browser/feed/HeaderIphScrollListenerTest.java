@@ -23,23 +23,16 @@ import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.feed.shared.stream.Stream;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.ScrollListener;
 import org.chromium.chrome.browser.ntp.ScrollListener.ScrollState;
 import org.chromium.chrome.browser.ntp.ScrollableContainerDelegate;
-import org.chromium.chrome.browser.ntp.snippets.SectionHeaderView;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feature_engagement.TriggerState;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /** Tests for {@link HeaderIphScrollListener}. */
 @RunWith(ParameterizedRunner.class)
@@ -108,19 +101,7 @@ public final class HeaderIphScrollListenerTest {
     private static final int FEED_VIEW_HEIGHT = 100;
 
     @Mock
-    private FeedSurfaceCoordinator mFeedSurfaceCoordinator;
-    @Mock
-    private Stream mStream;
-    @Mock
-    private FeedSurfaceMediator mFeedSurfaceMediator;
-    @Mock
-    private SectionHeaderView mSectionHeaderView;
-    @Mock
     private Tracker mTracker;
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private UserEducationHelper mUserEducationHelper;
     private View mFeedRootView;
 
     private boolean mHasShownMenuIph;
@@ -131,10 +112,6 @@ public final class HeaderIphScrollListenerTest {
 
         mFeedRootView = new View(InstrumentationRegistry.getContext());
         mFeedRootView.layout(0, 0, 0, FEED_VIEW_HEIGHT);
-
-        Map<String, Boolean> testFeatures =
-                Collections.singletonMap(ChromeFeatureList.REPORT_FEED_USER_ACTIONS, true);
-        ChromeFeatureList.setTestFeatures(testFeatures);
     }
 
     @Test
@@ -142,9 +119,9 @@ public final class HeaderIphScrollListenerTest {
     @Feature({"Feed"})
     @ParameterAnnotations.UseMethodParameter(TestParamsForOnScroll.class)
     public void onScrollStateChanged_triggerIph(boolean expectEnabled, int scrollState,
-            int triggerState, boolean wouldTriggerHelpUI, int verticallScrollOffset,
+            int triggerState, boolean wouldTriggerHelpUI, int verticalScrollOffset,
             boolean isFeedHeaderPositionInRecyclerViewSuitableForIPH, boolean isFeedExpanded,
-            boolean isSignedIn) throws Exception {
+            boolean isSignedIn) {
         // Set Tracker mock.
         when(mTracker.getTriggerState(FeatureConstants.FEED_HEADER_MENU_FEATURE))
                 .thenReturn(triggerState);
@@ -183,7 +160,7 @@ public final class HeaderIphScrollListenerTest {
                     public void removeScrollListener(ScrollListener listener) {}
                     @Override
                     public int getVerticalScrollOffset() {
-                        return verticallScrollOffset;
+                        return verticalScrollOffset;
                     }
                     @Override
                     public int getRootViewHeight() {
@@ -212,9 +189,9 @@ public final class HeaderIphScrollListenerTest {
     @Feature({"Feed"})
     @ParameterAnnotations.UseMethodParameter(TestParamsForOnOffsetChanged.class)
     public void onScrollStateChanged_onHeaderOffsetChanged(boolean expectEnabled, int scrollState,
-            int triggerState, boolean wouldTriggerHelpUI, int verticallScrollOffset,
+            int triggerState, boolean wouldTriggerHelpUI, int verticalScrollOffset,
             boolean isFeedHeaderPositionInRecyclerViewSuitableForIPH, boolean isFeedExpanded,
-            boolean isSignedIn) throws Exception {
+            boolean isSignedIn) {
         // Set Tracker mock.
         when(mTracker.getTriggerState(FeatureConstants.FEED_HEADER_MENU_FEATURE))
                 .thenReturn(triggerState);
@@ -268,7 +245,7 @@ public final class HeaderIphScrollListenerTest {
         // Trigger IPH through the scroll listener.
         HeaderIphScrollListener listener =
                 new HeaderIphScrollListener(iphDelegate, scrollableContainerDelegate);
-        listener.onHeaderOffsetChanged(-verticallScrollOffset);
+        listener.onHeaderOffsetChanged(-verticalScrollOffset);
 
         if (expectEnabled) {
             Assert.assertTrue(mHasShownMenuIph);
