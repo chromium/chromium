@@ -1200,8 +1200,8 @@
   },
   {
     "name": "drive-fs-bidirectional-native-messaging",
-    "owners": [ "austinct@chromium.org", "dats@chromium.org" ],
-    "expiry_milestone": 90
+    "owners": [ "austinct@chromium.org", "simmonsjosh@google.com" ],
+    "expiry_milestone": 93
   },
   {
     "name": "dynamic-color-gamut",
