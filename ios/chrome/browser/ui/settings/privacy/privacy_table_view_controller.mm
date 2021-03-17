@@ -218,7 +218,8 @@ const char kGoogleServicesSettingsURL[] = "settings://open_google_services";
           : l10n_util::GetNSString(
                 IDS_IOS_OPTIONS_PRIVACY_GOOGLE_SERVICES_FOOTER);
 
-  showPrivacyFooterItem.linkURL = GURL(kGoogleServicesSettingsURL);
+  showPrivacyFooterItem.urls =
+      std::vector<GURL>{GURL(kGoogleServicesSettingsURL)};
 
   return showPrivacyFooterItem;
 }

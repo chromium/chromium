@@ -21,7 +21,7 @@ TEST_F(TableViewLinkHeaderFooterItemTest, LinkedLabel) {
   TableViewLinkHeaderFooterItem* item =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:0];
   item.text = @"HeaderFooter text with BEGIN_LINKlinkEND_LINK";
-  item.linkURL = GURL("https://chromium.org");
+  item.urls = std::vector<GURL>{GURL("https://chromium.org")};
 
   id headerFooter = [[[item cellClass] alloc] init];
   ASSERT_TRUE(
@@ -33,7 +33,7 @@ TEST_F(TableViewLinkHeaderFooterItemTest, LinkedLabel) {
   [item configureHeaderFooterView:linkHeaderFooterView withStyler:styler];
   EXPECT_NSEQ(@"HeaderFooter text with link",
               linkHeaderFooterView.accessibilityLabel);
-  // Valid item.linkURL adds "Link" trait to the view's accessibility traits.
+  // Valid item.urls adds "Link" trait to the view's accessibility traits.
   EXPECT_EQ(UIAccessibilityTraitLink, linkHeaderFooterView.accessibilityTraits);
 }
 
@@ -52,7 +52,7 @@ TEST_F(TableViewLinkHeaderFooterItemTest, UnlinkedLabel) {
   [item configureHeaderFooterView:linkHeaderFooterView withStyler:styler];
   EXPECT_NSEQ(@"HeaderFooter text without link",
               linkHeaderFooterView.accessibilityLabel);
-  // Without setting item.linkURL, view's accessibility traits should not
+  // Without setting item.urls, view's accessibility traits should not
   // contain "Link" trait.
   EXPECT_NE(UIAccessibilityTraitLink, linkHeaderFooterView.accessibilityTraits);
 }

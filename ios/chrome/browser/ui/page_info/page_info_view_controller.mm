@@ -114,7 +114,7 @@ float kPaddingSecurityHeader = 28.0f;
         [[TableViewLinkHeaderFooterItem alloc]
             initWithType:ItemTypeSecurityDescription];
     securityDescription.text = self.pageInfoSecurityDescription.message;
-    securityDescription.linkURL = GURL(kPageInfoHelpCenterURL);
+    securityDescription.urls = std::vector<GURL>{GURL(kPageInfoHelpCenterURL)};
     [self.tableViewModel setFooter:securityDescription
           forSectionWithIdentifier:SectionIdentifierSecurityContent];
   } else {

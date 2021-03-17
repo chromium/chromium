@@ -511,9 +511,9 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeLinkHeader];
   footerItem.text =
       l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS_MANAGE_ACCOUNT);
-  footerItem.linkURL = google_util::AppendGoogleLocaleParam(
+  footerItem.urls = std::vector<GURL>{google_util::AppendGoogleLocaleParam(
       GURL(password_manager::kPasswordManagerAccountDashboardURL),
-      GetApplicationContext()->GetApplicationLocale());
+      GetApplicationContext()->GetApplicationLocale())};
   return footerItem;
 }
 

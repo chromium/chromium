@@ -497,8 +497,8 @@ static NSDictionary* _imageNamesByItemTypes = @{
   TableViewLinkHeaderFooterItem* footerItem =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:itemType];
   footerItem.text = l10n_util::GetNSString(titleMessageID);
-  footerItem.linkURL = google_util::AppendGoogleLocaleParam(
-      GURL(URL), GetApplicationContext()->GetApplicationLocale());
+  footerItem.urls = std::vector<GURL>{google_util::AppendGoogleLocaleParam(
+      GURL(URL), GetApplicationContext()->GetApplicationLocale())};
   return footerItem;
 }
 

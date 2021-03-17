@@ -118,9 +118,9 @@ NSString* const kTranslateSettingsCategory = @"ChromeTranslateSettings";
   TableViewLinkHeaderFooterItem* footer =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
   footer.text = l10n_util::GetNSString(IDS_IOS_TRANSLATE_SETTING_DESCRIPTION);
-  footer.linkURL = google_util::AppendGoogleLocaleParam(
+  footer.urls = std::vector<GURL>{google_util::AppendGoogleLocaleParam(
       GURL(kTranslateLearnMoreUrl),
-      GetApplicationContext()->GetApplicationLocale());
+      GetApplicationContext()->GetApplicationLocale())};
   [model setFooter:footer forSectionWithIdentifier:SectionIdentifierTranslate];
 }
 

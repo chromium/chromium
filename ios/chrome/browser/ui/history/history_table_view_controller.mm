@@ -873,7 +873,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
             [[TableViewLinkHeaderFooterItem alloc]
                 initWithType:ItemTypeEntriesStatusWithLink];
         header.text = newStatusMessage;
-        header.linkURL = GURL(kHistoryMyActivityURL);
+        header.urls = std::vector<GURL>{GURL(kHistoryMyActivityURL)};
         item = header;
       } else {
         TableViewTextHeaderFooterItem* header =

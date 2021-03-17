@@ -256,9 +256,9 @@ const CGFloat kSpinnerButtonPadding = 18;
   TableViewLinkHeaderFooterItem* footerItem =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
   footerItem.text = self.footerMessage;
-  footerItem.linkURL = google_util::AppendGoogleLocaleParam(
+  footerItem.urls = std::vector<GURL>{google_util::AppendGoogleLocaleParam(
       GURL(kSyncGoogleDashboardURL),
-      GetApplicationContext()->GetApplicationLocale());
+      GetApplicationContext()->GetApplicationLocale())};
   return footerItem;
 }
 
