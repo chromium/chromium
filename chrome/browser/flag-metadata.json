@@ -1804,7 +1804,7 @@
   {
     "name": "enable-generic-sensor-extra-classes",
     "owners": [ "reillyg@chromium.org", "raphael.kubo.da.costa@intel.com" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 94
   },
   {
     "name": "enable-google-srp-isolated-prerender-nsp",
