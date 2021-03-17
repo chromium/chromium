@@ -284,8 +284,6 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtilsTest.java",
   "javatests/src/org/chromium/chrome/browser/net/connectivitydetector/ConnectivityDetectorDelegateStub.java",
   "javatests/src/org/chromium/chrome/browser/net/connectivitydetector/ConnectivityDetectorTest.java",
-  "javatests/src/org/chromium/chrome/browser/night_mode/ChromeNightModeTestUtils.java",
-  "javatests/src/org/chromium/chrome/browser/night_mode/settings/ThemeSettingsFragmentTest.java",
   "javatests/src/org/chromium/chrome/browser/notifications/CustomNotificationBuilderTest.java",
   "javatests/src/org/chromium/chrome/browser/notifications/NotificationBuilderBaseTest.java",
   "javatests/src/org/chromium/chrome/browser/notifications/NotificationPlatformBridgeIntentTest.java",

@@ -820,7 +820,6 @@ chrome_java_resources = [
   "java/res/layout/powered_by_chrome_footer.xml",
   "java/res/layout/preference_text_scale.xml",
   "java/res/layout/radio_button_group_homepage_preference.xml",
-  "java/res/layout/radio_button_group_theme_preference.xml",
   "java/res/layout/recent_tabs_group_item.xml",
   "java/res/layout/recent_tabs_group_separator_invisible.xml",
   "java/res/layout/recent_tabs_group_separator_visible.xml",
@@ -926,6 +925,5 @@ chrome_java_resources = [
   "java/res/xml/privacy_preferences.xml",
   "java/res/xml/search_widget_info.xml",
   "java/res/xml/sync_and_services_preferences.xml",
-  "java/res/xml/theme_preferences.xml",
   "java/res/xml/tracing_preferences.xml",
 ]

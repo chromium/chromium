@@ -25,7 +25,6 @@ import org.chromium.base.Log;
  *  settings, see https://buganizer.corp.google.com/issues/133424086, http://crbug.com/1626864.
  */
 public class RemoteViewsWithNightModeInflater {
-
     private static final String TAG = "RemoteViewsInflater";
 
     /**
@@ -64,8 +63,8 @@ public class RemoteViewsWithNightModeInflater {
     }
 
     @Nullable
-    private static View inflateWithEnforcedDarkMode(RemoteViews remoteViews, ViewGroup parent,
-            boolean isInLocalNightMode) {
+    private static View inflateWithEnforcedDarkMode(
+            RemoteViews remoteViews, ViewGroup parent, boolean isInLocalNightMode) {
         // This is a modified version of RemoteViews#apply. RemoteViews#apply performs two steps:
         // 1. Inflate the View using the context of the remote app.
         // 2. Apply the Actions to the inflated View (actions are requested by remote app using
@@ -83,8 +82,8 @@ public class RemoteViewsWithNightModeInflater {
             // App context must be used instead of activity context to avoid the support library
             // bug, see https://crbug.com/783834
             Context appContext = ContextUtils.getApplicationContext();
-            Context contextForRemoteViews = new RemoteViewsContextWrapper(appContext,
-                    contextForResources);
+            Context contextForRemoteViews =
+                    new RemoteViewsContextWrapper(appContext, contextForResources);
 
             LayoutInflater inflater =
                     LayoutInflater.from(appContext).cloneInContext(contextForRemoteViews);

@@ -16,7 +16,6 @@ import java.lang.annotation.RetentionPolicy;
  * Records user actions and histograms related to the night mode state.
  */
 public class NightModeMetrics {
-
     /**
      * Different ways that night mode (aka dark theme) can be enabled. This is used for histograms
      * and should therefore be treated as append-only. See DarkThemeEnabledReason in

@@ -32,8 +32,10 @@ public class PowerSavingModeMonitor {
     }
 
     private final ObserverList<Runnable> mObservers = new ObserverList<>();
-    @Nullable private final PowerManager mPowerManager;
-    @Nullable private BroadcastReceiver mPowerModeReceiver;
+    @Nullable
+    private final PowerManager mPowerManager;
+    @Nullable
+    private BroadcastReceiver mPowerModeReceiver;
 
     private boolean mPowerSavingIsOn;
 

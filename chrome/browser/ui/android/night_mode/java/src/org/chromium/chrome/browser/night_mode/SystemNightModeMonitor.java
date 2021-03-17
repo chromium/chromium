@@ -8,11 +8,10 @@ import android.content.res.Configuration;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
-import org.chromium.chrome.browser.ChromeApplication;
 
 /**
  * Observes and keeps a record of the system night mode state (i.e. the night mode from
- * {@link ChromeApplication}).
+ * the application).
  */
 public class SystemNightModeMonitor {
     private static SystemNightModeMonitor sInstance;
@@ -28,7 +27,7 @@ public class SystemNightModeMonitor {
 
     /**
      * @return The {@link SystemNightModeMonitor} that observes the system night mode state
-     *         (i.e. the night mode from {@link ChromeApplication}).
+     *         (i.e. the night mode from the application).
      */
     public static SystemNightModeMonitor getInstance() {
         if (sInstance == null) {

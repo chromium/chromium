@@ -212,6 +212,7 @@ android_library("java") {
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/ui/android/native_page:java",
+    "//chrome/browser/ui/android/night_mode:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/ui/android/toolbar:java",

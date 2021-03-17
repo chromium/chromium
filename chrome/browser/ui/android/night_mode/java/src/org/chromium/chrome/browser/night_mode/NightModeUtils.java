@@ -96,15 +96,15 @@ public class NightModeUtils {
      * @param nightMode Whether to apply night mode.
      * @return Wrapped {@link Context}.
      */
-    public static Context wrapContextWithNightModeConfig(Context context, @StyleRes int themeResId,
-            boolean nightMode) {
+    public static Context wrapContextWithNightModeConfig(
+            Context context, @StyleRes int themeResId, boolean nightMode) {
         ContextThemeWrapper wrapper = new ContextThemeWrapper(context, themeResId);
         Configuration config = new Configuration();
         // Pre-Android O, fontScale gets initialized to 1 in the constructor. Set it to 0 so
         // that applyOverrideConfiguration() does not interpret it as an overridden value.
         config.fontScale = 0;
-        int nightModeFlag = nightMode ? Configuration.UI_MODE_NIGHT_YES
-                : Configuration.UI_MODE_NIGHT_NO;
+        int nightModeFlag =
+                nightMode ? Configuration.UI_MODE_NIGHT_YES : Configuration.UI_MODE_NIGHT_NO;
         config.uiMode = nightModeFlag | (config.uiMode & ~Configuration.UI_MODE_NIGHT_MASK);
         wrapper.applyOverrideConfiguration(config);
         return wrapper;
