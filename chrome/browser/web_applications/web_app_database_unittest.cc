@@ -336,6 +336,7 @@ class WebAppDatabaseTest : public WebAppTest {
       chromeos_data->show_in_search = random.next_bool();
       chromeos_data->show_in_management = random.next_bool();
       chromeos_data->is_disabled = random.next_bool();
+      chromeos_data->oem_installed = random.next_bool();
       app->SetWebAppChromeOsData(std::move(chromeos_data));
     }
 
@@ -636,6 +637,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
     EXPECT_TRUE(chromeos_data->show_in_search);
     EXPECT_TRUE(chromeos_data->show_in_management);
     EXPECT_FALSE(chromeos_data->is_disabled);
+    EXPECT_FALSE(chromeos_data->oem_installed);
   } else {
     EXPECT_FALSE(chromeos_data.has_value());
   }
@@ -801,5 +803,23 @@ TEST_F(WebAppDatabaseTest, WebAppWithUrlHandlersRoundTrip) {
   Registry registry = database_factory().ReadRegistry();
   EXPECT_TRUE(IsRegistryEqual(mutable_registrar().registry(), registry));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(WebAppDatabaseTest, WebAppOemInstalledRoundTrip) {
+  controller().Init();
+
+  const std::string base_url = "https://example.com/path";
+  auto app = CreateWebApp(base_url, 0);
+
+  auto chromeos_data = base::make_optional<WebAppChromeOsData>();
+  chromeos_data->oem_installed = true;
+  app->SetWebAppChromeOsData(std::move(chromeos_data));
+
+  controller().RegisterApp(std::move(app));
+
+  Registry registry = database_factory().ReadRegistry();
+  EXPECT_TRUE(IsRegistryEqual(mutable_registrar().registry(), registry));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace web_app

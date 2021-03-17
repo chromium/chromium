@@ -565,6 +565,25 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
             base::nullopt);
 }
 
+IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest, OemInstalled) {
+  ExternalWebAppManager::BypassOfflineManifestRequirementForTesting();
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  EXPECT_EQ(
+      SyncDefaultAppConfig(GetAppUrl(), base::ReplaceStringPlaceholders(
+                                            R"({
+                "app_url": "$1",
+                "launch_container": "window",
+                "oem_installed": true,
+                "user_type": ["unmanaged"]
+              })",
+                                            {GetAppUrl().spec()}, nullptr)),
+      InstallResultCode::kSuccessNewInstall);
+
+  AppId app_id = GenerateAppIdFromURL(GetAppUrl());
+  EXPECT_TRUE(registrar().WasInstalledByOem(app_id));
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace web_app

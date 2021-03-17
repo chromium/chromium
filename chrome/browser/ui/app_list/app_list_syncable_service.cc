@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/app_list/page_break_app_item.h"
 #include "chrome/browser/ui/app_list/page_break_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
+#include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
@@ -1316,6 +1317,10 @@ syncer::StringOrdinal AppListSyncableService::GetPreferredOemFolderPos() {
 bool AppListSyncableService::AppIsOem(const std::string& id) {
   const ArcAppListPrefs* arc_prefs = ArcAppListPrefs::Get(profile_);
   if (arc_prefs && arc_prefs->IsOem(id))
+    return true;
+
+  auto* provider = web_app::WebAppProviderBase::GetProviderBase(profile_);
+  if (provider && provider->registrar().WasInstalledByOem(id))
     return true;
 
   if (!extension_system_->extension_service())

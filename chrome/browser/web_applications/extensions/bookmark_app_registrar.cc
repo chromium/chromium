@@ -64,6 +64,13 @@ bool BookmarkAppRegistrar::WasInstalledByUser(
   return extension && !extension->was_installed_by_default();
 }
 
+bool BookmarkAppRegistrar::WasInstalledByOem(
+    const web_app::AppId& app_id) const {
+  const Extension* extension = GetEnabledExtension(app_id);
+  return extension && extension->from_bookmark() &&
+         extension->was_installed_by_oem();
+}
+
 int BookmarkAppRegistrar::CountUserInstalledApps() const {
   return CountUserInstalledBookmarkApps(profile());
 }

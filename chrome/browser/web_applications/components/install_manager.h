@@ -128,6 +128,8 @@ class InstallManager {
 
     base::Optional<std::string> launch_query_params;
     base::Optional<SystemAppType> system_app_type;
+
+    bool oem_installed = false;
   };
   // Starts a background web app installation process for a given
   // |web_contents|.

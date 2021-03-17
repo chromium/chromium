@@ -17,6 +17,11 @@ struct WebAppChromeOsData {
   // By default the app is not disabled. Disabling the app means having a
   // blocked logo on top of the app icon, and the user can't launch the app.
   bool is_disabled = false;
+  // True if the app was installed by the device OEM and should be shown
+  // in an OEM folder in the app launcher. This could also be stored as a Source
+  // on the WebApp, which would require refactoring ExternalWebAppManager to
+  // manage multiple Sources for a single app.
+  bool oem_installed = false;
 };
 
 // For logging and debugging purposes.

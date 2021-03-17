@@ -490,4 +490,35 @@ TEST_F(ExternalWebAppUtilsTest, IsReinstallPastMilestoneNeeded) {
   EXPECT_FALSE(IsReinstallPastMilestoneNeeded("error", "error", 0));
 }
 
+TEST_F(ExternalWebAppUtilsTest, OemInstalled) {
+  base::Optional<ExternalInstallOptions> non_bool = ParseConfig(R"(
+        {
+          "app_url": "https://www.test.org",
+          "launch_container": "window",
+          "oem_installed": "some string",
+          "user_type": ["test"]
+        }
+    )");
+  EXPECT_FALSE(non_bool.has_value());
+
+  base::Optional<ExternalInstallOptions> no_oem = ParseConfig(R"(
+        {
+          "app_url": "https://www.test.org",
+          "launch_container": "window",
+          "user_type": ["test"]
+        }
+    )");
+  EXPECT_FALSE(no_oem->oem_installed);
+
+  base::Optional<ExternalInstallOptions> oem_set = ParseConfig(R"(
+        {
+          "app_url": "https://www.test.org",
+          "launch_container": "window",
+          "oem_installed": true,
+          "user_type": ["test"]
+        }
+    )");
+  EXPECT_TRUE(oem_set->oem_installed);
+}
+
 }  // namespace web_app

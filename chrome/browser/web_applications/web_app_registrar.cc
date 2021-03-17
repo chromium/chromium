@@ -66,6 +66,12 @@ bool WebAppRegistrar::WasInstalledByUser(const AppId& app_id) const {
   return web_app && web_app->WasInstalledByUser();
 }
 
+bool WebAppRegistrar::WasInstalledByOem(const AppId& app_id) const {
+  const WebApp* web_app = GetAppById(app_id);
+  return web_app && web_app->chromeos_data().has_value() &&
+         web_app->chromeos_data()->oem_installed;
+}
+
 int WebAppRegistrar::CountUserInstalledApps() const {
   int num_user_installed = 0;
   for (const WebApp& app : GetAppsIncludingStubs()) {

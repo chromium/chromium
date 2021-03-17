@@ -213,6 +213,7 @@ void UpdateFinalizerClientData(
       options->chromeos_data->show_in_search = params->add_to_search;
       options->chromeos_data->show_in_management = params->add_to_management;
       options->chromeos_data->is_disabled = params->is_disabled;
+      options->chromeos_data->oem_installed = params->oem_installed;
     }
     if (params->system_app_type.has_value()) {
       options->system_web_app_data.emplace();

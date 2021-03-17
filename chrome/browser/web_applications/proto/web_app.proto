@@ -53,6 +53,7 @@ message ChromeOSDataProto {
   required bool show_in_search = 2;
   required bool show_in_management = 3;
   required bool is_disabled = 4;
+  optional bool oem_installed = 5;
 }
 
 // Properties for System Web Apps.

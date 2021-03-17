@@ -167,6 +167,10 @@ struct ExternalInstallOptions {
 
   // The type of SystemWebApp, if this app is a System Web App.
   base::Optional<SystemAppType> system_app_type = base::nullopt;
+
+  // Whether the app was installed by an OEM and should be placed in a special
+  // OEM folder in the app launcher. Only used on Chrome OS.
+  bool oem_installed = false;
 };
 
 std::ostream& operator<<(std::ostream& out,
