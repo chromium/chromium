@@ -10,18 +10,20 @@
 #include "base/i18n/rtl.h"
 #include "base/optional.h"
 #include "components/strings/grit/components_strings.h"
+#include "pdf/document_metadata.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/mock_resource_bundle_delegate.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/size.h"
 
-using ::testing::Invoke;
-using ::testing::NiceMock;
-
 namespace chrome_pdf {
 
 namespace {
+
+using ::testing::Invoke;
+using ::testing::IsEmpty;
+using ::testing::NiceMock;
 
 bool GetPageSizeString(int message_id, std::u16string* value) {
   switch (message_id) {
@@ -150,6 +152,16 @@ TEST_F(FormatPageSizeInchesTest, Square) {
 TEST_F(FormatPageSizeInchesTest, Large) {
   EXPECT_EQ(FormatPageSize(gfx::Size(72000, 72000)),
             u"1,000.00 × 1,000.00 in (portrait)");
+}
+
+TEST(FormatPdfVersion, Valid) {
+  EXPECT_EQ(FormatPdfVersion(PdfVersion::k1_7), "1.7");
+  EXPECT_EQ(FormatPdfVersion(PdfVersion::k2_0), "2.0");
+}
+
+TEST(FormatPdfVersion, Invalid) {
+  EXPECT_THAT(FormatPdfVersion(PdfVersion::kUnknown), IsEmpty());
+  EXPECT_THAT(FormatPdfVersion(PdfVersion::k1_8), IsEmpty());
 }
 
 }  // namespace chrome_pdf

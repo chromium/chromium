@@ -6,10 +6,10 @@
 
 #include <string>
 
-#include "base/check_op.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
 #include "base/optional.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/strings/grit/components_strings.h"
 #include "pdf/document_metadata.h"
 #include "printing/units.h"
@@ -91,45 +91,32 @@ std::u16string FormatPageSize(const base::Optional<gfx::Size>& size_points) {
       GetOrientation(size_points.value()));
 }
 
-std::u16string FormatPdfVersion(PdfVersion version) {
-  double value = 0;
+std::string FormatPdfVersion(PdfVersion version) {
   switch (version) {
     case PdfVersion::k1_0:
-      value = 1.0;
-      break;
+      return "1.0";
     case PdfVersion::k1_1:
-      value = 1.1;
-      break;
+      return "1.1";
     case PdfVersion::k1_2:
-      value = 1.2;
-      break;
+      return "1.2";
     case PdfVersion::k1_3:
-      value = 1.3;
-      break;
+      return "1.3";
     case PdfVersion::k1_4:
-      value = 1.4;
-      break;
+      return "1.4";
     case PdfVersion::k1_5:
-      value = 1.5;
-      break;
+      return "1.5";
     case PdfVersion::k1_6:
-      value = 1.6;
-      break;
+      return "1.6";
     case PdfVersion::k1_7:
-      value = 1.7;
-      break;
+      return "1.7";
     case PdfVersion::k2_0:
-      value = 2.0;
-      break;
+      return "2.0";
     case PdfVersion::kUnknown:
     case PdfVersion::k1_8:  // Not an actual version
-      return std::u16string();
+      return std::string();
   }
   // The default case is excluded from the above switch statement to ensure that
   // all supported versions are determinantly handled.
-
-  DCHECK_NE(0, value);
-  return base::FormatDouble(value, 1);
 }
 
 }  // namespace chrome_pdf

@@ -406,7 +406,7 @@ void PdfViewPluginBase::SendMetadata() {
   base::Value metadata(base::Value::Type::DICTIONARY);
   const DocumentMetadata& document_metadata = engine()->GetDocumentMetadata();
 
-  const std::u16string version = FormatPdfVersion(document_metadata.version);
+  const std::string version = FormatPdfVersion(document_metadata.version);
   if (!version.empty())
     metadata.SetStringKey("version", version);
 
