@@ -624,7 +624,7 @@ size_t HistoryURLProvider::EstimateMemoryUsage() const {
 AutocompleteMatch HistoryURLProvider::SuggestExactInput(
     const AutocompleteInput& input,
     const GURL& destination_url,
-    bool trim_http) {
+    bool trim_default_scheme) {
   // The FormattedStringWithEquivalentMeaning() call below requires callers to
   // be on the main thread.
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -634,17 +634,29 @@ AutocompleteMatch HistoryURLProvider::SuggestExactInput(
 
   if (destination_url.is_valid()) {
     match.destination_url = destination_url;
+    // If the input explicitly contains "http://" or "https://", callers must
+    // set |trim_default_scheme| to false. Otherwise, |trim_default_scheme| may
+    // be either true or false.
+    if (input.added_default_scheme_to_typed_url()) {
+      DCHECK(!(trim_default_scheme &&
+               AutocompleteInput::HasHTTPSScheme(input.text())));
+    } else {
+      DCHECK(!(trim_default_scheme &&
+               AutocompleteInput::HasHTTPScheme(input.text())));
+    }
+    const url_formatter::FormatUrlType format_type =
+        input.added_default_scheme_to_typed_url()
+            ? url_formatter::kFormatUrlOmitHTTPS
+            : url_formatter::kFormatUrlOmitHTTP;
 
-    // If the input explicitly contains "http://", callers must set |trim_http|
-    // to false. Otherwise, |trim_http| may be either true or false.
-    DCHECK(!(trim_http && AutocompleteInput::HasHTTPScheme(input.text())));
     base::string16 display_string(url_formatter::FormatUrl(
-        destination_url,
-        url_formatter::kFormatUrlOmitDefaults &
-            ~url_formatter::kFormatUrlOmitHTTP,
+        destination_url, url_formatter::kFormatUrlOmitDefaults & ~format_type,
         net::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
-    if (trim_http)
-      TrimHttpPrefix(&display_string);
+    if (trim_default_scheme) {
+      TrimSchemePrefix(&display_string,
+                       input.added_default_scheme_to_typed_url());
+    }
+
     match.fill_into_edit =
         AutocompleteInput::FormattedStringWithEquivalentMeaning(
             destination_url, display_string, client()->GetSchemeClassifier(),

@@ -206,9 +206,12 @@ AutocompleteProvider::FixupReturn AutocompleteProvider::FixupUserInput(
   }
   base::string16 output(base::UTF8ToUTF16(canonical_gurl_str));
   // Don't prepend a scheme when the user didn't have one.  Since the fixer
-  // upper only prepends the "http" scheme, that's all we need to check for.
+  // upper only prepends the "http" scheme that's all we need to check for.
+  // Note that even if Defaulting Typed Omnibox Navigations to HTTPS feature is
+  // enabled, the https upgrade is done in AutocompleteInput::Parse() and not
+  // in the fixer upper, so we don't need to check for that case.
   if (!AutocompleteInput::HasHTTPScheme(input_text))
-    TrimHttpPrefix(&output);
+    TrimSchemePrefix(&output, /*trim_https=*/false);
 
   // Make the number of trailing slashes on the output exactly match the input.
   // Examples of why not doing this would matter:
@@ -250,16 +253,19 @@ AutocompleteProvider::FixupReturn AutocompleteProvider::FixupUserInput(
 }
 
 // static
-size_t AutocompleteProvider::TrimHttpPrefix(base::string16* url) {
-  // Find any "http:".
-  if (!AutocompleteInput::HasHTTPScheme(*url))
+size_t AutocompleteProvider::TrimSchemePrefix(base::string16* url,
+                                              bool trim_https) {
+  // Find any "http:" or "https:".
+  if (trim_https && !AutocompleteInput::HasHTTPSScheme(*url))
     return 0;
-  size_t scheme_pos =
-      url->find(base::ASCIIToUTF16(url::kHttpScheme) + base::char16(':'));
+  if (!trim_https && !AutocompleteInput::HasHTTPScheme(*url))
+    return 0;
+  const char* scheme = trim_https ? url::kHttpsScheme : url::kHttpScheme;
+  size_t scheme_pos = url->find(base::ASCIIToUTF16(scheme) + base::char16(':'));
   DCHECK_NE(base::string16::npos, scheme_pos);
 
   // Erase scheme plus up to two slashes.
-  size_t prefix_end = scheme_pos + strlen(url::kHttpScheme) + 1;
+  size_t prefix_end = scheme_pos + strlen(scheme) + 1;
   const size_t after_slashes = std::min(url->length(), prefix_end + 2);
   while ((prefix_end < after_slashes) && ((*url)[prefix_end] == '/'))
     ++prefix_end;

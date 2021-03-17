@@ -114,8 +114,11 @@ class AutocompleteInput {
   // Returns the number of non-empty components in |parts| besides the host.
   static int NumNonHostComponents(const url::Parsed& parts);
 
-  // Returns whether |text| begins "http:" or "view-source:http:".
+  // Returns whether |text| begins with "http:" or "view-source:http:".
   static bool HasHTTPScheme(const base::string16& text);
+
+  // Returns whether |text| begins with "https:" or "view-source:https:".
+  static bool HasHTTPSScheme(const base::string16& text);
 
   // User-provided text to be completed.
   const base::string16& text() const { return text_; }
