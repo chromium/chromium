@@ -45,6 +45,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/base/upload_bytes_element_reader.h"
+#include "net/base/idempotency.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_query.h"
 #include "net/dns/dns_response.h"
@@ -398,6 +399,7 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
 
     if (use_post) {
       request_->set_method("POST");
+      request_->SetIdempotency(IDEMPOTENT);
       std::unique_ptr<UploadElementReader> reader =
           std::make_unique<UploadBytesElementReader>(
               query_->io_buffer()->data(), query_->io_buffer()->size());
