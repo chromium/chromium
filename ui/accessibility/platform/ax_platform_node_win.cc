@@ -36,6 +36,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_active_popup.h"
 #include "ui/accessibility/ax_constants.mojom.h"
 #include "ui/accessibility/ax_enum_util.h"
@@ -44,7 +45,6 @@
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree_data.h"
-#include "ui/accessibility/ax_tree_id_registry.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate_utils_win.h"
@@ -3960,8 +3960,8 @@ void AXPlatformNodeWin::GetRuntimeIdArray(
   AXTreeID tree_id = GetDelegate()->GetTreeData().tree_id;
   if (data.GetIntAttribute(ax::mojom::IntAttribute::kDOMNodeId, &dom_id) &&
       tree_id != AXTreeIDUnknown()) {
-    AXTreeIDRegistry::FrameID frame_id =
-        AXTreeIDRegistry::GetInstance()->GetFrameID(tree_id);
+    AXActionHandlerRegistry::FrameID frame_id =
+        AXActionHandlerRegistry::GetInstance()->GetFrameID(tree_id);
     runtime_id[1] = frame_id.first;
     runtime_id[2] = frame_id.second;
     runtime_id[3] = dom_id;

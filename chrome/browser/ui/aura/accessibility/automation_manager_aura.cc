@@ -15,10 +15,10 @@
 #include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_action_handler_base.h"
+#include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event.h"
-#include "ui/accessibility/ax_tree_id_registry.h"
 #include "ui/accessibility/ax_tree_source_checker.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -303,7 +303,8 @@ void AutomationManagerAura::PerformHitTest(
   // If the window has a child AX tree ID, forward the action to the
   // associated AXActionHandlerBase.
   if (child_ax_tree_id != ui::AXTreeIDUnknown()) {
-    ui::AXTreeIDRegistry* registry = ui::AXTreeIDRegistry::GetInstance();
+    ui::AXActionHandlerRegistry* registry =
+        ui::AXActionHandlerRegistry::GetInstance();
     ui::AXActionHandlerBase* action_handler =
         registry->GetActionHandler(child_ax_tree_id);
     CHECK(action_handler);

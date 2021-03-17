@@ -7,8 +7,8 @@
 
 #include <vector>
 
+#include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_export.h"
-#include "ui/accessibility/ax_tree_id_registry.h"
 #include "ui/accessibility/ax_tree_update.h"
 
 namespace ui {

@@ -248,9 +248,9 @@
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom.h"
 #include "third_party/blink/public/mojom/usb/web_usb_service.mojom.h"
 #include "third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom.h"
+#include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_tree.h"
-#include "ui/accessibility/ax_tree_id_registry.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/quad_f.h"
@@ -1032,8 +1032,8 @@ RenderFrameHost* RenderFrameHost::FromAXTreeID(ui::AXTreeID ax_tree_id) {
 RenderFrameHostImpl* RenderFrameHostImpl::FromAXTreeID(
     ui::AXTreeID ax_tree_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ui::AXTreeIDRegistry::FrameID frame_id =
-      ui::AXTreeIDRegistry::GetInstance()->GetFrameID(ax_tree_id);
+  ui::AXActionHandlerRegistry::FrameID frame_id =
+      ui::AXActionHandlerRegistry::GetInstance()->GetFrameID(ax_tree_id);
   return RenderFrameHostImpl::FromID(frame_id.first, frame_id.second);
 }
 
@@ -10609,11 +10609,12 @@ void RenderFrameHostImpl::SetEmbeddingToken(
   embedding_token_ = embedding_token;
 
   // The AXTreeID of a frame is backed by its embedding token, so we need to
-  // update its AXTreeID, as well as the associated mapping in AXTreeIDRegistry.
+  // update its AXTreeID, as well as the associated mapping in
+  // AXActionHandlerRegistry.
   ui::AXTreeID ax_tree_id = ui::AXTreeID::FromToken(embedding_token);
   SetAXTreeID(ax_tree_id);
-  ui::AXTreeIDRegistry::GetInstance()->SetFrameIDForAXTreeID(
-      ui::AXTreeIDRegistry::FrameID(GetProcess()->GetID(), routing_id_),
+  ui::AXActionHandlerRegistry::GetInstance()->SetFrameIDForAXTreeID(
+      ui::AXActionHandlerRegistry::FrameID(GetProcess()->GetID(), routing_id_),
       ax_tree_id);
 
   // Also important to notify the delegate so that the relevant observers can

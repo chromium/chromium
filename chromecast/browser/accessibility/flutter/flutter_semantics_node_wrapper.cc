@@ -10,7 +10,7 @@
 #include "chromecast/browser/cast_web_contents.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/accessibility/ax_tree_id_registry.h"
+#include "ui/accessibility/ax_action_handler_registry.h"
 
 using gallium::castos::ActionProperties;
 using gallium::castos::BooleanProperties;

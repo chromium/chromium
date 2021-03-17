@@ -39,8 +39,8 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_action_handler_base.h"
+#include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_enum_util.h"
-#include "ui/accessibility/ax_tree_id_registry.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/env.h"
@@ -353,7 +353,8 @@ ExtensionFunction::ResponseAction AutomationInternalEnableTreeFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   ui::AXTreeID ax_tree_id = ui::AXTreeID::FromString(params->tree_id);
-  ui::AXTreeIDRegistry* registry = ui::AXTreeIDRegistry::GetInstance();
+  ui::AXActionHandlerRegistry* registry =
+      ui::AXActionHandlerRegistry::GetInstance();
   ui::AXActionHandlerBase* action_handler =
       registry->GetActionHandler(ax_tree_id);
   if (action_handler) {
@@ -590,7 +591,8 @@ AutomationInternalPerformActionFunction::Run() {
   using api::automation_internal::PerformAction::Params;
   std::unique_ptr<Params> params(Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params.get());
-  ui::AXTreeIDRegistry* registry = ui::AXTreeIDRegistry::GetInstance();
+  ui::AXActionHandlerRegistry* registry =
+      ui::AXActionHandlerRegistry::GetInstance();
   ui::AXActionHandlerBase* action_handler = registry->GetActionHandler(
       ui::AXTreeID::FromString(params->args.tree_id));
   if (action_handler) {
