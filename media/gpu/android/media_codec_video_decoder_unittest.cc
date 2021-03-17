@@ -1059,5 +1059,7 @@ INSTANTIATE_TEST_SUITE_P(MediaCodecVideoDecoderAV1Test,
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(MediaCodecVideoDecoderVp9Test);
 // This test suite is empty on some OSes.
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(MediaCodecVideoDecoderAV1Test);
+// For builds without proprietary codecs
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(MediaCodecVideoDecoderH264Test);
 
 }  // namespace media
