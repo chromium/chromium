@@ -5730,22 +5730,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kStorageAccessAPIDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kStorageAccessAPI)},
 
-    {"same-site-by-default-cookies",
-     flag_descriptions::kSameSiteByDefaultCookiesName,
-     flag_descriptions::kSameSiteByDefaultCookiesDescription, kOsAll,
-     FEATURE_VALUE_TYPE(net::features::kSameSiteByDefaultCookies)},
-
     {"enable-removing-all-third-party-cookies",
      flag_descriptions::kEnableRemovingAllThirdPartyCookiesName,
      flag_descriptions::kEnableRemovingAllThirdPartyCookiesDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(
          browsing_data::features::kEnableRemovingAllThirdPartyCookies)},
-
-    {"cookies-without-same-site-must-be-secure",
-     flag_descriptions::kCookiesWithoutSameSiteMustBeSecureName,
-     flag_descriptions::kCookiesWithoutSameSiteMustBeSecureDescription, kOsAll,
-     FEATURE_VALUE_TYPE(net::features::kCookiesWithoutSameSiteMustBeSecure)},
 
 #if defined(OS_MAC)
     {"enterprise-reporting-api-keychain-recreation",

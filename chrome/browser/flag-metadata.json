@@ -786,11 +786,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "cookies-without-same-site-must-be-secure",
-    "owners": [ "chlily", "morlovich" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "copy-link-to-text",
     "owners": [ "johntlee" ],
     "expiry_milestone": 92
@@ -4553,11 +4548,6 @@
     "name": "safety-tips",
     "owners": [ "jdeblasio", "estark", "meacer" ],
     "expiry_milestone": 89
-  },
-  {
-    "name": "same-site-by-default-cookies",
-    "owners": [ "chlily", "morlovich" ],
-    "expiry_milestone": 90
   },
   {
     "name": "scan-app-media-link",

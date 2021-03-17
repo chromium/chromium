@@ -321,9 +321,6 @@ extern const char kCompositedLayerBordersDescription[];
 extern const char kCookieDeprecationMessagesName[];
 extern const char kCookieDeprecationMessagesDescription[];
 
-extern const char kCookiesWithoutSameSiteMustBeSecureName[];
-extern const char kCookiesWithoutSameSiteMustBeSecureDescription[];
-
 extern const char kCooperativeSchedulingName[];
 extern const char kCooperativeSchedulingDescription[];
 
@@ -1222,9 +1219,6 @@ extern const char
 
 extern const char kSafetyTipName[];
 extern const char kSafetyTipDescription[];
-
-extern const char kSameSiteByDefaultCookiesName[];
-extern const char kSameSiteByDefaultCookiesDescription[];
 
 extern const char kSchemefulSameSiteName[];
 extern const char kSchemefulSameSiteDescription[];
