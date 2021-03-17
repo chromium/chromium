@@ -1153,8 +1153,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="AttestationOps" separator=".">
+  <suffix name="ActivateAttestationKey" label=""/>
+  <suffix name="AttestationVerify" label=""/>
   <suffix name="DecryptDatabase" label=""/>
-  <suffix name="MigrateDatabase" label=""/>
+  <suffix name="EncryptDatabase" label=""/>
+  <suffix name="MigrateDatabase" label="">
+    <obsolete>
+      Removed 2021/03.
+    </obsolete>
+  </suffix>
   <suffix name="PrepareForEnrollment" label=""/>
   <affected-histogram name="Hwsec.Attestation.Status"/>
 </histogram_suffixes>
