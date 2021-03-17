@@ -11,11 +11,11 @@ import java.lang.ref.WeakReference;
 /**
  * Used for Js Java interaction, to delete the document start JavaScript snippet.
  */
-public class ScriptReference {
+public class ScriptHandler {
     private WeakReference<AwContents> mAwContentsRef;
     private int mScriptId;
 
-    public ScriptReference(AwContents awContents, int scriptId) {
+    public ScriptHandler(AwContents awContents, int scriptId) {
         assert scriptId >= 0;
         mAwContentsRef = new WeakReference(awContents);
         mScriptId = scriptId;

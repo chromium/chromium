@@ -6,23 +6,23 @@ package org.chromium.support_lib_glue;
 
 import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.recordApiCall;
 
-import org.chromium.android_webview.ScriptReference;
-import org.chromium.support_lib_boundary.ScriptReferenceBoundaryInterface;
+import org.chromium.android_webview.ScriptHandler;
+import org.chromium.support_lib_boundary.ScriptHandlerBoundaryInterface;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
 /**
- * Adapter between ScriptReferenceBoundaryInterface and ScriptReference.
+ * Adapter between ScriptHandlerBoundaryInterface and ScriptHandler.
  */
-class SupportLibScriptReferenceAdapter implements ScriptReferenceBoundaryInterface {
-    private ScriptReference mScriptReference;
+class SupportLibScriptHandlerAdapter implements ScriptHandlerBoundaryInterface {
+    private ScriptHandler mScriptHandler;
 
-    public SupportLibScriptReferenceAdapter(ScriptReference scriptReference) {
-        mScriptReference = scriptReference;
+    public SupportLibScriptHandlerAdapter(ScriptHandler scriptHandler) {
+        mScriptHandler = scriptHandler;
     }
 
     @Override
     public void remove() {
         recordApiCall(ApiCall.REMOVE_DOCUMENT_START_SCRIPT);
-        mScriptReference.remove();
+        mScriptHandler.remove();
     }
 }

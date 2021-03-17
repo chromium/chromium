@@ -489,7 +489,7 @@ android_library("browser_java") {
     "java/src/org/chromium/android_webview/NullAwViewMethods.java",
     "java/src/org/chromium/android_webview/OverScrollGlow.java",
     "java/src/org/chromium/android_webview/PopupTouchHandleDrawable.java",
-    "java/src/org/chromium/android_webview/ScriptReference.java",
+    "java/src/org/chromium/android_webview/ScriptHandler.java",
     "java/src/org/chromium/android_webview/ScrollAccessibilityHelper.java",
     "java/src/org/chromium/android_webview/SslUtil.java",
     "java/src/org/chromium/android_webview/ViewPositionObserver.java",

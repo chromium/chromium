@@ -2621,9 +2621,9 @@ public class AwContents implements SmartClipProvider {
      * Add a JavaScript snippet that will run after the document has been created, but before any
      * script in the document executes. Note that calling this method multiple times will add
      * multiple scripts. Added scripts will take effect from the next navigation. If want to remove
-     * previously set script, use the returned ScriptReference object to do so. Any JavaScript
+     * previously set script, use the returned ScriptHandler object to do so. Any JavaScript
      * objects injected by addWebMessageListener() or addJavascriptInterface() will be available to
-     * use in this script. Scripts can be removed using the ScriptReference object returned when
+     * use in this script. Scripts can be removed using the ScriptHandler object returned when
      * they were added. The DOM tree may not be ready at the moment that the script runs.
      *
      * If multiple scripts are added, they will be executed in the same order they were added.
@@ -2634,9 +2634,9 @@ public class AwContents implements SmartClipProvider {
      *
      * @throws IllegalArgumentException if one of the allowedOriginRules is invalid or one of
      *                                  jsObjectName and allowedOriginRules is {@code null}.
-     * @return A {@link ScriptReference} for removing the script.
+     * @return A {@link ScriptHandler} for removing the script.
      */
-    public ScriptReference addDocumentStartJavaScript(
+    public ScriptHandler addDocumentStartJavaScript(
             @NonNull String script, @NonNull String[] allowedOriginRules) {
         if (script == null) {
             throw new IllegalArgumentException("script shouldn't be null.");
@@ -2649,7 +2649,7 @@ public class AwContents implements SmartClipProvider {
             }
         }
 
-        return new ScriptReference(AwContents.this,
+        return new ScriptHandler(AwContents.this,
                 AwContentsJni.get().addDocumentStartJavaScript(
                         mNativeAwContents, AwContents.this, script, allowedOriginRules));
     }
