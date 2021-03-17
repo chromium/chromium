@@ -397,10 +397,19 @@ class PrerenderBrowserTest
   base::Lock lock_;
 };
 
+// TODO(crbug.com/1189150): Some MPArch fail on android-asan and therefore
+// disabled.
+#if defined(ADDRESS_SANITIZER)
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrerenderBrowserTest,
+                         testing::Values(kWebContents),
+                         ToString);
+#else
 INSTANTIATE_TEST_SUITE_P(All,
                          PrerenderBrowserTest,
                          testing::Values(kWebContents, kMPArch),
                          ToString);
+#endif
 
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LinkRelPrerender) {
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
