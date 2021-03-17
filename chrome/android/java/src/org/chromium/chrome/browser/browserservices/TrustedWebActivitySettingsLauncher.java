@@ -53,14 +53,14 @@ public class TrustedWebActivitySettingsLauncher {
      */
     public static void launchForWebApkPackageName(
             Context context, String packageName, String webApkUrl) {
+        // Handle the case when settings are selected but Chrome was not running.
+        ChromeWebApkHost.init();
         if (!WebApkValidator.canWebApkHandleUrl(context, packageName, webApkUrl)) {
             Log.d(TAG, "WebApk " + packageName + " can't handle url " + webApkUrl);
             return;
         }
         if (getApplicationUid(context, packageName) == null) return;
 
-        // Handle the case when settings are selected but Chrome was not running.
-        ChromeWebApkHost.init();
         openSingleWebsitePrefs(context, webApkUrl);
     }
 

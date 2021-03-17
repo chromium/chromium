@@ -211,13 +211,6 @@ public class WebApkValidator {
     @SuppressLint("PackageManagerGetSignatures")
     private static @ValidationResult int isValidWebApkInternal(
             Context context, String webappPackageName) {
-        if (sOverrideValidationForTesting) {
-            if (DEBUG) {
-                Log.d(TAG, "WebApk validation is disabled for testing.");
-            }
-            // Always return V1_WEB_APK in this case, because we only care if it's V1 WebAPK.
-            return ValidationResult.V1_WEB_APK;
-        }
         if (sExpectedSignature == null || sCommentSignedPublicKeyBytes == null) {
             Log.wtf(TAG,
                     "WebApk validation failure - expected signature not set - "
@@ -237,6 +230,13 @@ public class WebApkValidator {
         }
         if (isNotWebApkQuick(packageInfo)) {
             return ValidationResult.FAILURE;
+        }
+        if (sOverrideValidationForTesting) {
+            if (DEBUG) {
+                Log.d(TAG, "WebApk validation is disabled for testing.");
+            }
+            // Always return V1_WEB_APK in this case, because we only care if it's V1 WebAPK.
+            return ValidationResult.V1_WEB_APK;
         }
         if (verifyV1WebApk(packageInfo, webappPackageName)) {
             return ValidationResult.V1_WEB_APK;

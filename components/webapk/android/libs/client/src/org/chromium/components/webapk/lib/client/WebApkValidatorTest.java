@@ -78,6 +78,7 @@ public class WebApkValidatorTest {
     public void setUp() {
         mPackageManager = Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager());
         WebApkValidator.init(EXPECTED_SIGNATURE, PUBLIC_KEY);
+        WebApkValidator.setDisableValidationForTesting(false);
     }
 
     /**
@@ -465,6 +466,51 @@ public class WebApkValidatorTest {
 
         assertNull(WebApkValidator.queryBoundWebApkForManifestUrl(
                 RuntimeEnvironment.application, "https://evil.com/manifest.json"));
+    }
+
+    /**
+     * Tests when override validation is set, {@link WebApkValidator.isValidWebApk} returns
+     * true with invalid signature.
+     */
+    @Test
+    public void testIsValidWebApkWithOverridesSignature() {
+        mPackageManager.addPackage(newPackageInfoWithBrowserSignature(
+                WEBAPK_PACKAGE_NAME, new Signature(SIGNATURE_1), TEST_STARTURL, null));
+
+        assertFalse(
+                WebApkValidator.isValidWebApk(RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME));
+
+        WebApkValidator.setDisableValidationForTesting(true);
+        assertTrue(
+                WebApkValidator.isValidWebApk(RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME));
+    }
+
+    /**
+     * Tests when override validation is set, {@link WebApkValidator.isValidWebApk} returns false
+     * when no START_URL.
+     */
+    @Test
+    public void testIsValidWebApkOverridesReturnsFalseNoStartUrl() {
+        PackageInfo webapkPackage = newPackageInfoWithBrowserSignature(
+                WEBAPK_PACKAGE_NAME, new Signature(EXPECTED_SIGNATURE), TEST_STARTURL, null);
+        webapkPackage.applicationInfo.metaData.remove(START_URL);
+        mPackageManager.addPackage(webapkPackage);
+
+        WebApkValidator.setDisableValidationForTesting(true);
+        assertFalse(
+                WebApkValidator.isValidWebApk(RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME));
+    }
+
+    /**
+     * Tests when override validation is set, {@link WebApkValidator.isValidWebApk} returns false
+     * when package is not installed.
+     */
+    @Test
+    public void testIsValidWebApkOverridesPackageNotFound() {
+        WebApkValidator.setDisableValidationForTesting(true);
+
+        assertFalse(WebApkValidator.isValidWebApk(
+                RuntimeEnvironment.application, INVALID_WEBAPK_PACKAGE_NAME));
     }
 
     // Get the full test file path.
