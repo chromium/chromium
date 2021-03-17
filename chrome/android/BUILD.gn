@@ -1546,6 +1546,7 @@ if (enable_vr || enable_arcore) {
         "javatests/src/org/chromium/chrome/browser/vr/WebXrArLightEstimationTest.java",
         "javatests/src/org/chromium/chrome/browser/vr/WebXrArSessionTest.java",
         "javatests/src/org/chromium/chrome/browser/vr/WebXrArTestFramework.java",
+        "javatests/src/org/chromium/chrome/browser/vr/WebXrArViewportScaleTest.java",
         "javatests/src/org/chromium/chrome/browser/vr/rules/ArPlaybackFile.java",
         "javatests/src/org/chromium/chrome/browser/vr/rules/ArTestRule.java",
         "javatests/src/org/chromium/chrome/browser/vr/rules/ChromeTabbedActivityArTestRule.java",
