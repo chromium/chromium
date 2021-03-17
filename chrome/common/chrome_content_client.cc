@@ -90,7 +90,7 @@
 
 #if BUILDFLAG(ENABLE_WIDEVINE) && (defined(OS_LINUX) || defined(OS_CHROMEOS))
 #include "base/no_destructor.h"
-#include "chrome/common/media/cdm_manifest.h"
+#include "components/cdm/common/cdm_manifest.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"  // nogncheck
 // TODO(crbug.com/663554): Needed for WIDEVINE_CDM_VERSION_STRING. Support
 // component updated CDM on all desktop platforms and remove this.

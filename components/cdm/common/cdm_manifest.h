@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_COMMON_MEDIA_CDM_MANIFEST_H_
-#define CHROME_COMMON_MEDIA_CDM_MANIFEST_H_
+#ifndef COMPONENTS_CDM_COMMON_CDM_MANIFEST_H_
+#define COMPONENTS_CDM_COMMON_CDM_MANIFEST_H_
 
 namespace base {
 class FilePath;
 class Value;
 class Version;
-}
+}  // namespace base
 
 namespace content {
 struct CdmCapability;

@@ -5,6 +5,9 @@
 #ifndef CHROMECAST_COMMON_CAST_CONTENT_CLIENT_H_
 #define CHROMECAST_COMMON_CAST_CONTENT_CLIENT_H_
 
+#include <vector>
+
+#include "base/files/file_path.h"
 #include "content/public/common/content_client.h"
 #include "url/gurl.h"
 
@@ -32,6 +35,9 @@ class CastContentClient : public content::ContentClient {
   void ExposeInterfacesToBrowser(
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       mojo::BinderMap* binders) override;
+  void AddContentDecryptionModules(
+      std::vector<content::CdmInfo>* cdms,
+      std::vector<::media::CdmHostFilePath>* cdm_host_file_paths) override;
 
  private:
   GURL last_active_url_;

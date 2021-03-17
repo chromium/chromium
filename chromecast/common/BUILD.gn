@@ -4,6 +4,7 @@
 
 import("//chromecast/chromecast.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//third_party/widevine/cdm/widevine.gni")
 
 cast_source_set("queryable_data") {
   sources = [
@@ -75,10 +76,13 @@ cast_source_set("common") {
     "//chromecast/base:cast_version",
     "//chromecast/common/media",
     "//chromecast/common/mojom",
+    "//components/cdm/common:common",
     "//content/public/common",
+    "//media:media_buildflags",
     "//mojo/public/cpp/bindings",
     "//net",
     "//services/network/public/cpp:cpp",
+    "//third_party/widevine/cdm:buildflags",
     "//ui/base",
     "//url:url",
   ]
@@ -110,5 +114,9 @@ cast_source_set("common") {
 
   if (!is_fuchsia) {
     deps += [ "//components/services/heap_profiling/public/cpp" ]
+  }
+
+  if (enable_library_cdms) {
+    deps += [ "//media/cdm:cdm_paths" ]  # Needed by cast_content_client.cc
   }
 }

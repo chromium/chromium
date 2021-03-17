@@ -15,6 +15,7 @@ import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//rlz/buildflags/buildflags.gni")
 import("//testing/test.gni")
+import("//third_party/widevine/cdm/widevine.gni")
 import("//tools/grit/repack.gni")
 
 if (is_android) {
@@ -431,6 +432,10 @@ test("components_unittests") {
 
   if (!is_android) {
     deps += [ "//components/feedback:unit_tests" ]
+  }
+
+  if (enable_library_cdms) {
+    deps += [ "//components/cdm/common:unit_tests" ]
   }
 
   if (enable_rlz_support) {

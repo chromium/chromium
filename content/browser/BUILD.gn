@@ -2470,6 +2470,9 @@ source_set("browser") {
       "media/key_system_support_impl.cc",
       "media/key_system_support_impl.h",
     ]
+
+    # Depends on ppapi_constants.h
+    deps += [ "//ppapi/shared_impl" ]
   }
 
   if (use_atk) {

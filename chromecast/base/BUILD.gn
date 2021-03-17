@@ -90,6 +90,7 @@ cast_source_set("base") {
   deps = [
     "//base",
     "//chromecast:chromecast_buildflags",
+    "//third_party/widevine/cdm:buildflags",
   ]
 
   if (chromecast_branding == "public") {

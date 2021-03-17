@@ -28,7 +28,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/common/media/cdm_manifest.h"
+#include "components/cdm/common/cdm_manifest.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/version_info/version_info.h"

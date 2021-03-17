@@ -1,5 +1,6 @@
 include_rules = [
   "+chrome/elevation_service",
+  "+components/cdm/common",
   "+components/soda",
   "+media/cdm/supported_cdm_versions.h",
   "+ppapi/thunk",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/media/cdm_manifest.h"
+#include "components/cdm/common/cdm_manifest.h"
 
 #include <stdint.h>
 #include <memory>
@@ -19,7 +19,6 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "content/public/common/cdm_info.h"
-#include "extensions/common/manifest_constants.h"
 #include "media/cdm/api/content_decryption_module.h"
 #include "media/cdm/supported_cdm_versions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,6 +28,7 @@ using content::CdmCapability;
 namespace {
 
 // These names must match what is used in cdm_manifest.cc.
+const char kCdmVersion[] = "version";
 const char kCdmModuleVersionsName[] = "x-cdm-module-versions";
 const char kCdmInterfaceVersionsName[] = "x-cdm-interface-versions";
 const char kCdmHostVersionsName[] = "x-cdm-host-versions";
@@ -379,7 +379,7 @@ TEST(CdmManifestTest, FileManifest) {
 
   // Manifests read from a file also need a version.
   auto manifest = DefaultManifest();
-  manifest.SetStringKey(extensions::manifest_keys::kVersion, kVersion);
+  manifest.SetStringKey(kCdmVersion, kVersion);
   WriteManifestToFile(manifest, manifest_path);
 
   base::Version version;
@@ -417,7 +417,7 @@ TEST(CdmManifestTest, FileManifestBadVersion) {
   auto manifest_path = temp_dir.GetPath().AppendASCII("manifest.json");
 
   auto manifest = DefaultManifest();
-  manifest.SetStringKey(extensions::manifest_keys::kVersion, "bad version");
+  manifest.SetStringKey(kCdmVersion, "bad version");
   WriteManifestToFile(manifest, manifest_path);
 
   base::Version version;
@@ -456,7 +456,7 @@ TEST(CdmManifestTest, FileManifestLite) {
   // Only a version plus fields to satisfy compatibility are required in the
   // manifest to parse correctly.
   base::Value manifest(base::Value::Type::DICTIONARY);
-  manifest.SetStringKey(extensions::manifest_keys::kVersion, "1.2.3.4");
+  manifest.SetStringKey(kCdmVersion, "1.2.3.4");
   manifest.SetStringKey(kCdmModuleVersionsName,
                         base::NumberToString(kSupportedCdmModuleVersion));
   manifest.SetStringKey(kCdmInterfaceVersionsName,

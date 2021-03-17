@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/media/cdm_manifest.h"
+#include "components/cdm/common/cdm_manifest.h"
 
 #include <stddef.h>
 #include <memory>

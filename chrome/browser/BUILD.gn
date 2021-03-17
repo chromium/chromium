@@ -5862,7 +5862,10 @@ static_library("browser") {
           "component_updater/widevine_cdm_component_installer.cc",
           "component_updater/widevine_cdm_component_installer.h",
         ]
-        deps += [ "//third_party/widevine/cdm:headers" ]
+        deps += [
+          "//components/cdm/common",
+          "//third_party/widevine/cdm:headers",
+        ]
       }
       if (is_win) {
         sources += [

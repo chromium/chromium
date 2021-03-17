@@ -4059,10 +4059,6 @@ test("unit_tests") {
     }
   }
 
-  if (enable_library_cdms) {
-    sources += [ "../common/media/cdm_manifest_unittest.cc" ]
-  }
-
   if (is_android) {
     sources +=
         [ "../browser/enterprise/util/android_enterprise_info_unittest.cc" ]

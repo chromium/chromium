@@ -489,6 +489,7 @@ cast_executable("cast_shell") {
     ":chromecast_locales_pak",
     "//chromecast/app",
     "//content/public/app",
+    "//third_party/widevine/cdm",
   ]
 }
 
