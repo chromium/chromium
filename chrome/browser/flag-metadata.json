@@ -999,8 +999,8 @@
   },
   {
     "name": "diagnostics-app",
-    "owners": [ "baileyberro", "jimmyxgong", "zentaro"],
-    "expiry_milestone": 90
+    "owners": [ "//chromeos/components/diagnostics_ui/OWNERS" ],
+    "expiry_milestone": 92
   },
   {
     "name": "dice-web-signin-interception",
