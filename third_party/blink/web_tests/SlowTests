@@ -689,7 +689,6 @@ crbug.com/1046784 http/tests/devtools/elements/styles-4/styles-update-links-2.js
 crbug.com/1046784 http/tests/devtools/editor/text-editor-code-folding.js [ Slow ]
 crbug.com/1046784 http/tests/devtools/coverage/coverage-suspended.js [ Slow ]
 crbug.com/1046784 http/tests/devtools/network/network-search.js [ Slow ]
-crbug.com/1046784 http/tests/devtools/components/linkifier.js [ Slow ]
 crbug.com/1046784 http/tests/devtools/elements/styles-4/styles-update-links-1.js [ Slow ]
 crbug.com/1046784 http/tests/devtools/editor/text-editor-block-indent.js [ Slow ]
 crbug.com/1046784 http/tests/devtools/elements/edit/set-outer-html.js [ Slow ]
