@@ -1,7 +1,7 @@
 {
     "project": "chromium",
     "project_title": "Chromium",
-    "is_master": true,
+    "is_main": true,
     "is_lts_branch": false,
     "ref": "refs/heads/master"
 }

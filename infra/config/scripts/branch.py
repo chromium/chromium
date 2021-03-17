@@ -57,7 +57,7 @@ def initial_settings(milestone, branch):
   settings = dict(
       project=f'chromium-m{milestone}',
       project_title=f'Chromium M{milestone}',
-      is_master=False,
+      is_main=False,
       is_lts_branch=False,
       ref=f'refs/branch-heads/{branch}',
   )

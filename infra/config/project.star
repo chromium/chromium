@@ -6,7 +6,7 @@ def _project_settings(
         *,
         project,
         project_title,
-        is_master,
+        is_main,
         is_lts_branch,
         ref):
     """Declare settings for the project.
@@ -20,16 +20,16 @@ def _project_settings(
       * project - The name of the LUCI project.
       * project_title - A string identifying the project in title contexts (e.g.
         titles of consoles).
-      * is_master - Whether this branch is main/master/trunk.
+      * is_main - Whether this branch is main/master/trunk.
       * is_lts_branch - Whether this branch is in the LTS channel.
       * ref - The git ref containing the code for this branch.
     """
-    if is_master and is_lts_branch:
-        fail("is_master and is_lts_branch can't both be True")
+    if is_main and is_lts_branch:
+        fail("is_main and is_lts_branch can't both be True")
     return struct(
         project = project,
         project_title = project_title,
-        is_master = is_master,
+        is_main = is_main,
         is_lts_branch = is_lts_branch,
         ref = ref,
     )
@@ -45,7 +45,7 @@ def _generate_project_pyl(ctx):
             # defined for non-existent builders
             # On branches, we don't want to re-generate the source side specs as
             # that would increase branch day toil and complicate cherry-picks
-            validate_source_side_specs_have_builder = settings.is_master,
+            validate_source_side_specs_have_builder = settings.is_main,
         )),
         "",
     ])
