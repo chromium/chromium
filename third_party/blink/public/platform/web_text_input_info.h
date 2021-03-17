@@ -38,31 +38,33 @@
 namespace blink {
 
 struct WebTextInputInfo {
-  WebTextInputType type;
-  int flags;
+  WebTextInputType type = kWebTextInputTypeNone;
+
+  // Bitfield of WebTextInputFlags values.
+  int flags = kWebTextInputFlagNone;
 
   // The value of the currently focused input field.
   WebString value;
 
   // The cursor position of the current selection start, or the caret position
   // if nothing is selected.
-  int selection_start;
+  int selection_start = 0;
 
   // The cursor position of the current selection end, or the caret position
   // if nothing is selected.
-  int selection_end;
+  int selection_end = 0;
 
   // The start position of the current composition, or -1 if there is none.
-  int composition_start;
+  int composition_start = -1;
 
   // The end position of the current composition, or -1 if there is none.
-  int composition_end;
+  int composition_end = -1;
 
   // The inputmode attribute value of the currently focused input field.
-  WebTextInputMode input_mode;
+  WebTextInputMode input_mode = kWebTextInputModeDefault;
 
   // The enterkeyhint attribute value of the currently focused input field.
-  ui::TextInputAction action;
+  ui::TextInputAction action = ui::TextInputAction::kDefault;
 
   // The virtualkeyboardpolicy attribute value of the currently focused editable
   // element.
@@ -73,16 +75,6 @@ struct WebTextInputInfo {
   WebVector<ui::ImeTextSpan> ime_text_spans;
 
   BLINK_PLATFORM_EXPORT bool Equals(const WebTextInputInfo&) const;
-
-  WebTextInputInfo()
-      : type(kWebTextInputTypeNone),
-        flags(kWebTextInputFlagNone),
-        selection_start(0),
-        selection_end(0),
-        composition_start(-1),
-        composition_end(-1),
-        input_mode(kWebTextInputModeDefault),
-        action(ui::TextInputAction::kDefault) {}
 };
 
 inline bool operator==(const WebTextInputInfo& a, const WebTextInputInfo& b) {
@@ -95,4 +87,4 @@ inline bool operator!=(const WebTextInputInfo& a, const WebTextInputInfo& b) {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_TEXT_INPUT_INFO_H_
