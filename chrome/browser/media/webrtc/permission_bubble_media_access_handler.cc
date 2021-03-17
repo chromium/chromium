@@ -296,7 +296,7 @@ void PermissionBubbleMediaAccessHandler::OnMediaStreamRequestResponse(
     return;
   }
 
-  // If the kill switch is, or the request was blocked because of feature
+  // If the kill switch is, or the request was blocked because of permissions
   // policy we don't update the tab context.
   if (result != blink::mojom::MediaStreamRequestResult::KILL_SWITCH_ON &&
       !blocked_by_permissions_policy) {
