@@ -90,7 +90,7 @@ class LegacyDownloadProviderImpl
 
     @Override
     public void onAllDownloadsRetrieved(List<DownloadItem> items, ProfileKey profileKey) {
-        List<Callback<ArrayList<OfflineItem>>> list = mRequestsMap.get(profileKey);
+        List<Callback<ArrayList<OfflineItem>>> list = getRequestList(profileKey);
         if (list.isEmpty()) return;
 
         ArrayList<OfflineItem> offlineItems = new ArrayList<>();
