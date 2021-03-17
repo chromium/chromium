@@ -70,6 +70,22 @@ Polymer({
     },
 
     /**
+     * Enum used as an ID for specific UI elements.
+     * A UiElement is passed between html and JS for
+     * certain UI elements to determine their state.
+     *
+     * @type {!UiElement}
+     */
+    UiElement: {
+      type: Object,
+      value: UiElement,
+    },
+
+    showNoProfilesMessage: {
+      type: Boolean,
+    },
+
+    /**
      * @type {!PageState}
      * @private
      */
@@ -87,21 +103,14 @@ Polymer({
     },
 
     /**
-     * Enum used as an ID for specific UI elements.
-     * A UiElement is passed between html and JS for
-     * certain UI elements to determine their state.
-     *
-     * @type {!UiElement}
+     *  TODO(crbug.com/1093185): add type |BarcodeDetector| when externs
+     *  becomes available
+     *  @private {?Object}
      */
-    UiElement: {
+    qrCodeDetector_: {
       type: Object,
-      value: UiElement,
+      value: null,
     },
-
-    /** @private */
-    showNoProfilesMessage: {
-      type: Boolean,
-    }
   },
 
   /**
@@ -122,12 +131,6 @@ Polymer({
    */
   qrCodeDetectorTimer_: null,
 
-  /**
-   *  TODO(crbug.com/1093185): add type |BarcodeDetector| when externs
-   *  becomes available
-   *  @private
-   */
-  qrCodeDetector_: null,
 
   /**
    * The function used to initiate a repeating timer. Can be overwritten in
@@ -169,7 +172,7 @@ Polymer({
   /** @override */
   ready() {
     this.setMediaDevices(navigator.mediaDevices);
-    this.initBarcodeDetector();
+    this.initBarcodeDetector_();
     this.state_ = PageState.MANUAL_ENTRY;
   },
 
@@ -197,7 +200,7 @@ Polymer({
    * @suppress {undefinedVars|missingProperties}
    * @private
    */
-  async initBarcodeDetector() {
+  async initBarcodeDetector_() {
     const formats = await this.barcodeDetectorClass_.getSupportedFormats();
 
     if (!formats || formats.length === 0) {
@@ -229,11 +232,11 @@ Polymer({
    * @param {function()} playVideoFunction
    * @param {function(MediaStream)} stopStreamFunction
    */
-  setFakesForTesting(
+  async setFakesForTesting(
       barcodeDetectorClass, imageCaptureClass, setIntervalFunction,
       playVideoFunction, stopStreamFunction) {
     this.barcodeDetectorClass_ = barcodeDetectorClass;
-    this.initBarcodeDetector();
+    await this.initBarcodeDetector_();
     this.imageCaptureClass_ = imageCaptureClass;
     this.setIntervalFunction_ = setIntervalFunction;
     this.playVideo_ = playVideoFunction;

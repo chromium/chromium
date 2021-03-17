@@ -27,21 +27,22 @@ suite('CrComponentsActivationCodePageTest', function() {
     return new Promise(resolve => setTimeout(resolve));
   }
 
-  setup(function() {
-    activationCodePage = document.createElement('activation-code-page');
+  // Captures the function that is called every time the interval timer
+  // timeouts.
+  function setIntervalFunction(fn, milliseconds) {
+    intervalFunction = fn;
+    return 1;
+  }
 
-    // Captures the function that is called every time the interval timer
-    // timeouts.
-    const setIntervalFunction = (fn, milliseconds) => {
-      intervalFunction = fn;
-      return 1;
-    };
-    // In tests, pausing the video can have race conditions with previous
-    // requests to play the video due to the speed of execution. Avoid this by
-    // mocking the play and pause actions.
-    const playVideoFunction = () => {};
-    const stopStreamFunction = (stream) => {};
-    activationCodePage.setFakesForTesting(
+  // In tests, pausing the video can have race conditions with previous
+  // requests to play the video due to the speed of execution. Avoid this by
+  // mocking the play and pause actions.
+  function playVideoFunction() {}
+  function stopStreamFunction(stream) {}
+
+  setup(async function() {
+    activationCodePage = document.createElement('activation-code-page');
+    await activationCodePage.setFakesForTesting(
         FakeBarcodeDetector, FakeImageCapture, setIntervalFunction,
         playVideoFunction, stopStreamFunction);
     document.body.appendChild(activationCodePage);
@@ -284,9 +285,9 @@ suite('CrComponentsActivationCodePageTest', function() {
         assertTrue(!!qrCodeDetectorContainer);
 
         FakeBarcodeDetector.setShouldFail(true);
-        activationCodePage.initBarcodeDetector();
-
-        await flushAsync();
+        await activationCodePage.setFakesForTesting(
+            FakeBarcodeDetector, FakeImageCapture, setIntervalFunction,
+            playVideoFunction, stopStreamFunction);
 
         qrCodeDetectorContainer = activationCodePage.$$('#esimQrCodeDetection');
 

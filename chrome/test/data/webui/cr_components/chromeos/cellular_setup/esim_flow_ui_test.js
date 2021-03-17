@@ -13,7 +13,7 @@
 // #import {assertEquals, assertTrue} from '../../../chai_assert.js';
 // #import {FakeESimManagerRemote} from './fake_esim_manager_remote.m.js';
 // #import {FakeCellularSetupDelegate} from './fake_cellular_setup_delegate.m.js';
-// #import {FakeBarcodeDetector} from './fake_barcode_detector.m.js';
+// #import {FakeBarcodeDetector, FakeImageCapture} from './fake_barcode_detector.m.js';
 // #import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.m.js';
 // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 // #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
@@ -95,9 +95,6 @@ suite('CrComponentsEsimFlowUiTest', function() {
     const availableEuiccs = await eSimManagerRemote.getAvailableEuiccs();
     const euicc = availableEuiccs.euiccs[0];
 
-    activationCodePage.barcodeDetectorClass_ = FakeBarcodeDetector;
-    activationCodePage.initBarcodeDetector();
-
     euicc.setRequestPendingProfilesResult(
         chromeos.cellularSetup.mojom.ESimOperationResult.kFailure);
     eSimPage.initSubflow();
@@ -106,7 +103,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
     endFlowAndVerifyResult(ESimSetupFlowResult.ERROR_FETCHING_PROFILES);
   });
 
-  setup(function() {
+  setup(async function() {
     networkConfigRemote = new FakeNetworkConfig();
 
     addOnlineWifiNetwork();
@@ -130,6 +127,22 @@ suite('CrComponentsEsimFlowUiTest', function() {
     activationCodePage = eSimPage.$$('#activationCodePage');
     confirmationCodePage = eSimPage.$$('#confirmationCodePage');
     finalPage = eSimPage.$$('#finalPage');
+
+    // Captures the function that is called every time the interval timer
+    // timeouts.
+    const setIntervalFunction = (fn, milliseconds) => {
+      intervalFunction = fn;
+      return 1;
+    };
+
+    // In tests, pausing the video can have race conditions with previous
+    // requests to play the video due to the speed of execution. Avoid this by
+    // mocking the play and pause actions.
+    const playVideoFunction = () => {};
+    const stopStreamFunction = (stream) => {};
+    await activationCodePage.setFakesForTesting(
+        FakeBarcodeDetector, FakeImageCapture, setIntervalFunction,
+        playVideoFunction, stopStreamFunction);
 
     assertTrue(!!profileLoadingPage);
     assertTrue(!!profileDiscoveryPage);
@@ -258,8 +271,6 @@ suite('CrComponentsEsimFlowUiTest', function() {
       const availableEuiccs = await eSimManagerRemote.getAvailableEuiccs();
       euicc = availableEuiccs.euiccs[0];
 
-      activationCodePage.barcodeDetectorClass_ = FakeBarcodeDetector;
-      activationCodePage.initBarcodeDetector();
       await flushAsync();
       eSimPage.initSubflow();
 
@@ -274,12 +285,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
       assertActivationCodePage(/*forwardButtonShouldBeEnabled=*/ true);
     });
 
-    // TODO(crbug.com/1188665) Renable flaky test
-    test.skip('Invalid activation code', async function() {
-      activationCodePage.barcodeDetectorClass_ = FakeBarcodeDetector;
-      activationCodePage.initBarcodeDetector();
-      await flushAsync();
-
+    test('Invalid activation code', async function() {
       euicc.setProfileInstallResultForTest(
           chromeos.cellularSetup.mojom.ProfileInstallResult
               .kErrorInvalidActivationCode);
@@ -288,8 +294,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
       // Install should fail and still be at activation code page.
       assertActivationCodePage(/*forwardButtonShouldBeEnabled=*/ true);
-      assertTrue(activationCodePage.$$('#scanSuccessContainer').hidden);
-      assertFalse(activationCodePage.$$('#scanFailureContainer').hidden);
+      assertTrue(activationCodePage.showError);
 
       endFlowAndVerifyResult(
           ESimSetupFlowResult.CANCELLED_INVALID_ACTIVATION_CODE);
