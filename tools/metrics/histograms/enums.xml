@@ -77322,6 +77322,9 @@ Full version information for the fingerprint enum values:
       label="Failed to load the upgraded HTTPS URL because of a net error,
              fell back to the HTTP URL."/>
   <int value="5"
+      label="Failed to load the upgraded HTTPS URL within the timeout, fell
+             back to the HTTP URL."/>
+  <int value="6"
       label="Received a redirect. This doesn't necessarily imply that the
              HTTPS load succeeded or failed."/>
 </enum>
