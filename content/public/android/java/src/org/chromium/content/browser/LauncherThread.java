@@ -20,7 +20,7 @@ public final class LauncherThread {
     private static final JavaHandlerThread sThread =
             new JavaHandlerThread("Chrome_ProcessLauncherThread", Process.THREAD_PRIORITY_DEFAULT);
     private static final Handler sThreadHandler;
-    // Can be overritten in tests.
+    // Can be overwritten in tests.
     private static Handler sHandler;
     static {
         sThread.maybeStart();
