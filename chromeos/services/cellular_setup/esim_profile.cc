@@ -371,7 +371,7 @@ void ESimProfile::OnNewProfileEnableSuccess(const std::string& service_path) {
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&ESimProfile::OnNewProfileConnectFailure,
                      weak_ptr_factory_.GetWeakPtr()),
-      /*check_error_state=*/false, ConnectCallbackMode::ON_COMPLETED);
+      /*check_error_state=*/false, ConnectCallbackMode::ON_STARTED);
 }
 
 void ESimProfile::OnNewProfileConnectSuccess() {

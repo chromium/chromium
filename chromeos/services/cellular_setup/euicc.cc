@@ -258,7 +258,7 @@ void Euicc::OnNewProfileEnableSuccess(const dbus::ObjectPath& profile_path,
                      weak_ptr_factory_.GetWeakPtr(), profile_path),
       base::BindOnce(&Euicc::OnNewProfileConnectFailure,
                      weak_ptr_factory_.GetWeakPtr(), profile_path),
-      /*check_error_state=*/false, ConnectCallbackMode::ON_COMPLETED);
+      /*check_error_state=*/false, ConnectCallbackMode::ON_STARTED);
 }
 
 void Euicc::OnNewProfileConnectSuccess(const dbus::ObjectPath& profile_path) {
