@@ -2131,6 +2131,8 @@ void AppsGridView::UpdateOpacity(bool restore_opacity) {
   // centerline reaches |kAllAppsOpacityEndPx| above the work area bottom.
   AppListView* app_list_view = contents_view_->app_list_view();
   const int selected_page = pagination_model_.selected_page();
+  CHECK_LT(selected_page, int{view_structure_.pages().size()})
+      << pagination_model_.total_pages();
   auto current_page = view_structure_.pages()[selected_page];
 
   // First it should prepare the layers for all of the app items in the current
