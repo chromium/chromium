@@ -339,32 +339,42 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
     ],
   });
 
-  // The frameId is increased by one every time oneFrame() is called.
-  var frameId = 0;
+  // videos #0-#3 : 30 fps.
+  // videos #3-#15: 15 fps.
+  // videos #16+: 7 fps.
+  // Not every video frame is ready in rAF callback. Only draw videos that
+  // are ready.
+  var videoIsReady = new Array(videos.length);
 
-  // The videos are displayed at different frame rate with lower indices in
-  // videos updated faster than hight indices.
-  // For videos #0-#3, they are to be displayed at 30 fps.
-  // For videos #3-#15, they are to be displayed at 15 fps.
-  // For videos #16+, they are to be displayed at 7.5 fps.
-  // Since oneFrame() is called at 30 fps, the video textures #0-#3 are copied
-  // every frame, #4 -#15 are copied every other frame and #16+ are copied
-  // every 4 frames.
-  function GetNumOfVideosToCopyForCurrentFrame(frameId) {
-    switch (frameId % 4) {
-      case 0:
-        return videos.length;
-      case 1:
-      case 3:
-        return Math.min(4, videos.length);
-      case 2:
-        return Math.min(16, videos.length);
-      default:
-        console.error('Something wrong with frameId % 4');
-    }
+  function UpdateIsVideoReady(video) {
+    videoIsReady[video.id] = true;
+    video.requestVideoFrameCallback(function () {
+      UpdateIsVideoReady(video);
+    });
   }
 
-  const oneFrame = () => {
+  for (const video of videos) {
+    video.requestVideoFrameCallback(function () {
+      UpdateIsVideoReady(video);
+    });
+  }
+
+  // If rAF is running at 60 fps, skip every other frame so the demo is
+  // running at 30 fps.
+  // 30 fps is 33 milliseconds/frame. To prevent skipping frames accidentally
+  // when rAF is running near 30fps with small delta, use 32 ms instead of 33 ms
+  // for comparison.
+  const frameTime30Fps = 32;
+  let lastTimestamp = performance.now();
+
+  const oneFrame = (timestamp) => {
+    const elapsed = timestamp - lastTimestamp;
+    if (elapsed < frameTime30Fps) {
+      window.requestAnimationFrame(oneFrame);
+      return;
+    }
+    lastTimestamp = timestamp;
+
     const swapChainTexture = swapChain.getCurrentTexture();
     renderPassDescriptor.colorAttachments[0].attachment = swapChainTexture
       .createView();
@@ -376,24 +386,21 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
     passEncoder.setPipeline(pipeline);
     passEncoder.setVertexBuffer(0, verticesBuffer);
 
-    // These videos are displayed at different fps. Not every video needs to be
-    // updated in this frame. The videos at lower indices are updated faster
-    // (higher fps) than videos at higher indices. See comments of
-    // GetNumOfVideosToCopyForCurrentFrame() for how the videos with different
-    // fps are arranged.
-    const numVideosToCopy = GetNumOfVideosToCopyForCurrentFrame(frameId);
-
-    Promise.all(videos.slice(0, numVideosToCopy).
-      map(video => createImageBitmap(video))).then((videoFrames) => {
-        for (let i = 0; i < numVideosToCopy; ++i) {
-          device.queue.copyImageBitmapToTexture(
-            { imageBitmap: videoFrames[i], origin: { x: 0, y: 0 } },
-            { texture: videoTextures[i] },
-            {
-              width: videos[i].videoWidth, height: videos[i].videoHeight,
-              depthOrArrayLayers: 1
-            }
-          );
+    Promise.all(videos.map(video =>
+      (videoIsReady[video.id] ? createImageBitmap(video) : null))).
+      then((videoFrames) => {
+        for (let i = 0; i < videos.length; ++i) {
+          if (videoFrames[i] != undefined) {
+            device.queue.copyImageBitmapToTexture(
+              { imageBitmap: videoFrames[i], origin: { x: 0, y: 0 } },
+              { texture: videoTextures[i] },
+              {
+                width: videos[i].videoWidth, height: videos[i].videoHeight,
+                depthOrArrayLayers: 1
+              }
+            );
+            videoIsReady[i] = false;
+          }
         }
 
         for (let i = 0; i < videos.length; ++i) {
@@ -411,32 +418,30 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
         passEncoder.endPass();
         device.queue.submit([commandEncoder.finish()]);
 
-        frameId++;
+        window.requestAnimationFrame(oneFrame);
       });
   }
 
-  const oneFrameWithImportTextureApi = () => {
+  const oneFrameWithImportTextureApi = (timestamp) => {
+    const elapsed = timestamp - lastTimestamp;
+    if (elapsed < frameTime30Fps) {
+      window.requestAnimationFrame(oneFrame);
+      return;
+    }
+    lastTimestamp = timestamp;
+
+    for (let i = 0; i < videos.length; ++i) {
+      if (videoIsReady[i]) {
+        videoTextures[i].destroy();
+        videoTextures[i] = device.experimentalImportTexture(
+          videos[i], GPUTextureUsage.SAMPLED);
+        videoIsReady[i] = false;
+      }
+    }
+
     const swapChainTexture = swapChain.getCurrentTexture();
     renderPassDescriptor.colorAttachments[0].attachment = swapChainTexture
       .createView();
-
-    // These videos are displayed at different fps. Not every video needs to be
-    // updated in this frame. The videos at lower indices are updated faster
-    // than videos at higher indices. See GetNumOfVideosToCopyForCurrentFrame()
-    // for how the videos with different fps are arranged.
-    const numVideosToCopy = GetNumOfVideosToCopyForCurrentFrame(frameId);
-
-    // Destroy the textures after submit to promptly recycle resources.
-    // The textures not being imported here this time are not to be destroyed.
-    // We still need to render those textures for this frame.
-    for (let i = 0; i < numVideosToCopy; ++i) {
-      videoTextures[i].destroy();
-    }
-
-    for (let i = 0; i < numVideosToCopy; ++i) {
-      videoTextures[i] = device.experimentalImportTexture(
-        videos[i], GPUTextureUsage.SAMPLED);
-    }
 
     const commandEncoder = device.createCommandEncoder();
     const passEncoder =
@@ -472,13 +477,12 @@ function webGpuDrawVideoFrames(gpuSetting, videos, videoRows, videoColumns,
     passEncoder.endPass();
     device.queue.submit([commandEncoder.finish()]);
 
-    frameId++;
+    window.requestAnimationFrame(oneFrameWithImportTextureApi);
   }
 
-  // Call oneFrame() every 33 milliseconds to simulate 30 fps.
   if (useImportTextureApi) {
-    setInterval(oneFrameWithImportTextureApi, 33);
+    window.requestAnimationFrame(oneFrameWithImportTextureApi);
   } else {
-    setInterval(oneFrame, 33);
+    window.requestAnimationFrame(oneFrame);
   }
 }

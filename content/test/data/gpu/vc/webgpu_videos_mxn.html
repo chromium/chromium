@@ -130,7 +130,7 @@ found in the LICENSE file.
       const videoCount = videoRows * videoColumns;
       for (let i = 0; i < videoCount + 1; i++) {
         const video = document.createElement('video');
-        video.id = 'video_' + i;
+        video.id = i;
         video.loop = true;
         video.autoplay = true;
         video.muted = true;
