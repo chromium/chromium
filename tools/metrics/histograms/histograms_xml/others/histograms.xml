@@ -5719,6 +5719,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     <variant name="MacOs"/>
     <variant name="PluginVm"/>
     <variant name="Remote"/>
+    <variant name="SystemWeb"/>
     <variant name="Unknown"/>
     <variant name="Web"/>
   </token>

@@ -35,6 +35,10 @@
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "content/public/browser/web_contents.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#endif
+
 namespace {
 
 constexpr char kTextPlain[] = "text/plain";
@@ -103,7 +107,20 @@ namespace apps {
 WebAppsBase::WebAppsBase(
     const mojo::Remote<apps::mojom::AppService>& app_service,
     Profile* profile)
-    : profile_(profile), app_service_(nullptr) {
+    : profile_(profile),
+      app_service_(nullptr),
+      app_type_(apps::mojom::AppType::kWeb) {
+// After moving the ordinary Web Apps to Lacros chrome, the remaining web
+// apps in ash Chrome will be only System Web Apps. Change the app type
+// to kSystemWeb for this case and the kWeb app type will be published from
+// the publisher for Lacros web apps.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (crosapi::browser_util::IsLacrosEnabled() &&
+      base::FeatureList::IsEnabled(features::kLacrosWebApps)) {
+    app_type_ = apps::mojom::AppType::kSystemWeb;
+  }
+#endif
+
   Initialize(app_service);
 }
 
@@ -132,7 +149,7 @@ void WebAppsBase::OnWebAppWillBeUninstalled(const web_app::AppId& app_id) {
   // Construct an App with only the information required to identify an
   // uninstallation.
   apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = apps::mojom::AppType::kWeb;
+  app->app_type = app_type_;
   app->app_id = web_app->app_id();
   // TODO(loyso): Plumb uninstall source (reason) here.
   app->readiness = apps::mojom::Readiness::kUninstalledByUser;
@@ -141,15 +158,14 @@ void WebAppsBase::OnWebAppWillBeUninstalled(const web_app::AppId& app_id) {
   Publish(std::move(app), subscribers_);
 
   if (app_service_) {
-    app_service_->RemovePreferredApp(apps::mojom::AppType::kWeb,
-                                     web_app->app_id());
+    app_service_->RemovePreferredApp(app_type_, web_app->app_id());
   }
 }
 
 apps::mojom::AppPtr WebAppsBase::ConvertImpl(const web_app::WebApp* web_app,
                                              apps::mojom::Readiness readiness) {
   apps::mojom::AppPtr app = PublisherBase::MakeApp(
-      apps::mojom::AppType::kWeb, web_app->app_id(), readiness, web_app->name(),
+      app_type_, web_app->app_id(), readiness, web_app->name(),
       GetHighestPriorityInstallSource(web_app));
 
   app->description = web_app->description();
@@ -233,7 +249,7 @@ void WebAppsBase::Initialize(
   web_app_launch_manager_ =
       std::make_unique<web_app::WebAppLaunchManager>(profile_);
 
-  PublisherBase::Initialize(app_service, apps::mojom::AppType::kWeb);
+  PublisherBase::Initialize(app_service, app_type_);
   app_service_ = app_service.get();
 }
 
@@ -438,7 +454,7 @@ void WebAppsBase::OnContentSettingChanged(
     if (primary_pattern.Matches(web_app.start_url()) &&
         Accepts(web_app.app_id())) {
       apps::mojom::AppPtr app = apps::mojom::App::New();
-      app->app_type = apps::mojom::AppType::kWeb;
+      app->app_type = app_type_;
       app->app_id = web_app.app_id();
       PopulatePermissions(&web_app, &app->permissions);
 
@@ -460,7 +476,7 @@ void WebAppsBase::OnWebAppLastLaunchTimeChanged(
   const web_app::WebApp* web_app = GetWebApp(app_id);
   if (web_app && Accepts(app_id)) {
     apps::mojom::AppPtr app = apps::mojom::App::New();
-    app->app_type = apps::mojom::AppType::kWeb;
+    app->app_type = app_type_;
     app->app_id = app_id;
     app->last_launch_time = web_app->last_launch_time();
     Publish(std::move(app), subscribers_);
@@ -486,7 +502,7 @@ void WebAppsBase::OnWebAppLocallyInstalledStateChanged(
   if (!web_app)
     return;
   auto app = apps::mojom::App::New();
-  app->app_type = apps::mojom::AppType::kWeb;
+  app->app_type = app_type_;
   app->app_id = app_id;
   app->icon_key = icon_key_factory().MakeIconKey(GetIconEffects(web_app));
   Publish(std::move(app), subscribers_);
@@ -580,7 +596,7 @@ void WebAppsBase::StartPublishingWebApps(
 
   mojo::Remote<apps::mojom::Subscriber> subscriber(
       std::move(subscriber_remote));
-  subscriber->OnApps(std::move(apps), apps::mojom::AppType::kWeb,
+  subscriber->OnApps(std::move(apps), app_type_,
                      true /* should_notify_initialized */);
 
   subscribers_.Add(std::move(subscriber));

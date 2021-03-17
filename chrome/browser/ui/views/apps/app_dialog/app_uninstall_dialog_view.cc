@@ -180,6 +180,7 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
       break;
 
     case apps::mojom::AppType::kWeb:
+    case apps::mojom::AppType::kSystemWeb:
       if (base::FeatureList::IsEnabled(
               features::kDesktopPWAsWithoutExtensions)) {
         InitializeViewForWebApp(profile, app_id);

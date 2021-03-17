@@ -283,6 +283,7 @@ PickerEntryType GetPickerEntryType(mojom::AppType app_type) {
       picker_entry_type = PickerEntryType::kArc;
       break;
     case mojom::AppType::kWeb:
+    case mojom::AppType::kSystemWeb:
       picker_entry_type = PickerEntryType::kWeb;
       break;
     case mojom::AppType::kMacOs:

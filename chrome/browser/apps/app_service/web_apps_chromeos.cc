@@ -83,7 +83,7 @@ void WebAppsChromeOs::BadgeManagerDelegate::OnAppBadgeUpdated(
   }
   apps::mojom::AppPtr app =
       web_apps_chrome_os_->app_notifications_.GetAppWithHasBadgeStatus(
-          apps::mojom::AppType::kWeb, app_id);
+          web_apps_chrome_os_->app_type(), app_id);
   app->has_badge = web_apps_chrome_os_->ShouldShowBadge(app_id, app->has_badge);
   web_apps_chrome_os_->Publish(std::move(app),
                                web_apps_chrome_os_->subscribers());
@@ -212,8 +212,7 @@ void WebAppsChromeOs::PauseApp(const std::string& app_id) {
   }
 
   constexpr bool kPaused = true;
-  Publish(paused_apps_.GetAppWithPauseStatus(apps::mojom::AppType::kWeb, app_id,
-                                             kPaused),
+  Publish(paused_apps_.GetAppWithPauseStatus(app_type(), app_id, kPaused),
           subscribers());
 
   for (auto* browser : *BrowserList::GetInstance()) {
@@ -232,8 +231,7 @@ void WebAppsChromeOs::UnpauseApps(const std::string& app_id) {
   }
 
   constexpr bool kPaused = false;
-  Publish(paused_apps_.GetAppWithPauseStatus(apps::mojom::AppType::kWeb, app_id,
-                                             kPaused),
+  Publish(paused_apps_.GetAppWithPauseStatus(app_type(), app_id, kPaused),
           subscribers());
 }
 
@@ -588,8 +586,8 @@ void WebAppsChromeOs::OnNotificationClosed(const std::string& notification_id) {
   app_notifications_.RemoveNotification(notification_id);
 
   for (const auto& app_id : app_ids) {
-    apps::mojom::AppPtr app = app_notifications_.GetAppWithHasBadgeStatus(
-        apps::mojom::AppType::kWeb, app_id);
+    apps::mojom::AppPtr app =
+        app_notifications_.GetAppWithHasBadgeStatus(app_type(), app_id);
     app->has_badge = ShouldShowBadge(app_id, app->has_badge);
     Publish(std::move(app), subscribers());
   }
@@ -608,8 +606,8 @@ bool WebAppsChromeOs::MaybeAddNotification(const std::string& app_id,
   }
 
   app_notifications_.AddNotification(app_id, notification_id);
-  apps::mojom::AppPtr app = app_notifications_.GetAppWithHasBadgeStatus(
-      apps::mojom::AppType::kWeb, app_id);
+  apps::mojom::AppPtr app =
+      app_notifications_.GetAppWithHasBadgeStatus(app_type(), app_id);
   app->has_badge = ShouldShowBadge(app_id, app->has_badge);
   Publish(std::move(app), subscribers());
   return true;
@@ -713,7 +711,7 @@ void WebAppsChromeOs::SetIconEffect(const std::string& app_id) {
   }
 
   apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = apps::mojom::AppType::kWeb;
+  app->app_type = app_type();
   app->app_id = app_id;
   DCHECK(web_app->chromeos_data().has_value());
   app->icon_key = icon_key_factory().MakeIconKey(

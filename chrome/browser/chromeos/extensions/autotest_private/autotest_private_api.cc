@@ -317,6 +317,7 @@ api::autotest_private::AppType GetAppType(apps::mojom::AppType type) {
     case apps::mojom::AppType::kPluginVm:
       return api::autotest_private::AppType::APP_TYPE_PLUGINVM;
     case apps::mojom::AppType::kWeb:
+    case apps::mojom::AppType::kSystemWeb:
       return api::autotest_private::AppType::APP_TYPE_WEB;
     case apps::mojom::AppType::kUnknown:
       return api::autotest_private::AppType::APP_TYPE_NONE;

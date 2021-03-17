@@ -45,6 +45,7 @@ TaskType GetTaskType(apps::mojom::AppType app_type) {
     case apps::mojom::AppType::kArc:
       return TASK_TYPE_ARC_APP;
     case apps::mojom::AppType::kWeb:
+    case apps::mojom::AppType::kSystemWeb:
       return TASK_TYPE_WEB_APP;
     case apps::mojom::AppType::kUnknown:
     case apps::mojom::AppType::kCrostini:

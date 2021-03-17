@@ -93,6 +93,8 @@ class WebAppsBase : public apps::PublisherBase,
   // Can return nullptr in tests.
   const web_app::WebAppRegistrar* GetRegistrar() const;
 
+  apps::mojom::AppType app_type() { return app_type_; }
+
  private:
   void Initialize(const mojo::Remote<apps::mojom::AppService>& app_service);
 
@@ -167,6 +169,10 @@ class WebAppsBase : public apps::PublisherBase,
 
   // app_service_ is owned by the object that owns this object.
   apps::mojom::AppService* app_service_;
+
+  // The app type of the publisher. The app type is kSystemWeb if the web apps
+  // are serving from Lacros, and the app type is kWeb for all other cases.
+  apps::mojom::AppType app_type_;
 };
 
 void PopulateIntentFilters(const web_app::WebApp& web_app,

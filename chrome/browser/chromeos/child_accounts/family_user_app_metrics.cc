@@ -54,6 +54,8 @@ constexpr char kLacrosAppsCountHistogramName[] = "FamilyUser.LacrosAppsCount2";
 constexpr char kRemoteAppsCountHistogramName[] = "FamilyUser.RemoteAppsCount2";
 constexpr char kBorealisAppsCountHistogramName[] =
     "FamilyUser.BorealisAppsCount2";
+constexpr char kSystemWebAppsCountHistogramName[] =
+    "FamilyUser.SystemWebAppsCount2";
 
 const char* GetAppsCountHistogramName(apps::mojom::AppType app_type) {
   switch (app_type) {
@@ -79,6 +81,8 @@ const char* GetAppsCountHistogramName(apps::mojom::AppType app_type) {
       return kRemoteAppsCountHistogramName;
     case apps::mojom::AppType::kBorealis:
       return kBorealisAppsCountHistogramName;
+    case apps::mojom::AppType::kSystemWeb:
+      return kSystemWebAppsCountHistogramName;
   }
 }
 

@@ -194,6 +194,7 @@ void AppLaunchHandler::LaunchApp(apps::mojom::AppType app_type,
       // app.
       FALLTHROUGH;
     case apps::mojom::AppType::kWeb:
+    case apps::mojom::AppType::kSystemWeb:
       LaunchSystemWebAppOrChromeApp(app_id, it->second);
       break;
     case apps::mojom::AppType::kBuiltIn:

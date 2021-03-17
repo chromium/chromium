@@ -130,6 +130,7 @@ ash::SearchResultType AppServiceAppResult::GetSearchResultType() const {
       return ash::CROSTINI_APP;
     case apps::mojom::AppType::kExtension:
     case apps::mojom::AppType::kWeb:
+    case apps::mojom::AppType::kSystemWeb:
       return ash::EXTENSION_APP;
     case apps::mojom::AppType::kLacros:
       return ash::LACROS;

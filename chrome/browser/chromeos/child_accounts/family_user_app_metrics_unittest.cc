@@ -37,7 +37,7 @@ constexpr base::TimeDelta kOneDay = base::TimeDelta::FromDays(1);
 constexpr char kStartTime[] = "1 Jan 2020 21:15";
 constexpr int kStart = static_cast<int>(apps::mojom::AppType::kUnknown);  // 0
 constexpr int kEnd =
-    static_cast<int>(apps::mojom::AppType::kBorealis);  // max_value
+    static_cast<int>(apps::mojom::AppType::kSystemWeb);  // max_value
 
 apps::mojom::AppPtr MakeApp(const char* app_id,
                             const char* name,
@@ -184,6 +184,9 @@ class FamilyUserAppMetricsTest
     deltas.push_back(MakeApp(/*app_id=*/"bo", /*app_name=*/"borealis",
                              /*last_launch_time=*/base::Time::Now(),
                              apps::mojom::AppType::kBorealis));
+    deltas.push_back(MakeApp(/*app_id=*/"s", /*app_name=*/"systemweb",
+                             /*last_launch_time=*/base::Time::Now(),
+                             apps::mojom::AppType::kSystemWeb));
     cache.OnApps(std::move(deltas), apps::mojom::AppType::kUnknown,
                  false /* should_notify_initialized */);
 

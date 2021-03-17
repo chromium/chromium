@@ -310,6 +310,9 @@ void SharesheetService::RecordActionMetrics(const std::u16string& target_name) {
             SharesheetMetrics::UserAction::kArc);
         break;
       case apps::mojom::AppType::kWeb:
+      // TODO(crbug.com/1186533): Add a separate metrics for System Web Apps if
+      // needed.
+      case apps::mojom::AppType::kSystemWeb:
         SharesheetMetrics::RecordSharesheetActionMetrics(
             SharesheetMetrics::UserAction::kWeb);
         break;

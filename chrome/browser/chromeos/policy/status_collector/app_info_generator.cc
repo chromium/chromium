@@ -49,6 +49,7 @@ em::AppInfo::AppType ExtractAppType(const apps::mojom::AppType app_type) {
     case apps::mojom::AppType::kExtension:
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_EXTENSION;
     case apps::mojom::AppType::kWeb:
+    case apps::mojom::AppType::kSystemWeb:
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_WEB;
     case apps::mojom::AppType::kBorealis:
       return em::AppInfo::AppType::AppInfo_AppType_TYPE_BOREALIS;

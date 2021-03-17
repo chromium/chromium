@@ -211,7 +211,8 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
 
 bool AppServiceShelfContextMenu::IsCommandIdChecked(int command_id) const {
   switch (app_type_) {
-    case apps::mojom::AppType::kWeb: {
+    case apps::mojom::AppType::kWeb:
+    case apps::mojom::AppType::kSystemWeb: {
       auto* provider = web_app::WebAppProvider::Get(controller()->profile());
       DCHECK(provider);
       if ((command_id >= ash::LAUNCH_TYPE_PINNED_TAB &&
@@ -439,7 +440,8 @@ void AppServiceShelfContextMenu::ShowAppInfo() {
 
 void AppServiceShelfContextMenu::SetLaunchType(int command_id) {
   switch (app_type_) {
-    case apps::mojom::AppType::kWeb: {
+    case apps::mojom::AppType::kWeb:
+    case apps::mojom::AppType::kSystemWeb: {
       // Web apps can only toggle between kStandalone and kBrowser.
       web_app::DisplayMode user_display_mode =
           ConvertLaunchTypeCommandToDisplayMode(command_id);
@@ -544,6 +546,7 @@ bool AppServiceShelfContextMenu::ShouldAddPinMenu() {
     case apps::mojom::AppType::kCrostini:
     case apps::mojom::AppType::kExtension:
     case apps::mojom::AppType::kWeb:
+    case apps::mojom::AppType::kSystemWeb:
       return true;
     case apps::mojom::AppType::kLacros:
       // Lacros behaves like the Chrome browser icon and cannot be unpinned.
