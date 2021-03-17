@@ -5,6 +5,8 @@
 
 """generates files to embed the gles2 conformance test data in executable."""
 
+from __future__ import print_function
+
 import os
 import sys
 
@@ -35,23 +37,23 @@ class GenerateEmbeddedFiles(object):
       self.files_data_c = open(os.path.join(base_dir, "FilesDATA.c"), "wb")
       self.files_toc_c = open(os.path.join(base_dir, "FilesTOC.c"), "wb")
 
-      self.files_data_h.write("#ifndef FilesDATA_h\n\n")
-      self.files_data_h.write("#define FilesDATA_h\n\n");
+      self.files_data_h.write(b"#ifndef FilesDATA_h\n\n")
+      self.files_data_h.write(b"#define FilesDATA_h\n\n");
 
-      self.files_data_c.write("#include \"FilesDATA.h\"\n\n")
+      self.files_data_c.write(b"#include \"FilesDATA.h\"\n\n")
 
-      self.files_toc_c.write("#include \"FilesTOC.h\"\n\n");
-      self.files_toc_c.write("struct GTFVectorFileEntry tempFiles;\n\n");
-      self.files_toc_c.write("struct FileEntry files[] = {\n");
+      self.files_toc_c.write(b"#include \"FilesTOC.h\"\n\n");
+      self.files_toc_c.write(b"struct GTFVectorFileEntry tempFiles;\n\n");
+      self.files_toc_c.write(b"struct FileEntry files[] = {\n");
 
     self.AddFiles(scan_dir)
 
     if self.base_dir != None:
-      self.files_toc_c.write("\n};\n\n");
+      self.files_toc_c.write(b"\n};\n\n");
       self.files_toc_c.write(
-        "int numFileEntrys = sizeof(files) / sizeof(struct FileEntry);\n");
+        b"int numFileEntrys = sizeof(files) / sizeof(struct FileEntry);\n");
 
-      self.files_data_h.write("\n\n#endif  // FilesDATA_h\n");
+      self.files_data_h.write(b"\n\n#endif  // FilesDATA_h\n");
 
       self.files_data_c.close()
       self.files_data_h.close()
@@ -70,14 +72,16 @@ class GenerateEmbeddedFiles(object):
           sub_dirs.append(full_path)
       elif ext in GenerateEmbeddedFiles.extensions_to_include:
         if self.base_dir == None:
-          print full_path.replace("\\", "/")
+          print(full_path.replace("\\", "/"))
         else:
           self.count += 1
           name = "_FILE_%s_%d" % (ext.upper(), self.count)
           name = name.replace(".", "_")
 
-          self.files_data_h.write("extern const char %s[];\n" % name)
-          self.files_data_c.write("const char %s[] = \n" % name)
+          self.files_data_h.write(
+              ("extern const char %s[];\n" % name).encode("utf8"))
+          self.files_data_c.write(
+              ("const char %s[] = \n" % name).encode("utf8"))
 
           data = open(full_path, "r")
           lines = data.readlines();
@@ -89,11 +93,11 @@ class GenerateEmbeddedFiles(object):
             line = line.replace("\\", "\\\\")
             line = line.replace("\"", "\\\"")
 
-            self.files_data_c.write('"%s\\n"\n' % line)
+            self.files_data_c.write(('"%s\\n"\n' % line).encode("utf8"))
 
-          self.files_data_c.write(";\n")
-          self.files_toc_c.write("\t{ \"%s\", %s, 0 },\n" % (
-              base_path.replace("\\", "/"), name))
+          self.files_data_c.write(b";\n")
+          self.files_toc_c.write(("\t{ \"%s\", %s, 0 },\n" % (
+              base_path.replace("\\", "/"), name)).encode("utf8"))
 
     for sub_dir in sub_dirs:
       self.AddFiles(sub_dir)
