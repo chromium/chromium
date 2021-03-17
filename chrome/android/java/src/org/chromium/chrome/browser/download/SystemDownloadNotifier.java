@@ -243,13 +243,13 @@ public class SystemDownloadNotifier implements DownloadNotifier {
                 getDownloadNotificationService().notifyDownloadProgress(info.getContentId(),
                         info.getFileName(), info.getProgress(), info.getBytesReceived(),
                         info.getTimeRemainingInMillis(), notificationInfo.mStartTime,
-                        info.isOffTheRecord(), notificationInfo.mCanDownloadWhileMetered,
+                        info.getOTRProfileId(), notificationInfo.mCanDownloadWhileMetered,
                         info.getIsTransient(), info.getIcon(), info.getOriginalUrl(),
                         info.getShouldPromoteOrigin());
                 break;
             case NotificationType.PAUSED:
                 getDownloadNotificationService().notifyDownloadPaused(info.getContentId(),
-                        info.getFileName(), true, false, info.isOffTheRecord(),
+                        info.getFileName(), true, false, info.getOTRProfileId(),
                         info.getIsTransient(), info.getIcon(), info.getOriginalUrl(),
                         info.getShouldPromoteOrigin(), false, true, info.getPendingState());
                 break;
@@ -257,7 +257,7 @@ public class SystemDownloadNotifier implements DownloadNotifier {
                 final int notificationId =
                         getDownloadNotificationService().notifyDownloadSuccessful(
                                 info.getContentId(), info.getFilePath(), info.getFileName(),
-                                notificationInfo.mSystemDownloadId, info.isOffTheRecord(),
+                                notificationInfo.mSystemDownloadId, info.getOTRProfileId(),
                                 notificationInfo.mIsSupportedMimeType, info.getIsOpenable(),
                                 info.getIcon(), info.getOriginalUrl(),
                                 info.getShouldPromoteOrigin(), info.getReferrer(),
@@ -272,12 +272,12 @@ public class SystemDownloadNotifier implements DownloadNotifier {
             case NotificationType.FAILED:
                 getDownloadNotificationService().notifyDownloadFailed(info.getContentId(),
                         info.getFileName(), info.getIcon(), info.getOriginalUrl(),
-                        info.getShouldPromoteOrigin(), info.isOffTheRecord(), info.getFailState());
+                        info.getShouldPromoteOrigin(), info.getOTRProfileId(), info.getFailState());
                 break;
             case NotificationType.INTERRUPTED:
                 getDownloadNotificationService().notifyDownloadPaused(info.getContentId(),
                         info.getFileName(), info.isResumable(), notificationInfo.mIsAutoResumable,
-                        info.isOffTheRecord(), info.getIsTransient(), info.getIcon(),
+                        info.getOTRProfileId(), info.getIsTransient(), info.getIcon(),
                         info.getOriginalUrl(), info.getShouldPromoteOrigin(), false, false,
                         notificationInfo.mPendingState);
                 break;

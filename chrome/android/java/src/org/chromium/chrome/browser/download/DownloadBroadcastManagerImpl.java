@@ -137,8 +137,8 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
         switch (action) {
             case ACTION_DOWNLOAD_PAUSE:
                 mDownloadNotificationService.notifyDownloadPaused(entry.id, entry.fileName, true,
-                        false, OTRProfileID.isOffTheRecord(entry.otrProfileID), entry.isTransient,
-                        null, null, false, true, false, PendingState.NOT_PENDING);
+                        false, entry.otrProfileID, entry.isTransient, null, null, false, true,
+                        false, PendingState.NOT_PENDING);
                 break;
 
             case ACTION_DOWNLOAD_CANCEL:
@@ -158,9 +158,8 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
                                 entry.isTransient));
 
                 mDownloadNotificationService.notifyDownloadPending(entry.id, entry.fileName,
-                        OTRProfileID.isOffTheRecord(entry.otrProfileID),
-                        entry.canDownloadWhileMetered, entry.isTransient, null, null, false, true,
-                        PendingState.PENDING_NETWORK);
+                        entry.otrProfileID, entry.canDownloadWhileMetered, entry.isTransient, null,
+                        null, false, true, PendingState.PENDING_NETWORK);
                 break;
 
             default:

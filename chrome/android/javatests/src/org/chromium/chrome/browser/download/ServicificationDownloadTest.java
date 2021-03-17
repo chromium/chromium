@@ -19,6 +19,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.TestFileUtil;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ReducedModeNativeTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
@@ -53,7 +54,7 @@ public final class ServicificationDownloadTest {
 
         @Override
         public int notifyDownloadSuccessful(ContentId id, String filePath, String fileName,
-                long systemDownloadId, boolean isOffTheRecord, boolean isSupportedMimeType,
+                long systemDownloadId, OTRProfileID otrProfileID, boolean isSupportedMimeType,
                 boolean isOpenable, Bitmap icon, String originalUrl, boolean shouldPromoteOrigin,
                 String referrer, long totalBytes) {
             mDownloadCompleted = true;

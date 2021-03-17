@@ -205,13 +205,11 @@ public final class DownloadUpdate {
             return this;
         }
 
-        public Builder setIsOffTheRecord(boolean isOffTheRecord) {
-            this.mIsOffTheRecord = isOffTheRecord;
-            return this;
-        }
-
         public Builder setOTRProfileID(@Nullable OTRProfileID otrProfileID) {
             this.mOTRProfileID = otrProfileID;
+            // TODO(crbug.com/1161132): Remove this after replacing |DownloadUpdate#isOffTheRecord|
+            // usages with |DownloadUpdate#getOTRProfileID|.
+            this.mIsOffTheRecord = OTRProfileID.isOffTheRecord(otrProfileID);
             return this;
         }
 
