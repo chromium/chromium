@@ -731,6 +731,9 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
         // Safe mode can only be started when there's a window, so the actual
         // safe mode has been postponed until now.
         [self startSafeMode];
+      } else {
+        [MetricsMediator logStartupDuration:self.startupInformation
+                      connectionInformation:sceneState.controller];
       }
     }
     sceneState.presentingModalOverlay =

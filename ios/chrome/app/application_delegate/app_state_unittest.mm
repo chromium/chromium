@@ -365,6 +365,12 @@ TEST_F(AppStateTest, requiresHandlingAfterLaunchWithOptionsForegroundSafeMode) {
   NSDictionary* launchOptions =
       @{UIApplicationLaunchOptionsSourceApplicationKey : sourceApplication};
 
+  base::TimeTicks now = base::TimeTicks::Now();
+  [[[getStartupInformationMock() stub] andReturnValue:@YES] isColdStart];
+  [[[getStartupInformationMock() stub] andDo:^(NSInvocation* invocation) {
+    [invocation setReturnValue:(void*)&now];
+  }] appLaunchTime];
+
   id windowMock = getWindowMock();
   [[[windowMock stub] andReturn:nil] rootViewController];
   [[windowMock expect] setRootViewController:[OCMArg any]];
@@ -775,6 +781,12 @@ TEST_F(AppStateTest,
   id application = [OCMockObject mockForClass:[UIApplication class]];
   id metricsMediator = [OCMockObject mockForClass:[MetricsMediator class]];
   id memoryHelper = [OCMockObject mockForClass:[MemoryWarningHelper class]];
+
+  base::TimeTicks now = base::TimeTicks::Now();
+  [[[getStartupInformationMock() stub] andReturnValue:@YES] isColdStart];
+  [[[getStartupInformationMock() stub] andDo:^(NSInvocation* invocation) {
+    [invocation setReturnValue:(void*)&now];
+  }] appLaunchTime];
 
   id window = getWindowMock();
 
