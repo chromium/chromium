@@ -617,10 +617,6 @@ const base::Feature kSessionManagerLongKillTimeout{
 const base::Feature kShowBluetoothDebugLogToggle{
     "ShowBluetoothDebugLogToggle", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables or disables verbose Bluetooth log collection for Googlers.
-const base::Feature kEnableBluetoothVerboseLogsForGooglers{
-    "EnableBluetoothVerboseLogsForGooglers", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Shows the Play Store icon in Demo Mode.
 const base::Feature kShowPlayInDemoMode{"ShowPlayInDemoMode",
                                         base::FEATURE_ENABLED_BY_DEFAULT};

@@ -3093,12 +3093,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kShowBluetoothDebugLogToggleName,
      flag_descriptions::kShowBluetoothDebugLogToggleDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kShowBluetoothDebugLogToggle)},
-    {"enable-bluetooth-verbose-logs-for-googlers",
-     flag_descriptions::kEnableBluetoothVerboseLogsForGooglersName,
-     flag_descriptions::kEnableBluetoothVerboseLogsForGooglersDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         chromeos::features::kEnableBluetoothVerboseLogsForGooglers)},
     {"show-taps", flag_descriptions::kShowTapsName,
      flag_descriptions::kShowTapsDescription, kOsCrOS,
      SINGLE_VALUE_TYPE(ash::switches::kShowTaps)},

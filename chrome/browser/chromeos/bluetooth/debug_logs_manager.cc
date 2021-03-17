@@ -31,9 +31,7 @@ DebugLogsManager::DebugLogsManager(const std::string& primary_user_email,
     : primary_user_email_(primary_user_email), pref_service_(pref_service) {
   // For Googlers, set the default preference of Bluetooth verbose logs to true.
   if (AreDebugLogsSupported() &&
-      !pref_service->HasPrefPath(kVerboseLoggingEnablePrefName) &&
-      base::FeatureList::IsEnabled(
-          chromeos::features::kEnableBluetoothVerboseLogsForGooglers)) {
+      !pref_service->HasPrefPath(kVerboseLoggingEnablePrefName)) {
     ChangeDebugLogsState(true);
   }
 

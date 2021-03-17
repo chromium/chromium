@@ -1443,11 +1443,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "enable-bluetooth-verbose-logs-for-googlers",
-    "owners": [ "sonnysasaka" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "enable-browsing-data-lifetime-manager",
     "owners": ["ydago"],
     "expiry_milestone": 91
