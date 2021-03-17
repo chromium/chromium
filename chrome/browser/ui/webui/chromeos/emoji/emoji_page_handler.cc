@@ -26,7 +26,7 @@ void LogInsertEmoji(bool is_variant) {
   EmojiVariantType insert_value = is_variant
                                       ? EmojiVariantType::kEmojiPickerVariant
                                       : EmojiVariantType::kEmojiPickerBase;
-  base::UmaHistogramEnumeration("InputMethod.VirtualKeyboard.Emoji.TriggerType",
+  base::UmaHistogramEnumeration("InputMethod.SystemEmojiPicker.TriggerType",
                                 insert_value);
 }
 

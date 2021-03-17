@@ -541,6 +541,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="InputMethod.SystemEmojiPicker.TriggerType"
+    enum="VirtualKeyboardEmojiTriggerType" expires_after="M95">
+  <owner>jopalmer@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>How emojis were inserted.</summary>
+</histogram>
+
 <histogram name="InputMethod.VirtualKeyboard.BackspaceCount" units="units"
     expires_after="M95">
   <owner>shend@chromium.org</owner>
