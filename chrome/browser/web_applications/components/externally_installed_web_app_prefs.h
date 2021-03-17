@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
@@ -65,7 +64,8 @@ class ExternallyInstalledWebAppPrefs {
   bool IsPlaceholderApp(const AppId& app_id) const;
 
  private:
-  const CheckedPtr<PrefService> pref_service_;
+  PrefService* const pref_service_;
+
 };
 
 }  // namespace web_app

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_ACTION_VIEW_H_
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view_delegate_views.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/menu_button.h"
@@ -113,10 +112,10 @@ class ToolbarActionView : public views::MenuButton,
   std::unique_ptr<views::MenuButtonController::PressedLock> pressed_lock_;
 
   // The controller for this toolbar action view.
-  CheckedPtr<ToolbarActionViewController> view_controller_;
+  ToolbarActionViewController* view_controller_;
 
   // Delegate that usually represents a container for ToolbarActionView.
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
 
   // Set to true by a mouse press that will hide a popup due to deactivation.
   // In this case, the next click should not trigger an action, so the popup

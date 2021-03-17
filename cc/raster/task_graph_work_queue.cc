@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/memory/checked_ptr.h"
 #include "base/trace_event/trace_event.h"
 
 namespace cc {
@@ -95,10 +94,10 @@ class DependentIterator {
   operator bool() const { return current_index_ < graph_->edges.size(); }
 
  private:
-  CheckedPtr<TaskGraph> graph_;
-  CheckedPtr<const Task> task_;
+  TaskGraph* graph_;
+  const Task* task_;
   size_t current_index_;
-  CheckedPtr<TaskGraph::Node> current_node_;
+  TaskGraph::Node* current_node_;
 };
 
 }  // namespace

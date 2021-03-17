@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/android/autofill_assistant/autofill_assistant_tab_helper.h"
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
@@ -23,7 +22,7 @@ class AutofillAssistantTabHelperTest : public ChromeRenderViewHostTestHarness {
   AutofillAssistantTabHelper* tab_helper() const { return tab_helper_; }
 
  private:
-  CheckedPtr<AutofillAssistantTabHelper> tab_helper_;  // Owned by WebContents.
+  AutofillAssistantTabHelper* tab_helper_;  // Owned by WebContents.
 };
 
 AutofillAssistantTabHelperTest::AutofillAssistantTabHelperTest()

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "extensions/common/extension.h"
@@ -91,7 +90,7 @@ class ManifestHandlerTest : public testing::Test {
     std::vector<std::string> keys_;
     std::vector<const char*> keys_ptrs_;
     std::vector<std::string> prereqs_;
-    CheckedPtr<ParsingWatcher> watcher_;
+    ParsingWatcher* watcher_;
 
     base::span<const char* const> Keys() const override { return keys_ptrs_; }
   };

@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_popup.h"
 #include "ui/events/event_observer.h"
@@ -77,7 +76,7 @@ class FullscreenControlHost : public ui::EventObserver {
 
   bool in_mouse_cooldown_mode_ = false;
 
-  const CheckedPtr<BrowserView> browser_view_;
+  BrowserView* const browser_view_;
 
   std::unique_ptr<FullscreenControlPopup> fullscreen_control_popup_;
 

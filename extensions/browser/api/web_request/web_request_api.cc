@@ -16,7 +16,6 @@
 #include "base/containers/flat_map.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/stl_util.h"
@@ -873,7 +872,7 @@ struct ExtensionWebRequestEventRouter::BlockedRequest {
   BlockedRequest() = default;
 
   // Information about the request that is being blocked. Not owned.
-  CheckedPtr<const WebRequestInfo> request = nullptr;
+  const WebRequestInfo* request = nullptr;
 
   // Whether the request originates from an incognito tab.
   bool is_incognito = false;
@@ -899,15 +898,15 @@ struct ExtensionWebRequestEventRouter::BlockedRequest {
 
   // If non-empty, this contains the auth credentials that may be filled in.
   // Only valid for OnAuthRequired.
-  CheckedPtr<net::AuthCredentials> auth_credentials = nullptr;
+  net::AuthCredentials* auth_credentials = nullptr;
 
   // If non-empty, this contains the new URL that the request will redirect to.
   // Only valid for OnBeforeRequest and OnHeadersReceived.
-  CheckedPtr<GURL> new_url = nullptr;
+  GURL* new_url = nullptr;
 
   // The request headers that will be issued along with this request. Only valid
   // for OnBeforeSendHeaders.
-  CheckedPtr<net::HttpRequestHeaders> request_headers = nullptr;
+  net::HttpRequestHeaders* request_headers = nullptr;
 
   // The response headers that were received from the server. Only valid for
   // OnHeadersReceived.
@@ -915,8 +914,7 @@ struct ExtensionWebRequestEventRouter::BlockedRequest {
 
   // Location where to override response headers. Only valid for
   // OnHeadersReceived.
-  CheckedPtr<scoped_refptr<net::HttpResponseHeaders>>
-      override_response_headers = nullptr;
+  scoped_refptr<net::HttpResponseHeaders>* override_response_headers = nullptr;
 
   // Time the request was paused. Used for logging purposes.
   base::Time blocking_time;

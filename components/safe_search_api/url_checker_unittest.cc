@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -90,7 +89,7 @@ class SafeSearchURLCheckerTest : public testing::Test {
   }
 
   size_t next_url_;
-  CheckedPtr<FakeURLCheckerClient> fake_client_;
+  FakeURLCheckerClient* fake_client_;
   std::unique_ptr<URLChecker> checker_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "base/memory/checked_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/stop_find_action.h"
@@ -212,7 +211,7 @@ class CONTENT_EXPORT FindRequestManager {
     float nearest_distance = FLT_MAX;
 
     // The frame containing the nearest result found so far.
-    CheckedPtr<RenderFrameHostImpl> nearest_frame = nullptr;
+    RenderFrameHostImpl* nearest_frame = nullptr;
 
     // Nearest find result replies are still pending for these frames.
     std::unordered_set<RenderFrameHost*> pending_replies;
@@ -271,7 +270,7 @@ class CONTENT_EXPORT FindRequestManager {
   // The WebContents that owns this FindRequestManager. This also defines the
   // scope of all find sessions. Only frames in |contents_| and any inner
   // WebContentses within it will be searched.
-  const CheckedPtr<WebContentsImpl> contents_;
+  WebContentsImpl* const contents_;
 
   // The request ID of the initial find request in the current find-in-page
   // session, which uniquely identifies this session. Request IDs are included
@@ -291,7 +290,7 @@ class CONTENT_EXPORT FindRequestManager {
 
   // The frame (if any) that is still expected to reply to the last pending
   // "find next" request.
-  CheckedPtr<RenderFrameHost> pending_find_next_reply_ = nullptr;
+  RenderFrameHost* pending_find_next_reply_ = nullptr;
 
   // Indicates whether an update to the active match ordinal is expected. Once
   // set, |pending_active_match_ordinal_| will not reset until an update to the
@@ -311,7 +310,7 @@ class CONTENT_EXPORT FindRequestManager {
   int number_of_matches_ = 0;
 
   // The frame containing the active match, if one exists, or nullptr otherwise.
-  CheckedPtr<RenderFrameHostImpl> active_frame_ = nullptr;
+  RenderFrameHostImpl* active_frame_ = nullptr;
 
   // The active match ordinal relative to the matches found in its own frame.
   int relative_active_match_ordinal_ = 0;

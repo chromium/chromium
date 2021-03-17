@@ -8,7 +8,6 @@
 #include "base/base_export.h"
 #include "base/check_op.h"
 #include "base/containers/linked_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 
@@ -157,7 +156,7 @@ class WeakLinkNode : public base::LinkNode<WeakLinkNode<ObserverList>> {
   explicit operator bool() const { return get(); }
 
  private:
-  CheckedPtr<ObserverList> list_ = nullptr;
+  ObserverList* list_ = nullptr;
 };
 
 }  // namespace internal

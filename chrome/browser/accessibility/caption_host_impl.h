@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/common/caption.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -57,7 +56,7 @@ class CaptionHostImpl : public chrome::mojom::CaptionHost,
   // it does not exist.
   CaptionController* GetCaptionController(content::WebContents*);
 
-  CheckedPtr<content::RenderFrameHost> frame_host_;
+  content::RenderFrameHost* frame_host_;
 };
 
 }  // namespace captions

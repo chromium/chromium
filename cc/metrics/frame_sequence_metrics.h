@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/cc_export.h"
@@ -175,18 +174,18 @@ class CC_EXPORT FrameSequenceMetrics {
   struct TraceData {
     explicit TraceData(FrameSequenceMetrics* metrics);
     ~TraceData();
-    CheckedPtr<FrameSequenceMetrics> metrics;
+    FrameSequenceMetrics* metrics;
     base::TimeTicks last_timestamp = base::TimeTicks::Now();
     int frame_count = 0;
     bool enabled = false;
-    CheckedPtr<void> trace_id = nullptr;
+    void* trace_id = nullptr;
 
     void Advance(base::TimeTicks new_timestamp);
     void Terminate();
   } trace_data_{this};
 
   // Pointer to the reporter owned by the FrameSequenceTrackerCollection.
-  const CheckedPtr<ThroughputUkmReporter> throughput_ukm_reporter_;
+  ThroughputUkmReporter* const throughput_ukm_reporter_;
 
   ThroughputData impl_throughput_;
   ThroughputData main_throughput_;

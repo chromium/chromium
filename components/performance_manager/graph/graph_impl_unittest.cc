@@ -4,7 +4,6 @@
 
 #include "components/performance_manager/graph/graph_impl.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/process/process.h"
 #include "base/time/time.h"
@@ -160,7 +159,7 @@ class Foo : public GraphOwned {
  private:
   bool passed_to_called_ = false;
   bool taken_from_called_ = false;
-  CheckedPtr<int> destructor_count_ = nullptr;
+  int* destructor_count_ = nullptr;
 };
 
 }  // namespace

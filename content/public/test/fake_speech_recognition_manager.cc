@@ -85,7 +85,7 @@ int FakeSpeechRecognitionManager::CreateSession(
   VLOG(1) << "FAKE CreateSession invoked.";
   // FakeSpeechRecognitionManager only allows one active session at a time.
   EXPECT_EQ(0, session_id_);
-  EXPECT_EQ(nullptr, listener_.get());
+  EXPECT_EQ(nullptr, listener_);
   listener_ = config.event_listener.get();
   if (config.grammars.size() > 0)
     grammar_ = config.grammars[0].url.spec();

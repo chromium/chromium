@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/browser_context.h"
 
 namespace net {
@@ -45,8 +44,8 @@ class CONTENT_EXPORT SameSiteDataRemoverImpl {
   void OverrideStoragePartitionForTesting(StoragePartition* storage_partition);
 
  private:
-  CheckedPtr<BrowserContext> browser_context_;
-  CheckedPtr<StoragePartition> storage_partition_;
+  BrowserContext* browser_context_;
+  StoragePartition* storage_partition_;
   std::set<std::string> same_site_none_domains_;
 
   DISALLOW_COPY_AND_ASSIGN(SameSiteDataRemoverImpl);

@@ -12,7 +12,6 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/containers/span.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "cc/paint/transfer_cache_entry.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -75,15 +74,15 @@ class CC_PAINT_EXPORT ClientImageTransferCacheEntry final
   static base::AtomicSequenceNumber s_next_id_;
 
   // RGBX-only members.
-  const CheckedPtr<const SkPixmap> pixmap_;
-  const CheckedPtr<const SkColorSpace>
+  const SkPixmap* const pixmap_;
+  const SkColorSpace* const
       target_color_space_;  // Unused for YUV because Skia handles colorspaces
                             // at raster.
 
   // YUVA-only members.
   base::Optional<std::array<const SkPixmap*, SkYUVAInfo::kMaxPlanes>>
       yuv_pixmaps_;
-  const CheckedPtr<const SkColorSpace> decoded_color_space_;
+  const SkColorSpace* const decoded_color_space_;
   SkYUVAInfo::Subsampling subsampling_ = SkYUVAInfo::Subsampling::kUnknown;
   SkYUVColorSpace yuv_color_space_;
 
@@ -154,7 +153,7 @@ class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
                              uint32_t height,
                              sk_sp<SkColorSpace> target_color_space);
 
-  CheckedPtr<GrDirectContext> context_ = nullptr;
+  GrDirectContext* context_ = nullptr;
   std::vector<sk_sp<SkImage>> plane_images_;
   SkYUVAInfo::PlaneConfig plane_config_ = SkYUVAInfo::PlaneConfig::kUnknown;
   std::vector<size_t> plane_sizes_;

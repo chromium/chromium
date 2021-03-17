@@ -9,7 +9,6 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/signin_error_controller.h"
@@ -53,10 +52,10 @@ class SigninGlobalError : public GlobalErrorWithStandardBubble,
   void OnErrorChanged() override;
 
   // The Profile this service belongs to.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // The SigninErrorController that provides auth status.
-  CheckedPtr<SigninErrorController> error_controller_;
+  SigninErrorController* error_controller_;
 
   DISALLOW_COPY_AND_ASSIGN(SigninGlobalError);
 };

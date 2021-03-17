@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/net_errors.h"
@@ -33,10 +32,10 @@ class ProxyResolverFactoryImpl::Job {
   void OnDisconnect();
   void OnProxyResolverCreated(int error);
 
-  const CheckedPtr<ProxyResolverFactoryImpl> parent_;
+  ProxyResolverFactoryImpl* const parent_;
   std::unique_ptr<ProxyResolverV8Tracing> proxy_resolver_impl_;
   mojo::PendingReceiver<mojom::ProxyResolver> proxy_receiver_;
-  CheckedPtr<ProxyResolverV8TracingFactory> factory_;
+  ProxyResolverV8TracingFactory* factory_;
   std::unique_ptr<net::ProxyResolverFactory::Request> request_;
   mojo::Remote<mojom::ProxyResolverFactoryRequestClient> remote_client_;
 

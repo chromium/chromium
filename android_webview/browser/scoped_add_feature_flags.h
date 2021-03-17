@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 
 namespace base {
 class CommandLine;
@@ -31,7 +30,7 @@ class ScopedAddFeatureFlags {
  private:
   void AddFeatureIfNotSet(const base::Feature& feature, bool enable);
 
-  const CheckedPtr<base::CommandLine> cl_;
+  base::CommandLine* const cl_;
   std::vector<std::string> enabled_features_;
   std::vector<std::string> disabled_features_;
 

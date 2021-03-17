@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_timeouts.h"
 #include "base/values.h"
@@ -79,7 +78,7 @@ class NotificationUIManagerTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  CheckedPtr<MessageCenter> message_center_;
+  MessageCenter* message_center_;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // chromeos::LacrosChromeServiceImpl is used by Lacros implementation of

@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -81,23 +80,22 @@ struct NET_EXPORT_PRIVATE CommonConnectJobParams {
 
   CommonConnectJobParams& operator=(const CommonConnectJobParams& other);
 
-  CheckedPtr<ClientSocketFactory> client_socket_factory;
-  CheckedPtr<HostResolver> host_resolver;
-  CheckedPtr<HttpAuthCache> http_auth_cache;
-  CheckedPtr<HttpAuthHandlerFactory> http_auth_handler_factory;
-  CheckedPtr<SpdySessionPool> spdy_session_pool;
-  CheckedPtr<const quic::ParsedQuicVersionVector> quic_supported_versions;
-  CheckedPtr<QuicStreamFactory> quic_stream_factory;
-  CheckedPtr<ProxyDelegate> proxy_delegate;
-  CheckedPtr<const HttpUserAgentSettings> http_user_agent_settings;
-  CheckedPtr<SSLClientContext> ssl_client_context;
-  CheckedPtr<SocketPerformanceWatcherFactory>
-      socket_performance_watcher_factory;
-  CheckedPtr<NetworkQualityEstimator> network_quality_estimator;
-  CheckedPtr<NetLog> net_log;
+  ClientSocketFactory* client_socket_factory;
+  HostResolver* host_resolver;
+  HttpAuthCache* http_auth_cache;
+  HttpAuthHandlerFactory* http_auth_handler_factory;
+  SpdySessionPool* spdy_session_pool;
+  const quic::ParsedQuicVersionVector* quic_supported_versions;
+  QuicStreamFactory* quic_stream_factory;
+  ProxyDelegate* proxy_delegate;
+  const HttpUserAgentSettings* http_user_agent_settings;
+  SSLClientContext* ssl_client_context;
+  SocketPerformanceWatcherFactory* socket_performance_watcher_factory;
+  NetworkQualityEstimator* network_quality_estimator;
+  NetLog* net_log;
 
   // This must only be non-null for WebSockets.
-  CheckedPtr<WebSocketEndpointLockManager> websocket_endpoint_lock_manager;
+  WebSocketEndpointLockManager* websocket_endpoint_lock_manager;
 };
 
 // When a host resolution completes, OnHostResolutionCallback() is invoked. If
@@ -324,10 +322,10 @@ class NET_EXPORT_PRIVATE ConnectJob {
   const base::TimeDelta timeout_duration_;
   RequestPriority priority_;
   const SocketTag socket_tag_;
-  CheckedPtr<const CommonConnectJobParams> common_connect_job_params_;
+  const CommonConnectJobParams* common_connect_job_params_;
   // Timer to abort jobs that take too long.
   base::OneShotTimer timer_;
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
   std::unique_ptr<StreamSocket> socket_;
   // Indicates if this is the topmost ConnectJob. The topmost ConnectJob logs an
   // extra begin and end event, to allow callers to log extra data before the

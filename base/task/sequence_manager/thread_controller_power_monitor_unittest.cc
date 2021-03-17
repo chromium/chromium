@@ -4,7 +4,6 @@
 
 #include "base/task/sequence_manager/thread_controller_power_monitor.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
 #include "base/test/power_monitor_test_base.h"
@@ -37,7 +36,7 @@ class ThreadControllerPowerMonitorTest : public testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  CheckedPtr<PowerMonitorTestSource> power_monitor_source_ = nullptr;
+  PowerMonitorTestSource* power_monitor_source_ = nullptr;
   std::unique_ptr<ThreadControllerPowerMonitor>
       thread_controller_power_monitor_;
 };

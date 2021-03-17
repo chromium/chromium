@@ -7,7 +7,6 @@
 #include "base/containers/contains.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/unicodestring.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/stl_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -225,8 +224,8 @@ class CollapsibleListView : public views::View {
   }
 
   bool table_is_expanded_ = false;
-  CheckedPtr<views::ScrollView> table_view_parent_;
-  CheckedPtr<views::ToggleImageButton> expand_collapse_button_;
+  views::ScrollView* table_view_parent_;
+  views::ToggleImageButton* expand_collapse_button_;
 };
 
 BEGIN_METADATA(CollapsibleListView, views::View)

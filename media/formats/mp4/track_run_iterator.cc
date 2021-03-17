@@ -9,7 +9,6 @@
 #include <limits>
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -45,9 +44,9 @@ struct TrackRunInfo {
   int64_t sample_start_offset;
 
   bool is_audio;
-  CheckedPtr<const AudioSampleEntry> audio_description;
-  CheckedPtr<const VideoSampleEntry> video_description;
-  CheckedPtr<const SampleGroupDescription> track_sample_encryption_group;
+  const AudioSampleEntry* audio_description;
+  const VideoSampleEntry* video_description;
+  const SampleGroupDescription* track_sample_encryption_group;
 
   // Stores sample encryption entries, which is populated from 'senc' box if it
   // is available, otherwise will try to load from cenc auxiliary information.

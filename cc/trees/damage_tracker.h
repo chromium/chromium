@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer_collections.h"
 #include "ui/gfx/geometry/rect.h"
@@ -158,7 +157,7 @@ class CC_EXPORT DamageTracker {
   struct SurfaceWithRect {
     SurfaceWithRect(RenderSurfaceImpl* rs, const gfx::Rect& rect)
         : render_surface(rs), rect_in_target_space(rect) {}
-    CheckedPtr<RenderSurfaceImpl> render_surface;
+    RenderSurfaceImpl* render_surface;
     const gfx::Rect rect_in_target_space;
   };
 

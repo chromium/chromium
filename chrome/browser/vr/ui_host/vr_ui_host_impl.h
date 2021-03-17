@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -64,7 +63,7 @@ class VRUiHostImpl : public content::VrUiHost,
     base::Time bluetooth_indicator_start_;
     base::Time usb_indicator_start_;
     base::Time midi_indicator_start_;
-    CheckedPtr<CapturingStateModel> active_capture_state_model_;  // Not owned.
+    CapturingStateModel* active_capture_state_model_;  // Not owned.
   };
 
   // content::BrowserXRRuntime::Observer implementation.

@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -48,7 +47,7 @@ class FolderUploadConfirmationViewTest : public DialogBrowserTest {
  protected:
   std::vector<ui::SelectedFileInfo> test_files_;
 
-  CheckedPtr<views::Widget> widget_ = nullptr;
+  views::Widget* widget_ = nullptr;
 
   bool callback_called_ = false;
   std::vector<ui::SelectedFileInfo> callback_files_;

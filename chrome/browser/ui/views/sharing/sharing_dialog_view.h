@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/sharing/sharing_dialog.h"
 #include "chrome/browser/sharing/sharing_dialog_data.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
@@ -67,7 +66,7 @@ class SharingDialogView : public SharingDialog,
   SharingDialogData data_;
 
   // References to device and app buttons views.
-  CheckedPtr<View> button_list_ = nullptr;
+  View* button_list_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(SharingDialogView);
 };

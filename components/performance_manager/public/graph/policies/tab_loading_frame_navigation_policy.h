@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/containers/intrusive_heap.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/performance_manager/public/graph/frame_node.h"
@@ -193,7 +192,7 @@ class TabLoadingFrameNavigationPolicy
   base::TimeTicks scheduled_timer_ = base::TimeTicks::Min();
 
   // The mechanism delegate that this object is using
-  CheckedPtr<MechanismDelegate> mechanism_ = nullptr;
+  MechanismDelegate* mechanism_ = nullptr;
 };
 
 class TabLoadingFrameNavigationPolicy::MechanismDelegate {

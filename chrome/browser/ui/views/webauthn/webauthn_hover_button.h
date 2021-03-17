@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/hover_button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
@@ -49,10 +48,10 @@ class WebAuthnHoverButton : public HoverButton {
   ~WebAuthnHoverButton() override = default;
 
  private:
-  CheckedPtr<views::Label> title_ = nullptr;
-  CheckedPtr<views::Label> subtitle_ = nullptr;
-  CheckedPtr<views::View> icon_view_ = nullptr;
-  CheckedPtr<views::View> secondary_icon_view_ = nullptr;
+  views::Label* title_ = nullptr;
+  views::Label* subtitle_ = nullptr;
+  views::View* icon_view_ = nullptr;
+  views::View* secondary_icon_view_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_WEBAUTHN_HOVER_BUTTON_H_

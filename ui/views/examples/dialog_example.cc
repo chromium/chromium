@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -72,7 +71,7 @@ class DialogExample::Delegate : public virtual DialogType {
   bool Accept() override { return parent_->AllowDialogClose(true); }
 
  private:
-  CheckedPtr<DialogExample> parent_;
+  DialogExample* parent_;
 
   DISALLOW_COPY_AND_ASSIGN(Delegate);
 };

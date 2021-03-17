@@ -5,7 +5,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/test_timeouts.h"
@@ -610,7 +609,7 @@ class RenderProcessHostObserverCounter : public RenderProcessHostObserver {
   int exited_count_ = 0;
   int destroyed_count_ = 0;
   bool observing_ = false;
-  CheckedPtr<RenderProcessHost> observed_host_ = nullptr;
+  RenderProcessHost* observed_host_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(RenderProcessHostObserverCounter);
 };
@@ -692,8 +691,8 @@ class ShellCloser : public RenderProcessHostObserver {
     logging_string_->append("ShellCloser::RenderProcessHostDestroyed ");
   }
 
-  CheckedPtr<Shell> shell_;
-  CheckedPtr<std::string> logging_string_;
+  Shell* shell_;
+  std::string* logging_string_;
 };
 
 class ObserverLogger : public RenderProcessHostObserver {
@@ -715,7 +714,7 @@ class ObserverLogger : public RenderProcessHostObserver {
     host_destroyed_ = true;
   }
 
-  CheckedPtr<std::string> logging_string_;
+  std::string* logging_string_;
   bool host_destroyed_;
 };
 
@@ -830,7 +829,7 @@ class AudioStartObserver : public WebContentsObserver {
       std::move(audible_closure_).Run();
   }
 
-  CheckedPtr<RenderFrameHostImpl> render_frame_host_ = nullptr;
+  RenderFrameHostImpl* render_frame_host_ = nullptr;
   bool contents_audible_ = false;
   bool frame_audible_ = false;
   base::OnceClosure audible_closure_;

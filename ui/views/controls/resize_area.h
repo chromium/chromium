@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -42,7 +41,7 @@ class VIEWS_EXPORT ResizeArea : public View {
   void SetInitialPosition(int event_x);
 
   // The delegate to notify when we have updates.
-  CheckedPtr<ResizeAreaDelegate> delegate_;
+  ResizeAreaDelegate* delegate_;
 
   // The event's x-position at the start of the resize operation. The resize
   // area will move while being dragged, so |initial_position_| is represented

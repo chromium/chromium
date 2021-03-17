@@ -8,7 +8,6 @@
 #include <memory>
 #include <set>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
@@ -62,7 +61,7 @@ class BrowserAppMenuButton : public AppMenuButton {
       AppMenuIconController::Severity::NONE};
 
   // Our owning toolbar view.
-  const CheckedPtr<ToolbarView> toolbar_view_;
+  ToolbarView* const toolbar_view_;
 
   base::Optional<FeaturePromoController::PromoHandle> reopen_tab_promo_handle_;
 

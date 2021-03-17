@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -114,7 +113,7 @@ class BookmarkEditorViewTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
 
-  CheckedPtr<BookmarkModel> model_;
+  BookmarkModel* model_;
   std::unique_ptr<TestingProfile> profile_;
 
  private:

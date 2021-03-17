@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
@@ -84,7 +83,7 @@ class MockControllerObserver : public CastDialogController::Observer {
   MOCK_METHOD0(OnControllerInvalidatedInternal, void());
 
  private:
-  CheckedPtr<CastDialogController> controller_ = nullptr;
+  CastDialogController* controller_ = nullptr;
 };
 
 class MockMediaRouterFileDialog : public MediaRouterFileDialog {
@@ -254,7 +253,7 @@ class MediaRouterViewsUITest : public ChromeRenderViewHostTestHarness {
 
  protected:
   std::vector<MediaSinksObserver*> media_sinks_observers_;
-  CheckedPtr<MockMediaRouter> mock_router_ = nullptr;
+  MockMediaRouter* mock_router_ = nullptr;
   std::unique_ptr<MediaRouterUI> ui_;
   std::unique_ptr<StartPresentationContext> start_presentation_context_;
   std::unique_ptr<LoggerImpl> logger_;

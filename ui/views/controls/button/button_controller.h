@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/button/button.h"
 
@@ -59,7 +58,7 @@ class VIEWS_EXPORT ButtonController {
   }
 
  private:
-  const CheckedPtr<Button> button_;
+  Button* const button_;
 
   // TODO(cyan): Remove |button_| and access everything via the delegate.
   std::unique_ptr<ButtonControllerDelegate> button_controller_delegate_;

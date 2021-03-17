@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/memory/checked_ptr.h"
 #include "content/common/content_export.h"
 #include "content/common/cursors/webcursor.h"
 
@@ -64,13 +63,13 @@ class CONTENT_EXPORT CursorManager {
 
   // The view currently underneath the cursor, which corresponds to the cursor
   // currently displayed.
-  CheckedPtr<RenderWidgetHostViewBase> view_under_cursor_;
+  RenderWidgetHostViewBase* view_under_cursor_;
 
   // The root view is the target for DisplayCursor calls whenever the active
   // cursor needs to change.
-  CheckedPtr<RenderWidgetHostViewBase> root_view_;
+  RenderWidgetHostViewBase* root_view_;
 
-  CheckedPtr<TooltipObserver> tooltip_observer_for_testing_;
+  TooltipObserver* tooltip_observer_for_testing_;
 };
 
 }  // namespace content

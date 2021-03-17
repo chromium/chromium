@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/number_formatting.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -227,15 +226,15 @@ class TabCounterAnimator : public gfx::AnimationDelegate {
   TabCounterAnimationType current_animation_ = TabCounterAnimationType::kNone;
 
   // The label that will be animated into view, showing the new value.
-  const CheckedPtr<views::Label> appearing_label_;
+  views::Label* const appearing_label_;
   // The label that will be animated out of view, showing the old value.
-  const CheckedPtr<views::Label> disappearing_label_;
+  views::Label* const disappearing_label_;
   gfx::MultiAnimation label_animation_;
 
-  const CheckedPtr<views::View> border_view_;
+  views::View* const border_view_;
   gfx::MultiAnimation border_animation_;
 
-  const CheckedPtr<views::Throbber> throbber_;
+  views::Throbber* const throbber_;
   base::OneShotTimer throbber_timer_;
 
   std::unique_ptr<FlyingIndicator> flying_link_;
@@ -299,7 +298,7 @@ void TabCounterAnimator::MaybeStartPendingAnimation() {
       // background, which may not otherwise have been obvious because the tab
       // strip is hidden in this mode.
       throbber_timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(1000),
-                            throbber_.get(), &views::Throbber::Stop);
+                            throbber_, &views::Throbber::Stop);
     }
     pending_throbber_ = false;
   }
@@ -483,19 +482,19 @@ class WebUITabCounterButton : public views::Button,
 
   void MaybeStartFlyingLink(WindowOpenDisposition disposition);
 
-  CheckedPtr<views::InkDropContainerView> ink_drop_container_;
-  CheckedPtr<views::Label> appearing_label_;
-  CheckedPtr<views::Label> disappearing_label_;
-  CheckedPtr<views::View> border_view_;
+  views::InkDropContainerView* ink_drop_container_;
+  views::Label* appearing_label_;
+  views::Label* disappearing_label_;
+  views::View* border_view_;
   std::unique_ptr<TabCounterAnimator> animator_;
-  CheckedPtr<views::Throbber> throbber_;
+  views::Throbber* throbber_;
 
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   std::unique_ptr<views::MenuRunner> menu_runner_;
   std::unique_ptr<InteractionTracker> interaction_tracker_;
 
-  const CheckedPtr<TabStripModel> tab_strip_model_;
-  const CheckedPtr<BrowserView> browser_view_;
+  TabStripModel* const tab_strip_model_;
+  BrowserView* const browser_view_;
   base::CallbackListSubscription link_opened_from_gesture_subscription_;
 };
 

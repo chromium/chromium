@@ -4,7 +4,6 @@
 
 #include "chrome/browser/page_load_metrics/observers/translate_page_load_metrics_observer.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
@@ -135,7 +134,7 @@ class MockTranslateMetricsLoggerContainer
   }
 
  private:
-  CheckedPtr<translate::testing::MockTranslateMetricsLogger>
+  translate::testing::MockTranslateMetricsLogger*
       mock_translate_metrics_logger_;  // Weak.
 };
 

@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
@@ -138,7 +137,7 @@ class ReauthTestObserver : SigninReauthViewController::Observer {
   }
 
  private:
-  CheckedPtr<SigninReauthViewController> controller_;
+  SigninReauthViewController* controller_;
   base::RunLoop run_loop_;
 };
 

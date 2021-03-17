@@ -7,7 +7,6 @@
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/viz/common/features.h"
 #include "content/browser/browser_main_loop.h"
@@ -149,7 +148,7 @@ class ContextLostRunLoop : public viz::ContextLostObserver {
   // viz::LostContextProvider:
   void OnContextLost() override { did_lose_context_ = true; }
 
-  const CheckedPtr<viz::ContextProvider> context_provider_;
+  viz::ContextProvider* const context_provider_;
   bool did_lose_context_ = false;
   base::RunLoop run_loop_;
 
@@ -175,7 +174,7 @@ class CompositorSwapRunLoop {
     run_loop_.Quit();
   }
 
-  CheckedPtr<CompositorImpl> compositor_;
+  CompositorImpl* compositor_;
   base::RunLoop run_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(CompositorSwapRunLoop);

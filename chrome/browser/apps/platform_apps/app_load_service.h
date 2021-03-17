@@ -10,7 +10,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -91,7 +90,7 @@ class AppLoadService : public KeyedService,
   // no action.
   std::map<std::string, PostReloadAction> post_reload_actions_;
   content::NotificationRegistrar registrar_;
-  CheckedPtr<content::BrowserContext> context_;
+  content::BrowserContext* context_;
 };
 
 }  // namespace apps

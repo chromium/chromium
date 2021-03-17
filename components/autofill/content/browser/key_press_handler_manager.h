@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_CONTENT_BROWSER_KEY_PRESS_HANDLER_MANAGER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/render_widget_host.h"
 
 namespace autofill {
@@ -36,7 +35,7 @@ class KeyPressHandlerManager {
   void RemoveKeyPressHandler();  // Unregisters previous handler.
 
  private:
-  const CheckedPtr<Delegate> delegate_;
+  Delegate* const delegate_;
 
   content::RenderWidgetHost::KeyPressEventCallback handler_;
 

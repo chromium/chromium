@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -138,7 +137,7 @@ class OffscreenTab final : public ProfileObserver,
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
-  const CheckedPtr<Owner> owner_;  // Outlives this class.
+  Owner* const owner_;  // Outlives this class.
 
   // The initial navigation URL, which may or may not match the current URL if
   // page-initiated navigations have occurred.
@@ -146,7 +145,7 @@ class OffscreenTab final : public ProfileObserver,
 
   // A non-shared off-the-record profile based on the profile of the extension
   // background page.
-  CheckedPtr<Profile> otr_profile_;
+  Profile* otr_profile_;
 
   // The WebContents containing the off-screen tab's page.
   std::unique_ptr<content::WebContents> offscreen_tab_web_contents_;

@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
-#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/threading/thread_local.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -29,7 +28,7 @@ struct JingleThreadWrapper::PendingSend {
     DCHECK(sending_thread);
   }
 
-  CheckedPtr<JingleThreadWrapper> sending_thread;
+  JingleThreadWrapper* sending_thread;
   rtc::Message message;
   base::WaitableEvent done_event;
 };

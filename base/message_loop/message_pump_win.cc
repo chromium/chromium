@@ -812,10 +812,8 @@ bool MessagePumpForIO::GetIOItem(DWORD timeout, IOItem* item) {
 bool MessagePumpForIO::ProcessInternalIOItem(const IOItem& item) {
   DCHECK_CALLED_ON_VALID_THREAD(bound_thread_);
 
-  if (reinterpret_cast<void*>(this) ==
-          reinterpret_cast<void*>(item.context.get()) &&
-      reinterpret_cast<void*>(this) ==
-          reinterpret_cast<void*>(item.handler.get())) {
+  if (reinterpret_cast<void*>(this) == reinterpret_cast<void*>(item.context) &&
+      reinterpret_cast<void*>(this) == reinterpret_cast<void*>(item.handler)) {
     // This is our internal completion.
     DCHECK(!item.bytes_transfered);
     work_scheduled_ = false;

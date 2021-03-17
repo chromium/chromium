@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -189,7 +188,7 @@ class SettingsResetPromptDialogCloseTest : public DialogBrowserTest {
   void DismissUi() override { dialog_->Close(); }
 
  private:
-  CheckedPtr<SettingsResetPromptDialog> dialog_ = nullptr;
+  SettingsResetPromptDialog* dialog_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(SettingsResetPromptDialogCloseTest,

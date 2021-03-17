@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/webid/webid_dialog_views.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -48,13 +47,13 @@ class SigninPageView : public views::View, public content::WebContentsObserver {
   void UpdateHeaderView();
 
   // The dialog that is hosting this view.
-  CheckedPtr<WebIdDialogViews> dialog_;
+  WebIdDialogViews* dialog_;
 
-  CheckedPtr<content::WebContents> initiator_web_contents_;
+  content::WebContents* initiator_web_contents_;
   // The header of the dialog, owned by the view hierarchy.
-  CheckedPtr<views::View> header_view_;
+  views::View* header_view_;
   // The contents of the dialog, owned by the view hierarchy.
-  CheckedPtr<views::WebView> web_view_;
+  views::WebView* web_view_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBID_WEBID_SIGNIN_PAGE_VIEW_H_

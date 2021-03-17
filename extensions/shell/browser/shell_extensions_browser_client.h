@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -131,11 +130,11 @@ class ShellExtensionsBrowserClient : public ExtensionsBrowserClient {
  private:
   // The single BrowserContext for app_shell. Not owned. Must be initialized
   // when ready by calling InitWithBrowserContext().
-  CheckedPtr<content::BrowserContext> browser_context_ = nullptr;
+  content::BrowserContext* browser_context_ = nullptr;
 
   // The PrefService for |browser_context_|. Not owned. Must be initialized when
   // ready by calling InitWithBrowserContext().
-  CheckedPtr<PrefService> pref_service_ = nullptr;
+  PrefService* pref_service_ = nullptr;
 
   // Support for extension APIs.
   std::unique_ptr<ExtensionsAPIClient> api_client_;

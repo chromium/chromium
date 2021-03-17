@@ -6,7 +6,6 @@
 #define REMOTING_HOST_WIN_CHROMOTING_MODULE_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_com_initializer.h"
@@ -58,8 +57,8 @@ class ChromotingModule : public ATL::CAtlModuleT<ChromotingModule> {
   base::win::ScopedCOMInitializer com_initializer_;
 
   // Point to the vector of classes registered by this module.
-  CheckedPtr<ATL::_ATL_OBJMAP_ENTRY> classes_;
-  CheckedPtr<ATL::_ATL_OBJMAP_ENTRY> classes_end_;
+  ATL::_ATL_OBJMAP_ENTRY* classes_;
+  ATL::_ATL_OBJMAP_ENTRY* classes_end_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromotingModule);
 };

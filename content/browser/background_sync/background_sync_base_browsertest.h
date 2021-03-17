@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -103,7 +102,7 @@ class BackgroundSyncBaseBrowserTest : public ContentBrowserTest {
       base::OnceCallback<void(bool)> callback);
   StoragePartitionImpl* GetStorage();
 
-  CheckedPtr<Shell> shell_ = nullptr;
+  Shell* shell_ = nullptr;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

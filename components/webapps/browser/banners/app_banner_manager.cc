@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
@@ -81,7 +80,7 @@ class ConsoleStatusReporter : public AppBannerManager::StatusReporter {
   }
 
  private:
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 };
 
 // Tracks installable status codes via an UMA histogram.

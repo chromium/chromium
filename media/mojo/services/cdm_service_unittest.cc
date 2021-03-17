@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
@@ -125,7 +124,7 @@ class CdmServiceTest : public testing::Test {
         &CdmServiceTest::CdmConnectionClosed, base::Unretained(this)));
   }
   std::unique_ptr<CdmService> service_;
-  CheckedPtr<MockCdmServiceClient> mock_cdm_service_client_ = nullptr;
+  MockCdmServiceClient* mock_cdm_service_client_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(CdmServiceTest);
 };

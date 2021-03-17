@@ -11,7 +11,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -494,7 +493,7 @@ class OptimizationGuideStoreTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  CheckedPtr<FakeDB<proto::StoreEntry>> db_;
+  FakeDB<proto::StoreEntry>* db_;
   StoreEntryMap db_store_;
   std::unique_ptr<OptimizationGuideStore> guide_store_;
   base::ScopedTempDir temp_dir_;

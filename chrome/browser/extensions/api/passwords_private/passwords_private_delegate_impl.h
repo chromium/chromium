@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -144,7 +143,7 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
   bool OsReauthCall(password_manager::ReauthPurpose purpose);
 
   // Not owned by this class.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // Used to communicate with the password store.
   std::unique_ptr<PasswordManagerPresenter> password_manager_presenter_;
@@ -191,7 +190,7 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
 
   // The WebContents used when invoking this API. Used to fetch the
   // NativeWindow for the window where the API was called.
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 
   base::WeakPtrFactory<PasswordsPrivateDelegateImpl> weak_ptr_factory_{this};
 

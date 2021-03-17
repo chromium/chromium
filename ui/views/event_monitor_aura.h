@@ -8,7 +8,6 @@
 #include <set>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/views/event_monitor.h"
 
 namespace ui {
@@ -33,8 +32,8 @@ class EventMonitorAura : public EventMonitor {
   void TearDown();
 
  private:
-  CheckedPtr<ui::EventObserver> event_observer_;  // Weak. Owned by our owner.
-  CheckedPtr<ui::EventTarget> event_target_;      // Weak.
+  ui::EventObserver* event_observer_;  // Weak. Owned by our owner.
+  ui::EventTarget* event_target_;      // Weak.
 
   DISALLOW_COPY_AND_ASSIGN(EventMonitorAura);
 };

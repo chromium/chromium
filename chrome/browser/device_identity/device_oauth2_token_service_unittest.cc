@@ -10,7 +10,6 @@
 #include <set>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -194,7 +193,7 @@ class DeviceOAuth2TokenServiceTest : public testing::Test {
   std::unique_ptr<DeviceOAuth2TokenService, TokenServiceDeleter>
       oauth2_service_;
   TestingOAuth2AccessTokenManagerConsumer consumer_;
-  CheckedPtr<MockDeviceOAuth2TokenStore> token_store_;
+  MockDeviceOAuth2TokenStore* token_store_;
 };
 
 void DeviceOAuth2TokenServiceTest::ReturnOAuthUrlFetchResults(

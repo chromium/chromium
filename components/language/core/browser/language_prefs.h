@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -84,7 +83,7 @@ class LanguagePrefs {
   // Used for deduplication and reordering of languages.
   std::set<std::string> forced_languages_set_;
 
-  CheckedPtr<PrefService> prefs_;  // Weak.
+  PrefService* prefs_;  // Weak.
   PrefChangeRegistrar pref_change_registrar_;
 
   DISALLOW_COPY_AND_ASSIGN(LanguagePrefs);

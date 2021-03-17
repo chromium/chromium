@@ -5,7 +5,6 @@
 #include <set>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
@@ -53,7 +52,7 @@ class SubresourceFilterHistoryObserverTest : public testing::Test {
   TestingProfile testing_profile_;
 
   // Owned by the testing_profile_.
-  CheckedPtr<subresource_filter::SubresourceFilterContentSettingsManager>
+  subresource_filter::SubresourceFilterContentSettingsManager*
       settings_manager_ = nullptr;
 };
 

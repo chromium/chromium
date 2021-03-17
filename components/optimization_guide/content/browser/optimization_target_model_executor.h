@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/files/memory_mapped_file.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/task/task_traits.h"
@@ -154,7 +153,7 @@ class OptimizationTargetModelExecutor : public OptimizationTargetModelObserver {
   }
 
   // Not owned. Guaranteed to outlive |this|.
-  CheckedPtr<OptimizationGuideDecider> decider_;
+  OptimizationGuideDecider* decider_;
 
   proto::OptimizationTarget optimization_target_;
 

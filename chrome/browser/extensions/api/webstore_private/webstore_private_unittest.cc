@@ -9,7 +9,6 @@
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/util/values/values_util.h"
@@ -379,7 +378,7 @@ class WebstorePrivateBeginInstallWithManifest3Test
   ExtensionService* extension_service() { return service_; }
 
  private:
-  CheckedPtr<ExtensionService> service_ = nullptr;
+  ExtensionService* service_ = nullptr;
 };
 
 TEST_F(WebstorePrivateBeginInstallWithManifest3Test,

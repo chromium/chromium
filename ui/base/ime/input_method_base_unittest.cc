@@ -8,7 +8,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/task_environment.h"
@@ -145,7 +144,7 @@ class MockInputMethodBase : public InputMethodBase {
   }
 
   // Not owned.
-  const CheckedPtr<ClientChangeVerifier> verifier_;
+  ClientChangeVerifier* const verifier_;
 
   FRIEND_TEST_ALL_PREFIXES(InputMethodBaseTest, CandidateWindowEvents);
   DISALLOW_COPY_AND_ASSIGN(MockInputMethodBase);
@@ -169,7 +168,7 @@ class MockInputMethodObserver : public InputMethodObserver {
   void OnInputMethodDestroyed(const InputMethod* client) override {}
 
   // Not owned.
-  const CheckedPtr<ClientChangeVerifier> verifier_;
+  ClientChangeVerifier* const verifier_;
   DISALLOW_COPY_AND_ASSIGN(MockInputMethodObserver);
 };
 

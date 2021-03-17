@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "url/gurl.h"
@@ -58,7 +57,7 @@ class BrowserSavePasswordProgressLogger
  private:
   // The LogManager to which logs can be sent for display. The log_manager must
   // outlive this logger.
-  const CheckedPtr<const autofill::LogManager> log_manager_;
+  const autofill::LogManager* const log_manager_;
 
   // Returns string representation for |FormStructure|.
   std::string FormStructureToFieldsLogString(

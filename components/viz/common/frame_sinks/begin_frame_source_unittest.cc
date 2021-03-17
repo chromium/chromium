@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "components/viz/test/begin_frame_source_test.h"
@@ -79,8 +78,7 @@ class BackToBackBeginFrameSourceTest : public ::testing::Test {
   scoped_refptr<TestTaskRunner> task_runner_;
   std::unique_ptr<BackToBackBeginFrameSource> source_;
   std::unique_ptr<MockBeginFrameObserver> obs_;
-  CheckedPtr<FakeDelayBasedTimeSource>
-      delay_based_time_source_;  // Owned by |source_|.
+  FakeDelayBasedTimeSource* delay_based_time_source_;  // Owned by |source_|.
 };
 
 const int64_t BackToBackBeginFrameSourceTest::kDeadline =

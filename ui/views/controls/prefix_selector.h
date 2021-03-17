@@ -8,8 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/memory/checked_ptr.h"
-
 #if defined(OS_WIN)
 #include <string>
 #include <vector>
@@ -116,9 +114,9 @@ class VIEWS_EXPORT PrefixSelector : public ui::TextInputClient {
   // Clears |current_text_| and resets |time_of_last_key_|.
   void ClearText();
 
-  CheckedPtr<PrefixDelegate> prefix_delegate_;
+  PrefixDelegate* prefix_delegate_;
 
-  CheckedPtr<View> host_view_;
+  View* host_view_;
 
   // Time OnTextInput() was last invoked.
   base::TimeTicks time_of_last_key_;
@@ -127,7 +125,7 @@ class VIEWS_EXPORT PrefixSelector : public ui::TextInputClient {
 
   // TickClock used for getting the time of the current keystroke, used for
   // continuing or restarting selections.
-  CheckedPtr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
 
   DISALLOW_COPY_AND_ASSIGN(PrefixSelector);
 };

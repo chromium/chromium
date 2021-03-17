@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "content/public/browser/notification_database_data.h"
 #include "content/public/browser/platform_notification_service.h"
@@ -72,7 +71,7 @@ class MockPlatformNotificationService : public PlatformNotificationService {
   // persistent and non-persistent notifications will be considered for this.
   void ReplaceNotificationIfNeeded(const std::string& notification_id);
 
-  CheckedPtr<BrowserContext> context_;
+  BrowserContext* context_;
 
   std::unordered_map<std::string, GURL> persistent_notifications_;
   std::unordered_set<std::string> non_persistent_notifications_;

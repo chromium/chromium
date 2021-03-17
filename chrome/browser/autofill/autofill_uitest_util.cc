@@ -4,7 +4,6 @@
 
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -52,7 +51,7 @@ class PdmChangeWaiter : public PersonalDataManagerObserver {
  private:
   bool alerted_;
   bool has_run_message_loop_;
-  CheckedPtr<Profile> base_profile_;
+  Profile* base_profile_;
 
   DISALLOW_COPY_AND_ASSIGN(PdmChangeWaiter);
 };

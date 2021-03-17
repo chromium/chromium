@@ -6,7 +6,6 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_CREDENTIAL_MANAGER_PASSWORD_FORM_MANAGER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 
@@ -53,7 +52,7 @@ class CredentialManagerPasswordFormManager : public PasswordFormManager {
   // Calls OnProvisionalSaveComplete on |delegate_|.
   void NotifyDelegate();
 
-  CheckedPtr<CredentialManagerPasswordFormManagerDelegate> delegate_;
+  CredentialManagerPasswordFormManagerDelegate* delegate_;
 
   base::WeakPtrFactory<CredentialManagerPasswordFormManager> weak_factory_{
       this};

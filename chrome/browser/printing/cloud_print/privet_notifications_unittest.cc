@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -194,7 +193,7 @@ class TestPrivetNotificationDelegate : public PrivetNotificationDelegate {
   void OpenTab(const GURL& url) override;
   void DisableNotifications() override;
 
-  const CheckedPtr<TestPrivetNotificationService> service_;
+  TestPrivetNotificationService* const service_;
 
   DISALLOW_COPY_AND_ASSIGN(TestPrivetNotificationDelegate);
 };
@@ -272,7 +271,7 @@ class PrivetNotificationsNotificationTest : public testing::Test {
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(PrivetNotificationsNotificationTest);

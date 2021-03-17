@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "remoting/protocol/message_pipe.h"
@@ -54,8 +53,8 @@ class StreamConnectionTester {
   void HandleReadResult(int result);
 
  private:
-  CheckedPtr<P2PStreamSocket> host_socket_;
-  CheckedPtr<P2PStreamSocket> client_socket_;
+  P2PStreamSocket* host_socket_;
+  P2PStreamSocket* client_socket_;
   int message_size_;
   int test_data_size_;
   base::OnceClosure on_done_;
@@ -87,7 +86,7 @@ class MessagePipeConnectionTester : public MessagePipe::EventHandler {
   class MessageSender;
 
   base::RunLoop run_loop_;
-  CheckedPtr<MessagePipe> client_pipe_;
+  MessagePipe* client_pipe_;
 
   std::unique_ptr<MessageSender> sender_;
 

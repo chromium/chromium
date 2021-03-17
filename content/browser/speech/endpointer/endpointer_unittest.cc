@@ -4,7 +4,6 @@
 
 #include <stdint.h>
 
-#include "base/memory/checked_ptr.h"
 #include "content/browser/speech/audio_buffer.h"
 #include "content/browser/speech/endpointer/endpointer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -87,7 +86,7 @@ class EnergyEndpointerFrameProcessor : public FrameProcessor {
   }
 
  private:
-  CheckedPtr<EnergyEndpointer> endpointer_;
+  EnergyEndpointer* endpointer_;
 };
 
 TEST(EndpointerTest, TestEnergyEndpointerEvents) {
@@ -134,7 +133,7 @@ class EndpointerFrameProcessor : public FrameProcessor {
   }
 
  private:
-  CheckedPtr<Endpointer> endpointer_;
+  Endpointer* endpointer_;
 };
 
 TEST(EndpointerTest, TestEmbeddedEndpointerEvents) {

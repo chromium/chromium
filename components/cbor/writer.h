@@ -10,7 +10,6 @@
 
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "components/cbor/cbor_export.h"
 #include "components/cbor/values.h"
@@ -109,7 +108,7 @@ class CBOR_EXPORT Writer {
   size_t GetNumUintBytes(uint64_t value);
 
   // Holds the encoded CBOR data.
-  CheckedPtr<std::vector<uint8_t>> encoded_cbor_;
+  std::vector<uint8_t>* encoded_cbor_;
 
   DISALLOW_COPY_AND_ASSIGN(Writer);
 };

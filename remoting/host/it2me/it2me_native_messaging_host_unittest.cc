@@ -16,7 +16,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -255,7 +254,7 @@ class It2MeNativeMessagingHostTest : public testing::Test {
   void TestConnect();
 
   // Raw pointer to host factory (owned by It2MeNativeMessagingHost).
-  CheckedPtr<MockIt2MeHostFactory> factory_raw_ptr_ = nullptr;
+  MockIt2MeHostFactory* factory_raw_ptr_ = nullptr;
 
  private:
   void StartHost();
@@ -281,7 +280,7 @@ class It2MeNativeMessagingHostTest : public testing::Test {
 
   // Retain a raw pointer to |policy_loader_| in order to control the policy
   // contents.
-  CheckedPtr<policy::FakeAsyncPolicyLoader> policy_loader_ = nullptr;
+  policy::FakeAsyncPolicyLoader* policy_loader_ = nullptr;
 
   // Task runner of the host thread.
   scoped_refptr<AutoThreadTaskRunner> host_task_runner_;

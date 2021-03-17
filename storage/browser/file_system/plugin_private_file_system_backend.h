@@ -13,7 +13,6 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "storage/browser/file_system/file_system_backend.h"
@@ -144,7 +143,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) PluginPrivateFileSystemBackend
   const FileSystemOptions file_system_options_;
   const base::FilePath base_path_;
   std::unique_ptr<AsyncFileUtil> file_util_;
-  CheckedPtr<FileSystemIDToPluginMap> plugin_map_;  // Owned by file_util_.
+  FileSystemIDToPluginMap* plugin_map_;  // Owned by file_util_.
   base::WeakPtrFactory<PluginPrivateFileSystemBackend> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PluginPrivateFileSystemBackend);

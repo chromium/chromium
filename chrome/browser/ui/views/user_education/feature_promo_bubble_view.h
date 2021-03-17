@@ -8,7 +8,6 @@
 #include <cstddef>
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_params.h"
@@ -43,7 +42,7 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
     CreateParams(CreateParams&&);
     ~CreateParams();
 
-    CheckedPtr<views::View> anchor_view = nullptr;
+    views::View* anchor_view = nullptr;
 
     std::u16string body_text;
     base::Optional<std::u16string> title_text;
@@ -108,8 +107,8 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
   // If true, |focusable_| must be true for keyboard accessibility.
   bool snoozable_;
 
-  CheckedPtr<views::MdTextButton> dismiss_button_ = nullptr;
-  CheckedPtr<views::MdTextButton> snooze_button_ = nullptr;
+  views::MdTextButton* dismiss_button_ = nullptr;
+  views::MdTextButton* snooze_button_ = nullptr;
 
   std::u16string accessible_name_;
 

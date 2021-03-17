@@ -31,11 +31,11 @@ EditAddressProfileView::EditAddressProfileView(
 
   SetAcceptCallback(base::BindOnce(
       &SaveAddressProfileBubbleController::OnUserDecision,
-      base::Unretained(controller_.get()),
+      base::Unretained(controller_),
       AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted));
   SetCancelCallback(base::BindOnce(
       &SaveAddressProfileBubbleController::OnUserDecision,
-      base::Unretained(controller_.get()),
+      base::Unretained(controller_),
       AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined));
 
   SetLayoutManager(std::make_unique<views::FillLayout>());

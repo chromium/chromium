@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "cc/layers/painted_scrollbar_layer.h"
 #include "cc/test/fake_scrollbar.h"
 
@@ -60,7 +59,7 @@ class FakePaintedScrollbarLayer : public PaintedScrollbarLayer {
 
   int update_count_;
   size_t push_properties_count_;
-  CheckedPtr<FakeScrollbar> fake_scrollbar_;
+  FakeScrollbar* fake_scrollbar_;
 };
 
 }  // namespace cc

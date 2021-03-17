@@ -15,7 +15,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/memory/checked_ptr.h"
 
 namespace {
 constexpr size_t kUsingFullMapSentinel = std::numeric_limits<size_t>::max();
@@ -226,7 +225,7 @@ class small_map {
     }
 
     inline value_type* operator->() const {
-      return array_iter_ ? array_iter_.get() : map_iter_.operator->();
+      return array_iter_ ? array_iter_ : map_iter_.operator->();
     }
 
     inline value_type& operator*() const {
@@ -255,7 +254,7 @@ class small_map {
     inline explicit iterator(const typename NormalMap::iterator& init)
         : array_iter_(nullptr), map_iter_(init) {}
 
-    CheckedPtr<value_type> array_iter_;
+    value_type* array_iter_;
     typename NormalMap::iterator map_iter_;
   };
 
@@ -306,7 +305,7 @@ class small_map {
     }
 
     inline const value_type* operator->() const {
-      return array_iter_ ? array_iter_.get() : map_iter_.operator->();
+      return array_iter_ ? array_iter_ : map_iter_.operator->();
     }
 
     inline const value_type& operator*() const {
@@ -332,7 +331,7 @@ class small_map {
         const typename NormalMap::const_iterator& init)
         : array_iter_(nullptr), map_iter_(init) {}
 
-    CheckedPtr<const value_type> array_iter_;
+    const value_type* array_iter_;
     typename NormalMap::const_iterator map_iter_;
   };
 

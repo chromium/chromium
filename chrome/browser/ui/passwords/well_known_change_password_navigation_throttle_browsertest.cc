@@ -7,7 +7,6 @@
 #include <map>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -202,7 +201,7 @@ class WellKnownChangePasswordNavigationThrottleBrowserTest
   void SetUpOnMainThread() override;
   void TestNavigationThrottleForLocalhost(const std::string& expected_path);
 
-  CheckedPtr<MockChangePasswordUrlService> url_service_ = nullptr;
+  MockChangePasswordUrlService* url_service_ = nullptr;
 
  private:
 };

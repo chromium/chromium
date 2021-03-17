@@ -18,7 +18,6 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
 #include "gpu/command_buffer/client/gles2_cmd_helper.h"
@@ -302,7 +301,7 @@ class GLES2ImplementationTest : public testing::Test {
     std::unique_ptr<GLES2CmdHelper> helper_;
     std::unique_ptr<MockTransferBuffer> transfer_buffer_;
     std::unique_ptr<GLES2Implementation> gl_;
-    CheckedPtr<CommandBufferEntry> commands_;
+    CommandBufferEntry* commands_;
     int token_;
     Capabilities capabilities_;
   };
@@ -468,11 +467,11 @@ class GLES2ImplementationTest : public testing::Test {
   TestContext test_contexts_[kNumTestContexts];
 
   scoped_refptr<ShareGroup> share_group_;
-  CheckedPtr<MockClientGpuControl> gpu_control_;
-  CheckedPtr<GLES2CmdHelper> helper_;
-  CheckedPtr<MockTransferBuffer> transfer_buffer_;
-  CheckedPtr<GLES2Implementation> gl_;
-  CheckedPtr<CommandBufferEntry> commands_;
+  MockClientGpuControl* gpu_control_;
+  GLES2CmdHelper* helper_;
+  MockTransferBuffer* transfer_buffer_;
+  GLES2Implementation* gl_;
+  CommandBufferEntry* commands_;
 };
 
 void GLES2ImplementationTest::SetUp() {
@@ -4557,7 +4556,7 @@ struct ErrorMessageCounter {
       gl->ShaderBinary(-1, nullptr, 0, nullptr, 0);
   }
 
-  CheckedPtr<GLES2Implementation> gl;
+  GLES2Implementation* gl;
   int32_t num_calls = 0;
 };
 

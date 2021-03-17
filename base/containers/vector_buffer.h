@@ -14,7 +14,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 
@@ -186,7 +185,7 @@ class VectorBuffer {
                 .ValueOrDie() <= from_begin_uintptr);
   }
 
-  CheckedPtr<T> buffer_ = nullptr;
+  T* buffer_ = nullptr;
   size_t capacity_ = 0;
 };
 

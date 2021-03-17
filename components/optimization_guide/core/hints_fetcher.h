@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
@@ -149,17 +148,17 @@ class HintsFetcher {
   optimization_guide::proto::RequestContext request_context_;
 
   // A reference to the PrefService for this profile. Not owned.
-  CheckedPtr<PrefService> pref_service_ = nullptr;
+  PrefService* pref_service_ = nullptr;
 
   // Listens to changes around the network connection. Not owned. Guaranteed to
   // outlive |this|.
-  CheckedPtr<network::NetworkConnectionTracker> network_connection_tracker_;
+  network::NetworkConnectionTracker* network_connection_tracker_;
 
   // Holds the hosts being requested by the hints fetcher.
   std::vector<std::string> hosts_fetched_;
 
   // Clock used for recording time that the hints fetch occurred.
-  CheckedPtr<const base::Clock> time_clock_;
+  const base::Clock* time_clock_;
 
   // Used for creating an |active_url_loader_| when needed for request hints.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

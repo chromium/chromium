@@ -36,7 +36,7 @@ MediaRouterAndroid::PresentationConnectionProxy::Init() {
   auto receiver = peer_.BindNewPipeAndPassReceiver();
   peer_.set_disconnect_handler(
       base::BindOnce(&MediaRouterAndroid::OnPresentationConnectionError,
-                     base::Unretained(media_router_android_.get()), route_id_));
+                     base::Unretained(media_router_android_), route_id_));
   peer_->DidChangeState(blink::mojom::PresentationConnectionState::CONNECTED);
   return mojom::RoutePresentationConnection::New(Bind(), std::move(receiver));
 }
@@ -68,7 +68,7 @@ MediaRouterAndroid::PresentationConnectionProxy::Bind() {
   receiver_.Bind(connection_remote.InitWithNewPipeAndPassReceiver());
   receiver_.set_disconnect_handler(
       base::BindOnce(&MediaRouterAndroid::OnPresentationConnectionError,
-                     base::Unretained(media_router_android_.get()), route_id_));
+                     base::Unretained(media_router_android_), route_id_));
   return connection_remote;
 }
 

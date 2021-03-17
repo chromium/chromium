@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/browser/webauth/authenticator_common.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -80,7 +79,7 @@ class CONTENT_EXPORT AuthenticatorImpl : public blink::mojom::Authenticator,
   // WebContentsObserver:
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
 
-  const CheckedPtr<RenderFrameHost> render_frame_host_;
+  RenderFrameHost* const render_frame_host_;
   std::unique_ptr<AuthenticatorCommon> authenticator_common_;
 
   // Owns pipes to this Authenticator from |render_frame_host_|.

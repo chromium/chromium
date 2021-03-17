@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
@@ -51,7 +50,7 @@ class FilteredOfflineItemObserver : public OfflineContentProvider::Observer {
                      const base::Optional<UpdateDelta>& update_delta) override;
   void OnContentProviderGoingDown() override;
 
-  CheckedPtr<OfflineContentProvider> provider_;
+  OfflineContentProvider* provider_;
   base::ScopedObservation<OfflineContentProvider,
                           OfflineContentProvider::Observer>
       observation_{this};

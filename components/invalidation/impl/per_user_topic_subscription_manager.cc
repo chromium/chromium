@@ -14,7 +14,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
@@ -105,7 +104,7 @@ class PerProjectDictionaryPrefUpdate {
 
  private:
   DictionaryPrefUpdate update_;
-  CheckedPtr<base::Value> per_sender_pref_;
+  base::Value* per_sender_pref_;
 };
 
 // Added in M76.

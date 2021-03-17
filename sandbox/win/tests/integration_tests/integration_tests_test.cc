@@ -8,7 +8,6 @@
 
 #include <windows.h>
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
 #include "base/win/scoped_handle.h"
@@ -47,7 +46,7 @@ class TestDiagnosticsReceiver : public PolicyDiagnosticsReceiver {
   TestDiagnosticsReceiver() {}
   ~TestDiagnosticsReceiver() final {}
   TestDiagnosticsReceiver(PolicyDiagnosticsWaiter* waiter) { waiter_ = waiter; }
-  CheckedPtr<PolicyDiagnosticsWaiter> waiter_;
+  PolicyDiagnosticsWaiter* waiter_;
   void ReceiveDiagnostics(std::unique_ptr<PolicyList> policies) override {
     waiter_->policies = std::move(policies);
     ::SetEvent(waiter_->event.Get());

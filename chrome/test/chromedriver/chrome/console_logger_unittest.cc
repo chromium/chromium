@@ -11,7 +11,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/format_macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/log.h"
@@ -62,8 +61,7 @@ class FakeDevToolsClient : public StubDevToolsClient {
  private:
   const std::string id_;  // WebView id.
   base::queue<std::string> sent_command_queue_;  // Commands that were sent.
-  CheckedPtr<DevToolsEventListener>
-      listener_;  // The fake allows only one event listener.
+  DevToolsEventListener* listener_;  // The fake allows only one event listener.
 };
 
 struct LogEntry {

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/test/view_event_test_base.h"
-#include "base/memory/checked_ptr.h"
 
 #include "base/bind.h"
 #include "base/location.h"
@@ -51,7 +50,7 @@ class TestView : public views::View {
   }
 
  private:
-  CheckedPtr<ViewEventTestBase> harness_;
+  ViewEventTestBase* harness_;
 };
 
 }  // namespace
@@ -84,8 +83,8 @@ class TestBaseWidgetDelegate : public views::WidgetDelegate {
   }
 
  private:
-  CheckedPtr<ViewEventTestBase> harness_;
-  CheckedPtr<views::View> contents_ = nullptr;
+  ViewEventTestBase* harness_;
+  views::View* contents_ = nullptr;
 };
 
 ViewEventTestBase::ViewEventTestBase() {

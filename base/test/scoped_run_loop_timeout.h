@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 
@@ -100,7 +99,7 @@ class ScopedDisableRunLoopTimeout {
       delete;
 
  private:
-  const CheckedPtr<const RunLoop::RunLoopTimeout> nested_timeout_;
+  const RunLoop::RunLoopTimeout* const nested_timeout_;
 };
 
 }  // namespace test

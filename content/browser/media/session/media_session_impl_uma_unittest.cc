@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "content/browser/media/session/media_session_impl.h"
 
 #include <map>
@@ -68,7 +67,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   }
 
  private:
-  CheckedPtr<RenderFrameHost> render_frame_host_;
+  RenderFrameHost* render_frame_host_;
 };
 
 struct ActionMappingEntry {

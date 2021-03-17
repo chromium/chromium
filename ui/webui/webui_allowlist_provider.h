@@ -5,7 +5,6 @@
 #ifndef UI_WEBUI_WEBUI_ALLOWLIST_PROVIDER_H_
 #define UI_WEBUI_WEBUI_ALLOWLIST_PROVIDER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "ui/webui/webui_allowlist.h"
@@ -41,7 +40,7 @@ class WebUIAllowlistProvider : public content_settings::ObservableProvider {
   void ClearAllContentSettingsRules(ContentSettingsType content_type) override;
 
  private:
-  CheckedPtr<WebUIAllowlist> allowlist_;
+  WebUIAllowlist* allowlist_;
 };
 
 #endif  // UI_WEBUI_WEBUI_ALLOWLIST_PROVIDER_H_

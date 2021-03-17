@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/optional.h"
 #include "base/single_thread_task_runner.h"
@@ -170,7 +169,7 @@ class MEDIA_BLINK_EXPORT VideoDecodeStatsReporter {
 
   // Clock for |stats_cb_timer_| and getting current tick count (NowTicks()).
   // Tests may supply a mock clock via the constructor.
-  CheckedPtr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
 
   // Timer for all stats callbacks. Timer interval will be dynamically set based
   // on state of reporter. See calls to RunStatsTimerAtIntervalMs().

@@ -6,7 +6,6 @@
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TEST_DOWNLOAD_CLIENT_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/download/public/background_service/test/empty_client.h"
 
 namespace offline_pages {
@@ -26,7 +25,7 @@ class TestDownloadClient : public download::test::EmptyClient {
       const download::CompletionInfo& completion_info) override;
 
  private:
-  CheckedPtr<PrefetchDownloader> downloader_;
+  PrefetchDownloader* downloader_;
 
   DISALLOW_COPY_AND_ASSIGN(TestDownloadClient);
 };

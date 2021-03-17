@@ -66,7 +66,6 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_math.h"
@@ -289,7 +288,7 @@ class CertNetFetcherURLLoader::RequestCore
   void CancelJobOnTaskRunner();
 
   // A non-owned pointer to the job that is executing the request.
-  CheckedPtr<Job> job_ = nullptr;
+  Job* job_ = nullptr;
 
   // May be written to from network thread, or from the caller thread only when
   // there is no work that will be done on the network thread (e.g. when the
@@ -404,7 +403,7 @@ class Job {
 
   // Non-owned pointer to the AsyncCertNetFetcherURLLoader that created this
   // job.
-  CheckedPtr<CertNetFetcherURLLoader::AsyncCertNetFetcherURLLoader> parent_;
+  CertNetFetcherURLLoader::AsyncCertNetFetcherURLLoader* parent_;
 
   DISALLOW_COPY_AND_ASSIGN(Job);
 };
@@ -435,7 +434,7 @@ void CertNetFetcherURLLoader::RequestCore::CancelJob() {
 
 void CertNetFetcherURLLoader::RequestCore::CancelJobOnTaskRunner() {
   if (job_) {
-    auto* job = job_.get();
+    auto* job = job_;
     job_ = nullptr;
     job->DetachRequest(this);
   }

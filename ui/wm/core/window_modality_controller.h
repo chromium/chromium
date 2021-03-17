@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window_observer.h"
@@ -72,11 +71,11 @@ class WM_CORE_EXPORT WindowModalityController : public ui::EventHandler,
   // transient window of the |window|.
   void CancelTouchesOnTransientWindowTree(aura::Window* window);
 
-  CheckedPtr<aura::Env> env_;
+  aura::Env* env_;
 
   std::vector<aura::Window*> windows_;
 
-  CheckedPtr<ui::EventTarget> event_target_;
+  ui::EventTarget* event_target_;
 
   DISALLOW_COPY_AND_ASSIGN(WindowModalityController);
 };

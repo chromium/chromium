@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -48,7 +47,7 @@ class TestDeviceDescriptionFetcher : public DeviceDescriptionFetcher {
   }
 
  private:
-  const CheckedPtr<network::TestURLLoaderFactory> factory_;
+  network::TestURLLoaderFactory* const factory_;
 };
 
 class DeviceDescriptionFetcherTest : public testing::Test {

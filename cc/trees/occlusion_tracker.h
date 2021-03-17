@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "cc/base/simple_enclosed_region.h"
 #include "cc/cc_export.h"
 #include "cc/layers/effect_tree_layer_list_iterator.h"
@@ -62,7 +61,7 @@ class CC_EXPORT OcclusionTracker {
   struct StackObject {
     StackObject() : target(nullptr) {}
     explicit StackObject(const RenderSurfaceImpl* target) : target(target) {}
-    CheckedPtr<const RenderSurfaceImpl> target;
+    const RenderSurfaceImpl* target;
     SimpleEnclosedRegion occlusion_from_outside_target;
     SimpleEnclosedRegion occlusion_from_inside_target;
     bool ignores_parent_occlusion = false;

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 namespace content {
 class ResourceContext;
@@ -30,7 +29,7 @@ class ProfileIODataHandle {
 
   std::unique_ptr<ProfileIOData> io_data_;
 
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 
   mutable bool initialized_;
 

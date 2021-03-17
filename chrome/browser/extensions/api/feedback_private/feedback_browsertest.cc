@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
@@ -108,7 +107,7 @@ class TestFeedbackUploaderDelegate
   void OnStartDispatchingReport() override { quit_on_dispatch_->Quit(); }
 
  private:
-  CheckedPtr<base::RunLoop> quit_on_dispatch_;
+  base::RunLoop* quit_on_dispatch_;
 };
 
 IN_PROC_BROWSER_TEST_F(FeedbackTest, ShowFeedback) {

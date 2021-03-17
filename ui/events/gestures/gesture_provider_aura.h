@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/events/event.h"
 #include "ui/events/events_export.h"
 #include "ui/events/gesture_detection/filtered_gesture_provider.h"
@@ -57,7 +56,7 @@ class EVENTS_EXPORT GestureProviderAura : public GestureProviderClient {
   bool RequiresDoubleTapGestureEvents() const override;
 
  private:
-  CheckedPtr<GestureProviderAuraClient> client_;
+  GestureProviderAuraClient* client_;
   MotionEventAura pointer_state_;
   FilteredGestureProvider filtered_gesture_provider_;
 
@@ -65,7 +64,7 @@ class EVENTS_EXPORT GestureProviderAura : public GestureProviderClient {
   std::vector<std::unique_ptr<GestureEvent>> pending_gestures_;
 
   // |gesture_consumer_| must outlive this object.
-  CheckedPtr<GestureConsumer> gesture_consumer_;
+  GestureConsumer* gesture_consumer_;
 
   DISALLOW_COPY_AND_ASSIGN(GestureProviderAura);
 };

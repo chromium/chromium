@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 
@@ -91,7 +90,7 @@ class CONTENT_EXPORT MetricSource {
   void TearDownOnIOThread(base::ScopedClosureRunner on_finish_destroy);
   void TearDownOnUIThread(base::ScopedClosureRunner on_finish_destroy);
 
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
 
   // The following members are all affine to the UI thread.
   std::unique_ptr<MessageLoopObserver> message_loop_observer_ui_;

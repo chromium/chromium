@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 class Browser;
 
@@ -38,7 +37,7 @@ class ExtensionMessageBubbleFactory {
   static void set_override_for_tests(OverrideForTesting override);
 
  private:
-  const CheckedPtr<Browser> browser_;
+  Browser* const browser_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionMessageBubbleFactory);
 };

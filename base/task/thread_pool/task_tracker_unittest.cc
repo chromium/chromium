@@ -14,7 +14,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_base.h"
@@ -139,7 +138,7 @@ class ThreadPostingAndRunningTask : public SimpleThread {
     }
   }
 
-  const CheckedPtr<TaskTracker> tracker_;
+  TaskTracker* const tracker_;
   Task task_;
   scoped_refptr<Sequence> sequence_;
   RegisteredTaskSource task_source_;

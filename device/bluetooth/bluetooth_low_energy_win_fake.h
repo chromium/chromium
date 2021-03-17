@@ -9,7 +9,6 @@
 #include <set>
 #include <unordered_map>
 
-#include "base/memory/checked_ptr.h"
 #include "device/bluetooth/bluetooth_low_energy_win.h"
 
 namespace device {
@@ -229,9 +228,9 @@ class BluetoothLowEnergyWrapperFake : public BluetoothLowEnergyWrapper {
   // Table to store allocated attribute handle for a device.
   BLEAttributeHandleTable attribute_handle_table_;
   BLEDevicesMap simulated_devices_;
-  CheckedPtr<Observer> observer_;
+  Observer* observer_;
   GattCharacteristicObserverTable gatt_characteristic_observers_;
-  CheckedPtr<GattCharacteristic> remembered_characteristic_;
+  GattCharacteristic* remembered_characteristic_;
 };
 
 }  // namespace win

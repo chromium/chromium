@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/browser/predictors/navigation_id.h"
@@ -158,8 +157,8 @@ class LoadingDataCollector {
   // Cleanup inflight_navigations_ and call a cleanup for stats_collector_.
   void CleanupAbandonedNavigations(const NavigationID& navigation_id);
 
-  const CheckedPtr<ResourcePrefetchPredictor> predictor_;
-  const CheckedPtr<LoadingStatsCollector> stats_collector_;
+  ResourcePrefetchPredictor* const predictor_;
+  LoadingStatsCollector* const stats_collector_;
   const LoadingPredictorConfig config_;
 
   NavigationMap inflight_navigations_;

@@ -4,7 +4,6 @@
 
 #include "ui/message_center/views/notification_header_view.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -49,7 +48,7 @@ class NotificationHeaderViewTest : public views::ViewsTestBase {
 
     notification_header_view_ =
         new NotificationHeaderView(views::Button::PressedCallback());
-    container->AddChildView(notification_header_view_.get());
+    container->AddChildView(notification_header_view_);
 
     widget_.Show();
   }
@@ -78,7 +77,7 @@ class NotificationHeaderViewTest : public views::ViewsTestBase {
   }
 
  protected:
-  CheckedPtr<NotificationHeaderView> notification_header_view_ = nullptr;
+  NotificationHeaderView* notification_header_view_ = nullptr;
 
  private:
   views::Widget widget_;

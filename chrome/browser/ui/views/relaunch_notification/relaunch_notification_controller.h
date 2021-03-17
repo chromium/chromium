@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "base/util/timer/wall_clock_timer.h"
 #include "build/chromeos_buildflags.h"
@@ -166,11 +165,11 @@ class RelaunchNotificationController : public UpgradeObserver {
   virtual void OnRelaunchDeadlineExpired();
 
   // The process-wide upgrade detector.
-  const CheckedPtr<UpgradeDetector> upgrade_detector_;
+  UpgradeDetector* const upgrade_detector_;
 
   // A provider of Time to the controller and its timer for the sake of
   // testability.
-  const CheckedPtr<const base::Clock> clock_;
+  const base::Clock* const clock_;
 
   // Observes changes to the browser.relaunch_notification Local State pref.
   PrefChangeRegistrar pref_change_registrar_;

@@ -242,9 +242,8 @@ void OmniboxMatchCellView::Layout() {
   int x = child_area.x();
   int y = child_area.y();
   const int row_height = child_area.height();
-  views::ImageView* const image_view = (two_line && is_rich_suggestion_)
-                                           ? answer_image_view_.get()
-                                           : icon_view_.get();
+  views::ImageView* const image_view =
+      (two_line && is_rich_suggestion_) ? answer_image_view_ : icon_view_;
   image_view->SetBounds(x, y, OmniboxMatchCellView::kImageBoundsWidth,
                         row_height);
 

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_TOP_CONTAINER_VIEW_H_
 
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -29,7 +28,7 @@ class TopContainerView : public views::View {
 
  private:
   // The parent of this view. Not owned.
-  CheckedPtr<BrowserView> browser_view_;
+  BrowserView* browser_view_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_TOP_CONTAINER_VIEW_H_

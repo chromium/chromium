@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "content/browser/scheduler/responsiveness/metric_source.h"
 
 namespace content {
@@ -120,7 +119,7 @@ class CONTENT_EXPORT Watcher : public base::RefCounted<Watcher>,
   // thread sets |calculator_io_|. On destruction, this class first tears down
   // all consumers of |calculator_io_|, and then clears the member and destroys
   // Calculator.
-  CheckedPtr<Calculator> calculator_io_ = nullptr;
+  Calculator* calculator_io_ = nullptr;
 };
 
 }  // namespace responsiveness

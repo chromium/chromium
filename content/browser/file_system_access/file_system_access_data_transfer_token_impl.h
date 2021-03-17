@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_DATA_TRANSFER_TOKEN_IMPL_H_
 
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "base/unguessable_token.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/common/content_export.h"
@@ -61,7 +60,7 @@ class CONTENT_EXPORT FileSystemAccessDataTransferTokenImpl
   void OnMojoDisconnect();
 
   // Raw pointer since FileSystemAccessManagerImpl owns `this`.
-  const CheckedPtr<FileSystemAccessManagerImpl> manager_;
+  FileSystemAccessManagerImpl* const manager_;
   const FileSystemAccessManagerImpl::PathType path_type_;
   const base::FilePath file_path_;
   const int renderer_process_id_;

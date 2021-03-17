@@ -6,7 +6,6 @@
 #define SERVICES_NETWORK_COOKIE_ACCESS_DELEGATE_IMPL_H_
 
 #include "base/component_export.h"
-#include "base/memory/checked_ptr.h"
 #include "net/cookies/cookie_access_delegate.h"
 #include "services/network/cookie_settings.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -57,8 +56,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieAccessDelegateImpl
 
  private:
   const mojom::CookieAccessDelegateType type_;
-  const CheckedPtr<const CookieSettings> cookie_settings_;
-  const CheckedPtr<const FirstPartySets> first_party_sets_;
+  const CookieSettings* const cookie_settings_;
+  const FirstPartySets* const first_party_sets_;
 };
 
 }  // namespace network

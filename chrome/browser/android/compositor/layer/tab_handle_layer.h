@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "cc/layers/nine_patch_layer.h"
 #include "cc/layers/solid_color_layer.h"
 #include "cc/layers/ui_resource_layer.h"
@@ -56,7 +55,7 @@ class TabHandleLayer : public Layer {
   ~TabHandleLayer() override;
 
  private:
-  CheckedPtr<LayerTitleCache> layer_title_cache_;
+  LayerTitleCache* layer_title_cache_;
 
   scoped_refptr<cc::Layer> layer_;
   scoped_refptr<cc::UIResourceLayer> close_button_;

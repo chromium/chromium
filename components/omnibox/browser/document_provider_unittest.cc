@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/json/json_reader.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -103,7 +102,7 @@ class DocumentProviderTest : public testing::Test,
 
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
   scoped_refptr<DocumentProvider> provider_;
-  CheckedPtr<TemplateURL> default_template_url_;
+  TemplateURL* default_template_url_;
 };
 
 DocumentProviderTest::DocumentProviderTest() {}

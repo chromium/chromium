@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/tick_clock.h"
 #include "media/gpu/android/promotion_hint_aggregator.h"
@@ -31,7 +30,7 @@ class MEDIA_GPU_EXPORT PromotionHintAggregatorImpl
 
  private:
   // Clock, which we might not own, that we'll use.
-  CheckedPtr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
 
   // When did we receive the most recent "not promotable" frame?
   base::TimeTicks most_recent_unpromotable_;

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observer.h"
@@ -122,7 +121,7 @@ class ChromeExtensionCookies
   // KeyedService:
   void Shutdown() override;
 
-  CheckedPtr<Profile> profile_ = nullptr;
+  Profile* profile_ = nullptr;
 
   // Lives on the IO thread, null after Shutdown().
   std::unique_ptr<IOData> io_data_;

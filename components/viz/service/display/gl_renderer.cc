@@ -18,7 +18,6 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
@@ -218,7 +217,7 @@ class ScopedTimerQuery {
   }
 
  private:
-  CheckedPtr<gpu::gles2::GLES2Interface> gl_;
+  gpu::gles2::GLES2Interface* gl_;
 };
 
 void AccumulateDrawRects(const gfx::Rect& quad_rect,
@@ -277,18 +276,18 @@ struct GLRenderer::DrawRenderPassDrawQuadParams {
   }
 
   // Required inputs below.
-  CheckedPtr<const AggregatedRenderPassDrawQuad> quad = nullptr;
+  const AggregatedRenderPassDrawQuad* quad = nullptr;
 
   // Either |contents_texture| or |bypass_quad_texture| is populated. The
   // |contents_texture| will be valid if non-null, and when null the
   // bypass_quad_texture will be valid instead.
-  CheckedPtr<ScopedRenderPassTexture> contents_texture = nullptr;
+  ScopedRenderPassTexture* contents_texture = nullptr;
   struct {
     ResourceId resource_id = kInvalidResourceId;
     gfx::Size size;
   } bypass_quad_texture;
 
-  CheckedPtr<const gfx::QuadF> clip_region = nullptr;
+  const gfx::QuadF* clip_region = nullptr;
   bool flip_texture = false;
 
   // |window_matrix| maps from [-1,-1]-[1,1] unit square coordinates to window
@@ -302,8 +301,8 @@ struct GLRenderer::DrawRenderPassDrawQuadParams {
   // target content space pixel coordinates, including scale, offset,
   // perspective, and rotation.
   gfx::Transform quad_to_target_transform;
-  CheckedPtr<const cc::FilterOperations> filters = nullptr;
-  CheckedPtr<const cc::FilterOperations> backdrop_filters = nullptr;
+  const cc::FilterOperations* filters = nullptr;
+  const cc::FilterOperations* backdrop_filters = nullptr;
   base::Optional<gfx::RRectF> backdrop_filter_bounds;
 
   // Whether the texture to be sampled from needs to be flipped.
@@ -413,7 +412,7 @@ class GLRenderer::ScopedUseGrContext {
   }
 
   std::unique_ptr<cc::ScopedGpuRaster> scoped_gpu_raster_;
-  CheckedPtr<GLRenderer> renderer_;
+  GLRenderer* renderer_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedUseGrContext);
 };
@@ -874,7 +873,7 @@ gfx::Rect GLRenderer::GetBackdropBoundingBoxForRenderPassQuad(
   DCHECK(backdrop_filter_bounds);
   DCHECK(unclipped_rect);
 
-  const auto* quad = params->quad.get();
+  const auto* quad = params->quad;
   gfx::QuadF scaled_region;
   // |scaled_region| is a quad in [-0.5,0.5] space that represents |clip_region|
   // as a fraction of the space defined by |quad->rect|. If |clip_region| is
@@ -1061,7 +1060,7 @@ sk_sp<SkImage> GLRenderer::ApplyBackdropFilters(
          params->backdrop_filter_quality <= 1.0f);
   DCHECK(!params->filters)
       << "Filters should always be in a separate Effect node";
-  const auto* quad = params->quad.get();
+  const auto* quad = params->quad;
   auto use_gr_context = ScopedUseGrContext::Create(this);
 
   // Check if cached result can be used
@@ -1337,7 +1336,7 @@ void GLRenderer::DrawRenderPassQuadInternal(
 bool GLRenderer::InitializeRPDQParameters(
     DrawRenderPassDrawQuadParams* params) {
   DCHECK(params);
-  const auto* quad = params->quad.get();
+  const auto* quad = params->quad;
   SkMatrix local_matrix;
   local_matrix.setTranslate(quad->filters_origin.x(), quad->filters_origin.y());
   local_matrix.postScale(quad->filters_scale.x(), quad->filters_scale.y());
@@ -1412,7 +1411,7 @@ static GLuint GetGLTextureIDFromSkImage(const SkImage* image,
 
 void GLRenderer::UpdateRPDQShadersForBlending(
     DrawRenderPassDrawQuadParams* params) {
-  const auto* quad = params->quad.get();
+  const auto* quad = params->quad;
   params->blend_mode = quad->shared_quad_state->blend_mode;
   params->use_shaders_for_blending =
       !CanApplyBlendModeUsingBlendFunc(params->blend_mode) ||
@@ -1497,7 +1496,7 @@ void GLRenderer::UpdateRPDQShadersForBlending(
 
 bool GLRenderer::UpdateRPDQWithSkiaFilters(
     DrawRenderPassDrawQuadParams* params) {
-  const auto* quad = params->quad.get();
+  const auto* quad = params->quad;
   // Apply filters to the contents texture.
   if (params->filters) {
     DCHECK(!params->filters->IsEmpty());
@@ -3245,7 +3244,7 @@ void GLRenderer::CopyDrawnRenderPass(
   // CopyDrawnRenderPass() call for the root render pass. Therefore, make sure
   // to restore the correct framebuffer between readbacks. (Even if it did
   // not, a Mac-specific bug requires this workaround: http://crbug.com/99393)
-  const auto* render_pass = current_frame()->current_render_pass.get();
+  const auto* render_pass = current_frame()->current_render_pass;
   if (render_pass == current_frame()->root_render_pass)
     BindFramebufferToOutputSurface();
 }

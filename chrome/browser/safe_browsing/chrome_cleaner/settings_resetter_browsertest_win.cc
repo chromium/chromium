@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
@@ -115,7 +114,7 @@ class SettingsResetterTestDelegate
   }
 
  private:
-  CheckedPtr<int> num_resets_;
+  int* num_resets_;
 
   DISALLOW_COPY_AND_ASSIGN(SettingsResetterTestDelegate);
 };

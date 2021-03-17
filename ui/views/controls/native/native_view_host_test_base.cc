@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ui/views/controls/native/native_view_host_test_base.h"
-#include "base/memory/checked_ptr.h"
 
 #include <utility>
 
@@ -22,7 +21,7 @@ class NativeViewHostTestBase::NativeViewHostTesting : public NativeViewHost {
   ~NativeViewHostTesting() override { owner_->host_destroyed_count_++; }
 
  private:
-  CheckedPtr<NativeViewHostTestBase> owner_;
+  NativeViewHostTestBase* owner_;
 
   DISALLOW_COPY_AND_ASSIGN(NativeViewHostTesting);
 };

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_SIGN_IN_PROMO_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_SIGN_IN_PROMO_VIEW_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/sign_in_promo_bubble_controller.h"
 #include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
 #include "ui/views/controls/button/button.h"
@@ -41,7 +40,7 @@ class PasswordSignInPromoView : public views::View {
     void OnEnableSync(const AccountInfo& account) override;
 
    private:
-    CheckedPtr<SignInPromoBubbleController> controller_;
+    SignInPromoBubbleController* controller_;
   };
 
   SignInPromoBubbleController controller_;

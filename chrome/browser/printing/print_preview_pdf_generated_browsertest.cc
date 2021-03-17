@@ -24,7 +24,6 @@
 #include "base/hash/md5.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -263,7 +262,7 @@ class PrintPreviewDelegate : printing::PrintPreviewUI::TestDelegate {
     }
 
    private:
-    const CheckedPtr<PrintPreviewDelegate> delegate_;
+    PrintPreviewDelegate* const delegate_;
   };
 
   // PrintPreviewUI::TestDelegate:
@@ -278,7 +277,7 @@ class PrintPreviewDelegate : printing::PrintPreviewUI::TestDelegate {
   }
   void DidRenderPreviewPage(content::WebContents* preview_dialog) override {}
 
-  CheckedPtr<Browser> browser_;
+  Browser* browser_;
   base::OnceClosure quit_closure_;
   std::unique_ptr<PrintPreviewSettings> settings_;
 

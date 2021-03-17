@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_PERMISSIONS_PERMISSION_CONTROLLER_IMPL_H_
 
 #include "base/containers/id_map.h"
-#include "base/memory/checked_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/devtools_permission_overrides.h"
 #include "content/public/browser/permission_controller.h"
@@ -100,7 +99,7 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
 
   DevToolsPermissionOverrides devtools_permission_overrides_;
   SubscriptionsMap subscriptions_;
-  CheckedPtr<BrowserContext> browser_context_;
+  BrowserContext* browser_context_;
 
   DISALLOW_COPY_AND_ASSIGN(PermissionControllerImpl);
 };

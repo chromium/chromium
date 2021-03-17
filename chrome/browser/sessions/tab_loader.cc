@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/no_destructor.h"
 #include "base/system/sys_info.h"
@@ -89,7 +88,7 @@ class TabLoader::ReentrancyHelper {
 
   void DestroyTabLoader() { tab_loader_->this_retainer_ = nullptr; }
 
-  CheckedPtr<TabLoader> tab_loader_;
+  TabLoader* tab_loader_;
 
   DISALLOW_COPY_AND_ASSIGN(ReentrancyHelper);
 };

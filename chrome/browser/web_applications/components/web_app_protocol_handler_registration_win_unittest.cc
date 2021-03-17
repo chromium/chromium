@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/components/web_app_protocol_handler_registration.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
@@ -73,7 +72,7 @@ class WebAppProtocolHandlerRegistrationWinTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::IO_MAINLOOP};
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  CheckedPtr<TestingProfile> profile_;
+  TestingProfile* profile_;
 };
 
 TEST_F(WebAppProtocolHandlerRegistrationWinTest, RegisterHandlers) {

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_MEMORIES_MEMORIES_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_MEMORIES_MEMORIES_UI_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/webui/memories/memories.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -33,8 +32,8 @@ class MemoriesUI : public ui::MojoWebUIController {
       mojo::PendingReceiver<memories::mojom::PageHandler> pending_page_handler);
 
  private:
-  CheckedPtr<Profile> profile_;
-  CheckedPtr<content::WebContents> web_contents_;
+  Profile* profile_;
+  content::WebContents* web_contents_;
   std::unique_ptr<MemoriesHandler> memories_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();

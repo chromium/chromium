@@ -95,7 +95,7 @@ void HungPagesTableModel::InitForWebContents(
   }
 
   process_observer_.Add(render_widget_host_->GetProcess());
-  widget_observer_.Add(render_widget_host_.get());
+  widget_observer_.Add(render_widget_host_);
 
   // The world is different.
   if (observer_)
@@ -159,7 +159,7 @@ void HungPagesTableModel::RenderProcessExited(
 
 void HungPagesTableModel::RenderWidgetHostDestroyed(
     content::RenderWidgetHost* widget_host) {
-  DCHECK(widget_observer_.IsObserving(render_widget_host_.get()));
+  DCHECK(widget_observer_.IsObserving(render_widget_host_));
   widget_observer_.Remove(widget_host);
   render_widget_host_ = nullptr;
 

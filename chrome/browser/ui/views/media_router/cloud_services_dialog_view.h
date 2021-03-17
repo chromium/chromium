@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
@@ -50,7 +49,7 @@ class CloudServicesDialogView : public views::BubbleDialogDelegateView {
   static CloudServicesDialogView* instance_;
 
   // Browser window that this dialog is attached to.
-  const CheckedPtr<Browser> browser_;
+  Browser* const browser_;
 };
 
 }  // namespace media_router

@@ -9,7 +9,6 @@
 #include <map>
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/http/http_cache.h"
@@ -47,7 +46,7 @@ class NET_EXPORT_PRIVATE HttpCache::Writers {
     TransactionInfo& operator=(const TransactionInfo&);
     TransactionInfo(const TransactionInfo&);
 
-    CheckedPtr<PartialData> partial;
+    PartialData* partial;
     bool truncated;
     HttpResponseInfo response_info;
   };

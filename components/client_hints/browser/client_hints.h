@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -50,11 +49,11 @@ class ClientHints : public KeyedService,
       base::TimeDelta expiration_duration) override;
 
  private:
-  CheckedPtr<content::BrowserContext> context_ = nullptr;
-  CheckedPtr<network::NetworkQualityTracker> network_quality_tracker_ = nullptr;
-  CheckedPtr<HostContentSettingsMap> settings_map_ = nullptr;
+  content::BrowserContext* context_ = nullptr;
+  network::NetworkQualityTracker* network_quality_tracker_ = nullptr;
+  HostContentSettingsMap* settings_map_ = nullptr;
   blink::UserAgentMetadata user_agent_metadata_;
-  CheckedPtr<PrefService> pref_service_;
+  PrefService* pref_service_;
 
   DISALLOW_COPY_AND_ASSIGN(ClientHints);
 };

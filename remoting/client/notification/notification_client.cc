@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringize_macros.h"
@@ -181,8 +180,8 @@ class MessageAndLinkTextResults
 
   std::string locale_;
   Callback done_;
-  CheckedPtr<std::string> out_message_translation_;
-  CheckedPtr<std::string> out_link_translation_;
+  std::string* out_message_translation_;
+  std::string* out_link_translation_;
   bool is_message_translation_fetched_ = false;
   bool is_link_translation_fetched_ = false;
 };

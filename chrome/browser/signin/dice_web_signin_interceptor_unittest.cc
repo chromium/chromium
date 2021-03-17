@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -188,7 +187,7 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
   std::unique_ptr<DiceWebSigninInterceptor> dice_web_signin_interceptor_;
-  CheckedPtr<MockDiceWebSigninInterceptorDelegate> mock_delegate_ = nullptr;
+  MockDiceWebSigninInterceptorDelegate* mock_delegate_ = nullptr;
 };
 
 TEST_F(DiceWebSigninInterceptorTest, ShouldShowProfileSwitchBubble) {

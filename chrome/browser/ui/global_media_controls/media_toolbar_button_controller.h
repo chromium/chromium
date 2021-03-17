@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_TOOLBAR_BUTTON_CONTROLLER_H_
 #define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_TOOLBAR_BUTTON_CONTROLLER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_observer.h"
 
 class MediaNotificationService;
@@ -37,8 +36,8 @@ class MediaToolbarButtonController : public MediaNotificationServiceObserver {
 
   void UpdateToolbarButtonState();
 
-  const CheckedPtr<MediaToolbarButtonControllerDelegate> delegate_;
-  const CheckedPtr<MediaNotificationService> service_;
+  MediaToolbarButtonControllerDelegate* const delegate_;
+  MediaNotificationService* const service_;
 
   // The delegate starts hidden and isn't shown until media playback starts.
   DisplayState delegate_display_state_ = DisplayState::kHidden;

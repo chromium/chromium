@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/gfx/native_widget_types.h"
 
 class Profile;
@@ -76,14 +75,14 @@ class EditSearchEngineController {
   // The TemplateURL we're displaying information for. It may be nullptr. If we
   // have a keyword_editor_view, we assume that this TemplateURL is already in
   // the TemplateURLService; if not, we assume it isn't.
-  CheckedPtr<TemplateURL> template_url_;
+  TemplateURL* template_url_;
 
   // We may have been created by this, in which case we will call back to it on
   // success to add/modify the entry.  May be nullptr.
-  CheckedPtr<EditSearchEngineControllerDelegate> edit_keyword_delegate_;
+  EditSearchEngineControllerDelegate* edit_keyword_delegate_;
 
   // Profile whose TemplateURLService we're modifying.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   DISALLOW_COPY_AND_ASSIGN(EditSearchEngineController);
 };

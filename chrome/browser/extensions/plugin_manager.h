@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "components/nacl/common/buildflags.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -70,7 +69,7 @@ class PluginManager : public BrowserContextKeyedAPI,
 
   extensions::NaClModuleInfo::List nacl_module_list_;
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // Listen to extension load, unloaded notifications.
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>

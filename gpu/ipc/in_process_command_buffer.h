@@ -18,7 +18,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -237,7 +236,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
     bool EnableWrappedSkImage() const;
 
    private:
-    CheckedPtr<InProcessCommandBuffer> command_buffer_;
+    InProcessCommandBuffer* command_buffer_;
   };
 
   // Provides a callback that can be used to preserve the back buffer for the

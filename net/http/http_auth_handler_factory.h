@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/http/http_auth.h"
@@ -155,7 +154,7 @@ class NET_EXPORT HttpAuthHandlerFactory {
 
  private:
   // The preferences for HTTP authentication.
-  CheckedPtr<const HttpAuthPreferences> http_auth_preferences_;
+  const HttpAuthPreferences* http_auth_preferences_;
 
   DISALLOW_COPY_AND_ASSIGN(HttpAuthHandlerFactory);
 };

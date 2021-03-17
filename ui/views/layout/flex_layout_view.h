@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_LAYOUT_FLEX_LAYOUT_VIEW_H_
 #define UI_VIEWS_LAYOUT_FLEX_LAYOUT_VIEW_H_
 
-#include "base/memory/checked_ptr.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -69,7 +68,7 @@ class VIEWS_EXPORT FlexLayoutView : public View {
   }
 
  private:
-  CheckedPtr<FlexLayout> layout_;
+  FlexLayout* layout_;
   LayoutOrientation orientation_;
   LayoutAlignment main_axis_alignment_;
   LayoutAlignment cross_axis_alignment_;

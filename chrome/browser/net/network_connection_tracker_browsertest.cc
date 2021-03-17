@@ -7,7 +7,6 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/test/bind.h"
@@ -74,7 +73,7 @@ class TestNetworkConnectionObserver
 
  private:
   size_t num_notifications_;
-  CheckedPtr<network::NetworkConnectionTracker> tracker_;
+  network::NetworkConnectionTracker* tracker_;
   std::unique_ptr<base::RunLoop> run_loop_;
   network::mojom::ConnectionType connection_type_;
 

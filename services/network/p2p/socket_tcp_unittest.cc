@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
@@ -84,7 +83,7 @@ class P2PSocketTcpTestBase : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   std::string sent_data_;
-  CheckedPtr<FakeSocket> socket_;  // Owned by |socket_impl_|.
+  FakeSocket* socket_;  // Owned by |socket_impl_|.
   std::unique_ptr<P2PSocketTcpBase> socket_impl_;
   FakeP2PSocketDelegate socket_delegate_;
   std::unique_ptr<FakeSocketClient> fake_client_;

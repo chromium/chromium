@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/math_constants.h"
 #include "base/run_loop.h"
@@ -293,7 +292,7 @@ class ConnectionTest : public testing::Test,
       WebrtcTransport::SetDataChannelPollingIntervalForTests(base::TimeDelta());
 
       host_connection_.reset(new WebrtcConnectionToClient(
-          base::WrapUnique(host_session_.get()),
+          base::WrapUnique(host_session_),
           TransportContext::ForTests(protocol::TransportRole::SERVER),
           task_environment_.GetMainThreadTaskRunner(),
           task_environment_.GetMainThreadTaskRunner()));
@@ -301,7 +300,7 @@ class ConnectionTest : public testing::Test,
 
     } else {
       host_connection_.reset(new IceConnectionToClient(
-          base::WrapUnique(host_session_.get()),
+          base::WrapUnique(host_session_),
           TransportContext::ForTests(protocol::TransportRole::SERVER),
           task_environment_.GetMainThreadTaskRunner(),
           task_environment_.GetMainThreadTaskRunner()));
@@ -447,7 +446,7 @@ class ConnectionTest : public testing::Test,
   MockHostStub host_stub_;
   MockInputStub host_input_stub_;
   std::unique_ptr<ConnectionToClient> host_connection_;
-  CheckedPtr<FakeSession> host_session_;  // Owned by |host_connection_|.
+  FakeSession* host_session_;  // Owned by |host_connection_|.
   bool host_connected_ = false;
 
   MockConnectionToHostEventCallback client_event_handler_;
@@ -456,7 +455,7 @@ class ConnectionTest : public testing::Test,
   FakeVideoRenderer client_video_renderer_;
   FakeAudioPlayer client_audio_player_;
   std::unique_ptr<ConnectionToHost> client_connection_;
-  CheckedPtr<FakeSession> client_session_;  // Owned by |client_connection_|.
+  FakeSession* client_session_;  // Owned by |client_connection_|.
   std::unique_ptr<FakeSession> owned_client_session_;
   bool client_connected_ = false;
 

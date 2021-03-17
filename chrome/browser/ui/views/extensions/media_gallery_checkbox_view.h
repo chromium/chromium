@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -42,8 +41,8 @@ class MediaGalleryCheckboxView : public views::View {
 
  private:
   // Owned by the parent class (views::View).
-  CheckedPtr<views::Checkbox> checkbox_;
-  CheckedPtr<views::Label> secondary_text_;
+  views::Checkbox* checkbox_;
+  views::Label* secondary_text_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_MEDIA_GALLERY_CHECKBOX_VIEW_H_

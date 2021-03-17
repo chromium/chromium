@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -90,7 +89,7 @@ class RendererStartupHelper : public KeyedService,
   // Untracks the given process.
   void UntrackProcess(content::RenderProcessHost* process);
 
-  CheckedPtr<content::BrowserContext> browser_context_;  // Not owned.
+  content::BrowserContext* browser_context_;  // Not owned.
 
   // Tracks the set of loaded extensions and the processes they are loaded in.
   std::map<ExtensionId, std::set<content::RenderProcessHost*>>

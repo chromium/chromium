@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 namespace mojo {
 namespace internal {
@@ -66,7 +65,7 @@ class ContainerValidateParams {
 
   // Validation information for the map key array. May contain other
   // ArrayValidateParams e.g. if the keys are strings.
-  CheckedPtr<ContainerValidateParams> key_validate_params = nullptr;
+  ContainerValidateParams* key_validate_params = nullptr;
 
   // For arrays: validation information for elements. It is either a pointer to
   // another instance of ArrayValidateParams (if elements are arrays or maps),
@@ -74,7 +73,7 @@ class ContainerValidateParams {
   //
   // For maps: validation information for the whole value array. May contain
   // other ArrayValidateParams e.g. if the values are arrays or maps.
-  CheckedPtr<ContainerValidateParams> element_validate_params = nullptr;
+  ContainerValidateParams* element_validate_params = nullptr;
 
   // Validation function for enum elements.
   ValidateEnumFunc validate_enum_func = nullptr;

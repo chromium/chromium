@@ -38,7 +38,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
@@ -140,11 +139,11 @@ class CONTENT_EXPORT AudioMirroringManager {
     GlobalFrameRoutingId source_render_frame;
 
     // The diverter for re-routing the audio stream.
-    CheckedPtr<Diverter> diverter;
+    Diverter* diverter;
 
     // If not NULL, the audio stream is currently being diverted to this
     // destination.
-    CheckedPtr<MirroringDestination> destination;
+    MirroringDestination* destination;
 
     // The destinations to which audio stream is duplicated. AudioPushSink is
     // owned by the Diverter, but AudioMirroringManager must guarantee

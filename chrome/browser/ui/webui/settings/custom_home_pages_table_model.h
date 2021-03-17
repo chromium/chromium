@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/history/core/browser/history_types.h"
 #include "ui/base/models/table_model.h"
@@ -103,9 +102,9 @@ class CustomHomePagesTableModel : public ui::TableModel {
   std::vector<Entry> entries_;
 
   // Profile used to load titles.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
-  CheckedPtr<ui::TableModelObserver> observer_;
+  ui::TableModelObserver* observer_;
 
   // Used in loading titles.
   base::CancelableTaskTracker task_tracker_;

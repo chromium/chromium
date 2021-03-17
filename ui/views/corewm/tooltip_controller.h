@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "ui/aura/client/cursor_client_observer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/events/event_handler.h"
@@ -113,13 +112,13 @@ class VIEWS_EXPORT TooltipController
   // the |observed_window_| follows the window on which the mouse is.
   // TODO(bebeaudr): Update comment above when we'll have keyboard-triggered
   // tooltip because it won't always follow the cursor anymore.
-  CheckedPtr<aura::Window> observed_window_ = nullptr;
+  aura::Window* observed_window_ = nullptr;
 
   // These fields are for tracking state when the user presses a mouse button.
   // The tooltip should stay hidden after a mouse press event on the view until
   // the cursor moves to another view.
   std::u16string tooltip_text_at_mouse_press_;
-  CheckedPtr<aura::Window> tooltip_window_at_mouse_press_ = nullptr;
+  aura::Window* tooltip_window_at_mouse_press_ = nullptr;
 
   // Location of the last events in |tooltip_window_|'s coordinates.
   gfx::Point last_mouse_loc_;

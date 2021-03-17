@@ -4,7 +4,6 @@
 
 #include "components/performance_manager/graph/frame_node_impl.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/gtest_util.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -162,7 +161,7 @@ class LenientMockObserver : public FrameNodeImpl::Observer {
   const FrameNode* created_frame_node() { return created_frame_node_; }
 
  private:
-  CheckedPtr<const FrameNode> created_frame_node_ = nullptr;
+  const FrameNode* created_frame_node_ = nullptr;
 };
 
 using MockObserver = ::testing::StrictMock<LenientMockObserver>;

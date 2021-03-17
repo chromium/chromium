@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_REMOVER_BROWSERTEST_BASE_H_
 
 #include <string>
-#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
@@ -36,7 +35,7 @@ class BrowsingDataRemoverBrowserTestBase : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  CheckedPtr<Browser> incognito_browser_ = nullptr;
+  Browser* incognito_browser_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_REMOVER_BROWSERTEST_BASE_H_

@@ -7,7 +7,6 @@
 #include <set>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -172,7 +171,7 @@ class RestrictedCookieManagerSync {
   }
 
  private:
-  CheckedPtr<mojom::RestrictedCookieManager> cookie_service_;
+  mojom::RestrictedCookieManager* cookie_service_;
 
   DISALLOW_COPY_AND_ASSIGN(RestrictedCookieManagerSync);
 };
@@ -1168,7 +1167,7 @@ class TestCookieChangeListener : public network::mojom::CookieChangeListener {
   mojo::Receiver<network::mojom::CookieChangeListener> receiver_;
 
   // If not null, will be stopped when a cookie change notification is received.
-  CheckedPtr<base::RunLoop> run_loop_ = nullptr;
+  base::RunLoop* run_loop_ = nullptr;
 };
 
 }  // anonymous namespace

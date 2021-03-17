@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_OPTIMIZATION_GUIDE_BLINK_BLINK_OPTIMIZATION_GUIDE_WEB_CONTENTS_OBSERVER_H_
 #define CHROME_BROWSER_OPTIMIZATION_GUIDE_BLINK_BLINK_OPTIMIZATION_GUIDE_WEB_CONTENTS_OBSERVER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/blink/public/mojom/optimization_guide/optimization_guide.mojom.h"
@@ -57,7 +56,7 @@ class BlinkOptimizationGuideWebContentsObserver final
       content::WebContents* web_contents);
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 
   // Reset every time the main frame navigation gets ready to commit.
   std::unique_ptr<BlinkOptimizationGuideInquirer> current_inquirer_;

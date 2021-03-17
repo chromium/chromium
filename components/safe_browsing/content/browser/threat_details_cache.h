@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 
@@ -63,10 +62,10 @@ class ThreatDetailsCacheCollector
   ResourceMap::iterator resources_it_;
 
   // Points to the resources_ map in the ThreatDetails.
-  CheckedPtr<ResourceMap> resources_;
+  ResourceMap* resources_;
 
   // Points to the cache_result_ in the ThreatDetails.
-  CheckedPtr<bool> result_;
+  bool* result_;
 
   // Method we call when we are done. The caller must be alive for the
   // whole time, we are modifying its state (see above).

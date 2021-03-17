@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
@@ -62,7 +61,7 @@ class LeakDetectionDelegate : public LeakDetectionDelegateInterface {
 
   void OnError(LeakDetectionError error) override;
 
-  CheckedPtr<PasswordManagerClient> client_;
+  PasswordManagerClient* client_;
   // The factory that creates objects for performing a leak check up.
   std::unique_ptr<LeakDetectionCheckFactory> leak_factory_;
 

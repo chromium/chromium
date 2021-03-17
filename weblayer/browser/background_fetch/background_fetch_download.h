@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "weblayer/browser/download_impl.h"
 
 namespace weblayer {
@@ -43,10 +42,10 @@ class BackgroundFetchDownload : public DownloadImpl {
   bool IsTransient() override;
 
  private:
-  CheckedPtr<BackgroundFetchDelegateImpl> controller_;
+  BackgroundFetchDelegateImpl* controller_;
   std::string job_id_;
   int notification_id_ = 0;
-  CheckedPtr<const JobDetails> job_;
+  const JobDetails* job_;
 };
 
 }  // namespace weblayer

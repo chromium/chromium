@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "sandbox/win/src/crosscall_params.h"
 #include "sandbox/win/src/ipc_tags.h"
 
@@ -154,7 +153,7 @@ struct ClientInfo {
 // All IPC-related information to be passed to the IPC handler.
 struct IPCInfo {
   IpcTag ipc_tag;
-  CheckedPtr<const ClientInfo> client_info;
+  const ClientInfo* client_info;
   CrossCallReturn return_info;
 };
 

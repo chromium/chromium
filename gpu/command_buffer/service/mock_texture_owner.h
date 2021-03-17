@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
-#include "base/memory/checked_ptr.h"
 #include "gpu/command_buffer/service/texture_owner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,8 +48,8 @@ class MockTextureOwner : public TextureOwner {
     return nullptr;
   }
 
-  CheckedPtr<gl::GLContext> fake_context;
-  CheckedPtr<gl::GLSurface> fake_surface;
+  gl::GLContext* fake_context;
+  gl::GLSurface* fake_surface;
   int get_a_hardware_buffer_count = 0;
   bool expect_update_tex_image;
 

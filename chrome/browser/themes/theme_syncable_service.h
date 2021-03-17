@@ -9,7 +9,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/threading/thread_checker.h"
@@ -114,8 +113,8 @@ class ThemeSyncableService : public syncer::SyncableService,
 
   void NotifyOnSyncStarted();
 
-  const CheckedPtr<Profile> profile_;
-  const CheckedPtr<ThemeService> theme_service_;
+  Profile* const profile_;
+  ThemeService* const theme_service_;
 
   base::ObserverList<Observer> observer_list_;
 

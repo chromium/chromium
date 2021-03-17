@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/common/content_export.h"
@@ -233,7 +232,7 @@ class CONTENT_EXPORT Navigator {
 
   // Used to notify the object embedding this Navigator about navigation
   // events. Can be nullptr in tests.
-  CheckedPtr<NavigatorDelegate> delegate_;
+  NavigatorDelegate* delegate_;
 
   std::unique_ptr<Navigator::NavigationMetricsData> navigation_data_;
 

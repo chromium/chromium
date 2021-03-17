@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -286,7 +285,7 @@ class WebIdBrowserTest : public ContentBrowserTest {
   EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   std::unique_ptr<IdpTestServer> idp_server_;
   std::unique_ptr<WebIdTestContentBrowserClient> test_browser_client_;
-  CheckedPtr<ContentBrowserClient> old_client_ = nullptr;
+  ContentBrowserClient* old_client_ = nullptr;
 };
 
 // Verify a standard login flow with IdP sign-in page.

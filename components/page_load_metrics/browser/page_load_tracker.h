@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
@@ -478,7 +477,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   ResourceTracker resource_tracker_;
 
   // Interface to chrome features. Must outlive the class.
-  const CheckedPtr<PageLoadMetricsEmbedderInterface> embedder_interface_;
+  PageLoadMetricsEmbedderInterface* const embedder_interface_;
 
   std::vector<std::unique_ptr<PageLoadMetricsObserver>> observers_;
 
@@ -486,7 +485,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
 
   const ukm::SourceId source_id_;
 
-  const CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* const web_contents_;
 
   const bool is_first_navigation_in_web_contents_;
 

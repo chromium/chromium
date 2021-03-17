@@ -125,9 +125,8 @@ void AudioSourceFetcherImpl::SendAudioToSpeechRecognitionService(
 }
 
 media::AudioCapturerSource* AudioSourceFetcherImpl::GetAudioCapturerSource() {
-  return audio_capturer_source_for_tests_
-             ? audio_capturer_source_for_tests_.get()
-             : audio_capturer_source_.get();
+  return audio_capturer_source_for_tests_ ? audio_capturer_source_for_tests_
+                                          : audio_capturer_source_.get();
 }
 
 }  // namespace speech

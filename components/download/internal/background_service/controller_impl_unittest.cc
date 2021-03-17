@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -258,15 +257,15 @@ class DownloadServiceControllerImplTest : public testing::Test {
   std::unique_ptr<Configuration> config_;
   std::unique_ptr<LogSink> log_sink_;
   NavigationMonitorImpl navigation_monitor;
-  CheckedPtr<test::MockClient> client_;
-  CheckedPtr<UploadClient> client3_;
-  CheckedPtr<test::TestDownloadDriver> driver_;
-  CheckedPtr<test::TestStore> store_;
-  CheckedPtr<ModelImpl> model_;
-  CheckedPtr<test::TestDeviceStatusListener> device_status_listener_;
-  CheckedPtr<MockScheduler> scheduler_;
-  CheckedPtr<MockTaskScheduler> task_scheduler_;
-  CheckedPtr<MockFileMonitor> file_monitor_;
+  test::MockClient* client_;
+  UploadClient* client3_;
+  test::TestDownloadDriver* driver_;
+  test::TestStore* store_;
+  ModelImpl* model_;
+  test::TestDeviceStatusListener* device_status_listener_;
+  MockScheduler* scheduler_;
+  MockTaskScheduler* task_scheduler_;
+  MockFileMonitor* file_monitor_;
 
   DownloadParams::StartCallback start_callback_;
   bool init_callback_called_;

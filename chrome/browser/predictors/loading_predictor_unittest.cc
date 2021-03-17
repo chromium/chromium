@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/net/prediction_options.h"
 #include "chrome/browser/predictors/loading_test_util.h"
@@ -96,7 +95,7 @@ class LoadingPredictorTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<LoadingPredictor> predictor_;
-  CheckedPtr<StrictMock<MockResourcePrefetchPredictor>> mock_predictor_;
+  StrictMock<MockResourcePrefetchPredictor>* mock_predictor_;
 };
 
 LoadingPredictorTest::~LoadingPredictorTest() = default;
@@ -140,7 +139,7 @@ class LoadingPredictorPreconnectTest : public LoadingPredictorTest {
  protected:
   void SetPreference() override;
 
-  CheckedPtr<StrictMock<MockPreconnectManager>> mock_preconnect_manager_;
+  StrictMock<MockPreconnectManager>* mock_preconnect_manager_;
 };
 
 void LoadingPredictorPreconnectTest::SetUp() {

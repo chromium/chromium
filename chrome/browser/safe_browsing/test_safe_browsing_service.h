@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_TEST_SAFE_BROWSING_SERVICE_H_
 #define CHROME_BROWSER_SAFE_BROWSING_TEST_SAFE_BROWSING_SERVICE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 
 #include "chrome/browser/safe_browsing/services_delegate.h"
@@ -132,7 +131,7 @@ class TestSafeBrowsingServiceFactory : public SafeBrowsingServiceFactory {
   void UseV4LocalDatabaseManager();
 
  private:
-  CheckedPtr<TestSafeBrowsingService> test_safe_browsing_service_;
+  TestSafeBrowsingService* test_safe_browsing_service_;
   scoped_refptr<TestSafeBrowsingDatabaseManager> test_database_manager_;
   scoped_refptr<TestSafeBrowsingUIManager> test_ui_manager_;
   bool use_v4_local_db_manager_;

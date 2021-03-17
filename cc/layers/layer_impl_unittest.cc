@@ -4,7 +4,6 @@
 
 #include "cc/layers/layer_impl.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "cc/layers/painted_scrollbar_layer_impl.h"
 #include "cc/layers/solid_color_scrollbar_layer_impl.h"
@@ -327,7 +326,7 @@ class LayerImplScrollTest : public LayerImplTest {
   }
 
  private:
-  CheckedPtr<LayerImpl> layer_;
+  LayerImpl* layer_;
 };
 
 class CommitToPendingTreeLayerImplScrollTest : public LayerImplScrollTest {

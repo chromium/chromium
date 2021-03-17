@@ -6,7 +6,6 @@
 // and a test protocol manager. It is used to test logics in safebrowsing
 // service.
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "content/public/test/browser_test.h"
 
@@ -432,7 +431,7 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
 
   SBThreatType threat_type_;
   std::string threat_hash_;
-  CheckedPtr<SafeBrowsingService> safe_browsing_service_;
+  SafeBrowsingService* safe_browsing_service_;
 
   DISALLOW_COPY_AND_ASSIGN(TestSBClient);
 };
@@ -451,16 +450,15 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
     SafeBrowsingService::RegisterFactory(sb_factory_.get());
 
     store_factory_ = new TestV4StoreFactory();
-    V4Database::RegisterStoreFactoryForTest(
-        base::WrapUnique(store_factory_.get()));
+    V4Database::RegisterStoreFactoryForTest(base::WrapUnique(store_factory_));
 
     v4_db_factory_ = new TestV4DatabaseFactory();
     V4Database::RegisterDatabaseFactoryForTest(
-        base::WrapUnique(v4_db_factory_.get()));
+        base::WrapUnique(v4_db_factory_));
 
     v4_get_hash_factory_ = new TestV4GetHashProtocolManagerFactory();
     V4GetHashProtocolManager::RegisterFactory(
-        base::WrapUnique(v4_get_hash_factory_.get()));
+        base::WrapUnique(v4_get_hash_factory_));
 
     InProcessBrowserTest::SetUp();
   }
@@ -585,11 +583,11 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
  private:
   std::unique_ptr<TestSafeBrowsingServiceFactory> sb_factory_;
   // Owned by the V4Database.
-  CheckedPtr<TestV4DatabaseFactory> v4_db_factory_;
+  TestV4DatabaseFactory* v4_db_factory_;
   // Owned by the V4GetHashProtocolManager.
-  CheckedPtr<TestV4GetHashProtocolManagerFactory> v4_get_hash_factory_;
+  TestV4GetHashProtocolManagerFactory* v4_get_hash_factory_;
   // Owned by the V4Database.
-  CheckedPtr<TestV4StoreFactory> store_factory_;
+  TestV4StoreFactory* store_factory_;
 
 #if defined(ADDRESS_SANITIZER)
   // TODO(lukasza): https://crbug.com/971820: Disallow renderer crashes once the

@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -223,9 +222,9 @@ class WebXrPresentationState {
   // Index of the next animating WebXR frame.
   FrameIndexType next_frame_index_ = 0;
 
-  CheckedPtr<WebXrFrame> animating_frame_ = nullptr;
-  CheckedPtr<WebXrFrame> processing_frame_ = nullptr;
-  CheckedPtr<WebXrFrame> rendering_frame_ = nullptr;
+  WebXrFrame* animating_frame_ = nullptr;
+  WebXrFrame* processing_frame_ = nullptr;
+  WebXrFrame* rendering_frame_ = nullptr;
   base::queue<WebXrFrame*> idle_frames_;
 
   bool mailbox_bridge_ready_ = false;

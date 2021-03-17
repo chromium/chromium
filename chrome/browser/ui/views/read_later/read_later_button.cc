@@ -144,7 +144,7 @@ ReadLaterButton::ReadLaterButton(Browser* browser)
   reading_list_model_ =
       ReadingListModelFactory::GetForBrowserContext(browser_->profile());
   if (reading_list_model_)
-    reading_list_model_scoped_observation_.Observe(reading_list_model_.get());
+    reading_list_model_scoped_observation_.Observe(reading_list_model_);
 
   SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
@@ -241,7 +241,7 @@ void ReadLaterButton::ReadingListModelBeingDeleted(
     const ReadingListModel* model) {
   DCHECK(model == reading_list_model_);
   DCHECK(reading_list_model_scoped_observation_.IsObservingSource(
-      reading_list_model_.get()));
+      reading_list_model_));
   reading_list_model_scoped_observation_.Reset();
   reading_list_model_ = nullptr;
 }
@@ -271,7 +271,7 @@ void ReadLaterButton::ButtonPressed() {
           browser_view->side_panel()->AddChildView(std::move(webview));
       SetHighlighted(true);
     } else {
-      browser_view->side_panel()->RemoveChildViewT(side_panel_webview_.get());
+      browser_view->side_panel()->RemoveChildViewT(side_panel_webview_);
       side_panel_webview_ = nullptr;
       // TODO(pbos): Observe read_later_side_panel_bubble_ so we don't need to
       // SetHighlighted(false) here.

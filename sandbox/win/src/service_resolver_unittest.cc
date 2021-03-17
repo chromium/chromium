@@ -12,7 +12,6 @@
 
 #include "base/bit_cast.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/resolver.h"
 #include "sandbox/win/src/sandbox_utils.h"
@@ -31,7 +30,7 @@ class ResolverThunkTest {
 
  protected:
   // Holds the address of the fake target.
-  CheckedPtr<void> fake_target_;
+  void* fake_target_;
 };
 
 // This is the concrete resolver used to perform service-call type functions

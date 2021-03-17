@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SHARING_SHARED_CLIPBOARD_SHARED_CLIPBOARD_MESSAGE_HANDLER_DESKTOP_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/sharing/shared_clipboard/shared_clipboard_message_handler.h"
 
 class Profile;
@@ -24,7 +23,7 @@ class SharedClipboardMessageHandlerDesktop
   // SharedClipboardMessageHandler implementation.
   void ShowNotification(const std::string& device_name) override;
 
-  CheckedPtr<Profile> profile_ = nullptr;
+  Profile* profile_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(SharedClipboardMessageHandlerDesktop);
 };

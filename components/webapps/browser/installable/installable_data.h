@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -61,7 +60,7 @@ struct InstallableData {
   // nullptr if the most appropriate primary icon couldn't be determined or
   // downloaded. The underlying primary icon is owned by the InstallableManager;
   // clients must copy the bitmap if they want to to use it.
-  CheckedPtr<const SkBitmap> primary_icon;
+  const SkBitmap* primary_icon;
 
   // Whether the primary icon had the 'maskable' purpose, meaningless if no
   // primary_icon was requested.
@@ -76,7 +75,7 @@ struct InstallableData {
   // icon is optional, no error code is set if it cannot be fetched, and clients
   // specifying |valid_splash_icon| must check that the bitmap exists before
   // using it.
-  CheckedPtr<const SkBitmap> splash_icon;
+  const SkBitmap* splash_icon;
 
   // The screenshots to show in the install UI.
   const std::vector<SkBitmap>& screenshots;

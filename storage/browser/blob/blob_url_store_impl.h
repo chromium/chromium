@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -41,7 +40,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
 
  private:
   base::WeakPtr<BlobUrlRegistry> registry_;
-  CheckedPtr<BlobRegistryImpl::Delegate> delegate_;
+  BlobRegistryImpl::Delegate* delegate_;
 
   std::set<GURL> urls_;
 

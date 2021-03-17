@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -134,7 +133,7 @@ class ThreadCheckDesktopCapturer : public webrtc::DesktopCapturer {
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  CheckedPtr<webrtc::DesktopCapturer::Callback> callback_;
+  webrtc::DesktopCapturer::Callback* callback_;
 
   DISALLOW_COPY_AND_ASSIGN(ThreadCheckDesktopCapturer);
 };

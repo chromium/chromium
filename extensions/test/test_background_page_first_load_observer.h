@@ -6,7 +6,6 @@
 #define EXTENSIONS_TEST_TEST_BACKGROUND_PAGE_FIRST_LOAD_OBSERVER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
 #include "extensions/browser/extension_host.h"
@@ -43,8 +42,8 @@ class TestBackgroundPageFirstLoadObserver : public ProcessManagerObserver,
   void OnObtainedExtensionHost();
 
   const ExtensionId extension_id_;
-  const CheckedPtr<ProcessManager> process_manager_ = nullptr;
-  CheckedPtr<ExtensionHost> extension_host_ = nullptr;
+  ProcessManager* const process_manager_ = nullptr;
+  ExtensionHost* extension_host_ = nullptr;
   base::RunLoop run_loop_;
   ScopedObserver<ProcessManager, ProcessManagerObserver>
       process_manager_observer_{this};

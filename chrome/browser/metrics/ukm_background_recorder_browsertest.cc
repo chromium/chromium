@@ -4,7 +4,6 @@
 
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
@@ -65,7 +64,7 @@ class UkmBackgroundRecorderBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  CheckedPtr<ukm::UkmBackgroundRecorderService> background_recorder_service_;
+  ukm::UkmBackgroundRecorderService* background_recorder_service_;
 
   DISALLOW_COPY_AND_ASSIGN(UkmBackgroundRecorderBrowserTest);
 };

@@ -8,7 +8,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/commander/command_source.h"
@@ -110,7 +109,7 @@ class ViewModelCallbackWaiter {
   ~ViewModelCallbackWaiter() { test_->WaitForExpectedCallbacks(); }
 
  private:
-  CheckedPtr<CommanderControllerTest> test_;
+  CommanderControllerTest* test_;
 };
 
 TEST_F(CommanderControllerTest, PassesInputToCommandSourcesOnTextChanged) {

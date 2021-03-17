@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -314,7 +313,7 @@ class RenderViewHostTestHarness : public testing::Test {
 #if defined(USE_AURA)
   std::unique_ptr<aura::test::AuraTestHelper> aura_test_helper_;
 #endif
-  CheckedPtr<RenderProcessHostFactory> factory_ = nullptr;
+  RenderProcessHostFactory* factory_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(RenderViewHostTestHarness);
 };

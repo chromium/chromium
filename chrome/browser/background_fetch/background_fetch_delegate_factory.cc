@@ -4,7 +4,6 @@
 
 #include "chrome/browser/background_fetch/background_fetch_delegate_factory.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/background_fetch/background_fetch_delegate_impl.h"
@@ -82,7 +81,7 @@ class ChromeBackgroundFetchDelegateHelper
         .Record(ukm::UkmRecorder::Get());
   }
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 };
 
 }  // namespace

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/prefs/pref_member.h"
@@ -55,7 +54,7 @@ class StarView : public PageActionIconView,
   void MenuClosed(ui::SimpleMenuModel* source) override;
   bool IsCommandIdAlerted(int command_id) const override;
 
-  const CheckedPtr<Browser> browser_;
+  Browser* const browser_;
 
   std::unique_ptr<views::MenuRunner> menu_runner_;
   std::unique_ptr<StarMenuModel> menu_model_;

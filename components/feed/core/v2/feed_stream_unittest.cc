@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
@@ -601,8 +600,7 @@ class TestPrefetchService : public offline_pages::StubPrefetchService {
   }
 
  private:
-  CheckedPtr<offline_pages::SuggestionsProvider> suggestions_provider_ =
-      nullptr;
+  offline_pages::SuggestionsProvider* suggestions_provider_ = nullptr;
   int new_suggestions_available_call_count_ = 0;
 };
 

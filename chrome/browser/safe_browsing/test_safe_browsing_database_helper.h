@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/safe_browsing/core/db/util.h"
 
 namespace safe_browsing {
@@ -61,12 +60,12 @@ class TestSafeBrowsingDatabaseHelper {
  private:
   std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory> sb_factory_;
   // Owned by the V4Database.
-  CheckedPtr<InsertingDatabaseFactory> v4_db_factory_ = nullptr;
+  InsertingDatabaseFactory* v4_db_factory_ = nullptr;
 
   // Owned by the V4GetHashProtocolManager. Will stay nullptr if the v4 hash
   // factory is not being mocked.
-  CheckedPtr<safe_browsing::TestV4GetHashProtocolManagerFactory>
-      v4_get_hash_factory_ = nullptr;
+  safe_browsing::TestV4GetHashProtocolManagerFactory* v4_get_hash_factory_ =
+      nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TestSafeBrowsingDatabaseHelper);
 };

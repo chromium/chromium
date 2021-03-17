@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
@@ -127,7 +126,7 @@ class EventReportValidator {
                      const std::string& field_key,
                      const base::Optional<bool>& expected_value);
 
-  CheckedPtr<policy::MockCloudPolicyClient> client_;
+  policy::MockCloudPolicyClient* client_;
 
   std::string event_key_;
   std::string url_;
@@ -139,7 +138,7 @@ class EventReportValidator {
   base::Optional<std::string> threat_type_ = base::nullopt;
   base::Optional<std::string> unscanned_reason_ = base::nullopt;
   base::Optional<int> content_size_ = base::nullopt;
-  CheckedPtr<const std::set<std::string>> mimetypes_ = nullptr;
+  const std::set<std::string>* mimetypes_ = nullptr;
   base::Optional<std::string> result_ = base::nullopt;
   std::string username_;
 

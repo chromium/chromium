@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
@@ -64,7 +63,7 @@ class PasswordSaveUpdateWithAccountStoreViewTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  CheckedPtr<PasswordSaveUpdateWithAccountStoreView> view_;
+  PasswordSaveUpdateWithAccountStoreView* view_;
   std::vector<std::unique_ptr<password_manager::PasswordForm>> current_forms_;
 };
 

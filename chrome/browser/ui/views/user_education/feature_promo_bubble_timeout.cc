@@ -37,6 +37,6 @@ void FeaturePromoBubbleTimeout::OnMouseExited() {
 
 void FeaturePromoBubbleTimeout::StartAutoCloseTimer(
     base::TimeDelta auto_close_duration) {
-  timer_.Start(FROM_HERE, auto_close_duration, feature_promo_bubble_view_.get(),
+  timer_.Start(FROM_HERE, auto_close_duration, feature_promo_bubble_view_,
                &FeaturePromoBubbleView::CloseBubble);
 }

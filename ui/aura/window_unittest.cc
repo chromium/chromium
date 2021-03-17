@@ -13,7 +13,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -197,7 +196,7 @@ class ChildWindowDelegateImpl : public DestroyTrackingDelegateImpl {
   }
 
  private:
-  CheckedPtr<DestroyTrackingDelegateImpl> parent_delegate_;
+  DestroyTrackingDelegateImpl* parent_delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(ChildWindowDelegateImpl);
 };
@@ -215,7 +214,7 @@ class DestroyOrphanDelegate : public TestWindowDelegate {
   }
 
  private:
-  CheckedPtr<Window> window_;
+  Window* window_;
   DISALLOW_COPY_AND_ASSIGN(DestroyOrphanDelegate);
 };
 
@@ -1795,7 +1794,7 @@ class DeletionTestLayoutManager : public LayoutManager {
   void SetChildBounds(Window* child,
                       const gfx::Rect& requested_bounds) override {}
 
-  CheckedPtr<DeletionTracker> tracker_;
+  DeletionTracker* tracker_;
 
   DISALLOW_COPY_AND_ASSIGN(DeletionTestLayoutManager);
 };
@@ -2037,7 +2036,7 @@ class WindowObserverTest : public WindowTest,
   int removed_count_ = 0;
   int destroyed_count_ = 0;
   std::unique_ptr<VisibilityInfo> visibility_info_;
-  CheckedPtr<const void> property_key_ = nullptr;
+  const void* property_key_ = nullptr;
   intptr_t old_property_value_ = -3;
   std::vector<std::pair<int, int> > transform_notifications_;
   WindowBoundsInfo window_bounds_info_;
@@ -2881,8 +2880,8 @@ class DeleteOnVisibilityChangedObserver : public WindowObserver {
   }
 
  private:
-  CheckedPtr<Window> to_observe_;
-  CheckedPtr<Window> to_delete_;
+  Window* to_observe_;
+  Window* to_delete_;
 
   DISALLOW_COPY_AND_ASSIGN(DeleteOnVisibilityChangedObserver);
 };
@@ -3092,7 +3091,7 @@ class HierarchyObserver : public WindowObserver {
     EXPECT_EQ(p1.receiver, p2.receiver);
   }
 
-  CheckedPtr<Window> target_;
+  Window* target_;
   std::vector<WindowObserver::HierarchyChangeParams> params_;
 
   DISALLOW_COPY_AND_ASSIGN(HierarchyObserver);

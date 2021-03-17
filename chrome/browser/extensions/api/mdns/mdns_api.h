@@ -12,7 +12,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/media/router/discovery/mdns/dns_sd_registry.h"
 #include "chrome/common/extensions/api/mdns.h"
@@ -108,10 +107,10 @@ class MDnsAPI : public BrowserContextKeyedAPI,
 
   // Ensure methods are only called on UI thread.
   base::ThreadChecker thread_checker_;
-  const CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* const browser_context_;
   // Raw pointer to a leaky singleton. Lazily created on first access. Must
   // outlive this object.
-  CheckedPtr<media_router::DnsSdRegistry> dns_sd_registry_;
+  media_router::DnsSdRegistry* dns_sd_registry_;
   // Count of active listeners per service type, saved from the previous
   // invocation of UpdateMDnsListeners().
   ServiceTypeCounts prev_service_counts_;

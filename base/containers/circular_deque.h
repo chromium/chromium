@@ -14,7 +14,6 @@
 #include "base/check_op.h"
 #include "base/containers/vector_buffer.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/template_util.h"
@@ -315,7 +314,7 @@ class circular_deque_const_iterator {
   inline void CheckComparable(const circular_deque_const_iterator&) const {}
 #endif  // DCHECK_IS_ON()
 
-  CheckedPtr<const circular_deque<T>> parent_deque_;
+  const circular_deque<T>* parent_deque_;
   size_t index_;
 
 #if DCHECK_IS_ON()

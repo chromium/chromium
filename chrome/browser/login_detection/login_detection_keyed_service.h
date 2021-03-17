@@ -8,7 +8,6 @@
 #include <set>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/login_detection/login_detection_type.h"
 #include "chrome/browser/login_detection/password_store_sites.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -40,7 +39,7 @@ class LoginDetectionKeyedService : public KeyedService {
 
  private:
   // Guaranteed to outlive |this|.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // Set of sites that should be treated as logged-in, retrieved from field
   // trial.

@@ -4,7 +4,6 @@
 
 #include "device/fido/cable/v2_authenticator.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
@@ -403,13 +402,13 @@ class TunnelTransport : public Transport {
     }
   }
 
-  const CheckedPtr<Platform> platform_;
+  Platform* const platform_;
   State state_ = State::kNone;
   const std::array<uint8_t, kTunnelIdSize> tunnel_id_;
   const std::array<uint8_t, kEIDKeySize> eid_key_;
   std::unique_ptr<WebSocketAdapter> websocket_client_;
   std::unique_ptr<Crypter> crypter_;
-  const CheckedPtr<network::mojom::NetworkContext> network_context_;
+  network::mojom::NetworkContext* const network_context_;
   const base::Optional<std::array<uint8_t, kP256X962Length>> peer_identity_;
   std::array<uint8_t, kPSKSize> psk_;
   GeneratePairingDataCallback generate_pairing_data_;

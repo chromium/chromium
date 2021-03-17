@@ -12,7 +12,6 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "storage/browser/file_system/sandbox_origin_database_interface.h"
 
 namespace leveldb {
@@ -67,7 +66,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxPrioritizedOriginDatabase
   SandboxOriginDatabase* GetSandboxOriginDatabase();
 
   const base::FilePath file_system_directory_;
-  CheckedPtr<leveldb::Env> env_override_;
+  leveldb::Env* env_override_;
   const base::FilePath primary_origin_file_;
   std::unique_ptr<SandboxOriginDatabase> origin_database_;
   std::unique_ptr<SandboxIsolatedOriginDatabase> primary_origin_database_;
