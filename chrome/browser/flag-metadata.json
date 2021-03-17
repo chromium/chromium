@@ -2658,7 +2658,7 @@
   {
     "name": "enable-webrtc-remote-event-log",
     "owners": [ "eladalon" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 105
   },
   {
     "name": "enable-webrtc-srtp-aes-gcm",
