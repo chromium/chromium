@@ -75,6 +75,13 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
     NEED_POWERWASH = 3,
   };
 
+  enum class RestartJobReason : uint32_t {
+    // Restart browser for Guest session.
+    kGuest = 0,
+    // Restart browser without user session for headless Chromium.
+    kUserless = 1,
+  };
+
   // Interface for observing changes from the session manager.
   class Observer {
    public:
@@ -154,8 +161,11 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // request originates from belongs to the browser itself.
   // This method duplicates |socket_fd| so it's OK to close the FD without
   // waiting for the result.
+  // |reason| - restart job without user session (for headless chromium)
+  // or with user session (for guest sessions only).
   virtual void RestartJob(int socket_fd,
                           const std::vector<std::string>& argv,
+                          RestartJobReason reason,
                           VoidDBusMethodCallback callback) = 0;
 
   // Sends the user's password to the session manager.

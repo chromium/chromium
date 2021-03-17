@@ -597,7 +597,7 @@ void UserSessionManager::CompleteGuestSessionLogin(const GURL& start_url) {
         base::CommandLine::StringVector());
   }
 
-  RestartChrome(command_line);
+  RestartChrome(command_line, RestartChromeReason::kGuest);
 }
 
 scoped_refptr<Authenticator> UserSessionManager::CreateAuthenticator(

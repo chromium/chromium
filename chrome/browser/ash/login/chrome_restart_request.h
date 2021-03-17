@@ -15,6 +15,15 @@ class CommandLine;
 
 namespace chromeos {
 
+// Keep in sync with RestartJobReason in
+// chromeos/dbus/session_manager/session_manager_client.h
+enum class RestartChromeReason : uint32_t {
+  // Restart browser for Guest session.
+  kGuest = 0,
+  // Restart browser without user session for headless Chromium.
+  kUserless = 1,
+};
+
 // Determines the `command_line` to be used for the OTR process.
 void GetOffTheRecordCommandLine(const GURL& start_url,
                                 bool is_oobe_completed,
@@ -22,7 +31,10 @@ void GetOffTheRecordCommandLine(const GURL& start_url,
                                 base::CommandLine* command_line);
 
 // Request session manager to restart chrome with a new command line.
-void RestartChrome(const base::CommandLine& command_line);
+// |reason| - reason to restart chrome with user session (for guest sessions
+// only) or without user session (for headless chrome).
+void RestartChrome(const base::CommandLine& command_line,
+                   RestartChromeReason reason);
 
 }  // namespace chromeos
 

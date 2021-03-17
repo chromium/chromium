@@ -315,7 +315,7 @@ void ErrorScreen::OnOffTheRecordAuthSuccess() {
   base::CommandLine command_line(browser_command_line.GetProgram());
   GetOffTheRecordCommandLine(GURL(), StartupUtils::IsOobeCompleted(),
                              browser_command_line, &command_line);
-  RestartChrome(command_line);
+  RestartChrome(command_line, RestartChromeReason::kGuest);
 }
 
 void ErrorScreen::OnPasswordChangeDetected(const UserContext& user_context) {

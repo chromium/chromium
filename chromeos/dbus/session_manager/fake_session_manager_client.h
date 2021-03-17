@@ -57,6 +57,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   void EmitAshInitialized() override;
   void RestartJob(int socket_fd,
                   const std::vector<std::string>& argv,
+                  RestartJobReason reason,
                   VoidDBusMethodCallback callback) override;
   void SaveLoginPassword(const std::string& password) override;
 
@@ -165,6 +166,11 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   const base::Optional<std::vector<std::string>>& restart_job_argv() const {
     return restart_job_argv_;
   }
+
+  base::Optional<RestartJobReason> restart_job_reason() const {
+    return restart_job_reason_;
+  }
+
   // If |force_failure| is true, forces StorePolicy() to fail.
   void ForceStorePolicyFailure(bool force_failure) {
     force_store_policy_failure_ = force_failure;
@@ -288,6 +294,10 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   // If restart job was requested, and the client supports restart job, the
   // requested restarted arguments.
   base::Optional<std::vector<std::string>> restart_job_argv_;
+
+  // If restart job was requested, and the client supports restart job, the
+  // requested restart reason.
+  base::Optional<RestartJobReason> restart_job_reason_;
 
   base::ObserverList<Observer>::Unchecked observers_{
       SessionManagerClient::kObserverListPolicy};

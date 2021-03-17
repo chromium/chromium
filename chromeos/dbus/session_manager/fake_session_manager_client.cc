@@ -286,10 +286,12 @@ void FakeSessionManagerClient::EmitAshInitialized() {}
 
 void FakeSessionManagerClient::RestartJob(int socket_fd,
                                           const std::vector<std::string>& argv,
+                                          RestartJobReason reason,
                                           VoidDBusMethodCallback callback) {
   DCHECK(supports_browser_restart_);
 
   restart_job_argv_ = argv;
+  restart_job_reason_ = reason;
   if (restart_job_callback_)
     std::move(restart_job_callback_).Run();
 

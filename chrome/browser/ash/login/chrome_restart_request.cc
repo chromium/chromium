@@ -271,7 +271,8 @@ void ReLaunch(const base::CommandLine& command_line) {
 class ChromeRestartRequest
     : public base::SupportsWeakPtr<ChromeRestartRequest> {
  public:
-  explicit ChromeRestartRequest(const std::vector<std::string>& argv);
+  explicit ChromeRestartRequest(const std::vector<std::string>& argv,
+                                RestartChromeReason reson);
   ~ChromeRestartRequest();
 
   // Starts the request.
@@ -285,13 +286,16 @@ class ChromeRestartRequest
   void OnRestartJob(base::ScopedFD local_auth_fd, bool result);
 
   const std::vector<std::string> argv_;
+  const RestartChromeReason reason_;
+
   base::OneShotTimer timer_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeRestartRequest);
 };
 
-ChromeRestartRequest::ChromeRestartRequest(const std::vector<std::string>& argv)
-    : argv_(argv) {}
+ChromeRestartRequest::ChromeRestartRequest(const std::vector<std::string>& argv,
+                                           RestartChromeReason reason)
+    : argv_(argv), reason_(reason) {}
 
 ChromeRestartRequest::~ChromeRestartRequest() {}
 
@@ -334,6 +338,7 @@ void ChromeRestartRequest::RestartJob() {
   // of the socket-pair alive for the duration of the RPC.
   SessionManagerClient::Get()->RestartJob(
       remote_auth_fd.get(), argv_,
+      static_cast<SessionManagerClient::RestartJobReason>(reason_),
       base::BindOnce(&ChromeRestartRequest::OnRestartJob, AsWeakPtr(),
                      std::move(local_auth_fd)));
 }
@@ -377,7 +382,8 @@ void GetOffTheRecordCommandLine(const GURL& start_url,
   DeriveEnabledFeatures(command_line);
 }
 
-void RestartChrome(const base::CommandLine& command_line) {
+void RestartChrome(const base::CommandLine& command_line,
+                   RestartChromeReason reason) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   BootTimesRecorder::Get()->set_restart_requested();
 
@@ -405,7 +411,7 @@ void RestartChrome(const base::CommandLine& command_line) {
   }
 
   // ChromeRestartRequest deletes itself after request sent to session manager.
-  (new ChromeRestartRequest(command_line.argv()))->Start();
+  (new ChromeRestartRequest(command_line.argv(), reason))->Start();
 }
 
 }  // namespace chromeos
