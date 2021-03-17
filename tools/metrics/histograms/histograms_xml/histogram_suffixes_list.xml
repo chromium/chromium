@@ -875,6 +875,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>boliu@google.com</owner>
   <owner>ssid@chromium.org</owner>
   <suffix name="Browser" label="Recorded for Browser crashes."/>
+  <suffix name="Browser.Background"
+      label="Recorded for background Browser crashes."/>
+  <suffix name="Browser.Foreground"
+      label="Recorded for foregound Browser crashes."/>
   <suffix name="GpuForegroundOom"
       label="Recorded for foreground GPU process OOM crashes."/>
   <suffix name="UtilityForegroundOom"

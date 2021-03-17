@@ -129,7 +129,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>ssid@chromium.org</owner>
   <owner>wnwen@chromium.org</owner>
   <summary>
-    Reason given by Android ActivityManager for the exit of the process.
+    Reason given by Android ActivityManager for the exit of the process, only
+    recorded in Android R+. Recorded on the next browser startup for browser
+    exits, or right after the process died for child processes.
   </summary>
 </histogram>
 

@@ -25,8 +25,13 @@ import java.util.List;
  * ActivityManager, and record to UMA.
  */
 public class ProcessExitReasonFromSystem {
+    /**
+     * Get the exit reason of the most recent chrome process that died and had |pid| as the process
+     * ID. Only available on R+ devices, returns -1 otherwise.
+     * @return ApplicationExitInfo.Reason
+     */
     @TargetApi(Build.VERSION_CODES.R)
-    private static int getExitReason(int pid) {
+    public static int getExitReason(int pid) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             return -1;
         }
@@ -71,11 +76,18 @@ public class ProcessExitReasonFromSystem {
     }
 
     @CalledByNative
-    public static void recordExitReasonToUma(int pid, String umaName) {
-        int system_reason = getExitReason(pid);
+    private static void recordExitReasonToUma(int pid, String umaName) {
+        recordAsEnumHistogram(umaName, getExitReason(pid));
+    }
+
+    /**
+     * Records the given |systemReason| (given by #getExitReason) to UMA with the given |umaName|.
+     * @see #getExitReason
+     */
+    public static void recordAsEnumHistogram(String umaName, int systemReason) {
         @ExitReason
         int reason;
-        switch (system_reason) {
+        switch (systemReason) {
             case ApplicationExitInfo.REASON_ANR:
                 reason = ExitReason.REASON_ANR;
                 break;
