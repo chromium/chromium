@@ -179,6 +179,12 @@
   },
   'blink_platform_unittests': {
     'modifications': {
+      # TODO(crbug.com/1189336): Remove the filter once the issue is fixed.
+      'android-11-x86-fyi-rel': {
+        'args': [
+          '--gtest_filter=-HarfBuzzShaperTest.EmojiPercentage',
+        ],
+      },
       # TODO(crbug.com/1108121): Remove this filter
       'android-nougat-arm64-rel': {
         'args': [
