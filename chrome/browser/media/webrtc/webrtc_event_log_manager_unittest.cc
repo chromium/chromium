@@ -2274,7 +2274,9 @@ TEST_F(WebRtcEventLogManagerTest, StartRemoteLoggingCreatesEmptyFile) {
   ExpectRemoteFileContents(*file_path, std::string());
 }
 
-TEST_F(WebRtcEventLogManagerTest, RemoteLogFileCreatedInCorrectDirectory) {
+// TODO(crbug.com/1185008): Fix this flaky test.
+TEST_F(WebRtcEventLogManagerTest,
+       DISABLED_RemoteLogFileCreatedInCorrectDirectory) {
   // Set up separate browser contexts; each one will get one log.
   constexpr size_t kLogsNum = 3;
   std::unique_ptr<TestingProfile> browser_contexts[kLogsNum];
