@@ -1751,11 +1751,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "enable-experimental-productivity-features",
-    "owners": [ "feature-control@chromium.org" ],
-    "expiry_milestone": 86
-  },
-  {
     "name": "enable-experimental-web-platform-features",
     "owners": [ "//third_party/blink/renderer/core/OWNERS" ],
     // Used by developers to activate experimental features in blink.
