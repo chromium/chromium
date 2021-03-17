@@ -57,8 +57,8 @@ class PrefService;
 
 // Return YES if the user intends to open links in a certain mode and the
 // browser will proceed the request.
-+ (BOOL)canProceeedWithUserActivity:(NSUserActivity*)userActivity
-                        prefService:(PrefService*)prefService;
++ (BOOL)canProceedWithUserActivity:(NSUserActivity*)userActivity
+                       prefService:(PrefService*)prefService;
 
 @end
 

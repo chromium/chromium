@@ -76,16 +76,16 @@ std::vector<GURL> createGURLVectorFromIntentURLs(NSArray<NSURL*>* intentURLs) {
 
 // Returns the compatible mode array for an user activity.
 NSArray* CompatibleModeForActivityType(NSString* activityType) {
-  if (activityType == CSSearchableItemActionType ||
-      activityType == kShortcutNewSearch ||
-      activityType == kShortcutVoiceSearch ||
-      activityType == kShortcutQRScanner ||
-      activityType == kSiriShortcutSearchInChrome) {
+  if ([activityType isEqualToString:CSSearchableItemActionType] ||
+      [activityType isEqualToString:kShortcutNewSearch] ||
+      [activityType isEqualToString:kShortcutVoiceSearch] ||
+      [activityType isEqualToString:kShortcutQRScanner] ||
+      [activityType isEqualToString:kSiriShortcutSearchInChrome]) {
     return @[ kRegularMode, kIncognitoMode ];
-  } else if (activityType == kSiriShortcutOpenInChrome) {
+  } else if ([activityType isEqualToString:kSiriShortcutOpenInChrome]) {
     return @[ kRegularMode ];
-  } else if (activityType == kShortcutNewIncognitoSearch ||
-             activityType == kSiriShortcutOpenInIncognito) {
+  } else if ([activityType isEqualToString:kShortcutNewIncognitoSearch] ||
+             [activityType isEqualToString:kSiriShortcutOpenInIncognito]) {
     return @[ kIncognitoMode ];
   } else {
     NOTREACHED();
@@ -558,8 +558,8 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
   }
 }
 
-+ (BOOL)canProceeedWithUserActivity:(NSUserActivity*)userActivity
-                        prefService:(PrefService*)prefService {
++ (BOOL)canProceedWithUserActivity:(NSUserActivity*)userActivity
+                       prefService:(PrefService*)prefService {
   NSArray* array = CompatibleModeForActivityType(userActivity.activityType);
 
   if (IsIncognitoModeDisabled(prefService)) {

@@ -656,10 +656,10 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   }
   self.sceneState.startupHadExternalIntent = YES;
 
-  if (![UserActivityHandler
-          canProceeedWithUserActivity:userActivity
-                          prefService:self.currentInterface.browserState
-                                          ->GetPrefs()]) {
+  PrefService* prefs = self.currentInterface.browserState->GetPrefs();
+  if (IsIncognitoPolicyApplied(prefs) &&
+      ![UserActivityHandler canProceedWithUserActivity:userActivity
+                                           prefService:prefs]) {
     // If users request opening url in a unavailable mode, don't open the url
     // but show a toast.
     [self showToastWhenOpenExternalIntentInUnexpectedMode];
