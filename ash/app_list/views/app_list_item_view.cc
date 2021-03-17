@@ -365,25 +365,15 @@ void AppListItemView::SetUIState(UIState ui_state) {
   switch (ui_state) {
     case UI_STATE_NORMAL:
       title_->SetVisible(true);
-      if (ui_state_ == UI_STATE_DRAGGING) {
+      if (ui_state_ == UI_STATE_DRAGGING)
         ScaleAppIcon(false);
-      } else if (ui_state_ == UI_STATE_CARDIFY) {
-        title_->SetFontList(GetAppListConfig().app_title_font());
-        ScaleIconImmediatly(1.0f);
-      }
       break;
     case UI_STATE_DRAGGING:
       title_->SetVisible(false);
-      if (ui_state_ == UI_STATE_NORMAL)
+      if (ui_state_ == UI_STATE_NORMAL && !in_cardified_grid_)
         ScaleAppIcon(true);
       break;
     case UI_STATE_DROPPING_IN_FOLDER:
-      break;
-    case UI_STATE_CARDIFY:
-      gfx::FontList font_size = GetAppListConfig().app_title_font();
-      const int size_delta = font_size.GetFontSize() * (1 - kCardifyIconScale);
-      title_->SetFontList(font_size.DeriveWithSizeDelta(-size_delta));
-      ScaleIconImmediatly(kCardifyIconScale);
       break;
   }
   ui_state_ = ui_state;
@@ -993,8 +983,18 @@ void AppListItemView::SetDragUIState() {
   SetUIState(UI_STATE_DRAGGING);
 }
 
-void AppListItemView::SetCardifyUIState() {
-  SetUIState(UI_STATE_CARDIFY);
+void AppListItemView::EnterCardifyState() {
+  in_cardified_grid_ = true;
+  gfx::FontList font_size = GetAppListConfig().app_title_font();
+  const int size_delta = font_size.GetFontSize() * (1 - kCardifyIconScale);
+  title_->SetFontList(font_size.DeriveWithSizeDelta(-size_delta));
+  ScaleIconImmediatly(kCardifyIconScale);
+}
+
+void AppListItemView::ExitCardifyState() {
+  title_->SetFontList(GetAppListConfig().app_title_font());
+  ScaleIconImmediatly(1.0f);
+  in_cardified_grid_ = false;
 }
 
 void AppListItemView::SetNormalUIState() {

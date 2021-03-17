@@ -883,7 +883,7 @@ void AppsGridView::EndDrag(bool cancel) {
   if (cardified_state_) {
     // Temporarily set to cardified UI State so it animates back to its position
     // smoothly with all other icons.
-    released_drag_view->SetCardifyUIState();
+    released_drag_view->EnterCardifyState();
     // Compensate drag_source_bounds for the translation of the items_container
     // during AnimateCardifiedState().
     gfx::Point start_position = items_container_->origin();
@@ -2349,9 +2349,9 @@ void AppsGridView::AnimateCardifiedState() {
     current_bounds.Offset(translate_offset);
 
     if (cardified_state_)
-      entry_view->SetCardifyUIState();
+      entry_view->EnterCardifyState();
     else
-      entry_view->SetNormalUIState();
+      entry_view->ExitCardifyState();
 
     gfx::Rect target_bounds(view_model_.ideal_bounds(i));
     entry_view->SetBoundsRect(target_bounds);

@@ -97,10 +97,12 @@ class APP_LIST_EXPORT AppListItemView : public views::Button,
 
   // Sets UI state to dragging state.
   void SetDragUIState();
-  // Sets UI state to cardify state.
-  void SetCardifyUIState();
   // Sets UI state to normal state.
   void SetNormalUIState();
+
+  // Handles the icon's scaling and animation for a cardified grid.
+  void EnterCardifyState();
+  void ExitCardifyState();
 
   // Returns the icon bounds for with |target_bounds| as the bounds of this view
   // and given |icon_size| and the |icon_scale| if the icon was scaled from the
@@ -157,7 +159,6 @@ class APP_LIST_EXPORT AppListItemView : public views::Button,
     UI_STATE_NORMAL,              // Normal UI (icon + label)
     UI_STATE_DRAGGING,            // Dragging UI (scaled icon only)
     UI_STATE_DROPPING_IN_FOLDER,  // Folder dropping preview UI
-    UI_STATE_CARDIFY,             // Cardify UI (scaled icon + label)
   };
 
   // gfx::AnimationDelegate:
@@ -271,6 +272,9 @@ class APP_LIST_EXPORT AppListItemView : public views::Button,
   // Whether AppsGridView should not be notified of a focus event, triggering
   // A11y alerts and a focus ring.
   bool focus_silently_ = false;
+
+  // Whether AppsGridView is in cardified state.
+  bool in_cardified_grid_ = false;
 
   // The animation that runs when dragged view enters or exits this view.
   std::unique_ptr<gfx::SlideAnimation> dragged_view_hover_animation_;
