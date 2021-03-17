@@ -11,7 +11,7 @@
 namespace {
 
 constexpr int kDefaultRangeWidthDips = 150;
-constexpr int kDefaultRangeHeightDips = 120;
+constexpr float kDefaultRangeHeightDips = 120;
 constexpr float kLineScanSlowDownFactor = 0.5f;
 
 }  // namespace
