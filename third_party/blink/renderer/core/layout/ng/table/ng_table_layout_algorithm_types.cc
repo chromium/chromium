@@ -147,9 +147,11 @@ NGTableTypes::CellInlineConstraint NGTableTypes::CreateCellInlineConstraint(
       builder.SetAvailableSize({kIndefiniteSize, kIndefiniteSize});
       const auto space = builder.ToConstraintSpace();
 
-      MinMaxSizesInput input(kIndefiniteSize, MinMaxSizesType::kIntrinsic);
+      MinMaxSizesInput input(kIndefiniteSize);
       cached_min_max_sizes =
-          node.ComputeMinMaxSizes(table_writing_mode, input, &space).sizes;
+          node.ComputeMinMaxSizes(table_writing_mode,
+                                  MinMaxSizesType::kIntrinsic, input, &space)
+              .sizes;
     }
 
     return *cached_min_max_sizes;

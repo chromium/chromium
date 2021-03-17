@@ -280,8 +280,7 @@ MinMaxSizesResult NGBlockLayoutAlgorithm::ComputeMinMaxSizes(
         float_right_inline_size = LayoutUnit();
     }
 
-    MinMaxSizesInput child_input(input.percentage_resolution_block_size,
-                                 input.type);
+    MinMaxSizesInput child_input(input.percentage_resolution_block_size);
     if (child.IsInline() || child.IsAnonymousBlock()) {
       child_input.float_left_inline_size = float_left_inline_size;
       child_input.float_right_inline_size = float_right_inline_size;

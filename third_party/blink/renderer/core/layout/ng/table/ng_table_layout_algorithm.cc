@@ -41,9 +41,8 @@ NGTableTypes::Caption ComputeCaptionConstraint(
     // block-size to resolve against.
     NGBoxStrut margins = ComputeMinMaxMargins(table_style, caption);
     MinMaxSizes min_max_size =
-        ComputeMinAndMaxContentContribution(
-            table_style, caption,
-            MinMaxSizesInput(kIndefiniteSize, MinMaxSizesType::kContent))
+        ComputeMinAndMaxContentContribution(table_style, caption,
+                                            MinMaxSizesInput(kIndefiniteSize))
             .sizes;
     min_max_size += margins.InlineSum();
     caption_min_max.Encompass(min_max_size);

@@ -176,10 +176,9 @@ TEST_F(NGBlockNodeForTest, MinAndMaxContent) {
   NGBlockNode box(GetLayoutBoxByElementId("box"));
   MinMaxSizes sizes =
       box.ComputeMinMaxSizes(
-             WritingMode::kHorizontalTb,
+             WritingMode::kHorizontalTb, MinMaxSizesType::kContent,
              MinMaxSizesInput(
-                 /* percentage_resolution_block_size */ LayoutUnit(),
-                 MinMaxSizesType::kContent))
+                 /* percentage_resolution_block_size */ LayoutUnit()))
           .sizes;
   EXPECT_EQ(LayoutUnit(kWidth), sizes.min_size);
   EXPECT_EQ(LayoutUnit(kWidth), sizes.max_size);
@@ -202,10 +201,9 @@ TEST_F(NGBlockNodeForTest, MinContentForControls) {
     NGBlockNode box(GetLayoutBoxByElementId(id));
     MinMaxSizes sizes =
         box.ComputeMinMaxSizes(
-               WritingMode::kHorizontalTb,
+               WritingMode::kHorizontalTb, MinMaxSizesType::kContent,
                MinMaxSizesInput(
-                   /* percentage_resolution_block_size */ LayoutUnit(-1),
-                   MinMaxSizesType::kContent))
+                   /* percentage_resolution_block_size */ LayoutUnit(-1)))
             .sizes;
     EXPECT_EQ(LayoutUnit(kExpectedMinWidth), sizes.min_size);
   }

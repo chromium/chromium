@@ -1694,8 +1694,7 @@ static LayoutUnit ComputeContentSize(
       const ComputedStyle& float_style = float_node.Style();
 
       // Floats don't intrude into floats.
-      MinMaxSizesInput float_input(input.percentage_resolution_block_size,
-                                   MinMaxSizesType::kContent);
+      MinMaxSizesInput float_input(input.percentage_resolution_block_size);
       MinMaxSizesResult child_result =
           ComputeMinAndMaxContentContribution(style, float_node, float_input);
       LayoutUnit child_inline_margins =

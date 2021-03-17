@@ -542,9 +542,9 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
         // pass child's writing mode as the first parameter, which is nominally
         // |container_writing_mode|.
         NGConstraintSpace child_space = BuildSpaceForIntrinsicBlockSize(child);
-        MinMaxSizesInput input(ChildAvailableSize().block_size, type);
+        MinMaxSizesInput input(ChildAvailableSize().block_size);
         min_max_sizes = child.ComputeMinMaxSizes(child_style.GetWritingMode(),
-                                                 input, &child_space);
+                                                 type, input, &child_space);
       }
       return *min_max_sizes;
     };
@@ -850,9 +850,8 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
       MinMaxSizes table_intrinsic_widths =
           child
               .ComputeMinMaxSizes(
-                  ConstraintSpace().GetWritingMode(),
-                  MinMaxSizesInput(child_percentage_size_.block_size,
-                                   MinMaxSizesType::kContent),
+                  ConstraintSpace().GetWritingMode(), MinMaxSizesType::kContent,
+                  MinMaxSizesInput(child_percentage_size_.block_size),
                   ortho_child_space)
               .sizes;
 

@@ -714,7 +714,7 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
     // We'll want to determine this using the base or used track-sizes instead.
     // This should match the %-resolution sizes we use for layout during
     // measuring.
-    MinMaxSizesInput input(kIndefiniteSize, MinMaxSizesType::kContent);
+    MinMaxSizesInput input(kIndefiniteSize);
     return ComputeMinAndMaxContentContributionForSelf(node, input).sizes;
   };
 
@@ -802,9 +802,9 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
                   [&](MinMaxSizesType type) -> MinMaxSizesResult {
                 // TODO(ikilpatrick): Again, kIndefiniteSize here is incorrect,
                 // and needs to use the base or resolved track sizes.
-                MinMaxSizesInput input(kIndefiniteSize, type);
+                MinMaxSizesInput input(kIndefiniteSize);
                 return node.ComputeMinMaxSizes(item_style.GetWritingMode(),
-                                               input, &space);
+                                               type, input, &space);
               };
 
               contribution = ResolveMinInlineLength(

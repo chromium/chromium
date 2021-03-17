@@ -40,15 +40,11 @@ struct MinMaxSizesInput {
   //
   // As we don't perform any tree walking, we need to pass the percentage
   // resolution block-size for min/max down the min/max size calculation.
-  MinMaxSizesInput(LayoutUnit percentage_resolution_block_size,
-                   MinMaxSizesType type)
-      : percentage_resolution_block_size(percentage_resolution_block_size),
-        type(type) {}
+  explicit MinMaxSizesInput(LayoutUnit percentage_resolution_block_size)
+      : percentage_resolution_block_size(percentage_resolution_block_size) {}
   LayoutUnit float_left_inline_size;
   LayoutUnit float_right_inline_size;
   LayoutUnit percentage_resolution_block_size;
-
-  MinMaxSizesType type;
 };
 
 // The output of the min/max inline size calculation algorithm. Contains the

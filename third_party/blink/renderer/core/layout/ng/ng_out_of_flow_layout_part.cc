@@ -965,7 +965,7 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
   if (AbsoluteNeedsChildInlineSize(node_info.node) ||
       NeedMinMaxSize(candidate_style) || should_be_considered_as_replaced ||
       compute_inline_from_ar) {
-    MinMaxSizesInput input(kIndefiniteSize, MinMaxSizesType::kContent);
+    MinMaxSizesInput input(kIndefiniteSize);
     if (is_replaced) {
       input.percentage_resolution_block_size =
           container_content_size_in_candidate_writing_mode.block_size;
@@ -982,19 +982,19 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
     }
     if (compute_inline_from_ar &&
         candidate_style.OverflowInlineDirection() == EOverflow::kVisible) {
-      MinMaxSizesInput intrinsic_input(input);
-      intrinsic_input.type = MinMaxSizesType::kIntrinsic;
       minmax_intrinsic_sizes_for_ar =
           node_info.node
               .ComputeMinMaxSizes(candidate_writing_direction.GetWritingMode(),
-                                  intrinsic_input, &node_info.constraint_space)
+                                  MinMaxSizesType::kIntrinsic, input,
+                                  &node_info.constraint_space)
               .sizes;
     }
 
     min_max_sizes =
         node_info.node
             .ComputeMinMaxSizes(candidate_writing_direction.GetWritingMode(),
-                                input, &node_info.constraint_space)
+                                MinMaxSizesType::kContent, input,
+                                &node_info.constraint_space)
             .sizes;
   }
 

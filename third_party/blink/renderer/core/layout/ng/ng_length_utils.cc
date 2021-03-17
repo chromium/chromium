@@ -399,26 +399,26 @@ MinMaxSizesResult ComputeMinAndMaxContentContribution(
 
   if (IsParallelWritingMode(parent_writing_mode, child_writing_mode)) {
     // Legacy tables are special - always let the legacy table code handle this.
-    if (child.IsTable() && !child.IsNGTable())
-      return child.ComputeMinMaxSizes(parent_writing_mode, input, nullptr);
+    if (child.IsTable() && !child.IsNGTable()) {
+      return child.ComputeMinMaxSizes(
+          parent_writing_mode, MinMaxSizesType::kContent, input, nullptr);
+    }
 
     if (child.IsReplaced())
       return ComputeMinAndMaxContentContributionForReplaced(child, input);
   }
 
   auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
-    MinMaxSizesInput input_copy(input);
-    input_copy.type = type;
     // We need to set up a constraint space with correct fallback available
     // inline-size in case of orthogonal children.
     NGConstraintSpace indefinite_constraint_space;
     const NGConstraintSpace* child_constraint_space = nullptr;
     if (!IsParallelWritingMode(parent_writing_mode, child_writing_mode)) {
-      indefinite_constraint_space = CreateIndefiniteConstraintSpaceForChild(
-          parent_style, input_copy, child);
+      indefinite_constraint_space =
+          CreateIndefiniteConstraintSpaceForChild(parent_style, input, child);
       child_constraint_space = &indefinite_constraint_space;
     }
-    return child.ComputeMinMaxSizes(parent_writing_mode, input_copy,
+    return child.ComputeMinMaxSizes(parent_writing_mode, type, input,
                                     child_constraint_space);
   };
 
@@ -433,16 +433,16 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionForSelf(
   WritingMode writing_mode = child_style.GetWritingMode();
 
   // Legacy tables are special - always let the legacy table code handle this.
-  if (child.IsTable() && !child.IsNGTable())
-    return child.ComputeMinMaxSizes(writing_mode, input, nullptr);
+  if (child.IsTable() && !child.IsNGTable()) {
+    return child.ComputeMinMaxSizes(writing_mode, MinMaxSizesType::kContent,
+                                    input, nullptr);
+  }
 
   if (child.IsReplaced())
     return ComputeMinAndMaxContentContributionForReplaced(child, input);
 
   auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
-    MinMaxSizesInput input_copy(input);
-    input_copy.type = type;
-    return child.ComputeMinMaxSizes(writing_mode, input_copy);
+    return child.ComputeMinMaxSizes(writing_mode, type, input);
   };
 
   return ComputeMinAndMaxContentContributionInternal(writing_mode, child,
@@ -499,8 +499,8 @@ LayoutUnit ComputeInlineSizeForFragmentInternal(
                                /* depends_on_percentage_block_size */ false);
     }
 
-    MinMaxSizesInput input(space.PercentageResolutionBlockSize(), type);
-    return node.ComputeMinMaxSizes(space.GetWritingMode(), input, &space);
+    MinMaxSizesInput input(space.PercentageResolutionBlockSize());
+    return node.ComputeMinMaxSizes(space.GetWritingMode(), type, input, &space);
   };
 
   const ComputedStyle& style = node.Style();
@@ -1326,11 +1326,10 @@ NGFragmentGeometry CalculateInitialFragmentGeometry(
   if (node.IsReplaced()) {
     LogicalSize border_box_size;
     MinMaxSizesInput min_max_input(
-        constraint_space.ReplacedPercentageResolutionBlockSize(),
-        MinMaxSizesType::kIntrinsic);
+        constraint_space.ReplacedPercentageResolutionBlockSize());
     MinMaxSizes intrinsic_min_max_sizes =
         node.ComputeMinMaxSizes(constraint_space.GetWritingMode(),
-                                min_max_input)
+                                MinMaxSizesType::kIntrinsic, min_max_input)
             .sizes;
     base::Optional<LogicalSize> replaced_size;
     base::Optional<LogicalSize> aspect_ratio;

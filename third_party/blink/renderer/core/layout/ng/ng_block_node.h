@@ -85,10 +85,11 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   // space is not optional.
   MinMaxSizesResult ComputeMinMaxSizes(
       WritingMode container_writing_mode,
+      const MinMaxSizesType,
       const MinMaxSizesInput&,
       const NGConstraintSpace* = nullptr) const;
 
-  MinMaxSizes ComputeMinMaxSizesFromLegacy(const MinMaxSizesInput&,
+  MinMaxSizes ComputeMinMaxSizesFromLegacy(const MinMaxSizesType,
                                            const NGConstraintSpace&) const;
 
   NGLayoutInputNode FirstChild() const;

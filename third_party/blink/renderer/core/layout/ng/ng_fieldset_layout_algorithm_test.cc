@@ -40,8 +40,7 @@ class NGFieldsetLayoutAlgorithmTest
 
     NGFieldsetLayoutAlgorithm algorithm({node, fragment_geometry, space});
     MinMaxSizesInput input(
-        /* percentage_resolution_block_size */ LayoutUnit(),
-        MinMaxSizesType::kContent);
+        /* percentage_resolution_block_size */ (LayoutUnit()));
     return algorithm.ComputeMinMaxSizes(input).sizes;
   }
 

@@ -2709,8 +2709,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, MinMax) {
   NGColumnLayoutAlgorithm algorithm({node, fragment_geometry, space});
   base::Optional<MinMaxSizes> sizes;
   MinMaxSizesInput zero_input(
-      /* percentage_resolution_block_size */ LayoutUnit(),
-      MinMaxSizesType::kContent);
+      /* percentage_resolution_block_size */ (LayoutUnit()));
 
   // Both column-count and column-width set.
   style->SetColumnCount(3);
