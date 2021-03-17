@@ -421,8 +421,8 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
       [self.identityDiscButton.trailingAnchor
           constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
                          constant:-ntp_home::kIdentityAvatarMargin],
-      [self.identityDiscButton.centerYAnchor
-          constraintEqualToAnchor:self.logoVendor.view.centerYAnchor],
+      [self.identityDiscButton.topAnchor
+          constraintEqualToAnchor:self.logoVendor.view.topAnchor],
     ];
     self.identityDiscLogoPortraitConstraints = @[
       [self.identityDiscButton.heightAnchor
@@ -430,8 +430,8 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
       [self.identityDiscButton.widthAnchor constraintEqualToConstant:dimension],
       [self.identityDiscButton.trailingAnchor
           constraintEqualToAnchor:self.fakeOmnibox.trailingAnchor],
-      [self.identityDiscButton.centerYAnchor
-          constraintEqualToAnchor:self.logoVendor.view.centerYAnchor],
+      [self.identityDiscButton.topAnchor
+          constraintEqualToAnchor:self.logoVendor.view.topAnchor],
     ];
     [self updateIdentityDiscLogoConstraints];
   }
