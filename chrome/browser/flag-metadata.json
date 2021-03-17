@@ -2371,8 +2371,8 @@
   },
   {
     "name": "enable-skia-renderer",
-    "owners": [ "backer", "kylechar" ],
-    "expiry_milestone": 90
+    "owners": [ "backer", "kylechar", "penghuang" ],
+    "expiry_milestone": 93
   },
   {
     "name": "enable-speculative-service-worker-start-on-query-input",
