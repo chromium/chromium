@@ -149,7 +149,6 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.SHARING_LAST_SHARED_CLASS_NAME,
                 ChromePreferenceKeys.SHARING_LAST_SHARED_PACKAGE_NAME,
                 ChromePreferenceKeys.SIGNIN_ACCOUNTS_CHANGED,
-                ChromePreferenceKeys.SIGNIN_ACCOUNT_RENAMED,
                 ChromePreferenceKeys.SIGNIN_ACCOUNT_RENAME_EVENT_INDEX,
                 ChromePreferenceKeys.SIGNIN_AND_SYNC_PROMO_SHOW_COUNT,
                 ChromePreferenceKeys.SIGNIN_PROMO_IMPRESSIONS_COUNT_BOOKMARKS,

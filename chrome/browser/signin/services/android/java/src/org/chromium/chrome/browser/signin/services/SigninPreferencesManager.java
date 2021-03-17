@@ -41,29 +41,6 @@ public class SigninPreferencesManager {
     }
 
     /**
-     * @return The new account name of the current user. Null if it wasn't renamed.
-     */
-    public String getNewSignedInAccountName() {
-        return mManager.readString(ChromePreferenceKeys.SIGNIN_ACCOUNT_RENAMED, null);
-    }
-
-    /**
-     * Sets the new account name of the current user.
-     *
-     * @param newName the new name to write
-     */
-    public void setNewSignedInAccountName(@Nullable String newName) {
-        mManager.writeString(ChromePreferenceKeys.SIGNIN_ACCOUNT_RENAMED, newName);
-    }
-
-    /**
-     * Clears the new account name of the current user.
-     */
-    public void clearNewSignedInAccountName() {
-        setNewSignedInAccountName(null);
-    }
-
-    /**
      * Sets the last read index of all the account changed events of the current signed in account.
      *
      * @param newIndex the new index to write
@@ -101,7 +78,6 @@ public class SigninPreferencesManager {
     @VisibleForTesting
     public void clearAccountsStateSharedPrefsForTesting() {
         mManager.removeKey(ChromePreferenceKeys.SIGNIN_ACCOUNT_RENAME_EVENT_INDEX);
-        mManager.removeKey(ChromePreferenceKeys.SIGNIN_ACCOUNT_RENAMED);
         mManager.removeKey(ChromePreferenceKeys.SIGNIN_ACCOUNTS_CHANGED);
     }
 

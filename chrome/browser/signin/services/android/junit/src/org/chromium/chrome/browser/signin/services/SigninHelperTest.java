@@ -32,28 +32,29 @@ public class SigninHelperTest {
     @Test
     public void testSimpleAccountRename() {
         mEventChecker.insertRenameEvent("A", "B");
-        SigninHelper.updateAccountRenameData(mEventChecker, "A");
-        Assert.assertEquals("B", getNewSignedInAccountName());
+
+        Assert.assertEquals("B", SigninHelper.getNewNameOfRenamedAccount(mEventChecker, "A"));
         checkLastAccountChangedEventIndex(0);
     }
 
     @Test
     public void testNotSignedInAccountRename() {
         mEventChecker.insertRenameEvent("B", "C");
-        SigninHelper.updateAccountRenameData(mEventChecker, "A");
-        Assert.assertNull(getNewSignedInAccountName());
+
+        Assert.assertNull(SigninHelper.getNewNameOfRenamedAccount(mEventChecker, "A"));
         checkLastAccountChangedEventIndex(0);
     }
 
     @Test
     public void testSimpleAccountRenameTwice() {
         mEventChecker.insertRenameEvent("A", "B");
-        SigninHelper.updateAccountRenameData(mEventChecker, "A");
-        Assert.assertEquals("B", getNewSignedInAccountName());
+
+        Assert.assertEquals("B", SigninHelper.getNewNameOfRenamedAccount(mEventChecker, "A"));
         checkLastAccountChangedEventIndex(0);
+
         mEventChecker.insertRenameEvent("B", "C");
-        SigninHelper.updateAccountRenameData(mEventChecker, "B");
-        Assert.assertEquals("C", getNewSignedInAccountName());
+
+        Assert.assertEquals("C", SigninHelper.getNewNameOfRenamedAccount(mEventChecker, "B"));
         checkLastAccountChangedEventIndex(0);
     }
 
@@ -61,8 +62,8 @@ public class SigninHelperTest {
     public void testNotSignedInAccountRename2() {
         mEventChecker.insertRenameEvent("B", "C");
         mEventChecker.insertRenameEvent("C", "D");
-        SigninHelper.updateAccountRenameData(mEventChecker, "A");
-        Assert.assertNull(getNewSignedInAccountName());
+
+        Assert.assertNull(SigninHelper.getNewNameOfRenamedAccount(mEventChecker, "A"));
         checkLastAccountChangedEventIndex(0);
     }
 
@@ -73,8 +74,8 @@ public class SigninHelperTest {
         mEventChecker.insertRenameEvent("Y", "X"); // Unrelated.
         mEventChecker.insertRenameEvent("B", "C");
         mEventChecker.insertRenameEvent("C", "D");
-        SigninHelper.updateAccountRenameData(mEventChecker, "A");
-        Assert.assertEquals("D", getNewSignedInAccountName());
+
+        Assert.assertEquals("D", SigninHelper.getNewNameOfRenamedAccount(mEventChecker, "A"));
         checkLastAccountChangedEventIndex(0);
     }
 
@@ -87,13 +88,9 @@ public class SigninHelperTest {
         mEventChecker.insertRenameEvent("C", "D");
         mEventChecker.insertRenameEvent("D", "A"); // Looped.
         mAccountManagerTestRule.addAccount("D");
-        SigninHelper.updateAccountRenameData(mEventChecker, "A");
-        Assert.assertEquals("D", getNewSignedInAccountName());
-        checkLastAccountChangedEventIndex(1);
-    }
 
-    private String getNewSignedInAccountName() {
-        return SigninPreferencesManager.getInstance().getNewSignedInAccountName();
+        Assert.assertEquals("D", SigninHelper.getNewNameOfRenamedAccount(mEventChecker, "A"));
+        checkLastAccountChangedEventIndex(1);
     }
 
     private void checkLastAccountChangedEventIndex(int expectedEventIndex) {

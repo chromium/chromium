@@ -8,7 +8,6 @@ import android.accounts.Account;
 
 import androidx.test.filters.LargeTest;
 
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -16,22 +15,17 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.SigninHelperProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.services.SigninHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.signin.MockChangeEventChecker;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Test suite for Sync.
@@ -86,52 +80,6 @@ public class SyncTest {
                                     .hasPrimaryAccount(),
                 "Timed out checking that hasPrimaryAccount() == false", SyncTestUtil.TIMEOUT_MS,
                 SyncTestUtil.INTERVAL_MS);
-    }
-
-    /*
-     * @FlakyTest
-     * @LargeTest
-     * @Feature({"Sync"})
-     */
-    @Test
-    @DisabledTest(message = "crbug.com/588050,crbug.com/595893")
-    public void testRename() {
-        // The two accounts object that would represent the account rename.
-        final Account oldAccount = CoreAccountInfo.getAndroidAccountFrom(
-                mSyncTestRule.setUpAccountAndEnableSyncForTesting());
-        final Account newAccount =
-                CoreAccountInfo.getAndroidAccountFrom(mSyncTestRule.addAccount("test2@gmail.com"));
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // First, we force a call to updateAccountRenameData. In the real world,
-            // this should be called by one of our broadcast listener that listens to
-            // real account rename events instead of the mocks.
-            MockChangeEventChecker eventChecker = new MockChangeEventChecker();
-            eventChecker.insertRenameEvent(oldAccount.name, newAccount.name);
-            SigninHelper.updateAccountRenameData(eventChecker, oldAccount.name);
-
-            // Tell the fake content resolver that a rename had happen and copy over the sync
-            // settings.
-            MockSyncContentResolverDelegate contentResolver =
-                    mSyncTestRule.getSyncContentResolver();
-            String authority = AndroidSyncSettings.getContractAuthority();
-            int oldIsSyncable = contentResolver.getIsSyncable(oldAccount, authority);
-            contentResolver.setIsSyncable(newAccount, authority, oldIsSyncable);
-            if (oldIsSyncable > 0) {
-                contentResolver.setSyncAutomatically(newAccount, authority,
-                        contentResolver.getSyncAutomatically(oldAccount, authority));
-            }
-
-            // Starts the rename process. Normally, this is triggered by the broadcast
-            // listener as well.
-            SigninHelperProvider.get().validateAccountSettings(true);
-        });
-
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            Criteria.checkThat(mSyncTestRule.getCurrentSignedInAccount().getEmail(),
-                    Matchers.is(newAccount.name));
-        });
-        SyncTestUtil.waitForSyncFeatureActive();
     }
 
     @Test
