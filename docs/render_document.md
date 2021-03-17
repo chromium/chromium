@@ -45,11 +45,11 @@ https://crbug.com/936696
 We have 3 stages that are behind flags.
 
 1. crashed-frames:
-  A new RenderFrameHost is used for reloading a crashed document.
+  A new `RenderFrameHost` is used for reloading a crashed document.
 2. subframes:
-  A new RenderFrameHost is used for every nested document.
+  A new `RenderFrameHost` is used for every nested document.
 3. main frames:
-  A new RenderFrameHost is used for every document.
+  A new `RenderFrameHost` is used for every document.
 
 # Test changes
 
