@@ -897,7 +897,7 @@ void TrackEventThreadLocalEventSink::EmitCounterTrackDescriptor(
 
   CounterDescriptor* counter = track_descriptor->set_counter();
   if (counter_type != CounterDescriptor::COUNTER_UNSPECIFIED) {
-    counter->set_type(CounterDescriptor::COUNTER_THREAD_TIME_NS);
+    counter->set_type(counter_type);
   }
   if (unit_multiplier) {
     counter->set_unit_multiplier(unit_multiplier);
