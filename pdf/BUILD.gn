@@ -349,6 +349,7 @@ if (enable_pdf) {
       "page_orientation_unittest.cc",
       "pdf_transform_unittest.cc",
       "pdf_utils/dates_unittest.cc",
+      "pdf_view_plugin_base_unittest.cc",
       "pdfium/accessibility_unittest.cc",
       "pdfium/findtext_unittest.cc",
       "pdfium/pdfium_engine_exports_unittest.cc",
