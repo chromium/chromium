@@ -108,9 +108,11 @@ void ESimProfile::InstallProfile(const std::string& confirmation_code,
   EnsureProfileExistsOnEuiccCallback perform_install_profile_callback =
       base::BindOnce(&ESimProfile::PerformInstallProfile,
                      weak_ptr_factory_.GetWeakPtr(), confirmation_code);
-  esim_manager_->cellular_inhibitor()->InhibitCellularScanning(base::BindOnce(
-      &ESimProfile::EnsureProfileExistsOnEuicc, weak_ptr_factory_.GetWeakPtr(),
-      std::move(perform_install_profile_callback)));
+  esim_manager_->cellular_inhibitor()->InhibitCellularScanning(
+      CellularInhibitor::InhibitReason::kInstallingProfile,
+      base::BindOnce(&ESimProfile::EnsureProfileExistsOnEuicc,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(perform_install_profile_callback)));
 }
 
 void ESimProfile::UninstallProfile(UninstallProfileCallback callback) {
@@ -198,9 +200,11 @@ void ESimProfile::SetProfileNickname(const std::u16string& nickname,
   EnsureProfileExistsOnEuiccCallback perform_set_profile_nickname_callback =
       base::BindOnce(&ESimProfile::PerformSetProfileNickname,
                      weak_ptr_factory_.GetWeakPtr(), nickname);
-  esim_manager_->cellular_inhibitor()->InhibitCellularScanning(base::BindOnce(
-      &ESimProfile::EnsureProfileExistsOnEuicc, weak_ptr_factory_.GetWeakPtr(),
-      std::move(perform_set_profile_nickname_callback)));
+  esim_manager_->cellular_inhibitor()->InhibitCellularScanning(
+      CellularInhibitor::InhibitReason::kRenamingProfile,
+      base::BindOnce(&ESimProfile::EnsureProfileExistsOnEuicc,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(perform_set_profile_nickname_callback)));
 }
 
 void ESimProfile::UpdateProperties(

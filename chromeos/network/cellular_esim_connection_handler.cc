@@ -270,6 +270,7 @@ void CellularESimConnectionHandler::CheckServiceStatus() {
 
   TransitionToConnectionState(ConnectionState::kInhibitingScans);
   cellular_inhibitor_->InhibitCellularScanning(
+      CellularInhibitor::InhibitReason::kConnectingToProfile,
       base::BindOnce(&CellularESimConnectionHandler::OnInhibitScanResult,
                      weak_ptr_factory_.GetWeakPtr()));
 }

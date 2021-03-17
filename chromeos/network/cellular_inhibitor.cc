@@ -5,6 +5,7 @@
 #include "chromeos/network/cellular_inhibitor.h"
 
 #include <memory>
+#include <sstream>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -26,6 +27,14 @@ constexpr base::TimeDelta kUninhibitRetryDelay =
     base::TimeDelta::FromSeconds(2);
 
 }  // namespace
+
+CellularInhibitor::InhibitRequest::InhibitRequest(
+    InhibitReason inhibit_reason,
+    InhibitCallback inhibit_callback)
+    : inhibit_reason(inhibit_reason),
+      inhibit_callback(std::move(inhibit_callback)) {}
+
+CellularInhibitor::InhibitRequest::~InhibitRequest() = default;
 
 CellularInhibitor::InhibitLock::InhibitLock(base::OnceClosure unlock_callback)
     : unlock_callback_(std::move(unlock_callback)) {}
@@ -49,9 +58,36 @@ void CellularInhibitor::Init(NetworkStateHandler* network_state_handler,
   network_state_handler_->AddObserver(this, FROM_HERE);
 }
 
-void CellularInhibitor::InhibitCellularScanning(InhibitCallback callback) {
-  inhibit_requests_.push(std::move(callback));
+void CellularInhibitor::InhibitCellularScanning(InhibitReason reason,
+                                                InhibitCallback callback) {
+  inhibit_requests_.push(
+      std::make_unique<InhibitRequest>(reason, std::move(callback)));
   ProcessRequests();
+}
+
+base::Optional<CellularInhibitor::InhibitReason>
+CellularInhibitor::GetInhibitReason() const {
+  if (state_ == State::kIdle)
+    return base::nullopt;
+
+  return inhibit_requests_.front()->inhibit_reason;
+}
+
+void CellularInhibitor::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void CellularInhibitor::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
+bool CellularInhibitor::HasObserver(Observer* observer) const {
+  return observer_list_.HasObserver(observer);
+}
+
+void CellularInhibitor::NotifyInhibitStateChanged() {
+  for (auto& observer : observer_list_)
+    observer.OnInhibitStateChanged();
 }
 
 void CellularInhibitor::DeviceListChanged() {
@@ -68,8 +104,24 @@ const DeviceState* CellularInhibitor::GetCellularDevice() const {
 }
 
 void CellularInhibitor::TransitionToState(State state) {
-  NET_LOG(EVENT) << "CellularInhibitor state: " << state_ << " => " << state;
+  State old_state = state_;
   state_ = state;
+
+  bool was_inhibited = old_state != State::kIdle;
+  bool is_inhibited = state_ != State::kIdle;
+
+  std::stringstream ss;
+  ss << "CellularInhibitor state: " << old_state << " => " << state_;
+
+  if (!is_inhibited) {
+    DCHECK(!GetInhibitReason());
+    NET_LOG(EVENT) << ss.str();
+  } else {
+    NET_LOG(EVENT) << ss.str() << state_ << ", reason: " << *GetInhibitReason();
+  }
+
+  if (was_inhibited != is_inhibited)
+    NotifyInhibitStateChanged();
 }
 
 void CellularInhibitor::ProcessRequests() {
@@ -95,11 +147,11 @@ void CellularInhibitor::OnInhibit(bool success) {
     std::unique_ptr<InhibitLock> lock = std::make_unique<InhibitLock>(
         base::BindOnce(&CellularInhibitor::AttemptUninhibit,
                        weak_ptr_factory_.GetWeakPtr(), /*attempts_so_far=*/0));
-    std::move(inhibit_requests_.front()).Run(std::move(lock));
+    std::move(inhibit_requests_.front()->inhibit_callback).Run(std::move(lock));
     return;
   }
 
-  std::move(inhibit_requests_.front()).Run(nullptr);
+  std::move(inhibit_requests_.front()->inhibit_callback).Run(nullptr);
   PopRequestAndProcessNext();
 }
 
@@ -246,3 +298,26 @@ std::ostream& operator<<(std::ostream& stream,
 }
 
 }  // namespace chromeos
+
+std::ostream& operator<<(
+    std::ostream& stream,
+    const chromeos::CellularInhibitor::InhibitReason& inhibit_reason) {
+  switch (inhibit_reason) {
+    case chromeos::CellularInhibitor::InhibitReason::kInstallingProfile:
+      stream << "[Installing profile]";
+      break;
+    case chromeos::CellularInhibitor::InhibitReason::kRenamingProfile:
+      stream << "[Renaming profile]";
+      break;
+    case chromeos::CellularInhibitor::InhibitReason::kRemovingProfile:
+      stream << "[Removing profile]";
+      break;
+    case chromeos::CellularInhibitor::InhibitReason::kConnectingToProfile:
+      stream << "[Connecting to profile]";
+      break;
+    case chromeos::CellularInhibitor::InhibitReason::kRefreshingProfileList:
+      stream << "[Refreshing profile list]";
+      break;
+  }
+  return stream;
+}

@@ -135,6 +135,7 @@ void CellularESimUninstallHandler::AttemptNetworkDisconnectIfRequired() {
 
 void CellularESimUninstallHandler::AttemptShillInhibit() {
   cellular_inhibitor_->InhibitCellularScanning(
+      CellularInhibitor::InhibitReason::kRemovingProfile,
       base::BindOnce(&CellularESimUninstallHandler::OnShillInhibit,
                      weak_ptr_factory_.GetWeakPtr()));
 }

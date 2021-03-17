@@ -184,11 +184,14 @@ class CellularESimConnectionHandlerTest : public testing::Test {
   std::unique_ptr<CellularInhibitor::InhibitLock> InhibitCellular() {
     base::RunLoop run_loop;
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock;
-    inhibitor_.InhibitCellularScanning(base::BindLambdaForTesting(
-        [&](std::unique_ptr<CellularInhibitor::InhibitLock> new_inhibit_lock) {
-          inhibit_lock = std::move(new_inhibit_lock);
-          run_loop.Quit();
-        }));
+    inhibitor_.InhibitCellularScanning(
+        CellularInhibitor::InhibitReason::kRemovingProfile,
+        base::BindLambdaForTesting(
+            [&](std::unique_ptr<CellularInhibitor::InhibitLock>
+                    new_inhibit_lock) {
+              inhibit_lock = std::move(new_inhibit_lock);
+              run_loop.Quit();
+            }));
     run_loop.Run();
     return inhibit_lock;
   }

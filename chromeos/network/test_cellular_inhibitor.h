@@ -16,6 +16,8 @@ class TestCellularInhibitor : public CellularInhibitor {
   TestCellularInhibitor();
   ~TestCellularInhibitor() override;
 
+  using CellularInhibitor::NotifyInhibitStateChanged;
+
  private:
   // CellularESimProfileHandler:
   bool HasScanningStarted() override;
