@@ -15,13 +15,15 @@ namespace blink {
 class NGBlockNode;
 class NGBlockBreakToken;
 class NGBoxFragment;
+struct DevtoolsFlexInfo;
 
 class CORE_EXPORT NGFlexLayoutAlgorithm
     : public NGLayoutAlgorithm<NGBlockNode,
                                NGBoxFragmentBuilder,
                                NGBlockBreakToken> {
  public:
-  NGFlexLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
+  explicit NGFlexLayoutAlgorithm(const NGLayoutAlgorithmParams& params,
+                                 DevtoolsFlexInfo* devtools = nullptr);
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) const override;
   scoped_refptr<const NGLayoutResult> Layout() override;
@@ -86,6 +88,7 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
 
   bool ignore_child_scrollbar_changes_ = false;
   FlexLayoutAlgorithm algorithm_;
+  DevtoolsFlexInfo* layout_info_for_devtools_;
 };
 
 }  // namespace blink

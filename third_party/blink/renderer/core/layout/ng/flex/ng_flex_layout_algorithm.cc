@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_button.h"
 #include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
+#include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_child_iterator.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
@@ -32,7 +33,8 @@
 namespace blink {
 
 NGFlexLayoutAlgorithm::NGFlexLayoutAlgorithm(
-    const NGLayoutAlgorithmParams& params)
+    const NGLayoutAlgorithmParams& params,
+    DevtoolsFlexInfo* layout_info_for_devtools)
     : NGLayoutAlgorithm(params),
       is_column_(Style().ResolvedIsColumnFlexDirection()),
       is_horizontal_flow_(FlexLayoutAlgorithm::IsHorizontalFlow(Style())),
@@ -44,7 +46,8 @@ NGFlexLayoutAlgorithm::NGFlexLayoutAlgorithm(
       algorithm_(&Style(),
                  MainAxisContentExtent(LayoutUnit::Max()),
                  child_percentage_size_,
-                 &Node().GetDocument()) {}
+                 &Node().GetDocument()),
+      layout_info_for_devtools_(layout_info_for_devtools) {}
 
 bool NGFlexLayoutAlgorithm::MainAxisIsInlineAxis(
     const NGBlockNode& child) const {
@@ -930,6 +933,8 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::Layout() {
 scoped_refptr<const NGLayoutResult>
 NGFlexLayoutAlgorithm::RelayoutIgnoringChildScrollbarChanges() {
   DCHECK(!ignore_child_scrollbar_changes_);
+  DCHECK(!layout_info_for_devtools_);
+  DCHECK(!DevtoolsReadonlyLayoutScope::InDevtoolsLayout());
   NGLayoutAlgorithmParams params(
       Node(), container_builder_.InitialFragmentGeometry(), ConstraintSpace(),
       BreakToken(), /* early_break */ nullptr);
@@ -1190,6 +1195,8 @@ bool NGFlexLayoutAlgorithm::GiveLinesAndItemsFinalPositionAndSize() {
   bool success = true;
   LayoutUnit overflow_block_size;
   for (FlexLine& line_context : line_contexts) {
+    if (UNLIKELY(layout_info_for_devtools_))
+      layout_info_for_devtools_->lines.push_back(DevtoolsFlexInfo::Line());
     for (wtf_size_t child_number = 0;
          child_number < line_context.line_items_.size(); ++child_number) {
       FlexItem& flex_item = line_context.line_items_[child_number];
@@ -1218,6 +1225,22 @@ bool NGFlexLayoutAlgorithm::GiveLinesAndItemsFinalPositionAndSize() {
 
       container_builder_.AddChild(physical_fragment,
                                   {location.X(), location.Y()});
+      if (UNLIKELY(layout_info_for_devtools_)) {
+        // If this is a "devtools layout", execution speed isn't critical but we
+        // have to not adversely affect execution speed of a regular layout.
+        PhysicalRect item_rect;
+        item_rect.size = physical_fragment.Size();
+        PhysicalSize flexbox_size = ToPhysicalSize(
+            container_builder_.Size(), ConstraintSpace().GetWritingMode());
+        item_rect.offset =
+            LogicalOffset(location.X(), location.Y())
+                .ConvertToPhysical(ConstraintSpace().GetWritingDirection(),
+                                   flexbox_size, item_rect.size);
+        // devtools uses margin box.
+        item_rect.Expand(flex_item.physical_margins_);
+        DCHECK_GE(layout_info_for_devtools_->lines.size(), 1u);
+        layout_info_for_devtools_->lines.back().items.push_back(item_rect);
+      }
 
       flex_item.ng_input_node_.StoreMargins(flex_item.physical_margins_);
 

@@ -2496,16 +2496,6 @@ TEST_F(NGBlockLayoutAlgorithmTest,
   EXPECT_EQ(*after->LastBaseline(), LayoutUnit(400));
 }
 
-// TODO(dgrogan): Move this to ng_flex_layout_algorithm_test.cc if there ever is
-// one.
-TEST_F(NGBlockLayoutAlgorithmTest, DetailsFlexDoesntCrash) {
-  SetBodyInnerHTML(R"HTML(
-    <details style="display:flex"></details>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-  // No crash is good.
-}
-
 TEST_F(NGBlockLayoutAlgorithmTest, LayoutRubyTextCrash) {
   // crbug.com/1102186. This test passes if no DCHECK failure.
   SetBodyInnerHTML(R"HTML(

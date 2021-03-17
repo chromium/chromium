@@ -1382,6 +1382,7 @@ source_set("unit_tests") {
     "layout/multi_column_fragmentainer_group_test.cc",
     "layout/ng/custom/layout_worklet_test.cc",
     "layout/ng/exclusions/ng_exclusion_space_test.cc",
+    "layout/ng/flex/ng_flex_layout_algorithm_test.cc",
     "layout/ng/geometry/ng_box_strut_test.cc",
     "layout/ng/geometry/ng_static_position_test.cc",
     "layout/ng/grid/ng_grid_child_iterator_test.cc",

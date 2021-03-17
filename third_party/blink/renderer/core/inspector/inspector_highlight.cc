@@ -1577,6 +1577,8 @@ InspectorHighlight::InspectorHighlight(
       show_extension_lines_(highlight_config.show_extension_lines),
       show_accessibility_info_(highlight_config.show_accessibility_info),
       color_format_(highlight_config.color_format) {
+  DCHECK(node->GetDocument().Lifecycle().GetState() >=
+         DocumentLifecycle::kLayoutClean);
   AppendPathsForShapeOutside(node, highlight_config);
   AppendNodeHighlight(node, highlight_config);
   auto* text_node = DynamicTo<Text>(node);

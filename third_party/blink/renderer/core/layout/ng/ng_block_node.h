@@ -256,6 +256,19 @@ struct DowncastTraits<NGBlockNode> {
   }
 };
 
+// Devtools can trigger layout to collect devtools-specific data. We don't want
+// or need such devtools layouts to write to the fragment or layout trees. This
+// class sets a flag that is checked before storing the layout results. If the
+// flag is true, we bail before writing anything.
+class DevtoolsReadonlyLayoutScope {
+  STACK_ALLOCATED();
+
+ public:
+  DevtoolsReadonlyLayoutScope();
+  static bool InDevtoolsLayout();
+  ~DevtoolsReadonlyLayoutScope();
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_BLOCK_NODE_H_

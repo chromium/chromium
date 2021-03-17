@@ -419,6 +419,11 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
   scoped_refptr<const NGLayoutResult> layout_result =
       box_->CachedLayoutResult(constraint_space, break_token, early_break,
                                &fragment_geometry, &cache_status);
+  if (UNLIKELY(DevtoolsReadonlyLayoutScope::InDevtoolsLayout())) {
+    DCHECK_EQ(cache_status, NGLayoutCacheStatus::kHit);
+    DCHECK(!box_->NeedsLayoutOverflowRecalc());
+    return layout_result;
+  }
   if (cache_status == NGLayoutCacheStatus::kHit) {
     DCHECK(layout_result);
 
@@ -1628,6 +1633,14 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::RunLegacyLayout(
   scoped_refptr<const NGLayoutResult> layout_result =
       box_->GetCachedLayoutResult();
 
+  if (UNLIKELY(DevtoolsReadonlyLayoutScope::InDevtoolsLayout())) {
+    DCHECK(layout_result);
+    DCHECK(!box_->NeedsLayout());
+    DCHECK(!box_->NeedsLayoutOverflowRecalc());
+    DCHECK(MaySkipLegacyLayout(*this, *layout_result, constraint_space));
+    return layout_result;
+  }
+
   // We need to force a layout on the child if the constraint space given will
   // change the layout.
   bool needs_force_relayout =
@@ -1849,6 +1862,21 @@ void NGBlockNode::ReplaceColumnResult(
     const NGPhysicalBoxFragment& old_fragment) const {
   GetFlowThread(To<LayoutBlockFlow>(box_))
       ->ReplaceLayoutResult(std::move(result), old_fragment);
+}
+
+static bool g_devtools_layout = false;
+bool DevtoolsReadonlyLayoutScope::InDevtoolsLayout() {
+  return g_devtools_layout;
+}
+
+DevtoolsReadonlyLayoutScope::DevtoolsReadonlyLayoutScope() {
+  DCHECK(!g_devtools_layout);
+  g_devtools_layout = true;
+}
+
+DevtoolsReadonlyLayoutScope::~DevtoolsReadonlyLayoutScope() {
+  DCHECK(g_devtools_layout);
+  g_devtools_layout = false;
 }
 
 }  // namespace blink
