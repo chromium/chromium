@@ -4,6 +4,7 @@
 
 #include "chrome/updater/device_management/dm_message.h"
 
+#include <map>
 #include <memory>
 #include <utility>
 
@@ -15,6 +16,68 @@
 namespace updater {
 
 constexpr char kGoogleUpdatePolicyType[] = "google/machine-level-omaha";
+
+namespace {
+enterprise_management::PolicyValidationReportRequest::ValidationResultType
+TranslatePolicyValidationResult(PolicyValidationResult::Status status) {
+  using Report = enterprise_management::PolicyValidationReportRequest;
+  static const std::map<PolicyValidationResult::Status,
+                        Report::ValidationResultType>
+      kValidationStatusMap = {
+          {PolicyValidationResult::Status::kValidationOK,
+           Report::VALIDATION_RESULT_TYPE_SUCCESS},
+          {PolicyValidationResult::Status::kValidationBadInitialSignature,
+           Report::VALIDATION_RESULT_TYPE_BAD_INITIAL_SIGNATURE},
+          {PolicyValidationResult::Status::kValidationBadSignature,
+           Report::VALIDATION_RESULT_TYPE_BAD_SIGNATURE},
+          {PolicyValidationResult::Status::kValidationErrorCodePresent,
+           Report::VALIDATION_RESULT_TYPE_ERROR_CODE_PRESENT},
+          {PolicyValidationResult::Status::kValidationPayloadParseError,
+           Report::VALIDATION_RESULT_TYPE_PAYLOAD_PARSE_ERROR},
+          {PolicyValidationResult::Status::kValidationWrongPolicyType,
+           Report::VALIDATION_RESULT_TYPE_WRONG_POLICY_TYPE},
+          {PolicyValidationResult::Status::kValidationWrongSettingsEntityID,
+           Report::VALIDATION_RESULT_TYPE_WRONG_SETTINGS_ENTITY_ID},
+          {PolicyValidationResult::Status::kValidationBadTimestamp,
+           Report::VALIDATION_RESULT_TYPE_BAD_TIMESTAMP},
+          {PolicyValidationResult::Status::kValidationBadDMToken,
+           Report::VALIDATION_RESULT_TYPE_BAD_DM_TOKEN},
+          {PolicyValidationResult::Status::kValidationBadDeviceID,
+           Report::VALIDATION_RESULT_TYPE_BAD_DEVICE_ID},
+          {PolicyValidationResult::Status::kValidationBadUser,
+           Report::VALIDATION_RESULT_TYPE_BAD_USER},
+          {PolicyValidationResult::Status::kValidationPolicyParseError,
+           Report::VALIDATION_RESULT_TYPE_POLICY_PARSE_ERROR},
+          {PolicyValidationResult::Status::
+               kValidationBadKeyVerificationSignature,
+           Report::VALIDATION_RESULT_TYPE_BAD_KEY_VERIFICATION_SIGNATURE},
+          {PolicyValidationResult::Status::kValidationValueWarning,
+           Report::VALIDATION_RESULT_TYPE_VALUE_WARNING},
+          {PolicyValidationResult::Status::kValidationValueError,
+           Report::VALIDATION_RESULT_TYPE_VALUE_ERROR},
+      };
+
+  auto mapped_status = kValidationStatusMap.find(status);
+  return mapped_status == kValidationStatusMap.end()
+             ? Report::VALIDATION_RESULT_TYPE_ERROR_UNSPECIFIED
+             : mapped_status->second;
+}
+
+enterprise_management::PolicyValueValidationIssue::ValueValidationIssueSeverity
+TranslatePolicyValidationResultSeverity(
+    PolicyValueValidationIssue::Severity severity) {
+  using Issue = enterprise_management::PolicyValueValidationIssue;
+  switch (severity) {
+    case PolicyValueValidationIssue::Severity::kWarning:
+      return Issue::VALUE_VALIDATION_ISSUE_SEVERITY_WARNING;
+    case PolicyValueValidationIssue::Severity::kError:
+      return Issue::VALUE_VALIDATION_ISSUE_SEVERITY_ERROR;
+    default:
+      return Issue::VALUE_VALIDATION_ISSUE_SEVERITY_UNSPECIFIED;
+  }
+}
+
+}  // namespace
 
 std::string GetRegisterBrowserRequestData(const std::string& machine_name,
                                           const std::string& os_platform,
@@ -44,6 +107,56 @@ std::string GetPolicyFetchRequestData(const std::string& policy_type,
 
   if (policy_info.has_key_version()) {
     policy_fetch_request->set_public_key_version(policy_info.key_version());
+  }
+
+  return dm_request.SerializeAsString();
+}
+
+std::string GetPolicyValidationReportRequestData(
+    const PolicyValidationResult& validation_result) {
+  PolicyValidationResult::Status aggregated_status = validation_result.status;
+
+  if (aggregated_status == PolicyValidationResult::Status::kValidationOK) {
+    for (const PolicyValueValidationIssue& issue : validation_result.issues) {
+      switch (issue.severity) {
+        case PolicyValueValidationIssue::Severity::kError:
+          aggregated_status =
+              PolicyValidationResult::Status::kValidationValueError;
+          break;
+
+        case PolicyValueValidationIssue::Severity::kWarning:
+          aggregated_status =
+              PolicyValidationResult::Status::kValidationValueWarning;
+          break;
+      }
+    }
+  }
+
+  if (aggregated_status == PolicyValidationResult::Status::kValidationOK) {
+    return std::string();
+  }
+
+  enterprise_management::DeviceManagementRequest dm_request;
+
+  enterprise_management::PolicyValidationReportRequest*
+      policy_validation_report_request =
+          dm_request.mutable_policy_validation_report_request();
+  policy_validation_report_request->set_validation_result_type(
+      TranslatePolicyValidationResult(aggregated_status));
+  policy_validation_report_request->set_policy_type(
+      validation_result.policy_type);
+  policy_validation_report_request->set_policy_token(
+      validation_result.policy_token);
+
+  for (const PolicyValueValidationIssue& issue : validation_result.issues) {
+    enterprise_management::PolicyValueValidationIssue*
+        policy_value_validation_issue =
+            policy_validation_report_request
+                ->add_policy_value_validation_issues();
+    policy_value_validation_issue->set_policy_name(issue.policy_name);
+    policy_value_validation_issue->set_severity(
+        TranslatePolicyValidationResultSeverity(issue.severity));
+    policy_value_validation_issue->set_debug_message(issue.message);
   }
 
   return dm_request.SerializeAsString();

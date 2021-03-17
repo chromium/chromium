@@ -32,6 +32,11 @@ std::string GetRegisterBrowserRequestData(const std::string& machine_name,
 std::string GetPolicyFetchRequestData(const std::string& policy_type,
                                       const CachedPolicyInfo& policy_info);
 
+// Returns the serialized data from a DeviceManagementRequest, which wraps
+// a PolicyValidationReportRequest, to report possible policy validation errors.
+std::string GetPolicyValidationReportRequestData(
+    const PolicyValidationResult& validation_result);
+
 // Parses the DeviceManagementResponse for a device registration request, and
 // returns the DM token. Returns empty string if parsing failed or the response
 // is unexpected.
