@@ -80,11 +80,6 @@ public interface SiteSettingsDelegate {
     String getDelegatePackageNameForOrigin(Origin origin, @ContentSettingsType int type);
 
     /**
-     * @return true if PageInfo V2 is enabled.
-     */
-    boolean isPageInfoV2Enabled();
-
-    /**
      * @return true if Help and Feedback links and menu items should be shown to the user.
      */
     boolean isHelpAndFeedbackEnabled();

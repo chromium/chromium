@@ -399,18 +399,15 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         if (preference instanceof WebsitePreference) {
             WebsitePreference website_pref = (WebsitePreference) preference;
 
-            if (getSiteSettingsDelegate().isPageInfoV2Enabled()
-                    && !website_pref.getParent().getKey().equals(MANAGED_GROUP)) {
-                buildPreferenceDialog(website_pref.site()).show();
-            } else {
+            if (website_pref.getParent().getKey().equals(MANAGED_GROUP)) {
                 website_pref.setFragment(SingleWebsiteSettings.class.getName());
-
                 website_pref.putSiteAddressIntoExtras(SingleWebsiteSettings.EXTRA_SITE_ADDRESS);
-
                 int navigationSource = getArguments().getInt(
                         SettingsNavigationSource.EXTRA_KEY, SettingsNavigationSource.OTHER);
                 website_pref.getExtras().putInt(
                         SettingsNavigationSource.EXTRA_KEY, navigationSource);
+            } else {
+                buildPreferenceDialog(website_pref.site()).show();
             }
         }
 
