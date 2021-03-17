@@ -11,9 +11,7 @@ SelectToSpeakWordUtilsUnitTest = class extends SelectToSpeakE2ETest {
   setUp() {
     var runTest = this.deferRunTest(WhenTestDone.EXPECT);
     (async function() {
-      const module = await import('/select_to_speak/word_utils.js');
-      window.WordUtils = module.WordUtils;
-
+      await importModule('WordUtils', '/select_to_speak/word_utils.js');
       runTest();
     })();
   }

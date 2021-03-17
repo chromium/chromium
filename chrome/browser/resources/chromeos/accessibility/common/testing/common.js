@@ -18,3 +18,25 @@ function SYNC_TEST_F(testFixture, testName, testFunction) {
     this.newCallback(testFunction)();
   });
 }
+
+/**
+ * Helper to import a module, and expose it onto window.
+ * @param {string|!Array<string>} toImport Names of the module exports to
+ *     expose.
+ * @param {string} path Path to the module js file.
+ */
+async function importModule(toImport, path) {
+  const module = await import(path);
+  let moduleNames;
+  if (typeof (toImport) === 'string') {
+    moduleNames = [toImport];
+  } else if (typeof (toImport) === 'object') {
+    moduleNames = toImport;
+  } else {
+    throw new Error('Invalid argument to importModule: ' + toImport);
+  }
+
+  for (const moduleName of moduleNames) {
+    window[moduleName] = module[moduleName];
+  }
+}

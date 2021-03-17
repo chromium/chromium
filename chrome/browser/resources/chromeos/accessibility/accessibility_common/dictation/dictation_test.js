@@ -43,8 +43,8 @@ DictationE2ETest = class extends E2ETestBase {
 
 TEST_F('DictationE2ETest', 'SanityCheck', function() {
   this.newCallback(async () => {
-    const module = await import('/accessibility_common/dictation/dictation.js');
-    const Dictation = module.Dictation;
+    await importModule(
+        'Dictation', '/accessibility_common/dictation/dictation.js');
     assertNotNullNorUndefined(Dictation);
   })();
 });

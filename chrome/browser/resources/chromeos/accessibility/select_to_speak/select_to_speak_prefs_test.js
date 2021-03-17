@@ -38,12 +38,11 @@ SelectToSpeakPrefsTest = class extends SelectToSpeakE2ETest {
     var runTest = this.deferRunTest(WhenTestDone.EXPECT);
 
     (async () => {
-      let module = await import('/select_to_speak/select_to_speak_main.js');
-      window.selectToSpeak = module.selectToSpeak;
-
-      module = await import('/select_to_speak/select_to_speak_constants.js');
-      window.SelectToSpeakConstants = module.SelectToSpeakConstants;
-
+      await importModule(
+          'selectToSpeak', '/select_to_speak/select_to_speak_main.js');
+      await importModule(
+          'SelectToSpeakConstants',
+          '/select_to_speak/select_to_speak_constants.js');
       this.resetStorage();
 
       runTest();

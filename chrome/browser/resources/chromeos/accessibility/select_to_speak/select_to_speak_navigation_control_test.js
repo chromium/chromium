@@ -31,14 +31,11 @@ SelectToSpeakNavigationControlTest = class extends SelectToSpeakE2ETest {
         this.updateSelectToSpeakPanel;
 
     (async function() {
-      let module = await import('/select_to_speak/select_to_speak_main.js');
-      window.selectToSpeak = module.selectToSpeak;
-
-      module = await import('/select_to_speak/select_to_speak.js');
-
-      module = await import('/select_to_speak/select_to_speak_constants.js');
-      window.SelectToSpeakConstants = module.SelectToSpeakConstants;
-
+      await importModule(
+          'selectToSpeak', '/select_to_speak/select_to_speak_main.js');
+      await importModule(
+          'SelectToSpeakConstants',
+          '/select_to_speak/select_to_speak_constants.js');
       runTest();
     })();
   }

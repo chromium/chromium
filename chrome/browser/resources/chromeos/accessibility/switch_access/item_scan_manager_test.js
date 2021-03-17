@@ -10,22 +10,14 @@ SwitchAccessItemScanManagerTest = class extends SwitchAccessE2ETest {
   setUp() {
     var runTest = this.deferRunTest(WhenTestDone.EXPECT);
     (async () => {
-      let module = await import('/switch_access/nodes/back_button_node.js');
-      window.BackButtonNode = module.BackButtonNode;
-
-      module = await import('/switch_access/nodes/basic_node.js');
-      window.BasicNode = module.BasicNode;
-      window.BasicRootNode = module.BasicRootNode;
-
-      module = await import('/switch_access/cache.js');
-      window.SACache = module.SACache;
-
-      module = await import('/switch_access/switch_access_predicate.js');
-      window.SwitchAccessPredicate = module.SwitchAccessPredicate;
-
-      module = await import('/switch_access/navigator.js');
-      window.Navigator = module.Navigator;
-
+      await importModule(
+          'BackButtonNode', '/switch_access/nodes/back_button_node.js');
+      await importModule(
+          ['BasicNode', 'BasicRootNode'], '/switch_access/nodes/basic_node.js');
+      await importModule('SACache', '/switch_access/cache.js');
+      await importModule(
+          'SwitchAccessPredicate', '/switch_access/switch_access_predicate.js');
+      await importModule('Navigator', '/switch_access/navigator.js');
       this.navigator = Navigator.byItem;
       BackButtonNode
           .locationForTesting = {top: 10, left: 10, width: 20, height: 20};

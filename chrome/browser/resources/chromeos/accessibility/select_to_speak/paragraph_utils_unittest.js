@@ -12,9 +12,8 @@ SelectToSpeakParagraphUnitTest = class extends SelectToSpeakE2ETest {
   setUp() {
     var runTest = this.deferRunTest(WhenTestDone.EXPECT);
     (async function() {
-      const module = await import('/select_to_speak/paragraph_utils.js');
-      window.ParagraphUtils = module.ParagraphUtils;
-
+      await importModule(
+          'ParagraphUtils', '/select_to_speak/paragraph_utils.js');
       runTest();
     })();
   }

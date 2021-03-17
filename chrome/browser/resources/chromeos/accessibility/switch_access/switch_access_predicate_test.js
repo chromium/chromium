@@ -9,15 +9,11 @@ SwitchAccessPredicateTest = class extends SwitchAccessE2ETest {
   setUp() {
     var runTest = this.deferRunTest(WhenTestDone.EXPECT);
     (async function() {
-      let module = await import('/switch_access/switch_access_predicate.js');
-      window.SwitchAccessPredicate = module.SwitchAccessPredicate;
-
-      module = await import('/switch_access/cache.js');
-      window.SACache = module.SACache;
-
-      module = await import('/switch_access/nodes/switch_access_node.js');
-      window.SARootNode = module.SARootNode;
-
+      await importModule(
+          'SwitchAccessPredicate', '/switch_access/switch_access_predicate.js');
+      await importModule('SACache', '/switch_access/cache.js');
+      await importModule(
+          'SARootNode', '/switch_access/nodes/switch_access_node.js');
       runTest();
     })();
   }

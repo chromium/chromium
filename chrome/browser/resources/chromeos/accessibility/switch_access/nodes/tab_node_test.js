@@ -9,15 +9,12 @@ SwitchAccessTabNodeTest = class extends SwitchAccessE2ETest {
   setUp() {
     var runTest = this.deferRunTest(WhenTestDone.EXPECT);
     (async function() {
-      let module = await import('/switch_access/nodes/back_button_node.js');
-      window.BackButtonNode = module.BackButtonNode;
-
-      module = await import('/switch_access/navigator.js');
-      window.Navigator = module.Navigator;
-
-      module = await import('/switch_access/switch_access_constants.js');
-      window.SwitchAccessMenuAction = module.SwitchAccessMenuAction;
-
+      await importModule(
+          'BackButtonNode', '/switch_access/nodes/back_button_node.js');
+      await importModule('Navigator', '/switch_access/navigator.js');
+      await importModule(
+          'SwitchAccessMenuAction',
+          '/switch_access/switch_access_constants.js');
       runTest();
     })();
   }

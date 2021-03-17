@@ -15,9 +15,8 @@ ChromeVoxLiveRegionsTest = class extends ChromeVoxNextE2ETest {
     window.TreeChangeType = chrome.automation.TreeChangeType;
     const runTest = this.deferRunTest(WhenTestDone.EXPECT);
     (async function() {
-      const module = await import('/chromevox/background/live_regions.js');
-      window.LiveRegions = module.LiveRegions;
-
+      await importModule(
+          'LiveRegions', '/chromevox/background/live_regions.js');
       runTest();
     })();
   }

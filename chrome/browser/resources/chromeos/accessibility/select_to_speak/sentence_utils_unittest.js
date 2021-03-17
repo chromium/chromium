@@ -12,9 +12,7 @@ SelectToSpeakSentenceUtilsUnitTest = class extends SelectToSpeakE2ETest {
   setUp() {
     var runTest = this.deferRunTest(WhenTestDone.EXPECT);
     (async function() {
-      const module = await import('/select_to_speak/sentence_utils.js');
-      window.SentenceUtils = module.SentenceUtils;
-
+      await importModule('SentenceUtils', '/select_to_speak/sentence_utils.js');
       runTest();
     })();
   }

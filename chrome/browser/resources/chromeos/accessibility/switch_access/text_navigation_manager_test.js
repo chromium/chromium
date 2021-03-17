@@ -10,12 +10,9 @@ SwitchAccessTextNavigationManagerTest = class extends SwitchAccessE2ETest {
   setUp() {
     var runTest = this.deferRunTest(WhenTestDone.EXPECT);
     (async () => {
-      let module = await import('/switch_access/text_navigation_manager.js');
-      window.TextNavigationManager = module.TextNavigationManager;
-
-      module = await import('/switch_access/navigator.js');
-      window.Navigator = module.Navigator;
-
+      await importModule(
+          'TextNavigationManager', '/switch_access/text_navigation_manager.js');
+      await importModule('Navigator', '/switch_access/navigator.js');
       this.textNavigationManager = TextNavigationManager.instance;
       this.navigationManager = Navigator.byItem;
 

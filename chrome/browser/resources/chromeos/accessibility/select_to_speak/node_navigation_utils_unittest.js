@@ -12,15 +12,13 @@ SelectToSpeakNodeNavigationUtilsUnitTest = class extends SelectToSpeakE2ETest {
   setUp() {
     var runTest = this.deferRunTest(WhenTestDone.EXPECT);
     (async function() {
-      let module = await import('/select_to_speak/node_navigation_utils.js');
-      window.NodeNavigationUtils = module.NodeNavigationUtils;
-
-      module = await import('/select_to_speak/paragraph_utils.js');
-      window.ParagraphUtils = module.ParagraphUtils;
-
-      module = await import('/select_to_speak/test_node_generator.js');
-      window.createMockNode = module.createMockNode;
-      window.generateTestNodeGroup = module.generateTestNodeGroup;
+      await importModule(
+          'NodeNavigationUtils', '/select_to_speak/node_navigation_utils.js');
+      await importModule(
+          'ParagraphUtils', '/select_to_speak/paragraph_utils.js');
+      await importModule(
+          ['createMockNode', 'generateTestNodeGroup'],
+          '/select_to_speak/test_node_generator.js');
       runTest();
     })();
   }

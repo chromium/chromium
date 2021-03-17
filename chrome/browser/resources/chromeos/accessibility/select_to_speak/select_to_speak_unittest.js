@@ -12,9 +12,8 @@ SelectToSpeakUnitTest = class extends SelectToSpeakE2ETest {
   setUp() {
     var runTest = this.deferRunTest(WhenTestDone.EXPECT);
     (async function() {
-      const module = await import('/select_to_speak/select_to_speak.js');
-      window.getGSuiteAppRoot = module.getGSuiteAppRoot;
-
+      await importModule(
+          'getGSuiteAppRoot', '/select_to_speak/select_to_speak.js');
       runTest();
     })();
   }

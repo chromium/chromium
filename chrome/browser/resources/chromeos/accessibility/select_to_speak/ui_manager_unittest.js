@@ -95,14 +95,10 @@ SelectToSpeakUiManagerUnitTest = class extends SelectToSpeakE2ETest {
   setUp() {
     var runTest = this.deferRunTest(WhenTestDone.EXPECT);
     (async () => {
-      let module = await import('/select_to_speak/ui_manager.js');
-      window.UiManager = module.UiManager;
-
-      module = await import('/select_to_speak/prefs_manager.js');
-      window.PrefsManager = module.PrefsManager;
-
-      module = await import('/select_to_speak/paragraph_utils.js');
-      window.ParagraphUtils = module.ParagraphUtils;
+      await importModule('UiManager', '/select_to_speak/ui_manager.js');
+      await importModule('PrefsManager', '/select_to_speak/prefs_manager.js');
+      await importModule(
+          'ParagraphUtils', '/select_to_speak/paragraph_utils.js');
 
       this.mockPrefsManager = new MockPrefsManager();
       this.mockListener = new MockUiListener();
