@@ -89,6 +89,11 @@ std::string getAlternateDiscoverFeedServerURL() {
   return base::SysNSStringToUTF8(alternateServerURL);
 }
 
+bool ShouldResetNoticeCardOnFeedStart() {
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:@"ResetNoticeCard"];
+}
+
 bool IsMemoryDebuggingEnabled() {
 // Always return true for Chromium builds, but check the user default for
 // official builds because memory debugging should never be enabled on stable.

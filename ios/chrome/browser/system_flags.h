@@ -47,6 +47,11 @@ WhatsNewPromoStatus GetWhatsNewPromoStatus();
 // Returns the URL for the alternative Discover Feed server.
 std::string getAlternateDiscoverFeedServerURL();
 
+// Returns true if the prefs for the notice card views count and clicks count
+// should be reset to zero on feed start.
+// TODO(crbug.com/1189232): Remove after launch.
+bool ShouldResetNoticeCardOnFeedStart();
+
 // Whether memory debugging tools are enabled.
 bool IsMemoryDebuggingEnabled();
 
