@@ -36,7 +36,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeApplication;
+import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
 import org.chromium.chrome.browser.dependency_injection.ModuleOverridesRule;
@@ -126,7 +126,7 @@ public class RunningInChromeTest {
         mMockNotificationManager.setNotificationsEnabled(false);
 
         mStore = new BrowserServicesStore(
-                ChromeApplication.getComponent().resolveSharedPreferencesManager());
+                ChromeApplicationImpl.getComponent().resolveSharedPreferencesManager());
         mStore.removeTwaDisclosureAcceptanceForPackage(PACKAGE_NAME);
     }
 

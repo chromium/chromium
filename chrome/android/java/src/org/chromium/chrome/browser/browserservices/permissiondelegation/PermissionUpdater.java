@@ -9,7 +9,7 @@ import android.net.Uri;
 
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
-import org.chromium.chrome.browser.ChromeApplication;
+import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.BrowserServicesMetrics;
 import org.chromium.components.embedder_support.util.Origin;
 
@@ -40,7 +40,7 @@ public class PermissionUpdater {
     }
 
     public static PermissionUpdater get() {
-        return ChromeApplication.getComponent().resolveTwaPermissionUpdater();
+        return ChromeApplicationImpl.getComponent().resolveTwaPermissionUpdater();
     }
 
     /**

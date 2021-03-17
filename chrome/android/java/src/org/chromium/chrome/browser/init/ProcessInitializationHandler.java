@@ -30,7 +30,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AfterStartupTaskUtils;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
-import org.chromium.chrome.browser.ChromeApplication;
+import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.ChromeBackupAgentImpl;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.DeferredStartupHandler;
@@ -411,8 +411,8 @@ public class ProcessInitializationHandler {
                 () -> MediaViewerUtils.updateMediaLauncherActivityEnabled());
 
         deferredStartupHandler.addDeferredTask(
-                ChromeApplication.getComponent().resolveTwaClearDataDialogRecorder()
-                        ::makeDeferredRecordings);
+                ChromeApplicationImpl.getComponent()
+                        .resolveTwaClearDataDialogRecorder()::makeDeferredRecordings);
         deferredStartupHandler.addDeferredTask(WebApkUma::recordDeferredUma);
 
         deferredStartupHandler.addDeferredTask(

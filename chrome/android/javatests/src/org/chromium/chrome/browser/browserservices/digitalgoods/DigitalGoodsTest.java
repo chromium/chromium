@@ -32,7 +32,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.chrome.browser.ChromeApplication;
+import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
@@ -73,7 +73,7 @@ public class DigitalGoodsTest {
         // Native needs to be initialized to start the test server.
         LibraryLoader.getInstance().ensureInitialized();
 
-        ChromeAppComponent component = ChromeApplication.getComponent();
+        ChromeAppComponent component = ChromeApplicationImpl.getComponent();
         component.resolveTwaPermissionManager().addDelegateApp(
                 Origin.createOrThrow(TWA_SERVICE_SCOPE), "org.chromium.chrome.tests.support");
         mClient = component.resolveTrustedWebActivityClient();

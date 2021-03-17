@@ -600,7 +600,7 @@ public class IntentHandler {
         if (isValidReferrerHeader(referrerExtra)) {
             return referrerExtra.toString();
         } else if (IntentHandler.notSecureIsIntentChromeOrFirstParty(intent)
-                || ChromeApplication.getComponent()
+                || ChromeApplicationImpl.getComponent()
                            .resolveSessionDataHolder()
                            .canActiveHandlerUseReferrer(customTabsSession, referrerExtra)) {
             return referrerExtra.toString();

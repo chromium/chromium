@@ -14,7 +14,7 @@ import androidx.browser.trusted.TrustedWebActivityCallback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.ChromeApplication;
+import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -69,7 +69,7 @@ public class InstalledWebappGeolocationBridge {
         if (origin == null) return null;
 
         return new InstalledWebappGeolocationBridge(nativePtr, origin,
-                ChromeApplication.getComponent().resolveTrustedWebActivityClient());
+                ChromeApplicationImpl.getComponent().resolveTrustedWebActivityClient());
     }
 
     @CalledByNative

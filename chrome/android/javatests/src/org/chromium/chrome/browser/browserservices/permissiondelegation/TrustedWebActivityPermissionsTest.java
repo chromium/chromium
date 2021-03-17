@@ -25,7 +25,7 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.chrome.browser.ChromeApplication;
+import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
@@ -82,7 +82,7 @@ public class TrustedWebActivityPermissionsTest {
                 CustomTabsTestUtils.createMinimalCustomTabIntent(
                         InstrumentationRegistry.getTargetContext(), mTestPage));
 
-        mPermissionManager = ChromeApplication.getComponent().resolveTwaPermissionManager();
+        mPermissionManager = ChromeApplicationImpl.getComponent().resolveTwaPermissionManager();
         mPermissionManager.clearForTesting();
         assertEquals("\"default\"", getNotificationPermission());
     }

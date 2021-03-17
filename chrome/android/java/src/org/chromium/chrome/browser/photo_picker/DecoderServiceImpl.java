@@ -13,7 +13,7 @@ import org.chromium.base.PathUtils;
 import org.chromium.base.annotations.MainDex;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.ChromeApplication;
+import org.chromium.chrome.browser.base.SplitCompatApplication;
 import org.chromium.components.browser_ui.photo_picker.ImageDecoder;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
@@ -39,7 +39,7 @@ public class DecoderServiceImpl extends DecoderService.Impl {
         // The decoder service relies on PathUtils.
         PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT, () -> {
             PathUtils.setPrivateDataDirectorySuffix(
-                    ChromeApplication.PRIVATE_DATA_DIRECTORY_SUFFIX);
+                    SplitCompatApplication.PRIVATE_DATA_DIRECTORY_SUFFIX);
         });
 
         LibraryLoader.getInstance().ensureInitialized();

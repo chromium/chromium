@@ -33,7 +33,7 @@ public class PolicyAuditor {
     }
 
     /**
-     * Make it non-obvious to accidentally instantiate this outside of ChromeApplication.
+     * Make it non-obvious to accidentally instantiate this outside of ChromeApplicationImpl.
      */
     protected PolicyAuditor() {}
 

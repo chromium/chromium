@@ -32,7 +32,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeApplication;
+import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.dependency_injection.ChromeAppComponent;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
@@ -137,7 +137,7 @@ public class TrustedWebActivityClientTest {
         mTargetContext = InstrumentationRegistry.getTargetContext();
         mBuilder = new StandardNotificationBuilder(mTargetContext);
 
-        ChromeAppComponent component = ChromeApplication.getComponent();
+        ChromeAppComponent component = ChromeApplicationImpl.getComponent();
         mClient = component.resolveTrustedWebActivityClient();
 
         // TestTrustedWebActivityService is in the test support apk.
@@ -266,8 +266,8 @@ public class TrustedWebActivityClientTest {
         Assert.assertNull(TrustedWebActivityClient.createLaunchIntentForTwa(
                 context, SCOPE.toString(), Collections.singletonList(resolveInfo)));
 
-        ChromeApplication.getComponent().resolveTwaPermissionManager()
-                .addDelegateApp(Origin.create(SCOPE), targetPackageName);
+        ChromeApplicationImpl.getComponent().resolveTwaPermissionManager().addDelegateApp(
+                Origin.create(SCOPE), targetPackageName);
 
         Assert.assertNotNull(TrustedWebActivityClient.createLaunchIntentForTwa(
                 context, SCOPE.toString(), Collections.singletonList(resolveInfo)));

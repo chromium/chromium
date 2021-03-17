@@ -23,7 +23,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.ChromeApplication;
+import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -120,7 +120,7 @@ public class IncognitoTabLauncher extends Activity {
         String sendersPackageName =
                 intent.getStringExtra(IncognitoTabLauncher.EXTRA_SENDERS_PACKAGE_NAME);
         return !TextUtils.isEmpty(sendersPackageName)
-                && ChromeApplication.getComponent().resolveExternalAuthUtils().isGoogleSigned(
+                && ChromeApplicationImpl.getComponent().resolveExternalAuthUtils().isGoogleSigned(
                         sendersPackageName);
     }
 

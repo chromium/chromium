@@ -347,7 +347,7 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
     }
 
     private static SessionDataHolder getSessionDataHolder() {
-        return ChromeApplication.getComponent().resolveSessionDataHolder();
+        return ChromeApplicationImpl.getComponent().resolveSessionDataHolder();
     }
 
     /**

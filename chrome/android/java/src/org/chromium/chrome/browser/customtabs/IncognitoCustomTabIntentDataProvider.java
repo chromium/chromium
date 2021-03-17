@@ -25,7 +25,7 @@ import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeApplication;
+import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -138,7 +138,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
         String sendersPackageName =
                 CustomTabsConnection.getInstance().getClientPackageNameForSession(sessionToken);
         return !TextUtils.isEmpty(sendersPackageName)
-                && ChromeApplication.getComponent().resolveExternalAuthUtils().isGoogleSigned(
+                && ChromeApplicationImpl.getComponent().resolveExternalAuthUtils().isGoogleSigned(
                         sendersPackageName);
     }
 

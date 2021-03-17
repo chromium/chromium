@@ -84,7 +84,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeApplication;
+import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.TabsOpenedFromExternalAppTest;
@@ -3113,7 +3113,7 @@ public class CustomTabActivityTest {
     }
 
     private SessionDataHolder getSessionDataHolder() {
-        return ChromeApplication.getComponent().resolveSessionDataHolder();
+        return ChromeApplicationImpl.getComponent().resolveSessionDataHolder();
     }
 
     private CustomTabIntentDataProvider getCustomTabIntentDataProvider() {

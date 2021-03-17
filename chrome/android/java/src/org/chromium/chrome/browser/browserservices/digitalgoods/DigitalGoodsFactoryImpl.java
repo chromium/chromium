@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.browserservices.digitalgoods;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.ChromeApplication;
+import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.components.payments.MethodStrings;
@@ -39,7 +39,7 @@ public class DigitalGoodsFactoryImpl implements DigitalGoodsFactory {
         mRenderFrameHost = renderFrameHost;
         mDigitalGoodsDelegate = mRenderFrameHost::getLastCommittedURL;
         mAdapter = new DigitalGoodsAdapter(
-                ChromeApplication.getComponent().resolveTrustedWebActivityClient());
+                ChromeApplicationImpl.getComponent().resolveTrustedWebActivityClient());
     }
 
     private int getResponseCode(String paymentMethod) {

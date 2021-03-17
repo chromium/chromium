@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser;
 
+import android.app.Application;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -42,97 +43,85 @@ import org.chromium.url.GURL;
  * Note: All application logic should be added to {@link ChromeApplicationImpl}, which will be
  * called from the superclass. See {@link SplitCompatApplication} for more info.
  */
-public class ChromeApplication extends SplitCompatApplication {
+public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
     /** Lock on creation of sComponent. */
     private static final Object sLock = new Object();
     @Nullable
     private static volatile ChromeAppComponent sComponent;
 
-    /** Chrome application logic. */
-    public static class ChromeApplicationImpl extends Impl {
-        public ChromeApplicationImpl() {}
+    public ChromeApplicationImpl() {}
 
-        @Override
-        public void onCreate() {
-            super.onCreate();
+    @Override
+    public void onCreate() {
+        super.onCreate();
 
-            if (isBrowserProcess()) {
-                FontPreloader.getInstance().load(getApplication());
+        if (SplitCompatApplication.isBrowserProcess()) {
+            FontPreloader.getInstance().load(getApplication());
 
-                if (CachedFeatureFlags.isEnabled(ChromeFeatureList.EARLY_LIBRARY_LOAD)) {
-                    // Kick off library loading in a separate thread so it's ready when we need it.
-                    new Thread(() -> LibraryLoader.getInstance().ensureMainDexInitialized())
-                            .start();
-                }
-
-                ApplicationStatus.registerStateListenerForAllActivities(
-                        ChromePowerModeVoter.getInstance());
-
-                // Initializes the support for dynamic feature modules (browser only).
-                ModuleUtil.initApplication();
-
-                if (VersionConstants.CHANNEL == Channel.CANARY) {
-                    GURL.setReportDebugThrowableCallback(
-                            PureJavaExceptionReporter::reportJavaException);
-                }
-
-                // Set Chrome factory for mapping BackgroundTask classes to TaskIds.
-                ChromeBackgroundTaskFactory.setAsDefault();
-                PartitionResolverSupplier.setInstance(new ProfileResolver());
-
-                AppHooks.get().getChimeDelegate().initialize();
-            }
-        }
-
-        @MainDex
-        @Override
-        public void onTrimMemory(int level) {
-            super.onTrimMemory(level);
-            if (isSevereMemorySignal(level)
-                    && GlobalDiscardableReferencePool.getReferencePool() != null) {
-                GlobalDiscardableReferencePool.getReferencePool().drain();
-            }
-            CustomTabsConnection.onTrimMemory(level);
-        }
-
-        @Override
-        public void startActivity(Intent intent, Bundle options) {
-            if (VrModuleProvider.getDelegate().canLaunch2DIntents()
-                    || VrModuleProvider.getIntentDelegate().isVrIntent(intent)) {
-                super.startActivity(intent, options);
-                return;
+            if (CachedFeatureFlags.isEnabled(ChromeFeatureList.EARLY_LIBRARY_LOAD)) {
+                // Kick off library loading in a separate thread so it's ready when we need it.
+                new Thread(() -> LibraryLoader.getInstance().ensureMainDexInitialized()).start();
             }
 
-            VrModuleProvider.getDelegate().requestToExitVr(new OnExitVrRequestListener() {
-                @Override
-                public void onSucceeded() {
-                    if (!VrModuleProvider.getDelegate().canLaunch2DIntents()) {
-                        throw new IllegalStateException("Still in VR after having exited VR.");
-                    }
-                    startActivity(intent, options);
-                }
+            ApplicationStatus.registerStateListenerForAllActivities(
+                    ChromePowerModeVoter.getInstance());
 
-                @Override
-                public void onDenied() {}
-            });
-        }
+            // Initializes the support for dynamic feature modules (browser only).
+            ModuleUtil.initApplication();
 
-        @Override
-        public void onConfigurationChanged(Configuration newConfig) {
-            super.onConfigurationChanged(newConfig);
-            // TODO(huayinz): Add observer pattern for application configuration changes.
-            if (SplitCompatApplication.isBrowserProcess()) {
-                SystemNightModeMonitor.getInstance().onApplicationConfigurationChanged();
+            if (VersionConstants.CHANNEL == Channel.CANARY) {
+                GURL.setReportDebugThrowableCallback(
+                        PureJavaExceptionReporter::reportJavaException);
             }
+
+            // Set Chrome factory for mapping BackgroundTask classes to TaskIds.
+            ChromeBackgroundTaskFactory.setAsDefault();
+            PartitionResolverSupplier.setInstance(new ProfileResolver());
+
+            AppHooks.get().getChimeDelegate().initialize();
         }
     }
 
-    public ChromeApplication(Impl impl) {
-        setImplSupplier(() -> impl);
+    @MainDex
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        if (isSevereMemorySignal(level)
+                && GlobalDiscardableReferencePool.getReferencePool() != null) {
+            GlobalDiscardableReferencePool.getReferencePool().drain();
+        }
+        CustomTabsConnection.onTrimMemory(level);
     }
 
-    public ChromeApplication() {
-        this(new ChromeApplicationImpl());
+    @Override
+    public void startActivity(Intent intent, Bundle options) {
+        if (VrModuleProvider.getDelegate().canLaunch2DIntents()
+                || VrModuleProvider.getIntentDelegate().isVrIntent(intent)) {
+            super.startActivity(intent, options);
+            return;
+        }
+
+        VrModuleProvider.getDelegate().requestToExitVr(new OnExitVrRequestListener() {
+            @Override
+            public void onSucceeded() {
+                if (!VrModuleProvider.getDelegate().canLaunch2DIntents()) {
+                    throw new IllegalStateException("Still in VR after having exited VR.");
+                }
+                startActivity(intent, options);
+            }
+
+            @Override
+            public void onDenied() {}
+        });
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // TODO(huayinz): Add observer pattern for application configuration changes.
+        if (SplitCompatApplication.isBrowserProcess()) {
+            SystemNightModeMonitor.getInstance().onApplicationConfigurationChanged();
+        }
     }
 
     /**
@@ -142,8 +131,9 @@ public class ChromeApplication extends SplitCompatApplication {
     public static boolean isSevereMemorySignal(int level) {
         // The conditions are expressed using ranges to capture intermediate levels possibly added
         // to the API in the future.
-        return (level >= TRIM_MEMORY_RUNNING_LOW && level < TRIM_MEMORY_UI_HIDDEN)
-                || level >= TRIM_MEMORY_MODERATE;
+        return (level >= Application.TRIM_MEMORY_RUNNING_LOW
+                       && level < Application.TRIM_MEMORY_UI_HIDDEN)
+                || level >= Application.TRIM_MEMORY_MODERATE;
     }
 
     /** Returns the application-scoped component. */
@@ -169,7 +159,9 @@ public class ChromeApplication extends SplitCompatApplication {
         AppHooksModule appHooksModule =
                 appHooksFactory == null ? new AppHooksModule() : appHooksFactory.create();
 
-        return DaggerChromeAppComponent.builder().chromeAppModule(module)
-                .appHooksModule(appHooksModule).build();
+        return DaggerChromeAppComponent.builder()
+                .chromeAppModule(module)
+                .appHooksModule(appHooksModule)
+                .build();
     }
 }

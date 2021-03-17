@@ -2201,7 +2201,7 @@ android_library("monochrome_java") {
     "//content/public/android:content_java",
   ]
   sources =
-      [ "java/src/org/chromium/chrome/browser/MonochromeApplication.java" ]
+      [ "java/src/org/chromium/chrome/browser/MonochromeApplicationImpl.java" ]
 }
 
 # Monochrome equivalent of :base_module_java.
