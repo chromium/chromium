@@ -15,6 +15,7 @@ browse:media:googleplaystore:2021,"Navigate to the movies page of Google Play St
 browse:media:imgur,,desktop,2016
 browse:media:imgur:2019,,mobile,"2019,emerging_market"
 browse:media:pinterest:2018,,desktop,2018
+browse:media:tiktok_infinite_scroll:2021,,mobile,"2021,infinite_scroll"
 browse:media:tumblr:2018,,desktop,2018
 browse:media:youtube:2019,Load a typical YouTube video then navigate to a next few videos. Stop and,"desktop,mobile","2019,emerging_market,javascript_heavy"
 browse:media:youtubetv:2019,Load a typical YouTube TV video then navigate to a next few videos. Stop,desktop,2019

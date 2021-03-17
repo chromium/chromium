@@ -73,6 +73,7 @@ class JankyStorySet(story.StorySet):
     self.AddStory(browsing_stories.GoogleMapsMobileStory2019(self, False))
     self.AddStory(browsing_stories.CnnStory2021(self, False))
     self.AddStory(browsing_stories.FacebookMobileStory2019(self, False))
+    self.AddStory(browsing_stories.TikTokMobileStory2021(self, False))
 
   def GetAbridgedStorySetTagFilter(self):
     return story_tags.HEALTH_CHECK.name

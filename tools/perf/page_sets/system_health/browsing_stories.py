@@ -562,6 +562,32 @@ class ImgurDesktopStory(_MediaBrowsingStory):
   TAGS = [story_tags.YEAR_2016]
 
 
+class TikTokMobileStory2021(_BrowsingStory):
+  NAME = 'browse:media:tiktok_infinite_scroll:2021'
+  URL = 'https://tiktok.com/'
+  TAGS = [story_tags.INFINITE_SCROLL, story_tags.YEAR_2021]
+  SUPPORTED_PLATFORMS = platforms.MOBILE_ONLY
+
+  _TIME_TO_WAIT_BEFORE_STARTING_IN_SECONDS = 2
+  _TIME_TO_WAIT_BETWEEN_VIDEOS = 1
+  _ACCEPT_ALL_SELECTOR = 'div[class$=" cookie-banner"]>div[class$=" button-wrapper"]>button'
+
+  def _DidLoadDocument(self, action_runner):
+    # Accept all cookies
+    action_runner.WaitForElement(selector=self._ACCEPT_ALL_SELECTOR)
+    action_runner.ClickElement(selector=self._ACCEPT_ALL_SELECTOR)
+    action_runner.Wait(self._TIME_TO_WAIT_BEFORE_STARTING_IN_SECONDS)
+
+    # TikTok doesn't scroll like a traditional page but responds to vertical
+    # swipe gestures.
+    for direction in ['down', 'up', 'down']:
+      for _ in range(0, 3):
+        scroll_dist = action_runner.EvaluateJavaScript(
+            'window.innerHeight') * 0.8
+        action_runner.ScrollPage(distance=scroll_dist, direction=direction)
+        action_runner.Wait(self._TIME_TO_WAIT_BETWEEN_VIDEOS)
+
+
 class YouTubeMobileStory2019(_MediaBrowsingStory):
   """Load a typical YouTube video then navigate to a next few videos. Stop and
   watch each video for few seconds.
