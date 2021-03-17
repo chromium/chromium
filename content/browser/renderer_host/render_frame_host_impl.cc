@@ -8338,11 +8338,8 @@ void RenderFrameHostImpl::CreateBucketManagerHost(
 
 void RenderFrameHostImpl::CreatePermissionService(
     mojo::PendingReceiver<blink::mojom::PermissionService> receiver) {
-  if (!permission_service_context_)
-    permission_service_context_ =
-        std::make_unique<PermissionServiceContext>(this);
-
-  permission_service_context_->CreateService(std::move(receiver));
+  PermissionServiceContext::GetOrCreateForCurrentDocument(this)->CreateService(
+      std::move(receiver));
 }
 
 void RenderFrameHostImpl::GetAuthenticator(

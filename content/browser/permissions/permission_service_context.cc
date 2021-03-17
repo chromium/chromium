@@ -57,19 +57,15 @@ class PermissionServiceContext::PermissionSubscription {
   int id_ = 0;
 };
 
+RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(PermissionServiceContext)
+
 PermissionServiceContext::PermissionServiceContext(
     RenderFrameHost* render_frame_host)
-    : WebContentsObserver(WebContents::FromRenderFrameHost(render_frame_host)),
-      render_frame_host_(render_frame_host),
-      render_process_host_(nullptr) {
-}
+    : render_frame_host_(render_frame_host), render_process_host_(nullptr) {}
 
 PermissionServiceContext::PermissionServiceContext(
     RenderProcessHost* render_process_host)
-    : WebContentsObserver(nullptr),
-      render_frame_host_(nullptr),
-      render_process_host_(render_process_host) {
-}
+    : render_frame_host_(nullptr), render_process_host_(render_process_host) {}
 
 PermissionServiceContext::~PermissionServiceContext() {
 }
@@ -124,40 +120,9 @@ void PermissionServiceContext::ObserverHadConnectionError(int subscription_id) {
   DCHECK_EQ(1u, erased);
 }
 
-void PermissionServiceContext::RenderFrameHostChanged(
-    RenderFrameHost* old_host,
-    RenderFrameHost* new_host) {
-  CloseBindings(old_host);
-}
-
-void PermissionServiceContext::FrameDeleted(
-    RenderFrameHost* render_frame_host) {
-  CloseBindings(render_frame_host);
-}
-
-void PermissionServiceContext::DidFinishNavigation(
-    NavigationHandle* navigation_handle) {
-  if (!navigation_handle->HasCommitted() || navigation_handle->IsSameDocument())
-    return;
-
-  CloseBindings(navigation_handle->GetRenderFrameHost());
-}
-
-void PermissionServiceContext::CloseBindings(
-    RenderFrameHost* render_frame_host) {
-  DCHECK(render_frame_host_);
-  if (render_frame_host != render_frame_host_)
-    return;
-
-  services_.Clear();
-  subscriptions_.clear();
-}
-
 BrowserContext* PermissionServiceContext::GetBrowserContext() const {
-  // web_contents() may return nullptr during teardown, or when showing
-  // an interstitial.
-  if (web_contents())
-    return web_contents()->GetBrowserContext();
+  if (render_frame_host_)
+    return render_frame_host_->GetBrowserContext();
 
   if (render_process_host_)
     return render_process_host_->GetBrowserContext();
@@ -166,8 +131,12 @@ BrowserContext* PermissionServiceContext::GetBrowserContext() const {
 }
 
 GURL PermissionServiceContext::GetEmbeddingOrigin() const {
-  return web_contents() ? web_contents()->GetLastCommittedURL().GetOrigin()
-                        : GURL();
+  // TODO(https://crbug.com/1170277): This will return the wrong origin for a
+  // non primary FrameTree.
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(render_frame_host_);
+  return web_contents ? web_contents->GetLastCommittedURL().GetOrigin()
+                      : GURL();
 }
 
 }  // namespace content

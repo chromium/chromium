@@ -218,7 +218,6 @@ class NavigationEntryImpl;
 class NavigationRequest;
 class PeerConnectionTrackerHost;
 class PepperPluginInstanceHost;
-class PermissionServiceContext;
 class Portal;
 class PrefetchedSignedExchangeCache;
 class PresentationServiceImpl;
@@ -3024,10 +3023,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Flag to not create a BrowserAccessibilityManager, for testing. If one
   // already exists it will still be used.
   bool no_create_browser_accessibility_manager_for_testing_ = false;
-
-  // Context shared for each mojom::PermissionService instance created for this
-  // RFH.
-  std::unique_ptr<PermissionServiceContext> permission_service_context_;
 
   // Holder of Mojo connection with ImageDownloader service in Blink.
   mojo::Remote<blink::mojom::ImageDownloader> mojo_image_downloader_;
