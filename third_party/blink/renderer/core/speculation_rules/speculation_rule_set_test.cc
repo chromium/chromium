@@ -1,7 +1,14 @@
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
 
+#include "base/bind.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-blink.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
@@ -9,6 +16,7 @@
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 namespace {
@@ -226,6 +234,93 @@ TEST_F(SpeculationRuleSetTest, PropagatesToDocument) {
   SpeculationRuleSet* rule_set = supplement->rule_sets()[0];
   EXPECT_THAT(rule_set->prefetch_rules(),
               ElementsAre(MatchesListOfURLs("https://example.com/foo")));
+}
+
+class StubSpeculationHost : public mojom::blink::SpeculationHost {
+ public:
+  using Candidates = Vector<mojom::blink::SpeculationCandidatePtr>;
+
+  const Candidates& candidates() const { return candidates_; }
+  void SetDoneClosure(base::OnceClosure done) {
+    done_closure_ = std::move(done);
+  }
+
+  void BindUnsafe(mojo::ScopedMessagePipeHandle handle) {
+    Bind(mojo::PendingReceiver<SpeculationHost>(std::move(handle)));
+  }
+
+  void Bind(mojo::PendingReceiver<SpeculationHost> receiver) {
+    receiver_.Bind(std::move(receiver));
+    receiver_.set_disconnect_handler(base::BindOnce(
+        &StubSpeculationHost::OnConnectionLost, base::Unretained(this)));
+  }
+
+  void UpdateSpeculationCandidates_PendingSecurityReview(
+      Candidates candidates) override {
+    candidates_ = std::move(candidates);
+    if (done_closure_)
+      std::move(done_closure_).Run();
+  }
+
+  void OnConnectionLost() {
+    if (done_closure_)
+      std::move(done_closure_).Run();
+  }
+
+ private:
+  mojo::Receiver<SpeculationHost> receiver_{this};
+  Vector<mojom::blink::SpeculationCandidatePtr> candidates_;
+  base::OnceClosure done_closure_;
+};
+
+TEST_F(SpeculationRuleSetTest, PropagatesToBrowser) {
+  // A <script> with a case-insensitive type match should be propagated to the
+  // browser via Mojo.
+  // TODO(jbroman): Should we need to enable script? Should that be bypassed?
+  DummyPageHolder page_holder;
+  page_holder.GetFrame().GetSettings()->SetScriptEnabled(true);
+
+  StubSpeculationHost speculation_host;
+  page_holder.GetFrame()
+      .DomWindow()
+      ->GetBrowserInterfaceBroker()
+      .SetBinderForTesting(
+          mojom::blink::SpeculationHost::Name_,
+          WTF::BindRepeating(&StubSpeculationHost::BindUnsafe,
+                             WTF::Unretained(&speculation_host)));
+
+  base::RunLoop run_loop;
+  speculation_host.SetDoneClosure(run_loop.QuitClosure());
+
+  Document& document = page_holder.GetDocument();
+  HTMLScriptElement* script =
+      MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
+  script->setAttribute(html_names::kTypeAttr, "SpEcUlAtIoNrUlEs");
+  script->setText(
+      R"({"prefetch_with_subresources": [
+           {"source": "list",
+            "urls": ["https://example.com/foo", "https://example.com/bar"],
+            "requires": ["anonymous-client-ip-when-cross-origin"]}
+         ]})");
+  document.head()->appendChild(script);
+  run_loop.Run();
+
+  const auto& candidates = speculation_host.candidates();
+  ASSERT_EQ(candidates.size(), 2u);
+  {
+    const auto& candidate = candidates[0];
+    EXPECT_EQ(candidate->action,
+              mojom::blink::SpeculationAction::kPrefetchWithSubresources);
+    EXPECT_EQ(candidate->url, "https://example.com/foo");
+    EXPECT_TRUE(candidate->requires_anonymous_client_ip_when_cross_origin);
+  }
+  {
+    const auto& candidate = candidates[1];
+    EXPECT_EQ(candidate->action,
+              mojom::blink::SpeculationAction::kPrefetchWithSubresources);
+    EXPECT_EQ(candidate->url, "https://example.com/bar");
+    EXPECT_TRUE(candidate->requires_anonymous_client_ip_when_cross_origin);
+  }
 }
 
 }  // namespace
