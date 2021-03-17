@@ -736,6 +736,11 @@ const char kDesktopPWAsRunOnOsLoginDescription[] =
     "user logs in. Launching a PWA while the browser is not running is known "
     "to cause a failure to restore sessions. See https://crbug.com/938759.";
 
+const char kDesktopPWAsProtocolHandlingName[] = "Desktop PWA Protocol handling";
+const char kDesktopPWAsProtocolHandlingDescription[] =
+    "Enable web app manifests to declare protocol handling behavior."
+    "See: https://crbug.com/1019239.";
+
 const char kDesktopPWAsUrlHandlingName[] = "Desktop PWA URL handling";
 const char kDesktopPWAsUrlHandlingDescription[] =
     "Enable web app manifests to declare URL handling behavior. Prototype "

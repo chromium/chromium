@@ -1643,6 +1643,11 @@
     "expiry_milestone": 93
   },
   {
+    "name": "enable-desktop-pwas-protocol-handling",
+    "owners": [ "samtan@microsoft.com", "desktop-pwas-team@google.com" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "enable-desktop-pwas-remove-status-bar",
     "owners": [ "dmurph@chromium.org", "desktop-pwas-team@google.com" ],
     "expiry_milestone": 91
