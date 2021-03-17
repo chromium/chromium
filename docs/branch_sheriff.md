@@ -124,6 +124,8 @@ particular milestone or channel, along with a host of other useful information:
 The current branch sheriff is listed [here][rotation-home]. The configuration
 and source of truth for the schedule lives [here][rotation-config]. To swap,
 simply send a CL changing schedule at the bottom of the file.
+You can also use [Oncall Swapper](https://oncallswapper.corp.google.com/)
+to find the swap and submit the CL for you.
 
 [chromiumdash]: https://chromiumdash.appspot.com
 [chromiumdash-branches]: https://chromiumdash.appspot.com/branches
