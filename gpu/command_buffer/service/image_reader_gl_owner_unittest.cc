@@ -33,7 +33,7 @@ class ImageReaderGLOwnerTest : public testing::Test {
       return;
 
     gl::init::InitializeStaticGLBindingsImplementation(
-        gl::kGLImplementationEGLGLES2, false);
+        gl::GLImplementationParts(gl::kGLImplementationEGLGLES2), false);
     gl::init::InitializeGLOneOffPlatformImplementation(false, false, true);
 
     surface_ = new gl::PbufferGLSurfaceEGL(gfx::Size(320, 240));

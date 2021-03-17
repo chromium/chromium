@@ -149,7 +149,7 @@ void WebTestBrowserMainRunner::Initialize() {
       !command_line.HasSwitch(switches::kUseGL)) {
     command_line.AppendSwitchASCII(
         switches::kUseGL,
-        gl::GetGLImplementationName(gl::GetSoftwareGLImplementation()));
+        gl::GetGLImplementationGLName(gl::GetSoftwareGLImplementation()));
   }
   command_line.AppendSwitchASCII(switches::kTouchEventFeatureDetection,
                                  switches::kTouchEventFeatureDetectionEnabled);

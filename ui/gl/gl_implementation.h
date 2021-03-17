@@ -49,7 +49,22 @@ enum class ANGLEImplementation {
   kVulkan = 6,
   kSwiftShader = 7,
   kMetal = 8,
-  kMaxValue = kMetal,
+  kDefault = 9,
+  kMaxValue = kDefault,
+};
+
+struct GL_EXPORT GLImplementationParts {
+  explicit GLImplementationParts(const ANGLEImplementation angle_impl);
+  explicit GLImplementationParts(const GLImplementation gl_impl);
+
+  GLImplementation gl = kGLImplementationNone;
+  ANGLEImplementation angle = ANGLEImplementation::kNone;
+
+  constexpr bool operator==(const GLImplementationParts& other) const {
+    return (gl == other.gl && angle == other.angle);
+  }
+
+  bool IsValid() const;
 };
 
 struct GL_EXPORT GLWindowSystemBindingInfo {
@@ -93,6 +108,12 @@ class GL_EXPORT DisableNullDrawGLBindings {
   bool initial_enabled_;
 };
 
+// Set the current GL and ANGLE implementation.
+GL_EXPORT void SetGLImplementationParts(GLImplementationParts& implementation);
+
+// Get the current GL and ANGLE implementation.
+GL_EXPORT GLImplementationParts GetGLImplementationParts();
+
 // Set the current GL implementation.
 GL_EXPORT void SetGLImplementation(GLImplementation implementation);
 
@@ -106,17 +127,22 @@ GL_EXPORT void SetANGLEImplementation(ANGLEImplementation implementation);
 GL_EXPORT ANGLEImplementation GetANGLEImplementation();
 
 // Get the software GL implementation for the current platform.
-GL_EXPORT GLImplementation GetSoftwareGLImplementation();
+GL_EXPORT GLImplementationParts GetSoftwareGLImplementation();
 
 // Does the underlying GL support all features from Desktop GL 2.0 that were
 // removed from the ES 2.0 spec without requiring specific extension strings.
 GL_EXPORT bool HasDesktopGLFeatures();
 
 // Get the GL implementation with a given name.
-GL_EXPORT GLImplementation GetNamedGLImplementation(const std::string& name);
+GL_EXPORT GLImplementationParts
+GetNamedGLImplementation(const std::string& gl_name,
+                         const std::string& angle_name);
 
 // Get the name of a GL implementation.
-GL_EXPORT const char* GetGLImplementationName(GLImplementation implementation);
+GL_EXPORT const char* GetGLImplementationGLName(
+    GLImplementationParts implementation);
+GL_EXPORT const char* GetGLImplementationANGLEName(
+    GLImplementationParts implementation);
 
 // Add a native library to those searched for GL entry points.
 GL_EXPORT void AddGLNativeLibrary(base::NativeLibrary library);

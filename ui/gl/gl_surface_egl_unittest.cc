@@ -33,10 +33,10 @@ class GLSurfaceEGLTest : public testing::Test {
   void SetUp() override {
 #if defined(OS_WIN)
     GLSurfaceTestSupport::InitializeOneOffImplementation(
-        GLImplementation::kGLImplementationEGLANGLE, true);
+        GLImplementationParts(kGLImplementationEGLANGLE), true);
 #else
     GLSurfaceTestSupport::InitializeOneOffImplementation(
-        GLImplementation::kGLImplementationEGLGLES2, true);
+        GLImplementationParts(kGLImplementationEGLGLES2), true);
 #endif
   }
 

@@ -26,7 +26,7 @@ namespace init {
 bool InitializeGLOneOffPlatformX11();
 
 // Initializes a particular GL implementation.
-bool InitializeStaticGLBindingsX11(GLImplementation implementation);
+bool InitializeStaticGLBindingsX11(GLImplementationParts implementation);
 
 // Clears GL bindings for all implementations supported by platform.
 void ShutdownGLPlatformX11();

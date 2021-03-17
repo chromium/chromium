@@ -49,7 +49,7 @@ GL_INIT_EXPORT bool InitializeExtensionSettingsOneOffPlatform();
 // Initializes GL bindings using the provided parameters. This might be required
 // for use in tests.
 GL_INIT_EXPORT bool InitializeStaticGLBindingsImplementation(
-    GLImplementation impl,
+    GLImplementationParts impl,
     bool fallback_to_software_gl);
 
 // Initializes GL platform using the provided parameters. This might be required

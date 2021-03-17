@@ -137,7 +137,7 @@ void DrawTextureQuad(GLenum target, const gfx::Size& size) {
 
 }  // namespace internal
 
-base::Optional<GLImplementation>
+base::Optional<GLImplementationParts>
 GLImageTestDelegateBase::GetPreferedGLImplementation() const {
   return base::nullopt;
 }

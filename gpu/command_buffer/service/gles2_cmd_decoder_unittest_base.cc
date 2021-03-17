@@ -2434,7 +2434,7 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
   context_creation_attribs_.bind_generates_resource = true;
 
   gl::init::InitializeStaticGLBindingsImplementation(
-      gl::kGLImplementationEGLANGLE, false);
+      gl::GLImplementationParts(gl::kGLImplementationEGLANGLE), false);
   gl::init::InitializeGLOneOffPlatformImplementation(false, false, true);
 
   scoped_refptr<gles2::FeatureInfo> feature_info = new gles2::FeatureInfo();

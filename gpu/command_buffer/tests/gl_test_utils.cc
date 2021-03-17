@@ -41,7 +41,8 @@ bool GLTestHelper::InitializeGL(gl::GLImplementation gl_impl) {
       return false;
   } else {
     if (!gl::init::InitializeStaticGLBindingsImplementation(
-            gl_impl, /*fallback_to_software_gl*/ false))
+            gl::GLImplementationParts(gl_impl),
+            /*fallback_to_software_gl*/ false))
       return false;
 
     if (!gl::init::InitializeGLOneOffPlatformImplementation(
@@ -396,18 +397,19 @@ bool GpuCommandBufferTestEGL::InitializeEGL(int width, int height) {
     }
     // The native EGL driver is not supported with the passthrough command
     // decoder, in that case use ANGLE
-    const gl::GLImplementation new_impl =
-        (gpu_info.passthrough_cmd_decoder ? gl::kGLImplementationEGLANGLE
-                                          : gl::kGLImplementationEGLGLES2);
+    gl::GLImplementationParts new_impl(gl::kGLImplementationEGLGLES2);
+    if (gpu_info.passthrough_cmd_decoder)
+      new_impl = gl::GLImplementationParts(gl::kGLImplementationEGLANGLE);
+
     const auto allowed_impls = gl::init::GetAllowedGLImplementations();
-    if (!base::Contains(allowed_impls, new_impl)) {
+    if (!base::Contains(allowed_impls, new_impl.gl)) {
       LOG(INFO) << "Skip test, no EGL implementation is available";
       return false;
     }
 
     gl_reinitialized_ = true;
     gl::init::ShutdownGL(false /* due_to_fallback */);
-    if (!GLTestHelper::InitializeGL(new_impl)) {
+    if (!GLTestHelper::InitializeGL(new_impl.gl)) {
       LOG(INFO) << "Skip test, failed to initialize EGL";
       return false;
     }

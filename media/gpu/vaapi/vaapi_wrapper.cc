@@ -586,7 +586,8 @@ bool VADisplayState::InitializeVaDisplay_Locked() {
 
     default:
       LOG(WARNING) << "VAAPI video acceleration not available for "
-                   << gl::GetGLImplementationName(gl::GetGLImplementation());
+                   << gl::GetGLImplementationGLName(
+                          gl::GetGLImplementationParts());
       return false;
   }
 

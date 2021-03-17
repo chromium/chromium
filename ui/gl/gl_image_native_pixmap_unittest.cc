@@ -32,12 +32,14 @@ const uint8_t kImageColor[] = {0x30, 0x40, 0x10, 0xFF};
 template <gfx::BufferFormat format>
 class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
  public:
-  base::Optional<GLImplementation> GetPreferedGLImplementation()
+  base::Optional<GLImplementationParts> GetPreferedGLImplementation()
       const override {
 #if defined(OS_WIN)
-    return base::Optional<GLImplementation>(kGLImplementationEGLANGLE);
+    return base::Optional<GLImplementationParts>(GLImplementationParts(
+        kGLImplementationEGLANGLE, ANGLEImplementation::kNone));
 #else
-    return base::Optional<GLImplementation>(kGLImplementationEGLGLES2);
+    return base::Optional<GLImplementationParts>(
+        GLImplementationParts(kGLImplementationEGLGLES2));
 #endif
   }
 

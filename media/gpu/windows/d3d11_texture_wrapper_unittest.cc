@@ -45,7 +45,7 @@ class D3D11TextureWrapperUnittest : public ::testing::Test {
     task_runner_ = task_environment_.GetMainThreadTaskRunner();
 
     gl::GLSurfaceTestSupport::InitializeOneOffImplementation(
-        gl::kGLImplementationEGLANGLE, false);
+        gl::GLImplementationParts(gl::ANGLEImplementation::kD3D11), false);
     surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
     share_group_ = new gl::GLShareGroup();
     context_ = gl::init::CreateGLContext(share_group_.get(), surface_.get(),

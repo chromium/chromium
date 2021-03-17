@@ -336,14 +336,14 @@ class CommandBufferSetup {
 #endif
 
     CHECK(gl::init::InitializeStaticGLBindingsImplementation(
-        gl::kGLImplementationEGLANGLE, false));
+        gl::GLImplementationParts(gl::kGLImplementationEGLANGLE), false));
     CHECK(
         gl::init::InitializeGLOneOffPlatformImplementation(false, false, true));
 #elif defined(GPU_FUZZER_USE_SWIFTSHADER)
     command_line->AppendSwitchASCII(switches::kUseGL,
                                     gl::kGLImplementationSwiftShaderName);
     CHECK(gl::init::InitializeStaticGLBindingsImplementation(
-        gl::kGLImplementationSwiftShaderGL, false));
+        gl::GLImplementationParts(gl::kGLImplementationSwiftShaderGL), false));
     CHECK(
         gl::init::InitializeGLOneOffPlatformImplementation(false, false, true));
 #elif defined(GPU_FUZZER_USE_STUB)

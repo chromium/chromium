@@ -13,7 +13,7 @@ class GLSurfaceTestSupport {
  public:
   static void InitializeOneOff();
   static void InitializeNoExtensionsOneOff();
-  static void InitializeOneOffImplementation(GLImplementation impl,
+  static void InitializeOneOffImplementation(GLImplementationParts impl,
                                              bool fallback_to_swiftshader);
   static void InitializeOneOffWithMockBindings();
   static void InitializeOneOffWithStubBindings();

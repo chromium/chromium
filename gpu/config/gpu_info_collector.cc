@@ -235,7 +235,7 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
   }
 
   base::StringPiece software_gl_impl_name =
-      gl::GetGLImplementationName(gl::GetSoftwareGLImplementation());
+      gl::GetGLImplementationGLName(gl::GetSoftwareGLImplementation());
   if (use_gl == software_gl_impl_name ||
       command_line->HasSwitch(switches::kOverrideUseSoftwareGLForTests)) {
     // If using the software GL implementation, use fake vendor and

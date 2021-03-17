@@ -36,7 +36,7 @@ void rgb_to_yuv(uint8_t r, uint8_t g, uint8_t b, T* y, T* u, T* v) {
 
 // static
 void GLImageTestSupport::InitializeGL(
-    base::Optional<GLImplementation> prefered_impl) {
+    base::Optional<GLImplementationParts> prefered_impl) {
 #if defined(USE_OZONE)
   if (features::IsUsingOzonePlatform()) {
     ui::OzonePlatform::InitParams params;
@@ -49,8 +49,9 @@ void GLImageTestSupport::InitializeGL(
       init::GetAllowedGLImplementations();
   DCHECK(!allowed_impls.empty());
 
-  GLImplementation impl = prefered_impl ? *prefered_impl : allowed_impls[0];
-  DCHECK(base::Contains(allowed_impls, impl));
+  GLImplementationParts impl =
+      prefered_impl ? *prefered_impl : GLImplementationParts(allowed_impls[0]);
+  DCHECK(base::Contains(allowed_impls, impl.gl));
 
   GLSurfaceTestSupport::InitializeOneOffImplementation(impl, true);
 #if defined(USE_OZONE)

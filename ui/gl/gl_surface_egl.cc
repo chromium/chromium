@@ -1358,9 +1358,9 @@ EGLDisplay GLSurfaceEGL::InitializeDisplay(EGLDisplayPlatform native_display) {
     }
 
     std::ostringstream display_type_string;
-    auto gl_implementation = GetGLImplementation();
-    display_type_string << GetGLImplementationName(gl_implementation);
-    if (gl_implementation == kGLImplementationEGLANGLE) {
+    auto gl_implementation = GetGLImplementationParts();
+    display_type_string << GetGLImplementationGLName(gl_implementation);
+    if (gl_implementation.gl == kGLImplementationEGLANGLE) {
       display_type_string << ":" << DisplayTypeString(display_type);
     }
 

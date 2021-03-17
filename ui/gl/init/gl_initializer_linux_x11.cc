@@ -134,22 +134,22 @@ bool InitializeStaticEGLInternalFromLibrary(GLImplementation implementation) {
   return true;
 }
 
-bool InitializeStaticEGLInternal(GLImplementation implementation) {
+bool InitializeStaticEGLInternal(GLImplementationParts implementation) {
 #if BUILDFLAG(USE_STATIC_ANGLE)
-  if (implementation == kGLImplementationEGLANGLE) {
+  if (implementation.gl == kGLImplementationEGLANGLE) {
     // Use ANGLE if it is requested and it is statically linked
     if (!InitializeStaticANGLEEGL())
       return false;
-  } else if (!InitializeStaticEGLInternalFromLibrary(implementation)) {
+  } else if (!InitializeStaticEGLInternalFromLibrary(implementation.gl)) {
     return false;
   }
 #else
-  if (!InitializeStaticEGLInternalFromLibrary(implementation)) {
+  if (!InitializeStaticEGLInternalFromLibrary(implementation.gl)) {
     return false;
   }
 #endif  // !BUILDFLAG(USE_STATIC_ANGLE)
 
-  SetGLImplementation(implementation);
+  SetGLImplementationParts(implementation);
 
   InitializeStaticGLBindingsGL();
   InitializeStaticGLBindingsEGL();
@@ -184,7 +184,7 @@ bool InitializeGLOneOffPlatformX11() {
   }
 }
 
-bool InitializeStaticGLBindingsX11(GLImplementation implementation) {
+bool InitializeStaticGLBindingsX11(GLImplementationParts implementation) {
   // Prevent reinitialization with a different implementation. Once the gpu
   // unit tests have initialized with kGLImplementationMock, we don't want to
   // later switch to another GL implementation.
@@ -196,7 +196,7 @@ bool InitializeStaticGLBindingsX11(GLImplementation implementation) {
   // one-time initialization cost is small, between 2 and 5 ms.
   base::ThreadRestrictions::ScopedAllowIO allow_io;
 
-  switch (implementation) {
+  switch (implementation.gl) {
     case kGLImplementationDesktopGL:
       return InitializeStaticGLXInternal();
     case kGLImplementationSwiftShaderGL:
@@ -205,7 +205,7 @@ bool InitializeStaticGLBindingsX11(GLImplementation implementation) {
       return InitializeStaticEGLInternal(implementation);
     case kGLImplementationMockGL:
     case kGLImplementationStubGL:
-      SetGLImplementation(implementation);
+      SetGLImplementation(implementation.gl);
       InitializeStaticGLBindingsGL();
       return true;
     default:

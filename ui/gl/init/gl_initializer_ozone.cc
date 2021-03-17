@@ -47,7 +47,7 @@ bool InitializeGLOneOffPlatform() {
   return false;
 }
 
-bool InitializeStaticGLBindings(GLImplementation implementation) {
+bool InitializeStaticGLBindings(GLImplementationParts implementation) {
 #if defined(USE_X11)
   if (!features::IsUsingOzonePlatform())
     return gl::init::InitializeStaticGLBindingsX11(implementation);
@@ -59,15 +59,15 @@ bool InitializeStaticGLBindings(GLImplementation implementation) {
   // later switch to another GL implementation.
   DCHECK_EQ(kGLImplementationNone, GetGLImplementation());
 
-  if (HasGLOzone(implementation)) {
-    return GetGLOzone(implementation)
-        ->InitializeStaticGLBindings(implementation);
+  if (HasGLOzone(implementation.gl)) {
+    return GetGLOzone(implementation.gl)
+        ->InitializeStaticGLBindings(implementation.gl);
   }
 
-  switch (implementation) {
+  switch (implementation.gl) {
     case kGLImplementationMockGL:
     case kGLImplementationStubGL:
-      SetGLImplementation(implementation);
+      SetGLImplementation(implementation.gl);
       InitializeStaticGLBindingsGL();
       return true;
     default:
