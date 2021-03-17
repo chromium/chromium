@@ -78,6 +78,7 @@ class PresentationRequestNotificationProducer final
   void CreateItemForPresentationRequest(
       const content::PresentationRequest& request,
       std::unique_ptr<media_router::StartPresentationContext> context);
+  void DeleteItemForPresentationRequest(const std::string& message);
 
   // Returns true if there is an item, and the item is for a non-default
   // presentation request.

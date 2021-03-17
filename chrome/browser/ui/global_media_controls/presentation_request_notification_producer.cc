@@ -118,7 +118,7 @@ void PresentationRequestNotificationProducer::AfterMediaDialogOpened(
 }
 
 void PresentationRequestNotificationProducer::AfterMediaDialogClosed() {
-  item_.reset();
+  DeleteItemForPresentationRequest("Dialog closed.");
   if (presentation_manager_)
     presentation_manager_->RemoveObserver(this);
   presentation_manager_ = nullptr;
@@ -133,10 +133,9 @@ void PresentationRequestNotificationProducer::OnDefaultPresentationChanged(
   // notification for a non-default request, we ignored changes in the
   // default request.
   if (!HasItemForNonDefaultRequest()) {
+    DeleteItemForPresentationRequest("Default presentation changed.");
     if (presentation_request) {
       CreateItemForPresentationRequest(*presentation_request, nullptr);
-    } else {
-      item_.reset();
     }
   }
 }
@@ -153,4 +152,14 @@ void PresentationRequestNotificationProducer::CreateItemForPresentationRequest(
   auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
   DCHECK(web_contents);
   notification_service_->AddSupplementalNotification(item_->id(), web_contents);
+}
+
+void PresentationRequestNotificationProducer::DeleteItemForPresentationRequest(
+    const std::string& message) {
+  if (item_) {
+    item_->context()->InvokeErrorCallback(blink::mojom::PresentationError(
+        blink::mojom::PresentationErrorType::PRESENTATION_REQUEST_CANCELLED,
+        message));
+    item_.reset();
+  }
 }

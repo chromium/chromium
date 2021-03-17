@@ -535,6 +535,10 @@ void MediaNotificationService::OnStartPresentationContextCreated(
   if (presentation_request_notification_producer_) {
     presentation_request_notification_producer_
         ->OnStartPresentationContextCreated(std::move(context));
+  } else {
+    context->InvokeErrorCallback(blink::mojom::PresentationError(
+        blink::mojom::PresentationErrorType::PRESENTATION_REQUEST_CANCELLED,
+        "Unable to start presentation."));
   }
 }
 
