@@ -17,7 +17,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-      android:key="content_langauges_section"
+      android:key="content_languages_section"
       android:title="@string/languages_content_title"
       android:order="2"
       app:allowDividerAbove="true">

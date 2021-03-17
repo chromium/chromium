@@ -183,12 +183,12 @@ public class TranslateCompactInfoBar
     @Override
     public void onPreferenceChange() {
         if (mNativeTranslateInfoBarPtr != 0) {
-            String[] currentContentLangauges =
+            String[] currentContentLanguages =
                     TranslateCompactInfoBarJni.get().getContentLanguagesCodes(
                             mNativeTranslateInfoBarPtr, TranslateCompactInfoBar.this);
-            mOptions.updateContentLanguages(currentContentLangauges);
+            mOptions.updateContentLanguages(currentContentLanguages);
             if (mLanguageMenuHelper != null) {
-                mLanguageMenuHelper.onContentLanguagesChanged(currentContentLangauges);
+                mLanguageMenuHelper.onContentLanguagesChanged(currentContentLanguages);
             }
         }
     }

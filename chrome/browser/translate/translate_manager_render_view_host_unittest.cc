@@ -493,7 +493,7 @@ class TranslateManagerRenderViewHostInvalidLocaleTest
 };
 
 // A list of languages to fake being returned by the translate server.
-// Use only langauges for which Chrome's copy of ICU has
+// Use only languages for which Chrome's copy of ICU has
 // display names in English locale. To save space, Chrome's copy of ICU
 // does not have the display name for a language unless it's in the
 // Accept-Language list.

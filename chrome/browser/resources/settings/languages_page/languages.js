@@ -579,14 +579,14 @@ Polymer({
     const {on: spellCheckOnLanguages, off: spellCheckOffLanguages} =
         this.getSpellCheckLanguages_(args.supportedLanguages);
 
-    const alwaysTranslateLangauges =
+    const alwaysTranslateLanguages =
         args.alwaysTranslateCodes.map(code => this.getLanguage(code));
 
     const model = /** @type {!LanguagesModel} */ ({
       supported: args.supportedLanguages,
       enabled: enabledLanguageStates,
       translateTarget: args.translateTarget,
-      alwaysTranslate: alwaysTranslateLangauges,
+      alwaysTranslate: alwaysTranslateLanguages,
       spellCheckOnLanguages,
       spellCheckOffLanguages,
     });

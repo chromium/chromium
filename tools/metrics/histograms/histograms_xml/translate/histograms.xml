@@ -1062,7 +1062,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
-    Records the target language used for a translation. This is the langauge
+    Records the target language used for a translation. This is the language
     being translated to.
 
     This is recorded when a translation (both manual and automatic) is started.

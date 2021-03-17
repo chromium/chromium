@@ -178,7 +178,7 @@ void TranslateManager::InitiateTranslation(const std::string& page_lang) {
   // object. It should instead be passed around to code that uses it.
   InitTranslateEvent(page_language_code, target_lang, *translate_prefs);
 
-  // Logs the initial source and target langauges, as well as whether the
+  // Logs the initial source and target languages, as well as whether the
   // initial source language is in the user's content language.
   GetActiveTranslateMetricsLogger()->LogInitialSourceLanguage(
       page_language_code,

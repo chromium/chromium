@@ -162,7 +162,7 @@ class TranslateAgent : public content::RenderFrameObserver,
   std::string source_lang_;
   std::string target_lang_;
 
-  // Time when a page langauge is determined. This is used to know a duration
+  // Time when a page language is determined. This is used to know a duration
   // time from showing infobar to requesting translation.
   base::TimeTicks language_determined_time_;
 

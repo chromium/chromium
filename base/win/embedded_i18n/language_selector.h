@@ -22,7 +22,7 @@ namespace win {
 namespace i18n {
 
 // Selects a language from a set of available translations based on the user's
-// preferred language list. An optional preferred langauge may be provided to
+// preferred language list. An optional preferred language may be provided to
 // override selection should a corresponding translation be available.
 class BASE_EXPORT LanguageSelector {
  public:
@@ -40,8 +40,8 @@ class BASE_EXPORT LanguageSelector {
                    span<const LangToOffset> languages_to_offset);
 
   // Constructor for testing purposes.
-  // |candidates| is a list of all candiate languages that can be used to
-  // determine which langauge to use.
+  // |candidates| is a list of all candidate languages that can be used to
+  // determine which language to use.
   // |languages_to_offset_begin| and |languages_to_offset_end| point to a sorted
   // array of language identifiers (and their offsets) for which translations
   // are available.

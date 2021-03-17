@@ -718,7 +718,7 @@ void TestResponseProvider::GetLanguageResponse(
 }
 
 // Tests that the target language can be changed. TODO(crbug.com/1046629):
-// implement test for changing source langauge.
+// implement test for changing source language.
 - (void)testInfobarChangeTargetLanguage {
   // TODO(crbug.com/1116012): This test is failing flaky on iOS14.
   if (@available(iOS 14, *)) {

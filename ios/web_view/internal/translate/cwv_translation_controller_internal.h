@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 // Called to keep this class informed of the current translate progress.
 // |step| the state of current translation.
 // |sourceLanguage| the source language associated with the current |step|.
-// |targetLanguage| the target langauge associated with the current |step|.
+// |targetLanguage| the target language associated with the current |step|.
 // |errorType| the error, if any for the current |step|.
 // |triggeredFromMenu| should be true if this was a result from user action.
 - (void)updateTranslateStep:(translate::TranslateStep)step

@@ -116,7 +116,7 @@
   },
   {
     "name": "android-detailed-language-settings",
-    "owners": [ "perrier", "chrome-langauge@google.com" ],
+    "owners": [ "perrier", "chrome-language@google.com" ],
     "expiry_milestone": 91
   },
   {
@@ -954,7 +954,7 @@
   },
   {
     "name": "desktop-restructured-language-settings",
-    "owners": [ "joshsantana", "chrome-langauge@google.com"],
+    "owners": [ "joshsantana", "chrome-language@google.com"],
     "expiry_milestone": 93
   },
   {
