@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -30,6 +31,17 @@ namespace data_snapshotd {
 
 class ArcDataRemoveRequestedPrefHandler;
 class ArcDataSnapshotdBridge;
+
+// Ozone platform headless command line switch value.
+extern const char kHeadless[];
+// Environment variable to be passed to UpstartClient::StartArcDataSnapshotd
+// if the frecon (freon console from platform/frecon) must be restarted.
+// The environment variable is passed in order to restart frecon from a
+// configuration script and not grant excessive permissions to
+// arc-data-snapshotd.
+// The restart of frecon is needed only when system UI is shown (in BlockedUi
+// state).
+extern const char kRestartFreconEnv[];
 
 // This class manages ARC data/ directory snapshots and controls the lifetime of
 // the arc-data-snapshotd daemon.
@@ -240,6 +252,8 @@ class ArcDataSnapshotdManager final
   // Returns true if autologin is allowed to be performed and manager is not
   // waiting for the response from arc-data-snapshotd daemon.
   bool IsAutoLoginAllowed();
+  // Returns true if blocked UI screen is shown.
+  bool IsBlockedUiScreenShown();
 
   // Returns true if ARC data snapshot update is in progress.
   bool IsSnapshotInProgress();
@@ -339,6 +353,11 @@ class ArcDataSnapshotdManager final
 
   // Called once a progress bar is updated.
   void OnUiUpdated(bool success);
+
+  // Returns the list of daemon enviromnet variables to be passed to upstart of
+  // arc-data-snapshotd daemon.
+  // Currently, sets RESTART_FRECON=1 if the UI should be blocked.
+  std::vector<std::string> GetStartEnvVars();
 
   static bool is_snapshot_enabled_for_testing_;
 

@@ -5,6 +5,8 @@
 #include "components/arc/enterprise/arc_data_snapshotd_manager.h"
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "ash/constants/ash_switches.h"
 #include "base/callback_helpers.h"
@@ -30,6 +32,7 @@
 #include "ui/ozone/public/ozone_switches.h"
 
 using testing::_;
+using testing::Eq;
 using testing::Invoke;
 using testing::WithArgs;
 
@@ -47,7 +50,8 @@ class TestUpstartClient : public chromeos::FakeUpstartClient {
   // FakeUpstartClient overrides:
   MOCK_METHOD(void,
               StartArcDataSnapshotd,
-              (chromeos::VoidDBusMethodCallback),
+              (const std::vector<std::string>&,
+               chromeos::VoidDBusMethodCallback),
               (override));
 
   MOCK_METHOD(void,
@@ -186,9 +190,10 @@ class ArcDataSnapshotdManagerBasicTest : public testing::Test {
     chromeos::DBusThreadManager::Shutdown();
   }
 
-  void ExpectStartDaemon(bool success) {
-    EXPECT_CALL(*upstart_client(), StartArcDataSnapshotd(_))
-        .WillOnce(WithArgs<0>(
+  void ExpectStartDaemon(bool success,
+                         const std::vector<std::string>& env = {}) {
+    EXPECT_CALL(*upstart_client(), StartArcDataSnapshotd(Eq(env), _))
+        .WillOnce(WithArgs<1>(
             Invoke([success](chromeos::VoidDBusMethodCallback callback) {
               std::move(callback).Run(success);
             })));
@@ -982,7 +987,7 @@ TEST_P(ArcDataSnapshotdManagerFlowTest, BlockedUiBasic) {
   // Once |manager| is created, it tries to clear both snapshots, because the
   // mechanism is disabled by default, and stop the daemon.
   // Start to clear snapshots.
-  ExpectStartDaemon(true /*success */);
+  ExpectStartDaemon(true /*success */, {kRestartFreconEnv});
   // Stop once finished clearing.
   ExpectStopDaemon(true /*success */);
   bool is_attempt_user_exit_called = false;

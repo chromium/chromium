@@ -62,6 +62,13 @@ bool IsFirstExecAfterBoot() {
          user_manager::UserManager::Get()->IsFirstExecAfterBoot();
 }
 
+// Returns true if in ozone platform headless UI mode.
+bool IsInHeadlessMode() {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  return command_line->GetSwitchValueASCII(switches::kOzonePlatform) ==
+         kHeadless;
+}
+
 // Enables ozone platform headless via command line.
 void EnableHeadlessMode() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
@@ -84,6 +91,9 @@ std::string GetMgsCryptohomeAccountId() {
 }
 
 }  // namespace
+
+const char kHeadless[] = "headless";
+const char kRestartFreconEnv[] = "RESTART_FRECON=1";
 
 bool ArcDataSnapshotdManager::is_snapshot_enabled_for_testing_ = false;
 
@@ -374,9 +384,11 @@ void ArcDataSnapshotdManager::EnsureDaemonStarted(base::OnceClosure callback) {
   }
   VLOG(1) << "Starting arc-data-snapshotd";
   daemon_weak_ptr_factory_.InvalidateWeakPtrs();
-  chromeos::UpstartClient::Get()->StartArcDataSnapshotd(base::BindOnce(
-      &ArcDataSnapshotdManager::OnDaemonStarted,
-      daemon_weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  chromeos::UpstartClient::Get()->StartArcDataSnapshotd(
+      GetStartEnvVars(),
+      base::BindOnce(&ArcDataSnapshotdManager::OnDaemonStarted,
+                     daemon_weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback)));
 }
 
 void ArcDataSnapshotdManager::EnsureDaemonStopped(base::OnceClosure callback) {
@@ -433,6 +445,10 @@ bool ArcDataSnapshotdManager::IsAutoLoginAllowed() {
     case State::kMgsToLaunch:
       return true;
   }
+}
+
+bool ArcDataSnapshotdManager::IsBlockedUiScreenShown() {
+  return IsAutoLoginConfigured() && IsInHeadlessMode();
 }
 
 bool ArcDataSnapshotdManager::IsSnapshotInProgress() {
@@ -864,6 +880,13 @@ void ArcDataSnapshotdManager::OnUnexpectedArcDataRemoveRequested() {
 void ArcDataSnapshotdManager::OnUiUpdated(bool success) {
   if (!success)
     LOG(ERROR) << "Failed to update UI progress bar.";
+}
+
+std::vector<std::string> ArcDataSnapshotdManager::GetStartEnvVars() {
+  if (ArcDataSnapshotdManager::IsBlockedUiScreenShown())
+    return {kRestartFreconEnv};
+  else
+    return {};
 }
 
 }  // namespace data_snapshotd
