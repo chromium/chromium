@@ -213,9 +213,10 @@ void CompositeMatcher::OnRenderFrameDeleted(content::RenderFrameHost* host) {
     matcher->OnRenderFrameDeleted(host);
 }
 
-void CompositeMatcher::OnDidFinishNavigation(content::RenderFrameHost* host) {
+void CompositeMatcher::OnDidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
   for (auto& matcher : matchers_)
-    matcher->OnDidFinishNavigation(host);
+    matcher->OnDidFinishNavigation(navigation_handle);
 }
 
 void CompositeMatcher::OnMatchersModified() {

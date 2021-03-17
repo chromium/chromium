@@ -17,6 +17,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 
 namespace content {
+class NavigationHandle;
 class RenderFrameHost;
 }  // namespace content
 
@@ -87,7 +88,7 @@ class CompositeMatcher {
 
   void OnRenderFrameCreated(content::RenderFrameHost* host);
   void OnRenderFrameDeleted(content::RenderFrameHost* host);
-  void OnDidFinishNavigation(content::RenderFrameHost* host);
+  void OnDidFinishNavigation(content::NavigationHandle* navigation_handle);
 
  private:
   // This must be called whenever |matchers_| are modified.

@@ -87,9 +87,10 @@ void RulesetMatcher::OnRenderFrameDeleted(content::RenderFrameHost* host) {
   regex_matcher_.OnRenderFrameDeleted(host);
 }
 
-void RulesetMatcher::OnDidFinishNavigation(content::RenderFrameHost* host) {
-  url_pattern_index_matcher_.OnDidFinishNavigation(host);
-  regex_matcher_.OnDidFinishNavigation(host);
+void RulesetMatcher::OnDidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  url_pattern_index_matcher_.OnDidFinishNavigation(navigation_handle);
+  regex_matcher_.OnDidFinishNavigation(navigation_handle);
 }
 
 base::Optional<RequestAction>

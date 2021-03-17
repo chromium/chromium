@@ -15,6 +15,7 @@
 #include "extensions/common/api/declarative_net_request/constants.h"
 
 namespace content {
+class NavigationHandle;
 class RenderFrameHost;
 }  // namespace content
 
@@ -57,7 +58,7 @@ class RulesetMatcher {
 
   void OnRenderFrameCreated(content::RenderFrameHost* host);
   void OnRenderFrameDeleted(content::RenderFrameHost* host);
-  void OnDidFinishNavigation(content::RenderFrameHost* host);
+  void OnDidFinishNavigation(content::NavigationHandle* navigation_handle);
 
   // ID of the ruleset. Each extension can have multiple rulesets with
   // their own unique ids.

@@ -209,9 +209,10 @@ void RulesetManager::OnRenderFrameDeleted(content::RenderFrameHost* host) {
     ruleset.matcher->OnRenderFrameDeleted(host);
 }
 
-void RulesetManager::OnDidFinishNavigation(content::RenderFrameHost* host) {
+void RulesetManager::OnDidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
   for (ExtensionRulesetData& ruleset : rulesets_)
-    ruleset.matcher->OnDidFinishNavigation(host);
+    ruleset.matcher->OnDidFinishNavigation(navigation_handle);
 }
 
 void RulesetManager::SetObserverForTest(TestObserver* observer) {

@@ -22,6 +22,7 @@
 
 namespace content {
 class BrowserContext;
+class NavigationHandle;
 class RenderFrameHost;
 }
 
@@ -93,7 +94,7 @@ class RulesetManager {
 
   void OnRenderFrameCreated(content::RenderFrameHost* host);
   void OnRenderFrameDeleted(content::RenderFrameHost* host);
-  void OnDidFinishNavigation(content::RenderFrameHost* host);
+  void OnDidFinishNavigation(content::NavigationHandle* navigation_handle);
 
   // Returns the number of CompositeMatchers currently being managed.
   size_t GetMatcherCountForTest() const { return rulesets_.size(); }
