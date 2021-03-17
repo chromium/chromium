@@ -115,8 +115,8 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetModalType(ui::MODAL_TYPE_NONE);
 
-  const std::u16string title = browser_->tab_strip_model()
-                                   ->group_model()
+  TabStripModel* const tab_strip_model = browser_->tab_strip_model();
+  const std::u16string title = tab_strip_model->group_model()
                                    ->GetTabGroup(group_)
                                    ->visual_data()
                                    ->title();
@@ -229,6 +229,11 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
               base::Unretained(this)));
   move_to_new_window_menu_item->SetBorder(
       views::CreateEmptyBorder(control_insets));
+  // Disable the option if we'd leave the window empty.
+  if (tab_strip_model->count() ==
+      tab_strip_model->group_model()->GetTabGroup(group_)->tab_count()) {
+    move_to_new_window_menu_item->SetEnabled(false);
+  }
   menu_items_container->AddChildView(std::move(move_to_new_window_menu_item));
 
   if (base::FeatureList::IsEnabled(features::kTabGroupsFeedback)) {

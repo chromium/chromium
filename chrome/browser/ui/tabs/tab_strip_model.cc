@@ -1284,9 +1284,13 @@ bool TabStripModel::IsContextMenuCommandEnabled(
     case CommandMoveToExistingWindow:
       return true;
 
-    case CommandMoveTabsToNewWindow:
-      return delegate()->CanMoveTabsToWindow(
-          GetIndicesForCommand(context_index));
+    case CommandMoveTabsToNewWindow: {
+      std::vector<int> indices = GetIndicesForCommand(context_index);
+      const bool would_leave_strip_empty =
+          static_cast<int>(indices.size()) == count();
+      return !would_leave_strip_empty &&
+             delegate()->CanMoveTabsToWindow(indices);
+    }
 
     default:
       NOTREACHED();
