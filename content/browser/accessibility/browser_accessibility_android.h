@@ -79,7 +79,6 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
 
   bool HasAriaCurrent() const;
 
-  bool HasFocusableNonOptionChild() const;
   bool HasNonEmptyValue() const;
 
   bool HasCharacterLocations() const;
@@ -88,6 +87,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   const char* GetClassName() const;
   bool IsChildOfLeaf() const override;
   bool IsLeaf() const override;
+  bool IsLeafConsideringChildren() const;
   std::u16string GetInnerText() const override;
   std::u16string GetValueForControl() const override;
   std::u16string GetHint() const;

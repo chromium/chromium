@@ -1,0 +1,14 @@
+[document web]
+++[section]
+++++[section]
+++++++[section] name='1.'
+++++++++[static] name='1.'
+++++++[section] name='2.'
+++++++++[static] name='2.'
+++[section] name='3. 4.'
+++++[section]
+++++++[section]
+++++++++[section] name='3.'
+++++++++++[static] name='3.'
+++++++++[section] name='4.'
+++++++++++[static] name='4.'

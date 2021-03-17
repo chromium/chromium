@@ -496,31 +496,68 @@ bool BrowserAccessibilityAndroid::IsLeaf() const {
   BrowserAccessibilityManagerAndroid* manager_android =
       static_cast<BrowserAccessibilityManagerAndroid*>(manager());
   if (manager_android->prune_tree_for_screen_reader()) {
-    // Headings with text can drop their children.
+    // For some nodes, we will consider children before determining if the node
+    // is a leaf. For nodes with relevant children, we will return false here
+    // and allow the child nodes to be set as a leaf.
+
+    // Headings with text can drop their children (with exceptions).
     std::u16string name = GetInnerText();
     if (GetRole() == ax::mojom::Role::kHeading && !name.empty()) {
-      if (HasFocusableNonOptionChild()) {
-        return false;
-      } else {
-        return true;
-      }
+      return IsLeafConsideringChildren();
     }
 
-    // Focusable nodes with text should not expose their children.
+    // Focusable nodes with text can drop their children (with exceptions).
     if (HasState(ax::mojom::State::kFocusable) && !name.empty()) {
-      if (HasFocusableNonOptionChild()) {
-        return false;
-      } else {
-        return true;
-      }
+      return IsLeafConsideringChildren();
     }
 
-    // Nodes with only static text as children should not expose their children.
+    // Nodes with only static text can drop their children.
     if (HasOnlyTextChildren())
       return true;
   }
 
   return false;
+}
+
+bool BrowserAccessibilityAndroid::IsLeafConsideringChildren() const {
+  // This is called from IsLeaf, so don't call PlatformChildCount
+  // from within this!
+
+  // Check for any children that should be exposed and return false if found (by
+  // returning false we are saying the parent node is NOT a leaf and this child
+  // node should instead be the leaf).
+  //
+  // If a node has a child that meets any of these criteria, it is NOT a leaf:
+  //
+  //   * child is focusable, and NOT a menu option
+  //   * child is a table, cell, or row
+  //
+  for (auto it = InternalChildrenBegin(); it != InternalChildrenEnd(); ++it) {
+    BrowserAccessibility* child = it.get();
+
+    if (child->HasState(ax::mojom::State::kFocusable) &&
+        child->GetRole() != ax::mojom::Role::kMenuListOption) {
+      return false;
+    }
+
+    if (child->GetRole() == ax::mojom::Role::kTable ||
+        child->GetRole() == ax::mojom::Role::kCell ||
+        child->GetRole() == ax::mojom::Role::kRow ||
+        child->GetRole() == ax::mojom::Role::kLayoutTable ||
+        child->GetRole() == ax::mojom::Role::kLayoutTableCell ||
+        child->GetRole() == ax::mojom::Role::kLayoutTableRow) {
+      return false;
+    }
+
+    // Check nested children and return false if any meet above criteria.
+    if (!static_cast<BrowserAccessibilityAndroid*>(child)
+             ->IsLeafConsideringChildren())
+      return false;
+  }
+
+  // If no such children were found, return true signaling the parent node can
+  // be the leaf node.
+  return true;
 }
 
 std::u16string BrowserAccessibilityAndroid::GetInnerText() const {
@@ -2110,21 +2147,6 @@ void BrowserAccessibilityAndroid::GetWordBoundaries(
       }
     }
   }
-}
-
-bool BrowserAccessibilityAndroid::HasFocusableNonOptionChild() const {
-  // This is called from IsLeaf, so don't call PlatformChildCount
-  // from within this!
-  for (auto it = InternalChildrenBegin(); it != InternalChildrenEnd(); ++it) {
-    BrowserAccessibility* child = it.get();
-    if (child->HasState(ax::mojom::State::kFocusable) &&
-        child->GetRole() != ax::mojom::Role::kMenuListOption)
-      return true;
-    if (static_cast<BrowserAccessibilityAndroid*>(child)
-            ->HasFocusableNonOptionChild())
-      return true;
-  }
-  return false;
 }
 
 std::u16string BrowserAccessibilityAndroid::GetTargetUrl() const {
