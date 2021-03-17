@@ -44,9 +44,6 @@ class InteractiveUITestSuite : public ChromeTestSuite {
  protected:
   // ChromeTestSuite overrides:
   void Initialize() override {
-    // Browser tests are expected not to tear-down various globals.
-    base::TestSuite::DisableCheckForLeakedGlobals();
-
     ChromeTestSuite::Initialize();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -148,7 +145,8 @@ class InteractiveUITestLauncherDelegate : public ChromeTestLauncherDelegate {
 class InteractiveUITestSuiteRunner : public ChromeTestSuiteRunner {
  public:
   int RunTestSuite(int argc, char** argv) override {
-    return InteractiveUITestSuite(argc, argv).Run();
+    InteractiveUITestSuite test_suite(argc, argv);
+    return RunTestSuiteInternal(&test_suite);
   }
 };
 

@@ -70,10 +70,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #endif
 
-int ChromeTestSuiteRunner::RunTestSuite(int argc, char** argv) {
-  ChromeTestSuite test_suite(argc, argv);
+// static
+int ChromeTestSuiteRunner::RunTestSuiteInternal(ChromeTestSuite* test_suite) {
   // Browser tests are expected not to tear-down various globals.
-  test_suite.DisableCheckForLeakedGlobals();
+  test_suite->DisableCheckForLeakedGlobals();
 #if defined(OS_ANDROID)
   // Android browser tests run child processes as threads instead.
   content::ContentTestSuiteBase::RegisterInProcessThreads();
@@ -85,7 +85,12 @@ int ChromeTestSuiteRunner::RunTestSuite(int argc, char** argv) {
   InstalledVersionPoller::ScopedDisableForTesting disable_polling(
       InstalledVersionPoller::MakeScopedDisableForTesting());
 #endif
-  return test_suite.Run();
+  return test_suite->Run();
+}
+
+int ChromeTestSuiteRunner::RunTestSuite(int argc, char** argv) {
+  ChromeTestSuite test_suite(argc, argv);
+  return RunTestSuiteInternal(&test_suite);
 }
 
 #if defined(OS_WIN)

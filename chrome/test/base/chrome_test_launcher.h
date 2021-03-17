@@ -17,6 +17,8 @@
 #include "chrome/app/chrome_main_delegate.h"
 #endif
 
+class ChromeTestSuite;
+
 // Allows a test suite to override the TestSuite class used. By default it is an
 // instance of ChromeTestSuite.
 class ChromeTestSuiteRunner {
@@ -27,6 +29,9 @@ class ChromeTestSuiteRunner {
   virtual ~ChromeTestSuiteRunner() = default;
 
   virtual int RunTestSuite(int argc, char** argv);
+
+ protected:
+  static int RunTestSuiteInternal(ChromeTestSuite* test_suite);
 };
 
 // Acts like normal ChromeMainDelegate but injects behaviour for browser tests.
