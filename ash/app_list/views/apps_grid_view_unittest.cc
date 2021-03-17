@@ -255,11 +255,12 @@ class AppsGridViewTest : public views::ViewsTestBase,
     ash::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
         true);
 
+    // In production, page flip duration > page transition > overscroll.
     apps_grid_view_->set_page_flip_delay_for_testing(
-        base::TimeDelta::FromMilliseconds(10));
+        base::TimeDelta::FromMilliseconds(3));
     GetPaginationModel()->SetTransitionDurations(
-        base::TimeDelta::FromMilliseconds(10),
-        base::TimeDelta::FromMilliseconds(10));
+        base::TimeDelta::FromMilliseconds(2),
+        base::TimeDelta::FromMilliseconds(1));
     page_flip_waiter_ = std::make_unique<PageFlipWaiter>(GetPaginationModel());
   }
 
