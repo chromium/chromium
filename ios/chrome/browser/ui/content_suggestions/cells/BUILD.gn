@@ -22,6 +22,8 @@ source_set("cells") {
     "//ios/chrome/browser/ui/collection_view",
     "//ios/chrome/browser/ui/content_suggestions/identifier",
     "//ios/chrome/browser/ui/ntp_tile_views:constants",
+    "//ios/chrome/browser/ui/table_view/cells:cells_constants",
+    "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
     "//ui/base",
     "//url",
