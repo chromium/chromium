@@ -147,7 +147,7 @@
   {
     "name": "app-service-adaptive-icon",
     "owners": [ "//components/services/app_service/OWNERS" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   },
   {
     "name": "app-service-external-protocol",
