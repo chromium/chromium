@@ -10096,6 +10096,16 @@ histogram as enum -->
   <int value="0" label="Unknown"/>
 </enum>
 
+<enum name="CellularConnectResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Invalid GUID"/>
+  <int value="2" label="Invalid state"/>
+  <int value="3" label="Canceled"/>
+  <int value="4" label="Not configured"/>
+  <int value="5" label="Blocked"/>
+  <int value="6" label="Success"/>
+</enum>
+
 <enum name="CertificateChainPosition">
   <obsolete>
     Deprecated as of 01/2016. CertCacheTrial has been removed.

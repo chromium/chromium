@@ -75,10 +75,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   void OnShuttingDown() override;
 
   // NetworkConnectionObserver::
+  void ConnectFailed(const std::string& service_path,
+                     const std::string& error_name) override;
   void DisconnectRequested(const std::string& service_path) override;
 
  private:
   friend class CellularMetricsLoggerTest;
+  FRIEND_TEST_ALL_PREFIXES(CellularMetricsLoggerTest, CellularConnectResult);
   FRIEND_TEST_ALL_PREFIXES(CellularMetricsLoggerTest,
                            CellularESimProfileStatusAtLoginTest);
   FRIEND_TEST_ALL_PREFIXES(CellularMetricsLoggerTest,
@@ -109,10 +112,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   // Stores connection related information for a cellular network.
   struct ConnectionInfo {
     ConnectionInfo(const std::string& network_guid);
-    ConnectionInfo(const std::string& network_guid, bool is_connected);
+    ConnectionInfo(const std::string& network_guid,
+                   bool is_connected,
+                   bool is_connecting);
     ~ConnectionInfo();
     const std::string network_guid;
     base::Optional<bool> is_connected;
+    base::Optional<bool> is_connecting;
     base::Optional<base::TimeTicks> last_disconnect_request_time;
     base::Optional<base::TimeTicks> last_connect_start_time;
   };
@@ -124,7 +130,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   };
 
   // Usage type for cellular network. These values are persisted to logs.
-  // Entries should not be renumbered and numberic values should never
+  // Entries should not be renumbered and numeric values should never
   // be reused.
   enum class CellularUsage {
     kConnectedAndOnlyNetwork = 0,
@@ -157,7 +163,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   };
 
   // Cellular connection state. These values are persisted to logs.
-  // Entries should not be renumbered and numberic values should
+  // Entries should not be renumbered and numeric values should
   // never be reused.
   enum class ConnectionState {
     kConnected = 0,
@@ -184,6 +190,22 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
     kMaxValue = kErrorUnknown,
   };
 
+  // Result of connecting to a cellular network. These values are persisted to
+  // logs. Entries should not be renumbered and numeric values should never be
+  // reused.
+  enum class ConnectResult {
+    kUnknown = 0,
+    kInvalidGuid = 1,
+    kInvalidState = 2,
+    kCanceled = 3,
+    kNotConfigured = 4,
+    kBlocked = 5,
+    kSuccess = 6,
+    kMaxValue = kSuccess
+  };
+
+  SimType GetSimType(const NetworkState* network);
+
   // Convert shill error name string to SimPinOperationResult enum.
   static SimPinOperationResult GetSimPinOperationResultForShillError(
       const std::string& shill_error_name);
@@ -191,8 +213,16 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   // Convert shill activation state string to PSimActivationState enum
   PSimActivationState PSimActivationStateToEnum(const std::string& state);
 
+  // Converts a NetworkConnectionHandler string error to a ConnectResult enum.
+  ConnectResult NetworkConnectionErrorToConnectResult(
+      const std::string& error_name);
+
   // Helper method to save cellular disconnections histogram.
   void LogCellularDisconnectionsHistogram(ConnectionState connection_state);
+
+  void LogCellularConnectionSuccessHistogram(
+      ConnectResult start_connect_result,
+      CellularMetricsLogger::SimType sim_type);
 
   void OnInitializationTimeout();
 
@@ -210,6 +240,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   // Tracks the activation state of ESim cellular networks if available and
   // if |is_esim_profile_status_logged_| is false.
   void CheckForESimProfileStatusMetric();
+
+  // Tracks errors from shill that result in an unsuccessful connection.
+  void CheckForShillConnectionFailureMetric(const NetworkState* network);
 
   // This checks the state of connected networks and logs
   // cellular network usage histogram. Histogram is only logged

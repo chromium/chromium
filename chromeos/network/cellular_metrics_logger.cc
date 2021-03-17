@@ -99,10 +99,60 @@ void CellularMetricsLogger::RecordSimPinOperationResult(
   }
 }
 
+CellularMetricsLogger::SimType CellularMetricsLogger::GetSimType(
+    const NetworkState* network) {
+  return network->eid().empty() ? SimType::kPSim : SimType::kESim;
+}
+
+CellularMetricsLogger::ConnectResult
+CellularMetricsLogger::NetworkConnectionErrorToConnectResult(
+    const std::string& error_name) {
+  if (error_name == NetworkConnectionHandler::kErrorNotFound)
+    return CellularMetricsLogger::ConnectResult::kInvalidGuid;
+
+  if (error_name == NetworkConnectionHandler::kErrorConnected ||
+      error_name == NetworkConnectionHandler::kErrorConnecting) {
+    return CellularMetricsLogger::ConnectResult::kInvalidState;
+  }
+
+  if (error_name == NetworkConnectionHandler::kErrorConnectCanceled)
+    return CellularMetricsLogger::ConnectResult::kCanceled;
+
+  if (error_name == NetworkConnectionHandler::kErrorPassphraseRequired ||
+      error_name == NetworkConnectionHandler::kErrorBadPassphrase ||
+      error_name == NetworkConnectionHandler::kErrorCertificateRequired ||
+      error_name == NetworkConnectionHandler::kErrorConfigurationRequired ||
+      error_name == NetworkConnectionHandler::kErrorAuthenticationRequired ||
+      error_name == NetworkConnectionHandler::kErrorCertLoadTimeout ||
+      error_name == NetworkConnectionHandler::kErrorConfigureFailed) {
+    return CellularMetricsLogger::ConnectResult::kNotConfigured;
+  }
+
+  if (error_name == NetworkConnectionHandler::kErrorBlockedByPolicy)
+    return CellularMetricsLogger::ConnectResult::kBlocked;
+
+  return CellularMetricsLogger::ConnectResult::kUnknown;
+}
+
+void CellularMetricsLogger::LogCellularConnectionSuccessHistogram(
+    CellularMetricsLogger::ConnectResult start_connect_result,
+    CellularMetricsLogger::SimType sim_type) {
+  if (sim_type == SimType::kPSim) {
+    UMA_HISTOGRAM_ENUMERATION("Network.Cellular.PSim.ConnectionSuccess",
+                              start_connect_result);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION("Network.Cellular.ESim.ConnectionSuccess",
+                              start_connect_result);
+  }
+}
+
 CellularMetricsLogger::ConnectionInfo::ConnectionInfo(
     const std::string& network_guid,
-    bool is_connected)
-    : network_guid(network_guid), is_connected(is_connected) {}
+    bool is_connected,
+    bool is_connecting)
+    : network_guid(network_guid),
+      is_connected(is_connected),
+      is_connecting(is_connecting) {}
 
 CellularMetricsLogger::ConnectionInfo::ConnectionInfo(
     const std::string& network_guid)
@@ -191,7 +241,8 @@ void CellularMetricsLogger::NetworkListChanged() {
 
     guid_to_connection_info_map_.insert_or_assign(
         guid,
-        std::make_unique<ConnectionInfo>(guid, network->IsConnectedState()));
+        std::make_unique<ConnectionInfo>(guid, network->IsConnectedState(),
+                                         network->IsConnectingState()));
   }
 }
 
@@ -233,6 +284,10 @@ void CellularMetricsLogger::NetworkConnectionStateChanged(
   }
 
   CheckForTimeToConnectedMetric(network);
+  // Check for connection failures triggered by shill changes, unlike in
+  // ConnectFailed() which is triggered by connection attempt failures at
+  // chrome layers.
+  CheckForShillConnectionFailureMetric(network);
   CheckForConnectionStateMetric(network);
 }
 
@@ -267,6 +322,22 @@ void CellularMetricsLogger::CheckForTimeToConnectedMetric(
   // successfully connected or otherwise. Reset the connect start_time
   // so that it is not used for further connection state changes.
   connection_info->last_connect_start_time.reset();
+}
+
+void CellularMetricsLogger::ConnectFailed(const std::string& service_path,
+                                          const std::string& error_name) {
+  const NetworkState* network =
+      network_state_handler_->GetNetworkState(service_path);
+  if (!network || network->type().empty() ||
+      !network->Matches(NetworkTypePattern::Cellular())) {
+    return;
+  }
+
+  // Check for connection failures at chrome layers, instead of connection
+  // failures triggered by shill which is tracked in
+  // CheckForShillConnectionFailureMetric().
+  LogCellularConnectionSuccessHistogram(
+      NetworkConnectionErrorToConnectResult(error_name), GetSimType(network));
 }
 
 void CellularMetricsLogger::DisconnectRequested(
@@ -306,6 +377,22 @@ void CellularMetricsLogger::LogCellularDisconnectionsHistogram(
                             connection_state);
 }
 
+void CellularMetricsLogger::CheckForShillConnectionFailureMetric(
+    const NetworkState* network) {
+  ConnectionInfo* connection_info =
+      GetConnectionInfoForCellularNetwork(network->guid());
+
+  // If the network connection state just failed.
+  if (!network->IsConnectingOrConnected() && connection_info->is_connecting) {
+    // Note: Currently all shill errors that result in a connection failure are
+    // mapped to CellularMetricsLogger::ConnectResult::kUnknown.
+    LogCellularConnectionSuccessHistogram(
+        CellularMetricsLogger::ConnectResult::kUnknown, GetSimType(network));
+  }
+
+  connection_info->is_connecting = network->IsConnectingState();
+}
+
 void CellularMetricsLogger::CheckForConnectionStateMetric(
     const NetworkState* network) {
   ConnectionInfo* connection_info =
@@ -318,6 +405,8 @@ void CellularMetricsLogger::CheckForConnectionStateMetric(
   connection_info->is_connected = new_is_connected;
 
   if (new_is_connected) {
+    LogCellularConnectionSuccessHistogram(
+        CellularMetricsLogger::ConnectResult::kSuccess, GetSimType(network));
     LogCellularDisconnectionsHistogram(ConnectionState::kConnected);
     connection_info->last_disconnect_request_time.reset();
     return;
@@ -428,7 +517,7 @@ void CellularMetricsLogger::CheckForCellularServiceCountMetric() {
   size_t esim_profiles = 0;
 
   for (const auto* network : network_list) {
-    if (!network->eid().empty())
+    if (GetSimType(network) == SimType::kESim)
       esim_profiles++;
     else
       psim_networks++;
