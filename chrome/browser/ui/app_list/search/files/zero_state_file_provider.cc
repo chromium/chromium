@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/search/zero_state_file_provider.h"
+#include "chrome/browser/ui/app_list/search/files/zero_state_file_provider.h"
 
 #include <string>
 
@@ -19,15 +19,17 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/app_list/search/file_chip_result.h"
+#include "chrome/browser/ui/app_list/search/files/file_result.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_ranker.h"
-#include "chrome/browser/ui/app_list/search/zero_state_file_result.h"
 #include "components/prefs/pref_service.h"
 
 using file_manager::file_tasks::FileTasksObserver;
 
 namespace app_list {
 namespace {
+
+constexpr char kFileChipSchema[] = "file_chip://";
+constexpr char kZeroStateFileSchema[] = "zero_state_file://";
 
 constexpr int kMaxLocalFiles = 10;
 
@@ -69,7 +71,7 @@ ZeroStateFileProvider::ZeroStateFileProvider(Profile* profile)
       file_manager::file_tasks::FileTasksNotifier::GetForProfile(profile_);
 
   if (notifier) {
-    file_tasks_observer_.Add(notifier);
+    file_tasks_observer_.Observe(notifier);
 
     RecurrenceRankerConfigProto config;
     config.set_min_seconds_between_saves(120u);
@@ -118,13 +120,19 @@ void ZeroStateFileProvider::SetSearchResults(
   // Use valid results for search results.
   SearchProvider::Results new_results;
   for (const auto& filepath_score : results.first) {
-    new_results.emplace_back(std::make_unique<ZeroStateFileResult>(
-        filepath_score.first, filepath_score.second, profile_));
+    new_results.emplace_back(std::make_unique<FileResult>(
+        kZeroStateFileSchema, filepath_score.first,
+        ash::AppListSearchResultType::kZeroStateFile,
+        ash::SearchResultDisplayType::kList, filepath_score.second, profile_));
+
     // Add suggestion chip file results
     if (app_list_features::IsSuggestedFilesEnabled() &&
         IsSuggestedContentEnabled(profile_)) {
-      new_results.emplace_back(std::make_unique<FileChipResult>(
-          filepath_score.first, filepath_score.second, profile_));
+      new_results.emplace_back(
+          std::make_unique<FileResult>(kFileChipSchema, filepath_score.first,
+                                       ash::AppListSearchResultType::kFileChip,
+                                       ash::SearchResultDisplayType::kChip,
+                                       filepath_score.second, profile_));
     }
   }
 

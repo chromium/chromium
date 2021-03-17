@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_ZERO_STATE_FILE_PROVIDER_H_
-#define CHROME_BROWSER_UI_APP_LIST_SEARCH_ZERO_STATE_FILE_PROVIDER_H_
+#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_ZERO_STATE_FILE_PROVIDER_H_
+#define CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_ZERO_STATE_FILE_PROVIDER_H_
 
 #include <map>
 #include <memory>
@@ -15,7 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/file_manager/file_tasks_notifier.h"
@@ -69,8 +69,8 @@ class ZeroStateFileProvider : public SearchProvider,
 
   base::TimeTicks query_start_time_;
 
-  ScopedObserver<file_manager::file_tasks::FileTasksNotifier,
-                 file_manager::file_tasks::FileTasksObserver>
+  base::ScopedObservation<file_manager::file_tasks::FileTasksNotifier,
+                          file_manager::file_tasks::FileTasksObserver>
       file_tasks_observer_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -83,4 +83,4 @@ class ZeroStateFileProvider : public SearchProvider,
 
 }  // namespace app_list
 
-#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_ZERO_STATE_FILE_PROVIDER_H_
+#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_ZERO_STATE_FILE_PROVIDER_H_
