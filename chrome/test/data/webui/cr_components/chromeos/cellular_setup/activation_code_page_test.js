@@ -55,6 +55,7 @@ suite('CrComponentsActivationCodePageTest', function() {
 
   teardown(function() {
     activationCodePage.remove();
+    FakeBarcodeDetector.setShouldFail(false);
   });
 
   test('UI states', async function() {
@@ -115,17 +116,6 @@ suite('CrComponentsActivationCodePageTest', function() {
     assertFalse(scanSuccessContainer.hidden);
     assertTrue(scanFailureContainer.hidden);
 
-    // Mock an invalid activation code.
-    activationCodePage.showError = true;
-
-    // The scanFinishContainer and scanFailureContainer should now be visible,
-    // video, start scanning UI and scanSuccessContainer hidden.
-    assertFalse(scanFinishContainer.hidden);
-    assertTrue(startScanningContainer.hidden);
-    assertTrue(video.hidden);
-    assertTrue(scanSuccessContainer.hidden);
-    assertFalse(scanFailureContainer.hidden);
-
     // Click the 'Try Again' button.
     tryAgainButton.click();
     await flushAsync();
@@ -148,17 +138,6 @@ suite('CrComponentsActivationCodePageTest', function() {
     assertFalse(scanSuccessContainer.hidden);
     assertTrue(scanFailureContainer.hidden);
     assertFalse(activationCodePage.showError);
-
-    // Mock another invalid activation code.
-    activationCodePage.showError = true;
-
-    // The scanFinishContainer and scanFailureContainer should now be visible,
-    // video, start scanning UI and scanSuccessContainer hidden.
-    assertFalse(scanFinishContainer.hidden);
-    assertTrue(startScanningContainer.hidden);
-    assertTrue(video.hidden);
-    assertTrue(scanSuccessContainer.hidden);
-    assertFalse(scanFailureContainer.hidden);
 
     // Click the 'Try Again' button.
     tryAgainButton.click();
@@ -326,4 +305,27 @@ suite('CrComponentsActivationCodePageTest', function() {
     await flushAsync();
     assertTrue(eventFired);
   });
+
+  test(
+      'Install error after manual entry should show error on input',
+      async function() {
+        await flushAsync();
+        const input = activationCodePage.$$('#activationCode');
+        const startScanningContainer =
+            activationCodePage.$$('#startScanningContainer');
+        const scanFinishContainer =
+            activationCodePage.$$('#scanFinishContainer');
+        assertTrue(!!input);
+        assertTrue(!!startScanningContainer);
+        assertTrue(!!scanFinishContainer);
+        assertFalse(input.invalid);
+
+        input.value = 'ACTIVATION_CODE';
+        activationCodePage.showError = true;
+        assertTrue(input.invalid);
+
+        // Should be showing the start scanning UI.
+        assertFalse(startScanningContainer.hidden);
+        assertTrue(scanFinishContainer.hidden);
+      });
 });

@@ -17,6 +17,7 @@ const PageState = {
   SWITCHING_CAM_ENVIRONMENT_TO_USER: 5,
   SCANNING_SUCCESS: 6,
   SCANNING_FAILURE: 7,
+  MANUAL_ENTRY_INSTALL_FAILURE: 8,
 };
 
 /** @enum {number} */
@@ -394,14 +395,18 @@ Polymer({
 
   /** @private */
   onShowErrorChanged_() {
+    // TODO(crbug.com/1093185) Handle install failure from scanning.
     if (this.showError) {
-      this.state_ = PageState.SCANNING_FAILURE;
+      this.state_ = PageState.MANUAL_ENTRY_INSTALL_FAILURE;
+      Polymer.RenderStatus.afterNextRender(this, () => {
+        cr.ui.focusWithoutInk(this.$.activationCode);
+      });
     }
   },
 
   /** @private */
   onStateChanged_() {
-    if (this.state_ !== PageState.SCANNING_FAILURE) {
+    if (this.state_ !== PageState.MANUAL_ENTRY_INSTALL_FAILURE) {
       this.showError = false;
     }
     if (this.state_ === PageState.MANUAL_ENTRY) {
@@ -435,7 +440,8 @@ Polymer({
   isUiElementHidden_(uiElement, state, cameraCount) {
     switch (uiElement) {
       case UiElement.START_SCANNING:
-        return state !== PageState.MANUAL_ENTRY;
+        return state !== PageState.MANUAL_ENTRY &&
+            state !== PageState.MANUAL_ENTRY_INSTALL_FAILURE;
       case UiElement.VIDEO:
         return state !== PageState.SCANNING_USER_FACING &&
             state !== PageState.SCANNING_ENVIRONMENT_FACING;
