@@ -127,10 +127,9 @@ ScriptedIdleTaskController::RegisterCallback(
   scoped_refptr<internal::IdleRequestCallbackWrapper> callback_wrapper =
       internal::IdleRequestCallbackWrapper::Create(id, this);
   ScheduleCallback(std::move(callback_wrapper), timeout_millis);
-  TRACE_EVENT_INSTANT1("devtools.timeline", "RequestIdleCallback",
-                       TRACE_EVENT_SCOPE_THREAD, "data",
-                       inspector_idle_callback_request_event::Data(
-                           GetExecutionContext(), id, timeout_millis));
+  DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
+      "RequestIdleCallback", inspector_idle_callback_request_event::Data,
+      GetExecutionContext(), id, timeout_millis);
   return id;
 }
 
@@ -152,10 +151,9 @@ void ScriptedIdleTaskController::ScheduleCallback(
 }
 
 void ScriptedIdleTaskController::CancelCallback(CallbackId id) {
-  TRACE_EVENT_INSTANT1(
-      "devtools.timeline", "CancelIdleCallback", TRACE_EVENT_SCOPE_THREAD,
-      "data",
-      inspector_idle_callback_cancel_event::Data(GetExecutionContext(), id));
+  DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
+      "CancelIdleCallback", inspector_idle_callback_cancel_event::Data,
+      GetExecutionContext(), id);
   if (!IsValidCallbackId(id))
     return;
 
@@ -205,11 +203,10 @@ void ScriptedIdleTaskController::RunCallback(
   probe::UserCallback probe(GetExecutionContext(), "requestIdleCallback",
                             AtomicString(), true);
 
-  TRACE_EVENT1(
-      "devtools.timeline", "FireIdleCallback", "data",
-      inspector_idle_callback_fire_event::Data(
-          GetExecutionContext(), id, allotted_time.InMillisecondsF(),
-          callback_type == IdleDeadline::CallbackType::kCalledByTimeout));
+  DEVTOOLS_TIMELINE_TRACE_EVENT(
+      "FireIdleCallback", inspector_idle_callback_fire_event::Data,
+      GetExecutionContext(), id, allotted_time.InMillisecondsF(),
+      callback_type == IdleDeadline::CallbackType::kCalledByTimeout);
   idle_task->invoke(
       MakeGarbageCollected<IdleDeadline>(deadline, callback_type));
 

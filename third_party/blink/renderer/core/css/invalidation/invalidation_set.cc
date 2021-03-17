@@ -365,64 +365,41 @@ InvalidationSet* InvalidationSet::PartInvalidationSet() {
   return singleton_;
 }
 
-void InvalidationSet::ToTracedValue(TracedValue* value) const {
-  value->BeginDictionary();
+void InvalidationSet::WriteIntoTracedValue(
+    perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
 
-  value->SetString("id", DescendantInvalidationSetToIdString(*this));
+  dict.Add("id", DescendantInvalidationSetToIdString(*this));
 
   if (invalidation_flags_.WholeSubtreeInvalid())
-    value->SetBoolean("allDescendantsMightBeInvalid", true);
+    dict.Add("allDescendantsMightBeInvalid", true);
   if (invalidation_flags_.InvalidateCustomPseudo())
-    value->SetBoolean("customPseudoInvalid", true);
+    dict.Add("customPseudoInvalid", true);
   if (invalidation_flags_.TreeBoundaryCrossing())
-    value->SetBoolean("treeBoundaryCrossing", true);
+    dict.Add("treeBoundaryCrossing", true);
   if (invalidation_flags_.InsertionPointCrossing())
-    value->SetBoolean("insertionPointCrossing", true);
+    dict.Add("insertionPointCrossing", true);
   if (invalidation_flags_.InvalidatesSlotted())
-    value->SetBoolean("invalidatesSlotted", true);
+    dict.Add("invalidatesSlotted", true);
   if (invalidation_flags_.InvalidatesParts())
-    value->SetBoolean("invalidatesParts", true);
+    dict.Add("invalidatesParts", true);
 
   if (HasIds()) {
-    value->BeginArray("ids");
-    for (const auto& id : Ids())
-      value->PushString(id);
-    value->EndArray();
+    dict.Add("ids", Ids());
   }
 
   if (HasClasses()) {
-    value->BeginArray("classes");
-    for (const auto& class_name : Classes())
-      value->PushString(class_name);
-    value->EndArray();
+    dict.Add("classes", Classes());
   }
 
   if (HasTagNames()) {
-    value->BeginArray("tagNames");
-    for (const auto& tag_name : TagNames())
-      value->PushString(tag_name);
-    value->EndArray();
+    dict.Add("tagNames", TagNames());
   }
 
   if (HasAttributes()) {
-    value->BeginArray("attributes");
-    for (const auto& attribute : Attributes())
-      value->PushString(attribute);
-    value->EndArray();
+    dict.Add("attributes", Attributes());
   }
-
-  value->EndDictionary();
 }
-
-#ifndef NDEBUG
-void InvalidationSet::Show() const {
-  TracedValueJSON value;
-  value.BeginArray("InvalidationSet");
-  ToTracedValue(&value);
-  value.EndArray();
-  LOG(ERROR) << value.ToJSON().Ascii();
-}
-#endif  // NDEBUG
 
 String InvalidationSet::ToString() const {
   auto format_backing = [](auto range, const char* prefix, const char* suffix) {

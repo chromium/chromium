@@ -729,11 +729,10 @@ inline bool PaintFastBottomLayer(const Document* document,
         image->CorrectSrcRectForImageOrientation(intrinsic_tile_size, src_rect);
   }
 
-  TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "PaintImage",
-               "data",
-               inspector_paint_image_event::Data(
-                   node, *info.image, FloatRect(image->Rect()),
-                   FloatRect(image_border.Rect())));
+  DEVTOOLS_TIMELINE_TRACE_EVENT_WITH_CATEGORIES(
+      TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "PaintImage",
+      inspector_paint_image_event::Data, node, *info.image,
+      FloatRect(image->Rect()), FloatRect(image_border.Rect()));
 
   // Since there is no way for the developer to specify decode behavior, use
   // kSync by default.
@@ -875,11 +874,10 @@ void PaintFillLayerBackground(const Document* document,
   // resource locator is given such as "//:0", so still check for image.
   if (info.should_paint_image && !geometry.SnappedDestRect().IsEmpty() &&
       !geometry.TileSize().IsEmpty() && image) {
-    TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "PaintImage",
-                 "data",
-                 inspector_paint_image_event::Data(
-                     node, *info.image, FloatRect(image->Rect()),
-                     FloatRect(scrolled_paint_rect)));
+    DEVTOOLS_TIMELINE_TRACE_EVENT_WITH_CATEGORIES(
+        TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "PaintImage",
+        inspector_paint_image_event::Data, node, *info.image,
+        FloatRect(image->Rect()), FloatRect(scrolled_paint_rect));
     DrawTiledBackground(
         context, image, FloatSize(geometry.UnsnappedDestRect().size),
         FloatRect(geometry.SnappedDestRect()), geometry.Phase(),

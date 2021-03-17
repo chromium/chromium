@@ -184,12 +184,11 @@ void WorkerInspectorController::OnTraceLogDisabled() {}
 void WorkerInspectorController::EmitTraceEvent() {
   if (worker_devtools_token_.is_empty())
     return;
-  TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                       "TracingSessionIdForWorker", TRACE_EVENT_SCOPE_THREAD,
-                       "data",
-                       inspector_tracing_session_id_for_worker_event::Data(
-                           worker_devtools_token_, parent_devtools_token_, url_,
-                           worker_thread_id_));
+  DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT_WITH_CATEGORIES(
+      TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+      "TracingSessionIdForWorker",
+      inspector_tracing_session_id_for_worker_event::Data,
+      worker_devtools_token_, parent_devtools_token_, url_, worker_thread_id_);
 }
 
 void WorkerInspectorController::Trace(Visitor* visitor) const {

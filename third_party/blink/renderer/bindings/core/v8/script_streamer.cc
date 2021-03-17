@@ -459,9 +459,11 @@ void ScriptStreamer::RunScriptStreamingTask(
   // TODO(leszeks): Add flow event data again
   TRACE_EVENT_BEGIN1(
       "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
-      "v8.parseOnBackground", "data",
-      inspector_parse_script_event::Data(streamer->ScriptResourceIdentifier(),
-                                         streamer->ScriptURLString()));
+      "v8.parseOnBackground", "data", [&](perfetto::TracedValue context) {
+        inspector_parse_script_event::Data(std::move(context),
+                                           streamer->ScriptResourceIdentifier(),
+                                           streamer->ScriptURLString());
+      });
 
   TRACE_EVENT_BEGIN0(
       "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
@@ -612,8 +614,11 @@ bool ScriptStreamer::TryStartStreamingTask() {
   TRACE_EVENT_WITH_FLOW1(
       TRACE_DISABLED_BY_DEFAULT("v8.compile"), "v8.streamingCompile.start",
       this, TRACE_EVENT_FLAG_FLOW_OUT, "data",
-      inspector_parse_script_event::Data(this->ScriptResourceIdentifier(),
-                                         this->ScriptURLString()));
+      [&](perfetto::TracedValue context) {
+        inspector_parse_script_event::Data(std::move(context),
+                                           this->ScriptResourceIdentifier(),
+                                           this->ScriptURLString());
+      });
 
   stream_->TakeDataAndPipeOnMainThread(
       script_resource_, this, std::move(data_pipe_),
@@ -764,9 +769,11 @@ void ScriptStreamer::StreamingComplete(LoadingState loading_state) {
   TRACE_EVENT_WITH_FLOW2(
       TRACE_DISABLED_BY_DEFAULT("v8.compile"), "v8.streamingCompile.complete",
       this, TRACE_EVENT_FLAG_FLOW_IN, "streaming_suppressed",
-      IsStreamingSuppressed(), "data",
-      inspector_parse_script_event::Data(this->ScriptResourceIdentifier(),
-                                         this->ScriptURLString()));
+      IsStreamingSuppressed(), "data", [&](perfetto::TracedValue context) {
+        inspector_parse_script_event::Data(std::move(context),
+                                           this->ScriptResourceIdentifier(),
+                                           this->ScriptURLString());
+      });
 
   // The background task is completed; do the necessary ramp-down in the main
   // thread.

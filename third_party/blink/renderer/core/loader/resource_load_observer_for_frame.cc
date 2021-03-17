@@ -97,9 +97,9 @@ void ResourceLoadObserverForFrame::DidChangePriority(
     uint64_t identifier,
     ResourceLoadPriority priority,
     int intra_priority_value) {
-  TRACE_EVENT1("devtools.timeline", "ResourceChangePriority", "data",
-               inspector_change_resource_priority_event::Data(
-                   document_loader_, identifier, priority));
+  DEVTOOLS_TIMELINE_TRACE_EVENT("ResourceChangePriority",
+                                inspector_change_resource_priority_event::Data,
+                                document_loader_, identifier, priority);
   probe::DidChangeResourcePriority(document_->GetFrame(), document_loader_,
                                    identifier, priority);
 }

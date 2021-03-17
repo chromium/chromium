@@ -247,9 +247,12 @@ v8::MaybeLocal<v8::Script> V8ScriptRunner::CompileScript(
       CompileScriptInternal(isolate, execution_context, source, origin,
                             compile_options, no_cache_reason, &cache_result);
   TRACE_EVENT_END1(kTraceEventCategoryGroup, "v8.compile", "data",
-                   inspector_compile_script_event::Data(
-                       file_name, script_start_position, cache_result,
-                       source.Streamer(), source.NotStreamingReason()));
+                   [&](perfetto::TracedValue context) {
+                     inspector_compile_script_event::Data(
+                         std::move(context), file_name, script_start_position,
+                         cache_result, source.Streamer(),
+                         source.NotStreamingReason());
+                   });
   return script;
 }
 
@@ -328,9 +331,11 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
   }
 
   TRACE_EVENT_END1(kTraceEventCategoryGroup, "v8.compileModule", "data",
-                   inspector_compile_script_event::Data(
-                       file_name, start_position, cache_result, streamer,
-                       params.NotStreamingReason()));
+                   [&](perfetto::TracedValue context) {
+                     inspector_compile_script_event::Data(
+                         std::move(context), file_name, start_position,
+                         cache_result, streamer, params.NotStreamingReason());
+                   });
   return script;
 }
 
@@ -426,9 +431,9 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
 
   v8::Context::Scope scope(script_state->GetContext());
 
-  TRACE_EVENT1("devtools.timeline", "EvaluateScript", "data",
-               inspector_evaluate_script_event::Data(
-                   frame, source.Url().GetString(), source.StartPosition()));
+  DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
+      "EvaluateScript", inspector_evaluate_script_event::Data, frame,
+      source.Url().GetString(), source.StartPosition());
 
   // Scope for |v8::TryCatch|.
   {
@@ -624,7 +629,10 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallAsConstructor(
 
   if (!depth) {
     TRACE_EVENT_BEGIN1("devtools.timeline", "FunctionCall", "data",
-                       inspector_function_call_event::Data(context, function));
+                       [&](perfetto::TracedValue ctx) {
+                         inspector_function_call_event::Data(std::move(ctx),
+                                                             context, function);
+                       });
   }
 
   v8::MaybeLocal<v8::Value> result =
@@ -670,8 +678,8 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallFunction(
   v8::MicrotasksScope microtasks_scope(isolate, microtask_queue,
                                        v8::MicrotasksScope::kRunMicrotasks);
   if (!depth) {
-    TRACE_EVENT_BEGIN1("devtools.timeline", "FunctionCall", "data",
-                       inspector_function_call_event::Data(context, function));
+    DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
+        "FunctionCall", inspector_function_call_event::Data, context, function);
   }
 
   probe::CallFunction probe(context, function, depth);

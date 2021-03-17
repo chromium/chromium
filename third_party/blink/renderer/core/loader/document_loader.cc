@@ -1690,8 +1690,8 @@ void DocumentLoader::DidCommitNavigation() {
   if (interactive_detector)
     interactive_detector->SetNavigationStartTime(GetTiming().NavigationStart());
 
-  TRACE_EVENT1("devtools.timeline", "CommitLoad", "data",
-               inspector_commit_load_event::Data(frame_));
+  DEVTOOLS_TIMELINE_TRACE_EVENT("CommitLoad", inspector_commit_load_event::Data,
+                                frame_);
 
   // Needs to run before dispatching preloads, as it may evict the memory cache.
   probe::DidCommitLoad(frame_, this);

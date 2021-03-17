@@ -243,14 +243,17 @@ static void ProduceCacheInternal(
 
       TRACE_EVENT_END1(
           kTraceEventCategoryGroup, trace_name, "data",
-          inspector_compile_script_event::Data(
-              source_url.GetString(), source_start_position,
-              inspector_compile_script_event::V8CacheResult(
-                  inspector_compile_script_event::V8CacheResult::ProduceResult(
-                      cached_data ? cached_data->length : 0),
-                  base::Optional<inspector_compile_script_event::V8CacheResult::
-                                     ConsumeResult>()),
-              is_streamed, not_streaming_reason));
+          [&](perfetto::TracedValue context) {
+            inspector_compile_script_event::Data(
+                std::move(context), source_url.GetString(),
+                source_start_position,
+                inspector_compile_script_event::V8CacheResult(
+                    inspector_compile_script_event::V8CacheResult::
+                        ProduceResult(cached_data ? cached_data->length : 0),
+                    base::Optional<inspector_compile_script_event::
+                                       V8CacheResult::ConsumeResult>()),
+                is_streamed, not_streaming_reason);
+          });
       break;
     }
     case V8CodeCache::ProduceCacheOptions::kNoProduceCache:
@@ -351,14 +354,16 @@ scoped_refptr<CachedMetadata> V8CodeCache::GenerateFullCodeCache(
 
   TRACE_EVENT_END1(
       kTraceEventCategoryGroup, "v8.compile", "data",
-      inspector_compile_script_event::Data(
-          file_name, TextPosition::MinimumPosition(),
-          inspector_compile_script_event::V8CacheResult(
-              inspector_compile_script_event::V8CacheResult::ProduceResult(
-                  cached_data ? cached_data->length : 0),
-              base::Optional<inspector_compile_script_event::V8CacheResult::
-                                 ConsumeResult>()),
-          false, ScriptStreamer::NotStreamingReason::kHasCodeCache));
+      [&](perfetto::TracedValue context) {
+        inspector_compile_script_event::Data(
+            std::move(context), file_name, TextPosition::MinimumPosition(),
+            inspector_compile_script_event::V8CacheResult(
+                inspector_compile_script_event::V8CacheResult::ProduceResult(
+                    cached_data ? cached_data->length : 0),
+                base::Optional<inspector_compile_script_event::V8CacheResult::
+                                   ConsumeResult>()),
+            false, ScriptStreamer::NotStreamingReason::kHasCodeCache);
+      });
 
   return cached_metadata;
 }

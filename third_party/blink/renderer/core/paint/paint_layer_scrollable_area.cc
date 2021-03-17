@@ -528,8 +528,8 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
   LocalFrameView* frame_view = GetLayoutBox()->GetFrameView();
   bool is_root_layer = Layer()->IsRootLayer();
 
-  TRACE_EVENT1("devtools.timeline", "ScrollLayer", "data",
-               inspector_scroll_layer_event::Data(GetLayoutBox()));
+  DEVTOOLS_TIMELINE_TRACE_EVENT(
+      "ScrollLayer", inspector_scroll_layer_event::Data, GetLayoutBox());
 
   // Update the positions of our child layers (if needed as only fixed layers
   // should be impacted by a scroll).

@@ -321,9 +321,11 @@ const AtomicString& StyleSheetContents::NamespaceURIFromPrefix(
 
 void StyleSheetContents::ParseAuthorStyleSheet(
     const CSSStyleSheetResource* cached_style_sheet) {
-  TRACE_EVENT1(
-      "blink,devtools.timeline", "ParseAuthorStyleSheet", "data",
-      inspector_parse_author_style_sheet_event::Data(cached_style_sheet));
+  TRACE_EVENT1("blink,devtools.timeline", "ParseAuthorStyleSheet", "data",
+               [&](perfetto::TracedValue context) {
+                 inspector_parse_author_style_sheet_event::Data(
+                     std::move(context), cached_style_sheet);
+               });
 
   const ResourceResponse& response = cached_style_sheet->GetResponse();
   CSSStyleSheetResource::MIMETypeCheck mime_type_check =

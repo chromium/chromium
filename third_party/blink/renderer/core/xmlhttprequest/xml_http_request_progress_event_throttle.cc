@@ -143,9 +143,9 @@ void XMLHttpRequestProgressEventThrottle::DispatchProgressProgressEvent(
   XMLHttpRequest::State state = target_->readyState();
   if (target_->readyState() == XMLHttpRequest::kLoading &&
       has_dispatched_progress_progress_event_) {
-    TRACE_EVENT1("devtools.timeline", "XHRReadyStateChange", "data",
-                 inspector_xhr_ready_state_change_event::Data(
-                     target_->GetExecutionContext(), target_));
+    DEVTOOLS_TIMELINE_TRACE_EVENT("XHRReadyStateChange",
+                                  inspector_xhr_ready_state_change_event::Data,
+                                  target_->GetExecutionContext(), target_);
     probe::AsyncTask async_task(target_->GetExecutionContext(),
                                 target_->async_task_id(), "progress",
                                 target_->IsAsync());

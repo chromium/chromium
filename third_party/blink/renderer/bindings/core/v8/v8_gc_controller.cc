@@ -154,9 +154,11 @@ void V8GCController::GcEpilogue(v8::Isolate* isolate,
     current_thread_state->NotifyGarbageCollection(type, flags);
   }
 
-  TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                       "UpdateCounters", TRACE_EVENT_SCOPE_THREAD, "data",
-                       inspector_update_counters_event::Data());
+  TRACE_EVENT_INSTANT1(
+      TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "UpdateCounters",
+      TRACE_EVENT_SCOPE_THREAD, "data", [&](perfetto::TracedValue context) {
+        inspector_update_counters_event::Data(std::move(context));
+      });
 }
 
 }  // namespace blink

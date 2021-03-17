@@ -205,8 +205,11 @@ bool LayoutView::HitTestNoLifecycleUpdate(const HitTestLocation& location,
   }
 
   TRACE_EVENT_END1("blink,devtools.timeline", "HitTest", "endData",
-                   inspector_hit_test_event::EndData(result.GetHitTestRequest(),
-                                                     location, result));
+                   [&](perfetto::TracedValue context) {
+                     inspector_hit_test_event::EndData(
+                         std::move(context), result.GetHitTestRequest(),
+                         location, result);
+                   });
   return hit_layer;
 }
 

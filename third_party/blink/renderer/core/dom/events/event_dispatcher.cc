@@ -212,8 +212,8 @@ DispatchEventResult EventDispatcher::Dispatch() {
   DCHECK(!EventDispatchForbiddenScope::IsEventDispatchForbidden());
 #endif
   DCHECK(event_->target());
-  TRACE_EVENT1("devtools.timeline", "EventDispatch", "data",
-               inspector_event_dispatch_event::Data(*event_));
+  DEVTOOLS_TIMELINE_TRACE_EVENT("EventDispatch",
+                                inspector_event_dispatch_event::Data, *event_);
   EventDispatchHandlingState* pre_dispatch_event_handler_result = nullptr;
   if (DispatchEventPreProcess(activation_target,
                               pre_dispatch_event_handler_result) ==

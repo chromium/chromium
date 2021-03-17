@@ -529,9 +529,10 @@ bool Animation::PreCommit(
       DCHECK_EQ(kRunning, CalculateAnimationPlayState());
       TRACE_EVENT_NESTABLE_ASYNC_INSTANT1(
           "blink.animations,devtools.timeline,benchmark,rail", "Animation",
-          this, "data",
-          inspector_animation_compositor_event::Data(failure_reasons,
-                                                     unsupported_properties));
+          this, "data", [&](perfetto::TracedValue context) {
+            inspector_animation_compositor_event::Data(
+                std::move(context), failure_reasons, unsupported_properties);
+          });
     }
   }
 
@@ -2412,15 +2413,21 @@ void Animation::NotifyProbe() {
     if (!was_active && is_active) {
       TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
           "blink.animations,devtools.timeline,benchmark,rail", "Animation",
-          this, "data", inspector_animation_event::Data(*this));
+          this, "data", [&](perfetto::TracedValue context) {
+            inspector_animation_event::Data(std::move(context), *this);
+          });
     } else if (was_active && !is_active) {
       TRACE_EVENT_NESTABLE_ASYNC_END1(
           "blink.animations,devtools.timeline,benchmark,rail", "Animation",
-          this, "endData", inspector_animation_state_event::Data(*this));
+          this, "endData", [&](perfetto::TracedValue context) {
+            inspector_animation_state_event::Data(std::move(context), *this);
+          });
     } else {
       TRACE_EVENT_NESTABLE_ASYNC_INSTANT1(
           "blink.animations,devtools.timeline,benchmark,rail", "Animation",
-          this, "data", inspector_animation_state_event::Data(*this));
+          this, "data", [&](perfetto::TracedValue context) {
+            inspector_animation_state_event::Data(std::move(context), *this);
+          });
     }
   }
 }

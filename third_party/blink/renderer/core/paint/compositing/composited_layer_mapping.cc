@@ -1849,10 +1849,10 @@ void CompositedLayerMapping::PaintContents(
              .GetFrameView()
              ->LocalFrameTreeAllowsThrottling());
 
-  TRACE_EVENT1(
-      "devtools.timeline,rail", "Paint", "data",
-      inspector_paint_event::Data(&owning_layer_.GetLayoutObject(),
-                                  PhysicalRect(interest_rect), graphics_layer));
+  DEVTOOLS_TIMELINE_TRACE_EVENT_WITH_CATEGORIES(
+      "devtools.timeline,rail", "Paint", inspector_paint_event::Data,
+      &owning_layer_.GetLayoutObject(), PhysicalRect(interest_rect),
+      graphics_layer);
 
   PaintLayerFlags paint_layer_flags =
       PaintLayerFlagsFromGraphicsLayerPaintingPhase(

@@ -1855,9 +1855,8 @@ void LocalDOMWindow::DispatchLoadEvent() {
   if (owner)
     owner->DispatchLoad();
 
-  TRACE_EVENT_INSTANT1("devtools.timeline", "MarkLoad",
-                       TRACE_EVENT_SCOPE_THREAD, "data",
-                       inspector_mark_load_event::Data(GetFrame()));
+  DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
+      "MarkLoad", inspector_mark_load_event::Data, GetFrame());
   probe::LoadEventFired(GetFrame());
 }
 
@@ -1872,8 +1871,8 @@ DispatchEventResult LocalDOMWindow::DispatchEvent(Event& event,
   event.SetCurrentTarget(this);
   event.SetEventPhase(Event::kAtTarget);
 
-  TRACE_EVENT1("devtools.timeline", "EventDispatch", "data",
-               inspector_event_dispatch_event::Data(event));
+  DEVTOOLS_TIMELINE_TRACE_EVENT("EventDispatch",
+                                inspector_event_dispatch_event::Data, event);
   return FireEventListeners(event);
 }
 
