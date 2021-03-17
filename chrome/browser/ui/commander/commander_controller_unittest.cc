@@ -125,7 +125,7 @@ TEST_F(CommanderControllerTest, PassesInputToCommandSourcesOnTextChanged) {
   EXPECT_EQ(first->invocations().size(), 0u);
   EXPECT_EQ(second->invocations().size(), 0u);
 
-  std::u16string input = base::ASCIIToUTF16("foobar");
+  std::u16string input = u"foobar";
   controller->OnTextChanged(input, browser());
 
   EXPECT_EQ(first->invocations().size(), 1u);
@@ -145,7 +145,7 @@ TEST_F(CommanderControllerTest, ResultSetIdsDifferAcrossCalls) {
       &CommanderControllerTest::OnViewModelUpdated, base::Unretained(this)));
   {
     ViewModelCallbackWaiter waiter(this);
-    controller->OnTextChanged(base::ASCIIToUTF16("foobar"), browser());
+    controller->OnTextChanged(u"foobar", browser());
   }
   // Assert since we're accessing an element.
   ASSERT_EQ(received_view_models_.size(), 1u);
@@ -153,7 +153,7 @@ TEST_F(CommanderControllerTest, ResultSetIdsDifferAcrossCalls) {
 
   {
     ViewModelCallbackWaiter waiter(this);
-    controller->OnTextChanged(base::ASCIIToUTF16("barfoo"), browser());
+    controller->OnTextChanged(u"barfoo", browser());
   }
   EXPECT_EQ(received_view_models_.size(), 2u);
   EXPECT_NE(received_view_models_.back().result_set_id, first_id);
@@ -164,15 +164,14 @@ TEST_F(CommanderControllerTest, ViewModelAggregatesResults) {
   auto first = std::make_unique<TestCommandSource>(
       base::BindRepeating([](const std::u16string&, Browser* browser) {
         CommandSource::CommandResults result;
-        result.push_back(
-            CreateNoOpCommandItem(base::ASCIIToUTF16("first"), 100));
+        result.push_back(CreateNoOpCommandItem(u"first", 100));
         return result;
       }));
   auto second = std::make_unique<TestCommandSource>(
       base::BindRepeating([](const std::u16string&, Browser* browser) {
         CommandSource::CommandResults result;
-        auto item = CreateNoOpCommandItem(base::ASCIIToUTF16("second"), 99);
-        item->annotation = base::ASCIIToUTF16("2nd");
+        auto item = CreateNoOpCommandItem(u"second", 99);
+        item->annotation = u"2nd";
         item->entity_type = CommandItem::Entity::kBookmark;
         result.push_back(std::move(item));
         return result;
@@ -187,18 +186,18 @@ TEST_F(CommanderControllerTest, ViewModelAggregatesResults) {
 
   {
     ViewModelCallbackWaiter waiter(this);
-    controller->OnTextChanged(base::ASCIIToUTF16("foobar"), browser());
+    controller->OnTextChanged(u"foobar", browser());
   }
   ASSERT_EQ(received_view_models_.size(), 1u);
   CommanderViewModel model = received_view_models_.back();
   ASSERT_EQ(model.items.size(), 2u);
 
-  EXPECT_EQ(model.items[0].title, base::ASCIIToUTF16("first"));
+  EXPECT_EQ(model.items[0].title, u"first");
   EXPECT_EQ(model.items[0].annotation, std::u16string());
   EXPECT_EQ(model.items[0].entity_type, CommandItem::Entity::kCommand);
 
-  EXPECT_EQ(model.items[1].title, base::ASCIIToUTF16("second"));
-  EXPECT_EQ(model.items[1].annotation, base::ASCIIToUTF16("2nd"));
+  EXPECT_EQ(model.items[1].title, u"second");
+  EXPECT_EQ(model.items[1].annotation, u"2nd");
   EXPECT_EQ(model.items[1].entity_type, CommandItem::Entity::kBookmark);
 }
 
@@ -209,21 +208,17 @@ TEST_F(CommanderControllerTest, ViewModelSortsResults) {
   auto first = std::make_unique<TestCommandSource>(
       base::BindRepeating([](const std::u16string&, Browser* browser) {
         CommandSource::CommandResults result;
-        result.push_back(
-            CreateNoOpCommandItem(base::ASCIIToUTF16("third"), 98));
-        result.push_back(
-            CreateNoOpCommandItem(base::ASCIIToUTF16("first"), 100));
-        result.push_back(
-            CreateNoOpCommandItem(base::ASCIIToUTF16("fourth"), 90));
+        result.push_back(CreateNoOpCommandItem(u"third", 98));
+        result.push_back(CreateNoOpCommandItem(u"first", 100));
+        result.push_back(CreateNoOpCommandItem(u"fourth", 90));
 
         return result;
       }));
   auto second = std::make_unique<TestCommandSource>(
       base::BindRepeating([](const std::u16string&, Browser* browser) {
         CommandSource::CommandResults result;
-        result.push_back(
-            CreateNoOpCommandItem(base::ASCIIToUTF16("second"), 99));
-        result.push_back(CreateNoOpCommandItem(base::ASCIIToUTF16("fifth"), 1));
+        result.push_back(CreateNoOpCommandItem(u"second", 99));
+        result.push_back(CreateNoOpCommandItem(u"fifth", 1));
         return result;
       }));
   sources.push_back(std::move(first));
@@ -236,16 +231,16 @@ TEST_F(CommanderControllerTest, ViewModelSortsResults) {
 
   {
     ViewModelCallbackWaiter waiter(this);
-    controller->OnTextChanged(base::ASCIIToUTF16("foobar"), browser());
+    controller->OnTextChanged(u"foobar", browser());
   }
   ASSERT_EQ(received_view_models_.size(), 1u);
   CommanderViewModel model = received_view_models_.back();
   ASSERT_EQ(model.items.size(), 5u);
-  EXPECT_EQ(model.items[0].title, base::ASCIIToUTF16("first"));
-  EXPECT_EQ(model.items[1].title, base::ASCIIToUTF16("second"));
-  EXPECT_EQ(model.items[2].title, base::ASCIIToUTF16("third"));
-  EXPECT_EQ(model.items[3].title, base::ASCIIToUTF16("fourth"));
-  EXPECT_EQ(model.items[4].title, base::ASCIIToUTF16("fifth"));
+  EXPECT_EQ(model.items[0].title, u"first");
+  EXPECT_EQ(model.items[1].title, u"second");
+  EXPECT_EQ(model.items[2].title, u"third");
+  EXPECT_EQ(model.items[3].title, u"fourth");
+  EXPECT_EQ(model.items[4].title, u"fifth");
 }
 
 TEST_F(CommanderControllerTest, ViewModelSortsCommandsAboveNouns) {
@@ -253,11 +248,11 @@ TEST_F(CommanderControllerTest, ViewModelSortsCommandsAboveNouns) {
   auto source = std::make_unique<TestCommandSource>(
       base::BindRepeating([](const std::u16string&, Browser* browser) {
         CommandSource::CommandResults result;
-        auto window = CreateNoOpCommandItem(base::ASCIIToUTF16("window"), 99);
+        auto window = CreateNoOpCommandItem(u"window", 99);
         window->entity_type = CommandItem::Entity::kWindow;
-        auto command = CreateNoOpCommandItem(base::ASCIIToUTF16("command"), 90);
+        auto command = CreateNoOpCommandItem(u"command", 90);
         command->entity_type = CommandItem::Entity::kCommand;
-        auto tab = CreateNoOpCommandItem(base::ASCIIToUTF16("tab"), 100);
+        auto tab = CreateNoOpCommandItem(u"tab", 100);
         tab->entity_type = CommandItem::Entity::kTab;
         result.push_back(std::move(window));
         result.push_back(std::move(command));
@@ -272,20 +267,20 @@ TEST_F(CommanderControllerTest, ViewModelSortsCommandsAboveNouns) {
 
   {
     ViewModelCallbackWaiter waiter(this);
-    controller->OnTextChanged(base::ASCIIToUTF16("foobar"), browser());
+    controller->OnTextChanged(u"foobar", browser());
   }
   ASSERT_EQ(received_view_models_.size(), 1u);
   CommanderViewModel model = received_view_models_.back();
   ASSERT_EQ(model.items.size(), 3u);
-  EXPECT_EQ(model.items[0].title, base::ASCIIToUTF16("command"));
+  EXPECT_EQ(model.items[0].title, u"command");
 }
 
 TEST_F(CommanderControllerTest, ViewModelRetainsBoldRanges) {
   std::vector<std::unique_ptr<CommandSource>> sources;
   auto source = std::make_unique<TestCommandSource>(
       base::BindRepeating([=](const std::u16string&, Browser* browser) {
-        auto first = CreateNoOpCommandItem(base::ASCIIToUTF16("first"), 100);
-        auto second = CreateNoOpCommandItem(base::ASCIIToUTF16("second"), 99);
+        auto first = CreateNoOpCommandItem(u"first", 100);
+        auto second = CreateNoOpCommandItem(u"second", 99);
         first->matched_ranges.clear();
         first->matched_ranges.emplace_back(0, 2);
         first->matched_ranges.emplace_back(4, 1);
@@ -304,12 +299,12 @@ TEST_F(CommanderControllerTest, ViewModelRetainsBoldRanges) {
 
   {
     ViewModelCallbackWaiter waiter(this);
-    controller->OnTextChanged(base::ASCIIToUTF16("foobar"), browser());
+    controller->OnTextChanged(u"foobar", browser());
   }
   ASSERT_EQ(received_view_models_.size(), 1u);
   CommanderViewModel model = received_view_models_.back();
   // Ensure |first| is at index 0;
-  EXPECT_EQ(model.items[0].title, base::ASCIIToUTF16("first"));
+  EXPECT_EQ(model.items[0].title, u"first");
   std::vector<gfx::Range> first_ranges = {gfx::Range(0, 2), gfx::Range(4, 1)};
   std::vector<gfx::Range> second_ranges = {gfx::Range(1, 4)};
   EXPECT_EQ(model.items[0].matched_ranges, first_ranges);
@@ -323,8 +318,8 @@ TEST_F(CommanderControllerTest, OnCommandSelectedInvokesOneShotCommand) {
   auto source = std::make_unique<TestCommandSource>(base::BindRepeating(
       [](bool* first_called_ptr, bool* second_called_ptr, const std::u16string&,
          Browser* browser) {
-        auto first = CreateNoOpCommandItem(base::ASCIIToUTF16("first"), 100);
-        auto second = CreateNoOpCommandItem(base::ASCIIToUTF16("second"), 99);
+        auto first = CreateNoOpCommandItem(u"first", 100);
+        auto second = CreateNoOpCommandItem(u"second", 99);
         first->command = base::BindOnce([](bool* called) { *called = true; },
                                         first_called_ptr);
         second->command = base::BindOnce([](bool* called) { *called = true; },
@@ -343,12 +338,12 @@ TEST_F(CommanderControllerTest, OnCommandSelectedInvokesOneShotCommand) {
 
   {
     ViewModelCallbackWaiter waiter(this);
-    controller->OnTextChanged(base::ASCIIToUTF16("foobar"), browser());
+    controller->OnTextChanged(u"foobar", browser());
   }
   ASSERT_EQ(received_view_models_.size(), 1u);
   CommanderViewModel model = received_view_models_.back();
   // Ensure |first| is at index 0;
-  EXPECT_EQ(model.items[0].title, base::ASCIIToUTF16("first"));
+  EXPECT_EQ(model.items[0].title, u"first");
 
   {
     ViewModelCallbackWaiter waiter(this);
@@ -366,7 +361,7 @@ TEST_F(CommanderControllerTest, NoActionOnIncorrectResultId) {
   bool item_called = false;
   auto source = std::make_unique<TestCommandSource>(base::BindRepeating(
       [](bool* called_ptr, const std::u16string&, Browser* browser) {
-        auto item = CreateNoOpCommandItem(base::ASCIIToUTF16("first"), 100);
+        auto item = CreateNoOpCommandItem(u"first", 100);
         item->command =
             base::BindOnce([](bool* called) { *called = true; }, called_ptr);
         CommandSource::CommandResults result;
@@ -382,7 +377,7 @@ TEST_F(CommanderControllerTest, NoActionOnIncorrectResultId) {
 
   {
     ViewModelCallbackWaiter waiter(this);
-    controller->OnTextChanged(base::ASCIIToUTF16("foobar"), browser());
+    controller->OnTextChanged(u"foobar", browser());
   }
   ASSERT_EQ(received_view_models_.size(), 1u);
   CommanderViewModel model = received_view_models_.back();
@@ -397,7 +392,7 @@ TEST_F(CommanderControllerTest, NoActionOnOOBIndex) {
   bool item_called = false;
   auto source = std::make_unique<TestCommandSource>(base::BindRepeating(
       [](bool* called_ptr, const std::u16string&, Browser* browser) {
-        auto item = CreateNoOpCommandItem(base::ASCIIToUTF16("first"), 100);
+        auto item = CreateNoOpCommandItem(u"first", 100);
         item->command =
             base::BindOnce([](bool* called) { *called = true; }, called_ptr);
         CommandSource::CommandResults result;
@@ -413,7 +408,7 @@ TEST_F(CommanderControllerTest, NoActionOnOOBIndex) {
 
   {
     ViewModelCallbackWaiter waiter(this);
-    controller->OnTextChanged(base::ASCIIToUTF16("foobar"), browser());
+    controller->OnTextChanged(u"foobar", browser());
   }
   ASSERT_EQ(received_view_models_.size(), 1u);
   CommanderViewModel model = received_view_models_.back();
@@ -426,12 +421,12 @@ TEST_F(CommanderControllerTest, InvokingCompositeCommandSendsPrompt) {
   std::vector<std::unique_ptr<CommandSource>> sources;
   auto source = std::make_unique<TestCommandSource>(
       base::BindRepeating([](const std::u16string&, Browser* browser) {
-        auto item = CreateNoOpCommandItem(base::ASCIIToUTF16("first"), 100);
+        auto item = CreateNoOpCommandItem(u"first", 100);
         CommandItem::CompositeCommandProvider noop =
             base::BindRepeating([](const std::u16string&) {
               return CommandSource::CommandResults();
             });
-        item->command = std::make_pair(base::ASCIIToUTF16("Do stuff"), noop);
+        item->command = std::make_pair(u"Do stuff", noop);
         CommandSource::CommandResults result;
         result.push_back(std::move(item));
         return result;
@@ -444,7 +439,7 @@ TEST_F(CommanderControllerTest, InvokingCompositeCommandSendsPrompt) {
 
   {
     ViewModelCallbackWaiter waiter(this);
-    controller->OnTextChanged(base::ASCIIToUTF16("abracadabra"), browser());
+    controller->OnTextChanged(u"abracadabra", browser());
   }
   ASSERT_EQ(received_view_models_.size(), 1u);
   {
@@ -454,8 +449,7 @@ TEST_F(CommanderControllerTest, InvokingCompositeCommandSendsPrompt) {
   }
   EXPECT_EQ(received_view_models_.back().action,
             CommanderViewModel::Action::kPrompt);
-  EXPECT_EQ(received_view_models_.back().prompt_text,
-            base::ASCIIToUTF16("Do stuff"));
+  EXPECT_EQ(received_view_models_.back().prompt_text, u"Do stuff");
 }
 
 TEST_F(CommanderControllerTest, OnTextChangedPassedToCompositeCommandProvider) {
@@ -464,15 +458,14 @@ TEST_F(CommanderControllerTest, OnTextChangedPassedToCompositeCommandProvider) {
   auto source = std::make_unique<TestCommandSource>(base::BindRepeating(
       [](std::u16string* passthrough_string, const std::u16string& string,
          Browser* browser) {
-        auto item = CreateNoOpCommandItem(base::ASCIIToUTF16("first"), 100);
+        auto item = CreateNoOpCommandItem(u"first", 100);
         CommandItem::CompositeCommandProvider provider = base::BindRepeating(
             [](std::u16string* out_string, const std::u16string& string) {
               *out_string = string;
               return CommandSource::CommandResults();
             },
             passthrough_string);
-        item->command =
-            std::make_pair(base::ASCIIToUTF16("Do stuff"), provider);
+        item->command = std::make_pair(u"Do stuff", provider);
         CommandSource::CommandResults result;
         result.push_back(std::move(item));
         return result;
@@ -486,7 +479,7 @@ TEST_F(CommanderControllerTest, OnTextChangedPassedToCompositeCommandProvider) {
 
   {
     ViewModelCallbackWaiter waiter(this);
-    controller->OnTextChanged(base::ASCIIToUTF16("abracadabra"), browser());
+    controller->OnTextChanged(u"abracadabra", browser());
   }
   ASSERT_EQ(received_view_models_.size(), 1u);
   {
@@ -496,8 +489,8 @@ TEST_F(CommanderControllerTest, OnTextChangedPassedToCompositeCommandProvider) {
                                   received_view_models_.back().result_set_id);
   }
 
-  controller->OnTextChanged(base::ASCIIToUTF16("hocus pocus"), browser());
-  EXPECT_EQ(received_string, base::ASCIIToUTF16("hocus pocus"));
+  controller->OnTextChanged(u"hocus pocus", browser());
+  EXPECT_EQ(received_string, u"hocus pocus");
 }
 
 TEST_F(CommanderControllerTest,
@@ -505,18 +498,16 @@ TEST_F(CommanderControllerTest,
   std::vector<std::unique_ptr<CommandSource>> sources;
   auto source = std::make_unique<TestCommandSource>(
       base::BindRepeating([](const std::u16string&, Browser* browser) {
-        auto outer = CreateNoOpCommandItem(base::ASCIIToUTF16("outer"), 100);
+        auto outer = CreateNoOpCommandItem(u"outer", 100);
         CommandItem::CompositeCommandProvider provider =
             base::BindRepeating([](const std::u16string&) {
               CommandSource::CommandResults results;
-              auto inner =
-                  CreateNoOpCommandItem(base::ASCIIToUTF16("inner"), 100);
+              auto inner = CreateNoOpCommandItem(u"inner", 100);
               inner->command = base::MakeExpectedRunClosure(FROM_HERE);
               results.push_back(std::move(inner));
               return results;
             });
-        outer->command =
-            std::make_pair(base::ASCIIToUTF16("Do stuff"), provider);
+        outer->command = std::make_pair(u"Do stuff", provider);
         CommandSource::CommandResults result;
         result.push_back(std::move(outer));
         return result;
@@ -528,7 +519,7 @@ TEST_F(CommanderControllerTest,
       &CommanderControllerTest::OnViewModelUpdated, base::Unretained(this)));
   {
     ViewModelCallbackWaiter waiter(this);
-    controller->OnTextChanged(base::ASCIIToUTF16("abracadabra"), browser());
+    controller->OnTextChanged(u"abracadabra", browser());
   }
 
   ASSERT_EQ(received_view_models_.size(), 1u);
@@ -542,11 +533,10 @@ TEST_F(CommanderControllerTest,
   // this time.
   {
     ViewModelCallbackWaiter waiter(this);
-    controller->OnTextChanged(base::ASCIIToUTF16("hocus pocus"), browser());
+    controller->OnTextChanged(u"hocus pocus", browser());
   }
   ASSERT_EQ(received_view_models_.size(), 3u);
-  EXPECT_EQ(received_view_models_.back().items[0].title,
-            base::ASCIIToUTF16("inner"));
+  EXPECT_EQ(received_view_models_.back().items[0].title, u"inner");
 
   controller->OnCommandSelected(0, received_view_models_.back().result_set_id);
   // Inner command is an ExpectedRunClosure, so we will fail here if it wasn't
@@ -559,13 +549,12 @@ TEST_F(CommanderControllerTest, OnCompositeCommandCancelledRemovesProvider) {
       &sources,
       std::make_unique<TestCommandSource>(
           base::BindRepeating([](const std::u16string&, Browser* browser) {
-            auto item = CreateNoOpCommandItem(base::ASCIIToUTF16("first"), 100);
+            auto item = CreateNoOpCommandItem(u"first", 100);
             CommandItem::CompositeCommandProvider noop =
                 base::BindRepeating([](const std::u16string&) {
                   return CommandSource::CommandResults();
                 });
-            item->command =
-                std::make_pair(base::ASCIIToUTF16("Do stuff"), noop);
+            item->command = std::make_pair(u"Do stuff", noop);
             CommandSource::CommandResults result;
             result.push_back(std::move(item));
             return result;
@@ -578,7 +567,7 @@ TEST_F(CommanderControllerTest, OnCompositeCommandCancelledRemovesProvider) {
   // Prime the sources so we can select an item.
   {
     ViewModelCallbackWaiter waiter(this);
-    controller->OnTextChanged(base::ASCIIToUTF16("abracadabra"), browser());
+    controller->OnTextChanged(u"abracadabra", browser());
   }
   EXPECT_EQ(source->invocations().size(), 1u);
 
@@ -594,7 +583,7 @@ TEST_F(CommanderControllerTest, OnCompositeCommandCancelledRemovesProvider) {
   // This should go to the provider and not be seen by the source.
   {
     ViewModelCallbackWaiter waiter(this);
-    controller->OnTextChanged(base::ASCIIToUTF16("alakazam"), browser());
+    controller->OnTextChanged(u"alakazam", browser());
   }
   EXPECT_EQ(source->invocations().size(), 1u);
 
@@ -602,10 +591,10 @@ TEST_F(CommanderControllerTest, OnCompositeCommandCancelledRemovesProvider) {
   // Composite command was cancelled, so the source should see this one.
   {
     ViewModelCallbackWaiter waiter(this);
-    controller->OnTextChanged(base::ASCIIToUTF16("hocus pocus"), browser());
+    controller->OnTextChanged(u"hocus pocus", browser());
   }
   EXPECT_EQ(source->invocations().size(), 2u);
-  EXPECT_EQ(source->invocations().back(), base::ASCIIToUTF16("hocus pocus"));
+  EXPECT_EQ(source->invocations().back(), u"hocus pocus");
 }
 
 }  // namespace commander

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -339,8 +338,7 @@ CommandSource::CommandResults TabCommandSource::GetCommands(
   TabStripModel* tab_strip_model = browser->tab_strip_model();
   // TODO(lgrey): Temporarily using hardcoded English titles instead of
   // translated strings so we can experiment without adding translation load.
-  if (auto item = ItemForTitle(base::ASCIIToUTF16("Close current tab"), finder,
-                               &ranges)) {
+  if (auto item = ItemForTitle(u"Close current tab", finder, &ranges)) {
     item->command =
         base::BindOnce(&chrome::CloseTab, base::Unretained(browser));
     ui::Accelerator accelerator;
@@ -349,16 +347,14 @@ CommandSource::CommandResults TabCommandSource::GetCommands(
     results.push_back(std::move(item));
   }
   if (chrome::CanCloseOtherTabs(browser)) {
-    if (auto item = ItemForTitle(base::ASCIIToUTF16("Close other tabs"), finder,
-                                 &ranges)) {
+    if (auto item = ItemForTitle(u"Close other tabs", finder, &ranges)) {
       item->command =
           base::BindOnce(&chrome::CloseOtherTabs, base::Unretained(browser));
       results.push_back(std::move(item));
     }
   }
   if (chrome::CanCloseTabsToRight(browser)) {
-    if (auto item = ItemForTitle(base::ASCIIToUTF16("Close tabs to the right"),
-                                 finder, &ranges)) {
+    if (auto item = ItemForTitle(u"Close tabs to the right", finder, &ranges)) {
       item->command =
           base::BindOnce(&chrome::CloseTabsToRight, base::Unretained(browser));
       results.push_back(std::move(item));
@@ -366,8 +362,7 @@ CommandSource::CommandResults TabCommandSource::GetCommands(
   }
 
   if (CanCloseTabsToLeft(tab_strip_model)) {
-    if (auto item = ItemForTitle(base::ASCIIToUTF16("Close tabs to the left"),
-                                 finder, &ranges)) {
+    if (auto item = ItemForTitle(u"Close tabs to the left", finder, &ranges)) {
       item->command =
           base::BindOnce(&CloseTabsToLeft, base::Unretained(browser));
       results.push_back(std::move(item));
@@ -375,8 +370,7 @@ CommandSource::CommandResults TabCommandSource::GetCommands(
   }
 
   if (HasUnpinnedTabs(tab_strip_model)) {
-    if (auto item = ItemForTitle(base::ASCIIToUTF16("Close unpinned tabs"),
-                                 finder, &ranges)) {
+    if (auto item = ItemForTitle(u"Close unpinned tabs", finder, &ranges)) {
       item->command =
           base::BindOnce(&CloseUnpinnedTabs, base::Unretained(browser));
       results.push_back(std::move(item));
@@ -395,10 +389,9 @@ CommandSource::CommandResults TabCommandSource::GetCommands(
   }
 
   if (CanMoveTabsToExistingWindow(browser)) {
-    if (auto item = ItemForTitle(base::ASCIIToUTF16("Move tabs to window..."),
-                                 finder, &ranges)) {
+    if (auto item = ItemForTitle(u"Move tabs to window...", finder, &ranges)) {
       item->command = std::make_pair(
-          base::ASCIIToUTF16("Move tabs to..."),
+          u"Move tabs to...",
           base::BindRepeating(&MoveTabsToWindowCommandsForWindowsMatching,
                               base::Unretained(browser)));
       results.push_back(std::move(item));

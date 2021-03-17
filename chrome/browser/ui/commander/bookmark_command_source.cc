@@ -6,7 +6,6 @@
 
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -87,7 +86,7 @@ CommandSource::CommandResults BookmarkCommandSource::GetCommands(
   std::vector<gfx::Range> ranges;
   // TODO(lgrey): Temporarily using an untranslated string since it's not
   // yet clear which commands will ship.
-  std::u16string open_title = base::ASCIIToUTF16("Open bookmark...");
+  std::u16string open_title = u"Open bookmark...";
   double score = finder.Find(open_title, &ranges);
   if (score > 0) {
     auto verb = std::make_unique<CommandItem>(open_title, score, ranges);

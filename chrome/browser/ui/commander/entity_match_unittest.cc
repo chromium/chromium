@@ -107,8 +107,7 @@ TEST_F(CommanderEntityMatchTest, WindowOnlyIncludesMatches) {
   auto browser_with_match = CreateAndActivateBrowser("Orange juice");
   auto browser_without_match = CreateAndActivateBrowser("Aqua regia");
 
-  auto matches =
-      WindowsMatchingInput(browser(), base::ASCIIToUTF16("orange"), true);
+  auto matches = WindowsMatchingInput(browser(), u"orange", true);
   ASSERT_EQ(matches.size(), 1u);
   EXPECT_EQ(matches.at(0).browser, browser_with_match.get());
 }
@@ -118,8 +117,7 @@ TEST_F(CommanderEntityMatchTest, WindowRanksMatches) {
   auto browser_good_match =
       CreateAndActivateBrowser("Oracular Nouns Gesture Electrically");
 
-  auto matches =
-      WindowsMatchingInput(browser(), base::ASCIIToUTF16("orange"), true);
+  auto matches = WindowsMatchingInput(browser(), u"orange", true);
   ASSERT_EQ(matches.size(), 2u);
   base::ranges::sort(matches, std::greater<>(), &WindowMatch::score);
   EXPECT_EQ(matches.at(0).browser, browser_best_match.get());
@@ -130,14 +128,14 @@ TEST_F(CommanderEntityMatchTest, WindowMRUOrderWithNoInput) {
   auto browser2 = CreateAndActivateBrowser("Boop");
 
   // Browser 2 was activated last, so we expect it to be the top match.
-  auto matches = WindowsMatchingInput(browser(), base::ASCIIToUTF16(""), true);
+  auto matches = WindowsMatchingInput(browser(), u"", true);
   ASSERT_EQ(matches.size(), 2u);
   base::ranges::sort(matches, std::greater<>(), &WindowMatch::score);
   EXPECT_EQ(matches.at(0).browser, browser2.get());
 
   BrowserList::GetInstance()->SetLastActive(browser1.get());
   // Activating browser 1 should have brought it to the top.
-  matches = WindowsMatchingInput(browser(), base::ASCIIToUTF16(""), true);
+  matches = WindowsMatchingInput(browser(), u"", true);
   ASSERT_EQ(matches.size(), 2u);
   base::ranges::sort(matches, std::greater<>(), &WindowMatch::score);
   EXPECT_EQ(matches.at(0).browser, browser1.get());

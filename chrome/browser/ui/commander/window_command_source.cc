@@ -6,7 +6,6 @@
 
 #include <numeric>
 
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -97,9 +96,8 @@ CommandSource::CommandResults WindowCommandSource::GetCommands(
   std::vector<gfx::Range> ranges;
   // TODO(lgrey): Temporarily using untranslated strings since it's not
   // yet clear which commands will ship.
-  std::u16string open_title = base::ASCIIToUTF16("Switch to window...");
-  std::u16string merge_title =
-      base::ASCIIToUTF16("Merge current window into...");
+  std::u16string open_title = u"Switch to window...";
+  std::u16string merge_title = u"Merge current window into...";
 
   double score = finder.Find(open_title, &ranges);
   if (score > 0) {
