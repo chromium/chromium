@@ -994,8 +994,10 @@ TEST_F(NotificationViewMDTest, ExpandLongMessage) {
 }
 
 TEST_F(NotificationViewMDTest, TestAccentColor) {
+  // TODO(pkasting): These hardcoded colors are fragile and should be obtained
+  // dynamically.
   const SkColor kNotificationBackgroundColor = SK_ColorWHITE;
-  const SkColor kActionButtonBackgroundColor = SkColorSetRGB(0xEE, 0xEE, 0xEE);
+  const SkColor kActionButtonBackgroundColor = SkColorSetRGB(0xF2, 0xF2, 0xF2);
   const SkColor kActionButtonTextColor =
       DeriveMinContrastColor(gfx::kGoogleBlue600, kActionButtonBackgroundColor);
 
@@ -1004,7 +1006,12 @@ TEST_F(NotificationViewMDTest, TestAccentColor) {
 
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
   notification->set_buttons(CreateButtons(2));
+
+  // The code below is not prepared to deal with dark mode.
+  notification_view()->GetWidget()->GetNativeTheme()->set_use_dark_colors(
+      false);
   UpdateNotificationViews(*notification);
+
   notification_view()->GetWidget()->Show();
 
   // Action buttons are hidden by collapsed state.

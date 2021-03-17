@@ -22,20 +22,18 @@ namespace {
 
 ColorMixer& AddMixerForDarkMode(ColorProvider* provider, bool high_contrast) {
   ColorMixer& mixer = provider->AddMixer();
-  mixer.AddSet(
-      {kColorSetCoreDefaults,
-       {
-           {kColorAccent, gfx::kGoogleBlue300},
-           {kColorAlertHighSeverity, gfx::kGoogleRed300},
-           {kColorAlertLowSeverity, gfx::kGoogleGreen300},
-           {kColorAlertMediumSeverity, gfx::kGoogleYellow300},
-           {kColorMidground, gfx::kGoogleGrey800},
-           {kColorPrimaryBackground, SkColorSetRGB(0x29, 0x2A, 0x2D)},
-           {kColorPrimaryForeground, gfx::kGoogleGrey200},
-           {kColorSecondaryForeground, gfx::kGoogleGrey500},
-           {kColorSubtleEmphasisBackground, SkColorSetRGB(0x32, 0x36, 0x39)},
-           {kColorTextSelectionBackground, gfx::kGoogleBlue800},
-       }});
+  mixer.AddSet({kColorSetCoreDefaults,
+                {
+                    {kColorAccent, gfx::kGoogleBlue300},
+                    {kColorAlertHighSeverity, gfx::kGoogleRed300},
+                    {kColorAlertLowSeverity, gfx::kGoogleGreen300},
+                    {kColorAlertMediumSeverity, gfx::kGoogleYellow300},
+                    {kColorMidground, gfx::kGoogleGrey800},
+                    {kColorPrimaryBackground, SkColorSetRGB(0x29, 0x2A, 0x2D)},
+                    {kColorPrimaryForeground, gfx::kGoogleGrey200},
+                    {kColorSecondaryForeground, gfx::kGoogleGrey500},
+                    {kColorTextSelectionBackground, gfx::kGoogleBlue800},
+                }});
   return mixer;
 }
 
@@ -51,7 +49,6 @@ ColorMixer& AddMixerForLightMode(ColorProvider* provider, bool high_contrast) {
                     {kColorPrimaryBackground, SK_ColorWHITE},
                     {kColorPrimaryForeground, gfx::kGoogleGrey900},
                     {kColorSecondaryForeground, gfx::kGoogleGrey700},
-                    {kColorSubtleEmphasisBackground, gfx::kGoogleGrey050},
                     {kColorTextSelectionBackground, gfx::kGoogleBlue200},
                 }});
 
@@ -73,6 +70,10 @@ void AddCoreDefaultColorMixer(ColorProvider* provider,
       gfx::kGoogleGrey600, kColorPrimaryBackground, kColorPrimaryForeground);
   mixer[kColorItemSelectionBackground] =
       BlendForMinContrastWithSelf(kColorPrimaryBackground, 1.67f);
+  mixer[kColorSubtleEmphasisBackground] =
+      BlendTowardMaxContrast(kColorPrimaryBackground, gfx::kGoogleGreyAlpha100);
+  mixer[kColorTextSelectionForeground] =
+      GetColorWithMaxContrast(kColorTextSelectionBackground);
 }
 
 }  // namespace ui
