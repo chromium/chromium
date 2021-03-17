@@ -145,8 +145,6 @@ MEDIA_EXPORT extern const base::Feature kKaleidoscope;
 MEDIA_EXPORT extern const base::Feature kKaleidoscopeInMenu;
 MEDIA_EXPORT extern const base::Feature
     kKaleidoscopeForceShowFirstRunExperience;
-MEDIA_EXPORT extern const base::Feature kKaleidoscopeModule;
-MEDIA_EXPORT extern const base::Feature kKaleidoscopeModuleCacheOnly;
 MEDIA_EXPORT extern const base::Feature kLiveCaption;
 MEDIA_EXPORT extern const base::Feature kLiveCaptionMultiLanguage;
 MEDIA_EXPORT extern const base::Feature kLiveCaptionSystemWideOnChromeOS;

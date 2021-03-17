@@ -821,9 +821,6 @@ extern const char kJavascriptHarmonyDescription[];
 extern const char kJavascriptHarmonyShippingName[];
 extern const char kJavascriptHarmonyShippingDescription[];
 
-extern const char kKaleidoscopeModuleName[];
-extern const char kKaleidoscopeModuleDescription[];
-
 extern const char kKerberosSettingsSectionName[];
 extern const char kKerberosSettingsSectionDescription[];
 

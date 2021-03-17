@@ -6954,10 +6954,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     "SCTAuditingVariations")},
 #endif  // !defined(OS_ANDROID)
 
-    {"kaleidoscope-ntp-module", flag_descriptions::kKaleidoscopeModuleName,
-     flag_descriptions::kKaleidoscopeModuleDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(media::kKaleidoscopeModule)},
-
     {"insert-key-toggle-mode", flag_descriptions::kInsertKeyToggleModeName,
      flag_descriptions::kInsertKeyToggleModeDescription,
      kOsWin | kOsLinux | kOsCrOS,

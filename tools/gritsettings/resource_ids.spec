@@ -233,29 +233,6 @@
   # END chrome/browser section.
 
   # START chrome/ WebUI resources section
-  # Both the kaleidoscope_resources.grd and kaleidoscope_internal_resources.grd
-  # start with the same id because only one of them is built based on whether
-  # src-internal is available.
-  "chrome/browser/media/kaleidoscope/kaleidoscope_resources.grd": {
-    # Big alignment at start of section.
-    "META": {"align": 100},
-    "includes": [2000],
-  },
-  "chrome/browser/media/kaleidoscope/kaleidoscope_internal_resources.grd": {
-    # Big alignment at start of section.
-    "META": {"align": 100},
-    "includes": [2000],
-  },
-  # The internal version of kaleidoscope_resources.grd will be removed in a
-  # follow up. It is only here to avoid build breakages.
-  "chrome/browser/media/kaleidoscope/internal/kaleidoscope_resources.grd": {
-    "META": {"sizes": {"includes": [50],}},  # Relies on src-internal.
-    "includes": [2010],
-  },
-  "chrome/browser/media/kaleidoscope/internal/kaleidoscope_strings.grd": {
-    "META": {"sizes": {"messages": [50]}, "join": 2},  # Relies on src-internal.
-    "messages": [2015],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/bluetooth_internals/resources.grd": {
     "META": {"sizes": {"includes": [30],}},
     "includes": [2020],

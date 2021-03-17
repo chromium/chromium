@@ -99,7 +99,6 @@ vs-chromium-project.txt
 /chrome/browser/google/linkdoctor_internal
 /chrome/browser/internal
 /chrome/browser/media/engagement_internal
-/chrome/browser/media/kaleidoscope/internal
 /chrome/browser/performance_monitor/performance_monitor.xml
 /chrome/browser/protector/internal
 /chrome/browser/resources/chromeos/quickoffice

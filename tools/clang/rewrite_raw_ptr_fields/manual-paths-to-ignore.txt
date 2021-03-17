@@ -90,7 +90,6 @@ chrome/app/vector_icons/google_chrome/
 chrome/browser/google/linkdoctor_internal/
 chrome/browser/internal/
 chrome/browser/media/engagement_internal/
-chrome/browser/media/kaleidoscope/internal/
 chrome/browser/resources/chromeos/quickoffice/
 chrome/browser/resources/media_router/extension/src/
 chrome/browser/resources/media_router_internal/
