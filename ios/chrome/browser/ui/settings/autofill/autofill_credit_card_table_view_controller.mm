@@ -123,7 +123,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.navigationController.toolbar.accessibilityIdentifier =
       kAutofillPaymentMethodsToolbarId;
 
-  self.addPaymentMethodButton.enabled = [self isAutofillCreditCardEnabled];
   [self setToolbarItems:@[ [self flexibleSpace], self.addPaymentMethodButton ]
                animated:YES];
   [self updateUIForEditState];
@@ -349,7 +348,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)autofillCardSwitchChanged:(UISwitch*)switchView {
   [self setSwitchItemOn:[switchView isOn] itemType:ItemTypeAutofillCardSwitch];
   [self setAutofillCreditCardEnabled:[switchView isOn]];
-  self.addPaymentMethodButton.enabled = [self isAutofillCreditCardEnabled];
 }
 
 #pragma mark - Switch Helpers
@@ -567,15 +565,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Adds delete button to the bottom toolbar.
 - (void)showDeleteButton {
-  if ([self isAutofillCreditCardEnabled]) {
-    [self setToolbarItems:@[
-      self.deleteButton, [self flexibleSpace], self.addPaymentMethodButton
-    ]
-                 animated:YES];
-  } else {
-    [self setToolbarItems:@[ self.deleteButton, [self flexibleSpace] ]
-                 animated:YES];
-  }
+  NSArray* customToolbarItems =
+      @[ self.deleteButton, [self flexibleSpace], self.addPaymentMethodButton ];
+  [self setToolbarItems:customToolbarItems animated:YES];
 }
 
 // Removes delete button from the bottom toolbar.
