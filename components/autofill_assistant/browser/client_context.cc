@@ -67,6 +67,16 @@ void ClientContextImpl::Update(const TriggerContext& trigger_context) {
           ClientContextProto::ACCOUNTS_NOT_MATCHING);
     }
   }
+
+  auto window_size = client_->GetWindowSize();
+  if (window_size.has_value()) {
+    proto_.mutable_window_size()->set_width_pixels(window_size.value().first);
+    proto_.mutable_window_size()->set_height_pixels(window_size.value().second);
+  } else {
+    proto_.clear_window_size();
+  }
+
+  proto_.set_screen_orientation(client_->GetScreenOrientation());
 }
 
 ClientContextProto ClientContextImpl::AsProto() const {

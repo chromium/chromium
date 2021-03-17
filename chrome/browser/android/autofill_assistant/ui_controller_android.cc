@@ -964,6 +964,34 @@ void UiControllerAndroid::CloseOrCancel(
                               std::move(trigger_context), dropout_reason));
 }
 
+base::Optional<std::pair<int, int>> UiControllerAndroid::GetWindowSize() const {
+  JNIEnv* env = AttachCurrentThread();
+  auto java_size_array =
+      Java_AutofillAssistantUiController_getWindowSize(env, java_object_);
+  if (!java_size_array) {
+    return base::nullopt;
+  }
+
+  std::vector<int> size_array;
+  base::android::JavaIntArrayToIntVector(env, java_size_array, &size_array);
+  DCHECK_EQ(size_array.size(), 2u);
+  return std::make_pair(size_array[0], size_array[1]);
+}
+
+ClientContextProto::ScreenOrientation
+UiControllerAndroid::GetScreenOrientation() const {
+  int orientation = Java_AutofillAssistantUiController_getScreenOrientation(
+      AttachCurrentThread(), java_object_);
+  switch (orientation) {
+    case 1:
+      return ClientContextProto::PORTRAIT;
+    case 2:
+      return ClientContextProto::LANDSCAPE;
+    default:
+      return ClientContextProto::UNDEFINED_ORIENTATION;
+  }
+}
+
 void UiControllerAndroid::OnCancel(
     int action_index,
     std::unique_ptr<TriggerContext> trigger_context,

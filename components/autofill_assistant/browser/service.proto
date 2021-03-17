@@ -96,6 +96,23 @@ message ClientContextProto {
     SIGNED_IN = 2;
   }
   optional SignedIntoChromeStatus signed_into_chrome_status = 14;
+
+  // The size of the current Chrome window. This not only includes the part of
+  // the window that renders the website but also everything around it
+  // (toolbars, omnibox, ...).
+  message WindowSize {
+    optional int32 height_pixels = 1;
+    optional int32 width_pixels = 2;
+  }
+  optional WindowSize window_size = 15;
+
+  // The current orientation of the device.
+  enum ScreenOrientation {
+    UNDEFINED_ORIENTATION = 0;
+    PORTRAIT = 1;
+    LANDSCAPE = 2;
+  }
+  optional ScreenOrientation screen_orientation = 16;
 }
 
 // Get the list of scripts that can potentially be run on a url.

@@ -462,6 +462,21 @@ std::string ClientAndroid::GetChromeSignedInEmailAddress() const {
   return account_info.email;
 }
 
+base::Optional<std::pair<int, int>> ClientAndroid::GetWindowSize() const {
+  if (ui_controller_android_) {
+    return ui_controller_android_->GetWindowSize();
+  }
+  return base::nullopt;
+}
+
+ClientContextProto::ScreenOrientation ClientAndroid::GetScreenOrientation()
+    const {
+  if (ui_controller_android_) {
+    return ui_controller_android_->GetScreenOrientation();
+  }
+  return ClientContextProto::UNDEFINED_ORIENTATION;
+}
+
 AccessTokenFetcher* ClientAndroid::GetAccessTokenFetcher() {
   return this;
 }

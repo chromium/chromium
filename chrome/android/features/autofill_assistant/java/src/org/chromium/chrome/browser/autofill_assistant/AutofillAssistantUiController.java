@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
+import android.view.Window;
 
 import androidx.annotation.Nullable;
 
@@ -22,6 +25,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.feedback.ScreenshotMode;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -431,6 +435,28 @@ public class AutofillAssistantUiController {
     @CalledByNative
     private Context getContext() {
         return mActivity;
+    }
+
+    @CalledByNative
+    private int[] getWindowSize() {
+        Activity activity = TabUtils.getActivity(TabUtils.fromWebContents(mWebContents));
+        if (activity == null) {
+            return null;
+        }
+        Window window = activity.getWindow();
+        if (window == null) {
+            return null;
+        }
+        return new int[] {window.getDecorView().getWidth(), window.getDecorView().getHeight()};
+    }
+
+    @CalledByNative
+    private int getScreenOrientation() {
+        Activity activity = TabUtils.getActivity(TabUtils.fromWebContents(mWebContents));
+        if (activity == null) {
+            return Configuration.ORIENTATION_UNDEFINED;
+        }
+        return activity.getResources().getConfiguration().orientation;
     }
 
     // Native methods.

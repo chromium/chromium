@@ -113,6 +113,8 @@ class ClientAndroid : public Client,
   version_info::Channel GetChannel() const override;
   std::string GetEmailAddressForAccessTokenAccount() const override;
   std::string GetChromeSignedInEmailAddress() const override;
+  base::Optional<std::pair<int, int>> GetWindowSize() const override;
+  ClientContextProto::ScreenOrientation GetScreenOrientation() const override;
   AccessTokenFetcher* GetAccessTokenFetcher() override;
   autofill::PersonalDataManager* GetPersonalDataManager() const override;
   WebsiteLoginManager* GetWebsiteLoginManager() const override;

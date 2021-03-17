@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
@@ -86,6 +87,10 @@ class UiControllerAndroid : public ControllerObserver {
   void CloseOrCancel(int action_index,
                      std::unique_ptr<TriggerContext> trigger_context,
                      Metrics::DropOutReason dropout_reason);
+  // Returns the size of the window.
+  base::Optional<std::pair<int, int>> GetWindowSize() const;
+  // Returns the screen's orientation.
+  ClientContextProto::ScreenOrientation GetScreenOrientation() const;
 
   // Overrides ControllerObserver:
   void OnStateChanged(AutofillAssistantState new_state) override;
