@@ -12,12 +12,6 @@
 #include "ios/chrome/common/channel_info.h"
 #include "ios/web/common/features.h"
 
-const base::Feature kEditBookmarksIOS{"EditBookmarksIOS",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kManagedBookmarksIOS{"ManagedBookmarksIOS",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kEnableIncognitoModeAvailabilityIOS{
     "EnableIncognitoModeAvailabilityIOS", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -43,10 +37,6 @@ bool IsDisableEnterprisePolicySwitchPresent() {
 
 }  // namespace
 
-bool IsEditBookmarksIOSEnabled() {
-  return base::FeatureList::IsEnabled(kEditBookmarksIOS);
-}
-
 bool IsEnterprisePolicyEnabled() {
   return !IsDisableEnterprisePolicySwitchPresent();
 }
@@ -57,10 +47,6 @@ bool IsIncognitoModeAvailable() {
 
 bool ShouldInstallEnterprisePolicyHandlers() {
   return IsEnterprisePolicyEnabled();
-}
-
-bool IsManagedBookmarksEnabled() {
-  return base::FeatureList::IsEnabled(kManagedBookmarksIOS);
 }
 
 bool ShouldInstallURLBlocklistPolicyHandlers() {

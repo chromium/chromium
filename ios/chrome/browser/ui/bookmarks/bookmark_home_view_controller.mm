@@ -1322,10 +1322,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 // Returns YES if user is allowed to edit any bookmarks.
 - (BOOL)isEditBookmarksEnabled {
-  if (IsEditBookmarksIOSEnabled())
     return self.browserState->GetPrefs()->GetBoolean(
         bookmarks::prefs::kEditBookmarksEnabled);
-  return YES;
 }
 
 // Returns the bookmark node associated with |indexPath|.

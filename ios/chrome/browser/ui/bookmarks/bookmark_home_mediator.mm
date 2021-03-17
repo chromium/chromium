@@ -109,15 +109,11 @@ const int kMaxBookmarksSearchResults = 50;
   _prefChangeRegistrar->Init(self.browserState->GetPrefs());
   _prefObserverBridge.reset(new PrefObserverBridge(self));
 
-  if (IsEditBookmarksIOSEnabled()) {
     _prefObserverBridge->ObserveChangesForPreference(
         bookmarks::prefs::kEditBookmarksEnabled, _prefChangeRegistrar.get());
-  }
 
-  if (IsManagedBookmarksEnabled()) {
     _prefObserverBridge->ObserveChangesForPreference(
         bookmarks::prefs::kManagedBookmarks, _prefChangeRegistrar.get());
-  }
 
   [self computePromoTableViewData];
   [self computeBookmarkTableViewData];
@@ -218,7 +214,6 @@ const int kMaxBookmarksSearchResults = 50;
         toSectionWithIdentifier:BookmarkHomeSectionIdentifierBookmarks];
   }
 
-  if (IsManagedBookmarksEnabled()) {
     // Add "Managed Bookmarks" to the table if it exists.
     bookmarks::ManagedBookmarkService* managedBookmarkService =
         ManagedBookmarkServiceFactory::GetForBrowserState(self.browserState);
@@ -231,7 +226,6 @@ const int kMaxBookmarksSearchResults = 50;
                           addItem:managedItem
           toSectionWithIdentifier:BookmarkHomeSectionIdentifierBookmarks];
     }
-  }
 }
 
 - (void)computeBookmarkTableViewDataMatching:(NSString*)searchText

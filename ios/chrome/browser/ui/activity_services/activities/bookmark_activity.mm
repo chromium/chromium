@@ -9,7 +9,6 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/policy/policy_features.h"
 #import "ios/chrome/browser/ui/commands/bookmark_page_command.h"
 #import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
@@ -105,10 +104,8 @@ NSString* const kBookmarkActivityType = @"com.google.chrome.bookmarkActivity";
 
 // Verifies if, based on preferences, the user can edit their bookmarks or not.
 - (BOOL)isEditBookmarksEnabledInPrefs {
-  if (IsEditBookmarksIOSEnabled())
     return self.prefService->GetBoolean(
         bookmarks::prefs::kEditBookmarksEnabled);
-  return YES;
 }
 
 @end

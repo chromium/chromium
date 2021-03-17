@@ -4,13 +4,11 @@
 
 #import "ios/chrome/browser/ui/activity_services/activities/bookmark_activity.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "ios/chrome/browser/policy/policy_features.h"
 #include "ios/chrome/browser/ui/bookmarks/bookmark_ios_unittest.h"
 #include "ios/chrome/browser/ui/commands/bookmark_page_command.h"
 #include "ios/chrome/browser/ui/commands/bookmarks_commands.h"
@@ -36,9 +34,6 @@ class BookmarkActivityTest : public BookmarkIOSUnitTest {
 
   void SetUp() override {
     BookmarkIOSUnitTest::SetUp();
-
-    // Turn off flag by default.
-    scoped_features_.InitAndDisableFeature(kEditBookmarksIOS);
 
     mocked_handler_ = OCMProtocolMock(@protocol(BookmarksCommands));
 
@@ -66,31 +61,14 @@ class BookmarkActivityTest : public BookmarkIOSUnitTest {
                                      prefService:&testing_pref_service_];
   }
 
-  base::test::ScopedFeatureList scoped_features_;
   TestingPrefServiceSimple testing_pref_service_;
   id mocked_handler_;
 };
 
-// Tests that the activity can always be performed when the kEditBookmarksIOS
-// feature flag is disabled.
-TEST_F(BookmarkActivityTest, FlagOff_ActivityAlwaysAvailable) {
-  BookmarkActivity* activity = CreateActivity(GURL());
-
-  // Flag Off, Editable bookmark pref true.
-  EXPECT_TRUE([activity canPerformWithActivityItems:@[]]);
-
-  SetCanEditBookmarkPref(false);
-
-  // Flag off, Editable bookmark pref false.
-  EXPECT_TRUE([activity canPerformWithActivityItems:@[]]);
-}
-
-// Tests that, when the kEditBookmarksIOS is enabled, the activity can only be
-// performed if the preferences indicate that bookmarks can be edited.
+// Tests that the activity can only be performed if the preferences indicate
+// that bookmarks can be edited.
 TEST_F(BookmarkActivityTest, FlagOn_ActivityHiddenByPref) {
   BookmarkActivity* activity = CreateActivity(GURL());
-  scoped_features_.Reset();
-  scoped_features_.InitAndEnableFeature(kEditBookmarksIOS);
 
   // Flag On, Editable bookmark pref true.
   EXPECT_TRUE([activity canPerformWithActivityItems:@[]]);

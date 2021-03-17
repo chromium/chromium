@@ -135,11 +135,6 @@ extern const char kDetectMainThreadFreezeDescription[];
 extern const char kDiscoverFeedInNtpName[];
 extern const char kDiscoverFeedInNtpDescription[];
 
-// Title and description for the flag to enable EditBookmarks enterprise
-// policy on iOS.
-extern const char kEditBookmarksIOSName[];
-extern const char kEditBookmarksIOSDescription[];
-
 // Title and description for the flag to enable kEditPasswordsInSettings flag on
 // iOS.
 extern const char kEditPasswordsInSettingsName[];
@@ -241,11 +236,6 @@ extern const char kLocationPermissionsPromptDescription[];
 // Title and description for the flag to lock the bottom toolbar into place.
 extern const char kLockBottomToolbarName[];
 extern const char kLockBottomToolbarDescription[];
-
-// Title and description for the flag to enable ManagedBookmarks enterprise
-// policy on iOS.
-extern const char kManagedBookmarksIOSName[];
-extern const char kManagedBookmarksIOSDescription[];
 
 // Title and description for the flag where the Google SRP is requested in
 // mobile mode by default.

@@ -456,12 +456,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillSaveCardInfobarEditSupport)},
-    {"managed-bookmarks-ios", flag_descriptions::kManagedBookmarksIOSName,
-     flag_descriptions::kManagedBookmarksIOSDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kManagedBookmarksIOS)},
-    {"edit-bookmarks-ios", flag_descriptions::kEditBookmarksIOSName,
-     flag_descriptions::kEditBookmarksIOSDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kEditBookmarksIOS)},
     {"url-blocklist-ios", flag_descriptions::kURLBlocklistIOSName,
      flag_descriptions::kURLBlocklistIOSDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kURLBlocklistIOS)},

@@ -153,10 +153,6 @@ const char kDiscoverFeedInNtpDescription[] =
     "When enabled, replaces articles feed with new content Suggestion Feed in "
     "the NTP.";
 
-const char kEditBookmarksIOSName[] = "Edit Bookmarks IOS";
-const char kEditBookmarksIOSDescription[] =
-    "Enables support for the EditBookmarksEnabled enterprise policy on iOS";
-
 const char kEditPasswordsInSettingsName[] = "Edit passwords in settings";
 const char kEditPasswordsInSettingsDescription[] =
     "Enables password editing in settings.";
@@ -288,11 +284,6 @@ const char kLockBottomToolbarName[] = "Lock bottom toolbar";
 const char kLockBottomToolbarDescription[] =
     "When enabled, the bottom toolbar will not get collapsed when scrolling "
     "into fullscreen mode.";
-
-const char kManagedBookmarksIOSName[] = "Managed Bookmarks IOS";
-const char kManagedBookmarksIOSDescription[] =
-    "When enabled, managed bookmarks set by an enterprise policy can be shown "
-    "in the bookmarks UI on iOS";
 
 const char kMobileGoogleSRPName[] = "Mobile version of Google SRP by default";
 const char kMobileGoogleSRPDescription[] =

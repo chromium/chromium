@@ -537,9 +537,6 @@ TEST_F(PopupMenuMediatorTest, TestBookmarksToolsMenuButtons) {
 // Tests that the bookmark button is disabled when EditBookmarksEnabled pref is
 // changed to false.
 TEST_F(PopupMenuMediatorTest, TestDisableBookmarksButton) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kEditBookmarksIOS);
-
   CreateMediator(PopupMenuTypeToolsMenu, /*is_incognito=*/NO,
                  /*trigger_incognito_hint=*/NO);
   CreatePrefs();
