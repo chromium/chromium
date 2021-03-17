@@ -26,7 +26,6 @@ struct COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseDetails {
   std::string origin_identifier;
   std::u16string database_name;
   std::u16string description;
-  int64_t estimated_size;
 };
 
 class COMPONENT_EXPORT(STORAGE_BROWSER) DatabasesTable {

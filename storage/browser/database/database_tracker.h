@@ -96,7 +96,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
   void DatabaseOpened(const std::string& origin_identifier,
                       const std::u16string& database_name,
                       const std::u16string& database_details,
-                      int64_t estimated_size,
                       int64_t* database_size);
   void DatabaseModified(const std::string& origin_identifier,
                         const std::u16string& database_name);
@@ -234,8 +233,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseTracker
   bool UpgradeToCurrentVersion();
   void InsertOrUpdateDatabaseDetails(const std::string& origin_identifier,
                                      const std::u16string& database_name,
-                                     const std::u16string& database_details,
-                                     int64_t estimated_size);
+                                     const std::u16string& database_details);
 
   void ClearAllCachedOriginInfo();
   CachedOriginInfo* MaybeGetCachedOriginInfo(

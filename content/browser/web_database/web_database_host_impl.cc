@@ -17,6 +17,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "storage/browser/database/database_tracker.h"
 #include "storage/browser/database/database_util.h"
 #include "storage/browser/database/vfs_backend.h"
 #include "storage/browser/quota/quota_manager.h"
@@ -330,8 +331,7 @@ void WebDatabaseHostImpl::OpenedValidated(
   int64_t database_size = 0;
   std::string origin_identifier(storage::GetIdentifierFromOrigin(origin));
   db_tracker_->DatabaseOpened(origin_identifier, database_name,
-                              database_description, estimated_size,
-                              &database_size);
+                              database_description, &database_size);
 
   database_connections_.AddConnection(origin_identifier, database_name);
 

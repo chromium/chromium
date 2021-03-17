@@ -102,7 +102,6 @@ DatabaseTracker::~DatabaseTracker() {
 void DatabaseTracker::DatabaseOpened(const std::string& origin_identifier,
                                      const std::u16string& database_name,
                                      const std::u16string& database_description,
-                                     int64_t estimated_size,
                                      int64_t* database_size) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (shutting_down_ || !LazyInit()) {
@@ -116,7 +115,7 @@ void DatabaseTracker::DatabaseOpened(const std::string& origin_identifier,
         blink::mojom::StorageType::kTemporary, base::Time::Now());
 
   InsertOrUpdateDatabaseDetails(origin_identifier, database_name,
-                                database_description, estimated_size);
+                                database_description);
   if (database_connections_.AddConnection(origin_identifier, database_name)) {
     *database_size = SeedOpenDatabaseInfo(origin_identifier,
                                           database_name,
@@ -528,8 +527,7 @@ bool DatabaseTracker::UpgradeToCurrentVersion() {
 void DatabaseTracker::InsertOrUpdateDatabaseDetails(
     const std::string& origin_identifier,
     const std::u16string& database_name,
-    const std::u16string& database_description,
-    int64_t estimated_size) {
+    const std::u16string& database_description) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DatabaseDetails details;
   if (!databases_table_->GetDatabaseDetails(
@@ -537,12 +535,9 @@ void DatabaseTracker::InsertOrUpdateDatabaseDetails(
     details.origin_identifier = origin_identifier;
     details.database_name = database_name;
     details.description = database_description;
-    details.estimated_size = estimated_size;
     databases_table_->InsertDatabaseDetails(details);
-  } else if ((details.description != database_description) ||
-             (details.estimated_size != estimated_size)) {
+  } else if (details.description != database_description) {
     details.description = database_description;
-    details.estimated_size = estimated_size;
     databases_table_->UpdateDatabaseDetails(details);
   }
 }

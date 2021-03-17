@@ -5196,7 +5196,7 @@ void CreateDatabase(storage::DatabaseTracker* db_tracker,
   std::u16string db_name = base::UTF8ToUTF16("db");
   std::u16string description = base::UTF8ToUTF16("db_description");
   int64_t size;
-  db_tracker->DatabaseOpened(origin_id, db_name, description, 1, &size);
+  db_tracker->DatabaseOpened(origin_id, db_name, description, &size);
   db_tracker->DatabaseClosed(origin_id, db_name);
   std::vector<storage::OriginInfo> origins;
   db_tracker->GetAllOriginsInfo(&origins);

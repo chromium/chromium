@@ -11,7 +11,7 @@
 
 namespace storage {
 
-DatabaseDetails::DatabaseDetails() : estimated_size(0) { }
+DatabaseDetails::DatabaseDetails() = default;
 
 DatabaseDetails::DatabaseDetails(const DatabaseDetails& other) = default;
 
@@ -59,7 +59,7 @@ bool DatabasesTable::GetDatabaseDetails(const std::string& origin_identifier,
                                         DatabaseDetails* details) {
   DCHECK(details);
   sql::Statement select_statement(db_->GetCachedStatement(
-      SQL_FROM_HERE, "SELECT description, estimated_size FROM Databases "
+      SQL_FROM_HERE, "SELECT description FROM Databases "
                      "WHERE origin = ? AND name = ?"));
   select_statement.BindString(0, origin_identifier);
   select_statement.BindString16(1, database_name);
@@ -68,7 +68,6 @@ bool DatabasesTable::GetDatabaseDetails(const std::string& origin_identifier,
     details->origin_identifier = origin_identifier;
     details->database_name = database_name;
     details->description = select_statement.ColumnString16(0);
-    details->estimated_size = select_statement.ColumnInt64(1);
     return true;
   }
 
@@ -78,23 +77,21 @@ bool DatabasesTable::GetDatabaseDetails(const std::string& origin_identifier,
 bool DatabasesTable::InsertDatabaseDetails(const DatabaseDetails& details) {
   sql::Statement insert_statement(db_->GetCachedStatement(
       SQL_FROM_HERE, "INSERT INTO Databases (origin, name, description, "
-                     "estimated_size) VALUES (?, ?, ?, ?)"));
+                     "estimated_size) VALUES (?, ?, ?, 0)"));
   insert_statement.BindString(0, details.origin_identifier);
   insert_statement.BindString16(1, details.database_name);
   insert_statement.BindString16(2, details.description);
-  insert_statement.BindInt64(3, details.estimated_size);
 
   return insert_statement.Run();
 }
 
 bool DatabasesTable::UpdateDatabaseDetails(const DatabaseDetails& details) {
   sql::Statement update_statement(db_->GetCachedStatement(
-      SQL_FROM_HERE, "UPDATE Databases SET description = ?, "
-                     "estimated_size = ? WHERE origin = ? AND name = ?"));
+      SQL_FROM_HERE, "UPDATE Databases SET description = ? "
+                     "WHERE origin = ? AND name = ?"));
   update_statement.BindString16(0, details.description);
-  update_statement.BindInt64(1, details.estimated_size);
-  update_statement.BindString(2, details.origin_identifier);
-  update_statement.BindString16(3, details.database_name);
+  update_statement.BindString(1, details.origin_identifier);
+  update_statement.BindString16(2, details.database_name);
 
   return (update_statement.Run() && db_->GetLastChangeCount());
 }
@@ -125,7 +122,7 @@ bool DatabasesTable::GetAllDatabaseDetailsForOriginIdentifier(
     const std::string& origin_identifier,
     std::vector<DatabaseDetails>* details_vector) {
   sql::Statement statement(db_->GetCachedStatement(
-      SQL_FROM_HERE, "SELECT name, description, estimated_size "
+      SQL_FROM_HERE, "SELECT name, description "
                      "FROM Databases WHERE origin = ? ORDER BY name"));
   statement.BindString(0, origin_identifier);
 
@@ -134,7 +131,6 @@ bool DatabasesTable::GetAllDatabaseDetailsForOriginIdentifier(
     details.origin_identifier = origin_identifier;
     details.database_name = statement.ColumnString16(0);
     details.description = statement.ColumnString16(1);
-    details.estimated_size = statement.ColumnInt64(2);
     details_vector->push_back(details);
   }
 

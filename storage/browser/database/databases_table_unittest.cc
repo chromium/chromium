@@ -22,7 +22,6 @@ static void CheckDetailsAreEqual(const DatabaseDetails& d1,
   EXPECT_EQ(d1.origin_identifier, d2.origin_identifier);
   EXPECT_EQ(d1.database_name, d2.database_name);
   EXPECT_EQ(d1.description, d2.description);
-  EXPECT_EQ(d1.estimated_size, d2.estimated_size);
 }
 
 static bool DatabasesTableIsEmpty(sql::Database* db) {
@@ -57,7 +56,6 @@ TEST(DatabasesTableTest, TestIt) {
   details_in1.origin_identifier = "origin1";
   details_in1.database_name = u"db1";
   details_in1.description = u"description_db1";
-  details_in1.estimated_size = 100;
 
   // Updating details for this database should fail.
   EXPECT_FALSE(databases_table.UpdateDatabaseDetails(details_in1));
@@ -82,7 +80,6 @@ TEST(DatabasesTableTest, TestIt) {
   details_in2.origin_identifier = "origin1";
   details_in2.database_name = u"db2";
   details_in2.description = u"description_db2";
-  details_in2.estimated_size = 200;
   EXPECT_TRUE(databases_table.InsertDatabaseDetails(details_in2));
   EXPECT_EQ(2, databases_table.GetDatabaseID(details_in2.origin_identifier,
                                              details_in2.database_name));
@@ -92,7 +89,6 @@ TEST(DatabasesTableTest, TestIt) {
   details_in3.origin_identifier = "origin2";
   details_in3.database_name = u"db3";
   details_in3.description = u"description_db3";
-  details_in3.estimated_size = 300;
   EXPECT_TRUE(databases_table.InsertDatabaseDetails(details_in3));
   EXPECT_EQ(3, databases_table.GetDatabaseID(details_in3.origin_identifier,
                                              details_in3.database_name));

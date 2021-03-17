@@ -4,9 +4,15 @@
 
 #include <stdint.h>
 
+#include <list>
+#include <string>
+#include <vector>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -19,6 +25,10 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "storage/browser/database/database_tracker.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 using content::BrowserContext;
 using content::BrowserThread;
@@ -52,7 +62,7 @@ class DatabaseHelperTest : public content::ContentBrowserTest {
           std::u16string db_name = base::ASCIIToUTF16("db");
           std::u16string description = base::ASCIIToUTF16("db_description");
           int64_t size;
-          db_tracker->DatabaseOpened(kTestIdentifier1, db_name, description, 1,
+          db_tracker->DatabaseOpened(kTestIdentifier1, db_name, description,
                                      &size);
           db_tracker->DatabaseClosed(kTestIdentifier1, db_name);
           base::FilePath db_path1 =
@@ -60,7 +70,7 @@ class DatabaseHelperTest : public content::ContentBrowserTest {
           base::CreateDirectory(db_path1.DirName());
           ASSERT_EQ(0, base::WriteFile(db_path1, nullptr, 0));
           db_tracker->DatabaseOpened(kTestIdentifierExtension, db_name,
-                                     description, 1, &size);
+                                     description, &size);
           db_tracker->DatabaseClosed(kTestIdentifierExtension, db_name);
           base::FilePath db_path2 =
               db_tracker->GetFullDBFilePath(kTestIdentifierExtension, db_name);
