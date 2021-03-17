@@ -104,7 +104,7 @@ class VisitRow {
   // (https://github.com/WICG/floc) is an API that intends to provide callers
   // with coarse-grained information about the user’s browsing interests. The
   // history URL visits is a main source of computation, but some visits are
-  // ineligible to be included, so we use this bit to represent its eligiblity.
+  // ineligible to be included, so we use this bit to represent its eligibility.
   //
   // Currently this bit is "true" if the IP of this url visit was publicly
   // routable, i.e. the IP is NOT within the ranges reserved for "private"
@@ -129,7 +129,7 @@ class VisitRow {
     return visit_time < other.visit_time;
   }
 
-  // We allow the implicit copy constuctor and operator=.
+  // We allow the implicit copy constructor and operator=.
 };
 
 // We pass around vectors of visits a lot
@@ -300,7 +300,7 @@ struct QueryURLResult {
   QueryURLResult& operator=(QueryURLResult&&) noexcept;
   ~QueryURLResult();
 
-  // Indicates whether the call to HistoryBackend::QueryURL was successfull
+  // Indicates whether the call to HistoryBackend::QueryURL was successful
   // or not. If false, then both |row| and |visits| fields are undefined.
   bool success = false;
   URLRow row;

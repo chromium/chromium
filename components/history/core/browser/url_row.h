@@ -144,7 +144,7 @@ class URLRow {
   // is usually for subframes.
   bool hidden_ = false;
 
-  // We support the implicit copy constuctor and operator=.
+  // We support the implicit copy constructor and operator=.
 };
 typedef std::vector<URLRow> URLRows;
 
