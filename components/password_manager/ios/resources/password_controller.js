@@ -218,7 +218,7 @@ __gCrWeb.passwords['fillPasswordForm'] = function(
 };
 
 /**
- * Fills all password fields in the form identified by |formName|
+ * Finds the form identified by |formIdentifier| and fills its password fields
  * with |password|.
  *
  * @param {number} formIdentifier The name of the form to fill.
@@ -233,7 +233,41 @@ __gCrWeb.passwords['fillPasswordFormWithGeneratedPassword'] = function(
     password) {
   const hasFormTag =
       formIdentifier.toString() !== __gCrWeb.fill.RENDERER_ID_NOT_SET;
-  const form = __gCrWeb.form.getFormElementFromUniqueFormId(formIdentifier);
+  if (fillGeneratedPasswordInWindow(
+          formIdentifier, newPasswordIdentifier, confirmPasswordIdentifier,
+          password, hasFormTag, window)) {
+    return true;
+  }
+  // Try to recursively invoke for same origin iframes.
+  const frames = getSameOriginFrames(window);
+  for (let i = 0; i < frames.length; i++) {
+    if (fillGeneratedPasswordInWindow(
+            formIdentifier, newPasswordIdentifier, confirmPasswordIdentifier,
+            password, hasFormTag, frames[i])) {
+      return true;
+    }
+  }
+  return false;
+};
+
+/**
+ * Fills password fields in the form identified by |formIdentifier|
+ * with |password| in a given window.
+ *
+ * @param {number} formIdentifier The name of the form to fill.
+ * @param {number} newPasswordIdentifier The id of password element to fill.
+ * @param {number} confirmPasswordIdentifier The id of confirm password
+ *     element to fill.
+ * @param {string} password The password to fill.
+ * @param {boolean} hasFormTag Whether the new password field belongs to a
+ *     <form> element.
+ * @param {Window} win A window or a frame containing formData.
+ * @return {boolean} Whether new password field has been filled.
+ */
+const fillGeneratedPasswordInWindow = function(
+    formIdentifier, newPasswordIdentifier, confirmPasswordIdentifier, password,
+    hasFormTag, win) {
+  const form = getPasswordFormElement(win, formIdentifier);
   if (!form && hasFormTag) {
     return false;
   }
