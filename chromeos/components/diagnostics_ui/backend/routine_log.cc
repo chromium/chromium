@@ -26,6 +26,30 @@ std::string GetCurrentTimeAsString() {
       base::TimeFormatTimeOfDayWithMilliseconds(base::Time::Now()));
 }
 
+std::string getRoutineResultString(mojom::StandardRoutineResult result) {
+  switch (result) {
+    case mojom::StandardRoutineResult::kTestPassed:
+      return "Passed";
+    case mojom::StandardRoutineResult::kTestFailed:
+      return "Failed";
+    case mojom::StandardRoutineResult::kExecutionError:
+      return "Execution error";
+    case mojom::StandardRoutineResult::kUnableToRun:
+      return "Unable to run";
+  }
+}
+
+std::string getRoutineTypeString(mojom::RoutineType type) {
+  std::stringstream s;
+  s << type;
+  const std::string routineName = s.str();
+
+  // Remove leading "k" ex: "kCpuStress" -> "CpuStress".
+  DCHECK_GE(routineName.size(), 1U);
+  DCHECK_EQ(routineName[0], 'k');
+  return routineName.substr(1, routineName.size() - 1);
+}
+
 }  // namespace
 
 RoutineLog::RoutineLog(const base::FilePath& routine_log_file_path)
@@ -39,8 +63,9 @@ void RoutineLog::LogRoutineStarted(mojom::RoutineType type) {
   }
 
   std::stringstream log_line;
-  log_line << GetCurrentTimeAsString() << kSeparator << type << kSeparator
-           << kStartedDescription << kNewline;
+  log_line << GetCurrentTimeAsString() << kSeparator
+           << getRoutineTypeString(type) << kSeparator << kStartedDescription
+           << kNewline;
   AppendToLog(log_line.str());
 }
 
@@ -49,8 +74,9 @@ void RoutineLog::LogRoutineCompleted(mojom::RoutineType type,
   DCHECK(base::PathExists(routine_log_file_path_));
 
   std::stringstream log_line;
-  log_line << GetCurrentTimeAsString() << kSeparator << type << kSeparator
-           << result << kNewline;
+  log_line << GetCurrentTimeAsString() << kSeparator
+           << getRoutineTypeString(type) << kSeparator
+           << getRoutineResultString(result) << kNewline;
   AppendToLog(log_line.str());
 }
 
