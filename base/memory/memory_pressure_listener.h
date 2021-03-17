@@ -16,10 +16,6 @@
 #include "base/macros.h"
 #include "base/tracing_buildflags.h"
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-#include "base/tracing/protos/chrome_track_event.pbzero.h"  // nogncheck
-#endif
-
 namespace base {
 
 // To start listening, create a new instance, passing a callback to a
@@ -76,11 +72,6 @@ class BASE_EXPORT MemoryPressureListener {
     // UMA_HISTOGRAM_ENUMERATION macro.
     kMaxValue = MEMORY_PRESSURE_LEVEL_CRITICAL,
   };
-
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-  static perfetto::protos::pbzero::MemoryPressureLevel LevelAsTraceEnum(
-      MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
-#endif
 
   using MemoryPressureCallback = RepeatingCallback<void(MemoryPressureLevel)>;
   using SyncMemoryPressureCallback =

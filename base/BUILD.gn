@@ -2240,6 +2240,8 @@ component("base") {
       "trace_event/memory_dump_scheduler.h",
       "trace_event/memory_infra_background_allowlist.cc",
       "trace_event/memory_infra_background_allowlist.h",
+      "trace_event/memory_pressure_level_proto.cc",
+      "trace_event/memory_pressure_level_proto.h",
       "trace_event/memory_usage_estimator.cc",
       "trace_event/memory_usage_estimator.h",
       "trace_event/optional_trace_event.h",

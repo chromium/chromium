@@ -41,6 +41,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/memory_pressure_level_proto.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/values.h"
@@ -90,7 +91,6 @@
 #include "content/renderer/variations_render_thread_observer.h"
 #include "content/renderer/worker/embedded_shared_worker_stub.h"
 #include "content/renderer/worker/worker_thread_registry.h"
-#include "components/viz/common/features.h"
 #include "device/gamepad/public/cpp/gamepads.h"
 #include "gin/public/debug.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -1740,8 +1740,9 @@ void RenderThreadImpl::OnMemoryPressure(
                 auto* event =
                     ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
                 auto* data = event->set_chrome_memory_pressure_notification();
-                data->set_level(base::MemoryPressureListener::LevelAsTraceEnum(
-                    memory_pressure_level));
+                data->set_level(
+                    base::trace_event::MemoryPressureLevelToTraceEnum(
+                        memory_pressure_level));
               });
   if (blink_platform_impl_)
     blink::WebMemoryPressureListener::OnMemoryPressure(memory_pressure_level);

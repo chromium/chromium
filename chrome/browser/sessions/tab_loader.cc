@@ -13,6 +13,7 @@
 #include "base/system/sys_info.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
+#include "base/trace_event/memory_pressure_level_proto.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -373,7 +374,7 @@ void TabLoader::OnMemoryPressure(
       [&](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* data = event->set_chrome_memory_pressure_notification();
-        data->set_level(base::MemoryPressureListener::LevelAsTraceEnum(
+        data->set_level(base::trace_event::MemoryPressureLevelToTraceEnum(
             memory_pressure_level));
       });
 
