@@ -3585,11 +3585,6 @@
     "expiry_milestone": 84
   },
   {
-    "name": "movable-partial-screenshot-region",
-    "owners": [ "xiyuan", "chromeos-wmp-eng" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "nearby-sharing",
     "owners": [ "vecore@google.com", "cros-system-services@google.com", "cross-device-team@google.com" ],
     "expiry_milestone": 95

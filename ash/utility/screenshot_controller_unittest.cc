@@ -8,7 +8,6 @@
 #include "ash/display/mirror_window_test_api.h"
 #include "ash/display/mouse_cursor_event_filter.h"
 #include "ash/display/window_tree_host_manager.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/screenshot_delegate.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -16,7 +15,6 @@
 #include "ash/test_screenshot_delegate.h"
 #include "ash/wm/window_util.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/cursor/cursor.h"
@@ -150,72 +148,6 @@ TEST_F(PartialScreenshotControllerTest, JustClick) {
 
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(IsActive());
-}
-
-TEST_F(PartialScreenshotControllerTest, Movable) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kMovablePartialScreenshot);
-
-  TestScreenshotDelegate* test_delegate = GetScreenshotDelegate();
-  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
-
-  // Test data to exercise on an initial region of 10+20-50x50.
-  struct {
-    const gfx::Point drag_start;
-    const gfx::Point drag_end;
-    const gfx::Rect expected_region;
-  } kTestCases[] = {
-      // Drag from top-left. |drag_end| becomes the new origin.
-      {gfx::Point(10, 20), gfx::Point(20, 30), gfx::Rect(20, 30, 40, 40)},
-      // Drag from top-right. |drag_end| becomes the new top-right.
-      {gfx::Point(60, 20), gfx::Point(20, 30), gfx::Rect(10, 30, 10, 40)},
-      // Drag from bottom-left. |drag_end| becomes the new bottom-left.
-      {gfx::Point(10, 70), gfx::Point(20, 30), gfx::Rect(20, 20, 40, 10)},
-      // Drag from bottom-right. |drag_end| becomes the new bottom-right.
-      {gfx::Point(60, 70), gfx::Point(20, 30), gfx::Rect(10, 20, 10, 10)},
-
-      // Drag from top. |drag_end|'s y becomes new top.
-      {gfx::Point(30, 20), gfx::Point(20, 30), gfx::Rect(10, 30, 50, 40)},
-      // Drag from top. |drag_end|'s y becomes new bottom.
-      {gfx::Point(30, 20), gfx::Point(20, 80), gfx::Rect(10, 70, 50, 10)},
-
-      // Drag from left. |drag_end|'x becomes the new left.
-      {gfx::Point(10, 30), gfx::Point(20, 30), gfx::Rect(20, 20, 40, 50)},
-      // Drag from left. |drag_end|'x becomes the new right.
-      {gfx::Point(10, 30), gfx::Point(70, 30), gfx::Rect(60, 20, 10, 50)},
-
-      // Drag from right. |drag_end|'x becomes the new right.
-      {gfx::Point(60, 30), gfx::Point(20, 30), gfx::Rect(10, 20, 10, 50)},
-      // Drag from right. |drag_end|'x becomes the new left.
-      {gfx::Point(60, 30), gfx::Point(5, 30), gfx::Rect(5, 20, 5, 50)},
-
-      // Drag from bottom. |drag_end|'y becomes the new bottom.
-      {gfx::Point(30, 70), gfx::Point(20, 30), gfx::Rect(10, 20, 50, 10)},
-      // Drag from bottom. |drag_end|'y becomes the new top.
-      {gfx::Point(30, 70), gfx::Point(20, 10), gfx::Rect(10, 10, 50, 10)},
-  };
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
-    const auto& test = kTestCases[i];
-    SCOPED_TRACE(testing::Message()
-                 << ", i=" << i << "start=" << test.drag_start.ToString()
-                 << ", end=" << test.drag_end.ToString()
-                 << ", expect=" << test.expected_region.ToString());
-
-    StartPartialScreenshotSession();
-    generator.MoveMouseTo(10, 20);
-    generator.DragMouseBy(50, 50);
-
-    generator.MoveMouseTo(test.drag_start);
-    generator.DragMouseTo(test.drag_end);
-
-    // Complete partial screenshot selection by clicking outside the region.
-    generator.MoveMouseTo(0, 0);
-    generator.ClickLeftButton();
-
-    EXPECT_EQ(test.expected_region, test_delegate->last_rect());
-    EXPECT_EQ(static_cast<int>(i + 1),
-              test_delegate->handle_take_partial_screenshot_count());
-  }
 }
 
 TEST_F(PartialScreenshotControllerTest, BasicTouch) {

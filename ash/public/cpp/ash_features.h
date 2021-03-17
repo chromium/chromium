@@ -270,8 +270,6 @@ ASH_PUBLIC_EXPORT bool IsWebUITabStripTabDragIntegrationEnabled();
 
 ASH_PUBLIC_EXPORT bool IsDisplayAlignmentAssistanceEnabled();
 
-ASH_PUBLIC_EXPORT bool IsMovablePartialScreenshotEnabled();
-
 ASH_PUBLIC_EXPORT bool IsNotificationsInContextMenuEnabled();
 
 ASH_PUBLIC_EXPORT bool IsTemporaryHoldingSpaceEnabled();

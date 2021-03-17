@@ -87,7 +87,6 @@ class ASH_EXPORT ScreenshotController : public ui::EventHandler,
 
   class ScopedCursorSetter;
   class ScreenshotLayer;
-  class MovableScreenshotLayer;
 
   // Starts, ends, cancels, or updates the region selection.
   void CompleteWindowScreenshot();
