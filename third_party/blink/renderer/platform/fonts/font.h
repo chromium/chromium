@@ -216,6 +216,9 @@ class PLATFORM_EXPORT Font {
 
   void ReportNotDefGlyph() const;
 
+  void ReportEmojiSegmentGlyphCoverage(unsigned num_clusters,
+                                       unsigned num_broken_clusters) const;
+
  private:
   enum ForTextEmphasisOrNot { kNotForTextEmphasis, kForTextEmphasis };
 

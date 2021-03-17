@@ -56,7 +56,6 @@ class TestFontSelector : public FontSelector {
 
   unsigned Version() const override { return 0; }
   void FontCacheInvalidated() override {}
-  void ReportNotDefGlyph() const override {}
   void ReportSuccessfulFontFamilyMatch(
       const AtomicString& font_family_name) override {}
   void ReportFailedFontFamilyMatch(
@@ -80,6 +79,8 @@ class TestFontSelector : public FontSelector {
   void ReportLastResortFallbackFontLookup(
       const FontDescription& font_description,
       SimpleFontData* resulting_font_data) override {}
+  void ReportNotDefGlyph() const override {}
+  void ReportEmojiSegmentGlyphCoverage(unsigned, unsigned) override {}
   ExecutionContext* GetExecutionContext() const override { return nullptr; }
   FontFaceCache* GetFontFaceCache() override { return nullptr; }
 

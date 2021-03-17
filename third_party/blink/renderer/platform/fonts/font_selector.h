@@ -63,8 +63,6 @@ class PLATFORM_EXPORT FontSelector : public FontCacheClient {
 
   virtual unsigned Version() const = 0;
 
-  virtual void ReportNotDefGlyph() const = 0;
-
   // Called when a page attempts to match a font family, and the font family is
   // available.
   virtual void ReportSuccessfulFontFamilyMatch(
@@ -113,6 +111,14 @@ class PLATFORM_EXPORT FontSelector : public FontCacheClient {
   virtual void ReportLastResortFallbackFontLookup(
       const FontDescription& font_description,
       SimpleFontData* resulting_font_data) = 0;
+
+  virtual void ReportNotDefGlyph() const = 0;
+
+  // Called during text shaping of emoji presentation segments and after
+  // identifying how many clusters render as a single, non-tofu glyph.
+  virtual void ReportEmojiSegmentGlyphCoverage(
+      unsigned num_clusters,
+      unsigned num_broken_clusters) = 0;
 
   virtual void RegisterForInvalidationCallbacks(FontSelectorClient*) = 0;
   virtual void UnregisterForInvalidationCallbacks(FontSelectorClient*) = 0;

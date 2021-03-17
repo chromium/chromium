@@ -258,6 +258,13 @@ void FontMatchingMetrics::ReportFontFamilyLookupByGenericFamily(
       IdentifiabilityBenignCaseFoldingStringToken(resulting_font_name));
 }
 
+void FontMatchingMetrics::ReportEmojiSegmentGlyphCoverage(
+    unsigned num_clusters,
+    unsigned num_broken_clusters) {
+  total_emoji_clusters_shaped_ += num_clusters;
+  total_broken_emoji_clusters_ += num_broken_clusters;
+}
+
 void FontMatchingMetrics::PublishIdentifiabilityMetrics() {
   if (!IdentifiabilityStudySettings::Get()->IsActive())
     return;
@@ -333,6 +340,16 @@ void FontMatchingMetrics::PublishUkmMetrics() {
       local_fonts_failed_.size() + local_fonts_succeeded_.size());
 }
 
+void FontMatchingMetrics::PublishEmojiGlyphMetrics() {
+  DCHECK_LE(total_broken_emoji_clusters_, total_emoji_clusters_shaped_);
+  if (total_emoji_clusters_shaped_) {
+    double percentage = static_cast<double>(total_broken_emoji_clusters_) /
+                        total_emoji_clusters_shaped_;
+    UMA_HISTOGRAM_PERCENTAGE("Blink.Fonts.EmojiClusterBrokenness",
+                             static_cast<int>(round(percentage * 100)));
+  }
+}
+
 void FontMatchingMetrics::OnFontLookup() {
   DCHECK(IdentifiabilityStudySettings::Get()->IsActive());
   if (!identifiability_metrics_timer_.IsActive()) {
@@ -348,6 +365,7 @@ void FontMatchingMetrics::IdentifiabilityMetricsTimerFired(TimerBase*) {
 void FontMatchingMetrics::PublishAllMetrics() {
   PublishIdentifiabilityMetrics();
   PublishUkmMetrics();
+  PublishEmojiGlyphMetrics();
 }
 
 int64_t FontMatchingMetrics::GetHashForFontData(SimpleFontData* font_data) {

@@ -101,6 +101,14 @@ bool OffscreenFontSelector::IsPlatformFamilyMatchAvailable(
 
 void OffscreenFontSelector::ReportNotDefGlyph() const {}
 
+void OffscreenFontSelector::ReportEmojiSegmentGlyphCoverage(
+    unsigned num_clusters,
+    unsigned num_broken_clusters) {
+  DCHECK(worker_);
+  worker_->GetFontMatchingMetrics()->ReportEmojiSegmentGlyphCoverage(
+      num_clusters, num_broken_clusters);
+}
+
 void OffscreenFontSelector::ReportSuccessfulFontFamilyMatch(
     const AtomicString& font_family_name) {
   DCHECK(worker_);

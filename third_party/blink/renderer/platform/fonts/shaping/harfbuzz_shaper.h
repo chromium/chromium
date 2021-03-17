@@ -55,14 +55,15 @@ class PLATFORM_EXPORT HarfBuzzShaper final {
       base::RepeatingCallback<void(unsigned, unsigned)>;
 
  public:
+  // The optional emoji_metrics_callback argument is a mock metrics reporting
+  // function used during tests. Otherwise successful and unsuccessful emoji
+  // clusters are reported per Document / WorkerGlobalContext to
+  // FontMatchingMetrics.
   explicit HarfBuzzShaper(
       const String& text,
       EmojiMetricsCallback emoji_metrics_callback = EmojiMetricsCallback())
-      : text_(text), emoji_metrics_reporter_(emoji_metrics_callback) {
-    // TODO(https://crbug.com/1186694): If no callback is specified (unit tests
-    // specify a callback here), then get FontGlobalContext, implement UMA
-    // metrics there and report the emoji segment ratios there.
-  }
+      : text_(text),
+        emoji_metrics_reporter_for_testing_(emoji_metrics_callback) {}
 
   // Shape a range, defined by the start and end parameters, of the string
   // supplied to the constructor.
@@ -133,7 +134,7 @@ class PLATFORM_EXPORT HarfBuzzShaper final {
                     ShapeResult*) const;
 
   const String text_;
-  EmojiMetricsCallback emoji_metrics_reporter_;
+  EmojiMetricsCallback emoji_metrics_reporter_for_testing_;
 };
 
 }  // namespace blink

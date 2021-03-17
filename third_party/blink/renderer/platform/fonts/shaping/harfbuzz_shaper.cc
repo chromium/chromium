@@ -840,12 +840,18 @@ void HarfBuzzShaper::ShapeSegment(
     hb_buffer_reset(range_data->buffer);
   }
 
-  if (emoji_metrics_reporter_ &&
-      segment.font_fallback_priority == FontFallbackPriority::kEmojiEmoji) {
+  if (segment.font_fallback_priority == FontFallbackPriority::kEmojiEmoji) {
     EmojiCorrectness emoji_correctness =
         ComputeBrokenEmojiPercentage(result, segment.start, segment.end);
-    emoji_metrics_reporter_.Run(emoji_correctness.num_clusters,
-                                emoji_correctness.num_broken_clusters);
+    if (emoji_metrics_reporter_for_testing_) {
+      emoji_metrics_reporter_for_testing_.Run(
+          emoji_correctness.num_clusters,
+          emoji_correctness.num_broken_clusters);
+    } else {
+      range_data->font->ReportEmojiSegmentGlyphCoverage(
+          emoji_correctness.num_clusters,
+          emoji_correctness.num_broken_clusters);
+    }
   }
 }
 
