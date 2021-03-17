@@ -1703,6 +1703,36 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, AsyncClipboardAccessError) {
                                 "NotAllowedError: Document is not focused."));
 }
 
+// Tests that the Pointer Lock API is not valid on prerendering pages.
+// This cannot be upstreamed as a WPT test because the spec (probably) will
+// require that no error is thrown until activation.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, PointerLockError) {
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl =
+      GetUrl("/prerender/restriction_pointer_lock.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start a prerender.
+  AddPrerender(kPrerenderingUrl);
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host =
+      registry.FindHostByUrlForTesting(kPrerenderingUrl);
+  ASSERT_TRUE(prerender_host);
+  RenderFrameHostImpl* prerender_render_frame_host =
+      prerender_host->GetPrerenderedMainFrameHost();
+
+  // The Pointer Lock API is not engaged on prerendering pages because the
+  // prerendering documents are not focused.
+  // https://w3c.github.io/pointerlock/#extensions-to-the-element-interface
+  auto result =
+      EvalJs(prerender_render_frame_host, "canvas.requestPointerLock();");
+  EXPECT_THAT(result.error, ::testing::HasSubstr(
+                                "WrongDocumentError: The root document of this "
+                                "element is not valid for pointer lock."));
+}
+
 // End: Tests for feature restrictions in prerendered pages ====================
 
 // Tests that prerendering doesn't run for low-end devices.
