@@ -297,10 +297,6 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
     session_controller->AddObserver(this);
   }
 
-  process_reference_ = process_manager->GetNearbyProcessReference(
-      base::BindOnce(&NearbySharingServiceImpl::OnNearbyProcessStopped,
-                     weak_ptr_factory_.GetWeakPtr()));
-
   power_client_->AddObserver(this);
   certificate_manager_->AddObserver(this);
 
@@ -315,6 +311,7 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
     local_device_data_manager_->Start();
     contact_manager_->Start();
     certificate_manager_->Start();
+    BindToNearbyProcess();
   }
 }
 
@@ -1025,7 +1022,7 @@ void NearbySharingServiceImpl::
 }
 
 void NearbySharingServiceImpl::BindToNearbyProcess() {
-  if (process_reference_)
+  if (process_reference_ || !settings_.GetEnabled())
     return;
 
   process_reference_ = process_manager_->GetNearbyProcessReference(
@@ -1109,6 +1106,7 @@ void NearbySharingServiceImpl::OnEnabledChanged(bool enabled) {
     local_device_data_manager_->Start();
     contact_manager_->Start();
     certificate_manager_->Start();
+    BindToNearbyProcess();
   } else {
     NS_LOG(VERBOSE) << __func__ << ": Nearby sharing disabled!";
     StopAdvertising();
@@ -1117,6 +1115,7 @@ void NearbySharingServiceImpl::OnEnabledChanged(bool enabled) {
     local_device_data_manager_->Stop();
     contact_manager_->Stop();
     certificate_manager_->Stop();
+    process_reference_.reset();
   }
   InvalidateSurfaceState();
 }

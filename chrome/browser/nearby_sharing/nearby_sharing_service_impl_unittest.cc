@@ -480,11 +480,19 @@ class NearbySharingServiceImplTest : public testing::Test {
   void SetVisibility(nearby_share::mojom::Visibility visibility) {
     NearbyShareSettings settings(&prefs_, local_device_data_manager());
     settings.SetVisibility(visibility);
+
+    // This ensures that the change propagates through mojo and the observers
+    // are called.
+    base::RunLoop().RunUntilIdle();
   }
 
   void SetIsEnabled(bool is_enabled) {
     NearbyShareSettings settings(&prefs_, local_device_data_manager());
     settings.SetEnabled(is_enabled);
+
+    // This ensures that the change propagates through mojo and the observers
+    // are called.
+    base::RunLoop().RunUntilIdle();
   }
 
   void SetFakeFastInitiationManagerFactory(bool should_succeed_on_start) {
@@ -4155,6 +4163,27 @@ TEST_F(NearbySharingServiceImplTest, RetryDiscoveredEndpoints_DownloadLimit) {
   service_.reset();
 }
 
+TEST_F(NearbySharingServiceImplTest, NotBoundToProcessIfDisabled) {
+  SetIsEnabled(false);
+  EXPECT_FALSE(IsBoundToProcess());
+}
+
+TEST_F(NearbySharingServiceImplTest, UnbindsFromProcessWhenDisabled) {
+  SetIsEnabled(true);
+  EXPECT_TRUE(IsBoundToProcess());
+  SetIsEnabled(false);
+  EXPECT_FALSE(IsBoundToProcess());
+}
+
+TEST_F(NearbySharingServiceImplTest, BindsProcessWhenReenabled) {
+  SetIsEnabled(true);
+  EXPECT_TRUE(IsBoundToProcess());
+  SetIsEnabled(false);
+  EXPECT_FALSE(IsBoundToProcess());
+  SetIsEnabled(true);
+  EXPECT_TRUE(IsBoundToProcess());
+}
+
 using ServiceRestartTestParams =
     std::tuple<bool, NearbyProcessShutdownReason, int>;
 
@@ -4191,7 +4220,11 @@ TEST_P(NearbySharingServiceRestartTest, RestartsServiceWhenAppropriate) {
   EXPECT_CALL(mock_nearby_process_manager(), GetNearbyProcessReference)
       .Times(expected_to_restart ? 1 : 0);
 
-  std::move(process_stopped_callback_).Run(shutdown_reason);
+  // If the feature is disabled, the saved process_stopped_callback_ is invalid
+  // and shouldn't be called.
+  if (is_enabled) {
+    std::move(process_stopped_callback_).Run(shutdown_reason);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
