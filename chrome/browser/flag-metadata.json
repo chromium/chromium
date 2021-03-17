@@ -3547,7 +3547,7 @@
   {
     "name": "minutes-delay-to-restore-gaia-cookies-if-deleted",
     "owners": ["fernandex", "chrome-signin-team"],
-    "expiry_milestone": 90
+    "expiry_milestone": 99
   },
   {
     "name": "mixed-forms-disable-autofill",
@@ -3567,7 +3567,7 @@
   {
     "name": "mobile-identity-consistency",
     "owners": [ "bsazonov", "aliceywang", "msarda", "fernandex" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 99
   },
   {
     "name": "mobile-identity-consistency-var",
@@ -4460,12 +4460,12 @@
   {
     "name": "restore-gaia-cookies-if-deleted",
     "owners": [ "fernandex", "chrome-signin-team" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 99
   },
   {
     "name": "restore-gaia-cookies-on-user-action",
     "owners": ["fernandex", "chrome-signin-team" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 99
   },
   {
     "name": "restore-session-from-cache",
