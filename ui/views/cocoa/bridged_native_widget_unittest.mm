@@ -1503,7 +1503,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_SimulatePhoneticIme) {
       },
       &saw_vkey_return));
 
-  EXPECT_EQ(base::UTF8ToUTF16(""), textfield->GetText());
+  EXPECT_EQ(u"", textfield->GetText());
 
   g_fake_interpret_key_events = &handle_q_in_ime;
   [ns_view_ keyDown:q_in_ime];
@@ -1573,7 +1573,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_SimulateTelexMoo) {
         [view doCommandBySelector:@selector(insertNewLine:)];
       });
 
-  EXPECT_EQ(base::UTF8ToUTF16(""), textfield->GetText());
+  EXPECT_EQ(u"", textfield->GetText());
   EXPECT_EQ(0, enter_view->count());
 
   object_setClass(ns_view_, [InterpretKeyEventMockedBridgedContentView class]);
@@ -1643,7 +1643,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_NoAcceleratorPinyinSelectWord) {
         [view doCommandBySelector:@selector(insertNewLine:)];
       });
 
-  EXPECT_EQ(base::UTF8ToUTF16(""), textfield->GetText());
+  EXPECT_EQ(u"", textfield->GetText());
   EXPECT_EQ(0, enter_view->count());
 
   object_setClass(ns_view_, [InterpretKeyEventMockedBridgedContentView class]);
@@ -1713,7 +1713,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_NoAcceleratorEnterComposition) {
   InterpretKeyEventsCallback handle_second_return_in_ime = base::BindRepeating(
       [](id view) { [view doCommandBySelector:@selector(insertNewLine:)]; });
 
-  EXPECT_EQ(base::UTF8ToUTF16(""), textfield->GetText());
+  EXPECT_EQ(u"", textfield->GetText());
   EXPECT_EQ(0, enter_view->count());
 
   object_setClass(ns_view_, [InterpretKeyEventMockedBridgedContentView class]);
@@ -1780,7 +1780,7 @@ TEST_F(BridgedNativeWidgetTest, TextInput_NoAcceleratorTabEnterComposition) {
         [view doCommandBySelector:@selector(insertNewLine:)];
       });
 
-  EXPECT_EQ(base::UTF8ToUTF16(""), textfield->GetText());
+  EXPECT_EQ(u"", textfield->GetText());
   EXPECT_EQ(0, enter_view->count());
 
   object_setClass(ns_view_, [InterpretKeyEventMockedBridgedContentView class]);

@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -2179,9 +2178,9 @@ class WidgetWindowTitleTest : public DesktopWidgetTest {
         widget->native_widget_private();
 
     std::u16string empty;
-    std::u16string s1(base::UTF8ToUTF16("Title1"));
-    std::u16string s2(base::UTF8ToUTF16("Title2"));
-    std::u16string s3(base::UTF8ToUTF16("TitleLong"));
+    std::u16string s1(u"Title1");
+    std::u16string s2(u"Title2");
+    std::u16string s3(u"TitleLong");
 
     // The widget starts with no title, setting empty should not change
     // anything.

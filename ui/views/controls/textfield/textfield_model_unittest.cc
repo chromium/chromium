@@ -12,7 +12,6 @@
 
 #include "base/auto_reset.h"
 #include "base/stl_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1349,7 +1348,7 @@ TEST_F(TextfieldModelTest, CompositionTextTest) {
   EXPECT_EQ(10U, model.render_text()->cursor_position());
 #endif
 
-  model.InsertText(base::UTF8ToUTF16("-"));
+  model.InsertText(u"-");
   EXPECT_TRUE(composition_text_confirmed_or_cleared_);
   composition_text_confirmed_or_cleared_ = false;
   EXPECT_STR_EQ("1234567890-", model.text());
@@ -1362,7 +1361,7 @@ TEST_F(TextfieldModelTest, CompositionTextTest) {
   model.SetCompositionText(composition);
   EXPECT_STR_EQ("1234567890678", model.text());
 
-  model.ReplaceText(base::UTF8ToUTF16("-"));
+  model.ReplaceText(u"-");
   EXPECT_TRUE(composition_text_confirmed_or_cleared_);
   composition_text_confirmed_or_cleared_ = false;
   EXPECT_STR_EQ("1234567890-", model.text());
@@ -1370,7 +1369,7 @@ TEST_F(TextfieldModelTest, CompositionTextTest) {
   EXPECT_FALSE(model.HasSelection());
 
   model.SetCompositionText(composition);
-  model.Append(base::UTF8ToUTF16("-"));
+  model.Append(u"-");
   EXPECT_TRUE(composition_text_confirmed_or_cleared_);
   composition_text_confirmed_or_cleared_ = false;
   EXPECT_STR_EQ("1234567890-678-", model.text());

@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/i18n/rtl.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -459,13 +458,13 @@ TEST_F(LabelTest, ObscuredProperty) {
 TEST_F(LabelTest, ObscuredSurrogatePair) {
   // 'MUSICAL SYMBOL G CLEF': represented in UTF-16 as two characters
   // forming the surrogate pair 0x0001D11E.
-  std::u16string test_text = base::UTF8ToUTF16("\xF0\x9D\x84\x9E");
-  label()->SetText(test_text);
+  const std::u16string kTestText = u"𝄞";
+  label()->SetText(kTestText);
   label()->SetObscured(true);
   label()->SizeToPreferredSize();
   EXPECT_EQ(std::u16string(1, gfx::RenderText::kPasswordReplacementChar),
             label()->GetDisplayTextForTesting());
-  EXPECT_EQ(test_text, label()->GetText());
+  EXPECT_EQ(kTestText, label()->GetText());
 }
 
 // This test case verifies the label preferred size will change based on the

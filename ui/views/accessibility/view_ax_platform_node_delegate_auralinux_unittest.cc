@@ -33,7 +33,7 @@ TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, TextfieldAccessibility) {
   View* content = widget.SetContentsView(std::make_unique<View>());
 
   Textfield* textfield = new Textfield;
-  textfield->SetAccessibleName(base::UTF8ToUTF16("Name"));
+  textfield->SetAccessibleName(u"Name");
   content->AddChildView(textfield);
 
   ASSERT_EQ(0, atk_object_get_n_accessible_children(
@@ -59,7 +59,7 @@ TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, TextfieldAccessibility) {
   g_signal_connect(atk_text, "text-insert", callback, &text_insert_events);
   g_signal_connect(atk_text, "text-remove", callback, &text_remove_events);
 
-  textfield->SetText(base::UTF8ToUTF16("Value"));
+  textfield->SetText(u"Value");
   ASSERT_EQ(text_remove_events.size(), 0ul);
   ASSERT_EQ(text_insert_events.size(), 1ul);
   EXPECT_EQ(text_insert_events[0].position, 0);
@@ -67,7 +67,7 @@ TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, TextfieldAccessibility) {
   EXPECT_EQ(text_insert_events[0].text, "Value");
   text_insert_events.clear();
 
-  textfield->SetText(base::UTF8ToUTF16("Value A"));
+  textfield->SetText(u"Value A");
   ASSERT_EQ(text_remove_events.size(), 0ul);
   ASSERT_EQ(text_insert_events.size(), 1ul);
   EXPECT_EQ(text_insert_events[0].position, 5);
@@ -75,7 +75,7 @@ TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, TextfieldAccessibility) {
   EXPECT_EQ(text_insert_events[0].text, " A");
   text_insert_events.clear();
 
-  textfield->SetText(base::UTF8ToUTF16("Value"));
+  textfield->SetText(u"Value");
   ASSERT_EQ(text_remove_events.size(), 1ul);
   ASSERT_EQ(text_insert_events.size(), 0ul);
   EXPECT_EQ(text_remove_events[0].position, 5);
@@ -83,7 +83,7 @@ TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, TextfieldAccessibility) {
   EXPECT_EQ(text_remove_events[0].text, " A");
   text_remove_events.clear();
 
-  textfield->SetText(base::UTF8ToUTF16("Prefix Value"));
+  textfield->SetText(u"Prefix Value");
   ASSERT_EQ(text_remove_events.size(), 0ul);
   ASSERT_EQ(text_insert_events.size(), 1ul);
   EXPECT_EQ(text_insert_events[0].position, 0);
@@ -91,7 +91,7 @@ TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, TextfieldAccessibility) {
   EXPECT_EQ(text_insert_events[0].text, "Prefix ");
   text_insert_events.clear();
 
-  textfield->SetText(base::UTF8ToUTF16("Value"));
+  textfield->SetText(u"Value");
   ASSERT_EQ(text_remove_events.size(), 1ul);
   ASSERT_EQ(text_insert_events.size(), 0ul);
   EXPECT_EQ(text_remove_events[0].position, 0);
