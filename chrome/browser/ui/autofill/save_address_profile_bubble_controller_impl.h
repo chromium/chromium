@@ -46,7 +46,6 @@ class SaveAddressProfileBubbleControllerImpl
       AutofillClient::SaveAddressProfileOfferUserDecision decision) override;
   void OnEditButtonClicked() override;
   void OnBubbleClosed() override;
-  void OnEditDialogClosed() override;
 
   // SaveAddressProfileIconController:
   void OnPageActionIconClicked() override;
@@ -72,8 +71,6 @@ class SaveAddressProfileBubbleControllerImpl
   // Contains the details of the address profile that will be saved if the user
   // accepts.
   AutofillProfile address_profile_;
-
-  AutofillBubbleBase* edit_dialog_ = nullptr;
 
   // Whether the bubble is going to be shown upon user gesture (e.g. click on
   // the page action icon) or automatically (e.g. upon detection of an address

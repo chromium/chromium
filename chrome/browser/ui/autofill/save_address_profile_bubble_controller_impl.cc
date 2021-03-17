@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
+#include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -58,19 +59,16 @@ void SaveAddressProfileBubbleControllerImpl::OnUserDecision(
 
 void SaveAddressProfileBubbleControllerImpl::OnEditButtonClicked() {
   HideBubble();
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
-  edit_dialog_ = browser->window()
-                     ->GetAutofillBubbleHandler()
-                     ->ShowEditAddressProfileDialog(web_contents(), this);
+  EditAddressProfileDialogControllerImpl::CreateForWebContents(web_contents());
+  EditAddressProfileDialogControllerImpl* controller =
+      EditAddressProfileDialogControllerImpl::FromWebContents(web_contents());
+  controller->OfferEdit(address_profile_,
+                        std::move(address_profile_save_prompt_callback_));
 }
 
 void SaveAddressProfileBubbleControllerImpl::OnBubbleClosed() {
   set_bubble_view(nullptr);
   UpdatePageActionIcon();
-}
-
-void SaveAddressProfileBubbleControllerImpl::OnEditDialogClosed() {
-  edit_dialog_ = nullptr;
 }
 
 void SaveAddressProfileBubbleControllerImpl::OnPageActionIconClicked() {
@@ -82,7 +80,7 @@ void SaveAddressProfileBubbleControllerImpl::OnPageActionIconClicked() {
 }
 
 bool SaveAddressProfileBubbleControllerImpl::IsBubbleActive() const {
-  return bubble_view() != nullptr;
+  return !address_profile_save_prompt_callback_.is_null();
 }
 
 AutofillBubbleBase* SaveAddressProfileBubbleControllerImpl::GetSaveBubbleView()

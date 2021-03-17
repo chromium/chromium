@@ -14,13 +14,17 @@ class WebContents;
 }
 
 namespace autofill {
-class SaveAddressProfileBubbleController;
+class EditAddressProfileDialogController;
 
+// This is the dialog used to edit an address profile it. It's part of the
+// flow triggered upon submitting a form with an address profile that is not
+// already saved. This dialog is opened when the user decides to edit the
+// address before saving it.
 class EditAddressProfileView : public AutofillBubbleBase,
                                public views::DialogDelegateView {
  public:
   EditAddressProfileView(content::WebContents* web_contents,
-                         SaveAddressProfileBubbleController* controller);
+                         EditAddressProfileDialogController* controller);
 
   EditAddressProfileView(const EditAddressProfileView&) = delete;
   EditAddressProfileView& operator=(const EditAddressProfileView&) = delete;
@@ -34,7 +38,7 @@ class EditAddressProfileView : public AutofillBubbleBase,
   void WindowClosing() override;
 
  private:
-  SaveAddressProfileBubbleController* controller_;
+  EditAddressProfileDialogController* controller_;
   std::unique_ptr<AddressEditorController> address_editor_controller_;
 };
 

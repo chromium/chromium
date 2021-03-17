@@ -177,7 +177,7 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveAddressProfileBubble(
 
 AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowEditAddressProfileDialog(
     content::WebContents* web_contents,
-    SaveAddressProfileBubbleController* controller) {
+    EditAddressProfileDialogController* controller) {
   return new EditAddressProfileView(web_contents, controller);
 }
 

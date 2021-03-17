@@ -49,7 +49,7 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
       bool is_user_gesture) override;
   AutofillBubbleBase* ShowEditAddressProfileDialog(
       content::WebContents* contents,
-      SaveAddressProfileBubbleController* controller) override;
+      EditAddressProfileDialogController* controller) override;
   void OnPasswordSaved() override;
 
  private:

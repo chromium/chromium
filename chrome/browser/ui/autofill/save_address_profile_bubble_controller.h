@@ -21,7 +21,6 @@ class SaveAddressProfileBubbleController {
       AutofillClient::SaveAddressProfileOfferUserDecision decision) = 0;
   virtual void OnEditButtonClicked() = 0;
   virtual void OnBubbleClosed() = 0;
-  virtual void OnEditDialogClosed() = 0;
 };
 
 }  // namespace autofill

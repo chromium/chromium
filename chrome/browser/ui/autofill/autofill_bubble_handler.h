@@ -16,6 +16,7 @@ class AutofillBubbleBase;
 class LocalCardMigrationBubbleController;
 class OfferNotificationBubbleController;
 class SaveAddressProfileBubbleController;
+class EditAddressProfileDialogController;
 class SaveCardBubbleController;
 class SaveUPIBubble;
 class SaveUPIBubbleController;
@@ -53,7 +54,7 @@ class AutofillBubbleHandler {
 
   virtual AutofillBubbleBase* ShowEditAddressProfileDialog(
       content::WebContents* web_contents,
-      SaveAddressProfileBubbleController* controller) = 0;
+      EditAddressProfileDialogController* controller) = 0;
 
   // TODO(crbug.com/964127): Wait for the integration with sign in after local
   // save to be landed to see if we need to merge password saved and credit card

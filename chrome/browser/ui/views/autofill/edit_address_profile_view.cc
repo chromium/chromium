@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/views/autofill/edit_address_profile_view.h"
 
 #include "chrome/browser/ui/autofill/address_editor_controller.h"
-#include "chrome/browser/ui/autofill/save_address_profile_bubble_controller.h"
+#include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller.h"
 #include "chrome/browser/ui/views/autofill/address_editor_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -16,7 +16,7 @@ namespace autofill {
 
 EditAddressProfileView::EditAddressProfileView(
     content::WebContents* web_contents,
-    SaveAddressProfileBubbleController* controller)
+    EditAddressProfileDialogController* controller)
     : controller_(controller) {
   DCHECK(controller);
   DCHECK(web_contents);
@@ -30,17 +30,19 @@ EditAddressProfileView::EditAddressProfileView(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   SetAcceptCallback(base::BindOnce(
-      &SaveAddressProfileBubbleController::OnUserDecision,
+      &EditAddressProfileDialogController::OnUserDecision,
       base::Unretained(controller_),
-      AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted));
+      AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
+      controller_->GetProfileToEdit()));
   SetCancelCallback(base::BindOnce(
-      &SaveAddressProfileBubbleController::OnUserDecision,
+      &EditAddressProfileDialogController::OnUserDecision,
       base::Unretained(controller_),
-      AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined));
+      AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
+      controller_->GetProfileToEdit()));
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
   address_editor_controller_ = std::make_unique<AddressEditorController>(
-      controller_->GetProfileToSave(), web_contents);
+      controller_->GetProfileToEdit(), web_contents);
   AddChildView(
       std::make_unique<AddressEditorView>(address_editor_controller_.get()));
 
@@ -62,7 +64,7 @@ std::u16string EditAddressProfileView::GetWindowTitle() const {
 
 void EditAddressProfileView::WindowClosing() {
   if (controller_) {
-    controller_->OnEditDialogClosed();
+    controller_->OnDialogClosed();
     controller_ = nullptr;
   }
 }
