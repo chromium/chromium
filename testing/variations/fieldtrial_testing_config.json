@@ -3945,7 +3945,6 @@
     "LiveCaption": [
         {
             "platforms": [
-                "chromeos",
                 "chromeos_lacros",
                 "linux",
                 "mac",
@@ -3962,6 +3961,22 @@
                     },
                     "enable_features": [
                         "IPH_LiveCaption",
+                        "LiveCaption",
+                        "UseSodaForLiveCaption"
+                    ]
+                }
+            ]
+        }
+    ],
+    "LiveCaptionChromeOS": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_2021_03_09",
+                    "enable_features": [
                         "LiveCaption",
                         "UseSodaForLiveCaption"
                     ]
