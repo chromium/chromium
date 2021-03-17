@@ -82,6 +82,7 @@ void DisplayConnectionImpl::OnAndroidAppListRefreshed(
 
 void DisplayConnectionImpl::SendDisplayRequestLocked() {
   ::assistant::display::DisplayRequest display_request;
+  update_display_request_mutex_.AssertAcquired();
   FillDisplayRequestLocked(display_request);
 
   if (!delegate_) {
@@ -95,6 +96,8 @@ void DisplayConnectionImpl::SendDisplayRequestLocked() {
 
 void DisplayConnectionImpl::FillDisplayRequestLocked(
     ::assistant::display::DisplayRequest& dr) {
+  update_display_request_mutex_.AssertAcquired();
+
   auto* set_capabilities_request = dr.mutable_set_capabilities_request();
   auto* screen_capabilities =
       set_capabilities_request->mutable_screen_capabilities_to_merge();

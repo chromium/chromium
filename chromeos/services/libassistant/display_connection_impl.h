@@ -51,8 +51,7 @@ class DisplayConnectionImpl : public assistant_client::DisplayConnection {
 
   void FillDisplayRequestLocked(::assistant::display::DisplayRequest& dr);
 
-  // GUARDED_BY(update_display_request_mutex_)
-  Delegate* delegate_ = nullptr;
+  Delegate* delegate_ GUARDED_BY(update_display_request_mutex_) = nullptr;
 
   DisplayConnectionObserver* const observer_;
 
@@ -63,20 +62,18 @@ class DisplayConnectionImpl : public assistant_client::DisplayConnection {
   const bool media_session_enabled_;
 
   // Whether ARC++ is enabled.
-  // GUARDED_BY(update_display_request_mutex_)
-  bool arc_play_store_enabled_ = false;
+  bool arc_play_store_enabled_ GUARDED_BY(update_display_request_mutex_) =
+      false;
 
   // Whether device apps user data consent is granted.
-  // GUARDED_BY(update_display_request_mutex_)
-  bool device_apps_enabled_ = false;
+  bool device_apps_enabled_ GUARDED_BY(update_display_request_mutex_) = false;
 
   // Whether related info setting is on.
-  // GUARDED_BY(update_display_request_mutex_)
-  bool related_info_enabled_;
+  bool related_info_enabled_ GUARDED_BY(update_display_request_mutex_) = false;
 
   // Supported Android apps information.
-  // GUARDED_BY(update_display_request_mutex_)
-  std::vector<assistant::AndroidAppInfo> apps_info_;
+  std::vector<assistant::AndroidAppInfo> GUARDED_BY(
+      update_display_request_mutex_) apps_info_;
 
   // Both LibAssistant and Chrome threads may update and send display request so
   // we always guard access with |update_display_request_mutex_|.
