@@ -80,7 +80,7 @@ using TestCache = MatchedPropertiesCacheTestCache;
 class MatchedPropertiesCacheTest : public PageTestBase {
  public:
   scoped_refptr<ComputedStyle> CreateStyle() {
-    return StyleResolver::InitialStyleForElement(GetDocument());
+    return GetDocument().GetStyleResolver().InitialStyleForElement();
   }
 };
 

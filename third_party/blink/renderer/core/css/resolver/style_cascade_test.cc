@@ -221,7 +221,7 @@ class TestCascade {
   }
 
   static scoped_refptr<ComputedStyle> InitialStyle(Document& document) {
-    return StyleResolver::InitialStyleForElement(document);
+    return document.GetStyleResolver().InitialStyleForElement();
   }
 
   void FinishOrigin() {

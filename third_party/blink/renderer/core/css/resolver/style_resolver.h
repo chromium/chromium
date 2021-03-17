@@ -69,7 +69,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
       const StyleRecalcContext&,
       const StyleRequest& = StyleRequest());
 
-  static scoped_refptr<ComputedStyle> InitialStyleForElement(Document&);
+  scoped_refptr<ComputedStyle> InitialStyleForElement();
 
   static CompositorKeyframeValue* CreateCompositorKeyframeValueSnapshot(
       Element&,

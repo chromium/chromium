@@ -656,8 +656,7 @@ void StyleResolver::MatchAllRules(StyleResolverState& state,
 }
 
 scoped_refptr<ComputedStyle> StyleResolver::StyleForViewport() {
-  scoped_refptr<ComputedStyle> viewport_style =
-      InitialStyleForElement(GetDocument());
+  scoped_refptr<ComputedStyle> viewport_style = InitialStyleForElement();
 
   viewport_style->SetZIndex(0);
   viewport_style->SetIsStackingContextWithoutContainment(true);
@@ -821,7 +820,7 @@ void StyleResolver::InitStyleAndApplyInheritance(
       }
     }
   } else {
-    state.SetStyle(InitialStyleForElement(GetDocument()));
+    state.SetStyle(InitialStyleForElement());
     state.SetParentStyle(ComputedStyle::Clone(*state.Style()));
     state.SetLayoutParentStyle(state.ParentStyle());
     if (!style_request.IsPseudoStyleRequest() &&
@@ -976,7 +975,7 @@ void StyleResolver::ApplyBaseStyle(
     state.SetStyle(ComputedStyle::Clone(*animation_base_computed_style));
     state.Style()->SetStyleType(style_request.pseudo_id);
     if (!state.ParentStyle()) {
-      state.SetParentStyle(InitialStyleForElement(GetDocument()));
+      state.SetParentStyle(InitialStyleForElement());
       state.SetLayoutParentStyle(state.ParentStyle());
     }
     MaybeResetCascade(cascade);
@@ -1016,8 +1015,7 @@ CompositorKeyframeValue* StyleResolver::CreateCompositorKeyframeValueSnapshot(
 scoped_refptr<const ComputedStyle> StyleResolver::StyleForPage(
     uint32_t page_index,
     const AtomicString& page_name) {
-  scoped_refptr<const ComputedStyle> initial_style =
-      InitialStyleForElement(GetDocument());
+  scoped_refptr<const ComputedStyle> initial_style = InitialStyleForElement();
   if (!GetDocument().documentElement())
     return initial_style;
 
@@ -1050,32 +1048,31 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForPage(
   return state.TakeStyle();
 }
 
-scoped_refptr<ComputedStyle> StyleResolver::InitialStyleForElement(
-    Document& document) {
-  const LocalFrame* frame = document.GetFrame();
+scoped_refptr<ComputedStyle> StyleResolver::InitialStyleForElement() {
+  const LocalFrame* frame = GetDocument().GetFrame();
 
   scoped_refptr<ComputedStyle> initial_style = ComputedStyle::Create();
 
-  initial_style->SetRtlOrdering(document.VisuallyOrdered() ? EOrder::kVisual
-                                                           : EOrder::kLogical);
-  initial_style->SetZoom(frame && !document.Printing() ? frame->PageZoomFactor()
-                                                       : 1);
+  initial_style->SetRtlOrdering(
+      GetDocument().VisuallyOrdered() ? EOrder::kVisual : EOrder::kLogical);
+  initial_style->SetZoom(
+      frame && !GetDocument().Printing() ? frame->PageZoomFactor() : 1);
   initial_style->SetEffectiveZoom(initial_style->Zoom());
-  initial_style->SetInForcedColorsMode(document.InForcedColorsMode());
+  initial_style->SetInForcedColorsMode(GetDocument().InForcedColorsMode());
 
   FontDescription document_font_description =
       initial_style->GetFontDescription();
   document_font_description.SetLocale(
-      LayoutLocale::Get(document.ContentLanguage()));
+      LayoutLocale::Get(GetDocument().ContentLanguage()));
 
   initial_style->SetFontDescription(document_font_description);
-  initial_style->SetUserModify(document.InDesignMode()
+  initial_style->SetUserModify(GetDocument().InDesignMode()
                                    ? EUserModify::kReadWrite
                                    : EUserModify::kReadOnly);
-  document.SetupFontBuilder(*initial_style);
+  GetDocument().SetupFontBuilder(*initial_style);
 
   scoped_refptr<StyleInitialData> initial_data =
-      document.GetStyleEngine().MaybeCreateAndGetInitialData();
+      GetDocument().GetStyleEngine().MaybeCreateAndGetInitialData();
   if (initial_data)
     initial_style->SetInitialData(std::move(initial_data));
 
@@ -1533,7 +1530,7 @@ StyleResolver::BeforeChangeStyleForTransitionUpdate(
       // Do not apply interpolations to a detached element.
       return state.TakeStyle();
     }
-    state.SetParentStyle(InitialStyleForElement(GetDocument()));
+    state.SetParentStyle(InitialStyleForElement());
     state.SetLayoutParentStyle(state.ParentStyle());
   }
 
