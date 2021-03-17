@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -150,6 +151,7 @@ public class TranslateAssistContentTest {
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_ASSIST_CONTENT})
+    @DisabledTest(message = "https://crbug.com/1189385")
     public void testAssistContentNonTranslatePage()
             throws TimeoutException, ExecutionException, JSONException {
         if (shouldSkipDueToNetworkService()) return;
