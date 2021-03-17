@@ -1268,6 +1268,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>System uptime when first timeout writing TPM command occurs</summary>
 </histogram>
 
+<histogram name="Platform.Trunks.TpmErrorCode" enum="TPMResponseCode"
+    expires_after="2021-09-10">
+  <owner>yich@google.com</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    Each sample is the result code of a TPM command issued through trunks. For
+    the error codes, see src/platform2/trunks/tpm_generated.h.
+  </summary>
+</histogram>
+
 <histogram name="Platform.U2F.Command" enum="Cr50U2FCommands"
     expires_after="2021-12-21">
   <owner>cylai@chromium.org</owner>
