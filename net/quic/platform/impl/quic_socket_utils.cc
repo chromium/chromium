@@ -237,8 +237,8 @@ int QuicSocketUtils::ReadPacket(int fd,
   }
 
   if (hdr.msg_flags & MSG_CTRUNC) {
-    QUIC_BUG << "Incorrectly set control length: " << hdr.msg_controllen
-             << ", expected " << sizeof(cbuf);
+    LOG(DFATAL) << "Incorrectly set control length: " << hdr.msg_controllen
+                << ", expected " << sizeof(cbuf);
     return -1;
   }
 
@@ -368,7 +368,7 @@ void QuicSocketUtils::SetIpInfoInCmsgData(const QuicIpAddress& self_address,
     in6_pktinfo* pktinfo = static_cast<in6_pktinfo*>(cmsg_data);
     memcpy(&pktinfo->ipi6_addr, address_str.c_str(), address_str.length());
   } else {
-    QUIC_BUG << "Unrecognized IPAddress";
+    LOG(DFATAL) << "Unrecognized IPAddress";
   }
 }
 

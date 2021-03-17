@@ -7,8 +7,12 @@
 
 #include "base/logging.h"
 
-#define SPDY_BUG_IMPL LOG(DFATAL)
-#define SPDY_BUG_IF_IMPL(condition) LOG_IF(DFATAL, (condition))
+#define SPDY_BUG_IMPL(bug_id) LOG(DFATAL)
+#define SPDY_BUG_IF_IMPL(bug_id, condition) LOG_IF(DFATAL, (condition))
+
+#define SPDY_BUG_V2_IMPL(bug_id) LOG(DFATAL)
+#define SPDY_BUG_IF_V2_IMPL(bug_id, condition) LOG_IF(DFATAL, (condition))
+
 #define FLAGS_spdy_always_log_bugs_for_tests_impl (true)
 
 #endif  // NET_SPDY_PLATFORM_IMPL_SPDY_BUG_TRACKER_IMPL_H_

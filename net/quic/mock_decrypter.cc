@@ -52,12 +52,12 @@ size_t MockDecrypter::GetNoncePrefixSize() const {
 }
 
 bool MockDecrypter::SetPreliminaryKey(absl::string_view key) {
-  QUIC_BUG << "Should not be called";
+  LOG(DFATAL) << "Should not be called";
   return false;
 }
 
 bool MockDecrypter::SetDiversificationNonce(const DiversificationNonce& nonce) {
-  QUIC_BUG << "Should not be called";
+  LOG(DFATAL) << "Should not be called";
   return true;
 }
 

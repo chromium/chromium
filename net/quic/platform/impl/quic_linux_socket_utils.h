@@ -227,8 +227,9 @@ class QuicLinuxSocketUtils : public QuicSocketUtils {
 
       return WriteResult(WRITE_STATUS_OK, mhdr->num_bytes_sent(rc));
     } else if (rc == 0) {
-      QUIC_BUG << "sendmmsg returned 0, returning WRITE_STATUS_ERROR. errno: "
-               << errno;
+      LOG(DFATAL)
+          << "sendmmsg returned 0, returning WRITE_STATUS_ERROR. errno: "
+          << errno;
       errno = EIO;
     }
 

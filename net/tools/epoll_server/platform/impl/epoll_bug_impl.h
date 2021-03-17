@@ -7,6 +7,7 @@
 
 #include "net/tools/epoll_server/platform/impl/epoll_logging_impl.h"
 
-#define EPOLL_BUG_IMPL EPOLL_LOG_IMPL(DFATAL)
+#define EPOLL_BUG_IMPL(bug_id) EPOLL_LOG_IMPL(DFATAL)
+#define EPOLL_BUG_V2_IMPL(bug_id) EPOLL_LOG_IMPL(DFATAL)
 
 #endif  // NET_TOOLS_EPOLL_SERVER_PLATFORM_IMPL_EPOLL_BUG_IMPL_H_

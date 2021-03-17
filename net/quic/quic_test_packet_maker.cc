@@ -1111,7 +1111,7 @@ std::unique_ptr<quic::QuicEncryptedPacket>
 QuicTestPacketMaker::MakeStatelessResetPacket() {
   auto connection_id = quic::test::TestConnectionId();
   return quic::QuicFramer::BuildIetfStatelessResetPacket(
-      connection_id,
+      connection_id, quic::QuicFramer::GetMinStatelessResetPacketLength(),
       quic::QuicUtils::GenerateStatelessResetToken(connection_id));
 }
 
@@ -1143,7 +1143,7 @@ void QuicTestPacketMaker::SetEncryptionLevel(quic::EncryptionLevel level) {
       long_header_type_ = quic::INVALID_PACKET_TYPE;
       break;
     default:
-      QUIC_BUG << quic::EncryptionLevelToString(level);
+      LOG(DFATAL) << quic::EncryptionLevelToString(level);
       long_header_type_ = quic::INVALID_PACKET_TYPE;
   }
 }
