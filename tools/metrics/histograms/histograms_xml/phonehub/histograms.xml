@@ -105,21 +105,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="PhoneHubInterstitialScreenEvent" expires_after="2021-10-31">
   <owner>tengs@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
-  <summary>Events for the given PhoneHub interstitial screen.</summary>
+  <summary>Events for the given PhoneHub interstitial screen. {Screen}</summary>
 <!-- The entries below should be a subset of the PhoneHubScreen enum -->
 
   <token key="Screen">
-    <variant name="BluetoothOrWifiDisabled"/>
-    <variant name="InitialConnecting">
+    <variant name="BluetoothOrWifiDisabled" summary=""/>
+    <variant name="InitialConnecting" summary="">
       <obsolete>
         Combined into PhoneConnecting on Nov 2020.
       </obsolete>
     </variant>
-    <variant name="Onboarding.ExistingMultideviceUser"/>
-    <variant name="Onboarding.NewMultideviceUser"/>
-    <variant name="OnboardingDismissPrompt"/>
-    <variant name="PhoneConnecting"/>
-    <variant name="PhoneDisconnected"/>
+    <variant name="Onboarding.ExistingMultideviceUser"
+        summary="NOTE(https://crbug.com/1187255): This metric is actually
+                 logging new multi-device users. For continuity, we continue
+                 to log this metric in reverse. See ExistingMultideviceUser2
+                 for the correct logging."/>
+    <variant name="Onboarding.ExistingMultideviceUser2" summary=""/>
+    <variant name="Onboarding.NewMultideviceUser"
+        summary="NOTE(https://crbug.com/1187255): This metric is actually
+                 logging existing multi-device users. For continuity, we
+                 continue to log this metric in reverse. See
+                 NewMultideviceUser2 for the correct logging."/>
+    <variant name="Onboarding.NewMultideviceUser2" summary=""/>
+    <variant name="OnboardingDismissPrompt" summary=""/>
+    <variant name="PhoneConnecting" summary=""/>
+    <variant name="PhoneDisconnected" summary=""/>
   </token>
 </histogram>
 

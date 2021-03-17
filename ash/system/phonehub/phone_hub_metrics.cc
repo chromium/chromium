@@ -24,10 +24,10 @@ std::string GetInterstitialScreenEventHistogramName(Screen screen) {
       return "PhoneHub.InterstitialScreenEvent.TetherConnectionPending";
     case Screen::kOnboardingExistingMultideviceUser:
       return "PhoneHub.InterstitialScreenEvent.Onboarding."
-             "ExistingMultideviceUser";
+             "ExistingMultideviceUser2";
     case Screen::kOnboardingNewMultideviceUser:
       return "PhoneHub.InterstitialScreenEvent.Onboarding."
-             "NewMultideviceUser";
+             "NewMultideviceUser2";
     case Screen::kOnboardingDismissPrompt:
       return "PhoneHub.InterstitialScreenEvent.OnboardingDismissPrompt";
     default:
@@ -41,6 +41,22 @@ std::string GetInterstitialScreenEventHistogramName(Screen screen) {
 void LogInterstitialScreenEvent(Screen screen, InterstitialScreenEvent event) {
   base::UmaHistogramEnumeration(GetInterstitialScreenEventHistogramName(screen),
                                 event);
+
+  // NOTE(https://crbug.com/1187255): The new- and existing-user metrics were
+  // previously reversed. For continuity, we continue logging the old metrics in
+  // reverse. The new metrics
+  // "PhoneHub.InterstitialScreenEvent.Onboarding.NewMultideviceUser2" and
+  // "PhoneHub.InterstitialScreenEvent.Onboarding.ExistingMultideviceUser2" are
+  // logged correctly.
+  if (screen == Screen::kOnboardingExistingMultideviceUser) {
+    base::UmaHistogramEnumeration(
+        "PhoneHub.InterstitialScreenEvent.Onboarding.NewMultideviceUser",
+        event);
+  } else if (screen == Screen::kOnboardingNewMultideviceUser) {
+    base::UmaHistogramEnumeration(
+        "PhoneHub.InterstitialScreenEvent.Onboarding.ExistingMultideviceUser",
+        event);
+  }
 }
 
 void LogScreenOnBubbleOpen(Screen screen) {

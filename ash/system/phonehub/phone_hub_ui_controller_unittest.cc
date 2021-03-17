@@ -115,7 +115,8 @@ TEST_F(PhoneHubUiControllerTest, OnboardingNotEligible) {
 }
 
 TEST_F(PhoneHubUiControllerTest, ShowOnboardingUi_WithoutPhone) {
-  GetFeatureStatusProvider()->SetStatus(FeatureStatus::kDisabled);
+  GetFeatureStatusProvider()->SetStatus(
+      FeatureStatus::kEligiblePhoneButNotSetUp);
   EXPECT_TRUE(ui_state_changed_);
   ui_state_changed_ = false;
   GetOnboardingUiTracker()->SetShouldShowOnboardingUi(true);
@@ -129,8 +130,7 @@ TEST_F(PhoneHubUiControllerTest, ShowOnboardingUi_WithoutPhone) {
 }
 
 TEST_F(PhoneHubUiControllerTest, ShowOnboardingUi_WithPhone) {
-  GetFeatureStatusProvider()->SetStatus(
-      FeatureStatus::kEligiblePhoneButNotSetUp);
+  GetFeatureStatusProvider()->SetStatus(FeatureStatus::kDisabled);
   EXPECT_TRUE(ui_state_changed_);
   ui_state_changed_ = false;
   GetOnboardingUiTracker()->SetShouldShowOnboardingUi(true);

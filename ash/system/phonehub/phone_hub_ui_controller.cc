@@ -188,11 +188,11 @@ PhoneHubUiController::GetUiStateFromPhoneHubManager() {
       return UiState::kHidden;
 
     case FeatureStatus::kEligiblePhoneButNotSetUp:
-      return should_show_onboarding_ui ? UiState::kOnboardingWithPhone
+      return should_show_onboarding_ui ? UiState::kOnboardingWithoutPhone
                                        : UiState::kHidden;
 
     case FeatureStatus::kDisabled:
-      return should_show_onboarding_ui ? UiState::kOnboardingWithoutPhone
+      return should_show_onboarding_ui ? UiState::kOnboardingWithPhone
                                        : UiState::kHidden;
 
     case FeatureStatus::kUnavailableBluetoothOff:
