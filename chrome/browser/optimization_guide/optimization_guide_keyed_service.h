@@ -33,6 +33,7 @@ class OptimizationGuideStore;
 class PredictionManager;
 class PredictionManagerBrowserTestBase;
 class PredictionModelDownloadClient;
+class TabUrlProvider;
 class TopHostProvider;
 }  // namespace optimization_guide
 
@@ -168,6 +169,10 @@ class OptimizationGuideKeyedService
   // hosts. Will be null if the user has not consented to this type of browser
   // behavior.
   std::unique_ptr<optimization_guide::TopHostProvider> top_host_provider_;
+
+  // The tab URL provider to use for fetching information for the user's active
+  // tabs. Will be null if the user is off the record.
+  std::unique_ptr<optimization_guide::TabUrlProvider> tab_url_provider_;
 
   DISALLOW_COPY_AND_ASSIGN(OptimizationGuideKeyedService);
 };

@@ -12,6 +12,7 @@
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/optimization_guide/optimization_guide_hints_manager.h"
@@ -27,6 +28,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/core/tab_url_provider.h"
 #include "components/optimization_guide/core/top_host_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "content/public/browser/browser_context.h"
@@ -34,6 +36,12 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/storage_partition.h"
 #include "url/gurl.h"
+
+#if defined(OS_ANDROID)
+#include "chrome/browser/optimization_guide/android/optimization_guide_tab_url_provider_android.h"
+#else
+#include "chrome/browser/optimization_guide/optimization_guide_tab_url_provider.h"
+#endif
 
 namespace {
 
@@ -147,6 +155,15 @@ void OptimizationGuideKeyedService::Initialize() {
         "SyntheticOptimizationGuideRemoteFetching",
         optimization_guide_fetching_enabled ? "Enabled" : "Disabled");
 
+#if defined(OS_ANDROID)
+    tab_url_provider_ = std::make_unique<
+        optimization_guide::android::OptimizationGuideTabUrlProviderAndroid>(
+        profile);
+#else
+    tab_url_provider_ =
+        std::make_unique<OptimizationGuideTabUrlProvider>(profile);
+#endif
+
     hint_store_ =
         optimization_guide::features::ShouldPersistHintsToDisk()
             ? std::make_unique<optimization_guide::OptimizationGuideStore>(
@@ -172,7 +189,7 @@ void OptimizationGuideKeyedService::Initialize() {
 
   hints_manager_ = std::make_unique<OptimizationGuideHintsManager>(
       profile, profile->GetPrefs(), hint_store, top_host_provider_.get(),
-      url_loader_factory);
+      tab_url_provider_.get(), url_loader_factory);
   prediction_manager_ = std::make_unique<optimization_guide::PredictionManager>(
       prediction_model_and_features_store, top_host_provider_.get(),
       url_loader_factory, profile->GetPrefs(), profile);

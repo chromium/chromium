@@ -35,9 +35,6 @@ extern const base::Feature kPageContentAnnotations;
 // requested until the user navigates to the host again.
 size_t MaxHintsFetcherTopHostBlocklistSize();
 
-// Whether hints for top hosts should be batch updated.
-bool ShouldBatchUpdateHintsForTopHosts();
-
 // The maximum number of hosts allowed to be requested by the client to the
 // remote Optimzation Guide Service.
 size_t MaxHostsForOptimizationGuideServiceHintsFetch();
@@ -103,8 +100,16 @@ GetMaxEffectiveConnectionTypeForNavigationHintsFetch();
 // Returns the duration of the time window before hints expiration during which
 // the hosts should be refreshed. Example: If the hints for a host expire at
 // time T, then they are eligible for refresh at T -
-// GetHintsFetchRefreshDuration().
-base::TimeDelta GetHintsFetchRefreshDuration();
+// GetHostHintsFetchRefreshDuration().
+base::TimeDelta GetHostHintsFetchRefreshDuration();
+
+// Returns the duration of the time window between fetches for hints for the
+// URLs opened in active tabs.
+base::TimeDelta GetActiveTabsFetchRefreshDuration();
+
+// Returns the max duration since the time a tab has to be shown to be
+// considered active for a hints refresh.
+base::TimeDelta GetActiveTabsStalenessTolerance();
 
 // Returns the max number of concurrent fetches to the remote Optimization Guide
 // Service that should be allowed.

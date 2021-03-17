@@ -15,6 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/optimization_guide/optimization_guide_navigation_data.h"
+#include "chrome/browser/optimization_guide/optimization_guide_tab_url_provider.h"
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_pref_names.h"
@@ -48,10 +49,8 @@
 
 namespace {
 
-// Retry delay is 16 minutes to allow for kFetchRetryDelaySecs +
-// kFetchRandomMaxDelaySecs to pass.
-constexpr int kTestFetchRetryDelaySecs = 60 * 16;
-constexpr int kUpdateFetchHintsTimeSecs = 24 * 60 * 60;  // 24 hours.
+// Allows for default hour to pass + random delay between 30 and 60 seconds.
+constexpr int kUpdateFetchHintsTimeSecs = 61 * 60;  // 1 hours and 1 minutes.
 
 const int kDefaultHostBloomFilterNumHashFunctions = 7;
 const int kDefaultHostBloomFilterNumBits = 511;
@@ -133,7 +132,7 @@ class FakeTopHostProvider : public optimization_guide::TopHostProvider {
   std::vector<std::string> GetTopHosts() override {
     num_top_hosts_called_++;
 
-      return top_hosts_;
+    return top_hosts_;
   }
 
   int get_num_top_hosts_called() const { return num_top_hosts_called_; }
@@ -141,6 +140,24 @@ class FakeTopHostProvider : public optimization_guide::TopHostProvider {
  private:
   std::vector<std::string> top_hosts_;
   int num_top_hosts_called_ = 0;
+};
+
+// A mock class implementation of TabUrlProvider.
+class FakeTabUrlProvider : public optimization_guide::TabUrlProvider {
+ public:
+  const std::vector<GURL> GetUrlsOfActiveTabs(
+      const base::TimeDelta& duration_since_last_shown) override {
+    num_urls_called_++;
+    return urls_;
+  }
+
+  void SetUrls(const std::vector<GURL>& urls) { urls_ = urls; }
+
+  int get_num_urls_called() const { return num_urls_called_; }
+
+ private:
+  std::vector<GURL> urls_;
+  int num_urls_called_ = 0;
 };
 
 enum class HintsFetcherEndState {
@@ -282,9 +299,11 @@ class OptimizationGuideHintsManagerTest
         db_provider_.get(), temp_dir(),
         task_environment_.GetMainThreadTaskRunner());
 
+    tab_url_provider_ = std::make_unique<FakeTabUrlProvider>();
+
     hints_manager_ = std::make_unique<OptimizationGuideHintsManager>(
         &testing_profile_, pref_service_.get(), hint_store_.get(),
-        top_host_provider, url_loader_factory_);
+        top_host_provider, tab_url_provider_.get(), url_loader_factory_);
     hints_manager_->SetClockForTesting(task_environment_.GetMockClock());
 
     // Run until hint cache is initialized and the OptimizationGuideHintsManager
@@ -295,6 +314,7 @@ class OptimizationGuideHintsManagerTest
   void ResetHintsManager() {
     hints_manager_->Shutdown();
     hints_manager_.reset();
+    tab_url_provider_.reset();
     hint_store_.reset();
     pref_service_.reset();
     RunUntilIdle();
@@ -399,6 +419,10 @@ class OptimizationGuideHintsManagerTest
 
   TestingPrefServiceSimple* pref_service() const { return pref_service_.get(); }
 
+  FakeTabUrlProvider* tab_url_provider() const {
+    return tab_url_provider_.get();
+  }
+
   void RunUntilIdle() {
     task_environment_.RunUntilIdle();
     base::RunLoop().RunUntilIdle();
@@ -421,6 +445,7 @@ class OptimizationGuideHintsManagerTest
   TestingProfile testing_profile_;
   std::unique_ptr<content::TestWebContentsFactory> web_contents_factory_;
   std::unique_ptr<optimization_guide::OptimizationGuideStore> hint_store_;
+  std::unique_ptr<FakeTabUrlProvider> tab_url_provider_;
   std::unique_ptr<OptimizationGuideHintsManager> hints_manager_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
@@ -1869,7 +1894,7 @@ TEST_F(OptimizationGuideHintsManagerFetchingDisabledTest,
   InitializeWithDefaultConfig("1.0.0");
 
   // Force timer to expire and schedule a hints fetch.
-  MoveClockForwardBy(base::TimeDelta::FromSeconds(kTestFetchRetryDelaySecs));
+  MoveClockForwardBy(base::TimeDelta::FromSeconds(kUpdateFetchHintsTimeSecs));
   EXPECT_EQ(0, top_host_provider->get_num_top_hosts_called());
   // Hints fetcher should not even be created.
   EXPECT_FALSE(batch_update_hints_fetcher());
@@ -1963,25 +1988,7 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
   InitializeWithDefaultConfig("1.0.0");
 
   // Force timer to expire and schedule a hints fetch.
-  MoveClockForwardBy(base::TimeDelta::FromSeconds(kTestFetchRetryDelaySecs));
-  // Hints fetcher should not even be created.
-  EXPECT_FALSE(batch_update_hints_fetcher());
-}
-
-TEST_F(OptimizationGuideHintsManagerFetchingTest,
-       HintsFetchNotAllowedIfFeatureIsEnabledButTopHostProviderIsNotProvided) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
-  CreateHintsManager(/*top_host_provider=*/nullptr);
-  hints_manager()->RegisterOptimizationTypes(
-      {optimization_guide::proto::DEFER_ALL_SCRIPT});
-  hints_manager()->SetHintsFetcherFactoryForTesting(
-      BuildTestHintsFetcherFactory(
-          {HintsFetcherEndState::kFetchSuccessWithHostHints}));
-  InitializeWithDefaultConfig("1.0.0");
-
-  // Force timer to expire and schedule a hints fetch.
-  MoveClockForwardBy(base::TimeDelta::FromSeconds(kTestFetchRetryDelaySecs));
+  MoveClockForwardBy(base::TimeDelta::FromSeconds(kUpdateFetchHintsTimeSecs));
   // Hints fetcher should not even be created.
   EXPECT_FALSE(batch_update_hints_fetcher());
 }
@@ -2002,7 +2009,7 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
   InitializeWithDefaultConfig("1.0.0");
 
   // Force timer to expire and schedule a hints fetch but the fetch is not made.
-  MoveClockForwardBy(base::TimeDelta::FromSeconds(kTestFetchRetryDelaySecs));
+  MoveClockForwardBy(base::TimeDelta::FromSeconds(kUpdateFetchHintsTimeSecs));
   EXPECT_EQ(0, top_host_provider->get_num_top_hosts_called());
   // Hints fetcher should not be created.
   EXPECT_FALSE(batch_update_hints_fetcher());
@@ -2034,15 +2041,15 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
       BuildTestHintsFetcherFactory(
           {HintsFetcherEndState::kFetchSuccessWithHostHints}));
 
-  // Force timer to expire and schedule a hints fetch but the fetch is not made.
-  MoveClockForwardBy(base::TimeDelta::FromSeconds(kTestFetchRetryDelaySecs));
+  // Force timer to expire after random delay and schedule a hints fetch.
+  MoveClockForwardBy(base::TimeDelta::FromSeconds(60 * 2));
   EXPECT_EQ(0, top_host_provider->get_num_top_hosts_called());
   // Hints fetcher should not be created.
   EXPECT_FALSE(batch_update_hints_fetcher());
 }
 
 TEST_F(OptimizationGuideHintsManagerFetchingTest,
-       HintsFetcherEnabledNoHostsToFetch) {
+       HintsFetcherEnabledNoHostsOrUrlsToFetch) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
   std::unique_ptr<FakeTopHostProvider> top_host_provider =
@@ -2056,76 +2063,60 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
           {HintsFetcherEndState::kFetchSuccessWithHostHints}));
   InitializeWithDefaultConfig("1.0.0");
 
-  // Force timer to expire and schedule a hints fetch.
-  MoveClockForwardBy(base::TimeDelta::FromSeconds(kTestFetchRetryDelaySecs));
+  // Force timer to expire after random delay and schedule a hints fetch.
+  MoveClockForwardBy(base::TimeDelta::FromSeconds(60 * 2));
   EXPECT_EQ(1, top_host_provider->get_num_top_hosts_called());
+  EXPECT_EQ(1, tab_url_provider()->get_num_urls_called());
   // Hints fetcher should not be even created.
+  EXPECT_FALSE(batch_update_hints_fetcher());
+
+  // Move it forward again to make sure timer is scheduled.
+  MoveClockForwardBy(base::TimeDelta::FromSeconds(kUpdateFetchHintsTimeSecs));
+  EXPECT_EQ(2, top_host_provider->get_num_top_hosts_called());
+  EXPECT_EQ(2, tab_url_provider()->get_num_urls_called());
+  // Still no hosts or URLs, so hints fetcher should still not be even created.
   EXPECT_FALSE(batch_update_hints_fetcher());
 }
 
 TEST_F(OptimizationGuideHintsManagerFetchingTest,
-       HintsFetcherEnabledWithHostsNoHintsInResponse) {
+       HintsFetcherEnabledNoHostsButHasUrlsToFetch) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
   std::unique_ptr<FakeTopHostProvider> top_host_provider =
-      std::make_unique<FakeTopHostProvider>(
-          std::vector<std::string>({"example1.com", "example2.com"}));
+      std::make_unique<FakeTopHostProvider>(std::vector<std::string>({}));
   CreateHintsManager(top_host_provider.get());
+
   hints_manager()->RegisterOptimizationTypes(
       {optimization_guide::proto::DEFER_ALL_SCRIPT});
   hints_manager()->SetHintsFetcherFactoryForTesting(
       BuildTestHintsFetcherFactory(
-          {HintsFetcherEndState::kFetchSuccessWithNoHints}));
+          {HintsFetcherEndState::kFetchSuccessWithHostHints}));
   InitializeWithDefaultConfig("1.0.0");
 
-  // Force timer to expire and schedule a hints fetch.
-  MoveClockForwardBy(base::TimeDelta::FromSeconds(kTestFetchRetryDelaySecs));
+  tab_url_provider()->SetUrls({GURL("https://a.com"), GURL("https://b.com")});
+
+  // Force timer to expire after random delay and schedule a hints fetch that
+  // succeeds.
+  MoveClockForwardBy(base::TimeDelta::FromSeconds(60 * 2));
   EXPECT_EQ(1, top_host_provider->get_num_top_hosts_called());
+  EXPECT_EQ(1, tab_url_provider()->get_num_urls_called());
   EXPECT_EQ(1, batch_update_hints_fetcher()->num_fetches_requested());
 
-  // Check that hints should not be fetched again after the delay for a hints
-  // fetch attempt with no hints.
-  MoveClockForwardBy(base::TimeDelta::FromSeconds(kTestFetchRetryDelaySecs));
-  // This should be called exactly once, confirming that hints are not fetched
-  // again after |kTestFetchRetryDelaySecs|.
-  EXPECT_EQ(1, top_host_provider->get_num_top_hosts_called());
+  // Move it forward again to make sure timer is scheduled.
+  MoveClockForwardBy(base::TimeDelta::FromSeconds(kUpdateFetchHintsTimeSecs));
+  EXPECT_EQ(2, top_host_provider->get_num_top_hosts_called());
+  EXPECT_EQ(2, tab_url_provider()->get_num_urls_called());
+  // Urls didn't change and we have all URLs cached in store.
   EXPECT_EQ(1, batch_update_hints_fetcher()->num_fetches_requested());
 }
 
-TEST_F(OptimizationGuideHintsManagerFetchingTest, HintsFetcherTimerRetryDelay) {
+TEST_F(OptimizationGuideHintsManagerFetchingTest, HintsFetcherTimerFetch) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
   std::unique_ptr<FakeTopHostProvider> top_host_provider =
       std::make_unique<FakeTopHostProvider>(
           std::vector<std::string>({"example1.com", "example2.com"}));
 
-  CreateHintsManager(top_host_provider.get());
-  hints_manager()->RegisterOptimizationTypes(
-      {optimization_guide::proto::DEFER_ALL_SCRIPT});
-  hints_manager()->SetHintsFetcherFactoryForTesting(
-      BuildTestHintsFetcherFactory({HintsFetcherEndState::kFetchFailed}));
-  InitializeWithDefaultConfig("1.0.0");
-
-  // Force timer to expire and schedule a hints fetch - first time.
-  MoveClockForwardBy(base::TimeDelta::FromSeconds(kTestFetchRetryDelaySecs));
-  EXPECT_EQ(1, top_host_provider->get_num_top_hosts_called());
-  EXPECT_EQ(1, batch_update_hints_fetcher()->num_fetches_requested());
-
-  // Force speculative timer to expire after fetch fails.
-  MoveClockForwardBy(base::TimeDelta::FromSeconds(kTestFetchRetryDelaySecs));
-  EXPECT_EQ(1, top_host_provider->get_num_top_hosts_called());
-  EXPECT_EQ(1, batch_update_hints_fetcher()->num_fetches_requested());
-}
-
-TEST_F(OptimizationGuideHintsManagerFetchingTest,
-       HintsFetcherTimerFetchSucceeds) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
-  std::unique_ptr<FakeTopHostProvider> top_host_provider =
-      std::make_unique<FakeTopHostProvider>(
-          std::vector<std::string>({"example1.com", "example2.com"}));
-
-  // Force hints fetch scheduling.
   CreateHintsManager(top_host_provider.get());
   hints_manager()->RegisterOptimizationTypes(
       {optimization_guide::proto::DEFER_ALL_SCRIPT});
@@ -2134,15 +2125,12 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
           {HintsFetcherEndState::kFetchSuccessWithHostHints}));
   InitializeWithDefaultConfig("1.0.0");
 
-  // Force timer to expire and schedule a hints fetch that succeeds.
-  MoveClockForwardBy(base::TimeDelta::FromSeconds(kTestFetchRetryDelaySecs));
+  // Force timer to expire after random delay and schedule a hints fetch that
+  // succeeds.
+  MoveClockForwardBy(base::TimeDelta::FromSeconds(60 * 2));
   EXPECT_EQ(1, batch_update_hints_fetcher()->num_fetches_requested());
 
-  // TODO(mcrouse): Make sure timer is triggered by metadata entry,
-  // |hint_cache| control needed.
-  MoveClockForwardBy(base::TimeDelta::FromSeconds(kTestFetchRetryDelaySecs));
-  EXPECT_EQ(1, batch_update_hints_fetcher()->num_fetches_requested());
-
+  // Move it forward again to make sure timer is scheduled.
   MoveClockForwardBy(base::TimeDelta::FromSeconds(kUpdateFetchHintsTimeSecs));
   EXPECT_EQ(2, batch_update_hints_fetcher()->num_fetches_requested());
 }
@@ -3689,40 +3677,4 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
   // optimization type.
   EXPECT_EQ(optimization_guide::OptimizationTypeDecision::kNoHintAvailable,
             optimization_type_decision);
-}
-
-class OptimizationGuideHintsManagerFetchingNoBatchUpdateTest
-    : public OptimizationGuideHintsManagerTest {
- public:
-  OptimizationGuideHintsManagerFetchingNoBatchUpdateTest() {
-    scoped_list_.InitAndEnableFeatureWithParameters(
-        optimization_guide::features::kRemoteOptimizationGuideFetching,
-        {{"batch_update_hints_for_top_hosts", "false"}});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_list_;
-};
-
-TEST_F(OptimizationGuideHintsManagerFetchingNoBatchUpdateTest,
-       BatchUpdateHintsFetchNotScheduledIfNotAllowed) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
-  std::unique_ptr<FakeTopHostProvider> top_host_provider =
-      std::make_unique<FakeTopHostProvider>(
-          std::vector<std::string>({"example1.com", "example2.com"}));
-
-  // Force hints fetch scheduling.
-  CreateHintsManager(top_host_provider.get());
-  hints_manager()->RegisterOptimizationTypes(
-      {optimization_guide::proto::DEFER_ALL_SCRIPT});
-  hints_manager()->SetHintsFetcherFactoryForTesting(
-      BuildTestHintsFetcherFactory(
-          {HintsFetcherEndState::kFetchSuccessWithHostHints}));
-  InitializeWithDefaultConfig("1.0.0");
-
-  // Force timer to expire and schedule a hints fetch.
-  MoveClockForwardBy(base::TimeDelta::FromSeconds(kTestFetchRetryDelaySecs));
-  // Hints fetcher should not even be created.
-  EXPECT_FALSE(batch_update_hints_fetcher());
 }

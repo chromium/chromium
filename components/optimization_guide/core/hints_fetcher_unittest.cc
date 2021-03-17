@@ -275,7 +275,7 @@ TEST_P(HintsFetcherTest, FetchInProgress_HostsHintsRefreshed) {
   // Advancing the clock so that it's still one hour before the hints need to be
   // refreshed.
   test_clock.Advance(features::StoredFetchedHintsFreshnessDuration() -
-                     features::GetHintsFetchRefreshDuration() -
+                     features::GetHostHintsFetchRefreshDuration() -
                      base::TimeDelta().FromHours(1));
 
   EXPECT_FALSE(FetchHints({"foo.com"}, {} /* urls */));

@@ -87,15 +87,6 @@ size_t MaxHintsFetcherTopHostBlocklistSize() {
          MaxHostsForOptimizationGuideServiceHintsFetch();
 }
 
-bool ShouldBatchUpdateHintsForTopHosts() {
-  if (base::FeatureList::IsEnabled(kRemoteOptimizationGuideFetching)) {
-    return GetFieldTrialParamByFeatureAsBool(kRemoteOptimizationGuideFetching,
-                                             "batch_update_hints_for_top_hosts",
-                                             true);
-  }
-  return false;
-}
-
 size_t MaxHostsForOptimizationGuideServiceHintsFetch() {
   return GetFieldTrialParamByFeatureAsInt(
       kRemoteOptimizationGuideFetching,
@@ -219,10 +210,23 @@ GetMaxEffectiveConnectionTypeForNavigationHintsFetch() {
   return net::GetEffectiveConnectionTypeForName(param_value);
 }
 
-base::TimeDelta GetHintsFetchRefreshDuration() {
+base::TimeDelta GetHostHintsFetchRefreshDuration() {
   return base::TimeDelta::FromHours(GetFieldTrialParamByFeatureAsInt(
       kRemoteOptimizationGuideFetching, "hints_fetch_refresh_duration_in_hours",
       72));
+}
+
+base::TimeDelta GetActiveTabsFetchRefreshDuration() {
+  return base::TimeDelta::FromHours(GetFieldTrialParamByFeatureAsInt(
+      kRemoteOptimizationGuideFetching,
+      "active_tabs_fetch_refresh_duration_in_hours", 1));
+}
+
+base::TimeDelta GetActiveTabsStalenessTolerance() {
+  // 90 days initially chosen since that's how long local history lasts for.
+  return base::TimeDelta::FromDays(GetFieldTrialParamByFeatureAsInt(
+      kRemoteOptimizationGuideFetching,
+      "active_tabs_staleness_tolerance_in_days", 90));
 }
 
 size_t MaxConcurrentPageNavigationFetches() {

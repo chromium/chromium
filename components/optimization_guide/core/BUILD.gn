@@ -61,6 +61,7 @@ static_library("core") {
     "prediction_model_file.h",
     "store_update_data.cc",
     "store_update_data.h",
+    "tab_url_provider.h",
     "top_host_provider.h",
     "url_pattern_with_wildcards.cc",
     "url_pattern_with_wildcards.h",

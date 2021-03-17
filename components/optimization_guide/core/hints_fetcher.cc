@@ -437,7 +437,7 @@ std::vector<std::string> HintsFetcher::GetSizeLimitedHostsDueForHintsRefresh(
       base::Time host_valid_time = base::Time::FromDeltaSinceWindowsEpoch(
           base::TimeDelta::FromSecondsD(*value));
       host_hints_due_for_refresh =
-          (host_valid_time - features::GetHintsFetchRefreshDuration() <=
+          (host_valid_time - features::GetHostHintsFetchRefreshDuration() <=
            time_clock_->Now());
     }
     if (host_hints_due_for_refresh)

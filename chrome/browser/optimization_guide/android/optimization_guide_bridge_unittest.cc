@@ -38,6 +38,7 @@ class MockOptimizationGuideHintsManager : public OptimizationGuideHintsManager {
                                       pref_service,
                                       /*hint_store=*/nullptr,
                                       /*top_host_provider=*/nullptr,
+                                      /*tab_url_provider=*/nullptr,
                                       /*url_loader_factory=*/nullptr) {}
   ~MockOptimizationGuideHintsManager() override = default;
   MOCK_METHOD4(CanApplyOptimizationAsync,
