@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/debug/crash_logging.h"
 #include "base/logging.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -503,6 +504,12 @@ VulkanSwapChain::GetOrCreateFenceAndSemaphores() {
   FenceAndSemaphores fence_and_semaphores;
   do {
 #if !defined(OS_FUCHSIA)
+    // This crash key is for diagnosing OOM crash.
+    // TODO(penghuang): remove it when OOM crash is fixed, or find out it is not
+    // related.
+    SCOPED_CRASH_KEY_NUMBER("VulkanSwapChian", "queue_.size()",
+                            fence_and_semaphores_queue_.size());
+
     if (LIKELY(!fence_and_semaphores_queue_.empty())) {
       fence_and_semaphores = fence_and_semaphores_queue_.front();
       auto result = vkGetFenceStatus(device, fence_and_semaphores.fence);
