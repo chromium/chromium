@@ -106,7 +106,6 @@ PrefetchProxyProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
     network::mojom::URLLoaderFactory* target_factory,
     ResourceLoadSuccessfulCallback on_resource_load_successful,
     mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& request,
@@ -123,8 +122,8 @@ PrefetchProxyProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
       client_receiver_.BindNewPipeAndPassRemote();
 
   target_factory->CreateLoaderAndStart(
-      target_loader_.BindNewPipeAndPassReceiver(), routing_id, request_id,
-      options, request, std::move(proxy_client), traffic_annotation);
+      target_loader_.BindNewPipeAndPassReceiver(), request_id, options, request,
+      std::move(proxy_client), traffic_annotation);
 
   // Calls |OnBindingsClosed| only after both disconnect handlers have been run.
   base::RepeatingClosure closure = base::BarrierClosure(
@@ -355,7 +354,6 @@ bool PrefetchProxyProxyingURLLoaderFactory::ShouldHandleRequestForPrerender()
 
 void PrefetchProxyProxyingURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& request,
@@ -414,7 +412,7 @@ void PrefetchProxyProxyingURLLoaderFactory::CreateLoaderAndStart(
         base::BindOnce(
             &PrefetchProxyProxyingURLLoaderFactory::OnEligibilityResult,
             weak_factory_.GetWeakPtr(), profile, std::move(loader_receiver),
-            routing_id, request_id, options, request, std::move(client),
+            request_id, options, request, std::move(client),
             traffic_annotation));
     return;
   }
@@ -426,7 +424,7 @@ void PrefetchProxyProxyingURLLoaderFactory::CreateLoaderAndStart(
     // Load this resource from |isolated_factory_|'s cache.
     auto in_progress_request = std::make_unique<InProgressRequest>(
         profile, this, isolated_factory_.get(), base::NullCallback(),
-        std::move(loader_receiver), routing_id, request_id, options, request,
+        std::move(loader_receiver), request_id, options, request,
         std::move(client), traffic_annotation);
     in_progress_request->SetOnCompleteRecordMetricsCallback(
         base::BindOnce(&PrefetchProxyProxyingURLLoaderFactory::
@@ -438,7 +436,7 @@ void PrefetchProxyProxyingURLLoaderFactory::CreateLoaderAndStart(
     // No metrics callback here, since there's nothing important to record.
     requests_.insert(std::make_unique<InProgressRequest>(
         profile, this, network_process_factory_.get(), base::NullCallback(),
-        std::move(loader_receiver), routing_id, request_id, options, request,
+        std::move(loader_receiver), request_id, options, request,
         std::move(client), traffic_annotation));
   }
 }
@@ -446,7 +444,6 @@ void PrefetchProxyProxyingURLLoaderFactory::CreateLoaderAndStart(
 void PrefetchProxyProxyingURLLoaderFactory::OnEligibilityResult(
     Profile* profile,
     mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& request,
@@ -504,8 +501,8 @@ void PrefetchProxyProxyingURLLoaderFactory::OnEligibilityResult(
 
   auto in_progress_request = std::make_unique<InProgressRequest>(
       profile, this, isolated_factory_.get(), resource_load_successful_callback,
-      std::move(loader_receiver), routing_id, request_id, options,
-      isolated_request, std::move(client), traffic_annotation);
+      std::move(loader_receiver), request_id, options, isolated_request,
+      std::move(client), traffic_annotation);
   in_progress_request->SetOnCompleteRecordMetricsCallback(
       base::BindOnce(&PrefetchProxyProxyingURLLoaderFactory::
                          RecordSubresourceMetricsDuringPrerender,

@@ -473,7 +473,7 @@ class FileSystemURLLoaderFactoryTest
     auto client = std::make_unique<network::TestURLLoaderClient>();
     loader_.reset();
     factory->CreateLoaderAndStart(
-        loader_.BindNewPipeAndPassReceiver(), 0, 0,
+        loader_.BindNewPipeAndPassReceiver(), 0,
         network::mojom::kURLLoadOptionNone, request, client->CreateRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 

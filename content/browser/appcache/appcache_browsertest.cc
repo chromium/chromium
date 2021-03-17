@@ -247,7 +247,6 @@ class LoaderFactoryInterceptingBrowserClient : public TestContentBrowserClient {
 
     void CreateLoaderAndStart(
         mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
-        int32_t routing_id,
         int32_t request_id,
         uint32_t options,
         const network::ResourceRequest& request,
@@ -256,7 +255,7 @@ class LoaderFactoryInterceptingBrowserClient : public TestContentBrowserClient {
         override {
       client_->intercepted_request_map_[request.url] = request_initiator_;
       target_factory_->CreateLoaderAndStart(
-          std::move(loader_receiver), routing_id, request_id, options, request,
+          std::move(loader_receiver), request_id, options, request,
           std::move(client), traffic_annotation);
     }
 

@@ -100,7 +100,7 @@ void SignedExchangeValidityPinger::Start(
   resource_request->throttling_profile_id = throttling_profile_id;
 
   url_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
-      std::move(url_loader_factory), std::move(throttles), 0 /* routing_id */,
+      std::move(url_loader_factory), std::move(throttles),
       signed_exchange_utils::MakeRequestID() /* request_id */,
       network::mojom::kURLLoadOptionNone, resource_request.get(), this,
       kValidityPingerTrafficAnnotation, base::ThreadTaskRunnerHandle::Get());

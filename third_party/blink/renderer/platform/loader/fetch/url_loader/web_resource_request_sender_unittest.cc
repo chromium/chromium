@@ -205,7 +205,6 @@ class WebResourceRequestSenderTest : public testing::Test,
 
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& url_request,
@@ -255,7 +254,7 @@ class WebResourceRequestSenderTest : public testing::Test,
   void StartAsync(std::unique_ptr<network::ResourceRequest> request,
                   scoped_refptr<WebRequestPeer> peer) {
     sender()->SendAsync(
-        std::move(request), 0, scheduler::GetSingleThreadTaskRunnerForTesting(),
+        std::move(request), scheduler::GetSingleThreadTaskRunnerForTesting(),
         TRAFFIC_ANNOTATION_FOR_TESTS, false, WebVector<WebString>(),
         std::move(peer),
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(this),

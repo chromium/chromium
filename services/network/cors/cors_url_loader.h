@@ -40,7 +40,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   CorsURLLoader(
       mojo::PendingReceiver<mojom::URLLoader> loader_receiver,
       int32_t process_id,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       DeleteCallback delete_callback,
@@ -134,7 +133,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
 
   // We need to save these for redirect, and DevTools.
   const int32_t process_id_;
-  const int32_t routing_id_;
   const int32_t request_id_;
   const uint32_t options_;
 

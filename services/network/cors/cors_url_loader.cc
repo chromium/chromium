@@ -60,7 +60,6 @@ constexpr const char kTimingAllowOrigin[] = "Timing-Allow-Origin";
 CorsURLLoader::CorsURLLoader(
     mojo::PendingReceiver<mojom::URLLoader> loader_receiver,
     int32_t process_id,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     DeleteCallback delete_callback,
@@ -78,7 +77,6 @@ CorsURLLoader::CorsURLLoader(
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer)
     : receiver_(this, std::move(loader_receiver)),
       process_id_(process_id),
-      routing_id_(routing_id),
       request_id_(request_id),
       options_(options),
       delete_callback_(std::move(delete_callback)),
@@ -532,8 +530,8 @@ void CorsURLLoader::StartNetworkRequest(
   // |network_client_receiver_| shares this object's lifetime.
   network_loader_.reset();
   network_loader_factory_->CreateLoaderAndStart(
-      network_loader_.BindNewPipeAndPassReceiver(), routing_id_, request_id_,
-      options_, request_, network_client_receiver_.BindNewPipeAndPassRemote(),
+      network_loader_.BindNewPipeAndPassReceiver(), request_id_, options_,
+      request_, network_client_receiver_.BindNewPipeAndPassRemote(),
       traffic_annotation_);
   network_client_receiver_.set_disconnect_handler(
       base::BindOnce(&CorsURLLoader::OnMojoDisconnect, base::Unretained(this)));

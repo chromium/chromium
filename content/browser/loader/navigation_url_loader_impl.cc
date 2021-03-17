@@ -367,9 +367,9 @@ void NavigationURLLoaderImpl::Start(
     url_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
         base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
             std::move(factory_for_webui)),
-        CreateURLLoaderThrottles(), 0 /* routing_id */,
-        global_request_id_.request_id, network::mojom::kURLLoadOptionNone,
-        resource_request_.get(), this, kNavigationUrlLoaderTrafficAnnotation,
+        CreateURLLoaderThrottles(), global_request_id_.request_id,
+        network::mojom::kURLLoadOptionNone, resource_request_.get(), this,
+        kNavigationUrlLoaderTrafficAnnotation,
         base::ThreadTaskRunnerHandle::Get());
     return;
   }
@@ -381,9 +381,9 @@ void NavigationURLLoaderImpl::Start(
     url_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
         network::SharedURLLoaderFactory::Create(
             std::move(request_info_->blob_url_loader_factory)),
-        CreateURLLoaderThrottles(), 0 /* routing_id */,
-        global_request_id_.request_id, network::mojom::kURLLoadOptionNone,
-        resource_request_.get(), this, kNavigationUrlLoaderTrafficAnnotation,
+        CreateURLLoaderThrottles(), global_request_id_.request_id,
+        network::mojom::kURLLoadOptionNone, resource_request_.get(), this,
+        kNavigationUrlLoaderTrafficAnnotation,
         base::ThreadTaskRunnerHandle::Get());
     return;
   }
@@ -512,9 +512,8 @@ void NavigationURLLoaderImpl::MaybeStartLoader(
       url_loader_->ResetForFollowRedirect();
     url_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
         std::move(single_request_factory), std::move(throttles),
-        frame_tree_node_id_, global_request_id_.request_id,
-        network::mojom::kURLLoadOptionNone, resource_request_.get(), this,
-        kNavigationUrlLoaderTrafficAnnotation,
+        global_request_id_.request_id, network::mojom::kURLLoadOptionNone,
+        resource_request_.get(), this, kNavigationUrlLoaderTrafficAnnotation,
         base::ThreadTaskRunnerHandle::Get());
 
     subresource_loader_params_ =
@@ -572,7 +571,7 @@ void NavigationURLLoaderImpl::MaybeStartLoader(
   scoped_refptr<network::SharedURLLoaderFactory> factory =
       PrepareForNonInterceptedRequest(&options);
   url_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
-      std::move(factory), CreateURLLoaderThrottles(), frame_tree_node_id_,
+      std::move(factory), CreateURLLoaderThrottles(),
       global_request_id_.request_id, options, resource_request_.get(),
       this /* client */, kNavigationUrlLoaderTrafficAnnotation,
       base::ThreadTaskRunnerHandle::Get());
@@ -597,7 +596,7 @@ void NavigationURLLoaderImpl::FallbackToNonInterceptedRequest(
     DCHECK(response_loader_receiver_.is_bound());
     response_loader_receiver_.reset();
     url_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
-        std::move(factory), CreateURLLoaderThrottles(), frame_tree_node_id_,
+        std::move(factory), CreateURLLoaderThrottles(),
         global_request_id_.request_id, options, resource_request_.get(),
         this /* client */, kNavigationUrlLoaderTrafficAnnotation,
         base::ThreadTaskRunnerHandle::Get());

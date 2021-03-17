@@ -67,7 +67,6 @@ class CONTENT_EXPORT ServiceWorkerNewScriptLoader final
   enum class WriterState { kNotStarted, kWriting, kCompleted };
 
   static std::unique_ptr<ServiceWorkerNewScriptLoader> CreateAndStart(
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& original_request,
@@ -113,7 +112,6 @@ class CONTENT_EXPORT ServiceWorkerNewScriptLoader final
   class WrappedIOBuffer;
 
   ServiceWorkerNewScriptLoader(
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& original_request,

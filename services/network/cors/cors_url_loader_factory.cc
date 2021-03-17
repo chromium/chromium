@@ -111,7 +111,6 @@ class CorsURLLoaderFactory::FactoryOverride final {
     // mojom::URLLoaderFactory implementation
     void CreateLoaderAndStart(
         mojo::PendingReceiver<mojom::URLLoader> receiver,
-        int32_t routing_id,
         int32_t request_id,
         uint32_t options,
         const ResourceRequest& request,
@@ -119,8 +118,8 @@ class CorsURLLoaderFactory::FactoryOverride final {
         const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
         override {
       return network_loader_factory_->CreateLoaderAndStart(
-          std::move(receiver), routing_id, request_id, options, request,
-          std::move(client), traffic_annotation);
+          std::move(receiver), request_id, options, request, std::move(client),
+          traffic_annotation);
     }
     void Clone(
         mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) override {
@@ -223,7 +222,6 @@ void CorsURLLoaderFactory::DestroyURLLoader(mojom::URLLoader* loader) {
 
 void CorsURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingReceiver<mojom::URLLoader> receiver,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const ResourceRequest& resource_request,
@@ -266,7 +264,7 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
     }
 
     auto loader = std::make_unique<CorsURLLoader>(
-        std::move(receiver), process_id_, routing_id, request_id, options,
+        std::move(receiver), process_id_, request_id, options,
         base::BindOnce(&CorsURLLoaderFactory::DestroyURLLoader,
                        base::Unretained(this)),
         resource_request, ignore_isolated_world_origin_,
@@ -282,7 +280,7 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
     raw_loader->Start();
   } else {
     inner_url_loader_factory->CreateLoaderAndStart(
-        std::move(receiver), routing_id, request_id, options, resource_request,
+        std::move(receiver), request_id, options, resource_request,
         std::move(client), traffic_annotation);
   }
 }

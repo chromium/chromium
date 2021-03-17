@@ -23,7 +23,6 @@ void WeakWrapperSharedURLLoaderFactory::Detach() {
 
 void WeakWrapperSharedURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingReceiver<mojom::URLLoader> loader,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& request,
@@ -31,8 +30,8 @@ void WeakWrapperSharedURLLoaderFactory::CreateLoaderAndStart(
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   if (!factory())
     return;
-  factory()->CreateLoaderAndStart(std::move(loader), routing_id, request_id,
-                                  options, request, std::move(client),
+  factory()->CreateLoaderAndStart(std::move(loader), request_id, options,
+                                  request, std::move(client),
                                   traffic_annotation);
 }
 

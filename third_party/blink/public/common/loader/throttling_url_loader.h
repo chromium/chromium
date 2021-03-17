@@ -50,7 +50,6 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   static std::unique_ptr<ThrottlingURLLoader> CreateLoaderAndStart(
       scoped_refptr<network::SharedURLLoaderFactory> factory,
       std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       network::ResourceRequest* url_request,
@@ -114,7 +113,6 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
       const net::NetworkTrafficAnnotationTag& traffic_annotation);
 
   void Start(scoped_refptr<network::SharedURLLoaderFactory> factory,
-             int32_t routing_id,
              int32_t request_id,
              uint32_t options,
              network::ResourceRequest* url_request,
@@ -233,7 +231,6 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   struct StartInfo {
     StartInfo(
         scoped_refptr<network::SharedURLLoaderFactory> in_url_loader_factory,
-        int32_t in_routing_id,
         int32_t in_request_id,
         uint32_t in_options,
         network::ResourceRequest* in_url_request,
@@ -242,7 +239,6 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
     ~StartInfo();
 
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
-    int32_t routing_id;
     int32_t request_id;
     uint32_t options;
 

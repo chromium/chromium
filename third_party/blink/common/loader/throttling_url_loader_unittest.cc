@@ -103,7 +103,6 @@ class TestURLLoaderFactory : public network::mojom::URLLoaderFactory,
   // network::mojom::URLLoaderFactory implementation.
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& url_request,
@@ -383,8 +382,8 @@ class ThrottlingURLLoaderTest : public testing::Test {
     network::ResourceRequest request;
     request.url = request_url;
     loader_ = ThrottlingURLLoader::CreateLoaderAndStart(
-        factory_.shared_factory(), std::move(throttles_), 0, 0, options,
-        &request, &client_, TRAFFIC_ANNOTATION_FOR_TESTS,
+        factory_.shared_factory(), std::move(throttles_), 0, options, &request,
+        &client_, TRAFFIC_ANNOTATION_FOR_TESTS,
         base::ThreadTaskRunnerHandle::Get());
     factory_.factory_remote().FlushForTesting();
   }
@@ -584,7 +583,7 @@ TEST_F(ThrottlingURLLoaderTest,
   network::ResourceRequest request;
   request.url = request_url;
   loader_ = ThrottlingURLLoader::CreateLoaderAndStart(
-      factory_.shared_factory(), std::move(throttles_), 0, 0, 0, &request,
+      factory_.shared_factory(), std::move(throttles_), 0, 0, &request,
       &client_, TRAFFIC_ANNOTATION_FOR_TESTS,
       base::ThreadTaskRunnerHandle::Get());
 

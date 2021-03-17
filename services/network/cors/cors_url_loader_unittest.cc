@@ -109,7 +109,6 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
  private:
   // mojom::URLLoaderFactory implementation.
   void CreateLoaderAndStart(mojo::PendingReceiver<mojom::URLLoader> receiver,
-                            int32_t routing_id,
                             int32_t request_id,
                             uint32_t options,
                             const ResourceRequest& resource_request,
@@ -196,8 +195,8 @@ class CorsURLLoaderTest : public testing::Test {
     test_cors_loader_client_ = std::make_unique<TestURLLoaderClient>();
     url_loader_.reset();
     cors_url_loader_factory_->CreateLoaderAndStart(
-        url_loader_.BindNewPipeAndPassReceiver(), 0 /* routing_id */,
-        0 /* request_id */, mojom::kURLLoadOptionNone, request,
+        url_loader_.BindNewPipeAndPassReceiver(), 0 /* request_id */,
+        mojom::kURLLoadOptionNone, request,
         test_cors_loader_client_->CreateRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
   }

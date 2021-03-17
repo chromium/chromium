@@ -83,7 +83,7 @@ void WebBundleInterceptorForTrackedNavigationFromFile::CreateURLLoader(
   network::ResourceRequest new_resource_request = resource_request;
   new_resource_request.url = original_request_url_;
   url_loader_factory_->CreateLoaderAndStart(
-      std::move(receiver), /*routing_id=*/0, /*request_id=*/0, /*options=*/0,
+      std::move(receiver), /*request_id=*/0, /*options=*/0,
       new_resource_request, std::move(client),
       net::MutableNetworkTrafficAnnotationTag(
           web_bundle_utils::kTrafficAnnotation));

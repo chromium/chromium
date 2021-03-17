@@ -208,7 +208,7 @@ class BlobURLTest : public testing::Test {
     mojo::PendingRemote<network::mojom::URLLoader> url_loader;
     network::TestURLLoaderClient url_loader_client;
     url_loader_factory->CreateLoaderAndStart(
-        url_loader.InitWithNewPipeAndPassReceiver(), 0, 0,
+        url_loader.InitWithNewPipeAndPassReceiver(), 0,
         network::mojom::kURLLoadOptionNone, request,
         url_loader_client.CreateRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));

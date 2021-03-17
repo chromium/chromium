@@ -32,7 +32,7 @@ class TestURLLoaderFactoryTest : public testing::Test {
     request.report_raw_headers = report_raw_headers;
     loader_.reset();
     factory_.CreateLoaderAndStart(
-        loader_.BindNewPipeAndPassReceiver(), 0, 0, 0, request,
+        loader_.BindNewPipeAndPassReceiver(), 0, 0, request,
         client->CreateRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
   }

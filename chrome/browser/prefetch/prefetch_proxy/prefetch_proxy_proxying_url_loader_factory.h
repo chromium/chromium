@@ -86,7 +86,6 @@ class PrefetchProxyProxyingURLLoaderFactory
   // network::mojom::URLLoaderFactory:
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& request,
@@ -106,7 +105,6 @@ class PrefetchProxyProxyingURLLoaderFactory
         network::mojom::URLLoaderFactory* target_factory,
         ResourceLoadSuccessfulCallback on_resource_load_successful,
         mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
-        int32_t routing_id,
         int32_t request_id,
         uint32_t options,
         const network::ResourceRequest& request,
@@ -230,7 +228,6 @@ class PrefetchProxyProxyingURLLoaderFactory
   void OnEligibilityResult(
       Profile* profile,
       mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& request,

@@ -70,7 +70,6 @@ class MockResourceRequestSender : public WebResourceRequestSender {
   // WebResourceRequestSender implementation:
   void SendSync(
       std::unique_ptr<network::ResourceRequest> request,
-      int routing_id,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       uint32_t loader_options,
       SyncLoadResponse* response,
@@ -90,7 +89,6 @@ class MockResourceRequestSender : public WebResourceRequestSender {
 
   int SendAsync(
       std::unique_ptr<network::ResourceRequest> request,
-      int routing_id,
       scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       uint32_t loader_options,
@@ -145,7 +143,6 @@ class FakeURLLoaderFactory final : public network::mojom::URLLoaderFactory {
   ~FakeURLLoaderFactory() override = default;
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& url_request,

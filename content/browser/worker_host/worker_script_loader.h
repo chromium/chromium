@@ -71,7 +71,6 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
   WorkerScriptLoader(
       int process_id,
       const DedicatedOrSharedWorkerToken& worker_token,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& resource_request,
@@ -148,7 +147,6 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
 
   base::Optional<SubresourceLoaderParams> subresource_loader_params_;
 
-  const int32_t routing_id_;
   const int32_t request_id_;
   const uint32_t options_;
   network::ResourceRequest resource_request_;

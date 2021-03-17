@@ -67,7 +67,7 @@ class CRLSetComponentInstallerTest : public PlatformTest {
         loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
     loader_.reset();
     loader_factory->CreateLoaderAndStart(
-        loader_.BindNewPipeAndPassReceiver(), 1, 1,
+        loader_.BindNewPipeAndPassReceiver(), 1,
         network::mojom::kURLLoadOptionSendSSLInfoWithResponse |
             network::mojom::kURLLoadOptionSendSSLInfoForCertificateError,
         request, client_->CreateRemote(),

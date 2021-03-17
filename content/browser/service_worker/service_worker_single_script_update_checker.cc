@@ -178,9 +178,8 @@ ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
       network_client_receiver_.BindNewPipeAndPassRemote());
   network_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
       network::SharedURLLoaderFactory::Create(loader_factory->Clone()),
-      std::move(throttles), MSG_ROUTING_NONE,
-      GlobalRequestID::MakeBrowserInitiated().request_id, options,
-      &resource_request, network_client_remote_.get(),
+      std::move(throttles), GlobalRequestID::MakeBrowserInitiated().request_id,
+      options, &resource_request, network_client_remote_.get(),
       kUpdateCheckTrafficAnnotation, base::ThreadTaskRunnerHandle::Get());
   DCHECK_EQ(network_loader_state_,
             ServiceWorkerUpdatedScriptLoader::LoaderState::kNotStarted);

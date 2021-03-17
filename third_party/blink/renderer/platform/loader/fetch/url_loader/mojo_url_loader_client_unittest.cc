@@ -210,10 +210,9 @@ class WebMojoURLLoaderClientTest : public ::testing::Test,
     context_->url_laoder_client = client_.get();
     url_loader_ = ThrottlingURLLoader::CreateLoaderAndStart(
         std::move(url_loader_factory),
-        std::vector<std::unique_ptr<blink::URLLoaderThrottle>>(),
-        /*routing_id=*/0, request_id_, /*loader_options=0*/ 0, request.get(),
-        client_.get(), TRAFFIC_ANNOTATION_FOR_TESTS,
-        std::move(loading_task_runner),
+        std::vector<std::unique_ptr<blink::URLLoaderThrottle>>(), request_id_,
+        /*loader_options=0*/ 0, request.get(), client_.get(),
+        TRAFFIC_ANNOTATION_FOR_TESTS, std::move(loading_task_runner),
         base::make_optional(std::vector<std::string>()));
 
     base::RunLoop().RunUntilIdle();
@@ -226,7 +225,6 @@ class WebMojoURLLoaderClientTest : public ::testing::Test,
 
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& url_request,

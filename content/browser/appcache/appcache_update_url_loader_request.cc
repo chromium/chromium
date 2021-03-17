@@ -60,7 +60,7 @@ void AppCacheUpdateJob::UpdateURLLoaderRequest::Start() {
     return;
   partition_->GetURLLoaderFactoryForBrowserProcessWithCORBEnabled()
       ->CreateLoaderAndStart(
-          url_loader_.BindNewPipeAndPassReceiver(), -1, -1,
+          url_loader_.BindNewPipeAndPassReceiver(), -1,
           network::mojom::kURLLoadOptionSendSSLInfoWithResponse, request_,
           client_receiver_.BindNewPipeAndPassRemote(),
           net::MutableNetworkTrafficAnnotationTag(kAppCacheTrafficAnnotation));

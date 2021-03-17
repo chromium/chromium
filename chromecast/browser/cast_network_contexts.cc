@@ -48,7 +48,6 @@ class CastNetworkContexts::URLLoaderFactoryForSystem
   // mojom::URLLoaderFactory implementation:
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& url_request,
@@ -59,7 +58,7 @@ class CastNetworkContexts::URLLoaderFactoryForSystem
     if (!network_context_)
       return;
     network_context_->GetSystemURLLoaderFactory()->CreateLoaderAndStart(
-        std::move(receiver), routing_id, request_id, options, url_request,
+        std::move(receiver), request_id, options, url_request,
         std::move(client), traffic_annotation);
   }
 

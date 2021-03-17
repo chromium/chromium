@@ -136,18 +136,15 @@ bool DevToolsURLLoaderInterceptor::Pattern::Matches(
 
 struct CreateLoaderParameters {
   CreateLoaderParameters(
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       network::ResourceRequest request,
       net::MutableNetworkTrafficAnnotationTag traffic_annotation)
-      : routing_id(routing_id),
-        request_id(request_id),
+      : request_id(request_id),
         options(options),
         request(request),
         traffic_annotation(traffic_annotation) {}
 
-  const int32_t routing_id;
   const int32_t request_id;
   const uint32_t options;
   network::ResourceRequest request;
@@ -482,7 +479,6 @@ class DevToolsURLLoaderFactoryProxy : public network::mojom::URLLoaderFactory {
   // network::mojom::URLLoaderFactory implementation
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& request,
@@ -541,7 +537,6 @@ DevToolsURLLoaderFactoryProxy::~DevToolsURLLoaderFactoryProxy() = default;
 
 void DevToolsURLLoaderFactoryProxy::CreateLoaderAndStart(
     mojo::PendingReceiver<network::mojom::URLLoader> loader,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& request,
@@ -551,13 +546,13 @@ void DevToolsURLLoaderFactoryProxy::CreateLoaderAndStart(
 
   DevToolsURLLoaderInterceptor* interceptor = interceptor_.get();
   if (!interceptor_ || request.url.SchemeIs(url::kDataScheme)) {
-    target_factory_->CreateLoaderAndStart(
-        std::move(loader), routing_id, request_id, options, request,
-        std::move(client), traffic_annotation);
+    target_factory_->CreateLoaderAndStart(std::move(loader), request_id,
+                                          options, request, std::move(client),
+                                          traffic_annotation);
     return;
   }
   auto creation_params = std::make_unique<CreateLoaderParameters>(
-      routing_id, request_id, options, request, traffic_annotation);
+      request_id, options, request, traffic_annotation);
   mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_clone;
   target_factory_->Clone(factory_clone.InitWithNewPipeAndPassReceiver());
   mojo::PendingRemote<network::mojom::CookieManager> cookie_manager_clone;
@@ -1205,9 +1200,8 @@ void InterceptionJob::StartRequest() {
   state_ = State::kRequestSent;
 
   target_factory_->CreateLoaderAndStart(
-      loader_.BindNewPipeAndPassReceiver(), create_loader_params_->routing_id,
-      create_loader_params_->request_id, create_loader_params_->options,
-      create_loader_params_->request,
+      loader_.BindNewPipeAndPassReceiver(), create_loader_params_->request_id,
+      create_loader_params_->options, create_loader_params_->request,
       client_receiver_.BindNewPipeAndPassRemote(),
       create_loader_params_->traffic_annotation);
   client_receiver_.set_disconnect_handler(
@@ -1544,14 +1538,13 @@ DevToolsURLLoaderFactoryAdapter::~DevToolsURLLoaderFactoryAdapter() = default;
 
 void DevToolsURLLoaderFactoryAdapter::CreateLoaderAndStart(
     mojo::PendingReceiver<network::mojom::URLLoader> loader,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& request,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
-  factory_->CreateLoaderAndStart(std::move(loader), routing_id, request_id,
-                                 options, request, std::move(client),
+  factory_->CreateLoaderAndStart(std::move(loader), request_id, options,
+                                 request, std::move(client),
                                  traffic_annotation);
 }
 

@@ -146,7 +146,7 @@ void WebBundleInterceptorForNetwork::StartResponse(
   network::ResourceRequest new_resource_request = resource_request;
   new_resource_request.url = primary_url_;
   url_loader_factory_->CreateLoaderAndStart(
-      std::move(receiver), 0, 0, 0, new_resource_request, std::move(client),
+      std::move(receiver), 0, 0, new_resource_request, std::move(client),
       net::MutableNetworkTrafficAnnotationTag(
           web_bundle_utils::kTrafficAnnotation));
   std::move(done_callback_).Run(primary_url_, std::move(url_loader_factory_));

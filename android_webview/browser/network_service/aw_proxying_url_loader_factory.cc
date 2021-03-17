@@ -57,7 +57,6 @@ class InterceptedRequest : public network::mojom::URLLoader,
   InterceptedRequest(
       int frame_tree_node_id,
       uint64_t request_id,
-      int32_t routing_id,
       uint32_t options,
       const network::ResourceRequest& request,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
@@ -132,7 +131,6 @@ class InterceptedRequest : public network::mojom::URLLoader,
 
   const int frame_tree_node_id_;
   const uint64_t request_id_;
-  const int32_t routing_id_;
   const uint32_t options_;
   bool input_stream_previously_failed_ = false;
   bool request_was_redirected_ = false;
@@ -250,7 +248,6 @@ class ProtocolResponseDelegate
 InterceptedRequest::InterceptedRequest(
     int frame_tree_node_id,
     uint64_t request_id,
-    int32_t routing_id,
     uint32_t options,
     const network::ResourceRequest& request,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
@@ -262,7 +259,6 @@ InterceptedRequest::InterceptedRequest(
         security_options)
     : frame_tree_node_id_(frame_tree_node_id),
       request_id_(request_id),
-      routing_id_(routing_id),
       options_(options),
       intercept_only_(intercept_only),
       security_options_(security_options),
@@ -418,8 +414,8 @@ void InterceptedRequest::ContinueAfterIntercept() {
 
   if (!target_loader_ && target_factory_) {
     target_factory_->CreateLoaderAndStart(
-        target_loader_.BindNewPipeAndPassReceiver(), routing_id_, request_id_,
-        options_, request_, proxied_client_receiver_.BindNewPipeAndPassRemote(),
+        target_loader_.BindNewPipeAndPassReceiver(), request_id_, options_,
+        request_, proxied_client_receiver_.BindNewPipeAndPassRemote(),
         traffic_annotation_);
   }
 }
@@ -751,7 +747,6 @@ void AwProxyingURLLoaderFactory::CreateProxy(
 
 void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingReceiver<network::mojom::URLLoader> loader,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& request,
@@ -783,9 +778,9 @@ void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
   // manages its own lifecycle
   // TODO(timvolodine): consider keeping track of requests.
   InterceptedRequest* req = new InterceptedRequest(
-      frame_tree_node_id_, request_id, routing_id, options, request,
-      traffic_annotation, std::move(loader), std::move(client),
-      std::move(target_factory_clone), intercept_only_, security_options_);
+      frame_tree_node_id_, request_id, options, request, traffic_annotation,
+      std::move(loader), std::move(client), std::move(target_factory_clone),
+      intercept_only_, security_options_);
   req->Restart();
 }
 

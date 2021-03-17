@@ -155,7 +155,6 @@ void SignedExchangeCertFetcher::Start() {
   }
   url_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
       std::move(shared_url_loader_factory_), std::move(throttles_),
-      0 /* routing_id */,
       signed_exchange_utils::MakeRequestID() /* request_id */,
       network::mojom::kURLLoadOptionNone, resource_request_.get(), this,
       kCertFetcherTrafficAnnotation, base::ThreadTaskRunnerHandle::Get());
@@ -343,7 +342,7 @@ void SignedExchangeCertFetcher::OnDataURLRequest(
   mojo::Remote<network::mojom::URLLoaderFactory> factory(
       DataURLLoaderFactory::Create());
   factory->CreateLoaderAndStart(
-      std::move(url_loader_receiver), 0, 0, 0, resource_request,
+      std::move(url_loader_receiver), 0, 0, resource_request,
       std::move(url_loader_client_remote),
       net::MutableNetworkTrafficAnnotationTag(kCertFetcherTrafficAnnotation));
 }

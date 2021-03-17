@@ -45,7 +45,6 @@ class ServiceWorkerNewScriptLoader::WrappedIOBuffer
 
 std::unique_ptr<ServiceWorkerNewScriptLoader>
 ServiceWorkerNewScriptLoader::CreateAndStart(
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& original_request,
@@ -55,14 +54,13 @@ ServiceWorkerNewScriptLoader::CreateAndStart(
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     int64_t cache_resource_id) {
   return base::WrapUnique(new ServiceWorkerNewScriptLoader(
-      routing_id, request_id, options, original_request, std::move(client),
-      version, loader_factory, traffic_annotation, cache_resource_id));
+      request_id, options, original_request, std::move(client), version,
+      loader_factory, traffic_annotation, cache_resource_id));
 }
 
 // TODO(nhiroki): We're doing multiple things in the ctor. Consider factors out
 // some of them into a separate function.
 ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& original_request,
@@ -133,9 +131,9 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
   options &= ~network::mojom::kURLLoadOptionSniffMimeType;
 
   loader_factory_->CreateLoaderAndStart(
-      network_loader_.BindNewPipeAndPassReceiver(), routing_id, request_id,
-      options, resource_request,
-      network_client_receiver_.BindNewPipeAndPassRemote(), traffic_annotation);
+      network_loader_.BindNewPipeAndPassReceiver(), request_id, options,
+      resource_request, network_client_receiver_.BindNewPipeAndPassRemote(),
+      traffic_annotation);
   DCHECK_EQ(LoaderState::kNotStarted, network_loader_state_);
   network_loader_state_ = LoaderState::kLoadingHeader;
 }

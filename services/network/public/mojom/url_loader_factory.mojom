@@ -61,18 +61,12 @@ interface URLLoaderFactory {
   // methods will be called when certain events related to that loading
   // (e.g., response arrival) happen.
   //
-  // |routing_id| is the routing_id for subframe requests, and is the
-  // frame_tree_node_id for frame requests.
-  // TODO: once MojoLoading is only codepath and we have one factory per frame,
-  // remove this.
-  //
   // |request_id| is an arbitrary id for the request. The (routing_id,
   // request_id) pair must be unique over all calls to CreateLoaderAndStart()
   // on this factory.
   //
   // |options| is a bitfield of the options defined above.
   CreateLoaderAndStart(pending_receiver<URLLoader> loader,
-                       int32 routing_id,
                        int32 request_id,
                        uint32 options,
                        URLRequest request,

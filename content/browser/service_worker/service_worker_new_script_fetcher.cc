@@ -100,7 +100,7 @@ void ServiceWorkerNewScriptFetcher::StartScriptLoadingWithNewResourceID(
 
   mojo::MakeSelfOwnedReceiver(
       ServiceWorkerNewScriptLoader::CreateAndStart(
-          MSG_ROUTING_NONE, request_id_, options, request,
+          request_id_, options, request,
           url_loader_client_receiver_.BindNewPipeAndPassRemote(),
           std::move(version_), std::move(loader_factory_),
           net::MutableNetworkTrafficAnnotationTag(

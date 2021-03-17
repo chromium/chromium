@@ -86,16 +86,10 @@ void WorkerScriptFetcher::Start(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           script_loader_factory_.get());
 
-  // SharedWorker doesn't have a frame.
-  // TODO(nhiroki): Make the caller pass the frame id to support dedicated
-  // workers (https://crbug.com/906991).
-  int32_t routing_id = MSG_ROUTING_NONE;
-
   url_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
-      std::move(shared_url_loader_factory), std::move(throttles), routing_id,
-      request_id_, network::mojom::kURLLoadOptionNone, resource_request_.get(),
-      this, kWorkerScriptLoadTrafficAnnotation,
-      base::ThreadTaskRunnerHandle::Get());
+      std::move(shared_url_loader_factory), std::move(throttles), request_id_,
+      network::mojom::kURLLoadOptionNone, resource_request_.get(), this,
+      kWorkerScriptLoadTrafficAnnotation, base::ThreadTaskRunnerHandle::Get());
 }
 
 void WorkerScriptFetcher::OnReceiveEarlyHints(

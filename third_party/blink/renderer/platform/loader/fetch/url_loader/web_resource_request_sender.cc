@@ -160,7 +160,6 @@ WebResourceRequestSender::~WebResourceRequestSender() = default;
 
 void WebResourceRequestSender::SendSync(
     std::unique_ptr<network::ResourceRequest> request,
-    int routing_id,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     uint32_t loader_options,
     SyncLoadResponse* response,
@@ -212,7 +211,7 @@ void WebResourceRequestSender::SendSync(
       *task_runner, FROM_HERE,
       WTF::CrossThreadBindOnce(
           &SyncLoadContext::StartAsyncWithWaitableEvent, std::move(request),
-          routing_id, task_runner, traffic_annotation, loader_options,
+          task_runner, traffic_annotation, loader_options,
           std::move(pending_factory), std::move(throttles),
           CrossThreadUnretained(response),
           CrossThreadUnretained(&context_for_redirect),
@@ -246,7 +245,6 @@ void WebResourceRequestSender::SendSync(
 
 int WebResourceRequestSender::SendAsync(
     std::unique_ptr<network::ResourceRequest> request,
-    int routing_id,
     scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     uint32_t loader_options,
@@ -292,9 +290,9 @@ int WebResourceRequestSender::SendAsync(
                  [](const WebString& h) { return h.Latin1(); });
   std::unique_ptr<ThrottlingURLLoader> url_loader =
       ThrottlingURLLoader::CreateLoaderAndStart(
-          std::move(url_loader_factory), throttles.ReleaseVector(), routing_id,
-          request_id, loader_options, request.get(), client.get(),
-          traffic_annotation, std::move(loading_task_runner),
+          std::move(url_loader_factory), throttles.ReleaseVector(), request_id,
+          loader_options, request.get(), client.get(), traffic_annotation,
+          std::move(loading_task_runner),
           base::make_optional(std_cors_exempt_header_list));
   request_info_->url_loader = std::move(url_loader);
   request_info_->url_loader_client = std::move(client);

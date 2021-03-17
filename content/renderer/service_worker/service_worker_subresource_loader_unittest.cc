@@ -555,7 +555,7 @@ class ServiceWorkerSubresourceLoaderTest : public ::testing::Test {
       std::unique_ptr<network::TestURLLoaderClient>* out_loader_client) {
     *out_loader_client = std::make_unique<network::TestURLLoaderClient>();
     loader_factory->CreateLoaderAndStart(
-        out_loader->BindNewPipeAndPassReceiver(), 0, 0,
+        out_loader->BindNewPipeAndPassReceiver(), 0,
         network::mojom::kURLLoadOptionNone, request,
         (*out_loader_client)->CreateRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));

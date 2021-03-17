@@ -46,7 +46,6 @@ class SubresourceLoader : public network::mojom::URLLoader,
  public:
   SubresourceLoader(
       mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& request,
@@ -57,7 +56,6 @@ class SubresourceLoader : public network::mojom::URLLoader,
       : remote_receiver_(this, std::move(url_loader_receiver)),
         remote_client_(std::move(client)),
         request_(request),
-        routing_id_(routing_id),
         request_id_(request_id),
         options_(options),
         traffic_annotation_(annotation),
@@ -118,8 +116,8 @@ class SubresourceLoader : public network::mojom::URLLoader,
   void CreateAndStartNetworkLoader() {
     DCHECK(!appcache_loader_);
     network_loader_factory_->CreateLoaderAndStart(
-        network_loader_.BindNewPipeAndPassReceiver(), routing_id_, request_id_,
-        options_, request_, local_client_receiver_.BindNewPipeAndPassRemote(),
+        network_loader_.BindNewPipeAndPassReceiver(), request_id_, options_,
+        request_, local_client_receiver_.BindNewPipeAndPassRemote(),
         traffic_annotation_);
     if (has_set_priority_)
       network_loader_->SetPriority(priority_, intra_priority_value_);
@@ -293,7 +291,6 @@ class SubresourceLoader : public network::mojom::URLLoader,
   mojo::Remote<network::mojom::URLLoaderClient> remote_client_;
 
   network::ResourceRequest request_;
-  int32_t routing_id_;
   int32_t request_id_;
   uint32_t options_;
   net::MutableNetworkTrafficAnnotationTag traffic_annotation_;
@@ -365,7 +362,6 @@ bool AppCacheSubresourceURLFactory::CreateURLLoaderFactory(
 
 void AppCacheSubresourceURLFactory::CreateLoaderAndStart(
     mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& request,
@@ -393,8 +389,8 @@ void AppCacheSubresourceURLFactory::CreateLoaderAndStart(
     return;
   }
 
-  new SubresourceLoader(std::move(url_loader_receiver), routing_id, request_id,
-                        options, request, std::move(client), traffic_annotation,
+  new SubresourceLoader(std::move(url_loader_receiver), request_id, options,
+                        request, std::move(client), traffic_annotation,
                         appcache_host_, network_loader_factory_);
 }
 

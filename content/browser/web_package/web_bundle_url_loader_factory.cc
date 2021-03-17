@@ -193,7 +193,6 @@ void WebBundleURLLoaderFactory::SetFallbackFactory(
 
 void WebBundleURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& resource_request,
@@ -209,8 +208,8 @@ void WebBundleURLLoaderFactory::CreateLoaderAndStart(
                                    std::move(loader_receiver)));
   } else if (fallback_factory_) {
     fallback_factory_->CreateLoaderAndStart(
-        std::move(loader_receiver), routing_id, request_id, options,
-        resource_request, std::move(loader_client), traffic_annotation);
+        std::move(loader_receiver), request_id, options, resource_request,
+        std::move(loader_client), traffic_annotation);
   } else {
     mojo::Remote<network::mojom::URLLoaderClient>(std::move(loader_client))
         ->OnComplete(network::URLLoaderCompletionStatus(net::ERR_FAILED));

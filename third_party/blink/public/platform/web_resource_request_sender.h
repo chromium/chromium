@@ -87,15 +87,12 @@ class BLINK_PLATFORM_EXPORT WebResourceRequestSender {
   // interrupt this method. Errors are reported via the status field of the
   // response parameter.
   //
-  // |routing_id| is used to associated the bridge with a frame's network
-  // context.
   // |timeout| is used to abort the sync request on timeouts. TimeDelta::Max()
   // is interpreted as no-timeout.
   // If |download_to_blob_registry| is not null, it is used to redirect the
   // download to a blob.
   virtual void SendSync(
       std::unique_ptr<network::ResourceRequest> request,
-      int routing_id,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       uint32_t loader_options,
       SyncLoadResponse* response,
@@ -114,14 +111,10 @@ class BLINK_PLATFORM_EXPORT WebResourceRequestSender {
   // the peer's methods will be called asynchronously to report various events.
   // Returns the request id. |url_loader_factory| must be non-null.
   //
-  // |routing_id| is used to associated the bridge with a frame's network
-  // context.
-  //
   // You need to pass a non-null |loading_task_runner| to specify task queue to
   // execute loading tasks on.
   virtual int SendAsync(
       std::unique_ptr<network::ResourceRequest> request,
-      int routing_id,
       scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       uint32_t loader_options,

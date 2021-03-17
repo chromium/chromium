@@ -63,7 +63,6 @@ class FakeSharedURLLoaderFactory : public network::SharedURLLoaderFactory {
 
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& request,
@@ -71,8 +70,8 @@ class FakeSharedURLLoaderFactory : public network::SharedURLLoaderFactory {
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override {
     test_url_loader_factory_.CreateLoaderAndStart(
-        std::move(loader), routing_id, request_id, options, request,
-        std::move(client), traffic_annotation);
+        std::move(loader), request_id, options, request, std::move(client),
+        traffic_annotation);
   }
 
   // network::SharedURLLoaderFactory:

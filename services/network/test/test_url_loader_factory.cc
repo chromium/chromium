@@ -117,7 +117,6 @@ void TestURLLoaderFactory::SetInterceptor(const Interceptor& interceptor) {
 
 void TestURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingReceiver<mojom::URLLoader> receiver,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const ResourceRequest& url_request,

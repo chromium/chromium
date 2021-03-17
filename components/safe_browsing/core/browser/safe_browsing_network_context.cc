@@ -68,7 +68,6 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
   // network::URLLoaderFactory implementation:
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& request,
@@ -77,8 +76,8 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
       override {
     DCHECK(CurrentlyOnThread(ThreadID::UI));
     GetURLLoaderFactory()->CreateLoaderAndStart(
-        std::move(loader), routing_id, request_id, options, request,
-        std::move(client), traffic_annotation);
+        std::move(loader), request_id, options, request, std::move(client),
+        traffic_annotation);
   }
 
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)

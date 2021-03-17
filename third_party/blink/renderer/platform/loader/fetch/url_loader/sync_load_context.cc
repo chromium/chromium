@@ -92,7 +92,6 @@ class SyncLoadContext::SignalHelper final {
 // static
 void SyncLoadContext::StartAsyncWithWaitableEvent(
     std::unique_ptr<network::ResourceRequest> request,
-    int routing_id,
     scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     uint32_t loader_options,
@@ -113,10 +112,10 @@ void SyncLoadContext::StartAsyncWithWaitableEvent(
       context_for_redirect, redirect_or_response_event, abort_event, timeout,
       std::move(download_to_blob_registry), loading_task_runner);
   context->resource_request_sender_->SendAsync(
-      std::move(request), routing_id, std::move(loading_task_runner),
-      traffic_annotation, loader_options, cors_exempt_header_list,
-      base::WrapRefCounted(context), context->url_loader_factory_,
-      std::move(throttles), std::move(resource_load_info_notifier_wrapper),
+      std::move(request), std::move(loading_task_runner), traffic_annotation,
+      loader_options, cors_exempt_header_list, base::WrapRefCounted(context),
+      context->url_loader_factory_, std::move(throttles),
+      std::move(resource_load_info_notifier_wrapper),
       WebBackForwardCacheLoaderHelper());
 }
 

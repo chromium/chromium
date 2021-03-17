@@ -96,9 +96,9 @@ class ExternalFileURLLoaderFactoryTest : public testing::Test {
       const network::ResourceRequest& resource_request) {
     mojo::PendingRemote<network::mojom::URLLoader> loader;
     url_loader_factory_->CreateLoaderAndStart(
-        loader.InitWithNewPipeAndPassReceiver(), 0 /* routing_id */,
-        0 /* request_id */, network::mojom::kURLLoadOptionNone,
-        resource_request, client->CreateRemote(),
+        loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+        network::mojom::kURLLoadOptionNone, resource_request,
+        client->CreateRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
     return loader;
   }

@@ -587,9 +587,9 @@ void WebURLLoader::Context::Start(
     net::NetworkTrafficAnnotationTag tag =
         GetTrafficAnnotationTag(request.get());
     resource_request_sender_->SendSync(
-        std::move(request), requestor_id, tag, loader_options,
-        sync_load_response, url_loader_factory_, std::move(throttles),
-        timeout_interval, cors_exempt_header_list_, terminate_sync_load_event_,
+        std::move(request), tag, loader_options, sync_load_response,
+        url_loader_factory_, std::move(throttles), timeout_interval,
+        cors_exempt_header_list_, terminate_sync_load_event_,
         std::move(download_to_blob_registry), base::WrapRefCounted(this),
         std::move(resource_load_info_notifier_wrapper),
         back_forward_cache_loader_helper_);
@@ -600,10 +600,9 @@ void WebURLLoader::Context::Start(
                          TRACE_EVENT_FLAG_FLOW_OUT);
   net::NetworkTrafficAnnotationTag tag = GetTrafficAnnotationTag(request.get());
   request_id_ = resource_request_sender_->SendAsync(
-      std::move(request), requestor_id, unfreezable_task_runner_, tag,
-      loader_options, cors_exempt_header_list_, base::WrapRefCounted(this),
-      url_loader_factory_, std::move(throttles),
-      std::move(resource_load_info_notifier_wrapper),
+      std::move(request), unfreezable_task_runner_, tag, loader_options,
+      cors_exempt_header_list_, base::WrapRefCounted(this), url_loader_factory_,
+      std::move(throttles), std::move(resource_load_info_notifier_wrapper),
       back_forward_cache_loader_helper_);
 
   if (defers_loading_ != WebURLLoader::DeferType::kNotDeferred) {

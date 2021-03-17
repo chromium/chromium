@@ -57,7 +57,6 @@ class BLINK_PLATFORM_EXPORT SyncLoadContext : public WebRequestPeer {
   // |response|.
   static void StartAsyncWithWaitableEvent(
       std::unique_ptr<network::ResourceRequest> request,
-      int routing_id,
       scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       uint32_t loader_options,

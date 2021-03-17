@@ -41,7 +41,6 @@ class DeviceServiceURLLoaderFactory : public network::SharedURLLoaderFactory {
   // mojom::URLLoaderFactory implementation:
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& url_request,
@@ -53,8 +52,8 @@ class DeviceServiceURLLoaderFactory : public network::SharedURLLoaderFactory {
     if (!factory)
       return;
 
-    factory->CreateLoaderAndStart(std::move(receiver), routing_id, request_id,
-                                  options, url_request, std::move(client),
+    factory->CreateLoaderAndStart(std::move(receiver), request_id, options,
+                                  url_request, std::move(client),
                                   traffic_annotation);
   }
 

@@ -879,10 +879,9 @@ class CaptivePortalBrowserTest : public InProcessBrowserTest {
     CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
     content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
         ->GetURLLoaderFactoryForBrowserProcess()
-        ->CreateLoaderAndStart(std::move(job.receiver), job.routing_id,
-                               job.request_id, job.options,
-                               std::move(job.url_request), job.client.Unbind(),
-                               job.traffic_annotation);
+        ->CreateLoaderAndStart(std::move(job.receiver), job.request_id,
+                               job.options, std::move(job.url_request),
+                               job.client.Unbind(), job.traffic_annotation);
   }
 
   // Abandon all active kMockHttps* requests.  |expected_num_jobs|

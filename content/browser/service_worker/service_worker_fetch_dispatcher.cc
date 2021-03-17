@@ -788,7 +788,7 @@ bool ServiceWorkerFetchDispatcher::MaybeStartNavigationPreload(
   }
 
   factory->CreateLoaderAndStart(
-      url_loader.InitWithNewPipeAndPassReceiver(), -1 /* routing_id? */,
+      url_loader.InitWithNewPipeAndPassReceiver(),
       GlobalRequestID::MakeBrowserInitiated().request_id,
       network::mojom::kURLLoadOptionNone, resource_request,
       std::move(url_loader_client_to_pass),

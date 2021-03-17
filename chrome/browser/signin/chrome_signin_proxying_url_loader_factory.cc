@@ -85,7 +85,6 @@ class ProxyingURLLoaderFactory::InProgressRequest
   InProgressRequest(
       ProxyingURLLoaderFactory* factory,
       mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& request,
@@ -284,7 +283,6 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyResponseAdapter
 ProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
     ProxyingURLLoaderFactory* factory,
     mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& request,
@@ -310,8 +308,8 @@ ProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
 
   if (modified_headers.IsEmpty() && removed_headers.empty()) {
     factory_->target_factory_->CreateLoaderAndStart(
-        target_loader_.BindNewPipeAndPassReceiver(), routing_id, request_id,
-        options, request, std::move(proxy_client), traffic_annotation);
+        target_loader_.BindNewPipeAndPassReceiver(), request_id, options,
+        request, std::move(proxy_client), traffic_annotation);
 
     // We need to keep a full copy of the request headers in case there is a
     // redirect and the request headers need to be modified again.
@@ -326,8 +324,8 @@ ProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
     }
 
     factory_->target_factory_->CreateLoaderAndStart(
-        target_loader_.BindNewPipeAndPassReceiver(), routing_id, request_id,
-        options, request_copy, std::move(proxy_client), traffic_annotation);
+        target_loader_.BindNewPipeAndPassReceiver(), request_id, options,
+        request_copy, std::move(proxy_client), traffic_annotation);
 
     headers_.Swap(&request_copy.headers);
     cors_exempt_headers_.Swap(&request_copy.cors_exempt_headers);
@@ -470,15 +468,14 @@ bool ProxyingURLLoaderFactory::MaybeProxyRequest(
 
 void ProxyingURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& request,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   requests_.insert(std::make_unique<InProgressRequest>(
-      this, std::move(loader_receiver), routing_id, request_id, options,
-      request, std::move(client), traffic_annotation));
+      this, std::move(loader_receiver), request_id, options, request,
+      std::move(client), traffic_annotation));
 }
 
 void ProxyingURLLoaderFactory::Clone(

@@ -1828,7 +1828,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   network::ResourceRequest resource_request;
   resource_request.url = embedded_test_server()->GetURL("/hung");
   factory->CreateLoaderAndStart(
-      loader.InitWithNewPipeAndPassReceiver(), 0, 0,
+      loader.InitWithNewPipeAndPassReceiver(), 0,
       network::mojom::kURLLoadOptionNone, resource_request,
       client.CreateRemote(),
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));

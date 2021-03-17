@@ -109,7 +109,7 @@ class NetworkServiceIntegrationTest : public testing::Test {
 
     loader_.reset();
     loader_factory->CreateLoaderAndStart(
-        loader_.BindNewPipeAndPassReceiver(), 1, 1, options, request,
+        loader_.BindNewPipeAndPassReceiver(), 1, options, request,
         client_->CreateRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
   }

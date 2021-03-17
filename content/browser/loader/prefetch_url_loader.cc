@@ -31,7 +31,6 @@ constexpr char kSignedExchangeEnabledAcceptHeaderForPrefetch[] =
 }  // namespace
 
 PrefetchURLLoader::PrefetchURLLoader(
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     int frame_tree_node_id,
@@ -84,7 +83,7 @@ PrefetchURLLoader::PrefetchURLLoader(
   }
 
   network_loader_factory_->CreateLoaderAndStart(
-      loader_.BindNewPipeAndPassReceiver(), routing_id, request_id, options,
+      loader_.BindNewPipeAndPassReceiver(), request_id, options,
       resource_request_, client_receiver_.BindNewPipeAndPassRemote(),
       traffic_annotation);
   client_receiver_.set_disconnect_handler(base::BindOnce(
