@@ -112,13 +112,6 @@ class CORE_EXPORT StyleResolverState {
     return animation_update_;
   }
 
-  bool IsAnimationInterpolationMapReady() const {
-    return is_animation_interpolation_map_ready_;
-  }
-  void SetIsAnimationInterpolationMapReady() {
-    is_animation_interpolation_map_ready_ = true;
-  }
-
   Element* GetAnimatingElement() const;
 
   void SetParentStyle(scoped_refptr<const ComputedStyle>);
@@ -191,7 +184,6 @@ class CORE_EXPORT StyleResolverState {
   scoped_refptr<const ComputedStyle> layout_parent_style_;
 
   CSSAnimationUpdate animation_update_;
-  bool is_animation_interpolation_map_ready_ = false;
   StyleRequest::RequestType pseudo_request_type_;
 
   FontBuilder font_builder_;

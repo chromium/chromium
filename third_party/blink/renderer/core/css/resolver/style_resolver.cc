@@ -1211,8 +1211,9 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
     return false;
   }
 
-  CalculateAnimationUpdate(state);
-
+  CSSAnimations::CalculateAnimationUpdate(
+      state.AnimationUpdate(), animating_element, state.GetElement(),
+      *state.Style(), state.ParentStyle(), this);
   CSSAnimations::CalculateCompositorAnimationUpdate(
       state.AnimationUpdate(), animating_element, element, *state.Style(),
       state.ParentStyle(), WasViewportResized());
@@ -1400,20 +1401,6 @@ void StyleResolver::MaybeAddToMatchedPropertiesCache(
     matched_properties_cache_.Add(cache_success.key, *state.Style(),
                                   *state.ParentStyle());
   }
-}
-
-void StyleResolver::CalculateAnimationUpdate(StyleResolverState& state) {
-  Element* animating_element = state.GetAnimatingElement();
-
-  DCHECK(state.Style()->Animations() || state.Style()->Transitions() ||
-         (animating_element && animating_element->HasAnimations()));
-  DCHECK(!state.IsAnimationInterpolationMapReady());
-
-  CSSAnimations::CalculateAnimationUpdate(
-      state.AnimationUpdate(), animating_element, state.GetElement(),
-      *state.Style(), state.ParentStyle(), this);
-
-  state.SetIsAnimationInterpolationMapReady();
 }
 
 bool StyleResolver::CanReuseBaseComputedStyle(const StyleResolverState& state) {
