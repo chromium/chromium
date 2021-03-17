@@ -201,7 +201,7 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) {
     web_controller_->ScrollIntoView(
-        element,
+        true, element,
         base::BindOnce(&WebControllerBrowserTest::OnScrollIntoViewForClickOrTap,
                        base::Unretained(this), click_type, element,
                        std::move(callback)));

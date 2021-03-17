@@ -1038,8 +1038,9 @@ message WebControllerErrorInfoProto {
     // element.
     HIGHLIGHT_ELEMENT = 5;
 
-    // Scroll the element into view with padding. This does not use native JS
-    // functionality but calculates the scrolling manually.
+    // Scroll the element into view with padding. This uses native JS
+    // functionality for the initial scrolling and calculates the scrolling
+    // for padding manually.
     SCROLL_INTO_VIEW_WITH_PADDING = 6;
 
     // Get the |value| attribute of an element.

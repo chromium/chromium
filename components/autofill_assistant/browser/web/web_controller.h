@@ -86,8 +86,10 @@ class WebController {
   virtual void FindAllElements(const Selector& selector,
                                ElementFinder::Callback callback);
 
-  // Scroll the |element| into view.
+  // Scroll the |element| into view if needed, center the element on the screen
+  // if specified.
   virtual void ScrollIntoView(
+      bool center,
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 

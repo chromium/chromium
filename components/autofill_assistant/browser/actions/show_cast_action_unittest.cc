@@ -10,6 +10,7 @@
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
@@ -21,13 +22,17 @@ using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::Pointee;
 using ::testing::Property;
+using ::testing::Return;
 using ::testing::SaveArgPointee;
 
 class ShowCastActionTest : public testing::Test {
  public:
   ShowCastActionTest() {}
 
-  void SetUp() override {}
+  void SetUp() override {
+    ON_CALL(mock_action_delegate_, GetWebController)
+        .WillByDefault(Return(&mock_web_controller_));
+  }
 
  protected:
   void Run() {
@@ -38,6 +43,7 @@ class ShowCastActionTest : public testing::Test {
   }
 
   MockActionDelegate mock_action_delegate_;
+  MockWebController mock_web_controller_;
   base::MockCallback<Action::ProcessActionCallback> callback_;
   ShowCastProto proto_;
 };
@@ -154,6 +160,9 @@ TEST_F(ShowCastActionTest, WaitsForStableElementIfSpecified) {
                   _, DOCUMENT_INTERACTIVE, EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus(),
                                    base::TimeDelta::FromSeconds(0)));
+  EXPECT_CALL(mock_web_controller_,
+              ScrollIntoView(false, EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<2>(OkClientStatus()));
   EXPECT_CALL(
       mock_action_delegate_,
       WaitUntilElementIsStable(_, _, EqualsElement(expected_element), _))

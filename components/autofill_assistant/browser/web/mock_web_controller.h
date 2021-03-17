@@ -35,8 +35,9 @@ class MockWebController : public WebController {
                void(const Selector& selector,
                     ElementFinder::Callback& callback));
 
-  MOCK_METHOD2(ScrollIntoView,
-               void(const ElementFinder::Result&,
+  MOCK_METHOD3(ScrollIntoView,
+               void(bool,
+                    const ElementFinder::Result&,
                     base::OnceCallback<void(const ClientStatus&)>));
   MOCK_METHOD2(CheckOnTop,
                void(const ElementFinder::Result&,

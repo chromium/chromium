@@ -72,11 +72,14 @@ const char* const kScrollIntoViewWithPaddingScript =
   })";
 
 // Scroll the window or any scrollable container as needed for the element to
-// appear centered. This is in preparation of a click, to improve the chances
-// for the element to click to be visible.
-const char* const kScrollIntoViewCenterScript =
-    R"(function(node) {
-    node.scrollIntoView({block: "center", inline: "center"});
+// appear, center if specified.
+const char* const kScrollIntoViewScript =
+    R"(function(center) {
+      if (center) {
+        this.scrollIntoView({block: "center", inline: "center"});
+      } else {
+        this.scrollIntoViewIfNeeded();
+      }
   })";
 
 // Javascript to select a value from a select box. Also fires a "change" event
@@ -167,8 +170,8 @@ const char* const kGetElementTagScript = "function () { return this.tagName; }";
 
 // Javascript code to click on an element.
 const char* const kClickElementScript =
-    R"(function (selector) {
-      selector.click();
+    R"(function () {
+      this.click();
     })";
 
 // Javascript code that returns a promise that will succeed once the main
@@ -198,7 +201,7 @@ const char* const kSendChangeEventScript =
          this.dispatchEvent(e);
        })";
 
-const char* const kDispatchEventToDocument =
+const char* const kDispatchEventToDocumentScript =
     R"(const event = new Event('duplexweb');
        document.dispatchEvent(event);)";
 
@@ -394,15 +397,16 @@ void WebController::OnJavaScriptResultForStringArray(
 }
 
 void WebController::ScrollIntoView(
+    bool center,
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   std::vector<std::unique_ptr<runtime::CallArgument>> argument;
-  AddRuntimeCallArgumentObjectId(element.object_id(), &argument);
+  AddRuntimeCallArgument(center, &argument);
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
           .SetObjectId(element.object_id())
           .SetArguments(std::move(argument))
-          .SetFunctionDeclaration(std::string(kScrollIntoViewCenterScript))
+          .SetFunctionDeclaration(std::string(kScrollIntoViewScript))
           .SetReturnByValue(true)
           .Build(),
       element.node_frame_id(),
@@ -482,12 +486,9 @@ void WebController::ClickOrTapElement(
       element, std::move(callback));
 
   if (click_type == ClickType::JAVASCRIPT) {
-    std::vector<std::unique_ptr<runtime::CallArgument>> argument;
-    AddRuntimeCallArgumentObjectId(element.object_id(), &argument);
     devtools_client_->GetRuntime()->CallFunctionOn(
         runtime::CallFunctionOnParams::Builder()
             .SetObjectId(element.object_id())
-            .SetArguments(std::move(argument))
             .SetFunctionDeclaration(kClickElementScript)
             .Build(),
         element.node_frame_id(),
@@ -1004,12 +1005,9 @@ void WebController::OnSelectOption(
 void WebController::HighlightElement(
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  std::vector<std::unique_ptr<runtime::CallArgument>> argument;
-  AddRuntimeCallArgumentObjectId(element.object_id(), &argument);
   devtools_client_->GetRuntime()->CallFunctionOn(
       runtime::CallFunctionOnParams::Builder()
           .SetObjectId(element.object_id())
-          .SetArguments(std::move(argument))
           .SetFunctionDeclaration(std::string(kHighlightElementScript))
           .SetReturnByValue(true)
           .Build(),
@@ -1385,7 +1383,7 @@ void WebController::DispatchJsEvent(
     base::OnceCallback<void(const ClientStatus&)> callback) const {
   devtools_client_->GetRuntime()->Evaluate(
       runtime::EvaluateParams::Builder()
-          .SetExpression(kDispatchEventToDocument)
+          .SetExpression(kDispatchEventToDocumentScript)
           .SetReturnByValue(true)
           .Build(),
       ElementFinder::Result().node_frame_id(),

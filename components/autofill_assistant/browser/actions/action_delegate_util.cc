@@ -136,7 +136,7 @@ void AddClickOrTapSequence(const ActionDelegate* delegate,
       actions);
   actions->emplace_back(
       base::BindOnce(&WebController::ScrollIntoView,
-                     delegate->GetWebController()->GetWeakPtr()));
+                     delegate->GetWebController()->GetWeakPtr(), true));
   if (click_type != ClickType::JAVASCRIPT) {
     AddStepIgnoreTiming(
         base::BindOnce(&ActionDelegate::WaitUntilElementIsStable,

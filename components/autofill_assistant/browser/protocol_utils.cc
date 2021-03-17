@@ -234,7 +234,7 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
       return PerformOnSingleElementAction::WithClientId(
           delegate, action, action.scroll_into_view().client_id(),
           base::BindOnce(&WebController::ScrollIntoView,
-                         delegate->GetWebController()->GetWeakPtr()));
+                         delegate->GetWebController()->GetWeakPtr(), false));
     case ActionProto::ActionInfoCase::kWaitForDocumentToBecomeInteractive:
       return PerformOnSingleElementAction::WithOptionalClientIdTimed(
           delegate, action,

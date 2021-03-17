@@ -14,6 +14,7 @@
 #include "components/autofill_assistant/browser/client_settings.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/web/web_controller.h"
 
 namespace autofill_assistant {
 
@@ -118,6 +119,11 @@ void ShowCastAction::ScrollToElement(
   if (wait_for_stable_element == STEP_UNSPECIFIED) {
     wait_for_stable_element = SKIP_STEP;
   }
+  action_delegate_util::AddOptionalStep(
+      wait_for_stable_element,
+      base::BindOnce(&WebController::ScrollIntoView,
+                     delegate_->GetWebController()->GetWeakPtr(), false),
+      actions.get());
   action_delegate_util::AddOptionalStep(
       wait_for_stable_element,
       base::BindOnce(
