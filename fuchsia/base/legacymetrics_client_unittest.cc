@@ -512,5 +512,38 @@ TEST_F(LegacyMetricsClientTest, ExplicitFlushMultipleBatches) {
     EXPECT_EQ("bar", events[i].user_action_event().name());
 }
 
+TEST_F(LegacyMetricsClientTest, UseInjectedMetricsRecorder) {
+  // Disable auto connect and then connect |client_| to |test_recorder_|
+  // explicitly.
+  client_.DisableAutoConnect();
+  fidl::Binding<fuchsia::legacymetrics::MetricsRecorder> binding(
+      &test_recorder_);
+  fidl::InterfaceHandle<fuchsia::legacymetrics::MetricsRecorder>
+      metrics_recorder;
+  binding.Bind(metrics_recorder.NewRequest());
+  client_.SetMetricsRecorder(std::move(metrics_recorder));
+
+  client_.Start(kReportInterval);
+
+  base::RecordComputedAction("bar");
+
+  task_environment_.FastForwardBy(kReportInterval);
+  EXPECT_TRUE(test_recorder_.IsRecordInFlight());
+
+  auto events = test_recorder_.WaitForEvents();
+  EXPECT_EQ(1u, events.size());
+  EXPECT_EQ("bar", events[0].user_action_event().name());
+
+  // Verify that /svc wasn't used.
+  EXPECT_FALSE(service_binding_->has_clients());
+
+  // Verify that LegacyMetricsClient doesn't try to reconnect after
+  // MetricsRecorder has been disconnected.
+  binding.Unbind();
+  task_environment_.FastForwardBy(LegacyMetricsClient::kInitialReconnectDelay *
+                                  2);
+  EXPECT_FALSE(service_binding_->has_clients());
+}
+
 }  // namespace
 }  // namespace cr_fuchsia
