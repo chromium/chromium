@@ -27,6 +27,7 @@ TEST_F(JankInjectorTest, Basic) {
   scoped_refptr<base::TestSimpleTaskRunner> task_runner(
       new base::TestSimpleTaskRunner());
 
+  ScopedJankInjectionEnabler enable_jank;
   JankInjector injector;
   const auto& config = injector.config();
   EXPECT_EQ(config.target_dropped_frames_percent, 10u);

@@ -45,10 +45,12 @@ struct JankInjectionParams {
   bool busy_loop = true;
 };
 
+bool g_jank_enabled_for_test = false;
+
 bool IsJankInjectionEnabled() {
   static bool enabled =
       base::FeatureList::IsEnabled(features::kJankInjectionAblationFeature);
-  return enabled;
+  return enabled || g_jank_enabled_for_test;
 }
 
 using AllowedURLsMap = std::map<std::string, std::vector<std::string>>;
@@ -104,6 +106,16 @@ void RunJank(JankInjectionParams params) {
 }
 
 }  // namespace
+
+ScopedJankInjectionEnabler::ScopedJankInjectionEnabler() {
+  DCHECK(!g_jank_enabled_for_test);
+  g_jank_enabled_for_test = true;
+}
+
+ScopedJankInjectionEnabler::~ScopedJankInjectionEnabler() {
+  DCHECK(g_jank_enabled_for_test);
+  g_jank_enabled_for_test = false;
+}
 
 JankInjector::JankInjector() {
   if (IsJankInjectionEnabled()) {

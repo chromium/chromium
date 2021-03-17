@@ -15,6 +15,16 @@ class GURL;
 
 namespace cc {
 
+class CC_EXPORT ScopedJankInjectionEnabler {
+ public:
+  ScopedJankInjectionEnabler();
+  ~ScopedJankInjectionEnabler();
+
+  ScopedJankInjectionEnabler(const ScopedJankInjectionEnabler&) = delete;
+  ScopedJankInjectionEnabler& operator=(const ScopedJankInjectionEnabler&) =
+      delete;
+};
+
 class CC_EXPORT JankInjector {
  public:
   struct CC_EXPORT JankConfig {
