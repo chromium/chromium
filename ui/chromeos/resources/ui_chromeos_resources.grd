@@ -92,6 +92,18 @@
       <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_68" file="default_user_images/geo/avatar_geo3.png" />
       <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_69" file="default_user_images/geo/avatar_geo4.png" />
       <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_70" file="default_user_images/geo/avatar_geo5.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_71" file="default_user_images/imaginary/avatar_botanist.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_72" file="default_user_images/imaginary/avatar_burger.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_73" file="default_user_images/imaginary/avatar_graduate.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_74" file="default_user_images/imaginary/avatar_guitar.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_75" file="default_user_images/imaginary/avatar_waving.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_76" file="default_user_images/imaginary/avatar_lion.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_77" file="default_user_images/imaginary/avatar_planet.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_78" file="default_user_images/imaginary/avatar_instant_camera.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_79" file="default_user_images/imaginary/avatar_robot.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_80" file="default_user_images/imaginary/avatar_sneaker.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_81" file="default_user_images/imaginary/avatar_van.png" />
+      <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_82" file="default_user_images/imaginary/avatar_watermelon.png" />
 
       <!-- Print Job Notification images. -->
       <structure type="chrome_scaled_image" name="IDR_PRINT_NOTIFICATION_CANCEL" file="print_notification/cancel.png" />

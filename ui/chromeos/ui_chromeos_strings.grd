@@ -313,6 +313,43 @@
       <message name="IDS_LOGIN_DEFAULT_USER_DESC_70" desc="Description of the default user icon with a picture of geometric figure containing 'Grids'">
         Grids
       </message>
+      <message name="IDS_LOGIN_DEFAULT_USER_DESC_71" desc="Tooltip shown when the 'botanist' avatar is hovered in the 'Choose device account image' section of the settings page. A botanist is an expert or student of the scientific study of plants.">
+        Botanist
+      </message>
+      <message name="IDS_LOGIN_DEFAULT_USER_DESC_72" desc="Tooltip shown when the 'burger' avatar is hovered in the 'Choose device account image' section of the settings page. A burger is a dish consisting of a round patty of ground beef, or sometimes another savory ingredient, that is fried or grilled and typically served in a split bun or roll with various condiments and toppings">
+        Burger
+      </message>
+      <message name="IDS_LOGIN_DEFAULT_USER_DESC_73" desc="Tooltip shown when the 'graduate' avatar is hovered in the 'Choose device account image' section of the settings page. 'Graduate' means a person has successfully completed a course of study or training, especially when the person has been awarded an undergraduate academic degree.">
+        Graduate
+      </message>
+      <message name="IDS_LOGIN_DEFAULT_USER_DESC_74" desc="Tooltip shown when the 'guitar' avatar is hovered in the 'Choose device account image' section of the settings page. A guitar is a stringed musical instrument, with a fretted fingerboard, typically incurved sides, and six or twelve strings, played by plucking or strumming with the fingers or a plectrum.">
+        Guitar
+      </message>
+      <message name="IDS_LOGIN_DEFAULT_USER_DESC_75" desc="Tooltip shown when the 'waving' avatar is hovered in the 'Choose device account image' section of the settings page. Waving means moving one's hand to and fro in greeting or as a signal">
+        Waving
+      </message>
+      <message name="IDS_LOGIN_DEFAULT_USER_DESC_76" desc="Tooltip shown when the 'lion' avatar is hovered in the 'Choose device account image' section of the settings page. A lion is a large tawny-colored cat that lives in prides, found in Africa and northwestern India. The male has a flowing shaggy mane and takes little part in hunting, which is done cooperatively by the females.">
+        Lion
+      </message>
+      <message name="IDS_LOGIN_DEFAULT_USER_DESC_77" desc="Tooltip shown when the 'planet' avatar is hovered in the 'Choose device account image' section of the settings page. A planet is a celestial body moving in an elliptical orbit around a star.">
+        Planet
+      </message>
+      <message name="IDS_LOGIN_DEFAULT_USER_DESC_78" desc="Tooltip shown when the 'instant camera' avatar is hovered in the 'Choose device account image' section of the settings page. An instant camera is a type of camera with internal processing which produces a finished print rapidly after each exposure.">
+        Instant Camera
+      </message>
+      <message name="IDS_LOGIN_DEFAULT_USER_DESC_79" desc="Tooltip shown when the 'robot' avatar is hovered in the 'Choose device account image' section of the settings page. A robot is a machine resembling a human being and able to replicate certain human movements and functions automatically">
+        Robot
+      </message>
+      <message name="IDS_LOGIN_DEFAULT_USER_DESC_80" desc="Tooltip shown when the 'sneaker' avatar is hovered in the 'Choose device account image' section of the settings page. A sneaker is a soft shoe with a rubber sole worn for sports or casual occasions.">
+        Sneaker
+      </message>
+      <message name="IDS_LOGIN_DEFAULT_USER_DESC_81" desc="Tooltip shown when the 'van' avatar is hovered in the 'Choose device account image' section of the settings page. A van is a medium-sized motor vehicle with a boxy shape and high roof, used for transporting goods or passengers">
+        Van
+      </message>
+      <message name="IDS_LOGIN_DEFAULT_USER_DESC_82" desc="Tooltip shown when the 'watermelon' avatar is hovered in the 'Choose device account image' section of the settings page. A watermelon is a large fruit of a plant of the gourd family, with smooth green skin, red pulp, and watery juice. Popular fruit in summer.">
+        Watermelon
+      </message>
+
 
       <!-- Attribution strings for stock user images, not translateable. -->
       <message translateable="false" name="IDS_LOGIN_DEFAULT_USER_AUTHOR">
