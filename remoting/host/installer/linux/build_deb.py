@@ -14,7 +14,7 @@ def main():
   proc = subprocess.Popen([build_deb_script] + sys.argv[1:],
                           stdout=subprocess.PIPE)
   out, _ = proc.communicate()
-  sys.stdout.write(out.strip())
+  sys.stdout.write(out.decode('utf8').strip())
   return proc.returncode
 
 
