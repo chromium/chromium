@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -143,7 +144,7 @@ class VectorComboboxModel : public ui::ComboboxModel {
  private:
   base::ObserverList<ui::ComboboxModelObserver> observers_;
   int default_index_ = 0;
-  std::vector<std::string>* const values_;
+  const CheckedPtr<std::vector<std::string>> values_;
 
   DISALLOW_COPY_AND_ASSIGN(VectorComboboxModel);
 };
@@ -185,7 +186,7 @@ class TestComboboxListener {
   int actions_performed() const { return actions_performed_; }
 
  private:
-  Combobox* combobox_;
+  CheckedPtr<Combobox> combobox_;
   int perform_action_index_ = -1;
   int actions_performed_ = 0;
 
@@ -270,7 +271,7 @@ class ComboboxTest : public ViewsTestBase {
   UniqueWidgetPtr widget_;
 
   // |combobox_| will be allocated InitCombobox() and then owned by |widget_|.
-  TestCombobox* combobox_ = nullptr;
+  CheckedPtr<TestCombobox> combobox_ = nullptr;
   std::unique_ptr<ComboboxTestApi> test_api_;
 
   // Combobox does not take ownership of the model, hence it needs to be scoped.
@@ -909,7 +910,7 @@ class ConfigurableComboboxModel final : public ui::ComboboxModel {
   void SetDefaultIndex(int default_index) { default_index_ = default_index; }
 
  private:
-  bool* const destroyed_;
+  const CheckedPtr<bool> destroyed_;
   int item_count_ = 0;
   int default_index_ = -1;
 };

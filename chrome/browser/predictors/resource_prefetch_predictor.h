@@ -15,6 +15,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/scoped_observer.h"
@@ -344,7 +345,7 @@ class TestObserver {
   explicit TestObserver(ResourcePrefetchPredictor* predictor);
 
  private:
-  ResourcePrefetchPredictor* predictor_;
+  CheckedPtr<ResourcePrefetchPredictor> predictor_;
 
   DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };

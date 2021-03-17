@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -40,8 +41,8 @@ class LoginBubbleDialogView : public BubbleDialogDelegateView,
                         BubbleBorder::Arrow anchor_position,
                         OnSubmitCallback accept_callback);
 
-  Textfield* username_ = nullptr;
-  Textfield* password_ = nullptr;
+  CheckedPtr<Textfield> username_ = nullptr;
+  CheckedPtr<Textfield> password_ = nullptr;
 };
 
 // Instantiates the login dialog example.
@@ -57,11 +58,11 @@ class LoginBubbleDialogExample : public ExampleBase {
   void OnSubmit(std::u16string username, std::u16string password);
 
  private:
-  LabelButton* button_ = nullptr;
-  Label* username_label_ = nullptr;
-  Label* username_input_ = nullptr;
-  Label* password_label_ = nullptr;
-  Label* password_input_ = nullptr;
+  CheckedPtr<LabelButton> button_ = nullptr;
+  CheckedPtr<Label> username_label_ = nullptr;
+  CheckedPtr<Label> username_input_ = nullptr;
+  CheckedPtr<Label> password_label_ = nullptr;
+  CheckedPtr<Label> password_input_ = nullptr;
 };
 
 }  // namespace examples

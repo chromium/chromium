@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/checked_ptr.h"
 #include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
@@ -261,8 +262,8 @@ class TabDragController::SourceTabStripEmptinessTracker
     parent_->OnSourceTabStripEmpty();
   }
 
-  TabStripModel* const tab_strip_;
-  TabDragController* const parent_;
+  const CheckedPtr<TabStripModel> tab_strip_;
+  const CheckedPtr<TabDragController> parent_;
 };
 
 class TabDragController::DraggedTabsClosedTracker
@@ -284,7 +285,7 @@ class TabDragController::DraggedTabsClosedTracker
   }
 
  private:
-  TabDragController* const parent_;
+  const CheckedPtr<TabDragController> parent_;
 };
 
 TabDragController::TabDragData::TabDragData()

@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "content/browser/media/capture/frame_test_util.h"
 #include "media/base/video_frame.h"
 #include "media/capture/video/video_frame_receiver.h"
@@ -106,7 +107,7 @@ class FakeVideoCaptureStack::Receiver : public media::VideoFrameReceiver {
 
   void OnStopped() final {}
 
-  FakeVideoCaptureStack* const capture_stack_;
+  const CheckedPtr<FakeVideoCaptureStack> capture_stack_;
   base::flat_map<int, media::mojom::VideoBufferHandlePtr> buffers_;
 
   DISALLOW_COPY_AND_ASSIGN(Receiver);

@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/speech_recognition_event_listener.h"
 #include "content/public/browser/speech_recognition_manager.h"
 #include "content/public/browser/speech_recognition_session_config.h"
@@ -85,7 +86,7 @@ class FakeSpeechRecognitionManager : public SpeechRecognitionManager,
   void SetFakeRecognitionResult();
 
   int session_id_;
-  SpeechRecognitionEventListener* listener_;
+  CheckedPtr<SpeechRecognitionEventListener> listener_;
   SpeechRecognitionSessionConfig session_config_;
   SpeechRecognitionSessionContext session_ctx_;
   std::string fake_result_;
@@ -94,7 +95,7 @@ class FakeSpeechRecognitionManager : public SpeechRecognitionManager,
   bool should_send_fake_response_;
   base::OnceClosure recognition_started_closure_;
   base::OnceClosure recognition_ended_closure_;
-  SpeechRecognitionManagerDelegate* delegate_;  // Not owned.
+  CheckedPtr<SpeechRecognitionManagerDelegate> delegate_;  // Not owned.
 
   DISALLOW_COPY_AND_ASSIGN(FakeSpeechRecognitionManager);
 };

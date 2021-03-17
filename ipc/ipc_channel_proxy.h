@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
@@ -355,7 +356,7 @@ class COMPONENT_EXPORT(IPC) ChannelProxy : public Sender {
             GUARDED_BY(listener_thread_task_runners_lock_);
 
     scoped_refptr<base::SingleThreadTaskRunner> default_listener_task_runner_;
-    Listener* listener_;
+    CheckedPtr<Listener> listener_;
 
     // List of filters.  This is only accessed on the IPC thread.
     std::vector<scoped_refptr<MessageFilter> > filters_;

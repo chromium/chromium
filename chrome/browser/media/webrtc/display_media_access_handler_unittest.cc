@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -99,7 +100,7 @@ class DisplayMediaAccessHandlerTest : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
-  FakeDesktopMediaPickerFactory* picker_factory_;
+  CheckedPtr<FakeDesktopMediaPickerFactory> picker_factory_;
   std::unique_ptr<DisplayMediaAccessHandler> access_handler_;
 };
 

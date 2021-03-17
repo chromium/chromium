@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/window_tree_host_observer.h"
@@ -90,10 +91,10 @@ class RootWindowController : public aura::client::WindowParentingClient,
  private:
   void DestroyWindowTreeHost();
 
-  DesktopDelegate* const desktop_delegate_;
+  const CheckedPtr<DesktopDelegate> desktop_delegate_;
 
   // The BrowserContext used to create AppWindows.
-  content::BrowserContext* const browser_context_;
+  const CheckedPtr<content::BrowserContext> browser_context_;
 
   std::unique_ptr<aura::client::ScreenPositionClient> screen_position_client_;
 

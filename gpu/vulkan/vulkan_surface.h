@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/memory/checked_ptr.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_swap_chain.h"
 #include "ui/gfx/geometry/size.h"
@@ -77,7 +78,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanSurface {
   const gfx::AcceleratedWidget accelerated_widget_;
   VkSurfaceKHR surface_ = VK_NULL_HANDLE;
   VkSurfaceFormatKHR surface_format_ = {};
-  VulkanDeviceQueue* device_queue_ = nullptr;
+  CheckedPtr<VulkanDeviceQueue> device_queue_ = nullptr;
 
   const bool enforce_protected_memory_;
   const uint64_t acquire_next_image_timeout_ns_;

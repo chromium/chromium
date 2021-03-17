@@ -11,6 +11,7 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_type.h"
@@ -347,10 +348,10 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain,
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  sequence_manager::SequenceManager* const sequence_manager_;
+  const CheckedPtr<sequence_manager::SequenceManager> sequence_manager_;
 
-  internal::ThreadPoolImpl* thread_pool_ = nullptr;
-  const TestTaskTracker* thread_pool_task_tracker_ = nullptr;
+  CheckedPtr<internal::ThreadPoolImpl> thread_pool_ = nullptr;
+  CheckedPtr<const TestTaskTracker> thread_pool_task_tracker_ = nullptr;
 
   // Protects |now_ticks_|
   mutable Lock now_ticks_lock_;

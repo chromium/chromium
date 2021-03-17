@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/download/public/background_service/client.h"
 
 namespace content {
@@ -56,7 +57,7 @@ class BackgroundFetchDownloadClient : public download::Client {
   void GetUploadData(const std::string& guid,
                      download::GetUploadDataCallback callback) override;
 
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 };
 
 }  // namespace weblayer

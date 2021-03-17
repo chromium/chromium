@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/current_thread.h"
@@ -235,7 +236,7 @@ class WatchTimeReporterTest
     }
 
    private:
-    WatchTimeReporterTest* parent_;
+    CheckedPtr<WatchTimeReporterTest> parent_;
 
     DISALLOW_COPY_AND_ASSIGN(WatchTimeInterceptor);
   };
@@ -283,7 +284,7 @@ class WatchTimeReporterTest
     void SetAudioPipelineInfo(const AudioDecoderInfo& info) override {}
 
    private:
-    WatchTimeReporterTest* parent_;
+    CheckedPtr<WatchTimeReporterTest> parent_;
   };
 
   WatchTimeReporterTest()

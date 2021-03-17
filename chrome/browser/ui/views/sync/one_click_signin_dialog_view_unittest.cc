@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -83,7 +84,7 @@ class OneClickSigninDialogViewTest : public ChromeViewsTestBase,
  private:
   // Widget to host the anchor view of the dialog. Destroys itself when closed.
   std::unique_ptr<views::Widget> anchor_widget_;
-  base::RunLoop* run_loop_ = nullptr;
+  CheckedPtr<base::RunLoop> run_loop_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(OneClickSigninDialogViewTest);
 };

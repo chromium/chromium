@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -121,7 +122,7 @@ class CONTENT_EXPORT AudioStreamMonitor : public WebContentsObserver {
 
   // The WebContents instance to receive indicator toggle notifications.  This
   // pointer should be valid for the lifetime of AudioStreamMonitor.
-  WebContents* const web_contents_;
+  const CheckedPtr<WebContents> web_contents_;
 
   // Note: |clock_| is always a DefaultTickClock, except during unit
   // testing.

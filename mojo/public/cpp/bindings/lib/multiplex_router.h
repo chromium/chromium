@@ -17,6 +17,7 @@
 #include "base/containers/queue.h"
 #include "base/containers/small_map.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -260,7 +261,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MultiplexRouter
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Owned by |dispatcher_| below.
-  MessageHeaderValidator* header_validator_ = nullptr;
+  CheckedPtr<MessageHeaderValidator> header_validator_ = nullptr;
 
   MessageDispatcher dispatcher_;
   Connector connector_;

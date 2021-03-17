@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -384,12 +385,12 @@ class WebRtcEventLogManager final : public content::RenderProcessHostObserver,
   // Observer which will be informed whenever a local log file is started or
   // stopped. Its callbacks are called synchronously from |task_runner_|,
   // so the observer needs to be able to either run from any (sequenced) runner.
-  WebRtcLocalEventLogsObserver* local_logs_observer_;
+  CheckedPtr<WebRtcLocalEventLogsObserver> local_logs_observer_;
 
   // Observer which will be informed whenever a remote log file is started or
   // stopped. Its callbacks are called synchronously from |task_runner_|,
   // so the observer needs to be able to either run from any (sequenced) runner.
-  WebRtcRemoteEventLogsObserver* remote_logs_observer_;
+  CheckedPtr<WebRtcRemoteEventLogsObserver> remote_logs_observer_;
 
   // Manages local-bound logs - logs stored on the local filesystem when
   // logging has been explicitly enabled by the user.

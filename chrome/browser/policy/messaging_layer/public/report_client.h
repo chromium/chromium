@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "components/reporting//proto/record.pb.h"
@@ -75,10 +76,10 @@ class ReportingClient : public ReportQueueProvider {
     GetCloudPolicyClientCallback get_client_cb_;
     UploaderInterface::StartCb start_upload_cb_;
 
-    policy::CloudPolicyClient* cloud_policy_client_ = nullptr;
+    CheckedPtr<policy::CloudPolicyClient> cloud_policy_client_ = nullptr;
     std::unique_ptr<UploadClient> upload_client_;
     scoped_refptr<StorageModuleInterface> storage_;
-    ReportingClient* const client_;
+    const CheckedPtr<ReportingClient> client_;
   };
 
   ReportQueueProvider::InitializingContext* InstantiateInitializingContext(

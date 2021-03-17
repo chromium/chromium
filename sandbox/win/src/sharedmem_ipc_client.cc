@@ -63,7 +63,7 @@ void* SharedMemIPCClient::GetBuffer() {
   size_t ix = LockFreeChannel(&failure);
   if (failure)
     return nullptr;
-  return reinterpret_cast<char*>(control_) +
+  return reinterpret_cast<char*>(control_.get()) +
          control_->channels[ix].channel_base;
 }
 

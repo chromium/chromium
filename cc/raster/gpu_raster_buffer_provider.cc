@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
@@ -204,7 +205,7 @@ class GpuRasterBufferProvider::GpuRasterBacking
   }
 
   // The ContextProvider used to clean up the mailbox
-  viz::RasterContextProvider* worker_context_provider = nullptr;
+  CheckedPtr<viz::RasterContextProvider> worker_context_provider = nullptr;
 };
 
 GpuRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(

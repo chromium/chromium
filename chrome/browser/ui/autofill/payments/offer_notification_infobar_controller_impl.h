@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_OFFER_NOTIFICATION_INFOBAR_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_OFFER_NOTIFICATION_INFOBAR_CONTROLLER_IMPL_H_
 
+#include "base/memory/checked_ptr.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -32,7 +33,7 @@ class OfferNotificationInfoBarControllerImpl {
                        const CreditCard* card);
 
  private:
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
 };
 
 }  // namespace autofill

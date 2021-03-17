@@ -7,6 +7,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "ui/gfx/swap_result.h"
@@ -41,7 +42,7 @@ class GL_EXPORT GLSurfacePresentationHelper {
     gfx::SwapResult result() const { return result_; }
 
    private:
-    GLSurfacePresentationHelper* const helper_;
+    const CheckedPtr<GLSurfacePresentationHelper> helper_;
     gfx::SwapResult result_ = gfx::SwapResult::SWAP_ACK;
 
     DISALLOW_COPY_AND_ASSIGN(ScopedSwapBuffers);

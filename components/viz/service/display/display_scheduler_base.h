@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_DISPLAY_SCHEDULER_BASE_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_DISPLAY_SCHEDULER_BASE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "components/viz/service/display/display_damage_tracker.h"
 #include "components/viz/service/viz_service_export.h"
@@ -42,8 +43,8 @@ class VIZ_SERVICE_EXPORT DisplaySchedulerBase
   virtual void SetGpuLatency(base::TimeDelta gpu_latency) = 0;
 
  protected:
-  DisplaySchedulerClient* client_ = nullptr;
-  DisplayDamageTracker* damage_tracker_ = nullptr;
+  CheckedPtr<DisplaySchedulerClient> client_ = nullptr;
+  CheckedPtr<DisplayDamageTracker> damage_tracker_ = nullptr;
 };
 
 }  // namespace viz

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -82,7 +83,7 @@ class MetricsWebContentsObserver
     const PageLoadMetricsObserverDelegate& GetDelegateForCommittedLoad();
 
    private:
-    page_load_metrics::MetricsWebContentsObserver* observer_;
+    CheckedPtr<page_load_metrics::MetricsWebContentsObserver> observer_;
 
     DISALLOW_COPY_AND_ASSIGN(TestingObserver);
   };

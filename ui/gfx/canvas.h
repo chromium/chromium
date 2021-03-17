@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
@@ -459,7 +460,7 @@ class GFX_EXPORT Canvas {
   // there but bitmap_ and owned_canvas_ will not exist.
   base::Optional<SkBitmap> bitmap_;
   base::Optional<cc::SkiaPaintCanvas> owned_canvas_;
-  cc::PaintCanvas* canvas_;
+  CheckedPtr<cc::PaintCanvas> canvas_;
 
   DISALLOW_COPY_AND_ASSIGN(Canvas);
 };

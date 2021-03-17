@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -114,7 +115,7 @@ class DefaultObserver : public SettingsObserver {
   }
 
  private:
-  BrowserContext* const browser_context_;
+  const CheckedPtr<BrowserContext> browser_context_;
 };
 
 }  // namespace

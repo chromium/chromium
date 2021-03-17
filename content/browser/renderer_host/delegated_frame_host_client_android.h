@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_DELEGATED_FRAME_HOST_CLIENT_ANDROID_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "content/common/content_export.h"
@@ -28,7 +29,7 @@ class CONTENT_EXPORT DelegatedFrameHostClientAndroid
                            base::TimeTicks activation_time) override;
   void WasEvicted() override;
 
-  RenderWidgetHostViewAndroid* render_widget_host_view_;
+  CheckedPtr<RenderWidgetHostViewAndroid> render_widget_host_view_;
 
   DISALLOW_COPY_AND_ASSIGN(DelegatedFrameHostClientAndroid);
 };

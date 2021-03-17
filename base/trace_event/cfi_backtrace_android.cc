@@ -258,8 +258,8 @@ bool CFIBacktraceAndroid::FindCFIRowForPC(uintptr_t func_addr,
   // on this array to find the required function address.
   static const uintptr_t* const unw_index_fn_end =
       unw_index_function_col_ + unw_index_row_count_;
-  const uintptr_t* found =
-      std::lower_bound(unw_index_function_col_, unw_index_fn_end, func_addr);
+  const uintptr_t* found = std::lower_bound(unw_index_function_col_.get(),
+                                            unw_index_fn_end, func_addr);
 
   // If found is start, then the given function is not in the table. If the
   // given pc is start of a function then we cannot unwind.

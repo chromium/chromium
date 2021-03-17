@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -264,7 +265,7 @@ class MockWebMediaPlayerDelegate : public blink::WebMediaPlayerDelegate {
   int player_id() { return player_id_; }
 
  private:
-  Observer* observer_ = nullptr;
+  CheckedPtr<Observer> observer_ = nullptr;
   int player_id_ = 1234;
   bool is_idle_ = false;
   bool is_stale_ = false;
@@ -821,11 +822,11 @@ class WebMediaPlayerImplTest
 
   // Blink state.
   blink::WebLocalFrameClient web_frame_client_;
-  blink::WebView* web_view_;
-  blink::WebLocalFrame* web_local_frame_;
+  CheckedPtr<blink::WebView> web_view_;
+  CheckedPtr<blink::WebLocalFrame> web_local_frame_;
 
   scoped_refptr<viz::TestContextProvider> context_provider_;
-  NiceMock<MockVideoFrameCompositor>* compositor_;
+  CheckedPtr<NiceMock<MockVideoFrameCompositor>> compositor_;
 
   scoped_refptr<NiceMock<MockAudioRendererSink>> audio_sink_;
   MockResourceFetchContext mock_resource_fetch_context_;
@@ -857,17 +858,18 @@ class WebMediaPlayerImplTest
 
   // Use NiceMock since most tests do not care about this.
   std::unique_ptr<NiceMock<MockSurfaceLayerBridge>> surface_layer_bridge_;
-  NiceMock<MockSurfaceLayerBridge>* surface_layer_bridge_ptr_ = nullptr;
+  CheckedPtr<NiceMock<MockSurfaceLayerBridge>> surface_layer_bridge_ptr_ =
+      nullptr;
 
   // Only valid once set by InitializeWebMediaPlayerImpl(), this is for
   // verifying a subset of potential media logs.
-  NiceMock<MockMediaLog>* media_log_ = nullptr;
+  CheckedPtr<NiceMock<MockMediaLog>> media_log_ = nullptr;
 
   // Total memory in bytes allocated by the WebMediaPlayerImpl instance.
   int64_t reported_memory_ = 0;
 
   // Raw pointer of the RendererFactorySelector owned by |wmpi_|.
-  RendererFactorySelector* renderer_factory_selector_ = nullptr;
+  CheckedPtr<RendererFactorySelector> renderer_factory_selector_ = nullptr;
 
   // default decoder factory for WMPI
   std::unique_ptr<DecoderFactory> decoder_factory_;

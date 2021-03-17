@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -139,7 +140,7 @@ class ChromeMetricsServicesManagerClient::ChromeEnabledStateProvider
   }
 
  private:
-  PrefService* const local_state_;
+  const CheckedPtr<PrefService> local_state_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeEnabledStateProvider);
 };

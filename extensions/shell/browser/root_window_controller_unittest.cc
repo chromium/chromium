@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "extensions/shell/browser/root_window_controller.h"
+#include "base/memory/checked_ptr.h"
 
 #include <algorithm>
 #include <list>
@@ -59,7 +60,7 @@ class FakeDesktopDelegate : public RootWindowController::DesktopDelegate {
   }
 
  private:
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
   std::list<std::unique_ptr<RootWindowController>> root_window_controllers_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeDesktopDelegate);

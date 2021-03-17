@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_MEDIA_HISTORY_MEDIA_HISTORY_TABLE_BASE_H_
 #define CHROME_BROWSER_MEDIA_HISTORY_MEDIA_HISTORY_TABLE_BASE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/atomic_flag.h"
 #include "sql/init_status.h"
@@ -71,7 +72,7 @@ class MediaHistoryTableBase
   base::AtomicFlag cancelled_;
 
   scoped_refptr<base::UpdateableSequencedTaskRunner> db_task_runner_;
-  sql::Database* db_;
+  CheckedPtr<sql::Database> db_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaHistoryTableBase);
 };

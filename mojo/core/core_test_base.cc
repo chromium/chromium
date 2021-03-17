@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "mojo/core/core_test_base.h"
+#include "base/memory/checked_ptr.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -96,7 +97,7 @@ class MockDispatcher : public Dispatcher {
 
   ~MockDispatcher() override { info_->IncrementDtorCallCount(); }
 
-  CoreTestBase::MockHandleInfo* const info_;
+  const CheckedPtr<CoreTestBase::MockHandleInfo> info_;
 
   DISALLOW_COPY_AND_ASSIGN(MockDispatcher);
 };

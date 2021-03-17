@@ -13,6 +13,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -99,7 +100,7 @@ class SyncTransportDataPrefs {
 
  private:
   // Never null.
-  PrefService* const pref_service_;
+  const CheckedPtr<PrefService> pref_service_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -203,7 +204,7 @@ class SyncPrefs {
   void OnSyncRequestedPrefChange();
 
   // Never null.
-  PrefService* const pref_service_;
+  const CheckedPtr<PrefService> pref_service_;
 
   base::ObserverList<SyncPrefObserver>::Unchecked sync_pref_observers_;
 

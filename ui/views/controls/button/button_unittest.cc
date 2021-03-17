@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -225,7 +226,7 @@ class ButtonTest : public ViewsTestBase {
 
  private:
   std::unique_ptr<Widget> widget_;
-  TestButton* button_;
+  CheckedPtr<TestButton> button_;
   std::unique_ptr<TestButtonObserver> button_observer_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   DISALLOW_COPY_AND_ASSIGN(ButtonTest);

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/cart/cart_handler.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
@@ -127,7 +128,7 @@ class CartHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   std::unique_ptr<CartHandler> handler_;
-  CartService* service_;
+  CheckedPtr<CartService> service_;
   base::HistogramTester histogram_tester_;
 };
 

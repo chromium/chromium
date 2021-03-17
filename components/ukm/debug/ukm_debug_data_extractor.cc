@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/format_macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "services/metrics/public/cpp/ukm_decode.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -25,7 +26,7 @@ namespace {
 static const uint64_t BIT_FILTER_LAST32 = 0xffffffffULL;
 
 struct SourceData {
-  UkmSource* source;
+  CheckedPtr<UkmSource> source;
   std::vector<mojom::UkmEntry*> entries;
 };
 
@@ -107,7 +108,7 @@ base::Value UkmDebugDataExtractor::GetStructuredData(
 
   base::ListValue sources_list;
   for (const auto& kv : source_data) {
-    const auto* src = kv.second.source;
+    const auto* src = kv.second.source.get();
 
     base::DictionaryValue source_value;
     if (src) {

@@ -24,16 +24,16 @@ REWRITER_SRC_DIR=$(dirname $SCRIPT_PATH)
 COMPILE_DIRS=.
 EDIT_DIRS=.
 
-# Save llvm-build as it is about to be overwritten.
-mv third_party/llvm-build third_party/llvm-build-upstream
+# # Save llvm-build as it is about to be overwritten.
+# mv third_party/llvm-build third_party/llvm-build-upstream
 
-# Build and test the rewriter.
-echo "*** Building the rewriter ***"
-time tools/clang/scripts/build.py \
-    --without-android \
-    --without-fuchsia \
-    --extra-tools rewrite_raw_ptr_fields
-tools/clang/rewrite_raw_ptr_fields/tests/run_all_tests.py
+# # Build and test the rewriter.
+# echo "*** Building the rewriter ***"
+# time tools/clang/scripts/build.py \
+#     --without-android \
+#     --without-fuchsia \
+#     --extra-tools rewrite_raw_ptr_fields
+# tools/clang/rewrite_raw_ptr_fields/tests/run_all_tests.py
 
 args_for_platform() {
     case "$1" in
@@ -120,25 +120,25 @@ main_rewrite() {
     time tools/clang/scripts/run_tool.py \
         $TARGET_OS_OPTION \
         --tool rewrite_raw_ptr_fields \
-        --tool-arg=--exclude-fields=~/scratch/combined-fields-to-ignore.txt \
+        --tool-arg=--exclude-fields="$HOME/scratch/combined-fields-to-ignore.txt" \
         --tool-arg=--exclude-paths=$REWRITER_SRC_DIR/manual-paths-to-ignore.txt \
         -p $OUT_DIR \
         $COMPILE_DIRS > ~/scratch/rewriter-$PLATFORM.main.out
     cat ~/scratch/rewriter-$PLATFORM.main.out >> ~/scratch/rewriter.main.out
 }
 
-for PLATFORM in ${PLATFORMS//,/ }
-do
-    pre_process "$PLATFORM"
-done
+# for PLATFORM in ${PLATFORMS//,/ }
+# do
+#     pre_process "$PLATFORM"
+# done
 
-cat ~/scratch/rewriter.out \
-    | sed '/^==== BEGIN FIELD FILTERS ====$/,/^==== END FIELD FILTERS ====$/{//!b};d' \
-    | sort | uniq > ~/scratch/automated-fields-to-ignore.txt
-cat ~/scratch/automated-fields-to-ignore.txt \
-    tools/clang/rewrite_raw_ptr_fields/manual-fields-to-ignore.txt \
-    | grep -v "base::FileDescriptorWatcher::Controller::watcher_" \
-    > ~/scratch/combined-fields-to-ignore.txt
+# cat ~/scratch/rewriter.out \
+#     | sed '/^==== BEGIN FIELD FILTERS ====$/,/^==== END FIELD FILTERS ====$/{//!b};d' \
+#     | sort | uniq > ~/scratch/automated-fields-to-ignore.txt
+# cat ~/scratch/automated-fields-to-ignore.txt \
+#     tools/clang/rewrite_raw_ptr_fields/manual-fields-to-ignore.txt \
+#     | grep -v "base::FileDescriptorWatcher::Controller::watcher_" \
+#     > ~/scratch/combined-fields-to-ignore.txt
 
 for PLATFORM in ${PLATFORMS//,/ }
 do

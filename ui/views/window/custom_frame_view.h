@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget.h"
@@ -137,16 +138,16 @@ class VIEWS_EXPORT CustomFrameView : public NonClientFrameView {
   gfx::Rect title_bounds_;
 
   // Not owned.
-  Widget* const frame_;
+  const CheckedPtr<Widget> frame_;
 
   // The icon of this window. May be NULL.
-  ImageButton* window_icon_ = nullptr;
+  CheckedPtr<ImageButton> window_icon_ = nullptr;
 
   // Window caption buttons.
-  ImageButton* minimize_button_;
-  ImageButton* maximize_button_;
-  ImageButton* restore_button_;
-  ImageButton* close_button_;
+  CheckedPtr<ImageButton> minimize_button_;
+  CheckedPtr<ImageButton> maximize_button_;
+  CheckedPtr<ImageButton> restore_button_;
+  CheckedPtr<ImageButton> close_button_;
 
   // Background painter for the window frame.
   std::unique_ptr<FrameBackground> frame_background_;

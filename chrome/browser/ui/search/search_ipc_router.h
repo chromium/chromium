@@ -11,6 +11,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/common/search/instant_types.h"
@@ -395,7 +396,7 @@ class SearchIPCRouter : public content::WebContentsObserver,
     return embedded_search_client_factory_->GetEmbeddedSearchClient();
   }
 
-  Delegate* delegate_;
+  CheckedPtr<Delegate> delegate_;
   std::unique_ptr<Policy> policy_;
 
   // Holds the number of main frame commits executed in this tab. Used by the

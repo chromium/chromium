@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/thread_test_helper.h"
@@ -96,7 +97,7 @@ class QuotaChangeBrowserTest : public ContentBrowserTest,
 
  private:
   bool is_incognito_;
-  Shell* browser_ = nullptr;
+  CheckedPtr<Shell> browser_ = nullptr;
   base::test::ScopedFeatureList feature_list_;
 };
 

@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -134,8 +135,8 @@ class DesktopNotificationHandlerTest : public BrowserWithTestWindowTest {
   }
 
  protected:
-  SendTabToSelfModelMock* model_mock_;
-  NotificationDisplayServiceMock* display_service_mock_;
+  CheckedPtr<SendTabToSelfModelMock> model_mock_;
+  CheckedPtr<NotificationDisplayServiceMock> display_service_mock_;
 };
 
 TEST_F(DesktopNotificationHandlerTest, DisplayNewEntries) {

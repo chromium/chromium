@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/http_password_store_migrator.h"
@@ -76,7 +77,7 @@ class FormFetcherImpl : public FormFetcher,
   const PasswordStore::FormDigest form_digest_;
 
   // Client used to obtain a CredentialFilter.
-  const PasswordManagerClient* const client_;
+  const CheckedPtr<const PasswordManagerClient> client_;
 
   // State of the fetcher.
   State state_ = State::NOT_WAITING;

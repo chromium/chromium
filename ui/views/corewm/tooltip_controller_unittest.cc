@@ -9,6 +9,7 @@
 
 #include "base/at_exit.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -102,7 +103,7 @@ class TooltipControllerTest : public ViewsTestBase {
     widget_.reset(CreateWidget(root_window));
     widget_->SetContentsView(std::make_unique<View>());
     view_ = new TooltipTestView;
-    widget_->GetContentsView()->AddChildView(view_);
+    widget_->GetContentsView()->AddChildView(view_.get());
     view_->SetBoundsRect(widget_->GetContentsView()->GetLocalBounds());
     helper_ = std::make_unique<TooltipControllerTestHelper>(
         GetController(widget_.get()));
@@ -153,13 +154,13 @@ class TooltipControllerTest : public ViewsTestBase {
   }
 
   std::unique_ptr<views::Widget> widget_;
-  TooltipTestView* view_ = nullptr;
+  CheckedPtr<TooltipTestView> view_ = nullptr;
   std::unique_ptr<TooltipControllerTestHelper> helper_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
 
  protected:
 #if !BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_WIN)
-  TooltipAura* tooltip_aura_;  // not owned.
+  CheckedPtr<TooltipAura> tooltip_aura_;  // not owned.
 #endif
 
  private:
@@ -752,7 +753,7 @@ class TooltipControllerTest2 : public aura::test::AuraTestBase {
 
  protected:
   // Owned by |controller_|.
-  TestTooltip* test_tooltip_;
+  CheckedPtr<TestTooltip> test_tooltip_;
   std::unique_ptr<TooltipControllerTestHelper> helper_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
 
@@ -815,7 +816,7 @@ class TooltipControllerTest3 : public ViewsTestBase {
     widget_.reset(CreateWidget(root_window));
     widget_->SetContentsView(std::make_unique<View>());
     view_ = new TooltipTestView;
-    widget_->GetContentsView()->AddChildView(view_);
+    widget_->GetContentsView()->AddChildView(view_.get());
     view_->SetBoundsRect(widget_->GetContentsView()->GetLocalBounds());
 
     generator_ = std::make_unique<ui::test::EventGenerator>(GetRootWindow());
@@ -846,11 +847,11 @@ class TooltipControllerTest3 : public ViewsTestBase {
 
  protected:
   // Owned by |controller_|.
-  TestTooltip* test_tooltip_ = nullptr;
+  CheckedPtr<TestTooltip> test_tooltip_ = nullptr;
   std::unique_ptr<TooltipControllerTestHelper> helper_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   std::unique_ptr<views::Widget> widget_;
-  TooltipTestView* view_;
+  CheckedPtr<TooltipTestView> view_;
 
  private:
   std::unique_ptr<TooltipController> controller_;

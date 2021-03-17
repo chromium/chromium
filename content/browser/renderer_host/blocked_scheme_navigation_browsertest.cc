@@ -7,6 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
@@ -150,7 +151,7 @@ class ScopedPluginRegister {
   }
 
  private:
-  content::PluginService* plugin_service_;
+  CheckedPtr<content::PluginService> plugin_service_;
 };
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 

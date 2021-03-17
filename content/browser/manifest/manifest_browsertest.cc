@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -61,8 +62,8 @@ class MockWebContentsDelegate : public WebContentsDelegate {
                               const std::u16string& source_id) override;
 
  private:
-  WebContents* web_contents_;
-  ManifestBrowserTest* test_;
+  CheckedPtr<WebContents> web_contents_;
+  CheckedPtr<ManifestBrowserTest> test_;
 };
 
 class ManifestBrowserTest : public ContentBrowserTest,

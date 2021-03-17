@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
@@ -39,7 +40,7 @@ class EulaObserver : public web_resource::EulaAcceptedNotifier::Observer {
   void OnEulaAccepted() override { feed_stream_->OnEulaAccepted(); }
 
  private:
-  FeedStream* feed_stream_;
+  CheckedPtr<FeedStream> feed_stream_;
 };
 
 }  // namespace
@@ -78,8 +79,8 @@ class FeedService::HistoryObserverImpl
   }
 
  private:
-  FeedStream* feed_stream_;
-  signin::IdentityManager* identity_manager_;
+  CheckedPtr<FeedStream> feed_stream_;
+  CheckedPtr<signin::IdentityManager> identity_manager_;
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       scoped_history_service_observer_{this};
@@ -98,7 +99,7 @@ class FeedService::NetworkDelegateImpl : public FeedNetworkImpl::Delegate {
   }
 
  private:
-  FeedService::Delegate* service_delegate_;
+  CheckedPtr<FeedService::Delegate> service_delegate_;
 };
 
 class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
@@ -142,11 +143,11 @@ class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
   }
 
  private:
-  FeedService::Delegate* service_delegate_;
+  CheckedPtr<FeedService::Delegate> service_delegate_;
   web_resource::EulaAcceptedNotifier eula_notifier_;
   std::unique_ptr<EulaObserver> eula_observer_;
   std::unique_ptr<HistoryObserverImpl> history_observer_;
-  signin::IdentityManager* identity_manager_;
+  CheckedPtr<signin::IdentityManager> identity_manager_;
 };
 
 class FeedService::IdentityManagerObserverImpl
@@ -176,8 +177,8 @@ class FeedService::IdentityManagerObserverImpl
   }
 
  private:
-  signin::IdentityManager* identity_manager_;
-  FeedStream* feed_stream_;
+  CheckedPtr<signin::IdentityManager> identity_manager_;
+  CheckedPtr<FeedStream> feed_stream_;
 };
 
 FeedService::FeedService(std::unique_ptr<FeedStream> stream)

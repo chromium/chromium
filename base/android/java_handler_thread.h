@@ -11,6 +11,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/dcheck_is_on.h"
+#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_queue.h"
@@ -81,7 +82,7 @@ class BASE_EXPORT JavaHandlerThread {
 
     std::unique_ptr<sequence_manager::SequenceManager> sequence_manager;
     scoped_refptr<sequence_manager::TaskQueue> default_task_queue;
-    MessagePumpForUI* pump = nullptr;
+    CheckedPtr<MessagePumpForUI> pump = nullptr;
   };
 
   State* state() const { return state_.get(); }

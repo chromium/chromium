@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -1209,7 +1210,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, OnAuthErrorChanged) {
                 delegate_->GetAuthError(account_id));
     }
 
-    MutableProfileOAuth2TokenServiceDelegate* delegate_;
+    CheckedPtr<MutableProfileOAuth2TokenServiceDelegate> delegate_;
     bool error_changed_ = false;
 
     DISALLOW_COPY_AND_ASSIGN(TokenServiceErrorObserver);
@@ -1298,7 +1299,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
                 delegate_->GetAuthError(account_id));
     }
 
-    MutableProfileOAuth2TokenServiceDelegate* delegate_;
+    CheckedPtr<MutableProfileOAuth2TokenServiceDelegate> delegate_;
     bool error_changed_ = false;
     bool token_available_ = false;
 

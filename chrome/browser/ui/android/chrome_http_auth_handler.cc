@@ -30,7 +30,8 @@ ChromeHttpAuthHandler::ChromeHttpAuthHandler(
     : observer_(nullptr),
       authority_(authority),
       explanation_(explanation),
-      auth_manager_(login_model_data ? login_model_data->model : nullptr) {
+      auth_manager_(login_model_data ? login_model_data->model.get()
+                                     : nullptr) {
   if (login_model_data) {
     auth_manager_->SetObserverAndDeliverCredentials(this,
                                                     login_model_data->form);

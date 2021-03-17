@@ -12,6 +12,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/compiler_specific.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -335,11 +336,11 @@ class AutofillHandler
 
   // Provides driver-level context to the shared code of the component. Must
   // outlive this object.
-  AutofillDriver* const driver_;
+  const CheckedPtr<AutofillDriver> driver_;
 
-  AutofillClient* const client_;
+  const CheckedPtr<AutofillClient> client_;
 
-  LogManager* const log_manager_;
+  const CheckedPtr<LogManager> log_manager_;
 
   // Observer needed to re-run heuristics when the language has been detected.
   base::ScopedObservation<
@@ -368,7 +369,7 @@ class AutofillHandler
       query_result_delay_task_;
 
   // Will be not null only for |SaveCardBubbleViewsFullFormBrowserTest|.
-  ObserverForTest* observer_for_testing_ = nullptr;
+  CheckedPtr<ObserverForTest> observer_for_testing_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(AutofillHandler);
 };

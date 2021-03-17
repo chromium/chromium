@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
@@ -366,7 +367,7 @@ class ExtensionLoadWaiter : public ExtensionRegistryObserver {
 
  private:
   base::RunLoop run_loop_;
-  content::BrowserContext* context_;
+  CheckedPtr<content::BrowserContext> context_;
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observer_{this};
 

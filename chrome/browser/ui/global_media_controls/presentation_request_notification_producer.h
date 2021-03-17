@@ -9,6 +9,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_producer.h"
@@ -83,7 +84,7 @@ class PresentationRequestNotificationProducer final
   // presentation request.
   bool HasItemForNonDefaultRequest() const { return item_ && item_->context(); }
 
-  MediaNotificationService* const notification_service_;
+  const CheckedPtr<MediaNotificationService> notification_service_;
 
   // A copy of the WebContentsPresentationManager associated with the web
   // page where the media dialog is opened. The value is nullptr if the media

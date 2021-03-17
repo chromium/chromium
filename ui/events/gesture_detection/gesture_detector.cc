@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "base/memory/checked_ptr.h"
 #include "base/numerics/ranges.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -92,9 +93,8 @@ class GestureDetector::TimeoutGestureHandler {
   }
 
   void StartTimeout(TimeoutEvent event) {
-    timeout_timers_[event].Start(FROM_HERE,
-                                 timeout_delays_[event],
-                                 gesture_detector_,
+    timeout_timers_[event].Start(FROM_HERE, timeout_delays_[event],
+                                 gesture_detector_.get(),
                                  timeout_callbacks_[event]);
   }
 
@@ -112,7 +112,7 @@ class GestureDetector::TimeoutGestureHandler {
  private:
   typedef void (GestureDetector::*ReceiverMethod)();
 
-  GestureDetector* const gesture_detector_;
+  const CheckedPtr<GestureDetector> gesture_detector_;
   base::OneShotTimer timeout_timers_[TIMEOUT_EVENT_COUNT];
   ReceiverMethod timeout_callbacks_[TIMEOUT_EVENT_COUNT];
   base::TimeDelta timeout_delays_[TIMEOUT_EVENT_COUNT];

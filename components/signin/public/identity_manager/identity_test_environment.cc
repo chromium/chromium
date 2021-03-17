@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "base/memory/checked_ptr.h"
 
 #include <memory>
 #include <string>
@@ -78,9 +79,10 @@ class IdentityManagerDependenciesOwner {
   // the constructor, exactly one of these will be non-null.
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable>
       owned_pref_service_;
-  sync_preferences::TestingPrefServiceSyncable* raw_pref_service_ = nullptr;
+  CheckedPtr<sync_preferences::TestingPrefServiceSyncable> raw_pref_service_ =
+      nullptr;
   std::unique_ptr<TestSigninClient> owned_signin_client_;
-  TestSigninClient* raw_signin_client_ = nullptr;
+  CheckedPtr<TestSigninClient> raw_signin_client_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(IdentityManagerDependenciesOwner);
 };
@@ -115,7 +117,8 @@ IdentityManagerDependenciesOwner::pref_service() {
   DCHECK(raw_pref_service_ || owned_pref_service_);
   DCHECK(!(raw_pref_service_ && owned_pref_service_));
 
-  return raw_pref_service_ ? raw_pref_service_ : owned_pref_service_.get();
+  return raw_pref_service_ ? raw_pref_service_.get()
+                           : owned_pref_service_.get();
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -130,7 +133,8 @@ TestSigninClient* IdentityManagerDependenciesOwner::signin_client() {
   DCHECK(raw_signin_client_ || owned_signin_client_);
   DCHECK(!(raw_signin_client_ && owned_signin_client_));
 
-  return raw_signin_client_ ? raw_signin_client_ : owned_signin_client_.get();
+  return raw_signin_client_ ? raw_signin_client_.get()
+                            : owned_signin_client_.get();
 }
 
 IdentityTestEnvironment::IdentityTestEnvironment(

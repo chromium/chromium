@@ -5,6 +5,8 @@
 #ifndef BASE_POWER_MONITOR_TEST_FAKE_POWER_MONITOR_SOURCE_H_
 #define BASE_POWER_MONITOR_TEST_FAKE_POWER_MONITOR_SOURCE_H_
 
+#include "base/memory/checked_ptr.h"
+
 namespace base {
 namespace test {
 
@@ -29,7 +31,7 @@ class ScopedFakePowerMonitorSource {
 
  private:
   // Owned by PowerMonitor.
-  FakePowerMonitorSource* fake_power_monitor_source_ = nullptr;
+  CheckedPtr<FakePowerMonitorSource> fake_power_monitor_source_ = nullptr;
 };
 
 }  // namespace test

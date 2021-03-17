@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/scoped_observer.h"
@@ -81,7 +82,7 @@ class TokensLoadedCallbackRunner : public signin::IdentityManager::Observer {
   void OnRefreshTokensLoaded() override {
     shutdown_subscription_ = {};
     scoped_identity_manager_observer_.RemoveAll();
-    std::move(callback_).Run(profile_);
+    std::move(callback_).Run(profile_.get());
   }
 
   void OnShutdown() {
@@ -90,8 +91,8 @@ class TokensLoadedCallbackRunner : public signin::IdentityManager::Observer {
     std::move(callback_).Run(nullptr);
   }
 
-  Profile* profile_;
-  signin::IdentityManager* identity_manager_;
+  CheckedPtr<Profile> profile_;
+  CheckedPtr<signin::IdentityManager> identity_manager_;
   ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
       scoped_identity_manager_observer_{this};
   base::OnceCallback<void(Profile*)> callback_;
@@ -131,7 +132,7 @@ TokensLoadedCallbackRunner::TokensLoadedCallbackRunner(
           ->Get(profile)
           ->Subscribe(base::BindRepeating(
               &TokensLoadedCallbackRunner::OnShutdown, base::Unretained(this)));
-  scoped_identity_manager_observer_.Add(identity_manager_);
+  scoped_identity_manager_observer_.Add(identity_manager_.get());
 }
 
 DiceSignedInProfileCreator::DiceSignedInProfileCreator(

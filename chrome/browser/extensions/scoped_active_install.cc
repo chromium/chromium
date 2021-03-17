@@ -34,7 +34,7 @@ void ScopedActiveInstall::CancelDeregister() {
 void ScopedActiveInstall::Init() {
   DCHECK(!extension_id_.empty());
   DCHECK(tracker_);
-  tracker_observer_.Add(tracker_);
+  tracker_observer_.Add(tracker_.get());
 }
 
 void ScopedActiveInstall::OnShutdown() {

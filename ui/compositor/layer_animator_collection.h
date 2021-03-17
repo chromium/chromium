@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "ui/compositor/compositor_animation_observer.h"
@@ -39,7 +40,7 @@ class COMPOSITOR_EXPORT LayerAnimatorCollection
   void OnCompositingShuttingDown(Compositor* compositor) override;
 
  private:
-  Compositor* compositor_;
+  CheckedPtr<Compositor> compositor_;
   base::TimeTicks last_tick_time_;
   std::set<scoped_refptr<LayerAnimator> > animators_;
 

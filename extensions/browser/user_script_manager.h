@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -90,7 +91,7 @@ class UserScriptManager : public ExtensionRegistryObserver {
   // initialized.
   std::map<GURL, std::unique_ptr<WebUIUserScriptLoader>> webui_script_loaders_;
 
-  content::BrowserContext* const browser_context_;
+  const CheckedPtr<content::BrowserContext> browser_context_;
 
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observer_{this};

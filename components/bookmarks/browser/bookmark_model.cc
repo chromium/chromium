@@ -16,6 +16,7 @@
 #include "base/guid.h"
 #include "base/i18n/string_compare.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -239,7 +240,7 @@ void BookmarkModel::RemoveAllUserBookmarks() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::set<GURL> removed_urls;
   struct RemoveNodeData {
-    const BookmarkNode* parent;
+    CheckedPtr<const BookmarkNode> parent;
     int index;
     std::unique_ptr<BookmarkNode> node;
   };

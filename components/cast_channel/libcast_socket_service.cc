@@ -4,6 +4,7 @@
 
 #include "components/cast_channel/libcast_socket_service.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/post_task.h"
 #include "components/cast_channel/cast_message_util.h"
@@ -99,8 +100,8 @@ class CastSocketWrapper final : public CastSocket {
       NOTREACHED();
     }
 
-    LibcastSocket* socket_;
-    openscreen_platform::TaskRunner* openscreen_task_runner_;
+    CheckedPtr<LibcastSocket> socket_;
+    CheckedPtr<openscreen_platform::TaskRunner> openscreen_task_runner_;
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   };
 

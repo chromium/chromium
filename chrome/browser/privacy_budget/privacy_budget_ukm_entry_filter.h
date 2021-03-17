@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/privacy_budget/identifiability_study_state.h"
 #include "components/ukm/ukm_entry_filter.h"
 
@@ -29,7 +30,7 @@ class PrivacyBudgetUkmEntryFilter : public ukm::UkmEntryFilter {
   void OnStoreRecordingsInReport() final;
 
  private:
-  IdentifiabilityStudyState* const identifiability_study_state_;
+  const CheckedPtr<IdentifiabilityStudyState> identifiability_study_state_;
 
   // Keeps track of whether Privacy Budget metadata was reported. This flag is
   // reset each time the UKM service constructs a new UKM report. The goal being

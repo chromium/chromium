@@ -7,6 +7,7 @@
 #include <map>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/default_capture_client.h"
 #include "ui/aura/client/focus_change_observer.h"
@@ -91,8 +92,8 @@ class FocusNotificationObserver : public ActivationChangeObserver,
   int activation_changed_count_;
   int focus_changed_count_;
   int reactivation_count_;
-  aura::Window* reactivation_requested_window_;
-  aura::Window* reactivation_actual_window_;
+  CheckedPtr<aura::Window> reactivation_requested_window_;
+  CheckedPtr<aura::Window> reactivation_actual_window_;
 
   DISALLOW_COPY_AND_ASSIGN(FocusNotificationObserver);
 };
@@ -159,10 +160,10 @@ class RecordingActivationAndFocusChangeObserver
   }
 
  private:
-  aura::Window* root_;
+  CheckedPtr<aura::Window> root_;
 
   // Not owned.
-  WindowDeleter* deleter_;
+  CheckedPtr<WindowDeleter> deleter_;
 
   // Whether the observer was notified about the loss of activation or the
   // loss of focus with a window already deleted by |deleter_| as the
@@ -199,8 +200,8 @@ class HideOnLoseActivationChangeObserver : public ActivationChangeObserver {
     }
   }
 
-  aura::Window* root_;
-  aura::Window* window_to_hide_;
+  CheckedPtr<aura::Window> root_;
+  CheckedPtr<aura::Window> window_to_hide_;
 
   DISALLOW_COPY_AND_ASSIGN(HideOnLoseActivationChangeObserver);
 };
@@ -260,12 +261,12 @@ class DeleteOnActivationChangeObserver : public ActivationChangeObserver,
 
   // Overridden from WindowDeleter:
   aura::Window* GetDeletedWindow() override {
-    return did_delete_ ? window_ : nullptr;
+    return did_delete_ ? window_.get() : nullptr;
   }
 
  private:
-  aura::Window* root_;
-  aura::Window* window_;
+  CheckedPtr<aura::Window> root_;
+  CheckedPtr<aura::Window> window_;
   const bool delete_on_activating_;
   const bool delete_window_losing_active_;
   bool did_delete_;
@@ -299,12 +300,12 @@ class DeleteOnLoseFocusChangeObserver
 
   // Overridden from WindowDeleter:
   aura::Window* GetDeletedWindow() override {
-    return did_delete_ ? window_ : nullptr;
+    return did_delete_ ? window_.get() : nullptr;
   }
 
  private:
-  aura::Window* root_;
-  aura::Window* window_;
+  CheckedPtr<aura::Window> root_;
+  CheckedPtr<aura::Window> window_;
   bool did_delete_;
 
   DISALLOW_COPY_AND_ASSIGN(DeleteOnLoseFocusChangeObserver);
@@ -323,7 +324,7 @@ class ScopedFocusNotificationObserver : public FocusNotificationObserver {
   }
 
  private:
-  aura::Window* root_window_;
+  CheckedPtr<aura::Window> root_window_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedFocusNotificationObserver);
 };
@@ -344,7 +345,7 @@ class ScopedTargetFocusNotificationObserver : public FocusNotificationObserver {
   }
 
  private:
-  aura::Window* target_;
+  CheckedPtr<aura::Window> target_;
   aura::WindowTracker tracker_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedTargetFocusNotificationObserver);
@@ -388,8 +389,8 @@ class FocusShiftingActivationObserver : public ActivationChangeObserver {
     }
   }
 
-  aura::Window* activated_window_;
-  aura::Window* shift_focus_to_;
+  CheckedPtr<aura::Window> activated_window_;
+  CheckedPtr<aura::Window> shift_focus_to_;
 
   DISALLOW_COPY_AND_ASSIGN(FocusShiftingActivationObserver);
 };
@@ -434,9 +435,9 @@ class ActivateWhileActivatingObserver : public ActivationChangeObserver {
         ->FocusWindow(window);
   }
 
-  aura::Window* to_observe_;
-  aura::Window* to_activate_;
-  aura::Window* to_focus_;
+  CheckedPtr<aura::Window> to_observe_;
+  CheckedPtr<aura::Window> to_activate_;
+  CheckedPtr<aura::Window> to_focus_;
 
   DISALLOW_COPY_AND_ASSIGN(ActivateWhileActivatingObserver);
 };
@@ -474,11 +475,11 @@ class TestFocusRules : public BaseFocusRules {
   }
   aura::Window* GetActivatableWindow(aura::Window* window) const override {
     return BaseFocusRules::GetActivatableWindow(
-        CanFocusOrActivate(window) ? window : focus_restriction_);
+        CanFocusOrActivate(window) ? window : focus_restriction_.get());
   }
   aura::Window* GetFocusableWindow(aura::Window* window) const override {
     return BaseFocusRules::GetFocusableWindow(
-        CanFocusOrActivate(window) ? window : focus_restriction_);
+        CanFocusOrActivate(window) ? window : focus_restriction_.get());
   }
   aura::Window* GetNextActivatableWindow(aura::Window* ignore) const override {
     aura::Window* next_activatable =
@@ -492,7 +493,7 @@ class TestFocusRules : public BaseFocusRules {
     return !focus_restriction_ || focus_restriction_->Contains(window);
   }
 
-  aura::Window* focus_restriction_;
+  CheckedPtr<aura::Window> focus_restriction_;
 
   DISALLOW_COPY_AND_ASSIGN(TestFocusRules);
 };
@@ -603,7 +604,7 @@ class FocusControllerTestBase : public aura::test::AuraTestBase {
 
  private:
   std::unique_ptr<FocusController> focus_controller_;
-  TestFocusRules* test_focus_rules_;
+  CheckedPtr<TestFocusRules> test_focus_rules_;
 
   DISALLOW_COPY_AND_ASSIGN(FocusControllerTestBase);
 };

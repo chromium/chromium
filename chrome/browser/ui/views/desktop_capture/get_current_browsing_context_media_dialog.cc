@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/desktop_capture/get_current_browsing_context_media_dialog.h"
 
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -86,7 +87,7 @@ class GetCurrentBrowsingContextMediaDialogDelegate
   const int render_process_id_;
   const int render_frame_id_;
 
-  GetCurrentBrowsingContextMediaDialog* parent_ = nullptr;
+  CheckedPtr<GetCurrentBrowsingContextMediaDialog> parent_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(GetCurrentBrowsingContextMediaDialogDelegate);
 };
@@ -198,6 +199,6 @@ void GetCurrentBrowsingContextMediaDialog::MaybeAutomateUserInput() {
           [](views::BubbleDialogModelHost* dialog_host, bool accept) {
             accept ? dialog_host->Accept() : dialog_host->Cancel();
           },
-          base::Unretained(dialog_model_host_for_testing_),
+          base::Unretained(dialog_model_host_for_testing_.get()),
           auto_accept_tab_capture_for_testing_));
 }

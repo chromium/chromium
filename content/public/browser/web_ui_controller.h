@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/memory/checked_ptr.h"
 #include "content/common/content_export.h"
 
 class GURL;
@@ -76,7 +77,7 @@ class CONTENT_EXPORT WebUIController {
   virtual Type GetType();
 
  private:
-  WebUI* web_ui_;
+  CheckedPtr<WebUI> web_ui_;
 };
 
 // This macro declares a static variable inside the class that inherits from

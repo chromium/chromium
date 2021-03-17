@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
@@ -73,7 +74,7 @@ class PassThroughDelegate : public message_center::NotificationDelegate {
   ~PassThroughDelegate() override = default;
 
  private:
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   message_center::Notification notification_;
   NotificationHandler::Type notification_type_;
 };

@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/watchable_io_message_pump_posix.h"
 #include "base/threading/thread_checker.h"
@@ -53,11 +54,11 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
     void OnFileCanWriteWithoutBlocking(int fd, MessagePumpLibevent* pump);
 
     std::unique_ptr<event> event_;
-    MessagePumpLibevent* pump_ = nullptr;
-    FdWatcher* watcher_ = nullptr;
+    CheckedPtr<MessagePumpLibevent> pump_ = nullptr;
+    CheckedPtr<FdWatcher> watcher_ = nullptr;
     // If this pointer is non-NULL, the pointee is set to true in the
     // destructor.
-    bool* was_destroyed_ = nullptr;
+    CheckedPtr<bool> was_destroyed_ = nullptr;
 
     DISALLOW_COPY_AND_ASSIGN(FdWatchController);
   };
@@ -93,7 +94,7 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
   struct RunState {
     explicit RunState(Delegate* delegate_in) : delegate(delegate_in) {}
 
-    Delegate* const delegate;
+    const CheckedPtr<Delegate> delegate;
 
     // Used to flag that the current Run() invocation should return ASAP.
     bool should_quit = false;
@@ -107,14 +108,14 @@ class BASE_EXPORT MessagePumpLibevent : public MessagePump,
 
   // Libevent dispatcher.  Watches all sockets registered with it, and sends
   // readiness callbacks when a socket is ready for I/O.
-  event_base* const event_base_;
+  const CheckedPtr<event_base> event_base_;
 
   // ... write end; ScheduleWork() writes a single byte to it
   int wakeup_pipe_in_ = -1;
   // ... read end; OnWakeup reads it and then breaks Run() out of its sleep
   int wakeup_pipe_out_ = -1;
   // ... libevent wrapper for read end
-  event* wakeup_event_ = nullptr;
+  CheckedPtr<event> wakeup_event_ = nullptr;
 
   ThreadChecker watch_file_descriptor_caller_checker_;
   DISALLOW_COPY_AND_ASSIGN(MessagePumpLibevent);
