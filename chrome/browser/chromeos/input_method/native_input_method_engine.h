@@ -14,6 +14,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/base/ime/character_composer.h"
 
 namespace chromeos {
 
@@ -171,6 +172,8 @@ class NativeInputMethodEngine
 
     std::unique_ptr<AssistiveSuggester> assistive_suggester_;
     std::unique_ptr<AutocorrectManager> autocorrect_manager_;
+
+    ui::CharacterComposer character_composer_;
   };
 
   ImeObserver* GetNativeObserver() const;

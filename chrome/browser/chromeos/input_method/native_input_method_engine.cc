@@ -138,6 +138,16 @@ void LogEvent(ImeServiceEvent event) {
   UMA_HISTOGRAM_ENUMERATION("InputMethod.Mojo.Extension.Event", event);
 }
 
+ime::mojom::PhysicalKeyEventPtr CreatePhysicalKeyEventFromKeyEvent(
+    const ui::KeyEvent& event) {
+  return ime::mojom::PhysicalKeyEvent::New(
+      event.type() == ui::ET_KEY_PRESSED ? ime::mojom::KeyEventType::kKeyDown
+                                         : ime::mojom::KeyEventType::kKeyUp,
+      ui::KeycodeConverter::DomCodeToCodeString(event.code()),
+      ui::KeycodeConverter::DomKeyToKeyString(event.GetDomKey()),
+      ModifierStateFromEvent(event));
+}
+
 }  // namespace
 
 NativeInputMethodEngine::NativeInputMethodEngine() = default;
@@ -322,21 +332,34 @@ void NativeInputMethodEngine::ImeObserver::OnKeyEvent(
     std::move(callback).Run(true);
     return;
   }
-  auto key_event = ime::mojom::PhysicalKeyEvent::New(
-      event.type() == ui::ET_KEY_PRESSED ? ime::mojom::KeyEventType::kKeyDown
-                                         : ime::mojom::KeyEventType::kKeyUp,
-      ui::KeycodeConverter::DomCodeToCodeString(event.code()),
-      ui::KeycodeConverter::DomKeyToKeyString(event.GetDomKey()),
-      ModifierStateFromEvent(event));
 
   if (ShouldRouteToRuleBasedEngine(engine_id) && remote_to_engine_.is_bound()) {
     remote_to_engine_->ProcessKeypressForRulebased(
-        std::move(key_event),
+        CreatePhysicalKeyEventFromKeyEvent(event),
         base::BindOnce(&ImeObserver::OnRuleBasedKeyEventResponse,
                        base::Unretained(this), base::Time::Now(),
                        std::move(callback)));
   } else if (ShouldRouteToFstMojoEngine(engine_id)) {
     if (remote_to_engine_.is_bound()) {
+      // CharacterComposer only takes KEY_PRESSED events.
+      const bool filtered = event.type() == ui::ET_KEY_PRESSED &&
+                            character_composer_.FilterKeyPress(event);
+
+      // Don't send dead keys to the system IME. Dead keys should be handled at
+      // the OS level and not exposed to IMEs.
+      if (event.GetDomKey().IsDeadKey()) {
+        std::move(callback).Run(true);
+        return;
+      }
+
+      auto key_event = CreatePhysicalKeyEventFromKeyEvent(event);
+      if (filtered) {
+        // TODO(b/174612548): Transform the corresponding KEY_RELEASED event to
+        // use the composed character as well.
+        key_event->key =
+            base::UTF16ToUTF8(character_composer_.composed_character());
+      }
+
       remote_to_engine_->OnKeyEvent(std::move(key_event), std::move(callback));
     } else {
       std::move(callback).Run(false);

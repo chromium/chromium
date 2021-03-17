@@ -22,6 +22,7 @@
 #include "ui/base/ime/chromeos/mock_ime_input_context_handler.h"
 #include "ui/base/ime/chromeos/mock_input_method_manager.h"
 #include "ui/base/ime/text_input_flags.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 
 namespace chromeos {
 namespace {
@@ -32,6 +33,7 @@ MATCHER_P(MojoEq, value, "") {
 
 using input_method::InputMethodManager;
 using input_method::StubInputMethodEngineObserver;
+using testing::_;
 using testing::NiceMock;
 using testing::StrictMock;
 
@@ -268,7 +270,7 @@ TEST_F(NativeInputMethodEngineTest,
   {
     testing::InSequence seq;
     EXPECT_CALL(mock_input_channel, OnInputMethodChanged(kEngineIdUs));
-    EXPECT_CALL(mock_input_channel, OnFocus(::testing::_));
+    EXPECT_CALL(mock_input_channel, OnFocus(_));
     // Each character in "你好" is three UTF-8 code units.
     EXPECT_CALL(mock_input_channel,
                 OnSurroundingTextChanged(u8"你好",
@@ -287,6 +289,60 @@ TEST_F(NativeInputMethodEngineTest,
                             /*cursor_pos=*/2,
                             /*anchor_pos=*/2,
                             /*offset=*/0);
+  engine.FlushForTesting();
+
+  InputMethodManager::Shutdown();
+}
+
+TEST_F(NativeInputMethodEngineTest, ProcessesDeadKeysCorrectly) {
+  TestingProfile testing_profile;
+  SetPhysicalTypingAutocorrectEnabled(testing_profile, true);
+
+  testing::StrictMock<ime::MockInputChannel> mock_input_channel;
+  input_method::InputMethodManager::Initialize(
+      new TestInputMethodManager(&mock_input_channel));
+  ui::MockIMEInputContextHandler mock_handler;
+  ui::IMEBridge::Get()->SetInputContextHandler(&mock_handler);
+  NativeInputMethodEngine engine;
+  engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
+                    /*extension_id=*/"", &testing_profile);
+
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(mock_input_channel, OnInputMethodChanged(kEngineIdUs));
+    EXPECT_CALL(mock_input_channel, OnFocus(_));
+
+    // TODO(https://crbug.com/1187982): Expect the actual arguments to the call
+    // once the Mojo API is replaced with protos. GMock does not play well with
+    // move-only types like PhysicalKeyEvent.
+    EXPECT_CALL(mock_input_channel, OnKeyEvent(_, _))
+        .Times(2)
+        .WillRepeatedly(::testing::Invoke(
+            [](ime::mojom::PhysicalKeyEventPtr,
+               ime::mojom::InputChannel::OnKeyEventCallback callback) {
+              std::move(callback).Run(false);
+            }));
+  }
+
+  engine.Enable(kEngineIdUs);
+  engine.FocusIn(ui::IMEEngineHandlerInterface::InputContext(
+      ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
+      ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
+      /*should_do_learning=*/true));
+
+  // Quote ("VKEY_OEM_7") + A is a dead key combination.
+  engine.ProcessKeyEvent(
+      {ui::ET_KEY_PRESSED, ui::VKEY_OEM_7, ui::DomCode::QUOTE, ui::EF_NONE,
+       ui::DomKey::DeadKeyFromCombiningCharacter(u'\u0301'), base::TimeTicks()},
+      base::DoNothing());
+  engine.ProcessKeyEvent(
+      {ui::ET_KEY_RELEASED, ui::VKEY_OEM_7, ui::DomCode::QUOTE, ui::EF_NONE,
+       ui::DomKey::DeadKeyFromCombiningCharacter(u'\u0301'), base::TimeTicks()},
+      base::DoNothing());
+  engine.ProcessKeyEvent({ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE},
+                         base::DoNothing());
+  engine.ProcessKeyEvent({ui::ET_KEY_RELEASED, ui::VKEY_A, ui::EF_NONE},
+                         base::DoNothing());
   engine.FlushForTesting();
 
   InputMethodManager::Shutdown();
