@@ -45,11 +45,13 @@ class BranchIntegrationTest(unittest.TestCase):
 
     with open(self._settings_json) as f:
       settings = f.read()
-    self.assertEqual(settings, textwrap.dedent("""\
+    self.assertEqual(
+        settings,
+        textwrap.dedent("""\
         {
             "project": "chromium-mXX",
             "project_title": "Chromium MXX",
-            "is_master": false,
+            "is_main": false,
             "is_lts_branch": false,
             "ref": "refs/branch-heads/YYYY"
         }

@@ -283,7 +283,7 @@ try_.chromium_android_builder(
 try_.chromium_android_builder(
     name = "android-binary-size",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     executable = "recipe:binary_size_trybot",
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
@@ -346,7 +346,7 @@ try_.chromium_android_builder(
 try_.chromium_android_builder(
     name = "android-lollipop-arm-rel",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     cores = branches.value(for_main = 16, for_branches = 8),
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
@@ -356,7 +356,7 @@ try_.chromium_android_builder(
 try_.chromium_android_builder(
     name = "android-marshmallow-arm64-rel",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     cores = branches.value(for_main = 32, for_branches = 16),
     goma_jobs = goma.jobs.J300,
     main_list_view = "try",
@@ -368,7 +368,7 @@ try_.chromium_android_builder(
 try_.chromium_android_builder(
     name = "android-marshmallow-x86-rel",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     cores = 16,
     goma_jobs = goma.jobs.J300,
     ssd = True,
@@ -424,7 +424,7 @@ try_.chromium_android_builder(
 try_.chromium_android_builder(
     name = "android-pie-arm64-rel",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     cores = 16,
     goma_jobs = goma.jobs.J300,
     ssd = True,
@@ -499,7 +499,7 @@ try_.chromium_android_builder(
 try_.chromium_android_builder(
     name = "android_compile_dbg",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
     tryjob = try_.job(),
@@ -544,7 +544,7 @@ try_.chromium_android_builder(
 try_.chromium_android_builder(
     name = "android_cronet",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -564,7 +564,7 @@ try_.chromium_android_builder(
 try_.chromium_android_builder(
     name = "cast_shell_android",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -688,7 +688,7 @@ try_.chromium_chromiumos_builder(
 try_.chromium_chromiumos_builder(
     name = "chromeos-amd64-generic-rel",
     branch_selector = branches.ALL_BRANCHES,
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -700,14 +700,14 @@ try_.chromium_chromiumos_builder(
 try_.chromium_chromiumos_builder(
     name = "chromeos-arm-generic-rel",
     branch_selector = branches.ALL_BRANCHES,
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
 )
 
 try_.chromium_chromiumos_builder(
     name = "lacros-amd64-generic-rel",
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -715,7 +715,7 @@ try_.chromium_chromiumos_builder(
 try_.chromium_chromiumos_builder(
     name = "linux-chromeos-compile-dbg",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -744,7 +744,7 @@ try_.chromium_chromiumos_builder(
 try_.chromium_chromiumos_builder(
     name = "linux-chromeos-rel",
     branch_selector = branches.ALL_BRANCHES,
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
     tryjob = try_.job(),
@@ -759,7 +759,7 @@ try_.chromium_chromiumos_builder(
 
 try_.chromium_chromiumos_builder(
     name = "linux-lacros-rel",
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     cores = 16,
     ssd = True,
     goma_jobs = goma.jobs.J300,
@@ -893,7 +893,7 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "cast_shell_linux",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -984,7 +984,7 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "fuchsia-x64-cast",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -992,7 +992,7 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "fuchsia_arm64",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -1000,7 +1000,7 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "fuchsia_x64",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -1093,7 +1093,7 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "linux-libfuzzer-asan-rel",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     executable = "recipe:chromium_libfuzzer_trybot",
     main_list_view = "try",
     tryjob = try_.job(),
@@ -1102,7 +1102,7 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "linux-ozone-rel",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -1124,7 +1124,7 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "linux-rel",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
     tryjob = try_.job(),
@@ -1213,7 +1213,7 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "linux_chromium_compile_dbg_ng",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     caches = [
         swarming.cache(
             name = "builder",
@@ -1254,7 +1254,7 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "linux_chromium_tsan_rel_ng",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
     tryjob = try_.job(),
@@ -1357,7 +1357,7 @@ try_.chromium_mac_builder(
 try_.chromium_mac_builder(
     name = "mac-rel",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     use_clang_coverage = True,
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
