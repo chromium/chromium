@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/scheduler.h"
 
 #include <algorithm>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -13,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -185,6 +187,20 @@ uint32_t Scheduler::Sequence::ScheduleTask(base::OnceClosure closure) {
   return order_num;
 }
 
+base::TimeDelta Scheduler::Sequence::FrontTaskWaitingDependencyDelta() {
+  DCHECK(!tasks_.empty());
+  if (tasks_.front().first_dependency_added.is_null()) {
+    // didn't wait for dependencies.
+    return base::TimeDelta();
+  }
+  return tasks_.front().running_ready - tasks_.front().first_dependency_added;
+}
+
+base::TimeDelta Scheduler::Sequence::FrontTaskSchedulingDelay() {
+  DCHECK(!tasks_.empty());
+  return base::TimeTicks::Now() - tasks_.front().running_ready;
+}
+
 uint32_t Scheduler::Sequence::BeginTask(base::OnceClosure* closure) {
   DCHECK(closure);
   DCHECK(!tasks_.empty());
@@ -202,6 +218,14 @@ uint32_t Scheduler::Sequence::BeginTask(base::OnceClosure* closure) {
 void Scheduler::Sequence::FinishTask() {
   DCHECK_EQ(running_state_, RUNNING);
   running_state_ = IDLE;
+}
+
+void Scheduler::Sequence::SetLastTaskFirstDependencyTimeIfNeeded() {
+  DCHECK(!tasks_.empty());
+  if (tasks_.back().first_dependency_added.is_null()) {
+    // Fence are always added for the last task (which should always exists).
+    tasks_.back().first_dependency_added = base::TimeTicks::Now();
+  }
 }
 
 void Scheduler::Sequence::AddWaitFence(const SyncToken& sync_token,
@@ -232,6 +256,17 @@ void Scheduler::Sequence::RemoveWaitFence(const SyncToken& sync_token,
   if (it != wait_fences_.end()) {
     SchedulingPriority wait_priority = it->second;
     wait_fences_.erase(it);
+
+    for (auto& task : tasks_) {
+      if (order_num == task.order_num) {
+        // The fence applies to this task, bump the readiness timestamp
+        task.running_ready = base::TimeTicks::Now();
+        break;
+      } else if (order_num < task.order_num) {
+        // Updated all task related to this fence.
+        break;
+      }
+    }
 
     Sequence* release_sequence = scheduler_->GetSequence(release_sequence_id);
     if (release_sequence)
@@ -424,6 +459,7 @@ void Scheduler::ScheduleTaskHelper(Task task) {
                            sync_token, order_num, release_sequence_id,
                            sequence_id))) {
       sequence->AddWaitFence(sync_token, order_num, release_sequence_id);
+      sequence->SetLastTaskFirstDependencyTimeIfNeeded();
     }
   }
 
@@ -543,6 +579,18 @@ void Scheduler::RunNextTask() {
 
   Sequence* sequence = GetSequence(state.sequence_id);
   DCHECK(sequence);
+
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "GPU.Scheduler.TaskDependencyTime",
+      sequence->FrontTaskWaitingDependencyDelta(),
+      base::TimeDelta::FromMicroseconds(10), base::TimeDelta::FromSeconds(30),
+      100);
+
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "GPU.Scheduler.TaskSchedulingDelayTime",
+      sequence->FrontTaskSchedulingDelay(),
+      base::TimeDelta::FromMicroseconds(10), base::TimeDelta::FromSeconds(30),
+      100);
 
   base::OnceClosure closure;
   uint32_t order_num = sequence->BeginTask(&closure);

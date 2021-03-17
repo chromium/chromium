@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/scheduling_priority.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -169,6 +170,14 @@ class GPU_EXPORT Scheduler {
     // Update cached scheduling priority while running.
     void UpdateRunningPriority();
 
+    // The time delta it took for the front task's dependencies to be completed.
+    base::TimeDelta FrontTaskWaitingDependencyDelta();
+
+    // The delay between when the front task was ready to run (no more
+    // dependencies) and now. This is used when the task is actually started to
+    // check for low scheduling delays.
+    base::TimeDelta FrontTaskSchedulingDelay();
+
     // Returns the next order number and closure. Sets running state to RUNNING.
     uint32_t BeginTask(base::OnceClosure* closure);
 
@@ -182,6 +191,10 @@ class GPU_EXPORT Scheduler {
     // Continue running the current task with the given closure. Must be called
     // in between |BeginTask| and |FinishTask|.
     void ContinueTask(base::OnceClosure closure);
+
+    // Sets the first dependency added time on the last task if it wasn't
+    // already set, no-op otherwise.
+    void SetLastTaskFirstDependencyTimeIfNeeded();
 
     // Add a sync token fence that this sequence should wait on.
     void AddWaitFence(const SyncToken& sync_token,
@@ -235,6 +248,13 @@ class GPU_EXPORT Scheduler {
 
       base::OnceClosure closure;
       uint32_t order_num;
+
+      // TODO(b/181148082): add measuring callback to return values to task
+      // owner
+      // Note: this time is only correct once the last fence has been removed,
+      // as it is updated for all fences.
+      base::TimeTicks running_ready = base::TimeTicks::Now();
+      base::TimeTicks first_dependency_added;
     };
 
     // Description of Stream priority propagation: Each Stream has an initial

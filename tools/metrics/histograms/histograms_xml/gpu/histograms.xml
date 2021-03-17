@@ -1100,6 +1100,32 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="GPU.Scheduler.TaskDependencyTime" units="microseconds"
+    expires_after="2022-03-31">
+  <owner>berlu@chromium.org</owner>
+  <owner>chrome-gpu-metrics@google.com</owner>
+  <summary>
+    Records the wall time taken spent by each GPU scheduler task waiting on it's
+    dependencies to resolve. The time delta starts when the waiting fence is
+    added and finishes when the last fence is removed. Only recorded for clients
+    with high resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="GPU.Scheduler.TaskSchedulingDelayTime" units="microseconds"
+    expires_after="2022-03-31">
+  <owner>berlu@chromium.org</owner>
+  <owner>chrome-gpu-metrics@google.com</owner>
+  <summary>
+    Records the wall time taken spent by each GPU scheduler task waiting on to
+    be scheduled once all its dependencies have been resolved. The time delta
+    starts when the last waiting fence is passed and stops when the tasks starts
+    running. If the schedulers is working properly, for a high priority task,
+    this metric should be minimal. Only recorded for clients with high
+    resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="GPU.setIsAcceleratedCompositingActive"
     enum="GPUsetIsAcceleratedCompositingActive" expires_after="M85">
   <owner>vmiura@chromium.org</owner>
