@@ -633,7 +633,7 @@
     },
     {
       name: "CSSPseudoDir",
-      status: "stable",
+      status: "experimental",
     },
     {
       name: "CSSPseudoIs",
