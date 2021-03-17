@@ -943,6 +943,9 @@ cr.define('cr.ui.login.debug', function() {
             optInDefaultState: true,
             legalFooterVisibility: false,
           },
+          trigger: (screen) => {
+            screen.updateA11ySettingsButtonVisibility(false);
+          },
         },
         {
           id: 'NoOptionToSubscribe',
@@ -951,6 +954,9 @@ cr.define('cr.ui.login.debug', function() {
             optInDefaultState: false,
             legalFooterVisibility: false,
           },
+          trigger: (screen) => {
+            screen.updateA11ySettingsButtonVisibility(false);
+          },
         },
         {
           id: 'WithLegalFooter',
@@ -958,6 +964,20 @@ cr.define('cr.ui.login.debug', function() {
             optInVisibility: true,
             optInDefaultState: true,
             legalFooterVisibility: true,
+          },
+          trigger: (screen) => {
+            screen.updateA11ySettingsButtonVisibility(false);
+          },
+        },
+        {
+          id: 'WithAceessibilityButton',
+          data: {
+            optInVisibility: true,
+            optInDefaultState: true,
+            legalFooterVisibility: true,
+          },
+          trigger: (screen) => {
+            screen.updateA11ySettingsButtonVisibility(true);
           },
         },
       ],
