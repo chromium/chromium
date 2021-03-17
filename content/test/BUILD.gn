@@ -1556,6 +1556,7 @@ test("content_browsertests") {
       "../browser/file_system_access/file_system_chooser_browsertest.cc",
       "../browser/font_access/font_access_manager_impl_browsertest.cc",
       "../browser/host_zoom_map_impl_browsertest.cc",
+      "../browser/renderer_host/clipboard_host_impl_browsertest.cc",
       "../browser/serial/serial_browsertest.cc",
       "../browser/speech/speech_recognition_browsertest.cc",
       "../browser/speech/tts_ssml_browsertest.cc",
@@ -1564,6 +1565,7 @@ test("content_browsertests") {
       "../browser/zoom_browsertest.cc",
     ]
     deps += [ "//content/public/browser:proto" ]
+    data += [ "//content/test/data/clipboard" ]
   }
   if (is_posix) {
     deps += [ "//services/tracing:test_utils" ]

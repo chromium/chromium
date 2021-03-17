@@ -142,6 +142,7 @@ void ClipboardMac::ReadAvailableTypes(
   DCHECK(CalledOnValidThread());
   DCHECK(types);
 
+  NSPasteboard* pb = GetPasteboard();
   types->clear();
   if (IsFormatAvailable(ClipboardFormatType::GetPlainTextType(), buffer,
                         data_dst))
@@ -153,12 +154,15 @@ void ClipboardMac::ReadAvailableTypes(
   if (IsFormatAvailable(ClipboardFormatType::GetRtfType(), buffer, data_dst))
     types->push_back(base::UTF8ToUTF16(kMimeTypeRTF));
   if (IsFormatAvailable(ClipboardFormatType::GetFilenamesType(), buffer,
-                        data_dst))
+                        data_dst)) {
     types->push_back(base::UTF8ToUTF16(kMimeTypeURIList));
-
-  NSPasteboard* pb = GetPasteboard();
-  if (pb && [NSImage canInitWithPasteboard:pb])
+  } else if (pb && [NSImage canInitWithPasteboard:pb]) {
+    // Finder Cmd+C places both file and icon onto the clipboard
+    // (http://crbug.com/553686), so ignore images if we have detected files.
+    // This means that if an image is present with file content, we will always
+    // ignore the image, but this matches observable Safari behavior.
     types->push_back(base::UTF8ToUTF16(kMimeTypePNG));
+  }
 
   if ([[pb types] containsObject:kWebCustomDataPboardType]) {
     NSData* data = [pb dataForType:kWebCustomDataPboardType];
@@ -479,20 +483,7 @@ SkBitmap ClipboardMac::ReadImageInternal(ClipboardBuffer buffer,
   // a blank image is better.
   base::scoped_nsobject<NSImage> image;
   @try {
-    if ([[pasteboard types] containsObject:NSFilenamesPboardType]) {
-      // -[NSImage initWithPasteboard:] gets confused with copies of a single
-      // file from the Finder, so extract the path ourselves.
-      // http://crbug.com/553686
-      NSArray* paths = [pasteboard propertyListForType:NSFilenamesPboardType];
-      if ([paths count]) {
-        // If N number of files are selected from finder, choose the last one.
-        image.reset([[NSImage alloc]
-            initWithContentsOfURL:[NSURL fileURLWithPath:[paths lastObject]]]);
-      }
-    } else {
-      if (pasteboard)
-        image.reset([[NSImage alloc] initWithPasteboard:pasteboard]);
-    }
+    image.reset([[NSImage alloc] initWithPasteboard:pasteboard]);
   } @catch (id exception) {
   }
 
