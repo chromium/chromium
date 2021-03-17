@@ -9,11 +9,13 @@
 
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_types.h"
+#include "ash/public/cpp/system_tray_focus_observer.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
+#include "chrome/browser/ui/ash/login_screen_client.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/views/view_observer.h"
@@ -51,7 +53,8 @@ class OobeWebDialogView;
 class OobeUIDialogDelegate : public ui::WebDialogDelegate,
                              public ChromeKeyboardControllerClient::Observer,
                              public CaptivePortalWindowProxy::Observer,
-                             public views::ViewObserver {
+                             public views::ViewObserver,
+                             public ash::SystemTrayFocusObserver {
  public:
   explicit OobeUIDialogDelegate(base::WeakPtr<LoginDisplayHostMojo> controller);
   ~OobeUIDialogDelegate() override;
@@ -118,6 +121,9 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
   void OnBeforeCaptivePortalShown() override;
   void OnAfterCaptivePortalHidden() override;
 
+  // ash::SystemTrayFocusObserver:
+  void OnFocusLeavingSystemTray(bool reverse) override;
+
   base::WeakPtr<LoginDisplayHostMojo> controller_;
 
   base::WeakPtr<CaptivePortalDialogDelegate> captive_portal_delegate_;
@@ -130,11 +136,19 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
   // Reference to dialog view stored in widget_.
   OobeWebDialogView* dialog_view_ = nullptr;
 
-  ScopedObserver<ChromeKeyboardControllerClient,
-                 ChromeKeyboardControllerClient::Observer>
+  base::ScopedObservation<ChromeKeyboardControllerClient,
+                          ChromeKeyboardControllerClient::Observer>
       keyboard_observer_{this};
-  ScopedObserver<CaptivePortalWindowProxy, CaptivePortalWindowProxy::Observer>
+  base::ScopedObservation<CaptivePortalWindowProxy,
+                          CaptivePortalWindowProxy::Observer>
       captive_portal_observer_{this};
+
+  std::unique_ptr<base::ScopedObservation<
+      LoginScreenClient,
+      ash::SystemTrayFocusObserver,
+      &LoginScreenClient::AddSystemTrayFocusObserver,
+      &LoginScreenClient::RemoveSystemTrayFocusObserver>>
+      scoped_system_tray_focus_observer_;
 
   std::map<ui::Accelerator, ash::LoginAcceleratorAction> accel_map_;
   ash::OobeDialogState state_ = ash::OobeDialogState::HIDDEN;

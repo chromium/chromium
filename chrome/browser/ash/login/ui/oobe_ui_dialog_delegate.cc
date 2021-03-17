@@ -21,7 +21,6 @@
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/ash/ash_util.h"
-#include "chrome/browser/ui/ash/login_screen_client.h"
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/core_oobe_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
@@ -104,6 +103,27 @@ class OobeWebDialogView : public views::WebDialogView {
       const content::NativeWebKeyboardEvent& event) override {
     return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
         event, GetFocusManager());
+  }
+
+  OobeUI* GetOobeUI() {
+    content::WebUI* webui = web_contents()->GetWebUI();
+    if (webui)
+      return static_cast<OobeUI*>(webui->GetController());
+    return nullptr;
+  }
+
+  // Overridden from views::View:
+  void AboutToRequestFocusFromTabTraversal(bool reverse) override {
+    // Return the focus to the web contents.
+    web_contents()->FocusThroughTabTraversal(reverse);
+    GetWidget()->Activate();
+    web_contents()->Focus();
+
+    if (!GetOobeUI())
+      return;
+    CoreOobeView* view = GetOobeUI()->GetCoreOobeView();
+    if (view)
+      view->FocusReturned(reverse);
   }
 
  private:
@@ -214,7 +234,7 @@ OobeUIDialogDelegate::OobeUIDialogDelegate(
     base::WeakPtr<LoginDisplayHostMojo> controller)
     : controller_(controller) {
   set_can_resize(false);
-  keyboard_observer_.Add(ChromeKeyboardControllerClient::Get());
+  keyboard_observer_.Observe(ChromeKeyboardControllerClient::Get());
 
   for (size_t i = 0; i < ash::kLoginAcceleratorDataLength; ++i) {
     if (ash::kLoginAcceleratorData[i].global)
@@ -263,7 +283,7 @@ OobeUIDialogDelegate::OobeUIDialogDelegate(
 
   GetOobeUI()->GetErrorScreen()->MaybeInitCaptivePortalWindowProxy(
       dialog_view_->web_contents());
-  captive_portal_observer_.Add(
+  captive_portal_observer_.Observe(
       GetOobeUI()->GetErrorScreen()->captive_portal_window_proxy());
 }
 
@@ -288,6 +308,14 @@ void OobeUIDialogDelegate::SetShouldDisplayCaptivePortal(bool should_display) {
 }
 
 void OobeUIDialogDelegate::Show() {
+  if (LoginScreenClient::Get()) {
+    scoped_system_tray_focus_observer_ =
+        std::make_unique<base::ScopedObservation<
+            LoginScreenClient, ash::SystemTrayFocusObserver,
+            &LoginScreenClient::AddSystemTrayFocusObserver,
+            &LoginScreenClient::RemoveSystemTrayFocusObserver>>(this);
+    scoped_system_tray_focus_observer_->Observe(LoginScreenClient::Get());
+  }
   widget_->Show();
   if (state_ == ash::OobeDialogState::HIDDEN) {
     SetState(ash::OobeDialogState::GAIA_SIGNIN);
@@ -305,6 +333,7 @@ void OobeUIDialogDelegate::ShowFullScreen() {
 }
 
 void OobeUIDialogDelegate::Hide() {
+  scoped_system_tray_focus_observer_.reset();
   if (!widget_)
     return;
   widget_->Hide();
@@ -335,11 +364,8 @@ void OobeUIDialogDelegate::SetState(ash::OobeDialogState state) {
 }
 
 OobeUI* OobeUIDialogDelegate::GetOobeUI() const {
-  if (dialog_view_) {
-    content::WebUI* webui = dialog_view_->web_contents()->GetWebUI();
-    if (webui)
-      return static_cast<OobeUI*>(webui->GetController());
-  }
+  if (dialog_view_)
+    return dialog_view_->GetOobeUI();
   return nullptr;
 }
 
@@ -441,6 +467,11 @@ void OobeUIDialogDelegate::OnAfterCaptivePortalHidden() {
   should_display_captive_portal_ = false;
 
   captive_portal_delegate_->Hide();
+}
+
+void OobeUIDialogDelegate::OnFocusLeavingSystemTray(bool reverse) {
+  if (dialog_view_)
+    dialog_view_->AboutToRequestFocusFromTabTraversal(reverse);
 }
 
 }  // namespace chromeos

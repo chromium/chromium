@@ -489,6 +489,14 @@ Polymer({
   },
 
   /**
+   * Whether new OOBE layout is enabled.
+   */
+  newLayoutEnabled_() {
+    return loadTimeData.valueExists('newLayoutEnabled') &&
+        loadTimeData.getBoolean('newLayoutEnabled');
+  },
+
+  /**
    * Called when focus is returned.
    * @param {boolean} reverse Is focus returned in reverse order?
    */
@@ -497,7 +505,7 @@ Polymer({
     // returned from the system tray in regular order. Because the webview is
     // the first focusable element of the screen and we want to eliminate extra
     // tab. Reverse tab doesn't need any adjustments here.
-    if (!reverse && this.uiStep == UIState.EULA)
+    if (!this.newLayoutEnabled_() && !reverse && this.uiStep == UIState.EULA)
       Polymer.RenderStatus.afterNextRender(
           this, () => this.$.crosEulaFrame.focus());
   },
