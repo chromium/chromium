@@ -164,8 +164,8 @@ class EventRouter : public KeyedService,
   EventListenerMap& listeners() { return listeners_; }
 
   // Registers an observer to be notified when an event listener for
-  // |event_name| is added or removed. There can currently be only one observer
-  // for each distinct |event_name|.
+  // |event_name| is added or removed. There can currently be multiple
+  // observers for each distinct |event_name|.
   void RegisterObserver(Observer* observer, const std::string& event_name);
 
   // Unregisters an observer from all events.
