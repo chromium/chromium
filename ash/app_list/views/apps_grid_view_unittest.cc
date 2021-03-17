@@ -1972,56 +1972,60 @@ TEST_F(AppsGridViewTest, ControlShiftArrowFolderLastItemOnPage) {
   EXPECT_TRUE(folder_item->FindChildItem(second_item_id));
 }
 
-// Flaky: crbug.com/1156634
-TEST_P(AppsGridViewTest, DISABLED_MouseDragFlipPage) {
+TEST_P(AppsGridViewTest, MouseDragFlipToNextPage) {
+  // Create 3 full pages of apps.
   model_->PopulateApps(3 * GetTilesPerPage());
   EXPECT_EQ(3, GetPaginationModel()->total_pages());
   EXPECT_EQ(0, GetPaginationModel()->selected_page());
 
-  gfx::Point from = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
-  gfx::Point to;
+  gfx::Point item_center = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
   const gfx::Rect apps_grid_bounds = apps_grid_view_->GetLocalBounds();
-  to = gfx::Point(apps_grid_bounds.width() / 2, apps_grid_bounds.bottom() + 1);
+  gfx::Point apps_grid_bottom_center =
+      gfx::Point(apps_grid_bounds.width() / 2, apps_grid_bounds.bottom() + 1);
 
-  // For fullscreen/bubble launcher, drag to the bottom/right of bounds.
+  // Drag an item to the bottom to start flipping pages.
   page_flip_waiter_->Reset();
-  SimulateDrag(AppsGridView::MOUSE, from, to);
-
-  EXPECT_EQ(to, GetDragViewCenter());
-
-  // Page should be flipped after sometime to hit page 1 and 2 then stop.
+  SimulateDrag(AppsGridView::MOUSE, item_center, apps_grid_bottom_center);
   while (test_api_->HasPendingPageFlip()) {
     page_flip_waiter_->Wait();
   }
 
-  // When apps grid gap is enabled, the user can drag an item to an extra page
-  // created at the end.
+  // We flip to an extra page created at the end.
   EXPECT_EQ("1,2,3", page_flip_waiter_->selected_pages());
   EXPECT_EQ(3, GetPaginationModel()->selected_page());
-  EXPECT_EQ(to, GetDragViewCenter());
+  EXPECT_EQ(apps_grid_bottom_center, GetDragViewCenter());
 
-  // Cancel drag and put the dragged view back to its ideal position so that
-  // the next drag would pick it up.
-  EndDrag(apps_grid_view_, true /*cancel*/);
-  test_api_->LayoutToIdealBounds();
+  // End the drag to satisfy checks in AppsGridView destructor.
+  EndDrag(apps_grid_view_, /*cancel=*/true);
+}
 
-  // Now drag to the top edge, and test the other direction.
-  to.set_y(apps_grid_bounds.y());
+TEST_P(AppsGridViewTest, MouseDragFlipToPreviousPage) {
+  // Create 3 full pages of apps.
+  model_->PopulateApps(3 * GetTilesPerPage());
+  EXPECT_EQ(3, GetPaginationModel()->total_pages());
 
+  // Select the last page.
+  GetPaginationModel()->SelectPage(2, /*animate=*/false);
+  EXPECT_EQ(2, GetPaginationModel()->selected_page());
+
+  gfx::Point item_center = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
+  gfx::Point apps_grid_top_center(apps_grid_view_->GetLocalBounds().width() / 2,
+                                  0);
+
+  // Drag an item to the top to start flipping pages.
   page_flip_waiter_->Reset();
-  SimulateDrag(AppsGridView::MOUSE, from, to);
-
-  EXPECT_EQ(to, GetDragViewCenter());
-
+  SimulateDrag(AppsGridView::MOUSE, item_center, apps_grid_top_center);
   while (test_api_->HasPendingPageFlip()) {
     page_flip_waiter_->Wait();
   }
 
+  // We flipped back to the first page.
   EXPECT_EQ("1,0", page_flip_waiter_->selected_pages());
   EXPECT_EQ(0, GetPaginationModel()->selected_page());
-  EXPECT_EQ(to, GetDragViewCenter());
+  EXPECT_EQ(apps_grid_top_center, GetDragViewCenter());
 
-  EndDrag(apps_grid_view_, true /*cancel*/);
+  // End the drag to satisfy checks in AppsGridView destructor.
+  EndDrag(apps_grid_view_, /*cancel=*/true);
 }
 
 TEST_F(AppsGridViewTest, UpdateFolderBackgroundOnCancelDrag) {
