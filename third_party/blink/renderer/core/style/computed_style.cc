@@ -131,16 +131,11 @@ scoped_refptr<ComputedStyle> ComputedStyle::CreateInitialStyle() {
   return base::AdoptRef(new ComputedStyle(PassKey()));
 }
 
-ComputedStyle& ComputedStyle::MutableInitialStyle() {
+const ComputedStyle& ComputedStyle::InitialStyle() {
   LEAK_SANITIZER_DISABLED_SCOPE;
-  DEFINE_STATIC_REF(ComputedStyle, initial_style,
+  DEFINE_STATIC_REF(const ComputedStyle, initial_style,
                     (ComputedStyle::CreateInitialStyle()));
   return *initial_style;
-}
-
-void ComputedStyle::InvalidateInitialStyle() {
-  MutableInitialStyle().SetTapHighlightColor(
-      ComputedStyleInitialValues::InitialTapHighlightColor());
 }
 
 scoped_refptr<ComputedStyle> ComputedStyle::CreateAnonymousStyleWithDisplay(

@@ -299,8 +299,6 @@ class ComputedStyle : public ComputedStyleBase,
   ALWAYS_INLINE ComputedStyle(const ComputedStyle&);
 
   static scoped_refptr<ComputedStyle> CreateInitialStyle();
-  // TODO(crbug.com/794841): Remove this. Initial style should not be mutable.
-  CORE_EXPORT static ComputedStyle& MutableInitialStyle();
 
  public:
   using PassKey = base::PassKey<ComputedStyle>;
@@ -317,8 +315,7 @@ class ComputedStyle : public ComputedStyleBase,
       const ComputedStyle& parent_style,
       const ComputedStyle& layout_parent_style);
   CORE_EXPORT static scoped_refptr<ComputedStyle> Clone(const ComputedStyle&);
-  static const ComputedStyle& InitialStyle() { return MutableInitialStyle(); }
-  static void InvalidateInitialStyle();
+  CORE_EXPORT static const ComputedStyle& InitialStyle();
 
   // Find out how two ComputedStyles differ. Used for figuring out if style
   // recalc needs to propagate style changes down the tree. The constants are

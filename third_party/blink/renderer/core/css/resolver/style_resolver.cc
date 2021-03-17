@@ -1059,6 +1059,8 @@ scoped_refptr<ComputedStyle> StyleResolver::InitialStyleForElement() {
       frame && !GetDocument().Printing() ? frame->PageZoomFactor() : 1);
   initial_style->SetEffectiveZoom(initial_style->Zoom());
   initial_style->SetInForcedColorsMode(GetDocument().InForcedColorsMode());
+  initial_style->SetTapHighlightColor(
+      ComputedStyleInitialValues::InitialTapHighlightColor());
 
   FontDescription document_font_description =
       initial_style->GetFontDescription();

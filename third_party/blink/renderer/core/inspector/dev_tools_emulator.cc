@@ -345,7 +345,6 @@ void DevToolsEmulator::EnableMobileEmulation() {
   is_mobile_layout_theme_enabled_ =
       RuntimeEnabledFeatures::MobileLayoutThemeEnabled();
   RuntimeEnabledFeatures::SetMobileLayoutThemeEnabled(true);
-  ComputedStyle::InvalidateInitialStyle();
   Page::PlatformColorsChanged();
   web_view_->GetPage()->GetSettings().SetForceAndroidOverlayScrollbar(true);
   web_view_->GetPage()->GetSettings().SetViewportStyle(
@@ -378,7 +377,6 @@ void DevToolsEmulator::DisableMobileEmulation() {
       is_orientation_event_enabled_);
   RuntimeEnabledFeatures::SetMobileLayoutThemeEnabled(
       is_mobile_layout_theme_enabled_);
-  ComputedStyle::InvalidateInitialStyle();
   Page::PlatformColorsChanged();
   web_view_->GetPage()->GetSettings().SetForceAndroidOverlayScrollbar(false);
   web_view_->GetPage()->GetSettings().SetViewportEnabled(
