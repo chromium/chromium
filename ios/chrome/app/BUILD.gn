@@ -163,6 +163,18 @@ source_set("app_metrics_app_state_agent") {
   ]
 }
 
+source_set("safe_mode_app_state_agent") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "safe_mode_app_state_agent.h",
+    "safe_mode_app_state_agent.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/application_delegate:app_state_header",
+  ]
+}
+
 source_set("app_internal") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -186,6 +198,7 @@ source_set("app_internal") {
     ":blocking_scene_commands",
     ":content_suggestions_scheduler_app_state_agent",
     ":mode",
+    ":safe_mode_app_state_agent",
     ":tests_hook",
     "//base",
     "//build:branding_buildflags",

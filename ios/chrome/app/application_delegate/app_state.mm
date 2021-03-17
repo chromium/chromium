@@ -154,6 +154,13 @@ const NSTimeInterval kMemoryFootprintRecordingTimeInterval = 5;
 // Agents attached to this app state.
 @property(nonatomic, strong) NSMutableArray<id<AppStateAgent>>* agents;
 
+// Operational blocks to be run by the local runloop that are queued by the
+// init stage agents.
+@property(nonatomic, strong) NSMutableArray* stageQueue;
+
+// Redefined internaly as readwrite.
+@property(nonatomic, assign, readwrite) InitStage initStage;
+
 @end
 
 @implementation AppState
@@ -189,6 +196,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
                  object:nil];
       }
     }
+
+    _stageQueue = [NSMutableArray new];
   }
   return self;
 }
@@ -552,6 +561,13 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   [agent setAppState:self];
 }
 
+- (void)queueTransitionToNextInitStage {
+  __weak AppState* weakSelf = self;
+  [_stageQueue addObject:(^{
+                 [weakSelf advanceToNextInitStage];
+               })];
+}
+
 #pragma mark - Multiwindow-related
 
 - (SceneState*)foregroundActiveScene {
@@ -602,6 +618,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
 #pragma mark - SafeModeCoordinatorDelegate Implementation
 
+// TODO(crbug.com/1178809): Handle this with an app state agent when
+// transitioning out of safe mode.
 - (void)coordinatorDidExitSafeMode:(nonnull SafeModeCoordinator*)coordinator {
   [self stopSafeMode];
   [_browserLauncher startUpBrowserToStage:INITIALIZATION_STAGE_FOREGROUND];
@@ -648,6 +666,9 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   _userInteracted = YES;
   [self saveLaunchDetailsToDefaults];
 
+  [self startInitStages];
+
+  // TODO(crbug.com/1178809): Move this logic to the safe mode agent.
   if ([SafeModeCoordinator shouldStart]) {
     self.inSafeMode = YES;
     if (!base::ios::IsMultiwindowSupported()) {
@@ -657,6 +678,9 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
     }
     return;
   }
+
+  // TODO(crbug.com/1178809): Move the logic below to a Final Init Stage agent
+  // to make sure that the logic is only executed when getting out of safe mode.
 
   // Don't add code here. Add it in MainController's
   // -startUpBrowserForegroundInitialization.
@@ -687,6 +711,41 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
   // Start recording info about this session.
   [[PreviousSessionInfo sharedInstance] beginRecordingCurrentSession];
+}
+
+// Advances to the next init stage.
+- (void)advanceToNextInitStage {
+  // The app is done with all init stages, nothing to do.
+  if (self.initStage == InitStageFinal)
+    return;
+
+  InitStage newInitStage = static_cast<InitStage>(self.initStage + 1);
+
+  [self.observers appState:self willTransitionToInitStage:newInitStage];
+  self.initStage = newInitStage;
+  [self.observers appState:self didTransitionToInitStage:self.initStage];
+}
+
+// Starts the transition through init stages.
+- (void)startInitStages {
+  __weak AppState* weakSelf = self;
+  [_stageQueue addObject:(^{
+                 [weakSelf.observers appState:weakSelf
+                     willTransitionToInitStage:InitStageStart];
+                 [weakSelf.observers appState:weakSelf
+                     didTransitionToInitStage:InitStageStart];
+               })];
+  [self executeInitStageQueue];
+}
+
+// Executes the blocks in the init stage queue until the queue is empty. This
+// will also execute the new blocks that are queued on the fly.
+- (void)executeInitStageQueue {
+  while ([_stageQueue count] > 0) {
+    void (^stageBlock)() = [_stageQueue objectAtIndex:0];
+    stageBlock();
+    [_stageQueue removeObjectAtIndex:0];
+  }
 }
 
 #pragma mark - UIBlockerManager

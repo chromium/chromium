@@ -47,6 +47,7 @@ source_set("unit_tests") {
     "//ios/chrome/app",
     "//ios/chrome/app:app_internal",
     "//ios/chrome/app:mode",
+    "//ios/chrome/app:safe_mode_app_state_agent",
     "//ios/chrome/app/intents",
     "//ios/chrome/app/spotlight",
     "//ios/chrome/app/startup",
@@ -140,6 +141,7 @@ source_set("app_state_header") {
   sources = [
     "app_state.h",
     "app_state_agent.h",
+    "app_state_observer.h",
   ]
   public_deps = [
     "//ios/chrome/browser/ui/main:scene_state_observer",

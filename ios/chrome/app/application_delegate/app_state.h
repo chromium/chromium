@@ -10,6 +10,7 @@
 #include <memory>
 
 #import "ios/chrome/app/application_delegate/app_state_agent.h"
+#import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/browser/ui/main/scene_state_observer.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/ui_blocker_manager.h"
 
@@ -29,26 +30,6 @@ class ChromeBrowserState;
 namespace base {
 class TimeTicks;
 }
-
-@protocol AppStateObserver <NSObject>
-
-@optional
-
-// Called when a scene is connected.
-// On iOS 12, called when the mainSceneState is set.
-- (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState;
-
-// Called when the first scene initializes its UI.
-- (void)appState:(AppState*)appState
-    firstSceneHasInitializedUI:(SceneState*)sceneState;
-
-// Called after the app exits safe mode.
-- (void)appStateDidExitSafeMode:(AppState*)appState;
-
-// Called when |AppState.lastTappedWindow| changes.
-- (void)appState:(AppState*)appState lastTappedWindowChanged:(UIWindow*)window;
-
-@end
 
 // Represents the application state and responds to application state changes
 // and system events.
@@ -108,6 +89,9 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
 // Timestamp of when a scene was last becoming active. Can be null.
 @property(nonatomic, assign) base::TimeTicks lastTimeInForeground;
+
+// The initialization stage the app is currently at.
+@property(nonatomic, readonly) InitStage initStage;
 
 // Saves the launchOptions to be used from -newTabFromLaunchOptions. If the
 // application is in background, initialize the browser to basic. If not, launch
@@ -176,6 +160,10 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 // Adds a new agent. Agents are owned by the app state.
 // This automatically sets the app state on the |agent|.
 - (void)addAgent:(id<AppStateAgent>)agent;
+
+// Queue the transition to the next app initialization stage. Will stop
+// transitioning when the Final stage is reached.
+- (void)queueTransitionToNextInitStage;
 
 @end
 

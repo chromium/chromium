@@ -34,6 +34,7 @@
 #import "ios/chrome/app/content_suggestions_scheduler_app_state_agent.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/app/memory_monitor.h"
+#import "ios/chrome/app/safe_mode_app_state_agent.h"
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
 #include "ios/chrome/app/startup/chrome_app_startup_parameters.h"
 #include "ios/chrome/app/startup/chrome_main_starter.h"
@@ -616,6 +617,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [appState addAgent:[[AppMetricsAppStateAgent alloc] init]];
   [appState addAgent:[[ContentSuggestionsSchedulerAppAgent alloc] init]];
   [appState addAgent:[[IncognitoUsageAppStateAgent alloc] init]];
+  [appState addAgent:[[SafeModeAppAgent alloc] init]];
 
   // Create the window accessibility agent only when multuple windows are
   // possible.
