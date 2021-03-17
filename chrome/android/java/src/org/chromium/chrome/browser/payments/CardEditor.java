@@ -15,10 +15,10 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.CreditCardScanner;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
@@ -30,11 +30,14 @@ import org.chromium.chrome.browser.autofill.prefeditor.EditorFieldModel.EditorVa
 import org.chromium.chrome.browser.autofill.prefeditor.EditorModel;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.DropdownKeyValue;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.payments.BasicCardUtils;
 import org.chromium.components.payments.MethodStrings;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentMethodData;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -265,8 +268,19 @@ public class CardEditor
         };
         mCalendar.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-        ChromeActivity activity = ChromeActivity.fromWebContents(mWebContents);
-        mIsIncognito = activity != null && activity.getCurrentTabModel().isIncognito();
+        mIsIncognito = resolveIncognitoState(mWebContents.getTopLevelNativeWindow());
+    }
+
+    /** Returns whether the user is currently incognito, defaults to false. */
+    private boolean resolveIncognitoState(@Nullable WindowAndroid windowAndroid) {
+        if (windowAndroid == null) return false;
+
+        Supplier<TabModelSelector> tabModelSelectorSupplier =
+                TabModelSelectorSupplier.from(windowAndroid);
+        assert tabModelSelectorSupplier != null;
+        if (!tabModelSelectorSupplier.hasValue()) return false;
+
+        return tabModelSelectorSupplier.get().isIncognitoSelected();
     }
 
     private boolean isCardNumberLengthMaximum(@Nullable CharSequence value) {
