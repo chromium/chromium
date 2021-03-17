@@ -7,6 +7,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "third_party/blink/public/web/web_frame_content_dumper.h"
 
 namespace optimization_guide {
 
@@ -30,7 +31,8 @@ base::Optional<mojom::TextDumpEvent> LayoutEventAsMojoEvent(
 }  // namespace
 
 PageTextAgent::PageTextAgent(content::RenderFrame* frame)
-    : content::RenderFrameObserverTracker<PageTextAgent>(frame) {
+    : content::RenderFrameObserver(frame),
+      content::RenderFrameObserverTracker<PageTextAgent>(frame) {
   if (!frame) {
     // For unittesting.
     return;
@@ -49,6 +51,11 @@ base::OnceCallback<void(const std::u16string&)>
 PageTextAgent::MaybeRequestTextDumpOnLayoutEvent(
     blink::WebMeaningfulLayout event,
     uint32_t* max_size) {
+  // This code path is only supported for mainframes, when there is a frame.
+  if (render_frame() && !render_frame()->IsMainFrame()) {
+    return base::NullCallback();
+  }
+
   base::Optional<mojom::TextDumpEvent> mojo_event =
       LayoutEventAsMojoEvent(event);
   if (!mojo_event) {
@@ -92,6 +99,54 @@ void PageTextAgent::OnPageTextDump(
     consumer->OnTextDumpChunk(std::move(chunk));
   }
   consumer->OnChunksEnd();
+}
+
+void PageTextAgent::DidFinishLoad() {
+  if (!render_frame()) {
+    return;
+  }
+
+  // Only subframes should use this code path.
+  if (render_frame()->IsMainFrame()) {
+    return;
+  }
+
+  // Only AMP subframes are supported.
+  if (!is_amp_page_) {
+    return;
+  }
+
+  auto requests_iter =
+      requests_by_event_.find(mojom::TextDumpEvent::kFinishedLoad);
+  if (requests_iter == requests_by_event_.end()) {
+    return;
+  }
+
+  mojo::PendingRemote<mojom::PageTextConsumer> pending_consumer =
+      std::move(requests_iter->second.second);
+  uint32_t max_size = requests_iter->second.first->max_size;
+  requests_by_event_.erase(mojom::TextDumpEvent::kFinishedLoad);
+
+  std::u16string content = blink::WebFrameContentDumper::DumpFrameTreeAsText(
+                               render_frame()->GetWebFrame(), max_size)
+                               .Utf16();
+  OnPageTextDump(std::move(pending_consumer), content);
+}
+
+void PageTextAgent::DidStartNavigation(
+    const GURL& url,
+    base::Optional<blink::WebNavigationType> navigation_type) {
+  is_amp_page_ = false;
+  // Note that |requests_by_event_| should NOT be reset here. Requests and
+  // navigations from the browser race with each other, and the text dump
+  // request normally wins. We don't want to drop a request when its navigation
+  // is just about to start.
+}
+
+void PageTextAgent::DidObserveLoadingBehavior(
+    blink::LoadingBehaviorFlag behavior) {
+  is_amp_page_ |=
+      behavior & blink::LoadingBehaviorFlag::kLoadingBehaviorAmpDocumentLoaded;
 }
 
 void PageTextAgent::RequestPageTextDump(

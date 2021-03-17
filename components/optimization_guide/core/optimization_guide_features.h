@@ -27,6 +27,11 @@ extern const base::Feature kContextMenuPerformanceInfoAndRemoteHintFetching;
 extern const base::Feature kOptimizationTargetPrediction;
 extern const base::Feature kOptimizationGuideModelDownloading;
 extern const base::Feature kPageContentAnnotations;
+extern const base::Feature kPageTextExtraction;
+
+// The grace period duration for how long to give outstanding page text dump
+// requests to respond after DidFinishLoad.
+base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod();
 
 // The maximum number of hosts that can be stored in the
 // |kHintsFetcherTopHostBlocklist| dictionary pref when initialized. The top

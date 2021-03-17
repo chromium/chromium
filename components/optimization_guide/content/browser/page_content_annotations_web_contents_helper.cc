@@ -5,7 +5,6 @@
 #include "components/optimization_guide/content/browser/page_content_annotations_web_contents_helper.h"
 
 #include "base/bind.h"
-#include "base/strings/utf_string_conversions.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/public/browser/navigation_handle.h"
@@ -40,14 +39,10 @@ std::unique_ptr<PageTextObserver::ConsumerTextDumpRequest>
 PageContentAnnotationsWebContentsHelper::MaybeRequestFrameTextDump(
     content::NavigationHandle* navigation_handle) {
   DCHECK(navigation_handle->HasCommitted());
+  DCHECK(navigation_handle->IsInMainFrame());
 
   if (!navigation_handle->GetURL().SchemeIsHTTPOrHTTPS())
     return nullptr;
-
-  if (!navigation_handle->IsInMainFrame())
-    return nullptr;
-  // TODO(crbug/1177102): Change above to also annotate content for subframes
-  // when API exposes whether it makes up most of the frame.
 
   // TODO(crbug/1177102): Figure out how to deal with same document navigations.
 
@@ -55,7 +50,8 @@ PageContentAnnotationsWebContentsHelper::MaybeRequestFrameTextDump(
       std::make_unique<PageTextObserver::ConsumerTextDumpRequest>();
   request->max_size = max_size_for_text_dump_;
   request->events = {mojom::TextDumpEvent::kFirstLayout};
-  request->callback = base::BindRepeating(
+  request->dump_amp_subframes = true;
+  request->callback = base::BindOnce(
       &PageContentAnnotationsWebContentsHelper::OnTextDumpReceived,
       weak_ptr_factory_.GetWeakPtr(),
       PageContentAnnotationsService::CreateHistoryVisitFromWebContents(
@@ -65,8 +61,20 @@ PageContentAnnotationsWebContentsHelper::MaybeRequestFrameTextDump(
 
 void PageContentAnnotationsWebContentsHelper::OnTextDumpReceived(
     const HistoryVisit& visit,
-    const std::u16string& text) {
-  page_content_annotations_service_->Annotate(visit, base::UTF16ToUTF8(text));
+    const PageTextDumpResult& result) {
+  if (result.empty()) {
+    return;
+  }
+
+  // If the page had AMP frames, then only use that content. Otherwise, use the
+  // mainframe.
+  if (result.GetAMPTextContent()) {
+    page_content_annotations_service_->Annotate(visit,
+                                                *result.GetAMPTextContent());
+    return;
+  }
+  page_content_annotations_service_->Annotate(
+      visit, *result.GetMainFrameTextContent());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PageContentAnnotationsWebContentsHelper)

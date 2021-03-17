@@ -10,10 +10,14 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -35,9 +39,10 @@ namespace {
 // in stack.
 class PageTextChunkConsumer : public mojom::PageTextConsumer {
  public:
-  PageTextChunkConsumer(mojo::PendingReceiver<mojom::PageTextConsumer> receiver,
-                        uint32_t max_size,
-                        base::OnceCallback<void(std::u16string)> on_complete)
+  PageTextChunkConsumer(
+      mojo::PendingReceiver<mojom::PageTextConsumer> receiver,
+      uint32_t max_size,
+      base::OnceCallback<void(const std::u16string&)> on_complete)
       : remaining_size_(max_size),
         on_complete_(std::move(on_complete)),
         receiver_(this, std::move(receiver)) {
@@ -88,7 +93,7 @@ class PageTextChunkConsumer : public mojom::PageTextConsumer {
   // While |on_complete_| is non-null, the mojo pipe is also bound. Once the
   // |on_complete_| callback is run, this class is no longer active and can be
   // deleted (in stack with the callback).
-  base::OnceCallback<void(std::u16string)> on_complete_;
+  base::OnceCallback<void(const std::u16string&)> on_complete_;
   mojo::Receiver<mojom::PageTextConsumer> receiver_;
 
   // All chunks that have been read from the data pipe. These will be
@@ -130,6 +135,7 @@ class PageTextChunkConsumer : public mojom::PageTextConsumer {
 // along with copies of the scoped_refptr, making mojo the effective owner of
 // this class. Note that one or more requests have been made at this point and
 // this class will remain alive until they have all been completed and handled.
+// The count of outgoing requests sent to a renderer is returned.
 //
 // (4) The PageTextConsumer will receive chunks of the dumped page text until
 // either (a) all chunks have been read, or (b) the max length is reached. When
@@ -137,38 +143,70 @@ class PageTextChunkConsumer : public mojom::PageTextConsumer {
 // back to RequestMediator in a callback.
 //
 // (5) The callback to RequestMediator is the end of the line for a text dump
-// response as the original requests' callbacks are now passed the dumped
-// string16. At this time, the self scoped_refptr will fall out of scope and be
-// destroyed. If it was the last such pointer, then |this| will be destroyed.
+// response as the |on_complete_| callback is run. At this time, the self
+// scoped_refptr will fall out of scope and be destroyed. If it was the last
+// such pointer, then |this| will be destroyed.
 class RequestMediator : public base::RefCounted<RequestMediator> {
  public:
   RequestMediator() = default;
 
   void AddConsumerRequest(
-      std::unique_ptr<PageTextObserver::ConsumerTextDumpRequest> request) {
-    DCHECK(request->callback);
-    DCHECK(!request->events.empty());
-    DCHECK_GT(request->max_size, 0U);
+      const PageTextObserver::ConsumerTextDumpRequest& request) {
+    DCHECK(!request.events.empty());
+    DCHECK_GT(request.max_size, 0U);
 
-    for (mojom::TextDumpEvent event : request->events) {
+    for (mojom::TextDumpEvent event : request.events) {
       if (max_size_by_event_.find(event) == max_size_by_event_.end()) {
         max_size_by_event_.emplace(event, 0U);
       }
       auto event_to_max_size_iter = max_size_by_event_.find(event);
       event_to_max_size_iter->second =
-          std::max(event_to_max_size_iter->second, request->max_size);
+          std::max(event_to_max_size_iter->second, request.max_size);
     }
-
-    requests_.push_back(std::move(request));
   }
 
-  void MakeSelfOwnedAndDispatchRequests(
+  void AddAMPRequest(const PageTextObserver::ConsumerTextDumpRequest& request) {
+    if (!request.dump_amp_subframes) {
+      return;
+    }
+
+    auto iter = max_size_by_event_.find(mojom::TextDumpEvent::kFinishedLoad);
+    if (iter == max_size_by_event_.end()) {
+      max_size_by_event_.emplace(mojom::TextDumpEvent::kFinishedLoad,
+                                 request.max_size);
+      return;
+    }
+
+    iter->second = std::max(iter->second, request.max_size);
+  }
+
+  size_t MakeSelfOwnedAndDispatchRequests(
       scoped_refptr<RequestMediator> self,
-      mojo::AssociatedRemote<mojom::PageTextService> renderer_text_service) {
+      base::RepeatingCallback<void(base::Optional<FrameTextDumpResult>)>
+          on_frame_text_dump_complete,
+      content::RenderFrameHost* rfh) {
     DCHECK_EQ(self.get(), this);
+
+    if (max_size_by_event_.empty()) {
+      return 0;
+    }
+
+    on_frame_text_dump_complete_ = std::move(on_frame_text_dump_complete);
+
+    mojo::AssociatedRemote<mojom::PageTextService> renderer_text_service;
+    rfh->GetRemoteAssociatedInterfaces()->GetInterface(&renderer_text_service);
+
+    bool is_subframe = rfh->GetMainFrame() != rfh;
+    auto rfh_id = rfh->GetGlobalFrameRoutingId();
 
     for (const auto& event_to_max_size_iter : max_size_by_event_) {
       mojo::PendingRemote<mojom::PageTextConsumer> consumer_remote;
+
+      FrameTextDumpResult preliminary_result = FrameTextDumpResult::Initialize(
+          event_to_max_size_iter.first, rfh_id,
+          // Note that subframes only take text dumps iff they are an AMP
+          // frame. If that even changes, this won't work anymore.
+          /*amp_frame=*/is_subframe);
 
       std::unique_ptr<PageTextChunkConsumer> consumer =
           std::make_unique<PageTextChunkConsumer>(
@@ -178,8 +216,7 @@ class RequestMediator : public base::RefCounted<RequestMediator> {
               // passed to |consumer|. See comment at end of method for more
               // detail.
               base::BindOnce(&RequestMediator::OnPageTextAsString,
-                             base::Unretained(this), self,
-                             event_to_max_size_iter.first));
+                             base::Unretained(this), self, preliminary_result));
 
       auto request = mojom::PageTextDumpRequest::New();
       request->max_size = event_to_max_size_iter.second;
@@ -195,6 +232,8 @@ class RequestMediator : public base::RefCounted<RequestMediator> {
       // destroy |this| (if it was the last owning reference).
       consumers_.emplace(std::move(consumer));
     }
+
+    return max_size_by_event_.size();
   }
 
  private:
@@ -202,18 +241,23 @@ class RequestMediator : public base::RefCounted<RequestMediator> {
   ~RequestMediator() = default;
 
   void OnPageTextAsString(scoped_refptr<RequestMediator> self,
-                          mojom::TextDumpEvent event,
-                          const std::u16string page_text) {
-    for (const auto& request : requests_) {
-      if (request->events.find(event) != request->events.end()) {
-        request->callback.Run(page_text);
-      }
+                          const FrameTextDumpResult& preliminary_result,
+                          const std::u16string& page_text) {
+    DCHECK(on_frame_text_dump_complete_);
+
+    if (page_text.empty()) {
+      on_frame_text_dump_complete_.Run(base::nullopt);
+      return;
     }
+
+    on_frame_text_dump_complete_.Run(
+        preliminary_result.CompleteWithContents(page_text));
   }
 
-  // All text dumps requests.
-  std::vector<std::unique_ptr<PageTextObserver::ConsumerTextDumpRequest>>
-      requests_;
+  // Called whenever a text dump is completed for an event. This called as many
+  // times as events requested, which can be greater than 1.
+  base::RepeatingCallback<void(base::Optional<FrameTextDumpResult>)>
+      on_frame_text_dump_complete_;
 
   // All |PageTextChunkConsumer|'s that are owned by this.
   std::set<std::unique_ptr<PageTextChunkConsumer>> consumers_;
@@ -239,13 +283,19 @@ PageTextObserver* PageTextObserver::GetOrCreateForWebContents(
   return PageTextObserver::FromWebContents(web_contents);
 }
 
-void PageTextObserver::DidFinishNavigation(content::NavigationHandle* handle) {
-  if (consumers_.empty()) {
+void PageTextObserver::DidStartNavigation(content::NavigationHandle* handle) {
+  if (!handle->IsInMainFrame()) {
     return;
   }
 
+  requests_.clear();
+  page_result_.reset();
+  outstanding_requests_ = 0;
+  outstanding_requests_grace_timer_.reset();
+}
+
+void PageTextObserver::DidFinishNavigation(content::NavigationHandle* handle) {
   // Only main frames are supported for right now.
-  // TODO(crbug/1163244): Add subframe support.
   if (!handle->IsInMainFrame()) {
     return;
   }
@@ -254,23 +304,97 @@ void PageTextObserver::DidFinishNavigation(content::NavigationHandle* handle) {
     return;
   }
 
-  content::RenderFrameHost* render_frame_host = handle->GetRenderFrameHost();
+  if (consumers_.empty()) {
+    return;
+  }
 
   scoped_refptr<RequestMediator> mediator =
       base::MakeRefCounted<RequestMediator>();
   for (Consumer* consumer : consumers_) {
     auto request = consumer->MaybeRequestFrameTextDump(handle);
-    if (request) {
-      mediator->AddConsumerRequest(std::move(request));
+    if (!request) {
+      continue;
     }
+    mediator->AddConsumerRequest(*request);
+    requests_.push_back(std::move(request));
   }
 
-  mojo::AssociatedRemote<mojom::PageTextService> renderer_text_service;
-  render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
-      &renderer_text_service);
+  outstanding_requests_ += mediator->MakeSelfOwnedAndDispatchRequests(
+      mediator,
+      base::BindRepeating(&PageTextObserver::OnFrameTextDumpCompleted,
+                          weak_factory_.GetWeakPtr()),
+      handle->GetRenderFrameHost());
+}
 
-  mediator->MakeSelfOwnedAndDispatchRequests(mediator,
-                                             std::move(renderer_text_service));
+bool PageTextObserver::IsOOPIF(content::RenderFrameHost* rfh) const {
+  return rfh->GetProcess()->GetID() !=
+         rfh->GetMainFrame()->GetProcess()->GetID();
+}
+
+void PageTextObserver::RenderFrameCreated(content::RenderFrameHost* rfh) {
+  if (!IsOOPIF(rfh)) {
+    return;
+  }
+
+  scoped_refptr<RequestMediator> mediator =
+      base::MakeRefCounted<RequestMediator>();
+  for (const auto& request : requests_) {
+    mediator->AddAMPRequest(*request);
+  }
+
+  outstanding_requests_ += mediator->MakeSelfOwnedAndDispatchRequests(
+      mediator,
+      base::BindRepeating(&PageTextObserver::OnFrameTextDumpCompleted,
+                          weak_factory_.GetWeakPtr()),
+      rfh);
+}
+
+void PageTextObserver::OnFrameTextDumpCompleted(
+    base::Optional<FrameTextDumpResult> frame_result) {
+  // |frame_result| will be null in the event the RFH dies, in which case we can
+  // no longer expect the request to be fulfilled, so it should not be counted
+  // as outstanding anymore.
+  outstanding_requests_--;
+
+  if (frame_result) {
+    if (!page_result_) {
+      page_result_ = std::make_unique<PageTextDumpResult>();
+    }
+    page_result_->AddFrameTextDumpResult(*frame_result);
+  }
+
+  if (!!outstanding_requests_grace_timer_ && outstanding_requests_ == 0) {
+    outstanding_requests_grace_timer_.reset();
+    DispatchResponses();
+  }
+}
+
+void PageTextObserver::DidFinishLoad(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& validated_url) {
+  if (outstanding_requests_ > 0) {
+    outstanding_requests_grace_timer_ = std::make_unique<base::OneShotTimer>();
+    outstanding_requests_grace_timer_->Start(
+        FROM_HERE, features::PageTextExtractionOutstandingRequestsGracePeriod(),
+        base::BindOnce(&PageTextObserver::DispatchResponses,
+                       base::Unretained(this)));
+    return;
+  }
+  DispatchResponses();
+}
+
+void PageTextObserver::DispatchResponses() {
+  outstanding_requests_grace_timer_.reset();
+
+  if (!page_result_) {
+    return;
+  }
+
+  for (const auto& consumer_request : requests_) {
+    std::move(consumer_request->callback).Run(*page_result_);
+  }
+  requests_.clear();
+  page_result_.reset();
 }
 
 void PageTextObserver::AddConsumer(Consumer* consumer) {

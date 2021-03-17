@@ -6,7 +6,9 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
+#include "components/optimization_guide/content/browser/page_text_dump_result.h"
 #include "components/optimization_guide/content/browser/test_optimization_guide_decider.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
@@ -91,19 +93,11 @@ class PageContentAnnotationsWebContentsHelperTest
   TestPageTextObserver* page_text_observer() { return page_text_observer_; }
 
   std::unique_ptr<PageTextObserver::ConsumerTextDumpRequest>
-  RequestTextDumpForUrl(const GURL& url, bool is_main_frame) {
-    content::RenderFrameHost* frame = main_rfh();
-    if (!is_main_frame) {
-      // Commit main frame, so we can attach the subframe.
-      content::NavigationSimulator::NavigateAndCommitFromBrowser(
-          web_contents(), GURL("http://test.com"));
-      frame = content::RenderFrameHostTester::For(main_rfh())
-                  ->AppendChild("subframe");
-    }
-    content::MockNavigationHandle navigation_handle(url, frame);
+  RequestTextDumpForUrl(const GURL& url) {
+    content::MockNavigationHandle navigation_handle(url, main_rfh());
     navigation_handle.set_url(url);
     // PageTextObserver is guaranteed to call MaybeRequestFrameTextDump after
-    // the navigation has been committeed.
+    // the navigation has been committed.
     navigation_handle.set_has_committed(true);
     return helper()->MaybeRequestFrameTextDump(&navigation_handle);
   }
@@ -121,15 +115,7 @@ TEST_F(PageContentAnnotationsWebContentsHelperTest, HooksIntoPageTextObserver) {
 
 TEST_F(PageContentAnnotationsWebContentsHelperTest,
        DoesNotRequestForNonHttpHttps) {
-  EXPECT_EQ(
-      RequestTextDumpForUrl(GURL("chrome://new-tab"), /*is_main_frame=*/true),
-      nullptr);
-}
-
-TEST_F(PageContentAnnotationsWebContentsHelperTest, DoesNotRequestForSubframe) {
-  EXPECT_EQ(
-      RequestTextDumpForUrl(GURL("http://test.com"), /*is_main_frame=*/false),
-      nullptr);
+  EXPECT_EQ(RequestTextDumpForUrl(GURL("chrome://new-tab")), nullptr);
 }
 
 TEST_F(PageContentAnnotationsWebContentsHelperTest,
@@ -141,11 +127,23 @@ TEST_F(PageContentAnnotationsWebContentsHelperTest,
       web_contents(), GURL("http://test.com"));
 
   std::unique_ptr<PageTextObserver::ConsumerTextDumpRequest> request =
-      RequestTextDumpForUrl(GURL("http://test.com"), /*is_main_frame=*/true);
+      RequestTextDumpForUrl(GURL("http://test.com"));
   ASSERT_TRUE(request);
+  ASSERT_TRUE(request->callback);
+  EXPECT_EQ(features::MaxSizeForPageContentTextDump(), request->max_size);
+  EXPECT_TRUE(request->dump_amp_subframes);
+  EXPECT_EQ(std::set<mojom::TextDumpEvent>{mojom::TextDumpEvent::kFirstLayout},
+            request->events);
 
   // Invoke OnTextDumpReceived.
-  std::move(request->callback).Run(base::ASCIIToUTF16("some text"));
+  FrameTextDumpResult frame_result =
+      FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFirstLayout,
+                                      content::GlobalFrameRoutingId(),
+                                      /*amp_frame=*/false)
+          .CompleteWithContents(base::ASCIIToUTF16("some text"));
+  PageTextDumpResult result;
+  result.AddFrameTextDumpResult(frame_result);
+  std::move(request->callback).Run(std::move(result));
 
   base::Optional<std::pair<HistoryVisit, std::string>> last_annotation_request =
       service()->last_annotation_request();

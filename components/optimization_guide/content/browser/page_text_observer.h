@@ -11,6 +11,8 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
+#include "components/optimization_guide/content/browser/page_text_dump_result.h"
 #include "components/optimization_guide/content/mojom/page_text_service.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -50,7 +52,7 @@ class PageTextObserver : public content::WebContentsObserver,
 
     // The callback that is used to provide dumped page text.
     using TextDumpCallback =
-        base::RepeatingCallback<void(const std::u16string&)>;
+        base::OnceCallback<void(const PageTextDumpResult&)>;
     TextDumpCallback callback;
 
     // The max size of the text dump in bytes. Note that the actual size
@@ -58,6 +60,12 @@ class PageTextObserver : public content::WebContentsObserver,
     // another consumer requests a greater amount on the same event, or less on
     // pages with little text.
     uint32_t max_size = 0;
+
+    // Set when subframe text dumps should be taken on AMP subframes. A text
+    // dump of the mainframe will always also be taken. Consumer who set this
+    // should use |PageTextDumpResult::ConcatenateWithAMPHandling| on the
+    // |callback|.
+    bool dump_amp_subframes = false;
 
     // All of the |TextDumpEvent|'s that have been requested.
     std::set<mojom::TextDumpEvent> events;
@@ -79,7 +87,11 @@ class PageTextObserver : public content::WebContentsObserver,
   virtual void RemoveConsumer(Consumer* consumer);
 
   // content::WebContentsObserver:
+  void DidStartNavigation(content::NavigationHandle* handle) override;
   void DidFinishNavigation(content::NavigationHandle* handle) override;
+  void RenderFrameCreated(content::RenderFrameHost* rfh) override;
+  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
+                     const GURL& validated_url) override;
 
   PageTextObserver(const PageTextObserver&) = delete;
   PageTextObserver& operator=(const PageTextObserver&) = delete;
@@ -87,11 +99,31 @@ class PageTextObserver : public content::WebContentsObserver,
  protected:
   explicit PageTextObserver(content::WebContents* web_contents);
 
+  // Virtual for testing.
+  virtual bool IsOOPIF(content::RenderFrameHost* rfh) const;
+
  private:
   friend class content::WebContentsUserData<PageTextObserver>;
 
+  void OnFrameTextDumpCompleted(
+      base::Optional<FrameTextDumpResult> frame_result);
+
+  void DispatchResponses();
+
   // All registered consumers.
   std::set<Consumer*> consumers_;
+
+  // A persisted set of consumer requests.
+  std::vector<std::unique_ptr<ConsumerTextDumpRequest>> requests_;
+
+  std::unique_ptr<PageTextDumpResult> page_result_;
+
+  // |outstanding_requests_grace_timer_| is set after |DidFinishLoad| if the
+  // number of |outstanding_requests_| is > 0. When the timer fires, the
+  // |page_result_| will be finialized and dispatched to consumers (in
+  // |DispatchResponses|).
+  std::unique_ptr<base::OneShotTimer> outstanding_requests_grace_timer_;
+  size_t outstanding_requests_ = 0;
 
   base::WeakPtrFactory<PageTextObserver> weak_factory_{this};
 

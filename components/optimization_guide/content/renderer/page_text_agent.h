@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "components/optimization_guide/content/mojom/page_text_service.mojom.h"
+#include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -27,10 +28,11 @@ namespace optimization_guide {
 
 // PageTextAgent is the interface between ChromeRenderFrameObserver and
 // mojom::PageTextService. It currently supports requesting and getting text
-// dumps during |content::RenderFrameObserver::DidMeaningfulLayout|, but more
-// events will be added in the future.
+// dumps during |content::RenderFrameObserver::DidMeaningfulLayout|, and
+// |DidFinishLoad| for subframes.
 class PageTextAgent
     : public mojom::PageTextService,
+      public content::RenderFrameObserver,
       public content::RenderFrameObserverTracker<PageTextAgent> {
  public:
   explicit PageTextAgent(content::RenderFrame* frame);
@@ -52,6 +54,14 @@ class PageTextAgent
       mojom::PageTextDumpRequestPtr request,
       mojo::PendingRemote<mojom::PageTextConsumer> consumer) override;
 
+  // content::RenderFrameObserver:
+  void OnDestruct() override {}
+  void DidObserveLoadingBehavior(blink::LoadingBehaviorFlag behavior) override;
+  void DidStartNavigation(
+      const GURL& url,
+      base::Optional<blink::WebNavigationType> navigation_type) override;
+  void DidFinishLoad() override;
+
   PageTextAgent(const PageTextAgent&) = delete;
   PageTextAgent& operator=(const PageTextAgent&) = delete;
 
@@ -68,6 +78,9 @@ class PageTextAgent
       std::pair<mojom::PageTextDumpRequestPtr,
                 mojo::PendingRemote<mojom::PageTextConsumer>>;
   std::map<mojom::TextDumpEvent, RequestAndConsumer> requests_by_event_;
+
+  // Set when an AMP page is detected from loading behavior flags.
+  bool is_amp_page_ = false;
 
   mojo::AssociatedReceiverSet<mojom::PageTextService> receivers_;
 

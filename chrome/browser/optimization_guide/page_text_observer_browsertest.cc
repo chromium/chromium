@@ -9,6 +9,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/optional.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -25,8 +27,19 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace optimization_guide {
+
+namespace {
+
+FrameTextDumpResult MakeFrameDump(mojom::TextDumpEvent event,
+                                  content::GlobalFrameRoutingId rfh_id,
+                                  bool amp_frame,
+                                  const std::u16string& contents) {
+  return FrameTextDumpResult::Initialize(event, rfh_id, amp_frame)
+      .CompleteWithContents(contents);
+}
 
 class TestConsumer : public PageTextObserver::Consumer {
  public:
@@ -36,16 +49,18 @@ class TestConsumer : public PageTextObserver::Consumer {
   void Reset() { was_called_ = false; }
 
   void PopulateRequest(uint32_t max_size,
-                       const std::set<mojom::TextDumpEvent>& events) {
+                       const std::set<mojom::TextDumpEvent>& events,
+                       bool request_amp = false) {
     request_ = std::make_unique<PageTextObserver::ConsumerTextDumpRequest>();
     request_->max_size = max_size;
     request_->events = events;
-    request_->callback = base::BindRepeating(&TestConsumer::OnGotTextDump,
-                                             base::Unretained(this));
+    request_->callback =
+        base::BindOnce(&TestConsumer::OnGotTextDump, base::Unretained(this));
+    request_->dump_amp_subframes = request_amp;
   }
 
   void WaitForPageText() {
-    if (text_) {
+    if (result_) {
       return;
     }
 
@@ -56,7 +71,9 @@ class TestConsumer : public PageTextObserver::Consumer {
 
   bool was_called() const { return was_called_; }
 
-  const base::Optional<std::u16string>& text() const { return text_; }
+  base::Optional<PageTextDumpResult> result() {
+    return base::OptionalFromPtr(result_.get());
+  }
 
   // PageTextObserver::Consumer:
   std::unique_ptr<PageTextObserver::ConsumerTextDumpRequest>
@@ -66,21 +83,21 @@ class TestConsumer : public PageTextObserver::Consumer {
   }
 
  private:
-  void OnGotTextDump(const std::u16string& text) {
-    text_ = text;
+  void OnGotTextDump(const PageTextDumpResult& result) {
+    result_ = std::make_unique<PageTextDumpResult>(result);
     if (on_page_text_closure_) {
       std::move(on_page_text_closure_).Run();
     }
   }
 
   bool was_called_ = false;
-
   std::unique_ptr<PageTextObserver::ConsumerTextDumpRequest> request_;
 
   base::OnceClosure on_page_text_closure_;
-
-  base::Optional<std::u16string> text_;
+  std::unique_ptr<PageTextDumpResult> result_;
 };
+
+}  // namespace
 
 // This tests code in
 // //components/optimization_guide/content/browser/page_text_observer.h, but
@@ -133,6 +150,21 @@ class PageTextObserverBrowserTest : public InProcessBrowserTest {
       return resp;
     }
 
+    // This script is onLoad-blocking in the HTML, but is intentionally slow.
+    // This provides important time between first layout and finish load for
+    // tests that need it.
+    if (request.GetURL().path() == "/slow-add-world-text.js") {
+      std::unique_ptr<net::test_server::DelayedHttpResponse> resp =
+          std::make_unique<net::test_server::DelayedHttpResponse>(
+              base::TimeDelta::FromMilliseconds(500));
+      resp->set_code(net::HTTP_OK);
+      resp->set_content_type("application/javascript");
+      resp->set_content(
+          "var p = document.createElement('p'); p.innerHTML = 'world'; "
+          "document.body.appendChild(p); ");
+      return resp;
+    }
+
     if (request.GetURL().path() == "/dynamic.html") {
       std::unique_ptr<net::test_server::BasicHttpResponse> resp =
           std::make_unique<net::test_server::BasicHttpResponse>();
@@ -146,7 +178,7 @@ class PageTextObserverBrowserTest : public InProcessBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, SimpleCase) {
+IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, SimpleCaseNoSubframes) {
   PageTextObserver::CreateForWebContents(web_contents());
   ASSERT_TRUE(observer());
 
@@ -160,8 +192,14 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, SimpleCase) {
   ASSERT_TRUE(consumer.was_called());
 
   consumer.WaitForPageText();
-  ASSERT_TRUE(consumer.text());
-  EXPECT_EQ(base::ASCIIToUTF16("hello"), *consumer.text());
+  ASSERT_TRUE(consumer.result());
+  EXPECT_THAT(consumer.result()->frame_results(),
+              ::testing::UnorderedElementsAreArray({
+                  MakeFrameDump(
+                      mojom::TextDumpEvent::kFirstLayout,
+                      web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
+                      /*amp_frame=*/false, base::ASCIIToUTF16("hello")),
+              }));
 }
 
 IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, FirstLayoutAndOnLoad) {
@@ -189,14 +227,99 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, FirstLayoutAndOnLoad) {
   first_layout_consumer.WaitForPageText();
   on_load_consumer.WaitForPageText();
 
-  ASSERT_TRUE(first_layout_consumer.text());
-  // This check can be a bit flaky on some platforms. Check that "hello" is
-  // present, since the text captured may already be "hello world".
-  EXPECT_TRUE(base::Contains(*first_layout_consumer.text(),
-                             base::ASCIIToUTF16("hello")));
+  ASSERT_TRUE(first_layout_consumer.result());
+  EXPECT_THAT(
+      first_layout_consumer.result()->frame_results(),
+      ::testing::UnorderedElementsAreArray({
+          MakeFrameDump(
+              mojom::TextDumpEvent::kFirstLayout,
+              web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
+              /*amp_frame=*/false, base::ASCIIToUTF16("hello")),
+          MakeFrameDump(
+              mojom::TextDumpEvent::kFinishedLoad,
+              web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
+              /*amp_frame=*/false, base::ASCIIToUTF16("hello\n\nworld")),
+      }));
 
-  ASSERT_TRUE(on_load_consumer.text());
-  EXPECT_EQ(base::ASCIIToUTF16("hello\n\nworld"), *on_load_consumer.text());
+  EXPECT_EQ(first_layout_consumer.result(), on_load_consumer.result());
+}
+
+IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, OOPIFAMPSubframe) {
+  PageTextObserver::CreateForWebContents(web_contents());
+  ASSERT_TRUE(observer());
+
+  TestConsumer consumer;
+  observer()->AddConsumer(&consumer);
+  consumer.PopulateRequest(
+      /*max_size=*/1024,
+      /*events=*/{mojom::TextDumpEvent::kFirstLayout},
+      /*request_amp=*/true);
+
+  GURL url(embedded_test_server()->GetURL("a.com", "/dynamic.html"));
+  dynamic_response_body_ = base::StringPrintf(
+      "<html><body>"
+      "<script type=\"text/javascript\" src=\"/slow-first-layout.js\"></script>"
+      "<p>mainframe</p>"
+      "<iframe name=\"amp\" src=\"%s\"></iframe>"
+      "</body></html>",
+      embedded_test_server()->GetURL("b.com", "/amp.html").spec().c_str());
+  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(consumer.was_called());
+
+  consumer.WaitForPageText();
+
+  content::GlobalFrameRoutingId amp_frame_id;
+  for (auto* rfh : web_contents()->GetMainFrame()->GetFramesInSubtree()) {
+    if (rfh->GetFrameName() == "amp") {
+      amp_frame_id = rfh->GetGlobalFrameRoutingId();
+      break;
+    }
+  }
+
+  ASSERT_TRUE(consumer.result());
+  EXPECT_THAT(
+      consumer.result()->frame_results(),
+      ::testing::UnorderedElementsAreArray({
+          MakeFrameDump(
+              mojom::TextDumpEvent::kFirstLayout,
+              web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
+              /*amp_frame=*/false, base::ASCIIToUTF16("mainframe")),
+          MakeFrameDump(mojom::TextDumpEvent::kFinishedLoad, amp_frame_id,
+                        /*amp_frame=*/true, base::ASCIIToUTF16("AMP")),
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, OOPIFNotAmpSubframe) {
+  PageTextObserver::CreateForWebContents(web_contents());
+  ASSERT_TRUE(observer());
+
+  TestConsumer consumer;
+  observer()->AddConsumer(&consumer);
+  consumer.PopulateRequest(
+      /*max_size=*/1024,
+      /*events=*/{mojom::TextDumpEvent::kFirstLayout},
+      /*request_amp=*/true);
+
+  GURL url(embedded_test_server()->GetURL("a.com", "/dynamic.html"));
+  dynamic_response_body_ = base::StringPrintf(
+      "<html><body>"
+      "<script type=\"text/javascript\" src=\"/slow-first-layout.js\"></script>"
+      "<p>mainframe</p>"
+      "<iframe src=\"%s\"></iframe>"
+      "</body></html>",
+      embedded_test_server()->GetURL("b.com", "/hello.html").spec().c_str());
+  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(consumer.was_called());
+
+  consumer.WaitForPageText();
+  ASSERT_TRUE(consumer.result());
+  EXPECT_THAT(consumer.result()->frame_results(),
+              ::testing::UnorderedElementsAreArray({
+                  MakeFrameDump(
+                      mojom::TextDumpEvent::kFirstLayout,
+                      web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
+                      /*amp_frame=*/false, base::ASCIIToUTF16("mainframe")),
+              }));
 }
 
 class PageTextObserverSingleProcessBrowserTest
@@ -224,17 +347,58 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverSingleProcessBrowserTest,
   GURL url(embedded_test_server()->GetURL("a.com", "/dynamic.html"));
   dynamic_response_body_ = base::StringPrintf(
       "<html><body>"
-      "<p>foo</p>"
+      "<script type=\"text/javascript\" src=\"/slow-first-layout.js\"></script>"
+      "<p>mainframe</p>"
       "<iframe src=\"%s\"></iframe>"
       "</body></html>",
       embedded_test_server()->GetURL("a.com", "/hello.html").spec().c_str());
-
   ui_test_utils::NavigateToURL(browser(), url);
   ASSERT_TRUE(consumer.was_called());
 
   consumer.WaitForPageText();
-  ASSERT_TRUE(consumer.text());
-  EXPECT_EQ(base::ASCIIToUTF16("foo\n\nhello"), *consumer.text());
+  ASSERT_TRUE(consumer.result());
+  EXPECT_THAT(
+      consumer.result()->frame_results(),
+      ::testing::UnorderedElementsAreArray({
+          MakeFrameDump(
+              mojom::TextDumpEvent::kFinishedLoad,
+              web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
+              /*amp_frame=*/false, base::ASCIIToUTF16("mainframe\n\nhello")),
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(PageTextObserverSingleProcessBrowserTest,
+                       SameProcessAMPSubframe) {
+  PageTextObserver::CreateForWebContents(web_contents());
+  ASSERT_TRUE(observer());
+
+  TestConsumer consumer;
+  observer()->AddConsumer(&consumer);
+  consumer.PopulateRequest(
+      /*max_size=*/1024,
+      /*events=*/{mojom::TextDumpEvent::kFirstLayout},
+      /*request_amp=*/true);
+
+  GURL url(embedded_test_server()->GetURL("a.com", "/dynamic.html"));
+  dynamic_response_body_ = base::StringPrintf(
+      "<html><body>"
+      "<script type=\"text/javascript\" src=\"/slow-first-layout.js\"></script>"
+      "<p>mainframe</p>"
+      "<iframe src=\"%s\"></iframe>"
+      "</body></html>",
+      embedded_test_server()->GetURL("a.com", "/amp.html").spec().c_str());
+  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(consumer.was_called());
+
+  consumer.WaitForPageText();
+  ASSERT_TRUE(consumer.result());
+  EXPECT_THAT(consumer.result()->frame_results(),
+              ::testing::UnorderedElementsAreArray({
+                  MakeFrameDump(
+                      mojom::TextDumpEvent::kFirstLayout,
+                      web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
+                      /*amp_frame=*/false, base::ASCIIToUTF16("mainframe")),
+              }));
 }
 
 }  // namespace optimization_guide

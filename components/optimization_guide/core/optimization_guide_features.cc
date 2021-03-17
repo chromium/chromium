@@ -62,7 +62,7 @@ const base::Feature kOptimizationTargetPrediction{
     "OptimizationTargetPrediction", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables the downloading of models.
-const base::Feature kOptimizationGuideModelDownloading{
+const base::Feature kOptimizationGuideModelDownloading {
   "OptimizationGuideModelDownloading",
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
       base::FEATURE_ENABLED_BY_DEFAULT
@@ -74,6 +74,18 @@ const base::Feature kOptimizationGuideModelDownloading{
 // Enables page content to be annotated.
 const base::Feature kPageContentAnnotations{"PageContentAnnotations",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
+// This feature flag does not turn off any behavior, it is only used for
+// experiment parameters.
+const base::Feature kPageTextExtraction{
+    "OptimizationGuidePageContentExtraction", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// The default value here is a bit of a guess.
+// TODO(crbug/1163244): This should be tuned once metrics are available.
+base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod() {
+  return base::TimeDelta::FromMilliseconds(GetFieldTrialParamByFeatureAsInt(
+      kPageTextExtraction, "outstanding_requests_grace_period_ms", 1000));
+}
 
 size_t MaxHintsFetcherTopHostBlocklistSize() {
   // The blocklist will be limited to the most engaged hosts and will hold twice

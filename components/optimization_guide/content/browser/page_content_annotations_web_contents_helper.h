@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_WEB_CONTENTS_HELPER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "components/optimization_guide/content/browser/page_text_dump_result.h"
 #include "components/optimization_guide/content/browser/page_text_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -49,7 +50,7 @@ class PageContentAnnotationsWebContentsHelper
 
   // Callback invoked when a text dump has been received for the |visit|.
   void OnTextDumpReceived(const HistoryVisit& visit,
-                          const std::u16string& test);
+                          const PageTextDumpResult& result);
 
   // Not owned. Guaranteed to outlive |this|.
   content::WebContents* web_contents_;
