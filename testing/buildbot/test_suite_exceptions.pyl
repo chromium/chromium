@@ -3042,6 +3042,16 @@
       }
     }
   },
+  'weblayer_private_instrumentation_test_apk': {
+    'modifications': {
+      # TODO(crbug.com/1189403): Remove the filter once the issue is fixed.
+      'android-11-x86-fyi-rel': {
+        'args': [
+          '--gtest_filter=-org.chromium.weblayer.test.MediaCaptureTest.*',
+        ],
+      },
+    },
+  },
   'weblayer_shell_wpt': {
     'modifications': {
       # TODO(crbug.com/1171555): remove this when test can run with more emulators

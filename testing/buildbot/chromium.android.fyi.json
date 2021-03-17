@@ -3803,7 +3803,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android30.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android30.textpb",
+          "--gtest_filter=-org.chromium.weblayer.test.MediaCaptureTest.*"
         ],
         "merge": {
           "args": [
