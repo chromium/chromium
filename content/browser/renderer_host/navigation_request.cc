@@ -1610,7 +1610,10 @@ void NavigationRequest::BeginNavigation() {
           /*is_renderer_initiated_check=*/false));
     }
 
-    ReadyToCommitNavigation(false /* is_error */);
+    // No throttles will actually run, but `CommitNavigation()` expects to be
+    // called only once the request has reached `WILL_PROCESS_RESPONSE`.
+    SetState(WILL_PROCESS_RESPONSE);
+
     CommitNavigation();
     return;
   }
@@ -3425,7 +3428,6 @@ void NavigationRequest::CommitErrorPage(
 
   UpdateCommitNavigationParamsHistory();
 
-  frame_tree_node_->TransferNavigationRequestOwnership(render_frame_host_);
   // Error pages commit in an opaque origin in the renderer process. If this
   // NavigationRequest resulted in committing an error page, set
   // |origin_to_commit| to an opaque origin that has precursor information
@@ -3455,7 +3457,8 @@ void NavigationRequest::CommitErrorPage(
   redirect_chain_.clear();
   redirect_chain_.push_back(GetURL());
 
-  ReadyToCommitNavigation(true);
+  ReadyToCommitNavigation(true /* is_error */);
+
   // Use a separate cache shard, and no cookies, for error pages.
   isolation_info_for_subresources_ = net::IsolationInfo::CreateTransient();
   render_frame_host_->FailedNavigation(
@@ -3497,6 +3500,10 @@ void NavigationRequest::AddOldPageInfoToCommitParamsIfNeeded() {
 }
 
 void NavigationRequest::CommitNavigation() {
+  // A navigation request should only commit once the response has been
+  // processed.
+  DCHECK_GE(state_, WILL_PROCESS_RESPONSE);
+
   UpdateCommitNavigationParamsHistory();
   DCHECK(NeedsUrlLoader() == !!response_head_ ||
          (was_redirected_ && common_params_->url.IsAboutBlank()));
@@ -3546,12 +3553,23 @@ void NavigationRequest::CommitNavigation() {
     return;
   }
 
+  // For consistency, prerendering activation *should* go through this as well.
+  // However, the prerender implementation based on swapping WebContents
+  // introduces a number of edge cases that navigation code wouldn't normally
+  // have to handle, so it's easier to simply skip this in the hopes that the
+  // non-mparch implementation will be removed soon.
+  base::WeakPtr<NavigationRequest> weak_self(weak_factory_.GetWeakPtr());
+  ReadyToCommitNavigation(false /* is_error */);
+  // The call above might block on showing a user dialog. The interaction of
+  // the user with this dialog might result in the WebContents owning this
+  // NavigationRequest to be destroyed. Return if this is the case.
+  if (!weak_self)
+    return;
+
   DCHECK(render_frame_host_ ==
              frame_tree_node_->render_manager()->current_frame_host() ||
          render_frame_host_ ==
              frame_tree_node_->render_manager()->speculative_frame_host());
-
-  frame_tree_node_->TransferNavigationRequestOwnership(render_frame_host_);
 
   if (request_navigation_client_.is_bound()) {
     if (render_frame_host_ == frame_tree_node()->current_frame_host()) {
@@ -3738,7 +3756,13 @@ void NavigationRequest::CommitPageActivation() {
         activated_entry->render_frame_host->GetLastCommittedURL();
   }
 
-  frame_tree_node_->TransferNavigationRequestOwnership(GetRenderFrameHost());
+  base::WeakPtr<NavigationRequest> weak_self(weak_factory_.GetWeakPtr());
+  ReadyToCommitNavigation(false /* is_error */);
+  // The call above might block on showing a user dialog. The interaction of
+  // the user with this dialog might result in the WebContents owning this
+  // NavigationRequest to be destroyed. Return if this is the case.
+  if (!weak_self)
+    return;
 
   // Move the BackForwardCacheImpl::Entry into RenderFrameHostManager, in
   // preparation for committing. This entry may be either restored from the
@@ -4461,21 +4485,7 @@ void NavigationRequest::OnWillProcessResponseProcessed(
   DCHECK_NE(NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE, result.action());
   DCHECK(processing_navigation_throttle_);
   processing_navigation_throttle_ = false;
-  if (result.action() == NavigationThrottle::PROCEED) {
-    base::WeakPtr<NavigationRequest> weak_self(weak_factory_.GetWeakPtr());
-
-    // If the navigation is done processing the response, then it's ready to
-    // commit. Inform observers that the navigation is now ready to commit,
-    // unless it is not set to commit (204/205s/downloads).
-    if (render_frame_host_)
-      ReadyToCommitNavigation(false);
-
-    // The call above might block on showing a user dialog. The interaction of
-    // the user with this dialog might result in the WebContents owning this
-    // NavigationRequest to be destroyed. Return if this is the case.
-    if (!weak_self)
-      return;
-  } else {
+  if (result.action() != NavigationThrottle::PROCEED) {
     SetState(CANCELING);
   }
 
@@ -4889,6 +4899,14 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
     return;
   }
 
+  // Note: This marks the RenderFrameHost as loading. This is important to
+  // ensure that FrameTreeNode::IsLoading() still returns correct result for
+  // delegate and observer callbacks. Otherwise, there would be a period of time
+  // where the FrameTreeNode has no NavigationRequest, yet the
+  // RenderFrameHostImpl is not marked as loading yet, causing
+  // FrameTreeNode::IsLoading() to incorrectly return false.
+  frame_tree_node_->TransferNavigationRequestOwnership(render_frame_host_);
+
   SetState(READY_TO_COMMIT);
   ready_to_commit_time_ = base::TimeTicks::Now();
   RestartCommitTimeout();
@@ -5023,12 +5041,9 @@ url::Origin NavigationRequest::GetOriginForURLLoaderFactory() {
   // once it has been set for this navigation.  This will happens either at
   // WillProcessResponse time for regular navigations or at WillFailRequest time
   // for error pages.
-  RenderFrameHostImpl* target_frame = GetRenderFrameHost();
-  DCHECK(target_frame);
-
   // Check that |origin| is allowed to be accessed from the process that is the
   // target of this navigation.
-  if (target_frame->ShouldBypassSecurityChecksForErrorPage(this))
+  if (GetRenderFrameHost()->ShouldBypassSecurityChecksForErrorPage(this))
     return origin;
 
   // MHTML iframes can load documents from any origin, no matter the current
@@ -5038,7 +5053,7 @@ url::Origin NavigationRequest::GetOriginForURLLoaderFactory() {
   if (IsForMhtmlSubframe())
     return origin;
 
-  int process_id = target_frame->GetProcess()->GetID();
+  int process_id = GetRenderFrameHost()->GetProcess()->GetID();
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   CHECK(policy->CanAccessDataForOrigin(process_id, origin));
   return origin;

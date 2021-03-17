@@ -3176,16 +3176,6 @@ void RenderFrameHostImpl::DidCommitBackForwardCacheNavigation(
   std::unique_ptr<NavigationRequest> owned_request = std::move(request->second);
   navigation_requests_.erase(committing_navigation_request);
 
-  // During a normal (uncached) navigation, is_loading_ is set to true in
-  // CommitNavigation(). When navigating to a document in the BackForwardCache,
-  // CommitNavigation() is never called, so we have to set is_loading_ to true
-  // ourselves.
-  //
-  // If is_start_loading_ is set to false, DidCommitNavigationInternal will
-  // re-fire the DidStartLoading event, which we don't want since it has already
-  // been fired.
-  is_loading_ = true;
-
   DidCommitNavigationInternal(std::move(owned_request), std::move(params),
                               /*same_document_params=*/nullptr);
 
@@ -3286,6 +3276,9 @@ void RenderFrameHostImpl::ResetNavigationRequests() {
 void RenderFrameHostImpl::SetNavigationRequest(
     std::unique_ptr<NavigationRequest> navigation_request) {
   DCHECK(navigation_request);
+
+  is_loading_ = true;
+
   if (NavigationTypeUtils::IsSameDocument(
           navigation_request->common_params().navigation_type)) {
     same_document_navigation_requests_[navigation_request->commit_params()
@@ -6859,8 +6852,6 @@ void RenderFrameHostImpl::CommitNavigation(
               std::move(remote_object), sent_state));
     }
   }
-
-  is_loading_ = true;
 }
 
 void RenderFrameHostImpl::FailedNavigation(
@@ -6915,8 +6906,6 @@ void RenderFrameHostImpl::FailedNavigation(
   // TODO(crbug/1129537): support UKM source creation for failed navigations
   // too.
 
-  // An error page is expected to commit, hence why is_loading_ is set to true.
-  is_loading_ = true;
   dom_content_loaded_ = false;
   has_committed_any_navigation_ = true;
   DCHECK(navigation_request && navigation_request->IsNavigationStarted() &&

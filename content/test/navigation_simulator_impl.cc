@@ -9,6 +9,7 @@
 #include "base/debug/stack_trace.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/debug_urls.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
@@ -412,8 +413,7 @@ void NavigationSimulatorImpl::Start() {
   if (IsRendererDebugURL(navigation_url_))
     return;
 
-  if (same_document_ || !IsURLHandledByNetworkStack(navigation_url_) ||
-      navigation_url_.IsAboutBlank()) {
+  if (!NeedsThrottleChecks()) {
     CHECK_EQ(1, num_did_start_navigation_called_);
     return;
   }
@@ -534,27 +534,31 @@ void NavigationSimulatorImpl::ReadyToCommit() {
     return;
   }
 
-  bool needs_throttle_checks = !same_document_ &&
-                               !navigation_url_.IsAboutBlank() &&
-                               IsURLHandledByNetworkStack(navigation_url_);
   auto complete_closure =
-      base::BindOnce(&NavigationSimulatorImpl::ReadyToCommitComplete,
-                     weak_factory_.GetWeakPtr(), needs_throttle_checks);
-  if (needs_throttle_checks) {
+      base::BindOnce(&NavigationSimulatorImpl::WillProcessResponseComplete,
+                     weak_factory_.GetWeakPtr());
+  if (NeedsThrottleChecks()) {
     MaybeWaitForThrottleChecksComplete(std::move(complete_closure));
+    if (state_ == READY_TO_COMMIT) {
+      // `NavigationRequest::OnWillProcessResponseProcessed()` invokes the
+      // completion callback before synchronously dispatching
+      // `ReadyToCommitNavigation()` to observers. Once the throttle checks are
+      // complete, ensure that `ReadyToCommitNavigation()` has been called as
+      // expected.
+      CHECK_EQ(1, num_ready_to_commit_called_);
+    }
     return;
   }
   std::move(complete_closure).Run();
 }
 
-void NavigationSimulatorImpl::ReadyToCommitComplete(bool ran_throttles) {
-  if (ran_throttles) {
+void NavigationSimulatorImpl::WillProcessResponseComplete() {
+  if (NeedsThrottleChecks()) {
     if (GetLastThrottleCheckResult().action() != NavigationThrottle::PROCEED) {
       state_ = FAILED;
       return;
     }
     CHECK_EQ(1, num_will_process_response_called_);
-    CHECK_EQ(1, num_ready_to_commit_called_);
   }
 
   request_id_ = request_->GetGlobalRequestID();
@@ -1412,6 +1416,18 @@ void NavigationSimulatorImpl::
   if (previous_rfh->IsInBackForwardCache())
     return;
   previous_rfh->OnUnloadACK();
+}
+
+bool NavigationSimulatorImpl::NeedsThrottleChecks() const {
+  if (same_document_) {
+    return false;
+  }
+
+  if (navigation_url_.IsAboutBlank()) {
+    return false;
+  }
+
+  return IsURLHandledByNetworkStack(navigation_url_);
 }
 
 }  // namespace content

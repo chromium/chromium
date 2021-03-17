@@ -1417,18 +1417,7 @@ class NavigationHandleGrabber : public WebContentsObserver {
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override {
     if (navigation_handle->GetURL().path() != "/title2.html")
       return;
-    NavigationRequest::From(navigation_handle)
-        ->set_complete_callback_for_testing(
-            base::BindOnce(&NavigationHandleGrabber::SendingNavigationCommitted,
-                           base::Unretained(this), navigation_handle));
-  }
-
-  bool SendingNavigationCommitted(
-      NavigationHandle* navigation_handle,
-      NavigationThrottle::ThrottleCheckResult result) {
-    if (navigation_handle->GetURL().path() == "/title2.html")
-      ExecuteScriptAsync(web_contents(), "document.open();");
-    return false;
+    ExecuteScriptAsync(web_contents(), "document.open();");
   }
 
   void DidFinishNavigation(NavigationHandle* navigation_handle) override {

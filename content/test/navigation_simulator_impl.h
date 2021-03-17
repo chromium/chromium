@@ -188,7 +188,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   void StartComplete();
   void RedirectComplete(int previous_num_will_redirect_request_called,
                         int previous_did_redirect_navigation_called);
-  void ReadyToCommitComplete(bool ran_throttles);
+  void WillProcessResponseComplete();
   void FailComplete(int error_code);
 
   void OnWillStartRequest();
@@ -237,6 +237,12 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   // commit time.
   void SimulateUnloadCompletionCallbackForPreviousFrameIfNeeded(
       RenderFrameHostImpl* previous_frame);
+
+  // Certain navigations can skip throttle checks:
+  // - same-document navigations
+  // - about:blank navigations
+  // - navigations not handled by the network stack
+  bool NeedsThrottleChecks() const;
 
   enum State {
     INITIALIZATION,
