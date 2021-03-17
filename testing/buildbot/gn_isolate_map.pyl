@@ -1451,7 +1451,7 @@
   },
   "performance_web_engine_test_suite": {
     "args": [
-      "../../content/test/run_gpu_integration_test_fuchsia.py",
+      "../../content/test/gpu/run_telemetry_benchmark_fuchsia.py",
     ],
     "label": "//content/test:performance_web_engine_test_suite",
     "script": "//testing/scripts/run_performance_tests.py",

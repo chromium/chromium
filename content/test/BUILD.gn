@@ -665,7 +665,7 @@ if (is_fuchsia) {
   group("performance_web_engine_test_suite") {
     testonly = true
     data = [
-      "//content/test/gpu/run_telemetry_test_fuchsia.py",
+      "//content/test/gpu/run_telemetry_benchmark_fuchsia.py",
       "//content/test/gpu/",
     ]
     data_deps = [
