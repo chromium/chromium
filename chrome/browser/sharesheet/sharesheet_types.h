@@ -24,7 +24,8 @@ enum class SharesheetResult {
 // The type of a target.
 enum class TargetType {
   kUnknown = 0,
-  kApp,
+  kArcApp,
+  kWebApp,
   kAction,
 };
 
