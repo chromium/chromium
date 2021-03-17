@@ -186,12 +186,6 @@ void TestingSpellCheckProvider::FillSuggestionList(const std::u16string&,
 }
 
 #if defined(OS_WIN)
-void TestingSpellCheckProvider::GetPerLanguageSuggestions(
-    const std::u16string& word,
-    GetPerLanguageSuggestionsCallback callback) {
-  NOTREACHED();
-}
-
 void TestingSpellCheckProvider::InitializeDictionaries(
     InitializeDictionariesCallback callback) {
   if (base::FeatureList::IsEnabled(

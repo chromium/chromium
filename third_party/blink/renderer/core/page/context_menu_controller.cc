@@ -634,30 +634,39 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     // spelling marker on the word instead of spellchecking it.
     std::pair<String, String> misspelled_word_and_description =
         spell_checker.SelectMisspellingAsync();
-    data.misspelled_word =
-        WebString::FromUTF8(misspelled_word_and_description.first.Utf8())
-            .Utf16();
-    const String& description = misspelled_word_and_description.second;
-    if (description.length()) {
-      Vector<String> suggestions;
-      description.Split('\n', suggestions);
-      WebVector<std::u16string> web_suggestions(suggestions.size());
-      std::transform(suggestions.begin(), suggestions.end(),
-                     web_suggestions.begin(), [](const String& s) {
-                       return WebString::FromUTF8(s.Utf8()).Utf16();
-                     });
-      data.dictionary_suggestions = web_suggestions.ReleaseVector();
-    } else if (spell_checker.GetTextCheckerClient()) {
-      size_t misspelled_offset, misspelled_length;
-      WebVector<WebString> web_suggestions;
-      spell_checker.GetTextCheckerClient()->CheckSpelling(
-          WebString::FromUTF16(data.misspelled_word), misspelled_offset,
-          misspelled_length, &web_suggestions);
-      WebVector<std::u16string> suggestions(web_suggestions.size());
-      std::transform(web_suggestions.begin(), web_suggestions.end(),
-                     suggestions.begin(),
-                     [](const WebString& s) { return s.Utf16(); });
-      data.dictionary_suggestions = suggestions.ReleaseVector();
+    const String& misspelled_word = misspelled_word_and_description.first;
+    if (misspelled_word.length()) {
+      data.misspelled_word =
+          WebString::FromUTF8(misspelled_word.Utf8()).Utf16();
+      const String& description = misspelled_word_and_description.second;
+      if (description.length()) {
+        // Suggestions were cached for the misspelled word (won't be true for
+        // Hunspell, or Windows platform spellcheck if the
+        // kWinRetrieveSuggestionsOnlyOnDemand feature flag is set).
+        Vector<String> suggestions;
+        description.Split('\n', suggestions);
+        WebVector<std::u16string> web_suggestions(suggestions.size());
+        std::transform(suggestions.begin(), suggestions.end(),
+                       web_suggestions.begin(), [](const String& s) {
+                         return WebString::FromUTF8(s.Utf8()).Utf16();
+                       });
+        data.dictionary_suggestions = web_suggestions.ReleaseVector();
+      } else if (spell_checker.GetTextCheckerClient()) {
+        // No suggestions cached for the misspelled word. Retrieve suggestions
+        // for it (Windows platform spellchecker will do this later from
+        // SpellingMenuObserver::InitMenu on the browser process side to avoid a
+        // blocking IPC here).
+        size_t misspelled_offset, misspelled_length;
+        WebVector<WebString> web_suggestions;
+        spell_checker.GetTextCheckerClient()->CheckSpelling(
+            WebString::FromUTF16(data.misspelled_word), misspelled_offset,
+            misspelled_length, &web_suggestions);
+        WebVector<std::u16string> suggestions(web_suggestions.size());
+        std::transform(web_suggestions.begin(), web_suggestions.end(),
+                       suggestions.begin(),
+                       [](const WebString& s) { return s.Utf16(); });
+        data.dictionary_suggestions = suggestions.ReleaseVector();
+      }
     }
   }
 

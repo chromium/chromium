@@ -144,11 +144,7 @@ class TestingSpellCheckProvider : public SpellCheckProvider,
                      CheckSpellingCallback) override;
   void FillSuggestionList(const std::u16string&,
                           FillSuggestionListCallback) override;
-
 #if defined(OS_WIN)
-  void GetPerLanguageSuggestions(
-      const std::u16string& word,
-      GetPerLanguageSuggestionsCallback callback) override;
   void InitializeDictionaries(InitializeDictionariesCallback callback) override;
 #endif  // defined(OS_WIN)
 #endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER)

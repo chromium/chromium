@@ -270,31 +270,17 @@ void SpellCheckProvider::CheckSpelling(
 #if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
     base::TimeTicks suggestions_start = base::TimeTicks::Now();
 #endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+    // Retrieve suggestions from Hunspell. Windows platform spellchecker
+    // suggestions are retrieved in SpellingMenuObserver::InitMenu on the
+    // browser process side to avoid a blocking IPC.
     spellcheck::PerLanguageSuggestions per_language_suggestions;
     spellcheck_->SpellCheckWord(word.c_str(), kWordStart, word.size(),
                                 routing_id(), &offset, &length,
                                 &per_language_suggestions);
 
 #if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-    if (spellcheck::UseBrowserSpellChecker() &&
-        spellcheck_->EnabledLanguageCount() < spellcheck_->LanguageCount()) {
-      // Also fetch suggestions from the browser process (native spellchecker).
-      // This is a synchronous Mojo call, because this method must return
-      // synchronously.
-      spellcheck::PerLanguageSuggestions browser_suggestions;
-      GetSpellCheckHost().GetPerLanguageSuggestions(word, &browser_suggestions);
-
-      per_language_suggestions.reserve(per_language_suggestions.size() +
-                                       browser_suggestions.size());
-      per_language_suggestions.insert(per_language_suggestions.end(),
-                                      browser_suggestions.begin(),
-                                      browser_suggestions.end());
-      spellcheck_renderer_metrics::RecordHybridSuggestionDuration(
-          base::TimeTicks::Now() - suggestions_start);
-    } else {
-      spellcheck_renderer_metrics::RecordHunspellSuggestionDuration(
-          base::TimeTicks::Now() - suggestions_start);
-    }
+    spellcheck_renderer_metrics::RecordHunspellSuggestionDuration(
+        base::TimeTicks::Now() - suggestions_start);
 #endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
     std::vector<std::u16string> suggestions;

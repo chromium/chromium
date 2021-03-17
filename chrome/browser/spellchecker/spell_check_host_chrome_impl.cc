@@ -233,20 +233,6 @@ void SpellCheckHostChromeImpl::RequestTextCheck(
 }
 
 #if defined(OS_WIN)
-void SpellCheckHostChromeImpl::GetPerLanguageSuggestions(
-    const std::u16string& word,
-    GetPerLanguageSuggestionsCallback callback) {
-  SpellcheckService* spellcheck = GetSpellcheckService();
-
-  if (!spellcheck) {  // Teardown.
-    std::move(callback).Run({});
-    return;
-  }
-
-  spellcheck_platform::GetPerLanguageSuggestions(
-      spellcheck->platform_spell_checker(), word, std::move(callback));
-}
-
 void SpellCheckHostChromeImpl::InitializeDictionaries(
     InitializeDictionariesCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

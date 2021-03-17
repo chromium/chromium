@@ -128,13 +128,6 @@ class MockSpellCheckHost : spellcheck::mojom::SpellCheckHost {
                           FillSuggestionListCallback) override {}
 
 #if defined(OS_WIN)
-  void GetPerLanguageSuggestions(
-      const std::u16string& word,
-      GetPerLanguageSuggestionsCallback callback) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    std::move(callback).Run(std::vector<std::vector<std::u16string>>());
-  }
-
   void InitializeDictionaries(
       InitializeDictionariesCallback callback) override {
     if (base::FeatureList::IsEnabled(

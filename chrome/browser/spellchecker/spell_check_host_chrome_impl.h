@@ -85,10 +85,6 @@ class SpellCheckHostChromeImpl : public SpellCheckHostImpl {
                         RequestTextCheckCallback callback) override;
 
 #if defined(OS_WIN)
-  void GetPerLanguageSuggestions(
-      const std::u16string& word,
-      GetPerLanguageSuggestionsCallback callback) override;
-
   void InitializeDictionaries(InitializeDictionariesCallback callback) override;
 #endif  // defined(OS_WIN)
 

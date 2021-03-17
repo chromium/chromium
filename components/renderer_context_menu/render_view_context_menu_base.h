@@ -114,6 +114,7 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
   void UpdateMenuIcon(int command_id, const ui::ImageModel& icon) override;
   void RemoveMenuItem(int command_id) override;
   void RemoveAdjacentSeparators() override;
+  void RemoveSeparatorBeforeMenuItem(int command_id) override;
   content::RenderViewHost* GetRenderViewHost() const override;
   content::WebContents* GetWebContents() const override;
   content::BrowserContext* GetBrowserContext() const override;

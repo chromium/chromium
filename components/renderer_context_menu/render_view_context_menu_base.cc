@@ -301,6 +301,22 @@ void RenderViewContextMenuBase::RemoveAdjacentSeparators() {
     toolkit_delegate_->RebuildMenu();
 }
 
+void RenderViewContextMenuBase::RemoveSeparatorBeforeMenuItem(int command_id) {
+  int index = menu_model_.GetIndexOfCommandId(command_id);
+  // Ignore if command not found (index == -1) or if it's the first menu item.
+  if (index <= 0)
+    return;
+
+  ui::MenuModel::ItemType prev_type = menu_model_.GetTypeAt(index - 1);
+  if (prev_type != ui::MenuModel::ItemType::TYPE_SEPARATOR)
+    return;
+
+  menu_model_.RemoveItemAt(index - 1);
+
+  if (toolkit_delegate_)
+    toolkit_delegate_->RebuildMenu();
+}
+
 RenderViewHost* RenderViewContextMenuBase::GetRenderViewHost() const {
   return source_web_contents_->GetMainFrame()->GetRenderViewHost();
 }
