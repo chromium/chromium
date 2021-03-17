@@ -35,6 +35,11 @@ const base::Feature kGpuAppContainer{"GpuAppContainer",
 
 // Enables GPU Low Privilege AppContainer when combined with kGpuAppContainer.
 const base::Feature kGpuLPAC{"GpuLPAC", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Use LPAC for network sandbox instead of restricted token. Relies on
+// NetworkServiceSandbox being also enabled.
+const base::Feature kNetworkServiceSandboxLPAC{
+    "NetworkServiceSandboxLPAC", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // defined(OS_WIN)
 
 #if !defined(OS_ANDROID)

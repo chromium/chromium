@@ -631,6 +631,9 @@ std::wstring GetAppContainerProfileName(const std::string& appcontainer_id,
     case SandboxType::kMediaFoundationCdm:
       sandbox_base_name = std::string("cr.sb.cdm");
       break;
+    case SandboxType::kNetwork:
+      sandbox_base_name = std::string("cr.sb.net");
+      break;
     default:
       DCHECK(0);
   }
@@ -651,8 +654,12 @@ ResultCode SetupAppContainerProfile(AppContainerProfile* profile,
                                     SandboxType sandbox_type) {
   if (sandbox_type != SandboxType::kMediaFoundationCdm &&
       sandbox_type != SandboxType::kGpu &&
-      sandbox_type != SandboxType::kXrCompositing)
+      sandbox_type != SandboxType::kXrCompositing &&
+      sandbox_type != SandboxType::kNetwork)
     return SBOX_ERROR_UNSUPPORTED;
+
+  DCHECK(sandbox_type != SandboxType::kNetwork ||
+         base::FeatureList::IsEnabled(features::kNetworkServiceSandboxLPAC));
 
   if (sandbox_type == SandboxType::kGpu &&
       !profile->AddImpersonationCapability(L"chromeInstallFiles")) {
@@ -735,6 +742,18 @@ ResultCode SetupAppContainerProfile(AppContainerProfile* profile,
   // Enable LPAC for GPU process, but not for XRCompositor service.
   if (sandbox_type == SandboxType::kGpu &&
       base::FeatureList::IsEnabled(features::kGpuLPAC)) {
+    profile->SetEnableLowPrivilegeAppContainer(true);
+  }
+
+  // Enable LPAC for Network service.
+  if (sandbox_type == SandboxType::kNetwork) {
+    profile->AddCapability(
+        sandbox::WellKnownCapabilities::kPrivateNetworkClientServer);
+    profile->AddCapability(sandbox::WellKnownCapabilities::kInternetClient);
+    profile->AddCapability(
+        sandbox::WellKnownCapabilities::kEnterpriseAuthentication);
+    profile->AddCapability(L"lpacIdentityServices");
+    profile->AddCapability(L"lpacCryptoServices");
     profile->SetEnableLowPrivilegeAppContainer(true);
   }
 
@@ -900,9 +919,13 @@ bool SandboxWin::IsAppContainerEnabledForSandbox(
   if (sandbox_type == SandboxType::kMediaFoundationCdm)
     return true;
 
-  if (sandbox_type != SandboxType::kGpu)
-    return false;
-  return base::FeatureList::IsEnabled(features::kGpuAppContainer);
+  if (sandbox_type == SandboxType::kGpu)
+    return base::FeatureList::IsEnabled(features::kGpuAppContainer);
+
+  if (sandbox_type == SandboxType::kNetwork)
+    return base::FeatureList::IsEnabled(features::kNetworkServiceSandboxLPAC);
+
+  return false;
 }
 
 // static
