@@ -28,6 +28,7 @@ class API_AVAILABLE(macos(10.13.1)) NowPlayingInfoCenterDelegate {
   void SetTitle(const std::u16string& title);
   void SetArtist(const std::u16string& artist);
   void SetAlbum(const std::u16string& album);
+  void SetThumbnail(const SkBitmap& bitmap);
   void SetPosition(const media_session::MediaPosition& position);
   void ClearMetadata();
 

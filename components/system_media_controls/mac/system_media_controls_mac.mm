@@ -70,6 +70,10 @@ void SystemMediaControlsMac::SetAlbum(const std::u16string& album) {
   now_playing_info_center_delegate_.SetAlbum(album);
 }
 
+void SystemMediaControlsMac::SetThumbnail(const SkBitmap& bitmap) {
+  now_playing_info_center_delegate_.SetThumbnail(bitmap);
+}
+
 void SystemMediaControlsMac::SetPosition(
     const media_session::MediaPosition& position) {
   now_playing_info_center_delegate_.SetPosition(position);

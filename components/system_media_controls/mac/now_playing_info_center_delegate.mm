@@ -7,9 +7,11 @@
 #import <MediaPlayer/MediaPlayer.h>
 
 #include "base/bind.h"
+#include "base/mac/mac_util.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/system_media_controls/mac/now_playing_info_center_delegate_cocoa.h"
+#include "skia/ext/skia_utils_mac.h"
 
 namespace system_media_controls {
 namespace internal {
@@ -65,6 +67,13 @@ void NowPlayingInfoCenterDelegate::SetArtist(const std::u16string& artist) {
 void NowPlayingInfoCenterDelegate::SetAlbum(const std::u16string& album) {
   [now_playing_info_center_delegate_cocoa_
       setAlbum:base::SysUTF16ToNSString(album)];
+  [now_playing_info_center_delegate_cocoa_ updateNowPlayingInfo];
+}
+
+void NowPlayingInfoCenterDelegate::SetThumbnail(const SkBitmap& bitmap) {
+  NSImage* image = skia::SkBitmapToNSImageWithColorSpace(
+      bitmap, base::mac::GetSystemColorSpace());
+  [now_playing_info_center_delegate_cocoa_ setThumbnail:image];
   [now_playing_info_center_delegate_cocoa_ updateNowPlayingInfo];
 }
 

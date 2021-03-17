@@ -73,6 +73,18 @@
                       forKey:MPMediaItemPropertyPlaybackDuration];
 }
 
+- (void)setThumbnail:(NSImage*)image {
+  if (@available(macOS 10.13.2, *)) {
+    base::scoped_nsobject<MPMediaItemArtwork> artwork(
+        [[MPMediaItemArtwork alloc]
+            initWithBoundsSize:image.size
+                requestHandler:^NSImage* _Nonnull(CGSize aSize) {
+                  return image;
+                }]);
+    [_nowPlayingInfo setObject:artwork forKey:MPMediaItemPropertyArtwork];
+  }
+}
+
 - (void)clearMetadata {
   [self initializeNowPlayingInfoValues];
   [self updateNowPlayingInfo];
@@ -92,6 +104,9 @@
 #endif
   [_nowPlayingInfo setObject:@"" forKey:MPMediaItemPropertyArtist];
   [_nowPlayingInfo setObject:@"" forKey:MPMediaItemPropertyAlbumTitle];
+  if (@available(macOS 10.13.2, *)) {
+    [_nowPlayingInfo removeObjectForKey:MPMediaItemPropertyArtwork];
+  }
 }
 
 - (void)updateNowPlayingInfo {
