@@ -6388,7 +6388,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPaintPreviewStartupDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(paint_preview::kPaintPreviewShowOnStartup,
                                     kPaintPreviewStartupVariations,
-                                    "PaintPreviewStartup")},
+                                    "PaintPreviewShowOnStartup")},
 #endif  // ENABLE_PAINT_PREVIEW && defined(OS_ANDROID)
 
 #if defined(OS_ANDROID)
