@@ -1,4 +1,3 @@
---rtlib=libgcc
 --target=arm-linux-androideabi21
 -Werror
 -Wl,--as-needed
