@@ -12,6 +12,7 @@ namespace blink {
 
 struct LogicalSize;
 struct MinMaxSizes;
+struct MinMaxSizesResult;
 class NGBlockNode;
 class NGConstraintSpace;
 class NGLayoutInputNode;
@@ -23,6 +24,12 @@ NGConstraintSpace CreateConstraintSpaceForMathChild(
     const LogicalSize& child_available_size,
     const NGConstraintSpace& parent_constraint_space,
     const NGLayoutInputNode&);
+
+MinMaxSizesResult ComputeMinAndMaxContentContributionForMathChild(
+    const ComputedStyle& parent_style,
+    const NGConstraintSpace& parent_constraint_space,
+    const NGBlockNode& child,
+    LayoutUnit child_available_block_size);
 
 NGLayoutInputNode FirstChildInFlow(const NGBlockNode&);
 NGLayoutInputNode NextSiblingInFlow(const NGBlockNode&);

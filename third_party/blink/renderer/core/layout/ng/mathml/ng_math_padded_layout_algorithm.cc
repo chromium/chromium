@@ -124,10 +124,9 @@ MinMaxSizesResult NGMathPaddedLayoutAlgorithm::ComputeMinMaxSizes(
   NGBlockNode content = nullptr;
   GatherChildren(&content);
 
-  MinMaxSizesResult content_result =
-      ComputeMinAndMaxContentContribution(Style(), content, input);
-  NGBoxStrut content_margins = ComputeMinMaxMargins(Style(), content);
-  content_result.sizes += content_margins.InlineSum();
+  const auto content_result = ComputeMinAndMaxContentContributionForMathChild(
+      Style(), ConstraintSpace(), content,
+      input.percentage_resolution_block_size);
 
   bool depends_on_percentage_block_size =
       content_result.depends_on_percentage_block_size;

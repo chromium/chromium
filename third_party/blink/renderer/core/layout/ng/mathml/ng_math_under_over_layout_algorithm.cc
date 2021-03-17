@@ -341,10 +341,9 @@ MinMaxSizesResult NGMathUnderOverLayoutAlgorithm::ComputeMinMaxSizes(
     if (child.IsOutOfFlowPositioned())
       continue;
     // TODO(crbug.com/1125136): take into account italic correction.
-    auto child_result = ComputeMinAndMaxContentContribution(
-        Style(), To<NGBlockNode>(child), child_input);
-    NGBoxStrut margins = ComputeMinMaxMargins(Style(), child);
-    child_result.sizes += margins.InlineSum();
+    const auto child_result = ComputeMinAndMaxContentContributionForMathChild(
+        Style(), ConstraintSpace(), To<NGBlockNode>(child),
+        child_input.percentage_resolution_block_size);
 
     sizes.Encompass(child_result.sizes);
     depends_on_percentage_block_size |=

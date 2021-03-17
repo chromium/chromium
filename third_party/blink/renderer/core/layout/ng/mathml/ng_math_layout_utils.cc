@@ -38,6 +38,22 @@ NGConstraintSpace CreateConstraintSpaceForMathChild(
   return space_builder.ToConstraintSpace();
 }
 
+MinMaxSizesResult ComputeMinAndMaxContentContributionForMathChild(
+    const ComputedStyle& parent_style,
+    const NGConstraintSpace& parent_space,
+    const NGBlockNode& child,
+    LayoutUnit child_available_block_size) {
+  DCHECK(child.CreatesNewFormattingContext());
+
+  MinMaxSizesInput input(child_available_block_size);
+  auto result = ComputeMinAndMaxContentContribution(parent_style, child, input);
+
+  // Add margins directly here.
+  result.sizes += ComputeMinMaxMargins(parent_style, child).InlineSum();
+
+  return result;
+}
+
 NGLayoutInputNode FirstChildInFlow(const NGBlockNode& node) {
   NGLayoutInputNode child = node.FirstChild();
   while (child && child.IsOutOfFlowPositioned())

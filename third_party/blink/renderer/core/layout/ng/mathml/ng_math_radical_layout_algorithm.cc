@@ -204,15 +204,16 @@ MinMaxSizesResult NGMathRadicalLayoutAlgorithm::ComputeMinMaxSizes(
   MinMaxSizes sizes;
   bool depends_on_percentage_block_size = false;
   if (index) {
-    auto horizontal = GetRadicalHorizontalParameters(Style());
+    const auto horizontal = GetRadicalHorizontalParameters(Style());
     sizes += horizontal.kern_before_degree.ClampNegativeToZero();
-    MinMaxSizesResult index_result =
-        ComputeMinAndMaxContentContribution(Style(), index, input);
-    NGBoxStrut index_margins = ComputeMinMaxMargins(Style(), index);
-    index_result.sizes += index_margins.InlineSum();
+
+    const auto index_result = ComputeMinAndMaxContentContributionForMathChild(
+        Style(), ConstraintSpace(), index,
+        input.percentage_resolution_block_size);
     depends_on_percentage_block_size |=
         index_result.depends_on_percentage_block_size;
     sizes += index_result.sizes;
+
     // kern_after_degree decreases the inline size, but is capped by the index
     // content inline size.
     sizes.min_size +=
@@ -225,10 +226,9 @@ MinMaxSizesResult NGMathRadicalLayoutAlgorithm::ComputeMinMaxSizes(
       sizes += GetMinMaxSizesForVerticalStretchyOperator(Style(),
                                                          kSquareRootCharacter);
     }
-    MinMaxSizesResult base_result =
-        ComputeMinAndMaxContentContribution(Style(), base, input);
-    NGBoxStrut base_margins = ComputeMinMaxMargins(Style(), base);
-    base_result.sizes += base_margins.InlineSum();
+    const auto base_result = ComputeMinAndMaxContentContributionForMathChild(
+        Style(), ConstraintSpace(), base,
+        input.percentage_resolution_block_size);
     depends_on_percentage_block_size |=
         base_result.depends_on_percentage_block_size;
     sizes += base_result.sizes;

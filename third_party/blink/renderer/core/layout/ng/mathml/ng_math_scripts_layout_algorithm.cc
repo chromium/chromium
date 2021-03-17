@@ -426,9 +426,9 @@ MinMaxSizesResult NGMathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
   // TODO(layout-dev): Determine the italic-correction without calling layout
   // within ComputeMinMaxSizes, (or setup in an interoperable constraint-space).
   LayoutUnit base_italic_correction;
-  MinMaxSizesResult base_result =
-      ComputeMinAndMaxContentContribution(Style(), base, child_input);
-  base_result.sizes += ComputeMinMaxMargins(Style(), base).InlineSum();
+  const auto base_result = ComputeMinAndMaxContentContributionForMathChild(
+      Style(), ConstraintSpace(), base,
+      child_input.percentage_resolution_block_size);
 
   sizes = base_result.sizes;
   depends_on_percentage_block_size |=
@@ -440,13 +440,13 @@ MinMaxSizesResult NGMathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
     case MathScriptType::kUnder:
     case MathScriptType::kOver:
     case MathScriptType::kSuper: {
-      NGBlockNode sub = sub_sup_pairs[0].sub;
-      NGBlockNode sup = sub_sup_pairs[0].sup;
-      auto first_post_script = sub ? sub : sup;
-      auto first_post_script_result = ComputeMinAndMaxContentContribution(
-          Style(), first_post_script, child_input);
-      first_post_script_result.sizes +=
-          ComputeMinMaxMargins(Style(), first_post_script).InlineSum();
+      const NGBlockNode sub = sub_sup_pairs[0].sub;
+      const NGBlockNode sup = sub_sup_pairs[0].sup;
+      const auto first_post_script = sub ? sub : sup;
+      const auto first_post_script_result =
+          ComputeMinAndMaxContentContributionForMathChild(
+              Style(), ConstraintSpace(), first_post_script,
+              child_input.percentage_resolution_block_size);
 
       sizes += first_post_script_result.sizes;
       if (sub)
@@ -462,21 +462,21 @@ MinMaxSizesResult NGMathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
       MinMaxSizes sub_sup_pair_size;
       unsigned index = 0;
       do {
-        auto sub = sub_sup_pairs[index].sub;
+        const auto sub = sub_sup_pairs[index].sub;
         if (!sub)
           continue;
-        auto sub_result =
-            ComputeMinAndMaxContentContribution(Style(), sub, child_input);
-        sub_result.sizes += ComputeMinMaxMargins(Style(), sub).InlineSum();
+        auto sub_result = ComputeMinAndMaxContentContributionForMathChild(
+            Style(), ConstraintSpace(), sub,
+            child_input.percentage_resolution_block_size);
         sub_result.sizes -= base_italic_correction;
         sub_sup_pair_size.Encompass(sub_result.sizes);
 
-        auto sup = sub_sup_pairs[index].sup;
+        const auto sup = sub_sup_pairs[index].sup;
         if (!sup)
           continue;
-        auto sup_result =
-            ComputeMinAndMaxContentContribution(Style(), sup, child_input);
-        sup_result.sizes += ComputeMinMaxMargins(Style(), sup).InlineSum();
+        const auto sup_result = ComputeMinAndMaxContentContributionForMathChild(
+            Style(), ConstraintSpace(), sup,
+            child_input.percentage_resolution_block_size);
         sub_sup_pair_size.Encompass(sup_result.sizes);
 
         sizes += sub_sup_pair_size;
