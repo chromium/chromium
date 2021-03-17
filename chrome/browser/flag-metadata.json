@@ -4660,11 +4660,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "share-by-default-in-cct",
-    "owners": [ "sophey", "chrome-sharing-eng@google.com" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "shared-clipboard-ui",
     "owners": [ "//chrome/browser/sharing/OWNERS" ],
     "expiry_milestone": 90

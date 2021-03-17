@@ -428,7 +428,6 @@ public abstract class ChromeFeatureList {
             "ServiceManagerForBackgroundPrefetch";
     public static final String SERVICE_MANAGER_FOR_DOWNLOAD = "ServiceManagerForDownload";
     public static final String SHARE_BUTTON_IN_TOP_TOOLBAR = "ShareButtonInTopToolbar";
-    public static final String SHARE_BY_DEFAULT_IN_CCT = "ShareByDefaultInCCT";
     public static final String SHARED_CLIPBOARD_UI = "SharedClipboardUI";
     public static final String SHOW_TRUSTED_PUBLISHER_URL = "ShowTrustedPublisherURL";
     public static final String SMART_SUGGESTION_FOR_LARGE_DOWNLOADS =

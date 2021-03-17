@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
@@ -467,9 +466,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         int shareState = IntentUtils.safeGetIntExtra(
                 intent, CustomTabsIntent.EXTRA_SHARE_STATE, CustomTabsIntent.SHARE_STATE_DEFAULT);
         if (shareState == CustomTabsIntent.SHARE_STATE_ON
-                || (shareState == CustomTabsIntent.SHARE_STATE_DEFAULT
-                        && CachedFeatureFlags.isEnabled(
-                                ChromeFeatureList.SHARE_BY_DEFAULT_IN_CCT))) {
+                || shareState == CustomTabsIntent.SHARE_STATE_DEFAULT) {
             if (mToolbarButtons.isEmpty()) {
                 mToolbarButtons.add(
                         CustomButtonParamsImpl.createShareButton(context, getToolbarColor()));

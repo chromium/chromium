@@ -10,14 +10,10 @@ import androidx.annotation.NonNull;
 
 import org.junit.Assert;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.util.ScalableTimeout;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
-
-import java.util.Collections;
 
 /**
  * Custom ActivityTestRule for all instrumentation tests that require a {@link CustomTabActivity}.
@@ -46,10 +42,6 @@ public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabA
 
     @Override
     public void launchActivity(@NonNull Intent intent) {
-        if (!FeatureList.hasTestFeatures()) {
-            FeatureList.setTestFeatures(
-                    Collections.singletonMap(ChromeFeatureList.SHARE_BY_DEFAULT_IN_CCT, true));
-        }
         putCustomTabIdInIntent(intent);
         super.launchActivity(intent);
     }

@@ -2124,10 +2124,6 @@ const char kSendTabToSelfWhenSignedInDescription[] =
 const char kSidePanelName[] = "Side panel";
 const char kSidePanelDescription[] = "Host some content in a side panel.";
 
-const char kShareByDefaultInCCTName[] = "Enable sharing by default in CCT.";
-const char kShareByDefaultInCCTDescription[] =
-    "Enables a sharing option by default in Chrome Custom Tabs.";
-
 const char kSharedClipboardUIName[] =
     "Enable shared clipboard feature signals to be handled";
 const char kSharedClipboardUIDescription[] =

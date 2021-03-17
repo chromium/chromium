@@ -3372,9 +3372,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"chrome-sharing-hub-v1-5", flag_descriptions::kChromeSharingHubV15Name,
      flag_descriptions::kChromeSharingHubV15Description, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kChromeSharingHubV15)},
-    {"share-by-default-in-cct", flag_descriptions::kShareByDefaultInCCTName,
-     flag_descriptions::kShareByDefaultInCCTDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kShareByDefaultInCCT)},
 #endif  // OS_ANDROID
     {"in-product-help-demo-mode-choice",
      flag_descriptions::kInProductHelpDemoModeChoiceName,
