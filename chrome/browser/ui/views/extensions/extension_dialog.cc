@@ -81,37 +81,9 @@ void ExtensionDialog::SetMinimumContentsSize(int width, int height) {
   extension_view_->SetPreferredSize(gfx::Size(width, height));
 }
 
-void ExtensionDialog::WindowClosing() {
+void ExtensionDialog::OnWindowClosing() {
   if (observer_)
     observer_->ExtensionDialogClosing(this);
-}
-
-void ExtensionDialog::DeleteDelegate() {
-  // The window has finished closing.  Allow ourself to be deleted.
-  Release();
-}
-
-// TODO(ellyjones): Are either of these overrides necessary? It seems like
-// extension_view_ is always this dialog's contents view, in which case
-// GetWidget will already behave this way.
-views::Widget* ExtensionDialog::GetWidget() {
-  return extension_view_ ? extension_view_->GetWidget() : nullptr;
-}
-
-const views::Widget* ExtensionDialog::GetWidget() const {
-  return extension_view_ ? extension_view_->GetWidget() : nullptr;
-}
-
-views::View* ExtensionDialog::GetContentsView() {
-  if (!extension_view_) {
-    extension_view_ = new ExtensionViewViews(host_.get());  // Owned by caller.
-
-    // Show a white background while the extension loads.  This is prettier than
-    // flashing a black unfilled window frame.
-    extension_view_->SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
-  }
-
-  return extension_view_;
 }
 
 void ExtensionDialog::OnExtensionHostDidStopFirstLoad(
@@ -154,7 +126,11 @@ ExtensionDialog::ExtensionDialog(
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_use_custom_frame(false);
 
-  AddRef();  // Balanced in DeleteDelegate();
+  AddRef();
+  RegisterDeleteDelegateCallback(
+      base::BindOnce(&ExtensionDialog::Release, base::Unretained(this)));
+  RegisterWindowClosingCallback(base::BindOnce(
+      &ExtensionDialog::OnWindowClosing, base::Unretained(this)));
 
   extension_host_observation_.Observe(host_.get());
   process_manager_observation_.Observe(
@@ -165,6 +141,16 @@ ExtensionDialog::ExtensionDialog(
   SetModalType(ui::MODAL_TYPE_WINDOW);
   SetShowTitle(!init_params.title.empty());
   SetTitle(init_params.title);
+
+  extension_view_ =
+      SetContentsView(std::make_unique<ExtensionViewViews>(host_.get()));
+
+  // Show a white background while the extension loads.  This is prettier than
+  // flashing a black unfilled window frame.
+  extension_view_->SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
+  extension_view_->SetPreferredSize(init_params.size);
+  extension_view_->SetMinimumSize(init_params.min_size);
+  extension_view_->SetVisible(true);
 
   bool can_resize = true;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -226,13 +212,6 @@ ExtensionDialog::ExtensionDialog(
   window->Show();
   // TODO(jamescook): Remove redundant call to Activate()?
   window->Activate();
-
-  // Creating the Widget should have called GetContentsView() and created
-  // |extension_view_|.
-  DCHECK(extension_view_);
-  extension_view_->SetPreferredSize(init_params.size);
-  extension_view_->SetMinimumSize(init_params.min_size);
-  extension_view_->SetVisible(true);
 
   // Ensure the DOM JavaScript can respond immediately to keyboard shortcuts.
   host_->host_contents()->Focus();

@@ -92,13 +92,6 @@ class ExtensionDialog : public views::DialogDelegate,
 
   extensions::ExtensionViewHost* host() const { return host_.get(); }
 
-  // views::DialogDelegate:
-  void WindowClosing() override;
-  void DeleteDelegate() override;
-  views::Widget* GetWidget() override;
-  const views::Widget* GetWidget() const override;
-  views::View* GetContentsView() override;
-
   // extensions::ExtensionHostObserver:
   void OnExtensionHostDidStopFirstLoad(
       const extensions::ExtensionHost* host) override;
@@ -120,6 +113,8 @@ class ExtensionDialog : public views::DialogDelegate,
                   ExtensionDialogObserver* observer,
                   gfx::NativeWindow parent_window,
                   const InitParams& init_params);
+
+  void OnWindowClosing();
 
   // Window Title
   std::u16string window_title_;
