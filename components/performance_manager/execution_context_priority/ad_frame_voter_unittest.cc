@@ -86,7 +86,7 @@ class AdFrameVoterTest : public GraphTestHarness {
 };
 
 // Tests that the AdFrameVoter correctly casts a vote for an ad frame.
-TEST_F(AdFrameVoterTest, SetIsAdFrame) {
+TEST_F(AdFrameVoterTest, SetIsAdFrameTrue) {
   // Create a graph with a single frame. It should not initially be an ad frame.
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   auto& frame_node = mock_graph.frame;
@@ -96,13 +96,34 @@ TEST_F(AdFrameVoterTest, SetIsAdFrame) {
       observer().HasVote(voter_id(), GetExecutionContext(frame_node.get())));
 
   // Make the frame an ad frame. This should cast a low priority vote.
-  mock_graph.frame->SetIsAdFrame();
+  mock_graph.frame->SetIsAdFrame(true);
   EXPECT_EQ(observer().GetVoteCount(), 1u);
   EXPECT_TRUE(observer().HasVote(
       voter_id(), GetExecutionContext(frame_node.get()),
       base::TaskPriority::LOWEST, AdFrameVoter::kAdFrameReason));
 
   // Deleting the frame should invalidate the vote.
+  frame_node.reset();
+  EXPECT_EQ(observer().GetVoteCount(), 0u);
+}
+
+// Tests that the AdFrameVoter correctly does not cast a vote for an untagged
+// frame.
+TEST_F(AdFrameVoterTest, SetIsAdFrameFalse) {
+  // Create a graph with a single ad frame.
+  MockSinglePageInSingleProcessGraph mock_graph(graph());
+  auto& frame_node = mock_graph.frame;
+  mock_graph.frame->SetIsAdFrame(true);
+  EXPECT_TRUE(frame_node->is_ad_frame());
+
+  // Unset the frame as an ad. This should invalidate any vote.
+  mock_graph.frame->SetIsAdFrame(false);
+  EXPECT_FALSE(frame_node->is_ad_frame());
+  EXPECT_EQ(observer().GetVoteCount(), 0u);
+  EXPECT_FALSE(
+      observer().HasVote(voter_id(), GetExecutionContext(frame_node.get())));
+
+  // Deleting the frame should not affect the vote count.
   frame_node.reset();
   EXPECT_EQ(observer().GetVoteCount(), 0u);
 }

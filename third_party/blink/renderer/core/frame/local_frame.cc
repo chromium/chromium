@@ -2240,7 +2240,7 @@ void LocalFrame::SetIsAdSubframe(blink::mojom::AdFrameType ad_frame_type) {
     // of sending an IPC.
     auto* document_resource_coordinator = document->GetResourceCoordinator();
     if (document_resource_coordinator)
-      document_resource_coordinator->SetIsAdFrame();
+      document_resource_coordinator->SetIsAdFrame(true);
   }
   ad_frame_type_ = ad_frame_type;
   UpdateAdHighlight();

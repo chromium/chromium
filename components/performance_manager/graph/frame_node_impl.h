@@ -85,7 +85,7 @@ class FrameNodeImpl
   void SetLifecycleState(LifecycleState state) override;
   void SetHasNonEmptyBeforeUnload(bool has_nonempty_beforeunload) override;
   void SetViewportIntersection(const gfx::Rect& viewport_intersection) override;
-  void SetIsAdFrame() override;
+  void SetIsAdFrame(bool is_ad_frame) override;
   void SetHadFormInteraction() override;
   void OnNonPersistentNotificationCreated() override;
   void OnFirstContentfulPaint(
@@ -296,7 +296,6 @@ class FrameNodeImpl
       &FrameNodeObserver::OnFrameLifecycleStateChanged>
       lifecycle_state_{LifecycleState::kRunning};
 
-  // This is a one way switch. Once marked an ad-frame, always an ad-frame.
   ObservedProperty::
       NotifiesOnlyOnChanges<bool, &FrameNodeObserver::OnIsAdFrameChanged>
           is_ad_frame_{false};

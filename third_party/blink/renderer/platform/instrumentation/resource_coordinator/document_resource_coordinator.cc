@@ -49,8 +49,8 @@ void DocumentResourceCoordinator::SetViewportIntersection(
   service_->SetViewportIntersection(viewport_intersection);
 }
 
-void DocumentResourceCoordinator::SetIsAdFrame() {
-  service_->SetIsAdFrame();
+void DocumentResourceCoordinator::SetIsAdFrame(bool is_ad_frame) {
+  service_->SetIsAdFrame(is_ad_frame);
 }
 
 void DocumentResourceCoordinator::OnNonPersistentNotificationCreated() {

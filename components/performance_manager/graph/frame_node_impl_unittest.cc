@@ -231,12 +231,18 @@ TEST_F(FrameNodeImplTest, IsAdFrame) {
   MockObserver obs;
   graph()->AddFrameNodeObserver(&obs);
 
+  // Observer will be notified once when IsAdFrame goes from false to true, and
+  // again when it goes from true to false.
+  EXPECT_CALL(obs, OnIsAdFrameChanged(frame_node.get())).Times(2);
+
   EXPECT_FALSE(frame_node->is_ad_frame());
-  EXPECT_CALL(obs, OnIsAdFrameChanged(frame_node.get()));
-  frame_node->SetIsAdFrame();
+  frame_node->SetIsAdFrame(true);
   EXPECT_TRUE(frame_node->is_ad_frame());
-  frame_node->SetIsAdFrame();
+  frame_node->SetIsAdFrame(true);
   EXPECT_TRUE(frame_node->is_ad_frame());
+
+  frame_node->SetIsAdFrame(false);
+  EXPECT_FALSE(frame_node->is_ad_frame());
 
   graph()->RemoveFrameNodeObserver(&obs);
 }

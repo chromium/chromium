@@ -82,9 +82,9 @@ void FrameNodeImpl::SetHasNonEmptyBeforeUnload(bool has_nonempty_beforeunload) {
   document_.has_nonempty_beforeunload = has_nonempty_beforeunload;
 }
 
-void FrameNodeImpl::SetIsAdFrame() {
+void FrameNodeImpl::SetIsAdFrame(bool is_ad_frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  is_ad_frame_.SetAndMaybeNotify(this, true);
+  is_ad_frame_.SetAndMaybeNotify(this, is_ad_frame);
 }
 
 void FrameNodeImpl::SetHadFormInteraction() {
