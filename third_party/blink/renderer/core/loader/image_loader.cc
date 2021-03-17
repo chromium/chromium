@@ -667,9 +667,6 @@ void ImageLoader::UpdateFromElement(
     delay_until_do_update_from_element_ = nullptr;
   }
 
-  // TODO(crbug.com/1175295): Remove this CHECK once the investigation is done.
-  CHECK(element_->GetDocument().GetExecutionContext());
-
   if (ShouldLoadImmediately(ImageSourceToKURL(image_source_url))) {
     DoUpdateFromElement(element_->GetExecutionContext()->GetCurrentWorld(),
                         update_behavior, referrer_policy, UpdateType::kSync);
