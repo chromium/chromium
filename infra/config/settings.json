@@ -1,7 +1,7 @@
 {
     "project": "chromium-m89",
     "project_title": "Chromium M89",
-    "is_master": false,
+    "is_main": false,
     "is_lts_branch": false,
     "ref": "refs/branch-heads/4389"
 }
