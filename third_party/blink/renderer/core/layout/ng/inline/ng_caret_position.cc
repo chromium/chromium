@@ -248,8 +248,7 @@ bool IsUpstreamAfterLineBreak(const NGCaretPosition& caret_position) {
 
 NGCaretPosition BetterCandidateBetween(const NGCaretPosition& current,
                                        const NGCaretPosition& other,
-                                       unsigned offset,
-                                       TextAffinity affinity) {
+                                       unsigned offset) {
   DCHECK(!other.IsNull());
   if (current.IsNull())
     return other;
@@ -258,7 +257,10 @@ NGCaretPosition BetterCandidateBetween(const NGCaretPosition& current,
   // Make sure all of them are captured and handled here.
 
   // Only known case: either |current| or |other| is upstream after line break.
-  DCHECK_EQ(affinity, TextAffinity::kUpstream);
+  DCHECK(current.ToPositionInDOMTreeWithAffinity().Affinity() ==
+             TextAffinity::kUpstream ||
+         other.ToPositionInDOMTreeWithAffinity().Affinity() ==
+             TextAffinity::kUpstream);
   if (IsUpstreamAfterLineBreak(current)) {
     DCHECK(!IsUpstreamAfterLineBreak(other));
     return other;
@@ -298,8 +300,8 @@ NGCaretPosition ComputeNGCaretPosition(const LayoutBlockFlow& context,
     }
 
     DCHECK_EQ(ResolutionType::kFoundCandidate, resolution.type);
-    candidate = BetterCandidateBetween(candidate, resolution.caret_position,
-                                       offset, affinity);
+    candidate =
+        BetterCandidateBetween(candidate, resolution.caret_position, offset);
   }
 
   return AdjustCaretPositionForBidiText(candidate);

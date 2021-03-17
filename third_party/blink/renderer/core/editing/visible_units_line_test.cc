@@ -1174,4 +1174,21 @@ TEST_F(VisibleUnitsLineTest, TextOverflowEllipsis2) {
             start_of_line);
 }
 
+// https://crbug.com/1181451
+TEST_F(VisibleUnitsLineTest, InSameLineWithBidiReordering) {
+  InsertStyleElement("div { display: inline-block; width: 75% }");
+  SetBodyContent(
+      "<span dir='rtl'>"
+      "<span dir='ltr'>a&#x20;</span>&#x20;"
+      "<div></div><div></div>"
+      "</span>");
+  Element* span = GetDocument().QuerySelector("span > span");
+  PositionWithAffinity p1(Position(span->nextSibling(), 0));
+  PositionWithAffinity p2(Position(span->firstChild(), 2));
+
+  // Should not crash.
+  // The result on legacy layout is broken and not worth fixing.
+  EXPECT_EQ(LayoutNGEnabled() ? true : false, InSameLine(p1, p2));
+}
+
 }  // namespace blink
