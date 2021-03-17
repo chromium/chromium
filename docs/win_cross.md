@@ -37,8 +37,10 @@ builds ([.asm bug](https://crbug.com/762167)).
 
 1. `gclient sync`, follow instructions on screen.
 
-If you're at Google, this will automatically download the Windows SDK for you.
-If this fails with an error:
+### If you're at Google
+
+`gclient sync` should automatically download the Windows SDK for you. If this
+fails with an error:
 
     Please follow the instructions at
     https://chromium.googlesource.com/chromium/src/+/HEAD/docs/win_cross.md
@@ -49,8 +51,13 @@ then you may need to re-authenticate via:
     # Follow instructions, enter 0 as project id.
     download_from_google_storage --config
 
-If you are not at Google, you can package your Windows SDK installation
-into a zip file by running the following on a Windows machine:
+`gclient sync` should now succeed. Skip ahead to the [GN setup](#gn-setup)
+section.
+
+### If you're not at Google
+
+You can package your Windows SDK installation into a zip file by running the
+following on a Windows machine:
 
     cd path/to/depot_tools/win_toolchain
     # customize the Windows SDK version numbers
