@@ -9,7 +9,7 @@
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertTrue} from '../../../chai_assert.js';
 // #import {FakeMediaDevices} from './fake_media_devices.m.js';
-// #import {FakeBarcodeDetector} from './fake_barcode_detector.m.js';
+// #import {FakeBarcodeDetector, FakeImageCapture} from './fake_barcode_detector.m.js';
 // clang-format on
 
 suite('CrComponentsActivationCodePageTest', function() {
@@ -17,6 +17,9 @@ suite('CrComponentsActivationCodePageTest', function() {
 
   /** @type {?FakeMediaDevices} */
   let mediaDevices = null;
+
+  /** @type {function(Function, number)} */
+  let intervalFunction = null;
 
   function flushAsync() {
     Polymer.dom.flush();
@@ -26,8 +29,21 @@ suite('CrComponentsActivationCodePageTest', function() {
 
   setup(function() {
     activationCodePage = document.createElement('activation-code-page');
-    activationCodePage.barcodeDetectorClass_ = FakeBarcodeDetector;
-    activationCodePage.initBarcodeDetector();
+
+    // Captures the function that is called every time the interval timer
+    // timeouts.
+    const setIntervalFunction = (fn, milliseconds) => {
+      intervalFunction = fn;
+      return 1;
+    };
+    // In tests, pausing the video can have race conditions with previous
+    // requests to play the video due to the speed of execution. Avoid this by
+    // mocking the play and pause actions.
+    const playVideoFunction = () => {};
+    const stopStreamFunction = (stream) => {};
+    activationCodePage.setFakesForTesting(
+        FakeBarcodeDetector, FakeImageCapture, setIntervalFunction,
+        playVideoFunction, stopStreamFunction);
     document.body.appendChild(activationCodePage);
     Polymer.dom.flush();
 
@@ -35,6 +51,10 @@ suite('CrComponentsActivationCodePageTest', function() {
     mediaDevices.addDevice();
     activationCodePage.setMediaDevices(mediaDevices);
     Polymer.dom.flush();
+  });
+
+  teardown(function() {
+    activationCodePage.remove();
   });
 
   test('UI states', async function() {
@@ -48,6 +68,7 @@ suite('CrComponentsActivationCodePageTest', function() {
     const startScanningButton = activationCodePage.$$('#startScanningButton');
     const scanFinishContainer = activationCodePage.$$('#scanFinishContainer');
     const switchCameraButton = activationCodePage.$$('#switchCameraButton');
+    const tryAgainButton = activationCodePage.$$('#tryAgainButton');
     const scanSuccessContainer = activationCodePage.$$('#scanSuccessContainer');
     const scanFailureContainer = activationCodePage.$$('#scanFailureContainer');
     const spinner = activationCodePage.$$('paper-spinner-lite');
@@ -59,6 +80,7 @@ suite('CrComponentsActivationCodePageTest', function() {
     assertTrue(!!startScanningButton);
     assertTrue(!!scanFinishContainer);
     assertTrue(!!switchCameraButton);
+    assertTrue(!!tryAgainButton);
     assertTrue(!!scanSuccessContainer);
     assertTrue(!!scanFailureContainer);
     assertTrue(!!spinner);
@@ -81,8 +103,8 @@ suite('CrComponentsActivationCodePageTest', function() {
     assertTrue(scanFinishContainer.hidden);
     assertTrue(switchCameraButton.hidden);
 
-    // Mock detecting an activation code.
-    activationCodePage.$$('#activationCode').value = 'ACTIVATION_CODE';
+    // Mock camera scanning a code.
+    await intervalFunction();
     await flushAsync();
 
     // The scanFinishContainer and scanSuccessContainer should now be visible,
@@ -104,8 +126,18 @@ suite('CrComponentsActivationCodePageTest', function() {
     assertTrue(scanSuccessContainer.hidden);
     assertFalse(scanFailureContainer.hidden);
 
-    // Enter a new activation code
-    activationCodePage.$$('#activationCode').value = 'ACTIVATION_CODE 2';
+    // Click the 'Try Again' button.
+    tryAgainButton.click();
+    await flushAsync();
+
+    // The video should be visible and start scanning UI hidden.
+    assertFalse(video.hidden);
+    assertTrue(startScanningContainer.hidden);
+    assertTrue(scanFinishContainer.hidden);
+    assertTrue(switchCameraButton.hidden);
+
+    // Scan a new code.
+    await intervalFunction();
     await flushAsync();
 
     // The scanFinishContainer and scanSuccessContainer should now be visible,
@@ -127,6 +159,29 @@ suite('CrComponentsActivationCodePageTest', function() {
     assertTrue(video.hidden);
     assertTrue(scanSuccessContainer.hidden);
     assertFalse(scanFailureContainer.hidden);
+
+    // Click the 'Try Again' button.
+    tryAgainButton.click();
+    await flushAsync();
+
+    // The video should be visible and start scanning UI hidden.
+    assertFalse(video.hidden);
+    assertTrue(startScanningContainer.hidden);
+    assertTrue(scanFinishContainer.hidden);
+    assertTrue(switchCameraButton.hidden);
+
+    // Simulate typing in the input.
+    activationCodePage.$$('#activationCode')
+        .dispatchEvent(new KeyboardEvent('keydown', {key: 'A'}));
+    await flushAsync();
+
+    // We should be back in the initial state.
+    assertFalse(startScanningContainer.hidden);
+    assertFalse(activationCodeContainer.hidden);
+    assertTrue(video.hidden);
+    assertTrue(scanFinishContainer.hidden);
+    assertTrue(switchCameraButton.hidden);
+    assertTrue(spinner.hidden);
 
     activationCodePage.showBusy = true;
     assertFalse(spinner.hidden);
@@ -205,8 +260,8 @@ suite('CrComponentsActivationCodePageTest', function() {
     assertTrue(switchCameraButton.hidden);
 
     // Mock detecting an activation code.
-    activationCodePage.$$('#activationCode').value = 'ACTIVATION_CODE';
-    Polymer.dom.flush();
+    await intervalFunction();
+    await flushAsync();
 
     assertTrue(video.hidden);
   });

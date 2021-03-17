@@ -157,7 +157,7 @@
               <iron-icon class="button-image" icon="cellular-setup:switch-camera"></iron-icon>
               [[i18n('switchCamera')]]
             </cr-button>
-            <video id="video"
+            <video id="video" autoplay muted
                 hidden$="[[isUiElementHidden_(UiElement.VIDEO, state_)]]">
             </video>
             <div class="center" id="startScanningContainer" class="blue-icon"
