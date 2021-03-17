@@ -50,7 +50,7 @@ bool IsMainLatencyRecoveryEnabled() {
 }
 
 const base::Feature kRemoveMobileViewportDoubleTap{
-    "RemoveMobileViewportDoubleTap", base::FEATURE_DISABLED_BY_DEFAULT};
+    "RemoveMobileViewportDoubleTap", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kScrollUnification{"ScrollUnification",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
