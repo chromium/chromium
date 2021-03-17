@@ -540,6 +540,94 @@ TEST_F(BindTest, IgnoreResultForOnceCallback) {
   EXPECT_EQ(s, "Run2");
 }
 
+void SetFromRef(int& ref) {
+  EXPECT_EQ(ref, 1);
+  ref = 2;
+  EXPECT_EQ(ref, 2);
+}
+
+TEST_F(BindTest, BindOnceWithNonConstRef) {
+  int v = 1;
+
+  // Mutates `v` because it's not bound to callback instead it's forwarded by
+  // Run().
+  auto cb1 = BindOnce(SetFromRef);
+  std::move(cb1).Run(v);
+  EXPECT_EQ(v, 2);
+  v = 1;
+
+  // Mutates `v` through std::reference_wrapper bound to callback.
+  auto cb2 = BindOnce(SetFromRef, std::ref(v));
+  std::move(cb2).Run();
+  EXPECT_EQ(v, 2);
+  v = 1;
+
+  // Everything past here following will make a copy of the argument. The copy
+  // will be mutated and leave `v` unmodified.
+  auto cb3 = BindOnce(SetFromRef, base::OwnedRef(v));
+  std::move(cb3).Run();
+  EXPECT_EQ(v, 1);
+
+  int& ref = v;
+  auto cb4 = BindOnce(SetFromRef, base::OwnedRef(ref));
+  std::move(cb4).Run();
+  EXPECT_EQ(v, 1);
+
+  const int cv = 1;
+  auto cb5 = BindOnce(SetFromRef, base::OwnedRef(cv));
+  std::move(cb5).Run();
+  EXPECT_EQ(cv, 1);
+
+  const int& cref = v;
+  auto cb6 = BindOnce(SetFromRef, base::OwnedRef(cref));
+  std::move(cb6).Run();
+  EXPECT_EQ(cref, 1);
+
+  auto cb7 = BindOnce(SetFromRef, base::OwnedRef(1));
+  std::move(cb7).Run();
+}
+
+TEST_F(BindTest, BindRepeatingWithNonConstRef) {
+  int v = 1;
+
+  // Mutates `v` because it's not bound to callback instead it's forwarded by
+  // Run().
+  auto cb1 = BindRepeating(SetFromRef);
+  std::move(cb1).Run(v);
+  EXPECT_EQ(v, 2);
+  v = 1;
+
+  // Mutates `v` through std::reference_wrapper bound to callback.
+  auto cb2 = BindRepeating(SetFromRef, std::ref(v));
+  std::move(cb2).Run();
+  EXPECT_EQ(v, 2);
+  v = 1;
+
+  // Everything past here following will make a copy of the argument. The copy
+  // will be mutated and leave `v` unmodified.
+  auto cb3 = BindRepeating(SetFromRef, base::OwnedRef(v));
+  std::move(cb3).Run();
+  EXPECT_EQ(v, 1);
+
+  int& ref = v;
+  auto cb4 = BindRepeating(SetFromRef, base::OwnedRef(ref));
+  std::move(cb4).Run();
+  EXPECT_EQ(v, 1);
+
+  const int cv = 1;
+  auto cb5 = BindRepeating(SetFromRef, base::OwnedRef(cv));
+  std::move(cb5).Run();
+  EXPECT_EQ(cv, 1);
+
+  const int& cref = v;
+  auto cb6 = BindRepeating(SetFromRef, base::OwnedRef(cref));
+  std::move(cb6).Run();
+  EXPECT_EQ(cref, 1);
+
+  auto cb7 = BindRepeating(SetFromRef, base::OwnedRef(1));
+  std::move(cb7).Run();
+}
+
 // Functions that take reference parameters.
 //  - Forced reference parameter type still stores a copy.
 //  - Forced const reference parameter type still stores a copy.

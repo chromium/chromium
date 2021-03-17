@@ -74,6 +74,8 @@ void VoidPolymorphic1(T t) {
 void TakesMoveOnly(std::unique_ptr<int>) {
 }
 
+void TakesIntRef(int& ref) {}
+
 struct NonEmptyFunctor {
   int x;
   void operator()() const {}
@@ -157,13 +159,41 @@ void WontCompile() {
   ref_arg_cb.Run(p);
 }
 
-#elif defined(NCTEST_DISALLOW_BIND_TO_NON_CONST_REF_PARAM)  // [r"static_assert failed.+?BindArgument<0>::ForwardedAs<.+?>::ToParamWithType<.+?>::kCanBeForwardedToBoundFunctor.+?Type mismatch between bound argument and bound functor's parameter\."]
+#elif defined(NCTEST_BIND_ONCE_WITH_NON_CONST_REF_PARAM)  // [r"static_assert failed due to requirement 'BindArgument<0>::ForwardedAs<.+?>::ToParamWithType<.+?>::kNonConstRefParamMustBeWrapped' \"Bound argument for non-const reference parameter must be wrapped in std::ref\(\) or base::OwnedRef\(\).\""]
 
-// Binding functions with reference parameters requires `std::ref()`.
+// Binding functions with reference parameters requires `std::ref()` or
+// 'base::OwnedRef()`.
 void WontCompile() {
-  Parent p;
-  RepeatingCallback<int()> ref_cb = BindRepeating(&UnwrapParentRef, p);
-  ref_cb.Run();
+  int v = 1;
+  auto cb = BindOnce(&TakesIntRef, v);
+}
+
+#elif defined(NCTEST_BIND_REPEATING_WITH_NON_CONST_REF_PARAM)  // [r"static_assert failed due to requirement 'BindArgument<0>::ForwardedAs<.+?>::ToParamWithType<.+?>::kNonConstRefParamMustBeWrapped' \"Bound argument for non-const reference parameter must be wrapped in std::ref\(\) or base::OwnedRef\(\).\""]
+
+// Binding functions with reference parameters requires `std::ref()` or
+// 'base::OwnedRef()`.
+void WontCompile() {
+  int v = 1;
+  auto cb = BindRepeating(&TakesIntRef, v);
+}
+
+#elif defined(NCTEST_NON_CONST_REF_PARAM_WRONG_TYPE)  // [r"static_assert failed due to requirement 'BindArgument<0>::ForwardedAs<.+?>::ToParamWithType<.+?>::kCanBeForwardedToBoundFunctor' \"Type mismatch between bound argument and bound functor's parameter.\""]
+
+// If the argument and parameter types mismatch then the compile error should be
+// the generic type mismatch error.
+void WontCompile() {
+  float f = 1.0f;
+  auto cb = BindOnce(&TakesIntRef, f);
+}
+
+#elif defined(NCTEST_NON_CONST_REF_PARAM_WRONG_TYPE_AND_WRAPPED)  // [r"static_assert failed due to requirement 'BindArgument<0>::ForwardedAs<.+?>::ToParamWithType<.+?>::kCanBeForwardedToBoundFunctor' \"Type mismatch between bound argument and bound functor's parameter.\""]
+
+// If the argument and parameter types mismatch then the compile error should be
+// the generic type mismatch error even if the argument is wrapped in
+// base::OwnedRef().
+void WontCompile() {
+  float f = 1.0f;
+  auto cb = BindOnce(&TakesIntRef, base::OwnedRef(f));
 }
 
 #elif defined(NCTEST_NO_IMPLICIT_ARRAY_PTR_CONVERSION)  // [r"fatal error: static_assert failed due to requirement '!std::is_array<base::HasRef \[10\]>::value' \"First bound argument to a method cannot be an array.\""]

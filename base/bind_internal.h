@@ -1046,6 +1046,17 @@ struct BindArgument {
     struct ToParamWithType {
       static constexpr bool kCanBeForwardedToBoundFunctor =
           std::is_constructible<FunctorParamType, ForwardingType>::value;
+
+      // If the bound type can't be forwarded then test if `FunctorParamType` is
+      // a non-const lvalue reference and a reference to the unwrapped type
+      // *could* have been successfully forwarded.
+      static constexpr bool kNonConstRefParamMustBeWrapped =
+          kCanBeForwardedToBoundFunctor ||
+          !(std::is_lvalue_reference<FunctorParamType>::value &&
+            !std::is_const<std::remove_reference_t<FunctorParamType>>::value &&
+            std::is_convertible<std::decay_t<ForwardingType>&,
+                                FunctorParamType>::value);
+
       // Note that this intentionally drops the const qualifier from
       // `ForwardingType`, to test if it *could* have been successfully
       // forwarded if `Passed()` had been used.
@@ -1115,6 +1126,11 @@ struct AssertConstructible {
       "base::BindRepeating() argument is a move-only type. Use base::Passed() "
       "instead of std::move() to transfer ownership from the callback to the "
       "bound functor.");
+  static_assert(
+      BindArgument<i>::template ForwardedAs<Unwrapped>::
+          template ToParamWithType<Param>::kNonConstRefParamMustBeWrapped,
+      "Bound argument for non-const reference parameter must be wrapped in "
+      "std::ref() or base::OwnedRef().");
   static_assert(
       BindArgument<i>::template ForwardedAs<Unwrapped>::
           template ToParamWithType<Param>::kCanBeForwardedToBoundFunctor,
