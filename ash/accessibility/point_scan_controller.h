@@ -26,8 +26,6 @@ class ASH_EXPORT PointScanController : public AccessibilityLayerDelegate {
   PointScanController& operator=(const PointScanController&) = delete;
 
   enum class PointScanState {
-    // Point scanning is not scanning.
-    kOff,
     // Point scanning is currently range scanning horizontally.
     kHorizontalRangeScanning,
     // Point scanning is currently scanning horizontally.
@@ -36,6 +34,8 @@ class ASH_EXPORT PointScanController : public AccessibilityLayerDelegate {
     kVerticalRangeScanning,
     // Point scanning is currently scanning vertically.
     kVerticalScanning,
+    // Point scanning is not scanning.
+    kOff,
   };
 
   // Starts point scanning, by sweeping a range across the screen and waiting
@@ -50,7 +50,6 @@ class ASH_EXPORT PointScanController : public AccessibilityLayerDelegate {
   void ResetAnimation();
   base::Optional<gfx::PointF> OnPointSelect();
   bool IsPointScanEnabled();
-  void SetSpeedDipsPerSecond(int speed_dips_per_second);
 
  private:
   // AccessibilityLayerDelegate implementation:
@@ -70,7 +69,7 @@ class ASH_EXPORT PointScanController : public AccessibilityLayerDelegate {
   PointScanLayerAnimationInfo vertical_line_layer_info_;
   std::unique_ptr<PointScanLayer> vertical_line_layer_;
 
-  PointScanState state_ = PointScanState::kOff;
+  PointScanState state_;
 };
 
 }  // namespace ash

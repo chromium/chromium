@@ -9,16 +9,25 @@
 #include "ui/display/screen.h"
 
 namespace {
-
+// Scanning time in seconds from the start of the screen (offset_start) to the
+// end of the screen (offset_bound).
+constexpr float kHorizontalScanTimeSecs = 90;
+constexpr float kVerticalScanTimeSecs = 60;
+constexpr float kHorizontalRangeScanTimeSecs = 30;
+constexpr float kVerticalRangeScanTimeSecs = 25;
 constexpr int kDefaultRangeWidthDips = 150;
 constexpr float kDefaultRangeHeightDips = 120;
-constexpr float kLineScanSlowDownFactor = 0.5f;
 
 }  // namespace
 
 namespace ash {
 
-PointScanController::PointScanController() = default;
+PointScanController::PointScanController() {
+  horizontal_line_layer_info_.animation_rate = kHorizontalScanTimeSecs;
+  horizontal_range_layer_info_.animation_rate = kHorizontalRangeScanTimeSecs;
+  vertical_line_layer_info_.animation_rate = kVerticalScanTimeSecs;
+  vertical_range_layer_info_.animation_rate = kVerticalRangeScanTimeSecs;
+}
 
 PointScanController::~PointScanController() = default;
 
@@ -155,19 +164,6 @@ bool PointScanController::IsPointScanEnabled() {
     case PointScanState::kOff:
       return false;
   }
-}
-
-void PointScanController::SetSpeedDipsPerSecond(int speed_dips_per_second) {
-  const gfx::Rect& display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
-  float width = display_bounds.width();
-  float height = display_bounds.height();
-  horizontal_range_layer_info_.animation_rate = width / speed_dips_per_second;
-  horizontal_line_layer_info_.animation_rate =
-      width / (speed_dips_per_second * kLineScanSlowDownFactor);
-  vertical_range_layer_info_.animation_rate = height / speed_dips_per_second;
-  vertical_line_layer_info_.animation_rate =
-      height / (speed_dips_per_second * kLineScanSlowDownFactor);
 }
 
 void PointScanController::OnDeviceScaleFactorChanged() {}

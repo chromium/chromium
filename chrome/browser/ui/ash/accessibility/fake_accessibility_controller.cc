@@ -62,9 +62,6 @@ void FakeAccessibilityController::StartPointScan() {}
 
 void FakeAccessibilityController::StopPointScan() {}
 
-void FakeAccessibilityController::SetPointScanSpeedDipsPerSecond(
-    int point_scan_speed_dips_per_second) {}
-
 void FakeAccessibilityController::SetDictationActive(bool is_active) {}
 
 void FakeAccessibilityController::ToggleDictationFromSource(
