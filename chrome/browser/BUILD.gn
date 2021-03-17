@@ -6920,6 +6920,8 @@ static_library("test_support") {
       "extensions/test_blocklist.h",
       "extensions/test_blocklist_state_fetcher.cc",
       "extensions/test_blocklist_state_fetcher.h",
+      "extensions/test_extension_message_bubble_delegate.cc",
+      "extensions/test_extension_message_bubble_delegate.h",
       "extensions/test_extension_service.cc",
       "extensions/test_extension_service.h",
       "extensions/test_extension_system.cc",
