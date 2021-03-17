@@ -317,10 +317,16 @@ def _MakeStdioUrl(test_name, buildername, buildnumber):
 
 
 def _MakeBuildStatusUrl(project, buildbucket, buildername, buildnumber):
-  # Note: this construction only works for LUCI but it's ok because we are
-  # converting all perf bots to LUCI (crbug.com/803137).
-  if not (project and buildbucket and buildnumber and buildnumber):
+  # Temporary logging to debug crbug.com/1169299
+  logging.info('_MakeBuildStatusUrl(%s, %s, %s, %s)' %
+               (project, buildbucket, buildername, str(buildnumber)))
+
+  if not (buildername and buildnumber):
     return None
+  if not project:
+    project = 'chrome'
+  if not buildbucket:
+    buildbucket = 'ci'
   return 'https://ci.chromium.org/ui/p/%s/builders/%s/%s/%s' % (
       urllib.quote(project),
       urllib.quote(buildbucket),
