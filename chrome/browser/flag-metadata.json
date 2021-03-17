@@ -2875,8 +2875,8 @@
   },
   {
     "name": "fill-on-account-select",
-    "owners": [ "jdoerrie" ],
-    "expiry_milestone": 90
+    "owners": [ "kazinova@google.com", "vasilii" ],
+    "expiry_milestone": 95
   },
   {
     "name": "filling-across-affiliated-websites",
