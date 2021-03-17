@@ -40,13 +40,13 @@ namespace blink {
 // Function defined in third_party/blink/public/web/blink.h.
 void SetDomainRelaxationForbiddenForTest(bool forbidden,
                                          const WebString& scheme) {
-  SchemeRegistry::SetDomainRelaxationForbiddenForURLScheme(forbidden,
-                                                           String(scheme));
+  SchemeRegistry::SetDomainRelaxationForbiddenForURLSchemeForTest(
+      forbidden, String(scheme));
 }
 
 // Function defined in third_party/blink/public/web/blink.h.
 void ResetDomainRelaxationForTest() {
-  SchemeRegistry::ResetDomainRelaxation();
+  SchemeRegistry::ResetDomainRelaxationForTest();
 }
 
 namespace {
@@ -107,6 +107,7 @@ class URLSchemesRegistry final {
  private:
   friend const URLSchemesRegistry& GetURLSchemesRegistry();
   friend URLSchemesRegistry& GetMutableURLSchemesRegistry();
+  friend URLSchemesRegistry& GetMutableURLSchemesRegistryForTest();
 
   static URLSchemesRegistry& GetInstance() {
     DEFINE_STATIC_LOCAL(URLSchemesRegistry, schemes, ());
@@ -122,6 +123,13 @@ URLSchemesRegistry& GetMutableURLSchemesRegistry() {
 #if DCHECK_IS_ON()
   DCHECK(WTF::IsBeforeThreadCreated());
 #endif
+  return URLSchemesRegistry::GetInstance();
+}
+
+URLSchemesRegistry& GetMutableURLSchemesRegistryForTest() {
+  // Bypasses thread check. This is used when TestRunner tries to mutate
+  // schemes_forbidden_from_domain_relaxation during a test or on resetting
+  // its internal states.
   return URLSchemesRegistry::GetInstance();
 }
 
@@ -153,7 +161,7 @@ bool SchemeRegistry::ShouldLoadURLSchemeAsEmptyDocument(const String& scheme) {
   return GetURLSchemesRegistry().empty_document_schemes.Contains(scheme);
 }
 
-void SchemeRegistry::SetDomainRelaxationForbiddenForURLScheme(
+void SchemeRegistry::SetDomainRelaxationForbiddenForURLSchemeForTest(
     bool forbidden,
     const String& scheme) {
   DCHECK_EQ(scheme, scheme.LowerASCII());
@@ -161,16 +169,16 @@ void SchemeRegistry::SetDomainRelaxationForbiddenForURLScheme(
     return;
 
   if (forbidden) {
-    GetMutableURLSchemesRegistry()
+    GetMutableURLSchemesRegistryForTest()
         .schemes_forbidden_from_domain_relaxation.insert(scheme);
   } else {
-    GetMutableURLSchemesRegistry()
+    GetMutableURLSchemesRegistryForTest()
         .schemes_forbidden_from_domain_relaxation.erase(scheme);
   }
 }
 
-void SchemeRegistry::ResetDomainRelaxation() {
-  GetMutableURLSchemesRegistry()
+void SchemeRegistry::ResetDomainRelaxationForTest() {
+  GetMutableURLSchemesRegistryForTest()
       .schemes_forbidden_from_domain_relaxation.clear();
 }
 
