@@ -1071,7 +1071,6 @@
 <translation id="2187675480456493911">ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକ ସହ ସିଙ୍କ୍ ହୋଇଛି। ଅନ୍ୟ ଉପଯୋଗକର୍ତ୍ତାଙ୍କ ଦ୍ୱାରା ପରିବର୍ତ୍ତନ କରାଯାଇଥିବା ସେଟିଂସ୍ ସିଙ୍କ୍ ହେବ ନାହିଁ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">ସର୍ଭର୍ ସାର୍ଟିଫିକେଟ୍ ଇମ୍ପୋର୍ଟ କରିବାରେ ତ୍ରୁଟି</translation>
 <translation id="2187906491731510095">ଏକ୍ସଟେନ୍‌ସନ୍‌ଗୁଡ଼ିକ ଅପ୍‌ଡେଟ୍ କରାଯାଇଛି</translation>
-<translation id="2188100037674302806">Parallels Desktop</translation>
 <translation id="2188881192257509750"><ph name="APPLICATION" /> ଖୋଲନ୍ତୁ</translation>
 <translation id="2190069059097339078">ୱାଇଫାଇ କ୍ରେଡେନ୍ସିଆଲ୍ ପ୍ରାପ୍ତକର୍ତ୍ତା</translation>
 <translation id="219008588003277019">ସ୍ଥାନୀୟ କ୍ଲାଏଣ୍ଟ ମଡ୍ୟୁଲ୍: <ph name="NEXE_NAME" /></translation>
@@ -1891,7 +1890,6 @@
 <translation id="3089137131053189723">ସନ୍ଧାନ ଖାଲି ହୋ‍ଇଯାଇଛି</translation>
 <translation id="3090819949319990166"><ph name="TEMP_CRX_FILE" />କୁ crx ଏକ୍ସଟର୍ନଲ୍‌ ଫାଇଲ୍‌ କପି କରିପାରିବ ନାହିଁ।</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" ପେୟାର୍‌ ହୋ‍ଇଛି</translation>
-<translation id="3092699946856346803">ଦୟାକରି ଆପଣଙ୍କର SIMକୁ ଭର୍ତ୍ତି କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="3094141017404513551">ଏହା ଆପଣଙ୍କ ବ୍ରାଉଜିଂକୁ <ph name="EXISTING_USER" />ଠାରୁ ଅଲଗା କରିବ</translation>
 <translation id="3095871294753148861">ବୁକମାର୍କ, ପାସୱାର୍ଡ ଏବଂ ଅନ୍ୟ ବ୍ରାଉଜର୍ ଡାଟା ପ୍ରାଥମିକ ଆକାଉଣ୍ଟ ସହିତ ସିଙ୍କ୍ କରାଯାଇଛି।</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1ଟି ସମ୍ଭାବ୍ୟ କ୍ଷତିକାରକ ଏକ୍ସଟେନସନ୍ ବନ୍ଦ ଅଛି। ଆପଣ ଏହାକୁ ମଧ୍ୟ କାଢ଼ି ପାରିବେ।}other{{NUM_EXTENSIONS}ଟି ସମ୍ଭାବ୍ୟ କ୍ଷତିକାରକ ଏକ୍ସଟେନସନ୍ ବନ୍ଦ ଅଛି। ଆପଣ ସେଗୁଡ଼ିକୁ ମଧ୍ୟ କାଢ଼ି ପାରିବେ।}}</translation>
@@ -3028,7 +3026,6 @@
 <translation id="4415748029120993980">SECG ଅଣ୍ଡାକାର ବକ୍ର secp384r1 (aka NIST P-384)</translation>
 <translation id="4416582610654027550">ଏକ ଵୈଧ URL ଟାଇପ୍‌ କରନ୍ତୁ</translation>
 <translation id="4419409365248380979">ସର୍ବଦା <ph name="HOST" />କୁ କୁକୀଗୁଡ଼ିକ ସେଟ୍ କରିବା ପାଇଁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
-<translation id="4419610272958564173">ଅଜଣା ଡିଭାଇସ୍ (ବିକ୍ରେତା: <ph name="VENDOR_ID" />, ଉତ୍ପାଦ: <ph name="PRODUCT_ID" />)</translation>
 <translation id="4421932782753506458">ଫ୍ଲୁଫି</translation>
 <translation id="4423376891418188461">ସେଟିଂସ୍‍ ରିଷ୍ଟୋର୍‍ କରନ୍ତୁ</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, ଆପଣ ଆପଣଙ୍କର ପାସ୍‌ୱର୍ଡ ପରିବର୍ତ୍ତନ କରନ୍ତୁ ବୋଲି ଆପଣଙ୍କର ବ୍ୟବସ୍ଥାପକ ଚାହୁଁଛନ୍ତି।</translation>
@@ -3274,6 +3271,7 @@
 <translation id="4682551433947286597">ସାଇନ୍ ଇନ୍ ସ୍କ୍ରିନ୍‌ରେ ୱାଲ୍‌ପେପର୍‌ଗୁଡ଼ିକ ଦେଖାଯିବ।</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (ଡିଫଲ୍ଟ)</translation>
 <translation id="4684427112815847243">ସବୁକିଛି ସିଙ୍କ୍‌ କରନ୍ତୁ</translation>
+<translation id="4687613760714619596">ଅଜଣା ଡିଭାଇସ୍ (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">ଲୋକାଲ୍ ଲଗ୍ ID: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />।</translation>
 <translation id="4689235506267737042">ଆପଣଙ୍କ ଡେମୋର ଅଗ୍ରାଧିକାର ବାଛନ୍ତୁ</translation>
 <translation id="4689421377817139245">ଏହି ବୁକ୍‌ମାର୍କକୁ ଆପଣଙ୍କର iPhoneରେ ସିଙ୍କ୍‌ କରନ୍ତୁ</translation>
@@ -5446,7 +5444,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7222204278952406003">Chrome, ଆପଣଙ୍କର ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍ ଅଟେ</translation>
 <translation id="7222232353993864120">ଇମେଲ୍ ଠିକଣା</translation>
 <translation id="7225179976675429563">ନେଟ୍‍ୱାର୍କ ପ୍ରକାର ଉପଲବ୍ଧ ନାହିଁ</translation>
-<translation id="7227028316978186866"><ph name="DEVICE_NAME" /> (ବିକ୍ରେତା: <ph name="VENDOR_ID" />, ଉତ୍ପାଦ: <ph name="PRODUCT_ID" />)</translation>
 <translation id="7228479291753472782">ୱେବ୍‌ସାଇଟ୍‌ଗୁଡ଼ିକ ଭୌଗଳିକସ୍ଥାନ, ମାଇକ୍ରୋଫୋନ୍, କ୍ୟାମେରା ପ୍ରଭୃତି ବୈଶିଷ୍ଟ୍ୟ ଗୁଡ଼ିକର ବ୍ୟବହାର କରିପାରିବ କି ନାହିଁ ତାହା ନିର୍ଦ୍ଦିଷ୍ଟ କରୁଥିବା ସେଟିଂସ୍‌କୁ ଏପଟ ସେପଟ କରେ।</translation>
 <translation id="7228523857728654909">ସ୍କ୍ରିନ୍ ଲକ୍ ଓ ସାଇନ୍ ଇନ୍</translation>
 <translation id="7229570126336867161">EVDO ଆବଶ୍ୟକ କରେ</translation>

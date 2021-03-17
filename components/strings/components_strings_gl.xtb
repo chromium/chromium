@@ -528,7 +528,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2991174974383378012">Compartindo con sitios web</translation>
 <translation id="2991571918955627853">Non podes visitar <ph name="SITE" /> neste momento porque o sitio web utiliza HSTS. Normalmente, os erros de rede e os ataques son temporais, polo que é posible que esta páxina funcione máis tarde.</translation>
 <translation id="2995517112308048736">Tamaño do ficheiro:</translation>
-<translation id="2996674880327704673">Suxestións de Google</translation>
 <translation id="3002501248619246229">Comproba o soporte da bandexa de entrada</translation>
 <translation id="3005723025932146533">Mostrar copia gardada</translation>
 <translation id="3008447029300691911">Introduce o código CVC da tarxeta <ph name="CREDIT_CARD" />. Unha vez que confirmes os datos, os detalles da tarxeta compartiranse con este sitio.</translation>
@@ -622,6 +621,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3371076217486966826"><ph name="URL" /> quere facer o seguinte:
       • Crear un mapa 3D do que te rodea e facer un seguimento da posición da cámara
       • Usar a túa cámara</translation>
+<translation id="3372389303668969359">A próxima vez que utilices este dispositivo para realizar unha compra con este método de pago, podes verificar rapidamente a túa identidade a través de Windows Hello.</translation>
 <translation id="337363190475750230">Desaprovisionado</translation>
 <translation id="3377144306166885718">O servidor utilizou unha versión obsoleta de TLS.</translation>
 <translation id="3377188786107721145">Erro de análise da política</translation>
@@ -695,6 +695,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3615877443314183785">Introduce unha data de caducidade válida</translation>
 <translation id="36224234498066874">Borrar datos de navegación...</translation>
 <translation id="362276910939193118">Mostrar historial completo</translation>
+<translation id="3625635938337243871">Os datos de inicio de sesión almacenaranse neste dispositivo cando saias do modo de incógnito.</translation>
 <translation id="3630155396527302611">Se xa está incluído como programa autorizado para acceder á rede, proba
        a eliminalo da lista e volver engadilo.</translation>
 <translation id="3630699740441428070">Os administradores deste dispositivo configuraron a túa conexión de rede, o cal pode permitirlles ver o tráfico de rede, así como os sitios web que visitas.</translation>
@@ -929,6 +930,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4477350412780666475">Pista seguinte</translation>
 <translation id="4482953324121162758">Non se traducirá este sitio.</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">Cifrar contrasinais sincronizados coa túa Conta de Google</translation>
 <translation id="4492519888999857993">Estas funcións están desactivadas de forma predeterminada. Non estarán dispoñibles en versións futuras de Chrome.</translation>
 <translation id="4493480324863638523">O URL non é válido. Debe ser un URL cunha estrutura estándar, como http://example.com ou https://example.com.</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
@@ -1098,6 +1100,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5126510351761255129">Verificar a túa tarxeta</translation>
 <translation id="5135404736266831032">Xestiona os enderezos…</translation>
 <translation id="5138227688689900538">Mostrar menos</translation>
+<translation id="514010763713772514">Procesa a compra máis rápido a próxima vez</translation>
 <translation id="5145883236150621069">Código de erro presente na resposta da política</translation>
 <translation id="5146995429444047494">As notificacións de <ph name="ORIGIN" /> están bloqueadas</translation>
 <translation id="5148809049217731050">Cara arriba</translation>
@@ -1318,7 +1321,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5984570616552610254">Humidade da cámara</translation>
 <translation id="598637245381783098">Non se pode abrir a aplicación para pagos</translation>
 <translation id="5989320800837274978">Non se especificaron nin servidores proxy fixos nin un URL de script .pac.</translation>
-<translation id="5990559369517809815">Unha extensión bloqueou as solicitudes ao servidor.</translation>
 <translation id="5992691462791905444">Dobrez en Z para enxeñaría</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6008122969617370890">Orde de N a 1</translation>
@@ -1847,6 +1849,7 @@ Detalles adicionais:
 <translation id="8086971161893892807">Borrador</translation>
 <translation id="8088680233425245692">Non se puido ver o artigo.</translation>
 <translation id="808894953321890993">Cambiar contrasinal</translation>
+<translation id="8090329638663751802">A próxima vez que utilices este dispositivo para realizar unha compra con este método de pago, podes verificar rapidamente a túa identidade a través de Touch ID.</translation>
 <translation id="8090403583893450254">Tamaño 20</translation>
 <translation id="8091372947890762290">A activación está pendente no servidor</translation>
 <translation id="8092774999298748321">Púrpura intenso</translation>

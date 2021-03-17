@@ -525,7 +525,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2991174974383378012">Compartir con los sitios web</translation>
 <translation id="2991571918955627853">No puedes visitar <ph name="SITE" /> ahora porque el sitio web usa HSTS. Los ataques y errores de red suelen ser temporales, por lo que es posible que esta página funcione más tarde.</translation>
 <translation id="2995517112308048736">Tamaño del archivo:</translation>
-<translation id="2996674880327704673">Sugerencias de Google</translation>
 <translation id="3002501248619246229">Revisar el medio en la bandeja de entrada</translation>
 <translation id="3005723025932146533">Mostrar copia guardada</translation>
 <translation id="3008447029300691911">Ingresa el CVC de la tarjeta <ph name="CREDIT_CARD" />. Después de confirmarla, los datos de tu tarjeta se compartirán con este sitio.</translation>
@@ -620,6 +619,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3371076217486966826"><ph name="URL" /> quiere hacer lo siguiente:
       • Crear un mapa 3D de tu entorno y rastrear la posición de la cámara
       • Usar la cámara</translation>
+<translation id="3372389303668969359">Puedes verificar tu identidad rápidamente con Windows Hello la próxima vez que uses este dispositivo para realizar compras con esta forma de pago.</translation>
 <translation id="337363190475750230">Desaprovisionado</translation>
 <translation id="3377144306166885718">El servidor usaba una versión obsoleta de TLS.</translation>
 <translation id="3377188786107721145">Error al analizar la política</translation>
@@ -693,6 +693,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3615877443314183785">Ingresa una fecha de vencimiento válida</translation>
 <translation id="36224234498066874">Borrar datos de navegación...</translation>
 <translation id="362276910939193118">Mostrar historial completo</translation>
+<translation id="3625635938337243871">Los datos de acceso se almacenarán en este dispositivo cuando salgas del modo Incógnito.</translation>
 <translation id="3630155396527302611">Si ya está incluido como un programa con permiso para acceder a la red, intenta
       quitarlo de la lista y agregarlo de nuevo.</translation>
 <translation id="3630699740441428070">Los administradores de este dispositivo configuraron tu conexión de red, lo cual puede permitirles ver tu tráfico de red, incluido los sitios web que visitas.</translation>
@@ -922,6 +923,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4477350412780666475">Siguiente pista</translation>
 <translation id="4482953324121162758">Este sitio no se traducirá.</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">Encriptar las contraseñas sincronizadas con tu Cuenta de Google</translation>
 <translation id="4492519888999857993">Estas funciones están inhabilitadas de forma predeterminada. No estarán disponibles en futuras versiones de Chrome.</translation>
 <translation id="4493480324863638523">La URL no es válida. Debe ser una URL con un esquema estándar, p. ej., http://ejemplo.com o https://ejemplo.com.</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
@@ -1091,6 +1093,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5126510351761255129">Verifica tu tarjeta</translation>
 <translation id="5135404736266831032">Administrar direcciones…</translation>
 <translation id="5138227688689900538">Mostrar menos</translation>
+<translation id="514010763713772514">Agiliza tus próximos pagos</translation>
 <translation id="5145883236150621069">Código de error en la respuesta de la política</translation>
 <translation id="5146995429444047494">Se bloquearon las notificaciones de <ph name="ORIGIN" /></translation>
 <translation id="5148809049217731050">Hacia arriba</translation>
@@ -1311,7 +1314,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5984570616552610254">Humedad de la cámara</translation>
 <translation id="598637245381783098">No se puede abrir la app de pago</translation>
 <translation id="5989320800837274978">No se especifican servidores proxy fijos ni URL de secuencias de comandos .pac.</translation>
-<translation id="5990559369517809815">Una extensión bloqueó las solicitudes al servidor.</translation>
 <translation id="5992691462791905444">Plegado en Z para ingeniería</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6008122969617370890">Orden de N a 1</translation>
@@ -1840,6 +1842,7 @@ Detalles adicionales:
 <translation id="8086971161893892807">Borrador</translation>
 <translation id="8088680233425245692">Error al visualizar artículo</translation>
 <translation id="808894953321890993">Cambiar contraseña</translation>
+<translation id="8090329638663751802">Puedes verificar tu identidad rápidamente con Touch ID la próxima vez que uses este dispositivo para realizar compras con esta forma de pago.</translation>
 <translation id="8090403583893450254">Tamaño 20</translation>
 <translation id="8091372947890762290">La activación está pendiente en el servidor.</translation>
 <translation id="8092774999298748321">Púrpura oscuro</translation>

@@ -98,7 +98,7 @@
 <translation id="1697284962337958118">වෙත එක් කරන්න</translation>
 <translation id="1718835860248848330">පසුගිය පැය</translation>
 <translation id="1724977129262658800">ඔබගේ මුරපදය සංස්කරණය කිරීමට අගුලු හරින්න</translation>
-<translation id="173522743738009831">පෞද්ගලිකත්ව සෑන්ඩ්බොක්ස් පිළිබඳව</translation>
+<translation id="173522743738009831">රහස්‍යතා සෑන්ඩ්බොක්ස් පිළිබඳව</translation>
 <translation id="1736419249208073774">ගවේෂණය කරන්න</translation>
 <translation id="1749561566933687563">ඔබගේ පොත් සලකුණු සමමුහුර්ත කරන්න</translation>
 <translation id="17513872634828108">පටිති විවෘත කරන්න</translation>
@@ -178,6 +178,7 @@
 <translation id="2195339740518523951">Chrome හි ප්‍රබලම ආරක්ෂාව ලබා ගන්න</translation>
 <translation id="2200113223741723867">භාවිත දත්ත බෙදා ගැනීම කළමනාකරණය කරන්න</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> ලෙස දිගටම කර ගෙන යන්න</translation>
+<translation id="22320125457191592">ඔබ සඳහා</translation>
 <translation id="2234876718134438132">සමමුහුව සහ Google සේවා</translation>
 <translation id="2239812875700136898">Discover සඳහා විකල්ප බොත්තමෙන් ඔබේ කතා පාලන කරන්න</translation>
 <translation id="2259659629660284697">මුරපද නිර්යාත කරන්න…</translation>
@@ -316,6 +317,7 @@
 <translation id="3208584281581115441">දැන් පරීක්‍ෂා කරන්න</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> මකන ලදි</translation>
 <translation id="321773570071367578">ඔබට ඔබේ මුර-වැකිකඩ අමතක වී ඇත්නම් හෝ මෙම සැකසීම් වෙනස් කිරීමට අවශ්‍ය නම්, <ph name="BEGIN_LINK" />සමමුහුර්ත කිරීම නැවත සකසන්න<ph name="END_LINK" /></translation>
+<translation id="3220943972464248773">ඔබගේ මුරපද සමමුහුර්ත කිරීමට, ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
 <translation id="3227557059438308877">ආරක්ෂක යතුරක් ලෙස Google Chrome</translation>
 <translation id="3232754137068452469">වෙබ් යෙදුම</translation>
 <translation id="3236059992281584593">මිනිත්තු 1ක් ඉතිරියි</translation>
@@ -347,19 +349,19 @@
 <translation id="3384347053049321195">රූපය බෙදා ගන්න</translation>
 <translation id="3387650086002190359">පද්ධති දෝෂ නිසා <ph name="FILE_NAME" /> බාගැනීම අසාර්ථක විය.</translation>
 <translation id="3389286852084373014">පාඨය විශාල වැඩියි</translation>
-<translation id="3391512812407811893">පෞද්ගලිකත්ව සෑන්ඩ්බොක්ස් අත්හදා බැලීම්</translation>
+<translation id="3391512812407811893">රහස්‍යතා සෑන්ඩ්බොක්ස් අත්හදා බැලීම්</translation>
 <translation id="3398320232533725830">පිටුසන් කළමනාකරු විවෘත කරන්න</translation>
 <translation id="3414952576877147120">ප්‍රමාණය:</translation>
 <translation id="3429160811076349561">අත්හදා බැලීමේ විශේෂාංග ක්‍රියාවිරහිතයි</translation>
 <translation id="3440975416244667276">වඩාත් අදාළ තොරතුරු සඳහා ස්පර්ශ කර අල්ලාගෙන සිටින්න</translation>
 <translation id="3443221991560634068">වත්මන් පිටුව නැවත පූරණය කරන්න</translation>
-<translation id="3451542610083122179">පෞද්ගලිකත්ව සෑන්ඩ්බොක්ස් යනු ඔබව හඹා යාමේ යාන්ත්‍රණවලින් ආරක්ෂා කිරීමට උදව් වනු ඇති විවෘත වෙබය සංරක්ෂණය කිරීම සඳහා සිදු කරමින් පවතින මුලපිරීමකි.
+<translation id="3451542610083122179">රහස්‍යතා සෑන්ඩ්බොක්ස් යනු ඔබව හඹා යාමේ යාන්ත්‍රණවලින් ආරක්ෂා කිරීමට උදව් වනු ඇති විවෘත වෙබය සංරක්ෂණය කිරීම සඳහා සිදු කරමින් පවතින මුලපිරීමකි.
 
 අද, වෙබ් අඩවි අදාළ වෙළඳ දැන්වීම් පෙන්වීම සහ අඩවියේ ක්‍රියාකාරිත්වය මැනීම වැනි වැදගත් සේවා සඳහා, තෙවන පාර්ශ්ව කුකි වැනි, බොහොමයක් තාක්ෂණ මත යැපේ.
 
-අඩවි බිඳ දැමීමකින් තොරව සහ වෙබය හරහා රහසිගතව හඹා යාමෙන් ඔබව වළක්වන අතරම – මෙම සේවා ඉටු කිරීම සඳහා වඩා හොඳ ක්‍රම නිර්මාණය කිරීමෙන් පෞද්ගලිකත්ව සෑන්ඩ්බොක්ස් විවෘත වෙබයෙහි ජීව ශක්තිය රැක ගනියි.
+අඩවි බිඳ දැමීමකින් තොරව සහ වෙබය හරහා රහසිගතව හඹා යාමෙන් ඔබව වළක්වන අතරම – මෙම සේවා ඉටු කිරීම සඳහා වඩා හොඳ ක්‍රම නිර්මාණය කිරීමෙන් රහස්‍යතා සෑන්ඩ්බොක්ස් විවෘත වෙබයෙහි ජීව ශක්තිය රැක ගනියි.
 
-පෞද්ගලිකත්ව සෑන්ඩ්බොක්ස් තවම සක්‍රිය සංවර්ධනයක පවතින අතර තෝරා ගත් කලාපවල ලබා ගත හැකිය. දැනට, අඩවි තෙවන පාර්ශ්ව කුකී වැනි වර්තමාන වෙබ් තාක්ෂණ දිගටම භාවිත කරන අතරතුර පෞද්ගලිකත්ව සෑන්ඩ්බොක්ස් අත්හදා බැලිය හැකිය. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
+රහස්‍යතා සෑන්ඩ්බොක්ස් තවම සක්‍රිය සංවර්ධනයක පවතින අතර තෝරා ගත් කලාපවල ලබා ගත හැකිය. දැනට, අඩවි තෙවන පාර්ශ්ව කුකී වැනි වර්තමාන වෙබ් තාක්ෂණ දිගටම භාවිත කරන අතරතුර රහස්‍යතා සෑන්ඩ්බොක්ස් අත්හදා බැලිය හැකිය. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">ඔබට ඔබේ සෙවීම් එන්ජිම තෝරා ගත හැකිය</translation>
 <translation id="3492207499832628349">නව අප්‍රසිද්ධ පටිත්ත</translation>
 <translation id="3493531032208478708">යෝජිත අන්තර්ගතය ගැන <ph name="BEGIN_LINK" />තවත් දැනගන්න<ph name="END_LINK" /></translation>
@@ -484,6 +486,7 @@
 <translation id="447252321002412580">Chrome හි විශේෂාංග සහ කාර්යසාධනය වැඩි දියුණු කිරීමට උපකාරී වේ</translation>
 <translation id="4479972344484327217">Chrome සඳහා <ph name="MODULE" /> ස්ථාපන කිරීම…</translation>
 <translation id="4487967297491345095">Chrome හි සියලු යෙදුම් දත්ත ස්ථිරවම මකනු ඇත. මෙහි සියලු ගොනු, සැකසීම්, ගිණුම්, දත්ත සමුදායන්, ආදිය ඇතුළත් වේ.</translation>
+<translation id="449126573531210296">සමමුහුර්ත කළ මුරපද ඔබගේ Google ගිණුම සමග සංකේතනය කරන්න</translation>
 <translation id="4493497663118223949">සැහැල්ලු ප්‍රකාරය ක්‍රියාත්මකයි</translation>
 <translation id="4508528996305412043">සංග්‍රහ කාඩ්පත් මෙනුව විවෘත කර ඇත</translation>
 <translation id="4508642716788467538">ඔබගේ භාෂාව තෝරන්න</translation>
@@ -507,6 +510,7 @@
 <translation id="4594952190837476234">මෙම නොබැඳි පිටුව <ph name="CREATION_TIME" /> වෙතින් වන අතර සබැඳි අනුවාදයෙන් වෙනස් විය හැකිය.</translation>
 <translation id="4605958867780575332">අයිතමය ඉවත් කරන ලදී: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> විවෘත කරන්න</translation>
+<translation id="4619564267100705184">ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
 <translation id="4634124774493850572">මුරපදය භාවිත කරන්න</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{අවදානමට පත් වූ මුරපද 1}one{අවදානමට පත් වූ මුරපද #}other{අවදානමට පත් වූ මුරපද #}}</translation>
 <translation id="4650364565596261010">පද්ධති පෙරනිමිය</translation>
@@ -779,6 +783,7 @@
 <translation id="6342069812937806050">මේ දැන්</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">කියවූ ලෙස ලකුණු කරන්න</translation>
+<translation id="6363990818884053551">සමමුහුර්ත කිරීම ආරම්භ කිරීමට, ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
 <translation id="6364438453358674297">යෝජනාව ඉතිහාසය වෙතින් ඉවත් කරන්නද?</translation>
 <translation id="6378173571450987352">විස්තර: භාවිතා කරන දත්ත ප්ය‍රමාණය අනුව අනුපිළිවෙළට සකසා ඇත</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> Chrome තුළ විවෘත වෙයි. ඉදිරයට යාමෙන්, ඔබ <ph name="BEGIN_LINK1" />Google සේවා නියමවලට<ph name="END_LINK1" />, සහ <ph name="BEGIN_LINK2" />Google Chrome සහ Chrome OS අතිරේක සේවා නියමවලට<ph name="END_LINK2" /> එකඟ වෙයි.</translation>
@@ -841,6 +846,7 @@
 <translation id="666731172850799929"><ph name="APP_NAME" /> තුළ විවෘත කරන්න</translation>
 <translation id="666981079809192359">Chrome රහස්‍යතා දැනුම්දීම</translation>
 <translation id="6671495933530132209">රූපය පිටපත් කරන්න</translation>
+<translation id="6674571176963658787">සමමුහුර්ත කිරීම ආරම්භ කිරීමට, ඔබගේ මුර-වැකිකඩ ඇතුළත් කරන්න</translation>
 <translation id="6676840375528380067">මෙම උපාංගයෙන් ඔබේ Chrome දත්ත හිස් කරන්න ද?</translation>
 <translation id="6697492270171225480">පිටුවක් සොයා ගැනීමට නොහැකි විට සමාන පිටු සඳහා යෝජනා පෙන්වන්න</translation>
 <translation id="6698801883190606802">සමමුහුර්ත කළ දත්ත කළමනාකරණය කරන්න</translation>
@@ -1060,7 +1066,7 @@
 <translation id="8156139159503939589">ඔබ කියවන භාෂා මොනවාද?</translation>
 <translation id="8168435359814927499">අන්තර්ගතය</translation>
 <translation id="8186512483418048923">ගොනු <ph name="FILES" />ක් ඉතිරියි</translation>
-<translation id="8189750580333936930">පෞද්ගලිකත්ව සෑන්ඩ්බොක්ස්</translation>
+<translation id="8189750580333936930">රහස්‍යතා සෑන්ඩ්බොක්ස්</translation>
 <translation id="8190358571722158785">දින 1ක් ඉතිරියි</translation>
 <translation id="8200772114523450471">කරගෙන යන්න</translation>
 <translation id="8209050860603202033">රූපය විවෘත කරන්න</translation>

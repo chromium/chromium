@@ -92,6 +92,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1698760176351776263">IPv6 address: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Desk: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Mga Network Setting</translation>
+<translation id="1713296079175516843">Hindi sinusuportahan ang peripheral para sa mga panseguridad na dahilan</translation>
 <translation id="1719094688023114093">Naka-on ang Instant Caption.</translation>
 <translation id="1720011244392820496">I-on ang Wi-Fi Sync</translation>
 <translation id="1743570585616704562">Hindi nakilala</translation>
@@ -944,6 +945,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="8936501819958976551">na-deactivate</translation>
 <translation id="8938800817013097409">USB-C device (kanang port sa likod)</translation>
 <translation id="8940956008527784070">Mahina na ang baterya (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8951539504029375108">Ang mga aprubadong Thunderbolt device lang ang compatible sa iyong Chromebook</translation>
 <translation id="8982906748181120328">Visible Nearby</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Gamit ang <ph name="IME_NAME" /></translation>

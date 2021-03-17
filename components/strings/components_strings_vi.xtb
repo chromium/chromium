@@ -369,7 +369,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2293443924986248631">Khi tùy chọn này bật, các trang web không thể dùng cookie theo dõi bạn trên web. Do đó, các tính năng trên một số trang web có thể hoạt động không đúng cách.</translation>
 <translation id="2295290966866883927">Hệ thống sẽ gửi URL của những trang mà bạn truy cập cho Google Cloud hoặc bên thứ ba để phân tích. Ví dụ: họ có thể quét những trang này để phát hiện trang web không an toàn.</translation>
 <translation id="2297722699537546652">B5 (Phong bì)</translation>
-<translation id="2298855485018661510">Nút Quản lý cookie, hãy nhấn Enter để quản lý các lựa chọn ưu tiên dành cho cookie trong phần Cài đặt của Chrome</translation>
+<translation id="2298855485018661510">Nút Quản lý cookie, hãy nhấn Enter để quản lý các lựa chọn ưu tiên về cookie trong phần Cài đặt của Chrome</translation>
 <translation id="2300306941146563769">Chưa tải lên</translation>
 <translation id="2310021320168182093">Chou2 (Phong bì)</translation>
 <translation id="2316887270356262533">Bộ nhớ đệm còn chưa đầy 1 MB. Một số trang web có thể tải chậm hơn vào lần tới bạn truy cập.</translation>
@@ -531,7 +531,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2991174974383378012">Chia sẻ với trang web</translation>
 <translation id="2991571918955627853">Bạn không thể truy cập vào <ph name="SITE" /> ngay bây giờ vì trang web sử dụng HSTS. Lỗi mạng và các cuộc tấn công mạng thường chỉ là tạm thời nên trang này có thể sẽ hoạt động lại sau.</translation>
 <translation id="2995517112308048736">Kích thước tệp:</translation>
-<translation id="2996674880327704673">Bài viết do Google đề xuất</translation>
 <translation id="3002501248619246229">Kiểm tra phương tiện khay nạp giấy</translation>
 <translation id="3005723025932146533">Hiển thị bản sao đã lưu</translation>
 <translation id="3008447029300691911">Nhập CVC cho <ph name="CREDIT_CARD" />. Sau khi bạn xác nhận, chi tiết thẻ của bạn sẽ được chia sẻ với trang web này.</translation>
@@ -579,7 +578,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3188393374551744535">Số dư tài khoản</translation>
 <translation id="3194737229810486521"><ph name="URL" /> muốn lưu trữ vĩnh viễn dữ liệu trên thiết bị của bạn</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> trên <ph name="SERVER_NAME" /></translation>
-<translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, hãy nhấn Tab, sau đó nhấn Enter để quản lý loại thông tin bạn sẽ đồng bộ hóa trong phần Cài đặt của Chrome</translation>
+<translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, hãy nhấn Tab, sau đó nhấn Enter để quản lý loại thông tin bạn đồng bộ hóa trong phần Cài đặt của Chrome</translation>
 <translation id="320323717674993345">Hủy thanh toán</translation>
 <translation id="3207960819495026254">Đã đánh dấu trang</translation>
 <translation id="3209034400446768650">Trang này có thể tính phí</translation>
@@ -625,6 +624,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3371076217486966826"><ph name="URL" /> muốn:
       • Tạo bản đồ 3D về các khu vực xung quanh và theo dõi thông tin vị trí của máy ảnh
       • Dùng máy ảnh của bạn</translation>
+<translation id="3372389303668969359">Vào lần tới khi sử dụng thiết bị này để mua hàng bằng cùng phương thức thanh toán, bạn có thể nhanh chóng xác minh danh tính của mình bằng Windows Hello.</translation>
 <translation id="337363190475750230">Đã hủy cấp phép</translation>
 <translation id="3377144306166885718">Máy chủ sử dụng phiên bản TLS lỗi thời.</translation>
 <translation id="3377188786107721145">Lỗi phân tích cú pháp chính sách</translation>
@@ -636,7 +636,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3395827396354264108">Phương thức nhận hàng</translation>
 <translation id="3399952811970034796">Địa chỉ giao hàng</translation>
 <translation id="3402261774528610252">Đường kết nối dùng để tải trang web này đã sử dụng TLS 1.0 hoặc TLS 1.1. Các phiên bản này không được dùng nữa và sẽ bị vô hiệu hóa trong tương lai. Sau khi phiên bản bị vô hiệu hóa, người dùng sẽ không thể tải trang web này. Máy chủ cần bật phiên bản TLS 1.2 trở lên.</translation>
-<translation id="3409896703495473338">Quản lý cài đặt bảo mật</translation>
+<translation id="3409896703495473338">Quản lý chế độ cài đặt bảo mật</translation>
 <translation id="3414952576877147120">Kích thước:</translation>
 <translation id="3417660076059365994">Tệp bạn tải lên hoặc đính kèm được gửi đến Google Cloud hoặc bên thứ ba để phân tích. Ví dụ: các tệp đó có thể được quét tìm dữ liệu nhạy cảm hoặc phần mềm độc hại.</translation>
 <translation id="3422248202833853650">Thử thoát các chương trình khác để giải phóng bộ nhớ.</translation>
@@ -698,6 +698,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3615877443314183785">Nhập ngày hết hạn hợp lệ</translation>
 <translation id="36224234498066874">Xóa DL duyệt web</translation>
 <translation id="362276910939193118">Hiển thị Toàn bộ Lịch sử</translation>
+<translation id="3625635938337243871">Dữ liệu đăng nhập sẽ được lưu trữ trên thiết bị này sau khi bạn thoát khỏi chế độ ẩn danh.</translation>
 <translation id="3630155396527302611">Nếu chương trình đã được liệt kê là chương trình được phép truy cập mạng, hãy thử
       xóa chương trình này khỏi danh sách rồi thêm lại.</translation>
 <translation id="3630699740441428070">Các quản trị viên của thiết bị này đã định cấu hình đường kết nối mạng của bạn, nhờ đó họ có thể xem lưu lượng truy cập mạng của bạn, kể cả những trang web mà bạn truy cập.</translation>
@@ -932,6 +933,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4477350412780666475">Bản nhạc tiếp theo</translation>
 <translation id="4482953324121162758">Trang web này sẽ không được dịch.</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">Mã hóa các mật khẩu đã đồng bộ hóa bằng Tài khoản Google của bạn</translation>
 <translation id="4492519888999857993">Theo mặc định, những tính năng này sẽ bị tắt. Những tính năng này sẽ không có trên các phiên bản Chrome trong tương lai.</translation>
 <translation id="4493480324863638523">URL không hợp lệ. Phải là URL chứa tên giao thức chuẩn, chẳng hạn như: http://example.com hoặc https://example.com.</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
@@ -1101,6 +1103,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5126510351761255129">Xác minh thẻ của bạn</translation>
 <translation id="5135404736266831032">Quản lý địa chỉ...</translation>
 <translation id="5138227688689900538">Ẩn bớt</translation>
+<translation id="514010763713772514">Thanh toán nhanh hơn vào lần tới</translation>
 <translation id="5145883236150621069">Mã lỗi có trong phản hồi chính sách</translation>
 <translation id="5146995429444047494">Đã chặn các thông báo đối với <ph name="ORIGIN" /></translation>
 <translation id="5148809049217731050">Hướng lên</translation>
@@ -1212,7 +1215,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5540224163453853">Không thể tìm thấy bài viết đã yêu cầu.</translation>
 <translation id="5541086400771735334">Hộp thư 7</translation>
 <translation id="5541546772353173584">Thêm email</translation>
-<translation id="5542280138350899197">Nút Quản lý cài đặt bảo mật, hãy nhấn Enter để Quản lý tính năng Duyệt web an toàn và nhiều tính năng khác trong phần Cài đặt của Chrome</translation>
+<translation id="5542280138350899197">Nút Quản lý chế độ cài đặt bảo mật, hãy nhấn Enter để Quản lý tính năng Duyệt web an toàn và nhiều tính năng khác trong phần Cài đặt của Chrome</translation>
 <translation id="5545756402275714221">Tin bài dành cho bạn</translation>
 <translation id="5552137475244467770">Chrome kiểm tra định kỳ các mật khẩu của bạn so với những danh sách đã đăng trên Internet. Khi thực hiện việc này, mật khẩu và tên người dùng của bạn được mã hóa nên không ai có thể đọc được, kể cả Google.</translation>
 <translation id="5556459405103347317">Tải lại</translation>
@@ -1321,7 +1324,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5984570616552610254">Độ ẩm buồng</translation>
 <translation id="598637245381783098">Không thể mở ứng dụng thanh toán</translation>
 <translation id="5989320800837274978">Cả máy chủ proxy cố định và URL tập lệnh .pac đều chưa được chỉ định.</translation>
-<translation id="5990559369517809815">Tiện ích đã chặn yêu cầu tới máy chủ.</translation>
 <translation id="5992691462791905444">Gấp kiểu chữ Z kỹ thuật</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> kết quả cho '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6008122969617370890">Thứ tự từ N đến 1</translation>
@@ -1812,7 +1814,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7938958445268990899">Chứng chỉ của máy chủ chưa hợp lệ.</translation>
 <translation id="7942349550061667556">Đỏ</translation>
 <translation id="7947285636476623132">Kiểm tra năm hết hạn của bạn và thử lại</translation>
-<translation id="7950027195171824198">Quản lý tùy chọn cookie trong phần Cài đặt của Chrome</translation>
+<translation id="7950027195171824198">Quản lý các lựa chọn ưu tiên về cookie trong phần Cài đặt của Chrome</translation>
 <translation id="7951415247503192394">(32 bit)</translation>
 <translation id="7953569069500808819">May viền ở trên cùng</translation>
 <translation id="7956713633345437162">Dấu trang trên thiết bị di động</translation>
@@ -1850,6 +1852,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8086971161893892807">Bản nháp</translation>
 <translation id="8088680233425245692">Không xem được bài viết.</translation>
 <translation id="808894953321890993">Đổi mật khẩu</translation>
+<translation id="8090329638663751802">Vào lần tới khi sử dụng thiết bị này để mua hàng bằng cùng phương thức thanh toán, bạn có thể nhanh chóng xác minh danh tính của mình bằng Touch ID.</translation>
 <translation id="8090403583893450254">Kích thước 20</translation>
 <translation id="8091372947890762290">Kích hoạt đang chờ xử lý trên máy chủ</translation>
 <translation id="8092774999298748321">Tím đậm</translation>
@@ -1937,7 +1940,7 @@ Thông tin chi tiết bổ sung:
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8428213095426709021">Cài đặt</translation>
-<translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, hãy nhấn Tab rồi nhấn Enter để quản lý các lựa chọn ưu tiên dành cho cookie trong phần Cài đặt của Chrome</translation>
+<translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" />, hãy nhấn Tab rồi nhấn Enter để quản lý các lựa chọn ưu tiên về cookie trong phần Cài đặt của Chrome</translation>
 <translation id="8433057134996913067">Thao tác này sẽ đăng xuất bạn khỏi hầu hết các trang web.</translation>
 <translation id="8437238597147034694">&amp;Hoàn tác di chuyển</translation>
 <translation id="8438786541497918448">Sử dụng máy ảnh và micrô?</translation>

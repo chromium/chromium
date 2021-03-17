@@ -531,7 +531,6 @@
 <translation id="2991174974383378012">المشاركة مع المواقع الإلكترونية</translation>
 <translation id="2991571918955627853">‏لا يمكنك زيارة <ph name="SITE" /> في الوقت الحالي لأن الموقع الإلكتروني يستخدم HSTS. أخطاء الشبكة والهجمات عليها عادةً ما تكون مؤقتة، لذا ستعمل هذه الصفحة في وقت لاحق على الأرجح.</translation>
 <translation id="2995517112308048736">حجم الملف:</translation>
-<translation id="2996674880327704673">‏اقتراحات من Google</translation>
 <translation id="3002501248619246229">التحقق من دُرج وسائل الإعلام</translation>
 <translation id="3005723025932146533">عرض نسخة محفوظة</translation>
 <translation id="3008447029300691911">‏أدخِل رمز التحقّق (CVC) لبطاقة <ph name="CREDIT_CARD" />. بعد تأكيدك، ستتم مشاركة تفاصيل بطاقتك مع هذا الموقع.</translation>
@@ -625,6 +624,7 @@
 <translation id="3371076217486966826">يريد <ph name="URL" /> إجراء ما يلي:
       • إنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك وتتبُّع موضع الكاميرا
       • استخدام الكاميرا</translation>
+<translation id="3372389303668969359">‏يمكنك استخدام Windows Hello لإثبات هويّتك بسرعة في المرة المقبلة التي تستخدم فيها هذا الجهاز لإجراء عمليّة شراء باستخدام طريقة الدفع هذه.</translation>
 <translation id="337363190475750230">تم إلغاء التوفير</translation>
 <translation id="3377144306166885718">‏يستخدم الخادم إصدارًا قديمًا لطبقة النقل الآمنة (TLS).</translation>
 <translation id="3377188786107721145">خطأ في تحليل السياسة</translation>
@@ -698,6 +698,7 @@
 <translation id="3615877443314183785">أدخِل تاريخ انتهاء صلاحية صحيحًا</translation>
 <translation id="36224234498066874">محو بيانات التصفّح...</translation>
 <translation id="362276910939193118">عرض السجلّ بكامله</translation>
+<translation id="3625635938337243871">سيتم حفظ بيانات تسجيل الدخول على هذا الجهاز بعد الخروج من "وضع التصفُّح المتخفي".</translation>
 <translation id="3630155396527302611">إذا تم بالفعل إدراج صفحة الويب كبرنامج مسموح له بالدخول إلى الشبكة، فجرّب
         إزالتها من القائمة وإضافتها مرةً أخرى.</translation>
 <translation id="3630699740441428070">أعدَّ مشرفو هذا الجهاز اتصالك بالشبكة، ما قد يسمح لهم بالاطّلاع على حركة بيانات الشبكة الخاصة بك، بما في ذلك المواقع الإلكترونية التي تزورها.</translation>
@@ -932,6 +933,7 @@
 <translation id="4477350412780666475">المقطع الصوتي التالي</translation>
 <translation id="4482953324121162758">لن تتم ترجمة هذا الموقع.</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">‏ترميز كلمات المرور التي تمت مزامنتها باستخدام حسابك على Google</translation>
 <translation id="4492519888999857993">‏يتم إيقاف هذه الميزات تلقائيًا. لن تكون الميزات متاحة في الإصدارات المستقبلية من Chrome.</translation>
 <translation id="4493480324863638523">‏عنوان URL غير صحيح. يجب أن يحتوي عنوان URL على نظام عادي، مثل http://example.com أو https://example.com.</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
@@ -1101,6 +1103,7 @@
 <translation id="5126510351761255129">التحقق من بطاقتك</translation>
 <translation id="5135404736266831032">إدارة العناوين...</translation>
 <translation id="5138227688689900538">عرض أقل</translation>
+<translation id="514010763713772514">إتمام الدفع بشكل أسرع في المرة المقبلة</translation>
 <translation id="5145883236150621069">يوجد رمز خطأ في استجابة السياسة</translation>
 <translation id="5146995429444047494">يتم حظر الإشعارات للنطاق <ph name="ORIGIN" /></translation>
 <translation id="5148809049217731050">الوجه للأعلى</translation>
@@ -1321,7 +1324,6 @@
 <translation id="5984570616552610254">رطوبة الغرفة</translation>
 <translation id="598637245381783098">لا يمكن فتح تطبيق الدفع</translation>
 <translation id="5989320800837274978">‏لم يتم تحديد أي من الخوادم الوكيلة الثابتة ولا عنوان URL للنص البرمجي pac.</translation>
-<translation id="5990559369517809815">تم حظر الطلبات المقدمة إلى الخادم بواسطة إحدى الإضافات.</translation>
 <translation id="5992691462791905444">‏تصميم الطي على شكل حرف Z</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> من نتائج البحث عن "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6008122969617370890">طباعة الصفحات بالترتيب المعكوس</translation>
@@ -1850,6 +1852,7 @@
 <translation id="8086971161893892807">مسودّة</translation>
 <translation id="8088680233425245692">تعذّر عرض المقالة.</translation>
 <translation id="808894953321890993">تغيير كلمة المرور</translation>
+<translation id="8090329638663751802">‏يمكنك استخدام Windows Hello لإثبات هويّتك بسرعة في المرة التالية التي تستخدم فيها هذا الجهاز لإجراء عمليّة شراء باستخدام طريقة الدفع هذه.</translation>
 <translation id="8090403583893450254">الحجم 20</translation>
 <translation id="8091372947890762290">التفعيل قيد الانتظار في الخادم</translation>
 <translation id="8092774999298748321">أرجواني داكن</translation>

@@ -1077,7 +1077,6 @@
 <translation id="2187675480456493911">アカウントの他のデバイスと同期しています。他のユーザーが変更した設定は同期されません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">サーバー証明書インポート エラー</translation>
 <translation id="2187906491731510095">拡張機能が更新されました</translation>
-<translation id="2188100037674302806">Parallels Desktop</translation>
 <translation id="2188881192257509750"><ph name="APPLICATION" /> を開く</translation>
 <translation id="2190069059097339078">WiFi 認証情報の取得機能</translation>
 <translation id="219008588003277019">ネイティブ クライアント モジュール: <ph name="NEXE_NAME" /></translation>
@@ -1898,7 +1897,6 @@
 <translation id="3089137131053189723">検索をクリアしました</translation>
 <translation id="3090819949319990166">外部の crx ファイルは <ph name="TEMP_CRX_FILE" /> にコピーできません。</translation>
 <translation id="3090871774332213558">「<ph name="DEVICE_NAME" />」がペア設定されました</translation>
-<translation id="3092699946856346803">SIM を挿入してもう一度お試しください</translation>
 <translation id="3094141017404513551">続行すると、<ph name="EXISTING_USER" /> さんとは別のブラウジング環境が使用されるようになります</translation>
 <translation id="3095871294753148861">ブックマークやパスワードなどの閲覧データはメイン アカウントと同期されます。</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 個の有害な可能性がある拡張機能がオフになっています。削除することもできます。}other{{NUM_EXTENSIONS} 個の有害な可能性がある拡張機能がオフになっています。削除することもできます。}}</translation>
@@ -3036,7 +3034,6 @@
 <translation id="4415748029120993980">SECG 楕円曲線 secp384r1（別名 NIST P-384）</translation>
 <translation id="4416582610654027550">有効な URL を入力してください</translation>
 <translation id="4419409365248380979"><ph name="HOST" /> による Cookie 設定を常に許可する</translation>
-<translation id="4419610272958564173">不明なデバイス（ベンダー: <ph name="VENDOR_ID" />、プロダクト: <ph name="PRODUCT_ID" />）</translation>
 <translation id="4421932782753506458">フワフワ</translation>
 <translation id="4423376891418188461">設定を元に戻す</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" /> さん、管理者がパスワードの変更をリクエストしています。</translation>
@@ -5452,7 +5449,6 @@
 <translation id="7222204278952406003">Chrome をデフォルトのブラウザに設定しました</translation>
 <translation id="7222232353993864120">メール アドレス</translation>
 <translation id="7225179976675429563">ネットワークの種類が指定されていません</translation>
-<translation id="7227028316978186866"><ph name="DEVICE_NAME" />（ベンダー: <ph name="VENDOR_ID" />、プロダクト: <ph name="PRODUCT_ID" />）</translation>
 <translation id="7228479291753472782">ウェブサイトが位置情報やマイク、カメラなどの機能を使用できるかどうかの設定の操作</translation>
 <translation id="7228523857728654909">画面ロックとログイン</translation>
 <translation id="7229570126336867161">EVDO が必要です</translation>

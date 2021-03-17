@@ -1290,15 +1290,6 @@
 <translation id="2757054304033424106">允许安装的扩展程序/应用的类型</translation>
 <translation id="2759224876420453487">控制多用户配置会话中的用户行为</translation>
 <translation id="2761483219396643566">使用电池供电时的闲置警告延迟时间</translation>
-<translation id="2764165704281937018">让您能够指定一系列要应用于<ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />的设置，以供系统在有人下载文件时调用。
-
-      <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 字段用于确定当用户从网页下载某个文件时，该接口是否应将此文件发送给服务提供商。相应的网页网址必须与已关联到“enable”格式但未关联到“disable”格式的格式匹配。此文件的 MIME 类型也必须如此。
-
-      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 字段用于确定您指定的设置是与哪个分析服务提供商对应。
-
-      <ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" /> 字段用于确定服务提供商所属的企业。在用户设置<ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />的过程中，当系统要求登录时，只能使用与该企业关联的用户帐号。
-
-      此政策只能通过 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />进行设置。</translation>
 <translation id="2769952903507981510">为远程访问主机配置所需的域名</translation>
 <translation id="2772955711376920612">如果此政策已启用，且 <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> 和 <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> 均已设置，“用电高峰期切换电源”功能会保持开启状态（如果相应设备支持的话）。“用电高峰期切换电源”电源管理政策是一种节电政策，可在用电高峰期间尽可能少用交流电。您可分别为每个工作日设置“用电高峰期切换电源”模式的运行开始时间和结束时间。在您所设定的时段内，只要电池电量高于指定阈值，即使连接了交流电，设备也会仅使用电池来维持运行。待指定的结束时间过后，设备会使用交流电（如果已连接）来维持运行，但不会为电池充电。待指定的充电开始时间过后，设备会恢复正常运行方式，使用交流电来维持运行并为电池充电。
 
@@ -4926,10 +4917,6 @@
 <translation id="776110834126722255">已弃用</translation>
 <translation id="7763614521440615342">在“打开新的标签页”页面上显示内容建议</translation>
 <translation id="7765879851993224640">允许使用 Smart Lock 登录功能。</translation>
-<translation id="7774451488719504808">如 https://www.chromestatus.com/feature/5148698084376576 中所述，倘若 JavaScript 模态对话框（由 <ph name="JS_ALERT" />、<ph name="JS_CONFIRM" /> 和 <ph name="JS_PROMPT" /> 触发）是从非主框架来源的子框架触发的，<ph name="PRODUCT_NAME" /> 会屏蔽这些对话框。
-       此政策让您可以覆盖这项变更。
-       如果此政策已启用或未设置，系统将会屏蔽从其他来源的子框架触发的 JavaScript 对话框。
-       如果此政策已停用，系统将不会屏蔽从其他来源的子框架触发的 JavaScript 对话框。</translation>
 <translation id="7774768074957326919">使用系统代理设置</translation>
 <translation id="777734450201217641">在登录屏幕上启用无障碍功能快捷方式。
 

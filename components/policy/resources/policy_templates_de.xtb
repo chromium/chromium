@@ -1308,15 +1308,6 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2757054304033424106">Typen von Erweiterungen bzw. Apps, die installiert werden können</translation>
 <translation id="2759224876420453487">Nutzerverhalten in Mehrfachprofil-Sitzung steuern</translation>
 <translation id="2761483219396643566">Inaktivitätsspanne bis zur Warnung im Akkubetrieb</translation>
-<translation id="2764165704281937018">Liste der Einstellungen für den <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /> – dieser wird ausgelöst, wenn eine Datei heruntergeladen wird.
-
-      Mit den Feldern „<ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />“, „<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />“ und „<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" />“ wird festgelegt, ob der Connector eine Datei beim Download von einer Webseite an den Anbieter senden soll. Die URL dieser Webseite muss mit einem Muster übereinstimmen, das einem „enable“-Muster zugeordnet ist, nicht einem „disable“-Muster.  Der MIME-Typ der Datei muss ebenfalls mit einem Muster übereinstimmen, das einem „enable“-Muster zugeordnet ist, nicht einem „disable“-Muster.
-
-      Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" />“ wird festgelegt, für welchen Analyseanbieter die Einstellungen gelten.
-
-      Das Feld „<ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" />“ identifiziert das Unternehmen beim Anbieter.  Für die Anmeldung im Rahmen der Einrichtung des <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /> sind nur Nutzerkonten zulässig, die mit dem Unternehmen verknüpft sind.
-
-      Diese Richtlinie kann nur über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> konfiguriert werden.</translation>
 <translation id="2769952903507981510">Erforderlichen Domainnamen für Remotezugriff-Hosts konfigurieren</translation>
 <translation id="2772955711376920612">Wenn die Richtlinie aktiviert ist und „<ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" />“ sowie „<ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" />“ konfiguriert sind, ist das Umschalten bei Leistungsspitzen immer aktiviert, sofern die Funktion vom Gerät unterstützt wird. Die Energieverwaltung zum Umschalten bei Leistungsspitzen ist eine Richtlinie zum Energiesparen, mit der die Nutzung des Netzstroms bei Spitzenlasten minimiert wird. Für jeden Wochentag kann ein Beginn und ein Ende für den Modus zum Umschalten bei Leistungsspitzen festgelegt werden. Solange der Ladezustand des Akkus den angegebenen Schwellenwert nicht unterschreitet, wird das Gerät während dieser Zeiträume über den Akku mit Strom versorgt – auch dann, wenn das System an das Stromnetz angeschlossen ist. Nach dem angegebenen Ende wird das Gerät wieder über das Netz mit Strom versorgt (vorausgesetzt, es ist an das Stromnetz angeschlossen), der Akku jedoch nicht geladen. Das Gerät wird wieder auf den normalen Betrieb mit Netzstrom umgestellt und der Akku aufgeladen, nachdem die festgelegte Startzeit zum Laden erreicht wurde.
 
@@ -1734,15 +1725,6 @@ Ist diese Einstellung deaktiviert oder nicht konfiguriert, erfasst der Passworts
 Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, auf denen Windows 10 Pro läuft oder die durch <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> verwaltet werden. Unter <ph name="MAC_OS_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
 <translation id="3261592499545947104">Zeitpunkt, an dem eine Zertifikatsverlängerung ausgelöst werden soll, angegeben in Sekunden bis zum Zertifikatsablauf</translation>
 <translation id="3264793472749429012">Standardsuchmaschinen-Codierungen</translation>
-<translation id="3265738316212552123">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste mit URL-Mustern erstellen, die die Websites angeben, denen automatisch die Berechtigung für den Zugriff auf ein USB-Gerät mit den angegebenen Anbieter- und Produkt-IDs gewährt wird. Damit die Richtlinie gültig ist, müssen für jeden Eintrag auf der Liste die Felder „<ph name="DEVICES_FIELD_NAME" />“ und „<ph name="URLS_FIELD_NAME" />“ angegeben sein. Jeder Eintrag im Feld „<ph name="DEVICES_FIELD_NAME" />“ kann das Feld „<ph name="VENDOR_ID_FIELD_NAME" />“ und das Feld „<ph name="PRODUCT_ID_FIELD_NAME" />“ haben. Bei Weglassen des Felds „<ph name="VENDOR_ID_FIELD_NAME" />“ wird eine Richtlinie erstellt, die für jedes Gerät gilt. Bei Weglassen des Felds „<ph name="PRODUCT_ID_FIELD_NAME" />“ wird eine Richtlinie erstellt, die für jedes Gerät mit der angegebenen Anbieter-ID gilt. Eine Richtlinie, die das Feld „<ph name="PRODUCT_ID_FIELD_NAME" />“ ohne das Feld „<ph name="VENDOR_ID_FIELD_NAME" />“ hat, ist ungültig.
-
-      Das USB-Berechtigungsmodell erteilt der angegebenen URL die Berechtigung für den Zugriff auf das USB-Gerät als eine Quelle der obersten Ebene. Wenn eingebettete Frames auf USB-Geräte zugreifen müssen, sollte der <ph name="FEATURE_POLICY_HEADER_NAME" />-Header für USB verwendet werden, um Zugriff zu gewähren. Die URL muss gültig sein, da die Richtlinie andernfalls ignoriert wird.
-
-      Eingestellt: Das USB-Berechtigungsmodell, das dafür verwendet wurde, sowohl die anfragende URL als auch die einbettende URL anzugeben. Dieses wurde verworfen und wird aus Gründen der Abwärtskompatibilität nur noch folgendermaßen unterstützt: Wenn sowohl eine anfragende als auch eine einbettende URL angegeben ist, wird der einbettenden URL die Berechtigung als Quelle der obersten Ebene gegeben und die anfragende URL wird vollständig ignoriert.
-
-      Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />, sofern diese Einstellung verwendet wird. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
-
-      URL-Muster in dieser Richtlinie dürfen nicht im Widerspruch zu den über <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> konfigurierten URLs stehen. Andernfalls hat diese Richtlinie Vorrang vor <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> und <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="3273221114520206906">JavaScript-Standardeinstellung</translation>
 <translation id="328347261792478720">Der Browser zeigt standardmäßig für den Nutzer personalisierte Empfehlungen zu Medien an. Wenn diese Richtlinie deaktiviert ist, sind diese Empfehlungen für den Nutzer nicht sichtbar. Wenn sie aktiviert oder nicht konfiguriert ist, werden dem Nutzer die Empfehlungen zu Medien angezeigt.</translation>
 <translation id="3284094172359247914">Verwendung der WebUSB API steuern</translation>
@@ -1831,7 +1813,7 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
       Wenn diese Richtlinie aktiviert ist, wird der Audioprozess mit einer Priorität ausgeführt, die über der normalen liegt.
       Wird sie deaktiviert, erfolgt die Ausführung des Audioprozesses mit normaler Priorität.
       Ist die Richtlinie nicht konfiguriert, kommt die Standardkonfiguration für den Audioprozess zum Einsatz.
-      Diese Richtlinie ist als vorübergehende Maßnahme für Unternehmen vorgesehen, um Audioprozesse mit höherer Priorität ausführen zu können. Dies ermöglicht die Behandlung bestimmter Leistungsprobleme mit Audioaufnahmen.
+      Diese Richtlinie ist als vorübergehende Maßnahme für Unternehmen vorgesehen, um Audioprozesse mit höherer Priorität ausführen zu können. Dies ermöglicht das Beheben bestimmter Leistungsprobleme mit Audioaufnahmen.
       Diese Richtlinie wird in Zukunft entfernt.</translation>
 <translation id="3412937883532015092">Wenn für die Richtlinie eine Zahl festgelegt ist, zeigt <ph name="PRODUCT_NAME" /> für genau diese Anzahl von Millisekunden eine Nachricht an und öffnet dann den alternativen Browser.
 
@@ -5005,10 +4987,6 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 <translation id="776110834126722255">Eingestellt</translation>
 <translation id="7763614521440615342">Inhaltsvorschläge auf der "Neuer Tab"-Seite anzeigen</translation>
 <translation id="7765879851993224640">Verwendung von Smart Lock zur Anmeldung erlauben.</translation>
-<translation id="7774451488719504808">Wie unter https://www.chromestatus.com/feature/5148698084376576 beschrieben, werden von <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" /> und <ph name="JS_PROMPT" /> ausgelöste modale JavaScript-Dialogfelder in <ph name="PRODUCT_NAME" /> blockiert, wenn sie von einem Subframe ausgelöst werden, dessen Quelle sich von der Quelle des Hauptframes unterscheidet.
-       Mit dieser Richtlinie kann diese Änderung überschrieben werden.
-       Ist die Richtlinie aktiviert oder nicht konfiguriert, werden JavaScript-Dialogfelder, die von einem anderen Quell-Subframe ausgelöst wurden, blockiert.
-       Ist die Richtlinie deaktiviert, werden JavaScript-Dialogfelder, die von einem anderen Quell-Subframe ausgelöst wurden, nicht blockiert.</translation>
 <translation id="7774768074957326919">System-Proxy-Einstellungen verwenden</translation>
 <translation id="777734450201217641">Mit dieser Richtlinie aktivieren Sie auf dem Anmeldebildschirm die Tastenkombinationen für Bedienungshilfen.
 

@@ -525,7 +525,6 @@
 <translation id="2991174974383378012">웹사이트와 공유</translation>
 <translation id="2991571918955627853">웹사이트에서 HSTS를 사용하므로 지금은 <ph name="SITE" />에 방문할 수 없습니다. 네트워크 오류와 공격은 대체로 일시적인 문제이기 때문에 나중에 이 페이지가 정상적으로 작동할 수 있습니다.</translation>
 <translation id="2995517112308048736">파일 크기:</translation>
-<translation id="2996674880327704673">Google 추천</translation>
 <translation id="3002501248619246229">입력 트레이 미디어 확인</translation>
 <translation id="3005723025932146533">저장된 사본 표시</translation>
 <translation id="3008447029300691911"><ph name="CREDIT_CARD" /> 카드의 CVC를 입력하세요. 카드를 확인하면 카드 세부정보가 이 사이트와 공유됩니다.</translation>
@@ -619,6 +618,7 @@
 <translation id="3371076217486966826"><ph name="URL" />에서 다음 권한을 요청합니다.
       • 주변의 3D 지도 만들기 및 카메라 위치 추적
       • 카메라 사용</translation>
+<translation id="3372389303668969359">Windows Hello를 사용하면 다음번에 같은 기기와 결제 수단을 사용해 구매할 때 빠르게 본인 인증을 마칠 수 있습니다.</translation>
 <translation id="337363190475750230">사용 중단됨</translation>
 <translation id="3377144306166885718">서버에서 지원 중단된 TLS 버전을 사용했습니다.</translation>
 <translation id="3377188786107721145">정책 파싱 오류</translation>
@@ -692,6 +692,7 @@
 <translation id="3615877443314183785">올바른 만료일을 입력하세요.</translation>
 <translation id="36224234498066874">인터넷 사용 기록 삭제...</translation>
 <translation id="362276910939193118">방문 기록 전체 보기</translation>
+<translation id="3625635938337243871">로그인 데이터는 시크릿 모드를 종료한 후에도 기기에 저장됩니다.</translation>
 <translation id="3630155396527302611">이미 네트워크 액세스가 허용된 프로그램으로 되어 있는 경우
     목록에서 삭제한 뒤 다시 추가합니다.</translation>
 <translation id="3630699740441428070">이 기기의 관리자가 네트워크 연결을 구성했으며, 이를 통해 내가 방문한 웹사이트를 포함한 네트워크 트래픽을 관리자가 확인할 수 있습니다.</translation>
@@ -921,6 +922,7 @@
 <translation id="4477350412780666475">다음 트랙</translation>
 <translation id="4482953324121162758">이 사이트는 번역되지 않습니다.</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">Google 계정을 사용해 동기화된 비밀번호 암호화</translation>
 <translation id="4492519888999857993">이 기능은 기본적으로 사용 중지되어 있습니다. Chrome의 이후 버전에서는 사용할 수 없습니다.</translation>
 <translation id="4493480324863638523">잘못된 URL입니다. URL에는 표준 스키마가 있어야 합니다(예: http://example.com 또는 https://example.com).</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
@@ -1090,6 +1092,7 @@
 <translation id="5126510351761255129">카드 인증</translation>
 <translation id="5135404736266831032">주소 관리...</translation>
 <translation id="5138227688689900538">간략히</translation>
+<translation id="514010763713772514">다음번에 더 빠르게 결제</translation>
 <translation id="5145883236150621069">정책 응답에 오류 코드가 포함되어 있음</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> 알림이 차단됨</translation>
 <translation id="5148809049217731050">인쇄면이 위로</translation>
@@ -1310,7 +1313,6 @@
 <translation id="5984570616552610254">챔버 습도</translation>
 <translation id="598637245381783098">결제 앱을 열 수 없습니다.</translation>
 <translation id="5989320800837274978">고정 프록시 서버와 .pac 스크립트 URL이 모두 지정되지 않았습니다.</translation>
-<translation id="5990559369517809815">서버에 대한 요청이 확장 프로그램에 의해 차단되었습니다.</translation>
 <translation id="5992691462791905444">엔지니어링 Z 폴드</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' 검색결과 <ph name="RESULT_COUNT" />개</translation>
 <translation id="6008122969617370890">N-to-1 순서</translation>
@@ -1838,6 +1840,7 @@
 <translation id="8086971161893892807">초고</translation>
 <translation id="8088680233425245692">글을 조회하지 못했습니다.</translation>
 <translation id="808894953321890993">비밀번호 변경</translation>
+<translation id="8090329638663751802">Touch ID를 사용하면 다음번에 같은 기기와 결제 수단을 사용해 구매할 때 빠르게 본인 인증을 마칠 수 있습니다.</translation>
 <translation id="8090403583893450254">크기 20</translation>
 <translation id="8091372947890762290">활성화 요청이 서버에서 대기 중</translation>
 <translation id="8092774999298748321">짙은 보라색</translation>

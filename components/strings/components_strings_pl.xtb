@@ -300,7 +300,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2079545284768500474">Cofnij</translation>
 <translation id="20817612488360358">Skonfigurowano używanie systemowych ustawień proxy, ale podano też jawną konfigurację proxy.</translation>
 <translation id="2082238445998314030">Wynik <ph name="RESULT_NUMBER" /> z <ph name="TOTAL_RESULTS" /></translation>
-<translation id="2088086323192747268">Przycisk zarządzania synchronizacją; aby zarządzać w ustawieniach Chrome informacjami, które mają być synchronizowane, naciśnij Enter</translation>
+<translation id="2088086323192747268">Przycisk zarządzania synchronizacją; aby zarządzać w ustawieniach Chrome danymi, które mają być synchronizowane, naciśnij Enter</translation>
 <translation id="2091887806945687916">Dźwięk</translation>
 <translation id="2094505752054353250">Niewłaściwa domena</translation>
 <translation id="2096368010154057602">Departament</translation>
@@ -527,7 +527,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2991174974383378012">Udostępnianie stronom internetowym</translation>
 <translation id="2991571918955627853">Nie możesz teraz wejść na stronę <ph name="SITE" />, ponieważ używa ona HSTS. Błędy sieciowe i ataki są zazwyczaj tymczasowe, więc prawdopodobnie strona będzie dostępna później.</translation>
 <translation id="2995517112308048736">Rozmiar pliku:</translation>
-<translation id="2996674880327704673">Sugestie Google</translation>
 <translation id="3002501248619246229">Sprawdź nośnik na tacy wejściowej</translation>
 <translation id="3005723025932146533">Pokaż zapisaną kopię</translation>
 <translation id="3008447029300691911">Wpisz kod CVC karty <ph name="CREDIT_CARD" />. Po potwierdzeniu szczegółowe dane karty zostaną udostępnione tej stronie.</translation>
@@ -621,6 +620,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3371076217486966826"><ph name="URL" /> chce:
       • utworzyć mapę 3D otoczenia i śledzić pozycję kamery,
       • używać Twojej kamery.</translation>
+<translation id="3372389303668969359">Możesz użyć Windows Hello, aby szybko potwierdzić swoją tożsamość podczas kolejnego użycia tego urządzenia w celu dokonania zakupu za pomocą tej formy płatności.</translation>
 <translation id="337363190475750230">Anulowano obsługę</translation>
 <translation id="3377144306166885718">Serwer użył przestarzałej wersji protokołu TLS.</translation>
 <translation id="3377188786107721145">Podczas przetwarzania zasady wystąpił błąd</translation>
@@ -694,6 +694,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3615877443314183785">Wpisz prawidłową datę ważności</translation>
 <translation id="36224234498066874">Wyczyść dane przeglądania...</translation>
 <translation id="362276910939193118">Wyświetl całą historię</translation>
+<translation id="3625635938337243871">Dane logowania będą przechowywane na tym urządzeniu po wyjściu z trybu incognito.</translation>
 <translation id="3630155396527302611">Jeśli ten program jest już na liście programów mogących korzystać z sieci,
     spróbuj go z niej usunąć i dodać ponownie.</translation>
 <translation id="3630699740441428070">Administratorzy tego urządzenia, którzy skonfigurowali używane przez Ciebie połączenie sieciowe, mogą zobaczyć Twój ruch sieciowy, w tym strony, na które wchodzisz.</translation>
@@ -923,6 +924,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="4477350412780666475">Następny utwór</translation>
 <translation id="4482953324121162758">Ta strona nie będzie tłumaczona.</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">Szyfruj synchronizowane hasła, używając danych konta Google</translation>
 <translation id="4492519888999857993">Te funkcje są domyślnie wyłączone. Nie będą dostępne w kolejnych wersjach Chrome.</translation>
 <translation id="4493480324863638523">Nieprawidłowy URL. URL musi być zgodny ze schematem standardowym, np. http://example.com lub https://example.com</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
@@ -1092,6 +1094,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="5126510351761255129">Zweryfikuj kartę</translation>
 <translation id="5135404736266831032">Zarządzaj adresami…</translation>
 <translation id="5138227688689900538">Pokaż mniej</translation>
+<translation id="514010763713772514">Płać szybciej w przyszłości</translation>
 <translation id="5145883236150621069">W odebranej polityce znajduje się kod błędu</translation>
 <translation id="5146995429444047494">Powiadomienia z <ph name="ORIGIN" /> są blokowane</translation>
 <translation id="5148809049217731050">W górę</translation>
@@ -1312,7 +1315,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="5984570616552610254">Wilgotność w komorze</translation>
 <translation id="598637245381783098">Nie można otworzyć aplikacji do płatności</translation>
 <translation id="5989320800837274978">Nie określono ani stałych serwerów proxy, ani adresu URL skryptu PAC.</translation>
-<translation id="5990559369517809815">Żądania do serwera zostały zablokowane przez rozszerzenie.</translation>
 <translation id="5992691462791905444">Składanie typu Z</translation>
 <translation id="6000758707621254961">Wyniki wyszukiwania dla zapytania „<ph name="SEARCH_TEXT" />”: <ph name="RESULT_COUNT" /></translation>
 <translation id="6008122969617370890">Kolejność od N do 1</translation>
@@ -1458,7 +1460,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="6583674473685352014">B6 (koperta)</translation>
 <translation id="6587923378399804057">Skopiowany link</translation>
 <translation id="6591833882275308647">Twoje urządzenie <ph name="DEVICE_TYPE" /> nie jest zarządzane</translation>
-<translation id="6592952801936330159">Przycisk zarządzania ustawieniami witryny; aby zarządzać uprawnieniami i danymi zapisanymi dla różnych witryn w ustawieniach Chrome, naciśnij Enter</translation>
+<translation id="6592952801936330159">Przycisk zarządzania ustawieniami witryn; aby zarządzać uprawnieniami i danymi zapisanymi dla różnych witryn w ustawieniach Chrome, naciśnij Enter</translation>
 <translation id="6596325263575161958">Opcje szyfrowania</translation>
 <translation id="6604181099783169992">Czujniki ruchu lub światła</translation>
 <translation id="6609880536175561541">Prc7 (koperta)</translation>
@@ -1835,12 +1837,13 @@ Dodatkowe informacje:
 <translation id="8066955247577885446">Coś poszło nie tak.</translation>
 <translation id="8067872629359326442">Przed chwilą wpisano hasło na stronie wprowadzającej w błąd. Chromium może pomóc. Aby zmienić hasło i powiadomić Google, że Twoje konto może być zagrożone, kliknij Chroń konto.</translation>
 <translation id="8074253406171541171">10x13 (koperta)</translation>
-<translation id="8075898834294118863">Zarządzaj ustawieniami witryny</translation>
+<translation id="8075898834294118863">Zarządzaj ustawieniami witryn</translation>
 <translation id="8078141288243656252">Nie można dodawać adnotacji, gdy dokument jest obrócony</translation>
 <translation id="8079031581361219619">Załadować ponownie stronę?</translation>
 <translation id="8086971161893892807">Wersja robocza</translation>
 <translation id="8088680233425245692">Nie udało się wyświetlić artykułu.</translation>
 <translation id="808894953321890993">Zmień hasło</translation>
+<translation id="8090329638663751802">Możesz użyć Touch ID, aby szybko potwierdzić swoją tożsamość podczas kolejnego użycia tego urządzenia w celu dokonania zakupu za pomocą tej formy płatności.</translation>
 <translation id="8090403583893450254">Rozmiar 20</translation>
 <translation id="8091372947890762290">Aktywacja oczekuje na serwerze</translation>
 <translation id="8092774999298748321">Mocno fioletowy</translation>
@@ -1920,7 +1923,7 @@ Dodatkowe informacje:
 <translation id="8380941800586852976">Niebezpieczna</translation>
 <translation id="8381674639488873545">Może to być opłata jednorazowa lub cykliczna, a informacje o niej mogą nie być wyraźnie podane. <ph name="BEGIN_LINK" />Pokaż mimo to<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Zasady administratora uniemożliwiają udostępnianie informacji z <ph name="ORIGIN_NAME" /> maszynie wirtualnej <ph name="VM_NAME" /></translation>
-<translation id="8405579342203358118">Zarządzaj w ustawieniach Chrome informacjami, które mają być synchronizowane</translation>
+<translation id="8405579342203358118">Zarządzaj w ustawieniach Chrome danymi, które mają być synchronizowane</translation>
 <translation id="8412145213513410671">Awarie (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Musisz dwukrotnie wpisać to samo hasło.</translation>
 <translation id="8416694386774425977">Konfiguracja sieci jest nieprawidłowa i nie można jej zaimportować.

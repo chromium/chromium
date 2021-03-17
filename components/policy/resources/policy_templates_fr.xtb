@@ -355,7 +355,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Remarque : S'il y a plusieurs serveurs, séparez leur nom par une virgule. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.</translation>
 <translation id="1491015714523410492">Lors de la connexion via l'écran de verrouillage, l'authentification dans <ph name="PRODUCT_OS_NAME" /> peut s'effectuer sur un serveur (en ligne) ou à l'aide d'un mot de passe en cache (hors connexion).
 
-      Si cette règle n'est pas configurée ou si elle est définie sur -1, l'authentification en ligne sur l'écran de verrouillage ne sera pas appliquée. L'utilisateur pourra ainsi recouvrir à l'authentification hors connexion, sauf si un motif différent implique le contraire.
+      Si cette règle n'est pas configurée ou si elle est définie sur -1, l'authentification en ligne sur l'écran de verrouillage ne sera pas appliquée. L'utilisateur pourra recourir à l'authentification hors connexion, sauf si, pour une autre raison, il doit s'authentifier en ligne.
 
       Si cette règle est définie sur 0, une authentification en ligne sera toujours demandée.
 
@@ -393,11 +393,11 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="1522425503138261032">Autoriser les sites à suivre la position géographique des utilisateurs</translation>
 <translation id="1523774894176285446">Navigateur secondaire à lancer pour les sites Web configurés.</translation>
 <translation id="152657506688053119">Liste d'URL alternatives pour le moteur de recherche par défaut</translation>
-<translation id="1527298988676981599">Cette règle permet d'établir la liste des formats d'URL pour lesquels les sites sont automatiquement autorisés à se connecter à un appareil USB à l'aide des ID du produit et du fournisseur indiqués sur l'écran de connexion. Pour que la règle soit valide, chaque élément de la liste doit contenir <ph name="DEVICES_FIELD_NAME" /> et <ph name="URLS_FIELD_NAME" />. Chaque élément du champ <ph name="DEVICES_FIELD_NAME" /> peut contenir à son tour <ph name="VENDOR_ID_FIELD_NAME" /> et <ph name="PRODUCT_ID_FIELD_NAME" />. Si vous ne renseignez pas le champ <ph name="VENDOR_ID_FIELD_NAME" />, la règle qui est créée correspond à tous les appareils. Si vous ne renseignez pas le champ <ph name="PRODUCT_ID_FIELD_NAME" />, la règle qui est créée correspond à tous les appareils ayant l'ID de fournisseur donné. Une règle contenant un champ <ph name="PRODUCT_ID_FIELD_NAME" />, mais pas de champ <ph name="VENDOR_ID_FIELD_NAME" /> n'est pas valide.
+<translation id="1527298988676981599">Cette règle permet d'établir la liste des formats d'URL qui indiquent les sites automatiquement autorisés à se connecter à un appareil USB à l'aide des ID produit et du fournisseur indiqués sur l'écran de connexion. Pour que la règle soit valide, les champs <ph name="DEVICES_FIELD_NAME" /> et <ph name="URLS_FIELD_NAME" /> doivent être renseignés pour chaque élément de la liste. Chaque élément du champ <ph name="DEVICES_FIELD_NAME" /> peut avoir un champ <ph name="VENDOR_ID_FIELD_NAME" /> et <ph name="PRODUCT_ID_FIELD_NAME" />. Si vous ne renseignez pas le champ <ph name="VENDOR_ID_FIELD_NAME" />, la règle qui est créée correspond à tous les appareils. Si vous ne renseignez pas le champ <ph name="PRODUCT_ID_FIELD_NAME" />, la règle qui est créée correspond à tous les appareils ayant l'ID de fournisseur donné. Une règle ayant un champ <ph name="PRODUCT_ID_FIELD_NAME" />, mais pas de champ <ph name="VENDOR_ID_FIELD_NAME" /> n'est pas valide.
 
       Le modèle d'autorisations USB autorisera l'URL spécifiée à accéder à l'appareil USB en tant qu'origine de niveau supérieur. Si les cadres intégrés doivent accéder aux appareils USB, l'en-tête <ph name="FEATURE_POLICY_HEADER_NAME" /> "usb" doit être utilisé pour autoriser l'accès. Si l'URL n'est pas valide, la règle est ignorée.
 
-      Obsolète : Le modèle d'autorisations USB permettait de spécifier à la fois les URL à l'origine de la requête et les URL d'intégration. Ceci est obsolète et est seulement possible pour la rétrocompatibilité, de cette manière : si l'URL à l'origine de la requête et l'URL d'intégration sont spécifiées, alors l'URL d'intégration obtiendra l'autorisation en tant qu'origine de niveau supérieur et l'URL à l'origine de la requête sera totalement ignorée.
+      Obsolète : Le modèle d'autorisations USB permettait de spécifier à la fois l'URL à l'origine de la requête et l'URL d'intégration. Il est obsolète et seulement possible pour la rétrocompatibilité, de cette manière : si l'URL à l'origine de la requête et l'URL d'intégration sont spécifiées, alors la seconde obtiendra l'autorisation en tant qu'origine de niveau supérieur et la première sera totalement ignorée.
 
       Si cette règle n'est pas définie, la valeur globale par défaut est utilisée pour tous les sites (aucun accès automatique).</translation>
 <translation id="1530812829012954197">Toujours rendre les formats d'URL suivants dans le navigateur hôte</translation>
@@ -673,6 +673,10 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
         |TIME_LIMITS| permet d'appliquer une durée d'utilisation maximale, et de bloquer l'accès à l'application une fois que l'utilisateur a atteint cette limite journalière. Vous pouvez indiquer une limite d'utilisation dans la propriété |daily_limit_mins|. Le compteur est remis à zéro à l'heure UTC que vous avez définie dans la propriété |reset_at|.
         Cette règle s'applique uniquement aux utilisateurs mineurs.
         Elle complète la règle "UsageTimeLimit". Les restrictions que vous indiquez dans la règle "UsageTimeLimit" telles que le temps d'utilisation et l'heure du coucher s'appliquent indépendamment de la règle "PerAppTimeLimits".</translation>
+<translation id="1916266055944569995">Cette règle permet de définir la valeur de retour de l'API Managed Configuration pour l'origine donnée.
+
+      L'API Managed Configuration est une configuration de type clé-valeur accessible via un appel JavaScript navigator.managed.getManagedConfiguration(). Cette API est uniquement disponible pour les origines qui correspondent aux appls Web installées d'office via <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
+     </translation>
 <translation id="1919802376548418720">Utiliser la règle KDC pour déléguer les identifiants.</translation>
 <translation id="1920046221095339924">Autoriser une session gérée sur l'appareil</translation>
 <translation id="1920772397574801429">Permet de spécifier le type des comptes fournis par l'application d'authentification Android qui accepte la méthode d'authentification <ph name="HTTP_NEGOTIATE" /> (l'authentification Kerberos, par exemple). Ces informations doivent être disponibles auprès du fournisseur de l'application en question. Pour en savoir plus, consultez le site https://goo.gl/hajyfN (sur les projets Chromium).
@@ -1332,15 +1336,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="2757054304033424106">Types d'extensions ou d'applications autorisés à être installés</translation>
 <translation id="2759224876420453487">Contrôler le comportement de l'utilisateur lors d'une session à plusieurs profils</translation>
 <translation id="2761483219396643566">Délai d'inactivité avant l'affichage d'un avertissement (en cas d'utilisation de la batterie)</translation>
-<translation id="2764165704281937018">Liste des paramètres à appliquer au <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, qui se déclenche lorsqu'un fichier est téléchargé.
-
-      Les champs "<ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />" et "<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" />" permettent de déterminer si le connecteur doit envoyer un fichier au fournisseur de services lors du téléchargement à partir d'une page Web. L'URL de la page Web doit correspondre à un format associé à un format "enable" et non "disable".  Le type MIME du fichier doit également correspondre à un format associé à un format "enable" et non "disable".
-
-      Le champ "<ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" />" indique à quel fournisseur de services d'analyse correspondent les paramètres.
-
-      Le champ "<ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" />" identifie l'entreprise auprès du fournisseur de services.  Quand l'utilisateur est invité à se connecter lors de la configuration de <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, seuls les comptes utilisateur associés à cette entreprise sont autorisés.
-
-      Cette règle ne peut être configurée que dans la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="2769952903507981510">Configurer le nom de domaine requis pour les hôtes d'accès à distance</translation>
 <translation id="2772955711376920612">Si cette règle est activée, et que les règles <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> et <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> sont configurées, le mode d'alimentation alternée en heures pleines est activé (s'il est disponible sur l'appareil). Ce mode permet d'économiser l'énergie en faisant fonctionner autant que possible l'appareil sur batterie plutôt que sur secteur pendant les heures pleines. Vous pouvez définir l'heure de début et de fin de ce mode pour chaque jour de la semaine. Tant que le niveau de charge de la batterie reste au-dessus du seuil spécifié, l'appareil fonctionne sur batterie en heures pleines (même s'il est branché sur une prise électrique). Passée l'heure de fin définie, l'appareil repasse sur l'alimentation secteur (s'il est branché sur une prise), mais il ne recharge pas la batterie. L'appareil reprendra son fonctionnement habituel en utilisant l'alimentation secteur et en rechargeant la batterie à l'heure programmée pour le début de la charge.
 
@@ -1742,15 +1737,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="3261592499545947104">Nombre de secondes avant l'expiration d'un certificat lorsque le renouvellement doit être déclenché.</translation>
 <translation id="3264793472749429012">Codages du moteur de recherche par défaut</translation>
-<translation id="3265738316212552123">Cette règle permet d'établir la liste des formats d'URL pour lesquels les sites sont automatiquement autorisés à accéder à un appareil USB à l'aide des ID du produit et du fournisseur indiqués. Pour que la règle soit valide, chaque élément de la liste doit contenir <ph name="DEVICES_FIELD_NAME" /> et <ph name="URLS_FIELD_NAME" />. Chaque élément du champ <ph name="DEVICES_FIELD_NAME" /> peut contenir à son tour <ph name="VENDOR_ID_FIELD_NAME" /> et <ph name="PRODUCT_ID_FIELD_NAME" />. Si vous ne renseignez pas le champ <ph name="VENDOR_ID_FIELD_NAME" />, la règle qui est créée correspond à tous les appareils. Si vous ne renseignez pas le champ <ph name="PRODUCT_ID_FIELD_NAME" />, la règle qui est créée correspond à tous les appareils ayant l'ID de fournisseur donné. Une règle contenant un champ <ph name="PRODUCT_ID_FIELD_NAME" />, mais pas de champ <ph name="VENDOR_ID_FIELD_NAME" /> n'est pas valide.
-
-      Le modèle d'autorisations USB autorisera l'URL spécifiée à accéder à l'appareil USB en tant qu'origine de niveau supérieur. Si les cadres intégrés doivent accéder aux appareils USB, l'en-tête <ph name="FEATURE_POLICY_HEADER_NAME" /> "usb" doit être utilisé pour autoriser l'accès. Si l'URL n'est pas valide, la règle est ignorée.
-
-      Obsolète : Le modèle d'autorisations USB permettait de spécifier à la fois les URL à l'origine de la requête et les URL d'intégration. Ceci est obsolète et est seulement possible pour la rétrocompatibilité, de cette manière : si l'URL à l'origine de la requête et l'URL d'intégration sont spécifiées, alors l'URL d'intégration obtiendra l'autorisation en tant qu'origine de niveau supérieur et l'URL à l'origine de la requête sera totalement ignorée.
-
-      Si cette règle n'est pas configurée, <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> s'applique, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique.
-
-      Les formats d'URL de cette règle ne doivent pas entrer en conflit avec ceux qui ont été définis dans la règle <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. En cas de conflit, cette règle prévaut sur <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> et <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="3273221114520206906">Paramètre JavaScript par défaut</translation>
 <translation id="328347261792478720">Par défaut, le navigateur propose à l'utilisateur des recommandations personnalisées de contenus multimédias. Si cette règle est désactivée, l'utilisateur ne bénéficie pas de ces recommandations. Si cette règle est activée ou qu'elle n'est pas configurée, l'utilisateur peut voir ces recommandations.</translation>
 <translation id="3284094172359247914">Contrôler l'utilisation de l'API WebUSB</translation>
@@ -1832,11 +1818,11 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       Cette règle n'a aucune incidence si la règle <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> n'est pas configurée.</translation>
 <translation id="341285788698114069">Cette règle contrôle la priorité du processus audio sous Windows.
-      Si cette règle est activée, le processus audio s'exécutera avec une priorité supérieure à la priorité normale.
+      Si cette règle est activée, le processus audio s'exécutera avec une priorité supérieure à la normale.
       Si cette règle est désactivée, le processus audio s'exécutera avec une priorité normale.
       Si cette règle n'est pas définie, la configuration par défaut pour le processus audio sera utilisée.
       Cette règle est une mesure provisoire permettant aux entreprises
-      d'exécuter le processus audio avec une priorité supérieure pour résoudre certains problèmes de performances avec la capture audio.
+      d'exécuter le processus audio avec une priorité supérieure pour résoudre certains problèmes de performances affectant la capture de l'audio.
       Cette règle sera supprimée prochainement.</translation>
 <translation id="3412937883532015092">Si cette règle est définie sur un nombre, <ph name="PRODUCT_NAME" /> affiche un message pendant le nombre de millisecondes défini, puis ouvre un navigateur secondaire.
 
@@ -3206,7 +3192,7 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
           Si cette règle n'est pas configurée, la fonctionnalité de presse-papiers partagé est activée par défaut.
 
           C'est aux administrateurs de configurer les règles sur toutes les plates-formes qui les intéressent. Il est recommandé de définir cette règle sur une même valeur pour toutes les plates-formes.</translation>
-<translation id="5389708774452952523">Autoriser l'exécution du processus audio avec une priorité supérieure à la priorité normale sous Windows</translation>
+<translation id="5389708774452952523">Autoriser l'exécution du processus audio avec une priorité supérieure à la normale sous Windows</translation>
 <translation id="5389798680516458665">Permet de dresser la liste des formats d'URL pour lesquels les sites peuvent afficher des images.
 
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique.
@@ -5021,10 +5007,6 @@ au maximum si un utilisateur se sert de l'appareil.
 <translation id="776110834126722255">Obsolète</translation>
 <translation id="7763614521440615342">Afficher des recommandations de contenus sur la page "Nouvel onglet"</translation>
 <translation id="7765879851993224640">Autorise la connexion avec Smart Lock.</translation>
-<translation id="7774451488719504808">Tel que décrit sur https://www.chromestatus.com/feature/5148698084376576, les boîtes de dialogue modales JavaScript déclenchées par <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" /> et <ph name="JS_PROMPT" /> seront bloquées sur <ph name="PRODUCT_NAME" /> si elles sont déclenchées depuis un sous-frame dont l'origine est différente de celle du frame principal.
-       Cette règle permet d'ignorer cette distinction.
-       Si la règle est activée ou n'est pas définie, les boîtes de dialogue JavaScript déclenchées depuis un sous-frame d'une origine différente seront bloquées.
-       Si elle est désactivée, les boîtes de dialogue JavaScript déclenchées depuis un sous-frame d'une origine différente ne seront pas bloquées.</translation>
 <translation id="7774768074957326919">Utiliser les paramètres proxy du système</translation>
 <translation id="777734450201217641">Activer les raccourcis des fonctionnalités d'accessibilité sur l'écran de connexion.
 
@@ -5738,7 +5720,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8789338675663014675">Permet de configurer les règles relatives aux extensions. L'utilisateur n'est pas autorisé à installer des extensions bloquées, à moins qu'elles aient été ajoutées à la liste blanche. Vous pouvez également forcer <ph name="PRODUCT_NAME" /> à installer automatiquement des extensions en les spécifiant dans <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />. Cette méthode permet d'installer des extensions inscrites sur la liste de blocage.</translation>
 <translation id="8796924197496002727">Lors de la connexion via l'écran de verrouillage, l'authentification dans <ph name="PRODUCT_OS_NAME" /> peut s'effectuer sur un serveur (en ligne) ou à l'aide d'un mot de passe en cache (hors connexion).
 
-      Si cette règle n'est pas configurée ou si elle est définie sur -1, l'authentification en ligne sur l'écran de verrouillage ne sera pas appliquée. L'utilisateur pourra ainsi recouvrir à l'authentification hors connexion, sauf si un motif différent implique le contraire.
+      Si cette règle n'est pas configurée ou si elle est définie sur -1, l'authentification en ligne sur l'écran de verrouillage ne sera pas appliquée. L'utilisateur pourra recourir à l'authentification hors connexion, sauf si, pour une autre raison, il doit s'authentifier en ligne.
 
       Si cette règle est définie sur 0, une authentification en ligne sera toujours demandée.
 

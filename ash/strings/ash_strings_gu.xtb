@@ -92,6 +92,7 @@
 <translation id="1698760176351776263">IPv6 સરનામું: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">ડેસ્કટૉપ: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">નેટવર્ક સેટિંગ</translation>
+<translation id="1713296079175516843">સુરક્ષા કારણોસર પેરિફેરલને સપોર્ટ આપવામાં આવતો નથી</translation>
 <translation id="1719094688023114093">લાઇવ કૅપ્શનની સુવિધા ચાલુ છે.</translation>
 <translation id="1720011244392820496">વાઇ-ફાઇ સિંક ચાલુ કરો</translation>
 <translation id="1743570585616704562">ઓળખાયેલ નથી</translation>
@@ -944,6 +945,7 @@
 <translation id="8936501819958976551">નિષ્ક્રિય કરેલું</translation>
 <translation id="8938800817013097409">USB-C ડિવાઇસ (પાછળની બાજુએ જમણું પોર્ટ)</translation>
 <translation id="8940956008527784070">બૅટરી ઓછી (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8951539504029375108">તમારી Chromebook સાથે ફક્ત મંજૂરી ધરાવતા Thunderbolt ડિવાઇસ સુસંગત હોય છે</translation>
 <translation id="8982906748181120328">નજીકની દૃશ્યતા</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" />નો ઉપયોગ કરી રહ્યા છે</translation>

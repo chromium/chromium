@@ -178,6 +178,7 @@
 <translation id="2195339740518523951">ისარგებლეთ Chrome-ის უსაფრთხოების ყველაზე ძლიერი ფუნქციებით</translation>
 <translation id="2200113223741723867">გამოყენების მონაცემების გაზიარების მართვა</translation>
 <translation id="2227444325776770048">გაგრძელება, როგორც <ph name="USER_FULL_NAME" /></translation>
+<translation id="22320125457191592">თქვენთვის</translation>
 <translation id="2234876718134438132">სინქრონიზაციის/Google სერვისები</translation>
 <translation id="2239812875700136898">მართეთ ამბები „Discover-ის ვარიანტების“ ღილაკის მეშვეობით</translation>
 <translation id="2259659629660284697">პაროლების ექსპორტი…</translation>
@@ -316,6 +317,7 @@
 <translation id="3208584281581115441">ახლავე შემოწმება</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> წაშლილია</translation>
 <translation id="321773570071367578">თუ დაგავიწყდათ თქვენი საიდუმლო ფრაზა, ან ამ პარამეტრის შეცვლა გსურთ, <ph name="BEGIN_LINK" />გადააყენეთ სინქრონიზაცია<ph name="END_LINK" /></translation>
+<translation id="3220943972464248773">პაროლების სინქრონიზაციისთვის დაადასტურეთ, რომ ეს თქვენ ხართ</translation>
 <translation id="3227557059438308877">Google Chrome უსაფრთხოების გასაღების სახით</translation>
 <translation id="3232754137068452469">ვებ-აპი</translation>
 <translation id="3236059992281584593">დარჩენილია 1 წთ</translation>
@@ -484,6 +486,7 @@
 <translation id="447252321002412580">შეუწყვეთ ხელი Chrome-ის ფუნქციებისა და წარმადობის გაუმჯობესებას</translation>
 <translation id="4479972344484327217">ინსტალირდება <ph name="MODULE" /> Chrome-ისთვის…</translation>
 <translation id="4487967297491345095">Chrome-ში არსებული აპების მონაცემები სამუდამოდ წაიშლება. მათ შორის, აპებთან დაკავშირებული ყველა ფაილი, პარამეტრი, ანგარიში, მონაცემთა ბაზა და ა.შ.</translation>
+<translation id="449126573531210296">სინქრონიზებული პაროლების დაშიფვრა თქვენი Google ანგარიშის მეშვეობით</translation>
 <translation id="4493497663118223949">Lite რეჟიმი ჩართულია</translation>
 <translation id="4508528996305412043">გაიხსნა არხის ბარათის მენიუ</translation>
 <translation id="4508642716788467538">აირჩიეთ ენა</translation>
@@ -507,6 +510,7 @@
 <translation id="4594952190837476234">ეს ხაზგარეშე გვერდი თარიღდება <ph name="CREATION_TIME" />-ით და შეიძლება განსხვავდებოდეს ონლაინ-ვერსიისგან.</translation>
 <translation id="4605958867780575332">ერთეული „<ph name="ITEM_TITLE" />“ ამოიშალა</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />-ის გახსნა</translation>
+<translation id="4619564267100705184">ვინაობის დადასტურება</translation>
 <translation id="4634124774493850572">პაროლის გამოყენება</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 გატეხილი პაროლი}other{# გატეხილი პაროლი}}</translation>
 <translation id="4650364565596261010">სისტემის ნაგულისხმევი</translation>
@@ -779,6 +783,7 @@
 <translation id="6342069812937806050">ახლახან</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> სხვა}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> სხვა}}</translation>
 <translation id="6345878117466430440">წაკითხულად მონიშვნა</translation>
+<translation id="6363990818884053551">სინქრონიზაციის დასაწყებად დაადასტურეთ, რომ ეს თქვენ ხართ</translation>
 <translation id="6364438453358674297">ამოიშალოს შემოთავაზება ისტორიიდან?</translation>
 <translation id="6378173571450987352">დეტალები: დალაგებულია გამოყენებული მონაცემების მიხედვით</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> გაიხსნება Chrome-ში. გაგრძელებით ეთანხმებით <ph name="BEGIN_LINK1" />Google-ის მომსახურების პირობებს<ph name="END_LINK1" />, ასევე, <ph name="BEGIN_LINK2" />Google Chrome-ისა და Chrome OS-ის მომსახურების დამატებით პირობებს<ph name="END_LINK2" />.</translation>
@@ -841,6 +846,7 @@
 <translation id="666731172850799929">გახსნა <ph name="APP_NAME" />-ში</translation>
 <translation id="666981079809192359">Chrome-ის კონფიდენციალურობის ცნობა</translation>
 <translation id="6671495933530132209">გამოსახულების კოპირება</translation>
+<translation id="6674571176963658787">სინქრონიზაციის დასაწყებად შეიყვანეთ თქვენი საიდუმლო ფრაზა</translation>
 <translation id="6676840375528380067">გასუფთავდეს თქვენი Chrome მონაცემები ამ მოწყობილობიდან?</translation>
 <translation id="6697492270171225480">მსგავსი გვერდების შემოთავაზებების ჩვენება, როცა გვერდი ვერ მოიძებნება</translation>
 <translation id="6698801883190606802">სინქრონიზებული მონაცემების მართვა</translation>

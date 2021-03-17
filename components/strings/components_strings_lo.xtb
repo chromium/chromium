@@ -411,6 +411,7 @@
 <translation id="2482878487686419369">ການແຈ້ງເຕືອນ</translation>
 <translation id="248348093745724435">ນະໂຍບາຍຂອງເຄື່ອງ</translation>
 <translation id="2491120439723279231">ໃບຢັ້ງຢືນຂອງເຊີບເວີມີຄວາມຜິດພາດ.</translation>
+<translation id="2491414235131909199">ໜ້ານີ້ຖືກບລັອກໄວ້ໂດຍສ່ວນຂະຫຍາຍ</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">ຕົວ​ກະ​ຈາຍ JSON</translation>
 <translation id="2495093607237746763">ຖ້າໝາຍຖືກໄວ້, Chromium ຈະບັນທຶກຂໍ້ມູນສຳເນົາບັດຂອງທ່ານໄວ້ໃນອຸປະກອນນີ້ເພື່ອໃຫ້ສາມາດຕື່ມຂໍ້ມູນແບບຟອມໄດ້ໄວຂຶ້ນ.</translation>
@@ -531,7 +532,6 @@
 <translation id="2991174974383378012">ການແບ່ງປັນກັບເວັບໄຊ</translation>
 <translation id="2991571918955627853">ທ່ານບໍ່ສາມາດເຂົ້າເບິ່ງ <ph name="SITE" /> ໄດ້ໃນຂະນະນີ້ ເພາະວ່າເວັບໄຊນີ້ໃຊ້ HSTS. ໂດຍປົກກະຕິແລ້ວ ຂໍ້ຜິດພາດ ແລະ ການໂຈມຕີທາງເຄືອຂ່າຍແມ່ນຊົ່ວຄາວເທົ່ານັ້ນ, ສະນັ້ນ ໜ້ານີ້ອາດຈະໃຊ້ໄດ້ໃນພາຍຫຼັງ.</translation>
 <translation id="2995517112308048736">ຂະໜາດໄຟລ໌:</translation>
-<translation id="2996674880327704673">ການແນະນຳໂດຍ Google</translation>
 <translation id="3002501248619246229">ກວດສອບສື່ຂອງຖາດເຈ້ຍເຂົ້າ</translation>
 <translation id="3005723025932146533">ສະແດງສໍາເນົາທີ່ບັນທຶກໄວ້</translation>
 <translation id="3008447029300691911">ປ້ອນ CVC ສຳລັບ <ph name="CREDIT_CARD" />. ເມື່ອທ່ານຢືນຢັນ, ລາຍລະອຽດບັດຂອງທ່ານຈະຖືກແບ່ງປັນກັບເວັບໄຊນີ້.</translation>
@@ -625,6 +625,7 @@
 <translation id="3371076217486966826"><ph name="URL" /> ຕ້ອງການ:
       • ສ້າງແຜນທີ່ 3D ຂອງສິ່ງອ້ອມຂ້າງທ່ານ ແລະ ຕິດຕາມຕຳແໜ່ງກ້ອງ
       • ໃຊ້ກ້ອງຂອງທ່ານ</translation>
+<translation id="3372389303668969359">ທ່ານສາມາດໃຊ້ Windows Hello ເພື່ອຢັ້ງຢືນແບບດ່ວນໄດ້ວ່າແມ່ນທ່ານແທ້ໃນເທື່ອຕໍ່ໄປທີ່ທ່ານໃຊ້ອຸປະກອນນີ້ເພື່ອສັ່ງຊື້ດ້ວຍວິທີການຈ່າຍເງິນນີ້.</translation>
 <translation id="337363190475750230">ຖອນການຈັດໃຫ້ແລ້ວ</translation>
 <translation id="3377144306166885718">ເຊີບເວີໃຊ້ TLS ເວີຊັນເກົ່າ.</translation>
 <translation id="3377188786107721145">ຄວາມ​ຜິດ​ພາດກະຈາຍນະ​ໂຍ​ບາຍ</translation>
@@ -698,6 +699,7 @@
 <translation id="3615877443314183785">ປ້ອນວັນທີໝົດອາຍຸທີ່ຖືກຕ້ອງ</translation>
 <translation id="36224234498066874">ລຶບລ້າງຂໍ້ມູນການທ່ອງເວັບ...</translation>
 <translation id="362276910939193118">ສະ​ແດງ​ປະຫວັດທັງໝົດ</translation>
+<translation id="3625635938337243871">ລະບົບຈະເກັບຂໍ້ມູນການເຂົ້າສູ່ລະບົບໄວ້ໃນອຸປະກອນນີ້ຫຼັງຈາກທີ່ທ່ານອອກຈາກໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ.</translation>
 <translation id="3630155396527302611">ຖ້າວ່າມັນຢູ່ໃນລາຍການເປັນໂປຣແກຣມທີ່ໄດ້ຮັບອະນຸຍາດໃຫ້ເຂົ້າຫາເຄືອຂ່າຍໄດ້, ໃຫ້ລອງ
       ລຶບມັນອອກໄປຈາກລາຍການ ແລ້ວເພີ່ມມັນໃສ່ຄືນໃໝ່.</translation>
 <translation id="3630699740441428070">ຜູ້ເບິ່ງແຍງລະບົບຂອງອຸປະກອນນີ້ໄດ້ຕັ້ງຄ່າການເຊື່ອມຕໍ່ເຄືອຂ່າຍຂອງທ່ານ, ເຊິ່ງອາດຈະອະນຸຍາດໃຫ້ພວກມັນເຫັນການຮັບສົ່ງຂໍ້ມູນໃນເຄືອຂ່າຍຂອງທ່ານ, ຮວມທັງເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງ.</translation>
@@ -835,6 +837,7 @@
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{ອີກ <ph name="ITEM_COUNT" /> ລາຍການ}other{ອີກ <ph name="ITEM_COUNT" /> ລາຍການ}}</translation>
 <translation id="4176463684765177261">ປິດໃຊ້ງານແລ້ວ</translation>
+<translation id="4178883739871311481"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອສ້າງ Google Doc</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">ຂໍອະໄພ, ບໍ່ສາມາດບັນທຶກບັດຂອງທ່ານໄວ້ໄດ້ໃນຕອນນີ້</translation>
 <translation id="4196861286325780578">ເຮັດຄືນຄໍາສັ່ງຍ້າຍ</translation>
@@ -932,6 +935,7 @@
 <translation id="4477350412780666475">ເພງຕໍ່ໄປ</translation>
 <translation id="4482953324121162758">ລະບົບຈະບໍ່ແປເວັບໄຊນີ້.</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">ເຂົ້າລະຫັດລະຫັດຜ່ານທີ່ຊິ້ງຂໍ້ມູນໄວ້ດ້ວຍບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="4492519888999857993">ຄຸນສົມບັດນີ້ຖືກປິດນຳໃຊ້ຕາມຄ່າເລີ່ມຕົ້ນ. ພວກມັນຈະບໍ່ມີໃຫ້ນຳໃຊ້ໃນເວີຊັນອະນາຄົດຂອງ Chrome.</translation>
 <translation id="4493480324863638523">URL ໃຊ້ບໍ່ໄດ້. ຕ້ອງແມ່ນ URL ທີ່ມີຮູບແບບມາດຕະຖານ ເຊັ່ນ: http://example.com ຫຼື https://example.com.</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
@@ -1101,6 +1105,7 @@
 <translation id="5126510351761255129">ຢືນຢັນບັດຂອງທ່ານ</translation>
 <translation id="5135404736266831032">ຈັດການທີ່ຢູ່...</translation>
 <translation id="5138227688689900538">ຫຍໍ້ລົງ</translation>
+<translation id="514010763713772514">ຈ່າຍເງິນໄວຂຶ້ນໃນເທື່ອຕໍ່ໄປ</translation>
 <translation id="5145883236150621069">ລະຫັດຄວາມຜິດພາດມີຢູ່ໃນການຕອບຮັບນະໂຍບາຍ</translation>
 <translation id="5146995429444047494">ການແຈ້ງເຕືອນສຳລັບ <ph name="ORIGIN" /> ຖືກບລັອກໄວ້</translation>
 <translation id="5148809049217731050">ປີ້ນໜ້າຂຶ້ນ</translation>
@@ -1321,7 +1326,6 @@
 <translation id="5984570616552610254">ຄວາມຊຸ່ມຂອງຕູ້</translation>
 <translation id="598637245381783098">ບໍ່ສາມາດເປີດແອັບການຈ່າຍເງິນໄດ້</translation>
 <translation id="5989320800837274978">ບໍ່ໄດ້ກໍານົດທັງເຊີບເວີພຣັອກຊີທີ່ກໍານົດໄວ້ ຫຼື URL ຕົວຂຽນ .pac.</translation>
-<translation id="5990559369517809815">ການຮ້ອງຂໍຫາເຄືອຂ່າຍຖືກບລັອກໂດຍສ່ວນຂະຫຍາຍ.</translation>
 <translation id="5992691462791905444">ພັບທົບແບບ Engineering ຮູບໂຕ Z</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> ຜົນການຊອກຫາສຳລັບ '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6008122969617370890">ລຳດັບ N ເຖິງ 1</translation>
@@ -1523,6 +1527,7 @@
 <translation id="6852204201400771460">ໂຫຼດແອັບຄືນໃໝ່ບໍ?</translation>
 <translation id="6865412394715372076">ບໍ່ສາມາດຢັ້ງຢືນບັດນີ້ໄດ້ໃນຕອນນີ້</translation>
 <translation id="6874604403660855544">ເຮັດຄືນຄຳ​ສັ່ງເພີ່ມ</translation>
+<translation id="6881240511396774766">ສ້າງ Google Doc ໃໝ່ຢ່າງວ່ອງໄວ</translation>
 <translation id="6884662655240309489">ຂະໜາດ 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome ໄດ້ເຮັດໃຫ້ໜ້ານີ້ອ່ານໄດ້ງ່າຍຂຶ້ນ. Chrome ກູ້ຄືນໜ້າຕົ້ນສະບັບຜ່ານການເຊື່ອມຕໍ່ທີ່ບໍ່ປອດໄພ.</translation>
@@ -1532,6 +1537,7 @@
 <translation id="6898699227549475383">ອົງການຈັດຕັ້ງ (O)</translation>
 <translation id="6907293445143367439">ອະນຸຍາດໃຫ້ <ph name="SITE_NAME" /> ສາມາດ:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> ຕ້ອງການໄດ້ຮັບການຄວບຄຸມເຕັມຕໍ່ກັບອຸປະກອນ MIDI ຂອງທ່ານ</translation>
+<translation id="691325982945105493">ປຸ່ມສ້າງ Google Doc, ກົດ Enter ເພື່ອສ້າງ Google Doc ໃໝ່ຢ່າງວ່ອງໄວ</translation>
 <translation id="6915804003454593391">ຜູ້​ໃຊ້​:</translation>
 <translation id="6934672428414710184">ຊື່ນີ້ມາຈາກບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="6944692733090228304">ທ່ານໄດ້ປ້ອນລະຫັດຜ່ານຂອງທ່ານໃນເວັບໄຊທີ່ບໍ່ຖືກຈັດການໂດຍ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. ເພື່ອປົກປ້ອງບັນຊີຂອງທ່ານ, ກະລຸນາຢ່ານຳລະຫັດຜ່ານຂອງທ່ານມາໃຊ້ໃໝ່ຢູ່ໃນແອັບ ແລະ ເວັບໄຊອື່ນ.</translation>
@@ -1850,6 +1856,7 @@
 <translation id="8086971161893892807">ສະບັບຮ່າງ</translation>
 <translation id="8088680233425245692">ເບິ່ງບົດຄວາມບໍ່ສໍາເລັດ.</translation>
 <translation id="808894953321890993">ປ່ຽນລະຫັດຜ່ານ</translation>
+<translation id="8090329638663751802">ທ່ານສາມາດໃຊ້ Touch ID ເພື່ອຢັ້ງຢືນແບບດ່ວນໄດ້ວ່າແມ່ນທ່ານແທ້ໃນເທື່ອຕໍ່ໄປທີ່ທ່ານໃຊ້ອຸປະກອນນີ້ເພື່ອສັ່ງຊື້ດ້ວຍວິທີການຈ່າຍເງິນນີ້.</translation>
 <translation id="8090403583893450254">ຂະໜາດ 20</translation>
 <translation id="8091372947890762290">ການເປີດໃຊ້ງານຄ້າງຢູ່ໃນເຊີບເວີ</translation>
 <translation id="8092774999298748321">ສີມ່ວງເຂັ້ມ</translation>
@@ -2061,6 +2068,7 @@
 <translation id="8931333241327730545">ທ່ານຕ້ອງການບັນທຶກບັດນີ້ໃສ່ບັນຊີ Google ຂອງທ່ານບໍ?</translation>
 <translation id="8932102934695377596">ໂມງ​ຂອງ​ທ່ານ​ຊ້າ</translation>
 <translation id="893332455753468063">ເພີ່ມຊື່</translation>
+<translation id="8934418770423095813">ສ້າງ Google Doc</translation>
 <translation id="8942355029279167844">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ອະນຸຍາດໃຫ້ <ph name="APP_NAME" /> ເກັບເອົາຂໍ້ມູນການວິເຄາະບັນຫາເພື່ອປັບປຸງປະສົບການຜະລິດຕະພັນແລ້ວ. ເບິ່ງ <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> ສຳລັບຂໍ້ມູນເພີ່ມເຕີມ.</translation>
 <translation id="8943282376843390568">ສີຂຽວໝາກນາວ</translation>
 <translation id="8957210676456822347">ການ​ໃຫ້​ສິດ​ທາງ​ເຂົ້າ​ຈັບ​ໜ້າ​ຈໍ</translation>

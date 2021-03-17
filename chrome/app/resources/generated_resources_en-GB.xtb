@@ -1088,7 +1088,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2187675480456493911">Synced with other devices on your account. Settings modified by other users will not be synced. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Server Certificate Import Error</translation>
 <translation id="2187906491731510095">Extensions updated</translation>
-<translation id="2188100037674302806">Parallels desktop</translation>
 <translation id="2188881192257509750">Open <ph name="APPLICATION" /></translation>
 <translation id="2190069059097339078">Wi-Fi Credentials Getter</translation>
 <translation id="219008588003277019">Native Client module: <ph name="NEXE_NAME" /></translation>
@@ -1912,7 +1911,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3089137131053189723">Search cleared</translation>
 <translation id="3090819949319990166">Can't copy external crx file to <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" paired</translation>
-<translation id="3092699946856346803">Please insert your SIM and try again</translation>
 <translation id="3093714882666365141">Don't allow sites to install payment handlers</translation>
 <translation id="3094141017404513551">This will separate your browsing from <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Bookmarks, passwords and other browser data are synced with the primary account.</translation>
@@ -3061,7 +3059,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4415748029120993980">SECG elliptic curve secp384r1 (aka NIST P-384)</translation>
 <translation id="4416582610654027550">Type a valid URL</translation>
 <translation id="4419409365248380979">Always allow <ph name="HOST" /> to set cookies</translation>
-<translation id="4419610272958564173">Unknown Device (Vendor: <ph name="VENDOR_ID" />, Product: <ph name="PRODUCT_ID" />)</translation>
 <translation id="4421932782753506458">Fluffy</translation>
 <translation id="4423376891418188461">Restore Settings</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, your administrator requires you to change your password.</translation>
@@ -3309,6 +3306,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4682551433947286597">Wallpapers appear on the sign-in screen.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (default)</translation>
 <translation id="4684427112815847243">Sync everything</translation>
+<translation id="4687613760714619596">Unknown device (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">Local log ID: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">Choose your demo preferences</translation>
 <translation id="4689421377817139245">Sync this bookmark to your iPhone</translation>
@@ -5493,7 +5491,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7222204278952406003">Chrome is your default browser</translation>
 <translation id="7222232353993864120">Email Address</translation>
 <translation id="7225179976675429563">Network type missing</translation>
-<translation id="7227028316978186866"><ph name="DEVICE_NAME" /> (Vendor: <ph name="VENDOR_ID" />, Product: <ph name="PRODUCT_ID" />)</translation>
 <translation id="7228479291753472782">Manipulate settings that specify whether websites can use features such as geo-location, microphone, camera, etc.</translation>
 <translation id="7228523857728654909">Screen lock and sign-in</translation>
 <translation id="7229570126336867161">Need EVDO</translation>
@@ -6363,7 +6360,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8186609076106987817">The server could not find the file.</translation>
 <translation id="8188389033983459049">Check your device settings and turn it on to continue</translation>
 <translation id="8189306097519446565">School accounts</translation>
-<translation id="8189750580333936930">Privacy sandbox</translation>
+<translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Connecting to <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Manage your apps, extensions, and themes</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" /> wants to share the contents of your screen.</translation>

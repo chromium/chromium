@@ -531,7 +531,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2991174974383378012">Dijeljenje s web-lokacijama</translation>
 <translation id="2991571918955627853">Trenutačno ne možete otvoriti <ph name="SITE" /> jer web-lokacija upotrebljava HSTS. Mrežne pogreške i napadi obično su privremeni, tako da će stranica kasnije vjerojatno funkcionirati.</translation>
 <translation id="2995517112308048736">Veličina datoteke:</translation>
-<translation id="2996674880327704673">Googleovi prijedlozi</translation>
 <translation id="3002501248619246229">Provjera medija ladice za ulaganje</translation>
 <translation id="3005723025932146533">Prikaži spremljenu kopiju</translation>
 <translation id="3008447029300691911">Unesite CVC za karticu <ph name="CREDIT_CARD" />. Nakon što ih potvrdite, podaci o kartici dijelit će se s ovom web-lokacijom.</translation>
@@ -625,6 +624,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3371076217486966826"><ph name="URL" /> traži dopuštenje za sljedeće:
       • izradu 3D karte vašeg okruženja i praćenje položaja kamere
       • upotrebu kamere</translation>
+<translation id="3372389303668969359">Kad sljedeći put upotrijebite ovaj uređaj za kupnju ovim načinom plaćanja, možete upotrijebiti značajku Windows Hello za brzu potvrdu da ste to vi.</translation>
 <translation id="337363190475750230">Dodjela je uklonjena</translation>
 <translation id="3377144306166885718">Poslužitelj je koristio zastarjelu verziju TLS-a.</translation>
 <translation id="3377188786107721145">Pogreška pri analizi pravila</translation>
@@ -698,6 +698,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3615877443314183785">Unesite važeći datum isteka</translation>
 <translation id="36224234498066874">Obriši podatke o pregledavanju...</translation>
 <translation id="362276910939193118">Pokaži cijelu povijest</translation>
+<translation id="3625635938337243871">Podaci za prijavu pohranit će se na ovom uređaju nakon što izađete iz anonimnog načina.</translation>
 <translation id="3630155396527302611">Ako je već navedena kao program koji smije pristupiti mreži, pokušajte je ukloniti s popisa pa je ponovo dodati.</translation>
 <translation id="3630699740441428070">Administratori uređaja konfigurirali su vašu mrežnu vezu, što im može omogućiti prikaz vašeg mrežnog prometa, uključujući web-lokacije koje posjećujete.</translation>
 <translation id="3631244953324577188">Biometrijski podaci</translation>
@@ -932,6 +933,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4477350412780666475">Sljedeća pjesma</translation>
 <translation id="4482953324121162758">Ova web-lokacija neće biti prevedena.</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">Šifriranje sinkroniziranih zaporki s Google računom</translation>
 <translation id="4492519888999857993">Ove su značajke onemogućene prema zadanim postavkama. Neće biti dostupne u budućim verzijama Chromea.</translation>
 <translation id="4493480324863638523">URL nije važeći. URL mora imati standardnu shemu, na primjer http://example.com ili https://example.com.</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
@@ -1101,6 +1103,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5126510351761255129">Potvrdite svoju karticu</translation>
 <translation id="5135404736266831032">Upravljajte adresama...</translation>
 <translation id="5138227688689900538">Pokaži manje</translation>
+<translation id="514010763713772514">Sljedeći put brže provjerite</translation>
 <translation id="5145883236150621069">Odgovor na pravilo sadrži kôd pogreške</translation>
 <translation id="5146995429444047494">Blokirane su obavijesti za <ph name="ORIGIN" /></translation>
 <translation id="5148809049217731050">Prema gore</translation>
@@ -1321,7 +1324,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5984570616552610254">Vlažnost komore</translation>
 <translation id="598637245381783098">Aplikacija za plaćanje ne može se otvoriti</translation>
 <translation id="5989320800837274978">Nisu određeni fiksni proxy poslužitelji ni URL .pac skripte.</translation>
-<translation id="5990559369517809815">Zahtjevi poslužitelju blokirani su proširenjem.</translation>
 <translation id="5992691462791905444">Presavijanje u obliku harmonike s dva nabora</translation>
 <translation id="6000758707621254961">Rezultata za upit "<ph name="SEARCH_TEXT" />" ima <ph name="RESULT_COUNT" /></translation>
 <translation id="6008122969617370890">Redoslijed N do 1</translation>
@@ -1850,6 +1852,7 @@ Dodatne pojedinosti:
 <translation id="8086971161893892807">Skica</translation>
 <translation id="8088680233425245692">Prikaz članka nije uspio.</translation>
 <translation id="808894953321890993">Promjena zaporke</translation>
+<translation id="8090329638663751802">Kad sljedeći put upotrijebite ovaj uređaj za kupnju ovim načinom plaćanja, možete upotrijebiti značajku Touch ID za brzu potvrdu da ste to vi.</translation>
 <translation id="8090403583893450254">Veličina 20</translation>
 <translation id="8091372947890762290">Aktivacija je na čekanju na poslužitelju</translation>
 <translation id="8092774999298748321">Tamnoljubičasta</translation>

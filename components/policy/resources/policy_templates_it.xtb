@@ -663,6 +663,10 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
         |BLOCK| consente di non rendere disponibile l'app per l'utente. Se viene specificato un valore |daily_limit_mins| con il limite |BLOCK|, il valore |daily_limit_mins| viene ignorato.
         |TIME_LIMITS| consente di applicare un limite di utilizzo giornaliero e di non rendere disponibile l'app una volta raggiunto il limite nella giornata specifica. Il limite di utilizzo viene specificato tramite |daily_limit_mins| e viene reimpostato ogni giorno all'orario UTC impostato tramite |reset_at|.
         Questo criterio viene usato soltanto per i bambini ed è complementare al criterio "UsageTimeLimit". I limiti specificati nel criterio "UsageTimeLimit", ad esempio relativi al tempo di utilizzo e di interruzione dell'uso, verranno applicati a prescindere dal criterio "PerAppTimeLimits".</translation>
+<translation id="1916266055944569995">La configurazione del criterio consente di definire il valore restituito dell'API Managed Configuration per una determinata origine.
+
+      L'API Managed Configuration è una configurazione di coppie chiave-valore accessibile tramite chiamata JavaScript navigator.managed.getManagedConfiguration(). Questa API è disponibile soltanto per le origini che corrispondono ad applicazioni web con installazione forzata tramite <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
+     </translation>
 <translation id="1919802376548418720">Utilizza il criterio KDC per delegare credenziali.</translation>
 <translation id="1920046221095339924">Consenti la sessione gestita sul dispositivo</translation>
 <translation id="1920772397574801429">La configurazione del criterio consente di specificare il tipo di account, tra quelli forniti dall'app di autenticazione Android, che supporta l'autenticazione <ph name="HTTP_NEGOTIATE" />, ad esempio Kerberos. Queste informazioni dovrebbero essere messe a disposizione dal fornitore dell'app di autenticazione. Per i dettagli, consulta la pagina I progetti di Chromium ( https://goo.gl/hajyfN )
@@ -1327,15 +1331,6 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="2757054304033424106">Tipi di estensioni/app che possono essere installati</translation>
 <translation id="2759224876420453487">Controlla il comportamento dell'utente in una sessione profilo multiplo</translation>
 <translation id="2761483219396643566">Ritardo avviso inattività in caso di utilizzo della batteria</translation>
-<translation id="2764165704281937018">Elenco di impostazioni da applicare al <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, che si attiva quando viene scaricato un file.
-
-      I campi <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> vengono utilizzati per stabilire se il connettore deve inviare un file al fornitore di servizi quando il download viene effettuato da una pagina web. L'URL della pagina web deve corrispondere a un pattern associato a un pattern "enable" e non a un pattern "disable".  Anche il tipo MIME del file deve corrispondere a un pattern associato a un pattern "enable" e non a un pattern "disable".
-
-      Il campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica il fornitore di servizi di analisi a cui corrispondono le impostazioni.
-
-      Il campo <ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" /> identifica l'azienda con il fornitore di servizi.  Quando all'utente viene chiesto di accedere durante la configurazione del <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, sono consentiti soltanto gli account utente associati all'azienda in questione.
-
-      Questo criterio può essere impostato soltanto dalla <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="2769952903507981510">Configura il nome di dominio richiesto per gli host di accesso remoto</translation>
 <translation id="2772955711376920612">Se il criterio viene impostato su Attivato e vengono impostati i criteri <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> e <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" />, la variazione dei picchi energetici rimane attiva, se supportata sul dispositivo. Il criterio di gestione della variazione dei picchi energetici è un criterio per il risparmio energetico che riduce al minimo l'utilizzo della corrente alternata durante i momenti di picco. Puoi impostare un orario di inizio e di fine della modalità di variazione dei picchi energetici per ogni giorno feriale. Se durante questi orari il livello della batteria rimane al di sopra della soglia specificata, il dispositivo usa la batteria (anche se è collegato alla corrente alternata). Dopo l'orario di fine specificato, il dispositivo usa la corrente alternata, se è collegato, ma non ricarica la batteria. Il dispositivo funzionerà di nuovo normalmente con la corrente alternata e ricaricherà la batteria dopo l'orario di inizio della ricarica specificato.
 
@@ -1742,15 +1737,6 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="3261592499545947104">Il numero di secondi prima della scadenza di un certificato in cui attivare il rinnovo.</translation>
 <translation id="3264793472749429012">Codifiche del provider di ricerca predefinito</translation>
-<translation id="3265738316212552123">La configurazione del criterio consente di elencare i pattern URL che specificano i siti a cui viene concessa automaticamente l'autorizzazione di accesso a un dispositivo USB con gli ID fornitore e prodotto indicati. Perché il criterio sia valido, ogni elemento nell'elenco richiede entrambi i campi <ph name="DEVICES_FIELD_NAME" /> e <ph name="URLS_FIELD_NAME" />. Ogni elemento nel campo <ph name="DEVICES_FIELD_NAME" /> può avere un campo <ph name="VENDOR_ID_FIELD_NAME" /> e un campo <ph name="PRODUCT_ID_FIELD_NAME" />. Se il campo <ph name="VENDOR_ID_FIELD_NAME" /> non viene specificato, il criterio può corrispondere a qualsiasi dispositivo. Se il campo <ph name="PRODUCT_ID_FIELD_NAME" /> non viene specificato, il criterio può corrispondere a qualsiasi dispositivo con l'ID fornitore specificato. Un criterio con un campo <ph name="PRODUCT_ID_FIELD_NAME" /> senza un campo <ph name="VENDOR_ID_FIELD_NAME" /> non è valido.
-
-      Il modello di autorizzazioni USB consentirà all'URL specificato di accedere al dispositivo USB come origine di primo livello. Se i frame incorporati devono accedere ai dispositivi USB, per concedere l'accesso è necessario usare l'intestazione "usb" del criterio <ph name="FEATURE_POLICY_HEADER_NAME" />. Se l'URL non è valido, il criterio viene ignorato.
-
-      Deprecato. Il modello di autorizzazioni USB supportava la specifica di entrambi gli URL richiedente e di incorporamento. Questo modello è deprecato e supportato soltanto per la compatibilità con le versioni precedenti nel seguente modo: se vengono specificati entrambi gli URL richiedente e di incorporamento, all'URL di incorporamento verrà concessa l'autorizzazione come origine di primo livello, mentre l'URL richiedente verrà ignorato completamente.
-
-      Se il criterio non viene configurato, viene applicato il criterio <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
-
-      I pattern URL di questo criterio non devono essere in conflitto con quelli configurati tramite il criterio <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. In caso di conflitto, questo criterio ha la precedenza sui criteri <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> e <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="3273221114520206906">Impostazione JavaScript predefinita</translation>
 <translation id="328347261792478720">Per impostazione predefinita, nel browser vengono mostrati consigli di contenuti multimediali personalizzati in base agli interessi dell'utente. Se questo criterio viene impostato su Disattivato, questi consigli vengono nascosti all'utente. Se il criterio viene impostato su Attivato o se non viene configurato, i consigli di contenuti multimediali vengono mostrati all'utente.</translation>
 <translation id="3284094172359247914">Controlla l'utilizzo dell'API WebUSB</translation>
@@ -5002,10 +4988,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="776110834126722255">Deprecata</translation>
 <translation id="7763614521440615342">Mostra suggerimenti di contenuti nella pagina Nuova scheda</translation>
 <translation id="7765879851993224640">Consenti l'uso dell'accesso tramite Smart Lock.</translation>
-<translation id="7774451488719504808">Come descritto alla pagina https://www.chromestatus.com/feature/5148698084376576, le finestre di dialogo modali JavaScript, attivate da <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" /> e <ph name="JS_PROMPT" />, saranno bloccate in <ph name="PRODUCT_NAME" /> se attivate da un frame secondario la cui origine è diversa dall'origine del frame principale.
-       Questo criterio consente di eseguire l'override di tale modifica.
-       Se il criterio viene impostato su Attivato o non viene impostato, le finestre di dialogo JavaScript attivate da un frame secondario di origine diversa vengono bloccate.
-       Se il criterio viene impostato su Disattivato, le finestre di dialogo JavaScript attivate da un frame secondario di origine diversa non vengono bloccate.</translation>
 <translation id="7774768074957326919">Utilizza le impostazioni proxy di sistema</translation>
 <translation id="777734450201217641">Consente di attivare le scorciatoie delle funzioni di accessibilità nella schermata di accesso.
 

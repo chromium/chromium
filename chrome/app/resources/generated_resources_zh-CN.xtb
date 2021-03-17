@@ -1074,7 +1074,6 @@
 <translation id="2187675480456493911">已与您帐号中的其他设备同步。其他用户修改的设置不会进行同步。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">服务器证书导入错误</translation>
 <translation id="2187906491731510095">扩展程序已更新</translation>
-<translation id="2188100037674302806">Parallels Desktop</translation>
 <translation id="2188881192257509750">打开 <ph name="APPLICATION" /></translation>
 <translation id="2190069059097339078">WiFi 凭据获取工具</translation>
 <translation id="219008588003277019">Native Client 模块：<ph name="NEXE_NAME" /></translation>
@@ -1894,7 +1893,6 @@
 <translation id="3089137131053189723">搜索记录已清除</translation>
 <translation id="3090819949319990166">无法将外部 crx 文件复制到 <ph name="TEMP_CRX_FILE" />。</translation>
 <translation id="3090871774332213558">“<ph name="DEVICE_NAME" />”已配对</translation>
-<translation id="3092699946856346803">请插入 SIM 卡，然后重试</translation>
 <translation id="3094141017404513551">这会将您的浏览数据与 <ph name="EXISTING_USER" /> 的浏览数据分隔开来</translation>
 <translation id="3095871294753148861">书签、密码和其他浏览器数据会与主帐号同步。</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{关闭了 1 个可能有害的扩展程序。您也可移除它。}other{关闭了 {NUM_EXTENSIONS} 个可能有害的扩展程序。您也可移除它们。}}</translation>
@@ -3031,7 +3029,6 @@
 <translation id="4415748029120993980">SECG 椭圆曲线 secp384r1（又称 NIST P-384）</translation>
 <translation id="4416582610654027550">请输入一个有效网址</translation>
 <translation id="4419409365248380979">总是允许 <ph name="HOST" /> 设置 Cookie</translation>
-<translation id="4419610272958564173">未知设备（供应商：<ph name="VENDOR_ID" />，产品：<ph name="PRODUCT_ID" />）</translation>
 <translation id="4421932782753506458">猫咪</translation>
 <translation id="4423376891418188461">还原设置</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />，您的管理员要求您更改密码。</translation>
@@ -5445,7 +5442,6 @@
 <translation id="7222204278952406003">Chrome 是您的默认浏览器</translation>
 <translation id="7222232353993864120">电子邮件地址</translation>
 <translation id="7225179976675429563">缺少网络类型</translation>
-<translation id="7227028316978186866"><ph name="DEVICE_NAME" />（供应商：<ph name="VENDOR_ID" />，产品：<ph name="PRODUCT_ID" />）</translation>
 <translation id="7228479291753472782">管理用于指定网站可否使用地理位置信息、麦克风、摄像头等功能的设置</translation>
 <translation id="7228523857728654909">屏幕锁定和登录</translation>
 <translation id="7229570126336867161">需要 EVDO</translation>

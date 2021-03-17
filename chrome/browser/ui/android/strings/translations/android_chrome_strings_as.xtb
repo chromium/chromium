@@ -98,7 +98,7 @@
 <translation id="1697284962337958118">ইয়াত যোগ দিয়ক</translation>
 <translation id="1718835860248848330">যোৱা ১ ঘণ্টাৰ</translation>
 <translation id="1724977129262658800">আপোনাৰ পাছৱৰ্ডটো সম্পাদনা কৰিবলৈ আনলক কৰক</translation>
-<translation id="173522743738009831">গোপনীয়তা বিষয়ক ছেণ্ডবক্সৰ বিষয়ে</translation>
+<translation id="173522743738009831">প্ৰাইভেচি ছেণ্ডবক্সৰ বিষয়ে</translation>
 <translation id="1736419249208073774">অন্বেষণ কৰক</translation>
 <translation id="1749561566933687563">আপোনাৰ বুকমার্কসমূহ ছিংক কৰক</translation>
 <translation id="17513872634828108">খুলি ৰখা টেবসমূহ</translation>
@@ -178,6 +178,7 @@
 <translation id="2195339740518523951">Chromeৰ আটাইতকৈ শক্তিশালী সুৰক্ষা লাভ কৰক</translation>
 <translation id="2200113223741723867">ব্যৱহাৰৰ ডেটা শ্বেয়াৰ কৰাটো পৰিচালনা কৰক</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> হিচাপে অব্যাহত ৰাখক</translation>
+<translation id="22320125457191592">আপোনাৰ বাবে</translation>
 <translation id="2234876718134438132">ছিংক আৰু Google সেৱা</translation>
 <translation id="2239812875700136898">সন্ধান কৰক বুটামটোৰ বিকল্পসমূহৰ পৰা আপোনাৰ কাহিনীসমূহ নিয়ন্ত্ৰণ কৰক</translation>
 <translation id="2259659629660284697">পাছৱর্ডসমূহ ৰপ্তানি কৰক…</translation>
@@ -316,6 +317,7 @@
 <translation id="3208584281581115441">এতিয়াই পৰীক্ষা কৰক</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> মচা হ’ল</translation>
 <translation id="321773570071367578">আপুনি যদি নিজৰ পাছফ্ৰেজটো পাহৰিছে বা এই ছেটিংটো সলনি কৰিব বিচাৰিছে তেন্তে <ph name="BEGIN_LINK" />ছিংক ৰিছেট কৰক<ph name="END_LINK" /></translation>
+<translation id="3220943972464248773">আপোনাৰ পাছৱৰ্ড ছিংক কৰিবলৈ এয়া আপুনি বুলি সত্যাপন কৰক</translation>
 <translation id="3227557059438308877">এটা সুৰক্ষা সম্পৰ্কীয় চাবি হিচাপে Google Chrome</translation>
 <translation id="3232754137068452469">ৱেব এপ্‌</translation>
 <translation id="3236059992281584593">১ মিনিট বাকী আছে</translation>
@@ -347,19 +349,19 @@
 <translation id="3384347053049321195">প্ৰতিচ্ছবি শ্বেয়াৰ কৰক</translation>
 <translation id="3387650086002190359">ফাইল ছিষ্টেম সম্পর্কীয় আসোঁৱাহৰ বাবে <ph name="FILE_NAME" /> ডাউনল’ড কৰিব পৰা নগ’ল।</translation>
 <translation id="3389286852084373014">পাঠখিনি যথেষ্ট দীঘল</translation>
-<translation id="3391512812407811893">গোপনীয়তা বিষয়ক ছেণ্ডবক্সৰ ট্ৰায়েল</translation>
+<translation id="3391512812407811893">প্ৰাইভেচি ছেণ্ডবক্সৰ ট্ৰায়েল</translation>
 <translation id="3398320232533725830">বুকমাৰ্ক পৰিচালক খোলক</translation>
 <translation id="3414952576877147120">আকাৰ:</translation>
 <translation id="3429160811076349561">ট্ৰায়েলৰ সুবিধা অফ আছে</translation>
 <translation id="3440975416244667276">অধিক প্ৰাসংগিক তথ্যৰ বাবে স্পৰ্শ কৰি ধৰি ৰাখক</translation>
 <translation id="3443221991560634068">বর্তমানৰ পৃষ্ঠাটো পুনৰ ল’ড কৰক</translation>
-<translation id="3451542610083122179">গোপনীয়তা বিষয়ক ছেণ্ডবক্স হৈছে মুক্ত ৱেবক সুৰক্ষিত কৰিবলৈ সম্প্ৰতি চলি থকা এটা পদক্ষেপ, যিটোৱে ট্ৰেক কৰাৰ উপায়সমূহৰ বিৰুদ্ধে আপোনাক সুৰক্ষা প্ৰদান কৰাত সহায় কৰে।
+<translation id="3451542610083122179">প্ৰাইভেচি ছেণ্ডবক্স হৈছে মুক্ত ৱেবক সুৰক্ষিত কৰিবলৈ সম্প্ৰতি চলি থকা এটা পদক্ষেপ, যিটোৱে ট্ৰেক কৰাৰ উপায়সমূহৰ বিৰুদ্ধে আপোনাক সুৰক্ষা প্ৰদান কৰাত সহায় কৰে।
 
 আজিকালি ৱেবছাইটসমূহে প্ৰাসংগিক বিজ্ঞাপন দেখুওৱা আৰু কোনো ছাইটৰ পাৰদৰ্শিতাৰ জোখ-মাখ কৰাৰ দৰে গুৰুত্বপূৰ্ণ সেৱাৰ বাবে তৃতীয় পক্ষৰ কুকিৰ দৰে বহুতো প্ৰযুক্তিৰ ওপৰত নিৰ্ভৰ কৰে।
 
-গোপনীয়তা বিষয়ক ছেণ্ডবক্সে ছাইটৰ কাৰ্যকাৰিতাত প্ৰভাৱ নেপেলোৱাকৈ আৰু আপোনাক সমগ্ৰ ৱেব জুৰি গোপনে ট্ৰেক কৰাৰ পৰা সুৰক্ষিত কৰি এই সেৱাসমূহ প্ৰদান কৰাৰ অধিক ভাল উপায় সৃষ্টি কৰাৰ যোগেদি মুক্ত ৱেবৰ গুৰুত্ব অক্ষুণ্ণ ৰাখে।
+প্ৰাইভেচি ছেণ্ডবক্সে ছাইটৰ কাৰ্যকাৰিতাত প্ৰভাৱ নেপেলোৱাকৈ আৰু আপোনাক সমগ্ৰ ৱেব জুৰি গোপনে ট্ৰেক কৰাৰ পৰা সুৰক্ষিত কৰি এই সেৱাসমূহ প্ৰদান কৰাৰ অধিক ভাল উপায় সৃষ্টি কৰাৰ যোগেদি মুক্ত ৱেবৰ গুৰুত্ব অক্ষুণ্ণ ৰাখে।
 
-গোপনীয়তা বিষয়ক ছেণ্ডবক্সৰ এতিয়াও সক্ৰিয়ভাৱে বিকাশ কৰি থকা হৈছে আৰু এই সুবিধাটো বাছনিকৃত কিছুমান অঞ্চলত উপলব্ধ। সদ্যহতে, ছাইটসমূহে তৃতীয় পক্ষৰ কুকিৰ দৰে বৰ্তমানৰ ৱেব প্ৰযুক্তিসমূহ ব্যৱহাৰ কৰি থাকিও গোপনীয়তা বিষয়ক ছেণ্ডবক্স ব্যৱহাৰ কৰি চাব পাৰে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
+প্ৰাইভেচি ছেণ্ডবক্সৰ এতিয়াও সক্ৰিয়ভাৱে বিকাশ কৰি থকা হৈছে আৰু এই সুবিধাটো বাছনিকৃত কিছুমান অঞ্চলত উপলব্ধ। সদ্যহতে, ছাইটসমূহে তৃতীয় পক্ষৰ কুকিৰ দৰে বৰ্তমানৰ ৱেব প্ৰযুক্তিসমূহ ব্যৱহাৰ কৰি থাকিও প্ৰাইভেচি ছেণ্ডবক্স ব্যৱহাৰ কৰি চাব পাৰে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">আপুনি নিজৰ সন্ধান ইঞ্জিন বাছনি কৰিব পাৰে</translation>
 <translation id="3492207499832628349">নতুন ইনক’গনিট টেব</translation>
 <translation id="3493531032208478708">পৰামৰ্শ দিয়া সমলৰ বিষয়ে <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
@@ -484,6 +486,7 @@
 <translation id="447252321002412580">Chromeৰ সুবিধা আৰু প্ৰদৰ্শন উন্নত কৰাত সহায় কৰক</translation>
 <translation id="4479972344484327217">Chromeৰ বাবে <ph name="MODULE" /> ইনষ্টল কৰি থকা হৈছে…</translation>
 <translation id="4487967297491345095">সকলো Chrome এপৰ ডেটা স্থায়ীভাৱে মচা হ'ব। ইয়াত সকলো ফাইল, ছেটিং, একাউণ্ট, ডেটাবেছ ইত্যাদি অন্তর্ভুক্ত হয়।</translation>
+<translation id="449126573531210296">আপোনাৰ Google একাউণ্টৰ সৈতে ছিংক কৰি ৰখা পাছৱৰ্ড এনক্ৰিপ্ট কৰক</translation>
 <translation id="4493497663118223949">লাইট ম’ড অন কৰা আছে</translation>
 <translation id="4508528996305412043">ফীড কাৰ্ড মেনু খোলা হৈছে</translation>
 <translation id="4508642716788467538">আপোনাৰ ভাষা বাছনি কৰক</translation>
@@ -507,6 +510,7 @@
 <translation id="4594952190837476234">এই অফলাইন পৃষ্ঠাটো <ph name="CREATION_TIME" />ৰ আৰু এই পৃষ্ঠাটো অনলাইন সংস্কৰণতকৈ বেলেগ হ’ব পাৰে।</translation>
 <translation id="4605958867780575332">আঁতৰোৱা বস্তু: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> খোলক</translation>
+<translation id="4619564267100705184">এয়া আপুনিয়েই বুলি সত্যাপন কৰক</translation>
 <translation id="4634124774493850572">পাছৱৰ্ড দিয়ক</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{১ টা হেক হোৱা পাছৱৰ্ড}one{# টা হেক হোৱা পাছৱৰ্ড}other{# টা হেক হোৱা পাছৱৰ্ড}}</translation>
 <translation id="4650364565596261010">ছিষ্টেম ডিফ’ল্ট</translation>
@@ -779,6 +783,7 @@
 <translation id="6342069812937806050">খন্তেক পূর্বে</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> অধিক}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> অধিক}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 আৰু <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> অধিক}}</translation>
 <translation id="6345878117466430440">পঢ়া হৈছে বুলি চিহ্নিত কৰক</translation>
+<translation id="6363990818884053551">ছিংক আৰম্ভ কৰিবলৈ এয়া আপুনি বুলি সত্যাপন কৰক</translation>
 <translation id="6364438453358674297">ইতিহাসৰ পৰা পৰামৰ্শ আঁতৰাবনে?</translation>
 <translation id="6378173571450987352">সবিশেষ: ব্যৱহৃত ডেটাৰ পৰিমাণৰ ওপৰত ভিত্তি কৰি সজোৱা হৈছে</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> Chromeত খুলিব। অব্যাহত ৰাখি আপুনি <ph name="BEGIN_LINK1" />Google সেৱাৰ চৰ্তাৱলী<ph name="END_LINK1" /> আৰু <ph name="BEGIN_LINK2" />Google Chrome আৰু Chrome OSৰ সেৱাৰ অতিৰিক্ত চৰ্তাৱলী<ph name="END_LINK2" />ত সন্মতি দিয়ে।</translation>
@@ -841,6 +846,7 @@
 <translation id="666731172850799929"><ph name="APP_NAME" />ত খোলক</translation>
 <translation id="666981079809192359">Chrome গোপনীয়তাৰ জাননী</translation>
 <translation id="6671495933530132209">প্ৰতিচ্ছবি প্ৰতিলিপি কৰক</translation>
+<translation id="6674571176963658787">ছিংক আৰম্ভ কৰিবলৈ আপোনাৰ পাছফ্ৰেজ দিয়ক</translation>
 <translation id="6676840375528380067">এই ডিভাইচটোৰ পৰা Chrome ডেটা মচিবনে?</translation>
 <translation id="6698801883190606802">ছিংক কৰা ডেটা পৰিচালনা কৰক</translation>
 <translation id="6699370405921460408">Google ছাৰ্ভাৰে আপুনি চোৱা পৃষ্ঠাসমূহ অপ্টিমাইজ কৰিব।</translation>
@@ -1059,7 +1065,7 @@
 <translation id="8156139159503939589">আপুনি কি ভাষা পঢ়িব পাৰে?</translation>
 <translation id="8168435359814927499">সমল</translation>
 <translation id="8186512483418048923"><ph name="FILES" />টা ফাইল বাকী আছে</translation>
-<translation id="8189750580333936930">গোপনীয়তা ছেণ্ডবক্স</translation>
+<translation id="8189750580333936930">প্ৰাইভেচি ছেণ্ডবক্স</translation>
 <translation id="8190358571722158785">১ দিন বাকী আছে</translation>
 <translation id="8200772114523450471">পুনৰ আৰম্ভ কৰক</translation>
 <translation id="8209050860603202033">ছবি খোলক</translation>

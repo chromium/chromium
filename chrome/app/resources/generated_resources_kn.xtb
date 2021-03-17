@@ -1079,7 +1079,6 @@
 <translation id="2187675480456493911">ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿ ಇತರ ಸಾಧನಗಳ ಜೊತೆಗೆ ಸಿಂಕ್ ಮಾಡಲಾಗಿದೆ. ಇತರ ಬಳಕೆದಾರರು ಮಾರ್ಪಡಿಸಿದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಸಿಂಕ್ ಮಾಡುವುದಿಲ್ಲ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">ಸರ್ವರ್ ಪ್ರಮಾಣಪತ್ರದ ಆಮದು ದೋಷ</translation>
 <translation id="2187906491731510095">ವಿಸ್ತರಣೆಗಳನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗಿದೆ</translation>
-<translation id="2188100037674302806">Parallels Desktop</translation>
 <translation id="2188881192257509750"><ph name="APPLICATION" /> ತೆರೆಯಿರಿ</translation>
 <translation id="2190069059097339078">ವೈಫೈ ರುಜುವಾತುಗಳ ಪಡೆಯುವಿಕೆ</translation>
 <translation id="219008588003277019">ಸ್ಥಳೀಯ ಕ್ಲೈಂಟ್ ಮಾಡ್ಯೂಲ್: <ph name="NEXE_NAME" /></translation>
@@ -1899,7 +1898,6 @@
 <translation id="3089137131053189723">ಹುಡುಕಾಟ ತೆರವುಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="3090819949319990166">ಬಾಹ್ಯ crx ಫೈಲ್ ಅನ್ನು <ph name="TEMP_CRX_FILE" /> ಗೆ ನಕಲಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" ಜೋಡಿಸಲಾಗಿದೆ</translation>
-<translation id="3092699946856346803">ನಿಮ್ಮ ಸಿಮ್ ಅನ್ನು ಸೇರಿಸಿ, ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="3094141017404513551">ಇದು ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಅನ್ನು <ph name="EXISTING_USER" /> ನಿಂದ ಪ್ರತ್ಯೇಕಿಸುತ್ತದೆ</translation>
 <translation id="3095871294753148861">ಪ್ರಾಥಮಿಕ ಖಾತೆಯ ಜೊತೆಗೆ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಬ್ರೌಸಿಂಗ್‌ ಡೇಟಾವನ್ನು ಸಿಂಕ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 ಹಾನಿಕಾರಕ ವಿಸ್ತರಣೆಯು ಆಫ್ ಆಗಿದೆ. ಈಗಲೂ ನೀವು ಅದನ್ನು ತೆಗೆದುಹಾಕಬಹುದು.}one{{NUM_EXTENSIONS} ಹಾನಿಕಾರಕ ವಿಸ್ತರಣೆಗಳು ಆಫ್ ಆಗಿವೆ. ಈಗಲೂ ನೀವು ಅವುಗಳನ್ನು ತೆಗೆದುಹಾಕಬಹುದು.}other{{NUM_EXTENSIONS} ಹಾನಿಕಾರಕ ವಿಸ್ತರಣೆಗಳು ಆಫ್ ಆಗಿವೆ. ಈಗಲೂ ನೀವು ಅವುಗಳನ್ನು ತೆಗೆದುಹಾಕಬಹುದು.}}</translation>
@@ -3038,7 +3036,6 @@
 <translation id="4415748029120993980">SECG ಎಲಿಪ್ಟಿಕ್ ಕರ್ವ್ secp384r1 (aka NIST P-384)</translation>
 <translation id="4416582610654027550">ಮಾನ್ಯವಾದ URL ಟೈಪ್ ಮಾಡಿ</translation>
 <translation id="4419409365248380979">ಕುಕೀಗಳನ್ನು ಹೊಂದಿಸಲು <ph name="HOST" /> ಯಾವಾಗಲೂ ಅನುಮತಿಸುತ್ತದೆ</translation>
-<translation id="4419610272958564173">ಅಪರಿಚಿತ ಸಾಧನ (ಮಾರಾಟಗಾರರು: <ph name="VENDOR_ID" />, ಉತ್ಪನ್ನ: <ph name="PRODUCT_ID" />)</translation>
 <translation id="4421932782753506458">ಫ್ಲುಫಿ</translation>
 <translation id="4423376891418188461">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸು</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಗೆ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ನೀವು ಬದಲಾಯಿಸವುದು ಅಗತ್ಯವಿರುತ್ತದೆ.</translation>
@@ -5457,7 +5454,6 @@
 <translation id="7222204278952406003">Chrome ನಿಮ್ಮ ಡಿಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಆಗಿದೆ</translation>
 <translation id="7222232353993864120">ಇಮೇಲ್ ವಿಳಾಸ</translation>
 <translation id="7225179976675429563">ನೆಟ್‌ವರ್ಕ್ ಪ್ರಕಾರ ಕಾಣೆಯಾಗಿದೆ</translation>
-<translation id="7227028316978186866"><ph name="DEVICE_NAME" /> (ಮಾರಾಟಗಾರರು: <ph name="VENDOR_ID" />, ಉತ್ಪನ್ನ: <ph name="PRODUCT_ID" />)</translation>
 <translation id="7228479291753472782">ಜಿಯೋಲೋಕೇಶನ್, ಮೈಕ್ರೊಫೋನ್, ಕ್ಯಾಮರಾ, ಇತ್ಯಾದಿಯಂತೆ ನಿರ್ದಿಷ್ಟಪಡಿಸಿದ ಹವಾಮಾನ ವೆಬ್‌ಸೈಟ್‌ಗಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಬಳಸಬಹುದು.</translation>
 <translation id="7228523857728654909">ಪರದೆ ಲಾಕ್‌ ಮತ್ತು ಸೈನ್‌ ಇನ್‌</translation>
 <translation id="7229570126336867161">EVDO ಅಗತ್ಯವಿದೆ</translation>

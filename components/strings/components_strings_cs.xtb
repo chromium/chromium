@@ -525,7 +525,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2991174974383378012">Sdílení s weby</translation>
 <translation id="2991571918955627853">Web <ph name="SITE" /> teď nemůžete navštívit, protože používá zabezpečení HSTS. Síťové chyby a útoky jsou obvykle dočasné, tato stránka pravděpodobně později bude fungovat.</translation>
 <translation id="2995517112308048736">Velikost souboru:</translation>
-<translation id="2996674880327704673">Návrhy od Googlu</translation>
 <translation id="3002501248619246229">Zkontrolujte média ve vstupní přihrádce</translation>
 <translation id="3005723025932146533">Zobrazit uloženou kopii</translation>
 <translation id="3008447029300691911">Zadejte kód CVC karty <ph name="CREDIT_CARD" />. Po ověření budou údaje o kartě sdíleny s tímto webem.</translation>
@@ -616,6 +615,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3371076217486966826">Web <ph name="URL" /> chce:
       • vytvářet 3D mapu vašeho okolí a sledovat polohu kamery,
       • používat fotoaparát.</translation>
+<translation id="3372389303668969359">Až na tomto zařízení příště použijete tuto platební metodu, můžete svou totožnost ověřit rychle pomocí Windows Hello.</translation>
 <translation id="337363190475750230">Vyřazeno</translation>
 <translation id="3377144306166885718">Server použil zastaralou verzi protokolu TLS.</translation>
 <translation id="3377188786107721145">Chyba analýzy zásady</translation>
@@ -689,6 +689,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3615877443314183785">Zadejte platné datum vypršení platnosti</translation>
 <translation id="36224234498066874">Vymazat údaje o prohlížení...</translation>
 <translation id="362276910939193118">Zobrazit celou historii</translation>
+<translation id="3625635938337243871">Přihlašovací údaje zůstanou v tomto zařízení uložené i po ukončení anonymního režimu.</translation>
 <translation id="3630155396527302611">Pokud je program v seznamu programů s oprávněním přistupovat k síti již uveden, zkuste jej ze seznamu odebrat a znovu přidat.</translation>
 <translation id="3630699740441428070">Administrátoři tohoto zařízení nakonfigurovali vaše připojení k síti, což jim může umožnit sledovat váš síťový provoz, včetně webů, které navštěvujete.</translation>
 <translation id="3631244953324577188">Biometrické systémy</translation>
@@ -917,6 +918,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4477350412780666475">Další skladba</translation>
 <translation id="4482953324121162758">Tento web se nebude překládat.</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">Šifrovat synchronizovaná hesla pomocí účtu Google</translation>
 <translation id="4492519888999857993">Tyto funkce jsou ve výchozím nastavení zakázány. V budoucích verzích prohlížeče Chrome nebudou k dispozici.</translation>
 <translation id="4493480324863638523">Neplatná adresa URL. Je třeba použít adresu URL se standardním protokolem, např. http://example.com nebo https://example.com.</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
@@ -1086,6 +1088,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5126510351761255129">Ověřte svou kartu</translation>
 <translation id="5135404736266831032">Spravovat adresy...</translation>
 <translation id="5138227688689900538">Zobrazit méně</translation>
+<translation id="514010763713772514">Příště dokončete nákup rychleji</translation>
 <translation id="5145883236150621069">Odpověď zásady obsahuje kód chyby</translation>
 <translation id="5146995429444047494">Oznámení z webu <ph name="ORIGIN" /> jsou blokována</translation>
 <translation id="5148809049217731050">Lícem nahoru</translation>
@@ -1306,7 +1309,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5984570616552610254">Vlhkost komory</translation>
 <translation id="598637245381783098">Platební aplikaci nelze otevřít</translation>
 <translation id="5989320800837274978">Nejsou určeny pevně dané servery proxy ani adresa URL skriptu PAC.</translation>
-<translation id="5990559369517809815">Žádosti na tento server jsou blokovány rozšířením.</translation>
 <translation id="5992691462791905444">Technické přeložení do Z</translation>
 <translation id="6000758707621254961">Výsledky pro dotaz <ph name="SEARCH_TEXT" /> (<ph name="RESULT_COUNT" />)</translation>
 <translation id="6008122969617370890">Pořadí N stránek na list</translation>
@@ -1833,6 +1835,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8086971161893892807">Koncept</translation>
 <translation id="8088680233425245692">Zobrazení článku se nezdařilo.</translation>
 <translation id="808894953321890993">Změnit heslo</translation>
+<translation id="8090329638663751802">Až na tomto zařízení příště použijete tuto platební metodu, můžete svou totožnost rychle ověřit pomocí Touch ID.</translation>
 <translation id="8090403583893450254">Velikost 20</translation>
 <translation id="8091372947890762290">Čeká se na aktivaci na serveru</translation>
 <translation id="8092774999298748321">Tmavě nachová</translation>

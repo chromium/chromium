@@ -531,7 +531,6 @@
 <translation id="2991174974383378012">Veb saytlar ilə paylaşılır</translation>
 <translation id="2991571918955627853">Hazırda <ph name="SITE" /> saytına daxil olmaq mümkün deyil, çünki veb səhifə HSTS istifadə edir. Şəbəkə xətaları və hücumları adətən müvəqqəti olur, beləliklə, bu səhifə yəqin ki daha sonra işləyəcək.</translation>
 <translation id="2995517112308048736">Fayl ölçüsü:</translation>
-<translation id="2996674880327704673">Google tərəfindən təkliflər</translation>
 <translation id="3002501248619246229">Daxiletmə qabı mediasını yoxlayın</translation>
 <translation id="3005723025932146533">Saxlanılmış kopyanı göstərin</translation>
 <translation id="3008447029300691911"><ph name="CREDIT_CARD" /> üçün CVC kodu daxil edin. Təsdiq etdikdən sonra, kart detallarınız bu sayt ilə paylaşılacaq.</translation>
@@ -623,6 +622,7 @@
 <translation id="3371076217486966826"><ph name="URL" /> bunun üçün icazə istəyir:
       • Ətrafınızdakı sahələrin 3D xəritəsini yaratmaq və ya kamera mövqeyini izləmək
       • Kameranızı istifadə etmək</translation>
+<translation id="3372389303668969359">Növbəti dəfə bu ödəniş metodu ilə satınalma etmək üçün bu cihazdan istifadə etdiyiniz zaman kimliyinizi sürətli şəkildə doğrulamaq üçün Windows Hello'dan istifadə edə bilərsiniz.</translation>
 <translation id="337363190475750230">Nəzərdə tutulmayıb</translation>
 <translation id="3377144306166885718">Server köhnə TLS versiyasından istifadə etdi.</translation>
 <translation id="3377188786107721145">Siyasət təhlili xətası</translation>
@@ -695,6 +695,7 @@
 <translation id="3615877443314183785">Düzgün bitmə tarixi daxil edin</translation>
 <translation id="36224234498066874">Axtarış Datasını Silin...</translation>
 <translation id="362276910939193118">Tam tarixçəni göstərin</translation>
+<translation id="3625635938337243871">Anonim rejimdən çıxdıqdan sonra giriş datası bu cihazda saxlanılacaq.</translation>
 <translation id="3630155396527302611">Şəbəkəyə girmək icazəsi olan proqram olaraq siyahılanıb, onu siyahıdan silin və yenidən əlavə edin.</translation>
 <translation id="3630699740441428070">Bu cihazın administratorları onların şəbəkə trafiki, o cümlədən daxil olduğunuz veb saytlara baxmasına imkan verə biləcək şəbəkə bağlantısı konfiqurasiya edib.</translation>
 <translation id="3631244953324577188">Biometriklər</translation>
@@ -927,6 +928,7 @@
 <translation id="4477350412780666475">Növbəti trek</translation>
 <translation id="4482953324121162758">Bu sayt tərcümə edilməyəcək.</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">Sinxronlaşdırılmış parolları Google Hesabınız ilə şifrləyin</translation>
 <translation id="4492519888999857993">Bu funksiyalar defolt olaraq deaktiv edilib. Onlar Chrome'un gələcək versiyalarında əlçatan olmayacaq.</translation>
 <translation id="4493480324863638523">Yanlış link. Standart sxemli link olmalıdır, məs., http://example.com və ya https://example.com.</translation>
 <translation id="4503882053543859973">Arxitektura-D</translation>
@@ -1096,6 +1098,7 @@
 <translation id="5126510351761255129">Kartı təsdiq edin</translation>
 <translation id="5135404736266831032">Ünvanları idarə edin...</translation>
 <translation id="5138227688689900538">Daha azına baxın</translation>
+<translation id="514010763713772514">Növbəti dəfə daha sürətli ödəniş edin</translation>
 <translation id="5145883236150621069">Xəta kodu siyasət cavabında mövcuddur</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> üçün bildirişlər blok edilib</translation>
 <translation id="5148809049217731050">Üzü yuxarı</translation>
@@ -1316,7 +1319,6 @@
 <translation id="5984570616552610254">Kameranın rütubəti</translation>
 <translation id="598637245381783098">Ödəniş tətbiqini açmaq mümkün deyil</translation>
 <translation id="5989320800837274978">Proksi serverlər və .pac skript URL-i göstərilməyib.</translation>
-<translation id="5990559369517809815">Serverə sorğu artırma tərəfindən bloklandı.</translation>
 <translation id="5992691462791905444">Mühəndislikdə Z-qatlama</translation>
 <translation id="6000758707621254961">"<ph name="SEARCH_TEXT" />" üçün <ph name="RESULT_COUNT" /> nəticə</translation>
 <translation id="6008122969617370890">N-1 sırası</translation>
@@ -1845,6 +1847,7 @@
 <translation id="8086971161893892807">Qaralama</translation>
 <translation id="8088680233425245692">Məqaləyə baxmaq olmadı.</translation>
 <translation id="808894953321890993">Parolu dəyişin</translation>
+<translation id="8090329638663751802">Növbəti dəfə bu ödəniş metodu ilə satınalma etmək üçün bu cihazdan istifadə etdiyiniz zaman kimliyinizi sürətli şəkildə doğrulamaq üçün Touch ID'dən istifadə edə bilərsiniz.</translation>
 <translation id="8090403583893450254">Ölçü 20</translation>
 <translation id="8091372947890762290">Aktivləşdirmə serverdə gözlənilir</translation>
 <translation id="8092774999298748321">Tünd-bənövşəyi</translation>

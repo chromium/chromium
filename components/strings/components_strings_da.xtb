@@ -531,7 +531,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2991174974383378012">Deling med websites</translation>
 <translation id="2991571918955627853">Du kan ikke besøge <ph name="SITE" /> lige nu, da websitet bruger HSTS. Netværksfejl og angreb er normalt midlertidige, så siden vil sandsynligvis fungere senere.</translation>
 <translation id="2995517112308048736">Filstørrelse:</translation>
-<translation id="2996674880327704673">Forslag fra Google</translation>
 <translation id="3002501248619246229">Tjek det, der er lagt i papirbakken</translation>
 <translation id="3005723025932146533">Vis gemt kopi</translation>
 <translation id="3008447029300691911">Angiv kontrolkoden for <ph name="CREDIT_CARD" />. Når du bekræfter, deles dine kortoplysninger med dette website.</translation>
@@ -625,6 +624,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3371076217486966826"><ph name="URL" /> vil gerne:
       • Oprette et 3D-kort over dine omgivelser og registrere kamerapositionen
       • Anvende dit kamera</translation>
+<translation id="3372389303668969359">Du kan bruge Windows Hello til hurtigt at bekræfte din identitet, næste gang du bruger enheden til at foretage et køb med denne betalingsmetode.</translation>
 <translation id="337363190475750230">Deprovisioneret</translation>
 <translation id="3377144306166885718">Serveren benyttede en forældet version af TSL.</translation>
 <translation id="3377188786107721145">Det opstod en fejl ved parsing af politik</translation>
@@ -698,6 +698,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3615877443314183785">Angiv en gyldig udløbsdato</translation>
 <translation id="36224234498066874">Ryd browserdata...</translation>
 <translation id="362276910939193118">Vis hele historikken</translation>
+<translation id="3625635938337243871">Dine logindata gemmes på denne enhed, når du afslutter inkognitotilstand.</translation>
 <translation id="3630155396527302611">Hvis programmet allerede står på listen over programmer, der har adgang til netværket, kan du prøve
     at fjerne det fra listen og tilføje det igen.</translation>
 <translation id="3630699740441428070">Administratorer af denne enhed har konfigureret din netværksforbindelse, hvilket kan give dem mulighed for at se din netværkstrafik, herunder hvilke websites du besøger.</translation>
@@ -932,6 +933,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4477350412780666475">Næste nummer</translation>
 <translation id="4482953324121162758">Dette website kan ikke oversættes.</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">Krypter synkroniserede adgangskoder med din Google-konto</translation>
 <translation id="4492519888999857993">Disse funktioner er som standard deaktiveret. De vil ikke være tilgængelige i fremtidige versioner af Chrome.</translation>
 <translation id="4493480324863638523">Webadressen er ugyldig. Webadressen skal indeholde et standardskema, f.eks. http://eksempel.dk eller https://eksempel.dk.</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
@@ -1101,6 +1103,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5126510351761255129">Bekræft dit kort</translation>
 <translation id="5135404736266831032">Administrer adresser...</translation>
 <translation id="5138227688689900538">Vis færre</translation>
+<translation id="514010763713772514">Betal hurtigere næste gang</translation>
 <translation id="5145883236150621069">Fejlkode til stede i politiksvar</translation>
 <translation id="5146995429444047494">Notifikationer for <ph name="ORIGIN" /> blokeres</translation>
 <translation id="5148809049217731050">Forside opad</translation>
@@ -1321,7 +1324,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5984570616552610254">Fugtighed i kabinet</translation>
 <translation id="598637245381783098">Betalingsappen kan ikke åbnes</translation>
 <translation id="5989320800837274978">Der er hverken angivet faste proxyservere eller en .pac-scriptwebadresse.</translation>
-<translation id="5990559369517809815">Anmodninger til serveren er blokeret af en udvidelse.</translation>
 <translation id="5992691462791905444">Z-fals med kant foroven</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultater for "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6008122969617370890">N-til-1-rækkefølge</translation>
@@ -1850,6 +1852,7 @@ Yderligere oplysninger:
 <translation id="8086971161893892807">Kladde</translation>
 <translation id="8088680233425245692">Artiklen kunne ikke vises.</translation>
 <translation id="808894953321890993">Skift adgangskode</translation>
+<translation id="8090329638663751802">Du kan bruge Touch ID til at hurtigt at bekræfte din identitet, næste gang du bruger enheden til at foretage et køb med denne betalingsmetode.</translation>
 <translation id="8090403583893450254">Størrelse 20</translation>
 <translation id="8091372947890762290">Aktivering afventer serveren</translation>
 <translation id="8092774999298748321">Mørkelilla</translation>

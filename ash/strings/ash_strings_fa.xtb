@@ -92,6 +92,7 @@
 <translation id="1698760176351776263">‏نشانی IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">میزکار: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">«تنظیمات شبکه»</translation>
+<translation id="1713296079175516843">به‌دلایل امنیتی از دستگاه‌های جانبی پشتیبانی نمی‌شود</translation>
 <translation id="1719094688023114093">«زیرنویس ناشنوایان زنده» روشن است.</translation>
 <translation id="1720011244392820496">‏روشن کردن «همگام‌سازی Wi-Fi»</translation>
 <translation id="1743570585616704562">شناسایی نشد</translation>
@@ -944,6 +945,7 @@
 <translation id="8936501819958976551">غیرفعال</translation>
 <translation id="8938800817013097409">‏دستگاه USB-C (درگاه عقب سمت راست)</translation>
 <translation id="8940956008527784070">باتری ضعیف است (<ph name="PERCENTAGE" />٪)</translation>
+<translation id="8951539504029375108">‏فقط دستگاه‌های Thunderbolt تأییدشده با Chromebook شما سازگار هستند</translation>
 <translation id="8982906748181120328">نمایان برای اطراف</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">درحال استفاده از <ph name="IME_NAME" /></translation>

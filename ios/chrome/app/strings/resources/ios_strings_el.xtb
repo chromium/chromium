@@ -333,6 +333,7 @@
 <translation id="457386861538956877">Περισσότερα...</translation>
 <translation id="4592368184551360546">Πληκτρολόγιο</translation>
 <translation id="461440297010471931">Αναζήτηση με το Google</translation>
+<translation id="4619564267100705184">Επαλήθευση ταυτότητας</translation>
 <translation id="4619615317237390068">Καρτέλες από άλλες συσκευές</translation>
 <translation id="4620246317052452550">Σελίδες που έχετε διαβάσει</translation>
 <translation id="4630540211544979320">Μετάφραση σελίδων</translation>
@@ -549,6 +550,7 @@
 <translation id="6656103420185847513">Επεξεργασία φακέλου</translation>
 <translation id="6657585470893396449">Κωδικός πρόσβασης</translation>
 <translation id="6668619169535738264">Επεξεργασία σελιδοδείκτη</translation>
+<translation id="6674571176963658787">Για να ξεκινήσετε τον συγχρονισμό, εισαγάγετε τη φράση πρόσβασης.</translation>
 <translation id="667999046851023355">Έγγραφο</translation>
 <translation id="6691331417640343772">Διαχείριση συγχρονισμένων δεδομένων στον Πίνακα ελέγχου Google</translation>
 <translation id="6710079714193676716">Διαχειριζόμενο από τον οργανισμό σας. Ορισμένες λειτουργίες ενδέχεται να μην είναι διαθέσιμες. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
@@ -612,6 +614,7 @@
 <translation id="7346909386216857016">OK, το κατάλαβα</translation>
 <translation id="734758817008927353">Επιλογές για την Αποθήκευση κάρτας</translation>
 <translation id="7348502496356775519">Σελιδοδείκτης</translation>
+<translation id="7353432112255316844">Επαλήθευση ταυτότητας</translation>
 <translation id="7383797227493018512">Λίστα ανάγνωσης</translation>
 <translation id="7398893703713203428">Δημιουργία συνδέσμου</translation>
 <translation id="739941347996872055">Προηγούμενη καρτέλα</translation>
@@ -691,6 +694,7 @@
 <translation id="8105368624971345109">Απενεργοποίηση</translation>
 <translation id="8114753159095730575">Η λήψη του αρχείου είναι διαθέσιμη. Οι διαθέσιμες επιλογές βρίσκονται κοντά στο κάτω μέρος της οθόνης.</translation>
 <translation id="8131740175452115882">Επιβεβαίωση</translation>
+<translation id="8156478151976189188">Ο συγχρονισμός κωδικών πρόσβασης δεν λειτουργεί</translation>
 <translation id="8197543752516192074">Μετάφραση σελίδας</translation>
 <translation id="8205564605687841303">Ακύρωση</translation>
 <translation id="8206354486702514201">Η ρύθμιση αυτή επιβάλλεται από τον διαχειριστή σας.</translation>

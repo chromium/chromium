@@ -525,7 +525,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2991174974383378012">Comparteix informació amb llocs web</translation>
 <translation id="2991571918955627853">En aquest moments no pots visitar la pàgina <ph name="SITE" /> perquè el lloc web fa servir HSTS. Els atacs i els errors de xarxa acostumen a ser temporals, o sigui que probablement la pàgina funcionarà més endavant.</translation>
 <translation id="2995517112308048736">Mida del fitxer:</translation>
-<translation id="2996674880327704673">Suggeriments de Google</translation>
 <translation id="3002501248619246229">Comprova el suport de la safata d'entrada</translation>
 <translation id="3005723025932146533">Mostra la còpia desada</translation>
 <translation id="3008447029300691911">Introdueix el CVC de la targeta <ph name="CREDIT_CARD" />. Un cop confirmada, els detalls de la targeta es compartiran amb aquest lloc.</translation>
@@ -619,6 +618,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3371076217486966826"><ph name="URL" /> vol:
       • Crear un mapa 3D del teu entorn i fer un seguiment de la posició de la càmera.
       • Utilitzar la teva càmera.</translation>
+<translation id="3372389303668969359">Pots utilitzar Windows Hello per verificar ràpidament la teva identitat la propera vegada que utilitzis aquest dispositiu per fer una compra amb aquesta forma de pagament.</translation>
 <translation id="337363190475750230">No administrat</translation>
 <translation id="3377144306166885718">El servidor ha utilitzat una versió obsoleta de TLS.</translation>
 <translation id="3377188786107721145">S'ha produït un error en analitzar la política</translation>
@@ -692,6 +692,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3615877443314183785">Introdueix una data de caducitat vàlida</translation>
 <translation id="36224234498066874">Esborra dades de navegació</translation>
 <translation id="362276910939193118">Mostra l'historial complet</translation>
+<translation id="3625635938337243871">Les dades d'inici de sessió s'emmagatzemaran en aquest dispositiu quan surtis del mode d'incògnit.</translation>
 <translation id="3630155396527302611">Si ja està inclòs a la llista de programes autoritzats per accedir a la xarxa, proveu
       de suprimir-lo de la llista i torneu-lo a afegir.</translation>
 <translation id="3630699740441428070">Els administradors d'aquest dispositiu han configurat la connexió de la xarxa, la qual cosa és possible que els permeti veure el trànsit de la teva xarxa, inclosos els llocs web que visites.</translation>
@@ -921,6 +922,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4477350412780666475">Pista següent</translation>
 <translation id="4482953324121162758">Aquest lloc web no es traduirà.</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">Encripta contrasenyes sincronitzades amb el teu Compte de Google</translation>
 <translation id="4492519888999857993">Aquestes funcions estan desactivades de manera predeterminada. Deixaran d'estar disponibles en versions futures de Chrome.</translation>
 <translation id="4493480324863638523">L'URL no és vàlid. Ha de tenir un esquema estàndard, com ara "http://example.com" o "https://example.com".</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
@@ -1090,6 +1092,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5126510351761255129">Verifica la targeta</translation>
 <translation id="5135404736266831032">Gestiona les adreces...</translation>
 <translation id="5138227688689900538">Mostra'n menys</translation>
+<translation id="514010763713772514">Paga més ràpidament la propera vegada</translation>
 <translation id="5145883236150621069">Hi ha un codi d'error en la resposta a la política</translation>
 <translation id="5146995429444047494">Les notificacions per a <ph name="ORIGIN" /> estan bloquejades</translation>
 <translation id="5148809049217731050">Cara amunt</translation>
@@ -1201,7 +1204,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5540224163453853">No s'ha pogut trobar l'article sol·licitat.</translation>
 <translation id="5541086400771735334">Bústia de correu 7</translation>
 <translation id="5541546772353173584">Afegeix un correu electrònic</translation>
-<translation id="5542280138350899197">Botó Gestiona la configuració de seguretat: prem Retorn per gestionar la navegació segura i altres opcions de la configuració de Chrome</translation>
+<translation id="5542280138350899197">Botó Gestiona la configuració de seguretat: prem Retorn per gestionar Navegació segura i altres opcions de la configuració de Chrome</translation>
 <translation id="5545756402275714221">Articles que et poden interessar</translation>
 <translation id="5552137475244467770">Chrome contrasta periòdicament les teves contrasenyes amb les d'una sèrie de llistes publicades en línia. Quan ho fa, les teves contrasenyes i els teus noms d'usuari s'encripten i, per tant, ningú no els pot llegir (ni tan sols Google).</translation>
 <translation id="5556459405103347317">Torna a carregar</translation>
@@ -1310,7 +1313,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5984570616552610254">Humitat de la sala</translation>
 <translation id="598637245381783098">No es pot obrir l'aplicació de pagaments</translation>
 <translation id="5989320800837274978">No s'especifiquen servidors intermediaris ni URL de script .pac.</translation>
-<translation id="5990559369517809815">Una extensió ha bloquejat les peticions al servidor.</translation>
 <translation id="5992691462791905444">Plegat en Z per a enginyeria</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultats per a "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6008122969617370890">Ordre de N a 1</translation>
@@ -1839,6 +1841,7 @@ Detalls addicionals:
 <translation id="8086971161893892807">Esborrany</translation>
 <translation id="8088680233425245692">No s'ha pogut consultar l'article.</translation>
 <translation id="808894953321890993">Canvia la contrasenya</translation>
+<translation id="8090329638663751802">Pots utilitzar Touch ID per verificar ràpidament la teva identitat la propera vegada que utilitzis aquest dispositiu per fer una compra amb aquesta forma de pagament.</translation>
 <translation id="8090403583893450254">Mida 20</translation>
 <translation id="8091372947890762290">L'activació està pendent al servidor</translation>
 <translation id="8092774999298748321">Porpra intens</translation>

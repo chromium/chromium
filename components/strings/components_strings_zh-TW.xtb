@@ -525,7 +525,6 @@
 <translation id="2991174974383378012">與網站分享</translation>
 <translation id="2991571918955627853">目前無法造訪 <ph name="SITE" />，因為這個網站使用 HSTS。網路錯誤和攻擊行為通常是暫時性的，因此這個網頁可能稍後就會恢復正常狀態。</translation>
 <translation id="2995517112308048736">檔案大小：</translation>
-<translation id="2996674880327704673">Google 建議的項目</translation>
 <translation id="3002501248619246229">檢查輸入紙匣媒體</translation>
 <translation id="3005723025932146533">顯示儲存的複本</translation>
 <translation id="3008447029300691911">請輸入 <ph name="CREDIT_CARD" /> 的信用卡驗證碼。您確認後，這個網站就可以取得您的信用卡詳細資訊。</translation>
@@ -619,6 +618,7 @@
 <translation id="3371076217486966826"><ph name="URL" /> 要求：
       • 根據你的周遭環境建立 3D 地圖並追蹤攝影機位置
       • 使用裝置的攝影機</translation>
+<translation id="3372389303668969359">下次在這部裝置上透過這個付款方式進行交易時，可以使用 Windows Hello 快速驗證身分。</translation>
 <translation id="337363190475750230">已取消佈建</translation>
 <translation id="3377144306166885718">伺服器的傳輸層安全標準 (TLS) 版本已過時。</translation>
 <translation id="3377188786107721145">政策解析錯誤</translation>
@@ -692,6 +692,7 @@
 <translation id="3615877443314183785">請輸入有效的到期日</translation>
 <translation id="36224234498066874">清除瀏覽資料...</translation>
 <translation id="362276910939193118">顯示完整記錄</translation>
+<translation id="3625635938337243871">系統會在無痕模式結束後將登入資料儲存在這部裝置上。</translation>
 <translation id="3630155396527302611">如果程式已列在允許存取網路的清單中，建議您
       從清單中將其移除，然後再重新加入。</translation>
 <translation id="3630699740441428070">這部裝置的系統管理員已設定你的網路連線，這項設定可能會讓系統管理員可以查看你的網路流量 (包括你所造訪的網站)。</translation>
@@ -921,6 +922,7 @@
 <translation id="4477350412780666475">下一首曲目</translation>
 <translation id="4482953324121162758">系統不會翻譯這個網站。</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">使用你的 Google 帳戶對已同步處理的密碼進行加密</translation>
 <translation id="4492519888999857993">這些功能預設為停用。日後發布的 Chrome 版本將不再提供這些功能。</translation>
 <translation id="4493480324863638523">網址無效。網址必須採用標準架構，例如 http://example.com 或 https://example.com。</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
@@ -1090,6 +1092,7 @@
 <translation id="5126510351761255129">請驗證卡片</translation>
 <translation id="5135404736266831032">管理地址...</translation>
 <translation id="5138227688689900538">顯示較少</translation>
+<translation id="514010763713772514">想加快日後的結帳速度嗎？</translation>
 <translation id="5145883236150621069">政策回應中存在錯誤代碼</translation>
 <translation id="5146995429444047494">已封鎖 <ph name="ORIGIN" /> 的通知</translation>
 <translation id="5148809049217731050">正面朝上</translation>
@@ -1310,7 +1313,6 @@
 <translation id="5984570616552610254">室內溼度</translation>
 <translation id="598637245381783098">無法開啟付款應用程式</translation>
 <translation id="5989320800837274978">沒有指定固定的 Proxy 伺服器和 .pac 指令碼網址。</translation>
-<translation id="5990559369517809815">擴充功能已封鎖要傳送至伺服器的要求。</translation>
 <translation id="5992691462791905444">大小彈簧摺</translation>
 <translation id="6000758707621254961">有 <ph name="RESULT_COUNT" /> 個與「<ph name="SEARCH_TEXT" />」相符的搜尋結果</translation>
 <translation id="6008122969617370890">N 到 1 的順序</translation>
@@ -1839,6 +1841,7 @@
 <translation id="8086971161893892807">草稿</translation>
 <translation id="8088680233425245692">無法查看文章。</translation>
 <translation id="808894953321890993">變更密碼</translation>
+<translation id="8090329638663751802">下次在這部裝置上透過這個付款方式進行交易時，可以使用 Touch ID 快速驗證身分。</translation>
 <translation id="8090403583893450254">粗細：20</translation>
 <translation id="8091372947890762290">尚未在伺服器上啟動</translation>
 <translation id="8092774999298748321">深紫色</translation>

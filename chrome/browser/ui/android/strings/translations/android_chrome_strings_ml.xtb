@@ -178,6 +178,7 @@
 <translation id="2195339740518523951">Chrome-ന്റെ ഏറ്റവും ശക്‌തമായ സുരക്ഷ നേടുക</translation>
 <translation id="2200113223741723867">ഉപയോഗ ഡാറ്റ പങ്കിടൽ മാനേജ് ചെയ്യുക</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> എന്ന പേരിൽ തുടരുക</translation>
+<translation id="22320125457191592">നിങ്ങൾക്കായി</translation>
 <translation id="2234876718134438132">സമന്വയവും Google സേവനങ്ങളും</translation>
 <translation id="2239812875700136898">'Discover-നുള്ള ഓപ്‌ഷനുകൾ' ബട്ടൺ അമർത്തി നിങ്ങളുടെ സ്‌റ്റോറികൾ നിയന്ത്രിക്കുക</translation>
 <translation id="2259659629660284697">പാസ്‌വേഡുകൾ എക്‌സ്‌പോർട്ട് ചെയ്യുക...</translation>
@@ -316,6 +317,7 @@
 <translation id="3208584281581115441">ഇപ്പോൾ പരിശോധിക്കുക</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> ഇല്ലാതാക്കി</translation>
 <translation id="321773570071367578">നിങ്ങൾ പാസ്‌ഫ്രെയ്‌സ് മറന്നുപോയെങ്കിലോ ഈ ക്രമീകരണം മാറ്റണമെങ്കിലോ, <ph name="BEGIN_LINK" />സമന്വയം റീസെറ്റ് ചെയ്യുക<ph name="END_LINK" /></translation>
+<translation id="3220943972464248773">നിങ്ങളുടെ പാസ്‌വേഡുകൾ സമന്വയിപ്പിക്കാൻ, ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="3227557059438308877">സുരക്ഷാ കീ ആയി Google Chrome</translation>
 <translation id="3232754137068452469">വെബ് ആപ്പ്</translation>
 <translation id="3236059992281584593">ഒരു മിനിറ്റ് ശേഷിക്കുന്നു</translation>
@@ -484,6 +486,7 @@
 <translation id="447252321002412580">Chrome-ന്റെ ഫീച്ചറുകളും പ്രകടനവും മെച്ചപ്പെടുത്താൻ സഹായിക്കുക</translation>
 <translation id="4479972344484327217">Chrome-നുള്ള <ph name="MODULE" /> ഇൻസ്‌റ്റാൾ ചെയ്യുന്നു…</translation>
 <translation id="4487967297491345095">Chrome-ന്റെ എല്ലാ ആപ്പ് വിവരങ്ങളും ശാശ്വതമായി ഇല്ലാതാക്കും. ഇതിൽ എല്ലാ ഫയലുകളും ക്രമീകരണവും അക്കൗണ്ടുകളും ഡാറ്റാബേസുകളും മറ്റും ഉൾപ്പെടുന്നു.</translation>
+<translation id="449126573531210296">സമന്വയിപ്പിച്ച പാസ്‌വേഡുകൾ നിങ്ങളുടെ Google അക്കൗണ്ട് ഉപയോഗിച്ച് എൻക്രിപ്റ്റ് ചെയ്യുക</translation>
 <translation id="4493497663118223949">ലൈറ്റ് മോഡ് ഓണാണ്</translation>
 <translation id="4508528996305412043">ഫീഡ് കാർഡ് മെനു തുറന്നു</translation>
 <translation id="4508642716788467538">നിങ്ങളുടെ ഭാഷ തിരഞ്ഞെടുക്കുക</translation>
@@ -507,6 +510,7 @@
 <translation id="4594952190837476234">ഈ ഓഫ്‌ലൈൻ പേജ് <ph name="CREATION_TIME" /> -ന് സൃഷ്‌ടിച്ചതാണ്, അതിനാൽ ഓൺലൈൻ പതിപ്പിൽ നിന്ന് വ്യത്യസ്തമായിരിക്കാം.</translation>
 <translation id="4605958867780575332">നീക്കംചെയ്‌ത ഇനം: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> തുറക്കുക</translation>
+<translation id="4619564267100705184">ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="4634124774493850572">പാസ്‌വേഡ് ഉപയോഗിക്കുക</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{അപഹരിക്കപ്പെട്ട ഒരു പാസ്‌വേഡ്}other{അപഹരിക്കപ്പെട്ട # പാസ്‌വേഡുകൾ}}</translation>
 <translation id="4650364565596261010">സിസ്‌റ്റം ഡിഫോൾട്ട്</translation>
@@ -779,6 +783,7 @@
 <translation id="6342069812937806050">ഇപ്പോള്‍‌</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> പേയ്‌മെന്റ് രീതികളും}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> പേയ്‌മെന്റ് രീതികളും}}</translation>
 <translation id="6345878117466430440">വായിച്ചതായി അടയാളപ്പെടുത്തുക</translation>
+<translation id="6363990818884053551">സമന്വയിപ്പിക്കാൻ തുടങ്ങുന്നതിന്, ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="6364438453358674297">ചരിത്രത്തിൽ നിന്ന് നിർദ്ദേശം നീക്കംചെയ്യണോ?</translation>
 <translation id="6378173571450987352">വിശദാംശങ്ങൾ: ഉപയോഗിച്ച ഡാറ്റയുടെ അളവനുസരിച്ച് അടുക്കിയത്</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" />, Chrome-ൽ തുറക്കും. തുടരുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_LINK1" />Google സേവന നിബന്ധനകളും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google Chrome, Chrome OS അധിക സേവന നിബന്ധനകളും<ph name="END_LINK2" /> അംഗീകരിക്കുന്നു.</translation>
@@ -841,6 +846,7 @@
 <translation id="666731172850799929"><ph name="APP_NAME" />-ൽ തുറക്കുക</translation>
 <translation id="666981079809192359">Chrome സ്വകാര്യതാ അറിയിപ്പ്</translation>
 <translation id="6671495933530132209">ചിത്രം പകർത്തുക</translation>
+<translation id="6674571176963658787">സമന്വയിപ്പിക്കാൻ തുടങ്ങുന്നതിന്, നിങ്ങളുടെ പാസ്‌ഫ്രെയ്‌സ് നൽകുക</translation>
 <translation id="6676840375528380067">ഉപകരണത്തില്‍ നിന്ന് Chrome ഡാറ്റ മായ്ക്കണോ?</translation>
 <translation id="6697492270171225480">ഒരു പേജ് കണ്ടെത്താനാകുന്നില്ലെങ്കിൽ, സമാന പേജുകൾക്കായുള്ള നിർദ്ദേശങ്ങൾ കാണിക്കുക</translation>
 <translation id="6698801883190606802">സമന്വിത ഡാറ്റ നിയന്ത്രിക്കുക</translation>

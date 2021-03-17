@@ -1073,7 +1073,6 @@
 <translation id="2187675480456493911">तपाईंको खाता साइन इन गरिएका अन्य यन्त्रमा सिंक गरिएको छ। अन्य प्रयोगकर्ताहरूले परिमार्जन गरेका सेटिङ सिंक गरिने छैनन्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">सर्भर प्रमाणपत्र आयात त्रुटि</translation>
 <translation id="2187906491731510095">विस्तारहरू अद्यावधिक गरिए</translation>
-<translation id="2188100037674302806">Parallels Desktop</translation>
 <translation id="2188881192257509750"><ph name="APPLICATION" /> खोल्नुहोस्</translation>
 <translation id="2190069059097339078">Wi-Fi प्रमाणपत्रहरू प्राप्तकर्ता</translation>
 <translation id="219008588003277019">स्वदेशी ग्राहक मोड्युल: <ph name="NEXE_NAME" /></translation>
@@ -1895,7 +1894,6 @@
 <translation id="3089137131053189723">खोज खाली गरियो</translation>
 <translation id="3090819949319990166">बाह्य सिआरएक्स फाइललाई <ph name="TEMP_CRX_FILE" /> मा प्रतिलिपि गर्न सकिएन।</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" जोडि मिलाईयो</translation>
-<translation id="3092699946856346803">कृपया आफ्नो SIM प्रविष्टि गर्नुहोस् र फेरि प्रयास गर्नुहोस्</translation>
 <translation id="3094141017404513551">तपाईंले नयाँ Chromium प्रोफाइल प्रयोग गर्नुभयो भने तपाईंको ब्राउजिङ इतिहास र <ph name="EXISTING_USER" /> को ब्राउजिङ इतिहास छुट्टाछुट्टै सुरक्षित गरिने छ</translation>
 <translation id="3095871294753148861">बुकमार्क, पासवर्ड र ब्राउजरसम्बन्धी अन्य डेटा प्राथमिक खातामा सिंक गरिन्छन्।</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{हानिकारक हुन सक्ने १ एक्स्टेन्सन निष्क्रिय पारिएको छ। तपाईं यसलाई हटाउन पनि सक्नुहुन्छ।}other{हानिकारक हुन सक्ने {NUM_EXTENSIONS} एक्स्टेन्सनहरू निष्क्रिय पारिएका छन्। तपाईं तिनीहरूलाई हटाउन पनि सक्नुहुन्छ।}}</translation>
@@ -3032,7 +3030,6 @@
 <translation id="4415748029120993980">SECG अण्डाकार कर्भ secp384r1 (NIST P-521 पनि भनिन्छ)</translation>
 <translation id="4416582610654027550">कुनै मान्य URL टाइप गर्नुहोस्</translation>
 <translation id="4419409365248380979"><ph name="HOST" /> लाई सधैँ कुकीहरू सेट गर्न अनुमति दिनुहोस्</translation>
-<translation id="4419610272958564173">अज्ञात यन्त्र (विक्रेता: <ph name="VENDOR_ID" />, उत्पादनः <ph name="PRODUCT_ID" />)</translation>
 <translation id="4421932782753506458">फ्लफी</translation>
 <translation id="4423376891418188461">सेटिङहरूलाई पुनर्स्थापना गर्नुहोस्</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, तपाईंको प्रशासकले तपाईंले आफ्नो पासवर्ड परिवतन गर्नुहोस् भन्ने चाहनुहुन्छ।</translation>
@@ -4193,6 +4190,7 @@
 <translation id="5774295353725270860">फाइल एप खोल्नुहोस्</translation>
 <translation id="577624874850706961">खोज कुकीहरू</translation>
 <translation id="5777468213129569553">Chrome खोल्नुहोस्</translation>
+<translation id="5778491106820461378">तपाईं <ph name="LINK_BEGIN" />सेटिङ<ph name="LINK_END" />मा गई साइन इन गरिएका Google खाताहरू व्यवस्थापन गर्न सक्नुहुन्छ। तपाईंले वेबसाइट तथा एपहरूलाई दिनुभएका अनुमति सबै खाताहरूमा लागू हुन सक्छन्। तपाईं साइट वा एपहरूलाई तपाईंको खातासम्बन्धी जानकारी हेर्न तथा प्रयोग गर्न दिन चाहनुहुन्न भने तपाईं आफ्नो <ph name="DEVICE_TYPE" /> मा अतिथिका रूपमा साइन इन गर्न सक्नुहुन्छ।</translation>
 <translation id="5780011244986845107">तपाईंले चयन गर्नुभएको फोल्डरमा संवेदनशील फाइलहरू समावेश छन्। तपाईं "<ph name="APP_NAME" />" लाई स्थायी रूपमा यो फोल्डर पढ्न सक्ने पहुँच प्रदान गर्ने कुरामा निश्चित हुनुहुन्छ?</translation>
 <translation id="5780973441651030252">प्रक्रिया प्राथमिकता</translation>
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" /> का रूपमा सिंक गर्नुहोस्</translation>
@@ -5082,6 +5080,7 @@
 <translation id="6811332638216701903">DHCP होस्टनेम</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> लाई रूटको रूपमा चलाउन सकिन्न।</translation>
 <translation id="6812841287760418429">परिवर्तनहरू राख्नुहोस्</translation>
+<translation id="6813907279658683733">पूर्ण स्क्रिन</translation>
 <translation id="681584224457905309">{COUNT,plural, =1{फाइल}other{# वटा फाइल}}</translation>
 <translation id="6817174620439930047">कुनै साइटले MIDI यन्त्रहरूमाथि पहुँच गर्नका लागि प्रणालीका विशिष्ट सन्देशहरू प्रयोग गर्न खोज्दा सोध्नुहोस् (सिफारिस गरिएको)</translation>
 <translation id="6818198425579322765">अनुवाद गरिनु पर्ने पृष्ठको भाषा</translation>
@@ -5445,7 +5444,6 @@
 <translation id="7222204278952406003">Chrome तपाईंको पूर्वनिर्धारित ब्राउजर हो</translation>
 <translation id="7222232353993864120">इमेल ठेगाना</translation>
 <translation id="7225179976675429563">नेटवर्क प्रकार छैन</translation>
-<translation id="7227028316978186866"><ph name="DEVICE_NAME" /> (विक्रेता: <ph name="VENDOR_ID" />, उत्पादनः <ph name="PRODUCT_ID" />)</translation>
 <translation id="7228479291753472782">वेबसाइटहरूले भूस्थान, माइक्रोफोन, क्यामेरा जस्ता सुविधाहरूको प्रयोग गर्न सक्छन् वा सक्दैनन् भन्ने कुरा निर्दिष्ट गर्ने सेटिङहरूलाई फेरबदल गर्नुहोस्।</translation>
 <translation id="7228523857728654909">स्क्रिन लक तथा साइन इन</translation>
 <translation id="7229570126336867161">EVDO आवश्यक छ</translation>
@@ -5586,6 +5584,7 @@
 <translation id="7392118418926456391">भाइरस स्क्यान असफल भयो</translation>
 <translation id="7392915005464253525">बन्द विण्डोलाई पुन: खो&amp;ल्नुहोस्</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{एउटा वस्तु कपी गरियो}other{{COUNT} वटा वस्तु कपी गरिए}}</translation>
+<translation id="7395774987022469191">पूर्ण स्क्रिन</translation>
 <translation id="7396017167185131589">आदान प्रदान गरिएका फोल्डरहरू यहाँ देखिने छन्</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> सिस्टम स्टार्टअपमा लन्च हुनेछ र तपाईंले अन्य सबै <ph name="PRODUCT_NAME" /> विन्डोहरू बन्द गरिसक्नुभएपछि समेत पृष्ठभूमिमा चल्न जारी राख्नेछ।</translation>
 <translation id="7399045143794278225">सिंक आफू अनुकूल पार्नुहोस्</translation>

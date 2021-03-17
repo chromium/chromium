@@ -392,11 +392,11 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="1522425503138261032">Izinkan situs melacak lokasi fisik pengguna</translation>
 <translation id="1523774894176285446">Browser alternatif untuk membuka situs yang dikonfigurasi.</translation>
 <translation id="152657506688053119">Daftar URL pengganti untuk penyedia penelusuran default</translation>
-<translation id="1527298988676981599">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang otomatis diizinkan untuk mengakses perangkat USB dengan ID vendor dan produk tertentu di layar login. Setiap item dalam daftar memerlukan kolom <ph name="DEVICES_FIELD_NAME" /> dan <ph name="URLS_FIELD_NAME" /> agar kebijakan menjadi valid. Setiap item di kolom <ph name="DEVICES_FIELD_NAME" /> dapat memiliki kolom <ph name="VENDOR_ID_FIELD_NAME" /> dan <ph name="PRODUCT_ID_FIELD_NAME" />. Jika kolom <ph name="VENDOR_ID_FIELD_NAME" /> tidak ada, kebijakan akan cocok dengan perangkat apa pun. Jika kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tidak ada, kebijakan akan cocok dengan perangkat apa pun yang memiliki ID vendor tertentu. Kebijakan yang memiliki kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tanpa kolom <ph name="VENDOR_ID_FIELD_NAME" /> menjadi tidak valid.
+<translation id="1527298988676981599">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang otomatis diizinkan untuk mengakses perangkat USB dengan ID vendor dan produk ditetapkan di layar login. Setiap item dalam daftar memerlukan kolom <ph name="DEVICES_FIELD_NAME" /> dan <ph name="URLS_FIELD_NAME" /> agar kebijakan menjadi valid. Setiap item di kolom <ph name="DEVICES_FIELD_NAME" /> dapat memiliki kolom <ph name="VENDOR_ID_FIELD_NAME" /> dan <ph name="PRODUCT_ID_FIELD_NAME" />. Jika kolom <ph name="VENDOR_ID_FIELD_NAME" /> tidak ada, kebijakan akan cocok dengan perangkat apa pun. Jika kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tidak ada, kebijakan akan cocok dengan perangkat apa pun yang memiliki ID vendor yang ditetapkan. Kebijakan yang memiliki kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tanpa kolom <ph name="VENDOR_ID_FIELD_NAME" /> menjadi tidak valid.
 
       Model izin USB akan mengizinkan URL yang telah ditentukan untuk mengakses perangkat USB sebagai asal level atas. Jika bingkai sematan memerlukan akses ke perangkat USB, header <ph name="FEATURE_POLICY_HEADER_NAME" /> 'usb' harus digunakan untuk memberikan akses. URL harus valid. Jika tidak, kebijakan akan diabaikan.
 
-      Tidak digunakan lagi: Model izin USB digunakan untuk mendukung penentuan URL peminta dan sematan. Model izin ini tidak digunakan lagi dan hanya didukung untuk kompatibilitas mundur dengan cara berikut: jika URL peminta dan sematan ditentukan, URL sematan akan diizinkan sebagai asal level atas dan URL peminta akan diabaikan sepenuhnya.
+      Tidak digunakan lagi: Model izin USB yang digunakan untuk mendukung penentuan URL peminta dan sematan. Model izin ini tidak digunakan lagi dan hanya didukung untuk kompatibilitas mundur dengan cara berikut: jika URL peminta dan sematan ditentukan, URL sematan akan diizinkan sebagai asal level atas dan URL peminta akan diabaikan sepenuhnya.
 
       Jika kebijakan tidak disetel, nilai default global akan digunakan untuk semua situs (tidak ada akses otomatis).</translation>
 <translation id="1530812829012954197">Selalu urai pola URL berikut di browser host</translation>
@@ -671,6 +671,10 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
         |TIME_LIMITS| menerapkan batas penggunaan harian dan membuat aplikasi menjadi tidak tersedia setelah batas tersebut tercapai pada hari yang sudah ditentukan. Batas penggunaan ditentukan dalam |daily_limit_mins|. Batas penggunaan direset setiap hari pada waktu UTC yang dilewati dalam |reset_at|.
         Kebijakan ini hanya digunakan untuk anak-anak sebagai pengguna.
         Kebijakan ini bersifat komplementer terhadap 'UsageTimeLimit'. Pembatasan yang ditentukan dalam 'UsageTimeLimit' seperti waktu pemakaian perangkat dan waktu tidur akan diterapkan tanpa memandang 'PerAppTimeLimits'.</translation>
+<translation id="1916266055944569995">Menyetel kebijakan akan menentukan nilai Managed Configuration API yang ditampilkan untuk sumber tertentu.
+
+      Managed Configuration API adalah konfigurasi nilai kunci yang dapat diakses melalui panggilan JavaScript navigator.managed.getManagedConfiguration(). API ini hanya tersedia untuk sumber yang sesuai dengan aplikasi web yang diinstal otomatis melalui <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
+     </translation>
 <translation id="1919802376548418720">Gunakan kebijakan KDC untuk mendelegasikan kredensial.</translation>
 <translation id="1920046221095339924">Mengizinkan sesi yang dikelola di perangkat</translation>
 <translation id="1920772397574801429">Menyetel kebijakan akan menentukan jenis akun yang disediakan oleh aplikasi autentikasi Android yang mendukung autentikasi <ph name="HTTP_NEGOTIATE" /> (seperti autentikasi Kerberos). Informasi ini seharusnya tersedia dari penyedia aplikasi autentikasi. Untuk detailnya, lihat Project Chromium (https://goo.gl/hajyfN)
@@ -1335,15 +1339,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2757054304033424106">Ketik ekstensi/aplikasi yang diizinkan untuk dipasang</translation>
 <translation id="2759224876420453487">Mengontrol perilaku pengguna pada sesi multiprofil</translation>
 <translation id="2761483219396643566">Menunda peringatan waktu menganggur saat menggunakan daya baterai</translation>
-<translation id="2764165704281937018">Daftar setelan yang akan diterapkan ke <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, yang aktif saat file didownload.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />, dan <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> digunakan untuk menentukan apakah konektor perlu mengirimkan file ke penyedia layanan saat mendownload dari halaman web. URL halaman web harus cocok dengan pola yang terkait ke pola 'enable' dan tidak terkait ke pola 'disable'.  Jenis MIME file juga harus cocok dengan pola yang terkait ke pola 'enable' dan tidak terkait ke pola 'disable'.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> akan mengidentifikasi penyedia layanan analisis yang sesuai dengan setelan.
-
-      Kolom <ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" /> akan mengidentifikasi perusahaan dengan penyedia layanan.  Jika pengguna diminta login sebagai bagian dari penyiapan <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, hanya akun pengguna yang terkait dengan perusahaan ini yang akan diizinkan.
-
-      Kebijakan ini hanya dapat disetel dari <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="2769952903507981510">Mengonfigurasi nama domain yang dibutuhkan untuk hosting akses jarak jauh</translation>
 <translation id="2772955711376920612">Menyetel kebijakan ke Aktif serta menyetel <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> dan <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> akan terus memicu pengaktifan daya baterai, jika didukung di perangkat. Kebijakan manajemen pengaktifan daya baterai adalah kebijakan penghematan daya yang meminimalkan penggunaan arus listrik AC selama waktu penggunaan puncak. Untuk setiap hari kerja, Anda dapat menyetel waktu mulai dan waktu akhir untuk menjalankan sistem dalam mode pengaktifan daya baterai. Selama baterai tetap berada di atas nilai minimum yang ditentukan, perangkat akan berjalan menggunakan daya baterai (meski arus listrik AC terhubung) selama waktu tersebut. Setelah waktu akhir yang ditentukan, perangkat akan berjalan menggunakan arus listrik AC (jika terhubung), tetapi tidak akan mengisi daya baterai. Perangkat akan berfungsi normal kembali menggunakan arus listrik AC dan mengisi ulang daya baterai setelah waktu mulai pengisian daya yang ditentukan.
 
@@ -1761,15 +1756,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Di <ph name="MS_WIN_NAME" />, fungsi ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dijalankan di Windows 10 Pro, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Di <ph name="MAC_OS_NAME" />, fungsi ini hanya tersedia di instance yang dikelola melalui MDM, atau dihubungkan ke domain melalui MCX.</translation>
 <translation id="3261592499545947104">Jumlah detik sebelum masa berlaku sertifikat habis saat perpanjangan harus dipicu.</translation>
 <translation id="3264793472749429012">Penyandiaksaraan penyedia penelusuran default</translation>
-<translation id="3265738316212552123">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang otomatis diizinkan untuk mengakses perangkat USB dengan ID vendor dan produk tertentu. Setiap item dalam daftar memerlukan kolom <ph name="DEVICES_FIELD_NAME" /> dan <ph name="URLS_FIELD_NAME" /> agar kebijakan menjadi valid. Setiap item di kolom <ph name="DEVICES_FIELD_NAME" /> dapat memiliki kolom <ph name="VENDOR_ID_FIELD_NAME" /> dan <ph name="PRODUCT_ID_FIELD_NAME" />. Jika kolom <ph name="VENDOR_ID_FIELD_NAME" /> tidak ada, kebijakan akan cocok dengan perangkat apa pun. Jika kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tidak ada, kebijakan akan cocok dengan perangkat apa pun yang memiliki ID vendor tertentu. Kebijakan yang memiliki kolom <ph name="PRODUCT_ID_FIELD_NAME" /> tanpa kolom <ph name="VENDOR_ID_FIELD_NAME" /> menjadi tidak valid.
-
-      Model izin USB akan mengizinkan URL yang telah ditentukan untuk mengakses perangkat USB sebagai asal level atas. Jika bingkai sematan memerlukan akses ke perangkat USB, header <ph name="FEATURE_POLICY_HEADER_NAME" /> 'usb' harus digunakan untuk memberikan akses. URL harus valid. Jika tidak, kebijakan akan diabaikan.
-
-      Tidak digunakan lagi: Model izin USB digunakan untuk mendukung penentuan URL peminta dan sematan. Model izin ini tidak digunakan lagi dan hanya didukung untuk kompatibilitas mundur dengan cara berikut: jika URL peminta dan sematan ditentukan, URL sematan akan diizinkan sebagai asal level atas dan URL peminta akan diabaikan sepenuhnya.
-
-      Tidak menyetel kebijakan berarti <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> akan berlaku, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
-
-      Pola URL dalam kebijakan ini tidak boleh bertentangan dengan pola URL yang dikonfigurasi melalui <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. Jika bertentangan, kebijakan ini akan lebih diprioritaskan daripada <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> dan <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="3273221114520206906">Setelan JavaScript default</translation>
 <translation id="328347261792478720">Secara default, browser akan menampilkan rekomendasi media yang dipersonalisasi kepada pengguna. Jika kebijakan ini disetel ke Nonaktif, rekomendasi ini akan disembunyikan dari pengguna. Jika kebijakan ini disetel ke Aktif atau tidak disetel, rekomendasi media akan ditampilkan kepada pengguna.</translation>
 <translation id="3284094172359247914">Penggunaan kontrol WebUSB API</translation>
@@ -5047,10 +5033,6 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 <translation id="776110834126722255">Tidak digunakan lagi</translation>
 <translation id="7763614521440615342">Tampilkan saran konten di halaman Tab Baru</translation>
 <translation id="7765879851993224640">Izinkan Smart Lock Signin digunakan.</translation>
-<translation id="7774451488719504808">Sebagaimana dijelaskan di https://www.chromestatus.com/feature/5148698084376576, dialog modal JavaScript, yang dipicu oleh <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" />, dan <ph name="JS_PROMPT" />, akan diblokir di <ph name="PRODUCT_NAME" /> jika dipicu dari subframe yang memiliki asal berbeda dari asal frame utama.
-       Kebijakan ini memungkinkan penggantian perubahan tersebut.
-       Jika kebijakan disetel ke aktif atau tidak disetel, dialog JavaScript yang dipicu dari subframe asal yang berbeda akan diblokir.
-       Jika kebijakan disetel ke nonaktif, dialog JavaScript yang dipicu dari subframe asal yang berbeda tidak akan diblokir.</translation>
 <translation id="7774768074957326919">Gunakan setelan proxy sistem</translation>
 <translation id="777734450201217641">Mengaktifkan pintasan fitur aksesibilitas di layar login.
 

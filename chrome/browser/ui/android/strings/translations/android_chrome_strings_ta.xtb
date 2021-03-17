@@ -178,6 +178,7 @@
 <translation id="2195339740518523951">Chromeமின் வலிமையான பாதுகாப்பைப் பெறுங்கள்</translation>
 <translation id="2200113223741723867">உபயோகத் தரவுப் பகிர்தலை நிர்வகித்தல்</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> ஆகத் தொடர்க</translation>
+<translation id="22320125457191592">உங்களுக்கானவை</translation>
 <translation id="2234876718134438132">ஒத்திசைவு &amp; Google சேவைகள்</translation>
 <translation id="2239812875700136898">கண்டறிவதற்கான விருப்பங்கள் என்ற பட்டன் மூலம் உங்கள் செய்திகளைக் கட்டுப்படுத்தலாம்</translation>
 <translation id="2259659629660284697">கடவுச்சொற்களை ஏற்று…</translation>
@@ -316,6 +317,7 @@
 <translation id="3208584281581115441">இப்போது சரிபார்</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> நீக்கப்பட்டது</translation>
 <translation id="321773570071367578">கடவுச்சொற்றொடரை மறந்துவிட்டால் அல்லது இந்த அமைப்பை மாற்ற விரும்பினால், <ph name="BEGIN_LINK" />ஒத்திசைவை மீட்டமைக்கவும்<ph name="END_LINK" /></translation>
+<translation id="3220943972464248773">கடவுச்சொற்களை ஒத்திசைக்க இது நீங்கள்தான் என உறுதிசெய்யவும்</translation>
 <translation id="3227557059438308877">Google Chromeமைப் பாதுகாப்பு விசையாகப் பயன்படுத்தும் வசதி</translation>
 <translation id="3232754137068452469">இணைய ஆப்ஸ்</translation>
 <translation id="3236059992281584593">1 நிமிடம் மீதமுள்ளது</translation>
@@ -484,6 +486,7 @@
 <translation id="447252321002412580">Chrome இன் அம்சங்களையும் செயல்திறனையும் மேம்படுத்த உதவுக</translation>
 <translation id="4479972344484327217">Chromeமுக்கான <ph name="MODULE" />ஐ நிறுவுகிறது…</translation>
 <translation id="4487967297491345095">Chrome இன் எல்லாப் பயன்பாட்டுத் தரவும் நிரந்தரமாக நீக்கப்படும். இதில் அனைத்துக் கோப்புகள், அமைப்புகள், கணக்குகள், தரவுத்தளங்கள், மேலும் பல உள்ளடங்கும்.</translation>
+<translation id="449126573531210296">ஒத்திசைக்கப்பட்ட கடவுச்சொற்களை எனது Google கணக்கின் மூலம் என்க்ரிப்ட் செய்</translation>
 <translation id="4493497663118223949">லைட் பயன்முறை இயக்கத்தில் உள்ளது</translation>
 <translation id="4508528996305412043">ஃபீட் கார்டு மெனு திறந்துள்ளது</translation>
 <translation id="4508642716788467538">உங்கள் மொழியைத் தேர்வுசெய்யுங்கள்</translation>
@@ -507,6 +510,7 @@
 <translation id="4594952190837476234"><ph name="CREATION_TIME" /> அன்று இந்த ஆஃப்லைன் பக்கம் உருவாக்கப்பட்டது. இது ஆன்லைன் பதிப்பிலிருந்து வேறுபடலாம்.</translation>
 <translation id="4605958867780575332">உருப்படி அகற்றப்பட்டது: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />ஐத் திற</translation>
+<translation id="4619564267100705184">இது நீங்கள்தான் என உறுதிசெய்யுங்கள்</translation>
 <translation id="4634124774493850572">கடவுச்சொல்லைப் பயன்படுத்து</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 களவாடப்பட்ட கடவுச்சொல்}other{# களவாடப்பட்ட கடவுச்சொற்கள்}}</translation>
 <translation id="4650364565596261010">சிஸ்டத்தின் இயல்புநிலை</translation>
@@ -779,6 +783,7 @@
 <translation id="6342069812937806050">இப்போது</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> முகவரி}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> முகவரிகள்}}</translation>
 <translation id="6345878117466430440">படித்ததாகக் குறி</translation>
+<translation id="6363990818884053551">ஒத்திசைவைத் தொடங்க, இது நீங்கள்தான் என உறுதிசெய்யவும்</translation>
 <translation id="6364438453358674297">வரலாற்றிலிருந்து பரிந்துரையை அகற்றவா?</translation>
 <translation id="6378173571450987352">விவரங்கள்: பயன்படுத்திய டேட்டா அளவின்படி வரிசைப்படுத்தப்பட்டுள்ளன</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> Chromeமில் திறக்கும். தொடர்வதன் மூலம் <ph name="BEGIN_LINK1" />Google சேவை விதிமுறைகளையும்<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google Chrome மற்றும் Chrome OS தொடர்பான கூடுதல் சேவை விதிமுறைகளையும்<ph name="END_LINK2" /> ஏற்கிறீர்கள்.</translation>
@@ -841,6 +846,7 @@
 <translation id="666731172850799929"><ph name="APP_NAME" /> இல் திற</translation>
 <translation id="666981079809192359">Chrome தனியுரிமை அறிக்கை</translation>
 <translation id="6671495933530132209">படத்தை நகலெடு</translation>
+<translation id="6674571176963658787">ஒத்திசைவைத் தொடங்க, கடவுச்சொற்றொடரை உள்ளிடவும்</translation>
 <translation id="6676840375528380067">இந்தச் சாதனத்திலிருந்து உங்கள் Chrome தரவை அழிக்கவா?</translation>
 <translation id="6697492270171225480">பக்கத்தைக் கண்டறிய முடியாத போது, அதே மாதிரியான பக்கங்களுக்கான பரிந்துரைகளைக் காட்டும்</translation>
 <translation id="6698801883190606802">ஒத்திசைத்த தரவை நிர்வகித்தல்</translation>

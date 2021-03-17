@@ -333,6 +333,7 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="457386861538956877">Autres...</translation>
 <translation id="4592368184551360546">Clavier</translation>
 <translation id="461440297010471931">Recherche avec Google</translation>
+<translation id="4619564267100705184">Confirmer que c'est bien vous</translation>
 <translation id="4619615317237390068">Onglets ouverts sur d'autres appareils</translation>
 <translation id="4620246317052452550">Pages que vous avez lues</translation>
 <translation id="4630540211544979320">Traduire les pages</translation>
@@ -547,6 +548,7 @@ Tâchez d'utiliser un mot de passe différent pour chaque site.</translation>
 <translation id="6656103420185847513">Modifier le dossier</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
 <translation id="6668619169535738264">Modifier le favori</translation>
+<translation id="6674571176963658787">Pour lancer la synchronisation, entrez votre phrase de passe</translation>
 <translation id="667999046851023355">Document</translation>
 <translation id="6691331417640343772">Gérer les données synchronisées sur Google Tableau de bord</translation>
 <translation id="6710079714193676716">Géré par votre organisation. Certaines fonctionnalités peuvent ne pas être accessibles. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -610,6 +612,7 @@ Tâchez d'utiliser un mot de passe différent pour chaque site.</translation>
 <translation id="7346909386216857016">OK, j'ai compris</translation>
 <translation id="734758817008927353">Options pour enregistrer la carte</translation>
 <translation id="7348502496356775519">Ajouter aux favoris</translation>
+<translation id="7353432112255316844">Confirmer que c'est bien vous</translation>
 <translation id="7383797227493018512">Liste de lecture</translation>
 <translation id="7398893703713203428">Créer un lien</translation>
 <translation id="739941347996872055">Onglet précédent</translation>
@@ -689,6 +692,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8105368624971345109">Désactiver</translation>
 <translation id="8114753159095730575">Le téléchargement du fichier est disponible. Options présentées vers le bas de l’écran.</translation>
 <translation id="8131740175452115882">Confirmer</translation>
+<translation id="8156478151976189188">La synchronisation de mots de passe ne fonctionne pas</translation>
 <translation id="8197543752516192074">Traduire la page</translation>
 <translation id="8205564605687841303">Annuler</translation>
 <translation id="8206354486702514201">Votre administrateur impose la valeur associée à ce paramètre.</translation>

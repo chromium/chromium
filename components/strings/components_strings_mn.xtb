@@ -411,6 +411,7 @@
 <translation id="2482878487686419369">Мэдэгдэл</translation>
 <translation id="248348093745724435">Машины удирдамж</translation>
 <translation id="2491120439723279231">Серверийн гэрчилгээ алдаатай байна.</translation>
+<translation id="2491414235131909199">Энэ хуудсыг өргөтгөл блоклосон байна</translation>
 <translation id="2493640343870896922">Захидал-Нэмэх</translation>
 <translation id="2495083838625180221">JSON Задлагч</translation>
 <translation id="2495093607237746763">Сонгосон тохиолдолд Chromium нь таны энэ төхөөрөмжийн картын хуулбарыг маягт хурдан бөглөхийн тулд хадгалах болно.</translation>
@@ -531,7 +532,6 @@
 <translation id="2991174974383378012">Вебсайтад хуваалцаж байна</translation>
 <translation id="2991571918955627853"><ph name="SITE" /> нь HSTS ашигладаг тул та одоогоор тус вебсайтад зочлох боломжгүй байна. Сүлжээний алдаа, халдлага ихэвчлэн түр зуурынх байдаг тул энэ хуудас удахгүй хэвийн ажиллана.</translation>
 <translation id="2995517112308048736">Файлын хэмжээ:</translation>
-<translation id="2996674880327704673">Google-н зөвлөмж</translation>
 <translation id="3002501248619246229">Оролтын цаасны медиаг хянах</translation>
 <translation id="3005723025932146533">Хадгалагдсан хуулбарыг харуулах</translation>
 <translation id="3008447029300691911"><ph name="CREDIT_CARD" />-н карт баталгаажуулалтын кодыг оруулна уу. Баталгаажуулсны дараагаар таны картын дэлгэрэнгүйг энэ сайтад хуваалцах болно.</translation>
@@ -626,6 +626,7 @@
 <translation id="3371076217486966826"><ph name="URL" /> нь дараахад зөвшөөрөл хүсэж байна:
       • Таны эргэн тойрны 3D газрын зургийг үүсгэж, камерын байршлыг хянах
       • Таны камерыг ашиглах</translation>
+<translation id="3372389303668969359">Та дараагийн удаа энэ төхөөрөмжийг энэ төлбөрийн хэрэгслээр худалдан авалт хийхдээ ашиглахын тулд Windows Hello-г өөрийгөө мөн болохыг шуурхай бататгахдаа ашиглах боломжтой.</translation>
 <translation id="337363190475750230">Хадгалагдаагүй</translation>
 <translation id="3377144306166885718">Сервер TLS-н хуучирсан хувилбарыг ашигласан.</translation>
 <translation id="3377188786107721145">Тохиргооны задаргааны алдаа</translation>
@@ -699,6 +700,7 @@
 <translation id="3615877443314183785">Дуусах огноог зөв оруулна уу</translation>
 <translation id="36224234498066874">Хайлтын өгөгдлийг устгах...</translation>
 <translation id="362276910939193118">Түүхийг бүрнээр нь харуул</translation>
+<translation id="3625635938337243871">Таныг нууцлалын горимоос гарсны дараа нэвтрэх өгөгдлийг энэ төхөөрөмж дээр хадгална.</translation>
 <translation id="3630155396527302611">Хэрэв энэ программ нь сүлжээнд нэвтрэх зөвшөөрөлтэй программын
           жагсаалтад орсон бол жагсаалтаас устгаад, дахин нэмнэ үү.</translation>
 <translation id="3630699740441428070">Энэ төхөөрөмжийн администраторууд таны зочилдог веб сайтуудыг оруулаад сүлжээний ачааллыг тань харах боломжтойгоор сүлжээний холболтыг тохируулсан байна.</translation>
@@ -836,6 +838,7 @@
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{бусад <ph name="ITEM_COUNT" /> зүйл}other{бусад <ph name="ITEM_COUNT" /> зүйл}}</translation>
 <translation id="4176463684765177261">Хаасан</translation>
+<translation id="4178883739871311481"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Google Док үүсгэхийн тулд Tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">Таны картыг яг одоо хадгалах боломжгүй байна</translation>
 <translation id="4196861286325780578">&amp; Зөөвөрлөх үйлдлийг дахин хийх</translation>
@@ -933,6 +936,7 @@
 <translation id="4477350412780666475">Дараагийн бичлэг</translation>
 <translation id="4482953324121162758">Энэ сайтыг орчуулахгүй.</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">Google Бүртгэлээрээ синк хийсэн нууц үгнүүдийг шифрлэх</translation>
 <translation id="4492519888999857993">Эдгээр онцлогийг өгөгдмөл тохиргоогоор идэвхгүй болгосон. Энэ нь Chrome-н цаашдын хувилбарууд дээр боломжгүй байна.</translation>
 <translation id="4493480324863638523">Энэ URL хүчингүй байна. Энэ нь http://example.com эсвэл https://example.com зэрэг стандарт схемтэй URL байх ёстой.</translation>
 <translation id="4503882053543859973">Архитектур-D</translation>
@@ -1102,6 +1106,7 @@
 <translation id="5126510351761255129">Картаа баталгаажуулах</translation>
 <translation id="5135404736266831032">Хаягийг удирдах...</translation>
 <translation id="5138227688689900538">Хураангуйлж харуулах</translation>
+<translation id="514010763713772514">Дараагийн удаа тооцоогоо илүү хурдан хийгээрэй</translation>
 <translation id="5145883236150621069">удирдамжийн хариулт дахь алдааны код</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" />-н мэдэгдлийг хориглосон</translation>
 <translation id="5148809049217731050">Нүүрээр нь дээш харуулсан</translation>
@@ -1322,7 +1327,6 @@
 <translation id="5984570616552610254">Танхимын чийгшил</translation>
 <translation id="598637245381783098">Төлбөрийн аппыг нээх боломжгүй байна</translation>
 <translation id="5989320800837274978">Прокси серверүүд болон  а.pac бичвэрийн холбоосын аль алиныг нь зааж өгөөгүй байна.</translation>
-<translation id="5990559369517809815">Серверт хүсэлт ирүүлэхийг өргөтгөлөөр хориглосон байна.</translation>
 <translation id="5992691462791905444">Инженерчлэлийн Z-нугалаа</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />'-н <ph name="RESULT_COUNT" /> илэрц</translation>
 <translation id="6008122969617370890">N-с 1 хүртэлх дараалал</translation>
@@ -1523,6 +1527,7 @@
 <translation id="6852204201400771460">Аппыг дахин ачаалaх уу?</translation>
 <translation id="6865412394715372076">Энэ картыг одоогоор баталгаажуулах боломжгүй байна</translation>
 <translation id="6874604403660855544">&amp; Нэмэх үйлдлийг дахин хийх</translation>
+<translation id="6881240511396774766">Шинэ Google Док шуурхай үүсгээрэй</translation>
 <translation id="6884662655240309489">Хэмжээ 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome нь энэ хуудсыг уншихад илүү амар болгож хялбаршуулсан. Chrome нь аюултай холболтоор эх хуудсыг сэргээсэн.</translation>
@@ -1532,6 +1537,7 @@
 <translation id="6898699227549475383">Байгууллага (O)</translation>
 <translation id="6907293445143367439"><ph name="SITE_NAME" />-д дараахыг зөвшөөрөх:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> таны MIDI төхөөрөмжүүдийг бүрэн хянах хүсэлтэй байна</translation>
+<translation id="691325982945105493">Google Док үүсгэх товч. Шинэ Google Док шуурхай үүсгэхийн тулд Enter дээр дарна уу</translation>
 <translation id="6915804003454593391">Хэрэглэгч:</translation>
 <translation id="6934672428414710184">Энэ нэрийг таны Google Бүртгэлээс гаргасан байна</translation>
 <translation id="6944692733090228304">Та <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-с удирдаагүй сайтад нууц үгээ оруулсан байна. Бүртгэлээ хамгаалахын тулд бусад апп болон сайтад нууц үгээ дахин бүү ашиглана уу.</translation>
@@ -1850,6 +1856,7 @@
 <translation id="8086971161893892807">Ноорог</translation>
 <translation id="8088680233425245692">Өгүүллийг үзэх үйлдэл амжилтгүй болсон байна.</translation>
 <translation id="808894953321890993">Нууц үгийг солих</translation>
+<translation id="8090329638663751802">Та дараагийн удаа энэ төхөөрөмжийг энэ төлбөрийн хэрэгслээр худалдан авалт хийхдээ ашиглахын тулд Touch ID-г өөрийгөө мөн болохыг шуурхай бататгахдаа ашиглах боломжтой.</translation>
 <translation id="8090403583893450254">Хэмжээ 20</translation>
 <translation id="8091372947890762290">Сервер дээр идэвхжүүлэхийг хүлээж байна</translation>
 <translation id="8092774999298748321">Гүн нил ягаан</translation>
@@ -2061,6 +2068,7 @@
 <translation id="8931333241327730545">Та картаа өөрийн Google Бүртгэлд хадгалах уу?</translation>
 <translation id="8932102934695377596">Таны цаг хоцорч байна</translation>
 <translation id="893332455753468063">Нэр нэмэх</translation>
+<translation id="8934418770423095813">Google Док үүсгэх</translation>
 <translation id="8942355029279167844">Таны администратор бүтээгдэхүүний туршлагыг сайжруулахын тулд <ph name="APP_NAME" />-д оношилгооны өгөгдлийг цуглуулахыг зөвшөөрсөн байна. Нэмэлт мэдээлэл авахын тулд <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />-г харна уу.</translation>
 <translation id="8943282376843390568">Нимбэгний ногоон</translation>
 <translation id="8957210676456822347">Captive Portal Authorization</translation>

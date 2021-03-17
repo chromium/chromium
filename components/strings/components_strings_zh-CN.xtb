@@ -147,7 +147,7 @@
 <translation id="1462951478840426066">使用您计算机上的字体，以便您能够创作高保真内容</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">向左</translation>
-<translation id="1468653229182955856">您的验证码是 <ph name="ONE_TIME_CODE" />；若要让 <ph name="EMBEDDED_ORIGIN" /> 继续在 <ph name="TOP_ORIGIN" /> 上运行，您必须输入此验证码。</translation>
+<translation id="1468653229182955856">您的 <ph name="EMBEDDED_ORIGIN" /> 验证码是 <ph name="ONE_TIME_CODE" />，您需要输入此验证码，才能继续访问 <ph name="TOP_ORIGIN" />。</translation>
 <translation id="1472675084647422956">展开</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -521,7 +521,6 @@
 <translation id="2991174974383378012">与网站分享</translation>
 <translation id="2991571918955627853">您目前无法访问 <ph name="SITE" />，因为此网站使用了 HSTS。网络错误和攻击通常是暂时的，因此，此网页稍后可能会恢复正常。</translation>
 <translation id="2995517112308048736">文件大小：</translation>
-<translation id="2996674880327704673">Google 提供的建议</translation>
 <translation id="3002501248619246229">检查进纸匣媒体</translation>
 <translation id="3005723025932146533">显示已保存的版本</translation>
 <translation id="3008447029300691911">输入“<ph name="CREDIT_CARD" />”的银行卡验证码 (CVC)。在您确认后，您的信用卡详情将与此网站共享。</translation>
@@ -1298,7 +1297,6 @@
 <translation id="5984570616552610254">室内湿度</translation>
 <translation id="598637245381783098">无法打开付款应用</translation>
 <translation id="5989320800837274978">固定代理服务器和 .pac 脚本网址均未指定。</translation>
-<translation id="5990559369517809815">对服务器的请求已遭到某个扩展程序的阻止。</translation>
 <translation id="5992691462791905444">工程 Z 型折</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> 个与“<ph name="SEARCH_TEXT" />”相符的搜索结果</translation>
 <translation id="6008122969617370890">从 N 到 1 的顺序</translation>

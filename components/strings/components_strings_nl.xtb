@@ -524,7 +524,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2991174974383378012">Delen met websites</translation>
 <translation id="2991571918955627853">Je kunt <ph name="SITE" /> momenteel niet bezoeken, omdat de website HSTS gebruikt. Netwerkfouten en aanvallen zijn doorgaans tijdelijk, dus deze pagina werkt later waarschijnlijk correct.</translation>
 <translation id="2995517112308048736">Bestandsgrootte:</translation>
-<translation id="2996674880327704673">Suggesties van Google</translation>
 <translation id="3002501248619246229">Materiaal in de invoerlade controleren</translation>
 <translation id="3005723025932146533">Opgeslagen kopie weergeven</translation>
 <translation id="3008447029300691911">Geef de CVC-code voor <ph name="CREDIT_CARD" /> op. Zodra je bevestigt, worden je creditcardgegevens gedeeld met deze site.</translation>
@@ -615,6 +614,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3371076217486966826"><ph name="URL" /> wil:
       • Een 3D-kaart van je omgeving maken en de camerapositie volgen
       • De camera gebruiken</translation>
+<translation id="3372389303668969359">Via Windows Hello kun je snel bevestigen dat jij het bent wanneer je dit apparaat weer gebruikt om een aankoop te doen met deze betaalmethode.</translation>
 <translation id="337363190475750230">Uitgeschreven</translation>
 <translation id="3377144306166885718">De server gebruikte een verouderde versie van TLS.</translation>
 <translation id="3377188786107721145">Fout bij het parseren van beleid</translation>
@@ -687,6 +687,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3615877443314183785">Geef een geldige vervaldatum op</translation>
 <translation id="36224234498066874">Browsegegevens wissen</translation>
 <translation id="362276910939193118">Volledige geschiedenis weergeven</translation>
+<translation id="3625635938337243871">Nadat je de incognitomodus hebt afgesloten, worden de inloggegevens opgeslagen op dit apparaat.</translation>
 <translation id="3630155396527302611">Als dit programma al wordt vermeld als een programma dat toegang heeft tot het netwerk, kun je proberen het uit de lijst te verwijderen en het opnieuw toe te voegen.</translation>
 <translation id="3630699740441428070">De beheerders van dit apparaat hebben je netwerkverbinding ingesteld, waardoor ze mogelijk je netwerkverkeer kunnen bekijken, zoals welke websites je bezoekt.</translation>
 <translation id="3631244953324577188">Biometrische systemen</translation>
@@ -920,6 +921,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="4477350412780666475">Volgend nummer</translation>
 <translation id="4482953324121162758">Deze site wordt niet vertaald.</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">Gesynchroniseerde wachtwoorden versleutelen met je Google-account</translation>
 <translation id="4492519888999857993">Deze functies zijn standaard uitgeschakeld. Ze zijn niet meer beschikbaar in toekomstige versies van Chrome.</translation>
 <translation id="4493480324863638523">Ongeldige URL. Dit moet een URL met een standaardschema zijn, zoals http://example.com of https://example.com.</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
@@ -1087,6 +1089,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="5126510351761255129">Je kaart verifiëren</translation>
 <translation id="5135404736266831032">Adressen beheren...</translation>
 <translation id="5138227688689900538">Minder weergeven</translation>
+<translation id="514010763713772514">Betaal de volgende keer sneller</translation>
 <translation id="5145883236150621069">Foutcode aanwezig in de beleidsreactie</translation>
 <translation id="5146995429444047494">Meldingen voor <ph name="ORIGIN" /> zijn geblokkeerd</translation>
 <translation id="5148809049217731050">Met de bedrukte zijde omhoog</translation>
@@ -1307,7 +1310,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="5984570616552610254">Luchtvochtigheid van ruimte</translation>
 <translation id="598637245381783098">Kan betaal-app niet openen</translation>
 <translation id="5989320800837274978">Er worden geen vaste proxyservers en geen pac-script-URL gespecificeerd.</translation>
-<translation id="5990559369517809815">Verzoeken aan de server zijn door een extensie geblokkeerd.</translation>
 <translation id="5992691462791905444">Zizagvouw 2-slag oneven center</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultaten voor '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6008122969617370890">Volgorde: van N naar 1</translation>
@@ -1835,6 +1837,7 @@ Aanvullende informatie:
 <translation id="8086971161893892807">Concept</translation>
 <translation id="8088680233425245692">Kan artikel niet bekijken.</translation>
 <translation id="808894953321890993">Wachtwoord wijzigen</translation>
+<translation id="8090329638663751802">Via Touch ID kun je snel bevestigen dat jij het bent wanneer je dit apparaat weer gebruikt om een aankoop te doen met deze betaalmethode.</translation>
 <translation id="8090403583893450254">Grootte 20</translation>
 <translation id="8091372947890762290">Activering is in behandeling op de server</translation>
 <translation id="8092774999298748321">Dieppaars</translation>

@@ -527,7 +527,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2991174974383378012">Berbagi dengan Situs Web</translation>
 <translation id="2991571918955627853">Anda tidak dapat mengunjungi <ph name="SITE" /> sekarang karena situs menggunakan HSTS. Error jaringan dan serangan biasanya bersifat sementara, sehingga halaman ini mungkin akan berfungsi nanti.</translation>
 <translation id="2995517112308048736">Ukuran file:</translation>
-<translation id="2996674880327704673">Saran oleh Google</translation>
 <translation id="3002501248619246229">Periksa media baki masukan</translation>
 <translation id="3005723025932146533">Tampilkan salinan yang disimpan</translation>
 <translation id="3008447029300691911">Masukkan CVC untuk <ph name="CREDIT_CARD" />. Setelah mengonfirmasi, detail kartu Anda akan dibagikan dengan situs ini.</translation>
@@ -621,6 +620,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3371076217486966826"><ph name="URL" /> ingin:
       • Membuat peta 3D area di sekeliling Anda dan melacak posisi kamera
       • Menggunakan kamera Anda</translation>
+<translation id="3372389303668969359">Anda dapat menggunakan Windows Hello untuk memverifikasi diri Anda dengan cepat pada kali berikutnya Anda menggunakan perangkat ini untuk melakukan pembelian dengan metode pembayaran ini.</translation>
 <translation id="337363190475750230">Dicabut aksesnya</translation>
 <translation id="3377144306166885718">Server menggunakan versi TLS yang sudah tidak digunakan lagi.</translation>
 <translation id="3377188786107721145">Kesalahan penguraian kebijakan</translation>
@@ -693,6 +693,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3615877443314183785">Masukkan tanggal masa berlaku yang valid</translation>
 <translation id="36224234498066874">Hapus Data Penjelajahan...</translation>
 <translation id="362276910939193118">Tampilkan Histori Lengkap</translation>
+<translation id="3625635938337243871">Data login akan disimpan di perangkat ini setelah Anda keluar dari mode samaran.</translation>
 <translation id="3630155396527302611">Jika sudah tercantum sebagai program yang diizinkan untuk mengakses jaringan,
       coba hapus dari daftar dan tambahkan lagi.</translation>
 <translation id="3630699740441428070">Administrator perangkat ini telah mengonfigurasi koneksi jaringan Anda, yang memungkinkan mereka untuk melihat traffic jaringan, termasuk situs yang Anda kunjungi.</translation>
@@ -922,6 +923,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4477350412780666475">Lagu Berikutnya</translation>
 <translation id="4482953324121162758">Situs ini tidak akan diterjemahkan.</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">Enkripsikan sandi yang disinkronkan dengan Akun Google Anda</translation>
 <translation id="4492519888999857993">Fitur ini dinonaktifkan secara default. Fitur ini tidak akan tersedia pada versi mendatang Chrome.</translation>
 <translation id="4493480324863638523">URL tidak valid. Harus berupa URL dengan skema standar, misalnya http://example.com atau https://example.com.</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
@@ -1091,6 +1093,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5126510351761255129">Verifikasi kartu</translation>
 <translation id="5135404736266831032">Kelola alamat...</translation>
 <translation id="5138227688689900538">Tampilkan lebih sedikit</translation>
+<translation id="514010763713772514">Check out lebih cepat lain kali</translation>
 <translation id="5145883236150621069">Ada kode kesalahan dalam tanggapan kebijakan</translation>
 <translation id="5146995429444047494">Notifikasi untuk <ph name="ORIGIN" /> diblokir</translation>
 <translation id="5148809049217731050">Menghadap ke atas</translation>
@@ -1311,7 +1314,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5984570616552610254">Kelembapan ruang</translation>
 <translation id="598637245381783098">Tidak dapat membuka aplikasi pembayaran</translation>
 <translation id="5989320800837274978">Baik proxy server tetap ataupun URL skrip .pac tidak ditentukan.</translation>
-<translation id="5990559369517809815">Permintaan ke server telah dicekal oleh ekstensi.</translation>
 <translation id="5992691462791905444">Lipatan format engineering Z</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> hasil untuk '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6008122969617370890">Urutan N-ke-1</translation>
@@ -1838,6 +1840,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8086971161893892807">Draf</translation>
 <translation id="8088680233425245692">Gagal melihat artikel.</translation>
 <translation id="808894953321890993">Ubah sandi</translation>
+<translation id="8090329638663751802">Anda dapat menggunakan Touch ID untuk memverifikasi diri Anda dengan cepat pada kali berikutnya Anda menggunakan perangkat ini untuk melakukan pembelian dengan metode pembayaran ini.</translation>
 <translation id="8090403583893450254">Ukuran 20</translation>
 <translation id="8091372947890762290">Aktivasi ditunda di server</translation>
 <translation id="8092774999298748321">Ungu Tua</translation>

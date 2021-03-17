@@ -407,6 +407,7 @@
 <translation id="2482878487686419369">通知</translation>
 <translation id="248348093745724435">裝置政策</translation>
 <translation id="2491120439723279231">伺服器憑證含有錯誤。</translation>
+<translation id="2491414235131909199">有擴充程式已封鎖此頁面</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON 剖析器</translation>
 <translation id="2495093607237746763">勾選後，Chromium 會在此裝置上儲存信用卡資料副本，以加快填表速度。</translation>
@@ -525,7 +526,6 @@
 <translation id="2991174974383378012">與其他網站分享</translation>
 <translation id="2991571918955627853">您目前無法瀏覽 <ph name="SITE" />，因為此網站使用 HSTS。網絡錯誤和攻擊行為通常是暫時性問題，所以此網頁應會在稍後回復正常。</translation>
 <translation id="2995517112308048736">檔案大小：</translation>
-<translation id="2996674880327704673">Google 提供的建議</translation>
 <translation id="3002501248619246229">檢查輸入紙匣媒體</translation>
 <translation id="3005723025932146533">顯示儲存的複本</translation>
 <translation id="3008447029300691911">請輸入 <ph name="CREDIT_CARD" /> 的信用卡驗證碼 (CVC)。完成驗證後，系統會與這個網站共用您的信用卡資料。</translation>
@@ -619,6 +619,7 @@
 <translation id="3371076217486966826"><ph name="URL" /> 要求以下權限：
       • 根據您身處環境建立 3D 地圖並追蹤攝錄機位置
       • 使用攝錄機</translation>
+<translation id="3372389303668969359">下次在此裝置上透過此付款方法進行交易時，可以使用 Windows Hello 快速驗證身分。</translation>
 <translation id="337363190475750230">已取消佈建</translation>
 <translation id="3377144306166885718">伺服器的 TLS 版本已過時。</translation>
 <translation id="3377188786107721145">政策解析錯誤</translation>
@@ -691,6 +692,7 @@
 <translation id="3615877443314183785">請輸入有效的到期日</translation>
 <translation id="36224234498066874">清除瀏覽資料…</translation>
 <translation id="362276910939193118">顯示完整記錄</translation>
+<translation id="3625635938337243871">離開無痕模式後，登入資料會儲存在此裝置中。</translation>
 <translation id="3630155396527302611">如果程式已列在允許存取網絡的清單中，建議您
       從清單中移除該程式，然後重新加入。</translation>
 <translation id="3630699740441428070">此裝置的管理員已設定您的網絡連線，此設定可允許管理員查看您的網絡流量，包括您瀏覽的網站。</translation>
@@ -827,6 +829,7 @@
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{還有另外 <ph name="ITEM_COUNT" /> 個項目}other{還有另外 <ph name="ITEM_COUNT" /> 個項目}}</translation>
 <translation id="4176463684765177261">已停用</translation>
+<translation id="4178883739871311481"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以建立 Google 文件</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">目前無法儲存您的信用卡</translation>
 <translation id="4196861286325780578">重做移動(&amp;R)</translation>
@@ -920,6 +923,7 @@
 <translation id="4477350412780666475">下一首曲目</translation>
 <translation id="4482953324121162758">系統不會翻譯此網站。</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">使用您的 Google 帳戶為已同步處理的密碼加密</translation>
 <translation id="4492519888999857993">這些功能預設為停用。日後發佈的 Chrome 版本將不再提供這些功能。</translation>
 <translation id="4493480324863638523">網址無效。必須為有標準配置的網址，例如 http://example.com 或 https://example.com。</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
@@ -1089,6 +1093,7 @@
 <translation id="5126510351761255129">驗證信用卡</translation>
 <translation id="5135404736266831032">管理地址…</translation>
 <translation id="5138227688689900538">顯示較少</translation>
+<translation id="514010763713772514">想加快日後的結帳速度嗎？</translation>
 <translation id="5145883236150621069">政策回應中存在錯誤代碼</translation>
 <translation id="5146995429444047494">已封鎖 <ph name="ORIGIN" /> 的通知</translation>
 <translation id="5148809049217731050">正面朝上</translation>
@@ -1309,7 +1314,6 @@
 <translation id="5984570616552610254">室內濕度</translation>
 <translation id="598637245381783098">無法開啟付款應用程式</translation>
 <translation id="5989320800837274978">沒有指定固定的 Proxy 伺服器和 .pac 指令碼網址。</translation>
-<translation id="5990559369517809815">擴充功能已封鎖要傳送至伺服器的要求。</translation>
 <translation id="5992691462791905444">大小風琴摺</translation>
 <translation id="6000758707621254961">有 <ph name="RESULT_COUNT" /> 個同「<ph name="SEARCH_TEXT" />」相關嘅搜尋結果</translation>
 <translation id="6008122969617370890">N 至 1 的順序</translation>
@@ -1511,6 +1515,7 @@
 <translation id="6852204201400771460">要重新載入應用程式嗎？</translation>
 <translation id="6865412394715372076">目前無法驗證此信用卡</translation>
 <translation id="6874604403660855544">重做新增(&amp;R)</translation>
+<translation id="6881240511396774766">快速建立新的 Google 文件</translation>
 <translation id="6884662655240309489">粗幼：1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome 已簡化此頁面，方便您閱讀。Chrome 已透過不安全連線擷取原始網頁。</translation>
@@ -1520,6 +1525,7 @@
 <translation id="6898699227549475383">機構 (O)</translation>
 <translation id="6907293445143367439">允許 <ph name="SITE_NAME" /> 執行以下操作：</translation>
 <translation id="6910240653697687763"><ph name="URL" /> 要求全權控制 MIDI 裝置</translation>
+<translation id="691325982945105493">建立 Google 文件按鈕，㩒一下 Enter 鍵就可以快速建立新嘅 Google 文件</translation>
 <translation id="6915804003454593391">使用者：</translation>
 <translation id="6934672428414710184">此名稱來自您的 Google 賬戶</translation>
 <translation id="6944692733090228304">您輸入密碼的網站並非由 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 管理。為保帳戶安全，請勿在其他應用程式和網站上使用相同的密碼。</translation>
@@ -1838,6 +1844,7 @@
 <translation id="8086971161893892807">草稿</translation>
 <translation id="8088680233425245692">無法檢視文章。</translation>
 <translation id="808894953321890993">變更密碼</translation>
+<translation id="8090329638663751802">下次在此裝置上透過此付款方法進行交易時，可以使用 Touch ID 快速驗證身分。</translation>
 <translation id="8090403583893450254">粗幼：20</translation>
 <translation id="8091372947890762290">尚未在伺服器上啟動</translation>
 <translation id="8092774999298748321">深紫色</translation>
@@ -2049,6 +2056,7 @@
 <translation id="8931333241327730545">要將此信用卡儲存至您的 Google 帳戶嗎？</translation>
 <translation id="8932102934695377596">您時鐘的時間過慢</translation>
 <translation id="893332455753468063">新增名稱</translation>
+<translation id="8934418770423095813">建立 Google 文件</translation>
 <translation id="8942355029279167844">您的管理員已允許 <ph name="APP_NAME" /> 收集診斷資料，以改善產品使用體驗。請查閱 <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> 以瞭解詳情。</translation>
 <translation id="8943282376843390568">青檸色</translation>
 <translation id="8957210676456822347">網頁驗證入口授權</translation>

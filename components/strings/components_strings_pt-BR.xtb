@@ -525,7 +525,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2991174974383378012">Compartilhar com websites</translation>
 <translation id="2991571918955627853">Você não pode visitar <ph name="SITE" /> agora, porque o site usa HSTS. Erros de rede e ataques são geralmente temporários. Esta página provavelmente funcionará mais tarde.</translation>
 <translation id="2995517112308048736">Tamanho do arquivo:</translation>
-<translation id="2996674880327704673">Sugestões do Google</translation>
 <translation id="3002501248619246229">Verificar mídia de bandeja de entrada</translation>
 <translation id="3005723025932146533">Mostrar cópia salva</translation>
 <translation id="3008447029300691911">Digite o CVC do <ph name="CREDIT_CARD" />. Depois da confirmação, os detalhes do seu cartão serão compartilhados com esse site.</translation>
@@ -619,6 +618,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3371076217486966826"><ph name="URL" /> quer:
       • criar um mapa 3D do ambiente a sua volta e acompanhar a posição da câmera;
       • usar a câmera.</translation>
+<translation id="3372389303668969359">Você pode usar o Windows Hello para confirmar sua identidade com rapidez quando fizer uma nova compra neste dispositivo com esta forma de pagamento.</translation>
 <translation id="337363190475750230">Desprovisionado</translation>
 <translation id="3377144306166885718">Versão obsoleta do TLS usada no servidor.</translation>
 <translation id="3377188786107721145">Erro de análise da política</translation>
@@ -692,6 +692,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3615877443314183785">Informe uma data de validade válida</translation>
 <translation id="36224234498066874">Limpar dados de navegação...</translation>
 <translation id="362276910939193118">Mostrar histórico completo</translation>
+<translation id="3625635938337243871">Depois que você sair do modo de navegação anônima, os dados de login serão armazenados neste dispositivo.</translation>
 <translation id="3630155396527302611">Se ele já estiver listado como um programa que tem permissão para acessar a rede, tente
       removê-lo da lista e adicioná-lo novamente.</translation>
 <translation id="3630699740441428070">Os administradores deste dispositivo configuraram sua conexão de rede. Dessa forma, eles podem ver o tráfego da rede, incluindo os sites que você visita.</translation>
@@ -921,6 +922,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4477350412780666475">Próxima faixa</translation>
 <translation id="4482953324121162758">Este site não será traduzido.</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">Criptografar as senhas sincronizadas com sua Conta do Google</translation>
 <translation id="4492519888999857993">Esses recursos são desativados por padrão e não estarão disponíveis em versões futuras do Chrome.</translation>
 <translation id="4493480324863638523">URL inválido. É necessário um URL com um esquema padrão, como http://example.com ou https://example.com.</translation>
 <translation id="4503882053543859973">Arch D</translation>
@@ -1090,6 +1092,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5126510351761255129">Verificar seu cartão</translation>
 <translation id="5135404736266831032">Gerenciar endereços…</translation>
 <translation id="5138227688689900538">Mostrar menos</translation>
+<translation id="514010763713772514">Agilize a próxima finalização de compra</translation>
 <translation id="5145883236150621069">Código de erro presente na resposta da política</translation>
 <translation id="5146995429444047494">As notificações de <ph name="ORIGIN" /> estão bloqueadas</translation>
 <translation id="5148809049217731050">Virada para cima</translation>
@@ -1310,7 +1313,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5984570616552610254">Umidade da câmara</translation>
 <translation id="598637245381783098">Não foi possível abrir app de pagamento</translation>
 <translation id="5989320800837274978">Nem os servidores proxy fixos nem o URL de script .pac foram especificados.</translation>
-<translation id="5990559369517809815">Solicitações ao servidor foram bloqueadas por uma extensão.</translation>
 <translation id="5992691462791905444">Dobra sanfona</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6008122969617370890">Ordem N a 1</translation>
@@ -1839,6 +1841,7 @@ Mais detalhes:
 <translation id="8086971161893892807">Rascunho</translation>
 <translation id="8088680233425245692">Falha ao exibir artigo.</translation>
 <translation id="808894953321890993">Alterar senha</translation>
+<translation id="8090329638663751802">Você pode usar o Touch ID para confirmar sua identidade com rapidez quando fizer uma nova compra neste dispositivo com esta forma de pagamento.</translation>
 <translation id="8090403583893450254">Tamanho 20</translation>
 <translation id="8091372947890762290">A ativação está pendente no servidor</translation>
 <translation id="8092774999298748321">Roxo intenso</translation>

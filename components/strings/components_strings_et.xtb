@@ -530,7 +530,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2991174974383378012">Veebisaitidega jagamine</translation>
 <translation id="2991571918955627853">Te ei saa saiti <ph name="SITE" /> praegu külastada, sest veebisait kasutab HSTS-i. Võrguvead ja -rünnakud on tavaliselt ajutised, nii et leht tõenäoliselt hiljem töötab.</translation>
 <translation id="2995517112308048736">Faili suurus:</translation>
-<translation id="2996674880327704673">Soovitused Google'ilt</translation>
 <translation id="3002501248619246229">Kontrolli sisestussalve meediat</translation>
 <translation id="3005723025932146533">Kuva salvestatud koopia</translation>
 <translation id="3008447029300691911">Sisestage krediitkaardi <ph name="CREDIT_CARD" /> CVC. Kui selle kinnitate, jagatakse teie kaardi üksikasju selle saidiga.</translation>
@@ -624,6 +623,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3371076217486966826"><ph name="URL" /> soovib:
       • luua teid ümbritsevast 3D-kaardi ja jälgida kaamera asendit;
       • kasutada teie kaamerat.</translation>
+<translation id="3372389303668969359">Windows Hello abil saate kiirelt oma isiku kinnitada, et järgmisel korral seda seadet kasutades selle makseviisi kaudu ost sooritada.</translation>
 <translation id="337363190475750230">Eraldatud</translation>
 <translation id="3377144306166885718">Server kasutas TLS-i aegunud versiooni.</translation>
 <translation id="3377188786107721145">Viga reegli sõelumisel</translation>
@@ -697,6 +697,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3615877443314183785">Sisestage kehtiv aegumiskuupäev</translation>
 <translation id="36224234498066874">Sirvimisandmete kustutamine...</translation>
 <translation id="362276910939193118">Näita kogu ajalugu</translation>
+<translation id="3625635938337243871">Sisselogimisandmed salvestatakse sellesse seadmesse pärast inkognito režiimist väljumist.</translation>
 <translation id="3630155396527302611">Kui see on juba loendis kui programm, millele on lubatud võrgujuurdepääs, proovige
       see loendist eemaldada ja siis uuesti lisada.</translation>
 <translation id="3630699740441428070">Seadme administraatorid on seadistanud teie võrguühenduse, mille abil võivad nad näha teie võrguliiklust, sealhulgas külastatavaid veebisaite.</translation>
@@ -931,6 +932,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4477350412780666475">Järgmine lugu</translation>
 <translation id="4482953324121162758">Seda saiti ei tõlgita.</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">Krüpteerige sünkroonitud paroolid oma Google'i kontoga</translation>
 <translation id="4492519888999857993">Need funktsioonid on vaikimisi peatatud. Need ei ole Chrome'i tulevastes versioonides saadaval.</translation>
 <translation id="4493480324863638523">Sobimatu URL. Peab olema standardskeemiga URL, nt http://example.com või https://example.com.</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
@@ -1100,6 +1102,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5126510351761255129">Kaardi kinnitamine</translation>
 <translation id="5135404736266831032">Halda aadresse …</translation>
 <translation id="5138227688689900538">Kuva vähem</translation>
+<translation id="514010763713772514">Muutke kassas maksmine kiiremaks</translation>
 <translation id="5145883236150621069">Reegli vastuses sisaldus veakood</translation>
 <translation id="5146995429444047494">Saidi <ph name="ORIGIN" /> märguanded on blokeeritud</translation>
 <translation id="5148809049217731050">Esikülg ülespoole</translation>
@@ -1320,7 +1323,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5984570616552610254">Kambri niiskus</translation>
 <translation id="598637245381783098">Makserakendust ei saa avada</translation>
 <translation id="5989320800837274978">Määratud ei ole fikseeritud puhverservereid ega pac-skriptiga URL-i.</translation>
-<translation id="5990559369517809815">Laiendus blokeeris serverisse saadetavad päringud.</translation>
 <translation id="5992691462791905444">Z-kujuliselt volditud</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> tulemust otsingule „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="6008122969617370890">Järjestus n–1</translation>
@@ -1849,6 +1851,7 @@ Lisateave:
 <translation id="8086971161893892807">Mustand</translation>
 <translation id="8088680233425245692">Artikli kuvamine ebaõnnestus.</translation>
 <translation id="808894953321890993">Muuda parooli</translation>
+<translation id="8090329638663751802">Touch ID abil saate kiirelt oma isiku kinnitada, et järgmisel korral seda seadet kasutades selle makseviisi kaudu ost sooritada.</translation>
 <translation id="8090403583893450254">Suurus 20</translation>
 <translation id="8091372947890762290">Aktiveerimine on serveris ootel</translation>
 <translation id="8092774999298748321">Sügavlilla</translation>

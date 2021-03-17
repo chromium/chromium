@@ -531,7 +531,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2991174974383378012">Bendrinimas su svetainėmis</translation>
 <translation id="2991571918955627853">Negalite dabar apsilankyti <ph name="SITE" />, nes svetainėje naudojama HSTS. Tinklo klaidos ir užpuolimai dažniausiai yra laikini, todėl šis puslapis vėliau tikriausiai veiks.</translation>
 <translation id="2995517112308048736">Failo dydis:</translation>
-<translation id="2996674880327704673">„Google“ pasiūlymai</translation>
 <translation id="3002501248619246229">Patikrinkite įvesties dėklo mediją</translation>
 <translation id="3005723025932146533">Rodyti išsaugotą kopiją</translation>
 <translation id="3008447029300691911">Įveskite „<ph name="CREDIT_CARD" />“ kortelės saugos kodą (CVC). Kai patvirtinsite, išsami kortelės informacija bus bendrinama su šia svetaine.</translation>
@@ -626,6 +625,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3371076217486966826"><ph name="URL" /> nori:
       • kurti jūsų aplinkos 3D žemėlapį ir stebėti kameros padėtį;
       • naudoti kamerą.</translation>
+<translation id="3372389303668969359">Galite naudoti „Windows Hello“, kad sparčiai patvirtintumėte savo tapatybę, kai kitą kartą naudosite šį įrenginį norėdami ką nors įsigyti naudodami šį mokėjimo metodą.</translation>
 <translation id="337363190475750230">Teikimas nutrauktas</translation>
 <translation id="3377144306166885718">Serveryje naudojama pasenusios versijos TLS.</translation>
 <translation id="3377188786107721145">Politikos analizės klaida</translation>
@@ -699,6 +699,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3615877443314183785">Įveskite tinkamą galiojimo laiko pabaigos datą</translation>
 <translation id="36224234498066874">Išvalyti naršymo duomenis...</translation>
 <translation id="362276910939193118">Rodyti visą istoriją</translation>
+<translation id="3625635938337243871">Prisijungimo duomenys bus saugomi šiame įrenginyje, kai išjungsite inkognito režimą.</translation>
 <translation id="3630155396527302611">Jei ji nurodyta kaip programa, kuriai leidžiama pasiekti tinklą, pabandykite
       ją pašalinti iš sąrašo ir vėl pridėti.</translation>
 <translation id="3630699740441428070">Šio įrenginio administratoriai sukonfigūravo jūsų tinklo ryšį, per kurį gali peržiūrėti jūsų tinklo srautą, įskaitant lankomas svetaines.</translation>
@@ -933,6 +934,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4477350412780666475">Kitas takelis</translation>
 <translation id="4482953324121162758">Ši svetainė nebus verčiama.</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">Šifruoti sinchronizuotus slaptažodžius naudojant „Google“ paskyrą</translation>
 <translation id="4492519888999857993">Šios funkcijos išjungtos pagal numatytuosius nustatymus. Jos nebus pasiekiamos būsimų versijų naršyklėje „Chrome“.</translation>
 <translation id="4493480324863638523">Netinkamas URL. Tai turi būti įprastos schemos URL, pvz., http://example.com arba https://example.com.</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
@@ -1102,6 +1104,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5126510351761255129">Kortelės patvirtinimas</translation>
 <translation id="5135404736266831032">Tvarkyti adresus...</translation>
 <translation id="5138227688689900538">Rodyti mažiau</translation>
+<translation id="514010763713772514">Spartesnis mokėjimo apdorojimas kitą kartą</translation>
 <translation id="5145883236150621069">Politikos atsakyme yra klaidos kodas</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> pranešimai užblokuoti</translation>
 <translation id="5148809049217731050">Gerąja puse į viršų</translation>
@@ -1322,7 +1325,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5984570616552610254">Kameros drėgnumas</translation>
 <translation id="598637245381783098">Nepavyksta atidaryti mokėjimo programos</translation>
 <translation id="5989320800837274978">Nenurodyti nei fiksuoti įgaliotieji serveriai, nei .pac scenarijaus URL.</translation>
-<translation id="5990559369517809815">Plėtinys užblokavo serveriui teikiamas užklausas.</translation>
 <translation id="5992691462791905444">Neproporcingas Z formos perlenkimas</translation>
 <translation id="6000758707621254961">Rezultatų pagal užklausą „<ph name="SEARCH_TEXT" />“: <ph name="RESULT_COUNT" /></translation>
 <translation id="6008122969617370890">Tvarka: nuo N iki 1</translation>
@@ -1851,6 +1853,7 @@ Papildoma išsami informacija:
 <translation id="8086971161893892807">Juodraštis</translation>
 <translation id="8088680233425245692">Nepavyko peržiūrėti straipsnio.</translation>
 <translation id="808894953321890993">Keisti slaptažodį</translation>
+<translation id="8090329638663751802">Galite naudoti „Touch ID“, kad sparčiai patvirtintumėte savo tapatybę, kai kitą kartą naudosite šį įrenginį norėdami ką nors įsigyti naudodami šį mokėjimo metodą.</translation>
 <translation id="8090403583893450254">Dydis: 20</translation>
 <translation id="8091372947890762290">Laukiama aktyvinimo serveryje</translation>
 <translation id="8092774999298748321">Sodri violetinė</translation>

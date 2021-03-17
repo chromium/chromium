@@ -414,6 +414,7 @@
 <translation id="2482878487686419369">ការជូនដំណឹង</translation>
 <translation id="248348093745724435">គោលការណ៍ម៉ាស៊ីន</translation>
 <translation id="2491120439723279231">វិញ្ញាបនប័ត្រម៉ាស៊ីនមេផ្ទុកកំហុសឆ្គង។</translation>
+<translation id="2491414235131909199">ទំព័រ​នេះ​ត្រូវបាន​ទប់ស្កាត់ដោយកម្មវិធីបន្ថែម​</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">កម្មវិធីញែក JSON</translation>
 <translation id="2495093607237746763">ប្រសិនបើបានធីក នោះ Chromium នឹងផ្ទុកច្បាប់ចម្លងនៃកាតរបស់អ្នកនៅលើឧបករណ៍នេះសម្រាប់ការបំពេញសំណុំបែបបទឲ្យបានលឿនជាងមុន។</translation>
@@ -534,7 +535,6 @@
 <translation id="2991174974383378012">ការចែករំលែកជាមួយគេហទំព័រ</translation>
 <translation id="2991571918955627853">អ្នក​មិន​អាច​ចូល​ទៅកាន់ <ph name="SITE" /> ឥឡូវនេះ​បានទេ ដោយសារតែគេហទំព័រ​នេះ​ប្រើ HSTS ។ ជាទូទៅបញ្ហា​បណ្តញ ឬ​ការវាយប្រហារ​​កើត​ឡើង​ជាបណ្តោះអាសន្ន ដូច្នេះ​ទំព័រ​នេះ​នឹងដំណើរការល្អឡើងវិញនៅពេលក្រោយ។</translation>
 <translation id="2995517112308048736">ទំហំ​ឯកសារ៖</translation>
-<translation id="2996674880327704673">ការណែនាំ​ពី Google</translation>
 <translation id="3002501248619246229">ពិនិត្យមើល​មេឌៀនៃទម្រ​ធាតុបញ្ចូល</translation>
 <translation id="3005723025932146533">បង្ហាញច្បាប់ចម្លងដែលបានរក្សាទុក</translation>
 <translation id="3008447029300691911">បញ្ចូល CVC សម្រាប់ <ph name="CREDIT_CARD" /> ។ បន្ទាប់ពីអ្នកបញ្ជាក់ហើយ ព័ត៌មានលម្អិតពីកាត់របស់អ្នកនឹងត្រូវបានចែករំលែកជាមួយគេហទំព័រនេះ។</translation>
@@ -628,6 +628,7 @@
 <translation id="3371076217486966826"><ph name="URL" /> ចង់៖
       • បង្កើតផែនទី 3D នៃមជ្ឈដ្ឋានជុំវិញ​របស់អ្នក និងតាមដាន​ទីតាំងកាមេរ៉ា
       • ប្រើកាមេរ៉ារបស់អ្នក</translation>
+<translation id="3372389303668969359">អ្នកអាចប្រើ Windows Hello ដើម្បី​ផ្ទៀងផ្ទាត់ថា​ជាអ្នកបាន​យ៉ាងរហ័ស នៅពេលអ្នក​ប្រើឧបករណ៍នេះ​លើកក្រោយ ដើម្បីធ្វើការទិញ​តាមរយៈវិធីបង់ប្រាក់នេះ។</translation>
 <translation id="337363190475750230">បានផ្តាច់ការផ្តល់ជូន</translation>
 <translation id="3377144306166885718">ម៉ាស៊ីនមេបានប្រើ​កំណែ TLS ដែលលែងប្រើ។</translation>
 <translation id="3377188786107721145">កំហុសឆ្គងការវិភាគគោលការណ៍</translation>
@@ -701,6 +702,7 @@
 <translation id="3615877443314183785">បញ្ចូលកាលបរិច្ឆេទផុតកំណត់ដែលត្រឹមត្រូវ</translation>
 <translation id="36224234498066874">សម្អាត​ទិន្នន័យ​រុករក...</translation>
 <translation id="362276910939193118">បង្ហាញប្រវត្តិពេញលេញ</translation>
+<translation id="3625635938337243871">ទិន្នន័យ​សម្រាប់​ចូលគណនី​នឹងត្រូវបាន​រក្សាទុកនៅលើ​ឧបករណ៍នេះ បន្ទាប់ពីអ្នក​ចាកចេញពី​មុខងារ​ឯកជន។</translation>
 <translation id="3630155396527302611">ប្រសិនបើវាត្រូវបានរាយជាកម្មវិធីដែលបានអនុញ្ញាតឲ្យចូលប្រើបណ្តាញនេះរួចហើយ
       សូមសាកល្បងយកវាចេញពីបញ្ជី ហើយបន្ថែមវាម្តងទៀត។</translation>
 <translation id="3630699740441428070">អ្នកគ្រប់គ្រង​ឧបករណ៍​នេះ​បានកំណត់រចនាសម្ព័ន្ធ​ការតភ្ជាប់​បណ្ដាញ​របស់អ្នក ដែលសកម្មភាពនេះអាច​អនុញ្ញាតឱ្យ​ពួកគេ​មើលឃើញ​ចរាចរណ៍បណ្ដាញ​របស់អ្នក រួមទាំង​គេហទំព័រ​ដែលអ្នក​ចូលមើល​ផងដែរ​។</translation>
@@ -838,6 +840,7 @@
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{ធាតុ <ph name="ITEM_COUNT" /> ទៀត}other{ធាតុ <ph name="ITEM_COUNT" /> ទៀត}}</translation>
 <translation id="4176463684765177261">បានបិទដំណើរការ</translation>
+<translation id="4178883739871311481"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច "Tab" រួចចុច "Enter" ដើម្បីបង្កើតឯកសារ Google</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">មិនអាចរក្សាទុក​បណ្ណរបស់អ្នកបានទេ​នៅពេលនេះ</translation>
 <translation id="4196861286325780578">ធ្វើការផ្លាស់ទីឡើងវិញ</translation>
@@ -936,6 +939,7 @@
 <translation id="4477350412780666475">សំនៀង​បន្ទាប់</translation>
 <translation id="4482953324121162758">គេហទំព័រនេះ​នឹង​មិនត្រូវ​បានបកប្រែទេ។</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">អ៊ីនគ្រីប​ពាក្យសម្ងាត់​ដែលបាន​ធ្វើសមកាលកម្ម​ជាមួយគណនី Google របស់អ្នក</translation>
 <translation id="4492519888999857993">មុខងារទាំងនេះ​ត្រូវបានបិទ​តាមលំនាំដើម។ មុខងារទាំងនេះ​នឹងមិនមាន​នៅក្នុងកំណែ Chrome ក្នុងពេល​អនាគត​ទេ។</translation>
 <translation id="4493480324863638523">URL គ្មានសុពលភាព។ ត្រូវតែជា URL ដែលមានគម្រោងស្តង់ដារ ឧ. http://example.com ឬ https://example.com ។</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
@@ -1105,6 +1109,7 @@
 <translation id="5126510351761255129">ផ្ទៀងផ្ទាត់កាតរបស់អ្នក</translation>
 <translation id="5135404736266831032">គ្រប់គ្រង​អាសយដ្ឋាន...</translation>
 <translation id="5138227688689900538">បង្ហាញ​តិច</translation>
+<translation id="514010763713772514">បង់ប្រាក់ចេញ​បានកាន់តែរហ័ស​នៅពេលក្រោយ</translation>
 <translation id="5145883236150621069">លេខកូដកំហុសឆ្គងបង្ហាញនៅក្នុងការឆ្លើយតបគោលការណ៍</translation>
 <translation id="5146995429444047494">ការជូនដំណឹង​សម្រាប់ <ph name="ORIGIN" /> ត្រូវបានទប់ស្កាត់</translation>
 <translation id="5148809049217731050">ផ្ងារឡើង</translation>
@@ -1325,7 +1330,6 @@
 <translation id="5984570616552610254">សំណើម​ក្នុងម៉ាស៊ីនបោះពុម្ព</translation>
 <translation id="598637245381783098">មិនអាចបើកកម្មវិធីបង់ប្រាក់បានទេ</translation>
 <translation id="5989320800837274978">ទាំងម៉ាស៊ីនមេប្រូកស៊ីដែលថេរ និង URL ស្គ្រីបផេកមិនត្រូវបានបញ្ជាក់ទេ។</translation>
-<translation id="5990559369517809815">ការស្នើទៅម៉ាស៊ីនមេត្រូវបានរារាំងដោយកម្មវិធីបន្ថែមមួយ។</translation>
 <translation id="5992691462791905444">បត់​ជាអក្សរ Z</translation>
 <translation id="6000758707621254961">លទ្ធផល <ph name="RESULT_COUNT" /> សម្រាប់ '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6008122969617370890">លំដាប់លំដោយ N-to-1</translation>
@@ -1527,6 +1531,7 @@
 <translation id="6852204201400771460">ផ្ទុក​កម្មវិធី​ឡើងវិញ?</translation>
 <translation id="6865412394715372076">មិនអាច​ផ្ទៀងផ្ទាត់កាតនេះ​​​ឥឡូវនេះ​បានទេ</translation>
 <translation id="6874604403660855544">ធ្វើការបន្ថែមវិញ</translation>
+<translation id="6881240511396774766">បង្កើតឯកសារ Google ថ្មីបានរហ័ស</translation>
 <translation id="6884662655240309489">ទំហំ 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome បានសម្រួលទំព័រនេះ ដើម្បី​ឱ្យងាយស្រួលអានជាងមុន។ Chrome បានទាញយក​ទំព័រដើម​តាមរយៈការតភ្ជាប់ដែលគ្មានសុវត្ថិភាព។</translation>
@@ -1536,6 +1541,7 @@
 <translation id="6898699227549475383">អង្គភាព (O)</translation>
 <translation id="6907293445143367439">អនុញ្ញាតឱ្យ <ph name="SITE_NAME" />៖</translation>
 <translation id="6910240653697687763"><ph name="URL" /> ចង់​គ្រប់គ្រង​ឧបករណ៍ MIDI របស់អ្នក​ទាំងស្រុង</translation>
+<translation id="691325982945105493">ប៊ូតុងបង្កើតឯកសារ Google, ចុច "Enter" ដើម្បីបង្កើតឯកសារ Google ថ្មីបានរហ័ស</translation>
 <translation id="6915804003454593391">អ្នកប្រើ៖</translation>
 <translation id="6934672428414710184">ឈ្មោះ​នេះ​បាន​មកពី​គណនី Google របស់អ្នក</translation>
 <translation id="6944692733090228304">អ្នក​បានបញ្ចូល​ពាក្យសម្ងាត់​របស់អ្នក​នៅលើ​គេហទំព័រ​ ដែល​មិនស្ថិត​ក្រោម​ការ​​គ្រប់គ្រង​របស់ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />។ ដើម្បី​ការពារ​គណនី​របស់អ្នក សូមកុំ​ប្រើពាក្យ​សម្ងាត់​របស់អ្នក​ម្តងទៀត​នៅលើ​កម្មវិធី និង​គេហទំព័រដទៃទៀត។</translation>
@@ -1855,6 +1861,7 @@
 <translation id="8086971161893892807">សេចក្ដី​ព្រាង</translation>
 <translation id="8088680233425245692">បានបរាជ័យក្នុងការបង្ហាញអត្ថបទ។</translation>
 <translation id="808894953321890993">ប្ដូរ​ពាក្យ​សម្ងាត់</translation>
+<translation id="8090329638663751802">អ្នកអាចប្រើ Touch ID ដើម្បី​ផ្ទៀងផ្ទាត់ថា​ជាអ្នកបាន​យ៉ាងរហ័ស នៅពេលអ្នក​ប្រើឧបករណ៍នេះ​លើកក្រោយ ដើម្បីធ្វើការទិញ​តាមរយៈវិធីបង់ប្រាក់នេះ។</translation>
 <translation id="8090403583893450254">ទំហំ 20</translation>
 <translation id="8091372947890762290">ការធ្វើសកម្មភាពកំពុងរង់ចាំនៅលើម៉ាស៊ីនមេ</translation>
 <translation id="8092774999298748321">ស្វាយចាស់</translation>
@@ -2066,6 +2073,7 @@
 <translation id="8931333241327730545">តើអ្នកចង់រក្សាទុកកាតនេះទៅគណនី Google របស់អ្នកដែរឬទេ?</translation>
 <translation id="8932102934695377596">ម៉ោងរបស់អ្នកដើរយឺត</translation>
 <translation id="893332455753468063">បញ្ចូល​ឈ្មោះ</translation>
+<translation id="8934418770423095813">បង្កើតឯកសារ Google</translation>
 <translation id="8942355029279167844">អ្នកគ្រប់គ្រង​របស់អ្នកបាន​អនុញ្ញាតឱ្យ <ph name="APP_NAME" /> ប្រមូលទិន្នន័យ​វិភាគ ដើម្បីកែលម្អបទពិសោធន៍ប្រើប្រាស់​ផលិតផល។ សូមមើល <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> ដើម្បីទទួលបាន​ព័ត៌មានបន្ថែម។</translation>
 <translation id="8943282376843390568">លឿងខ្ចី</translation>
 <translation id="8957210676456822347">ការអនុញ្ញាតច្រកចូលគ្រប់គ្រង</translation>

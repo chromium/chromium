@@ -304,7 +304,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2079545284768500474">Annulla</translation>
 <translation id="20817612488360358">Devono essere utilizzate le impostazioni del proxy di sistema ma è stata specificata anche una configurazione proxy esplicita.</translation>
 <translation id="2082238445998314030">Risultato <ph name="RESULT_NUMBER" /> di <ph name="TOTAL_RESULTS" /></translation>
-<translation id="2088086323192747268">Pulsante Gestisci sincronizzazione, premi Invio per gestire le informazioni da sincronizzare nelle impostazioni di Chrome</translation>
+<translation id="2088086323192747268">Pulsante Gestisci sincronizzazione: premi Invio per gestire le informazioni da sincronizzare nelle impostazioni di Chrome</translation>
 <translation id="2091887806945687916">Audio</translation>
 <translation id="2094505752054353250">Dominio non corrispondente</translation>
 <translation id="2096368010154057602">Dipartimento</translation>
@@ -369,7 +369,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2293443924986248631">Se questa opzione è attiva, i siti non possono utilizzare i cookie per monitorare la tua attività sul Web. Le funzionalità su alcuni siti potrebbero non essere disponibili.</translation>
 <translation id="2295290966866883927">Gli URL delle pagine che visiti vengono inviati a Google Cloud o a terze parti a scopo di analisi. Ad esempio, potrebbero essere sottoposti a scansione per rilevare siti web non sicuri.</translation>
 <translation id="2297722699537546652">B5 (Envelope)</translation>
-<translation id="2298855485018661510">Pulsante Gestisci i cookie, premi Invio per gestire le preferenze relative ai cookie nelle impostazioni di Chrome</translation>
+<translation id="2298855485018661510">Pulsante Gestisci i cookie: premi Invio per gestire le preferenze relative ai cookie nelle impostazioni di Chrome</translation>
 <translation id="2300306941146563769">Non caricato</translation>
 <translation id="2310021320168182093">Chou2 (Envelope)</translation>
 <translation id="2316887270356262533">Consente di liberare meno di 1 MB. Alcuni siti potrebbero caricarsi più lentamente alla prossima visita.</translation>
@@ -531,7 +531,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2991174974383378012">Condivisione con i siti web</translation>
 <translation id="2991571918955627853">Al momento non puoi visitare il sito web <ph name="SITE" /> perché utilizza HSTS. In genere gli errori di rete e gli attacchi sono temporanei, pertanto questa pagina potrebbe funzionare più tardi.</translation>
 <translation id="2995517112308048736">Dimensioni file:</translation>
-<translation id="2996674880327704673">Suggerimenti di Google</translation>
 <translation id="3002501248619246229">Controlla contenuti multimediali cassetto di input</translation>
 <translation id="3005723025932146533">Mostra copia salvata</translation>
 <translation id="3008447029300691911">Inserisci il codice CVC della carta <ph name="CREDIT_CARD" />. Dopo essere stati confermati, i dettagli della carta saranno condivisi con questo sito.</translation>
@@ -622,6 +621,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3371076217486966826"><ph name="URL" /> vuole:
       • Creare una mappa 3D dell'ambiente circostante e monitorare la posizione della fotocamera
       • Usare la fotocamera</translation>
+<translation id="3372389303668969359">Potrai usare Windows Hello per verificare rapidamente la tua identità la volta successiva che userai questo dispositivo per effettuare un acquisto con questo metodo di pagamento.</translation>
 <translation id="337363190475750230">Deprovisioning effettuato</translation>
 <translation id="3377144306166885718">Il server usava una versione obsoleta di TLS.</translation>
 <translation id="3377188786107721145">Errore di analisi del criterio</translation>
@@ -665,7 +665,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="350069200438440499">Nome file:</translation>
 <translation id="3507936815618196901">Creare una mappa 3D dell'ambiente circostante e monitorare la posizione della fotocamera</translation>
 <translation id="3512163584740124171">Questo criterio viene ignorato perché un altro criterio dello stesso gruppo ha una priorità più elevata.</translation>
-<translation id="35172538073169599">Pulsante Gestisci indirizzi, premi Invio per aggiungere e gestire indirizzi nelle impostazioni di Chrome</translation>
+<translation id="35172538073169599">Pulsante Gestisci indirizzi: premi Invio per aggiungere e gestire indirizzi nelle impostazioni di Chrome</translation>
 <translation id="3518941727116570328">Gestione di più oggetti</translation>
 <translation id="3528171143076753409">Il certificato del server non è affidabile.</translation>
 <translation id="3528485271872257980">Marrone scuro</translation>
@@ -695,6 +695,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3615877443314183785">Inserisci una data di scadenza valida</translation>
 <translation id="36224234498066874">Cancella dati di navigazione...</translation>
 <translation id="362276910939193118">Mostra cronologia completa</translation>
+<translation id="3625635938337243871">I dati di accesso verranno memorizzati su questo dispositivo quando uscirai dalla modalità di navigazione in incognito.</translation>
 <translation id="3630155396527302611">Se è già elencato come programma autorizzato ad accedere alla rete, prova a
       rimuoverlo dall'elenco e ad aggiungerlo di nuovo.</translation>
 <translation id="3630699740441428070">Gli amministratori di questo dispositivo hanno configurato la connessione di rete che potrebbe consentire loro di visualizzare il tuo traffico di rete, compresi i siti web che visiti.</translation>
@@ -929,6 +930,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4477350412780666475">Traccia successiva</translation>
 <translation id="4482953324121162758">Questo sito non verrà tradotto.</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">Cripta le password sincronizzate con il tuo Account Google</translation>
 <translation id="4492519888999857993">Queste funzionalità sono disattivate per impostazione predefinita. Non saranno disponibili nelle future versioni di Chrome.</translation>
 <translation id="4493480324863638523">URL non valido. Deve essere un URL con schema standard, ad esempio http://example.com o https://example.com.</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
@@ -1098,6 +1100,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5126510351761255129">Verifica la carta</translation>
 <translation id="5135404736266831032">Gestisci indirizzi…</translation>
 <translation id="5138227688689900538">Mostra meno</translation>
+<translation id="514010763713772514">Paga più velocemente la prossima volta</translation>
 <translation id="5145883236150621069">Codice di errore presente nella risposta del criterio</translation>
 <translation id="5146995429444047494">Le notifiche per il sito <ph name="ORIGIN" /> sono bloccate</translation>
 <translation id="5148809049217731050">A faccia in su</translation>
@@ -1209,7 +1212,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5540224163453853">Impossibile trovare l'articolo richiesto.</translation>
 <translation id="5541086400771735334">Mailbox 7</translation>
 <translation id="5541546772353173584">Aggiungi email</translation>
-<translation id="5542280138350899197">Pulsante Gestisci le impostazioni di sicurezza, premi Invio per gestire la funzionalità Navigazione sicura e altre opzioni nelle impostazioni di Chrome</translation>
+<translation id="5542280138350899197">Pulsante Gestisci le impostazioni di sicurezza: premi Invio per gestire la funzionalità Navigazione sicura e altre opzioni nelle impostazioni di Chrome</translation>
 <translation id="5545756402275714221">Articoli per te</translation>
 <translation id="5552137475244467770">Chrome confronta periodicamente le tue password con gli elenchi pubblicati online. Durante questa operazione, le tue password e i tuoi nomi utente vengono criptati, quindi non possono essere letti da nessuno, Google compresa.</translation>
 <translation id="5556459405103347317">Ricarica</translation>
@@ -1318,7 +1321,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5984570616552610254">Umidità della camera</translation>
 <translation id="598637245381783098">Impossibile aprire l'app per i pagamenti</translation>
 <translation id="5989320800837274978">Non sono stati specificati né server proxy fissi né un URL script .pac.</translation>
-<translation id="5990559369517809815">Le richieste al server sono state bloccate da un'estensione.</translation>
 <translation id="5992691462791905444">Piegatura a Z</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> risultati per "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6008122969617370890">Ordine da N a 1</translation>
@@ -1463,7 +1465,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6583674473685352014">B6 (Envelope)</translation>
 <translation id="6587923378399804057">Link copiato</translation>
 <translation id="6591833882275308647">Il tuo dispositivo <ph name="DEVICE_TYPE" /> non è gestito</translation>
-<translation id="6592952801936330159">Pulsante Gestisci impostazioni dei siti, premi Invio per gestire le autorizzazioni e i dati memorizzati sui siti nelle impostazioni di Chrome</translation>
+<translation id="6592952801936330159">Pulsante Gestisci impostazioni dei siti: premi Invio per gestire le autorizzazioni e i dati memorizzati sui siti nelle impostazioni di Chrome</translation>
 <translation id="6596325263575161958">Opzioni di crittografia</translation>
 <translation id="6604181099783169992">Sensori di movimento o della luce</translation>
 <translation id="6609880536175561541">Prc7 (Envelope)</translation>
@@ -1846,6 +1848,7 @@ Ulteriori dettagli:
 <translation id="8086971161893892807">Bozza</translation>
 <translation id="8088680233425245692">Impossibile visualizzare l'articolo.</translation>
 <translation id="808894953321890993">Cambia password</translation>
+<translation id="8090329638663751802">Potrai usare Touch ID per verificare rapidamente la tua identità la volta successiva che userai questo dispositivo per effettuare un acquisto con questo metodo di pagamento.</translation>
 <translation id="8090403583893450254">Dimensione 20</translation>
 <translation id="8091372947890762290">Attivazione in attesa sul server</translation>
 <translation id="8092774999298748321">Viola scuro</translation>

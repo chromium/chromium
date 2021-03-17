@@ -669,6 +669,10 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
         |TIME_LIMITS| past een dagelijkse gebruikslimiet toe en zorgt dat de app niet beschikbaar is nadat de tijdslimiet voor de betreffende dag is bereikt. De gebruikslimiet wordt opgegeven in |daily_limit_mins|. De gebruikslimiet wordt dagelijks gereset op de UTC-tijd die wordt doorgegeven in |reset_at|.
         Dit beleid wordt alleen gebruikt voor minderjarige gebruikers.
         Dit beleid vormt een aanvulling op 'UsageTimeLimit'. Beperkingen die zijn opgegeven in 'UsageTimeLimit' (zoals schermtijd en bedtijd), worden afgedwongen, ongeacht 'PerAppTimeLimits'.</translation>
+<translation id="1916266055944569995">Als je dit beleid instelt, wordt de waarde gedefinieerd die de Managed Configuration API voor een bepaalde herkomst retourneert.
+
+      De Managed Configuration API is een sleutel/waarde-configuratie waartoe je toegang hebt via de JavaScript-aanroep navigator.managed.getManagedConfiguration(). Deze API is alleen beschikbaar voor herkomsten die overeenkomen met afgedwongen geïnstalleerde web-apps via <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
+     </translation>
 <translation id="1919802376548418720">Gebruik KDC-beleid om gegevens te delegeren.</translation>
 <translation id="1920046221095339924">Beheerde sessie op apparaat toestaan</translation>
 <translation id="1920772397574801429">Als je het beleid instelt, wordt het accounttype opgegeven van de accounts die worden geleverd door de Android-verificatie-app die <ph name="HTTP_NEGOTIATE" />-verificatie ondersteunt (zoals Kerberos-verificatie). Deze informatie is beschikbaar via de leverancier van de verificatie-app. Ga naar The Chromium Projects (https://goo.gl/hajyfN) voor meer informatie.
@@ -1318,15 +1322,6 @@ Als dit beleid niet is ingesteld, is het privacyscherm in eerste instantie uitge
 <translation id="2757054304033424106">Typen extensies/apps die mogen worden geïnstalleerd</translation>
 <translation id="2759224876420453487">Het gebruikersgedrag beheren in een multiprofielsessie</translation>
 <translation id="2761483219396643566">Inactieve waarschuwingsvertraging wanneer op de batterij wordt gewerkt</translation>
-<translation id="2764165704281937018">Lijst met instellingen die moeten worden toegepast op de <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />. De lijst wordt geactiveerd als een bestand wordt gedownload.
-
-      De velden <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> worden gebruikt om te bepalen of de connector een bestand moet sturen naar de serviceprovider als het wordt gedownload van een webpagina. De URL van de webpagina moet een 'enable'-patroon hebben, geen 'disable'-patroon.  Ook het MIME-type van het bestand moet een 'enable'-patroon hebben, geen 'disable'-patroon.
-
-      Het veld <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> geeft aan bij welke analyseserviceprovider de instellingen horen.
-
-      Het veld <ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" /> geeft aan welke organisatie bij de serviceprovider hoort.  Als de gebruiker inlogt tijdens de installatie van de <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, kan dat alleen met een gebruikersaccount dat is gekoppeld aan de organisatie.
-
-      Dit beleid kan alleen worden ingesteld via de <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="2769952903507981510">De vereiste domeinnaam configureren voor hosts voor externe toegang</translation>
 <translation id="2772955711376920612">Als je dit beleid inschakelt en <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> en <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> instelt, blijft stroom voor piekuren aan (als het apparaat hiervoor geschikt is). Het beleid voor stroombeheer voor piekuren is een energiebesparingsbeleid waarmee het gebruik van wisselstroom op piekuren wordt geminimaliseerd. Voor elke dag van de week kun je een begin- en eindtijd instellen voor stroom voor piekuren. Zolang de batterij op deze momenten boven de ingestelde drempelwaarde blijft, blijft het apparaat op de batterij draaien (zelfs als het is aangesloten op wisselstroom). Na de ingestelde eindtijd gebruikt het apparaat wisselstroom (als het daarop is aangesloten) maar wordt de batterij niet opgeladen. Het apparaat keert terug naar de normale werking waarbij wisselstroom wordt gebruikt en de batterij wordt opgeladen na de opgegeven begintijd voor opladen.
 
@@ -1736,15 +1731,6 @@ en 3 optionele leden:
       In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="3261592499545947104">Aantal seconden vóór het verlopen van een certificaat wanneer de verlenging moet worden geactiveerd</translation>
 <translation id="3264793472749429012">Coderingen voor standaardzoekprovider</translation>
-<translation id="3265738316212552123">Als je het beleid instelt, kun je een lijst met URL-patronen opgeven met de sites die automatisch toegangsrechten krijgen voor een USB-apparaat met de opgegeven leveranciers- en product-ID's. Het beleid is alleen geldig als elk item in de lijst de velden <ph name="DEVICES_FIELD_NAME" /> en <ph name="URLS_FIELD_NAME" /> bevat. Elk item in het veld <ph name="DEVICES_FIELD_NAME" /> kan een veld <ph name="VENDOR_ID_FIELD_NAME" /> en een veld <ph name="PRODUCT_ID_FIELD_NAME" /> hebben. Als je het veld <ph name="VENDOR_ID_FIELD_NAME" /> weglaat, wordt een beleid gemaakt dat geschikt is voor elk apparaat. Als je het veld <ph name="PRODUCT_ID_FIELD_NAME" /> weglaat, wordt een beleid gemaakt dat geschikt is voor elk apparaat met de opgegeven leveranciers-ID. Een beleid dat het veld <ph name="PRODUCT_ID_FIELD_NAME" /> heeft zonder het veld <ph name="VENDOR_ID_FIELD_NAME" /> is ongeldig.
-
-      Het USB-rechtenmodel geeft de opgegeven URL toegang tot het USB-apparaat als oorsprong op hoofdniveau. Als ingesloten frames toegang tot USB-apparaten nodig hebben, moet de <ph name="FEATURE_POLICY_HEADER_NAME" />-header 'usb' worden gebruikt om toegang te geven. De URL moet geldig zijn, anders wordt het beleid genegeerd.
-
-      Beëindigd: Het USB-rechtenmodel ondersteunde dat zowel de aanvragende als de insluitings-URL werd opgegeven. Dit is beëindigd en wordt alleen nog op deze manier ondersteund voor compatibiliteit met eerdere versies: als zowel een aanvragende als insluitings-URL is opgegeven, krijgt de insluitings-URL toegang als oorsprong op hoofdniveau en wordt de aanvragende URL helemaal genegeerd.
-
-      Als je het beleid niet instelt, is <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> van toepassing als dit is ingesteld. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
-
-      De URL-patronen in dit beleid mogen geen conflict vormen met de patronen die zijn ingesteld via <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. Als dit het geval is, krijgt dit beleid voorrang op <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> en <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="3273221114520206906">Standaardinstelling voor JavaScript</translation>
 <translation id="328347261792478720">De browser geeft standaard media-aanbevelingen weer die zijn gepersonaliseerd voor de gebruiker. Als je dit beleid uitschakelt, worden deze aanbevelingen niet weergegeven aan de gebruiker. Als je dit beleid inschakelt of niet instelt, worden de media-aanbevelingen weergegeven aan de gebruiker.</translation>
 <translation id="3284094172359247914">Gebruik van de WebUSB API beheren</translation>
@@ -4986,10 +4972,6 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
 <translation id="776110834126722255">Beëindigd</translation>
 <translation id="7763614521440615342">Contentsuggesties weergeven op de nieuwe tabbladpagina</translation>
 <translation id="7765879851993224640">Toestaan dat Smart Lock Signin wordt gebruikt</translation>
-<translation id="7774451488719504808">Zoals wordt beschreven in https://www.chromestatus.com/feature/5148698084376576, worden modulaire JavaScript-dialoogvensters die worden geactiveerd door <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" /> en <ph name="JS_PROMPT" />, geblokkeerd in <ph name="PRODUCT_NAME" /> als ze worden geactiveerd vanuit een subframe waarvan de oorsprong verschilt van de oorsprong van de hoofdframe.
-       Met dit beleid kun je die wijziging overschrijven.
-       Als je het beleid toepast of niet instelt, worden JavaScript-dialoogvensters geblokkeerd als ze afkomstig zijn van een subframe met een andere oorsprong.
-       Als je het beleid niet toepast, worden JavaScript-dialoogvensters niet geblokkeerd, zelfs niet als ze afkomstig zijn van een subframe met een andere oorsprong.</translation>
 <translation id="7774768074957326919">Proxyinstellingen van het systeem gebruiken</translation>
 <translation id="777734450201217641">Schakel snelkoppelingen voor toegankelijkheidsfuncties in op het inlogscherm.
 

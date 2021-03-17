@@ -92,6 +92,7 @@
 <translation id="1698760176351776263">Адреса IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Робочий стіл: "<ph name="DESK_NAME" />"</translation>
 <translation id="1709762881904163296">Мережеві налаштування</translation>
+<translation id="1713296079175516843">З міркувань безпеки периферійні пристрої не підтримуються</translation>
 <translation id="1719094688023114093">Живі субтитри ввімкнено.</translation>
 <translation id="1720011244392820496">Увімкніть синхронізацію Wi-Fi</translation>
 <translation id="1743570585616704562">Не розпізнано</translation>
@@ -764,7 +765,7 @@
 <translation id="7526573455193969409">Мережевий трафік може відстежуватися</translation>
 <translation id="7536035074519304529">ІР-адреса: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Час спати</translation>
-<translation id="7551643184018910560">Закріпити на полиці</translation>
+<translation id="7551643184018910560">Закріпити на панелі запуску</translation>
 <translation id="7561982940498449837">Закрити меню</translation>
 <translation id="7564874036684306347">Переміщення вікон на інший робочий стіл може спричинити неочікувану поведінку. Нові сповіщення та вікна можуть розділятися між робочими столами.</translation>
 <translation id="7569509451529460200">Шрифт Брайля та ChromeVox увімкнено</translation>
@@ -944,6 +945,7 @@
 <translation id="8936501819958976551">деактивовано</translation>
 <translation id="8938800817013097409">Пристрій, під’єднаний до порту USB-C (праворуч на задній панелі)</translation>
 <translation id="8940956008527784070">Низький заряд акумулятора (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8951539504029375108">З вашим Chromebook сумісні лише схвалені пристрої Thunderbolt</translation>
 <translation id="8982906748181120328">Видимість поблизу</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Використовується: <ph name="IME_NAME" /></translation>

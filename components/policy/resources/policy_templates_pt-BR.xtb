@@ -664,6 +664,10 @@ Se você desativar a política, essa rolagem será desativada.</translation>
         |TIME_LIMITS| aplica o limite de uso diário e torna o app indisponível após o limite ser atingido no dia especificado. O limite de uso é especificado em |daily_limit_mins|. O limite de uso é redefinido diariamente no horário UTC transmitido em |reset_at|.
         Esta política é usada apenas para crianças.
         Esta política complementa a "UsageTimeLimit". Restrições especificadas em "UsageTimeLimit", como tempo de uso e hora de dormir, serão aplicadas independentemente de "PerAppTimeLimits".</translation>
+<translation id="1916266055944569995">Se a política for definida, o valor de retorno da API Managed Configuration será definido para origens específicas.
+
+      A API Managed Configuration é uma configuração de chave-valor que pode ser acessada pela chamada de navigator.managed.getManagedConfiguration() no JavaScript. Ela só está disponível em origens correspondentes a aplicativos da Web de instalação forçada via <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
+     </translation>
 <translation id="1919802376548418720">Usar a política KDC para delegar credenciais.</translation>
 <translation id="1920046221095339924">Permite sessão gerenciada no dispositivo</translation>
 <translation id="1920772397574801429">Definir a política especifica o tipo de conta fornecido pelo app de autenticação do Android compatível com a autenticação <ph name="HTTP_NEGOTIATE" /> (como Kerberos). Essas informações devem estar disponíveis junto ao fornecedor do app de autenticação. Para saber detalhes, consulte a página The Chromium Projects (https://goo.gl/hajyfN)
@@ -1328,15 +1332,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="2757054304033424106">Tipos de extensões/aplicativos que podem ser instalados</translation>
 <translation id="2759224876420453487">Controla o comportamento do usuário em uma sessão de diversos perfis</translation>
 <translation id="2761483219396643566">Intervalo da advertência de inatividade no funcionamento com energia da bateria</translation>
-<translation id="2764165704281937018">Lista de configurações que serão aplicadas ao <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, que é acionado quando um arquivo é transferido por download.
-
-      Os campos <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> são usados para determinar se o conector precisa enviar um arquivo ao provedor de serviços ao fazer o download em uma página da Web. O URL da página da Web precisa corresponder ao padrão associado a um padrão "ativar", e não a um "desativar".  O tipo MIME do arquivo também precisa corresponder ao padrão associado a um padrão "ativar", e não a um "desativar".
-
-      O campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica o provedor de serviços de análise correspondente às configurações.
-
-      O campo <ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" /> identifica a empresa com o provedor de serviços.  Quando o usuário é solicitado a fazer login como parte da configuração de <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, apenas contas de usuário associadas a essa empresa são permitidas.
-
-      Esta política só pode ser definida pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="2769952903507981510">Configurar o nome de domínio obrigatório para hosts de acesso remoto</translation>
 <translation id="2772955711376920612">Se a política for definida como "Ativada" e <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> e <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> forem definidas, a economia de energia no período de pico permanecerá ativa, caso ela seja compatível com o dispositivo. A política de gerenciamento de energia no período de pico gera economia pela redução do uso de corrente alternada quando há alto consumo. É possível definir um horário de início e término do modo de economia de energia no período de pico para cada dia da semana. Durante esses períodos, o dispositivo funcionará usando a bateria mesmo se estiver conectado à corrente alternada, desde que a bateria se mantenha acima do limite especificado. Depois do horário de término especificado, o dispositivo funcionará usando energia de corrente alternada (se conectado), mas a bateria não será carregada. O dispositivo voltará a funcionar normalmente, usando corrente alternada e recarregando a bateria depois do horário de início de carregamento especificado.
 
@@ -1753,15 +1748,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas em <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
 <translation id="3261592499545947104">Número de segundos antes da expiração de um certificado quando a renovação precisa ser acionada.</translation>
 <translation id="3264793472749429012">Codificações do provedor de pesquisa padrão</translation>
-<translation id="3265738316212552123">Se a política for definida, será possível criar uma lista de padrões de URL que especifica quais sites recebem permissão automaticamente para acessar um dispositivo USB com os IDs de produto e fornecedor especificados. Cada item na lista precisa ter um campo "<ph name="DEVICES_FIELD_NAME" />" e "<ph name="URLS_FIELD_NAME" />" para que a política seja válida. Cada item no campo "<ph name="DEVICES_FIELD_NAME" />" pode ter um campo "<ph name="VENDOR_ID_FIELD_NAME" />" e "<ph name="PRODUCT_ID_FIELD_NAME" />". A omissão de "<ph name="VENDOR_ID_FIELD_NAME" />" criará uma política válida para qualquer dispositivo. A omissão de "<ph name="PRODUCT_ID_FIELD_NAME" />" criará uma política válida para qualquer dispositivo com o ID de fornecedor especificado. Uma política com um campo "<ph name="PRODUCT_ID_FIELD_NAME" />" que não tiver um "<ph name="VENDOR_ID_FIELD_NAME" />" será inválida.
-
-      O modelo de permissões de USB autorizará o URL especificado a acessar o dispositivo USB como uma origem de nível superior. Se os frames incorporados precisarem acessar dispositivos USB, o cabeçalho "usb" de <ph name="FEATURE_POLICY_HEADER_NAME" /> será usado para conceder o acesso. O URL precisa ser válido. Caso contrário, a política será ignorada.
-
-      O modelo de permissões de USB usado para especificar os URLs de solicitação e incorporação foi suspenso e é compatível apenas com versões anteriores. Se os dois tipos de URL forem especificados ao mesmo tempo, o de incorporação receberá a permissão como origem de alto nível e o de solicitação será totalmente ignorado.
-
-      Se a política for deixada sem definição, a <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> será aplicada, caso esteja definida. Caso contrário, a configuração pessoal do usuário será aplicada.
-
-      Os padrões de URL desta política não devem entrar em conflito com os configurados pela <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. Se entrarem, esta política terá precedência sobre <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> e <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="3273221114520206906">Configuração padrão do JavaScript</translation>
 <translation id="328347261792478720">Por padrão, o navegador mostrará recomendações de mídia personalizadas para o usuário. Se esta política for definida como "Desativada", essas recomendações ficarão ocultas para o usuário. Se esta política for definida como "Ativada" ou não for definida, as recomendações de mídia serão mostradas para o usuário.</translation>
 <translation id="3284094172359247914">Controla o uso da API WebUSB</translation>
@@ -5018,10 +5004,6 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 <translation id="776110834126722255">Obsoleta</translation>
 <translation id="7763614521440615342">Mostrar sugestões de conteúdo na página "Nova guia"</translation>
 <translation id="7765879851993224640">Permitir que o login do Smart Lock seja usado.</translation>
-<translation id="7774451488719504808">Como descrito em https://www.chromestatus.com/feature/5148698084376576, as caixas de diálogo modais de JavaScript, acionadas por <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" />, e <ph name="JS_PROMPT" />, serão bloqueadas no <ph name="PRODUCT_NAME" /> se forem acionadas por um subframe com a origem diferente do frame de origem principal.
-       Esta política permite substituir essa mudança.
-       Se a política for definida como "Enabled" ou deixada sem definição, as caixas de diálogo de JavaScript acionadas por um subframe de origem diferente serão bloqueadas.
-       Se ela for definida como "Disabled", as caixas de diálogo de JavaScript acionadas por um subframe de origem diferente não serão bloqueadas.</translation>
 <translation id="7774768074957326919">Usar configurações de proxy do sistema</translation>
 <translation id="777734450201217641">Ative atalhos de recursos de acessibilidade na tela de login.
 

@@ -529,7 +529,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2991174974383378012">Kopīgošana ar vietnēm</translation>
 <translation id="2991571918955627853">Pašlaik nevarat apmeklēt vietni <ph name="SITE" />, jo tā izmanto HSTS. Tā kā tīkla kļūdas un uzbrukumi parasti ir īslaicīgi, visticamāk, šī lapa vēlāk darbosies.</translation>
 <translation id="2995517112308048736">Faila lielums:</translation>
-<translation id="2996674880327704673">Google ieteikumi</translation>
 <translation id="3002501248619246229">Ievades paliktņa materiāla pārbaude</translation>
 <translation id="3005723025932146533">Rādīt saglabāto versiju</translation>
 <translation id="3008447029300691911">Ievadiet kredītkartes <ph name="CREDIT_CARD" /> CVC. Pēc apstiprināšanas kartes informācija tiks kopīgota ar šo vietni.</translation>
@@ -623,6 +622,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3371076217486966826"><ph name="URL" /> vēlas:
       • izveidot jūsu apkārtnes 3D karti un izsekot kameras pozīciju;
       • izmantot jūsu kameru.</translation>
+<translation id="3372389303668969359">Varat izmantot Windows Hello, lai ātri apstiprinātu savu identitāti nākamajā reizē, kad pirkuma veikšanai šajā ierīcē izmantosiet šo maksājuma veidu.</translation>
 <translation id="337363190475750230">Tika noņemta piekļuve</translation>
 <translation id="3377144306166885718">Serveris izmantoja novecojušu TLS versiju.</translation>
 <translation id="3377188786107721145">Radās politikas parsēšanas kļūda.</translation>
@@ -696,6 +696,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3615877443314183785">Ievadiet derīgu datumu</translation>
 <translation id="36224234498066874">Dzēst pārlūkošanas datus...</translation>
 <translation id="362276910939193118">Rādīt pilnu vēsturi</translation>
+<translation id="3625635938337243871">Pēc tam, kad iziesiet no inkognito režīma, pierakstīšanās dati tiks glabāti šajā ierīcē.</translation>
 <translation id="3630155396527302611">Ja tā jau ir norādīta kā programma, kurai ir atļauts piekļūt tīklam, noņemiet to no saraksta un pievienojiet vēlreiz.</translation>
 <translation id="3630699740441428070">Šīs ierīces administratori ir konfigurējuši jūsu tīkla savienojumu, tāpēc viņi, iespējams, var skatīt jūsu tīkla datplūsmu, tostarp apmeklētās vietnes.</translation>
 <translation id="3631244953324577188">Biometrija</translation>
@@ -929,6 +930,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4477350412780666475">Nākamais ieraksts</translation>
 <translation id="4482953324121162758">Šī vietne netiks tulkota.</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">Šifrēt sinhronizētās paroles, izmantojot jūsu Google konta datus</translation>
 <translation id="4492519888999857993">Šīs funkcijas ir atspējotas pēc noklusējuma. Turpmākajās Chrome versijās tās nebūs pieejamas.</translation>
 <translation id="4493480324863638523">Nederīgs URL. Vietrādim URL ir jābūt ar standarta shēmu, piemēram, “http://example.com” vai “https://example.com”.</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
@@ -1098,6 +1100,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5126510351761255129">Kartes verificēšana</translation>
 <translation id="5135404736266831032">Pārvaldīt adreses...</translation>
 <translation id="5138227688689900538">Rādīt mazāk</translation>
+<translation id="514010763713772514">Nākamajā reizē izmantojiet ātrāku norēķinu iespēju</translation>
 <translation id="5145883236150621069">Politikas atbildē ir kļūdas kods.</translation>
 <translation id="5146995429444047494">Vietnes <ph name="ORIGIN" /> paziņojumi ir bloķēti</translation>
 <translation id="5148809049217731050">Ar virspusi uz augšu</translation>
@@ -1318,7 +1321,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5984570616552610254">Mitruma līmenis korpusā</translation>
 <translation id="598637245381783098">Nevar atvērt maksājumu lietotni</translation>
 <translation id="5989320800837274978">Nav norādīti nedz fiksēti starpniekserveri, nedz .pac skripta URL.</translation>
-<translation id="5990559369517809815">Paplašinājums ir bloķējis pieprasījumus serverim.</translation>
 <translation id="5992691462791905444">Inženierijas Z-veida locījums</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> rezultāti vaicājumam “<ph name="SEARCH_TEXT" />”</translation>
 <translation id="6008122969617370890">Secība: no N līdz 1.</translation>
@@ -1847,6 +1849,7 @@ Papildu informācija:
 <translation id="8086971161893892807">Melnraksts</translation>
 <translation id="8088680233425245692">Rakstu neizdevās skatīt.</translation>
 <translation id="808894953321890993">Mainīt paroli</translation>
+<translation id="8090329638663751802">Varat izmantot Touch ID, lai ātri apstiprinātu savu identitāti nākamajā reizē, kad pirkuma veikšanai šajā ierīcē izmantosiet šo maksājuma veidu.</translation>
 <translation id="8090403583893450254">20. izmērs</translation>
 <translation id="8091372947890762290">Aktivizācija vēl nav apstiprināta serverī.</translation>
 <translation id="8092774999298748321">Tumši violets</translation>

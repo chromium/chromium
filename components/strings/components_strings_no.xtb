@@ -291,7 +291,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2001146170449793414">{COUNT,plural, =1{og 1 til}other{og # til}}</translation>
 <translation id="2003709556000175978">Tilbakestill passordet ditt nå</translation>
 <translation id="2003775180883135320">Fire hull topp</translation>
-<translation id="201174227998721785">Administrer tillatelser og data som er lagret på tvers av nettsteder, i Chrome-innstillingene</translation>
+<translation id="201174227998721785">Administrer tillatelser og data som er lagret på nettsteder, i Chrome-innstillingene</translation>
 <translation id="2025115093177348061">Utvidet virkelighet</translation>
 <translation id="2025186561304664664">Mellomtjeneren er innstilt på automatisk konfigurasjon.</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Sjekk proxy-tjeneren og brannmuren<ph name="END_LINK" /></translation>
@@ -531,7 +531,6 @@ brukere av denne nettleseren.</translation>
 <translation id="2991174974383378012">Deling med nettsteder</translation>
 <translation id="2991571918955627853">Du kan ikke gå til <ph name="SITE" /> akkurat nå, siden nettstedet bruker HSTS. Nettverksfeil og -angrep er vanligvis midlertidige, så denne siden fungerer sannsynligvis senere.</translation>
 <translation id="2995517112308048736">Filstørrelse:</translation>
-<translation id="2996674880327704673">Forslag fra Google</translation>
 <translation id="3002501248619246229">Sjekk inndataskuffmedier</translation>
 <translation id="3005723025932146533">Vis lagret kopi</translation>
 <translation id="3008447029300691911">Skriv inn verifiseringskoden for <ph name="CREDIT_CARD" />. Når du bekrefter, deles kortinformasjonen din med dette nettstedet.</translation>
@@ -625,6 +624,7 @@ brukere av denne nettleseren.</translation>
 <translation id="3371076217486966826"><ph name="URL" /> vil
       • lage et 3D-kart av omgivelsene dine og spore kameraposisjonen
       • bruke kameraet ditt</translation>
+<translation id="3372389303668969359">Du kan bruke Windows Hello for å bekrefte identiteten din raskt neste gang du bruker denne enheten til å foreta kjøp med denne betalingsmåten.</translation>
 <translation id="337363190475750230">Godkjenningen er opphevet</translation>
 <translation id="3377144306166885718">Tjeneren brukte en foreldet versjon av TLS.</translation>
 <translation id="3377188786107721145">Feil under analysen av enhetsinnstillinger</translation>
@@ -698,6 +698,7 @@ brukere av denne nettleseren.</translation>
 <translation id="3615877443314183785">Angi en gyldig utløpsdato</translation>
 <translation id="36224234498066874">Slett nettleserdata</translation>
 <translation id="362276910939193118">Vis fullstendig logg</translation>
+<translation id="3625635938337243871">Påloggingsdata blir lagret på denne enheten når du går ut av Inkognitomodus.</translation>
 <translation id="3630155396527302611">Hvis programmet allerede har fått tillatelse til å bruke nettverket, kan du prøve
       å fjerne det fra listen og så legge det til på nytt.</translation>
 <translation id="3630699740441428070">Administratorene for denne enheten har konfigurert nettverkstilkoblingen din, noe som betyr at de kanskje kan se nettverkstrafikken din, inkludert hvilke nettsteder du besøker.</translation>
@@ -932,6 +933,7 @@ brukere av denne nettleseren.</translation>
 <translation id="4477350412780666475">Neste spor</translation>
 <translation id="4482953324121162758">Dette nettstedet oversettes ikke.</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">Kryptér synkroniserte passord med Google-kontoen din</translation>
 <translation id="4492519888999857993">Som standard er disse funksjonene avslått. De kommer ikke til å være tilgjengelige i fremtidige versjoner av Chrome.</translation>
 <translation id="4493480324863638523">Ugyldig nettadresse. Dette må være en nettadresse på standardformat, f.eks. http://example.com eller https://example.com.</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
@@ -1101,6 +1103,7 @@ brukere av denne nettleseren.</translation>
 <translation id="5126510351761255129">Bekreft kortet ditt</translation>
 <translation id="5135404736266831032">Adminstrer adresser…</translation>
 <translation id="5138227688689900538">Vis færre</translation>
+<translation id="514010763713772514">Betal raskere neste gang</translation>
 <translation id="5145883236150621069">Feilkode i responsen for enhetsinnstillinger</translation>
 <translation id="5146995429444047494">Varsler for <ph name="ORIGIN" /> er blokkert</translation>
 <translation id="5148809049217731050">Forsiden opp</translation>
@@ -1321,7 +1324,6 @@ brukere av denne nettleseren.</translation>
 <translation id="5984570616552610254">Kammerfuktighet</translation>
 <translation id="598637245381783098">Kan ikke åpne betalingsappen</translation>
 <translation id="5989320800837274978">Verken statiske proxytjenere eller en nettadresse med .pac-skript er angitt.</translation>
-<translation id="5990559369517809815">Forespørsler til tjeneren har blitt blokkert av en utvidelse.</translation>
 <translation id="5992691462791905444">Ingeniør-Z-fals</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultater for «<ph name="SEARCH_TEXT" />»</translation>
 <translation id="6008122969617370890">N-til-1-rekkefølge</translation>
@@ -1467,7 +1469,7 @@ brukere av denne nettleseren.</translation>
 <translation id="6583674473685352014">B6 (konvolutt)</translation>
 <translation id="6587923378399804057">Linken du kopierte</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> administreres ikke</translation>
-<translation id="6592952801936330159">Knappen «Administrer nettstedsinnstillinger» – trykk på Enter for å administrere tillatelser og data som er lagret på tvers av nettsteder, i Chrome-innstillingene</translation>
+<translation id="6592952801936330159">Knappen «Administrer nettstedsinnstillinger» – trykk på Enter for å administrere tillatelser og data som er lagret på nettsteder, i Chrome-innstillingene</translation>
 <translation id="6596325263575161958">Krypteringsalternativer</translation>
 <translation id="6604181099783169992">Bevegelses- eller lyssensorer</translation>
 <translation id="6609880536175561541">Prc7 (konvolutt)</translation>
@@ -1579,7 +1581,7 @@ brukere av denne nettleseren.</translation>
 <translation id="7083258188081898530">Skuff 9</translation>
 <translation id="7086090958708083563">Opplasting forespurt av bruker</translation>
 <translation id="7087282848513945231">Fylke</translation>
-<translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å administrere tillatelser og data som er lagret på tvers av nettsteder, i Chrome-innstillingene</translation>
+<translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å administrere tillatelser og data som er lagret på nettsteder, i Chrome-innstillingene</translation>
 <translation id="7108338896283013870">Skjul</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> ber om å bruke kameraet ditt</translation>
 <translation id="7108819624672055576">Tillatt av en utvidelse</translation>
@@ -1849,6 +1851,7 @@ brukere av denne nettleseren.</translation>
 <translation id="8086971161893892807">Utkast</translation>
 <translation id="8088680233425245692">Kunne ikke åpne artikkelen.</translation>
 <translation id="808894953321890993">Endre passord</translation>
+<translation id="8090329638663751802">Du kan bruke Touch ID for å bekrefte identiteten din raskt neste gang du bruker denne enheten til å foreta kjøp med denne betalingsmåten.</translation>
 <translation id="8090403583893450254">Størrelse 20</translation>
 <translation id="8091372947890762290">Aktivering venter på tjeneren</translation>
 <translation id="8092774999298748321">Mørk fiolett</translation>

@@ -178,6 +178,7 @@ Sök genom att trycka på ett ord. Du kan finjustera sökningen genom att trycka
 <translation id="2195339740518523951">Få det bästa skyddet i Chrome</translation>
 <translation id="2200113223741723867">Hantera delning av data om användning</translation>
 <translation id="2227444325776770048">Fortsätt som <ph name="USER_FULL_NAME" /></translation>
+<translation id="22320125457191592">För dig</translation>
 <translation id="2234876718134438132">Synk och Googles tjänster</translation>
 <translation id="2239812875700136898">Du kan styra artiklarna med knappen Alternativ för Förslag</translation>
 <translation id="2259659629660284697">Exportera lösenord …</translation>
@@ -316,6 +317,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3208584281581115441">Kontrollera nu</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> raderades</translation>
 <translation id="321773570071367578">Om du har glömt lösenfrasen eller vill ändra inställningen <ph name="BEGIN_LINK" />återställer du synkroniseringen<ph name="END_LINK" /></translation>
+<translation id="3220943972464248773">Verifiera din identitet för att synkronisera lösenord</translation>
 <translation id="3227557059438308877">Google Chrome som säkerhetsnyckel</translation>
 <translation id="3232754137068452469">Webbapp</translation>
 <translation id="3236059992281584593">1 minut kvar</translation>
@@ -347,7 +349,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3384347053049321195">Dela bild</translation>
 <translation id="3387650086002190359">Det gick inte att ladda ned <ph name="FILE_NAME" /> på grund av filsystemfel.</translation>
 <translation id="3389286852084373014">Texten är för stor</translation>
-<translation id="3391512812407811893">Prova Privacy Sandbox</translation>
+<translation id="3391512812407811893">Provfunktioner i Privacy Sandbox</translation>
 <translation id="3398320232533725830">Öppna bokmärkeshanteraren</translation>
 <translation id="3414952576877147120">Storlek:</translation>
 <translation id="3429160811076349561">Provfunktionerna är inaktiverade</translation>
@@ -357,7 +359,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 
 I dag används teknik som tredjepartscookies på många webbplatser för viktiga tjänster, som att visa relevanta annonser eller mäta webbplatsresultat.
 
-Privacy Sandbox bevarar den öppna webbens vitalitet genom att skapa bättre sätt att tillhandahålla dessa tjänster på – utan att webbplatserna ska sluta att fungera! – så att du inte ska behöva bli spårad från webbplats till webbplats.
+Privacy Sandbox bevarar den öppna webben genom att skapa bättre sätt att tillhandahålla dessa tjänster på – utan att försämra webbplatsernas funktion – så att du slipper bli spårad från webbplats till webbplats.
 
 Privacy Sandbox är för närvarande under utveckling och tillgängligt i vissa regioner. För närvarande går det att testa Privacy Sandbox på en webbplats samtidigt som gängse webbteknik som tredjepartscookies används på den. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">Du kan välja din sökmotor</translation>
@@ -484,6 +486,7 @@ Privacy Sandbox är för närvarande under utveckling och tillgängligt i vissa 
 <translation id="447252321002412580">Bidra till att förbättra Chromes funktioner och prestanda</translation>
 <translation id="4479972344484327217"><ph name="MODULE" /> installeras i Chrome …</translation>
 <translation id="4487967297491345095">All appdata i Chrome raderas permanent. Detta omfattar alla filer, inställningar, konton, databaser osv.</translation>
+<translation id="449126573531210296">Kryptera synkroniserade lösenord med ditt Google-konto</translation>
 <translation id="4493497663118223949">Begränsat läge har aktiverats</translation>
 <translation id="4508528996305412043">Menyn med flödeskort är öppen</translation>
 <translation id="4508642716788467538">Välj språk</translation>
@@ -507,6 +510,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4594952190837476234">Den här offlinesidan sparades <ph name="CREATION_TIME" /> och kan skilja sig från onlineversionen.</translation>
 <translation id="4605958867780575332">Borttaget objekt: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">Öppna <ph name="WEBAPK_NAME" /></translation>
+<translation id="4619564267100705184">Verifiera din identitet</translation>
 <translation id="4634124774493850572">Använd lösenordet</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 utsatt lösenord}other{# utsatta lösenord}}</translation>
 <translation id="4650364565596261010">Systemets standardinställning</translation>
@@ -779,6 +783,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6342069812937806050">Alldeles nyss</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> till}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> till}}</translation>
 <translation id="6345878117466430440">Markera som läst</translation>
+<translation id="6363990818884053551">Verifiera din identitet för att starta synkroniseringen</translation>
 <translation id="6364438453358674297">Vill du ta bort förslaget från historiken?</translation>
 <translation id="6378173571450987352">Mer information: Sorterad efter dataförbrukning</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> öppnas i Chrome. Genom att fortsätta godkänner du <ph name="BEGIN_LINK1" />Googles användarvillkor<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />de ytterligare användarvillkoren för Google Chrome och Chrome OS<ph name="END_LINK2" />.</translation>
@@ -841,6 +846,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="666731172850799929">Öppna i <ph name="APP_NAME" /></translation>
 <translation id="666981079809192359">Chromes sekretessmeddelande</translation>
 <translation id="6671495933530132209">Kopiera bild</translation>
+<translation id="6674571176963658787">Ange din lösenfras för att starta synkroniseringen</translation>
 <translation id="6676840375528380067">Vill du rensa din data i Chrome från den här enheten?</translation>
 <translation id="6697492270171225480">Visa förslag på liknande sidor om en sida inte hittas</translation>
 <translation id="6698801883190606802">Hantera synkroniserad data</translation>

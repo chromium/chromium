@@ -1074,7 +1074,6 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2187675480456493911">Mit anderen Geräten in Ihrem Konto synchronisiert. Von anderen Nutzern geänderte Einstellungen werden nicht synchronisiert. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Fehler beim Importieren des Serverzertifikats</translation>
 <translation id="2187906491731510095">Erweiterungen wurden aktualisiert</translation>
-<translation id="2188100037674302806">Parallels Desktop</translation>
 <translation id="2188881192257509750"><ph name="APPLICATION" /> öffnen</translation>
 <translation id="2190069059097339078">WLAN-Anmeldedaten-Abruf</translation>
 <translation id="219008588003277019">Natives Client-Modul: <ph name="NEXE_NAME" /></translation>
@@ -1894,7 +1893,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3089137131053189723">Suche gelöscht</translation>
 <translation id="3090819949319990166">Externe CRX-Datei konnte nicht als <ph name="TEMP_CRX_FILE" /> kopiert werden.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" ist gekoppelt</translation>
-<translation id="3092699946856346803">Bitte die SIM-Karte einsetzen und noch einmal versuchen</translation>
 <translation id="3094141017404513551">Dadurch werden Ihre Browsingaktivitäten von <ph name="EXISTING_USER" /> getrennt</translation>
 <translation id="3095871294753148861">Lesezeichen, Passwörter und andere Browserdaten werden mit dem primären Konto synchronisiert.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 potenziell schädliche Erweiterung wurde deaktiviert. Sie können sie auch entfernen.}other{{NUM_EXTENSIONS} potenziell schädliche Erweiterungen wurden deaktiviert. Sie können sie auch entfernen.}}</translation>
@@ -3032,7 +3030,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4415748029120993980">Elliptische SECG-Kurve secp384r1 (NIST P-384)</translation>
 <translation id="4416582610654027550">Geben Sie eine gültige URL ein</translation>
 <translation id="4419409365248380979"><ph name="HOST" /> darf immer Cookies setzen</translation>
-<translation id="4419610272958564173">Unbekanntes Gerät (Anbieter: <ph name="VENDOR_ID" />, Produkt: <ph name="PRODUCT_ID" />)</translation>
 <translation id="4421932782753506458">Miez</translation>
 <translation id="4423376891418188461">Einstellungen wiederherstellen</translation>
 <translation id="442397852638519243"><ph name="USER_NAME" />, Ihr Administrator fordert Sie zum Ändern Ihres Passworts auf.</translation>
@@ -5448,7 +5445,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7222204278952406003">Chrome ist Ihr Standardbrowser</translation>
 <translation id="7222232353993864120">E-Mail-Adresse</translation>
 <translation id="7225179976675429563">Netzwerktyp fehlt.</translation>
-<translation id="7227028316978186866"><ph name="DEVICE_NAME" /> (Anbieter: <ph name="VENDOR_ID" />, Produkt: <ph name="PRODUCT_ID" />)</translation>
 <translation id="7228479291753472782">Einstellungen bearbeiten, die festlegen, ob Websites Funktionen wie die Standortbestimmung, das Mikrofon, die Kamera usw. verwenden dürfen</translation>
 <translation id="7228523857728654909">Bildschirmsperre und Anmeldung</translation>
 <translation id="7229570126336867161">EVDO erforderlich</translation>

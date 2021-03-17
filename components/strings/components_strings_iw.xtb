@@ -531,7 +531,6 @@
 <translation id="2991174974383378012">שיתוף עם אתרים</translation>
 <translation id="2991571918955627853">‏נכון לעכשיו אי אפשר לבקר באתר <ph name="SITE" /> מאחר שנעשה בו שימוש ב-HSTS. שגיאות רשת ומתקפות הן בדרך כלל זמניות, כך שהדף הזה יחזור כנראה לפעול מאוחר יותר.</translation>
 <translation id="2995517112308048736">גודל הקובץ:</translation>
-<translation id="2996674880327704673">‏הצעות מאת Google</translation>
 <translation id="3002501248619246229">בדיקת מדיה במגש קלט</translation>
 <translation id="3005723025932146533">הצגת עותק שמור</translation>
 <translation id="3008447029300691911">יש להזין את קוד האימות של הכרטיס <ph name="CREDIT_CARD" />. לאחר האישור, פרטי הכרטיס שלך ישותפו עם האתר הזה.</translation>
@@ -625,6 +624,7 @@
 <translation id="3371076217486966826"><ph name="URL" /> רוצה:
       • ליצור מפות תלת ממד של האזור שמסביבך ולעקוב אחרי המיקום של המצלמה.
       • להשתמש במצלמה שלך.</translation>
+<translation id="3372389303668969359">‏ניתן להשתמש ב-Windows Hello לאימות מהיר של זהותך בפעם הבאה שייעשה שימוש על ידך במכשיר הזה לרכישה באמצעי התשלום הזה.</translation>
 <translation id="337363190475750230">ניהול התצורה בוטל</translation>
 <translation id="3377144306166885718">‏בשרת נעשה שימוש בגרסה מיושנת של TLS.</translation>
 <translation id="3377188786107721145">שגיאה בניתוח המדיניות</translation>
@@ -698,6 +698,7 @@
 <translation id="3615877443314183785">עליך להזין תאריך תפוגה חוקי</translation>
 <translation id="36224234498066874">ניקוי נתוני גלישה…</translation>
 <translation id="362276910939193118">כל ההיסטוריה</translation>
+<translation id="3625635938337243871">פרטי הכניסה יאוחסנו במכשיר הזה אחרי היציאה ממצב אנונימי.</translation>
 <translation id="3630155396527302611">אם היא כבר רשומה כתוכנית המורשית לגשת לרשת, יש לנסות
       להסיר אותה מהרשימה ולהוסיף אותה שוב.</translation>
 <translation id="3630699740441428070">החיבור לרשת של המכשיר הזה הוגדר על ידי מנהלי המערכת, ועשויה להיות להם אפשרות לראות את התנועה שלך ברשת, כולל האתרים שבהם ביקרת.</translation>
@@ -930,6 +931,7 @@
 <translation id="4477350412780666475">הטראק הבא</translation>
 <translation id="4482953324121162758">האתר הזה לא יתורגם.</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">‏הצפנת סיסמאות מסונכרנות באמצעות חשבון Google</translation>
 <translation id="4492519888999857993">‏התכונות האלה מושבתות כברירת מחדל. הן לא יהיו זמינות בגרסאות עתידיות של Chrome.</translation>
 <translation id="4493480324863638523">‏כתובת URL לא חוקית. הסכימה של כתובת ה-URL צריכה להיות רגילה, כלומר: http://example.com או https://example.com.</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
@@ -1103,6 +1105,7 @@ Del</translation>
 <translation id="5126510351761255129">אימות הכרטיס</translation>
 <translation id="5135404736266831032">ניהול כתובות...</translation>
 <translation id="5138227688689900538">פחות מידע</translation>
+<translation id="514010763713772514">תהליך התשלום יכול להיות מהיר יותר בפעם הבאה</translation>
 <translation id="5145883236150621069">קיים קוד שגיאה בתגובת המדיניות</translation>
 <translation id="5146995429444047494">התראות של <ph name="ORIGIN" /> נחסמו</translation>
 <translation id="5148809049217731050">פנים כלפי מעלה</translation>
@@ -1324,7 +1327,6 @@ Del</translation>
 <translation id="5984570616552610254">לחות בתא</translation>
 <translation id="598637245381783098">לא ניתן לפתוח את אפליקציית התשלומים</translation>
 <translation id="5989320800837274978">‏לא צוינו שרתי Proxy קבועים ולא כתובת אתר של סקריפט ‎.pac</translation>
-<translation id="5990559369517809815">בקשות שנשלחו לשרת נחסמו על ידי תוסף.</translation>
 <translation id="5992691462791905444">‏קיפול מסוג Engineering Z</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> תוצאות בשביל '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6008122969617370890">‏סידור מ-N עד 1</translation>
@@ -1853,6 +1855,7 @@ Del</translation>
 <translation id="8086971161893892807">טיוטה</translation>
 <translation id="8088680233425245692">הצגת הפריט נכשלה.</translation>
 <translation id="808894953321890993">שינוי הסיסמה</translation>
+<translation id="8090329638663751802">‏ניתן להשתמש ב-Touch ID לאימות מהיר של זהותך בפעם הבאה שייעשה שימוש על ידך במכשיר הזה לרכישה באמצעי התשלום הזה.</translation>
 <translation id="8090403583893450254">גודל 20</translation>
 <translation id="8091372947890762290">ההפעלה ממתינה בשרת</translation>
 <translation id="8092774999298748321">סגול כהה</translation>

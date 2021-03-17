@@ -1305,15 +1305,6 @@
 <translation id="2757054304033424106">インストールが許可されている拡張機能/アプリのタイプ</translation>
 <translation id="2759224876420453487">マルチプロフィール セッションでのユーザーの動作を制御する</translation>
 <translation id="2761483219396643566">アイドル警告が表示されるまでの時間（バッテリー電源での実行時）</translation>
-<translation id="2764165704281937018"><ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /> に適用する設定のリストです。これはファイルがダウンロードされるときに呼び出されます。
-
-      <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> フィールドは、ウェブページからダウンロードされるファイルをコネクタがサービス プロバイダに送信すべきかどうかを判別する際に使用されます。ウェブページの URL は、「有効」パターンと関連付けられ、かつ「無効」パターンと関連付けられていないパターンに一致する必要があります。ファイルの MIME タイプも、「有効」パターンと関連付けられ、かつ「無効」パターンと関連付けられていないパターンに一致する必要があります。
-
-      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> フィールドでは、この設定が対応している分析サービス プロバイダを指定します。
-
-      <ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" /> フィールドでは、このサービス プロバイダを使用している企業を指定します。<ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /> の設定の一部としてログインが必要な場合、この企業と関連付けられたユーザー アカウントのみが許可されます。
-
-      このポリシーは <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> からのみ設定できます。</translation>
 <translation id="2769952903507981510">リモート アクセス ホストの必須のドメイン名を設定する</translation>
 <translation id="2772955711376920612">このポリシーを有効に設定して、<ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> と <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> を設定した場合、デバイスが対応していれば電力ピークシフトが有効になります。電力ピークシフトの電力管理ポリシーは、ピーク使用時に交流電流の使用量を最小限に抑える省電力ポリシーです。各平日に、電力ピークシフト モードの開始時刻と終了時刻を設定できます。バッテリー残量が指定したしきい値を上回っている限り、この時間帯は、交流電流が接続されている場合でもデバイスの実行にはバッテリーが使用されます。指定した終了時刻を過ぎると、電源に接続されている場合、デバイスの実行には交流電流が使用されますが、バッテリーは充電されません。指定した開始時刻を過ぎると、デバイスは再び、交流電流を使って通常どおりに動作し、バッテリーが充電されます。
 
@@ -1711,15 +1702,6 @@
       <ph name="MS_WIN_NAME" /> では、この機能は <ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみ使用できます。<ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンスまたは MCX を介してドメインに追加されたインスタンスでのみこの機能を使用できます。</translation>
 <translation id="3261592499545947104">更新が必要となる、証明書の有効期限が切れるまでの時間（秒）</translation>
 <translation id="3264793472749429012">デフォルトの検索プロバイダのエンコード</translation>
-<translation id="3265738316212552123">このポリシーでは、特定のベンダー ID と製品 ID の USB デバイスへのアクセスを自動的に許可するサイトの URL パターンリストを指定できます。リストの各項目では、「<ph name="DEVICES_FIELD_NAME" />」と「<ph name="URLS_FIELD_NAME" />」フィールドの両方を指定する必要があります。「<ph name="DEVICES_FIELD_NAME" />」フィールドの各項目には、「<ph name="VENDOR_ID_FIELD_NAME" />」と「<ph name="PRODUCT_ID_FIELD_NAME" />」フィールドを指定できます。「<ph name="VENDOR_ID_FIELD_NAME" />」フィールドを省略した場合、あらゆるデバイスに一致するポリシーが作成されます。「<ph name="PRODUCT_ID_FIELD_NAME" />」フィールドを省略した場合、指定したベンダー ID のあらゆるデバイスに一致するポリシーが作成されます。「<ph name="PRODUCT_ID_FIELD_NAME" />」フィールドを指定して「<ph name="VENDOR_ID_FIELD_NAME" />」フィールドは指定しなかった場合、ポリシーは無効になります。
-
-      USB のアクセス許可モデルでは、指定した URL に最上位のオリジンとして USB デバイスへのアクセスを許可します。埋め込みフレームから USB デバイスにアクセスする必要がある場合は、「usb」<ph name="FEATURE_POLICY_HEADER_NAME" /> ヘッダーを使用してアクセスを許可します。必ず有効な URL を指定してください。無効な URL を指定した場合、このポリシーは無視されます。
-
-      サポートの終了: USB のアクセス許可モデルでは、以前はリクエスト元 URL と埋め込み元 URL の両方を指定することができました。現在は指定できなくなり、次の方法による下位互換のみサポートされています。リクエスト元 URL と埋め込み元 URL の両方を指定した場合、埋め込み元 URL は最上位のオリジンとしてアクセスが許可され、リクエスト元 URL は完全に無視されます。
-
-      このポリシーを未設定のままにした場合、<ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> が設定されていればその設定が使用され、設定されていなければユーザーの個人設定が適用されます。
-
-      このポリシーで指定する URL パターンは、<ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> で指定する URL パターンと競合しないようにする必要があります。競合する場合、このポリシーは <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> と <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" /> より優先されます。</translation>
 <translation id="3273221114520206906">デフォルトのJavaScript 設定</translation>
 <translation id="328347261792478720">デフォルトでは、ブラウザはユーザーに合わせてパーソナライズされたおすすめメディアを表示します。このポリシーを無効に設定すると、ユーザーに対するおすすめは表示されません。このポリシーを有効にするか、未設定のままにすると、おすすめメディアがユーザーに表示されます。</translation>
 <translation id="3284094172359247914">WebUSB API の使用を管理する</translation>
@@ -4875,7 +4857,6 @@
 <translation id="776110834126722255">廃止</translation>
 <translation id="7763614521440615342">[新しいタブ] ページにおすすめのコンテンツを表示します</translation>
 <translation id="7765879851993224640">Smart Lock Signin の使用を許可する</translation>
-<translation id="7774451488719504808"><ph name="JS_ALERT" />、<ph name="JS_CONFIRM" />、<ph name="JS_PROMPT" /> によってトリガーされた JavaScript モード ダイアログは、トリガーしたサブフレームの生成元がメインフレームの生成元とは異なる場合に <ph name="PRODUCT_NAME" /> でブロックされます（参照: https://www.chromestatus.com/feature/5148698084376576）。このポリシーは前述の変更を許可します。このポリシーが有効に設定されている、または未設定の場合、生成元が異なるサブフレームからトリガーされた JavaScript ダイアログはブロックされます。ポリシーが無効に設定されている場合、生成元が異なるサブフレームからトリガーされた JavaScript ダイアログはブロックされません。</translation>
 <translation id="7774768074957326919">システムのプロキシ設定を使用する</translation>
 <translation id="777734450201217641">ログイン画面でユーザー補助機能のショートカットを有効にします。
 

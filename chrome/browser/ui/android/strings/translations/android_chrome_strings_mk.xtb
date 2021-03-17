@@ -178,6 +178,7 @@
 <translation id="2195339740518523951">Добијте ја најсилната безбедност на Chrome</translation>
 <translation id="2200113223741723867">Управувајте со споделувањето податоци за користењето</translation>
 <translation id="2227444325776770048">Продолжи како <ph name="USER_FULL_NAME" /></translation>
+<translation id="22320125457191592">За вас</translation>
 <translation id="2234876718134438132">Синхронизација и услуги на Google</translation>
 <translation id="2239812875700136898">Контролирајте ги сториите од копчето „Опции за Discover“</translation>
 <translation id="2259659629660284697">Извезување лозинки…</translation>
@@ -316,6 +317,7 @@
 <translation id="3208584281581115441">Провери сега</translation>
 <translation id="3211426585530211793">Избришана е ставката <ph name="ITEM_TITLE" /></translation>
 <translation id="321773570071367578">Ако сте ја заборавиле лозинката или сакате да ја измените поставкава, <ph name="BEGIN_LINK" />ресетирајте ја синхронизацијата<ph name="END_LINK" /></translation>
+<translation id="3220943972464248773">За да ги синхронизирате лозинките, потврдете дека сте вие</translation>
 <translation id="3227557059438308877">Google Chrome како безбедносен клуч</translation>
 <translation id="3232754137068452469">Веб-апликација</translation>
 <translation id="3236059992281584593">Остана 1 минута</translation>
@@ -484,6 +486,7 @@
 <translation id="447252321002412580">Помогнете да се подобрат функциите и изведбата на Chrome</translation>
 <translation id="4479972344484327217">Се инсталира <ph name="MODULE" /> за Chrome…</translation>
 <translation id="4487967297491345095">Сите податоци од апликациите на Chrome ќе се избришат трајно. Тука спаѓаат сите датотеки, поставки, сметки, бази на податоци итн.</translation>
+<translation id="449126573531210296">Шифрирај синхронизирани лозинки со сметката на Google</translation>
 <translation id="4493497663118223949">„Лесниот режим“ е вклучен</translation>
 <translation id="4508528996305412043">Менито на картичката за активност е отворено</translation>
 <translation id="4508642716788467538">Изберете јазик</translation>
@@ -507,6 +510,7 @@
 <translation id="4594952190837476234">Офлајн страницава е од <ph name="CREATION_TIME" /> и може да се разликува од онлајн верзијата.</translation>
 <translation id="4605958867780575332">Отстранета ставка: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">Отвори <ph name="WEBAPK_NAME" /></translation>
+<translation id="4619564267100705184">Потврдете дека сте вие</translation>
 <translation id="4634124774493850572">Употреби ја лозинката</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 компромитирана лозинка}one{# компромитирана лозинка}other{# компромитирани лозинки}}</translation>
 <translation id="4650364565596261010">Стандардна поставка за системот</translation>
@@ -779,6 +783,7 @@
 <translation id="6342069812937806050">Пред малку</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Означи како прочитано</translation>
+<translation id="6363990818884053551">За да започне синхронизацијата, потврдете дека сте вие</translation>
 <translation id="6364438453358674297">Да се отстрани предлогот од историјата?</translation>
 <translation id="6378173571450987352">Детали: подредени по количината на податоци што се користат</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> ќе се отвори во Chrome. Ако продолжите, се согласувате со <ph name="BEGIN_LINK1" />Условите за користење на Google<ph name="END_LINK1" />и <ph name="BEGIN_LINK2" />Дополнителните услови за користење на Google Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
@@ -841,6 +846,7 @@
 <translation id="666731172850799929">Отвори во <ph name="APP_NAME" /></translation>
 <translation id="666981079809192359">Известување за приватност на Chrome</translation>
 <translation id="6671495933530132209">Копирај слика</translation>
+<translation id="6674571176963658787">За да започне синхронизацијата, внесете ја лозинката</translation>
 <translation id="6676840375528380067">Да се избришат податоците на Chrome од уредов?</translation>
 <translation id="6697492270171225480">Прикажувај предлози за слични страници кога страницата не може да се најде</translation>
 <translation id="6698801883190606802">Управувајте со синхронизираните податоци</translation>

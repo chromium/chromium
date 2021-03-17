@@ -525,7 +525,6 @@
 <translation id="2991174974383378012">การแชร์กับเว็บไซต์</translation>
 <translation id="2991571918955627853">คุณไม่สามารถไปที่ <ph name="SITE" /> ได้ในขณะนี้เนื่องจากเว็บไซต์ใช้ HSTS โดยปกติข้อผิดพลาดของเครือข่ายและการโจมตีจะเกิดขึ้นเพียงชั่วคราว หน้านี้จึงอาจใช้งานได้ในภายหลัง</translation>
 <translation id="2995517112308048736">ขนาดไฟล์:</translation>
-<translation id="2996674880327704673">คำแนะนำโดย Google</translation>
 <translation id="3002501248619246229">ตรวจสอบสื่อของถาดกระดาษเข้า</translation>
 <translation id="3005723025932146533">แสดงสำเนาที่บันทึกไว้</translation>
 <translation id="3008447029300691911">ป้อน CVC สำหรับ <ph name="CREDIT_CARD" /> เมื่อยืนยันแล้ว รายละเอียดบัตรของคุณจะแชร์กับเว็บไซต์นี้</translation>
@@ -619,6 +618,7 @@
 <translation id="3371076217486966826"><ph name="URL" /> ต้องการ
       • สร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณและติดตามตำแหน่งของกล้อง
       • ใช้กล้องของคุณ</translation>
+<translation id="3372389303668969359">คุณใช้ Windows Hello เพื่อยืนยันตัวตนของคุณได้อย่างรวดเร็วในครั้งถัดไปที่ใช้อุปกรณ์นี้ทำการซื้อด้วยวิธีการชำระเงินนี้</translation>
 <translation id="337363190475750230">ยกเลิกการจัดเตรียมแล้ว</translation>
 <translation id="3377144306166885718">เซิร์ฟเวอร์ใช้ TLS เวอร์ชันที่ล้าสมัย</translation>
 <translation id="3377188786107721145">ข้อผิดพลาดในการแยกวิเคราะห์นโยบาย</translation>
@@ -691,6 +691,7 @@
 <translation id="3615877443314183785">ป้อนวันที่หมดอายุที่ถูกต้อง</translation>
 <translation id="36224234498066874">ล้างข้อมูลการท่องเว็บ</translation>
 <translation id="362276910939193118">แสดงประวัติการเข้าชมทั้งหมด</translation>
+<translation id="3625635938337243871">ข้อมูลการลงชื่อเข้าใช้จะจัดเก็บอยู่ในอุปกรณ์นี้หลังจากออกจากโหมดไม่ระบุตัวตน</translation>
 <translation id="3630155396527302611">หากโปรแกรมอยู่ในรายการที่ได้รับอนุญาตให้เข้าถึงเครือข่ายอยู่แล้ว
       ลองนำโปรแกรมออกจากรายการและเพิ่มกลับเข้าไปใหม่</translation>
 <translation id="3630699740441428070">ผู้ดูแลระบบของอุปกรณ์นี้ได้กำหนดค่าการเชื่อมต่อเครือข่ายของคุณ ซึ่งอาจทำให้เห็นการจราจรของข้อมูลในเครือข่าย รวมถึงเว็บไซต์ที่คุณเข้าชม</translation>
@@ -920,6 +921,7 @@
 <translation id="4477350412780666475">แทร็กถัดไป</translation>
 <translation id="4482953324121162758">ระบบจะไม่แปลเว็บไซต์นี้</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">เข้ารหัสรหัสผ่านที่ซิงค์กับบัญชี Google ของคุณ</translation>
 <translation id="4492519888999857993">ฟีเจอร์เหล่านี้ปิดใช้งานอยู่โดยค่าเริ่มต้น และจะไม่มีให้ใช้งานใน Chrome เวอร์ชันต่อๆ ไป</translation>
 <translation id="4493480324863638523">URL ไม่ถูกต้อง ต้องเป็น URL ที่มีรูปแบบมาตรฐาน เช่น http://example.com หรือ https://example.com</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
@@ -1089,6 +1091,7 @@
 <translation id="5126510351761255129">ยืนยันบัตร</translation>
 <translation id="5135404736266831032">จัดการที่อยู่...</translation>
 <translation id="5138227688689900538">แสดงน้อยลง</translation>
+<translation id="514010763713772514">ชำระเงินได้เร็วขึ้นในครั้งถัดไป</translation>
 <translation id="5145883236150621069">มีรหัสข้อผิดพลาดในการตอบกลับนโยบาย</translation>
 <translation id="5146995429444047494">บล็อกการแจ้งเตือนของ <ph name="ORIGIN" /> ไว้</translation>
 <translation id="5148809049217731050">หงายหน้าขึ้น</translation>
@@ -1309,7 +1312,6 @@
 <translation id="5984570616552610254">ความชื้นของตู้</translation>
 <translation id="598637245381783098">ไม่สามารถเปิดแอปการชำระเงิน</translation>
 <translation id="5989320800837274978">ไม่มีการระบุทั้งพร็อกซีเซิร์ฟเวอร์แบบคงที่หรือ URL สคริปต์ .pac</translation>
-<translation id="5990559369517809815">คำขอไปยังเซิร์ฟเวอร์ถูกบล็อกโดยส่วนขยาย</translation>
 <translation id="5992691462791905444">พับทบแบบ Engineering รูปตัว Z</translation>
 <translation id="6000758707621254961">มีผลการค้นหา "<ph name="SEARCH_TEXT" />" <ph name="RESULT_COUNT" /> รายการ</translation>
 <translation id="6008122969617370890">ลำดับ N ถึง 1</translation>
@@ -1800,7 +1802,7 @@
 <translation id="7938958445268990899">ใบรับรองของเซิร์ฟเวอร์ยังไม่ถูกต้อง</translation>
 <translation id="7942349550061667556">สีแดง</translation>
 <translation id="7947285636476623132">ตรวจสอบปีหมดอายุแล้วลองอีกครั้ง</translation>
-<translation id="7950027195171824198">จัดการค่ากำหนดของคุกกี้ในการตั้งค่า Chrome</translation>
+<translation id="7950027195171824198">จัดการค่ากำหนดเกี่ยวกับคุกกี้ในการตั้งค่า Chrome</translation>
 <translation id="7951415247503192394">(32 บิต)</translation>
 <translation id="7953569069500808819">เย็บขอบด้านบน</translation>
 <translation id="7956713633345437162">บุ๊กมาร์กบนอุปกรณ์เคลื่อนที่</translation>
@@ -1838,6 +1840,7 @@
 <translation id="8086971161893892807">ฉบับร่าง</translation>
 <translation id="8088680233425245692">การดูบทความล้มเหลว</translation>
 <translation id="808894953321890993">เปลี่ยนรหัสผ่าน</translation>
+<translation id="8090329638663751802">คุณใช้ Touch ID เพื่อยืนยันตัวตนของคุณได้อย่างรวดเร็วในครั้งถัดไปที่ใช้อุปกรณ์นี้ทำการซื้อด้วยวิธีการชำระเงินนี้</translation>
 <translation id="8090403583893450254">ขนาด 20</translation>
 <translation id="8091372947890762290">กำลังรอการเปิดใช้งานบนเซิร์ฟเวอร์</translation>
 <translation id="8092774999298748321">ม่วงเข้ม</translation>

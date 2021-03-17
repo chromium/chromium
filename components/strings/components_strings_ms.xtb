@@ -531,7 +531,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2991174974383378012">Berkongsi dengan Tapak Web</translation>
 <translation id="2991571918955627853">Anda tidak boleh melawati <ph name="SITE" /> sekarang kerana tapak web ini menggunakan HSTS. Ralat dan serangan rangkaian biasanya sementara. Oleh sebab itu, halaman ini mungkin akan berfungsi semula kemudian.</translation>
 <translation id="2995517112308048736">Saiz fail:</translation>
-<translation id="2996674880327704673">Cadangan oleh Google</translation>
 <translation id="3002501248619246229">Semak media dulang input</translation>
 <translation id="3005723025932146533">Paparkan salinan disimpan</translation>
 <translation id="3008447029300691911">Masukkan CVC untuk <ph name="CREDIT_CARD" />. Setelah anda mengesahkan, butiran kad anda akan dikongsi dengan tapak ini.</translation>
@@ -625,6 +624,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3371076217486966826"><ph name="URL" /> mahu:
       • Membuat peta 3D bagi persekitaran anda dan menjejak kedudukan kamera
       • Gunakan kamera anda</translation>
+<translation id="3372389303668969359">Anda boleh menggunakan Windows Hello untuk mengesahkan orang itu ialah anda dengan pantas pada kali seterusnya anda menggunakan peranti ini untuk membuat pembelian dengan kaedah pembayaran ini.</translation>
 <translation id="337363190475750230">Nyahperuntukkan</translation>
 <translation id="3377144306166885718">Pelayan menggunakan versi TLS yang sudah lapuk.</translation>
 <translation id="3377188786107721145">Ralat menghuraikan dasar</translation>
@@ -698,6 +698,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3615877443314183785">Masukkan tarikh tamat tempoh yang sah</translation>
 <translation id="36224234498066874">Kosongkan Data Semakan Imbas...</translation>
 <translation id="362276910939193118">Paparkan Sejarah Penuh</translation>
+<translation id="3625635938337243871">Data log masuk akan disimpan pada peranti ini selepas anda keluar daripada mod inkognito.</translation>
 <translation id="3630155396527302611">Jika apl telah disenaraikan sebagai atur cara yang dibenarkan untuk mengakses
       rangkaian, cuba alihkannya keluar daripada senarai dan tambahkannya  
       semula.</translation>
@@ -933,6 +934,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4477350412780666475">Lagu Seterusnya</translation>
 <translation id="4482953324121162758">Tapak ini tidak akan diterjemah.</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">Sulitkan kata laluan yang disegerakkan menggunakan Akaun Google anda</translation>
 <translation id="4492519888999857993">Ciri ini dilumpuhkan secara lalai. Ciri ini tidak akan tersedia pada versi Chrome akan datang.</translation>
 <translation id="4493480324863638523">URL tidak sah. Mestilah URL dengan skema standard, mis http://example.com atau https://example.com.</translation>
 <translation id="4503882053543859973">Seni Bina-D</translation>
@@ -1102,6 +1104,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5126510351761255129">Sahkan kad anda</translation>
 <translation id="5135404736266831032">Urus alamat...</translation>
 <translation id="5138227688689900538">Tunjukkan kurang</translation>
+<translation id="514010763713772514">Daftar keluar lebih pantas selepas ini</translation>
 <translation id="5145883236150621069">Terdapat kod ralat dalam balasan dasar</translation>
 <translation id="5146995429444047494">Pemberitahuan untuk <ph name="ORIGIN" /> disekat</translation>
 <translation id="5148809049217731050">Menghadap ke atas</translation>
@@ -1322,7 +1325,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5984570616552610254">Kelembapan ruang</translation>
 <translation id="598637245381783098">Tidak dapat membuka apl pembayaran</translation>
 <translation id="5989320800837274978">Pelayan proksi tetap begitu juga URL skrip .pac, kedua-duanya tidak ditetapkan.</translation>
-<translation id="5990559369517809815">Permintaan pada pelayan telah disekat oleh sambungan.</translation>
 <translation id="5992691462791905444">Lipatan Z kejuruteraan</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> hasil carian untuk '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6008122969617370890">Susunan N-ke-1</translation>
@@ -1851,6 +1853,7 @@ Butiran tambahan:
 <translation id="8086971161893892807">Draf</translation>
 <translation id="8088680233425245692">Gagal melihat artikel.</translation>
 <translation id="808894953321890993">Tukar kata laluan</translation>
+<translation id="8090329638663751802">Anda boleh menggunakan Touch ID untuk mengesahkan orang itu ialah anda dengan pantas pada kali seterusnya anda menggunakan peranti ini untuk membuat pembelian dengan kaedah pembayaran ini.</translation>
 <translation id="8090403583893450254">Saiz 20</translation>
 <translation id="8091372947890762290">Pengaktifan belum selesai pada pelayan</translation>
 <translation id="8092774999298748321">Ungu Tua</translation>

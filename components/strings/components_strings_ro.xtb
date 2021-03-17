@@ -529,7 +529,6 @@
 <translation id="2991174974383378012">Permiterea accesului pentru site-uri</translation>
 <translation id="2991571918955627853">Nu poți accesa <ph name="SITE" /> acum, deoarece site-ul folosește HSTS. Erorile de rețea și atacurile sunt de obicei temporare și probabil că această pagină va funcționa mai târziu.</translation>
 <translation id="2995517112308048736">Dimensiunea fișierului:</translation>
-<translation id="2996674880327704673">Sugestii de la Google</translation>
 <translation id="3002501248619246229">Verifică suportul din tava de intrare</translation>
 <translation id="3005723025932146533">Afișați o copie salvată</translation>
 <translation id="3008447029300691911">Introdu codul CVC pentru <ph name="CREDIT_CARD" />. După ce confirmi, acest site va avea acces la detaliile cardului tău.</translation>
@@ -623,6 +622,7 @@
 <translation id="3371076217486966826"><ph name="URL" /> vrea:
       • să creeze o hartă 3D a lucrurilor din jurul tău și să urmărească poziția camerei video;
       • să utilizeze camera.</translation>
+<translation id="3372389303668969359">Poți folosi Windows Hello pentru a-ți confirma rapid identitatea data viitoare când folosești dispozitivul pentru a face o achiziție cu această metodă de plată.</translation>
 <translation id="337363190475750230">Scos din uz</translation>
 <translation id="3377144306166885718">Serverul a folosit o versiune TLS învechită.</translation>
 <translation id="3377188786107721145">Eroare la analizarea politicii</translation>
@@ -696,6 +696,7 @@
 <translation id="3615877443314183785">Introdu o dată de expirare validă</translation>
 <translation id="36224234498066874">Șterge datele de navigare...</translation>
 <translation id="362276910939193118">Afișează întregul istoric</translation>
+<translation id="3625635938337243871">Datele de conectare vor fi stocate pe acest dispozitiv după ce ieși din modul incognito.</translation>
 <translation id="3630155396527302611">Dacă este deja inclus ca program căruia i se permite să acceseze rețeaua, încearcă
       să îl elimini din listă și să îl adaugi din nou.</translation>
 <translation id="3630699740441428070">Administratorii acestui dispozitiv au configurat conexiunea la rețea, ceea ce le poate permite să vadă traficul de rețea, inclusiv site-urile pe care le accesezi.</translation>
@@ -930,6 +931,7 @@
 <translation id="4477350412780666475">Melodia următoare</translation>
 <translation id="4482953324121162758">Acest site nu va fi tradus.</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">Criptează parolele sincronizate folosind Contul Google</translation>
 <translation id="4492519888999857993">Funcțiile sunt dezactivate în mod prestabilit. Acestea nu vor fi disponibile în versiunile Chrome ulterioare.</translation>
 <translation id="4493480324863638523">Adresă URL nevalidă. Trebuie să fie o adresă URL cu schemă standard, de exemplu: http://example.com sau https://example.com.</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
@@ -1099,6 +1101,7 @@
 <translation id="5126510351761255129">Confirmă cardul</translation>
 <translation id="5135404736266831032">Gestionează adresele...</translation>
 <translation id="5138227688689900538">Afișează mai puțin</translation>
+<translation id="514010763713772514">Finalizează mai rapid achiziția data viitoare</translation>
 <translation id="5145883236150621069">Răspunsul pentru politică include un cod de eroare</translation>
 <translation id="5146995429444047494">Notificările pentru <ph name="ORIGIN" /> sunt blocate</translation>
 <translation id="5148809049217731050">Cu fața în sus</translation>
@@ -1319,7 +1322,6 @@
 <translation id="5984570616552610254">Umiditatea camerei</translation>
 <translation id="598637245381783098">Nu se poate deschide aplicația de plată</translation>
 <translation id="5989320800837274978">Nu sunt specificate nici servere proxy fixe și nici o adresă URL pentru scripturi .pac.</translation>
-<translation id="5990559369517809815">Solicitările trimise la server au fost blocate de o extensie.</translation>
 <translation id="5992691462791905444">Îndoire în Z pentru inginerie</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> rezultate pentru „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="6008122969617370890">În ordinea de la N-la-1</translation>
@@ -1848,6 +1850,7 @@ Detalii suplimentare:
 <translation id="8086971161893892807">Schiță</translation>
 <translation id="8088680233425245692">Articolul nu a fost vizualizat.</translation>
 <translation id="808894953321890993">Schimbă parola</translation>
+<translation id="8090329638663751802">Poți folosi Touch ID pentru a-ți confirma rapid identitatea data viitoare când folosești dispozitivul pentru a face o achiziție cu această metodă de plată.</translation>
 <translation id="8090403583893450254">Mărimea 20</translation>
 <translation id="8091372947890762290">Se așteaptă activarea pe server</translation>
 <translation id="8092774999298748321">Mov intens</translation>

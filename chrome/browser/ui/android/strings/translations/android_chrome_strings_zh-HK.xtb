@@ -178,6 +178,7 @@
 <translation id="2195339740518523951">取得 Chrome 最強大的安全防護</translation>
 <translation id="2200113223741723867">管理使用情況資料分享設定</translation>
 <translation id="2227444325776770048">以<ph name="USER_FULL_NAME" />的身分繼續</translation>
+<translation id="22320125457191592">為您推薦</translation>
 <translation id="2234876718134438132">同步處理和 Google 服務</translation>
 <translation id="2239812875700136898">按一下 [探索的選項] 按鈕來控制您的報導</translation>
 <translation id="2259659629660284697">匯出密碼…</translation>
@@ -316,6 +317,7 @@
 <translation id="3208584281581115441">立即檢查</translation>
 <translation id="3211426585530211793">已刪除 <ph name="ITEM_TITLE" /></translation>
 <translation id="321773570071367578">如果您忘記密碼短語，或希望變更這項設定，請<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" /></translation>
+<translation id="3220943972464248773">如要同步密碼，請驗證您的身分</translation>
 <translation id="3227557059438308877">以 Google Chrome 作為安全密鑰</translation>
 <translation id="3232754137068452469">網絡應用程式</translation>
 <translation id="3236059992281584593">尚餘 1 分鐘</translation>
@@ -484,6 +486,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="447252321002412580">協助改善 Chrome 的功能和效能</translation>
 <translation id="4479972344484327217">正在為 Chrome 安裝 <ph name="MODULE" />…</translation>
 <translation id="4487967297491345095">所有 Chrome 的應用程式資料將會永久刪除，包括所有檔案、設定、帳戶、資料庫等。</translation>
+<translation id="449126573531210296">使用您的 Google 帳戶為已同步處理的密碼加密</translation>
 <translation id="4493497663118223949">精簡模式已開啟</translation>
 <translation id="4508528996305412043">資訊提供卡選單開咗</translation>
 <translation id="4508642716788467538">請選擇語言</translation>
@@ -507,6 +510,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="4594952190837476234">此離線網頁在 <ph name="CREATION_TIME" />建立，且可能與網上版本不同。</translation>
 <translation id="4605958867780575332">移除咗嘅項目：<ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">開啟 <ph name="WEBAPK_NAME" /></translation>
+<translation id="4619564267100705184">驗證身分</translation>
 <translation id="4634124774493850572">使用密碼</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 個密碼被盜用}other{# 個密碼被盜用}}</translation>
 <translation id="4650364565596261010">系統預設</translation>
@@ -779,6 +783,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="6342069812937806050">剛剛完成</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 個地址}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 個地址}}</translation>
 <translation id="6345878117466430440">標示為已閱讀</translation>
+<translation id="6363990818884053551">如要開始同步，請驗證您的身分</translation>
 <translation id="6364438453358674297">從記錄中移除建議項目嗎？</translation>
 <translation id="6378173571450987352">詳情：依使用數據量排序</translation>
 <translation id="6379829913050047669">「<ph name="APP_NAME" />」將在 Chrome 中開啟。繼續即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 作業系統的《附加服務條款》<ph name="END_LINK2" />。</translation>
@@ -841,6 +846,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="666731172850799929">在「<ph name="APP_NAME" />」中開啟</translation>
 <translation id="666981079809192359">Chrome 私隱聲明</translation>
 <translation id="6671495933530132209">複製圖片</translation>
+<translation id="6674571176963658787">如要開始同步處理，請輸入密碼短語</translation>
 <translation id="6676840375528380067">要清除此裝置上的 Chrome 資料嗎？</translation>
 <translation id="6697492270171225480">找不到網頁時，顯示類似的網頁建議</translation>
 <translation id="6698801883190606802">管理同步資料</translation>

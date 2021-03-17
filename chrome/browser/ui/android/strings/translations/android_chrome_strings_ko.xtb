@@ -178,6 +178,7 @@
 <translation id="2195339740518523951">Chrome의 가장 강력한 보안 기능 사용하기</translation>
 <translation id="2200113223741723867">사용 데이터 공유 관리</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" />(으)로 계속</translation>
+<translation id="22320125457191592">추천</translation>
 <translation id="2234876718134438132">동기화 및 Google 서비스</translation>
 <translation id="2239812875700136898">디스커버 버튼 옵션으로 새 탭 페이지에 표시될 뉴스를 관리하세요</translation>
 <translation id="2259659629660284697">비밀번호 내보내기...</translation>
@@ -316,6 +317,7 @@
 <translation id="3208584281581115441">지금 확인</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> 삭제됨</translation>
 <translation id="321773570071367578">암호를 잊어버렸거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />동기화를 재설정<ph name="END_LINK" />합니다.</translation>
+<translation id="3220943972464248773">비밀번호를 동기화하려면 본인 여부를 인증하세요.</translation>
 <translation id="3227557059438308877">Chrome을 보안 키로 사용</translation>
 <translation id="3232754137068452469">웹 앱</translation>
 <translation id="3236059992281584593">1분 남음</translation>
@@ -484,6 +486,7 @@
 <translation id="447252321002412580">Chrome의 기능 및 성능 개선에 참여</translation>
 <translation id="4479972344484327217">Chrome에 <ph name="MODULE" />을(를) 설치하고 있습니다…</translation>
 <translation id="4487967297491345095">모든 파일, 설정, 계정, 데이터베이스 등을 포함한 Chrome의 모든 앱 데이터가 완전히 삭제됩니다.</translation>
+<translation id="449126573531210296">Google 계정을 사용해 동기화된 비밀번호 암호화</translation>
 <translation id="4493497663118223949">라이트 모드 사용 설정됨</translation>
 <translation id="4508528996305412043">피드 카드 메뉴가 열림</translation>
 <translation id="4508642716788467538">언어 선택</translation>
@@ -507,6 +510,7 @@
 <translation id="4594952190837476234">이 오프라인 페이지는 <ph name="CREATION_TIME" />에 생성되었으며 온라인 버전과 다를 수 있습니다.</translation>
 <translation id="4605958867780575332"><ph name="ITEM_TITLE" /> 삭제됨</translation>
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> 열기</translation>
+<translation id="4619564267100705184">본인 인증</translation>
 <translation id="4634124774493850572">비밀번호 사용</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{유출된 비밀번호 1개}other{유출된 비밀번호 #개}}</translation>
 <translation id="4650364565596261010">시스템 기본값</translation>
@@ -779,6 +783,7 @@
 <translation id="6342069812937806050">방금</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />개}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />개}}</translation>
 <translation id="6345878117466430440">읽음으로 표시</translation>
+<translation id="6363990818884053551">동기화를 시작하려면 본인 여부를 확인하세요.</translation>
 <translation id="6364438453358674297">기록에서 제안을 삭제하시겠습니까?</translation>
 <translation id="6378173571450987352">세부정보: 사용된 데이터 양에 따라 정렬</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> 앱이 Chrome에서 열립니다. 계속하면 <ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" />과 <ph name="BEGIN_LINK2" />Chrome 및 Chrome OS 추가 서비스 약관<ph name="END_LINK2" />에 동의하는 것으로 간주됩니다.</translation>
@@ -841,6 +846,7 @@
 <translation id="666731172850799929"><ph name="APP_NAME" />에서 열기</translation>
 <translation id="666981079809192359">Chrome 개인정보처리방침</translation>
 <translation id="6671495933530132209">이미지 복사</translation>
+<translation id="6674571176963658787">동기화를 시작하려면 암호를 입력하세요.</translation>
 <translation id="6676840375528380067">기기에서 Chrome 데이터를 삭제하시겠습니까?</translation>
 <translation id="6697492270171225480">페이지를 찾을 수 없을 때 비슷한 페이지 제안 표시</translation>
 <translation id="6698801883190606802">동기화된 데이터 관리</translation>

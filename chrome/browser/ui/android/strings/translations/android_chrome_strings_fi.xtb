@@ -98,7 +98,7 @@
 <translation id="1697284962337958118">Lisää…</translation>
 <translation id="1718835860248848330">Viimeinen tunti</translation>
 <translation id="1724977129262658800">Avaa lukitus muokataksesi salasanaasi</translation>
-<translation id="173522743738009831">Tietoja Yksityisyyden hiekkalaatikosta</translation>
+<translation id="173522743738009831">Tietoja Privacy Sandboxista</translation>
 <translation id="1736419249208073774">Tutustu</translation>
 <translation id="1749561566933687563">Synkronoi kirjanmerkit</translation>
 <translation id="17513872634828108">Avoimet välilehdet</translation>
@@ -178,6 +178,7 @@ Hae napauttamalla sanaa. Jos haluat tarkentaa hakuasi, valitse enemmän tai väh
 <translation id="2195339740518523951">Ota Chromen tehokkain suojaus käyttöön</translation>
 <translation id="2200113223741723867">Valitse käyttödatan jakamisasetukset</translation>
 <translation id="2227444325776770048">Jatka tilillä <ph name="USER_FULL_NAME" /></translation>
+<translation id="22320125457191592">Sinulle</translation>
 <translation id="2234876718134438132">Synkronointi ja Google-palvelut</translation>
 <translation id="2239812875700136898">Muuta juttujesi asetuksia Discover-asetuksissa</translation>
 <translation id="2259659629660284697">Vie salasanat…</translation>
@@ -316,6 +317,7 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="3208584281581115441">Tarkista nyt</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> poistettiin.</translation>
 <translation id="321773570071367578">Jos unohdat tunnuslauseesi tai haluat muokata tätä asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name="END_LINK" />.</translation>
+<translation id="3220943972464248773">Synkronoi salasanasi todentamalla henkilöllisyytesi</translation>
 <translation id="3227557059438308877">Google Chrome suojausavaimena</translation>
 <translation id="3232754137068452469">Verkkosovellus</translation>
 <translation id="3236059992281584593">1 minuutti jäljellä</translation>
@@ -347,19 +349,19 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="3384347053049321195">Jaa kuva</translation>
 <translation id="3387650086002190359">Tiedoston <ph name="FILE_NAME" /> lataus epäonnistui tiedostojärjestelmävirheen vuoksi.</translation>
 <translation id="3389286852084373014">Teksti on liian suuri</translation>
-<translation id="3391512812407811893">Yksityisyyden hiekkalaatikko ‑kokeilut</translation>
+<translation id="3391512812407811893">Privacy Sandbox ‑kokeilut</translation>
 <translation id="3398320232533725830">Avaa kirjanmerkkien hallinta</translation>
 <translation id="3414952576877147120">Koko:</translation>
 <translation id="3429160811076349561">Kokeiluominaisuudet ovat poissa käytöstä</translation>
 <translation id="3440975416244667276">Katso lisää olennaisia tietoja koskettamalla pitkään</translation>
 <translation id="3443221991560634068">Päivitä nykyinen sivu</translation>
-<translation id="3451542610083122179">Yksityisyyden hiekkalaatikko on aloite, jonka tarkoituksena on pitää verkko avoimena. Näin sinua voidaan suojata seurantamekanismeilta.
+<translation id="3451542610083122179">Privacy Sandbox on aloite, jonka tarkoituksena on pitää verkko avoimena. Näin sinua voidaan suojata seurantamekanismeilta.
 
 Nykyään verkkosivustot hyödyntävät monia eri teknologioita (esim. kolmannen osapuolen evästeitä) tärkeissä palveluissa, kuten osuvien mainosten näyttämisessä ja sivuston kehityksen mittaamisessa.
 
-Yksityisyyden hiekkalaatikko huolehtii avoimen verkon vakaudesta luomalla parempia tapoja tarjota näitä palveluita – häiritsemättä sivustoja ja estäen samalla sinun seuraamisen vaivihkaa eri puolilla verkkoa.
+Privacy Sandbox huolehtii avoimen verkon vakaudesta luomalla parempia tapoja tarjota näitä palveluita – häiritsemättä sivustoja ja estäen samalla seuraamisesi vaivihkaa eri puolilla verkkoa.
 
-Yksityisyyden hiekkalaatikkoa kehitetään yhä aktiivisesti, ja se on saatavilla vain tietyillä alueilla. Tällä hetkellä sivustot voivat kokeilla Yksityisyyden hiekkalaatikkoa ja jatkaa samalla nykyisten verkkoteknologioiden, esim. kolmansien osapuolten evästeiden, käyttöä. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
+Privacy Sandboxia kehitetään yhä aktiivisesti, ja se on saatavilla vain tietyillä alueilla. Tällä hetkellä sivustot voivat kokeilla Privacy Sandboxia ja jatkaa samalla nykyisten verkkoteknologioiden, esim. kolmansien osapuolten evästeiden, käyttöä. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">Voit valita hakukoneen</translation>
 <translation id="3492207499832628349">Uusi incognito-välilehti</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Lue lisätietoja<ph name="END_LINK" /> suositellusta sisällöstä.</translation>
@@ -484,6 +486,7 @@ Yksityisyyden hiekkalaatikkoa kehitetään yhä aktiivisesti, ja se on saatavill
 <translation id="447252321002412580">Auta parantamaan Chromen ominaisuuksia ja suorituskykyä</translation>
 <translation id="4479972344484327217">Asennetaan <ph name="MODULE" /> Chromeen…</translation>
 <translation id="4487967297491345095">Kaikki Chromen sovellustiedot, mukaan lukien tiedostot, asetukset, tilit ja tietokannat, poistetaan pysyvästi.</translation>
+<translation id="449126573531210296">Salaa synkronoidut salasanat Google-tilisi avulla</translation>
 <translation id="4493497663118223949">Yksinkertaistettu tila on päällä</translation>
 <translation id="4508528996305412043">Fiidikorttien valikko on avattu</translation>
 <translation id="4508642716788467538">Valitse kieli</translation>
@@ -507,6 +510,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4594952190837476234">Offline-sivu vastaa tilannetta <ph name="CREATION_TIME" /> ja saattaa poiketa nykyisestä verkkoversiosta.</translation>
 <translation id="4605958867780575332">Kohde poistettiin: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">Avaa <ph name="WEBAPK_NAME" /></translation>
+<translation id="4619564267100705184">Todenna henkilöllisyytesi</translation>
 <translation id="4634124774493850572">Käytä salasanaa</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 vaarantunut salasana}other{# vaarantunutta salasanaa}}</translation>
 <translation id="4650364565596261010">Järjestelmän oletusarvo</translation>
@@ -779,6 +783,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6342069812937806050">Valmistui juuri</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ja <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> muu}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 ja <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> muuta}}</translation>
 <translation id="6345878117466430440">Merkitse luetuksi</translation>
+<translation id="6363990818884053551">Aloita synkronointi todentamalla henkilöllisyytesi</translation>
 <translation id="6364438453358674297">Poistetaanko ehdotus historiasta?</translation>
 <translation id="6378173571450987352">Lisätiedot: Lajiteltu käytetyn datan mukaan</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> avautuu Chromessa. Jatkamalla hyväksyt <ph name="BEGIN_LINK1" />Googlen käyttöehdot<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />Chromen ja Chrome-käyttöjärjestelmän lisäkäyttöehdot<ph name="END_LINK2" />.</translation>
@@ -841,6 +846,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="666731172850799929">Avaa sovelluksessa <ph name="APP_NAME" /></translation>
 <translation id="666981079809192359">Chromen tietosuojailmoitus</translation>
 <translation id="6671495933530132209">Kopioi kuva</translation>
+<translation id="6674571176963658787">Aloita synkronointi lisäämällä tunnuslause</translation>
 <translation id="6676840375528380067">Poistetaanko Chrome-data tältä laitteelta?</translation>
 <translation id="6697492270171225480">Näytä ehdotuksia samankaltaisista sivuista, kun sivua ei löydy</translation>
 <translation id="6698801883190606802">Hallinnoi synkronoituja tietoja</translation>
@@ -1060,7 +1066,7 @@ Incognito-käyttökerran data tyhjennetään Chromesta vain, kun <ph name="BEGIN
 <translation id="8156139159503939589">Mitä kieliä ymmärrät?</translation>
 <translation id="8168435359814927499">Sisältö</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> tiedostoa jäljellä</translation>
-<translation id="8189750580333936930">Tietosuojan hiekkalaatikko</translation>
+<translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">1 päivä jäljellä</translation>
 <translation id="8200772114523450471">Jatka</translation>
 <translation id="8209050860603202033">Avaa kuva</translation>

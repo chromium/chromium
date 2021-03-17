@@ -531,7 +531,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2991174974383378012">Jakaminen verkkosivustojen kanssa</translation>
 <translation id="2991571918955627853"><ph name="SITE" /> ei ole juuri nyt käytettävissä, koska se käyttää HSTS:ää. Verkkovirheet ja hyökkäykset ovat yleensä väliaikaisia, joten sivu luultavasti toimii myöhemmin.</translation>
 <translation id="2995517112308048736">Tiedoston koko:</translation>
-<translation id="2996674880327704673">Googlen ehdotukset</translation>
 <translation id="3002501248619246229">Tarkista syöttölokeron media</translation>
 <translation id="3005723025932146533">Näytä tallennettu kopio</translation>
 <translation id="3008447029300691911">Anna kortin <ph name="CREDIT_CARD" /> CVC. Vahvistamisen jälkeen korttisi tiedot jaetaan sivuston kanssa.</translation>
@@ -626,6 +625,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3371076217486966826"><ph name="URL" /> haluaa
       • luoda 3D-kartan ympäristöstäsi ja seurata kameran asentoa
       • käyttää kameraasi</translation>
+<translation id="3372389303668969359">Windows Hellon avulla voit todentaa nopeasti henkilöllisyytesi seuraavan kerran, kun ostat jotain tällä laitteella ja maksutavalla.</translation>
 <translation id="337363190475750230">Poistettu käytöstä</translation>
 <translation id="3377144306166885718">Palvelin käytti vanhentunutta TLS:n versiota.</translation>
 <translation id="3377188786107721145">Virhe jäsennettäessä käytäntöä</translation>
@@ -699,6 +699,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3615877443314183785">Anna kelvollinen viimeinen voimassaolopäivä.</translation>
 <translation id="36224234498066874">Poista selaustiedot...</translation>
 <translation id="362276910939193118">Näytä koko selaushistoria</translation>
+<translation id="3625635938337243871">Kirjautumisdata pysyy tällä laitteella incognito-tilan sulkemisen jälkeen.</translation>
 <translation id="3630155396527302611">Jos sillä on jo verkon käyttöoikeus, kokeile sen poistamista
       sallittujen ohjelmien luettelosta ja lisäämistä sitten uudelleen.</translation>
 <translation id="3630699740441428070">Laitteen järjestelmänvalvojat ovat valinneet yhteysasetuksesi, joten he saattavat nähdä verkkoliikenteen, myös avaamasi sivustot.</translation>
@@ -933,6 +934,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4477350412780666475">Seuraava kappale</translation>
 <translation id="4482953324121162758">Tätä sivustoa ei käännetä.</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">Salaa synkronoidut salasanat Google-tilisi avulla</translation>
 <translation id="4492519888999857993">Nämä ominaisuudet ovat oletuksena poissa käytöstä. Ne eivät ole käytettävissä Chromen tulevissa versioissa.</translation>
 <translation id="4493480324863638523">Virheellinen URL-osoite URL-osoitteen on oltava vakiomallien mukainen, esimerkiksi "http://example.com" tai "https://example.com".</translation>
 <translation id="4503882053543859973">Arkkitehti-D</translation>
@@ -1102,6 +1104,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5126510351761255129">Vahvista kortti</translation>
 <translation id="5135404736266831032">Hallinnoi osoitteita…</translation>
 <translation id="5138227688689900538">Näytä vähemmän</translation>
+<translation id="514010763713772514">Maksa nopeammin ensi kerralla</translation>
 <translation id="5145883236150621069">Käytäntövastaus sisältää virhekoodin</translation>
 <translation id="5146995429444047494">Ilmoitukset on estetty: <ph name="ORIGIN" /></translation>
 <translation id="5148809049217731050">Tulostuspuoli ylöspäin</translation>
@@ -1322,7 +1325,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5984570616552610254">Huoneen kosteus</translation>
 <translation id="598637245381783098">Maksusovelluksen avaaminen ei onnistu.</translation>
 <translation id="5989320800837274978">Kiinteitä välityspalvelimia tai .pac-URL-osoitetta ei ole määritetty.</translation>
-<translation id="5990559369517809815">Laajennus esti palvelinpyynnöt.</translation>
 <translation id="5992691462791905444">Kolmoistaite (engineering)</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> tulosta: <ph name="SEARCH_TEXT" /></translation>
 <translation id="6008122969617370890">N-to-1-järjestys</translation>
@@ -1851,6 +1853,7 @@ Lisätietoja:
 <translation id="8086971161893892807">Luonnos</translation>
 <translation id="8088680233425245692">Artikkelin näyttäminen epäonnistui.</translation>
 <translation id="808894953321890993">Vaihda salasana</translation>
+<translation id="8090329638663751802">Touch ID:n avulla voit todentaa nopeasti henkilöllisyytesi seuraavan kerran, kun ostat jotain tällä laitteella ja maksutavalla.</translation>
 <translation id="8090403583893450254">Koko 20</translation>
 <translation id="8091372947890762290">Aktivointi odottaa palvelimella</translation>
 <translation id="8092774999298748321">Tummanvioletti</translation>

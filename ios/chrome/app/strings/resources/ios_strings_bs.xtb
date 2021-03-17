@@ -333,6 +333,7 @@ Slijedite korake u nastavku:</translation>
 <translation id="457386861538956877">Više...</translation>
 <translation id="4592368184551360546">Tastatura</translation>
 <translation id="461440297010471931">Pretraživanje s Googleom</translation>
+<translation id="4619564267100705184">Potvrdite identitet</translation>
 <translation id="4619615317237390068">Kartice iz drugih uređaja</translation>
 <translation id="4620246317052452550">Pročitane stranice</translation>
 <translation id="4630540211544979320">Prevedi stranice</translation>
@@ -548,6 +549,7 @@ Pokušajte koristiti jedinstvenu lozinku za svaku web lokaciju.</translation>
 <translation id="6656103420185847513">Uređivanje mape</translation>
 <translation id="6657585470893396449">Lozinka</translation>
 <translation id="6668619169535738264">Uredi oznaku</translation>
+<translation id="6674571176963658787">Da pokrenete sinhronizaciju, unesite pristupni izraz</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6691331417640343772">Upravljajte sinhroniziranim podacima na Google kontrolnoj tabli</translation>
 <translation id="6710079714193676716">Upravlja vaša organizacija. Neke funkcije možda neće biti dostupne. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -611,6 +613,7 @@ Pokušajte koristiti jedinstvenu lozinku za svaku web lokaciju.</translation>
 <translation id="7346909386216857016">Uredu, razumijem</translation>
 <translation id="734758817008927353">Opcije za čuvanje kartice</translation>
 <translation id="7348502496356775519">Označi</translation>
+<translation id="7353432112255316844">Potvrdite identitet</translation>
 <translation id="7383797227493018512">Lista za čitanje</translation>
 <translation id="7398893703713203428">Kreiraj link</translation>
 <translation id="739941347996872055">Prethodna kartica</translation>
@@ -690,6 +693,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8105368624971345109">Isključi</translation>
 <translation id="8114753159095730575">Dostupno je preuzimanje fajla. Opcije koje su dostupne pri dnu ekrana.</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
+<translation id="8156478151976189188">Sinhronizacija lozinki ne funkcionira</translation>
 <translation id="8197543752516192074">Prevedi stranicu</translation>
 <translation id="8205564605687841303">Otkaži</translation>
 <translation id="8206354486702514201">Ovu postavku je nametnuo vaš administrator.</translation>

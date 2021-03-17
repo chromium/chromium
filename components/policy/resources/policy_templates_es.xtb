@@ -671,6 +671,10 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
         |TIME_LIMITS| aplica un límite de uso diario y hace que la aplicación deje de estar disponible cuando se alcance ese límite durante el día determinado. El límite de uso se especifica en |daily_limit_mins| y se restablece diariamente a la hora UTC especificada en |reset_at|.
         Esta política solo se usa para usuarios infantiles.
         Esta política es complementaria a "UsageTimeLimit". Las restricciones especificadas en "UsageTimeLimit", como el tiempo de pantalla y la hora de dormir, se aplicarán independientemente de lo que se haya especificado en "PerAppTimeLimits".</translation>
+<translation id="1916266055944569995">Si se asigna un valor a esta política, se definirá el valor de retorno de la API Managed Configuration para un origen determinado.
+
+      La API Managed Configuration es una configuración clave-valor a la que se puede acceder llamando a la función de JavaScript navigator.device.getManagedConfiguration(). Esta API solo está disponible para orígenes que se correspondan con aplicaciones web de instalación forzada mediante <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
+     </translation>
 <translation id="1919802376548418720">Usa la política del centro de distribución de llaves (KDC) para delegar credenciales.</translation>
 <translation id="1920046221095339924">Permitir sesión gestionada en el dispositivo</translation>
 <translation id="1920772397574801429">Si se define esta política, se especificará el tipo de cuentas proporcionadas por la aplicación de autenticación de Android compatible con la autenticación <ph name="HTTP_NEGOTIATE" /> (como la autenticación Kerberos). Esta información debe estar disponible desde el proveedor de la aplicación de autenticación. Para obtener más información, consulta The Chromium Projects (https://goo.gl/hajyfN).
@@ -1335,15 +1339,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="2757054304033424106">Tipos de extensiones o aplicaciones que se pueden instalar</translation>
 <translation id="2759224876420453487">Controlar el comportamiento del usuario en una sesión de varios perfiles</translation>
 <translation id="2761483219396643566">Tiempo de espera de advertencia de inactividad cuando el dispositivo funciona con batería</translation>
-<translation id="2764165704281937018">Lista con los ajustes que se van a aplicar al conector <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, que se activa cuando se descarga un archivo.
-
-      Los campos <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> se usan para determinar si el conector debe enviar un archivo al proveedor de servicios cuando se descargue desde una página web. La URL de la página web debe coincidir con un patrón asociado a un patrón enable y no asociado a un patrón disable.  El tipo de MIME del archivo también debe coincidir con un patrón asociado a un patrón enable y no asociado a un patrón disable.
-
-      El campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica a qué proveedor de servicios de análisis corresponden los ajustes.
-
-      El campo <ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" /> identifica la empresa con el proveedor de servicios.  Cuando se le pide al usuario que inicie sesión como parte de la configuración de <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, solo se permiten las cuentas de usuario asociadas a esta empresa.
-
-      Esta política solo se puede establecer desde la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="2769952903507981510">Configurar el nombre de dominio obligatorio para hosts de acceso remoto</translation>
 <translation id="2772955711376920612">Si se habilita la política y se establecen <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> y <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" />, se mantiene activado el cambio de alimentación en picos (en caso de ser compatible con el dispositivo). La política de gestión del cambio de alimentación en picos es una política de ahorro de energía que minimiza el uso de corriente alterna durante las horas en las que más energía se utiliza del día. Para ejecutar el modo de cambio de alimentación en picos, se puede configurar una hora de inicio y de finalización para cada día de la semana. Siempre y cuando la batería se mantenga por encima del umbral especificado, el dispositivo funciona con la batería durante esas horas (aunque esté conectada la corriente alterna). Después de la hora de finalización especificada, el dispositivo funcionará con corriente alterna (si está conectada), pero no cargará la batería. El dispositivo volverá a funcionar con normalidad usando la corriente alterna y cargando la batería después de la hora de inicio de carga especificada.
 
@@ -1761,15 +1756,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       En <ph name="MS_WIN_NAME" />, esta política solo está disponible en las instancias vinculadas a un dominio de <ph name="MS_AD_NAME" /> que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
 <translation id="3261592499545947104">Número de segundos restantes para que caduque un certificado cuando se deba activar la renovación</translation>
 <translation id="3264793472749429012">Codificaciones del proveedor de búsquedas predeterminadas</translation>
-<translation id="3265738316212552123">Habilitar esta política te permite añadir una lista con patrones de URL que especifica qué sitios obtendrán permiso automáticamente para acceder a un dispositivo USB con el ID de proveedor y de producto establecidos. Para que la política sea válida, cada elemento de la lista debe tener los campos <ph name="DEVICES_FIELD_NAME" /> y <ph name="URLS_FIELD_NAME" />. Cada elemento del campo <ph name="DEVICES_FIELD_NAME" /> puede tener un campo <ph name="VENDOR_ID_FIELD_NAME" /> y un campo <ph name="PRODUCT_ID_FIELD_NAME" />. Si se omite el campo <ph name="VENDOR_ID_FIELD_NAME" />, se creará una política válida con cualquier dispositivo. Si se omite el campo <ph name="PRODUCT_ID_FIELD_NAME" />, se creará una política válida con cualquier dispositivo con el ID de proveedor proporcionado. Una política que tenga un campo <ph name="PRODUCT_ID_FIELD_NAME" />, pero que no tenga un campo <ph name="VENDOR_ID_FIELD_NAME" />, no es válida.
-
-      El modelo de permisos USB otorgará a la URL especificada el permiso de acceso al dispositivo USB como origen de nivel destacado. Si los marcos insertados necesitan acceder a dispositivos USB, se deberá usar el encabezado 'usb' <ph name="FEATURE_POLICY_HEADER_NAME" /> para otorgar acceso. La URL debe ser válida; si no, se ignorará la política.
-
-      Obsoleto: El modelo de permisos USB permitía especificar tanto la URL solicitante como la URL de inserción. Esto ya no es así y solo se aplica a la retrocompatibilidad de la siguiente manera: si se especifican tanto una URL solicitante como una URL de inserción, se otorgará el permiso de nivel destacado a la URL de inserción y la URL solicitante se ignorará por completo.
-
-      Si no se le asigna un valor a la política, se aplicará <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> si se ha definido previamente. Si no se ha definido, se aplicará la configuración personal del usuario.
-
-      Los patrones de URL de esta política no deben entrar en conflicto con los de la política <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />. En caso de conflicto, esta política prevalece sobre <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> y <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="3273221114520206906">Configuración de JavaScript predeterminada</translation>
 <translation id="328347261792478720">De forma predeterminada, el navegador mostrará recomendaciones de contenido multimedia personalizadas al usuario. Si se inhabilita esta política, no se mostrarán estas recomendaciones al usuario. Si se habilita esta política o no se establece, se mostrarán recomendaciones de contenido multimedia al usuario.</translation>
 <translation id="3284094172359247914">Controlar el uso de la API WebUSB</translation>
@@ -1855,7 +1841,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
       Esta política no tendrá efecto si no se define la política <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />.</translation>
 <translation id="341285788698114069">Esta política controla la prioridad del proceso de audio en Windows.
-      Si se habilita la política, el proceso de audio se ejecutará con una prioridad normal superior.
+      Si se habilita la política, el proceso de audio se ejecutará con una prioridad superior a la normal.
       Si se inhabilita esta política, el proceso de audio se ejecutará con una prioridad normal.
       Si no se define esta política, se usará la configuración predeterminada del proceso de audio.
       Esta política se ha creado como medida temporal para ofrecer a las empresas la posibilidad de
@@ -5050,10 +5036,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="776110834126722255">Obsoleta</translation>
 <translation id="7763614521440615342">Mostrar sugerencias de contenido en la página Nueva pestaña</translation>
 <translation id="7765879851993224640">Permitir que se use el inicio de sesión con Smart Lock</translation>
-<translation id="7774451488719504808">Tal como se describe en la página https://www.chromestatus.com/feature/5148698084376576, los cuadros de diálogo modales de JavaScript, activados por <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" /> y <ph name="JS_PROMPT" />, se bloquearán en <ph name="PRODUCT_NAME" /> si se activan desde un submarco cuyo origen sea diferente al del marco principal.
-       Esta política permite anular ese cambio.
-       Si se habilita esta política o no se le asigna ningún valor, se bloquearán los cuadros de diálogo de JavaScript que se activen desde un submarco de origen diferente.
-       Si se inhabilita esta política, no se bloquearán los cuadros de diálogo de JavaScript que se activen desde un submarco de origen diferente.</translation>
 <translation id="7774768074957326919">Utilizar configuración de proxy del sistema</translation>
 <translation id="777734450201217641">Esta política habilita las combinaciones de teclas para las funciones de accesibilidad en la pantalla de inicio de sesión.
 

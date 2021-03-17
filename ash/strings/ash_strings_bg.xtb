@@ -92,6 +92,7 @@
 <translation id="1698760176351776263">IPv6 адрес: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Работен кът: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Настройки за мрежата</translation>
+<translation id="1713296079175516843">От съображения за сигурност това периферно устройство не се поддържа</translation>
 <translation id="1719094688023114093">Функцията „Надписи на живо“ е включена.</translation>
 <translation id="1720011244392820496">Включване на функцията за синхронизиране на Wi-Fi</translation>
 <translation id="1743570585616704562">Не е разпознато</translation>
@@ -944,6 +945,7 @@
 <translation id="8936501819958976551">деактивирана</translation>
 <translation id="8938800817013097409">Устройство с USB-C (десният порт на гърба)</translation>
 <translation id="8940956008527784070">Батерията е изтощена (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8951539504029375108">Само одобрени устройства Thunderbolt са съвместими с вашия Chromebook</translation>
 <translation id="8982906748181120328">Видимост наблизо</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Използвате <ph name="IME_NAME" /></translation>
