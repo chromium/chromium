@@ -2432,6 +2432,7 @@ void LayoutBlockFlow::AddVisualOverflowFromInlineChildren() {
     // direction only for now.
     for (const NGPhysicalBoxFragment& fragment : PhysicalFragments()) {
       if (const NGFragmentItems* items = fragment.Items()) {
+        PhysicalRect children_rect;
         for (NGInlineCursor cursor(fragment, *items); cursor;
              cursor.MoveToNextSkippingChildren()) {
           const NGFragmentItem* child = cursor.CurrentItem();
@@ -2441,9 +2442,10 @@ void LayoutBlockFlow::AddVisualOverflowFromInlineChildren() {
           PhysicalRect child_rect = child->InkOverflow();
           if (!child_rect.IsEmpty()) {
             child_rect.offset += child->OffsetInContainerFragment();
-            AddContentsVisualOverflow(child_rect);
+            children_rect.Unite(child_rect);
           }
         }
+        AddContentsVisualOverflow(children_rect);
       } else if (fragment.HasFloatingDescendantsForPaint()) {
         AddVisualOverflowFromFloats(fragment);
       }
