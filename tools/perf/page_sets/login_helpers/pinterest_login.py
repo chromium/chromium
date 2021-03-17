@@ -68,4 +68,4 @@ def LoginMobileAccount(action_runner, credential,
   })()
   """
   _LoginAccount(action_runner, credential, credentials_path)
-  action_runner.WaitForJavaScriptCondition(wait_for_local_storage, timeout=10)
+  action_runner.WaitForJavaScriptCondition(wait_for_local_storage, timeout=20)
