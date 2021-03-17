@@ -9,7 +9,7 @@
 
 <link rel="import" href="/components/common_styles.html">
 <link rel="import" href="/components/hd_iron_icon.html">
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
 <link rel="import" href="/components/login_screen_behavior.html">
 <link rel="import" href="/components/multi_step_behavior.html">
@@ -32,8 +32,23 @@
         vertical-align: top;
       }
 
+      :host-context(html[new-layout]) #contentEnrolling {
+        display: none;
+      }
+
+      :host-context(html:not([new-layout])) #subtitleEnrolling {
+        display: none;
+      }
+
       #attributePromptMessage {
         color: black;
+      }
+
+      :host-context(html:not(html[new-layout])) .illustration {
+        display: none;
+      }
+      :host-context(html[new-layout]) .illustration-old {
+        display: none;
       }
     </style>
     <!-- OAUTH GAIA DIALOG -->
@@ -47,19 +62,24 @@
     </gaia-dialog>
 
     <!-- ENROLLMENT IN PROGRESS (SPINNER) DIALOG -->
-    <oobe-dialog id="step-working" for-step="working"
-        title-key="oauthEnrollScreenTitle">
-      <hd-iron-icon slot="oobe-icon"
+    <oobe-adaptive-dialog id="step-working" for-step="working">
+      <hd-iron-icon slot="icon"
           icon1x="oobe-32:enterprise" icon2x="oobe-64:enterprise">
       </hd-iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'oauthEnrollScreenTitle')]]
+      </h1>
+      <p slot="subtitle" id="subtitleEnrolling">
+        [[i18nDynamic(locale, 'oauthEnrollWorking')]]
+      </p>
       <paper-progress slot="progress" indeterminate>
       </paper-progress>
-      <div slot="footer" class="flex layout vertical" role="alert">
-        <div class="step-message">
+      <div slot="content" class="flex layout vertical" role="alert">
+        <div class="step-message" id="contentEnrolling">
           [[i18nDynamic(locale, 'oauthEnrollWorking')]]
         </div>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
 
     <offline-ad-login-element id="step-ad-join" is-domain-join
         for-step="ad-join"
@@ -78,14 +98,14 @@
             AttributePrompt: [ 'Done' ]
             ActiveDirectoryJoin: [ 'Try Again' ]
     -->
-    <oobe-dialog id="step-error" has-buttons role="alert"
+    <oobe-adaptive-dialog id="step-error" role="alert"
         for-step="error, attribute-prompt-error, active-directory-join-error">
-      <hd-iron-icon slot="oobe-icon"
+      <hd-iron-icon slot="icon"
                     icon1x="oobe-32:warning"
                     icon2x="oobe-64:warning"></hd-iron-icon>
       <h1 slot="title">[[i18nDynamic(locale, 'oauthEnrollErrorTitle')]]</h1>
       <div id="errorMsg" slot="subtitle">[[errorText_]]</div>
-      <div slot="footer"
+      <div slot="content"
           class="flex layout vertical center center-justified">
         <img srcset="images/1x/error.svg 1x,
                      images/2x/error.svg 2x"
@@ -135,41 +155,53 @@
         </div>
 
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
 
     <!-- SUCCESS DIALOG -->
-    <oobe-dialog has-buttons id="step-success" for-step="success" role="alert"
-        title-key="oauthEnrollSuccessTitle" footer-shrinkable>
-      <hd-iron-icon slot="oobe-icon"
+    <oobe-adaptive-dialog id="step-success" for-step="success" role="alert"
+        footer-shrinkable>
+      <hd-iron-icon slot="icon"
           icon1x="oobe-32:enterprise" icon2x="oobe-64:enterprise">
       </hd-iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'oauthEnrollSuccessTitle')]]
+      </h1>
       <!-- Hide the subtitle if the domain could not be determined. -->
       <div hidden="[[isEmpty_(domainManager_)]]" class="self-start"
           slot="subtitle">
         <div>[[successText_(locale, deviceName_, domainManager_)]]</div>
       </div>
-      <div slot="footer" class="flex layout vertical center end-justified">
+      <div slot="content" class="flex layout vertical center center-justified">
         <img srcset="images/enrollment_success_illustration_1x.png 1x,
-                images/enrollment_success_illustration_2x.png 2x"
+                     images/enrollment_success_illustration_2x.png 2x"
             alt$="[[i18nDynamic(locale,
                 'enrollmentSuccessIllustrationTitle')]]"
-            class="oobe-illustration">
+            class="oobe-illustration illustration-old">
+        <img src="images/enrollment_complete.svg"
+            alt$="[[i18nDynamic(locale,
+                  'enrollmentSuccessIllustrationTitle')]]"
+            class="oobe-illustration illustration">
       </div>
-      <div slot="bottom-buttons" class="layout horizontal end-justified">
+      <div slot="bottom-buttons">
         <oobe-text-button inverse id="successDoneButton"
             text-key="oauthEnrollDone" on-click="onEnrollmentFinished_"
             class="focus-on-show"></oobe-text-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
 
     <!-- ATTRIBUTE PROMPT DIALOG -->
-    <oobe-dialog id="step-attribute-prompt" for-step="attribute-prompt"
-        has-buttons title-key="oauthEnrollScreenTitle"
-        subtitle-key="oauthEnrollDeviceInformation">
-      <hd-iron-icon slot="oobe-icon"
+    <oobe-adaptive-dialog id="step-attribute-prompt"
+        for-step="attribute-prompt">
+      <hd-iron-icon slot="icon"
           icon1x="oobe-32:enterprise" icon2x="oobe-64:enterprise">
       </hd-iron-icon>
-      <div slot="footer" class="flex layout vertical">
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'oauthEnrollScreenTitle')]]
+      </h1>
+      <p slot="subtitle">
+        [[i18nDynamic(locale, 'oauthEnrollDeviceInformation')]]
+      </p>
+      <div slot="content" class="flex layout vertical">
         <div class="step-message">
           <span id="attributePromptMessage">
             [[i18nDynamic(locale, 'oauthEnrollAttributeExplanation')]]
@@ -189,7 +221,7 @@
           </cr-input>
         </div>
       </div>
-      <div slot="bottom-buttons" class="layout horizontal end-justified">
+      <div slot="bottom-buttons">
         <oobe-text-button id="attributesSkip"
             text-key="oauthEnrollSkip" on-click="skipAttributes_">
         </oobe-text-button>
@@ -197,6 +229,6 @@
         <oobe-next-button id="attributesSubmit"
             on-click="submitAttributes_"></oobe-next-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
   </template>
 </dom-module>
