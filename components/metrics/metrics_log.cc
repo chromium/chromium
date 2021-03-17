@@ -214,12 +214,7 @@ void MetricsLog::RecordCoreSystemProfile(
 
   metrics::SystemProfileProto::Hardware* hardware =
       system_profile->mutable_hardware();
-#if !defined(OS_IOS)
-  // On iOS, OperatingSystemArchitecture() returns values like iPad4,4 which is
-  // not the actual CPU architecture. Don't set it until the API is fixed. See
-  // crbug.com/370104 for details.
   hardware->set_cpu_architecture(base::SysInfo::OperatingSystemArchitecture());
-#endif
   auto app_os_arch = base::SysInfo::ProcessCPUArchitecture();
   if (!app_os_arch.empty())
     hardware->set_app_cpu_architecture(app_os_arch);
