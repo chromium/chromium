@@ -88,7 +88,7 @@ class MEDIA_EXPORT VideoRendererImpl
   // VideoRendererSink::RenderCallback implementation.
   scoped_refptr<VideoFrame> Render(base::TimeTicks deadline_min,
                                    base::TimeTicks deadline_max,
-                                   bool background_rendering) override;
+                                   RenderingMode rendering_mode) override;
   void OnFrameDropped() override;
   base::TimeDelta GetPreferredRenderInterval() override;
 

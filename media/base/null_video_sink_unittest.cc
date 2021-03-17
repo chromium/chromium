@@ -23,6 +23,8 @@ using testing::Return;
 
 namespace media {
 
+using RenderingMode = VideoRendererSink::RenderCallback::RenderingMode;
+
 class NullVideoSinkTest : public testing::Test,
                           public VideoRendererSink::RenderCallback {
  public:
@@ -57,7 +59,7 @@ class NullVideoSinkTest : public testing::Test,
   MOCK_METHOD3(Render,
                scoped_refptr<VideoFrame>(base::TimeTicks,
                                          base::TimeTicks,
-                                         bool));
+                                         RenderingMode));
   MOCK_METHOD0(OnFrameDropped, void());
 
   MOCK_METHOD1(FrameReceived, void(scoped_refptr<VideoFrame>));
@@ -80,7 +82,8 @@ TEST_F(NullVideoSinkTest, BasicFunctionality) {
     sink->Start(this);
     const base::TimeTicks current_time = tick_clock_.NowTicks();
     const base::TimeTicks current_interval_end = current_time + kInterval;
-    EXPECT_CALL(*this, Render(current_time, current_interval_end, false))
+    EXPECT_CALL(*this, Render(current_time, current_interval_end,
+                              RenderingMode::kNormal))
         .WillOnce(Return(test_frame));
     WaitableMessageLoopEvent event;
     EXPECT_CALL(*this, FrameReceived(test_frame))
@@ -98,7 +101,7 @@ TEST_F(NullVideoSinkTest, BasicFunctionality) {
     SCOPED_TRACE("Waiting for second render call.");
     WaitableMessageLoopEvent event;
     scoped_refptr<VideoFrame> test_frame_2 = CreateFrame(kInterval);
-    EXPECT_CALL(*this, Render(_, _, true))
+    EXPECT_CALL(*this, Render(_, _, RenderingMode::kBackground))
         .WillOnce(Return(test_frame))
         .WillOnce(Return(test_frame_2));
     EXPECT_CALL(*this, FrameReceived(test_frame)).Times(0);
@@ -141,11 +144,13 @@ TEST_F(NullVideoSinkTest, ClocklessFunctionality) {
   for (int i = 0; i < kTestRuns; ++i) {
     if (i < kTestRuns - 1) {
       EXPECT_CALL(*this, Render(current_time + i * interval,
-                                current_time + (i + 1) * interval, false))
+                                current_time + (i + 1) * interval,
+                                RenderingMode::kNormal))
           .WillOnce(Return(test_frame));
     } else {
       EXPECT_CALL(*this, Render(current_time + i * interval,
-                                current_time + (i + 1) * interval, false))
+                                current_time + (i + 1) * interval,
+                                RenderingMode::kNormal))
           .WillOnce(
               DoAll(RunOnceClosure(event.GetClosure()), Return(test_frame_2)));
     }

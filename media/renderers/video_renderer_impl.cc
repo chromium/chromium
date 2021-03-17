@@ -221,7 +221,7 @@ void VideoRendererImpl::Initialize(
 scoped_refptr<VideoFrame> VideoRendererImpl::Render(
     base::TimeTicks deadline_min,
     base::TimeTicks deadline_max,
-    bool background_rendering) {
+    RenderingMode rendering_mode) {
   TRACE_EVENT_BEGIN1("media", "VideoRendererImpl::Render", "id",
                      media_log_->id());
   base::AutoLock auto_lock(lock_);
@@ -235,6 +235,9 @@ scoped_refptr<VideoFrame> VideoRendererImpl::Render(
   // Due to how the |algorithm_| holds frames, this should never be null if
   // we've had a proper startup sequence.
   DCHECK(result);
+
+  const bool background_rendering =
+      rendering_mode == RenderingMode::kBackground;
 
   // Declare HAVE_NOTHING if we reach a state where we can't progress playback
   // any further.  We don't want to do this if we've already done so, reached

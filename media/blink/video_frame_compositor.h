@@ -211,7 +211,9 @@ class MEDIA_BLINK_EXPORT VideoFrameCompositor : public VideoRendererSink,
 
   // Called by |background_rendering_timer_| when enough time elapses where we
   // haven't seen a Render() call.
-  void BackgroundRender();
+  void BackgroundRender(
+      VideoRendererSink::RenderCallback::RenderingMode mode =
+          VideoRendererSink::RenderCallback::RenderingMode::kBackground);
 
   // If |callback_| is available, calls Render() with the provided properties.
   // Updates |is_background_rendering_|, |last_interval_|, and resets
@@ -219,7 +221,7 @@ class MEDIA_BLINK_EXPORT VideoFrameCompositor : public VideoRendererSink,
   // available via GetCurrentFrame().
   bool CallRender(base::TimeTicks deadline_min,
                   base::TimeTicks deadline_max,
-                  bool background_rendering);
+                  VideoRendererSink::RenderCallback::RenderingMode mode);
 
   // Returns |last_interval_| without acquiring a lock.
   // Can only be called from the compositor thread.

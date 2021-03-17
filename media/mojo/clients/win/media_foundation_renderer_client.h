@@ -80,9 +80,10 @@ class MediaFoundationRendererClient
   void OnVideoFrameRateChange(base::Optional<int>) override;
 
   // media::VideoRendererSink::RenderCallback implementation.
-  scoped_refptr<media::VideoFrame> Render(base::TimeTicks deadline_min,
-                                          base::TimeTicks deadline_max,
-                                          bool background_rendering) override;
+  scoped_refptr<media::VideoFrame> Render(
+      base::TimeTicks deadline_min,
+      base::TimeTicks deadline_max,
+      RenderingMode rendering_mode) override;
   void OnFrameDropped() override;
   base::TimeDelta GetPreferredRenderInterval() override;
 

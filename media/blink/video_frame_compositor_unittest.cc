@@ -25,6 +25,8 @@ using testing::StrictMock;
 
 namespace media {
 
+using RenderingMode = VideoRendererSink::RenderCallback::RenderingMode;
+
 class MockWebVideoFrameSubmitter : public blink::WebVideoFrameSubmitter {
  public:
   // blink::WebVideoFrameSubmitter implementation.
@@ -98,7 +100,7 @@ class VideoFrameCompositorTest : public VideoRendererSink::RenderCallback,
   MOCK_METHOD3(Render,
                scoped_refptr<VideoFrame>(base::TimeTicks,
                                          base::TimeTicks,
-                                         bool));
+                                         RenderingMode));
   MOCK_METHOD0(OnFrameDropped, void());
   MOCK_METHOD0(OnNewFramePresented, void());
 
@@ -214,7 +216,8 @@ TEST_F(VideoFrameCompositorTest, RenderFiresPresentationCallback) {
   tick_clock_.Advance(base::TimeDelta::FromSeconds(1));
 
   scoped_refptr<VideoFrame> opaque_frame = CreateOpaqueFrame();
-  EXPECT_CALL(*this, Render(_, _, true)).WillRepeatedly(Return(opaque_frame));
+  EXPECT_CALL(*this, Render(_, _, RenderingMode::kStartup))
+      .WillRepeatedly(Return(opaque_frame));
   EXPECT_CALL(*this, OnNewFramePresented());
   EXPECT_CALL(*submitter_, SetForceBeginFrames(true)).Times(AnyNumber());
   compositor()->SetOnFramePresentedCallback(GetNewFramePresentedCB());
@@ -320,7 +323,8 @@ TEST_F(VideoFrameCompositorTest, VideoRendererSinkFrameDropped) {
 
 TEST_F(VideoFrameCompositorTest, StartFiresBackgroundRender) {
   scoped_refptr<VideoFrame> opaque_frame = CreateOpaqueFrame();
-  EXPECT_CALL(*this, Render(_, _, true)).WillRepeatedly(Return(opaque_frame));
+  EXPECT_CALL(*this, Render(_, _, RenderingMode::kStartup))
+      .WillRepeatedly(Return(opaque_frame));
   StartVideoRendererSink();
   StopVideoRendererSink(true);
 }
@@ -330,15 +334,17 @@ TEST_F(VideoFrameCompositorTest, BackgroundRenderTicks) {
   compositor_->set_background_rendering_for_testing(true);
 
   base::RunLoop run_loop;
-  EXPECT_CALL(*this, Render(_, _, true))
-      .WillOnce(Return(opaque_frame))
+  EXPECT_CALL(*this, Render(_, _, RenderingMode::kStartup))
+      .WillOnce(Return(opaque_frame));
+  EXPECT_CALL(*this, Render(_, _, RenderingMode::kBackground))
       .WillOnce(
           DoAll(RunClosure(run_loop.QuitClosure()), Return(opaque_frame)));
   StartVideoRendererSink();
   run_loop.Run();
 
   // UpdateCurrentFrame() calls should indicate they are not synthetic.
-  EXPECT_CALL(*this, Render(_, _, false)).WillOnce(Return(opaque_frame));
+  EXPECT_CALL(*this, Render(_, _, RenderingMode::kNormal))
+      .WillOnce(Return(opaque_frame));
   EXPECT_FALSE(
       compositor()->UpdateCurrentFrame(base::TimeTicks(), base::TimeTicks()));
 
@@ -352,13 +358,14 @@ TEST_F(VideoFrameCompositorTest,
   compositor_->set_background_rendering_for_testing(true);
 
   // Background render a frame that succeeds immediately.
-  EXPECT_CALL(*this, Render(_, _, true)).WillOnce(Return(opaque_frame));
+  EXPECT_CALL(*this, Render(_, _, RenderingMode::kStartup))
+      .WillOnce(Return(opaque_frame));
   StartVideoRendererSink();
 
   // The background render completes immediately, so the next call to
   // UpdateCurrentFrame is expected to return true to account for the frame
   // rendered in the background.
-  EXPECT_CALL(*this, Render(_, _, false))
+  EXPECT_CALL(*this, Render(_, _, RenderingMode::kNormal))
       .WillOnce(Return(scoped_refptr<VideoFrame>(opaque_frame)));
   EXPECT_TRUE(
       compositor()->UpdateCurrentFrame(base::TimeTicks(), base::TimeTicks()));
@@ -366,7 +373,7 @@ TEST_F(VideoFrameCompositorTest,
 
   // Second call to UpdateCurrentFrame will return false as no new frame has
   // been created since the last call.
-  EXPECT_CALL(*this, Render(_, _, false))
+  EXPECT_CALL(*this, Render(_, _, RenderingMode::kNormal))
       .WillOnce(Return(scoped_refptr<VideoFrame>(opaque_frame)));
   EXPECT_FALSE(
       compositor()->UpdateCurrentFrame(base::TimeTicks(), base::TimeTicks()));
@@ -384,7 +391,8 @@ TEST_F(VideoFrameCompositorTest, UpdateCurrentFrameIfStale) {
       .WillRepeatedly(Return(true));
 
   // Starting the video renderer should return a single frame.
-  EXPECT_CALL(*this, Render(_, _, true)).WillOnce(Return(opaque_frame_1));
+  EXPECT_CALL(*this, Render(_, _, RenderingMode::kStartup))
+      .WillOnce(Return(opaque_frame_1));
   StartVideoRendererSink();
   EXPECT_EQ(opaque_frame_1, compositor()->GetCurrentFrame());
 
@@ -402,20 +410,21 @@ TEST_F(VideoFrameCompositorTest, UpdateCurrentFrameIfStale) {
 
   // Wait for background rendering to tick.
   base::RunLoop run_loop;
-  EXPECT_CALL(*this, Render(_, _, true))
+  EXPECT_CALL(*this, Render(_, _, RenderingMode::kBackground))
       .WillOnce(
           DoAll(RunClosure(run_loop.QuitClosure()), Return(opaque_frame_2)));
   run_loop.Run();
 
   // This call should still not call background render, because not enough time
   // has elapsed since the last background render call.
-  EXPECT_CALL(*this, Render(_, _, true)).Times(0);
+  EXPECT_CALL(*this, Render(_, _, RenderingMode::kBackground)).Times(0);
   compositor()->UpdateCurrentFrameIfStale();
   EXPECT_EQ(opaque_frame_2, compositor()->GetCurrentFrame());
 
   // Advancing the tick clock should allow a new frame to be requested.
   tick_clock_.Advance(base::TimeDelta::FromMilliseconds(10));
-  EXPECT_CALL(*this, Render(_, _, true)).WillOnce(Return(opaque_frame_1));
+  EXPECT_CALL(*this, Render(_, _, RenderingMode::kBackground))
+      .WillOnce(Return(opaque_frame_1));
   compositor()->UpdateCurrentFrameIfStale();
   EXPECT_EQ(opaque_frame_1, compositor()->GetCurrentFrame());
 
@@ -425,7 +434,8 @@ TEST_F(VideoFrameCompositorTest, UpdateCurrentFrameIfStale) {
 
   // Advancing the tick clock should allow a new frame to be requested.
   tick_clock_.Advance(base::TimeDelta::FromMilliseconds(10));
-  EXPECT_CALL(*this, Render(_, _, true)).WillOnce(Return(opaque_frame_2));
+  EXPECT_CALL(*this, Render(_, _, RenderingMode::kBackground))
+      .WillOnce(Return(opaque_frame_2));
   compositor()->UpdateCurrentFrameIfStale();
   EXPECT_EQ(opaque_frame_2, compositor()->GetCurrentFrame());
 
@@ -447,7 +457,8 @@ TEST_F(VideoFrameCompositorTest, UpdateCurrentFrameIfStale_ClientBypass) {
   tick_clock_.Advance(base::TimeDelta::FromSeconds(1));
 
   // Starting the video renderer should return a single frame.
-  EXPECT_CALL(*this, Render(_, _, true)).WillOnce(Return(opaque_frame_1));
+  EXPECT_CALL(*this, Render(_, _, RenderingMode::kStartup))
+      .WillOnce(Return(opaque_frame_1));
   StartVideoRendererSink();
   EXPECT_EQ(opaque_frame_1, compositor()->GetCurrentFrame());
 

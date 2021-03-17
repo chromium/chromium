@@ -386,7 +386,7 @@ void MediaFoundationRendererClient::OnVideoFrameRateChange(
 scoped_refptr<media::VideoFrame> MediaFoundationRendererClient::Render(
     base::TimeTicks deadline_min,
     base::TimeTicks deadline_max,
-    bool background_rendering) {
+    RenderingMode mode) {
   // Returns no video frame as it is rendered independently by Windows Direct
   // Composition.
   return nullptr;
