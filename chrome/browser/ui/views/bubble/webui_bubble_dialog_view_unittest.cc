@@ -18,7 +18,7 @@ namespace {
 class TestBubbleContentsWrapper : public BubbleContentsWrapper {
  public:
   explicit TestBubbleContentsWrapper(Profile* profile)
-      : BubbleContentsWrapper(profile, 0, false) {}
+      : BubbleContentsWrapper(profile, 0, false, true) {}
   void ReloadWebContents() override {}
 };
 }  // namespace

@@ -36,8 +36,10 @@ bool BubbleContentsWrapper::Host::HandleKeyboardEvent(
 BubbleContentsWrapper::BubbleContentsWrapper(
     content::BrowserContext* browser_context,
     int task_manager_string_id,
-    bool enable_extension_apis)
-    : web_contents_(content::WebContents::Create(
+    bool enable_extension_apis,
+    bool webui_resizes_host)
+    : webui_resizes_host_(webui_resizes_host),
+      web_contents_(content::WebContents::Create(
           GetWebContentsCreateParams(browser_context))) {
   web_contents_->SetDelegate(this);
   WebContentsObserver::Observe(web_contents_.get());
@@ -96,7 +98,7 @@ void BubbleContentsWrapper::RenderViewHostChanged(
     content::RenderViewHost* new_host) {
   content::RenderWidgetHostView* render_widget_host_view =
       web_contents_->GetRenderWidgetHostView();
-  if (!render_widget_host_view)
+  if (!webui_resizes_host_ || !render_widget_host_view)
     return;
 
   render_widget_host_view->EnableAutoResize(gfx::Size(1, 1),
