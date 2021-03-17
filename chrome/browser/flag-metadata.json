@@ -1796,8 +1796,8 @@
   },
   {
     "name": "enable-fullpage-screenshot",
-    "owners": [ "jmentasti", "seblalancette" ],
-    "expiry_milestone": 90
+    "owners": [ "seblalancette" ],
+    "expiry_milestone": 94
   },
   {
     "name": "enable-future-v8-vm-features",
