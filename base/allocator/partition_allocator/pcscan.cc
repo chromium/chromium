@@ -1259,10 +1259,13 @@ void PCScan::PerformScan(InvocationMode invocation_mode) {
                   [](Root* root) { return root->IsQuarantineEnabled(); }));
 #endif
 
-  if (state_.exchange(State::kScheduled, std::memory_order_acq_rel) !=
-      State::kNotRunning) {
-    // Bail out if PCScan is already in progress.
-    return;
+  {
+    // If scanning is already in progress, bail out.
+    State expected = State::kNotRunning;
+    if (!state_.compare_exchange_strong(expected, State::kScheduled,
+                                        std::memory_order_acq_rel,
+                                        std::memory_order_relaxed))
+      return;
   }
 
   quarantine_data_.ResetAndAdvanceEpoch();
