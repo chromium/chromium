@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
 #include "base/optional.h"
 #include "base/strings/string_util.h"
@@ -512,7 +513,15 @@ mojom::DeviceStatePropertiesPtr DeviceStateToMojo(
   result->mac_address =
       network_util::FormattedMacAddress(device->mac_address());
   result->scanning = device->scanning();
-  result->device_state = technology_state;
+
+  // Before multi-SIM support was in place, the Cellular device would always be
+  // disabled anytime that a SIM was absent. Special-case this logic to ensure
+  // that users with the flag off will still see a disabled UI in this case.
+  if (device->IsSimAbsent() && !features::IsCellularActivationUiEnabled())
+    result->device_state = mojom::DeviceStateType::kDisabled;
+  else
+    result->device_state = technology_state;
+
   result->managed_network_available =
       !device->available_managed_network_path().empty();
   result->sim_absent = device->IsSimAbsent();

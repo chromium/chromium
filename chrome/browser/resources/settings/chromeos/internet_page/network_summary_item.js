@@ -163,9 +163,16 @@ Polymer({
       return name ? this.i18n('networkListItemConnectingTo', name) :
                     this.i18n('networkListItemConnecting');
     }
-    if (networkState.type === mojom.NetworkType.kCellular && deviceState &&
-        deviceState.scanning) {
-      return this.i18n('internetMobileSearching');
+    if (networkState.type === mojom.NetworkType.kCellular && deviceState) {
+      // If there is no cellular SIM and the updated UI flag is disabled,
+      // simply display 'Off'. See b/162564761 for details.
+      if (deviceState.simAbsent &&
+          !loadTimeData.getBoolean('updatedCellularActivationUi')) {
+        return this.i18n('deviceOff');
+      }
+      if (deviceState.scanning) {
+        return this.i18n('internetMobileSearching');
+      }
     }
     return this.i18n('networkListItemNotConnected');
   },
