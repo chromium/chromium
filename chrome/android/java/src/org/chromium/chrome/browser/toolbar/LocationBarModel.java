@@ -20,7 +20,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
@@ -103,6 +102,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     private boolean mIsIncognito;
     private boolean mIsUsingBrandColor;
     private boolean mShouldShowOmniboxInOverviewMode;
+    private boolean mIsShowingTabSwitcher;
 
     private long mNativeLocationBarModelAndroid;
     private ObserverList<LocationBarDataProvider.Observer> mLocationBarDataObservers =
@@ -361,8 +361,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     public boolean isInOverviewAndShowingOmnibox() {
         if (!mShouldShowOmniboxInOverviewMode) return false;
 
-        return mLayoutStateProvider != null
-                && mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER);
+        return mLayoutStateProvider != null && mIsShowingTabSwitcher;
     }
 
     /**
@@ -573,6 +572,18 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         if (mNativeLocationBarModelAndroid == 0) return "";
         return LocationBarModelJni.get().getURLForDisplay(
                 mNativeLocationBarModelAndroid, LocationBarModel.this);
+    }
+
+    /**
+     * Set whether tab switcher is showing or not and notify changes.
+     * @param isShowingTabSwitcher Whether tab switcher is showing or not.
+     */
+    public void setIsShowingTabSwitcher(boolean isShowingTabSwitcher) {
+        mIsShowingTabSwitcher = isShowingTabSwitcher;
+        notifyTitleChanged();
+        notifyUrlChanged();
+        notifyPrimaryColorChanged();
+        notifySecurityStateChanged();
     }
 
     @NativeMethods

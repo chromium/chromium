@@ -1879,8 +1879,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             mPendingTriggerUrlFocusRequest = true;
         }
 
-        if (inTabSwitcherMode) mUrlBar.setText("");
-
         return true;
     }
 
@@ -1914,14 +1912,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             mDelayedTabSwitcherModeAnimation.start();
         } else {
             updateViewsForTabSwitcherMode();
-        }
-
-        // Set the url bar text back after finished hiding the tab switcher.
-        if (getToolbarDataProvider().shouldShowLocationBarInOverviewMode()
-                && mTabSwitcherState == STATIC_TAB && getToolbarDataProvider() != null
-                && getToolbarDataProvider().getUrlBarData() != null) {
-            assert !getToolbarDataProvider().isInOverviewAndShowingOmnibox();
-            mUrlBar.setText(getToolbarDataProvider().getUrlBarData().displayText);
         }
     }
 
@@ -2190,11 +2180,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
         if (mTabSwitcherAnimationTabStackDrawable != null) {
             mTabSwitcherAnimationTabStackDrawable.updateForTabCount(numberOfTabs, isIncognito);
-        }
-
-        if (getToolbarDataProvider().isInOverviewAndShowingOmnibox()
-                && getToolbarDataProvider().shouldShowLocationBarInOverviewMode()) {
-            mUrlBar.setText("");
         }
     }
 

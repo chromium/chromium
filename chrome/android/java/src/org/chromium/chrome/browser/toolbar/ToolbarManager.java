@@ -767,6 +767,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             @Override
             public void onStartedShowing(@LayoutType int layoutType, boolean showToolbar) {
                 if (layoutType == LayoutType.TAB_SWITCHER) {
+                    mLocationBarModel.setIsShowingTabSwitcher(true);
                     mToolbar.setTabSwitcherMode(true, showToolbar, false);
                     updateButtonStatus();
                     if (mLocationBarModel.shouldShowLocationBarInOverviewMode()) {
@@ -780,6 +781,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             public void onStartedHiding(
                     @LayoutType int layoutType, boolean showToolbar, boolean delayAnimation) {
                 if (layoutType == LayoutType.TAB_SWITCHER) {
+                    mLocationBarModel.setIsShowingTabSwitcher(false);
                     mToolbar.setTabSwitcherMode(false, showToolbar, delayAnimation);
                     updateButtonStatus();
                 }
