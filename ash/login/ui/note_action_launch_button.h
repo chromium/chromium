@@ -11,7 +11,6 @@
 #include "ash/tray_action/tray_action.h"
 #include "ash/tray_action/tray_action_observer.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
 
 namespace ash {
 

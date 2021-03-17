@@ -10,7 +10,6 @@
 #include <set>
 
 #include "ash/ash_export.h"
-#include "base/scoped_observer.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/event_rewriter.h"
 

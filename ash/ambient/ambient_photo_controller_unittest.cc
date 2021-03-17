@@ -361,9 +361,9 @@ TEST_F(AmbientPhotoControllerTest,
 TEST_F(AmbientPhotoControllerTest, ShouldNotLoadDuplicateImages) {
   testing::NiceMock<MockAmbientBackendModelObserver> mock_backend_observer;
   base::ScopedObservation<AmbientBackendModel, AmbientBackendModelObserver>
-      scoped_observer{&mock_backend_observer};
+      scoped_observation{&mock_backend_observer};
 
-  scoped_observer.Observe(photo_controller()->ambient_backend_model());
+  scoped_observation.Observe(photo_controller()->ambient_backend_model());
 
   // All images downloaded will be identical.
   SetDownloadPhotoData("image data");
