@@ -5,6 +5,7 @@
 #include "chromeos/services/cellular_setup/esim_profile.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_profile_client.h"
@@ -39,6 +40,25 @@ bool IsESimProfilePropertiesEqualToState(
              properties->service_provider &&
          ProfileStateToMojo(esim_profile_state.state()) == properties->state &&
          esim_profile_state.activation_code() == properties->activation_code;
+}
+
+// Measures the time from which this function is called to when |callback|
+// is expected to run. The measured time difference should capture the time it
+// took for a pending profile to be fully downloaded.
+ESimProfile::InstallProfileCallback CreateTimedInstallProfileCallback(
+    ESimProfile::InstallProfileCallback callback) {
+  return base::BindOnce(
+      [](ESimProfile::InstallProfileCallback callback,
+         base::Time installation_start_time,
+         mojom::ProfileInstallResult result) -> void {
+        std::move(callback).Run(result);
+        if (result != mojom::ProfileInstallResult::kSuccess)
+          return;
+        UMA_HISTOGRAM_MEDIUM_TIMES(
+            "Network.Cellular.ESim.ProfileDownload.PendingProfile.Latency",
+            base::Time::Now() - installation_start_time);
+      },
+      std::move(callback), base::Time::Now());
 }
 
 }  // namespace
@@ -84,7 +104,7 @@ void ESimProfile::InstallProfile(const std::string& confirmation_code,
   esim_manager_->NotifyESimProfileChanged(this);
 
   NET_LOG(USER) << "Installing profile with path " << path().value();
-  install_callback_ = std::move(callback);
+  install_callback_ = CreateTimedInstallProfileCallback(std::move(callback));
   EnsureProfileExistsOnEuiccCallback perform_install_profile_callback =
       base::BindOnce(&ESimProfile::PerformInstallProfile,
                      weak_ptr_factory_.GetWeakPtr(), confirmation_code);

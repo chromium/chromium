@@ -131,7 +131,8 @@ class ESimProfileTest : public ESimTestBase {
   mojom::ProfileInstallResult InstallProfile(
       const mojo::Remote<mojom::ESimProfile>& esim_profile,
       bool wait_for_connect,
-      bool fail_connect) {
+      bool fail_connect,
+      const uint64_t& connect_latency_in_ms = 0) {
     mojom::ProfileInstallResult out_install_result;
 
     base::RunLoop run_loop;
@@ -144,6 +145,9 @@ class ESimProfileTest : public ESimTestBase {
             }));
 
     if (wait_for_connect) {
+      base::RunLoop().RunUntilIdle();
+      task_environment()->AdvanceClock(
+          base::TimeDelta::FromMilliseconds(connect_latency_in_ms));
       base::RunLoop().RunUntilIdle();
       EXPECT_LE(1u, network_connection_handler()->connect_calls().size());
       if (fail_connect) {
@@ -205,8 +209,11 @@ TEST_F(ESimProfileTest, InstallProfile) {
 
   // Verify that installing pending profile returns proper results
   // and updates esim_profile properties.
-  install_result = InstallProfile(esim_profile, /*wait_for_connect=*/true,
-                                  /*fail_connect=*/false);
+  base::HistogramTester histogram_tester;
+  const uint64_t connect_latency_in_ms = 3000;
+  install_result =
+      InstallProfile(esim_profile, /*wait_for_connect=*/true,
+                     /*fail_connect=*/false, connect_latency_in_ms);
   // Wait for property changes to propagate.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(mojom::ProfileInstallResult::kSuccess, install_result);
@@ -215,6 +222,13 @@ TEST_F(ESimProfileTest, InstallProfile) {
   EXPECT_EQ(dbus_properties->iccid().value(), mojo_properties->iccid);
   EXPECT_NE(mojo_properties->state, mojom::ProfileState::kPending);
   EXPECT_EQ(1u, observer()->profile_list_change_calls().size());
+
+  histogram_tester.ExpectTimeBucketCount(
+      "Network.Cellular.ESim.ProfileDownload.PendingProfile.Latency",
+      base::TimeDelta::FromMilliseconds(connect_latency_in_ms), 1);
+
+  histogram_tester.ExpectTotalCount(
+      "Network.Cellular.ESim.ProfileDownload.PendingProfile.Latency", 1);
 }
 
 TEST_F(ESimProfileTest, InstallConnectFailure) {
