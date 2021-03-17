@@ -998,8 +998,7 @@ TEST_F(SystemDataProviderTest, GetSystemInfoLogs) {
             log_contents[6]);
   EXPECT_EQ("Milestone Version: " + expected_milestone_version,
             log_contents[7]);
-  EXPECT_EQ("Has Battery: " + base::NumberToString(expected_has_battery),
-            log_contents[8]);
+  EXPECT_EQ("Has Battery: true", log_contents[8]);
 }
 
 }  // namespace diagnostics

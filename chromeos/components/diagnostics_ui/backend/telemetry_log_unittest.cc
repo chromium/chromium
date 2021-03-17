@@ -79,8 +79,7 @@ TEST_F(TelemetryLogTest, DetailedLogContents) {
                 base::NumberToString(expected_cpu_max_clock_speed_khz),
             log_lines[6]);
   EXPECT_EQ("Milestone Version: " + expected_milestone_version, log_lines[7]);
-  EXPECT_EQ("Has Battery: " + base::NumberToString(expected_has_battery),
-            log_lines[8]);
+  EXPECT_EQ("Has Battery: true", log_lines[8]);
 }
 
 TEST_F(TelemetryLogTest, ChangeContents) {
@@ -109,8 +108,47 @@ TEST_F(TelemetryLogTest, ChangeContents) {
 
   const std::string log_as_string = log.GetContents();
   const std::vector<std::string> log_lines = GetLogLines(log_as_string);
+}
 
-  EXPECT_EQ("Board Name: new board_name", log_lines[1]);
+TEST_F(TelemetryLogTest, CpuUsageUint8) {
+  const std::string expected_board_name = "board_name";
+  const std::string expected_marketing_name = "marketing_name";
+  const std::string expected_cpu_model = "cpu_model";
+  const uint32_t expected_total_memory_kib = 1234;
+  const uint16_t expected_cpu_threads_count = 5678;
+  const uint32_t expected_cpu_max_clock_speed_khz = 91011;
+  const bool expected_has_battery = true;
+  const std::string expected_milestone_version = "M99";
+  const uint8_t percent_usage_user = 10;
+  const uint8_t percent_usage_system = 20;
+  const uint8_t percent_usage_free = 80;
+  const uint16_t average_cpu_temp_celsius = 31;
+  const uint32_t scaling_current_frequency_khz = 500;
+
+  mojom::SystemInfoPtr test_info = CreateSystemInfoPtr(
+      expected_board_name, expected_marketing_name, expected_cpu_model,
+      expected_total_memory_kib, expected_cpu_threads_count,
+      expected_cpu_max_clock_speed_khz, expected_has_battery,
+      expected_milestone_version);
+
+  mojom::CpuUsagePtr cpu_usage = mojom::CpuUsage::New(
+      percent_usage_user, percent_usage_system, percent_usage_free,
+      average_cpu_temp_celsius, scaling_current_frequency_khz);
+
+  TelemetryLog log;
+
+  log.UpdateSystemInfo(test_info.Clone());
+  log.UpdateCpuUsage(cpu_usage.Clone());
+
+  const std::string log_as_string = log.GetContents();
+  const std::vector<std::string> log_lines = GetLogLines(log_as_string);
+
+  EXPECT_EQ("Usage User (%): " + base::NumberToString(percent_usage_user),
+            log_lines[10]);
+  EXPECT_EQ("Usage System (%): " + base::NumberToString(percent_usage_system),
+            log_lines[11]);
+  EXPECT_EQ("Usage Free (%): " + base::NumberToString(percent_usage_free),
+            log_lines[12]);
 }
 
 }  // namespace diagnostics

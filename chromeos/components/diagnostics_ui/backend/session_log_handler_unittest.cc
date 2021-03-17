@@ -228,10 +228,7 @@ TEST_F(SessionLogHandlerTest, SaveSessionLog) {
                 base::NumberToString(expected_cpu_max_clock_speed_khz),
             log_lines[7]);
   EXPECT_EQ("Milestone Version: " + expected_milestone_version, log_lines[8]);
-  EXPECT_EQ("Has Battery: " + base::NumberToString(expected_has_battery),
-            log_lines[9]);
-  EXPECT_EQ("Has Battery: " + base::NumberToString(expected_has_battery),
-            log_lines[9]);
+  EXPECT_EQ("Has Battery: true", log_lines[9]);
 
   const std::string expected_routine_log_header = "=== Routine Log ===";
   EXPECT_EQ(expected_routine_log_header, log_lines[10]);
