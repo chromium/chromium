@@ -406,10 +406,6 @@ const char kShowAutofillTypePredictionsDescription[] =
     "Annotates web forms with Autofill field type predictions as placeholder "
     "text.";
 
-const char kSnapshotDrawViewName[] = "Use DrawViewHierarchy for Snapshots";
-const char kSnapshotDrawViewDescription[] =
-    "When enabled, snapshots will be taken using |-drawViewHierarchy:|.";
-
 const char kSimplifySignOutIOSName[] = "Simplify sign-out";
 const char kSimplifySignOutIOSDescription[] =
     "When enabled, sign-out UI in the account table view is simplified.";

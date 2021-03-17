@@ -11,9 +11,6 @@
 // Feature to open tab switcher after sliding down the toolbar.
 extern const base::Feature kExpandedTabStrip;
 
-// Feature to take snapshots using |-drawViewHierarchy:|.
-extern const base::Feature kSnapshotDrawView;
-
 // Feature to apply UI Refresh theme to the settings.
 extern const base::Feature kSettingsRefresh;
 

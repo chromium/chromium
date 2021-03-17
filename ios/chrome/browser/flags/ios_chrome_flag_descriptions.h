@@ -345,11 +345,6 @@ extern const char kShowAutofillTypePredictionsDescription[];
 extern const char kSimplifySignOutIOSName[];
 extern const char kSimplifySignOutIOSDescription[];
 
-// Title and description for the flag to use |-drawViewHierarchy:| for taking
-// snapshots.
-extern const char kSnapshotDrawViewName[];
-extern const char kSnapshotDrawViewDescription[];
-
 // Title and description for the flag to enable the Start Surface.
 extern const char kStartSurfaceName[];
 extern const char kStartSurfaceDescription[];

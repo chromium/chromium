@@ -384,9 +384,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxLocalHistoryZeroSuggestName,
      flag_descriptions::kOmniboxLocalHistoryZeroSuggestDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(omnibox::kLocalHistoryZeroSuggest)},
-    {"snapshot-draw-view", flag_descriptions::kSnapshotDrawViewName,
-     flag_descriptions::kSnapshotDrawViewDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kSnapshotDrawView)},
 #if defined(DCHECK_IS_CONFIGURABLE)
     {"dcheck-is-fatal", flag_descriptions::kDcheckIsFatalName,
      flag_descriptions::kDcheckIsFatalDescription, flags_ui::kOsIos,
