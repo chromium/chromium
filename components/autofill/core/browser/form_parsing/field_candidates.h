@@ -9,7 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 

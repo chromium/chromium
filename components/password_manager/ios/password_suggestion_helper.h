@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #include <memory>
 
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 
 NS_ASSUME_NONNULL_BEGIN

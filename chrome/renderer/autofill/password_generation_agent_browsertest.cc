@@ -29,7 +29,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_view.h"

@@ -6,7 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;

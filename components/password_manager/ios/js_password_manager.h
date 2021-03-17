@@ -6,7 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_IOS_JS_PASSWORD_MANAGER_H_
 
 #include "base/ios/block_types.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "ios/web/public/js_messaging/web_frame.h"
 
 namespace autofill {

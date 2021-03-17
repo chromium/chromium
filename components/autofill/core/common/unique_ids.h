@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_COMMON_RENDERER_ID_H_
-#define COMPONENTS_AUTOFILL_CORE_COMMON_RENDERER_ID_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_COMMON_UNIQUE_IDS_H_
+#define COMPONENTS_AUTOFILL_CORE_COMMON_UNIQUE_IDS_H_
 
 #include <stdint.h>
 #include <limits>
@@ -95,4 +95,4 @@ LogBuffer& operator<<(LogBuffer& buffer, const FieldGlobalId& field);
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_COMMON_RENDERER_ID_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_COMMON_UNIQUE_IDS_H_

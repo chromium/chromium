@@ -27,7 +27,7 @@
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/language_code.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

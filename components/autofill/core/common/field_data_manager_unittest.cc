@@ -5,7 +5,7 @@
 #include "components/autofill/core/common/field_data_manager.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using autofill::FormFieldData;

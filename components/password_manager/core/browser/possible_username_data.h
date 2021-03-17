@@ -10,7 +10,7 @@
 
 #include "base/optional.h"
 #include "base/time/time.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
 
 namespace password_manager {

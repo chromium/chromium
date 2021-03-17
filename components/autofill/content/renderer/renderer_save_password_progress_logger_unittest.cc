@@ -8,7 +8,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

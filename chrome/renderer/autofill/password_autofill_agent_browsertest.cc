@@ -30,7 +30,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/renderer/render_frame.h"

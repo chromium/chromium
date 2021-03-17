@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 

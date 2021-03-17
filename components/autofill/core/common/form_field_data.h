@@ -15,7 +15,7 @@
 #include "base/i18n/rtl.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace base {

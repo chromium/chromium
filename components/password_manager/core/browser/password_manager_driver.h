@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 class AutofillDriver;

@@ -31,7 +31,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/pattern_provider/pattern_configuration_parser.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "net/http/http_status_code.h"

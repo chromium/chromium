@@ -18,7 +18,7 @@
 #include "components/autofill/core/browser/data_driven_test.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #include "components/autofill/ios/browser/autofill_driver_ios.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"

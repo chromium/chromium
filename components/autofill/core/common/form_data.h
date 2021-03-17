@@ -13,7 +13,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

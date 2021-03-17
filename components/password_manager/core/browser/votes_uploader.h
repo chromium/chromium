@@ -12,8 +12,8 @@
 #include "base/optional.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
-#include "components/autofill/core/common/renderer_id.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
 #include "components/password_manager/core/browser/password_form.h"
 

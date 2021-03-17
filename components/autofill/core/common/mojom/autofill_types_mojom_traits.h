@@ -19,7 +19,7 @@
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "mojo/public/cpp/base/text_direction_mojom_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/mojom/base/unguessable_token.mojom-shared.h"

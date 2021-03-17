@@ -16,7 +16,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"

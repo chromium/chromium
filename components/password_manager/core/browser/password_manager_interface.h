@@ -12,7 +12,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/form_submission_observer.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 

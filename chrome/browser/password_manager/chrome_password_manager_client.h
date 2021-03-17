@@ -17,7 +17,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom-forward.h"
 #include "components/autofill/core/common/password_generation_util.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/autofill_assistant/browser/public/runtime_observer.h"
 #include "components/password_manager/content/browser/content_credential_manager.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"

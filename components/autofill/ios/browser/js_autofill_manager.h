@@ -8,7 +8,7 @@
 #include "base/ios/block_types.h"
 #include "base/values.h"
 #include "components/autofill/core/common/autofill_constants.h"
-#include "components/autofill/core/common/renderer_id.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace web {
 class WebFrame;
