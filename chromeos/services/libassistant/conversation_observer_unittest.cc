@@ -8,6 +8,7 @@
 #include "chromeos/assistant/internal/action/cros_action_module.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
+#include "chromeos/services/libassistant/conversation_controller.h"
 #include "chromeos/services/libassistant/libassistant_service.h"
 #include "chromeos/services/libassistant/public/cpp/android_app_info.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_observer.mojom.h"
@@ -113,18 +114,24 @@ class ConversationObserverMock : public mojom::ConversationObserver {
 
 }  // namespace
 
-class ConversationObserverTest : public ::testing::Test {
+class AssistantConversationObserverTest : public ::testing::Test {
  public:
-  ConversationObserverTest() = default;
-  ConversationObserverTest(const ConversationObserverTest&) = delete;
-  ConversationObserverTest& operator=(const ConversationObserverTest&) = delete;
-  ~ConversationObserverTest() override = default;
+  AssistantConversationObserverTest() = default;
+  AssistantConversationObserverTest(const AssistantConversationObserverTest&) =
+      delete;
+  AssistantConversationObserverTest& operator=(
+      const AssistantConversationObserverTest&) = delete;
+  ~AssistantConversationObserverTest() override = default;
 
   void SetUp() override {
     service_tester_.conversation_controller().AddRemoteObserver(
         observer_mock_.BindNewPipeAndPassRemote());
 
     service_tester_.Start();
+
+    controller().OnAssistantManagerRunning(
+        &service_tester_.assistant_manager(),
+        &service_tester_.assistant_manager_internal());
 
     action_module_helper_ = std::make_unique<CrosActionModuleHelper>(
         static_cast<assistant::action::CrosActionModule*>(
@@ -141,6 +148,10 @@ class ConversationObserverTest : public ::testing::Test {
 
   ConversationObserverMock& observer_mock() { return observer_mock_; }
 
+  ConversationController& controller() {
+    return service_tester_.service().conversation_controller();
+  }
+
  private:
   base::test::SingleThreadTaskEnvironment environment_;
   ::testing::StrictMock<ConversationObserverMock> observer_mock_;
@@ -148,7 +159,7 @@ class ConversationObserverTest : public ::testing::Test {
   std::unique_ptr<CrosActionModuleHelper> action_module_helper_;
 };
 
-TEST_F(ConversationObserverTest,
+TEST_F(AssistantConversationObserverTest,
        ShouldReceiveOnTurnFinishedEventWhenFinishedNormally) {
   EXPECT_CALL(
       observer_mock(),
@@ -160,7 +171,7 @@ TEST_F(ConversationObserverTest,
   observer_mock().FlushForTesting();
 }
 
-TEST_F(ConversationObserverTest,
+TEST_F(AssistantConversationObserverTest,
        ShouldReceiveOnTurnFinishedEventWhenBeingInterrupted) {
   EXPECT_CALL(
       observer_mock(),
@@ -172,7 +183,7 @@ TEST_F(ConversationObserverTest,
   observer_mock().FlushForTesting();
 }
 
-TEST_F(ConversationObserverTest,
+TEST_F(AssistantConversationObserverTest,
        ShouldReceiveOnTtsStartedEventWhenFinishingNormally) {
   EXPECT_CALL(observer_mock(), OnTtsStarted(/*due_to_error=*/false));
 
@@ -180,7 +191,7 @@ TEST_F(ConversationObserverTest,
   observer_mock().FlushForTesting();
 }
 
-TEST_F(ConversationObserverTest,
+TEST_F(AssistantConversationObserverTest,
        ShouldReceiveOnTtsStartedEventWhenErrorOccured) {
   EXPECT_CALL(observer_mock(), OnTtsStarted(/*due_to_error=*/true));
 
@@ -188,7 +199,7 @@ TEST_F(ConversationObserverTest,
   observer_mock().FlushForTesting();
 }
 
-TEST_F(ConversationObserverTest, ShouldReceiveOnHtmlResponse) {
+TEST_F(AssistantConversationObserverTest, ShouldReceiveOnHtmlResponse) {
   const std::string fake_html = "<h1>Hello world!</h1>";
   EXPECT_CALL(observer_mock(), OnHtmlResponse(fake_html, ""));
 
@@ -197,7 +208,7 @@ TEST_F(ConversationObserverTest, ShouldReceiveOnHtmlResponse) {
   observer_mock().FlushForTesting();
 }
 
-TEST_F(ConversationObserverTest, ShouldReceiveOnTextResponse) {
+TEST_F(AssistantConversationObserverTest, ShouldReceiveOnTextResponse) {
   const std::string fake_text = "I'm a text response";
   EXPECT_CALL(observer_mock(), OnTextResponse(fake_text));
 
@@ -205,7 +216,7 @@ TEST_F(ConversationObserverTest, ShouldReceiveOnTextResponse) {
   observer_mock().FlushForTesting();
 }
 
-TEST_F(ConversationObserverTest, ShouldReceiveOnSuggestionsResponse) {
+TEST_F(AssistantConversationObserverTest, ShouldReceiveOnSuggestionsResponse) {
   const std::string fake_text = "text";
   const std::string fake_icon_url = "https://icon-url/";
   const std::string fake_action_url = "https://action-url/";
@@ -224,7 +235,7 @@ TEST_F(ConversationObserverTest, ShouldReceiveOnSuggestionsResponse) {
   observer_mock().FlushForTesting();
 }
 
-TEST_F(ConversationObserverTest, ShouldReceiveOnOpenUrlResponse) {
+TEST_F(AssistantConversationObserverTest, ShouldReceiveOnOpenUrlResponse) {
   const std::string fake_url = "https://fake-url/";
   EXPECT_CALL(observer_mock(),
               OnOpenUrlResponse(GURL(fake_url), /*in_background=*/false));
@@ -233,7 +244,7 @@ TEST_F(ConversationObserverTest, ShouldReceiveOnOpenUrlResponse) {
   observer_mock().FlushForTesting();
 }
 
-TEST_F(ConversationObserverTest, ShouldReceiveOnOpenAppResponse) {
+TEST_F(AssistantConversationObserverTest, ShouldReceiveOnOpenAppResponse) {
   assistant::AndroidAppInfo fake_app_info;
   fake_app_info.package_name = "fake package name";
   fake_app_info.version = 123;
@@ -255,7 +266,7 @@ TEST_F(ConversationObserverTest, ShouldReceiveOnOpenAppResponse) {
   observer_mock().FlushForTesting();
 }
 
-TEST_F(ConversationObserverTest, ShouldReceiveOnWaitStarted) {
+TEST_F(AssistantConversationObserverTest, ShouldReceiveOnWaitStarted) {
   EXPECT_CALL(observer_mock(), OnWaitStarted());
 
   action_module_helper().ScheduleWait();

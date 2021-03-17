@@ -66,6 +66,10 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
           chromeos::libassistant::mojom::AuthenticationStateObserver> observer)
       override;
 
+  ConversationController& conversation_controller() {
+    return conversation_controller_;
+  }
+
  private:
   ServiceController& service_controller() { return service_controller_; }
 

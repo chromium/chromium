@@ -62,7 +62,7 @@ LibassistantService::LibassistantService(
       libassistant_factory_(
           FactoryOrDefault(std::move(factory), &platform_api_)),
       service_controller_(libassistant_factory_.get()),
-      conversation_controller_(&service_controller_),
+      conversation_controller_(),
       conversation_state_listener_(
           &speech_recognition_observers_,
           conversation_controller_.conversation_observers(),

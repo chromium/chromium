@@ -29,8 +29,6 @@ class CrosActionModule;
 
 namespace libassistant {
 
-class ServiceController;
-
 class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
     : public mojom::ConversationController,
       public AssistantManagerObserver,
@@ -40,7 +38,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
   using AssistantQuerySource = ::chromeos::assistant::AssistantQuerySource;
   using AssistantFeedback = ::chromeos::assistant::AssistantFeedback;
 
-  explicit ConversationController(ServiceController* service_controller);
+  ConversationController();
   ConversationController(const ConversationController&) = delete;
   ConversationController& operator=(const ConversationController&) = delete;
   ~ConversationController() override;
@@ -57,6 +55,14 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
 
   // AssistantManagerObserver:
   void OnAssistantManagerCreated(
+      assistant_client::AssistantManager* assistant_manager,
+      assistant_client::AssistantManagerInternal* assistant_manager_internal)
+      override;
+  void OnAssistantManagerRunning(
+      assistant_client::AssistantManager* assistant_manager,
+      assistant_client::AssistantManagerInternal* assistant_manager_internal)
+      override;
+  void OnDestroyingAssistantManager(
       assistant_client::AssistantManager* assistant_manager,
       assistant_client::AssistantManagerInternal* assistant_manager_internal)
       override;
@@ -99,16 +105,17 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
                                 const std::string& description,
                                 bool is_user_initiated);
 
-  assistant_client::AssistantManagerInternal* assistant_manager_internal();
-
   mojo::Receiver<mojom::ConversationController> receiver_;
   mojo::RemoteSet<mojom::ConversationObserver> observers_;
   mojo::RemoteSet<mojom::AuthenticationStateObserver>
       authentication_state_observers_;
   mojo::Remote<mojom::NotificationDelegate> notification_delegate_;
 
-  // Owned by |LibassistantService|.
-  ServiceController* const service_controller_;
+  assistant_client::AssistantManagerInternal* assistant_manager_internal_ =
+      nullptr;
+  // False until libassistant is running for the first time.
+  // Any request that comes in before that is an error and will be DCHECK'ed.
+  bool requests_are_allowed_ = false;
 
   std::unique_ptr<AssistantManagerDelegateImpl> assistant_manager_delegate_;
   std::unique_ptr<assistant::action::CrosActionModule> action_module_;
