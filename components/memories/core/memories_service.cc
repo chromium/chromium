@@ -11,6 +11,7 @@
 namespace memories {
 
 MemoriesService::MemoriesService(
+    history::HistoryService* history_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : remote_model_helper_(
           std::make_unique<memories::MemoriesRemoteModelHelper>(

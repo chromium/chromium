@@ -17,6 +17,7 @@ static_library("core") {
   deps = [
     ":mojo_bindings",
     "//base",
+    "//components/history/core/browser",
     "//components/keyed_service/core",
     "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",

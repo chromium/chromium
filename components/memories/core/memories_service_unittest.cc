@@ -29,6 +29,7 @@ class MemoriesServiceTest : public testing::Test {
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)),
         memories_service_(std::make_unique<memories::MemoriesService>(
+            nullptr,
             shared_url_loader_factory_)),
         task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
         run_loop_quit_(run_loop_.QuitClosure()) {}

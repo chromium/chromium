@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/memories/core/memories_remote_model_helper.h"
 #include "components/memories/core/visit_data.h"
@@ -23,6 +24,7 @@ namespace memories {
 class MemoriesService : public KeyedService {
  public:
   explicit MemoriesService(
+      history::HistoryService* history_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~MemoriesService() override;
 

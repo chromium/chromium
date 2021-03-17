@@ -460,7 +460,6 @@ static_library("ui") {
     "//components/language/core/common",
     "//components/lens",
     "//components/lookalikes/core",
-    "//components/memories/content",
     "//components/memories/core",
     "//components/metrics_services_manager",
     "//components/navigation_metrics",

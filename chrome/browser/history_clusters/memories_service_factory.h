@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_MEMORIES_CONTENT_MEMORIES_SERVICE_FACTORY_H_
-#define COMPONENTS_MEMORIES_CONTENT_MEMORIES_SERVICE_FACTORY_H_
+#ifndef CHROME_BROWSER_HISTORY_CLUSTERS_MEMORIES_SERVICE_FACTORY_H_
+#define CHROME_BROWSER_HISTORY_CLUSTERS_MEMORIES_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -34,4 +34,4 @@ class MemoriesServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
 };
 
-#endif  // COMPONENTS_MEMORIES_CONTENT_MEMORIES_SERVICE_FACTORY_H_
+#endif  // CHROME_BROWSER_HISTORY_CLUSTERS_MEMORIES_SERVICE_FACTORY_H_
