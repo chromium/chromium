@@ -39,6 +39,8 @@ source_set("input_monitor") {
   if (use_x11 && (!is_chromeos_ash || use_ozone)) {
     sources += [
       "local_hotkey_input_monitor_x11.cc",
+      "local_input_monitor_x11_common.cc",
+      "local_input_monitor_x11_common.h",
       "local_keyboard_input_monitor_x11.cc",
       "local_mouse_input_monitor_x11.cc",
     ]

@@ -18,8 +18,8 @@
 #include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
+#include "remoting/host/input_monitor/local_input_monitor_x11_common.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
-#include "ui/events/devices/x11/xinput_util.h"
 #include "ui/events/event.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
@@ -77,7 +77,7 @@ class LocalMouseInputMonitorX11 : public LocalPointerInputMonitor {
     // Controls watching X events.
     std::unique_ptr<base::FileDescriptorWatcher::Controller> controller_;
 
-    std::unique_ptr<x11::Connection> connection_;
+    x11::Connection* connection_ = nullptr;
 
     DISALLOW_COPY_AND_ASSIGN(Core);
   };
@@ -128,28 +128,24 @@ void LocalMouseInputMonitorX11::Core::Stop() {
                                base::BindOnce(&Core::StopOnInputThread, this));
 }
 
-LocalMouseInputMonitorX11::Core::~Core() {
-  DCHECK(!connection_);
-}
+LocalMouseInputMonitorX11::Core::~Core() = default;
 
 void LocalMouseInputMonitorX11::Core::StartOnInputThread() {
   DCHECK(input_task_runner_->BelongsToCurrentThread());
   DCHECK(!connection_);
 
-  // TODO(jamiewalch): We should pass the connection in.
-  connection_ = std::make_unique<x11::Connection>();
+  connection_ = x11::Connection::Get();
   connection_->AddEventObserver(this);
 
   if (!connection_->xinput().present()) {
-    LOG(ERROR) << "X Record extension not available.";
+    LOG(ERROR) << "X Input extension not available.";
     return;
   }
   // Let the server know the client XInput version.
   connection_->xinput().XIQueryVersion(
       {x11::Input::major_version, x11::Input::minor_version});
 
-  x11::Input::XIEventMask mask{};
-  ui::SetXinputMask(&mask, x11::Input::RawDeviceEvent::RawMotion);
+  auto mask = CommonXIEventMaskForRootWindow();
   connection_->xinput().XISelectEvents(
       {connection_->default_root(),
        {{x11::Input::DeviceId::AllMaster, {mask}}}});
@@ -168,7 +164,6 @@ void LocalMouseInputMonitorX11::Core::StartOnInputThread() {
 void LocalMouseInputMonitorX11::Core::StopOnInputThread() {
   DCHECK(input_task_runner_->BelongsToCurrentThread());
   controller_.reset();
-  connection_.reset();
 }
 
 void LocalMouseInputMonitorX11::Core::OnConnectionData() {
@@ -184,7 +179,8 @@ void LocalMouseInputMonitorX11::Core::OnEvent(const x11::Event& event) {
   // selected them.
   if (!raw)
     return;
-  DCHECK(raw->opcode == x11::Input::RawDeviceEvent::RawMotion);
+  if (raw->opcode != x11::Input::RawDeviceEvent::RawMotion)
+    return;
 
   connection_->QueryPointer({connection_->default_root()})
       .OnResponse(base::BindOnce(
