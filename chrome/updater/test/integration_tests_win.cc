@@ -23,7 +23,7 @@
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants_builder.h"
-#include "chrome/updater/test/integration_tests.h"
+#include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test/test_app/constants.h"
 #include "chrome/updater/test/test_app/test_app_version.h"
 #include "chrome/updater/updater_branding.h"

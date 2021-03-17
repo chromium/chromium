@@ -24,7 +24,7 @@
 #import "chrome/updater/mac/mac_util.h"
 #include "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/prefs.h"
-#include "chrome/updater/test/integration_tests.h"
+#include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test/test_app/constants.h"
 #include "chrome/updater/test/test_app/test_app_version.h"
 #include "chrome/updater/updater_branding.h"
@@ -159,6 +159,8 @@ void Clean(UpdaterScope scope) {
 
   @autoreleasepool {
     RemoveJobFromLaunchd(scope, launchd_domain, launchd_type,
+                         CopyWakeLaunchdName());
+    RemoveJobFromLaunchd(scope, launchd_domain, launchd_type,
                          CopyUpdateServiceLaunchdName());
     RemoveJobFromLaunchd(scope, launchd_domain, launchd_type,
                          CopyUpdateServiceInternalLaunchdName());
@@ -195,8 +197,6 @@ void ExpectInstalled(UpdaterScope scope) {
   Launchd::Domain launchd_domain = LaunchdDomain(scope);
   Launchd::Type launchd_type = LaunchdType(scope);
 
-  VLOG(0) << "Scope :" << scope
-          << "; GetProductPath(scope): " << GetProductPath(scope);
   // Files must exist on the file system.
   base::Optional<base::FilePath> path = GetProductPath(scope);
   EXPECT_TRUE(path);

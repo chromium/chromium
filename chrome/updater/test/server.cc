@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "chrome/updater/test/integration_tests.h"
+#include "chrome/updater/test/integration_tests_impl.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"

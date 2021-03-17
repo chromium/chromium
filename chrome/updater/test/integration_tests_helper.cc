@@ -16,7 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/test/integration_tests.h"
+#include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/updater_scope.h"
 #include "url/gurl.h"
 
@@ -109,8 +109,10 @@ void AppTestHelper::FirstTaskRun() {
       int exit_code = -1;
       if (base::StringToInt(command_line->GetSwitchValueASCII("exit_code"),
                             &exit_code)) {
-        RunWake(UpdaterScope::kSystem, exit_code);
-        Shutdown(kSuccess);
+        task_runner->PostTaskAndReply(
+            FROM_HERE,
+            base::BindOnce(&RunWake, UpdaterScope::kSystem, exit_code),
+            base::BindOnce(&AppTestHelper::Shutdown, this, kSuccess));
       } else {
         Shutdown(kBadExitCodeSwitch);
       }
@@ -223,6 +225,12 @@ int IntegrationTestsHelperMain(int argc, char** argv) {
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
 
   base::CommandLine::Init(argc, argv);
+
+  logging::SetLogItems(/*enable_process_id=*/true,
+                       /*enable_thread_id=*/true,
+                       /*enable_timestamp=*/true,
+                       /*enable_tickcount=*/false);
+
   return MakeAppTestHelper()->Run();
 }
 
