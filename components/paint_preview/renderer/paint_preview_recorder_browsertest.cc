@@ -303,7 +303,7 @@ TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureLocalFrame) {
   LoadHTML(
       "<!doctype html>"
       "<body style='min-height:1000px;'>"
-      "  <iframe style='width: 500px, height: 500px'"
+      "  <iframe style='width: 500px; height: 500px'"
       "          srcdoc=\"<div style='width: 100px; height: 100px;"
       "          background-color: #000000'>&nbsp;</div>\"></iframe>"
       "</body>");
@@ -316,6 +316,48 @@ TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureLocalFrame) {
 
   EXPECT_TRUE(out_response->embedding_token.has_value());
   EXPECT_EQ(out_response->content_id_to_embedding_token.size(), 0U);
+}
+
+TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureUnclippedLocalFrame) {
+  LoadHTML(
+      "<!doctype html>"
+      "<body style='min-height:1000px;'>"
+      "  <iframe style='width: 500px; height: 500px'"
+      "          srcdoc=\"<div style='width: 500px; height: 100px;"
+      "          background-color: #00FF00'>&nbsp;</div>"
+      "          <div style='width: 500px; height: 900px;"
+      "          background-color: #FF0000'>&nbsp;</div>\"></iframe>"
+      "</body>");
+  auto out_response = mojom::PaintPreviewCaptureResponse::New();
+  auto* child_web_frame =
+      GetFrame()->GetWebFrame()->FirstChild()->ToWebLocalFrame();
+  auto* child_frame = content::RenderFrame::FromWebFrame(child_web_frame);
+  ASSERT_TRUE(child_frame);
+
+  child_web_frame->SetScrollOffset(gfx::ScrollOffset(0, 400));
+
+  base::FilePath skp_path = RunCapture(child_frame, &out_response, false);
+
+  EXPECT_TRUE(out_response->embedding_token.has_value());
+  EXPECT_EQ(out_response->content_id_to_embedding_token.size(), 0U);
+
+  sk_sp<SkPicture> pic;
+  {
+    base::ScopedAllowBlockingForTesting scope;
+    FileRStream rstream(base::File(
+        skp_path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ));
+    pic = SkPicture::MakeFromStream(&rstream, nullptr);
+  }
+  EXPECT_EQ(pic->cullRect().width(), child_web_frame->DocumentSize().width());
+  EXPECT_EQ(pic->cullRect().height(), child_web_frame->DocumentSize().height());
+
+  SkBitmap bitmap;
+  ASSERT_TRUE(bitmap.tryAllocN32Pixels(pic->cullRect().width(),
+                                       pic->cullRect().height()));
+  SkCanvas canvas(bitmap);
+  canvas.drawPicture(pic);
+  EXPECT_EQ(bitmap.getColor(50, 50), 0xFF00FF00U);
+  EXPECT_EQ(bitmap.getColor(50, 800), 0xFFFF0000U);
 }
 
 TEST_F(PaintPreviewRecorderRenderViewTest, TestCaptureCustomClipRect) {
