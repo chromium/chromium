@@ -522,6 +522,8 @@ class ASH_EXPORT ShelfLayoutManager
   // Updates the visibility state because of the change on a status area tray.
   void UpdateVisibilityStateForTrayBubbleChange(bool bubble_shown);
 
+  bool IsShelfContainerAnimating() const;
+
   bool in_shutdown_ = false;
 
   // True if the last mouse event was a mouse drag.

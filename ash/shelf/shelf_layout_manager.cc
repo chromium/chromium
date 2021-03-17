@@ -473,6 +473,8 @@ gfx::Rect ShelfLayoutManager::GetIdealBoundsForWorkAreaCalculation() const {
 }
 
 void ShelfLayoutManager::LayoutShelf(bool animate) {
+  // Do not animate if the shelf container is animating.
+  animate &= !IsShelfContainerAnimating();
   // The ShelfWidget may be partially closed (no native widget) during shutdown
   // or before it's been fully initialized so skip layout.
   if (in_shutdown_ || !shelf_widget_->native_widget())
@@ -1088,7 +1090,11 @@ void ShelfLayoutManager::OnSessionStateChanged(
   const bool was_adding_user = state_.IsAddingSecondaryUser();
   const bool was_locked = state_.IsScreenLocked();
   state_.session_state = state;
-  MaybeUpdateShelfBackground(AnimationChangeType::ANIMATE);
+
+  // Animate shelf layout if the container is not animating.
+  bool animate = !IsShelfContainerAnimating();
+  MaybeUpdateShelfBackground(animate ? AnimationChangeType::ANIMATE
+                                     : AnimationChangeType::IMMEDIATE);
   HideContextualNudges();
   if (was_adding_user != state_.IsAddingSecondaryUser()) {
     UpdateShelfVisibilityAfterLoginUIChange();
@@ -1101,7 +1107,7 @@ void ShelfLayoutManager::OnSessionStateChanged(
     UpdateShelfVisibilityAfterLoginUIChange();
 
   CalculateTargetBoundsAndUpdateWorkArea();
-  UpdateBoundsAndOpacity(true /* animate */);
+  UpdateBoundsAndOpacity(animate);
   UpdateVisibilityState();
   UpdateContextualNudges();
 }
@@ -1940,7 +1946,7 @@ bool ShelfLayoutManager::IsStatusAreaWindow(aura::Window* window) {
 
 void ShelfLayoutManager::UpdateShelfVisibilityAfterLoginUIChange() {
   UpdateVisibilityState();
-  LayoutShelf();
+  LayoutShelf(/*animate=*/false);
 }
 
 float ShelfLayoutManager::ComputeTargetOpacity(const State& state) const {
@@ -2709,6 +2715,20 @@ void ShelfLayoutManager::OnShelfTrayBubbleVisibilityChanged(bool bubble_shown) {
   // Use ThreadTaskRunnerHandle to specify that the task runs on the UI thread.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, visibility_update_for_tray_callback_.callback());
+}
+
+bool ShelfLayoutManager::IsShelfContainerAnimating() const {
+  // TODO(oshima): We're re-layouting during shelf construction. We probably
+  // should wait and then layout once after shelf is fully constructed.
+  if (!shelf_widget_ || !shelf_widget_->native_widget_private() ||
+      !shelf_widget_->GetNativeWindow()) {
+    return false;
+  }
+  return shelf_widget_->GetNativeWindow()
+      ->parent()
+      ->layer()
+      ->GetAnimator()
+      ->is_animating();
 }
 
 }  // namespace ash
