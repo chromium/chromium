@@ -4,7 +4,6 @@
 
 #include "chrome/services/sharing/nearby/platform/webrtc.h"
 
-#include "base/i18n/timezone.h"
 #include "chrome/services/sharing/webrtc/ipc_network_manager.h"
 #include "chrome/services/sharing/webrtc/ipc_packet_socket_factory.h"
 #include "chrome/services/sharing/webrtc/mdns_responder_adapter.h"
@@ -18,6 +17,7 @@
 #include "third_party/webrtc/api/jsep.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
 #include "third_party/webrtc_overrides/task_queue_factory.h"
+#include "unicode/locid.h"
 
 namespace location {
 namespace nearby {
@@ -61,6 +61,12 @@ net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           }
         }
     )");
+
+// Returns the ISO country code for the locale currently set as the
+// user's device language.
+const std::string GetCurrentCountryCode() {
+  return std::string(icu::Locale::getDefault().getCountry());
+}
 
 class ProxyAsyncResolverFactory final : public webrtc::AsyncResolverFactory {
  public:
@@ -156,7 +162,7 @@ class WebRtcSignalingMessengerImpl : public api::WebRtcSignalingMessenger {
       case location::nearby::connections::LocationStandard_Format::
           LocationStandard_Format_UNKNOWN:
         // Here we default to the current default country code before sending.
-        location_hint_ptr->location = base::CountryCodeForCurrentTimezone();
+        location_hint_ptr->location = GetCurrentCountryCode();
         location_hint_ptr->format =
             sharing::mojom::LocationStandardFormat::ISO_3166_1_ALPHA_2;
         break;
@@ -283,7 +289,7 @@ WebRtcMedium::WebRtcMedium(
 WebRtcMedium::~WebRtcMedium() = default;
 
 const std::string WebRtcMedium::GetDefaultCountryCode() {
-  return base::CountryCodeForCurrentTimezone();
+  return GetCurrentCountryCode();
 }
 
 void WebRtcMedium::CreatePeerConnection(

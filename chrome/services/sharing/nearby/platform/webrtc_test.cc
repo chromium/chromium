@@ -4,13 +4,13 @@
 
 #include "chrome/services/sharing/nearby/platform/webrtc.h"
 
-#include "base/i18n/timezone.h"
 #include "base/test/task_environment.h"
 #include "chrome/services/sharing/nearby/test_support/mock_webrtc_dependencies.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "unicode/locid.h"
 
 namespace location {
 namespace nearby {
@@ -186,7 +186,7 @@ TEST_F(WebRtcMediumTest, GetMessengerAndSendMessageWithUnknownLocationHint) {
               sharing::MockWebRtcDependencies::SendMessageCallback callback) {
             // Validate we get the default country code if we pass an UNKNOWN
             // location hint.
-            EXPECT_EQ(base::CountryCodeForCurrentTimezone(),
+            EXPECT_EQ(icu::Locale::getDefault().getCountry(),
                       location_hint->location);
             EXPECT_EQ(
                 sharing::mojom::LocationStandardFormat::ISO_3166_1_ALPHA_2,
@@ -261,7 +261,7 @@ TEST_F(WebRtcMediumTest, DISABLED_GetMessenger_StartAndStopReceivingMessages) {
                   callback) {
             // Expect the unknown location hint to get defaulted by the time we
             // get here.
-            EXPECT_EQ(base::CountryCodeForCurrentTimezone(),
+            EXPECT_EQ(icu::Locale::getDefault().getCountry(),
                       location_hint->location);
             EXPECT_EQ(
                 sharing::mojom::LocationStandardFormat::ISO_3166_1_ALPHA_2,

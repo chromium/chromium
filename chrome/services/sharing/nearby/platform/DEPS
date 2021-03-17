@@ -6,4 +6,5 @@ include_rules = [
   '+device/bluetooth/public',
   '+third_party/abseil-cpp/absl/strings/string_view.h',
   '+third_party/abseil-cpp/absl/time/time.h',
+  "+unicode/locid.h"
 ]
