@@ -120,8 +120,7 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
   CameraDeviceDelegate(
       VideoCaptureDeviceDescriptor device_descriptor,
       scoped_refptr<CameraHalDelegate> camera_hal_delegate,
-      scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner,
-      CameraAppDeviceImpl* camera_app_device);
+      scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner);
 
   ~CameraDeviceDelegate() final;
 
@@ -215,9 +214,6 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
   void OnConstructedDefaultStillCaptureRequestSettings(
       cros::mojom::CameraMetadataPtr settings);
 
-  void OnGotFpsRange(cros::mojom::CameraMetadataPtr settings,
-                     base::Optional<gfx::Range> specified_fps_range);
-
   gfx::Size GetBlobResolution(base::Optional<gfx::Size> new_blob_resolution);
 
   // StreamCaptureInterface implementations.  These methods are called by
@@ -274,7 +270,7 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
 
   std::queue<base::OnceClosure> on_reconfigured_callbacks_;
 
-  CameraAppDeviceImpl* camera_app_device_;  // Weak.
+  base::WeakPtr<CameraAppDeviceImpl> camera_app_device_;
 
   // States of SetPhotoOptions
   bool is_set_awb_mode_;

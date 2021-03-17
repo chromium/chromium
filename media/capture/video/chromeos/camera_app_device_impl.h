@@ -59,13 +59,18 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
       media::mojom::ImageCapture::TakePhotoCallback take_photo_callback);
 
   CameraAppDeviceImpl(const std::string& device_id,
-                      cros::mojom::CameraInfoPtr camera_info,
-                      base::OnceClosure cleanup_callback);
+                      cros::mojom::CameraInfoPtr camera_info);
   ~CameraAppDeviceImpl() override;
 
   // Binds the mojo receiver to this implementation.
   void BindReceiver(
       mojo::PendingReceiver<cros::mojom::CameraAppDevice> receiver);
+
+  // All the weak pointers should be dereferenced and invalidated on the camera
+  // device ipc thread.
+  base::WeakPtr<CameraAppDeviceImpl> GetWeakPtr();
+
+  void InvalidatePtrs(base::OnceClosure callback);
 
   // Consumes all the pending reprocess tasks if there is any and eventually
   // generates a ReprocessTaskQueue which contains:
@@ -136,12 +141,6 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
 
   cros::mojom::CameraInfoPtr camera_info_;
 
-  // Callback which should be triggered when the connection is down.
-  base::OnceClosure cleanup_callback_;
-
-  // It is used to invalidate weak pointer.
-  const scoped_refptr<base::SingleThreadTaskRunner> creation_task_runner_;
-
   // It is used for calls which should run on the mojo thread.
   scoped_refptr<base::SingleThreadTaskRunner> mojo_task_runner_;
 
@@ -175,7 +174,13 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   base::flat_map<uint32_t, mojo::Remote<cros::mojom::CameraEventObserver>>
       camera_event_observers_;
 
-  std::unique_ptr<base::WeakPtrFactory<CameraAppDeviceImpl>> weak_ptr_factory_;
+  // The weak pointers should be dereferenced and invalidated on camera device
+  // ipc thread.
+  base::WeakPtrFactory<CameraAppDeviceImpl> weak_ptr_factory_{this};
+
+  // The weak pointers should be dereferenced and invalidated on the Mojo
+  // thread.
+  base::WeakPtrFactory<CameraAppDeviceImpl> weak_ptr_factory_for_mojo_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CameraAppDeviceImpl);
 };

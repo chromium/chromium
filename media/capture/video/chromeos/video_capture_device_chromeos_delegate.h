@@ -27,7 +27,6 @@ class Display;
 
 namespace media {
 
-class CameraAppDeviceImpl;
 class CameraHalDelegate;
 class CameraDeviceDelegate;
 
@@ -39,7 +38,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceChromeOSDelegate final
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       const VideoCaptureDeviceDescriptor& device_descriptor,
       scoped_refptr<CameraHalDelegate> camera_hal_delegate,
-      CameraAppDeviceImpl* camera_app_device,
       base::OnceClosure cleanup_callback);
 
   ~VideoCaptureDeviceChromeOSDelegate();
@@ -102,8 +100,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceChromeOSDelegate final
   // Whether the incoming frames should rotate when the device rotates.
   const bool rotates_with_device_;
   int rotation_;
-
-  CameraAppDeviceImpl* camera_app_device_;  // Weak.
 
   base::OnceClosure cleanup_callback_;
 
