@@ -121,10 +121,30 @@ void FullRestoreReadHandler::RemoveApp(const base::FilePath& profile_path,
   it->second->RemoveApp(app_id);
 }
 
+bool FullRestoreReadHandler::HasWindowInfo(int32_t restore_window_id) {
+  if (!SessionID::IsValidValue(restore_window_id))
+    return false;
+
+  auto it = window_id_to_app_restore_info_.find(restore_window_id);
+  if (it == window_id_to_app_restore_info_.end())
+    return false;
+
+  return true;
+}
+
+std::unique_ptr<WindowInfo> FullRestoreReadHandler::GetWindowInfo(
+    const base::FilePath& profile_path,
+    const std::string& app_id,
+    int32_t restore_window_id) {
+  auto it = profile_path_to_restore_data_.find(profile_path);
+  if (it == profile_path_to_restore_data_.end())
+    return nullptr;
+
+  return it->second->GetWindowInfo(app_id, restore_window_id);
+}
+
 std::unique_ptr<WindowInfo> FullRestoreReadHandler::GetWindowInfo(
     int32_t restore_window_id) {
-  // TODO(crbug.com/1146900): Handle ARC app windows.
-
   if (!SessionID::IsValidValue(restore_window_id))
     return nullptr;
 
@@ -132,8 +152,9 @@ std::unique_ptr<WindowInfo> FullRestoreReadHandler::GetWindowInfo(
   if (it == window_id_to_app_restore_info_.end())
     return nullptr;
 
-  return profile_path_to_restore_data_[it->second.first]->GetWindowInfo(
-      it->second.second, restore_window_id);
+  const base::FilePath& profile_path = it->second.first;
+  const std::string& app_id = it->second.second;
+  return GetWindowInfo(profile_path, app_id, restore_window_id);
 }
 
 std::unique_ptr<WindowInfo> FullRestoreReadHandler::GetWindowInfo(

@@ -38,14 +38,6 @@ void SaveWindowInfo(const WindowInfo& window_info) {
   FullRestoreSaveHandler::GetInstance()->SaveWindowInfo(window_info);
 }
 
-std::unique_ptr<WindowInfo> GetWindowInfo(int32_t restore_window_id) {
-  if (!ash::features::IsFullRestoreEnabled())
-    return nullptr;
-
-  return FullRestoreReadHandler::GetInstance()->GetWindowInfo(
-      restore_window_id);
-}
-
 std::unique_ptr<WindowInfo> GetWindowInfo(aura::Window* window) {
   if (!ash::features::IsFullRestoreEnabled())
     return nullptr;
@@ -83,8 +75,8 @@ bool HasWindowInfo(int32_t restore_window_id) {
   if (!ash::features::IsFullRestoreEnabled())
     return false;
 
-  std::unique_ptr<WindowInfo> window_info = GetWindowInfo(restore_window_id);
-  return !!window_info;
+  return FullRestoreReadHandler::GetInstance()->HasWindowInfo(
+      restore_window_id);
 }
 
 void ModifyWidgetParams(int32_t restore_window_id,
