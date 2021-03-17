@@ -2251,7 +2251,7 @@
   {
     "name": "enable-reader-mode",
     "owners": [ "katie", "dmazzoni" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 95
   },
   {
     "name": "enable-reader-mode-in-cct",
