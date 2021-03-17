@@ -27,16 +27,24 @@ ProcessMetricsRecorder::~ProcessMetricsRecorder() = default;
 void ProcessMetricsRecorder::OnMetricsSampled(
     const ProcessMetadata& process_metadata,
     const ProcessMonitor::Metrics& metrics) {
-  // We scale up to the equivalent of 64 CPU cores fully loaded. More than this
-  // doesn't really matter, as we're already in a terrible place.
-  const int kHistogramMin = 1;
-  const int kHistogramMax = 6400;
-  const int kHistogramBucketCount = 50;
+  // CPU usage metrics are reported as a double in the
+  // [0.0, number of core * 100.0] range. The CPU usage is usually below 1% and
+  // so the histogram are reported with a 1/10000 granularity to make analyzing
+  // the data easier (otherwise almost all the samples end up in the same [0, 1[
+  // bucket).
+  constexpr int kCPUUsageFactor = 100;
+  // We scale up to the equivalent of 2 CPU cores fully loaded. More than this
+  // doesn't really matter, as we're already in a terrible place. This used to
+  // be capped at 64 cores but the data showed that this was way too much, the
+  // per process CPU usage really rarely exceeds 100% of one core.
+  constexpr int kHistogramMin = 1;
+  constexpr int kHistogramMax = 200 * kCPUUsageFactor;
+  constexpr int kHistogramBucketCount = 50;
 
 #if defined(OS_WIN)
-  const int kDiskUsageHistogramMin = 1;
-  const int kDiskUsageHistogramMax = 200 * 1024 * 1024;  // 200 M/sec.
-  const int kDiskUsageHistogramBucketCount = 50;
+  constexpr int kDiskUsageHistogramMin = 1;
+  constexpr int kDiskUsageHistogramMax = 200 * 1024 * 1024;  // 200 M/sec.
+  constexpr int kDiskUsageHistogramBucketCount = 50;
 #endif
 
   // The histogram macros don't support variables as histogram names,
@@ -44,8 +52,9 @@ void ProcessMetricsRecorder::OnMetricsSampled(
   switch (process_metadata.process_type) {
     case content::PROCESS_TYPE_BROWSER:
       UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "PerformanceMonitor.AverageCPU.BrowserProcess", metrics.cpu_usage,
-          kHistogramMin, kHistogramMax, kHistogramBucketCount);
+          "PerformanceMonitor.AverageCPU2.BrowserProcess",
+          metrics.cpu_usage * kCPUUsageFactor, kHistogramMin, kHistogramMax,
+          kHistogramBucketCount);
       // If CPU usage has consistently been above our threshold,
       // we *may* have an issue.
       if (metrics.cpu_usage > kHighCPUUtilizationThreshold) {
@@ -76,8 +85,9 @@ void ProcessMetricsRecorder::OnMetricsSampled(
       break;
     case content::PROCESS_TYPE_RENDERER:
       UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "PerformanceMonitor.AverageCPU.RendererProcess", metrics.cpu_usage,
-          kHistogramMin, kHistogramMax, kHistogramBucketCount);
+          "PerformanceMonitor.AverageCPU2.RendererProcess2",
+          metrics.cpu_usage * kCPUUsageFactor, kHistogramMin, kHistogramMax,
+          kHistogramBucketCount);
       if (metrics.cpu_usage > kHighCPUUtilizationThreshold) {
         UMA_HISTOGRAM_BOOLEAN("PerformanceMonitor.HighCPU.RendererProcess",
                               true);
@@ -100,9 +110,10 @@ void ProcessMetricsRecorder::OnMetricsSampled(
 
       break;
     case content::PROCESS_TYPE_GPU:
-      UMA_HISTOGRAM_CUSTOM_COUNTS("PerformanceMonitor.AverageCPU.GPUProcess",
-                                  metrics.cpu_usage, kHistogramMin,
-                                  kHistogramMax, kHistogramBucketCount);
+      UMA_HISTOGRAM_CUSTOM_COUNTS("PerformanceMonitor.AverageCPU2.GPUProcess",
+                                  metrics.cpu_usage * kCPUUsageFactor,
+                                  kHistogramMin, kHistogramMax,
+                                  kHistogramBucketCount);
       if (metrics.cpu_usage > kHighCPUUtilizationThreshold)
         UMA_HISTOGRAM_BOOLEAN("PerformanceMonitor.HighCPU.GPUProcess", true);
 #if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
@@ -121,9 +132,10 @@ void ProcessMetricsRecorder::OnMetricsSampled(
 
       break;
     case content::PROCESS_TYPE_PPAPI_PLUGIN:
-      UMA_HISTOGRAM_CUSTOM_COUNTS("PerformanceMonitor.AverageCPU.PPAPIProcess",
-                                  metrics.cpu_usage, kHistogramMin,
-                                  kHistogramMax, kHistogramBucketCount);
+      UMA_HISTOGRAM_CUSTOM_COUNTS("PerformanceMonitor.AverageCPU2.PPAPIProcess",
+                                  metrics.cpu_usage * kCPUUsageFactor,
+                                  kHistogramMin, kHistogramMax,
+                                  kHistogramBucketCount);
       if (metrics.cpu_usage > kHighCPUUtilizationThreshold)
         UMA_HISTOGRAM_BOOLEAN("PerformanceMonitor.HighCPU.PPAPIProcess", true);
       break;
@@ -135,18 +147,12 @@ void ProcessMetricsRecorder::OnMetricsSampled(
     case kProcessSubtypeUnknown:
       break;
     case kProcessSubtypePPAPIFlash:
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "PerformanceMonitor.AverageCPU.PPAPIFlashProcess", metrics.cpu_usage,
-          kHistogramMin, kHistogramMax, kHistogramBucketCount);
-      if (metrics.cpu_usage > kHighCPUUtilizationThreshold) {
-        UMA_HISTOGRAM_BOOLEAN("PerformanceMonitor.HighCPU.PPAPIFlashProcess",
-                              true);
-      }
+      NOTREACHED() << "Flash isn't supported anymore.";
       break;
     case kProcessSubtypeExtensionPersistent:
       UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "PerformanceMonitor.AverageCPU.RendererExtensionPersistentProcess",
-          metrics.cpu_usage, kHistogramMin, kHistogramMax,
+          "PerformanceMonitor.AverageCPU2.RendererExtensionPersistentProcess",
+          metrics.cpu_usage * kCPUUsageFactor, kHistogramMin, kHistogramMax,
           kHistogramBucketCount);
       if (metrics.cpu_usage > kHighCPUUtilizationThreshold) {
         UMA_HISTOGRAM_BOOLEAN(
@@ -156,8 +162,8 @@ void ProcessMetricsRecorder::OnMetricsSampled(
       break;
     case kProcessSubtypeExtensionEvent:
       UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "PerformanceMonitor.AverageCPU.RendererExtensionEventProcess",
-          metrics.cpu_usage, kHistogramMin, kHistogramMax,
+          "PerformanceMonitor.AverageCPU2.RendererExtensionEventProcess",
+          metrics.cpu_usage * kCPUUsageFactor, kHistogramMin, kHistogramMax,
           kHistogramBucketCount);
       if (metrics.cpu_usage > kHighCPUUtilizationThreshold) {
         UMA_HISTOGRAM_BOOLEAN(

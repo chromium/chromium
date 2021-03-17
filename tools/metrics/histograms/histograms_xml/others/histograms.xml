@@ -11022,6 +11022,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PerformanceMonitor.AverageCPU" units="PercentCPUUsage"
     expires_after="2021-10-30">
+  <obsolete>
+    Replaced in 2021-03 by PerformanceMonitor.AverageCPU2, which reports this
+    value in permyriad (1/10000) instead of percent and changes the upper bound
+    of the histogram.
+  </obsolete>
   <owner>fdoray@chromium.org</owner>
   <owner>oysteine@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -11029,6 +11034,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Average CPU utilization of a process, read out at each two-minute interval.
     The utilization is in the 0-100% range per CPU, which is then summed up.
     I.e. a quadcore system fully loaded would read as 400%.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceMonitor.AverageCPU2" units="hundredth of percent"
+    expires_after="2022-01-30">
+  <owner>fdoray@chromium.org</owner>
+  <owner>sebmarchand@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Average CPU utilization of a process, read out at each two-minute interval.
+    The utilization is in the 0-100% range per CPU, which is then summed up and
+    multiplied by 100. The histogram is capped at 20000 (equivalent to 2 cores
+    fully loaded). I.e. 4 cores busy at 25% each will read as 25 * 4 * 100 =
+    10000.
   </summary>
 </histogram>
 
