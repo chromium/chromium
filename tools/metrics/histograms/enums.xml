@@ -41732,6 +41732,11 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="ARC not available"/>
 </enum>
 
+<enum name="KmsVncMethodEnum">
+  <int value="1" label="EGL"/>
+  <int value="2" label="BO"/>
+</enum>
+
 <enum name="LanguageCode">
   <summary>ISO 639 Language Codes.</summary>
   <int value="24929" label="Afar"/>

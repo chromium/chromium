@@ -550,6 +550,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Platform.KmsVncMethod" enum="KmsVncMethodEnum"
+    expires_after="2022-02-02">
+  <owner>uekawa@chromium.org</owner>
+  <owner>shaochuan@chromium.org</owner>
+  <summary>
+    KmsVnc graphics method in use, depending on command line flags and
+    auto-detected kernel graphics features. Recorded at start up of VNC server.
+  </summary>
+</histogram>
+
 <histogram name="Platform.LogicalCpuCount" units="units"
     expires_after="2021-09-05">
   <owner>sonnyrao@chromium.org</owner>
