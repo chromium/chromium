@@ -435,5 +435,8 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="cablev2_websocket_from_client"/>
       <traffic_annotation unique_id="cablev2_websocket_from_authenticator"/>
     </sender>
+    <sender name="Memories">
+      <traffic_annotation unique_id="memories_remote_model_request"/>
+    </sender>
   </group>
 </groups>

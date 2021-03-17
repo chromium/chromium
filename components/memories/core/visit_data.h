@@ -57,7 +57,7 @@ struct VisitContextSignals {
   // An opaque integer representing page_load_metrics::PageEndReason.
   // Do not use this directly, as it's a raw integer for serialization, and not
   // a typesafe page_load_metrics::PageEndReason.
-  int64_t page_end_reason = 0;
+  int page_end_reason = 0;
 };
 
 struct MemoriesVisit {

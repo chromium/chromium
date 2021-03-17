@@ -5,18 +5,25 @@
 #ifndef COMPONENTS_MEMORIES_CORE_MEMORIES_SERVICE_H_
 #define COMPONENTS_MEMORIES_CORE_MEMORIES_SERVICE_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/memories/core/memories_remote_model_helper.h"
 #include "components/memories/core/visit_data.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "url/gurl.h"
 
 namespace memories {
 
 // This Service is the API for UIs to fetch Chrome Memories.
 class MemoriesService : public KeyedService {
  public:
-  MemoriesService();
+  explicit MemoriesService(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~MemoriesService() override;
 
   // KeyedService:
@@ -28,11 +35,19 @@ class MemoriesService : public KeyedService {
                 const base::Time& time,
                 const VisitContextSignals& context_signals);
 
+  // Asks |remote_model_helper_| to construct memories from |visits_|.
+  void GetMemories(MemoriesCallback callback);
+
  private:
   // If the Memories flag is enabled, this contains all the visits in-memory
   // during the Profile lifetime.
   // TODO(tommycli): Hide this better behind a new debug flag.
   std::vector<MemoriesVisit> visits_;
+
+  // Helper service to handle communicating with the remote model. This will be
+  // used for debugging only; the launch ready feature will use a local model
+  // instead.
+  std::unique_ptr<MemoriesRemoteModelHelper> remote_model_helper_;
 
   DISALLOW_COPY_AND_ASSIGN(MemoriesService);
 };

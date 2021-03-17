@@ -30,6 +30,9 @@ interface PageHandler {
   // Returns sample Memories related to |query| for experimentation with a POC.
   // TODO(crbug.com/1179069): Remove this when real Memories are available.
   GetSampleMemories(string query) => (MemoriesResult result);
+
+  // Return memories related to visit history.
+  GetMemories() => (MemoriesResult memories);
 };
 
 // WebUI-side handler for requests from the browser.

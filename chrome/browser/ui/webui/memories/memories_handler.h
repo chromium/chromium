@@ -5,8 +5,12 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_MEMORIES_MEMORIES_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_MEMORIES_MEMORIES_HANDLER_H_
 
+#include <string>
+
+#include "base/callback.h"
 #include "chrome/browser/ui/webui/memories/memories.mojom.h"
 #include "components/memories/core/memories.mojom.h"
+#include "components/memories/core/memories_remote_model_helper.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -49,6 +53,8 @@ class MemoriesHandler : public memories::mojom::PageHandler {
       base::OnceCallback<void(memories::mojom::MemoriesResultPtr)>;
   void GetSampleMemories(const std::string& query,
                          MemoriesResultCallback callback) override;
+
+  void GetMemories(MemoriesResultCallback callback) override;
 
  private:
 #if !defined(OFFICIAL_BUILD)

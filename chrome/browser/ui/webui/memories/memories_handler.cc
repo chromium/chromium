@@ -4,8 +4,15 @@
 
 #include "chrome/browser/ui/webui/memories/memories_handler.h"
 
+#include <algorithm>
+#include <utility>
+#include <vector>
+
 #include "chrome/browser/profiles/profile.h"
+#include "components/memories/content/memories_service_factory.h"
+#include "components/memories/core/memories_service.h"
 #include "content/public/browser/web_contents.h"
+#include "url/gurl.h"
 
 #if !defined(OFFICIAL_BUILD)
 #include "base/bind.h"
@@ -243,4 +250,14 @@ void MemoriesHandler::OnHistoryQueryResults(const std::string& query,
   memories_result_mojom->memories.push_back(std::move(memory_mojom));
   std::move(callback).Run(std::move(memories_result_mojom));
 #endif
+}
+
+void MemoriesHandler::GetMemories(MemoriesResultCallback callback) {
+  auto* memory_service = MemoriesServiceFactory::GetForBrowserContext(profile_);
+  memory_service->GetMemories(base::BindOnce([](memories::Memories memories) {
+                                auto result =
+                                    memories::mojom::MemoriesResult::New();
+                                result->memories = std::move(memories);
+                                return result;
+                              }).Then(std::move(callback)));
 }

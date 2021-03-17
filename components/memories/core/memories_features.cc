@@ -10,6 +10,7 @@ namespace memories {
 
 // Enables the Chrome Memories history clustering feature.
 const base::Feature kMemories{"Memories", base::FEATURE_DISABLED_BY_DEFAULT};
+const char kMemoriesRemoteModelEndpointParam[] = "MemoriesRemoteModelEndpoint";
 
 // Enables debug info; e.g. shows visit metadata on chrome://history entries.
 const base::Feature kDebug{"MemoriesDebug", base::FEATURE_DISABLED_BY_DEFAULT};

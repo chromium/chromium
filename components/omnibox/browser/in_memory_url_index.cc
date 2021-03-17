@@ -25,8 +25,6 @@
 #include "components/omnibox/browser/url_index_private_data.h"
 #include "components/omnibox/common/omnibox_features.h"
 
-using in_memory_url_index::InMemoryURLIndexCacheItem;
-
 // Initializes a allowlist of URL schemes.
 void InitializeSchemeAllowlist(SchemeSet* allowlist,
                                const SchemeSet& client_schemes_to_allowlist) {

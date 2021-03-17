@@ -10,6 +10,10 @@
 namespace memories {
 
 extern const base::Feature kMemories;
+// The remote model endpoint used to cluster visits into memories.
+extern const char kMemoriesRemoteModelEndpointParam[];
+
+// Enables debug features; e.g. displaying typed_count on chrome://history.
 extern const base::Feature kDebug;
 
 }  // namespace memories

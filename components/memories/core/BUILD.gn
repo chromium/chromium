@@ -8,6 +8,8 @@ static_library("core") {
   sources = [
     "memories_features.cc",
     "memories_features.h",
+    "memories_remote_model_helper.cc",
+    "memories_remote_model_helper.h",
     "memories_service.cc",
     "memories_service.h",
     "visit_data.h",
@@ -16,6 +18,8 @@ static_library("core") {
     ":mojo_bindings",
     "//base",
     "//components/keyed_service/core",
+    "//services/data_decoder/public/cpp",
+    "//services/network/public/cpp",
     "//url",
   ]
 }
@@ -26,5 +30,17 @@ mojom("mojo_bindings") {
   public_deps = [
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "memories_service_unittest.cc" ]
+  deps = [
+    ":core",
+    "//base/test:test_support",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/network:test_support",
+    "//testing/gtest",
   ]
 }

@@ -12,5 +12,6 @@ source_set("content") {
     "//base",
     "//components/keyed_service/content",
     "//components/memories/core",
+    "//content/public/browser",
   ]
 }

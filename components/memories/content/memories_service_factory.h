@@ -7,6 +7,7 @@
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "content/public/browser/browser_context.h"
 
 namespace memories {
 class MemoriesService;

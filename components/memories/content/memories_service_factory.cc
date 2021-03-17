@@ -6,6 +6,7 @@
 
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/memories/core/memories_service.h"
+#include "content/public/browser/storage_partition.h"
 
 // static
 memories::MemoriesService* MemoriesServiceFactory::GetForBrowserContext(
@@ -29,7 +30,10 @@ MemoriesServiceFactory::~MemoriesServiceFactory() = default;
 
 KeyedService* MemoriesServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new memories::MemoriesService();
+  auto url_loader_factory =
+      content::BrowserContext::GetDefaultStoragePartition(context)
+          ->GetURLLoaderFactoryForBrowserProcess();
+  return new memories::MemoriesService(url_loader_factory);
 }
 
 content::BrowserContext* MemoriesServiceFactory::GetBrowserContextToUse(
