@@ -5263,7 +5263,7 @@
   {
     "name": "web-bundles",
     "owners": [ "ksakamoto", "horo", "kinuko" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 96
   },
   {
     "name": "web-feed",
