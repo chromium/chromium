@@ -388,7 +388,7 @@ void RenderFrameHostManager::DidNavigateFrame(
                            is_same_document_navigation,
                            clear_proxies_on_commit);
 
-  // Make sure any dynamic changes to this frame's sandbox flags and feature
+  // Make sure any dynamic changes to this frame's sandbox flags and permissions
   // policy that were made prior to navigation take effect.  This should only
   // happen for cross-document navigations.
   if (!is_same_document_navigation)
