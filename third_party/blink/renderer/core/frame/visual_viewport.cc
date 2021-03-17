@@ -848,7 +848,7 @@ mojom::blink::ColorScheme VisualViewport::UsedColorScheme() const {
     if (Document* main_document = main_frame->GetDocument())
       return main_document->GetLayoutView()->StyleRef().UsedColorScheme();
   }
-  return ComputedStyle::InitialStyle().UsedColorScheme();
+  return mojom::blink::ColorScheme::kLight;
 }
 
 void VisualViewport::UpdateScrollOffset(const ScrollOffset& position,

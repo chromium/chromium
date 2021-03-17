@@ -70,12 +70,12 @@ CSSColorInterpolationType::CreateInterpolableColor(CSSValueID keyword) {
     case CSSValueID::kWebkitFocusRingColor:
       // TODO(crbug.com/929098) Need to pass an appropriate color scheme here.
       return CreateInterpolableColor(LayoutTheme::GetTheme().FocusRingColor(
-          ComputedStyle::InitialStyle().UsedColorScheme()));
+          mojom::blink::ColorScheme::kLight));
     default:
       DCHECK(StyleColor::IsColorKeyword(keyword));
       // TODO(crbug.com/929098) Need to pass an appropriate color scheme here.
       return CreateInterpolableColor(StyleColor::ColorFromKeyword(
-          keyword, ComputedStyle::InitialStyle().UsedColorScheme()));
+          keyword, mojom::blink::ColorScheme::kLight));
   }
 }
 

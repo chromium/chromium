@@ -109,7 +109,7 @@ class ScrollableAreaStub : public GarbageCollected<ScrollableAreaStub>,
   }
   bool ScheduleAnimation() override { return true; }
   mojom::blink::ColorScheme UsedColorScheme() const override {
-    return ComputedStyle::InitialStyle().UsedColorScheme();
+    return mojom::blink::ColorScheme::kLight;
   }
 
   ScrollOffset ClampedScrollOffset(const ScrollOffset& offset) {

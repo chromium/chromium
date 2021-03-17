@@ -693,9 +693,8 @@ TEST_F(WebViewTest, PlatformColorsChangedOnDeviceEmulation) {
   ASSERT_TRUE(span1);
 
   // Check non-MobileLayoutTheme color.
-  // TODO(crbug.com/929098) Need to pass an appropriate color scheme here.
   Color original = LayoutTheme::GetTheme().FocusRingColor(
-      ComputedStyle::InitialStyle().UsedColorScheme());
+      span1->ComputedStyleRef().UsedColorScheme());
   EXPECT_EQ(original, OutlineColor(span1));
 
   // Set the focus ring color for the mobile theme to something known.

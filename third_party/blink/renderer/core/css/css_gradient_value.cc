@@ -353,9 +353,10 @@ void CSSGradientValue::AddComputedStops(
         }
         break;
       default:
+        // TODO(crbug.com/929098) Need to pass an appropriate color scheme here.
         stop.color_ = CSSColorValue::Create(
-            StyleColor::ColorFromKeyword(
-                value_id, ComputedStyle::InitialStyle().UsedColorScheme())
+            StyleColor::ColorFromKeyword(value_id,
+                                         mojom::blink::ColorScheme::kLight)
                 .Rgb());
     }
     AddStop(stop);

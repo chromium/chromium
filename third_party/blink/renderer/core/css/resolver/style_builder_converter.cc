@@ -1415,7 +1415,7 @@ ShadowData StyleBuilderConverter::ConvertShadow(
             break;
           default:
             color = StyleColor(StyleColor::ColorFromKeyword(
-                value_id, ComputedStyle::InitialStyle().UsedColorScheme()));
+                value_id, mojom::blink::ColorScheme::kLight));
         }
       }
     }
