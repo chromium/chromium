@@ -336,13 +336,17 @@ class RenderViewImplTest : public RenderViewTest {
                             mojom::CommonNavigationParamsPtr common_params,
                             mojom::CommitNavigationParamsPtr commit_params) {
     EXPECT_TRUE(common_params->transition & ui::PAGE_TRANSITION_FORWARD_BACK);
-    int pending_offset = offset + view()->history_list_offset_;
+    blink::WebView* webview = view()->GetWebView();
+    int pending_offset = offset + webview->HistoryBackListCount();
 
     commit_params->page_state = state;
     commit_params->nav_entry_id = pending_offset + 1;
     commit_params->pending_history_list_offset = pending_offset;
-    commit_params->current_history_list_offset = view()->history_list_offset_;
-    commit_params->current_history_list_length = view()->history_list_length_;
+    commit_params->current_history_list_offset =
+        webview->HistoryBackListCount();
+    commit_params->current_history_list_length =
+        webview->HistoryForwardListCount() + webview->HistoryBackListCount() +
+        1;
     frame()->Navigate(std::move(common_params), std::move(commit_params));
 
     // The load actually happens asynchronously, so we pump messages to process
@@ -2152,18 +2156,6 @@ TEST_F(RenderViewImplTest, DroppedNavigationStaysInViewSourceMode) {
   EXPECT_TRUE(web_frame->IsViewSourceModeEnabled());
 }
 
-TEST_F(RenderViewImplTest, SetHistoryLengthAndOffset) {
-  // No history to merge; one committed page.
-  view()->OnSetHistoryOffsetAndLength(0, 1);
-  EXPECT_EQ(1, view()->history_list_length_);
-  EXPECT_EQ(0, view()->history_list_offset_);
-
-  // History of length 1 to merge; one committed page.
-  view()->OnSetHistoryOffsetAndLength(1, 2);
-  EXPECT_EQ(2, view()->history_list_length_);
-  EXPECT_EQ(1, view()->history_list_offset_);
-}
-
 namespace {
 
 class ContextMenuFrameHost : public LocalFrameHostInterceptor {
@@ -2942,9 +2934,10 @@ TEST_F(RenderViewImplScaleFactorTest, PreferredSizeWithScaleFactor) {
 // Ensure the RenderViewImpl history list is properly updated when starting a
 // new browser-initiated navigation.
 TEST_F(RenderViewImplTest, HistoryIsProperlyUpdatedOnNavigation) {
-  EXPECT_EQ(0, view()->HistoryBackListCount());
-  EXPECT_EQ(0, view()->HistoryBackListCount() +
-                   view()->HistoryForwardListCount() + 1);
+  blink::WebView* webview = view()->GetWebView();
+  EXPECT_EQ(0, webview->HistoryBackListCount());
+  EXPECT_EQ(0, webview->HistoryBackListCount() +
+                   webview->HistoryForwardListCount() + 1);
 
   // Receive a CommitNavigation message with history parameters.
   auto commit_params = DummyCommitNavigationParams();
@@ -2953,17 +2946,18 @@ TEST_F(RenderViewImplTest, HistoryIsProperlyUpdatedOnNavigation) {
   frame()->Navigate(CreateCommonNavigationParams(), std::move(commit_params));
 
   // The current history list in RenderView is updated.
-  EXPECT_EQ(1, view()->HistoryBackListCount());
-  EXPECT_EQ(2, view()->HistoryBackListCount() +
-                   view()->HistoryForwardListCount() + 1);
+  EXPECT_EQ(1, webview->HistoryBackListCount());
+  EXPECT_EQ(2, webview->HistoryBackListCount() +
+                   webview->HistoryForwardListCount() + 1);
 }
 
 // Ensure the RenderViewImpl history list is properly updated when starting a
 // new history browser-initiated navigation.
 TEST_F(RenderViewImplTest, HistoryIsProperlyUpdatedOnHistoryNavigation) {
-  EXPECT_EQ(0, view()->HistoryBackListCount());
-  EXPECT_EQ(0, view()->HistoryBackListCount() +
-                   view()->HistoryForwardListCount() + 1);
+  blink::WebView* webview = view()->GetWebView();
+  EXPECT_EQ(0, webview->HistoryBackListCount());
+  EXPECT_EQ(0, webview->HistoryBackListCount() +
+                   webview->HistoryForwardListCount() + 1);
 
   // Receive a CommitNavigation message with history parameters.
   auto commit_params = DummyCommitNavigationParams();
@@ -2974,17 +2968,18 @@ TEST_F(RenderViewImplTest, HistoryIsProperlyUpdatedOnHistoryNavigation) {
   frame()->Navigate(CreateCommonNavigationParams(), std::move(commit_params));
 
   // The current history list in RenderView is updated.
-  EXPECT_EQ(12, view()->HistoryBackListCount());
-  EXPECT_EQ(25, view()->HistoryBackListCount() +
-                    view()->HistoryForwardListCount() + 1);
+  EXPECT_EQ(12, webview->HistoryBackListCount());
+  EXPECT_EQ(25, webview->HistoryBackListCount() +
+                    webview->HistoryForwardListCount() + 1);
 }
 
 // Ensure the RenderViewImpl history list is properly updated when starting a
 // new history browser-initiated navigation with should_clear_history_list
 TEST_F(RenderViewImplTest, HistoryIsProperlyUpdatedOnShouldClearHistoryList) {
-  EXPECT_EQ(0, view()->HistoryBackListCount());
-  EXPECT_EQ(0, view()->HistoryBackListCount() +
-                   view()->HistoryForwardListCount() + 1);
+  blink::WebView* webview = view()->GetWebView();
+  EXPECT_EQ(0, webview->HistoryBackListCount());
+  EXPECT_EQ(0, webview->HistoryBackListCount() +
+                   webview->HistoryForwardListCount() + 1);
 
   // Receive a CommitNavigation message with history parameters.
   auto commit_params = DummyCommitNavigationParams();
@@ -2994,9 +2989,9 @@ TEST_F(RenderViewImplTest, HistoryIsProperlyUpdatedOnShouldClearHistoryList) {
   frame()->Navigate(CreateCommonNavigationParams(), std::move(commit_params));
 
   // The current history list in RenderView is updated.
-  EXPECT_EQ(0, view()->HistoryBackListCount());
-  EXPECT_EQ(1, view()->HistoryBackListCount() +
-                   view()->HistoryForwardListCount() + 1);
+  EXPECT_EQ(0, webview->HistoryBackListCount());
+  EXPECT_EQ(1, webview->HistoryBackListCount() +
+                   webview->HistoryForwardListCount() + 1);
 }
 
 namespace {

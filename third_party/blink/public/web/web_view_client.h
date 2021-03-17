@@ -120,16 +120,6 @@ class WebViewClient {
   // Called when the View acquires focus.
   virtual void DidFocus() {}
 
-  // Session history -----------------------------------------------------
-
-  // Returns the number of history items before/after the current
-  // history item.
-  virtual int HistoryBackListCount() { return 0; }
-  virtual int HistoryForwardListCount() { return 0; }
-
-  // History -------------------------------------------------------------
-  virtual void OnSetHistoryOffsetAndLength(int history_offset,
-                                           int history_length) {}
 };
 
 }  // namespace blink

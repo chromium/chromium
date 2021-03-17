@@ -654,9 +654,9 @@ bool LocalFrameClientImpl::NavigateBackForward(int offset) const {
   DCHECK(web_frame_->Client());
 
   DCHECK(offset);
-  if (offset > webview->Client()->HistoryForwardListCount())
+  if (offset > webview->HistoryForwardListCount())
     return false;
-  if (offset < -webview->Client()->HistoryBackListCount())
+  if (offset < -webview->HistoryBackListCount())
     return false;
 
   bool has_user_gesture =
@@ -902,10 +902,10 @@ void LocalFrameClientImpl::DispatchDidChangeManifest() {
 
 unsigned LocalFrameClientImpl::BackForwardLength() {
   WebViewImpl* webview = web_frame_->ViewImpl();
-  if (!webview || !webview->Client())
+  if (!webview)
     return 0;
-  return webview->Client()->HistoryBackListCount() + 1 +
-         webview->Client()->HistoryForwardListCount();
+  return webview->HistoryBackListCount() + 1 +
+         webview->HistoryForwardListCount();
 }
 
 BlameContext* LocalFrameClientImpl::GetFrameBlameContext() {

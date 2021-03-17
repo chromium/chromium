@@ -429,6 +429,18 @@ class WebView {
   // completed.
   virtual WebFrameWidget* MainFrameWidget() = 0;
 
+  // History list ---------------------------------------------------------
+  virtual void SetHistoryListFromNavigation(
+      int32_t history_offset,
+      base::Optional<int32_t> history_length) = 0;
+  virtual void IncreaseHistoryListFromNavigation() = 0;
+
+  // Session history -----------------------------------------------------
+  // Returns the number of history items before/after the current
+  // history item.
+  virtual int32_t HistoryBackListCount() = 0;
+  virtual int32_t HistoryForwardListCount() = 0;
+
   // Portals --------------------------------------------------------------
 
  protected:

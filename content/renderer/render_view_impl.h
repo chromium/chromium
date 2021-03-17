@@ -137,11 +137,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // be coalesced into one update.
   void StartNavStateSyncTimerIfNecessary(RenderFrameImpl* frame);
 
-  // Returns the length of the session history of this RenderView. Note that
-  // this only coincides with the actual length of the session history if this
-  // RenderView is the currently active RenderView of a WebContents.
-  unsigned GetLocalSessionHistoryLengthForTesting() const;
-
   // Registers a watcher to observe changes in the
   // blink::RendererPreferences.
   void RegisterRendererPreferenceWatcher(
@@ -170,13 +165,9 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   void PrintPage(blink::WebLocalFrame* frame) override;
   bool AcceptsLoadDrops() override;
   bool CanUpdateLayout() override;
-  int HistoryBackListCount() override;
-  int HistoryForwardListCount() override;
   void OnPageVisibilityChanged(PageVisibilityState visibility) override;
   void OnPageFrozenChanged(bool frozen) override;
   void DidUpdateRendererPreferences() override;
-  void OnSetHistoryOffsetAndLength(int history_offset,
-                                   int history_length) override;
 
   // RenderView implementation -------------------------------------------------
 
@@ -208,8 +199,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // utility functions needed in both classes, while we move frame specific
   // code away from this class.
   friend class RenderFrameImpl;
-
-  FRIEND_TEST_ALL_PREFIXES(RenderViewImplTest, SetHistoryLengthAndOffset);
 
   // Initialize() is separated out from the constructor because it is possible
   // to accidentally call virtual functions. All RenderViewImpl creation is
@@ -283,18 +272,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // Set of RenderFrame routing IDs for frames that having pending UpdateState
   // messages to send when the next |nav_state_sync_timer_| fires.
   std::set<int> frames_with_pending_state_;
-
-  // History list --------------------------------------------------------------
-
-  // The offset of the current item in the history list.
-  int history_list_offset_ = -1;
-
-  // The RenderView's current impression of the history length.  This includes
-  // any items that have committed in this process, but because of cross-process
-  // navigations, the history may have some entries that were committed in other
-  // processes.  We won't know about them until the next navigation in this
-  // process.
-  int history_list_length_ = 0;
 
   // View ----------------------------------------------------------------------
 

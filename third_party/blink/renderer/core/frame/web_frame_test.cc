@@ -7432,8 +7432,9 @@ TEST_F(WebFrameTest, NavigateToSame) {
   RegisterMockedHttpURLLoad("navigate_to_same.html");
   TestSameDocumentWebFrameClient client;
   frame_test_helpers::WebViewHelper web_view_helper;
-  web_view_helper.InitializeAndLoad(base_url_ + "navigate_to_same.html",
-                                    &client);
+  WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
+      base_url_ + "navigate_to_same.html", &client);
+  web_view->SetHistoryListFromNavigation(0, 1);
   EXPECT_FALSE(client.FrameLoadTypeReloadSeen());
 
   auto* local_frame =

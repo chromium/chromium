@@ -941,11 +941,6 @@ class CONTENT_EXPORT RenderFrameImpl
 
   void InitializeMediaStreamDeviceObserver();
 
-  // Does preparation for the navigation to |url|.
-  void PrepareRenderViewForNavigation(
-      const GURL& url,
-      const mojom::CommitNavigationParams& commit_params);
-
   // Sends a FrameHostMsg_BeginNavigation to the browser
   void BeginNavigationInternal(std::unique_ptr<blink::WebNavigationInfo> info,
                                bool is_history_navigation_in_new_child_frame,

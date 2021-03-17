@@ -94,6 +94,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
+#include "third_party/blink/public/common/history/session_history_constants.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/common/page_state/page_state_serialization.h"
 #include "url/url_constants.h"
@@ -902,8 +903,10 @@ void NavigationControllerImpl::GoBack() {
       break;
     }
   }
+
   UMA_HISTOGRAM_ENUMERATION("Navigation.BackForward.BackTargetSkipped",
-                            count_entries_skipped, kMaxSessionHistoryEntries);
+                            count_entries_skipped,
+                            blink::kMaxSessionHistoryEntries);
   UMA_HISTOGRAM_BOOLEAN("Navigation.BackForward.AllBackTargetsSkippable",
                         all_skippable_entries);
 
@@ -938,7 +941,8 @@ void NavigationControllerImpl::GoForward() {
     }
   }
   UMA_HISTOGRAM_ENUMERATION("Navigation.BackForward.ForwardTargetSkipped",
-                            count_entries_skipped, kMaxSessionHistoryEntries);
+                            count_entries_skipped,
+                            blink::kMaxSessionHistoryEntries);
 
   GoToIndex(target_index);
 }
@@ -3668,7 +3672,7 @@ void NavigationControllerImpl::NotifyNavigationEntryCommitted(
 size_t NavigationControllerImpl::max_entry_count() {
   if (max_entry_count_for_testing_ != kMaxEntryCountForTestingNotSet)
     return max_entry_count_for_testing_;
-  return kMaxSessionHistoryEntries;
+  return blink::kMaxSessionHistoryEntries;
 }
 
 void NavigationControllerImpl::SetActive(bool is_active) {

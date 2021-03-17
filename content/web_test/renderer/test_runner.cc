@@ -2142,7 +2142,12 @@ std::string TestRunnerBindings::TooltipText() {
 int TestRunnerBindings::WebHistoryItemCount() {
   if (invalid_)
     return 0;
-  return frame_->render_view()->GetLocalSessionHistoryLengthForTesting();
+
+  // Returns the length of the session history of this RenderView. Note that
+  // this only coincides with the actual length of the session history if this
+  // RenderView is the currently active RenderView of a WebContents.
+  return frame_->GetWebFrame()->View()->HistoryBackListCount() +
+         frame_->GetWebFrame()->View()->HistoryForwardListCount() + 1;
 }
 
 void TestRunnerBindings::ForceNextWebGLContextCreationToFail() {

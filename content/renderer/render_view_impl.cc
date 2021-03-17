@@ -259,21 +259,6 @@ void RenderViewImpl::Destroy() {
   delete this;
 }
 
-// IPC message handlers -----------------------------------------
-
-void RenderViewImpl::OnSetHistoryOffsetAndLength(int history_offset,
-                                                 int history_length) {
-  // -1 <= history_offset < history_length <= kMaxSessionHistoryEntries(50).
-  DCHECK_LE(-1, history_offset);
-  DCHECK_LT(history_offset, history_length);
-  DCHECK_LE(history_length, kMaxSessionHistoryEntries);
-
-  history_list_offset_ = history_offset;
-  history_list_length_ = history_length;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
 void RenderViewImpl::SendFrameStateUpdates() {
   // Tell each frame with pending state to send its UpdateState message.
   for (int render_frame_routing_id : frames_with_pending_state_) {
@@ -537,14 +522,6 @@ const blink::RendererPreferences& RenderViewImpl::GetRendererPreferences()
   return webview_->GetRendererPreferences();
 }
 
-int RenderViewImpl::HistoryBackListCount() {
-  return history_list_offset_ < 0 ? 0 : history_list_offset_;
-}
-
-int RenderViewImpl::HistoryForwardListCount() {
-  return history_list_length_ - HistoryBackListCount() - 1;
-}
-
 void RenderViewImpl::OnPageVisibilityChanged(PageVisibilityState visibility) {
 #if defined(OS_ANDROID)
   SuspendVideoCaptureDevices(visibility != PageVisibilityState::kVisible);
@@ -615,9 +592,5 @@ void RenderViewImpl::SuspendVideoCaptureDevices(bool suspend) {
       video_devices, suspend);
 }
 #endif  // defined(OS_ANDROID)
-
-unsigned RenderViewImpl::GetLocalSessionHistoryLengthForTesting() const {
-  return history_list_length_;
-}
 
 }  // namespace content

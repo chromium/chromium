@@ -6062,4 +6062,20 @@ TEST_F(WebViewTest, LongPressAndThenLongTapLinkInIframeShouldShowContextMenu) {
             web_view->MainFrameImpl()->GetDocument().Title());
 }
 
+TEST_F(WebViewTest, SetHistoryLengthAndOffset) {
+  WebViewImpl* web_view_impl = web_view_helper_.Initialize();
+
+  // No history to merge; one committed page.
+  web_view_impl->SetHistoryListFromNavigation(0, 1);
+  EXPECT_EQ(1, web_view_impl->HistoryBackListCount() +
+                   web_view_impl->HistoryForwardListCount() + 1);
+  EXPECT_EQ(0, web_view_impl->HistoryBackListCount());
+
+  // History of length 1 to merge; one committed page.
+  web_view_impl->SetHistoryListFromNavigation(1, 2);
+  EXPECT_EQ(2, web_view_impl->HistoryBackListCount() +
+                   web_view_impl->HistoryForwardListCount() + 1);
+  EXPECT_EQ(1, web_view_impl->HistoryBackListCount());
+}
+
 }  // namespace blink

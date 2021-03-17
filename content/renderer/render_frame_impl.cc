@@ -3191,8 +3191,11 @@ void RenderFrameImpl::CommitFailedNavigation(
   AssertNavigationCommits assert_navigation_commits(
       this, kMayReplaceInitialEmptyDocument);
 
-  RenderFrameImpl::PrepareRenderViewForNavigation(common_params->url,
-                                                  *commit_params);
+  DCHECK(render_view_->GetWebView());
+  render_view_->GetWebView()->SetHistoryListFromNavigation(
+      commit_params->current_history_list_offset,
+      commit_params->current_history_list_length);
+
   // Note: this intentionally does not call |Detach()| before |reset()|. If
   // there is an active |MHTMLBodyLoaderClient|, the browser-side navigation
   // code is explicitly replacing it with a new navigation commit request.
@@ -4942,25 +4945,20 @@ void RenderFrameImpl::UpdateNavigationHistory(
       blink::WebString::FromUTF8(unique_name_helper_.value()));
 
   bool is_new_navigation = commit_type == blink::kWebStandardCommit;
+  blink::WebView* webview = render_view_->GetWebView();
   if (commit_params.should_clear_history_list) {
-    render_view_->history_list_offset_ = 0;
-    render_view_->history_list_length_ = 1;
+    webview->SetHistoryListFromNavigation(/*history_offset*/ 0,
+                                          /*history_length*/ 1);
   } else if (is_new_navigation) {
     DCHECK(!navigation_state->common_params().should_replace_current_entry ||
-           render_view_->history_list_length_ > 0);
-    if (!navigation_state->common_params().should_replace_current_entry) {
-      // Advance our offset in session history, applying the length limit.
-      // There is now no forward history.
-      render_view_->history_list_offset_++;
-      if (render_view_->history_list_offset_ >= kMaxSessionHistoryEntries)
-        render_view_->history_list_offset_ = kMaxSessionHistoryEntries - 1;
-      render_view_->history_list_length_ =
-          render_view_->history_list_offset_ + 1;
-    }
+           (webview->HistoryBackListCount() +
+            webview->HistoryForwardListCount() + 1) > 0);
+    if (!navigation_state->common_params().should_replace_current_entry)
+      webview->IncreaseHistoryListFromNavigation();
   } else if (commit_params.nav_entry_id != 0 &&
              !commit_params.intended_as_new_entry) {
-    render_view_->history_list_offset_ =
-        navigation_state->commit_params().pending_history_list_offset;
+    webview->SetHistoryListFromNavigation(
+        navigation_state->commit_params().pending_history_list_offset, {});
   }
 }
 
@@ -5083,7 +5081,10 @@ void RenderFrameImpl::PrepareFrameForCommit(
   GetContentClient()->SetActiveURL(
       url, frame_->Top()->GetSecurityOrigin().ToString().Utf8());
 
-  RenderFrameImpl::PrepareRenderViewForNavigation(url, commit_params);
+  DCHECK(render_view_->GetWebView());
+  render_view_->GetWebView()->SetHistoryListFromNavigation(
+      commit_params.current_history_list_offset,
+      commit_params.current_history_list_length);
 }
 
 blink::mojom::CommitResult RenderFrameImpl::PrepareForHistoryNavigationCommit(
@@ -5546,7 +5547,8 @@ void RenderFrameImpl::OpenURL(std::unique_ptr<blink::WebNavigationInfo> info) {
   params->blob_url_token = CloneBlobURLToken(info->blob_url_token);
   params->should_replace_current_entry =
       info->frame_load_type == WebFrameLoadType::kReplaceCurrentItem &&
-      render_view_->history_list_length_;
+      render_view_->GetWebView()->HistoryBackListCount() +
+          render_view_->GetWebView()->HistoryForwardListCount() + 1;
   params->user_gesture = info->has_transient_user_activation;
   params->initiator_policy_container_keep_alive_handle =
       std::move(info->initiator_policy_container_keep_alive_handle);
@@ -5755,17 +5757,6 @@ void RenderFrameImpl::InitializeMediaStreamDeviceObserver() {
   DCHECK(!web_media_stream_device_observer_);
   web_media_stream_device_observer_ =
       std::make_unique<blink::WebMediaStreamDeviceObserver>(GetWebFrame());
-}
-
-void RenderFrameImpl::PrepareRenderViewForNavigation(
-    const GURL& url,
-    const mojom::CommitNavigationParams& commit_params) {
-  DCHECK(render_view_->GetWebView());
-
-  render_view_->history_list_offset_ =
-      commit_params.current_history_list_offset;
-  render_view_->history_list_length_ =
-      commit_params.current_history_list_length;
 }
 
 void RenderFrameImpl::BeginNavigationInternal(

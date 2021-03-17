@@ -886,10 +886,10 @@ void RenderViewTest::GoToOffset(int offset,
                                 const GURL& url,
                                 const blink::PageState& state) {
   RenderViewImpl* view = static_cast<RenderViewImpl*>(view_);
-
+  blink::WebView* webview = view->GetWebView();
   int history_list_length =
-      view->HistoryBackListCount() + view->HistoryForwardListCount() + 1;
-  int pending_offset = offset + view->history_list_offset_;
+      webview->HistoryBackListCount() + webview->HistoryForwardListCount() + 1;
+  int pending_offset = offset + webview->HistoryBackListCount();
 
   auto common_params = mojom::CommonNavigationParams::New(
       url, base::nullopt, blink::mojom::Referrer::New(),
@@ -907,7 +907,7 @@ void RenderViewTest::GoToOffset(int offset,
   commit_params->page_state = state;
   commit_params->nav_entry_id = pending_offset + 1;
   commit_params->pending_history_list_offset = pending_offset;
-  commit_params->current_history_list_offset = view->history_list_offset_;
+  commit_params->current_history_list_offset = webview->HistoryBackListCount();
   commit_params->current_history_list_length = history_list_length;
   commit_params->sandbox_flags = network::mojom::WebSandboxFlags::kNone;
 
@@ -917,7 +917,7 @@ void RenderViewTest::GoToOffset(int offset,
   // The load may actually happen asynchronously, so we pump messages to process
   // the pending continuation.
   waiter.Wait();
-  view_->GetWebView()->MainFrameWidget()->UpdateAllLifecyclePhases(
+  webview->MainFrameWidget()->UpdateAllLifecyclePhases(
       blink::DocumentUpdateReason::kTest);
 }
 

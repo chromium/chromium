@@ -43,6 +43,7 @@
 #include "media/base/media_switches.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/history/session_history_constants.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
@@ -2337,12 +2338,11 @@ void WebViewImpl::SetPageLifecycleStateInternal(
     SetPageFrozen(true);
   if (restoring_from_bfcache) {
     DCHECK(page_restore_params);
-    // Update the history offset and length value saved in RenderViewImpl, as
-    // pages that are kept in the back-forward cache do not get notified about
-    // updates on these values, so the currently saved value might be stale.
-    web_view_client_->OnSetHistoryOffsetAndLength(
-        page_restore_params->pending_history_list_offset,
-        page_restore_params->current_history_list_length);
+    // Update the history offset and length value, as pages that are kept in
+    // the back-forward cache do not get notified about updates on these
+    // values, so the currently saved value might be stale.
+    SetHistoryOffsetAndLength(page_restore_params->pending_history_list_offset,
+                              page_restore_params->current_history_list_length);
   }
   if (eviction_changed)
     HookBackForwardCacheEviction(new_state->eviction_enabled);
@@ -3176,8 +3176,40 @@ void WebViewImpl::UpdateRendererPreferences(
 
 void WebViewImpl::SetHistoryOffsetAndLength(int32_t history_offset,
                                             int32_t history_length) {
-  DCHECK(web_view_client_);
-  web_view_client_->OnSetHistoryOffsetAndLength(history_offset, history_length);
+  // -1 <= history_offset < history_length <= kMaxSessionHistoryEntries.
+  DCHECK_LE(-1, history_offset);
+  DCHECK_LT(history_offset, history_length);
+  DCHECK_LE(history_length, kMaxSessionHistoryEntries);
+
+  history_list_offset_ = history_offset;
+  history_list_length_ = history_length;
+}
+
+void WebViewImpl::SetHistoryListFromNavigation(
+    int32_t history_offset,
+    base::Optional<int32_t> history_length) {
+  if (!history_length.has_value()) {
+    history_list_offset_ = history_offset;
+    return;
+  }
+
+  SetHistoryOffsetAndLength(history_offset, *history_length);
+}
+
+void WebViewImpl::IncreaseHistoryListFromNavigation() {
+  // Advance our offset in session history, applying the length limit.
+  // There is now no forward history.
+  history_list_offset_ =
+      std::min(history_list_offset_ + 1, kMaxSessionHistoryEntries - 1);
+  history_list_length_ = history_list_offset_ + 1;
+}
+
+int32_t WebViewImpl::HistoryBackListCount() {
+  return std::max(history_list_offset_, 0);
+}
+
+int32_t WebViewImpl::HistoryForwardListCount() {
+  return history_list_length_ - HistoryBackListCount() - 1;
 }
 
 void WebViewImpl::SetWebPreferences(

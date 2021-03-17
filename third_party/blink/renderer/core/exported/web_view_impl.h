@@ -202,6 +202,12 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   const RendererPreferences& GetRendererPreferences() override;
   void SetWebPreferences(const web_pref::WebPreferences& preferences) override;
   const web_pref::WebPreferences& GetWebPreferences() override;
+  void SetHistoryListFromNavigation(
+      int32_t history_offset,
+      base::Optional<int32_t> history_length) override;
+  void IncreaseHistoryListFromNavigation() override;
+  int32_t HistoryBackListCount() override;
+  int32_t HistoryForwardListCount() override;
 
   // Functions to add and remove observers for this object.
   void AddObserver(WebViewObserver* observer);
@@ -743,6 +749,18 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   float compositor_device_scale_factor_override_ = 0.f;
   TransformationMatrix device_emulation_transform_;
+
+  // The offset of the current item in the history list.
+  // The initial value is -1 since the offset should be lower than
+  // |history_list_length_| to count the back/forward history list.
+  int32_t history_list_offset_ = -1;
+
+  // The RenderView's current impression of the history length.  This includes
+  // any items that have committed in this process, but because of cross-process
+  // navigations, the history may have some entries that were committed in other
+  // processes.  We won't know about them until the next navigation in this
+  // process.
+  int32_t history_list_length_ = 0;
 
   // The popup associated with an input/select element. The popup is owned via
   // closership (self-owned-but-deleted-via-close) by RenderWidget. We also hold
