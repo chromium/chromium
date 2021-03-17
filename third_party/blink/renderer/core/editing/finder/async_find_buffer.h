@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/editing/finder/find_buffer_runner.h"
 #include "third_party/blink/renderer/core/editing/finder/find_options.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
+#include "third_party/blink/renderer/core/editing/range_in_flat_tree.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 
 namespace blink {
@@ -19,7 +20,7 @@ class AsyncFindBuffer final : public FindBufferRunner {
   explicit AsyncFindBuffer() = default;
   ~AsyncFindBuffer() = default;
 
-  void FindMatchInRange(Range* search_range,
+  void FindMatchInRange(RangeInFlatTree* search_range,
                         String search_text,
                         FindOptions options,
                         Callback completeCallback) override;
@@ -27,12 +28,12 @@ class AsyncFindBuffer final : public FindBufferRunner {
   bool IsActive() override { return pending_find_match_task_.IsActive(); }
 
  private:
-  void Run(Range* search_range,
+  void Run(RangeInFlatTree* search_range,
            String search_text,
            FindOptions options,
            Callback completeCallback);
 
-  void NextIteration(Range* search_range,
+  void NextIteration(RangeInFlatTree* search_range,
                      String search_text,
                      FindOptions options,
                      Callback completeCallback);

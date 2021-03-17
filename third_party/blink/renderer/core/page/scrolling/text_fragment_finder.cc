@@ -127,10 +127,18 @@ bool ContainedByTableCell(const EphemeralRangeInFlatTree& range) {
 
 void TextFragmentFinder::OnFindMatchInRangeComplete(
     String search_text,
-    Range* search_range,
+    RangeInFlatTree* search_range,
     bool word_start_bounded,
     bool word_end_bounded,
     const EphemeralRangeInFlatTree& match) {
+  // If any of our ranges became invalid, stop the search.
+  if (!HasValidRanges()) {
+    potential_match_.Clear();
+    first_match_.Clear();
+    OnMatchComplete();
+    return;
+  }
+
   if (match.IsNull() ||
       IsWordBounded(match, word_start_bounded, word_end_bounded)) {
     switch (step_) {
@@ -149,14 +157,13 @@ void TextFragmentFinder::OnFindMatchInRangeComplete(
     }
     return;
   }
-
-  search_range->setStart(ToPositionInDOMTree(match.EndPosition()));
+  search_range->SetStart(match.EndPosition());
   FindMatchInRange(search_text, search_range, word_start_bounded,
                    word_end_bounded);
 }
 
 void TextFragmentFinder::FindMatchInRange(String search_text,
-                                          Range* search_range,
+                                          RangeInFlatTree* search_range,
                                           bool word_start_bounded,
                                           bool word_end_bounded) {
   find_buffer_runner_->FindMatchInRange(
@@ -168,8 +175,8 @@ void TextFragmentFinder::FindMatchInRange(String search_text,
 }
 
 void TextFragmentFinder::FindPrefix() {
-  search_range_->setStart(match_range_->StartPosition());
-  if (search_range_->collapsed()) {
+  search_range_->SetStart(match_range_->StartPosition());
+  if (search_range_->IsCollapsed()) {
     OnMatchComplete();
     return;
   }
@@ -199,8 +206,7 @@ void TextFragmentFinder::OnPrefixMatchComplete(
   // with the current one. e.g. If |prefix| is "a a" and our search range
   // currently starts with "a a a b...", the next iteration should start at
   // the second a which is part of the current |prefix_match|.
-  match_range_->setStart(ToPositionInDOMTree(
-      FirstWordBoundaryAfter(prefix_match.StartPosition())));
+  match_range_->SetStart(FirstWordBoundaryAfter(prefix_match.StartPosition()));
   SetPrefixMatch(prefix_match);
   GoToStep(kMatchTextStart);
   return;
@@ -217,12 +223,9 @@ void TextFragmentFinder::FindTextStart() {
   // details.
   const bool end_at_word_boundary =
       !selector_.End().IsEmpty() || selector_.Suffix().IsEmpty();
-  EphemeralRangeInFlatTree prefix_match(prefix_match_);
-  EphemeralRangeInFlatTree potential_match;
-  if (prefix_match.IsNotNull()) {
-    search_range_->setStart(ToPositionInDOMTree(
-        NextTextPosition(prefix_match.EndPosition(),
-                         ToPositionInFlatTree(match_range_->EndPosition()))));
+  if (prefix_match_) {
+    search_range_->SetStart(NextTextPosition(prefix_match_->EndPosition(),
+                                             match_range_->EndPosition()));
     FindMatchInRange(selector_.Start(), search_range_,
                      /*word_start_bounded=*/false, end_at_word_boundary);
   } else {
@@ -233,15 +236,12 @@ void TextFragmentFinder::FindTextStart() {
 
 void TextFragmentFinder::OnTextStartMatchComplete(
     EphemeralRangeInFlatTree potential_match) {
-  EphemeralRangeInFlatTree prefix_match(prefix_match_);
-  if (prefix_match.IsNotNull()) {
-    EphemeralRangeInFlatTree match_range(
-        NextTextPosition(prefix_match.EndPosition(),
-                         ToPositionInFlatTree(match_range_->EndPosition())),
-        ToPositionInFlatTree(match_range_->EndPosition()));
+  if (prefix_match_) {
+    PositionInFlatTree next_position_after_prefix = NextTextPosition(
+        prefix_match_->EndPosition(), match_range_->EndPosition());
     // We found a potential match but it didn't immediately follow the prefix.
     if (!potential_match.IsNull() &&
-        potential_match.StartPosition() != match_range.StartPosition()) {
+        potential_match.StartPosition() != next_position_after_prefix) {
       potential_match_.Clear();
       GoToStep(kMatchPrefix);
       return;
@@ -253,11 +253,17 @@ void TextFragmentFinder::OnTextStartMatchComplete(
     OnMatchComplete();
     return;
   }
-  if (prefix_match.IsNull()) {
-    match_range_->setStart(ToPositionInDOMTree(
-        FirstWordBoundaryAfter(potential_match.StartPosition())));
+  if (!prefix_match_) {
+    match_range_->SetStart(
+        FirstWordBoundaryAfter(potential_match.StartPosition()));
   }
-  range_end_search_start_ = potential_match.EndPosition();
+  if (!range_end_search_start_) {
+    range_end_search_start_ = MakeGarbageCollected<RelocatablePosition>(
+        ToPositionInDOMTree(potential_match.EndPosition()));
+  } else {
+    range_end_search_start_->SetPosition(
+        ToPositionInDOMTree(potential_match.EndPosition()));
+  }
   SetPotentialMatch(potential_match);
   GoToStep(kMatchTextEnd);
 }
@@ -267,7 +273,8 @@ void TextFragmentFinder::FindTextEnd() {
   // that's followed by the |start_text|. We'll now try to expand that into
   // a range match if |end_text| is specified.
   if (!selector_.End().IsEmpty()) {
-    search_range_->setStart(ToPositionInDOMTree(range_end_search_start_));
+    search_range_->SetStart(
+        ToPositionInFlatTree(range_end_search_start_->GetPosition()));
     const bool end_at_word_boundary = selector_.Suffix().IsEmpty();
 
     FindMatchInRange(selector_.End(), search_range_,
@@ -285,15 +292,12 @@ void TextFragmentFinder::OnTextEndMatchComplete(
     return;
   }
 
-  EphemeralRangeInFlatTree potential_match(potential_match_);
-  SetPotentialMatch(EphemeralRangeInFlatTree(potential_match.StartPosition(),
-                                             text_end_match.EndPosition()));
+  potential_match_->SetEnd(text_end_match.EndPosition());
   GoToStep(kMatchSuffix);
 }
 
 void TextFragmentFinder::FindSuffix() {
-  EphemeralRangeInFlatTree potential_match(potential_match_);
-  DCHECK(!potential_match.IsNull());
+  DCHECK(!potential_match_->IsNull());
 
   if (selector_.Suffix().IsEmpty()) {
     OnMatchComplete();
@@ -301,9 +305,8 @@ void TextFragmentFinder::FindSuffix() {
   }
 
   // Now we just have to ensure the match is followed by the |suffix|.
-  search_range_->setStart(ToPositionInDOMTree(
-      NextTextPosition(potential_match.EndPosition(),
-                       ToPositionInFlatTree(match_range_->EndPosition()))));
+  search_range_->SetStart(NextTextPosition(potential_match_->EndPosition(),
+                                           match_range_->EndPosition()));
   FindMatchInRange(selector_.Suffix(), search_range_,
                    /*word_start_bounded=*/false, /*word_end_bounded=*/true);
 }
@@ -317,12 +320,10 @@ void TextFragmentFinder::OnSuffixMatchComplete(
     OnMatchComplete();
     return;
   }
-  EphemeralRangeInFlatTree potential_match(potential_match_);
-  EphemeralRangeInFlatTree suffix_range(
-      NextTextPosition(potential_match.EndPosition(),
-                       ToPositionInFlatTree(match_range_->EndPosition())),
-      ToPositionInFlatTree(match_range_->EndPosition()));
-  if (suffix_match.StartPosition() == suffix_range.StartPosition()) {
+
+  PositionInFlatTree next_position_after_match = NextTextPosition(
+      potential_match_->EndPosition(), match_range_->EndPosition());
+  if (suffix_match.StartPosition() == next_position_after_match) {
     OnMatchComplete();
     return;
   }
@@ -339,7 +340,8 @@ void TextFragmentFinder::OnSuffixMatchComplete(
   // If this is a range match(e.g. |end_text| is specified), it is possible
   // that we found the correct range start, but not the correct range end.
   // Continue searching for it, without restarting the range start search.
-  range_end_search_start_ = potential_match.EndPosition();
+  range_end_search_start_->SetPosition(
+      ToPositionInDOMTree(potential_match_->EndPosition()));
   GoToStep(kMatchTextEnd);
 }
 
@@ -412,12 +414,10 @@ void TextFragmentFinder::FindMatchFromPosition(
   } else {
     search_end = PositionInFlatTree::LastPositionInNode(*document_);
   }
-  search_range_ = Range::Create(*document_);
-  search_range_->setStart(ToPositionInDOMTree(search_start));
-  search_range_->setEnd(ToPositionInDOMTree(search_end));
-  match_range_ = Range::Create(*document_);
-  match_range_->setStart(ToPositionInDOMTree(search_start));
-  match_range_->setEnd(ToPositionInDOMTree(search_end));
+  search_range_ =
+      MakeGarbageCollected<RangeInFlatTree>(search_start, search_end);
+  match_range_ =
+      MakeGarbageCollected<RangeInFlatTree>(search_start, search_end);
   potential_match_.Clear();
   prefix_match_.Clear();
   GoToStep(kMatchPrefix);
@@ -431,11 +431,10 @@ void TextFragmentFinder::OnMatchComplete() {
     // TODO(crbug.com/919204): This is temporary and only for measuring
     // ambiguous matching during prototyping.
     first_match_ = potential_match_;
-    EphemeralRangeInFlatTree match(first_match_);
-    FindMatchFromPosition(match.EndPosition());
+    FindMatchFromPosition(first_match_->EndPosition());
   } else {
     TextFragmentAnchorMetrics::Match match_metrics(selector_);
-    EphemeralRangeInFlatTree potential_match(first_match_);
+    EphemeralRangeInFlatTree potential_match = first_match_->ToEphemeralRange();
     if (selector_.Type() == TextFragmentSelector::SelectorType::kExact) {
       // If it's an exact match, we don't need to do the PlainText conversion,
       // we can just use the text from the selector.
@@ -470,14 +469,34 @@ void TextFragmentFinder::Trace(Visitor* visitor) const {
 }
 
 void TextFragmentFinder::SetPotentialMatch(EphemeralRangeInFlatTree range) {
-  potential_match_ = MakeGarbageCollected<Range>(
-      range.GetDocument(), ToPositionInDOMTree(range.StartPosition()),
-      ToPositionInDOMTree(range.EndPosition()));
+  if (potential_match_) {
+    potential_match_->SetStart(range.StartPosition());
+    potential_match_->SetEnd(range.EndPosition());
+  } else {
+    potential_match_ = MakeGarbageCollected<RangeInFlatTree>(
+        range.StartPosition(), range.EndPosition());
+  }
 }
 
 void TextFragmentFinder::SetPrefixMatch(EphemeralRangeInFlatTree range) {
-  prefix_match_ = MakeGarbageCollected<Range>(
-      range.GetDocument(), ToPositionInDOMTree(range.StartPosition()),
-      ToPositionInDOMTree(range.EndPosition()));
+  if (prefix_match_) {
+    prefix_match_->SetStart(range.StartPosition());
+    prefix_match_->SetEnd(range.EndPosition());
+  } else {
+    prefix_match_ = MakeGarbageCollected<RangeInFlatTree>(range.StartPosition(),
+                                                          range.EndPosition());
+  }
 }
+
+bool TextFragmentFinder::HasValidRanges() {
+  return !((prefix_match_ &&
+            (prefix_match_->IsNull() || !prefix_match_->IsConnected())) ||
+           (potential_match_ &&
+            (potential_match_->IsNull() || !potential_match_->IsConnected())) ||
+           (search_range_ &&
+            (search_range_->IsNull() || !search_range_->IsConnected())) ||
+           (match_range_ &&
+            (match_range_->IsNull() || !match_range_->IsConnected())));
+}
+
 }  // namespace blink

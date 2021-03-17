@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_FINDER_FIND_BUFFER_RUNNER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_FINDER_FIND_BUFFER_RUNNER_H_
 
-#include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/editing/finder/find_options.h"
+#include "third_party/blink/renderer/core/editing/range_in_flat_tree.h"
 
 namespace blink {
 
@@ -16,7 +16,7 @@ class FindBufferRunner : public GarbageCollected<FindBufferRunner> {
  public:
   using Callback = base::OnceCallback<void(const EphemeralRangeInFlatTree&)>;
 
-  virtual void FindMatchInRange(Range* search_range,
+  virtual void FindMatchInRange(RangeInFlatTree* search_range,
                                 String search_text,
                                 FindOptions options,
                                 Callback completeCallback) = 0;

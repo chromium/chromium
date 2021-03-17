@@ -391,7 +391,7 @@ void TextFragmentSelectorGenerator::DidFindMatch(
     const TextFragmentAnchorMetrics::Match match_metrics,
     bool is_unique) {
   if (is_unique && PlainText(match).StripWhiteSpace().length() ==
-                       PlainText(EphemeralRange(selection_range_))
+                       PlainText(EphemeralRangeInFlatTree(selection_range_))
                            .StripWhiteSpace()
                            .length()) {
     state_ = kSuccess;
