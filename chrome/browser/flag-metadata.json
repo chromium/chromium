@@ -619,11 +619,6 @@
     "expiry_milestone": 80
   },
   {
-    "name": "color-picker-eye-dropper",
-    "owners": [ "iopopesc@microsoft.com", "masonfreed" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "color-provider-redirection",
     "owners": [ "//ui/color/OWNERS" ],
     "expiry_milestone": 88

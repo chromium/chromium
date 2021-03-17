@@ -730,9 +730,6 @@ extern const char kFormControlsDarkModeDescription[];
 extern const char kFormControlsRefreshName[];
 extern const char kFormControlsRefreshDescription[];
 
-extern const char kColorPickerEyeDropperName[];
-extern const char kColorPickerEyeDropperDescription[];
-
 extern const char kGlobalMediaControlsName[];
 extern const char kGlobalMediaControlsDescription[];
 

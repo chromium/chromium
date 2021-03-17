@@ -1215,11 +1215,6 @@ const char kFormControlsRefreshName[] = "Web Platform Controls updated UI";
 const char kFormControlsRefreshDescription[] =
     "If enabled, HTML forms elements will be rendered using an updated style.";
 
-const char kColorPickerEyeDropperName[] = "Color Picker Eye Dropper Support";
-const char kColorPickerEyeDropperDescription[] =
-    "If enabled, the color picker will contain an eye dropper control that "
-    "can be used to pick colors.";
-
 const char kGlobalMediaControlsName[] = "Global Media Controls";
 const char kGlobalMediaControlsDescription[] =
     "Enables the Global Media Controls UI in the toolbar.";
