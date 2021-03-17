@@ -11,6 +11,7 @@
 <if expr="not chromeos">
     <settings-toggle-button id="signinAllowedToggle"
         class="hr"
+        hidden="[[!signinAvailable_]]"
         disabled="[[syncFirstSetupInProgress_]]"
         pref="{{prefs.signin.allowed_on_next_startup}}"
         label="$i18n{signinAllowedTitle}"

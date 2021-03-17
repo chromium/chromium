@@ -1241,6 +1241,11 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
   html_source->AddBoolean("profileShortcutsEnabled",
                           ProfileShortcutManager::IsFeatureEnabled());
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  html_source->AddBoolean("signinAvailable",
+                          AccountConsistencyModeManager::IsDiceSignInAllowed());
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Toggles the Chrome OS Account Manager submenu in the People section.
   html_source->AddBoolean("isAccountManagerEnabled",

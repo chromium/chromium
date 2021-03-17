@@ -80,6 +80,14 @@ Polymer({
       value: false,
       computed: 'computeSyncFirstSetupInProgress_(syncStatus)',
     },
+
+    // <if expr="not chromeos">
+    /** @private */
+    signinAvailable_: {
+      type: Boolean,
+      value: () => loadTimeData.getBoolean('signinAvailable'),
+    },
+    // </if>
   },
 
   /** @private {?PrivacyPageBrowserProxy} */
