@@ -1654,6 +1654,9 @@ bindings::V8SetReturnValue(
         return T("bindings::V8SetReturnValue"
                  "(${info}, ${return_value}.V8Value());")
 
+    if return_type.is_nullable:
+        return T("bindings::V8SetReturnValue(${info}, ${v8_return_value});")
+
     return T("bindings::V8SetReturnValue(${info}, "
              "ToV8(${return_value}, ${creation_context_object}, ${isolate}));")
 
