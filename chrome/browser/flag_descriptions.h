@@ -1242,6 +1242,9 @@ extern const char kScrollableTabStripButtonsDescription[];
 extern const char kScrollUnificationName[];
 extern const char kScrollUnificationDescription[];
 
+extern const char kSearchHistoryLinkName[];
+extern const char kSearchHistoryLinkDescription[];
+
 extern const char kSecurePaymentConfirmationDebugName[];
 extern const char kSecurePaymentConfirmationDebugDescription[];
 

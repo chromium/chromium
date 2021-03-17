@@ -541,6 +541,9 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<double> kSCTAuditingSamplingRate;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kSearchHistoryLink;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kSecurityKeyAttestationPrompt;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

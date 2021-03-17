@@ -422,6 +422,7 @@ public abstract class ChromeFeatureList {
     public static final String SEARCH_ENGINE_PROMO_EXISTING_DEVICE =
             "SearchEnginePromo.ExistingDevice";
     public static final String SEARCH_ENGINE_PROMO_NEW_DEVICE = "SearchEnginePromo.NewDevice";
+    public static final String SEARCH_HISTORY_LINK = "SearchHistoryLink";
     public static final String SEND_TAB_TO_SELF = "SyncSendTabToSelf";
     public static final String SERVICE_MANAGER_FOR_BACKGROUND_PREFETCH =
             "ServiceManagerForBackgroundPrefetch";

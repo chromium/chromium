@@ -2118,6 +2118,11 @@ const char kScrollUnificationDescription[] =
     "Refactoring project that eliminates scroll handling code from Blink. "
     "Does not affect behavior or performance.";
 
+const char kSearchHistoryLinkName[] = "Search History Link";
+const char kSearchHistoryLinkDescription[] =
+    "Changes the Clear Browsing Data UI to display a link to clear search "
+    "history on My Google Activity.";
+
 const char kSecurePaymentConfirmationDebugName[] =
     "Secure Payment Confirmation Debug Mode";
 const char kSecurePaymentConfirmationDebugDescription[] =

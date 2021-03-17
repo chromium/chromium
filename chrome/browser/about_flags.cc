@@ -5854,6 +5854,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     "MetricsSettingsAndroid")},
 #endif
 
+    {"search-history-link", flag_descriptions::kSearchHistoryLinkName,
+     flag_descriptions::kSearchHistoryLinkDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kSearchHistoryLink)},
+
 #if defined(OS_ANDROID)
     {"safe-browsing-client-side-detection-android",
      flag_descriptions::kSafeBrowsingClientSideDetectionAndroidName,

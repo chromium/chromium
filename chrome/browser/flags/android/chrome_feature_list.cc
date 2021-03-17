@@ -110,6 +110,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &features::kPrioritizeBootstrapTasks,
     &features::kQuietNotificationPrompts,
     &features::kRequestDesktopSiteForTablets,
+    &features::kSearchHistoryLink,
     &features::kToolbarUseHardwareBitmapDraw,
     &features::kUseNotificationCompatBuilder,
     &features::kWebAuth,

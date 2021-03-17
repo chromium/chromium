@@ -47211,6 +47211,7 @@ from previous Chrome versions.
   <int value="1169418814" label="ManualFallbacksFilling:enabled"/>
   <int value="1173244409" label="AutofillUseMobileLabelDisambiguation:enabled"/>
   <int value="1174088940" label="enable-wasm"/>
+  <int value="1176183341" label="SearchHistoryLink:enabled"/>
   <int value="1177120582" label="InstallableInkDrop:disabled"/>
   <int value="1177174300" label="LayoutNGTable:disabled"/>
   <int value="1177628103" label="GaiaActionButtons:disabled"/>
@@ -47972,6 +47973,7 @@ from previous Chrome versions.
   <int value="1865799183" label="javascript-harmony"/>
   <int value="1865963858" label="tls13-variant"/>
   <int value="1866079109" label="team-drives"/>
+  <int value="1866280482" label="SearchHistoryLink:disabled"/>
   <int value="1866526688" label="GlobalMediaControlsForCast:enabled"/>
   <int value="1866656400" label="DisplayCutoutAPI:disabled"/>
   <int value="1866963423" label="SyncPseudoUSSThemes:enabled"/>
