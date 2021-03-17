@@ -310,7 +310,9 @@ void MojoVideoDecoderService::OnDecoderInitialized(Status status) {
                          status.code());
 
   if (!status.is_ok()) {
-    std::move(init_cb_).Run(status, false, 1, VideoDecoderType::kUnknown);
+    std::move(init_cb_).Run(
+        status, false, 1,
+        decoder_ ? decoder_->GetDecoderType() : VideoDecoderType::kUnknown);
     return;
   }
   std::move(init_cb_).Run(status, decoder_->NeedsBitstreamConversion(),

@@ -110,8 +110,9 @@ void MojoAudioDecoderService::OnInitialized(InitializeCallback callback,
 
   if (!status.is_ok()) {
     // Do not call decoder_->NeedsBitstreamConversion() if init failed.
-    std::move(callback).Run(std::move(status), false,
-                            AudioDecoderType::kUnknown);
+    std::move(callback).Run(
+        std::move(status), false,
+        decoder_ ? decoder_->GetDecoderType() : AudioDecoderType::kUnknown);
     return;
   }
 
