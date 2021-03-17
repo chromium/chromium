@@ -5,6 +5,7 @@
 (async function () {
   await TestRunner.loadModule('axe_core_test_runner');
   await TestRunner.showPanel('sources');
+  await TestRunner.loadLegacyModule('browser_debugger');
 
   await UI.viewManager.showView('sources.eventListenerBreakpoints');
   const eventListenerWidget = self.runtime.sharedInstance(

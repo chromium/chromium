@@ -5,6 +5,7 @@
 (async function () {
   await TestRunner.loadModule('axe_core_test_runner');
   await TestRunner.showPanel('sources');
+  await TestRunner.loadLegacyModule('browser_debugger');
 
   // this rule causes false negatives due to axe not handling the shadow DOM properly
   const noRequiredParent = {'aria-required-parent': {enabled: false}};
