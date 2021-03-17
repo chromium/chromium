@@ -554,15 +554,19 @@ def _CombineConfigs(configs, dynamic_config_data, exclude_generated=False):
     if exclude_generated and config.endswith('.resources.proguard.txt'):
       continue
 
-    ret.append('# File: ' + config)
     with open(config) as config_file:
       contents = config_file.read().rstrip()
+
+    if not contents.strip():
+      # Ignore empty files.
+      continue
 
     # Fix up line endings (third_party configs can have windows endings).
     contents = contents.replace('\r', '')
     # Remove numbers from generated rule comments to make file more
     # diff'able.
     contents = re.sub(r' #generated:\d+', '', contents)
+    ret.append('# File: ' + config)
     ret.append(contents)
     ret.append('')
 

@@ -745,9 +745,6 @@
 
 -keep class * implements com.google.firebase.components.ComponentRegistrar
 
-# File: obj/third_party/android_deps/google_firebase_firebase_encoders_json_java/proguard.txt
-
-
 # File: obj/third_party/android_deps/google_firebase_firebase_messaging_java/proguard.txt
 # Analytics library is optional.
 # Access to this class is protected by try/catch(NoClassDefFoundError e)
