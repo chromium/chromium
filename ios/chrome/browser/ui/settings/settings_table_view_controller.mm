@@ -325,13 +325,10 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
     PrefService* prefService = _browserState->GetPrefs();
 
-    if (base::FeatureList::IsEnabled(kSafetyCheckIOS)) {
-      _passwordCheckManager =
-          IOSChromePasswordCheckManagerFactory::GetForBrowserState(
-              _browserState);
-      _passwordCheckObserver = std::make_unique<PasswordCheckObserverBridge>(
-          self, _passwordCheckManager.get());
-    }
+    _passwordCheckManager =
+        IOSChromePasswordCheckManagerFactory::GetForBrowserState(_browserState);
+    _passwordCheckObserver = std::make_unique<PasswordCheckObserverBridge>(
+        self, _passwordCheckManager.get());
 
     _articlesEnabled = [[PrefBackedBoolean alloc]
         initWithPrefService:prefService
@@ -447,10 +444,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   [model addSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
   [model addItem:[self voiceSearchDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
-  if (base::FeatureList::IsEnabled(kSafetyCheckIOS)) {
-    [model addItem:[self safetyCheckDetailItem]
-        toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
-  }
+  [model addItem:[self safetyCheckDetailItem]
+      toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
   [model addItem:[self privacyDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
   _articlesForYouItem = [self articlesForYouSwitchItem];

@@ -29,9 +29,6 @@ extern const base::Feature kTestFeature;
 // an enterprise policy.
 extern const base::Feature kEnableIOSManagedSettingsUI;
 
-// Enables the safety check in settings on iOS.
-extern const base::Feature kSafetyCheckIOS;
-
 // Feature flag to enable new illustrations and UI on empty states.
 extern const base::Feature kIllustratedEmptyStates;
 

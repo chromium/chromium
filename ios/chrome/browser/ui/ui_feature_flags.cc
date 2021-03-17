@@ -22,9 +22,6 @@ const base::Feature kTestFeature{"TestFeature",
 const base::Feature kEnableIOSManagedSettingsUI{
     "EnableIOSManagedSettingsUI", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kSafetyCheckIOS{"SafetyCheckIOS",
-                                    base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kIllustratedEmptyStates{"IllustratedEmptyStates",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 

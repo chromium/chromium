@@ -4536,16 +4536,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "safety-check-ios",
-    "owners": [
-      "andzaytsev",
-      "harrisonsean",
-      "msramek",
-      "chrome-friendly-settings@google.com"
-    ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "safety-check-weak-passwords",
     "owners": [
       "rainhard",
