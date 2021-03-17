@@ -819,15 +819,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             @Override
             public void onSceneChange(Layout layout) {
                 mToolbar.setContentAttached(layout.shouldDisplayContentOverlay());
-
-                if (StartSurfaceConfiguration.consumeFocusOnOmnibox(
-                            mActivityTabProvider.get(), layout)) {
-                    setUrlBarFocus(true, OmniboxFocusReason.FOCUS_ON_NEW_TAB);
-                    if (shouldShowCursorInLocationBar()) {
-                        mLocationBar.showUrlBarCursorWithoutFocusAnimations();
-                    }
-                    updateButtonStatus();
-                }
+                maybeFocusOmnibox(layout, mActivityTabProvider.get());
             }
         };
 
@@ -870,6 +862,23 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         }));
 
         TraceEvent.end("ToolbarManager.ToolbarManager");
+    }
+
+    /**
+     * May set Omnibox focused if the Tab has the flag to require focusing the Omnibox.
+     */
+    private void maybeFocusOmnibox(Layout layout, Tab tab) {
+        if (StartSurfaceConfiguration.consumeFocusOnOmnibox(tab, layout)) {
+            if (mLocationBar.getFakeboxDelegate() == null
+                    || mLocationBar.getFakeboxDelegate().isUrlBarFocused()) {
+                return;
+            }
+            setUrlBarFocus(true, OmniboxFocusReason.FOCUS_ON_NEW_TAB);
+            if (shouldShowCursorInLocationBar()) {
+                mLocationBar.showUrlBarCursorWithoutFocusAnimations();
+            }
+            updateButtonStatus();
+        }
     }
 
     private TopToolbarCoordinator createTopToolbarCoordinator(
@@ -1169,6 +1178,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 && !TextUtils.isEmpty(currentTab.getUrlString())) {
             mControlContainer.setReadyForBitmapCapture(true);
         }
+        maybeFocusOmnibox(mLayoutManager.getActiveLayout(), currentTab);
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_IPH_ANDROID)) {
             UserEducationHelper userEducationHelper = new UserEducationHelper(

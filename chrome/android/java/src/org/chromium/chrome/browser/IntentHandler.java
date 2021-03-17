@@ -1133,6 +1133,15 @@ public class IntentHandler {
                 != 0;
     }
 
+    /**
+     * Returns whether the Intent specifies to create a new Tab from the launcher shortcut.
+     */
+    static boolean isTabOpenAsNewTabFromLauncher(Intent intent) {
+        return IntentUtils.safeGetBooleanExtra(intent, Browser.EXTRA_CREATE_NEW_TAB, false)
+                && IntentUtils.safeGetBooleanExtra(
+                        intent, IntentHandler.EXTRA_INVOKED_FROM_SHORTCUT, false);
+    }
+
     /*
      * The default behavior here is to open in a new tab.  If this is changed, ensure
      * intents with action NDEF_DISCOVERED (links beamed over NFC) are handled properly.
