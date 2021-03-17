@@ -827,8 +827,11 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
     LayoutUnit size_from_ar = ComputeInlineSizeFromAspectRatio(
         *constraint_space, Style(), border_padding, block_size);
     if (size_from_ar != kIndefiniteSize) {
-      return MinMaxSizesResult({size_from_ar, size_from_ar},
-                               Style().LogicalHeight().IsPercentOrCalc());
+      return MinMaxSizesResult(
+          {size_from_ar, size_from_ar},
+          Style().LogicalHeight().IsPercentOrCalc() ||
+              Style().LogicalMinHeight().IsPercentOrCalc() ||
+              Style().LogicalMaxHeight().IsPercentOrCalc());
     }
   }
 
@@ -878,7 +881,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
     return MinMaxSizesResult(sizes, cache_depends_on_percentage_block_size);
   }
 
-  box_->SetIntrinsicLogicalWidthsDirty();
+  box_->SetIntrinsicLogicalWidthsDirty(kMarkOnlyThis);
 
   if (!CanUseNewLayout()) {
     MinMaxSizes sizes = ComputeMinMaxSizesFromLegacy(input, *constraint_space);

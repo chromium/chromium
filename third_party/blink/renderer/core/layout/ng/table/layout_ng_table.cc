@@ -86,7 +86,8 @@ void LayoutNGTable::GridBordersChanged() {
     SetShouldDoFullPaintInvalidationWithoutGeometryChange(
         PaintInvalidationReason::kStyle);
     // If borders change, table fragment must be regenerated.
-    SetNeedsLayout(layout_invalidation_reason::kTableChanged);
+    SetNeedsLayoutAndIntrinsicWidthsRecalc(
+        layout_invalidation_reason::kTableChanged);
   }
 }
 
