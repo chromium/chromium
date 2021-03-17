@@ -470,7 +470,8 @@ class CommerceHintCacaoTest : public CommerceHintAgentTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(CommerceHintCacaoTest, Rejected) {
+// Flaky. crbug.com/1183852
+IN_PROC_BROWSER_TEST_F(CommerceHintCacaoTest, DISABLED_Rejected) {
   NavigateToURL("https://www.walmart.com/");
   SendXHR("/add-to-cart", "product: 123");
   WaitForCartCount(kEmptyExpected);
