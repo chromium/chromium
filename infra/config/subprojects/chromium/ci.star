@@ -582,7 +582,7 @@ ci.android_builder(
         short_name = "rel",
     ),
     executable = "recipe:swarming/deterministic_build",
-    execution_timeout = 6 * time.hour,
+    execution_timeout = 7 * time.hour,
     notifies = ["Deterministic Android"],
     tree_closing = True,
 )
