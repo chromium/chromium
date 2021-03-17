@@ -444,7 +444,7 @@ void FrameFetchContext::AddClientHintsIfNecessary(
   if (!AllowScriptFromSourceWithoutNotifying(request.Url()))
     return;
 
-  // When the runtime flag "FeaturePolicyForClientHints" is enabled, feature
+  // When the runtime flag "FeaturePolicyForClientHints" is enabled, permissions
   // policy is used to enable hints for all subresources, based on the policy of
   // the requesting document, and the origin of the resource.
   const PermissionsPolicy* policy =

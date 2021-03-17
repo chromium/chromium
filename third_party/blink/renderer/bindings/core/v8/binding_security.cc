@@ -146,7 +146,7 @@ bool CanAccessWindowInternal(
                    : WebFeature::kDocumentDomainBlockedCrossOriginAccess);
   }
   if (!can_access) {
-    // Ensure that if we got a cluster mismatch that it was due to a feature
+    // Ensure that if we got a cluster mismatch that it was due to a permissions
     // policy being enabled and not a logic bug.
     if (detail == SecurityOrigin::AccessResultDomainDetail::
                       kDomainNotRelevantAgentClusterMismatch) {

@@ -27,9 +27,10 @@ const char k{{feature.name}}PolicyName[] = "{{feature.permissions_policy_name}}"
 // add their feature names to this map unconditionally, as the trial token could
 // be added after the HTTP header needs to be parsed. This also means that
 // top-level documents which simply want to embed another page which uses an
-// origin trial feature, without using the feature themselves, can use feature
-// policy to allow use of the feature in subframes (The framed document will
-// still require a valid origin trial token to use the feature in this scenario).
+// origin trial feature, without using the feature themselves, can use
+// permissions policy to allow use of the feature in subframes (The framed
+// document will still require a valid origin trial token to use the feature in
+// this scenario).
 const FeatureNameMap& GetDefaultFeatureNameMap() {
   DEFINE_STATIC_LOCAL(FeatureNameMap, default_feature_name_map, ());
   if (default_feature_name_map.IsEmpty()) {

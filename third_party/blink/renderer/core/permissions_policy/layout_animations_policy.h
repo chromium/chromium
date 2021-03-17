@@ -14,13 +14,13 @@ namespace blink {
 class CSSProperty;
 class ExecutionContext;
 
-// Helper methods for for 'layout-animations' (kLayoutAnimations) feature
+// Helper methods for for 'layout-animations' (kLayoutAnimations) permissions
 // policy.
 class LayoutAnimationsPolicy {
   DISALLOW_NEW();
 
  public:
-  // Returns a set of the CSS properties which are affected by the feature
+  // Returns a set of the CSS properties which are affected by the permissions
   // policy 'layout-animations'.
   static const HashSet<const CSSProperty*>& AffectedCSSProperties();
 

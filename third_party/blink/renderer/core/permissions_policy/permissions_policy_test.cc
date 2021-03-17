@@ -649,7 +649,7 @@ TEST_F(PermissionsPolicyParserParsingTest,
   PolicyParserMessageBuffer permissions_policy_logger("Permissions Policy: ");
 
   // 'geolocation' in permissions policy has a invalid allowlist item, which
-  // results in an empty allowlist, which is equivalent to 'none' in feature
+  // results in an empty allowlist, which is equivalent to "()" in permissions
   // policy syntax.
   CheckParsedPolicy(
       PermissionsPolicyParser::ParseHeader(

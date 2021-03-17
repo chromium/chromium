@@ -129,10 +129,10 @@ operator==(const ParsedPermissionsPolicyDeclaration& lhs,
 
 class BLINK_COMMON_EXPORT PermissionsPolicy {
  public:
-  // Represents a collection of origins which make up an allowlist in a feature
-  // policy. This collection may be set to match every origin (corresponding to
-  // the "*" syntax in the policy string, in which case the Contains() method
-  // will always return true.
+  // Represents a collection of origins which make up an allowlist in a
+  // permissions policy. This collection may be set to match every origin
+  // (corresponding to the "*" syntax in the policy string, in which case the
+  // Contains() method will always return true.
   class BLINK_COMMON_EXPORT Allowlist final {
    public:
     Allowlist();
