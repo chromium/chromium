@@ -2127,6 +2127,7 @@ if (!is_android) {
         "../browser/extensions/navigation_observer_browsertest.cc",
         "../browser/extensions/options_page_apitest.cc",
         "../browser/extensions/page_action_browsertest.cc",
+        "../browser/extensions/printer_provider_apitest.cc",
         "../browser/extensions/process_management_browsertest.cc",
         "../browser/extensions/process_manager_browsertest.cc",
         "../browser/extensions/renderer_initialization_browsertest.cc",
