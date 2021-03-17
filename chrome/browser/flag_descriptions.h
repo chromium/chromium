@@ -1568,6 +1568,9 @@ extern const char kDrawPredictedPointsName[];
 
 #if defined(OS_ANDROID)
 
+extern const char kAddToHomescreenIPHName[];
+extern const char kAddToHomescreenIPHDescription[];
+
 extern const char kAImageReaderName[];
 extern const char kAImageReaderDescription[];
 

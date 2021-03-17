@@ -59,6 +59,11 @@
     "expiry_milestone": 93
   },
   {
+    "name": "add-to-homescreen-iph",
+    "owners": [ "shaktisahu" ],
+    "expiry_milestone": 94
+  },
+  {
     "name": "aggregated-ml-app-ranking",
     "owners": [ "pdyson", "jiameng" ],
     "expiry_milestone": 81

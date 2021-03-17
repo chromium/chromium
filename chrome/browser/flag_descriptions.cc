@@ -2674,6 +2674,11 @@ const char kDrawPredictedPointsName[] = "Draw predicted delegated ink points";
 
 #if defined(OS_ANDROID)
 
+const char kAddToHomescreenIPHName[] = "Add to homescreen IPH";
+const char kAddToHomescreenIPHDescription[] =
+    " Shows in-product-help messages educating users about add to homescreen "
+    "option in chrome.";
+
 const char kAImageReaderName[] = "Android ImageReader";
 const char kAImageReaderDescription[] =
     " Enables MediaPlayer and MediaCodec to use AImageReader on Android. "
