@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "build/build_config.h"
+#include "components/password_manager/core/browser/android_affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/credentials_filter.h"
 #include "components/password_manager/core/browser/multi_store_form_fetcher.h"
@@ -203,6 +204,21 @@ std::unique_ptr<FormFetcher> FormFetcherImpl::Clone() {
 }
 
 void FormFetcherImpl::ProcessPasswordStoreResults(
+    std::vector<std::unique_ptr<PasswordForm>> results) {
+  if (client_->GetProfilePasswordStore()->affiliated_match_helper()) {
+    client_->GetProfilePasswordStore()
+        ->affiliated_match_helper()
+        ->InjectAffiliationAndBrandingInformation(
+            std::move(results),
+            AndroidAffiliationService::StrategyOnCacheMiss::FAIL,
+            base::BindOnce(&FormFetcherImpl::FindMatchesAndNotifyConsumers,
+                           weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    FindMatchesAndNotifyConsumers(std::move(results));
+  }
+}
+
+void FormFetcherImpl::FindMatchesAndNotifyConsumers(
     std::vector<std::unique_ptr<PasswordForm>> results) {
   DCHECK_EQ(State::WAITING, state_);
   state_ = State::NOT_WAITING;

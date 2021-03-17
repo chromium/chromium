@@ -17,6 +17,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/password_manager/core/browser/android_affiliation/affiliated_match_helper.h"
+#include "components/password_manager/core/browser/android_affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
 #include "components/password_manager/core/browser/multi_store_form_fetcher.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -851,6 +853,34 @@ TEST_P(FormFetcherImplTest, DestroyFetcherFromConsumer) {
   static_cast<PasswordStoreConsumer*>(form_fetcher)
       ->OnGetPasswordStoreResultsFrom(
           mock_store_.get(), std::vector<std::unique_ptr<PasswordForm>>());
+}
+
+TEST_P(FormFetcherImplTest, BrandingInformationInjected) {
+  Fetch();
+
+  std::vector<MockAffiliatedMatchHelper::AffiliationAndBrandingInformation>
+      affiliation_info_for_results = {
+          {"android://hash@com.example.android/", "Android App Name", GURL()}};
+
+  PasswordForm form = CreateHTMLForm("android://hash@com.example.android/",
+                                     "username_value", "password_value");
+  form.in_store = PasswordForm::Store::kProfileStore;
+  auto mock_helper = std::make_unique<MockAffiliatedMatchHelper>();
+  // Injects expected branding information.
+  mock_helper->ExpectCallToInjectAffiliationAndBrandingInformation(
+      affiliation_info_for_results);
+  // Settings affiliated match helper for the password store.
+  mock_store_->SetAffiliatedMatchHelper(std::move(mock_helper));
+
+  std::vector<std::unique_ptr<PasswordForm>> results;
+  results.push_back(std::make_unique<PasswordForm>(form));
+  form_fetcher_->OnGetPasswordStoreResultsFrom(mock_store_.get(),
+                                               std::move(results));
+  EXPECT_EQ(FormFetcher::State::NOT_WAITING, form_fetcher_->GetState());
+
+  // The results should contain branding information.
+  EXPECT_EQ(form_fetcher_->GetNonFederatedMatches()[0]->app_display_name,
+            "Android App Name");
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

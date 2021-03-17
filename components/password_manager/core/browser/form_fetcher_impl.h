@@ -65,8 +65,14 @@ class FormFetcherImpl : public FormFetcher,
   std::unique_ptr<FormFetcher> Clone() override;
 
  protected:
-  // Processes password form results and forwards them to the |consumers_|.
+  // Processes password form results and forwards them to the
+  // AffiliatedMatchHelper to inject branding information. Calls
+  // FindMatchesAndNotifyConsumers afterwards.
   void ProcessPasswordStoreResults(
+      std::vector<std::unique_ptr<PasswordForm>> results);
+
+  // Actually finds best matches and notifies consumers.
+  void FindMatchesAndNotifyConsumers(
       std::vector<std::unique_ptr<PasswordForm>> results);
 
   // Splits |results| into |federated_|, |non_federated_| and |is_blocklisted_|.
@@ -140,6 +146,8 @@ class FormFetcherImpl : public FormFetcher,
   // Consumers of the fetcher, all are assumed to either outlive |this| or
   // remove themselves from the list during their destruction.
   base::ObserverList<FormFetcher::Consumer> consumers_;
+
+  base::WeakPtrFactory<FormFetcherImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FormFetcherImpl);
 };
