@@ -112,6 +112,10 @@ def _ParseArgs(args):
   parser.add_argument('--warnings-as-errors',
                       action='store_true',
                       help='Treat all warnings as errors.')
+  parser.add_argument('--dump-inputs',
+                      action='store_true',
+                      help='Use when filing D8 bugs to capture inputs.'
+                      ' Stores inputs to d8inputs.zip')
 
   group = parser.add_argument_group('Dexlayout')
   group.add_argument(
@@ -571,7 +575,12 @@ def main(args):
     final_dex_inputs = list(options.class_inputs)
   final_dex_inputs += options.dex_inputs
 
-  dex_cmd = build_utils.JavaCmd(options.warnings_as_errors) + [
+  dex_cmd = build_utils.JavaCmd(options.warnings_as_errors)
+
+  if options.dump_inputs:
+    dex_cmd += ['-Dcom.android.tools.r8.dumpinputtofile=d8inputs.zip']
+
+  dex_cmd += [
       '-cp',
       '{}:{}'.format(options.r8_jar_path, options.custom_d8_jar_path),
       'org.chromium.build.CustomD8',
