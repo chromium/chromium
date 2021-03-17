@@ -9,7 +9,7 @@
  */
 
 // clang-format off
-// #import {util} from '../file_manager/common/js/util.m.js';
+// #import {util} from '../common/js/util.m.js';
 // clang-format on
 
 /* #export */ class EntriesChangedEvent extends Event {

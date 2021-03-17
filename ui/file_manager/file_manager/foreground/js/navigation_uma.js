@@ -4,7 +4,7 @@
 
 // clang-format off
 // #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
-// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.m.js';
 // #import {metrics} from '../../common/js/metrics.m.js';
 // clang-format on
 

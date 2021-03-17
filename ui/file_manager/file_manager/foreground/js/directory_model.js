@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {EntriesChangedEvent} from '../../../externs/entries_changed_event.m.js';
+// #import {EntriesChangedEvent} from '../../externs/entries_changed_event.m.js';
 // #import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
 // #import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
-// #import {VolumeInfo} from '../../../externs/volume_info.m.js';
-// #import {FilesAppDirEntry, FakeEntry, FilesAppEntry} from '../../../externs/files_app_entry_interfaces.m.js';
-// #import {FileOperationManager} from '../../../externs/background/file_operation_manager.m.js';
-// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+// #import {VolumeInfo} from '../../externs/volume_info.m.js';
+// #import {FilesAppDirEntry, FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.m.js';
+// #import {FileOperationManager} from '../../externs/background/file_operation_manager.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.m.js';
 // #import {MetadataModel} from './metadata/metadata_model.m.js';
 // #import {FileListSingleSelectionModel, FileListSelectionModel} from './ui/file_list_selection_model.m.js';
 // #import {FileWatcher} from './file_watcher.m.js';

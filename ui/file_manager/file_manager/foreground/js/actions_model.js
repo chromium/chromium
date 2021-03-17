@@ -5,8 +5,8 @@
 // clang-format off
 // #import {ActionModelUI} from './ui/action_model_ui.m.js';
 // #import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.m.js';
-// #import {DriveSyncHandler} from '../../../externs/background/drive_sync_handler.m.js';
-// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+// #import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.m.js';
 // #import {MetadataModel} from './metadata/metadata_model.m.js';
 // #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
 // #import {util, str, strf} from '../../common/js/util.m.js';

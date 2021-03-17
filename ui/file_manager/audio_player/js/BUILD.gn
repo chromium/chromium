@@ -53,8 +53,8 @@ js_library("closure_compile_externs") {
   externs_list = [
     "$externs_path/chrome_extensions.js",
     "$externs_path/mediasession.js",
-    "//ui/file_manager/externs/audio_player_foreground.js",
-    "//ui/file_manager/externs/platform.js",
+    "//ui/file_manager/file_manager/externs/audio_player_foreground.js",
+    "//ui/file_manager/file_manager/externs/platform.js",
   ]
 }
 
@@ -81,16 +81,16 @@ js_library("audio_player.m") {
     "//ui/file_manager/base/js:filtered_volume_manager.m",
     "//ui/file_manager/base/js:mediasession_types.m",
     "//ui/file_manager/base/js:volume_manager_types.m",
-    "//ui/file_manager/externs:volume_manager.m",
     "//ui/file_manager/file_manager/common/js:async_util.m",
     "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/file_manager/file_manager/externs:volume_manager.m",
     "//ui/file_manager/file_manager/foreground/js/metadata:content_metadata_provider.m",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model.m",
     "//ui/webui/resources/js:load_time_data",
   ]
 
   externs_list = [
-    "//ui/file_manager/externs/audio_player_foreground.js",
+    "//ui/file_manager/file_manager/externs/audio_player_foreground.js",
     "$externs_path/mediasession.js",
   ]
 

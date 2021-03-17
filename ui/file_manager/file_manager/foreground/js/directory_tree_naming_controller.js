@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // #import {DirectoryTree, DirectoryItem} from './ui/directory_tree.m.js';
-// #import {VolumeInfo} from '../../../externs/volume_info.m.js';
+// #import {VolumeInfo} from '../../externs/volume_info.m.js';
 // #import {AlertDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {util} from '../../common/js/util.m.js';

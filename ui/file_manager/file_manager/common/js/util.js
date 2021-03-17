@@ -15,11 +15,11 @@
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import * as wrappedVolumeManagerCommon from '../../../base/js/volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
 // #import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-// #import {FilesAppEntry, FakeEntry} from '../../../externs/files_app_entry_interfaces.m.js';
+// #import {FilesAppEntry, FakeEntry} from '../../externs/files_app_entry_interfaces.m.js';
 // #import {EntryList} from './files_app_entry_types.m.js';
-// #import {VolumeInfo} from '../../../externs/volume_info.m.js';
-// #import {EntryLocation} from '../../../externs/entry_location.m.js';
-// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+// #import {VolumeInfo} from '../../externs/volume_info.m.js';
+// #import {EntryLocation} from '../../externs/entry_location.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.m.js';
 // clang-format on
 
 /**

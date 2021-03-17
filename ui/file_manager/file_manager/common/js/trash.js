@@ -20,8 +20,8 @@
  */
 
 // clang-format off
-// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
-// #import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.m.js';
+// #import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {util} from './util.m.js';
 // #import {FakeEntryImpl, CombinedReaders} from './files_app_entry_types.m.js';

@@ -11,7 +11,7 @@
 // #import {metadataProxy} from './metadata_proxy.m.js';
 // #import {util} from '../../common/js/util.m.js';
 // #import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-// #import {importerHistoryInterfaces} from '../../../externs/background/import_history.m.js';
+// #import {importerHistoryInterfaces} from '../../externs/background/import_history.m.js';
 // #import {importer} from '../../common/js/importer_common.m.js';
 // clang-format on
 

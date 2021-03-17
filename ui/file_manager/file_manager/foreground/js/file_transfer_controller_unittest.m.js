@@ -7,14 +7,16 @@ import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
 import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
 import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+
 import {installMockChrome} from '../../../base/js/mock_chrome.m.js';
 import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
-import {FileOperationManager} from '../../../externs/background/file_operation_manager.m.js';
-import {importerHistoryInterfaces} from '../../../externs/background/import_history.m.js';
-import {ProgressCenter} from '../../../externs/background/progress_center.m.js';
-import {VolumeManager} from '../../../externs/volume_manager.m.js';
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.m.js';
 import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';
+import {FileOperationManager} from '../../externs/background/file_operation_manager.m.js';
+import {importerHistoryInterfaces} from '../../externs/background/import_history.m.js';
+import {ProgressCenter} from '../../externs/background/progress_center.m.js';
+import {VolumeManager} from '../../externs/volume_manager.m.js';
+
 import {DialogType} from './dialog_type.m.js';
 import {FakeFileSelectionHandler} from './fake_file_selection_handler.m.js';
 import {FileListModel} from './file_list_model.m.js';

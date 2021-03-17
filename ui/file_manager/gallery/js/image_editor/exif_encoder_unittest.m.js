@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
-import {MetadataParserLogger} from '../../../externs/metadata_worker_window.m.js';
+import {MetadataParserLogger} from '../../../file_manager/externs/metadata_worker_window.m.js';
 import {ByteReader} from '../../../file_manager/foreground/js/metadata/byte_reader.m.js';
 import {ExifParser} from '../../../file_manager/foreground/js/metadata/exif_parser.m.js';
 import {MetadataItem} from '../../../file_manager/foreground/js/metadata/metadata_item.m.js';

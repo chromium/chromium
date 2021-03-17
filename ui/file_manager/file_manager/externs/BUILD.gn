@@ -19,16 +19,18 @@ js_library("file_manager_private") {
 }
 
 js_library("background_window.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/externs/background_window.m.js" ]
+  sources = [
+    "$root_gen_dir/ui/file_manager/file_manager/externs/background_window.m.js",
+  ]
 
-  deps = [ "//ui/file_manager/externs/background:background_base.m" ]
+  deps =
+      [ "//ui/file_manager/file_manager/externs/background:background_base.m" ]
 
   extra_deps = [ ":modulize" ]
 }
 
 js_library("command_handler_deps.m") {
-  sources =
-      [ "$root_gen_dir/ui/file_manager/externs/command_handler_deps.m.js" ]
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/externs/command_handler_deps.m.js" ]
   deps = [
     ":files_app_entry_interfaces.m",
     ":volume_manager.m",
@@ -55,23 +57,20 @@ js_library("command_handler_deps.m") {
 }
 
 js_library("directory_change_event.m") {
-  sources =
-      [ "$root_gen_dir/ui/file_manager/externs/directory_change_event.m.js" ]
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/externs/directory_change_event.m.js" ]
   deps = [ ":files_app_entry_interfaces.m" ]
 
   extra_deps = [ ":modulize" ]
 }
 
 js_library("drive_dialog_controller.m") {
-  sources =
-      [ "$root_gen_dir/ui/file_manager/externs/drive_dialog_controller.m.js" ]
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/externs/drive_dialog_controller.m.js" ]
 
   extra_deps = [ ":modulize" ]
 }
 
 js_library("entries_changed_event.m") {
-  sources =
-      [ "$root_gen_dir/ui/file_manager/externs/entries_changed_event.m.js" ]
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/externs/entries_changed_event.m.js" ]
 
   deps = [ "//ui/file_manager/file_manager/common/js:util.m" ]
 
@@ -79,7 +78,9 @@ js_library("entries_changed_event.m") {
 }
 
 js_library("entry_location.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/externs/entry_location.m.js" ]
+  sources = [
+    "$root_gen_dir/ui/file_manager/file_manager/externs/entry_location.m.js",
+  ]
 
   deps = [
     ":volume_info.m",
@@ -90,7 +91,8 @@ js_library("entry_location.m") {
 }
 
 js_library("exif_entry.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/externs/exif_entry.m.js" ]
+  sources =
+      [ "$root_gen_dir/ui/file_manager/file_manager/externs/exif_entry.m.js" ]
 
   deps = [
     "//ui/file_manager/file_manager/foreground/js/metadata:exif_constants.m",
@@ -100,9 +102,7 @@ js_library("exif_entry.m") {
 }
 
 js_library("files_app_entry_interfaces.m") {
-  sources = [
-    "$root_gen_dir/ui/file_manager/externs/files_app_entry_interfaces.m.js",
-  ]
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/externs/files_app_entry_interfaces.m.js" ]
 
   deps = [ "//ui/file_manager/base/js:volume_manager_types.m" ]
 
@@ -110,15 +110,13 @@ js_library("files_app_entry_interfaces.m") {
 }
 
 js_library("metadata_worker_window.m") {
-  sources =
-      [ "$root_gen_dir/ui/file_manager/externs/metadata_worker_window.m.js" ]
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/externs/metadata_worker_window.m.js" ]
 
   extra_deps = [ ":modulize" ]
 }
 
 js_library("progress_center_panel.m") {
-  sources =
-      [ "$root_gen_dir/ui/file_manager/externs/progress_center_panel.m.js" ]
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/externs/progress_center_panel.m.js" ]
 
   deps = [ "//ui/file_manager/file_manager/common/js:progress_center_common.m" ]
   extra_deps = [ ":modulize" ]
@@ -139,7 +137,9 @@ js_library("volume_manager") {
 }
 
 js_library("volume_manager.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/externs/volume_manager.m.js" ]
+  sources = [
+    "$root_gen_dir/ui/file_manager/file_manager/externs/volume_manager.m.js",
+  ]
 
   deps = [
     ":entry_location.m",
@@ -153,7 +153,8 @@ js_library("volume_manager.m") {
 }
 
 js_library("volume_info.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/externs/volume_info.m.js" ]
+  sources =
+      [ "$root_gen_dir/ui/file_manager/file_manager/externs/volume_info.m.js" ]
 
   deps = [
     ":files_app_entry_interfaces.m",
@@ -164,7 +165,9 @@ js_library("volume_info.m") {
 }
 
 js_library("volume_info_list.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/externs/volume_info_list.m.js" ]
+  sources = [
+    "$root_gen_dir/ui/file_manager/file_manager/externs/volume_info_list.m.js",
+  ]
 
   deps = [ ":volume_info.m" ]
 

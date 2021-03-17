@@ -54,8 +54,8 @@ js_library("closure_compile_externs") {
     "$externs_path/media_player_private.js",
     "$externs_path/metrics_private.js",
     "$externs_path/picture_in_picture.js",
-    "//ui/file_manager/externs/chrome_cast.js",
-    "//ui/file_manager/externs/platform.js",
+    "//ui/file_manager/file_manager/externs/chrome_cast.js",
+    "//ui/file_manager/file_manager/externs/platform.js",
   ]
 }
 
@@ -70,10 +70,10 @@ js_library("background") {
 js_library("background.m") {
   sources = [ "$root_gen_dir/ui/file_manager/video_player/js/background.m.js" ]
   deps = [
-    "//ui/file_manager/externs/background:background_base.m",
     "//ui/file_manager/file_manager/background/js:app_window_wrapper.m",
     "//ui/file_manager/file_manager/background/js:background_base.m",
     "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/file_manager/file_manager/externs/background:background_base.m",
     "//ui/webui/resources/js:assert.m",
   ]
 
@@ -105,11 +105,11 @@ js_library("test_util.m") {
 js_library("video_player_native_controls") {
   deps = [
     "//ui/file_manager/base/js:app_util",
-    "//ui/file_manager/externs:file_manager_private",
+    "//ui/file_manager/file_manager/externs:file_manager_private",
     "//ui/webui/resources/js:load_time_data",
     "//ui/webui/resources/js:util",
   ]
-  externs_list = [ "//ui/file_manager/externs/platform.js" ]
+  externs_list = [ "//ui/file_manager/file_manager/externs/platform.js" ]
 }
 
 js_library("video_player_native_controls.m") {
@@ -122,7 +122,7 @@ js_library("video_player_native_controls.m") {
     "//ui/webui/resources/js:util.m",
   ]
 
-  externs_list = [ "//ui/file_manager/externs/platform.js" ]
+  externs_list = [ "//ui/file_manager/file_manager/externs/platform.js" ]
 
   extra_deps = [ ":modulize" ]
 }
@@ -184,17 +184,16 @@ js_test_gen_html("js_test_gen_html_modules") {
   deps = [ ":video_player_native_controls_unittest.m" ]
   is_polymer3 = true
 
-  closure_flags =
-      strict_error_checking_closure_args + [
-        "generate_exports=false",
-        "js_module_root=gen/ui/file_manager/",
-        "js_module_root=./gen/ui",
-        "js_module_root=../../ui",
-        "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
-        "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
-        "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
-        "hide_warnings_for=third_party/",
-      ]
+  closure_flags = strict_error_checking_closure_args + [
+                    "generate_exports=false",
+                    "js_module_root=gen/ui/file_manager/",
+                    "js_module_root=./gen/ui",
+                    "js_module_root=../../ui",
+                    "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+                    "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=./file_manager/\"",
+                    "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
+                    "hide_warnings_for=third_party/",
+                  ]
 }
 
 js_library("main.m") {

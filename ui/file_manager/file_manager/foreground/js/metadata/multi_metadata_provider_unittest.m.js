@@ -11,7 +11,7 @@ import {ExternalMetadataProvider} from './external_metadata_provider.m.js';
 import {FileSystemMetadataProvider} from './file_system_metadata_provider.m.js';
 import {MetadataRequest} from './metadata_request.m.js';
 import {MultiMetadataProvider} from './multi_metadata_provider.m.js';
-import {VolumeManager} from '../../../../externs/volume_manager.m.js';
+import {VolumeManager} from '../../../externs/volume_manager.m.js';
 
 const entryA = /** @type {!Entry} */ ({
   toURL: function() {

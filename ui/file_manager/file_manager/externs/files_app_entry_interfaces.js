@@ -7,7 +7,7 @@
  */
 
 // clang-format off
-// #import * as wrappedVolumeManagerCommon from '../base/js/volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
+// #import * as wrappedVolumeManagerCommon from '../../base/js/volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
 // clang-format on
 
 /**

@@ -58,7 +58,7 @@ js_unittest("dimmable_ui_controller_unittest") {
 
 js_library("entry_list_watcher") {
   deps = [
-    "//ui/file_manager/externs:file_manager_private",
+    "//ui/file_manager/file_manager/externs:file_manager_private",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js/cr/ui:array_data_model",
   ]
@@ -122,7 +122,7 @@ js_library("gallery_item") {
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
     "//ui/file_manager/file_manager/foreground/js/metadata:thumbnail_model",
   ]
-  externs_list = [ "//ui/file_manager/externs/entry_location.js" ]
+  externs_list = [ "//ui/file_manager/file_manager/externs/entry_location.js" ]
 }
 
 js_unittest("gallery_item_unittest") {
@@ -140,9 +140,9 @@ js_library("gallery_metrics") {
 js_library("gallery_util") {
   deps = [
     "//ui/file_manager/base/js:volume_manager_types",
-    "//ui/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/common/js:file_type",
     "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/externs:volume_manager",
   ]
 }
 
@@ -203,7 +203,8 @@ js_library("slide_mode") {
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple",
   ]
-  externs_list = [ "//ui/file_manager/externs/gallery_foreground.js" ]
+  externs_list =
+      [ "//ui/file_manager/file_manager/externs/gallery_foreground.js" ]
 }
 
 js_unittest("slide_mode_unittest") {

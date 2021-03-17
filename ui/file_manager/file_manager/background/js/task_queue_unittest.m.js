@@ -5,8 +5,8 @@
 import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 
 import {reportPromise} from '../../../base/js/test_error_reporting.m.js';
-import {taskQueueInterfaces} from '../../../externs/background/task_queue.m.js';
 import {importer} from '../../common/js/importer_common.m.js';
+import {taskQueueInterfaces} from '../../externs/background/task_queue.m.js';
 
 import {taskQueue} from './task_queue.m.js';
 

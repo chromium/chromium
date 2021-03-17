@@ -5,7 +5,7 @@
 // clang-format off
 // #import {assertTrue, assertEquals} from 'chrome://test/chai_assert.js';
 // #import {importer} from '../../common/js/importer_common.m.js';
-// #import {mediaScannerInterfaces} from '../../../externs/background/media_scanner.m.js';
+// #import {mediaScannerInterfaces} from '../../externs/background/media_scanner.m.js';
 // #import {mediaScanner} from './media_scanner.m.js';
 // clang-format on
 

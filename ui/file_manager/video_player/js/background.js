@@ -7,7 +7,7 @@
 // #import {AppWindowWrapper} from '../../file_manager/background/js/app_window_wrapper.m.js';
 // #import {util} from '../../file_manager/common/js/util.m.js';
 // #import {BackgroundBaseImpl} from '../../file_manager/background/js/background_base.m.js';
-// #import {BackgroundBase} from '../../externs/background/background_base.m.js';
+// #import {BackgroundBase} from '../../file_manager/externs/background/background_base.m.js';
 // clang-format on
 
 /**

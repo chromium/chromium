@@ -9,8 +9,8 @@
  * @param {function(!Entry)} successCallback
  * @param {function(!FileError)=} opt_errorCallback
  */
-Window.prototype.webkitResolveLocalFileSystemURL =
-    function(url, successCallback, opt_errorCallback) {};
+Window.prototype.webkitResolveLocalFileSystemURL = function(
+    url, successCallback, opt_errorCallback) {};
 
 /**
  * Media error: MEDIA_ERR_ABORTED.

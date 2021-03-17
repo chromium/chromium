@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {DriveDialogControllerInterface} from '../../../externs/drive_dialog_controller.m.js';
+// #import {DriveDialogControllerInterface} from '../../externs/drive_dialog_controller.m.js';
 // #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-// #import {DriveSyncHandler} from '../../../externs/background/drive_sync_handler.m.js';
+// #import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.m.js';
 // clang-format on
 
 /* #ignore */ 'use strict';

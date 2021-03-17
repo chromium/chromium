@@ -9,7 +9,7 @@
  */
 
 // clang-format off
-// #import {importer} from '../../file_manager/common/js/importer_common.m.js';
+// #import {importer} from '../../common/js/importer_common.m.js';
 // clang-format on
 
 const taskQueueInterfaces = {};

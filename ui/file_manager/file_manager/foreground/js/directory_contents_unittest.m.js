@@ -5,8 +5,8 @@
 import {assertEquals, assertFalse} from 'chrome://test/chai_assert.js';
 import {installMockChrome} from '../../../base/js/mock_chrome.m.js';
 import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
-import {EntryLocation} from '../../../externs/entry_location.m.js';
-import {VolumeManager} from '../../../externs/volume_manager.m.js';
+import {EntryLocation} from '../../externs/entry_location.m.js';
+import {VolumeManager} from '../../externs/volume_manager.m.js';
 import {FileFilter} from './directory_contents.m.js';
 
 /**

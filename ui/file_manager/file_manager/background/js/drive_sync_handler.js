@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {ProgressCenter} from '../../../externs/background/progress_center.m.js';
-// #import {DriveDialogControllerInterface} from '../../../externs/drive_dialog_controller.m.js';
-// #import {DriveSyncHandler} from '../../../externs/background/drive_sync_handler.m.js';
+// #import {ProgressCenter} from '../../externs/background/progress_center.m.js';
+// #import {DriveDialogControllerInterface} from '../../externs/drive_dialog_controller.m.js';
+// #import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.m.js';
 // #import {str, strf} from '../../common/js/util.m.js';
 // #import {fileOperationUtil} from './file_operation_util.m.js';
 // #import {AsyncUtil} from '../../common/js/async_util.m.js';

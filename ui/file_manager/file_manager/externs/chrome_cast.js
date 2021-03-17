@@ -341,8 +341,9 @@ chrome.cast.Volume.prototype.muted;
  * @constructor
  * @see https://developers.google.com/cast/docs/reference/chrome/chrome.cast.ApiConfig
  */
-chrome.cast.ApiConfig = function(sessionRequest, sessionListener,
-    receiverListener, opt_autoJoinPolicy, opt_defaultActionPolicy) {};
+chrome.cast.ApiConfig = function(
+    sessionRequest, sessionListener, receiverListener, opt_autoJoinPolicy,
+    opt_defaultActionPolicy) {};
 
 /** @type {!chrome.cast.SessionRequest} */
 chrome.cast.ApiConfig.prototype.sessionRequest;
@@ -390,8 +391,8 @@ chrome.cast.SessionRequest.prototype.language;
  * @constructor
  * @see https://developers.google.com/cast/docs/reference/chrome/chrome.cast.Receiver
  */
-chrome.cast.Receiver =
-    function(label, friendlyName, opt_capabilities, opt_volume) {};
+chrome.cast.Receiver = function(
+    label, friendlyName, opt_capabilities, opt_volume) {};
 
 /** @type {string} */
 chrome.cast.Receiver.prototype.label;
@@ -436,8 +437,8 @@ chrome.cast.ReceiverDisplayStatus.prototype.appImages;
  * @constructor
  * @see https://developers.google.com/cast/docs/reference/chrome/chrome.cast.Session
  */
-chrome.cast.Session =
-    function(sessionId, appId, displayName, appImages, receiver) {};
+chrome.cast.Session = function(
+    sessionId, appId, displayName, appImages, receiver) {};
 
 /** @type {string} */
 chrome.cast.Session.prototype.sessionId;
@@ -474,30 +475,30 @@ chrome.cast.Session.prototype.status;
  * @param {function()} successCallback
  * @param {function(chrome.cast.Error)} errorCallback
  */
-chrome.cast.Session.prototype.setReceiverVolumeLevel =
-    function(newLevel, successCallback, errorCallback) {};
+chrome.cast.Session.prototype.setReceiverVolumeLevel = function(
+    newLevel, successCallback, errorCallback) {};
 
 /**
  * @param {boolean} muted
  * @param {function()} successCallback
  * @param {function(chrome.cast.Error)} errorCallback
  */
-chrome.cast.Session.prototype.setReceiverMuted =
-    function(muted, successCallback, errorCallback) {};
+chrome.cast.Session.prototype.setReceiverMuted = function(
+    muted, successCallback, errorCallback) {};
 
 /**
  * @param {function()} successCallback
  * @param {function(chrome.cast.Error)} errorCallback
  */
-chrome.cast.Session.prototype.leave =
-    function(successCallback, errorCallback) {};
+chrome.cast.Session.prototype.leave = function(
+    successCallback, errorCallback) {};
 
 /**
  * @param {function()} successCallback
  * @param {function(chrome.cast.Error)} errorCallback
  */
-chrome.cast.Session.prototype.stop =
-    function(successCallback, errorCallback) {};
+chrome.cast.Session.prototype.stop = function(
+    successCallback, errorCallback) {};
 
 /**
  * @param {string} namespace
@@ -505,8 +506,8 @@ chrome.cast.Session.prototype.stop =
  * @param {!function()} successCallback
  * @param {function(!chrome.cast.Error)} errorCallback
  */
-chrome.cast.Session.prototype.sendMessage =
-    function(namespace, message, successCallback, errorCallback) {};
+chrome.cast.Session.prototype.sendMessage = function(
+    namespace, message, successCallback, errorCallback) {};
 
 /**
  * @param {function(boolean)} listener
@@ -522,15 +523,15 @@ chrome.cast.Session.prototype.removeUpdateListener = function(listener) {};
  * @param {string} namespace
  * @param {function(string,string)} listener
  */
-chrome.cast.Session.prototype.addMessageListener =
-    function(namespace, listener) {};
+chrome.cast.Session.prototype.addMessageListener = function(
+    namespace, listener) {};
 
 /**
  * @param {string} namespace
  * @param {function(string,string)} listener
  */
-chrome.cast.Session.prototype.removeMessageListener =
-    function(namespace, listener) {};
+chrome.cast.Session.prototype.removeMessageListener = function(
+    namespace, listener) {};
 
 /**
  * @param {function(!chrome.cast.media.Media)} listener
@@ -547,8 +548,8 @@ chrome.cast.Session.prototype.removeMediaListener = function(listener) {};
  * @param {function(!chrome.cast.media.Media)} successCallback
  * @param {function(!chrome.cast.Error)} errorCallback
  */
-chrome.cast.Session.prototype.loadMedia =
-    function(loadRequest, successCallback, errorCallback) {};
+chrome.cast.Session.prototype.loadMedia = function(
+    loadRequest, successCallback, errorCallback) {};
 
 
 /**
@@ -630,8 +631,8 @@ chrome.cast.logMessage = function(message) {};
  * @param {function()} successCallback
  * @param {function(chrome.cast.Error)} errorCallback
  */
-chrome.cast.setCustomReceivers =
-    function(receivers, successCallback, errorCallback) {};
+chrome.cast.setCustomReceivers = function(
+    receivers, successCallback, errorCallback) {};
 
 
 /**
@@ -639,8 +640,8 @@ chrome.cast.setCustomReceivers =
  * @param {function()} successCallback
  * @param {function(chrome.cast.Error)} errorCallback
  */
-chrome.cast.setReceiverDisplayStatus =
-    function(receiver, successCallback, errorCallback) {};
+chrome.cast.setReceiverDisplayStatus = function(
+    receiver, successCallback, errorCallback) {};
 
 
 /**
@@ -742,8 +743,8 @@ chrome.cast.media.LoadRequest.prototype.media;
  * @constructor
  * @see https://developers.google.com/cast/docs/reference/chrome/chrome.cast.media.EditTracksInfoRequest
  */
-chrome.cast.media.EditTracksInfoRequest =
-    function(opt_activeTrackIds, opt_textTrackStyle) {};
+chrome.cast.media.EditTracksInfoRequest = function(
+    opt_activeTrackIds, opt_textTrackStyle) {};
 
 /** @type {Array<number>} */
 chrome.cast.media.EditTracksInfoRequest.prototype.activeTrackIds;
@@ -1067,56 +1068,56 @@ chrome.cast.media.Media.prototype.currentTime;
  * @param {function()} successCallback
  * @param {function(!chrome.cast.Error)} errorCallback
  */
-chrome.cast.media.Media.prototype.getStatus =
-    function(getStatusRequest, successCallback, errorCallback) {};
+chrome.cast.media.Media.prototype.getStatus = function(
+    getStatusRequest, successCallback, errorCallback) {};
 
 /**
  * @param {chrome.cast.media.PlayRequest} playRequest
  * @param {function()} successCallback
  * @param {function(!chrome.cast.Error)} errorCallback
  */
-chrome.cast.media.Media.prototype.play =
-    function(playRequest, successCallback, errorCallback) {};
+chrome.cast.media.Media.prototype.play = function(
+    playRequest, successCallback, errorCallback) {};
 
 /**
  * @param {chrome.cast.media.PauseRequest} pauseRequest
  * @param {function()} successCallback
  * @param {function(!chrome.cast.Error)} errorCallback
  */
-chrome.cast.media.Media.prototype.pause =
-    function(pauseRequest, successCallback, errorCallback) {};
+chrome.cast.media.Media.prototype.pause = function(
+    pauseRequest, successCallback, errorCallback) {};
 
 /**
  * @param {!chrome.cast.media.SeekRequest} seekRequest
  * @param {function()} successCallback
  * @param {function(!chrome.cast.Error)} errorCallback
  */
-chrome.cast.media.Media.prototype.seek =
-    function(seekRequest, successCallback, errorCallback) {};
+chrome.cast.media.Media.prototype.seek = function(
+    seekRequest, successCallback, errorCallback) {};
 
 /**
  * @param {chrome.cast.media.StopRequest} stopRequest
  * @param {function()} successCallback
  * @param {function(!chrome.cast.Error)} errorCallback
  */
-chrome.cast.media.Media.prototype.stop =
-    function(stopRequest, successCallback, errorCallback) {};
+chrome.cast.media.Media.prototype.stop = function(
+    stopRequest, successCallback, errorCallback) {};
 
 /**
  * @param {!chrome.cast.media.VolumeRequest} volumeRequest
  * @param {function()} successCallback
  * @param {function(!chrome.cast.Error)} errorCallback
  */
-chrome.cast.media.Media.prototype.setVolume =
-    function(volumeRequest, successCallback, errorCallback) {};
+chrome.cast.media.Media.prototype.setVolume = function(
+    volumeRequest, successCallback, errorCallback) {};
 
 /**
  * @param {!chrome.cast.media.EditTracksInfoRequest} editTracksInfoRequest
  * @param {function()} successCallback
  * @param {function(!chrome.cast.Error)} errorCallback
  */
-chrome.cast.media.Media.prototype.editTracksInfo =
-    function(editTracksInfoRequest, successCallback, errorCallback) {};
+chrome.cast.media.Media.prototype.editTracksInfo = function(
+    editTracksInfoRequest, successCallback, errorCallback) {};
 
 /**
  * @param {!chrome.cast.media.MediaCommand} command

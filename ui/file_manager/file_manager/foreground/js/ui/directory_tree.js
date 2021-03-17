@@ -3,15 +3,15 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {FileOperationManager} from '../../../../externs/background/file_operation_manager.m.js';
+// #import {FileOperationManager} from '../../../externs/background/file_operation_manager.m.js';
 // #import {FileFilter} from '../directory_contents.m.js';
 // #import {MetadataModel} from '../metadata/metadata_model.m.js';
-// #import {VolumeManager} from '../../../../externs/volume_manager.m.js';
+// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
 // #import {DirectoryModel} from '../directory_model.m.js';
-// #import {VolumeInfo} from '../../../../externs/volume_info.m.js';
+// #import {VolumeInfo} from '../../../externs/volume_info.m.js';
 // #import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
 // #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
-// #import {FilesAppDirEntry} from '../../../../externs/files_app_entry_interfaces.m.js';
+// #import {FilesAppDirEntry} from '../../../externs/files_app_entry_interfaces.m.js';
 // #import {NavigationModelItemType, NavigationSection, NavigationModelFakeItem, NavigationModelVolumeItem, NavigationModelShortcutItem, NavigationModelAndroidAppItem, NavigationListModel, NavigationModelItem} from '../navigation_list_model.m.js';
 // #import {FileType} from '../../../common/js/file_type.m.js';
 // #import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';

@@ -7,7 +7,7 @@
 // #import {DirectoryTree} from './ui/directory_tree.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {FilesMessage} from '../elements/files_message.m.js';
-// #import {Crostini} from '../../../externs/background/crostini.m.js';
+// #import {Crostini} from '../../externs/background/crostini.m.js';
 // #import {CommandHandler} from './file_manager_commands.m.js';
 // #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
 // #import {FakeEntryImpl} from '../../common/js/files_app_entry_types.m.js';

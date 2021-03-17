@@ -9,7 +9,7 @@
  */
 
 // #import {DriveSyncHandler} from './drive_sync_handler.m.js';
-// #import {importer} from '../../file_manager/common/js/importer_common.m.js';
+// #import {importer} from '../../common/js/importer_common.m.js';
 // #import {importerHistoryInterfaces} from './import_history.m.js';
 // #import {duplicateFinderInterfaces} from './duplicate_finder.m.js';
 // #import {mediaScannerInterfaces} from './media_scanner.m.js';

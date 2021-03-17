@@ -9,8 +9,8 @@
  */
 
 // clang-format off
-// #import {BackgroundBase} from '../../externs/background/background_base.m.js';
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
+// #import {BackgroundBase} from '../../file_manager/externs/background/background_base.m.js';
+// #import {VolumeManager} from '../../file_manager/externs/volume_manager.m.js';
 // clang-format on
 
 const appUtil = {};

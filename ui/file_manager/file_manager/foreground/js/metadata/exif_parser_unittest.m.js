@@ -7,8 +7,8 @@ import {ByteReader} from './byte_reader.m.js';
 import * as wrappedExif from './exif_constants.m.js';
 import {ExifParser} from './exif_parser.m.js';
 const {Exif} = wrappedExif;
-import {ExifEntry} from '../../../../externs/exif_entry.m.js';
-import {MetadataParserLogger} from '../../../../externs/metadata_worker_window.m.js';
+import {ExifEntry} from '../../../externs/exif_entry.m.js';
+import {MetadataParserLogger} from '../../../externs/metadata_worker_window.m.js';
 
 class ByteWriter {
   /**

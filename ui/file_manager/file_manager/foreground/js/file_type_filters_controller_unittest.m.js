@@ -8,8 +8,8 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.j
 
 import {installMockChrome} from '../../../base/js/mock_chrome.m.js';
 import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
-import {FakeEntry} from '../../../externs/files_app_entry_interfaces.m.js';
 import {EntryList, FakeEntryImpl} from '../../common/js/files_app_entry_types.m.js';
+import {FakeEntry} from '../../externs/files_app_entry_interfaces.m.js';
 
 import {DirectoryModel} from './directory_model.m.js';
 import {FileTypeFiltersController} from './file_type_filters_controller.m.js';

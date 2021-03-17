@@ -6,7 +6,7 @@
 // #import {LaunchParam} from './launch_param.m.js';
 // #import {NamingController} from './naming_controller.m.js';
 // #import {FileFilter} from './directory_contents.m.js';
-// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.m.js';
 // #import {MetadataModel} from './metadata/metadata_model.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {DialogFooter} from './ui/dialog_footer.m.js';

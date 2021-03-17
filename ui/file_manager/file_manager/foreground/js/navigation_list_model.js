@@ -6,9 +6,9 @@
 // #import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {AndroidAppListModel} from './android_app_list_model.m.js';
-// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
-// #import {FilesAppEntry, FakeEntry} from '../../../externs/files_app_entry_interfaces.m.js';
-// #import {VolumeInfo} from '../../../externs/volume_info.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.m.js';
+// #import {FilesAppEntry, FakeEntry} from '../../externs/files_app_entry_interfaces.m.js';
+// #import {VolumeInfo} from '../../externs/volume_info.m.js';
 // #import {TrashRootEntry} from '../../common/js/trash.m.js';
 // #import {util, str} from '../../common/js/util.m.js';
 // #import {FakeEntryImpl, VolumeEntry, EntryList} from '../../common/js/files_app_entry_types.m.js';

@@ -10,7 +10,7 @@
 // #import {MetadataProvider} from './metadata_provider.m.js';
 // #import {MetadataRequest} from './metadata_request.m.js';
 // #import * as wrappedVolumeManagerCommon from '../../../../base/js/volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
-// #import {VolumeManager} from '../../../../externs/volume_manager.m.js';
+// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // clang-format on
 

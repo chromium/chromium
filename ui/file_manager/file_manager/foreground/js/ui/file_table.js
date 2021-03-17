@@ -5,13 +5,13 @@
 // clang-format off
 // #import {A11yAnnounce} from './a11y_announce.m.js';
 // #import {FileListSelectionModel, FileListSingleSelectionModel} from './file_list_selection_model.m.js';
-// #import {EntryLocation} from '../../../../externs/entry_location.m.js';
+// #import {EntryLocation} from '../../../externs/entry_location.m.js';
 // #import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
 // #import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
-// #import {FilesAppEntry} from '../../../../externs/files_app_entry_interfaces.m.js';
+// #import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.m.js';
 // #import {List} from 'chrome://resources/js/cr/ui/list.m.js';
-// #import {VolumeManager} from '../../../../externs/volume_manager.m.js';
-// #import {importerHistoryInterfaces} from '../../../../externs/background/import_history.m.js';
+// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+// #import {importerHistoryInterfaces} from '../../../externs/background/import_history.m.js';
 // #import {MetadataModel} from '../metadata/metadata_model.m.js';
 // #import {ListThumbnailLoader} from '../list_thumbnail_loader.m.js';
 // #import {TableColumn} from './table/table_column.m.js';

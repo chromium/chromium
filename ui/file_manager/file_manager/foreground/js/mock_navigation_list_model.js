@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.m.js';
 // #import {NavigationModelVolumeItem, NavigationModelItem} from './navigation_list_model.m.js';
 // #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 // clang-format on

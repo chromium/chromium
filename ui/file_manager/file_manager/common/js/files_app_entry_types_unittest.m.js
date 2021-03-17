@@ -12,7 +12,7 @@ const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
 import {MockFileSystem} from './mock_entry.m.js';
 import {reportPromise, waitUntil} from '../../../base/js/test_error_reporting.m.js';
 import {VolumeEntry, EntryList, StaticReader, CombinedReaders, FakeEntryImpl} from './files_app_entry_types.m.js';
-import {VolumeInfo} from '../../../externs/volume_info.m.js';
+import {VolumeInfo} from '../../externs/volume_info.m.js';
 // clang-format on
 
 

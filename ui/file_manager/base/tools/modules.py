@@ -39,8 +39,8 @@ def get_relative_dependency(path, dir_path):
         - ":file_type.m" if returned if file_type.js is in dir_path.
         - "metadata:metadata_model.m" is returned if metadata/metadata_model.js
         is in dir_path.
-        - "//ui/file_manager/externs:volume_manager.m" is returned if
-        ui/file_manager/externs is not included in dir_path.
+        - "//ui/file_manager/file_manager/externs:volume_manager.m" is returned if
+        ui/file_manager/file_manager/externs is not included in dir_path.
     '''
     split_path = path.split('/')
     file_name = split_path.pop().replace('.js', '.m')

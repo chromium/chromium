@@ -7,7 +7,7 @@
 // #import {metadataProxy} from './metadata_proxy.m.js';
 // #import {fileOperationUtil} from './file_operation_util.m.js';
 // #import {importer} from '../../common/js/importer_common.m.js';
-// #import {mediaScannerInterfaces} from '../../../externs/background/media_scanner.m.js';
+// #import {mediaScannerInterfaces} from '../../externs/background/media_scanner.m.js';
 // clang-format on
 
 // Namespace

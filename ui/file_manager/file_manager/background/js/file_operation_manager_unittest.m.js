@@ -8,11 +8,11 @@ import { assertArrayEquals, assertEquals, assertFalse,assertTrue} from 'chrome:/
 
 import {installMockChrome} from '../../../base/js/mock_chrome.m.js';
 import {reportPromise, waitUntil} from '../../../base/js/test_error_reporting.m.js';
-import {FileOperationManager} from '../../../externs/background/file_operation_manager.m.js';
-import {EntryLocation} from '../../../externs/entry_location.m.js';
 import {FileOperationProgressEvent} from '../../common/js/file_operation_common.m.js';
 import { joinPath, MockDirectoryEntry, MockEntry, MockFileEntry,MockFileSystem} from '../../common/js/mock_entry.m.js';
 import {util} from '../../common/js/util.m.js';
+import {FileOperationManager} from '../../externs/background/file_operation_manager.m.js';
+import {EntryLocation} from '../../externs/entry_location.m.js';
 
 import {FileOperationManagerImpl} from './file_operation_manager.m.js';
 import {fileOperationUtil} from './file_operation_util.m.js';

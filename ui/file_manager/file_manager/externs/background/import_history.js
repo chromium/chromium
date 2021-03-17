@@ -8,7 +8,7 @@
  * line exporting.
  */
 
-// #import {importer} from '../../file_manager/common/js/importer_common.m.js';
+// #import {importer} from '../../common/js/importer_common.m.js';
 
 // Namespace
 // eslint-disable-next-line no-var

@@ -5,9 +5,9 @@
 // clang-format off
 // #import {MetadataModel} from './metadata/metadata_model.m.js';
 // #import {ListContainer} from './ui/list_container.m.js';
-// #import {FileOperationManager} from '../../../externs/background/file_operation_manager.m.js';
+// #import {FileOperationManager} from '../../externs/background/file_operation_manager.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';
-// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.m.js';
 // #import {AllowedPaths} from '../../../base/js/volume_manager_types.m.js';
 // #import {util} from '../../common/js/util.m.js';
 // #import {constants} from './constants.m.js';

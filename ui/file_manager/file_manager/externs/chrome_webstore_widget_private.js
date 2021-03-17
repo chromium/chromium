@@ -12,5 +12,4 @@ chrome.webstoreWidgetPrivate = {};
  * @param {function()} callback
  */
 chrome.webstoreWidgetPrivate.installWebstoreItem = function(
-    itemId, silentInstall, callback) {
-};
+    itemId, silentInstall, callback) {};

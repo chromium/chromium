@@ -4,10 +4,10 @@
 
 // clang-format off
 // #import {TrashEntry} from '../../common/js/trash.m.js';
-// #import {FakeEntry} from '../../../externs/files_app_entry_interfaces.m.js';
-// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
-// #import {EntryLocation} from '../../../externs/entry_location.m.js';
-// #import {FileOperationManager} from '../../../externs/background/file_operation_manager.m.js';
+// #import {FakeEntry} from '../../externs/files_app_entry_interfaces.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.m.js';
+// #import {EntryLocation} from '../../externs/entry_location.m.js';
+// #import {FileOperationManager} from '../../externs/background/file_operation_manager.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {metadataProxy} from './metadata_proxy.m.js';
 // #import {AsyncUtil} from '../../common/js/async_util.m.js';

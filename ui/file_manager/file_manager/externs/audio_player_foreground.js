@@ -10,7 +10,7 @@
  *   items: (!Array<string>|undefined)
  * }}
  */
-var Playlist;
+let Playlist;
 
 /**
  * @type {(Playlist|Object|undefined)}

@@ -7,7 +7,7 @@
 // #import {MetadataItem} from './metadata/metadata_item.m.js';
 // #import {FileTasks} from './file_tasks.m.js';
 // #import {FilesQuickView} from '../elements/files_quick_view.m.js';
-// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.m.js';
 // #import {MetadataBoxController} from './metadata_box_controller.m.js';
 // #import {FileListSelectionModel} from './ui/file_list_selection_model.m.js';
 // #import {TaskController} from './task_controller.m.js';
@@ -15,7 +15,7 @@
 // #import {MultiMenuButton} from './ui/multi_menu_button.m.js';
 // #import {ListContainer} from './ui/list_container.m.js';
 // #import {MetadataModel} from './metadata/metadata_model.m.js';
-// #import {CommandHandlerDeps} from '../../../externs/command_handler_deps.m.js';
+// #import {CommandHandlerDeps} from '../../externs/command_handler_deps.m.js';
 // #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
 // #import {ThumbnailLoader} from './thumbnail_loader.m.js';
 // #import {ImageLoaderClient} from '../../../image_loader/image_loader_client.m.js';

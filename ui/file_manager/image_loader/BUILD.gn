@@ -67,7 +67,7 @@ js_library("image_loader") {
     ":image_request_task",
     ":load_image_request",
     ":scheduler",
-    "//ui/file_manager/externs:file_manager_private",
+    "//ui/file_manager/file_manager/externs:file_manager_private",
   ]
 }
 
@@ -171,12 +171,12 @@ js_library("piex_loader") {
   # No dependencies should be added here, so the module can be loaded as a
   # standalone .js file.
 
-  externs_list = [ "//ui/file_manager/externs/platform.js" ]
+  externs_list = [ "//ui/file_manager/file_manager/externs/platform.js" ]
 }
 
 js_library("piex_loader.m") {
   sources = [ "$root_gen_dir/ui/file_manager/image_loader/piex_loader.m.js" ]
-  externs_list = [ "//ui/file_manager/externs/platform.js" ]
+  externs_list = [ "//ui/file_manager/file_manager/externs/platform.js" ]
 
   extra_deps = [ ":modulize" ]
 }
@@ -189,7 +189,7 @@ js_library("image_request_task") {
     ":piex_loader",
     "//ui/file_manager/file_manager/common/js:file_type",
   ]
-  externs_list = [ "//ui/file_manager/externs/platform.js" ]
+  externs_list = [ "//ui/file_manager/file_manager/externs/platform.js" ]
 }
 
 js_library("image_request_task.m") {

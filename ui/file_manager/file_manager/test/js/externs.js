@@ -20,7 +20,8 @@ fileManager.fileBrowserBackground_;
 
 /**
  * Declare ProgressCenterPanel here rather than deal with its deps.  It is
- * referenced in //ui/file_manager/externs/background/progress_center.js
+ * referenced in
+ * //ui/file_manager/file_manager/externs/background/progress_center.js
  * @interface
  */
 class ProgressCenterPanel {}

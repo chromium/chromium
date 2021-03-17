@@ -5,15 +5,16 @@
 // clang-format off
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {assertArrayEquals,assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+
 import {installMockChrome, MockCommandLinePrivate} from '../../../../base/js/mock_chrome.m.js';
 import {reportPromise, waitUntil} from '../../../../base/js/test_error_reporting.m.js';
 import {VolumeManagerCommon} from '../../../../base/js/volume_manager_types.m.js';
-import {FileOperationManager} from '../../../../externs/background/file_operation_manager.m.js';
 import {MockVolumeManager} from '../../../background/js/mock_volume_manager.m.js';
 import {EntryList} from '../../../common/js/files_app_entry_types.m.js';
 import {metrics} from '../../../common/js/metrics.m.js';
 import {MockDirectoryEntry} from '../../../common/js/mock_entry.m.js';
 import {str} from '../../../common/js/util.m.js';
+import {FileOperationManager} from '../../../externs/background/file_operation_manager.m.js';
 import {DirectoryModel} from '../directory_model.m.js';
 import {createFakeAndroidAppListModel} from '../fake_android_app_list_model.m.js';
 import {MetadataModel} from '../metadata/metadata_model.m.js';

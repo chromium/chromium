@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {FilesAppDirEntry, FakeEntry} from '../../../externs/files_app_entry_interfaces.m.js';
+// #import {FilesAppDirEntry, FakeEntry} from '../../externs/files_app_entry_interfaces.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {FileFilter} from './directory_contents.m.js';
 // #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';

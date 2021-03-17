@@ -9,9 +9,9 @@
 // #import {volumeManagerFactory} from './volume_manager_factory.m.js';
 // #import {ProgressCenterItem, ProgressItemType, ProgressItemState} from '../../common/js/progress_center_common.m.js';
 // #import {util, strf, str} from '../../common/js/util.m.js';
-// #import {VolumeInfo} from '../../../externs/volume_info.m.js';
-// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
-// #import {ProgressCenter} from '../../../externs/background/progress_center.m.js';
+// #import {VolumeInfo} from '../../externs/volume_info.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.m.js';
+// #import {ProgressCenter} from '../../externs/background/progress_center.m.js';
 // #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 // clang-format on
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {FakeEntry} from '../../../externs/files_app_entry_interfaces.m.js';
+// #import {FakeEntry} from '../../externs/files_app_entry_interfaces.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {str, util} from '../../common/js/util.m.js';
 

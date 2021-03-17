@@ -5,10 +5,12 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+
 import {reportPromise, waitUntil} from '../../../base/js/test_error_reporting.m.js';
 import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
-import {VolumeManager} from '../../../externs/volume_manager.m.js';
 import {MockDirectoryEntry, MockEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';
+import {VolumeManager} from '../../externs/volume_manager.m.js';
+
 import {DirectoryModel} from './directory_model.m.js';
 import {FileListModel} from './file_list_model.m.js';
 import {ListThumbnailLoader} from './list_thumbnail_loader.m.js';

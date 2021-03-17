@@ -9,7 +9,7 @@
  * }}
  * @see https://developer.chrome.com/extensions/fileBrowserHandler#type-FileHandlerExecuteEventDetails
  */
-var FileHandlerExecuteEventDetails;
+let FileHandlerExecuteEventDetails;
 
 /**
  * @namespace

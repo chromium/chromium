@@ -8,7 +8,7 @@
  */
 
 // clang-format off
-// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.m.js';
 // #import {fileOperationUtil} from './file_operation_util.m.js';
 // #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';

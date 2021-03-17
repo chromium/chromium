@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {ProgressCenterItem} from '../../file_manager/common/js/progress_center_common.m.js';
+// #import {ProgressCenterItem} from '../../common/js/progress_center_common.m.js';
 // #import {ProgressCenterPanelInterface} from '../progress_center_panel.m.js';
 // clang-format on
 

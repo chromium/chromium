@@ -5,7 +5,7 @@
 // clang-format off
 // #import '../elements/audio_player.m.js';
 // #import {dashToCamelCase} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {ExternallyUnmountedEvent} from '../../externs/volume_manager.m.js';
+// #import {ExternallyUnmountedEvent} from '../../file_manager/externs/volume_manager.m.js';
 // #import {FilteredVolumeManager} from '../../base/js/filtered_volume_manager.m.js';
 // #import {AllowedPaths} from '../../base/js/volume_manager_types.m.js';
 // #import {MediaSessionPlaybackState} from '../../base/js/mediasession_types.m.js';

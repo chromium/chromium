@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // #import {CrostiniImpl} from './crostini.m.js';
-// #import {Crostini} from '../../../externs/background/crostini.m.js';
+// #import {Crostini} from '../../externs/background/crostini.m.js';
 
 /* #ignore */ 'use strict';
 

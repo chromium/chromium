@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {ProgressCenterPanelInterface} from '../../../../externs/progress_center_panel.m.js';
+// #import {ProgressCenterPanelInterface} from '../../../externs/progress_center_panel.m.js';
 // #import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 // #import {strf, str} from '../../../common/js/util.m.js';
 // #import {ProgressItemType, ProgressItemState, ProgressCenterItem} from '../../../common/js/progress_center_common.m.js';

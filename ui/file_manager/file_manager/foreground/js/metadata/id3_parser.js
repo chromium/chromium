@@ -7,7 +7,7 @@
 // #import {FunctionParallel} from './function_parallel.m.js';
 // #import {FunctionSequence} from './function_sequence.m.js';
 // #import {MetadataParser} from './metadata_parser.m.js';
-// #import {MetadataParserLogger} from '../../../../externs/metadata_worker_window.m.js';
+// #import {MetadataParserLogger} from '../../../externs/metadata_worker_window.m.js';
 
 /* #ignore */ importScripts(
 /* #ignore */     'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/js/metadata/function_sequence.js');

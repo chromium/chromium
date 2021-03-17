@@ -3,17 +3,17 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {VolumeInfo} from '../../../externs/volume_info.m.js';
-// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
-// #import {Crostini} from '../../../externs/background/crostini.m.js';
-// #import {FileBrowserBackgroundFull} from '../../../externs/background/file_browser_background_full.m.js';
-// #import {mediaImportInterfaces} from '../../../externs/background/media_import_handler.m.js';
-// #import {mediaScannerInterfaces} from '../../../externs/background/media_scanner.m.js';
-// #import {duplicateFinderInterfaces} from '../../../externs/background/duplicate_finder.m.js';
-// #import {DriveSyncHandler} from '../../../externs/background/drive_sync_handler.m.js';
-// #import {importerHistoryInterfaces} from '../../../externs/background/import_history.m.js';
-// #import {FileOperationManager} from '../../../externs/background/file_operation_manager.m.js';
-// #import {ProgressCenter} from '../../../externs/background/progress_center.m.js';
+// #import {VolumeInfo} from '../../externs/volume_info.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.m.js';
+// #import {Crostini} from '../../externs/background/crostini.m.js';
+// #import {FileBrowserBackgroundFull} from '../../externs/background/file_browser_background_full.m.js';
+// #import {mediaImportInterfaces} from '../../externs/background/media_import_handler.m.js';
+// #import {mediaScannerInterfaces} from '../../externs/background/media_scanner.m.js';
+// #import {duplicateFinderInterfaces} from '../../externs/background/duplicate_finder.m.js';
+// #import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.m.js';
+// #import {importerHistoryInterfaces} from '../../externs/background/import_history.m.js';
+// #import {FileOperationManager} from '../../externs/background/file_operation_manager.m.js';
+// #import {ProgressCenter} from '../../externs/background/progress_center.m.js';
 // #import {util, str} from '../../common/js/util.m.js';
 // #import {metrics} from '../../common/js/metrics.m.js';
 // #import {fileOperationUtil} from './file_operation_util.m.js';

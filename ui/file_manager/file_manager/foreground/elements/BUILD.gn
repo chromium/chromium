@@ -105,7 +105,7 @@ polymer_modulizer("files_format_dialog") {
     "ui/file_manager/file_manager/common/js/util.html|util",
     "ui/file_manager/file_manager/common/js/files_app_entry_types.html|EntryList,VolumeEntry",
     "ui/file_manager/base/js/volume_manager_types.html|VolumeManagerCommon",
-    "ui/file_manager/externs/volume_info.html|VolumeInfo",
+    "ui/file_manager/file_manager/externs/volume_info.html|VolumeInfo",
   ]
 }
 
@@ -116,9 +116,9 @@ js_library("files_format_dialog.m") {
     "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/file_manager/base/js:volume_manager_types.m",
-    "//ui/file_manager/externs:volume_info.m",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types.m",
     "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/file_manager/file_manager/externs:volume_info.m",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",

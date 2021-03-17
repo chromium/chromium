@@ -11,12 +11,12 @@
 // #import {TrashEntry} from '../../common/js/trash.m.js';
 // #import {FileOperationProgressEvent} from '../../common/js/file_operation_common.m.js';
 // #import {FilesConfirmDialog} from './ui/files_confirm_dialog.m.js';
-// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+// #import {VolumeManager} from '../../externs/volume_manager.m.js';
 // #import {FileSelection, FileSelectionHandler} from './file_selection.m.js';
-// #import {VolumeInfo} from '../../../externs/volume_info.m.js';
+// #import {VolumeInfo} from '../../externs/volume_info.m.js';
 // #import {DirectoryModel} from './directory_model.m.js';
-// #import {FakeEntry, FilesAppEntry, FilesAppDirEntry} from '../../../externs/files_app_entry_interfaces.m.js';
-// #import {CommandHandlerDeps} from '../../../externs/command_handler_deps.m.js';
+// #import {FakeEntry, FilesAppEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.m.js';
+// #import {CommandHandlerDeps} from '../../externs/command_handler_deps.m.js';
 // #import {FileType} from '../../common/js/file_type.m.js';
 // #import {constants} from './constants.m.js';
 // #import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.m.js';
