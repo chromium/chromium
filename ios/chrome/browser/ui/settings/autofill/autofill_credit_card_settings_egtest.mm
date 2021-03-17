@@ -226,6 +226,59 @@ id<GREYMatcher> BottomToolbar() {
   [self exitSettingsMenu];
 }
 
+// Checks that the Autofill credit card switch can be turned off and the add
+// payment method button in the toolbar is disabled.
+- (void)testToggleCreditCardSwitchPaymentMethodDisabled {
+  [self openCreditCardsSettings];
+
+  // Toggle the Autofill credit cards switch off.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+                                   kAutofillCreditCardSwitchViewId, YES, YES)]
+      performAction:chrome_test_util::TurnSettingsSwitchOn(NO)];
+
+  // Expect Add Payment Method button to be disabled.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::AddPaymentMethodButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
+
+  // Toggle the Autofill credit cards switch back on.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+                                   kAutofillCreditCardSwitchViewId, NO, YES)]
+      performAction:chrome_test_util::TurnSettingsSwitchOn(YES)];
+
+  // Expect Add Payment Method button to be visible.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::AddPaymentMethodButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [self exitSettingsMenu];
+}
+
+// Checks that when the Autofill credit card switch can be turned off and the
+// edit button is pressed, Add Payment Method button is removed from the
+// toolbar.
+- (void)testToggleCreditCardSwitchInEditModePaymentMethodRemoved {
+  [AutofillAppInterface saveLocalCreditCard];
+  [self openCreditCardsSettings];
+
+  // Toggle the Autofill credit cards switch off.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+                                   kAutofillCreditCardSwitchViewId, YES, YES)]
+      performAction:chrome_test_util::TurnSettingsSwitchOn(NO)];
+
+  // Open Edit Mode.
+  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+      performAction:grey_tap()];
+
+  // Expect Add Payment Method to be removed.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::AddPaymentMethodButton()]
+      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+}
+
 // Checks that the toolbar always appears in edit mode.
 - (void)testToolbarInEditModeAddPaymentMethodFeatureEnabled {
   NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
