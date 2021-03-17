@@ -4099,11 +4099,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "password-check",
-    "owners": [ "jdoerrie", "vasilii" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "password-reuse-detection",
     "owners": [
       "edchin",
