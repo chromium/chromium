@@ -40,6 +40,7 @@ TaskManagerInterface* TaskManagerInterface::GetTaskManager() {
   return TaskManagerImpl::GetInstance();
 }
 
+// static
 void TaskManagerInterface::UpdateAccumulatedStatsNetworkForRoute(
     int process_id,
     int route_id,
