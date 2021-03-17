@@ -24,15 +24,17 @@ public class GooglePayDataCallbacksServiceWrapper extends Service {
 
     @Override
     public void onCreate() {
+        IObjectWrapper objectWrapper;
         try {
-            IObjectWrapper objectWrapper =
-                    WebLayer.getIWebLayer(this).createGooglePayDataCallbacksService();
-            if (objectWrapper == null) return;
-            mService = ObjectWrapper.unwrap(objectWrapper, Service.class);
-            mService.onCreate();
+            objectWrapper = WebLayer.getIWebLayer(this).createGooglePayDataCallbacksService();
         } catch (Exception e) {
             throw new APICallException(e);
         }
+        if (objectWrapper == null) return;
+        Service service = ObjectWrapper.unwrap(objectWrapper, Service.class);
+        if (service == null) return;
+        mService = service;
+        mService.onCreate();
     }
 
     @Nullable
