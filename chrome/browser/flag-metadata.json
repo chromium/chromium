@@ -3298,7 +3298,7 @@
     // This is useful for isolating additional origins beyond the normal site
     // isolation policy, as well as for diagnosing problems when site isolation
     // only applies to some sites.
-    "expiry_milestone": 90
+    "expiry_milestone": 100
   },
   {
     "name": "isolation-by-default",
@@ -4793,7 +4793,7 @@
     "_comment2": "in https://crbug.com/849815.",
     "name": "site-isolation-trial-opt-out",
     "owners": [ "site-isolation-dev", "alexmos", "creis", "lukasza" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "smart-dim-model-v3",
@@ -4865,7 +4865,7 @@
     // therefore unlikely to ship anytime soon, but this allows experimenting
     // with a stronger isolation policy for users who may not care about
     // breaking compatibility with document.domain.
-    "expiry_milestone": 90
+    "expiry_milestone": 100
   },
   {
     "name": "stylus-battery-status",
