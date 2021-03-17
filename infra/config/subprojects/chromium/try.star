@@ -471,7 +471,7 @@ try_.chromium_android_builder(
 try_.chromium_android_builder(
     name = "android_compile_dbg",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
     tryjob = try_.job(),
@@ -516,7 +516,7 @@ try_.chromium_android_builder(
 try_.chromium_android_builder(
     name = "android_cronet",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -536,7 +536,7 @@ try_.chromium_android_builder(
 try_.chromium_android_builder(
     name = "cast_shell_android",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -652,7 +652,7 @@ try_.chromium_chromiumos_builder(
 try_.chromium_chromiumos_builder(
     name = "linux-chromeos-compile-dbg",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -677,7 +677,7 @@ try_.chromium_chromiumos_builder(
 try_.chromium_chromiumos_builder(
     name = "linux-chromeos-rel",
     branch_selector = branches.ALL_BRANCHES,
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
     tryjob = try_.job(),
@@ -807,7 +807,7 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "cast_shell_linux",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
 )
@@ -1086,7 +1086,7 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "linux_chromium_compile_dbg_ng",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_master,
+    builderless = not settings.is_main,
     caches = [
         swarming.cache(
             name = "builder",
