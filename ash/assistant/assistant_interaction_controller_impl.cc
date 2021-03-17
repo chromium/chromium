@@ -264,6 +264,7 @@ void AssistantInteractionControllerImpl::OnUiVisibilityChanged(
       // reset the interaction state and restore the default input modality.
       StopActiveInteraction(true);
       model_.ClearInteraction();
+      model_.SetInputModality(GetDefaultInputModality());
       break;
     case AssistantVisibility::kVisible:
       OnUiVisible(entry_point.value());
@@ -789,15 +790,12 @@ bool AssistantInteractionControllerImpl::HasActiveInteraction() const {
 void AssistantInteractionControllerImpl::OnUiVisible(
     AssistantEntryPoint entry_point) {
   DCHECK(IsVisible());
-  const bool is_voice_entry =
-      assistant::util::IsVoiceEntryPoint(entry_point, IsPreferVoice());
-  model_.SetInputModality(is_voice_entry ? InputModality::kVoice
-                                         : InputModality::kKeyboard);
 
   // We don't explicitly start a new voice interaction if the entry point
   // is hotword since in such cases a voice interaction will already be in
   // progress.
-  if (is_voice_entry && entry_point != AssistantEntryPoint::kHotword) {
+  if (assistant::util::IsVoiceEntryPoint(entry_point, IsPreferVoice()) &&
+      entry_point != AssistantEntryPoint::kHotword) {
     StartVoiceInteraction();
     return;
   }

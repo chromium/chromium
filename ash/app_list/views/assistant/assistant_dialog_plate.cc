@@ -299,7 +299,7 @@ views::View* AssistantDialogPlate::FindFirstFocusableView() {
     case InputModality::kKeyboard:
       return textfield_;
     case InputModality::kVoice:
-      return voice_layout_container_;
+      return animated_voice_input_toggle_;
   }
 }
 
