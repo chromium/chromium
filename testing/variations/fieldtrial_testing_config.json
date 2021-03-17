@@ -49,24 +49,6 @@
             ]
         }
     ],
-    "AndroidAppMenuUiReworkPhase4And5": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "AddToOption",
-                    "params": {
-                        "three_button_action_bar": "add_to_option"
-                    },
-                    "enable_features": [
-                        "TabbedAppOverflowMenuThreeButtonActionbar"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidAutofillQueryServerFieldTypes": [
         {
             "platforms": [
