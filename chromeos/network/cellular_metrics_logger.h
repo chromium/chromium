@@ -214,7 +214,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   // This checks the state of connected networks and logs
   // cellular network usage histogram. Histogram is only logged
   // when usage state changes.
-  void CheckForCellularUsageCountMetric();
+  void CheckForCellularUsageMetrics();
 
   // Tracks how many eSIM profiles are installed on the device and how many pSIM
   // networks are available on the device if |is_service_count_logged_| is true.
@@ -230,8 +230,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   // Tracks the last PSim cellular network usage state.
   base::Optional<CellularUsage> last_psim_cellular_usage_;
 
+  // Tracks the last time the PSim network's cellular usage changed.
+  base::Optional<base::Time> last_psim_usage_change_timestamp_;
+
   // Tracks the last ESim cellular network usage state.
   base::Optional<CellularUsage> last_esim_cellular_usage_;
+
+  // Tracks the last time the ESim network's cellular usage changed.
+  base::Optional<base::Time> last_esim_usage_change_timestamp_;
 
   // Tracks whether cellular device is available or not.
   bool is_cellular_available_ = false;

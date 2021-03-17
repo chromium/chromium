@@ -259,7 +259,10 @@ TEST_F(CellularMetricsLoggerTest, CellularUsageCountTest) {
       kESimUsageCountHistogram,
       CellularMetricsLogger::CellularUsage::kConnectedAndOnlyNetwork, 0);
 
-  // PSim Cellular not connected; both ESim and PSim hisograms are emitted to.
+  // After |time_spent_online_psim|, PSim Cellular becomes not connected.
+  const base::TimeDelta time_spent_online_psim =
+      base::TimeDelta::FromSeconds(123);
+  task_environment_.FastForwardBy(time_spent_online_psim);
   service_client_test()->SetServiceProperty(
       kTestCellularServicePath, shill::kStateProperty, kTestIdleStateValue);
   base::RunLoop().RunUntilIdle();
@@ -269,6 +272,8 @@ TEST_F(CellularMetricsLoggerTest, CellularUsageCountTest) {
   histogram_tester.ExpectBucketCount(
       kESimUsageCountHistogram,
       CellularMetricsLogger::CellularUsage::kNotConnected, 1);
+  histogram_tester.ExpectTimeBucketCount("Network.Cellular.PSim.Usage.Duration",
+                                         time_spent_online_psim, 1);
 
   // Connect ethernet network.
   service_client_test()->SetServiceProperty(
@@ -298,7 +303,10 @@ TEST_F(CellularMetricsLoggerTest, CellularUsageCountTest) {
       kESimUsageCountHistogram,
       CellularMetricsLogger::CellularUsage::kConnectedAndOnlyNetwork, 1);
 
-  // ESim Cellular not connected; both ESim and PSim hisograms are emitted to.
+  // After |time_spent_online_esim|, ESim Cellular becomes not connected.
+  const base::TimeDelta time_spent_online_esim =
+      base::TimeDelta::FromSeconds(321);
+  task_environment_.FastForwardBy(time_spent_online_esim);
   service_client_test()->SetServiceProperty(
       kTestCellularServicePath2, shill::kStateProperty, kTestIdleStateValue);
   base::RunLoop().RunUntilIdle();
@@ -308,6 +316,8 @@ TEST_F(CellularMetricsLoggerTest, CellularUsageCountTest) {
   histogram_tester.ExpectBucketCount(
       kESimUsageCountHistogram,
       CellularMetricsLogger::CellularUsage::kNotConnected, 2);
+  histogram_tester.ExpectTimeBucketCount("Network.Cellular.ESim.Usage.Duration",
+                                         time_spent_online_esim, 1);
 }
 
 TEST_F(CellularMetricsLoggerTest, CellularUsageCountDongleTest) {

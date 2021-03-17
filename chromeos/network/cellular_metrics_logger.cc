@@ -198,7 +198,7 @@ void CellularMetricsLogger::NetworkListChanged() {
 void CellularMetricsLogger::OnInitializationTimeout() {
   CheckForPSimActivationStateMetric();
   CheckForESimProfileStatusMetric();
-  CheckForCellularUsageCountMetric();
+  CheckForCellularUsageMetrics();
   CheckForCellularServiceCountMetric();
 }
 
@@ -225,7 +225,7 @@ void CellularMetricsLogger::LoggedInStateChanged() {
 void CellularMetricsLogger::NetworkConnectionStateChanged(
     const NetworkState* network) {
   DCHECK(network_state_handler_);
-  CheckForCellularUsageCountMetric();
+  CheckForCellularUsageMetrics();
 
   if (network->type().empty() ||
       !network->Matches(NetworkTypePattern::Cellular())) {
@@ -441,7 +441,7 @@ void CellularMetricsLogger::CheckForCellularServiceCountMetric() {
   is_service_count_logged_ = true;
 }
 
-void CellularMetricsLogger::CheckForCellularUsageCountMetric() {
+void CellularMetricsLogger::CheckForCellularUsageMetrics() {
   if (!is_cellular_available_)
     return;
 
@@ -482,14 +482,32 @@ void CellularMetricsLogger::CheckForCellularUsageCountMetric() {
   }
 
   if (!sim_type.has_value() || *sim_type == SimType::kPSim) {
-    if (usage != last_psim_cellular_usage_)
+    if (usage != last_psim_cellular_usage_) {
       UMA_HISTOGRAM_ENUMERATION("Network.Cellular.PSim.Usage.Count", usage);
+      if (last_psim_cellular_usage_ ==
+          CellularUsage::kConnectedAndOnlyNetwork) {
+        UMA_HISTOGRAM_LONG_TIMES(
+            "Network.Cellular.PSim.Usage.Duration",
+            base::Time::Now() - *last_psim_usage_change_timestamp_);
+      }
+    }
+
+    last_psim_usage_change_timestamp_ = base::Time::Now();
     last_psim_cellular_usage_ = usage;
   }
 
   if (!sim_type.has_value() || *sim_type == SimType::kESim) {
-    if (usage != last_esim_cellular_usage_)
+    if (usage != last_esim_cellular_usage_) {
       UMA_HISTOGRAM_ENUMERATION("Network.Cellular.ESim.Usage.Count", usage);
+      if (last_esim_cellular_usage_ ==
+          CellularUsage::kConnectedAndOnlyNetwork) {
+        UMA_HISTOGRAM_LONG_TIMES(
+            "Network.Cellular.ESim.Usage.Duration",
+            base::Time::Now() - *last_esim_usage_change_timestamp_);
+      }
+    }
+
+    last_esim_usage_change_timestamp_ = base::Time::Now();
     last_esim_cellular_usage_ = usage;
   }
 }
