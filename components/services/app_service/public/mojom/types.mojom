@@ -68,6 +68,10 @@ struct App {
   // be handled by this app. One app can have multiple intent filters.
   array<IntentFilter> intent_filters;
 
+  // Whether the app can be free resized. If this is true, various resizing
+  // operations will be restricted.
+  OptionalBool resize_locked;
+
   // When adding new fields, also update the Merge method and other helpers in
   // components/services/app_service/public/cpp/app_update.*
 };

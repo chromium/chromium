@@ -107,6 +107,9 @@ class AppServiceImpl : public apps::mojom::AppService {
       apps::mojom::AppType app_type,
       const std::string& app_id,
       apps::mojom::IntentFilterPtr intent_filter) override;
+  void SetResizeLocked(apps::mojom::AppType app_type,
+                       const std::string& app_id,
+                       apps::mojom::OptionalBool locked) override;
 
   // Retern the preferred_apps_ for testing.
   PreferredAppsList& GetPreferredAppsForTesting();

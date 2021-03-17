@@ -129,6 +129,12 @@ interface AppService {
       AppType app_type,
       string app_id,
       IntentFilter intent_filter);
+
+  // Enables resize lock mode for the app identified by |app_id|.
+  SetResizeLocked(
+      AppType app_type,
+      string app_id,
+      OptionalBool locked);
 };
 
 interface Publisher {
@@ -221,6 +227,11 @@ interface Publisher {
       IntentFilter intent_filter,
       Intent intent,
       ReplacedAppPreferences replaced_app_preferences);
+
+  // Enables resize lock mode for the app identified by |app_id|.
+  SetResizeLocked(
+      string app_id,
+      OptionalBool locked);
 };
 
 // Subscriber works as a proxy, to receive a stream of apps from publishers,

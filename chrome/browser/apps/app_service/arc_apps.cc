@@ -41,6 +41,7 @@
 #include "components/arc/arc_util.h"
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/mojom/app_permissions.mojom.h"
+#include "components/arc/mojom/compatibility_mode.mojom.h"
 #include "components/arc/mojom/file_system.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/full_restore/app_launch_info.h"
@@ -437,6 +438,37 @@ apps::mojom::WindowInfoPtr SetSessionId(
   return window_info;
 }
 
+apps::mojom::OptionalBool IsResizeLocked(ArcAppListPrefs* prefs,
+                                         const std::string& app_id) {
+  // Set kUnknown to resize lock state until the Mojo connection to ARC++ has
+  // been established. This prevents Chrome and ARC++ from having inconsistent
+  // states.
+  auto* arc_service_manager = arc::ArcServiceManager::Get();
+  if (!arc_service_manager) {
+    return apps::mojom::OptionalBool::kUnknown;
+  }
+  // Check if |SetResizeLockState| is available to see if Android is ready to
+  // be synchronized. Otherwise we need to hide the corresponding setting by
+  // returning unknown.
+  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_service_manager->arc_bridge_service()->compatibility_mode(),
+      SetResizeLockState);
+  if (!instance) {
+    return apps::mojom::OptionalBool::kUnknown;
+  }
+
+  auto resize_lock_state = prefs->GetResizeLockState(app_id);
+  switch (resize_lock_state) {
+    case arc::mojom::ArcResizeLockState::ON:
+      return apps::mojom::OptionalBool::kTrue;
+    case arc::mojom::ArcResizeLockState::OFF:
+      return apps::mojom::OptionalBool::kFalse;
+    case arc::mojom::ArcResizeLockState::UNDEFINED:
+    case arc::mojom::ArcResizeLockState::READY:
+      return apps::mojom::OptionalBool::kUnknown;
+  }
+}
+
 }  // namespace
 
 namespace apps {
@@ -788,6 +820,20 @@ void ArcApps::SetPermission(const std::string& app_id,
                                              permission_type);
     }
   }
+}
+
+void ArcApps::SetResizeLocked(const std::string& app_id,
+                              apps::mojom::OptionalBool locked) {
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
+  if (!prefs) {
+    return;
+  }
+  if (locked == apps::mojom::OptionalBool::kUnknown) {
+    return;
+  }
+  prefs->SetResizeLockState(app_id, locked == apps::mojom::OptionalBool::kTrue
+                                        ? arc::mojom::ArcResizeLockState::ON
+                                        : arc::mojom::ArcResizeLockState::OFF);
 }
 
 void ArcApps::Uninstall(const std::string& app_id,
@@ -1306,6 +1352,7 @@ apps::mojom::AppPtr ArcApps::Convert(ArcAppListPrefs* prefs,
                        ? apps::mojom::OptionalBool::kTrue
                        : apps::mojom::OptionalBool::kFalse;
   app->paused = paused;
+  app->resize_locked = IsResizeLocked(prefs, app_id);
 
   std::unique_ptr<ArcAppListPrefs::PackageInfo> package =
       prefs->GetPackage(app_info.package_name);

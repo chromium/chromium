@@ -436,6 +436,14 @@ void AppServiceProxy::UnpauseApps(const std::set<std::string>& app_ids) {
     app_service_->UnpauseApps(app_type, app_id);
   }
 }
+
+void AppServiceProxy::SetResizeLocked(const std::string& app_id,
+                                      apps::mojom::OptionalBool locked) {
+  if (app_service_.is_connected()) {
+    apps::mojom::AppType app_type = app_registry_cache_.GetAppType(app_id);
+    app_service_->SetResizeLocked(app_type, app_id, locked);
+  }
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void AppServiceProxy::StopApp(const std::string& app_id) {

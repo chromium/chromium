@@ -660,8 +660,7 @@ void ArcAppListPrefs::SetResizeLockState(const std::string& app_id,
   base::DictionaryValue* app_dict = update.Get();
   app_dict->SetInteger(kResizeLockState, static_cast<int32_t>(state));
 
-  for (auto& observer : observer_list_)
-    observer.OnResizeLockStateChanged(app_id, state);
+  NotifyAppStatesChanged(app_id);
 }
 
 void ArcAppListPrefs::AddObserver(Observer* observer) {

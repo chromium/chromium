@@ -194,6 +194,10 @@ class AppServiceProxy : public KeyedService,
   // Unpauses the apps from the paused status. AppService sets the paused status
   // as false directly and removes the paused app icon effect.
   void UnpauseApps(const std::set<std::string>& app_ids);
+
+  // Set whether resize lock is enabled for the app identified by |app_id|.
+  void SetResizeLocked(const std::string& app_id,
+                       apps::mojom::OptionalBool locked);
 #endif
 
   // Stops the current running app for the given |app_id|.

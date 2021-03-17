@@ -164,4 +164,9 @@ void PublisherBase::OnPreferredAppSet(
   NOTIMPLEMENTED();
 }
 
+void PublisherBase::SetResizeLocked(const std::string& app_id,
+                                    apps::mojom::OptionalBool locked) {
+  NOTIMPLEMENTED();
+}
+
 }  // namespace apps

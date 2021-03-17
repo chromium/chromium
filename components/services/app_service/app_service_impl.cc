@@ -408,6 +408,16 @@ void AppServiceImpl::RemovePreferredAppForFilter(
   LogPreferredAppUpdateAction(PreferredAppsUpdateAction::kDeleteForFilter);
 }
 
+void AppServiceImpl::SetResizeLocked(apps::mojom::AppType app_type,
+                                     const std::string& app_id,
+                                     mojom::OptionalBool locked) {
+  auto iter = publishers_.find(app_type);
+  if (iter == publishers_.end()) {
+    return;
+  }
+  iter->second->SetResizeLocked(app_id, locked);
+}
+
 PreferredAppsList& AppServiceImpl::GetPreferredAppsForTesting() {
   return preferred_apps_;
 }

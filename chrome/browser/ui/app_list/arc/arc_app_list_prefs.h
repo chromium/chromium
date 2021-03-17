@@ -193,10 +193,6 @@ class ArcAppListPrefs : public KeyedService,
     // Notifies that task has been activated and moved to the front.
     virtual void OnTaskSetActive(int32_t task_id) {}
 
-    // Notifies that the resize lock state has changed.
-    virtual void OnResizeLockStateChanged(
-        const std::string& app_id,
-        arc::mojom::ArcResizeLockState state) {}
     virtual void OnNotificationsEnabledChanged(
         const std::string& package_name, bool enabled) {}
     // Notifies that package has been installed. This may be called in two

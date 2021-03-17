@@ -97,6 +97,8 @@ class ArcApps : public KeyedService,
                            apps::mojom::WindowInfoPtr window_info) override;
   void SetPermission(const std::string& app_id,
                      apps::mojom::PermissionPtr permission) override;
+  void SetResizeLocked(const std::string& app_id,
+                       apps::mojom::OptionalBool locked) override;
   void Uninstall(const std::string& app_id,
                  apps::mojom::UninstallSource uninstall_source,
                  bool clear_site_data,

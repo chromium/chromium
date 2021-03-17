@@ -81,6 +81,9 @@ class AppUpdateTest : public testing::Test {
   std::vector<apps::mojom::IntentFilterPtr> expect_intent_filters_;
   bool expect_intent_filters_changed_;
 
+  apps::mojom::OptionalBool expect_resize_locked_;
+  bool expect_resize_locked_changed_;
+
   AccountId account_id_ = AccountId::FromUserEmail("test@gmail.com");
 
   static constexpr uint32_t kPermissionTypeLocation = 100;
@@ -118,6 +121,7 @@ class AppUpdateTest : public testing::Test {
     expect_has_badge_changed_ = false;
     expect_paused_changed_ = false;
     expect_intent_filters_changed_ = false;
+    expect_resize_locked_changed_ = false;
   }
 
   void CheckExpects(const apps::AppUpdate& u) {
@@ -188,6 +192,9 @@ class AppUpdateTest : public testing::Test {
     EXPECT_EQ(expect_intent_filters_, u.IntentFilters());
     EXPECT_EQ(expect_intent_filters_changed_, u.IntentFiltersChanged());
 
+    EXPECT_EQ(expect_resize_locked_, u.ResizeLocked());
+    EXPECT_EQ(expect_resize_locked_changed_, u.ResizeLockedChanged());
+
     EXPECT_EQ(account_id_, u.AccountId());
   }
 
@@ -220,6 +227,7 @@ class AppUpdateTest : public testing::Test {
     expect_has_badge_ = apps::mojom::OptionalBool::kUnknown;
     expect_paused_ = apps::mojom::OptionalBool::kUnknown;
     expect_intent_filters_.clear();
+    expect_resize_locked_ = apps::mojom::OptionalBool::kUnknown;
     ExpectNoChange();
     CheckExpects(u);
 
@@ -756,6 +764,28 @@ class AppUpdateTest : public testing::Test {
       delta->intent_filters.push_back(intent_filter.Clone());
       expect_intent_filters_.push_back(intent_filter.Clone());
       expect_intent_filters_changed_ = true;
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      ExpectNoChange();
+      CheckExpects(u);
+    }
+
+    // ResizeLocked tests.
+
+    if (state) {
+      state->resize_locked = apps::mojom::OptionalBool::kFalse;
+      expect_resize_locked_ = apps::mojom::OptionalBool::kFalse;
+      expect_resize_locked_changed_ = false;
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      delta->resize_locked = apps::mojom::OptionalBool::kTrue;
+      expect_resize_locked_ = apps::mojom::OptionalBool::kTrue;
+      expect_resize_locked_changed_ = true;
       CheckExpects(u);
     }
 
