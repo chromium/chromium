@@ -10,6 +10,7 @@
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -262,6 +263,36 @@ TEST(ContentSecurityPolicy, ParseFrameAncestors) {
 }
 
 TEST(ContentSecurityPolicy, ParseDirectives) {
+  // Directive names are case-insensitive.
+  {
+    scoped_refptr<net::HttpResponseHeaders> headers(
+        new net::HttpResponseHeaders("HTTP/1.1 200 OK"));
+    headers->SetHeader("Content-Security-Policy",
+                       "ScrIPT-sRc 'none'; img-src 'none'");
+    std::vector<mojom::ContentSecurityPolicyPtr> policies;
+    AddContentSecurityPolicyFromHeaders(*headers, GURL("https://example.com/"),
+                                        &policies);
+    EXPECT_EQ(2U, policies[0]->directives.size());
+    EXPECT_EQ(2U, policies[0]->raw_directives.size());
+
+    EXPECT_EQ(policies[0]->raw_directives[mojom::CSPDirectiveName::ScriptSrc],
+              "'none'");
+    auto& script_src =
+        policies[0]->directives[mojom::CSPDirectiveName::ScriptSrc];
+    EXPECT_EQ(script_src->sources.size(), 0U);
+    EXPECT_EQ(script_src->allow_self, false);
+    EXPECT_EQ(script_src->allow_star, false);
+
+    EXPECT_EQ(policies[0]->raw_directives[mojom::CSPDirectiveName::ImgSrc],
+              "'none'");
+    auto& img_src = policies[0]->directives[mojom::CSPDirectiveName::ScriptSrc];
+    EXPECT_EQ(img_src->sources.size(), 0U);
+    EXPECT_EQ(img_src->allow_self, false);
+    EXPECT_EQ(img_src->allow_star, false);
+
+    EXPECT_THAT(policies[0]->parsing_errors, testing::IsEmpty());
+  }
+
   // One duplicate directive.
   {
     scoped_refptr<net::HttpResponseHeaders> headers(

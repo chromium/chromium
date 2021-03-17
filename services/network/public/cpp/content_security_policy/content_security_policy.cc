@@ -1282,63 +1282,63 @@ bool Subsumes(const mojom::ContentSecurityPolicy& policy_a,
 }
 
 CSPDirectiveName ToCSPDirectiveName(const std::string& name) {
-  if (name == "base-uri")
+  if (base::LowerCaseEqualsASCII(name, "base-uri"))
     return CSPDirectiveName::BaseURI;
-  if (name == "block-all-mixed-content")
+  if (base::LowerCaseEqualsASCII(name, "block-all-mixed-content"))
     return CSPDirectiveName::BlockAllMixedContent;
-  if (name == "child-src")
+  if (base::LowerCaseEqualsASCII(name, "child-src"))
     return CSPDirectiveName::ChildSrc;
-  if (name == "connect-src")
+  if (base::LowerCaseEqualsASCII(name, "connect-src"))
     return CSPDirectiveName::ConnectSrc;
-  if (name == "default-src")
+  if (base::LowerCaseEqualsASCII(name, "default-src"))
     return CSPDirectiveName::DefaultSrc;
-  if (name == "frame-ancestors")
+  if (base::LowerCaseEqualsASCII(name, "frame-ancestors"))
     return CSPDirectiveName::FrameAncestors;
-  if (name == "frame-src")
+  if (base::LowerCaseEqualsASCII(name, "frame-src"))
     return CSPDirectiveName::FrameSrc;
-  if (name == "font-src")
+  if (base::LowerCaseEqualsASCII(name, "font-src"))
     return CSPDirectiveName::FontSrc;
-  if (name == "form-action")
+  if (base::LowerCaseEqualsASCII(name, "form-action"))
     return CSPDirectiveName::FormAction;
-  if (name == "img-src")
+  if (base::LowerCaseEqualsASCII(name, "img-src"))
     return CSPDirectiveName::ImgSrc;
-  if (name == "manifest-src")
+  if (base::LowerCaseEqualsASCII(name, "manifest-src"))
     return CSPDirectiveName::ManifestSrc;
-  if (name == "media-src")
+  if (base::LowerCaseEqualsASCII(name, "media-src"))
     return CSPDirectiveName::MediaSrc;
-  if (name == "object-src")
+  if (base::LowerCaseEqualsASCII(name, "object-src"))
     return CSPDirectiveName::ObjectSrc;
-  if (name == "prefetch-src")
+  if (base::LowerCaseEqualsASCII(name, "prefetch-src"))
     return CSPDirectiveName::PrefetchSrc;
-  if (name == "report-uri")
+  if (base::LowerCaseEqualsASCII(name, "report-uri"))
     return CSPDirectiveName::ReportURI;
-  if (name == "require-trusted-types-for")
+  if (base::LowerCaseEqualsASCII(name, "require-trusted-types-for"))
     return CSPDirectiveName::RequireTrustedTypesFor;
-  if (name == "sandbox")
+  if (base::LowerCaseEqualsASCII(name, "sandbox"))
     return CSPDirectiveName::Sandbox;
-  if (name == "script-src")
+  if (base::LowerCaseEqualsASCII(name, "script-src"))
     return CSPDirectiveName::ScriptSrc;
-  if (name == "script-src-attr")
+  if (base::LowerCaseEqualsASCII(name, "script-src-attr"))
     return CSPDirectiveName::ScriptSrcAttr;
-  if (name == "script-src-elem")
+  if (base::LowerCaseEqualsASCII(name, "script-src-elem"))
     return CSPDirectiveName::ScriptSrcElem;
-  if (name == "style-src")
+  if (base::LowerCaseEqualsASCII(name, "style-src"))
     return CSPDirectiveName::StyleSrc;
-  if (name == "style-src-attr")
+  if (base::LowerCaseEqualsASCII(name, "style-src-attr"))
     return CSPDirectiveName::StyleSrcAttr;
-  if (name == "style-src-elem")
+  if (base::LowerCaseEqualsASCII(name, "style-src-elem"))
     return CSPDirectiveName::StyleSrcElem;
-  if (name == "treat-as-public-address")
+  if (base::LowerCaseEqualsASCII(name, "treat-as-public-address"))
     return CSPDirectiveName::TreatAsPublicAddress;
-  if (name == "trusted-types")
+  if (base::LowerCaseEqualsASCII(name, "trusted-types"))
     return CSPDirectiveName::TrustedTypes;
-  if (name == "upgrade-insecure-requests")
+  if (base::LowerCaseEqualsASCII(name, "upgrade-insecure-requests"))
     return CSPDirectiveName::UpgradeInsecureRequests;
-  if (name == "worker-src")
+  if (base::LowerCaseEqualsASCII(name, "worker-src"))
     return CSPDirectiveName::WorkerSrc;
-  if (name == "report-to")
+  if (base::LowerCaseEqualsASCII(name, "report-to"))
     return CSPDirectiveName::ReportTo;
-  if (name == "navigate-to")
+  if (base::LowerCaseEqualsASCII(name, "navigate-to"))
     return CSPDirectiveName::NavigateTo;
 
   return CSPDirectiveName::Unknown;
