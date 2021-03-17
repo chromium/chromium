@@ -1564,8 +1564,14 @@ void LocalFrameView::SetNeedsCompositingUpdate(
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
     return;
   if (auto* layout_view = GetLayoutView()) {
-    if (frame_->GetDocument()->IsActive())
-      layout_view->Compositor()->SetNeedsCompositingUpdate(update_type);
+    if (frame_->GetDocument()->IsActive()) {
+      auto* compositor = layout_view->Compositor();
+      compositor->SetNeedsCompositingUpdate(update_type);
+      // Even if the frame is throttlable, we may still need to decomposite it
+      // in response to a visibility change.
+      if (compositor->StaleInCompositingMode())
+        needs_forced_compositing_update_ = true;
+    }
   }
 }
 
