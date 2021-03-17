@@ -94,7 +94,7 @@ def declare_bucket(milestone_vars, *, branch_selector = branches.MAIN):
 
 def set_defaults(milestone_vars, **kwargs):
     default_values = dict(
-        add_to_console_view = milestone_vars.is_master,
+        add_to_console_view = milestone_vars.is_main,
         bucket = milestone_vars.ci_bucket,
         build_numbers = True,
         configure_kitchen = True,
@@ -104,7 +104,7 @@ def set_defaults(milestone_vars, **kwargs):
         execution_timeout = 3 * time.hour,
         os = builders.os.LINUX_DEFAULT,
         pool = "luci.chromium.ci",
-        project_trigger_overrides = {"chromium": settings.project} if not settings.is_master else None,
+        project_trigger_overrides = {"chromium": settings.project} if not settings.is_main else None,
         repo = "https://chromium.googlesource.com/chromium/src",
         refs = [milestone_vars.ref],
         service_account = "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",

@@ -98,7 +98,7 @@ def declare_bucket(milestone_vars, *, branch_selector = branches.MAIN):
 
 def set_defaults(milestone_vars, **kwargs):
     default_values = dict(
-        add_to_list_view = milestone_vars.is_master,
+        add_to_list_view = milestone_vars.is_main,
         bucket = milestone_vars.try_bucket,
         build_numbers = True,
         caches = [

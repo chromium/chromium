@@ -16,18 +16,18 @@ without error.
 load("@stdlib//internal/luci/proto.star", "scheduler_pb")
 load("//project.star", "settings")
 
-# For the chromium project (settings.is_master is True), we have bucket-based
+# For the chromium project (settings.is_main is True), we have bucket-based
 # milestones for <=M85. We create a no-op job that prefixes the ci bucket name
 # for those milestones. Combined with setting the bucketed_triggers property,
 # this makes it safe to issue triggers for the builders that don't exist for the
 # milestone.
-# For the chromium milestone projects (settings.is_master is False), the
+# For the chromium milestone projects (settings.is_main is False), the
 # milestone project will use the same bucket names, so we create a no-op job for
 # the 'ci' bucket.
 _BRANCH_NOOP_CONFIG = struct(
     buckets = ["ci-m84", "ci-m85"],
     fmt = "{bucket}-{builder}",
-) if settings.is_master else struct(
+) if settings.is_main else struct(
     buckets = ["ci"],
     fmt = "{builder}",
 )

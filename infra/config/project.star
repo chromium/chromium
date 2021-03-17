@@ -4,7 +4,7 @@
 
 settings = struct(
     project = "chromium-m86",
-    is_master = False,
+    is_main = False,
     is_lts_branch = True,
     ref = "refs/branch-heads/4240",
     ci_bucket = "ci",
@@ -23,8 +23,8 @@ settings = struct(
 )
 
 def _validate_settings():
-    if settings.is_master and settings.is_lts_branch:
-        fail("is_master and is_lts_branch can't both be True")
+    if settings.is_main and settings.is_lts_branch:
+        fail("is_main and is_lts_branch can't both be True")
 
 _validate_settings()
 
@@ -37,7 +37,7 @@ def _generate_project_pyl(ctx):
             # defined for non-existent builders
             # On branches, we don't want to re-generate the source side specs as
             # that would increase branch day toil and complicate cherry-picks
-            validate_source_side_specs_have_builder = settings.is_master,
+            validate_source_side_specs_have_builder = settings.is_main,
         )),
         "",
     ])

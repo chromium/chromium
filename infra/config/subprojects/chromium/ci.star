@@ -9,7 +9,7 @@ load("//console-header.star", "HEADER")
 load("//project.star", "settings")
 
 def main_console_if_on_branch():
-    return None if settings.is_master else settings.main_console_name
+    return None if settings.is_main else settings.main_console_name
 
 ci.set_defaults(
     settings,

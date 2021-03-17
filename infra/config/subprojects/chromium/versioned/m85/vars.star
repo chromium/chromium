@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 vars = struct(
-    is_master = False,
+    is_main = False,
     ref = "refs/branch-heads/4183",
     ci_bucket = "ci-m85",
     ci_poller = "m85-gitiles-trigger",
