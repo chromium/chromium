@@ -2676,7 +2676,6 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
     SetupSpaceBuilderForFragmentation(ConstraintSpace(), child,
                                       fragmentainer_offset_delta, &builder,
                                       is_new_fc);
-    builder.SetEarlyBreakAppeal(container_builder_.BreakAppeal());
   }
 
   return builder.ToConstraintSpace();

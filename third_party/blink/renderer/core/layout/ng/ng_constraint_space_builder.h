@@ -175,12 +175,6 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
 
   void SetIsInColumnBfc() { space_.EnsureRareData()->is_in_column_bfc = true; }
 
-  void SetEarlyBreakAppeal(NGBreakAppeal appeal) {
-    if (appeal == kBreakAppealLastResort && !space_.rare_data_)
-      return;
-    space_.EnsureRareData()->early_break_appeal = appeal;
-  }
-
   // is_legacy_table_cell must always be assigned if is_table_cell is true.
   void SetIsTableCell(bool is_table_cell, bool is_legacy_table_cell) {
     space_.bitfields_.is_table_cell = is_table_cell;

@@ -465,7 +465,6 @@ NGFieldsetLayoutAlgorithm::CreateConstraintSpaceForFieldsetContent(
     SetupSpaceBuilderForFragmentation(ConstraintSpace(), fieldset_content,
                                       block_offset, &builder,
                                       /* is_new_fc */ true);
-    builder.SetEarlyBreakAppeal(container_builder_.BreakAppeal());
   }
   return builder.ToConstraintSpace();
 }

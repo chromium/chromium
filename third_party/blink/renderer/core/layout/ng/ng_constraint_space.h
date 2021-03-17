@@ -496,15 +496,6 @@ class CORE_EXPORT NGConstraintSpace final {
     return HasRareData() && rare_data_->is_in_column_bfc;
   }
 
-  // Get the appeal of the best breakpoint found so far. When progressing
-  // through layout, we know that we don't need to consider less appealing
-  // breakpoints than this.
-  NGBreakAppeal EarlyBreakAppeal() const {
-    if (!HasRareData())
-      return kBreakAppealLastResort;
-    return static_cast<NGBreakAppeal>(rare_data_->early_break_appeal);
-  }
-
   // Returns if this node is a table cell child, and which table layout mode
   // is occurring.
   NGTableCellChildLayoutMode TableCellChildLayoutMode() const {
@@ -756,8 +747,7 @@ class CORE_EXPORT NGConstraintSpace final {
           block_direction_fragmentation_type(
               static_cast<unsigned>(kFragmentNone)),
           is_inside_balanced_columns(false),
-          is_in_column_bfc(false),
-          early_break_appeal(kBreakAppealLastResort) {}
+          is_in_column_bfc(false) {}
     RareData(const RareData& other)
         : percentage_resolution_size(other.percentage_resolution_size),
           replaced_percentage_resolution_block_size(
@@ -773,8 +763,7 @@ class CORE_EXPORT NGConstraintSpace final {
           block_direction_fragmentation_type(
               other.block_direction_fragmentation_type),
           is_inside_balanced_columns(other.is_inside_balanced_columns),
-          is_in_column_bfc(other.is_in_column_bfc),
-          early_break_appeal(other.early_break_appeal) {
+          is_in_column_bfc(other.is_in_column_bfc) {
       switch (data_union_type) {
         case kNone:
           break;
@@ -838,8 +827,7 @@ class CORE_EXPORT NGConstraintSpace final {
           block_direction_fragmentation_type !=
               other.block_direction_fragmentation_type ||
           is_inside_balanced_columns != other.is_inside_balanced_columns ||
-          is_in_column_bfc != other.is_in_column_bfc ||
-          early_break_appeal != other.early_break_appeal)
+          is_in_column_bfc != other.is_in_column_bfc)
         return false;
 
       switch (data_union_type) {
@@ -868,8 +856,7 @@ class CORE_EXPORT NGConstraintSpace final {
           fragmentainer_offset_at_bfc || is_restricted_block_size_table_cell ||
           hide_table_cell_if_empty ||
           block_direction_fragmentation_type != kFragmentNone ||
-          is_inside_balanced_columns || is_in_column_bfc ||
-          early_break_appeal != kBreakAppealLastResort)
+          is_inside_balanced_columns || is_in_column_bfc)
         return false;
 
       switch (data_union_type) {
@@ -1117,7 +1104,6 @@ class CORE_EXPORT NGConstraintSpace final {
     unsigned block_direction_fragmentation_type : 2;
     unsigned is_inside_balanced_columns : 1;
     unsigned is_in_column_bfc : 1;
-    unsigned early_break_appeal : 2;  // NGBreakAppeal
    private:
     struct BlockData {
       bool MaySkipLayout(const BlockData& other) const {
