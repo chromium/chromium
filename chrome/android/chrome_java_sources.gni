@@ -813,7 +813,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/notifications/scheduler/NotificationSchedulerTask.java",
   "java/src/org/chromium/chrome/browser/notifications/settings/NotificationSettings.java",
   "java/src/org/chromium/chrome/browser/ntp/FakeRecentlyClosedTabManager.java",
-  "java/src/org/chromium/chrome/browser/ntp/FakeboxDelegate.java",
   "java/src/org/chromium/chrome/browser/ntp/ForeignSessionHelper.java",
   "java/src/org/chromium/chrome/browser/ntp/IncognitoCookieControlsManager.java",
   "java/src/org/chromium/chrome/browser/ntp/IncognitoDescriptionView.java",

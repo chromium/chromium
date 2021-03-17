@@ -858,8 +858,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      */
     private void maybeFocusOmnibox(Layout layout, Tab tab) {
         if (StartSurfaceConfiguration.consumeFocusOnOmnibox(tab, layout)) {
-            if (mLocationBar.getFakeboxDelegate() == null
-                    || mLocationBar.getFakeboxDelegate().isUrlBarFocused()) {
+            if (mLocationBar.getOmniboxStub() == null
+                    || mLocationBar.getOmniboxStub().isUrlBarFocused()) {
                 return;
             }
             setUrlBarFocus(true, OmniboxFocusReason.FOCUS_ON_NEW_TAB);

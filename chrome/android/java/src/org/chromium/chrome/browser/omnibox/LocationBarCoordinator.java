@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.locale.LocaleManager;
-import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusView;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
@@ -301,12 +300,6 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
     @Override
     public VoiceRecognitionHandler getVoiceRecognitionHandler() {
         return mLocationBarMediator.getVoiceRecognitionHandler();
-    }
-
-    @Nullable
-    @Override
-    public FakeboxDelegate getFakeboxDelegate() {
-        return getOmniboxStub();
     }
 
     @Nullable

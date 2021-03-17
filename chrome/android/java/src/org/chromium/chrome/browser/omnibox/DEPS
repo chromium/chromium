@@ -2,6 +2,7 @@ noparent = True
 
 include_rules = [
   "-chrome/android/java/src/org/chromium/chrome/browser",
+  "+chrome/android/java/src/org/chromium/chrome/browser/omnibox",
 
   "+base/android/java/src/org/chromium/base",
   "+chrome/browser/ui/android",
@@ -22,7 +23,6 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/lens/LensQueryParams.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/native_page/NativePageFactory.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/night_mode/NightModeUtils.java",
-  "+chrome/android/java/src/org/chromium/chrome/browser/ntp/FakeboxDelegate.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/ntp/NewTabPageUma.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/offlinepages/OfflinePageUtils.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/page_info/ChromePageInfoControllerDelegate.java",
