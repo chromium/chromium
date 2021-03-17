@@ -4401,11 +4401,6 @@
     "expiry_milestone": 82
   },
   {
-    "name": "reduced-referrer-granularity",
-    "owners": [ "davidvc", "mkwst", "jochen" ],
-    "expiry_milestone": 87
-  },
-  {
     "name": "reengagement-notification",
     "owners": [ "dtrainor", "xingliu" ],
     "expiry_milestone": 90
