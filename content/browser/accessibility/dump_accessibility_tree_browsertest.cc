@@ -663,9 +663,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaColAttr) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaColumnHeader) {
-  // TODO(crbug.com/1152126): Enable extra mac nodes in AXTree.
-  base::AutoReset<bool> disable_extra_mac_nodes(
-      &disable_extra_mac_nodes_for_testing_, true);
   RunAriaTest(FILE_PATH_LITERAL("aria-columnheader.html"));
 }
 
