@@ -14,6 +14,15 @@
 
 namespace full_restore {
 
+namespace {
+
+// Repeat timer interval between each checking that whether a task is created
+// for each app launching.
+constexpr base::TimeDelta kCheckCycleInterval =
+    base::TimeDelta::FromSeconds(30);
+
+}  // namespace
+
 ArcSaveHandler::ArcSaveHandler(const base::FilePath& profile_path)
     : profile_path_(profile_path) {}
 
@@ -25,7 +34,10 @@ void ArcSaveHandler::SaveAppLaunchInfo(AppLaunchInfoPtr app_launch_info) {
   // Save |app_launch_info| to |session_id_to_app_launch_info_|, and wait for
   // the ARC task to be created.
   int32_t session_id = app_launch_info->arc_session_id.value();
-  session_id_to_app_launch_info_[session_id] = std::move(app_launch_info);
+  session_id_to_app_launch_info_[session_id] =
+      std::make_pair(std::move(app_launch_info), base::TimeTicks::Now());
+
+  MaybeStartCheckTimer();
 }
 
 void ArcSaveHandler::ModifyWindowInfo(int task_id,
@@ -74,8 +86,10 @@ void ArcSaveHandler::OnTaskCreated(const std::string& app_id,
 
   task_id_to_app_id_[task_id] = app_id;
 
-  auto app_launch_info = std::move(it->second);
+  auto app_launch_info = std::move(it->second.first);
   session_id_to_app_launch_info_.erase(it);
+  if (session_id_to_app_launch_info_.empty())
+    check_timer_.Stop();
 
   app_launch_info->window_id = task_id;
   FullRestoreSaveHandler::GetInstance()->AddAppLaunchInfo(
@@ -112,6 +126,30 @@ int32_t ArcSaveHandler::GetArcSessionId() {
   }
 
   return ++session_id_;
+}
+
+void ArcSaveHandler::MaybeStartCheckTimer() {
+  if (!check_timer_.IsRunning()) {
+    check_timer_.Start(
+        FROM_HERE, kCheckCycleInterval,
+        base::BindRepeating(&ArcSaveHandler::CheckTasksForAppLaunching,
+                            weak_factory_.GetWeakPtr()));
+  }
+}
+
+void ArcSaveHandler::CheckTasksForAppLaunching() {
+  std::set<int32_t> session_ids;
+  for (const auto& it : session_id_to_app_launch_info_) {
+    base::TimeDelta time_delta = base::TimeTicks::Now() - it.second.second;
+    if (time_delta > kCheckCycleInterval)
+      session_ids.insert(it.first);
+  }
+
+  for (auto id : session_ids)
+    session_id_to_app_launch_info_.erase(id);
+
+  if (session_id_to_app_launch_info_.empty())
+    check_timer_.Stop();
 }
 
 }  // namespace full_restore

@@ -55,30 +55,51 @@ class FullRestoreSaveHandlerTestApi {
       const FullRestoreSaveHandlerTestApi&) = delete;
   ~FullRestoreSaveHandlerTestApi() = default;
 
-  const ArcSaveHandler* GetArcSaveHanderForTesting() const {
+  const ArcSaveHandler* GetArcSaveHander() const {
     DCHECK(save_handler_);
     return save_handler_->arc_save_handler_.get();
   }
 
-  const std::map<int32_t, FullRestoreSaveHandler::AppLaunchInfoPtr>&
-  GetArcSessionIdMapForTesting() const {
-    DCHECK(save_handler_);
-    ArcSaveHandler* arc_save_handler = save_handler_->arc_save_handler_.get();
-
+  const ArcSaveHandler::SessionIdMap& GetArcSessionIdMap() const {
+    const auto* arc_save_handler = GetArcSaveHander();
     DCHECK(arc_save_handler);
     return arc_save_handler->session_id_to_app_launch_info_;
   }
 
-  const std::map<int32_t, std::string>& GetArcTaskIdMapForTesting() const {
-    DCHECK(save_handler_);
-    ArcSaveHandler* arc_save_handler = save_handler_->arc_save_handler_.get();
-
+  const std::map<int32_t, std::string>& GetArcTaskIdMap() const {
+    const auto* arc_save_handler = GetArcSaveHander();
     DCHECK(arc_save_handler);
     return arc_save_handler->task_id_to_app_id_;
   }
 
+  void ModifyLaunchTime(int32_t session_id) {
+    auto& session_id_to_app_launch_info =
+        arc_save_handler()->session_id_to_app_launch_info_;
+    auto it = session_id_to_app_launch_info.find(session_id);
+    if (it == session_id_to_app_launch_info.end())
+      return;
+
+    // If there is no task created for the session id in 30 seconds, the session
+    // id record is removed. So set the record time as 31 seconds ago, so that
+    // CheckTasksForAppLaunching can remove the session id record to simulate
+    // the task is not created for the session id.
+    it->second.second = it->second.second - base::TimeDelta::FromSeconds(31);
+  }
+
+  base::RepeatingTimer* GetArcCheckTimer() {
+    return &arc_save_handler()->check_timer_;
+  }
+
+  void CheckArcTasks() { arc_save_handler()->CheckTasksForAppLaunching(); }
+
  private:
-  FullRestoreSaveHandler* save_handler_ = nullptr;
+  ArcSaveHandler* arc_save_handler() {
+    DCHECK(save_handler_);
+    DCHECK(save_handler_->arc_save_handler_.get());
+    return save_handler_->arc_save_handler_.get();
+  }
+
+  FullRestoreSaveHandler* save_handler_;
 };
 
 // Unit tests for restore data.
@@ -283,10 +304,9 @@ TEST_F(FullRestoreReadAndSaveTest, ArcWindowSaving) {
 
   // Add an ARC app launch info.
   AddArcAppLaunchInfo(GetPath());
-  const ArcSaveHandler* arc_save_handler =
-      test_api.GetArcSaveHanderForTesting();
+  const ArcSaveHandler* arc_save_handler = test_api.GetArcSaveHander();
   ASSERT_TRUE(arc_save_handler);
-  const auto& arc_session_id_map = test_api.GetArcSessionIdMapForTesting();
+  const auto& arc_session_id_map = test_api.GetArcSessionIdMap();
   EXPECT_EQ(1u, arc_session_id_map.size());
   auto session_it = arc_session_id_map.find(kArcSessionId1);
   EXPECT_TRUE(session_it != arc_session_id_map.end());
@@ -295,7 +315,7 @@ TEST_F(FullRestoreReadAndSaveTest, ArcWindowSaving) {
   // cleared.
   save_handler->OnTaskCreated(kAppId, kArcTaskId1, kArcSessionId1);
   EXPECT_TRUE(arc_session_id_map.empty());
-  const auto& task_id_map = test_api.GetArcTaskIdMapForTesting();
+  const auto& task_id_map = test_api.GetArcTaskIdMap();
   EXPECT_EQ(1u, task_id_map.size());
   auto task_id = task_id_map.find(kArcTaskId1);
   EXPECT_TRUE(task_id != task_id_map.end());
@@ -315,6 +335,47 @@ TEST_F(FullRestoreReadAndSaveTest, ArcWindowSaving) {
   EXPECT_TRUE(restore_data->app_id_to_launch_list().empty());
 }
 
+TEST_F(FullRestoreReadAndSaveTest, ArcLaunchWithoutTask) {
+  FullRestoreSaveHandler* save_handler = FullRestoreSaveHandler::GetInstance();
+  FullRestoreSaveHandlerTestApi test_api(save_handler);
+
+  save_handler->SetPrimaryProfilePath(GetPath());
+  base::OneShotTimer* timer = save_handler->GetTimerForTesting();
+
+  // Add an ARC app launch info.
+  AddArcAppLaunchInfo(GetPath());
+
+  // Verify the ARC app launch info is saved to |arc_session_id_map|.
+  const auto& arc_session_id_map = test_api.GetArcSessionIdMap();
+  EXPECT_EQ(1u, arc_session_id_map.size());
+  auto session_it = arc_session_id_map.find(kArcSessionId1);
+  EXPECT_TRUE(session_it != arc_session_id_map.end());
+
+  // Verify the ARC check timer starts running.
+  base::RepeatingTimer* arc_check_timer = test_api.GetArcCheckTimer();
+  EXPECT_TRUE(arc_check_timer->IsRunning());
+
+  // Simulate more than 30 seconds have passed, OnTaskCreated is not called, and
+  // the ARC check timer is expired to remove the ARC app launch info.
+  test_api.ModifyLaunchTime(kArcSessionId1);
+  test_api.CheckArcTasks();
+  EXPECT_TRUE(arc_session_id_map.empty());
+  EXPECT_TRUE(test_api.GetArcTaskIdMap().empty());
+  EXPECT_FALSE(arc_check_timer->IsRunning());
+
+  // Verify the timer in FullRestoreSaveHandler is not running, because there is
+  // no app launching info to save.
+  EXPECT_FALSE(timer->IsRunning());
+  task_environment().RunUntilIdle();
+
+  ReadFromFile(GetPath());
+
+  // Verify there is not restore data.
+  const auto* restore_data = GetRestoreData(GetPath());
+  ASSERT_TRUE(restore_data);
+  EXPECT_TRUE(restore_data->app_id_to_launch_list().empty());
+}
+
 TEST_F(FullRestoreReadAndSaveTest, ArcWindowRestore) {
   FullRestoreSaveHandler* save_handler = FullRestoreSaveHandler::GetInstance();
   FullRestoreSaveHandlerTestApi test_api(save_handler);
@@ -324,16 +385,20 @@ TEST_F(FullRestoreReadAndSaveTest, ArcWindowRestore) {
 
   // Add an ARC app launch info.
   AddArcAppLaunchInfo(GetPath());
-  const ArcSaveHandler* arc_save_handler =
-      test_api.GetArcSaveHanderForTesting();
+  const ArcSaveHandler* arc_save_handler = test_api.GetArcSaveHander();
   ASSERT_TRUE(arc_save_handler);
-  EXPECT_EQ(1u, test_api.GetArcSessionIdMapForTesting().size());
+  EXPECT_EQ(1u, test_api.GetArcSessionIdMap().size());
+
+  // Verify the ARC check timer starts running.
+  base::RepeatingTimer* arc_check_timer = test_api.GetArcCheckTimer();
+  EXPECT_TRUE(arc_check_timer->IsRunning());
 
   // Create a task. Since we have got the task, the arc session id map can be
   // cleared.
   save_handler->OnTaskCreated(kAppId, kArcTaskId1, kArcSessionId1);
-  EXPECT_TRUE(test_api.GetArcSessionIdMapForTesting().empty());
-  EXPECT_EQ(1u, test_api.GetArcTaskIdMapForTesting().size());
+  EXPECT_TRUE(test_api.GetArcSessionIdMap().empty());
+  EXPECT_EQ(1u, test_api.GetArcTaskIdMap().size());
+  EXPECT_FALSE(arc_check_timer->IsRunning());
 
   // Modify the window info.
   CreateWindowInfo(kArcTaskId1, kActivationIndex1, ash::AppType::ARC_APP);

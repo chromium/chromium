@@ -12,6 +12,8 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 
 namespace aura {
 class Window;
@@ -28,6 +30,8 @@ struct WindowInfo;
 class COMPONENT_EXPORT(FULL_RESTORE) ArcSaveHandler {
  public:
   using AppLaunchInfoPtr = std::unique_ptr<AppLaunchInfo>;
+  using SessionIdMap =
+      std::map<int32_t, std::pair<AppLaunchInfoPtr, base::TimeTicks>>;
 
   explicit ArcSaveHandler(const base::FilePath& profile_path);
   ArcSaveHandler(const ArcSaveHandler&) = delete;
@@ -61,13 +65,21 @@ class COMPONENT_EXPORT(FULL_RESTORE) ArcSaveHandler {
  private:
   friend class FullRestoreSaveHandlerTestApi;
 
+  // Starts the timer to check whether a task is created for the app launching
+  // (if timer isn't already running).
+  void MaybeStartCheckTimer();
+
+  // Check whether a task is created for each app launching. If not, remove the
+  // app launching record.
+  void CheckTasksForAppLaunching();
+
   // The user profile path for ARC app.
   base::FilePath profile_path_;
 
   int32_t session_id_ = 0;
 
   // The map from the ARC session id to the app launch info.
-  std::map<int32_t, AppLaunchInfoPtr> session_id_to_app_launch_info_;
+  SessionIdMap session_id_to_app_launch_info_;
 
   // The map from the task id to the app id. The task id is saved in the window
   // property. This map is used to find the app id when save the window info.
@@ -78,6 +90,13 @@ class COMPONENT_EXPORT(FULL_RESTORE) ArcSaveHandler {
   // windows, whose tasks have not been created. Once the task for the window is
   // created, the window is removed from |arc_window_candidates_|.
   std::set<aura::Window*> arc_window_candidates_;
+
+  // Timer used to whether a task is created.  App launching could have failed.
+  // If an app is launched without a task created, the launch record should be
+  // removed from |session_id_to_app_launch_info_|.
+  base::RepeatingTimer check_timer_;
+
+  base::WeakPtrFactory<ArcSaveHandler> weak_factory_{this};
 };
 
 }  // namespace full_restore
