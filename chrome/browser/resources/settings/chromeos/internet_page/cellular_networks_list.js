@@ -277,7 +277,7 @@ Polymer({
   /**
    * @private
    */
-  async onNetworksListChanged_() {
+  onNetworksListChanged_() {
     const mojom = chromeos.networkConfig.mojom;
 
     const pSimNetworks = [];
@@ -290,16 +290,7 @@ Polymer({
         continue;
       }
 
-      const managedPropertiesResponse =
-          await this.networkConfig_.getManagedProperties(network.guid);
-      if (!managedPropertiesResponse || !managedPropertiesResponse.result) {
-        console.error(
-            'Unable to get managed properties for network. guid=',
-            network.guid);
-        continue;
-      }
-
-      if (managedPropertiesResponse.result.typeProperties.cellular.eid) {
+      if (network.typeState.cellular && network.typeState.cellular.eid) {
         eSimNetworks.push(network);
       } else {
         pSimNetworks.push(network);

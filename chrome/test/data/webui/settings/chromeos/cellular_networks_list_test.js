@@ -71,8 +71,10 @@ suite('CellularNetworksList', function() {
 
     const eSimNetwork1 = OncMojo.getDefaultNetworkState(
         mojom.NetworkType.kCellular, 'cellular_esim1');
+    eSimNetwork1.typeState.cellular.eid = '11111111111111111111111111111111';
     const eSimNetwork2 = OncMojo.getDefaultNetworkState(
         mojom.NetworkType.kCellular, 'cellular_esim2');
+    eSimNetwork2.typeState.cellular.eid = '22222222222222222222222222222222';
     setNetworksForTest(mojom.NetworkType.kCellular, [
       OncMojo.getDefaultNetworkState(mojom.NetworkType.kCellular, 'cellular1'),
       OncMojo.getDefaultNetworkState(mojom.NetworkType.kCellular, 'cellular2'),
@@ -81,17 +83,6 @@ suite('CellularNetworksList', function() {
       OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether1'),
       OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether2'),
     ]);
-
-    const eSimManagedProperties1 = OncMojo.getDefaultManagedProperties(
-        mojom.NetworkType.kCellular, eSimNetwork1.guid, eSimNetwork1.name);
-    const eSimManagedProperties2 = OncMojo.getDefaultManagedProperties(
-        mojom.NetworkType.kCellular, eSimNetwork2.guid, eSimNetwork2.name);
-    eSimManagedProperties1.typeProperties.cellular.eid =
-        '11111111111111111111111111111111';
-    eSimManagedProperties2.typeProperties.cellular.eid =
-        '22222222222222222222222222222222';
-    mojoApi_.setManagedPropertiesForTest(eSimManagedProperties1);
-    mojoApi_.setManagedPropertiesForTest(eSimManagedProperties2);
 
     eSimManagerRemote.addEuiccForTest(2);
 
