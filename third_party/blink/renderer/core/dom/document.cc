@@ -8454,6 +8454,9 @@ void Document::ActivateForPrerendering() {
     loader->NotifyPrerenderingDocumentActivated();
 
   DispatchEvent(*Event::Create(event_type_names::kPrerenderingchange));
+
+  if (LocalFrame* frame = GetFrame())
+    frame->DidActivateForPrerendering();
 }
 
 bool Document::InStyleRecalc() const {

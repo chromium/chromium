@@ -543,6 +543,10 @@ interface LocalFrameHost {
   // correctly set the initial size of the frame in case of a cross-process
   // navigation.
   FrameSizeChanged(gfx.mojom.Size size);
+
+  // Used when a prerendered page is activated. Notifies the browser that the
+  // document in this frame dispatched the prerenderingchange event.
+  DidActivateForPrerendering();
 };
 
 // Implemented in Blink, this interface defines frame-specific methods that will

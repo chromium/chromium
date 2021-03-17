@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/barrier_closure.h"
 #include "base/base_switches.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
@@ -815,6 +816,9 @@ class MojoCapabilityControlTestContentBrowserClient
     cancel_receiver_.Bind(std::move(receiver));
   }
 
+  // mojom::TestInterfaceForDefer implementation.
+  void Ping(PingCallback callback) override { std::move(callback).Run(); }
+
   size_t GetDeferReceiverSetSize() { return defer_receiver_set_.size(); }
 
   size_t GetGrantReceiverSetSize() { return grant_receiver_set_.size(); }
@@ -848,6 +852,12 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, MojoCapabilityControl) {
   std::vector<RenderFrameHost*> frames =
       prerendered_render_frame_host->GetFramesInSubtree();
 
+  // A barrier closure to wait until a deferred interface is granted on all
+  // frames.
+  base::RunLoop run_loop;
+  auto barrier_closure =
+      base::BarrierClosure(frames.size(), run_loop.QuitClosure());
+
   mojo::RemoteSet<mojom::TestInterfaceForDefer> defer_remote_set;
   mojo::RemoteSet<mojom::TestInterfaceForGrant> grant_remote_set;
   for (auto* frame : frames) {
@@ -859,11 +869,16 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, MojoCapabilityControl) {
         rfhi->browser_interface_broker_receiver_for_testing();
     blink::mojom::BrowserInterfaceBroker* prerender_broker =
         bib.internal_state()->impl();
+
     // Try to bind a kDefer interface.
     mojo::Remote<mojom::TestInterfaceForDefer> prerender_defer_remote;
     prerender_broker->GetInterface(
         prerender_defer_remote.BindNewPipeAndPassReceiver());
+    // The barrier closure will be called after the deferred interface is
+    // granted.
+    prerender_defer_remote->Ping(barrier_closure);
     defer_remote_set.Add(std::move(prerender_defer_remote));
+
     // Try to bind a kGrant interface.
     mojo::Remote<mojom::TestInterfaceForGrant> prerender_grant_remote;
     prerender_broker->GetInterface(
@@ -879,6 +894,9 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, MojoCapabilityControl) {
   // Activate the prerendered page.
   NavigatePrimaryPage(kPrerenderingUrl);
   EXPECT_EQ(shell()->web_contents()->GetURL(), kPrerenderingUrl);
+
+  // Wait until the deferred interface is granted on all frames.
+  run_loop.Run();
   EXPECT_EQ(test_browser_client.GetDeferReceiverSetSize(), frames.size());
 
   SetBrowserClientForTesting(old_browser_client);
@@ -1430,6 +1448,11 @@ INSTANTIATE_TEST_SUITE_P(All,
 // Tests that access to local file system is deferred on prerendering pages.
 IN_PROC_BROWSER_TEST_P(PrerenderFileSystemAccessBrowserTest,
                        MAYBE_DeferFileSystemAccess) {
+  // TODO(https://crbug.com/1189017): Currently the MPArch doesn't fire the
+  // prerenderingchange event that is required for running this test.
+  if (IsMPArchActive())
+    return;
+
   base::FilePath temp_file;
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -1461,14 +1484,21 @@ IN_PROC_BROWSER_TEST_P(PrerenderFileSystemAccessBrowserTest,
   // Run a event loop so the page can fail the test.
   EXPECT_TRUE(ExecJs(prerender_render_frame_host, "runLoop();"));
 
-  // Inform the prerendered page that it will be activated and activate it.
-  EXPECT_TRUE(ExecJs(prerender_render_frame_host, "setWillActivate();"));
   NavigatePrimaryPage(kPrerenderingUrl);
 
-  // `temp_file` should be selected after `willActivate` was set to true,
-  // otherwise the prerendered page will throw an error.
+  // Wait for the completion of `startShowOpenFilePicker`.
   EXPECT_EQ(temp_file.BaseName().AsUTF8Unsafe(),
             EvalJs(prerender_render_frame_host, "result;"));
+
+  // Check the event sequence seen in the prerendered page.
+  EvalJsResult results = EvalJs(prerender_render_frame_host, "eventsSeen");
+  std::vector<std::string> eventsSeen;
+  for (auto& result : results.ExtractList())
+    eventsSeen.push_back(result.GetString());
+  EXPECT_THAT(eventsSeen, testing::ElementsAreArray(
+                              {"startShowOpenFilePicker (prerendering: true)",
+                               "prerenderingchange (prerendering: false)",
+                               "showOpenFilePicker (prerendering: false)"}));
 
   ui::SelectFileDialog::SetFactory(nullptr);
 }

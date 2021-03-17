@@ -777,6 +777,10 @@ class CORE_EXPORT LocalFrame final
     return window_controls_overlay_rect_;
   }
 
+  // Called after the document in this frame dispatched the prerenderingchange
+  // event.
+  void DidActivateForPrerendering();
+
  private:
   friend class FrameNavigationDisabler;
   FRIEND_TEST_ALL_PREFIXES(LocalFrameTest, CharacterIndexAtPointWithPinchZoom);

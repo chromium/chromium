@@ -2681,6 +2681,26 @@ void RenderFrameHostImpl::FrameSizeChanged(const gfx::Size& frame_size) {
   delegate_->FrameSizeChanged(this, frame_size);
 }
 
+void RenderFrameHostImpl::DidActivateForPrerendering() {
+  DCHECK(blink::features::IsPrerender2Enabled());
+  if (!is_notifying_activation_for_prerendering_) {
+    mojo::ReportBadMessage("RFHI: DidActivateForPrerendering is unexpected");
+    return;
+  }
+  is_notifying_activation_for_prerendering_ = false;
+
+  // The renderer calls `DidActivateForPrerendering()` to notify that it fired
+  // the prerenderingchange event on a document. The browser now runs any
+  // binders that were deferred during prerendering. This corresponds to the
+  // following steps of the activate algorithm:
+  //
+  // https://jeremyroman.github.io/alternate-loading-modes/#prerendering-browsing-context-activate
+  // Step 8.3.4. "For each steps in doc's post-prerendering activation steps
+  // list:"
+  // Step 8.3.4.1. "Run steps."
+  broker_.ReleaseMojoBinderPolicies();
+}
+
 void RenderFrameHostImpl::OnCreateChildFrame(
     int new_routing_id,
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
@@ -7910,10 +7930,17 @@ void RenderFrameHostImpl::OnPrerenderedPageActivated() {
   // crash. Return to DCHECKs after the bug is fixed.
   CHECK(blink::features::IsPrerender2Enabled());
   CHECK(blink::features::IsPrerenderWebContentsEnabled());
+
   // Update the |lifecycle_state_| to kActive on activation.
   DCHECK_EQ(lifecycle_state_, LifecycleState::kPrerendering);
   SetLifecycleState(LifecycleState::kActive);
-  ReleaseMojoBinderPoliciesForPrerendering();
+
+  // TODO(https://crbug.com/1183320): Loosen the policies of the mojo capability
+  // control during dispatching the prerenderingchange event in the Blink.
+
+  DCHECK(!is_notifying_activation_for_prerendering_);
+  is_notifying_activation_for_prerendering_ = true;
+
   for (auto& child : children_)
     child->current_frame_host()->OnPrerenderedPageActivated();
 }

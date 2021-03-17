@@ -51,6 +51,9 @@ class TestReceiverCollector : public mojom::TestInterfaceForDefer,
     cancel_receiver_.Bind(std::move(receiver));
   }
 
+  // mojom::TestInterfaceForDefer implementation.
+  void Ping(PingCallback callback) override { NOTREACHED(); }
+
   // Will be called when MojoBinderPolicyApplier::ApplyPolicyToBinder()
   // handles a kCancel binding request.
   void Cancel() { is_canceled_ = true; }

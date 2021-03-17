@@ -2493,6 +2493,11 @@ bool LocalFrame::SwapIn() {
   return client->SwapIn(WebFrame::FromCoreFrame(GetProvisionalOwnerFrame()));
 }
 
+void LocalFrame::DidActivateForPrerendering() {
+  DCHECK(RuntimeEnabledFeatures::Prerender2Enabled());
+  GetLocalFrameHostRemote().DidActivateForPrerendering();
+}
+
 WebURLLoader::DeferType LocalFrame::GetLoadDeferType() {
   if (GetPage()->GetPageScheduler()->IsInBackForwardCache() &&
       IsInflightNetworkRequestBackForwardCacheSupportEnabled()) {

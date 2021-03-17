@@ -222,6 +222,8 @@ void FakeLocalFrameHost::DidAddMessageToConsole(
 
 void FakeLocalFrameHost::FrameSizeChanged(const gfx::Size& frame_size) {}
 
+void FakeLocalFrameHost::DidActivateForPrerendering() {}
+
 void FakeLocalFrameHost::BindFrameHostReceiver(
     mojo::ScopedInterfaceEndpointHandle handle) {
   receiver_.Bind(mojo::PendingAssociatedReceiver<mojom::blink::LocalFrameHost>(

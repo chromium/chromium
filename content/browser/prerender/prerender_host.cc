@@ -320,6 +320,9 @@ class PrerenderHost::WebContentsPageHolder
 
     // Notify the renderer of activation to update the prerendering state and
     // dispatch the prerenderingchange event.
+    // TODO(nhiroki): Send a message to dispatch the prerenderingchange event
+    // per frame from RenderFrameHostImpl::OnPrerenderedPageActivated(), not
+    // per page.
     successor_web_contents->NotifyPrerenderingPageActivated();
 
     return nullptr;

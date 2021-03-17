@@ -1809,6 +1809,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const base::Optional<std::u16string>& source_id,
       const base::Optional<std::u16string>& untrusted_stack_trace) override;
   void FrameSizeChanged(const gfx::Size& frame_size) override;
+  void DidActivateForPrerendering() override;
 
   // blink::LocalMainFrameHost overrides:
   void ScaleFactorChanged(float scale) override;
@@ -3524,6 +3525,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Note that it is the initiator RenderFrameHost that stores these receivers.
   mojo::UniqueReceiverSet<blink::mojom::PrerenderProcessor>
       prerender_processor_receivers_;
+
+  // Prerender2:
+  // This is true while notifying the frame in the renderer of activation for
+  // prerendering.
+  bool is_notifying_activation_for_prerendering_ = false;
 
   // The current document's HTTP response head. This is used by back-forward
   // cache, for navigating a second time toward the same document.
