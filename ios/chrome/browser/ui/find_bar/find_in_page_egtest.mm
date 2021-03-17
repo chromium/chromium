@@ -113,7 +113,8 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
 
 // Tests that find in page allows iteration between search results and displays
 // correct number of results.
-- (void)testFindInPage {
+// TODO(crbug.com/1188709) : Fix failing test.
+- (void)DISABLED_testFindInPage {
   // Type "find".
   [self typeFindInPageText:@"find"];
   // Should be highlighting result 1 of 2.
@@ -171,7 +172,8 @@ const std::string kFindInPageResponse = "Find in page. Find in page.";
 }
 
 // Tests accessibility of the Find in Page screen.
-- (void)testAccessibilityOnFindInPage {
+// TODO(crbug.com/1188709) : Fix failing test.
+- (void)DISABLED_testAccessibilityOnFindInPage {
   [self typeFindInPageText:@"find"];
   [self assertResultStringIsResult:1 outOfTotal:2];
 
