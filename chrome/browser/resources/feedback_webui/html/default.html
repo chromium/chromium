@@ -5,24 +5,12 @@
   <meta charset="utf-8">
   <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
   <link rel="stylesheet" href="chrome://resources/css/apps/common.css"></link>
-  <link rel="stylesheet" href="chrome://resources/css/apps/topbutton_bar.css">
   </link>
   <link rel="stylesheet" href="../css/feedback.css">
 
   <script type="module" src="../js/feedback.js"></script>
 </head>
 <body>
-  <div id="title-bar" class="title-bar">
-    <span id="page-title">$i18n{pageTitle}</span>
-    <span class="topbutton-bar">
-      <button class="minimize-button" id="minimize-button" tabindex="-1"
-              aria-label="$i18n{minimizeBtnLabel}">
-      </button>
-      <button class="close-button" id="close-button" tabindex="-1"
-              aria-label="$i18n{closeBtnLabel}">
-      </button>
-    </span>
-  </div>
   <div id="content-pane" class="content">
     <p id="free-form-text">$i18n{freeFormText}</p>
     <textarea id="description-text" aria-labelledby="free-form-text"

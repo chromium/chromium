@@ -13,7 +13,6 @@ js_type_check("closure_compile") {
 
     # TODO(crbug.com/1167223): Fix and enable remaining js_library() targets.
     #":sys_info",
-    #":topbar_handlers",
   ]
 }
 
@@ -43,8 +42,4 @@ js_library("sys_info") {
 }
 
 js_library("take_screenshot") {
-}
-
-js_library("topbar_handlers") {
-  deps = [ "//ui/webui/resources/js:util" ]
 }

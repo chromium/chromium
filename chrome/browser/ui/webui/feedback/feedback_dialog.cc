@@ -105,11 +105,11 @@ void FeedbackDialog::OnCloseContents(WebContents* source,
 }
 
 bool FeedbackDialog::ShouldShowDialogTitle() const {
-  return false;
+  return true;
 }
 
 bool FeedbackDialog::ShouldShowCloseButton() const {
-  return false;
+  return true;
 }
 
 ui::WebDialogDelegate::FrameKind FeedbackDialog::GetWebDialogFrameKind() const {
