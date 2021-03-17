@@ -28,6 +28,16 @@ bool IsSliderThumb(const Node* node) {
          shadow_pseudo == shadow_element_names::kPseudoSliderThumb;
 }
 
+bool IsTextControlContainer(const Node* node) {
+  const auto* element = DynamicTo<Element>(node);
+  if (!element || !element->IsInUserAgentShadowRoot())
+    return false;
+  if (!IsTextControl(element->OwnerShadowHost()))
+    return false;
+  return element->GetIdAttribute() ==
+         shadow_element_names::kIdTextFieldContainer;
+}
+
 bool IsTextControlPlaceholder(const Node* node) {
   const auto* element = DynamicTo<Element>(node);
   if (!element || !element->IsInUserAgentShadowRoot())

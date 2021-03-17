@@ -176,6 +176,7 @@ class CORE_EXPORT NGPhysicalFragment
            !layout_object_->IsTableCellLegacy();
   }
 
+  bool IsTextControlContainer() const;
   bool IsTextControlPlaceholder() const;
 
   // Return true if this fragment is a container established by a fieldset

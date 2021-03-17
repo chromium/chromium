@@ -3034,12 +3034,30 @@ void NGBlockLayoutAlgorithm::HandleTextControlPlaceholder(
     const NGPreviousInflowPosition& previous_inflow_position) {
   DCHECK(Node().IsTextControl()) << Node().GetLayoutBox();
 
+  LogicalSize available_size = ChildAvailableSize();
+  // The placeholder should have the width same as "editing-view-port" element,
+  // which is the first grandchild of the text control.
+  if (container_builder_.Children().size() > 0) {
+    const NGPhysicalFragment& child =
+        *container_builder_.Children()[0].fragment;
+    if (child.IsTextControlContainer()) {
+      const auto& grand_children =
+          To<NGPhysicalContainerFragment>(child).PostLayoutChildren();
+      const auto begin = grand_children.begin();
+      if (begin != grand_children.end()) {
+        NGFragment grand_child_fragment(ConstraintSpace().GetWritingDirection(),
+                                        *begin->fragment);
+        available_size.inline_size = grand_child_fragment.InlineSize();
+      }
+    }
+  }
+
   const bool is_new_fc = placeholder.CreatesNewFormattingContext();
   const NGConstraintSpace space = CreateConstraintSpaceForChild(
       placeholder,
       ComputeChildData(previous_inflow_position, placeholder,
                        /* child_break_token */ nullptr, is_new_fc),
-      ChildAvailableSize(), is_new_fc);
+      available_size, is_new_fc);
 
   scoped_refptr<const NGLayoutResult> result = placeholder.Layout(space);
   LogicalOffset offset = BorderScrollbarPadding().StartOffset();
