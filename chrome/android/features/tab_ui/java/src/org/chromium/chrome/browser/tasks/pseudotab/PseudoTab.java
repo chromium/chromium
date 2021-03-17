@@ -200,24 +200,23 @@ public class PseudoTab {
     }
 
     /**
+     * @return The timestamp of the {@link PseudoTab}.
+     */
+    public long getTimestampMillis() {
+        if (mTab != null && mTab.get() != null && mTab.get().isInitialized()) {
+            return CriticalPersistedTabData.from(mTab.get()).getTimestampMillis();
+        }
+        assert mTabId != null;
+        return TabAttributeCache.getTimestampMillis(mTabId);
+    }
+
+    /**
      * @return Whether the {@link PseudoTab} is in the Incognito mode.
      */
     public boolean isIncognito() {
         if (mTab != null && mTab.get() != null) return mTab.get().isIncognito();
         assert mTabId != null;
         return false;
-    }
-
-    /**
-     * @return {@link Tab#getTimestampMillis()} of the underlying real {@link Tab}
-     */
-    public long getTimestampMillis() {
-        assert mTab != null
-                && mTab.get() != null : "getTimestampMillis can only be used with real tabs";
-        if (!mTab.get().isInitialized()) {
-            return CriticalPersistedTabData.INVALID_TIMESTAMP;
-        }
-        return CriticalPersistedTabData.from(mTab.get()).getTimestampMillis();
     }
 
     /**

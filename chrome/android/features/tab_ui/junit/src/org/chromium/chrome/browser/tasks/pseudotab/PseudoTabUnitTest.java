@@ -300,6 +300,32 @@ public class PseudoTabUnitTest {
     }
 
     @Test
+    public void getTimestampMillis_real() {
+        long timestamp = 12345;
+        doReturn(timestamp).when(mCriticalPersistedTabData).getTimestampMillis();
+
+        PseudoTab tab = PseudoTab.fromTabId(TAB1_ID);
+        Assert.assertEquals(CriticalPersistedTabData.INVALID_TIMESTAMP, tab.getTimestampMillis());
+
+        PseudoTab realTab = PseudoTab.fromTab(mTab1);
+        Assert.assertNotEquals(tab, realTab);
+        Assert.assertEquals(timestamp, realTab.getTimestampMillis());
+    }
+
+    @Test
+    public void getTimestampMillis_cache() {
+        long timestamp = 42;
+        TabAttributeCache.setTimestampMillisForTesting(TAB1_ID, timestamp);
+
+        PseudoTab tab = PseudoTab.fromTabId(TAB1_ID);
+        Assert.assertEquals(timestamp, tab.getTimestampMillis());
+
+        PseudoTab realTab = PseudoTab.fromTab(mTab1);
+        Assert.assertNotEquals(tab, realTab);
+        Assert.assertNotEquals(timestamp, realTab.getTimestampMillis());
+    }
+
+    @Test
     public void isIncognito() {
         doReturn(true).when(mTab1).isIncognito();
 
@@ -312,22 +338,6 @@ public class PseudoTabUnitTest {
 
         doReturn(false).when(mTab1).isIncognito();
         Assert.assertFalse(realTab.isIncognito());
-    }
-
-    @Test
-    public void getTimestampMillis_realTab() {
-        CriticalPersistedTabData criticalPersistedTabaData = CriticalPersistedTabData.from(mTab1);
-        long timestamp = 12345;
-        doReturn(timestamp).when(criticalPersistedTabaData).getTimestampMillis();
-
-        PseudoTab tab = PseudoTab.fromTab(mTab1);
-        Assert.assertEquals(timestamp, tab.getTimestampMillis());
-    }
-
-    @Test(expected = AssertionError.class)
-    public void getTimestampMillis_notRealTab() {
-        PseudoTab tab = PseudoTab.fromTabId(TAB1_ID);
-        tab.getTimestampMillis();
     }
 
     @Test
@@ -437,17 +447,6 @@ public class PseudoTabUnitTest {
     }
 
     @Test
-    public void testTabDestroyedRootId() {
-        Tab tab = new MockTab(TAB4_ID, false);
-        PseudoTab pseudoTab = PseudoTab.fromTab(tab);
-        tab.destroy();
-        // Root ID was not set. Without the isInitialized() check,
-        // pseudoTab.getRootId() would crash here with
-        // UnsupportedOperationException
-        Assert.assertEquals(Tab.INVALID_TAB_ID, pseudoTab.getRootId());
-    }
-
-    @Test
     public void testTabDestroyedTitle() {
         Tab tab = new MockTab(TAB4_ID, false);
         PseudoTab pseudoTab = PseudoTab.fromTab(tab);
@@ -467,5 +466,28 @@ public class PseudoTabUnitTest {
         // pseudoTab.getUrl() would crash here with
         // UnsupportedOperationException
         Assert.assertEquals("", pseudoTab.getUrl());
+    }
+
+    @Test
+    public void testTabDestroyedRootId() {
+        Tab tab = new MockTab(TAB4_ID, false);
+        PseudoTab pseudoTab = PseudoTab.fromTab(tab);
+        tab.destroy();
+        // Root ID was not set. Without the isInitialized() check,
+        // pseudoTab.getRootId() would crash here with
+        // UnsupportedOperationException
+        Assert.assertEquals(Tab.INVALID_TAB_ID, pseudoTab.getRootId());
+    }
+
+    @Test
+    public void testTabDestroyedTimestamp() {
+        Tab tab = new MockTab(TAB4_ID, false);
+        PseudoTab pseudoTab = PseudoTab.fromTab(tab);
+        tab.destroy();
+        // Timestamp was not set. Without the isInitialized() check,
+        // pseudoTab.getTimestampMillis() would crash here with
+        // UnsupportedOperationException
+        Assert.assertEquals(
+                CriticalPersistedTabData.INVALID_TIMESTAMP, pseudoTab.getTimestampMillis());
     }
 }
