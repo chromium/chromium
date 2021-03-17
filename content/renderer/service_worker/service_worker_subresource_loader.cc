@@ -497,9 +497,6 @@ void ServiceWorkerSubresourceLoader::StartResponse(
   }
 
   ServiceWorkerLoaderHelpers::SaveResponseInfo(*response, response_head_.get());
-  ServiceWorkerLoaderHelpers::SaveResponseHeaders(
-      response->status_code, response->status_text, response->headers,
-      response_head_.get());
   response_head_->response_start = base::TimeTicks::Now();
   response_head_->load_timing.receive_headers_start = base::TimeTicks::Now();
   response_head_->load_timing.receive_headers_end =

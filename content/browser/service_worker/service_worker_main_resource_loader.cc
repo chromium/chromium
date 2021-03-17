@@ -340,9 +340,6 @@ void ServiceWorkerMainResourceLoader::StartResponse(
   DCHECK_EQ(status_, Status::kStarted);
 
   ServiceWorkerLoaderHelpers::SaveResponseInfo(*response, response_head_.get());
-  ServiceWorkerLoaderHelpers::SaveResponseHeaders(
-      response->status_code, response->status_text, response->headers,
-      response_head_.get());
 
   response_head_->did_service_worker_navigation_preload =
       did_navigation_preload_;

@@ -24,14 +24,7 @@ namespace content {
 //(e.g., ServiceWorkerMainResourceLoader and ServiceWorkerSubresourceLoader).
 class ServiceWorkerLoaderHelpers {
  public:
-  // Populates |out_head->headers| with the given |status_code|, |status_text|,
-  // and |headers|.
-  static void SaveResponseHeaders(
-      const int status_code,
-      const std::string& status_text,
-      const base::flat_map<std::string, std::string>& headers,
-      network::mojom::URLResponseHead* out_head);
-  // Populates |out_head| (except for headers) with given |response|.
+  // Populates |out_head| with given |response|.
   static void SaveResponseInfo(const blink::mojom::FetchAPIResponse& response,
                                network::mojom::URLResponseHead* out_head);
 

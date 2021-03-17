@@ -44,19 +44,13 @@ class BlobCompleteCaller : public blink::mojom::BlobReaderClient {
   BlobCompleteCallback callback_;
 };
 
-}  // namespace
-
-// static
-void ServiceWorkerLoaderHelpers::SaveResponseHeaders(
-    const int status_code,
-    const std::string& status_text,
-    const base::flat_map<std::string, std::string>& headers,
-    network::mojom::URLResponseHead* out_head) {
+void SaveResponseHeaders(const blink::mojom::FetchAPIResponse& response,
+                         network::mojom::URLResponseHead* out_head) {
   // Build a string instead of using HttpResponseHeaders::AddHeader on
   // each header, since AddHeader has O(n^2) performance.
-  std::string buf(base::StringPrintf("HTTP/1.1 %d %s\r\n", status_code,
-                                     status_text.c_str()));
-  for (const auto& item : headers) {
+  std::string buf(base::StringPrintf("HTTP/1.1 %d %s\r\n", response.status_code,
+                                     response.status_text.c_str()));
+  for (const auto& item : response.headers) {
     buf.append(item.first);
     buf.append(": ");
     buf.append(item.second);
@@ -89,6 +83,8 @@ void ServiceWorkerLoaderHelpers::SaveResponseHeaders(
     out_head->content_length = out_head->headers->GetContentLength();
 }
 
+}  // namespace
+
 // static
 void ServiceWorkerLoaderHelpers::SaveResponseInfo(
     const blink::mojom::FetchAPIResponse& response,
@@ -111,10 +107,8 @@ void ServiceWorkerLoaderHelpers::SaveResponseInfo(
   }
   out_head->response_time = response.response_time;
   out_head->service_worker_response_source = response.response_source;
-  if (response.cache_storage_cache_name)
-    out_head->cache_storage_cache_name = *(response.cache_storage_cache_name);
-  else
-    out_head->cache_storage_cache_name.clear();
+  out_head->cache_storage_cache_name =
+      response.cache_storage_cache_name.value_or(std::string());
   out_head->cors_exposed_header_names = response.cors_exposed_header_names;
   out_head->did_service_worker_navigation_preload = false;
   out_head->parsed_headers = mojo::Clone(response.parsed_headers);
@@ -123,6 +117,7 @@ void ServiceWorkerLoaderHelpers::SaveResponseInfo(
   out_head->was_fetched_via_spdy = response.was_fetched_via_spdy;
   out_head->has_range_requested = response.has_range_requested;
   out_head->auth_challenge_info = response.auth_challenge_info;
+  SaveResponseHeaders(response, out_head);
 }
 
 // static
