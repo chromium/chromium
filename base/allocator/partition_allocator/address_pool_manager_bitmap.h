@@ -79,7 +79,7 @@ ALWAYS_INLINE bool IsManagedByPartitionAllocDirectMap(const void* address) {
 
 // BackupRefPtrImpl hardcodes assumption:
 // IsManagedByPartitionAllocNormalBuckets(nullptr) == false
-ALWAYS_INLINE bool IsManagedByPartitionAllocNormalBuckets(const void* address) {
+ALWAYS_INLINE bool IsManagedByPartitionAllocNormalBuckets(void* address) {
   return internal::AddressPoolManagerBitmap::IsManagedByNormalBucketPool(
       address);
 }

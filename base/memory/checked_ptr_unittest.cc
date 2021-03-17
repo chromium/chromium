@@ -79,25 +79,22 @@ static void ClearCounters() {
 struct CheckedPtrCountingNoOpImpl : base::internal::CheckedPtrNoOpImpl {
   using Super = base::internal::CheckedPtrNoOpImpl;
 
-  static ALWAYS_INLINE uintptr_t WrapRawPtr(const volatile void* cv_ptr) {
+  static ALWAYS_INLINE void* WrapRawPtr(void* ptr) {
     ++g_wrap_raw_ptr_cnt;
-    return Super::WrapRawPtr(cv_ptr);
+    return Super::WrapRawPtr(ptr);
   }
 
-  static ALWAYS_INLINE void* SafelyUnwrapPtrForDereference(
-      uintptr_t wrapped_ptr) {
+  static ALWAYS_INLINE void* SafelyUnwrapPtrForDereference(void* wrapped_ptr) {
     ++g_get_for_dereference_cnt;
     return Super::SafelyUnwrapPtrForDereference(wrapped_ptr);
   }
 
-  static ALWAYS_INLINE void* SafelyUnwrapPtrForExtraction(
-      uintptr_t wrapped_ptr) {
+  static ALWAYS_INLINE void* SafelyUnwrapPtrForExtraction(void* wrapped_ptr) {
     ++g_get_for_extraction_cnt;
     return Super::SafelyUnwrapPtrForExtraction(wrapped_ptr);
   }
 
-  static ALWAYS_INLINE void* UnsafelyUnwrapPtrForComparison(
-      uintptr_t wrapped_ptr) {
+  static ALWAYS_INLINE void* UnsafelyUnwrapPtrForComparison(void* wrapped_ptr) {
     ++g_get_for_comparison_cnt;
     return Super::UnsafelyUnwrapPtrForComparison(wrapped_ptr);
   }

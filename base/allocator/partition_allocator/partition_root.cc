@@ -400,7 +400,7 @@ static void PartitionDumpBucketStats(
 }
 
 #if DCHECK_IS_ON()
-void DCheckIfManagedByPartitionAllocNormalBuckets(const void* ptr) {
+void DCheckIfManagedByPartitionAllocNormalBuckets(void* ptr) {
   PA_DCHECK(IsManagedByPartitionAllocNormalBuckets(ptr));
 }
 #endif

@@ -75,9 +75,9 @@ namespace internal {
 // Avoid including partition_address_space.h from this .h file, by moving the
 // call to IfManagedByPartitionAllocNormalBuckets into the .cc file.
 #if DCHECK_IS_ON()
-BASE_EXPORT void DCheckIfManagedByPartitionAllocNormalBuckets(const void* ptr);
+BASE_EXPORT void DCheckIfManagedByPartitionAllocNormalBuckets(void* ptr);
 #else
-ALWAYS_INLINE void DCheckIfManagedByPartitionAllocNormalBuckets(const void*) {}
+ALWAYS_INLINE void DCheckIfManagedByPartitionAllocNormalBuckets(void*) {}
 #endif
 }  // namespace internal
 
