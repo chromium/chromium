@@ -75,6 +75,8 @@ public class InstalledAppProviderTest {
             "https://example.com:8000/path/to/page.html?key=value#fragment";
     private static final String MANIFEST_URL = "https://example.com:8000/manifest.json";
     private static final String OTHER_MANIFEST_URL = "https://example2.com:8000/manifest.json";
+    private static final String OTHER_MANIFEST_URL3 = "https://example3.com:8000/manifest.json";
+    private static final String OTHER_MANIFEST_URL4 = "https://example4.com:8000/manifest.json";
     private static final String ORIGIN_SYNTAX_ERROR = "https:{";
     private static final String ORIGIN_MISSING_SCHEME = "path/only";
     private static final String ORIGIN_MISSING_HOST = "file:///path/piece";
@@ -157,6 +159,7 @@ public class InstalledAppProviderTest {
     private static class TestInstalledAppProviderImplJni
             implements InstalledAppProviderImpl.Natives {
         private final Map<String, String> mRelationMap = new HashMap<>();
+        private ArrayList<Pair<Callback<Boolean>, Boolean>> mCallbacks;
 
         public void addVerfication(String webDomain, String manifestUrl) {
             mRelationMap.put(webDomain, manifestUrl);
@@ -166,8 +169,29 @@ public class InstalledAppProviderTest {
         public void checkDigitalAssetLinksRelationshipForWebApk(
                 BrowserContextHandle browserContextHandle, String webDomain, String manifestUrl,
                 Callback<Boolean> callback) {
-            callback.onResult(mRelationMap.containsKey(webDomain)
-                    && mRelationMap.get(webDomain).equals(manifestUrl));
+            boolean result = mRelationMap.containsKey(webDomain)
+                    && mRelationMap.get(webDomain).equals(manifestUrl);
+            if (mCallbacks == null) {
+                callback.onResult(result);
+                return;
+            }
+
+            mCallbacks.add(Pair.create(callback, result));
+            if (mCallbacks.size() == 3) {
+                Pair<Callback<Boolean>, Boolean> stashed = mCallbacks.get(1);
+                stashed.first.onResult(stashed.second);
+                stashed = mCallbacks.get(0);
+                stashed.first.onResult(stashed.second);
+                stashed = mCallbacks.get(2);
+                stashed.first.onResult(stashed.second);
+            }
+        }
+
+        // If called, the callbacks passed to {@link checkDigitalAssetLinksRelationshipForWebApk}
+        // won't be executed until it's been called three times, and then they'll be executed out of
+        // order.
+        void rearrangeOrderOfResults() {
+            mCallbacks = new ArrayList<>();
         }
     }
 
@@ -1010,5 +1034,28 @@ public class InstalledAppProviderTest {
 
         mTestInstalledAppProviderImplJni.addVerfication(MANIFEST_URL, OTHER_MANIFEST_URL);
         verifyInstalledApps(manifestRelatedApps, new RelatedApplication[] {});
+    }
+
+    /**
+     * Tests that the order of returned filtered apps matches the order of the apps passed to {@link
+     * filterInstalledApps}.
+     */
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testOrderOfResults() throws Exception {
+        RelatedApplication manifestRelatedApps[] = new RelatedApplication[] {
+                createRelatedApplication(PLATFORM_WEBAPP, null, OTHER_MANIFEST_URL),
+                createRelatedApplication(PLATFORM_WEBAPP, null, OTHER_MANIFEST_URL3),
+                createRelatedApplication(PLATFORM_WEBAPP, null, OTHER_MANIFEST_URL4)};
+        mFakePackageManager.addWebApk(OTHER_MANIFEST_URL);
+        mFakePackageManager.addWebApk(OTHER_MANIFEST_URL3);
+        mFakePackageManager.addWebApk(OTHER_MANIFEST_URL4);
+        mTestInstalledAppProviderImplJni.addVerfication(OTHER_MANIFEST_URL, MANIFEST_URL);
+        mTestInstalledAppProviderImplJni.addVerfication(OTHER_MANIFEST_URL3, MANIFEST_URL);
+        mTestInstalledAppProviderImplJni.addVerfication(OTHER_MANIFEST_URL4, MANIFEST_URL);
+
+        mTestInstalledAppProviderImplJni.rearrangeOrderOfResults();
+        verifyInstalledApps(manifestRelatedApps, manifestRelatedApps);
     }
 }

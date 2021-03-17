@@ -9,7 +9,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
-import android.util.Pair;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -119,37 +118,36 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
 
     /** Utility class for waiting for all the installation/verification results. */
     @UiThread
-    private static class ResultHolder {
+    private class ResultHolder {
         private int mNumTasks;
-        Callback mCallback;
+        private FilterInstalledAppsResponse mCallback;
         private ArrayList<RelatedApplication> mInstalledApps;
         private int mDelayMs;
 
         /**
          * @param numTasks How many results to wait for.
-         * @param callback Gets called with the results once all the tasks are complete.
+         * @param callback Will be passed on to {@link onFilteredInstalledApps()} to be invoked with
+         *         the results once all the tasks are complete.
          */
-        public ResultHolder(
-                int numTasks, Callback<Pair<ArrayList<RelatedApplication>, Integer>> callback) {
+        public ResultHolder(int numTasks, FilterInstalledAppsResponse callback) {
             mNumTasks = numTasks;
             mCallback = callback;
             mInstalledApps =
                     new ArrayList<RelatedApplication>(Collections.nCopies(mNumTasks, null));
-            mDelayMs = 0;
             if (mNumTasks == 0) {
-                mCallback.onResult(Pair.create(mInstalledApps, mDelayMs));
+                onFilteredInstalledApps(mInstalledApps, mDelayMs, mCallback);
             }
         }
 
         public void onResult(@Nullable RelatedApplication app, int taskIdx, int delayMs) {
             assert mNumTasks > 0;
 
-            if (app != null) mInstalledApps.add(taskIdx, app);
+            mInstalledApps.set(taskIdx, app);
             mDelayMs += delayMs;
 
             if (--mNumTasks == 0) {
                 mInstalledApps.removeAll(Collections.singleton(null));
-                mCallback.onResult(Pair.create(mInstalledApps, mDelayMs));
+                onFilteredInstalledApps(mInstalledApps, mDelayMs, mCallback);
             }
         }
     }
@@ -162,9 +160,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
         final GURL frameUrl = url == null ? GURL.emptyGURL() : url;
         int delayMillis = 0;
         int numTasks = Math.min(relatedApps.length, MAX_ALLOWED_RELATED_APPS);
-        ResultHolder resultHolder = new ResultHolder(numTasks, (resultPair) -> {
-            onFilteredInstalledApps(resultPair.first, resultPair.second, callback);
-        });
+        ResultHolder resultHolder = new ResultHolder(numTasks, callback);
 
         // NOTE: For security, it must not be possible to distinguish (from the time taken to
         // respond) between the app not being installed and the origin not being associated with the
