@@ -7,8 +7,9 @@ package org.chromium.components.signin;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -16,6 +17,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
@@ -50,6 +53,15 @@ public class AccountTrackerServiceTest {
     @Mock
     private AccountTrackerService.Natives mNativeMock;
 
+    @Mock
+    private Runnable mRunnableMock;
+
+    @Captor
+    private ArgumentCaptor<String[]> mGaiaIdsCaptor;
+
+    @Captor
+    private ArgumentCaptor<String[]> mEmailsCaptor;
+
     private AccountTrackerService mService;
 
     @Before
@@ -66,19 +78,45 @@ public class AccountTrackerServiceTest {
     }
 
     @Test
-    public void testCheckAndSeedAccountsTheFirstTime() {
-        doAnswer(invocation -> {
-            Assert.assertArrayEquals(
-                    new String[] {mFakeAccountManagerFacade.getAccountGaiaId(ACCOUNT_EMAIL)},
-                    invocation.getArgument(1));
-            Assert.assertArrayEquals(new String[] {ACCOUNT_EMAIL}, invocation.getArgument(2));
-            return true;
-        })
-                .when(mNativeMock)
-                .seedAccountsInfo(eq(ACCOUNT_TRACKER_SERVICE_NATIVE), any(), any());
+    public void testSeedAccountsWithoutGooglePlayServices() {
+        when(mFakeAccountManagerFacade.isGooglePlayServicesAvailable()).thenReturn(false);
 
-        mService.checkAndSeedSystemAccounts();
+        mService.seedAccountsIfNeeded(mRunnableMock);
+
+        verify(mFakeAccountManagerFacade, never()).tryGetGoogleAccounts(any());
+        verify(mRunnableMock, never()).run();
+    }
+
+    @Test
+    public void testSeedAccountsIfNeededBeforeAccountsAreSeeded() {
+        mService.seedAccountsIfNeeded(mRunnableMock);
+
         verify(mFakeAccountManagerFacade).addObserver(notNull());
-        verify(mNativeMock).seedAccountsInfo(eq(ACCOUNT_TRACKER_SERVICE_NATIVE), any(), any());
+        verify(mNativeMock)
+                .seedAccountsInfo(eq(ACCOUNT_TRACKER_SERVICE_NATIVE), mGaiaIdsCaptor.capture(),
+                        mEmailsCaptor.capture());
+        Assert.assertArrayEquals(
+                new String[] {mFakeAccountManagerFacade.getAccountGaiaId(ACCOUNT_EMAIL)},
+                mGaiaIdsCaptor.getValue());
+        Assert.assertArrayEquals(new String[] {ACCOUNT_EMAIL}, mEmailsCaptor.getValue());
+        verify(mRunnableMock).run();
+    }
+
+    @Test
+    public void testSeedAccountsIfNeededAfterAccountsAreSeeded() {
+        mService.seedAccountsIfNeeded(() -> {});
+
+        mService.seedAccountsIfNeeded(mRunnableMock);
+
+        verify(mFakeAccountManagerFacade).addObserver(notNull());
+        // Accounts should be seeded only once
+        verify(mNativeMock)
+                .seedAccountsInfo(eq(ACCOUNT_TRACKER_SERVICE_NATIVE), mGaiaIdsCaptor.capture(),
+                        mEmailsCaptor.capture());
+        Assert.assertArrayEquals(
+                new String[] {mFakeAccountManagerFacade.getAccountGaiaId(ACCOUNT_EMAIL)},
+                mGaiaIdsCaptor.getValue());
+        Assert.assertArrayEquals(new String[] {ACCOUNT_EMAIL}, mEmailsCaptor.getValue());
+        verify(mRunnableMock).run();
     }
 }

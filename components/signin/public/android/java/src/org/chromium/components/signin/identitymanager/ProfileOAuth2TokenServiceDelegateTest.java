@@ -6,6 +6,7 @@ package org.chromium.components.signin.identitymanager;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -182,7 +183,13 @@ public class ProfileOAuth2TokenServiceDelegateTest {
     @Test
     @SmallTest
     public void testSeedAndReloadAccountsWhenAccountsAreSeeded() {
-        when(mAccountTrackerServiceMock.checkAndSeedSystemAccounts()).thenReturn(true);
+        doAnswer(invocation -> {
+            Runnable runnable = invocation.getArgument(0);
+            runnable.run();
+            return null;
+        })
+                .when(mAccountTrackerServiceMock)
+                .seedAccountsIfNeeded(any(Runnable.class));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> { mDelegate.seedAndReloadAccountsWithPrimaryAccount(null); });
         verify(mNativeMock).reloadAllAccountsWithPrimaryAccountAfterSeeding(NATIVE_DELEGATE, null);

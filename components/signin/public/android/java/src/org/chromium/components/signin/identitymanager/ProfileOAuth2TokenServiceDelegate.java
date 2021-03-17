@@ -28,8 +28,7 @@ import org.chromium.components.signin.ConnectionRetry.AuthTask;
  * AccountManagerFacade and forwards callbacks to native code.
  * <p/>
  */
-final class ProfileOAuth2TokenServiceDelegate
-        implements AccountTrackerService.OnSystemAccountsSeededListener {
+final class ProfileOAuth2TokenServiceDelegate {
     /**
      * A simple callback for getAccessToken.
      */
@@ -56,11 +55,6 @@ final class ProfileOAuth2TokenServiceDelegate
     private final AccountTrackerService mAccountTrackerService;
     private final AccountManagerFacade mAccountManagerFacade;
 
-    private boolean mPendingUpdate;
-    // TODO(crbug.com/934688) Once ProfileOAuth2TokenServiceDelegate.java is internalized, use
-    // CoreAccountId instead of String.
-    private String mPendingUpdateAccountId;
-
     private ProfileOAuth2TokenServiceDelegate(long nativeProfileOAuth2TokenServiceDelegate,
             AccountTrackerService accountTrackerService,
             AccountManagerFacade accountManagerFacade) {
@@ -70,7 +64,6 @@ final class ProfileOAuth2TokenServiceDelegate
         mNativeProfileOAuth2TokenServiceDelegate = nativeProfileOAuth2TokenServiceDelegate;
         mAccountTrackerService = accountTrackerService;
         mAccountManagerFacade = accountManagerFacade;
-        mAccountTrackerService.addSystemAccountsSeededListener(this);
     }
 
     @VisibleForTesting
@@ -180,35 +173,15 @@ final class ProfileOAuth2TokenServiceDelegate
                 != null;
     }
 
-    /**
-     * Continue pending accounts validation after system accounts have been seeded into
-     * AccountTrackerService.
-     */
-    @Override
-    public void onSystemAccountsSeedingComplete() {
-        if (mPendingUpdate) {
-            reloadAllAccountsWithPrimaryAccountAfterSeeding(mPendingUpdateAccountId);
-            mPendingUpdate = false;
-            mPendingUpdateAccountId = null;
-        }
-    }
-
     @VisibleForTesting
     @CalledByNative
     void seedAndReloadAccountsWithPrimaryAccount(@Nullable String accountId) {
         ThreadUtils.assertOnUiThread();
-        if (mAccountTrackerService.checkAndSeedSystemAccounts()) {
-            reloadAllAccountsWithPrimaryAccountAfterSeeding(accountId);
-        } else {
-            assert !mPendingUpdate && mPendingUpdateAccountId == null;
-            mPendingUpdate = true;
-            mPendingUpdateAccountId = accountId;
-        }
-    }
-
-    private void reloadAllAccountsWithPrimaryAccountAfterSeeding(@Nullable String accountId) {
-        ProfileOAuth2TokenServiceDelegateJni.get().reloadAllAccountsWithPrimaryAccountAfterSeeding(
-                mNativeProfileOAuth2TokenServiceDelegate, accountId);
+        mAccountTrackerService.seedAccountsIfNeeded(() -> {
+            ProfileOAuth2TokenServiceDelegateJni.get()
+                    .reloadAllAccountsWithPrimaryAccountAfterSeeding(
+                            mNativeProfileOAuth2TokenServiceDelegate, accountId);
+        });
     }
 
     @NativeMethods

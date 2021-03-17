@@ -60,6 +60,7 @@ public class AccountTrackerService {
 
     private final ObserverList<OnSystemAccountsSeededListener> mSystemAccountsSeedingObservers =
             new ObserverList<>();
+    private final List<Runnable> mRunnablesWaitingForAccountsSeeding = new ArrayList<>();
 
     @VisibleForTesting
     @CalledByNative
@@ -73,7 +74,11 @@ public class AccountTrackerService {
      * Checks whether the account id <-> email mapping has been seeded into C++ layer.
      * If not, it automatically starts fetching the mapping and seeds it.
      * @return Whether the accounts have been seeded already.
+     *
+     * TODO(crbug/1185162): Remove this method after removing all the callers
+     * Use {@link #seedAccountsIfNeeded(Runnable)} instead.
      */
+    @Deprecated
     public boolean checkAndSeedSystemAccounts() {
         ThreadUtils.assertOnUiThread();
         if (areSystemAccountsSeeded()) {
@@ -89,6 +94,27 @@ public class AccountTrackerService {
     }
 
     /**
+     * Seeds the accounts if they are not seeded yet.
+     * The given runnable will run after the accounts are seeded. If the accounts
+     * are already seeded, the runnable will be executed immediately.
+     */
+    public void seedAccountsIfNeeded(Runnable onAccountsSeeded) {
+        ThreadUtils.assertOnUiThread();
+        if (areSystemAccountsSeeded()) {
+            onAccountsSeeded.run();
+            return;
+        }
+        mRunnablesWaitingForAccountsSeeding.add(onAccountsSeeded);
+        // TODO(crbug/1185162): Simplify these conditions
+        if ((mSystemAccountsSeedingStatus == SystemAccountsSeedingStatus.SEEDING_NOT_STARTED
+                    || mSystemAccountsChanged)
+                && mSystemAccountsSeedingStatus
+                        != SystemAccountsSeedingStatus.SEEDING_IN_PROGRESS) {
+            seedAccounts();
+        }
+    }
+
+    /**
      * Checks whether system accounts are seeded without changing the state.
      * @return Whether account list in {@link AccountManagerFacade} is consistent with accounts in
      *         the native AccountTrackerService.
@@ -100,7 +126,11 @@ public class AccountTrackerService {
 
     /**
      * Register an |observer| to observe system accounts seeding status.
+     *
+     * TODO(crbug/1185162): Remove this method after removing all the callers
+     * Use {@link #seedAccountsIfNeeded(Runnable)} instead.
      */
+    @Deprecated
     public void addSystemAccountsSeededListener(OnSystemAccountsSeededListener observer) {
         ThreadUtils.assertOnUiThread();
         mSystemAccountsSeedingObservers.addObserver(observer);
@@ -108,7 +138,11 @@ public class AccountTrackerService {
 
     /**
      * Remove an |observer| from the list of observers.
+     *
+     * TODO(crbug/1185162): Remove this method after removing all the callers
+     * Use {@link #seedAccountsIfNeeded(Runnable)} instead.
      */
+    @Deprecated
     public void removeSystemAccountsSeededListener(OnSystemAccountsSeededListener observer) {
         ThreadUtils.assertOnUiThread();
         mSystemAccountsSeedingObservers.removeObserver(observer);
@@ -172,6 +206,10 @@ public class AccountTrackerService {
         for (OnSystemAccountsSeededListener observer : mSystemAccountsSeedingObservers) {
             observer.onSystemAccountsSeedingComplete();
         }
+        for (Runnable runnable : mRunnablesWaitingForAccountsSeeding) {
+            runnable.run();
+        }
+        mRunnablesWaitingForAccountsSeeding.clear();
     }
 
     /**
