@@ -1186,6 +1186,46 @@ TEST_P(TextFragmentSelectorGeneratorTest, Input) {
   VerifySelector(start, end, "First%20paragraph,Second");
 }
 
+// Checks selection across a shadow tree. Input that has text value will create
+// a shadow tree,
+TEST_P(TextFragmentSelectorGeneratorTest, InputSubmit) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+  <div id='div'>
+    First paragraph<input type='submit' value="button text"> Second paragraph
+  </div>
+  )HTML");
+  GetDocument().UpdateStyleAndLayoutTree();
+  Node* div = GetDocument().getElementById("div");
+  const auto& start = Position(div->firstChild(), 0);
+  const auto& end = Position(div->lastChild(), 7);
+  ASSERT_EQ("First paragraph Second", PlainText(EphemeralRange(start, end)));
+
+  VerifySelector(start, end, "First%20paragraph,Second");
+}
+
+// Checks selection right after a shadow tree will use the shadow tree for
+// prefix. Input with text value will create a shadow tree.
+TEST_P(TextFragmentSelectorGeneratorTest, InputSubmitPrefix) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+  <div id='div'>
+    <input type='submit' value="button text"> paragraph text
+  </div>
+  )HTML");
+  GetDocument().UpdateStyleAndLayoutTree();
+  Node* div = GetDocument().getElementById("div");
+  const auto& start = Position(div->lastChild(), 0);
+  const auto& end = Position(div->lastChild(), 10);
+  ASSERT_EQ(" paragraph", PlainText(EphemeralRange(start, end)));
+
+  VerifySelector(start, end, "button%20text-,paragraph,-text");
+}
+
 // Basic test case for |GetNextTextBlock|.
 TEST_P(TextFragmentSelectorGeneratorTest, GetPreviousTextBlock) {
   SimRequest request("https://example.com/test.html", "text/html");

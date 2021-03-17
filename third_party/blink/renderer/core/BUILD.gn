@@ -1497,6 +1497,7 @@ source_set("unit_tests") {
     "page/scrolling/snap_coordinator_test.cc",
     "page/scrolling/text_fragment_anchor_metrics_test.cc",
     "page/scrolling/text_fragment_anchor_test.cc",
+    "page/scrolling/text_fragment_finder_test.cc",
     "page/scrolling/text_fragment_selector_generator_test.cc",
     "page/scrolling/text_fragment_selector_test.cc",
     "page/slot_scoped_traversal_test.cc",

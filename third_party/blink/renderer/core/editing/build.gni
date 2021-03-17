@@ -251,6 +251,8 @@ blink_core_sources_editing = [
   "position_iterator.h",
   "position_with_affinity.cc",
   "position_with_affinity.h",
+  "range_in_flat_tree.cc",
+  "range_in_flat_tree.h",
   "relocatable_position.cc",
   "relocatable_position.h",
   "reveal_selection_scope.cc",
