@@ -4517,7 +4517,6 @@ crbug.com/953591 [ Win ] transforms/matrix-02.html [ Pass Failure ]
 crbug.com/938884 http/tests/devtools/elements/styles-3/styles-add-blank-property.js [ Timeout Pass ]
 
 # Sheriff 2019-04-18
-crbug.com/954297 [ Linux ] http/tests/devtools/oopif/oopif-presentation-console-messages.js [ Pass Crash Timeout ]
 crbug.com/954297 [ Win ] http/tests/devtools/oopif/oopif-presentation-console-messages.js [ Pass Crash Timeout ]
 
 # Sheriff 2019-04-30
@@ -5681,3 +5680,8 @@ crbug.com/1188098 [ Linux ] http/tests/devtools/elements/styles-1/color-aware-pr
 
 # Sheriff 2021-03-17
 crbug.com/1072022 http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change.html [ Pass Timeout ]
+
+# Failing on WebKit Linux Leak
+crbug.com/1188098 [ Linux ] http/tests/devtools/oopif/oopif-presentation-console-messages.js [ Pass Crash Timeout Failure ]
+crbug.com/1188098 [ Linux ] http/tests/devtools/network/network-worker-fetch-blocked.js [ Pass Failure ]
+crbug.com/1188098 [ Linux ] http/tests/devtools/profiler/cpu-profiler-flame-chart-overview.js [ Pass Failure ]
