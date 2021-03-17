@@ -43,10 +43,6 @@ std::pair<ReadStatus, std::unique_ptr<T>> Read(const base::FilePath& filepath) {
 
 template <class T>
 WriteStatus Write(const base::FilePath& filepath, const T* proto) {
-  DCHECK(proto);
-  if (!proto)
-    return WriteStatus::kWriteError;
-
   const auto directory = filepath.DirName();
   if (!base::DirectoryExists(directory))
     base::CreateDirectory(directory);
