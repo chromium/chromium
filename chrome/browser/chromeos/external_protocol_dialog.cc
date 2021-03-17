@@ -8,7 +8,6 @@
 #include "chrome/browser/chromeos/arc/intent_helper/arc_external_protocol_dialog.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_external_protocol_handler.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
-#include "chrome/browser/sharing/click_to_call/feature.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/external_protocol_dialog.h"
@@ -117,12 +116,9 @@ ExternalProtocolNoHandlersDialog::ExternalProtocolNoHandlersDialog(
 ExternalProtocolNoHandlersDialog::~ExternalProtocolNoHandlersDialog() = default;
 
 std::u16string ExternalProtocolNoHandlersDialog::GetWindowTitle() const {
-  // If click to call feature is available, we display a message to the user on
-  // how to use the feature.
-  // TODO(crbug.com/1007995) - This is a hotfix for M78 and we plan to use our
-  // own dialog with more information in the future.
-  if (scheme_ == url::kTelScheme &&
-      base::FeatureList::IsEnabled(kClickToCallUI)) {
+  // If this dialog is shown for a tel link, we display a message to the user on
+  // how to use the Click to Call feature.
+  if (scheme_ == url::kTelScheme) {
     return l10n_util::GetStringUTF16(
         IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_HELP_TEXT_NO_DEVICES);
   }

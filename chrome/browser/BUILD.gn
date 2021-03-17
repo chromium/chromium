@@ -1544,8 +1544,6 @@ static_library("browser") {
     "sharesheet/sharesheet_types.h",
     "sharing/ack_message_handler.cc",
     "sharing/ack_message_handler.h",
-    "sharing/click_to_call/feature.cc",
-    "sharing/click_to_call/feature.h",
     "sharing/features.cc",
     "sharing/features.h",
     "sharing/ping_message_handler.cc",

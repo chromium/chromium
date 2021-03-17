@@ -595,11 +595,6 @@
     "expiry_milestone": 78
   },
   {
-    "name": "click-to-call-ui",
-    "owners": [ "//chrome/browser/sharing/OWNERS" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "client-storage-access-context-auditing",
     "owners": [
       "sauski",

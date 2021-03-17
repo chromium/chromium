@@ -11,7 +11,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sharing/click_to_call/feature.h"
 #include "chrome/browser/sharing/click_to_call/phone_number_regex.h"
 #include "chrome/browser/sharing/sharing_service.h"
 #include "chrome/browser/sharing/sharing_service_factory.h"
@@ -42,7 +41,7 @@ bool IsClickToCallEnabled(content::BrowserContext* browser_context) {
 
   SharingService* sharing_service =
       SharingServiceFactory::GetForBrowserContext(browser_context);
-  return sharing_service && base::FeatureList::IsEnabled(kClickToCallUI);
+  return sharing_service != nullptr;
 }
 
 }  // namespace

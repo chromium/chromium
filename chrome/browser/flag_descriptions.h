@@ -2968,11 +2968,6 @@ extern const char kDcheckIsFatalName[];
 extern const char kDcheckIsFatalDescription[];
 #endif  // defined(DCHECK_IS_CONFIGURABLE)
 
-#if BUILDFLAG(ENABLE_CLICK_TO_CALL)
-extern const char kClickToCallUIName[];
-extern const char kClickToCallUIDescription[];
-#endif  // BUILDFLAG(ENABLE_CLICK_TO_CALL)
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 extern const char kDiceWebSigninInterceptionName[];
 extern const char kDiceWebSigninInterceptionDescription[];

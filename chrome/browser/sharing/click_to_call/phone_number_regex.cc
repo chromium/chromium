@@ -11,7 +11,6 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "chrome/browser/sharing/click_to_call/feature.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace {
@@ -40,8 +39,6 @@ const re2::RE2& GetPhoneNumberRegex() {
 }
 
 void PrecompilePhoneNumberRegexesAsync() {
-  if (!base::FeatureList::IsEnabled(kClickToCallUI))
-    return;
   constexpr auto kParseDelay = base::TimeDelta::FromSeconds(15);
   base::ThreadPool::PostDelayedTask(
       FROM_HERE,
