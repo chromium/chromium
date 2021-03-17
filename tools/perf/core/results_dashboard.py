@@ -317,10 +317,6 @@ def _MakeStdioUrl(test_name, buildername, buildnumber):
 
 
 def _MakeBuildStatusUrl(project, buildbucket, buildername, buildnumber):
-  # Temporary logging to debug crbug.com/1169299
-  logging.info('_MakeBuildStatusUrl(%s, %s, %s, %s)' %
-               (project, buildbucket, buildername, str(buildnumber)))
-
   if not (buildername and buildnumber):
     return None
   if not project:
