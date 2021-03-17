@@ -5678,3 +5678,6 @@ crbug.com/1187575 external/wpt/html/canvas/element/fill-and-stroke-styles/2d.str
 # Sheriff 2021-03-15
 crbug.com/1188098 [ Linux ] http/tests/devtools/sources/debugger-pause/skip-pauses-until-reload.js [ Pass Failure ]
 crbug.com/1188098 [ Linux ] http/tests/devtools/elements/styles-1/color-aware-property-value-edit.js [ Pass Failure ]
+
+# Sheriff 2021-03-17
+crbug.com/1072022 http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change.html [ Pass Timeout ]
