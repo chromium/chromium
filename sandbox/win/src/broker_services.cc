@@ -26,7 +26,7 @@
 #include "sandbox/win/src/sandbox_policy_diagnostic.h"
 #include "sandbox/win/src/startup_information_helper.h"
 #include "sandbox/win/src/target_process.h"
-#include "sandbox/win/src/win2k_threadpool.h"
+#include "sandbox/win/src/threadpool.h"
 #include "sandbox/win/src/win_utils.h"
 
 namespace {
@@ -57,7 +57,7 @@ enum {
 struct TargetEventsThreadParams {
   TargetEventsThreadParams(HANDLE iocp,
                            HANDLE no_targets,
-                           std::unique_ptr<sandbox::ThreadProvider> thread_pool)
+                           std::unique_ptr<sandbox::ThreadPool> thread_pool)
       : iocp(iocp),
         no_targets(no_targets),
         thread_pool(std::move(thread_pool)) {}
@@ -71,7 +71,7 @@ struct TargetEventsThreadParams {
   // Thread pool used to mediate sandbox IPC, owned by the target
   // events thread but accessed by BrokerServices and TargetProcesses.
   // Destroyed when TargetEventsThread ends.
-  std::unique_ptr<sandbox::ThreadProvider> thread_pool;
+  std::unique_ptr<sandbox::ThreadPool> thread_pool;
 };
 
 // Helper structure that allows the Broker to associate a job notification
@@ -164,7 +164,7 @@ ResultCode BrokerServicesBase::Init() {
 
   // We transfer ownership of this memory to the thread.
   auto params = std::make_unique<TargetEventsThreadParams>(
-      job_port_.Get(), no_targets_.Get(), std::make_unique<Win2kThreadPool>());
+      job_port_.Get(), no_targets_.Get(), std::make_unique<ThreadPool>());
 
   // We keep the thread alive until our destructor so we can use a raw
   // pointer to the thread pool.

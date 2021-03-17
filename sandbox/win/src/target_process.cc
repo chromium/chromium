@@ -104,7 +104,7 @@ SANDBOX_INTERCEPT size_t g_shared_policy_size;
 TargetProcess::TargetProcess(base::win::ScopedHandle initial_token,
                              base::win::ScopedHandle lockdown_token,
                              HANDLE job,
-                             ThreadProvider* thread_pool,
+                             ThreadPool* thread_pool,
                              const std::vector<Sid>& impersonation_capabilities)
     // This object owns everything initialized here except thread_pool and
     // the job_ handle. The Job handle is closed by BrokerServices and results

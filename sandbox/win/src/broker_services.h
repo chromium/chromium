@@ -19,7 +19,7 @@
 #include "sandbox/win/src/job.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sharedmem_ipc_server.h"
-#include "sandbox/win/src/win2k_threadpool.h"
+#include "sandbox/win/src/threadpool.h"
 #include "sandbox/win/src/win_utils.h"
 
 namespace sandbox {
@@ -69,7 +69,7 @@ class BrokerServicesBase final : public BrokerServices,
 
   // Provides a pool of threads that are used to wait on the IPC calls.
   // Owned by TargetEventsThread which is alive until our destructor.
-  ThreadProvider* thread_pool_ = nullptr;
+  ThreadPool* thread_pool_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(BrokerServicesBase);
 };
