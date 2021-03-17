@@ -1,0 +1,6 @@
+{
+  "name": "Test Extension",
+  "version": "2",
+  "manifest_version": 2,
+  "update_url": "http://update.extension/pinning/update_url/update_manifest.xml"
+}
