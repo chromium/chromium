@@ -23,6 +23,8 @@ component("lib") {
     "assistant_interaction_logger.h",
     "assistant_manager_service.cc",
     "assistant_manager_service.h",
+    "assistant_settings_impl.cc",
+    "assistant_settings_impl.h",
     "device_settings_host.cc",
     "device_settings_host.h",
     "fake_assistant_manager_service_impl.cc",
@@ -45,6 +47,8 @@ component("lib") {
     "service.cc",
     "service.h",
     "service_context.h",
+    "timer_host.cc",
+    "timer_host.h",
   ]
 
   deps = [
@@ -79,12 +83,8 @@ component("lib") {
     sources += [
       "assistant_manager_service_impl.cc",
       "assistant_manager_service_impl.h",
-      "assistant_settings_impl.cc",
-      "assistant_settings_impl.h",
       "libassistant_service_host_impl.cc",
       "libassistant_service_host_impl.h",
-      "timer_host.cc",
-      "timer_host.h",
     ]
 
     deps += [

@@ -13,6 +13,7 @@
 namespace chromeos {
 namespace assistant {
 
+// TODO(jeroendh): Can be removed once FakeAssistantManagerServiceImpl is gone.
 class FakeAssistantSettingsImpl : public AssistantSettings {
  public:
   FakeAssistantSettingsImpl();

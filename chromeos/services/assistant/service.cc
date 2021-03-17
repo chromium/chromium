@@ -31,7 +31,6 @@
 #include "chromeos/services/assistant/assistant_interaction_logger.h"
 #include "chromeos/services/assistant/assistant_manager_service.h"
 #include "chromeos/services/assistant/fake_assistant_manager_service_impl.h"
-#include "chromeos/services/assistant/fake_assistant_settings_impl.h"
 #include "chromeos/services/assistant/public/cpp/assistant_client.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/services/assistant/public/cpp/device_actions.h"
@@ -48,7 +47,6 @@
 
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #include "chromeos/services/assistant/assistant_manager_service_impl.h"
-#include "chromeos/services/assistant/assistant_settings_impl.h"
 #endif
 
 namespace chromeos {
