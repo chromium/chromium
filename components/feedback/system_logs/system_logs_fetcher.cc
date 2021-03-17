@@ -123,6 +123,7 @@ void SystemLogsFetcher::OnFetched(
     const std::string& source_name,
     std::unique_ptr<SystemLogsResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(response);
 
   VLOG(1) << "Received SystemLogSource: " << source_name;
 

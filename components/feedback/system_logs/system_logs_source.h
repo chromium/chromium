@@ -15,7 +15,7 @@ namespace system_logs {
 
 using SystemLogsResponse = FeedbackCommon::SystemLogsMap;
 
-// Callback that the data sources use to return data.
+// Callback that the data sources use to return data. The data must not be null.
 using SysLogsSourceCallback =
     base::OnceCallback<void(std::unique_ptr<SystemLogsResponse>)>;
 
