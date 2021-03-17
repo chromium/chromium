@@ -435,10 +435,10 @@ void MTPDeviceTaskHelper::OnGetFileInfoToReadBytes(
   uint32_t bytes_to_read =
       std::min(base::checked_cast<uint32_t>(request.buf_len),
                base::saturated_cast<uint32_t>(file_info.size - request.offset));
-
+  auto file_id = request.file_id;
+  auto offset = base::checked_cast<uint32_t>(request.offset);
   GetMediaTransferProtocolManager()->ReadFileChunk(
-      device_handle_, request.file_id,
-      base::checked_cast<uint32_t>(request.offset), bytes_to_read,
+      device_handle_, file_id, offset, bytes_to_read,
       base::BindOnce(&MTPDeviceTaskHelper::OnDidReadBytes,
                      weak_ptr_factory_.GetWeakPtr(), std::move(request),
                      file_info));
