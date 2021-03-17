@@ -4,6 +4,7 @@
   ],
   "xcode build version": "12d4e",
   "gn_args": [
+    "enable_run_ios_unittests_with_xctest=true",
     "goma_dir=\"$(goma_dir)\"",
     "ios_enable_code_signing=false",
     "ios_set_attributes_for_xcode_project_generation=false",
