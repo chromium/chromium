@@ -29,13 +29,6 @@ AwOriginTrialsComponentInstallerPolicy::
 AwOriginTrialsComponentInstallerPolicy::
     ~AwOriginTrialsComponentInstallerPolicy() = default;
 
-update_client::CrxInstaller::Result
-AwOriginTrialsComponentInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
-    const base::FilePath& install_dir) {
-  return delegate_->OnCustomInstall(manifest, install_dir);
-}
-
 void AwOriginTrialsComponentInstallerPolicy::OnCustomUninstall() {
   delegate_->OnCustomUninstall();
 }

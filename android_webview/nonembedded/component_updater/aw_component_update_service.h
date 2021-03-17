@@ -19,17 +19,11 @@
 #include "base/sequence_checker.h"
 #include "components/update_client/update_client.h"
 
-namespace base {
-class FilePath;
-class Version;
-}  // namespace base
-
 namespace android_webview {
 
 using RegisterComponentsCallback =
     base::RepeatingCallback<bool(const update_client::CrxComponent&)>;
 
-class MockAwComponentUpdateService;
 class TestAwComponentUpdateService;
 
 // Native-side implementation of the AwComponentUpdateService. It
@@ -39,9 +33,6 @@ class AwComponentUpdateService {
   static AwComponentUpdateService* GetInstance();
   void StartComponentUpdateService(base::OnceClosure finished_callback);
 
-  virtual bool NotifyNewVersion(const std::string& component_id,
-                                const base::FilePath& install_dir,
-                                const base::Version& version);
   bool RegisterComponent(const update_client::CrxComponent& component);
   void CheckForUpdates(base::OnceClosure on_finished);
 
@@ -49,7 +40,6 @@ class AwComponentUpdateService {
   SEQUENCE_CHECKER(sequence_checker_);
 
   friend base::NoDestructor<AwComponentUpdateService>;
-  friend MockAwComponentUpdateService;
   friend TestAwComponentUpdateService;
 
   FRIEND_TEST_ALL_PREFIXES(AwComponentUpdateServiceTest,
@@ -90,8 +80,6 @@ class AwComponentUpdateService {
 
   base::WeakPtrFactory<AwComponentUpdateService> weak_ptr_factory_{this};
 };
-
-void SetAwComponentUpdateServiceForTesting(AwComponentUpdateService* service);
 
 }  // namespace android_webview
 

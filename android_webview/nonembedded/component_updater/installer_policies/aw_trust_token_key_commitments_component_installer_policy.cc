@@ -34,15 +34,10 @@ AwTrustTokenKeyCommitmentsComponentInstallerPolicy::
 AwTrustTokenKeyCommitmentsComponentInstallerPolicy::
     ~AwTrustTokenKeyCommitmentsComponentInstallerPolicy() = default;
 
-update_client::CrxInstaller::Result
-AwTrustTokenKeyCommitmentsComponentInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
-    const base::FilePath& install_dir) {
-  return delegate_->OnCustomInstall(manifest, install_dir);
-}
 void AwTrustTokenKeyCommitmentsComponentInstallerPolicy::OnCustomUninstall() {
   delegate_->OnCustomUninstall();
 }
+
 void AwTrustTokenKeyCommitmentsComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
