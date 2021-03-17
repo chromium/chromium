@@ -29,6 +29,12 @@ class ChromiumPlugin implements Plugin<Project> {
             /** Libraries that are only used during build. These support android. */
             buildCompile
 
+            /**
+             * Libraries that are only used during build but should not
+             * automatically retrieve their dependencies.
+             */
+            buildCompileNoDeps
+
             /** Libraries that are used for testing only and support android. */
             androidTestCompile
         }

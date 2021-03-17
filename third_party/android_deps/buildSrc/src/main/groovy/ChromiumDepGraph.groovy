@@ -342,6 +342,7 @@ class ChromiumDepGraph {
 
     void collectDependencies() {
         Set<ResolvedConfiguration> deps = []
+        Set<ResolvedConfiguration> depsNoRecurse = []
         Set<ResolvedDependency> firstLevelModuleDependencies = []
         Map<String, List<ResolvedArtifact>> resolvedArtifacts = new HashMap<>()
         String[] configNames = [
@@ -349,12 +350,16 @@ class ChromiumDepGraph {
             'compileListenableFuture',
             'buildCompile',
             'testCompile',
-            'androidTestCompile'
+            'androidTestCompile',
+            'buildCompileNoDeps'
         ]
         for (Project project : projects) {
             for (String configName : configNames) {
                 def config = project.configurations.getByName(configName).resolvedConfiguration
                 deps += config.firstLevelModuleDependencies
+                if (configName == 'buildCompileNoDeps') {
+                  depsNoRecurse += config.firstLevelModuleDependencies
+                }
                 if (!resolvedArtifacts.containsKey(configName)) {
                   resolvedArtifacts[configName] = []
                 }
@@ -369,7 +374,7 @@ class ChromiumDepGraph {
         List<String> topLevelIds = []
         deps.each { dependency ->
             topLevelIds.add(makeModuleId(dependency.module))
-            collectDependenciesInternal(dependency)
+            collectDependenciesInternal(dependency, !depsNoRecurse.contains(dependency))
         }
 
         topLevelIds.each { id -> dependencies.get(id).visible = true }
@@ -406,6 +411,14 @@ class ChromiumDepGraph {
             dep.isShipped = true
         }
 
+        depsNoRecurse.each { resolvedDep ->
+            def id = makeModuleId(resolvedDep.module)
+            def dep = dependencies.get(id)
+            assert dep != null : "No dependency collected for artifact ${artifact.name}"
+            dep.testOnly = false
+        }
+
+
         PROPERTY_OVERRIDES.each { id, fallbackProperties ->
             if (fallbackProperties?.isShipped != null) {
                 def dep = dependencies.get(id)
@@ -418,7 +431,7 @@ class ChromiumDepGraph {
         }
     }
 
-    private void collectDependenciesInternal(ResolvedDependency dependency) {
+    private void collectDependenciesInternal(ResolvedDependency dependency, boolean recurse = true) {
         def id = makeModuleId(dependency.module)
         if (dependencies.containsKey(id)) {
             if (dependencies.get(id).version == dependency.module.id.version) return
@@ -427,15 +440,10 @@ class ChromiumDepGraph {
             // crbug.com/1040958
             // https://docs.gradle.org/current/userguide/dependency_resolution.html#sec:version-conflict
             def useLowerVersion = (id in lowerVersionOverride)
-            def versionIsLower = dependency.module.id.version < dependencies.get(id).version 
+            def versionIsLower = dependency.module.id.version < dependencies.get(id).version
             if (useLowerVersion != versionIsLower) {
                 return
             }
-        }
-
-        def childModules = []
-        dependency.children.each { childDependency ->
-            childModules += makeModuleId(childDependency.module)
         }
 
         if (dependency.getModuleArtifacts().size() != 1) {
@@ -447,9 +455,17 @@ class ChromiumDepGraph {
             throw new IllegalStateException("Type ${artifact.extension} of ${id} not supported.")
         }
 
-        dependencies.put(id, buildDepDescription(id, dependency, artifact, childModules))
-        dependency.children.each {
-            childDependency -> collectDependenciesInternal(childDependency)
+        if (recurse) {
+          def childModules = []
+          dependency.children.each { childDependency ->
+              childModules += makeModuleId(childDependency.module)
+          }
+          dependencies.put(id, buildDepDescription(id, dependency, artifact, childModules))
+          dependency.children.each {
+              childDependency -> collectDependenciesInternal(childDependency)
+          }
+        } else {
+          dependencies.put(id, buildDepDescription(id, dependency, artifact, []))
         }
     }
 
