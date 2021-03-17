@@ -632,9 +632,7 @@ FormStructure::FormStructure(const FormData& form)
       is_form_tag_(form.is_form_tag),
       all_fields_are_passwords_(!form.fields.empty()),
       form_parsed_timestamp_(AutofillTickClock::NowTicks()),
-      passwords_were_revealed_(false),
-      password_symbol_vote_(0),
-      developer_engagement_metrics_(0),
+      host_frame_(form.host_frame),
       unique_renderer_id_(form.unique_renderer_id) {
   // Copy the form fields.
   std::map<std::u16string, size_t> unique_names;
@@ -688,7 +686,7 @@ void FormStructure::DetermineHeuristicTypes(
     const FieldCandidatesMap field_type_map = FormField::ParseFormFields(
         fields_, current_page_language_, is_form_tag_, log_manager);
     for (const auto& field : fields_) {
-      const auto iter = field_type_map.find(field->unique_renderer_id);
+      const auto iter = field_type_map.find(field->global_id());
       if (iter != field_type_map.end()) {
         field->set_heuristic_type(iter->second.BestHeuristicType());
       }
@@ -1094,14 +1092,14 @@ void FormStructure::RetrieveFromCache(
     const FormStructure& cached_form,
     const bool should_keep_cached_value,
     const bool only_server_and_autofill_state) {
-  std::map<FieldRendererId, const AutofillField*> cached_fields_by_id;
+  std::map<FieldGlobalId, const AutofillField*> cached_fields_by_id;
   for (size_t i = 0; i < cached_form.field_count(); ++i) {
     auto* const field = cached_form.field(i);
-    cached_fields_by_id[field->unique_renderer_id] = field;
+    cached_fields_by_id[field->global_id()] = field;
   }
   for (auto& field : *this) {
     const AutofillField* cached_field = nullptr;
-    const auto& it = cached_fields_by_id.find(field->unique_renderer_id);
+    const auto& it = cached_fields_by_id.find(field->global_id());
     if (it != cached_fields_by_id.end())
       cached_field = it->second;
 
@@ -1512,7 +1510,8 @@ FormData FormStructure::ToFormData() const {
   data.action = target_url_;
   data.main_frame_origin = main_frame_origin_;
   data.is_form_tag = is_form_tag_;
-  data.unique_renderer_id = unique_renderer_id_;
+  data.host_frame = host_frame();
+  data.unique_renderer_id = unique_renderer_id();
 
   for (const auto& field : fields_) {
     data.fields.push_back(*field);
@@ -2095,6 +2094,8 @@ void FormStructure::IdentifySectionsWithNewMethod() {
             features::kAutofillNameSectionsWithRendererIds)) {
       return base::StrCat(
           {field.name, base::ASCIIToUTF16("_"),
+           base::ASCIIToUTF16(field.host_frame.ToString()),
+           base::ASCIIToUTF16("_"),
            base::NumberToString16(field.unique_renderer_id.value())});
     } else {
       return field.unique_name();
@@ -2277,6 +2278,8 @@ void FormStructure::IdentifySections(bool has_author_specified_sections) {
             features::kAutofillNameSectionsWithRendererIds)) {
       return base::StrCat(
           {field.name, base::ASCIIToUTF16("_"),
+           base::ASCIIToUTF16(field.host_frame.ToString()),
+           base::ASCIIToUTF16("_"),
            base::NumberToString16(field.unique_renderer_id.value())});
     } else {
       return field.unique_name();
@@ -2520,6 +2523,7 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
                           base::NumberToString(
                               HashFormSignature(form.form_signature()))});
   buffer << "\n Form name: " << form.form_name();
+  buffer << "\n Host frame: " << form.host_frame().ToString();
   buffer << "\n Unique renderer Id: " << form.unique_renderer_id().value();
   buffer << "\n Target URL:" << form.target_url();
   for (size_t i = 0; i < form.field_count(); ++i) {
@@ -2531,6 +2535,7 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
                    " - ",
                    base::NumberToString(
                        HashFieldSignature(field->GetFieldSignature())),
+                   ", host frame: ", field->host_frame.ToString(),
                    ", unique renderer id: ",
                    base::NumberToString(field->unique_renderer_id.value())});
     buffer << "\n  Name: " << field->parseable_name();
@@ -2568,6 +2573,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
                           base::NumberToString(
                               HashFormSignature(form.form_signature()))});
   buffer << Tr{} << "Form name:" << form.form_name();
+  buffer << Tr{} << "Host frame:" << form.host_frame().ToString();
   buffer << Tr{} << "Unique renderer id:" << form.unique_renderer_id().value();
   buffer << Tr{} << "Target URL:" << form.target_url();
   for (size_t i = 0; i < form.field_count(); ++i) {
@@ -2582,6 +2588,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
                    " - ",
                    base::NumberToString(
                        HashFieldSignature(field->GetFieldSignature())),
+                   ", host frame: ", field->host_frame.ToString(),
                    ", unique renderer id: ",
                    base::NumberToString(field->unique_renderer_id.value())});
     buffer << Tr{} << "Name:" << field->parseable_name();

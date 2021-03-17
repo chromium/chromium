@@ -1098,6 +1098,8 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
         HasPasswordField(*frame)) {
       // Set everything that |FormDigest| needs.
       password_forms_data.push_back(FormData());
+      password_forms_data.back().host_frame =
+          autofill::LocalFrameToken(frame->GetLocalFrameToken().value());
       password_forms_data.back().url =
           form_util::GetCanonicalOriginForDocument(frame->GetDocument());
       password_forms_data.back().full_url =

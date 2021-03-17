@@ -50,8 +50,8 @@ class FieldCandidates {
   std::vector<FieldCandidate> field_candidates_;
 };
 
-// A map from the field's unique name to its possible candidates.
-using FieldCandidatesMap = base::flat_map<FieldRendererId, FieldCandidates>;
+// A map from the field's global ID to its possible candidates.
+using FieldCandidatesMap = base::flat_map<FieldGlobalId, FieldCandidates>;
 
 }  // namespace autofill
 

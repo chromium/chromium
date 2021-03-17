@@ -73,6 +73,8 @@ struct FormFieldData {
   FormFieldData& operator=(FormFieldData&&);
   ~FormFieldData();
 
+  FieldGlobalId global_id() const { return {host_frame, unique_renderer_id}; }
+
   // Returns true if both fields are identical, ignoring value- and
   // parsing related members.
   // See also SimilarFieldAs(), DynamicallySameFieldAs().
@@ -144,6 +146,9 @@ struct FormFieldData {
   std::u16string aria_label;
   std::u16string aria_description;
 
+  // Unique ID of the containing frame. A FormData must not be serialized if
+  // |host_frame| is default-initialized.
+  LocalFrameToken host_frame;
   // Unique renderer id returned by
   // WebFormControlElement::UniqueRendererFormId(). It is not persistent between
   // page loads, so it is not saved and not used in comparison in SameFieldAs().

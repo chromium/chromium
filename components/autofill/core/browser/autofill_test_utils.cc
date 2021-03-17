@@ -71,11 +71,18 @@ std::string GetRandomCardNumber() {
   return value;
 }
 
+// Creates a non-empty LocalFrameToken (no variation among different calls).
+LocalFrameToken GetLocalFrameToken() {
+  return LocalFrameToken(base::UnguessableToken::Deserialize(98765, 43210));
+}
+
+// Creates new, pairwise distinct FormRendererIds.
 FormRendererId MakeFormRendererId() {
   static uint32_t counter = 10;
   return FormRendererId(counter++);
 }
 
+// Creates new, pairwise distinct FieldRendererIds.
 FieldRendererId MakeFieldRendererId() {
   static uint32_t counter = 10;
   return FieldRendererId(counter++);
@@ -137,6 +144,7 @@ void CreateTestFormField(const char* label,
                          const char* value,
                          const char* type,
                          FormFieldData* field) {
+  field->host_frame = GetLocalFrameToken();
   field->unique_renderer_id = MakeFieldRendererId();
   field->label = ASCIIToUTF16(label);
   field->name = ASCIIToUTF16(name);
@@ -201,6 +209,7 @@ void CreateTestAddressFormData(FormData* form, const char* unique_id) {
 void CreateTestAddressFormData(FormData* form,
                                std::vector<ServerFieldTypeSet>* types,
                                const char* unique_id) {
+  form->host_frame = GetLocalFrameToken();
   form->unique_renderer_id = MakeFormRendererId();
   form->name =
       ASCIIToUTF16("MyForm") + ASCIIToUTF16(unique_id ? unique_id : "");

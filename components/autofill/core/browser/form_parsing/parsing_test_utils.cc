@@ -31,7 +31,7 @@ void FormFieldTestBase::AddFormFieldDataWithLength(
   field_data.unique_renderer_id = MakeFieldRendererId();
   list_.push_back(std::make_unique<AutofillField>(field_data));
   expected_classifications_.insert(
-      std::make_pair(field_data.unique_renderer_id, expected_type));
+      std::make_pair(field_data.global_id(), expected_type));
 }
 
 void FormFieldTestBase::AddSelectOneFormFieldData(
@@ -92,29 +92,29 @@ void FormFieldTestBase::ClassifyAndVerify(ParseResult parse_result,
 }
 
 void FormFieldTestBase::TestClassificationExpectations() {
-  for (const std::pair<FieldRendererId, ServerFieldType> it :
+  for (const std::pair<FieldGlobalId, ServerFieldType> p :
        expected_classifications_) {
-    if (it.second != UNKNOWN_TYPE) {
+    if (p.second != UNKNOWN_TYPE) {
       SCOPED_TRACE(testing::Message()
                    << "Found type "
                    << AutofillType::ServerFieldTypeToString(
-                          field_candidates_map_[it.first].BestHeuristicType())
+                          field_candidates_map_[p.first].BestHeuristicType())
                    << ", expected type "
-                   << AutofillType::ServerFieldTypeToString(it.second));
+                   << AutofillType::ServerFieldTypeToString(p.second));
 
-      ASSERT_TRUE(field_candidates_map_.find(it.first) !=
+      ASSERT_TRUE(field_candidates_map_.find(p.first) !=
                   field_candidates_map_.end());
-      EXPECT_EQ(it.second, field_candidates_map_[it.first].BestHeuristicType());
+      EXPECT_EQ(p.second, field_candidates_map_[p.first].BestHeuristicType());
     } else {
       SCOPED_TRACE(
           testing::Message()
           << "Expected type UNKNOWN_TYPE but got "
           << AutofillType::ServerFieldTypeToString(
-                 field_candidates_map_.find(it.first) !=
+                 field_candidates_map_.find(p.first) !=
                          field_candidates_map_.end()
-                     ? field_candidates_map_[it.first].BestHeuristicType()
+                     ? field_candidates_map_[p.first].BestHeuristicType()
                      : UNKNOWN_TYPE));
-      EXPECT_EQ(field_candidates_map_.find(it.first),
+      EXPECT_EQ(field_candidates_map_.find(p.first),
                 field_candidates_map_.end());
     }
   }

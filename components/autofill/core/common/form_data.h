@@ -43,6 +43,8 @@ struct FormData {
   FormData& operator=(FormData&&);
   ~FormData();
 
+  FormGlobalId global_id() const { return {host_frame, unique_renderer_id}; }
+
   // Returns true if two forms are the same, not counting the values of the
   // form elements.
   bool SameFormAs(const FormData& other) const;
@@ -90,6 +92,9 @@ struct FormData {
   url::Origin main_frame_origin;
   // True if this form is a form tag.
   bool is_form_tag = true;
+  // Unique ID of the containing frame. A FormData must not be serialized if
+  // |host_frame| is default-initialized.
+  LocalFrameToken host_frame;
   // Unique renderer id returned by WebFormElement::UniqueRendererFormId(). It
   // is not persistent between page loads, so it is not saved and not used in
   // comparison in SameFormAs().

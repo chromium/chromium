@@ -1717,6 +1717,7 @@ void WebFormControlElementToFormField(
     FormFieldData* field) {
   DCHECK(field);
   DCHECK(!element.IsNull());
+  DCHECK(element.GetDocument().GetFrame());
   static base::NoDestructor<WebString> kAutocomplete("autocomplete");
   static base::NoDestructor<WebString> kName("name");
   static base::NoDestructor<WebString> kRole("role");
@@ -1728,6 +1729,8 @@ void WebFormControlElementToFormField(
   field->name = element.NameForAutofill().Utf16();
   field->id_attribute = element.GetIdAttribute().Utf16();
   field->name_attribute = element.GetAttribute(*kName).Utf16();
+  field->host_frame = LocalFrameToken(
+      element.GetDocument().GetFrame()->GetLocalFrameToken().value());
   field->unique_renderer_id =
       FieldRendererId(element.UniqueRendererFormControlId());
   field->form_control_ax_id = element.GetAxId();
@@ -1740,8 +1743,9 @@ void WebFormControlElementToFormField(
     field->autocomplete_attribute = "x-max-data-length-exceeded";
   }
   if (base::LowerCaseEqualsASCII(element.GetAttribute(*kRole).Utf16(),
-                                 "presentation"))
+                                 "presentation")) {
     field->role = FormFieldData::RoleAttribute::kPresentation;
+  }
 
   field->placeholder = element.GetAttribute(*kPlaceholder).Utf16();
   if (element.HasAttribute(*kClass))
@@ -1863,6 +1867,7 @@ bool WebFormElementToFormData(
     return false;
 
   form->name = GetFormIdentifier(form_element);
+  form->host_frame = LocalFrameToken(frame->GetLocalFrameToken().value());
   form->unique_renderer_id =
       FormRendererId(form_element.UniqueRendererFormId());
   form->url = GetCanonicalOriginForDocument(frame->GetDocument());
@@ -1924,9 +1929,15 @@ bool UnownedFormElementsAndFieldSetsToFormData(
     ExtractMask extract_mask,
     FormData* form,
     FormFieldData* field) {
+  blink::WebLocalFrame* frame = document.GetFrame();
+  if (!frame)
+    return false;
+
+  form->host_frame = LocalFrameToken(frame->GetLocalFrameToken().value());
+  form->unique_renderer_id = FormRendererId();
   form->url = GetCanonicalOriginForDocument(document);
-  if (document.GetFrame() && document.GetFrame()->Top()) {
-    form->main_frame_origin = document.GetFrame()->Top()->GetSecurityOrigin();
+  if (frame->Top()) {
+    form->main_frame_origin = frame->Top()->GetSecurityOrigin();
   } else {
     form->main_frame_origin = url::Origin();
   }

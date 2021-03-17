@@ -380,17 +380,30 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
       std::string field_id =
           base::NumberToString(field_data.unique_renderer_id.value());
 
-      std::string title =
-          base::StrCat({"overall type: ", field.overall_type,             //
-                        "\nserver type: ", field.server_type,             //
-                        "\nheuristic type: ", field.heuristic_type,       //
-                        "\nlabel: ", base::UTF16ToUTF8(truncated_label),  //
-                        "\nparseable name: ", field.parseable_name,       //
-                        "\nsection: ", field.section,                     //
-                        "\nfield signature: ", field.signature,           //
-                        "\nform signature: ", form.signature,             //
-                        "\nform renderer id: ", form_id,                  //
-                        "\nfield renderer id: ", field_id});
+      std::string title = base::StrCat({"overall type: ",
+                                        field.overall_type,
+                                        "\nserver type: ",
+                                        field.server_type,
+                                        "\nheuristic type: ",
+                                        field.heuristic_type,
+                                        "\nlabel: ",
+                                        base::UTF16ToUTF8(truncated_label),
+                                        "\nparseable name: ",
+                                        field.parseable_name,
+                                        "\nsection: ",
+                                        field.section,
+                                        "\nfield signature: ",
+                                        field.signature,
+                                        "\nform signature: ",
+                                        form.signature,
+                                        "\nform frame token: ",
+                                        form.data.host_frame.ToString(),
+                                        "\nfield frame token: ",
+                                        field_data.host_frame.ToString(),
+                                        "\nform renderer id: ",
+                                        form_id,
+                                        "\nfield renderer id: ",
+                                        field_id});
 
       // Set this debug string to the title so that a developer can easily debug
       // by hovering the mouse over the input field.

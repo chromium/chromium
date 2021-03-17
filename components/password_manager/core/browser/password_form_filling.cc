@@ -263,6 +263,10 @@ PasswordFormFillData CreatePasswordFormFillData(
   // Note that many of the |FormFieldData| members are not initialized for
   // |username_field| and |password_field| because they are currently not used
   // by the password autocomplete code.
+  // Although the |host_frame| is currently not used by Password Manager, it
+  // must be set because serializing an empty LocalFrameToken is illegal.
+  result.username_field.host_frame = form_on_page.form_data.host_frame;
+  result.password_field.host_frame = form_on_page.form_data.host_frame;
   result.username_field.value = preferred_match.username_value;
   result.password_field.value = preferred_match.password_value;
   if (!form_on_page.only_for_fallback &&

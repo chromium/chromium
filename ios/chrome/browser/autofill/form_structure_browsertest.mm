@@ -242,15 +242,17 @@ std::string FormStructureBrowserTest::FormStructuresToString(
       // Normalize the section by replacing the unique but platform-dependent
       // integers in |field->section| with consecutive unique integers.
       size_t last_underscore = section.find_last_of('_');
-      size_t next_dash = section.find_first_of('-', last_underscore);
+      size_t second_last_underscore =
+          section.find_last_of('_', last_underscore - 1);
+      size_t next_dash = section.find_first_of('-', second_last_underscore);
       int new_section_index = static_cast<int>(section_to_index.size() + 1);
       int section_index =
           section_to_index.insert(std::make_pair(section, new_section_index))
               .first->second;
-      if (last_underscore != std::string::npos &&
+      if (second_last_underscore != std::string::npos &&
           next_dash != std::string::npos) {
         section = base::StringPrintf(
-            "%s%d%s", section.substr(0, last_underscore + 1).c_str(),
+            "%s%d%s", section.substr(0, second_last_underscore + 1).c_str(),
             section_index, section.substr(next_dash).c_str());
       }
 

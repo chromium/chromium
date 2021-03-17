@@ -633,6 +633,8 @@ TEST(PasswordFormFillDataTest, RendererIDs) {
 
   // Set renderer id related fields.
   FormData form_data;
+  form_data.host_frame = autofill::LocalFrameToken(
+      base::UnguessableToken::Deserialize(98765, 43210));
   form_data.unique_renderer_id = FormRendererId(42);
   form_data.is_form_tag = true;
   form_on_page.form_data = form_data;
@@ -643,6 +645,8 @@ TEST(PasswordFormFillDataTest, RendererIDs) {
       CreatePasswordFormFillData(form_on_page, {}, preferred_match, true);
 
   EXPECT_EQ(form_data.unique_renderer_id, result.form_renderer_id);
+  EXPECT_EQ(form_data.host_frame, result.username_field.host_frame);
+  EXPECT_EQ(form_data.host_frame, result.password_field.host_frame);
   EXPECT_EQ(form_on_page.username_element_renderer_id,
             result.username_field.unique_renderer_id);
   EXPECT_EQ(form_on_page.password_element_renderer_id,

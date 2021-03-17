@@ -93,7 +93,7 @@ class FormFieldTestBase {
   std::vector<std::unique_ptr<AutofillField>> list_;
   std::unique_ptr<FormField> field_;
   FieldCandidatesMap field_candidates_map_;
-  std::map<FieldRendererId, ServerFieldType> expected_classifications_;
+  std::map<FieldGlobalId, ServerFieldType> expected_classifications_;
 
  private:
   uint64_t id_counter_ = 0;

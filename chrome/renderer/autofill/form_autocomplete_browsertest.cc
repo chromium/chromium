@@ -190,6 +190,7 @@ void VerifyNoSubmitMessagesReceived(
 void SimulateOnFillForm(autofill::AutofillAgent* autofill_agent,
                         blink::WebLocalFrame* main_frame) {
   FormData data;
+  data.host_frame = LocalFrameToken(main_frame->GetLocalFrameToken().value());
   data.name = base::ASCIIToUTF16("name");
   data.url = GURL("http://example.com/");
   data.action = GURL("http://example.com/blade.php");
@@ -208,6 +209,8 @@ void SimulateOnFillForm(autofill::AutofillAgent* autofill_agent,
   field_data.name = base::ASCIIToUTF16("fname");
   field_data.value = base::ASCIIToUTF16("John");
   field_data.is_autofilled = true;
+  field_data.host_frame = LocalFrameToken(
+      fname_element.GetDocument().GetFrame()->GetLocalFrameToken().value());
   field_data.unique_renderer_id =
       FieldRendererId(fname_element.UniqueRendererFormControlId());
   data.fields.push_back(field_data);
@@ -216,6 +219,8 @@ void SimulateOnFillForm(autofill::AutofillAgent* autofill_agent,
   field_data.value = base::ASCIIToUTF16("Smith");
   field_data.is_autofilled = true;
   if (!lname_element.IsNull()) {
+    field_data.host_frame = LocalFrameToken(
+        lname_element.GetDocument().GetFrame()->GetLocalFrameToken().value());
     field_data.unique_renderer_id =
         FieldRendererId(lname_element.UniqueRendererFormControlId());
   }
@@ -249,6 +254,7 @@ void SimulateOnFillFormWithNonFillableFields(
   ASSERT_FALSE(lname_element.IsNull());
 
   FormData data;
+  data.host_frame = LocalFrameToken(main_frame->GetLocalFrameToken().value());
   data.name = base::ASCIIToUTF16("name");
   data.url = GURL("http://example.com/");
   data.action = GURL("http://example.com/blade.php");
@@ -258,6 +264,8 @@ void SimulateOnFillFormWithNonFillableFields(
   field_data.name = base::ASCIIToUTF16("fname");
   field_data.value = base::ASCIIToUTF16("John");
   field_data.is_autofilled = true;
+  field_data.host_frame = LocalFrameToken(
+      fname_element.GetDocument().GetFrame()->GetLocalFrameToken().value());
   field_data.unique_renderer_id =
       FieldRendererId(fname_element.UniqueRendererFormControlId());
   data.fields.push_back(field_data);
@@ -265,6 +273,8 @@ void SimulateOnFillFormWithNonFillableFields(
   field_data.name = base::ASCIIToUTF16("lname");
   field_data.value = base::ASCIIToUTF16("Smith");
   field_data.is_autofilled = true;
+  field_data.host_frame = LocalFrameToken(
+      lname_element.GetDocument().GetFrame()->GetLocalFrameToken().value());
   field_data.unique_renderer_id =
       FieldRendererId(lname_element.UniqueRendererFormControlId());
   data.fields.push_back(field_data);
@@ -273,6 +283,8 @@ void SimulateOnFillFormWithNonFillableFields(
   field_data.name = base::ASCIIToUTF16("mname");
   field_data.value = base::ASCIIToUTF16("James");
   field_data.is_autofilled = false;
+  field_data.host_frame = LocalFrameToken(
+      mname_element.GetDocument().GetFrame()->GetLocalFrameToken().value());
   field_data.unique_renderer_id =
       FieldRendererId(mname_element.UniqueRendererFormControlId());
   data.fields.push_back(field_data);

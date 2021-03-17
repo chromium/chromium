@@ -133,7 +133,7 @@ FieldCandidatesMap FormField::ParseFormFields(
       }
       for (const auto& candidate : field_candidates) {
         LogBuffer name;
-        name << "Type candidate for renderer ID: " << candidate.first.value();
+        name << "Type candidate for frame and renderer ID: " << candidate.first;
         LogBuffer description;
         ServerFieldType field_type = candidate.second.BestHeuristicType();
         description << "BestHeuristicType: "
@@ -297,7 +297,7 @@ void FormField::AddClassification(const AutofillField* field,
   if (field == nullptr)
     return;
 
-  FieldCandidates& candidates = (*field_candidates)[field->unique_renderer_id];
+  FieldCandidates& candidates = (*field_candidates)[field->global_id()];
   candidates.AddFieldCandidate(type, score);
 }
 
