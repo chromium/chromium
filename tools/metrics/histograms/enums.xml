@@ -45419,7 +45419,6 @@ from previous Chrome versions.
   <int value="-490652941" label="WebViewZeroCopyVideo:enabled"/>
   <int value="-488779992" label="blink-settings"/>
   <int value="-488744544" label="PromoBrowserCommands:disabled"/>
-  <int value="-488449930" label="SafetyCheckAndroid:enabled"/>
   <int value="-482494879"
       label="OmniboxHistoryQuickProviderAllowMidwordContinuations:disabled"/>
   <int value="-482259889" label="MacMDDownloadShelf:disabled"/>
@@ -47394,7 +47393,6 @@ from previous Chrome versions.
   <int value="1327928774" label="ClipboardHistorySimpleRender:enabled"/>
   <int value="1330264457" label="OmniboxUIExperimentVerticalLayout:disabled"/>
   <int value="1331098784" label="ReducedReferrerGranularity:enabled"/>
-  <int value="1331513360" label="SafetyCheckAndroid:disabled"/>
   <int value="1332120969" label="ChromeDuet:disabled"/>
   <int value="1333847867" label="NoScriptPreviews:enabled"/>
   <int value="1338356182" label="AutofillAssistantChromeEntry:disabled"/>
