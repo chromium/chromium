@@ -7340,10 +7340,8 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
     return !base::FeatureList::IsEnabled(features::kTeamfoodFlags);
   }
 
-  // enable-bloom and wallpaper-webui are only available for Unknown/Canary/Dev
-  // channels.
-  if ((!strcmp("enable-bloom", entry.internal_name) ||
-       !strcmp(kWallpaperWebUIInternalName, entry.internal_name)) &&
+  // wallpaper-webui is only available for Unknown/Canary/Dev channels.
+  if (!strcmp(kWallpaperWebUIInternalName, entry.internal_name) &&
       channel != version_info::Channel::DEV &&
       channel != version_info::Channel::CANARY &&
       channel != version_info::Channel::UNKNOWN) {

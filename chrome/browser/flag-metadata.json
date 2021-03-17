@@ -1453,11 +1453,6 @@
     "expiry_milestone": 86
   },
   {
-    "name": "enable-bloom",
-    "owners": [ "croissant-eng" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "enable-bluetooth-spp-in-serial-api",
     "owners": [ "mattreynolds", "odejesush", "vickymin@google.com" ],
     "expiry_milestone": 90
