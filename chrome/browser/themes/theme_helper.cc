@@ -4,6 +4,7 @@
 
 #include "chrome/browser/themes/theme_service.h"
 
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -480,6 +482,10 @@ bool ThemeHelper::ShouldIgnoreThemeSupplier(
     int id,
     bool incognito,
     const CustomThemeSupplier* theme_supplier) {
+  if (incognito && base::FeatureList::IsEnabled(
+                       features::kIncognitoBrandConsistencyForDesktop)) {
+    return true;
+  }
   // The incognito NTP uses the default background color instead of any theme
   // background color, unless the theme also sets a custom background image.
   return incognito && (id == TP::COLOR_NTP_BACKGROUND) &&
