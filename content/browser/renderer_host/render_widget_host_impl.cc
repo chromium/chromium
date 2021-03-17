@@ -19,6 +19,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/debug/alias.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/hash/hash.h"
 #include "base/i18n/rtl.h"
@@ -1985,8 +1986,99 @@ blink::ScreenInfos RenderWidgetHostImpl::GetScreenInfos() {
   // Use GetScreenInfo here to retain legacy behavior for the current screen.
   blink::ScreenInfo current_screen_info;
   GetScreenInfo(&current_screen_info);
-  // TODO(enne): Temporary workaround for http://crbug.com/1183146.
+
+  // TODO(enne): RenderWidgetHostViewMac caches the ScreenInfo and chooses
+  // not to change it during resizes.  This means that the RWHV::GetScreenInfo
+  // returned might be stale wrt GetAllDisplays() below.  Fix this.
+  // For now, just return the legacy screen info for mac.
+#if defined(OS_MAC)
   return blink::ScreenInfos(current_screen_info);
+#else
+
+  // If this widget has not been connected to a view yet (or has been
+  // disconnected), the display code may be using a fake primary display.
+  // In these cases, temporarily return the legacy screen info until
+  // it is connected and visual properties updates this correctly.
+  if (!view_) {
+    return blink::ScreenInfos(current_screen_info);
+  }
+
+  // TODO(enne): add ScreenInfos to FrameVisualProperties and store these
+  // on CrossProcessFrameConnector.  For now, only return the legacy
+  // screen info for any child widgets to avoid races between visual
+  // property propagation of legacy screen info vs GetAllDisplays.
+  // In the future, child frames should use screen_infos from the connector.
+  if (!view_->IsRenderWidgetHostViewChildFrame()) {
+    return blink::ScreenInfos(current_screen_info);
+  }
+
+  display::Screen* screen = display::Screen::GetScreen();
+  if (!screen) {
+    return blink::ScreenInfos(current_screen_info);
+  }
+
+  const std::vector<display::Display>& displays = screen->GetAllDisplays();
+
+  // Just return the legacy singular ScreenInfo, if its id is invalid or if the
+  // display::Screen is not initialized; each of which occurs in various tests.
+  // When there are no valid displays, some platforms can also create a
+  // fake default Display as well (e.g. Display::GetDefaultDisplay).
+  if (current_screen_info.display_id == display::kInvalidDisplayId ||
+      current_screen_info.display_id == display::kDefaultDisplayId ||
+      displays.empty()) {
+    return blink::ScreenInfos(current_screen_info);
+  }
+
+  // If we get here, we are asserting that the current display as reported
+  // by the RenderWidgetHostView is inside of GetAllDisplays().
+
+  blink::ScreenInfos result;
+  bool current_display_added = false;
+  for (const auto& display : displays) {
+    if (display.id() == current_screen_info.display_id) {
+      DCHECK(!current_display_added);
+      result.screen_infos.push_back(current_screen_info);
+      result.current_display_id = current_screen_info.display_id;
+      current_display_added = true;
+      continue;
+    }
+    blink::ScreenInfo screen_info;
+    DisplayUtil::DisplayToScreenInfo(&screen_info, display);
+    if (display::Display::HasForceRasterColorProfile()) {
+      screen_info.display_color_spaces = gfx::DisplayColorSpaces(
+          display::Display::GetForcedRasterColorProfile());
+    }
+    result.screen_infos.push_back(screen_info);
+  }
+
+  if (current_display_added)
+    return result;
+
+  // TODO(enne): temporary debugging logic.  GetScreens() is called during
+  // frequent visual property updates, and so will crash even when the
+  // multi-screen window placement api is not enabled.  Instead of CHECK, do a
+  // dump here so we can check if this is happening without having a full-on
+  // browser crash.
+  static bool have_crash_dumped = false;
+  if (!have_crash_dumped) {
+    have_crash_dumped = true;
+
+    SCOPED_CRASH_KEY_NUMBER("GetScreenInfos", "display_id",
+                            current_screen_info.display_id);
+    SCOPED_CRASH_KEY_NUMBER("GetScreenInfos", "num_displays", displays.size());
+
+    std::string display_ids;
+    for (const auto& display : displays) {
+      base::StringAppendF(&display_ids, "%" PRId64 ",", display.id());
+    }
+    SCOPED_CRASH_KEY_STRING256("GetScreenInfos", "displays", display_ids);
+
+    base::debug::DumpWithoutCrashing();
+  }
+
+  // Fall back to legacy screen info, if we are in a bad state.
+  return blink::ScreenInfos(current_screen_info);
+#endif
 }
 
 void RenderWidgetHostImpl::GetSnapshotFromBrowser(
