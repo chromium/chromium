@@ -122,6 +122,7 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD2(ConfirmSaveUpiIdLocally,
                void(const std::string& upi_id,
                     base::OnceCallback<void(bool user_decision)> callback));
+  MOCK_CONST_METHOD0(GetProfileType, profile_metrics::BrowserProfileType());
 };
 
 class MockAutofillDownloadManager : public TestAutofillDownloadManager {
@@ -8553,6 +8554,47 @@ TEST_F(AutofillManagerTest, PageLanguageGetsCorrectlyDetected) {
 
   ASSERT_EQ(LanguageCode("zh"), parsed_form->current_page_language());
 }
+
+// AutofillManagerTest with different browser profile types.
+class AutofillManagerProfileMetricsTest
+    : public AutofillManagerTest,
+      public testing::WithParamInterface<profile_metrics::BrowserProfileType> {
+ public:
+  AutofillManagerProfileMetricsTest() : profile_type_(GetParam()) {
+    EXPECT_CALL(autofill_client_, GetProfileType())
+        .WillRepeatedly(Return(profile_type_));
+  }
+
+  const profile_metrics::BrowserProfileType profile_type_;
+};
+
+// Tests if submitting a form in different browser profile types records correct
+// |Autofill.FormSubmission.PerProfileType| metric.
+TEST_P(AutofillManagerProfileMetricsTest, FormSubmissionPerProfileTypeMetrics) {
+  // Set up our form data.
+  FormData form;
+  test::CreateTestAddressFormData(&form);
+  std::vector<FormData> forms(1, form);
+  FormsSeen(forms);
+  FormFieldData field = form.fields[0];
+  GetAutofillSuggestions(form, field);
+
+  base::HistogramTester histogram_tester;
+
+  FormSubmitted(form);
+  histogram_tester.ExpectBucketCount("Autofill.FormSubmission.PerProfileType",
+                                     profile_type_, 1);
+  histogram_tester.ExpectTotalCount("Autofill.FormSubmission.PerProfileType",
+                                    1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AutofillManagerProfileMetricsTest,
+    testing::ValuesIn({profile_metrics::BrowserProfileType::kRegular,
+                       profile_metrics::BrowserProfileType::kIncognito,
+                       profile_metrics::BrowserProfileType::kGuest,
+                       profile_metrics::BrowserProfileType::kEphemeralGuest}));
 
 // AutofillManagerTest with kAutofillDisabledMixedForms feature enabled.
 class AutofillManagerTestWithMixedForms : public AutofillManagerTest {
