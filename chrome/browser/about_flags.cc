@@ -6054,8 +6054,13 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if defined(OS_ANDROID)
 
-    {"use-chime-android-sdk", flag_descriptions::kUseChimeAndroidSdkName,
-     flag_descriptions::kUseChimeAndroidSdkDescription, kOsAndroid,
+    {"debug-chime-notification",
+     flag_descriptions::kChimeAlwaysShowNotificationName,
+     flag_descriptions::kChimeAlwaysShowNotificationDescription, kOsAndroid,
+     SINGLE_VALUE_TYPE(notifications::switches::kDebugChimeNotification)},
+
+    {"use-chime-android-sdk", flag_descriptions::kChimeAndroidSdkName,
+     flag_descriptions::kChimeAndroidSdkDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(notifications::features::kUseChimeAndroidSdk)},
 
 #endif  // defined(OS_ANDROID)
