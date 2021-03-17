@@ -1291,7 +1291,7 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   //    progress; otherwise, it is advanced directly to
   //    LifeCycleState::kReadyToBeDeleted.
   //
-  // For BackForwardCache case:
+  // For BackForwardCache or Prerender case:
   //
   // Deleting the BackForwardCache::Entry deletes immediately all the
   // Render{View,Frame,FrameProxy}Host. This will destroy the main RenderFrame
@@ -1337,8 +1337,10 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   // *always* first be unassociated from its corresponding RFHM. Thus, it
   // follows that |GetMainFrame()| will never return the speculative main frame
   // being deleted, since it must have already been unset.
-  if (was_created && render_view_host_->GetMainFrame() != this)
-    CHECK(IsPendingDeletion() || IsInBackForwardCache());
+  if (was_created && render_view_host_->GetMainFrame() != this) {
+    CHECK(IsPendingDeletion() || IsInBackForwardCache() ||
+          lifecycle_state() == LifecycleState::kPrerendering);
+  }
 
   GetAgentSchedulingGroup().RemoveRoute(routing_id_);
   g_routing_id_frame_map.Get().erase(
@@ -7895,7 +7897,7 @@ void RenderFrameHostImpl::BindPrerenderProcessor(
 }
 
 void RenderFrameHostImpl::CancelPrerendering() {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2));
+  DCHECK(blink::features::IsPrerender2Enabled());
   // This function is called from MojoBinderPolicyApplier, which should only be
   // active during prerendering. It would be an error to call this while not
   // prerendering, as it could mean an interface request is never resolved for
@@ -7910,15 +7912,19 @@ void RenderFrameHostImpl::CancelPrerendering() {
   prerender_host_registry->AbandonHost(frame_tree_node_id);
 }
 
+void RenderFrameHostImpl::ReleaseMojoBinderPoliciesForPrerendering() {
+  broker_.ReleaseMojoBinderPolicies();
+}
 
 void RenderFrameHostImpl::OnPrerenderedPageActivated() {
   // TODO(crbug.com/1174506): Temporary until we understand the cause of the
   // crash. Return to DCHECKs after the bug is fixed.
   CHECK(blink::features::IsPrerender2Enabled());
+  CHECK(blink::features::IsPrerenderWebContentsEnabled());
   // Update the |lifecycle_state_| to kActive on activation.
   DCHECK_EQ(lifecycle_state_, LifecycleState::kPrerendering);
   SetLifecycleState(LifecycleState::kActive);
-  broker_.ReleaseMojoBinderPolicies();
+  ReleaseMojoBinderPoliciesForPrerendering();
   for (auto& child : children_)
     child->current_frame_host()->OnPrerenderedPageActivated();
 }
@@ -8995,10 +9001,11 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   // early post-crash CommitPending() call.
   committed_speculative_rfh_before_navigation_commit_ = false;
 
-  // TODO(arthursonzogni): Updating this flag for same-document or bfcache
-  // navigation doesn't seem right. This should likely be executed in
+  // TODO(arthursonzogni): Updating this flag for same-document, bfcache, or
+  // prerender navigation doesn't seem right. This should likely be executed in
   // DidCommitNewDocument().
-  if (IsBackForwardCacheEnabled()) {
+  if (IsBackForwardCacheEnabled() ||
+      blink::features::IsPrerenderMPArchEnabled()) {
     // Store the Commit params so they can be reused if the page is ever
     // restored from the BackForwardCache.
     last_commit_params_ = std::move(params);
@@ -9838,10 +9845,15 @@ int CalculateHTTPStatusCode(NavigationRequest* request,
   // committed navigation.
   if (request->IsSameDocument())
     return last_http_status_code;
-  // Navigations that are served from the back/forward cache will always have
-  // the HTTP status code set to 200.
-  if (request->IsServedFromBackForwardCache())
+  // Navigations that are served from the back/forward cache or that are
+  // prerendered will always have the HTTP status code set to 200.
+  //
+  // TODO(https://crbug.com/1170277): Navigations should actually return the
+  // last HTTP status code of the RenderFrameHost.
+  if (request->IsServedFromBackForwardCache() ||
+      request->IsPrerenderedPageActivation()) {
     return 200;
+  }
   // The HTTP status code is not set if we never received any HTTP response for
   // the navigation.
   const int request_response_code = request->commit_params().http_response_code;
@@ -10374,13 +10386,15 @@ bool RenderFrameHostImpl::IsPendingDeletion() {
 }
 
 void RenderFrameHostImpl::SetLifecycleStateToActive() {
-  // If the RenderFrameHost is restored from BackForwardCache, update states of
-  // all the children to kActive. This is called from
-  // RenderFrameHostManager::SetRenderFrameHost which happens after commit.
-  if (IsInBackForwardCache()) {
+  // If the RenderFrameHost is restored from BackForwardCache or is part of a
+  // prerender activation, update states of all the children to kActive. This is
+  // called from RenderFrameHostManager::SetRenderFrameHost which happens after
+  // commit.
+  if (IsInBackForwardCache() ||
+      lifecycle_state_ == LifecycleState::kPrerendering) {
     for (auto& child : children_) {
-      DCHECK_EQ(child->current_frame_host()->lifecycle_state_,
-                LifecycleState::kInBackForwardCache);
+      DCHECK_EQ(lifecycle_state_,
+                child->current_frame_host()->lifecycle_state_);
       child->current_frame_host()->SetLifecycleStateToActive();
     }
   }
@@ -10443,7 +10457,8 @@ void RenderFrameHostImpl::SetLifecycleState(LifecycleState state) {
   // Unset the |has_pending_lifecycle_state_update_| value once the
   // LifecycleState is updated.
   if (has_pending_lifecycle_state_update_) {
-    DCHECK(IsInBackForwardCache() || IsPendingDeletion())
+    DCHECK(IsInBackForwardCache() || IsPendingDeletion() ||
+           old_state == LifecycleState::kPrerendering)
         << "Transitioned to unexpected state with resetting "
            "|has_pending_lifecycle_state_update_|\n ";
     has_pending_lifecycle_state_update_ = false;
@@ -10632,6 +10647,16 @@ void RenderFrameHostImpl::SetEmbeddingToken(
 
 bool RenderFrameHostImpl::DocumentUsedWebOTP() {
   return document_used_web_otp_;
+}
+
+void RenderFrameHostImpl::SetFrameTreeNode(FrameTreeNode& frame_tree_node) {
+  frame_tree_node_ = &frame_tree_node;
+  frame_tree_ = frame_tree_node_->frame_tree();
+}
+
+void RenderFrameHostImpl::SetFrameTree(FrameTree& frame_tree) {
+  DCHECK_EQ(frame_tree_node_->frame_tree(), &frame_tree);
+  frame_tree_ = &frame_tree;
 }
 
 void RenderFrameHostImpl::SetPolicyContainerForEarlyCommitAfterCrash(

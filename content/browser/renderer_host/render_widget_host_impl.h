@@ -189,7 +189,13 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // RenderWidgetHostImpl.
   static RenderWidgetHostImpl* From(RenderWidgetHost* rwh);
 
+  // TODO(crbug.com/1179502): FrameTree and FrameTreeNode will not be const as
+  // with prerenderer activation the page needs to move between FrameTreeNodes
+  // and FrameTrees. As it's hard to make sure that all places handle this
+  // transition correctly, MPArch will remove references from this class to
+  // FrameTree/FrameTreeNode.
   FrameTree* frame_tree() const { return frame_tree_; }
+  void SetFrameTree(FrameTree& frame_tree) { frame_tree_ = &frame_tree; }
 
   void set_new_content_rendering_delay_for_testing(
       const base::TimeDelta& delay) {

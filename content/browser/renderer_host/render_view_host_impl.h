@@ -310,7 +310,13 @@ class CONTENT_EXPORT RenderViewHostImpl
   // trigger an eviction of this page.
   void PrepareToLeaveBackForwardCache(base::OnceClosure done_cb);
 
+  // TODO(https://crbug.com/1179502): FrameTree and FrameTreeNode will not be
+  // const as with prerenderer activation the page needs to move between
+  // FrameTreeNodes and FrameTrees. As it's hard to make sure that all places
+  // handle this transition correctly, MPArch will remove references from this
+  // class to FrameTree/FrameTreeNode.
   FrameTree* frame_tree() const { return frame_tree_; }
+  void SetFrameTree(FrameTree& frame_tree);
 
   // NOTE: Do not add functions that just send an IPC message that are called in
   // one or two places. Have the caller send the IPC message directly (unless

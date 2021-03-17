@@ -1516,6 +1516,18 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
     }
   }
 
+  // If this is an activation navigation from a prerendered page, transfer the
+  // new entry from an entry already created and stored in the
+  // NavigationRequest. |new_entry| will not have been set prior to this as
+  // |is_same_document| is mutually exclusive with
+  // |IsPrerenderedPageActivation|.
+  if (request->IsPrerenderedPageActivation()) {
+    DCHECK(!is_same_document);
+    DCHECK(!new_entry);
+    new_entry = request->TakePrerenderNavigationEntry();
+    DCHECK(new_entry);
+  }
+
   // Only make a copy of the pending entry if it is appropriate for the new
   // document that just loaded. Verify this by checking if the entry corresponds
   // to the given NavigationRequest. Additionally, coarsely check that:
@@ -1578,55 +1590,62 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
     }
   }
 
-  // Don't use the page type from the pending entry. Some interstitial page
-  // may have set the type to interstitial. Once we commit, however, the page
-  // type must always be normal or error.
-  new_entry->set_page_type(params.url_is_unreachable ? PAGE_TYPE_ERROR
-                                                     : PAGE_TYPE_NORMAL);
-  new_entry->SetURL(params.url);
-  if (update_virtual_url)
-    UpdateVirtualURLToURL(new_entry.get(), params.url);
-  new_entry->SetReferrer(Referrer(*params.referrer));
-  new_entry->SetTransitionType(params.transition);
-  new_entry->set_site_instance(
-      static_cast<SiteInstanceImpl*>(rfh->GetSiteInstance()));
-  new_entry->SetOriginalRequestURL(request->GetOriginalRequestURL());
+  // TODO(crbug.com/1179428) - determine which parts of the entry need to be set
+  // for prerendered contents, if any. This is because prerendering/activation
+  // technically won't be creating a new document. Unlike BFCache, prerendering
+  // creates a new NavigationEntry rather than using an existing one.
+  if (!request->IsPrerenderedPageActivation()) {
+    // Don't use the page type from the pending entry. Some interstitial page
+    // may have set the type to interstitial. Once we commit, however, the page
+    // type must always be normal or error.
+    new_entry->set_page_type(params.url_is_unreachable ? PAGE_TYPE_ERROR
+                                                       : PAGE_TYPE_NORMAL);
+    new_entry->SetURL(params.url);
+    if (update_virtual_url)
+      UpdateVirtualURLToURL(new_entry.get(), params.url);
+    new_entry->SetReferrer(Referrer(*params.referrer));
+    new_entry->SetTransitionType(params.transition);
+    new_entry->set_site_instance(
+        static_cast<SiteInstanceImpl*>(rfh->GetSiteInstance()));
+    new_entry->SetOriginalRequestURL(request->GetOriginalRequestURL());
 
-  if (!is_same_document) {
-    DCHECK_EQ(request->IsOverridingUserAgent() && !rfh->GetParent(),
-              params.is_overriding_user_agent);
-  } else {
-    DCHECK_EQ(rfh->is_overriding_user_agent(), params.is_overriding_user_agent);
-  }
-  new_entry->SetIsOverridingUserAgent(params.is_overriding_user_agent);
+    if (!is_same_document) {
+      DCHECK_EQ(request->IsOverridingUserAgent() && !rfh->GetParent(),
+                params.is_overriding_user_agent);
+    } else {
+      DCHECK_EQ(rfh->is_overriding_user_agent(),
+                params.is_overriding_user_agent);
+    }
+    new_entry->SetIsOverridingUserAgent(params.is_overriding_user_agent);
 
-  // Update the FrameNavigationEntry for new main frame commits.
-  FrameNavigationEntry* frame_entry =
-      new_entry->GetFrameEntry(rfh->frame_tree_node());
-  frame_entry->set_frame_unique_name(rfh->frame_tree_node()->unique_name());
-  frame_entry->set_item_sequence_number(params.item_sequence_number);
-  frame_entry->set_document_sequence_number(params.document_sequence_number);
-  frame_entry->set_redirect_chain(request->GetRedirectChain());
-  frame_entry->SetPageState(params.page_state);
-  frame_entry->set_method(params.method);
-  frame_entry->set_post_id(params.post_id);
-  frame_entry->set_policy_container_policies(
-      ComputePolicyContainerPoliciesForFrameEntry(rfh, is_same_document,
-                                                  request));
+    // Update the FrameNavigationEntry for new main frame commits.
+    FrameNavigationEntry* frame_entry =
+        new_entry->GetFrameEntry(rfh->frame_tree_node());
+    frame_entry->set_frame_unique_name(rfh->frame_tree_node()->unique_name());
+    frame_entry->set_item_sequence_number(params.item_sequence_number);
+    frame_entry->set_document_sequence_number(params.document_sequence_number);
+    frame_entry->set_redirect_chain(request->GetRedirectChain());
+    frame_entry->SetPageState(params.page_state);
+    frame_entry->set_method(params.method);
+    frame_entry->set_post_id(params.post_id);
+    frame_entry->set_policy_container_policies(
+        ComputePolicyContainerPoliciesForFrameEntry(rfh, is_same_document,
+                                                    request));
 
-  if (!params.url_is_unreachable)
-    frame_entry->set_committed_origin(params.origin);
-  if (request->web_bundle_navigation_info()) {
-    frame_entry->set_web_bundle_navigation_info(
-        request->web_bundle_navigation_info()->Clone());
-  }
+    if (!params.url_is_unreachable)
+      frame_entry->set_committed_origin(params.origin);
+    if (request->web_bundle_navigation_info()) {
+      frame_entry->set_web_bundle_navigation_info(
+          request->web_bundle_navigation_info()->Clone());
+    }
 
-  // history.pushState() is classified as a navigation to a new page, but sets
-  // is_same_document to true. In this case, we already have the title and
-  // favicon available, so set them immediately.
-  if (is_same_document && GetLastCommittedEntry()) {
-    new_entry->SetTitle(GetLastCommittedEntry()->GetTitle());
-    new_entry->GetFavicon() = GetLastCommittedEntry()->GetFavicon();
+    // history.pushState() is classified as a navigation to a new page, but sets
+    // is_same_document to true. In this case, we already have the title and
+    // favicon available, so set them immediately.
+    if (is_same_document && GetLastCommittedEntry()) {
+      new_entry->SetTitle(GetLastCommittedEntry()->GetTitle());
+      new_entry->GetFavicon() = GetLastCommittedEntry()->GetFavicon();
+    }
   }
 
   DCHECK(!params.history_list_was_cleared || !replace_entry);

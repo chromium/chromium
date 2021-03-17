@@ -149,18 +149,6 @@ int PrerenderHostRegistry::ReserveHostToActivate(
   if (!host->is_ready_for_activation())
     return RenderFrameHost::kNoFrameTreeNodeId;
 
-  switch (blink::features::kPrerender2ImplementationParam.Get()) {
-    case blink::features::Prerender2Implementation::kWebContents:
-      break;
-    case blink::features::Prerender2Implementation::kMPArch:
-      // The feature param disallows activation of the prerendered page for
-      // testing. Destroy the host to dispose of the prerendered page and return
-      // an invalid id.
-      // TODO(https://crbug.com/1170277): Remove once activation support is
-      // added to MPArch.
-      return RenderFrameHost::kNoFrameTreeNodeId;
-  }
-
   // Reserve the host for activation.
   auto result = reserved_prerender_host_by_frame_tree_node_id_.emplace(
       prerender_frame_tree_node_id, std::move(host));
@@ -169,16 +157,28 @@ int PrerenderHostRegistry::ReserveHostToActivate(
   return prerender_frame_tree_node_id;
 }
 
-bool PrerenderHostRegistry::ActivateReservedHost(
-    int frame_tree_node_id,
-    RenderFrameHostImpl& current_render_frame_host) {
+RenderFrameHostImpl* PrerenderHostRegistry::GetRenderFrameHostForReservedHost(
+    int frame_tree_node_id) {
   auto iter =
       reserved_prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
-  if (iter == reserved_prerender_host_by_frame_tree_node_id_.end())
-    return false;
+  if (iter == reserved_prerender_host_by_frame_tree_node_id_.end()) {
+    return nullptr;
+  }
+  return iter->second->GetPrerenderedMainFrameHost();
+}
+
+std::unique_ptr<BackForwardCacheImpl::Entry>
+PrerenderHostRegistry::ActivateReservedHost(
+    int frame_tree_node_id,
+    RenderFrameHostImpl& current_render_frame_host,
+    NavigationRequest& navigation_request) {
+  auto iter =
+      reserved_prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
+  CHECK(iter != reserved_prerender_host_by_frame_tree_node_id_.end());
   std::unique_ptr<PrerenderHost> prerender_host = std::move(iter->second);
   reserved_prerender_host_by_frame_tree_node_id_.erase(iter);
-  return prerender_host->ActivatePrerenderedContents(current_render_frame_host);
+  return prerender_host->ActivatePrerenderedContents(current_render_frame_host,
+                                                     navigation_request);
 }
 
 void PrerenderHostRegistry::AbandonReservedHost(int frame_tree_node_id) {

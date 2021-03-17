@@ -143,6 +143,8 @@ class CONTENT_EXPORT FrameTree {
   FrameTreeNode* root() const { return root_; }
 
   // Sets |is_prerendering_| to false and activates the Prerendered page.
+  // TODO(https://crbug.com/1154501): Remove once MPArch is enabled, as this is
+  // only used in the multiple WebContents implementation of prerendering.
   void ActivatePrerenderedFrameTree();
 
   bool is_prerendering() const { return is_prerendering_; }
@@ -356,6 +358,10 @@ class CONTENT_EXPORT FrameTree {
 
   // Stops all ongoing navigations in each of the nodes of this FrameTree.
   void StopLoading();
+
+  // Returns true if any of the nodes in this frame tree is navigating, i.e. it
+  // has an associated NavigationRequest.
+  bool HasNavigation();
 
  private:
   friend class FrameTreeTest;

@@ -157,7 +157,9 @@ void WebContentsObserverConsistencyChecker::RenderFrameHostChanged(
 
   GlobalRoutingID routing_pair = GetRoutingPair(new_host);
   bool host_exists = !current_hosts_.insert(routing_pair).second;
-  if (host_exists) {
+  // TODO(https://crbug.com/1179683): Figure out a better way to deal with
+  // MPArch.
+  if (host_exists && !blink::features::IsPrerenderMPArchEnabled()) {
     CHECK(false)
         << "RenderFrameHostChanged called more than once for routing pair:"
         << Format(new_host);
@@ -166,7 +168,12 @@ void WebContentsObserverConsistencyChecker::RenderFrameHostChanged(
   // If |new_host| is restored from the BackForwardCache, it can contain
   // iframes, otherwise it has just been created and can't contain iframes for
   // the moment.
-  if (!IsBackForwardCacheEnabled()) {
+  //
+  // TODO(https://crbug.com/1179683): Figure out a better way to deal with
+  // handling the new RenderFrameHost coming from a prerendered activation
+  // rather than an ordinary activation.
+  if (!IsBackForwardCacheEnabled() &&
+      !blink::features::IsPrerenderMPArchEnabled()) {
     CHECK(!HasAnyChildren(new_host))
         << "A frame should not have children before it is committed.";
   }

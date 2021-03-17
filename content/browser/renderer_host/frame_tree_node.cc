@@ -31,6 +31,7 @@
 #include "content/public/common/content_features.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
 
@@ -160,10 +161,30 @@ FrameTreeNode::FrameTreeNode(
 }
 
 FrameTreeNode::~FrameTreeNode() {
-  // Remove the children.
-  current_frame_host()->ResetChildren();
+  // The current frame host may be null when destroying the old frame tree
+  // during prerender activation. However, in such cases, the FrameTree and its
+  // root FrameTreeNode objects are deleted immediately with activation. In all
+  // other cases, there should always be a current frame host.
+  //
+  // TODO(https://crbug.com/1170277): Need to find a solution for being notified
+  // in various places. They do not support having no current_frame_host().
+  if (current_frame_host()) {
+    // Remove the children.
+    current_frame_host()->ResetChildren();
 
-  current_frame_host()->ResetLoadingState();
+    current_frame_host()->ResetLoadingState();
+  } else {
+    DCHECK(blink::features::IsPrerenderMPArchEnabled());
+    DCHECK(!parent());  // Only main documents can be activated.
+    DCHECK(!opener());  // Prerendered frame trees can't have openers.
+
+    // Activation is not allowed during ongoing navigations.
+    DCHECK(!navigation_request_);
+
+    // TODO(https://crbug.com/1170277): Need to determine how to handle pending
+    // deletions, as observers will be notified.
+    DCHECK(!render_manager()->speculative_frame_host());
+  }
 
   // If the removed frame was created by a script, then its history entry will
   // never be reused - we can save some memory by removing the history entry.
@@ -235,7 +256,8 @@ FrameTreeNode::~FrameTreeNode() {
   if (did_stop_loading)
     DidStopLoading();
 
-  DCHECK(!IsLoading());
+  // IsLoading() requires that current_frame_host() is non-null.
+  DCHECK(!current_frame_host() || !IsLoading());
 }
 
 void FrameTreeNode::AddObserver(Observer* observer) {
@@ -345,6 +367,11 @@ void FrameTreeNode::SetCollapsed(bool collapsed) {
 
   is_collapsed_ = collapsed;
   render_manager_.OnDidChangeCollapsedState(collapsed);
+}
+
+void FrameTreeNode::SetFrameTree(FrameTree& frame_tree) {
+  DCHECK(blink::features::IsPrerenderMPArchEnabled());
+  frame_tree_ = &frame_tree;
 }
 
 void FrameTreeNode::SetFrameName(const std::string& name,

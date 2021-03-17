@@ -166,6 +166,18 @@ bool IsPrerender2Enabled() {
   return base::FeatureList::IsEnabled(blink::features::kPrerender2);
 }
 
+bool IsPrerenderMPArchEnabled() {
+  return IsPrerender2Enabled() &&
+         blink::features::kPrerender2ImplementationParam.Get() ==
+             blink::features::Prerender2Implementation::kMPArch;
+}
+
+bool IsPrerenderWebContentsEnabled() {
+  return IsPrerender2Enabled() &&
+         blink::features::kPrerender2ImplementationParam.Get() ==
+             blink::features::Prerender2Implementation::kWebContents;
+}
+
 // Enable limiting previews loading hints to specific resource types.
 const base::Feature kPreviewsResourceLoadingHintsSpecificResourceTypes{
     "PreviewsResourceLoadingHintsSpecificResourceTypes",

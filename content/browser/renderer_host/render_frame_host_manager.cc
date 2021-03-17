@@ -63,6 +63,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
@@ -518,6 +519,49 @@ void RenderFrameHostManager::OnDidSetFramePolicyHeaders() {
   }
 }
 
+std::unique_ptr<BackForwardCacheImpl::Entry>
+RenderFrameHostManager::TakePrerenderedPage() {
+  DCHECK(frame_tree_node_->IsMainFrame());
+  // TODO(https://crbug.com/1170277): investigate whether it is preferable to
+  // set the RenderFrameHost to a non-null placeholder similar to the
+  // implementations of portals and inner WebContents.
+  return CollectPage(SetRenderFrameHost(nullptr));
+}
+
+std::unique_ptr<BackForwardCacheImpl::Entry>
+RenderFrameHostManager::CollectPage(
+    std::unique_ptr<RenderFrameHostImpl> main_render_frame_host) {
+  DCHECK(main_render_frame_host->is_main_frame());
+
+  std::set<RenderViewHostImpl*> render_view_hosts;
+
+  // Prepare the main frame.
+  render_view_hosts.insert(main_render_frame_host->render_view_host());
+
+  // Prepare the proxies.
+  RenderFrameProxyHostMap proxy_hosts;
+  SiteInstance* instance = main_render_frame_host->GetSiteInstance();
+  for (auto& it : proxy_hosts_) {
+    // This avoids including the proxy created when starting a
+    // new cross-process, cross-BrowsingInstance navigation, as well as any
+    // restored proxies which are also in a different BrowsingInstance.
+    if (instance->IsRelatedSiteInstance(it.second->GetSiteInstance())) {
+      render_view_hosts.insert(it.second->GetRenderViewHost());
+      proxy_hosts[it.first] = std::move(it.second);
+    }
+  }
+  // Remove the previously extracted proxies from the
+  // RenderFrameHostManager, which also removes their respective
+  // SiteInstanceImpl::Observer.
+  for (auto& it : proxy_hosts)
+    DeleteRenderFrameProxyHost(it.second->GetSiteInstance());
+
+  auto entry = std::make_unique<BackForwardCacheImpl::Entry>(
+      std::move(main_render_frame_host), std::move(proxy_hosts),
+      std::move(render_view_hosts));
+  return entry;
+}
+
 void RenderFrameHostManager::UnloadOldFrame(
     std::unique_ptr<RenderFrameHostImpl> old_render_frame_host) {
   TRACE_EVENT1("navigation", "RenderFrameHostManager::UnloadOldFrame",
@@ -568,43 +612,17 @@ void RenderFrameHostManager::UnloadOldFrame(
   {
     BackForwardCacheImpl& back_forward_cache =
         GetNavigationController().GetBackForwardCache();
+
     auto can_store =
         back_forward_cache.CanStorePageNow(old_render_frame_host.get());
     TRACE_EVENT1("navigation", "BackForwardCache_MaybeStorePage", "can_store",
                  can_store.ToString());
     if (can_store) {
-      std::set<RenderViewHostImpl*> old_render_view_hosts;
-
-      // Prepare the main frame.
-      old_render_view_hosts.insert(static_cast<RenderViewHostImpl*>(
-          old_render_frame_host->GetRenderViewHost()));
-
-      // Prepare the proxies.
-      RenderFrameProxyHostMap old_proxy_hosts;
-      SiteInstance* instance = old_render_frame_host->GetSiteInstance();
-      for (auto& it : proxy_hosts_) {
-        // This avoids including the proxy created when starting a
-        // new cross-process, cross-BrowsingInstance navigation, as well as any
-        // restored proxies which are also in a different BrowsingInstance.
-        if (instance->IsRelatedSiteInstance(it.second->GetSiteInstance())) {
-          old_render_view_hosts.insert(it.second->GetRenderViewHost());
-          old_proxy_hosts[it.first] = std::move(it.second);
-        }
-      }
-      // Remove the previously extracted proxies from the
-      // RenderFrameHostManager, which also remove their respective
-      // SiteInstanceImpl::Observer.
-      for (auto& it : old_proxy_hosts)
-        DeleteRenderFrameProxyHost(it.second->GetSiteInstance());
-
+      auto entry = CollectPage(std::move(old_render_frame_host));
       // Ensures RenderViewHosts are not reused while they are in the cache.
-      for (RenderViewHostImpl* rvh : old_render_view_hosts) {
+      for (RenderViewHostImpl* rvh : entry->render_view_hosts) {
         rvh->EnterBackForwardCache();
       }
-
-      auto entry = std::make_unique<BackForwardCacheImpl::Entry>(
-          std::move(old_render_frame_host), std::move(old_proxy_hosts),
-          std::move(old_render_view_hosts));
       back_forward_cache.StoreEntry(std::move(entry));
       return;
     }
@@ -3036,8 +3054,12 @@ void RenderFrameHostManager::CommitPending(
   //    order to receive the IPC.
   DCHECK(pending_rfh->IsRenderFrameCreated());
 
-  // We should never have a pending bfcache entry if bfcache is disabled.
-  DCHECK(!pending_bfcache_entry || IsBackForwardCacheEnabled());
+  // We should not have a pending bfcache entry unless bfcache or prerendering
+  // is enabled. Note that in prerendering, the prerendering page information is
+  // stored in `pending_bfcache_entry` prior to activating the page
+  // (despite the "bfcache" name).
+  DCHECK(!pending_bfcache_entry || IsBackForwardCacheEnabled() ||
+         blink::features::IsPrerender2Enabled());
 
 #if defined(OS_MAC)
   // The old RenderWidgetHostView will be hidden before the new
@@ -3082,6 +3104,15 @@ void RenderFrameHostManager::CommitPending(
         navigation_entry);
   }
 
+  // If we navigate to an existing page (i.e. |pending_bfcache_entry| is not
+  // null), check that |pending_rfh|'s old lifecycle state supports that.
+  RenderFrameHostImpl::LifecycleState prev_state =
+      pending_rfh->lifecycle_state();
+  DCHECK(!pending_bfcache_entry ||
+         prev_state == RenderFrameHostImpl::LifecycleState::kPrerendering ||
+         prev_state ==
+             RenderFrameHostImpl::LifecycleState::kInBackForwardCache);
+
   // Swap in the new frame and make it active. Also ensure the FrameTree
   // stays in sync.
   std::unique_ptr<RenderFrameHostImpl> old_render_frame_host;
@@ -3104,9 +3135,12 @@ void RenderFrameHostManager::CommitPending(
 
     std::set<RenderViewHostImpl*> render_view_hosts_to_restore =
         std::move(pending_bfcache_entry->render_view_hosts);
-    for (RenderViewHostImpl* rvh : render_view_hosts_to_restore) {
-      rvh->LeaveBackForwardCache(
-          pending_bfcache_entry->page_restore_params.Clone());
+    if (prev_state ==
+        RenderFrameHostImpl::LifecycleState::kInBackForwardCache) {
+      for (RenderViewHostImpl* rvh : render_view_hosts_to_restore) {
+        rvh->LeaveBackForwardCache(
+            pending_bfcache_entry->page_restore_params.Clone());
+      }
     }
   }
 

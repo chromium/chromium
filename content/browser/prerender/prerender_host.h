@@ -10,6 +10,7 @@
 #include "base/observer_list_types.h"
 #include "base/optional.h"
 #include "base/types/pass_key.h"
+#include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
@@ -76,17 +77,29 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   // WebContentsObserver implementation:
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
 
-  // Activates the prerendered contents. Returns false when activation didn't
-  // occur for some reason. This must be called after this host gets ready for
-  // activation. `current_render_frame_host` is the RenderFrameHost that will
-  // be swapped out and destroyed by the activation.
-  bool ActivatePrerenderedContents(
-      RenderFrameHostImpl& current_render_frame_host);
+  // Activates the prerendered contents. This must be called after this host
+  // gets ready for activation. `old_render_frame_host` is the RenderFrameHost
+  // that will be swapped out and destroyed by the activation. For MPArch
+  // implementation, returns the activating page prepared for cross-FrameTree
+  // transfer. For multiple WebContents implementation, always returns nullptr.
+  //
+  // TODO(https://crbug.com/1154501): WebContents implementation will need to be
+  // removed.
+  //
+  // TODO(https://crbug.com/1170277): Potentially update implementation so that
+  // the |old_render_frame_host| parameter is not required.
+  //
+  // TODO(https://crbug.com/1181263): Refactor BackForwardCacheImpl::Entry into
+  // a generic "page" object to make clear that the same logic is also used for
+  // prerendering.
+  std::unique_ptr<BackForwardCacheImpl::Entry> ActivatePrerenderedContents(
+      RenderFrameHostImpl& old_render_frame_host,
+      NavigationRequest& navigation_request);
 
-  // Exposes the main RenderFrameHost of the prerendered page for testing.
+  // Returns the main RenderFrameHost of the prerendered page.
   // This must be called after StartPrerendering() and before
   // ActivatePrerenderedContents().
-  RenderFrameHostImpl* GetPrerenderedMainFrameHostForTesting();
+  RenderFrameHostImpl* GetPrerenderedMainFrameHost();
 
   // Tells the reason of the destruction of this host. PrerenderHostRegistry
   // uses this before abandoning the host.

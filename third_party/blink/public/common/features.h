@@ -57,6 +57,8 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<Prerender2Implementation>
 
 // Returns true when Prerender2 feature is enabled.
 BLINK_COMMON_EXPORT bool IsPrerender2Enabled();
+BLINK_COMMON_EXPORT bool IsPrerenderMPArchEnabled();
+BLINK_COMMON_EXPORT bool IsPrerenderWebContentsEnabled();
 
 BLINK_COMMON_EXPORT extern const base::Feature
     kPreviewsResourceLoadingHintsSpecificResourceTypes;

@@ -519,6 +519,12 @@ void RenderViewHostImpl::SetMainFrameRoutingId(int routing_id) {
   // will need to track its own live-ness then.
 }
 
+void RenderViewHostImpl::SetFrameTree(FrameTree& frame_tree) {
+  frame_tree_->UnregisterRenderViewHost(render_view_host_map_id_, this);
+  frame_tree_ = &frame_tree;
+  frame_tree_->RegisterRenderViewHost(render_view_host_map_id_, this);
+}
+
 void RenderViewHostImpl::EnterBackForwardCache() {
   if (!will_enter_back_forward_cache_callback_for_testing_.is_null())
     will_enter_back_forward_cache_callback_for_testing_.Run();

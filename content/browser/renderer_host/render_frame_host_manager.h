@@ -545,6 +545,17 @@ class CONTENT_EXPORT RenderFrameHostManager
 
   Delegate* delegate() { return delegate_; }
 
+  // Collects the current page into BackForwardCacheImpl::Entry in preparation
+  // for it to be moved to another FrameTree for prerender activation. After
+  // this call, |current_frame_host_| will become null, which breaks many
+  // invariants in the code, so the caller is responsible for destroying the
+  // FrameTree immediately after this call.
+  //
+  // TODO(https://crbug.com/1183523): Rename BackForwardCacheImpl::Entry to make
+  // clear that it is also used to transfer pages between FrameTrees for
+  // prerendering.
+  std::unique_ptr<BackForwardCacheImpl::Entry> TakePrerenderedPage();
+
  private:
   friend class NavigatorTest;
   friend class RenderFrameHostManagerTest;
@@ -917,6 +928,13 @@ class CONTENT_EXPORT RenderFrameHostManager
   void NotifyPrepareForInnerDelegateAttachComplete(bool success);
 
   NavigationControllerImpl& GetNavigationController();
+
+  // Collects all of the page-related state currently owned by
+  // RenderFrameHostManager (including relevant RenderViewHosts and
+  // RenderFrameProxyHosts) into a BackForwardCacheImpl::Entry object to be
+  // stored in back-forward cache or to activate the prerenderer.
+  std::unique_ptr<BackForwardCacheImpl::Entry> CollectPage(
+      std::unique_ptr<RenderFrameHostImpl> main_render_frame_host);
 
   // For use in creating RenderFrameHosts.
   FrameTreeNode* frame_tree_node_;

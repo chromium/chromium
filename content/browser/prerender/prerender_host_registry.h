@@ -11,6 +11,7 @@
 #include "base/observer_list_types.h"
 #include "base/types/pass_key.h"
 #include "content/browser/prerender/prerender_host.h"
+#include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "url/gurl.h"
@@ -101,12 +102,22 @@ class CONTENT_EXPORT PrerenderHostRegistry {
                             FrameTreeNode& frame_tree_node);
 
   // For activators.
-  // Activates the host reserved by ReserveHostToActivate(). Returns true if
-  // activation succeeded. `current_render_frame_host` is the
-  // RenderFrameHostImpl that will be swapped out and destroyed by the
-  // activation.
-  bool ActivateReservedHost(int frame_tree_node_id,
-                            RenderFrameHostImpl& current_render_frame_host);
+  // Activates the host reserved by ReserveHostToActivate().
+  // - For MPArch, this returns the BackForwardCacheImpl::Entry containing the
+  //   page that was activated on success, or nullptr on failure.
+  // - For multiple WebContents, this always returns nullptr.
+  // TODO(crbug.com/1183519): Remove multiple WebContents
+  // implementation after MPArch activation is sufficiently stable.
+  //
+  // `current_render_frame_host` is the RenderFrameHostImpl that will be swapped
+  // out and destroyed by the activation.
+  std::unique_ptr<BackForwardCacheImpl::Entry> ActivateReservedHost(
+      int frame_tree_node_id,
+      RenderFrameHostImpl& current_render_frame_host,
+      NavigationRequest& navigation_request);
+
+  RenderFrameHostImpl* GetRenderFrameHostForReservedHost(
+      int frame_tree_node_id);
 
   // For activators.
   // Abandons the host reserved by ReserveHostToActivate().

@@ -56,7 +56,7 @@ class CONTENT_EXPORT BackForwardCacheImpl : public BackForwardCache {
   static MessageHandlingPolicyWhenCached
   GetChannelAssociatedMessageHandlingPolicy();
 
-  struct Entry {
+  struct CONTENT_EXPORT Entry {
     using RenderFrameProxyHostMap =
         std::unordered_map<int32_t /* SiteInstance ID */,
                            std::unique_ptr<RenderFrameProxyHost>>;

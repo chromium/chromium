@@ -10,6 +10,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
@@ -92,7 +93,7 @@ TEST_F(PrerenderHostTest, Activate) {
   // to complete. Use NavigationSimulator to finish the navigation on the
   // WebContents.
   WebContents* prerender_contents = WebContents::FromRenderFrameHost(
-      prerender_host->GetPrerenderedMainFrameHostForTesting());
+      prerender_host->GetPrerenderedMainFrameHost());
   ASSERT_TRUE(prerender_contents);
   std::unique_ptr<NavigationSimulator> sim =
       NavigationSimulator::CreateFromPending(prerender_contents);
@@ -100,8 +101,17 @@ TEST_F(PrerenderHostTest, Activate) {
   sim->Commit();
   EXPECT_TRUE(prerender_host->is_ready_for_activation());
 
-  // Activate.
-  EXPECT_TRUE(prerender_host->ActivatePrerenderedContents(*initiator_rfh));
+  auto sim_2 = NavigationSimulatorImpl::CreateBrowserInitiated(
+      kPrerenderingUrl, web_contents.get());
+  sim_2->Start();
+  // Activate. Will return a nullptr for failed activations with MPArch. Nullptr
+  // is always returned for multiple WebContents, which will be removed per
+  // https://crbug.com/1154501
+  auto entry = prerender_host->ActivatePrerenderedContents(
+      *initiator_rfh, *sim_2->GetNavigationHandle());
+  if (blink::features::IsPrerenderMPArchEnabled()) {
+    EXPECT_TRUE(entry);
+  }
   ExpectFinalStatus(PrerenderHost::FinalStatus::kActivated);
 }
 

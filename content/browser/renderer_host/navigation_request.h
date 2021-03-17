@@ -829,6 +829,14 @@ class CONTENT_EXPORT NavigationRequest
   // adds a const qualifier.
   bool IsServedFromBackForwardCache() const;
 
+  // See comments for |prerender_navigation_entry_|.
+  void SetPrerenderNavigationEntry(
+      std::unique_ptr<NavigationEntryImpl> prerender_navigation_entry) {
+    prerender_navigation_entry_ = std::move(prerender_navigation_entry);
+  }
+
+  std::unique_ptr<NavigationEntryImpl> TakePrerenderNavigationEntry();
+
  private:
   friend class NavigationRequestTest;
 
@@ -916,6 +924,11 @@ class CONTENT_EXPORT NavigationRequest
   // be destroyed after this call.
   void CommitNavigation();
 
+  // Commits the navigation to an existing page (back-forward cache navigation
+  // or prerender activation). NavigationRequest will be destroyed after this
+  // call.
+  void CommitPageActivation();
+
   // Checks if the specified CSP context's relevant CSP directive
   // allows the navigation. This is called to perform the frame-src
   // and navigate-to checks.
@@ -955,7 +968,16 @@ class CONTENT_EXPORT NavigationRequest
   // Builds the parameters used to commit a navigation to a page that was
   // restored from the back-forward cache.
   mojom::DidCommitProvisionalLoadParamsPtr
-  MakeDidCommitProvisionalLoadParamsForBFCache();
+  MakeDidCommitProvisionalLoadParamsForBFCacheRestore();
+
+  // Builds the parameters used to commit a navigation to a prerendered page
+  // that was activated.
+  mojom::DidCommitProvisionalLoadParamsPtr
+  MakeDidCommitProvisionalLoadParamsForPrerenderActivation();
+
+  // Builds generic activation parameters used to commit a navigation to a page.
+  mojom::DidCommitProvisionalLoadParamsPtr
+  MakeDidCommitProvisionalLoadParamsForActivation();
 
   // This enum describes the result of the credentialed subresource check for
   // the request.
@@ -1128,7 +1150,7 @@ class CONTENT_EXPORT NavigationRequest
   // Updates |private_network_request_policy_| for ReadyToCommitNavigation().
   //
   // Must not be called for same-document navigation requests nor for requests
-  // served from the back-forward cache.
+  // served from the back-forward cache or from prerendered pages.
   void UpdatePrivateNetworkRequestPolicy();
 
   // Called when the navigation is ready to be committed. This will update the
@@ -1613,9 +1635,14 @@ class CONTENT_EXPORT NavigationRequest
   net::IsolationInfo isolation_info_for_subresources_;
 
   // Prerender2:
-  // This is valid only when this navigation will activate the prerendered
-  // page.
+  // The root frame tree node id of the prerendered page. This is valid only
+  // when this navigation will activate a prerendered page.
   int prerender_frame_tree_node_id_ = RenderFrameHost::kNoFrameTreeNodeId;
+  // Used to store a cloned NavigationEntry for activating a prerendered page.
+  // |prerender_navigation_entry_| is cloned and stored in NavigationRequest
+  // when the prerendered page is transferred to the target FrameTree and is
+  // consumed when NavigationController needs a new entry to commit.
+  std::unique_ptr<NavigationEntryImpl> prerender_navigation_entry_;
 
   // The following fields that constitute the ClientSecurityState. This
   // state is used to take security decisions about the request, and later on

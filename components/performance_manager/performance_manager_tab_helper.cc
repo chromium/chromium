@@ -259,7 +259,10 @@ void PerformanceManagerTabHelper::RenderFrameHostChanged(
                            // The very first frame to be created is already
                            // current by default. In which case the swap must be
                            // from no frame to a frame.
-                           DCHECK(!old_frame);
+                           // TODO(https://crbug.com/1179682): Make this
+                           // compatible with MPArch.
+                           DCHECK(!old_frame ||
+                                  blink::features::IsPrerender2Enabled());
                          }
                        }
                      },

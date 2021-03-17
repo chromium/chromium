@@ -1614,11 +1614,11 @@ void NavigationRequest::BeginNavigation() {
     CommitNavigation();
     return;
   }
-  // If the navigation is served from the back-forward cache, we already know
-  // its preview type from the first time we navigated into the page, so we
-  // should only set |previews_state| when the navigation is not served from the
-  // back-forward cache.
-  if (!IsServedFromBackForwardCache()) {
+  // If the navigation is served from the back-forward cache or is activating a
+  // prerendered page, we already know its preview type from the first time we
+  // navigated into the page, so we should only set |previews_state| when the
+  // navigation is not served from one of these.
+  if (!IsServedFromBackForwardCache() || IsPrerenderedPageActivation()) {
     common_params_->previews_state =
         GetContentClient()->browser()->DetermineAllowedPreviews(
             common_params_->previews_state, this, common_params_->url);
@@ -2604,6 +2604,24 @@ void NavigationRequest::OnResponseStarted(
     // should never reach this point without the document still present in the
     // BackForwardCache.
     CHECK(render_frame_host_);
+  } else if (IsPrerenderedPageActivation()) {
+    RenderFrameHostImpl* current_frame_host =
+        frame_tree_node_->current_frame_host();
+    // Prerendering requires changing pages starting at the root node.
+    DCHECK(IsInMainFrame());
+
+    // TODO(https://crbug.com/1170619): Remove storage partition ownership of
+    // PrerenderHostRegistry and replace with ownership by WebContentsImpl after
+    // MPArch replaces multiple WebContentsImpl prerender implementation.
+    auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
+        current_frame_host->GetStoragePartition());
+    PrerenderHostRegistry* prerender_host_registry =
+        storage_partition_impl->GetPrerenderHostRegistry();
+    render_frame_host_ =
+        prerender_host_registry->GetRenderFrameHostForReservedHost(
+            prerender_frame_tree_node_id_);
+    // TODO(https://crbug.com/1181712): Handle the cases when the prerender is
+    // cancelled and RFH is destroyed while NavigationRequest is alive.
   } else if (response_should_be_rendered_) {
     render_frame_host_ =
         frame_tree_node_->render_manager()->GetFrameHostForNavigation(this);
@@ -3192,6 +3210,8 @@ network::mojom::WebSandboxFlags NavigationRequest::SandboxFlagsToCommit() {
   DCHECK_GE(state_, WILL_PROCESS_RESPONSE);
   DCHECK(!IsSameDocument());
   DCHECK(!IsServedFromBackForwardCache());
+  // TODO(https://crbug.com/1181763): Figure out what to do with SandboxFlags in
+  // the Prerender case
   return sandbox_flags_to_commit_.value();
 }
 
@@ -3498,58 +3518,19 @@ void NavigationRequest::CommitNavigation() {
           origin);
   DCHECK(!isolation_info_for_subresources_.IsEmpty());
 
-  if (IsServedFromBackForwardCache()) {
-    // Navigations served from the back-forward cache must be a history
-    // navigation, and thus should have a valid |pending_history_list_offset|
-    // value. We will pass that value and the |current_history_list_length|
-    // value to update the history offset and length information saved in the
-    // renderer, which might be stale.
-    DCHECK_GE(commit_params_->pending_history_list_offset, 0);
+  bool is_prerendering_activation_mparch =
+      IsPrerenderedPageActivation() &&
+      blink::features::IsPrerenderMPArchEnabled();
+  bool is_prerendering_activation_web_contents =
+      IsPrerenderedPageActivation() &&
+      blink::features::IsPrerenderWebContentsEnabled();
 
-    auto page_restore_params = blink::mojom::PageRestoreParams::New();
-    page_restore_params->navigation_start = NavigationStart();
-    page_restore_params->pending_history_list_offset =
-        commit_params_->pending_history_list_offset;
-    page_restore_params->current_history_list_length =
-        commit_params_->current_history_list_length;
-
-    NavigationControllerImpl* controller = GetNavigationController();
-    std::unique_ptr<BackForwardCacheImpl::Entry> restored_bfcache_entry =
-        controller->GetBackForwardCache().RestoreEntry(
-            nav_entry_id_, std::move(page_restore_params));
-
-    if (!restored_bfcache_entry) {
-      // The only time restored_bfcache_entry can be nullptr here, is if the
-      // document was evicted from the BackForwardCache since this navigation
-      // started.
-      //
-      // If the document was evicted, it should have posted a task to re-issue
-      // the navigation - ensure that this happened.
-      CHECK(restarting_back_forward_cached_navigation_);
-      return;
-    } else {
-      CHECK(!restarting_back_forward_cached_navigation_);
-    }
-
-    // Transfer ownership of this NavigationRequest to the restored
-    // RenderFrameHost.
-    frame_tree_node_->TransferNavigationRequestOwnership(GetRenderFrameHost());
-
-    // Move the restored BackForwardCache Entry into RenderFrameHostManager, in
-    // preparation for committing.
-    frame_tree_node_->render_manager()->RestoreFromBackForwardCache(
-        std::move(restored_bfcache_entry));
-
-    // Commit the restored BackForwardCache Entry. This includes committing the
-    // RenderFrameHost and restoring extra state, such as proxies, etc.
-    // Note that this will delete the NavigationRequest.
-    GetRenderFrameHost()->DidCommitBackForwardCacheNavigation(
-        this, MakeDidCommitProvisionalLoadParamsForBFCache());
-
+  if (IsServedFromBackForwardCache() || is_prerendering_activation_mparch) {
+    CommitPageActivation();
     return;
   }
 
-  if (blink::features::IsPrerender2Enabled() && IsPrerenderedPageActivation()) {
+  if (is_prerendering_activation_web_contents) {
     RenderFrameHostImpl* current_frame_host =
         frame_tree_node_->current_frame_host();
     DCHECK(!current_frame_host->GetParent());
@@ -3560,9 +3541,8 @@ void NavigationRequest::CommitNavigation() {
         storage_partition_impl->GetPrerenderHostRegistry();
     // Do not touch `this` after this point. Activating the reserved prerender
     // host destroys `this`.
-    bool result = prerender_host_registry->ActivateReservedHost(
-        prerender_frame_tree_node_id_, *current_frame_host);
-    DCHECK(result);
+    prerender_host_registry->ActivateReservedHost(prerender_frame_tree_node_id_,
+                                                  *current_frame_host, *this);
     return;
   }
 
@@ -3689,6 +3669,90 @@ void NavigationRequest::CommitNavigation() {
         "#potentially-trustworthy-origin and "
         "https://html.spec.whatwg.org/#the-cross-origin-opener-policy-header.");
   }
+}
+
+void NavigationRequest::CommitPageActivation() {
+  // An activation is either for the back-forward cache or prerendering. They
+  // are mutually exclusive.
+  DCHECK_NE(IsServedFromBackForwardCache(), IsPrerenderedPageActivation());
+
+  NavigationControllerImpl* controller = GetNavigationController();
+  std::unique_ptr<BackForwardCacheImpl::Entry> activated_entry;
+
+  if (IsServedFromBackForwardCache()) {
+    // Navigations served from the back-forward cache must be a history
+    // navigation, and thus should have a valid |pending_history_list_offset|
+    // value. We will pass that value and the |current_history_list_length|
+    // value to update the history offset and length information saved in the
+    // renderer, which might be stale.
+    DCHECK_GE(commit_params_->pending_history_list_offset, 0);
+
+    auto page_restore_params = blink::mojom::PageRestoreParams::New();
+    page_restore_params->navigation_start = NavigationStart();
+    page_restore_params->pending_history_list_offset =
+        commit_params_->pending_history_list_offset;
+    page_restore_params->current_history_list_length =
+        commit_params_->current_history_list_length;
+
+    activated_entry = controller->GetBackForwardCache().RestoreEntry(
+        nav_entry_id_, std::move(page_restore_params));
+    // The only time activated_entry can be nullptr here, is if the
+    // document was evicted from the BackForwardCache since this navigation
+    // started.
+    //
+    // If the document was evicted, it should have posted a task to re-issue
+    // the navigation - ensure that this happened.
+    DCHECK(activated_entry || restarting_back_forward_cached_navigation_);
+    if (!activated_entry)
+      return;
+  } else {
+    auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
+        frame_tree_node_->current_frame_host()->GetStoragePartition());
+    PrerenderHostRegistry* prerender_host_registry =
+        storage_partition_impl->GetPrerenderHostRegistry();
+
+    activated_entry = prerender_host_registry->ActivateReservedHost(
+        prerender_frame_tree_node_id_, *frame_tree_node_->current_frame_host(),
+        *this);
+
+    // TODO(https://crbug.com/1181712): Determine the best way to handle
+    // navigation when prerendering is cancelled during activation. This
+    // includes the case where a navigation can be restarted.
+    if (!activated_entry) {
+      // TODO(https://crbug.com/1126305): Record the final status for activation
+      // failure.
+      NOTIMPLEMENTED()
+          << "The prerendered page was cancelled during activation";
+      return;
+    }
+
+    // The prerender page might have navigated.
+    // TODO(https://crbug.com/1181712): Ensure that the tests that navigate
+    // MPArch activation flow do not crash. This is a hack to unblock the basic
+    // MPArch activation flow for now. There are probably other parameters which
+    // are out of sync, and we need to carefully think through how we can
+    // activate a RenderFrameHost whose URL doesn't match the one that was
+    // initially passed to NavigationRequest (or disallow subsequent navigations
+    // in the main frame of the prerender frame tree).
+    common_params_->url =
+        activated_entry->render_frame_host->GetLastCommittedURL();
+  }
+
+  frame_tree_node_->TransferNavigationRequestOwnership(GetRenderFrameHost());
+
+  // Move the BackForwardCacheImpl::Entry into RenderFrameHostManager, in
+  // preparation for committing. This entry may be either restored from the
+  // backforward cache or a prerender activation.
+  frame_tree_node_->render_manager()->RestoreFromBackForwardCache(
+      std::move(activated_entry));
+
+  // Commit the restored BackForwardCache Entry. This includes committing the
+  // RenderFrameHost and restoring extra state, such as proxies, etc.
+  // Note that this will delete the NavigationRequest.
+  GetRenderFrameHost()->DidCommitBackForwardCacheNavigation(
+      this, IsPrerenderedPageActivation()
+                ? MakeDidCommitProvisionalLoadParamsForPrerenderActivation()
+                : MakeDidCommitProvisionalLoadParamsForBFCacheRestore());
 }
 
 void NavigationRequest::ResetExpectedProcess() {
@@ -4784,9 +4848,10 @@ bool NavigationRequest::NeedsUrlLoader() {
 
 void NavigationRequest::UpdatePrivateNetworkRequestPolicy() {
   // It is useless to update this state for same-document navigations as well
-  // as pages served from the back-forward cache.
+  // as pages served from the back-forward cache or prerendered pages.
   DCHECK(!IsSameDocument());
   DCHECK(!IsServedFromBackForwardCache());
+  DCHECK(!IsPrerenderedPageActivation());
 
   ContentBrowserClient* client = GetContentClient()->browser();
   BrowserContext* context =
@@ -4828,7 +4893,8 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
   ready_to_commit_time_ = base::TimeTicks::Now();
   RestartCommitTimeout();
 
-  if (!IsSameDocument() && !IsServedFromBackForwardCache()) {
+  if (!IsSameDocument() && !IsServedFromBackForwardCache() &&
+      !IsPrerenderedPageActivation()) {
     UpdatePrivateNetworkRequestPolicy();
   }
 
@@ -4917,8 +4983,10 @@ url::Origin NavigationRequest::GetOriginForURLLoaderFactory() {
   // The origin to commit is not known until we get the final network response.
   DCHECK_GE(state_, WILL_PROCESS_RESPONSE);
 
-  if (IsSameDocument() || IsServedFromBackForwardCache())
+  if (IsSameDocument() || IsServedFromBackForwardCache() ||
+      IsPrerenderedPageActivation()) {
     return GetRenderFrameHost()->GetLastCommittedOrigin();
+  }
 
   // Calculate an approximation of the origin. The sandbox/csp are ignored.
   url::Origin origin = GetOriginForURLLoaderFactoryUnchecked(this);
@@ -5097,7 +5165,7 @@ const net::HttpResponseHeaders* NavigationRequest::GetResponseHeaders() {
 }
 
 mojom::DidCommitProvisionalLoadParamsPtr
-NavigationRequest::MakeDidCommitProvisionalLoadParamsForBFCache() {
+NavigationRequest::MakeDidCommitProvisionalLoadParamsForActivation() {
   // Use the DidCommitProvisionalLoadParams last used to commit the frame being
   // restored as a starting point.
   mojom::DidCommitProvisionalLoadParamsPtr params =
@@ -5115,13 +5183,10 @@ NavigationRequest::MakeDidCommitProvisionalLoadParamsForBFCache() {
       common_params().should_replace_current_entry;
   DCHECK_EQ(params->post_id, -1);
   params->navigation_token = commit_params().navigation_token;
-  params->did_create_new_entry = false;
-  DCHECK_EQ(params->origin, commit_params().origin_to_commit.value());
   DCHECK_EQ(params->url, common_params().url);
   params->should_update_history = true;
   params->gesture = common_params().has_user_gesture ? NavigationGestureUser
                                                      : NavigationGestureAuto;
-  params->page_state = commit_params().page_state;
   DCHECK_EQ(params->method, common_params().method);
   params->item_sequence_number = frame_entry_item_sequence_number_;
   params->document_sequence_number = frame_entry_document_sequence_number_;
@@ -5129,6 +5194,34 @@ NavigationRequest::MakeDidCommitProvisionalLoadParamsForBFCache() {
   params->history_list_was_cleared = false;
   params->request_id = GetGlobalRequestID().request_id;
 
+  return params;
+}
+
+mojom::DidCommitProvisionalLoadParamsPtr
+NavigationRequest::MakeDidCommitProvisionalLoadParamsForBFCacheRestore() {
+  // Start with the provisional load parameters shared between all page
+  // activation types.
+  mojom::DidCommitProvisionalLoadParamsPtr params =
+      MakeDidCommitProvisionalLoadParamsForActivation();
+
+  // Add bfcache-specific provisional load params:
+  params->did_create_new_entry = false;
+  DCHECK_EQ(params->origin, commit_params().origin_to_commit.value());
+  params->page_state = commit_params().page_state;
+  return params;
+}
+
+mojom::DidCommitProvisionalLoadParamsPtr
+NavigationRequest::MakeDidCommitProvisionalLoadParamsForPrerenderActivation() {
+  // Start with the provisional load parameters shared between all page
+  // activation types.
+  mojom::DidCommitProvisionalLoadParamsPtr params =
+      MakeDidCommitProvisionalLoadParamsForActivation();
+  // TODO(https://crbug.com/1170277): Investigate when a new entry should
+  // replace an old one when prerendering a page.
+  params->did_create_new_entry = true;
+  // Unlike bfcache restore, Prerendering makes a new navigation entry, so it
+  // doesn't need to set params->page_state..
   return params;
 }
 
@@ -5814,6 +5907,11 @@ bool NavigationRequest::IsPrerenderedPageActivation() const {
 
 bool NavigationRequest::IsServedFromBackForwardCache() const {
   return rfh_restored_from_back_forward_cache_ != nullptr;
+}
+
+std::unique_ptr<NavigationEntryImpl>
+NavigationRequest::TakePrerenderNavigationEntry() {
+  return std::move(prerender_navigation_entry_);
 }
 
 bool NavigationRequest::IsWaitingForBeforeUnload() {

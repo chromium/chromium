@@ -104,7 +104,19 @@ class CONTENT_EXPORT RenderFrameProxyHost
 
   SiteInstance* GetSiteInstance() { return site_instance_.get(); }
 
+  // TODO(https://crbug.com/1179502): FrameTree and FrameTreeNode are not const
+  // as with prerenderer activation the page needs to move between
+  // FrameTreeNodes and FrameTrees. Note that FrameTreeNode can only change for
+  // root nodes. As it's hard to make sure that all places handle this
+  // transition correctly, MPArch will remove references from this class to
+  // FrameTree/FrameTreeNode.
   FrameTreeNode* frame_tree_node() const { return frame_tree_node_; }
+
+  // TODO(https://crbug.com/1170277): This is currently only used in MPArch
+  // prerendering. Add testing for cross-origin iframes.
+  void set_frame_tree_node(FrameTreeNode& frame_tree_node) {
+    frame_tree_node_ = &frame_tree_node;
+  }
 
   // Associates the RenderWidgetHostViewChildFrame |view| with this
   // RenderFrameProxyHost. If |initial_frame_size| isn't specified at this time,
