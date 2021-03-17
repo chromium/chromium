@@ -75,7 +75,8 @@ class SubresourceFilterTestHarness : public content::RenderViewHostTestHarness,
     return client_->fake_safe_browsing_database_manager();
   }
 
-  void TagSubframeAsAd(content::RenderFrameHost* render_frame_host);
+  void SetIsAdSubframe(content::RenderFrameHost* render_frame_host,
+                       bool is_ad_subframe);
 
   content::WebContents* web_contents() {
     return content::RenderViewHostTestHarness::web_contents();

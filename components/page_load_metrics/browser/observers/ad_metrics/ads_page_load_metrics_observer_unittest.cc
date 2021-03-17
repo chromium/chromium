@@ -1118,7 +1118,7 @@ TEST_F(AdsPageLoadMetricsObserverTest, CountAbortedNavigation) {
       NavigationSimulator::CreateRendererInitiated(GURL(kAdUrl), subframe_ad);
   // The sub-frame renavigates before it commits.
   navigation_simulator->Start();
-  TagSubframeAsAd(subframe_ad);
+  SetIsAdSubframe(subframe_ad, /*is_ad_subframe=*/true);
   navigation_simulator->Fail(net::ERR_ABORTED);
 
   // Load resources for the aborted frame (e.g., simulate the navigation
@@ -1147,7 +1147,7 @@ TEST_F(AdsPageLoadMetricsObserverTest, CountAbortedSecondNavigationForFrame) {
       NavigationSimulator::CreateRendererInitiated(GURL(kAdUrl), sub_frame);
   // The sub-frame renavigates before it commits.
   navigation_simulator->Start();
-  TagSubframeAsAd(sub_frame);
+  SetIsAdSubframe(sub_frame, /*is_ad_subframe=*/true);
   navigation_simulator->Fail(net::ERR_ABORTED);
 
   // Load resources for the aborted frame (e.g., simulate the navigation
@@ -1178,7 +1178,7 @@ TEST_F(AdsPageLoadMetricsObserverTest, TwoResourceLoadsBeforeCommit) {
 
   // The sub-frame renavigates before it commits.
   navigation_simulator->Start();
-  TagSubframeAsAd(subframe_ad);
+  SetIsAdSubframe(subframe_ad, /*is_ad_subframe=*/true);
   navigation_simulator->Fail(net::ERR_ABORTED);
 
   // Renavigate the subframe to a successful commit. But again, the resource
@@ -1191,6 +1191,30 @@ TEST_F(AdsPageLoadMetricsObserverTest, TwoResourceLoadsBeforeCommit) {
 
   TestHistograms(histogram_tester(), test_ukm_recorder(), {{0, 20}},
                  0 /* non_ad_cached_kb */, 10 /* non_ad_uncached_kb */);
+}
+
+TEST_F(AdsPageLoadMetricsObserverTest, UntaggingAdFrame) {
+  RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
+  RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
+
+  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, 10);
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, 10);
+
+  // Renavigate and untag the ad frame.
+  auto navigation_simulator =
+      NavigationSimulator::CreateRendererInitiated(GURL(kNonAdUrl), ad_frame);
+  SetIsAdSubframe(ad_frame, /*is_ad_subframe=*/false);
+  navigation_simulator->Commit();
+
+  ResourceDataUpdate(navigation_simulator->GetFinalRenderFrameHost(),
+                     ResourceCached::kNotCached, 10);
+
+  // Navigate again to trigger histograms.
+  NavigateFrame(kNonAdUrl, main_frame);
+
+  // As the frame was untagged, no ad bytes should have been recorded.
+  TestHistograms(histogram_tester(), test_ukm_recorder(), {},
+                 0 /* non_ad_cached_kb */, 20 /* non_ad_uncached_kb */);
 }
 
 TEST_F(AdsPageLoadMetricsObserverTest, MainFrameResource) {
@@ -1389,7 +1413,7 @@ TEST_F(AdsPageLoadMetricsObserverTest,
       RenderFrameHostTester::For(main_frame)->AppendChild("frame_name");
   auto navigation_simulator = NavigationSimulator::CreateRendererInitiated(
       GURL("https://foo.com"), subframe);
-  TagSubframeAsAd(subframe);
+  SetIsAdSubframe(subframe, /*is_ad_subframe=*/true);
   navigation_simulator->Commit();
 
   subframe = navigation_simulator->GetFinalRenderFrameHost();

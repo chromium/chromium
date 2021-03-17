@@ -335,8 +335,8 @@ void FrameSchedulerImpl::SetCrossOriginToMainFrame(bool cross_origin) {
   UpdatePolicy();
 }
 
-void FrameSchedulerImpl::SetIsAdFrame() {
-  is_ad_frame_ = true;
+void FrameSchedulerImpl::SetIsAdFrame(bool is_ad_frame) {
+  is_ad_frame_ = is_ad_frame;
   UpdatePolicy();
 }
 

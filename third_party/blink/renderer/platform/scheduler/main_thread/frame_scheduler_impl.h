@@ -96,7 +96,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   void SetCrossOriginToMainFrame(bool cross_origin) override;
   bool IsCrossOriginToMainFrame() const override;
 
-  void SetIsAdFrame() override;
+  void SetIsAdFrame(bool is_ad_frame) override;
   bool IsAdFrame() const override;
 
   void TraceUrlChange(const String& url) override;

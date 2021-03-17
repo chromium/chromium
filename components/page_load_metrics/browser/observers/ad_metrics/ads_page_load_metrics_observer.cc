@@ -180,13 +180,10 @@ AdsPageLoadMetricsObserver::CreateIfNeeded(
 
 // static
 bool AdsPageLoadMetricsObserver::IsSubframeSameOriginToMainFrame(
-    content::RenderFrameHost* sub_host,
-    bool use_parent_origin) {
+    content::RenderFrameHost* sub_host) {
   DCHECK(sub_host);
   content::RenderFrameHost* main_host =
       content::WebContents::FromRenderFrameHost(sub_host)->GetMainFrame();
-  if (use_parent_origin)
-    sub_host = sub_host->GetParent();
   url::Origin subframe_origin = sub_host->GetLastCommittedOrigin();
   url::Origin mainframe_origin = main_host->GetLastCommittedOrigin();
   return subframe_origin.IsSameOriginWith(mainframe_origin);
@@ -320,8 +317,7 @@ void AdsPageLoadMetricsObserver::OnTimingUpdate(
   if (has_new_fcp) {
     ad_metrics::OriginStatus origin_status =
         AdsPageLoadMetricsObserver::IsSubframeSameOriginToMainFrame(
-            subframe_rfh,
-            !ancestor_data->frame_navigated() /* use_parent_origin */)
+            subframe_rfh)
             ? ad_metrics::OriginStatus::kSame
             : ad_metrics::OriginStatus::kCross;
     ancestor_data->set_creative_origin_status(origin_status);
@@ -353,8 +349,7 @@ void AdsPageLoadMetricsObserver::UpdateAdFrameData(
     FrameTreeNodeId ad_id,
     bool is_adframe,
     bool should_ignore_detected_ad,
-    content::RenderFrameHost* ad_host,
-    bool frame_navigated) {
+    content::RenderFrameHost* ad_host) {
   // If an existing subframe is navigating and it was an ad previously that
   // hasn't navigated yet, then we need to update it.
   const auto& id_and_data = ad_frames_data_.find(ad_id);
@@ -363,12 +358,13 @@ void AdsPageLoadMetricsObserver::UpdateAdFrameData(
                                      : nullptr;
 
   if (previous_data) {
-    // We should not get new ad frame notifications for frames that have already
-    // navigated unless there is a ongoing navigation in the frame.
-    DCHECK(frame_navigated);
-
-    if (should_ignore_detected_ad &&
-        (ad_id == previous_data->root_frame_tree_node_id())) {
+    // Frames that are no longer ad frames or are ignored as ad frames due to
+    // restricted navigation ad tagging should have their tracked data reset.
+    // TODO(crbug.com/1101584): Simplify the condition when restricted
+    // navigation ad tagging is moved to subresource_filter/.
+    if (!is_adframe || (should_ignore_detected_ad &&
+                        (ad_id == previous_data->root_frame_tree_node_id()))) {
+      DCHECK_EQ(ad_id, previous_data->root_frame_tree_node_id());
       CleanupDeletedFrame(ad_id, previous_data,
                           true /* update_density_tracker */,
                           false /* record_metrics */);
@@ -380,16 +376,16 @@ void AdsPageLoadMetricsObserver::UpdateAdFrameData(
       ad_frames_data_.emplace(std::piecewise_construct,
                               std::forward_as_tuple(ad_id),
                               std::forward_as_tuple());
-      RecordAdFrameIgnoredByRestrictedAdTagging(true /* ignored */);
+
+      if (should_ignore_detected_ad)
+        RecordAdFrameIgnoredByRestrictedAdTagging(true /* ignored */);
       return;
     }
 
-    // If the frame has already navigated we need to process the new navigation
+    // As the frame has already navigated, we need to process the new navigation
     // resource in the frame.
-    if (previous_data->frame_navigated()) {
-      ProcessOngoingNavigationResource(ad_host);
-      return;
-    }
+    ProcessOngoingNavigationResource(ad_host);
+    return;
   }
 
   // Determine who the parent frame's ad ancestor is.  If we don't know who it
@@ -416,17 +412,12 @@ void AdsPageLoadMetricsObserver::UpdateAdFrameData(
   }
 
   if (should_create_new_frame_data) {
-    if (previous_data) {
-      previous_data->UpdateForNavigation(ad_host, frame_navigated);
-      return;
-    }
-
     // Construct a new FrameTreeData to track this ad frame, and update it for
     // the navigation.
     auto frame_data = std::make_unique<FrameTreeData>(
         ad_id,
         heavy_ad_threshold_noise_provider_->GetNetworkThresholdNoiseForFrame());
-    frame_data->UpdateForNavigation(ad_host, frame_navigated);
+    frame_data->UpdateForNavigation(ad_host);
     frame_data->MaybeUpdateFrameDepth(ad_host);
 
     FrameInstance frame_instance(std::move(frame_data));
@@ -518,7 +509,7 @@ void AdsPageLoadMetricsObserver::OnDidFinishSubFrameNavigation(
   }
 
   UpdateAdFrameData(frame_tree_node_id, is_adframe, should_ignore_detected_ad,
-                    frame_host, true /*frame_navigated=*/);
+                    frame_host);
 
   ProcessOngoingNavigationResource(frame_host);
 }
@@ -718,15 +709,6 @@ void AdsPageLoadMetricsObserver::OnV8MemoryChanged(
       aggregate_frame_data_->update_main_frame_memory(update.delta_bytes);
     }
   }
-}
-
-void AdsPageLoadMetricsObserver::OnAdSubframeDetected(
-    content::RenderFrameHost* render_frame_host,
-    const subresource_filter::FrameAdEvidence& ad_evidence) {
-  FrameTreeNodeId frame_tree_node_id = render_frame_host->GetFrameTreeNodeId();
-  UpdateAdFrameData(frame_tree_node_id, true /* is_adframe */,
-                    false /* should_ignore_detected_ad */, render_frame_host,
-                    /*frame_navigated=*/false);
 }
 
 void AdsPageLoadMetricsObserver::OnSubresourceFilterGoingAway() {

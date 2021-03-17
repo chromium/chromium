@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, FramesByURL) {
   content::RenderFrameHost* ad_child = subresource_filter::CreateSrcFrame(
       web_contents(), GetURL("frame_factory.html?2&ad=true"));
   EXPECT_TRUE(observer.GetIsAdSubframe(ad_child->GetFrameTreeNodeId()));
-  observer.VerifyEvidenceForAdSubframe(
+  subresource_filter::ExpectFrameAdEvidence(
       ad_child, /*parent_is_ad=*/false,
       subresource_filter::FilterListEvidence::kMatchedBlockingRule,
       subresource_filter::ScriptHeuristicEvidence::kNotCreatedByAdScript);
@@ -129,9 +129,9 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, FramesByURL) {
   content::RenderFrameHost* ad_child_2 = subresource_filter::CreateSrcFrame(
       ad_child, GetURL("frame_factory.html?sub=1&3&ad=true"));
   EXPECT_TRUE(observer.GetIsAdSubframe(ad_child_2->GetFrameTreeNodeId()));
-  observer.VerifyEvidenceForAdSubframe(
+  subresource_filter::ExpectFrameAdEvidence(
       ad_child_2, /*parent_is_ad=*/true,
-      subresource_filter::FilterListEvidence::kNotChecked,
+      subresource_filter::FilterListEvidence::kMatchedBlockingRule,
       subresource_filter::ScriptHeuristicEvidence::kCreatedByAdScript);
 
   // (4) Vanilla child of 2.
@@ -139,9 +139,9 @@ IN_PROC_BROWSER_TEST_F(AdTaggingBrowserTest, FramesByURL) {
       subresource_filter::CreateSrcFrame(ad_child,
                                          GetURL("frame_factory.html?4"));
   EXPECT_TRUE(observer.GetIsAdSubframe(vanilla_child_2->GetFrameTreeNodeId()));
-  observer.VerifyEvidenceForAdSubframe(
+  subresource_filter::ExpectFrameAdEvidence(
       vanilla_child_2, /*parent_is_ad=*/true,
-      subresource_filter::FilterListEvidence::kNotChecked,
+      subresource_filter::FilterListEvidence::kMatchedNoRules,
       subresource_filter::ScriptHeuristicEvidence::kCreatedByAdScript);
 
   // (5) Vanilla child of 1. This tests something subtle.

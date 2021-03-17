@@ -161,10 +161,11 @@ SubresourceFilterTestHarness::GetSettingsManager() {
   return client_->profile_context()->settings_manager();
 }
 
-void SubresourceFilterTestHarness::TagSubframeAsAd(
-    content::RenderFrameHost* render_frame_host) {
+void SubresourceFilterTestHarness::SetIsAdSubframe(
+    content::RenderFrameHost* render_frame_host,
+    bool is_ad_subframe) {
   ContentSubresourceFilterThrottleManager::FromWebContents(web_contents())
-      ->SetFrameAsAdSubframeForTesting(render_frame_host);
+      ->SetIsAdSubframeForTesting(render_frame_host, is_ad_subframe);
 }
 
 }  // namespace subresource_filter

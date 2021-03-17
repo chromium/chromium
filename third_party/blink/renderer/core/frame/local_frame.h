@@ -503,9 +503,9 @@ class CORE_EXPORT LocalFrame final
   // be removed.
   bool IsProvisional() const;
 
-  // Called by the embedder if the evidence indicates the frame is an ad
-  // subframe. Called on creation of the initial empty document or, for
-  // LocalFrames created on behalf of OOPIF, just before commit
+  // Called by the embedder according to whether the evidence indicates the
+  // frame is an ad subframe. Called on creation of the initial empty document
+  // or, for LocalFrames created on behalf of OOPIF, just before commit
   // (ReadyToCommitNavigation time).
   void SetIsAdSubframe(blink::mojom::AdFrameType ad_frame_type);
 

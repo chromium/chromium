@@ -570,11 +570,7 @@ void RemoteFrame::SetReplicatedOrigin(
 
 void RemoteFrame::SetReplicatedAdFrameType(
     mojom::blink::AdFrameType ad_frame_type) {
-  if (ad_frame_type_ == mojom::blink::AdFrameType::kNonAd) {
-    ad_frame_type_ = ad_frame_type;
-  } else {
-    DCHECK_EQ(ad_frame_type_, ad_frame_type);
-  }
+  ad_frame_type_ = ad_frame_type;
 }
 
 void RemoteFrame::SetReplicatedName(const String& name,

@@ -43,10 +43,13 @@ void TestSubresourceFilterObserver::OnSubframeNavigationEvaluated(
   subframe_load_evaluations_[navigation_handle->GetURL()] = load_policy;
 }
 
-void TestSubresourceFilterObserver::OnAdSubframeDetected(
+void TestSubresourceFilterObserver::OnIsAdSubframeChanged(
     content::RenderFrameHost* render_frame_host,
-    const FrameAdEvidence& ad_evidence) {
-  ad_evidence_.emplace(render_frame_host->GetFrameTreeNodeId(), ad_evidence);
+    bool is_ad_subframe) {
+  if (is_ad_subframe)
+    ad_frames_.insert(render_frame_host->GetFrameTreeNodeId());
+  else
+    ad_frames_.erase(render_frame_host->GetFrameTreeNodeId());
 }
 
 void TestSubresourceFilterObserver::DidFinishNavigation(
@@ -78,14 +81,7 @@ TestSubresourceFilterObserver::GetPageActivation(const GURL& url) const {
 
 bool TestSubresourceFilterObserver::GetIsAdSubframe(
     int frame_tree_node_id) const {
-  return base::Contains(ad_evidence_, frame_tree_node_id);
-}
-
-const FrameAdEvidence& TestSubresourceFilterObserver::GetEvidenceForAdSubframe(
-    int frame_tree_node_id) const {
-  auto it = ad_evidence_.find(frame_tree_node_id);
-  DCHECK(it != ad_evidence_.end());
-  return it->second;
+  return base::Contains(ad_frames_, frame_tree_node_id);
 }
 
 base::Optional<LoadPolicy> TestSubresourceFilterObserver::GetSubframeLoadPolicy(
@@ -107,19 +103,6 @@ TestSubresourceFilterObserver::GetSafeBrowsingResult(const GURL& url) const {
   if (it != safe_browsing_checks_.end())
     return it->second;
   return base::Optional<SafeBrowsingCheck>();
-}
-
-void TestSubresourceFilterObserver::VerifyEvidenceForAdSubframe(
-    content::RenderFrameHost* frame_host,
-    bool parent_is_ad,
-    FilterListEvidence filter_list_result,
-    ScriptHeuristicEvidence created_by_ad_script) const {
-  const FrameAdEvidence& ad_evidence =
-      GetEvidenceForAdSubframe(frame_host->GetFrameTreeNodeId());
-  EXPECT_TRUE(ad_evidence.is_complete());
-  EXPECT_EQ(ad_evidence.parent_is_ad(), parent_is_ad);
-  EXPECT_EQ(ad_evidence.filter_list_result(), filter_list_result);
-  EXPECT_EQ(ad_evidence.created_by_ad_script(), created_by_ad_script);
 }
 
 }  // namespace subresource_filter

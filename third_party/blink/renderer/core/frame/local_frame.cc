@@ -2228,35 +2228,36 @@ bool LocalFrame::IsProvisional() const {
 void LocalFrame::SetIsAdSubframe(blink::mojom::AdFrameType ad_frame_type) {
   DCHECK(!IsMainFrame());
 
-  // Once |ad_frame_type_| has been set to an ad type on this frame, it cannot
-  // be changed.
-  if (ad_frame_type == blink::mojom::AdFrameType::kNonAd)
+  if (ad_frame_type_ == ad_frame_type)
     return;
-  if (ad_frame_type_ != blink::mojom::AdFrameType::kNonAd)
-    return;
+
+  bool is_ad_subframe = ad_frame_type != blink::mojom::AdFrameType::kNonAd;
   if (auto* document = GetDocument()) {
     // TODO(fdoray): It is possible for the document not to be installed when
     // this method is called. Consider inheriting frame bit in the graph instead
     // of sending an IPC.
     auto* document_resource_coordinator = document->GetResourceCoordinator();
     if (document_resource_coordinator)
-      document_resource_coordinator->SetIsAdFrame(true);
+      document_resource_coordinator->SetIsAdFrame(is_ad_subframe);
   }
+
   ad_frame_type_ = ad_frame_type;
   UpdateAdHighlight();
-  frame_scheduler_->SetIsAdFrame();
+  frame_scheduler_->SetIsAdFrame(is_ad_subframe);
 
-  UseCounter::Count(DomWindow(), WebFeature::kAdFrameDetected);
-  InstanceCounters::IncrementCounter(InstanceCounters::kAdSubframeCounter);
+  if (is_ad_subframe) {
+    UseCounter::Count(DomWindow(), WebFeature::kAdFrameDetected);
+    InstanceCounters::IncrementCounter(InstanceCounters::kAdSubframeCounter);
+  } else {
+    InstanceCounters::DecrementCounter(InstanceCounters::kAdSubframeCounter);
+  }
 }
 
 void LocalFrame::UpdateAdHighlight() {
-  if (!IsAdRoot()) {
-    // Verify that non root ad subframes do not have an overlay.
-    DCHECK(IsMainFrame() || !frame_color_overlay_);
+  if (IsMainFrame())
     return;
-  }
-  if (GetPage()->GetSettings().GetHighlightAds())
+
+  if (IsAdRoot() && GetPage()->GetSettings().GetHighlightAds())
     SetSubframeColorOverlay(SkColorSetARGB(128, 255, 0, 0));
   else
     SetSubframeColorOverlay(Color::kTransparent);

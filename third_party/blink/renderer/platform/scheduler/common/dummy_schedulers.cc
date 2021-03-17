@@ -48,7 +48,7 @@ class DummyFrameScheduler : public FrameScheduler {
   void SetShouldReportPostedTasksWhenDisabled(bool) override {}
   void SetCrossOriginToMainFrame(bool) override {}
   bool IsCrossOriginToMainFrame() const override { return false; }
-  void SetIsAdFrame() override {}
+  void SetIsAdFrame(bool is_ad_frame) override {}
   bool IsAdFrame() const override { return false; }
   void TraceUrlChange(const String&) override {}
   void AddTaskTime(base::TimeDelta) override {}

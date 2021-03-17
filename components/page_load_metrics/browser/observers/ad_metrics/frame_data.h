@@ -283,8 +283,7 @@ class FrameTreeData : public base::SupportsWeakPtr<FrameTreeData> {
   base::TimeDelta GetTotalCpuUsage() const;
 
   // Update the metadata of this frame if it is being navigated.
-  void UpdateForNavigation(content::RenderFrameHost* render_frame_host,
-                           bool frame_navigated);
+  void UpdateForNavigation(content::RenderFrameHost* render_frame_host);
 
   // Returns how the frame should be treated by the heavy ad intervention.
   // This intervention is triggered when the frame is considered heavy, has not
@@ -347,8 +346,6 @@ class FrameTreeData : public base::SupportsWeakPtr<FrameTreeData> {
   UserActivationStatus user_activation_status() const {
     return user_activation_status_;
   }
-
-  bool frame_navigated() const { return frame_navigated_; }
 
   FrameVisibility visibility() const { return visibility_; }
 
@@ -430,10 +427,6 @@ class FrameTreeData : public base::SupportsWeakPtr<FrameTreeData> {
 
   // The origin status of the creative content.
   OriginStatus creative_origin_status_ = OriginStatus::kUnknown;
-
-  // Whether or not the frame has been navigated, to determine if there's an
-  // ongoing request.
-  bool frame_navigated_ = false;
 
   // Whether or not the frame is set to not display.
   bool is_display_none_ = false;

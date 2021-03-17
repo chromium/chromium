@@ -310,9 +310,7 @@ base::TimeDelta FrameTreeData::GetTotalCpuUsage() const {
 }
 
 void FrameTreeData::UpdateForNavigation(
-    content::RenderFrameHost* render_frame_host,
-    bool frame_navigated) {
-  frame_navigated_ = frame_navigated;
+    content::RenderFrameHost* render_frame_host) {
   if (!render_frame_host)
     return;
 
@@ -321,11 +319,10 @@ void FrameTreeData::UpdateForNavigation(
     SetFrameSize(*(render_frame_host->GetFrameSize()));
 
   // For frames triggered on render, their origin is their parent's origin.
-  origin_status_ =
-      AdsPageLoadMetricsObserver::IsSubframeSameOriginToMainFrame(
-          render_frame_host, !frame_navigated /* use_parent_origin */)
-          ? OriginStatus::kSame
-          : OriginStatus::kCross;
+  origin_status_ = AdsPageLoadMetricsObserver::IsSubframeSameOriginToMainFrame(
+                       render_frame_host)
+                       ? OriginStatus::kSame
+                       : OriginStatus::kCross;
 
   root_frame_depth_ = render_frame_host->GetFrameDepth();
 }

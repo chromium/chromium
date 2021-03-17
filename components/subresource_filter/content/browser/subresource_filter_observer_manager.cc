@@ -49,11 +49,11 @@ void SubresourceFilterObserverManager::NotifySubframeNavigationEvaluated(
     observer.OnSubframeNavigationEvaluated(navigation_handle, load_policy);
 }
 
-void SubresourceFilterObserverManager::NotifyAdSubframeDetected(
+void SubresourceFilterObserverManager::NotifyIsAdSubframeChanged(
     content::RenderFrameHost* render_frame_host,
-    const FrameAdEvidence& ad_evidence) {
+    bool is_ad_subframe) {
   for (auto& observer : observers_)
-    observer.OnAdSubframeDetected(render_frame_host, ad_evidence);
+    observer.OnIsAdSubframeChanged(render_frame_host, is_ad_subframe);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SubresourceFilterObserverManager)

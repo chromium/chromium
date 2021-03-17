@@ -237,8 +237,10 @@ void SubresourceFilterAgent::ActivateForNextCommittedLoad(
     mojom::ActivationStatePtr activation_state,
     blink::mojom::AdFrameType ad_frame_type) {
   activation_state_for_next_document_ = *activation_state;
-  if (ad_frame_type != blink::mojom::AdFrameType::kNonAd) {
+  if (!IsMainFrame()) {
     SetIsAdSubframe(ad_frame_type);
+  } else {
+    DCHECK_EQ(ad_frame_type, blink::mojom::AdFrameType::kNonAd);
   }
 }
 

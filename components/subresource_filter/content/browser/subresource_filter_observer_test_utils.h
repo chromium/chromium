@@ -6,6 +6,7 @@
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_SUBRESOURCE_FILTER_OBSERVER_TEST_UTILS_H_
 
 #include <map>
+#include <set>
 #include <utility>
 
 #include "base/macros.h"
@@ -15,7 +16,6 @@
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
-#include "components/subresource_filter/content/common/ad_evidence.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -45,8 +45,8 @@ class TestSubresourceFilterObserver : public SubresourceFilterObserver,
   void OnSubframeNavigationEvaluated(
       content::NavigationHandle* navigation_handle,
       LoadPolicy load_policy) override;
-  void OnAdSubframeDetected(content::RenderFrameHost* render_frame_host,
-                            const FrameAdEvidence& ad_evidence) override;
+  void OnIsAdSubframeChanged(content::RenderFrameHost* render_frame_host,
+                             bool is_ad_subframe) override;
 
   // content::WebContentsObserver
   void DidFinishNavigation(
@@ -58,18 +58,8 @@ class TestSubresourceFilterObserver : public SubresourceFilterObserver,
 
   bool GetIsAdSubframe(int frame_tree_node_id) const;
 
-  // Should only be called on a subframe tagged as an ad.
-  const FrameAdEvidence& GetEvidenceForAdSubframe(int frame_tree_node_id) const;
   base::Optional<mojom::ActivationLevel> GetPageActivationForLastCommittedLoad()
       const;
-
-  // Verifies that the evidence associated with the frame matches the provided
-  // values. Should only be called on subframes tagged as ads.
-  void VerifyEvidenceForAdSubframe(
-      content::RenderFrameHost* frame_host,
-      bool parent_is_ad,
-      FilterListEvidence filter_list_result,
-      ScriptHeuristicEvidence created_by_ad_script) const;
 
   using SafeBrowsingCheck =
       std::pair<safe_browsing::SBThreatType, safe_browsing::ThreatMetadata>;
@@ -78,7 +68,9 @@ class TestSubresourceFilterObserver : public SubresourceFilterObserver,
 
  private:
   std::map<GURL, LoadPolicy> subframe_load_evaluations_;
-  std::map<int, const FrameAdEvidence> ad_evidence_;
+
+  // Set of FrameTreeNode IDs representing frames tagged as ads.
+  std::set<int> ad_frames_;
 
   std::map<GURL, mojom::ActivationLevel> page_activations_;
   std::map<GURL, SafeBrowsingCheck> safe_browsing_checks_;

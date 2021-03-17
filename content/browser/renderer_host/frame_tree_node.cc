@@ -792,13 +792,11 @@ void FrameTreeNode::PruneChildFrameNavigationEntries(
 }
 
 void FrameTreeNode::SetAdFrameType(blink::mojom::AdFrameType ad_frame_type) {
-  DCHECK_NE(ad_frame_type, blink::mojom::AdFrameType::kNonAd);
-  if (replication_state_->ad_frame_type == blink::mojom::AdFrameType::kNonAd) {
-    replication_state_->ad_frame_type = ad_frame_type;
-    render_manager()->OnDidSetAdFrameType(ad_frame_type);
-  } else {
-    DCHECK_EQ(ad_frame_type, replication_state_->ad_frame_type);
-  }
+  if (ad_frame_type == replication_state_->ad_frame_type)
+    return;
+
+  replication_state_->ad_frame_type = ad_frame_type;
+  render_manager()->OnDidSetAdFrameType(ad_frame_type);
 }
 
 void FrameTreeNode::SetInitialPopupURL(const GURL& initial_popup_url) {

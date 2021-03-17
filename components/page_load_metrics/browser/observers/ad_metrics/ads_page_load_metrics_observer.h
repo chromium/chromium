@@ -78,12 +78,9 @@ class AdsPageLoadMetricsObserver
       const ApplicationLocaleGetter& application_local_getter);
 
   // For a given subframe, returns whether or not the subframe's url would be
-  // considering same origin to the main frame's url. |use_parent_origin|
-  // indicates that the subframe's parent frames's origin should be used when
-  // performing the comparison.
+  // considering same origin to the main frame's url.
   static bool IsSubframeSameOriginToMainFrame(
-      content::RenderFrameHost* sub_host,
-      bool use_parent_origin);
+      content::RenderFrameHost* sub_host);
 
   // |clock| and |blocklist| should be set only by tests. In particular,
   // |blocklist| should be set only if |heavy_ad_service| is null.
@@ -185,9 +182,6 @@ class AdsPageLoadMetricsObserver
   void CheckForAdDensityViolation();
 
   // subresource_filter::SubresourceFilterObserver:
-  void OnAdSubframeDetected(
-      content::RenderFrameHost* render_frame_host,
-      const subresource_filter::FrameAdEvidence& ad_evidence) override;
   void OnSubresourceFilterGoingAway() override;
   void OnPageActivationComputed(
       content::NavigationHandle* navigation_handle,
@@ -197,8 +191,7 @@ class AdsPageLoadMetricsObserver
   void UpdateAdFrameData(FrameTreeNodeId ad_id,
                          bool is_adframe,
                          bool should_ignored_detected_ad,
-                         content::RenderFrameHost* ad_host,
-                         bool frame_navigated);
+                         content::RenderFrameHost* ad_host);
 
   // Gets the number of bytes that we may have not attributed to ad
   // resources due to the resource being reported as an ad late.

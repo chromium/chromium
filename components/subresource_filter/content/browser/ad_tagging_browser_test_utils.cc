@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -53,6 +54,35 @@ content::RenderFrameHost* CreateSrcFrame(
     const content::ToRenderFrameHost& adapter,
     const GURL& url) {
   return CreateFrameImpl(adapter, url, false /* ad_script */);
+}
+
+void ExpectFrameAdEvidence(content::RenderFrameHost* frame_host,
+                           bool parent_is_ad,
+                           FilterListEvidence filter_list_result,
+                           ScriptHeuristicEvidence created_by_ad_script) {
+  ExpectFrameAdEvidence(frame_host, parent_is_ad, filter_list_result,
+                        filter_list_result, created_by_ad_script);
+}
+
+void ExpectFrameAdEvidence(
+    content::RenderFrameHost* frame_host,
+    bool parent_is_ad,
+    FilterListEvidence latest_filter_list_result,
+    FilterListEvidence most_restrictive_filter_list_result,
+    ScriptHeuristicEvidence created_by_ad_script) {
+  auto* throttle_manager =
+      ContentSubresourceFilterThrottleManager::FromWebContents(
+          content::WebContents::FromRenderFrameHost(frame_host));
+  base::Optional<FrameAdEvidence> ad_evidence =
+      throttle_manager->GetAdEvidenceForFrame(frame_host);
+  ASSERT_TRUE(ad_evidence.has_value());
+  EXPECT_TRUE(ad_evidence->is_complete());
+  EXPECT_EQ(ad_evidence->parent_is_ad(), parent_is_ad);
+  EXPECT_EQ(ad_evidence->latest_filter_list_result(),
+            latest_filter_list_result);
+  EXPECT_EQ(ad_evidence->most_restrictive_filter_list_result(),
+            most_restrictive_filter_list_result);
+  EXPECT_EQ(ad_evidence->created_by_ad_script(), created_by_ad_script);
 }
 
 }  // namespace subresource_filter

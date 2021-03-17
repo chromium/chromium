@@ -10,17 +10,18 @@
 
 namespace subresource_filter {
 
+// Ordered by increasing severity. See `MoreRestrictiveFilterListEvidence()`.
 enum class FilterListEvidence {
   // No URL the frame has navigated to has been checked against the filter list.
   // This occurs for initial navigations that are either not handled by the
   // network stack or were not committed.
-  kNotChecked,
-  // The last URL checked against the filter list did not match any rules.
-  kMatchedNoRules,
-  // The last URL checked against the filter list matched a blocking rule.
-  kMatchedBlockingRule,
+  kNotChecked = 0,
   // The last URL checked against the filter list matched an allowing rule.
-  kMatchedAllowingRule,
+  kMatchedAllowingRule = 1,
+  // The last URL checked against the filter list did not match any rules.
+  kMatchedNoRules = 2,
+  // The last URL checked against the filter list matched a blocking rule.
+  kMatchedBlockingRule = 3,
 };
 
 enum class ScriptHeuristicEvidence {
@@ -37,6 +38,12 @@ enum class ScriptHeuristicEvidence {
 // latest check.
 FilterListEvidence InterpretLoadPolicyAsEvidence(
     const base::Optional<LoadPolicy>& load_policy);
+
+// Returns the stricter of the two load policies, as determined by the order
+// of the FilterListEvidence enum. Should mirror
+// `LoadPolicy::MoreRestrictiveLoadPolicy()`.
+FilterListEvidence MoreRestrictiveFilterListEvidence(FilterListEvidence a,
+                                                     FilterListEvidence b);
 
 // Enumeration of evidence for or against a subframe being an ad.
 class FrameAdEvidence {
@@ -62,10 +69,16 @@ class FrameAdEvidence {
 
   bool parent_is_ad() const { return parent_is_ad_; }
 
-  FilterListEvidence filter_list_result() const { return filter_list_result_; }
-  void set_filter_list_result(FilterListEvidence value) {
-    filter_list_result_ = value;
+  FilterListEvidence latest_filter_list_result() const {
+    return latest_filter_list_result_;
   }
+  FilterListEvidence most_restrictive_filter_list_result() const {
+    return most_restrictive_filter_list_result_;
+  }
+
+  // Updates the latest filter list result and, if necessary, the most
+  // restrictive filter list result as well.
+  void UpdateFilterListResult(FilterListEvidence value);
 
   ScriptHeuristicEvidence created_by_ad_script() const {
     return created_by_ad_script_;
@@ -85,7 +98,16 @@ class FrameAdEvidence {
   // and, if so, the result of the latest lookup. This is set once the filter
   // list evaluates a frame url, or it is known a frame will not consult the
   // the filter list (and has never done so yet).
-  FilterListEvidence filter_list_result_ = FilterListEvidence::kNotChecked;
+  // TODO(crbug.com/1148058): Update to only include load policies from
+  // navigations that commit.
+  FilterListEvidence latest_filter_list_result_ =
+      FilterListEvidence::kNotChecked;
+
+  // The most restrictive value of `latest_filter_list_result_` ever set. This
+  // tracks whether any URL for this frame has been checked against the filter
+  // list and, if so, the most restrictive result of any lookup.
+  FilterListEvidence most_restrictive_filter_list_result_ =
+      FilterListEvidence::kNotChecked;
 
   // Whether ad script was on the v8 stack at the time this frame was created.
   ScriptHeuristicEvidence created_by_ad_script_ =
