@@ -222,7 +222,7 @@ void ExtensionActionRunner::RunForTesting(const Extension* extension) {
 PermissionsData::PageAccess
 ExtensionActionRunner::RequiresUserConsentForScriptInjection(
     const Extension* extension,
-    UserScript::InjectionType type) {
+    mojom::InjectionType type) {
   CHECK(extension);
 
   // Allow the extension if it's been explicitly granted permission.
@@ -232,10 +232,10 @@ ExtensionActionRunner::RequiresUserConsentForScriptInjection(
   GURL url = web_contents()->GetVisibleURL();
   int tab_id = sessions::SessionTabHelper::IdForTab(web_contents()).id();
   switch (type) {
-    case UserScript::CONTENT_SCRIPT:
+    case mojom::InjectionType::kContentScript:
       return extension->permissions_data()->GetContentScriptAccess(url, tab_id,
                                                                    nullptr);
-    case UserScript::PROGRAMMATIC_SCRIPT:
+    case mojom::InjectionType::kProgrammaticScript:
       return extension->permissions_data()->GetPageAccess(url, tab_id, nullptr);
   }
 
@@ -293,7 +293,7 @@ void ExtensionActionRunner::RunPendingScriptsForExtension(
 
 void ExtensionActionRunner::OnRequestScriptInjectionPermission(
     const std::string& extension_id,
-    UserScript::InjectionType script_type,
+    mojom::InjectionType script_type,
     mojom::RunLocation run_location,
     int64_t request_id) {
   if (!crx_file::id_util::IdIsValid(extension_id)) {

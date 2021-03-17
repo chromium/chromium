@@ -39,6 +39,7 @@
 #include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/host_id.mojom.h"
+#include "extensions/common/mojom/injection_type.mojom-shared.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/socket_permission_data.h"
@@ -61,8 +62,8 @@ IPC_ENUM_TRAITS_MAX_VALUE(extensions::mojom::CSSOrigin,
 IPC_ENUM_TRAITS_MAX_VALUE(content::SocketPermissionRequest::OperationType,
                           content::SocketPermissionRequest::OPERATION_TYPE_LAST)
 
-IPC_ENUM_TRAITS_MAX_VALUE(extensions::UserScript::InjectionType,
-                          extensions::UserScript::INJECTION_TYPE_LAST)
+IPC_ENUM_TRAITS_MAX_VALUE(extensions::mojom::InjectionType,
+                          extensions::mojom::InjectionType::kMaxValue)
 
 IPC_ENUM_TRAITS_MAX_VALUE(extensions::mojom::RunLocation,
                           extensions::mojom::RunLocation::kMaxValue)
@@ -752,7 +753,7 @@ IPC_MESSAGE_ROUTED2(ExtensionHostMsg_ContentScriptsExecuting,
 // scripts running without user consent is not enabled.
 IPC_MESSAGE_ROUTED4(ExtensionHostMsg_RequestScriptInjectionPermission,
                     std::string /* extension id */,
-                    extensions::UserScript::InjectionType /* script type */,
+                    extensions::mojom::InjectionType /* script type */,
                     extensions::mojom::RunLocation /* run location */,
                     int64_t /* request id */)
 

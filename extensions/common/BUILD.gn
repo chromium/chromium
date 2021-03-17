@@ -47,6 +47,7 @@ if (enable_extensions) {
       "mojom/frame.mojom",
       "mojom/guest_view.mojom",
       "mojom/host_id.mojom",
+      "mojom/injection_type.mojom",
       "mojom/keep_alive.mojom",
       "mojom/manifest.mojom",
       "mojom/renderer.mojom",

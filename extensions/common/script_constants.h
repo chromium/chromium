@@ -25,9 +25,6 @@ enum class MatchOriginAsFallbackBehavior {
   kAlways,
 };
 
-// TODO(devlin): Move the other non-UserScript-specific constants like
-// RunLocation and InjectionType from UserScript into here.
-
 }  // namespace extensions
 
 #endif  // EXTENSIONS_COMMON_SCRIPT_CONSTANTS_H_

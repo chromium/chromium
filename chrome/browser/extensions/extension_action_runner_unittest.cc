@@ -27,6 +27,7 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/injection_type.mojom-shared.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "extensions/common/value_builder.h"
@@ -127,7 +128,7 @@ bool ExtensionActionRunnerUnitTest::RequiresUserConsent(
     const Extension* extension) const {
   PermissionsData::PageAccess access_type =
       runner()->RequiresUserConsentForScriptInjectionForTesting(
-          extension, UserScript::PROGRAMMATIC_SCRIPT);
+          extension, mojom::InjectionType::kProgrammaticScript);
   // We should never downright refuse access in these tests.
   DCHECK_NE(PermissionsData::PageAccess::kDenied, access_type);
   return access_type == PermissionsData::PageAccess::kWithheld;

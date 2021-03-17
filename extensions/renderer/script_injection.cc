@@ -20,6 +20,7 @@
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/identifiability_metrics.h"
 #include "extensions/common/mojom/host_id.mojom.h"
+#include "extensions/common/mojom/injection_type.mojom-shared.h"
 #include "extensions/renderer/dom_activity_logger.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/extensions_renderer_client.h"
@@ -313,7 +314,7 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
   // asynchronously; however, these are rare enough that there probably isn't
   // UI jank. If this changes, we can update this.
   bool should_execute_asynchronously =
-      injector_->script_type() == UserScript::CONTENT_SCRIPT &&
+      injector_->script_type() == mojom::InjectionType::kContentScript &&
       (run_location_ == mojom::RunLocation::kDocumentEnd ||
        run_location_ == mojom::RunLocation::kDocumentIdle);
   blink::WebLocalFrame::ScriptExecutionType execution_option =

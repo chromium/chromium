@@ -10,6 +10,7 @@
 
 #include "extensions/common/constants.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
+#include "extensions/common/mojom/injection_type.mojom-shared.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/user_script.h"
@@ -39,7 +40,7 @@ class ScriptInjector {
   virtual ~ScriptInjector() {}
 
   // Returns the script type of this particular injection.
-  virtual UserScript::InjectionType script_type() const = 0;
+  virtual mojom::InjectionType script_type() const = 0;
 
   // Returns true if the script is running inside a user gesture.
   virtual bool IsUserGesture() const = 0;

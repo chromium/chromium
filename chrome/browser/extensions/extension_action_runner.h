@@ -23,6 +23,7 @@
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/common/mojom/injection_type.mojom-shared.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/user_script.h"
@@ -110,7 +111,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // Only used in tests.
   PermissionsData::PageAccess RequiresUserConsentForScriptInjectionForTesting(
       const Extension* extension,
-      UserScript::InjectionType type) {
+      mojom::InjectionType type) {
     return RequiresUserConsentForScriptInjection(extension, type);
   }
   void RequestScriptInjectionForTesting(const Extension* extension,
@@ -145,7 +146,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // via RequestScriptInjection().
   PermissionsData::PageAccess RequiresUserConsentForScriptInjection(
       const Extension* extension,
-      UserScript::InjectionType type);
+      mojom::InjectionType type);
 
   // |callback|. The only assumption that can be made about when (or if)
   // |callback| is run is that, if it is run, it will run on the current page.
@@ -158,7 +159,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
 
   // Handle the RequestScriptInjectionPermission message.
   void OnRequestScriptInjectionPermission(const std::string& extension_id,
-                                          UserScript::InjectionType script_type,
+                                          mojom::InjectionType script_type,
                                           mojom::RunLocation run_location,
                                           int64_t request_id);
 

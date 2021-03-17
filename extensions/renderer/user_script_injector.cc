@@ -128,8 +128,8 @@ void UserScriptInjector::OnUserScriptsUpdated(
   DCHECK(script_);
 }
 
-UserScript::InjectionType UserScriptInjector::script_type() const {
-  return UserScript::CONTENT_SCRIPT;
+mojom::InjectionType UserScriptInjector::script_type() const {
+  return mojom::InjectionType::kContentScript;
 }
 
 bool UserScriptInjector::IsUserGesture() const {

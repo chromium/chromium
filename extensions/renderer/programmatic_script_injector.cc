@@ -36,9 +36,8 @@ ProgrammaticScriptInjector::ProgrammaticScriptInjector(
 ProgrammaticScriptInjector::~ProgrammaticScriptInjector() {
 }
 
-UserScript::InjectionType ProgrammaticScriptInjector::script_type()
-    const {
-  return UserScript::PROGRAMMATIC_SCRIPT;
+mojom::InjectionType ProgrammaticScriptInjector::script_type() const {
+  return mojom::InjectionType::kProgrammaticScript;
 }
 
 bool ProgrammaticScriptInjector::IsUserGesture() const {

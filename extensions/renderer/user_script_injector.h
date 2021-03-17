@@ -12,6 +12,7 @@
 #include "base/scoped_observer.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
 #include "extensions/common/mojom/host_id.mojom.h"
+#include "extensions/common/mojom/injection_type.mojom-shared.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "extensions/renderer/script_injection.h"
@@ -40,7 +41,7 @@ class UserScriptInjector : public ScriptInjector,
                             const UserScriptList& scripts) override;
 
   // ScriptInjector implementation.
-  UserScript::InjectionType script_type() const override;
+  mojom::InjectionType script_type() const override;
   bool IsUserGesture() const override;
   mojom::CSSOrigin GetCssOrigin() const override;
   bool IsRemovingCSS() const override;
