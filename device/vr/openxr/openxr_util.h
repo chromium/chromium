@@ -18,8 +18,7 @@
 #include "ui/gfx/transform_util.h"
 
 using AnchorId = util::IdTypeU64<class AnchorTag>;
-constexpr AnchorId kInvalidAnchorId =
-    AnchorId(0);  // IdTypeU64 invalid value is 0
+constexpr AnchorId kInvalidAnchorId;
 
 namespace device {
 // These macros aren't common in Chromium and generally discouraged, so define

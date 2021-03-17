@@ -39,14 +39,7 @@ OpenXrRenderLoop::OpenXrRenderLoop(
   DCHECK(instance_ != XR_NULL_HANDLE);
 }
 
-void OpenXrRenderLoop::DisposeActiveAnchorCallbacks() {
-  for (auto& create_anchor : create_anchor_requests_) {
-    create_anchor.TakeCallback().Run(mojom::CreateAnchorResult::FAILURE, 0);
-  }
-}
-
 OpenXrRenderLoop::~OpenXrRenderLoop() {
-  DisposeActiveAnchorCallbacks();
   Stop();
 }
 
@@ -102,16 +95,17 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
                                   current_display_info_.Clone()));
   }
 
-  if (anchors_enabled) {
-    OpenXrAnchorManager* anchor_manager =
-        openxr_->GetOrCreateAnchorManager(extension_helper_);
+  if (openxr_->HasFrameState()) {
+    if (anchors_enabled) {
+      OpenXrAnchorManager* anchor_manager =
+          openxr_->GetOrCreateAnchorManager(extension_helper_);
 
-    ProcessCreateAnchorRequests(anchor_manager,
-                                frame_data->input_state.value());
-
-    if (anchor_manager) {
-      frame_data->anchors_data = anchor_manager->GetCurrentAnchorsData(
-          openxr_->GetPredictedDisplayTime());
+      if (anchor_manager) {
+        frame_data->anchors_data = anchor_manager->ProcessAnchorsForFrame(
+            openxr_.get(), GetCurrentStageParameters(),
+            frame_data->input_state.value(),
+            openxr_->GetPredictedDisplayTime());
+      }
     }
   }
 
@@ -170,7 +164,6 @@ void OpenXrRenderLoop::StopRuntime() {
   // Has to reset input_helper_ before reset openxr_. If we destroy openxr_
   // first, input_helper_destructor will try to call the actual openxr runtime
   // rather than the mock in tests.
-  DisposeActiveAnchorCallbacks();
   openxr_ = nullptr;
   current_display_info_ = nullptr;
   texture_helper_.Reset();
@@ -188,7 +181,7 @@ void OpenXrRenderLoop::EnableSupportedFeatures(
           kMSFTHandInteractionExtensionName);
 
   // Filter out features that are requested but not supported
-  auto required_extension_enabled_filter =
+  auto openxr_extension_enabled_filter =
       [anchors_supported,
        hand_input_supported](device::mojom::XRSessionFeature feature) {
         if (feature == device::mojom::XRSessionFeature::ANCHORS &&
@@ -207,11 +200,13 @@ void OpenXrRenderLoop::EnableSupportedFeatures(
   // reached this point, it is safe to assume that all requested features are
   // enabled.
   // TODO(https://crbug.com/995377): revisit the approach when the bug is fixed.
+  // If the session request has succeeded, we can assume that the required
+  // features are supported.
   std::copy(required_features.begin(), required_features.end(),
             std::inserter(enabled_features_, enabled_features_.begin()));
   std::copy_if(optional_features.begin(), optional_features.end(),
                std::inserter(enabled_features_, enabled_features_.begin()),
-               required_extension_enabled_filter);
+               openxr_extension_enabled_filter);
 }
 
 device::mojom::XREnvironmentBlendMode OpenXrRenderLoop::GetEnvironmentBlendMode(
@@ -454,92 +449,18 @@ void OpenXrRenderLoop::UnsubscribeFromHitTest(uint64_t subscription_id) {
       "OpenXrRenderLoop::UnsubscribeFromHitTest not yet implemented");
 }
 
-base::Optional<OpenXrRenderLoop::XrLocation>
-OpenXrRenderLoop::GetXrLocationFromReferenceSpace(
-    const mojom::XRNativeOriginInformation& native_origin_information,
-    const gfx::Transform& native_origin_from_anchor) const {
-  // Floor corresponds to offset from local * local, so we must apply the
-  // offset to get the correct pose in the local space.
-  auto type = native_origin_information.get_reference_space_type();
-  if (type == device::mojom::XRReferenceSpaceType::kLocalFloor) {
-    const mojom::VRStageParametersPtr& current_stage_parameters =
-        GetCurrentStageParameters();
-    if (!current_stage_parameters) {
-      return base::nullopt;
-    }
-    return XrLocation{
-        GfxTransformToXrPose(current_stage_parameters->mojo_from_floor *
-                             native_origin_from_anchor),
-        openxr_->GetReferenceSpace(
-            device::mojom::XRReferenceSpaceType::kLocal)};
-  }
-
-  return XrLocation{GfxTransformToXrPose(native_origin_from_anchor),
-                    openxr_->GetReferenceSpace(type)};
-}
-
-base::Optional<OpenXrRenderLoop::XrLocation>
-OpenXrRenderLoop::GetXrLocationFromNativeOriginInformation(
-    const OpenXrAnchorManager* anchor_manager,
-    const mojom::XRNativeOriginInformation& native_origin_information,
-    const gfx::Transform& native_origin_from_anchor,
-    const std::vector<mojom::XRInputSourceStatePtr>& input_state) const {
-  switch (native_origin_information.which()) {
-    case mojom::XRNativeOriginInformation::Tag::INPUT_SOURCE_ID:
-      // Currently unimplemented as only anchors are supported and are never
-      // created relative to input sources
-      return base::nullopt;
-    case mojom::XRNativeOriginInformation::Tag::REFERENCE_SPACE_TYPE:
-      return GetXrLocationFromReferenceSpace(native_origin_information,
-                                             native_origin_from_anchor);
-    case mojom::XRNativeOriginInformation::Tag::PLANE_ID:
-    case mojom::XRNativeOriginInformation::Tag::HAND_JOINT_SPACE_INFO:
-      // Unsupported for now
-      return base::nullopt;
-    case mojom::XRNativeOriginInformation::Tag::ANCHOR_ID:
-      return XrLocation{GfxTransformToXrPose(native_origin_from_anchor),
-                        anchor_manager->GetAnchorSpace(AnchorId(
-                            native_origin_information.get_anchor_id()))};
-  }
-}
-
 void OpenXrRenderLoop::CreateAnchor(
     mojom::XRNativeOriginInformationPtr native_origin_information,
     const device::Pose& native_origin_from_anchor,
     CreateAnchorCallback callback) {
-  create_anchor_requests_.emplace_back(*native_origin_information,
-                                       native_origin_from_anchor.ToTransform(),
-                                       std::move(callback));
-}
-
-void OpenXrRenderLoop::ProcessCreateAnchorRequests(
-    OpenXrAnchorManager* anchor_manager,
-    const std::vector<mojom::XRInputSourceStatePtr>& input_state) {
-  for (auto& request : create_anchor_requests_) {
-    base::Optional<XrLocation> anchor_location =
-        GetXrLocationFromNativeOriginInformation(
-            anchor_manager, request.GetNativeOriginInformation(),
-            request.GetNativeOriginFromAnchor(), input_state);
-    if (!anchor_location.has_value()) {
-      request.TakeCallback().Run(device::mojom::CreateAnchorResult::FAILURE, 0);
-      continue;
-    }
-
-    AnchorId anchor_id = kInvalidAnchorId;
-    if (openxr_->HasFrameState()) {
-      XrTime display_time = openxr_->GetPredictedDisplayTime();
-      anchor_id = anchor_manager->CreateAnchor(
-          anchor_location->pose, anchor_location->space, display_time);
-    }
-
-    if (anchor_id.is_null()) {
-      request.TakeCallback().Run(device::mojom::CreateAnchorResult::FAILURE, 0);
-    } else {
-      request.TakeCallback().Run(device::mojom::CreateAnchorResult::SUCCESS,
-                                 anchor_id.GetUnsafeValue());
-    }
+  OpenXrAnchorManager* anchor_manager =
+      openxr_->GetOrCreateAnchorManager(extension_helper_);
+  if (!anchor_manager) {
+    return;
   }
-  create_anchor_requests_.clear();
+  anchor_manager->AddCreateAnchorRequest(*native_origin_information,
+                                         native_origin_from_anchor,
+                                         std::move(callback));
 }
 
 void OpenXrRenderLoop::CreatePlaneAnchor(

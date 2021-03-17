@@ -13,7 +13,6 @@
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "device/vr/openxr/context_provider_callbacks.h"
 #include "device/vr/openxr/openxr_anchor_manager.h"
-#include "device/vr/openxr/openxr_anchor_request.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/windows/compositor_base.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -82,14 +81,11 @@ class OpenXrRenderLoop : public XRCompositorCommon,
                  mojom::VREyeParametersPtr* eye) const;
   void UpdateStageParameters();
 
-  void DisposeActiveAnchorCallbacks();
-
   // XREnvironmentIntegrationProvider
   void GetEnvironmentIntegrationProvider(
       mojo::PendingAssociatedReceiver<
           device::mojom::XREnvironmentIntegrationProvider> environment_provider)
       override;
-
   void SubscribeToHitTest(
       mojom::XRNativeOriginInformationPtr native_origin_information,
       const std::vector<mojom::EntityTypeForHitTest>& entity_types,
@@ -118,20 +114,6 @@ class OpenXrRenderLoop : public XRCompositorCommon,
       OpenXrAnchorManager* anchor_manager,
       const std::vector<mojom::XRInputSourceStatePtr>& input_state);
 
-  // An XrPosef with the space it is relative to
-  struct XrLocation {
-    XrPosef pose;
-    XrSpace space;
-  };
-  base::Optional<XrLocation> GetXrLocationFromNativeOriginInformation(
-      const OpenXrAnchorManager* anchor_manager,
-      const mojom::XRNativeOriginInformation& native_origin_information,
-      const gfx::Transform& native_origin_from_anchor,
-      const std::vector<mojom::XRInputSourceStatePtr>& input_state) const;
-  base::Optional<XrLocation> GetXrLocationFromReferenceSpace(
-      const mojom::XRNativeOriginInformation& native_origin_information,
-      const gfx::Transform& native_origin_from_anchor) const;
-
   void StartContextProviderIfNeeded(
       StartRuntimeCallback start_runtime_callback);
   void OnContextProviderCreated(
@@ -149,8 +131,6 @@ class OpenXrRenderLoop : public XRCompositorCommon,
   const OpenXrExtensionHelper& extension_helper_;
 
   std::unique_ptr<OpenXrApiWrapper> openxr_;
-
-  std::vector<CreateAnchorRequest> create_anchor_requests_;
 
   base::RepeatingCallback<void(mojom::VRDisplayInfoPtr)>
       on_display_info_changed_;
