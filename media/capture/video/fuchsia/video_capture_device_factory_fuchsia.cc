@@ -208,8 +208,11 @@ void VideoCaptureDeviceFactoryFuchsia::OnWatchDevicesResult(
       }
       if (it->second->is_pending()) {
         // If the device info request was still pending then consider it
-        // complete now.
-        OnDeviceInfoFetched();
+        // complete now. If this was the only device in pending state then all
+        // callbacks will be resolved in
+        // MaybeResolvePendingDeviceInfoCallbacks() called below.
+        DCHECK_GT(num_pending_device_info_requests_, 0U);
+        num_pending_device_info_requests_--;
       }
       devices_->erase(it);
       continue;
