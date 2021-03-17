@@ -57,7 +57,8 @@ void PluginResource::OnReplyReceived(
   if (it == callbacks_.end()) {
     DCHECK(false) << "Callback does not exist for an expected sequence number.";
   } else {
-    scoped_refptr<PluginResourceCallbackBase> callback = it->second;
+    std::unique_ptr<PluginResourceCallbackBase> callback =
+        std::move(it->second);
     callbacks_.erase(it);
     callback->Run(params, msg);
   }

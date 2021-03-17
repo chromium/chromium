@@ -46,10 +46,10 @@ int32_t IsolatedFileSystemPrivateResource::Open(
   if (!file_system_resource)
     return PP_ERROR_BADARGUMENT;
 
-  Call<PpapiPluginMsg_IsolatedFileSystem_BrowserOpenReply>(BROWSER,
-      PpapiHostMsg_IsolatedFileSystem_BrowserOpen(type),
-      base::Bind(&IsolatedFileSystemPrivateResource::OnBrowserOpenComplete,
-                 this, type, file_system_resource, callback));
+  Call<PpapiPluginMsg_IsolatedFileSystem_BrowserOpenReply>(
+      BROWSER, PpapiHostMsg_IsolatedFileSystem_BrowserOpen(type),
+      base::BindOnce(&IsolatedFileSystemPrivateResource::OnBrowserOpenComplete,
+                     this, type, file_system_resource, callback));
   return PP_OK_COMPLETIONPENDING;
 }
 

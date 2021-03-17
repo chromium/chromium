@@ -147,8 +147,9 @@ int32_t FileChooserResource::ShowInternal(
         mode_ == PP_FILECHOOSERMODE_OPENMULTIPLE,
         sugg_str ? sugg_str->value() : std::string(),
         accept_types_);
-  Call<PpapiPluginMsg_FileChooser_ShowReply>(RENDERER, msg,
-      base::Bind(&FileChooserResource::OnPluginMsgShowReply, this));
+  Call<PpapiPluginMsg_FileChooser_ShowReply>(
+      RENDERER, msg,
+      base::BindOnce(&FileChooserResource::OnPluginMsgShowReply, this));
   return PP_OK_COMPLETIONPENDING;
 }
 

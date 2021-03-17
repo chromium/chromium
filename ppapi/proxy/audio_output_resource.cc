@@ -313,8 +313,8 @@ int32_t AudioOutputResource::CommonOpen(
       enter_config.object()->GetSampleFrameCount());
   Call<PpapiPluginMsg_AudioOutput_OpenReply>(
       RENDERER, msg,
-      base::Bind(&AudioOutputResource::OnPluginMsgOpenReply,
-                 base::Unretained(this)));
+      base::BindOnce(&AudioOutputResource::OnPluginMsgOpenReply,
+                     base::Unretained(this)));
   return PP_OK_COMPLETIONPENDING;
 }
 }  // namespace proxy

@@ -122,11 +122,9 @@ int32_t UDPSocketResourceBase::SetOptionImpl(
   }
 
   Call<PpapiPluginMsg_UDPSocket_SetOptionReply>(
-      BROWSER,
-      PpapiHostMsg_UDPSocket_SetOption(name, option_data),
-      base::Bind(&UDPSocketResourceBase::OnPluginMsgGeneralReply,
-                 base::Unretained(this),
-                 callback),
+      BROWSER, PpapiHostMsg_UDPSocket_SetOption(name, option_data),
+      base::BindOnce(&UDPSocketResourceBase::OnPluginMsgGeneralReply,
+                     base::Unretained(this), callback),
       callback);
   return PP_OK_COMPLETIONPENDING;
 }
@@ -146,10 +144,9 @@ int32_t UDPSocketResourceBase::BindImpl(
 
   // Send the request, the browser will call us back via BindReply.
   Call<PpapiPluginMsg_UDPSocket_BindReply>(
-      BROWSER,
-      PpapiHostMsg_UDPSocket_Bind(*addr),
-      base::Bind(&UDPSocketResourceBase::OnPluginMsgBindReply,
-                 base::Unretained(this)),
+      BROWSER, PpapiHostMsg_UDPSocket_Bind(*addr),
+      base::BindOnce(&UDPSocketResourceBase::OnPluginMsgBindReply,
+                     base::Unretained(this)),
       callback);
   return PP_OK_COMPLETIONPENDING;
 }
@@ -204,8 +201,8 @@ int32_t UDPSocketResourceBase::SendToImpl(
   Call<PpapiPluginMsg_UDPSocket_SendToReply>(
       BROWSER,
       PpapiHostMsg_UDPSocket_SendTo(std::string(buffer, num_bytes), *addr),
-      base::Bind(&UDPSocketResourceBase::OnPluginMsgSendToReply,
-                 base::Unretained(this)),
+      base::BindOnce(&UDPSocketResourceBase::OnPluginMsgSendToReply,
+                     base::Unretained(this)),
       callback);
   return PP_OK_COMPLETIONPENDING;
 }
@@ -234,11 +231,9 @@ int32_t UDPSocketResourceBase::JoinGroupImpl(
   DCHECK(group);
 
   Call<PpapiPluginMsg_UDPSocket_JoinGroupReply>(
-      BROWSER,
-      PpapiHostMsg_UDPSocket_JoinGroup(*group),
-      base::Bind(&UDPSocketResourceBase::OnPluginMsgGeneralReply,
-                 base::Unretained(this),
-                 callback),
+      BROWSER, PpapiHostMsg_UDPSocket_JoinGroup(*group),
+      base::BindOnce(&UDPSocketResourceBase::OnPluginMsgGeneralReply,
+                     base::Unretained(this), callback),
       callback);
   return PP_OK_COMPLETIONPENDING;
 }
@@ -249,11 +244,9 @@ int32_t UDPSocketResourceBase::LeaveGroupImpl(
   DCHECK(group);
 
   Call<PpapiPluginMsg_UDPSocket_LeaveGroupReply>(
-      BROWSER,
-      PpapiHostMsg_UDPSocket_LeaveGroup(*group),
-      base::Bind(&UDPSocketResourceBase::OnPluginMsgGeneralReply,
-                 base::Unretained(this),
-                 callback),
+      BROWSER, PpapiHostMsg_UDPSocket_LeaveGroup(*group),
+      base::BindOnce(&UDPSocketResourceBase::OnPluginMsgGeneralReply,
+                     base::Unretained(this), callback),
       callback);
   return PP_OK_COMPLETIONPENDING;
 }

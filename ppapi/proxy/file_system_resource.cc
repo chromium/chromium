@@ -79,16 +79,12 @@ int32_t FileSystemResource::Open(int64_t expected_size,
     return PP_ERROR_FAILED;
   called_open_ = true;
 
-  Call<PpapiPluginMsg_FileSystem_OpenReply>(RENDERER,
-      PpapiHostMsg_FileSystem_Open(expected_size),
-      base::Bind(&FileSystemResource::OpenComplete,
-                 this,
-                 callback));
-  Call<PpapiPluginMsg_FileSystem_OpenReply>(BROWSER,
-      PpapiHostMsg_FileSystem_Open(expected_size),
-      base::Bind(&FileSystemResource::OpenComplete,
-                 this,
-                 callback));
+  Call<PpapiPluginMsg_FileSystem_OpenReply>(
+      RENDERER, PpapiHostMsg_FileSystem_Open(expected_size),
+      base::BindOnce(&FileSystemResource::OpenComplete, this, callback));
+  Call<PpapiPluginMsg_FileSystem_OpenReply>(
+      BROWSER, PpapiHostMsg_FileSystem_Open(expected_size),
+      base::BindOnce(&FileSystemResource::OpenComplete, this, callback));
   return PP_OK_COMPLETIONPENDING;
 }
 
@@ -135,16 +131,14 @@ int32_t FileSystemResource::InitIsolatedFileSystem(
     return PP_ERROR_FAILED;
   called_open_ = true;
 
-  Call<PpapiPluginMsg_FileSystem_InitIsolatedFileSystemReply>(RENDERER,
-      PpapiHostMsg_FileSystem_InitIsolatedFileSystem(fsid, type),
-      base::Bind(&FileSystemResource::InitIsolatedFileSystemComplete,
-      this,
-      callback));
-  Call<PpapiPluginMsg_FileSystem_InitIsolatedFileSystemReply>(BROWSER,
-      PpapiHostMsg_FileSystem_InitIsolatedFileSystem(fsid, type),
-      base::Bind(&FileSystemResource::InitIsolatedFileSystemComplete,
-      this,
-      callback));
+  Call<PpapiPluginMsg_FileSystem_InitIsolatedFileSystemReply>(
+      RENDERER, PpapiHostMsg_FileSystem_InitIsolatedFileSystem(fsid, type),
+      base::BindOnce(&FileSystemResource::InitIsolatedFileSystemComplete, this,
+                     callback));
+  Call<PpapiPluginMsg_FileSystem_InitIsolatedFileSystemReply>(
+      BROWSER, PpapiHostMsg_FileSystem_InitIsolatedFileSystem(fsid, type),
+      base::BindOnce(&FileSystemResource::InitIsolatedFileSystemComplete, this,
+                     callback));
   return PP_OK_COMPLETIONPENDING;
 }
 
@@ -189,10 +183,9 @@ void FileSystemResource::ReserveQuota(int64_t amount) {
         file_io_api->GetMaxWrittenOffset(),
         file_io_api->GetAppendModeWriteAmount());
   }
-  Call<PpapiPluginMsg_FileSystem_ReserveQuotaReply>(BROWSER,
-      PpapiHostMsg_FileSystem_ReserveQuota(amount, file_growths),
-      base::Bind(&FileSystemResource::ReserveQuotaComplete,
-                 this));
+  Call<PpapiPluginMsg_FileSystem_ReserveQuotaReply>(
+      BROWSER, PpapiHostMsg_FileSystem_ReserveQuota(amount, file_growths),
+      base::BindOnce(&FileSystemResource::ReserveQuotaComplete, this));
 }
 
 void FileSystemResource::ReserveQuotaComplete(

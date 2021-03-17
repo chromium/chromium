@@ -93,7 +93,7 @@ int32_t VideoCaptureResource::Open(
   Call<PpapiPluginMsg_VideoCapture_OpenReply>(
       RENDERER,
       PpapiHostMsg_VideoCapture_Open(device_id, requested_info, buffer_count),
-      base::Bind(&VideoCaptureResource::OnPluginMsgOpenReply, this));
+      base::BindOnce(&VideoCaptureResource::OnPluginMsgOpenReply, this));
   return PP_OK_COMPLETIONPENDING;
 }
 

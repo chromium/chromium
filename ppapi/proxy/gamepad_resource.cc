@@ -24,9 +24,8 @@ GamepadResource::GamepadResource(Connection connection, PP_Instance instance)
 
   SendCreate(BROWSER, PpapiHostMsg_Gamepad_Create());
   Call<PpapiPluginMsg_Gamepad_SendMemory>(
-      BROWSER,
-      PpapiHostMsg_Gamepad_RequestMemory(),
-      base::Bind(&GamepadResource::OnPluginMsgSendMemory, this));
+      BROWSER, PpapiHostMsg_Gamepad_RequestMemory(),
+      base::BindOnce(&GamepadResource::OnPluginMsgSendMemory, this));
 }
 
 GamepadResource::~GamepadResource() {
