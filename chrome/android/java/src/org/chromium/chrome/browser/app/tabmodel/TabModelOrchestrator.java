@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.app.tabmodel;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
@@ -133,15 +132,6 @@ public abstract class TabModelOrchestrator {
     }
 
     protected void wireSelectorAndStore() {
-        // Supply TabModelSelectorImpl with TabPersistentStore.
-        //
-        // TODO(crbug.com/1138561): Remove this dependency by making TabModelSelectorImpl emit
-        // events and TabPersistentStore react to them as an observer.
-        ObservableSupplierImpl<TabPersistentStore> tabPersistentStoreSupplier =
-                new ObservableSupplierImpl<>();
-        tabPersistentStoreSupplier.set(mTabPersistentStore);
-        mTabModelSelector.setTabPersistentStoreSupplier(tabPersistentStoreSupplier);
-
         // Notify TabModelSelectorImpl when TabPersistentStore initializes tab state
         final TabPersistentStoreObserver persistentStoreObserver =
                 new TabPersistentStoreObserver() {

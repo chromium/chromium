@@ -152,7 +152,7 @@ public class TabPersistentStoreTest {
                     return new TabModelImpl(Profile.getLastUsedRegularProfile(), false,
                             getTabCreatorManager().getTabCreator(false),
                             getTabCreatorManager().getTabCreator(true), mTabModelOrderController,
-                            null, mTabPersistentStore, nextTabPolicySupplier,
+                            null, nextTabPolicySupplier,
                             AsyncTabParamsManagerSingleton.getInstance(), TestTabModelSelector.this,
                             true);
                 }
@@ -162,7 +162,7 @@ public class TabPersistentStoreTest {
                     new IncognitoTabModelImpl(new IncognitoTabModelImplCreator(null,
                             getTabCreatorManager().getTabCreator(false),
                             getTabCreatorManager().getTabCreator(true), mTabModelOrderController,
-                            null, mTabPersistentStore, nextTabPolicySupplier,
+                            null, nextTabPolicySupplier,
                             AsyncTabParamsManagerSingleton.getInstance(), this));
             initialize(regularTabModel, incognitoTabModel);
         }

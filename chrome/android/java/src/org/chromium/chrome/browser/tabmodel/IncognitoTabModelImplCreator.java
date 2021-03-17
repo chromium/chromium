@@ -24,7 +24,6 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
     private final TabCreator mIncognitoTabCreator;
     private final TabModelOrderController mOrderController;
     private final TabContentManager mTabContentManager;
-    private final TabPersistentStore mTabSaver;
     private final NextTabPolicySupplier mNextTabPolicySupplier;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final TabModelDelegate mModelDelegate;
@@ -46,7 +45,6 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
      * @param incognitoTabCreator Creates incognito tabs.
      * @param orderController     Determines the order for inserting new Tabs.
      * @param tabContentManager   Manages the display content of the tab.
-     * @param tabSaver            Handler for saving tabs.
      * @param nextTabPolicySupplier Supplies the policy to pick a next tab if the current is closed
      * @param asyncTabParamsManager An {@link AsyncTabParamsManager} instance.
      * @param modelDelegate       Delegate to handle external dependencies and interactions.
@@ -54,14 +52,13 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
     IncognitoTabModelImplCreator(@Nullable Supplier<WindowAndroid> windowAndroidSupplier,
             TabCreator regularTabCreator, TabCreator incognitoTabCreator,
             TabModelOrderController orderController, TabContentManager tabContentManager,
-            TabPersistentStore tabSaver, NextTabPolicySupplier nextTabPolicySupplier,
+            NextTabPolicySupplier nextTabPolicySupplier,
             AsyncTabParamsManager asyncTabParamsManager, TabModelDelegate modelDelegate) {
         mWindowAndroidSupplier = windowAndroidSupplier;
         mRegularTabCreator = regularTabCreator;
         mIncognitoTabCreator = incognitoTabCreator;
         mOrderController = orderController;
         mTabContentManager = tabContentManager;
-        mTabSaver = tabSaver;
         mNextTabPolicySupplier = nextTabPolicySupplier;
         mAsyncTabParamsManager = asyncTabParamsManager;
         mModelDelegate = modelDelegate;
@@ -89,7 +86,7 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
     public TabModel createTabModel() {
         Profile otrProfile = getOTRProfile();
         return new TabModelImpl(otrProfile, false, mRegularTabCreator, mIncognitoTabCreator,
-                mOrderController, mTabContentManager, mTabSaver, mNextTabPolicySupplier,
+                mOrderController, mTabContentManager, mNextTabPolicySupplier,
                 mAsyncTabParamsManager, mModelDelegate, false);
     }
 

@@ -59,7 +59,6 @@ public class TabModelImpl extends TabModelJniBridge {
     private final TabCreator mIncognitoTabCreator;
     private final TabModelOrderController mOrderController;
     private final TabContentManager mTabContentManager;
-    private final TabPersistentStore mTabSaver;
     private final TabModelDelegate mModelDelegate;
     private final ObserverList<TabModelObserver> mObservers;
     private final NextTabPolicySupplier mNextTabPolicySupplier;
@@ -90,7 +89,7 @@ public class TabModelImpl extends TabModelJniBridge {
     public TabModelImpl(@NonNull Profile profile, boolean isTabbedActivity,
             TabCreator regularTabCreator, TabCreator incognitoTabCreator,
             TabModelOrderController orderController, TabContentManager tabContentManager,
-            TabPersistentStore tabSaver, NextTabPolicySupplier nextTabPolicySupplier,
+            NextTabPolicySupplier nextTabPolicySupplier,
             AsyncTabParamsManager asyncTabParamsManager, TabModelDelegate modelDelegate,
             boolean supportUndo) {
         super(profile, isTabbedActivity);
@@ -98,7 +97,6 @@ public class TabModelImpl extends TabModelJniBridge {
         mIncognitoTabCreator = incognitoTabCreator;
         mOrderController = orderController;
         mTabContentManager = tabContentManager;
-        mTabSaver = tabSaver;
         mNextTabPolicySupplier = nextTabPolicySupplier;
         mAsyncTabParamsManager = asyncTabParamsManager;
         mModelDelegate = modelDelegate;
@@ -355,9 +353,6 @@ public class TabModelImpl extends TabModelJniBridge {
             }
         }
 
-        // Re-save the tab list now that it is being kept.
-        mTabSaver.saveTabListAsynchronously();
-
         for (TabModelObserver obs : mObservers) obs.tabClosureUndone(tab);
     }
 
@@ -449,7 +444,7 @@ public class TabModelImpl extends TabModelJniBridge {
 
     @Override
     public void closeAllTabs(boolean allowDelegation, boolean uponExit) {
-        mTabSaver.cancelLoadingTabs(isIncognito());
+        for (TabModelObserver obs : mObservers) obs.willCloseAllTabs(isIncognito());
 
         if (uponExit) {
             commitAllTabClosures();
@@ -662,11 +657,11 @@ public class TabModelImpl extends TabModelJniBridge {
      */
     private void finalizeTabClosure(Tab tab, boolean notifyTabClosureCommitted) {
         if (mTabContentManager != null) mTabContentManager.removeTabThumbnail(tab.getId());
-        mTabSaver.removeTabFromQueues(tab);
         PersistedTabData.onTabClose(tab);
 
         if (!isIncognito()) HistoricalTabSaver.createHistoricalTab(tab);
 
+        for (TabModelObserver obs : mObservers) obs.didCloseTab(tab);
         for (TabModelObserver obs : mObservers) obs.didCloseTab(tab.getId(), tab.isIncognito());
         if (notifyTabClosureCommitted) {
             for (TabModelObserver obs : mObservers) obs.tabClosureCommitted(tab);

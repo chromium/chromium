@@ -92,6 +92,7 @@ public class TabPersistentStore {
 
     /** Prevents two TabPersistentStores from saving the same file simultaneously. */
     private static final Object SAVE_LIST_LOCK = new Object();
+    private TabModelObserver mTabModelObserver;
 
     public void onNativeLibraryReady(TabContentManager tabContentManager) {
         setTabContentManager(tabContentManager);
@@ -126,6 +127,26 @@ public class TabPersistentStore {
                 addTabToSaveQueue(tab);
             }
         };
+
+        mTabModelObserver = new TabModelObserver() {
+            @Override
+            public void didCloseTab(Tab tab) {
+                removeTabFromQueues(tab);
+            }
+
+            @Override
+            public void willCloseAllTabs(boolean incognito) {
+                cancelLoadingTabs(incognito);
+            }
+
+            @Override
+            public void tabClosureUndone(Tab tab) {
+                saveTabListAsynchronously();
+            }
+        };
+
+        mTabModelSelector.getModel(false).addObserver(mTabModelObserver);
+        mTabModelSelector.getModel(true).addObserver(mTabModelObserver);
     }
 
     /**
@@ -847,6 +868,11 @@ public class TabPersistentStore {
 
     public void destroy() {
         mDestroyed = true;
+        if (mTabModelObserver != null) {
+            mTabModelSelector.getModel(false).removeObserver(mTabModelObserver);
+            mTabModelSelector.getModel(true).removeObserver(mTabModelObserver);
+            mTabModelObserver = null;
+        }
         mPersistencePolicy.destroy();
         if (mTabLoader != null) mTabLoader.cancel(true);
         mTabsToSave.clear();

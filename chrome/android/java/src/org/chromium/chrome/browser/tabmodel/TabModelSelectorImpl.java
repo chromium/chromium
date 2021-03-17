@@ -44,10 +44,6 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
 
     private final TabModelOrderController mOrderController;
 
-    // TODO(crbug.com/1138561): Remove the dependency from TabModelSelectorImpl to
-    // TabPersistentStore.
-    private Supplier<TabPersistentStore> mTabSaver;
-
     private final AsyncTabParamsManager mAsyncTabParamsManager;
 
     private NextTabPolicySupplier mNextTabPolicySupplier;
@@ -82,19 +78,6 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         mOrderController = new TabModelOrderControllerImpl(this);
         mNextTabPolicySupplier = nextTabPolicySupplier;
         mAsyncTabParamsManager = asyncTabParamsManager;
-    }
-
-    /**
-     * TODO(crbug.com/1138561): Do not add more parameters here. This is temporary while the
-     * dependency from TabModelSelectorImpl to TabPersistentStore is removed.
-     *
-     * This must be called after the constructor; NPEs are expected, otherwise.
-     * A Supplier that supplies null can be passed in tests.
-     */
-    public void setTabPersistentStoreSupplier(
-            Supplier<TabPersistentStore> tabPersistentStoreSupplier) {
-        assert mTabSaver == null;
-        mTabSaver = tabPersistentStoreSupplier;
     }
 
     @Override
@@ -133,14 +116,14 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                 (ChromeTabCreator) getTabCreatorManager().getTabCreator(true);
         TabModelImpl normalModel = new TabModelImpl(Profile.getLastUsedRegularProfile(),
                 mIsTabbedActivityForSync, regularTabCreator, incognitoTabCreator, mOrderController,
-                mTabContentManager, mTabSaver.get(), mNextTabPolicySupplier, mAsyncTabParamsManager,
-                this, mIsUndoSupported);
+                mTabContentManager, mNextTabPolicySupplier, mAsyncTabParamsManager, this,
+                mIsUndoSupported);
         regularTabCreator.setTabModel(normalModel, mOrderController);
 
-        IncognitoTabModel incognitoModel = new IncognitoTabModelImpl(
-                new IncognitoTabModelImplCreator(mWindowAndroidSupplier, regularTabCreator,
-                        incognitoTabCreator, mOrderController, mTabContentManager, mTabSaver.get(),
-                        mNextTabPolicySupplier, mAsyncTabParamsManager, this));
+        IncognitoTabModel incognitoModel =
+                new IncognitoTabModelImpl(new IncognitoTabModelImplCreator(mWindowAndroidSupplier,
+                        regularTabCreator, incognitoTabCreator, mOrderController,
+                        mTabContentManager, mNextTabPolicySupplier, mAsyncTabParamsManager, this));
         incognitoTabCreator.setTabModel(incognitoModel, mOrderController);
         onNativeLibraryReadyInternal(tabContentProvider, normalModel, incognitoModel);
     }
