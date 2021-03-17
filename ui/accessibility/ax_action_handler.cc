@@ -4,12 +4,12 @@
 
 #include "ui/accessibility/ax_action_handler.h"
 
-#include "ui/accessibility/ax_action_handler_registry.h"
+#include "ui/accessibility/ax_tree_id_registry.h"
 
 namespace ui {
 
 AXActionHandler::AXActionHandler()
     : AXActionHandlerBase(
-          AXActionHandlerRegistry::GetInstance()->GetOrCreateAXTreeID(this)) {}
+          AXTreeIDRegistry::GetInstance()->GetOrCreateAXTreeID(this)) {}
 
 }  // namespace ui

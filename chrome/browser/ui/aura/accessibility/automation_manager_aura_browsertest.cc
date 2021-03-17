@@ -61,8 +61,8 @@ void FindAllHostsOfWebContentsWithAXTreeID(
 
 // A helper to retrieve an ax tree id given a RenderFrameHost.
 ui::AXTreeID GetAXTreeIDFromRenderFrameHost(content::RenderFrameHost* rfh) {
-  auto* registry = ui::AXActionHandlerRegistry::GetInstance();
-  return registry->GetAXTreeID(ui::AXActionHandlerRegistry::FrameID(
+  auto* registry = ui::AXTreeIDRegistry::GetInstance();
+  return registry->GetAXTreeID(ui::AXTreeIDRegistry::FrameID(
       rfh->GetProcess()->GetID(), rfh->GetRoutingID()));
 }
 
@@ -424,9 +424,8 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest,
-                       AXActionHandlerRegistryUpdates) {
-  ui::AXActionHandlerRegistry* registry =
-      ui::AXActionHandlerRegistry::GetInstance();
+                       AXTreeIDRegistryUpdates) {
+  ui::AXTreeIDRegistry* registry = ui::AXTreeIDRegistry::GetInstance();
   AutomationManagerAura* manager = AutomationManagerAura::GetInstance();
   ui::AXTreeID tree_id = manager->ax_tree_id();
 

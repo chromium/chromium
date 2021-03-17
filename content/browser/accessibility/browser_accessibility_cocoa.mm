@@ -51,7 +51,7 @@ using content::ContentClient;
 using content::IsUseZoomForDSFEnabled;
 using content::OneShotAccessibilityTreeSearch;
 using ui::AXNodeData;
-using ui::AXActionHandlerRegistry;
+using ui::AXTreeIDRegistry;
 
 static_assert(
     std::is_trivially_copyable<BrowserAccessibility::SerializedPosition>::value,

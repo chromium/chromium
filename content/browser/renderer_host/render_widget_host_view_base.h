@@ -36,7 +36,7 @@
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom-forward.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
-#include "ui/accessibility/ax_action_handler_registry.h"
+#include "ui/accessibility/ax_tree_id_registry.h"
 #include "ui/base/ime/mojom/text_input_state.mojom-forward.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
