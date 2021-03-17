@@ -134,9 +134,14 @@
         </network-proxy-exclusions>
         <div id="addException" class="layout horizontal center">
           <cr-input id="proxyExclusion" class="flex"
+              value="{{proxyExclusionInputValue_}}"
               aria-label="[[i18n('networkProxyExceptionInputA11yLabel')]]"
               on-keypress="onAddProxyExclusionKeypress_">
-            <cr-button on-click="onAddProxyExclusionTap_" slot="suffix">
+            <cr-button id="proxyExclusionButton"
+                on-click="onAddProxyExclusionTap_"
+                slot="suffix"
+                disabled="[[shouldProxyExclusionButtonBeDisabled_(
+                    proxyExclusionInputValue_)]]">
               [[i18n('networkProxyAddException')]]
             </cr-button>
           </cr-input>
