@@ -191,6 +191,32 @@ TEST_F(OverviewWindowDragControllerTest,
   EXPECT_TRUE(overview_session->no_windows_widget_for_testing());
 }
 
+// Test that if window is destroyed during dragging, no crash should happen and
+// drag should be reset.
+TEST_F(OverviewWindowDragControllerTest, WindowDestroyedDuringDragging) {
+  std::unique_ptr<aura::Window> window =
+      CreateAppWindow(gfx::Rect(0, 0, 250, 100));
+  auto* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  auto* overview_session = overview_controller->overview_session();
+  auto* overview_item =
+      overview_session->GetOverviewItemForWindow(window.get());
+  ASSERT_TRUE(overview_item);
+
+  auto* event_generator = GetEventGenerator();
+  StartDraggingItemBy(overview_item, 30, 200, /*by_touch_gestures=*/false,
+                      event_generator);
+  OverviewWindowDragController* drag_controller =
+      overview_session->window_drag_controller();
+  EXPECT_EQ(OverviewWindowDragController::DragBehavior::kNormalDrag,
+            drag_controller->current_drag_behavior());
+
+  window.reset();
+  EXPECT_EQ(OverviewWindowDragController::DragBehavior::kNoDrag,
+            drag_controller->current_drag_behavior());
+}
+
 // Tests the behavior of dragging a window in portrait tablet mode with virtual
 // desks enabled.
 class OverviewWindowDragControllerDesksPortraitTabletTest : public AshTestBase {
