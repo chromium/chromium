@@ -178,15 +178,15 @@ class AttributeListsIterator {
 
  private:
   SVGLengthContext length_context_;
-  SVGLengthList* x_list_;
+  const SVGLengthList* x_list_;
   unsigned x_list_remaining_;
-  SVGLengthList* y_list_;
+  const SVGLengthList* y_list_;
   unsigned y_list_remaining_;
-  SVGLengthList* dx_list_;
+  const SVGLengthList* dx_list_;
   unsigned dx_list_remaining_;
-  SVGLengthList* dy_list_;
+  const SVGLengthList* dy_list_;
   unsigned dy_list_remaining_;
-  SVGNumberList* rotate_list_;
+  const SVGNumberList* rotate_list_;
   unsigned rotate_list_remaining_;
 };
 
