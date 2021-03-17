@@ -904,6 +904,27 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
             global_tags=list(global_results_tags),
             indent=2)
 
+      test_class_to_file_name_dict = {}
+      # Test Location is only supported for instrumentation tests as it
+      # requires the size-info file.
+      if test_instance.TestType() == 'instrumentation':
+        test_class_to_file_name_dict = _CreateClassToFileNameDict(args.test_apk)
+
+      if result_sink_client:
+        for run in all_raw_results:
+          for results in run:
+            for r in results.GetAll():
+              # Matches chrome.page_info.PageInfoViewTest#testChromePage
+              match = re.search(r'^(.+\..+)#', r.GetName())
+              test_file_name = test_class_to_file_name_dict.get(
+                  match.group(1)) if match else None
+              # Some tests put in non utf-8 char as part of the test
+              # which breaks uploads, so need to decode and re-encode.
+              result_sink_client.Post(
+                  r.GetName(), r.GetType(), r.GetDuration(),
+                  r.GetLog().decode('utf-8', 'replace').encode('utf-8'),
+                  test_file_name)
+
   @contextlib.contextmanager
   def upload_logcats_file():
     try:
@@ -964,29 +985,11 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
         for r in reversed(raw_results):
           iteration_results.AddTestRunResults(r)
         all_iteration_results.append(iteration_results)
-
-        test_class_to_file_name_dict = {}
-        # Test Location is only supported for instrumentation tests as it
-        # requires the size-info file.
-        if test_instance.TestType() == 'instrumentation':
-          test_class_to_file_name_dict = _CreateClassToFileNameDict(
-              args.test_apk)
-
         iteration_count += 1
-        for r in iteration_results.GetAll():
-          if result_sink_client:
-            # Matches chrome.page_info.PageInfoViewTest#testChromePage
-            match = re.search(r'^(.+\..+)#', r.GetName())
-            test_file_name = test_class_to_file_name_dict.get(
-                match.group(1)) if match else None
-            # Some tests put in non utf-8 char as part of the test
-            # which breaks uploads, so need to decode and re-encode.
-            result_sink_client.Post(
-                r.GetName(), r.GetType(), r.GetDuration(),
-                r.GetLog().decode('utf-8', 'replace').encode('utf-8'),
-                test_file_name)
 
+        for r in iteration_results.GetAll():
           result_counts[r.GetName()][r.GetType()] += 1
+
         report_results.LogFull(
             results=iteration_results,
             test_type=test_instance.TestType(),
