@@ -794,6 +794,11 @@ LogMessage::~LogMessage() {
         severity = FX_LOG_ERROR;
         break;
     }
+    // TODO(https://crbug.com/1188820): Integrate verbose levels with the switch
+    // statement.
+    if (severity_ <= LOGGING_VERBOSE) {
+      severity = FX_LOG_DEBUG;
+    }
 
     fx_logger_t* logger = fx_log_get_logger();
     if (logger) {
