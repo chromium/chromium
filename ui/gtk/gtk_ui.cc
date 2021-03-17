@@ -720,7 +720,7 @@ base::flat_map<std::string, std::string> GtkUi::GetKeyboardLayoutMap() {
     return {};
 #endif
 
-  ui::DomKeyboardLayoutManager* layouts = new ui::DomKeyboardLayoutManager();
+  auto layouts = std::make_unique<ui::DomKeyboardLayoutManager>();
   auto map = base::flat_map<std::string, std::string>();
 
   for (unsigned int i_domcode = 0;
