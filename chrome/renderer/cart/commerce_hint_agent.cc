@@ -5,6 +5,7 @@
 #include "chrome/renderer/cart/commerce_hint_agent.h"
 
 #include "base/json/json_writer.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -12,6 +13,7 @@
 #include "chrome/common/cart/commerce_hints.mojom.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/grit/renderer_resources.h"
+#include "components/search/ntp_features.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/v8_value_converter.h"
@@ -41,6 +43,11 @@ constexpr char kAmazonDomain[] = "amazon.com";
 constexpr char kEbayDomain[] = "ebay.com";
 constexpr char kAppleDomain[] = "apple.com";
 constexpr char kMacysDomain[] = "macys.com";
+
+constexpr base::FeatureParam<std::string> kSkipPattern{
+    &ntp_features::kNtpChromeCartModule, "product-skip-pattern",
+    // This regex does not match anything.
+    "\\b\\B"};
 
 std::string eTLDPlusOne(const GURL& url) {
   return net::registry_controlled_domains::GetDomainAndRegistry(
@@ -203,6 +210,15 @@ const re2::RE2& GetVisitCheckoutPattern() {
   return *instance;
 }
 
+const re2::RE2& GetSkipPattern() {
+  static base::NoDestructor<re2::RE2> instance([] {
+    const std::string& pattern = kSkipPattern.Get();
+    DVLOG(1) << "SkipPattern = " << pattern;
+    return pattern;
+  }());
+  return *instance;
+}
+
 // TODO(crbug/1164236): need i18n.
 const re2::RE2& GetPurchaseTextPattern() {
   static base::NoDestructor<re2::RE2> instance(
@@ -314,6 +330,10 @@ bool CommerceHintAgent::IsPurchase(base::StringPiece button_text) {
   return PartialMatch(button_text, GetPurchaseTextPattern());
 }
 
+bool CommerceHintAgent::ShouldSkip(base::StringPiece product_name) {
+  return PartialMatch(product_name.substr(0, kLengthLimit), GetSkipPattern());
+}
+
 std::string CommerceHintAgent::ExtractButtonText(
     const blink::WebFormElement& form) {
   static base::NoDestructor<WebString> kButton("button");
@@ -390,6 +410,10 @@ void CommerceHintAgent::OnProductsExtracted(
     product_ptr->name = product_name->GetString();
     DVLOG(1) << "image_url = " << product_ptr->image_url;
     DVLOG(1) << "name = " << product_ptr->name;
+    if (ShouldSkip(product_ptr->name)) {
+      DVLOG(1) << "skipped";
+      continue;
+    }
     products.push_back(std::move(product_ptr));
   }
   OnCartProductUpdated(render_frame(), std::move(products));

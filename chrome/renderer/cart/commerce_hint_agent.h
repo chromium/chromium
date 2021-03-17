@@ -35,6 +35,8 @@ class CommerceHintAgent
   static bool IsPurchase(const GURL& main_frame_url);
   // Whether the button text corresponds to a purchase.
   static bool IsPurchase(base::StringPiece button_text);
+  // Whether the product should be skipped, based on product name.
+  static bool ShouldSkip(base::StringPiece product_name);
 
   void ExtractProducts();
   void OnProductsExtracted(std::unique_ptr<base::Value> result);
