@@ -61,7 +61,7 @@ void ElementPositionGetter::OnVisualStateUpdatedCallback(bool success) {
     return;
   }
 
-  OnError();
+  OnError(ClientStatus(ELEMENT_UNSTABLE));
 }
 
 void ElementPositionGetter::GetAndWaitBoxModelStable() {
@@ -77,7 +77,7 @@ void ElementPositionGetter::OnGetBoxModelForStableCheck(
     std::unique_ptr<dom::GetBoxModelResult> result) {
   if (!result || !result->GetModel() || !result->GetModel()->GetContent()) {
     VLOG(1) << __func__ << " Failed to get box model.";
-    OnError();
+    OnError(JavaScriptErrorStatus(reply_status, __FILE__, __LINE__, nullptr));
     return;
   }
 
@@ -112,7 +112,7 @@ void ElementPositionGetter::OnGetBoxModelForStableCheck(
   }
 
   if (remaining_rounds_ <= 0) {
-    OnError();
+    OnError(ClientStatus(ELEMENT_UNSTABLE));
     return;
   }
 
@@ -154,7 +154,7 @@ void ElementPositionGetter::OnScrollIntoView(
       CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
   if (!status.ok()) {
     VLOG(1) << __func__ << " Failed to scroll the element: " << status;
-    OnError();
+    OnError(status);
     return;
   }
 
@@ -174,9 +174,9 @@ void ElementPositionGetter::OnResult(int x, int y) {
   }
 }
 
-void ElementPositionGetter::OnError() {
+void ElementPositionGetter::OnError(const ClientStatus& status) {
   if (callback_) {
-    std::move(callback_).Run(ClientStatus(ELEMENT_UNSTABLE));
+    std::move(callback_).Run(status);
   }
 }
 

@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/string_conversions_util.h"
 #include "components/autofill_assistant/browser/top_padding.h"
@@ -553,6 +554,23 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
                        captured_status = status;
                        run_loop.Quit();
                      }));
+    run_loop.Run();
+    return captured_status;
+  }
+
+  ClientStatus WaitUntilElementIsStable(const ElementFinder::Result& element,
+                                        int max_rounds,
+                                        base::TimeDelta check_interval) {
+    ClientStatus captured_status;
+    base::RunLoop run_loop;
+    web_controller_->WaitUntilElementIsStable(
+        element, max_rounds, check_interval,
+        base::BindLambdaForTesting(
+            [&captured_status, &run_loop](const ClientStatus& status,
+                                          base::TimeDelta) {
+              captured_status = status;
+              run_loop.Quit();
+            }));
     run_loop.Run();
     return captured_status;
   }
@@ -2593,6 +2611,45 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SendDuplexwebEvent) {
   GetFieldsValue({selector}, {"empty"});
   web_controller_->DispatchJsEvent(base::DoNothing());
   GetFieldsValue({selector}, {"received"});
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, WaitForElementToBecomeStable) {
+  ClientStatus status;
+  ElementFinder::Result element;
+  FindElement(Selector({"#touch_area_one"}), &status, &element);
+  ASSERT_TRUE(status.ok());
+
+  // Move the element indefinitely.
+  EXPECT_TRUE(ExecJs(shell(), R"(
+    (function() {
+        let i = 0;
+        document.getElementById('touch_area_one').style.position = 'absolute';
+        document.browserTestInterval = setInterval(function() {
+          document.getElementById('touch_area_one').style.left =
+            `${10 * i++}px`;
+        }, 100);
+      })())"));
+  status = WaitUntilElementIsStable(element, 10,
+                                    base::TimeDelta::FromMilliseconds(100));
+  EXPECT_EQ(ELEMENT_UNSTABLE, status.proto_status());
+
+  // Stop moving the element.
+  EXPECT_TRUE(ExecJs(shell(), "clearInterval(document.browserTestInterval);"));
+  status = WaitUntilElementIsStable(element, 10,
+                                    base::TimeDelta::FromMilliseconds(100));
+  EXPECT_TRUE(status.ok());
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
+                       WaitForElementToBecomeStableDevtoolsFailure) {
+  // This makes devtools action fail.
+  ElementFinder::Result element;
+  element.dom_object.object_data.node_frame_id = "doesnotexist";
+  element.container_frame_host = web_contents()->GetMainFrame();
+
+  ClientStatus status = WaitUntilElementIsStable(
+      element, 10, base::TimeDelta::FromMilliseconds(100));
+  EXPECT_EQ(UNEXPECTED_JS_ERROR, status.proto_status());
 }
 
 }  // namespace autofill_assistant
