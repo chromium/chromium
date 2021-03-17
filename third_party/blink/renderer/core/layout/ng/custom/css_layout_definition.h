@@ -67,16 +67,15 @@ class CSSLayoutDefinition final : public GarbageCollected<CSSLayoutDefinition>,
 
     // Runs the web developer defined intrinsicSizes, returns true if everything
     // succeeded. It populates the IntrinsicSizesResultOptions dictionary.
-    bool IntrinsicSizes(
-        const NGConstraintSpace&,
-        const Document&,
-        const NGBlockNode&,
-        const LogicalSize& border_box_size,
-        const NGBoxStrut& border_scrollbar_padding,
-        const LayoutUnit child_percentage_resolution_block_size_for_min_max,
-        CustomLayoutScope*,
-        IntrinsicSizesResultOptions**,
-        bool* child_depends_on_percentage_block_size);
+    bool IntrinsicSizes(const NGConstraintSpace&,
+                        const Document&,
+                        const NGBlockNode&,
+                        const LogicalSize& border_box_size,
+                        const NGBoxStrut& border_scrollbar_padding,
+                        const LayoutUnit child_available_block_size,
+                        CustomLayoutScope*,
+                        IntrinsicSizesResultOptions**,
+                        bool* child_depends_on_percentage_block_size);
 
     void Trace(Visitor*) const;
 
