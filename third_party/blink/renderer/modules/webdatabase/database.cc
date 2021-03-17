@@ -223,13 +223,11 @@ static bool SetTextValueInDatabase(SQLiteDatabase& db,
 Database::Database(DatabaseContext* database_context,
                    const String& name,
                    const String& expected_version,
-                   const String& display_name,
-                   uint32_t estimated_size)
+                   const String& display_name)
     : database_context_(database_context),
       name_(name.IsolatedCopy()),
       expected_version_(expected_version.IsolatedCopy()),
       display_name_(display_name.IsolatedCopy()),
-      estimated_size_(estimated_size),
       guid_(0),
       opened_(false),
       new_(false),
@@ -621,10 +619,6 @@ String Database::StringIdentifier() const {
 String Database::DisplayName() const {
   // Return a deep copy for ref counting thread safety
   return display_name_.IsolatedCopy();
-}
-
-uint32_t Database::EstimatedSize() const {
-  return estimated_size_;
 }
 
 String Database::FileName() const {

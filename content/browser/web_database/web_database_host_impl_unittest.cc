@@ -159,8 +159,8 @@ TEST_F(WebDatabaseHostImplTest, BadMessagesUnauthorized) {
   });
 
   CheckUnauthorizedOrigin([&]() {
-    host()->Opened(incorrect_origin, db_name, base::ASCIIToUTF16("description"),
-                   /*estimated_size=*/0);
+    host()->Opened(incorrect_origin, db_name,
+                   base::ASCIIToUTF16("description"));
   });
 
   CheckUnauthorizedOrigin(
@@ -181,8 +181,7 @@ TEST_F(WebDatabaseHostImplTest, BadMessagesInvalid) {
       [&]() { host()->GetSpaceAvailable(opaque_origin, base::DoNothing()); });
 
   CheckInvalidOrigin([&]() {
-    host()->Opened(opaque_origin, db_name, base::ASCIIToUTF16("description"),
-                   /*estimated_size=*/0);
+    host()->Opened(opaque_origin, db_name, base::ASCIIToUTF16("description"));
   });
 
   CheckInvalidOrigin([&]() { host()->Modified(opaque_origin, db_name); });

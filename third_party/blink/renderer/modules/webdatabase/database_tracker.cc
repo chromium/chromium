@@ -146,9 +146,9 @@ void DatabaseTracker::PrepareToOpenDatabase(Database* database) {
   // where the database is in an unusable state. To assist, we will record the
   // size of the database straight away so we can use it immediately, and the
   // real size will eventually be updated by the RPC from the browser.
-  WebDatabaseHost::GetInstance().DatabaseOpened(
-      *database->GetSecurityOrigin(), database->StringIdentifier(),
-      database->DisplayName(), database->EstimatedSize());
+  WebDatabaseHost::GetInstance().DatabaseOpened(*database->GetSecurityOrigin(),
+                                                database->StringIdentifier(),
+                                                database->DisplayName());
   // We write a temporary size of 0 to the QuotaTracker - we will be updated
   // with the correct size via RPC asynchronously.
   QuotaTracker::Instance().UpdateDatabaseSize(database->GetSecurityOrigin(),

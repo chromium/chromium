@@ -69,8 +69,7 @@ Database* DOMWindowWebDatabase::openDatabase(
 
     String error_message;
     database = db_manager.OpenDatabase(&window, name, version, display_name,
-                                       estimated_size, creation_callback, error,
-                                       error_message);
+                                       creation_callback, error, error_message);
     DCHECK(database || error != DatabaseError::kNone);
     if (error != DatabaseError::kNone)
       DatabaseManager::ThrowExceptionForDatabaseError(error, error_message,

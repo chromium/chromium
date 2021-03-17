@@ -60,8 +60,7 @@ class CONTENT_EXPORT WebDatabaseHostImpl
 
   void Opened(const url::Origin& origin,
               const std::u16string& database_name,
-              const std::u16string& database_description,
-              int64_t estimated_size) override;
+              const std::u16string& database_description) override;
 
   void Modified(const url::Origin& origin,
                 const std::u16string& database_name) override;
@@ -109,8 +108,7 @@ class CONTENT_EXPORT WebDatabaseHostImpl
 
   void OpenedValidated(const url::Origin& origin,
                        const std::u16string& database_name,
-                       const std::u16string& database_description,
-                       int64_t estimated_size);
+                       const std::u16string& database_description);
 
   void ModifiedValidated(const url::Origin& origin,
                          const std::u16string& database_name);

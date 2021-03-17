@@ -46,7 +46,7 @@ interface WebDatabaseHost {
 
   // Notifies the browser process that a new database has been opened
   Opened(url.mojom.Origin origin, mojo_base.mojom.String16 database_name,
-         mojo_base.mojom.String16 database_description, int64 estimated_size);
+         mojo_base.mojom.String16 database_description);
 
   // Notifies the browser process that a database might have been modified
   Modified(url.mojom.Origin origin, mojo_base.mojom.String16 database_name);

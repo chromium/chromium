@@ -52,8 +52,7 @@ class WebDatabaseHost {
 
   void DatabaseOpened(const SecurityOrigin& origin,
                       const String& database_name,
-                      const String& database_display_name,
-                      uint32_t estimated_size);
+                      const String& database_display_name);
   void DatabaseModified(const SecurityOrigin& origin,
                         const String& database_name);
   void DatabaseClosed(const SecurityOrigin& origin,

@@ -302,8 +302,7 @@ void WebDatabaseHostImpl::DatabaseDeleteFile(
 
 void WebDatabaseHostImpl::Opened(const url::Origin& origin,
                                  const std::u16string& database_name,
-                                 const std::u16string& database_description,
-                                 int64_t estimated_size) {
+                                 const std::u16string& database_description) {
   DCHECK(db_tracker_->task_runner()->RunsTasksInCurrentSequence());
 
   if (!observer_added_) {
@@ -313,15 +312,13 @@ void WebDatabaseHostImpl::Opened(const url::Origin& origin,
 
   ValidateOrigin(origin, base::BindOnce(&WebDatabaseHostImpl::OpenedValidated,
                                         weak_ptr_factory_.GetWeakPtr(), origin,
-                                        database_name, database_description,
-                                        estimated_size));
+                                        database_name, database_description));
 }
 
 void WebDatabaseHostImpl::OpenedValidated(
     const url::Origin& origin,
     const std::u16string& database_name,
-    const std::u16string& database_description,
-    int64_t estimated_size) {
+    const std::u16string& database_description) {
   DCHECK(db_tracker_->task_runner()->RunsTasksInCurrentSequence());
 
   // TODO(https://crbug.com/1158302): Use IsOriginPotentiallyTrustworthy?
