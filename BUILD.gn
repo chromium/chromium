@@ -1039,6 +1039,7 @@ if (!is_ios) {
         "//chrome:chrome",
         "//chrome/test/chromedriver",
         "//third_party/blink/tools:wpt_tests_isolate",
+        "//tools/imagediff",
       ]
     }
   }

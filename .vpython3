@@ -124,4 +124,7 @@ wheel: <
   name: "infra/python/wheels/distro-py2_py3"
   version: "version:1.4.0"
 >
-
+wheel: <
+  name: "infra/python/wheels/pillow/linux-amd64_cp38_cp38"
+  version: "version:8.1.2"
+>
