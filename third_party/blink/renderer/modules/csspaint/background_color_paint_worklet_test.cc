@@ -34,8 +34,9 @@ TEST_F(BackgroundColorPaintWorkletTest, FallbackToMainNoAnimation) {
   EXPECT_FALSE(element->GetElementAnimations());
   Vector<Color> animated_colors;
   Vector<double> offsets;
+  base::Optional<double> progress;
   EXPECT_FALSE(BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
-      element, &animated_colors, &offsets));
+      element, &animated_colors, &offsets, &progress));
 }
 
 // Test that when an element has other animations but no background color
@@ -82,8 +83,9 @@ TEST_F(BackgroundColorPaintWorkletTest, NoBGColorAnimationFallback) {
   EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
   Vector<Color> animated_colors;
   Vector<double> offsets;
+  base::Optional<double> progress;
   EXPECT_FALSE(BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
-      element, &animated_colors, &offsets));
+      element, &animated_colors, &offsets, &progress));
   EXPECT_TRUE(animated_colors.IsEmpty());
   EXPECT_TRUE(offsets.IsEmpty());
 }
@@ -130,8 +132,9 @@ TEST_F(BackgroundColorPaintWorkletTest, FallbackToMainCompositeAccumulate) {
   EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
   Vector<Color> animated_colors;
   Vector<double> offsets;
+  base::Optional<double> progress;
   EXPECT_FALSE(BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
-      element, &animated_colors, &offsets));
+      element, &animated_colors, &offsets, &progress));
 }
 
 TEST_F(BackgroundColorPaintWorkletTest, MultipleAnimationsFallback) {
@@ -187,8 +190,9 @@ TEST_F(BackgroundColorPaintWorkletTest, MultipleAnimationsFallback) {
   EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 2u);
   Vector<Color> animated_colors;
   Vector<double> offsets;
+  base::Optional<double> progress;
   EXPECT_FALSE(BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
-      element, &animated_colors, &offsets));
+      element, &animated_colors, &offsets, &progress));
 }
 
 // Test that calling BackgroundColorPaintWorkletProxyClient::Paint won't crash

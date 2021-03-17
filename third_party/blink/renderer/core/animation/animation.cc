@@ -510,8 +510,6 @@ bool Animation::PreCommit(
     compositor_group_ = compositor_group;
     if (start_on_compositor) {
       PropertyHandleSet unsupported_properties;
-      // TODO(crbug.com/1182261): avoid check twice by just using the value of
-      // |supplemental_failure_reasons_|.
       CompositorAnimations::FailureReasons failure_reasons =
           CheckCanStartAnimationOnCompositor(paint_artifact_compositor,
                                              &unsupported_properties);

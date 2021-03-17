@@ -34,14 +34,19 @@ class MODULES_EXPORT BackgroundColorPaintWorklet : public NativePaintWorklet {
   scoped_refptr<Image> Paint(const FloatSize& container_size,
                              const Node*,
                              const Vector<Color>& animated_colors,
-                             const Vector<double>& offsets);
+                             const Vector<double>& offsets,
+                             const base::Optional<double>& progress);
 
-  // Get the animated colors and offsets from the animation keyframes.
-  // Returning false meaning that we need to fall back to the main thread for
-  // the animation.
+  // Get the animated colors and offsets from the animation keyframes. Moreover,
+  // we obtain the progress of the animation from the main thread, such that if
+  // the animation failed to run on the compositor thread, we can still paint
+  // the element off the main thread with that progress + the keyframes.
+  // Returning false meaning that we cannot paint background color with
+  // BackgroundColorPaintWorklet.
   static bool GetBGColorPaintWorkletParams(Node* node,
                                            Vector<Color>* animated_colors,
-                                           Vector<double>* offsets);
+                                           Vector<double>* offsets,
+                                           base::Optional<double>* progress);
 
   // For testing purpose only.
   static sk_sp<cc::PaintRecord> ProxyClientPaintForTest(
