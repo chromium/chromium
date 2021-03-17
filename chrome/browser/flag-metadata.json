@@ -2759,7 +2759,7 @@
   {
     "name": "exo-ordinal-motion",
     "owners": [ "hollingum@google.com" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 96
   },
   {
     "name": "exo-pointer-lock",
