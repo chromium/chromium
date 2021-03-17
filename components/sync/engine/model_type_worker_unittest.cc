@@ -29,6 +29,7 @@
 #include "components/sync/test/engine/mock_model_type_processor.h"
 #include "components/sync/test/engine/mock_nudge_handler.h"
 #include "components/sync/test/engine/single_type_mock_server.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
@@ -37,6 +38,8 @@ using sync_pb::BookmarkSpecifics;
 using sync_pb::EntitySpecifics;
 using sync_pb::ModelTypeState;
 using sync_pb::SyncEntity;
+using testing::IsNull;
+using testing::NotNull;
 
 namespace syncer {
 
@@ -378,8 +381,10 @@ class ModelTypeWorkerTest : public ::testing::Test {
   // about other tasks being run between the time when the commit request is
   // issued and the time when the commit response is received.
   void DoSuccessfulCommit() {
-    std::unique_ptr<CommitContribution> contribution(
-        worker()->GetContribution(INT_MAX));
+    DoSuccessfulCommit(worker()->GetContribution(INT_MAX));
+  }
+
+  void DoSuccessfulCommit(std::unique_ptr<CommitContribution> contribution) {
     DCHECK(contribution);
 
     sync_pb::ClientToServerMessage message;
@@ -2256,6 +2261,127 @@ TEST_F(ModelTypeWorkerBookmarksTest,
                                                 .at(0)
                                                 ->entity.specifics.bookmark()
                                                 .guid()));
+}
+
+TEST_F(ModelTypeWorkerBookmarksTest,
+       ShouldNotHaveLocalChangesOnSuccessfulLastCommit) {
+  const size_t kMaxEntities = 5;
+
+  NormalInitialize();
+
+  ASSERT_FALSE(worker()->HasLocalChangesForTest());
+  processor()->SetCommitRequest(GenerateCommitRequest(kTag1, kValue1));
+  worker()->NudgeForCommit();
+  ASSERT_TRUE(worker()->HasLocalChangesForTest());
+
+  std::unique_ptr<CommitContribution> contribution(
+      worker()->GetContribution(kMaxEntities));
+  ASSERT_THAT(contribution, NotNull());
+  ASSERT_EQ(1u, contribution->GetNumEntries());
+
+  // Entities are in-flight and it's considered to have local changes.
+  EXPECT_TRUE(worker()->HasLocalChangesForTest());
+
+  // Finish the commit successfully.
+  DoSuccessfulCommit(std::move(contribution));
+  EXPECT_FALSE(worker()->HasLocalChangesForTest());
+}
+
+TEST_F(ModelTypeWorkerBookmarksTest, ShouldHaveLocalChangesOnCommitFailure) {
+  NormalInitialize();
+
+  ASSERT_FALSE(worker()->HasLocalChangesForTest());
+  processor()->SetCommitRequest(GenerateCommitRequest(kTag1, kValue1));
+  worker()->NudgeForCommit();
+  ASSERT_TRUE(worker()->HasLocalChangesForTest());
+
+  DoCommitFailure();
+  EXPECT_TRUE(worker()->HasLocalChangesForTest());
+}
+
+TEST_F(ModelTypeWorkerBookmarksTest,
+       ShouldHaveLocalChangesOnSuccessfulNotLastCommit) {
+  const size_t kMaxEntities = 2;
+  NormalInitialize();
+
+  ASSERT_FALSE(worker()->HasLocalChangesForTest());
+  processor()->AppendCommitRequest(kHash1, GenerateSpecifics(kTag1, kValue1));
+  processor()->AppendCommitRequest(kHash2, GenerateSpecifics(kTag2, kValue2));
+  processor()->AppendCommitRequest(kHash3, GenerateSpecifics(kTag3, kValue3));
+  worker()->NudgeForCommit();
+  ASSERT_TRUE(worker()->HasLocalChangesForTest());
+
+  std::unique_ptr<CommitContribution> contribution(
+      worker()->GetContribution(kMaxEntities));
+  ASSERT_THAT(contribution, NotNull());
+  ASSERT_EQ(kMaxEntities, contribution->GetNumEntries());
+  DoSuccessfulCommit(std::move(contribution));
+
+  // There are still changes in the processor waiting for commit.
+  EXPECT_TRUE(worker()->HasLocalChangesForTest());
+
+  // Commit the rest of entities.
+  DoSuccessfulCommit();
+  EXPECT_FALSE(worker()->HasLocalChangesForTest());
+}
+
+TEST_F(ModelTypeWorkerBookmarksTest,
+       ShouldHaveLocalChangesWhenNudgedWhileInFlight) {
+  const size_t kMaxEntities = 5;
+  NormalInitialize();
+
+  ASSERT_FALSE(worker()->HasLocalChangesForTest());
+  processor()->SetCommitRequest(GenerateCommitRequest(kTag1, kValue1));
+  worker()->NudgeForCommit();
+  ASSERT_TRUE(worker()->HasLocalChangesForTest());
+
+  // Start a commit.
+  std::unique_ptr<CommitContribution> contribution(
+      worker()->GetContribution(kMaxEntities));
+  ASSERT_THAT(contribution, NotNull());
+  ASSERT_EQ(1u, contribution->GetNumEntries());
+
+  // Add new data while the commit is in progress.
+  processor()->SetCommitRequest(GenerateCommitRequest(kTag2, kValue2));
+  worker()->NudgeForCommit();
+  EXPECT_TRUE(worker()->HasLocalChangesForTest());
+
+  // Finish the started commit request.
+  DoSuccessfulCommit(std::move(contribution));
+
+  // There are still entities to commit.
+  EXPECT_TRUE(worker()->HasLocalChangesForTest());
+
+  // Commit the rest of entities.
+  DoSuccessfulCommit();
+  EXPECT_FALSE(worker()->HasLocalChangesForTest());
+}
+
+TEST_F(ModelTypeWorkerBookmarksTest,
+       ShouldHaveLocalChangesWhenContributedMaxEntities) {
+  const size_t kMaxEntities = 2;
+  NormalInitialize();
+  ASSERT_FALSE(worker()->HasLocalChangesForTest());
+
+  processor()->AppendCommitRequest(kHash1, GenerateSpecifics(kTag1, kValue1));
+  processor()->AppendCommitRequest(kHash2, GenerateSpecifics(kTag2, kValue2));
+  worker()->NudgeForCommit();
+  ASSERT_TRUE(worker()->HasLocalChangesForTest());
+
+  std::unique_ptr<CommitContribution> contribution(
+      worker()->GetContribution(kMaxEntities));
+  ASSERT_THAT(contribution, NotNull());
+  ASSERT_EQ(kMaxEntities, contribution->GetNumEntries());
+  DoSuccessfulCommit(std::move(contribution));
+
+  // The worker is still not aware if there are more changes available. It is
+  // supposed that GetContribution() will be called until it returns less than
+  // |max_entities| items. This is not the intended behaviour, but this is how
+  // things currently work.
+  EXPECT_TRUE(worker()->HasLocalChangesForTest());
+  contribution = worker()->GetContribution(kMaxEntities);
+  ASSERT_THAT(contribution, IsNull());
+  EXPECT_FALSE(worker()->HasLocalChangesForTest());
 }
 
 }  // namespace syncer

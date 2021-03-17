@@ -496,12 +496,15 @@ void ModelTypeWorker::ApplyPendingUpdates() {
 
 void ModelTypeWorker::NudgeForCommit() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  has_local_changes_ = true;
+  has_local_changes_state_ = kNewlyNudgedLocalChanges;
   NudgeIfReadyToCommit();
 }
 
 void ModelTypeWorker::NudgeIfReadyToCommit() {
-  if (has_local_changes_ && CanCommitItems())
+  // TODO(crbug.com/1188034): |kNoNudgedLocalChanges| is used to keep the
+  // existing behaviour. But perhaps there is no need to nudge for commit if all
+  // known changes are already in flight.
+  if (has_local_changes_state_ != kNoNudgedLocalChanges && CanCommitItems())
     nudge_handler_->NudgeForCommit(GetModelType());
 }
 
@@ -520,8 +523,9 @@ std::unique_ptr<CommitContribution> ModelTypeWorker::GetContribution(
   DCHECK(entries_pending_decryption_.empty());
 
   // Pull local changes from the processor (in the model thread/sequence). Note
-  // that this takes place independently of nudges (i.e. |has_local_changes_|),
-  // in case the processor decided a local change was not worth a nudge.
+  // that this takes place independently of nudges (i.e.
+  // |has_local_changes_state_|), in case the processor decided a local change
+  // was not worth a nudge.
   scoped_refptr<GetLocalChangesRequest> request =
       base::MakeRefCounted<GetLocalChangesRequest>(cancelation_signal_);
   model_type_processor_->GetLocalChanges(
@@ -532,11 +536,22 @@ std::unique_ptr<CommitContribution> ModelTypeWorker::GetContribution(
   if (!request->WasCancelled())
     response = request->ExtractResponse();
   if (response.empty()) {
-    has_local_changes_ = false;
+    has_local_changes_state_ = kNoNudgedLocalChanges;
     return std::unique_ptr<CommitContribution>();
   }
 
   DCHECK(response.size() <= max_entries);
+  if (response.size() < max_entries) {
+    // In case when response.size() equals to |max_entries|, there will be
+    // another commit request (see CommitProcessor::GatherCommitContributions).
+    // Hence, in general it should be normal if |has_local_changes_state_| is
+    // |kNewlyNudgedLocalChanges| (even if there are no more items in the
+    // processor). In other words, |kAllNudgedLocalChangesInFlight| means that
+    // there might not be another commit request in the current sync cycle (but
+    // still possible if some other data type contributes |max_entities|).
+    has_local_changes_state_ = kAllNudgedLocalChangesInFlight;
+  }
+
   return std::make_unique<CommitContributionImpl>(
       GetModelType(), model_type_state_.type_context(), std::move(response),
       base::BindOnce(&ModelTypeWorker::OnCommitResponse,
@@ -547,7 +562,7 @@ std::unique_ptr<CommitContribution> ModelTypeWorker::GetContribution(
 }
 
 bool ModelTypeWorker::HasLocalChangesForTest() const {
-  return has_local_changes_;
+  return has_local_changes_state_ != kNoNudgedLocalChanges;
 }
 
 void ModelTypeWorker::OnCommitResponse(
@@ -560,6 +575,11 @@ void ModelTypeWorker::OnCommitResponse(
   // permanent storage) and which failed (it can e.g. notify the user).
   model_type_processor_->OnCommitCompleted(
       model_type_state_, committed_response_list, error_response_list);
+
+  if (has_local_changes_state_ == kAllNudgedLocalChangesInFlight) {
+    // There are no new nudged changes since last commit.
+    has_local_changes_state_ = kNoNudgedLocalChanges;
+  }
 }
 
 void ModelTypeWorker::OnFullCommitFailure(SyncCommitError commit_error) {
@@ -825,7 +845,7 @@ GetLocalChangesRequest::GetLocalChangesRequest(
       response_accepted_(base::WaitableEvent::ResetPolicy::MANUAL,
                          base::WaitableEvent::InitialState::NOT_SIGNALED) {}
 
-GetLocalChangesRequest::~GetLocalChangesRequest() {}
+GetLocalChangesRequest::~GetLocalChangesRequest() = default;
 
 void GetLocalChangesRequest::OnCancelationSignalReceived() {
   response_accepted_.Signal();

@@ -60,6 +60,20 @@ class ModelTypeWorker : public UpdateHandler,
   // Public for testing.
   enum DecryptionStatus { SUCCESS, DECRYPTION_PENDING, FAILED_TO_DECRYPT };
 
+  // This enum reflects the processor's state of having local changes.
+  enum HasLocalChangesState {
+    // There are no new nudged pending changes in the processor.
+    kNoNudgedLocalChanges,
+
+    // There are new pending changes in the processor which are not committed
+    // yet.
+    kNewlyNudgedLocalChanges,
+
+    // All known local changes are contributed in the last commit request (and
+    // there is no commit response yet).
+    kAllNudgedLocalChangesInFlight,
+  };
+
   // |nudge_handler| and |cancelation_signal| must outlive this object.
   // |cryptographer| must either outlive this object or be null. Passing a
   // a null cryptographer means this type won't use encryption.
@@ -261,7 +275,7 @@ class ModelTypeWorker : public UpdateHandler,
 
   // Indicates if processor has local changes. Processor only nudges worker once
   // and worker might not be ready to commit entities at the time.
-  bool has_local_changes_ = false;
+  HasLocalChangesState has_local_changes_state_ = kNoNudgedLocalChanges;
 
   // Remains constant in production code. Can be overridden in tests.
   // |UnknownEncryptionKeyInfo::gu_responses_while_should_have_been_known| must
