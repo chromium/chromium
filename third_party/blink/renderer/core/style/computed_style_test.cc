@@ -667,16 +667,17 @@ TEST(ComputedStyleTest, CustomPropertiesInheritance_StyleRecalc) {
 TEST(ComputedStyleTest, ApplyColorSchemeLightOnDark) {
   ScopedCSSColorSchemeUARenderingForTest scoped_ua_enabled(true);
 
-  std::unique_ptr<DummyPageHolder> dummy_page_holder_ =
+  std::unique_ptr<DummyPageHolder> dummy_page_holder =
       std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
-  const ComputedStyle* initial = &ComputedStyle::InitialStyle();
+  Document& document = dummy_page_holder->GetDocument();
+  scoped_refptr<const ComputedStyle> initial =
+      document.GetStyleResolver().InitialStyleForElement();
 
-  ColorSchemeHelper color_scheme_helper(dummy_page_holder_->GetDocument());
+  ColorSchemeHelper color_scheme_helper(document);
   color_scheme_helper.SetPreferredColorScheme(
       mojom::blink::PreferredColorScheme::kDark);
-  StyleResolverState state(dummy_page_holder_->GetDocument(),
-                           *dummy_page_holder_->GetDocument().documentElement(),
-                           StyleRequest(initial));
+  StyleResolverState state(document, *document.documentElement(),
+                           StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
   state.SetStyle(style);
@@ -701,16 +702,17 @@ TEST(ComputedStyleTest, ApplyInternalLightDarkColor) {
 
   ScopedCSSColorSchemeUARenderingForTest scoped_ua_enabled(true);
 
-  std::unique_ptr<DummyPageHolder> dummy_page_holder_ =
+  std::unique_ptr<DummyPageHolder> dummy_page_holder =
       std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
-  const ComputedStyle* initial = &ComputedStyle::InitialStyle();
+  Document& document = dummy_page_holder->GetDocument();
+  scoped_refptr<const ComputedStyle> initial =
+      document.GetStyleResolver().InitialStyleForElement();
 
-  ColorSchemeHelper color_scheme_helper(dummy_page_holder_->GetDocument());
+  ColorSchemeHelper color_scheme_helper(document);
   color_scheme_helper.SetPreferredColorScheme(
       mojom::blink::PreferredColorScheme::kDark);
-  StyleResolverState state(dummy_page_holder_->GetDocument(),
-                           *dummy_page_holder_->GetDocument().documentElement(),
-                           StyleRequest(initial));
+  StyleResolverState state(document, *document.documentElement(),
+                           StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
   state.SetStyle(style);
@@ -744,16 +746,17 @@ TEST(ComputedStyleTest, ApplyInternalLightDarkBackgroundImage) {
 
   ScopedCSSColorSchemeUARenderingForTest scoped_ua_enabled(true);
 
-  std::unique_ptr<DummyPageHolder> dummy_page_holder_ =
+  std::unique_ptr<DummyPageHolder> dummy_page_holder =
       std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
-  const ComputedStyle* initial = &ComputedStyle::InitialStyle();
+  Document& document = dummy_page_holder->GetDocument();
+  scoped_refptr<const ComputedStyle> initial =
+      document.GetStyleResolver().InitialStyleForElement();
 
-  ColorSchemeHelper color_scheme_helper(dummy_page_holder_->GetDocument());
+  ColorSchemeHelper color_scheme_helper(document);
   color_scheme_helper.SetPreferredColorScheme(
       mojom::blink::PreferredColorScheme::kDark);
-  StyleResolverState state(dummy_page_holder_->GetDocument(),
-                           *dummy_page_holder_->GetDocument().documentElement(),
-                           StyleRequest(initial));
+  StyleResolverState state(document, *document.documentElement(),
+                           StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
   state.SetStyle(style);
@@ -785,14 +788,14 @@ TEST(ComputedStyleTest, ApplyInternalLightDarkBackgroundImage) {
 }
 
 TEST(ComputedStyleTest, StrokeWidthZoomAndCalc) {
-  std::unique_ptr<DummyPageHolder> dummy_page_holder_ =
+  std::unique_ptr<DummyPageHolder> dummy_page_holder =
       std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+  Document& document = dummy_page_holder->GetDocument();
+  scoped_refptr<const ComputedStyle> initial =
+      document.GetStyleResolver().InitialStyleForElement();
 
-  const ComputedStyle* initial = &ComputedStyle::InitialStyle();
-
-  StyleResolverState state(dummy_page_holder_->GetDocument(),
-                           *dummy_page_holder_->GetDocument().documentElement(),
-                           StyleRequest(initial));
+  StyleResolverState state(document, *document.documentElement(),
+                           StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
   style->SetEffectiveZoom(1.5);
@@ -908,14 +911,14 @@ TEST(ComputedStyleTest, InitialAndInheritedAndNonInheritedVariableNames) {
 }
 
 TEST(ComputedStyleTest, BorderWidthZoom) {
-  std::unique_ptr<DummyPageHolder> dummy_page_holder_ =
+  std::unique_ptr<DummyPageHolder> dummy_page_holder =
       std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+  Document& document = dummy_page_holder->GetDocument();
+  scoped_refptr<const ComputedStyle> initial =
+      document.GetStyleResolver().InitialStyleForElement();
 
-  const ComputedStyle* initial = &ComputedStyle::InitialStyle();
-
-  StyleResolverState state(dummy_page_holder_->GetDocument(),
-                           *dummy_page_holder_->GetDocument().documentElement(),
-                           StyleRequest(initial));
+  StyleResolverState state(document, *document.documentElement(),
+                           StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
   style->SetEffectiveZoom(2);
@@ -955,13 +958,14 @@ TEST(ComputedStyleTest, BorderWidthZoom) {
 TEST(ComputedStyleTest, TextDecorationEqualDoesNotRequireRecomputeInkOverflow) {
   using css_test_helpers::ParseDeclarationBlock;
 
-  std::unique_ptr<DummyPageHolder> dummy_page_holder_ =
+  std::unique_ptr<DummyPageHolder> dummy_page_holder =
       std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
-  const ComputedStyle* initial = &ComputedStyle::InitialStyle();
+  Document& document = dummy_page_holder->GetDocument();
+  scoped_refptr<const ComputedStyle> initial =
+      document.GetStyleResolver().InitialStyleForElement();
 
-  StyleResolverState state(dummy_page_holder_->GetDocument(),
-                           *dummy_page_holder_->GetDocument().documentElement(),
-                           StyleRequest(initial));
+  StyleResolverState state(document, *document.documentElement(),
+                           StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
 
@@ -994,13 +998,14 @@ TEST(ComputedStyleTest, TextDecorationEqualDoesNotRequireRecomputeInkOverflow) {
 TEST(ComputedStyleTest, TextDecorationNotEqualRequiresRecomputeInkOverflow) {
   using css_test_helpers::ParseDeclarationBlock;
 
-  std::unique_ptr<DummyPageHolder> dummy_page_holder_ =
+  std::unique_ptr<DummyPageHolder> dummy_page_holder =
       std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
-  const ComputedStyle* initial = &ComputedStyle::InitialStyle();
+  Document& document = dummy_page_holder->GetDocument();
+  scoped_refptr<const ComputedStyle> initial =
+      document.GetStyleResolver().InitialStyleForElement();
 
-  StyleResolverState state(dummy_page_holder_->GetDocument(),
-                           *dummy_page_holder_->GetDocument().documentElement(),
-                           StyleRequest(initial));
+  StyleResolverState state(document, *document.documentElement(),
+                           StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
 
@@ -1101,13 +1106,14 @@ TEST(ComputedStyleTest, ClonedStyleTransitionsAreIndependent) {
 }
 
 TEST(ComputedStyleTest, ApplyInitialAnimationNameAndTransitionProperty) {
-  std::unique_ptr<DummyPageHolder> dummy_page_holder_ =
+  std::unique_ptr<DummyPageHolder> dummy_page_holder =
       std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+  Document& document = dummy_page_holder->GetDocument();
+  scoped_refptr<const ComputedStyle> initial =
+      document.GetStyleResolver().InitialStyleForElement();
 
-  const ComputedStyle* initial = &ComputedStyle::InitialStyle();
-  StyleResolverState state(dummy_page_holder_->GetDocument(),
-                           *dummy_page_holder_->GetDocument().documentElement(),
-                           StyleRequest(initial));
+  StyleResolverState state(document, *document.documentElement(),
+                           StyleRequest(initial.get()));
 
   scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
   state.SetStyle(style);
