@@ -2225,38 +2225,27 @@ TEST_P(HoldingSpaceTrayTest, MultiselectInTouchMode) {
   EXPECT_TRUE(item_views[1]->selected());
   EXPECT_FALSE(item_views[2]->selected());
 
-  // Tap one of the selected views. Both items should be opened.
-  EXPECT_CALL(*client(), OpenItems)
-      .WillOnce(
-          testing::Invoke([&](const std::vector<const HoldingSpaceItem*>& items,
-                              HoldingSpaceClient::SuccessCallback callback) {
-            ASSERT_EQ(items.size(), 2u);
-            EXPECT_EQ(item_views[0]->item(), items[0]);
-            EXPECT_EQ(item_views[1]->item(), items[1]);
-          }));
+  // Tap one of the selected views. It should no longer be selected.
   GestureTap(item_views[0]);
-  testing::Mock::VerifyAndClearExpectations(client());
-
-  // Reselect the first item view and close the context menu triggered from
-  // long press.
-  LongPress(item_views[0]);
-  EXPECT_TRUE(views::MenuController::GetActiveInstance());
-  PressAndReleaseKey(item_views[0], ui::VKEY_ESCAPE);
-  EXPECT_FALSE(views::MenuController::GetActiveInstance());
-
-  // Reselect the second item view and close the context menu triggered from
-  // long press.
-  LongPress(item_views[1]);
-  EXPECT_TRUE(views::MenuController::GetActiveInstance());
-  PressAndReleaseKey(item_views[1], ui::VKEY_ESCAPE);
-  EXPECT_FALSE(views::MenuController::GetActiveInstance());
-
-  EXPECT_TRUE(item_views[0]->selected());
+  EXPECT_FALSE(item_views[0]->selected());
   EXPECT_TRUE(item_views[1]->selected());
   EXPECT_FALSE(item_views[2]->selected());
 
-  // Tap an unselected view. Only the view which was previously unselected
-  // should be open.
+  // Tap one of the unselected views. It should become selected.
+  GestureTap(item_views[2]);
+  EXPECT_FALSE(item_views[0]->selected());
+  EXPECT_TRUE(item_views[1]->selected());
+  EXPECT_TRUE(item_views[2]->selected());
+
+  // Tap both selected views. No views should be selected.
+  GestureTap(item_views[1]);
+  GestureTap(item_views[2]);
+  EXPECT_FALSE(item_views[0]->selected());
+  EXPECT_FALSE(item_views[1]->selected());
+  EXPECT_FALSE(item_views[2]->selected());
+
+  // Tap an unselected view. This is the only way to open an item via touch.
+  // There must be *no* views currently selected when tapping a view.
   EXPECT_CALL(*client(), OpenItems)
       .WillOnce(
           testing::Invoke([&](const std::vector<const HoldingSpaceItem*>& items,

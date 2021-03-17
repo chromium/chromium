@@ -79,8 +79,9 @@ class ASH_EXPORT HoldingSpaceItemViewDelegate
       HoldingSpaceItemView* view,
       const ui::AXActionData& action_data);
 
-  // Invoked when `view` receives the specified gesture `event`.
-  void OnHoldingSpaceItemViewGestureEvent(HoldingSpaceItemView* view,
+  // Invoked when `view` receives the specified gesture `event`. If `true` is
+  // returned, the `event` was fully handled and should stop propagating.
+  bool OnHoldingSpaceItemViewGestureEvent(HoldingSpaceItemView* view,
                                           const ui::GestureEvent& event);
 
   // Invoked when `view` receives the specified key pressed `event`.

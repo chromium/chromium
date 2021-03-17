@@ -182,8 +182,8 @@ void HoldingSpaceItemView::OnBlur() {
 }
 
 void HoldingSpaceItemView::OnGestureEvent(ui::GestureEvent* event) {
-  if (delegate_)
-    delegate_->OnHoldingSpaceItemViewGestureEvent(this, *event);
+  if (delegate_ && delegate_->OnHoldingSpaceItemViewGestureEvent(this, *event))
+    event->SetHandled();
 }
 
 bool HoldingSpaceItemView::OnKeyPressed(const ui::KeyEvent& event) {

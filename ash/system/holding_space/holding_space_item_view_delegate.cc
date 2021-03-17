@@ -203,7 +203,7 @@ bool HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewAccessibleAction(
   return false;
 }
 
-void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewGestureEvent(
+bool HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewGestureEvent(
     HoldingSpaceItemView* view,
     const ui::GestureEvent& event) {
   // The user may alternate between using mouse and touch inputs. Treat gesture
@@ -218,7 +218,7 @@ void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewGestureEvent(
   if (event.type() == ui::ET_GESTURE_LONG_PRESS ||
       event.type() == ui::ET_GESTURE_TWO_FINGER_TAP) {
     view->SetSelected(true);
-    return;
+    return false;
   }
   // If a scroll begin gesture is received while the context menu is showing,
   // that means the user is trying to initiate a drag. Close the context menu
@@ -227,16 +227,28 @@ void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewGestureEvent(
       context_menu_runner_->IsRunning()) {
     context_menu_runner_.reset();
     view->StartDrag(event, ui::mojom::DragEventSource::kTouch);
-    return;
+    return false;
   }
-  // When a tap gesture occurs, we select and open the corresponding tapped
-  // `view`. If the `view` was not already part of the current selection, it
-  // will become the entire selection.
-  if (event.type() == ui::ET_GESTURE_TAP) {
-    if (!view->selected())
-      SetSelection(view);
+
+  if (event.type() != ui::ET_GESTURE_TAP)
+    return false;
+
+  // When a tap gesture occurs and *no* views are currently selected, select and
+  // open the tapped `view`. Note that the tap `event` should *not* propagate
+  // further. Failure to halt propagation would result in the gesture reaching
+  // the child bubble which clears selection state.
+  if (GetSelection().empty()) {
+    SetSelection(view);
     OpenItems(GetSelection());
+    return true;
   }
+
+  // When a tap gesture occurs and a selection *does* exist, the selected state
+  // of the tapped `view` is toggled. Note that the tap event should *not*
+  // propagate further. Failure to halt propagation would result in the gesture
+  // reaching the child bubble which clears selection state.
+  view->SetSelected(!view->selected());
+  return true;
 }
 
 bool HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewKeyPressed(
