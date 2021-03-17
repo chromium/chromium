@@ -179,6 +179,7 @@ void BluetoothTestBase::SimulateDeviceBreaksConnection(
 }
 
 bool BluetoothTestBase::SimulateLocalGattCharacteristicNotificationsRequest(
+    BluetoothDevice* device,
     BluetoothLocalGattCharacteristic* characteristic,
     bool start) {
   NOTIMPLEMENTED();

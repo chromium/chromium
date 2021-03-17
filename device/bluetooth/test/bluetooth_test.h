@@ -531,6 +531,7 @@ class BluetoothTestBase : public testing::Test {
   // hosted GATT characteristic by a remote device. Returns false if we were
   // not able to start or stop notifications.
   virtual bool SimulateLocalGattCharacteristicNotificationsRequest(
+      BluetoothDevice* from_device,
       BluetoothLocalGattCharacteristic* characteristic,
       bool start);
 

@@ -203,6 +203,7 @@ void FakeBluetoothGattCharacteristicServiceProvider::PrepareSetValue(
 }
 
 bool FakeBluetoothGattCharacteristicServiceProvider::NotificationsChange(
+    const dbus::ObjectPath& device_path,
     bool start) {
   DVLOG(1) << "GATT characteristic value notification request: "
            << object_path_.value() << " UUID: " << uuid_ << " start=" << start;
@@ -222,10 +223,10 @@ bool FakeBluetoothGattCharacteristicServiceProvider::NotificationsChange(
 
   // Pass on to the delegate.
   DCHECK(delegate_);
-  start ? delegate_->StartNotifications(object_path_,
+  start ? delegate_->StartNotifications(device_path,
                                         device::BluetoothGattCharacteristic::
                                             NotificationType::kNotification)
-        : delegate_->StopNotifications(object_path_);
+        : delegate_->StopNotifications(device_path);
 
   return true;
 }

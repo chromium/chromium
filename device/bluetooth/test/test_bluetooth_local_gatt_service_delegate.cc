@@ -112,6 +112,7 @@ void TestBluetoothLocalGattServiceDelegate::OnNotificationsStart(
     const BluetoothDevice* device,
     device::BluetoothGattCharacteristic::NotificationType notification_type,
     const BluetoothLocalGattCharacteristic* characteristic) {
+  DCHECK(device);
   EXPECT_EQ(expected_characteristic_->GetIdentifier(),
             characteristic->GetIdentifier());
   notifications_started_for_characteristic_[characteristic->GetIdentifier()] =
@@ -121,6 +122,7 @@ void TestBluetoothLocalGattServiceDelegate::OnNotificationsStart(
 void TestBluetoothLocalGattServiceDelegate::OnNotificationsStop(
     const BluetoothDevice* device,
     const BluetoothLocalGattCharacteristic* characteristic) {
+  DCHECK(device);
   EXPECT_EQ(expected_characteristic_->GetIdentifier(),
             characteristic->GetIdentifier());
   notifications_started_for_characteristic_[characteristic->GetIdentifier()] =

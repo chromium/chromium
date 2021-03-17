@@ -325,6 +325,7 @@ void BluetoothTestBlueZ::SimulateLocalGattDescriptorValueWriteRequest(
 }
 
 bool BluetoothTestBlueZ::SimulateLocalGattCharacteristicNotificationsRequest(
+    BluetoothDevice* from_device,
     BluetoothLocalGattCharacteristic* characteristic,
     bool start) {
   bluez::BluetoothLocalGattCharacteristicBlueZ* characteristic_bluez =
@@ -345,7 +346,8 @@ bool BluetoothTestBlueZ::SimulateLocalGattCharacteristicNotificationsRequest(
       service_bluez->GetDelegate())
       ->set_expected_characteristic(characteristic);
 
-  return characteristic_provider->NotificationsChange(start);
+  return characteristic_provider->NotificationsChange(
+      GetDevicePath(from_device), start);
 }
 
 std::vector<uint8_t> BluetoothTestBlueZ::LastNotifactionValueForCharacteristic(
