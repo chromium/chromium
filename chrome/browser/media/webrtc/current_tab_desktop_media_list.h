@@ -23,7 +23,7 @@ class CurrentTabDesktopMediaList : public DesktopMediaListBase {
                              base::TimeDelta period,
                              DesktopMediaListObserver* observer);
 
-  void Refresh(bool update_thumnails) override;
+  void Refresh(bool update_thumbnails) override;
 
   // Called on the UI thread after the captured image is handled. If the
   // image was new, it's rescaled to the desired size and sent back in |image|.
@@ -38,7 +38,6 @@ class CurrentTabDesktopMediaList : public DesktopMediaListBase {
   void ResetLastHashForTesting();
 
   // This "list" tracks a single view - the one represented by these variables.
-  content::RenderWidgetHostView* const view_;
   const content::DesktopMediaID media_id_;
 
   // Avoid two concurrent refreshes.

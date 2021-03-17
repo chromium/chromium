@@ -165,6 +165,8 @@ class CurrentTabDesktopMediaListTest : public testing::Test {
 
   void ResetLastHash() { list_->ResetLastHashForTesting(); }
 
+  void RefreshList() { list_->Refresh(/*update_thumbnails=*/true); }
+
   // The path to temporary directory used to contain the test operations.
   base::ScopedTempDir temp_dir_;
   ScopedTestingLocalState local_state_;
@@ -266,6 +268,25 @@ TEST_F(CurrentTabDesktopMediaListTest,
   // Test focus.
   EXPECT_CALL(observer_, OnSourceThumbnailChanged(_, _)).Times(0);
   task_environment_.AdvanceClock(kUpdatePeriod);
+}
+
+TEST_F(CurrentTabDesktopMediaListTest, CallingRefreshAfterTabFreedIsSafe) {
+  constexpr size_t kMainTab = 3;
+  WebContents* const web_contents = all_web_contents_[kMainTab];
+
+  // Setup.
+  EXPECT_CALL(observer_, OnSourceAdded(_, 0)).Times(1);
+  EXPECT_CALL(observer_, OnSourceThumbnailChanged(_, 0))
+      .Times(1)
+      .WillOnce(QuitMessageLoop(run_loop_.get()));
+  list_ = CreateCurrentTabDesktopMediaList(web_contents);
+  Wait();
+
+  // Simulate tab closing.
+  RemoveWebContents(web_contents);
+
+  // Test focus - no crash.
+  RefreshList();
 }
 
 // TODO(crbug.com/1136942): Test rescaling of the thumbnails.
