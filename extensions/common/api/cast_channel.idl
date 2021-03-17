@@ -176,25 +176,25 @@ namespace cast.channel {
     // callback will be invoked with a ChannelInfo with channel.readyState ==
     // 'closed', channel.errorState will be set to the error condition, and
     // onError will be fired with error details.
-    static void open(ConnectInfo connectInfo,
-                     ChannelInfoCallback callback);
+    [supportsPromises] static void open(ConnectInfo connectInfo,
+                                        ChannelInfoCallback callback);
 
     // Sends a message on the channel and invokes callback with the resulting
     // channel status.  The channel must be in readyState == 'open'.  If
     // unsuccessful, channel.readyState will be set to 'closed',
     // channel.errorState will be set to the error condition, and onError will
     // be fired with error details.
-    static void send(ChannelInfo channel,
-                     MessageInfo message,
-                     ChannelInfoCallback callback);
+    [supportsPromises] static void send(ChannelInfo channel,
+                                        MessageInfo message,
+                                        ChannelInfoCallback callback);
 
     // Requests that the channel be closed and invokes callback with the
     // resulting channel status.  The channel must be in readyState == 'open' or
     // 'connecting'.  If successful, onClose will be fired with readyState ==
     // 'closed'.  If unsuccessful, channel.readyState will be set to 'closed',
     // and channel.errorState will be set to the error condition.
-    static void close(ChannelInfo channel,
-                      ChannelInfoCallback callback);
+    [supportsPromises] static void close(ChannelInfo channel,
+                                         ChannelInfoCallback callback);
   };
 
   // Events on the channel.

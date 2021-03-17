@@ -46,7 +46,8 @@ namespace cecPrivate {
     //
     // |callback| will be run as soon as all displays have been requested to
     // change their power state.
-    static void sendStandBy(optional ChangePowerStateCallback callback);
+    [supportsPromises] static void sendStandBy(
+        optional ChangePowerStateCallback callback);
 
     // Attempt to announce this device as the active input source towards all
     // HDMI CEC enabled displays connected, waking them from standby if
@@ -54,10 +55,11 @@ namespace cecPrivate {
     //
     // |callback| will be run as soon as all displays have been requested to
     // change their power state.
-    static void sendWakeUp(optional ChangePowerStateCallback callback);
+    [supportsPromises] static void sendWakeUp(
+        optional ChangePowerStateCallback callback);
 
     // Queries all HDMI CEC capable displays for their current power state.
-    static void queryDisplayCecPowerState(
+    [supportsPromises] static void queryDisplayCecPowerState(
         DisplayCecPowerStateCallback callback);
   };
 };

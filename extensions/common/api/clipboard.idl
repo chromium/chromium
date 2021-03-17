@@ -46,9 +46,10 @@ namespace clipboard {
     // The callback is called with <code>chrome.runtime.lastError</code>
     // set to error code if there is an error.
     // Requires clipboard and clipboardWrite permissions.
-    static void setImageData(ArrayBuffer imageData,
-                             ImageType type,
-                             optional AdditionalDataItem[] additionalItems,
-                             optional SetImageDataCallback callback);
+    [supportsPromises] static void setImageData(
+        ArrayBuffer imageData,
+        ImageType type,
+        optional AdditionalDataItem[] additionalItems,
+        optional SetImageDataCallback callback);
   };
 };
