@@ -119,6 +119,11 @@
     By turning this off, you can sign in to Google sites like Gmail without signing in to Chrome
   </message>
 
+  <!-- Site Settings -->
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PDFS_BLOCKED" desc="Label for the disabled option of the pdfs content setting.">
+    Open PDFs in Chrome
+  </message>
+
   <!-- Safety check -->
   <message name="IDS_SETTINGS_SAFETY_CHECK_PARENT_PRIMARY_LABEL_BEFORE" desc="This text describes what the safety check is. (It's an area of the Settings page where users can quickly check whether their safety-related settings are fully protecting them.)">
     Chrome can help keep you safe from data breaches, bad extensions, and more

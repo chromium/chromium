@@ -1827,6 +1827,15 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_BACKGROUND_SYNC_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the background sync content setting.">
     Not allowed to finish sending or receiving data
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_DEVICES_DESCRIPTION" desc="Description of the bluetooth devices site setting.">
+    Sites usually connect to Bluetooth devices for features like setting up or syncing a low-energy beacon, a health or fitness tracker, or a smart light bulb
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_DEVICES_ALLOWED" desc="Label for the enabled option of bluetooth devices site setting.">
+    Sites can ask to connect to Bluetooth devices
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_DEVICES_BLOCKED" desc="Label for the disabled option of the bluetooth devices site setting.">
+    Don't allow sites to connect to Bluetooth devices
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CAMERA_DESCRIPTION" desc="Description of the camera content setting.">
     Sites usually use your video camera for communication features like video chatting
   </message>
@@ -1852,13 +1861,28 @@
     Sites can ask to see text and images on your clipboard
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CLIPBOARD_BLOCKED" desc="Label for the disabled option of the clipboard content setting.">
-    Don't allow sites from to see text or images on your clipboard
+    Don't allow sites to see text or images on your clipboard
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CLIPBOARD_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the clipboard content setting.">
     Allowed to see your clipboard
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CLIPBOARD_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the clipboard content setting.">
     Not allowed to see your clipboard
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_DEVICE_USE_DESCRIPTION" desc="Description of the device use content setting.">
+    Sites usually detect when you're actively using your device to set your availability on chat apps
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_DEVICE_USE_ALLOWED" desc="Label for the enabled option of the device use content setting.">
+    Sites can ask to know when you're actively using your device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_DEVICE_USE_BLOCKED" desc="Label for the disabled option of the device use content setting.">
+    Don't allow sites to know when you're actively using your device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_DEVICE_USE_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the device use content setting.">
+    Allowed to know when you're actively using your device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_DEVICE_USE_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the device use content setting.">
+    Not allowed to know when you're actively using your device
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_WRITE_DESCRIPTION" desc="Description of the file system write content setting.">
     Sites usually access files and folders on your device for features like automatically saving your work
@@ -1871,6 +1895,69 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_WRITE_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the file system write content setting.">
     Not allowed to edit files or folders on your device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FONTS_DESCRIPTION" desc="Description of the fonts content setting.">
+    Sites usually use your fonts so you can create high-fidelity content with online design and graphics tools
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FONTS_ALLOWED" desc="Label for the enabled option of the fonts content setting.">
+    Sites can ask to use fonts installed on your device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FONTS_BLOCKED" desc="Label for the disabled option of the fonts content setting.">
+    Don't allow sites to use fonts installed on your device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FONTS_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the fonts content setting.">
+    Allowed to use fonts installed on your device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FONTS_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the fonts content setting.">
+    Not allowed to use fonts installed on your device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_DESCRIPTION" desc="Description of the hid devices site setting.">
+    Sites usually connect to HID devices for features that use uncommon keyboards, game controllers, and other devices
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_ALLOWED" desc="Label for the enabled option of hid devices site setting.">
+    Sites can ask to connect to HID devices
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_BLOCKED" desc="Label for the disabled option of the hid devices site setting.">
+    Don't allow sites to connect to HID devices
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_DESCRIPTION" desc="Description of the images content setting.">
+    Sites usually show images to provide illustration, like photos for online stores or news articles
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_ALLOWED" desc="Label for the enabled option of the images content setting.">
+    Sites can show images (recommended)
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_BLOCKED" desc="Label for the disabled option of the images content setting.">
+    Don't allow sites to show images
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the images content setting.">
+    Allowed to show images
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the images content setting.">
+    Not allowed to show images
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_INSECURE_CONTENT_DESCRIPTION" desc="Label explaining the insecure content content setting. Insecure content refers to content served over HTTP, secure sites refers to sites served over HTTPS.">
+    Secure sites might embed content like images or web frames that aren't secure
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_INSECURE_CONTENT_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the insecure content content setting.">
+    Allowed to show insecure content
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_INSECURE_CONTENT_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the insecure content content setting.">
+    Not allowed to show insecure content
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_DESCRIPTION" desc="Description of the Javascript content setting.">
+    Sites usually use Javascript to display interactive features, like video games or web forms
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_ALLOWED" desc="Label for the enabled option of the Javascript content setting.">
+    Sites can use Javascript (recommended)
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_BLOCKED" desc="Label for the disabled option of the Javascript content setting.">
+    Don't allow sites to use Javascript
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the Javascript content setting.">
+    Allowed to use Javascript
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the Javascript content setting.">
+    Not allowed to use Javascript
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_DESCRIPTION" desc="Description of the location content setting.">
     Sites usually use your location for relevant features or info, like local news or nearby shops
@@ -1889,36 +1976,6 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_BLOCKED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the blocked content setting.">
     Not allowed to see your location
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_DESCRIPTION" desc="Description of the images content setting.">
-    Sites usually show images to provide illustration, like photos for online stores or news articles
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_ALLOWED" desc="Label for the enabled option of the images content setting.">
-    Sites can show images (recommended)
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_BLOCKED" desc="Label for the disabled option of the images content setting.">
-    Block images
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the images content setting.">
-    Allowed to show images
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the images content setting.">
-    Not allowed to show images
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_DESCRIPTION" desc="Description of the Javascript content setting.">
-    Sites usually use Javascript to display interactive features, like video games or web forms
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_ALLOWED" desc="Label for the enabled option of the Javascript content setting.">
-    Sites can use Javascript (recommended)
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_BLOCKED" desc="Label for the disabled option of the Javascript content setting.">
-    Don't allow sites to use Javascript
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the Javascript content setting.">
-    Allowed to use Javascript
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the Javascript content setting.">
-    Not allowed to use Javascript
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIC_DESCRIPTION" desc="Description of the microphone content setting.">
     Sites usually use your microphone for communication features like video chatting
@@ -1953,11 +2010,23 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the MIDI devices content setting.">
     Not allowed to connect to MIDI devices
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_INSECURE_CONTENT_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the insecure content content setting.">
-    Allowed to show insecure content
+  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_DESCRIPTION" desc="Description of the motion sensors content setting.">
+    Sites usually use your device's motion sensors for features like virtual reality or fitness tracking
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_INSECURE_CONTENT_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the insecure content content setting.">
-    Not allowed to show insecure content
+  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_ALLOWED" desc="Label for the enabled option of the motion sensors content setting.">
+    Sites can use motion sensors
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_BLOCKED" desc="Label for the disabled option of the motion sensors content setting.">
+    Don't allow sites to use motion sensors
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_BLOCKED_SUB_LABEL" desc="Sub label for the disabled option of the motion sensors content setting.">
+    Features that need motion sensors won't work
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the motion sensors content setting.">
+    Allowed to use motion sensors
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the motion sensors content setting.">
+    Not allowed to use motion sensors
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_DESCRIPTION" desc="Description of the notifications content setting.">
     Sites usually send notifications to let you know about breaking news or chat messages
@@ -1998,6 +2067,12 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_PAYMENT_HANDLERS_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the payment handlers content setting.">
     Not allowed to install payment handlers
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PDFS_DESCRIPTION" desc="Description of the pdfs content setting.">
+    Sites sometimes publish PDFs, like documents, contracts, and forms
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PDFS_ALLOWED" desc="Label for the enabled option of the pdfs content setting.">
+    Download PDFs
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_POPUPS_DESCRIPTION" desc="Description of the pop-ups content setting.">
     Sites might send pop-ups to show ads, or use redirects to lead you to websites you may not want to visit
   </message>
@@ -2028,23 +2103,14 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the protected content content setting.">
     Not allowed to play protected content
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_DESCRIPTION" desc="Description of the motion sensors content setting.">
-    Sites usually use your device's motion sensors for features like virtual reality or fitness tracking
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PROTOCOL_HANDLERS_ALLOWED" desc="Label for the enabled option of protocol handlers site setting.">
+    Sites can ask to handle protocols
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_ALLOWED" desc="Label for the enabled option of the motion sensors content setting.">
-    Sites can use motion sensors
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PROTOCOL_HANDLERS_BLOCKED" desc="Label for the disabled option of the protocol handlers site setting.">
+    Don't allow sites to handle protocols
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_BLOCKED" desc="Label for the disabled option of the motion sensors content setting.">
-    Don't allow sites to use motion sensors
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_BLOCKED_SUB_LABEL" desc="Sub label for the disabled option of the motion sensors content setting.">
-    Features that need motion sensors won't work
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the motion sensors content setting.">
-    Allowed to use motion sensors
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the motion sensors content setting.">
-    Not allowed to use motion sensors
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PROTOCOL_HANDLERS_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the protocol handlers site setting.">
+    Not allowed to handle protocols
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SERIAL_PORTS_DESCRIPTION" desc="Description of the serial ports content setting.">
     Sites usually connect to serial devices for data transfer features, like setting up your network
@@ -2069,33 +2135,6 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SOUND_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the sound content setting.">
     Not allowed to play sound
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_DEVICES_DESCRIPTION" desc="Description of the bluetooth devices site setting.">
-    Sites usually connect to Bluetooth devices for features like setting up or syncing a low-energy beacon, a health or fitness tracker, or a smart light bulb
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_DEVICES_ALLOWED" desc="Label for the enabled option of bluetooth devices site setting.">
-    Sites can ask to connect to Bluetooth devices
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_DEVICES_BLOCKED" desc="Label for the disabled option of the bluetooth devices site setting.">
-    Don't allow sites to connect to Bluetooth devices
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_DESCRIPTION" desc="Description of the hid devices site setting.">
-    Sites usually connect to HID devices for features that use uncommon keyboards, game controllers, and other devices
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_ALLOWED" desc="Label for the enabled option of hid devices site setting.">
-    Sites can ask to connect to HID devices
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_BLOCKED" desc="Label for the disabled option of the hid devices site setting.">
-    Don't allow sites to connect to HID devices
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_PROTOCOL_HANDLERS_ALLOWED" desc="Label for the enabled option of protocol handlers site setting.">
-    Sites can ask to handle protocols
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_PROTOCOL_HANDLERS_BLOCKED" desc="Label for the disabled option of the protocol handlers site setting.">
-    Don't allow sites to handle protocols
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_PROTOCOL_HANDLERS_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the protocol handlers site setting.">
-    Not allowed to handle protocols
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_USB_DESCRIPTION" desc="Description of the USB devices content setting.">
     Sites usually connect to USB devices for features like printing a document or saving to a storage device

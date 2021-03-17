@@ -304,7 +304,10 @@
             page-title="$i18n{siteSettingsCategoryInsecureContent}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <div class="cr-row first">
+          <div class="content-settings-header secondary">
+            $i18n{siteSettingsInsecureContentDescription}
+          </div>
+          <div class="cr-row first secondary">
             $i18n{siteSettingsInsecureContentBlock}
           </div>
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
@@ -390,7 +393,7 @@
         <settings-subpage page-title="$i18n{siteSettingsPdfDocuments}">
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
             <div class="radio-group">
-              <h2>$i18n{siteSettingsNotificationsDescription}</h2>
+              <div class="secondary">$i18n{siteSettingsPdfsDescription}</div>
               <h2>$i18n{siteSettingsDefaultBehavior}</h2>
               <div class="secondary radio-sub-heading">
                 $i18n{siteSettingsDefaultBehaviorDescription}
@@ -398,17 +401,16 @@
               <settings-radio-group
                   pref="{{prefs.plugins.always_open_pdf_externally}}"
                   selectable-elements="settings-collapse-radio-button">
-                <!-- TODO(1113642): Apply actual strings. -->
                 <settings-collapse-radio-button no-collapse
                     pref="[[prefs.plugins.always_open_pdf_externally]]"
-                    label="$i18n{siteSettingsAllow}"
+                    label="$i18n{siteSettingsPdfsAllowed}"
                     name="true"
                     disabled$="[[isGuest_]]"
                     icon="settings:pdf">
                 </settings-collapse-radio-button>
                 <settings-collapse-radio-button no-collapse
                     pref="[[prefs.plugins.always_open_pdf_externally]]"
-                    label="$i18n{siteSettingsBlock}"
+                    label="$i18n{siteSettingsPdfsBlocked}"
                     name="false"
                     disabled$="[[isGuest_]]"
                     icon="settings:pdf-off">
@@ -1260,22 +1262,21 @@
         <settings-subpage page-title="$i18n{siteSettingsIdleDetection}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <!-- TODO(1113642): Apply actual strings and new off icon. -->
           <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsArDescription}</h2>
+            <div class="content-settings-header secondary">
+              $i18n{siteSettingsDeviceUseDescription}
             </div>
             <settings-category-default-radio-group
                 category="[[ContentSettingsTypes.IDLE_DETECTION]]"
-                allow-option-label="$i18n{siteSettingsIdleDetectionAsk}"
+                allow-option-label="$i18n{siteSettingsDeviceUseAllowed}"
                 allow-option-icon="settings:devices"
-                block-option-label="$i18n{siteSettingsIdleDetectionBlock}"
+                block-option-label="$i18n{siteSettingsDeviceUseBlocked}"
                 block-option-icon="settings:devices-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[ContentSettingsTypes.IDLE_DETECTION]]"
-                allow-header="$i18n{siteSettingsAllow}"
-                block-header="$i18n{siteSettingsBlock}"
+                allow-header="$i18n{siteSettingsDeviceUseAllowedExceptions}"
+                block-header="$i18n{siteSettingsDeviceUseBlockedExceptions}"
                 search-filter="[[searchFilter_IDLE_DETECTION]]">
             </category-setting-exceptions>
           </template>
@@ -1319,22 +1320,22 @@
           <settings-subpage page-title="$i18n{fonts}"
               search-label="$i18n{siteSettingsAllSitesSearch}"
               search-term="{{searchFilter_}}">
-              <!-- TODO(1113642): Apply actual strings and new off icon. -->
+              <!-- TODO(1113642): Apply new off icon. -->
               <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-                <div class="content-settings-header">
-                  <h2>$i18n{siteSettingsDefaultBehavior}</h2>
+                <div class="content-settings-header secondary">
+                  $i18n{siteSettingsFontsDescription}
                 </div>
                 <settings-category-default-radio-group
                     category="[[ContentSettingsTypes.FONT_ACCESS]]"
-                    allow-option-label="$i18n{siteSettingsFontAccessAsk}"
+                    allow-option-label="$i18n{siteSettingsFontsAllowed}"
                     allow-option-icon="settings:font-access"
-                    block-option-label="$i18n{siteSettingsFontAccessBlock}"
+                    block-option-label="$i18n{siteSettingsFontsBlocked}"
                     block-option-icon="settings:font-access">
                 </settings-category-default-radio-group>
                 <category-setting-exceptions
                     category="[[ContentSettingsTypes.FONT_ACCESS]]"
-                    block-header="$i18n{siteSettingsBlock}"
-                    allow-header="$i18n{siteSettingsAllow}"
+                    block-header="$i18n{siteSettingsFontsBlockedExceptions}"
+                    allow-header="$i18n{siteSettingsFontsAllowedExceptions}"
                     search-filter="[[searchFilter_]]">
                 </category-setting-exceptions>
               </template>
