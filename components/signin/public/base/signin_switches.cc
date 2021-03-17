@@ -31,4 +31,8 @@ const base::Feature kDeprecateMenagerieAPI{"DeprecateMenagerieAPI",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const base::Feature kUseAccountManagerFacade{"kUseAccountManagerFacade",
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
+#endif
 }  // namespace switches

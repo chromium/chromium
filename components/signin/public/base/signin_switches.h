@@ -32,6 +32,11 @@ extern const base::Feature kForceAccountIdMigration;
 // Menagerie API.
 extern const base::Feature kDeprecateMenagerieAPI;
 #endif  // defined(OS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Killswitch for PO2TS migration to AccountManagerFacade.
+extern const base::Feature kUseAccountManagerFacade;
+#endif
 }  // namespace switches
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_BASE_SIGNIN_SWITCHES_H_

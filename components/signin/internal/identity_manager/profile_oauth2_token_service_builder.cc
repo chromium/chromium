@@ -15,6 +15,7 @@
 #include "components/signin/public/base/device_id_helper.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_client.h"
+#include "components/signin/public/base/signin_switches.h"
 
 #if defined(OS_ANDROID)
 #include "components/signin/internal/base/account_manager_facade_android.h"
@@ -27,6 +28,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/account_manager/account_manager.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_chromeos.h"
+#include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_chromeos_legacy.h"
 #include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -60,14 +62,19 @@ std::unique_ptr<ProfileOAuth2TokenServiceIOSDelegate> CreateIOSOAuthDelegate(
       account_tracker_service);
 }
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-std::unique_ptr<signin::ProfileOAuth2TokenServiceDelegateChromeOS>
-CreateCrOsOAuthDelegate(
+std::unique_ptr<ProfileOAuth2TokenServiceDelegate> CreateCrOsOAuthDelegate(
     AccountTrackerService* account_tracker_service,
     network::NetworkConnectionTracker* network_connection_tracker,
     ash::AccountManager* account_manager,
     bool is_regular_profile) {
   DCHECK(account_manager);
-  return std::make_unique<signin::ProfileOAuth2TokenServiceDelegateChromeOS>(
+  if (base::FeatureList::IsEnabled(switches::kUseAccountManagerFacade)) {
+    return std::make_unique<signin::ProfileOAuth2TokenServiceDelegateChromeOS>(
+        account_tracker_service, network_connection_tracker, account_manager,
+        is_regular_profile);
+  }
+  return std::make_unique<
+      signin::ProfileOAuth2TokenServiceDelegateChromeOSLegacy>(
       account_tracker_service, network_connection_tracker, account_manager,
       is_regular_profile);
 }

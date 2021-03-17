@@ -89,6 +89,8 @@ source_set("identity_manager") {
     sources += [
       "profile_oauth2_token_service_delegate_chromeos.cc",
       "profile_oauth2_token_service_delegate_chromeos.h",
+      "profile_oauth2_token_service_delegate_chromeos_legacy.cc",
+      "profile_oauth2_token_service_delegate_chromeos_legacy.h",
     ]
     public_deps += [ "//ash/components/account_manager" ]
 
