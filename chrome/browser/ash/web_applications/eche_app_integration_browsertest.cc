@@ -67,7 +67,7 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest,
   EXPECT_FALSE(browser_view->CanMaximize());
 }
 
-IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest, MinimalUi) {
+IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest, MinimalUiWithoutReloadButton) {
   WaitForTestSystemAppInstall();
   Browser* browser;
   LaunchApp(web_app::SystemAppType::ECHE, &browser);
@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest, MinimalUi) {
       BrowserView::GetBrowserViewForBrowser(browser);
   ToolbarButtonProvider* provider = browser_view->toolbar_button_provider();
   EXPECT_TRUE(provider->GetBackButton());
-  EXPECT_TRUE(provider->GetReloadButton());
+  EXPECT_FALSE(provider->GetReloadButton());
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(

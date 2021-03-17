@@ -142,6 +142,9 @@ class AppBrowserController : public TabStripModelObserver,
 
   virtual bool IsWindowControlsOverlayEnabled() const;
 
+  // Whether the browser should show the reload button in the toolbar.
+  virtual bool HasReloadButton() const;
+
   // Updates the custom tab bar's visibility based on whether it should be
   // currently visible or not. If |animate| is set, the change will be
   // animated.

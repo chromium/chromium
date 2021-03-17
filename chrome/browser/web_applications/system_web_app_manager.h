@@ -113,6 +113,10 @@ struct SystemAppInfo {
   // If set to false, the surface of app will can be non-maximizable.
   bool is_maximizable = true;
 
+  // If set to false, the app will not have the reload button in minimal ui
+  // mode.
+  bool should_have_reload_button_in_minimal_ui = true;
+
   WebApplicationInfoFactory app_info_factory;
 
   // Setup information to drive a background task.
@@ -205,6 +209,9 @@ class SystemWebAppManager {
 
   // Returns whether the surface of app can be maximizable.
   bool IsMaximizableWindow(SystemAppType type) const;
+
+  // Returns whether the app should have the reload button in minimal ui mode.
+  bool ShouldHaveReloadButtonInMinimalUi(SystemAppType type) const;
 
   // Returns the SystemAppType that should capture the navigation to |url|.
   base::Optional<SystemAppType> GetCapturingSystemAppForURL(

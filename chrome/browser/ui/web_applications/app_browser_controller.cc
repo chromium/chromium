@@ -338,6 +338,15 @@ bool AppBrowserController::IsWindowControlsOverlayEnabled() const {
   return false;
 }
 
+bool AppBrowserController::HasReloadButton() const {
+  if (!system_app_type_)
+    return true;
+
+  return WebAppProvider::Get(browser()->profile())
+      ->system_web_app_manager()
+      .ShouldHaveReloadButtonInMinimalUi(system_app_type_.value());
+}
+
 std::u16string AppBrowserController::GetLaunchFlashText() const {
   if (base::FeatureList::IsEnabled(
           features::kDesktopPWAsFlashAppNameInsteadOfOrigin)) {
