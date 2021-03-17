@@ -187,7 +187,7 @@ Polymer({
   /** private */
   onMoreFeaturesLinkClick_() {
     window.open(
-        'https://chrome.google.com/webstore/category/collection/accessibility');
+        'https://chrome.google.com/webstore/category/collection/3p_accessibility_extensions');
   },
 
   /** @private */
