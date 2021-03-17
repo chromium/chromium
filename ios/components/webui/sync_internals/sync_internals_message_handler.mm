@@ -156,15 +156,15 @@ void SyncInternalsMessageHandler::HandleRequestIncludeSpecificsInitialState(
 void SyncInternalsMessageHandler::HandleGetAllNodes(
     const base::ListValue* args) {
   DCHECK_EQ(1U, args->GetSize());
-  int request_id = 0;
-  bool success = ExtractIntegerValue(args, &request_id);
+  std::string callback_id;
+  bool success = args->GetString(0, &callback_id);
   DCHECK(success);
 
   syncer::SyncService* service = GetSyncService();
   if (service) {
     service->GetAllNodesForDebugging(
         base::BindOnce(&SyncInternalsMessageHandler::OnReceivedAllNodes,
-                       weak_ptr_factory_.GetWeakPtr(), request_id));
+                       weak_ptr_factory_.GetWeakPtr(), callback_id));
   }
 }
 
@@ -229,14 +229,13 @@ void SyncInternalsMessageHandler::HandleTriggerRefresh(
 }
 
 void SyncInternalsMessageHandler::OnReceivedAllNodes(
-    int request_id,
+    const std::string& callback_id,
     std::unique_ptr<base::ListValue> nodes) {
-  base::Value id(request_id);
+  base::Value id(callback_id);
   base::Value nodes_clone = nodes->Clone();
 
   std::vector<const base::Value*> args{&id, &nodes_clone};
-  web_ui()->CallJavascriptFunction(syncer::sync_ui_util::kGetAllNodesCallback,
-                                   args);
+  web_ui()->CallJavascriptFunction("cr.webUIResponse", args);
 }
 
 void SyncInternalsMessageHandler::OnStateChanged(syncer::SyncService* sync) {
@@ -309,5 +308,5 @@ void SyncInternalsMessageHandler::DispatchEvent(
 
   std::vector<const base::Value*> args{&event_name, &details_value};
 
-  web_ui()->CallJavascriptFunction(syncer::sync_ui_util::kDispatchEvent, args);
+  web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", args);
 }

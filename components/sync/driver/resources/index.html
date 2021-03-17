@@ -16,39 +16,6 @@ chrome/test/functional/special_tabs.py. -->
 <link rel="stylesheet" href="traffic_log.css">
 <link rel="stylesheet" href="invalidations.css">
 
-<if expr="is_ios">
-<!-- TODO(crbug.com/487000): Remove this once injected by web. -->
-<script src="chrome://resources/js/ios/web_ui.js"></script>
-</if>
-
-<script src="chrome://resources/js/event_tracker.js"></script>
-<script src="chrome://resources/js/cr.js"></script>
-<script src="chrome://resources/js/cr/event_target.js"></script>
-<script src="chrome://resources/js/cr/ui.js"></script>
-<script src="chrome://resources/js/cr/ui/focus_outline_manager.js"></script>
-<script src="chrome://resources/js/cr/ui/splitter.js"></script>
-<script src="chrome://resources/js/load_time_data.js"></script>
-
-<!-- List stuff. -->
-<script src="chrome://resources/js/assert.js"></script>
-<script src="chrome://resources/js/cr/ui/array_data_model.js"></script>
-<script src="chrome://resources/js/cr/ui/list_item.js"></script>
-<script src="chrome://resources/js/cr/ui/list_selection_controller.js"></script>
-<script src="chrome://resources/js/cr/ui/list_selection_model.js"></script>
-<script src="chrome://resources/js/cr/ui/list.js"></script>
-<script src="chrome://resources/js/cr/ui/tabs.js"></script>
-<script src="chrome://resources/js/cr/ui/tree.js"></script>
-<script src="chrome://resources/js/util.js"></script>
-<script src="chrome_sync.js"></script>
-<script src="about.js"></script>
-<script src="events.js"></script>
-<script src="sync_log.js"></script>
-<script src="sync_node_browser.js"></script>
-<script src="sync_search.js"></script>
-<script src="user_events.js"></script>
-<script src="traffic_log.js"></script>
-<script src="strings.js"></script>
-<script src="invalidations.js"></script>
 </head>
 <body>
 
@@ -71,7 +38,7 @@ chrome/test/functional/special_tabs.py. -->
     <tab id="sync-events-tab">Events</tab>
     <tab id="sync-browser-tab">Sync Node Browser</tab>
     <tab id="sync-search-tab">Search</tab>
-    <tab id="sync-user-events-tab" hidden>User Events</tab>
+    <tab id="sync-user-events-tab">User Events</tab>
     <tab id="sync-traffic-log-tab">Traffic Log</tab>
     <tab id="sync-invalidations-tab">Invalidations</tab>
   </tabs>
@@ -325,9 +292,6 @@ chrome/test/functional/special_tabs.py. -->
   </tabpanels>
 </tabbox>
 
-<script src="chrome://resources/js/jstemplate_compiled.js"></script>
-<script src="data.js"></script>
-<script src="search.js"></script>
-<script src="sync_index.js"></script>
+<script type="module" src="sync_index.js"></script>
 </body>
 </html>

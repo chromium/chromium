@@ -52,9 +52,7 @@ const char kTrafficLogJS[] = "traffic_log.js";
 const char kInvalidationsJS[] = "invalidations.js";
 
 // Message handlers.
-const char kDispatchEvent[] = "chrome.sync.dispatchEvent";
 const char kGetAllNodes[] = "getAllNodes";
-const char kGetAllNodesCallback[] = "chrome.sync.getAllNodesCallback";
 const char kRequestDataAndRegisterForUpdates[] =
     "requestDataAndRegisterForUpdates";
 const char kRequestIncludeSpecificsInitialState[] =
@@ -63,11 +61,8 @@ const char kRequestListOfTypes[] = "requestListOfTypes";
 const char kRequestStart[] = "requestStart";
 const char kRequestStopKeepData[] = "requestStopKeepData";
 const char kRequestStopClearData[] = "requestStopClearData";
-const char kRequestUserEventsVisibility[] = "requestUserEventsVisibility";
 const char kSetIncludeSpecifics[] = "setIncludeSpecifics";
 const char kTriggerRefresh[] = "triggerRefresh";
-const char kUserEventsVisibilityCallback[] =
-    "chrome.sync.userEventsVisibilityCallback";
 const char kWriteUserEvent[] = "writeUserEvent";
 
 // Other strings.

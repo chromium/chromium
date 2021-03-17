@@ -64,7 +64,6 @@ grit("resources") {
 }
 
 js_type_check("closure_compile") {
-  uses_legacy_modules = true
   deps = [
     #TODO(crbug.com/986001): Fix compilation errors and enable all targets.
 
@@ -88,14 +87,14 @@ js_type_check("closure_compile") {
 js_library("about") {
   deps = [
     "//third_party/jstemplate:jstemplate",
-    "//ui/webui/resources/js:util",
+    "//ui/webui/resources/js:util.m",
   ]
 }
 
 js_library("chrome_sync") {
   deps = [
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:util",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:util.m",
   ]
 }
 
@@ -105,57 +104,57 @@ js_library("data") {
 js_library("events") {
   deps = [
     "//third_party/jstemplate:jstemplate",
-    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:cr.m",
   ]
 }
 
 js_library("search") {
   deps = [
-    "//ui/webui/resources/js:util",
-    "//ui/webui/resources/js/cr/ui:splitter",
+    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js/cr/ui:splitter.m",
   ]
 }
 
 js_library("sync_index") {
   deps = [
-    "//ui/webui/resources/js:util",
-    "//ui/webui/resources/js/cr/ui:tabs",
+    "//ui/webui/resources/js:util.m",
+    "//ui/webui/resources/js/cr/ui:tabs.m",
   ]
 }
 
 js_library("sync_log") {
   deps = [
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js/cr:event_target",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr:event_target.m",
   ]
 }
 
 js_library("sync_node_browser") {
   deps = [
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js/cr/ui:tree",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr/ui:tree.m",
   ]
 }
 
 js_library("sync_search") {
   deps = [
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js/cr/ui:array_data_model",
-    "//ui/webui/resources/js/cr/ui:list",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr/ui:array_data_model.m",
+    "//ui/webui/resources/js/cr/ui:list.m",
   ]
 }
 
 js_library("traffic_log") {
-  deps = [ "//ui/webui/resources/js:cr" ]
+  deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
 js_library("user_events") {
   deps = [
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:util",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:util.m",
   ]
 }
 
 js_library("invalidations") {
-  deps = [ "//ui/webui/resources/js:cr" ]
+  deps = [ "//ui/webui/resources/js:cr.m" ]
 }

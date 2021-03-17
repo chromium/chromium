@@ -2,7 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-(function() {
+import {addWebUIListener, removeWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
+
+import {aboutInfo} from './about.js';
+import {getAllNodes, requestIncludeSpecificsInitialState, requestListOfTypes} from './chrome_sync.js';
+import {log} from './sync_log.js';
+
 const dumpToTextButton = $('dump-to-text');
 const dataDump = $('data-dump');
 dumpToTextButton.addEventListener('click', function(event) {
@@ -12,21 +18,14 @@ dumpToTextButton.addEventListener('click', function(event) {
   data += '======\n';
   data += 'Status\n';
   data += '======\n';
-  data += JSON.stringify(chrome.sync.aboutInfo, null, 2);
-  data += '\n';
-  data += '\n';
-
-  data += '=============\n';
-  data += 'Notifications\n';
-  data += '=============\n';
-  data += JSON.stringify(chrome.sync.notifications, null, 2);
+  data += JSON.stringify(aboutInfo, null, 2);
   data += '\n';
   data += '\n';
 
   data += '===\n';
   data += 'Log\n';
   data += '===\n';
-  data += JSON.stringify(chrome.sync.log.entries, null, 2);
+  data += JSON.stringify(log.entries, null, 2);
   data += '\n';
 
   dataDump.textContent = data;
@@ -139,8 +138,8 @@ function triggerDataDownload(nodesMap) {
   let output = [makeDateUserAgentHeader()];
   output.push('=====');
 
-  const aboutInfo = JSON.stringify(chrome.sync.aboutInfo, null, 2);
-  output.push(aboutInfo);
+  const aboutInfoString = JSON.stringify(aboutInfo, null, 2);
+  output.push(aboutInfoString);
 
   // Filter out non-selected types.
   const selectedTypesNodes = nodesMap.filter(function(x) {
@@ -183,33 +182,31 @@ function createTypesCheckboxes(types) {
   });
 }
 
-function onReceivedListOfTypes(e) {
-  const types = e.details.types;
+let listOfTypesListener = null;
+
+function onReceivedListOfTypes(response) {
+  const types = response.types;
   types.sort();
   createTypesCheckboxes(types);
-  chrome.sync.events.removeEventListener(
-      'onReceivedListOfTypes',
-      onReceivedListOfTypes);
+  removeWebUIListener(listOfTypesListener);
 }
 
-function onReceivedIncludeSpecificsInitialState(e) {
-  $('capture-specifics').checked = e.details.includeSpecifics;
+function onReceivedIncludeSpecificsInitialState(response) {
+  $('capture-specifics').checked = response.includeSpecifics;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  chrome.sync.events.addEventListener(
-      'onReceivedListOfTypes',
-      onReceivedListOfTypes);
-  chrome.sync.requestListOfTypes();
+  listOfTypesListener =
+      addWebUIListener('onReceivedListOfTypes', onReceivedListOfTypes);
+  requestListOfTypes();
 
-  chrome.sync.events.addEventListener(
-    'onReceivedIncludeSpecificsInitialState',
-    onReceivedIncludeSpecificsInitialState);
-  chrome.sync.requestIncludeSpecificsInitialState();
+  addWebUIListener(
+      'onReceivedIncludeSpecificsInitialState',
+      onReceivedIncludeSpecificsInitialState);
+  requestIncludeSpecificsInitialState();
 });
 
 const dumpToFileLink = $('dump-to-file');
 dumpToFileLink.addEventListener('click', function(event) {
-  chrome.sync.getAllNodes(triggerDataDownload);
+  getAllNodes(triggerDataDownload);
 });
-})();

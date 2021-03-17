@@ -36,7 +36,7 @@ SyncInternalsWebUITest.prototype = {
    * @protected
    */
   hasInDetails: function(isValid, key, value) {
-    const details = chrome.sync.aboutInfo.details;
+    const details = getAboutInfoForTest().details;
     if (!details) {
       return false;
     }
@@ -154,7 +154,7 @@ const HARD_CODED_ALL_NODES = [{
  * A value to return in mock onReceivedUpdatedAboutInfo event.
  * @const
  */
-HARD_CODED_ABOUT_INFO = {
+const HARD_CODED_ABOUT_INFO = {
   'actionable_error': [
     {
       'stat_status': 'uninitialized',
@@ -180,13 +180,11 @@ HARD_CODED_ABOUT_INFO = {
   'actionable_error_detected': false,
   'details': [
     {
-      'data': [
-        {
-          'stat_status': '',
-          'stat_name': 'Summary',
-          'stat_value': 'Sync service initialized'
-        }
-      ],
+      'data': [{
+        'stat_status': '',
+        'stat_name': 'Summary',
+        'stat_value': 'Sync service initialized'
+      }],
       'is_sensitive': false,
       'title': 'Summary'
     },
@@ -227,7 +225,7 @@ NETWORK_EVENT_DETAILS_2 = {
 };
 
 TEST_F('SyncInternalsWebUITest', 'Uninitialized', function() {
-   assertNotEquals(null, chrome.sync.aboutInfo);
+  assertNotEquals(null, getAboutInfoForTest());
 });
 
 GEN('#if defined(OS_CHROMEOS)');
@@ -259,33 +257,32 @@ GEN('#endif  // defined(OS_CHROMEOS)');
 
 TEST_F('SyncInternalsWebUITest', 'LoadPastedAboutInfo', function() {
   // Expose the text field.
-  $('import-status').click();
+  document.querySelector('#import-status').click();
 
   // Fill it with fake data.
-  $('status-text').value = JSON.stringify(HARD_CODED_ABOUT_INFO);
+  document.querySelector('#status-text').value =
+      JSON.stringify(HARD_CODED_ABOUT_INFO);
 
   // Trigger the import.
-  $('import-status').click();
+  document.querySelector('#import-status').click();
 
   expectTrue(this.hasInDetails(true, 'Summary', 'Sync service initialized'));
 });
 
 TEST_F('SyncInternalsWebUITest', 'NetworkEventsTest', function() {
-  const networkEvent1 = new Event('onProtocolEvent');
-  networkEvent1.details = NETWORK_EVENT_DETAILS_1;
-  const networkEvent2 = new Event('onProtocolEvent');
-  networkEvent2.details = NETWORK_EVENT_DETAILS_2;
-
-  chrome.sync.events.dispatchEvent(networkEvent1);
-  chrome.sync.events.dispatchEvent(networkEvent2);
+  cr.webUIListenerCallback('onProtocolEvent', NETWORK_EVENT_DETAILS_1);
+  cr.webUIListenerCallback('onProtocolEvent', NETWORK_EVENT_DETAILS_2);
 
   // Make sure that both events arrived.
-  const eventCount = $('traffic-event-container').children.length;
+  const eventCount =
+      document.querySelector('#traffic-event-container').children.length;
   assertGE(eventCount, 2);
 
   // Check that the event details are displayed.
-  const displayedEvent1 = $('traffic-event-container').children[eventCount - 2];
-  const displayedEvent2 = $('traffic-event-container').children[eventCount - 1];
+  const displayedEvent1 = document.querySelector('#traffic-event-container')
+                              .children[eventCount - 2];
+  const displayedEvent2 = document.querySelector('#traffic-event-container')
+                              .children[eventCount - 1];
   expectTrue(
       displayedEvent1.innerHTML.includes(NETWORK_EVENT_DETAILS_1.details));
   expectTrue(displayedEvent1.innerHTML.includes(NETWORK_EVENT_DETAILS_1.type));
@@ -294,19 +291,20 @@ TEST_F('SyncInternalsWebUITest', 'NetworkEventsTest', function() {
   expectTrue(displayedEvent2.innerHTML.includes(NETWORK_EVENT_DETAILS_2.type));
 
   // Test that repeated events are not re-displayed.
-  chrome.sync.events.dispatchEvent(networkEvent1);
-  expectEquals(eventCount, $('traffic-event-container').children.length);
+  cr.webUIListenerCallback('onProtocolEvent', NETWORK_EVENT_DETAILS_1);
+  expectEquals(
+      eventCount,
+      document.querySelector('#traffic-event-container').children.length);
 });
 
 TEST_F('SyncInternalsWebUITest', 'SearchTabDoesntChangeOnItemSelect',
        function() {
   // Select the search tab.
-  $('sync-search-tab').selected = true;
-  expectTrue($('sync-search-tab').selected);
+  document.querySelector('#sync-search-tab').selected = true;
+  expectTrue(document.querySelector('#sync-search-tab').selected);
 
   // Build the data model and attach to result list.
-  cr.ui.List.decorate($('sync-results-list'));
-  $('sync-results-list').dataModel = new cr.ui.ArrayDataModel([
+  setupSyncResultsListForTest([
     {
       value: 'value 0',
       toString: function() {
@@ -322,26 +320,27 @@ TEST_F('SyncInternalsWebUITest', 'SearchTabDoesntChangeOnItemSelect',
   ]);
 
   // Select the first list item and verify the search tab remains selected.
-  $('sync-results-list').getListItemByIndex(0).selected = true;
-  expectTrue($('sync-search-tab').selected);
+  document.querySelector('#sync-results-list').getListItemByIndex(0).selected =
+      true;
+  expectTrue(document.querySelector('#sync-search-tab').selected);
 });
 
 TEST_F('SyncInternalsWebUITest', 'NodeBrowserTest', function() {
-  chrome.sync.getAllNodes = (callback) => {
-    callback(HARD_CODED_ALL_NODES);
-  };
+  setAllNodesForTest(HARD_CODED_ALL_NODES);
 
   // Hit the refresh button.
-  $('node-browser-refresh-button').click();
+  document.querySelector('#node-browser-refresh-button').click();
 
   // Check that the refresh time was updated.
-  expectNotEquals($('node-browser-refresh-time').textContent, 'Never');
+  expectNotEquals(
+      document.querySelector('#node-browser-refresh-time').textContent,
+      'Never');
 
   // Verify some hard-coded assumptions.  These depend on the value of the
   // hard-coded nodes, specified elsewhere in this file.
 
   // Start with the tree itself.
-  const tree = $('sync-node-tree');
+  const tree = document.querySelector('#sync-node-tree');
   assertEquals(1, tree.items.length);
 
   // Check the type root and expand it.
@@ -354,39 +353,43 @@ TEST_F('SyncInternalsWebUITest', 'NodeBrowserTest', function() {
   const leaf = typeRoot.items[0];
 
   // Verify that selecting it affects the details view.
-  expectTrue($('node-details').hasAttribute('hidden'));
+  expectTrue(document.querySelector('#node-details').hasAttribute('hidden'));
   leaf.selected = true;
-  expectFalse($('node-details').hasAttribute('hidden'));
+  expectFalse(document.querySelector('#node-details').hasAttribute('hidden'));
 });
 
 TEST_F('SyncInternalsWebUITest', 'NodeBrowserRefreshOnTabSelect', function() {
-  chrome.sync.getAllNodes = (callback) => {
-    callback(HARD_CODED_ALL_NODES);
-  };
+  setAllNodesForTest(HARD_CODED_ALL_NODES);
 
   // Should start with non-refreshed node browser.
-  expectEquals($('node-browser-refresh-time').textContent, 'Never');
+  expectEquals(
+      document.querySelector('#node-browser-refresh-time').textContent,
+      'Never');
 
   // Selecting the tab will refresh it.
-  $('sync-browser-tab').selected = true;
-  expectNotEquals($('node-browser-refresh-time').textContent, 'Never');
+  document.querySelector('#sync-browser-tab').selected = true;
+  expectNotEquals(
+      document.querySelector('#node-browser-refresh-time').textContent,
+      'Never');
 
   // Re-selecting the tab shouldn't re-refresh.
-  $('node-browser-refresh-time').textContent = 'TestCanary';
-  $('sync-browser-tab').selected = false;
-  $('sync-browser-tab').selected = true;
-  expectEquals($('node-browser-refresh-time').textContent, 'TestCanary');
+  document.querySelector('#node-browser-refresh-time').textContent =
+      'TestCanary';
+  document.querySelector('#sync-browser-tab').selected = false;
+  document.querySelector('#sync-browser-tab').selected = true;
+  expectEquals(
+      document.querySelector('#node-browser-refresh-time').textContent,
+      'TestCanary');
 });
 
 // Tests that the events log page correctly receives and displays an event.
 TEST_F('SyncInternalsWebUITest', 'EventLogTest', function() {
   // Dispatch an event.
-  const connectionEvent = new Event('onConnectionStatusChange');
-  connectionEvent.details = {'status': 'CONNECTION_OK'};
-  chrome.sync.events.dispatchEvent(connectionEvent);
+  cr.webUIListenerCallback(
+      'onConnectionStatusChange', {'status': 'CONNECTION_OK'});
 
   // Verify that it is displayed in the events log.
-  const syncEventsTable = $('sync-events');
+  const syncEventsTable = document.querySelector('#sync-events');
   assertGE(syncEventsTable.children.length, 1);
   const lastRow = syncEventsTable.children[syncEventsTable.children.length - 1];
 
@@ -407,15 +410,15 @@ TEST_F('SyncInternalsWebUITest', 'EventLogTest', function() {
 
 TEST_F('SyncInternalsWebUITest', 'DumpSyncEventsToText', function() {
   // Dispatch an event.
-  const connectionEvent = new Event('onConnectionStatusChange');
-  connectionEvent.details = {'status': 'CONNECTION_OK'};
-  chrome.sync.events.dispatchEvent(connectionEvent);
+  connectionEvent = {'status': 'CONNECTION_OK'};
+  cr.webUIListenerCallback('onConnectionStatusChange',
+      { 'status': 'CONNECTION_OK' });
 
   // Click the dump-to-text button.
-  $('dump-to-text').click();
+  document.querySelector('#dump-to-text').click();
 
   // Verify our event is among the results.
-  const eventDumpText = $('data-dump').textContent;
+  const eventDumpText = document.querySelector('#data-dump').textContent;
 
   expectGE(eventDumpText.indexOf('onConnectionStatusChange'), 0);
   expectGE(eventDumpText.indexOf('CONNECTION_OK'), 0);

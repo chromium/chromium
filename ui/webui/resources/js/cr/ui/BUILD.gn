@@ -106,6 +106,7 @@ preprocess_if_expr("preprocess_generated") {
       "menu_item.m.js",
       "menu.m.js",
       "position_util.m.js",
+      "splitter.m.js",
     ]
   }
 
@@ -114,7 +115,6 @@ preprocess_if_expr("preprocess_generated") {
       "dialogs.m.js",
       "grid.m.js",
       "list_single_selection_model.m.js",
-      "splitter.m.js",
     ]
   }
 }
