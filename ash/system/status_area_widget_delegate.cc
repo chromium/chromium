@@ -209,10 +209,12 @@ gfx::Rect StatusAreaWidgetDelegate::GetTargetBounds() const {
 }
 
 void StatusAreaWidgetDelegate::UpdateLayout(bool animate) {
-  if (animate)
+  if (animate) {
     StatusAreaWidgetDelegateAnimationSettings settings(layer());
-
-  Layout();
+    Layout();
+  } else {
+    Layout();
+  }
 }
 
 void StatusAreaWidgetDelegate::ChildPreferredSizeChanged(View* child) {
