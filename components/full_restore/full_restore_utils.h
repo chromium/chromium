@@ -35,6 +35,10 @@ struct WindowInfo;
 // assigned for ARC session ids.
 constexpr int32_t kArcSessionIdOffsetForRestoredLaunching = 1000000000;
 
+// If the ARC task is not created when the window is initialized, set the
+// restore window id as -1, to add the ARC app window to the hidden container.
+constexpr int32_t kParentToHiddenContainer = -1;
+
 // A property key to indicate the id for the window to be saved in RestoreData.
 // For web apps, browser windows or Chrome app windows, this is the session id.
 // For ARC apps, this is the task id.

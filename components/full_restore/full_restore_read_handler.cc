@@ -40,11 +40,15 @@ void FullRestoreReadHandler::OnWindowInitialized(aura::Window* window) {
 
   if (window->GetProperty(aura::client::kAppType) ==
       static_cast<int>(ash::AppType::ARC_APP)) {
-    if (!base::Contains(window_id_to_app_restore_info_, window_id))
+    // If there isn't restore data for ARC apps, we don't need to handle ARC app
+    // windows restoration.
+    if (!arc_read_handler_)
       return;
 
-    observed_windows_.AddObservation(window);
-    FullRestoreInfo::GetInstance()->OnWindowInitialized(window);
+    if (arc_read_handler_->HasRestoreData(window_id)) {
+      observed_windows_.AddObservation(window);
+      FullRestoreInfo::GetInstance()->OnWindowInitialized(window);
+    }
     return;
   }
 
@@ -77,17 +81,13 @@ void FullRestoreReadHandler::SetActiveProfilePath(
 void FullRestoreReadHandler::OnTaskCreated(const std::string& app_id,
                                            int32_t task_id,
                                            int32_t session_id) {
-  auto it = arc_session_id_to_window_id_.find(session_id);
-  if (it == arc_session_id_to_window_id_.end())
-    return;
-
-  arc_task_id_to_app_id_window_id_[task_id] =
-      std::make_pair(app_id, it->second);
-  arc_session_id_to_window_id_.erase(it);
+  if (arc_read_handler_)
+    arc_read_handler_->OnTaskCreated(app_id, task_id, session_id);
 }
 
 void FullRestoreReadHandler::OnTaskDestroyed(int32_t task_id) {
-  arc_task_id_to_app_id_window_id_.erase(task_id);
+  if (arc_read_handler_)
+    arc_read_handler_->OnTaskDestroyed(task_id);
 }
 
 void FullRestoreReadHandler::ReadFromFile(const base::FilePath& profile_path,
@@ -188,11 +188,10 @@ int32_t FullRestoreReadHandler::FetchRestoreWindowId(
 }
 
 int32_t FullRestoreReadHandler::GetArcRestoreWindowId(int32_t task_id) {
-  auto it = arc_task_id_to_app_id_window_id_.find(task_id);
-  if (it == arc_task_id_to_app_id_window_id_.end())
-    return -1;
+  if (!arc_read_handler_)
+    return 0;
 
-  return it->second.second;
+  return arc_read_handler_->GetArcRestoreWindowId(task_id);
 }
 
 void FullRestoreReadHandler::ModifyWidgetParams(
@@ -232,19 +231,14 @@ void FullRestoreReadHandler::ModifyWidgetParams(
 }
 
 int32_t FullRestoreReadHandler::GetArcSessionId() {
-  if (arc_session_id_ < kArcSessionIdOffsetForRestoredLaunching) {
-    LOG(WARNING) << "ARC session id is overflow: " << arc_session_id_;
-    arc_session_id_ = kArcSessionIdOffsetForRestoredLaunching;
-  }
-
-  return ++arc_session_id_;
+  DCHECK(arc_read_handler_);
+  return arc_read_handler_->GetArcSessionId();
 }
 
 void FullRestoreReadHandler::SetArcSessionIdForWindowId(int32_t arc_session_id,
                                                         int32_t window_id) {
-  DCHECK_GT(arc_session_id,
-            full_restore::kArcSessionIdOffsetForRestoredLaunching);
-  arc_session_id_to_window_id_[arc_session_id] = window_id;
+  DCHECK(arc_read_handler_);
+  arc_read_handler_->SetArcSessionIdForWindowId(arc_session_id, window_id);
 }
 
 void FullRestoreReadHandler::OnGetRestoreData(
@@ -256,10 +250,19 @@ void FullRestoreReadHandler::OnGetRestoreData(
 
     for (auto it = restore_data->app_id_to_launch_list().begin();
          it != restore_data->app_id_to_launch_list().end(); it++) {
+      const std::string& app_id = it->first;
       for (auto data_it = it->second.begin(); data_it != it->second.end();
            data_it++) {
-        window_id_to_app_restore_info_[data_it->first] =
-            std::make_pair(profile_path, it->first);
+        int32_t window_id = data_it->first;
+        // Only ARC app launch parameters have event_flag.
+        if (data_it->second->event_flag.has_value()) {
+          if (!arc_read_handler_)
+            arc_read_handler_ = std::make_unique<ArcReadHandler>(profile_path);
+          arc_read_handler_->AddRestoreData(app_id, window_id);
+        } else {
+          window_id_to_app_restore_info_[window_id] =
+              std::make_pair(profile_path, app_id);
+        }
       }
     }
   }

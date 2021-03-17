@@ -29,7 +29,6 @@ namespace full_restore {
 
 struct AppLaunchInfo;
 class FullRestoreFileHandler;
-class FullRestoreSaveHandlerTestApi;
 class RestoreData;
 struct WindowInfo;
 

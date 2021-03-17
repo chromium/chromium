@@ -7,12 +7,14 @@
 
 #include <map>
 #include <memory>
+#include <utility>
 
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
+#include "components/full_restore/arc_read_handler.h"
 #include "components/full_restore/full_restore_utils.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
@@ -120,16 +122,9 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
   // |arc session id| is assigned when ARC apps are restored.
   void SetArcSessionIdForWindowId(int32_t arc_session_id, int32_t window_id);
 
-  const std::map<int32_t, int32_t>& GetArcSessionIdMapForTesting() const {
-    return arc_session_id_to_window_id_;
-  }
-
-  const std::map<int32_t, std::pair<std::string, int32_t>>&
-  GetArcTaskIdMapForTesting() const {
-    return arc_task_id_to_app_id_window_id_;
-  }
-
  private:
+  friend class FullRestoreReadHandlerTestApi;
+
   // Invoked when reading the restore data from |profile_path| is finished, and
   // calls |callback| to notify that the reading operation is done.
   void OnGetRestoreData(const base::FilePath& profile_path,
@@ -153,15 +148,7 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
   std::map<int32_t, std::pair<base::FilePath, std::string>>
       window_id_to_app_restore_info_;
 
-  int32_t arc_session_id_ =
-      full_restore::kArcSessionIdOffsetForRestoredLaunching;
-
-  // The map from the arc session id to the window id.
-  std::map<int32_t, int32_t> arc_session_id_to_window_id_;
-
-  // The map from the arc task id to the app id and the window id.
-  std::map<int32_t, std::pair<std::string, int32_t>>
-      arc_task_id_to_app_id_window_id_;
+  std::unique_ptr<ArcReadHandler> arc_read_handler_;
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       observed_windows_{this};

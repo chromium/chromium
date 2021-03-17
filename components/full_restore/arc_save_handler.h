@@ -22,7 +22,6 @@ class Window;
 namespace full_restore {
 
 struct AppLaunchInfo;
-class FullRestoreSaveHandlerTestApi;
 struct WindowInfo;
 
 // ArcSaveHandler is a helper class for FullRestoreSaveHandler to handle ARC app
