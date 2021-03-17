@@ -58,6 +58,7 @@ import tempfile
 import traceback
 
 import common
+from collections import OrderedDict
 
 CHROMIUM_SRC_DIR = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -621,7 +622,7 @@ def main(sys_args):
   else:
     if options.use_dynamic_shards:
       shard_map_str = options.dynamic_shardmap
-      shard_map = json.loads(shard_map_str)
+      shard_map = json.loads(shard_map_str, object_pairs_hook=OrderedDict)
       shard_map_path = os.path.join(SHARD_MAPS_DIRECTORY,
                                     options.test_shard_map_filename)
       with open(shard_map_path, 'w') as f:
