@@ -64,12 +64,12 @@ void UDPSocketFilter::AddUDPResource(
     PP_Instance instance,
     PP_Resource resource,
     bool private_api,
-    const base::Closure& slot_available_callback) {
+    base::RepeatingClosure slot_available_callback) {
   ProxyLock::AssertAcquired();
   base::AutoLock acquire(lock_);
   DCHECK(queues_.find(resource) == queues_.end());
-  queues_[resource] = std::make_unique<RecvQueue>(instance, private_api,
-                                                  slot_available_callback);
+  queues_[resource] = std::make_unique<RecvQueue>(
+      instance, private_api, std::move(slot_available_callback));
 }
 
 void UDPSocketFilter::RemoveUDPResource(PP_Resource resource) {
@@ -134,15 +134,14 @@ void UDPSocketFilter::OnPluginMsgPushRecvResult(
 UDPSocketFilter::RecvQueue::RecvQueue(
     PP_Instance pp_instance,
     bool private_api,
-    const base::Closure& slot_available_callback)
+    base::RepeatingClosure slot_available_callback)
     : pp_instance_(pp_instance),
       read_buffer_(nullptr),
       bytes_to_read_(0),
       recvfrom_addr_resource_(nullptr),
       last_recvfrom_addr_(),
       private_api_(private_api),
-      slot_available_callback_(slot_available_callback) {
-}
+      slot_available_callback_(std::move(slot_available_callback)) {}
 
 UDPSocketFilter::RecvQueue::~RecvQueue() {
   if (TrackedCallback::IsPending(recvfrom_callback_))

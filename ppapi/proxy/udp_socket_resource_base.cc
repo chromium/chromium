@@ -48,7 +48,8 @@ UDPSocketResourceBase::UDPSocketResourceBase(Connection connection,
       bound_addr_() {
   recv_filter_->AddUDPResource(
       pp_instance(), pp_resource(), private_api,
-      base::Bind(&UDPSocketResourceBase::SlotBecameAvailable, pp_resource()));
+      base::BindRepeating(&UDPSocketResourceBase::SlotBecameAvailable,
+                          pp_resource()));
   if (private_api)
     SendCreate(BROWSER, PpapiHostMsg_UDPSocket_CreatePrivate());
   else
