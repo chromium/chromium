@@ -504,10 +504,8 @@ struct HashTraits<blink::FontDescription>
     : SimpleClassHashTraits<blink::FontDescription> {
   // FontDescription default constructor creates a regular value instead of the
   // empty value.
-  static const blink::FontDescription& EmptyValue() {
-    DEFINE_STATIC_LOCAL(blink::FontDescription, empty_value,
-                        (blink::FontDescription::CreateHashTableEmptyValue()));
-    return empty_value;
+  static blink::FontDescription EmptyValue() {
+    return blink::FontDescription::CreateHashTableEmptyValue();
   }
 };
 
