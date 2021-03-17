@@ -12,6 +12,7 @@
 #include "components/autofill_assistant/browser/actions/action_delegate_util.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
+#include "components/autofill_assistant/browser/web/web_controller.h"
 
 namespace autofill_assistant {
 
@@ -51,7 +52,8 @@ void SetAttributeAction::OnWaitForElement(ProcessActionCallback callback,
 
   action_delegate_util::FindElementAndPerform(
       delegate_, selector,
-      base::BindOnce(&ActionDelegate::SetAttribute, delegate_->GetWeakPtr(),
+      base::BindOnce(&WebController::SetAttribute,
+                     delegate_->GetWebController()->GetWeakPtr(),
                      ExtractVector(proto_.set_attribute().attribute()),
                      proto_.set_attribute().value()),
       base::BindOnce(&SetAttributeAction::OnSetAttribute,

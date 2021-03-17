@@ -103,9 +103,9 @@ class WebController {
   // Get a stable position of the given element. Fail with ELEMENT_UNSTABLE if
   // the element position doesn't stabilize quickly enough.
   virtual void WaitUntilElementIsStable(
-      const ElementFinder::Result& element,
       int max_rounds,
       base::TimeDelta check_interval,
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback);
 
   // Check whether the center given element is on top. Fail with
@@ -140,10 +140,10 @@ class WebController {
 
   // Select the option to be picked given by the |re2| in the |element|.
   virtual void SelectOption(
-      const ElementFinder::Result& element,
       const std::string& re2,
       bool case_sensitive,
       SelectOptionProto::OptionComparisonAttribute option_comparison_attribute,
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
   // Highlight an |element|.
@@ -175,23 +175,23 @@ class WebController {
   // result through |callback|. If the lookup fails, the value will be empty.
   // An empty result does not mean an error.
   virtual void GetStringAttribute(
-      const ElementFinder::Result& element,
       const std::vector<std::string>& attributes,
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&, const std::string&)>
           callback);
 
   // Set the value attribute of an |element| to the specified |value| and
   // trigger an onchange event.
   virtual void SetValueAttribute(
-      const ElementFinder::Result& element,
       const std::string& value,
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
   // Set the nested |attributes| of an |element| to the specified |value|.
   virtual void SetAttribute(
-      const ElementFinder::Result& element,
       const std::vector<std::string>& attributes,
       const std::string& value,
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
   // Select the current value in a text |element|.
@@ -209,9 +209,9 @@ class WebController {
   // |key_press_delay_in_millisecond| between them. Returns the result through
   // |callback|.
   virtual void SendKeyboardInput(
-      const ElementFinder::Result& element,
       const std::vector<UChar32>& codepoints,
       int key_press_delay_in_millisecond,
+      const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
   // Inputs the specified |value| into |element| with keystrokes per character.

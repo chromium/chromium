@@ -13,6 +13,7 @@
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/user_data_util.h"
+#include "components/autofill_assistant/browser/web/web_controller.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace autofill_assistant {
@@ -132,8 +133,9 @@ void GetElementStatusAction::OnWaitForElement(
       selector_,
       base::BindOnce(
           &action_delegate_util::TakeElementAndGetProperty<std::string>,
-          base::BindOnce(&ActionDelegate::GetStringAttribute,
-                         delegate_->GetWeakPtr(), attribute_list),
+          base::BindOnce(&WebController::GetStringAttribute,
+                         delegate_->GetWebController()->GetWeakPtr(),
+                         attribute_list),
           base::BindOnce(&GetElementStatusAction::OnGetStringAttribute,
                          weak_ptr_factory_.GetWeakPtr())));
 }

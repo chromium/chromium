@@ -347,7 +347,7 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     ASSERT_TRUE(element_result != nullptr);
     const ElementFinder::Result* element_result_ptr = element_result.get();
     web_controller_->SelectOption(
-        *element_result_ptr, re2, case_sensitive, option_comparison_attribute,
+        re2, case_sensitive, option_comparison_attribute, *element_result_ptr,
         base::BindOnce(&WebControllerBrowserTest::ElementRetainingCallback,
                        base::Unretained(this), std::move(element_result),
                        std::move(done_callback), result_output));
@@ -564,7 +564,7 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     ClientStatus captured_status;
     base::RunLoop run_loop;
     web_controller_->WaitUntilElementIsStable(
-        element, max_rounds, check_interval,
+        max_rounds, check_interval, element,
         base::BindLambdaForTesting(
             [&captured_status, &run_loop](const ClientStatus& status,
                                           base::TimeDelta) {
@@ -662,7 +662,7 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     ASSERT_TRUE(element_result != nullptr);
     const ElementFinder::Result* element_result_ptr = element_result.get();
     web_controller_->GetStringAttribute(
-        *element_result_ptr, attributes,
+        attributes, *element_result_ptr,
         base::BindOnce(
             &WebControllerBrowserTest::ElementRetainingStringCallback,
             base::Unretained(this), std::move(element_result),
@@ -765,17 +765,17 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) {
     if (value.empty()) {
-      web_controller_->SetValueAttribute(element, value, std::move(callback));
+      web_controller_->SetValueAttribute(value, element, std::move(callback));
       return;
     }
 
     switch (fill_strategy) {
       case SET_VALUE:
-        web_controller_->SetValueAttribute(element, value, std::move(callback));
+        web_controller_->SetValueAttribute(value, element, std::move(callback));
         return;
       case SIMULATE_KEY_PRESSES:
         web_controller_->SetValueAttribute(
-            element, /* value= */ std::string(),
+            /* value= */ std::string(), element,
             base::BindOnce(
                 &WebControllerBrowserTest::OnSetValueAttributeForSetFieldValue,
                 base::Unretained(this), value, false, element,
@@ -790,7 +790,7 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
         return;
       case SIMULATE_KEY_PRESSES_FOCUS:
         web_controller_->SetValueAttribute(
-            element, /* value= */ std::string(),
+            /* value= */ std::string(), element,
             base::BindOnce(
                 &WebControllerBrowserTest::OnSetValueAttributeForSetFieldValue,
                 base::Unretained(this), value, true, element,
@@ -824,8 +824,8 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
       std::move(callback).Run(status);
       return;
     }
-    web_controller_->SendKeyboardInput(element, UTF8ToUnicode(value),
-                                       /* delay_in_milli= */ 0,
+    web_controller_->SendKeyboardInput(UTF8ToUnicode(value),
+                                       /* delay_in_milli= */ 0, element,
                                        std::move(callback));
   }
 
@@ -905,7 +905,7 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
       return;
     }
 
-    web_controller_->SendKeyboardInput(element, codepoints, delay_in_milli,
+    web_controller_->SendKeyboardInput(codepoints, delay_in_milli, element,
                                        std::move(callback));
   }
 
@@ -942,7 +942,7 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     ASSERT_TRUE(element_result != nullptr);
     const ElementFinder::Result* element_result_ptr = element_result.get();
     web_controller_->SetAttribute(
-        *element_result_ptr, attributes, value,
+        attributes, value, *element_result_ptr,
         base::BindOnce(&WebControllerBrowserTest::ElementRetainingCallback,
                        base::Unretained(this), std::move(element_result),
                        std::move(done_callback), result_output));
@@ -2175,8 +2175,8 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
   ClientStatus status;
   base::RunLoop run_loop;
   web_controller_->SendKeyboardInput(
-      bad_element, UTF8ToUnicode("never sent"),
-      /* key_press_delay_in_millisecond= */ 0,
+      UTF8ToUnicode("never sent"),
+      /* key_press_delay_in_millisecond= */ 0, bad_element,
       base::BindOnce(&WebControllerBrowserTest::OnClientStatus,
                      base::Unretained(this), run_loop.QuitClosure(), &status));
   run_loop.Run();

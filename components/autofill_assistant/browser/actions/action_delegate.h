@@ -118,15 +118,6 @@ class ActionDelegate {
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 
-  // Wait for the |element| to stop moving on the page. Fails with
-  // ELEMENT_UNSTABLE.
-  virtual void WaitUntilElementIsStable(
-      int max_rounds,
-      base::TimeDelta check_interval,
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>
-          callback) = 0;
-
   // Have the UI enter the prompt mode and make the given actions available.
   //
   // While a prompt is in progress, the UI looks the same as it does between
@@ -204,14 +195,6 @@ class ActionDelegate {
                               const autofill::FormData&,
                               const autofill::FormFieldData&)> callback) = 0;
 
-  // Select the option to be picked given by the |re2| in the |element|.
-  virtual void SelectOption(
-      const std::string& re2,
-      bool case_sensitive,
-      SelectOptionProto::OptionComparisonAttribute option_comparison_attribute,
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback) = 0;
-
   // Scroll to an |element|'s position. |top_padding| specifies the padding
   // between the focused element and the top.
   // If |container| is specified, that container will be scrolled, if
@@ -233,45 +216,6 @@ class ActionDelegate {
   // whichever comes first.
   virtual void SetTouchableElementArea(
       const ElementAreaProto& touchable_element_area) = 0;
-
-  // Get the value attribute of an |element| and return the result through
-  // |callback|. If the lookup fails, the value will be empty. An empty result
-  // does not mean an error.
-  virtual void GetFieldValue(
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&, const std::string&)>
-          callback) = 0;
-
-  // Get the value of a nested |attribute| from an |element| and return the
-  // result through |callback|. If the lookup fails, the value will be empty.
-  // An empty result does not mean an error.
-  virtual void GetStringAttribute(
-      const std::vector<std::string>& attributes,
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&, const std::string&)>
-          callback) = 0;
-
-  // Set the value attribute of an |element| to the specified |value| and
-  // trigger an onchange event.
-  virtual void SetValueAttribute(
-      const std::string& value,
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback) = 0;
-
-  // Set the nested |attributes| of an |element| to the specified |value|.
-  virtual void SetAttribute(
-      const std::vector<std::string>& attributes,
-      const std::string& value,
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback) = 0;
-
-  // Inputs the specified codepoints into |element|. Expects the |element| to
-  // have focus. Returns the result through |callback|.
-  virtual void SendKeyboardInput(
-      const std::vector<UChar32>& codepoints,
-      int key_press_delay_in_millisecond,
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 
   // Make the next call to WaitForNavigation to expect a navigation event that
   // started after this call.

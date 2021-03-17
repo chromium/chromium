@@ -16,6 +16,7 @@
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
@@ -33,6 +34,9 @@ class SelectOptionActionTest : public testing::Test {
   SelectOptionActionTest() {}
 
   void SetUp() override {
+    ON_CALL(mock_action_delegate_, GetWebController)
+        .WillByDefault(Return(&mock_web_controller_));
+
     proto_.set_option_comparison_attribute(SelectOptionProto::VALUE);
   }
 
@@ -48,6 +52,7 @@ class SelectOptionActionTest : public testing::Test {
   }
 
   MockActionDelegate mock_action_delegate_;
+  MockWebController mock_web_controller_;
   base::MockCallback<Action::ProcessActionCallback> callback_;
   SelectOptionProto proto_;
   UserData user_data_;
@@ -114,7 +119,7 @@ TEST_F(SelectOptionActionTest, CheckExpectedCallChain) {
                                    base::TimeDelta::FromSeconds(0)));
   auto expected_element =
       test_util::MockFindElement(mock_action_delegate_, expected_selector);
-  EXPECT_CALL(mock_action_delegate_,
+  EXPECT_CALL(mock_web_controller_,
               SelectOption("option", false, SelectOptionProto::VALUE,
                            EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<4>(OkClientStatus()));
@@ -185,7 +190,7 @@ TEST_F(SelectOptionActionTest, SelectOptionFromProfileValue) {
               OnShortWaitForElement(expected_selector, _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(),
                                    base::TimeDelta::FromSeconds(0)));
-  EXPECT_CALL(mock_action_delegate_,
+  EXPECT_CALL(mock_web_controller_,
               SelectOption("John", false, SelectOptionProto::VALUE,
                            EqualsElement(test_util::MockFindElement(
                                mock_action_delegate_, expected_selector)),
@@ -213,7 +218,7 @@ TEST_F(SelectOptionActionTest, SelectRegularExpressionValue) {
                                    base::TimeDelta::FromSeconds(0)));
   auto expected_element =
       test_util::MockFindElement(mock_action_delegate_, expected_selector);
-  EXPECT_CALL(mock_action_delegate_,
+  EXPECT_CALL(mock_web_controller_,
               SelectOption("^option$", true, SelectOptionProto::VALUE,
                            EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<4>(OkClientStatus()));
@@ -250,7 +255,7 @@ TEST_F(SelectOptionActionTest, EscapeRegularExpressionAutofillValue) {
               OnShortWaitForElement(expected_selector, _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(),
                                    base::TimeDelta::FromSeconds(0)));
-  EXPECT_CALL(mock_action_delegate_,
+  EXPECT_CALL(mock_web_controller_,
               SelectOption("^\\+41791234567$", true, SelectOptionProto::VALUE,
                            EqualsElement(test_util::MockFindElement(
                                mock_action_delegate_, expected_selector)),

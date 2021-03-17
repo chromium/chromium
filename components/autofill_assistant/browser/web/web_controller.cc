@@ -445,9 +445,9 @@ void WebController::OnCheckOnTop(
 }
 
 void WebController::WaitUntilElementIsStable(
-    const ElementFinder::Result& element,
     int max_rounds,
     base::TimeDelta check_interval,
+    const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback) {
   std::unique_ptr<ElementPositionGetter> getter =
       std::make_unique<ElementPositionGetter>(devtools_client_.get(),
@@ -929,10 +929,10 @@ void WebController::OnGetFormAndFieldDataForRetrieving(
 }
 
 void WebController::SelectOption(
-    const ElementFinder::Result& element,
     const std::string& re2,
     bool case_sensitive,
     SelectOptionProto::OptionComparisonAttribute option_comparison_attribute,
+    const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
 #ifdef NDEBUG
   VLOG(3) << __func__ << " re2=(redacted)"
@@ -1068,8 +1068,8 @@ void WebController::GetFieldValue(
 }
 
 void WebController::GetStringAttribute(
-    const ElementFinder::Result& element,
     const std::vector<std::string>& attributes,
+    const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&, const std::string&)>
         callback) {
   VLOG(3) << __func__ << " attributes=[" << base::JoinString(attributes, ",")
@@ -1122,8 +1122,8 @@ void WebController::SelectFieldValue(
 }
 
 void WebController::SetValueAttribute(
-    const ElementFinder::Result& element,
     const std::string& value,
+    const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   std::vector<std::unique_ptr<runtime::CallArgument>> argument;
   AddRuntimeCallArgument(value, &argument);
@@ -1142,9 +1142,9 @@ void WebController::SetValueAttribute(
 }
 
 void WebController::SetAttribute(
-    const ElementFinder::Result& element,
     const std::vector<std::string>& attributes,
     const std::string& value,
+    const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   DVLOG(3) << __func__ << " attributes=[" << base::JoinString(attributes, ",")
            << "], value=" << value;
@@ -1183,14 +1183,14 @@ void WebController::SendTextInput(
     const std::string& value,
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  SendKeyboardInput(element, UTF8ToUnicode(value),
-                    key_press_delay_in_millisecond, std::move(callback));
+  SendKeyboardInput(UTF8ToUnicode(value), key_press_delay_in_millisecond,
+                    element, std::move(callback));
 }
 
 void WebController::SendKeyboardInput(
-    const ElementFinder::Result& element,
     const std::vector<UChar32>& codepoints,
     const int key_press_delay_in_millisecond,
+    const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   auto worker =
       std::make_unique<SendKeyboardInputWorker>(devtools_client_.get());

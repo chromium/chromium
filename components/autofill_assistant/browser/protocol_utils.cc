@@ -291,10 +291,12 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
       }
       return PerformOnSingleElementAction::WithClientId(
           delegate, action, action.set_element_attribute().client_id(),
-          base::BindOnce(&action_delegate_util::PerformWithTextValue, delegate,
-                         action.set_element_attribute().value(),
-                         base::BindOnce(&ActionDelegate::SetAttribute,
-                                        delegate->GetWeakPtr(), attributes)));
+          base::BindOnce(
+              &action_delegate_util::PerformWithTextValue, delegate,
+              action.set_element_attribute().value(),
+              base::BindOnce(&WebController::SetAttribute,
+                             delegate->GetWebController()->GetWeakPtr(),
+                             attributes)));
     }
     case ActionProto::ActionInfoCase::kSelectFieldValue:
       return PerformOnSingleElementAction::WithClientId(
@@ -310,8 +312,8 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
       return PerformOnSingleElementAction::WithClientIdTimed(
           delegate, action,
           action.wait_for_element_to_become_stable().client_id(),
-          base::BindOnce(&ActionDelegate::WaitUntilElementIsStable,
-                         delegate->GetWeakPtr(),
+          base::BindOnce(&WebController::WaitUntilElementIsStable,
+                         delegate->GetWebController()->GetWeakPtr(),
                          action.wait_for_element_to_become_stable()
                              .stable_check_max_rounds(),
                          base::TimeDelta::FromMilliseconds(

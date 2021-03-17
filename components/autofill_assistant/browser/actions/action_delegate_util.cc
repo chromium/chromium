@@ -139,8 +139,8 @@ void AddClickOrTapSequence(const ActionDelegate* delegate,
                      delegate->GetWebController()->GetWeakPtr(), true));
   if (click_type != ClickType::JAVASCRIPT) {
     AddStepIgnoreTiming(
-        base::BindOnce(&ActionDelegate::WaitUntilElementIsStable,
-                       delegate->GetWeakPtr(),
+        base::BindOnce(&WebController::WaitUntilElementIsStable,
+                       delegate->GetWebController()->GetWeakPtr(),
                        delegate->GetSettings().box_model_check_count,
                        delegate->GetSettings().box_model_check_interval),
         actions);
@@ -295,9 +295,9 @@ void PerformSendKeyboardInput(
     AddClickOrTapSequence(delegate, ClickType::CLICK, /* on_top=*/SKIP_STEP,
                           actions.get());
   }
-  actions->emplace_back(base::BindOnce(&ActionDelegate::SendKeyboardInput,
-                                       delegate->GetWeakPtr(), codepoints,
-                                       delay_in_millis));
+  actions->emplace_back(base::BindOnce(
+      &WebController::SendKeyboardInput,
+      delegate->GetWebController()->GetWeakPtr(), codepoints, delay_in_millis));
 
   PerformAll(std::move(actions), element, std::move(done));
 }
@@ -329,25 +329,27 @@ void PerformSetFieldValue(const ActionDelegate* delegate,
 
   auto actions = std::make_unique<ElementActionVector>();
   if (value.empty()) {
-    actions->emplace_back(base::BindOnce(&ActionDelegate::SetValueAttribute,
-                                         delegate->GetWeakPtr(),
-                                         std::string()));
+    actions->emplace_back(base::BindOnce(
+        &WebController::SetValueAttribute,
+        delegate->GetWebController()->GetWeakPtr(), std::string()));
   } else {
     switch (fill_strategy) {
       case UNSPECIFIED_KEYBAORD_STRATEGY:
       case SET_VALUE:
-        actions->emplace_back(base::BindOnce(&ActionDelegate::SetValueAttribute,
-                                             delegate->GetWeakPtr(), value));
+        actions->emplace_back(
+            base::BindOnce(&WebController::SetValueAttribute,
+                           delegate->GetWebController()->GetWeakPtr(), value));
         break;
       case SIMULATE_KEY_PRESSES:
-        actions->emplace_back(base::BindOnce(&ActionDelegate::SetValueAttribute,
-                                             delegate->GetWeakPtr(),
-                                             std::string()));
+        actions->emplace_back(base::BindOnce(
+            &WebController::SetValueAttribute,
+            delegate->GetWebController()->GetWeakPtr(), std::string()));
         AddClickOrTapSequence(delegate, ClickType::CLICK,
                               /* on_top= */ SKIP_STEP, actions.get());
         actions->emplace_back(base::BindOnce(
-            &ActionDelegate::SendKeyboardInput, delegate->GetWeakPtr(),
-            UTF8ToUnicode(value), key_press_delay_in_millisecond));
+            &WebController::SendKeyboardInput,
+            delegate->GetWebController()->GetWeakPtr(), UTF8ToUnicode(value),
+            key_press_delay_in_millisecond));
         break;
       case SIMULATE_KEY_PRESSES_SELECT_VALUE:
         // TODO(b/149004036): In case of empty, send a backspace (i.e. code 8),
@@ -358,19 +360,21 @@ void PerformSetFieldValue(const ActionDelegate* delegate,
             base::BindOnce(&WebController::SelectFieldValue,
                            delegate->GetWebController()->GetWeakPtr()));
         actions->emplace_back(base::BindOnce(
-            &ActionDelegate::SendKeyboardInput, delegate->GetWeakPtr(),
-            UTF8ToUnicode(value), key_press_delay_in_millisecond));
+            &WebController::SendKeyboardInput,
+            delegate->GetWebController()->GetWeakPtr(), UTF8ToUnicode(value),
+            key_press_delay_in_millisecond));
         break;
       case SIMULATE_KEY_PRESSES_FOCUS:
-        actions->emplace_back(base::BindOnce(&ActionDelegate::SetValueAttribute,
-                                             delegate->GetWeakPtr(),
-                                             std::string()));
+        actions->emplace_back(base::BindOnce(
+            &WebController::SetValueAttribute,
+            delegate->GetWebController()->GetWeakPtr(), std::string()));
         actions->emplace_back(
             base::BindOnce(&WebController::FocusField,
                            delegate->GetWebController()->GetWeakPtr()));
         actions->emplace_back(base::BindOnce(
-            &ActionDelegate::SendKeyboardInput, delegate->GetWeakPtr(),
-            UTF8ToUnicode(value), key_press_delay_in_millisecond));
+            &WebController::SendKeyboardInput,
+            delegate->GetWebController()->GetWeakPtr(), UTF8ToUnicode(value),
+            key_press_delay_in_millisecond));
         break;
     }
   }

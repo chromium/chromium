@@ -325,7 +325,7 @@ void RequiredFieldsFallbackHandler::OnGetFallbackFieldElementTag(
     }
 
     const ElementFinder::Result* element_ptr = element.get();
-    action_delegate_->SelectOption(
+    action_delegate_->GetWebController()->SelectOption(
         re2, /* case_sensitive= */ false, option_comparison_attribute,
         *element_ptr,
         base::BindOnce(&RequiredFieldsFallbackHandler::OnSetFallbackFieldValue,

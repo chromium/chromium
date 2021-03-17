@@ -14,6 +14,7 @@
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/user_data_util.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
+#include "components/autofill_assistant/browser/web/web_controller.h"
 
 namespace autofill_assistant {
 namespace {
@@ -266,7 +267,7 @@ void SetFormFieldValueAction::OnSetFieldValueAndCheckFallback(
     EndAction(status);
     return;
   }
-  delegate_->GetFieldValue(
+  delegate_->GetWebController()->GetFieldValue(
       *element_,
       base::BindOnce(&SetFormFieldValueAction::OnGetFieldValue,
                      weak_ptr_factory_.GetWeakPtr(),

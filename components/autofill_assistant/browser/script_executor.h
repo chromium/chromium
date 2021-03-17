@@ -133,12 +133,6 @@ class ScriptExecutor : public ActionDelegate,
                    ElementFinder::Callback callback) const override;
   void FindAllElements(const Selector& selector,
                        ElementFinder::Callback callback) const override;
-  void WaitUntilElementIsStable(
-      int max_rounds,
-      base::TimeDelta check_interval,
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback)
-      override;
   void ClickOrTapElement(
       ClickType click_type,
       const ElementFinder::Result& element,
@@ -175,12 +169,6 @@ class ScriptExecutor : public ActionDelegate,
                               const autofill::FormData& form_data,
                               const autofill::FormFieldData& field_data)>
           callback) override;
-  void SelectOption(
-      const std::string& re2,
-      bool case_sensitive,
-      SelectOptionProto::OptionComparisonAttribute option_comparison_attribute,
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback) override;
   void ScrollToElementPosition(
       const Selector& selector,
       const TopPadding& top_padding,
@@ -189,29 +177,6 @@ class ScriptExecutor : public ActionDelegate,
       base::OnceCallback<void(const ClientStatus&)> callback) override;
   void SetTouchableElementArea(
       const ElementAreaProto& touchable_element_area) override;
-  void GetFieldValue(
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&, const std::string&)>
-          callback) override;
-  void GetStringAttribute(
-      const std::vector<std::string>& attributes,
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&, const std::string&)>
-          callback) override;
-  void SetValueAttribute(
-      const std::string& value,
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback) override;
-  void SetAttribute(
-      const std::vector<std::string>& attributes,
-      const std::string& value,
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback) override;
-  void SendKeyboardInput(
-      const std::vector<UChar32>& codepoints,
-      int key_press_delay_in_millisecond,
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback) override;
   void ExpectNavigation() override;
   bool ExpectedNavigationHasStarted() override;
   bool WaitForNavigation(base::OnceCallback<void(bool)> callback) override;

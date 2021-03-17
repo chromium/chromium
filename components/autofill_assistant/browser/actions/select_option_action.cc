@@ -13,6 +13,7 @@
 #include "components/autofill_assistant/browser/actions/action_delegate_util.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/user_data_util.h"
+#include "components/autofill_assistant/browser/web/web_controller.h"
 
 namespace autofill_assistant {
 
@@ -88,8 +89,9 @@ void SelectOptionAction::OnWaitForElement(const Selector& selector,
          SelectOptionProto::NOT_SET);
   action_delegate_util::FindElementAndPerform(
       delegate_, selector,
-      base::BindOnce(&ActionDelegate::SelectOption, delegate_->GetWeakPtr(),
-                     value_, case_sensitive_,
+      base::BindOnce(&WebController::SelectOption,
+                     delegate_->GetWebController()->GetWeakPtr(), value_,
+                     case_sensitive_,
                      proto_.select_option().option_comparison_attribute()),
       base::BindOnce(&SelectOptionAction::EndAction,
                      weak_ptr_factory_.GetWeakPtr()));

@@ -152,8 +152,8 @@ TEST_F(ActionDelegateUtilTest, ActionDelegateDeletedDuringExecution) {
   EXPECT_CALL(*mock_delegate, WaitUntilDocumentIsInReadyState(_, _, _, _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus(),
                                    base::TimeDelta::FromSeconds(0)));
-  EXPECT_CALL(*mock_delegate, WaitUntilElementIsStable(
-                                  _, _, EqualsElement(expected_element), _))
+  EXPECT_CALL(*mock_delegate, ScrollToElementPosition(
+                                  _, _, _, EqualsElement(expected_element), _))
       .Times(0);
   EXPECT_CALL(*this, MockDone(_)).Times(0);
 
@@ -172,10 +172,9 @@ TEST_F(ActionDelegateUtilTest, ActionDelegateDeletedDuringExecution) {
         std::move(done).Run(OkClientStatus());
       },
       base::BindLambdaForTesting([&]() { mock_delegate.reset(); })));
-  AddStepIgnoreTiming(base::BindOnce(&ActionDelegate::WaitUntilElementIsStable,
-                                     mock_delegate->GetWeakPtr(), 1,
-                                     base::TimeDelta::FromMilliseconds(0)),
-                      actions.get());
+  actions->emplace_back(base::BindOnce(
+      &ActionDelegate::ScrollToElementPosition, mock_delegate->GetWeakPtr(),
+      Selector({"#element"}), TopPadding(), nullptr));
 
   FindElementAndPerform(mock_delegate.get(), expected_selector,
                         base::BindOnce(&PerformAll, std::move(actions)),

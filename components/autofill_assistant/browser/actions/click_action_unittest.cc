@@ -38,7 +38,7 @@ class ClickActionTest : public testing::Test {
                                           base::TimeDelta::FromSeconds(0)));
     ON_CALL(mock_web_controller_, ScrollIntoView(_, _, _))
         .WillByDefault(RunOnceCallback<2>(OkClientStatus()));
-    ON_CALL(mock_action_delegate_, WaitUntilElementIsStable(_, _, _, _))
+    ON_CALL(mock_web_controller_, WaitUntilElementIsStable(_, _, _, _))
         .WillByDefault(RunOnceCallback<3>(OkClientStatus(),
                                           base::TimeDelta::FromSeconds(0)));
     ON_CALL(mock_web_controller_, CheckOnTop(_, _))
@@ -100,7 +100,7 @@ TEST_F(ClickActionTest, CheckExpectedCallChain) {
               ScrollIntoView(true, EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
   EXPECT_CALL(
-      mock_action_delegate_,
+      mock_web_controller_,
       WaitUntilElementIsStable(_, _, EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus(),
                                    base::TimeDelta::FromSeconds(0)));
@@ -123,7 +123,7 @@ TEST_F(ClickActionTest, JavaScriptClickSkipsWaitForElementStable) {
   ElementFinder::Result expected_element =
       test_util::MockFindElement(mock_action_delegate_, expected_selector);
 
-  EXPECT_CALL(mock_action_delegate_, WaitUntilElementIsStable(_, _, _, _))
+  EXPECT_CALL(mock_web_controller_, WaitUntilElementIsStable(_, _, _, _))
       .Times(0);
   EXPECT_CALL(mock_web_controller_, CheckOnTop(_, _)).Times(0);
   EXPECT_CALL(mock_action_delegate_,
@@ -165,7 +165,7 @@ TEST_F(ClickActionTest, RequireCheckOnTop) {
 
   InSequence seq;
   EXPECT_CALL(
-      mock_action_delegate_,
+      mock_web_controller_,
       WaitUntilElementIsStable(_, _, EqualsElement(expected_element), _));
   EXPECT_CALL(mock_web_controller_,
               CheckOnTop(EqualsElement(expected_element), _));
@@ -191,7 +191,7 @@ TEST_F(ClickActionTest, OptionalCheckOnTop) {
 
   InSequence seq;
   EXPECT_CALL(
-      mock_action_delegate_,
+      mock_web_controller_,
       WaitUntilElementIsStable(_, _, EqualsElement(expected_element), _));
   EXPECT_CALL(mock_web_controller_,
               CheckOnTop(EqualsElement(expected_element), _));

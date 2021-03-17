@@ -350,15 +350,6 @@ void ScriptExecutor::FindAllElements(const Selector& selector,
   delegate_->GetWebController()->FindAllElements(selector, std::move(callback));
 }
 
-void ScriptExecutor::WaitUntilElementIsStable(
-    int max_rounds,
-    base::TimeDelta check_interval,
-    const ElementFinder::Result& element,
-    base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback) {
-  delegate_->GetWebController()->WaitUntilElementIsStable(
-      element, max_rounds, check_interval, std::move(callback));
-}
-
 void ScriptExecutor::ClickOrTapElement(
     ClickType click_type,
     const ElementFinder::Result& element,
@@ -545,17 +536,6 @@ void ScriptExecutor::RetrieveElementFormAndFieldData(
       selector, std::move(callback));
 }
 
-void ScriptExecutor::SelectOption(
-    const std::string& re2,
-    bool case_sensitive,
-    SelectOptionProto::OptionComparisonAttribute option_comparison_attribute,
-    const ElementFinder::Result& element,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
-  delegate_->GetWebController()->SelectOption(element, re2, case_sensitive,
-                                              option_comparison_attribute,
-                                              std::move(callback));
-}
-
 void ScriptExecutor::ScrollToElementPosition(
     const Selector& selector,
     const TopPadding& top_padding,
@@ -598,48 +578,6 @@ void ScriptExecutor::SetProgressBarErrorState(bool error) {
 void ScriptExecutor::SetStepProgressBarConfiguration(
     const ShowProgressBarProto::StepProgressBarConfiguration& configuration) {
   delegate_->SetStepProgressBarConfiguration(configuration);
-}
-
-void ScriptExecutor::GetFieldValue(
-    const ElementFinder::Result& element,
-    base::OnceCallback<void(const ClientStatus&, const std::string&)>
-        callback) {
-  delegate_->GetWebController()->GetFieldValue(element, std::move(callback));
-}
-
-void ScriptExecutor::GetStringAttribute(
-    const std::vector<std::string>& attributes,
-    const ElementFinder::Result& element,
-    base::OnceCallback<void(const ClientStatus&, const std::string&)>
-        callback) {
-  delegate_->GetWebController()->GetStringAttribute(element, attributes,
-                                                    std::move(callback));
-}
-
-void ScriptExecutor::SetValueAttribute(
-    const std::string& value,
-    const ElementFinder::Result& element,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
-  delegate_->GetWebController()->SetValueAttribute(element, value,
-                                                   std::move(callback));
-}
-
-void ScriptExecutor::SetAttribute(
-    const std::vector<std::string>& attributes,
-    const std::string& value,
-    const ElementFinder::Result& element,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
-  delegate_->GetWebController()->SetAttribute(element, attributes, value,
-                                              std::move(callback));
-}
-
-void ScriptExecutor::SendKeyboardInput(
-    const std::vector<UChar32>& codepoints,
-    int key_press_delay_in_millisecond,
-    const ElementFinder::Result& element,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
-  delegate_->GetWebController()->SendKeyboardInput(
-      element, codepoints, key_press_delay_in_millisecond, std::move(callback));
 }
 
 void ScriptExecutor::ExpectNavigation() {
