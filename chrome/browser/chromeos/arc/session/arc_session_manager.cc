@@ -65,7 +65,6 @@
 #include "components/arc/session/arc_session_runner.h"
 #include "components/arc/session/arc_supervision_transition.h"
 #include "components/prefs/pref_service.h"
-#include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
@@ -682,10 +681,10 @@ void ArcSessionManager::OnProvisioningFinished(
             prefs->GetBoolean(prefs::kArcProvisioningInitiatedFromOobe))) {
       playstore_launcher_ = std::make_unique<ArcAppLauncher>(
           profile_, kPlayStoreAppId,
-          apps_util::CreateIntentForActivity(kPlayStoreActivity,
-                                             kInitialStartParam),
+          GetLaunchIntent(kPlayStorePackage, kPlayStoreActivity,
+                          {kInitialStartParam}),
           false /* deferred_launch_allowed */, display::kInvalidDisplayId,
-          apps::mojom::LaunchSource::kFromChromeInternal);
+          arc::UserInteractionType::NOT_USER_INITIATED);
     }
 
     prefs->ClearPref(prefs::kArcProvisioningInitiatedFromOobe);
