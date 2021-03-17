@@ -138,6 +138,11 @@ WGPUTexture WebGPUSwapBufferProvider::GetNewTexture(const IntSize& size) {
   return reservation.texture;
 }
 
+base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+WebGPUSwapBufferProvider::GetContextProviderWeakPtr() const {
+  return dawn_control_client_->GetContextProviderWeakPtr();
+}
+
 bool WebGPUSwapBufferProvider::PrepareTransferableResource(
     cc::SharedBitmapIdRegistrar* bitmap_registrar,
     viz::TransferableResource* out_resource,

@@ -223,7 +223,7 @@ _BACKWARD_COMPATIBLE_UNION_FILEPATHS = {
     "NodeOrLongSequenceOrEventOrXMLHttpRequestOrStringOrStringByteStringOrNodeListRecord":
     "NestedUnionType",
     # modules/canvas/offscreencanvas/offscreen_canvas_module.idl
-    "OffscreenCanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrImageBitmapRenderingContext":
+    "OffscreenCanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrImageBitmapRenderingContextOrGPUCanvasContext":
     "OffscreenRenderingContext",
     # core/xmlhttprequest/xml_http_request.idl
     "DocumentOrBlobOrArrayBufferOrArrayBufferViewOrFormDataOrURLSearchParamsOrUSVString":

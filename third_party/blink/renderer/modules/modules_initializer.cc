@@ -154,6 +154,8 @@ void ModulesInitializer::Initialize() {
       std::make_unique<WebGL2RenderingContext::Factory>());
   OffscreenCanvas::RegisterRenderingContextFactory(
       std::make_unique<ImageBitmapRenderingContext::Factory>());
+  OffscreenCanvas::RegisterRenderingContextFactory(
+      std::make_unique<GPUCanvasContext::Factory>());
 }
 
 void ModulesInitializer::InitLocalFrame(LocalFrame& frame) const {
