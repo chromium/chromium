@@ -51,14 +51,14 @@ class CommerceHintObserverImpl
 
   void OnAddToCart(const base::Optional<GURL>& cart_url) override {
     DVLOG(1) << "Received OnAddToCart in the browser process";
-    if (!service_)
+    if (!service_ || !binding_url_.SchemeIsHTTPOrHTTPS())
       return;
     service_->OnAddToCart(binding_url_, cart_url);
   }
 
   void OnVisitCart() override {
     DVLOG(1) << "Received OnVisitCart in the browser process";
-    if (!service_)
+    if (!service_ || !binding_url_.SchemeIsHTTPOrHTTPS())
       return;
     service_->OnAddToCart(binding_url_, binding_url_);
   }
@@ -66,7 +66,7 @@ class CommerceHintObserverImpl
   void OnCartProductUpdated(std::vector<mojom::ProductPtr> products) override {
     DVLOG(1) << "Received OnCartProductUpdated in the browser process, with "
              << products.size() << " product(s).";
-    if (!service_)
+    if (!service_ || !binding_url_.SchemeIsHTTPOrHTTPS())
       return;
 
     if (products.empty()) {
@@ -78,14 +78,14 @@ class CommerceHintObserverImpl
 
   void OnVisitCheckout() override {
     DVLOG(1) << "Received OnVisitCheckout in the browser process";
-    if (!service_)
+    if (!service_ || !binding_url_.SchemeIsHTTPOrHTTPS())
       return;
     service_->OnRemoveCart(binding_url_);
   }
 
   void OnPurchase() override {
     DVLOG(1) << "Received OnPurchase in the browser process";
-    if (!service_)
+    if (!service_ || !binding_url_.SchemeIsHTTPOrHTTPS())
       return;
     service_->OnRemoveCart(binding_url_);
   }

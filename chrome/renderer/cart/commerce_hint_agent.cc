@@ -409,6 +409,8 @@ void CommerceHintAgent::WillSendRequest(const blink::WebURLRequest& request) {
   if (frame->Parent())
     return;
   const GURL& url(frame->GetDocument().Url());
+  if (!url.SchemeIsHTTPOrHTTPS())
+    return;
 
   if (IsVisitCart(url) && IsSameDomainXHR(url.host(), request)) {
     DVLOG(1) << "In-cart XHR: " << request.Url();
@@ -419,6 +421,8 @@ void CommerceHintAgent::WillSendRequest(const blink::WebURLRequest& request) {
 void CommerceHintAgent::DidStartNavigation(
     const GURL& url,
     base::Optional<blink::WebNavigationType> navigation_type) {
+  if (!url.SchemeIsHTTPOrHTTPS())
+    return;
   starting_url_ = url;
 }
 
@@ -448,6 +452,8 @@ void CommerceHintAgent::DidFinishLoad() {
   if (frame->Parent())
     return;
   const GURL& url(frame->GetDocument().Url());
+  if (!url.SchemeIsHTTPOrHTTPS())
+    return;
 
   if (IsVisitCart(url)) {
     RecordCommerceEvent(CommerceEvent::kVisitCart);
@@ -457,6 +463,11 @@ void CommerceHintAgent::DidFinishLoad() {
 }
 
 void CommerceHintAgent::WillSubmitForm(const blink::WebFormElement& form) {
+  blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
+  const GURL url(frame->GetDocument().Url());
+  if (!url.SchemeIsHTTPOrHTTPS())
+    return;
+
   if (IsPurchase(ExtractButtonText(form))) {
     RecordCommerceEvent(CommerceEvent::kPurchaseByForm);
     OnPurchase(render_frame());
@@ -471,6 +482,8 @@ void CommerceHintAgent::DidObserveLayoutShift(double score,
   if (frame->Parent())
     return;
   const GURL url(frame->GetDocument().Url());
+  if (!url.SchemeIsHTTPOrHTTPS())
+    return;
 
   if (IsVisitCart(url)) {
     DVLOG(1) << "In-cart layout shift: " << url;
