@@ -492,6 +492,10 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     view_->Show(AppListViewState::kPeeking, is_side_shelf);
   }
 
+  const AppListConfig& GetAppListConfig() const {
+    return view_->GetAppListConfig();
+  }
+
   AppsGridViewTestApi* test_api() { return test_api_.get(); }
 
   void SimulateKeyPress(ui::KeyboardCode key_code,
@@ -1176,7 +1180,7 @@ TEST_F(AppListViewFocusTest, VerticalFocusTraversalInFirstPageOfFolder) {
   std::vector<views::View*> forward_view_list;
   const views::ViewModelT<AppListItemView>* view_model =
       app_list_folder_view()->items_grid_view()->view_model();
-  for (size_t i = 0; i < AppListConfig::instance().max_folder_items_per_page();
+  for (size_t i = 0; i < GetAppListConfig().max_folder_items_per_page();
        i += app_list_folder_view()->items_grid_view()->cols()) {
     forward_view_list.push_back(view_model->view_at(i));
   }
@@ -1193,8 +1197,8 @@ TEST_F(AppListViewFocusTest, VerticalFocusTraversalInFirstPageOfFolder) {
   backward_view_list.push_back(search_box_view()->search_box());
   backward_view_list.push_back(
       app_list_folder_view()->folder_header_view()->GetFolderNameViewForTest());
-  for (int i = AppListConfig::instance().max_folder_items_per_page() - 1;
-       i >= 0; i -= app_list_folder_view()->items_grid_view()->cols()) {
+  for (int i = GetAppListConfig().max_folder_items_per_page() - 1; i >= 0;
+       i -= app_list_folder_view()->items_grid_view()->cols()) {
     backward_view_list.push_back(view_model->view_at(i));
   }
   backward_view_list.push_back(search_box_view()->search_box());
@@ -1221,7 +1225,7 @@ TEST_F(AppListViewFocusTest, VerticalFocusTraversalInSecondPageOfFolder) {
   std::vector<views::View*> forward_view_list;
   const views::ViewModelT<AppListItemView>* view_model =
       app_list_folder_view()->items_grid_view()->view_model();
-  for (int i = AppListConfig::instance().max_folder_items_per_page();
+  for (int i = GetAppListConfig().max_folder_items_per_page();
        i < view_model->view_size();
        i += app_list_folder_view()->items_grid_view()->cols()) {
     forward_view_list.push_back(view_model->view_at(i));
@@ -1229,20 +1233,20 @@ TEST_F(AppListViewFocusTest, VerticalFocusTraversalInSecondPageOfFolder) {
   forward_view_list.push_back(
       app_list_folder_view()->folder_header_view()->GetFolderNameViewForTest());
   forward_view_list.push_back(search_box_view()->search_box());
-  forward_view_list.push_back(view_model->view_at(
-      AppListConfig::instance().max_folder_items_per_page()));
+  forward_view_list.push_back(
+      view_model->view_at(GetAppListConfig().max_folder_items_per_page()));
 
   // Test traversal triggered by down.
   TestFocusTraversal(forward_view_list, ui::VKEY_DOWN, false);
 
   std::vector<views::View*> backward_view_list;
-  backward_view_list.push_back(view_model->view_at(
-      AppListConfig::instance().max_folder_items_per_page()));
+  backward_view_list.push_back(
+      view_model->view_at(GetAppListConfig().max_folder_items_per_page()));
   backward_view_list.push_back(search_box_view()->search_box());
   backward_view_list.push_back(
       app_list_folder_view()->folder_header_view()->GetFolderNameViewForTest());
   for (size_t i = view_model->view_size() - 1;
-       i >= AppListConfig::instance().max_folder_items_per_page();
+       i >= GetAppListConfig().max_folder_items_per_page();
        i -= app_list_folder_view()->items_grid_view()->cols()) {
     backward_view_list.push_back(view_model->view_at(i));
   }
@@ -1916,7 +1920,7 @@ TEST_P(AppListViewTest, OpenInPeekingCorrectHeight) {
 
   Show();
   view_->SetState(ash::AppListViewState::kPeeking);
-  ASSERT_EQ(AppListConfig::instance().peeking_app_list_height(),
+  ASSERT_EQ(view_->GetAppListConfig().peeking_app_list_height(),
             view_->GetCurrentAppListHeight());
 }
 

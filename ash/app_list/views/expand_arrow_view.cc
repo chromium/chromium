@@ -245,8 +245,9 @@ void ExpandArrowView::PaintButtonContents(gfx::Canvas* canvas) {
 }
 
 gfx::Size ExpandArrowView::CalculatePreferredSize() const {
-  return gfx::Size(kTileWidth,
-                   AppListConfig::instance().expand_arrow_tile_height());
+  return gfx::Size(
+      kTileWidth,
+      app_list_view_->GetAppListConfig().expand_arrow_tile_height());
 }
 
 bool ExpandArrowView::OnKeyPressed(const ui::KeyEvent& event) {

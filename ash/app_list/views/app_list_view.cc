@@ -518,11 +518,20 @@ class AppListBackgroundShieldView : public views::View {
     blur_value_ = use_blur;
 
     if (use_blur) {
-      layer()->SetBackgroundBlur(AppListConfig::instance().blur_radius());
+      layer()->SetBackgroundBlur(preferred_blur_radius_);
       layer()->SetBackdropFilterQuality(kAppListBlurQuality);
     } else {
       layer()->SetBackgroundBlur(0);
     }
+  }
+
+  void UpdatePreferredBlurRadius(double preferred_blur_radius) {
+    if (preferred_blur_radius_ == preferred_blur_radius)
+      return;
+
+    preferred_blur_radius_ = preferred_blur_radius;
+    if (blur_value_)
+      layer()->SetBackgroundBlur(preferred_blur_radius);
   }
 
   void UpdateBackgroundRadius(
@@ -533,7 +542,7 @@ class AppListBackgroundShieldView : public views::View {
         (state == AppListViewState::kClosed && !shelf_has_rounded_corners)
             ? 0
             : shelf_background_corner_radius_;
-    if (radius_ == target_corner_radius)
+    if (corner_radius_ == target_corner_radius)
       return;
 
     layer()->GetAnimator()->StopAnimatingProperty(
@@ -552,9 +561,9 @@ class AppListBackgroundShieldView : public views::View {
     SetBackgroundRadius(target_corner_radius);
   }
 
-  void SetBackgroundRadius(double radius) {
-    radius_ = radius;
-    layer()->SetRoundedCornerRadius({radius, radius, 0, 0});
+  void SetBackgroundRadius(double corner_radius) {
+    corner_radius_ = corner_radius;
+    layer()->SetRoundedCornerRadius({corner_radius, corner_radius, 0, 0});
   }
 
   void UpdateColor(SkColor color) {
@@ -585,7 +594,10 @@ class AppListBackgroundShieldView : public views::View {
   // Whether the background blur has been set on the background shield.
   bool blur_value_ = false;
 
-  double radius_ = 0.f;
+  // The blur radius to use for blur when blur is enabled.
+  double preferred_blur_radius_ = 0;
+
+  double corner_radius_ = 0.f;
 
   SkColor color_;
 
@@ -684,6 +696,8 @@ void AppListView::InitContents() {
           delegate_->GetShelfSize() / 2, delegate_->IsInTabletMode());
   app_list_background_shield->UpdateBackground(
       /*use_blur*/ !delegate_->IsInTabletMode() && is_background_blur_enabled_);
+  app_list_background_shield->UpdatePreferredBlurRadius(
+      app_list_config_->blur_radius());
   app_list_background_shield_ =
       AddChildView(std::move(app_list_background_shield));
 
@@ -968,6 +982,11 @@ void AppListView::UpdateAppListConfig(aura::Window* parent_window) {
   // Initial config should be set before the app list main view is initialized.
   DCHECK(!is_initial_config || !app_list_main_view_);
 
+  if (app_list_background_shield_) {
+    app_list_background_shield_->UpdatePreferredBlurRadius(
+        app_list_config_->blur_radius());
+  }
+
   // If the config changed, notify apps container the config has changed, so
   // root and folder apps grids are updated for the new config.
   if (!is_initial_config)
@@ -1116,7 +1135,7 @@ void AppListView::EndDrag(const gfx::PointF& location_in_root) {
         app_list_height = std::min(fullscreen_height, kHalfAppListHeight);
         break;
       case AppListViewState::kPeeking:
-        app_list_height = AppListConfig::instance().peeking_app_list_height();
+        app_list_height = GetAppListConfig().peeking_app_list_height();
         break;
       case AppListViewState::kClosed:
         NOTREACHED();
@@ -2039,11 +2058,10 @@ float AppListView::GetAppListTransitionProgress(int flags) const {
   }
 
   const int fullscreen_height = GetFullscreenStateHeight();
-  const int baseline_height =
-      std::min(fullscreen_height,
-               (flags & kProgressFlagSearchResults)
-                   ? kHalfAppListHeight
-                   : AppListConfig::instance().peeking_app_list_height());
+  const int baseline_height = std::min(
+      fullscreen_height, (flags & kProgressFlagSearchResults)
+                             ? kHalfAppListHeight
+                             : GetAppListConfig().peeking_app_list_height());
 
   // If vertical space is limited, the baseline and fullscreen height might be
   // the same. To handle this case, if the height has reached the
@@ -2400,7 +2418,7 @@ int AppListView::GetPreferredWidgetYForState(AppListViewState state) const {
   switch (state) {
     case AppListViewState::kPeeking:
       return display.bounds().height() -
-             AppListConfig::instance().peeking_app_list_height();
+             GetAppListConfig().peeking_app_list_height();
     case AppListViewState::kHalf:
       return std::max(work_area_bounds.y() - display.bounds().y(),
                       display.bounds().height() - kHalfAppListHeight);

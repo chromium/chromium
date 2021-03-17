@@ -33,6 +33,7 @@ class ScopedLayerAnimationSettings;
 
 namespace ash {
 
+class AppListConfig;
 class AppListPage;
 class AppListView;
 class ApplicationDragAndDropHost;
@@ -214,6 +215,9 @@ class APP_LIST_EXPORT ContentsView : public views::View,
   // (when centered).
   gfx::Size AdjustSearchBoxSizeToFitMargins(
       const gfx::Size& preferred_size) const;
+
+  // Gets the current app list configuration.
+  const AppListConfig& GetAppListConfig() const;
 
  private:
   // Sets the active launcher page.

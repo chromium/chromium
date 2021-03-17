@@ -273,6 +273,10 @@ class AppsGridViewTest : public views::ViewsTestBase,
   }
 
  protected:
+  const AppListConfig& GetAppListConfig() const {
+    return contents_view_->GetAppListConfig();
+  }
+
   AppListItemView* GetItemViewInAppsGridAt(int index,
                                            AppsGridView* grid_view) const {
     return grid_view->view_model()->view_at(index);
@@ -764,8 +768,7 @@ TEST_F(AppsGridViewTest, CloseFolderByClickingBackground) {
   AppsContainerView* apps_container_view =
       contents_view_->apps_container_view();
 
-  const size_t kTotalItems =
-      AppListConfig::instance().max_folder_items_per_page();
+  const size_t kTotalItems = GetAppListConfig().max_folder_items_per_page();
   model_->CreateAndPopulateFolderWithApps(kTotalItems);
   EXPECT_EQ(1u, model_->top_level_item_list()->item_count());
   EXPECT_EQ(AppListFolderItem::kItemType,
@@ -802,9 +805,8 @@ TEST_P(AppsGridViewTest, TapsBetweenAppsWontCloseAppList) {
 }
 
 TEST_F(AppsGridViewTest, PageResetAfterOpenFolder) {
-  const size_t kTotalItems =
-      AppListConfig::instance().max_folder_pages() *
-      AppListConfig::instance().max_folder_items_per_page();
+  const size_t kTotalItems = GetAppListConfig().max_folder_pages() *
+                             GetAppListConfig().max_folder_items_per_page();
   model_->CreateAndPopulateFolderWithApps(kTotalItems);
   EXPECT_EQ(1u, model_->top_level_item_list()->item_count());
   EXPECT_EQ(AppListFolderItem::kItemType,
@@ -870,8 +872,7 @@ TEST_F(AppsGridViewTest, FolderColsAndRows) {
 }
 
 TEST_P(AppsGridViewTest, ScrollDownShouldNotExitFolder) {
-  const size_t kTotalItems =
-      AppListConfig::instance().max_folder_items_per_page();
+  const size_t kTotalItems = GetAppListConfig().max_folder_items_per_page();
   model_->CreateAndPopulateFolderWithApps(kTotalItems);
   EXPECT_EQ(1u, model_->top_level_item_list()->item_count());
   EXPECT_EQ(AppListFolderItem::kItemType,
@@ -1035,8 +1036,7 @@ TEST_P(AppsGridViewTest, MouseDragItemIntoFolder) {
 
 TEST_P(AppsGridViewTest, MouseDragItemOutOfFolderFirstPage) {
   // Creates a folder item.
-  const size_t kTotalItems =
-      AppListConfig::instance().max_folder_items_per_page();
+  const size_t kTotalItems = GetAppListConfig().max_folder_items_per_page();
   AppListFolderItem* folder_item =
       model_->CreateAndPopulateFolderWithApps(kTotalItems);
   EXPECT_EQ(1u, model_->top_level_item_list()->item_count());
@@ -1099,8 +1099,7 @@ TEST_P(AppsGridViewTest, MouseDragItemOutOfFolderFirstPage) {
 
 TEST_P(AppsGridViewTest, MouseDragItemOutOfFolderSecondPage) {
   // Creates a folder item with enough views to have a second page.
-  const size_t kTotalItems =
-      AppListConfig::instance().max_folder_items_per_page() + 1;
+  const size_t kTotalItems = GetAppListConfig().max_folder_items_per_page() + 1;
   AppListFolderItem* folder_item =
       model_->CreateAndPopulateFolderWithApps(kTotalItems);
   EXPECT_EQ(1u, model_->top_level_item_list()->item_count());
@@ -1179,9 +1178,8 @@ TEST_P(AppsGridViewTest, MouseDragItemOutOfFolderSecondPage) {
 
 TEST_P(AppsGridViewTest, MouseDragMaxItemsInFolder) {
   // Create and add a folder with |kMaxFolderItemsFullscreen - 1| items.
-  const size_t kMaxItems =
-      AppListConfig::instance().max_folder_items_per_page() *
-      AppListConfig::instance().max_folder_pages();
+  const size_t kMaxItems = GetAppListConfig().max_folder_items_per_page() *
+                           GetAppListConfig().max_folder_pages();
   const size_t kTotalItems = kMaxItems - 1;
   AppListFolderItem* folder_item =
       model_->CreateAndPopulateFolderWithApps(kTotalItems);
@@ -1226,9 +1224,8 @@ TEST_P(AppsGridViewTest, MouseDragMaxItemsInFolder) {
 // folder.
 TEST_P(AppsGridViewTest, MouseDragMaxItemsInFolderWithMovement) {
   // Create and add a folder with |kMaxFolderItemsFullscreen| in it.
-  const size_t kMaxItems =
-      AppListConfig::instance().max_folder_items_per_page() *
-      AppListConfig::instance().max_folder_pages();
+  const size_t kMaxItems = GetAppListConfig().max_folder_items_per_page() *
+                           GetAppListConfig().max_folder_pages();
   size_t kTotalItems = kMaxItems;
   model_->CreateAndPopulateFolderWithApps(kMaxItems);
   EXPECT_EQ(1u, model_->top_level_item_list()->item_count());
@@ -1307,8 +1304,7 @@ TEST_P(AppsGridViewTest, MouseDragItemReorder) {
   // Drag left, past the folder dropping circle.
   gfx::Vector2d last_drag_vector(drag_vector);
   drag_vector.set_x(-2 * half_tile_width -
-                    AppListConfig::instance().folder_dropping_circle_radius() -
-                    4);
+                    GetAppListConfig().folder_dropping_circle_radius() - 4);
   SimulateDrag(AppsGridView::MOUSE, top_right + last_drag_vector,
                top_right + drag_vector);
   EndDrag(apps_grid_view_, false /*cancel*/);

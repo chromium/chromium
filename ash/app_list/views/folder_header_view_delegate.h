@@ -17,6 +17,10 @@ class AppListFolderItem;
 
 class FolderHeaderViewDelegate {
  public:
+  // Gets the AppListConfig for the app list view in which the folder header
+  // view is shown.
+  virtual const AppListConfig& GetAppListConfig() const = 0;
+
   // Invoked when the back button on the folder header view is clicked.
   // |item| is the folder item which FolderHeaderview represents.
   // |event_flags| contains the flags of the keyboard/mouse event that triggers

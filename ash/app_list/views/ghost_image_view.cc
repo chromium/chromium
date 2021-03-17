@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <memory>
-#include <vector>
 
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item_list.h"
@@ -67,7 +66,11 @@ void GhostImageView::Init(AppListItemView* drag_view,
     num_items_ = std::min(FolderImage::kNumFolderTopItems,
                           folder_item->item_list()->item_count());
 
-    // Create an outline for each item within the folder icon.
+    std::vector<gfx::Rect> top_icon_bounds = FolderImage::GetTopIconsBounds(
+        drag_view->GetAppListConfig(), icon_bounds_, num_items_.value());
+
+    // Create an outline, and calculate position for each item within the folder
+    // icon.
     for (size_t i = 0; i < num_items_.value(); i++) {
       gfx::ImageSkia inner_icon_outline =
           gfx::ImageSkiaOperations::CreateResizedImage(
@@ -76,6 +79,9 @@ void GhostImageView::Init(AppListItemView* drag_view,
               skia::ImageOperations::RESIZE_BEST,
               drag_view->GetAppListConfig().item_icon_in_folder_icon_size());
       inner_folder_icon_outlines_.push_back(GetIconOutline(inner_icon_outline));
+      inner_folder_icon_origins_.push_back(
+          gfx::Point(top_icon_bounds[i].x() - kGhostImagePadding,
+                     top_icon_bounds[i].y() - kGhostImagePadding));
     }
   } else {
     // Create outline of app icon and set |outline_| to it.
@@ -149,8 +155,8 @@ void GhostImageView::OnPaint(gfx::Canvas* canvas) {
     // Draw ghost items within the ghost folder circle.
     for (size_t i = 0; i < num_items_.value(); i++) {
       canvas->DrawImageInt(inner_folder_icon_outlines_[i],
-                           top_icon_bounds[i].x() - kGhostImagePadding,
-                           top_icon_bounds[i].y() - kGhostImagePadding);
+                           inner_folder_icon_origins_[i].x(),
+                           inner_folder_icon_origins_[i].y());
     }
   } else {
     canvas->DrawImageInt(outline_, icon_bounds_.x() - kGhostImagePadding,

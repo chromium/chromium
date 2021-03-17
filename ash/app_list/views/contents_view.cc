@@ -77,8 +77,8 @@ float GetOpacityForProgress(float progress,
 ContentsView::ContentsView(AppListView* app_list_view)
     : app_list_view_(app_list_view) {
   pagination_model_.SetTransitionDurations(
-      AppListConfig::instance().page_transition_duration(),
-      AppListConfig::instance().overscroll_page_transition_duration());
+      GetAppListConfig().page_transition_duration(),
+      GetAppListConfig().overscroll_page_transition_duration());
   pagination_model_.AddObserver(this);
 }
 
@@ -259,12 +259,15 @@ int ContentsView::NumLauncherPages() const {
   return pagination_model_.total_pages();
 }
 
+const AppListConfig& ContentsView::GetAppListConfig() const {
+  return app_list_view_->GetAppListConfig();
+}
+
 gfx::Size ContentsView::AdjustSearchBoxSizeToFitMargins(
     const gfx::Size& preferred_size) const {
   const int padded_width =
       GetContentsBounds().width() -
-      2 * app_list_view_->GetAppListConfig().GetIdealHorizontalMargin(
-              GetContentsBounds());
+      2 * GetAppListConfig().GetIdealHorizontalMargin(GetContentsBounds());
   return gfx::Size(base::ClampToRange(padded_width, kSearchBarMinWidth,
                                       preferred_size.width()),
                    preferred_size.height());
@@ -509,9 +512,9 @@ gfx::Size ContentsView::GetSearchBoxSize(AppListState state) const {
   // available to the apps grid.
   if (GetContentsBounds().height() < kDenseLayoutHeightThreshold) {
     preferred_size.set_height(
-        AppListConfig::instance().search_box_height_for_dense_layout());
+        GetAppListConfig().search_box_height_for_dense_layout());
   } else {
-    preferred_size.set_height(AppListConfig::instance().search_box_height());
+    preferred_size.set_height(GetAppListConfig().search_box_height());
   }
 
   return AdjustSearchBoxSizeToFitMargins(preferred_size);
@@ -921,7 +924,7 @@ int ContentsView::GetSearchBoxTopForViewState(
 
   switch (view_state) {
     case AppListViewState::kClosed:
-      return AppListConfig::instance().search_box_closed_top_padding();
+      return GetAppListConfig().search_box_closed_top_padding();
     case AppListViewState::kFullscreenAllApps:
     case AppListViewState::kFullscreenSearch:
       return apps_container_view_
@@ -930,11 +933,11 @@ int ContentsView::GetSearchBoxTopForViewState(
           .top();
     case AppListViewState::kPeeking:
     case AppListViewState::kHalf:
-      return AppListConfig::instance().search_box_peeking_top_padding();
+      return GetAppListConfig().search_box_peeking_top_padding();
   }
 
   NOTREACHED();
-  return AppListConfig::instance().search_box_fullscreen_top_padding();
+  return GetAppListConfig().search_box_fullscreen_top_padding();
 }
 
 }  // namespace ash

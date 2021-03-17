@@ -89,10 +89,6 @@ class APP_LIST_EXPORT AppListFolderView : public views::View,
   // closing the folder.
   bool IsAnimationRunning() const;
 
-  // Helper for getting current app list config from the parents in the app list
-  // view hierarchy.
-  const AppListConfig& GetAppListConfig() const;
-
   AppsGridView* items_grid_view() { return items_grid_view_; }
 
   FolderHeaderView* folder_header_view() { return folder_header_view_; }
@@ -119,21 +115,11 @@ class APP_LIST_EXPORT AppListFolderView : public views::View,
   // Called when tablet mode starts and ends.
   void OnTabletModeChanged(bool started);
 
- private:
-  void CalculateIdealBounds();
-
-  // Starts setting up drag in root level apps grid view for re-parenting a
-  // folder item.
-  // |drag_point_in_root_grid| is in the coordinates of root level AppsGridView.
-  void StartSetupDragInRootLevelAppsGridView(
-      AppListItemView* original_drag_view,
-      const gfx::Point& drag_point_in_root_grid,
-      bool has_native_drag);
-
   // Overridden from views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // Overridden from FolderHeaderViewDelegate:
+  const AppListConfig& GetAppListConfig() const override;
   void NavigateBack(AppListFolderItem* item,
                     const ui::Event& event_flags) override;
   void GiveBackFocusToSearchBox() override;
@@ -153,6 +139,17 @@ class APP_LIST_EXPORT AppListFolderView : public views::View,
   void SetRootLevelDragViewVisible(bool visible) override;
   void HandleKeyboardReparent(AppListItemView* reparented_view,
                               ui::KeyboardCode key_code) override;
+
+ private:
+  void CalculateIdealBounds();
+
+  // Starts setting up drag in root level apps grid view for re-parenting a
+  // folder item. `drag_point_in_root_grid` is in the coordinates of root
+  // level AppsGridView.
+  void StartSetupDragInRootLevelAppsGridView(
+      AppListItemView* original_drag_view,
+      const gfx::Point& drag_point_in_root_grid,
+      bool has_native_drag);
 
   // Returns the compositor associated to the widget containing this view.
   // Returns nullptr if there isn't one associated with this widget.

@@ -1426,8 +1426,10 @@ TEST_F(AppListPresenterDelegateTest, AppListWindowBounds) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckVisibility(true);
   const gfx::Rect primary_display_rect(
-      gfx::Point(0, display_size.height() -
-                        AppListConfig::instance().peeking_app_list_height()),
+      gfx::Point(
+          0,
+          display_size.height() -
+              GetAppListView()->GetAppListConfig().peeking_app_list_height()),
       display_size);
   EXPECT_EQ(
       primary_display_rect,
@@ -1441,9 +1443,10 @@ TEST_F(AppListPresenterDelegateTest, AppListWindowBounds) {
   GetAppListTestHelper()->ShowAndRunLoop(GetSecondaryDisplay().id());
   GetAppListTestHelper()->CheckVisibility(true);
   const gfx::Rect secondary_display_rect(
-      gfx::Point(display_size.width(),
-                 display_size.height() -
-                     AppListConfig::instance().peeking_app_list_height()),
+      gfx::Point(
+          display_size.width(),
+          display_size.height() -
+              GetAppListView()->GetAppListConfig().peeking_app_list_height()),
       display_size);
   EXPECT_EQ(
       secondary_display_rect,
@@ -2918,8 +2921,9 @@ TEST_F(AppListPresenterDelegateTest, DragAppListViewFromPeeking) {
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
 
   // Calculate |threshold| in the same way with AppListView::EndDrag.
-  const int threshold = AppListConfig::instance().peeking_app_list_height() /
-                        kAppListThresholdDenominator;
+  const int threshold =
+      GetAppListView()->GetAppListConfig().peeking_app_list_height() /
+      kAppListThresholdDenominator;
 
   // Drag AppListView downward by |threshold| then release the gesture.
   // Check the final state should be Peeking.
@@ -3705,8 +3709,9 @@ TEST_P(AppListPresenterDelegateHomeLauncherTest, MouseDragAppList) {
 // Verifies that mouse dragging AppListView creates layers, causes to change the
 // opacity, and destroys the layers when done.
 TEST_P(AppListPresenterDelegateHomeLauncherTest, MouseDragAppListItemOpacity) {
-  const int items_in_page = AppListConfig::instance().preferred_cols() *
-                            AppListConfig::instance().preferred_rows();
+  const int items_in_page =
+      GetAppListView()->GetAppListConfig().preferred_cols() *
+      GetAppListView()->GetAppListConfig().preferred_rows();
   for (int i = 0; i < items_in_page; ++i) {
     std::unique_ptr<AppListItem> item(
         new AppListItem(base::StringPrintf("fake id %d", i)));
@@ -3767,8 +3772,9 @@ TEST_P(AppListPresenterDelegateHomeLauncherTest, MouseDragAppListItemOpacity) {
 // Tests that ending of the mouse dragging of app-list destroys the layers for
 // the items which are in the second page. See https://crbug.com/990529.
 TEST_P(AppListPresenterDelegateHomeLauncherTest, LayerOnSecondPage) {
-  const int items_in_page = AppListConfig::instance().preferred_cols() *
-                            AppListConfig::instance().preferred_rows();
+  const int items_in_page =
+      GetAppListView()->GetAppListConfig().preferred_cols() *
+      GetAppListView()->GetAppListConfig().preferred_rows();
   AppListModel* model = Shell::Get()->app_list_controller()->GetModel();
   for (int i = 0; i < items_in_page; ++i) {
     std::unique_ptr<AppListItem> item(
@@ -4408,7 +4414,7 @@ TEST_P(AppListPresenterDelegateHomeLauncherTest,
   ui::test::EventGenerator* generator = GetEventGenerator();
   const int x = 540;
   const int peeking_height =
-      900 - AppListConfig::instance().peeking_app_list_height();
+      900 - GetAppListView()->GetAppListConfig().peeking_app_list_height();
   const int closed_y = 890;
   generator->MoveTouch(gfx::Point(x, peeking_height));
   generator->PressTouch();
