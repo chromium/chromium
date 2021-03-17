@@ -13,7 +13,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.instanceOf;
 
 import static org.chromium.chrome.test.util.ViewUtils.waitForView;
 
@@ -21,7 +20,6 @@ import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.filters.MediumTest;
@@ -199,7 +197,7 @@ public class EnhancedProtectionPromoTest {
     }
 
     private void scrollToEnhancedProtectionPromo() {
-        onView(instanceOf(RecyclerView.class))
+        onView(withId(R.id.feed_stream_recycler_view))
                 .perform(RecyclerViewActions.scrollToPosition(NTP_HEADER_POSITION + 1));
         waitForView((ViewGroup) mActivityTestRule.getActivity().findViewById(
                             R.id.enhanced_protection_promo),

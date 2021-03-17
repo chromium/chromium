@@ -32,7 +32,6 @@ tab_management_test_java_sources = [
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/TrendyTermsCoordinatorTest.java",
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/TrendyTermsViewBinderTest.java",
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/AssertsTest.java",
-  "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/ConditionalTabStripTest.java",
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/MessageCardProviderTest.java",
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/MessageCardViewBinderTest.java",
   "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/PriceTrackingDialogTest.java",

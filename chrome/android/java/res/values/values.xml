@@ -25,9 +25,6 @@
     <!-- Compositor Tab Title Text -->
     <bool name="compositor_tab_title_fake_bold_text">true</bool>
 
-    <!-- TabSwitcher - Maximum amount to tilt tabs in over scroll in degrees. -->
-    <integer name="over_scroll_angle">15</integer>
-
     <!-- Toolbar/AppMenu - Drawable level on reload image button -->
     <integer name="reload_button_level_reload">0</integer>
     <integer name="reload_button_level_stop">1</integer>

@@ -12,32 +12,12 @@
 
     <!-- TabSwitcher - The minimum distance from the edge to commit a side swap. -->
     <dimen name="swipe_commit_distance">120dp</dimen>
-    <!-- TabSwitcher - Size of the shift applied to tabs when stacked. -->
-    <dimen name="stacked_tab_visible_size">4dp</dimen>
-    <!-- TabSwitcher - Buffer space above the stack. -->
-    <dimen name="stack_buffer_height">5dp</dimen>
-    <!-- TabSwitcher - Buffer space on the side of the stack. -->
-    <dimen name="stack_buffer_width">5dp</dimen>
-    <!-- TabSwitcher - Minimum spacing between tabs. -->
-    <dimen name="min_spacing">120dp</dimen>
-    <!-- TabSwitcher - Maximum over scroll. -->
-    <dimen name="over_scroll">75dp</dimen>
-    <!-- TabSwitcher - Minimum scrolling distance to even out all the tabs. -->
-    <dimen name="even_out_scrolling">400dp</dimen>
     <!-- TabSwitcher - The space between tabs in the toolbar swiping transition. -->
     <dimen name="toolbar_swipe_space_between_tabs">30dp</dimen>
     <!-- TabSwitcher - The minimum distance from the edge to commit a toolbar side swap. -->
     <dimen name="toolbar_swipe_commit_distance">90dp</dimen>
-    <!-- TabSwitcher - Maximum amount to slide the tabs down or right in over scroll. -->
-    <dimen name="over_scroll_slide">10dp</dimen>
      <!-- TabSwitcher - The size of the close button on each tab. -->
     <dimen name="tab_switcher_close_button_size">20dp</dimen>
-
-    <!-- TabSwitcher -->
-    <dimen name="tabswitcher_border_frame_padding_left">6dp</dimen>
-    <dimen name="tabswitcher_border_frame_padding_top">50dp</dimen>
-    <dimen name="tabswitcher_border_frame_transparent_top">3dp</dimen>
-    <dimen name="tabswitcher_border_frame_transparent_side">2dp</dimen>
 
     <!-- Toolbar Phone - padding of the optional button when menu button is present -->
     <dimen name="toolbar_phone_optional_button_padding">12dp</dimen>
@@ -408,7 +388,6 @@
     <!--  Used as a margin to force the shadow view to overlap other views. -->
     <dimen name="action_bar_shadow_margin_negative">-10dp</dimen>
     <dimen name="sync_promo_view_padding">16dp</dimen>
-    <dimen name="open_new_tab_animation_y_translation">-20dp</dimen>
     <dimen name="sync_passphrase_type_instructions_padding">25dp</dimen>
     <!-- 18dp padding is added to each side of the remove button to limit the image width to 20dp (56dp - 2 * 18dp). -->
     <dimen name="history_item_remove_button_lateral_padding">18dp</dimen>

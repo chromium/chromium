@@ -894,7 +894,6 @@ chrome_java_resources = [
   "java/res/values-v28/styles.xml",
   "java/res/values-xhdpi/dimens.xml",
   "java/res/values-xlarge/dimens.xml",
-  "java/res/values-xxhdpi/dimens.xml",
   "java/res/values/attrs.xml",
   "java/res/values/colors.xml",
   "java/res/values/dimens.xml",

@@ -90,7 +90,7 @@ public class PseudoTab {
                 if (cached.getTab() == tab) {
                     return cached;
                 } else {
-                    assert cached.getTab().getWebContents() == null
+                    assert tab.getWebContents() == null || cached.getTab().getWebContents() == null
                             || cached.getTab().getWebContents().getTopLevelNativeWindow() == null;
                     return new PseudoTab(tab);
                 }

@@ -10,7 +10,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
@@ -26,7 +25,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
@@ -192,7 +190,7 @@ public class NewTabPageTest {
     @Features.DisableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testRender_SignInPromoLegacy() throws Exception {
         // Scroll to the sign in promo in case it is not visible.
-        onView(instanceOf(RecyclerView.class))
+        onView(withId(R.id.feed_stream_recycler_view))
                 .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
         mRenderTestRule.render(mNtp.getCoordinatorForTesting().getSignInPromoViewForTesting(),
                 "sign_in_promo_legacy");
@@ -204,7 +202,7 @@ public class NewTabPageTest {
     @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testRender_SignInPromoNoAccounts() throws Exception {
         // Scroll to the sign in promo in case it is not visible.
-        onView(instanceOf(RecyclerView.class))
+        onView(withId(R.id.feed_stream_recycler_view))
                 .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
         mRenderTestRule.render(
                 mNtp.getCoordinatorForTesting().getSignInPromoViewForTesting(), "sign_in_promo");
@@ -218,7 +216,7 @@ public class NewTabPageTest {
         mAccountManagerTestRule.addAccount(mAccountManagerTestRule.createProfileDataFromName(
                 AccountManagerTestRule.TEST_ACCOUNT_EMAIL));
         // Scroll to the sign in promo in case it is not visible.
-        onView(instanceOf(RecyclerView.class))
+        onView(withId(R.id.feed_stream_recycler_view))
                 .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
         mRenderTestRule.render(mNtp.getCoordinatorForTesting().getSignInPromoViewForTesting(),
                 "sign_in_promo_with_account");
@@ -231,7 +229,7 @@ public class NewTabPageTest {
     public void testRender_SyncPromo() throws Exception {
         mAccountManagerTestRule.addTestAccountThenSignin();
         // Scroll to the sign in promo in case it is not visible.
-        onView(instanceOf(RecyclerView.class))
+        onView(withId(R.id.feed_stream_recycler_view))
                 .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
         mRenderTestRule.render(
                 mNtp.getCoordinatorForTesting().getSignInPromoViewForTesting(), "sync_promo");
@@ -242,7 +240,7 @@ public class NewTabPageTest {
     @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
     public void testRender_ArticleSectionHeader() throws Exception {
         // Scroll to the article section header in case it is not visible.
-        onView(instanceOf(RecyclerView.class))
+        onView(withId(R.id.feed_stream_recycler_view))
                 .perform(RecyclerViewActions.scrollToPosition(ARTICLE_SECTION_HEADER_POSITION));
         waitForView((ViewGroup) mNtp.getView(), allOf(withId(R.id.header_title), isDisplayed()));
         View view = mNtp.getCoordinatorForTesting().getSectionHeaderViewForTesting();
@@ -250,7 +248,7 @@ public class NewTabPageTest {
         mRenderTestRule.render(view, "expandable_header_expanded");
 
         // Toggle header on the current tab.
-        onView(instanceOf(RecyclerView.class))
+        onView(withId(R.id.feed_stream_recycler_view))
                 .perform(RecyclerViewActions.scrollToPosition(ARTICLE_SECTION_HEADER_POSITION));
         waitForView((ViewGroup) mNtp.getView(), allOf(withId(R.id.header_title), isDisplayed()));
         onView(withId(R.id.header_title)).perform(click());

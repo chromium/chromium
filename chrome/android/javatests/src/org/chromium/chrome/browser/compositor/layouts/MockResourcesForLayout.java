@@ -33,15 +33,8 @@ public class MockResourcesForLayout extends MockResources {
 
     public MockResourcesForLayout(Resources resources) {
         mValidResources = resources;
-        mFloats.put(R.dimen.over_scroll_slide, 10.0f);
-        mFloats.put(R.dimen.tabswitcher_border_frame_padding_left, 6.f);
-        mFloats.put(R.dimen.tabswitcher_border_frame_padding_top, 50.f);
         mFloats.put(org.chromium.chrome.R.dimen.compositor_tab_title_text_size, 13.0f);
         mIntegers.put(R.color.tab_switcher_background, 0xFF111111);
-        mFloats.put(R.dimen.over_scroll, 75.0f);
-        mIntegers.put(R.integer.over_scroll_angle, 15);
-        mFloats.put(R.dimen.even_out_scrolling, 400.0f);
-        mFloats.put(R.dimen.min_spacing, 120.0f);
         mFloats.put(R.dimen.swipe_commit_distance, 120.0f);
         mFloats.put(R.dimen.toolbar_swipe_space_between_tabs, 30.0f);
         mFloats.put(R.dimen.toolbar_swipe_commit_distance, 90.0f);
@@ -51,16 +44,8 @@ public class MockResourcesForLayout extends MockResources {
         mFloats.put(R.dimen.tab_title_favicon_start_padding, 16.0f);
         mFloats.put(R.dimen.tab_title_favicon_end_padding, 7.0f);
         mFloats.put(org.chromium.chrome.R.dimen.compositor_tab_title_favicon_size, 16.0f);
-        mFloats.put(R.dimen.stacked_tab_visible_size, 4.0f);
-        mFloats.put(R.dimen.stack_buffer_width, 5.0f);
-        mFloats.put(R.dimen.stack_buffer_height, 5.0f);
         mFloats.put(org.chromium.chrome.R.dimen.compositor_button_slop, 20.0f);
         mFloats.put(R.dimen.accessibility_tab_height, 65.f);
-        mFloats.put(R.dimen.tabswitcher_border_frame_padding_left, 6.f);
-        mFloats.put(R.dimen.tabswitcher_border_frame_padding_top, 50.f);
-        mFloats.put(R.dimen.tabswitcher_border_frame_transparent_top, 3.f);
-        mFloats.put(R.dimen.tabswitcher_border_frame_transparent_side, 2.f);
-        mFloats.put(R.dimen.open_new_tab_animation_y_translation, -20.f);
         mBooleans.put(org.chromium.chrome.R.bool.compositor_tab_title_fake_bold_text, true);
         mStrings.put(R.string.tab_loading_default_title, "Loading...");
         mFloats.put(org.chromium.chrome.R.dimen.overlay_panel_bar_height, 56.f);

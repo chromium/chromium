@@ -21,12 +21,15 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeController;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -42,6 +45,8 @@ import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.test.util.UiRestriction;
+
+import java.util.concurrent.TimeoutException;
 
 /**
  * Tests {@link NavigationHandler} navigating back/forward using overscroll history navigation.
@@ -273,7 +278,7 @@ public class NavigationHandlerTest {
     @Test
     @SmallTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    public void testEdgeSwipeIsNoopInTabSwitcher() {
+    public void testEdgeSwipeIsNoopInTabSwitcher() throws TimeoutException {
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
         mActivityTestRule.loadUrl(UrlConstants.RECENT_TABS_URL);
         setTabSwitcherModeAndWait(true);
@@ -289,12 +294,27 @@ public class NavigationHandlerTest {
      * Enter or exit the tab switcher with animations and wait for the scene to change.
      * @param inSwitcher Whether to enter or exit the tab switcher.
      */
-    private void setTabSwitcherModeAndWait(boolean inSwitcher) {
-        OverviewModeController controller = mActivityTestRule.getActivity().getLayoutManager();
+    private void setTabSwitcherModeAndWait(boolean inSwitcher) throws TimeoutException {
+        CallbackHelper switchHelper = new CallbackHelper();
+        LayoutStateProvider.LayoutStateObserver layoutObserver =
+                new LayoutStateProvider.LayoutStateObserver() {
+                    @Override
+                    public void onFinishedShowing(int layoutType) {
+                        if ((inSwitcher && layoutType == LayoutType.TAB_SWITCHER)
+                                || (!inSwitcher && layoutType == LayoutType.BROWSING)) {
+                            switchHelper.notifyCalled();
+                        }
+                    }
+                };
+
+        LayoutManagerChrome controller = mActivityTestRule.getActivity().getLayoutManager();
+        controller.addObserver(layoutObserver);
         if (inSwitcher) {
             TestThreadUtils.runOnUiThreadBlocking(() -> controller.showOverview(false));
         } else {
             TestThreadUtils.runOnUiThreadBlocking(() -> controller.hideOverview(false));
         }
+        switchHelper.waitForCallback(0);
+        controller.removeObserver(layoutObserver);
     }
 }

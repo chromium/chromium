@@ -33,8 +33,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.CONDITIONAL_TAB_STRIP_ANDROID;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_ANDROID;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_TYPE;
@@ -106,7 +104,6 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.state.PersistedTabDataConfiguration;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
@@ -893,27 +890,6 @@ public class TabListMediatorUnitTest {
         assertThat(mModel.size(), equalTo(3));
         assertThat(mModel.get(2).model.get(TabProperties.TAB_ID), equalTo(TAB3_ID));
         assertThat(mModel.get(2).model.get(TabProperties.TITLE), equalTo(TAB3_TITLE));
-    }
-
-    @Test
-    @Features.EnableFeatures({CONDITIONAL_TAB_STRIP_ANDROID})
-    @Features.DisableFeatures({TAB_GRID_LAYOUT_ANDROID, TAB_GROUPS_ANDROID})
-    public void tabClosureUndone_CTS() {
-        initAndAssertAllProperties();
-
-        TabImpl newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
-        doReturn(3).when(mTabModel).getCount();
-        doReturn(newTab).when(mTabModel).getTabAt(2);
-        doReturn(Arrays.asList(mTab1, mTab2, newTab))
-                .when(mTabModelFilter)
-                .getRelatedTabList(eq(TAB1_ID));
-
-        mTabModelObserverCaptor.getValue().tabClosureUndone(newTab);
-
-        assertThat(mModel.size(), equalTo(3));
-        assertThat(mModel.get(2).model.get(TabProperties.TAB_ID), equalTo(TAB3_ID));
-        assertThat(mModel.get(2).model.get(TabProperties.TITLE), equalTo(TAB3_TITLE));
-        verify(mTabModel).setIndex(eq(2), eq(TabSelectionType.FROM_USER));
     }
 
     @Test

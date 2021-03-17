@@ -5,8 +5,7 @@
 package org.chromium.chrome.browser.explore_sites;
 
 import static androidx.test.espresso.Espresso.onView;
-
-import static org.hamcrest.Matchers.instanceOf;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import android.os.SystemClock;
 
@@ -136,7 +135,7 @@ public class ExploreSitesPageTest {
     @Features.EnableFeatures(ChromeFeatureList.EXPLORE_SITES)
     public void testScrolledLayout_withBack() throws Exception {
         final int scrollPosition = 2;
-        onView(instanceOf(RecyclerView.class))
+        onView(withId(R.id.feed_stream_recycler_view))
                 .perform(RecyclerViewActions.scrollToPosition(scrollPosition));
         mRenderTestRule.render(mRecyclerView, "recycler_layout");
         Assert.assertEquals(scrollPosition, getFirstVisiblePosition());
@@ -156,7 +155,8 @@ public class ExploreSitesPageTest {
     @Features.EnableFeatures(ChromeFeatureList.EXPLORE_SITES)
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testInitialLayout(boolean nightModeEnabled) throws Exception {
-        onView(instanceOf(RecyclerView.class)).perform(RecyclerViewActions.scrollToPosition(0));
+        onView(withId(R.id.explore_sites_category_recycler))
+                .perform(RecyclerViewActions.scrollToPosition(0));
         mRenderTestRule.render(mRecyclerView, "initial_layout");
     }
 

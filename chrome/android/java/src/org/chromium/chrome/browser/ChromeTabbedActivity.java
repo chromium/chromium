@@ -74,10 +74,8 @@ import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromePhone;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromeTablet;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeController;
-import org.chromium.chrome.browser.compositor.layouts.phone.StackLayout;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityComponent;
@@ -612,6 +610,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         try (TraceEvent e = TraceEvent.scoped(
                      "ChromeTabbedActivity.setupCompositorContentPreNativeForPhone")) {
             CompositorViewHolder compositorViewHolder = getCompositorViewHolder();
+
+            // TODO(1169205): Remove all GTS enabled checks after M5 is default.
             if (TabUiFeatureUtilities.isGridTabSwitcherEnabled()) {
                 TabManagementDelegate tabManagementDelegate =
                         TabManagementModuleProvider.getDelegate();
@@ -622,6 +622,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             mStartSurfaceParentTabSupplier, hadWarmStart(), getWindowAndroid());
                 }
             }
+
             // clang-format off
             mLayoutManager = new LayoutManagerChromePhone(compositorViewHolder, mContentContainer,
                     mStartSurfaceSupplier.get(), getTabContentManagerSupplier(),
@@ -693,13 +694,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
                 if (getFullscreenManager().getPersistentFullscreenMode()) {
                     return;
-                }
-
-                Layout activeLayout = mLayoutManager.getActiveLayout();
-                if (activeLayout instanceof StackLayout && !activeLayout.isStartingToHide()) {
-                    RecordUserAction.record("MobileToolbarStackViewButtonInStackView");
-                } else if (!isInOverviewMode()) {
-                    RecordUserAction.record("MobileToolbarStackViewButtonInBrowsingView");
                 }
 
                 if (isInOverviewMode() && !StartSurfaceConfiguration.isStartSurfaceEnabled()) {
@@ -2197,10 +2191,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     private void hideOverview() {
         assert (mOverviewModeController.overviewVisible());
-        Layout activeLayout = mLayoutManager.getActiveLayout();
-        if (activeLayout instanceof StackLayout) {
-            ((StackLayout) activeLayout).commitOutstandingModelState(LayoutManagerImpl.time());
-        }
         if (getCurrentTabModel().getCount() != 0) {
             // Don't hide overview if current tab stack is empty()
             mOverviewModeController.hideOverview(true);

@@ -243,7 +243,7 @@ public class FeedV2NewTabPageTest {
         // that sign-in promo is not shown.
         TestThreadUtils.runOnUiThreadBlocking(signinObserver::onSignedIn);
         RecyclerViewTestUtils.waitForStableRecyclerView(recyclerView);
-        onView(instanceOf(RecyclerView.class))
+        onView(withId(R.id.feed_stream_recycler_view))
                 .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
         onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
 
@@ -251,7 +251,7 @@ public class FeedV2NewTabPageTest {
         // that sign-in promo is shown.
         TestThreadUtils.runOnUiThreadBlocking(signinObserver::onSignedOut);
         RecyclerViewTestUtils.waitForStableRecyclerView(recyclerView);
-        onView(instanceOf(RecyclerView.class))
+        onView(withId(R.id.feed_stream_recycler_view))
                 .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
         onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
 
@@ -284,12 +284,12 @@ public class FeedV2NewTabPageTest {
         }
 
         // Verify that sign-in promo is displayed initially.
-        onView(instanceOf(RecyclerView.class))
+        onView(withId(R.id.feed_stream_recycler_view))
                 .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
         onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
 
         // Swipe away the sign-in promo.
-        onView(instanceOf(RecyclerView.class))
+        onView(withId(R.id.feed_stream_recycler_view))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(
                         SIGNIN_PROMO_POSITION, SWIPE_LEFT));
 
@@ -315,7 +315,7 @@ public class FeedV2NewTabPageTest {
         mIsCachePopulatedInAccountManagerFacade = false;
         openNewTabPage();
         // Check that the sign-in promo is not shown if accounts are not ready.
-        onView(instanceOf(RecyclerView.class))
+        onView(withId(R.id.feed_stream_recycler_view))
                 .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
         onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
 
@@ -324,7 +324,7 @@ public class FeedV2NewTabPageTest {
         ChromeTabUtils.waitForTabPageLoaded(mTab, ChromeTabUtils.getUrlStringOnUiThread(mTab));
 
         // Check that the sign-in promo is displayed this time.
-        onView(instanceOf(RecyclerView.class))
+        onView(withId(R.id.feed_stream_recycler_view))
                 .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
         onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
     }
@@ -336,7 +336,7 @@ public class FeedV2NewTabPageTest {
     public void testArticleSectionHeaderWithMenu(boolean disableSigninPromoCard) throws Exception {
         openNewTabPage();
         // Scroll to the article section header in case it is not visible.
-        onView(instanceOf(RecyclerView.class))
+        onView(withId(R.id.feed_stream_recycler_view))
                 .perform(RecyclerViewActions.scrollToPosition(ARTICLE_SECTION_HEADER_POSITION));
         waitForView((ViewGroup) mNtp.getView(), allOf(withId(R.id.header_title), isDisplayed()));
 
