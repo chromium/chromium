@@ -97,9 +97,29 @@ class MojoBinderPolicyApplierTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
+// Verifies that interfaces whose policies are kGrant can be bound immediately.
+TEST_F(MojoBinderPolicyApplierTest, GrantInEnforce) {
+  // Initialize Mojo interfaces.
+  mojo::Remote<mojom::TestInterfaceForGrant> grant_remote;
+  mojo::GenericPendingReceiver grant_receiver(
+      grant_remote.BindNewPipeAndPassReceiver());
+
+  // Bind the interface immediately if the policy is kGrant.
+  const std::string interface_name = grant_receiver.interface_name().value();
+  EXPECT_FALSE(collector_.IsCanceled());
+  EXPECT_FALSE(collector_.IsGrantReceiverBound());
+  policy_applier_.ApplyPolicyToBinder(
+      interface_name,
+      base::BindOnce(&TestReceiverCollector::BindGrantInterface,
+                     base::Unretained(&collector_),
+                     grant_receiver.As<mojom::TestInterfaceForGrant>()));
+  EXPECT_TRUE(collector_.IsGrantReceiverBound());
+  EXPECT_FALSE(collector_.IsCanceled());
+}
+
 // Verifies that interfaces whose policies are kDefer cannot be bound until
 // GrantAll() is called.
-TEST_F(MojoBinderPolicyApplierTest, ApplyDeferPolicy) {
+TEST_F(MojoBinderPolicyApplierTest, DeferInEnforce) {
   // Initialize Mojo interfaces.
   mojo::Remote<mojom::TestInterfaceForDefer> defer_remote;
   mojo::GenericPendingReceiver defer_receiver(
@@ -122,29 +142,9 @@ TEST_F(MojoBinderPolicyApplierTest, ApplyDeferPolicy) {
   EXPECT_FALSE(collector_.IsCanceled());
 }
 
-// Verifies that interfaces whose policies are kGrant can be bound immediately.
-TEST_F(MojoBinderPolicyApplierTest, ApplyGrantPolicy) {
-  // Initialize Mojo interfaces.
-  mojo::Remote<mojom::TestInterfaceForGrant> grant_remote;
-  mojo::GenericPendingReceiver grant_receiver(
-      grant_remote.BindNewPipeAndPassReceiver());
-
-  // Bind the interface immediately if the policy is kGrant.
-  const std::string interface_name = grant_receiver.interface_name().value();
-  EXPECT_FALSE(collector_.IsCanceled());
-  EXPECT_FALSE(collector_.IsGrantReceiverBound());
-  policy_applier_.ApplyPolicyToBinder(
-      interface_name,
-      base::BindOnce(&TestReceiverCollector::BindGrantInterface,
-                     base::Unretained(&collector_),
-                     grant_receiver.As<mojom::TestInterfaceForGrant>()));
-  EXPECT_TRUE(collector_.IsGrantReceiverBound());
-  EXPECT_FALSE(collector_.IsCanceled());
-}
-
-// Verifies that when receiving an interface whose policy is kCancel,
-// cancel_closure_ can be invoked.
-TEST_F(MojoBinderPolicyApplierTest, ApplyCancelPolicy) {
+// Verifies that MojoBinderPolicyApplier will run `cancel_closure` when running
+// in the kEnforce mode and receiving an interface whose policy is kCancel,
+TEST_F(MojoBinderPolicyApplierTest, CancelInEnforce) {
   // Initialize Mojo interfaces.
   mojo::Remote<mojom::TestInterfaceForCancel> cancel_remote;
   mojo::GenericPendingReceiver cancel_receiver(
@@ -160,6 +160,75 @@ TEST_F(MojoBinderPolicyApplierTest, ApplyCancelPolicy) {
                      cancel_receiver.As<mojom::TestInterfaceForCancel>()));
   EXPECT_TRUE(collector_.IsCanceled());
   EXPECT_FALSE(collector_.IsCancelReceiverBound());
+}
+
+// When MojoBinderPolicyApplier runs in the kPrepareToGrantAll mode, verifies it
+// applies kGrant for kGrant interfaces.
+TEST_F(MojoBinderPolicyApplierTest, GrantInPrepareToGrantAll) {
+  // Initialize Mojo interfaces.
+  mojo::Remote<mojom::TestInterfaceForGrant> grant_remote;
+  mojo::GenericPendingReceiver grant_receiver(
+      grant_remote.BindNewPipeAndPassReceiver());
+
+  policy_applier_.PrepareToGrantAll();
+  const std::string grant_interface_name =
+      grant_receiver.interface_name().value();
+  policy_applier_.ApplyPolicyToBinder(
+      grant_interface_name,
+      base::BindOnce(&TestReceiverCollector::BindGrantInterface,
+                     base::Unretained(&collector_),
+                     grant_receiver.As<mojom::TestInterfaceForGrant>()));
+  EXPECT_TRUE(collector_.IsGrantReceiverBound());
+}
+
+// When MojoBinderPolicyApplier runs in the kPrepareToGrantAll mode, verifies it
+// applies kDefer for kDefer interfaces.
+TEST_F(MojoBinderPolicyApplierTest, DeferInPrepareToGrantAll) {
+  // Initialize Mojo interfaces.
+  mojo::Remote<mojom::TestInterfaceForDefer> defer_remote;
+  mojo::GenericPendingReceiver defer_receiver(
+      defer_remote.BindNewPipeAndPassReceiver());
+
+  policy_applier_.PrepareToGrantAll();
+  const std::string defer_interface_name =
+      defer_receiver.interface_name().value();
+  policy_applier_.ApplyPolicyToBinder(
+      defer_interface_name,
+      base::BindOnce(&TestReceiverCollector::BindDeferInterface,
+                     base::Unretained(&collector_),
+                     defer_receiver.As<mojom::TestInterfaceForDefer>()));
+  EXPECT_FALSE(collector_.IsDeferReceiverBound());
+  EXPECT_EQ(1U, deferred_binders().size());
+
+  policy_applier_.GrantAll();
+  EXPECT_TRUE(collector_.IsDeferReceiverBound());
+  EXPECT_EQ(0U, deferred_binders().size());
+}
+
+// When MojoBinderPolicyApplier runs in the kPrepareToGrantAll mode, verifies it
+// applies kDefer rather than kCancel policy when receiving a kCancel interface
+// binding request.
+TEST_F(MojoBinderPolicyApplierTest, CancelInPrepareToGrantAll) {
+  // Initialize Mojo interfaces.
+  mojo::Remote<mojom::TestInterfaceForCancel> cancel_remote;
+  mojo::GenericPendingReceiver cancel_receiver(
+      cancel_remote.BindNewPipeAndPassReceiver());
+
+  policy_applier_.PrepareToGrantAll();
+  const std::string cancel_interface_name =
+      cancel_receiver.interface_name().value();
+  policy_applier_.ApplyPolicyToBinder(
+      cancel_interface_name,
+      base::BindOnce(&TestReceiverCollector::BindCancelInterface,
+                     base::Unretained(&collector_),
+                     cancel_receiver.As<mojom::TestInterfaceForCancel>()));
+  EXPECT_FALSE(collector_.IsCanceled());
+  EXPECT_FALSE(collector_.IsCancelReceiverBound());
+  EXPECT_EQ(1U, deferred_binders().size());
+
+  policy_applier_.GrantAll();
+  EXPECT_TRUE(collector_.IsCancelReceiverBound());
+  EXPECT_EQ(0U, deferred_binders().size());
 }
 
 // Verifies that all interfaces are bound immediately if GrantAll() is called,
