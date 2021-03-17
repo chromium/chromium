@@ -263,12 +263,11 @@ namespace {
 
 void SetNodeInfo(perfetto::TracedDictionary& dict,
                  Node* node,
-                 const char* id_field_name,
-                 const char* name_field_name = nullptr) {
-  dict.Add(perfetto::StaticString{id_field_name},
-           IdentifiersFactory::IntIdForNode(node));
-  if (name_field_name)
-    dict.Add(perfetto::DynamicString{name_field_name}, node->DebugName());
+                 perfetto::StaticString id_field_name,
+                 perfetto::StaticString name_field_name = nullptr) {
+  dict.Add(id_field_name, IdentifiersFactory::IntIdForNode(node));
+  if (name_field_name.value)
+    dict.Add(name_field_name, node->DebugName());
 }
 
 const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
@@ -674,10 +673,11 @@ static void CreateQuad(perfetto::TracedValue context, const FloatQuad& quad) {
   array.Append(quad.P4().Y());
 }
 
-static void SetGeneratingNodeInfo(perfetto::TracedDictionary& dict,
-                                  const LayoutObject* layout_object,
-                                  const char* id_field_name,
-                                  const char* name_field_name = nullptr) {
+static void SetGeneratingNodeInfo(
+    perfetto::TracedDictionary& dict,
+    const LayoutObject* layout_object,
+    perfetto::StaticString id_field_name,
+    perfetto::StaticString name_field_name = nullptr) {
   Node* node = nullptr;
   for (; layout_object && !node; layout_object = layout_object->Parent())
     node = layout_object->GeneratingNode();
