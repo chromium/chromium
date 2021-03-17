@@ -18,6 +18,7 @@ const PageState = {
   SCANNING_SUCCESS: 6,
   SCANNING_FAILURE: 7,
   MANUAL_ENTRY_INSTALL_FAILURE: 8,
+  SCANNING_INSTALL_FAILURE: 9,
 };
 
 /** @enum {number} */
@@ -28,6 +29,8 @@ const UiElement = {
   SCAN_FINISH: 4,
   SCAN_SUCCESS: 5,
   SCAN_FAILURE: 6,
+  CODE_DETECTED: 7,
+  SCAN_INSTALL_FAILURE: 8,
 };
 
 /**
@@ -395,18 +398,22 @@ Polymer({
 
   /** @private */
   onShowErrorChanged_() {
-    // TODO(crbug.com/1093185) Handle install failure from scanning.
     if (this.showError) {
-      this.state_ = PageState.MANUAL_ENTRY_INSTALL_FAILURE;
-      Polymer.RenderStatus.afterNextRender(this, () => {
-        cr.ui.focusWithoutInk(this.$.activationCode);
-      });
+      if (this.state_ === PageState.MANUAL_ENTRY) {
+        this.state_ = PageState.MANUAL_ENTRY_INSTALL_FAILURE;
+        Polymer.RenderStatus.afterNextRender(this, () => {
+          cr.ui.focusWithoutInk(this.$.activationCode);
+        });
+      } else if (this.state_ === PageState.SCANNING_SUCCESS) {
+        this.state_ = PageState.SCANNING_INSTALL_FAILURE;
+      }
     }
   },
 
   /** @private */
   onStateChanged_() {
-    if (this.state_ !== PageState.MANUAL_ENTRY_INSTALL_FAILURE) {
+    if (this.state_ !== PageState.MANUAL_ENTRY_INSTALL_FAILURE &&
+        this.state_ !== PageState.SCANNING_INSTALL_FAILURE) {
       this.showError = false;
     }
     if (this.state_ === PageState.MANUAL_ENTRY) {
@@ -451,11 +458,17 @@ Polymer({
         return !(isScanning && this.cameraCount_ > 1);
       case UiElement.SCAN_FINISH:
         return state !== PageState.SCANNING_SUCCESS &&
-            state !== PageState.SCANNING_FAILURE;
+            state !== PageState.SCANNING_FAILURE &&
+            state !== PageState.SCANNING_INSTALL_FAILURE;
       case UiElement.SCAN_SUCCESS:
-        return state !== PageState.SCANNING_SUCCESS;
+        return state !== PageState.SCANNING_SUCCESS &&
+            state !== PageState.SCANNING_INSTALL_FAILURE;
       case UiElement.SCAN_FAILURE:
         return state !== PageState.SCANNING_FAILURE;
+      case UiElement.CODE_DETECTED:
+        return state !== PageState.SCANNING_SUCCESS;
+      case UiElement.SCAN_INSTALL_FAILURE:
+        return state !== PageState.SCANNING_INSTALL_FAILURE;
     }
   },
 
@@ -489,4 +502,13 @@ Polymer({
     return this.showNoProfilesMessage ? this.i18n('scanQRCodeNoProfiles') :
                                         this.i18n('scanQRCode');
   },
+
+  /**
+   * @param {PageState} state
+   * @return {boolean}
+   * @private
+   */
+  shouldActivationCodeInputBeInvalid_(state) {
+    return state === PageState.MANUAL_ENTRY_INSTALL_FAILURE;
+  }
 });

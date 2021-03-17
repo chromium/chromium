@@ -76,6 +76,14 @@
         cursor: default;
       }
 
+      .scan-error-header {
+        --iron-icon-fill-color: #D93025;
+      }
+
+      .scan-error-message {
+        color: var(--google-red-600);
+      }
+
       .blue-icon {
         --iron-icon-fill-color: #1A73E8;
       }
@@ -91,12 +99,7 @@
       }
 
       #scanFailureHeader {
-        --iron-icon-fill-color: #D93025;
         margin-bottom: 4px;
-      }
-
-      #scanFailureMessage {
-        color: var(--google-red-600);
       }
 
       #useCameraAgainButton {
@@ -177,10 +180,18 @@
               <div>
                 <div id="scanSuccessContainer"
                     hidden$="[[isUiElementHidden_(UiElement.SCAN_SUCCESS, state_)]]">
-                  <div id=scanSucessHeader>
+                  <div id=scanSucessHeader
+                      hidden$="[[isUiElementHidden_(UiElement.CODE_DETECTED, state_)]]">
                     <iron-icon class="scan-finish-image" icon="cellular-setup:checked"></iron-icon>
                     <span class="label scan-finish-message" id="scanSuccessMessage">
                       [[i18n('scanQRCodeSuccess')]]
+                    </span>
+                  </div>
+                  <div id="scanInstallFailureHeader" class="scan-error-header"
+                      hidden$="[[isUiElementHidden_(UiElement.SCAN_INSTALL_FAILURE, state_)]]">
+                    <iron-icon class="scan-finish-image" icon="cellular-setup:error"></iron-icon>
+                    <span class="label scan-finish-message scan-error-message">
+                      [[i18n('scanQrCodeInvalid')]]
                     </span>
                   </div>
                   <cr-button id="useCameraAgainButton" class="blue-icon"
@@ -192,9 +203,9 @@
                 </div>
                 <div id="scanFailureContainer"
                     hidden$="[[isUiElementHidden_(UiElement.SCAN_FAILURE, state_)]]">
-                  <div id="scanFailureHeader" class="blue-icon">
+                  <div id="scanFailureHeader" class="scan-error-header">
                     <iron-icon class="scan-finish-image" icon="cellular-setup:error"></iron-icon>
-                    <span class="label scan-finish-message" id="scanFailureMessage">
+                    <span class="label scan-finish-message scan-error-message">
                       [[i18n('scanQrCodeError')]]
                     </span>
                   </div>
@@ -215,7 +226,7 @@
             value="{{activationCode}}"
             disabled="[[showBusy]]"
             on-keydown="onKeyDown_"
-            invalid="[[showError]]"
+            invalid="[[shouldActivationCodeInputBeInvalid_(state_)]]"
             error-message="[[i18n('scanQrCodeInvalid')]]">
           </cr-input>
           <paper-spinner-lite active
