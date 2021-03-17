@@ -93,6 +93,7 @@ class TestObserver : public InputMethodEngineBase::Observer {
     engine_id_ = engine_id;
   }
   void OnFocus(
+      int context_id,
       const ui::IMEEngineHandlerInterface::InputContext& context) override {
     calls_bitmap_ |= ONFOCUS;
   }

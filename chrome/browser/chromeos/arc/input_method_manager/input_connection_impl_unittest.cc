@@ -28,6 +28,7 @@ class DummyInputMethodEngineObserver
 
   void OnActivate(const std::string& engine_id) override {}
   void OnFocus(
+      int context_id,
       const ui::IMEEngineHandlerInterface::InputContext& context) override {}
   void OnBlur(int context_id) override {}
   void OnKeyEvent(
@@ -174,7 +175,6 @@ class InputConnectionImplTest : public testing::Test {
 
   ui::IMEEngineHandlerInterface::InputContext context() {
     return ui::IMEEngineHandlerInterface::InputContext{
-        1,
         ui::TEXT_INPUT_TYPE_TEXT,
         ui::TEXT_INPUT_MODE_DEFAULT,
         0 /* flags */,

@@ -900,9 +900,7 @@ TEST_F(ArcInputMethodManagerServiceTest, FocusAndBlur) {
       std::get<2>(imm()->state()->added_input_method_extensions_.at(0));
 
   // Set up mock input context.
-  constexpr int test_context_id = 0;
   const ui::IMEEngineHandlerInterface::InputContext test_context{
-      test_context_id,
       ui::TEXT_INPUT_TYPE_TEXT,
       ui::TEXT_INPUT_MODE_DEFAULT,
       0 /* flags */,
@@ -991,9 +989,7 @@ TEST_F(ArcInputMethodManagerServiceTest, ShowVirtualKeyboard) {
       std::get<2>(imm()->state()->added_input_method_extensions_.at(0));
 
   // Set up mock input context.
-  constexpr int test_context_id = 0;
   const ui::IMEEngineHandlerInterface::InputContext test_context{
-      test_context_id,
       ui::TEXT_INPUT_TYPE_TEXT,
       ui::TEXT_INPUT_MODE_DEFAULT,
       0 /* flags */,
@@ -1062,9 +1058,7 @@ TEST_F(ArcInputMethodManagerServiceTest, VisibilityObserver) {
       std::get<2>(imm()->state()->added_input_method_extensions_.at(0));
 
   // Set up mock input context.
-  constexpr int test_context_id = 0;
   const ui::IMEEngineHandlerInterface::InputContext test_context{
-      test_context_id,
       ui::TEXT_INPUT_TYPE_TEXT,
       ui::TEXT_INPUT_MODE_DEFAULT,
       0 /* flags */,

@@ -20,6 +20,7 @@ class StubInputMethodEngineObserver : public InputMethodEngineBase::Observer {
   void OnActivate(const std::string& engine_id) override {}
   void OnDeactivated(const std::string& engine_id) override {}
   void OnFocus(
+      int context_id,
       const ui::IMEEngineHandlerInterface::InputContext& context) override {}
   void OnBlur(int context_id) override {}
   void OnKeyEvent(

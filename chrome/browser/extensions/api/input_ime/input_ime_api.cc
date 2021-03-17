@@ -152,12 +152,13 @@ void ImeObserver::OnActivate(const std::string& component_id) {
 }
 
 void ImeObserver::OnFocus(
+    int context_id,
     const IMEEngineHandlerInterface::InputContext& context) {
   if (extension_id_.empty() || !HasListener(input_ime::OnFocus::kEventName))
     return;
 
   input_ime::InputContext context_value;
-  context_value.context_id = context.id;
+  context_value.context_id = context_id;
   context_value.type =
       input_ime::ParseInputContextType(ConvertInputContextType(context));
   context_value.auto_correct = ConvertInputContextAutoCorrect(context);

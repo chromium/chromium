@@ -275,11 +275,12 @@ void NativeInputMethodEngine::ImeObserver::ProcessMessage(
 }
 
 void NativeInputMethodEngine::ImeObserver::OnFocus(
+    int context_id,
     const IMEEngineHandlerInterface::InputContext& context) {
   if (assistive_suggester_->IsAssistiveFeatureEnabled()) {
-    assistive_suggester_->OnFocus(context.id);
+    assistive_suggester_->OnFocus(context_id);
   }
-  autocorrect_manager_->OnFocus(context.id);
+  autocorrect_manager_->OnFocus(context_id);
   if (active_engine_id_ && ShouldRouteToFstMojoEngine(*active_engine_id_)) {
     if (remote_to_engine_.is_bound()) {
       remote_to_engine_->OnFocus(ime::mojom::InputFieldInfo::New(
@@ -290,7 +291,7 @@ void NativeInputMethodEngine::ImeObserver::OnFocus(
               : ime::mojom::PersonalizationMode::kDisabled));
     }
   } else {
-    ime_base_observer_->OnFocus(context);
+    ime_base_observer_->OnFocus(context_id, context);
   }
 }
 
