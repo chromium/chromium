@@ -1388,6 +1388,35 @@ TEST_F(SingleOverlayOnTopTest, AllowClipped) {
   EXPECT_EQ(1U, candidate_list.size());
 }
 
+TEST_F(UnderlayTest, ReplacementQuad) {
+  auto pass = CreateRenderPass();
+  CreateFullscreenCandidateQuad(
+      resource_provider_.get(), child_resource_provider_.get(),
+      child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
+
+  OverlayCandidateList candidate_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(pass));
+  SurfaceDamageRectList surface_damage_rect_list;
+
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list), nullptr, &candidate_list,
+      &damage_rect_, &content_bounds_);
+  ASSERT_EQ(1U, pass_list.size());
+  ASSERT_EQ(1U, pass_list.front()->quad_list.size());
+  EXPECT_EQ(SK_ColorTRANSPARENT, static_cast<SolidColorDrawQuad*>(
+                                     pass_list.front()->quad_list.front())
+                                     ->color);
+  EXPECT_FALSE(pass_list.front()->quad_list.front()->ShouldDrawWithBlending());
+  EXPECT_FALSE(pass_list.front()
+                   ->quad_list.front()
+                   ->shared_quad_state->are_contents_opaque);
+}
+
 TEST_F(UnderlayTest, AllowVerticalFlip) {
   gfx::Rect rect = kOverlayRect;
   rect.set_width(rect.width() / 2);
@@ -2947,6 +2976,34 @@ TEST_F(UnderlayTest, CandidateNoDamageWhenQuadSharedStateNoOccludingDamage) {
       EXPECT_TRUE(damage_rect_.IsEmpty());
     }
   }
+}
+
+TEST_F(UnderlayCastTest, ReplacementQuad) {
+  auto pass = CreateRenderPass();
+  CreateVideoHoleDrawQuadAt(pass->shared_quad_state_list.back(), pass.get(),
+                            kOverlayRect);
+
+  OverlayCandidateList candidate_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(pass));
+  SurfaceDamageRectList surface_damage_rect_list;
+
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list), nullptr, &candidate_list,
+      &damage_rect_, &content_bounds_);
+  ASSERT_EQ(1U, pass_list.size());
+  ASSERT_EQ(1U, pass_list.front()->quad_list.size());
+  EXPECT_EQ(SK_ColorTRANSPARENT, static_cast<SolidColorDrawQuad*>(
+                                     pass_list.front()->quad_list.front())
+                                     ->color);
+  EXPECT_FALSE(pass_list.front()->quad_list.front()->ShouldDrawWithBlending());
+  EXPECT_FALSE(pass_list.front()
+                   ->quad_list.front()
+                   ->shared_quad_state->are_contents_opaque);
 }
 
 TEST_F(UnderlayCastTest, NoOverlayContentBounds) {
