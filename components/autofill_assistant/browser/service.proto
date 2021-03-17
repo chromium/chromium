@@ -513,6 +513,8 @@ message ActionsResponseProto {
   // the backend.
   message UpdateScriptListProto { repeated SupportedScriptProto scripts = 1; }
   optional UpdateScriptListProto update_script_list = 5;
+
+  reserved 1, 6 to 10;
 }
 
 // Can be used to indicate the presence of a field, without the ambiguity that
