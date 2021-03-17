@@ -103,6 +103,11 @@ python2_action("about_credits") {
     "credits",
     rebase_path(about_credits_file, root_build_dir),
   ]
+
+  # Defined by downstream projects.
+  if (defined(extra_third_party_notice_dirs)) {
+    args += [ "--extra-third-party-dirs=$extra_third_party_notice_dirs" ]
+  }
 }
 
 if (is_android) {
