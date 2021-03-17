@@ -417,8 +417,7 @@ void AXPositionTest::SetUp() {
   SetTree(std::make_unique<AXTree>(initial_state));
 
   AXTreeUpdate views_tree_update;
-  web_view.AddStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
-                              GetTreeID().ToString());
+  web_view.AddChildTreeId(GetTreeID());
   views_tree_update.nodes = {web_view};
   ASSERT_TRUE(views_tree->Unserialize(views_tree_update));
   views_tree_manager_ = TestAXTreeManager(std::move(views_tree));
@@ -587,14 +586,12 @@ void AXPositionTest::CreateBrowserWindow(
       CreateAXTree({iframe_root}, webpage_tree->GetAXTreeID());
 
   AXTreeUpdate views_tree_update;
-  web_view.AddStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
-                              webpage_tree->GetAXTreeID().ToString());
+  web_view.AddChildTreeId(webpage_tree->GetAXTreeID());
   views_tree_update.nodes = {web_view};
   ASSERT_TRUE(views_tree->Unserialize(views_tree_update));
 
   AXTreeUpdate webpage_tree_update;
-  iframe.AddStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
-                            iframe_tree->GetAXTreeID().ToString());
+  iframe.AddChildTreeId(iframe_tree->GetAXTreeID());
   webpage_tree_update.nodes = {iframe};
   ASSERT_TRUE(webpage_tree->Unserialize(webpage_tree_update));
 
@@ -11122,8 +11119,7 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterEmbedObject) {
   root.child_ids = {embed_object.id};
 
   embed_object.role = ax::mojom::Role::kEmbeddedObject;
-  embed_object.AddStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
-                                  child_tree_id.ToString());
+  embed_object.AddChildTreeId(child_tree_id);
   SetTree(CreateAXTree({root, embed_object}));
 
   // Create tree manager for child tree.

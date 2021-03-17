@@ -3114,14 +3114,11 @@ TEST(AXTreeTest, ChildTreeIds) {
   initial_state.nodes[0].child_ids.push_back(3);
   initial_state.nodes[0].child_ids.push_back(4);
   initial_state.nodes[1].id = 2;
-  initial_state.nodes[1].AddStringAttribute(
-      ax::mojom::StringAttribute::kChildTreeId, tree_id_2.ToString());
+  initial_state.nodes[1].AddChildTreeId(tree_id_2);
   initial_state.nodes[2].id = 3;
-  initial_state.nodes[2].AddStringAttribute(
-      ax::mojom::StringAttribute::kChildTreeId, tree_id_3.ToString());
+  initial_state.nodes[2].AddChildTreeId(tree_id_3);
   initial_state.nodes[3].id = 4;
-  initial_state.nodes[3].AddStringAttribute(
-      ax::mojom::StringAttribute::kChildTreeId, tree_id_3.ToString());
+  initial_state.nodes[3].AddChildTreeId(tree_id_3);
   AXTree tree(initial_state);
 
   auto child_tree_1_nodes = tree.GetNodeIdsForChildTreeId(tree_id_1);
@@ -3138,8 +3135,7 @@ TEST(AXTreeTest, ChildTreeIds) {
 
   AXTreeUpdate update = initial_state;
   update.nodes[2].string_attributes.clear();
-  update.nodes[2].AddStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
-                                     tree_id_2.ToString());
+  update.nodes[2].AddChildTreeId(tree_id_2);
   update.nodes[3].string_attributes.clear();
 
   EXPECT_TRUE(tree.Unserialize(update));

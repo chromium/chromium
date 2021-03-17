@@ -22,6 +22,8 @@
 
 namespace ui {
 
+class AXTreeID;
+
 // Defines the type used for AXNode IDs.
 using AXNodeID = int32_t;
 
@@ -117,8 +119,11 @@ struct AX_BASE_EXPORT AXNodeData {
   // have wanted or what existing code already assumes.
   //
 
+  // This method cannot be used to set kChildTreeId due to a common
+  // misuse of base::UnguessableToken serialization. Use AddChildTreeId instead.
   void AddStringAttribute(ax::mojom::StringAttribute attribute,
                           const std::string& value);
+  void AddChildTreeId(const ui::AXTreeID& tree_id);
   void AddIntAttribute(ax::mojom::IntAttribute attribute, int32_t value);
   void AddFloatAttribute(ax::mojom::FloatAttribute attribute, float value);
   void AddBoolAttribute(ax::mojom::BoolAttribute attribute, bool value);

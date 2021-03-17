@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "base/unguessable_token.h"
+#include "base/util/values/values_util.h"
 #include "chromecast/browser/accessibility/flutter/flutter_semantics_node_wrapper.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/tts_controller.h"
@@ -475,7 +477,12 @@ TEST_F(AXTreeSourceFlutterTest, ResetFocus) {
   child = AddChild(&event2, root2, 2, 0, 0, 400, 600, false);
   child = AddChild(&event2, root2, 3, 400, 0, 400, 600, false);
   child = AddChild(&event2, root2, 4, 0, 0, 200, 200, false);
-  child->set_plugin_id("1234");
+
+  // We need a plugin id that is the right length. Here we use
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  std::string token_to_string =
+      util::UnguessableTokenToValue(token).GetString();
+  child->set_plugin_id(token_to_string);
 
   // focus should move to node with child tree
   CallNotifyAccessibilityEvent(&event2);

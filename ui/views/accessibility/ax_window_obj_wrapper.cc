@@ -145,25 +145,27 @@ void AXWindowObjWrapper::Serialize(ui::AXNodeData* out_node_data) {
   out_node_data->relative_bounds.bounds =
       gfx::RectF(window_->GetBoundsInScreen());
   std::string* child_ax_tree_id_ptr = window_->GetProperty(ui::kChildAXTreeID);
-  if (child_ax_tree_id_ptr && ui::AXTreeID::FromString(*child_ax_tree_id_ptr) !=
-                                  ui::AXTreeIDUnknown()) {
-    // Most often, child AX trees are parented to Views. We need to handle
-    // the case where they're not here, but we don't want the same AX tree
-    // to be a child of two different parents.
-    //
-    // To avoid this double-parenting, only add the child tree ID of this
-    // window if the top-level window doesn't have an associated Widget.
-    //
-    // Also, if this window is not visible, its child tree should also be
-    // non-visible so prune it.
-    if (!window_->GetToplevelWindow() ||
-        GetWidgetForWindow(window_->GetToplevelWindow()) ||
-        !window_->IsVisible()) {
-      return;
-    }
+  if (child_ax_tree_id_ptr) {
+    ui::AXTreeID child_ax_tree_id =
+        ui::AXTreeID::FromString(*child_ax_tree_id_ptr);
+    if (child_ax_tree_id != ui::AXTreeIDUnknown()) {
+      // Most often, child AX trees are parented to Views. We need to handle
+      // the case where they're not here, but we don't want the same AX tree
+      // to be a child of two different parents.
+      //
+      // To avoid this double-parenting, only add the child tree ID of this
+      // window if the top-level window doesn't have an associated Widget.
+      //
+      // Also, if this window is not visible, its child tree should also be
+      // non-visible so prune it.
+      if (!window_->GetToplevelWindow() ||
+          GetWidgetForWindow(window_->GetToplevelWindow()) ||
+          !window_->IsVisible()) {
+        return;
+      }
 
-    out_node_data->AddStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
-                                      *child_ax_tree_id_ptr);
+      out_node_data->AddChildTreeId(child_ax_tree_id);
+    }
   }
 
   out_node_data->AddStringAttribute(ax::mojom::StringAttribute::kClassName,

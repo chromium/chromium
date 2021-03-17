@@ -128,8 +128,7 @@ TEST_F(BrowserAccessibilityTest, PlatformChildIterator) {
   parent_tree_update.nodes[3].id = 4;
 
   parent_tree_update.nodes[4].id = 5;
-  parent_tree_update.nodes[4].AddStringAttribute(
-      ax::mojom::StringAttribute::kChildTreeId, child_tree_id.ToString());
+  parent_tree_update.nodes[4].AddChildTreeId(child_tree_id);
 
   parent_tree_update.nodes[5].id = 6;
   parent_tree_update.nodes[5].child_ids = {9};
@@ -857,8 +856,7 @@ TEST_F(BrowserAccessibilityTest, PortalName) {
 
   parent_tree_update.nodes[0].id = 1;
   parent_tree_update.nodes[0].role = ax::mojom::Role::kPortal;
-  parent_tree_update.nodes[0].AddStringAttribute(
-      ax::mojom::StringAttribute::kChildTreeId, child_tree_id.ToString());
+  parent_tree_update.nodes[0].AddChildTreeId(child_tree_id);
 
   ui::AXTreeUpdate child_tree_update;
   child_tree_update.tree_data.tree_id = child_tree_id;

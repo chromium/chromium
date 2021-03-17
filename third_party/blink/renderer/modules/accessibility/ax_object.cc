@@ -1230,9 +1230,7 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
       if (child_token && !(IsDetached() || ChildCountIncludingIgnored())) {
         ui::AXTreeID child_tree_id =
             ui::AXTreeID::FromToken(child_token.value());
-        node_data->AddStringAttribute(
-            ax::mojom::blink::StringAttribute::kChildTreeId,
-            child_tree_id.ToString());
+        node_data->AddChildTreeId(child_tree_id);
       }
     }
   }

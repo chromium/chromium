@@ -19,6 +19,7 @@
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/gfx/transform.h"
 
 namespace ui {
@@ -450,9 +451,19 @@ bool AXNodeData::GetHtmlAttribute(const char* html_attr,
 void AXNodeData::AddStringAttribute(ax::mojom::StringAttribute attribute,
                                     const std::string& value) {
   DCHECK_NE(attribute, ax::mojom::StringAttribute::kNone);
+  DCHECK_NE(attribute, ax::mojom::StringAttribute::kChildTreeId)
+      << "Use AddChildTreeId";
   if (HasStringAttribute(attribute))
     RemoveStringAttribute(attribute);
   string_attributes.push_back(std::make_pair(attribute, value));
+}
+
+void AXNodeData::AddChildTreeId(const ui::AXTreeID& tree_id) {
+  ax::mojom::StringAttribute attribute =
+      ax::mojom::StringAttribute::kChildTreeId;
+  if (HasStringAttribute(attribute))
+    RemoveStringAttribute(attribute);
+  string_attributes.push_back(std::make_pair(attribute, tree_id.ToString()));
 }
 
 void AXNodeData::AddIntAttribute(ax::mojom::IntAttribute attribute, int value) {

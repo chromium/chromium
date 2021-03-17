@@ -276,8 +276,7 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
       << "Please annotate child tree ids using "
          "ViewAccessibility::OverrideChildTreeID.";
   if (child_tree_id_) {
-    data->AddStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
-                             child_tree_id_->ToString());
+    data->AddChildTreeId(child_tree_id_.value());
   }
 }
 
