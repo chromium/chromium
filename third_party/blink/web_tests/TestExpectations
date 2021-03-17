@@ -5683,6 +5683,7 @@ crbug.com/1188098 [ Linux ] http/tests/devtools/elements/styles-1/color-aware-pr
 crbug.com/1072022 http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change.html [ Pass Timeout ]
 
 # Failing on WebKit Linux Leak
+crbug.com/1188098 [ Linux ] http/tests/devtools/indexeddb/database-structure.js [ Pass Failure ]
 crbug.com/1188098 [ Linux ] http/tests/devtools/oopif/oopif-presentation-console-messages.js [ Pass Crash Timeout Failure ]
 crbug.com/1188098 [ Linux ] http/tests/devtools/network/network-worker-fetch-blocked.js [ Pass Failure ]
 crbug.com/1188098 [ Linux ] http/tests/devtools/profiler/cpu-profiler-flame-chart-overview.js [ Pass Failure ]
