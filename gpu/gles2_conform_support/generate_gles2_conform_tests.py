@@ -52,7 +52,7 @@ def main(argv):
     out_dir = '.'
 
   out_filename = os.path.join(out_dir, 'gles2_conform_test_autogen.cc')
-  with open(out_filename, 'wb') as out_file:
+  with open(out_filename, 'w') as out_file:
     GenerateTests(out_file)
 
   return 0
