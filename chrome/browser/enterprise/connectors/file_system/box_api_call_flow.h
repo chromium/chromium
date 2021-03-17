@@ -17,6 +17,9 @@ namespace enterprise_connectors {
 // be implemented by subclasses.
 class BoxApiCallFlow : public OAuth2ApiCallFlow {
  public:
+  // Callback args are: whether request returned success, and
+  // net::HttpStatusCode.
+  using TaskCallback = base::OnceCallback<void(bool, int)>;
   BoxApiCallFlow();
   ~BoxApiCallFlow() override;
 
@@ -33,9 +36,11 @@ class BoxApiCallFlow : public OAuth2ApiCallFlow {
   static const size_t kWholeFileUploadMaxSize;
 };
 
-// Helper for finding the downloads folder in box.
+// Helper for finding the downloads folder in Box.
 class BoxFindUpstreamFolderApiCallFlow : public BoxApiCallFlow {
  public:
+  // Additional callback arg is: folder_id for the downloads folder found in
+  // Box.
   using TaskCallback = base::OnceCallback<void(bool, int, const std::string&)>;
   explicit BoxFindUpstreamFolderApiCallFlow(TaskCallback callback);
   ~BoxFindUpstreamFolderApiCallFlow() override;
@@ -61,6 +66,8 @@ class BoxFindUpstreamFolderApiCallFlow : public BoxApiCallFlow {
 // Helper for creating an upstream downloads folder in box.
 class BoxCreateUpstreamFolderApiCallFlow : public BoxApiCallFlow {
  public:
+  // Additional callback arg is: folder_id for the downloads folder created in
+  // Box.
   using TaskCallback = base::OnceCallback<void(bool, int, const std::string&)>;
   explicit BoxCreateUpstreamFolderApiCallFlow(TaskCallback callback);
   ~BoxCreateUpstreamFolderApiCallFlow() override;
@@ -89,7 +96,6 @@ class BoxCreateUpstreamFolderApiCallFlow : public BoxApiCallFlow {
 // downloads folder in box.
 class BoxWholeFileUploadApiCallFlow : public BoxApiCallFlow {
  public:
-  using TaskCallback = base::OnceCallback<void(bool, int)>;
   BoxWholeFileUploadApiCallFlow(TaskCallback callback,
                                 const std::string& folder_id,
                                 const base::FilePath& target_file_name,
@@ -157,8 +163,10 @@ class BoxWholeFileUploadApiCallFlow : public BoxApiCallFlow {
 // in Box.
 class BoxCreateUploadSessionApiCallFlow : public BoxApiCallFlow {
  public:
-  using Callback = base::OnceCallback<void(bool, int, base::Value)>;
-  BoxCreateUploadSessionApiCallFlow(Callback callback,
+  // Additional callback arg is: session endpoints provided in API request
+  // response.
+  using TaskCallback = base::OnceCallback<void(bool, int, base::Value)>;
+  BoxCreateUploadSessionApiCallFlow(TaskCallback callback,
                                     const std::string& folder_id,
                                     const size_t file_size,
                                     const std::string& file_name);
@@ -178,19 +186,65 @@ class BoxCreateUploadSessionApiCallFlow : public BoxApiCallFlow {
  private:
   void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
 
-  Callback callback_;
+  TaskCallback callback_;
   const std::string folder_id_;
   const size_t file_size_;
   const std::string file_name_;
   base::WeakPtrFactory<BoxCreateUploadSessionApiCallFlow> factory_{this};
 };
 
+// Helper for uploading a part of the file to Box.
+class BoxPartFileUploadApiCallFlow : public BoxApiCallFlow {
+ public:
+  // Additional callback arg is: uploaded file part info in API request response
+  // that needs to be attached in CommitUploadSession request.
+  // Callback invoked when the file part upload completes. The bool argument is
+  // true if the upload succeeded and false otherwise. The int argument
+  // represents the final HTTP status code of the request. The Value holds a
+  // JSON part object as returned by the Box Upload Part API, which is valid
+  // only on success.
+  using TaskCallback = base::OnceCallback<void(bool, int, base::Value)>;
+  BoxPartFileUploadApiCallFlow(TaskCallback callback,
+                               const std::string& upload_endpoint,
+                               const std::string& file_part_content,
+                               const size_t byte_from,
+                               const size_t byte_to,
+                               const size_t byte_total);
+  ~BoxPartFileUploadApiCallFlow() override;
+
+  // Helper method.
+  static std::string CreateFileDigest(const std::string& content);
+
+ protected:
+  // BoxApiCallFlow interface.
+  GURL CreateApiCallUrl() override;
+  net::HttpRequestHeaders CreateApiCallHeaders() override;
+  std::string CreateApiCallBody() override;
+  std::string CreateApiCallBodyContentType() override;
+  std::string GetRequestTypeForBody(const std::string& body) override;
+  bool IsExpectedSuccessCode(int code) const override;
+  void ProcessApiCallSuccess(const network::mojom::URLResponseHead* head,
+                             std::unique_ptr<std::string> body) override;
+  void ProcessApiCallFailure(int net_error,
+                             const network::mojom::URLResponseHead* head,
+                             std::unique_ptr<std::string> body) override;
+
+ private:
+  void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
+
+  TaskCallback callback_;
+  const GURL upload_endpoint_;
+  const std::string& part_content_;
+  const std::string content_range_;
+  const std::string sha_digest_;
+  base::WeakPtrFactory<BoxPartFileUploadApiCallFlow> factory_{this};
+};
+
 // Helper for committing an upload session once all the parts are uploaded
 // successfully.
 class BoxCommitUploadSessionApiCallFlow : public BoxApiCallFlow {
  public:
-  using Callback = base::OnceCallback<void(bool, int)>;
-  BoxCommitUploadSessionApiCallFlow(Callback callback,
+  BoxCommitUploadSessionApiCallFlow(TaskCallback callback,
                                     const std::string& commit_endpoint,
                                     const base::Value& parts,
                                     const std::string digest);
@@ -209,7 +263,7 @@ class BoxCommitUploadSessionApiCallFlow : public BoxApiCallFlow {
                              std::unique_ptr<std::string> body) override;
 
  private:
-  Callback callback_;
+  TaskCallback callback_;
   const std::string commit_endpoint_;
   const base::Value upload_session_parts_;
   const std::string sha_digest_;

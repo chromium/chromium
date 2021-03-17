@@ -10,6 +10,8 @@ const char kFileSystemBoxFindFolderUrl[] =
 const char kFileSystemBoxCreateFolderUrl[] = "https://api.box.com/2.0/folders";
 const char kFileSystemBoxWholeFileUploadUrl[] =
     "https://upload.box.com/api/2.0/files/content";
+
+const char kEmptyResponseBody[] = R"({})";
 const char kFileSystemBoxFindFolderResponseBody[] = R"({
     "entries": [
       {

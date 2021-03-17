@@ -6,7 +6,9 @@
 
 #include <string>
 
+#include "base/base64.h"
 #include "base/files/file_util.h"
+#include "base/hash/sha1.h"
 #include "base/json/json_writer.h"
 #include "base/task/post_task.h"
 #include "base/values.h"
@@ -441,7 +443,7 @@ void BoxWholeFileUploadApiCallFlow::ProcessApiCallFailure(
 // https://developer.box.com/reference/post-files-upload-sessions/
 
 BoxCreateUploadSessionApiCallFlow::BoxCreateUploadSessionApiCallFlow(
-    Callback callback,
+    TaskCallback callback,
     const std::string& folder_id,
     const size_t file_size,
     const std::string& file_name)
@@ -524,13 +526,123 @@ void BoxCreateUploadSessionApiCallFlow::OnJsonParsed(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// ChunkedUpload: PartFileUpload
+////////////////////////////////////////////////////////////////////////////////
+// BoxApiCallFlow interface.
+// API reference:
+// https://developer.box.com/reference/put-files-upload-sessions-id/
+
+BoxPartFileUploadApiCallFlow::BoxPartFileUploadApiCallFlow(
+    TaskCallback callback,
+    const std::string& upload_endpoint,
+    const std::string& file_part_content,
+    const size_t byte_from,
+    const size_t byte_to,
+    const size_t byte_total)
+    : callback_(std::move(callback)),
+      upload_endpoint_(upload_endpoint),
+      part_content_(file_part_content),
+      content_range_(base::StringPrintf("bytes %zu-%zu/%zu",
+                                        byte_from,
+                                        byte_to,
+                                        byte_total)),
+      sha_digest_(CreateFileDigest(file_part_content)) {
+  DCHECK(upload_endpoint_.is_valid());
+}
+
+BoxPartFileUploadApiCallFlow::~BoxPartFileUploadApiCallFlow() = default;
+
+std::string BoxPartFileUploadApiCallFlow::CreateFileDigest(
+    const std::string& content) {
+  // Box API requires the digest to be SHA1 and Base64 encoded.
+  std::string sha_encoded;
+  base::Base64Encode(base::SHA1HashString(content), &sha_encoded);
+
+  std::string sha_digest("sha=");
+  sha_digest.append(sha_encoded);
+  sha_digest.append("=");
+  return sha_digest;
+}
+
+GURL BoxPartFileUploadApiCallFlow::CreateApiCallUrl() {
+  return upload_endpoint_;
+}
+
+net::HttpRequestHeaders BoxPartFileUploadApiCallFlow::CreateApiCallHeaders() {
+  net::HttpRequestHeaders headers;
+  headers.SetHeader("content-range", content_range_);
+  headers.SetHeader("digest", sha_digest_);
+  return headers;
+}
+
+std::string BoxPartFileUploadApiCallFlow::CreateApiCallBody() {
+  return part_content_;
+}
+// TODO read the file in parts? #include "net/base/upload_file_element_reader.h"
+
+std::string BoxPartFileUploadApiCallFlow::CreateApiCallBodyContentType() {
+  return "application/octet-stream";
+}
+
+std::string BoxPartFileUploadApiCallFlow::GetRequestTypeForBody(
+    const std::string& body) {
+  CHECK(!body.empty());
+  return "PUT";
+}
+
+bool BoxPartFileUploadApiCallFlow::IsExpectedSuccessCode(int code) const {
+  return code == net::HTTP_OK;
+}
+
+void BoxPartFileUploadApiCallFlow::ProcessApiCallSuccess(
+    const network::mojom::URLResponseHead* head,
+    std::unique_ptr<std::string> body) {
+  DCHECK(body);
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      *body, base::BindOnce(&BoxPartFileUploadApiCallFlow::OnJsonParsed,
+                            factory_.GetWeakPtr()));
+}
+
+void BoxPartFileUploadApiCallFlow::ProcessApiCallFailure(
+    int net_error,
+    const network::mojom::URLResponseHead* head,
+    std::unique_ptr<std::string> body) {
+  auto response_code = head->headers->response_code();
+  DVLOG(1) << "[BoxApiCallFlow] PartFileUplaod failed. Error code "
+           << response_code;
+  std::move(callback_).Run(false, response_code, base::Value());
+}
+
+void BoxPartFileUploadApiCallFlow::OnJsonParsed(
+    data_decoder::DataDecoder::ValueOrError result) {
+  if (!result.value) {
+    DVLOG(1) << "[BoxApiCallFlow] PartFileUplaod OnJsonParsed Error: "
+             << (result.error ? result.error->data()
+                              : "<no error info available>");
+    std::move(callback_).Run(false, net::HTTP_OK, base::Value());
+    return;
+  }
+
+  base::Value* part = result.value ? result.value->FindPath("part") : nullptr;
+  if (!part) {
+    const char* msg =
+        result.value ? "<no part>"
+                     : (result.error ? result.error->data() : "<no error>");
+    DVLOG(1) << "BoxPartFileUploadApiCallFlow::OnJsonParsed: " << msg;
+    std::move(callback_).Run(false, net::HTTP_OK, base::Value());
+    return;
+  }
+  std::move(callback_).Run(true, net::HTTP_OK, std::move(*part));
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // ChunkedUpload: CommitUploadSession
 ////////////////////////////////////////////////////////////////////////////////
 // BoxApiCallFlow interface.
 // API reference:
 // https://developer.box.com/reference/post-files-upload-sessions-id-commit/
 BoxCommitUploadSessionApiCallFlow::BoxCommitUploadSessionApiCallFlow(
-    Callback callback,
+    TaskCallback callback,
     const std::string& commit_endpoint,
     const base::Value& parts,
     const std::string digest)

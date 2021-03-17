@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/base64.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -630,6 +631,146 @@ TEST_F(BoxCreateUploadSessionApiCallFlowTest, ProcessApiCallFailure) {
 
   ASSERT_EQ(response_code_, net::HTTP_BAD_REQUEST);
   ASSERT_FALSE(processed_success_);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// PartFileUpload
+////////////////////////////////////////////////////////////////////////////////
+
+class BoxPartFileUploadApiCallFlowForTest
+    : public BoxPartFileUploadApiCallFlow {
+ public:
+  using BoxPartFileUploadApiCallFlow::BoxPartFileUploadApiCallFlow;
+  using BoxPartFileUploadApiCallFlow::CreateApiCallBody;
+  using BoxPartFileUploadApiCallFlow::CreateApiCallBodyContentType;
+  using BoxPartFileUploadApiCallFlow::CreateApiCallHeaders;
+  using BoxPartFileUploadApiCallFlow::CreateApiCallUrl;
+  using BoxPartFileUploadApiCallFlow::CreateFileDigest;
+  using BoxPartFileUploadApiCallFlow::GetRequestTypeForBody;
+  using BoxPartFileUploadApiCallFlow::IsExpectedSuccessCode;
+  using BoxPartFileUploadApiCallFlow::ProcessApiCallFailure;
+  using BoxPartFileUploadApiCallFlow::ProcessApiCallSuccess;
+};
+
+class BoxPartFileUploadApiCallFlowTest
+    : public BoxApiCallFlowTest<BoxPartFileUploadApiCallFlowForTest> {
+ protected:
+  BoxPartFileUploadApiCallFlowTest()
+      : file_content_("random file part content"),
+        expected_sha_(
+            BoxPartFileUploadApiCallFlow::CreateFileDigest(file_content_)),
+        expected_content_range_(base::StringPrintf("bytes 0-%zu/%zu",
+                                                   file_content_.size(),
+                                                   file_content_.size())) {}
+
+  void SetUp() override {
+    flow_ = std::make_unique<BoxPartFileUploadApiCallFlowForTest>(
+        base::BindOnce(&BoxPartFileUploadApiCallFlowTest::OnResponse,
+                       factory_.GetWeakPtr()),
+        upload_endpoint_, file_content_, 0, file_content_.size(),
+        file_content_.size());
+  }
+
+  void OnResponse(bool success, int response_code, base::Value) {
+    processed_success_ = success;
+    response_code_ = response_code;
+    if (quit_closure_)
+      std::move(quit_closure_).Run();
+  }
+
+  const std::string upload_endpoint_ = "https://provider.com/upload/id=12345";
+  const std::string file_content_;
+  const std::string expected_sha_;
+  const std::string expected_content_range_;
+
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  data_decoder::test::InProcessDataDecoder decoder_;
+  base::OnceClosure quit_closure_;
+  base::WeakPtrFactory<BoxPartFileUploadApiCallFlowTest> factory_{this};
+};
+
+TEST_F(BoxPartFileUploadApiCallFlowTest, CreateApiCallUrl) {
+  ASSERT_EQ(flow_->CreateApiCallUrl(), upload_endpoint_);
+}
+
+TEST_F(BoxPartFileUploadApiCallFlowTest, CreateApiCallHeaders) {
+  net::HttpRequestHeaders headers = flow_->CreateApiCallHeaders();
+  std::string digest;
+  headers.GetHeader("digest", &digest);
+  base::Base64Decode(digest, &digest);
+  EXPECT_EQ(digest, expected_sha_);
+
+  std::string content_range;
+  headers.GetHeader("content-range", &content_range);
+  EXPECT_EQ(content_range, expected_content_range_) << headers.ToString();
+}
+
+TEST_F(BoxPartFileUploadApiCallFlowTest, CreateApiCallBody) {
+  std::string body = flow_->CreateApiCallBody();
+  ASSERT_EQ(body, file_content_);
+}
+
+TEST_F(BoxPartFileUploadApiCallFlowTest, CreateApiCallBodyContentType) {
+  std::string type = flow_->CreateApiCallBodyContentType();
+  ASSERT_EQ(type, "application/octet-stream");
+}
+
+TEST_F(BoxPartFileUploadApiCallFlowTest, GetRequestTypeForBody) {
+  std::string type = flow_->GetRequestTypeForBody(file_content_);
+  ASSERT_EQ(type, "PUT");
+}
+
+TEST_F(BoxPartFileUploadApiCallFlowTest, IsExpectedSuccessCode) {
+  ASSERT_TRUE(flow_->IsExpectedSuccessCode(200));
+  ASSERT_FALSE(flow_->IsExpectedSuccessCode(201));
+  ASSERT_FALSE(flow_->IsExpectedSuccessCode(202));
+  ASSERT_FALSE(flow_->IsExpectedSuccessCode(400));
+  ASSERT_FALSE(flow_->IsExpectedSuccessCode(404));
+  ASSERT_FALSE(flow_->IsExpectedSuccessCode(409));
+  ASSERT_FALSE(flow_->IsExpectedSuccessCode(412));
+}
+
+TEST_F(BoxPartFileUploadApiCallFlowTest, ProcessApiCallSuccess) {
+  auto http_head = network::CreateURLResponseHead(net::HTTP_OK);
+  std::string body(R"({
+    "part": {
+    "offset": 16777216,
+    "part_id": "6F2D3486",
+    "sha1": "134b65991ed521fcfe4724b7d814ab8ded5185dc",
+    "size": 3222784
+  }
+  })");
+  flow_->ProcessApiCallSuccess(http_head.get(),
+                               std::make_unique<std::string>(body));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(processed_success_);
+  ASSERT_EQ(response_code_, net::HTTP_OK);
+}
+
+TEST_F(BoxPartFileUploadApiCallFlowTest, ProcessApiCallSuccess_ParseError) {
+  auto http_head = network::CreateURLResponseHead(net::HTTP_OK);
+  flow_->ProcessApiCallSuccess(http_head.get(),
+                               std::make_unique<std::string>());
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(processed_success_);
+  ASSERT_EQ(response_code_, net::HTTP_OK);
+}
+
+TEST_F(BoxPartFileUploadApiCallFlowTest, ProcessApiCallSuccess_EmptyResponse) {
+  auto http_head = network::CreateURLResponseHead(net::HTTP_OK);
+  flow_->ProcessApiCallSuccess(
+      http_head.get(), std::make_unique<std::string>(kEmptyResponseBody));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(processed_success_);
+  ASSERT_EQ(response_code_, net::HTTP_OK);
+}
+
+TEST_F(BoxPartFileUploadApiCallFlowTest, ProcessApiCallFailure) {
+  auto http_head = network::CreateURLResponseHead(net::HTTP_CONFLICT);
+  flow_->ProcessApiCallFailure(net::OK, http_head.get(), {});
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(processed_success_);
+  ASSERT_EQ(response_code_, net::HTTP_CONFLICT);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

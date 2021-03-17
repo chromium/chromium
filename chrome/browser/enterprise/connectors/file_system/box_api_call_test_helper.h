@@ -12,9 +12,10 @@ extern const char kFileSystemBoxFindFolderUrl[];
 extern const char kFileSystemBoxCreateFolderUrl[];
 extern const char kFileSystemBoxWholeFileUploadUrl[];
 
-// Expected responses for calls to Box endpoints; used for
-// network::TestURLLoaderFactory.
+// Expected responses for calls to Box endpoints.
 
+// Empty response body.
+extern const char kEmptyResponseBody[];
 // Expected response from kFileSystemBoxFindFolderUrl.
 extern const char kFileSystemBoxFindFolderResponseBody[];
 // Expected folder id extracted from kFileSystemBoxFindFolderResponseBody.
