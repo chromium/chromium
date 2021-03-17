@@ -31,7 +31,7 @@
   {
     "name": "abusive-notification-permission-revocation",
     "owners": [ "engedy", "mkwst", "andypaicu", "hkamila", "elklm" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   },
   {
     "name": "accessible-pdf-form",
@@ -4349,7 +4349,7 @@
   {
     "name": "quiet-notification-prompts",
     "owners": [ "engedy", "mkwst", "andypaicu", "hkamila" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   },
   {
     "name": "raw-audio-capture",
