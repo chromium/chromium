@@ -22,6 +22,7 @@ import java.util.List;
  * {@link generateInitialEntry}.
  */
 public class EntryManager {
+    private static final int KB_IN_BYTES = 1024;
     // List of all entries in correspondence of the webpage.
     private List<LongScreenshotsEntry> mEntries;
     // List of entries that are queued to generate the bitmap. Entries should only be queued
@@ -30,6 +31,8 @@ public class EntryManager {
     private BitmapGenerator mGenerator;
     private @EntryStatus int mGeneratorStatus;
     private ScreenshotBoundsManager mBoundsManager;
+    private int mMemoryUsedInKb;
+    private int mMaxMemoryUsageInKb;
 
     /**
      * @param context An instance of current Android {@link Context}.
@@ -43,6 +46,8 @@ public class EntryManager {
         mGenerator = new BitmapGenerator(tab, mBoundsManager, createBitmapGeneratorCallback());
         mGenerator.captureTab();
         updateGeneratorStatus(EntryStatus.CAPTURE_IN_PROGRESS);
+        // TODO(cb/1153969): Make this a finch param instead.
+        mMaxMemoryUsageInKb = 16 * 1024;
     }
 
     /**
@@ -51,8 +56,8 @@ public class EntryManager {
      * generation and retrieve the bitmap.
      */
     public LongScreenshotsEntry generateInitialEntry() {
-        LongScreenshotsEntry entry =
-                new LongScreenshotsEntry(mGenerator, mBoundsManager.getInitialEntryBounds());
+        LongScreenshotsEntry entry = new LongScreenshotsEntry(
+                mGenerator, mBoundsManager.getInitialEntryBounds(), this::updateMemoryUsage);
         processEntry(entry, false);
         // Pre-compute these entries so that they are ready to go when the user starts scrolling.
         getPreviousEntry(entry.getId());
@@ -82,14 +87,19 @@ public class EntryManager {
             return mEntries.get(found - 1);
         }
 
+        // Before generating a new bitmap, make sure too much memory has not already been used.
+        if (mMemoryUsedInKb >= mMaxMemoryUsageInKb) {
+            return LongScreenshotsEntry.createEntryWithStatus(EntryStatus.INSUFFICIENT_MEMORY);
+        }
+
         Rect bounds = mBoundsManager.calculateClipBoundsAbove(mEntries.get(0).getId());
         if (bounds == null) {
-            return LongScreenshotsEntry.createEntryWithStatus(
-                    null, bounds, EntryStatus.BOUNDS_ABOVE_CAPTURE);
+            return LongScreenshotsEntry.createEntryWithStatus(EntryStatus.BOUNDS_ABOVE_CAPTURE);
         }
 
         // found = 0
-        LongScreenshotsEntry newEntry = new LongScreenshotsEntry(mGenerator, bounds);
+        LongScreenshotsEntry newEntry =
+                new LongScreenshotsEntry(mGenerator, bounds, this::updateMemoryUsage);
         processEntry(newEntry, true);
         return newEntry;
     }
@@ -116,16 +126,21 @@ public class EntryManager {
             return mEntries.get(found + 1);
         }
 
+        // Before generating a new bitmap, make sure too much memory has not already been used.
+        if (mMemoryUsedInKb >= mMaxMemoryUsageInKb) {
+            return LongScreenshotsEntry.createEntryWithStatus(EntryStatus.INSUFFICIENT_MEMORY);
+        }
+
         // found = last entry in the arraylist
         int newStartY = mEntries.get(mEntries.size() - 1).getEndYAxis() + 1;
 
         Rect bounds = mBoundsManager.calculateClipBoundsBelow(newStartY);
         if (bounds == null) {
-            return LongScreenshotsEntry.createEntryWithStatus(
-                    null, bounds, EntryStatus.BOUNDS_BELOW_CAPTURE);
+            return LongScreenshotsEntry.createEntryWithStatus(EntryStatus.BOUNDS_BELOW_CAPTURE);
         }
 
-        LongScreenshotsEntry newEntry = new LongScreenshotsEntry(mGenerator, bounds);
+        LongScreenshotsEntry newEntry =
+                new LongScreenshotsEntry(mGenerator, bounds, this::updateMemoryUsage);
         processEntry(newEntry, false);
         return newEntry;
     }
@@ -165,6 +180,10 @@ public class EntryManager {
                 entry.updateStatus(status);
             }
         }
+    }
+
+    private void updateMemoryUsage(int bytedUsed) {
+        mMemoryUsedInKb += (bytedUsed / KB_IN_BYTES);
     }
 
     /**

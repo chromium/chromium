@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.share.long_screenshots.bitmap_generation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
@@ -109,8 +110,13 @@ public class LongScreenshotsEntryTest {
     public void testSuccessfulEntry() {
         TestBitmapGenerator testGenerator = new TestBitmapGenerator(new Rect(0, 0, 200, 1000));
 
-        LongScreenshotsEntry entry =
-                new LongScreenshotsEntry(testGenerator, new Rect(0, 1000, 0, 2000));
+        LongScreenshotsEntry entry = new LongScreenshotsEntry(
+                testGenerator, new Rect(0, 1000, 0, 2000), new Callback<Integer>() {
+                    @Override
+                    public void onResult(Integer result) {
+                        assertEquals((int) result, 2097152);
+                    }
+                });
         TestEntryListener entryListener = new TestEntryListener();
         entry.setListener(entryListener);
         entry.generateBitmap();
@@ -124,8 +130,13 @@ public class LongScreenshotsEntryTest {
         TestBitmapGenerator testGenerator = new TestBitmapGenerator(new Rect(0, 0, 200, 1000));
         testGenerator.throwErrorOnComposite();
 
-        LongScreenshotsEntry entry =
-                new LongScreenshotsEntry(testGenerator, new Rect(0, 1000, 0, 2000));
+        LongScreenshotsEntry entry = new LongScreenshotsEntry(
+                testGenerator, new Rect(0, 1000, 0, 2000), new Callback<Integer>() {
+                    @Override
+                    public void onResult(Integer result) {
+                        fail("MemoryUsage should not be called");
+                    }
+                });
         TestEntryListener entryListener = new TestEntryListener();
         entry.setListener(entryListener);
         entry.generateBitmap();

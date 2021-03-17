@@ -10,6 +10,8 @@ import android.graphics.Rect;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -33,6 +35,7 @@ public class LongScreenshotsEntry {
     // Generated bitmap
     private Bitmap mGeneratedBitmap;
     private EntryListener mEntryListener;
+    private Callback<Integer> mMemoryTracker;
 
     @IntDef({EntryStatus.UNKNOWN, EntryStatus.INSUFFICIENT_MEMORY, EntryStatus.GENERATION_ERROR,
             EntryStatus.BITMAP_GENERATED, EntryStatus.CAPTURE_COMPLETE,
@@ -67,14 +70,15 @@ public class LongScreenshotsEntry {
      * @param generator BitmapGenerator to be used to capture and composite the website.
      * @param bounds The bounds of the entry.
      */
-    public LongScreenshotsEntry(BitmapGenerator generator, Rect bounds) {
+    public LongScreenshotsEntry(
+            BitmapGenerator generator, Rect bounds, Callback<Integer> memoryTracker) {
         mRect = bounds;
         mGenerator = generator;
+        mMemoryTracker = memoryTracker;
     }
 
-    public static LongScreenshotsEntry createEntryWithStatus(
-            BitmapGenerator generator, Rect bounds, @EntryStatus int status) {
-        LongScreenshotsEntry entry = new LongScreenshotsEntry(generator, bounds);
+    static LongScreenshotsEntry createEntryWithStatus(@EntryStatus int status) {
+        LongScreenshotsEntry entry = new LongScreenshotsEntry(null, null, null);
         entry.updateStatus(status);
         return entry;
     }
@@ -99,11 +103,11 @@ public class LongScreenshotsEntry {
         return mRect == null ? -1 : mRect.top;
     }
 
-    public int getEndYAxis() {
+    int getEndYAxis() {
         return mRect == null ? -1 : mRect.bottom;
     }
 
-    public void generateBitmap() {
+    void generateBitmap() {
         if (mGenerator == null) {
             updateStatus(EntryStatus.GENERATION_ERROR);
             return;
@@ -136,6 +140,10 @@ public class LongScreenshotsEntry {
     private void onBitmapGenerated(Bitmap bitmap) {
         // TODO(tgupta): Add metrics logging here.
         mGeneratedBitmap = bitmap;
+
+        if (mMemoryTracker != null && mGeneratedBitmap != null) {
+            mMemoryTracker.onResult(mGeneratedBitmap.getAllocationByteCount());
+        }
         updateStatus(EntryStatus.BITMAP_GENERATED);
     }
 
@@ -143,14 +151,14 @@ public class LongScreenshotsEntry {
         updateStatus(EntryStatus.GENERATION_ERROR);
     }
 
-    public void updateStatus(@EntryStatus int status) {
+    void updateStatus(@EntryStatus int status) {
         mCurrentStatus = status;
         if (mEntryListener != null) {
             mEntryListener.onResult(mCurrentStatus);
         }
     }
 
-    public void destroy() {
+    void destroy() {
         if (mGenerator != null) {
             mGenerator.destroy();
             mGenerator = null;
