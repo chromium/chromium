@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/webcodecs/encoded_audio_metadata.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
@@ -19,7 +18,9 @@ class MODULES_EXPORT EncodedAudioChunk final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  EncodedAudioChunk(EncodedAudioMetadata metadata, DOMArrayBuffer* buffer);
+  EncodedAudioChunk(base::TimeDelta timestamp,
+                    bool key_frame,
+                    DOMArrayBuffer* buffer);
 
   static EncodedAudioChunk* Create(const EncodedAudioChunkInit* init);
 
@@ -34,7 +35,8 @@ class MODULES_EXPORT EncodedAudioChunk final : public ScriptWrappable {
   }
 
  private:
-  EncodedAudioMetadata metadata_;
+  base::TimeDelta timestamp_;
+  bool key_frame_ = false;
   Member<DOMArrayBuffer> buffer_;
 };
 

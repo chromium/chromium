@@ -13,9 +13,9 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_frame_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk_metadata.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk.h"
-#include "third_party/blink/renderer/modules/webcodecs/encoded_audio_metadata.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
@@ -74,7 +74,7 @@ void AudioEncoder::ProcessConfigure(Request* request) {
   };
 
   stall_request_processing_ = true;
-  produced_first_output_ = false;
+  first_output_after_configure_ = true;
   media_encoder_->Initialize(
       active_config_->options, std::move(output_cb),
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
@@ -231,25 +231,27 @@ void AudioEncoder::CallOutputCallback(
     uint32_t reset_count,
     media::EncodedAudioBuffer encoded_buffer,
     base::Optional<media::AudioEncoder::CodecDescription> codec_desc) {
+  DCHECK(active_config);
   if (!script_state_->ContextIsValid() || !output_callback_ ||
       state_.AsEnum() != V8CodecState::Enum::kConfigured ||
       reset_count != reset_count_)
     return;
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  EncodedAudioMetadata metadata;
-  metadata.timestamp = encoded_buffer.timestamp - base::TimeTicks();
+  auto timestamp = encoded_buffer.timestamp - base::TimeTicks();
   auto deleter = [](void* data, size_t length, void*) {
     delete[] static_cast<uint8_t*>(data);
   };
   ArrayBufferContents data(encoded_buffer.encoded_data.release(),
                            encoded_buffer.encoded_data_size, deleter);
   auto* dom_array = MakeGarbageCollected<DOMArrayBuffer>(std::move(data));
-  auto* chunk = MakeGarbageCollected<EncodedAudioChunk>(metadata, dom_array);
+  auto* chunk =
+      MakeGarbageCollected<EncodedAudioChunk>(timestamp, false, dom_array);
 
-  AudioDecoderConfig* decoder_config = nullptr;
-  if (!produced_first_output_ || codec_desc.has_value()) {
-    decoder_config = MakeGarbageCollected<AudioDecoderConfig>();
+  auto* metadata = MakeGarbageCollected<EncodedAudioChunkMetadata>();
+  if (first_output_after_configure_ || codec_desc.has_value()) {
+    first_output_after_configure_ = false;
+    auto* decoder_config = MakeGarbageCollected<AudioDecoderConfig>();
     decoder_config->setCodec(active_config->codec_string);
     decoder_config->setSampleRate(active_config->options.sample_rate);
     decoder_config->setNumberOfChannels(active_config->options.channels);
@@ -259,11 +261,11 @@ void AudioEncoder::CallOutputCallback(
       decoder_config->setDescription(
           ArrayBufferOrArrayBufferView::FromArrayBuffer(desc_array_buf));
     }
-    produced_first_output_ = true;
+    metadata->setDecoderConfig(decoder_config);
   }
 
   ScriptState::Scope scope(script_state_);
-  output_callback_->InvokeAndReportException(nullptr, chunk, decoder_config);
+  output_callback_->InvokeAndReportException(nullptr, chunk, metadata);
 }
 
 }  // namespace blink

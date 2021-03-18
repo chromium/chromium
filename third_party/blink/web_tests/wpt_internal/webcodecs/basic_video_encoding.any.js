@@ -27,7 +27,7 @@ async function encode_decode_test(codec, acc, avc_format) {
   const encoder_init = {
     output(chunk, metadata) {
       let config = metadata.decoderConfig;
-      if (decoder.state != "configured" || config.description) {
+      if (config) {
         decoder.configure(config);
       }
       decoder.decode(chunk);

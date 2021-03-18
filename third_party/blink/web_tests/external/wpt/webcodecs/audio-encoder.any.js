@@ -183,7 +183,8 @@ promise_test(async t => {
 
   let encoder_init = {
     error: t.unreached_func("Encoder error"),
-    output: (chunk, config) => {
+    output: (chunk, metadata) => {
+      let config = metadata.decoderConfig;
       if (config)
         decoder.configure(config);
       decoder.decode(chunk);
@@ -254,7 +255,8 @@ promise_test(async t => {
 
   let init = {
     error: t.unreached_func("Encoder error"),
-    output: (chunk, config) => {
+    output: (chunk, metadata) => {
+      let config = metadata.decoderConfig;
       // Only the first invocation of the output callback is supposed to have
       // a |config| in it.
       output_count++;

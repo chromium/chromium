@@ -579,6 +579,7 @@ void VideoEncoder::ProcessReconfigure(Request* request) {
             WrapCrossThreadPersistent(self->active_config_.Get()),
             self->reset_count_));
 
+    self->first_output_after_configure_ = true;
     self->media_encoder_->ChangeOptions(
         self->active_config_->options, std::move(output_cb),
         ConvertToBaseOnceCallback(CrossThreadBindOnce(
@@ -645,20 +646,23 @@ void VideoEncoder::CallOutputCallback(
   auto* chunk = MakeGarbageCollected<EncodedVideoChunk>(
       output.timestamp, output.key_frame, dom_array);
 
-  auto* decoder_config = MakeGarbageCollected<VideoDecoderConfig>();
-  decoder_config->setCodec(active_config->codec_string);
-  decoder_config->setCodedHeight(active_config->options.frame_size.height());
-  decoder_config->setCodedWidth(active_config->options.frame_size.width());
-  if (codec_desc.has_value()) {
-    auto* desc_array_buf = DOMArrayBuffer::Create(codec_desc.value().data(),
-                                                  codec_desc.value().size());
-    decoder_config->setDescription(
-        ArrayBufferOrArrayBufferView::FromArrayBuffer(desc_array_buf));
-  }
-
   auto* metadata = MakeGarbageCollected<EncodedVideoChunkMetadata>();
-  metadata->setDecoderConfig(decoder_config);
   metadata->setTemporalLayerId(output.temporal_id);
+
+  if (first_output_after_configure_ || codec_desc.has_value()) {
+    first_output_after_configure_ = false;
+    auto* decoder_config = MakeGarbageCollected<VideoDecoderConfig>();
+    decoder_config->setCodec(active_config->codec_string);
+    decoder_config->setCodedHeight(active_config->options.frame_size.height());
+    decoder_config->setCodedWidth(active_config->options.frame_size.width());
+    if (codec_desc.has_value()) {
+      auto* desc_array_buf = DOMArrayBuffer::Create(codec_desc.value().data(),
+                                                    codec_desc.value().size());
+      decoder_config->setDescription(
+          ArrayBufferOrArrayBufferView::FromArrayBuffer(desc_array_buf));
+    }
+    metadata->setDecoderConfig(decoder_config);
+  }
 
   ScriptState::Scope scope(script_state_);
   output_callback_->InvokeAndReportException(nullptr, chunk, metadata);

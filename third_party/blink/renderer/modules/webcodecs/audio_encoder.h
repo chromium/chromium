@@ -89,8 +89,6 @@ class MODULES_EXPORT AudioEncoder final
       uint32_t reset_count,
       media::EncodedAudioBuffer encoded_buffer,
       base::Optional<media::AudioEncoder::CodecDescription> codec_desc);
-
-  bool produced_first_output_ = false;
 };
 
 }  // namespace blink

@@ -128,6 +128,8 @@ class MODULES_EXPORT EncoderBase
   // till the current requests are finished.
   bool stall_request_processing_ = false;
 
+  bool first_output_after_configure_ = true;
+
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
