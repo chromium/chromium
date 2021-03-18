@@ -305,6 +305,7 @@ public class AutofillAssistantOverlayIntegrationTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1182103")
     public void testShowCastOnIFrameElementInScrollIFrame() throws Exception {
         SelectorProto element =
                 (SelectorProto) SelectorProto.newBuilder()
