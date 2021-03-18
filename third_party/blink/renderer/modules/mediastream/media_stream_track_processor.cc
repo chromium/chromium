@@ -142,7 +142,8 @@ void MediaStreamTrackProcessor::CreateVideoSourceStream(
       MakeGarbageCollected<MediaStreamVideoTrackUnderlyingSource>(
           script_state, input_track_->Component(), buffer_size_);
   source_stream_ = ReadableStream::CreateWithCountQueueingStrategy(
-      script_state, video_underlying_source_, /*high_water_mark=*/0,
+      script_state, video_underlying_source_,
+      /*high_water_mark=*/0,
       video_underlying_source_->GetStreamTransferOptimizer());
 
   source_closer_ = MakeGarbageCollected<UnderlyingSourceCloser>(

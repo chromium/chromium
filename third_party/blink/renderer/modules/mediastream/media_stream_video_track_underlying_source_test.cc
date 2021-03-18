@@ -192,6 +192,7 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
   ScriptState* script_state = v8_scope.GetScriptState();
   auto* track = CreateTrack(v8_scope.GetExecutionContext());
   auto* source = CreateSource(script_state, track);
+
   // Create a stream to ensure there is a controller associated to the source.
   ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
 

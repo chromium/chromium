@@ -11,6 +11,8 @@ blink_modules_sources("mediastream") {
     "apply_constraints_request.cc",
     "apply_constraints_request.h",
     "dom_window_media_stream.h",
+    "frame_queue_underlying_source.cc",
+    "frame_queue_underlying_source.h",
     "identifiability_metrics.cc",
     "identifiability_metrics.h",
     "input_device_info.cc",

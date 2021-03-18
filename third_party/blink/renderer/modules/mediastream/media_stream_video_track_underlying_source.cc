@@ -4,19 +4,13 @@
 
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track_underlying_source.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
-#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
-#include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
-#include "third_party/blink/renderer/platform/bindings/exception_code.h"
-#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
-
 namespace blink {
 
 // Temporary workaround for crbug.com/1182497.
@@ -31,7 +25,7 @@ class StreamTransferNotifier final
 
  public:
   StreamTransferNotifier(
-      scoped_refptr<base::SingleThreadTaskRunner> original_runner,
+      scoped_refptr<base::SequencedTaskRunner> original_runner,
       OptimizerCallback callback)
       : original_runner_(std::move(original_runner)),
         callback_(std::move(callback)) {}
@@ -47,7 +41,7 @@ class StreamTransferNotifier final
   }
 
  private:
-  scoped_refptr<base::SingleThreadTaskRunner> original_runner_;
+  scoped_refptr<base::SequencedTaskRunner> original_runner_;
   OptimizerCallback callback_;
 };
 
@@ -55,86 +49,26 @@ MediaStreamVideoTrackUnderlyingSource::MediaStreamVideoTrackUnderlyingSource(
     ScriptState* script_state,
     MediaStreamComponent* track,
     wtf_size_t max_queue_size)
-    : UnderlyingSourceBase(script_state),
-      main_task_runner_(ExecutionContext::From(script_state)
-                            ->GetTaskRunner(TaskType::kInternalMediaRealTime)),
-      track_(track),
-      max_queue_size_(std::max(1u, max_queue_size)) {
+    : FrameQueueUnderlyingSource(script_state, max_queue_size), track_(track) {
   DCHECK(track_);
 }
 
-ScriptPromise MediaStreamVideoTrackUnderlyingSource::pull(
-    ScriptState* script_state) {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
-  if (!queue_.empty()) {
-    ProcessPullRequest();
-  } else {
-    is_pending_pull_ = true;
-  }
-
-  DCHECK_LT(queue_.size(), max_queue_size_);
-  return ScriptPromise::CastUndefined(script_state);
-}
-
-ScriptPromise MediaStreamVideoTrackUnderlyingSource::Start(
-    ScriptState* script_state) {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
-  MediaStreamVideoTrack* video_track = MediaStreamVideoTrack::From(track_);
-  if (!video_track) {
-    return ScriptPromise::RejectWithDOMException(
-        script_state,
-        DOMException::Create(
-            "No input track",
-            DOMException::GetErrorName(DOMExceptionCode::kInvalidStateError)));
-  }
-  ConnectToTrack(WebMediaStreamTrack(track_),
-                 ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-                     &MediaStreamVideoTrackUnderlyingSource::OnFrameFromTrack,
-                     WrapCrossThreadPersistent(this))),
-                 /*is_sink_secure=*/false);
-  return ScriptPromise::CastUndefined(script_state);
-}
-
-ScriptPromise MediaStreamVideoTrackUnderlyingSource::Cancel(
-    ScriptState* script_state,
-    ScriptValue reason) {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
-  DisconnectFromTrack();
-  return ScriptPromise::CastUndefined(script_state);
-}
-
 void MediaStreamVideoTrackUnderlyingSource::Trace(Visitor* visitor) const {
+  FrameQueueUnderlyingSource::Trace(visitor);
   visitor->Trace(track_);
-  UnderlyingSourceBase::Trace(visitor);
-}
-
-double MediaStreamVideoTrackUnderlyingSource::DesiredSizeForTesting() const {
-  return Controller()->DesiredSize();
-}
-
-void MediaStreamVideoTrackUnderlyingSource::ContextDestroyed() {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
-  UnderlyingSourceBase::ContextDestroyed();
-  queue_.clear();
-}
-
-void MediaStreamVideoTrackUnderlyingSource::Close() {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
-  DisconnectFromTrack();
-  if (Controller())
-    Controller()->Close();
-  queue_.clear();
 }
 
 std::unique_ptr<ReadableStreamTransferringOptimizer>
 MediaStreamVideoTrackUnderlyingSource::GetStreamTransferOptimizer() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   auto stream_transferred_cb = [](MediaStreamVideoTrackUnderlyingSource* self) {
     if (self)
-      self->stream_was_transferred_ = true;
+      self->SetStreamWasTransferred();
   };
 
   return std::make_unique<StreamTransferNotifier>(
-      main_task_runner_,
+      Thread::Current()->GetTaskRunner(),
       CrossThreadBindOnce(stream_transferred_cb,
                           WrapCrossThreadWeakPersistent(this)));
 }
@@ -144,56 +78,26 @@ void MediaStreamVideoTrackUnderlyingSource::OnFrameFromTrack(
     std::vector<scoped_refptr<media::VideoFrame>> /*scaled_media_frames*/,
     base::TimeTicks estimated_capture_time) {
   // The scaled video frames are currently ignored.
-  PostCrossThreadTask(
-      *main_task_runner_, FROM_HERE,
-      CrossThreadBindOnce(
-          &MediaStreamVideoTrackUnderlyingSource::OnFrameFromTrackOnMainThread,
-          WrapCrossThreadPersistent(this), std::move(media_frame),
-          estimated_capture_time));
+  QueueFrame(std::move(media_frame));
 }
 
-void MediaStreamVideoTrackUnderlyingSource::OnFrameFromTrackOnMainThread(
-    scoped_refptr<media::VideoFrame> media_frame,
-    base::TimeTicks /*estimated_capture_time*/) {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
-  DCHECK_LE(queue_.size(), max_queue_size_);
+bool MediaStreamVideoTrackUnderlyingSource::StartFrameDelivery() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  MediaStreamVideoTrack* video_track = MediaStreamVideoTrack::From(track_);
+  if (!video_track)
+    return false;
 
-  // If the |queue_| is empty and the consumer has signaled a pull, bypass
-  // |queue_| and send the frame directly to the stream controller.
-  if (queue_.empty() && is_pending_pull_) {
-    SendFrameToStream(std::move(media_frame));
-    return;
-  }
-
-  if (queue_.size() == max_queue_size_)
-    queue_.pop_front();
-
-  queue_.push_back(std::move(media_frame));
-  if (is_pending_pull_) {
-    ProcessPullRequest();
-  }
+  ConnectToTrack(WebMediaStreamTrack(track_),
+                 ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+                     &MediaStreamVideoTrackUnderlyingSource::OnFrameFromTrack,
+                     WrapCrossThreadPersistent(this))),
+                 /*is_sink_secure=*/false);
+  return true;
 }
 
-void MediaStreamVideoTrackUnderlyingSource::ProcessPullRequest() {
-  DCHECK(!queue_.empty());
-  SendFrameToStream(std::move(queue_.front()));
-  queue_.pop_front();
-}
-
-void MediaStreamVideoTrackUnderlyingSource::SendFrameToStream(
-    scoped_refptr<media::VideoFrame> media_frame) {
-  DCHECK(media_frame);
-  if (!Controller())
-    return;
-
-  VideoFrame* video_frame = MakeGarbageCollected<VideoFrame>(
-      std::move(media_frame), GetExecutionContext());
-
-  if (stream_was_transferred_)
-    video_frame->handle()->SetCloseOnClone();
-
-  Controller()->Enqueue(video_frame);
-  is_pending_pull_ = false;
+void MediaStreamVideoTrackUnderlyingSource::StopFrameDelivery() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DisconnectFromTrack();
 }
 
 }  // namespace blink
