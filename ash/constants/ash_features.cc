@@ -320,10 +320,6 @@ const base::Feature kExoLockNotification{"ExoLockNotification",
 const base::Feature kFamilyLinkOnSchoolDevice{"FamilyLinkOnSchoolDevice",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables the camera folder handling in files app.
-const base::Feature kFilesCameraFolder{"FilesCameraFolder",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables the next generation file manager.
 const base::Feature kFilesNG{"FilesNG", base::FEATURE_ENABLED_BY_DEFAULT};
 

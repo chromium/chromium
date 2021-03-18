@@ -158,7 +158,7 @@
         if (path === 'PvmDefault') {
           path = str('PLUGIN_VM_DIRECTORY_LABEL');
         }
-        if (util.isFilesCameraFolderEnabled() && path === 'Camera') {
+        if (path === 'Camera') {
           path = str('CAMERA_DIRECTORY_LABEL');
         }
       }

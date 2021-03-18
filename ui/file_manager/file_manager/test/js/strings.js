@@ -11,7 +11,6 @@ loadTimeData.data = $GRDP;
 loadTimeData.overrideValues({
   'COPY_IMAGE_ENABLED': false,
   'CROSTINI_ENABLED': true,
-  'FILES_CAMERA_FOLDER_ENABLED': false,
   'FILES_NG_ENABLED': true,
   'FILES_SINGLE_PARTITION_FORMAT_ENABLED': false,
   'FILES_TRASH_ENABLED': true,

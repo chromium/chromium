@@ -1038,9 +1038,6 @@ void AddFileManagerFeatureStrings(const std::string& locale,
                    crostini::CrostiniFeatures::Get()->IsEnabled(profile));
   dict->SetBoolean("PLUGIN_VM_ENABLED",
                    plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile));
-  dict->SetBoolean(
-      "FILES_CAMERA_FOLDER_ENABLED",
-      base::FeatureList::IsEnabled(chromeos::features::kFilesCameraFolder));
   dict->SetBoolean("FILES_NG_ENABLED",
                    base::FeatureList::IsEnabled(chromeos::features::kFilesNG));
   dict->SetBoolean("COPY_IMAGE_ENABLED",

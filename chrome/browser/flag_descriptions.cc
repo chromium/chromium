@@ -4370,12 +4370,6 @@ const char kFilesAppCopyImageName[] = "Enable Copy Images from Files App";
 const char kFilesAppCopyImageDescription[] =
     "Enables the Files App to copy images selected to the system clipboard";
 
-const char kFilesCameraFolderName[] =
-    "Enable Camera folder handling in Files App";
-const char kFilesCameraFolderDescription[] =
-    "Enables the Files App to display Camera folder with i18n name and make it "
-    "nonmodifiable";
-
 const char kFilesJsModulesName[] = "Enable JS Modules for Files app";
 const char kFilesJsModulesDescription[] =
     "Enable running Files app using JS Modules.";

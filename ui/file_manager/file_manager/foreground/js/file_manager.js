@@ -903,9 +903,6 @@
     this.document_.documentElement.classList.add('files-ng');
     this.dialogDom_.classList.add('files-ng');
 
-    this.dialogDom_.classList.toggle(
-        'camera-folder-enabled', util.isFilesCameraFolderEnabled());
-
     chrome.fileManagerPrivate.isTabletModeEnabled(
         this.onTabletModeChanged_.bind(this));
     chrome.fileManagerPrivate.onTabletModeChanged.addListener(

@@ -1204,7 +1204,7 @@ util.getEntryLabel = (locationInfo, entry) => {
     if (entry.fullPath == '/PvmDefault') {
       return str('PLUGIN_VM_DIRECTORY_LABEL');
     }
-    if (util.isFilesCameraFolderEnabled() && entry.fullPath == '/Camera') {
+    if (entry.fullPath == '/Camera') {
       return str('CAMERA_DIRECTORY_LABEL');
     }
   }
@@ -1260,7 +1260,7 @@ util.isNonModifiable = (volumeManager, entry) => {
       return true;
     }
 
-    if (fullPath === '/Camera' && util.isFilesCameraFolderEnabled()) {
+    if (fullPath === '/Camera') {
       return true;
     }
 
@@ -1442,14 +1442,6 @@ util.timeoutPromise = (promise, ms, opt_message) => {
       throw new Error(opt_message || 'Operation timed out.');
     })
   ]);
-};
-
-/**
- * Returns true when FilesCameraFolder is enabled.
- * @return {boolean}
- */
-util.isFilesCameraFolderEnabled = () => {
-  return loadTimeData.getBoolean('FILES_CAMERA_FOLDER_ENABLED');
 };
 
 /**
