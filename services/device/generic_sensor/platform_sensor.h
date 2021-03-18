@@ -9,11 +9,13 @@
 #include <map>
 #include <memory>
 
+#include "base/callback_forward.h"
+#include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/single_thread_task_runner.h"
+#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
@@ -80,6 +82,11 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
   using ConfigMap = std::map<Client*, std::list<PlatformSensorConfiguration>>;
   const ConfigMap& GetConfigMapForTesting() const;
 
+  // Called by API users to post a task on |main_task_runner_| when run from a
+  // different sequence.
+  void PostTaskToMainSequence(const base::Location& location,
+                              base::OnceClosure task);
+
  protected:
   virtual ~PlatformSensor();
   PlatformSensor(mojom::SensorType type,
@@ -92,12 +99,14 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
   virtual bool StartSensor(
       const PlatformSensorConfiguration& configuration) = 0;
   virtual void StopSensor() = 0;
-  // Updates shared buffer with new sensor reading data and schedules
-  // NotifySensorReadingChanged invocation on IPC thread.
+
+  // Updates the shared buffer with new sensor reading data and posts a task to
+  // invoke NotifySensorReadingChanged() on |main_task_runner_|.
   // Note: this method is thread-safe.
   void UpdateSharedBufferAndNotifyClients(const SensorReading& reading);
 
   // Updates shared buffer with provided SensorReading
+  // Note: this method is thread-safe.
   void UpdateSharedBuffer(const SensorReading& reading);
 
   void NotifySensorReadingChanged();
@@ -105,14 +114,20 @@ class PlatformSensor : public base::RefCountedThreadSafe<PlatformSensor> {
 
   void ResetReadingBuffer();
 
-  // Task runner that is used by mojo objects for the IPC.
-  // If platform sensor events are processed on a different
-  // thread, notifications are forwarded to |task_runner_|.
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  // Returns the task runner where this object has been created. Subclasses can
+  // use it to post tasks to the right sequence when running on a different task
+  // runner.
+  scoped_refptr<base::SequencedTaskRunner> main_task_runner() const {
+    return main_task_runner_;
+  }
+
   base::ObserverList<Client, true>::Unchecked clients_;
 
  private:
   friend class base::RefCountedThreadSafe<PlatformSensor>;
+
+  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
+
   SensorReadingSharedBuffer* reading_buffer_;  // NOTE: Owned by |provider_|.
   mojom::SensorType type_;
   ConfigMap config_map_;

@@ -7,8 +7,9 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/check.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "services/device/generic_sensor/platform_sensor_provider.h"
 #include "services/device/generic_sensor/platform_sensor_util.h"
 #include "services/device/public/cpp/generic_sensor/platform_sensor_configuration.h"
@@ -19,7 +20,7 @@ namespace device {
 PlatformSensor::PlatformSensor(mojom::SensorType type,
                                SensorReadingSharedBuffer* reading_buffer,
                                PlatformSensorProvider* provider)
-    : task_runner_(base::ThreadTaskRunnerHandle::Get()),
+    : main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       reading_buffer_(reading_buffer),
       type_(type),
       provider_(provider),
@@ -124,7 +125,7 @@ bool PlatformSensor::GetLatestRawReading(SensorReading* result) const {
 void PlatformSensor::UpdateSharedBufferAndNotifyClients(
     const SensorReading& reading) {
   UpdateSharedBuffer(reading);
-  task_runner_->PostTask(
+  main_task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&PlatformSensor::NotifySensorReadingChanged,
                                 weak_factory_.GetWeakPtr()));
 }
@@ -198,6 +199,11 @@ bool PlatformSensor::IsActiveForTesting() const {
 
 auto PlatformSensor::GetConfigMapForTesting() const -> const ConfigMap& {
   return config_map_;
+}
+
+void PlatformSensor::PostTaskToMainSequence(const base::Location& location,
+                                            base::OnceClosure task) {
+  main_task_runner()->PostTask(location, std::move(task));
 }
 
 }  // namespace device

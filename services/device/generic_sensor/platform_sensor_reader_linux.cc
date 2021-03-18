@@ -10,7 +10,6 @@
 #include "base/files/file_util.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -26,8 +25,7 @@ namespace device {
 class PollingSensorReader : public SensorReader {
  public:
   PollingSensorReader(const SensorInfoLinux& sensor_info,
-                      base::WeakPtr<PlatformSensorLinux> sensor,
-                      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+                      base::WeakPtr<PlatformSensorLinux> sensor);
   ~PollingSensorReader() override;
 
   // SensorReader overrides
@@ -179,9 +177,8 @@ void PollingSensorReader::BlockingTaskRunnerHelper::PollForData() {
 
 PollingSensorReader::PollingSensorReader(
     const SensorInfoLinux& sensor_info,
-    base::WeakPtr<PlatformSensorLinux> sensor,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : SensorReader(sensor, std::move(task_runner)),
+    base::WeakPtr<PlatformSensorLinux> sensor)
+    : SensorReader(sensor),
       blocking_task_helper_(nullptr,
                             base::OnTaskRunnerDeleter(blocking_task_runner_)) {
   // We need to properly initialize |blocking_task_helper_| here because we need
@@ -218,10 +215,12 @@ void PollingSensorReader::OnReadingAvailable(SensorReading reading) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!is_reading_active_)
     return;
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PlatformSensorLinux::UpdatePlatformSensorReading, sensor_,
-                     reading));
+  if (sensor_) {
+    sensor_->PostTaskToMainSequence(
+        FROM_HERE,
+        base::BindOnce(&PlatformSensorLinux::UpdatePlatformSensorReading,
+                       sensor_, reading));
+  }
 }
 
 void PollingSensorReader::OnReadingError() {
@@ -232,27 +231,20 @@ void PollingSensorReader::OnReadingError() {
 // static
 std::unique_ptr<SensorReader> SensorReader::Create(
     const SensorInfoLinux& sensor_info,
-    base::WeakPtr<PlatformSensorLinux> sensor,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    base::WeakPtr<PlatformSensorLinux> sensor) {
   // TODO(maksims): implement triggered reading. At the moment,
   // only polling read is supported.
-  return std::make_unique<PollingSensorReader>(sensor_info, sensor,
-                                               std::move(task_runner));
+  return std::make_unique<PollingSensorReader>(sensor_info, sensor);
 }
 
-SensorReader::SensorReader(
-    base::WeakPtr<PlatformSensorLinux> sensor,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : sensor_(sensor),
-      task_runner_(std::move(task_runner)),
-      is_reading_active_(false) {
-}
+SensorReader::SensorReader(base::WeakPtr<PlatformSensorLinux> sensor)
+    : sensor_(sensor), is_reading_active_(false) {}
 
 SensorReader::~SensorReader() = default;
 
 void SensorReader::NotifyReadError() {
-  if (is_reading_active_) {
-    task_runner_->PostTask(
+  if (is_reading_active_ && sensor_) {
+    sensor_->PostTaskToMainSequence(
         FROM_HERE,
         base::BindOnce(&PlatformSensorLinux::NotifyPlatformSensorError,
                        sensor_));

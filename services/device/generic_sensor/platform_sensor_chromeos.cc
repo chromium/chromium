@@ -260,7 +260,7 @@ mojo::PendingRemote<chromeos::sensors::mojom::SensorDeviceSamplesObserver>
 PlatformSensorChromeOS::BindNewPipeAndPassRemote() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!receiver_.is_bound());
-  auto pending_remote = receiver_.BindNewPipeAndPassRemote(task_runner_);
+  auto pending_remote = receiver_.BindNewPipeAndPassRemote(main_task_runner());
 
   receiver_.set_disconnect_handler(
       base::BindOnce(&PlatformSensorChromeOS::OnObserverDisconnect,
