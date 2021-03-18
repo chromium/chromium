@@ -160,6 +160,11 @@ void TrayItemView::AnimationProgressed(const gfx::Animation* animation) {
     transform.Scale(scale_progress, scale_progress);
     layer()->SetTransform(transform);
   }
+
+  // Container size might not fully transition to full size (the resize progress
+  // value converted from animation progress might not be 1 after resize
+  // animation). This call makes sure that it is fully resized.
+  PreferredSizeChanged();
 }
 
 void TrayItemView::AnimationEnded(const gfx::Animation* animation) {
