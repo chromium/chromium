@@ -2948,8 +2948,8 @@
   },
   {
     "name": "forced-colors",
-    "owners": [ "weblayout@microsoft.com" ],
-    "expiry_milestone": 90
+    "owners": [ "almaher@microsoft.com" ],
+    "expiry_milestone": 92
   },
   {
     "name": "form-controls-dark-mode",
