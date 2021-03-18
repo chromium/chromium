@@ -282,9 +282,8 @@ class BigQueryQuerier(object):
       data_types.Resultobjects.
     """
 
-    test_filter_clauses, test_id_lists = self._GetTestFilterClausesForBuilder(
-        builder, builder_type)
-    if not test_filter_clauses:
+    test_filter = self._GetTestFilterForBuilder(builder, builder_type)
+    if not test_filter:
       # No affected tests on this builder, so early return.
       return []
 
@@ -296,7 +295,7 @@ class BigQueryQuerier(object):
     while query_results is None:
       try:
         queries = []
-        for tfc in test_filter_clauses:
+        for tfc in test_filter.GetClauses():
           query = GPU_BQ_QUERY_TEMPLATE.format(builder_type=builder_type,
                                                test_filter_clause=tfc,
                                                suite=self._suite)
@@ -315,8 +314,7 @@ class BigQueryQuerier(object):
         logging.warning(
             'Query to builder %s hit BigQuery hard memory limit, trying again '
             'with more query splitting.', builder)
-        test_id_lists = _SplitTestIdsInHalf(test_id_lists)
-        test_filter_clauses = _CreateTestFilterClausesFromTestIds(test_id_lists)
+        test_filter.SplitFilter()
 
     results = []
     if not query_results:
@@ -342,8 +340,8 @@ class BigQueryQuerier(object):
                   builder_type, builder)
     return results
 
-  def _GetTestFilterClausesForBuilder(self, builder, builder_type):
-    """Returns SQL clauses to only include relevant tests.
+  def _GetTestFilterForBuilder(self, builder, builder_type):
+    """Returns a _BaseQueryTestFilter instance to only include relevant tests.
 
     Args:
       builder: A string containing the name of the builder to query.
@@ -351,24 +349,16 @@ class BigQueryQuerier(object):
           "ci" or "try".
 
     Returns:
-      A tuple (clauses, test_id_lists). |clauses| is an empty list if
-      |large_query_mode| is True and no tests are relevant to the specified
-      |builder|. Otherwise, |clauses| is a list of strings containing valid SQL
-      clauses. |test_id_lists| is a list of lists of strings, each inner list
-      corresponding to the test IDs that were used to create one clause in
-      |clauses|. |test_id_lists| will be empty if no IDs were extracted, either
-      due to |large_query_mode| being False or to the query returning no
-      results.
+      None if the query returned no results. Otherwise, some instance of a
+      _BaseQueryTestFilter.
     """
 
     if not self._large_query_mode:
       # Look for all tests that match the given suite.
-      return [
-          """\
+      return _FixedQueryTestFilter("""\
         AND REGEXP_CONTAINS(
           test_id,
-          r"gpu_tests\.%s\.")""" % self._suite
-      ], []
+          r"gpu_tests\.%s\.")""" % self._suite)
 
     query = TEST_FILTER_QUERY_TEMPLATE.format(
         builder_type=builder_type,
@@ -381,14 +371,12 @@ class BigQueryQuerier(object):
     test_ids = ['"%s"' % r['test_id'] for r in query_results]
 
     if not test_ids:
-      return [], []
+      return None
 
     # Only consider specific test cases that were found to have active
     # expectations in the above query. Also perform any initial query splitting.
     target_num_ids = TARGET_RESULTS_PER_QUERY / self._num_samples
-    test_id_lists = _SplitListToTargetSize(test_ids, target_num_ids)
-    test_filter_clauses = _CreateTestFilterClausesFromTestIds(test_id_lists)
-    return test_filter_clauses, test_id_lists
+    return _SplitQueryTestFilter(test_ids, target_num_ids)
 
   def _GetSuiteFilterClause(self):
     """Returns a SQL clause to only include relevant suites.
@@ -499,6 +487,109 @@ class BigQueryQuerier(object):
     return combined_json
 
 
+class _BaseQueryTestFilter(object):
+  """Abstract base class for test filters."""
+
+  def SplitFilter(self):
+    """Splits the test filter into more clauses/queries."""
+    raise NotImplementedError('SplitFilter must be overridden in a child class')
+
+  def GetClauses(self):
+    """Gets string representations of the test filters.
+
+    Returns:
+      A list of strings, each string being a valid SQL clause that applies a
+      portion of the test filter to a query.
+    """
+    raise NotImplementedError('GetClauses must be overridden in a child class')
+
+
+class _FixedQueryTestFilter(_BaseQueryTestFilter):
+  """Concrete test filter that cannot be split."""
+
+  def __init__(self, test_filter):
+    """
+    Args:
+      test_filter: A string containing the test filter SQL clause to use.
+    """
+    self._test_filter = test_filter
+
+  def SplitFilter(self):
+    raise QuerySplitError('Tried to split a query without any test IDs to use, '
+                          'use --large-query-mode')
+
+  def GetClauses(self):
+    return [self._test_filter]
+
+
+class _SplitQueryTestFilter(_BaseQueryTestFilter):
+  """Concrete test filter that can be split to a desired size."""
+
+  def __init__(self, test_ids, target_num_samples):
+    """
+    Args:
+      test_ids: A list of strings containing the test IDs to use in the test
+          test filter.
+      target_num_samples: The target/max number of samples to get from each
+          query that uses clauses from this test filter.
+    """
+    self._test_id_lists = []
+    self._target_num_samples = target_num_samples
+    self._clauses = []
+    self._PerformInitialSplit(test_ids)
+
+  def _PerformInitialSplit(self, test_ids):
+    """Evenly splits |test_ids| into lists that are  ~|_target_num_samples| long
+
+    Only to be called from the constructor.
+
+    Args:
+      test_ids: A list of test IDs to split and assign to the _test_id_lists
+          member.
+    """
+    assert (isinstance(test_ids[0], str) or isinstance(test_ids[0], unicode))
+
+    num_lists = int(math.ceil(float(len(test_ids)) / self._target_num_samples))
+    list_size = int(math.ceil(float(len(test_ids)) / num_lists))
+
+    split_lists = []
+    start = 0
+    for _ in xrange(num_lists):
+      end = min(len(test_ids), start + list_size)
+      split_lists.append(test_ids[start:end])
+      start = end
+    self._test_id_lists = split_lists
+    self._GenerateClauses()
+
+  def _GenerateClauses(self):
+    test_filter_clauses = []
+    for id_list in self._test_id_lists:
+      clause = 'AND test_id IN UNNEST([%s])' % ', '.join(id_list)
+      test_filter_clauses.append(clause)
+    self._clauses = test_filter_clauses
+
+  def SplitFilter(self):
+    def _SplitListInHalf(l):
+      assert len(l) > 1
+      front = l[:len(l) / 2]
+      back = l[len(l) / 2:]
+      return front, back
+
+    tmp_test_id_lists = []
+    for til in self._test_id_lists:
+      if len(til) <= 1:
+        raise QuerySplitError(
+            'Cannot split query any further, try lowering --num-samples')
+      front, back = _SplitListInHalf(til)
+      tmp_test_id_lists.append(front)
+      tmp_test_id_lists.append(back)
+    self._test_id_lists = tmp_test_id_lists
+    self._GenerateClauses()
+
+  def GetClauses(self):
+    return self._clauses
+
+
 def _GenerateBigQueryCommand(project, parameters):
   """Generate a BigQuery commandline.
 
@@ -552,76 +643,6 @@ def _ConvertActualResultToExpectationFileFormat(actual_result):
   # The result reported to ResultDB is in the format PASS/FAIL, while the
   # expected results in an expectation file are in the format Pass/Failure.
   return expectations_parser.RESULT_TAGS[actual_result]
-
-
-def _CreateTestFilterClausesFromTestIds(test_id_lists):
-  """Creates SQL clauses from |test_id_lists|.
-
-  test_id_lists: A list of lists, each inner list containing test ids.
-
-  Returns:
-    A list of strings, each string being a SQL clause to filter results to only
-    the tests contained in a particular element of |test_id_lists|.
-  """
-  test_filter_clauses = []
-  for id_list in test_id_lists:
-    clause = 'AND test_id IN UNNEST([%s])' % ', '.join(id_list)
-    test_filter_clauses.append(clause)
-  return test_filter_clauses
-
-
-def _SplitListToTargetSize(input_list, target_size):
-  """Evenly splits |input_list| into lists that are roughly |target_size|.
-
-  Args:
-    input_list: The list to split.
-    target_size: The maximum length of any portions of the split list.
-
-  Returns:
-    A list of lists, together containing all the elements of |input_list|.
-  """
-  num_lists = int(math.ceil(float(len(input_list)) / target_size))
-  list_size = int(math.ceil(float(len(input_list)) / num_lists))
-
-  split_lists = []
-  start = 0
-  for _ in xrange(num_lists):
-    end = min(len(input_list), start + list_size)
-    split_lists.append(input_list[start:end])
-    start = end
-  return split_lists
-
-
-def _SplitTestIdsInHalf(test_id_lists):
-  """Splits |test_id_lists|' elements in half.
-
-  Args:
-    test_id_lists: A list of lists of strings.
-
-  Returns:
-    A list of list of strings containing the same data as |test_id_lists|, but
-    with each element of |test_id_lists| split in half.
-  """
-  if not test_id_lists:
-    raise QuerySplitError(
-        'Cannot split query, no test IDs given. Use --large-query-mode.')
-
-  tmp_test_id_lists = []
-  for til in test_id_lists:
-    if len(til) <= 1:
-      raise QuerySplitError(
-          'Cannot split query any further, try lowering --num-samples')
-    front, back = _SplitListInHalf(til)
-    tmp_test_id_lists.append(front)
-    tmp_test_id_lists.append(back)
-  return tmp_test_id_lists
-
-
-def _SplitListInHalf(l):
-  assert len(l) > 1
-  front = l[:len(l) / 2]
-  back = l[len(l) / 2:]
-  return front, back
 
 
 class RateLimitError(Exception):

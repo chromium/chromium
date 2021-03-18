@@ -43,35 +43,29 @@ class HelperMethodUnittest(unittest.TestCase):
     with self.assertRaises(AssertionError):
       queries._StripPrefixFromTestId(test_id)
 
-  def testSplitListToTargetSizeNoSplitNeeded(self):
-    l = [1, 2]
-    split = queries._SplitListToTargetSize(l, 10)
-    self.assertEqual(split, [l])
 
-  def testSplitListToTargetSizeSplitNeeded(self):
-    l = [1, 2, 3]
-    split = queries._SplitListToTargetSize(l, 2)
-    self.assertEqual(split, [[1, 2], [3]])
+class QueryTestFilterUnittest(unittest.TestCase):
+  def testSplitQueryTestFilterInitialSplit(self):
+    """Tests that initial query splitting works as expected."""
+    test_filter = queries._SplitQueryTestFilter(['1', '2', '3'], 2)
+    self.assertEqual(test_filter._test_id_lists, [['1', '2'], ['3']])
+    self.assertEqual(len(test_filter.GetClauses()), 2)
+    test_filter = queries._SplitQueryTestFilter(['1', '2', '3'], 3)
+    self.assertEqual(test_filter._test_id_lists, [['1', '2', '3']])
+    self.assertEqual(len(test_filter.GetClauses()), 1)
 
-  def testSplitListInHalfInvalidLength(self):
-    with self.assertRaises(AssertionError):
-      queries._SplitListInHalf([])
+  def testSplitQueryTestFilterSplitQuery(self):
+    """Tests that SplitQueryTestFilter's query splitting works."""
+    test_filter = queries._SplitQueryTestFilter(['1', '2'], 10)
+    self.assertEqual(len(test_filter.GetClauses()), 1)
+    test_filter.SplitFilter()
+    self.assertEqual(len(test_filter.GetClauses()), 2)
 
-  def testSplitListInHalfValid(self):
-    l = [1, 2, 3]
-    front, back = queries._SplitListInHalf(l)
-    self.assertEqual(front, [1])
-    self.assertEqual(back, [2, 3])
-
-  def testSplitTestIdsInHalfCannotSplit(self):
+  def testSplitQueryTestFilterSplitQueryCannotSplitFurther(self):
+    """Tests that SplitQueryTestFilter's failure mode."""
+    test_filter = queries._SplitQueryTestFilter(['1'], 1)
     with self.assertRaises(queries.QuerySplitError):
-      queries._SplitTestIdsInHalf([['test_id']])
-    with self.assertRaises(queries.QuerySplitError):
-      queries._SplitTestIdsInHalf([])
-
-  def testSplitTestIdsInHalfValid(self):
-    output = queries._SplitTestIdsInHalf([['test_id_1', 'test_id_2']])
-    self.assertEqual(output, [['test_id_1'], ['test_id_2']])
+      test_filter.SplitFilter()
 
 
 class QueryBuilderUnittest(unittest.TestCase):
@@ -224,9 +218,11 @@ class QueryBuilderUnittest(unittest.TestCase):
     """Tests that test filters are properly inserted into the query."""
     with mock.patch.object(
         self._querier,
-        '_GetTestFilterClausesForBuilder',
-        return_value=(['a real filter'], [])), mock.patch.object(
-            self._querier, '_RunBigQueryCommandsForJsonOutput') as query_mock:
+        '_GetTestFilterForBuilder',
+        return_value=queries._FixedQueryTestFilter(
+            'a real filter')), mock.patch.object(
+                self._querier,
+                '_RunBigQueryCommandsForJsonOutput') as query_mock:
       self._querier.QueryBuilder('builder', 'ci')
       query_mock.assert_called_once()
       query = query_mock.call_args[0][0][0]
@@ -239,8 +235,8 @@ class QueryBuilderUnittest(unittest.TestCase):
   def testEarlyReturnOnNoFilter(self):
     """Tests that the absence of a test filter results in an early return."""
     with mock.patch.object(
-        self._querier, '_GetTestFilterClausesForBuilder',
-        return_value=([], [])), mock.patch.object(
+        self._querier, '_GetTestFilterForBuilder',
+        return_value=None), mock.patch.object(
             self._querier, '_RunBigQueryCommandsForJsonOutput') as query_mock:
       results = self._querier.QueryBuilder('builder', 'ci')
       query_mock.assert_not_called()
@@ -259,11 +255,11 @@ class QueryBuilderUnittest(unittest.TestCase):
 
     with mock.patch.object(
         self._querier,
-        '_GetTestFilterClausesForBuilder',
-        return_value=(['filter_a filter_b'],
-                      [['filter_a', 'filter_b']])), mock.patch.object(
-                          self._querier,
-                          '_RunBigQueryCommandsForJsonOutput') as query_mock:
+        '_GetTestFilterForBuilder',
+        return_value=queries._SplitQueryTestFilter(
+            ['filter_a', 'filter_b'], 10)), mock.patch.object(
+                self._querier,
+                '_RunBigQueryCommandsForJsonOutput') as query_mock:
       query_mock.side_effect = SideEffect
       self._querier.QueryBuilder('builder', 'ci')
       self.assertEqual(query_mock.call_count, 2)
@@ -355,15 +351,14 @@ class GetTestFilterClausesForBuilderUnittest(unittest.TestCase):
 
   def testNoLargeQueryMode(self):
     """Tests that the expected clause is returned in normal mode."""
-    clauses, test_id_lists = self._querier._GetTestFilterClausesForBuilder(
-        '', '')
-    self.assertEqual(len(clauses), 1)
+    test_filter = self._querier._GetTestFilterForBuilder('', '')
+    self.assertEqual(len(test_filter.GetClauses()), 1)
     self.assertEqual(
-        clauses[0], """\
+        test_filter.GetClauses()[0], """\
         AND REGEXP_CONTAINS(
           test_id,
           r"gpu_tests\.pixel_integration_test\.")""")
-    self.assertEqual(test_id_lists, [])
+    self.assertIsInstance(test_filter, queries._FixedQueryTestFilter)
     self._query_mock.assert_not_called()
 
   def testLargeQueryModeNoTests(self):
@@ -372,9 +367,8 @@ class GetTestFilterClausesForBuilderUnittest(unittest.TestCase):
     with mock.patch.object(querier,
                            '_RunBigQueryCommandsForJsonOutput',
                            return_value=[]) as query_mock:
-      clauses, test_id_lists = querier._GetTestFilterClausesForBuilder('', '')
-      self.assertEqual(clauses, [])
-      self.assertEqual(test_id_lists, [])
+      test_filter = querier._GetTestFilterForBuilder('', '')
+      self.assertIsNone(test_filter)
       query_mock.assert_called_once()
 
   def testLargeQueryModeFoundTests(self):
@@ -387,9 +381,10 @@ class GetTestFilterClausesForBuilderUnittest(unittest.TestCase):
       }, {
           'test_id': 'bar_test'
       }]
-      clauses, _ = querier._GetTestFilterClausesForBuilder('', '')
-      self.assertEqual(clauses,
+      test_filter = querier._GetTestFilterForBuilder('', '')
+      self.assertEqual(test_filter.GetClauses(),
                        ['AND test_id IN UNNEST(["foo_test", "bar_test"])'])
+      self.assertIsInstance(test_filter, queries._SplitQueryTestFilter)
 
 
 class GetSuiteFilterClauseUnittest(unittest.TestCase):
