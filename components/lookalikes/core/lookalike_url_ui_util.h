@@ -16,13 +16,15 @@ class DictionaryValue;
 void RecordUkmForLookalikeUrlBlockingPage(
     ukm::SourceId source_id,
     LookalikeUrlMatchType match_type,
-    LookalikeUrlBlockingPageUserAction user_action);
+    LookalikeUrlBlockingPageUserAction user_action,
+    bool triggered_by_initial_url);
 
 // Record UKM if not already reported for this page.
 void ReportUkmForLookalikeUrlBlockingPageIfNeeded(
     ukm::SourceId& source_id,
     LookalikeUrlMatchType match_type,
-    LookalikeUrlBlockingPageUserAction action);
+    LookalikeUrlBlockingPageUserAction action,
+    bool triggered_by_initial_url);
 
 // Populates |load_time_data| for interstitial HTML.
 void PopulateLookalikeUrlBlockingPageStrings(

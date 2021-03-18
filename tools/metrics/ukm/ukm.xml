@@ -7784,6 +7784,13 @@ be describing additional metrics about the same event.
       domain, etc.). The enum is defined in |LookalikeUrlBlockingPage|.
     </summary>
   </metric>
+  <metric name="TriggeredByInitialUrl" enum="Boolean">
+    <summary>
+      A boolean representing whether or not the warning was triggered by the
+      first URL in the chain, or whether the warning was triggered by the final
+      (commited) URL.
+    </summary>
+  </metric>
   <metric name="UserAction">
     <summary>
       An enum value representing the decision the user made when shown an

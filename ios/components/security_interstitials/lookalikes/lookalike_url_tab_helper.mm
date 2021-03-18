@@ -43,6 +43,9 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
     std::move(callback).Run(CreateAllowDecision());
     return;
   }
+  // TODO(crbug.com/1188945): Only detect lookalike navigations if they're the
+  // first or last URL in the redirect chain. Other URLs are invisible to the
+  // user. Then, ensure UKM is set correctly to record which URL triggered.
 
   // TODO(crbug.com/1104386): Create container and ReleaseInterstitialParams.
   // Get stored interstitial parameters early. Doing so ensures that a
@@ -152,7 +155,8 @@ void LookalikeUrlTabHelper::ShouldAllowResponse(
   // Interstitial normally records UKM, but still record when it's not shown.
   RecordUkmForLookalikeUrlBlockingPage(
       ukm::GetSourceIdForWebStateDocument(web_state()), match_type,
-      LookalikeUrlBlockingPageUserAction::kInterstitialNotShown);
+      LookalikeUrlBlockingPageUserAction::kInterstitialNotShown,
+      /*triggered_by_initial_url=*/false);
 
   std::move(callback).Run(CreateAllowDecision());
 }

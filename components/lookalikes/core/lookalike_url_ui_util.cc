@@ -15,24 +15,28 @@
 void RecordUkmForLookalikeUrlBlockingPage(
     ukm::SourceId source_id,
     LookalikeUrlMatchType match_type,
-    LookalikeUrlBlockingPageUserAction user_action) {
+    LookalikeUrlBlockingPageUserAction user_action,
+    bool triggered_by_initial_url) {
   ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
   CHECK(ukm_recorder);
 
   ukm::builders::LookalikeUrl_NavigationSuggestion(source_id)
       .SetMatchType(static_cast<int>(match_type))
       .SetUserAction(static_cast<int>(user_action))
+      .SetTriggeredByInitialUrl(static_cast<int>(triggered_by_initial_url))
       .Record(ukm_recorder);
 }
 
 void ReportUkmForLookalikeUrlBlockingPageIfNeeded(
     ukm::SourceId& source_id,
     LookalikeUrlMatchType match_type,
-    LookalikeUrlBlockingPageUserAction action) {
+    LookalikeUrlBlockingPageUserAction action,
+    bool triggered_by_initial_url) {
   // Rely on the saved SourceId because deconstruction happens after the next
   // navigation occurs, so web contents points to the new destination.
   if (source_id != ukm::kInvalidSourceId) {
-    RecordUkmForLookalikeUrlBlockingPage(source_id, match_type, action);
+    RecordUkmForLookalikeUrlBlockingPage(source_id, match_type, action,
+                                         triggered_by_initial_url);
     source_id = ukm::kInvalidSourceId;
   }
 }

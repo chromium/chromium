@@ -92,7 +92,8 @@ class LookalikeUrlNavigationThrottle : public content::NavigationThrottle {
   ThrottleCheckResult ShowInterstitial(const GURL& safe_domain,
                                        const GURL& lookalike_domain,
                                        ukm::SourceId source_id,
-                                       LookalikeUrlMatchType match_type);
+                                       LookalikeUrlMatchType match_type,
+                                       bool triggered_by_initial_url);
 
   // Checks digital asset links of |lookalike_domain| and |safe_domain| and
   // shows a full page interstitial if either manifest validation fails.
@@ -100,13 +101,15 @@ class LookalikeUrlNavigationThrottle : public content::NavigationThrottle {
       const GURL& safe_domain,
       const GURL& lookalike_domain,
       ukm::SourceId source_id,
-      LookalikeUrlMatchType match_type);
+      LookalikeUrlMatchType match_type,
+      bool triggered_by_initial_url);
 
   // Callback for digital asset link manifest validations.
   void OnManifestValidationResult(const GURL& safe_domain,
                                   const GURL& lookalike_domain,
                                   ukm::SourceId source_id,
                                   LookalikeUrlMatchType match_type,
+                                  bool triggered_by_initial_url,
                                   bool validation_success);
 
   Profile* profile_;

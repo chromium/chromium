@@ -31,6 +31,7 @@ LookalikeUrlBlockingPage::LookalikeUrlBlockingPage(
     ukm::SourceId source_id,
     LookalikeUrlMatchType match_type,
     bool is_signed_exchange,
+    bool triggered_by_initial_url,
     std::unique_ptr<
         security_interstitials::SecurityInterstitialControllerClient>
         controller_client)
@@ -41,7 +42,8 @@ LookalikeUrlBlockingPage::LookalikeUrlBlockingPage(
       safe_url_(safe_url),
       source_id_(source_id),
       match_type_(match_type),
-      is_signed_exchange_(is_signed_exchange) {
+      is_signed_exchange_(is_signed_exchange),
+      triggered_by_initial_url_(triggered_by_initial_url) {
   controller()->metrics_helper()->RecordUserDecision(MetricsHelper::SHOW);
   controller()->metrics_helper()->RecordUserInteraction(
       MetricsHelper::TOTAL_VISITS);
@@ -64,8 +66,8 @@ void LookalikeUrlBlockingPage::PopulateInterstitialStrings(
 
 void LookalikeUrlBlockingPage::OnInterstitialClosing() {
   ReportUkmForLookalikeUrlBlockingPageIfNeeded(
-      source_id_, match_type_,
-      LookalikeUrlBlockingPageUserAction::kCloseOrBack);
+      source_id_, match_type_, LookalikeUrlBlockingPageUserAction::kCloseOrBack,
+      triggered_by_initial_url_);
 }
 
 bool LookalikeUrlBlockingPage::ShouldDisplayURL() const {
@@ -90,7 +92,8 @@ void LookalikeUrlBlockingPage::CommandReceived(const std::string& command) {
           MetricsHelper::DONT_PROCEED);
       ReportUkmForLookalikeUrlBlockingPageIfNeeded(
           source_id_, match_type_,
-          LookalikeUrlBlockingPageUserAction::kAcceptSuggestion);
+          LookalikeUrlBlockingPageUserAction::kAcceptSuggestion,
+          triggered_by_initial_url_);
       // If the interstitial doesn't have a suggested URL (e.g. punycode
       // interstitial), simply open the new tab page.
       if (!safe_url_.is_valid()) {
@@ -104,7 +107,8 @@ void LookalikeUrlBlockingPage::CommandReceived(const std::string& command) {
           MetricsHelper::PROCEED);
       ReportUkmForLookalikeUrlBlockingPageIfNeeded(
           source_id_, match_type_,
-          LookalikeUrlBlockingPageUserAction::kClickThrough);
+          LookalikeUrlBlockingPageUserAction::kClickThrough,
+          triggered_by_initial_url_);
       controller()->Proceed();
       break;
     case security_interstitials::CMD_DO_REPORT:

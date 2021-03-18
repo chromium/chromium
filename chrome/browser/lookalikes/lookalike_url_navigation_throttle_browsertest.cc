@@ -482,6 +482,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
 
   CheckUkm({kNavigatedUrl}, "MatchType",
            LookalikeUrlMatchType::kSkeletonMatchTop500);
+  CheckUkm({kNavigatedUrl}, "TriggeredByInitialUrl", false);
 }
 
 // Navigate to a domain that would trigger the warning, but doesn't because it
@@ -527,6 +528,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
   }
   CheckUkm({kNavigatedUrl}, "MatchType",
            LookalikeUrlMatchType::kTargetEmbedding);
+  CheckUkm({kNavigatedUrl}, "TriggeredByInitialUrl", false);
 }
 
 // Same as TargetEmbedding_TopDomain_Match, but has a redirect where the first
@@ -560,6 +562,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
         NavigationSuggestionEvent::kMatchTargetEmbedding);
   }
   CheckUkm({kLastUrl}, "MatchType", LookalikeUrlMatchType::kTargetEmbedding);
+  CheckUkm({kLastUrl}, "TriggeredByInitialUrl", true);
 }
 
 // Target embedding should not trigger on allowlisted embedder domains.

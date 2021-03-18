@@ -273,7 +273,7 @@ std::unique_ptr<LookalikeUrlBlockingPage> CreateLookalikeInterstitialPage(
   }
   return std::make_unique<LookalikeUrlBlockingPage>(
       web_contents, safe_url, request_url, ukm::kInvalidSourceId,
-      LookalikeUrlMatchType::kNone, false,
+      LookalikeUrlMatchType::kNone, false, /*triggered_by_initial_url=*/false,
       std::make_unique<LookalikeUrlControllerClient>(web_contents, request_url,
                                                      safe_url));
 }
