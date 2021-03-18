@@ -44,7 +44,7 @@ namespace ash {
 
 class KioskAppData;
 class KioskExternalUpdater;
-class OwnerSettingsServiceChromeOS;
+class OwnerSettingsServiceAsh;
 
 // KioskAppManager manages cached app data.
 class KioskAppManager : public KioskAppManagerBase,
@@ -127,7 +127,7 @@ class KioskAppManager : public KioskAppManagerBase,
 
   // Sets |app_id| as the app to auto launch at start up.
   void SetAutoLaunchApp(const std::string& app_id,
-                        OwnerSettingsServiceChromeOS* service);
+                        OwnerSettingsServiceAsh* service);
 
   // Returns true if there is a pending auto-launch request.
   bool IsAutoLaunchRequested() const;
@@ -144,9 +144,8 @@ class KioskAppManager : public KioskAppManagerBase,
 
   // Adds/removes a kiosk app by id. When removed, all locally cached data
   // will be removed as well.
-  void AddApp(const std::string& app_id, OwnerSettingsServiceChromeOS* service);
-  void RemoveApp(const std::string& app_id,
-                 OwnerSettingsServiceChromeOS* service);
+  void AddApp(const std::string& app_id, OwnerSettingsServiceAsh* service);
+  void RemoveApp(const std::string& app_id, OwnerSettingsServiceAsh* service);
 
   // KioskAppManagerBase:
   // Gets info of all apps that have no meta data load error.

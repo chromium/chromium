@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "chrome/browser/ash/ownership/owner_settings_service_chromeos.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 
 class Profile;
 
@@ -19,7 +19,7 @@ namespace ash {
 
 class StubCrosSettingsProvider;
 
-class FakeOwnerSettingsService : public OwnerSettingsServiceChromeOS {
+class FakeOwnerSettingsService : public OwnerSettingsServiceAsh {
  public:
   FakeOwnerSettingsService(StubCrosSettingsProvider* provider,
                            Profile* profile);
@@ -38,7 +38,7 @@ class FakeOwnerSettingsService : public OwnerSettingsServiceChromeOS {
     return last_settings_;
   }
 
-  // OwnerSettingsServiceChromeOS:
+  // OwnerSettingsServiceAsh:
   bool IsOwner() override;
   bool Set(const std::string& setting, const base::Value& value) override;
 

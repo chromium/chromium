@@ -20,7 +20,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/ash/ownership/owner_settings_service_chromeos.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_chromeos_factory.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/browser/chromeos/policy/device_cloud_policy_initializer.h"
@@ -550,7 +550,7 @@ class DeviceCloudPolicyManagerChromeOSEnrollmentTest
             device_management_service_.StartJobFullControl(&register_job)));
     AllowUninterestingRemoteCommandFetches();
 
-    ash::OwnerSettingsServiceChromeOS* owner_settings_service =
+    ash::OwnerSettingsServiceAsh* owner_settings_service =
         ash::OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(
             profile_.get());
     ASSERT_TRUE(owner_settings_service);

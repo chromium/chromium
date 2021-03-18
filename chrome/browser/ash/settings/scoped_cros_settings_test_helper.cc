@@ -8,7 +8,7 @@
 #include "base/check.h"
 #include "base/values.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
-#include "chrome/browser/ash/ownership/owner_settings_service_chromeos.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_cache.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
@@ -120,7 +120,7 @@ void ScopedCrosSettingsTestHelper::StoreCachedDeviceSetting(
                                         g_browser_process->local_state())) {
       CHECK(settings.ParseFromString(data.policy_value()));
     }
-    OwnerSettingsServiceChromeOS::UpdateDeviceSettings(path, *value, settings);
+    OwnerSettingsServiceAsh::UpdateDeviceSettings(path, *value, settings);
     CHECK(settings.SerializeToString(data.mutable_policy_value()));
     CHECK(device_settings_cache::Store(data, g_browser_process->local_state()));
     g_browser_process->local_state()->CommitPendingWrite(base::DoNothing(),

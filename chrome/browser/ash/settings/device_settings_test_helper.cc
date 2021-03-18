@@ -6,7 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "chrome/browser/ash/ownership/owner_settings_service_chromeos.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_chromeos_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -117,7 +117,7 @@ void DeviceSettingsTestBase::InitOwner(const AccountId& account_id,
     ProfileHelper::Get()->SetProfileToUserMappingForTesting(
         const_cast<user_manager::User*>(user));
   }
-  OwnerSettingsServiceChromeOS* service =
+  OwnerSettingsServiceAsh* service =
       OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(profile_.get());
   CHECK(service);
   if (tpm_is_ready)

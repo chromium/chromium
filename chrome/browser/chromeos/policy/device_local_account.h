@@ -10,7 +10,7 @@
 
 namespace ash {
 class CrosSettings;
-class OwnerSettingsServiceChromeOS;
+class OwnerSettingsServiceAsh;
 }  // namespace ash
 
 namespace policy {
@@ -123,7 +123,7 @@ bool IsDeviceLocalAccountUser(const std::string& user_id,
 // Stores a list of device-local accounts in |service|. The accounts are stored
 // as a list of dictionaries with each dictionary containing the information
 // about one |DeviceLocalAccount|.
-void SetDeviceLocalAccounts(ash::OwnerSettingsServiceChromeOS* service,
+void SetDeviceLocalAccounts(ash::OwnerSettingsServiceAsh* service,
                             const std::vector<DeviceLocalAccount>& accounts);
 
 // Retrieves a list of device-local accounts from |cros_settings|.

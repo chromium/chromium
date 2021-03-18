@@ -15,7 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "chrome/browser/ash/ownership/owner_settings_service_chromeos.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
@@ -174,7 +174,7 @@ bool IsDeviceLocalAccountUser(const std::string& user_id,
   return true;
 }
 
-void SetDeviceLocalAccounts(ash::OwnerSettingsServiceChromeOS* service,
+void SetDeviceLocalAccounts(ash::OwnerSettingsServiceAsh* service,
                             const std::vector<DeviceLocalAccount>& accounts) {
   // TODO(https://crbug.com/984021): handle TYPE_SAML_PUBLIC_SESSION
   base::ListValue list;

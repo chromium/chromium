@@ -43,7 +43,7 @@
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/ash/ownership/owner_settings_service_chromeos.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_chromeos_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -114,7 +114,7 @@ void FinishInitialization(base::WeakPtr<T> flags_ui,
   // Note that |dom_handler| is owned by the web ui that owns |flags_ui|, so
   // it is still alive if |flags_ui| is.
   if (current_user_is_owner) {
-    ash::OwnerSettingsServiceChromeOS* service =
+    ash::OwnerSettingsServiceAsh* service =
         ash::OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(profile);
     dom_handler->Init(new chromeos::about_flags::OwnerFlagsStorage(
                           profile->GetPrefs(), service),
@@ -234,7 +234,7 @@ FlagsUIHandler* InitializeHandler(content::WebUI* web_ui,
   if (base::SysInfo::IsRunningOnChromeOS() &&
       ash::OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(
           original_profile)) {
-    ash::OwnerSettingsServiceChromeOS* service =
+    ash::OwnerSettingsServiceAsh* service =
         ash::OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(
             original_profile);
     service->IsOwnerAsync(base::BindOnce(&FinishInitialization<T>,

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/ownership/owner_settings_service_chromeos.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 
 #include <keyhi.h>
 #include <stdint.h>
@@ -168,7 +168,7 @@ bool DoesPrivateKeyExistAsyncHelper(
 // not. Responds via |callback|.
 void DoesPrivateKeyExistAsync(
     const scoped_refptr<OwnerKeyUtil>& owner_key_util,
-    OwnerSettingsServiceChromeOS::IsOwnerCallback callback) {
+    OwnerSettingsServiceAsh::IsOwnerCallback callback) {
   if (!owner_key_util.get()) {
     std::move(callback).Run(false);
     return;
@@ -185,13 +185,11 @@ void DoesPrivateKeyExistAsync(
 
 }  // namespace
 
-OwnerSettingsServiceChromeOS::ManagementSettings::ManagementSettings() =
-    default;
+OwnerSettingsServiceAsh::ManagementSettings::ManagementSettings() = default;
 
-OwnerSettingsServiceChromeOS::ManagementSettings::~ManagementSettings() =
-    default;
+OwnerSettingsServiceAsh::ManagementSettings::~ManagementSettings() = default;
 
-OwnerSettingsServiceChromeOS::OwnerSettingsServiceChromeOS(
+OwnerSettingsServiceAsh::OwnerSettingsServiceAsh(
     DeviceSettingsService* device_settings_service,
     Profile* profile,
     const scoped_refptr<OwnerKeyUtil>& owner_key_util)
@@ -201,7 +199,7 @@ OwnerSettingsServiceChromeOS::OwnerSettingsServiceChromeOS(
   if (chromeos::TPMTokenLoader::IsInitialized()) {
     chromeos::TPMTokenLoader::TPMTokenStatus tpm_token_status =
         chromeos::TPMTokenLoader::Get()->IsTPMTokenEnabled(
-            base::BindOnce(&OwnerSettingsServiceChromeOS::OnTPMTokenReady,
+            base::BindOnce(&OwnerSettingsServiceAsh::OnTPMTokenReady,
                            weak_factory_.GetWeakPtr()));
     waiting_for_tpm_token_ =
         tpm_token_status ==
@@ -221,14 +219,14 @@ OwnerSettingsServiceChromeOS::OwnerSettingsServiceChromeOS(
   }
 
   UserSessionManager::GetInstance()->WaitForEasyUnlockKeyOpsFinished(
-      base::BindOnce(&OwnerSettingsServiceChromeOS::OnEasyUnlockKeyOpsFinished,
+      base::BindOnce(&OwnerSettingsServiceAsh::OnEasyUnlockKeyOpsFinished,
                      weak_factory_.GetWeakPtr()));
   // The ProfileManager may be null in unit tests.
   if (g_browser_process->profile_manager())
     g_browser_process->profile_manager()->AddObserver(this);
 }
 
-OwnerSettingsServiceChromeOS::~OwnerSettingsServiceChromeOS() {
+OwnerSettingsServiceAsh::~OwnerSettingsServiceAsh() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   // The ProfileManager may be null in unit tests.
@@ -242,7 +240,7 @@ OwnerSettingsServiceChromeOS::~OwnerSettingsServiceChromeOS() {
     chromeos::SessionManagerClient::Get()->RemoveObserver(this);
 }
 
-OwnerSettingsServiceChromeOS* OwnerSettingsServiceChromeOS::FromWebUI(
+OwnerSettingsServiceAsh* OwnerSettingsServiceAsh::FromWebUI(
     content::WebUI* web_ui) {
   if (!web_ui)
     return nullptr;
@@ -252,8 +250,7 @@ OwnerSettingsServiceChromeOS* OwnerSettingsServiceChromeOS::FromWebUI(
   return OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(profile);
 }
 
-void OwnerSettingsServiceChromeOS::OnTPMTokenReady(
-    bool /* tpm_token_enabled */) {
+void OwnerSettingsServiceAsh::OnTPMTokenReady(bool /* tpm_token_enabled */) {
   DCHECK(thread_checker_.CalledOnValidThread());
   waiting_for_tpm_token_ = false;
 
@@ -262,26 +259,26 @@ void OwnerSettingsServiceChromeOS::OnTPMTokenReady(
   ReloadKeypair();
 }
 
-void OwnerSettingsServiceChromeOS::OnEasyUnlockKeyOpsFinished() {
+void OwnerSettingsServiceAsh::OnEasyUnlockKeyOpsFinished() {
   DCHECK(thread_checker_.CalledOnValidThread());
   waiting_for_easy_unlock_operation_finshed_ = false;
 
   ReloadKeypair();
 }
 
-bool OwnerSettingsServiceChromeOS::HasPendingChanges() const {
+bool OwnerSettingsServiceAsh::HasPendingChanges() const {
   return !pending_changes_.empty() || tentative_settings_.get() ||
          has_pending_fixups_;
 }
 
-bool OwnerSettingsServiceChromeOS::IsOwner() {
+bool OwnerSettingsServiceAsh::IsOwner() {
   if (chromeos::InstallAttributes::Get()->IsEnterpriseManaged()) {
     return false;
   }
   return OwnerSettingsService::IsOwner();
 }
 
-void OwnerSettingsServiceChromeOS::IsOwnerAsync(IsOwnerCallback callback) {
+void OwnerSettingsServiceAsh::IsOwnerAsync(IsOwnerCallback callback) {
   if (chromeos::InstallAttributes::Get()->IsEnterpriseManaged()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false));
@@ -290,12 +287,12 @@ void OwnerSettingsServiceChromeOS::IsOwnerAsync(IsOwnerCallback callback) {
   OwnerSettingsService::IsOwnerAsync(std::move(callback));
 }
 
-bool OwnerSettingsServiceChromeOS::HandlesSetting(const std::string& setting) {
+bool OwnerSettingsServiceAsh::HandlesSetting(const std::string& setting) {
   return DeviceSettingsProvider::IsDeviceSetting(setting);
 }
 
-bool OwnerSettingsServiceChromeOS::Set(const std::string& setting,
-                                       const base::Value& value) {
+bool OwnerSettingsServiceAsh::Set(const std::string& setting,
+                                  const base::Value& value) {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (!IsOwner() && !IsOwnerInTests(user_id_))
     return false;
@@ -320,8 +317,8 @@ bool OwnerSettingsServiceChromeOS::Set(const std::string& setting,
   return true;
 }
 
-bool OwnerSettingsServiceChromeOS::AppendToList(const std::string& setting,
-                                                const base::Value& value) {
+bool OwnerSettingsServiceAsh::AppendToList(const std::string& setting,
+                                           const base::Value& value) {
   DCHECK(thread_checker_.CalledOnValidThread());
   const base::Value* old_value = CrosSettings::Get()->GetPref(setting);
   if (old_value && !old_value->is_list())
@@ -333,8 +330,8 @@ bool OwnerSettingsServiceChromeOS::AppendToList(const std::string& setting,
   return Set(setting, *new_value);
 }
 
-bool OwnerSettingsServiceChromeOS::RemoveFromList(const std::string& setting,
-                                                  const base::Value& value) {
+bool OwnerSettingsServiceAsh::RemoveFromList(const std::string& setting,
+                                             const base::Value& value) {
   DCHECK(thread_checker_.CalledOnValidThread());
   const base::Value* old_value = CrosSettings::Get()->GetPref(setting);
   if (old_value && !old_value->is_list())
@@ -346,7 +343,7 @@ bool OwnerSettingsServiceChromeOS::RemoveFromList(const std::string& setting,
   return Set(setting, *new_value);
 }
 
-bool OwnerSettingsServiceChromeOS::CommitTentativeDeviceSettings(
+bool OwnerSettingsServiceAsh::CommitTentativeDeviceSettings(
     std::unique_ptr<enterprise_management::PolicyData> policy) {
   if (!IsOwner() && !IsOwnerInTests(user_id_))
     return false;
@@ -361,7 +358,7 @@ bool OwnerSettingsServiceChromeOS::CommitTentativeDeviceSettings(
   return true;
 }
 
-void OwnerSettingsServiceChromeOS::OnProfileAdded(Profile* profile) {
+void OwnerSettingsServiceAsh::OnProfileAdded(Profile* profile) {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (profile != profile_)
     return;
@@ -370,28 +367,28 @@ void OwnerSettingsServiceChromeOS::OnProfileAdded(Profile* profile) {
   ReloadKeypair();
 }
 
-void OwnerSettingsServiceChromeOS::OwnerKeySet(bool success) {
+void OwnerSettingsServiceAsh::OwnerKeySet(bool success) {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (success)
     ReloadKeypair();
 }
 
-void OwnerSettingsServiceChromeOS::OwnershipStatusChanged() {
+void OwnerSettingsServiceAsh::OwnershipStatusChanged() {
   DCHECK(thread_checker_.CalledOnValidThread());
   StorePendingChanges();
 }
 
-void OwnerSettingsServiceChromeOS::DeviceSettingsUpdated() {
+void OwnerSettingsServiceAsh::DeviceSettingsUpdated() {
   DCHECK(thread_checker_.CalledOnValidThread());
   StorePendingChanges();
 }
 
-void OwnerSettingsServiceChromeOS::OnDeviceSettingsServiceShutdown() {
+void OwnerSettingsServiceAsh::OnDeviceSettingsServiceShutdown() {
   device_settings_service_ = nullptr;
 }
 
 // static
-void OwnerSettingsServiceChromeOS::IsOwnerForSafeModeAsync(
+void OwnerSettingsServiceAsh::IsOwnerForSafeModeAsync(
     const std::string& user_hash,
     const scoped_refptr<OwnerKeyUtil>& owner_key_util,
     IsOwnerCallback callback) {
@@ -409,7 +406,7 @@ void OwnerSettingsServiceChromeOS::IsOwnerForSafeModeAsync(
 }
 
 // static
-std::unique_ptr<em::PolicyData> OwnerSettingsServiceChromeOS::AssemblePolicy(
+std::unique_ptr<em::PolicyData> OwnerSettingsServiceAsh::AssemblePolicy(
     const std::string& user_id,
     const em::PolicyData* policy_data,
     em::ChromeDeviceSettingsProto* settings) {
@@ -434,13 +431,13 @@ std::unique_ptr<em::PolicyData> OwnerSettingsServiceChromeOS::AssemblePolicy(
   if (policy->management_mode() == em::PolicyData::LOCAL_OWNER)
     FixupLocalOwnerPolicy(user_id, settings);
   if (!settings->SerializeToString(policy->mutable_policy_value()))
-    return std::unique_ptr<em::PolicyData>();
+    return nullptr;
 
   return policy;
 }
 
 // static
-void OwnerSettingsServiceChromeOS::FixupLocalOwnerPolicy(
+void OwnerSettingsServiceAsh::FixupLocalOwnerPolicy(
     const std::string& user_id,
     enterprise_management::ChromeDeviceSettingsProto* settings) {
   if (!settings->has_allow_new_users())
@@ -462,7 +459,7 @@ void OwnerSettingsServiceChromeOS::FixupLocalOwnerPolicy(
 }
 
 // static
-void OwnerSettingsServiceChromeOS::UpdateDeviceSettings(
+void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     const std::string& path,
     const base::Value& value,
     enterprise_management::ChromeDeviceSettingsProto& settings) {
@@ -703,7 +700,7 @@ void OwnerSettingsServiceChromeOS::UpdateDeviceSettings(
   }
 }
 
-void OwnerSettingsServiceChromeOS::OnPostKeypairLoadedActions() {
+void OwnerSettingsServiceAsh::OnPostKeypairLoadedActions() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   const user_manager::User* user =
@@ -717,7 +714,7 @@ void OwnerSettingsServiceChromeOS::OnPostKeypairLoadedActions() {
   has_pending_fixups_ = true;
 }
 
-void OwnerSettingsServiceChromeOS::ReloadKeypairImpl(
+void OwnerSettingsServiceAsh::ReloadKeypairImpl(
     base::OnceCallback<void(const scoped_refptr<PublicKey>& public_key,
                             const scoped_refptr<PrivateKey>& private_key)>
         callback) {
@@ -741,7 +738,7 @@ void OwnerSettingsServiceChromeOS::ReloadKeypairImpl(
                      std::move(callback)));
 }
 
-void OwnerSettingsServiceChromeOS::StorePendingChanges() {
+void OwnerSettingsServiceAsh::StorePendingChanges() {
   if (!HasPendingChanges() || store_settings_factory_.HasWeakPtrs() ||
       !device_settings_service_ || user_id_.empty() || !IsOwner()) {
     return;
@@ -772,13 +769,13 @@ void OwnerSettingsServiceChromeOS::StorePendingChanges() {
       base::ThreadPool::CreateTaskRunner({base::MayBlock()});
   bool rv = AssembleAndSignPolicyAsync(
       task_runner.get(), std::move(policy),
-      base::BindOnce(&OwnerSettingsServiceChromeOS::OnPolicyAssembledAndSigned,
+      base::BindOnce(&OwnerSettingsServiceAsh::OnPolicyAssembledAndSigned,
                      store_settings_factory_.GetWeakPtr()));
   if (!rv)
     ReportStatusAndContinueStoring(false /* success */);
 }
 
-void OwnerSettingsServiceChromeOS::OnPolicyAssembledAndSigned(
+void OwnerSettingsServiceAsh::OnPolicyAssembledAndSigned(
     std::unique_ptr<em::PolicyFetchResponse> policy_response) {
   if (!policy_response.get() || !device_settings_service_) {
     ReportStatusAndContinueStoring(false /* success */);
@@ -786,26 +783,25 @@ void OwnerSettingsServiceChromeOS::OnPolicyAssembledAndSigned(
   }
   device_settings_service_->Store(
       std::move(policy_response),
-      base::BindOnce(&OwnerSettingsServiceChromeOS::OnSignedPolicyStored,
+      base::BindOnce(&OwnerSettingsServiceAsh::OnSignedPolicyStored,
                      store_settings_factory_.GetWeakPtr(), true /* success */));
 }
 
-void OwnerSettingsServiceChromeOS::OnSignedPolicyStored(bool success) {
+void OwnerSettingsServiceAsh::OnSignedPolicyStored(bool success) {
   CHECK(device_settings_service_);
   ReportStatusAndContinueStoring(success &&
                                  device_settings_service_->status() ==
                                      DeviceSettingsService::STORE_SUCCESS);
 }
 
-void OwnerSettingsServiceChromeOS::ReportStatusAndContinueStoring(
-    bool success) {
+void OwnerSettingsServiceAsh::ReportStatusAndContinueStoring(bool success) {
   store_settings_factory_.InvalidateWeakPtrs();
   for (auto& observer : observers_)
     observer.OnSignedPolicyStored(success);
   StorePendingChanges();
 }
 
-void OwnerSettingsServiceChromeOS::MigrateFeatureFlags(
+void OwnerSettingsServiceAsh::MigrateFeatureFlags(
     enterprise_management::ChromeDeviceSettingsProto* settings) {
   DCHECK(IsOwner() || IsOwnerInTests(user_id_));
 

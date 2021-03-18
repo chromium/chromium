@@ -12,7 +12,7 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/browser/ash/ownership/owner_settings_service_chromeos.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_chromeos_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -140,7 +140,7 @@ std::unique_ptr<base::ListValue> GetUsersList(Profile* profile,
         std::make_unique<base::Value>(user->GetAccountId().GetUserEmail()));
   }
 
-  if (ash::OwnerSettingsServiceChromeOS* service =
+  if (ash::OwnerSettingsServiceAsh* service =
           ash::OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(
               profile)) {
     service->Set(chromeos::kAccountsPrefUsers, *email_list.get());

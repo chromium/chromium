@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_OWNERSHIP_OWNER_SETTINGS_SERVICE_CHROMEOS_H_
-#define CHROME_BROWSER_ASH_OWNERSHIP_OWNER_SETTINGS_SERVICE_CHROMEOS_H_
+#ifndef CHROME_BROWSER_ASH_OWNERSHIP_OWNER_SETTINGS_SERVICE_ASH_H_
+#define CHROME_BROWSER_ASH_OWNERSHIP_OWNER_SETTINGS_SERVICE_ASH_H_
 
 #include <string>
 #include <unordered_map>
@@ -47,11 +47,10 @@ enum class FeatureFlagsMigrationStatus {
 //
 // TODO (ygorshenin@): move write path for device settings here
 // (crbug.com/230018).
-class OwnerSettingsServiceChromeOS
-    : public ownership::OwnerSettingsService,
-      public ProfileManagerObserver,
-      public chromeos::SessionManagerClient::Observer,
-      public DeviceSettingsService::Observer {
+class OwnerSettingsServiceAsh : public ownership::OwnerSettingsService,
+                                public ProfileManagerObserver,
+                                public chromeos::SessionManagerClient::Observer,
+                                public DeviceSettingsService::Observer {
  public:
   struct ManagementSettings {
     ManagementSettings();
@@ -61,9 +60,9 @@ class OwnerSettingsServiceChromeOS
     std::string device_id;
   };
 
-  ~OwnerSettingsServiceChromeOS() override;
+  ~OwnerSettingsServiceAsh() override;
 
-  static OwnerSettingsServiceChromeOS* FromWebUI(content::WebUI* web_ui);
+  static OwnerSettingsServiceAsh* FromWebUI(content::WebUI* web_ui);
 
   void OnTPMTokenReady(bool tpm_token_enabled);
 
@@ -115,7 +114,7 @@ class OwnerSettingsServiceChromeOS
       enterprise_management::ChromeDeviceSettingsProto& settings);
 
  protected:
-  OwnerSettingsServiceChromeOS(
+  OwnerSettingsServiceAsh(
       DeviceSettingsService* device_settings_service,
       Profile* profile,
       const scoped_refptr<ownership::OwnerKeyUtil>& owner_key_util);
@@ -191,12 +190,11 @@ class OwnerSettingsServiceChromeOS
   std::unique_ptr<enterprise_management::ChromeDeviceSettingsProto>
       tentative_settings_;
 
-  base::WeakPtrFactory<OwnerSettingsServiceChromeOS> weak_factory_{this};
+  base::WeakPtrFactory<OwnerSettingsServiceAsh> weak_factory_{this};
 
-  base::WeakPtrFactory<OwnerSettingsServiceChromeOS> store_settings_factory_{
-      this};
+  base::WeakPtrFactory<OwnerSettingsServiceAsh> store_settings_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(OwnerSettingsServiceChromeOS);
+  DISALLOW_COPY_AND_ASSIGN(OwnerSettingsServiceAsh);
 };
 
 }  // namespace ash
@@ -204,7 +202,7 @@ class OwnerSettingsServiceChromeOS
 // TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
 // source migration is finished.
 namespace chromeos {
-using ::ash::OwnerSettingsServiceChromeOS;
+using ::ash::OwnerSettingsServiceAsh;
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_ASH_OWNERSHIP_OWNER_SETTINGS_SERVICE_CHROMEOS_H_
+#endif  // CHROME_BROWSER_ASH_OWNERSHIP_OWNER_SETTINGS_SERVICE_ASH_H_

@@ -6,7 +6,7 @@
 
 #include "base/path_service.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
-#include "chrome/browser/ash/ownership/owner_settings_service_chromeos.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -43,10 +43,10 @@ OwnerSettingsServiceChromeOSFactory::~OwnerSettingsServiceChromeOSFactory() =
     default;
 
 // static
-OwnerSettingsServiceChromeOS*
+OwnerSettingsServiceAsh*
 OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(
     content::BrowserContext* context) {
-  return static_cast<OwnerSettingsServiceChromeOS*>(
+  return static_cast<OwnerSettingsServiceAsh*>(
       GetInstance()->GetServiceForBrowserContext(context, true));
 }
 
@@ -114,10 +114,8 @@ KeyedService* OwnerSettingsServiceChromeOSFactory::BuildServiceInstanceFor(
         GetInstance()->GetOwnerKeyUtil());
   }
 
-  return new OwnerSettingsServiceChromeOS(
-      GetDeviceSettingsService(),
-      profile,
-      GetInstance()->GetOwnerKeyUtil());
+  return new OwnerSettingsServiceAsh(GetDeviceSettingsService(), profile,
+                                     GetInstance()->GetOwnerKeyUtil());
 }
 
 }  // namespace ash

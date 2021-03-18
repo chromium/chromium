@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "chrome/browser/ash/ownership/owner_settings_service_chromeos.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_chromeos_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -36,7 +36,7 @@ void SetShouldUse24HourClock(bool use_24_hour_clock) {
   Profile* const profile = ProfileHelper::Get()->GetProfileByUser(user);
   if (!profile)
     return;  // May occur in tests or if not running on a device.
-  OwnerSettingsServiceChromeOS* const service =
+  OwnerSettingsServiceAsh* const service =
       OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(profile);
   CHECK(service);
   service->SetBoolean(kSystemUse24HourClock, use_24_hour_clock);

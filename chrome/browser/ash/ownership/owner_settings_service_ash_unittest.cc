@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/ownership/owner_settings_service_chromeos.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 
 #include <memory>
 #include <utility>
@@ -38,7 +38,7 @@ void OnPrefChanged(const std::string& /* setting */) {}
 
 class PrefsChecker : public ownership::OwnerSettingsService::Observer {
  public:
-  PrefsChecker(OwnerSettingsServiceChromeOS* service,
+  PrefsChecker(OwnerSettingsServiceAsh* service,
                DeviceSettingsProvider* provider)
       : service_(service), provider_(provider) {
     CHECK(service_);
@@ -72,7 +72,7 @@ class PrefsChecker : public ownership::OwnerSettingsService::Observer {
   void Wait() { loop_.Run(); }
 
  private:
-  OwnerSettingsServiceChromeOS* service_;
+  OwnerSettingsServiceAsh* service_;
   DeviceSettingsProvider* provider_;
   base::RunLoop loop_;
 
@@ -91,9 +91,9 @@ bool FindInListValue(const std::string& needle, const base::Value* haystack) {
 
 }  // namespace
 
-class OwnerSettingsServiceChromeOSTest : public DeviceSettingsTestBase {
+class OwnerSettingsServiceAshTest : public DeviceSettingsTestBase {
  public:
-  OwnerSettingsServiceChromeOSTest()
+  OwnerSettingsServiceAshTest()
       : service_(nullptr),
         local_state_(TestingBrowserProcess::GetGlobal()),
         user_data_dir_override_(chrome::DIR_USER_DATA),
@@ -127,7 +127,7 @@ class OwnerSettingsServiceChromeOSTest : public DeviceSettingsTestBase {
     DeviceSettingsTestBase::TearDown();
   }
 
-  void TestSingleSet(OwnerSettingsServiceChromeOS* service,
+  void TestSingleSet(OwnerSettingsServiceAsh* service,
                      const std::string& setting,
                      const base::Value& in_value) {
     PrefsChecker checker(service, provider_.get());
@@ -147,23 +147,23 @@ class OwnerSettingsServiceChromeOSTest : public DeviceSettingsTestBase {
   }
 
  protected:
-  OwnerSettingsServiceChromeOS* service_;
+  OwnerSettingsServiceAsh* service_;
   ScopedTestingLocalState local_state_;
   std::unique_ptr<DeviceSettingsProvider> provider_;
   base::ScopedPathOverride user_data_dir_override_;
   bool management_settings_set_;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(OwnerSettingsServiceChromeOSTest);
+  DISALLOW_COPY_AND_ASSIGN(OwnerSettingsServiceAshTest);
 };
 
-TEST_F(OwnerSettingsServiceChromeOSTest, SingleSetTest) {
+TEST_F(OwnerSettingsServiceAshTest, SingleSetTest) {
   TestSingleSet(service_, kReleaseChannel, base::Value("dev-channel"));
   TestSingleSet(service_, kReleaseChannel, base::Value("beta-channel"));
   TestSingleSet(service_, kReleaseChannel, base::Value("stable-channel"));
 }
 
-TEST_F(OwnerSettingsServiceChromeOSTest, MultipleSetTest) {
+TEST_F(OwnerSettingsServiceAshTest, MultipleSetTest) {
   base::Value allow_guest(false);
   base::Value release_channel("stable-channel");
   base::Value show_user_names(true);
@@ -178,7 +178,7 @@ TEST_F(OwnerSettingsServiceChromeOSTest, MultipleSetTest) {
   checker.Wait();
 }
 
-TEST_F(OwnerSettingsServiceChromeOSTest, FailedSetRequest) {
+TEST_F(OwnerSettingsServiceAshTest, FailedSetRequest) {
   session_manager_client_.ForceStorePolicyFailure(true);
   std::string current_channel;
   ASSERT_TRUE(provider_->Get(kReleaseChannel)->GetAsString(&current_channel));
@@ -195,7 +195,7 @@ TEST_F(OwnerSettingsServiceChromeOSTest, FailedSetRequest) {
             device_settings().release_channel().release_channel());
 }
 
-TEST_F(OwnerSettingsServiceChromeOSTest, ForceAllowlist) {
+TEST_F(OwnerSettingsServiceAshTest, ForceAllowlist) {
   EXPECT_FALSE(FindInListValue(device_policy_->policy_data().username(),
                                provider_->Get(kAccountsPrefUsers)));
   // Force a settings write.
@@ -204,7 +204,7 @@ TEST_F(OwnerSettingsServiceChromeOSTest, ForceAllowlist) {
                               provider_->Get(kAccountsPrefUsers)));
 }
 
-TEST_F(OwnerSettingsServiceChromeOSTest, AccountPrefUsersEmptyLists) {
+TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersEmptyLists) {
   std::vector<base::Value> list;
   list.push_back(base::Value(kUserAllowlist));
 
@@ -213,7 +213,7 @@ TEST_F(OwnerSettingsServiceChromeOSTest, AccountPrefUsersEmptyLists) {
   EXPECT_EQ(0,
             device_policy_->payload().user_whitelist().user_whitelist().size());
 
-  OwnerSettingsServiceChromeOS::UpdateDeviceSettings(
+  OwnerSettingsServiceAsh::UpdateDeviceSettings(
       kAccountsPrefUsers, base::ListValue(list), device_policy_->payload());
 
   EXPECT_EQ(1,
@@ -224,7 +224,7 @@ TEST_F(OwnerSettingsServiceChromeOSTest, AccountPrefUsersEmptyLists) {
             device_policy_->payload().user_whitelist().user_whitelist().size());
 }
 
-TEST_F(OwnerSettingsServiceChromeOSTest, AccountPrefUsersAllowList) {
+TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersAllowList) {
   std::vector<base::Value> list;
   list.push_back(base::Value(kUserAllowlist));
 
@@ -236,7 +236,7 @@ TEST_F(OwnerSettingsServiceChromeOSTest, AccountPrefUsersAllowList) {
   EXPECT_EQ(0,
             device_policy_->payload().user_whitelist().user_whitelist().size());
 
-  OwnerSettingsServiceChromeOS::UpdateDeviceSettings(
+  OwnerSettingsServiceAsh::UpdateDeviceSettings(
       kAccountsPrefUsers, base::ListValue(list), device_policy_->payload());
 
   EXPECT_EQ(1,
@@ -247,7 +247,7 @@ TEST_F(OwnerSettingsServiceChromeOSTest, AccountPrefUsersAllowList) {
             device_policy_->payload().user_whitelist().user_whitelist().size());
 }
 
-TEST_F(OwnerSettingsServiceChromeOSTest, AccountPrefUsersWhiteList) {
+TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersWhiteList) {
   std::vector<base::Value> list;
   list.push_back(base::Value(kUserAllowlist));
 
@@ -259,7 +259,7 @@ TEST_F(OwnerSettingsServiceChromeOSTest, AccountPrefUsersWhiteList) {
   EXPECT_EQ(1,
             device_policy_->payload().user_whitelist().user_whitelist().size());
 
-  OwnerSettingsServiceChromeOS::UpdateDeviceSettings(
+  OwnerSettingsServiceAsh::UpdateDeviceSettings(
       kAccountsPrefUsers, base::ListValue(list), device_policy_->payload());
 
   EXPECT_EQ(0,
@@ -270,7 +270,7 @@ TEST_F(OwnerSettingsServiceChromeOSTest, AccountPrefUsersWhiteList) {
             device_policy_->payload().user_whitelist().user_whitelist(0));
 }
 
-TEST_F(OwnerSettingsServiceChromeOSTest, AccountPrefUsersBothLists) {
+TEST_F(OwnerSettingsServiceAshTest, AccountPrefUsersBothLists) {
   std::vector<base::Value> list;
   list.push_back(base::Value(kUserAllowlist));
 
@@ -284,7 +284,7 @@ TEST_F(OwnerSettingsServiceChromeOSTest, AccountPrefUsersBothLists) {
   EXPECT_EQ(1,
             device_policy_->payload().user_whitelist().user_whitelist().size());
 
-  OwnerSettingsServiceChromeOS::UpdateDeviceSettings(
+  OwnerSettingsServiceAsh::UpdateDeviceSettings(
       kAccountsPrefUsers, base::ListValue(list), device_policy_->payload());
 
   EXPECT_EQ(1,
@@ -295,7 +295,7 @@ TEST_F(OwnerSettingsServiceChromeOSTest, AccountPrefUsersBothLists) {
             device_policy_->payload().user_whitelist().user_whitelist().size());
 }
 
-TEST_F(OwnerSettingsServiceChromeOSTest, MigrateFeatureFlagsAbsent) {
+TEST_F(OwnerSettingsServiceAshTest, MigrateFeatureFlagsAbsent) {
   base::HistogramTester histogram_tester;
   EXPECT_FALSE(device_settings().has_feature_flags());
 
@@ -308,7 +308,7 @@ TEST_F(OwnerSettingsServiceChromeOSTest, MigrateFeatureFlagsAbsent) {
       FeatureFlagsMigrationStatus::kNoFeatureFlags, 1);
 }
 
-TEST_F(OwnerSettingsServiceChromeOSTest, MigrateFeatureFlagsNoSwitches) {
+TEST_F(OwnerSettingsServiceAshTest, MigrateFeatureFlagsNoSwitches) {
   base::HistogramTester histogram_tester;
   device_policy_->payload().mutable_feature_flags();
   EXPECT_TRUE(device_policy_->payload().has_feature_flags());
@@ -322,7 +322,7 @@ TEST_F(OwnerSettingsServiceChromeOSTest, MigrateFeatureFlagsNoSwitches) {
       FeatureFlagsMigrationStatus::kNoFeatureFlags, 1);
 }
 
-TEST_F(OwnerSettingsServiceChromeOSTest, MigrateFeatureFlagsSuccess) {
+TEST_F(OwnerSettingsServiceAshTest, MigrateFeatureFlagsSuccess) {
   base::HistogramTester histogram_tester;
   device_policy_->payload().mutable_feature_flags()->add_switches("--foobar");
   device_policy_->Build();
@@ -347,7 +347,7 @@ TEST_F(OwnerSettingsServiceChromeOSTest, MigrateFeatureFlagsSuccess) {
       FeatureFlagsMigrationStatus::kMigrationPerformed, 1);
 }
 
-TEST_F(OwnerSettingsServiceChromeOSTest, MigrateFeatureFlagsAlreadyMigrated) {
+TEST_F(OwnerSettingsServiceAshTest, MigrateFeatureFlagsAlreadyMigrated) {
   base::HistogramTester histogram_tester;
   device_policy_->payload().mutable_feature_flags()->add_switches("--foobar");
   device_policy_->payload().mutable_feature_flags()->add_feature_flags(
@@ -374,11 +374,11 @@ TEST_F(OwnerSettingsServiceChromeOSTest, MigrateFeatureFlagsAlreadyMigrated) {
       FeatureFlagsMigrationStatus::kAlreadyMigrated, 1);
 }
 
-class OwnerSettingsServiceChromeOSNoOwnerTest
-    : public OwnerSettingsServiceChromeOSTest {
+class OwnerSettingsServiceAshNoOwnerTest
+    : public OwnerSettingsServiceAshTest {
  public:
-  OwnerSettingsServiceChromeOSNoOwnerTest() {}
-  ~OwnerSettingsServiceChromeOSNoOwnerTest() override {}
+  OwnerSettingsServiceAshNoOwnerTest() {}
+  ~OwnerSettingsServiceAshNoOwnerTest() override {}
 
   void SetUp() override {
     DeviceSettingsTestBase::SetUp();
@@ -393,14 +393,14 @@ class OwnerSettingsServiceChromeOSNoOwnerTest
   }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(OwnerSettingsServiceChromeOSNoOwnerTest);
+  DISALLOW_COPY_AND_ASSIGN(OwnerSettingsServiceAshNoOwnerTest);
 };
 
-TEST_F(OwnerSettingsServiceChromeOSNoOwnerTest, SingleSetTest) {
+TEST_F(OwnerSettingsServiceAshNoOwnerTest, SingleSetTest) {
   ASSERT_FALSE(service_->SetBoolean(kAccountsPrefAllowGuest, false));
 }
 
-TEST_F(OwnerSettingsServiceChromeOSNoOwnerTest, TakeOwnershipForceAllowlist) {
+TEST_F(OwnerSettingsServiceAshNoOwnerTest, TakeOwnershipForceAllowlist) {
   EXPECT_FALSE(FindInListValue(device_policy_->policy_data().username(),
                                provider_->Get(kAccountsPrefUsers)));
   owner_key_util_->SetPrivateKey(device_policy_->GetSigningKey());

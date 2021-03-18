@@ -36,7 +36,7 @@ namespace ash {
 // is in use.
 //
 // Note that the write path is in the process of being migrated to
-// OwnerSettingsServiceChromeOS (crbug.com/230018).
+// OwnerSettingsServiceAsh (crbug.com/230018).
 class DeviceSettingsProvider
     : public CrosSettingsProvider,
       public DeviceSettingsService::Observer,

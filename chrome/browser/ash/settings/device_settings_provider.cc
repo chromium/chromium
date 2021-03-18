@@ -23,7 +23,7 @@
 #include "base/syslog_logging.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
-#include "chrome/browser/ash/ownership/owner_settings_service_chromeos.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_cache.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
@@ -1179,8 +1179,8 @@ void DeviceSettingsProvider::DoSet(const std::string& path,
     // Temporary store new setting in
     // |device_settings_|. |device_settings_| will be stored on a disk
     // as soon as an ownership of device the will be taken.
-    OwnerSettingsServiceChromeOS::UpdateDeviceSettings(path, in_value,
-                                                       device_settings_);
+    OwnerSettingsServiceAsh::UpdateDeviceSettings(path, in_value,
+                                                  device_settings_);
     em::PolicyData data;
     data.set_username(device_settings_service_->GetUsername());
     CHECK(device_settings_.SerializeToString(data.mutable_policy_value()));

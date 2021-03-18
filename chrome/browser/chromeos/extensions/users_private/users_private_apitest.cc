@@ -116,7 +116,7 @@ class UsersPrivateApiTest : public ExtensionApiTest {
  public:
   UsersPrivateApiTest() {
     // Mock owner key pairs. Note this needs to happen before
-    // OwnerSettingsServiceChromeOS is created.
+    // OwnerSettingsServiceAsh is created.
     scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util =
         new ownership::MockOwnerKeyUtil();
     owner_key_util->SetPrivateKey(crypto::RSAPrivateKey::Create(512));

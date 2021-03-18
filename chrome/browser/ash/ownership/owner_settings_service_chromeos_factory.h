@@ -24,13 +24,13 @@ class OwnerKeyUtil;
 namespace ash {
 
 class DeviceSettingsService;
-class OwnerSettingsServiceChromeOS;
+class OwnerSettingsServiceAsh;
 class StubCrosSettingsProvider;
 
 class OwnerSettingsServiceChromeOSFactory
     : public BrowserContextKeyedServiceFactory {
  public:
-  static OwnerSettingsServiceChromeOS* GetForBrowserContext(
+  static OwnerSettingsServiceAsh* GetForBrowserContext(
       content::BrowserContext* context);
 
   static OwnerSettingsServiceChromeOSFactory* GetInstance();

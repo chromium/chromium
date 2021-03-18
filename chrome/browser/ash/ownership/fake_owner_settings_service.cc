@@ -15,7 +15,7 @@ namespace ash {
 FakeOwnerSettingsService::FakeOwnerSettingsService(
     StubCrosSettingsProvider* provider,
     Profile* profile)
-    : OwnerSettingsServiceChromeOS(
+    : OwnerSettingsServiceAsh(
           /* device_settings_service= */ nullptr,
           profile,
           OwnerSettingsServiceChromeOSFactory::GetInstance()
@@ -27,7 +27,7 @@ FakeOwnerSettingsService::FakeOwnerSettingsService(
     StubCrosSettingsProvider* provider,
     Profile* profile,
     const scoped_refptr<ownership::OwnerKeyUtil>& owner_key_util)
-    : OwnerSettingsServiceChromeOS(nullptr, profile, owner_key_util),
+    : OwnerSettingsServiceAsh(nullptr, profile, owner_key_util),
       set_management_settings_result_(true),
       settings_provider_(provider) {}
 

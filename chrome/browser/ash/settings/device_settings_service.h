@@ -187,7 +187,7 @@ class DeviceSettingsService : public chromeos::SessionManagerClient::Observer {
   // TODO (ygorshenin@, crbug.com/433840): get rid of the method when
   // write path for device settings will be removed from
   // DeviceSettingsProvider and all existing clients will be switched
-  // to OwnerSettingsServiceChromeOS.
+  // to OwnerSettingsServiceAsh.
   void InitOwner(const std::string& username,
                  const base::WeakPtr<ownership::OwnerSettingsService>&
                      owner_settings_service);
@@ -212,7 +212,7 @@ class DeviceSettingsService : public chromeos::SessionManagerClient::Observer {
   void PropertyChangeComplete(bool success) override;
 
  private:
-  friend class OwnerSettingsServiceChromeOS;
+  friend class OwnerSettingsServiceAsh;
 
   // Enqueues a new operation. Takes ownership of |operation| and starts it
   // right away if there is no active operation currently.
