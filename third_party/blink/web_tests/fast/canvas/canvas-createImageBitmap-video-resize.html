@@ -24,12 +24,8 @@ function checkLowResult(imageBitmap, bw, bh, video, sx, sy, sw, sh)
     for (var i = 0; i < data1.length; i++) {
         // data1[i] is strictly the same as data2[i] on software rendering.
         // But on GPU, the difference could be quite significant.
-        if (Math.abs(data1[i] - data2[i]) > 18) {
-            dataMatched = false;
-            break;
-        }
+        assert_approx_equals(data1[i], data2[i], 18);
     }
-    assert_true(dataMatched);
 }
 
 function generateTest()
@@ -52,8 +48,8 @@ var t = async_test('createImageBitmap(HTMLVideoElement) with resize option');
 // HTMLVideoElement
 var video = document.createElement("video");
 video.preload = "auto";
-video.oncanplaythrough = t.step_func(function() {
+video.requestVideoFrameCallback(t.step_func(function() {
     return generateTest();
-});
-video.src = "../../compositing/resources/video.ogv";
+}));
+video.src = "../../media/content/test.webm";
 </script>

@@ -9,11 +9,7 @@
 </head>
 <body>
   <canvas id="canvas"></canvas>
-  <video id="video">
-    <source src="resources/canvas_video.webm" type='video/webm' />
-    <source src="resources/canvas_video.mp4"  type='video/mp4' />
-    <source src="resources/canvas_video.ogv"  type='video/ogg' />
-  </video>
+  <video id="video"></video>
   <script>
   if (window.testRunner)
     testRunner.waitUntilDone();
@@ -25,11 +21,11 @@
   var ctx = canvas.getContext("2d");
 
   var video = document.getElementById("video");
-  video.addEventListener("playing", drawImageToCanvas, true);
+  video.requestVideoFrameCallback(drawImageToCanvas);
+  video.src = "resources/canvas_video.webm";
   video.play();
 
   function drawImageToCanvas() {
-    video.removeEventListener("playing", drawImageToCanvas, true);
     ctx.fillStyle = "blue";
     ctx.fillRect(0, 0, length, length);
     ctx.fillStyle = ctx.createPattern(video, "no-repeat");

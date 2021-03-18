@@ -21,11 +21,7 @@
     <div>Test Results</div>
     <div><table id='outputtable'></table></div>
     <div>Test Video</div>
-    <div><video id="video">
-      <source src="resources/canvas_video.webm" type='video/webm' />
-      <source src="resources/canvas_video.mp4"  type='video/mp4' />
-      <source src="resources/canvas_video.ogv"  type='video/ogg' />
-    </video></div>
+    <div><video id="video"></video></div>
     <script type="application/x-javascript">
       function drawImage(context, compositeIndex, alpha) {
         context.globalCompositeOperation = compositeTypes[compositeIndex];
@@ -38,15 +34,9 @@
       function setupTest() {}
 
       var video = document.getElementById("video");
-      video.addEventListener("playing", playVideo, true);
+      video.requestVideoFrameCallback(runTest);
+      video.src = "resources/canvas_video.webm";
       video.play();
-
-      function playVideo() {
-        video.removeEventListener("playing", playVideo, true);
-        // We cannot read pixel after drawing a video because of SecurityError:
-        // The canvas has been tainted by cross-origin data.
-        runTest();
-      }
     </script>
   </body>
 </html>

@@ -578,41 +578,38 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
 
   bool QueryYUVA(const SkYUVAPixmapInfo::SupportedDataTypes&,
                  SkYUVAPixmapInfo* info) const override {
-    // Temporarily disabling this path to avoid creating YUV ImageData in
-    // GpuImageDecodeCache.
-    // TODO(crbug.com/921636): Restore the code below once YUV rendering support
-    // is added for VideoImageGenerator.
-    return false;
-#if 0
     SkYUVAInfo::PlaneConfig plane_config;
     SkYUVAInfo::Subsampling subsampling;
     std::tie(plane_config, subsampling) =
         VideoPixelFormatAsSkYUVAInfoValues(frame_->format());
-    if (plane_config == SkYUVAInfo::PlaneConfig::kUnknown) {
+    if (plane_config == SkYUVAInfo::PlaneConfig::kUnknown)
+      return false;
+
+    // Don't use the YUV conversion path for multi-plane RGB frames.
+    if (frame_->format() == PIXEL_FORMAT_I444 &&
+        frame_->ColorSpace().GetMatrixID() == gfx::ColorSpace::MatrixID::GBR) {
       return false;
     }
-    if (info) {
-      SkYUVColorSpace yuv_color_space;
-      if (!frame_->ColorSpace().ToSkYUVColorSpace(video_frame->BitDepth(),
-                                                  &yuv_color_space)) {
-        // TODO(hubbe): This really should default to rec709
-        // https://crbug.com/828599
-        yuv_color_space = kRec601_SkYUVColorSpace;
-      }
-      // We use the Y plane size because it may get rounded up to an even size.
-      // Our implementation of GetYUVAPlanes expects this.
-      gfx::Size y_size =
-          VideoFrame::PlaneSize(frame_->format(), VideoFrame::kYPlane,
-                                gfx::Size(frame_->visible_rect().width(),
-                                          frame_->visible_rect().height()));
-      SkYUVAInfo yuva_info =
-          SkYUVAInfo({y_size.width(), y_size.height()}, plane_config,
-                     subsampling, yuv_color_space);
-      *info = SkYUVAPixmapInfo(yuva_info, SkYUVAPixmapInfo::DataType::kUnorm8,
-                               /* row bytes */ nullptr);
+
+    if (!info)
+      return true;
+
+    SkYUVColorSpace yuv_color_space;
+    if (!frame_->ColorSpace().ToSkYUVColorSpace(frame_->BitDepth(),
+                                                &yuv_color_space)) {
+      // TODO(crbug.com/828599): This should default to BT.709 color space.
+      yuv_color_space = kRec601_SkYUVColorSpace;
     }
+
+    // We use the Y plane size because it may get rounded up to an even size.
+    // Our implementation of GetYUVAPlanes expects this.
+    auto y_size = VideoFrame::PlaneSize(frame_->format(), VideoFrame::kYPlane,
+                                        frame_->visible_rect().size());
+    auto yuva_info = SkYUVAInfo({y_size.width(), y_size.height()}, plane_config,
+                                subsampling, yuv_color_space);
+    *info = SkYUVAPixmapInfo(yuva_info, SkYUVAPixmapInfo::DataType::kUnorm8,
+                             /*rowBytes=*/nullptr);
     return true;
-#endif
   }
 
   bool GetYUVAPlanes(const SkYUVAPixmaps& pixmaps,
@@ -621,50 +618,32 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
     DCHECK_EQ(frame_index, 0u);
     DCHECK_EQ(pixmaps.numPlanes(), 3);
 
-    if (DCHECK_IS_ON()) {
-      SkYUVAInfo::PlaneConfig plane_config;
-      SkYUVAInfo::Subsampling subsampling;
-      std::tie(plane_config, subsampling) =
-          VideoPixelFormatAsSkYUVAInfoValues(frame_->format());
-      DCHECK_EQ(plane_config, pixmaps.yuvaInfo().planeConfig());
-      DCHECK_EQ(subsampling, pixmaps.yuvaInfo().subsampling());
-    }
+#if DCHECK_IS_ON()
+    SkYUVAInfo::PlaneConfig plane_config;
+    SkYUVAInfo::Subsampling subsampling;
+    std::tie(plane_config, subsampling) =
+        VideoPixelFormatAsSkYUVAInfoValues(frame_->format());
+    DCHECK_EQ(plane_config, pixmaps.yuvaInfo().planeConfig());
+    DCHECK_EQ(subsampling, pixmaps.yuvaInfo().subsampling());
+#endif
 
     for (int plane = VideoFrame::kYPlane; plane <= VideoFrame::kVPlane;
          ++plane) {
-      const gfx::Size size =
-          VideoFrame::PlaneSize(frame_->format(), plane,
-                                gfx::Size(frame_->visible_rect().width(),
-                                          frame_->visible_rect().height()));
-      if (size.width() != pixmaps.plane(plane).width() ||
-          size.height() != pixmaps.plane(plane).height()) {
+      const auto plane_size = VideoFrame::PlaneSize(
+          frame_->format(), plane, frame_->visible_rect().size());
+      if (plane_size.width() != pixmaps.plane(plane).width() ||
+          plane_size.height() != pixmaps.plane(plane).height()) {
         return false;
       }
 
-      size_t offset;
-      const int y_shift =
-          (frame_->format() == media::PIXEL_FORMAT_I422) ? 0 : 1;
-      if (plane == VideoFrame::kYPlane) {
-        offset =
-            (frame_->stride(VideoFrame::kYPlane) * frame_->visible_rect().y()) +
-            frame_->visible_rect().x();
-      } else {
-        offset = (frame_->stride(VideoFrame::kUPlane) *
-                  (frame_->visible_rect().y() >> y_shift)) +
-                 (frame_->visible_rect().x() >> 1);
-      }
+      const auto& out_plane = pixmaps.plane(plane);
 
-      // Copy the frame to the supplied memory.
-      // TODO: Find a way (API change?) to avoid this copy.
-      uint8_t* out_line =
-          static_cast<uint8_t*>(pixmaps.plane(plane).writable_addr());
-      int out_line_stride = static_cast<int>(pixmaps.plane(plane).rowBytes());
-      uint8_t* in_line = frame_->data(plane) + offset;
-      int in_line_stride = frame_->stride(plane);
-      int plane_height = pixmaps.plane(plane).height();
-      int bytes_to_copy_per_line = std::min(out_line_stride, in_line_stride);
-      libyuv::CopyPlane(in_line, in_line_stride, out_line, out_line_stride,
-                        bytes_to_copy_per_line, plane_height);
+      // Copy the frame to the supplied memory. It'd be nice to avoid this copy,
+      // but the memory is externally owned so we can't w/o an API change.
+      libyuv::CopyPlane(frame_->visible_data(plane), frame_->stride(plane),
+                        reinterpret_cast<uint8_t*>(out_plane.writable_addr()),
+                        out_plane.rowBytes(), plane_size.width(),
+                        plane_size.height());
     }
     return true;
   }
