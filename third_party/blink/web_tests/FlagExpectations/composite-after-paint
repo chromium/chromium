@@ -58,8 +58,6 @@ crbug.com/1108972 fullscreen/compositor-touch-hit-rects-fullscreen-video-control
 crbug.com/1123189 virtual/threaded-composited-iframes/external/wpt/is-input-pending/security/cross-origin-subframe-masked-pointer-events-mixed-2.sub.html [ Failure ]
 crbug.com/1123189 virtual/threaded-composited-iframes/external/wpt/is-input-pending/security/cross-origin-subframe-complex-clip.sub.html [ Failure ]
 
-crbug.com/1124979 compositing/video/video-controls-layer-creation.html [ Pass Failure ]
-
 # Fixed-position element gets composited/decomposited on overlap change during scroll.
 crbug.com/1099379 compositing/squashing/squash-above-fixed-1.html [ Failure ]
 crbug.com/1099379 compositing/squashing/squash-above-fixed-3.html [ Failure ]
