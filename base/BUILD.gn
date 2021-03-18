@@ -3174,6 +3174,7 @@ if (build_base_unittests) {
       "//base/test:immediate_crash_test_helper",
       "//base/test:test_child_process",
       "//base/test:test_shared_library",
+      "//testing/buildbot/filters:base_unittests_filters",
     ]
 
     if (is_apple) {

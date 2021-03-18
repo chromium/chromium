@@ -170,6 +170,11 @@
   },
   'base_unittests': {
     'modifications': {
+      'android-11-x86-fyi-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.base_unittests.filter',
+        ],
+      },
       'fuchsia-code-coverage': {
         'swarming': {
           'shards': 5,
@@ -1306,6 +1311,13 @@
       'Linux CFI',
       'CFI Linux ToT',
     ],
+    'modifications': {
+      'android-11-x86-fyi-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.crashpad_tests.filter',
+        ],
+      },
+    },
   },
   'cronet_sizes': {
     'modifications': {
@@ -2970,6 +2982,11 @@
         'swarming': {
           'hard_timeout': 1200,
         },
+      },
+      'android-11-x86-fyi-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.blink_unittests.filter',
+        ],
       },
       'linux-blink-heap-concurrent-marking-tsan-rel': {
         'swarming': {

@@ -29,6 +29,9 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
       "test:test_test",
       "util:util_test",
     ]
+
+    data_deps = [ "//testing/buildbot/filters:crashpad_tests_filters" ]
+
     if (!crashpad_is_ios) {
       deps += [ "snapshot:snapshot_test" ]
     }
