@@ -126,6 +126,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoHidDevice final : public FidoDevice {
                           uint8_t report_id,
                           const base::Optional<std::vector<uint8_t>>& buf);
   void MessageReceived(FidoHidMessage message);
+  void RetryAfterChannelBusy();
   void ArmTimeout();
   void OnTimeout();
   static void WriteCancelComplete(

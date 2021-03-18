@@ -63,9 +63,15 @@ void MockFidoHidConnection::SetNonce(base::span<uint8_t const> nonce) {
 }
 
 void MockFidoHidConnection::ExpectWriteHidInit() {
+  ExpectWriteHidInit(testing::Sequence());
+}
+
+void MockFidoHidConnection::ExpectWriteHidInit(
+    const testing::Sequence& sequence) {
   EXPECT_CALL(*this, WritePtr(::testing::_,
                               IsCtapHidCommand(FidoHidDeviceCommand::kInit),
                               ::testing::_))
+      .InSequence(sequence)
       .WillOnce(::testing::Invoke(
           [&](auto&&, const std::vector<uint8_t>& buffer,
               device::mojom::HidConnection::WriteCallback* cb) {
@@ -79,12 +85,30 @@ void MockFidoHidConnection::ExpectWriteHidInit() {
 
 void MockFidoHidConnection::ExpectHidWriteWithCommand(
     FidoHidDeviceCommand cmd) {
+  ExpectHidWriteWithCommand(testing::Sequence(), cmd);
+}
+
+void MockFidoHidConnection::ExpectHidWriteWithCommand(
+    const testing::Sequence& sequence,
+    FidoHidDeviceCommand cmd) {
   EXPECT_CALL(*this,
               WritePtr(::testing::_, IsCtapHidCommand(cmd), ::testing::_))
+      .InSequence(sequence)
       .WillOnce(::testing::Invoke(
           [&](auto&&, const std::vector<uint8_t>& buffer,
               device::mojom::HidConnection::WriteCallback* cb) {
             std::move(*cb).Run(true);
+          }));
+}
+
+void MockFidoHidConnection::ExpectReadAndReplyWith(
+    const testing::Sequence& sequence,
+    std::vector<uint8_t> response) {
+  EXPECT_CALL(*this, ReadPtr(testing::_))
+      .InSequence(sequence)
+      .WillOnce(::testing::Invoke(
+          [response](device::mojom::HidConnection::ReadCallback* cb) {
+            std::move(*cb).Run(true, 0, std::move(response));
           }));
 }
 
