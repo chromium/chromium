@@ -415,6 +415,19 @@ int AudioRendererAlgorithm::BufferedFrames() const {
          (resampler_ ? static_cast<int>(resampler_->BufferedFrames()) : 0);
 }
 
+double AudioRendererAlgorithm::DelayInFrames(double playback_rate) const {
+  int slower_step = std::ceil(ola_window_size_ * playback_rate);
+  int faster_step = std::ceil(ola_window_size_ / playback_rate);
+
+  // When |playback_rate| ~= 1, we read directly from |audio_buffer_|.
+  if (ola_window_size_ <= faster_step && slower_step >= ola_window_size_)
+    return audio_buffer_.frames();
+
+  const float buffered_output_frames = BufferedFrames() / playback_rate;
+  const float unconverted_output_frames = buffered_output_frames - output_time_;
+  return unconverted_output_frames + num_complete_frames_;
+}
+
 bool AudioRendererAlgorithm::CanPerformWsola() const {
   const int search_block_size = num_candidate_blocks_ + (ola_window_size_ - 1);
   const int frames = audio_buffer_.frames();
