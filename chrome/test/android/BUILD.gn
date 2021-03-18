@@ -273,6 +273,7 @@ android_library("chrome_java_test_support") {
     "//chrome/browser/settings:test_support_java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/tab_group:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/thumbnail/generator:java",
     "//chrome/browser/ui/android/appmenu:java",

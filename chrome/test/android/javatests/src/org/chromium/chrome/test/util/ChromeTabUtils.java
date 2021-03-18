@@ -9,12 +9,14 @@ import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.junit.Assert;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -28,10 +30,14 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabWebContentsObserver;
+import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -40,6 +46,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -475,8 +482,10 @@ public class ChromeTabUtils {
      * Creates a new tab in the specified model then waits for it to load.
      * <p>
      * Returns when the tab has been created and finishes loading.
+     *
+     * @return Newly created Tab object.
      */
-    public static void fullyLoadUrlInNewTab(Instrumentation instrumentation,
+    public static Tab fullyLoadUrlInNewTab(Instrumentation instrumentation,
             final ChromeTabbedActivity activity, final String url, final boolean incognito) {
         newTabFromMenu(instrumentation, activity, incognito, false);
 
@@ -487,7 +496,8 @@ public class ChromeTabUtils {
                 loadUrlOnUiThread(tab, url);
             }
         });
-        instrumentation.waitForIdleSync();
+        waitForInteractable(tab);
+        return tab;
     }
 
     public static void loadUrlOnUiThread(final Tab tab, final String url) {
@@ -659,6 +669,52 @@ public class ChromeTabUtils {
                 }
             }
         });
+    }
+
+    /**
+     * @param windowAndroid the WindowAndroid used to acquire the TabModelSelector.
+     * @return The TabModelSelector used with the supplied WindowAndroid.
+     */
+    public static @NonNull TabModelSelector getTabModelSelector(WindowAndroid windowAndroid) {
+        Assert.assertTrue(ThreadUtils.runningOnUiThread());
+        Assert.assertNotNull(windowAndroid);
+
+        final ObservableSupplier<TabModelSelector> supplier =
+                TabModelSelectorSupplier.from(windowAndroid);
+        Assert.assertNotNull(supplier);
+
+        final TabModelSelector selector = supplier.get();
+        Assert.assertNotNull(selector);
+        return selector;
+    }
+
+    /**
+     * @param tab The tab to retrieve Root ID for.
+     * @return the Root ID for a supplied tab object.
+     */
+    public static int getRootId(Tab tab) {
+        Assert.assertTrue(ThreadUtils.runningOnUiThread());
+        return CriticalPersistedTabData.from(tab).getRootId();
+    }
+
+    /**
+     * Groups together two tabs.
+     * @param tab1 First tab to group.
+     * @param tab2 Second tab to group.
+     */
+    public static void mergeTabsToGroup(Tab tab1, Tab tab2) {
+        Assert.assertTrue(ThreadUtils.runningOnUiThread());
+
+        // Verify that the two tabs do not belong with different models.
+        Assert.assertEquals(tab1.isIncognito(), tab2.isIncognito());
+        final TabModelSelector selector = getTabModelSelector(tab1.getWindowAndroid());
+        final TabModelFilter filter =
+                selector.getTabModelFilterProvider().getTabModelFilter(tab1.isIncognito());
+        Assert.assertTrue(filter instanceof TabGroupModelFilter);
+        TabGroupModelFilter groupingFilter = (TabGroupModelFilter) filter;
+
+        groupingFilter.mergeTabsToGroup(tab1.getId(), tab2.getId());
+        Assert.assertEquals(getRootId(tab1), getRootId(tab2));
     }
 
     /**

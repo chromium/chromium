@@ -67,7 +67,10 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/ntp_tiles/custom_links_store.h"
-#endif  // !defined(OS_ANDROID)
+#else  // defined(OS_ANDROID)
+#include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_jni_bridge.h"
+#endif  // defined(OS_ANDROID)
 
 namespace {
 
@@ -154,7 +157,6 @@ int BucketWithOffsetAndUnit(int num, int offset, uint32_t unit) {
 bool IsPageInTabGroup(content::WebContents* contents) {
   DCHECK(contents);
 
-  // TODO(tommycli): Implement this for Android too.
 #if !defined(OS_ANDROID)
   if (Browser* browser = chrome::FindBrowserWithWebContents(contents)) {
     int tab_index = browser->tab_strip_model()->GetIndexOfWebContents(contents);
@@ -163,8 +165,12 @@ bool IsPageInTabGroup(content::WebContents* contents) {
       return true;
     }
   }
-#endif  // !defined(OS_ANDROID)
-
+#else   // defined(OS_ANDROID)
+  TabAndroid* const tab = TabAndroid::FromWebContents(contents);
+  if (!tab)
+    return false;
+  return TabModelJniBridge::HasOtherRelatedTabs(tab);
+#endif  // defined(OS_ANDROID)
   return false;
 }
 

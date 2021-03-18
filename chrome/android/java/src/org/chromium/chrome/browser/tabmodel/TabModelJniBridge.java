@@ -10,12 +10,15 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.Origin;
 
 /**
@@ -146,6 +149,29 @@ public abstract class TabModelJniBridge implements TabModel {
     protected Tab createNewTabForDevTools(String url) {
         return getTabCreator(/*incognito=*/false)
                 .createNewTab(new LoadUrlParams(url), TabLaunchType.FROM_CHROME_UI, null);
+    }
+
+    /** Returns whether supplied Tab instance has been grouped together with other Tabs. */
+    @CalledByNative
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static boolean hasOtherRelatedTabs(@NonNull Tab tab) {
+        assert tab != null;
+        final WindowAndroid windowAndroid = tab.getWindowAndroid();
+        if (windowAndroid == null) return false;
+
+        final ObservableSupplier<TabModelSelector> supplier =
+                TabModelSelectorSupplier.from(windowAndroid);
+        if (supplier == null) return false;
+
+        final TabModelSelector selector = supplier.get();
+        if (selector == null) return false;
+
+        final TabModelFilter filter =
+                selector.getTabModelFilterProvider().getTabModelFilter(tab.isIncognito());
+        if (!(filter instanceof TabGroupModelFilter)) return false;
+
+        final TabGroupModelFilter groupingFilter = (TabGroupModelFilter) filter;
+        return groupingFilter.hasOtherRelatedTabs(tab);
     }
 
     @Override
