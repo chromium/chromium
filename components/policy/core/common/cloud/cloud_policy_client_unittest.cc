@@ -427,6 +427,29 @@ em::DeviceManagementRequest GetRemoteCommandRequest() {
   return remote_command_request;
 }
 
+em::DeviceManagementRequest GetRobotAuthCodeFetchRequest() {
+  em::DeviceManagementRequest robot_auth_code_fetch_request;
+
+  em::DeviceServiceApiAccessRequest* api_request =
+      robot_auth_code_fetch_request.mutable_service_api_access_request();
+  api_request->set_oauth2_client_id(
+      GaiaUrls::GetInstance()->oauth2_chrome_client_id());
+  api_request->add_auth_scopes(kApiAuthScope);
+  api_request->set_device_type(em::DeviceServiceApiAccessRequest::CHROME_OS);
+
+  return robot_auth_code_fetch_request;
+}
+
+em::DeviceManagementResponse GetRobotAuthCodeFetchResponse() {
+  em::DeviceManagementResponse robot_auth_code_fetch_response;
+
+  em::DeviceServiceApiAccessResponse* api_response =
+      robot_auth_code_fetch_response.mutable_service_api_access_response();
+  api_response->set_auth_code(kRobotAuthCode);
+
+  return robot_auth_code_fetch_response;
+}
+
 em::DeviceManagementResponse GetEmptyResponse() {
   return em::DeviceManagementResponse();
 }
@@ -439,32 +462,6 @@ class CloudPolicyClientTest : public testing::Test {
       : job_type_(DeviceManagementService::JobConfiguration::TYPE_INVALID),
         client_id_(kClientID),
         policy_type_(dm_protocol::kChromeUserPolicyType) {
-    em::PolicyValidationReportRequest* policy_validation_report_request =
-        upload_policy_validation_report_request_
-            .mutable_policy_validation_report_request();
-    policy_validation_report_request->set_policy_type(policy_type_);
-    policy_validation_report_request->set_policy_token(kPolicyToken);
-    policy_validation_report_request->set_validation_result_type(
-        em::PolicyValidationReportRequest::
-            VALIDATION_RESULT_TYPE_VALUE_WARNING);
-    em::PolicyValueValidationIssue* policy_value_validation_issue =
-        policy_validation_report_request->add_policy_value_validation_issues();
-    policy_value_validation_issue->set_policy_name(kPolicyName);
-    policy_value_validation_issue->set_severity(
-        em::PolicyValueValidationIssue::
-            VALUE_VALIDATION_ISSUE_SEVERITY_WARNING);
-    policy_value_validation_issue->set_debug_message(kValueValidationMessage);
-
-    em::DeviceServiceApiAccessRequest* api_request =
-        robot_auth_code_fetch_request_.mutable_service_api_access_request();
-    api_request->set_oauth2_client_id(
-        GaiaUrls::GetInstance()->oauth2_chrome_client_id());
-    api_request->add_auth_scopes(kApiAuthScope);
-    api_request->set_device_type(em::DeviceServiceApiAccessRequest::CHROME_OS);
-    em::DeviceServiceApiAccessResponse* api_response =
-        robot_auth_code_fetch_response_.mutable_service_api_access_response();
-    api_response->set_auth_code(kRobotAuthCode);
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     fake_statistics_provider_.SetMachineStatistic(
         chromeos::system::kSerialNumberKeyForTest, "fake_serial_number");
@@ -573,14 +570,6 @@ class CloudPolicyClientTest : public testing::Test {
                                    std::move(response_callback));
     base::RunLoop().RunUntilIdle();
   }
-
-  // Request protobufs used as expectations for the client requests.
-  em::DeviceManagementRequest upload_policy_validation_report_request_;
-  em::DeviceManagementRequest robot_auth_code_fetch_request_;
-
-  // Protobufs used in successful responses.
-  em::DeviceManagementResponse upload_policy_validation_report_response_;
-  em::DeviceManagementResponse robot_auth_code_fetch_response_;
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   DeviceManagementService::JobConfiguration::JobType job_type_;
@@ -1582,9 +1571,28 @@ TEST_F(CloudPolicyClientTest, UploadStatusWhilePolicyFetchActive) {
 }
 
 TEST_F(CloudPolicyClientTest, UploadPolicyValidationReport) {
+  em::DeviceManagementRequest upload_policy_validation_report_request;
+  {
+    em::PolicyValidationReportRequest* policy_validation_report_request =
+        upload_policy_validation_report_request
+            .mutable_policy_validation_report_request();
+    policy_validation_report_request->set_policy_type(policy_type_);
+    policy_validation_report_request->set_policy_token(kPolicyToken);
+    policy_validation_report_request->set_validation_result_type(
+        em::PolicyValidationReportRequest::
+            VALIDATION_RESULT_TYPE_VALUE_WARNING);
+    em::PolicyValueValidationIssue* policy_value_validation_issue =
+        policy_validation_report_request->add_policy_value_validation_issues();
+    policy_value_validation_issue->set_policy_name(kPolicyName);
+    policy_value_validation_issue->set_severity(
+        em::PolicyValueValidationIssue::
+            VALUE_VALIDATION_ISSUE_SEVERITY_WARNING);
+    policy_value_validation_issue->set_debug_message(kValueValidationMessage);
+  }
+
   RegisterClient();
 
-  ExpectAndCaptureJob(upload_policy_validation_report_response_);
+  ExpectAndCaptureJob(GetEmptyResponse());
   std::vector<ValueValidationIssue> issues;
   issues.push_back(
       {kPolicyName, ValueValidationIssue::kWarning, kValueValidationMessage});
@@ -1596,9 +1604,8 @@ TEST_F(CloudPolicyClientTest, UploadPolicyValidationReport) {
                 TYPE_UPLOAD_POLICY_VALIDATION_REPORT,
             job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
-  EXPECT_EQ(
-      job_request_.SerializePartialAsString(),
-      upload_policy_validation_report_request_.SerializePartialAsString());
+  EXPECT_EQ(job_request_.SerializePartialAsString(),
+            upload_policy_validation_report_request.SerializePartialAsString());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
 }
 
@@ -2378,8 +2385,13 @@ TEST_F(CloudPolicyClientTest, PolicyReregistrationFailsWithNonMatchingDMToken) {
 }
 
 TEST_F(CloudPolicyClientTest, RequestFetchRobotAuthCodes) {
+  em::DeviceManagementRequest robot_auth_code_fetch_request =
+      GetRobotAuthCodeFetchRequest();
+  em::DeviceManagementResponse robot_auth_code_fetch_response =
+      GetRobotAuthCodeFetchResponse();
+
   RegisterClient();
-  ExpectAndCaptureJob(robot_auth_code_fetch_response_);
+  ExpectAndCaptureJob(robot_auth_code_fetch_response);
   EXPECT_CALL(robot_auth_code_callback_observer_,
               OnRobotAuthCodeFetched(_, kRobotAuthCode));
 
@@ -2395,13 +2407,16 @@ TEST_F(CloudPolicyClientTest, RequestFetchRobotAuthCodes) {
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_API_AUTH_CODE_FETCH,
             job_type_);
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
-  EXPECT_EQ(robot_auth_code_fetch_request_.SerializePartialAsString(),
+  EXPECT_EQ(robot_auth_code_fetch_request.SerializePartialAsString(),
             job_request_.SerializePartialAsString());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
 }
 
 TEST_F(CloudPolicyClientTest,
        RequestFetchRobotAuthCodesNotInterruptedByPolicyFetch) {
+  em::DeviceManagementResponse robot_auth_code_fetch_response =
+      GetRobotAuthCodeFetchResponse();
+
   // Expect a robot auth code fetch request that never runs its callback to
   // simulate something happening while we wait for the request to return.
   DeviceManagementService::JobControl* robot_job = nullptr;
@@ -2432,7 +2447,7 @@ TEST_F(CloudPolicyClientTest,
   // Try to manually finish the robot auth code fetch job.
   service_.DoURLCompletion(&robot_job, net::OK,
                            DeviceManagementService::kSuccess,
-                           robot_auth_code_fetch_response_);
+                           robot_auth_code_fetch_response);
 
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_API_AUTH_CODE_FETCH,
             robot_job_type);
