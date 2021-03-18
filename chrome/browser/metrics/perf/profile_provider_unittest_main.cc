@@ -275,7 +275,13 @@ TEST_F(ProfileProviderRealCollectionTest, SessionRestoreDone) {
   AssertProfileData(SampledProfile::RESTORE_SESSION);
 }
 
-TEST_F(ProfileProviderRealCollectionTest, OnJankStarted) {
+// Flaky on Chrome OS: crbug.com/1188498.
+#if defined(OS_CHROMEOS)
+#define MAYBE_OnJankStarted DISABLED_OnJankStarted
+#else
+#define MAYBE_OnJankStarted OnJankStarted
+#endif
+TEST_F(ProfileProviderRealCollectionTest, MAYBE_OnJankStarted) {
   // Trigger a resume from suspend.
   profile_provider_->OnJankStarted();
 
