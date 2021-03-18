@@ -195,7 +195,7 @@ class DragDropClientMacTest : public WidgetTest {
     widget_->Show();
 
     target_ = new DragDropView();
-    widget_->GetContentsView()->AddChildView(target_);
+    widget_->non_client_view()->frame_view()->AddChildView(target_);
     target_->SetBoundsRect(bounds);
 
     drag_drop_client()->source_operation_ = ui::DragDropTypes::DRAG_COPY;
@@ -329,7 +329,7 @@ TEST_F(DragDropClientMacTest, CloseWidgetOnDrop) {
   SetData(data);
 
   target_ = new DragDropCloseView();
-  widget_->GetContentsView()->AddChildView(target_);
+  widget_->non_client_view()->frame_view()->AddChildView(target_);
   target_->SetBoundsRect(gfx::Rect(0, 0, 100, 100));
   target_->set_formats(ui::OSExchangeData::STRING | ui::OSExchangeData::URL);
 

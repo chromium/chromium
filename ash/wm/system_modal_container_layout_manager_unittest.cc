@@ -547,11 +547,12 @@ TEST_F(SystemModalContainerLayoutManagerTest, ShowModalWhileHidden) {
 TEST_F(SystemModalContainerLayoutManagerTest, ChangeCapture) {
   std::unique_ptr<aura::Window> widget_window(ShowToplevelTestWindow(false));
   views::test::CaptureTrackingView* view = new views::test::CaptureTrackingView;
-  views::View* contents_view =
+  views::View* client_view =
       views::Widget::GetWidgetForNativeView(widget_window.get())
-          ->GetContentsView();
-  contents_view->AddChildView(view);
-  view->SetBoundsRect(contents_view->bounds());
+          ->non_client_view()
+          ->client_view();
+  client_view->AddChildView(view);
+  view->SetBoundsRect(client_view->bounds());
 
   gfx::Point center(view->width() / 2, view->height() / 2);
   views::View::ConvertPointToScreen(view, &center);

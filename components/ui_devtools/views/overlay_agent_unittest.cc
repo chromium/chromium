@@ -114,12 +114,14 @@ class OverlayAgentTest : public views::ViewsTestBase {
   }
 #endif
 
-  void CreateWidget(const gfx::Rect& bounds) {
+  void CreateWidget(const gfx::Rect& bounds,
+                    views::Widget::InitParams::Type type) {
     widget_ = std::make_unique<views::Widget>();
     views::Widget::InitParams params;
     params.delegate = nullptr;
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     params.bounds = bounds;
+    params.type = type;
 #if defined(USE_AURA)
     params.parent = GetContext();
 #endif
@@ -129,7 +131,8 @@ class OverlayAgentTest : public views::ViewsTestBase {
 
   void CreateWidget() {
     // Create a widget with default bounds.
-    return CreateWidget(gfx::Rect(0, 0, 400, 400));
+    return CreateWidget(gfx::Rect(0, 0, 400, 400),
+                        views::Widget::InitParams::Type::TYPE_WINDOW);
   }
 
   views::Widget* widget() { return widget_.get(); }
@@ -176,13 +179,14 @@ TEST_F(OverlayAgentTest, FindElementIdTargetedByPointWindow) {
 #endif
 
 TEST_F(OverlayAgentTest, FindElementIdTargetedByPointViews) {
-  CreateWidget();
+  // Use a frameless window instead of deleting all children of |contents_view|
+  CreateWidget(gfx::Rect(0, 0, 400, 400),
+               views::Widget::InitParams::Type::TYPE_WINDOW_FRAMELESS);
 
   std::unique_ptr<protocol::DOM::Node> root;
   dom_agent()->getDocument(&root);
 
-  views::View* contents_view = widget()->GetContentsView();
-  contents_view->RemoveAllChildViews(true);
+  views::View* contents_view = widget()->GetRootView();
 
   views::View* child_1 = new views::View;
   views::View* child_2 = new views::View;
@@ -203,7 +207,7 @@ TEST_F(OverlayAgentTest, FindElementIdTargetedByPointViews) {
   child_1->SetBounds(20, 20, 100, 100);
   child_2->SetBounds(90, 50, 100, 100);
 
-  EXPECT_EQ(GetViewAtPoint(1, 1), widget()->GetContentsView());
+  EXPECT_EQ(GetViewAtPoint(1, 1), widget()->GetRootView());
   EXPECT_EQ(GetViewAtPoint(21, 21), child_1);
   EXPECT_EQ(GetViewAtPoint(170, 130), child_2);
   // At the overlap.
@@ -237,7 +241,7 @@ TEST_F(OverlayAgentTest, HighlightRects) {
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(testing::Message() << "Case: " << test_case.name);
-    CreateWidget(kWidgetBounds);
+    CreateWidget(kWidgetBounds, views::Widget::InitParams::Type::TYPE_WINDOW);
     // Can't just use kWidgetBounds because of Mac's menu bar.
     gfx::Vector2d widget_screen_offset =
         widget()->GetClientAreaBoundsInScreen().OffsetFromOrigin();

@@ -2899,6 +2899,12 @@ void BrowserView::ViewHierarchyChanged(
 }
 
 void BrowserView::AddedToWidget() {
+  // BrowserView may be added to a widget more than once if the user changes
+  // themes after starting the browser. Do not re-initialize BrowserView in
+  // this case.
+  if (initialized_)
+    return;
+
   views::ClientView::AddedToWidget();
 
   widget_observation_.Observe(GetWidget());

@@ -61,12 +61,15 @@ class BrowserNonClientFrameViewPopupTest
 #define MAYBE_HitTestPopupTopChrome HitTestPopupTopChrome
 #endif
 TEST_F(BrowserNonClientFrameViewPopupTest, MAYBE_HitTestPopupTopChrome) {
-  EXPECT_FALSE(frame_view_->HitTestRect(gfx::Rect(-1, 4, 1, 1)));
-  EXPECT_FALSE(frame_view_->HitTestRect(gfx::Rect(4, -1, 1, 1)));
+  constexpr gfx::Rect kLeftOfFrame(-1, 4, 1, 1);
+  EXPECT_FALSE(frame_view_->HitTestRect(kLeftOfFrame));
+
+  constexpr gfx::Rect kAboveFrame(4, -1, 1, 1);
+  EXPECT_FALSE(frame_view_->HitTestRect(kAboveFrame));
+
   const int top_inset = frame_view_->GetTopInset(false);
-  EXPECT_FALSE(frame_view_->HitTestRect(gfx::Rect(4, top_inset, 1, 1)));
-  if (top_inset > 0)
-    EXPECT_TRUE(frame_view_->HitTestRect(gfx::Rect(4, top_inset - 1, 1, 1)));
+  const gfx::Rect in_browser_view(4, top_inset, 1, 1);
+  EXPECT_TRUE(frame_view_->HitTestRect(in_browser_view));
 }
 
 class BrowserNonClientFrameViewTabbedTest
@@ -108,7 +111,9 @@ TEST_F(BrowserNonClientFrameViewTabbedTest, MAYBE_HitTestTabstrip) {
 
   // Hits client portions of the tabstrip (near the bottom left corner of the
   // first tab).
-  EXPECT_FALSE(frame_view_->HitTestRect(gfx::Rect(
+  EXPECT_TRUE(frame_view_->HitTestRect(gfx::Rect(
+      tabstrip_bounds.x() + 10, tabstrip_bounds.bottom() - 10, 1, 1)));
+  EXPECT_TRUE(frame_view_->browser_view()->HitTestRect(gfx::Rect(
       tabstrip_bounds.x() + 10, tabstrip_bounds.bottom() - 10, 1, 1)));
 
 // Tabs extend to the top of the tabstrip everywhere in this test context on

@@ -87,8 +87,6 @@ void ClientView::ViewHierarchyChanged(
     // TODO(weili): This seems fragile and can be refactored.
     // Tracked at https://crbug.com/1012466.
     AddChildViewAt(contents_view_, 0);
-  } else if (!details.is_add && details.child == contents_view_) {
-    contents_view_ = nullptr;
   }
 }
 

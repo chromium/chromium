@@ -101,11 +101,7 @@ class VIEWS_EXPORT NonClientFrameView : public View,
   // View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
-
- protected:
-  // ViewTargeterDelegate:
-  bool DoesIntersectRect(const View* target,
-                         const gfx::Rect& rect) const override;
+  void Layout() override;
 
  private:
 #if defined(OS_WIN)
@@ -121,10 +117,11 @@ class VIEWS_EXPORT NonClientFrameView : public View,
 //
 //  The NonClientView is the logical root of all Views contained within a
 //  Window, except for the RootView which is its parent and of which it is the
-//  sole child. The NonClientView has two children, the NonClientFrameView which
+//  sole child. The NonClientView has one child, the NonClientFrameView which
 //  is responsible for painting and responding to events from the non-client
-//  portions of the window, and the ClientView, which is responsible for the
-//  same for the client area of the window:
+//  portions of the window, and for forwarding events to its child, the
+//  ClientView, which is responsible for the same for the client area of the
+//  window:
 //
 //  +- views::Widget ------------------------------------+
 //  | +- views::RootView ------------------------------+ |
@@ -135,22 +132,16 @@ class VIEWS_EXPORT NonClientFrameView : public View,
 //  | | | | << of the non-client areas of a     >> | | | |
 //  | | | | << views::Widget.                   >> | | | |
 //  | | | |                                        | | | |
-//  | | | +----------------------------------------+ | | |
-//  | | | +- views::ClientView or subclass --------+ | | |
-//  | | | |                                        | | | |
-//  | | | | << all painting and event receiving >> | | | |
-//  | | | | << of the client areas of a         >> | | | |
-//  | | | | << views::Widget.                   >> | | | |
-//  | | | |                                        | | | |
+//  | | | | +- views::ClientView or subclass ----+ | | | |
+//  | | | | |                                    | | | | |
+//  | | | | | << all painting and event       >> | | | | |
+//  | | | | | << receiving of the client      >> | | | | |
+//  | | | | | << areas of a views::Widget.    >> | | | | |
+//  | | | | +----------------------------------+ | | | | |
 //  | | | +----------------------------------------+ | | |
 //  | | +--------------------------------------------+ | |
 //  | +------------------------------------------------+ |
 //  +----------------------------------------------------+
-//
-// The NonClientFrameView and ClientView are siblings because due to theme
-// changes the NonClientFrameView may be replaced with different
-// implementations (e.g. during the switch from DWM/Aero-Glass to Vista Basic/
-// Classic rendering).
 //
 class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
  public:

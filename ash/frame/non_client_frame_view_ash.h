@@ -90,7 +90,6 @@ class ASH_EXPORT NonClientFrameViewAsh : public views::NonClientFrameView {
   void Layout() override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
-  void SetVisible(bool visible) override;
 
   // If |paint| is false, we should not paint the header. Used for overview mode
   // with OnOverviewModeStarting() and OnOverviewModeEnded() to hide/show the
@@ -110,6 +109,9 @@ class ASH_EXPORT NonClientFrameViewAsh : public views::NonClientFrameView {
   SkColor GetInactiveFrameColorForTest() const;
 
   views::Widget* frame() { return frame_; }
+
+  bool GetFrameEnabled() const { return frame_enabled_; }
+  virtual void SetFrameEnabled(bool enabled);
 
  protected:
   // views::View:
@@ -140,6 +142,8 @@ class ASH_EXPORT NonClientFrameViewAsh : public views::NonClientFrameView {
   HeaderView* header_view_ = nullptr;
 
   OverlayView* overlay_view_ = nullptr;
+
+  bool frame_enabled_ = true;
 
   std::unique_ptr<NonClientFrameViewAshImmersiveHelper> immersive_helper_;
 

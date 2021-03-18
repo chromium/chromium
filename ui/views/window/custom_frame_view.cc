@@ -211,6 +211,7 @@ void CustomFrameView::Layout() {
   }
 
   LayoutClientView();
+  NonClientFrameView::Layout();
 }
 
 gfx::Size CustomFrameView::CalculatePreferredSize() const {
