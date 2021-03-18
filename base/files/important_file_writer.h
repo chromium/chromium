@@ -16,6 +16,7 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
 
@@ -37,6 +38,11 @@ class SequencedTaskRunner;
 // for details) and thus please don't block shutdown on ImportantFileWriter.
 class BASE_EXPORT ImportantFileWriter {
  public:
+  // Promise-like callback that returns (via output parameter) the serialized
+  // data to be written. This callback is invoked on the sequence where I/O
+  // operations are executed. Returning false indicates an error.
+  using BackgroundDataProducerCallback = base::OnceCallback<bool(std::string*)>;
+
   // Used by ScheduleSave to lazily provide the data to be saved. Allows us
   // to also batch data serializations.
   class BASE_EXPORT DataSerializer {
@@ -48,6 +54,21 @@ class BASE_EXPORT ImportantFileWriter {
 
    protected:
     virtual ~DataSerializer() = default;
+  };
+
+  // Same as DataSerializer but allows the caller to move some of the
+  // serialization logic to the sequence where I/O operations are executed.
+  class BASE_EXPORT BackgroundDataSerializer {
+   public:
+    // Returns a promise-like callback that, when invoked, will produce the
+    // serialized string. This getter itself will be called on the same thread
+    // on which ImportantFileWriter has been created, but the callback will be
+    // invoked from the sequence where I/O operations are executed.
+    virtual BackgroundDataProducerCallback
+    GetSerializedDataProducerForBackgroundSequence() = 0;
+
+   protected:
+    virtual ~BackgroundDataSerializer() = default;
   };
 
   // Save |data| to |path| in an atomic manner. Blocks and writes data on the
@@ -97,7 +118,11 @@ class BASE_EXPORT ImportantFileWriter {
   // ImportantFileWriter.
   void ScheduleWrite(DataSerializer* serializer);
 
-  // Serialize data pending to be saved and execute write on backend thread.
+  // Same as above but uses the BackgroundDataSerializer API.
+  void ScheduleWriteWithBackgroundDataSerializer(
+      BackgroundDataSerializer* serializer);
+
+  // Serialize data pending to be saved and execute write on background thread.
   void DoScheduledWrite();
 
   // Registers |before_next_write_callback| and |after_next_write_callback| to
@@ -132,11 +157,16 @@ class BASE_EXPORT ImportantFileWriter {
   }
   OneShotTimer& timer() { return timer_override_ ? *timer_override_ : timer_; }
 
-  // Helper function to call WriteFileAtomically() with a
-  // std::unique_ptr<std::string>.
-  static void WriteScopedStringToFileAtomically(
+  // Same as WriteNow() but it uses a promise-like signature that allows running
+  // custom logic in the background sequence.
+  void WriteNowWithBackgroundDataProducer(
+      BackgroundDataProducerCallback background_producer);
+
+  // Helper function to call WriteFileAtomically() with a promise-like callback
+  // producing a std::string.
+  static void ProduceAndWriteStringToFileAtomically(
       const FilePath& path,
-      std::unique_ptr<std::string> data,
+      BackgroundDataProducerCallback data_producer_for_background_sequence,
       OnceClosure before_write_callback,
       OnceCallback<void(bool success)> after_write_callback,
       const std::string& histogram_suffix);
@@ -170,7 +200,8 @@ class BASE_EXPORT ImportantFileWriter {
   OneShotTimer* timer_override_ = nullptr;
 
   // Serializer which will provide the data to be saved.
-  DataSerializer* serializer_;
+  absl::variant<absl::monostate, DataSerializer*, BackgroundDataSerializer*>
+      serializer_;
 
   // Time delta after which scheduled data will be written to disk.
   const TimeDelta commit_interval_;

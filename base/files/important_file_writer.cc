@@ -182,19 +182,26 @@ bool ImportantFileWriter::WriteFileAtomically(const FilePath& path,
 }
 
 // static
-void ImportantFileWriter::WriteScopedStringToFileAtomically(
+void ImportantFileWriter::ProduceAndWriteStringToFileAtomically(
     const FilePath& path,
-    std::unique_ptr<std::string> data,
+    BackgroundDataProducerCallback data_producer_for_background_sequence,
     OnceClosure before_write_callback,
     OnceCallback<void(bool success)> after_write_callback,
     const std::string& histogram_suffix) {
+  // Produce the actual data string on the background sequence.
+  std::string data;
+  if (!std::move(data_producer_for_background_sequence).Run(&data)) {
+    DLOG(WARNING) << "Failed to serialize data to be saved in " << path.value();
+    return;
+  }
+
   if (!before_write_callback.is_null())
     std::move(before_write_callback).Run();
 
-  // Calling the impl by way of the private WriteScopedStringToFileAtomically,
-  // which originated from an ImportantFileWriter instance, so |from_instance|
-  // is true.
-  const bool result = WriteFileAtomicallyImpl(path, *data, histogram_suffix,
+  // Calling the impl by way of the private
+  // ProduceAndWriteStringToFileAtomically, which originated from an
+  // ImportantFileWriter instance, so |from_instance| is true.
+  const bool result = WriteFileAtomicallyImpl(path, data, histogram_suffix,
                                               /*from_instance=*/true);
 
   if (!after_write_callback.is_null())
@@ -350,7 +357,6 @@ ImportantFileWriter::ImportantFileWriter(
     StringPiece histogram_suffix)
     : path_(path),
       task_runner_(std::move(task_runner)),
-      serializer_(nullptr),
       commit_interval_(interval),
       histogram_suffix_(histogram_suffix) {
   DCHECK(task_runner_);
@@ -377,8 +383,21 @@ void ImportantFileWriter::WriteNow(std::unique_ptr<std::string> data) {
     return;
   }
 
+  WriteNowWithBackgroundDataProducer(base::BindOnce(
+      [](std::string data, std::string* output) {
+        *output = std::move(data);
+        return true;
+      },
+      std::move(*data)));
+}
+
+void ImportantFileWriter::WriteNowWithBackgroundDataProducer(
+    BackgroundDataProducerCallback background_data_producer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   RepeatingClosure task = AdaptCallbackForRepeating(
-      BindOnce(&WriteScopedStringToFileAtomically, path_, std::move(data),
+      BindOnce(&ProduceAndWriteStringToFileAtomically, path_,
+               std::move(background_data_producer),
                std::move(before_next_write_callback_),
                std::move(after_next_write_callback_), histogram_suffix_));
 
@@ -399,7 +418,21 @@ void ImportantFileWriter::ScheduleWrite(DataSerializer* serializer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(serializer);
-  serializer_ = serializer;
+  serializer_.emplace<DataSerializer*>(serializer);
+
+  if (!timer().IsRunning()) {
+    timer().Start(
+        FROM_HERE, commit_interval_,
+        BindOnce(&ImportantFileWriter::DoScheduledWrite, Unretained(this)));
+  }
+}
+
+void ImportantFileWriter::ScheduleWriteWithBackgroundDataSerializer(
+    BackgroundDataSerializer* serializer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  DCHECK(serializer);
+  serializer_.emplace<BackgroundDataSerializer*>(serializer);
 
   if (!timer().IsRunning()) {
     timer().Start(
@@ -409,28 +442,51 @@ void ImportantFileWriter::ScheduleWrite(DataSerializer* serializer) {
 }
 
 void ImportantFileWriter::DoScheduledWrite() {
-  DCHECK(serializer_);
-  auto data = std::make_unique<std::string>();
-
-  // Pre-allocate previously needed memory plus 1kB for potential growth of
-  // data. Reduces the number of memory allocations to grow |data| step by step
-  // from tiny to very large.
-  data->reserve(previous_data_size_ + 1024);
+  // One of the serializers should be set.
+  DCHECK(!absl::holds_alternative<absl::monostate>(serializer_));
 
   const TimeTicks serialization_start = TimeTicks::Now();
-  const bool success = serializer_->SerializeData(data.get());
+  BackgroundDataProducerCallback data_producer_for_background_sequence;
+
+  if (absl::holds_alternative<DataSerializer*>(serializer_)) {
+    std::string data;
+
+    // Pre-allocate previously needed memory plus 1kB for potential growth of
+    // data. Reduces the number of memory allocations to grow |data| step by
+    // step from tiny to very large.
+    data.reserve(previous_data_size_ + 1024);
+
+    if (!absl::get<DataSerializer*>(serializer_)->SerializeData(&data)) {
+      DLOG(WARNING) << "Failed to serialize data to be saved in "
+                    << path_.value();
+      ClearPendingWrite();
+      return;
+    }
+
+    previous_data_size_ = data.size();
+    data_producer_for_background_sequence = base::BindOnce(
+        [](std::string data, std::string* result) {
+          *result = std::move(data);
+          return true;
+        },
+        std::move(data));
+  } else {
+    data_producer_for_background_sequence =
+        absl::get<BackgroundDataSerializer*>(serializer_)
+            ->GetSerializedDataProducerForBackgroundSequence();
+
+    DCHECK(data_producer_for_background_sequence);
+  }
+
   const TimeDelta serialization_duration =
       TimeTicks::Now() - serialization_start;
-  if (success) {
-    UmaHistogramTimesWithSuffix("ImportantFile.SerializationDuration",
-                                histogram_suffix_, serialization_duration);
-    previous_data_size_ = data->size();
-    WriteNow(std::move(data));
-  } else {
-    DLOG(WARNING) << "failed to serialize data to be saved in "
-                  << path_.value();
-  }
-  ClearPendingWrite();
+
+  UmaHistogramTimesWithSuffix("ImportantFile.SerializationDuration",
+                              histogram_suffix_, serialization_duration);
+
+  WriteNowWithBackgroundDataProducer(
+      std::move(data_producer_for_background_sequence));
+  DCHECK(!HasPendingWrite());
 }
 
 void ImportantFileWriter::RegisterOnNextWriteCallbacks(
@@ -442,7 +498,7 @@ void ImportantFileWriter::RegisterOnNextWriteCallbacks(
 
 void ImportantFileWriter::ClearPendingWrite() {
   timer().Stop();
-  serializer_ = nullptr;
+  serializer_.emplace<absl::monostate>();
 }
 
 void ImportantFileWriter::SetTimerForTesting(OneShotTimer* timer_override) {
