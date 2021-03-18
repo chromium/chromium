@@ -120,10 +120,10 @@ class MockHelpers {
       -> decltype(m.template RegisterMock<
                   typename KeySignature<KeyT>::result_type,
                   typename KeySignature<KeyT>::arg_tuple_type>(
-          std::declval<IdType>())) {
+          m, std::declval<IdType>())) {
     return m.template RegisterMock<typename KeySignature<KeyT>::result_type,
                                    typename KeySignature<KeyT>::arg_tuple_type>(
-        ::absl::base_internal::FastTypeId<KeyT>());
+        m, ::absl::base_internal::FastTypeId<KeyT>());
   }
 };
 

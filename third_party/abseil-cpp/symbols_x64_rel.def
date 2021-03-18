@@ -291,6 +291,7 @@ EXPORTS
     ?DeadlineExceededError@absl@@YA?AVStatus@1@Vstring_view@1@@Z
     ?DecodeWaitCycles@SpinLock@base_internal@absl@@KA_KI@Z
     ?DecrementCount@BlockingCounter@absl@@QEAA_NXZ
+    ?DecrementSynchSem@Mutex@absl@@CA_NPEAV12@PEAUPerThreadSynch@base_internal@2@VKernelTimeout@synchronization_internal@2@@Z
     ?DefaultArena@LowLevelAlloc@base_internal@absl@@SAPEAUArena@123@XZ
     ?DefaultStackUnwinder@absl@@YAHPEAPEAXPEAHHHPEBX1@Z
     ?Delete@CordRepRing@cord_internal@absl@@CAXPEAV123@@Z
@@ -436,6 +437,7 @@ EXPORTS
     ?IDivDuration@time_internal@absl@@YA_J_NVDuration@2@1PEAV32@@Z
     ?In@Time@absl@@QEBA?AUBreakdown@12@VTimeZone@2@@Z
     ?InMillisecondsFromNow@KernelTimeout@synchronization_internal@absl@@AEBAKXZ
+    ?IncrementSynchSem@Mutex@absl@@CAXPEAV12@PEAUPerThreadSynch@base_internal@2@@Z
     ?Init@PerThreadSem@synchronization_internal@absl@@CAXPEAUThreadIdentity@base_internal@3@@Z
     ?InitFrom@?$Storage@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@__1@std@@@inlined_vector_internal@absl@@QEAAXAEBV123@@Z
     ?InitTree@ChunkIterator@Cord@absl@@AEAAXPEAUCordRep@cord_internal@3@@Z

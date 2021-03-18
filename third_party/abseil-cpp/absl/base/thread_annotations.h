@@ -315,7 +315,7 @@ namespace base_internal {
 
 // Takes a reference to a guarded data member, and returns an unguarded
 // reference.
-// Do not used this function directly, use ABSL_TS_UNCHECKED_READ instead.
+// Do not use this function directly, use ABSL_TS_UNCHECKED_READ instead.
 template <typename T>
 inline const T& ts_unchecked_read(const T& v) ABSL_NO_THREAD_SAFETY_ANALYSIS {
   return v;

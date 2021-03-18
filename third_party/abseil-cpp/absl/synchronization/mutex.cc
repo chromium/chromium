@@ -559,7 +559,7 @@ static SynchLocksHeld *Synch_GetAllLocks() {
 }
 
 // Post on "w"'s associated PerThreadSem.
-inline void Mutex::IncrementSynchSem(Mutex *mu, PerThreadSynch *w) {
+void Mutex::IncrementSynchSem(Mutex *mu, PerThreadSynch *w) {
   if (mu) {
     ABSL_TSAN_MUTEX_PRE_DIVERT(mu, 0);
   }

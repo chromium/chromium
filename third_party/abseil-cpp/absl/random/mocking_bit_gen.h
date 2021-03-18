@@ -175,13 +175,26 @@ class MockingBitGen {
   //
   // The returned MockFunction<...> type can be used to setup additional
   // distribution parameters of the expectation.
-  template <typename ResultT, typename ArgTupleT>
-  auto RegisterMock(base_internal::FastTypeIdType type)
+  template <typename ResultT, typename ArgTupleT, typename SelfT>
+  auto RegisterMock(SelfT&, base_internal::FastTypeIdType type)
       -> decltype(GetMockFnType(std::declval<ResultT>(),
                                 std::declval<ArgTupleT>()))& {
     using MockFnType = decltype(GetMockFnType(std::declval<ResultT>(),
                                               std::declval<ArgTupleT>()));
-    using ImplT = FunctionHolderImpl<MockFnType, ResultT, ArgTupleT>;
+
+    using WrappedFnType = absl::conditional_t<
+        std::is_same<SelfT, ::testing::NiceMock<absl::MockingBitGen>>::value,
+        ::testing::NiceMock<MockFnType>,
+        absl::conditional_t<
+            std::is_same<SelfT,
+                         ::testing::NaggyMock<absl::MockingBitGen>>::value,
+            ::testing::NaggyMock<MockFnType>,
+            absl::conditional_t<
+                std::is_same<SelfT,
+                             ::testing::StrictMock<absl::MockingBitGen>>::value,
+                ::testing::StrictMock<MockFnType>, MockFnType>>>;
+
+    using ImplT = FunctionHolderImpl<WrappedFnType, ResultT, ArgTupleT>;
     auto& mock = mocks_[type];
     if (!mock) {
       mock = absl::make_unique<ImplT>();
