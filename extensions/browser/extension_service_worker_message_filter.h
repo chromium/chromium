@@ -8,7 +8,9 @@
 #include <string>
 #include <unordered_set>
 
+#include "base/callback_list.h"
 #include "base/macros.h"
+#include "base/sequenced_task_runner_helpers.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/activation_sequence.h"
@@ -27,6 +29,8 @@ namespace extensions {
 class ExtensionFunctionDispatcher;
 
 // IPC handler class for extension service worker.
+//
+// Created and destroyed on the UI thread.
 class ExtensionServiceWorkerMessageFilter
     : public content::BrowserMessageFilter {
  public:
@@ -39,9 +43,16 @@ class ExtensionServiceWorkerMessageFilter
   bool OnMessageReceived(const IPC::Message& message) override;
   void OverrideThreadForMessage(const IPC::Message& message,
                                 content::BrowserThread::ID* thread) override;
+  void OnDestruct() const override;
+
+  static void EnsureShutdownNotifierFactoryBuilt();
 
  private:
+  friend class base::DeleteHelper<ExtensionServiceWorkerMessageFilter>;
+  friend class content::BrowserThread;
   ~ExtensionServiceWorkerMessageFilter() override;
+
+  void ShutdownOnUIThread();
 
   // Message handlers.
   void OnRequestWorker(const ExtensionHostMsg_Request_Params& params);
@@ -70,9 +81,12 @@ class ExtensionServiceWorkerMessageFilter
 
   void DidFailDecrementInflightEvent();
 
-  content::BrowserContext* const browser_context_;
+  // Only accessed from the UI thread.
+  content::BrowserContext* browser_context_;
 
   const int render_process_id_;
+
+  base::CallbackListSubscription shutdown_notifier_subscription_;
 
   // Owned by the StoragePartition of our profile.
   content::ServiceWorkerContext* service_worker_context_;
