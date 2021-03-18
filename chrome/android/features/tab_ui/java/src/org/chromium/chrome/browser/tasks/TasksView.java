@@ -132,10 +132,9 @@ class TasksView extends CoordinatorLayoutForPointer {
         TextView titleDescription = (TextView) findViewById(R.id.tab_switcher_title_description);
         TextView moreTabs = (TextView) findViewById(R.id.more_tabs);
         ApiCompatibilityUtils.setTextAppearance(
-                titleDescription, R.style.TextAppearance_TextSmall_Secondary);
-        ApiCompatibilityUtils.setTextAppearance(moreTabs, R.style.TextAppearance_TextSmall_Blue);
-        ViewCompat.setPaddingRelative(titleDescription,
-                mContext.getResources().getDimensionPixelSize(R.dimen.card_padding),
+                titleDescription, R.style.TextAppearance_TextAccentMediumThick_Secondary);
+        ApiCompatibilityUtils.setTextAppearance(moreTabs, R.style.TextAppearance_Button_Text_Blue);
+        ViewCompat.setPaddingRelative(titleDescription, titleDescription.getPaddingStart(),
                 titleDescription.getPaddingTop(), titleDescription.getPaddingEnd(),
                 titleDescription.getPaddingBottom());
     }
