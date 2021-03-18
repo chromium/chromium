@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -167,7 +166,8 @@ class LocationBarMediator
             @NonNull OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
             @NonNull BackKeyBehaviorDelegate backKeyBehavior, @NonNull WindowAndroid windowAndroid,
             boolean isTablet, @NonNull SearchEngineLogoUtils searchEngineLogoUtils,
-            @NonNull LensController lensController, @NonNull SettingsLauncher settingsLauncher) {
+            @NonNull LensController lensController,
+            @NonNull Runnable launchAssistanceSettingsAction) {
         mContext = context;
         mLocationBarLayout = locationBarLayout;
         mLocationBarDataProvider = locationBarDataProvider;
@@ -175,7 +175,7 @@ class LocationBarMediator
         mOverrideUrlLoadingDelegate = overrideUrlLoadingDelegate;
         mLocaleManager = localeManager;
         mVoiceRecognitionHandler = new VoiceRecognitionHandler(
-                this, mAssistantVoiceSearchServiceSupplier, settingsLauncher);
+                this, mAssistantVoiceSearchServiceSupplier, launchAssistanceSettingsAction);
         mVoiceRecognitionHandler.addObserver(this);
         mProfileSupplier = profileSupplier;
         mProfileSupplier.addObserver(mCallbackController.makeCancelable(this::setProfile));

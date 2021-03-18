@@ -20,13 +20,11 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferenceFragment;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.annotation.Retention;
@@ -45,7 +43,7 @@ class AssistantVoiceSearchConsentUi
      * Show the consent ui to the user.
      * @param windowAndroid The current {@link WindowAndroid} for the app.
      * @param sharedPreferencesManager The {@link SharedPreferencesManager} to read/write prefs.
-     * @param settingsLauncher The {@link SettingsLauncher}, used to launch settings.
+     * @param launchAssistanceSettingsAction Runnable launching settings activity.
      * @param bottomSheetController The {@link BottomSheetController} used to show the consent ui.
      *                              This can be null when starting the consent flow from
      *                              SearchActivity.
@@ -54,7 +52,7 @@ class AssistantVoiceSearchConsentUi
      */
     static void show(@NonNull WindowAndroid windowAndroid,
             @NonNull SharedPreferencesManager sharedPreferencesManager,
-            @NonNull SettingsLauncher settingsLauncher,
+            @NonNull Runnable launchAssistanceSettingsAction,
             @Nullable BottomSheetController bottomSheetController,
             @NonNull Callback<Boolean> completionCallback) {
         // When attempting voice search through the search widget, the bottom sheet isn't
@@ -66,9 +64,9 @@ class AssistantVoiceSearchConsentUi
                     () -> { completionCallback.onResult(/* useAssistant= */ false); });
             return;
         }
-        AssistantVoiceSearchConsentUi consentUi =
-                new AssistantVoiceSearchConsentUi(windowAndroid, windowAndroid.getContext().get(),
-                        sharedPreferencesManager, settingsLauncher, bottomSheetController);
+        AssistantVoiceSearchConsentUi consentUi = new AssistantVoiceSearchConsentUi(windowAndroid,
+                windowAndroid.getContext().get(), sharedPreferencesManager,
+                launchAssistanceSettingsAction, bottomSheetController);
         consentUi.show(completionCallback);
     }
 
@@ -92,7 +90,6 @@ class AssistantVoiceSearchConsentUi
     private final WindowAndroid mWindowAndroid;
     private final Context mContext;
     private final SharedPreferencesManager mSharedPreferencesManager;
-    private final SettingsLauncher mSettingsLauncher;
     private final BottomSheetController mBottomSheetController;
     private final BottomSheetObserver mBottomSheetObserver;
     private View mContentView;
@@ -102,11 +99,10 @@ class AssistantVoiceSearchConsentUi
     @VisibleForTesting
     AssistantVoiceSearchConsentUi(@NonNull WindowAndroid windowAndroid, @NonNull Context context,
             @NonNull SharedPreferencesManager sharedPreferencesManager,
-            @NonNull SettingsLauncher settingsLauncher,
+            @NonNull Runnable launchAssistanceSettingsAction,
             @NonNull BottomSheetController bottomSheetController) {
         mContext = context;
         mSharedPreferencesManager = sharedPreferencesManager;
-        mSettingsLauncher = settingsLauncher;
         mBottomSheetController = bottomSheetController;
         mWindowAndroid = windowAndroid;
         mWindowAndroid.addActivityStateObserver(this);
@@ -142,7 +138,7 @@ class AssistantVoiceSearchConsentUi
         });
 
         View learnMore = mContentView.findViewById(R.id.avs_consent_ui_learn_more);
-        learnMore.setOnClickListener((v) -> openLearnMore());
+        learnMore.setOnClickListener((v) -> launchAssistanceSettingsAction.run());
     }
 
     /**
@@ -177,12 +173,6 @@ class AssistantVoiceSearchConsentUi
         mSharedPreferencesManager.writeBoolean(ASSISTANT_VOICE_SEARCH_ENABLED, false);
         RecordHistogram.recordEnumeratedHistogram(
                 CONSENT_OUTCOME_HISTOGRAM, consentOutcome, ConsentOutcome.MAX_VALUE);
-    }
-
-    /** Open a page to learn more about the consent dialog. */
-    private void openLearnMore() {
-        mSettingsLauncher.launchSettingsActivity(
-                mContext, AutofillAssistantPreferenceFragment.class, /* fragmentArgs= */ null);
     }
 
     // WindowAndroid.ActivityStateObserver implementation.

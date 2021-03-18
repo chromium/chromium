@@ -77,7 +77,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.search_engines.TemplateUrl;
@@ -217,8 +216,6 @@ public class LocationBarMediatorTest {
     @Mock
     private LensController mLensController;
     @Mock
-    private SettingsLauncher mSettingsLauncher;
-    @Mock
     private IdentityServicesProvider mIdentityServicesProvider;
     @Mock
     private IdentityManager mIdentityManager;
@@ -248,11 +245,12 @@ public class LocationBarMediatorTest {
         Profile.setLastUsedProfileForTesting(mProfile);
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(mProfile);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+        Runnable noAction = () -> {}; // launchAssistanceSettingsAction
         mMediator = new LocationBarMediator(/*context=*/RuntimeEnvironment.application,
                 mLocationBarLayout, mLocationBarDataProvider, mProfileSupplier,
                 mPrivacyPreferencesManager, mOverrideUrlLoadingDelegate, mLocaleManager,
                 mTemplateUrlServiceSupplier, mOverrideBackKeyBehaviorDelegate, mWindowAndroid,
-                /*isTablet=*/false, mSearchEngineLogoUtils, mLensController, mSettingsLauncher);
+                /*isTablet=*/false, mSearchEngineLogoUtils, mLensController, noAction);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         ObjectAnimatorShadow.setUrlAnimator(mUrlAnimator);
         GSAStateShadow.setGSAState(mGSAState);
@@ -261,7 +259,7 @@ public class LocationBarMediatorTest {
                 mLocationBarTablet, mLocationBarDataProvider, mProfileSupplier,
                 mPrivacyPreferencesManager, mOverrideUrlLoadingDelegate, mLocaleManager,
                 mTemplateUrlServiceSupplier, mOverrideBackKeyBehaviorDelegate, mWindowAndroid,
-                /*isTablet=*/true, mSearchEngineLogoUtils, mLensController, mSettingsLauncher);
+                /*isTablet=*/true, mSearchEngineLogoUtils, mLensController, noAction);
         mTabletMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
     }

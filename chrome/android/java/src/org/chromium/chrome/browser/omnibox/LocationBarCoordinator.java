@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -110,7 +109,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
      * @param overrideUrlLoadingDelegate Delegate that allows customization of url loading behavior.
      * @param backKeyBehavior Delegate that allows customization of back key behavior.
      * @param searchEngineLogoUtils Utils to query the state of the search engine logos feature.
-     * @param settingsLauncher {@link SettingsLauncher} object used to launch setting activity.
+     * @param launchAssistanceSettingsAction Runnable launching settings for voice assistance.
      */
     public LocationBarCoordinator(View locationBarLayout, View autocompleteAnchorView,
             ObservableSupplier<Profile> profileObservableSupplier,
@@ -123,7 +122,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             OverrideUrlLoadingDelegate overrideUrlLoadingDelegate,
             BackKeyBehaviorDelegate backKeyBehavior, SearchEngineLogoUtils searchEngineLogoUtils,
-            SettingsLauncher settingsLauncher) {
+            @NonNull Runnable launchAssistanceSettingsAction) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
         mWindowDelegate = windowDelegate;
         mWindowAndroid = windowAndroid;
@@ -139,7 +138,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
                 PrivacyPreferencesManagerImpl.getInstance(), overrideUrlLoadingDelegate,
                 LocaleManager.getInstance(), mTemplateUrlServiceSupplier, backKeyBehavior,
                 windowAndroid, isTablet() && isTabletLayout(), searchEngineLogoUtils,
-                LensController.getInstance(), settingsLauncher);
+                LensController.getInstance(), launchAssistanceSettingsAction);
         mUrlCoordinator =
                 new UrlBarCoordinator((UrlBar) mUrlBar, windowDelegate, actionModeCallback,
                         mCallbackController.makeCancelable(mLocationBarMediator::onUrlFocusChange),

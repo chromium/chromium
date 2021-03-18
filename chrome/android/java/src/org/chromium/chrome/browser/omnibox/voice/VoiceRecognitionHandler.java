@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.util.VoiceRecognitionUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -153,7 +152,7 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
     private Supplier<AssistantVoiceSearchService> mAssistantVoiceSearchServiceSupplier;
     private TranslateBridgeWrapper mTranslateBridgeWrapper;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
-    private final SettingsLauncher mSettingsLauncher;
+    private final Runnable mLaunchAssistanceSettingsAction;
 
     /**
      * AudioPermissionState defined in tools/metrics/histograms/enums.xml.
@@ -363,10 +362,10 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
 
     public VoiceRecognitionHandler(Delegate delegate,
             Supplier<AssistantVoiceSearchService> assistantVoiceSearchServiceSupplier,
-            SettingsLauncher settingsLauncher) {
+            Runnable launchAssistanceSettingsAction) {
         mDelegate = delegate;
         mAssistantVoiceSearchServiceSupplier = assistantVoiceSearchServiceSupplier;
-        mSettingsLauncher = settingsLauncher;
+        mLaunchAssistanceSettingsAction = launchAssistanceSettingsAction;
         mTranslateBridgeWrapper = new TranslateBridgeWrapper();
         ProfileManager.addObserver(this);
     }
@@ -823,7 +822,7 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
         if (assistantVoiceSearchService.needsEnabledCheck()) {
             mDelegate.clearOmniboxFocus();
             AssistantVoiceSearchConsentUi.show(windowAndroid,
-                    SharedPreferencesManager.getInstance(), mSettingsLauncher,
+                    SharedPreferencesManager.getInstance(), mLaunchAssistanceSettingsAction,
                     BottomSheetControllerProvider.from(windowAndroid), (useAssistant) -> {
                         // Notify the service about the consent completion.
                         assistantVoiceSearchService.onAssistantConsentDialogComplete(useAssistant);

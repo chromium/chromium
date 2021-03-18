@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
@@ -186,7 +185,7 @@ public class SearchActivity extends AsyncInitializationActivity
                 /*shareDelegateSupplier=*/null, /*incognitoStateProvider=*/null,
                 getLifecycleDispatcher(), overrideUrlLoadingDelegate,
                 /*backKeyBehavior=*/this, SearchEngineLogoUtils.getInstance(),
-                new SettingsLauncherImpl());
+                /*launchAssistanceSettingsAction=*/() -> {});
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);
         mLocationBarCoordinator.getOmniboxStub().addUrlFocusChangeListener(this);

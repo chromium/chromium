@@ -39,6 +39,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.TabLoadStatus;
+import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferenceFragment;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -80,7 +81,6 @@ import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -494,7 +494,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     modalDialogManagerSupplier, shareDelegateSupplier, mIncognitoStateProvider,
                     activityLifecycleDispatcher, overrideUrlLoadingDelegate,
                     new BackKeyBehaviorDelegate() {}, SearchEngineLogoUtils.getInstance(),
-                    new SettingsLauncherImpl());
+                    () -> AutofillAssistantPreferenceFragment.launchSettings(mActivity));
             toolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
             mLocationBar = locationBarCoordinator;
         }

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
@@ -176,5 +177,12 @@ public class AutofillAssistantPreferenceFragment extends PreferenceFragmentCompa
 
         mAssistantVoiceSearchEnabledPref.setChecked(mSharedPreferencesManager.readBoolean(
                 ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_ENABLED, /* default= */ false));
+    }
+
+    /** Open a page to learn more about the consent dialog. */
+    public static void launchSettings(Context context) {
+        SettingsLauncherImpl settingsLauncher = new SettingsLauncherImpl();
+        settingsLauncher.launchSettingsActivity(
+                context, AutofillAssistantPreferenceFragment.class, /* fragmentArgs= */ null);
     }
 }

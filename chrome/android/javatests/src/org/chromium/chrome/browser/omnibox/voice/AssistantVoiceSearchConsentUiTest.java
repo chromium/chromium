@@ -37,12 +37,12 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferenceFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchConsentUi.ConsentOutcome;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.settings.SettingsActivity;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -85,7 +85,9 @@ public class AssistantVoiceSearchConsentUiTest {
         mBottomSheetController = cta.getRootUiCoordinatorForTesting().getBottomSheetController();
         mBottomSheetTestSupport = new BottomSheetTestSupport(mBottomSheetController);
         mAssistantVoiceSearchConsentUi = new AssistantVoiceSearchConsentUi(cta.getWindowAndroid(),
-                cta, mSharedPreferencesManager, new SettingsLauncherImpl(), mBottomSheetController);
+                cta, mSharedPreferencesManager,
+                () -> AutofillAssistantPreferenceFragment.launchSettings(cta),
+                mBottomSheetController);
     }
 
     @After
@@ -104,8 +106,8 @@ public class AssistantVoiceSearchConsentUiTest {
     @MediumTest
     public void testNoBottomSheetControllerAvailable() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        AssistantVoiceSearchConsentUi.show(cta.getWindowAndroid(), mSharedPreferencesManager,
-                new SettingsLauncherImpl(), null, mCallback);
+        AssistantVoiceSearchConsentUi.show(
+                cta.getWindowAndroid(), mSharedPreferencesManager, () -> {}, null, mCallback);
         Mockito.verify(mCallback, Mockito.timeout(1000)).onResult(false);
     }
 
