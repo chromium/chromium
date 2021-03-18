@@ -33,6 +33,7 @@ const char kObfuscatedGaiaId[] = "obfuscated_gaia_id";
 const char kAppDisplayName[] = "name";
 const char kAppDisplayVersion[] = "version";
 const char kAppPublisher[] = "publisher";
+const char kAppType[] = "app_type";
 
 const wchar_t kInstalledWin32AppsRegistryPath[] =
     L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall";
@@ -257,6 +258,9 @@ base::Value AppInventoryManager::GetInstalledWin32Apps() {
       if (hr == S_OK) {
         request_dict_->SetStringKey(kAppPublisher, base::WideToUTF8(publisher));
       }
+
+      // App_type value 1 refers to WIN_32 applications.
+      request_dict_->SetIntKey(kAppType, 1);
 
       app_info_value_list.Append(
           base::Value::FromUniquePtrValue(std::move(request_dict_)));
