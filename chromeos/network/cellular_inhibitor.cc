@@ -117,7 +117,7 @@ void CellularInhibitor::TransitionToState(State state) {
     DCHECK(!GetInhibitReason());
     NET_LOG(EVENT) << ss.str();
   } else {
-    NET_LOG(EVENT) << ss.str() << state_ << ", reason: " << *GetInhibitReason();
+    NET_LOG(EVENT) << ss.str() << ", reason: " << *GetInhibitReason();
   }
 
   if (was_inhibited != is_inhibited)
