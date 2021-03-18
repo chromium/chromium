@@ -258,8 +258,12 @@ bool SysmemBufferCollection::CreateVkImage(
       properties.memoryTypeBits & requirements.memoryTypeBits;
   uint32_t memory_type = base::bits::CountTrailingZeroBits(viable_memory_types);
 
+  VkMemoryDedicatedAllocateInfoKHR dedicated_allocate = {
+      VK_STRUCTURE_TYPE_MEMORY_DEDICATED_ALLOCATE_INFO_KHR};
+  dedicated_allocate.image = *vk_image;
   VkImportMemoryBufferCollectionFUCHSIA buffer_collection_info = {
-      VK_STRUCTURE_TYPE_IMPORT_MEMORY_BUFFER_COLLECTION_FUCHSIA};
+      VK_STRUCTURE_TYPE_IMPORT_MEMORY_BUFFER_COLLECTION_FUCHSIA,
+      &dedicated_allocate};
   buffer_collection_info.collection = vk_buffer_collection_;
   buffer_collection_info.index = buffer_index;
 
