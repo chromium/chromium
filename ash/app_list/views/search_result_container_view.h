@@ -59,9 +59,6 @@ class APP_LIST_EXPORT SearchResultContainerView : public views::View,
     horizontally_traversable_ = horizontally_traversable;
   }
 
-  void set_container_score(double score) { container_score_ = score; }
-  double container_score() const { return container_score_; }
-
   // Batching method that actually performs the update and updates layout.
   void Update();
 
@@ -107,8 +104,6 @@ class APP_LIST_EXPORT SearchResultContainerView : public views::View,
 
   // If true, left/right key events will traverse this container
   bool horizontally_traversable_ = false;
-
-  double container_score_ = -1.0;
 
   SearchModel::SearchResults* results_ = nullptr;  // Owned by SearchModel.
 

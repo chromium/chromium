@@ -15,7 +15,6 @@
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/app_list/views/assistant/assistant_page_view.h"
 #include "ash/app_list/views/expand_arrow_view.h"
-#include "ash/app_list/views/privacy_container_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_page_view.h"
@@ -99,24 +98,11 @@ void ContentsView::Init(AppListModel* model) {
   // Search results UI.
   auto search_results_page_view =
       std::make_unique<SearchResultPageView>(view_delegate->GetSearchModel());
-
-  // Search result containers:
-  privacy_container_view_ =
-      search_results_page_view->AddSearchResultContainerView(
-          std::make_unique<PrivacyContainerView>(view_delegate));
+  search_results_page_view->InitializeContainers(
+      view_delegate, GetAppListMainView(), GetSearchBoxView()->search_box());
 
   expand_arrow_view_ =
       AddChildView(std::make_unique<ExpandArrowView>(this, app_list_view_));
-
-  search_result_tile_item_list_view_ =
-      search_results_page_view->AddSearchResultContainerView(
-          std::make_unique<SearchResultTileItemListView>(
-              GetSearchBoxView()->search_box(), view_delegate));
-
-  search_result_list_view_ =
-      search_results_page_view->AddSearchResultContainerView(
-          std::make_unique<SearchResultListView>(GetAppListMainView(),
-                                                 view_delegate));
 
   search_results_page_view_ = AddLauncherPage(
       std::move(search_results_page_view), AppListState::kStateSearchResults);

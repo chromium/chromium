@@ -135,6 +135,11 @@ class APP_LIST_EXPORT ResultSelectionController {
   void SetSelection(const ResultLocationDetails& location,
                     bool reverse_tab_order);
 
+  // Returns the location for the first result in the first non-empty result
+  // container. Returns nullptr if no results exist.
+  std::unique_ptr<ResultLocationDetails> GetFirstAvailableResultLocation()
+      const;
+
   SearchResultBaseView* GetResultAtLocation(
       const ResultLocationDetails& location);
 

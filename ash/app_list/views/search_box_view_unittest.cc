@@ -641,7 +641,8 @@ TEST_F(SearchBoxViewTest, NavigateSuggestedContentInfo) {
   view()->set_contents_view(contents_view);
 
   PrivacyContainerView* const privacy_container_view =
-      contents_view->privacy_container_view();
+      contents_view->search_results_page_view()
+          ->GetPrivacyContainerViewForTest();
   ASSERT_TRUE(privacy_container_view);
 
   // Set up the search box.
@@ -695,7 +696,8 @@ TEST_F(SearchBoxViewTest, KeyboardEventClosesSuggestedContentInfo) {
   view()->set_contents_view(contents_view);
 
   PrivacyContainerView* const privacy_container_view =
-      contents_view->privacy_container_view();
+      contents_view->search_results_page_view()
+          ->GetPrivacyContainerViewForTest();
   ASSERT_TRUE(privacy_container_view);
 
   // Set up the search box.
@@ -725,7 +727,8 @@ TEST_F(SearchBoxViewTest, SuggestedContentActionNotOverriddenByNewResults) {
   view()->set_contents_view(contents_view);
 
   PrivacyContainerView* const privacy_container_view =
-      contents_view->privacy_container_view();
+      contents_view->search_results_page_view()
+          ->GetPrivacyContainerViewForTest();
   ASSERT_TRUE(privacy_container_view);
 
   // Set up the search box.
@@ -767,7 +770,8 @@ TEST_F(SearchBoxViewTest, SuggestedContentSelectionDoesNotChangeSearchBoxText) {
   view()->set_contents_view(contents_view);
 
   PrivacyContainerView* const privacy_container_view =
-      contents_view->privacy_container_view();
+      contents_view->search_results_page_view()
+          ->GetPrivacyContainerViewForTest();
   ASSERT_TRUE(privacy_container_view);
 
   // Set up the search box.

@@ -496,6 +496,18 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     return view_->GetAppListConfig();
   }
 
+  SearchResultTileItemListView* GetSearchResultTileItemListView() {
+    return contents_view()
+        ->search_results_page_view()
+        ->GetSearchResultTileItemListViewForTest();
+  }
+
+  SearchResultListView* GetSearchResultListView() {
+    return contents_view()
+        ->search_results_page_view()
+        ->GetSearchResultListViewForTest();
+  }
+
   AppsGridViewTestApi* test_api() { return test_api_.get(); }
 
   void SimulateKeyPress(ui::KeyboardCode key_code,
@@ -895,14 +907,11 @@ TEST_F(AppListViewFocusTest, TabFocusTraversalInHalfState) {
   std::vector<views::View*> forward_view_list;
 
   const std::vector<SearchResultTileItemView*>& tile_views =
-      contents_view()
-          ->search_result_tile_item_list_view_for_test()
-          ->tile_views_for_test();
+      GetSearchResultTileItemListView()->tile_views_for_test();
   for (int i = 0; i < kTileResults; ++i)
     forward_view_list.push_back(tile_views[i]);
 
-  SearchResultListView* list_view =
-      contents_view()->search_result_list_view_for_test();
+  SearchResultListView* list_view = GetSearchResultListView();
   for (int i = 0; i < kListResults; ++i)
     forward_view_list.push_back(list_view->GetResultViewAt(i));
 
@@ -950,9 +959,7 @@ TEST_F(AppListViewFocusTest, CloseButtonClearsSearchOnEnter) {
   SetUpSearchResults(kTileResults, kListResults);
 
   const std::vector<SearchResultTileItemView*>& tile_views =
-      contents_view()
-          ->search_result_tile_item_list_view_for_test()
-          ->tile_views_for_test();
+      GetSearchResultTileItemListView()->tile_views_for_test();
   ASSERT_FALSE(tile_views.empty());
   views::View* first_result_view = tile_views[0];
 
@@ -1006,9 +1013,7 @@ TEST_P(AppListViewFocusTest, LeftRightFocusTraversalInHalfState) {
 
   std::vector<views::View*> forward_view_list;
   const std::vector<SearchResultTileItemView*>& tile_views =
-      contents_view()
-          ->search_result_tile_item_list_view_for_test()
-          ->tile_views_for_test();
+      GetSearchResultTileItemListView()->tile_views_for_test();
   forward_view_list.push_back(tile_views[0]);
 
   for (int i = 1; i < kTileResults; ++i)
@@ -1139,13 +1144,10 @@ TEST_F(AppListViewFocusTest, VerticalFocusTraversalInHalfState) {
   std::vector<views::View*> forward_view_list;
 
   const std::vector<SearchResultTileItemView*>& tile_views =
-      contents_view()
-          ->search_result_tile_item_list_view_for_test()
-          ->tile_views_for_test();
+      GetSearchResultTileItemListView()->tile_views_for_test();
   forward_view_list.push_back(tile_views[0]);
 
-  SearchResultListView* list_view =
-      contents_view()->search_result_list_view_for_test();
+  SearchResultListView* list_view = GetSearchResultListView();
   for (int i = 0; i < kListResults; ++i)
     forward_view_list.push_back(list_view->GetResultViewAt(i));
 
@@ -1421,8 +1423,7 @@ TEST_F(AppListViewFocusTest, FirstResultSelectedAfterSearchResultsUpdated) {
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   const int kListResults = 2;
   SetUpSearchResults(0, kListResults);
-  SearchResultListView* list_view =
-      contents_view()->search_result_list_view_for_test();
+  SearchResultListView* list_view = GetSearchResultListView();
 
   EXPECT_EQ(search_box_view()->search_box(), focused_view());
   EXPECT_EQ(list_view->GetResultViewAt(0),
@@ -1433,9 +1434,7 @@ TEST_F(AppListViewFocusTest, FirstResultSelectedAfterSearchResultsUpdated) {
   const int kTileResults = 3;
   SetUpSearchResults(kTileResults, kListResults);
   const std::vector<SearchResultTileItemView*>& tile_views =
-      contents_view()
-          ->search_result_tile_item_list_view_for_test()
-          ->tile_views_for_test();
+      GetSearchResultTileItemListView()->tile_views_for_test();
   EXPECT_EQ(search_box_view()->search_box(), focused_view());
   EXPECT_EQ(tile_views[0],
             contents_view()->search_results_page_view()->first_result_view());
@@ -2496,8 +2495,7 @@ TEST_F(AppListViewFocusTest, ShowEmbeddedAssistantUI) {
   EXPECT_EQ(1, GetTotalOpenSearchResultCount());
   EXPECT_EQ(0, GetTotalOpenAssistantUICount());
 
-  SearchResultListView* list_view =
-      contents_view()->search_result_list_view_for_test();
+  SearchResultListView* list_view = GetSearchResultListView();
   ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_RETURN, ui::EF_NONE);
   list_view->GetResultViewAt(kIndexOpenAssistantUi)->OnKeyEvent(&key_event);
   EXPECT_EQ(1, GetOpenFirstSearchResultCount());

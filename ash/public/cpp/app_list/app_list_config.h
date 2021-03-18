@@ -119,16 +119,6 @@ class ASH_PUBLIC_EXPORT SharedAppListConfig {
 
   int search_tile_height() const { return search_tile_height_; }
 
-  double privacy_container_score() const { return privacy_container_score_; }
-
-  double app_tiles_container_score() const {
-    return app_tiles_container_score_;
-  }
-
-  double results_list_container_score() const {
-    return results_list_container_score_;
-  }
-
   // Returns the maximum number of items allowed in a page in the apps grid.
   int GetMaxNumOfItemsPerPage() const;
 
@@ -196,14 +186,6 @@ class ASH_PUBLIC_EXPORT SharedAppListConfig {
 
   // The height of tiles in search result.
   const int search_tile_height_ = 92;
-
-  // Scores for the containers within the search box view. These are displayed
-  // in high-to-low order.
-  // The privacy container is not always visible, but when available it should
-  // always be the first item underneath the search box.
-  const double privacy_container_score_ = 4.0;
-  const double app_tiles_container_score_ = 3.0;
-  const double results_list_container_score_ = 1.0;
 };
 
 // Contains app list layout information for an app list view. `AppListConfig`

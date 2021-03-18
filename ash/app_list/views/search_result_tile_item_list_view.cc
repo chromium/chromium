@@ -241,11 +241,6 @@ int SearchResultTileItemListView::DoUpdate() {
     }
   }
 
-  set_container_score(
-      display_results.empty()
-          ? -1.0
-          : SharedAppListConfig::instance().app_tiles_container_score());
-
   return display_results.size();
 }
 

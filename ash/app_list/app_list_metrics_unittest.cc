@@ -21,6 +21,7 @@
 #include "ash/app_list/views/privacy_container_view.h"
 #include "ash/app_list/views/search_result_container_view.h"
 #include "ash/app_list/views/search_result_page_view.h"
+#include "ash/app_list/views/search_result_tile_item_list_view.h"
 #include "ash/app_list/views/search_result_tile_item_view.h"
 #include "ash/app_list/views/suggestion_chip_container_view.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -147,10 +148,13 @@ class AppListAppLaunchedMetricTest : public AshTestBase {
                                       ->app_list_main_view()
                                       ->contents_view();
     Shell::Get()->app_list_controller()->MarkSuggestedContentInfoDismissed();
-    contents_view->privacy_container_view()->Update();
+    contents_view->search_results_page_view()
+        ->GetPrivacyContainerViewForTest()
+        ->Update();
 
     SearchResultContainerView* search_result_container_view =
-        contents_view->search_results_page_view()->result_container_views()[0];
+        contents_view->search_results_page_view()
+            ->GetSearchResultTileItemListViewForTest();
 
     // Request focus on the first tile item view.
     search_result_container_view->GetFirstResultView()->RequestFocus();

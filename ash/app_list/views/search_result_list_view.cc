@@ -133,12 +133,6 @@ int SearchResultListView::DoUpdate() {
     impression_timer_.Stop();
   impression_timer_.Start(FROM_HERE, kImpressionThreshold, this,
                           &SearchResultListView::LogImpressions);
-
-  set_container_score(
-      display_results.empty()
-          ? -1.0
-          : SharedAppListConfig::instance().results_list_container_score());
-
   return display_results.size();
 }
 
