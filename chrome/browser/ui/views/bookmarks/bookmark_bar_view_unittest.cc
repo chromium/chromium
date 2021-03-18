@@ -445,4 +445,26 @@ TEST_F(BookmarkBarViewInWidgetTest, UpdateTooltipText) {
   EXPECT_EQ(base::ASCIIToUTF16("new title\na.com"), button->GetTooltipText(p));
 }
 
+// This test does not work correctly on LaCrOS. Calling
+// BookmarkBarView::SetPaneFocus() does not give focus as expected.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// When a node has keyboard focus and is deleted (e.g. by context menu), focus
+// should stay within the bookmark bar. Regression test for crbug.com/1183980.
+TEST_F(BookmarkBarViewInWidgetTest, FocusStaysInBarAfterBookmarkDeletion) {
+  widget()->Show();
+
+  BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile());
+  const BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
+  bookmarks::test::AddNodesFromModelString(model, bookmark_bar_node, "a b c");
+
+  SizeUntilButtonsVisible(2);
+  EXPECT_EQ(2u, test_helper_->GetBookmarkButtonCount());
+
+  bookmark_bar_view()->SetPaneFocus(test_helper_->GetBookmarkButton(0));
+  EXPECT_TRUE(test_helper_->GetBookmarkButton(0)->HasFocus());
+  model->Remove(bookmark_bar_node->children()[0].get());
+  EXPECT_TRUE(test_helper_->GetBookmarkButton(0)->HasFocus());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+
 }  // namespace
