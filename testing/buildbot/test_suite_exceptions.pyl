@@ -2691,16 +2691,6 @@
       },
     }
   },
-  'ui_base_unittests_x11': {
-    'modifications': {
-      # CI tester.
-      'Linux Tester (Ozone X11)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.x11_ui_base_unittests.filter',
-        ],
-      },
-    },
-  },
   'unit_tests': {
     'remove_from': [
       # There's no need to run unit_tests on both lollipop and marshmallow

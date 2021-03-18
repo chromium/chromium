@@ -198,7 +198,6 @@ source_set("ui_base_unittests_filters") {
   testonly = true
 
   data = [
-    "//testing/buildbot/filters/ozone-linux.x11_ui_base_unittests.filter",
     "//testing/buildbot/filters/ozone-linux.ui_base_unittests_wayland.filter",
   ]
 }

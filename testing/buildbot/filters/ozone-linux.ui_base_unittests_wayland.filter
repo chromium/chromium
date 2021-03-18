@@ -1,7 +1,3 @@
-# TODO: https://crbug.com/1177297
--ClipboardTest/TestClipboardTest.ReadAvailablePlatformSpecificFormatNamesTest
--ClipboardTest/TestClipboardTest.TextTest
-
 # TODO: https://crbug.com/1179238: These mustn't run for Wayland and must be refactored.
 -OSExchangeDataProviderX11Test.FilesArentURLs
 -OSExchangeDataProviderX11Test.HTTPURLsArentFiles

@@ -173,8 +173,8 @@ TYPED_TEST(ClipboardTest, TextTest) {
 #if defined(USE_OZONE) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
     !defined(OS_FUCHSIA) && !BUILDFLAG(IS_CHROMECAST) && \
     !BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(https://crbug.com/1096425): remove this if condition. It seems like
-  // we have this condition working for Ozone/Linux, but not for X11/Linux.
+  // TODO(https://crbug.com/1096425): remove this if condition once Ozone is the
+  // only path in Linux builds.
   if (features::IsUsingOzonePlatform()) {
     EXPECT_THAT(this->GetAvailableTypes(ClipboardBuffer::kCopyPaste),
                 Contains(ASCIIToUTF16(kMimeTypeTextUtf8)));

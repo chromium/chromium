@@ -11,11 +11,15 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
+#include "build/chromecast_buildflags.h"
+#include "build/chromeos_buildflags.h"
 #include "skia/ext/skia_utils_base.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
+#include "ui/base/ui_base_features.h"
 
 namespace ui {
 
@@ -89,8 +93,20 @@ void TestClipboard::ReadAvailableTypes(
     return;
 
   if (IsFormatAvailable(ClipboardFormatType::GetPlainTextType(), buffer,
-                        data_dst))
+                        data_dst)) {
     types->push_back(base::UTF8ToUTF16(kMimeTypeText));
+#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+    !BUILDFLAG(IS_CHROMECAST) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+    // This additional mime type is required as both Ozone/X11 and Ozone/Wayland
+    // clipboards convert text/plain[;charset=utf-8] <=> [UTF8_]STRING to allow
+    // interoperability with other applications which do not use the same mime
+    // types as chrome.
+    // TODO(https://crbug.com/1096425): remove this if condition once Ozone is
+    // the only path in Linux builds.
+    if (features::IsUsingOzonePlatform())
+      types->push_back(base::UTF8ToUTF16(kMimeTypeTextUtf8));
+#endif
+  }
   if (IsFormatAvailable(ClipboardFormatType::GetHtmlType(), buffer, data_dst))
     types->push_back(base::UTF8ToUTF16(kMimeTypeHTML));
 
@@ -121,7 +137,14 @@ TestClipboard::ReadAvailablePlatformSpecificFormatNames(
   // as available formats by automatically converting between them.
   if (IsFormatAvailable(ClipboardFormatType::GetPlainTextType(), buffer,
                         data_dst)) {
-#if defined(USE_X11)
+#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+    !BUILDFLAG(IS_CHROMECAST) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+    // See comment in ReadAvailableTypes() that also includes this mime type.
+    // TODO(https://crbug.com/1096425): remove this if condition once Ozone is
+    // the only path in Linux builds.
+    if (features::IsUsingOzonePlatform())
+      types.push_back(base::UTF8ToUTF16(kMimeTypeTextUtf8));
+
     types.push_back(base::ASCIIToUTF16("TEXT"));
     types.push_back(base::ASCIIToUTF16("STRING"));
     types.push_back(base::ASCIIToUTF16("UTF8_STRING"));
