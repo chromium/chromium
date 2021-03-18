@@ -1054,6 +1054,15 @@
       如果在平台级别设置了此政策，则应在平台级别停用同步功能。
       如果在用户级别设置了此政策，则应为该用户停用同步功能，才能使此政策生效。
       </translation>
+<translation id="244950822854046436">让您能够指定要应用于<ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />的设置列表，以供系统在有人下载文件时调用。
+
+      <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 字段用于确定当用户从网页下载某个文件时，该接口是否应将此文件发送给服务提供商。相应的网页网址必须与已关联到“enable”格式但未关联到“disable”格式的格式匹配。此文件的 MIME 类型也必须如此。
+
+      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 字段用于指明您指定的设置是与哪个分析服务提供商对应。
+
+      <ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" /> 字段用于填写合作伙伴服务提供商的唯一 ID，以指明客户为使用该服务提供商而创建的帐号。在用户设置<ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />的过程中，当系统要求登录时，只能使用与此客户的服务提供商帐号关联的用户帐号。
+
+      此政策只能通过 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />进行设置。</translation>
 <translation id="2454228136871844693">针对稳定性进行优化。</translation>
 <translation id="2455033019778127130">使用默认浏览器行为，显示《服务条款》并等待用户接受。</translation>
 <translation id="2460127623195247744">此政策已被弃用，请改用“<ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />”政策。
@@ -5403,6 +5412,12 @@
       如需了解详情，请访问 https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744。</translation>
 <translation id="8424255554404582727">设置显示屏默认旋转角度，每次重新启动后都重新应用设置的角度</translation>
 <translation id="8426231401662877819">将屏幕顺时针旋转 90 度</translation>
+<translation id="8426819027631706846">如 https://www.chromestatus.com/feature/5148698084376576 中所述，倘若 JavaScript 模态对话框（由 <ph name="JS_ALERT" />、<ph name="JS_CONFIRM" /> 和 <ph name="JS_PROMPT" /> 触发）是从非主框架来源的子框架触发的，<ph name="PRODUCT_NAME" /> 会屏蔽这些对话框。
+       此政策让您可以覆盖这项变更。
+       如果此政策已启用或未设置，系统将会屏蔽从其他来源的子框架触发的 JavaScript 对话框。
+       如果此政策已停用，系统将不会屏蔽从其他来源的子框架触发的 JavaScript 对话框。
+
+       在 <ph name="PRODUCT_NAME" /> 95 版中，此政策将被移除。</translation>
 <translation id="8433186206711564395">网络设置</translation>
 <translation id="8433769814000220721">启用建议的内容</translation>
 <translation id="843609873781525167">如果此政策设为 True，<ph name="PRODUCT_NAME" /> 在启动时始终会检查自己是否是默认浏览器，并会尽可能自动注册。如果此政策设为 False，<ph name="PRODUCT_NAME" /> 一律不会检查自己是否是默认浏览器，并会禁止用户设置此选项。

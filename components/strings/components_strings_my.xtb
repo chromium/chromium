@@ -413,6 +413,7 @@
 <translation id="2482878487686419369">အကြောင်းကြားစာ</translation>
 <translation id="248348093745724435">စက်ပစ္စည်း မူဝါဒများ</translation>
 <translation id="2491120439723279231">ဆာဗာ၏ အသိမှတ်ပြုလက်မှ</translation>
+<translation id="2491414235131909199">နောက်ဆက်တွဲတစ်ခုက ဤစာမျက်နှာကို ပိတ်ထားသည်</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON Parser</translation>
 <translation id="2495093607237746763">အမှန်ခြစ်ထားပါက၊ ပုံစံဖြည့်မှု မြန်လာစေရန် Chrome သည် သင့်ကဒ်၏ မိတ္ထူကို ဤကိရိယာထဲတွင် သိမ်းထားပါမည်။</translation>
@@ -835,6 +836,7 @@
 <translation id="4173315687471669144">ဖူးစကက်</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{နောက်ထပ် <ph name="ITEM_COUNT" /> ခု}other{နောက်ထပ် <ph name="ITEM_COUNT" /> ခု}}</translation>
 <translation id="4176463684765177261">ပိတ်ထားသည်။</translation>
+<translation id="4178883739871311481"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ ‘Google Doc ပြုလုပ်ရန်’ ‘တဘ်ခလုတ်’ ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">သင့်ကတ်ကို ယခု သိမ်း၍မရပါ</translation>
 <translation id="4196861286325780578">&amp;ရွေ့ရှားမှုကို ပြန်လုပ်ရန်</translation>
@@ -1524,6 +1526,7 @@
 <translation id="6852204201400771460">အက်ပ်ကို ပြန်လည်စတင်လိုပါသလား။</translation>
 <translation id="6865412394715372076">ဤကတ်ကို ယခုအတည်ပြု၍ မရသေးပါ</translation>
 <translation id="6874604403660855544">&amp;ထည့်ပေးမှ ပြန်လုပ်ရန်</translation>
+<translation id="6881240511396774766">Google Doc အသစ်တစ်ခု အမြန်ပြုလုပ်ပါ</translation>
 <translation id="6884662655240309489">အရွယ်အစား ၁</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">ဤစာမျက်နှာကို ပိုမိုလွယ်ကူစွာဖတ်နိုင်ရန် Chrome က ရိုးရှင်းအောင်ပြုလုပ်ထားသည်။ Chrome သည် မူရင်းစာမျက်နှာကို လုံခြုံမှုမရှိသည့် ချိတ်ဆက်မှုမှတစ်ဆင့် ရယူထားသည်။</translation>
@@ -1533,6 +1536,7 @@
 <translation id="6898699227549475383">အဖွဲ့အစည်း (O)</translation>
 <translation id="6907293445143367439"><ph name="SITE_NAME" /> အား အောက်ပါကိုခွင့်ပြုပါ−</translation>
 <translation id="6910240653697687763"><ph name="URL" /> သည် သင်၏ MIDI စက်များကို အပြည့်အဝ ထိန်းချုပ်လိုသည်</translation>
+<translation id="691325982945105493">‘Google Doc ပြုလုပ်ရန်’ ခလုတ်၊ Google Doc အသစ်တစ်ခု အမြန် ‘ပြုလုပ်ရန်’ Enter နှိပ်ပါ</translation>
 <translation id="6915804003454593391">အသုံးပြုသူ:</translation>
 <translation id="6934672428414710184">ဤအမည်သည် သင်၏ Google အကောင့်မှဖြစ်သည်။</translation>
 <translation id="6944692733090228304">သင်သည် <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> က ကြီးကြပ်ထားခြင်းမရှိသည့် ဝဘ်ဆိုက်တွင် သင်၏ စကားဝှက်ကို ထည့်သွင်းထားသည်။ သင့်အကောင့်ကို ကာကွယ်နိုင်ရန် အခြားအက်ပ်နှင့် ဝဘ်ဆိုက်များတွင် သင့်စကားဝှက်ကို ပြန်မသုံးပါနှင့်။</translation>
@@ -1852,7 +1856,7 @@
 <translation id="8086971161893892807">မူကြမ်း</translation>
 <translation id="8088680233425245692">ဆောင်းပါး ကြည့်ခြင်း မအောင်မြင်ပါ။</translation>
 <translation id="808894953321890993">စကားဝှက် ပြောင်းရန်</translation>
-<translation id="8090329638663751802">ဤငွေပေးချေနည်းလမ်းဖြင့် ဝယ်ယူရန်အတွက် ယခုကိရိယာကို နောက်တစ်ကြိမ်သုံးသည့်အခါ သင်ဖြစ်ကြောင်း အမြန်စိစစ်ရန် ‘တို့ထိ ID’ ကို သုံးနိုင်သည်။</translation>
+<translation id="8090329638663751802">ဤငွေပေးချေနည်းလမ်းဖြင့် ဝယ်ယူရန်အတွက် ယခုကိရိယာကို နောက်တစ်ကြိမ်သုံးသည့်အခါ သင်ဖြစ်ကြောင်း အမြန်စိစစ်ရန် Touch ID ကို သုံးနိုင်သည်။</translation>
 <translation id="8090403583893450254">အရွယ်အစား ၂၀</translation>
 <translation id="8091372947890762290">စသုံးရန် လုပ်ကိုင်မှုသည် ဆာဗာမှာ ဆိုင်းငံ့နေသည်</translation>
 <translation id="8092774999298748321">ခရမ်းရင့်</translation>
@@ -2064,6 +2068,7 @@
 <translation id="8931333241327730545">သင့် Google အကောင့်သို့ ဤကဒ်ကိုသိမ်းလိုပါသလား။</translation>
 <translation id="8932102934695377596">သင်၏ နာရီ နောက်ကျနေ</translation>
 <translation id="893332455753468063">အမည် ထည့်သွင်းခြင်း</translation>
+<translation id="8934418770423095813">Google Doc ပြုလုပ်ရန်</translation>
 <translation id="8942355029279167844">သင်၏ စီမံခန့်ခွဲသူသည် ထုတ်ကုန်အသုံးပြုမှု ပိုမိုကောင်းမွန်စေရန်အတွက် အမှားရှာပြင်ခြင်းဒေတာများကို စုဆောင်းရန် <ph name="APP_NAME" /> ကို ခွင့်ပြုထားသည်။ နောက်ထပ်အချက်အလက်များအတွက် <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> တွင် ကြည့်ပါ။</translation>
 <translation id="8943282376843390568">သံပုရာ</translation>
 <translation id="8957210676456822347">ထွက်ပေါက်မရှိသော မူလအင်တာနက်စာမျက်နှာ ခွင့်ပြူချက်</translation>

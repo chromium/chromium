@@ -2833,7 +2833,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4115080753528843955">Alguns serviços de conteúdo usam identificadores exclusivos para autorizar o acesso a conteúdo protegido</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4118579674665737931">Reinicialize o dispositivo e tente novamente.</translation>
-<translation id="4118998393712575296">Para usar o controle dos pais, como a aprovação de apps e os limites de tempo de uso, é necessário que a criança tenha uma Conta do Google gerenciada por um pai/mãe. Uma conta escolar pode ser adicionada mais tarde para uso em sites e apps como o Google Sala de Aula.</translation>
 <translation id="4120388883569225797">Não é possível redefinir esta chave de segurança</translation>
 <translation id="4120817667028078560">Caminho muito longo</translation>
 <translation id="4124823734405044952">Sua chave de segurança foi redefinida</translation>
@@ -3308,6 +3307,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4682551433947286597">Os planos de fundo aparecem na tela de login.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (padrão)</translation>
 <translation id="4684427112815847243">Sincronizar tudo</translation>
+<translation id="4687613760714619596">Dispositivo desconhecido (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">Código do registro local: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">Escolher preferências de demonstração</translation>
 <translation id="4689421377817139245">Sincronizar esse favorito no seu iPhone</translation>

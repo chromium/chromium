@@ -98,7 +98,7 @@
 <translation id="1697284962337958118">Añadir a</translation>
 <translation id="1718835860248848330">Última hora</translation>
 <translation id="1724977129262658800">Desbloquea para cambiar tu contraseña</translation>
-<translation id="173522743738009831">Información sobre la zona de pruebas de privacidad</translation>
+<translation id="173522743738009831">Información sobre Privacy Sandbox</translation>
 <translation id="1736419249208073774">Más información</translation>
 <translation id="1749561566933687563">Sincronizar marcadores</translation>
 <translation id="17513872634828108">Pestañas abiertas</translation>
@@ -349,19 +349,19 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="3384347053049321195">Compartir imagen</translation>
 <translation id="3387650086002190359">No se ha podido descargar <ph name="FILE_NAME" /> debido a problemas con el sistema de archivos.</translation>
 <translation id="3389286852084373014">El texto es demasiado largo</translation>
-<translation id="3391512812407811893">Pruebas de la zona de pruebas de privacidad</translation>
+<translation id="3391512812407811893">Pruebas de Privacy Sandbox</translation>
 <translation id="3398320232533725830">Abre el administrador de marcadores</translation>
 <translation id="3414952576877147120">Tamaño:</translation>
 <translation id="3429160811076349561">Las funciones de prueba están desactivadas.</translation>
 <translation id="3440975416244667276">Mantén pulsado para ver más información relevante</translation>
 <translation id="3443221991560634068">Vuelve a cargar la página actual</translation>
-<translation id="3451542610083122179">La zona de pruebas de privacidad es una iniciativa en curso para preservar la Web abierta que ayudará a protegerte de mecanismos de seguimiento.
+<translation id="3451542610083122179">Privacy Sandbox es una iniciativa en curso para preservar la Web abierta que ayudará a protegerte de mecanismos de seguimiento.
 
 Hoy en día, los sitios web dependen de varias tecnologías (por ejemplo, las cookies de terceros) para ofrecer servicios importantes, como mostrar anuncios relevantes o medir el rendimiento de un sitio web.
 
-La zona de pruebas de privacidad conserva la vitalidad de la Web abierta creando mejores formas de ofrecer estos servicios sin inutilizar los sitios e impidiendo que se te hagan seguimientos ocultos en la Web.
+Privacy Sandbox conserva la vitalidad de la Web abierta creando mejores formas de ofrecer estos servicios sin inutilizar los sitios e impidiendo que se te hagan seguimientos ocultos en la Web.
 
-La zona de pruebas de privacidad sigue en desarrollo y está disponible solo en ciertas regiones. Por ahora, los sitios pueden usar la zona de pruebas de privacidad y seguir utilizando tecnologías web actuales, como las cookies de terceros. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+Privacy Sandbox sigue en desarrollo y está disponible solo en ciertas regiones. Por ahora, los sitios pueden usar Privacy Sandbox y seguir utilizando tecnologías web actuales, como las cookies de terceros. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">Puedes elegir tu buscador</translation>
 <translation id="3492207499832628349">Nueva pestaña incógnito</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /> sobre el contenido sugerido</translation>
@@ -1066,7 +1066,7 @@ Los datos de las sesiones de incógnito se borran de Chrome solo cuando <ph name
 <translation id="8156139159503939589">¿Qué idiomas puedes leer?</translation>
 <translation id="8168435359814927499">Contenido</translation>
 <translation id="8186512483418048923">Archivos restantes: <ph name="FILES" /></translation>
-<translation id="8189750580333936930">Zona de pruebas de privacidad</translation>
+<translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">Queda 1 día</translation>
 <translation id="8200772114523450471">Reanudar</translation>
 <translation id="8209050860603202033">Abrir imagen</translation>

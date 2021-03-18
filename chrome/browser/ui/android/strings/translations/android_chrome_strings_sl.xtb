@@ -98,7 +98,7 @@
 <translation id="1697284962337958118">Dodajanje v</translation>
 <translation id="1718835860248848330">Zadnja ura</translation>
 <translation id="1724977129262658800">Odklenite, če želite urediti geslo.</translation>
-<translation id="173522743738009831">O peskovniku za zasebnost</translation>
+<translation id="173522743738009831">Zasebni peskovnik</translation>
 <translation id="1736419249208073774">Razišči</translation>
 <translation id="1749561566933687563">Sinhroniziranje zaznamkov</translation>
 <translation id="17513872634828108">Odprti zavihki</translation>
@@ -349,7 +349,7 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="3384347053049321195">Skupna raba slike</translation>
 <translation id="3387650086002190359">Prenos datoteke <ph name="FILE_NAME" /> ni uspel zaradi napak v datotečnem sistemu.</translation>
 <translation id="3389286852084373014">Besedilo je preveliko</translation>
-<translation id="3391512812407811893">Preizkusi peskovnika za zasebnost</translation>
+<translation id="3391512812407811893">Preizkusi zasebnega peskovnika</translation>
 <translation id="3398320232533725830">Odpiranje upravitelja zaznamkov</translation>
 <translation id="3414952576877147120">Velikost:</translation>
 <translation id="3429160811076349561">Funkcije preizkusa so onemogočene</translation>
@@ -1066,7 +1066,7 @@ Podatki seje brez beleženja dejavnosti se iz Chroma izbrišejo šele, ko <ph na
 <translation id="8156139159503939589">Katere jezike znate brati?</translation>
 <translation id="8168435359814927499">Vsebina</translation>
 <translation id="8186512483418048923">Še toliko datotek: <ph name="FILES" /></translation>
-<translation id="8189750580333936930">Peskovnik za zasebnost</translation>
+<translation id="8189750580333936930">Zasebni peskovnik</translation>
 <translation id="8190358571722158785">Še 1 dan</translation>
 <translation id="8200772114523450471">Nadaljuj</translation>
 <translation id="8209050860603202033">Odpri sliko</translation>

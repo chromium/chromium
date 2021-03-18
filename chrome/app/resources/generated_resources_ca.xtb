@@ -679,7 +679,7 @@
 <translation id="1734212868489994726">Blau clar</translation>
 <translation id="1734230530703461088">No s'han pogut carregar les extensions dins del límit de temps. Contacta amb l'administrador.</translation>
 <translation id="1734824808160898225">És possible que <ph name="PRODUCT_NAME" /> no pugui actualitzar-se tot sol</translation>
-<translation id="173522743738009831">Sobre la zona de proves de privadesa</translation>
+<translation id="173522743738009831">Sobre Privacy Sandbox</translation>
 <translation id="173628468822554835">D'acord. De manera predeterminada, els llocs webs nous que visitis no t'enviaran notificacions.</translation>
 <translation id="1736419249208073774">Explora</translation>
 <translation id="1737968601308870607">Arxiva l'error</translation>
@@ -1089,7 +1089,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2187895286714876935">Error d'importació del certificat del servidor</translation>
 <translation id="2187906491731510095">S'han actualitzat les extensions</translation>
 <translation id="2188881192257509750">Obre <ph name="APPLICATION" /></translation>
-<translation id="2190069059097339078">Obtenidor de credencials de la Wi-Fi</translation>
+<translation id="2190069059097339078">Mètode d'obtenció de credencials de la Wi-Fi</translation>
 <translation id="219008588003277019">Mòdul de client nadiu: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(buit)</translation>
 <translation id="2191754378957563929">Activat</translation>
@@ -2016,7 +2016,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3238192140106069382">S'està connectant i verificant</translation>
 <translation id="3239373508713281971">S'ha suprimit el límit de temps per a <ph name="APP_NAME" /></translation>
 <translation id="3241680850019875542">Seleccioneu el directori arrel de l'extensió que voleu empaquetar. Per actualitzar una extensió, cal que seleccioneu també el fitxer de clau privada que s'utilitzarà.</translation>
-<translation id="3242905690080165035">La zona de proves de privadesa encara s'està desenvolupant i només està disponible en determinades regions. Per ara, és possible que els llocs web provin la zona de proves de privadesa mentre continuen utilitzant les tecnologies web actuals, com ara les galetes de tercers. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
+<translation id="3242905690080165035">Privacy Sandbox encara s'està desenvolupant i només està disponible en determinades regions. Per ara, és possible que els llocs web provin 	Privacy Sandbox mentre continuen utilitzant les tecnologies web actuals, com ara les galetes de tercers. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="3244294424315804309">Continua silenciant el so</translation>
 <translation id="3246107497225150582">{0,plural, =1{Tens 1 dia per actualitzar el dispositiu}other{Tens # dies per actualitzar el dispositiu}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" />: error de la xarxa</translation>
@@ -2143,7 +2143,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3390013585654699824">Detalls de l'aplicació</translation>
 <translation id="3390741581549395454">La còpia de seguretat dels fitxers i de les aplicacions de Linux s'ha creat correctament. L'actualització començarà aviat.</translation>
 <translation id="3391482648489541560">edició de fitxers</translation>
-<translation id="3391512812407811893">Proves de la zona de proves de privadesa</translation>
+<translation id="3391512812407811893">Proves de Privacy Sandbox</translation>
 <translation id="339178315942519818">Consulta les notificacions de les aplicacions de xat al teu dispositiu <ph name="DEVICE_TYPE" /></translation>
 <translation id="3396800784455899911">En fer clic al botó Accepta i continua, acceptes el processament descrit anteriorment per a aquests serveis de Google.</translation>
 <translation id="3399432415385675819">Les notificacions es desactivaran</translation>
@@ -2829,7 +2829,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4115080753528843955">Alguns serveis de contingut fan servir identificadors únics per autoritzar l'accés a contingut protegit</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4118579674665737931">Reinicia el dispositiu i torna-ho a provar.</translation>
-<translation id="4118998393712575296">Per utilitzar els controls parentals, com ara l'aprovació d'aplicacions i els límits de temps de connexió, el nen ha de tenir un Compte de Google gestionat pel pare o per la mare. Més endavant, es pot afegir un compte de centre educatiu per utilitzar-lo en llocs web i aplicacions com Google Classroom.</translation>
 <translation id="4120388883569225797">Aquesta clau de seguretat no es pot restablir</translation>
 <translation id="4120817667028078560">El camí és massa llarg</translation>
 <translation id="4124823734405044952">La clau de seguretat s'ha restablert</translation>
@@ -3304,6 +3303,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4682551433947286597">Els fons de pantalla apareixen a la pantalla d'inici de sessió.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (opció predeterminada)</translation>
 <translation id="4684427112815847243">Sincronitza-ho tot</translation>
+<translation id="4687613760714619596">Dispositiu desconegut (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">Identificador del registre local: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">Tria les teves preferències de demostració</translation>
 <translation id="4689421377817139245">Sincronitza aquesta adreça d'interès amb el teu iPhone</translation>
@@ -4659,7 +4659,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6271348838875430303">s'ha desfet la correcció</translation>
 <translation id="6272643420381259437">S'ha produït un error (<ph name="ERROR" />) en baixar el connector</translation>
 <translation id="6273677812470008672">Qualitat</translation>
-<translation id="6275846828483490454">La zona de proves de privadesa és una iniciativa en curs per preservar el web obert que t'ajudarà a protegir-te dels mecanismes de seguiment.</translation>
+<translation id="6275846828483490454">Privacy Sandbox és una iniciativa en curs per preservar el web obert que t'ajudarà a protegir-te dels mecanismes de seguiment.</translation>
 <translation id="6276210637549544171">El servidor intermediari del domini <ph name="PROXY_SERVER" /> requereix un nom d'usuari i una contrasenya.</translation>
 <translation id="6277105963844135994">Temps d'espera de la xarxa</translation>
 <translation id="6277518330158259200">Fes una c&amp;aptura de pantalla</translation>
@@ -5323,7 +5323,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7018275672629230621">Llegir i canviar l'historial de navegació</translation>
 <translation id="7019805045859631636">Ràpid</translation>
 <translation id="7022562585984256452">S'ha definit la pàgina d'inici.</translation>
-<translation id="7023206482239788111">La zona de proves de privadesa preserva la vitalitat del web obert creant millors maneres de dur a terme aquests serveis, sense que els llocs web es vegin afectats i impedint que es faci un seguiment ocult de les teves accions al web.</translation>
+<translation id="7023206482239788111">Privacy Sandbox preserva la vitalitat del web obert creant millors maneres de dur a terme aquests serveis, sense que els llocs web es vegin afectats i impedint que es faci un seguiment ocult de les teves accions al web.</translation>
 <translation id="7025082428878635038">Presentem una nova manera de navegar amb gestos</translation>
 <translation id="7025190659207909717">Gestió de serveis de dades mòbils</translation>
 <translation id="7025895441903756761">Seguretat i privadesa</translation>
@@ -6358,7 +6358,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8186609076106987817">El servidor no ha pogut trobar el fitxer.</translation>
 <translation id="8188389033983459049">Comprova la configuració del dispositiu i activa'l per continuar</translation>
 <translation id="8189306097519446565">Comptes de centre educatiu</translation>
-<translation id="8189750580333936930">Zona de proves de privadesa</translation>
+<translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">S'està connectant amb <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Gestionar les aplicacions, les extensions i els temes</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" /> vol compartir el contingut de la teva pantalla.</translation>

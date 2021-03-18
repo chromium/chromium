@@ -411,6 +411,7 @@
 <translation id="2482878487686419369">Ծանուցումներ</translation>
 <translation id="248348093745724435">Սարքի քաղաքականություններ</translation>
 <translation id="2491120439723279231">Սերվերի վկայագիրը սխալներ է պարունակում:</translation>
+<translation id="2491414235131909199">Այս էջն արգելափակվել է ընդլայնման կողմից</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON վերլուծիչ</translation>
 <translation id="2495093607237746763">Եթե նշված է, Chromium-ն այս սարքում կպահի ձեր քարտի կրկնօրինակը՝ ձևն արագ լրացնելու համար:</translation>
@@ -836,6 +837,7 @@
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Եվս <ph name="ITEM_COUNT" /> տարր}one{Եվս <ph name="ITEM_COUNT" /> տարր}other{Եվս <ph name="ITEM_COUNT" /> տարր}}</translation>
 <translation id="4176463684765177261">Անջատված է</translation>
+<translation id="4178883739871311481"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google փաստաթուղթ ստեղծելու համար սեղմեք Tab, ապա՝ Enter</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">Չհաջողվեց պահել քարտը</translation>
 <translation id="4196861286325780578">&amp;Վերարկել տեղափոխումը</translation>
@@ -1525,6 +1527,7 @@
 <translation id="6852204201400771460">Կրկին բեռնե՞լ հավելվածը</translation>
 <translation id="6865412394715372076">Չհաջողվեց հաստատել այս քարտը</translation>
 <translation id="6874604403660855544">&amp;Վերարկել հավելումը</translation>
+<translation id="6881240511396774766">Արագ ստեղծեք նոր Google փաստաթուղթ</translation>
 <translation id="6884662655240309489">Չափ 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome-ը պարզեցրել է այս էջը՝ այն ավելի ընթեռնելի դարձնելու համար։ Chrome-ը բեռնել է սկզբնական էջը ոչ ապահով կապի միջոցով։</translation>
@@ -1534,6 +1537,7 @@
 <translation id="6898699227549475383">Կազմակերպություն (O)</translation>
 <translation id="6907293445143367439">Թույլ տալ <ph name="SITE_NAME" /> կայքին՝</translation>
 <translation id="6910240653697687763"><ph name="URL" /> կայքն ուզում է ամբողջովին վերահսկել ձեր MIDI սարքերը</translation>
+<translation id="691325982945105493">«Ստեղծել Google փաստաթուղթ» կոճակ, սեղմեք Enter՝ նոր Google փաստաթուղթ արագ ստեղծելու համար</translation>
 <translation id="6915804003454593391">Օգտատեր`</translation>
 <translation id="6934672428414710184">Այս անունը վերցված է ձեր Google հաշվից</translation>
 <translation id="6944692733090228304">Դուք մուտքագրել եք գաղտնաբառը մի կայքում, որը չի կառավարվում <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-ի կողմից: Ձեր հաշիվը պաշտպանելու համար խորհուրդ ենք տալիս չօգտագործել այդ գաղտնաբառն այլ հավելվածներում և կայքերում:</translation>
@@ -2064,6 +2068,7 @@
 <translation id="8931333241327730545">Ուզո՞ւմ եք պահել այս քարտը ձեր Google հաշվում:</translation>
 <translation id="8932102934695377596">Ձեր ժամացույցը հետ է ընկել</translation>
 <translation id="893332455753468063">Ավելացրեք անունը</translation>
+<translation id="8934418770423095813">Ստեղծել Google փաստաթուղթ</translation>
 <translation id="8942355029279167844">Ձեր ադմինիստրատորը թույլատրել է <ph name="APP_NAME" /> հավելվածին հավաքել դիագնոստիկ տվյալներ՝ ծառայության որակը բարելավելու նպատակով։ Լրացուցիչ տեղեկությունների համար անցեք <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> էջ։</translation>
 <translation id="8943282376843390568">Լայմ</translation>
 <translation id="8957210676456822347">Գրավող կայքէջի նույնականացում</translation>

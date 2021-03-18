@@ -2831,7 +2831,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4115080753528843955">Eduki-zerbitzu batzuek identifikatzaile esklusiboak erabiltzen dituzte eduki babestua atzitzeko baimena emateko</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4118579674665737931">Berrabiarazi gailua eta saiatu berriro.</translation>
-<translation id="4118998393712575296">Gurasoen murriztapenak erabiltzeko (adibidez, aplikazioak onartzeko aukera eta erabilera-ordutegia), guraso batek kudeatu behar du haurraren Google-ko kontua. Ikastetxeko kontu bat gehi daiteke geroago, webguneetan eta Google Classroom-en nahiz antzeko aplikazioetan erabiltzeko.</translation>
 <translation id="4120388883569225797">Ezin da berrezarri segurtasun-giltza</translation>
 <translation id="4120817667028078560">Bidea luzeegia da</translation>
 <translation id="4124823734405044952">Berrezarri da segurtasun-giltza</translation>
@@ -3306,6 +3305,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="4682551433947286597">Horma-paperak saio-hasieran agertzen dira.</translation>
 <translation id="4683947955326903992">% <ph name="PERCENTAGE" /> (lehenetsia)</translation>
 <translation id="4684427112815847243">Sinkronizatu dena</translation>
+<translation id="4687613760714619596">Gailu ezezaguna (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">Erregistro lokalaren IDa: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">Aukeratu demo moduaren hobespenak</translation>
 <translation id="4689421377817139245">Sinkronizatu laster-marka iPhone-arekin</translation>
@@ -5452,7 +5452,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="7180865173735832675">Pertsonalizatu</translation>
 <translation id="7182791023900310535">Eraman pasahitza</translation>
 <translation id="7186088072322679094">Mantendu tresna-barran</translation>
-<translation id="7186303001964993981"><ph name="ORIGIN" /> webguneak ezin du ireki karpeta sistemaren fitxategiak daudelako</translation>
+<translation id="7186303001964993981"><ph name="ORIGIN" /> webguneak ezin du ireki karpeta sistemaren fitxategiak dituelako</translation>
 <translation id="7187428571767585875">Erregistroan kendu edo aldatu beharreko sarrerak:</translation>
 <translation id="7189234443051076392">Ziurtatu gailuan behar adina toki duzula</translation>
 <translation id="7189451821249468368">Ez dituzu behar adina lizentzia gailua erregistratzeko. Gehiago erosteko, jarri salmenta sailarekin harremanetan. Mezu hau ikusi beharko ez zenukeela uste baduzu, jarri laguntza-zerbitzuarekin harremanetan.</translation>

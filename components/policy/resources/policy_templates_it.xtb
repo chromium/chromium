@@ -1089,6 +1089,15 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
       Se questo criterio viene impostato a livello di piattaforma, la sincronizzazione dovrebbe essere disattivata a livello di piattaforma.
       Se questo criterio viene impostato a livello di utente, la sincronizzazione dovrebbe essere disattivata per quell'utente affinché il criterio venga applicato.
       </translation>
+<translation id="244950822854046436">Elenco di impostazioni da applicare al <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, che si attiva quando viene scaricato un file.
+
+      I campi <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> vengono utilizzati per stabilire se il connettore deve inviare un file al fornitore di servizi quando il download viene effettuato da una pagina web. L'URL della pagina web deve corrispondere a un pattern associato a un pattern "enable" e non a un pattern "disable".  Anche il tipo MIME del file deve corrispondere a un pattern associato a un pattern "enable" e non a un pattern "disable".
+
+      Il campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica il fornitore di servizi di analisi a cui corrispondono le impostazioni.
+
+      Il campo <ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" /> contiene l'ID univoco di un fornitore di servizi partner che identifica l'account del cliente presso il fornitore di servizi. Quando all'utente viene chiesto di accedere durante la configurazione del <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, sono consentiti soltanto gli account utente associati all'account del fornitore di servizi del cliente in questione.
+
+      Questo criterio può essere impostato soltanto dalla <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="2454228136871844693">Ottimizza per aumentare la stabilità.</translation>
 <translation id="2455033019778127130">Usa il comportamento predefinito del browser, mostra i TdS e attende l'accettazione dell'utente</translation>
 <translation id="2460127623195247744">Questo criterio è deprecato. Utilizza il criterio "<ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />".
@@ -5474,6 +5483,12 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
       Per ulteriori informazioni, vai all'indirizzo https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
 <translation id="8424255554404582727">Imposta la rotazione predefinita dello schermo, riapplicata a ogni riavvio</translation>
 <translation id="8426231401662877819">Ruota lo schermo in senso orario di 90°</translation>
+<translation id="8426819027631706846">Come descritto all'indirizzo https://www.chromestatus.com/feature/5148698084376576, le finestre di dialogo modali JavaScript, attivate da <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" /> e <ph name="JS_PROMPT" />, saranno bloccate in <ph name="PRODUCT_NAME" /> se attivate da un frame secondario la cui origine è diversa dall'origine del frame principale.
+       Questo criterio consente di eseguire l'override di tale modifica.
+       Se il criterio viene impostato su Attivato o se non viene configurato, le finestre di dialogo JavaScript attivate da un frame secondario di origine diversa verranno bloccate.
+       Se il criterio viene impostato su Disattivato, le finestre di dialogo JavaScript attivate da un frame secondario di origine diversa non verranno bloccate.
+
+       Questo criterio verrà rimosso nella versione 95 di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8433186206711564395">Impostazioni di rete</translation>
 <translation id="8433769814000220721">Attiva contenuti suggeriti</translation>
 <translation id="843609873781525167">Se il criterio è impostato su True, all'avvio <ph name="PRODUCT_NAME" /> verifica sempre di essere il browser predefinito e, se possibile, si registra automaticamente. Se il criterio è impostato su False, <ph name="PRODUCT_NAME" /> non verifica mai di essere il browser predefinito e disattiva i controlli degli utenti per questa opzione.

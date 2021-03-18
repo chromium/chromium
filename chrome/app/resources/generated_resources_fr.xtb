@@ -2832,7 +2832,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4115080753528843955">Certains services de contenu utilisent des identifiants uniques dans le but d'autoriser l'accès au contenu protégé</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4118579674665737931">Veuillez redémarrer l'appareil et réessayer.</translation>
-<translation id="4118998393712575296">Pour utiliser le contrôle parental (approbation des applis, limites de temps d'utilisation, etc.) vous devez gérer le compte Google de votre enfant. Vous pourrez ajouter un compte scolaire par la suite, pour qu'il l'utilise sur des sites et applis comme Google Classroom.</translation>
 <translation id="4120388883569225797">Impossible de réinitialiser cette clé de sécurité</translation>
 <translation id="4120817667028078560">Chemin d'accès trop long.</translation>
 <translation id="4124823734405044952">Votre clé de sécurité a été réinitialisée</translation>
@@ -3307,6 +3306,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4682551433947286597">Les fonds d'écran s'affichent sur l'écran de connexion.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (par défaut)</translation>
 <translation id="4684427112815847243">Tout synchroniser</translation>
+<translation id="4687613760714619596">Appareil inconnu (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">Identifiant de journal local : <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">Sélectionner vos préférences de démonstration</translation>
 <translation id="4689421377817139245">Synchroniser ce favori sur votre iPhone</translation>

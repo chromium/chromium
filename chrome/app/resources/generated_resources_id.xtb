@@ -2831,7 +2831,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4115080753528843955">Beberapa layanan konten menggunakan pengenal unik untuk memberi otorisasi akses ke konten yang dilindungi</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4118579674665737931">Harap reboot perangkat, lalu coba lagi.</translation>
-<translation id="4118998393712575296">Untuk menggunakan kontrol orang tua seperti persetujuan aplikasi dan batas waktu pemakaian perangkat, anak harus memiliki Akun Google yang dikelola oleh orang tua. Akun sekolah dapat ditambahkan nanti untuk digunakan dengan situs dan aplikasi seperti Google Classroom.</translation>
 <translation id="4120388883569225797">Tidak dapat menyetel ulang kunci keamanan</translation>
 <translation id="4120817667028078560">Jalur terlalu panjang</translation>
 <translation id="4124823734405044952">Kunci keamanan Anda telah direset</translation>
@@ -3306,6 +3305,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4682551433947286597">Wallpaper muncul di Layar Login.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (default)</translation>
 <translation id="4684427112815847243">Sinkronkan semua</translation>
+<translation id="4687613760714619596">Perangkat Tak Diketahui (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">ID log lokal: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">Pilih preferensi demo</translation>
 <translation id="4689421377817139245">Sinkronisasikan bookmark ini ke iPhone Anda</translation>

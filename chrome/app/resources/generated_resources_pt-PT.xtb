@@ -679,7 +679,7 @@
 <translation id="1734212868489994726">Azul claro</translation>
 <translation id="1734230530703461088">Falha ao carregar extensões dentro do limite de tempo. Contacte o seu administrador.</translation>
 <translation id="1734824808160898225">O <ph name="PRODUCT_NAME" /> pode não conseguir manter-se atualizado.</translation>
-<translation id="173522743738009831">Acerca do Isolamento de processos de privacidade</translation>
+<translation id="173522743738009831">Acerca da Privacy Sandbox</translation>
 <translation id="173628468822554835">Compreendido. Por predefinição, os novos sites que visitar não lhe vão enviar notificações.</translation>
 <translation id="1736419249208073774">Explorar</translation>
 <translation id="1737968601308870607">Erro de ficheiro</translation>
@@ -2017,7 +2017,7 @@ Pretende pará-lo?</translation>
 <translation id="3238192140106069382">A ligar e a validar…</translation>
 <translation id="3239373508713281971">Limite de tempo removido para a app <ph name="APP_NAME" />.</translation>
 <translation id="3241680850019875542">Selecione o directório raiz da extensão a comprimir. Para atualizar uma extensão, selecione também o ficheiro de chave privada a reutilizar.</translation>
-<translation id="3242905690080165035">O Isolamento de processos de privacidade está em desenvolvimento e está disponível em regiões selecionadas. Por agora, os sites podem experimentar o Isolamento de processos de privacidade enquanto continuam a utilizar as tecnologias da Web atuais, como os cookies de terceiros. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="3242905690080165035">A Privacy Sandbox está em desenvolvimento e está disponível em regiões selecionadas. Por agora, os sites podem experimentar a Privacy Sandbox enquanto continuam a utilizar as tecnologias da Web atuais, como os cookies de terceiros. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3244294424315804309">Manter o som desativado</translation>
 <translation id="3246107497225150582">{0,plural, =1{Atualize o dispositivo dentro de um dia}other{Atualize o dispositivo dentro de # dias}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – erro de rede</translation>
@@ -2144,7 +2144,7 @@ Pretende pará-lo?</translation>
 <translation id="3390013585654699824">Detalhes da app</translation>
 <translation id="3390741581549395454">Cópia de segurança das aplicações e dos ficheiros do Linux efetuada com êxito. A atualização vai começar em breve.</translation>
 <translation id="3391482648489541560">edição de ficheiros</translation>
-<translation id="3391512812407811893">Avaliações do Isolamento de processos de privacidade</translation>
+<translation id="3391512812407811893">Avaliações da Privacy Sandbox</translation>
 <translation id="339178315942519818">Veja notificações das suas apps de chat no <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3396800784455899911">Ao clicar no botão "Aceitar e continuar", está a aceitar o processamento descrito acima para estes serviços Google.</translation>
 <translation id="3399432415385675819">As notificações serão desativadas</translation>
@@ -2831,7 +2831,6 @@ Pretende pará-lo?</translation>
 <translation id="4115080753528843955">Alguns serviços de conteúdo utilizam identificadores exclusivos para autorizar o acesso a conteúdo protegido</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4118579674665737931">Reinicie o dispositivo e tente novamente.</translation>
-<translation id="4118998393712575296">Para utilizar o controlo parental, como a aprovação de apps e os limites de tempo de utilização, uma criança tem de ter uma Conta Google gerida por um dos pais. É possível adicionar uma conta escolar mais tarde para utilizar com sites e apps, como o Google Classroom.</translation>
 <translation id="4120388883569225797">Não é possível repor esta chave de segurança.</translation>
 <translation id="4120817667028078560">Caminho demasiado longo</translation>
 <translation id="4124823734405044952">A chave de segurança foi reposta.</translation>
@@ -3306,6 +3305,7 @@ Pretende pará-lo?</translation>
 <translation id="4682551433947286597">As imagens de fundo aparecem no Ecrã de início de sessão.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (predefinição)</translation>
 <translation id="4684427112815847243">Sincronizar tudo</translation>
+<translation id="4687613760714619596">Dispositivo desconhecido (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">ID do registo local: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">Escolher as preferências de demonstração</translation>
 <translation id="4689421377817139245">Sincronizar este marcador com o seu iPhone</translation>
@@ -4660,7 +4660,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6271348838875430303">correção anulada</translation>
 <translation id="6272643420381259437">Ocorreu um erro (<ph name="ERROR" />) ao transferir o plug-in</translation>
 <translation id="6273677812470008672">Qualidade</translation>
-<translation id="6275846828483490454">O Isolamento de processos de privacidade é uma iniciativa em curso para preservar a Web aberta que irá ajudar a proteger de mecanismos de monitorização.</translation>
+<translation id="6275846828483490454">A Privacy Sandbox é uma iniciativa em curso para preservar a Web aberta que irá ajudar a proteger de mecanismos de monitorização.</translation>
 <translation id="6276210637549544171">O proxy <ph name="PROXY_SERVER" /> necessita de um nome de utilizador e uma palavra-passe.</translation>
 <translation id="6277105963844135994">Limite de tempo da rede</translation>
 <translation id="6277518330158259200">C&amp;riar captura de ecrã</translation>
@@ -5324,7 +5324,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7018275672629230621">Ler e alterar o histórico de navegação</translation>
 <translation id="7019805045859631636">Rápido</translation>
 <translation id="7022562585984256452">A sua página inicial foi definida.</translation>
-<translation id="7023206482239788111">O Isolamento de processos de privacidade preserva a vitalidade da Web aberta ao criar melhores formas de prestar estes serviços, sem comprometer os sites e ao mesmo tempo que evita que a sua navegação seja sub-repticiamente monitorizada na Web.</translation>
+<translation id="7023206482239788111">A Privacy Sandbox preserva a vitalidade da Web aberta ao criar melhores formas de prestar estes serviços, sem comprometer os sites e ao mesmo tempo que evita que a sua navegação seja sub-repticiamente monitorizada na Web.</translation>
 <translation id="7025082428878635038">Apresentamos uma nova forma de navegar com gestos</translation>
 <translation id="7025190659207909717">Gestão de serviços de dados móveis</translation>
 <translation id="7025895441903756761">Segurança e privacidade</translation>
@@ -6359,7 +6359,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8186609076106987817">O servidor não conseguiu encontrar o ficheiro.</translation>
 <translation id="8188389033983459049">Verifique as definições do dispositivo e ative-o para continuar.</translation>
 <translation id="8189306097519446565">Contas escolares</translation>
-<translation id="8189750580333936930">Isolamento de processos de privacidade</translation>
+<translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">A ligar a <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Gerir as suas aplicações, extensões e temas</translation>
 <translation id="8192944472786724289">A app <ph name="APP_NAME" /> pretende partilhar o conteúdo do seu ecrã.</translation>

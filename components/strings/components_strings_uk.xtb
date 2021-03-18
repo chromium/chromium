@@ -411,6 +411,7 @@
 <translation id="2482878487686419369">Сповіщення</translation>
 <translation id="248348093745724435">Правила пристрою</translation>
 <translation id="2491120439723279231">Сертифікат сервера містить помилки.</translation>
+<translation id="2491414235131909199">Розширення заблокувало цю сторінку</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">Синтаксичний аналізатор файлів JSON</translation>
 <translation id="2495093607237746763">Якщо вибрати цю опцію, Chromium зберігатиме копію даних вашої картки на цьому пристрої, щоб ви могли швидше заповнювати форми.</translation>
@@ -834,6 +835,7 @@
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{ще <ph name="ITEM_COUNT" /> елемент}one{ще <ph name="ITEM_COUNT" /> елемент}few{ще <ph name="ITEM_COUNT" /> елементи}many{ще <ph name="ITEM_COUNT" /> елементів}other{ще <ph name="ITEM_COUNT" /> елемента}}</translation>
 <translation id="4176463684765177261">Вимкнено</translation>
+<translation id="4178883739871311481"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб створити документ Google</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">Не вдається зберегти картку</translation>
 <translation id="4196861286325780578">&amp;Повторити переміщення</translation>
@@ -1523,6 +1525,7 @@
 <translation id="6852204201400771460">Перезапустити додаток?</translation>
 <translation id="6865412394715372076">Зараз цю картку не можна підтвердити</translation>
 <translation id="6874604403660855544">&amp;Повторити додавання</translation>
+<translation id="6881240511396774766">Швидко створити новий документ Google</translation>
 <translation id="6884662655240309489">Розмір 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Веб-переглядач Chrome зробив цю сторінку простішою для читання. Оригінальна сторінка була завантажена через незахищене з'єднання.</translation>
@@ -1532,6 +1535,7 @@
 <translation id="6898699227549475383">Організація (О)</translation>
 <translation id="6907293445143367439">Дозволити сайту <ph name="SITE_NAME" />:</translation>
 <translation id="6910240653697687763">Сайт <ph name="URL" /> хоче повністю контролювати ваші пристрої MIDI</translation>
+<translation id="691325982945105493">Кнопка "Створити документ Google"; натисніть Enter, щоб швидко створити новий документ Google</translation>
 <translation id="6915804003454593391">Користувач:</translation>
 <translation id="6934672428414710184">Це ім’я з вашого облікового запису Google</translation>
 <translation id="6944692733090228304">Ви ввели пароль на сайті, яким не керує <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Щоб захистити свій обліковий запис, не використовуйте цей пароль для інших додатків і сайтів.</translation>
@@ -2063,6 +2067,7 @@
 <translation id="8931333241327730545">Зберегти цю картку у вашому обліковому записі Google?</translation>
 <translation id="8932102934695377596">Ваш годинник запізнюється</translation>
 <translation id="893332455753468063">Додайте ім’я</translation>
+<translation id="8934418770423095813">Створити документ Google</translation>
 <translation id="8942355029279167844">Адміністратор надав додатку <ph name="APP_NAME" /> дозвіл збирати дані діагностики, щоб покращувати роботу продукту. Докладніше читайте на сторінці <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Лаймовий</translation>
 <translation id="8957210676456822347">Авторизація приєднаного порталу</translation>

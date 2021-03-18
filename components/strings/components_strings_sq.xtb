@@ -410,6 +410,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2482878487686419369">Njoftimet</translation>
 <translation id="248348093745724435">Politikat e pajisjes</translation>
 <translation id="2491120439723279231">Certifikata e serverit përmban gabime.</translation>
+<translation id="2491414235131909199">Kjo faqe është bllokuar nga një shtesë</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">Analizuesi JSON</translation>
 <translation id="2495093607237746763">Nëse zgjidhet, Chromium do të ruajë një kopje të kartës tënde në këtë pajisje për një plotësim më të shpejtë të formularit.</translation>
@@ -833,6 +834,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> artikull tjetër}other{<ph name="ITEM_COUNT" /> artikuj të tjerë}}</translation>
 <translation id="4176463684765177261">I çaktivizuar</translation>
+<translation id="4178883739871311481"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp Tab, pastaj Enter për të krijuar "Dokument të Google"</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">Karta jote nuk mund të ruhet për momentin</translation>
 <translation id="4196861286325780578">&amp;Bëje përsëri zhvendosjen</translation>
@@ -1519,6 +1521,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6852204201400771460">Dëshiron ta ringarkosh aplikacionin?</translation>
 <translation id="6865412394715372076">Kjo kartë nuk mund të verifikohet për momentin</translation>
 <translation id="6874604403660855544">&amp;Ribëje shtimin</translation>
+<translation id="6881240511396774766">Krijo shpejt një "Dokument të Google"</translation>
 <translation id="6884662655240309489">Madhësia 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome e ka thjeshtuar këtë faqe për ta bërë më të lehtë për t'u lexuar. Chrome e mori faqen origjinale nëpërmjet një lidhjeje të pasigurt.</translation>
@@ -1528,6 +1531,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6898699227549475383">Organizata (O)</translation>
 <translation id="6907293445143367439">Lejo <ph name="SITE_NAME" /> te:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> kërkon të marrë nën kontroll të plotë pajisjet e tua MIDI</translation>
+<translation id="691325982945105493">Butoni "Krijo 'Dokument të Google'", shtyp Enter për të krijuar shpejt një "Dokument të Google"</translation>
 <translation id="6915804003454593391">Përdoruesi:</translation>
 <translation id="6934672428414710184">Ky emër është nga "Llogaria jote e Google"</translation>
 <translation id="6944692733090228304">Ke futur fjalëkalimin tënd në një faqe që nuk menaxhohet nga <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Për të mbrojtur llogarinë, mos e ripërdor fjalëkalimin tënd në aplikacione dhe faqe të tjera.</translation>
@@ -2058,6 +2062,7 @@ Detaje shtesë:
 <translation id="8931333241327730545">Dëshiron që ta ruash këtë kartë te llogaria jote e Google?</translation>
 <translation id="8932102934695377596">Ora ka mbetur prapa</translation>
 <translation id="893332455753468063">Shto emër</translation>
+<translation id="8934418770423095813">Krijo "Dokument të Google"</translation>
 <translation id="8942355029279167844">Administratori yt ka lejuar që <ph name="APP_NAME" /> të grumbullojë të dhënat e diagnostikimit për të përmirësuar përvojën e produktit. Shiko <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> për më shumë informacion.</translation>
 <translation id="8943282376843390568">Ngjyrë limoni jeshil</translation>
 <translation id="8957210676456822347">Autorizimi i portalit izolues</translation>

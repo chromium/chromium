@@ -411,6 +411,7 @@
 <translation id="2482878487686419369">දැනුම්දීම්</translation>
 <translation id="248348093745724435">යන්ත්‍ර ප්‍රතිපත්ති</translation>
 <translation id="2491120439723279231">සේවාදායකයෙහි සහතිකයේ දෝෂ අඩංගුයි.</translation>
+<translation id="2491414235131909199">දිගුවක් මගින් මෙම පිටුව අවහිර කර ඇත</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON Parser</translation>
 <translation id="2495093607237746763">පරීක්ෂා කළේ නම්, වඩා වේගවත් පෝරමක් පිරවීම සඳහා Chromium ඔබේ කාඩ්පතේ පිටපතක් මෙම උපාංගයෙහි ගබඩා කරනු ඇත.</translation>
@@ -834,6 +835,7 @@
 <translation id="4173315687471669144">ෆූල්ස්කැප්</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{තවත් අයිතම <ph name="ITEM_COUNT" />}one{තවත් අයිතම <ph name="ITEM_COUNT" />}other{තවත් අයිතම <ph name="ITEM_COUNT" />}}</translation>
 <translation id="4176463684765177261">අබල කරන ලද</translation>
+<translation id="4178883739871311481"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Doc තැනීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">ඔබේ කාඩ්පත දැනට සුරැකිය නොහැක</translation>
 <translation id="4196861286325780578">&amp;ගෙන යාම යළි කරන්න</translation>
@@ -1520,6 +1522,7 @@
 <translation id="6852204201400771460">යෙදුම නැවත පූරණය කරන්න ද?</translation>
 <translation id="6865412394715372076">මෙම කාඩ්පත දැන් තහවුරු කළ නොහැකිය</translation>
 <translation id="6874604403660855544">&amp;එක් කිරීම යළි කරන්න</translation>
+<translation id="6881240511396774766">ඉක්මනින් අලුත් Google Doc එකක් තනන්න</translation>
 <translation id="6884662655240309489">ප්‍රමාණය 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">මෙය කියවීමට පහසු කිරීමට Chrome මෙම පිටුව සරල කළා. Chrome අනාරක්‍ෂිත සම්බන්ධතාවක් ඔස්සේ මූලික පිටුව ලබා ගත්තා.</translation>
@@ -1529,6 +1532,7 @@
 <translation id="6898699227549475383">සංවිධානය (O)</translation>
 <translation id="6907293445143367439"><ph name="SITE_NAME" /> හට මේවාට ඉඩ දෙන්න:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> හට ඔබේ MIDI උපාංගවල සම්පූර්ණ පාලනය ලබා ගැනීමට අවශ්‍යයි</translation>
+<translation id="691325982945105493">Google Doc තනන්න බොත්තම, ඉක්මනින් අලුත් Google Doc එකක් තැනීමට Enter ඔබන්න</translation>
 <translation id="6915804003454593391">පරිශීලක</translation>
 <translation id="6934672428414710184">මෙම නම ඔබගේ Google ගිණුමෙනි</translation>
 <translation id="6944692733090228304">ඔබ ඔබගේ මුරපදය <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> වෙතින් කළමනාකරණය නොවන අඩවියකට ඇතුළත් කළා. ඔබගේ ගිණුම ආරක්ෂා කිරීමට, ඔබගේ මුරපදය වෙනත් යෙදුම් සහ අඩවිවල නැවත භාවිතා නොකරන්න.</translation>
@@ -2059,6 +2063,7 @@
 <translation id="8931333241327730545">ඔබට ඔබේ Google ගිණුම වෙත මෙම කාඩ්පත සුරැකීමට අවශ්‍යද?</translation>
 <translation id="8932102934695377596">ඔබගේ ඔරලෝසුව ඇත්තේ පිටුපසින් ය</translation>
 <translation id="893332455753468063">නම එක් කරන්න</translation>
+<translation id="8934418770423095813">Google Doc තනන්න</translation>
 <translation id="8942355029279167844">ඔබගේ පරිපාලක <ph name="APP_NAME" /> හට නිෂ්පාදන අත්දැකීම වැඩිදියුණු කිරීම සඳහා දෝෂ නිර්ණ දත්ත රැස් කිරීමට ඉඩ දී ඇත. වැඩි විස්තර සඳහා <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> බලන්න.</translation>
 <translation id="8943282376843390568">දෙහි</translation>
 <translation id="8957210676456822347">බැඳි ද්වාර සත්‍යාපනය</translation>

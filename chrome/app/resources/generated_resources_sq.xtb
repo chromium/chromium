@@ -2828,7 +2828,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4115080753528843955">Disa shërbime të përmbajtjes përdorin identifikues unikë për qëllimet e autorizimit të qasjes te përmbajtja e mbrojtur</translation>
 <translation id="4115378294792113321">E purpurt e errët</translation>
 <translation id="4118579674665737931">Rinise pajisjen dhe provo përsëri.</translation>
-<translation id="4118998393712575296">Për të përdorur kontrolle prindërore si miratimin e aplikacioneve dhe kufijtë e kohës para ekranit, një fëmijë duhet të ketë një "Llogari të Google" të menaxhuar nga një prind. Mund të shtohet më vonë një llogari shkolle për përdorim me sajte dhe aplikacione të tilla si Google Classroom.</translation>
 <translation id="4120388883569225797">Ky çelës sigurie nuk mund të rivendoset</translation>
 <translation id="4120817667028078560">Shtegu është shumë i gjatë</translation>
 <translation id="4124823734405044952">Çelësi yt i sigurisë është rivendosur</translation>
@@ -3303,6 +3302,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4682551433947286597">Imazhet e sfondit shfaqen në "Ekranin e identifikimit".</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (i parazgjedhur)</translation>
 <translation id="4684427112815847243">Sinkronizo gjithçka</translation>
+<translation id="4687613760714619596">Pajisje e panjohur (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">ID-ja e evidencës lokale: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">Zgjidh preferencat e tua për demonstrimin</translation>
 <translation id="4689421377817139245">Sinkronizoje këtë faqeshënues në telefonin tënd iPhone</translation>

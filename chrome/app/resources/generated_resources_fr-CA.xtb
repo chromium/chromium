@@ -3306,6 +3306,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4682551433947286597">Les fonds d'écran s'affichent sur l'écran de connexion.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (par défaut)</translation>
 <translation id="4684427112815847243">Tout synchroniser</translation>
+<translation id="4687613760714619596">Appareil inconnu (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">Identifiant du journal local : <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">Choisir vos préférences pour la démonstration</translation>
 <translation id="4689421377817139245">Synchronisez ce favori sur votre iPhone</translation>

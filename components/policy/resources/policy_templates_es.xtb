@@ -1097,6 +1097,15 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Si se establece esta política a nivel de plataforma, se debe inhabilitar la sincronización a nivel de plataforma.
       Si la política se establece a nivel de usuario, se debe inhabilitar la sincronización para ese usuario a fin de que la política se haga efectiva.
       </translation>
+<translation id="244950822854046436">Lista de los ajustes que se van a aplicar al conector <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, que se activa cuando se descarga un archivo.
+
+      Los campos <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> se usan para determinar si el conector debe enviar un archivo al proveedor de servicios al descargar contenido desde una página web. La URL de la página web debe coincidir con un patrón asociado a un patrón enable y no asociado a un patrón disable.  El tipo de MIME del archivo también debe coincidir con un patrón asociado a un patrón enable y no asociado a un patrón disable.
+
+      El campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica a qué proveedor de servicios de análisis corresponde la configuración.
+
+      El campo <ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" /> es un ID único para un proveedor de servicios que identifica la cuenta del cliente con el proveedor de servicios. En la configuración de <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, cuando se le pide al usuario que inicie sesión, solo se permiten las cuentas de usuario asociadas a la cuenta del proveedor de servicios de este cliente.
+
+      Esta política solo se puede establecer desde la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="2454228136871844693">Optimizar para una mejor estabilidad.</translation>
 <translation id="2455033019778127130">Sigue el comportamiento predeterminado del navegador, muestra los Términos del Servicio y espera a que el usuario los acepte.</translation>
 <translation id="2460127623195247744">Esta política está obsoleta. Usa la política <ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" /> en su lugar.
@@ -5527,6 +5536,12 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
       Para obtener más información, consulta https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
 <translation id="8424255554404582727">Establecer rotación de pantalla predeterminada y volver a aplicarla cada vez que se reinicie el dispositivo</translation>
 <translation id="8426231401662877819">Rotar la pantalla 90 grados hacia la derecha</translation>
+<translation id="8426819027631706846">Tal como se describe en la página https://www.chromestatus.com/feature/5148698084376576, los cuadros de diálogo modales de JavaScript, activados por <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" /> y <ph name="JS_PROMPT" />, se bloquearán en <ph name="PRODUCT_NAME" /> si se activan desde un submarco cuyo origen sea diferente al del marco principal.
+       Esta política permite anular ese cambio.
+       Si se habilita esta política o no se establece, se bloquearán los cuadros de diálogo de JavaScript activados desde un submarco de origen diferente.
+       Si se inhabilita esta política, no se bloquearán.
+
+       Esta política se eliminará en la versión 95 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8433186206711564395">Configuración de red</translation>
 <translation id="8433769814000220721">Habilitar sugerencias de contenido</translation>
 <translation id="843609873781525167">Si se asigna el valor "Verdadero" a esta política, <ph name="PRODUCT_NAME" /> siempre comprobará al iniciarse si es el navegador predeterminado y, si es posible, se registrará a sí mismo automáticamente. Si se le asigna el valor "Falso", <ph name="PRODUCT_NAME" /> dejará de comprobar si es el navegador predeterminado y desactivará los controles del usuario correspondientes a esta opción.

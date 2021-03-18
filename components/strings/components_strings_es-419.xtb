@@ -407,6 +407,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2482878487686419369">Notificaciones</translation>
 <translation id="248348093745724435">Políticas de la máquina</translation>
 <translation id="2491120439723279231">El certificado del servidor contiene errores.</translation>
+<translation id="2491414235131909199">Una extensión bloqueó esta página</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">Analizador de JSON</translation>
 <translation id="2495093607237746763">Si marcas esta opción, Chromium almacenará una copia de la tarjeta en el dispositivo para completar más rápidamente los formularios.</translation>
@@ -830,6 +831,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> elemento más}other{<ph name="ITEM_COUNT" /> elementos más}}</translation>
 <translation id="4176463684765177261">Inhabilitado</translation>
+<translation id="4178883739871311481"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />: presiona Tab y, luego, Intro para crear un documento de Google</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">No se puede guardar tu tarjeta en este momento</translation>
 <translation id="4196861286325780578">&amp;Rehacer Mover</translation>
@@ -1515,6 +1517,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6852204201400771460">¿Deseas volver a cargar la app?</translation>
 <translation id="6865412394715372076">No se puede verificar la tarjeta en este momento</translation>
 <translation id="6874604403660855544">&amp;Rehacer Agregar</translation>
+<translation id="6881240511396774766">Crea un nuevo documento de Google rápidamente</translation>
 <translation id="6884662655240309489">Tamaño 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome simplificó esta página para facilitar la lectura. Chrome recuperó la página original a través de una conexión no segura.</translation>
@@ -1524,6 +1527,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6898699227549475383">Organización (O)</translation>
 <translation id="6907293445143367439">Permitir a <ph name="SITE_NAME" />:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> desea obtener el control total de tus dispositivos MIDI</translation>
+<translation id="691325982945105493">Botón Crear documento de Google: presiona Intro para crear un nuevo documento de Google</translation>
 <translation id="6915804003454593391">Usuario:</translation>
 <translation id="6934672428414710184">Este nombre es de tu Cuenta de Google</translation>
 <translation id="6944692733090228304">Ingresaste tu contraseña en un sitio que no está administrado por <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Para proteger tu cuenta, no vuelvas a usar la contraseña en otras apps y sitios.</translation>
@@ -2055,6 +2059,7 @@ Detalles adicionales:
 <translation id="8931333241327730545">¿Quieres guardar esta tarjeta en tu cuenta de Google?</translation>
 <translation id="8932102934695377596">El reloj está atrasado</translation>
 <translation id="893332455753468063">Agregar nombre</translation>
+<translation id="8934418770423095813">Crear documento de Google</translation>
 <translation id="8942355029279167844">El administrador permitió que <ph name="APP_NAME" /> recopile datos de diagnóstico para mejorar la experiencia del producto. Para obtener más información, consulta <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Verde lima</translation>
 <translation id="8957210676456822347">Autorización de portal cautivo</translation>

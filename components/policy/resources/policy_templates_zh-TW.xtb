@@ -1078,6 +1078,15 @@
       如果是在平台層級設定這項政策，必須在平台層級停用同步功能。
       如果是在使用者層級設定這項政策，則必須為該使用者停用同步功能，這樣這項政策才會生效。
       </translation>
+<translation id="244950822854046436">指定要套用 <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />的設定清單，這份清單會在下載檔案時觸發。
+
+      從網頁執行下載作業時，系統會使用 <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 欄位來判斷連接器是否應將檔案傳送至服務供應商。相應的網頁網址必須符合與「enable」模式相關聯的模式，而非與「disable」模式相關聯的模式。該檔案的 MIME 類型也必須符合與「enable」模式相關聯的模式，而非與「disable」模式相關聯的模式。
+
+      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 欄位可用來指定與設定對應的分析服務供應商。
+
+      <ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" /> 欄位是合作夥伴服務供應商的專屬 ID，可用來指定客戶在服務供應商平台上使用的帳戶。如果 <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /> 的設定作業需要使用者登入，系統只會接受與這個客戶的服務供應商帳戶相關的使用者帳戶。
+
+      這項政策只能透過 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />進行設定。</translation>
 <translation id="2454228136871844693">穩定性最佳化。</translation>
 <translation id="2455033019778127130">使用預設的瀏覽器行為，顯示《服務條款》並等待使用者接受。</translation>
 <translation id="2460127623195247744">這項政策已淘汰，請改用「<ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />」政策。
@@ -5423,6 +5432,12 @@
       詳情請參閱 https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744。</translation>
 <translation id="8424255554404582727">設定畫面旋轉預設值 (每次重新啟動皆重新套用)</translation>
 <translation id="8426231401662877819">將畫面以順時針方向旋轉 90 度</translation>
+<translation id="8426819027631706846">如 https://www.chromestatus.com/feature/5148698084376576 所述，<ph name="PRODUCT_NAME" /> 會封鎖 <ph name="JS_ALERT" />、<ph name="JS_CONFIRM" /> 和 <ph name="JS_PROMPT" /> 所觸發的 JavaScript 強制回應對話方塊 (如果是從與主頁框不同來源的子頁框觸發的話)。
+       這項政策可讓你覆寫此變更。
+       如果將這項政策設為啟用或不予設定，系統會封鎖從不同來源子頁框觸發的 JavaScript 對話方塊。
+       如果將這項政策設為停用，系統就不會封鎖從不同來源子頁框觸發的 JavaScript 對話方塊。
+
+       這項政策將在 <ph name="PRODUCT_NAME" /> 第 95 版中移除。</translation>
 <translation id="8433186206711564395">網路設定</translation>
 <translation id="8433769814000220721">啟用推薦內容</translation>
 <translation id="843609873781525167">如果將這項政策設為 True，<ph name="PRODUCT_NAME" /> 一律會在啟動時檢查其是否為預設瀏覽器，並在情況允許時自動登錄。如果將這項政策設為 False，<ph name="PRODUCT_NAME" /> 一律不會檢查其是否為預設瀏覽器，且會停用設定這個選項的使用者控制項。

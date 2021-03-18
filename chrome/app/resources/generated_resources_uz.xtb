@@ -2829,7 +2829,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4115080753528843955">Ba’zi axborot xizmatlari himoyalangan kontent ruxsatlarini boshqarish uchun maxsus identifikatorlardan foydalanadi</translation>
 <translation id="4115378294792113321">Siyohrang</translation>
 <translation id="4118579674665737931">Qurilmani oʻchirib yoqing va qaytadan urining.</translation>
-<translation id="4118998393712575296">Ilovadan foydalanishga ruxsat va ekran vaqtini cheklash kabi ota-ona nazorati funksiyalari uchun farzand Google hisobi ota-ona boshqaruvida boʻlishi zarur. Maktab hisobi keyinroq kiritilsa, u bilan Google Classrom kabi sayt va ilovalarga kirish mumkin.</translation>
 <translation id="4120388883569225797">Bu elektron kalit sozlamalari qayta tiklanmaydi</translation>
 <translation id="4120817667028078560">Yo‘lak haddan tashqari uzun</translation>
 <translation id="4124823734405044952">Elektron kalit sozlamalari qayta tiklandi</translation>
@@ -6356,7 +6355,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8186609076106987817">Bu fayl serverda topilmadi.</translation>
 <translation id="8188389033983459049">Qurilma sozlamalarini tekshiring va davom ettirish uchun Bluetoothni yoqing</translation>
 <translation id="8189306097519446565">Maktab hisoblari</translation>
-<translation id="8189750580333936930">Maxfiylik xavfsiz muhiti</translation>
+<translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" /> tarmog‘iga ulanilmoqda</translation>
 <translation id="8191230140820435481">Ilovalar, kengaytmalar va mavzularni boshqarish</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" /> ekraningiz kontentini ulashmoqchi</translation>

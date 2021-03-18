@@ -411,6 +411,7 @@
 <translation id="2482878487686419369">Хабарландырулар</translation>
 <translation id="248348093745724435">Құрылғы саясаттары</translation>
 <translation id="2491120439723279231">Сервер сертификатында қате бар.</translation>
+<translation id="2491414235131909199">Бұл бетке кеңейтім тарапынан тыйым салынған.</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON Parser</translation>
 <translation id="2495093607237746763">Құсбелгі қойылса, Chromium нысанды жылдамырақ толтыру үшін картаңыздың көшірмесін осы құрылғыда сақтайды.</translation>
@@ -835,6 +836,7 @@
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{тағы <ph name="ITEM_COUNT" /> элемент}other{тағы <ph name="ITEM_COUNT" /> элемент}}</translation>
 <translation id="4176463684765177261">Өшірілген</translation>
+<translation id="4178883739871311481"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google құжатын жасау үшін Tab, одан кейін Enter пернесін басыңыз.</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">Картаңызды дәл қазір сақтау мүмкін емес.</translation>
 <translation id="4196861286325780578">Тасымалдауды &amp;қайта орындау</translation>
@@ -1524,6 +1526,7 @@
 <translation id="6852204201400771460">Қолданба қайта жүктелсін бе?</translation>
 <translation id="6865412394715372076">Бұл картаны дәл қазір растау мүмкін емес</translation>
 <translation id="6874604403660855544">&amp;Қайта қосу</translation>
+<translation id="6881240511396774766">Жаңа Google құжатын жылдам жасаңыз.</translation>
 <translation id="6884662655240309489">Өлшемі: 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome бұл режимде беттің оқылуын жеңілдетті. Chrome браузерінде бастапқы бет қорғалмаған байланыс арқылы алынды.</translation>
@@ -1533,6 +1536,7 @@
 <translation id="6898699227549475383">Ұйым (O)</translation>
 <translation id="6907293445143367439"><ph name="SITE_NAME" /> сайтына мына әрекеттерді орындауға рұқсат етіңіз:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> беті MIDI құрылғыларыңызды толық бақылағысы келеді</translation>
+<translation id="691325982945105493">Google құжатын жасау түймесі, жаңа Google құжатын жылдам жасау үшін Enter пернесін басыңыз.</translation>
 <translation id="6915804003454593391">Пайдаланушы:</translation>
 <translation id="6934672428414710184">Бұл атау Google есептік жазбаңызда бар.</translation>
 <translation id="6944692733090228304">Құпия сөзіңізді <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> басқармайтын сайтта енгіздіңіз. Есептік жазбаны қорғау үшін құпия сөзді басқа қолданбалар мен сайттарда пайдаланбаңыз.</translation>
@@ -2063,6 +2067,7 @@
 <translation id="8931333241327730545">Бұл картаны Google есептік жазбасына сақтағыңыз келе ме?</translation>
 <translation id="8932102934695377596">Сағатыңыз артта қалған</translation>
 <translation id="893332455753468063">Ат қосу</translation>
+<translation id="8934418770423095813">Google құжатын жасау</translation>
 <translation id="8942355029279167844">Әкімші <ph name="APP_NAME" /> қолданбасына өнімді пайдалануды жақсарту үшін диагностикалық деректерді жинауға рұқсат етті. Толығырақ ақпарат алу үшін <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> бетін қараңыз.</translation>
 <translation id="8943282376843390568">Сарғылт жасыл</translation>
 <translation id="8957210676456822347">Байланысқан портал авторизациясы</translation>

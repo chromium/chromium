@@ -2831,7 +2831,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4115080753528843955">Mõned sisuteenused kasutavad kordumatuid identifikaatoreid, et kaitstud sisule juurdepääsu volitada</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4118579674665737931">Taaskäivitage seade ja proovige uuesti.</translation>
-<translation id="4118998393712575296">Kui soovite kasutada vanemlikku järelevalvet, nt rakenduste heakskiitmist ja ekraaniaja piiranguid, peab lapsel olema vanema hallatav Google'i konto. Koolikonto saab lisada hiljem, et seda kasutada saitide ja rakendustega, nagu Google Classroom.</translation>
 <translation id="4120388883569225797">Seda turvavõtit ei saa lähtestada</translation>
 <translation id="4120817667028078560">Tee on liiga pikk</translation>
 <translation id="4124823734405044952">Teie turvavõti lähtestati</translation>
@@ -3306,6 +3305,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4682551433947286597">Taustapildid kuvatakse sisselogimisekraanil.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (vaikeseade)</translation>
 <translation id="4684427112815847243">Sünkrooni kõik</translation>
+<translation id="4687613760714619596">Tundmatu seade (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">Kohaliku logi ID: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">Demoeelistuste valimine</translation>
 <translation id="4689421377817139245">Sünkroonige see järjehoidja oma iPhone'iga</translation>

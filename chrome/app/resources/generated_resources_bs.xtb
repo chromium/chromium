@@ -2833,7 +2833,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4115080753528843955">Neke usluge sadržaja koriste jedinstvene identifikatore za potrebe odobravanja pristupa zaštićenom sadržaju.</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4118579674665737931">Ponovo pokrenite uređaj i pokušajte ponovo.</translation>
-<translation id="4118998393712575296">Da koristite kontrole roditeljskog nadzora, kao što su odobrenja za aplikacije i ograničenja vremena korištenja uređaja, dijete mora imati Google račun kojim upravlja roditelj. Školski račun se može dodati kasnije za korištenje s web lokacijama i aplikacijama kao što je Google Učionica.</translation>
 <translation id="4120388883569225797">Nije moguće poništiti ovaj sigurnosni ključ</translation>
 <translation id="4120817667028078560">Put je predug</translation>
 <translation id="4124823734405044952">Vaš sigurnosni ključ je poništen</translation>
@@ -3308,6 +3307,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4682551433947286597">Pozadinska slika se pojavljuje na ekranu za prijavu.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (zadano)</translation>
 <translation id="4684427112815847243">Sinhroniziranje svega</translation>
+<translation id="4687613760714619596">Nepoznat uređaj (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">Lokalni ID zapisnika: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">Odaberite postavke demonstracije</translation>
 <translation id="4689421377817139245">Sinhronizirajte ovu oznaku na svoj iPhone</translation>

@@ -411,6 +411,7 @@
 <translation id="2482878487686419369">Билдирмелер</translation>
 <translation id="248348093745724435">Компьютердин саясаттары</translation>
 <translation id="2491120439723279231">Сервер тастыктамасында ката бар.</translation>
+<translation id="2491414235131909199">Бул баракты кеңейтүү бөгөттөп койду</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON Талдоочу</translation>
 <translation id="2495093607237746763">Эгер белгиленсе, форманы тезирээк толтуруу үчүн карточкаңыздын көчүрмөсүн Chromium ушул түзмөккө сактап коёт.</translation>
@@ -835,6 +836,7 @@
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Дагы <ph name="ITEM_COUNT" /> нерсе}other{Дагы <ph name="ITEM_COUNT" /> нерсе}}</translation>
 <translation id="4176463684765177261">Өчүк</translation>
+<translation id="4178883739871311481"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Google документин түзүү үчүн Tab, андан соң Enter баскычын басыңыз</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">Картаңызды азыр сактоо мүмкүн эмес</translation>
 <translation id="4196861286325780578">Жылдырууну &amp;кайталоо</translation>
@@ -1524,6 +1526,7 @@
 <translation id="6852204201400771460">Колдонмо кайра жүктөлсүнбү?</translation>
 <translation id="6865412394715372076">Бул картаны учурда ырастоо мүмкүн эмес</translation>
 <translation id="6874604403660855544">Кошууну &amp;кайталоо</translation>
+<translation id="6881240511396774766">Жаңы Google документин тез түзүү</translation>
 <translation id="6884662655240309489">Өлчөмү: 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome бул баракты окууну жеңилдетүү үчүн жөнөкөйлөттү Chrome кооптуу туташуу аркылуу түпнуска баракты алды.</translation>
@@ -1533,6 +1536,7 @@
 <translation id="6898699227549475383">Уюм (У)</translation>
 <translation id="6907293445143367439"><ph name="SITE_NAME" /> үчүн төмөнкү уруксаттар керек:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> MIDI түзмөктөрүңүздү толугу менен көзөмөлдөгөнү жатат</translation>
+<translation id="691325982945105493">Google документин түзүү баскычы. Жаңы Google документин тез түзүү үчүн Enter баскычын басыңыз</translation>
 <translation id="6915804003454593391">Колдонуучу:</translation>
 <translation id="6934672428414710184">Бул ысым Google аккаунтуңуздан алынды</translation>
 <translation id="6944692733090228304">Сырсөзүңүздү <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> тарабынан башкарылбаган сайтка киргиздиңиз. Аккаунтуңузду коргоо үчүн сырсөзүңүздү башка колдонмолор менен сайттарда колдонбоңуз.</translation>
@@ -2063,6 +2067,7 @@
 <translation id="8931333241327730545">Бул карточканы Google аккаунтуңузга сактап коесузбу?</translation>
 <translation id="8932102934695377596">Саатыңыз артта</translation>
 <translation id="893332455753468063">Атын кошуу</translation>
+<translation id="8934418770423095813">Google документин түзүү</translation>
 <translation id="8942355029279167844">Кызматты жакшыртуу максатында администраторуңуз <ph name="APP_NAME" /> колдонмосуна мүчүлүштүктөрдү оңдоо дайындарын топтоого уруксат берди. Толук маалымат алуу үчүн <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> дарегине өтүңүз.</translation>
 <translation id="8943282376843390568">Ачык жашыл</translation>
 <translation id="8957210676456822347">Туткундоочу порталга уруксат алуу</translation>

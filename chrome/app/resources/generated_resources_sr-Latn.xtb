@@ -2830,7 +2830,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4115080753528843955">Neke usluge sadržaja koriste jedinstvene identifikatore radi odobravanja pristupa zaštićenom sadržaju</translation>
 <translation id="4115378294792113321">Ciklama</translation>
 <translation id="4118579674665737931">Restartujte uređaj i probajte ponovo.</translation>
-<translation id="4118998393712575296">Da biste koristili roditeljski nadzor, poput odobrenja za aplikacije i ograničenja vremena ispred ekrana, dete mora da ima Google nalog kojim upravlja roditelj. Kasnije može da se doda školski nalog za korišćenje sa sajtovima i aplikacijama, kao što je Google učionica.</translation>
 <translation id="4120388883569225797">Resetovanje ovog bezbednosnog ključa nije uspelo</translation>
 <translation id="4120817667028078560">Putanja je predugačka</translation>
 <translation id="4124823734405044952">Bezbednosni ključ je resetovan</translation>
@@ -3305,6 +3304,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4682551433947286597">Pozadine se prikazuju na ekranu za prijavljivanje.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (podrazumevano)</translation>
 <translation id="4684427112815847243">Sinhronizuj sve</translation>
+<translation id="4687613760714619596">Nepoznat uređaj (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">ID lokalne evidencije: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">Odaberite podešavanja demonstracije</translation>
 <translation id="4689421377817139245">Sinhronizujte ovaj obeleživač sa iPhone-om</translation>
@@ -4659,7 +4659,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6271348838875430303">ispravka je opozvana</translation>
 <translation id="6272643420381259437">Došlo je do greške (<ph name="ERROR" />) pri preuzimanju dodatne komponente</translation>
 <translation id="6273677812470008672">Kvalitet</translation>
-<translation id="6275846828483490454">Zaštićeno okružene privatnosti je aktuelna inicijativa za očuvanje otvorenog veba koja će vam pomoći da se predostrožno zaštitite od mehanizama za praćenje.</translation>
+<translation id="6275846828483490454">Zaštićeno okruženje privatnosti je aktuelna inicijativa za očuvanje otvorenog veba koja će vam pomoći da se zaštitite od mehanizama za praćenje.</translation>
 <translation id="6276210637549544171">Proksi <ph name="PROXY_SERVER" /> zahteva korisničko ime i lozinku.</translation>
 <translation id="6277105963844135994">Vremensko ograničenje mreže</translation>
 <translation id="6277518330158259200">S&amp;nimi ekran</translation>

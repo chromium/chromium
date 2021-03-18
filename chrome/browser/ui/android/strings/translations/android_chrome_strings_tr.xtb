@@ -98,7 +98,7 @@
 <translation id="1697284962337958118">Ekle</translation>
 <translation id="1718835860248848330">Son bir saat</translation>
 <translation id="1724977129262658800">Şifrenizi düzenlemek için kilidi açın</translation>
-<translation id="173522743738009831">Privacy Sandbox hakkında</translation>
+<translation id="173522743738009831">Özel Korumalı Alan hakkında</translation>
 <translation id="1736419249208073774">Keşfet</translation>
 <translation id="1749561566933687563">Yer işaretlerinizi senkronize edin</translation>
 <translation id="17513872634828108">Açık sekmeler</translation>
@@ -192,7 +192,7 @@ Arama yapmak için herhangi bir kelimeye dokunun. Aramanızı hassaslaştırmak 
 <translation id="2321958826496381788">Bu yazıyı rahatça okuyana kadar kaydırma çubuğunu sürükleyin. Bir paragrafa iki kez hafifçe dokunduğunuzda metin en az bunun kadar büyük görünmelidir.</translation>
 <translation id="2323763861024343754">Site depolama alanı</translation>
 <translation id="2328985652426384049">Oturum açılamıyor</translation>
-<translation id="2336549603503100420">Privacy Sandbox etkinleştirildiğinde, siteler içeriklerini ve hizmetlerini sunmak için burada gösterilen gizliliği koruma tekniklerini kullanabilir. Bu teknikler, siteler arası izlemeye alternatif çözümler sağlar. Zaman içinde diğer denemeler de eklenebilir.
+<translation id="2336549603503100420">Özel Korumalı Alan etkinleştirildiğinde, siteler içeriklerini ve hizmetlerini sunmak için burada gösterilen gizliliği koruma tekniklerini kullanabilir. Bu teknikler, siteler arası izlemeye alternatif çözümler sağlar. Zaman içinde diğer denemeler de eklenebilir.
 
 <ph name="BEGIN_LIST_ITEM1" />Reklamverenler, bir konsere katılan kitle gibi binlerce kullanıcının benzer bir ilgi alanını paylaştığını öğrenebilir ve ayrı ayrı kişiler yerine bu kitle için reklam seçebilirler.<ph name="END_LIST_ITEM1" />
 
@@ -349,19 +349,19 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="3384347053049321195">Resmi paylaş</translation>
 <translation id="3387650086002190359">Dosya sistemi hataları nedeniyle <ph name="FILE_NAME" /> dosyası indirilemedi.</translation>
 <translation id="3389286852084373014">Metin çok büyük</translation>
-<translation id="3391512812407811893">Privacy Sandbox denemeleri</translation>
+<translation id="3391512812407811893">Özel Korumalı Alan denemeleri</translation>
 <translation id="3398320232533725830">Yer işareti yöneticisini açar</translation>
 <translation id="3414952576877147120">Boyut:</translation>
 <translation id="3429160811076349561">Deneme özellikleri kapalı</translation>
 <translation id="3440975416244667276">Daha fazla alakalı bilgi için dokunun ve basılı tutun</translation>
 <translation id="3443221991560634068">Geçerli sayfayı yeniden yükler</translation>
-<translation id="3451542610083122179">Privacy Sandbox, izleme mekanizmalarına karşı sizi teminat altına almaya yardımcı olacak açık web'i korumaya yönelik devam etmekte olan bir girişimdir.
+<translation id="3451542610083122179">Özel Korumalı Alan, izleme mekanizmalarına karşı sizi teminat altına almaya yardımcı olacak açık web'i korumaya yönelik devam etmekte olan bir girişimdir.
 
 Günümüzde web siteleri, alakalı reklamlar göstermek ve bir sitenin performansını ölçmek gibi önemli hizmetler için üçüncü taraf çerezler benzeri birçok teknoloji kullanmaktadır.
 
-Privacy Sandbox, bu hizmetleri gerçekleştirmek için web'de gizlice izlenmenizi önlerken sitelerin çalışmasını bozmayan daha iyi yollar oluşturarak açık web'in canlılığını korur.
+Özel Korumalı Alan, bu hizmetleri gerçekleştirmek için web'de gizlice izlenmenizi önlerken sitelerin çalışmasını bozmayan daha iyi yollar oluşturarak açık web'in canlılığını korur.
 
-Privacy Sandbox, hâlâ aktif geliştirme aşamasında olup seçili bölgelerde kullanılmaktadır. Şimdilik, siteler üçüncü taraf çerezler gibi geçerli web teknolojilerini kullanmaya devam ederken Privacy Sandbox'ı deneyebilir. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
+Özel Korumalı Alan, hâlâ aktif geliştirme aşamasında olup seçili bölgelerde kullanılmaktadır. Şimdilik, siteler üçüncü taraf çerezler gibi geçerli web teknolojilerini kullanmaya devam ederken Özel Korumalı Alan'ı deneyebilir. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">Arama motorunuzu seçebilirsiniz</translation>
 <translation id="3492207499832628349">Yeni gizli sekme</translation>
 <translation id="3493531032208478708">Önerilen içerik hakkında <ph name="BEGIN_LINK" />daha fazla bilgi edinin<ph name="END_LINK" /></translation>
@@ -1066,7 +1066,7 @@ Gizli oturumunuzdaki veriler yalnızca <ph name="BEGIN_BOLD2" />tüm Gizli sekme
 <translation id="8156139159503939589">Hangi dillerde okuyabiliyorsunuz?</translation>
 <translation id="8168435359814927499">İçerik</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> dosya kaldı</translation>
-<translation id="8189750580333936930">Privacy Sandbox</translation>
+<translation id="8189750580333936930">Özel Korumalı Alan</translation>
 <translation id="8190358571722158785">1 gün kaldı</translation>
 <translation id="8200772114523450471">Sürdür</translation>
 <translation id="8209050860603202033">Resmi aç</translation>

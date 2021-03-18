@@ -2828,7 +2828,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4115080753528843955">Jotkin sisältöpalvelut käyttävät yksilöllisiä tunnuksia suojatun sisällön käyttöoikeuden myöntämiseen.</translation>
 <translation id="4115378294792113321">Purppura</translation>
 <translation id="4118579674665737931">Käynnistä laite uudelleen ja yritä sen jälkeen uudelleen.</translation>
-<translation id="4118998393712575296">Lapsella on oltava vanhemman ylläpitämä Google-tili, jotta tämä voi käyttää lapsilukko-asetuksia, kuten sovellusten hyväksyntää ja käyttöaikarajoituksia. Koulutili voidaan lisätä myöhemmin Google Classroomin kaltaisen sivustojen ja sovellusten käyttöä varten.</translation>
 <translation id="4120388883569225797">Tätä suojausavainta ei voi nollata</translation>
 <translation id="4120817667028078560">Polku on liian pitkä</translation>
 <translation id="4124823734405044952">Suojausavaimesi on nollattu</translation>
@@ -3303,6 +3302,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4682551433947286597">Taustakuva näytetään kirjautumisruudulla.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (oletus)</translation>
 <translation id="4684427112815847243">Synkronoi kaikki</translation>
+<translation id="4687613760714619596">Tuntematon laite (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">Paikallisen lokin tunnus: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" /></translation>
 <translation id="4689235506267737042">Valitse esittelyasetukset</translation>
 <translation id="4689421377817139245">Synkronoi tämä kirjanmerkki iPhoneesi</translation>

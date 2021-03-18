@@ -2826,7 +2826,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4115080753528843955">Baadhi ya huduma za maudhui hutumia vitambulisho vya kipekee kwa madhumuni ya kuidhinisha ufikiaji wa maudhui yaliyolindwa</translation>
 <translation id="4115378294792113321">Rangi ya damu ya mzee</translation>
 <translation id="4118579674665737931">Tafadhali washa tena kifaa kisha ujaribu.</translation>
-<translation id="4118998393712575296">Ili uweze kutumia vidhibiti vya wazazi kama vile uidhinishaji wa programu na vikomo vya muda wa kutumia vifaa, ni lazima mtoto awe na Akaunti ya Google inayodhibitiwa na mzazi. Unaweza kuongeza akaunti ya shule baadaye ili itumike kwenye tovuti na programu kama vile Google Darasani.</translation>
 <translation id="4120388883569225797">Huruhusiwi kubadilisha ufunguo huu wa usalama</translation>
 <translation id="4120817667028078560">Kijia ni kirefu mno</translation>
 <translation id="4124823734405044952">Umebadilisha ufunguo wako wa usalama</translation>
@@ -3301,6 +3300,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4682551433947286597">Mandhari hutokea kwenye Skrini ya Kuingia.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (chaguomsingi)</translation>
 <translation id="4684427112815847243">Sawazisha kila kitu</translation>
+<translation id="4687613760714619596">Kifaa Kisichojulikana (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">Kitambulisho cha kumbukumbu ya mfumo: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">Chagua mapendeleo yako ya maonyesho</translation>
 <translation id="4689421377817139245">Sawazisha alamisho hii kwenye iPhone yako</translation>

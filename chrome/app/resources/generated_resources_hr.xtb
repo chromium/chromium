@@ -2145,7 +2145,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3390013585654699824">Pojedinosti o aplikaciji</translation>
 <translation id="3390741581549395454">Uspješno su stvorene sigurnosne kopije Linux aplikacija i datoteka. Nadogradnja će uskoro započeti.</translation>
 <translation id="3391482648489541560">uređivanje datoteka</translation>
-<translation id="3391512812407811893">Probe Privacy Sandboxa</translation>
+<translation id="3391512812407811893">Probne verzije Privacy Sandboxa</translation>
 <translation id="339178315942519818">Pregledavajte obavijesti iz svojih aplikacija za chat na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="3396800784455899911">Klikom na gumb "Prihvati i nastavi" prihvaćate prethodno opisanu obradu za ove Googleove usluge.</translation>
 <translation id="3399432415385675819">Obavijesti će se onemogućiti</translation>
@@ -2832,7 +2832,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4115080753528843955">Neke usluge sadržaja upotrebljavaju jedinstvene identifikatore radi autorizacije pristupa zaštićenom sadržaju</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4118579674665737931">Ponovo pokrenite uređaj i pokušajte opet.</translation>
-<translation id="4118998393712575296">Da biste koristili roditeljski nadzor, na primjer odobrenje aplikacija i ograničenja vremena upotrebe, dijete mora imati Google račun kojim upravlja roditelj. Školski račun može se dodati kasnije za upotrebu s web-lokacijama i aplikacijama kao što je Google učionica.</translation>
 <translation id="4120388883569225797">Taj se sigurnosni ključ ne može vratiti na zadano</translation>
 <translation id="4120817667028078560">Putanja je predugačka</translation>
 <translation id="4124823734405044952">Vaš sigurnosni ključ vraćen je na zadano</translation>
@@ -3307,6 +3306,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4682551433947286597">Pozadine se prikazuju na zaslonu za prijavu.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (zadano)</translation>
 <translation id="4684427112815847243">Sinkroniziraj sve</translation>
+<translation id="4687613760714619596">Nepoznati uređaj (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">Lokalni ID zapisnika: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">Odaberite svoje demo-postavke</translation>
 <translation id="4689421377817139245">Sinkronizirajte ovu oznaku sa svojim iPhoneom</translation>

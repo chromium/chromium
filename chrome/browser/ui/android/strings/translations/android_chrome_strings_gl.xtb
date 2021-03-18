@@ -98,7 +98,7 @@
 <translation id="1697284962337958118">Engadir a</translation>
 <translation id="1718835860248848330">Última hora</translation>
 <translation id="1724977129262658800">Para poder editar o contrasinal, desbloquea a pantalla</translation>
-<translation id="173522743738009831">Acerca do illamento de procesos de privacidade</translation>
+<translation id="173522743738009831">Acerca de Privacy Sandbox</translation>
 <translation id="1736419249208073774">Explorar</translation>
 <translation id="1749561566933687563">Sincroniza os teus marcadores</translation>
 <translation id="17513872634828108">Pestanas abertas</translation>
@@ -349,19 +349,19 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3384347053049321195">Compartir imaxe</translation>
 <translation id="3387650086002190359">Produciuse un erro ao descargar <ph name="FILE_NAME" /> debido a erros no sistema de ficheiros.</translation>
 <translation id="3389286852084373014">O texto é demasiado longo</translation>
-<translation id="3391512812407811893">Probas do illamento de procesos de privacidade</translation>
+<translation id="3391512812407811893">Probas de Privacy Sandbox</translation>
 <translation id="3398320232533725830">Abre o xestor de marcadores</translation>
 <translation id="3414952576877147120">Tamaño:</translation>
 <translation id="3429160811076349561">As funcións de proba están desactivadas</translation>
 <translation id="3440975416244667276">Mantén premidas as palabras para ver información relevante</translation>
 <translation id="3443221991560634068">Volver cargar a páxina actual</translation>
-<translation id="3451542610083122179">O illamento de procesos de privacidade é unha iniciativa en curso para facer que a Web siga sendo un espazo aberto e axudar a protexerte contra os mecanismos de seguimento.
+<translation id="3451542610083122179">Privacy Sandbox é unha iniciativa en curso para facer que a Web siga sendo un espazo aberto e axudar a protexerte contra os mecanismos de seguimento.
 
 Actualmente úsanse moitas tecnoloxías, como as cookies de terceiros, en servizos importantes da Web (por exemplo, para mostrar anuncios relevantes ou medir o rendemento dos sitios).
 
-O illamento de procesos de privacidade fai que a Web siga sendo un espazo aberto, xa que crea mellores formas de ofrecer eses servizos sen que os sitios deixen de funcionar e sen que se realice ás agachadas un seguimento do que fas na Web.
+Privacy Sandbox fai que a Web siga sendo un espazo aberto, xa que crea mellores formas de ofrecer eses servizos sen que os sitios deixen de funcionar e sen que se realice ás agachadas un seguimento do que fas na Web.
 
-Seguimos desenvolvendo activamente esta iniciativa, que está dispoñible só nalgunhas rexións. Polo momento, os sitios poden probar o illamento de procesos de privacidade sen deixar de usar as tecnoloxías web actuais, como as cookies de terceiros. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
+Seguimos desenvolvendo activamente esta iniciativa, que está dispoñible só nalgunhas rexións. Polo momento, os sitios poden probar Privacy Sandbox sen deixar de usar as tecnoloxías web actuais, como as cookies de terceiros. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">Podes escoller o motor de busca</translation>
 <translation id="3492207499832628349">Nova pestana de incógnito</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /> acerca do contido suxerido</translation>
@@ -1066,7 +1066,7 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="8156139159503939589">Que idiomas sabes ler?</translation>
 <translation id="8168435359814927499">Contido</translation>
 <translation id="8186512483418048923">Quedan <ph name="FILES" /> ficheiros</translation>
-<translation id="8189750580333936930">Illamento de procesos de privacidade</translation>
+<translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">Queda 1 día</translation>
 <translation id="8200772114523450471">Retomar</translation>
 <translation id="8209050860603202033">Abrir imaxe</translation>

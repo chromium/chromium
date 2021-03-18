@@ -411,6 +411,7 @@
 <translation id="2482878487686419369">Апавяшчэнні</translation>
 <translation id="248348093745724435">Палітыкі прылады</translation>
 <translation id="2491120439723279231">Ёсць памылкі ў сертыфікаце сервера.</translation>
+<translation id="2491414235131909199">Старонка заблакіравана пашырэннем</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">Аналізатар JSON</translation>
 <translation id="2495093607237746763">Калі тут паставіць птушку, Chromium будзе захоўваць копію вашай карткі на гэтай прыладзе ў мэтах хутчэйшага запаўнення форм.</translation>
@@ -835,6 +836,7 @@
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Яшчэ <ph name="ITEM_COUNT" /> элемент}one{Яшчэ <ph name="ITEM_COUNT" /> элемент}few{Яшчэ <ph name="ITEM_COUNT" /> элементы}many{Яшчэ <ph name="ITEM_COUNT" /> элементаў}other{Яшчэ <ph name="ITEM_COUNT" /> элемента}}</translation>
 <translation id="4176463684765177261">Выключана</translation>
+<translation id="4178883739871311481"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб стварыць дакумент Google, націсніце Tab, затым Enter</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">Не ўдаецца захаваць даныя вашай крэдытнай карткі</translation>
 <translation id="4196861286325780578">&amp;Узнавіць перамяшчэнне</translation>
@@ -1524,6 +1526,7 @@
 <translation id="6852204201400771460">Перазагрузіць праграму?</translation>
 <translation id="6865412394715372076">Гэту картку спраўдзіць пакуль што не ўдаецца</translation>
 <translation id="6874604403660855544">&amp;Узнавіць дадаванне</translation>
+<translation id="6881240511396774766">Хутка стварыць новы дакумент Google</translation>
 <translation id="6884662655240309489">Памер 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome спрасціў гэту старонку для больш зручнага чытання. Ён атрымаў зыходную старонку па небяспечным падключэнні.</translation>
@@ -1533,6 +1536,7 @@
 <translation id="6898699227549475383">Арганізацыя (А)</translation>
 <translation id="6907293445143367439">Дазволіць сайту <ph name="SITE_NAME" />:</translation>
 <translation id="6910240653697687763">Сайт <ph name="URL" /> запытвае поўны кантроль над прыладамі MIDI</translation>
+<translation id="691325982945105493">Кнопка "Стварыць дакумент Google". Каб хутка стварыць новы дакумент Google, націсніце Enter</translation>
 <translation id="6915804003454593391">Карыстальнік:</translation>
 <translation id="6934672428414710184">Гэта імя – з вашага Уліковага запісу Google</translation>
 <translation id="6944692733090228304">Вы ўвялі пароль на сайце, які не знаходзіцца пад кіраваннем арганізацыі <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Каб абараніць свой уліковы запіс, не выкарыстоўвайце пароль на іншых прыладах і сайтах.</translation>
@@ -2064,6 +2068,7 @@
 <translation id="8931333241327730545">Захаваць гэту картку ў вашым Уліковым запісе Google?</translation>
 <translation id="8932102934695377596">Ваш гадзіннік спазняецца</translation>
 <translation id="893332455753468063">Дадаць імя</translation>
+<translation id="8934418770423095813">Стварыць дакумент Google</translation>
 <translation id="8942355029279167844">Адміністратар дазволіў праграме "<ph name="APP_NAME" />" збіраць даныя дыягностыкі дзеля ўдасканалення работы прадукту. Дадатковая інфармацыя – па спасылцы <ph name="BEGIN_LINK" /> https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Лайм</translation>
 <translation id="8957210676456822347">Аўтарызацыя праз партал узаемадзеяння</translation>

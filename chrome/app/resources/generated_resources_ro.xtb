@@ -2832,7 +2832,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4115080753528843955">Unele servicii de conținut folosesc identificatori unici pentru autorizarea accesului la conținutul protejat</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4118579674665737931">Repornește dispozitivul și încearcă din nou.</translation>
-<translation id="4118998393712575296">Pentru a folosi opțiunile de control parental, precum aprobarea aplicațiilor și limitele pentru durata de folosire a dispozitivului, copilul trebuie să aibă un Cont Google gestionat de un părinte. Mai târziu se poate adăuga un cont de la școală pentru a fi folosit împreună cu site-uri și aplicații, cum ar fi Google Classroom.</translation>
 <translation id="4120388883569225797">Această cheie de securitate nu poate fi resetată</translation>
 <translation id="4120817667028078560">Calea este prea lungă</translation>
 <translation id="4124823734405044952">Cheia de securitate a fost resetată</translation>
@@ -3307,6 +3306,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4682551433947286597">Imaginile de fundal apar pe ecranul de conectare.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (prestabilit)</translation>
 <translation id="4684427112815847243">Sincronizează tot</translation>
+<translation id="4687613760714619596">Dispozitiv necunoscut (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">ID jurnal local: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">Alege preferințele tale demo</translation>
 <translation id="4689421377817139245">Sincronizează marcajul pe iPhone</translation>

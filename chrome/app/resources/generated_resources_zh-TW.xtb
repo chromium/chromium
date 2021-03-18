@@ -2829,7 +2829,6 @@
 <translation id="4115080753528843955">部分內容服務會使用專屬 ID 來授予受保護內容的存取權</translation>
 <translation id="4115378294792113321">洋紅色</translation>
 <translation id="4118579674665737931">請重新啟動裝置，然後再試一次。</translation>
-<translation id="4118998393712575296">如要使用應用程式核准設定、裝置使用時間限制等家長監護功能，就必須讓孩子使用由家長管理的 Google 帳戶。如果孩子需要透過學校帳戶使用 Google Classroom 之類的網站和應用程式，可以之後再新增帳戶。</translation>
 <translation id="4120388883569225797">無法重設這個安全金鑰</translation>
 <translation id="4120817667028078560">路徑名稱過長</translation>
 <translation id="4124823734405044952">你的安全金鑰已重設</translation>
@@ -3304,6 +3303,7 @@
 <translation id="4682551433947286597">登入畫面上顯示的桌布。</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (預設)</translation>
 <translation id="4684427112815847243">同步處理所有資料</translation>
+<translation id="4687613760714619596">不明裝置 (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">本機記錄 ID：<ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />。</translation>
 <translation id="4689235506267737042">選擇示範模式偏好設定</translation>
 <translation id="4689421377817139245">將這個書籤同步到 iPhone 上</translation>

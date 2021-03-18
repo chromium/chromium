@@ -2831,7 +2831,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4115080753528843955">Některé obsahové služby k ověření přístupu k chráněnému obsahu používají jedinečné identifikátory</translation>
 <translation id="4115378294792113321">Purpurová</translation>
 <translation id="4118579674665737931">Restartujte zařízení a zkuste to znovu.</translation>
-<translation id="4118998393712575296">Pokud chcete používat funkce rodičovské kontroly jako schvalování aplikací a omezení času stráveného na zařízení, dítě musí mít účet Google spravovaný rodičem. Později lze přidat školní účet pro použití s weby a aplikacemi, jako je Učebna Google.</translation>
 <translation id="4120388883569225797">Tento bezpečnostní klíč nelze resetovat</translation>
 <translation id="4120817667028078560">Cesta je příliš dlouhá</translation>
 <translation id="4124823734405044952">Bezpečnostní klíč byl resetován</translation>
@@ -3306,6 +3305,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4682551433947286597">Tapety se zobrazí na přihlašovací obrazovce.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (výchozí)</translation>
 <translation id="4684427112815847243">Synchronizovat vše</translation>
+<translation id="4687613760714619596">Neznámé zařízení (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">Místní ID protokolu: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">Zvolte předvolby ukázkového režimu</translation>
 <translation id="4689421377817139245">Synchronizujte tuto záložku do svého iPhonu</translation>

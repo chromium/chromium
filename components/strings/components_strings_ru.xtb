@@ -407,6 +407,7 @@
 <translation id="2482878487686419369">Уведомления</translation>
 <translation id="248348093745724435">Правила для компьютера</translation>
 <translation id="2491120439723279231">Сертификат сервера содержит ошибки.</translation>
+<translation id="2491414235131909199">Эта страница была заблокирована расширением.</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">Синтаксический анализатор JSON</translation>
 <translation id="2495093607237746763">Если флажок установлен, Chromium будет хранить на этом устройстве данные карты для быстрого заполнения форм.</translation>
@@ -828,6 +829,7 @@
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Ещё <ph name="ITEM_COUNT" /> товар}one{Ещё <ph name="ITEM_COUNT" /> товар}few{Ещё <ph name="ITEM_COUNT" /> товара}many{Ещё <ph name="ITEM_COUNT" /> товаров}other{Ещё <ph name="ITEM_COUNT" /> товара}}</translation>
 <translation id="4176463684765177261">Отключено</translation>
+<translation id="4178883739871311481"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы создать документ Google, нажмите Tab, а затем – Ввод.</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" />: <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">Сейчас сохранить эту карту нельзя.</translation>
 <translation id="4196861286325780578">&amp;Повторить перемещение</translation>
@@ -1513,6 +1515,7 @@
 <translation id="6852204201400771460">Перезапустить приложение?</translation>
 <translation id="6865412394715372076">Невозможно подтвердить карту.</translation>
 <translation id="6874604403660855544">&amp;Повторить добавление</translation>
+<translation id="6881240511396774766">Быстро создать документ Google</translation>
 <translation id="6884662655240309489">Размер: 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" />, <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Браузер Chrome упростил вид страницы, чтобы ее было удобнее читать. Исходная страница была получена с использованием незащищенного соединения.</translation>
@@ -1522,6 +1525,7 @@
 <translation id="6898699227549475383">Организация (O)</translation>
 <translation id="6907293445143367439">Предоставьте сайту <ph name="SITE_NAME" /> следующие разрешения:</translation>
 <translation id="6910240653697687763">Сайт <ph name="URL" /> запрашивает полный контроль над MIDI-устройствами.</translation>
+<translation id="691325982945105493">Кнопка "Создать документ Google". Чтобы быстро выполнить это действие, нажмите Ввод.</translation>
 <translation id="6915804003454593391">Пользователь:</translation>
 <translation id="6934672428414710184">Это имя из вашего аккаунта Google</translation>
 <translation id="6944692733090228304">Вы ввели пароль на сайте, который не находится под управлением организации <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Чтобы защитить свой аккаунт, не используйте этот пароль для других приложений и сайтов.</translation>
@@ -2052,6 +2056,7 @@
 <translation id="8931333241327730545">Сохранить эту карту в аккаунте Google?</translation>
 <translation id="8932102934695377596">Часы отстают</translation>
 <translation id="893332455753468063">Добавьте имя</translation>
+<translation id="8934418770423095813">Создать документ Google</translation>
 <translation id="8942355029279167844">Ваш администратор разрешил приложению "<ph name="APP_NAME" />" собирать диагностические данные для улучшения продукта. Более подробные сведения приведены на странице <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Лаймовый</translation>
 <translation id="8957210676456822347">Авторизация через адаптивный портал</translation>

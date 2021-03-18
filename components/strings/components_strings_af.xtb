@@ -411,6 +411,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2482878487686419369">Kennisgewings</translation>
 <translation id="248348093745724435">Masjienbeleide</translation>
 <translation id="2491120439723279231">Bediener se sertifikaat bevat foute.</translation>
+<translation id="2491414235131909199">Hierdie bladsy is deur 'n uitbreiding geblokkeer</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON-ontleder</translation>
 <translation id="2495093607237746763">As dit gemerk is, sal Chromium 'n kopie van jou kaart op hierdie toestel berg om vorms vinniger in te vul.</translation>
@@ -836,6 +837,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Nog <ph name="ITEM_COUNT" /> item}other{Nog <ph name="ITEM_COUNT" /> items}}</translation>
 <translation id="4176463684765177261">Gedeaktiveer</translation>
+<translation id="4178883739871311481"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" /> – druk Tab en dan Enter om Google Dokument te skep</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">Jou kaart kan nie nou gestoor word nie</translation>
 <translation id="4196861286325780578">Herdoen skuif</translation>
@@ -1525,6 +1527,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6852204201400771460">Herlaai program?</translation>
 <translation id="6865412394715372076">Hierdie kaart kan nie op die oomblik geverifieer word nie</translation>
 <translation id="6874604403660855544">Herdoen byvoeging</translation>
+<translation id="6881240511396774766">Skep vinnig 'n nuwe Google Dokument</translation>
 <translation id="6884662655240309489">Grootte 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome het hierdie bladsy vereenvoudig om dit makliker te maak om te lees. Chrome het die oorspronklike bladsy oor 'n onveilige verbinding gaan haal.</translation>
@@ -1534,6 +1537,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6898699227549475383">Organisasie (O)</translation>
 <translation id="6907293445143367439">Laat <ph name="SITE_NAME" /> toe om:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> wil volle beheer van jou MIDI-toestelle oorneem</translation>
+<translation id="691325982945105493">"Skep Google Dokument"-knoppie – druk Enter om vinnig 'n nuwe Google Dokument te skep</translation>
 <translation id="6915804003454593391">Gebruiker:</translation>
 <translation id="6934672428414710184">Hierdie naam is van jou Google-rekening af</translation>
 <translation id="6944692733090228304">Jy het jou wagwoord ingevoer op 'n werf wat nie deur <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> bestuur word nie. Om jou rekening te beskerm, moet jy nie jou wagwoord op ander programme en werwe hergebruik nie.</translation>
@@ -2064,6 +2068,7 @@ Bykomende besonderhede:
 <translation id="8931333241327730545">Wil jy hierdie kaart in jou Google-rekening stoor?</translation>
 <translation id="8932102934695377596">Jou horlosie is agter</translation>
 <translation id="893332455753468063">Voeg naam by</translation>
+<translation id="8934418770423095813">Skep Google Dokument</translation>
 <translation id="8942355029279167844">Jou administrateur het <ph name="APP_NAME" /> toegelaat om diagnostiese data in te samel om die produkervaring beter te maak. Sien <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> vir meer inligting.</translation>
 <translation id="8943282376843390568">Lemmetjiegroen</translation>
 <translation id="8957210676456822347">Gevangeportaal-magtiging</translation>

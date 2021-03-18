@@ -2142,7 +2142,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3390013585654699824">Szczegóły aplikacji</translation>
 <translation id="3390741581549395454">Utworzono kopię zapasową aplikacji i plików Linuksa. Uaktualnianie wkrótce się rozpocznie.</translation>
 <translation id="3391482648489541560">edytowanie plików</translation>
-<translation id="3391512812407811893">Wersje próbne w piaskownicy prywatności</translation>
+<translation id="3391512812407811893">Wersje próbne w Piaskownicy prywatności</translation>
 <translation id="339178315942519818">Wyświetlaj powiadomienia z aplikacji do czatowania na urządzeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="3396800784455899911">Klikając przycisk „Zaakceptuj i kontynuuj”, wyrażasz zgodę na opisane powyżej przetwarzanie danych w tych usługach Google.</translation>
 <translation id="3399432415385675819">Powiadomienia zostaną wyłączone</translation>
@@ -2829,7 +2829,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4115080753528843955">Niektóre usługi związane z treściami używają unikalnych identyfikatorów na potrzeby autoryzacji dostępu do chronionych treści</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4118579674665737931">Uruchom ponownie urządzenie i spróbuj jeszcze raz.</translation>
-<translation id="4118998393712575296">Aby można było używać funkcji kontroli rodzicielskiej takich jak zatwierdzanie aplikacji i limity czasu korzystania z urządzenia, dziecko musi mieć konto Google zarządzane przez rodzica. Potem można też dodać konto szkolne, aby korzystać z witryn i aplikacji takich jak Google Classroom.</translation>
 <translation id="4120388883569225797">Nie udało się zresetować tego klucza bezpieczeństwa</translation>
 <translation id="4120817667028078560">Zbyt długa ścieżka</translation>
 <translation id="4124823734405044952">Klucz bezpieczeństwa został zresetowany</translation>
@@ -3304,6 +3303,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="4682551433947286597">Na ekranie logowania są wyświetlane tapety.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (domyślnie)</translation>
 <translation id="4684427112815847243">Synchronizuj wszystko</translation>
+<translation id="4687613760714619596">Nieokreślone urządzenie (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">Identyfikator logu lokalnego: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">Wybierz ustawienia trybu demonstracyjnego</translation>
 <translation id="4689421377817139245">Zsynchronizuj tę zakładkę ze swoim iPhonem</translation>
@@ -5496,7 +5496,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7234010996000898150">Anuluję przywracanie Linuksa</translation>
 <translation id="7235716375204803342">Pobieram aktywność…</translation>
 <translation id="7235737137505019098">Na Twoim kluczu bezpieczeństwa nie ma wystarczającej ilości miejsca na kolejne konta.</translation>
-<translation id="7238640585329759787">Gdy włączysz tę funkcję, witryny mogą dostarczać swoje treści i usługi, używając wymienionych tu technik chroniących prywatność. Obejmują one rozwiązania alternatywne dla śledzenia w witrynach. Z czasem może pojawić się więcej wersji próbnych.</translation>
+<translation id="7238640585329759787">Gdy włączysz tę funkcję, witryny będą mogły dostarczać swoje treści i usługi, używając wymienionych tu technik chroniących prywatność. Obejmują one rozwiązania alternatywne dla śledzenia w witrynach. Z czasem może pojawić się więcej wersji próbnych.</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, szczegóły</translation>
 <translation id="7239108166256782787">Urządzenie <ph name="DEVICE_NAME" /> anulowało przesyłanie</translation>
 <translation id="7240339475467890413">Połączyć z nowym hotspotem?</translation>

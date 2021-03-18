@@ -411,6 +411,7 @@
 <translation id="2482878487686419369">सूचनाहरू</translation>
 <translation id="248348093745724435">मेसिन नीतिहरू</translation>
 <translation id="2491120439723279231">सर्भरको प्रमाणपत्रमा त्रुटिहरू छन्।</translation>
+<translation id="2491414235131909199">कुनै एक्स्टेन्सनले यो पेज ब्लक गरेको छ</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON पार्सर</translation>
 <translation id="2495093607237746763">जाँच गरिएको खण्डमा छिटो फाराम भर्नको लागि Chromium ले यस यन्त्रमा तपाईँको कार्डको प्रतिलिपि भण्डारण गर्ने छ।</translation>
@@ -621,6 +622,7 @@
 <translation id="3371076217486966826"><ph name="URL" /> निम्न अनुमति माग्दै छ:
       • तपाईंको सेरोफेरोको 3D नक्सा बनाउने तथा क्यामेराको स्थिति ट्र्याक गर्ने
       • तपाईंको क्यामेरा प्रयोग गर्ने</translation>
+<translation id="3372389303668969359">तपाईंले अर्को पटक यो भुक्तानी विधि प्रयोग गरी किनमेल गर्न यो यन्त्र चलाउँदा किनमेल गर्न खोज्ने व्यक्ति तपाईं नै हो भन्ने कुरा तुरुन्तै पुष्टि गर्न Windows Hello प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="337363190475750230">प्रबन्ध हटाइएको</translation>
 <translation id="3377144306166885718">सर्भरले TLS को प्रचलनमा नरहेको संस्करण प्रयोग गर्‍यो।</translation>
 <translation id="3377188786107721145">नीति पार्स त्रुटि</translation>
@@ -694,6 +696,7 @@
 <translation id="3615877443314183785">म्याद सकिने मान्य मिति प्रविष्टि गर्नुहोस्</translation>
 <translation id="36224234498066874">ब्राउजिङको डेटा खाली गर्नुहोस्...</translation>
 <translation id="362276910939193118">पूर्ण इतिहास देखाउनुहोस्</translation>
+<translation id="3625635938337243871">तपाईं इन्कोग्निटो मोडबाट बाहिरिएपछि साइन इन गर्न प्रयोग गरिएको डेटा यो यन्त्रमा भण्डारण गरिने छ।</translation>
 <translation id="3630155396527302611">यदि यसलाई नेटवर्कमा पहुँच गर्ने अनुमति भएको प्रोग्रामको रूपमा पहिले नै सूचीबद्ध गरिएको छ भने यसलाई
       सूचीबाट हटाएर फेरि थप्ने प्रयास गर्नुहोस्।</translation>
 <translation id="3630699740441428070">यो यन्त्रका एड्मिनहरूले तपाईंले हेर्ने वेबसाइटलगायत तपाईंको नेटवर्क ट्राफिक हेर्न पाउने गरी तपाईंको नेटवर्क कनेक्सन कन्फिगर गर्नुभएको छ।</translation>
@@ -831,6 +834,7 @@
 <translation id="4173315687471669144">फुलस्केप</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{थप <ph name="ITEM_COUNT" /> वस्तु}other{थप <ph name="ITEM_COUNT" /> वस्तुहरू}}</translation>
 <translation id="4176463684765177261">असक्षम गरिएको</translation>
+<translation id="4178883739871311481"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google कागजात प्रयोग गरी डकुमेन्ट बनाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">तपाईंको कार्ड अहिले नै सुरक्षित गर्न मिल्दैन</translation>
 <translation id="4196861286325780578">सार्ने कार्य &amp;पुन: गर्नुहोस्</translation>
@@ -927,6 +931,7 @@
 <translation id="4477350412780666475">अर्को ट्र्याक</translation>
 <translation id="4482953324121162758">यो साइटको अनुवाद गरिने छैन।</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">सिंक गरिएका पासवर्डहरू मेरो Google खाता प्रयोग गरी इन्क्रिप्ट गरियोस्</translation>
 <translation id="4492519888999857993">यी सुविधाहरू पूर्वनिर्धारित रूपमा असक्षम पारिएका छन्। यिनीहरू Chrome का भावी संस्करणमा उपलब्ध हुने छैनन्।</translation>
 <translation id="4493480324863638523">अमान्य URL। अनिवार्य रूपमा मानक योजनाबमोजिमको URL हुनु पर्छ, जस्तै, http://example.com वा https://example.com।</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
@@ -1096,6 +1101,7 @@
 <translation id="5126510351761255129">आफ्नो कार्ड पुष्टि गर्नुहोस्</translation>
 <translation id="5135404736266831032">ठेगानाहरू व्यवस्थित गर्नुहोस्...</translation>
 <translation id="5138227688689900538">कम देखाउनुहोस्</translation>
+<translation id="514010763713772514">अर्को पटक अझ छिटो चेक आउट गर्नुहोस्</translation>
 <translation id="5145883236150621069">नीति प्रतिक्रियामा त्रुटि कोड समावेश छ</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> का सूचनाहरूलाई रोक लगाइएको छ</translation>
 <translation id="5148809049217731050">माथितिर फर्केको</translation>
@@ -1517,6 +1523,7 @@
 <translation id="6852204201400771460">एप पुनः लोड गर्ने हो?</translation>
 <translation id="6865412394715372076">यो कार्ड यस बखत पुष्टि गर्न सकिँदैन</translation>
 <translation id="6874604403660855544">&amp;रिडु जोड</translation>
+<translation id="6881240511396774766">Google कागजात प्रयोग गरी तुरुन्तै नयाँ डकुमेन्ट बनाउनुहोस्</translation>
 <translation id="6884662655240309489">आकार १</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome ले यो पृष्ठ पढ्न अझ सजिलो बनाउन यसलाई सरलीकृत गर्‍यो। Chrome ले एउटा असुरक्षित इन्टरनेटमार्फत मूल पृष्ठ पुनः प्राप्त गर्‍यो।</translation>
@@ -1526,6 +1533,7 @@
 <translation id="6898699227549475383">संगठन (सं)</translation>
 <translation id="6907293445143367439"><ph name="SITE_NAME" /> लाई निम्न कार्यहरू गर्न दिनुहोस्:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> तपाईंका MIDI यन्त्रहरूमाथि पूर्ण नियन्त्रण प्राप्त गर्न चाहन्छ</translation>
+<translation id="691325982945105493">'Google कागजात प्रयोग गरी डकुमेन्ट बनाउनुहोस्' नामक बटन, Google कागजात प्रयोग गरी तुरुन्तै नयाँ डकुमेन्ट बनाउन Enter थिच्नुहोस्</translation>
 <translation id="6915804003454593391">प्रयोगकर्ता:</translation>
 <translation id="6934672428414710184">यो नाम तपाईंको Google खाताबाट लिइएको हो</translation>
 <translation id="6944692733090228304">तपाईंले <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ले व्यवस्थापन नगरेको कुनै साइटमा आफ्नो पासवर्ड प्रविष्ट गर्नुभयो। आफ्नो खाता सुरक्षित गर्न अन्य एप र साइटहरूमा तपाईंको पासवर्ड पुनः प्रयोग नगर्नुहोस्।</translation>
@@ -1844,6 +1852,7 @@
 <translation id="8086971161893892807">मस्यौदा</translation>
 <translation id="8088680233425245692">लेख गर्न असफल भयो।</translation>
 <translation id="808894953321890993">पासवर्ड परिवर्तन गर्नुहोस्‌</translation>
+<translation id="8090329638663751802">तपाईंले अर्को पटक यो भुक्तानी विधि प्रयोग गरी किनमेल गर्न यो यन्त्र चलाउँदा किनमेल गर्न खोज्ने व्यक्ति तपाईं नै हो भन्ने कुरा तुरुन्तै पुष्टि गर्न Touch ID प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="8090403583893450254">आकार २०</translation>
 <translation id="8091372947890762290">सक्रियता सर्भरमा विचाराधीन छ</translation>
 <translation id="8092774999298748321">गाढा बैजनी</translation>
@@ -2055,6 +2064,7 @@
 <translation id="8931333241327730545">तपाईं आफ्नो Google खातामा यो कार्ड सुरक्षित गर्न चाहनुहुन्छ?</translation>
 <translation id="8932102934695377596">तपाईंको घडी ढिला छ</translation>
 <translation id="893332455753468063">नाम थप्नुहोस्</translation>
+<translation id="8934418770423095813">Google कागजात प्रयोग गरी डकुमेन्ट बनाउनुहोस्</translation>
 <translation id="8942355029279167844">तपाईंका एड्मिनले <ph name="APP_NAME" /> एप सुधार्ने प्रयोजनका लागि यो एपलाई निदानसम्बन्धी डेटा सङ्कलन गर्ने अनुमति दिनुभएको छ। थप जानकारीका लागि <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> मा जानुहोस्।</translation>
 <translation id="8943282376843390568">हल्का पहेँलो</translation>
 <translation id="8957210676456822347">क्याप्टिभ पोर्टल प्राधिकरण</translation>

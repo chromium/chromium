@@ -407,6 +407,7 @@
 <translation id="2482878487686419369">알림</translation>
 <translation id="248348093745724435">컴퓨터 정책</translation>
 <translation id="2491120439723279231">서버 인증서에 오류가 있습니다.</translation>
+<translation id="2491414235131909199">확장 프로그램에서 차단한 페이지입니다.</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON 파서</translation>
 <translation id="2495093607237746763">선택하면 이 기기에 카드 사본이 저장되어 Chromium에서 양식을 더 빠르게 입력할 수 있습니다.</translation>
@@ -829,6 +830,7 @@
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{그 외 <ph name="ITEM_COUNT" />개 항목}other{그 외 <ph name="ITEM_COUNT" />개 항목}}</translation>
 <translation id="4176463684765177261">사용 중지됨</translation>
+<translation id="4178883739871311481"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab 키와 Enter 키를 차례로 눌러 Google 문서를 만듭니다</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">지금은 카드를 저장할 수 없습니다.</translation>
 <translation id="4196861286325780578">이동 다시 실행(&amp;R)</translation>
@@ -1514,6 +1516,7 @@
 <translation id="6852204201400771460">앱을 새로고침하시겠습니까?</translation>
 <translation id="6865412394715372076">지금은 이 카드를 인증할 수 없습니다.</translation>
 <translation id="6874604403660855544">추가 다시 실행(&amp;R)</translation>
+<translation id="6881240511396774766">빠르게 새 Google 문서 만들기</translation>
 <translation id="6884662655240309489">크기 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome에서 페이지를 읽기 쉽도록 간소화했습니다. Chrome에서 안전하지 않은 연결을 통해 원본 페이지를 가져왔습니다.</translation>
@@ -1523,6 +1526,7 @@
 <translation id="6898699227549475383">조직(O)</translation>
 <translation id="6907293445143367439"><ph name="SITE_NAME" />의 다음 작업 허용:</translation>
 <translation id="6910240653697687763"><ph name="URL" />에서 MIDI 기기를 완전히 제어하려고 합니다.</translation>
+<translation id="691325982945105493">Google 문서 만들기 버튼, Enter 키를 눌러 새 Google 문서를 빠르게 만듭니다</translation>
 <translation id="6915804003454593391">사용자:</translation>
 <translation id="6934672428414710184">Google 계정에 등록된 이름입니다.</translation>
 <translation id="6944692733090228304"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />에서 관리하지 않는 사이트에 비밀번호를 입력했습니다. 계정을 안전하게 보호하려면 다른 앱과 사이트에서 동일한 비밀번호를 재사용하지 마세요.</translation>
@@ -2052,6 +2056,7 @@
 <translation id="8931333241327730545">이 카드를 Google 계정에 저장하시겠습니까?</translation>
 <translation id="8932102934695377596">시간이 너무 먼 과거로 설정되어 있습니다.</translation>
 <translation id="893332455753468063">이름 추가</translation>
+<translation id="8934418770423095813">Google 문서 만들기</translation>
 <translation id="8942355029279167844">관리자가 <ph name="APP_NAME" /> 앱에서 제품 환경 개선을 위한 진단 데이터를 수집하도록 허용했습니다. 자세한 내용은 <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />를 참고하세요.</translation>
 <translation id="8943282376843390568">라임색</translation>
 <translation id="8957210676456822347">캡티브 포털 승인</translation>

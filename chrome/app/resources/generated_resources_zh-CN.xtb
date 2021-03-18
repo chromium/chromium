@@ -2121,7 +2121,7 @@
 <translation id="3390013585654699824">应用详细信息</translation>
 <translation id="3390741581549395454">已成功备份 Linux 应用和文件。即将开始升级。</translation>
 <translation id="3391482648489541560">文件修改</translation>
-<translation id="3391512812407811893">隐私沙盒的试用版功能</translation>
+<translation id="3391512812407811893">试用隐私沙盒</translation>
 <translation id="339178315942519818">在 <ph name="DEVICE_TYPE" /> 上查看聊天应用内的通知</translation>
 <translation id="3396800784455899911">点击“接受并继续”按钮，即表示您同意上述针对这些 Google 服务的处理方式。</translation>
 <translation id="3399432415385675819">通知将被停用</translation>
@@ -2803,7 +2803,6 @@
 <translation id="4115080753528843955">有些内容服务会使用独一无二的标识符来授予对受保护内容的访问权限</translation>
 <translation id="4115378294792113321">洋红色</translation>
 <translation id="4118579674665737931">请重新启动此设备，然后重试。</translation>
-<translation id="4118998393712575296">如果您想使用家长控制功能（例如应用审批和设备使用时间），您的孩子必须有一个由家长管理的 Google 帐号。日后需要时，您还可添加学校帐号以用于访问相关网站和应用（例如 Google 课堂）。</translation>
 <translation id="4120388883569225797">无法重置此安全密钥</translation>
 <translation id="4120817667028078560">路径过长</translation>
 <translation id="4124823734405044952">您的安全密钥已重置完毕</translation>
@@ -3274,6 +3273,7 @@
 <translation id="4682551433947286597">登录屏幕上显示的壁纸。</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />%（默认）</translation>
 <translation id="4684427112815847243">同步所有数据类型</translation>
+<translation id="4687613760714619596">未知设备 (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">本地日志 ID：<ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />。</translation>
 <translation id="4689235506267737042">选择您的演示偏好设置</translation>
 <translation id="4689421377817139245">将此书签同步到您的 iPhone</translation>

@@ -1099,6 +1099,15 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Si cette règle est définie au niveau de la plate-forme, la synchronisation devra y être désactivée.
       Si cette règle est définie au niveau d'un utilisateur, la synchronisation devra être désactivée au niveau de cet utilisateur pour que la règle prenne effet.
       </translation>
+<translation id="244950822854046436">Liste des paramètres à appliquer au <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, qui se déclenche lorsqu'un fichier est téléchargé.
+
+      Les champs "<ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />", "<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />" et "<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" />" permettent de déterminer si le connecteur doit envoyer un fichier au fournisseur de services lors du téléchargement à partir d'une page Web. L'URL de la page Web doit correspondre à un format associé à un format "enable" et non "disable".  Le type MIME du fichier doit également correspondre à un format associé à un format "enable" et non "disable".
+
+      Le champ "<ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" />" indique à quel fournisseur de services d'analyse correspondent les paramètres.
+
+      Le champ "<ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" />" est un ID unique permettant au fournisseur de services partenaire d'identifier le compte client. Quand un utilisateur est invité à se connecter au moment de configurer <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, seuls les comptes utilisateur associés au compte du fournisseur de services du client sont autorisés.
+
+      Cette règle ne peut être configurée que dans la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="2454228136871844693">Privilégier la stabilité.</translation>
 <translation id="2455033019778127130">Utiliser le comportement par défaut du navigateur, afficher les conditions d'utilisation et attendre que l'utilisateur les accepte.</translation>
 <translation id="2460127623195247744">Cette règle est obsolète (veuillez utiliser la règle <ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" /> à la place).
@@ -5499,6 +5508,12 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
       Pour en savoir plus, consultez la page https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
 <translation id="8424255554404582727">Définir la rotation de l'écran par défaut (réappliquée à chaque redémarrage)</translation>
 <translation id="8426231401662877819">Faire pivoter l'écran vers la droite de 90 degrés</translation>
+<translation id="8426819027631706846">Tel que décrit sur https://www.chromestatus.com/feature/5148698084376576, les boîtes de dialogue modales JavaScript déclenchées par <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" /> et <ph name="JS_PROMPT" /> seront bloquées sur <ph name="PRODUCT_NAME" /> si elles sont déclenchées depuis un sous-frame dont l'origine est différente de celle du frame principal.
+       Cette règle permet d'ignorer cette distinction.
+       Si la règle est activée ou n'est pas définie, les boîtes de dialogue JavaScript déclenchées depuis un sous-frame d'une origine différente seront bloquées.
+       Si elle est désactivée, les boîtes de dialogue JavaScript déclenchées depuis un sous-frame d'une origine différente ne seront pas bloquées.
+
+       Cette règle sera supprimée dans la version 95 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8433186206711564395">Paramètres réseau</translation>
 <translation id="8433769814000220721">Activer les contenus suggérés</translation>
 <translation id="843609873781525167">Si cette règle est définie sur "True", <ph name="PRODUCT_NAME" /> vérifie toujours au démarrage s'il est le navigateur par défaut et, si possible, s'enregistre automatiquement. Si cette règle est définie sur "False", <ph name="PRODUCT_NAME" /> ne vérifie jamais s'il est le navigateur par défaut et désactive les commandes utilisateur concernant cette option.

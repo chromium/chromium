@@ -411,6 +411,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2482878487686419369">Thông báo</translation>
 <translation id="248348093745724435">Chính sách về máy</translation>
 <translation id="2491120439723279231">Chứng chỉ của máy chủ có lỗi.</translation>
+<translation id="2491414235131909199">Trang này bị một tiện ích chặn</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">Trình phân tích cú pháp JSON</translation>
 <translation id="2495093607237746763">Nếu được chọn, Chromium sẽ lưu trữ bản sao thẻ của bạn trên thiết bị này để điền biểu mẫu nhanh hơn.</translation>
@@ -836,6 +837,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> mục khác}other{<ph name="ITEM_COUNT" /> mục khác}}</translation>
 <translation id="4176463684765177261">Đã tắt</translation>
+<translation id="4178883739871311481"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn Enter để Tạo Google Tài liệu</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">Hệ thống không thể lưu thẻ của bạn vào lúc này</translation>
 <translation id="4196861286325780578">&amp;Làm lại di chuyển</translation>
@@ -1525,6 +1527,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6852204201400771460">Tải lại ứng dụng?</translation>
 <translation id="6865412394715372076">Hiện không thể xác minh thẻ này</translation>
 <translation id="6874604403660855544">&amp;Làm lại thêm</translation>
+<translation id="6881240511396774766">Tạo nhanh một Google Tài liệu mới</translation>
 <translation id="6884662655240309489">Kích thước 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome đơn giản hóa trang này để bạn dễ đọc hơn. Chrome đã truy xuất trang gốc qua một đường kết nối không an toàn.</translation>
@@ -1534,6 +1537,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6898699227549475383">Tổ chức (O)</translation>
 <translation id="6907293445143367439">Cho phép <ph name="SITE_NAME" />:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> muốn có quyền kiểm soát toàn bộ thiết bị MIDI của bạn</translation>
+<translation id="691325982945105493">Nút Tạo Google Tài liệu, nhấn Enter để tạo nhanh một Google Tài liệu mới</translation>
 <translation id="6915804003454593391">Người dùng:</translation>
 <translation id="6934672428414710184">Tên này lấy từ Tài khoản Google của bạn</translation>
 <translation id="6944692733090228304">Bạn đã nhập mật khẩu trên trang web không do <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> quản lý. Để bảo vệ tài khoản, không sử dụng lại mật khẩu của bạn trên các ứng dụng và trang web khác.</translation>
@@ -2065,6 +2069,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8931333241327730545">Bạn có muốn lưu thẻ này vào Tài khoản Google của mình không?</translation>
 <translation id="8932102934695377596">Đồng hồ của bạn chạy chậm</translation>
 <translation id="893332455753468063">Thêm tên</translation>
+<translation id="8934418770423095813">Tạo Google Tài liệu</translation>
 <translation id="8942355029279167844">Quản trị viên đã cho phép <ph name="APP_NAME" /> thu thập dữ liệu chẩn đoán để nâng cao trải nghiệm sử dụng sản phẩm. Hãy truy cập vào <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> để biết thêm thông tin.</translation>
 <translation id="8943282376843390568">Vàng chanh</translation>
 <translation id="8957210676456822347">Ủy quyền cổng bị khóa</translation>

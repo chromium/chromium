@@ -406,6 +406,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2482878487686419369">Meldingen</translation>
 <translation id="248348093745724435">Apparaatbeleid</translation>
 <translation id="2491120439723279231">Het servercertificaat bevat fouten.</translation>
+<translation id="2491414235131909199">Deze pagina is geblokkeerd door een extensie</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON Parser</translation>
 <translation id="2495093607237746763">Als deze optie is aangevinkt, bewaart Chromium een exemplaar van je pas op dit apparaat om formulieren sneller te kunnen invullen.</translation>
@@ -560,7 +561,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="315504272643575312">Je account wordt beheerd door <ph name="MANAGER" />.</translation>
 <translation id="3157931365184549694">Herstellen</translation>
 <translation id="3162559335345991374">Het is mogelijk dat je de inlogpagina moet bezoeken van het wifi-netwerk dat je gebruikt.</translation>
-<translation id="3167968892399408617">De pagina's die je op incognitotabbladen weergeeft, worden niet bewaard in je browsergeschiedenis, cookie-opslag of zoekgeschiedenis nadat je al je incognitotabbladen hebt gesloten. Alle bestanden die je hebt gedownload of bookmarks die je hebt gemaakt, blijven behouden.</translation>
+<translation id="3167968892399408617">De pagina's die je op incognitotabbladen bekijkt, worden niet bewaard in je browsergeschiedenis, cookie-opslag of zoekgeschiedenis nadat je al je incognitotabbladen hebt gesloten. Alle bestanden die je hebt gedownload of bookmarks die je hebt gemaakt, blijven behouden.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174168572213147020">Eiland</translation>
 <translation id="3176929007561373547">Controleer je proxyinstellingen of neem contact op met je netwerkbeheerder om te controleren of de proxyserver werkt. Als je denkt dat je geen proxyserver zou moeten gebruiken: <ph name="PLATFORM_TEXT" /></translation>
@@ -824,6 +825,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Nog <ph name="ITEM_COUNT" /> item}other{Nog <ph name="ITEM_COUNT" /> items}}</translation>
 <translation id="4176463684765177261">Uitgeschakeld</translation>
+<translation id="4178883739871311481"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om een Google-document te maken</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">Je kaart kan op dit moment niet worden opgeslagen</translation>
 <translation id="4196861286325780578">&amp;Opnieuw verplaatsen</translation>
@@ -1510,6 +1512,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="6852204201400771460">App opnieuw laden?</translation>
 <translation id="6865412394715372076">Deze pas kan momenteel niet worden geverifieerd</translation>
 <translation id="6874604403660855544">&amp;Opnieuw toevoegen</translation>
+<translation id="6881240511396774766">Snel een nieuw Google-document maken</translation>
 <translation id="6884662655240309489">Grootte 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome heeft deze pagina vereenvoudigd om deze beter leesbaar te maken. Chrome heeft de originele pagina opgehaald via een niet-beveiligde verbinding.</translation>
@@ -1519,6 +1522,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="6898699227549475383">Organisatie (O)</translation>
 <translation id="6907293445143367439">Toestaan dat <ph name="SITE_NAME" /> het volgende doet:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> wil volledig beheer van je MIDI-apparaten hebben</translation>
+<translation id="691325982945105493">Knop Google-document maken, druk op Enter om snel een nieuw Google-document te maken</translation>
 <translation id="6915804003454593391">Gebruiker:</translation>
 <translation id="6934672428414710184">Dit is de naam die in je Google-account staat</translation>
 <translation id="6944692733090228304">Je hebt je wachtwoord ingevoerd op een site die niet door <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> wordt beheerd. Ter bescherming van je account kun je je wachtwoord beter niet hergebruiken voor andere apps en sites.</translation>
@@ -1646,7 +1650,7 @@ Aanvullende informatie:
 <translation id="7399802613464275309">Veiligheidscheck</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403591733719184120">Je <ph name="DEVICE_NAME" /> wordt beheerd</translation>
-<translation id="7407424307057130981">&lt;p&gt;Deze foutmelding wordt weergegeven als je Superfish-software op je Windows-computer hebt geïnstalleerd.&lt;/p&gt;
+<translation id="7407424307057130981">&lt;p&gt;Je ziet deze foutmelding als je Superfish-software op je Windows-computer hebt geïnstalleerd.&lt;/p&gt;
       &lt;p&gt;Volg deze stappen om de software tijdelijk uit te schakelen zodat je verbinding met internet kunt maken. Je hebt beheerdersrechten nodig.&lt;/p&gt;
       &lt;ol&gt;
       &lt;li&gt;Klik op &lt;strong&gt;Start&lt;/strong&gt; en zoek en selecteer &lt;strong&gt;Lokale services weergeven&lt;/strong&gt;
@@ -2047,6 +2051,7 @@ Aanvullende informatie:
 <translation id="8931333241327730545">Wil je deze pas opslaan in je Google-account?</translation>
 <translation id="8932102934695377596">Je klok loopt achter</translation>
 <translation id="893332455753468063">Naam toevoegen</translation>
+<translation id="8934418770423095813">Google-document maken</translation>
 <translation id="8942355029279167844">Je beheerder heeft toegestaan dat <ph name="APP_NAME" /> diagnostische gegevens verzamelt om de productfunctionaliteit te verbeteren. Zie <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> voor meer informatie.</translation>
 <translation id="8943282376843390568">Limoengroen</translation>
 <translation id="8957210676456822347">Autorisatie van captive portal</translation>

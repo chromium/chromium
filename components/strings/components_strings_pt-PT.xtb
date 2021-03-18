@@ -411,6 +411,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="248348093745724435">Políticas do computador</translation>
 <translation id="2491120439723279231">O certificado do servidor contém erros.</translation>
+<translation id="2491414235131909199">Esta página foi bloqueada por uma extensão</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">Analisador JSON</translation>
 <translation id="2495093607237746763">Se marcada, o Chromium armazena uma cópia do seu cartão neste dispositivo para preencher formulários mais rapidamente.</translation>
@@ -836,6 +837,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Mais <ph name="ITEM_COUNT" /> item}other{Mais <ph name="ITEM_COUNT" /> itens}}</translation>
 <translation id="4176463684765177261">Desativado</translation>
+<translation id="4178883739871311481"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para criar um Documento do Google Docs</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">Não é possível guardar o seu cartão neste momento.</translation>
 <translation id="4196861286325780578">&amp;Refazer movimentação</translation>
@@ -1525,6 +1527,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6852204201400771460">Pretende atualizar a aplicação?</translation>
 <translation id="6865412394715372076">Não é possível validar este cartão neste momento.</translation>
 <translation id="6874604403660855544">&amp;Refazer adição</translation>
+<translation id="6881240511396774766">Crie um novo Documento do Google Docs rapidamente</translation>
 <translation id="6884662655240309489">Tamanho 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">O Chrome simplificou esta página para facilitar a leitura. O Chrome obteve a página original através de uma ligação insegura.</translation>
@@ -1534,6 +1537,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6898699227549475383">Organização (O)</translation>
 <translation id="6907293445143367439">Permitir à app <ph name="SITE_NAME" />:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> pretende obter o controlo total sobre os seus dispositivos MIDI.</translation>
+<translation id="691325982945105493">Botão Criar Documento do Google Docs, prima Enter para criar um novo Documento do Google Docs rapidamente</translation>
 <translation id="6915804003454593391">Utilizador:</translation>
 <translation id="6934672428414710184">Este nome é proveniente da sua Conta Google.</translation>
 <translation id="6944692733090228304">Introduziu a palavra-passe num site que não é gerido pela <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Para proteger a conta, não reutilize a sua palavra-passe noutras aplicações e sites.</translation>
@@ -2064,6 +2068,7 @@ Detalhes adicionais:
 <translation id="8931333241327730545">Pretende guardar este cartão na sua Conta Google?</translation>
 <translation id="8932102934695377596">O seu relógio está atrasado</translation>
 <translation id="893332455753468063">Adicionar nome</translation>
+<translation id="8934418770423095813">Criar Documento do Google Docs</translation>
 <translation id="8942355029279167844">O seu administrador autorizou a app <ph name="APP_NAME" /> a recolher dados de diagnóstico para melhorar a experiência do produto. Veja <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> para obter mais informações.</translation>
 <translation id="8943282376843390568">Lima</translation>
 <translation id="8957210676456822347">Autorização de portal cativo</translation>

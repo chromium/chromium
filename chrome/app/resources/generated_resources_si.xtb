@@ -2830,7 +2830,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4115080753528843955">ඇතැම් අන්තර්ගත සේවා ආරක්ෂිත අන්තර්ගතයට ප්‍රවේශය ලබා දීමේ අරමුණ සඳහා අනුපම අනන්‍යකාරක භාවිත කරයි</translation>
 <translation id="4115378294792113321">මැජෙන්ටා</translation>
 <translation id="4118579674665737931">උපාංගය යළි පණ ගන්වා නැවත උත්සාහ කරන්න.</translation>
-<translation id="4118998393712575296">යෙදුම් අනුමත කිරීම සහ තිර කාල සීමා වැනි මාපිය පාලන භාවිත කිරීමට, දරුවෙකුට මාපියන්ගෙන් අයෙකු විසින් කළමනාකරණය කරන Google ගිණුමක් තිබිය යුතුය. Google පන්ති කාමරය වැනි අඩවි සහ යෙදුම් සමඟ භාවිත කිරීම සඳහා පාසල් ගිණුමක් පසුව එක් කළ හැකිය.</translation>
 <translation id="4120388883569225797">මෙම ආරක්‍ෂක යතුර යළි සැකසිය නොහැක</translation>
 <translation id="4120817667028078560">මඟ ඉතා දිගුයි</translation>
 <translation id="4124823734405044952">ඔබේ ආරක්‍ෂක යතුර යළි සකසා ඇත</translation>
@@ -3305,6 +3304,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4682551433947286597">පිරිමේ තිරය මත පෙනෙන බිතුපත්.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (පෙරනිමි)</translation>
 <translation id="4684427112815847243">සියල්ල සම්මුහුර්ත කරන්න</translation>
+<translation id="4687613760714619596">නොදන්නා උපාංගය (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">දේශීය ලොග් ID: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">ඔබගේ ආදර්ශ මනාප තෝරන්න</translation>
 <translation id="4689421377817139245">ඔබේ iPhone වෙත මෙම පිටුසන සමමුහුර්ත කරන්න</translation>

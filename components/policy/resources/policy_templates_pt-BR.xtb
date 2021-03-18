@@ -1090,6 +1090,15 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Se esta política for definida no nível da plataforma, a sincronização será desativada em toda a plataforma.
       Se ela for definida no nível do usuário, a sincronização será desativada para esse usuário específico para que esta política seja aplicada.
       </translation>
+<translation id="244950822854046436">Lista de configurações que serão aplicadas ao <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, que é acionado quando um arquivo é transferido por download.
+
+      Os campos <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> são usados para determinar se o conector precisa enviar um arquivo ao provedor de serviços ao fazer o download em uma página da Web. O URL da página precisa corresponder ao padrão associado a um padrão "enable", e não a um "disable".  O Tipo MIME do arquivo também precisa corresponder ao padrão associado a um padrão "enable", e não a um "disable".
+
+      O campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica o provedor de serviços de análise correspondente às configurações.
+
+      O campo <ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" /> é um ID exclusivo de um provedor de serviços parceiro que identifica a conta do cliente com o provedor. Quando o login é solicitado como parte da configuração do <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, apenas contas de usuário associadas à conta de provedor de serviços do cliente são permitidas.
+
+      Esta política só pode ser definida pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="2454228136871844693">Otimiza a estabilidade.</translation>
 <translation id="2455033019778127130">Usa o comportamento padrão do navegador, exibe os TOS e espera até eles serem aceitos pelo usuário.</translation>
 <translation id="2460127623195247744">Esta política foi suspensa. Use a <ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />.
@@ -5486,6 +5495,12 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       Veja mais detalhes em https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
 <translation id="8424255554404582727">Definir rotação padrão da tela, reaplicada em cada reinicialização</translation>
 <translation id="8426231401662877819">Girar tela no sentido horário em 90 graus</translation>
+<translation id="8426819027631706846">Como descrito em https://www.chromestatus.com/feature/5148698084376576, as caixas de diálogo modais de JavaScript, acionadas por <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" />, e <ph name="JS_PROMPT" />, serão bloqueadas no <ph name="PRODUCT_NAME" /> se forem acionadas por um subframe com a origem diferente do frame de origem principal.
+       Esta política permite substituir essa mudança.
+       Se a política for definida como "Enabled" ou deixada sem definição, as caixas de diálogo de JavaScript acionadas por um subframe de origem diferente serão bloqueadas.
+       Se ela for definida como "Disabled", as caixas de diálogo de JavaScript acionadas por um subframe de origem diferente não serão bloqueadas.
+
+       Esta política será removida na versão 95 do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8433186206711564395">Configurações de rede</translation>
 <translation id="8433769814000220721">Permitir conteúdo sugerido</translation>
 <translation id="843609873781525167">Se a política for definida como verdadeira, o <ph name="PRODUCT_NAME" /> precisará sempre verificar se é o navegador padrão na inicialização e, se possível, registrar-se automaticamente. Se a política for definida como falsa, o<ph name="PRODUCT_NAME" /> deixará de verificar se ele é o navegador padrão e os controles do usuário para essa opção serão desativados.

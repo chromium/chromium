@@ -407,6 +407,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="248348093745724435">Políticas do computador</translation>
 <translation id="2491120439723279231">O certificado do servidor contém erros.</translation>
+<translation id="2491414235131909199">Esta página foi bloqueada por uma extensão</translation>
 <translation id="2493640343870896922">Letter Plus</translation>
 <translation id="2495083838625180221">Analisador JSON</translation>
 <translation id="2495093607237746763">Se esta opção for selecionada, o Chromium armazenará uma cópia do seu cartão neste dispositivo para preencher de formulários mais rapidamente.</translation>
@@ -829,6 +830,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{Mais <ph name="ITEM_COUNT" /> item}one{Mais <ph name="ITEM_COUNT" /> item}other{Mais <ph name="ITEM_COUNT" /> itens}}</translation>
 <translation id="4176463684765177261">Desativado</translation>
+<translation id="4178883739871311481"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e Enter para criar um arquivo do Documentos Google</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" />: <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">Não é possível salvar seu cartão no momento</translation>
 <translation id="4196861286325780578">&amp;Refazer mover</translation>
@@ -1514,6 +1516,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6852204201400771460">Recarregar app?</translation>
 <translation id="6865412394715372076">Não é possível verificar este cartão no momento</translation>
 <translation id="6874604403660855544">&amp;Refazer adicionar</translation>
+<translation id="6881240511396774766">Criar um novo arquivo do Documentos Google rapidamente</translation>
 <translation id="6884662655240309489">Tamanho 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">O Chrome simplificou esta página para facilitar a leitura. A página original foi recuperada por uma conexão não segura.</translation>
@@ -1523,6 +1526,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6898699227549475383">O (Organização)</translation>
 <translation id="6907293445143367439">Permitir que <ph name="SITE_NAME" />:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> quer ter controle total sobre seus dispositivos MIDI</translation>
+<translation id="691325982945105493">Botão "Criar um arquivo do Documentos Google". Pressione Enter para criar um novo arquivo do Documentos Google rapidamente</translation>
 <translation id="6915804003454593391">Usuário:</translation>
 <translation id="6934672428414710184">Este nome é da sua Conta do Google</translation>
 <translation id="6944692733090228304">Você inseriu sua senha em um site que não é gerenciado por <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Para proteger sua conta, não reutilize sua senha em outros apps e sites.</translation>
@@ -2054,6 +2058,7 @@ Mais detalhes:
 <translation id="8931333241327730545">Quer salvar este cartão na sua Conta do Google?</translation>
 <translation id="8932102934695377596">Seu relógio está atrasado</translation>
 <translation id="893332455753468063">Adicione um Nome</translation>
+<translation id="8934418770423095813">Criar um arquivo do Documentos Google</translation>
 <translation id="8942355029279167844">Seu administrador permitiu que <ph name="APP_NAME" /> coletasse dados de diagnósticos para melhorar a experiência com o produto. Veja mais informações em <ph name="BEGIN_LINK" />https://www.parallels.com/br/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Verde-limão</translation>
 <translation id="8957210676456822347">Autorização de portal cativo</translation>

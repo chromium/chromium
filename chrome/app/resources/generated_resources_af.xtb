@@ -2831,7 +2831,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4115080753528843955">Sommige inhouddienste gebruik unieke identifiseerders om toegang tot beskermde inhoud te magtig</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4118579674665737931">Laat die toestel herselflaai en probeer weer.</translation>
-<translation id="4118998393712575296">Om ouerkontroles soos programgoedkeuring en skermtydlimiete te gebruik, moet 'n kind 'n Google-rekening hê wat deur 'n ouer bestuur word. 'n Skoolrekening kan later bygevoeg word om saam met werwe en programme soos Google Klaskamer te gebruik.</translation>
 <translation id="4120388883569225797">Kan nie hierdie sekuriteitsleutel terugstel nie</translation>
 <translation id="4120817667028078560">Pad te lank</translation>
 <translation id="4124823734405044952">Jou sekuriteitsleutel is teruggestel</translation>
@@ -3306,6 +3305,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4682551433947286597">Muurpapiere verskyn op die aanmeldskerm</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (verstek)</translation>
 <translation id="4684427112815847243">Sinkroniseer alles</translation>
+<translation id="4687613760714619596">Onbekende toestel <ph name="DEVICE_ID" /></translation>
 <translation id="4688036121858134881">Plaaslike loglêer-ID: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">Kies jou demonstrasievoorkeure</translation>
 <translation id="4689421377817139245">Sinkroniseer hierdie boekmerk met jou iPhone</translation>

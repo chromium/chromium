@@ -2834,7 +2834,6 @@
 <translation id="4115080753528843955">تستخدم بعض خدمات المحتوى مُعرّفات فريدةً لأغراض تتعلق بالسماح بالدخول إلى المحتوى المحمي</translation>
 <translation id="4115378294792113321">أرجواني</translation>
 <translation id="4118579674665737931">يُرجى إعادة تشغيل الجهاز وإعادة المحاولة.</translation>
-<translation id="4118998393712575296">‏لاستخدام أدوات الرقابة الأبوية، مثل الموافقة على التطبيقات وحدود وقت النظر إلى الشاشة، يجب أن يكون للطفل حساب على Google يديره أحد الوالدَين. يمكن إضافة حساب تديره المؤسسة التعليمية لاحقًا لاستخدامه في مواقع إلكترونية وتطبيقات مثل Google Classroom.</translation>
 <translation id="4120388883569225797">تعذّرت إعادة ضبط مفتاح الأمان هذا</translation>
 <translation id="4120817667028078560">المسار طويل جدًا</translation>
 <translation id="4124823734405044952">تمت إعادة ضبط مفتاح الأمان</translation>
@@ -3309,6 +3308,7 @@
 <translation id="4682551433947286597">تظهر الخلفيات على شاشة تسجيل الدخول.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (تلقائي)</translation>
 <translation id="4684427112815847243">مزامنة كل شيء</translation>
+<translation id="4687613760714619596">جهاز غير معروف (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">رقم تعريف السِجلّ المحلي: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">اختيار إعدادات العرض التوضيحي المفضَّلة</translation>
 <translation id="4689421377817139245">‏مزامنة هذه الإشارة المرجعة على جهاز iPhone</translation>

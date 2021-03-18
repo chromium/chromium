@@ -300,7 +300,7 @@
 <translation id="2079545284768500474">元に戻す</translation>
 <translation id="20817612488360358">システム プロキシ設定を使用するように設定されていますが、明示的なプロキシの設定も指定されています。</translation>
 <translation id="2082238445998314030">結果 <ph name="TOTAL_RESULTS" /> 件中 <ph name="RESULT_NUMBER" /> 件目</translation>
-<translation id="2088086323192747268">同期を管理するボタンです。Enter キーを押すと、Chrome の設定で同期する情報を管理します</translation>
+<translation id="2088086323192747268">同期を管理するボタンです。Enter キーを押して、Chrome の設定で同期する情報を管理します</translation>
 <translation id="2091887806945687916">音声</translation>
 <translation id="2094505752054353250">ドメインが一致しません</translation>
 <translation id="2096368010154057602">県</translation>
@@ -365,7 +365,7 @@
 <translation id="2293443924986248631">オンにすると、サイトは Cookie を使用してあなたをウェブ上でトラッキングできなくなります。一部サイトの機能が使用できなくなる可能性もあります。</translation>
 <translation id="2295290966866883927">アクセスしたページの URL は分析のため Google Cloud または第三者に送信されます。たとえば、安全でないウェブサイトを検出するためにスキャンされる場合があります。</translation>
 <translation id="2297722699537546652">B5（封筒）</translation>
-<translation id="2298855485018661510">Cookie を管理するボタンです。Enter キーを押すと、Chrome の設定で Cookie の設定を管理します</translation>
+<translation id="2298855485018661510">Cookie を管理するボタンです。Enter キーを押して、Chrome の設定で Cookie の設定を管理します</translation>
 <translation id="2300306941146563769">アップロードされていません</translation>
 <translation id="2310021320168182093">長2（封筒）</translation>
 <translation id="2316887270356262533">最大で 1 MB を解放します。サイトによっては、次回アクセスする際に読み込みに時間がかかる可能性があります。</translation>
@@ -399,7 +399,7 @@
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">配達方法を選択</translation>
 <translation id="2465688316154986572">ステープル</translation>
-<translation id="246725142101294240"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome の設定でセーフ ブラウジングなどを管理します</translation>
+<translation id="246725142101294240"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押して、Chrome の設定でセーフ ブラウジングなどを管理します</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />ネットワーク診断ツールを実行する<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1～N の順</translation>
 <translation id="2470767536994572628">メモを編集すると、ドキュメントは単一ページ表示で元の向きに戻ります</translation>
@@ -572,7 +572,7 @@
 <translation id="3188393374551744535">アカウント残高</translation>
 <translation id="3194737229810486521"><ph name="URL" /> から、デバイスにデータを永続的に保存する許可を求められています</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" />（<ph name="SERVER_NAME" /> 上）</translation>
-<translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome の設定で同期する情報を管理します</translation>
+<translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押して、Chrome の設定で同期する情報を管理します</translation>
 <translation id="320323717674993345">支払いをキャンセル</translation>
 <translation id="3207960819495026254">ブックマークしました</translation>
 <translation id="3209034400446768650">このページでは料金が請求される可能性があります</translation>
@@ -618,6 +618,7 @@
 <translation id="3371076217486966826"><ph name="URL" /> が次の許可を求めています。
       • 周囲の 3D マップの作成とカメラ位置の追跡
       • カメラの使用</translation>
+<translation id="3372389303668969359">Windows Hello を使用すると、次回このデバイスを使用してこのお支払い方法で購入する際に本人確認をすばやく行えるようになります。</translation>
 <translation id="337363190475750230">プロビジョニングが解除されました</translation>
 <translation id="3377144306166885718">このサーバーは TLS の廃止されたバージョンを使用しています。</translation>
 <translation id="3377188786107721145">ポリシー解析エラーです</translation>
@@ -661,7 +662,7 @@
 <translation id="350069200438440499">ファイル名:</translation>
 <translation id="3507936815618196901">周囲の 3D マップの作成とカメラ位置の追跡</translation>
 <translation id="3512163584740124171">より優先度の高いポリシーが同じポリシー グループにあるため、このポリシーは無視されます。</translation>
-<translation id="35172538073169599">住所を管理するボタンです。Enter キーを押すと、Chrome の設定で住所を追加、管理します</translation>
+<translation id="35172538073169599">住所を管理するボタンです。Enter キーを押して、Chrome の設定で住所を追加、管理します</translation>
 <translation id="3518941727116570328">複数オブジェクトの処理</translation>
 <translation id="3528171143076753409">サーバーの証明書を信頼できません。</translation>
 <translation id="3528485271872257980">暗い茶色</translation>
@@ -691,6 +692,7 @@
 <translation id="3615877443314183785">有効期限（日）を入力してください</translation>
 <translation id="36224234498066874">閲覧履歴データを削除...</translation>
 <translation id="362276910939193118">全履歴を表示</translation>
+<translation id="3625635938337243871">ログインデータはシークレット モードの終了後にこのデバイスに保存されます。</translation>
 <translation id="3630155396527302611">ネットワークへのアクセスを許可されたプログラムとして既に表示されている場合は、
       いったんリストから削除し、もう一度追加してみてください。</translation>
 <translation id="3630699740441428070">このデバイスの管理者が設定したネットワーク接続によって、アクセス先のウェブサイトを含むネットワーク トラフィックを管理者が把握できるようになっている可能性があります。</translation>
@@ -920,6 +922,7 @@
 <translation id="4477350412780666475">次の曲</translation>
 <translation id="4482953324121162758">このサイトは翻訳されません。</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">Google アカウントで同期パスワードを暗号化する</translation>
 <translation id="4492519888999857993">これらの機能はデフォルトで無効になっています。Chrome の今後のバージョンではご利用いただけません。</translation>
 <translation id="4493480324863638523">URL が無効です。標準のスキームを使用した URL を指定してください（例: http://example.com、https://example.com）。</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
@@ -1089,6 +1092,7 @@
 <translation id="5126510351761255129">カードの確認</translation>
 <translation id="5135404736266831032">住所を管理...</translation>
 <translation id="5138227688689900538">一部を表示</translation>
+<translation id="514010763713772514">次回の確認が簡単になります</translation>
 <translation id="5145883236150621069">ポリシー応答内にエラー コードがあります</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> の通知をブロックしました</translation>
 <translation id="5148809049217731050">上向き</translation>
@@ -1200,7 +1204,7 @@
 <translation id="5540224163453853">リクエストされた記事が見つかりませんでした。</translation>
 <translation id="5541086400771735334">用紙受け 7</translation>
 <translation id="5541546772353173584">メールの追加</translation>
-<translation id="5542280138350899197">セキュリティ設定を管理するボタンです。Enter キーを押すと、Chrome の設定でセーフ ブラウジングなどを管理します</translation>
+<translation id="5542280138350899197">セキュリティ設定を管理するボタンです。Enter キーを押して、Chrome の設定でセーフ ブラウジングなどを管理します</translation>
 <translation id="5545756402275714221">おすすめの記事</translation>
 <translation id="5552137475244467770">Chrome では、定期的にパスワードをオンライン上の公開リストと照合し、確認しています。その際、パスワードとユーザー名は Google を含め誰も読み取ることができないよう暗号化されます。</translation>
 <translation id="5556459405103347317">再読み込み</translation>
@@ -1454,7 +1458,7 @@
 <translation id="6583674473685352014">B6（封筒）</translation>
 <translation id="6587923378399804057">コピーしたリンク</translation>
 <translation id="6591833882275308647">ご使用の <ph name="DEVICE_TYPE" /> は管理されていません</translation>
-<translation id="6592952801936330159">サイトの設定を管理するボタンです。Enter キーを押すと、Chrome の設定ですべてのサイトに保存されている権限とデータを管理します</translation>
+<translation id="6592952801936330159">サイトの設定を管理するボタンです。Enter キーを押して、Chrome の設定ですべてのサイトに保存されている権限とデータを管理します</translation>
 <translation id="6596325263575161958">暗号化オプション</translation>
 <translation id="6604181099783169992">モーション センサーまたは光センサー</translation>
 <translation id="6609880536175561541">Prc7（封筒）</translation>
@@ -1566,7 +1570,7 @@
 <translation id="7083258188081898530">トレイ 9</translation>
 <translation id="7086090958708083563">ユーザーからアップロードがリクエストされました</translation>
 <translation id="7087282848513945231">郡</translation>
-<translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome の設定ですべてのサイトに保存されている権限とデータを管理します</translation>
+<translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押して、Chrome の設定ですべてのサイトに保存されている権限とデータを管理します</translation>
 <translation id="7108338896283013870">非表示</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> から、カメラの使用許可を求められています</translation>
 <translation id="7108819624672055576">拡張機能によって許可</translation>
@@ -1632,7 +1636,7 @@
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">コマンドライン</translation>
 <translation id="7359588939039777303">広告がブロックされました。</translation>
-<translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome の設定で住所を追加、管理します</translation>
+<translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押して、Chrome の設定で住所を追加、管理します</translation>
 <translation id="7365849542400970216">デバイスのアクティブ状態を知らせますか？</translation>
 <translation id="7372973238305370288">検索結果</translation>
 <translation id="7374733840632556089">この問題は、あなたまたは他のユーザーがデバイスにインストールした証明書が原因で発生します。該当の証明書は、ネットワークの監視と傍受に使われることが確認されており、Chrome では信頼されていません。学校や会社のネットワークなどで合法的に監視されているケースもありますが、ユーザーが監視を止められないとしても監視の事実を把握できるように、Chrome ではこのメッセージを表示しています。監視の対象は、ブラウザ、またはウェブにアクセスするアプリケーションです。</translation>
@@ -1837,6 +1841,7 @@
 <translation id="8086971161893892807">下書き</translation>
 <translation id="8088680233425245692">記事を表示できませんでした。</translation>
 <translation id="808894953321890993">パスワードの変更</translation>
+<translation id="8090329638663751802">Touch ID を使用すると、次回このデバイスを使用してこのお支払い方法で購入する際にすばやく本人確認を行えるようになります。</translation>
 <translation id="8090403583893450254">サイズ 20</translation>
 <translation id="8091372947890762290">サーバーで有効化が保留になっています</translation>
 <translation id="8092774999298748321">ディープ パープル</translation>
@@ -1924,7 +1929,7 @@
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8428213095426709021">設定</translation>
-<translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome の設定で Cookie の設定を管理します</translation>
+<translation id="8431194080598727332"><ph name="MANAGE_COOKIES_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押して、Chrome の設定で Cookie の設定を管理します</translation>
 <translation id="8433057134996913067">ほとんどのウェブサイトからログアウトします。</translation>
 <translation id="8437238597147034694">移動の取り消し（&amp;U）</translation>
 <translation id="8438786541497918448">カメラとマイクを使用しますか？</translation>

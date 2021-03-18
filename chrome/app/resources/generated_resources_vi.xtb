@@ -2831,7 +2831,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4115080753528843955">Một số dịch vụ nội dung sử dụng số nhận dạng duy nhất nhằm mục đích cho phép truy cập vào nội dung được bảo vệ</translation>
 <translation id="4115378294792113321">Đỏ thẫm</translation>
 <translation id="4118579674665737931">Vui lòng khởi động lại thiết bị và thử lại.</translation>
-<translation id="4118998393712575296">Để sử dụng các quyền kiểm soát của cha mẹ như phê duyệt ứng dụng và giới hạn thời gian sử dụng thiết bị, trẻ phải có một Tài khoản Google do cha mẹ quản lý. Bạn có thể thêm một tài khoản trường học vào lúc khác để sử dụng với các trang web và ứng dụng như Google Lớp học.</translation>
 <translation id="4120388883569225797">Không thể đặt lại khóa bảo mật này</translation>
 <translation id="4120817667028078560">Đường dẫn quá dài</translation>
 <translation id="4124823734405044952">Khóa bảo mật của bạn đã được đặt lại</translation>
@@ -3306,6 +3305,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4682551433947286597">Hình nền xuất hiện trên màn hình đăng nhập.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (mặc định)</translation>
 <translation id="4684427112815847243">Đồng bộ hóa mọi thứ</translation>
+<translation id="4687613760714619596">Thiết bị không xác định (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">ID nhật ký cục bộ: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">Chọn tùy chọn minh họa</translation>
 <translation id="4689421377817139245">Đồng bộ hóa dấu trang này với iPhone của bạn</translation>

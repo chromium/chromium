@@ -403,6 +403,7 @@
 <translation id="2482878487686419369">通知</translation>
 <translation id="248348093745724435">设备政策</translation>
 <translation id="2491120439723279231">服务器证书中包含错误。</translation>
+<translation id="2491414235131909199">此页面已被某个扩展程序屏蔽</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON 解析器</translation>
 <translation id="2495093607237746763">选中后，Chromium 会将您的信用卡副本存储在此设备上，以加快表单填写速度。</translation>
@@ -816,6 +817,7 @@
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{另外 <ph name="ITEM_COUNT" /> 项}other{另外 <ph name="ITEM_COUNT" /> 项}}</translation>
 <translation id="4176463684765177261">已停用</translation>
+<translation id="4178883739871311481"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可创建 Google 文档</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> - <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">此刻无法保存您的信用卡信息</translation>
 <translation id="4196861286325780578">恢复移动(&amp;R)</translation>
@@ -1496,6 +1498,7 @@
 <translation id="6852204201400771460">要重新加载应用吗？</translation>
 <translation id="6865412394715372076">暂时无法验证此信用卡</translation>
 <translation id="6874604403660855544">恢复添加(&amp;R)</translation>
+<translation id="6881240511396774766">快速创建一个新的 Google 文档</translation>
 <translation id="6884662655240309489">大小：1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome 已简化该页面，让内容更易于阅读，并且通过不安全的连接检索到了原始网页。</translation>
@@ -1505,6 +1508,7 @@
 <translation id="6898699227549475383">组织 (O)</translation>
 <translation id="6907293445143367439">允许 <ph name="SITE_NAME" />：</translation>
 <translation id="6910240653697687763"><ph name="URL" /> 想完全控制您的 MIDI 设备</translation>
+<translation id="691325982945105493">“创建 Google 文档”按钮，按 Enter 键即可快速创建一个新的 Google 文档</translation>
 <translation id="6915804003454593391">用户：</translation>
 <translation id="6934672428414710184">此名称来自您的 Google 帐号</translation>
 <translation id="6944692733090228304">您在一个不受 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 管理的网站上输入了您的密码。为了保护您的帐号，请不要在其他应用和网站上重复使用您的密码。</translation>
@@ -2026,6 +2030,7 @@
 <translation id="8931333241327730545">要将此卡的信息保存到您的 Google 帐号吗？</translation>
 <translation id="8932102934695377596">您的时钟慢了</translation>
 <translation id="893332455753468063">添加名称</translation>
+<translation id="8934418770423095813">创建 Google 文档</translation>
 <translation id="8942355029279167844">您的管理员已允许 <ph name="APP_NAME" /> 收集诊断数据以提升产品使用体验。有关详情，请参阅 <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />。</translation>
 <translation id="8943282376843390568">绿黄色</translation>
 <translation id="8957210676456822347">强制门户授权</translation>

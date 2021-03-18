@@ -2826,7 +2826,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4115080753528843955">Noen innholdstjenester bruker unike identifikatorer for å godkjenne tilgang til beskyttet innhold</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4118579674665737931">Start enheten på nytt og prøv igjen.</translation>
-<translation id="4118998393712575296">Hvis du vil bruke foreldrekontroller som appgodkjenning og grenser for skjermtid, må barnet ha en Google-konto som administreres av en forelder. Senere kan det legges til en skolekonto for bruk på nettsteder og i apper som Google Classroom.</translation>
 <translation id="4120388883569225797">Kan ikke tilbakestille denne sikkerhetsnøkkelen</translation>
 <translation id="4120817667028078560">Filbanen er for lang</translation>
 <translation id="4124823734405044952">Sikkerhetsnøkkelen er tilbakestilt</translation>
@@ -3301,6 +3300,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4682551433947286597">Bakgrunner vises på påloggingsskjermen.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (standard)</translation>
 <translation id="4684427112815847243">Synkroniser alt</translation>
+<translation id="4687613760714619596">Ukjent enhet (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">Lokal logg-ID: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">Velg demoinnstillingene dine</translation>
 <translation id="4689421377817139245">Synkroniser dette bokmerket med iPhone</translation>

@@ -2830,7 +2830,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4115080753528843955">Bizonyos tartalomszolgáltatások egyedi azonosítót használnak a védett tartalmakhoz való hozzáférés engedélyezéséhez</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4118579674665737931">Indítsa újra az eszközt, majd próbálja meg újra.</translation>
-<translation id="4118998393712575296">A szülői felügyelet (mint például az alkamazásjóváhagyás és a képernyő előtt tölthető idő) beállításához a gyermeknek a szülő által felügyelt Google-fiókkal kell rendelkeznie. Iskolai fiók később is hozzáadható webhelyek és olyan alkalmazások használatára, mint a Google Tanterem.</translation>
 <translation id="4120388883569225797">Nem lehetséges a biztonsági hardverkulcs visszaállítása.</translation>
 <translation id="4120817667028078560">Az elérési út túl hosszú</translation>
 <translation id="4124823734405044952">Sikerült a biztonsági hardverkulcs visszaállítása</translation>
@@ -3305,6 +3304,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4682551433947286597">A háttérképek a bejelentkezési képernyőn jelennek meg.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (alapértelmezett)</translation>
 <translation id="4684427112815847243">Az összes szinkronizálása</translation>
+<translation id="4687613760714619596">Ismeretlen eszköz (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">Napló helyi azonosítója: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">A demóbeállítások kiválasztása</translation>
 <translation id="4689421377817139245">Szinkronizálja ezt a könyvjelzőt iPhone eszközével</translation>

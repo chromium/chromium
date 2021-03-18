@@ -2829,7 +2829,6 @@
 <translation id="4115080753528843955">일부 콘텐츠 서비스는 보호된 콘텐츠에 액세스 권한을 부여할 수 있도록 고유 식별자를 사용합니다.</translation>
 <translation id="4115378294792113321">자홍색</translation>
 <translation id="4118579674665737931">기기를 재부팅한 후 다시 시도해 주세요.</translation>
-<translation id="4118998393712575296">앱 승인 및 기기 사용 시간 제한과 같은 자녀 보호 기능을 사용하려면 자녀에게 부모가 관리하는 Google 계정이 있어야 합니다. 나중에 학교 계정을 추가하여 Google 클래스룸과 같은 앱이나 사이트에서 사용할 수 있습니다</translation>
 <translation id="4120388883569225797">보안 키를 재설정할 수 없습니다.</translation>
 <translation id="4120817667028078560">경로가 너무 김</translation>
 <translation id="4124823734405044952">보안 키가 재설정되었습니다.</translation>
@@ -3304,6 +3303,7 @@
 <translation id="4682551433947286597">로그인 화면에 배경화면이 표시됩니다.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />%(기본)</translation>
 <translation id="4684427112815847243">모두 동기화</translation>
+<translation id="4687613760714619596">알 수 없는 기기(<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">로컬 로그 ID: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" /></translation>
 <translation id="4689235506267737042">데모 환경설정 선택</translation>
 <translation id="4689421377817139245">이 북마크를 내 iPhone에 동기화</translation>

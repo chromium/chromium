@@ -2831,7 +2831,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4115080753528843955">I vissa innehållstjänster används unika identifierare i syfte att ge åtkomst till skyddat innehåll</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4118579674665737931">Starta om enheten och försök igen.</translation>
-<translation id="4118998393712575296">Om du vill använda föräldrakontroller som appgodkännanden och skärmtidsgränser måste barnet ha ett Google-konto som hanteras av en förälder. Ett skolkonto som kan användas med webbplatser och appar som Google Classroom kan läggas till senare.</translation>
 <translation id="4120388883569225797">Det går inte att återställa den här säkerhetsnyckeln</translation>
 <translation id="4120817667028078560">Sökvägen är för lång</translation>
 <translation id="4124823734405044952">Säkerhetsnyckeln har återställts</translation>
@@ -3306,6 +3305,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4682551433947286597">Bakgrunder visas på inloggningsskärmen.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (standard)</translation>
 <translation id="4684427112815847243">Synkronisera allt</translation>
+<translation id="4687613760714619596">Okänd enhet (<ph name="DEVICE_ID" />)</translation>
 <translation id="4688036121858134881">Lokalt logg-id: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4689235506267737042">Välj demoinställningar</translation>
 <translation id="4689421377817139245">Synkronisera det här bokmärket med din iPhone</translation>

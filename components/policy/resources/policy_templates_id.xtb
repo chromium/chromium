@@ -1097,6 +1097,15 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Jika kebijakan ini disetel di tingkat platform, Sinkronisasi harus dinonaktifkan di tingkat platform.
       Jika kebijakan ini disetel di tingkat pengguna, Sinkronisasi harus dinonaktifkan untuk pengguna tersebut agar kebijakan ini dapat berlaku.
       </translation>
+<translation id="244950822854046436">Daftar setelan yang akan diterapkan ke <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, yang aktif saat file didownload.
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />, dan <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> digunakan untuk menentukan apakah konektor perlu mengirimkan file ke penyedia layanan saat mendownload dari halaman web. URL halaman web harus cocok dengan pola yang terkait ke pola 'enable' dan tidak terkait ke pola 'disable'.  Jenis MIME file juga harus cocok dengan pola yang terkait ke pola 'enable' dan tidak terkait ke pola 'disable'.
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> akan mengidentifikasi penyedia layanan analisis yang sesuai dengan setelan.
+
+      Kolom <ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" /> adalah ID unik untuk penyedia layanan partner yang mengidentifikasi akun pelanggan dengan penyedia layanan. Jika pengguna diminta login sebagai bagian dari penyiapan <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />, hanya akun pengguna yang terkait dengan akun penyedia layanan pelanggan ini yang akan diizinkan.
+
+      Kebijakan ini hanya dapat disetel dari <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.</translation>
 <translation id="2454228136871844693">Mengoptimalkan untuk stabilitas.</translation>
 <translation id="2455033019778127130">Menggunakan perilaku browser default, menampilkan ToS, dan menunggu penerimaan dari pengguna.</translation>
 <translation id="2460127623195247744">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan kebijakan '<ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />'.
@@ -5519,6 +5528,12 @@ Cara yang disarankan untuk mengonfigurasi kebijakan di Windows adalah melalui GP
       Lihat https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744 untuk detailnya.</translation>
 <translation id="8424255554404582727">Setel pemutaran layar default, diterapkan kembali setiap kali melakukan boot ulang</translation>
 <translation id="8426231401662877819">Putar layar searah jarum jam sebesar 90 derajat</translation>
+<translation id="8426819027631706846">Sebagaimana dijelaskan di https://www.chromestatus.com/feature/5148698084376576, dialog modal JavaScript, yang dipicu oleh <ph name="JS_ALERT" />, <ph name="JS_CONFIRM" />, dan <ph name="JS_PROMPT" />, akan diblokir di <ph name="PRODUCT_NAME" /> jika dipicu dari subframe yang memiliki asal berbeda dari asal frame utama.
+       Kebijakan ini memungkinkan penggantian perubahan tersebut.
+       Jika kebijakan disetel ke aktif atau tidak disetel, dialog JavaScript yang dipicu dari subframe asal yang berbeda akan diblokir.
+       Jika kebijakan disetel ke nonaktif, dialog JavaScript yang dipicu dari subframe asal yang berbeda tidak akan diblokir.
+
+       Kebijakan ini akan dihapus dari <ph name="PRODUCT_NAME" /> versi 95.</translation>
 <translation id="8433186206711564395">Setelan jaringan</translation>
 <translation id="8433769814000220721">Mengaktifkan Konten yang Disarankan</translation>
 <translation id="843609873781525167">Jika kebijakan ditetapkan ke Benar (True), <ph name="PRODUCT_NAME" /> akan selalu memeriksa apakah browser merupakan default saat memulai dan, jika mungkin, mendaftarkan sendiri secara otomatis. Jika kebijakan ditetapkan ke Salah (False), <ph name="PRODUCT_NAME" /> akan berhenti memeriksa apakah browser tersebut merupakan default dan menonaktifkan kontrol pengguna untuk opsi ini.
