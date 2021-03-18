@@ -189,7 +189,7 @@ vars = {
   'checkout_reclient': False,
 
   # reclient CIPD package version
-  'reclient_version': 're_client_version:0.23.0.edbb281',
+  'reclient_version': 're_client_version:0.24.0.c22ef22',
 
   'android_git': 'https://android.googlesource.com',
   'aomedia_git': 'https://aomedia.googlesource.com',
