@@ -43,9 +43,6 @@ external/wpt/css/css-break/transform-002.html [ Pass ]
 crbug.com/1135676 external/wpt/css/css-ui/resize-child-will-change-transform.html [ Pass ]
 crbug.com/148499 external/wpt/svg/extensibility/foreignObject/will-change-in-foreign-object-paint-order.html [ Pass ]
 
-# Raster under-invalidation checking doesn't work for huge layers.
-paint/invalidation/raster-under-invalidation-checking.html [ Failure ]
-
 paint/invalidation/media-audio-no-spurious-repaints.html [ Failure ]
 
 # Outline paints incorrectly with columns. Needs LayoutNGBlockFragment.

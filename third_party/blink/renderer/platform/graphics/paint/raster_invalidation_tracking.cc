@@ -169,8 +169,6 @@ void RasterInvalidationTracking::CheckUnderInvalidations(
     return;
 
   IntRect rect = Intersection(old_interest_rect, new_interest_rect);
-  // Avoid too big area as the following code is slow.
-  rect.Intersect(IntRect(rect.X(), rect.Y(), 1200, 6000));
   if (rect.IsEmpty())
     return;
 
@@ -197,6 +195,15 @@ void RasterInvalidationTracking::CheckUnderInvalidations(
   int mismatching_pixels = 0;
   static const int kMaxMismatchesToReport = 50;
   for (int bitmap_y = 0; bitmap_y < rect.Height(); ++bitmap_y) {
+    // In the common case of no under-invalidation, memcmp/memset is much faster
+    // than the pixel-by-pixel comparison below.
+    void* new_row_addr = new_bitmap.pixmap().writable_addr(0, bitmap_y);
+    if (memcmp(old_bitmap.pixmap().addr(0, bitmap_y), new_row_addr,
+               new_bitmap.rowBytes()) == 0) {
+      memset(new_row_addr, 0, new_bitmap.rowBytes());
+      continue;
+    }
+
     int layer_y = bitmap_y + rect.Y();
     for (int bitmap_x = 0; bitmap_x < rect.Width(); ++bitmap_x) {
       int layer_x = bitmap_x + rect.X();
