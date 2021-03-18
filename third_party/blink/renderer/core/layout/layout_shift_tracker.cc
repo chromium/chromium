@@ -94,9 +94,9 @@ bool EqualWithinMovementThreshold(const FloatPoint& a,
          fabs(a.Y() - b.Y()) < threshold_physical_px;
 }
 
-bool SmallerThanRegionGranularity(const PhysicalRect& rect) {
-  // The region uses integer coordinates, so the rects are snapped to
-  // pixel boundaries. Ignore rects smaller than half a pixel.
+bool SmallerThanRegionGranularity(const LayoutRect& rect) {
+  // Normally we paint by snapping to whole pixels, so rects smaller than half
+  // a pixel may be invisible.
   return rect.Width() < 0.5 || rect.Height() < 0.5;
 }
 
@@ -164,36 +164,62 @@ bool LayoutShiftTracker::NeedsToTrack(const LayoutObject& object) const {
   if (object.IsSVGChild())
     return false;
 
-  if (object.IsText())
-    return !object.IsBR() && ContainingBlockScope::top_;
+  if (object.StyleRef().Visibility() != EVisibility::kVisible)
+    return false;
+
+  if (object.IsText()) {
+    if (!ContainingBlockScope::top_)
+      return false;
+    if (object.IsBR())
+      return false;
+    if (To<LayoutText>(object).ContainsOnlyWhitespaceOrNbsp() ==
+        OnlyWhitespaceOrNbsp::kYes)
+      return false;
+    if (object.StyleRef().GetFont().ShouldSkipDrawing())
+      return false;
+    return true;
+  }
 
   if (!object.IsBox())
     return false;
 
-  if (auto* display_lock_context = object.GetDisplayLockContext()) {
+  const auto& box = To<LayoutBox>(object);
+  if (SmallerThanRegionGranularity(box.VisualOverflowRect()))
+    return false;
+
+  if (auto* display_lock_context = box.GetDisplayLockContext()) {
     if (display_lock_context->IsAuto() && display_lock_context->IsLocked())
       return false;
   }
 
   // Don't report shift of anonymous objects. Will report the children because
   // we want report real DOM nodes.
-  if (object.IsAnonymous())
-    return false;
-
-  if (object.StyleRef().Visibility() != EVisibility::kVisible)
+  if (box.IsAnonymous())
     return false;
 
   // Ignore sticky-positioned objects that move on scroll.
   // TODO(skobes): Find a way to detect when these objects shift.
-  if (object.IsStickyPositioned())
+  if (box.IsStickyPositioned())
     return false;
 
-  if (object.IsLayoutView())
+  // A LayoutView can't move by itself.
+  if (box.IsLayoutView())
     return false;
 
   if (Element* element = DynamicTo<Element>(object.GetNode())) {
     if (element->IsSliderThumbElement())
       return false;
+  }
+
+  if (box.IsLayoutBlock()) {
+    // Just check the simplest case. For more complex cases, we should suggest
+    // the developer to use visibility:hidden.
+    if (To<LayoutBlock>(box).FirstChild())
+      return true;
+    if (box.HasBoxDecorationBackground() || box.GetScrollableArea() ||
+        box.StyleRef().HasVisualOverflowingEffect())
+      return true;
+    return false;
   }
 
   return true;
@@ -221,10 +247,6 @@ void LayoutShiftTracker::ObjectShifted(
   if (old_transform_indifferent_starting_point != old_starting_point &&
       EqualWithinMovementThreshold(old_transform_indifferent_starting_point,
                                    new_starting_point, threshold_physical_px))
-    return;
-
-  if (SmallerThanRegionGranularity(old_rect) &&
-      SmallerThanRegionGranularity(new_rect))
     return;
 
   const auto& root_state =

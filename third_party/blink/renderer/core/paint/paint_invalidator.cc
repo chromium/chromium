@@ -271,8 +271,10 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
     if (object.HasLayer() &&
         To<LayoutBoxModelObject>(object).HasSelfPaintingLayer())
       return true;
-    // We don't report shift for anonymous objects but report for the children.
-    if (object.Parent()->IsAnonymous())
+    // Always track if the parent doesn't need to track (e.g. it has visibility:
+    // hidden), while this object needs (e.g. it has visibility: visible).
+    // This also includes non-anonymous child with an anonymous parent.
+    if (object.Parent()->ShouldSkipNextLayoutShiftTracking())
       return true;
     // Report if the parent is in a different transform space.
     const auto* parent_context = context.ParentContext();
