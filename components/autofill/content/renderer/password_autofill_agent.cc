@@ -950,7 +950,7 @@ void PasswordAutofillAgent::FireSubmissionIfFormDisappear(
         return;
     }
   }
-  GetPasswordManagerDriver()->SameDocumentNavigation(event);
+  GetPasswordManagerDriver()->DynamicFormSubmission(event);
   browser_has_form_to_process_ = false;
 }
 
@@ -1144,7 +1144,7 @@ void PasswordAutofillAgent::OnFrameDetached() {
   // for examples of sites that perform login using this technique.
   if (render_frame()->GetWebFrame()->Parent() && browser_has_form_to_process_) {
     DCHECK(FrameCanAccessPasswordManager());
-    GetPasswordManagerDriver()->SameDocumentNavigation(
+    GetPasswordManagerDriver()->DynamicFormSubmission(
         SubmissionIndicatorEvent::FRAME_DETACHED);
   }
   CleanupOnDocumentShutdown();

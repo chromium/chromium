@@ -265,10 +265,10 @@ void ContentPasswordManagerDriver::InformAboutUserInput(
   }
 }
 
-void ContentPasswordManagerDriver::SameDocumentNavigation(
+void ContentPasswordManagerDriver::DynamicFormSubmission(
     autofill::mojom::SubmissionIndicatorEvent submission_indication_event) {
-  GetPasswordManager()->OnPasswordFormSubmittedNoChecks(
-      this, submission_indication_event);
+  GetPasswordManager()->OnDynamicFormSubmission(this,
+                                                submission_indication_event);
   LogSiteIsolationMetricsForSubmittedForm(render_frame_host_);
 }
 

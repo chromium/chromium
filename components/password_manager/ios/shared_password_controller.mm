@@ -497,8 +497,8 @@ NSString* const kSuggestionSuffix = @" ••••••••";
   } else {
     // Show a save prompt immediately because for iframes it is very hard to
     // figure out correctness of password forms submission.
-    _passwordManager->OnPasswordFormSubmittedNoChecksForiOS(
-        _delegate.passwordManagerDriver, form);
+    _passwordManager->OnSubframeFormSubmission(_delegate.passwordManagerDriver,
+                                               form);
   }
 }
 

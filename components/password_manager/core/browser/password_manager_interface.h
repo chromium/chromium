@@ -54,12 +54,12 @@ class PasswordManagerInterface : public FormSubmissionObserver {
       autofill::password_generation::PasswordGenerationType type) = 0;
 
 #if defined(OS_IOS)
-  // Handles a password form being submitted, assumes that submission is
-  // successful and does not do any checks on success of submission. For
-  // example, this is called if |password_form| was filled upon in-page
-  // navigation. This often means history.pushState being called from
-  // JavaScript.
-  virtual void OnPasswordFormSubmittedNoChecksForiOS(
+  // Handles a subframe form submission. In contrast to OnPasswordFormSubmitted
+  // this method does not wait for OnPasswordFormsRendered before invoking
+  // OnLoginSuccessful), but rather invokes ProvisionallySave immediately and
+  // then calls OnLoginSuccessful if applicable. It is the iOS pendant to
+  // PasswordManager::OnDynamicFormSubmission.
+  virtual void OnSubframeFormSubmission(
       PasswordManagerDriver* driver,
       const autofill::FormData& form_data) = 0;
 

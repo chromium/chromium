@@ -433,12 +433,12 @@ void PasswordManager::OnPasswordFormSubmitted(PasswordManagerDriver* driver,
   ProvisionallySaveForm(form_data, driver, false);
 }
 
-void PasswordManager::OnPasswordFormSubmittedNoChecks(
+void PasswordManager::OnDynamicFormSubmission(
     password_manager::PasswordManagerDriver* driver,
-    autofill::mojom::SubmissionIndicatorEvent event) {
+    SubmissionIndicatorEvent event) {
   if (password_manager_util::IsLoggingActive(client_)) {
     BrowserSavePasswordProgressLogger logger(client_->GetLogManager());
-    logger.LogMessage(Logger::STRING_ON_SAME_DOCUMENT_NAVIGATION);
+    logger.LogMessage(Logger::STRING_ON_DYNAMIC_FORM_SUBMISSION);
   }
   PasswordFormManager* submitted_manager = GetSubmittedManager();
   // TODO(crbug.com/949519): Add UMA metric for how frequently submitted_manager
@@ -498,12 +498,11 @@ void PasswordManager::OnPasswordFormCleared(
 }
 
 #if defined(OS_IOS)
-void PasswordManager::OnPasswordFormSubmittedNoChecksForiOS(
-    PasswordManagerDriver* driver,
-    const FormData& form_data) {
+void PasswordManager::OnSubframeFormSubmission(PasswordManagerDriver* driver,
+                                               const FormData& form_data) {
   if (password_manager_util::IsLoggingActive(client_)) {
     BrowserSavePasswordProgressLogger logger(client_->GetLogManager());
-    logger.LogMessage(Logger::STRING_ON_SAME_DOCUMENT_NAVIGATION);
+    logger.LogMessage(Logger::STRING_ON_DYNAMIC_FORM_SUBMISSION);
   }
 
   ProvisionallySaveForm(form_data, driver, false);

@@ -42,9 +42,9 @@ void FakeMojoPasswordManagerDriver::PasswordFormSubmitted(
   form_data_submitted_ = form_data;
 }
 
-void FakeMojoPasswordManagerDriver::SameDocumentNavigation(
+void FakeMojoPasswordManagerDriver::DynamicFormSubmission(
     autofill::mojom::SubmissionIndicatorEvent submission_indication_event) {
-  called_same_document_navigation_ = true;
+  called_dynamic_form_submission_ = true;
   form_data_maybe_submitted_->submission_event = submission_indication_event;
 }
 

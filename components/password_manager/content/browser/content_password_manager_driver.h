@@ -101,8 +101,8 @@ class ContentPasswordManagerDriver
       bool did_stop_loading) override;
   void PasswordFormSubmitted(const autofill::FormData& form_data) override;
   void InformAboutUserInput(const autofill::FormData& form_data) override;
-  void SameDocumentNavigation(autofill::mojom::SubmissionIndicatorEvent
-                                  submission_indication_event) override;
+  void DynamicFormSubmission(autofill::mojom::SubmissionIndicatorEvent
+                                 submission_indication_event) override;
   void PasswordFormCleared(const autofill::FormData& form_data) override;
   void RecordSavePasswordProgress(const std::string& log) override;
   void UserModifiedPasswordField() override;

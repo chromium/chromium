@@ -87,9 +87,8 @@ class PasswordManager : public PasswordManagerInterface {
       autofill::FieldRendererId generation_element,
       autofill::password_generation::PasswordGenerationType type) override;
 #if defined(OS_IOS)
-  void OnPasswordFormSubmittedNoChecksForiOS(
-      PasswordManagerDriver* driver,
-      const autofill::FormData& form_data) override;
+  void OnSubframeFormSubmission(PasswordManagerDriver* driver,
+                                const autofill::FormData& form_data) override;
   void PresaveGeneratedPassword(
       PasswordManagerDriver* driver,
       const autofill::FormData& form,
@@ -137,16 +136,14 @@ class PasswordManager : public PasswordManagerInterface {
   // |PasswordManager.ResultOfSavingFlowAfterUnblacklistin|.
   void MarkWasUnblocklistedInFormManagers(CredentialCache* credential_cache);
 
-  // Handles a password form being submitted, assumes that submission is
-  // successful and does not do any checks on success of submission. For
-  // example, this is called if |password_form| was filled upon in-page
-  // navigation. This often means history.pushState being called from
-  // JavaScript.
-  // TODO(crbug.com/949519): Rename this method together with
-  // SameDocumentNavigation in autofill::mojom::PasswordManagerDriver
-  void OnPasswordFormSubmittedNoChecks(
-      PasswordManagerDriver* driver,
-      autofill::mojom::SubmissionIndicatorEvent event);
+  // Handles a dynamic form submission. In contrast to OnPasswordFormSubmitted()
+  // this method does not wait for OnPasswordFormsRendered() before invoking
+  // OnLoginSuccessful(), provided that a password form was provisionally saved
+  // in the past. Since this is commonly invoked for same document navigations,
+  // detachment of frames or hiding a form following an XHR, it does not make
+  // sense to await a full page navigation event.
+  void OnDynamicFormSubmission(PasswordManagerDriver* driver,
+                               autofill::mojom::SubmissionIndicatorEvent event);
 
   // Called when a user changed a value in a non-password field. The field is in
   // a frame corresponding to |driver| and has a renderer id |renderer_id|.

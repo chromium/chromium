@@ -651,7 +651,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
       form_data = *(fake_driver_.form_data_submitted());
     } else {
       ASSERT_EQ(PasswordFormSameDocumentNavigation, expected_type);
-      ASSERT_TRUE(fake_driver_.called_same_document_navigation());
+      ASSERT_TRUE(fake_driver_.called_dynamic_form_submission());
       ASSERT_TRUE(static_cast<bool>(fake_driver_.form_data_maybe_submitted()));
       form_data = *(fake_driver_.form_data_maybe_submitted());
       EXPECT_EQ(expected_submission_event, form_data.submission_event);
@@ -714,7 +714,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
       const std::string& new_password_value,
       SubmissionIndicatorEvent event) {
     base::RunLoop().RunUntilIdle();
-    ASSERT_TRUE(fake_driver_.called_same_document_navigation());
+    ASSERT_TRUE(fake_driver_.called_dynamic_form_submission());
     ASSERT_TRUE(static_cast<bool>(fake_driver_.form_data_maybe_submitted()));
     ExpectFormDataWithUsernameAndPasswordsAndEvent(
         *(fake_driver_.form_data_maybe_submitted()), form_renderer_id,
@@ -2918,7 +2918,7 @@ TEST_F(PasswordAutofillAgentTest,
   FireAjaxSucceeded();
 
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(fake_driver_.called_same_document_navigation());
+  EXPECT_FALSE(fake_driver_.called_dynamic_form_submission());
   EXPECT_FALSE(fake_driver_.called_password_form_submitted());
 }
 
@@ -2947,7 +2947,7 @@ TEST_F(PasswordAutofillAgentTest,
   ExecuteJavaScriptForTests(show_captcha.c_str());
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(fake_driver_.called_same_document_navigation());
+  EXPECT_FALSE(fake_driver_.called_dynamic_form_submission());
   EXPECT_FALSE(fake_driver_.called_password_form_submitted());
 }
 
@@ -2980,7 +2980,7 @@ TEST_F(PasswordAutofillAgentTest,
   FireAjaxSucceeded();
 
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(fake_driver_.called_same_document_navigation());
+  EXPECT_FALSE(fake_driver_.called_dynamic_form_submission());
   EXPECT_FALSE(fake_driver_.called_password_form_submitted());
 }
 
@@ -3011,7 +3011,7 @@ TEST_F(PasswordAutofillAgentTest,
   captcha_element.SetAttribute("style", "display:inline;");
 
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(fake_driver_.called_same_document_navigation());
+  EXPECT_FALSE(fake_driver_.called_dynamic_form_submission());
   EXPECT_FALSE(fake_driver_.called_password_form_submitted());
 }
 
@@ -3991,7 +3991,7 @@ TEST_F(PasswordAutofillAgentTest, NoXhrSubmissionAfterFillingOnPageload) {
   // that a submission was successful.
   ExecuteJavaScriptForTests(kJavaScriptRemoveForm);
   base::RunLoop().RunUntilIdle();
-  ASSERT_FALSE(fake_driver_.called_same_document_navigation());
+  ASSERT_FALSE(fake_driver_.called_dynamic_form_submission());
 }
 
 }  // namespace autofill

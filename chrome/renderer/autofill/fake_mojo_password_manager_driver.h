@@ -53,8 +53,8 @@ class FakeMojoPasswordManagerDriver
     return form_data_submitted_;
   }
 
-  bool called_same_document_navigation() const {
-    return called_same_document_navigation_;
+  bool called_dynamic_form_submission() const {
+    return called_dynamic_form_submission_;
   }
 
   const base::Optional<autofill::FormData>& form_data_maybe_submitted() const {
@@ -130,8 +130,8 @@ class FakeMojoPasswordManagerDriver
 
   void PasswordFormSubmitted(const autofill::FormData& form_data) override;
 
-  void SameDocumentNavigation(autofill::mojom::SubmissionIndicatorEvent
-                                  submission_indication_event) override;
+  void DynamicFormSubmission(autofill::mojom::SubmissionIndicatorEvent
+                                 submission_indication_event) override;
 
   void RecordSavePasswordProgress(const std::string& log) override;
 
@@ -158,8 +158,8 @@ class FakeMojoPasswordManagerDriver
   base::Optional<autofill::FormData> form_data_submitted_;
   // Records data received via ShowManualFallbackForSaving() call.
   base::Optional<autofill::FormData> form_data_maybe_submitted_;
-  // Records whether SameDocumentNavigation() gets called.
-  bool called_same_document_navigation_ = false;
+  // Records whether DynamicFormSubmission() gets called.
+  bool called_dynamic_form_submission_ = false;
   // Records whether PasswordFormsParsed() gets called.
   bool called_password_forms_parsed_ = false;
   // Records if the list received via PasswordFormsParsed() call was empty.

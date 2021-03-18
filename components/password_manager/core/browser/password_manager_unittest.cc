@@ -1743,7 +1743,7 @@ TEST_P(PasswordManagerTest, SameDocumentNavigation) {
   std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr(_))
       .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager_to_save)));
-  manager()->OnPasswordFormSubmittedNoChecks(&driver_, form.submission_event);
+  manager()->OnDynamicFormSubmission(&driver_, form.submission_event);
   ASSERT_TRUE(form_manager_to_save);
 
   // Simulate saving the form, as if the info bar was accepted.
@@ -1775,7 +1775,7 @@ TEST_P(PasswordManagerTest, SameDocumentBlockedSite) {
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr(_))
       .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager_to_save)));
 
-  manager()->OnPasswordFormSubmittedNoChecks(&driver_, form.submission_event);
+  manager()->OnDynamicFormSubmission(&driver_, form.submission_event);
   EXPECT_TRUE(form_manager_to_save->IsBlocklisted());
 }
 
@@ -2761,8 +2761,8 @@ TEST_P(PasswordManagerTest, ProcessingOtherSubmissionTypes) {
   std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr(_))
       .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager_to_save)));
-  manager()->OnPasswordFormSubmittedNoChecks(
-      &driver_, submitted_form_data.submission_event);
+  manager()->OnDynamicFormSubmission(&driver_,
+                                     submitted_form_data.submission_event);
   EXPECT_TRUE(manager()->form_managers().empty());
 }
 
@@ -2785,8 +2785,7 @@ TEST_P(PasswordManagerTest, SubmittedGaiaFormWithoutVisiblePasswordField) {
   form_data.fields[1].is_focusable = false;
 
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr(_)).Times(0);
-  manager()->OnPasswordFormSubmittedNoChecks(&driver_,
-                                             form_data.submission_event);
+  manager()->OnDynamicFormSubmission(&driver_, form_data.submission_event);
 }
 
 TEST_P(PasswordManagerTest, MetricForSchemeOfSuccessfulLogins) {
@@ -2872,8 +2871,8 @@ TEST_P(PasswordManagerTest, NoSavePromptWhenPasswordManagerDisabled) {
   submitted_form_data.fields[1].value = ASCIIToUTF16("strong_password");
 
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr(_)).Times(0);
-  manager()->OnPasswordFormSubmittedNoChecks(
-      &driver_, submitted_form_data.submission_event);
+  manager()->OnDynamicFormSubmission(&driver_,
+                                     submitted_form_data.submission_event);
 }
 
 TEST_P(PasswordManagerTest, NoSavePromptForNotPasswordForm) {
@@ -2892,8 +2891,8 @@ TEST_P(PasswordManagerTest, NoSavePromptForNotPasswordForm) {
   submitted_form_data.fields[1].value = ASCIIToUTF16("1234");
 
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr(_)).Times(0);
-  manager()->OnPasswordFormSubmittedNoChecks(
-      &driver_, submitted_form_data.submission_event);
+  manager()->OnDynamicFormSubmission(&driver_,
+                                     submitted_form_data.submission_event);
 }
 
 // Check that when autofill predictions are received before a form is found then
