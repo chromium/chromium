@@ -231,6 +231,7 @@
   X(TRACE_DISABLED_BY_DEFAULT("skia"))                                   \
   X(TRACE_DISABLED_BY_DEFAULT("skia.gpu"))                               \
   X(TRACE_DISABLED_BY_DEFAULT("skia.gpu.cache"))                         \
+  X(TRACE_DISABLED_BY_DEFAULT("skia.shaders"))                           \
   X(TRACE_DISABLED_BY_DEFAULT("SyncFileSystem"))                         \
   X(TRACE_DISABLED_BY_DEFAULT("system_stats"))                           \
   X(TRACE_DISABLED_BY_DEFAULT("thread_pool_diagnostics"))                \
