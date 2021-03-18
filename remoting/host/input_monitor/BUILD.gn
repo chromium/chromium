@@ -69,5 +69,8 @@ source_set("input_monitor") {
     ]
 
     deps += [ "//remoting/host/chromeos:chromeos" ]
+  } else if (is_chromeos_lacros) {
+    sources -= [ "local_input_monitor.cc" ]
+    sources += [ "local_input_monitor_lacros.cc" ]
   }
 }

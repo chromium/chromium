@@ -22,12 +22,17 @@ namespace remoting {
 
 // Creates native messaging host on ChromeOS. Must be called on the UI thread
 // of the browser process.
-
 std::unique_ptr<extensions::NativeMessageHost>
 CreateIt2MeNativeMessagingHostForChromeOS(
     scoped_refptr<base::SingleThreadTaskRunner> io_runnner,
     scoped_refptr<base::SingleThreadTaskRunner> ui_runnner,
     policy::PolicyService* policy_service);
+
+// The set of origins which are allowed to instantiate an It2Me host.
+extern const char* const kRemotingIt2MeOrigins[];
+
+// The number of entries defined in |kRemotingIt2MeOrigins|.
+extern const size_t kRemotingIt2MeOriginsCount;
 
 }  // namespace remoting
 
