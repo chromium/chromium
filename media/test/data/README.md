@@ -853,7 +853,7 @@ Metadata describing bear\_320x192.nv12.yuv.
 First frame of bear\_320x192\_40frames.yv12.yuv for image\_processor_test and
 formatted yv12.
 To get the uncompressed yuv, execute the following command.
-`ffmpeg -s:v 320x192 -pix_fmt yuv420p -i bear_320x192.i420.yuv  -c:v rawvideo -pix_fmt yuv420p -vf shuffleplanes=0:2:1 bear_320x192.yv12.2.yuv`
+`ffmpeg -s:v 320x192 -pix_fmt yuv420p -i bear_320x192.i420.yuv  -c:v rawvideo -pix_fmt yuv420p -vf shuffleplanes=0:2:1 bear_320x192.yv12.yuv`
 
 #### bear\_320x192.rgba
 RAW RGBA format data. This data is created from bear\_320x192.i420.yuv.
@@ -865,7 +865,7 @@ To get the uncompressed yuv, execute the following command.
 RAW BGRA format data. This data is created from bear\_320x192.i420.yuv.
 Alpha channel is always 0xFF.
 To get the uncompressed yuv, execute the following command.
-`ffmpeg -s 320x192 -pix_fmt yuv420p -i bear_320x192.i420.yuv -vcodec rawvideo -f image2 -pix_fmt rgba bear_320x192.bgra`
+`ffmpeg -s 320x192 -pix_fmt yuv420p -i bear_320x192.i420.yuv -vcodec rawvideo -f image2 -pix_fmt bgra bear_320x192.bgra`
 
 #### bear\_192x320\_90.nv12.yuv
 Rotate bear\_320x192.nv12.yuv by 90 degrees clockwise.
