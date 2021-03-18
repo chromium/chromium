@@ -7,6 +7,7 @@
 #include "components/full_restore/full_restore_info.h"
 #include "components/full_restore/full_restore_read_handler.h"
 #include "components/full_restore/window_info.h"
+#include "ui/aura/window.h"
 
 namespace full_restore {
 
@@ -20,6 +21,27 @@ void ArcReadHandler::AddRestoreData(const std::string& app_id,
   window_id_to_app_id_[window_id] = app_id;
 }
 
+void ArcReadHandler::AddArcWindowCandidate(aura::Window* window) {
+  arc_window_candidates_.insert(window);
+}
+
+void ArcReadHandler::OnWindowDestroyed(aura::Window* window) {
+  DCHECK(window);
+
+  // If |window| is list in |arc_window_candidates_|, |window| is not attached
+  // to a valid restore window id yet, so we don't need to remove AppRestoreData
+  // from the restore data.
+  auto it = arc_window_candidates_.find(window);
+  if (it != arc_window_candidates_.end()) {
+    arc_window_candidates_.erase(it);
+    return;
+  }
+
+  int32_t restore_window_id =
+      window->GetProperty(::full_restore::kRestoreWindowIdKey);
+  RemoveAppRestoreData(restore_window_id);
+}
+
 void ArcReadHandler::OnTaskCreated(const std::string& app_id,
                                    int32_t task_id,
                                    int32_t session_id) {
@@ -30,6 +52,22 @@ void ArcReadHandler::OnTaskCreated(const std::string& app_id,
   int32_t restore_window_id = it->second;
   session_id_to_window_id_.erase(it);
   task_id_to_window_id_[task_id] = restore_window_id;
+
+  // Go through |arc_window_candidates_|. If the window for |task_id| has been
+  // created, set the correct restore window id, and remove the window from the
+  // hidden container.
+  auto window_it = std::find_if(
+      arc_window_candidates_.begin(), arc_window_candidates_.end(),
+      [task_id](aura::Window* window) {
+        return window->GetProperty(::full_restore::kWindowIdKey) == task_id;
+      });
+  if (window_it != arc_window_candidates_.end()) {
+    (*window_it)
+        ->SetProperty(full_restore::kRestoreWindowIdKey, restore_window_id);
+    (*window_it)->SetProperty(full_restore::kParentToHiddenContainerKey, false);
+    FullRestoreInfo::GetInstance()->OnWindowInitialized(*window_it);
+    arc_window_candidates_.erase(*window_it);
+  }
 }
 
 void ArcReadHandler::OnTaskDestroyed(int32_t task_id) {
@@ -45,6 +83,19 @@ void ArcReadHandler::OnTaskDestroyed(int32_t task_id) {
 
 bool ArcReadHandler::HasRestoreData(int32_t window_id) {
   return base::Contains(window_id_to_app_id_, window_id);
+}
+
+std::unique_ptr<WindowInfo> ArcReadHandler::GetWindowInfo(
+    int32_t restore_window_id) {
+  if (restore_window_id == 0 || restore_window_id == kParentToHiddenContainer)
+    return nullptr;
+
+  auto it = window_id_to_app_id_.find(restore_window_id);
+  if (it == window_id_to_app_id_.end())
+    return nullptr;
+
+  return FullRestoreReadHandler::GetInstance()->GetWindowInfo(
+      profile_path_, it->second, restore_window_id);
 }
 
 int32_t ArcReadHandler::GetArcRestoreWindowId(int32_t task_id) {

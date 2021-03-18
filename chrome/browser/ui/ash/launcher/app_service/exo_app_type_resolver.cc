@@ -55,7 +55,12 @@ void ExoAppTypeResolver::PopulateProperties(
   out_properties_container.SetProperty(aura::client::kAppType,
                                        static_cast<int>(ash::AppType::ARC_APP));
   out_properties_container.SetProperty(full_restore::kWindowIdKey, task_id);
-  out_properties_container.SetProperty(
-      full_restore::kRestoreWindowIdKey,
-      full_restore::GetArcRestoreWindowId(task_id));
+  int32_t restore_window_id = full_restore::GetArcRestoreWindowId(task_id);
+  out_properties_container.SetProperty(full_restore::kRestoreWindowIdKey,
+                                       restore_window_id);
+
+  if (restore_window_id == full_restore::kParentToHiddenContainer) {
+    out_properties_container.SetProperty(
+        full_restore::kParentToHiddenContainerKey, true);
+  }
 }

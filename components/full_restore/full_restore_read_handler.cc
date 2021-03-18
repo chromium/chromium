@@ -45,8 +45,16 @@ void FullRestoreReadHandler::OnWindowInitialized(aura::Window* window) {
     if (!arc_read_handler_)
       return;
 
-    if (arc_read_handler_->HasRestoreData(window_id)) {
+    if (window_id == kParentToHiddenContainer ||
+        arc_read_handler_->HasRestoreData(window_id)) {
       observed_windows_.AddObservation(window);
+
+      // If |window| is added to a hidden container, that means the ARC task is
+      // not created yet, so add |window| to |arc_window_candidates_| to wait
+      // the task to be created.
+      if (window_id == kParentToHiddenContainer)
+        arc_read_handler_->AddArcWindowCandidate(window);
+
       FullRestoreInfo::GetInstance()->OnWindowInitialized(window);
     }
     return;
@@ -61,10 +69,15 @@ void FullRestoreReadHandler::OnWindowInitialized(aura::Window* window) {
 }
 
 void FullRestoreReadHandler::OnWindowDestroyed(aura::Window* window) {
-  // TODO(crbug.com/1146900): Handle ARC app windows.
-
   DCHECK(observed_windows_.IsObservingSource(window));
   observed_windows_.RemoveObservation(window);
+
+  if (window->GetProperty(aura::client::kAppType) ==
+      static_cast<int>(ash::AppType::ARC_APP)) {
+    if (arc_read_handler_)
+      arc_read_handler_->OnWindowDestroyed(window);
+    return;
+  }
 
   int32_t restore_window_id =
       window->GetProperty(::full_restore::kRestoreWindowIdKey);
@@ -175,6 +188,14 @@ std::unique_ptr<WindowInfo> FullRestoreReadHandler::GetWindowInfo(
 
   const int32_t restore_window_id =
       window->GetProperty(::full_restore::kRestoreWindowIdKey);
+
+  if (window->GetProperty(aura::client::kAppType) ==
+      static_cast<int>(ash::AppType::ARC_APP)) {
+    return arc_read_handler_
+               ? arc_read_handler_->GetWindowInfo(restore_window_id)
+               : nullptr;
+  }
+
   return GetWindowInfo(restore_window_id);
 }
 

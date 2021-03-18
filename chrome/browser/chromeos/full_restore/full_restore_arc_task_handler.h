@@ -20,8 +20,6 @@ namespace full_restore {
 //
 // FullRestoreArcTaskHandler is an independent KeyedService so that it could be
 // created along with ARC system rather than with FullRestoreService.
-//
-// TODO(crbug.com/1146900): Handle intent.
 class FullRestoreArcTaskHandler : public KeyedService,
                                   public ArcAppListPrefs::Observer {
  public:

@@ -199,6 +199,15 @@ class FullRestoreReadAndSaveTest : public testing::Test {
     full_restore::SaveWindowInfo(window_info);
   }
 
+  std::unique_ptr<WindowInfo> GetArcWindowInfo(int32_t restore_window_id) {
+    std::unique_ptr<aura::Window> window(
+        aura::test::CreateTestWindowWithId(restore_window_id, nullptr));
+    window->SetProperty(aura::client::kAppType,
+                        static_cast<int>(ash::AppType::ARC_APP));
+    window->SetProperty(full_restore::kRestoreWindowIdKey, restore_window_id);
+    return full_restore::GetWindowInfo(window.get());
+  }
+
   void VerifyRestoreData(const base::FilePath& file_path,
                          int32_t id,
                          int32_t index) {
@@ -478,6 +487,11 @@ TEST_F(FullRestoreReadAndSaveTest, ArcWindowRestore) {
   read_handler->SetArcSessionIdForWindowId(kArcSessionId2, kArcTaskId1);
   EXPECT_EQ(1u, read_test_api.GetArcSessionIdMap().size());
 
+  // Before OnTaskCreated is called, return -1 to add the ARC app window to the
+  // hidden container.
+  EXPECT_EQ(kParentToHiddenContainer,
+            full_restore::GetArcRestoreWindowId(kArcTaskId2));
+
   // Call OnTaskCreated to simulate that the ARC app with |kAppId| has been
   // launched, and the new task id |kArcTaskId2| has been created with
   // |kArcSessionId2| returned.
@@ -489,6 +503,11 @@ TEST_F(FullRestoreReadAndSaveTest, ArcWindowRestore) {
   // |kArcTaskId1| with the new |kArcTaskId2|.
   EXPECT_TRUE(read_test_api.GetArcSessionIdMap().empty());
   EXPECT_EQ(kArcTaskId1, full_restore::GetArcRestoreWindowId(kArcTaskId2));
+
+  // Verify |window_info| for |kArcTaskId1|.
+  auto window_info = GetArcWindowInfo(kArcTaskId1);
+  EXPECT_TRUE(window_info);
+  EXPECT_EQ(kActivationIndex1, window_info->activation_index);
 
   // Call OnTaskDestroyed to simulate the ARC app launching has been finished
   // for |kArcTaskId2|, and verify the task id map is now empty and a invalid

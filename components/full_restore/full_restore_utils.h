@@ -65,6 +65,11 @@ extern const ui::ClassProperty<std::string*>* const kAppIdKey;
 COMPONENT_EXPORT(FULL_RESTORE)
 extern const ui::ClassProperty<int32_t*>* const kActivationIndexKey;
 
+// A property key to add the window to a hidden container, if the ARC task is
+// not created when the window is initialized.
+COMPONENT_EXPORT(FULL_RESTORE)
+extern const ui::ClassProperty<bool>* const kParentToHiddenContainerKey;
+
 // Saves the app launch parameters to the full restore file.
 COMPONENT_EXPORT(FULL_RESTORE)
 void SaveAppLaunchInfo(const base::FilePath& profile_path,
