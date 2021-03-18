@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_layout_algorithm.h"
+
+#include "build/build_config.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_placement.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_base_layout_algorithm_test.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
@@ -226,7 +228,13 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmBaseSetSizes) {
   EXPECT_EQ(BaseRowSizeForChild(algorithm, 4), kIndefiniteSize);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRanges) {
+#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+// https://crbug.com/1146112
+#define MAYBE_NGGridLayoutAlgorithmRanges DISABLED_NGGridLayoutAlgorithmRanges
+#else
+#define MAYBE_NGGridLayoutAlgorithmRanges NGGridLayoutAlgorithmRanges
+#endif
+TEST_F(NGGridLayoutAlgorithmTest, MAYBE_NGGridLayoutAlgorithmRanges) {
   if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
     return;
 
@@ -283,7 +291,16 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRanges) {
   EXPECT_FALSE(column_iterator.MoveToNextRange());
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesWithAutoRepeater) {
+#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+// https://crbug.com/1146112
+#define MAYBE_NGGridLayoutAlgorithmRangesWithAutoRepeater \
+  DISABLED_NGGridLayoutAlgorithmRangesWithAutoRepeater
+#else
+#define MAYBE_NGGridLayoutAlgorithmRangesWithAutoRepeater \
+  NGGridLayoutAlgorithmRangesWithAutoRepeater
+#endif
+TEST_F(NGGridLayoutAlgorithmTest,
+       MAYBE_NGGridLayoutAlgorithmRangesWithAutoRepeater) {
   if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
     return;
 
@@ -427,8 +444,16 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesImplicit) {
   EXPECT_FALSE(row_iterator.MoveToNextRange());
 }
 
+#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+// https://crbug.com/1146112
+#define MAYBE_NGGridLayoutAlgorithmRangesImplicitAutoColumns \
+  DISABLED_NGGridLayoutAlgorithmRangesImplicitAutoColumns
+#else
+#define MAYBE_NGGridLayoutAlgorithmRangesImplicitAutoColumns \
+  NGGridLayoutAlgorithmRangesImplicitAutoColumns
+#endif
 TEST_F(NGGridLayoutAlgorithmTest,
-       NGGridLayoutAlgorithmRangesImplicitAutoColumns) {
+       MAYBE_NGGridLayoutAlgorithmRangesImplicitAutoColumns) {
   if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
     return;
 
@@ -495,7 +520,16 @@ TEST_F(NGGridLayoutAlgorithmTest,
   EXPECT_FALSE(row_iterator.MoveToNextRange());
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesImplicitAutoRows) {
+#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+// https://crbug.com/1146112
+#define MAYBE_NGGridLayoutAlgorithmRangesImplicitAutoRows \
+  DISABLED_NGGridLayoutAlgorithmRangesImplicitAutoRows
+#else
+#define MAYBE_NGGridLayoutAlgorithmRangesImplicitAutoRows \
+  NGGridLayoutAlgorithmRangesImplicitAutoRows
+#endif
+TEST_F(NGGridLayoutAlgorithmTest,
+       MAYBE_NGGridLayoutAlgorithmRangesImplicitAutoRows) {
   if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
     return;
 
@@ -624,7 +658,16 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesImplicitMixed) {
   EXPECT_FALSE(row_iterator.MoveToNextRange());
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmAutoGridPositions) {
+#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+// https://crbug.com/1146112
+#define MAYBE_NGGridLayoutAlgorithmAutoGridPositions \
+  DISABLED_NGGridLayoutAlgorithmAutoGridPositions
+#else
+#define MAYBE_NGGridLayoutAlgorithmAutoGridPositions \
+  NGGridLayoutAlgorithmAutoGridPositions
+#endif
+TEST_F(NGGridLayoutAlgorithmTest,
+       MAYBE_NGGridLayoutAlgorithmAutoGridPositions) {
   if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
     return;
 
@@ -701,7 +744,14 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmAutoGridPositions) {
   EXPECT_GRID_AREA(grid_positions[3], 0U, 1U, 0U, 1U);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmAutoDense) {
+#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+// https://crbug.com/1146112
+#define MAYBE_NGGridLayoutAlgorithmAutoDense \
+  DISABLED_NGGridLayoutAlgorithmAutoDense
+#else
+#define MAYBE_NGGridLayoutAlgorithmAutoDense NGGridLayoutAlgorithmAutoDense
+#endif
+TEST_F(NGGridLayoutAlgorithmTest, MAYBE_NGGridLayoutAlgorithmAutoDense) {
   if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
     return;
 
@@ -927,7 +977,16 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmGridPositions) {
   EXPECT_FALSE(row_iterator.MoveToNextRange());
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmResolveFixedTrackSizes) {
+#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+// https://crbug.com/1146112
+#define MAYBE_NGGridLayoutAlgorithmResolveFixedTrackSizes \
+  DISABLED_NGGridLayoutAlgorithmResolveFixedTrackSizes
+#else
+#define MAYBE_NGGridLayoutAlgorithmResolveFixedTrackSizes \
+  NGGridLayoutAlgorithmResolveFixedTrackSizes
+#endif
+TEST_F(NGGridLayoutAlgorithmTest,
+       MAYBE_NGGridLayoutAlgorithmResolveFixedTrackSizes) {
   if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
     return;
 
@@ -987,8 +1046,17 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmResolveFixedTrackSizes) {
     EXPECT_EQ(expected_row_growth_limits[i], growth_limits[i]);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest,
-       NGGridLayoutAlgorithmDetermineGridItemsSpanningIntrinsicOrFlexTracks) {
+#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+// https://crbug.com/1146112
+#define MAYBE_NGGridLayoutAlgorithmDetermineGridItemsSpanningIntrinsicOrFlexTracks \
+  DISABLED_NGGridLayoutAlgorithmDetermineGridItemsSpanningIntrinsicOrFlexTracks
+#else
+#define MAYBE_NGGridLayoutAlgorithmDetermineGridItemsSpanningIntrinsicOrFlexTracks \
+  NGGridLayoutAlgorithmDetermineGridItemsSpanningIntrinsicOrFlexTracks
+#endif
+TEST_F(
+    NGGridLayoutAlgorithmTest,
+    MAYBE_NGGridLayoutAlgorithmDetermineGridItemsSpanningIntrinsicOrFlexTracks) {
   if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
     return;
 
@@ -1073,7 +1141,13 @@ TEST_F(NGGridLayoutAlgorithmTest,
     EXPECT_EQ(expected_grid_items_spanning_flex_track[i], actual_items[i]);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, FixedSizePositioning) {
+#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+// https://crbug.com/1146112
+#define MAYBE_FixedSizePositioning DISABLED_FixedSizePositioning
+#else
+#define MAYBE_FixedSizePositioning FixedSizePositioning
+#endif
+TEST_F(NGGridLayoutAlgorithmTest, MAYBE_FixedSizePositioning) {
   if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
     return;
 
@@ -1262,7 +1336,13 @@ TEST_F(NGGridLayoutAlgorithmTest, SpecifiedPositionsOutOfOrder) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, GridWithGap) {
+#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+// https://crbug.com/1146112
+#define MAYBE_GridWithGap DISABLED_GridWithGap
+#else
+#define MAYBE_GridWithGap GridWithGap
+#endif
+TEST_F(NGGridLayoutAlgorithmTest, MAYBE_GridWithGap) {
   if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
     return;
 
@@ -1372,7 +1452,13 @@ TEST_F(NGGridLayoutAlgorithmTest, GridWithPercentGap) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, AutoSizedGridWithGap) {
+#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+// https://crbug.com/1146112
+#define MAYBE_AutoSizedGridWithGap DISABLED_AutoSizedGridWithGap
+#else
+#define MAYBE_AutoSizedGridWithGap AutoSizedGridWithGap
+#endif
+TEST_F(NGGridLayoutAlgorithmTest, MAYBE_AutoSizedGridWithGap) {
   if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
     return;
 
@@ -1477,7 +1563,13 @@ TEST_F(NGGridLayoutAlgorithmTest, AutoSizedGridWithPercentageGap) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, ItemsSizeWithGap) {
+#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+// https://crbug.com/1146112
+#define MAYBE_ItemsSizeWithGap DISABLED_ItemsSizeWithGap
+#else
+#define MAYBE_ItemsSizeWithGap ItemsSizeWithGap
+#endif
+TEST_F(NGGridLayoutAlgorithmTest, MAYBE_ItemsSizeWithGap) {
   if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
     return;
 
@@ -1541,7 +1633,13 @@ TEST_F(NGGridLayoutAlgorithmTest, ItemsSizeWithGap) {
   EXPECT_EQ(expectation, dump);
 }
 
-TEST_F(NGGridLayoutAlgorithmTest, PositionedOutOfFlowItems) {
+#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+// https://crbug.com/1146112
+#define MAYBE_PositionedOutOfFlowItems DISABLED_PositionedOutOfFlowItems
+#else
+#define MAYBE_PositionedOutOfFlowItems PositionedOutOfFlowItems
+#endif
+TEST_F(NGGridLayoutAlgorithmTest, MAYBE_PositionedOutOfFlowItems) {
   if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
     return;
 
