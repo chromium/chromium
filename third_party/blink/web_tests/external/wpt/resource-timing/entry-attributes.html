@@ -9,26 +9,6 @@
 <script src="resources/resource-loaders.js"></script>
 <script src="resources/entry-invariants.js"></script>
 <script>
-
-// Given a resource-loader and a PerformanceResourceTiming validator, loads a
-// resource and validates the resulting entry.
-const attribute_test = (load_resource, validate, test_label) => {
-  promise_test(
-    async () => {
-      // Clear out everything that isn't the one ResourceTiming entry under test.
-      performance.clearResourceTimings();
-
-      await load_resource();
-
-      const entry_list = performance.getEntriesByType("resource");
-      if (entry_list.length != 1) {
-        throw new Error(`There should be one entry for one resource (found ${entry_list.length})`);
-      }
-
-      validate(entry_list[0]);
-  }, test_label);
-}
-
 attribute_test(
   () => load.image("resources/fake_responses.py#hash=1"),
   entry => {

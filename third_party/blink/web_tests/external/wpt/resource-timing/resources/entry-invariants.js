@@ -88,5 +88,50 @@ const invariants = {
       "domainLookupEnd",
       "connectStart",
     ]);
+  },
+
+  // Asserts that attributes of the given PerformanceResourceTiming entry match
+  // what the spec dictates for any resource fetched over HTTPS through a
+  // cross-origin redirect.
+  // (e.g. GET http://remote.com/foo => 304 Location: https://remote.com/foo)
+  assert_cross_origin_redirected_resource: entry => {
+    assert_zeroed_(entry, [
+      "redirectStart",
+      "redirectEnd",
+      "domainLookupStart",
+      "domainLookupEnd",
+      "connectStart",
+      "connectEnd",
+      "secureConnectionStart",
+      "requestStart",
+      "responseStart",
+    ]);
+
+    assert_positive_(entry, [
+      "fetchStart",
+      "responseEnd",
+    ]);
   }
 };
+
+// Given a resource-loader and a PerformanceResourceTiming validator, loads a
+// resource and validates the resulting entry.
+const attribute_test = (load_resource, validate, test_label) => {
+  promise_test(
+    async () => {
+      // Clear out everything that isn't the one ResourceTiming entry under test.
+      performance.clearResourceTimings();
+
+      await load_resource();
+
+      const entry_list = performance.getEntriesByType("resource");
+      if (entry_list.length != 1) {
+        const names = entry_list
+          .map(e => e.name)
+          .join(", ");
+        throw new Error(`There should be one entry for one resource (found ${entry_list.length}: ${names})`);
+      }
+
+      validate(entry_list[0]);
+  }, test_label);
+}
