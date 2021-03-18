@@ -1,31 +1,18 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <script src="../../resources/js-test.js"></script>
-</head>
-<body>
-    <script>
-        if (window.testRunner) {
-            testRunner.dumpAsText();
-            testRunner.waitUntilDone();
-        }
+<title>A link in a &lt;foreignObject> in an SVG image taints a canvas</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+  async_test(t => {
+    let image = new Image();
+    image.src = "resources/link-xhtml.svg";
+    image.onload = t.step_func_done(() => {
+      let ctx = document.createElement("canvas").getContext("2d");
 
-        var svg = new Image();
-        svg.src = "resources/link-xhtml.svg";
+      ctx.getImageData(0, 0, 1, 1);
+      ctx.drawImage(image, 0, 0);
 
-        svg.onload = function() {
-            var canvas = document.createElement("canvas");
-            window.ctx = canvas.getContext("2d");
-
-            ctx.getImageData(0, 0, 1, 1);
-
-            ctx.drawImage(svg, 0, 0);
-
-            shouldThrow("window.ctx.getImageData(0, 0, 1, 1)");
-
-            if (window.testRunner)
-                testRunner.notifyDone();
-        };
-    </script>
-</body>
-</html>
+      assert_throws_dom("SecurityError", () => ctx.getImageData(0, 0, 1, 1));
+    });
+  });
+</script>
