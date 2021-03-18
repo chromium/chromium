@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
@@ -43,8 +44,13 @@ class TabGroupEditorBubbleViewDialogBrowserTest : public DialogBrowserTest {
   }
 };
 
+#if defined(OS_WIN)
+#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
+#else
+#define MAYBE_InvokeUi_default InvokeUi_default
+#endif
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
-                       InvokeUi_default) {
+                       MAYBE_InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
