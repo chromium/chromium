@@ -2650,6 +2650,7 @@
           '--no-xvfb',
           '--use-weston',
           '--weston-use-gl',
+          '--weston-debug-logging',
         ],
         'mixins': [
           'enable_resultdb',
@@ -2665,6 +2666,7 @@
           '--no-xvfb',
           '--use-weston',
           '--weston-use-gl',
+          '--weston-debug-logging',
         ],
         'mixins': [
           'enable_resultdb',
@@ -3034,6 +3036,7 @@
           '--no-xvfb',
           '--use-weston',
           '--weston-use-gl',
+          '--weston-debug-logging',
         ],
         'args': [
           '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle',
@@ -3052,6 +3055,7 @@
           '--no-xvfb',
           '--use-weston',
           '--weston-use-gl',
+          '--weston-debug-logging',
         ],
         'mixins': [
           'enable_resultdb',
@@ -3068,6 +3072,7 @@
           '--no-xvfb',
           '--use-weston',
           '--weston-use-gl',
+          '--weston-debug-logging',
         ],
         'mixins': [
           'enable_resultdb',
@@ -3083,6 +3088,7 @@
           '--no-xvfb',
           '--use-weston',
           '--weston-use-gl',
+          '--weston-debug-logging',
         ],
         'mixins': [
           'enable_resultdb',
@@ -3110,6 +3116,7 @@
           '--no-xvfb',
           '--use-weston',
           '--weston-use-gl',
+          '--weston-debug-logging',
         ],
         'mixins': [
           'chrome-gpu-gold-service-account',
@@ -3138,6 +3145,7 @@
           '--no-xvfb',
           '--use-weston',
           '--weston-use-gl',
+          '--weston-debug-logging',
         ],
         'mixins': [
           'chrome-gpu-gold-service-account',
@@ -3166,6 +3174,7 @@
           '--no-xvfb',
           '--use-weston',
           '--weston-use-gl',
+          '--weston-debug-logging',
         ],
         'mixins': [
           'enable_resultdb',
@@ -3403,6 +3412,7 @@
           '--no-xvfb',
           '--use-weston',
           '--weston-use-gl',
+          '--weston-debug-logging',
         ],
         'args': [
           '--extra-browser-args=--use-cmd-decoder=validating',
@@ -3421,6 +3431,7 @@
           '--no-xvfb',
           '--use-weston',
           '--weston-use-gl',
+          '--weston-debug-logging',
         ],
         'mixins': [
           'enable_resultdb',
@@ -3437,6 +3448,7 @@
           '--no-xvfb',
           '--use-weston',
           '--weston-use-gl',
+          '--weston-debug-logging',
         ],
         'mixins': [
           'enable_resultdb',
@@ -3452,6 +3464,7 @@
           '--no-xvfb',
           '--use-weston',
           '--weston-use-gl',
+          '--weston-debug-logging',
         ],
         'mixins': [
           'enable_resultdb',
@@ -3479,6 +3492,7 @@
           '--no-xvfb',
           '--use-weston',
           '--weston-use-gl',
+          '--weston-debug-logging',
         ],
         'mixins': [
           'chrome-gpu-gold-service-account',
@@ -3507,6 +3521,7 @@
           '--no-xvfb',
           '--use-weston',
           '--weston-use-gl',
+          '--weston-debug-logging',
         ],
         'mixins': [
           'chrome-gpu-gold-service-account',
@@ -3535,6 +3550,7 @@
           '--no-xvfb',
           '--use-weston',
           '--weston-use-gl',
+          '--weston-debug-logging',
         ],
         'mixins': [
           'enable_resultdb',
@@ -3594,6 +3610,7 @@
           '--no-xvfb',
           '--use-weston',
           '--weston-use-gl',
+          '--weston-debug-logging',
         ],
         'mixins': [
           'enable_resultdb',
@@ -3673,6 +3690,7 @@
           '--no-xvfb',
           '--use-weston',
           '--weston-use-gl',
+          '--weston-debug-logging',
         ],
         'mixins': [
           'enable_resultdb',
@@ -3761,6 +3779,7 @@
           '--no-xvfb',
           '--use-weston',
           '--weston-use-gl',
+          '--weston-debug-logging',
         ],
         'mixins': [
           'enable_resultdb',
@@ -3899,6 +3918,7 @@
           '--no-xvfb',
           '--use-weston',
           '--weston-use-gl',
+          '--weston-debug-logging',
         ],
         'args': [
           # On dual-GPU devices we want the high-performance GPU to be active

@@ -7384,7 +7384,8 @@
           "--xvfb",
           "--no-xvfb",
           "--use-weston",
-          "--weston-use-gl"
+          "--weston-use-gl",
+          "--weston-debug-logging"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -7422,7 +7423,8 @@
           "--xvfb",
           "--no-xvfb",
           "--use-weston",
-          "--weston-use-gl"
+          "--weston-use-gl",
+          "--weston-debug-logging"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -7460,7 +7462,8 @@
           "--xvfb",
           "--no-xvfb",
           "--use-weston",
-          "--weston-use-gl"
+          "--weston-use-gl",
+          "--weston-debug-logging"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -7498,7 +7501,8 @@
           "--xvfb",
           "--no-xvfb",
           "--use-weston",
-          "--weston-use-gl"
+          "--weston-use-gl",
+          "--weston-debug-logging"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -7540,7 +7544,8 @@
           "--xvfb",
           "--no-xvfb",
           "--use-weston",
-          "--weston-use-gl"
+          "--weston-use-gl",
+          "--weston-debug-logging"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -7582,6 +7587,7 @@
           "--no-xvfb",
           "--use-weston",
           "--weston-use-gl",
+          "--weston-debug-logging",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -7629,6 +7635,7 @@
           "--no-xvfb",
           "--use-weston",
           "--weston-use-gl",
+          "--weston-debug-logging",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -7673,7 +7680,8 @@
           "--xvfb",
           "--no-xvfb",
           "--use-weston",
-          "--weston-use-gl"
+          "--weston-use-gl",
+          "--weston-debug-logging"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -7711,7 +7719,8 @@
           "--xvfb",
           "--no-xvfb",
           "--use-weston",
-          "--weston-use-gl"
+          "--weston-use-gl",
+          "--weston-debug-logging"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -7750,7 +7759,8 @@
           "--xvfb",
           "--no-xvfb",
           "--use-weston",
-          "--weston-use-gl"
+          "--weston-use-gl",
+          "--weston-debug-logging"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {

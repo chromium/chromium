@@ -8,6 +8,7 @@
 
 from __future__ import print_function
 
+import copy
 import os
 import os.path
 import psutil
@@ -284,6 +285,11 @@ def _run_with_weston(cmd, env, stdoutfile):
     if '--weston-use-gl' in cmd:
       weston_cmd.append('--use-gl')
       cmd.remove('--weston-use-gl')
+
+    if '--weston-debug-logging' in cmd:
+      cmd.remove('--weston-debug-logging')
+      env = copy.deepcopy(env)
+      env['WAYLAND_DEBUG'] = '1'
 
     weston_proc_display = None
     for _ in range(10):
