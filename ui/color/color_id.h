@@ -25,7 +25,6 @@
   E_CPONLY(kColorSecondaryForeground) \
   E_CPONLY(kColorSubtleEmphasisBackground) \
   E_CPONLY(kColorTextSelectionBackground) \
-  E_CPONLY(kColorTextSelectionForeground) \
   \
   /* Further UI element colors */ \
   E(kColorAvatarHeaderArt, NativeTheme::kColorId_AvatarHeaderArt) \

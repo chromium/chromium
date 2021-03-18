@@ -26,8 +26,9 @@ constexpr auto kNativeOSColorIds = base::MakeFixedFlatSet<ui::ColorId>({
     ui::kColorMenuItemForegroundDisabled,
     ui::kColorMenuItemForeground,
     ui::kColorMenuSeparator,
-    ui::kColorTableBackgroundAlternate,
-    ui::kColorTextfieldSelectionBackground});
+    ui::kColorTextSelectionBackground,
+    ui::kColorTextfieldSelectionBackground,
+    ui::kColorTableBackgroundAlternate});
 // clang-format on
 }
 
@@ -63,7 +64,13 @@ void AddNativeUiColorMixer(ColorProvider* provider,
             skia::NSSystemColorToSkColor([NSColor disabledControlTextColor])},
            {kColorMenuItemForeground,
             skia::NSSystemColorToSkColor([NSColor controlTextColor])},
+           {kColorTextSelectionBackground,
+            skia::NSSystemColorToSkColor(
+                [NSColor selectedTextBackgroundColor])},
        }});
+
+  mixer[kColorMenuItemForegroundHighlighted] = {kColorPrimaryForeground};
+  mixer[kColorMenuItemForegroundSelected] = {kColorPrimaryForeground};
 
   if (@available(macOS 10.14, *)) {
     mixer[kColorTableBackgroundAlternate] = {skia::NSSystemColorToSkColor(

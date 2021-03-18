@@ -92,12 +92,10 @@ class ToggleButton::ThumbView : public InkDropHostView {
     cc::PaintFlags thumb_flags;
     thumb_flags.setLooper(gfx::CreateShadowDrawLooper(shadows));
     thumb_flags.setAntiAlias(true);
-    const SkColor thumb_on_color =
-        thumb_on_color_.value_or(theme->GetSystemColor(
-            ui::NativeTheme::kColorId_ToggleButtonThumbColorOn));
-    const SkColor thumb_off_color =
-        thumb_off_color_.value_or(theme->GetSystemColor(
-            ui::NativeTheme::kColorId_ToggleButtonThumbColorOff));
+    const SkColor thumb_on_color = thumb_on_color_.value_or(
+        theme->GetSystemColor(ui::NativeTheme::kColorId_ProminentButtonColor));
+    const SkColor thumb_off_color = thumb_off_color_.value_or(
+        theme->GetSystemColor(ui::NativeTheme::kColorId_ButtonColor));
     thumb_flags.setColor(
         color_utils::AlphaBlend(thumb_on_color, thumb_off_color, color_ratio_));
 
