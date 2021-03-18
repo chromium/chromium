@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -74,17 +75,6 @@ SecurityTokenSessionController::Behavior ParseBehaviorPrefValue(
     return SecurityTokenSessionController::Behavior::kLock;
 
   return SecurityTokenSessionController::Behavior::kIgnore;
-}
-
-std::string GetEnterpriseDomainFromEmail(const std::string& email) {
-  size_t email_separator_pos = email.find('@');
-  bool is_email = email_separator_pos != std::string::npos &&
-                  email_separator_pos < email.length() - 1;
-
-  if (!is_email)
-    return std::string();
-
-  return gaia::ExtractDomainName(email);
 }
 
 // Checks if `domain` represents a valid domain. Returns false if `domain` is
@@ -364,7 +354,9 @@ void SecurityTokenSessionController::ExtensionStopsProvidingCertificate(
             notification_seconds_,
             base::BindOnce(&SecurityTokenSessionController::TriggerAction,
                            weak_ptr_factory_.GetWeakPtr()),
-            behavior_, GetEnterpriseDomainFromEmail(user_->GetDisplayEmail())),
+            behavior_,
+            chrome::enterprise_util::GetDomainFromEmail(
+                user_->GetDisplayEmail())),
         nullptr, nullptr);
     fullscreen_notification_->Show();
   }
@@ -380,7 +372,8 @@ void SecurityTokenSessionController::AddLockNotification() const {
   profile_prefs_->SetBoolean(prefs::kSecurityTokenSessionNotificationDisplayed,
                              true);
 
-  std::string domain = GetEnterpriseDomainFromEmail(user_->GetDisplayEmail());
+  std::string domain =
+      chrome::enterprise_util::GetDomainFromEmail(user_->GetDisplayEmail());
   DisplayNotification(
       l10n_util::GetStringFUTF16(IDS_SECURITY_TOKEN_SESSION_LOCK_MESSAGE_TITLE,
                                  ui::GetChromeOSDeviceName()),
@@ -402,7 +395,7 @@ void SecurityTokenSessionController::ScheduleLogoutNotification() const {
                              true);
   local_state_->SetString(
       prefs::kSecurityTokenSessionNotificationScheduledDomain,
-      GetEnterpriseDomainFromEmail(user_->GetDisplayEmail()));
+      chrome::enterprise_util::GetDomainFromEmail(user_->GetDisplayEmail()));
 }
 
 void SecurityTokenSessionController::Reset() {

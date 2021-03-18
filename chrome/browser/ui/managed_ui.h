@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/optional.h"
 #include "build/chromeos_buildflags.h"
 
 class Profile;
@@ -37,6 +38,20 @@ std::u16string GetManagedUiWebUILabel(Profile* profile);
 // is mananged. These strings contain HTML for an <a> element.
 std::u16string GetDeviceManagedUiWebUILabel();
 #endif
+
+// Returns nullopt if the device is not managed, the UTF8-encoded string
+// representation of the manager identity if available and an empty string if
+// the device is managed but the manager is not known.
+base::Optional<std::string> GetDeviceManagerIdentity();
+
+// Returns the UTF8-encoded string representation of the the entity that manages
+// `profile` or nullopt if unmanaged. For standard dasher domains, this will be
+// a domain name (ie foo.com). For FlexOrgs, this will be the email address of
+// the admin of the FlexOrg (ie user@foo.com). If DMServer does not provide this
+// information, this function defaults to the domain of the account.
+// TODO(crbug.com/1081272): Refactor localization hints for all strings that
+// depend on this function.
+base::Optional<std::string> GetAccountManagerIdentity(Profile* profile);
 
 }  // namespace chrome
 

@@ -123,8 +123,8 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
   // be the email address of the admin of the FlexOrg (ie user@foo.com). If
   // DMServer does not provide this information, this method defaults to
   // |GetAccountDomain|. If unmanaged, an empty string is returned.
-  // TODO(crbug.com/1081272): refactor localization hints for all strings that
-  // depend on this method
+  // TODO(crbug.com/1188594): Remove this function and replace all call sites
+  // with chrome::GetAccountManagerIdentity().
   static std::string GetAccountManager(Profile* profile);
 
   void OnJavascriptAllowed() override;

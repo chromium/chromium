@@ -24,6 +24,7 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/managed_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -31,7 +32,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
-#include "google_apis/gaia/gaia_auth_util.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/referrer_policy.h"
@@ -326,44 +326,10 @@ const char* GetReportingTypeValue(ReportingType reportingType) {
 
 }  // namespace
 
-std::string GetAccountDomain(Profile* profile) {
-  if (!IsProfileManaged(profile))
-    return std::string();
-  auto username = profile->GetProfileUserName();
-  size_t email_separator_pos = username.find('@');
-  bool is_email = email_separator_pos != std::string::npos &&
-                  email_separator_pos < username.length() - 1;
-
-  if (!is_email)
-    return std::string();
-
-  const std::string domain = gaia::ExtractDomainName(std::move(username));
-
-  return (domain == "gmail.com" || domain == "googlemail.com") ? std::string()
-                                                               : domain;
-}
-
 std::string ManagementUIHandler::GetAccountManager(Profile* profile) {
-  if (!IsProfileManaged(profile))
-    return std::string();
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  const policy::UserCloudPolicyManagerChromeOS* user_cloud_policy_manager =
-      profile->GetUserCloudPolicyManagerChromeOS();
-#else
-  const policy::UserCloudPolicyManager* user_cloud_policy_manager =
-      profile->GetUserCloudPolicyManager();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  if (user_cloud_policy_manager) {
-    const enterprise_management::PolicyData* policy =
-        user_cloud_policy_manager->core()->store()->policy();
-    if (policy && policy->has_managed_by()) {
-      return policy->managed_by();
-    }
-  }
-
-  return GetAccountDomain(profile);
+  base::Optional<std::string> account_manager =
+      chrome::GetAccountManagerIdentity(profile);
+  return account_manager ? *account_manager : std::string();
 }
 
 ManagementUIHandler::ManagementUIHandler() {

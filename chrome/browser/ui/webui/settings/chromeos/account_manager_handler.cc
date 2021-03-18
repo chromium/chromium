@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "chrome/browser/account_manager_facade_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/account_manager/account_manager_welcome_dialog.h"
@@ -45,17 +46,6 @@ constexpr char kFamilyLink[] = "Family Link";
 constexpr int kToastDurationMs = 2500;
 constexpr char kAccountRemovedToastId[] =
     "settings_account_manager_account_removed";
-
-std::string GetEnterpriseDomainFromUsername(const std::string& username) {
-  size_t email_separator_pos = username.find('@');
-  bool is_email = email_separator_pos != std::string::npos &&
-                  email_separator_pos < username.length() - 1;
-
-  if (!is_email)
-    return std::string();
-
-  return gaia::ExtractDomainName(username);
-}
 
 ::account_manager::AccountKey GetAccountKeyFromJsCallback(
     const base::DictionaryValue* const dictionary) {
@@ -273,12 +263,13 @@ void AccountManagerUIHandler::OnCheckDummyGaiaTokenForAllAccounts(
       device_account.SetOrganization(organization);
     } else if (user->IsActiveDirectoryUser()) {
       device_account.SetOrganization(
-          GetEnterpriseDomainFromUsername(user->GetDisplayEmail()));
+          chrome::enterprise_util::GetDomainFromEmail(user->GetDisplayEmail()));
     } else if (profile_->GetProfilePolicyConnector()->IsManaged()) {
-      device_account.SetOrganization(GetEnterpriseDomainFromUsername(
-          identity_manager_
-              ->GetPrimaryAccountInfo(signin::ConsentLevel::kNotRequired)
-              .email));
+      device_account.SetOrganization(
+          chrome::enterprise_util::GetDomainFromEmail(
+              identity_manager_
+                  ->GetPrimaryAccountInfo(signin::ConsentLevel::kNotRequired)
+                  .email));
     }
 
     // Device account must show up at the top.
