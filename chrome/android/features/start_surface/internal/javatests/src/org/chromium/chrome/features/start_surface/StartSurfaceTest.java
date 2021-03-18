@@ -1653,6 +1653,82 @@ public class StartSurfaceTest {
     @Test
     @LargeTest
     @Feature({"StartSurface"})
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
+    // clang-format off
+    @CommandLineFlags.Add({BASE_PARAMS + "/single"})
+    public void testShow_SingleAsHomepage_BackButtonOnHomepageWithGroupTabsDialog()
+        throws ExecutionException {
+        // clang-format on
+        backButtonOnHomepageWithGroupTabsDialogImpl();
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"StartSurface"})
+    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
+    // clang-format off
+    @CommandLineFlags.Add({BASE_PARAMS + "/single/show_last_active_tab_only/true"})
+    public void testShow_SingleAsHomepageV2_BackButtonOnHomepageWithGroupTabsDialog()
+        throws ExecutionException {
+        // clang-format on
+        backButtonOnHomepageWithGroupTabsDialogImpl();
+    }
+
+    private void backButtonOnHomepageWithGroupTabsDialogImpl() throws ExecutionException {
+        if (!mImmediateReturn) {
+            pressHomePageButton();
+        }
+
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        CriteriaHelper.pollUiThread(
+                () -> cta.getLayoutManager() != null && cta.getLayoutManager().overviewVisible());
+        waitForTabModel();
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
+        onViewWaiting(withId(R.id.logo));
+
+        // Launches the first site in MV tiles to create the second tab for grouping.
+        LinearLayout tilesLayout =
+                cta.findViewById(org.chromium.chrome.tab_ui.R.id.mv_tiles_layout);
+        TestThreadUtils.runOnUiThreadBlocking(() -> tilesLayout.getChildAt(0).performClick());
+        CriteriaHelper.pollUiThread(() -> !cta.getLayoutManager().overviewVisible());
+        // Verifies a new Tab is created.
+        TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
+
+        // When show_last_active_tab_only is enabled, we need to enter the tab switcher first to
+        // initialize the secondary task surface which shows the TabSelectionEditor dialog.
+        onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.tab_switcher_button));
+        TabUiTestHelper.enterTabSwitcher(cta);
+        waitForView(withId(R.id.secondary_tasks_surface_view));
+        List<Tab> tabs =
+                getTabsInCurrentTabModel(mActivityTestRule.getActivity().getCurrentTabModel());
+        TabSelectionEditorTestingRobot robot = new TabSelectionEditorTestingRobot();
+
+        // Enters the homepage, and shows the TabSelectionEditor dialog.
+        pressHomePageButton();
+        waitForView(withId(R.id.primary_tasks_surface_view));
+
+        StartSurfaceCoordinator startSurfaceCoordinator = getStartSurfaceFromUIThread();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> startSurfaceCoordinator.showTabSelectionEditorForTesting(tabs));
+        robot.resultRobot.verifyTabSelectionEditorIsVisible()
+                .verifyToolbarActionButtonDisabled()
+                .verifyToolbarActionButtonWithResourceId(
+                        org.chromium.chrome.tab_ui.R.string.tab_selection_editor_group)
+                .verifyToolbarSelectionTextWithResourceId(
+                        org.chromium.chrome.tab_ui.R.string
+                                .tab_selection_editor_toolbar_select_tabs)
+                .verifyAdapterHasItemCount(tabs.size())
+                .verifyHasAtLeastNItemVisible(2);
+
+        // Verifies that tapping the back button will close the TabSelectionEditor.
+        pressBack();
+        robot.resultRobot.verifyTabSelectionEditorIsHidden();
+        onView(allOf(withId(R.id.primary_tasks_surface_view), isDisplayed()));
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"StartSurface"})
     @DisableIf.Build(sdk_is_less_than = M, message = "https://crbug.com/1170553")
     @CommandLineFlags.Add({BASE_PARAMS + "/single/omnibox_focused_on_new_tab/true"})
     public void testOmnibox_FocusedOnNewTabInSingleSurface() {

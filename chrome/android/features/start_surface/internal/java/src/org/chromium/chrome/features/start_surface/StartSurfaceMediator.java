@@ -651,18 +651,21 @@ class StartSurfaceMediator
     public boolean onBackPressed() {
         boolean isOnHomepage = mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE;
 
+        // When the SecondaryTasksSurface is shown, the TabGridDialog is controlled by
+        // mSecondaryTasksSurfaceController, while the TabSelectionEditor dialog is controlled
+        // by mController. Therefore, we need to check both controllers whether any dialog is
+        // visible. If so, the corresponding controller will handle the back button.
+        // When the Start surface is shown, tapping "Group Tabs" from menu will also show the
+        // the TabSelectionEditor dialog. Therefore, we need to check both controllers as well.
+        if (mSecondaryTasksSurfaceController != null
+                && mSecondaryTasksSurfaceController.isDialogVisible()) {
+            return mSecondaryTasksSurfaceController.onBackPressed(isOnHomepage);
+        } else if (mController.isDialogVisible()) {
+            return mController.onBackPressed(isOnHomepage);
+        }
+
         if (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER) {
-            // When the SecondaryTasksSurface is shown, the TabGridDialog is controlled by
-            // mSecondaryTasksSurfaceController, while the TabSelectionEditor dialog is controlled
-            // by mController. Therefore, we need to check both controllers whether any dialog is
-            // visible. If so, the corresponding controller will handle the back button.
-            if (mSecondaryTasksSurfaceController != null
-                    && mSecondaryTasksSurfaceController.isDialogVisible()) {
-                return mSecondaryTasksSurfaceController.onBackPressed(isOnHomepage);
-            } else if (mController.isDialogVisible()) {
-                return mController.onBackPressed(isOnHomepage);
-            } else if (mPreviousStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
-                    && !mIsIncognito) {
+            if (mPreviousStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE && !mIsIncognito) {
                 // Secondary tasks surface is used as the main surface in incognito mode.
                 // If we reached Tab switcher from HomePage, and there isn't any dialog shown,
                 // updates the state, and ChromeTabbedActivity will handle the back button.
