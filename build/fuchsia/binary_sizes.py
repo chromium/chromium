@@ -251,20 +251,6 @@ def GetBlobNameHashes(meta_dir):
   return blob_name_hashes
 
 
-def CommitPositionFromBuildProperty(value):
-  """Extracts the chromium commit position from a builders got_revision_cp
-  property."""
-
-  # Match a commit position from a build properties commit string like
-  # "refs/heads/master@{#819458}"
-  test_arg_commit_position_re = r'\{#(?P<position>\d+)\}'
-
-  match = re.search(test_arg_commit_position_re, value)
-  if match:
-    return int(match.group('position'))
-  raise RuntimeError('Could not get chromium commit position from test arg.')
-
-
 # Compiled regular expression matching strings like *.so, *.so.1, *.so.2, ...
 SO_FILENAME_REGEXP = re.compile(r'\.so(\.\d+)?$')
 
@@ -440,11 +426,6 @@ def main():
       type=os.path.realpath,
       help='File to which simplified JSON results will be written.')
   parser.add_argument(
-      '--output-dir',
-      help='Optional directory for histogram output file.  This argument is '
-      'automatically supplied by the recipe infrastructure when this script '
-      'is invoked by a recipe call to api.chromium.runtest().')
-  parser.add_argument(
       '--size-plugin-json-path',
       help='Optional path for json size data for the Gerrit binary size plugin',
   )
@@ -454,12 +435,6 @@ def main():
                            'fyi_sizes.json'),
       help='path to package size limits json file.  The path is relative to '
       'the workspace src directory')
-  parser.add_argument(
-      '--test-revision-cp',
-      help='Set the chromium commit point NNNNNN from a build property value '
-      'like "refs/heads/master@{#NNNNNNN}".  Intended for use in recipes with '
-      'the build property got_revision_cp',
-  )
   parser.add_argument('--verbose',
                       '-v',
                       action='store_true',
@@ -476,10 +451,6 @@ def main():
     print('Args:')
     for var in vars(args):
       print('  {}: {}'.format(var, getattr(args, var) or ''))
-
-  # Optionally prefix the output_dir to the histogram_path.
-  if args.output_dir and args.histogram_path:
-    args.histogram_path = os.path.join(args.output_dir, args.histogram_path)
 
   if not os.path.isdir(args.build_out_dir):
     raise Exception('Could not find build output directory "%s".' %
