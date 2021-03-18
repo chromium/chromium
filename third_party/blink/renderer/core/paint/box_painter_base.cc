@@ -382,13 +382,17 @@ BoxPainterBase::FillLayerInfo::FillLayerInfo(
   is_printing = doc.Printing();
 
   should_paint_image = image && image->CanRender();
-  should_paint_color =
-      is_bottom_layer && color.Alpha() &&
-      (!should_paint_image || !layer.ImageOccludesNextLayers(doc, style));
-  should_paint_color_with_paint_worklet_image =
-      should_paint_color &&
+  bool composite_bgcolor_animation =
       RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
       style.HasCurrentBackgroundColorAnimation();
+  // When background color animation is running on the compositor thread, we
+  // need to trigger repaint even if the background is transparent to collect
+  // artifacts in order to run the animation on the compositor.
+  should_paint_color =
+      is_bottom_layer && (color.Alpha() || composite_bgcolor_animation) &&
+      (!should_paint_image || !layer.ImageOccludesNextLayers(doc, style));
+  should_paint_color_with_paint_worklet_image =
+      should_paint_color && composite_bgcolor_animation;
 }
 
 namespace {
