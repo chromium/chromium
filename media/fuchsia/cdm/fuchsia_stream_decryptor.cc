@@ -254,14 +254,6 @@ void FuchsiaClearStreamDecryptor::CancelDecrypt() {
 void FuchsiaClearStreamDecryptor::AllocateOutputBuffers(
     const fuchsia::media::StreamBufferConstraints& stream_constraints) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!stream_constraints.has_packet_count_for_client_max() ||
-      !stream_constraints.has_packet_count_for_client_min()) {
-    DLOG(ERROR) << "StreamBufferConstraints doesn't contain required fields.";
-    OnError();
-    return;
-  }
-
   output_pool_creator_ =
       allocator_.MakeBufferPoolCreator(1 /* num_shared_token */);
   output_pool_creator_->Create(

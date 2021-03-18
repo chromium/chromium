@@ -638,7 +638,6 @@ void FuchsiaVideoDecoder::OnInputBufferPoolCreated(
   settings.set_buffer_lifetime_ordinal(input_buffer_lifetime_ordinal_);
   settings.set_buffer_constraints_version_ordinal(
       decoder_input_constraints_->buffer_constraints_version_ordinal());
-  settings.set_single_buffer_mode(false);
   settings.set_sysmem_token(input_buffer_collection_->TakeToken());
   decoder_->SetInputBufferPartialSettings(std::move(settings));
 
