@@ -155,9 +155,11 @@ if (chromecast_branding == "public") {
 }
 
 # All locales supported by Cast builds. This provides a single point of
-# reference for all GN files referencing a locales list. |locales| is declared
-# in //build/config/locales.gni.
-cast_locales = locales
+# reference for all GN files referencing a locales list.
+# |locales_without_pseudolocales| is declared in //build/config/locales.gni.
+# See https://chromium-review.googlesource.com/488166/ for why we can't use
+# pseudolocales in chromecast.
+cast_locales = locales_without_pseudolocales
 
 # Android currently supports more locales than Desktop and ChromeOS.
 # If Cast will also the android files update this and the Cast grd files.
