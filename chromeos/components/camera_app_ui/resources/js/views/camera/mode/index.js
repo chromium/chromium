@@ -380,6 +380,7 @@ export class Modes {
   async updateMode(mode, factory, stream, facing, deviceId, captureResolution) {
     if (this.current !== null) {
       await this.current.stopCapture();
+      await this.disableSaveMetadata_();
     }
     this.updateModeUI_(mode);
     this.current = factory.produce();
