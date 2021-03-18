@@ -8,6 +8,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace embedder_support {
 
@@ -53,25 +54,29 @@ bool AllowSharedWorker(
 bool AllowWorkerFileSystem(
     const GURL& url,
     const content_settings::CookieSettings* cookie_settings) {
-  return cookie_settings->IsCookieAccessAllowed(url, url, base::nullopt);
+  return cookie_settings->IsCookieAccessAllowed(url, url,
+                                                url::Origin::Create(url));
 }
 
 bool AllowWorkerIndexedDB(
     const GURL& url,
     const content_settings::CookieSettings* cookie_settings) {
-  return cookie_settings->IsCookieAccessAllowed(url, url, base::nullopt);
+  return cookie_settings->IsCookieAccessAllowed(url, url,
+                                                url::Origin::Create(url));
 }
 
 bool AllowWorkerCacheStorage(
     const GURL& url,
     const content_settings::CookieSettings* cookie_settings) {
-  return cookie_settings->IsCookieAccessAllowed(url, url, base::nullopt);
+  return cookie_settings->IsCookieAccessAllowed(url, url,
+                                                url::Origin::Create(url));
 }
 
 bool AllowWorkerWebLocks(
     const GURL& url,
     const content_settings::CookieSettings* cookie_settings) {
-  return cookie_settings->IsCookieAccessAllowed(url, url, base::nullopt);
+  return cookie_settings->IsCookieAccessAllowed(url, url,
+                                                url::Origin::Create(url));
 }
 
 }  // namespace embedder_support
