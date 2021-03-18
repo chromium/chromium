@@ -12,14 +12,11 @@
 
 namespace permissions {
 ClientFeatures_Platform GetCurrentPlatformProto() {
-#if defined(OS_WIN)
-  return permissions::ClientFeatures_Platform_PLATFORM_WINDOWS;
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
-  return permissions::ClientFeatures_Platform_PLATFORM_LINUX;
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
+    defined(OS_MAC)
+  return permissions::ClientFeatures_Platform_PLATFORM_DESKTOP;
 #elif defined(OS_ANDROID) || defined(OS_FUCHSIA)
-  return permissions::ClientFeatures_Platform_PLATFORM_ANDROID;
-#elif defined(OS_MAC)
-  return permissions::ClientFeatures_Platform_PLATFORM_MAC_OS;
+  return permissions::ClientFeatures_Platform_PLATFORM_MOBILE;
 #else
   return permissions::ClientFeatures_Platform_PLATFORM_UNSPECIFIED;
 #endif

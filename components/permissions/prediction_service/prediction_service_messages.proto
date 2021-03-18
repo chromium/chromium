@@ -38,10 +38,8 @@ message ClientFeatures {
   // Enum defining the client platforms.
   enum Platform {
     PLATFORM_UNSPECIFIED = 0;
-    PLATFORM_ANDROID = 1;
-    PLATFORM_WINDOWS = 2;
-    PLATFORM_LINUX = 3;
-    PLATFORM_MAC_OS = 4;
+    PLATFORM_MOBILE = 1;
+    PLATFORM_DESKTOP = 2;
   }
 
   // The platform run by the client that originated the suggestion request.

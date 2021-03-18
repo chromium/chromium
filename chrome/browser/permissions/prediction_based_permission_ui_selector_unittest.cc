@@ -33,7 +33,7 @@ class PredictionBasedPermissionUiSelectorTest : public testing::Test {
 
     safe_browsing::SetSafeBrowsingState(
         testing_profile_->GetPrefs(),
-        safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+        safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
   }
 
   void RecordHistoryActions(size_t action_count,
