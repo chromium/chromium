@@ -19,6 +19,7 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Manage policy cache that will be used during browser launch stage.
@@ -132,6 +133,15 @@ public class PolicyCache {
         } catch (JSONException e) {
             return null;
         }
+    }
+
+    /**
+     * @return ALl cached policies.
+     */
+    public Map<String, ?> getAllPolicies() {
+        SharedPreferences sharedPreferences = getSharedPreferences();
+        if (sharedPreferences == null) return null;
+        return sharedPreferences.getAll();
     }
 
     /**

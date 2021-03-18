@@ -14,6 +14,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -27,6 +28,7 @@ public class CombinedPolicyProvider {
     private long mNativeCombinedPolicyProvider;
 
     private PolicyConverter mPolicyConverter;
+    private PolicyCacheProvider mPolicyCacheProvider;
     private final List<PolicyProvider> mPolicyProviders = new ArrayList<>();
     private final List<Bundle> mCachedPolicies = new ArrayList<>();
     private final List<PolicyChangeListener> mPolicyChangeListeners = new ArrayList<>();
@@ -42,11 +44,15 @@ public class CombinedPolicyProvider {
             long nativeCombinedPolicyProvider, PolicyConverter policyConverter) {
         mNativeCombinedPolicyProvider = nativeCombinedPolicyProvider;
         mPolicyConverter = policyConverter;
-        if (nativeCombinedPolicyProvider != 0) {
-            for (PolicyProvider provider : mPolicyProviders) {
-                provider.refresh();
-            }
+        if (nativeCombinedPolicyProvider == 0) {
+            return;
         }
+
+        if (mPolicyProviders.isEmpty()) {
+            mPolicyCacheProvider = new PolicyCacheProvider();
+            mPolicyCacheProvider.setManagerAndSource(this, /* source = */ 0);
+        }
+        refreshPolicies();
     }
 
     @CalledByNative
@@ -63,6 +69,10 @@ public class CombinedPolicyProvider {
      * disambiguating updates.
      */
     public void registerProvider(PolicyProvider provider) {
+        if (isPolicyCacheEnabled()) {
+            mPolicyCacheProvider = null;
+        }
+
         mPolicyProviders.add(provider);
         mCachedPolicies.add(null);
         provider.setManagerAndSource(this, mPolicyProviders.size() - 1);
@@ -81,15 +91,21 @@ public class CombinedPolicyProvider {
     }
 
     void onSettingsAvailable(int source, Bundle newSettings) {
-        mCachedPolicies.set(source, newSettings);
-        // Check if we have policies from all the providers before applying them.
-        for (Bundle settings : mCachedPolicies) {
-            if (settings == null) return;
-        }
-
         if (mNativeCombinedPolicyProvider == 0) return;
 
-        for (Bundle settings : mCachedPolicies) {
+        List<Bundle> policies;
+        if (isPolicyCacheEnabled()) {
+            policies = Arrays.asList(newSettings);
+        } else {
+            mCachedPolicies.set(source, newSettings);
+            // Check if we have policies from all the providers before applying them.
+            for (Bundle settings : mCachedPolicies) {
+                if (settings == null) return;
+            }
+
+            policies = mCachedPolicies;
+        }
+        for (Bundle settings : policies) {
             for (String key : settings.keySet()) {
                 mPolicyConverter.setPolicy(key, settings.get(key));
             }
@@ -115,6 +131,11 @@ public class CombinedPolicyProvider {
     @VisibleForTesting
     @CalledByNative
     public void refreshPolicies() {
+        if (isPolicyCacheEnabled()) {
+            mPolicyCacheProvider.refresh();
+            return;
+        }
+
         assert mPolicyProviders.size() == mCachedPolicies.size();
         for (int i = 0; i < mCachedPolicies.size(); ++i) {
             mCachedPolicies.set(i, null);
@@ -124,6 +145,15 @@ public class CombinedPolicyProvider {
         }
     }
 
+    @VisibleForTesting
+    List<PolicyProvider> getPolicyProvidersForTesting() {
+        return mPolicyProviders;
+    }
+
+    @VisibleForTesting
+    boolean isPolicyCacheEnabled() {
+        return mPolicyCacheProvider != null;
+    }
     /**
      * Interface to handle actions related with policy changes.
      */
