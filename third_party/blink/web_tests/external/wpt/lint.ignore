@@ -310,7 +310,7 @@ SET TIMEOUT: html/browsers/windows/auxiliary-browsing-contexts/resources/close-o
 SET TIMEOUT: html/cross-origin-embedder-policy/resources/reporting-worker.js
 SET TIMEOUT: html/cross-origin-opener-policy/navigate-to-aboutblank.https.html
 SET TIMEOUT: html/cross-origin-opener-policy/navigate-top-to-aboutblank.https.html
-SET TIMEOUT: html/cross-origin-opener-policy/reporting/resources/dispatcher.js
+SET TIMEOUT: html/cross-origin-opener-policy/resources/dispatcher.js
 SET TIMEOUT: html/dom/documents/dom-tree-accessors/Document.currentScript.html
 SET TIMEOUT: html/webappapis/timers/*
 SET TIMEOUT: orientation-event/resources/orientation-event-helpers.js
