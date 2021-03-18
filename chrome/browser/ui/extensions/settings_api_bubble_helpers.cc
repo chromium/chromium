@@ -9,7 +9,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_web_ui.h"
-#include "chrome/browser/extensions/ntp_overridden_bubble_delegate.h"
 #include "chrome/browser/extensions/settings_api_bubble_delegate.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -212,18 +211,6 @@ void MaybeShowExtensionControlledNewTabPage(
     chrome::ShowExtensionSettingsOverriddenDialog(std::move(dialog), browser);
     return;
   }
-
-  std::unique_ptr<ExtensionMessageBubbleController> ntp_overridden_bubble(
-      new ExtensionMessageBubbleController(
-          new NtpOverriddenBubbleDelegate(profile), browser));
-  if (!ntp_overridden_bubble->ShouldShow())
-    return;
-
-  ntp_overridden_bubble->SetIsActiveBubble();
-  std::unique_ptr<ToolbarActionsBarBubbleDelegate> bridge(
-      new ExtensionMessageBubbleBridge(std::move(ntp_overridden_bubble)));
-  browser->window()->GetExtensionsContainer()->ShowToolbarActionBubbleAsync(
-      std::move(bridge));
 }
 
 }  // namespace extensions

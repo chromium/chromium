@@ -130,8 +130,6 @@ void ExtensionMessageBubbleViewBrowserTest::ShowUi(const std::string& name) {
 
   if (name == "devmode_warning") {
     TestBubbleAnchoredToExtensionAction();
-  } else if (name == "ntp_override") {
-    TestControlledNewTabPageBubbleShown(false);
   } else {
     // TODO(tapted): Add cases for all bubble types.
     ADD_FAILURE() << "Unknown dialog: " << name;
@@ -347,84 +345,5 @@ IN_PROC_BROWSER_TEST_F(LegacyExtensionMessageBubbleViewBrowserTest,
 // extensions installed in developer mode.
 IN_PROC_BROWSER_TEST_F(LegacyExtensionMessageBubbleViewBrowserTest,
                        InvokeUi_devmode_warning) {
-  ShowAndVerifyUi();
-}
-
-class NtpExtensionBubbleViewBrowserTest
-    : public LegacyExtensionMessageBubbleViewBrowserTest {
- public:
-  std::vector<base::Feature> GetFeaturesToDisable() override {
-    std::vector<base::Feature> features_to_disable =
-        LegacyExtensionMessageBubbleViewBrowserTest::GetFeaturesToDisable();
-    features_to_disable.push_back(
-        features::kExtensionSettingsOverriddenDialogs);
-    return features_to_disable;
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    LegacyExtensionMessageBubbleViewBrowserTest::SetUpCommandLine(command_line);
-// The NTP bubble is only enabled by default on Mac, Windows, and CrOS.
-#if !defined(OS_WIN) && !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH)
-    extensions::SetNtpPostInstallUiEnabledForTesting(true);
-#endif
-  }
-
-  void TearDownOnMainThread() override {
-#if !defined(OS_WIN) && !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH)
-    extensions::SetNtpPostInstallUiEnabledForTesting(false);
-#endif
-    LegacyExtensionMessageBubbleViewBrowserTest::TearDownOnMainThread();
-  }
-};
-
-// Flaky on Ozone https://crbug.com/1178732
-#if defined(USE_OZONE)
-#define MAYBE_TestControlledNewTabPageMessageBubbleLearnMore \
-  DISABLED_TestControlledNewTabPageMessageBubbleLearnMore
-#else
-#define MAYBE_TestControlledNewTabPageMessageBubbleLearnMore \
-  TestControlledNewTabPageMessageBubbleLearnMore
-#endif
-IN_PROC_BROWSER_TEST_F(NtpExtensionBubbleViewBrowserTest,
-                       MAYBE_TestControlledNewTabPageMessageBubbleLearnMore) {
-  TestControlledNewTabPageBubbleShown(true);
-}
-
-// Flaky on Mac, Linux, and ChromeOS https://crbug.com/851655
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
-#define MAYBE_TestBubbleClosedAfterExtensionUninstall \
-  DISABLED_TestBubbleClosedAfterExtensionUninstall
-#else
-#define MAYBE_TestBubbleClosedAfterExtensionUninstall \
-  TestBubbleClosedAfterExtensionUninstall
-#endif
-IN_PROC_BROWSER_TEST_F(NtpExtensionBubbleViewBrowserTest,
-                       MAYBE_TestBubbleClosedAfterExtensionUninstall) {
-  TestBubbleClosedAfterExtensionUninstall();
-}
-
-// Flaky on Ozone https://crbug.com/1178717
-#if defined(USE_OZONE)
-#define MAYBE_TestControlledNewTabPageMessageBubble \
-  DISABLED_TestControlledNewTabPageMessageBubble
-#else
-#define MAYBE_TestControlledNewTabPageMessageBubble \
-  TestControlledNewTabPageMessageBubble
-#endif
-IN_PROC_BROWSER_TEST_F(NtpExtensionBubbleViewBrowserTest,
-                       MAYBE_TestControlledNewTabPageMessageBubble) {
-  TestControlledNewTabPageBubbleShown(false);
-}
-
-// BrowserUiTest for the warning bubble that appears when opening a new tab and
-// an extension is controlling it.
-// Flaky on Ozone https://crbug.com/1178733
-#if defined(USE_OZONE)
-#define MAYBE_InvokeUi_ntp_override DISABLED_InvokeUi_ntp_override
-#else
-#define MAYBE_InvokeUi_ntp_override InvokeUi_ntp_override
-#endif
-IN_PROC_BROWSER_TEST_F(NtpExtensionBubbleViewBrowserTest,
-                       MAYBE_InvokeUi_ntp_override) {
   ShowAndVerifyUi();
 }

@@ -647,8 +647,6 @@ static_library("extensions") {
     "menu_manager_factory.h",
     "navigation_observer.cc",
     "navigation_observer.h",
-    "ntp_overridden_bubble_delegate.cc",
-    "ntp_overridden_bubble_delegate.h",
     "pack_extension_job.cc",
     "pack_extension_job.h",
     "pending_extension_info.cc",

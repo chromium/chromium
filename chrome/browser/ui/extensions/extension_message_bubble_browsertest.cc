@@ -268,26 +268,6 @@ void ExtensionMessageBubbleBrowserTest::TestDevModeBubbleIsntShownTwice() {
   CheckBubbleIsNotPresent(third_browser, false, false);
 }
 
-void ExtensionMessageBubbleBrowserTest::TestControlledNewTabPageBubbleShown(
-    bool click_learn_more) {
-  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("api_test")
-                                          .AppendASCII("override")
-                                          .AppendASCII("newtab")));
-  CheckBubbleIsNotPresent(browser(), false, false);
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  chrome::NewTab(browser());
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  base::RunLoop().RunUntilIdle();
-  CheckBubble(browser(), ANCHOR_BROWSER_ACTION, false);
-  if (click_learn_more) {
-    ClickLearnMoreButton(browser());
-    EXPECT_EQ(3, browser()->tab_strip_model()->count());
-  } else {
-    CloseBubble(browser());
-    EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  }
-}
-
 void ExtensionMessageBubbleBrowserTest::TestControlledHomeBubbleShown() {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
 
