@@ -64,6 +64,7 @@
 #include "chrome/browser/ash/web_applications/help_app_web_app_info.h"
 #include "chrome/browser/ash/web_applications/media_web_app_info.h"
 #include "chrome/browser/ash/web_applications/os_settings_web_app_info.h"
+#include "chrome/browser/ash/web_applications/personalization_app_info.h"
 #include "chrome/browser/ash/web_applications/print_management_web_app_info.h"
 #include "chrome/browser/ash/web_applications/scanning_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/terminal_system_web_app_info.h"
@@ -72,6 +73,7 @@
 #include "chromeos/components/connectivity_diagnostics/url_constants.h"
 #include "chromeos/components/help_app_ui/url_constants.h"
 #include "chromeos/components/media_app_ui/url_constants.h"
+#include "chromeos/components/personalization_app/personalization_app_url_constants.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "extensions/common/constants.h"
 #if !defined(OFFICIAL_BUILD)
@@ -247,6 +249,16 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
         false;
   }
 
+  if (SystemWebAppManager::IsAppEnabled(SystemAppType::PERSONALIZATION)) {
+    infos.emplace(
+        SystemAppType::PERSONALIZATION,
+        SystemAppInfo(
+            "Personalization", GURL(chromeos::kChromeUIPersonalizationAppURL),
+            base::BindRepeating(&CreateWebAppInfoForPersonalizationApp)));
+    auto& personalization_info = infos.at(SystemAppType::PERSONALIZATION);
+    personalization_info.capture_navigations = true;
+  }
+
 #if !defined(OFFICIAL_BUILD)
   if (SystemWebAppManager::IsAppEnabled(SystemAppType::TELEMETRY)) {
     infos.emplace(
@@ -388,6 +400,8 @@ bool SystemWebAppManager::IsAppEnabled(SystemAppType type) {
       return false;
     case SystemAppType::ECHE:
       return base::FeatureList::IsEnabled(chromeos::features::kEcheSWA);
+    case SystemAppType::PERSONALIZATION:
+      return chromeos::features::IsWallpaperWebUIEnabled();
   }
 #else
   return false;

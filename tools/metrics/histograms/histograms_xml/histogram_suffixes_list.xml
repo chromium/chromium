@@ -19902,6 +19902,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Help" label="Help"/>
   <suffix name="Media" label="Media"/>
   <suffix name="OSSettings" label="OS Settings"/>
+  <suffix name="Personalization" label="Personalization"/>
   <suffix name="PrintManagement" label="PrintManagement"/>
   <suffix name="Sample" label="Sample"/>
   <suffix name="Scanning" label="Scanning"/>

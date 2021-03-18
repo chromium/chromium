@@ -314,3 +314,22 @@ grit("eche_bundle_resources") {
   ]
   output_dir = "$root_gen_dir/chromeos"
 }
+
+# Resources used by chrome://personalization SWA.
+grit("personalization_app_resources") {
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  personalization_app_gen_dir =
+      "$root_gen_dir/chromeos/components/personalization_app/resources"
+  source =
+      "$personalization_app_gen_dir/chromeos_personalization_app_resources.grd"
+  deps = [ "//chromeos/components/personalization_app/resources:build_grd" ]
+
+  outputs = [
+    "grit/chromeos_personalization_app_resources.h",
+    "grit/chromeos_personalization_app_resources_map.cc",
+    "grit/chromeos_personalization_app_resources_map.h",
+    "chromeos_personalization_app_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chromeos"
+}

@@ -112,6 +112,7 @@ source_set("web_applications") {
       "//chromeos/components/eche_app_ui",
       "//chromeos/components/help_app_ui",
       "//chromeos/components/media_app_ui",
+      "//chromeos/components/personalization_app",
       "//chromeos/strings",
       "//components/arc:arc_base",
       "//components/arc/mojom",

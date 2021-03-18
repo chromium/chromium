@@ -33,7 +33,7 @@
     Time limit removed for <ph name="APP_NAME">$1<ex>Gmail</ex></ph>
   </message>
 
-  <!-- Wallpaper Manager -->
+  <!-- Wallpaper Manager (Deprecated Chrome App Version) -->
   <message name="IDS_WALLPAPER_MANAGER_APP_NAME" desc="Name of the app which allows users to pick their wallpaper.">
     Wallpaper Picker
   </message>

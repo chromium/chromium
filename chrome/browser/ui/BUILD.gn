@@ -2715,6 +2715,7 @@ static_library("ui") {
       "//chromeos/components/multidevice/logging",
       "//chromeos/components/network_ui:network_diagnostics_resource_provider",
       "//chromeos/components/network_ui:network_health_resource_provider",
+      "//chromeos/components/personalization_app",
       "//chromeos/components/phonehub",
       "//chromeos/components/phonehub:debug",
       "//chromeos/components/print_management",

@@ -30,6 +30,7 @@ enum class SystemAppType {
   CONNECTIVITY_DIAGNOSTICS = 12,
   ECHE = 13,
   CROSH = 14,
+  PERSONALIZATION = 15,
 
   // When adding a new System App, remember to:
   //

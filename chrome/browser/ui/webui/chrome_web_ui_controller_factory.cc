@@ -223,6 +223,8 @@
 #include "chromeos/components/media_app_ui/url_constants.h"
 #include "chromeos/components/multidevice/debug_webui/proximity_auth_ui.h"
 #include "chromeos/components/multidevice/debug_webui/url_constants.h"
+#include "chromeos/components/personalization_app/personalization_app_ui.h"
+#include "chromeos/components/personalization_app/personalization_app_url_constants.h"
 #include "chromeos/components/print_management/print_management_ui.h"
 #include "chromeos/components/print_management/url_constants.h"
 #include "chromeos/components/scanning/scanning_ui.h"
@@ -838,6 +840,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
   if (url.host_piece() == chrome::kChromeUIPluginVmInternalHost) {
     return &NewWebUI<chromeos::PluginVmInternalUI>;
+  }
+  if (url.host_piece() == chromeos::kChromeUIPersonalizationAppHost &&
+      chromeos::features::IsWallpaperWebUIEnabled()) {
+    return &NewWebUI<chromeos::PersonalizationAppUI>;
   }
 
 #if !defined(OFFICIAL_BUILD)

@@ -73,6 +73,7 @@ message SystemWebAppDataProto {
     CONNECTIVITY_DIAGNOSTICS = 12;
     ECHE = 13;
     CROSH = 14;
+    PERSONALIZATION = 15;
   };
 
   optional SystemAppType system_app_type = 1;
