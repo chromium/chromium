@@ -233,6 +233,17 @@ int FrameCaptionButton::GetInkDropCornerRadius() const {
   return ink_drop_corner_radius_;
 }
 
+void FrameCaptionButton::SetPaintAsActive(bool paint_as_active) {
+  if (paint_as_active == paint_as_active_)
+    return;
+  paint_as_active_ = paint_as_active;
+  OnPropertyChanged(&paint_as_active_, kPropertyEffectsPaint);
+}
+
+bool FrameCaptionButton::GetPaintAsActive() const {
+  return paint_as_active_;
+}
+
 void FrameCaptionButton::PaintButtonContents(gfx::Canvas* canvas) {
   constexpr SkAlpha kHighlightVisibleOpacity = 0x14;
   SkAlpha highlight_alpha = SK_AlphaTRANSPARENT;
@@ -357,6 +368,7 @@ BEGIN_METADATA(FrameCaptionButton, Button)
 ADD_PROPERTY_METADATA(SkColor, BackgroundColor, metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(int, InkDropCornerRadius)
 ADD_READONLY_PROPERTY_METADATA(CaptionButtonIcon, Icon)
+ADD_PROPERTY_METADATA(bool, PaintAsActive)
 END_METADATA
 
 }  // namespace views

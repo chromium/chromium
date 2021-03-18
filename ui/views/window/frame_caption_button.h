@@ -66,11 +66,8 @@ class VIEWS_EXPORT FrameCaptionButton : public views::Button {
   void SetBackgroundColor(SkColor background_color);
   SkColor GetBackgroundColor() const;
 
-  void set_paint_as_active(bool paint_as_active) {
-    paint_as_active_ = paint_as_active;
-  }
-
-  bool paint_as_active() const { return paint_as_active_; }
+  void SetPaintAsActive(bool paint_as_active);
+  bool GetPaintAsActive() const;
 
   void SetInkDropCornerRadius(int ink_drop_corner_radius);
   int GetInkDropCornerRadius() const;

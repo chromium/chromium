@@ -502,7 +502,7 @@ void OpaqueBrowserFrameView::OnPaint(gfx::Canvas* canvas) {
                 button->GetClassName());
       views::FrameCaptionButton* frame_caption_button =
           static_cast<views::FrameCaptionButton*>(button);
-      frame_caption_button->set_paint_as_active(active);
+      frame_caption_button->SetPaintAsActive(active);
       frame_caption_button->SetBackgroundColor(frame_color);
     }
   }

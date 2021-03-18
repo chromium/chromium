@@ -231,10 +231,10 @@ void FrameCaptionButtonContainerView::SetButtonImage(
 }
 
 void FrameCaptionButtonContainerView::SetPaintAsActive(bool paint_as_active) {
-  menu_button_->set_paint_as_active(paint_as_active);
-  minimize_button_->set_paint_as_active(paint_as_active);
-  size_button_->set_paint_as_active(paint_as_active);
-  close_button_->set_paint_as_active(paint_as_active);
+  menu_button_->SetPaintAsActive(paint_as_active);
+  minimize_button_->SetPaintAsActive(paint_as_active);
+  size_button_->SetPaintAsActive(paint_as_active);
+  close_button_->SetPaintAsActive(paint_as_active);
   SchedulePaint();
 }
 
