@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/services/cups_proxy/fake_cups_proxy_service_delegate.h"
 #include "chrome/services/cups_proxy/public/cpp/type_conversions.h"
@@ -243,7 +244,13 @@ TEST_F(SocketManagerTest, SyncEverything) {
   EXPECT_EQ(*response, ipp_converter::ConvertToByteBuffer(*http_handshake));
 }
 
-TEST_F(SocketManagerTest, AsyncEverything) {
+// Flaky on Chrome OS. See: crbug.com/1188650.
+#if defined(OS_CHROMEOS)
+#define MAYBE_AsyncEverything DISABLED_AsyncEverything
+#else
+#define MAYBE_AsyncEverything AsyncEverything
+#endif
+TEST_F(SocketManagerTest, MAYBE_AsyncEverything) {
   auto http_handshake = GetTestFile("basic_handshake");
   EXPECT_TRUE(http_handshake);
 
