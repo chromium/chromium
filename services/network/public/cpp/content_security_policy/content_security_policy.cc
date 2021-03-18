@@ -1414,24 +1414,31 @@ std::string ToString(CSPDirectiveName name) {
 bool AllowsBlanketEnforcementOfRequiredCSP(
     const url::Origin& request_origin,
     const GURL& response_url,
-    const network::mojom::AllowCSPFromHeaderValue* allow_csp_from) {
+    const network::mojom::AllowCSPFromHeaderValue* allow_csp_from,
+    network::mojom::ContentSecurityPolicyPtr& required_csp) {
   if (response_url.SchemeIs(url::kAboutScheme) ||
       response_url.SchemeIs(url::kDataScheme) || response_url.SchemeIsFile() ||
       response_url.SchemeIsFileSystem() || response_url.SchemeIsBlob()) {
+    required_csp->self_origin = ComputeSelfOrigin(request_origin.GetURL());
     return true;
   }
 
-  if (request_origin.IsSameOriginWith(url::Origin::Create(response_url)))
+  if (request_origin.IsSameOriginWith(url::Origin::Create(response_url))) {
+    required_csp->self_origin = ComputeSelfOrigin(response_url);
     return true;
+  }
 
   if (!allow_csp_from)
     return false;
 
-  if (allow_csp_from->is_allow_star())
+  if (allow_csp_from->is_allow_star()) {
+    required_csp->self_origin = ComputeSelfOrigin(response_url);
     return true;
+  }
 
   if (allow_csp_from->is_origin() &&
       request_origin.IsSameOriginWith(allow_csp_from->get_origin())) {
+    required_csp->self_origin = ComputeSelfOrigin(response_url);
     return true;
   }
 

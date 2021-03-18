@@ -494,14 +494,6 @@ void FillNavigationParamsRequest(
   for (const auto& trial : commit_params.force_enabled_origin_trials)
     web_origin_trials.emplace_back(WebString::FromASCII(trial));
   navigation_params->force_enabled_origin_trials = web_origin_trials;
-
-  WebVector<WebString> forced_content_security_policies;
-  forced_content_security_policies.reserve(
-      commit_params.forced_content_security_policies.size());
-  for (const auto& csp : commit_params.forced_content_security_policies)
-    forced_content_security_policies.emplace_back(WebString::FromASCII(csp));
-  navigation_params->forced_content_security_policies =
-      forced_content_security_policies;
 }
 
 mojom::CommonNavigationParamsPtr MakeCommonNavigationParams(

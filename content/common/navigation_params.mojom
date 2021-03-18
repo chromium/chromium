@@ -457,12 +457,6 @@ struct CommitNavigationParams {
   // Whether this is a cross browsing instance navigation.
   bool is_cross_browsing_instance = false;
 
-  // A list of additional Content Security Policies to be enforced by blink
-  // on the document. This is being used by Content Security Policy: Embedded
-  // Enforcement for enforcing on frames Content Security Policies required by
-  // their embedders.
-  array<string> forced_content_security_policies;
-
   // Should only be set to a valid value for main-frame same-site navigations
   // where we did a proactive BrowsingInstance swap and we're reusing the old
   // page's process.

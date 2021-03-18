@@ -137,6 +137,10 @@ class CONTENT_EXPORT PolicyContainerHost
     return policies_->ip_address_space;
   }
 
+  void AddContentSecurityPolicies(
+      std::vector<network::mojom::ContentSecurityPolicyPtr>
+          content_security_policies) final;
+
   // Return a PolicyContainer containing copies of the policies and a pending
   // mojo remote that can be used to update policies in this object. If called a
   // second time, it resets the receiver and creates a new PolicyContainer,
@@ -167,9 +171,6 @@ class CONTENT_EXPORT PolicyContainerHost
   ~PolicyContainerHost() override;
 
   void SetReferrerPolicy(network::mojom::ReferrerPolicy referrer_policy) final;
-  void AddContentSecurityPolicies(
-      std::vector<network::mojom::ContentSecurityPolicyPtr>
-          content_security_policies) final;
 
   // The policies of this PolicyContainerHost. This is never null.
   std::unique_ptr<PolicyContainerPolicies> policies_;

@@ -414,9 +414,6 @@ struct BLINK_EXPORT WebNavigationParams {
   // Whether the navigation is cross browsing context group (browsing instance).
   bool is_cross_browsing_context_group_navigation = false;
 
-  // A list of additional content security policies to be enforced by blink.
-  WebVector<WebString> forced_content_security_policies;
-
   // Blink's copy of the policy container containing security policies to be
   // enforced on the document created by this navigation.
   std::unique_ptr<WebPolicyContainer> policy_container;

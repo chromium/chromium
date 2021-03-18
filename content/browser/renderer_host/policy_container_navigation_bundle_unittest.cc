@@ -15,6 +15,7 @@
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,13 +31,21 @@ using ::testing::NotNull;
 using ::testing::Pointee;
 using ::testing::SizeIs;
 
+network::mojom::ContentSecurityPolicyPtr MakeTestCSP() {
+  auto csp = network::mojom::ContentSecurityPolicy::New();
+  csp->header = network::mojom::ContentSecurityPolicyHeader::New();
+  csp->header->header_value = "some-directive some-value";
+  return csp;
+}
+
 // Returns non-default policies for use in tests.
 std::unique_ptr<PolicyContainerPolicies> MakeTestPolicies() {
+  std::vector<network::mojom::ContentSecurityPolicyPtr> csp_list;
+  csp_list.push_back(MakeTestCSP());
   return std::make_unique<PolicyContainerPolicies>(
       network::mojom::ReferrerPolicy::kAlways,
       network::mojom::IPAddressSpace::kPublic,
-      /*is_web_secure_context=*/true,
-      std::vector<network::mojom::ContentSecurityPolicyPtr>());
+      /*is_web_secure_context=*/true, std::move(csp_list));
 }
 
 // Shorthand.
@@ -72,7 +81,7 @@ class PolicyContainerNavigationBundleTest
 // Verifies that the initial delivered policies are default-constructed.
 TEST_F(PolicyContainerNavigationBundleTest, DefaultDeliveredPolicies) {
   EXPECT_EQ(PolicyContainerNavigationBundle(nullptr, nullptr, nullptr)
-                .DeliveredPolicies(),
+                .DeliveredPoliciesForTesting(),
             PolicyContainerPolicies());
 }
 
@@ -85,7 +94,7 @@ TEST_F(PolicyContainerNavigationBundleTest, SetIPAddressSpace) {
   PolicyContainerPolicies expected_policies;
   expected_policies.ip_address_space = network::mojom::IPAddressSpace::kPublic;
 
-  EXPECT_EQ(bundle.DeliveredPolicies(), expected_policies);
+  EXPECT_EQ(bundle.DeliveredPoliciesForTesting(), expected_policies);
 }
 
 // Verifies that SetIsOriginPotentiallyTrustworthy sets the secure context bit
@@ -97,12 +106,12 @@ TEST_F(PolicyContainerNavigationBundleTest, SetIsOriginPotentiallyTrustworthy) {
   PolicyContainerPolicies expected_policies;
   expected_policies.is_web_secure_context = true;
 
-  EXPECT_EQ(bundle.DeliveredPolicies(), expected_policies);
+  EXPECT_EQ(bundle.DeliveredPoliciesForTesting(), expected_policies);
 
   bundle.SetIsOriginPotentiallyTrustworthy(false);
 
   expected_policies.is_web_secure_context = false;
-  EXPECT_EQ(bundle.DeliveredPolicies(), expected_policies);
+  EXPECT_EQ(bundle.DeliveredPoliciesForTesting(), expected_policies);
 }
 
 // Verifies that the default final policies of a bundle are default-constructed,
@@ -126,22 +135,39 @@ TEST_F(PolicyContainerNavigationBundleTest, FinalPoliciesNormalUrl) {
   PolicyContainerNavigationBundle bundle(nullptr, nullptr, nullptr);
 
   bundle.SetIPAddressSpace(network::mojom::IPAddressSpace::kPublic);
+  bundle.AddContentSecurityPolicy(MakeTestCSP());
   std::unique_ptr<PolicyContainerPolicies> delivered_policies =
-      bundle.DeliveredPolicies().Clone();
+      bundle.DeliveredPoliciesForTesting().Clone();
   bundle.ComputePolicies(GURL("https://foo.test"));
 
   EXPECT_EQ(bundle.FinalPolicies(), *delivered_policies);
 }
 
-// Verifies that when the URL of the document to commit is `about:blank` but
-// there is no initiator, the bundle's final policies contain default values.
+// Verifies the final policies when the URL of the document to commit is
+// `about:blank` but there is no initiator.
 TEST_F(PolicyContainerNavigationBundleTest,
        FinalPoliciesAboutBlankWithoutInitiator) {
   PolicyContainerNavigationBundle bundle(nullptr, nullptr, nullptr);
   bundle.SetIPAddressSpace(network::mojom::IPAddressSpace::kPublic);
+  std::unique_ptr<PolicyContainerPolicies> delivered_policies =
+      bundle.DeliveredPoliciesForTesting().Clone();
   bundle.ComputePolicies(AboutBlankUrl());
 
-  EXPECT_EQ(bundle.FinalPolicies(), PolicyContainerPolicies());
+  EXPECT_EQ(bundle.FinalPolicies(), *delivered_policies);
+}
+
+// Verifies the final policies when the URL of the document to commit is
+// `about:blank` but there is no initiator, and we have some additional CSPs.
+TEST_F(PolicyContainerNavigationBundleTest,
+       FinalPoliciesAboutBlankWithoutInitiatorAdditionalCSP) {
+  PolicyContainerNavigationBundle bundle(nullptr, nullptr, nullptr);
+  bundle.SetIPAddressSpace(network::mojom::IPAddressSpace::kPublic);
+  bundle.AddContentSecurityPolicy(MakeTestCSP());
+  std::unique_ptr<PolicyContainerPolicies> delivered_policies =
+      bundle.DeliveredPoliciesForTesting().Clone();
+  bundle.ComputePolicies(AboutBlankUrl());
+
+  EXPECT_EQ(bundle.FinalPolicies(), *delivered_policies);
 }
 
 // This test verifies the default final policies on error pages.
@@ -229,7 +255,7 @@ TEST_F(PolicyContainerNavigationBundleTest, InitiatorPoliciesWithInitiator) {
 }
 
 // Verifies that when the URL of the document to commit is `about:blank`, the
-// bundle's final policies are copied from the iniitator.
+// bundle's final policies are copied from the initiator.
 TEST_F(PolicyContainerNavigationBundleTest,
        FinalPoliciesAboutBlankWithInitiator) {
   std::unique_ptr<PolicyContainerPolicies> initiator_policies =
@@ -243,6 +269,32 @@ TEST_F(PolicyContainerNavigationBundleTest,
   PolicyContainerNavigationBundle bundle(nullptr, &token, nullptr);
   bundle.ComputePolicies(AboutBlankUrl());
 
+  EXPECT_EQ(bundle.FinalPolicies(), *initiator_policies);
+}
+
+// Verifies that when the URL of the document to commit is `about:blank`, the
+// bundle's final policies are copied from the initiator, and additional
+// delivered policies are merged.
+TEST_F(PolicyContainerNavigationBundleTest,
+       FinalPoliciesAboutBlankWithInitiatorAndAdditionalCSP) {
+  std::unique_ptr<PolicyContainerPolicies> initiator_policies =
+      MakeTestPolicies();
+
+  TestRenderFrameHost* initiator = contents()->GetMainFrame();
+  initiator->SetPolicyContainerHost(NewHost(initiator_policies->Clone()));
+
+  // Force implicit conversion from LocalFrameToken to UnguessableToken.
+  const blink::LocalFrameToken& token = initiator->GetFrameToken();
+  PolicyContainerNavigationBundle bundle(nullptr, &token, nullptr);
+
+  // Add some CSP.
+  network::mojom::ContentSecurityPolicyPtr test_csp = MakeTestCSP();
+  bundle.AddContentSecurityPolicy(test_csp.Clone());
+  bundle.ComputePolicies(AboutBlankUrl());
+
+  // Append the CPS to the `initiator_policies` just for testing equality
+  // later.
+  initiator_policies->content_security_policies.push_back(std::move(test_csp));
   EXPECT_EQ(bundle.FinalPolicies(), *initiator_policies);
 }
 
@@ -290,7 +342,7 @@ TEST_F(PolicyContainerNavigationBundleTest,
   bundle.SetIsOriginPotentiallyTrustworthy(true);
 
   std::unique_ptr<PolicyContainerPolicies> delivered_policies =
-      bundle.DeliveredPolicies().Clone();
+      bundle.DeliveredPoliciesForTesting().Clone();
   EXPECT_TRUE(delivered_policies->is_web_secure_context);
 
   bundle.ComputePolicies(GURL());
@@ -307,7 +359,7 @@ TEST_F(PolicyContainerNavigationBundleTest,
   bundle.SetIsOriginPotentiallyTrustworthy(false);
 
   std::unique_ptr<PolicyContainerPolicies> delivered_policies =
-      bundle.DeliveredPolicies().Clone();
+      bundle.DeliveredPoliciesForTesting().Clone();
   EXPECT_FALSE(delivered_policies->is_web_secure_context);
 
   bundle.ComputePolicies(GURL());
@@ -349,7 +401,7 @@ TEST_F(PolicyContainerNavigationBundleTest,
   bundle.SetIsOriginPotentiallyTrustworthy(false);
 
   std::unique_ptr<PolicyContainerPolicies> delivered_policies =
-      bundle.DeliveredPolicies().Clone();
+      bundle.DeliveredPoliciesForTesting().Clone();
   EXPECT_FALSE(delivered_policies->is_web_secure_context);
 
   bundle.ComputePolicies(GURL("http://foo.test"));
@@ -372,12 +424,35 @@ TEST_F(PolicyContainerNavigationBundleTest,
   bundle.SetIsOriginPotentiallyTrustworthy(true);
 
   std::unique_ptr<PolicyContainerPolicies> delivered_policies =
-      bundle.DeliveredPolicies().Clone();
+      bundle.DeliveredPoliciesForTesting().Clone();
   EXPECT_TRUE(delivered_policies->is_web_secure_context);
 
   bundle.ComputePolicies(GURL("https://foo.test"));
 
   EXPECT_EQ(bundle.FinalPolicies(), *delivered_policies);
+}
+
+// Verifies that when the the URL of the document to commit is `about:srcdoc`,
+// the bundle's final policies are copied from the parent, and additional
+// delivered policies are merged.
+TEST_F(PolicyContainerNavigationBundleTest,
+       FinalPoliciesAboutSrcdocWithParentAndAdditionalCSP) {
+  std::unique_ptr<PolicyContainerPolicies> parent_policies = MakeTestPolicies();
+
+  TestRenderFrameHost* parent = contents()->GetMainFrame();
+  parent->SetPolicyContainerHost(NewHost(parent_policies->Clone()));
+
+  PolicyContainerNavigationBundle bundle(parent, nullptr, nullptr);
+
+  // Add some CSP.
+  network::mojom::ContentSecurityPolicyPtr test_csp = MakeTestCSP();
+  bundle.AddContentSecurityPolicy(test_csp.Clone());
+  bundle.ComputePolicies(AboutSrcdocUrl());
+
+  // Append the CPS to the `parent_policies` just for testing equality
+  // later.
+  parent_policies->content_security_policies.push_back(std::move(test_csp));
+  EXPECT_EQ(bundle.FinalPolicies(), *parent_policies);
 }
 
 // Calling ComputePolicies() twice triggers a DCHECK.

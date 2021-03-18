@@ -106,13 +106,15 @@ COMPONENT_EXPORT(NETWORK_CPP)
 std::string ToString(mojom::CSPDirectiveName name);
 
 // Return true if the response allows the embedder to enforce arbitrary policy
-// on its behalf.
-// Specification: https://w3c.github.io/webappsec-cspee/#origin-allowed
+// on its behalf. |required_csp| is modified so that its self_origin matches the
+// correct origin. Specification:
+// https://w3c.github.io/webappsec-cspee/#origin-allowed
 COMPONENT_EXPORT(NETWORK_CPP)
 bool AllowsBlanketEnforcementOfRequiredCSP(
     const url::Origin& request_origin,
     const GURL& response_url,
-    const network::mojom::AllowCSPFromHeaderValue* allow_csp_from);
+    const network::mojom::AllowCSPFromHeaderValue* allow_csp_from,
+    network::mojom::ContentSecurityPolicyPtr& required_csp);
 
 }  // namespace network
 

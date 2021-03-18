@@ -1232,8 +1232,7 @@ class CONTENT_EXPORT NavigationRequest
   // once the final response is known. It is based on the current FramePolicy,
   // the response's CSP and the embedder's HTMLIframeElement.csp.
   void ComputeSandboxFlagsToCommit(
-      const network::mojom::URLResponseHead* response_head,
-      const network::mojom::ContentSecurityPolicy* required_csp);
+      const network::mojom::URLResponseHead* response_head);
 
   // DCHECK that tranistioning from the current state to |state| valid. This
   // does nothing in non-debug builds.

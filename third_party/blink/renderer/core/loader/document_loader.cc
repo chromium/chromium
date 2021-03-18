@@ -298,7 +298,6 @@ struct SameSizeAsDocumentLoader
   bool navigation_scroll_allowed;
   bool origin_agent_cluster;
   bool is_cross_browsing_context_group_navigation;
-  const WebVector<WebString> forced_content_security_policies;
 };
 
 // Asserts size of DocumentLoader, so that whenever a new attribute is added to
@@ -402,9 +401,7 @@ DocumentLoader::DocumentLoader(
           CopyForceEnabledOriginTrials(params_->force_enabled_origin_trials)),
       origin_agent_cluster_(params_->origin_agent_cluster),
       is_cross_browsing_context_group_navigation_(
-          params_->is_cross_browsing_context_group_navigation),
-      forced_content_security_policies_(
-          std::move(params_->forced_content_security_policies)) {
+          params_->is_cross_browsing_context_group_navigation) {
   DCHECK(frame_);
 
   // See `archive_` attribute documentation.
@@ -2464,8 +2461,10 @@ ContentSecurityPolicy* DocumentLoader::CreateCSP() {
   // Add policies from the policy container. If this is a XSLT or javascript:
   // document, this will just keep the current policies. If this is a local
   // scheme document, the policy container contains the right policies (as
-  // inherited in the NavigationRequest in the browser). Otherwise, the policy
-  // container is empty.
+  // inherited in the NavigationRequest in the browser). If CSP Embedded
+  // Enforcement was used on this frame and the response allowed blanket
+  // enforcement, the policy container includes the enforced policy. Otherwise,
+  // the policy container is empty.
   csp->AddPolicies(
       mojo::Clone(policy_container_->GetPolicies().content_security_policies));
 
@@ -2481,16 +2480,6 @@ ContentSecurityPolicy* DocumentLoader::CreateCSP() {
   // container.
   if (origin_policy_) {
     ApplyOriginPolicy(csp, Url(), origin_policy_.value(), *policy_container_);
-  }
-
-  // The following are Content Security Policies forced by CSP Embedded
-  // Enforcement.
-  for (auto& policy : forced_content_security_policies_) {
-    scoped_refptr<SecurityOrigin> self_origin = SecurityOrigin::Create(Url());
-    policy_container_->AddContentSecurityPolicies(csp->DidReceiveHeader(
-        policy, *self_origin,
-        network::mojom::ContentSecurityPolicyType::kEnforce,
-        network::mojom::ContentSecurityPolicySource::kHTTP));
   }
 
   return csp;

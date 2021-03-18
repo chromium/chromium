@@ -1823,6 +1823,7 @@ TEST(ContentSecurityPolicy, AllowsBlanketEnforcementOfRequiredCSP) {
     const char* response_origin;
     const char* allow_csp_from;
     bool expected_result;
+    const char* expected_self_origin;
   } cases[] = {
       {
           "About scheme allows",
@@ -1830,6 +1831,7 @@ TEST(ContentSecurityPolicy, AllowsBlanketEnforcementOfRequiredCSP) {
           "about://me",
           nullptr,
           true,
+          "http://example.com",
       },
       {
           "File scheme allows",
@@ -1837,6 +1839,7 @@ TEST(ContentSecurityPolicy, AllowsBlanketEnforcementOfRequiredCSP) {
           "file://me",
           nullptr,
           true,
+          "http://example.com",
       },
       {
           "Data scheme allows",
@@ -1844,6 +1847,7 @@ TEST(ContentSecurityPolicy, AllowsBlanketEnforcementOfRequiredCSP) {
           "data://me",
           nullptr,
           true,
+          "http://example.com",
       },
       {
           "Filesystem scheme allows",
@@ -1851,6 +1855,7 @@ TEST(ContentSecurityPolicy, AllowsBlanketEnforcementOfRequiredCSP) {
           "filesystem://me",
           nullptr,
           true,
+          "http://example.com",
       },
       {
           "Blob scheme allows",
@@ -1858,6 +1863,7 @@ TEST(ContentSecurityPolicy, AllowsBlanketEnforcementOfRequiredCSP) {
           "blob://me",
           nullptr,
           true,
+          "http://example.com",
       },
       {
           "Same origin allows",
@@ -1865,6 +1871,7 @@ TEST(ContentSecurityPolicy, AllowsBlanketEnforcementOfRequiredCSP) {
           "http://example.com",
           nullptr,
           true,
+          "http://example.com",
       },
       {
           "Same origin allows independently of header",
@@ -1872,6 +1879,7 @@ TEST(ContentSecurityPolicy, AllowsBlanketEnforcementOfRequiredCSP) {
           "http://example.com",
           "http://not-example.com",
           true,
+          "http://example.com",
       },
       {
           "Different origin does not allow",
@@ -1886,6 +1894,7 @@ TEST(ContentSecurityPolicy, AllowsBlanketEnforcementOfRequiredCSP) {
           "http://not-example.com",
           "http://example.com",
           true,
+          "http://not-example.com",
       },
       {
           "Different origin with right header 2 allows",
@@ -1893,6 +1902,7 @@ TEST(ContentSecurityPolicy, AllowsBlanketEnforcementOfRequiredCSP) {
           "http://not-example.com",
           "http://example.com/",
           true,
+          "http://not-example.com",
       },
       {
           "Different origin with wrong header does not allow",
@@ -1907,6 +1917,7 @@ TEST(ContentSecurityPolicy, AllowsBlanketEnforcementOfRequiredCSP) {
           "http://not-example.com",
           "*",
           true,
+          "http://not-example.com",
       },
       {
           "Malformed header does not allow",
@@ -1925,10 +1936,19 @@ TEST(ContentSecurityPolicy, AllowsBlanketEnforcementOfRequiredCSP) {
       headers->AddHeader("allow-csp-from", test.allow_csp_from);
     auto allow_csp_from = network::ParseAllowCSPFromHeader(*headers);
 
+    auto required_csp = mojom::ContentSecurityPolicy::New();
     bool actual = AllowsBlanketEnforcementOfRequiredCSP(
         url::Origin::Create(GURL(test.request_origin)),
-        GURL(test.response_origin), allow_csp_from.get());
+        GURL(test.response_origin), allow_csp_from.get(), required_csp);
     EXPECT_EQ(test.expected_result, actual);
+    if (test.expected_self_origin) {
+      GURL expected_self_origin(test.expected_self_origin);
+      EXPECT_EQ(expected_self_origin.scheme(),
+                required_csp->self_origin->scheme);
+      EXPECT_EQ(expected_self_origin.host(), required_csp->self_origin->host);
+      EXPECT_EQ(expected_self_origin.EffectiveIntPort(),
+                required_csp->self_origin->port);
+    }
   }
 }
 

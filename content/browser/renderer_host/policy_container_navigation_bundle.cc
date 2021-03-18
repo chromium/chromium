@@ -7,7 +7,10 @@
 #include <utility>
 
 #include "content/browser/renderer_host/frame_navigation_entry.h"
+#include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "services/network/public/mojom/content_security_policy.mojom-forward.h"
+#include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 
 namespace content {
 namespace {
@@ -119,7 +122,7 @@ void PolicyContainerNavigationBundle::AddContentSecurityPolicy(
 }
 
 const PolicyContainerPolicies&
-PolicyContainerNavigationBundle::DeliveredPolicies() const {
+PolicyContainerNavigationBundle::DeliveredPoliciesForTesting() const {
   DCHECK(!HasComputedPolicies());
 
   return *delivered_policies_;
@@ -161,34 +164,65 @@ void PolicyContainerNavigationBundle::ComputeIsWebSecureContext() {
       parent_policies_->is_web_secure_context;
 }
 
-void PolicyContainerNavigationBundle::ComputePolicies(const GURL& url) {
-  DCHECK(!HasComputedPolicies());
+std::unique_ptr<PolicyContainerPolicies>
+PolicyContainerNavigationBundle::IncorporateDeliveredPolicies(
+    std::unique_ptr<PolicyContainerPolicies> policies) {
+  // Delivered content security policies must be appended.
+  policies->AddContentSecurityPolicies(
+      mojo::Clone(delivered_policies_->content_security_policies));
 
-  ComputeIsWebSecureContext();
+  // The delivered IP address space (if any) overrides the IP address space.
+  if (delivered_policies_->ip_address_space !=
+      network::mojom::IPAddressSpace::kUnknown) {
+    policies->ip_address_space = delivered_policies_->ip_address_space;
+  }
 
-  if (history_policies_) {
-    DCHECK(HasLocalScheme(url))
-        << "Document is restoring policies from history for non-local scheme: "
-        << url;
-    SetFinalPolicies(history_policies_->Clone());
-    return;
+  return policies;
+}
+
+std::unique_ptr<PolicyContainerPolicies>
+PolicyContainerNavigationBundle::ComputeInheritedPolicies(const GURL& url) {
+  if (!HasLocalScheme(url)) {
+    // No inheritance for non-local schemes.
+    return nullptr;
   }
 
   if (url.IsAboutSrcdoc()) {
     DCHECK(parent_policies_)
         << "About:srcdoc documents should always have a parent frame.";
-    SetFinalPolicies(parent_policies_->Clone());
-    return;
+    return parent_policies_->Clone();
   }
 
-  if (HasLocalScheme(url)) {
-    SetFinalPolicies(initiator_policies_
-                         ? initiator_policies_->Clone()
-                         : std::make_unique<PolicyContainerPolicies>());
-    return;
+  if (initiator_policies_) {
+    return initiator_policies_->Clone();
   }
 
-  SetFinalPolicies(delivered_policies_->Clone());
+  return std::make_unique<PolicyContainerPolicies>();
+}
+
+std::unique_ptr<PolicyContainerPolicies>
+PolicyContainerNavigationBundle::ComputeFinalPolicies(const GURL& url) {
+  if (history_policies_) {
+    DCHECK(HasLocalScheme(url)) << "Document is restoring policies from "
+                                   "history for non-local scheme: "
+                                << url;
+    return history_policies_->Clone();
+  }
+
+  std::unique_ptr<PolicyContainerPolicies> inherited_policies =
+      ComputeInheritedPolicies(url);
+
+  if (inherited_policies) {
+    return IncorporateDeliveredPolicies(std::move(inherited_policies));
+  }
+
+  return delivered_policies_->Clone();
+}
+
+void PolicyContainerNavigationBundle::ComputePolicies(const GURL& url) {
+  DCHECK(!HasComputedPolicies());
+  ComputeIsWebSecureContext();
+  SetFinalPolicies(ComputeFinalPolicies(url));
 }
 
 bool PolicyContainerNavigationBundle::HasComputedPolicies() const {

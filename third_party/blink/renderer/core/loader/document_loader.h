@@ -605,9 +605,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   // Whether this load request is cross browsing context group.
   bool is_cross_browsing_context_group_navigation_ = false;
-
-  // Content Security Policies forced by CSP Embedded Enforcement.
-  const WebVector<WebString> forced_content_security_policies_;
 };
 
 DECLARE_WEAK_IDENTIFIER_MAP(DocumentLoader);

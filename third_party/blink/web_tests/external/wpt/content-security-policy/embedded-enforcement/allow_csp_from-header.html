@@ -75,6 +75,12 @@
         "allow_csp_from": getOrigin(),
         "expected": IframeLoad.EXPECT_LOAD,
         "blockedURI": "inline"},
+      { "name": "'self' in blanket enforced EmbeddingCSP matches the target response origin.",
+        "origin": Host.CROSS_ORIGIN,
+        "csp": "img-src 'self'",
+        "allow_csp_from": "*",
+        "expected": IframeLoad.EXPECT_LOAD,
+        "blockedURI": null},
     ];
 
     tests.forEach(test => {
