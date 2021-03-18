@@ -4,5 +4,8 @@ kmarshall@chromium.org
 sergeyu@chromium.org
 wez@chromium.org
 
+per-file linux.sdk.sha1=chromium-autoroll@skia-public.iam.gserviceaccount.com
+per-file mac.sdk.sha1=chromium-autoroll@skia-public.iam.gserviceaccount.com
+
 # TEAM: cr-fuchsia@chromium.org
 # COMPONENT: Fuchsia
