@@ -945,6 +945,9 @@
       status: "experimental",
     },
     {
+      name: "FledgeInterestGroups",
+    },
+    {
       name: "FocuslessSpatialNavigation",
       settable_from_internals: true,
     },
