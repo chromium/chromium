@@ -23,6 +23,7 @@ source_set("browser_tests") {
     "payment_handler_enable_delegations_browsertest.cc",
     "payment_handler_enforce_full_delegation_browsertest.cc",
     "payment_handler_exploit_browsertest.cc",
+    "payment_handler_jit_install_with_registered_sw_browsertest.cc",
     "payment_handler_just_in_time_installation_browsertest.cc",
     "payment_handler_ui_browsertest.cc",
     "payment_handler_uninstall_browsertest.cc",
