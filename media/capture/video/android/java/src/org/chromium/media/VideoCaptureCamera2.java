@@ -1449,43 +1449,48 @@ public class VideoCaptureCamera2 extends VideoCapture {
         final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(index);
         if (cameraCharacteristics == null) return null;
 
-        final int[] capabilities =
-                cameraCharacteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES);
-        // Per-format frame rate via getOutputMinFrameDuration() is only available if the
-        // property REQUEST_AVAILABLE_CAPABILITIES_MANUAL_SENSOR is set.
-        boolean minFrameDurationAvailable = false;
-        for (int cap : capabilities) {
-            if (cap == CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_MANUAL_SENSOR) {
-                minFrameDurationAvailable = true;
-                break;
-            }
-        }
-
-        ArrayList<VideoCaptureFormat> formatList = new ArrayList<VideoCaptureFormat>();
-        final StreamConfigurationMap streamMap =
-                cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-        final int[] formats = streamMap.getOutputFormats();
-        for (int format : formats) {
-            final Size[] sizes = streamMap.getOutputSizes(format);
-            if (sizes == null) continue;
-            for (Size size : sizes) {
-                double minFrameRate = 0.0f;
-                if (minFrameDurationAvailable) {
-                    final long minFrameDurationInNanoseconds =
-                            streamMap.getOutputMinFrameDuration(format, size);
-                    minFrameRate = (minFrameDurationInNanoseconds == 0)
-                            ? 0.0f
-                            : (kNanosecondsPerSecond / minFrameDurationInNanoseconds);
-                } else {
-                    // TODO(mcasas): find out where to get the info from in this case.
-                    // Hint: perhaps using SCALER_AVAILABLE_PROCESSED_MIN_DURATIONS.
-                    minFrameRate = 0.0;
+        try {
+            final int[] capabilities =
+                    cameraCharacteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES);
+            // Per-format frame rate via getOutputMinFrameDuration() is only available if the
+            // property REQUEST_AVAILABLE_CAPABILITIES_MANUAL_SENSOR is set.
+            boolean minFrameDurationAvailable = false;
+            for (int cap : capabilities) {
+                if (cap == CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_MANUAL_SENSOR) {
+                    minFrameDurationAvailable = true;
+                    break;
                 }
-                formatList.add(new VideoCaptureFormat(
-                        size.getWidth(), size.getHeight(), (int) minFrameRate, format));
             }
+
+            ArrayList<VideoCaptureFormat> formatList = new ArrayList<VideoCaptureFormat>();
+            final StreamConfigurationMap streamMap = cameraCharacteristics.get(
+                    CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+            final int[] formats = streamMap.getOutputFormats();
+            for (int format : formats) {
+                final Size[] sizes = streamMap.getOutputSizes(format);
+                if (sizes == null) continue;
+                for (Size size : sizes) {
+                    double minFrameRate = 0.0f;
+                    if (minFrameDurationAvailable) {
+                        final long minFrameDurationInNanoseconds =
+                                streamMap.getOutputMinFrameDuration(format, size);
+                        minFrameRate = (minFrameDurationInNanoseconds == 0)
+                                ? 0.0f
+                                : (kNanosecondsPerSecond / minFrameDurationInNanoseconds);
+                    } else {
+                        // TODO(mcasas): find out where to get the info from in this case.
+                        // Hint: perhaps using SCALER_AVAILABLE_PROCESSED_MIN_DURATIONS.
+                        minFrameRate = 0.0;
+                    }
+                    formatList.add(new VideoCaptureFormat(
+                            size.getWidth(), size.getHeight(), (int) minFrameRate, format));
+                }
+            }
+            return formatList.toArray(new VideoCaptureFormat[formatList.size()]);
+        } catch (Exception e) {
+            Log.e(TAG, "Unable to catch device supported video formats: ", e);
+            return null;
         }
-        return formatList.toArray(new VideoCaptureFormat[formatList.size()]);
     }
 
     VideoCaptureCamera2(int index, long nativeVideoCaptureDeviceAndroid) {
