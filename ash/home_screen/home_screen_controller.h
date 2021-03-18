@@ -29,6 +29,8 @@ class HomeScreenDelegate;
 
 // HomeScreenController provides functionality to control the home launcher -
 // the tablet mode app list.
+// NOTE: This class is being folded into AppListControllerImpl. Its tests live
+// in ash/app_list/app_list_controller_impl_unittest.cc.
 class ASH_EXPORT HomeScreenController : public OverviewObserver,
                                         public SplitViewObserver,
                                         public WallpaperControllerObserver {

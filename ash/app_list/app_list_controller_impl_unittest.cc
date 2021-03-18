@@ -30,6 +30,7 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/system_tray_test_api.h"
+#include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
@@ -882,6 +883,39 @@ TEST_F(AppListControllerImplTest, NoOverlapWithHotseatOnSwitchFromSideShelf) {
       shelf->shelf_widget()->GetWindowBoundsInScreen()));
   EXPECT_FALSE(apps_grid_view_bounds.Intersects(
       shelf->hotseat_widget()->GetWindowBoundsInScreen()));
+}
+
+TEST_F(AppListControllerImplTest, OnlyMinimizeCycleListWindows) {
+  std::unique_ptr<aura::Window> w1(CreateTestWindow(gfx::Rect(0, 0, 400, 400)));
+  std::unique_ptr<aura::Window> w2(CreateTestWindow(
+      gfx::Rect(0, 0, 400, 400), aura::client::WINDOW_TYPE_POPUP));
+
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  std::unique_ptr<ui::Event> test_event = std::make_unique<ui::KeyEvent>(
+      ui::EventType::ET_MOUSE_PRESSED, ui::VKEY_UNKNOWN, ui::EF_NONE);
+  Shell::Get()->home_screen_controller()->GoHome(GetPrimaryDisplay().id());
+  EXPECT_TRUE(WindowState::Get(w1.get())->IsMinimized());
+  EXPECT_FALSE(WindowState::Get(w2.get())->IsMinimized());
+}
+
+// Tests that the home screen is visible after rotating the screen in overview
+// mode.
+TEST_F(AppListControllerImplTest,
+       HomeScreenVisibleAfterDisplayUpdateInOverview) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview();
+
+  // Trigger a display configuration change, this simulates screen rotation.
+  Shell::Get()->app_list_controller()->OnDisplayConfigurationChanged();
+
+  // End overview mode, the home launcher should be visible.
+  overview_controller->EndOverview();
+  ShellTestApi().WaitForOverviewAnimationState(
+      OverviewAnimationState::kExitAnimationComplete);
+
+  EXPECT_TRUE(
+      Shell::Get()->app_list_controller()->GetHomeScreenWindow()->IsVisible());
 }
 
 // The test parameter indicates whether the shelf should auto-hide. In either

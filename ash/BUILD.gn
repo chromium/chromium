@@ -2122,7 +2122,6 @@ test("ash_unittests") {
     "home_screen/drag_window_from_shelf_controller_test_api.cc",
     "home_screen/drag_window_from_shelf_controller_test_api.h",
     "home_screen/drag_window_from_shelf_controller_unittest.cc",
-    "home_screen/home_screen_controller_unittest.cc",
     "home_screen/swipe_home_to_overview_controller_unittest.cc",
     "host/ash_window_tree_host_platform_unittest.cc",
     "ime/ime_controller_impl_unittest.cc",
