@@ -6,7 +6,7 @@
 
 <link rel="import" href="/components/common_styles.html">
 <link rel="import" href="/components/hd_iron_icon.html">
-<link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_adaptive_dialog.html">
 <link rel="import" href="/components/oobe_i18n_behavior.html">
 <link rel="import" href="/components/oobe_dialog_host_behavior.html">
 <link rel="import" href="/components/login_screen_behavior.html">
@@ -43,36 +43,43 @@
         width: 264px;
       }
     </style>
-    <oobe-dialog has-buttons for-step="update-required-message" role="dialog"
-        id="update-required-dialog" title-key="updateRequiredTitle"
+    <oobe-adaptive-dialog for-step="update-required-message" role="dialog"
+        id="update-required-dialog"
         aria-label$="[[i18nDynamic(locale, 'updateRequiredTitle')]]">
-      <hd-iron-icon slot="oobe-icon"
+      <hd-iron-icon slot="icon"
           icon1x="oobe-32:enterprise" icon2x="oobe-64:enterprise">
       </hd-iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'updateRequiredTitle')]]
+      </h1>
       <div slot="subtitle">
         [[i18nDynamic(locale,'updateRequiredMessage', enterpriseDomain,
             deviceName)]]
       </div>
-      <div slot="footer" class="flex layout vertical center-justified center">
+      <div slot="content" class="flex layout vertical center-justified center">
         <img class="update-illustration oobe-illustration"
-             srcset="../../images/1x/updating_1x.svg 1x,
-                     ../../images/2x/updating_2x.svg 2x">
+             src="../../images/1x/updating_1x.svg">
       </div>
-      <div slot="bottom-buttons" class="layout horizontal end-justified">
+      <div slot="bottom-buttons">
         <oobe-text-button inverse on-click="onUpdateClicked_"
             class="focus-on-show" text-key="updateButtonCaption">
         </oobe-text-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
 
-    <oobe-dialog has-buttons for-step="update-error"
+    <oobe-adaptive-dialog for-step="update-error"
         id="update-required-error-dialog" role="dialog"
-        title-key="updateRequiredTitle" subtitle-key="errorMessage"
         aria-label$="[[i18nDynamic(locale, 'updateRequiredTitle')]]">
-      <hd-iron-icon slot="oobe-icon"
+      <hd-iron-icon slot="icon"
           icon1x="oobe-32:enterprise" icon2x="oobe-64:enterprise">
       </hd-iron-icon>
-      <div slot="bottom-buttons" class="layout horizontal end-justified">
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'updateRequiredTitle')]]
+      </h1>
+      <p slot="subtitle">
+        [[i18nDynamic(locale, 'errorMessage')]]
+      </p>
+      <div slot="bottom-buttons">
         <oobe-text-button inverse on-click="onSelectNetworkClicked_"
             class="focus-on-show" text-key="selectNetworkButtonCaption">
         </oobe-text-button>
@@ -80,7 +87,7 @@
             id="update-button" text-key="updateButtonCaption">
         </oobe-text-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
 
     <checking-downloading-update id="checking-downloading-update"
         aria-label$="[[i18nDynamic(locale, 'updateScreenAccessibleTitle')]]"
@@ -95,20 +102,22 @@
         downloading-updates-key="updatingMessage">
     </checking-downloading-update>
 
-    <oobe-dialog for-step="update-need-permission" has-buttons role="dialog"
-        title-key="updateRequiredTitle" id="update-need-permission-dialog"
+    <oobe-adaptive-dialog for-step="update-need-permission" role="dialog"
+        id="update-need-permission-dialog"
         aria-label$="[[i18nDynamic(locale, 'updateRequiredTitle')]]">
-      <hd-iron-icon slot="oobe-icon"
+      <hd-iron-icon slot="icon"
           icon1x="oobe-32:enterprise" icon2x="oobe-64:enterprise">
       </hd-iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'updateRequiredTitle')]]
+      </h1>
       <div slot="subtitle" class="update-subtitle">
         [[i18nDynamic(locale,'updateOverMeteredNetworkMessage',
             enterpriseDomain)]]
       </div>
-      <div slot="footer" class="flex layout vertical center-justified center">
+      <div slot="content" class="flex layout vertical center-justified center">
         <img class="update-illustration oobe-illustration"
-            srcset="../../images/1x/updating_1x.svg 1x,
-                    ../../images/2x/updating_2x.svg 2x">
+            src="../../images/1x/updating_1x.svg">
       </div>
       <div slot="bottom-buttons" class="layout horizontal end-justified">
         <oobe-text-button inverse on-click="onCellularPermissionAccepted_"
@@ -116,34 +125,36 @@
             id="cellular-permission-accept-button">
         </oobe-text-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
 
-    <oobe-dialog for-step="update-no-network" has-buttons role="dialog"
-        title-key="updateRequiredTitle" id="update-required-no-network-dialog"
+    <oobe-adaptive-dialog for-step="update-no-network" role="dialog"
+        id="update-required-no-network-dialog"
         aria-label$="[[i18nDynamic(locale, 'updateRequiredTitle')]]">
-      <hd-iron-icon slot="oobe-icon"
+      <hd-iron-icon slot="icon"
         icon1x="oobe-32:enterprise" icon2x="oobe-64:enterprise">
       </hd-iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'updateRequiredTitle')]]
+      </h1>
       <div slot="subtitle" class="update-subtitle"
           id="no-network-message">
         [[i18nDynamic(locale,'noNetworkMessage', enterpriseDomain)]]
       </div>
-      <div slot="footer" class="flex layout vertical center-justified center">
+      <div slot="content" class="flex layout vertical center-justified center">
         <img class="update-illustration oobe-illustration"
-            srcset="../../images/1x/updating_1x.svg 1x,
-                    ../../images/2x/updating_2x.svg 2x">
+            src="../../images/1x/updating_1x.svg">
       </div>
-      <div slot="bottom-buttons" class="layout horizontal end-justified">
+      <div slot="bottom-buttons">
         <oobe-text-button inverse on-click="onSelectNetworkClicked_"
             id="select-network-button" text-key="selectNetworkButtonCaption"
             class="focus-on-show">
         </oobe-text-button>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
 
-    <oobe-dialog for-step="eol" id="eolDialog"
+    <oobe-adaptive-dialog for-step="eol" id="eolDialog"
         role="dialog" aria-labelledby="eolTitle">
-      <hd-iron-icon slot="oobe-icon" id="eolAlertIcon"
+      <hd-iron-icon slot="icon" id="eolAlertIcon"
           icon1x="oobe-32:warning" icon2x="oobe-64:warning">
       </hd-iron-icon>
       <h1 id="eolTitle" slot="title">
@@ -158,7 +169,7 @@
           [[i18nDynamic(locale, 'eolNoUsersDataMessage', deviceName)]]
         </div>
       </div>
-      <div slot="footer" class="flex layout vertical">
+      <div slot="content" class="flex layout vertical">
         <div id="adminMessageContainer"
             hidden="[[isEmpty_(eolAdminMessage_)]]">
           <div class="bold">[[i18nDynamic(locale, 'eolAdminMessageTitle')]]
@@ -169,11 +180,10 @@
           <!-- Use lock image indicating that end-of-life has been reached and
              the device is disabled for further use  -->
           <img class="update-illustration oobe-illustration"
-          srcset="../../images/1x/device-disabled.svg 1x,
-                  ../../images/2x/device-disabled.svg 2x">
+              src="../../images/1x/device-disabled.svg">
         </div>
       </div>
-    </oobe-dialog>
+    </oobe-adaptive-dialog>
 
     <!-- Delete users data confirmation dialog (shown when EOL reached) -->
     <oobe-modal-dialog id="confirmationDialog"
