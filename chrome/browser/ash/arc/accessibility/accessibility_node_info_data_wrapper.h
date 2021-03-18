@@ -1,0 +1,106 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_ACCESSIBILITY_NODE_INFO_DATA_WRAPPER_H_
+#define CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_ACCESSIBILITY_NODE_INFO_DATA_WRAPPER_H_
+
+#include <string>
+#include <vector>
+
+#include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
+#include "ui/accessibility/ax_enum_util.h"
+#include "ui/accessibility/ax_node_data.h"
+
+namespace arc {
+
+class AXTreeSourceArc;
+
+// Wrapper class for an AccessibilityWindowInfoData.
+class AccessibilityNodeInfoDataWrapper : public AccessibilityInfoDataWrapper {
+ public:
+  AccessibilityNodeInfoDataWrapper(AXTreeSourceArc* tree_source,
+                                   mojom::AccessibilityNodeInfoData* node);
+
+  ~AccessibilityNodeInfoDataWrapper() override;
+
+  // AccessibilityInfoDataWrapper overrides.
+  bool IsNode() const override;
+  mojom::AccessibilityNodeInfoData* GetNode() const override;
+  mojom::AccessibilityWindowInfoData* GetWindow() const override;
+  int32_t GetId() const override;
+  const gfx::Rect GetBounds() const override;
+  bool IsVisibleToUser() const override;
+  bool IsVirtualNode() const override;
+  bool IsIgnored() const override;
+  bool IsImportantInAndroid() const override;
+  bool IsFocusableInFullFocusMode() const override;
+  bool IsAccessibilityFocusableContainer() const override;
+  void PopulateAXRole(ui::AXNodeData* out_data) const override;
+  void PopulateAXState(ui::AXNodeData* out_data) const override;
+  void Serialize(ui::AXNodeData* out_data) const override;
+  std::string ComputeAXName(bool do_recursive) const override;
+  void GetChildren(
+      std::vector<AccessibilityInfoDataWrapper*>* children) const override;
+  int32_t GetWindowId() const override;
+
+  mojom::AccessibilityNodeInfoData* node() { return node_ptr_; }
+
+  void set_container_live_status(mojom::AccessibilityLiveRegionType status) {
+    container_live_status_ = status;
+  }
+
+ private:
+  bool GetProperty(mojom::AccessibilityBooleanProperty prop) const;
+  bool GetProperty(mojom::AccessibilityIntProperty prop,
+                   int32_t* out_value) const;
+  bool HasProperty(mojom::AccessibilityStringProperty prop) const;
+  bool GetProperty(mojom::AccessibilityStringProperty prop,
+                   std::string* out_value) const;
+  bool GetProperty(mojom::AccessibilityIntListProperty prop,
+                   std::vector<int32_t>* out_value) const;
+  bool GetProperty(mojom::AccessibilityStringListProperty prop,
+                   std::vector<std::string>* out_value) const;
+
+  bool HasStandardAction(mojom::AccessibilityActionType action) const;
+
+  bool HasCoveringSpan(mojom::AccessibilityStringProperty prop,
+                       mojom::SpanType span_type) const;
+
+  bool HasText() const;
+  bool HasAccessibilityFocusableText() const;
+
+  void ComputeNameFromContents(std::vector<std::string>* names) const;
+  void ComputeNameFromContentsInternal(std::vector<std::string>* names) const;
+
+  bool IsClickable() const;
+  bool IsFocusable() const;
+
+  bool IsScrollableContainer() const;
+  bool IsToplevelScrollItem() const;
+
+  bool HasImportantProperty() const;
+  bool HasImportantPropertyInternal() const;
+
+  mojom::AccessibilityNodeInfoData* node_ptr_ = nullptr;
+
+  mojom::AccessibilityLiveRegionType container_live_status_ =
+      mojom::AccessibilityLiveRegionType::NONE;
+
+  // Properties which should be checked for recursive text computation.
+  // It's not clear whether labeled by should be taken into account here.
+  static constexpr mojom::AccessibilityStringProperty text_properties_[3] = {
+      mojom::AccessibilityStringProperty::TEXT,
+      mojom::AccessibilityStringProperty::CONTENT_DESCRIPTION,
+      mojom::AccessibilityStringProperty::STATE_DESCRIPTION};
+
+  // This property is a cached value so that we can avoid same computation.
+  // mutable because once the value is computed it won't change.
+  mutable base::Optional<bool> has_important_property_cache_;
+
+  DISALLOW_COPY_AND_ASSIGN(AccessibilityNodeInfoDataWrapper);
+};
+
+}  // namespace arc
+
+#endif  // CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_ACCESSIBILITY_NODE_INFO_DATA_WRAPPER_H_

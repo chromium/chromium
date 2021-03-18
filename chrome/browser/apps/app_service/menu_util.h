@@ -10,7 +10,7 @@
 
 #include "base/callback.h"
 #include "base/strings/string_piece.h"
-#include "chrome/browser/chromeos/arc/app_shortcuts/arc_app_shortcut_item.h"
+#include "chrome/browser/ash/arc/app_shortcuts/arc_app_shortcut_item.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/base/models/simple_menu_model.h"

@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/arc/app_shortcuts/arc_app_shortcut_item.h"
+#include "chrome/browser/ash/arc/app_shortcuts/arc_app_shortcut_item.h"
 #include "chrome/browser/ui/ash/launcher/shelf_context_menu.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"

@@ -29,7 +29,7 @@
 #include "chrome/browser/ash/crosapi/automation_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/chromeos/arc/accessibility/arc_accessibility_helper_bridge.h"
+#include "chrome/browser/ash/arc/accessibility/arc_accessibility_helper_bridge.h"
 #endif
 
 namespace extensions {

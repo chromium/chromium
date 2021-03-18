@@ -990,7 +990,7 @@ class AccessibilityRelnotesFieldTest(unittest.TestCase):
   def testExpectedPaths(self):
     filesToTest = [
       "chrome/browser/accessibility/foo.py",
-      "chrome/browser/chromeos/arc/accessibility/foo.cc",
+      "chrome/browser/ash/arc/accessibility/foo.cc",
       "chrome/browser/ui/views/accessibility/foo.h",
       "chrome/browser/extensions/api/automation/foo.h",
       "chrome/browser/extensions/api/automation_internal/foo.cc",
