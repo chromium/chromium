@@ -25,6 +25,8 @@ twellington@chromium.org
 # structural changes, please get a review from a reviewer in this file.
 per-file *.gni=*
 per-file BUILD.gn=file://build/OWNERS
+per-file MAJOR_BRANCH_DATE=chrome-official-brancher@chops-service-accounts.iam.gserviceaccount.com
+per-file VERSION=chrome-official-brancher@chops-service-accounts.iam.gserviceaccount.com
 per-file VERSION=amineer@chromium.org
 per-file VERSION=anantha@chromium.org
 per-file VERSION=govind@chromium.org
