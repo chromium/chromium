@@ -360,7 +360,7 @@ void AppServiceShelfContextMenu::BuildAppShortcutsMenu(
     std::unique_ptr<ui::SimpleMenuModel> menu_model,
     GetMenuModelCallback callback,
     size_t shortcut_index) {
-  app_shortcut_items_ = std::make_unique<arc::ArcAppShortcutItems>();
+  app_shortcut_items_ = std::make_unique<apps::AppShortcutItems>();
   for (size_t i = shortcut_index; i < menu_items->items.size(); i++) {
     apps::PopulateItemFromMojoMenuItems(std::move(menu_items->items[i]),
                                         menu_model.get(),

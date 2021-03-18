@@ -12,7 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "chrome/browser/ash/arc/app_shortcuts/arc_app_shortcut_item.h"
+#include "chrome/browser/apps/app_service/app_shortcut_item.h"
 #include "chrome/browser/chromeos/arc/icon_decode_request.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -48,10 +48,10 @@ class ArcAppShortcutsRequestTest : public testing::Test {
 
 TEST_F(ArcAppShortcutsRequestTest, Basic) {
   base::RunLoop run_loop;
-  std::unique_ptr<ArcAppShortcutItems> items;
+  std::unique_ptr<apps::AppShortcutItems> items;
   auto arc_app_shortcuts_request =
       std::make_unique<ArcAppShortcutsRequest>(base::BindLambdaForTesting(
-          [&](std::unique_ptr<ArcAppShortcutItems> returned_items) {
+          [&](std::unique_ptr<apps::AppShortcutItems> returned_items) {
             items = std::move(returned_items);
             run_loop.Quit();
           }));

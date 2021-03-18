@@ -89,19 +89,19 @@ void ArcAppShortcutsMenuBuilder::OnGetAppShortcutItems(
     const base::TimeTicks& start_time,
     std::unique_ptr<ui::SimpleMenuModel> menu_model,
     GetMenuModelCallback callback,
-    std::unique_ptr<ArcAppShortcutItems> app_shortcut_items) {
+    std::unique_ptr<apps::AppShortcutItems> app_shortcut_items) {
   app_shortcut_items_ = std::move(app_shortcut_items);
   if (app_shortcut_items_ && !app_shortcut_items_->empty()) {
-    ArcAppShortcutItems& items = *app_shortcut_items_;
+    apps::AppShortcutItems& items = *app_shortcut_items_;
     // Sort the shortcuts based on two rules: (1) Static (declared in manifest)
     // shortcuts and then dynamic shortcuts; (2) Within each shortcut type
     // (static and dynamic), shortcuts are sorted in order of increasing rank.
-    std::sort(
-        items.begin(), items.end(),
-        [](const ArcAppShortcutItem& item1, const ArcAppShortcutItem& item2) {
-          return std::tie(item1.type, item1.rank) <
-                 std::tie(item2.type, item2.rank);
-        });
+    std::sort(items.begin(), items.end(),
+              [](const apps::AppShortcutItem& item1,
+                 const apps::AppShortcutItem& item2) {
+                return std::tie(item1.type, item1.rank) <
+                       std::tie(item2.type, item2.rank);
+              });
 
     menu_model->AddSeparator(ui::DOUBLE_SEPARATOR);
     int command_id = command_id_first_;

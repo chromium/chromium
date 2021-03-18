@@ -264,7 +264,7 @@ void AppServiceContextMenu::OnGetMenuModel(
   if (!build_extension_menu_before_default)
     BuildExtensionAppShortcutsMenu(menu_model.get());
 
-  app_shortcut_items_ = std::make_unique<arc::ArcAppShortcutItems>();
+  app_shortcut_items_ = std::make_unique<apps::AppShortcutItems>();
   for (size_t i = index; i < menu_items->items.size(); i++) {
     if (menu_items->items[i]->type == apps::mojom::MenuItemType::kCommand) {
       AddContextMenuOption(

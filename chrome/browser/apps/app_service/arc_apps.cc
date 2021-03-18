@@ -1466,7 +1466,7 @@ void ArcApps::OnGetAppShortcutItems(
     const base::TimeTicks start_time,
     apps::mojom::MenuItemsPtr menu_items,
     GetMenuModelCallback callback,
-    std::unique_ptr<arc::ArcAppShortcutItems> app_shortcut_items) {
+    std::unique_ptr<apps::AppShortcutItems> app_shortcut_items) {
   if (!app_shortcut_items || app_shortcut_items->empty()) {
     // No need log time for empty requests.
     std::move(callback).Run(std::move(menu_items));
@@ -1474,13 +1474,13 @@ void ArcApps::OnGetAppShortcutItems(
     return;
   }
 
-  arc::ArcAppShortcutItems& items = *app_shortcut_items;
+  apps::AppShortcutItems& items = *app_shortcut_items;
   // Sort the shortcuts based on two rules: (1) Static (declared in manifest)
   // shortcuts and then dynamic shortcuts; (2) Within each shortcut type
   // (static and dynamic), shortcuts are sorted in order of increasing rank.
   std::sort(items.begin(), items.end(),
-            [](const arc::ArcAppShortcutItem& item1,
-               const arc::ArcAppShortcutItem& item2) {
+            [](const apps::AppShortcutItem& item1,
+               const apps::AppShortcutItem& item2) {
               return std::tie(item1.type, item1.rank) <
                      std::tie(item2.type, item2.rank);
             });

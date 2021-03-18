@@ -19,11 +19,11 @@
 #include "base/scoped_observer.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_notifications.h"
+#include "chrome/browser/apps/app_service/app_shortcut_item.h"
 #include "chrome/browser/apps/app_service/arc_activity_adaptive_icon_impl.h"
 #include "chrome/browser/apps/app_service/arc_icon_once_loader.h"
 #include "chrome/browser/apps/app_service/icon_key_util.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
-#include "chrome/browser/ash/arc/app_shortcuts/arc_app_shortcut_item.h"
 #include "chrome/browser/ash/arc/app_shortcuts/arc_app_shortcuts_request.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
@@ -197,7 +197,7 @@ class ArcApps : public KeyedService,
       const base::TimeTicks start_time,
       apps::mojom::MenuItemsPtr menu_items,
       GetMenuModelCallback callback,
-      std::unique_ptr<arc::ArcAppShortcutItems> app_shortcut_items);
+      std::unique_ptr<apps::AppShortcutItems> app_shortcut_items);
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 

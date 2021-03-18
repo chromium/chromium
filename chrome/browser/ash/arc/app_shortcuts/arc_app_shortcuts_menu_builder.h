@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/arc/app_shortcuts/arc_app_shortcut_item.h"
+#include "chrome/browser/apps/app_service/app_shortcut_item.h"
 
 class Profile;
 
@@ -49,7 +49,7 @@ class ArcAppShortcutsMenuBuilder {
       const base::TimeTicks& start_time,
       std::unique_ptr<ui::SimpleMenuModel> menu_model,
       GetMenuModelCallback callback,
-      std::unique_ptr<ArcAppShortcutItems> app_shortcut_items);
+      std::unique_ptr<apps::AppShortcutItems> app_shortcut_items);
 
   Profile* const profile_;
   const std::string app_id_;
@@ -58,7 +58,7 @@ class ArcAppShortcutsMenuBuilder {
   const int command_id_last_;
 
   // Caches the app shortcut items from OnGetAppShortcutItems().
-  std::unique_ptr<ArcAppShortcutItems> app_shortcut_items_;
+  std::unique_ptr<apps::AppShortcutItems> app_shortcut_items_;
 
   // Handles requesting app shortcuts from Android.
   std::unique_ptr<ArcAppShortcutsRequest> arc_app_shortcuts_request_;

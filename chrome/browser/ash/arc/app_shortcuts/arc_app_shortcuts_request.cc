@@ -63,7 +63,7 @@ void ArcAppShortcutsRequest::OnGetAppShortcutItems(
     return;
   }
 
-  items_ = std::make_unique<ArcAppShortcutItems>();
+  items_ = std::make_unique<apps::AppShortcutItems>();
 
   // Using base::Unretained(this) here is safe since we own barrier_closure_.
   barrier_closure_ = base::BarrierClosure(
@@ -72,7 +72,7 @@ void ArcAppShortcutsRequest::OnGetAppShortcutItems(
                      base::Unretained(this)));
 
   for (const auto& shortcut_item_ptr : shortcut_items) {
-    ArcAppShortcutItem item;
+    apps::AppShortcutItem item;
     item.shortcut_id = shortcut_item_ptr->shortcut_id;
     item.short_label = shortcut_item_ptr->short_label;
     item.type = shortcut_item_ptr->type;

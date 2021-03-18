@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_ARC_APP_SHORTCUTS_ARC_APP_SHORTCUT_ITEM_H_
-#define CHROME_BROWSER_ASH_ARC_APP_SHORTCUTS_ARC_APP_SHORTCUT_ITEM_H_
+#ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_SHORTCUT_ITEM_H_
+#define CHROME_BROWSER_APPS_APP_SERVICE_APP_SHORTCUT_ITEM_H_
 
 #include <string>
 #include <vector>
@@ -11,13 +11,13 @@
 #include "components/arc/mojom/app.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace arc {
+namespace apps {
 
 // Describes app shortcut that is published by Android's ShortcutManager.
-struct ArcAppShortcutItem {
-  ArcAppShortcutItem();
-  ArcAppShortcutItem(const ArcAppShortcutItem& item);
-  ~ArcAppShortcutItem();
+struct AppShortcutItem {
+  AppShortcutItem();
+  AppShortcutItem(const AppShortcutItem& item);
+  ~AppShortcutItem();
 
   // The ID of this shortcut. Unique within each publisher app and stable across
   // devices.
@@ -30,14 +30,16 @@ struct ArcAppShortcutItem {
   gfx::ImageSkia icon;
 
   // The category type of this shortcut.
-  mojom::AppShortcutItemType type = mojom::AppShortcutItemType::kStatic;
+  // TODO(crbug.com/1140356): Move arc::mojom::AppShortcutItemType to apps::.
+  arc::mojom::AppShortcutItemType type =
+      arc::mojom::AppShortcutItemType::kStatic;
 
   // "Rank" of a shortcut, which is a non-negative, sequential value.
   int rank = 0;
 };
 
-using ArcAppShortcutItems = std::vector<ArcAppShortcutItem>;
+using AppShortcutItems = std::vector<AppShortcutItem>;
 
-}  // namespace arc
+}  // namespace apps
 
-#endif  // CHROME_BROWSER_ASH_ARC_APP_SHORTCUTS_ARC_APP_SHORTCUT_ITEM_H_
+#endif  // CHROME_BROWSER_APPS_APP_SERVICE_APP_SHORTCUT_ITEM_H_

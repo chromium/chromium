@@ -589,8 +589,6 @@ source_set("chromeos") {
     "../ash/arc/accessibility/geometry_util.h",
     "../ash/arc/adbd/arc_adbd_monitor_bridge.cc",
     "../ash/arc/adbd/arc_adbd_monitor_bridge.h",
-    "../ash/arc/app_shortcuts/arc_app_shortcut_item.cc",
-    "../ash/arc/app_shortcuts/arc_app_shortcut_item.h",
     "../ash/arc/app_shortcuts/arc_app_shortcuts_menu_builder.cc",
     "../ash/arc/app_shortcuts/arc_app_shortcuts_menu_builder.h",
     "../ash/arc/app_shortcuts/arc_app_shortcuts_request.cc",

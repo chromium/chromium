@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/arc/app_shortcuts/arc_app_shortcut_item.h"
+#include "chrome/browser/apps/app_service/app_shortcut_item.h"
 #include "components/arc/mojom/app.mojom-forward.h"
 
 namespace arc {
@@ -23,7 +23,7 @@ class IconDecodeRequest;
 class ArcAppShortcutsRequest {
  public:
   using GetAppShortcutItemsCallback =
-      base::OnceCallback<void(std::unique_ptr<ArcAppShortcutItems>)>;
+      base::OnceCallback<void(std::unique_ptr<apps::AppShortcutItems>)>;
 
   explicit ArcAppShortcutsRequest(GetAppShortcutItemsCallback callback);
   ~ArcAppShortcutsRequest();
@@ -48,7 +48,7 @@ class ArcAppShortcutsRequest {
 
   // Caches the app shortcut items to be sent to |callback_| when they are
   // ready.
-  std::unique_ptr<ArcAppShortcutItems> items_;
+  std::unique_ptr<apps::AppShortcutItems> items_;
 
   // A barrier closure to be run when all pending icon decode requests are done.
   base::RepeatingClosure barrier_closure_;

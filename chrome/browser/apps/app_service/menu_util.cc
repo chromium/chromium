@@ -190,10 +190,9 @@ bool PopulateNewItemFromMojoMenuItems(
   return true;
 }
 
-void PopulateItemFromMojoMenuItems(
-    apps::mojom::MenuItemPtr item,
-    ui::SimpleMenuModel* model,
-    arc::ArcAppShortcutItems* arc_shortcut_items) {
+void PopulateItemFromMojoMenuItems(apps::mojom::MenuItemPtr item,
+                                   ui::SimpleMenuModel* model,
+                                   apps::AppShortcutItems* arc_shortcut_items) {
   switch (item->type) {
     case apps::mojom::MenuItemType::kSeparator:
       model->AddSeparator(static_cast<ui::MenuSeparatorType>(item->command_id));
@@ -201,7 +200,7 @@ void PopulateItemFromMojoMenuItems(
     case apps::mojom::MenuItemType::kPublisherCommand: {
       model->AddItemWithIcon(item->command_id, base::UTF8ToUTF16(item->label),
                              ui::ImageModel::FromImageSkia(item->image));
-      arc::ArcAppShortcutItem arc_shortcut_item;
+      apps::AppShortcutItem arc_shortcut_item;
       arc_shortcut_item.shortcut_id = item->shortcut_id;
       arc_shortcut_items->push_back(arc_shortcut_item);
       break;
