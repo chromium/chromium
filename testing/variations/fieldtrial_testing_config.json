@@ -4434,6 +4434,7 @@
                 {
                     "name": "DesktopExperiments",
                     "params": {
+                        "EntitySuggestionsReduceLatencyDecoderTimeout": "30000",
                         "EntitySuggestionsReduceLatencyDecoderWakeup": "true",
                         "MaxZeroSuggestMatches": "10",
                         "OmniboxMaxURLMatches": "7",
