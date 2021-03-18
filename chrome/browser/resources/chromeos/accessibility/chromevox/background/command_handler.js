@@ -247,11 +247,25 @@ CommandHandler.onCommand = function(command) {
     case 'toggleDarkScreen':
       const oldState = sessionStorage.getItem('darkScreen');
       const newState = (oldState === 'true') ? false : true;
-      sessionStorage.setItem('darkScreen', (newState) ? 'true' : 'false');
-      chrome.accessibilityPrivate.darkenScreen(newState);
-      new Output()
-          .format((newState) ? '@darken_screen' : '@undarken_screen')
-          .go();
+      if (newState && localStorage['acceptDarkenScreen'] !== 'true') {
+        // If this is the first time, show a confirmation dialog.
+        chrome.accessibilityPrivate.showConfirmationDialog(
+            Msgs.getMsg('darken_screen'),
+            Msgs.getMsg('darken_screen_description'), (confirmed) => {
+              if (confirmed) {
+                sessionStorage.setItem('darkScreen', 'true');
+                localStorage['acceptDarkenScreen'] = true;
+                chrome.accessibilityPrivate.darkenScreen(true);
+                new Output().format('@darken_screen').go();
+              }
+            });
+      } else {
+        sessionStorage.setItem('darkScreen', (newState) ? 'true' : 'false');
+        chrome.accessibilityPrivate.darkenScreen(newState);
+        new Output()
+            .format((newState) ? '@darken_screen' : '@undarken_screen')
+            .go();
+      }
       return false;
     case 'toggleSpeechOnOrOff':
       const state = ChromeVox.tts.toggleSpeechOnOrOff();

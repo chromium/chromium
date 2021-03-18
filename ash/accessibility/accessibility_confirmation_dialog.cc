@@ -37,10 +37,16 @@ AccessibilityConfirmationDialog::AccessibilityConfirmationDialog(
   SetCloseCallback(std::move(on_close_callback));
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   SetBorder(views::CreateEmptyBorder(
       views::LayoutProvider::Get()->GetDialogInsetsForContentType(
           views::TEXT, views::TEXT)));
-  AddChildView(std::make_unique<views::Label>(dialog_text));
+  std::unique_ptr<views::Label> label =
+      std::make_unique<views::Label>(dialog_text);
+  label->SetMultiLine(true);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  AddChildView(std::move(label));
 
   // Parent the dialog widget to the LockSystemModalContainer to ensure that it
   // will get displayed on respective lock/signin or OOBE screen.

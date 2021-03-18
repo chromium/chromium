@@ -6,17 +6,21 @@
 
 #include <queue>
 
+#include "ash/accessibility/accessibility_confirmation_dialog.h"
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
+#include "ash/public/cpp/screen_backlight.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
+#include "ash/system/power/backlights_forced_off_setter.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "base/bind.h"
@@ -1210,11 +1214,104 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, SmartStickyMode) {
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, HardwareKeysGetRewritten) {
+class TestBacklightsObserver : public ash::ScreenBacklightObserver {
+ public:
+  explicit TestBacklightsObserver(
+      ash::BacklightsForcedOffSetter* backlights_setter) {
+    backlights_forced_off_ = backlights_setter->backlights_forced_off();
+    scoped_observation_.Observe(backlights_setter);
+  }
+  ~TestBacklightsObserver() override = default;
+  TestBacklightsObserver(const TestBacklightsObserver&) = delete;
+  TestBacklightsObserver& operator=(const TestBacklightsObserver&) = delete;
+
+  // ScreenBacklightObserver:
+  void OnBacklightsForcedOffChanged(bool backlights_forced_off) override {
+    if (backlights_forced_off_ == backlights_forced_off)
+      return;
+
+    backlights_forced_off_ = backlights_forced_off;
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
+  }
+
+  void WaitForBacklightStateChange() {
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+  }
+
+  bool backlights_forced_off() const { return backlights_forced_off_; }
+
+ private:
+  bool backlights_forced_off_;
+  std::unique_ptr<base::RunLoop> run_loop_;
+
+  base::ScopedObservation<ash::BacklightsForcedOffSetter,
+                          ash::ScreenBacklightObserver>
+      scoped_observation_{this};
+};
+
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DarkenScreenConfirmation) {
   EnableChromeVox();
   StablizeChromeVoxState();
+  EXPECT_FALSE(ash::Shell::Get()
+                   ->backlights_forced_off_setter()
+                   ->backlights_forced_off());
+  ash::BacklightsForcedOffSetter* backlights_setter =
+      ash::Shell::Get()->backlights_forced_off_setter();
+  TestBacklightsObserver observer(backlights_setter);
+
+  // Try to darken screen and check the dialog is shown.
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_F7); });
+  sm_.ExpectSpeech("Continue");
+  sm_.ExpectSpeech("default");
+  sm_.ExpectSpeech("Button");
   sm_.ExpectSpeech("Darken screen");
+  sm_.ExpectSpeech("Dialog");
+  sm_.ExpectSpeech("This turns off the screen.");
+  sm_.ExpectSpeech(
+      "You can turn the screen back on with Search plus Brightness up.");
+  sm_.ExpectSpeech("Do you want to turn it off?");
+
+  sm_.Call([]() {
+    // Accept the dialog and see that the screen is darkened.
+    AccessibilityConfirmationDialog* dialog_ =
+        ash::Shell::Get()
+            ->accessibility_controller()
+            ->GetConfirmationDialogForTest();
+    ASSERT_TRUE(dialog_ != nullptr);
+    dialog_->Accept();
+  });
+  sm_.ExpectSpeech("Darken screen");
+  // Make sure Ash gets the backlight change request.
+  sm_.Call([&observer = observer, backlights_setter = backlights_setter]() {
+    if (observer.backlights_forced_off())
+      return;
+    observer.WaitForBacklightStateChange();
+    EXPECT_TRUE(backlights_setter->backlights_forced_off());
+  });
+
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_F7); });
+  sm_.ExpectNextSpeechIsNot("Continue");
+  sm_.ExpectSpeech("Undarken screen");
+  sm_.Call([&observer = observer, backlights_setter = backlights_setter]() {
+    if (!observer.backlights_forced_off())
+      return;
+    observer.WaitForBacklightStateChange();
+    EXPECT_FALSE(backlights_setter->backlights_forced_off());
+  });
+
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_F7); });
+  sm_.ExpectNextSpeechIsNot("Continue");
+  sm_.ExpectSpeech("Darken screen");
+  sm_.Call([&observer = observer, backlights_setter = backlights_setter]() {
+    if (observer.backlights_forced_off())
+      return;
+    observer.WaitForBacklightStateChange();
+    EXPECT_TRUE(backlights_setter->backlights_forced_off());
+  });
+
   sm_.Replay();
 }
 

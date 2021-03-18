@@ -2378,6 +2378,8 @@ TEST_F('ChromeVoxBackgroundTest', 'PhoneticsAndCommands', function() {
 
 TEST_F('ChromeVoxBackgroundTest', 'ToggleDarkScreen', function() {
   const mockFeedback = this.createMockFeedback();
+  // Pretend we've already accepted the confirmation dialog once.
+  localStorage['acceptDarkenScreen'] = 'true';
   this.runWithLoadedTree('<div>Unimportant web content</div>', function() {
     mockFeedback.call(doCmd('toggleDarkScreen'))
         .expectSpeech('Darken screen')

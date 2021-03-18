@@ -2180,6 +2180,9 @@
   <message desc="Describes a command to toggle on/off the visual display for accessibility." name="IDS_CHROMEVOX_TOGGLE_DARK_SCREEN">
     Toggle dark screen
   </message>
+  <message desc="Shown the first time a user requests the darken screen command: describes what the darken screen command does and how to turn the screen on again with Search + Brightness Up buttons." name="IDS_CHROMEVOX_DARKEN_SCREEN_DESCRIPTION">
+    This turns off the screen. You can turn the screen back on with Search + Brightness up. Do you want to turn it off?
+  </message>
   <message desc="Describes a command that turns text to speech feedback off." name="IDS_CHROMEVOX_SPEECH_OFF">
     Speech off
   </message>
