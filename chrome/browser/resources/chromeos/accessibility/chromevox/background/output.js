@@ -679,16 +679,13 @@ Output = class {
     if (typeof (format) === 'string') {
       format = format.replace(/([,:])\s+/gm, '$1');
       tokens = format.split(' ');
+      // Ignore empty tokens.
+      tokens.filter(token => !!token);
     } else {
-      tokens = [format];
+      tokens = format ? [format] : [];
     }
 
     tokens.forEach(function(token) {
-      // Ignore empty tokens.
-      if (!token) {
-        return;
-      }
-
       // Parse the token.
       let tree;
       if (typeof (token) === 'string') {
