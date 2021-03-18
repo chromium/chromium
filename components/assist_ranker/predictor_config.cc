@@ -6,9 +6,9 @@
 
 namespace assist_ranker {
 
-const base::flat_set<std::string>* GetEmptyWhitelist() {
-  static auto* whitelist = new base::flat_set<std::string>();
-  return whitelist;
+const base::flat_set<std::string>* GetEmptyAllowlist() {
+  static auto* allowlist = new base::flat_set<std::string>();
+  return allowlist;
 }
 
 }  // namespace assist_ranker
