@@ -2663,8 +2663,8 @@
   },
   {
     "name": "enable-zero-state-app-reinstall-suggestions",
-    "owners": [ "robsc", "napper", "jennyz" ],
-    "expiry_milestone": 90
+    "owners": [ "robsc", "napper", "jennyz", "thanhdng" ],
+    "expiry_milestone": 98
   },
   {
     "name": "enhanced_clipboard",

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_ARC_RECOMMEND_APPS_FETCHER_IMPL_H_
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_ARC_RECOMMEND_APPS_FETCHER_IMPL_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/app_list/search/arc/recommend_apps_fetcher.h"
 
@@ -38,6 +39,10 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
 
   // RecommendAppsFetcher:
   void StartDownload() override;
+
+  void SetAndroidIdStatusForTesting(bool status) {
+    get_android_id_successfully_ = status;
+  }
 
  private:
   // Abort the attempt to download the recommended app list if it takes too
@@ -83,12 +88,14 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
 
   int64_t android_id_ = 0;
   bool get_android_id_successfully_ = false;
+  int num_get_android_id_retry_ = 0;
 
   // Timer that enforces a custom (shorter) timeout on the attempt to download
   // the recommended app list.
   base::OneShotTimer download_timer_;
 
   base::TimeTicks start_time_;
+  base::WeakPtrFactory<RecommendAppsFetcherImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace app_list

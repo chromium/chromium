@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/app_list/search/arc/recommend_apps_fetcher_impl.h"
+#include <memory>
 
 #include "base/run_loop.h"
 #include "base/values.h"
@@ -23,8 +24,11 @@ class AppListRecommendAppsFetcherImplTest : public testing::Test {
         &AppListRecommendAppsFetcherImplTest::InterceptRequest,
         base::Unretained(this)));
 
-    recommend_apps_fetcher_ = std::make_unique<RecommendAppsFetcherImpl>(
-        &delegate_, &test_url_loader_factory_);
+    std::unique_ptr<RecommendAppsFetcherImpl> temp =
+        std::make_unique<RecommendAppsFetcherImpl>(&delegate_,
+                                                   &test_url_loader_factory_);
+    temp->SetAndroidIdStatusForTesting(true);
+    recommend_apps_fetcher_ = std::move(temp);
   }
 
  protected:

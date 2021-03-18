@@ -8,6 +8,7 @@
 #include <iomanip>
 
 #include "base/base64url.h"
+#include "base/callback_forward.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -51,11 +52,13 @@ std::string HexEncode(int64_t id) {
 
 void OnGetAndroidId(bool* get_android_id_successfully,
                     int64_t* android_id,
+                    base::OnceCallback<void()> callback,
                     bool ok,
                     int64_t id) {
   // TODO(thanhdng): Add a UMA histogram here.
   *get_android_id_successfully = ok;
   *android_id = id;
+  std::move(callback).Run();
 }
 
 }  // namespace
@@ -64,13 +67,23 @@ RecommendAppsFetcherImpl::RecommendAppsFetcherImpl(
     RecommendAppsFetcherDelegate* delegate,
     network::mojom::URLLoaderFactory* url_loader_factory)
     : delegate_(delegate), url_loader_factory_(url_loader_factory) {
-  arc::GetAndroidId(base::BindOnce(
-      &OnGetAndroidId, &get_android_id_successfully_, &android_id_));
 }
 
 RecommendAppsFetcherImpl::~RecommendAppsFetcherImpl() = default;
 
 void RecommendAppsFetcherImpl::StartDownload() {
+  if (!get_android_id_successfully_) {
+    // Retry getting android ID up to 5 times after giving up downloading.
+    if (num_get_android_id_retry_ < 5) {
+      num_get_android_id_retry_++;
+      arc::GetAndroidId(base::BindOnce(
+          &OnGetAndroidId, &get_android_id_successfully_, &android_id_,
+          base::BindOnce(&RecommendAppsFetcherImpl::StartDownload,
+                         weak_ptr_factory_.GetWeakPtr())));
+    }
+    return;
+  }
+
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("play_recommended_apps_reinstall", R"(
         semantics {
