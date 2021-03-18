@@ -158,6 +158,16 @@
   }
 
   /**
+   * @param {!chromeos.networkConfig.mojom.NetworkStateProperties} network
+   */
+  removeNetworkForTest(network) {
+    this.networkStates_ = this.networkStates_.filter((state) => {
+      return state.guid !== network.guid;
+    });
+    this.onNetworkStateListChanged();
+  }
+
+  /**
    * @param {!chromeos.networkConfig.mojom.ManagedProperties>} network
    */
   setManagedPropertiesForTest(network) {

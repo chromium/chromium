@@ -3,6 +3,8 @@
 <link rel="import" href="../../../html/i18n_behavior.html">
 <link rel="import" href="cellular_types.html">
 <link rel="import" href="subflow_behavior.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/cellular_utils.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_listener_behavior.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_radio_group/cr_radio_group.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_card_radio_button.html">
 
@@ -130,7 +132,8 @@
           class="sim-flow-ui-btn"
           name="esim-flow-ui"
           aria-labeledby="esimBtnTitle"
-          aria-describedby="esimBtnDescrition">
+          aria-describedby="esimBtnDescrition"
+          disabled="[[!isConnectedToNonCellularNetwork_]]">
         <div class="flex-container">
           <div id="esimIconContainer" class="sim-icon-container"></div>
           <div>

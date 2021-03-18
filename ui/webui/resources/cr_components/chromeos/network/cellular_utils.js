@@ -74,3 +74,28 @@ function networkIsPSim_(network) {
 
   return {pSimSlots, eSimSlots};
 }
+
+/**
+ * Checks if the device is currently connected to a WiFi, Ethernet or Tether
+ * network.
+ * @return {!Promise<boolean>}
+ */
+/* #export */ function isConnectedToNonCellularNetwork() {
+  const mojom = chromeos.networkConfig.mojom;
+  const networkConfig = network_config.MojoInterfaceProviderImpl.getInstance()
+                            .getMojoServiceRemote();
+  return networkConfig
+      .getNetworkStateList({
+        filter: mojom.FilterType.kActive,
+        networkType: mojom.NetworkType.kAll,
+        limit: mojom.NO_LIMIT,
+      })
+      .then((response) => {
+        // Filter for connected non-cellular networks.
+        return response.result.some(network => {
+          return network.connectionState ===
+              mojom.ConnectionStateType.kOnline &&
+              network.type !== mojom.NetworkType.kCellular;
+        });
+      });
+}

@@ -11,6 +11,7 @@ Polymer({
 
   behaviors: [
     I18nBehavior,
+    NetworkListenerBehavior,
     SubflowBehavior,
   ],
 
@@ -27,11 +28,25 @@ Polymer({
     forwardButtonLabel: {
       type: String,
       notify: true,
+    },
+
+    /** @private {boolean} */
+    isConnectedToNonCellularNetwork_: {
+      type: Boolean,
+      value: false,
     }
   },
 
   initSubflow() {
     this.updateButtonState_(this.selectedPage);
+    this.onNetworkStateListChanged();
+  },
+
+  /** NetworkListenerBehavior override */
+  onNetworkStateListChanged() {
+    isConnectedToNonCellularNetwork().then((isConnected) => {
+      this.isConnectedToNonCellularNetwork_ = isConnected;
+    });
   },
 
   /**

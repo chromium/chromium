@@ -227,6 +227,8 @@ js_library("setup_selection_flow.m") {
   deps = [
     ":cellular_types.m",
     ":subflow_behavior.m",
+    "//ui/webui/resources/cr_components/chromeos/network:cellular_utils.m",
+    "//ui/webui/resources/cr_components/chromeos/network:network_listener_behavior.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":setup_selection_flow_module" ]
