@@ -1493,6 +1493,11 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest,
   app_browser = FindOneOtherBrowser(browser());
   ASSERT_TRUE(app_browser);
   ASSERT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
+
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+  ASSERT_EQ(1, tab_strip->count());
+  content::WebContents* web_contents = tab_strip->GetWebContentsAt(0);
+  EXPECT_EQ(GURL(kStartUrl), web_contents->GetVisibleURL());
 }
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest,
@@ -1513,6 +1518,12 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest,
   app_browser = FindOneOtherBrowser(browser());
   ASSERT_TRUE(app_browser);
   ASSERT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser, app_id));
+
+  // Out-of-scope URL launch results in app launch with default launch URL.
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+  ASSERT_EQ(1, tab_strip->count());
+  content::WebContents* web_contents = tab_strip->GetWebContentsAt(0);
+  EXPECT_EQ(GURL(kStartUrl), web_contents->GetVisibleURL());
 }
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest, UrlNotCaptured) {

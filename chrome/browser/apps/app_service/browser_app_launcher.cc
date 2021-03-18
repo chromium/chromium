@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -100,6 +101,7 @@ void BrowserAppLauncher::LaunchAppWithCallback(
     const std::string& app_id,
     const base::CommandLine& command_line,
     const base::FilePath& current_directory,
+    const base::Optional<GURL>& url_handler_launch_url,
     base::OnceCallback<void(Browser* browser,
                             apps::mojom::LaunchContainer container)> callback) {
   // old-style app shortcuts
@@ -114,7 +116,8 @@ void BrowserAppLauncher::LaunchAppWithCallback(
           app_id);
   if (!extension || extension->from_bookmark()) {
     web_app_launch_manager_.LaunchApplication(
-        app_id, command_line, current_directory, std::move(callback));
+        app_id, command_line, current_directory, url_handler_launch_url,
+        std::move(callback));
     return;
   }
 

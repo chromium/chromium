@@ -23,6 +23,7 @@
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/task/thread_pool.h"
@@ -419,6 +420,7 @@ bool MaybeLaunchApplication(
         ->BrowserAppLauncher()
         ->LaunchAppWithCallback(
             app_id, command_line, cur_dir,
+            /*url_handler_launch_url=*/base::nullopt,
             base::BindOnce(&FinalizeWebAppLaunch,
                            std::move(launch_mode_recorder)));
     return true;
@@ -486,7 +488,7 @@ bool MaybeLaunchUrlHandlerWebApp(
     apps::AppServiceProxyFactory::GetForProfile(profile)
         ->BrowserAppLauncher()
         ->LaunchAppWithCallback(
-            match.app_id, command_line, cur_dir,
+            match.app_id, command_line, cur_dir, match.url,
             base::BindOnce(&FinalizeWebAppLaunch,
                            std::move(launch_mode_recorder)));
     return true;

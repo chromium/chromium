@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -86,11 +87,39 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
   return web_contents;
 }
 
+base::Optional<GURL> GetUrlHandlingLaunchUrl(
+    WebAppProvider& provider,
+    const apps::AppLaunchParams& params) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kWebAppEnableUrlHandlers) ||
+      !params.url_handler_launch_url.has_value()) {
+    return base::nullopt;
+  }
+
+  GURL url = params.url_handler_launch_url.value();
+  DCHECK(url.is_valid());
+
+  // If URL is not in scope, default to launch URL for now.
+  // TODO(crbug.com/1072058): Allow developers to handle out-of-scope URL
+  // launch.
+  const std::string app_scope =
+      provider.registrar().GetAppScope(params.app_id).spec();
+  DCHECK(!app_scope.empty());
+  return base::StartsWith(url.spec(), app_scope, base::CompareCase::SENSITIVE)
+             ? url
+             : provider.registrar().GetAppLaunchUrl(params.app_id);
+}
+
 GURL GetLaunchUrl(WebAppProvider& provider,
                   const apps::AppLaunchParams& params,
                   const apps::ShareTarget* share_target) {
   if (!params.override_url.is_empty())
     return params.override_url;
+
+  base::Optional<GURL> url_handler_launch_url =
+      GetUrlHandlingLaunchUrl(provider, params);
+  if (url_handler_launch_url.has_value())
+    return url_handler_launch_url.value();
 
   const GURL app_url =
       share_target ? share_target->action
@@ -271,6 +300,7 @@ void WebAppLaunchManager::LaunchApplication(
     const std::string& app_id,
     const base::CommandLine& command_line,
     const base::FilePath& current_directory,
+    const base::Optional<GURL>& url_handler_launch_url,
     base::OnceCallback<void(Browser* browser,
                             apps::mojom::LaunchContainer container)> callback) {
   if (!provider_)
@@ -289,6 +319,8 @@ void WebAppLaunchManager::LaunchApplication(
   params.command_line = command_line;
   params.current_directory = current_directory;
   params.launch_files = apps::GetLaunchFilesFromCommandLine(command_line);
+  params.url_handler_launch_url = url_handler_launch_url;
+
   if (base::FeatureList::IsEnabled(
           features::kDesktopPWAsAppIconShortcutsMenu)) {
     params.override_url = GURL(command_line.GetSwitchValueASCII(

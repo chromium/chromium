@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/optional.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
@@ -92,6 +93,10 @@ struct AppLaunchParams {
   // The intent the application was launched with. Empty if the application was
   // not launched with intent.
   apps::mojom::IntentPtr intent;
+
+  // When PWA is launched as a URL handler, the URL that we should launch the
+  // PWA to. Null when it's not a URL handler launch.
+  base::Optional<GURL> url_handler_launch_url;
 };
 
 }  // namespace apps
