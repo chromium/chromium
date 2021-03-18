@@ -4041,6 +4041,9 @@ class AXPosition {
   // On some platforms, embedded objects are represented in their parent with a
   // single "embedded object character".
   int MaxTextOffsetInParent() const {
+    if (IsNullPosition())
+      return 0;
+
     // Ignored anchors are not visible to platform APIs. As a result, their
     // inner text or hypertext does not appear in their parent node, but the
     // text of their unignored children does, if any. (See
