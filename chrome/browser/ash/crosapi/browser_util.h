@@ -66,6 +66,18 @@ bool IsLacrosEnabled(version_info::Channel channel);
 // Forces IsLacrosEnabled() to return true for testing.
 void SetLacrosEnabledForTest(bool force_enabled);
 
+// Returns true if the lacros should be used as a primary browser.
+bool IsLacrosPrimaryBrowser();
+
+// As above, but takes a channel. Exposed for testing.
+bool IsLacrosPrimaryBrowser(version_info::Channel channel);
+
+// Returns true if the lacros can be used as a primary browser
+// for the current session.
+// Note that IsLacrosPrimaryBrowser may return false, even if this returns
+// true, specifically, the feature is disabled by user/policy.
+bool IsLacrosPrimaryBrowserAllowed(version_info::Channel channel);
+
 // Returns true if |window| is an exo ShellSurface window representing a Lacros
 // browser.
 bool IsLacrosWindow(const aura::Window* window);

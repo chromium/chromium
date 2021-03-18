@@ -431,6 +431,14 @@ const base::Feature kInstantTethering{"InstantTethering",
 const base::Feature kKerberosSettingsSection{"KerberosSettingsSection",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables to use lacros-chrome as a primary web browser on Chrome OS.
+// This works only when LacrosSupport below is enabled.
+// NOTE: Use crosapi::browser_util::IsLacrosPrimary() instead of checking
+// the feature directly. Similar to LacrosSupport, this may not be allowed
+// depending on user types and/or policies.
+const base::Feature kLacrosPrimary{"LacrosPrimary",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables "Linux and Chrome OS" support. Allows a Linux version of Chrome
 // ("lacros-chrome") to run as a Wayland client with this instance of Chrome
 // ("ash-chrome") acting as the Wayland server and window manager.

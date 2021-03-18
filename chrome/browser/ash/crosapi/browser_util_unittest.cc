@@ -70,16 +70,28 @@ TEST_F(BrowserUtilTest, LacrosEnabledByFlag) {
   EXPECT_TRUE(browser_util::IsLacrosEnabled());
 }
 
-TEST_F(BrowserUtilTest, ChannelTest) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(chromeos::features::kLacrosSupport);
+TEST_F(BrowserUtilTest, LacrosEnabledForChannels) {
   AddRegularUser("user@test.com");
 
-  EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::UNKNOWN));
-  EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::CANARY));
-  EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::DEV));
-  EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::BETA));
-  EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::STABLE));
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(chromeos::features::kLacrosSupport);
+    EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::UNKNOWN));
+    EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::CANARY));
+    EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::DEV));
+    EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::BETA));
+    EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::STABLE));
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({chromeos::features::kLacrosSupport},
+                                  {browser_util::kLacrosAllowOnStableChannel});
+    EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::UNKNOWN));
+    EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::CANARY));
+    EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::DEV));
+    EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::BETA));
+    EXPECT_FALSE(browser_util::IsLacrosEnabled(Channel::STABLE));
+  }
 }
 
 TEST_F(BrowserUtilTest, ManagedAccountLacrosEnabled) {
@@ -113,6 +125,54 @@ TEST_F(BrowserUtilTest, BlockedForChildUser) {
                                    /*browser_restart=*/false,
                                    /*is_child=*/true);
   EXPECT_FALSE(browser_util::IsLacrosEnabled(Channel::UNKNOWN));
+}
+
+TEST_F(BrowserUtilTest, LacrosPrimaryBrowserByFlags) {
+  AddRegularUser("user@test.com");
+
+  EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowser());
+
+  // Just enabling LacrosPrimary feature is not enough.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(chromeos::features::kLacrosPrimary);
+    EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowser());
+  }
+
+  // Both LacrosPrimary and LacrosSupport are needed.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({chromeos::features::kLacrosPrimary,
+                                   chromeos::features::kLacrosSupport},
+                                  {});
+    EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowser());
+  }
+}
+
+TEST_F(BrowserUtilTest, LacrosPrimaryBrowserForChannels) {
+  AddRegularUser("user@test.com");
+
+  // Currently, only developer build can use Lacros as a primary
+  // web browser.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {chromeos::features::kLacrosPrimary, chromeos::features::kLacrosSupport},
+      {});
+  EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowser(Channel::UNKNOWN));
+  EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowser(Channel::CANARY));
+  EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowser(Channel::DEV));
+  EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowser(Channel::BETA));
+  EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowser(Channel::STABLE));
+}
+
+TEST_F(BrowserUtilTest, LacrosPrimaryBrowserAllowedForChannels) {
+  AddRegularUser("user@test.com");
+
+  EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::UNKNOWN));
+  EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::CANARY));
+  EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::DEV));
+  EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::BETA));
+  EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::STABLE));
 }
 
 TEST_F(BrowserUtilTest, GetInterfaceVersions) {

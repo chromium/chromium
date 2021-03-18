@@ -185,6 +185,40 @@ void SetLacrosEnabledForTest(bool force_enabled) {
   g_lacros_enabled_for_test = force_enabled;
 }
 
+bool IsLacrosPrimaryBrowser() {
+  return IsLacrosPrimaryBrowser(chrome::GetChannel());
+}
+
+bool IsLacrosPrimaryBrowser(Channel channel) {
+  if (!IsLacrosEnabled(channel))
+    return false;
+
+  if (!IsLacrosPrimaryBrowserAllowed(channel))
+    return false;
+
+  // TODO(crbug.com/1188070): Support Lacros Primary policy.
+  return base::FeatureList::IsEnabled(chromeos::features::kLacrosPrimary);
+}
+
+bool IsLacrosPrimaryBrowserAllowed(Channel channel) {
+  if (!IsLacrosAllowed(channel))
+    return false;
+
+  switch (channel) {
+    case Channel::UNKNOWN:
+      // Currently, developer build is only a way to enable Lacros as a Primary
+      // web browser.
+      return true;
+    case Channel::CANARY:
+    case Channel::DEV:
+    case Channel::BETA:
+    case Channel::STABLE:
+      // Canary/dev/beta/stable builds cannot use Lacros as a primary
+      // browser, yet.
+      return false;
+  }
+}
+
 bool IsLacrosWindow(const aura::Window* window) {
   const std::string* app_id = exo::GetShellApplicationId(window);
   if (!app_id)

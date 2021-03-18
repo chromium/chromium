@@ -242,6 +242,7 @@ void DeriveCommandLine(const GURL& start_url,
 void DeriveEnabledFeatures(base::CommandLine* out_command_line) {
   static const base::Feature* kForwardEnabledFeatures[] = {
       &ash::features::kAutoNightLight,
+      &chromeos::features::kLacrosPrimary,
       &chromeos::features::kLacrosSupport,
   };
 
