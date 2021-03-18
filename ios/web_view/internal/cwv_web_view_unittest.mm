@@ -30,6 +30,13 @@ class CWVWebViewTest : public TestWithLocaleAndResources {
   web::ScopedTestingWebClient web_client_;
 };
 
+// Test +[CWVWebView customUserAgent].
+TEST_F(CWVWebViewTest, CustomUserAgent) {
+  EXPECT_FALSE(CWVWebView.customUserAgent);
+  CWVWebView.customUserAgent = @"FooCustomUserAgent";
+  EXPECT_NSEQ(@"FooCustomUserAgent", CWVWebView.customUserAgent);
+}
+
 // Test CWVWebView's inputAccessoryView controls whether or not the overriding
 // behavior is enabled.
 TEST_F(CWVWebViewTest, InputAccessoryView) {

@@ -142,7 +142,13 @@ CWV_EXPORT
 // https://developer.apple.com/documentation/uikit/uiresponder/1621119-inputaccessoryview?language=objc
 @property(nonatomic, strong, nullable) UIView* inputAccessoryView;
 
+// Allows full customization of the user agent.
+// Similar to -[WKWebView customUserAgent], but applies to all instances.
+// If non-nil, this is used instead of |userAgentProduct|.
+@property(nonatomic, class, copy, nullable) NSString* customUserAgent;
+
 // The User Agent product string used to build the full User Agent.
+// Deprecated. Use |customUserAgent| instead.
 + (NSString*)userAgentProduct;
 
 // Customizes the User Agent string by inserting |product|. It should be of the
@@ -155,6 +161,8 @@ CWV_EXPORT
 // Setting |product| is only guaranteed to affect web views which have not yet
 // been initialized. However, exisiting web views could also be affected
 // depending upon their internal state.
+//
+// Deprecated. Use |customUserAgent| instead.
 + (void)setUserAgentProduct:(NSString*)product;
 
 // Use this method to set the necessary credentials used to communicate with

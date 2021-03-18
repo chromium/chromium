@@ -156,6 +156,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 @end
 
 namespace {
+NSString* gCustomUserAgent = nil;
 NSString* gUserAgentProduct = nil;
 BOOL gChromeLongPressAndForceTouchHandlingEnabled = YES;
 }  // namespace
@@ -191,6 +192,14 @@ BOOL gChromeLongPressAndForceTouchHandlingEnabled = YES;
 
 + (void)setChromeLongPressAndForceTouchHandlingEnabled:(BOOL)newValue {
   gChromeLongPressAndForceTouchHandlingEnabled = newValue;
+}
+
++ (NSString*)customUserAgent {
+  return gCustomUserAgent;
+}
+
++ (void)setCustomUserAgent:(NSString*)customUserAgent {
+  gCustomUserAgent = [customUserAgent copy];
 }
 
 + (NSString*)userAgentProduct {

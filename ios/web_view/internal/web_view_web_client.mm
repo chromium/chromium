@@ -72,8 +72,12 @@ bool WebViewWebClient::IsAppSpecificURL(const GURL& url) const {
 }
 
 std::string WebViewWebClient::GetUserAgent(web::UserAgentType type) const {
-  return web::BuildMobileUserAgent(
-      base::SysNSStringToUTF8([CWVWebView userAgentProduct]));
+  if (CWVWebView.customUserAgent) {
+    return base::SysNSStringToUTF8(CWVWebView.customUserAgent);
+  } else {
+    return web::BuildMobileUserAgent(
+        base::SysNSStringToUTF8([CWVWebView userAgentProduct]));
+  }
 }
 
 base::StringPiece WebViewWebClient::GetDataResource(

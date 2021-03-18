@@ -51,6 +51,31 @@ class WebViewTest : public ios_web_view::WebViewInttestBase {
   std::unique_ptr<net::test_server::HttpRequest> last_request_;
 };
 
+// Tests +[CWVWebView customUserAgent].
+TEST_F(WebViewTest, CustomUserAgent) {
+  ASSERT_TRUE(test_server_->Start());
+
+  CWVWebView.customUserAgent = @"FooCustomUserAgent";
+  ASSERT_NSEQ(@"FooCustomUserAgent", CWVWebView.customUserAgent);
+
+  // Cannot use existing |web_view_| here because the change above may only
+  // affect web views created after the change.
+  CWVWebView* web_view = test::CreateWebView();
+  GURL url = test_server_->GetURL("/CaptureRequest");
+  ASSERT_TRUE(test::LoadUrl(web_view, net::NSURLWithGURL(url)));
+
+  // Investigates the HTTP headers captured by CaptureRequestHandler(), and
+  // tests that they include User-Agent HTTP header with the specified product
+  // name. /echoheader?User-Agent provided by EmbeddedTestServer cannot be used
+  // here because it returns content with type text/plain, but we cannot extract
+  // the content using test::WaitForWebViewContainingTextOrTimeout() because
+  // JavaScript cannot be executed on text/plain content.
+  ASSERT_NE(nullptr, last_request_.get());
+  auto user_agent_it = last_request_->headers.find("User-Agent");
+  ASSERT_NE(last_request_->headers.end(), user_agent_it);
+  EXPECT_EQ("FooCustomUserAgent", user_agent_it->second);
+}
+
 // Tests +[CWVWebView setUserAgentProduct] and +[CWVWebView userAgentProduct].
 TEST_F(WebViewTest, UserAgentProduct) {
   ASSERT_TRUE(test_server_->Start());

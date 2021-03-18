@@ -24,4 +24,7 @@
 // Allows customization of the keyboard input accessory view for CWVWebView.
 #define IOS_WEB_VIEW_SUPPORTS_CWV_WEB_VIEW_INPUT_ACCESSORY_VIEW 1
 
+// Allows customization of CWVWebView's user agent string.
+#define IOS_WEB_VIEW_SUPPORTS_CWV_WEB_VIEW_CUSTOM_USER_AGENT 1
+
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_
