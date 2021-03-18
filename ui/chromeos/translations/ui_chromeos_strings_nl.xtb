@@ -30,7 +30,7 @@
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1293556467332435079">Bestanden</translation>
 <translation id="1297922636971898492">Google Drive is momenteel niet beschikbaar. Het uploaden wordt automatisch gestart zodra Google Drive weer beschikbaar is.</translation>
-<translation id="1307931752636661898">Kan Linux-bestanden niet weergeven</translation>
+<translation id="1307931752636661898">Kan Linux-bestanden niet bekijken</translation>
 <translation id="1346748346194534595">Rechts</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> bestanden importeren...</translation>
 <translation id="1358735829858566124">Het bestand of de map is niet bruikbaar.</translation>
@@ -285,7 +285,7 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> verplaatst.</translation>
 <translation id="4186579485882418952">Offline aanzetten</translation>
 <translation id="4193154014135846272">Google-document</translation>
-<translation id="4197674956721858839">Geselecteerde bestanden inpakken</translation>
+<translation id="4197674956721858839">Geselecteerde bestanden toevoegen aan zip-bestand</translation>
 <translation id="4202378258276439759">Spaans (Latijns-Amerika)</translation>
 <translation id="4202977638116331303">Georgisch</translation>
 <translation id="421017592316736757">Je moet online zijn om dit bestand te openen.</translation>
@@ -418,7 +418,7 @@
 <translation id="5318819489018851358">Delen met Linux</translation>
 <translation id="5323213332664049067">Latijns-Amerikaans</translation>
 <translation id="5327248766486351172">Naam</translation>
-<translation id="5330145655348521461">Deze bestanden zijn op een ander bureaublad geopend. Verplaats ze naar <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) om ze weer te geven.</translation>
+<translation id="5330145655348521461">Deze bestanden zijn op een ander bureaublad geopend. Verplaats ze naar <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) om ze te bekijken.</translation>
 <translation id="5330512191124428349">Informatie ophalen</translation>
 <translation id="5335458522276292100">Back-up van <ph name="FILE_COUNT" /> maken op <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="5358764674931277">Framesnelheid</translation>
@@ -507,7 +507,7 @@
 <translation id="6346310558342052870">Beperkte toegang</translation>
 <translation id="6356685157277930264">Feedbackvenster voor bestanden</translation>
 <translation id="6358884629796491903">Draak</translation>
-<translation id="637062427944097960">Dit bestand is op een ander bureaublad geopend. Verplaats het naar <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) om het weer te geven.</translation>
+<translation id="637062427944097960">Dit bestand is op een ander bureaublad geopend. Verplaats het naar <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) om het te bekijken.</translation>
 <translation id="6394388407447716302">Alleen lezen</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> items</translation>
 <translation id="6398765197997659313">Volledig scherm sluiten</translation>

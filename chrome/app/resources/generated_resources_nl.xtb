@@ -1305,7 +1305,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2435579801172349831">Alles (<ph name="URL_COUNT" />) openen in incognitovenster</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> toestaan alle links voor <ph name="PROTOCOL" /> te openen?</translation>
 <translation id="2440366609912234507">{COUNT,plural, =1{app}other{# apps}}</translation>
-<translation id="2440604414813129000">Br&amp;on weergeven</translation>
+<translation id="2440604414813129000">Br&amp;on bekijken</translation>
 <translation id="244231003699905658">Ongeldig adres. Controleer het adres en probeer het opnieuw.</translation>
 <translation id="2442916515643169563">Tekstschaduw</translation>
 <translation id="2445081178310039857">Hoofddirectory van extensie is vereist.</translation>
@@ -1683,7 +1683,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2841013758207633010">Tijd</translation>
 <translation id="2841837950101800123">Provider</translation>
 <translation id="2844169650293029770">USB-C-apparaat (poort links aan de voorkant)</translation>
-<translation id="2844809857160214557">Afdruktaken weergeven en beheren</translation>
+<translation id="2844809857160214557">Afdruktaken bekijken en beheren</translation>
 <translation id="2845382757467349449">Bookmarkbalk altijd weergeven</translation>
 <translation id="284805635805850872">Schadelijke software verwijderen?</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -3132,7 +3132,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4507128560633489176">Gegevens zijn gewist.</translation>
 <translation id="4508051413094283164">Alles openen in incognitovenster</translation>
 <translation id="4508265954913339219">Activering mislukt</translation>
-<translation id="4508765956121923607">Br&amp;on weergeven</translation>
+<translation id="4508765956121923607">Br&amp;on bekijken</translation>
 <translation id="4510479820467554003">Lijst met ouderaccounts</translation>
 <translation id="4510614391273086606">Linux-bestanden en -apps worden hersteld naar de status van de back-up.</translation>
 <translation id="451102079304155829">winkelwagens</translation>
@@ -5304,7 +5304,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7006634003215061422">Marge onderkant</translation>
 <translation id="7007648447224463482">Alles openen in nieuw venster</translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" /> gebruikt je camera</translation>
-<translation id="701080569351381435">Toon paginabron</translation>
+<translation id="701080569351381435">Bekijk paginabron</translation>
 <translation id="7014174261166285193">Installatie mislukt.</translation>
 <translation id="7017004637493394352">Zeg nog een keer "Oké Google"</translation>
 <translation id="7017219178341817193">Een nieuwe pagina toevoegen</translation>
@@ -5458,7 +5458,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7200083590239651963">Configuratie selecteren</translation>
 <translation id="720110658997053098">Dit apparaat permanent in kioskmodus houden</translation>
 <translation id="7201118060536064622">'<ph name="DELETED_ITEM_NAME" />' verwijderd</translation>
-<translation id="7201420661433230412">Bestanden weergeven</translation>
+<translation id="7201420661433230412">Bestanden bekijken</translation>
 <translation id="7203150201908454328">Uitgevouwen</translation>
 <translation id="7206693748120342859"><ph name="PLUGIN_NAME" /> downloaden...</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Pagina afsluiten}other{Pagina's afsluiten}}</translation>
@@ -6144,7 +6144,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7968072247663421402">Provideropties</translation>
 <translation id="7968742106503422125">Gegevens lezen en aanpassen die je kopieert en plakt</translation>
 <translation id="7968833647796919681">Het verzamelen van prestatiegegevens inschakelen</translation>
-<translation id="7968982339740310781">Details weergeven</translation>
+<translation id="7968982339740310781">Details bekijken</translation>
 <translation id="7969046989155602842">Command</translation>
 <translation id="7970673414865679092">Ethernetgegevens</translation>
 <translation id="7970882136539140748">Kaart kan nu niet worden opgeslagen</translation>
@@ -6347,7 +6347,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8186609076106987817">De server kan het bestand niet vinden.</translation>
 <translation id="8188389033983459049">Controleer de instellingen van je apparaat en schakel je apparaat in om door te gaan</translation>
 <translation id="8189306097519446565">Schoolaccounts</translation>
-<translation id="8189750580333936930">Privacy-sandbox</translation>
+<translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190193592390505034">Verbinding maken met <ph name="PROVIDER_NAME" /></translation>
 <translation id="8191230140820435481">Je apps, extensies en thema's beheren</translation>
 <translation id="8192944472786724289"><ph name="APP_NAME" /> wil de content van je scherm delen.</translation>

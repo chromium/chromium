@@ -1060,6 +1060,7 @@
 <translation id="215753907730220065">全画面表示を終了</translation>
 <translation id="2157875535253991059">現在このページは全画面表示です。</translation>
 <translation id="2158475082070321257">選択箇所へのリンクをコピー</translation>
+<translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Wi-Fi を追加...</translation>
 <translation id="2162155940152307086">同期設定を閉じると同期が開始します</translation>
 <translation id="2162838847352058695">サイトが複数のファイルを自動的にダウンロードできないようにする</translation>
@@ -1182,6 +1183,7 @@
 <translation id="2297705863329999812">プリンタを検索</translation>
 <translation id="2299734369537008228">スライダー: <ph name="MIN_LABEL" /> から <ph name="MAX_LABEL" /> まで</translation>
 <translation id="2299941608784654630">debugd で収集したすべてのログファイルを個別のアーカイブとして含める。</translation>
+<translation id="2300214399009193026">PCIe</translation>
 <translation id="2300383962156589922"><ph name="APP_NAME" /> のカスタマイズと制御</translation>
 <translation id="2301382460326681002">拡張機能のルート ディレクトリが無効です。</translation>
 <translation id="23030561267973084">「<ph name="EXTENSION_NAME" />」が追加の許可をリクエストしています。</translation>
@@ -2760,6 +2762,7 @@
 <translation id="404493185430269859">デフォルトの検索エンジン</translation>
 <translation id="4046013316139505482">これらの拡張機能は、このサイトの情報の表示、変更を必要としていません。</translation>
 <translation id="4046123991198612571">次のトラック</translation>
+<translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">ホームに移動</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{使用できない連絡先が # 件あります。これらのユーザーとニアバイシェアを利用するには、該当するユーザーの Google アカウントに関連付けられているメールアドレスを連絡先に追加してください。}other{使用できない連絡先が # 件あります。これらのユーザーとニアバイシェアを利用するには、該当するユーザーの Google アカウントに関連付けられているメールアドレスを連絡先に追加してください。}}</translation>
 <translation id="4050225813016893843">認証方法</translation>
@@ -4285,6 +4288,7 @@
 <translation id="5856721540245522153">デバッグ機能を有効にする</translation>
 <translation id="5857090052475505287">新しいフォルダ</translation>
 <translation id="5857171483910641802">よくアクセスするウェブサイトに基づいておすすめのショートカットが表示されます</translation>
+<translation id="5857675236236529683">準備ができたら、ここでリーディング リストを確認できます</translation>
 <translation id="5858490737742085133">ターミナル</translation>
 <translation id="5859603669299126575">アート ギャラリーのアルバム</translation>
 <translation id="585979798156957858">外部メタキー</translation>
@@ -7209,6 +7213,7 @@
 <translation id="9168436347345867845">後で行う</translation>
 <translation id="9169496697824289689">キーボード ショートカットの表示</translation>
 <translation id="916964310188958970">この候補が表示された理由</translation>
+<translation id="9170048603158555829">Thunderbolt</translation>
 <translation id="9170061643796692986">現在の公開設定はすべての連絡先です</translation>
 <translation id="9170848237812810038">取消(&amp;U)</translation>
 <translation id="9170884462774788842">パソコン上の別のプログラムにより、Chrome の動作方法を変更する可能性のあるテーマが追加されました。</translation>

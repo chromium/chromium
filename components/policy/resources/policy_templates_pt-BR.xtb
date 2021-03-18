@@ -1135,6 +1135,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="2515699738406900920">Disponibilidade do seletor de perfil na inicialização</translation>
 <translation id="2517466659416174529">Permitir congelamento das guias em segundo plano</translation>
 <translation id="2518231489509538392">Permitir a reprodução de áudio</translation>
+<translation id="2520551905471951523">Usar a prioridade alta para o processo de áudio</translation>
 <translation id="2521581787935130926">Exibir os atalhos de aplicativos na barra de favoritos</translation>
 <translation id="2522304491589804974">Configurar a lista de permissões para instalação de extensões</translation>
 <translation id="2529880111512635313">Configurar a lista de extensões e aplicativos instalados forçadamente</translation>
@@ -1800,6 +1801,13 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Se a política não for definida, o tempo limite de 0 milissegundos será usado.
 
       Se a <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> não for definida, esta política não terá efeito.</translation>
+<translation id="341285788698114069">Esta política controla a prioridade do processo de áudio no Windows.
+      Se ela for ativada, o processo de áudio será executado com prioridade acima do normal.
+      Se ela for desativada, o processo de áudio será executado com prioridade normal.
+      Se a política não for definida, a configuração padrão para o processo de áudio será usada.
+      Esta política é uma medida temporária para permitir que empresas executem
+      áudio com maior prioridade para resolver problemas de desempenho na captura de áudio.
+      Ela pode ser removida no futuro.</translation>
 <translation id="3412937883532015092">Se a política for definida como um número, o <ph name="PRODUCT_NAME" /> exibirá uma mensagem de milésimos de segundo para o número e abrirá um navegador alternativo.
 
       Se ela não for definida ou for definida como 0, a navegação para um URL designado o abrirá imediatamente em um navegador alternativo.</translation>
@@ -2557,6 +2565,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="4534500438517478692">Nome de restrição Android:</translation>
 <translation id="4541530620466526913">Contas locais de dispositivo</translation>
 <translation id="4543502256674577024">Configurações de atualização do dispositivo</translation>
+<translation id="454585952814397564">Usar a prioridade normal para o processo de áudio</translation>
 <translation id="4548555985107150628">Essa política está obsoleta. Use <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> para controlar a disponibilidade do plug-in Flash e <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> para controlar se o visualizador de PDF integrado será usado para abrir arquivos PDF.
 
       Especifica uma lista de plug-ins que estão ativados no <ph name="PRODUCT_NAME" /> e impede os usuários de alterar essa configuração.
@@ -3171,6 +3180,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
           Se esta política não for definida, o recurso de área de transferência compartilhada será ativado por padrão.
 
           Cabe aos administradores definir políticas em todas as plataformas que sejam relevantes. É recomendado definir um único valor para esta política em todas as plataformas.</translation>
+<translation id="5389708774452952523">Permitir que o processo de áudio seja executado com prioridade acima do normal no Windows</translation>
 <translation id="5389798680516458665">Se a política for definida, você poderá fazer uma lista de padrões de URL que especificam sites que podem exibir imagens.
 
       Se a política não tiver definição, <ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
@@ -4645,6 +4655,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 
       A pesquisa e a instalação automáticas de plug-ins ausentes não são mais compatíveis.</translation>
 <translation id="7267809745244694722">Teclas de mídia padrão para teclas de função</translation>
+<translation id="7269263983506766969">Usar a prioridade padrão para o processo de áudio</translation>
 <translation id="7270001383428188269">Identificador para este certificado do cliente.</translation>
 <translation id="7271085005502526897">Importar homepage do navegador padrão na primeira execução</translation>
 <translation id="7271181393214180342">Definir a política como "Ativada" faz com que a autenticação HTTP respeite a aprovação pela política de KDC. Em outras palavras, o <ph name="PRODUCT_NAME" /> delegará credenciais de usuário para o serviço acessado se o KDC definir <ph name="OK_AS_DELEGATE" /> em um ticket de serviço. Consulte RFC 5896 (https://tools.ietf.org/html/rfc5896.html, link em inglês). O serviço também precisa ter a permissão de <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />.

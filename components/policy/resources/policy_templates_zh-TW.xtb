@@ -1119,6 +1119,7 @@
 <translation id="2515699738406900920">是否要在瀏覽器啟動時顯示設定檔選擇畫面</translation>
 <translation id="2517466659416174529">允許背景分頁凍結</translation>
 <translation id="2518231489509538392">允許播放音訊</translation>
+<translation id="2520551905471951523">以高優先順序執行音訊程序</translation>
 <translation id="2521581787935130926">在書籤列中顯示應用程式捷徑</translation>
 <translation id="2522304491589804974">設定擴充功能安裝許可清單</translation>
 <translation id="2529880111512635313">設定強制安裝的應用程式和擴充功能清單</translation>
@@ -1771,6 +1772,12 @@
       如果不設定，系統會使用 0 毫秒做為逾時時間。
 
       如果不設定 <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> 政策，則這項政策不會有任何作用。</translation>
+<translation id="341285788698114069">這項政策可控管音訊程序在 Windows 系統上的優先順序。
+      如果啟用這項政策，系統將以高於一般優先順序的次序執行音訊程序。
+      如果停用這項政策，系統將以一般優先順序執行音訊程序。
+      如果不設定這項政策，系統會使用音訊程序的預設設定。
+      這項政策是暫時性措施，目的是讓企業能夠以較高優先順序執行音訊，以解決音訊擷取方面的特定效能問題。
+      這項政策將在日後移除。</translation>
 <translation id="3412937883532015092">如果將這項政策設為數值，<ph name="PRODUCT_NAME" /> 在開啟替代瀏覽器前會先顯示一則等待訊息，並依據該數值 (以毫秒為單位) 來設定這則訊息要顯示多久的時間。
 
       如果未設定這項政策或設為 0，當使用者前往指定網址時，系統會立即在替代瀏覽器中開啟該網址。</translation>
@@ -2529,6 +2536,7 @@
 <translation id="4534500438517478692">Android 限制名稱：</translation>
 <translation id="4541530620466526913">裝置本機帳戶</translation>
 <translation id="4543502256674577024">裝置更新設定</translation>
+<translation id="454585952814397564">以一般優先順序執行音訊程序</translation>
 <translation id="4548555985107150628">這項政策已遭到淘汰。請使用 <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> 控管是否要提供 Flash 外掛程式，並使用 <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> 指定是否要使用整合式 PDF 檢視器開啟 PDF 檔案。
 
       這會指定在 <ph name="PRODUCT_NAME" /> 中要啟用哪些外掛程式，並禁止使用者變更這項設定。
@@ -3143,6 +3151,7 @@
           如果不設定這項政策，系統在預設狀態下會啟用剪貼簿共用功能。
 
           管理員可以自行選擇在任何平台上設定政策。建議作法是在所有平台上將這項政策設為相同的值。</translation>
+<translation id="5389708774452952523">允許音訊程序在 Windows 系統上以高於一般優先順序的次序執行</translation>
 <translation id="5389798680516458665">你可以透過這項政策設定網址模式清單，用於指定可顯示圖片的網址。
 
       如果未設定這項政策，系統會針對所有網站套用 <ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" /> 政策 (如果已設定)。否則系統會套用使用者的個人設定。
@@ -4586,6 +4595,7 @@
 
       系統不會再自動搜尋並安裝缺少的外掛程式。</translation>
 <translation id="7267809745244694722">媒體鍵預設為功能鍵</translation>
+<translation id="7269263983506766969">以預設優先順序執行音訊程序</translation>
 <translation id="7270001383428188269">這個用戶端憑證的 ID。</translation>
 <translation id="7271085005502526897">第一次執行時從預設瀏覽器匯入首頁</translation>
 <translation id="7271181393214180342">如果將這項政策設為啟用，HTTP 驗證會遵循 KDC 政策的核准結果。也就是說，當 KDC 為服務票證設定 <ph name="OK_AS_DELEGATE" /> 時，<ph name="PRODUCT_NAME" /> 會委派使用者憑證給受到存取的服務。請參閱 RFC 5896，網址為 https://tools.ietf.org/html/rfc5896.html。<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> 也應該允許這項服務。
