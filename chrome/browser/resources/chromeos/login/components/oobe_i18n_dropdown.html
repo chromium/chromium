@@ -6,12 +6,13 @@
   <template>
     <style include="md-select">
       :host {
-        font-size: 13px;
+        font-size: var(--oobe-select-font-size);
+        line-height: var(--oobe-select-line-height);
         --md-select-width: 240px;
       }
 
       select {
-        height: 32px;
+        height: var(--oobe-select-height);
       }
     </style>
     <select id="select" aria-label$="[[labelForAria]]" class="md-select" >

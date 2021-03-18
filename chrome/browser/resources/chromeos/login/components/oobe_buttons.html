@@ -64,7 +64,8 @@
   <template>
     <style include="cr-shared-style oobe-common">
       cr-button {
-        border-color: var(--google-grey-300);
+        --border-color: var(--google-grey-300);
+        --cr-button-height: var(--oobe-button-height);
         border-radius: var(--oobe-button-radius);
         margin: 0 4px;
       }
@@ -123,7 +124,8 @@
   <template>
     <style include="cr-icons cr-shared-style oobe-common">
       cr-button {
-        border-color: var(--oobe-button-border-color);
+        --border-color: var(--oobe-button-border-color);
+        --cr-button-height: var(--oobe-button-height);
         border-radius: var(--oobe-button-radius);
         margin: 0 4px;
         padding-inline-end: var(--oobe-back-button-padding-inline-end);
@@ -147,7 +149,7 @@
     </style>
     <cr-button id="button" on-click="onClick_" disabled="[[disabled]]"
         aria-label$="[[labelForAria_]]">
-      <div class="flex horizontal layout start center">
+      <div class="flex horizontal layout center-justified center">
         <hd-iron-icon
             icon1x="oobe-buttons-20:arrow-forward"
             icon2x="oobe-buttons-40:arrow-forward">
@@ -164,7 +166,8 @@
   <template>
     <style include="cr-icons cr-shared-style oobe-common">
       cr-button {
-        border-color: var(--oobe-button-border-color);
+        --border-color: var(--oobe-button-border-color);
+        --cr-button-height: var(--oobe-button-height);
         border-radius: var(--oobe-button-radius);
         margin: 0 4px;
         padding-inline-end: var(--oobe-next-button-padding-inline-end);
@@ -188,7 +191,7 @@
     </style>
     <cr-button id="button" on-click="onClick_" disabled="[[disabled]]"
         aria-label$="[[labelForAria_]]" class="action-button">
-      <div class="flex horizontal layout start center">
+      <div class="flex horizontal layout center-justified center">
         <slot name="text">
           <div class="fallback">[[i18nDynamic(locale, textKey)]]</div>
         </slot>
@@ -229,7 +232,8 @@
   <template>
     <style include="cr-icons cr-shared-style oobe-common">
       cr-button {
-        border-color: var(--oobe-button-border-color);
+        --border-color: var(--oobe-button-border-color);
+        --cr-button-height: var(--oobe-button-height);
         border-radius: var(--oobe-button-radius);
         margin: 0 4px;
       }
