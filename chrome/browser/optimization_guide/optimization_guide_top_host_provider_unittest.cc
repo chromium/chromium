@@ -191,30 +191,49 @@ class OptimizationGuideTopHostProviderTest
   PrefService* pref_service_;
 };
 
-TEST_F(OptimizationGuideTopHostProviderTest, CreateIfAllowedNonDataSaverUser) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      {optimization_guide::features::kRemoteOptimizationGuideFetching});
+class OptimizationGuideTopHostProviderRemoteOptimizationEnabledTest
+    : public OptimizationGuideTopHostProviderTest {
+ public:
+  OptimizationGuideTopHostProviderRemoteOptimizationEnabledTest() {
+    // This needs to be run before any tasks run on other threads that check if
+    // a feature is enabled, to avoid tsan error flakes.
+    scoped_feature_list_.InitAndEnableFeature(
+        {optimization_guide::features::kRemoteOptimizationGuideFetching});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(OptimizationGuideTopHostProviderRemoteOptimizationEnabledTest,
+       CreateIfAllowedNonDataSaverUser) {
   SetDataSaverEnabled(false);
   ASSERT_FALSE(OptimizationGuideTopHostProvider::CreateIfAllowed(profile()));
 }
 
-TEST_F(OptimizationGuideTopHostProviderTest, CreateIfAllowedDataSaverUser) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      {optimization_guide::features::kRemoteOptimizationGuideFetching});
-
+TEST_F(OptimizationGuideTopHostProviderRemoteOptimizationEnabledTest,
+       CreateIfAllowedDataSaverUser) {
   SetDataSaverEnabled(true);
 
   ASSERT_TRUE(OptimizationGuideTopHostProvider::CreateIfAllowed(profile()));
 }
 
-TEST_F(OptimizationGuideTopHostProviderTest,
-       CreateIfAllowedDataSaverUserButHintsFetchingNotEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {}, {optimization_guide::features::kRemoteOptimizationGuideFetching});
+class OptimizationGuideTopHostProviderRemoteOptimizationDisabledTest
+    : public OptimizationGuideTopHostProviderTest {
+ public:
+  OptimizationGuideTopHostProviderRemoteOptimizationDisabledTest() {
+    // This needs to be run before any tasks run on other threads that check if
+    // a feature is enabled, to avoid tsan error flakes.
+    scoped_feature_list_.InitAndDisableFeature(
+        {optimization_guide::features::kRemoteOptimizationGuideFetching});
+  }
 
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(OptimizationGuideTopHostProviderRemoteOptimizationDisabledTest,
+       CreateIfAllowedDataSaverUserButHintsFetchingNotEnabled) {
   SetDataSaverEnabled(true);
 
   ASSERT_FALSE(OptimizationGuideTopHostProvider::CreateIfAllowed(profile()));
