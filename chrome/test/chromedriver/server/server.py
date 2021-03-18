@@ -8,7 +8,8 @@ import socket
 import subprocess
 import threading
 import time
-import urllib2
+
+from six.moves import urllib
 
 def terminate_process(proc):
   """Terminates the process.
@@ -21,7 +22,7 @@ def terminate_process(proc):
   try:
     proc.terminate()
   except OSError as ex:
-    print 'Error while killing a process: %s' % ex
+    print('Error while killing a process: %s' % ex)
 
 
 class Server(object):
@@ -79,10 +80,10 @@ class Server(object):
       if time.time() > max_time:
         self._process.poll()
         if self._process.returncode is None:
-          print 'ChromeDriver process still running, but not responding'
+          print( 'ChromeDriver process still running, but not responding')
         else:
-          print ('ChromeDriver process exited with return code %d'
-                 % self._process.returncode)
+          print('ChromeDriver process exited with return code %d'
+                % self._process.returncode)
         self._process.terminate()
         raise RuntimeError('ChromeDriver server did not start')
       time.sleep(0.1)
@@ -112,9 +113,9 @@ class Server(object):
   def IsRunning(self):
     """Returns whether the server is up and running."""
     try:
-      urllib2.urlopen(self.GetUrl() + '/status')
+      urllib.request.urlopen(self.GetUrl() + '/status')
       return True
-    except urllib2.URLError:
+    except urllib.error.URLError:
       return False
 
   def Kill(self):
@@ -123,7 +124,7 @@ class Server(object):
       return
 
     try:
-      urllib2.urlopen(self.GetUrl() + '/shutdown', timeout=10).close()
+      urllib.request.urlopen(self.GetUrl() + '/shutdown', timeout=10).close()
     except:
       self._process.terminate()
     timer = threading.Timer(5, terminate_process, [self._process])

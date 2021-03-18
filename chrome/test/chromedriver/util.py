@@ -6,7 +6,6 @@
 
 import atexit
 import base64
-import httplib
 import json
 import os
 import platform
@@ -19,8 +18,9 @@ import subprocess
 import sys
 import tempfile
 import time
-import urlparse
 import zipfile
+
+from six.moves import urllib, http_client
 
 import chrome_paths
 
@@ -200,12 +200,12 @@ def DoesUrlExist(url):
   Returns:
     True if url exists, otherwise False.
   """
-  parsed = urlparse.urlparse(url)
+  parsed = urllib.parse.urlparse(url)
   try:
-    conn = httplib.HTTPConnection(parsed.netloc)
+    conn = http_client.HTTPConnection(parsed.netloc)
     conn.request('HEAD', parsed.path)
     response = conn.getresponse()
-  except httplib.HTTPException:
+  except http_client.HTTPException:
     return False
   finally:
     conn.close()
@@ -216,22 +216,22 @@ def DoesUrlExist(url):
 
 
 def MarkBuildStepStart(name):
-  print '@@@BUILD_STEP %s@@@' % name
+  print('@@@BUILD_STEP %s@@@' % name)
   sys.stdout.flush()
 
 
 def MarkBuildStepError():
-  print '@@@STEP_FAILURE@@@'
+  print('@@@STEP_FAILURE@@@')
   sys.stdout.flush()
 
 
 def AddBuildStepText(text):
-  print '@@@STEP_TEXT@%s@@@' % text
+  print('@@@STEP_TEXT@%s@@@' % text)
   sys.stdout.flush()
 
 
 def PrintAndFlush(text):
-  print text
+  print(text)
   sys.stdout.flush()
 
 
@@ -242,7 +242,7 @@ def AddLink(label, url):
     label: A string with the name of the label.
     url: A string of the URL.
   """
-  print '@@@STEP_LINK@%s@%s@@@' % (label, url)
+  print('@@@STEP_LINK@%s@%s@@@' % (label, url))
 
 
 def FindProbableFreePorts():
