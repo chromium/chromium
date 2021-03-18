@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/accessibility/accessibility_confirmation_dialog.h"
+#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/shell.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -12,6 +15,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/test/result_catcher.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ui_base_features.h"
 
@@ -102,6 +106,69 @@ IN_PROC_BROWSER_TEST_F(AccessibilityPrivateApiTest,
   ASSERT_TRUE(RunExtensionSubtest("accessibility_private/",
                                   "is_feature_enabled_feature_disabled.html"))
       << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityPrivateApiTest, AcceptConfirmationDialog) {
+  ASSERT_TRUE(RunExtensionSubtest("accessibility_private/",
+                                  "accept_confirmation_dialog.html"))
+      << message_;
+
+  // The test has requested to open the confirmation dialog. Check that
+  // it was created, then confirm it.
+  ash::AccessibilityConfirmationDialog* dialog_ =
+      ash::Shell::Get()
+          ->accessibility_controller()
+          ->GetConfirmationDialogForTest();
+  ASSERT_NE(dialog_, nullptr);
+
+  EXPECT_EQ(dialog_->GetWindowTitle(), u"Confirm me! 🐶");
+
+  // Accept the dialog and wait for the JS test to get the confirmation.
+  ResultCatcher catcher;
+  dialog_->Accept();
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityPrivateApiTest, CancelConfirmationDialog) {
+  ASSERT_TRUE(RunExtensionSubtest("accessibility_private/",
+                                  "cancel_confirmation_dialog.html"))
+      << message_;
+
+  // The test has requested to open the confirmation dialog. Check that
+  // it was created, then cancel it.
+  ash::AccessibilityConfirmationDialog* dialog_ =
+      ash::Shell::Get()
+          ->accessibility_controller()
+          ->GetConfirmationDialogForTest();
+  ASSERT_NE(dialog_, nullptr);
+
+  EXPECT_EQ(dialog_->GetWindowTitle(), u"Cancel me!");
+
+  // Cancel the dialog and wait for the JS test to get the callback.
+  ResultCatcher catcher;
+  dialog_->Cancel();
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityPrivateApiTest, CloseConfirmationDialog) {
+  ASSERT_TRUE(RunExtensionSubtest("accessibility_private/",
+                                  "cancel_confirmation_dialog.html"))
+      << message_;
+
+  // The test has requested to open the confirmation dialog. Check that
+  // it was created, then close it.
+  ash::AccessibilityConfirmationDialog* dialog_ =
+      ash::Shell::Get()
+          ->accessibility_controller()
+          ->GetConfirmationDialogForTest();
+  ASSERT_TRUE(dialog_ != nullptr);
+
+  EXPECT_EQ(dialog_->GetWindowTitle(), u"Cancel me!");
+
+  // Close the dialog and wait for the JS test to get the callback.
+  ResultCatcher catcher;
+  dialog_->Close();
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
 class AccessibilityPrivateApiFeatureEnabledTest : public ExtensionApiTest {

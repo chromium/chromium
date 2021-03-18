@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -657,4 +658,33 @@ AccessibilityPrivateUpdateSelectToSpeakPanelFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-#endif  // defined (OS_CHROMEOS)
+ExtensionFunction::ResponseAction
+AccessibilityPrivateShowConfirmationDialogFunction::Run() {
+  std::unique_ptr<accessibility_private::ShowConfirmationDialog::Params>
+      params =
+          accessibility_private::ShowConfirmationDialog::Params::Create(*args_);
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  std::u16string title = base::UTF8ToUTF16(params->title);
+  std::u16string description = base::UTF8ToUTF16(params->description);
+  ash::AccessibilityController::Get()->ShowConfirmationDialog(
+      title, description,
+      base::BindOnce(
+          &AccessibilityPrivateShowConfirmationDialogFunction::OnDialogResult,
+          base::RetainedRef(this), /* confirmed */ true),
+      base::BindOnce(
+          &AccessibilityPrivateShowConfirmationDialogFunction::OnDialogResult,
+          base::RetainedRef(this), /* not confirmed */ false),
+      base::BindOnce(
+          &AccessibilityPrivateShowConfirmationDialogFunction::OnDialogResult,
+          base::RetainedRef(this), /* not confirmed */ false));
+
+  return RespondLater();
+}
+
+void AccessibilityPrivateShowConfirmationDialogFunction::OnDialogResult(
+    bool confirmed) {
+  Respond(OneArgument(base::Value(confirmed)));
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -6,10 +6,10 @@
 
 #include <utility>
 
-#include "ash/accelerators/accelerator_confirmation_dialog.h"
 #include "ash/accelerators/accelerator_history_impl.h"
 #include "ash/accelerators/accelerator_table.h"
 #include "ash/accelerators/pre_target_accelerator_handler.h"
+#include "ash/accessibility/accessibility_confirmation_dialog.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/app_list/app_list_metrics.h"

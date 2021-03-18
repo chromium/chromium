@@ -1929,6 +1929,28 @@ void AccessibilityControllerImpl::EnableChromeVoxVolumeSlideGesture() {
   enable_chromevox_volume_slide_gesture_ = true;
 }
 
+void AccessibilityControllerImpl::ShowConfirmationDialog(
+    const std::u16string& title,
+    const std::u16string& description,
+    base::OnceClosure on_accept_callback,
+    base::OnceClosure on_cancel_callback,
+    base::OnceClosure on_close_callback) {
+  if (confirmation_dialog_) {
+    // If a dialog is already being shown we do not show a new one.
+    // Instead, run the on_close_callback on the new dialog to indicate
+    // it was closed without the user taking any action.
+    // This is consistent with AcceleratorController.
+    std::move(on_close_callback).Run();
+    return;
+  }
+  auto* dialog = new AccessibilityConfirmationDialog(
+      title, description, std::move(on_accept_callback),
+      std::move(on_cancel_callback), std::move(on_close_callback));
+  // Save the dialog so it doesn't go out of scope before it is
+  // used and closed.
+  confirmation_dialog_ = dialog->GetWeakPtr();
+}
+
 void AccessibilityControllerImpl::UpdateFeatureFromPref(FeatureType feature) {
   bool enabled = features_[feature]->enabled();
 

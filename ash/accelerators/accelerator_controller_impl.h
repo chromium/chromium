@@ -12,10 +12,10 @@
 #include <set>
 #include <vector>
 
-#include "ash/accelerators/accelerator_confirmation_dialog.h"
 #include "ash/accelerators/accelerator_history_impl.h"
 #include "ash/accelerators/accelerator_table.h"
 #include "ash/accelerators/exit_warning_handler.h"
+#include "ash/accessibility/accessibility_confirmation_dialog.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accelerators.h"
 #include "base/compiler_specific.h"
@@ -112,7 +112,7 @@ class ASH_EXPORT AcceleratorControllerImpl : public ui::AcceleratorTarget,
         AcceleratorAction action);
 
     // Accessor to accelerator confirmation dialog.
-    AcceleratorConfirmationDialog* GetConfirmationDialog();
+    AccessibilityConfirmationDialog* GetConfirmationDialog();
 
     AcceleratorControllerImpl::SideVolumeButtonLocation
     side_volume_button_location() {
@@ -334,8 +334,8 @@ class ASH_EXPORT AcceleratorControllerImpl : public ui::AcceleratorTarget,
   // Actions that can be performed without closing the menu (if one is present).
   std::set<int> actions_keeping_menu_open_;
 
-  // Holds a weak pointer to the accelerator confirmation dialog.
-  base::WeakPtr<AcceleratorConfirmationDialog> confirmation_dialog_;
+  // Holds a weak pointer to the accessibility confirmation dialog.
+  base::WeakPtr<AccessibilityConfirmationDialog> confirmation_dialog_;
 
   // Path of the file that contains the side volume button location info. It
   // should always be kSideVolumeButtonLocationFilePath. But it is allowed to be

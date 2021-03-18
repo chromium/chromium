@@ -596,6 +596,36 @@
           }
         ],
         "platforms": ["chromeos"]
+      },
+      {
+        "name": "showConfirmationDialog",
+        "type": "function",
+        "description": "Shows a confirmation dialog.",
+        "parameters": [
+          {
+            "name": "title",
+            "type": "string",
+            "description": "The title of the confirmation dialog."
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "description": "The description to show within the confirmation dialog."
+          },
+          {
+            "name": "callback",
+            "type": "function",
+            "description": "Called when the dialog is confirmed or cancelled.",
+            "parameters": [
+              {
+                "type": "boolean",
+                "name": "confirmed",
+                "description": "True if the dialog was confirmed, false if it was canceled or closed."
+              }
+            ]
+          }
+        ],
+        "platforms": ["chromeos"]
       }
     ],
     "events": [

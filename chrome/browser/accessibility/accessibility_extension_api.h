@@ -215,6 +215,17 @@ class AccessibilityPrivateUpdateSelectToSpeakPanelFunction
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.updateSelectToSpeakPanel",
                              ACCESSIBILITY_PRIVATE_UPDATESELECTTOSPEAKPANEL)
 };
+
+// API function that shows a confirmation dialog, with callbacks for
+// confirm/cancel.
+class AccessibilityPrivateShowConfirmationDialogFunction
+    : public ExtensionFunction {
+  ~AccessibilityPrivateShowConfirmationDialogFunction() override = default;
+  ResponseAction Run() override;
+  void OnDialogResult(bool confirmed);
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.showConfirmationDialog",
+                             ACCESSIBILITY_PRIVATE_SHOWCONFIRMATIONDIALOG)
+};
 #endif  // defined (OS_CHROMEOS)
 
 #endif  // CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EXTENSION_API_H_

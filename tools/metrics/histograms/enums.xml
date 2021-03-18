@@ -26826,6 +26826,7 @@ Called by update_extension_histograms.py.-->
       label="LANGUAGESETTINGSPRIVATE_GETALWAYSTRANSLATELANGUAGES"/>
   <int value="1545"
       label="LANGUAGESETTINGSPRIVATE_SETLANGUAGEALWAYSTRANSLATESTATE"/>
+  <int value="1546" label="ACCESSIBILITY_PRIVATE_SHOWCONFIRMATIONDIALOG"/>
 </enum>
 
 <enum name="ExtensionIconState">

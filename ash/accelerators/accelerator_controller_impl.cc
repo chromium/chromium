@@ -10,8 +10,8 @@
 #include <utility>
 
 #include "ash/accelerators/accelerator_commands.h"
-#include "ash/accelerators/accelerator_confirmation_dialog.h"
 #include "ash/accelerators/debug_commands.h"
+#include "ash/accessibility/accessibility_confirmation_dialog.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/ambient/ambient_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
@@ -1666,7 +1666,7 @@ AcceleratorControllerImpl::TestApi::GetDeprecatedAcceleratorData(
   return it->second;
 }
 
-AcceleratorConfirmationDialog*
+AccessibilityConfirmationDialog*
 AcceleratorControllerImpl::TestApi::GetConfirmationDialog() {
   return controller_->confirmation_dialog_.get();
 }
@@ -2578,9 +2578,10 @@ void AcceleratorControllerImpl::MaybeShowConfirmationDialog(
   if (confirmation_dialog_)
     return;
 
-  auto* dialog = new AcceleratorConfirmationDialog(
-      window_title_text_id, dialog_text_id, std::move(on_accept_callback),
-      std::move(on_cancel_callback));
+  auto* dialog = new AccessibilityConfirmationDialog(
+      l10n_util::GetStringUTF16(window_title_text_id),
+      l10n_util::GetStringUTF16(dialog_text_id), std::move(on_accept_callback),
+      std::move(on_cancel_callback), /* on close */ base::DoNothing());
   confirmation_dialog_ = dialog->GetWeakPtr();
 }
 

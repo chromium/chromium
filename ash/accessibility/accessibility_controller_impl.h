@@ -40,6 +40,7 @@ struct VectorIcon;
 
 namespace ash {
 
+class AccessibilityConfirmationDialog;
 class AccessibilityEventRewriter;
 class AccessibilityHighlightController;
 class AccessibilityObserver;
@@ -390,6 +391,11 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   void DisablePolicyRecommendationRestorerForTesting() override;
   void SuspendSwitchAccessKeyHandling(bool suspend) override;
   void EnableChromeVoxVolumeSlideGesture() override;
+  void ShowConfirmationDialog(const std::u16string& title,
+                              const std::u16string& description,
+                              base::OnceClosure on_accept_callback,
+                              base::OnceClosure on_cancel_callback,
+                              base::OnceClosure on_close_callback) override;
 
   // SessionObserver:
   void OnSigninScreenPrefServiceInitialized(PrefService* prefs) override;
@@ -404,6 +410,9 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   SelectToSpeakMenuBubbleController*
   GetSelectToSpeakMenuBubbleControllerForTest() {
     return select_to_speak_bubble_controller_.get();
+  }
+  AccessibilityConfirmationDialog* GetConfirmationDialogForTest() {
+    return confirmation_dialog_.get();
   }
 
   bool enable_chromevox_volume_slide_gesture() {
@@ -513,6 +522,9 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   // This has to be the first one to be destroyed so we don't get updates about
   // any prefs during destruction.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
+  // The current AccessibilityConfirmationDialog, if one exists.
+  base::WeakPtr<AccessibilityConfirmationDialog> confirmation_dialog_;
 
   base::WeakPtrFactory<AccessibilityControllerImpl> weak_ptr_factory_{this};
 

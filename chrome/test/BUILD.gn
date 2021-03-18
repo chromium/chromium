@@ -2191,7 +2191,6 @@ if (!is_android) {
 
       if (is_chromeos_ash) {
         sources += [
-          "../browser/accessibility/accessibility_extension_api_browsertest.cc",
           "../browser/apps/platform_apps/api/arc_apps_private/arc_apps_private_apitest.cc",
           "../browser/extensions/api/bluetooth_low_energy/bluetooth_low_energy_apitest_chromeos.cc",
           "../browser/extensions/api/crash_report_private/crash_report_private_apitest.cc",
@@ -2440,6 +2439,7 @@ if (!is_android) {
         "../browser/apps/platform_apps/app_window_interactive_uitest_base.cc",
         "../browser/apps/platform_apps/app_window_interactive_uitest_base.h",
         "../browser/ash/accessibility/accessibility_common_browsertest.cc",
+        "../browser/ash/accessibility/accessibility_extension_api_browsertest.cc",
         "../browser/ash/accessibility/accessibility_manager_browsertest.cc",
         "../browser/ash/accessibility/accessibility_test_utils.cc",
         "../browser/ash/accessibility/accessibility_test_utils.h",

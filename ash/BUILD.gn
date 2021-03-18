@@ -110,8 +110,6 @@ component("ash") {
   sources = [
     "accelerators/accelerator_commands.cc",
     "accelerators/accelerator_commands.h",
-    "accelerators/accelerator_confirmation_dialog.cc",
-    "accelerators/accelerator_confirmation_dialog.h",
     "accelerators/accelerator_controller_impl.cc",
     "accelerators/accelerator_controller_impl.h",
     "accelerators/accelerator_history_impl.cc",
@@ -140,6 +138,8 @@ component("ash") {
     "accelerometer/accelerometer_reader.h",
     "accelerometer/accelerometer_types.cc",
     "accelerometer/accelerometer_types.h",
+    "accessibility/accessibility_confirmation_dialog.cc",
+    "accessibility/accessibility_confirmation_dialog.h",
     "accessibility/accessibility_controller_impl.cc",
     "accessibility/accessibility_cursor_ring_layer.cc",
     "accessibility/accessibility_cursor_ring_layer.h",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/accelerators/accelerator_confirmation_dialog.h"
+#include "ash/accessibility/accessibility_confirmation_dialog.h"
 
 #include <memory>
 #include <utility>
@@ -22,24 +22,25 @@
 
 namespace ash {
 
-AcceleratorConfirmationDialog::AcceleratorConfirmationDialog(
-    int window_title_text_id,
-    int dialog_text_id,
+AccessibilityConfirmationDialog::AccessibilityConfirmationDialog(
+    const std::u16string& window_title_text,
+    const std::u16string& dialog_text,
     base::OnceClosure on_accept_callback,
-    base::OnceClosure on_cancel_callback) {
+    base::OnceClosure on_cancel_callback,
+    base::OnceClosure on_close_callback) {
   SetModalType(ui::MODAL_TYPE_SYSTEM);
-  SetTitle(l10n_util::GetStringUTF16(window_title_text_id));
+  SetTitle(window_title_text);
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_ASH_CONTINUE_BUTTON));
   SetAcceptCallback(std::move(on_accept_callback));
   SetCancelCallback(std::move(on_cancel_callback));
+  SetCloseCallback(std::move(on_close_callback));
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetBorder(views::CreateEmptyBorder(
       views::LayoutProvider::Get()->GetDialogInsetsForContentType(
           views::TEXT, views::TEXT)));
-  AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(dialog_text_id)));
+  AddChildView(std::make_unique<views::Label>(dialog_text));
 
   // Parent the dialog widget to the LockSystemModalContainer to ensure that it
   // will get displayed on respective lock/signin or OOBE screen.
@@ -58,10 +59,10 @@ AcceleratorConfirmationDialog::AcceleratorConfirmationDialog(
   widget->Show();
 }
 
-AcceleratorConfirmationDialog::~AcceleratorConfirmationDialog() = default;
+AccessibilityConfirmationDialog::~AccessibilityConfirmationDialog() = default;
 
-base::WeakPtr<AcceleratorConfirmationDialog>
-AcceleratorConfirmationDialog::GetWeakPtr() {
+base::WeakPtr<AccessibilityConfirmationDialog>
+AccessibilityConfirmationDialog::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 

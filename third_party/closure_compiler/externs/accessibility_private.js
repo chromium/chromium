@@ -458,6 +458,16 @@ chrome.accessibilityPrivate.isFeatureEnabled = function(feature, callback) {};
 chrome.accessibilityPrivate.updateSelectToSpeakPanel = function(show, anchor, isPaused, speed) {};
 
 /**
+ * Shows a confirmation dialog.
+ * @param {string} title The title of the confirmation dialog.
+ * @param {string} description The description to show within the confirmation
+ *     dialog.
+ * @param {function(boolean): void} callback Called when the dialog is confirmed
+ *     or cancelled.
+ */
+chrome.accessibilityPrivate.showConfirmationDialog = function(title, description, callback) {};
+
+/**
  * Fired whenever ChromeVox should output introduction.
  * @type {!ChromeEvent}
  */
