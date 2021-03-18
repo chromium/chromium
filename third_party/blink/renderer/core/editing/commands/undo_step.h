@@ -46,12 +46,15 @@ class UndoStep final : public GarbageCollected<UndoStep> {
            const SelectionForUndoStep& ending_selection,
            InputEvent::InputType);
 
+  // Returns true if associated root editable elements are connected.
+  bool IsConnected() const;
   void Unapply();
   void Reapply();
   InputEvent::InputType GetInputType() const;
   void Append(SimpleEditCommand*);
   void Append(UndoStep*);
 
+  Document& GetDocument() const { return *document_; }
   const SelectionForUndoStep& StartingSelection() const {
     return starting_selection_;
   }

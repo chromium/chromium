@@ -680,6 +680,15 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/core/editing/commands/undo_stack.cc',
+            'third_party/blink/renderer/core/editing/commands/undo_stack.h'
+        ],
+        'allowed': [
+            'base::MemoryPressureListener',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/core/fetch/data_consumer_handle_test_util.cc'
         ],
         'allowed': [
