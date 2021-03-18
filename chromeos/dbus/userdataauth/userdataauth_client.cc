@@ -23,6 +23,10 @@
 namespace chromeos {
 namespace {
 
+// This suffix is appended to cryptohome_id to get hash in stub implementation:
+// stub_hash = "[cryptohome_id]-hash";
+constexpr char kUserIdStubHashSuffix[] = "-hash";
+
 // The default timeout for all userdataauth method call.
 // Note that it is known that cryptohomed could be slow to respond to calls
 // certain conditions, especially Mount(). D-Bus call blocking for as long as 2
@@ -240,6 +244,12 @@ void UserDataAuthClient::Shutdown() {
 // static
 UserDataAuthClient* UserDataAuthClient::Get() {
   return g_instance;
+}
+
+// static
+std::string UserDataAuthClient::GetStubSanitizedUsername(
+    const cryptohome::AccountIdentifier& id) {
+  return id.account_id() + kUserIdStubHashSuffix;
 }
 
 }  // namespace chromeos

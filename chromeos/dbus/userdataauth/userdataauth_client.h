@@ -9,6 +9,7 @@
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 
 namespace dbus {
@@ -53,6 +54,10 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
 
   // Returns the global instance which may be null if not initialized.
   static UserDataAuthClient* Get();
+
+  // Returns the sanitized |username| that the stub implementation would return.
+  static std::string GetStubSanitizedUsername(
+      const cryptohome::AccountIdentifier& id);
 
   // Adds an observer.
   virtual void AddObserver(Observer* observer) = 0;
