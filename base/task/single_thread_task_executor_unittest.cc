@@ -1261,8 +1261,9 @@ TEST_P(SingleThreadTaskExecutorTypedTest, RunLoopQuitOrderAfter) {
 // On Linux, the pipe buffer size is 64KiB by default. The bug caused one
 // byte accumulated in the pipe per two posts, so we should repeat 128K
 // times to reproduce the bug.
-#if defined(OS_FUCHSIA)
+#if defined(OS_FUCHSIA) || defined(OS_CHROMEOS)
 // TODO(crbug.com/810077): This is flaky on Fuchsia.
+// TODO(crbug.com/1188497): Also flaky on Chrome OS.
 #define MAYBE_RecursivePosts DISABLED_RecursivePosts
 #else
 #define MAYBE_RecursivePosts RecursivePosts
