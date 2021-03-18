@@ -3207,6 +3207,11 @@ void RenderFrameHostImpl::DidCommitBackForwardCacheNavigation(
 void RenderFrameHostImpl::DidCommitSameDocumentNavigation(
     mojom::DidCommitProvisionalLoadParamsPtr params,
     mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params) {
+  TRACE_EVENT2("navigation",
+               "RenderFrameHostImpl::DidCommitSameDocumentNavigation",
+               "frame_tree_node", frame_tree_node_->frame_tree_node_id(), "url",
+               params->url.possibly_invalid_spec());
+
   ScopedActiveURL scoped_active_url(params->url,
                                     frame_tree()->root()->current_origin());
   ScopedCommitStateResetter commit_state_resetter(this);
@@ -3219,16 +3224,18 @@ void RenderFrameHostImpl::DidCommitSameDocumentNavigation(
   // See https://crbug.com/805705 and https://crbug.com/930132.
   // TODO(ahemery): Investigate to see if this can be removed when the
   // NavigationClient interface is implemented.
+  //
   // If this is called when the frame is in BackForwardCache, evict the frame
   // to avoid ignoring the renderer-initiated navigation, which the frame
   // might not expect.
-  if (IsInactiveAndDisallowActivation())
+  //
+  // If this is called when the frame is in Prerendering, do not cancel
+  // Prerendering as prerendered frames can be navigated, including
+  // same-document navigations like push/replaceState.
+  if (lifecycle_state() != LifecycleState::kPrerendering &&
+      IsInactiveAndDisallowActivation()) {
     return;
-
-  TRACE_EVENT2("navigation",
-               "RenderFrameHostImpl::DidCommitSameDocumentNavigation",
-               "frame_tree_node", frame_tree_node_->frame_tree_node_id(), "url",
-               params->url.possibly_invalid_spec());
+  }
 
   // Check if the navigation matches a stored same-document NavigationRequest.
   // In that case it is browser-initiated.
