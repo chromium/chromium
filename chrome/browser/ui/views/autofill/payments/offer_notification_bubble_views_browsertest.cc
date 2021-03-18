@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views_test_base.h"
 
+#include "build/build_config.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,7 +24,14 @@ class OfferNotificationBubbleViewsBrowserTest
       const OfferNotificationBubbleViewsBrowserTest&) = delete;
 };
 
-IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest, Navigation) {
+// Flaky on Linux. crbug.com/1182526
+#if defined(OS_LINUX)
+#define MAYBE_Navigation DISABLED_Navigation
+#else
+#define MAYBE_Navigation Navigation
+#endif
+IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
+                       MAYBE_Navigation) {
   static const struct {
     std::string url_navigated_to;
     bool bubble_should_be_visible;
