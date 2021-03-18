@@ -1414,7 +1414,7 @@ void ReadableStream::InitInternal(ScriptState* script_state,
     }
 
     // 6. If typeString is "bytes",
-    if (type_string == V8AtomicString(isolate, "bytes")) {
+    if (type_string->StringEquals(V8AtomicString(isolate, "bytes"))) {
       UseCounter::Count(ExecutionContext::From(script_state),
                         WebFeature::kReadableStreamWithByteSource);
 
