@@ -1093,8 +1093,6 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
 
 // Tests for feature restrictions in prerendered pages =========================
 
-// - Tests for feature-specific code methodology restrictions ==================
-
 // Tests that window.open() in a prerendering page fails.
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, FeatureRestriction_WindowOpen) {
   // Navigate to an initial page.
@@ -1148,93 +1146,6 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
     client_urls.push_back(result.GetString());
   EXPECT_TRUE(base::Contains(client_urls, kInitialUrl));
   EXPECT_TRUE(base::Contains(client_urls, kPrerenderingUrl));
-}
-
-// Tests that same-origin prerendering pages have the access to Broadcast
-// Channel API.
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, GrantBroadcastChannel) {
-  const GURL kInitialUrl =
-      GetUrl("/prerender/restriction_broadcast_channel.html");
-  const GURL kPrerenderingUrl =
-      GetUrl("/prerender/restriction_broadcast_channel.html?prerendering");
-  const std::string initial_message =
-      "This is a message sent from the initial page";
-  const std::string prerender_message =
-      "This is a message sent from the prerendering page.";
-
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  // Make a same-origin prerendering page.
-  AddPrerender(kPrerenderingUrl);
-
-  // Send a message to the channel from the initial page.
-  EXPECT_TRUE(ExecJs(shell()->web_contents(),
-                     JsReplace("bc.postMessage($1);", initial_message)));
-
-  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
-  PrerenderHost* prerender_host =
-      registry.FindHostByUrlForTesting(kPrerenderingUrl);
-  RenderFrameHostImpl* prerendered_render_frame_host =
-      prerender_host->GetPrerenderedMainFrameHost();
-  ASSERT_TRUE(prerender_host);
-
-  // Check the prerendering page received the message sent by the initial page.
-  EXPECT_EQ(initial_message,
-            EvalJs(prerendered_render_frame_host, "messageReceived;"));
-
-  // Send a message to the channel from the prerendering page.
-  EXPECT_TRUE(ExecJs(prerendered_render_frame_host,
-                     JsReplace("bc.postMessage($1);", prerender_message)));
-
-  // Check the initial page received the message sent by the prerendering page.
-  EXPECT_EQ(prerender_message,
-            EvalJs(shell()->web_contents(), "messageReceived;"));
-
-  // Disconnect from the channel.
-  EXPECT_TRUE(ExecJs(shell()->web_contents(), "bc.close();"));
-  EXPECT_TRUE(ExecJs(prerendered_render_frame_host, "bc.close();"));
-}
-
-// - End: Tests for feature-specific code methodology restrictions =============
-
-// - Tests for Mojo capability control methodology restrictions ================
-
-// Tests that prerendering pages can access cookies.
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, CookieAccess) {
-  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
-  const GURL kPrerenderingUrl = GetUrl("/empty.html");
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  // Set a cookie to the origin.
-  const std::string initial_cookie = "initial_cookie=exist";
-  const std::string prerender_cookie = "prerender_cookie=exist";
-  EvalJsResult result =
-      EvalJs(shell()->web_contents(),
-             "document.cookie='" + initial_cookie + "; path=/'");
-  EXPECT_TRUE(result.error.empty()) << result.error;
-
-  // Make a prerendered page.
-  AddPrerender(kPrerenderingUrl);
-  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
-  PrerenderHost* prerender_host =
-      registry.FindHostByUrlForTesting(kPrerenderingUrl);
-  ASSERT_TRUE(prerender_host);
-  RenderFrameHostImpl* prerendered_render_frame_host =
-      prerender_host->GetPrerenderedMainFrameHost();
-
-  // Verify the prerendered page can read the cookie.
-  EXPECT_EQ(initial_cookie,
-            EvalJs(prerendered_render_frame_host, "document.cookie"));
-
-  // Verify the prerendered page can update cookies.
-  EvalJsResult prerender_result =
-      EvalJs(prerendered_render_frame_host,
-             "document.cookie='" + prerender_cookie + "; path=/'");
-  EXPECT_TRUE(prerender_result.error.empty()) << prerender_result.error;
-  // Read the updated cookie from the initial page.
-  EXPECT_EQ(initial_cookie + "; " + prerender_cookie,
-            EvalJs(shell()->web_contents(), "document.cookie"));
 }
 
 // Test that a cross-site navigation from prerendering browser context will
@@ -1352,89 +1263,6 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, RenderFrameHostLifecycleState) {
   // Both rfh_c and rfh_d lifecycle state's should be kActive after activation.
   EXPECT_EQ(LifecycleState::kActive, rfh_c->lifecycle_state());
   EXPECT_EQ(LifecycleState::kActive, rfh_d->lifecycle_state());
-}
-
-// Tests that prerendering pages can access local storage.
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LocalStorageAccess) {
-  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
-  const GURL kPrerenderingUrl = GetUrl("/empty.html");
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  // Add an item to local storage from the initial page.
-  const std::string key = "set_by";
-  const std::string initial_value = "initial";
-  const std::string prerender_value = "prerender";
-  EvalJsResult result = EvalJs(
-      shell()->web_contents(),
-      JsReplace("window.localStorage.setItem($1, $2)", key, initial_value));
-  EXPECT_TRUE(result.error.empty()) << result.error;
-
-  // Make a prerendered page.
-  AddPrerender(kPrerenderingUrl);
-  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
-  PrerenderHost* prerender_host =
-      registry.FindHostByUrlForTesting(kPrerenderingUrl);
-  ASSERT_TRUE(prerender_host);
-  RenderFrameHostImpl* prerendered_render_frame_host =
-      prerender_host->GetPrerenderedMainFrameHost();
-
-  // Verify the prerendered page can read the item that the initial page wrote.
-  EXPECT_EQ(initial_value,
-            EvalJs(prerendered_render_frame_host,
-                   JsReplace("window.localStorage.getItem($1)", key)));
-
-  // Verify the prerendered page can update local storage.
-  EvalJsResult prerender_result = EvalJs(
-      prerendered_render_frame_host,
-      JsReplace("window.localStorage.setItem($1, $2)", key, prerender_value));
-  EXPECT_TRUE(prerender_result.error.empty()) << prerender_result.error;
-  // Read the updated item value from the initial page.
-  EXPECT_EQ(prerender_value,
-            EvalJs(shell()->web_contents(),
-                   JsReplace("window.localStorage.getItem($1)", key)));
-}
-
-// Tests that prerendering pages can access Indexed Database.
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, IndexedDBAccess) {
-  const GURL kInitialUrl = GetUrl("/prerender/restriction_indexeddb.html");
-  const GURL kPrerenderingUrl =
-      GetUrl("/prerender/restriction_indexeddb.html?prerendering");
-
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  const std::string initial_key = "initial";
-  const std::string initial_value = initial_key + "_set";
-  const std::string prerender_key = "prerender";
-  const std::string prerender_value = prerender_key + "_set";
-
-  // Write an object to Indexed Database.
-  EXPECT_EQ(true,
-            EvalJs(shell()->web_contents(),
-                   JsReplace("addData($1, $2);", initial_key, initial_value)));
-
-  // Make a prerendered page.
-  AddPrerender(kPrerenderingUrl);
-  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
-  PrerenderHost* prerender_host =
-      registry.FindHostByUrlForTesting(kPrerenderingUrl);
-  ASSERT_TRUE(prerender_host);
-  RenderFrameHostImpl* prerender_render_frame_host =
-      prerender_host->GetPrerenderedMainFrameHost();
-
-  // Verify the prerendered page can read the object that the initial page
-  // wrote.
-  EXPECT_EQ(initial_value, EvalJs(prerender_render_frame_host,
-                                  JsReplace("readData($1);", initial_key)));
-
-  // The prerendered page writes another object to Indexed Database.
-  EXPECT_EQ(true, EvalJs(prerender_render_frame_host,
-                         JsReplace("addData($1, $2);", prerender_key,
-                                   prerender_value)));
-
-  // Read the added object from the initial page.
-  EXPECT_EQ(prerender_value, EvalJs(shell()->web_contents(),
-                                    JsReplace("readData($1);", prerender_key)));
 }
 
 // Tests that prerendering is gated behind CSP:prefetch-src
@@ -1680,7 +1508,6 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, ClipboardByExecCommandCancel) {
   EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 }
 
-// - End: Tests for Mojo capability control methodology restrictions ===========
 
 // Tests that prerendering pages cannot access the Async Clipboard API because
 // they are not focused.
