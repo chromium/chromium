@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/public/cpp/ash_pref_names.h"
+#include "build/build_config.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/accessibility/magnifier_type.h"
@@ -409,7 +410,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, MonoAudioEnabled) {
   EXPECT_TRUE(accessibility_manager->IsMonoAudioEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, AutoclickEnabled) {
+// Flaky on chromeos: crbug.com/1184225
+#if defined(OS_CHROMEOS)
+#define MAYBE_AutoclickEnabled DISABLED_AutoclickEnabled
+#else
+#define MAYBE_AutoclickEnabled AutoclickEnabled
+#endif
+IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, MAYBE_AutoclickEnabled) {
   // Verifies that the autoclick accessibility feature can be controlled through
   // policy.
   AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
