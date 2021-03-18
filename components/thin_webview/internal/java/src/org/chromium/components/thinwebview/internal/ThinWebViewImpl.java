@@ -31,6 +31,7 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
     private WindowAndroid mWindowAndroid;
     private long mNativeThinWebViewImpl;
     private WebContents mWebContents;
+    private WebContentsDelegateAndroid mWebContentsDelegate;
     private View mContentView;
 
     /**
@@ -67,10 +68,11 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
             @Nullable WebContentsDelegateAndroid delegate) {
         if (mNativeThinWebViewImpl == 0) return;
         mWebContents = webContents;
-
+        // Native code holds only a weak reference to this object.
+        mWebContentsDelegate = delegate;
         setContentView(contentView);
         ThinWebViewImplJni.get().setWebContents(
-                mNativeThinWebViewImpl, ThinWebViewImpl.this, mWebContents, delegate);
+                mNativeThinWebViewImpl, ThinWebViewImpl.this, mWebContents, mWebContentsDelegate);
         mWebContents.onShow();
     }
 
