@@ -38,6 +38,7 @@ class ChromeAppBannerManagerAndroid
   InstallableParams ParamsToPerformInstallableWebAppCheck() override;
   void OnDidPerformInstallableWebAppCheck(
       const InstallableData& result) override;
+  void ResetCurrentPageData() override;
   void MaybeShowAmbientBadge() override;
   void ShowAmbientBadge() override;
   void ShowBannerUi(WebappInstallSource install_source) override;

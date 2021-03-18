@@ -71,6 +71,11 @@ void ChromeAppBannerManagerAndroid::OnDidPerformInstallableWebAppCheck(
   AppBannerManagerAndroid::OnDidPerformInstallableWebAppCheck(data);
 }
 
+void ChromeAppBannerManagerAndroid::ResetCurrentPageData() {
+  AppBannerManagerAndroid::ResetCurrentPageData();
+  screenshots_.clear();
+}
+
 void ChromeAppBannerManagerAndroid::MaybeShowAmbientBadge() {
   if (MaybeShowInProductHelp() &&
       base::GetFieldTrialParamByFeatureAsBool(
