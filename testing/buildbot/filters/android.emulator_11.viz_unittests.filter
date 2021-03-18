@@ -1,0 +1,7 @@
+# https://crbug.com/1189284
+-All/GLRendererCopierPixelTest.ExecutesCopyRequest/*
+-GLScalerPixelTest.CopiesByDefault
+-GLScalerPixelTest.ExportsTheRedColorChannel
+-GLScalerPixelTest.TranslatesVerticallyFlippedSourceWithSourceOffset
+-GLScalerPixelTest.TranslatesWithSourceOffset
+-GLScalerPixelTest.VerticallyFlipsOutput
