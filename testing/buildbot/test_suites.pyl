@@ -1749,11 +1749,11 @@
       },
     },
 
-    'gl_gtests_validating': {
-      'gl_tests_validating': {
+    'gl_gtests_passthrough': {
+      'gl_tests_passthrough': {
         'test': 'gl_tests',
         'args': [
-          '--use-cmd-decoder=validating',
+          '--use-cmd-decoder=passthrough',
         ],
         'linux_args': ['--no-xvfb'],
       },
@@ -5793,7 +5793,7 @@
       'chromium_gtests_for_win_and_linux_only',
       'linux_flavor_specific_chromium_gtests',
       'linux_specific_xr_gtests',
-      'gl_gtests_validating',
+      'gl_gtests_passthrough',
       'gpu_fyi_vulkan_swiftshader_gtests',
       'non_android_and_cast_and_chromeos_chromium_gtests',
       'non_android_chromium_gtests',
@@ -5813,7 +5813,7 @@
       'chromium_gtests_for_win_and_linux_only',
       'linux_flavor_specific_chromium_gtests',
       'linux_specific_xr_gtests',
-      'gl_gtests_validating',
+      'gl_gtests_passthrough',
       'non_android_and_cast_and_chromeos_chromium_gtests',
       'non_android_chromium_gtests',
       'vr_platform_specific_chromium_gtests',
@@ -6230,7 +6230,6 @@
     'gpu_common_linux_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
       'gpu_passthrough_telemetry_tests',
-      'gpu_validating_telemetry_tests',
       'gpu_webgl_conformance_telemetry_tests',
       'gpu_gl_renderer_small_telemetry_tests',
     ],
@@ -6285,8 +6284,13 @@
       'gpu_webgpu_integration_extra_isolated_scripts',
     ],
 
-    # These tests are run on Linux and Mac
-    'gpu_desktop_gtests': [
+    'gpu_desktop_linux_gtests': [
+      'gpu_angle_unit_gtests',
+      'gpu_common_gtests_passthrough',
+      'gpu_desktop_specific_gtests',
+    ],
+
+    'gpu_desktop_mac_gtests': [
       'gpu_angle_unit_gtests',
       'gpu_common_gtests_passthrough',
       'gpu_common_gtests_validating',
@@ -6355,7 +6359,6 @@
       'gpu_angle_unit_gtests',
       'gpu_angle_white_box_gtests',
       'gpu_common_gtests_passthrough',
-      'gpu_common_gtests_validating',
       'gpu_gles2_conform_gtests',
       'gpu_swiftshader_gtests',
     ],
@@ -6363,9 +6366,7 @@
     'gpu_fyi_linux_debug_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
       'gpu_passthrough_telemetry_tests',
-      'gpu_validating_telemetry_tests',
       'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_validating_telemetry_tests',
     ],
 
     'gpu_fyi_linux_optional_gtests': [
@@ -6380,7 +6381,6 @@
       'gpu_angle_unit_gtests',
       'gpu_angle_white_box_gtests',
       'gpu_common_gtests_passthrough',
-      'gpu_common_gtests_validating',
       'gpu_dawn_gtests',
       'gpu_desktop_specific_gtests',
       'gpu_gles2_conform_gtests',
@@ -6392,7 +6392,6 @@
       'gpu_angle_unit_gtests',
       'gpu_angle_white_box_gtests',
       'gpu_common_gtests_passthrough',
-      'gpu_common_gtests_validating',
       'gpu_desktop_specific_gtests',
       'gpu_gles2_conform_gtests',
       'gpu_swiftshader_gtests',
@@ -6401,11 +6400,8 @@
     'gpu_fyi_linux_release_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
       'gpu_passthrough_telemetry_tests',
-      'gpu_validating_telemetry_tests',
       'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
-      'gpu_webgl2_conformance_validating_telemetry_tests',
       'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_validating_telemetry_tests',
     ],
 
     'gpu_fyi_mac_debug_gtests': [
@@ -6463,7 +6459,7 @@
 
     'gpu_fyi_optional_linux_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
-      'gpu_webgl2_conformance_validating_telemetry_tests',
+      'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
       'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
     ],
 

@@ -3759,7 +3759,7 @@
           'linux_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_desktop_gtests',
+          'gtest_tests': 'gpu_desktop_linux_gtests',
           'gpu_telemetry_tests': 'gpu_common_linux_telemetry_tests',
         },
       },
@@ -3770,7 +3770,7 @@
           'linux_nvidia_quadro_p400_stable',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_desktop_gtests',
+          'gtest_tests': 'gpu_desktop_linux_gtests',
           'gpu_telemetry_tests': 'gpu_common_linux_telemetry_tests',
         },
       },
@@ -3781,7 +3781,7 @@
           'mac_mini_intel_gpu_stable',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_desktop_gtests',
+          'gtest_tests': 'gpu_desktop_mac_gtests',
           'gpu_telemetry_tests': 'gpu_common_telemetry_tests',
         },
       },
@@ -3792,7 +3792,7 @@
           'mac_mini_intel_gpu_stable',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_desktop_gtests',
+          'gtest_tests': 'gpu_desktop_mac_gtests',
           'gpu_telemetry_tests': 'gpu_common_telemetry_tests',
           'isolated_scripts': 'rendering_desktop_representative_perf_tests_isolated_scripts',
         },
@@ -3804,7 +3804,7 @@
           'mac_retina_amd_gpu_stable',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_desktop_gtests',
+          'gtest_tests': 'gpu_desktop_mac_gtests',
           'gpu_telemetry_tests': 'gpu_common_telemetry_tests',
         },
       },
@@ -3815,7 +3815,7 @@
           'mac_retina_amd_gpu_stable',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_desktop_gtests',
+          'gtest_tests': 'gpu_desktop_mac_gtests',
           'gpu_telemetry_tests': 'gpu_common_telemetry_tests',
           'isolated_scripts': 'rendering_desktop_representative_perf_tests_isolated_scripts',
         },

@@ -1455,61 +1455,10 @@
     },
   },
   'gl_tests_validating': {
-    'remove_from': [
-      'CFI Linux ToT',
+   'remove_from': [
       'Android FYI Release (Nexus 5X)',
-      # Can't run on MSAN because gl_tests uses the hardware driver,
-      # which isn't instrumented.
-      'Linux MSan Tests',
     ],
     'modifications': {
-      # TODO(kbr): figure out a better way to specify blocks of
-      # arguments like this for tests on multiple machines.
-      'Linux ASan LSan Tests (1)': {
-        'args': [
-          '--use-gpu-in-tests',
-          '--no-xvfb',
-        ],
-        'swarming': {
-          'dimension_sets': [
-            {
-              'gpu': '10de:1cb3',
-              'os': 'Ubuntu',
-              'pool': 'chromium.tests.gpu',
-            },
-          ],
-        },
-      },
-      'Linux CFI': {
-        'args': [
-          '--use-gpu-in-tests',
-          '--no-xvfb',
-        ],
-        'swarming': {
-          'dimension_sets': [
-            {
-              'gpu': '10de:1cb3',
-              'os': 'Ubuntu',
-              'pool': 'chromium.tests.gpu',
-            },
-          ],
-        },
-      },
-      'Linux TSan Tests': {
-        'args': [
-          '--use-gpu-in-tests',
-          '--no-xvfb',
-        ],
-        'swarming': {
-          'dimension_sets': [
-            {
-              'gpu': '10de:1cb3',
-              'os': 'Ubuntu',
-              'pool': 'chromium.tests.gpu',
-            },
-          ],
-        },
-      },
       'android-11-x86-fyi-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.gl_tests.filter',
@@ -1785,16 +1734,6 @@
       # The V8 builders pass the V8 revision for ${got_revision}, so instead
       # use ${got_cr_revision}, which is only set on the V8 bots.
       'Android V8 FYI Release (Nexus 5X)': {
-        'args': {
-          '--git-revision': '${got_cr_revision}',
-        },
-      },
-      'Linux V8 FYI Release (NVIDIA)': {
-        'args': {
-          '--git-revision': '${got_cr_revision}',
-        },
-      },
-      'Linux V8 FYI Release - pointer compression (NVIDIA)': {
         'args': {
           '--git-revision': '${got_cr_revision}',
         },
@@ -2369,16 +2308,6 @@
       # The V8 builders pass the V8 revision for ${got_revision}, so instead
       # use ${got_cr_revision}, which is only set on the V8 bots.
       'Android V8 FYI Release (Nexus 5X)': {
-        'args': {
-          '--git-revision': '${got_cr_revision}',
-        },
-      },
-      'Linux V8 FYI Release (NVIDIA)': {
-        'args': {
-          '--git-revision': '${got_cr_revision}',
-        },
-      },
-      'Linux V8 FYI Release - pointer compression (NVIDIA)': {
         'args': {
           '--git-revision': '${got_cr_revision}',
         },
