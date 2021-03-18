@@ -120,7 +120,7 @@ class OwnerSettingsServiceAsh : public ownership::OwnerSettingsService,
       const scoped_refptr<ownership::OwnerKeyUtil>& owner_key_util);
 
  private:
-  friend class OwnerSettingsServiceChromeOSFactory;
+  friend class OwnerSettingsServiceAshFactory;
 
   // Perform fixups required to ensure sensical local-owner device policy:
   //  1) user whitelisting must be explicitly allowed or disallowed, and

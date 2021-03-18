@@ -6,7 +6,7 @@
 
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
-#include "chrome/browser/ash/ownership/owner_settings_service_chromeos_factory.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/ownership/owner_key_util.h"
@@ -40,7 +40,7 @@ void ChromeCryptohomeAuthenticator::CheckSafeModeOwnership(
 
   OwnerSettingsServiceAsh::IsOwnerForSafeModeAsync(
       context.GetUserIDHash(),
-      OwnerSettingsServiceChromeOSFactory::GetInstance()->GetOwnerKeyUtil(),
+      OwnerSettingsServiceAshFactory::GetInstance()->GetOwnerKeyUtil(),
       std::move(callback));
 }
 

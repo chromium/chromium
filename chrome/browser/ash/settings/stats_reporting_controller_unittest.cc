@@ -11,7 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
-#include "chrome/browser/ash/ownership/owner_settings_service_chromeos_factory.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_cache.h"
 #include "chrome/browser/chromeos/policy/device_policy_builder.h"
@@ -57,10 +57,10 @@ class StatsReportingControllerTest : public testing::Test {
 
   std::unique_ptr<TestingProfile> CreateUser(
       scoped_refptr<ownership::MockOwnerKeyUtil> keys) {
-    OwnerSettingsServiceChromeOSFactory::GetInstance()
-        ->SetOwnerKeyUtilForTesting(keys);
+    OwnerSettingsServiceAshFactory::GetInstance()->SetOwnerKeyUtilForTesting(
+        keys);
     std::unique_ptr<TestingProfile> user = std::make_unique<TestingProfile>();
-    OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(user.get())
+    OwnerSettingsServiceAshFactory::GetForBrowserContext(user.get())
         ->OnTPMTokenReady(true);
     content::RunAllTasksUntilIdle();
     return user;
@@ -243,7 +243,7 @@ TEST_F(StatsReportingControllerTest, SetBeforeOwnershipTaken) {
 
   // After device is owned, the value is written to Cros settings.
   StatsReportingController::Get()->OnOwnershipTaken(
-      OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(owner.get()));
+      OwnerSettingsServiceAshFactory::GetForBrowserContext(owner.get()));
   EXPECT_TRUE(StatsReportingController::Get()->IsEnabled());
   EXPECT_TRUE(value_at_last_notification_);
   ExpectThatPendingValueIs(true);

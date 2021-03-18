@@ -16,7 +16,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
-#include "chrome/browser/ash/ownership/owner_settings_service_chromeos_factory.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/chromeos/policy/device_policy_builder.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -65,8 +65,8 @@ class CrosSettingsTest : public testing::Test {
     owner_key_util_->SetPublicKeyFromPrivateKey(
         *device_policy_.GetSigningKey());
     owner_key_util_->SetPrivateKey(device_policy_.GetSigningKey());
-    OwnerSettingsServiceChromeOSFactory::GetInstance()
-        ->SetOwnerKeyUtilForTesting(owner_key_util_);
+    OwnerSettingsServiceAshFactory::GetInstance()->SetOwnerKeyUtilForTesting(
+        owner_key_util_);
     DeviceSettingsService::Get()->SetSessionManager(
         &fake_session_manager_client_, owner_key_util_);
     DeviceSettingsService::Get()->Load();
@@ -90,8 +90,7 @@ class CrosSettingsTest : public testing::Test {
     profile_->set_profile_name(account_id.GetUserEmail());
 
     OwnerSettingsServiceAsh* service =
-        OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(
-            profile_.get());
+        OwnerSettingsServiceAshFactory::GetForBrowserContext(profile_.get());
     DCHECK(service);
 
     service->OnTPMTokenReady(true);

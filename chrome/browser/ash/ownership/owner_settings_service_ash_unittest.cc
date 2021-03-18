@@ -14,7 +14,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_path_override.h"
 #include "base/values.h"
-#include "chrome/browser/ash/ownership/owner_settings_service_chromeos_factory.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/common/chrome_paths.h"
@@ -110,8 +110,8 @@ class OwnerSettingsServiceAshTest : public DeviceSettingsTestBase {
         true);
     FlushDeviceSettings();
 
-    service_ = OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(
-        profile_.get());
+    service_ =
+        OwnerSettingsServiceAshFactory::GetForBrowserContext(profile_.get());
     ASSERT_TRUE(service_);
     ASSERT_TRUE(service_->IsOwner());
 
@@ -386,8 +386,8 @@ class OwnerSettingsServiceAshNoOwnerTest
         base::BindRepeating(&OnPrefChanged), device_settings_service_.get(),
         TestingBrowserProcess::GetGlobal()->local_state()));
     FlushDeviceSettings();
-    service_ = OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(
-        profile_.get());
+    service_ =
+        OwnerSettingsServiceAshFactory::GetForBrowserContext(profile_.get());
     ASSERT_TRUE(service_);
     ASSERT_FALSE(service_->IsOwner());
   }

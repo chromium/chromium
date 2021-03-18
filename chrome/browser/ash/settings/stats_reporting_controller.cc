@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
-#include "chrome/browser/ash/ownership/owner_settings_service_chromeos_factory.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -220,7 +220,7 @@ StatsReportingController::GetOwnershipStatus() {
 
 ownership::OwnerSettingsService*
 StatsReportingController::GetOwnerSettingsService(Profile* profile) {
-  return OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(profile);
+  return OwnerSettingsServiceAshFactory::GetForBrowserContext(profile);
 }
 
 bool StatsReportingController::GetPendingValue(bool* result) {

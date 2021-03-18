@@ -24,7 +24,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/ash/ownership/owner_settings_service_chromeos_factory.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
@@ -247,7 +247,7 @@ OwnerSettingsServiceAsh* OwnerSettingsServiceAsh::FromWebUI(
   Profile* profile = Profile::FromWebUI(web_ui);
   if (!profile)
     return nullptr;
-  return OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(profile);
+  return OwnerSettingsServiceAshFactory::GetForBrowserContext(profile);
 }
 
 void OwnerSettingsServiceAsh::OnTPMTokenReady(bool /* tpm_token_enabled */) {

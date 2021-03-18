@@ -24,7 +24,7 @@ class StubCrosSettingsProvider;
 // a StubCrosSettingsProvider for device settings,
 // and a regular SystemSettingsProvider for the system settings.
 //
-// OwnerSettingsServiceChromeOSFactory::SetStubCrosSettingsProviderForTesting is
+// OwnerSettingsServiceAshFactory::SetStubCrosSettingsProviderForTesting is
 // caled too, with the StubCrosSettingsProvider, so that any
 // OwnerSettingsService created will write to the StubCrosSettingsProvider.
 //

@@ -21,7 +21,7 @@
 #include "chrome/browser/ash/login/auth/chrome_cryptohome_authenticator.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
-#include "chrome/browser/ash/ownership/owner_settings_service_chromeos_factory.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -266,8 +266,8 @@ class CryptohomeAuthenticatorTest : public testing::Test {
     // user_manager_enabler_, because it will create another UserManager
     // instance if UserManager instance has not been registed before.
     profile_.reset(new TestingProfile);
-    OwnerSettingsServiceChromeOSFactory::GetInstance()
-        ->SetOwnerKeyUtilForTesting(owner_key_util_);
+    OwnerSettingsServiceAshFactory::GetInstance()->SetOwnerKeyUtilForTesting(
+        owner_key_util_);
     Key key("fakepass");
     key.SetLabel(kCryptohomeGaiaKeyLabel);
     user_context_.SetKey(key);

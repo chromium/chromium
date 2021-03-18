@@ -18,7 +18,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
-#include "chrome/browser/ash/ownership/owner_settings_service_chromeos_factory.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/ownership/mock_owner_key_util.h"
@@ -73,8 +73,8 @@ class SessionManagerOperationTest : public testing::Test {
         user_manager_(new chromeos::FakeChromeUserManager()),
         user_manager_enabler_(base::WrapUnique(user_manager_)),
         validated_(false) {
-    OwnerSettingsServiceChromeOSFactory::GetInstance()
-        ->SetOwnerKeyUtilForTesting(owner_key_util_);
+    OwnerSettingsServiceAshFactory::GetInstance()->SetOwnerKeyUtilForTesting(
+        owner_key_util_);
   }
 
   void SetUp() override {
@@ -83,8 +83,8 @@ class SessionManagerOperationTest : public testing::Test {
     policy_.Build();
 
     profile_.reset(new TestingProfile());
-    service_ = OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(
-        profile_.get());
+    service_ =
+        OwnerSettingsServiceAshFactory::GetForBrowserContext(profile_.get());
   }
 
   MOCK_METHOD2(OnOperationCompleted,

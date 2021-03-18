@@ -59,7 +59,7 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/ownership/owner_settings_service_chromeos_factory.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/shutdown_policy_forwarder.h"
@@ -408,7 +408,7 @@ class DBusServices {
 
     DeviceSettingsService::Get()->SetSessionManager(
         SessionManagerClient::Get(),
-        OwnerSettingsServiceChromeOSFactory::GetInstance()->GetOwnerKeyUtil());
+        OwnerSettingsServiceAshFactory::GetInstance()->GetOwnerKeyUtil());
   }
 
   void CreateMachineLearningDecisionProvider() {

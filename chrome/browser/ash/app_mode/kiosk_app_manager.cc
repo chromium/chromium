@@ -32,7 +32,7 @@
 #include "chrome/browser/ash/app_mode/pref_names.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
-#include "chrome/browser/ash/ownership/owner_settings_service_chromeos_factory.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -83,7 +83,7 @@ std::string GenerateKioskAppAccountId(const std::string& app_id) {
 // Check for presence of machine owner public key file.
 void CheckOwnerFilePresence(bool *present) {
   scoped_refptr<ownership::OwnerKeyUtil> util =
-      OwnerSettingsServiceChromeOSFactory::GetInstance()->GetOwnerKeyUtil();
+      OwnerSettingsServiceAshFactory::GetInstance()->GetOwnerKeyUtil();
   *present = util.get() && util->IsPublicKeyPresent();
 }
 

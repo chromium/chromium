@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
-#include "chrome/browser/ash/ownership/owner_settings_service_chromeos_factory.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/help/help_utils_chromeos.h"
@@ -33,7 +33,7 @@
 using chromeos::CrosSettings;
 using chromeos::DBusThreadManager;
 using chromeos::OwnerSettingsServiceAsh;
-using chromeos::OwnerSettingsServiceChromeOSFactory;
+using chromeos::OwnerSettingsServiceAshFactory;
 using chromeos::UpdateEngineClient;
 using chromeos::WizardController;
 
@@ -183,9 +183,10 @@ void VersionUpdaterCros::CheckForUpdate(StatusCallback callback,
 void VersionUpdaterCros::SetChannel(const std::string& channel,
                                     bool is_powerwash_allowed) {
   OwnerSettingsServiceAsh* service =
-      context_ ? OwnerSettingsServiceChromeOSFactory::GetInstance()
-                     ->GetForBrowserContext(context_)
-               : nullptr;
+      context_
+          ? OwnerSettingsServiceAshFactory::GetInstance()->GetForBrowserContext(
+                context_)
+          : nullptr;
   // For local owner set the field in the policy blob.
   if (service)
     service->SetString(chromeos::kReleaseChannel, channel);

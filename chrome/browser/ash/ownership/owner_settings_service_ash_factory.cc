@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/ownership/owner_settings_service_chromeos_factory.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 
 #include "base/path_service.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
@@ -34,42 +34,39 @@ DeviceSettingsService* GetDeviceSettingsService() {
 
 }  // namespace
 
-OwnerSettingsServiceChromeOSFactory::OwnerSettingsServiceChromeOSFactory()
+OwnerSettingsServiceAshFactory::OwnerSettingsServiceAshFactory()
     : BrowserContextKeyedServiceFactory(
           "OwnerSettingsService",
           BrowserContextDependencyManager::GetInstance()) {}
 
-OwnerSettingsServiceChromeOSFactory::~OwnerSettingsServiceChromeOSFactory() =
-    default;
+OwnerSettingsServiceAshFactory::~OwnerSettingsServiceAshFactory() = default;
 
 // static
-OwnerSettingsServiceAsh*
-OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(
+OwnerSettingsServiceAsh* OwnerSettingsServiceAshFactory::GetForBrowserContext(
     content::BrowserContext* context) {
   return static_cast<OwnerSettingsServiceAsh*>(
       GetInstance()->GetServiceForBrowserContext(context, true));
 }
 
 // static
-OwnerSettingsServiceChromeOSFactory*
-OwnerSettingsServiceChromeOSFactory::GetInstance() {
-  return base::Singleton<OwnerSettingsServiceChromeOSFactory>::get();
+OwnerSettingsServiceAshFactory* OwnerSettingsServiceAshFactory::GetInstance() {
+  return base::Singleton<OwnerSettingsServiceAshFactory>::get();
 }
 
 // static
-void OwnerSettingsServiceChromeOSFactory::SetDeviceSettingsServiceForTesting(
+void OwnerSettingsServiceAshFactory::SetDeviceSettingsServiceForTesting(
     DeviceSettingsService* device_settings_service) {
   g_device_settings_service_for_testing_ = device_settings_service;
 }
 
 // static
-void OwnerSettingsServiceChromeOSFactory::SetStubCrosSettingsProviderForTesting(
+void OwnerSettingsServiceAshFactory::SetStubCrosSettingsProviderForTesting(
     StubCrosSettingsProvider* stub_cros_settings_provider) {
   g_stub_cros_settings_provider_for_testing_ = stub_cros_settings_provider;
 }
 
 scoped_refptr<ownership::OwnerKeyUtil>
-OwnerSettingsServiceChromeOSFactory::GetOwnerKeyUtil() {
+OwnerSettingsServiceAshFactory::GetOwnerKeyUtil() {
   if (owner_key_util_.get())
     return owner_key_util_;
   base::FilePath public_key_path;
@@ -81,13 +78,12 @@ OwnerSettingsServiceChromeOSFactory::GetOwnerKeyUtil() {
   return owner_key_util_;
 }
 
-void OwnerSettingsServiceChromeOSFactory::SetOwnerKeyUtilForTesting(
+void OwnerSettingsServiceAshFactory::SetOwnerKeyUtilForTesting(
     const scoped_refptr<ownership::OwnerKeyUtil>& owner_key_util) {
   owner_key_util_ = owner_key_util;
 }
 
-content::BrowserContext*
-OwnerSettingsServiceChromeOSFactory::GetBrowserContextToUse(
+content::BrowserContext* OwnerSettingsServiceAshFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   if (profile->IsOffTheRecord() || !ProfileHelper::IsRegularProfile(profile)) {
@@ -97,12 +93,12 @@ OwnerSettingsServiceChromeOSFactory::GetBrowserContextToUse(
   return context;
 }
 
-bool OwnerSettingsServiceChromeOSFactory::ServiceIsCreatedWithBrowserContext()
+bool OwnerSettingsServiceAshFactory::ServiceIsCreatedWithBrowserContext()
     const {
   return true;
 }
 
-KeyedService* OwnerSettingsServiceChromeOSFactory::BuildServiceInstanceFor(
+KeyedService* OwnerSettingsServiceAshFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   // If g_stub_cros_settings_provider_for_testing_ is set, we treat the current
   // user as the owner, and write settings directly to the stubbed provider.
