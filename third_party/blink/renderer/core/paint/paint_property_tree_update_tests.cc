@@ -1866,4 +1866,34 @@ TEST_P(PaintPropertyTreeUpdateTest, ScrollNonStackingContextContainingStacked) {
   EXPECT_FALSE(paint_artifact_compositor->NeedsUpdate());
 }
 
+TEST_P(PaintPropertyTreeUpdateTest, ScrollOriginChange) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      ::-webkit-scrollbar {width: 20px; height: 20px}
+    </style>
+    <div id="container" style="width: 100px; height: 100px; overflow: scroll;
+                               writing-mode: vertical-rl">
+      <div id="child1" style="width: 100px"></div>
+      <div id="child2" style="width: 0"></div>
+    </div>
+  )HTML");
+
+  auto* container_properties = PaintPropertiesForElement("container");
+  ASSERT_TRUE(container_properties);
+  auto* child1 = GetLayoutObjectByElementId("child1");
+  auto* child2 = GetLayoutObjectByElementId("child2");
+  EXPECT_EQ(FloatSize(-20, 0),
+            container_properties->ScrollTranslation()->Translation2D());
+  EXPECT_EQ(PhysicalOffset(), child1->FirstFragment().PaintOffset());
+  EXPECT_EQ(PhysicalOffset(), child2->FirstFragment().PaintOffset());
+
+  To<Element>(child2->GetNode())
+      ->setAttribute(html_names::kStyleAttr, "width: 100px");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(FloatSize(-120, 0),
+            container_properties->ScrollTranslation()->Translation2D());
+  EXPECT_EQ(PhysicalOffset(100, 0), child1->FirstFragment().PaintOffset());
+  EXPECT_EQ(PhysicalOffset(), child2->FirstFragment().PaintOffset());
+}
+
 }  // namespace blink

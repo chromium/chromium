@@ -965,8 +965,11 @@ void PaintLayerScrollableArea::UpdateScrollOrigin() {
                                            GetLayoutBox()->BorderTop()));
   IntPoint new_origin(FlooredIntPoint(-scrollable_overflow.offset) +
                       GetLayoutBox()->OriginAdjustmentForScrollbars());
-  if (new_origin != scroll_origin_)
+  if (new_origin != scroll_origin_) {
     scroll_origin_changed_ = true;
+    // ScrollOrigin affects paint offsets of the scrolling contents.
+    GetLayoutBox()->SetSubtreeShouldCheckForPaintInvalidation();
+  }
   scroll_origin_ = new_origin;
 }
 
