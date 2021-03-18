@@ -280,11 +280,8 @@ std::vector<blink::WebString> UserScriptInjector::GetCssSources(
 
 void UserScriptInjector::OnInjectionComplete(
     std::unique_ptr<base::Value> execution_result,
-    mojom::RunLocation run_location,
-    content::RenderFrame* render_frame) {}
+    mojom::RunLocation run_location) {}
 
-void UserScriptInjector::OnWillNotInject(InjectFailureReason reason,
-                                         content::RenderFrame* render_frame) {
-}
+void UserScriptInjector::OnWillNotInject(InjectFailureReason reason) {}
 
 }  // namespace extensions

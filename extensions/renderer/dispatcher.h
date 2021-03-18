@@ -25,6 +25,7 @@
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
+#include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/mojom/renderer.mojom.h"
 #include "extensions/renderer/resource_bundle_source_map.h"
@@ -187,6 +188,11 @@ class Dispatcher : public content::RenderThreadObserver,
                                 const ExtensionId& extension_id,
                                 const std::string& script_id,
                                 const GURL& url);
+
+  // Executes the code described in |param| and calls |callback| if it's done.
+  void ExecuteCode(mojom::ExecuteCodeParamsPtr param,
+                   mojom::LocalFrame::ExecuteCodeCallback callback,
+                   content::RenderFrame* render_frame);
 
   struct JsResourceInfo {
     const char* name = nullptr;

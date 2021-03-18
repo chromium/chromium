@@ -40,7 +40,7 @@ using ScriptsExecutedNotification = base::RepeatingCallback<
 
 // Interface for executing extension content scripts (e.g. executeScript) as
 // described by the mojom::ExecuteCodeParams IPC, and notifying the
-// caller when responded with ExtensionHostMsg_ExecuteCodeFinished.
+// caller when responded with ExecuteCodeCallback.
 class ScriptExecutor {
  public:
   explicit ScriptExecutor(content::WebContents* web_contents);
@@ -129,9 +129,6 @@ class ScriptExecutor {
   }
 
  private:
-  // The next value to use for request_id in mojom::ExecuteCodeParams.
-  int next_request_id_ = 0;
-
   content::WebContents* web_contents_;
 
   ScriptsExecutedNotification observer_;

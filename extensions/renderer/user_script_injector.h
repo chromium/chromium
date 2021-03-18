@@ -67,10 +67,8 @@ class UserScriptInjector : public ScriptInjector,
       std::set<std::string>* injected_stylesheets,
       size_t* num_injected_stylesheets) const override;
   void OnInjectionComplete(std::unique_ptr<base::Value> execution_result,
-                           mojom::RunLocation run_location,
-                           content::RenderFrame* render_frame) override;
-  void OnWillNotInject(InjectFailureReason reason,
-                       content::RenderFrame* render_frame) override;
+                           mojom::RunLocation run_location) override;
+  void OnWillNotInject(InjectFailureReason reason) override;
 
   // The associated user script. Owned by the UserScriptSet that created this
   // object.

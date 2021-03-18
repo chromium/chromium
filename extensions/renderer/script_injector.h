@@ -96,18 +96,12 @@ class ScriptInjector {
 
   // Notifies the script that injection has completed, with a possibly-populated
   // list of results (depending on whether or not ExpectsResults() was true).
-  // |render_frame| contains the render frame, or null if the frame was
-  // invalidated.
   virtual void OnInjectionComplete(
       std::unique_ptr<base::Value> execution_result,
-      mojom::RunLocation run_location,
-      content::RenderFrame* render_frame) = 0;
+      mojom::RunLocation run_location) = 0;
 
   // Notifies the script that injection will never occur.
-  // |render_frame| contains the render frame, or null if the frame was
-  // invalidated.
-  virtual void OnWillNotInject(InjectFailureReason reason,
-                               content::RenderFrame* render_frame) = 0;
+  virtual void OnWillNotInject(InjectFailureReason reason) = 0;
 };
 
 }  // namespace extensions

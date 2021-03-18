@@ -281,10 +281,11 @@ void URLLoaderFactoryManager::WillExecuteCode(content::RenderFrameHost* frame,
 
   // When WillExecuteCode runs, the frame already received the initial
   // URLLoaderFactoryBundle - therefore we need to request a separate push
-  // below.  This doesn't race with the ExtensionMsg_ExecuteCode message,
+  // below.  This doesn't race with the ExecuteCode mojo message,
   // because the URLLoaderFactoryBundle is sent to the renderer over
-  // content.mojom.FrameNavigationControl interface which is associated with the
-  // legacy IPC pipe (raciness will be introduced if that ever changes).
+  // content.mojom.Frame interface which is associated with the
+  // extensions.mojom.LocalFrame (raciness will be introduced if that ever
+  // changes).
   constexpr bool kPushToRendererNow = true;
 
   MarkIsolatedWorldsAsRequiringSeparateURLLoaderFactory(

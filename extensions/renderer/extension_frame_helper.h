@@ -109,6 +109,10 @@ class ExtensionFrameHelper
                      const std::string& module_name,
                      const std::string& function_name,
                      const base::Value args) override;
+
+  void ExecuteCode(mojom::ExecuteCodeParamsPtr param,
+                   ExecuteCodeCallback callback) override;
+
   void ExecuteDeclarativeScript(int32_t tab_id,
                                 const std::string& extension_id,
                                 const std::string& script_id,

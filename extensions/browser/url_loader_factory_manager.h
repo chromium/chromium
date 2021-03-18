@@ -46,7 +46,7 @@ class URLLoaderFactoryManager {
   // |navigation|.
   static void ReadyToCommitNavigation(content::NavigationHandle* navigation);
 
-  // To be called before ExtensionMsg_ExecuteCode is sent to a renderer process
+  // To be called before ExecuteCode is sent to a renderer process
   // (to ensure that the renderer gets the special URLLoaderFactory before
   // injecting content script requested via chrome.tabs.executeScript).
   //

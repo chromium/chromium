@@ -21,7 +21,6 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/extension_set.h"
-#include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/extension_injection_host.h"
@@ -64,17 +63,6 @@ base::Optional<mojom::RunLocation> NextRunLocation(
   NOTREACHED();
 }
 
-// TODO(crbug.com/1180858): Remove once ExtensionMsg_ExecuteCode is converted to
-// mojo as the mojo method will get mojom::ExecuteCodeParamsPtr.
-mojom::ExecuteCodeParamsPtr CreateExecuteCodeParamsPtr(
-    const mojom::ExecuteCodeParams& params) {
-  return mojom::ExecuteCodeParams::New(
-      params.request_id, params.host_id.Clone(), params.action_type,
-      params.code, params.webview_src, params.match_about_blank, params.run_at,
-      params.is_web_view, params.wants_result, params.script_url,
-      params.user_gesture, params.css_origin, params.injection_key);
-}
-
 }  // namespace
 
 class ScriptInjectionManager::RFOHelper : public content::RenderFrameObserver {
@@ -96,7 +84,6 @@ class ScriptInjectionManager::RFOHelper : public content::RenderFrameObserver {
   void OnDestruct() override;
   void OnStop() override;
 
-  virtual void OnExecuteCode(const mojom::ExecuteCodeParams& params);
   virtual void OnPermitScriptInjection(int64_t request_id);
 
   // Tells the ScriptInjectionManager to run tasks associated with
@@ -147,7 +134,6 @@ bool ScriptInjectionManager::RFOHelper::OnMessageReceived(
     const IPC::Message& message) {
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(ScriptInjectionManager::RFOHelper, message)
-    IPC_MESSAGE_HANDLER(ExtensionMsg_ExecuteCode, OnExecuteCode)
     IPC_MESSAGE_HANDLER(ExtensionMsg_PermitScriptInjection,
                         OnPermitScriptInjection)
     IPC_MESSAGE_UNHANDLED(handled = false)
@@ -238,11 +224,6 @@ void ScriptInjectionManager::RFOHelper::OnStop() {
   // extension to avoid keeping the frame in a START state indefinitely which
   // leads to deadlocks.
   DidFailProvisionalLoad();
-}
-
-void ScriptInjectionManager::RFOHelper::OnExecuteCode(
-    const mojom::ExecuteCodeParams& params) {
-  manager_->HandleExecuteCode(params, render_frame());
 }
 
 void ScriptInjectionManager::RFOHelper::OnPermitScriptInjection(
@@ -465,21 +446,26 @@ void ScriptInjectionManager::TryToInject(
 }
 
 void ScriptInjectionManager::HandleExecuteCode(
-    const mojom::ExecuteCodeParams& params,
+    mojom::ExecuteCodeParamsPtr params,
+    mojom::LocalFrame::ExecuteCodeCallback callback,
     content::RenderFrame* render_frame) {
   std::unique_ptr<const InjectionHost> injection_host;
-  if (params.host_id->type == mojom::HostID::HostType::kExtensions) {
-    injection_host = ExtensionInjectionHost::Create(params.host_id->id);
-    if (!injection_host)
+  if (params->host_id->type == mojom::HostID::HostType::kExtensions) {
+    injection_host = ExtensionInjectionHost::Create(params->host_id->id);
+    if (!injection_host) {
+      std::move(callback).Run(base::EmptyString(), GURL::EmptyGURL(),
+                              base::nullopt);
       return;
-  } else if (params.host_id->type == mojom::HostID::HostType::kWebUi) {
-    injection_host.reset(new WebUIInjectionHost(*params.host_id));
+    }
+  } else if (params->host_id->type == mojom::HostID::HostType::kWebUi) {
+    injection_host = std::make_unique<WebUIInjectionHost>(*params->host_id);
   }
 
+  mojom::RunLocation run_at = params->run_at;
   auto injection = std::make_unique<ScriptInjection>(
-      std::make_unique<ProgrammaticScriptInjector>(
-          CreateExecuteCodeParamsPtr(params)),
-      render_frame, std::move(injection_host), params.run_at,
+      std::make_unique<ProgrammaticScriptInjector>(std::move(params),
+                                                   std::move(callback)),
+      render_frame, std::move(injection_host), run_at,
       activity_logging_enabled_);
 
   FrameStatusMap::const_iterator iter = frame_statuses_.find(render_frame);

@@ -15,7 +15,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/scoped_observer.h"
-#include "extensions/common/mojom/frame.mojom-forward.h"
+#include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
@@ -43,6 +43,11 @@ class ScriptInjectionManager : public UserScriptSetManager::Observer {
 
   // Removes pending injections of the unloaded extension.
   void OnExtensionUnloaded(const std::string& extension_id);
+
+  // Handle the ExecuteCode extension message.
+  void HandleExecuteCode(mojom::ExecuteCodeParamsPtr params,
+                         mojom::LocalFrame::ExecuteCodeCallback callback,
+                         content::RenderFrame* render_frame);
 
   void ExecuteDeclarativeScript(content::RenderFrame* render_frame,
                                 int tab_id,
@@ -89,10 +94,6 @@ class ScriptInjectionManager : public UserScriptSetManager::Observer {
   void TryToInject(std::unique_ptr<ScriptInjection> injection,
                    mojom::RunLocation run_location,
                    ScriptsRunInfo* scripts_run_info);
-
-  // Handle the ExecuteCode extension message.
-  void HandleExecuteCode(const mojom::ExecuteCodeParams& params,
-                         content::RenderFrame* render_frame);
 
   // Handle the GrantInjectionPermission extension message.
   void HandlePermitScriptInjection(int64_t request_id);

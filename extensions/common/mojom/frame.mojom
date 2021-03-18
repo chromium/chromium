@@ -14,8 +14,6 @@ import "url/mojom/url.mojom";
 
 // Allows an extension to execute code in a tab.
 struct ExecuteCodeParams {
-  // The extension API request id, for responding.
-  int32 request_id;
   // The ID of the requesting injection host.
   HostID host_id;
   // Whether the code is JavaScript or CSS.
@@ -70,6 +68,15 @@ interface LocalFrame {
                 string module_name,
                 string function_name,
                 mojo_base.mojom.ListValue args);
+
+  // Notifies the renderer that it should run some JavaScript code. The reply
+  // is sent back to the browser to return the script running result. An empty
+  // |error| implies success. |url| is the URL that the code executed on. It may
+  // be empty if it's unsuccessful. We use an optional for |result| to
+  // differentiate between no result (such as in the case of an error) and a
+  // null result.
+  ExecuteCode(ExecuteCodeParams param) =>
+      (string error, url.mojom.Url url, mojo_base.mojom.Value? result);
 
   // Trigger to execute declarative content script under browser control.
   ExecuteDeclarativeScript(int32 tab_id,

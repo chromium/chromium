@@ -14,7 +14,6 @@
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/mojom/action_type.mojom-shared.h"
-#include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -30,8 +29,9 @@
 namespace extensions {
 
 ProgrammaticScriptInjector::ProgrammaticScriptInjector(
-    mojom::ExecuteCodeParamsPtr params)
-    : params_(std::move(params)), finished_(false) {}
+    mojom::ExecuteCodeParamsPtr params,
+    mojom::LocalFrame::ExecuteCodeCallback callback)
+    : params_(std::move(params)), callback_(std::move(callback)) {}
 
 ProgrammaticScriptInjector::~ProgrammaticScriptInjector() {
 }
@@ -143,18 +143,15 @@ std::vector<blink::WebString> ProgrammaticScriptInjector::GetCssSources(
 
 void ProgrammaticScriptInjector::OnInjectionComplete(
     std::unique_ptr<base::Value> execution_result,
-    mojom::RunLocation run_location,
-    content::RenderFrame* render_frame) {
+    mojom::RunLocation run_location) {
   DCHECK(!result_.has_value());
   if (execution_result) {
     result_ = base::Value::FromUniquePtrValue(std::move(execution_result));
   }
-  Finish(std::string(), render_frame);
+  Finish(std::string());
 }
 
-void ProgrammaticScriptInjector::OnWillNotInject(
-    InjectFailureReason reason,
-    content::RenderFrame* render_frame) {
+void ProgrammaticScriptInjector::OnWillNotInject(InjectFailureReason reason) {
   std::string error;
   switch (reason) {
     case NOT_ALLOWED:
@@ -173,7 +170,7 @@ void ProgrammaticScriptInjector::OnWillNotInject(
     case WONT_INJECT:
       break;
   }
-  Finish(error, render_frame);
+  Finish(error);
 }
 
 bool ProgrammaticScriptInjector::CanShowUrlInError() const {
@@ -187,19 +184,12 @@ bool ProgrammaticScriptInjector::CanShowUrlInError() const {
       APIPermission::kTab);
 }
 
-void ProgrammaticScriptInjector::Finish(const std::string& error,
-                                        content::RenderFrame* render_frame) {
+void ProgrammaticScriptInjector::Finish(const std::string& error) {
   DCHECK(!finished_);
   finished_ = true;
 
-  // It's possible that the render frame was destroyed in the course of
-  // injecting scripts. Don't respond if it was (the browser side watches for
-  // frame deletions so nothing is left hanging).
-  if (render_frame) {
-    render_frame->Send(new ExtensionHostMsg_ExecuteCodeFinished(
-        render_frame->GetRoutingID(), params_->request_id, error, url_,
-        result_));
-  }
+  if (callback_)
+    std::move(callback_).Run(error, url_, std::move(result_));
 }
 
 }  // namespace extensions

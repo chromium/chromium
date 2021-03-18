@@ -11,22 +11,20 @@
 #include "base/optional.h"
 #include "base/values.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
-#include "extensions/common/mojom/frame.mojom-forward.h"
+#include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/injection_type.mojom-shared.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/renderer/script_injection.h"
 #include "url/gurl.h"
-
-namespace content {
-class RenderFrame;
-}
 
 namespace extensions {
 
 // A ScriptInjector to handle tabs.executeScript().
 class ProgrammaticScriptInjector : public ScriptInjector {
  public:
-  explicit ProgrammaticScriptInjector(mojom::ExecuteCodeParamsPtr params);
+  explicit ProgrammaticScriptInjector(
+      mojom::ExecuteCodeParamsPtr params,
+      mojom::LocalFrame::ExecuteCodeCallback callback);
   ~ProgrammaticScriptInjector() override;
 
  private:
@@ -57,20 +55,21 @@ class ProgrammaticScriptInjector : public ScriptInjector {
       std::set<std::string>* injected_stylesheets,
       size_t* num_injected_stylesheets) const override;
   void OnInjectionComplete(std::unique_ptr<base::Value> execution_result,
-                           mojom::RunLocation run_location,
-                           content::RenderFrame* render_frame) override;
-  void OnWillNotInject(InjectFailureReason reason,
-                       content::RenderFrame* render_frame) override;
+                           mojom::RunLocation run_location) override;
+  void OnWillNotInject(InjectFailureReason reason) override;
 
   // Whether it is safe to include information about the URL in error messages.
   bool CanShowUrlInError() const;
 
   // Notify the browser that the script was injected (or never will be), and
   // send along any results or errors.
-  void Finish(const std::string& error, content::RenderFrame* render_frame);
+  void Finish(const std::string& error);
 
   // The parameters for injecting the script.
   mojom::ExecuteCodeParamsPtr params_;
+
+  // The callback to notify that the script has been executed.
+  mojom::LocalFrame::ExecuteCodeCallback callback_;
 
   // The url of the frame into which we are injecting.
   GURL url_;
@@ -83,7 +82,7 @@ class ProgrammaticScriptInjector : public ScriptInjector {
   base::Optional<base::Value> result_;
 
   // Whether or not this script injection has finished.
-  bool finished_;
+  bool finished_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ProgrammaticScriptInjector);
 };

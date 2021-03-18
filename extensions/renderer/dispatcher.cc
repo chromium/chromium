@@ -721,6 +721,13 @@ void Dispatcher::ExecuteDeclarativeScript(content::RenderFrame* render_frame,
       render_frame, tab_id, extension_id, script_id, url);
 }
 
+void Dispatcher::ExecuteCode(mojom::ExecuteCodeParamsPtr param,
+                             mojom::LocalFrame::ExecuteCodeCallback callback,
+                             content::RenderFrame* render_frame) {
+  script_injection_manager_->HandleExecuteCode(
+      std::move(param), std::move(callback), render_frame);
+}
+
 // static
 std::vector<Dispatcher::JsResourceInfo> Dispatcher::GetJsResources() {
   // Libraries.

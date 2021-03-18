@@ -471,6 +471,12 @@ void ExtensionFrameHelper::MessageInvoke(const std::string& extension_id,
       base::Value::AsListValue(args));
 }
 
+void ExtensionFrameHelper::ExecuteCode(mojom::ExecuteCodeParamsPtr param,
+                                       ExecuteCodeCallback callback) {
+  extension_dispatcher_->ExecuteCode(std::move(param), std::move(callback),
+                                     render_frame());
+}
+
 void ExtensionFrameHelper::SetFrameName(const std::string& name) {
   render_frame()->GetWebFrame()->SetName(blink::WebString::FromUTF8(name));
 }

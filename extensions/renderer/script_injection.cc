@@ -247,7 +247,7 @@ void ScriptInjection::RequestPermissionFromBrowser() {
 void ScriptInjection::NotifyWillNotInject(
     ScriptInjector::InjectFailureReason reason) {
   complete_ = true;
-  injector_->OnWillNotInject(reason, render_frame_);
+  injector_->OnWillNotInject(reason);
 }
 
 ScriptInjection::InjectionResult ScriptInjection::Inject(
@@ -279,8 +279,7 @@ ScriptInjection::InjectionResult ScriptInjection::Inject(
   if (complete_) {
     if (host_id().type == mojom::HostID::HostType::kExtensions)
       RecordContentScriptInjection(ukm_source_id_, host_id().id);
-    injector_->OnInjectionComplete(std::move(execution_result_), run_location_,
-                                   render_frame_);
+    injector_->OnInjectionComplete(std::move(execution_result_), run_location_);
   } else {
     ++scripts_run_info->num_blocking_js;
   }
@@ -377,8 +376,7 @@ void ScriptInjection::OnJsInjectionCompleted(
   // asynchronously, and we should run it.
   if (!async_completion_callback_.is_null()) {
     complete_ = true;
-    injector_->OnInjectionComplete(std::move(execution_result_), run_location_,
-                                   render_frame_);
+    injector_->OnInjectionComplete(std::move(execution_result_), run_location_);
     // Warning: this object can be destroyed after this line!
     std::move(async_completion_callback_).Run(this);
   }
