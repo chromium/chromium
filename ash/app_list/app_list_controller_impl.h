@@ -14,13 +14,13 @@
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_presenter_impl.h"
 #include "ash/app_list/app_list_view_delegate.h"
+#include "ash/app_list/home_launcher_animation_info.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/model/app_list_model_observer.h"
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/ash_export.h"
 #include "ash/assistant/model/assistant_ui_model_observer.h"
 #include "ash/display/window_tree_host_manager.h"
-#include "ash/home_screen/home_screen_delegate.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
@@ -69,7 +69,6 @@ class ASH_EXPORT AppListControllerImpl
       public MruWindowTracker::Observer,
       public AssistantControllerObserver,
       public AssistantUiModelObserver,
-      public HomeScreenDelegate,
       public apps::AppRegistryCache::Observer,
       public message_center::MessageCenterObserver {
  public:
@@ -274,21 +273,50 @@ class ASH_EXPORT AppListControllerImpl
       base::Optional<AssistantEntryPoint> entry_point,
       base::Optional<AssistantExitPoint> exit_point) override;
 
-  // HomeScreenDelegate:
-  void ShowHomeScreenView() override;
-  aura::Window* GetHomeScreenWindow() override;
+  // Shows the home screen view.
+  void ShowHomeScreenView();
+
+  // Gets the home screen window, if available, or null if the home screen
+  // window is being hidden for effects (e.g. when dragging windows or
+  // previewing the wallpaper).
+  aura::Window* GetHomeScreenWindow();
+
+  // Scales the home launcher view maintaining the view center point, and
+  // updates its opacity. If |callback| is non-null, the update should be
+  // animated, and the |callback| should be called with the animation settings.
+  // |animation_info| - Information about the transition trigger that will be
+  // used to report animation metrics. Should be set only if |callback| is
+  // not null (otherwise the transition will not be animated).
+  using UpdateAnimationSettingsCallback =
+      base::RepeatingCallback<void(ui::ScopedLayerAnimationSettings* settings)>;
   void UpdateScaleAndOpacityForHomeLauncher(
       float scale,
       float opacity,
-      base::Optional<AnimationInfo> animation_info,
-      UpdateAnimationSettingsCallback callback) override;
-  base::ScopedClosureRunner DisableHomeScreenBackgroundBlur() override;
-  void OnHomeLauncherAnimationComplete(bool shown, int64_t display_id) override;
-  void OnHomeLauncherPositionChanged(int percent_shown,
-                                     int64_t display_id) override;
-  bool IsHomeScreenVisible() override;
-  gfx::Rect GetInitialAppListItemScreenBoundsForWindow(
-      aura::Window* window) override;
+      base::Optional<HomeLauncherAnimationInfo> animation_info,
+      UpdateAnimationSettingsCallback callback);
+
+  // Disables background blur in home screen UI while the returned
+  // ScopedClosureRunner is in scope.
+  base::ScopedClosureRunner DisableHomeScreenBackgroundBlur();
+
+  // Called when the HomeLauncher positional animation has completed.
+  void OnHomeLauncherAnimationComplete(bool shown, int64_t display_id);
+
+  // Called when the HomeLauncher has changed its position on the screen,
+  // during either an animation or a drag.
+  void OnHomeLauncherPositionChanged(int percent_shown, int64_t display_id);
+
+  // True if home screen is visible.
+  bool IsHomeScreenVisible();
+
+  // Returns bounds rect in screen coordinates for the app list item associated
+  // with the provided window in the apps grid shown in the home screen,
+  // assuming the initial app list grid page is selected.
+  // If the window is not associated with an app, or the app item is not shown
+  // in the initial home screen page, it returns 1x1 rectangle centered in the
+  // home screen's apps grid.
+  // If the home screen is not yet shown, returns an empty rect.
+  gfx::Rect GetInitialAppListItemScreenBoundsForWindow(aura::Window* window);
 
   // apps::AppRegistryCache::Observer:
   void OnAppUpdate(const apps::AppUpdate& update) override;

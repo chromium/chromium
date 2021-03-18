@@ -4,9 +4,9 @@
 
 #include "ash/home_screen/drag_window_from_shelf_controller.h"
 
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/home_screen/home_screen_controller.h"
-#include "ash/home_screen/home_screen_delegate.h"
 #include "ash/home_screen/window_scale_animation.h"
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -658,12 +658,9 @@ void DragWindowFromShelfController::ScaleDownWindowAfterDrag() {
   // Notify home screen controller that the home screen is about to be shown, so
   // home screen and shelf start updating their state as the window is
   // minimizing.
-  Shell::Get()
-      ->home_screen_controller()
-      ->delegate()
-      ->OnHomeLauncherPositionChanged(
-          /*percent_shown=*/100,
-          display::Screen::GetScreen()->GetPrimaryDisplay().id());
+  Shell::Get()->app_list_controller()->OnHomeLauncherPositionChanged(
+      /*percent_shown=*/100,
+      display::Screen::GetScreen()->GetPrimaryDisplay().id());
 
   // Do the scale-down transform for the entire transient tree.
   for (auto* window : GetTransientTreeIterator(window_)) {
@@ -679,12 +676,12 @@ void DragWindowFromShelfController::ScaleDownWindowAfterDrag() {
 }
 
 void DragWindowFromShelfController::OnWindowScaledDownAfterDrag() {
-  HomeScreenController* home_screen_controller =
-      Shell::Get()->home_screen_controller();
-  if (!home_screen_controller || !home_screen_controller->delegate())
+  AppListControllerImpl* app_list_controller =
+      Shell::Get()->app_list_controller();
+  if (!app_list_controller)
     return;
 
-  home_screen_controller->delegate()->OnHomeLauncherAnimationComplete(
+  app_list_controller->OnHomeLauncherAnimationComplete(
       /*shown=*/true, display::Screen::GetScreen()->GetPrimaryDisplay().id());
 }
 

@@ -7,9 +7,10 @@
 #include <string>
 #include <utility>
 
-#include "ash/home_screen/home_screen_controller.h"
-#include "ash/home_screen/home_screen_delegate.h"
+#include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/home_launcher_animation_info.h"
 #include "ash/public/cpp/ash_features.h"
+#include "ash/shell.h"
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -36,6 +37,7 @@ constexpr float kOverviewFadeAnimationScale = 0.92f;
 constexpr base::TimeDelta kOverviewFadeAnimationDuration =
     base::TimeDelta::FromMilliseconds(350);
 
+// TODO(https://crbug.com/1137452): Eliminate this method and inline the value.
 base::TimeDelta GetAnimationDurationForTransition(
     HomeScreenPresenter::TransitionType transition) {
   switch (transition) {
@@ -55,9 +57,10 @@ HomeScreenPresenter::TransitionType GetOppositeTransition(
   }
 }
 
-HomeScreenDelegate::AnimationTrigger GetAnimationTrigger(
+// TODO(https://crbug.com/1137452): Eliminate this method and inline the value.
+HomeLauncherAnimationTrigger GetAnimationTrigger(
     HomeScreenPresenter::TransitionType transition) {
-  return HomeScreenDelegate::AnimationTrigger::kOverviewModeFade;
+  return HomeLauncherAnimationTrigger::kOverviewModeFade;
 }
 
 bool IsShowingHomeTransition(HomeScreenPresenter::TransitionType transition) {
@@ -74,10 +77,7 @@ void UpdateOverviewSettings(base::TimeDelta duration,
 
 }  // namespace
 
-HomeScreenPresenter::HomeScreenPresenter(HomeScreenController* controller)
-    : controller_(controller) {
-  DCHECK(controller);
-}
+HomeScreenPresenter::HomeScreenPresenter() = default;
 
 HomeScreenPresenter::~HomeScreenPresenter() = default;
 
@@ -101,7 +101,7 @@ void HomeScreenPresenter::ScheduleOverviewModeAnimation(
   // before starting the overview mode transition, and restore them when
   // reshowing the app list.
   aura::Window* app_list_window =
-      controller_->delegate()->GetHomeScreenWindow();
+      Shell::Get()->app_list_controller()->GetHomeScreenWindow();
   if (app_list_window) {
     const bool showing_home = IsShowingHomeTransition(transition);
     for (auto* child : wm::GetTransientChildren(app_list_window)) {
@@ -120,28 +120,29 @@ void HomeScreenPresenter::ScheduleOverviewModeAnimation(
 void HomeScreenPresenter::SetFinalHomeTransformForTransition(
     TransitionType transition,
     base::TimeDelta animation_duration) {
-  HomeScreenDelegate::UpdateAnimationSettingsCallback
+  base::RepeatingCallback<void(ui::ScopedLayerAnimationSettings * settings)>
       animation_settings_updater =
           !animation_duration.is_zero()
-              ? base::BindRepeating(&UpdateOverviewSettings,
-                                    animation_duration)
+              ? base::BindRepeating(&UpdateOverviewSettings, animation_duration)
               : base::NullCallback();
 
-  base::Optional<HomeScreenDelegate::AnimationInfo> animation_info =
+  base::Optional<HomeLauncherAnimationInfo> animation_info =
       !animation_duration.is_zero()
-          ? base::make_optional<HomeScreenDelegate::AnimationInfo>(
+          ? base::make_optional<HomeLauncherAnimationInfo>(
                 GetAnimationTrigger(transition),
                 IsShowingHomeTransition(transition))
           : base::nullopt;
 
+  AppListControllerImpl* app_list_controller =
+      Shell::Get()->app_list_controller();
   switch (transition) {
     case TransitionType::kScaleHomeIn:
-      controller_->delegate()->UpdateScaleAndOpacityForHomeLauncher(
+      app_list_controller->UpdateScaleAndOpacityForHomeLauncher(
           1.0 /*scale*/, 1.0 /*opacity*/, std::move(animation_info),
           animation_settings_updater);
       break;
     case TransitionType::kScaleHomeOut:
-      controller_->delegate()->UpdateScaleAndOpacityForHomeLauncher(
+      app_list_controller->UpdateScaleAndOpacityForHomeLauncher(
           kOverviewFadeAnimationScale /*scale*/, 0.0 /*opacity*/,
           std::move(animation_info), animation_settings_updater);
       break;

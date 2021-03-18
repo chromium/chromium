@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/home_screen/home_screen_delegate.h"
 #include "ash/home_screen/window_scale_animation.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/metrics_util.h"
@@ -121,10 +120,11 @@ void HomeScreenController::Show() {
   if (!Shell::Get()->session_controller()->IsActiveUserSessionStarted())
     return;
 
-  delegate_->ShowHomeScreenView();
+  auto* app_list_controller = Shell::Get()->app_list_controller();
+  app_list_controller->ShowHomeScreenView();
   UpdateVisibility();
 
-  aura::Window* window = delegate_->GetHomeScreenWindow();
+  aura::Window* window = app_list_controller->GetHomeScreenWindow();
   if (window)
     Shelf::ForWindow(window)->MaybeUpdateShelfBackground();
 }
@@ -200,8 +200,8 @@ bool HomeScreenController::GoHome(int64_t display_id) {
           std::make_unique<ScopedAnimationDisabler>(window));
     }
 
-    delegate_->OnHomeLauncherPositionChanged(100 /* percent_shown */,
-                                             display_id);
+    app_list_controller->OnHomeLauncherPositionChanged(100 /* percent_shown */,
+                                                       display_id);
   }
 
   StartTrackingAnimationSmoothness(display_id);
@@ -235,12 +235,9 @@ void HomeScreenController::NotifyHomeLauncherTransitionEnded(
     bool shown,
     int64_t display_id) {
   RecordAnimationSmoothness();
-  if (delegate_)
-    delegate_->OnHomeLauncherAnimationComplete(shown, display_id);
-}
-
-void HomeScreenController::SetDelegate(HomeScreenDelegate* delegate) {
-  delegate_ = delegate;
+  auto* app_list_controller = Shell::Get()->app_list_controller();
+  if (app_list_controller)
+    app_list_controller->OnHomeLauncherAnimationComplete(shown, display_id);
 }
 
 void HomeScreenController::OnWindowDragStarted() {
@@ -264,7 +261,7 @@ void HomeScreenController::OnWindowDragEnded(bool animate) {
 }
 
 bool HomeScreenController::IsHomeScreenVisible() const {
-  return delegate_->IsHomeScreenVisible();
+  return Shell::Get()->app_list_controller()->IsHomeScreenVisible();
 }
 
 void HomeScreenController::StartTrackingAnimationSmoothness(
@@ -286,8 +283,9 @@ void HomeScreenController::RecordAnimationSmoothness() {
 }
 
 void HomeScreenController::OnAppListViewShown() {
-  split_view_observation_.Observe(
-      SplitViewController::Get(delegate_->GetHomeScreenWindow()));
+  aura::Window* window =
+      Shell::Get()->app_list_controller()->GetHomeScreenWindow();
+  split_view_observation_.Observe(SplitViewController::Get(window));
   UpdateVisibility();
 }
 
@@ -372,10 +370,11 @@ void HomeScreenController::OnWallpaperPreviewEnded() {
 }
 
 void HomeScreenController::UpdateVisibility() {
-  if (!Shell::Get()->tablet_mode_controller()->InTabletMode())
+  auto* shell = Shell::Get();
+  if (!shell->tablet_mode_controller()->InTabletMode())
     return;
 
-  aura::Window* window = delegate_->GetHomeScreenWindow();
+  aura::Window* window = shell->app_list_controller()->GetHomeScreenWindow();
   if (!window)
     return;
 
@@ -389,11 +388,11 @@ bool HomeScreenController::ShouldShowHomeScreen() const {
   if (in_window_dragging_ || in_wallpaper_preview_)
     return false;
 
-  auto* window = delegate_->GetHomeScreenWindow();
+  auto* shell = Shell::Get();
+  aura::Window* window = shell->app_list_controller()->GetHomeScreenWindow();
   if (!window)
     return false;
 
-  auto* shell = Shell::Get();
   if (!shell->tablet_mode_controller()->InTabletMode())
     return false;
   if (shell->overview_controller()->InOverviewSession())

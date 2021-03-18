@@ -1166,7 +1166,6 @@ void Shell::Init(
   // |assistant_controller_| and |home_screen_controller_| are put before
   // |app_list_controller_| as they are used in its constructor.
   app_list_controller_ = std::make_unique<AppListControllerImpl>();
-  home_screen_controller_->SetDelegate(app_list_controller_.get());
 
   autoclick_controller_ = std::make_unique<AutoclickController>();
 

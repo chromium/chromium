@@ -750,8 +750,7 @@ TEST_F(AppListControllerImplTest, DragItemFromAppsGridView) {
   EXPECT_EQ(1.0f, shelf_icon_view->layer()->opacity());
 }
 
-// Tests for HomeScreenDelegate::GetInitialAppListItemScreenBoundsForWindow
-// implemtenation.
+// Tests for GetInitialAppListItemScreenBoundsForWindow.
 TEST_F(AppListControllerImplTest, GetItemBoundsForWindow) {
   // Populate app list model with 25 items, of which items at indices in
   // |folders| are folders containing a single item.
@@ -804,8 +803,8 @@ TEST_F(AppListControllerImplTest, GetItemBoundsForWindow) {
   std::unique_ptr<views::Widget> widget_without_app_id =
       TestWidgetBuilder().SetBounds(init_bounds).BuildOwnsNativeWidget();
 
-  HomeScreenDelegate* const home_screen_delegate =
-      Shell::Get()->home_screen_controller()->delegate();
+  AppListControllerImpl* app_list_controller =
+      Shell::Get()->app_list_controller();
   // NOTE: Calculate the apps grid bounds after test window is shown, as showing
   // the window can change the app list layout (due to the change in the shelf
   // height).
@@ -814,7 +813,7 @@ TEST_F(AppListControllerImplTest, GetItemBoundsForWindow) {
       gfx::Rect(apps_grid_bounds.CenterPoint(), gfx::Size(1, 1));
 
   EXPECT_EQ(apps_grid_center,
-            home_screen_delegate->GetInitialAppListItemScreenBoundsForWindow(
+            app_list_controller->GetInitialAppListItemScreenBoundsForWindow(
                 widget_without_app_id->GetNativeWindow()));
 
   // Run tests cases, both for when the first and the second apps grid page is
@@ -840,7 +839,7 @@ TEST_F(AppListControllerImplTest, GetItemBoundsForWindow) {
               .BuildOwnsNativeWidget();
 
       const gfx::Rect item_bounds =
-          home_screen_delegate->GetInitialAppListItemScreenBoundsForWindow(
+          app_list_controller->GetInitialAppListItemScreenBoundsForWindow(
               widget->GetNativeWindow());
       if (!test_case.grid_position.has_value()) {
         EXPECT_EQ(apps_grid_center, item_bounds);

@@ -4,11 +4,10 @@
 
 #include "ash/home_screen/drag_window_from_shelf_controller.h"
 
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/home_screen/drag_window_from_shelf_controller_test_api.h"
-#include "ash/home_screen/home_screen_controller.h"
-#include "ash/home_screen/home_screen_delegate.h"
 #include "ash/public/cpp/overview_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_backdrop.h"
@@ -224,7 +223,7 @@ TEST_F(DragWindowFromShelfControllerTest, HideHomeLauncherDuringDraggingTest) {
   StartDrag(window.get(), shelf_bounds.CenterPoint());
   Drag(gfx::Point(0, 200), 0.f, 1.f);
   aura::Window* home_screen_window =
-      Shell::Get()->home_screen_controller()->delegate()->GetHomeScreenWindow();
+      Shell::Get()->app_list_controller()->GetHomeScreenWindow();
   EXPECT_TRUE(home_screen_window);
   EXPECT_FALSE(home_screen_window->IsVisible());
 

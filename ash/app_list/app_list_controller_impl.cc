@@ -82,18 +82,18 @@ bool IsTabletMode() {
 }
 
 TabletModeAnimationTransition CalculateAnimationTransitionForMetrics(
-    HomeScreenDelegate::AnimationTrigger trigger,
+    HomeLauncherAnimationTrigger trigger,
     bool launcher_should_show) {
   switch (trigger) {
-    case HomeScreenDelegate::AnimationTrigger::kHideForWindow:
+    case HomeLauncherAnimationTrigger::kHideForWindow:
       return TabletModeAnimationTransition::kHideHomeLauncherForWindow;
-    case HomeScreenDelegate::AnimationTrigger::kLauncherButton:
+    case HomeLauncherAnimationTrigger::kLauncherButton:
       return TabletModeAnimationTransition::kHomeButtonShow;
-    case HomeScreenDelegate::AnimationTrigger::kDragRelease:
+    case HomeLauncherAnimationTrigger::kDragRelease:
       return launcher_should_show
                  ? TabletModeAnimationTransition::kDragReleaseShow
                  : TabletModeAnimationTransition::kDragReleaseHide;
-    case HomeScreenDelegate::AnimationTrigger::kOverviewModeFade:
+    case HomeLauncherAnimationTrigger::kOverviewModeFade:
       return launcher_should_show
                  ? TabletModeAnimationTransition::kFadeOutOverview
                  : TabletModeAnimationTransition::kFadeInOverview;
@@ -157,7 +157,7 @@ void LogAppListShowSource(AppListShowSource show_source) {
 
 base::Optional<TabletModeAnimationTransition>
 GetTransitionFromMetricsAnimationInfo(
-    base::Optional<HomeScreenDelegate::AnimationInfo> animation_info) {
+    base::Optional<HomeLauncherAnimationInfo> animation_info) {
   if (!animation_info.has_value())
     return base::nullopt;
 
@@ -973,7 +973,7 @@ aura::Window* AppListControllerImpl::GetHomeScreenWindow() {
 void AppListControllerImpl::UpdateScaleAndOpacityForHomeLauncher(
     float scale,
     float opacity,
-    base::Optional<AnimationInfo> animation_info,
+    base::Optional<HomeLauncherAnimationInfo> animation_info,
     UpdateAnimationSettingsCallback callback) {
   DCHECK(!animation_info.has_value() || !callback.is_null());
 

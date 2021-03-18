@@ -4,11 +4,11 @@
 
 #include "ash/home_screen/swipe_home_to_overview_controller.h"
 
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/home_screen/home_screen_controller.h"
-#include "ash/home_screen/home_screen_delegate.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
@@ -45,7 +45,7 @@ gfx::RectF GetShelfBoundsInFloat() {
 
 class SwipeHomeToOverviewControllerTest : public AshTestBase {
  public:
-  SwipeHomeToOverviewControllerTest() {}
+  SwipeHomeToOverviewControllerTest() = default;
   ~SwipeHomeToOverviewControllerTest() override = default;
 
   // AshTestBase:
@@ -83,8 +83,8 @@ class SwipeHomeToOverviewControllerTest : public AshTestBase {
 
   void CancelDrag() { home_to_overview_controller_->CancelDrag(); }
 
-  HomeScreenDelegate* home_screen_delegate() {
-    return Shell::Get()->home_screen_controller()->delegate();
+  AppListControllerImpl* app_list_controller() {
+    return Shell::Get()->app_list_controller();
   }
 
   bool OverviewTransitionTimerRunning() const {
@@ -230,7 +230,7 @@ TEST_F(SwipeHomeToOverviewControllerTest, BasicFlow) {
   Drag(shelf_bounds.CenterPoint(), 0.f, 1.f);
 
   aura::Window* home_screen_window =
-      home_screen_delegate()->GetHomeScreenWindow();
+      app_list_controller()->GetHomeScreenWindow();
   ASSERT_TRUE(home_screen_window);
 
   EXPECT_EQ(gfx::Transform(),
@@ -309,7 +309,7 @@ TEST_F(SwipeHomeToOverviewControllerTest, EndDragBeforeTimeout) {
   StartDrag();
 
   aura::Window* home_screen_window =
-      home_screen_delegate()->GetHomeScreenWindow();
+      app_list_controller()->GetHomeScreenWindow();
   ASSERT_TRUE(home_screen_window);
 
   const int transition_threshold =
@@ -355,7 +355,7 @@ TEST_F(SwipeHomeToOverviewControllerTest, GoBackOnHomeLauncher) {
   StartDrag();
 
   aura::Window* home_screen_window =
-      home_screen_delegate()->GetHomeScreenWindow();
+      app_list_controller()->GetHomeScreenWindow();
   ASSERT_TRUE(home_screen_window);
 
   const int transition_threshold =
@@ -402,7 +402,7 @@ TEST_F(SwipeHomeToOverviewControllerTest, FlingOnAppsPage) {
   StartDrag();
 
   aura::Window* home_screen_window =
-      home_screen_delegate()->GetHomeScreenWindow();
+      app_list_controller()->GetHomeScreenWindow();
   ASSERT_TRUE(home_screen_window);
 
   const int transition_threshold =
@@ -451,7 +451,7 @@ TEST_F(SwipeHomeToOverviewControllerTest, CancelDragBeforeTimeout) {
   StartDrag();
 
   aura::Window* home_screen_window =
-      home_screen_delegate()->GetHomeScreenWindow();
+      app_list_controller()->GetHomeScreenWindow();
   ASSERT_TRUE(home_screen_window);
 
   const int transition_threshold =
@@ -606,7 +606,7 @@ TEST_F(SwipeHomeToOverviewControllerTest, DragBellowThresholdStopsTimer) {
        0.f, 1.f);
 
   aura::Window* home_screen_window =
-      home_screen_delegate()->GetHomeScreenWindow();
+      app_list_controller()->GetHomeScreenWindow();
   ASSERT_TRUE(home_screen_window);
 
   EXPECT_EQ(home_screen_window->transform(),
@@ -671,7 +671,7 @@ TEST_F(SwipeHomeToOverviewControllerTest, ScaleChangesDuringDrag) {
   Drag(shelf_bounds.CenterPoint(), 0.f, 1.f);
 
   aura::Window* home_screen_window =
-      home_screen_delegate()->GetHomeScreenWindow();
+      app_list_controller()->GetHomeScreenWindow();
   ASSERT_TRUE(home_screen_window);
   const gfx::RectF original_home_bounds(home_screen_window->bounds());
 

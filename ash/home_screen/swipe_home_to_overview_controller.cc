@@ -6,8 +6,6 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/home_screen/drag_window_from_shelf_controller.h"
-#include "ash/home_screen/home_screen_controller.h"
-#include "ash/home_screen/home_screen_delegate.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -109,10 +107,8 @@ void SwipeHomeToOverviewController::Drag(const gfx::PointF& location_in_screen,
         display.bounds().y() +
         display.bounds().height() * kHomeScalingThresholdDisplayHeightRatio;
     state_ = State::kTrackingDrag;
-    home_screen_blur_disabler_ = Shell::Get()
-                                     ->home_screen_controller()
-                                     ->delegate()
-                                     ->DisableHomeScreenBackgroundBlur();
+    home_screen_blur_disabler_ =
+        Shell::Get()->app_list_controller()->DisableHomeScreenBackgroundBlur();
   } else {
     if (location_in_screen.y() <= overview_transition_threshold_y_ &&
         std::abs(scroll_x) + std::abs(scroll_y) <= kMovementVelocityThreshold) {
@@ -139,12 +135,9 @@ void SwipeHomeToOverviewController::Drag(const gfx::PointF& location_in_screen,
       base::ClampToRange(1.f - distance / target_distance, 0.0f, 1.0f));
 
   float scale = gfx::Tween::FloatValueBetween(progress, 1.0f, kTargetHomeScale);
-  Shell::Get()
-      ->home_screen_controller()
-      ->delegate()
-      ->UpdateScaleAndOpacityForHomeLauncher(scale, 1.0f /*opacity*/,
-                                             base::nullopt /*animation_info*/,
-                                             base::NullCallback());
+  Shell::Get()->app_list_controller()->UpdateScaleAndOpacityForHomeLauncher(
+      scale, 1.0f /*opacity*/, base::nullopt /*animation_info*/,
+      base::NullCallback());
 }
 
 void SwipeHomeToOverviewController::EndDrag(
@@ -229,12 +222,9 @@ void SwipeHomeToOverviewController::FinalizeDragAndStayOnHomeScreen(
   // Make sure the home launcher scale and opacity return to the initial state.
   // Note that this is needed even if the gesture ended up in a fling, as early
   // gesture handling might have updated the launcher scale.
-  Shell::Get()
-      ->home_screen_controller()
-      ->delegate()
-      ->UpdateScaleAndOpacityForHomeLauncher(
-          1.0f /*scale*/, 1.0f /*opacity*/, base::nullopt /*animation_info*/,
-          base::BindRepeating(&UpdateHomeAnimationForGestureCancel, go_back));
+  Shell::Get()->app_list_controller()->UpdateScaleAndOpacityForHomeLauncher(
+      1.0f /*scale*/, 1.0f /*opacity*/, base::nullopt /*animation_info*/,
+      base::BindRepeating(&UpdateHomeAnimationForGestureCancel, go_back));
 
   // No need to keep blur disabled for the drag - note that blur might remain
   // disabled at this point due to the started home screen scale animation.
