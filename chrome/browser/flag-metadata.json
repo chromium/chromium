@@ -2490,8 +2490,8 @@
   },
   {
     "name": "enable-unsafe-fast-js-calls",
-    "owners": [ "mslekova", "enga" ],
-    "expiry_milestone": 90
+    "owners": [ "mslekova", "enga", "v8-fast-api@google.com" ],
+    "expiry_milestone": 98
   },
   {
     "name": "enable-unsafe-webgpu",
