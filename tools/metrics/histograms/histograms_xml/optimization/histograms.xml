@@ -352,6 +352,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.PredictionModelDownloadManager.DownloadStatus"
+    enum="OptimizationGuidePredictionModelDownloadStatus" expires_after="M94">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    The status of verifying and processing model downloads. Recorded once per
+    file that was successfully downloaded via the Download Service.
+  </summary>
+</histogram>
+
+<histogram
     name="OptimizationGuide.PredictionModelDownloadManager.DownloadSucceeded"
     units="BooleanSucceeded" expires_after="M94">
   <owner>sophiechang@chromium.org</owner>
@@ -359,17 +370,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Records whether the Download Service notified whether a model download has
     succeeded or failed.
-  </summary>
-</histogram>
-
-<histogram
-    name="OptimizationGuide.PredictionModelDownloadManager.DownloadVerificationStatus"
-    enum="OptimizationGuidePredictionModelDownloadStatus" expires_after="M94">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>mcrouse@chromium.org</owner>
-  <summary>
-    The status of verifying and processing model downloads. Recorded once per
-    file that was successfully downloaded via the Download Service.
   </summary>
 </histogram>
 
