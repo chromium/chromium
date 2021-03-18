@@ -443,7 +443,6 @@ group("gn_all") {
       "//ash/keyboard/ui:keyboard_unittests",
       "//chrome/browser/metrics/perf:profile_provider_unittest",
       "//chrome/test:usage_time_limit_unittests",
-      "//chromeos:chromeos_unittests",
       "//chromeos/components:chromeos_components_unittests",
       "//chromeos/components/proximity_auth:proximity_auth_unittests",
       "//components/exo/wayland:wayland_client_compatibility_tests",
@@ -451,6 +450,10 @@ group("gn_all") {
       "//third_party/shell-encryption:shell_encryption_unittests",
       "//ui/chromeos:ui_chromeos_unittests",
     ]
+  }
+
+  if (is_chromeos_ash || is_chromeos_lacros) {
+    deps += [ "//chromeos:chromeos_unittests" ]
   }
 
   if (is_chromeos_ash || is_mac || is_win) {
