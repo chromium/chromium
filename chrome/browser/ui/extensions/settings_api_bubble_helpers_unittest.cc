@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/ntp_overridden_bubble_delegate.h"
+#include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 
 #include <memory>
 
@@ -41,11 +41,11 @@ scoped_refptr<const Extension> GetNtpExtension(const std::string& name) {
 
 }  // namespace
 
-using NtpOverriddenBubbleDelegateTest = ExtensionServiceTestBase;
+using SettingsApiBubbleHelpersUnitTest = ExtensionServiceTestBase;
 
-TEST_F(NtpOverriddenBubbleDelegateTest, TestAcknowledgeExistingExtensions) {
-  NtpOverriddenBubbleDelegate::set_acknowledge_existing_extensions_for_testing(
-      true);
+TEST_F(SettingsApiBubbleHelpersUnitTest, TestAcknowledgeExistingExtensions) {
+  base::AutoReset<bool> ack_existing =
+      SetAcknowledgeExistingNtpExtensionsForTesting(true);
 
   InitializeEmptyExtensionService();
   ExtensionWebUIOverrideRegistrar::GetFactoryInstance()->SetTestingFactory(
@@ -58,37 +58,33 @@ TEST_F(NtpOverriddenBubbleDelegateTest, TestAcknowledgeExistingExtensions) {
   scoped_refptr<const Extension> first = GetNtpExtension("first");
   service()->AddExtension(first.get());
 
-  auto include_extension = [this](const Extension* extension) {
-    auto ntp_delegate =
-        std::make_unique<NtpOverriddenBubbleDelegate>(profile());
-    return ntp_delegate->ShouldIncludeExtension(extension);
+  auto is_acknowledged = [this](const ExtensionId& id) {
+    bool is_acked = false;
+    return ExtensionPrefs::Get(profile())->ReadPrefAsBoolean(
+               id, kNtpOverridingExtensionAcknowledged, &is_acked) &&
+           is_acked;
   };
-  // By default, we should warn about an extension overriding the NTP.
-  EXPECT_TRUE(include_extension(first.get()));
+  // By default, the extension should not be acknowledged.
+  EXPECT_FALSE(is_acknowledged(first->id()));
 
-  // Acknowledge existing extensions. Now, |first| should be acknowledged and
-  // shouldn't be included in the bubble warning.
-  NtpOverriddenBubbleDelegate::MaybeAcknowledgeExistingNtpExtensions(profile());
-  EXPECT_FALSE(include_extension(first.get()));
+  // Acknowledge existing extensions. Now, `first` should be acknowledged.
+  AcknowledgePreExistingNtpExtensions(profile());
+  EXPECT_TRUE(is_acknowledged(first->id()));
 
-  // Install a second NTP-overriding extension. As before, we should include the
-  // extension.
+  // Install a second NTP-overriding extension. The new extension should not be
+  // acknowledged.
   scoped_refptr<const Extension> second = GetNtpExtension("second");
   service()->AddExtension(second.get());
-  EXPECT_TRUE(include_extension(second.get()));
+  EXPECT_FALSE(is_acknowledged(second->id()));
 
   // Try acknowledging existing extensions. Since we already did this once for
-  // this profile, this should have no effect, and we should still warn about
-  // the second extension.
-  NtpOverriddenBubbleDelegate::MaybeAcknowledgeExistingNtpExtensions(profile());
-  EXPECT_TRUE(include_extension(second.get()));
+  // this profile, this should have no effect, and we should still consider the
+  // second extension unacknowledged.
+  AcknowledgePreExistingNtpExtensions(profile());
+  EXPECT_FALSE(is_acknowledged(second->id()));
 
-  // We should still not warn about the first.
-  EXPECT_FALSE(include_extension(first.get()));
-
-  // Clean up.
-  NtpOverriddenBubbleDelegate::set_acknowledge_existing_extensions_for_testing(
-      false);
+  // But the first should still be acknowledged.
+  EXPECT_TRUE(is_acknowledged(first->id()));
 }
 
 }  // namespace extensions

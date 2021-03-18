@@ -8,11 +8,11 @@
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/extensions/extension_web_ui.h"
-#include "chrome/browser/extensions/ntp_overridden_bubble_delegate.h"
 #include "chrome/browser/extensions/settings_api_bubble_delegate.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -146,11 +146,9 @@ GetNtpOverriddenParams(Profile* profile) {
   if (!extension)
     return base::nullopt;
 
-  // We deliberately re-use the same preference that the bubble UI uses. This
-  // way, users won't see the bubble or dialog UI if they've already
-  // acknowledged either version.
-  const char* preference_name =
-      extensions::NtpOverriddenBubbleDelegate::kNtpBubbleAcknowledged;
+  // This preference tracks whether users have acknowledged the extension's
+  // control, so that they are not warned twice about the same extension.
+  const char* preference_name = extensions::kNtpOverridingExtensionAcknowledged;
 
   std::vector<GURL> possible_rewrites =
       content::BrowserURLHandler::GetInstance()->GetPossibleRewrites(ntp_url,

@@ -12,29 +12,14 @@
 #include "chrome/browser/extensions/extension_web_ui.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/prefs/pref_registry.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
-
-// Whether existing NTP extensions have been automatically acknowledged.
-const char kDidAcknowledgeExistingNtpExtensions[] =
-    "ack_existing_ntp_extensions";
-
-// Whether to acknowledge existing extensions overriding the NTP for the active
-// profile. Active on MacOS to rollout the NTP bubble without prompting for
-// previously-installed extensions.
-bool g_acknowledge_existing_extensions =
-#if defined(OS_MAC)
-    true;
-#else
-    false;
-#endif
 
 base::LazyInstance<std::set<std::pair<Profile*, std::string>>>::Leaky
     g_ntp_overridden_shown = LAZY_INSTANCE_INITIALIZER;
@@ -43,46 +28,13 @@ base::LazyInstance<std::set<std::pair<Profile*, std::string>>>::Leaky
 
 namespace extensions {
 
-const char NtpOverriddenBubbleDelegate::kNtpBubbleAcknowledged[] =
-    "ack_ntp_bubble";
-
 NtpOverriddenBubbleDelegate::NtpOverriddenBubbleDelegate(Profile* profile)
     : extensions::ExtensionMessageBubbleController::Delegate(profile),
       profile_(profile) {
-  set_acknowledged_flag_pref_name(kNtpBubbleAcknowledged);
+  set_acknowledged_flag_pref_name(kNtpOverridingExtensionAcknowledged);
 }
 
 NtpOverriddenBubbleDelegate::~NtpOverriddenBubbleDelegate() {}
-
-// static
-void NtpOverriddenBubbleDelegate::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(kDidAcknowledgeExistingNtpExtensions, false,
-                                PrefRegistry::NO_REGISTRATION_FLAGS);
-}
-
-// static
-void NtpOverriddenBubbleDelegate::MaybeAcknowledgeExistingNtpExtensions(
-    Profile* profile) {
-  if (!g_acknowledge_existing_extensions)
-    return;
-
-  ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
-  PrefService* profile_prefs = profile->GetPrefs();
-  // Only acknowledge existing extensions once per profile.
-  if (profile_prefs->GetBoolean(kDidAcknowledgeExistingNtpExtensions))
-    return;
-
-  profile_prefs->SetBoolean(kDidAcknowledgeExistingNtpExtensions, true);
-  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile);
-  for (const auto& extension : registry->enabled_extensions()) {
-    const URLOverrides::URLOverrideMap& overrides =
-        URLOverrides::GetChromeURLOverrides(extension.get());
-    if (overrides.find(chrome::kChromeUINewTabHost) != overrides.end()) {
-      prefs->UpdateExtensionPref(extension->id(), kNtpBubbleAcknowledged,
-                                 std::make_unique<base::Value>(true));
-    }
-  }
-}
 
 bool NtpOverriddenBubbleDelegate::ShouldIncludeExtension(
     const extensions::Extension* extension) {
@@ -207,12 +159,6 @@ void NtpOverriddenBubbleDelegate::LogAction(
 
 bool NtpOverriddenBubbleDelegate::SupportsPolicyIndicator() {
   return true;
-}
-
-void NtpOverriddenBubbleDelegate::
-    set_acknowledge_existing_extensions_for_testing(
-        bool acknowledge_existing_extensions) {
-  g_acknowledge_existing_extensions = acknowledge_existing_extensions;
 }
 
 }  // namespace extensions

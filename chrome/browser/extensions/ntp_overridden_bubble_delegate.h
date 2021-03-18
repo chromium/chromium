@@ -12,30 +12,13 @@
 #include "base/macros.h"
 #include "chrome/browser/extensions/extension_message_bubble_controller.h"
 
-class PrefRegistrySimple;
-
 namespace extensions {
 
 class NtpOverriddenBubbleDelegate
     : public ExtensionMessageBubbleController::Delegate {
  public:
-  // Name of the preference that says whether the user has been notified about
-  // extension overriding the new tab page.
-  static const char kNtpBubbleAcknowledged[];
-
   explicit NtpOverriddenBubbleDelegate(Profile* profile);
   ~NtpOverriddenBubbleDelegate() override;
-
-  // Registers associated preferences.
-  static void RegisterPrefs(PrefRegistrySimple* registry);
-
-  // Iterates over existing NTP-overriding extensions installed in the given
-  // |profile| and marks them as acknowledged. Stores a preference indicating
-  // the action was completed. Subsequent calls will *not* acknowledge more
-  // extensions. This is needed to avoid prompting users with existing
-  // extensions when we expand the warning to new platforms.
-  // TODO(devlin): Remove this in M62.
-  static void MaybeAcknowledgeExistingNtpExtensions(Profile* profile);
 
   // ExtensionMessageBubbleController::Delegate methods.
   bool ShouldIncludeExtension(const extensions::Extension* extension) override;
@@ -63,9 +46,6 @@ class NtpOverriddenBubbleDelegate
   void LogExtensionCount(size_t count) override;
   void LogAction(ExtensionMessageBubbleController::BubbleAction) override;
   bool SupportsPolicyIndicator() override;
-
-  static void set_acknowledge_existing_extensions_for_testing(
-      bool acknowledge_existing_extensions);
 
  private:
   Profile* profile_;

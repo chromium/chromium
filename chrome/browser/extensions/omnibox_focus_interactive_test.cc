@@ -6,8 +6,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/extensions/ntp_overridden_bubble_delegate.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -51,9 +51,9 @@ class OmniboxFocusInteractiveTest : public ExtensionBrowserTest {
     // Prevent a focus-stealing focus bubble that warns the user that "An
     // extension has changed what page is shown when you open a new tab."
     ExtensionPrefs* prefs = ExtensionPrefs::Get(browser()->profile());
-    prefs->UpdateExtensionPref(
-        extension->id(), NtpOverriddenBubbleDelegate::kNtpBubbleAcknowledged,
-        std::make_unique<base::Value>(true));
+    prefs->UpdateExtensionPref(extension->id(),
+                               kNtpOverridingExtensionAcknowledged,
+                               std::make_unique<base::Value>(true));
 
     return extension;
   }
