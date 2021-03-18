@@ -12,6 +12,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/aura/window_tree_host_observer.h"
 #include "ui/display/display_switches.h"
+#include "ui/platform_window/platform_window.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #include "ui/views/widget/widget_observer.h"
@@ -178,6 +179,9 @@ TEST_F(DesktopWindowTreeHostPlatformTest, UpdateWindowShapeFromWindowMask) {
   auto* host_platform = DesktopWindowTreeHostPlatform::GetHostForWidget(
       widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
   ASSERT_TRUE(host_platform);
+  if (!host_platform->platform_window()->ShouldUseLayerForShapedWindow())
+    return;
+
   auto* content_window =
       DesktopWindowTreeHostPlatform::GetContentWindowForWidget(
           widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
@@ -306,6 +310,9 @@ TEST_F(DesktopWindowTreeHostPlatformHighDPITest, VerifyWindowShapeInHighDPI) {
   auto* host_platform = DesktopWindowTreeHostPlatform::GetHostForWidget(
       widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
   ASSERT_TRUE(host_platform);
+  if (!host_platform->platform_window()->ShouldUseLayerForShapedWindow())
+    return;
+
   auto* content_window =
       DesktopWindowTreeHostPlatform::GetContentWindowForWidget(
           widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());

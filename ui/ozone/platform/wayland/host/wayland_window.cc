@@ -357,6 +357,10 @@ void WaylandWindow::SetWindowIcons(const gfx::ImageSkia& window_icon,
 
 void WaylandWindow::SizeConstraintsChanged() {}
 
+bool WaylandWindow::ShouldUseLayerForShapedWindow() const {
+  return true;
+}
+
 bool WaylandWindow::CanDispatchEvent(const PlatformEvent& event) {
   if (event->IsMouseEvent())
     return has_pointer_focus_;
