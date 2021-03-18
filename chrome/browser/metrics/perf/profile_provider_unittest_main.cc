@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/test_suite.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "chrome/browser/metrics/perf/collection_params.h"
 #include "chrome/browser/metrics/perf/metric_provider.h"
 #include "chrome/browser/metrics/perf/perf_events_collector.h"
@@ -248,7 +249,13 @@ class ProfileProviderRealCollectionTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(ProfileProviderRealCollectionTest);
 };
 
-TEST_F(ProfileProviderRealCollectionTest, SuspendDone) {
+// Flaky on chromeos: crbug.com/1184119
+#if defined(OS_CHROMEOS)
+#define MAYBE_SuspendDone DISABLED_SuspendDone
+#else
+#define MAYBE_SuspendDone SuspendDone
+#endif
+TEST_F(ProfileProviderRealCollectionTest, MAYBE_SuspendDone) {
   // Trigger a resume from suspend.
   profile_provider_->SuspendDone(base::TimeDelta::FromMinutes(10));
 
