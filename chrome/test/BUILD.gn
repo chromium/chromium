@@ -15,6 +15,8 @@ import("//chrome/browser/buildflags.gni")
 import("//chrome/browser/downgrade/buildflags.gni")
 import("//chrome/browser/page_load_metrics/integration_tests/jsdeps.gni")
 import("//chrome/browser/page_load_metrics/integration_tests/sources.gni")
+import(
+    "//chrome/browser/sync/test/integration/sync_integration_tests_sources.gni")
 import("//chrome/common/features.gni")
 import("//chrome/services/speech/buildflags.gni")
 import("//chrome/test/base/js2gtest.gni")
@@ -663,11 +665,8 @@ if (is_android) {
       "//testing/android/native_test:native_test_support",
     ]
 
-    sources = [
-      "../browser/sync/test/integration/single_client_autofill_profile_sync_test.cc",
-      "../browser/sync/test/integration/single_client_typed_urls_sync_test.cc",
-      "android/browsertests_apk/android_browsertests_jni_onload.cc",
-    ]
+    sources = sync_integration_tests_sources +
+              [ "android/browsertests_apk/android_browsertests_jni_onload.cc" ]
 
     data = [
       "$root_gen_dir/chrome/android/chrome_apk_paks/chrome_100_percent.pak",
@@ -7064,20 +7063,32 @@ if (!is_fuchsia) {
     sources = [
       "../browser/sync/test/integration/autofill_helper.cc",
       "../browser/sync/test/integration/autofill_helper.h",
+      "../browser/sync/test/integration/bookmarks_helper.cc",
+      "../browser/sync/test/integration/bookmarks_helper.h",
       "../browser/sync/test/integration/configuration_refresher.cc",
       "../browser/sync/test/integration/configuration_refresher.h",
       "../browser/sync/test/integration/device_info_helper.cc",
       "../browser/sync/test/integration/device_info_helper.h",
+      "../browser/sync/test/integration/encryption_helper.cc",
+      "../browser/sync/test/integration/encryption_helper.h",
       "../browser/sync/test/integration/fake_server_invalidation_sender.cc",
       "../browser/sync/test/integration/fake_server_invalidation_sender.h",
       "../browser/sync/test/integration/fake_server_sync_invalidation_sender.cc",
       "../browser/sync/test/integration/fake_server_sync_invalidation_sender.h",
       "../browser/sync/test/integration/multi_client_status_change_checker.cc",
       "../browser/sync/test/integration/multi_client_status_change_checker.h",
+      "../browser/sync/test/integration/offer_helper.cc",
+      "../browser/sync/test/integration/offer_helper.h",
+      "../browser/sync/test/integration/passwords_helper.cc",
+      "../browser/sync/test/integration/passwords_helper.h",
       "../browser/sync/test/integration/profile_sync_service_harness.cc",
       "../browser/sync/test/integration/profile_sync_service_harness.h",
       "../browser/sync/test/integration/quiesce_status_change_checker.cc",
       "../browser/sync/test/integration/quiesce_status_change_checker.h",
+      "../browser/sync/test/integration/retry_verifier.cc",
+      "../browser/sync/test/integration/retry_verifier.h",
+      "../browser/sync/test/integration/secondary_account_helper.cc",
+      "../browser/sync/test/integration/secondary_account_helper.h",
       "../browser/sync/test/integration/single_client_status_change_checker.cc",
       "../browser/sync/test/integration/single_client_status_change_checker.h",
       "../browser/sync/test/integration/status_change_checker.cc",
@@ -7094,6 +7105,8 @@ if (!is_fuchsia) {
       "../browser/sync/test/integration/typed_urls_helper.h",
       "../browser/sync/test/integration/updated_progress_marker_checker.cc",
       "../browser/sync/test/integration/updated_progress_marker_checker.h",
+      "../browser/sync/test/integration/wallet_helper.cc",
+      "../browser/sync/test/integration/wallet_helper.h",
     ]
     if (!is_android) {
       sources += [
@@ -7101,16 +7114,12 @@ if (!is_fuchsia) {
         "../browser/sync/test/integration/apps_helper.h",
         "../browser/sync/test/integration/await_match_status_change_checker.cc",
         "../browser/sync/test/integration/await_match_status_change_checker.h",
-        "../browser/sync/test/integration/bookmarks_helper.cc",
-        "../browser/sync/test/integration/bookmarks_helper.h",
         "../browser/sync/test/integration/cookie_helper.cc",
         "../browser/sync/test/integration/cookie_helper.h",
         "../browser/sync/test/integration/dictionary_helper.cc",
         "../browser/sync/test/integration/dictionary_helper.h",
         "../browser/sync/test/integration/dictionary_load_observer.cc",
         "../browser/sync/test/integration/dictionary_load_observer.h",
-        "../browser/sync/test/integration/encryption_helper.cc",
-        "../browser/sync/test/integration/encryption_helper.h",
         "../browser/sync/test/integration/extension_settings_helper.cc",
         "../browser/sync/test/integration/extension_settings_helper.h",
         "../browser/sync/test/integration/extensions_helper.cc",
@@ -7123,18 +7132,10 @@ if (!is_fuchsia) {
         "../browser/sync/test/integration/migration_waiter.h",
         "../browser/sync/test/integration/migration_watcher.cc",
         "../browser/sync/test/integration/migration_watcher.h",
-        "../browser/sync/test/integration/offer_helper.cc",
-        "../browser/sync/test/integration/offer_helper.h",
-        "../browser/sync/test/integration/passwords_helper.cc",
-        "../browser/sync/test/integration/passwords_helper.h",
         "../browser/sync/test/integration/preferences_helper.cc",
         "../browser/sync/test/integration/preferences_helper.h",
-        "../browser/sync/test/integration/retry_verifier.cc",
-        "../browser/sync/test/integration/retry_verifier.h",
         "../browser/sync/test/integration/search_engines_helper.cc",
         "../browser/sync/test/integration/search_engines_helper.h",
-        "../browser/sync/test/integration/secondary_account_helper.cc",
-        "../browser/sync/test/integration/secondary_account_helper.h",
         "../browser/sync/test/integration/send_tab_to_self_helper.cc",
         "../browser/sync/test/integration/send_tab_to_self_helper.h",
         "../browser/sync/test/integration/session_hierarchy_match_checker.cc",
@@ -7155,8 +7156,6 @@ if (!is_fuchsia) {
         "../browser/sync/test/integration/themes_helper.h",
         "../browser/sync/test/integration/user_events_helper.cc",
         "../browser/sync/test/integration/user_events_helper.h",
-        "../browser/sync/test/integration/wallet_helper.cc",
-        "../browser/sync/test/integration/wallet_helper.h",
       ]
     } else {
       sources += [
@@ -7224,63 +7223,7 @@ if (!is_fuchsia && !is_android) {
   test("sync_integration_tests") {
     use_xvfb = use_xvfb_in_this_config
 
-    sources = [
-      "../browser/sync/test/integration/enable_disable_test.cc",
-      "../browser/sync/test/integration/local_sync_test.cc",
-      "../browser/sync/test/integration/migration_test.cc",
-      "../browser/sync/test/integration/password_manager_sync_test.cc",
-      "../browser/sync/test/integration/single_client_app_settings_sync_test.cc",
-      "../browser/sync/test/integration/single_client_autofill_profile_sync_test.cc",
-      "../browser/sync/test/integration/single_client_bookmarks_sync_test.cc",
-      "../browser/sync/test/integration/single_client_custom_passphrase_sync_test.cc",
-      "../browser/sync/test/integration/single_client_device_info_sync_test.cc",
-      "../browser/sync/test/integration/single_client_dictionary_sync_test.cc",
-      "../browser/sync/test/integration/single_client_extension_apps_sync_test.cc",
-      "../browser/sync/test/integration/single_client_extensions_sync_test.cc",
-      "../browser/sync/test/integration/single_client_history_delete_directives_sync_test.cc",
-      "../browser/sync/test/integration/single_client_nigori_sync_test.cc",
-      "../browser/sync/test/integration/single_client_offer_sync_test.cc",
-      "../browser/sync/test/integration/single_client_passwords_sync_test.cc",
-      "../browser/sync/test/integration/single_client_polling_sync_test.cc",
-      "../browser/sync/test/integration/single_client_preferences_sync_test.cc",
-      "../browser/sync/test/integration/single_client_search_engines_sync_test.cc",
-      "../browser/sync/test/integration/single_client_secondary_account_sync_test.cc",
-      "../browser/sync/test/integration/single_client_send_tab_to_self_sync_test.cc",
-      "../browser/sync/test/integration/single_client_sessions_sync_test.cc",
-      "../browser/sync/test/integration/single_client_sharing_message_sync_test.cc",
-      "../browser/sync/test/integration/single_client_standalone_transport_sync_test.cc",
-      "../browser/sync/test/integration/single_client_sync_invalidations_test.cc",
-      "../browser/sync/test/integration/single_client_themes_sync_test.cc",
-      "../browser/sync/test/integration/single_client_typed_urls_sync_test.cc",
-      "../browser/sync/test/integration/single_client_user_consents_sync_test.cc",
-      "../browser/sync/test/integration/single_client_user_events_sync_test.cc",
-      "../browser/sync/test/integration/single_client_wallet_sync_test.cc",
-      "../browser/sync/test/integration/single_client_web_apps_sync_test.cc",
-      "../browser/sync/test/integration/sync_auth_test.cc",
-      "../browser/sync/test/integration/sync_errors_test.cc",
-      "../browser/sync/test/integration/sync_exponential_backoff_test.cc",
-      "../browser/sync/test/integration/two_client_autocomplete_sync_test.cc",
-      "../browser/sync/test/integration/two_client_autofill_sync_test.cc",
-      "../browser/sync/test/integration/two_client_bookmarks_sync_test.cc",
-      "../browser/sync/test/integration/two_client_custom_passphrase_sync_test.cc",
-      "../browser/sync/test/integration/two_client_dictionary_sync_test.cc",
-      "../browser/sync/test/integration/two_client_extension_apps_sync_test.cc",
-      "../browser/sync/test/integration/two_client_extension_settings_and_app_settings_sync_test.cc",
-      "../browser/sync/test/integration/two_client_extensions_sync_test.cc",
-      "../browser/sync/test/integration/two_client_passwords_sync_test.cc",
-      "../browser/sync/test/integration/two_client_polling_sync_test.cc",
-      "../browser/sync/test/integration/two_client_preferences_sync_test.cc",
-      "../browser/sync/test/integration/two_client_search_engines_sync_test.cc",
-      "../browser/sync/test/integration/two_client_send_tab_to_self_sync_test.cc",
-      "../browser/sync/test/integration/two_client_sessions_sync_test.cc",
-      "../browser/sync/test/integration/two_client_themes_sync_test.cc",
-      "../browser/sync/test/integration/two_client_typed_urls_sync_test.cc",
-      "../browser/sync/test/integration/two_client_user_events_sync_test.cc",
-      "../browser/sync/test/integration/two_client_wallet_sync_test.cc",
-      "../browser/sync/test/integration/two_client_web_apps_bmo_sync_test.cc",
-      "../browser/sync/test/integration/two_client_web_apps_integration_sync_test.cc",
-      "../browser/sync/test/integration/two_client_web_apps_sync_test.cc",
-    ]
+    sources = sync_integration_tests_sources
 
     data = [
       "//chrome/test/data/password/",

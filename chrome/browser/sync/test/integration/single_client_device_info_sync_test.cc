@@ -11,7 +11,6 @@
 #include "chrome/browser/sync/test/integration/device_info_helper.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/ui/browser.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/time.h"
@@ -203,6 +202,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   EXPECT_FALSE(message.commit().config_params().single_client());
 }
 
+// PRE_* tests aren't supported on Android browser tests.
+#if !defined(OS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
                        PRE_ShouldNotSendDeviceInfoAfterBrowserRestart) {
   ASSERT_TRUE(SetupSync());
@@ -244,5 +245,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   EXPECT_FALSE(has_local_changes);
   EXPECT_EQ(entities_before.front().mtime(), entities_after.front().mtime());
 }
+#endif  // !defined(OS_ANDROID)
 
 }  // namespace
