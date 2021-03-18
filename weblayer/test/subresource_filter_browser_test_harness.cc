@@ -4,6 +4,7 @@
 
 #include "weblayer/test/subresource_filter_browser_test_harness.h"
 
+#include "components/heavy_ad_intervention/heavy_ad_service.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
@@ -12,6 +13,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "weblayer/browser/browser_process.h"
+#include "weblayer/browser/heavy_ad_service_factory.h"
 #include "weblayer/browser/subresource_filter_client_impl.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/shell/browser/shell.h"
@@ -37,6 +39,17 @@ void WaitForSubresourceFilterRulesetDataToBePublished() {
   }
 }
 
+// Waits for the heavy ad blocklist data to be loaded as part of
+// WebLayer startup.
+void WaitForHeavyAdBlocklistToBeLoaded(content::WebContents* web_contents) {
+  auto* heavy_ad_service = HeavyAdServiceFactory::GetForBrowserContext(
+      web_contents->GetBrowserContext());
+
+  base::RunLoop run_loop;
+  heavy_ad_service->NotifyOnBlocklistLoaded(run_loop.QuitClosure());
+  run_loop.Run();
+}
+
 }  // namespace
 
 SubresourceFilterBrowserTest::SubresourceFilterBrowserTest() {
@@ -54,6 +67,12 @@ void SubresourceFilterBrowserTest::SetUpOnMainThread() {
   // they can end up incorrectly proceeding on the publishing of the
   // production data rather than their test data.
   WaitForSubresourceFilterRulesetDataToBePublished();
+
+  // Wait for the heavy ad blocklist loading that occurs as part of ProfileImpl
+  // creation to complete. This is crucial for tests of heavy ad interventions:
+  // if the blocklist isn't loaded all hosts are treated as blocklisted, which
+  // interferes with the operation of those tests.
+  WaitForHeavyAdBlocklistToBeLoaded(web_contents());
 
   embedded_test_server()->ServeFilesFromSourceDirectory("components/test/data");
 

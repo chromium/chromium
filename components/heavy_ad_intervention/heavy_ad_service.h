@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -32,12 +33,23 @@ class HeavyAdService : public KeyedService,
   // Initializes the blocklist with no backing store for incognito mode.
   void InitializeOffTheRecord();
 
+  // |on_blocklist_loaded_callback| will be invoked when the heavy ad blocklist
+  // has been loaded. It will be invoked immediately if the blocklist has
+  // already been loaded and has not subsequently been unloaded.
+  void NotifyOnBlocklistLoaded(base::OnceClosure on_blocklist_loaded_callback);
+
   HeavyAdBlocklist* heavy_ad_blocklist() { return heavy_ad_blocklist_.get(); }
 
  private:
+  // blocklist::OptOutBlocklistDelegate:
+  void OnLoadingStateChanged(bool is_loaded) override;
+
   // The blocklist used to control triggering of the heavy ad intervention.
   // Created during Initialize().
   std::unique_ptr<HeavyAdBlocklist> heavy_ad_blocklist_;
+
+  base::OnceClosure on_blocklist_loaded_callback_;
+  bool blocklist_is_loaded_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(HeavyAdService);
 };

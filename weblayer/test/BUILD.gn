@@ -114,6 +114,7 @@ test("weblayer_browsertests") {
     "//components/content_settings/core/browser",
     "//components/error_page/content/browser",
     "//components/favicon/content",
+    "//components/heavy_ad_intervention",
     "//components/network_session_configurator/common",
     "//components/network_time",
     "//components/no_state_prefetch/browser",

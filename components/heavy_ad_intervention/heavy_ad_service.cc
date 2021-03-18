@@ -40,6 +40,7 @@ HeavyAdService::~HeavyAdService() {
 
 void HeavyAdService::Initialize(const base::FilePath& profile_path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(!profile_path.empty());
 
   if (!base::FeatureList::IsEnabled(features::kHeavyAdPrivacyMitigations))
     return;
@@ -69,4 +70,21 @@ void HeavyAdService::InitializeOffTheRecord() {
   // Providing a null out_out_store which sets up the blocklist in-memory only.
   heavy_ad_blocklist_ = std::make_unique<HeavyAdBlocklist>(
       nullptr /* opt_out_store */, base::DefaultClock::GetInstance(), this);
+}
+
+void HeavyAdService::NotifyOnBlocklistLoaded(
+    base::OnceClosure on_blocklist_loaded_callback) {
+  if (blocklist_is_loaded_) {
+    std::move(on_blocklist_loaded_callback).Run();
+    return;
+  }
+
+  on_blocklist_loaded_callback_ = std::move(on_blocklist_loaded_callback);
+}
+
+void HeavyAdService::OnLoadingStateChanged(bool is_loaded) {
+  blocklist_is_loaded_ = is_loaded;
+
+  if (blocklist_is_loaded_ && !on_blocklist_loaded_callback_.is_null())
+    std::move(on_blocklist_loaded_callback_).Run();
 }
