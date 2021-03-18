@@ -59,7 +59,7 @@ DemoModeApp GetAppFromAppId(const std::string& app_id) {
       app_id == extension_misc::kScreensaverEveAppId ||
       app_id == extension_misc::kScreensaverNocturneAppId ||
       app_id == extension_misc::kScreensaverAtlasAppId ||
-      app_id == extension_misc::kScreensaverKukuiAppId) {
+      app_id == extension_misc::kScreensaverKraneZdksAppId) {
     return DemoModeApp::kScreensaver;
   }
 

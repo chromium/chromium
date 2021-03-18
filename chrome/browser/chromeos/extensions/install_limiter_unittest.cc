@@ -45,7 +45,7 @@ TEST_P(InstallLimiterTest, ShouldDeferInstall) {
       extension_misc::kScreensaverAppId, extension_misc::kScreensaverEveAppId,
       extension_misc::kScreensaverNocturneAppId,
       extension_misc::kScreensaverAtlasAppId,
-      extension_misc::kScreensaverKukuiAppId};
+      extension_misc::kScreensaverKraneZdksAppId};
 
   chromeos::DemoModeTestHelper demo_mode_test_helper;
   if (GetParam() != chromeos::DemoSession::DemoModeConfig::kNone)
