@@ -143,7 +143,7 @@ Polymer({
    *  TODO(crbug.com/1093185): add type |BarcodeDetector| when externs
    *  becomes available
    *  @suppress {undefinedVars|missingProperties}
-   *  @private {typeof BarcodeDetector}
+   *  @private
    */
   barcodeDetectorClass_: BarcodeDetector,
 
@@ -226,7 +226,9 @@ Polymer({
   },
 
   /**
-   * @param {typeof BarcodeDetector} barcodeDetectorClass
+   * TODO(crbug.com/1093185): Add barcodeDetectorClass type when BarcodeDetector
+   * externs become available.
+   * @param barcodeDetectorClass
    * @param {typeof ImageCapture} imageCaptureClass
    * @param {function(Function, number)} setIntervalFunction
    * @param {function()} playVideoFunction
