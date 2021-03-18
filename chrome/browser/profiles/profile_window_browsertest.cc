@@ -298,7 +298,6 @@ IN_PROC_BROWSER_TEST_P(GuestProfileWindowBrowserTest,
   guest_browser = chrome::FindAnyBrowser(guest_profile, true);
   EXPECT_TRUE(guest_browser);
   CloseBrowserSynchronously(guest_browser);
-  content::RunAllTasksUntilIdle();
 
   // Open a new guest browser window. Since this is a separate session, the find
   // in page text should have been cleared (along with all other browsing data).
