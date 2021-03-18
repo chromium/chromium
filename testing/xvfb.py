@@ -36,6 +36,17 @@ def kill(proc, name, timeout_in_seconds=10):
   if not proc:
     return
 
+  # TODO(crbug.com/1189400): Either remove this special cased logic or make
+  # it a general thing once it's determined whether explicitly terminating
+  # child processes has an effect on stability.
+  child_processes = []
+  if name == 'weston':
+    try:
+      parent = psutil.Process(proc.pid)
+      child_processes = parent.children(recursive=True)
+    except psutil.NoSuchProcess:
+      pass
+
   proc.terminate()
   thread = threading.Thread(target=proc.wait)
   thread.start()
@@ -49,6 +60,12 @@ def kill(proc, name, timeout_in_seconds=10):
   if thread.is_alive():
     print('%s running after SIGTERM and SIGKILL; good luck!\n' % name,
           file=sys.stderr)
+
+  for child in child_processes:
+    try:
+      child.terminate()
+    except psutil.NoSuchProcess:
+      pass
 
 
 def launch_dbus(env):
