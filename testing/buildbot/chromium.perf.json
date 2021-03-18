@@ -703,7 +703,7 @@
       {
         "args": [
           "-v",
-          "--browser=android-weblayer",
+          "--browser=android-weblayer-trichrome-google-bundle",
           "--upload-results",
           "--test-shard-map-filename=android-pixel4_weblayer-perf_map.json"
         ],

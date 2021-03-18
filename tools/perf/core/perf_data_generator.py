@@ -643,7 +643,7 @@ BUILDERS = {
         'tests': [{
             'isolate': 'performance_weblayer_test_suite',
         }],
-        'platform': 'android-weblayer',
+        'platform': 'android-weblayer-trichrome-google-bundle',
         'dimension': {
             'pool': 'chrome.tests.perf-weblayer',
             'os': 'Android',
