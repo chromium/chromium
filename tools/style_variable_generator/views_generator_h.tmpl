@@ -36,12 +36,12 @@ constexpr SkAlpha GetOpacity(OpacityName opacity_name, bool is_dark_mode) {
     case OpacityName::{{name | to_const_name}}:
 {%-   if mode_values[Modes.DARK] %}
       if (is_dark_mode) {
-        return {{mode_values[Modes.DARK] | alpha_to_hex}};
+        return {{mode_values[Modes.DARK] | cpp_opacity}};
       } else {
-        return {{mode_values[Modes.LIGHT] | alpha_to_hex}};
+        return {{mode_values[Modes.LIGHT] | cpp_opacity}};
       }
 {%-    else %}
-      return {{mode_values[Modes.LIGHT] | alpha_to_hex}};
+      return {{mode_values[Modes.LIGHT] | cpp_opacity}};
 {%-    endif %}
 {%-   endfor %}
   }

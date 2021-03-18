@@ -19,12 +19,19 @@ enum class ColorName {
 
 enum class OpacityName {
   kDisabledOpacity,
+  kReferenceOpacity,
 };
 
 constexpr SkAlpha GetOpacity(OpacityName opacity_name, bool is_dark_mode) {
   switch (opacity_name) {
     case OpacityName::kDisabledOpacity:
       return 0x60;
+    case OpacityName::kReferenceOpacity:
+      if (is_dark_mode) {
+        return 0xFF;
+      } else {
+        return GetOpacity(OpacityName::kDisabledOpacity, is_dark_mode);
+      }
   }
 }
 

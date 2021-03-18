@@ -20,5 +20,9 @@
   },
   opacities: {
     disabled_opacity: 0.38,
+    reference_opacity: {
+        light: '$disabled_opacity',
+        dark: 1,
+    },
   },
 }

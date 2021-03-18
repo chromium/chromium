@@ -18,4 +18,6 @@ html:not(body) {
   --cros-toggle-color: rgba(var(--cros-toggle-color-rgb), var(--cros-disabled-opacity));
 
   --cros-disabled-opacity: 0.38;
+
+  --cros-reference-opacity: var(--cros-disabled-opacity);
 }

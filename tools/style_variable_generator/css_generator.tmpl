@@ -14,7 +14,7 @@
 {% endfor %}
 
 {%- for name, value in opacities[mode].items() %}
-  {{name | to_css_var_name}}: {{value}};
+  {{name | to_css_var_name}}: {{value | css_opacity}};
 {%  endfor -%}
 {%- endmacro %}
 {#

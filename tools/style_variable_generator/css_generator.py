@@ -37,6 +37,7 @@ class CSSStyleGenerator(BaseGenerator):
         return {
             'to_css_var_name': self._ToCSSVarName,
             'css_color': self._CSSColor,
+            'css_opacity': self._CSSOpacity,
             'css_color_rgb': self._CSSColorRGB,
         }
 

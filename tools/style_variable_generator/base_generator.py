@@ -276,15 +276,15 @@ class BaseGenerator:
                 raise ValueError("Color %s not defined for default mode" % name)
             for mode, color in mode_values.items():
                 if color.var:
-                    CheckColorReference(color.var, color)
+                    CheckColorReference(color.var, name)
                 if color.rgb_var:
-                    CheckColorReference(color.RGBVarToVar(), color)
+                    CheckColorReference(color.RGBVarToVar(), name)
                 if color.opacity and color.opacity.var:
-                    CheckOpacityReference(color.opacity.var, color)
+                    CheckOpacityReference(color.opacity.var, name)
 
         for name, mode_values in opacities.items():
             for mode, opacity in mode_values.items():
                 if opacity.var:
-                    CheckOpacityReference(opacity.var)
+                    CheckOpacityReference(opacity.var, name)
 
         # TODO(calamity): Check for circular references.

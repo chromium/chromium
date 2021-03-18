@@ -30,6 +30,7 @@ class ViewsStyleGenerator(BaseGenerator):
             'to_const_name': self._ToConstName,
             'cpp_color': self._CppColor,
             'alpha_to_hex': self._AlphaToHex,
+            'cpp_opacity': self._CppOpacity,
         }
 
     def GetGlobals(self):
@@ -58,17 +59,17 @@ class ViewsStyleGenerator(BaseGenerator):
     def _AlphaToHex(self, opacity):
         return '0x%X' % math.floor(opacity.a * 255)
 
+    def _CppOpacity(self, opacity):
+        if opacity.a != -1:
+            return self._AlphaToHex(opacity)
+        elif opacity.var:
+            return ('GetOpacity(OpacityName::%s, is_dark_mode)' %
+                    self._ToConstName(opacity.var))
+        raise ValueError('Invalid opacity: ' + repr(opacity))
+
     def _CppColor(self, c):
         '''Returns the C++ color representation of |c|'''
         assert (isinstance(c, Color))
-
-        def CppOpacity(color):
-            if c.opacity.a != -1:
-                return self._AlphaToHex(c.opacity)
-            elif c.opacity.var:
-                return ('GetOpacity(OpacityName::%s, is_dark_mode)' %
-                    self._ToConstName(c.opacity.var))
-            raise ValueError('Color with invalid opacity: ' + repr(color))
 
         if c.var:
             return ('ResolveColor(ColorName::%s, is_dark_mode)' %
@@ -77,10 +78,11 @@ class ViewsStyleGenerator(BaseGenerator):
         if c.rgb_var:
             return (
                 'SkColorSetA(ResolveColor(ColorName::%s, is_dark_mode), %s)' %
-                (self._ToConstName(c.RGBVarToVar()), CppOpacity(c)))
+                (self._ToConstName(c.RGBVarToVar()), self._CppOpacity(
+                    c.opacity)))
 
         if c.opacity.a != 1:
-            return 'SkColorSetARGB(%s, 0x%X, 0x%X, 0x%X)' % (CppOpacity(c),
-                                                             c.r, c.g, c.b)
+            return 'SkColorSetARGB(%s, 0x%X, 0x%X, 0x%X)' % (self._CppOpacity(
+                c.opacity), c.r, c.g, c.b)
         else:
             return 'SkColorSetRGB(0x%X, 0x%X, 0x%X)' % (c.r, c.g, c.b)
