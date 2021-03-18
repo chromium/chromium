@@ -65,6 +65,7 @@ class WEB_ENGINE_EXPORT NodeIDMapper {
 // accepts partial updates, so |node| does not require all fields to be set.
 WEB_ENGINE_EXPORT fuchsia::accessibility::semantics::Node
 AXNodeDataToSemanticNode(const ui::AXNodeData& node,
+                         const ui::AXNodeData& container_node,
                          const ui::AXTreeID& tree_id,
                          bool is_root,
                          NodeIDMapper* id_mapper);

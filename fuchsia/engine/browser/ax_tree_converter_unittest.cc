@@ -23,6 +23,7 @@ const char kLabel1[] = "label nodes, not people";
 const char kLabel2[] = "fancy stickers";
 const char kDescription1[] = "this node does some stuff";
 const char kValue1[] = "user entered value";
+const int32_t kRootId = 182;
 const int32_t kChildId1 = 23901;
 const int32_t kChildId2 = 484345;
 const int32_t kChildId3 = 4156877;
@@ -30,8 +31,8 @@ const int32_t kRectX = 1;
 const int32_t kRectY = 2;
 const int32_t kRectWidth = 7;
 const int32_t kRectHeight = 8;
-const std::array<float, 16> k4DIdentityMatrix = {1, 0, 0, 0, 0, 1, 0, 0,
-                                                 0, 0, 1, 0, 0, 0, 0, 1};
+const std::array<float, 16> k4DIdentityMatrixWithDefaultOffset = {
+    1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 2, 0, 1};
 
 class MockNodeIDMapper : public NodeIDMapper {
  public:
@@ -55,7 +56,10 @@ ui::AXNodeData CreateAXNodeData(ax::mojom::Role role,
   ui::AXNodeData node;
   node.id = 2;
   node.role = role;
-  node.AddAction(action);
+  if (action != ax::mojom::Action::kNone) {
+    node.AddAction(action);
+  }
+
   node.AddIntAttribute(ax::mojom::IntAttribute::kCheckedState,
                        static_cast<int32_t>(checked_state));
   node.child_ids = child_ids;
@@ -86,6 +90,7 @@ Node CreateSemanticNode(uint32_t id,
   node.set_child_ids(child_ids);
   node.set_location(location);
   node.set_transform(transform);
+  node.set_container_id(kRootId);
   return node;
 }
 
@@ -96,6 +101,7 @@ std::pair<ui::AXNodeData, Node> CreateSemanticNodeAllFieldsSet() {
   relative_bounds.transform =
       std::make_unique<gfx::Transform>(gfx::Transform::kSkipInitialization);
   relative_bounds.transform->MakeIdentity();
+  relative_bounds.offset_container_id = -1;
   auto ax_node_data = CreateAXNodeData(
       ax::mojom::Role::kButton, ax::mojom::Action::kFocus,
       std::vector<int32_t>{kChildId1, kChildId2, kChildId3}, relative_bounds,
@@ -114,7 +120,7 @@ std::pair<ui::AXNodeData, Node> CreateSemanticNodeAllFieldsSet() {
   box.max =
       scenic::NewVector3({kRectX + kRectWidth, kRectY + kRectHeight, 0.0f});
   fuchsia::ui::gfx::Matrix4Value mat =
-      scenic::NewMatrix4Value(k4DIdentityMatrix);
+      scenic::NewMatrix4Value(k4DIdentityMatrixWithDefaultOffset);
   States states;
   states.set_checked_state(CheckedState::MIXED);
   states.set_hidden(false);
@@ -133,10 +139,24 @@ std::pair<ui::AXNodeData, Node> CreateSemanticNodeAllFieldsSet() {
 
 class AXTreeConverterTest : public testing::Test {
  public:
-  AXTreeConverterTest() = default;
+  AXTreeConverterTest() {
+    ui::AXRelativeBounds relative_bounds = ui::AXRelativeBounds();
+    relative_bounds.bounds =
+        gfx::RectF(kRectX, kRectY, kRectWidth, kRectHeight);
+    root_node_data_ =
+        CreateAXNodeData(ax::mojom::Role::kNone, ax::mojom::Action::kNone,
+                         std::vector<int32_t>{}, relative_bounds, "", "",
+                         ax::mojom::CheckedState::kNone);
+    root_node_data_.id = kRootId;
+  }
   ~AXTreeConverterTest() override = default;
 
+  ui::AXNodeData& root_node() { return root_node_data_; }
+
   DISALLOW_COPY_AND_ASSIGN(AXTreeConverterTest);
+
+ private:
+  ui::AXNodeData root_node_data_;
 };
 
 TEST_F(AXTreeConverterTest, AllFieldsSetAndEqual) {
@@ -146,8 +166,38 @@ TEST_F(AXTreeConverterTest, AllFieldsSetAndEqual) {
 
   MockNodeIDMapper mapper;
   auto converted_node = AXNodeDataToSemanticNode(
-      source_node_data, ui::AXTreeID::CreateNewAXTreeID(), false, &mapper);
+      source_node_data, root_node(), ui::AXTreeID::CreateNewAXTreeID(), false,
+      &mapper);
   EXPECT_TRUE(fidl::Equals(converted_node, expected_node));
+}
+
+TEST_F(AXTreeConverterTest, TransformAccountsForContainerOffset) {
+  ui::AXNodeData container_node_data;
+  container_node_data.id = 0;
+  container_node_data.relative_bounds = ui::AXRelativeBounds();
+  container_node_data.relative_bounds.bounds =
+      gfx::RectF(100 /* x */, 200 /* y */, 10 /* width */, 20 /* height */);
+
+  ui::AXNodeData child_node_data;
+  child_node_data.id = 1;
+  child_node_data.relative_bounds.transform = std::make_unique<gfx::Transform>(
+      2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+  MockNodeIDMapper mapper;
+  auto converted_node = AXNodeDataToSemanticNode(
+      child_node_data, container_node_data, ui::AXTreeID::CreateNewAXTreeID(),
+      false, &mapper);
+
+  Node expected_node;
+  expected_node.set_node_id(1);
+  fuchsia::ui::gfx::BoundingBox box;
+  expected_node.set_location(std::move(box));
+  // The fuchsia node transform should include a post-translation for the
+  // container node's relative bounds.
+  auto expected_transform = scenic::NewMatrix4Value(
+      {2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1, 0, 100, 200, 0, 1});
+  expected_node.set_transform(expected_transform.value);
+  EXPECT_EQ(converted_node.transform().matrix,
+            expected_node.transform().matrix);
 }
 
 TEST_F(AXTreeConverterTest, SomeFieldsSetAndEqual) {
@@ -162,7 +212,8 @@ TEST_F(AXTreeConverterTest, SomeFieldsSetAndEqual) {
 
   MockNodeIDMapper mapper;
   auto converted_node = AXNodeDataToSemanticNode(
-      source_node_data, ui::AXTreeID::CreateNewAXTreeID(), false, &mapper);
+      source_node_data, root_node(), ui::AXTreeID::CreateNewAXTreeID(), false,
+      &mapper);
 
   Node expected_node;
   expected_node.set_node_id(0);
@@ -178,7 +229,10 @@ TEST_F(AXTreeConverterTest, SomeFieldsSetAndEqual) {
   expected_node.set_attributes(std::move(attributes));
   fuchsia::ui::gfx::BoundingBox box;
   expected_node.set_location(std::move(box));
-
+  expected_node.set_container_id(kRootId);
+  fuchsia::ui::gfx::Matrix4Value mat =
+      scenic::NewMatrix4Value(k4DIdentityMatrixWithDefaultOffset);
+  expected_node.set_transform(mat.value);
   EXPECT_TRUE(fidl::Equals(converted_node, expected_node));
 }
 
@@ -195,7 +249,8 @@ TEST_F(AXTreeConverterTest, FieldMismatch) {
 
   MockNodeIDMapper mapper;
   auto converted_node = AXNodeDataToSemanticNode(
-      source_node_data, ui::AXTreeID::CreateNewAXTreeID(), false, &mapper);
+      source_node_data, root_node(), ui::AXTreeID::CreateNewAXTreeID(), false,
+      &mapper);
 
   Attributes attributes;
   attributes.set_label(kLabel1);
@@ -208,7 +263,7 @@ TEST_F(AXTreeConverterTest, FieldMismatch) {
   box.max =
       scenic::NewVector3({kRectX + kRectWidth, kRectY + kRectHeight, 0.0f});
   fuchsia::ui::gfx::Matrix4Value mat =
-      scenic::NewMatrix4Value(k4DIdentityMatrix);
+      scenic::NewMatrix4Value(k4DIdentityMatrixWithDefaultOffset);
   auto expected_node = CreateSemanticNode(
       source_node_data.id, Role::HEADER, std::move(attributes),
       std::move(states), std::vector<Action>{Action::SET_VALUE},
@@ -223,15 +278,17 @@ TEST_F(AXTreeConverterTest, FieldMismatch) {
   modified_node_data.AddStringAttribute(ax::mojom::StringAttribute::kName,
                                         kLabel2);
 
-  converted_node = AXNodeDataToSemanticNode(
-      modified_node_data, ui::AXTreeID::CreateNewAXTreeID(), false, &mapper);
+  converted_node = AXNodeDataToSemanticNode(modified_node_data, root_node(),
+                                            ui::AXTreeID::CreateNewAXTreeID(),
+                                            false, &mapper);
   EXPECT_FALSE(fidl::Equals(converted_node, expected_node));
 
   // The same as above, this time changing |child_ids|.
   modified_node_data = source_node_data;
   modified_node_data.child_ids = std::vector<int32_t>{};
-  converted_node = AXNodeDataToSemanticNode(
-      modified_node_data, ui::AXTreeID::CreateNewAXTreeID(), false, &mapper);
+  converted_node = AXNodeDataToSemanticNode(modified_node_data, root_node(),
+                                            ui::AXTreeID::CreateNewAXTreeID(),
+                                            false, &mapper);
   EXPECT_FALSE(fidl::Equals(converted_node, expected_node));
 }
 
@@ -248,7 +305,8 @@ TEST_F(AXTreeConverterTest, LocationFieldRespectsTypeInvariants) {
 
   MockNodeIDMapper mapper;
   auto converted_node = AXNodeDataToSemanticNode(
-      source_node_data, ui::AXTreeID::CreateNewAXTreeID(), false, &mapper);
+      source_node_data, root_node(), ui::AXTreeID::CreateNewAXTreeID(), false,
+      &mapper);
 
   // The type definition of the location field requires that in order to be
   // interpreted as having non-zero length in a dimension, the min must be less
@@ -272,7 +330,8 @@ TEST_F(AXTreeConverterTest, DefaultAction) {
 
   MockNodeIDMapper mapper;
   auto converted_node = AXNodeDataToSemanticNode(
-      source_node_data, ui::AXTreeID::CreateNewAXTreeID(), false, &mapper);
+      source_node_data, root_node(), ui::AXTreeID::CreateNewAXTreeID(), false,
+      &mapper);
 
   EXPECT_TRUE(fidl::Equals(converted_node, expected_node));
 }
@@ -323,58 +382,67 @@ TEST_F(AXTreeConverterTest, ConvertRoles) {
   ui::AXNodeData node;
   node.id = 0;
   node.role = ax::mojom::Role::kButton;
-  EXPECT_EQ(fuchsia::accessibility::semantics::Role::BUTTON,
-            AXNodeDataToSemanticNode(node, ui::AXTreeID::CreateNewAXTreeID(),
-                                     false, &mapper)
-                .role());
+  EXPECT_EQ(
+      fuchsia::accessibility::semantics::Role::BUTTON,
+      AXNodeDataToSemanticNode(
+          node, root_node(), ui::AXTreeID::CreateNewAXTreeID(), false, &mapper)
+          .role());
 
   node.role = ax::mojom::Role::kCheckBox;
-  EXPECT_EQ(fuchsia::accessibility::semantics::Role::CHECK_BOX,
-            AXNodeDataToSemanticNode(node, ui::AXTreeID::CreateNewAXTreeID(),
-                                     false, &mapper)
-                .role());
+  EXPECT_EQ(
+      fuchsia::accessibility::semantics::Role::CHECK_BOX,
+      AXNodeDataToSemanticNode(
+          node, root_node(), ui::AXTreeID::CreateNewAXTreeID(), false, &mapper)
+          .role());
 
   node.role = ax::mojom::Role::kHeader;
-  EXPECT_EQ(fuchsia::accessibility::semantics::Role::HEADER,
-            AXNodeDataToSemanticNode(node, ui::AXTreeID::CreateNewAXTreeID(),
-                                     false, &mapper)
-                .role());
+  EXPECT_EQ(
+      fuchsia::accessibility::semantics::Role::HEADER,
+      AXNodeDataToSemanticNode(
+          node, root_node(), ui::AXTreeID::CreateNewAXTreeID(), false, &mapper)
+          .role());
 
   node.role = ax::mojom::Role::kImage;
-  EXPECT_EQ(fuchsia::accessibility::semantics::Role::IMAGE,
-            AXNodeDataToSemanticNode(node, ui::AXTreeID::CreateNewAXTreeID(),
-                                     false, &mapper)
-                .role());
+  EXPECT_EQ(
+      fuchsia::accessibility::semantics::Role::IMAGE,
+      AXNodeDataToSemanticNode(
+          node, root_node(), ui::AXTreeID::CreateNewAXTreeID(), false, &mapper)
+          .role());
 
   node.role = ax::mojom::Role::kLink;
-  EXPECT_EQ(fuchsia::accessibility::semantics::Role::LINK,
-            AXNodeDataToSemanticNode(node, ui::AXTreeID::CreateNewAXTreeID(),
-                                     false, &mapper)
-                .role());
+  EXPECT_EQ(
+      fuchsia::accessibility::semantics::Role::LINK,
+      AXNodeDataToSemanticNode(
+          node, root_node(), ui::AXTreeID::CreateNewAXTreeID(), false, &mapper)
+          .role());
 
   node.role = ax::mojom::Role::kRadioButton;
-  EXPECT_EQ(fuchsia::accessibility::semantics::Role::RADIO_BUTTON,
-            AXNodeDataToSemanticNode(node, ui::AXTreeID::CreateNewAXTreeID(),
-                                     false, &mapper)
-                .role());
+  EXPECT_EQ(
+      fuchsia::accessibility::semantics::Role::RADIO_BUTTON,
+      AXNodeDataToSemanticNode(
+          node, root_node(), ui::AXTreeID::CreateNewAXTreeID(), false, &mapper)
+          .role());
 
   node.role = ax::mojom::Role::kSlider;
-  EXPECT_EQ(fuchsia::accessibility::semantics::Role::SLIDER,
-            AXNodeDataToSemanticNode(node, ui::AXTreeID::CreateNewAXTreeID(),
-                                     false, &mapper)
-                .role());
+  EXPECT_EQ(
+      fuchsia::accessibility::semantics::Role::SLIDER,
+      AXNodeDataToSemanticNode(
+          node, root_node(), ui::AXTreeID::CreateNewAXTreeID(), false, &mapper)
+          .role());
 
   node.role = ax::mojom::Role::kTextField;
-  EXPECT_EQ(fuchsia::accessibility::semantics::Role::TEXT_FIELD,
-            AXNodeDataToSemanticNode(node, ui::AXTreeID::CreateNewAXTreeID(),
-                                     false, &mapper)
-                .role());
+  EXPECT_EQ(
+      fuchsia::accessibility::semantics::Role::TEXT_FIELD,
+      AXNodeDataToSemanticNode(
+          node, root_node(), ui::AXTreeID::CreateNewAXTreeID(), false, &mapper)
+          .role());
 
   node.role = ax::mojom::Role::kStaticText;
-  EXPECT_EQ(fuchsia::accessibility::semantics::Role::STATIC_TEXT,
-            AXNodeDataToSemanticNode(node, ui::AXTreeID::CreateNewAXTreeID(),
-                                     false, &mapper)
-                .role());
+  EXPECT_EQ(
+      fuchsia::accessibility::semantics::Role::STATIC_TEXT,
+      AXNodeDataToSemanticNode(
+          node, root_node(), ui::AXTreeID::CreateNewAXTreeID(), false, &mapper)
+          .role());
 }
 
 }  // namespace

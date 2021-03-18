@@ -17,6 +17,7 @@
 #include "fuchsia/engine/test/web_engine_browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_tree_observer.h"
 #include "ui/gfx/switches.h"
 #include "ui/ozone/public/ozone_switches.h"
 
@@ -629,9 +630,90 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest,
   }
 }
 
-// TODO(crbug.com/1167266): Number of commit calls is not deterministic in
-// general, leading to flakiness. Hard-wired wait for 200ms may also lead to
-// expectations failures if the system running tests is overloaded.
+// This test verifies that a node's transform is updated correctly when its
+// container's relative bounds change.
+IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest,
+                       UpdateTransformWhenContainerBoundsChange) {
+  // Loads a page, so a real frame is created for this test. Then, several tree
+  // operations are applied on top of it, using the AXTreeID that corresponds to
+  // that frame.
+  LoadPage(kPage1Path, kPage1Title);
+  semantics_manager_.semantic_tree()->RunUntilCommitCountIs(1);
+
+  // Fetch the AXTreeID of the main frame (the page just loaded). This ID will
+  // be used in the operations that follow to simulate new data coming in.
+  auto tree_id =
+      frame_impl_->web_contents_for_test()->GetMainFrame()->GetAXTreeID();
+
+  AccessibilityBridge* bridge = frame_impl_->accessibility_bridge_for_test();
+  size_t tree_size = 5;
+
+  // The tree has the following form: (1 (2 (3 (4 (5)))))
+  auto tree_accessibility_event = CreateTreeAccessibilityEvent(tree_size);
+  tree_accessibility_event.ax_tree_id = tree_id;
+
+  // The root of this tree needs to be cleared (because it holds the page just
+  // loaded, and we are loading something completely new).
+  tree_accessibility_event.updates[0].node_id_to_clear =
+      bridge->ax_tree_for_test()->root()->id();
+
+  bridge->AccessibilityEventReceived(tree_accessibility_event);
+
+  semantics_manager_.semantic_tree()->RunUntilCommitCountIs(2);
+
+  const char kNodeName[] = "transfrom should update";
+  // Changes the bounds of node 1.
+  // (1 (2 (3 (4 (5)))))
+  ui::AXTreeUpdate update;
+  update.root_id = 1;
+  update.nodes.resize(2);
+  update.nodes[0].id = 1;
+  // Update the relative bounds of node 1, which is node 2's offset container.
+  update.nodes[0].relative_bounds.bounds = gfx::RectF(2, 3, 4, 5);
+  update.nodes[0].child_ids = {2};
+  update.nodes[1].id = 2;
+  update.nodes[1].SetName(kNodeName);
+  bridge->AccessibilityEventReceived(
+      CreateAccessibilityEventWithUpdate(std::move(update), tree_id));
+  semantics_manager_.semantic_tree()->RunUntilCommitCountIs(3);
+
+  auto* tree = bridge->ax_tree_for_test();
+  auto* updated_node = tree->GetFromId(2);
+  ASSERT_TRUE(updated_node);
+
+  // Call OnAtomicUpdateFinished(), and ensure that the change is committed to
+  // the semantic tree.
+  auto node_data = updated_node->data();
+  node_data.relative_bounds.offset_container_id = 1;
+  // Node 2 should have non-trivial relative bounds to ensure that the
+  // accessibility bridge correctly composes node 2's transform and the
+  // translation for node 1's bounds.
+  node_data.relative_bounds.bounds = gfx::RectF(10, 11, 10, 11);
+  node_data.relative_bounds.transform = std::make_unique<gfx::Transform>(
+      5, 0, 0, 100, 0, 5, 0, 200, 0, 0, 5, 0, 0, 0, 0, 1);
+  updated_node->SetData(node_data);
+  ui::AXTreeObserver::Change change(
+      updated_node, ui::AXTreeObserver::ChangeType::NODE_CHANGED);
+  bridge->OnAtomicUpdateFinished(tree, /*root_changed=*/false, {change});
+  semantics_manager_.semantic_tree()->RunUntilCommitCountIs(4);
+
+  // Verify that the transform for the Fuchsia semantic node corresponding to
+  // node 2 reflects the new bounds of node 1.
+  fuchsia::accessibility::semantics::Node* fuchsia_node =
+      semantics_manager_.semantic_tree()->GetNodeFromLabel(kNodeName);
+  ASSERT_TRUE(fuchsia_node);
+  // A Fuchsia node's semantic transform should include an offset for its parent
+  // node as a post-translation on top of its existing transform. Therefore, the
+  // x, y, and z scale (indices 0, 5, and 10, respectively) should remain
+  // unchanged, and the x and y bounds of the offset container should be added
+  // to the node's existing translation entries (indices 12 and 13).
+  EXPECT_EQ(fuchsia_node->transform().matrix[0], 5);
+  EXPECT_EQ(fuchsia_node->transform().matrix[5], 5);
+  EXPECT_EQ(fuchsia_node->transform().matrix[10], 5);
+  EXPECT_EQ(fuchsia_node->transform().matrix[12], 102);
+  EXPECT_EQ(fuchsia_node->transform().matrix[13], 203);
+}
+
 IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, DISABLED_OutOfProcessIframe) {
   constexpr int64_t kBindingsId = 1234;
 
