@@ -206,6 +206,12 @@ class NavigationControllerTest : public RenderViewHostImplTestHarness,
         ContentWebUIControllerFactory::GetInstance());
   }
 
+  void TearDown() override {
+    WebUIControllerFactory::UnregisterFactoryForTesting(
+        ContentWebUIControllerFactory::GetInstance());
+    RenderViewHostImplTestHarness::TearDown();
+  }
+
   // WebContentsObserver:
   void DidStartNavigation(NavigationHandle* navigation) override {
     navigated_url_ = navigation->GetURL();
