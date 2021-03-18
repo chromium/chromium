@@ -197,8 +197,6 @@ void PdfViewWebPlugin::DidFinishLoading() {}
 
 void PdfViewWebPlugin::DidFailLoading(const blink::WebURLError& error) {}
 
-void PdfViewWebPlugin::DidScroll(const gfx::Vector2d& offset) {}
-
 void PdfViewWebPlugin::UpdateCursor(PP_CursorType_Dev cursor) {}
 
 void PdfViewWebPlugin::UpdateTickMarks(

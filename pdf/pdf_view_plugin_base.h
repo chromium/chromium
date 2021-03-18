@@ -52,6 +52,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // PDFEngine::Client:
   void ProposeDocumentLayout(const DocumentLayout& layout) override;
   void Invalidate(const gfx::Rect& rect) override;
+  void DidScroll(const gfx::Vector2d& offset) override;
   void ScrollToX(int x_screen_coords) override;
   void ScrollToY(int y_screen_coords) override;
   void ScrollBy(const gfx::Vector2d& delta) override;
@@ -247,7 +248,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   void set_url(const std::string& url) { url_ = url; }
 
-  const SkBitmap& image_data() const { return image_data_; }
   SkBitmap& mutable_image_data() { return image_data_; }
 
   const gfx::Rect& available_area() const { return available_area_; }

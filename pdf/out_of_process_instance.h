@@ -30,7 +30,6 @@
 
 namespace gfx {
 class Size;
-class Vector2d;
 }  // namespace gfx
 
 namespace pp {
@@ -97,7 +96,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void FlushCallback(int32_t result);
 
   // PdfViewPluginBase:
-  void DidScroll(const gfx::Vector2d& offset) override;
   void UpdateCursor(PP_CursorType_Dev cursor) override;
   void UpdateTickMarks(const std::vector<gfx::Rect>& tickmarks) override;
   void NotifyNumberOfFindResultsChanged(int total, bool final_result) override;
@@ -238,7 +236,7 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   // or not.
   bool SendInputEventToEngine(const pp::InputEvent& event);
 
-  // The Pepper image data that is in sync with image_data().
+  // The Pepper image data that is in sync with mutable_image_data().
   pp::ImageData pepper_image_data_;
 
   // The current cursor.

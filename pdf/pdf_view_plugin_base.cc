@@ -130,6 +130,11 @@ void PdfViewPluginBase::Invalidate(const gfx::Rect& rect) {
   paint_manager_.InvalidateRect(offset_rect);
 }
 
+void PdfViewPluginBase::DidScroll(const gfx::Vector2d& offset) {
+  if (!image_data_.drawsNothing())
+    paint_manager_.ScrollRect(available_area_, offset);
+}
+
 void PdfViewPluginBase::ScrollToX(int x_screen_coords) {
   const float x_scroll_pos = x_screen_coords / device_scale_;
 

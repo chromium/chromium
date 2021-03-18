@@ -66,7 +66,6 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/geometry/vector2d.h"
 
 namespace chrome_pdf {
 
@@ -902,11 +901,6 @@ void OutOfProcessInstance::SetFormFieldInFocus(bool in_focus) {
 
   text_input_->SetTextInputType(in_focus ? PP_TEXTINPUT_TYPE_DEV_TEXT
                                          : PP_TEXTINPUT_TYPE_DEV_NONE);
-}
-
-void OutOfProcessInstance::DidScroll(const gfx::Vector2d& offset) {
-  if (!image_data().drawsNothing())
-    paint_manager().ScrollRect(available_area(), offset);
 }
 
 void OutOfProcessInstance::UpdateCursor(PP_CursorType_Dev cursor) {
