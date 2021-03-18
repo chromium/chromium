@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_test_utils.h"
@@ -90,8 +91,16 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, PortalActivation) {
   EXPECT_EQ(portal_contents, tab_strip_model->GetActiveWebContents());
 }
 
+// Flaky on Linux ASAN. crbug.com/1182702
+#if defined(ADDRESS_SANITIZER) && defined(OS_LINUX)
+#define MAYBE_DevToolsWindowStaysOpenAfterActivation \
+  DISABLED_DevToolsWindowStaysOpenAfterActivation
+#else
+#define MAYBE_DevToolsWindowStaysOpenAfterActivation \
+  DevToolsWindowStaysOpenAfterActivation
+#endif
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
-                       DevToolsWindowStaysOpenAfterActivation) {
+                       MAYBE_DevToolsWindowStaysOpenAfterActivation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL("/portal/activate.html"));
   ui_test_utils::NavigateToURL(browser(), url);
