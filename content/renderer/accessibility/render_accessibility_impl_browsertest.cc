@@ -1181,7 +1181,7 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
     action_data.value = value_to_set;
     EXPECT_TRUE(input_text_action_target->PerformAction(action_data));
   }
-  EXPECT_EQ(value_to_set, input_text.StringValue().Utf8());
+  EXPECT_EQ(value_to_set, input_text.GetValueForControl().Utf8());
 
   // Setting selection requires layout to be clean.
   ASSERT_TRUE(root_obj.MaybeUpdateLayoutAndCheckValidity());

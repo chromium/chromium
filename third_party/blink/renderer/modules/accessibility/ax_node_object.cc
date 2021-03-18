@@ -1385,17 +1385,7 @@ bool AXNodeObject::IsNativeImage() const {
 }
 
 bool AXNodeObject::IsNativeTextControl() const {
-  Node* node = this->GetNode();
-  if (!node)
-    return false;
-
-  if (IsA<HTMLTextAreaElement>(*node))
-    return true;
-
-  if (const auto* input = DynamicTo<HTMLInputElement>(*node))
-    return input->IsTextField();
-
-  return false;
+  return blink::IsTextControl(GetNode());
 }
 
 bool AXNodeObject::IsNonNativeTextControl() const {
@@ -2269,7 +2259,7 @@ const AtomicString& AXNodeObject::AccessKey() const {
 int AXNodeObject::TextLength() const {
   if (!IsTextControl())
     return -1;
-  return GetValueForControl().length();
+  return SlowGetValueForControlIncludingContentEditable().length();
 }
 
 RGBA32 AXNodeObject::ColorValue() const {
@@ -2673,17 +2663,12 @@ String AXNodeObject::GetValueForControl() const {
     return select_element->InnerElement().innerText();
   }
 
-  if (IsTextControl()) {
-    if (!IsA<HTMLTextAreaElement>(*node) && !IsA<HTMLInputElement>(*node)) {
-      // The text control is a contenteditable.
-      auto* element = DynamicTo<Element>(node);
-      return element ? element->GetInnerTextWithoutUpdate() : String();
-    }
-
-    // For an Input or a textarea: We should not simply return the "value"
-    // attribute because it might be sanitized in some input control types, e.g.
-    // email fields. If we do that, then "selectionStart" and "selectionEnd"
-    // indices will not match with the text in the sanitized value.
+  if (IsNativeTextControl()) {
+    // This is an "<input type=text>" or a "<textarea>": We should not simply
+    // return the "value" attribute because it might be sanitized in some input
+    // control types, e.g. email fields. If we do that, then "selectionStart"
+    // and "selectionEnd" indices will not match with the text in the sanitized
+    // value.
     String inner_text = ToTextControl(*node).InnerEditorValue();
     if (!IsPasswordFieldAndShouldHideValue())
       return inner_text;
@@ -2760,6 +2745,14 @@ String AXNodeObject::GetValueForControl() const {
   }
 
   return String();
+}
+
+String AXNodeObject::SlowGetValueForControlIncludingContentEditable() const {
+  if (HasContentEditableAttributeSet() || IsARIATextControl()) {
+    Element* element = GetElement();
+    return element ? element->GetInnerTextWithoutUpdate() : String();
+  }
+  return GetValueForControl();
 }
 
 ax::mojom::blink::Role AXNodeObject::AriaRoleAttribute() const {
@@ -5396,7 +5389,7 @@ String AXNodeObject::PlaceholderFromNativeAttribute() const {
 String AXNodeObject::GetValueContributionToName() const {
   if (CanSetValueAttribute()) {
     if (IsTextControl())
-      return GetValueForControl();
+      return SlowGetValueForControlIncludingContentEditable();
 
     if (IsRangeValueSupported()) {
       const AtomicString& aria_valuetext =

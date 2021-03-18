@@ -851,7 +851,7 @@ void InspectorAccessibilityAgent::FillCoreProperties(
     if (ax_object.ValueForRange(&value))
       node_object.setValue(CreateValue(value));
   } else {
-    String value = ax_object.GetValueForControl();
+    String value = ax_object.SlowGetValueForControlIncludingContentEditable();
     if (!value.IsEmpty())
       node_object.setValue(CreateValue(value));
   }

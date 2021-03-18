@@ -177,6 +177,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   KURL Url() const override;
   AXObject* ChooserPopup() const override;
   String GetValueForControl() const override;
+  String SlowGetValueForControlIncludingContentEditable() const override;
   String TextFromDescendants(AXObjectSet& visited,
                              bool recursive) const override;
 

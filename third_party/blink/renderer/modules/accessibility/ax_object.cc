@@ -1262,9 +1262,9 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
     return;
   }
 
-  TruncateAndAddStringAttribute(node_data,
-                                ax::mojom::blink::StringAttribute::kValue,
-                                GetValueForControl().Utf8());
+  TruncateAndAddStringAttribute(
+      node_data, ax::mojom::blink::StringAttribute::kValue,
+      SlowGetValueForControlIncludingContentEditable().Utf8());
 
   switch (Restriction()) {
     case AXRestriction::kRestrictionReadOnly:
@@ -1731,6 +1731,8 @@ ax::mojom::blink::Role AXObject::RoleValue() const {
 }
 
 bool AXObject::IsARIATextControl() const {
+  if (IsNativeTextControl())
+    return false;  // Native role supercedes the ARIA one.
   return AriaRoleAttribute() == ax::mojom::blink::Role::kTextField ||
          AriaRoleAttribute() == ax::mojom::blink::Role::kSearchBox ||
          AriaRoleAttribute() == ax::mojom::blink::Role::kTextFieldWithComboBox;
@@ -1875,6 +1877,14 @@ ax::mojom::blink::CheckedState AXObject::CheckedState() const {
   }
 
   return ax::mojom::blink::CheckedState::kFalse;
+}
+
+String AXObject::GetValueForControl() const {
+  return String();
+}
+
+String AXObject::SlowGetValueForControlIncludingContentEditable() const {
+  return String();
 }
 
 bool AXObject::IsNativeCheckboxInMixedState(const Node* node) {

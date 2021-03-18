@@ -776,11 +776,13 @@ bool WebAXObject::SetSelection(const WebAXObject& anchor_object,
   return ax_selection.Select();
 }
 
-WebString WebAXObject::StringValue() const {
+WebString WebAXObject::GetValueForControl() const {
   if (IsDetached())
     return WebString();
 
-  return private_->GetValueForControl();
+  // TODO(nektar): Switch to `GetValueForControl()` once browser changes have
+  // landed.
+  return private_->SlowGetValueForControlIncludingContentEditable();
 }
 
 ax::mojom::blink::WritingDirection WebAXObject::GetTextDirection() const {

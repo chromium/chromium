@@ -179,7 +179,7 @@ class WebAXObject {
   BLINK_EXPORT WebAXObject InPageLinkTarget() const;
   BLINK_EXPORT WebVector<WebAXObject> RadioButtonsInGroup() const;
   BLINK_EXPORT ax::mojom::Role Role() const;
-  BLINK_EXPORT WebString StringValue() const;
+  BLINK_EXPORT WebString GetValueForControl() const;
   BLINK_EXPORT ax::mojom::WritingDirection GetTextDirection() const;
   BLINK_EXPORT WebURL Url() const;
 

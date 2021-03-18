@@ -774,7 +774,24 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual bool MaxValueForRange(float* out_value) const { return false; }
   virtual bool MinValueForRange(float* out_value) const { return false; }
   virtual bool StepValueForRange(float* out_value) const { return false; }
-  virtual String GetValueForControl() const { return String(); }
+
+  // Returns the value of a control such as a plain text field, a content
+  // editable, a submit button, a slider, a progress bar, a scroll bar, a meter,
+  // a spinner, a <select> element, a date picker or an ARIA combo box. In order
+  // to improve performance during our cross-process communication with the
+  // browser, we avoid computing the value of a content editable from its inner
+  // text. (See `AXObject::SlowGetValueForControlIncludingContentEditable()`.)
+  // For range controls, such as sliders and scroll bars, the value of
+  // aria-valuetext takes priority over the value of aria-valuenow.
+  virtual String GetValueForControl() const;
+
+  // Similar to `AXObject::GetValueForControl()` above, but also computes the
+  // value of a content editable from its inner text. Sending this value to the
+  // browser process might be slow if the content editable has a lot of content.
+  // So, we should prefer computing the value of a content editable on the
+  // browser side.
+  virtual String SlowGetValueForControlIncludingContentEditable() const;
+
   virtual AXRestriction Restriction() const;
 
   // ARIA attributes.
