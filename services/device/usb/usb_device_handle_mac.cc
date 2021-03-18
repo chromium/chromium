@@ -343,7 +343,8 @@ void UsbDeviceHandleMac::ResetDevice(ResultCallback callback) {
 
   // TODO(https://crbug.com/1096743): Figure out if open interfaces need to be
   // closed as well.
-  IOReturn kr = (*device_interface_)->ResetDevice(device_interface_);
+  IOReturn kr = (*device_interface_)
+                    ->USBDeviceReEnumerate(device_interface_, /*options=*/0);
   if (kr != kIOReturnSuccess) {
     std::move(callback).Run(false);
     return;

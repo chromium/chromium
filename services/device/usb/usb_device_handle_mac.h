@@ -32,8 +32,10 @@ struct Transfer;
 
 class UsbDeviceHandleMac : public UsbDeviceHandle {
  public:
+  // Requires Mac OS X version 10.1.2 or later.
   using ScopedIOUSBDeviceInterface =
-      base::mac::ScopedIOPluginInterface<IOUSBDeviceInterface182>;
+      base::mac::ScopedIOPluginInterface<IOUSBDeviceInterface187>;
+  // Requires Mac OS X version 10.0.4 or later.
   using ScopedIOUSBInterfaceInterface =
       base::mac::ScopedIOPluginInterface<IOUSBInterfaceInterface182>;
 
