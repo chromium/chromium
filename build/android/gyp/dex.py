@@ -38,10 +38,6 @@ _IGNORE_WARNINGS = (
     r'Missing class com.google.errorprone.annotations.RestrictedInheritance',
     # Caused by internal protobuf package: https://crbug.com/1183971
     r'referenced from: com.google.protobuf.GeneratedMessageLite$GeneratedExtension',  # pylint: disable=line-too-long
-    # Filter out warnings caused by our fake main dex list used to enable
-    # multidex on library targets.
-    # Warning: Application does not contain `Foo` as referenced in main-dex-list
-    r'does not contain `Foo`',
 )
 
 
@@ -376,17 +372,9 @@ def _CreateFinalDex(d8_inputs, output, tmp_dir, dex_cmd, options=None):
   needs_dexing = not all(f.endswith('.dex') for f in d8_inputs)
   needs_dexmerge = output.endswith('.dex') or not (options and options.library)
   if needs_dexing or needs_dexmerge:
-    if options:
-      if options.main_dex_rules_path:
-        for main_dex_rule in options.main_dex_rules_path:
-          dex_cmd = dex_cmd + ['--main-dex-rules', main_dex_rule]
-      elif options.library and int(options.min_api or 1) < 21:
-        # When dexing D8 requires a main dex list pre-21. For library targets,
-        # it doesn't matter what's in the main dex, so just use a dummy one.
-        tmp_main_dex_list_path = os.path.join(tmp_dir, 'main_list.txt')
-        with open(tmp_main_dex_list_path, 'w') as f:
-          f.write('Foo.class\n')
-        dex_cmd = dex_cmd + ['--main-dex-list', tmp_main_dex_list_path]
+    if options and options.main_dex_rules_path:
+      for main_dex_rule in options.main_dex_rules_path:
+        dex_cmd = dex_cmd + ['--main-dex-rules', main_dex_rule]
 
     tmp_dex_dir = os.path.join(tmp_dir, 'tmp_dex_dir')
     os.mkdir(tmp_dex_dir)
