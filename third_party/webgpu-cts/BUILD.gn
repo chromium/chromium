@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("./scripts/node.gni")
-
 group("webgpu-cts") {
   public_deps = [ ":compile_src" ]
 }
@@ -15,10 +13,11 @@ foreach(file, input_ts_files) {
   ts_source_inputs += [ "src/$file" ]
 }
 
-node_action("compile_src") {
-  script = "//third_party/node/node_modules/typescript/lib/tsc.js"
+action("compile_src") {
+  script = "scripts/compile_src.py"
 
-  inputs = ts_source_inputs
+  inputs = [ "//third_party/node/node_modules/typescript/lib/tsc.js" ] +
+           ts_source_inputs
   outputs = []
   foreach(ts_file, input_ts_files) {
     js_file = string_replace(ts_file, ".ts", ".js")
