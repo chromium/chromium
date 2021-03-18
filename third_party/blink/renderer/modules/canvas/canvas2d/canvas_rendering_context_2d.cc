@@ -1174,7 +1174,7 @@ void CanvasRenderingContext2D::DrawFocusIfNeededInternal(const Path& path,
   // focus events fire.
   if (element->GetDocument().FocusedElement() == element) {
     ScrollPathIntoViewInternal(path);
-    DrawFocusRing(path);
+    DrawFocusRing(path, element);
   }
 
   // Update its accessible bounds whether it's focused or not.
@@ -1194,15 +1194,19 @@ bool CanvasRenderingContext2D::FocusRingCallIsValid(const Path& path,
   return true;
 }
 
-void CanvasRenderingContext2D::DrawFocusRing(const Path& path) {
+void CanvasRenderingContext2D::DrawFocusRing(const Path& path,
+                                             Element* element) {
   if (!GetOrCreatePaintCanvas())
     return;
 
-  // TODO(crbug.com/929098) Need to pass an appropriate color scheme here.
-  SkColor color =
-      LayoutTheme::GetTheme()
-          .FocusRingColor(ComputedStyle::InitialStyle().UsedColorScheme())
-          .Rgb();
+  mojom::blink::ColorScheme color_scheme = mojom::blink::ColorScheme::kLight;
+  if (element) {
+    if (const ComputedStyle* style = element->GetComputedStyle()) {
+      color_scheme = style->UsedColorScheme();
+    }
+  }
+
+  SkColor color = LayoutTheme::GetTheme().FocusRingColor(color_scheme).Rgb();
   const int kFocusRingWidth = 5;
   DrawPlatformFocusRing(path.GetSkPath(), GetPaintCanvas(), color,
                         /*width=*/kFocusRingWidth, /*radius=*/kFocusRingWidth);
