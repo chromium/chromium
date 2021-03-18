@@ -5295,6 +5295,8 @@ static_library("browser") {
       "password_manager/multi_profile_credentials_filter.cc",
       "password_manager/multi_profile_credentials_filter.h",
       "platform_util.cc",
+      "policy/cbcm_invalidations_initializer.cc",
+      "policy/cbcm_invalidations_initializer.h",
       "policy/chrome_browser_cloud_management_controller_desktop.cc",
       "policy/chrome_browser_cloud_management_controller_desktop.h",
       "policy/chrome_browser_cloud_management_register_watcher.cc",
