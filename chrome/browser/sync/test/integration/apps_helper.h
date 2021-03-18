@@ -104,6 +104,8 @@ void CopyNTPOrdinals(Profile* source, Profile* destination, int index);
 // Fix any NTP icon collisions that are currently in |profile|.
 void FixNTPOrdinalCollisions(Profile* profile);
 
+// Wait for all the web app install and uninstall tasks to finish.
+void AwaitWebAppQuiescence(std::vector<Profile*> profiles);
 }  // namespace apps_helper
 
 // Checker to block for a set of profiles to have matching extensions lists. If
