@@ -361,7 +361,7 @@ LayoutBox* LayoutObjectFactory::CreateAnonymousTableWithParent(
     const LayoutObject& parent,
     bool child_forces_legacy) {
   scoped_refptr<ComputedStyle> new_style =
-      ComputedStyle::CreateAnonymousStyleWithDisplay(
+      parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           parent.StyleRef(),
           parent.IsLayoutInline() ? EDisplay::kInlineTable : EDisplay::kTable);
   LegacyLayout legacy = parent.ForceLegacyLayout() || child_forces_legacy
@@ -378,8 +378,8 @@ LayoutBox* LayoutObjectFactory::CreateAnonymousTableWithParent(
 LayoutBox* LayoutObjectFactory::CreateAnonymousTableSectionWithParent(
     const LayoutObject& parent) {
   scoped_refptr<ComputedStyle> new_style =
-      ComputedStyle::CreateAnonymousStyleWithDisplay(parent.StyleRef(),
-                                                     EDisplay::kTableRowGroup);
+      parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
+          parent.StyleRef(), EDisplay::kTableRowGroup);
   LegacyLayout legacy =
       parent.ForceLegacyLayout() ? LegacyLayout::kForce : LegacyLayout::kAuto;
 
@@ -393,8 +393,8 @@ LayoutBox* LayoutObjectFactory::CreateAnonymousTableSectionWithParent(
 LayoutBox* LayoutObjectFactory::CreateAnonymousTableRowWithParent(
     const LayoutObject& parent) {
   scoped_refptr<ComputedStyle> new_style =
-      ComputedStyle::CreateAnonymousStyleWithDisplay(parent.StyleRef(),
-                                                     EDisplay::kTableRow);
+      parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
+          parent.StyleRef(), EDisplay::kTableRow);
   LegacyLayout legacy =
       parent.ForceLegacyLayout() ? LegacyLayout::kForce : LegacyLayout::kAuto;
   LayoutBox* new_row = CreateTableRow(parent.GetDocument(), *new_style, legacy);
@@ -406,8 +406,8 @@ LayoutBox* LayoutObjectFactory::CreateAnonymousTableRowWithParent(
 LayoutBlockFlow* LayoutObjectFactory::CreateAnonymousTableCellWithParent(
     const LayoutObject& parent) {
   scoped_refptr<ComputedStyle> new_style =
-      ComputedStyle::CreateAnonymousStyleWithDisplay(parent.StyleRef(),
-                                                     EDisplay::kTableCell);
+      parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
+          parent.StyleRef(), EDisplay::kTableCell);
   LegacyLayout legacy =
       parent.ForceLegacyLayout() ? LegacyLayout::kForce : LegacyLayout::kAuto;
   LayoutBlockFlow* new_cell =

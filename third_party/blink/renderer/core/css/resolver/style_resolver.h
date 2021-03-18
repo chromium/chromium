@@ -69,6 +69,12 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
       const StyleRecalcContext&,
       const StyleRequest& = StyleRequest());
 
+  // Create a new ComputedStyle instance populated with initial values.
+  scoped_refptr<ComputedStyle> CreateComputedStyle();
+
+  // Create a ComputedStyle for initial styles to be used as the basis for the
+  // root element style. In addition to initial values things like zoom, font,
+  // forced color mode etc. is set.
   scoped_refptr<ComputedStyle> InitialStyleForElement();
 
   static CompositorKeyframeValue* CreateCompositorKeyframeValueSnapshot(
@@ -84,6 +90,17 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
       const AtomicString& page_name);
   scoped_refptr<const ComputedStyle> StyleForText(Text*);
   scoped_refptr<ComputedStyle> StyleForViewport();
+
+  // Create ComputedStyle for anonymous boxes.
+  scoped_refptr<ComputedStyle> CreateAnonymousStyleWithDisplay(
+      const ComputedStyle& parent_style,
+      EDisplay);
+
+  // Create ComputedStyle for anonymous wrappers between text boxes and
+  // display:contents elements.
+  scoped_refptr<ComputedStyle> CreateInheritedDisplayContentsStyleIfNeeded(
+      const ComputedStyle& parent_style,
+      const ComputedStyle& layout_parent_style);
 
   // TODO(esprehn): StyleResolver should probably not contain tree walking
   // state, instead we should pass a context object during recalcStyle.

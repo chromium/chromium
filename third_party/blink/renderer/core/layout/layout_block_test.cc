@@ -19,7 +19,8 @@ namespace blink {
 class LayoutBlockTest : public RenderingTest {};
 
 TEST_F(LayoutBlockTest, LayoutNameCalledWithNullStyle) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style =
+      GetDocument().GetStyleResolver().CreateComputedStyle();
   LayoutObject* obj = LayoutBlockFlow::CreateAnonymous(&GetDocument(), style,
                                                        LegacyLayout::kAuto);
   obj->SetModifiedStyleOutsideStyleRecalc(nullptr,

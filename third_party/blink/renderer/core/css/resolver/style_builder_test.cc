@@ -6,6 +6,7 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_inherited_value.h"
 #include "third_party/blink/renderer/core/css/css_initial_value.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/scoped_css_value.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -31,8 +32,9 @@ TEST_F(StyleBuilderTest, WritingModeChangeDirtiesFont) {
 
   for (const CSSProperty* property : properties) {
     for (const CSSValue* value : values) {
-      auto parent_style = ComputedStyle::Create();
-      auto style = ComputedStyle::Create();
+      auto parent_style =
+          GetDocument().GetStyleResolver().CreateComputedStyle();
+      auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
       // This test assumes that initial 'writing-mode' is not 'vertical-lr'.
       ASSERT_NE(WritingMode::kVerticalLr, style->GetWritingMode());
       style->SetWritingMode(WritingMode::kVerticalLr);
@@ -63,8 +65,9 @@ TEST_F(StyleBuilderTest, TextOrientationChangeDirtiesFont) {
 
   for (const CSSProperty* property : properties) {
     for (const CSSValue* value : values) {
-      auto parent_style = ComputedStyle::Create();
-      auto style = ComputedStyle::Create();
+      auto parent_style =
+          GetDocument().GetStyleResolver().CreateComputedStyle();
+      auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
       // This test assumes that initial 'text-orientation' is not 'upright'.
       ASSERT_NE(ETextOrientation::kUpright, style->GetTextOrientation());
       style->SetTextOrientation(ETextOrientation::kUpright);
@@ -82,8 +85,8 @@ TEST_F(StyleBuilderTest, TextOrientationChangeDirtiesFont) {
 }
 
 TEST_F(StyleBuilderTest, HasExplicitInheritance) {
-  auto parent_style = ComputedStyle::Create();
-  auto style = ComputedStyle::Create();
+  auto parent_style = GetDocument().GetStyleResolver().CreateComputedStyle();
+  auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
   StyleResolverState state(GetDocument(), *GetDocument().body(),
                            StyleRequest(parent_style.get()));
   state.SetStyle(style);

@@ -57,8 +57,9 @@ LayoutMultiColumnFlowThread* LayoutMultiColumnFlowThread::CreateAnonymous(
   LayoutMultiColumnFlowThread* layout_object =
       new LayoutMultiColumnFlowThread(needs_paint_layer);
   layout_object->SetDocumentForAnonymous(&document);
-  layout_object->SetStyle(ComputedStyle::CreateAnonymousStyleWithDisplay(
-      parent_style, EDisplay::kBlock));
+  layout_object->SetStyle(
+      document.GetStyleResolver().CreateAnonymousStyleWithDisplay(
+          parent_style, EDisplay::kBlock));
   return layout_object;
 }
 

@@ -20,7 +20,7 @@ class TestInlineTextBox : public InlineTextBox {
   static TestInlineTextBox* Create(Document& document, const String& string) {
     Text* node = document.createTextNode(string);
     LayoutText* text = new LayoutText(node, string.Impl());
-    text->SetStyle(ComputedStyle::Create());
+    text->SetStyle(document.GetStyleResolver().CreateComputedStyle());
     return new TestInlineTextBox(LineLayoutItem(text));
   }
 

@@ -63,7 +63,8 @@ void CanvasFormattedText::Dispose() {
 LayoutBlockFlow* CanvasFormattedText::GetLayoutBlock(
     Document& document,
     const FontDescription& defaultFont) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style =
+      document.GetStyleResolver().CreateComputedStyle();
   style->SetDisplay(EDisplay::kBlock);
   style->SetFontDescription(defaultFont);
   block_->SetStyle(style);

@@ -28,7 +28,7 @@ class NGInlineItemsBuilderTest : public NGLayoutTest {
  protected:
   void SetUp() override {
     NGLayoutTest::SetUp();
-    style_ = ComputedStyle::Create();
+    style_ = GetDocument().GetStyleResolver().CreateComputedStyle();
     block_flow_ = LayoutBlockFlow::CreateAnonymous(&GetDocument(), style_,
                                                    LegacyLayout::kAuto);
     anonymous_objects_.push_back(block_flow_);
@@ -49,7 +49,8 @@ class NGInlineItemsBuilderTest : public NGLayoutTest {
   scoped_refptr<ComputedStyle> GetStyle(EWhiteSpace whitespace) {
     if (whitespace == EWhiteSpace::kNormal)
       return style_;
-    scoped_refptr<ComputedStyle> style(ComputedStyle::Create());
+    scoped_refptr<ComputedStyle> style(
+        GetDocument().GetStyleResolver().CreateComputedStyle());
     style->SetWhiteSpace(whitespace);
     return style;
   }
@@ -409,7 +410,8 @@ TEST_F(NGInlineItemsBuilderTest, IgnorablePre) {
 TEST_F(NGInlineItemsBuilderTest, Empty) {
   Vector<NGInlineItem> items;
   NGInlineItemsBuilder builder(GetLayoutBlockFlow(), &items);
-  scoped_refptr<ComputedStyle> block_style(ComputedStyle::Create());
+  scoped_refptr<ComputedStyle> block_style(
+      GetDocument().GetStyleResolver().CreateComputedStyle());
   builder.EnterBlock(block_style.get());
   builder.ExitBlock();
 
@@ -451,7 +453,8 @@ TEST_F(NGInlineItemsBuilderTest, GenerateBreakOpportunityAfterLeadingSpaces) {
 TEST_F(NGInlineItemsBuilderTest, BidiBlockOverride) {
   Vector<NGInlineItem> items;
   NGInlineItemsBuilder builder(GetLayoutBlockFlow(), &items);
-  scoped_refptr<ComputedStyle> block_style(ComputedStyle::Create());
+  scoped_refptr<ComputedStyle> block_style(
+      GetDocument().GetStyleResolver().CreateComputedStyle());
   block_style->SetUnicodeBidi(UnicodeBidi::kBidiOverride);
   block_style->SetDirection(TextDirection::kRtl);
   builder.EnterBlock(block_style.get());
@@ -469,7 +472,8 @@ TEST_F(NGInlineItemsBuilderTest, BidiBlockOverride) {
 static LayoutInline* CreateLayoutInline(
     Document* document,
     void (*initialize_style)(ComputedStyle*)) {
-  scoped_refptr<ComputedStyle> style(ComputedStyle::Create());
+  scoped_refptr<ComputedStyle> style(
+      document->GetStyleResolver().CreateComputedStyle());
   initialize_style(style.get());
   LayoutInline* const node = LayoutInline::CreateAnonymous(document);
   node->SetModifiedStyleOutsideStyleRecalc(

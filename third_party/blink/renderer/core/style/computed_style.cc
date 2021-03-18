@@ -138,26 +138,6 @@ const ComputedStyle& ComputedStyle::InitialStyle() {
   return *initial_style;
 }
 
-scoped_refptr<ComputedStyle> ComputedStyle::CreateAnonymousStyleWithDisplay(
-    const ComputedStyle& parent_style,
-    EDisplay display) {
-  scoped_refptr<ComputedStyle> new_style = ComputedStyle::Create();
-  new_style->InheritFrom(parent_style);
-  new_style->SetUnicodeBidi(parent_style.GetUnicodeBidi());
-  new_style->SetDisplay(display);
-  return new_style;
-}
-
-scoped_refptr<ComputedStyle>
-ComputedStyle::CreateInheritedDisplayContentsStyleIfNeeded(
-    const ComputedStyle& parent_style,
-    const ComputedStyle& layout_parent_style) {
-  if (parent_style.InheritedEqual(layout_parent_style))
-    return nullptr;
-  return ComputedStyle::CreateAnonymousStyleWithDisplay(parent_style,
-                                                        EDisplay::kInline);
-}
-
 scoped_refptr<ComputedStyle> ComputedStyle::Clone(const ComputedStyle& other) {
   return base::AdoptRef(new ComputedStyle(PassKey(), other));
 }

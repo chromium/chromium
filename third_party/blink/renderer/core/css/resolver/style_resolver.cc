@@ -803,7 +803,7 @@ void StyleResolver::InitStyleAndApplyInheritance(
     const StyleRequest& style_request,
     StyleResolverState& state) {
   if (AllowsInheritance(style_request, state.ParentStyle())) {
-    scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+    scoped_refptr<ComputedStyle> style = CreateComputedStyle();
     style->InheritFrom(
         *state.ParentStyle(),
         (!style_request.IsPseudoStyleRequest() && IsAtShadowBoundary(&element))
@@ -1022,7 +1022,7 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForPage(
   StyleResolverState state(GetDocument(), *GetDocument().documentElement(),
                            StyleRequest(initial_style.get()));
 
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   const ComputedStyle* root_element_style =
       state.RootElementStyle() ? state.RootElementStyle()
                                : GetDocument().GetComputedStyle();
@@ -1048,10 +1048,16 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForPage(
   return state.TakeStyle();
 }
 
+scoped_refptr<ComputedStyle> StyleResolver::CreateComputedStyle() {
+  // TODO(crbug.com/1115000): Clone the initial style singleton once we have a
+  // singleton per resolver instead of the static global in ComputedStyle.
+  return ComputedStyle::Create();
+}
+
 scoped_refptr<ComputedStyle> StyleResolver::InitialStyleForElement() {
   const LocalFrame* frame = GetDocument().GetFrame();
 
-  scoped_refptr<ComputedStyle> initial_style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> initial_style = CreateComputedStyle();
 
   initial_style->SetRtlOrdering(
       GetDocument().VisuallyOrdered() ? EOrder::kVisual : EOrder::kLogical);
@@ -1123,7 +1129,7 @@ StyleRuleList* StyleResolver::StyleRulesForElement(Element* element,
 HeapHashMap<CSSPropertyName, Member<const CSSValue>>
 StyleResolver::CascadedValuesForElement(Element* element, PseudoId pseudo_id) {
   StyleResolverState state(GetDocument(), *element);
-  state.SetStyle(ComputedStyle::Create());
+  state.SetStyle(CreateComputedStyle());
 
   STACK_UNINITIALIZED StyleCascade cascade(state);
   // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
@@ -1636,6 +1642,25 @@ bool StyleResolver::IsForcedColorsModeEnabled(
     const StyleResolverState& state) const {
   return IsForcedColorsModeEnabled() &&
          state.Style()->ForcedColorAdjust() != EForcedColorAdjust::kNone;
+}
+
+scoped_refptr<ComputedStyle> StyleResolver::CreateAnonymousStyleWithDisplay(
+    const ComputedStyle& parent_style,
+    EDisplay display) {
+  scoped_refptr<ComputedStyle> new_style = CreateComputedStyle();
+  new_style->InheritFrom(parent_style);
+  new_style->SetUnicodeBidi(parent_style.GetUnicodeBidi());
+  new_style->SetDisplay(display);
+  return new_style;
+}
+
+scoped_refptr<ComputedStyle>
+StyleResolver::CreateInheritedDisplayContentsStyleIfNeeded(
+    const ComputedStyle& parent_style,
+    const ComputedStyle& layout_parent_style) {
+  if (parent_style.InheritedEqual(layout_parent_style))
+    return nullptr;
+  return CreateAnonymousStyleWithDisplay(parent_style, EDisplay::kInline);
 }
 
 }  // namespace blink

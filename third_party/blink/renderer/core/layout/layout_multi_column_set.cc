@@ -46,8 +46,9 @@ LayoutMultiColumnSet* LayoutMultiColumnSet::CreateAnonymous(
   Document& document = flow_thread.GetDocument();
   LayoutMultiColumnSet* layout_object = new LayoutMultiColumnSet(&flow_thread);
   layout_object->SetDocumentForAnonymous(&document);
-  layout_object->SetStyle(ComputedStyle::CreateAnonymousStyleWithDisplay(
-      parent_style, EDisplay::kBlock));
+  layout_object->SetStyle(
+      document.GetStyleResolver().CreateAnonymousStyleWithDisplay(
+          parent_style, EDisplay::kBlock));
   return layout_object;
 }
 

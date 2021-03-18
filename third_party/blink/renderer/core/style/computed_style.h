@@ -307,13 +307,6 @@ class ComputedStyle : public ComputedStyleBase,
   ALWAYS_INLINE explicit ComputedStyle(PassKey);
 
   CORE_EXPORT static scoped_refptr<ComputedStyle> Create();
-  static scoped_refptr<ComputedStyle> CreateAnonymousStyleWithDisplay(
-      const ComputedStyle& parent_style,
-      EDisplay);
-  static scoped_refptr<ComputedStyle>
-  CreateInheritedDisplayContentsStyleIfNeeded(
-      const ComputedStyle& parent_style,
-      const ComputedStyle& layout_parent_style);
   CORE_EXPORT static scoped_refptr<ComputedStyle> Clone(const ComputedStyle&);
   CORE_EXPORT static const ComputedStyle& InitialStyle();
 

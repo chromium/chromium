@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/cssom/css_keyword_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_cascade.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -72,7 +73,7 @@ void EnsureInterpolatedValueCached(ActiveInterpolations* interpolations,
   // document.GetStyleResolver().ResolveStyle(element). However that would
   // require our callers to properly register every animation they pass in
   // here, which the current tests do not do.
-  auto style = ComputedStyle::Create();
+  auto style = document.GetStyleResolver().CreateComputedStyle();
   StyleResolverState state(document, *element, StyleRequest(style.get()));
   state.SetStyle(style);
 

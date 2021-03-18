@@ -38,7 +38,7 @@ class LayoutTableCellDeathTest : public RenderingTest,
 
   void SetUp() override {
     RenderingTest::SetUp();
-    auto style = ComputedStyle::Create();
+    auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
     style->SetDisplay(EDisplay::kTableCell);
     cell_ = LayoutTableCell::CreateAnonymous(&GetDocument(), std::move(style),
                                              LegacyLayout::kAuto);

@@ -140,7 +140,8 @@ TEST_F(ScrollTimelineUtilTest, ConvertOrientationPhysicalCases) {
                                        WritingMode::kVerticalRl};
   Vector<TextDirection> directions = {TextDirection::kLtr, TextDirection::kRtl};
 
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style =
+      GetDocument().GetStyleResolver().CreateComputedStyle();
   for (const WritingMode& writing_mode : writing_modes) {
     for (const TextDirection& direction : directions) {
       style->SetWritingMode(writing_mode);
@@ -154,7 +155,8 @@ TEST_F(ScrollTimelineUtilTest, ConvertOrientationPhysicalCases) {
 }
 
 TEST_F(ScrollTimelineUtilTest, ConvertOrientationLogical) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style =
+      GetDocument().GetStyleResolver().CreateComputedStyle();
 
   // horizontal-tb, ltr
   style->SetWritingMode(WritingMode::kHorizontalTb);

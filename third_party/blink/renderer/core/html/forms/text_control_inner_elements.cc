@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/html/forms/text_control_inner_elements.h"
 
 #include "third_party/blink/renderer/core/css/resolver/style_adjuster.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
@@ -49,7 +50,8 @@ scoped_refptr<ComputedStyle> EditingViewPortElement::CustomStyleForLayoutObject(
     const StyleRecalcContext&) {
   // FXIME: Move these styles to html.css.
 
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style =
+      GetDocument().GetStyleResolver().CreateComputedStyle();
   style->InheritFrom(OwnerShadowHost()->ComputedStyleRef());
 
   style->SetFlexGrow(1);
@@ -150,7 +152,8 @@ TextControlInnerEditorElement::CreateInnerEditorStyle() const {
   Element* host = OwnerShadowHost();
   DCHECK(host);
   const ComputedStyle& start_style = host->ComputedStyleRef();
-  scoped_refptr<ComputedStyle> text_block_style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> text_block_style =
+      GetDocument().GetStyleResolver().CreateComputedStyle();
   text_block_style->InheritFrom(start_style);
   // The inner block, if present, always has its direction set to LTR,
   // so we need to inherit the direction and unicode-bidi style from the
@@ -200,7 +203,8 @@ TextControlInnerEditorElement::CreateInnerEditorStyle() const {
     text_block_style->SetOverflowX(EOverflow::kScroll);
     // overflow-y:visible doesn't work because overflow-x:scroll makes a layer.
     text_block_style->SetOverflowY(EOverflow::kScroll);
-    scoped_refptr<ComputedStyle> no_scrollbar_style = ComputedStyle::Create();
+    scoped_refptr<ComputedStyle> no_scrollbar_style =
+        GetDocument().GetStyleResolver().CreateComputedStyle();
     no_scrollbar_style->SetStyleType(kPseudoIdScrollbar);
     no_scrollbar_style->SetDisplay(EDisplay::kNone);
     text_block_style->AddCachedPseudoElementStyle(no_scrollbar_style);

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_property_instances.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/scoped_css_value.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -32,7 +33,7 @@ class CSSPropertyTest : public PageTestBase {
       const CSSProperty& property,
       const CSSValue& value) {
     StyleResolverState state(GetDocument(), *GetDocument().body());
-    state.SetStyle(ComputedStyle::Create());
+    state.SetStyle(GetDocument().GetStyleResolver().CreateComputedStyle());
 
     // The border-style needs to be non-hidden and non-none, otherwise
     // the computed values of border-width properties are always zero.
@@ -79,7 +80,8 @@ TEST_F(CSSPropertyTest, InternalFontSizeDeltaNotWebExposed) {
 }
 
 TEST_F(CSSPropertyTest, VisitedPropertiesCanParseValues) {
-  scoped_refptr<ComputedStyle> initial_style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> initial_style =
+      GetDocument().GetStyleResolver().CreateComputedStyle();
 
   // Count the number of 'visited' properties seen.
   size_t num_visited = 0;

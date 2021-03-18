@@ -7,6 +7,7 @@
 #include "base/optional.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/selector_filter.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -38,7 +39,7 @@ class ElementRuleCollectorTest : public PageTestBase {
     ElementResolveContext context(*element);
     SelectorFilter filter;
     MatchResult result;
-    auto style = ComputedStyle::Create();
+    auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
     ElementRuleCollector collector(context, StyleRecalcContext(), filter,
                                    result, style.get(), InsideLink(element));
 

@@ -56,8 +56,10 @@ NGInlineLayoutAlgorithm::NGInlineLayoutAlgorithm(
     NGInlineChildLayoutContext* context)
     : NGLayoutAlgorithm(
           inline_node,
-          ComputedStyle::CreateAnonymousStyleWithDisplay(inline_node.Style(),
-                                                         EDisplay::kBlock),
+          inline_node.GetDocument()
+              .GetStyleResolver()
+              .CreateAnonymousStyleWithDisplay(inline_node.Style(),
+                                               EDisplay::kBlock),
           space,
           // Use LTR direction since inline layout handles bidi by itself and
           // lays out in visual order.

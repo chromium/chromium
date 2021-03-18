@@ -263,8 +263,10 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
       if (marker.IsLayoutNGListMarker())
         image->SetIsLayoutNGObjectForListMarkerImage(true);
       scoped_refptr<ComputedStyle> image_style =
-          ComputedStyle::CreateAnonymousStyleWithDisplay(marker.StyleRef(),
-                                                         EDisplay::kInline);
+          marker.GetDocument()
+              .GetStyleResolver()
+              .CreateAnonymousStyleWithDisplay(marker.StyleRef(),
+                                               EDisplay::kInline);
       image->SetStyle(image_style);
       image->SetImageResource(
           MakeGarbageCollected<LayoutImageResourceStyleImage>(
@@ -287,7 +289,7 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
   // |LayoutObject::PropagateStyleToAnonymousChildren()| to avoid unexpected
   // full layout due by style difference. See http://crbug.com/980399
   scoped_refptr<ComputedStyle> text_style =
-      ComputedStyle::CreateAnonymousStyleWithDisplay(
+      marker.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           marker.StyleRef(), marker.StyleRef().Display());
   if (child) {
     if (child->IsText()) {

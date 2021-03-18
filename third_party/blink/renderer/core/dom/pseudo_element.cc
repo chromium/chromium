@@ -134,7 +134,8 @@ scoped_refptr<ComputedStyle> PseudoElement::LayoutStyleForDisplayContents(
   // For display:contents we should not generate a box, but we generate a non-
   // observable inline box for pseudo elements to be able to locate the
   // anonymous layout objects for generated content during DetachLayoutTree().
-  scoped_refptr<ComputedStyle> layout_style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> layout_style =
+      GetDocument().GetStyleResolver().CreateComputedStyle();
   layout_style->InheritFrom(style);
   layout_style->SetContent(style.GetContentData());
   layout_style->SetDisplay(EDisplay::kInline);

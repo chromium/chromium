@@ -1685,7 +1685,8 @@ TEST_F(AnimationAnimationTestCompositing,
       scroll_timeline, exception_state);
 
   model->SnapshotAllCompositorKeyframesIfNecessary(
-      *element, *ComputedStyle::Create(), nullptr);
+      *element, *GetDocument().GetStyleResolver().CreateComputedStyle(),
+      nullptr);
 
   UpdateAllLifecyclePhasesForTest();
   scroll_animation->play();
@@ -1753,7 +1754,8 @@ TEST_F(AnimationAnimationTestCompositing,
       Animation::Create(keyframe_effect, scroll_timeline, exception_state);
 
   model->SnapshotAllCompositorKeyframesIfNecessary(
-      *element, *ComputedStyle::Create(), nullptr);
+      *element, *GetDocument().GetStyleResolver().CreateComputedStyle(),
+      nullptr);
 
   UpdateAllLifecyclePhasesForTest();
   const double TEST_START_TIME = 10;
@@ -1885,7 +1887,8 @@ TEST_F(AnimationAnimationTestCompositing,
   Animation* scroll_animation =
       Animation::Create(keyframe_effect, scroll_timeline, exception_state);
   model->SnapshotAllCompositorKeyframesIfNecessary(
-      *element, *ComputedStyle::Create(), nullptr);
+      *element, *GetDocument().GetStyleResolver().CreateComputedStyle(),
+      nullptr);
   UpdateAllLifecyclePhasesForTest();
 
   scroll_animation->play();
@@ -2228,7 +2231,8 @@ TEST_F(AnimationAnimationTestCompositing,
       scroll_timeline, exception_state);
 
   model->SnapshotAllCompositorKeyframesIfNecessary(
-      *element, *ComputedStyle::Create(), nullptr);
+      *element, *GetDocument().GetStyleResolver().CreateComputedStyle(),
+      nullptr);
 
   UpdateAllLifecyclePhasesForTest();
   scroll_animation->play();

@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/core/css/resolver/filter_operation_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/scoped_css_value.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -387,7 +388,10 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilter(
       filter_value_->ReResolveUrl(style_resolution_host->GetDocument());
     }
 
-    scoped_refptr<ComputedStyle> filter_style = ComputedStyle::Create();
+    scoped_refptr<ComputedStyle> filter_style =
+        style_resolution_host->GetDocument()
+            .GetStyleResolver()
+            .CreateComputedStyle();
     // Must set font in case the filter uses any font-relative units (em, ex)
     // If font_for_filter_ was never set (ie frame-less documents) use base font
     if (LIKELY(font_for_filter_.GetFontSelector())) {

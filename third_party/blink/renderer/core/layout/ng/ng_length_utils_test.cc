@@ -91,7 +91,7 @@ class NGLengthUtilsTestWithNode : public NGLayoutTest {
  public:
   void SetUp() override {
     NGLayoutTest::SetUp();
-    style_ = ComputedStyle::Create();
+    style_ = GetDocument().GetStyleResolver().CreateComputedStyle();
   }
 
   LayoutUnit ComputeInlineSizeForFragment(
@@ -220,7 +220,7 @@ TEST_F(NGLengthUtilsTestWithNode, TestComputeContentContribution) {
                           style_->GetWritingMode(), node, sizes));
 
   expected = MinMaxSizes{LayoutUnit(150), LayoutUnit(150)};
-  style_ = ComputedStyle::Create();
+  style_ = GetDocument().GetStyleResolver().CreateComputedStyle();
   style_->SetLogicalWidth(Length::Fixed(100));
   style_->SetPaddingLeft(Length::Fixed(50));
   body->SetStyle(style_);
@@ -292,7 +292,7 @@ TEST_F(NGLengthUtilsTestWithNode, TestComputeInlineSizeForFragment) {
   style_->SetMinWidth(Length::Percent(80));
   EXPECT_EQ(LayoutUnit(160), ComputeInlineSizeForFragment());
 
-  style_ = ComputedStyle::Create();
+  style_ = GetDocument().GetStyleResolver().CreateComputedStyle();
   style_->SetMarginRight(Length::Fixed(20));
   EXPECT_EQ(LayoutUnit(180), ComputeInlineSizeForFragment());
 
@@ -363,7 +363,7 @@ TEST_F(NGLengthUtilsTestWithNode, TestComputeBlockSizeForFragment) {
   style_->SetMinHeight(Length::Percent(80));
   EXPECT_EQ(LayoutUnit(240), ComputeBlockSizeForFragment());
 
-  style_ = ComputedStyle::Create();
+  style_ = GetDocument().GetStyleResolver().CreateComputedStyle();
   style_->SetMarginTop(Length::Fixed(20));
   style_->SetLogicalHeight(Length::FillAvailable());
   EXPECT_EQ(LayoutUnit(280), ComputeBlockSizeForFragment());
@@ -385,7 +385,7 @@ TEST_F(NGLengthUtilsTestWithNode, TestComputeBlockSizeForFragment) {
   EXPECT_EQ(LayoutUnit(400), ComputeBlockSizeForFragment());
 
   // Now check aspect-ratio.
-  style_ = ComputedStyle::Create();
+  style_ = GetDocument().GetStyleResolver().CreateComputedStyle();
   style_->SetLogicalWidth(Length::Fixed(100));
   style_->SetAspectRatio(
       StyleAspectRatio(EAspectRatioType::kRatio, FloatSize(2, 1)));

@@ -18,8 +18,8 @@ void LayoutNGMathMLBlockWithAnonymousMrow::AddChild(
   LayoutBlock* anonymous_mrow = To<LayoutBlock>(FirstChild());
   if (!anonymous_mrow) {
     scoped_refptr<ComputedStyle> new_style =
-        ComputedStyle::CreateAnonymousStyleWithDisplay(StyleRef(),
-                                                       EDisplay::kBlockMath);
+        GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
+            StyleRef(), EDisplay::kBlockMath);
 
     UpdateAnonymousChildStyle(nullptr, *new_style);
     anonymous_mrow = new LayoutNGMathMLBlock(nullptr);

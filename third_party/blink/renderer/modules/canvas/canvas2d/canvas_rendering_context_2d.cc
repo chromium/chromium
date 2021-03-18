@@ -551,7 +551,8 @@ void CanvasRenderingContext2D::setFont(const String& new_font) {
           canvas_font_cache->ParseFont(new_font);
       if (!parsed_style)
         return;
-      font_style = ComputedStyle::Create();
+      font_style =
+          canvas()->GetDocument().GetStyleResolver().CreateComputedStyle();
       FontDescription element_font_description(
           computed_style->GetFontDescription());
       // Reset the computed size to avoid inheriting the zoom factor from the
