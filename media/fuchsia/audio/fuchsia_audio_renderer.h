@@ -60,11 +60,9 @@ class FuchsiaAudioRenderer : public AudioRenderer, public TimeSource {
     // should not be used yet.
     kStarting,
 
+    // Playback is active. When the stream reaches EOS it stays in the kPlaying
+    // state.
     kPlaying,
-
-    // Received end-of-stream packet from the |demuxer_stream_|. Waiting for
-    // EndOfStream event from |audio_consumer_|.
-    kEndOfStream,
   };
 
   // Struct used to store state of an input buffer shared with the
@@ -169,6 +167,10 @@ class FuchsiaAudioRenderer : public AudioRenderer, public TimeSource {
   // the initial AudioConsumerStatus is received.
   base::TimeDelta min_lead_time_;
   base::TimeDelta max_lead_time_;
+
+  // Set to true after we've received end-of-stream from the |demuxer_stream_|.
+  // The renderer may be restarted after Flush().
+  bool is_at_end_of_stream_ = false;
 
   // TimeSource interface is not single-threaded. The lock is used to guard
   // fields that are accessed in the TimeSource implementation. Note that these
