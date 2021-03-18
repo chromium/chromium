@@ -57,6 +57,7 @@ class SystemFeaturesDisableListPolicyHandler
   ~SystemFeaturesDisableListPolicyHandler() override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
+  static SystemFeature GetSystemFeatureFromAppId(const std::string& app_id);
 
  protected:
   // ListPolicyHandler:

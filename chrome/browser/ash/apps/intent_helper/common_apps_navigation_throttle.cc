@@ -62,14 +62,6 @@ std::string GetAppDisabledErrorPage() {
   return webui::GetI18nTemplateHtml(html, &strings);
 }
 
-policy::SystemFeature GetSystemFeatureFromAppId(const std::string& app_id) {
-  // TODO(sanjaperisic): Currently we only support Canvas app. Move this mapping
-  // to an appropriate place when the list of supported apps grows.
-  if (app_id == web_app::kCanvasAppId)
-    return policy::SystemFeature::kCanvas;
-  return policy::SystemFeature::kUnknownSystemFeature;
-}
-
 bool IsAppDisabled(const std::string& app_id) {
   PrefService* const local_state = g_browser_process->local_state();
   if (!local_state)
@@ -80,7 +72,9 @@ bool IsAppDisabled(const std::string& app_id) {
   if (!disabled_system_features_pref)
     return false;
 
-  policy::SystemFeature system_feature = GetSystemFeatureFromAppId(app_id);
+  policy::SystemFeature system_feature =
+      policy::SystemFeaturesDisableListPolicyHandler::GetSystemFeatureFromAppId(
+          app_id);
   if (system_feature == policy::SystemFeature::kUnknownSystemFeature)
     return false;
 
