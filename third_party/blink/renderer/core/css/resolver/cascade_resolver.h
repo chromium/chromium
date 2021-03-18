@@ -15,7 +15,6 @@
 
 namespace blink {
 
-class CascadePriority;
 class CSSProperty;
 class CSSVariableData;
 class CSSProperty;
@@ -51,16 +50,6 @@ class CORE_EXPORT CascadeResolver {
   //
   // https://drafts.csswg.org/css-variables/#animation-tainted
   bool AllowSubstitution(CSSVariableData*) const;
-
-  // Sets the generation of the priority to zero, which has the effect of
-  // marking it as unapplied. (I.e. this can be used to force re-application of
-  // a declaration).
-  void MarkUnapplied(CascadePriority*) const;
-
-  // Sets the generation of the priority to the current generation,
-  // which has the effect of marking it as already applied. (I.e. this can be
-  // used to skip application of a declaration).
-  void MarkApplied(CascadePriority*) const;
 
   // If the incoming origin is kAuthor, collect flags from 'property'.
   // AuthorFlags() can then later be used to see which flags have been observed.

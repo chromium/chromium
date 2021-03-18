@@ -26,16 +26,6 @@ bool CascadeResolver::AllowSubstitution(CSSVariableData* data) const {
   return true;
 }
 
-void CascadeResolver::MarkUnapplied(CascadePriority* priority) const {
-  DCHECK(priority);
-  *priority = CascadePriority(*priority, 0);
-}
-
-void CascadeResolver::MarkApplied(CascadePriority* priority) const {
-  DCHECK(priority);
-  *priority = CascadePriority(*priority, generation_);
-}
-
 bool CascadeResolver::DetectCycle(const CSSProperty& property) {
   wtf_size_t index = Find(property);
   if (index == kNotFound)

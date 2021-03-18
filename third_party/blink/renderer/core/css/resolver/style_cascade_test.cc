@@ -65,12 +65,6 @@ class TestCascadeResolver {
   }
   wtf_size_t CycleStart() const { return resolver_.cycle_start_; }
   wtf_size_t CycleEnd() const { return resolver_.cycle_end_; }
-  void MarkApplied(CascadePriority* priority) {
-    resolver_.MarkApplied(priority);
-  }
-  void MarkUnapplied(CascadePriority* priority) {
-    resolver_.MarkUnapplied(priority);
-  }
   uint8_t GetGeneration() { return resolver_.generation_; }
   CascadeResolver& InnerResolver() { return resolver_; }
   const CSSProperty* CurrentProperty() const {
@@ -830,20 +824,6 @@ TEST_F(StyleCascadeTest, ResolverDetectMultiCycleReverse) {
   EXPECT_FALSE(resolver.InCycle());
 }
 
-TEST_F(StyleCascadeTest, ResolverMarkApplied) {
-  TestCascadeResolver resolver(2);
-
-  CascadePriority priority(CascadeOrigin::kAuthor);
-  EXPECT_EQ(0, priority.GetGeneration());
-
-  resolver.MarkApplied(&priority);
-  EXPECT_EQ(2, priority.GetGeneration());
-
-  // Mark a second time to verify observation of the same generation.
-  resolver.MarkApplied(&priority);
-  EXPECT_EQ(2, priority.GetGeneration());
-}
-
 TEST_F(StyleCascadeTest, CurrentProperty) {
   using AutoLock = TestCascadeAutoLock;
 
@@ -928,23 +908,6 @@ TEST_F(StyleCascadeTest, CycleWithExtraEdge) {
     EXPECT_FALSE(resolver.InCycle());
   }
   EXPECT_FALSE(resolver.InCycle());
-}
-
-TEST_F(StyleCascadeTest, ResolverMarkUnapplied) {
-  TestCascadeResolver resolver(7);
-
-  CascadePriority priority(CascadeOrigin::kAuthor);
-  EXPECT_EQ(0, priority.GetGeneration());
-
-  resolver.MarkApplied(&priority);
-  EXPECT_EQ(7, priority.GetGeneration());
-
-  resolver.MarkUnapplied(&priority);
-  EXPECT_EQ(0, priority.GetGeneration());
-
-  // Mark a second time to verify observation of the same generation.
-  resolver.MarkUnapplied(&priority);
-  EXPECT_EQ(0, priority.GetGeneration());
 }
 
 TEST_F(StyleCascadeTest, BasicCycle) {
