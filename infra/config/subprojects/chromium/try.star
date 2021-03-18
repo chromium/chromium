@@ -1824,7 +1824,7 @@ def chrome_internal_verifier(
         builder,
         **kwargs):
     branches.cq_tryjob_verifier(
-        builder = "chrome:try/" + builder,
+        builder = "{}:try/{}".format(settings.chrome_project, builder),
         cq_group = "cq",
         includable_only = True,
         owner_whitelist = [

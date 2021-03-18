@@ -63,7 +63,8 @@ class BranchUnitTest(unittest.TestCase):
                 "project_title": "Chromium MMM",
                 "is_main": false,
                 "is_lts_branch": false,
-                "ref": "refs/branch-heads/BBBB"
+                "ref": "refs/branch-heads/BBBB",
+                "chrome_project": "chrome-mMM"
             }
             """))
 

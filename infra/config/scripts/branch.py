@@ -60,6 +60,7 @@ def initial_settings(milestone, branch):
       is_main=False,
       is_lts_branch=False,
       ref=f'refs/branch-heads/{branch}',
+      chrome_project=f'chrome-m{milestone}',
   )
 
   return json.dumps(settings, indent=4) + '\n'
