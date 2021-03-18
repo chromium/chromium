@@ -977,6 +977,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
                       TestCase("fileListKeyboardSelectionA11y"),
                       TestCase("fileListMouseSelectionA11y"),
                       TestCase("fileListDeleteMultipleFiles"),
+                      TestCase("fileListRenameSelectedItem"),
                       TestCase("fileListRenameFromSelectAll")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(

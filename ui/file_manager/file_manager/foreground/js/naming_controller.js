@@ -153,7 +153,9 @@
   }
 
   initiateRename() {
-    const item = this.listContainer_.currentList.ensureLeadItemExists();
+    const selectedIndex = this.listContainer_.selectionModel.selectedIndex;
+    const item =
+        this.listContainer_.currentList.getListItemByIndex(selectedIndex);
     if (!item) {
       return;
     }
