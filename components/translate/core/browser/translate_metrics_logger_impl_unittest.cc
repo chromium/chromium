@@ -546,14 +546,24 @@ TEST_F(TranslateMetricsLoggerImplTest, MultipleRecordMetrics) {
 }
 
 TEST_F(TranslateMetricsLoggerImplTest, LogRankerMetrics) {
+  base::SimpleTestTickClock test_clock;
+  translate_metrics_logger()->SetInternalClockForTesting(&test_clock);
+
   RankerDecision ranker_decision = RankerDecision::kDontShowUI;
   uint32_t ranker_model_version = 4321;
+
+  translate_metrics_logger()->LogRankerStart();
+  test_clock.Advance(base::TimeDelta::FromSeconds(10));
+  translate_metrics_logger()->LogRankerFinish();
 
   translate_metrics_logger()->LogRankerMetrics(ranker_decision,
                                                ranker_model_version);
 
   translate_metrics_logger()->RecordMetrics(true);
 
+  histogram_tester()->ExpectUniqueSample(
+      kTranslatePageLoadRankerTimerShouldOfferTranslation,
+      base::TimeDelta::FromSeconds(10).InMilliseconds(), 1);
   histogram_tester()->ExpectUniqueSample(kTranslatePageLoadRankerDecision,
                                          ranker_decision, 1);
   histogram_tester()->ExpectUniqueSample(kTranslatePageLoadRankerVersion,

@@ -54,6 +54,8 @@ const char kTranslatePageLoadNumReversions[] =
     "Translate.PageLoad.NumReversions";
 const char kTranslatePageLoadRankerDecision[] =
     "Translate.PageLoad.Ranker.Decision";
+const char kTranslatePageLoadRankerTimerShouldOfferTranslation[] =
+    "Translate.PageLoad.Ranker.Timer.ShouldOffereTranslation";
 const char kTranslatePageLoadRankerVersion[] =
     "Translate.PageLoad.Ranker.Version";
 const char kTranslatePageLoadTriggerDecision[] =
@@ -180,6 +182,9 @@ void TranslateMetricsLoggerImpl::RecordPageLoadUmaMetrics(
                                 ranker_decision_);
   base::UmaHistogramSparse(kTranslatePageLoadRankerVersion,
                            int(ranker_version_));
+  if (ranker_duration_)
+    base::UmaHistogramTimes(kTranslatePageLoadRankerTimerShouldOfferTranslation,
+                            ranker_duration_.value());
 
   base::UmaHistogramEnumeration(kTranslatePageLoadTriggerDecision,
                                 trigger_decision_);
@@ -254,6 +259,16 @@ void TranslateMetricsLoggerImpl::LogRankerMetrics(
     uint32_t ranker_version) {
   ranker_decision_ = ranker_decision;
   ranker_version_ = ranker_version;
+}
+
+void TranslateMetricsLoggerImpl::LogRankerStart() {
+  if (!ranker_duration_)
+    ranker_start_time_ = clock_->NowTicks();
+}
+
+void TranslateMetricsLoggerImpl::LogRankerFinish() {
+  if (!ranker_duration_)
+    ranker_duration_ = clock_->NowTicks() - ranker_start_time_;
 }
 
 void TranslateMetricsLoggerImpl::LogTriggerDecision(

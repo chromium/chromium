@@ -44,6 +44,14 @@ class MockTranslateMetricsLoggerContainer
                                                      ranker_version);
   }
 
+  void LogRankerStart() override {
+    mock_translate_metrics_logger_->LogRankerStart();
+  }
+
+  void LogRankerFinish() override {
+    mock_translate_metrics_logger_->LogRankerFinish();
+  }
+
   void LogTriggerDecision(
       translate::TriggerDecision trigger_decision) override {
     mock_translate_metrics_logger_->LogTriggerDecision(trigger_decision);

@@ -257,9 +257,9 @@ bool TranslateRankerImpl::ShouldOfferTranslation(
     return kDefaultResponse;
   }
 
-  SCOPED_UMA_HISTOGRAM_TIMER("Translate.Ranker.Timer.ShouldOfferTranslation");
-
+  translate_metrics_logger->LogRankerStart();
   bool result = GetModelDecision(*translate_event);
+  translate_metrics_logger->LogRankerFinish();
 
   UMA_HISTOGRAM_BOOLEAN("Translate.Ranker.QueryResult", result);
 
@@ -281,7 +281,6 @@ bool TranslateRankerImpl::ShouldOfferTranslation(
 bool TranslateRankerImpl::GetModelDecision(
     const metrics::TranslateEventProto& translate_event) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
-  SCOPED_UMA_HISTOGRAM_TIMER("Translate.Ranker.Timer.CalculateScore");
   DCHECK(model_ != nullptr);
 
   // TODO(hamelphi): consider deprecating TranslateRankerFeatures and move the

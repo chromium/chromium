@@ -43,6 +43,7 @@ extern const char kTranslatePageLoadNumTargetLanguageChanges[];
 extern const char kTranslatePageLoadNumTranslations[];
 extern const char kTranslatePageLoadNumReversions[];
 extern const char kTranslatePageLoadRankerDecision[];
+extern const char kTranslatePageLoadRankerTimerShouldOfferTranslation[];
 extern const char kTranslatePageLoadRankerVersion[];
 extern const char kTranslatePageLoadTriggerDecision[];
 extern const char kTranslatePageLoadTriggerDecisionAllTriggerDecisions[];
@@ -59,6 +60,8 @@ class NullTranslateMetricsLogger : public TranslateMetricsLogger {
   void SetUkmSourceId(ukm::SourceId ukm_source_id) override {}
   void LogRankerMetrics(RankerDecision ranker_decision,
                         uint32_t ranker_version) override {}
+  void LogRankerStart() override {}
+  void LogRankerFinish() override {}
   void LogTriggerDecision(TriggerDecision trigger_decision) override {}
   void LogAutofillAssistantDeferredTriggerDecision() override {}
   void LogInitialState() override {}
@@ -114,6 +117,8 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   void SetUkmSourceId(ukm::SourceId ukm_source_id) override;
   void LogRankerMetrics(RankerDecision ranker_decision,
                         uint32_t ranker_version) override;
+  void LogRankerStart() override;
+  void LogRankerFinish() override;
   void LogTriggerDecision(TriggerDecision trigger_decision) override;
   void LogAutofillAssistantDeferredTriggerDecision() override;
   void LogInitialState() override;
@@ -197,6 +202,8 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   // Stores state about TranslateRanker for this page load.
   RankerDecision ranker_decision_ = RankerDecision::kUninitialized;
   uint32_t ranker_version_ = 0;
+  base::TimeTicks ranker_start_time_;
+  base::Optional<base::TimeDelta> ranker_duration_;
 
   // Stores the reason for the initial state of the page load. In the case there
   // are multiple reasons, only the first reported reason is stored.

@@ -683,6 +683,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Translate.PageLoad.Ranker.Timer.ShouldOfferTranslation"
+    units="ms" expires_after="M95">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Logs the time it takes for the Translate Ranker to calculate whether or not
+    the Translate UI should be shown. This value is only logged on pages loads
+    where the Translate Ranker is queried. On these page loads, the value is
+    logged once the page load is completed or the first time that Chrome is
+    backgrounded during the course of the page load, whichever comes first.
+  </summary>
+</histogram>
+
 <histogram name="Translate.PageLoad.Ranker.Version" units="version"
     expires_after="2021-08-09">
   <owner>curranmax@google.com</owner>
@@ -776,6 +790,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Translate.Ranker.Timer.CalculateScore" units="ms"
     expires_after="M77">
+  <obsolete>
+    Removed M91. Replaced by
+    Translate.PageLoad.Ranker.Timer.ShouldOfferTranslation.
+  </obsolete>
   <owner>rogerm@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -815,6 +833,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Translate.Ranker.Timer.ShouldOfferTranslation" units="ms"
     expires_after="M77">
+  <obsolete>
+    Removed M91. Replaced by
+    Translate.PageLoad.Ranker.Timer.ShouldOfferTranslation.
+  </obsolete>
   <owner>rogerm@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
