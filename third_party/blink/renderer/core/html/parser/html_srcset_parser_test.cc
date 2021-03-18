@@ -7,6 +7,7 @@
 #include <limits.h>
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_network_state_notifier.h"
@@ -178,7 +179,13 @@ TEST(HTMLSrcsetParserTest, Basic) {
   }
 }
 
-TEST(HTMLSrcsetParserTest, SaveDataEnabledBasic) {
+#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+// https://crbug.com/1189511
+#define MAYBE_SaveDataEnabledBasic DISABLED_SaveDataEnabledBasic
+#else
+#define MAYBE_SaveDataEnabledBasic SaveDataEnabledBasic
+#endif
+TEST(HTMLSrcsetParserTest, MAYBE_SaveDataEnabledBasic) {
   SrcsetParserTestCase test_cases[] = {
       // 0
       {2.0, 0.5, "", "data:,a 1w, data:,b 2x", "data:,a", 2.0, 1},
