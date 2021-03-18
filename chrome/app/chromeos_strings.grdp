@@ -1943,6 +1943,9 @@
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_CHANGE_PIN_TITLE" desc="Settings > Internet > Network details > Lock/unlock SIM card: Title for change PIN dialog.">
     Change SIM PIN
   </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCKED_TOOLTIP" desc="Settings > Internet > Network details > Lock/unlock SIM card: Tooltip over SIM lock toggle that indicates that the operation cannot be performed without network connection">
+    Connect to this network to change SIM lock setting
+  </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCKED_TITLE" desc="Settings > Internet > Network details > Lock/unlock SIM card: Title for SIM locked dialog.">
     SIM Card is locked
   </message>

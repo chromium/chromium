@@ -8,6 +8,7 @@
 <link rel="import" href="../../../html/cr/ui/focus_without_ink.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-tooltip/paper-tooltip.html">
 <link rel="import" href="mojo_interface_provider.html">
 <link rel="import" href="network_password_input.html">
 <link rel="import" href="network_shared_css.html">
@@ -75,6 +76,16 @@
           hidden$="[[!showChangePinButton_(deviceState, isActiveSim_)]]">
         [[i18n('networkSimChangePin')]]
       </cr-button>
+      <template is="dom-if" if="[[!isActiveSim_]]" restamp>
+        <iron-icon id="help-icon" tabindex="0" icon="cr:help-outline"
+            aria-labelledby="simLockToggleLabel inActiveSimLockTooltip">
+        </iron-icon>
+        <paper-tooltip id="inActiveSimLockTooltip" for="help-icon" position="bottom"
+            aria-hidden="true" fit-to-visible-bounds>
+            [[i18n('networkSimLockedTooltip')]]
+        </paper-tooltip>
+        <div class="separator"></div>
+      </template>
       <cr-toggle id="simLockButton"
           disabled$="[[!isActiveSim_]]"
           on-change="onSimLockEnabledChange_" checked="{{lockEnabled_}}"

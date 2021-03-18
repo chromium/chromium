@@ -108,8 +108,10 @@ suite('NetworkSiminfoTest', function() {
       async function() {
         let changePinButton = simInfo.$$('#changePinButton');
         let simLockButton = simInfo.$$('#simLockButton');
+        let simLockButtonTooltip = simInfo.$$('#inActiveSimLockTooltip');
         assertFalse(changePinButton.hidden);
         assertFalse(simLockButton.disabled);
+        assertFalse(!!simLockButtonTooltip);
 
         // Trigger device state change
         simInfo.deviceState =
@@ -118,7 +120,12 @@ suite('NetworkSiminfoTest', function() {
 
         changePinButton = simInfo.$$('#changePinButton');
         simLockButton = simInfo.$$('#simLockButton');
+        simLockButtonTooltip = simInfo.$$('#inActiveSimLockTooltip');
+
+        assertTrue(!!simLockButtonTooltip);
+
         assertTrue(changePinButton.hidden);
         assertTrue(simLockButton.disabled);
+        assertFalse(simLockButtonTooltip.hidden);
       });
 });

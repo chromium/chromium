@@ -284,6 +284,8 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
       {"networkSimChangePin", IDS_SETTINGS_INTERNET_NETWORK_SIM_CHANGE_PIN},
       {"networkSimChangePinTitle",
        IDS_SETTINGS_INTERNET_NETWORK_SIM_CHANGE_PIN_TITLE},
+      {"networkSimLockedTooltip",
+       IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCKED_TOOLTIP},
       {"networkSimEnter", IDS_SETTINGS_INTERNET_NETWORK_SIM_BUTTON_ENTER},
       {"networkSimEnterNewPin",
        IDS_SETTINGS_INTERNET_NETWORK_SIM_ENTER_NEW_PIN},
