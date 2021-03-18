@@ -76,13 +76,6 @@ source_set("v4l2") {
     "GLESv2",
   ]
 
-  if (current_cpu == "arm") {
-    sources += [
-      "tegra_v4l2_device.cc",
-      "tegra_v4l2_device.h",
-    ]
-  }
-
   if (use_v4l2_codec_aml) {
     sources += [
       "aml_v4l2_device.cc",

@@ -33,9 +33,6 @@
 #include "ui/gfx/generic_shared_memory_id.h"
 #include "ui/gfx/native_pixmap_handle.h"
 
-#if defined(ARCH_CPU_ARMEL)
-#include "media/gpu/v4l2/tegra_v4l2_device.h"
-#endif
 #if defined(AML_V4L2)
 #include "media/gpu/v4l2/aml_v4l2_device.h"
 #endif
@@ -130,8 +127,8 @@ class V4L2Buffer {
   // V4L2 data as queried by QUERYBUF.
   struct v4l2_buffer v4l2_buffer_;
   // WARNING: do not change this to a vector or something smaller than
-  // VIDEO_MAX_PLANES, otherwise the Tegra libv4l2 will write data beyond
-  // the number of allocated planes, resulting in memory corruption.
+  // VIDEO_MAX_PLANES (the maximum number of planes V4L2 supports). The
+  // element overhead is small and may avoid memory corruption bugs.
   struct v4l2_plane v4l2_planes_[VIDEO_MAX_PLANES];
 
   struct v4l2_format format_;
@@ -249,18 +246,21 @@ scoped_refptr<VideoFrame> V4L2Buffer::CreateVideoFrame() {
     return nullptr;
   }
 
+  // DMA buffer fds should not be invalid
+  for (const auto& dmabuf_fd : dmabuf_fds) {
+    if (!dmabuf_fd.is_valid()) {
+      DLOG(ERROR) << "Fail to get DMABUFs of V4L2 buffer - invalid fd";
+      return nullptr;
+    }
+  }
+
   // Duplicate the fd of the last v4l2 plane until the number of fds are the
   // same as the number of color planes.
-  while (dmabuf_fds.size() != layout->planes().size()) {
-    int duped_fd = -1;
-    // Fd in dmabuf_fds is invalid with TegraV4L2Device. An invalid fd is added
-    // in the case.
-    if (dmabuf_fds.back().is_valid()) {
-      duped_fd = HANDLE_EINTR(dup(dmabuf_fds.back().get()));
-      if (duped_fd == -1) {
-        DLOG(ERROR) << "Failed duplicating dmabuf fd";
-        return nullptr;
-      }
+  while (dmabuf_fds.size() < layout->planes().size()) {
+    int duped_fd = HANDLE_EINTR(dup(dmabuf_fds.back().get()));
+    if (duped_fd == -1) {
+      DLOG(ERROR) << "Failed duplicating dmabuf fd";
+      return nullptr;
     }
 
     dmabuf_fds.emplace_back(duped_fd);
@@ -371,8 +371,8 @@ class V4L2BufferRefBase {
   // Data from the buffer, that users can query and/or write.
   struct v4l2_buffer v4l2_buffer_;
   // WARNING: do not change this to a vector or something smaller than
-  // VIDEO_MAX_PLANES, otherwise the Tegra libv4l2 will write data beyond
-  // the number of allocated planes, resulting in memory corruption.
+  // VIDEO_MAX_PLANES (the maximum number of planes V4L2 supports). The
+  // element overhead is small and may avoid memory corruption bugs.
   struct v4l2_plane v4l2_planes_[VIDEO_MAX_PLANES];
 
  private:
@@ -1069,9 +1069,6 @@ size_t V4L2Queue::AllocateBuffers(size_t count, enum v4l2_memory memory) {
   }
 
   // First query the number of planes in the buffers we are about to request.
-  // This should not be required, but Tegra's VIDIOC_QUERYBUF will fail on
-  // output buffers if the number of specified planes does not exactly match the
-  // format.
   base::Optional<v4l2_format> format = GetFormat().first;
   if (!format) {
     VQLOGF(1) << "Cannot get format.";
@@ -1267,8 +1264,8 @@ std::pair<bool, V4L2ReadableBufferRef> V4L2Queue::DequeueBuffer() {
   struct v4l2_buffer v4l2_buffer;
   memset(&v4l2_buffer, 0, sizeof(v4l2_buffer));
   // WARNING: do not change this to a vector or something smaller than
-  // VIDEO_MAX_PLANES, otherwise the Tegra libv4l2 will write data beyond
-  // the number of allocated planes, resulting in memory corruption.
+  // VIDEO_MAX_PLANES (the maximum number of planes V4L2 supports). The
+  // element overhead is small and may avoid memory corruption bugs.
   struct v4l2_plane planes[VIDEO_MAX_PLANES];
   memset(planes, 0, sizeof(planes));
   v4l2_buffer.type = type_;
@@ -1453,12 +1450,6 @@ scoped_refptr<V4L2Device> V4L2Device::Create() {
   DVLOGF(3);
 
   scoped_refptr<V4L2Device> device;
-
-#if defined(ARCH_CPU_ARMEL)
-  device = new TegraV4L2Device();
-  if (device->Initialize())
-    return device;
-#endif
 
 #if defined(AML_V4L2)
   device = new AmlV4L2Device();
