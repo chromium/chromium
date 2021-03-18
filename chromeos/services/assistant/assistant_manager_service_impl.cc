@@ -823,6 +823,18 @@ void AssistantManagerServiceImpl::OnStateChanged(
   using libassistant::mojom::ServiceState;
 
   DVLOG(1) << "Libassistant service state changed to " << new_state;
+
+  // We shall only move forward here if |state_| is not STOPPED, meaning
+  // that we are still in the normal process of bringing up Libassistant
+  // without barge in. In edge cases when assistant service could be shut
+  // down right after being started, |state_| could be overridden to STOPPED
+  // and thus we shall not proceed to avoid potential crashes caused by
+  // accessing memory which has already been freed during Libassistant shut
+  // down. This early return is also safe during normal shutdown process
+  // since it will be no-op for ServiceState::kStopped case.
+  if (GetState() == State::STOPPED)
+    return;
+
   switch (new_state) {
     case ServiceState::kStarted:
       OnServiceStarted();
