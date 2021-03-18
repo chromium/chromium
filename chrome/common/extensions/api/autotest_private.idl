@@ -765,6 +765,10 @@ namespace autotestPrivate {
     // Shows the Plugin VM installer. Does not start installation.
     static void showPluginVMInstaller();
 
+    // Installs Borealis without showing the normal installer UI.
+    // |callback|: Called when the operation has completed.
+    static void installBorealis(VoidCallback callback);
+
     // Register a component with CrOSComponentManager.
     // |name|: The name of the component.
     // |path|: Path to the component.

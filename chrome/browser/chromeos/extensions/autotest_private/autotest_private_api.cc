@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <deque>
 #include <map>
+#include <memory>
 #include <set>
 #include <sstream>
 #include <utility>
@@ -46,6 +47,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/scoped_observer.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -59,6 +61,9 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/assistant/assistant_util.h"
+#include "chrome/browser/ash/borealis/borealis_installer.h"
+#include "chrome/browser/ash/borealis/borealis_metrics.h"
+#include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_installer.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_installer_factory.h"
@@ -139,6 +144,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
+#include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_registry.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -2217,6 +2223,71 @@ AutotestPrivateShowPluginVMInstallerFunction::Run() {
   plugin_vm::ShowPluginVmInstallerView(profile);
 
   return RespondNow(NoArguments());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateInstallBorealisFunction
+///////////////////////////////////////////////////////////////////////////////
+
+class AutotestPrivateInstallBorealisFunction::InstallationObserver
+    : public borealis::BorealisInstaller::Observer {
+ public:
+  InstallationObserver(Profile* profile,
+                       base::OnceCallback<void(bool)> completion_callback)
+      : observation_(this),
+        completion_callback_(std::move(completion_callback)) {
+    observation_.Observe(
+        &borealis::BorealisService::GetForProfile(profile)->Installer());
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](Profile* profile) {
+                         borealis::BorealisService::GetForProfile(profile)
+                             ->Installer()
+                             .Start();
+                       },
+                       profile));
+  }
+
+  void OnProgressUpdated(double fraction_complete) override {}
+
+  void OnStateUpdated(
+      borealis::BorealisInstaller::InstallingState new_state) override {}
+
+  void OnInstallationEnded(borealis::BorealisInstallResult result) override {
+    std::move(completion_callback_)
+        .Run(result == borealis::BorealisInstallResult::kSuccess);
+  }
+
+  void OnCancelInitiated() override {}
+
+ private:
+  base::ScopedObservation<borealis::BorealisInstaller,
+                          borealis::BorealisInstaller::Observer>
+      observation_;
+  base::OnceCallback<void(bool)> completion_callback_;
+};
+
+AutotestPrivateInstallBorealisFunction::
+    AutotestPrivateInstallBorealisFunction() = default;
+
+AutotestPrivateInstallBorealisFunction::
+    ~AutotestPrivateInstallBorealisFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateInstallBorealisFunction::Run() {
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  installation_observer_ = std::make_unique<InstallationObserver>(
+      profile,
+      base::BindOnce(&AutotestPrivateInstallBorealisFunction::Complete, this));
+  return RespondLater();
+}
+
+void AutotestPrivateInstallBorealisFunction::Complete(bool was_successful) {
+  if (was_successful) {
+    Respond(NoArguments());
+  } else {
+    Respond(Error("Failed to install borealis"));
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

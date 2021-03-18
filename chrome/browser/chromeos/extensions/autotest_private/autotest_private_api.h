@@ -476,6 +476,23 @@ class AutotestPrivateShowPluginVMInstallerFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+class AutotestPrivateInstallBorealisFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.installBorealis",
+                             AUTOTESTPRIVATE_INSTALLBOREALIS)
+  AutotestPrivateInstallBorealisFunction();
+
+ private:
+  class InstallationObserver;
+
+  ~AutotestPrivateInstallBorealisFunction() override;
+  ResponseAction Run() override;
+
+  void Complete(bool was_successful);
+
+  std::unique_ptr<InstallationObserver> installation_observer_;
+};
+
 class AutotestPrivateRegisterComponentFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("autotestPrivate.registerComponent",
