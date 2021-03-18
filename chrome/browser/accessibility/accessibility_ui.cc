@@ -132,6 +132,8 @@ std::unique_ptr<base::DictionaryValue> BuildTargetDescriptor(
 
 std::unique_ptr<base::DictionaryValue> BuildTargetDescriptor(
     content::RenderViewHost* rvh) {
+  TRACE_EVENT1("accessibility", "BuildTargetDescriptor", "render_view_host",
+               rvh);
   content::WebContents* web_contents =
       content::WebContents::FromRenderViewHost(rvh);
   ui::AXMode accessibility_mode;

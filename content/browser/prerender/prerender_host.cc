@@ -419,8 +419,7 @@ PrerenderHost::ActivatePrerenderedContents(
     RenderFrameHostImpl& old_render_frame_host,
     NavigationRequest& navigation_request) {
   TRACE_EVENT1("navigation", "PrerenderHost::ActivatePrerenderedContents",
-               "render_frame_host",
-               base::trace_event::ToTracedValue(&old_render_frame_host));
+               "render_frame_host", old_render_frame_host);
 
   DCHECK(is_ready_for_activation_);
   is_ready_for_activation_ = false;

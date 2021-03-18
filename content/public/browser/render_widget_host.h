@@ -23,6 +23,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/surface/transport_dib.h"
@@ -288,6 +289,9 @@ class CONTENT_EXPORT RenderWidgetHost {
 
   // Get the allowed touch action corresponding to this RenderWidgetHost.
   virtual base::Optional<cc::TouchAction> GetAllowedTouchAction() = 0;
+
+  // Write a representation of this object into a trace.
+  virtual void WriteIntoTracedValue(perfetto::TracedValue context) = 0;
 
   // Drag-and-drop drop target messages that get sent to Blink.
   virtual void DragTargetDragEnter(const DropData& drop_data,

@@ -419,7 +419,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   StoragePartition* GetStoragePartition() override;
   BrowserContext* GetBrowserContext() override;
   void ReportInspectorIssue(blink::mojom::InspectorIssueInfoPtr info) override;
-  void AsValueInto(base::trace_event::TracedValue* traced_value) override;
+  void WriteIntoTracedValue(perfetto::TracedValue context) override;
 
   // Determines if a clipboard paste using |data| of type |data_type| is allowed
   // in this renderer frame.  The implementation delegates to
@@ -2598,11 +2598,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const base::UnguessableToken& navigation_token,
       bool should_replace_current_entry,
       blink::mojom::CommitResult result);
-
-  // Creates a TracedValue object containing the details of a committed
-  // navigation, so it can be logged with the tracing system.
-  std::unique_ptr<base::trace_event::TracedValue> CommitAsTracedValue(
-      const mojom::DidCommitProvisionalLoadParams& params) const;
 
   // Creates URLLoaderFactory objects for |isolated_world_origins|.
   //

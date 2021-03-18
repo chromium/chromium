@@ -60,6 +60,7 @@
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom-forward.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -345,6 +346,7 @@ class CONTENT_EXPORT NavigationRequest
   void SetSilentlyIgnoreErrors() override;
   network::mojom::WebSandboxFlags SandboxFlagsToCommit() override;
   bool IsWaitingToCommit() override;
+  void WriteIntoTracedValue(perfetto::TracedValue context) override;
 
   // Called on the UI thread by the Navigator to start the navigation.
   // The NavigationRequest can be deleted while BeginNavigation() is called.
@@ -733,10 +735,6 @@ class CONTENT_EXPORT NavigationRequest
   // blink are both computing the origin to commit. This method should be
   // renamed GetOriginToCommit() and the value pushed to blink.
   url::Origin GetOriginForURLLoaderFactory();
-
-  // Add information about this NavigationRequest to |traced_value| for
-  // tracing purposes.
-  void AsValueInto(base::trace_event::TracedValue* traced_value);
 
   // If this navigation fails with net::ERR_BLOCKED_BY_CLIENT, act as if it were
   // cancelled by the user and do not commit an error page.

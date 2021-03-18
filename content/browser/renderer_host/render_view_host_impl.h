@@ -40,6 +40,7 @@
 #include "third_party/blink/public/mojom/page/page.mojom.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "third_party/blink/public/web/web_console_message.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gl/gpu_preference.h"
@@ -132,6 +133,7 @@ class CONTENT_EXPORT RenderViewHostImpl
       blink::mojom::PluginActionType action) override;
   RenderViewHostDelegate* GetDelegate() override;
   bool IsRenderViewLive() override;
+  void WriteIntoTracedValue(perfetto::TracedValue context) override;
 
   void SendWebPreferencesToRenderer();
   void SendRendererPreferencesToRenderer(

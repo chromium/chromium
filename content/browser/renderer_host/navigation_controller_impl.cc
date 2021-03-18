@@ -3983,9 +3983,9 @@ void NavigationControllerImpl::DidAccessInitialMainDocument() {
 void NavigationControllerImpl::UpdateStateForFrame(
     RenderFrameHostImpl* rfhi,
     const blink::PageState& page_state) {
-  OPTIONAL_TRACE_EVENT1(
-      "content", "NavigationControllerImpl::UpdateStateForFrame",
-      "render_frame_host", base::trace_event::ToTracedValue(rfhi));
+  OPTIONAL_TRACE_EVENT1("content",
+                        "NavigationControllerImpl::UpdateStateForFrame",
+                        "render_frame_host", rfhi);
   // The state update affects the last NavigationEntry associated with the given
   // |render_frame_host|. This may not be the last committed NavigationEntry (as
   // in the case of an UpdateState from a frame being swapped out). We track

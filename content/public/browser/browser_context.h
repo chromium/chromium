@@ -25,6 +25,7 @@
 #include "third_party/blink/public/mojom/blob/blob.mojom-forward.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-forward.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom-forward.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 #if !defined(OS_ANDROID)
 #include "content/public/browser/zoom_level_delegate.h"
@@ -366,6 +367,9 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // Returns the VariationsClient associated with the context if any, or
   // nullptr if there isn't one.
   virtual variations::VariationsClient* GetVariationsClient();
+
+  // Write a representation of this object into a trace.
+  void WriteIntoTracedValue(perfetto::TracedValue context);
 
  private:
   const std::string unique_id_;

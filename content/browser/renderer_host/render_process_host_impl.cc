@@ -1576,12 +1576,11 @@ RenderProcessHostImpl::RenderProcessHostImpl(
       instance_weak_factory_(base::in_place, this),
       shutdown_exit_code_(-1) {
   CHECK(!browser_context->ShutdownStarted());
-  TRACE_EVENT2("shutdown", "RenderProcessHostImpl", "render_process_host",
-               static_cast<void*>(this), "id", GetID());
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
-      "shutdown", "Browser.RenderProcessHostImpl", static_cast<void*>(this),
-      "render_process_host", static_cast<void*>(this), "browser_context",
-      static_cast<void*>(browser_context_));
+  TRACE_EVENT2("shutdown", "RenderProcessHostImpl", "render_process_host", this,
+               "id", GetID());
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2("shutdown", "Browser.RenderProcessHostImpl",
+                                    this, "render_process_host", this,
+                                    "browser_context", browser_context_);
   widget_helper_ = new RenderWidgetHelper();
 
   ChildProcessSecurityPolicyImpl::GetInstance()->Add(GetID(), browser_context);
@@ -1681,7 +1680,7 @@ void RenderProcessHostImpl::SetCodeCacheHostReceiverHandlerForTesting(
 
 RenderProcessHostImpl::~RenderProcessHostImpl() {
   TRACE_EVENT2("shutdown", "~RenderProcessHostImpl", "render_process_host",
-               static_cast<void*>(this), "id", GetID());
+               this, "id", GetID());
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 #ifndef NDEBUG
   DCHECK(is_self_deleted_)
@@ -1709,13 +1708,11 @@ RenderProcessHostImpl::~RenderProcessHostImpl() {
     RemoveNetworkServicePluginExceptions(GetID());
 
   TRACE_EVENT_NESTABLE_ASYNC_END2("shutdown", "Cleanup in progress", this,
-                                  "render_process_host",
-                                  static_cast<void*>(this), "browser_context",
-                                  static_cast<void*>(browser_context_));
+                                  "render_process_host", this,
+                                  "browser_context", browser_context_);
   TRACE_EVENT_NESTABLE_ASYNC_END2("shutdown", "Browser.RenderProcessHostImpl",
-                                  this, "render_process_host",
-                                  static_cast<void*>(this), "browser_context",
-                                  static_cast<void*>(browser_context_));
+                                  this, "render_process_host", this,
+                                  "browser_context", browser_context_);
 }
 
 bool RenderProcessHostImpl::Init() {
@@ -2203,6 +2200,15 @@ void RenderProcessHostImpl::DumpProfilingData(base::OnceClosure callback) {
 }
 #endif
 
+void RenderProcessHostImpl::WriteIntoTracedValue(
+    perfetto::TracedValue context) {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("id", GetID());
+  dict.Add("process_lock", ChildProcessSecurityPolicyImpl::GetInstance()
+                               ->GetProcessLock(GetID())
+                               .ToString());
+}
+
 void RenderProcessHostImpl::RegisterMojoInterfaces() {
   auto registry = std::make_unique<service_manager::BinderRegistry>();
 
@@ -2651,8 +2657,8 @@ void RenderProcessHostImpl::DecrementKeepAliveRefCount() {
 
 void RenderProcessHostImpl::DisableKeepAliveRefCount() {
   TRACE_EVENT2("shutdown", "RenderProcessHostImpl::DisableKeepAliveRefCount",
-               "browser_context", static_cast<void*>(browser_context_),
-               "render_process_host", static_cast<void*>(this));
+               "browser_context", browser_context_, "render_process_host",
+               this);
 
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -2729,8 +2735,7 @@ void RenderProcessHostImpl::SetIsUsed() {
 void RenderProcessHostImpl::AddRoute(int32_t routing_id,
                                      IPC::Listener* listener) {
   TRACE_EVENT2("shutdown", "RenderProcessHostImpl::AddRoute",
-               "render_process_host", static_cast<void*>(this), "routing_id",
-               routing_id);
+               "render_process_host", this, "routing_id", routing_id);
   CHECK(!listeners_.Lookup(routing_id))
       << "Found Routing ID Conflict: " << routing_id;
   listeners_.AddWithID(listener, routing_id);
@@ -2738,8 +2743,7 @@ void RenderProcessHostImpl::AddRoute(int32_t routing_id,
 
 void RenderProcessHostImpl::RemoveRoute(int32_t routing_id) {
   TRACE_EVENT2("shutdown", "RenderProcessHostImpl::RemoveRoute",
-               "render_process_host", static_cast<void*>(this), "routing_id",
-               routing_id);
+               "render_process_host", this, "routing_id", routing_id);
   DCHECK(listeners_.Lookup(routing_id) != nullptr);
   listeners_.Remove(routing_id);
   Cleanup();
@@ -3603,7 +3607,7 @@ RenderProcessHostImpl::RegisterBlockStateChangedCallback(
 
 void RenderProcessHostImpl::Cleanup() {
   TRACE_EVENT1("shutdown", "RenderProcessHostImpl::Cleanup",
-               "render_process_host", static_cast<void*>(this));
+               "render_process_host", this);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Keep the one renderer thread around forever in single process mode.
   if (run_renderer_in_process())
@@ -3618,7 +3622,7 @@ void RenderProcessHostImpl::Cleanup() {
     TRACE_EVENT1(
         "shutdown",
         "RenderProcessHostImpl::Cleanup : within_process_died_observer",
-        "render_process_host", static_cast<void*>(this));
+        "render_process_host", this);
     delayed_cleanup_needed_ = true;
     return;
   }
@@ -3635,23 +3639,22 @@ void RenderProcessHostImpl::Cleanup() {
   // ourselves.
   if (!listeners_.IsEmpty()) {
     TRACE_EVENT2("shutdown", "RenderProcessHostImpl::Cleanup : Has listeners.",
-                 "render_process_host", static_cast<void*>(this),
-                 "listener_count", listeners_.size());
+                 "render_process_host", this, "listener_count",
+                 listeners_.size());
     return;
   } else if (keep_alive_ref_count_ != 0) {
     TRACE_EVENT2("shutdown",
                  "RenderProcessHostImpl::Cleanup : Have keep_alive_ref.",
-                 "render_process_host", static_cast<void*>(this),
-                 "keep_alive_ref_count_", keep_alive_ref_count_);
+                 "render_process_host", this, "keep_alive_ref_count_",
+                 keep_alive_ref_count_);
     return;
   }
 
   TRACE_EVENT1("shutdown", "RenderProcessHostImpl::Cleanup : Starting cleanup.",
-               "render_process_host", static_cast<void*>(this));
+               "render_process_host", this);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN2("shutdown", "Cleanup in progress", this,
-                                    "render_process_host",
-                                    static_cast<void*>(this), "browser_context",
-                                    static_cast<void*>(browser_context_));
+                                    "render_process_host", this,
+                                    "browser_context", browser_context_);
 
   if (is_initialized_) {
     GetIOThreadTaskRunner({})->PostTask(
@@ -3818,8 +3821,7 @@ bool RenderProcessHostImpl::FastShutdownStarted() {
 // static
 void RenderProcessHostImpl::RegisterHost(int host_id, RenderProcessHost* host) {
   TRACE_EVENT2("shutdown", "RenderProcessHostImpl::RegisterHost",
-               "render_process_host", static_cast<void*>(host), "host_id",
-               host_id);
+               "render_process_host", host, "host_id", host_id);
   GetAllHosts().AddWithID(host, host_id);
 }
 
@@ -3827,8 +3829,7 @@ void RenderProcessHostImpl::RegisterHost(int host_id, RenderProcessHost* host) {
 void RenderProcessHostImpl::UnregisterHost(int host_id) {
   RenderProcessHost* host = GetAllHosts().Lookup(host_id);
   TRACE_EVENT2("shutdown", "RenderProcessHostImpl::UnregisterHost",
-               "render_process_host", static_cast<void*>(host), "host_id",
-               host_id);
+               "render_process_host", host, "host_id", host_id);
 
   if (!host)
     return;

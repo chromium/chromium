@@ -744,11 +744,8 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // created on the document.
   virtual bool DocumentUsedWebOTP() = 0;
 
-  // Write a description of this RenderFrameHost into provided |traced_value|.
-  // The caller is responsible for ensuring that key-value pairs can be written
-  // into |traced_value| — either by creating a new TracedValue or calling
-  // BeginDictionary() before calling this method.
-  virtual void AsValueInto(base::trace_event::TracedValue* traced_value) = 0;
+  // Write a description of this RenderFrameHost into the provided |context|.
+  virtual void WriteIntoTracedValue(perfetto::TracedValue context) = 0;
 
   // Start/stop event log output from WebRTC on this RFH for the peer connection
   // identified locally within the RFH using the ID `lid`.

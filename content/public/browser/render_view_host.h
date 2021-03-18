@@ -88,6 +88,9 @@ class CONTENT_EXPORT RenderViewHost {
   // Returns true if the RenderView is active and has not crashed.
   virtual bool IsRenderViewLive() = 0;
 
+  // Write a representation of this object into a trace.
+  virtual void WriteIntoTracedValue(perfetto::TracedValue context) = 0;
+
  private:
   // This interface should only be implemented inside content.
   friend class RenderViewHostImpl;

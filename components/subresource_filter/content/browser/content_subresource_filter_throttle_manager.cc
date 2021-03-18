@@ -202,7 +202,7 @@ void ContentSubresourceFilterThrottleManager::ReadyToCommitNavigation(
       TRACE_DISABLED_BY_DEFAULT("loading"),
       "ContentSubresourceFilterThrottleManager::ReadyToCommitNavigation",
       "activation_state", static_cast<int>(level), "render_frame_host",
-      base::trace_event::ToTracedValue(frame_host));
+      frame_host);
 
   throttle->WillSendActivationToRenderer();
 

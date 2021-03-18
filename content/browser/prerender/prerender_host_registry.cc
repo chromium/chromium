@@ -109,7 +109,7 @@ int PrerenderHostRegistry::ReserveHostToActivate(
   RenderFrameHostImpl* render_frame_host = frame_tree_node.current_frame_host();
   TRACE_EVENT2("navigation", "PrerenderHostRegistry::ReserveHostToActivate",
                "navigation_url", navigation_url.spec(), "render_frame_host",
-               base::trace_event::ToTracedValue(render_frame_host));
+               render_frame_host);
 
   // Disallow activation when the navigation is for prerendering.
   if (frame_tree_node.frame_tree()->is_prerendering())

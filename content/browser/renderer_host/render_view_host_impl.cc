@@ -86,6 +86,7 @@
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/device_form_factor.h"
@@ -971,6 +972,12 @@ void RenderViewHostImpl::SetWillEnterBackForwardCacheCallbackForTesting(
 void RenderViewHostImpl::SetWillSendRendererPreferencesCallbackForTesting(
     const WillSendRendererPreferencesCallbackForTesting& callback) {
   will_send_renderer_preferences_callback_for_testing_ = callback;
+}
+
+void RenderViewHostImpl::WriteIntoTracedValue(perfetto::TracedValue context) {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("routing_id", GetRoutingID());
+  dict.Add("process", GetProcess());
 }
 
 }  // namespace content

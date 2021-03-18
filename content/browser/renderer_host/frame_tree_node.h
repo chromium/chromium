@@ -449,6 +449,9 @@ class CONTENT_EXPORT FrameTreeNode {
   // tree.
   void SetFrameTree(FrameTree& frame_tree);
 
+  // Write a representation of this object into a trace.
+  void WriteIntoTracedValue(perfetto::TracedValue context) const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessPermissionsPolicyBrowserTest,
                            ContainerPolicyDynamic);

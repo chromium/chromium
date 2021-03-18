@@ -16,6 +16,7 @@
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition_config.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -269,6 +270,9 @@ class CONTENT_EXPORT SiteInfo {
   StoragePartitionConfig GetStoragePartitionConfig(
       BrowserContext* browser_context) const;
 
+  // Write a representation of this object into a trace.
+  void WriteIntoTracedValue(perfetto::TracedValue context) const;
+
  private:
   static auto MakeTie(const SiteInfo& site_info);
 
@@ -424,6 +428,7 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   bool IsSameSiteWithURL(const GURL& url) override;
   bool IsGuest() override;
   SiteInstanceProcessAssignment GetLastProcessAssignmentOutcome() override;
+  void WriteIntoTracedValue(perfetto::TracedValue context) override;
 
   // This is called every time a renderer process is assigned to a SiteInstance
   // and is used by the content embedder for collecting metrics.

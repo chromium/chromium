@@ -579,6 +579,11 @@ void MetricsWebContentsObserver::HandleCommittedNavigationForTrackedLoad(
 void MetricsWebContentsObserver::MaybeStorePageLoadTrackerForBackForwardCache(
     content::NavigationHandle* next_navigation_handle,
     std::unique_ptr<PageLoadTracker> previously_committed_load) {
+  TRACE_EVENT1("loading",
+               "MetricsWebContentsObserver::"
+               "MaybeRestorePageLoadTrackerForBackForwardCache",
+               "next_navigation", next_navigation_handle);
+
   if (!previously_committed_load)
     return;
 
@@ -603,6 +608,11 @@ void MetricsWebContentsObserver::MaybeStorePageLoadTrackerForBackForwardCache(
 
 bool MetricsWebContentsObserver::MaybeRestorePageLoadTrackerForBackForwardCache(
     content::NavigationHandle* navigation_handle) {
+  TRACE_EVENT1("loading",
+               "MetricsWebContentsObserver::"
+               "MaybeRestorePageLoadTrackerForBackForwardCache",
+               "navigation", navigation_handle);
+
   if (!navigation_handle->IsServedFromBackForwardCache())
     return false;
 

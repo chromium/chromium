@@ -27,6 +27,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/page_transition_types.h"
 
 class GURL;
@@ -440,6 +441,9 @@ class CONTENT_EXPORT NavigationHandle {
   // RenderFrameHost. This can either be for the commit of a successful
   // navigation or an error page.
   virtual bool IsWaitingToCommit() = 0;
+
+  // Write a representation of this object into a trace.
+  virtual void WriteIntoTracedValue(perfetto::TracedValue context) = 0;
 
   // Testing methods ----------------------------------------------------------
   //

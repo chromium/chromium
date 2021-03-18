@@ -5,6 +5,7 @@
 #include "chrome/browser/site_isolation/site_details.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "base/trace_event/trace_event.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -25,6 +26,8 @@ namespace {
 content::SiteInstance* DeterminePrimarySiteInstance(
     content::SiteInstance* site_instance,
     SiteData* site_data) {
+  TRACE_EVENT1("navigation", "DeterminePrimarySiteInstance", "site_instance",
+               site_instance);
   // Find the BrowsingInstance this WebContents belongs to by iterating over
   // the "primary" SiteInstances of each BrowsingInstance we've seen so far.
   for (auto& entry : site_data->browsing_instances) {

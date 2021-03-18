@@ -65,6 +65,7 @@
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/database/database_tracker.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 using base::UserDataAdapter;
 
@@ -647,6 +648,11 @@ bool BrowserContext::CanUseDiskWhenOffTheRecord() {
 
 variations::VariationsClient* BrowserContext::GetVariationsClient() {
   return nullptr;
+}
+
+void BrowserContext::WriteIntoTracedValue(perfetto::TracedValue context) {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("id", unique_id_);
 }
 
 }  // namespace content

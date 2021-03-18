@@ -170,6 +170,7 @@ source_set("browser_sources") {
     "frame_accept_header.h",
     "frame_service_base.h",
     "generated_code_cache_settings.h",
+    "global_request_id.cc",
     "global_request_id.h",
     "global_routing_id.h",
     "gpu_client.h",

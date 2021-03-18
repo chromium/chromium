@@ -34,6 +34,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
 
@@ -375,6 +376,14 @@ StoragePartitionConfig SiteInfo::GetStoragePartitionConfig(
 
   return GetContentClient()->browser()->GetStoragePartitionConfigForSite(
       browser_context, site_url());
+}
+
+void SiteInfo::WriteIntoTracedValue(perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("site_url", site_url());
+  dict.Add("process_lock_url", process_lock_url());
+  dict.Add("is_origin_keyed", is_origin_keyed_);
+  dict.Add("is_guest", is_guest_);
 }
 
 bool SiteInfo::is_error_page() const {
@@ -1713,6 +1722,15 @@ void SiteInstance::StartIsolatingSite(BrowserContext* context,
   // profiles.
   if (!context->IsOffTheRecord())
     GetContentClient()->browser()->PersistIsolatedOrigin(context, site_origin);
+}
+
+void SiteInstanceImpl::WriteIntoTracedValue(perfetto::TracedValue context) {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("id", GetId());
+  dict.Add("browsing_instance_id", GetBrowsingInstanceId());
+  dict.Add("is_default", IsDefaultSiteInstance());
+  dict.Add("site_info", site_info_);
+  dict.Add("active_frame_count", active_frame_count_);
 }
 
 }  // namespace content

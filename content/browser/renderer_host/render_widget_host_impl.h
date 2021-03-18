@@ -250,6 +250,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void GetScreenInfo(blink::ScreenInfo* result) override;
   float GetDeviceScaleFactor() override;
   base::Optional<cc::TouchAction> GetAllowedTouchAction() override;
+  void WriteIntoTracedValue(perfetto::TracedValue context) override;
   // |drop_data| must have been filtered. The embedder should call
   // FilterDropData before passing the drop data to RWHI.
   void DragTargetDragEnter(const DropData& drop_data,

@@ -1190,8 +1190,7 @@ NavigationRequest::NavigationRequest(
   }
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("navigation", "NavigationRequest",
-                                    navigation_id_, "navigation_request",
-                                    base::trace_event::ToTracedValue(this));
+                                    navigation_id_, "navigation_request", this);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("navigation", "Initializing",
                                     navigation_id_);
 
@@ -5201,28 +5200,29 @@ url::Origin NavigationRequest::GetOriginForURLLoaderFactory() {
   return origin;
 }
 
-void NavigationRequest::AsValueInto(
-    base::trace_event::TracedValue* traced_value) {
-  traced_value->SetPointer("this", this);
-  traced_value->SetInteger("navigation_id", navigation_id_);
-  traced_value->SetInteger("frame_tree_node",
-                           frame_tree_node_->frame_tree_node_id());
-  traced_value->SetString("url", common_params_->url.possibly_invalid_spec());
-  traced_value->SetBoolean("browser_initiated", browser_initiated_);
-  traced_value->SetBoolean("from_begin_navigation", from_begin_navigation_);
-  traced_value->SetBoolean("is_for_commit", is_for_commit_);
-  traced_value->SetInteger("reload_type", static_cast<int>(reload_type_));
-  traced_value->SetInteger("navigation_type",
-                           static_cast<int>(common_params_->navigation_type));
-  traced_value->SetInteger("state", static_cast<int>(state_));
+void NavigationRequest::WriteIntoTracedValue(perfetto::TracedValue context) {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("navigation_id", navigation_id_);
+  dict.Add("has_committed", HasCommitted());
+  dict.Add("is_error_page", IsErrorPage());
+  dict.Add("net_error", net_error_);
+  dict.Add("url", common_params_->url);
+  dict.Add("frame_tree_node", frame_tree_node_);
+  dict.Add("browser_initiated", browser_initiated_);
+  dict.Add("from_begin_navigation", from_begin_navigation_);
+  dict.Add("is_for_commit", is_for_commit_);
+  dict.Add("reload_type", reload_type_);
+  dict.Add("state", state_);
+  dict.Add("navigation_type", common_params_->navigation_type);
 
   if (IsServedFromBackForwardCache()) {
-    traced_value->SetBoolean("bf cached", true);
-    rfh_restored_from_back_forward_cache_->AsValueInto(traced_value);
+    dict.Add("served_from_bfcache", true);
+    dict.Add("rfh_restored_from_bfcache",
+             rfh_restored_from_back_forward_cache_);
   }
 
   if (state_ >= WILL_PROCESS_RESPONSE)
-    GetRenderFrameHost()->AsValueInto(traced_value);
+    dict.Add("render_frame_host", GetRenderFrameHost());
 }
 
 void NavigationRequest::RenderProcessBlockedStateChanged(bool blocked) {

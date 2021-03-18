@@ -125,8 +125,9 @@ class RenderWidgetHostVisibilityTracker
     if (!host || host->GetView()->IsShowing())
       return;
     observation_.Observe(host);
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("ui,latency",
-                                      "TabSwitchVisibilityRequest", this);
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("ui,latency",
+                                      "TabSwitchVisibilityRequest", this,
+                                      "render_widget_host", host);
   }
   ~RenderWidgetHostVisibilityTracker() final = default;
   RenderWidgetHostVisibilityTracker(const RenderWidgetHostVisibilityTracker&) =
