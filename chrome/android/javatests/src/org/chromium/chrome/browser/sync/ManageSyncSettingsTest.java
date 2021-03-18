@@ -450,6 +450,7 @@ public class ManageSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
+    @FlakyTest(message = "https://crbug.com/1188548")
     public void testPassphraseCreation() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         SyncTestUtil.waitForSyncFeatureActive();
