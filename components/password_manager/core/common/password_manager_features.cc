@@ -24,7 +24,13 @@ const base::Feature kChangePasswordAffiliationInfo = {
 // Enables submission detection for forms dynamically cleared but not removed
 // from the page.
 const base::Feature kDetectFormSubmissionOnFormClear = {
-    "DetectFormSubmissionOnFormClear", base::FEATURE_DISABLED_BY_DEFAULT};
+    "DetectFormSubmissionOnFormClear",
+#if defined(OS_IOS)
+    base::FEATURE_DISABLED_BY_DEFAULT
+#else
+    base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
 
 // Enables the editing of passwords in Chrome settings.
 const base::Feature kEditPasswordsInSettings = {
