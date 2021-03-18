@@ -22,6 +22,73 @@ async function setFileSystemAccess() {
   }
 }
 
+async function setIndexedDb() {
+  return new Promise((resolve) => {
+    let open = indexedDB.open('worker_db', 2);
+    open.onupgradeneeded = function () {
+      open.result.createObjectStore('store');
+    }
+    open.onsuccess = function () {
+      open.result.close();
+      resolve(true);
+    }
+    open.onerror = (e) => {
+      resolve(false);
+    }
+  });
+}
+
+async function hasIndexedDb() {
+  return new Promise((resolve) => {
+    let open = indexedDB.open('worker_db');
+    open.onsuccess = function () {
+      let hasStore = open.result.objectStoreNames.contains('store');
+      open.result.close();
+      resolve(hasStore);
+    }
+    open.onerror = () => resolve(false);
+  });
+}
+
+async function setCacheStorage() {
+  try {
+    let cache = await caches.open("worker_cache")
+    await cache.put("/foo", new Response("bar"))
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function hasCacheStorage() {
+  try {
+    let cache = await caches.open("worker_cache")
+    let keys = await cache.keys()
+    return keys.length > 0;
+  } catch {
+    return false;
+  }
+}
+
+async function setStorageFoundation() {
+  try {
+    let f = await storageFoundation.open('worker');
+    await f.close();
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+async function hasStorageFoundation() {
+  try {
+    let dir = await storageFoundation.getAll();
+    return dir.indexOf('worker') != -1;
+  } catch (e) {
+    return false;
+  }
+}
+
 onmessage = async function (e) {
   let result = await this[e.data]();
   postMessage(result);

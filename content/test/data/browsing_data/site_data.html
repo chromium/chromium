@@ -213,6 +213,30 @@
     worker_("setFileSystemAccess");
   }
 
+  function hasWorkerCacheStorage() {
+    worker_("hasCacheStorage");
+  }
+
+  function setWorkerCacheStorage() {
+    worker_("setCacheStorage");
+  }
+
+  function hasWorkerIndexedDb() {
+    worker_("hasIndexedDb");
+  }
+
+  function setWorkerIndexedDb() {
+    worker_("setIndexedDb");
+  }
+
+  function hasWorkerStorageFoundation() {
+    worker_("hasStorageFoundation");
+  }
+
+  function setWorkerStorageFoundation() {
+    worker_("setStorageFoundation");
+  }
+
   function setHistory() {
     history.pushState({}, "foo");
     success_();

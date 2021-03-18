@@ -10,10 +10,11 @@ namespace storage {
 namespace test {
 
 const std::vector<std::string> kStorageTypes{
-    "Cookie",           "LocalStorage",           "FileSystem",
-    "FileSystemAccess", "SessionStorage",         "IndexedDb",
-    "WebSql",           "CacheStorage",           "ServiceWorker",
-    "CookieStore",      "WorkerFileSystemAccess", "StorageFoundation"};
+    "Cookie",           "LocalStorage",      "FileSystem",
+    "FileSystemAccess", "SessionStorage",    "IndexedDb",
+    "WebSql",           "CacheStorage",      "ServiceWorker",
+    "CookieStore",      "StorageFoundation", "WorkerFileSystemAccess",
+    "WorkerIndexedDb",  "WorkerCacheStorage", "WorkerStorageFoundation"};
 
 const std::vector<std::string> kCrossTabCommunicationTypes{
     "SharedWorker",
@@ -52,7 +53,7 @@ void SetStorageForFrame(content::RenderFrameHost* frame) {
     bool data = false;
     EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
         frame, "set" + data_type + "()", &data));
-    EXPECT_TRUE(data) << data_type;
+    EXPECT_TRUE(data) << "SetStorageForFrame for " << data_type;
   }
 }
 
@@ -61,7 +62,7 @@ void ExpectStorageForFrame(content::RenderFrameHost* frame, bool expected) {
     bool data = false;
     EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
         frame, "has" + data_type + "();", &data));
-    EXPECT_EQ(expected, data) << data_type;
+    EXPECT_EQ(expected, data) << "ExpectStorageForFrame for " << data_type;
   }
 }
 
