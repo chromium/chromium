@@ -25,20 +25,11 @@
 #include "extensions/common/constants.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/net/nss_service_chromeos_factory.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 using content::BrowserThread;
 
 void ProfileIOData::InitializeOnUIThread(Profile* profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(https://crbug.com/1018972): Remove this line once NSS initialization
-  // no longer depends on the ResourceContext.
-  NssServiceChromeOSFactory::GetForContext(profile);
-#endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Make sure the ResourceContext is initialized.  It's unclear if this is
   // still needed.
   content::BrowserContext::EnsureResourceContextInitialized(profile);
