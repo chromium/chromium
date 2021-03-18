@@ -318,9 +318,6 @@ extern const char kDynamicColorGamutDescription[];
 extern const char kCompositedLayerBordersName[];
 extern const char kCompositedLayerBordersDescription[];
 
-extern const char kCookieDeprecationMessagesName[];
-extern const char kCookieDeprecationMessagesDescription[];
-
 extern const char kCooperativeSchedulingName[];
 extern const char kCooperativeSchedulingDescription[];
 

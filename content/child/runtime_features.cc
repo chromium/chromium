@@ -237,7 +237,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableConsolidatedMovementXY, features::kConsolidatedMovementXY},
     {wf::EnableConversionMeasurementInfraSupport,
      features::kConversionMeasurement},
-    {wf::EnableCookieDeprecationMessages, features::kCookieDeprecationMessages},
     {wf::EnableCookiesWithoutSameSiteMustBeSecure,
      net::features::kCookiesWithoutSameSiteMustBeSecure},
     {wf::EnableCooperativeScheduling, features::kCooperativeScheduling},

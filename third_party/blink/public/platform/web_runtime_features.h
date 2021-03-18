@@ -96,7 +96,6 @@ class WebRuntimeFeatures {
       bool enable);
   BLINK_PLATFORM_EXPORT static void EnableCompositeRelativeKeyframes(
       bool enable);
-  BLINK_PLATFORM_EXPORT static void EnableCookieDeprecationMessages(bool);
   BLINK_PLATFORM_EXPORT static void EnableCookiesWithoutSameSiteMustBeSecure(
       bool);
   BLINK_PLATFORM_EXPORT static void EnableCanvas2dImageChromium(bool);

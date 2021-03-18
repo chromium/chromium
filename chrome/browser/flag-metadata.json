@@ -761,11 +761,6 @@
     "expiry_milestone": 93
   },
   {
-    "name": "cookie-deprecation-messages",
-    "owners": [ "bingler", "chlily", "aarontag" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "copy-link-to-text",
     "owners": [ "johntlee" ],
     "expiry_milestone": 92

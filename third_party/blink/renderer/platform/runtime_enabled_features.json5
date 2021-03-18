@@ -431,10 +431,6 @@
       name: "ConversionMeasurementInfraSupport",
     },
     {
-      name: "CookieDeprecationMessages",
-      status: "experimental",
-    },
-    {
       name: "CookiesWithoutSameSiteMustBeSecure",
       status: "test",
     },
