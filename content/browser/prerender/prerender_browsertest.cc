@@ -538,6 +538,49 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, LinkRelPrerender_Duplicate) {
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl2), 1);
 }
 
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, NonHttpUrl) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to an initial page.
+  // This test can not use `about:blank` as the initial url because created
+  // blobs inside the page are populated as opaque and blob to blob prerendering
+  // are alerted as cross-origin prerendering.
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Navigate to a dynamically constructed Blob page.
+  const char kCreateBlobUrlScript[] =
+      "URL.createObjectURL(new Blob([\"<script>"
+      "function add_prerender(url) {"
+      "  const link = document.createElement('link');"
+      "  link.rel = 'prerender';"
+      "  link.href= url;"
+      "  document.head.appendChild(link);"
+      "}"
+      "</script>\"], { type: 'text/html' }));";
+  const std::string initial_blob_url =
+      EvalJs(shell()->web_contents(), kCreateBlobUrlScript).ExtractString();
+  ASSERT_TRUE(NavigateToURL(shell(), GURL(initial_blob_url)));
+
+  // Create another Blob URL inside the Blob page.
+  const std::string blob_url =
+      EvalJs(shell()->web_contents(), kCreateBlobUrlScript).ExtractString();
+  const GURL blob_gurl(blob_url);
+
+  // Add <link rel=prerender> that will prerender the Blob page.
+  PrerenderHostRegistryObserver observer(GetPrerenderHostRegistry());
+  EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                     JsReplace("add_prerender($1)", blob_url)));
+  observer.WaitForTrigger(blob_gurl);
+
+  // A prerender host for the URL should not be registered.
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  EXPECT_FALSE(registry.FindHostByUrlForTesting(blob_gurl));
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      PrerenderHost::FinalStatus::kInvalidSchemeNavigation, 1);
+}
+
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, SameOriginRedirection) {
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");

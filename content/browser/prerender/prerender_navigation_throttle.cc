@@ -59,21 +59,31 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   DCHECK(frame_tree_node->IsMainFrame());
   DCHECK(frame_tree_node->frame_tree()->is_prerendering());
 
-  // Take the prerender host of the prerendering page.
+  // Get the prerender host registry.
   auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
       frame_tree_node->current_frame_host()->GetStoragePartition());
   PrerenderHostRegistry* prerender_host_registry =
       storage_partition_impl->GetPrerenderHostRegistry();
+
+  // Allow only HTTP(S) schemes.
+  // https://jeremyroman.github.io/alternate-loading-modes/#no-bad-navs
+  GURL prerendering_url = navigation_handle()->GetURL();
+  if (!prerendering_url.SchemeIsHTTPOrHTTPS()) {
+    prerender_host_registry->AbandonHostAsync(
+        frame_tree_node->frame_tree_node_id(),
+        is_redirection ? PrerenderHost::FinalStatus::kInvalidSchemeRedirect
+                       : PrerenderHost::FinalStatus::kInvalidSchemeNavigation);
+    return CANCEL;
+  }
+
+  // Take the prerender host of the prerendering page.
   const PrerenderHost* prerender_host = prerender_host_registry->FindHostById(
       frame_tree_node->frame_tree_node_id());
   DCHECK(prerender_host);
 
-  // TODO(https://crbug.com/1176132): Cancel if the request is not for http(s).
-
   // Cancel prerendering if this is cross-origin prerendering, cross-origin
   // redirection during prerendering, or cross-origin navigation from a
   // prerendered page.
-  GURL prerendering_url = navigation_handle()->GetURL();
   url::Origin prerendering_origin = url::Origin::Create(prerendering_url);
   if (prerendering_origin != prerender_host->initiator_origin()) {
     // Asynchronously abandon the prerender host so that the navigation request

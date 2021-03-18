@@ -59,7 +59,9 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     kLowEndDevice = 2,
     kCrossOriginRedirect = 3,
     kCrossOriginNavigation = 4,
-    kMaxValue = kCrossOriginNavigation
+    kInvalidSchemeRedirect = 5,
+    kInvalidSchemeNavigation = 6,
+    kMaxValue = kInvalidSchemeNavigation
   };
 
   PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,
