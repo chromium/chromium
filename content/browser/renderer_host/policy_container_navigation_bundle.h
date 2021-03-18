@@ -97,6 +97,10 @@ class CONTENT_EXPORT PolicyContainerNavigationBundle {
   void AddContentSecurityPolicy(
       network::mojom::ContentSecurityPolicyPtr policy);
 
+  // Same as `AddContentSecurityPolicy` above, but takes a vector of policies.
+  void AddContentSecurityPolicies(
+      std::vector<network::mojom::ContentSecurityPolicyPtr> policies);
+
   // Returns the delivered policies, as set so far by:
   //
   //  - |SetIPAddressSpace()| for |ip_address_space|

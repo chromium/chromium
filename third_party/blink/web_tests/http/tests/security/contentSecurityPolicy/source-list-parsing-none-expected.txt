@@ -2,11 +2,11 @@ CONSOLE ERROR: Refused to load the script 'http://127.0.0.1:8000/security/conten
 
 CONSOLE ERROR: Refused to load the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' because it violates the following Content Security Policy directive: "script-src 'none'". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
 
-CONSOLE ERROR: The source list for Content Security Policy directive 'script-src' contains an invalid source: ''none''. It will be ignored. Note that 'none' has no effect unless it is the only expression in the source list.
-CONSOLE ERROR: The source list for Content Security Policy directive 'script-src' contains an invalid source: ''none''. It will be ignored. Note that 'none' has no effect unless it is the only expression in the source list.
-CONSOLE ERROR: The source list for Content Security Policy directive 'script-src' contains an invalid source: ''none''. It will be ignored. Note that 'none' has no effect unless it is the only expression in the source list.
-CONSOLE ERROR: The source list for Content Security Policy directive 'script-src' contains an invalid source: ''none''. It will be ignored. Note that 'none' has no effect unless it is the only expression in the source list.
-CONSOLE ERROR: The source list for Content Security Policy directive 'script-src' contains an invalid source: ''none''. It will be ignored. Note that 'none' has no effect unless it is the only expression in the source list.
+CONSOLE ERROR: The Content-Security-Policy directive 'script-src' contains the keyword 'none' alongside with other source expressions. The keyword 'none' must be the only source expression in the directive value, otherwise it is ignored.
+CONSOLE ERROR: The Content-Security-Policy directive 'script-src' contains the keyword 'none' alongside with other source expressions. The keyword 'none' must be the only source expression in the directive value, otherwise it is ignored.
+CONSOLE ERROR: The Content-Security-Policy directive 'script-src' contains the keyword 'none' alongside with other source expressions. The keyword 'none' must be the only source expression in the directive value, otherwise it is ignored.
+CONSOLE ERROR: The Content-Security-Policy directive 'script-src' contains the keyword 'none' alongside with other source expressions. The keyword 'none' must be the only source expression in the directive value, otherwise it is ignored.
+CONSOLE ERROR: The Content-Security-Policy directive 'script-src' contains the keyword 'none' alongside with other source expressions. The keyword 'none' must be the only source expression in the directive value, otherwise it is ignored.
 CONSOLE ERROR: Refused to load the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' because it violates the following Content Security Policy directive: "script-src 'none' 'none' 'none'". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
 
 'none' should be ignored in source lists, unless it is the only token.

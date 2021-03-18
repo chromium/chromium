@@ -23,8 +23,47 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
+
+namespace {
+
+void ClearAllButFrameAncestors(
+    std::vector<network::mojom::ContentSecurityPolicyPtr>& csp) {
+  std::vector<network::mojom::ContentSecurityPolicyPtr> cleared;
+
+  for (auto& policy : csp) {
+    auto frame_ancestors = policy->directives.find(
+        network::mojom::CSPDirectiveName::FrameAncestors);
+    if (frame_ancestors == policy->directives.end())
+      continue;
+
+    auto cleared_policy = network::mojom::ContentSecurityPolicy::New();
+    cleared_policy->self_origin = std::move(policy->self_origin);
+    cleared_policy->header = std::move(policy->header);
+    cleared_policy->header->header_value = "";
+    cleared_policy
+        ->directives[network::mojom::CSPDirectiveName::FrameAncestors] =
+        std::move(frame_ancestors->second);
+
+    auto raw_frame_ancestors = policy->raw_directives.find(
+        network::mojom::CSPDirectiveName::FrameAncestors);
+    if (raw_frame_ancestors == policy->raw_directives.end()) {
+      DCHECK(false);
+    } else {
+      cleared_policy
+          ->raw_directives[network::mojom::CSPDirectiveName::FrameAncestors] =
+          std::move(raw_frame_ancestors->second);
+    }
+
+    cleared.push_back(std::move(cleared_policy));
+  }
+
+  csp.swap(cleared);
+}
+
+}  // namespace
 
 PluginResponseInterceptorURLLoaderThrottle::
     PluginResponseInterceptorURLLoaderThrottle(
@@ -64,6 +103,13 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
   if (extension_id == extension_misc::kPdfExtensionId &&
       response_head->headers) {
     response_head->headers->RemoveHeader("Content-Security-Policy");
+
+    if (response_head->parsed_headers) {
+      // We still want to honor the frame-ancestors directive in the
+      // AncestorThrottle.
+      ClearAllButFrameAncestors(
+          response_head->parsed_headers->content_security_policy);
+    }
   }
 
   MimeTypesHandler::ReportUsedHandler(extension_id);

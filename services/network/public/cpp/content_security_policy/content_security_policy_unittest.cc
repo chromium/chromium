@@ -480,7 +480,7 @@ TEST(ContentSecurityPolicy, ParseDirectives) {
 
     EXPECT_EQ(1U, policies[0]->parsing_errors.size());
     EXPECT_EQ(
-        "The source list for Content-Security-Policy directive "
+        "The source list for Content Security Policy directive "
         "'frame-ancestors' contains a source with an invalid path: "
         "'/index.html?a=b'. The query component, including the '?', will be "
         "ignored.",
@@ -516,7 +516,7 @@ TEST(ContentSecurityPolicy, ParseDirectives) {
 
     EXPECT_EQ(1U, policies[0]->parsing_errors.size());
     EXPECT_EQ(
-        "The source list for Content-Security-Policy directive "
+        "The source list for Content Security Policy directive "
         "'frame-ancestors' contains a source with an invalid path: "
         "'/index.html#a'. The fragment identifier, including the '#', will be "
         "ignored.",
@@ -1396,8 +1396,9 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
             csp->allow_star = true;
             return csp;
           }),
-          "The source list for the Content-Security-Policy directive "
-          "'script-src' contains an invalid source: ''wrong''.",
+          "The source list for the Content Security Policy directive "
+          "'script-src' contains an invalid source: ''wrong''. It will be "
+          "ignored.",
       },
       {
           "'wrong' 'unsafe-inline'",
@@ -1406,8 +1407,9 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
             csp->allow_inline = true;
             return csp;
           }),
-          "The source list for the Content-Security-Policy directive "
-          "'script-src' contains an invalid source: ''wrong''.",
+          "The source list for the Content Security Policy directive "
+          "'script-src' contains an invalid source: ''wrong''. It will be "
+          "ignored.",
       },
       {
           "'wrong' 'unsafe-eval'",
@@ -1416,8 +1418,9 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
             csp->allow_eval = true;
             return csp;
           }),
-          "The source list for the Content-Security-Policy directive "
-          "'script-src' contains an invalid source: ''wrong''.",
+          "The source list for the Content Security Policy directive "
+          "'script-src' contains an invalid source: ''wrong''. It will be "
+          "ignored.",
       },
       {
           "'wrong' 'wasm-eval'",
@@ -1426,8 +1429,9 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
             csp->allow_wasm_eval = true;
             return csp;
           }),
-          "The source list for the Content-Security-Policy directive "
-          "'script-src' contains an invalid source: ''wrong''.",
+          "The source list for the Content Security Policy directive "
+          "'script-src' contains an invalid source: ''wrong''. It will be "
+          "ignored.",
       },
       {
           "'wrong' 'strict-dynamic'",
@@ -1436,8 +1440,9 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
             csp->allow_dynamic = true;
             return csp;
           }),
-          "The source list for the Content-Security-Policy directive "
-          "'script-src' contains an invalid source: ''wrong''.",
+          "The source list for the Content Security Policy directive "
+          "'script-src' contains an invalid source: ''wrong''. It will be "
+          "ignored.",
       },
       {
           "'wrong' 'unsafe-hashes'",
@@ -1446,8 +1451,9 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
             csp->allow_unsafe_hashes = true;
             return csp;
           }),
-          "The source list for the Content-Security-Policy directive "
-          "'script-src' contains an invalid source: ''wrong''.",
+          "The source list for the Content Security Policy directive "
+          "'script-src' contains an invalid source: ''wrong''. It will be "
+          "ignored.",
       },
       {
           "'wrong' 'report-sample'",
@@ -1456,8 +1462,9 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
             csp->report_sample = true;
             return csp;
           }),
-          "The source list for the Content-Security-Policy directive "
-          "'script-src' contains an invalid source: ''wrong''.",
+          "The source list for the Content Security Policy directive "
+          "'script-src' contains an invalid source: ''wrong''. It will be "
+          "ignored.",
       },
   };
 

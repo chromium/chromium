@@ -343,6 +343,11 @@ void ContentSecurityPolicy::AddPolicies(
 
   for (network::mojom::blink::ContentSecurityPolicyPtr& policy : policies) {
     ComputeInternalStateForParsedPolicy(*policy);
+
+    // Report parsing errors in the console.
+    for (const String& message : policy->parsing_errors)
+      LogToConsole(message);
+
     policies_.push_back(std::move(policy));
   }
 

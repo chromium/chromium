@@ -10,7 +10,7 @@
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
-#include "services/network/public/mojom/content_security_policy.mojom-shared.h"
+#include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
@@ -625,10 +625,18 @@ bool CheckEval(const network::mojom::blink::CSPSourceList* directive) {
   return !directive || directive->allow_eval;
 }
 
-bool CheckWasmEval(const network::mojom::blink::CSPSourceList* directive,
+bool SupportsWasmEval(const network::mojom::blink::ContentSecurityPolicy& csp,
+                      const ContentSecurityPolicy* policy) {
+  return policy->SupportsWasmEval() ||
+         SchemeRegistry::SchemeSupportsWasmEvalCSP(csp.self_origin->scheme);
+}
+
+bool CheckWasmEval(const network::mojom::blink::ContentSecurityPolicy& csp,
                    const ContentSecurityPolicy* policy) {
+  const network::mojom::blink::CSPSourceList* directive =
+      OperativeDirective(csp, CSPDirectiveName::ScriptSrc).source_list;
   return !directive || directive->allow_eval ||
-         (policy->SupportsWasmEval() && directive->allow_wasm_eval);
+         (SupportsWasmEval(csp, policy) && directive->allow_wasm_eval);
 }
 
 bool CheckHash(const network::mojom::blink::CSPSourceList* directive,
@@ -747,11 +755,11 @@ bool CheckWasmEvalAndReportViolation(
     const String& console_message,
     ContentSecurityPolicy::ExceptionStatus exception_status,
     const String& content) {
-  CSPOperativeDirective directive =
-      OperativeDirective(csp, CSPDirectiveName::ScriptSrc);
-  if (CheckWasmEval(directive.source_list, policy))
+  if (CheckWasmEval(csp, policy))
     return true;
 
+  CSPOperativeDirective directive =
+      OperativeDirective(csp, CSPDirectiveName::ScriptSrc);
   String suffix = String();
   if (directive.type == CSPDirectiveName::DefaultSrc) {
     suffix =
@@ -1091,7 +1099,7 @@ bool CSPDirectiveListAllowWasmCodeGeneration(
     ContentSecurityPolicy::ExceptionStatus exception_status,
     const String& content) {
   if (reporting_disposition == ReportingDisposition::kReport) {
-    String infix = policy->SupportsWasmEval()
+    String infix = SupportsWasmEval(csp, policy)
                        ? "neither 'wasm-eval' nor 'unsafe-eval' is"
                        : "'unsafe-eval' is not";
     return CheckWasmEvalAndReportViolation(
@@ -1102,10 +1110,7 @@ bool CSPDirectiveListAllowWasmCodeGeneration(
             "Content Security Policy directive: ",
         exception_status, content);
   }
-  return CSPDirectiveListIsReportOnly(csp) ||
-         CheckWasmEval(
-             OperativeDirective(csp, CSPDirectiveName::ScriptSrc).source_list,
-             policy);
+  return CSPDirectiveListIsReportOnly(csp) || CheckWasmEval(csp, policy);
 }
 
 bool CSPDirectiveListShouldDisableEval(

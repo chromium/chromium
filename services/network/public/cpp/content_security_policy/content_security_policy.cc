@@ -409,7 +409,7 @@ bool ParseSource(CSPDirectiveName directive_name,
             ? "The query component, including the '?', will be ignored."
             : "The fragment identifier, including the '#', will be ignored.";
     parsing_errors.emplace_back(base::StringPrintf(
-        "The source list for Content-Security-Policy directive '%s' "
+        "The source list for Content Security Policy directive '%s' "
         "contains a source with an invalid path: '%s'. %s",
         ToString(directive_name).c_str(), expression.as_string().c_str(),
         ignoring));
@@ -634,8 +634,8 @@ mojom::CSPSourceListPtr ParseSourceList(
     // Parsing error.
     // Ignore this source-expression.
     parsing_errors.emplace_back(base::StringPrintf(
-        "The source list for the Content-Security-Policy directive '%s' "
-        "contains an invalid source: '%s'.",
+        "The source list for the Content Security Policy directive '%s' "
+        "contains an invalid source: '%s'. It will be ignored.",
         ToString(directive_name).c_str(), expression.as_string().c_str()));
   }
 

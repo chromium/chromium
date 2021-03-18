@@ -60,6 +60,7 @@
 #include "third_party/blink/public/web/web_navigation_params.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view_client.h"
+#include "third_party/blink/renderer/core/frame/csp/conversion_util.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/frame/web_remote_frame_impl.h"
@@ -234,6 +235,19 @@ void FillNavigationParamsResponse(WebNavigationParams* params) {
     return;
   WebURLLoaderMockFactory::GetSingletonInstance()->FillNavigationParamsResponse(
       params);
+
+  // Parse Content Security Policy response headers into the policy container,
+  // simulating what the browser does.
+  network::mojom::blink::ParsedHeadersPtr parsed_headers = ParseHeaders(
+      "HTTP/1.1 " + String::Number(params->response.HttpStatusCode()) + " " +
+          String(params->response.HttpStatusText()) +
+          "\nContent-Security-Policy: " +
+          String(params->response.HttpHeaderField("Content-Security-Policy")),
+      params->response.ResponseUrl());
+  for (auto& csp : parsed_headers->content_security_policy) {
+    params->policy_container->policies.content_security_policies.emplace_back(
+        ConvertToPublic(std::move(csp)));
+  }
 }
 
 WebMouseEvent CreateMouseEvent(WebInputEvent::Type type,

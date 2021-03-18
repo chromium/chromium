@@ -2468,14 +2468,6 @@ ContentSecurityPolicy* DocumentLoader::CreateCSP() {
   csp->AddPolicies(
       mojo::Clone(policy_container_->GetPolicies().content_security_policies));
 
-  // Parse CSPs from the HTTP response and add them to the policy container.
-  //
-  // TODO(https://crbug.com/1181683): We should prepopulate the policy container
-  // in the browser process with the CSPs from the parsed headers and skip this
-  // step.
-  policy_container_->AddContentSecurityPolicies(
-      csp->DidReceiveHeaders(ContentSecurityPolicyResponseHeaders(response_)));
-
   // Retrieve CSP stored in the OriginPolicy and add them to the policy
   // container.
   if (origin_policy_) {

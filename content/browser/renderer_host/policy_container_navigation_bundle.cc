@@ -121,6 +121,13 @@ void PolicyContainerNavigationBundle::AddContentSecurityPolicy(
   delivered_policies_->content_security_policies.push_back(std::move(policy));
 }
 
+void PolicyContainerNavigationBundle::AddContentSecurityPolicies(
+    std::vector<network::mojom::ContentSecurityPolicyPtr> policies) {
+  DCHECK(!HasComputedPolicies());
+
+  delivered_policies_->AddContentSecurityPolicies(std::move(policies));
+}
+
 const PolicyContainerPolicies&
 PolicyContainerNavigationBundle::DeliveredPoliciesForTesting() const {
   DCHECK(!HasComputedPolicies());

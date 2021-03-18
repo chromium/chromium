@@ -566,6 +566,30 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
   EXPECT_EQ(embedder_rect, guest_rect);
 }
 
+// This test verifies that when a PDF is served with
+// Content-Security-Policy: sandbox, this is ignored and the PDF is displayed.
+// Regression test for https://crbug.com/1187122.
+IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
+                       CSPWithSandboxDoesNotBlockPDF) {
+  GURL main_url(embedded_test_server()->GetURL("/pdf/test-csp-sandbox.pdf"));
+  ui_test_utils::NavigateToURL(browser(), main_url);
+  auto* embedder_web_contents = GetActiveWebContents();
+  ASSERT_TRUE(embedder_web_contents);
+
+  // Verify the pdf has loaded.
+  auto* guest_web_contents = GetGuestViewManager()->WaitForSingleGuestCreated();
+  ASSERT_TRUE(guest_web_contents);
+  EXPECT_NE(embedder_web_contents, guest_web_contents);
+  WaitForLoadStart(guest_web_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(guest_web_contents));
+
+  // Verify the extension was loaded.
+  const GURL extension_url(
+      "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/index.html");
+  EXPECT_EQ(extension_url, guest_web_contents->GetURL());
+  EXPECT_EQ(main_url, embedder_web_contents->GetURL());
+}
+
 // This test verifies that Content-Security-Policy's frame-ancestors 'none'
 // directive is effective on a PDF response.
 // Regression test for https://crbug.com/1107535.
