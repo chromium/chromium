@@ -72,8 +72,8 @@ void IsolatedFileSystemPrivateResource::OnBrowserOpenComplete(
   *file_system_resource = fs->GetReference();
   if (*file_system_resource == 0)
     callback->Run(PP_ERROR_FAILED);
-  fs->InitIsolatedFileSystem(
-      fsid, type, base::Bind(&RunTrackedCallback, callback));
+  fs->InitIsolatedFileSystem(fsid, type,
+                             base::BindOnce(&RunTrackedCallback, callback));
 }
 
 }  // namespace proxy

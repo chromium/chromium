@@ -120,7 +120,7 @@ void SerializedVar::Inner::WriteToMessage(base::Pickle* m) const {
       RawVarDataGraph::Create(var_, instance_);
   if (data) {
     m->WriteBool(true);  // Success.
-    data->Write(m, base::Bind(&DefaultHandleWriter));
+    data->Write(m, base::BindRepeating(&DefaultHandleWriter));
   } else {
     m->WriteBool(false);  // Failure.
   }

@@ -63,7 +63,7 @@ bool WriteAndRead(const PP_Var& var, PP_Var* result) {
   if (!expected_data)
     return false;
   IPC::Message m;
-  expected_data->Write(&m, base::Bind(&DefaultHandleWriter));
+  expected_data->Write(&m, base::BindRepeating(&DefaultHandleWriter));
   base::PickleIterator iter(m);
   std::unique_ptr<RawVarDataGraph> actual_data(
       RawVarDataGraph::Read(&m, &iter));
