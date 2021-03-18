@@ -11,6 +11,7 @@
 #include "base/mac/mac_util.h"
 #include "base/mac/mach_logging.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/message_loop/timer_slack.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/time/time_override.h"
 
@@ -112,7 +113,9 @@ void MessagePumpKqueue::MachPortWatchController::Reset() {
 }
 
 MessagePumpKqueue::MessagePumpKqueue()
-    : kqueue_(kqueue()), weak_factory_(this) {
+    : kqueue_(kqueue()),
+      is_ludicrous_timer_slack_enabled_(base::IsLudicrousTimerSlackEnabled()),
+      weak_factory_(this) {
   PCHECK(kqueue_.is_valid()) << "kqueue";
 
   // Create a Mach port that will be used to wake up the pump by sending
@@ -499,6 +502,7 @@ void MessagePumpKqueue::UpdateWakeupTimer(const base::TimeTicks& wakeup_time) {
     timer.filter = EVFILT_TIMER;
     // This updates the timer if it already exists in |kqueue_|.
     timer.flags = EV_ADD | EV_ONESHOT;
+
     // Specify the sleep in microseconds to avoid undersleeping due to
     // numeric problems. The sleep is computed from TimeTicks::Now rather than
     // NextWorkInfo::recent_now because recent_now is strictly earlier than
@@ -508,6 +512,18 @@ void MessagePumpKqueue::UpdateWakeupTimer(const base::TimeTicks& wakeup_time) {
     // timer is set immediately.
     timer.fflags = NOTE_USECONDS;
     timer.data = (wakeup_time - base::TimeTicks::Now()).InMicroseconds();
+
+    // This odd-looking check is here to validate that message pumps aren't
+    // constructed before the feature flag is initialized.
+    DCHECK_EQ(base::IsLudicrousTimerSlackEnabled(),
+              is_ludicrous_timer_slack_enabled_);
+    if (is_ludicrous_timer_slack_enabled_) {
+      // Specify ludicrous slack when the experiment is enabled.
+      // See "man kqueue" in recent macOSen for documentation.
+      timer.fflags |= NOTE_LEEWAY;
+      timer.ext[1] = GetLudicrousTimerSlack().InMicroseconds();
+    }
+
     int rv = ChangeOneEvent(kqueue_, &timer);
     PCHECK(rv == 0) << "kevent64, set timer";
 

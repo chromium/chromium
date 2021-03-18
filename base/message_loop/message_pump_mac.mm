@@ -32,6 +32,14 @@ const CFStringRef kMessageLoopExclusiveRunLoopMode =
 
 namespace {
 
+MessagePumpCFRunLoopBase::LudicrousSlackSetting GetLudicrousSlackSetting() {
+  return base::IsLudicrousTimerSlackEnabled()
+             ? MessagePumpCFRunLoopBase::LudicrousSlackSetting::
+                   kLudicrousSlackOn
+             : MessagePumpCFRunLoopBase::LudicrousSlackSetting::
+                   kLudicrousSlackOff;
+}
+
 // Mask that determines which modes to use.
 enum { kCommonModeMask = 0x1, kAllModesMask = 0xf };
 
@@ -176,7 +184,25 @@ void MessagePumpCFRunLoopBase::ScheduleDelayedWork(
 
 void MessagePumpCFRunLoopBase::ScheduleDelayedWorkImpl(TimeDelta delta) {
   // The tolerance needs to be set before the fire date or it may be ignored.
-  if (timer_slack_ == TIMER_SLACK_MAXIMUM) {
+
+  // Pickup the ludicrous slack setting as late as possible to work around
+  // initialization issues in base. Note that the main thread won't sleep until
+  // field trial initialization is complete.
+  if (ludicrous_slack_setting_ ==
+      LudicrousSlackSetting::kLudicrousSlackUninitialized) {
+    ludicrous_slack_setting_ = GetLudicrousSlackSetting();
+  } else {
+    // Validate that the setting doesn't change after we cache it.
+    DCHECK_EQ(ludicrous_slack_setting_, GetLudicrousSlackSetting());
+  }
+  DCHECK_NE(ludicrous_slack_setting_,
+            LudicrousSlackSetting::kLudicrousSlackUninitialized);
+
+  if (ludicrous_slack_setting_ == LudicrousSlackSetting::kLudicrousSlackOn) {
+    // Specify ludicrous slack when the experiment is enabled.
+    CFRunLoopTimerSetTolerance(delayed_work_timer_,
+                               GetLudicrousTimerSlack().InSecondsF());
+  } else if (timer_slack_ == TIMER_SLACK_MAXIMUM) {
     CFRunLoopTimerSetTolerance(delayed_work_timer_, delta.InSecondsF() * 0.5);
   } else {
     CFRunLoopTimerSetTolerance(delayed_work_timer_, 0);
