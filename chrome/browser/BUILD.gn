@@ -6720,6 +6720,8 @@ static_library("test_support") {
     "notifications/stub_notification_display_service.h",
     "plugins/plugin_test_utils.cc",
     "plugins/plugin_test_utils.h",
+    "policy/messaging_layer/upload/fake_upload_client.cc",
+    "policy/messaging_layer/upload/fake_upload_client.h",
     "predictors/loading_test_util.cc",
     "predictors/loading_test_util.h",
     "resource_coordinator/tab_load_tracker_test_support.cc",

@@ -39,16 +39,18 @@ class UploadClient {
       base::OnceCallback<void(StatusOr<std::unique_ptr<UploadClient>>)>
           created_cb);
 
-  ~UploadClient();
+  virtual ~UploadClient();
   UploadClient(const UploadClient& other) = delete;
   UploadClient& operator=(const UploadClient& other) = delete;
 
-  Status EnqueueUpload(bool need_encryption_keys,
-                       std::unique_ptr<std::vector<EncryptedRecord>> record);
+  virtual Status EnqueueUpload(
+      bool need_encryption_keys,
+      std::unique_ptr<std::vector<EncryptedRecord>> record);
 
- private:
+ protected:
   UploadClient();
 
+ private:
   std::unique_ptr<DmServerUploadService> dm_server_upload_service_;
 };
 
