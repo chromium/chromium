@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "content/public/browser/web_contents_observer.h"
-
 namespace captions {
 
 class CaptionBubble;
@@ -16,8 +14,8 @@ class CaptionBubble;
 ///////////////////////////////////////////////////////////////////////////////
 // Caption Bubble Model
 //
-//  A representation of the data a caption bubble needs on a particular web
-//  contents. The caption bubble controller sets the value of the text. The
+//  A representation of the data a caption bubble needs for a particular media
+//  stream. The caption bubble controller sets the value of the text. The
 //  caption bubble observes the model, and when the values change, the observer
 //  is alerted.
 //
@@ -34,10 +32,10 @@ class CaptionBubble;
 //  appended to the end of the final text. The caption bubble displays the full
 //  final + partial text.
 //
-class CaptionBubbleModel : public content::WebContentsObserver {
+class CaptionBubbleModel {
  public:
-  explicit CaptionBubbleModel(content::WebContents* web_contents);
-  ~CaptionBubbleModel() override;
+  CaptionBubbleModel();
+  ~CaptionBubbleModel();
   CaptionBubbleModel(const CaptionBubbleModel&) = delete;
   CaptionBubbleModel& operator=(const CaptionBubbleModel&) = delete;
 
@@ -63,11 +61,6 @@ class CaptionBubbleModel : public content::WebContentsObserver {
   bool IsClosed() const { return is_closed_; }
   bool HasError() const { return has_error_; }
   std::string GetFullText() const { return final_text_ + partial_text_; }
-
- protected:
-  // content::WebContentsObserver:
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
 
  private:
   // Alert the observer that a change has occurred to the model text.

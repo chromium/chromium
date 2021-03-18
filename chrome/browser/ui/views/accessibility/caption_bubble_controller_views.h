@@ -10,7 +10,6 @@
 #include <unordered_map>
 
 #include "chrome/browser/ui/caption_bubble_controller.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
 namespace views {
 class View;
@@ -27,8 +26,7 @@ class CaptionBubbleModel;
 //
 //  The implementation of the caption bubble controller for Views.
 //
-class CaptionBubbleControllerViews : public CaptionBubbleController,
-                                     public TabStripModelObserver {
+class CaptionBubbleControllerViews : public CaptionBubbleController {
  public:
   static views::View* GetCaptionBubbleAccessiblePane(Browser* browser);
 
@@ -41,12 +39,15 @@ class CaptionBubbleControllerViews : public CaptionBubbleController,
   // Called when a transcription is received from the service. Returns whether
   // the transcription result was set on the caption bubble successfully.
   // Transcriptions will halt if this returns false.
-  bool OnTranscription(
-      const chrome::mojom::TranscriptionResultPtr& transcription_result,
-      content::WebContents* web_contents) override;
+  bool OnTranscription(CaptionHostImpl* caption_host_impl,
+                       const chrome::mojom::TranscriptionResultPtr&
+                           transcription_result) override;
 
   // Called when the speech service has an error.
-  void OnError(content::WebContents* web_contents) override;
+  void OnError(CaptionHostImpl* caption_host_impl) override;
+
+  // Called when the audio stream has ended.
+  void OnAudioStreamEnd(CaptionHostImpl* caption_host_impl) override;
 
   // Called when the caption style changes.
   void UpdateCaptionStyle(
@@ -59,34 +60,28 @@ class CaptionBubbleControllerViews : public CaptionBubbleController,
  private:
   friend class CaptionBubbleControllerViewsTest;
 
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
-
   // A callback passed to the CaptionBubble which is called when the
   // CaptionBubble is destroyed.
   void OnCaptionBubbleDestroyed();
 
-  // Sets the active contents to the given web contents, and creates a new
-  // CaptionBubbleModel for that contents if one does not already exist.
-  void SetActiveContents(content::WebContents* contents);
+  // Sets the active CaptionBubbleModel to the one corresponding to the given
+  // media player id, and creates a new CaptionBubbleModel if one does not
+  // already exist.
+  void SetActiveModel(CaptionHostImpl* caption_host_impl);
 
   bool IsWidgetVisibleForTesting() override;
   std::string GetBubbleLabelTextForTesting() override;
 
   CaptionBubble* caption_bubble_;
   views::Widget* caption_widget_;
-  Browser* browser_;
 
-  // The web contents corresponding to the active tab.
-  content::WebContents* active_contents_;
+  // A pointer to the currently active CaptionBubbleModel.
+  CaptionBubbleModel* active_model_ = nullptr;
 
-  // A map of web contents and their corresponding CaptionBubbleModel. New
-  // entries are added to this map when a previously un-activated web contents
-  // is activated.
-  std::unordered_map<content::WebContents*, std::unique_ptr<CaptionBubbleModel>>
+  // A map of media player ids and their corresponding CaptionBubbleModel. New
+  // entries are added to this map when a previously unseen media player id is
+  // received.
+  std::unordered_map<CaptionHostImpl*, std::unique_ptr<CaptionBubbleModel>>
       caption_bubble_models_;
 };
 }  // namespace captions
