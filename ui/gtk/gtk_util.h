@@ -85,13 +85,6 @@ bool GtkCheckVersion(int major, int minor = 0, int micro = 0);
 
 class GtkCssContext {
  public:
-#if BUILDFLAG(GTK_VERSION) >= 4
-  using ContextType = GtkWidget;
-#else
-  using ContextType = GtkStyleContext;
-#endif
-
-  explicit GtkCssContext(ScopedGObject<ContextType> context);
   GtkCssContext();
   GtkCssContext(const GtkCssContext&);
   GtkCssContext(GtkCssContext&&);
@@ -99,30 +92,41 @@ class GtkCssContext {
   GtkCssContext& operator=(GtkCssContext&&);
   ~GtkCssContext();
 
-  ContextType* get() { return context_; }
-
-  operator GtkStyleContext*() {
 #if BUILDFLAG(GTK_VERSION) >= 4
-    return gtk_widget_get_style_context(context_);
-#else
-    return context_;
-#endif
-  }
+  GtkCssContext(GtkWidget* widget, GtkWidget* root);
 
-#if BUILDFLAG(GTK_VERSION) >= 4
-  operator GtkWidget*() { return context_; }
-#endif
+  operator bool() { return widget_; }
+
+  operator GtkStyleContext*() { return gtk_widget_get_style_context(widget_); }
+
+  operator GtkWidget*() { return widget_; }
+
+  GtkWidget* root() { return root_; }
 
   GtkCssContext GetParent() {
-#if BUILDFLAG(GTK_VERSION) >= 4
-    return GtkCssContext(WrapGObject(gtk_widget_get_parent(context_)));
-#else
-    return GtkCssContext(WrapGObject(gtk_style_context_get_parent(context_)));
-#endif
+    return GtkCssContext(WrapGObject(gtk_widget_get_parent(widget_)),
+                         root_ == widget_ ? nullptr : root_);
   }
 
  private:
-  ScopedGObject<ContextType> context_;
+  // GTK widgets own their children, so instead of keeping a reference to the
+  // widget directly, keep a reference to the root widget.
+  GtkWidget* widget_ = nullptr;
+  ScopedGObject<GtkWidget> root_;
+#else
+  explicit GtkCssContext(GtkStyleContext* context);
+
+  operator bool() { return context_; }
+
+  operator GtkStyleContext*() { return context_; }
+
+  GtkCssContext GetParent() {
+    return GtkCssContext(WrapGObject(gtk_style_context_get_parent(context_)));
+  }
+
+ private:
+  ScopedGObject<GtkStyleContext> context_;
+#endif
 };
 
 using ScopedCssProvider = ScopedGObject<GtkCssProvider>;

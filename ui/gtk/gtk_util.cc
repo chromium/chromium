@@ -102,9 +102,13 @@ GtkCssContext AppendCssNodeToStyleContextImpl(
     const std::vector<std::string>& classes,
     GtkStateFlags state) {
 #if BUILDFLAG(GTK_VERSION) >= 4
+  // GTK_TYPE_BOX is used instead of GTK_TYPE_WIDGET because:
+  // 1. Widgets are abstract and cannot be created directly.
+  // 2. The widget must be a container type so that it unrefs child widgets
+  //    on destruction.
   auto* widget_object = object_name.empty()
-                            ? g_object_new(GTK_TYPE_WIDGET, nullptr)
-                            : g_object_new(GTK_TYPE_WIDGET, "css-name",
+                            ? g_object_new(GTK_TYPE_BOX, nullptr)
+                            : g_object_new(GTK_TYPE_BOX, "css-name",
                                            object_name.c_str(), nullptr);
   auto widget = TakeGObject(GTK_WIDGET(widget_object));
 
@@ -120,8 +124,9 @@ GtkCssContext AppendCssNodeToStyleContextImpl(
 
   gtk_widget_set_state_flags(widget, state, false);
 
-  gtk_widget_set_parent(widget, context);
-  return GtkCssContext(widget);
+  if (context)
+    gtk_widget_set_parent(widget, context);
+  return GtkCssContext(widget, context ? context.root() : widget);
 #else
   GtkWidgetPath* path =
       context ? gtk_widget_path_copy(gtk_style_context_get_path(context))
@@ -298,8 +303,13 @@ bool GtkCheckVersion(int major, int minor, int micro) {
   return version >= std::make_tuple(major, minor, micro);
 }
 
-GtkCssContext::GtkCssContext(ScopedGObject<ContextType> context)
-    : context_(context) {}
+#if BUILDFLAG(GTK_VERSION) >= 4
+GtkCssContext::GtkCssContext(GtkWidget* widget, GtkWidget* root)
+    : widget_(widget), root_(WrapGObject(root)) {}
+#else
+GtkCssContext::GtkCssContext(GtkStyleContext* context)
+    : context_(WrapGObject(context)) {}
+#endif
 GtkCssContext::GtkCssContext() = default;
 GtkCssContext::GtkCssContext(const GtkCssContext&) = default;
 GtkCssContext::GtkCssContext(GtkCssContext&&) = default;
@@ -490,7 +500,7 @@ ScopedCssProvider GetCssProvider(const std::string& css) {
 
 void ApplyCssProviderToContext(GtkCssContext context,
                                GtkCssProvider* provider) {
-  while (context.get()) {
+  while (context) {
     gtk_style_context_add_provider(context, GTK_STYLE_PROVIDER(provider),
                                    G_MAXUINT);
     context = context.GetParent();
@@ -505,7 +515,7 @@ void ApplyCssToContext(GtkCssContext context, const std::string& css) {
 void RenderBackground(const gfx::Size& size,
                       cairo_t* cr,
                       GtkCssContext context) {
-  if (!context.get())
+  if (!context)
     return;
   RenderBackground(size, cr, context.GetParent());
   gtk_render_background(context, cr, 0, 0, size.width(), size.height());
