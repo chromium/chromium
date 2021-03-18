@@ -31,6 +31,8 @@
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 
+using extensions::mojom::ManifestLocation;
+
 namespace {
 
 const char* TypeToString(extensions::Manifest::Type type) {
@@ -60,32 +62,30 @@ const char* TypeToString(extensions::Manifest::Type type) {
   return "";
 }
 
-const char* LocationToString(extensions::Manifest::Location loc) {
+const char* LocationToString(ManifestLocation loc) {
   switch (loc) {
-    case extensions::Manifest::INVALID_LOCATION:
+    case ManifestLocation::kInvalidLocation:
       return "INVALID_LOCATION";
-    case extensions::Manifest::INTERNAL:
+    case ManifestLocation::kInternal:
       return "INTERNAL";
-    case extensions::Manifest::EXTERNAL_PREF:
+    case ManifestLocation::kExternalPref:
       return "EXTERNAL_PREF";
-    case extensions::Manifest::EXTERNAL_REGISTRY:
+    case ManifestLocation::kExternalRegistry:
       return "EXTERNAL_REGISTRY";
-    case extensions::Manifest::UNPACKED:
+    case ManifestLocation::kUnpacked:
       return "UNPACKED";
-    case extensions::Manifest::COMPONENT:
+    case ManifestLocation::kComponent:
       return "COMPONENT";
-    case extensions::Manifest::EXTERNAL_PREF_DOWNLOAD:
+    case ManifestLocation::kExternalPrefDownload:
       return "EXTERNAL_PREF_DOWNLOAD";
-    case extensions::Manifest::EXTERNAL_POLICY_DOWNLOAD:
+    case ManifestLocation::kExternalPolicyDownload:
       return "EXTERNAL_POLICY_DOWNLOAD";
-    case extensions::Manifest::COMMAND_LINE:
+    case ManifestLocation::kCommandLine:
       return "COMMAND_LINE";
-    case extensions::Manifest::EXTERNAL_POLICY:
+    case ManifestLocation::kExternalPolicy:
       return "EXTERNAL_POLICY";
-    case extensions::Manifest::EXTERNAL_COMPONENT:
+    case ManifestLocation::kExternalComponent:
       return "EXTERNAL_COMPONENT";
-    case extensions::Manifest::NUM_LOCATIONS:
-      break;
   }
   NOTREACHED();
   return "";

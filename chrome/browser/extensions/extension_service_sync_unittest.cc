@@ -54,6 +54,7 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_url_handlers.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/permissions/permission_set.h"
 
 using extensions::AppSorting;
@@ -64,6 +65,7 @@ using extensions::ExtensionSyncData;
 using extensions::ExtensionSystem;
 using extensions::Manifest;
 using extensions::PermissionSet;
+using extensions::mojom::ManifestLocation;
 using syncer::SyncChange;
 using syncer::SyncChangeList;
 using testing::Mock;
@@ -1403,7 +1405,7 @@ TEST_F(ExtensionServiceSyncTest, ProcessSyncDataNotInstalled) {
       (info = service()->pending_extension_manager()->GetById(good_crx)));
   EXPECT_EQ(ext_specifics->update_url(), info->update_url().spec());
   EXPECT_TRUE(info->is_from_sync());
-  EXPECT_EQ(Manifest::INTERNAL, info->install_source());
+  EXPECT_EQ(ManifestLocation::kInternal, info->install_source());
   // TODO(akalin): Figure out a way to test |info.ShouldAllowInstall()|.
 }
 

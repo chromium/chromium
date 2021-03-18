@@ -207,7 +207,7 @@ Feature::Context ScriptContextSet::ClassifyJavaScriptContext(
     // unless the extension in question is a component extension, in which case
     // we cheat and call it blessed.
     if (extension->is_hosted_app() &&
-        extension->location() != Manifest::COMPONENT) {
+        extension->location() != mojom::ManifestLocation::kComponent) {
       return Feature::BLESSED_WEB_PAGE_CONTEXT;
     }
 

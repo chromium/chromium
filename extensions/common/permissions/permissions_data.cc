@@ -94,8 +94,8 @@ void PermissionsData::SetPolicyDelegate(PolicyDelegate* delegate) {
 // static
 bool PermissionsData::CanExecuteScriptEverywhere(
     const ExtensionId& extension_id,
-    Manifest::Location location) {
-  if (location == Manifest::COMPONENT)
+    mojom::ManifestLocation location) {
+  if (location == mojom::ManifestLocation::kComponent)
     return true;
 
   const ExtensionsClient::ScriptingAllowlist& allowlist =
@@ -106,7 +106,8 @@ bool PermissionsData::CanExecuteScriptEverywhere(
 
 bool PermissionsData::IsRestrictedUrl(const GURL& document_url,
                                       std::string* error) const {
-  if (CanExecuteScriptEverywhere(extension_id_, location_))
+  if (CanExecuteScriptEverywhere(
+          extension_id_, static_cast<mojom::ManifestLocation>(location_)))
     return false;
 
   if (g_policy_delegate &&

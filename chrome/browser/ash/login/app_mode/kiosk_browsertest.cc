@@ -128,6 +128,8 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/events/test/event_generator.h"
 
+using extensions::mojom::ManifestLocation;
+
 namespace em = enterprise_management;
 
 namespace chromeos {
@@ -619,7 +621,7 @@ class KioskTest : public OobeBaseTest {
     return GetInstalledApp()->version();
   }
 
-  extensions::Manifest::Location GetInstalledAppLocation() {
+  ManifestLocation GetInstalledAppLocation() {
     return GetInstalledApp()->location();
   }
 
@@ -880,7 +882,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, InstallAndLaunchApp) {
   KioskAppManager::App app;
   ASSERT_TRUE(KioskAppManager::Get()->GetApp(test_app_id(), &app));
   EXPECT_FALSE(app.was_auto_launched_with_zero_delay);
-  EXPECT_EQ(extensions::Manifest::EXTERNAL_PREF, GetInstalledAppLocation());
+  EXPECT_EQ(ManifestLocation::kExternalPref, GetInstalledAppLocation());
 }
 
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
@@ -1009,7 +1011,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, NotSignedInWithGAIAAccount) {
   StartAppLaunchFromLoginScreen(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
   WaitForAppLaunchSuccess();
-  EXPECT_EQ(extensions::Manifest::EXTERNAL_PREF, GetInstalledAppLocation());
+  EXPECT_EQ(ManifestLocation::kExternalPref, GetInstalledAppLocation());
 
   Profile* app_profile = ProfileManager::GetPrimaryUserProfile();
   ASSERT_TRUE(app_profile);
@@ -1184,7 +1186,7 @@ IN_PROC_BROWSER_TEST_F(KioskTest, AutolaunchWarningConfirm) {
   KioskAppManager::App app;
   ASSERT_TRUE(KioskAppManager::Get()->GetApp(test_app_id(), &app));
   EXPECT_TRUE(app.was_auto_launched_with_zero_delay);
-  EXPECT_EQ(extensions::Manifest::EXTERNAL_PREF, GetInstalledAppLocation());
+  EXPECT_EQ(ManifestLocation::kExternalPref, GetInstalledAppLocation());
 }
 
 IN_PROC_BROWSER_TEST_F(KioskTest, KioskEnableCancel) {
@@ -1958,7 +1960,7 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest, LaunchOfflineEnabledAppNoNetwork) {
   WaitForAppLaunchSuccess();
 
   EXPECT_EQ("1.0.0", GetInstalledAppVersion().GetString());
-  EXPECT_EQ(extensions::Manifest::EXTERNAL_PREF, GetInstalledAppLocation());
+  EXPECT_EQ(ManifestLocation::kExternalPref, GetInstalledAppLocation());
 }
 
 IN_PROC_BROWSER_TEST_F(KioskUpdateTest,
@@ -1978,7 +1980,7 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest,
   WaitForAppLaunchSuccess();
 
   EXPECT_EQ("1.0.0", GetInstalledAppVersion().GetString());
-  EXPECT_EQ(extensions::Manifest::EXTERNAL_PREF, GetInstalledAppLocation());
+  EXPECT_EQ(ManifestLocation::kExternalPref, GetInstalledAppLocation());
 }
 
 // Network offline, app v1.0 has run before, has cached v2.0 crx and v2.0 should
@@ -2006,7 +2008,7 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest,
 
   // v2 app should have been installed.
   EXPECT_EQ("2.0.0", GetInstalledAppVersion().GetString());
-  EXPECT_EQ(extensions::Manifest::EXTERNAL_PREF, GetInstalledAppLocation());
+  EXPECT_EQ(ManifestLocation::kExternalPref, GetInstalledAppLocation());
 }
 
 IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PRE_LaunchOfflineEnabledAppNoUpdate) {
@@ -2023,7 +2025,7 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest, LaunchOfflineEnabledAppNoUpdate) {
   WaitForAppLaunchSuccess();
 
   EXPECT_EQ("1.0.0", GetInstalledAppVersion().GetString());
-  EXPECT_EQ(extensions::Manifest::EXTERNAL_PREF, GetInstalledAppLocation());
+  EXPECT_EQ(ManifestLocation::kExternalPref, GetInstalledAppLocation());
 }
 
 IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PRE_LaunchOfflineEnabledAppHasUpdate) {
@@ -2041,7 +2043,7 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest, LaunchOfflineEnabledAppHasUpdate) {
   WaitForAppLaunchSuccess();
 
   EXPECT_EQ("2.0.0", GetInstalledAppVersion().GetString());
-  EXPECT_EQ(extensions::Manifest::EXTERNAL_PREF, GetInstalledAppLocation());
+  EXPECT_EQ(ManifestLocation::kExternalPref, GetInstalledAppLocation());
 }
 
 // Pre-cache v1 kiosk app, then launch the app without network,
@@ -2558,7 +2560,7 @@ IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest, EnterpriseKioskApp) {
   // Check installer status.
   EXPECT_EQ(chromeos::KioskAppLaunchError::Error::kNone,
             chromeos::KioskAppLaunchError::Get());
-  EXPECT_EQ(extensions::Manifest::EXTERNAL_POLICY, GetInstalledAppLocation());
+  EXPECT_EQ(ManifestLocation::kExternalPolicy, GetInstalledAppLocation());
 
   // Wait for the window to appear.
   extensions::AppWindow* window =
@@ -2628,7 +2630,7 @@ IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest, PrivateStore) {
   // Private store should serve crx and CWS should not.
   DCHECK_GT(private_store.GetUpdateCheckCountAndReset(), 0);
   DCHECK_EQ(0, fake_cws()->GetUpdateCheckCountAndReset());
-  EXPECT_EQ(extensions::Manifest::EXTERNAL_POLICY, GetInstalledAppLocation());
+  EXPECT_EQ(ManifestLocation::kExternalPolicy, GetInstalledAppLocation());
 }
 
 // A custom SoundsManagerTestImpl implements Initialize and Play only.

@@ -45,6 +45,8 @@
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/user_script.h"
 
+using extensions::mojom::ManifestLocation;
+
 namespace extensions {
 
 namespace {
@@ -460,7 +462,7 @@ void ExtensionPrefs::MakePathsRelative() {
     int location_value;
     if (extension_dict->GetInteger(kPrefLocation, &location_value) &&
         Manifest::IsUnpackedLocation(
-            static_cast<Manifest::Location>(location_value))) {
+            static_cast<ManifestLocation>(location_value))) {
       // Unpacked extensions can have absolute paths.
       continue;
     }
@@ -1440,7 +1442,7 @@ void ExtensionPrefs::OnExtensionInstalled(
 }
 
 void ExtensionPrefs::OnExtensionUninstalled(const std::string& extension_id,
-                                            const Manifest::Location& location,
+                                            const ManifestLocation location,
                                             bool external_uninstall) {
   app_sorting()->ClearOrdinals(extension_id);
 
@@ -1555,8 +1557,9 @@ std::unique_ptr<ExtensionInfo> ExtensionPrefs::GetInstalledInfoHelper(
   if (!extension->GetInteger(kPrefLocation, &location_value))
     return std::unique_ptr<ExtensionInfo>();
 
-  Manifest::Location location = static_cast<Manifest::Location>(location_value);
-  if (location == Manifest::COMPONENT && !include_component_extensions) {
+  ManifestLocation location = static_cast<ManifestLocation>(location_value);
+  if (location == ManifestLocation::kComponent &&
+      !include_component_extensions) {
     // Component extensions are ignored by default. Component extensions may
     // have data saved in preferences, but they are already loaded at this point
     // (by ComponentLoader) and shouldn't be populated into the result of
@@ -1566,7 +1569,8 @@ std::unique_ptr<ExtensionInfo> ExtensionPrefs::GetInstalledInfoHelper(
   }
 
   // Only the following extension types have data saved in the preferences.
-  if (location != Manifest::INTERNAL && location != Manifest::COMPONENT &&
+  if (location != ManifestLocation::kInternal &&
+      location != ManifestLocation::kComponent &&
       !Manifest::IsUnpackedLocation(location) &&
       !Manifest::IsExternalLocation(location)) {
     NOTREACHED();
@@ -2426,7 +2430,8 @@ void ExtensionPrefs::PopulateExtensionInfoPrefs(
     const declarative_net_request::RulesetInstallPrefs& ruleset_install_prefs,
     prefs::DictionaryValueUpdate* extension_dict) const {
   extension_dict->SetInteger(kPrefState, initial_state);
-  extension_dict->SetInteger(kPrefLocation, extension->location());
+  extension_dict->SetInteger(kPrefLocation,
+                             static_cast<int>(extension->location()));
   extension_dict->SetInteger(kPrefCreationFlags, extension->creation_flags());
   extension_dict->SetBoolean(kPrefFromWebStore, extension->from_webstore());
   extension_dict->SetBoolean(kPrefFromBookmark, extension->from_bookmark());
@@ -2710,7 +2715,8 @@ void ExtensionPrefs::MigrateToNewWithholdingPref() {
     // from.
     Manifest::Type type =
         Manifest::GetTypeFromManifestValue(*info->extension_manifest);
-    Manifest::Location location = info->extension_location;
+    ManifestLocation location =
+        static_cast<ManifestLocation>(info->extension_location);
     if (!util::CanWithholdPermissionsFromExtension(extension_id, type,
                                                    location))
       continue;
@@ -2784,7 +2790,7 @@ bool ExtensionPrefs::ShouldInstallObsoleteComponentExtension(
 
 void ExtensionPrefs::MarkObsoleteComponentExtensionAsRemoved(
     const std::string& extension_id,
-    const Manifest::Location& location) {
+    const ManifestLocation location) {
   ListPrefUpdate update(prefs_, pref_names::kDeletedComponentExtensions);
   base::Value* current_ids = update.Get();
   base::Value::ListView list = current_ids->GetList();

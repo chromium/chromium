@@ -29,6 +29,8 @@
 #include "extensions/common/permissions/permissions_info.h"
 #include "ui/base/l10n/l10n_util.h"
 
+using extensions::mojom::ManifestLocation;
+
 namespace chromeos {
 
 namespace {
@@ -833,8 +835,8 @@ bool DeviceLocalAccountManagementPolicyProvider::UserMayLoad(
   if (account_type_ == policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION ||
       account_type_ == policy::DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION) {
     // Allow extension if it is a component of Chrome.
-    if (extension->location() == extensions::Manifest::EXTERNAL_COMPONENT ||
-        extension->location() == extensions::Manifest::COMPONENT) {
+    if (extension->location() == ManifestLocation::kExternalComponent ||
+        extension->location() == ManifestLocation::kComponent) {
       return true;
     }
 
@@ -851,9 +853,9 @@ bool DeviceLocalAccountManagementPolicyProvider::UserMayLoad(
     }
 
     // Allow force-installed extension if all manifest contents are whitelisted.
-    if ((extension->location() == extensions::Manifest::EXTERNAL_POLICY_DOWNLOAD
-         || extension->location() == extensions::Manifest::EXTERNAL_POLICY)
-        && IsSafeForPublicSession(extension)) {
+    if ((extension->location() == ManifestLocation::kExternalPolicyDownload ||
+         extension->location() == ManifestLocation::kExternalPolicy) &&
+        IsSafeForPublicSession(extension)) {
       return true;
     }
   } else if (account_type_ == policy::DeviceLocalAccount::TYPE_KIOSK_APP ||

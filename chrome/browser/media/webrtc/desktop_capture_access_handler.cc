@@ -64,6 +64,7 @@
 #endif  // defined(OS_MAC)
 
 using content::BrowserThread;
+using extensions::mojom::ManifestLocation;
 
 namespace {
 
@@ -90,8 +91,8 @@ std::u16string GetApplicationTitle(content::WebContents* web_contents,
 // notification.
 bool ShouldDisplayNotification(const extensions::Extension* extension) {
   return !(extension &&
-           (extension->location() == extensions::Manifest::COMPONENT ||
-            extension->location() == extensions::Manifest::EXTERNAL_COMPONENT));
+           (extension->location() == ManifestLocation::kComponent ||
+            extension->location() == ManifestLocation::kExternalComponent));
 }
 
 #if !defined(OS_ANDROID)
@@ -286,8 +287,8 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
 bool DesktopCaptureAccessHandler::IsDefaultApproved(
     const extensions::Extension* extension) {
   return extension &&
-         (extension->location() == extensions::Manifest::COMPONENT ||
-          extension->location() == extensions::Manifest::EXTERNAL_COMPONENT ||
+         (extension->location() == ManifestLocation::kComponent ||
+          extension->location() == ManifestLocation::kExternalComponent ||
           IsExtensionAllowedForScreenCapture(extension));
 }
 

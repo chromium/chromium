@@ -94,7 +94,7 @@ void ConsentProvider::RequestConsent(
   DCHECK(IsGrantableForVolume(extension, volume));
 
   // If a allowlisted component, then no need to ask or inform the user.
-  if (extension.location() == Manifest::COMPONENT &&
+  if (extension.location() == mojom::ManifestLocation::kComponent &&
       delegate_->IsAllowlistedComponent(extension)) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), CONSENT_GRANTED));

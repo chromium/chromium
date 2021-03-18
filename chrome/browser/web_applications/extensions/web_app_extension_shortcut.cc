@@ -207,7 +207,8 @@ bool ShouldCreateShortcutFor(ShortcutCreationReason reason,
                              const extensions::Extension* extension) {
   // Shortcuts should never be created for component apps, or for apps that
   // cannot be shown in the launcher.
-  if (extension->location() == extensions::Manifest::COMPONENT ||
+  if (extension->location() ==
+          extensions::mojom::ManifestLocation::kComponent ||
       !extensions::ui_util::CanDisplayInAppLauncher(extension, profile)) {
     return false;
   }

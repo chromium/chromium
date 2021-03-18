@@ -26,8 +26,9 @@ bool IsSyncable(const Extension* extension) {
   // that don't already have them. Specially, if a user doesn't have default
   // apps, creates a new profile (which get default apps) and then enables sync
   // for it, then their profile everywhere gets the default apps.
-  bool is_syncable = (extension->location() == Manifest::INTERNAL &&
-                      !extension->was_installed_by_default());
+  bool is_syncable =
+      (extension->location() == mojom::ManifestLocation::kInternal &&
+       !extension->was_installed_by_default());
   if (!is_syncable && !IsSyncableComponentExtension(extension)) {
     // We have a non-standard location.
     return false;

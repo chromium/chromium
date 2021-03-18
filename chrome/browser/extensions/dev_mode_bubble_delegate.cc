@@ -35,8 +35,8 @@ DevModeBubbleDelegate::~DevModeBubbleDelegate() {
 }
 
 bool DevModeBubbleDelegate::ShouldIncludeExtension(const Extension* extension) {
-  return (extension->location() == Manifest::UNPACKED ||
-          extension->location() == Manifest::COMMAND_LINE);
+  return (extension->location() == mojom::ManifestLocation::kUnpacked ||
+          extension->location() == mojom::ManifestLocation::kCommandLine);
 }
 
 void DevModeBubbleDelegate::AcknowledgeExtension(

@@ -122,6 +122,7 @@
 
 using content::BrowserContext;
 using content::BrowserThread;
+using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 
@@ -256,7 +257,8 @@ bool ExtensionService::OnExternalExtensionUpdateUrlFound(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(crx_file::id_util::IdIsValid(info.extension_id));
 
-  if (Manifest::IsExternalLocation(info.download_location)) {
+  if (Manifest::IsExternalLocation(
+          static_cast<ManifestLocation>(info.download_location))) {
     // All extensions that are not user specific can be cached.
     ExtensionsBrowserClient::Get()->GetExtensionCache()->AllowCaching(
         info.extension_id);
@@ -271,11 +273,12 @@ bool ExtensionService::OnExternalExtensionUpdateUrlFound(
     // Already installed. Skip this install if the current location has higher
     // priority than |info.download_location|, and we aren't doing a
     // reinstall of a corrupt policy force-installed extension.
-    Manifest::Location current = extension->location();
+    ManifestLocation current = extension->location();
     if (!pending_extension_manager_.IsPolicyReinstallForCorruptionExpected(
             info.extension_id) &&
         current == Manifest::GetHigherPriorityLocation(
-                       current, info.download_location)) {
+                       current,
+                       static_cast<ManifestLocation>(info.download_location))) {
       install_stage_tracker->ReportFailure(
           info.extension_id,
           InstallStageTracker::FailureReason::ALREADY_INSTALLED);
@@ -284,14 +287,16 @@ bool ExtensionService::OnExternalExtensionUpdateUrlFound(
     // If the installation is requested from a higher priority source, update
     // its install location.
     if (current !=
-        Manifest::GetHigherPriorityLocation(current, info.download_location)) {
+        Manifest::GetHigherPriorityLocation(
+            current, static_cast<ManifestLocation>(info.download_location))) {
       UnloadExtension(info.extension_id, UnloadedExtensionReason::UPDATE);
 
       // Fetch the installation info from the prefs, and reload the extension
       // with a modified install location.
       std::unique_ptr<ExtensionInfo> installed_extension(
           extension_prefs_->GetInstalledExtensionInfo(info.extension_id));
-      installed_extension->extension_location = info.download_location;
+      installed_extension->extension_location =
+          static_cast<ManifestLocation>(info.download_location);
 
       // Load the extension with the new install location
       InstalledLoader(this).Load(*installed_extension, false);
@@ -341,8 +346,8 @@ bool ExtensionService::OnExternalExtensionUpdateUrlFound(
       info.extension_id, InstallStageTracker::Stage::PENDING);
   if (!pending_extension_manager()->AddFromExternalUpdateUrl(
           info.extension_id, info.install_parameter, info.update_url,
-          info.download_location, info.creation_flags,
-          info.mark_acknowledged)) {
+          static_cast<ManifestLocation>(info.download_location),
+          info.creation_flags, info.mark_acknowledged)) {
     // We can reach here if the extension from an equal or higher priority
     // source is already present in the |pending_extension_list_|. No need to
     // report the failure in this case.
@@ -569,7 +574,7 @@ void ExtensionService::MaybeFinishShutdownDelayed() {
       std::string error;
       extension = Extension::Create(
           info->extension_path,
-          static_cast<mojom::ManifestLocation>(info->extension_location),
+          static_cast<ManifestLocation>(info->extension_location),
           *info->extension_manifest,
           extension_prefs_->GetDelayedInstallCreationFlags(info->extension_id),
           info->extension_id, &error);
@@ -1398,7 +1403,7 @@ void ExtensionService::AddExtension(const Extension* extension) {
     // DumpWithoutCrashing() (possibly replacing it with a CHECK).
     NOTREACHED();
     DEBUG_ALIAS_FOR_CSTR(extension_id_copy, extension->id().c_str(), 33);
-    Manifest::Location location = extension->location();
+    ManifestLocation location = extension->location();
     int creation_flags = extension->creation_flags();
     Manifest::Type type = extension->manifest()->type();
     base::debug::Alias(&location);
@@ -1499,7 +1504,8 @@ void ExtensionService::CheckPermissionsIncrease(const Extension* extension,
   // We only need to compare the granted permissions to the current permissions
   // if the extension has not been auto-granted its permissions above and is
   // installed internally.
-  if (extension->location() == Manifest::INTERNAL && !auto_grant_permission) {
+  if (extension->location() == ManifestLocation::kInternal &&
+      !auto_grant_permission) {
     // Add all the recognized permissions if the granted permissions list
     // hasn't been initialized yet.
     std::unique_ptr<const PermissionSet> granted_permissions =
@@ -1579,7 +1585,8 @@ void ExtensionService::CheckPermissionsIncrease(const Extension* extension,
 void ExtensionService::UpdateActiveExtensionsInCrashReporter() {
   std::set<std::string> extension_ids;
   for (const auto& extension : registry_->enabled_extensions()) {
-    if (!extension->is_theme() && extension->location() != Manifest::COMPONENT)
+    if (!extension->is_theme() &&
+        extension->location() != ManifestLocation::kComponent)
       extension_ids.insert(extension->id());
   }
 
@@ -1667,20 +1674,19 @@ void ExtensionService::OnExtensionInstalled(
     // showing the install dialogue).
     extension_prefs_->AcknowledgeBlocklistedExtension(id);
     UMA_HISTOGRAM_ENUMERATION("ExtensionBlacklist.SilentInstall",
-                              extension->location(), Manifest::NUM_LOCATIONS);
+                              extension->location());
   }
 
   if (!registry_->GetInstalledExtension(extension->id())) {
     UMA_HISTOGRAM_ENUMERATION("Extensions.InstallType", extension->GetType(),
                               100);
-    UMA_HISTOGRAM_ENUMERATION("Extensions.InstallSource", extension->location(),
-                              Manifest::NUM_LOCATIONS);
+    UMA_HISTOGRAM_ENUMERATION("Extensions.InstallSource",
+                              extension->location());
     RecordPermissionMessagesHistogram(extension, "Install");
   } else {
     UMA_HISTOGRAM_ENUMERATION("Extensions.UpdateType", extension->GetType(),
                               100);
-    UMA_HISTOGRAM_ENUMERATION("Extensions.UpdateSource", extension->location(),
-                              Manifest::NUM_LOCATIONS);
+    UMA_HISTOGRAM_ENUMERATION("Extensions.UpdateSource", extension->location());
   }
 
   const Extension::State initial_state =
@@ -1925,7 +1931,8 @@ bool ExtensionService::OnExternalExtensionFileFound(
   installer->set_installer_callback(
       base::BindOnce(&ExtensionService::InstallationFromExternalFileFinished,
                      AsWeakPtr(), info.extension_id));
-  installer->set_install_source(info.crx_location);
+  installer->set_install_source(
+      static_cast<ManifestLocation>(info.crx_location));
   installer->set_expected_id(info.extension_id);
   installer->set_expected_version(info.version,
                                   true /* fail_install_if_unexpected */);
@@ -2107,8 +2114,8 @@ int ExtensionService::GetDisableReasonsOnInstalled(const Extension* extension) {
 // Helper method to determine if an extension can be blocked.
 bool ExtensionService::CanBlockExtension(const Extension* extension) const {
   DCHECK(extension);
-  return extension->location() != Manifest::COMPONENT &&
-         extension->location() != Manifest::EXTERNAL_COMPONENT &&
+  return extension->location() != ManifestLocation::kComponent &&
+         extension->location() != ManifestLocation::kExternalComponent &&
          !system_->management_policy()->MustRemainEnabled(extension, nullptr);
 }
 
@@ -2186,7 +2193,7 @@ bool ExtensionService::CanDisableExtension(const Extension* extension) {
   // - EXTERNAL_COMPONENT extensions are not generally modifiable by users, but
   //   can be uninstalled by the browser if the user sets extension-specific
   //   preferences.
-  if (extension->location() == Manifest::EXTERNAL_COMPONENT)
+  if (extension->location() == ManifestLocation::kExternalComponent)
     return true;
 
   return system_->management_policy()->UserMayModifySettings(extension,
@@ -2294,7 +2301,7 @@ void ExtensionService::UpdateBlocklistedExtensions(
                                                  NOT_BLOCKLISTED);
     AddExtension(extension.get());
     UMA_HISTOGRAM_ENUMERATION("ExtensionBlacklist.UnblacklistInstalled",
-                              extension->location(), Manifest::NUM_LOCATIONS);
+                              extension->location());
   }
 
   for (auto it = not_yet_blocked.begin(); it != not_yet_blocked.end(); ++it) {
@@ -2310,7 +2317,7 @@ void ExtensionService::UpdateBlocklistedExtensions(
                                                  BLOCKLISTED_MALWARE);
     UnloadExtension(*it, UnloadedExtensionReason::BLOCKLIST);
     UMA_HISTOGRAM_ENUMERATION("ExtensionBlacklist.BlacklistInstalled",
-                              extension->location(), Manifest::NUM_LOCATIONS);
+                              extension->location());
   }
 }
 

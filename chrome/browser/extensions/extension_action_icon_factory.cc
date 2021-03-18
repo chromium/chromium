@@ -37,7 +37,7 @@ ExtensionActionIconFactory::ExtensionActionIconFactory(
       action_(action),
       observer_(observer),
       should_check_icons_(extension->location() !=
-                          extensions::Manifest::UNPACKED),
+                          extensions::mojom::ManifestLocation::kUnpacked),
       icon_image_observer_(this) {
   if (action->default_icon_image())
     icon_image_observer_.Add(action->default_icon_image());

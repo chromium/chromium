@@ -635,7 +635,7 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
   }
 
   // Location.
-  if (extension.location() == Manifest::INTERNAL &&
+  if (extension.location() == mojom::ManifestLocation::kInternal &&
       extension_management->UpdatesFromWebstore(extension)) {
     info->location = developer::LOCATION_FROM_STORE;
   } else if (Manifest::IsUnpackedLocation(extension.location())) {
@@ -651,7 +651,7 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
   int location_text = -1;
   if (info->location == developer::LOCATION_UNKNOWN)
     location_text = IDS_EXTENSIONS_INSTALL_LOCATION_UNKNOWN;
-  else if (extension.location() == Manifest::EXTERNAL_REGISTRY)
+  else if (extension.location() == mojom::ManifestLocation::kExternalRegistry)
     location_text = IDS_EXTENSIONS_INSTALL_LOCATION_3RD_PARTY;
   else if (extension.is_shared_module())
     location_text = IDS_EXTENSIONS_INSTALL_LOCATION_SHARED_MODULE;

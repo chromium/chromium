@@ -108,7 +108,7 @@ CrxInstaller::CrxInstaller(base::WeakPtr<ExtensionService> service_weak,
                            const WebstoreInstaller::Approval* approval)
     : profile_(service_weak->profile()),
       install_directory_(service_weak->install_directory()),
-      install_source_(Manifest::INTERNAL),
+      install_source_(mojom::ManifestLocation::kInternal),
       approved_(false),
       verification_check_failed_(false),
       expected_manifest_check_level_(
@@ -187,8 +187,8 @@ void CrxInstaller::InstallCrxFile(const CRXFileInfo& source_file) {
   source_file_ = source_file.path;
 
   auto unpacker = base::MakeRefCounted<SandboxedUnpacker>(
-      install_source_, creation_flags_, install_directory_,
-      GetUnpackerTaskRunner(), this);
+      static_cast<Manifest::Location>(install_source_), creation_flags_,
+      install_directory_, GetUnpackerTaskRunner(), this);
 
   if (!GetUnpackerTaskRunner()->PostTask(
           FROM_HERE, base::BindOnce(&SandboxedUnpacker::StartWithCrx, unpacker,
@@ -209,8 +209,8 @@ void CrxInstaller::InstallUnpackedCrx(const std::string& extension_id,
   source_file_ = unpacked_dir;
 
   auto unpacker = base::MakeRefCounted<SandboxedUnpacker>(
-      install_source_, creation_flags_, install_directory_,
-      GetUnpackerTaskRunner(), this);
+      static_cast<Manifest::Location>(install_source_), creation_flags_,
+      install_directory_, GetUnpackerTaskRunner(), this);
 
   if (!GetUnpackerTaskRunner()->PostTask(
           FROM_HERE,
@@ -307,9 +307,9 @@ void CrxInstaller::UpdateExtensionFromUnpackedCrx(
 
 void CrxInstaller::ConvertWebAppOnSharedFileThread(
     const WebApplicationInfo& web_app) {
-  scoped_refptr<Extension> extension(ConvertWebAppToExtension(
-      web_app, base::Time::Now(), install_directory_, creation_flags_,
-      static_cast<mojom::ManifestLocation>(install_source_)));
+  scoped_refptr<Extension> extension(
+      ConvertWebAppToExtension(web_app, base::Time::Now(), install_directory_,
+                               creation_flags_, install_source_));
   if (!extension.get()) {
     // Validation should have stopped any potential errors before getting here.
     NOTREACHED() << "Could not convert web app to extension.";
@@ -382,9 +382,8 @@ base::Optional<CrxInstallError> CrxInstaller::AllowInstall(
           WebstoreInstaller::MANIFEST_CHECK_LEVEL_LOOSE) {
         std::string error;
         scoped_refptr<Extension> dummy_extension = Extension::Create(
-            base::FilePath(),
-            static_cast<mojom::ManifestLocation>(install_source_),
-            *expected_manifest_, creation_flags_, extension->id(), &error);
+            base::FilePath(), install_source_, *expected_manifest_,
+            creation_flags_, extension->id(), &error);
         if (error.empty()) {
           valid = !(PermissionMessageProvider::Get()->IsPrivilegeIncrease(
               dummy_extension->permissions_data()->active_permissions(),
@@ -722,8 +721,7 @@ void CrxInstaller::OnInstallChecksComplete(const PreloadCheck::Errors& errors) {
           l10n_util::GetStringFUTF16(IDS_EXTENSION_IS_BLOCKLISTED,
                                      base::UTF8ToUTF16(extension()->name()))));
       UMA_HISTOGRAM_ENUMERATION("ExtensionBlacklist.BlockCRX",
-                                extension()->location(),
-                                Manifest::NUM_LOCATIONS);
+                                extension()->location());
       return;
     }
   }
@@ -959,7 +957,7 @@ void CrxInstaller::ReloadExtensionAfterInstall(
   std::string extension_id = extension()->id();
   std::string error;
   extension_ = file_util::LoadExtension(
-      version_dir, install_source_,
+      version_dir, static_cast<Manifest::Location>(install_source_),
       // Note: modified by UpdateCreationFlagsAndCompleteInstall.
       creation_flags_, &error);
 

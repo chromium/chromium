@@ -183,7 +183,8 @@ void ExtensionControlledPrefsTest::EnsureExtensionUninstalled(
       break;
     }
   }
-  prefs()->OnExtensionUninstalled(extension_id, Manifest::INTERNAL, false);
+  prefs()->OnExtensionUninstalled(extension_id,
+                                  mojom::ManifestLocation::kInternal, false);
 }
 
 class ControlledPrefsInstallOneExtension

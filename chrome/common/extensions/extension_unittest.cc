@@ -36,9 +36,10 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
 
+using base::FilePath;
 using extension_test_util::LoadManifest;
 using extension_test_util::LoadManifestStrict;
-using base::FilePath;
+using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 
@@ -58,40 +59,41 @@ TEST(ExtensionTest, LocationValuesTest) {
 }
 
 TEST(ExtensionTest, LocationPriorityTest) {
-  for (int i = 0; i < Manifest::NUM_LOCATIONS; i++) {
-    Manifest::Location loc = static_cast<Manifest::Location>(i);
+  for (int i = 0; i <= static_cast<int>(ManifestLocation::kMaxValue); i++) {
+    ManifestLocation loc = static_cast<ManifestLocation>(i);
 
-    // INVALID is not a valid location.
-    if (loc == Manifest::INVALID_LOCATION)
+    // kInvalidLocation is not a valid location.
+    if (loc == ManifestLocation::kInvalidLocation)
       continue;
 
     // Comparing a location that has no rank will hit a CHECK. Do a
     // compare with every valid location, to be sure each one is covered.
 
     // Check that no install source can override a componenet extension.
-    ASSERT_EQ(Manifest::COMPONENT,
-              Manifest::GetHigherPriorityLocation(Manifest::COMPONENT, loc));
-    ASSERT_EQ(Manifest::COMPONENT,
-              Manifest::GetHigherPriorityLocation(loc, Manifest::COMPONENT));
+    ASSERT_EQ(
+        ManifestLocation::kComponent,
+        Manifest::GetHigherPriorityLocation(ManifestLocation::kComponent, loc));
+    ASSERT_EQ(
+        ManifestLocation::kComponent,
+        Manifest::GetHigherPriorityLocation(loc, ManifestLocation::kComponent));
 
     // Check that any source can override a user install. This might change
     // in the future, in which case this test should be updated.
-    ASSERT_EQ(loc,
-              Manifest::GetHigherPriorityLocation(Manifest::INTERNAL, loc));
-    ASSERT_EQ(loc,
-              Manifest::GetHigherPriorityLocation(loc, Manifest::INTERNAL));
+    ASSERT_EQ(loc, Manifest::GetHigherPriorityLocation(
+                       ManifestLocation::kInternal, loc));
+    ASSERT_EQ(loc, Manifest::GetHigherPriorityLocation(
+                       loc, ManifestLocation::kInternal));
   }
 
   // Check a few interesting cases that we know can happen:
-  ASSERT_EQ(Manifest::EXTERNAL_POLICY_DOWNLOAD,
+  ASSERT_EQ(ManifestLocation::kExternalPolicyDownload,
             Manifest::GetHigherPriorityLocation(
-                Manifest::EXTERNAL_POLICY_DOWNLOAD,
-                Manifest::EXTERNAL_PREF));
+                ManifestLocation::kExternalPolicyDownload,
+                ManifestLocation::kExternalPref));
 
-  ASSERT_EQ(Manifest::EXTERNAL_PREF,
+  ASSERT_EQ(ManifestLocation::kExternalPref,
             Manifest::GetHigherPriorityLocation(
-                Manifest::INTERNAL,
-                Manifest::EXTERNAL_PREF));
+                ManifestLocation::kInternal, ManifestLocation::kExternalPref));
 }
 
 TEST(ExtensionTest, EnsureNewLinesInExtensionNameAreCollapsed) {

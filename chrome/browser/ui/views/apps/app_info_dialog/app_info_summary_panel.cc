@@ -157,7 +157,7 @@ void AppInfoSummaryPanel::AddDescriptionAndLinksControl(
 
 void AppInfoSummaryPanel::AddDetailsControl(views::View* vertical_stack) {
   // Component apps have no details.
-  if (app_->location() == extensions::Manifest::COMPONENT)
+  if (app_->location() == extensions::mojom::ManifestLocation::kComponent)
     return;
 
   std::unique_ptr<views::View> details_list =

@@ -336,7 +336,7 @@ const Extension* ExtensionApiTest::GetSingleLoadedExtension() {
        registry->enabled_extensions()) {
     // Ignore any component extensions. They are automatically loaded into all
     // profiles and aren't the extension we're looking for here.
-    if (extension->location() == Manifest::COMPONENT)
+    if (extension->location() == mojom::ManifestLocation::kComponent)
       continue;
 
     if (result != NULL) {

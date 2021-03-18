@@ -276,7 +276,8 @@ void LoadCompressedDataFromExtension(
       extensions::IconsInfo::GetIconResource(extension, size_hint_in_px,
                                              ExtensionIconSet::MATCH_BIGGER);
 
-  if (extension && extension->location() == extensions::Manifest::COMPONENT) {
+  if (extension && extension->location() ==
+                       extensions::mojom::ManifestLocation::kComponent) {
     int resource_id = 0;
     const extensions::ComponentExtensionResourceManager* manager =
         extensions::ExtensionsBrowserClient::Get()

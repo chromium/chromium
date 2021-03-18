@@ -164,9 +164,10 @@ namespace extension_l10n_util {
 
 GzippedMessagesPermission GetGzippedMessagesPermissionForExtension(
     const extensions::Extension* extension) {
-  return extension
-             ? GetGzippedMessagesPermissionForLocation(extension->location())
-             : GzippedMessagesPermission::kDisallow;
+  return extension ? GetGzippedMessagesPermissionForLocation(
+                         static_cast<extensions::Manifest::Location>(
+                             extension->location()))
+                   : GzippedMessagesPermission::kDisallow;
 }
 
 GzippedMessagesPermission GetGzippedMessagesPermissionForLocation(

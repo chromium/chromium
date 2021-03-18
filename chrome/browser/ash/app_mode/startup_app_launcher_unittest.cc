@@ -53,6 +53,7 @@
 using extensions::ExternalInstallInfoFile;
 using extensions::ExternalInstallInfoUpdateUrl;
 using extensions::Manifest;
+using extensions::mojom::ManifestLocation;
 using ::testing::AssertionFailure;
 using ::testing::AssertionResult;
 using ::testing::AssertionSuccess;
@@ -292,8 +293,8 @@ class TestKioskLoaderVisitor
     if (!extension_service_->pending_extension_manager()
              ->AddFromExternalUpdateUrl(
                  info.extension_id, info.install_parameter, info.update_url,
-                 info.download_location, info.creation_flags,
-                 info.mark_acknowledged)) {
+                 static_cast<ManifestLocation>(info.download_location),
+                 info.creation_flags, info.mark_acknowledged)) {
       return false;
     }
 

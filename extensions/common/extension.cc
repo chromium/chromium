@@ -453,8 +453,8 @@ const ExtensionGuid& Extension::guid() const {
   return guid_.AsLowercaseString();
 }
 
-Manifest::Location Extension::location() const {
-  return manifest_->location();
+mojom::ManifestLocation Extension::location() const {
+  return static_cast<mojom::ManifestLocation>(manifest_->location());
 }
 
 const std::string& Extension::id() const {
@@ -601,7 +601,7 @@ bool Extension::InitFromValue(int flags, std::u16string* error) {
   finished_parsing_manifest_ = true;
 
   permissions_data_ = std::make_unique<PermissionsData>(
-      id(), GetType(), location(),
+      id(), GetType(), static_cast<Manifest::Location>(location()),
       PermissionsParser::GetRequiredPermissions(this).Clone());
 
   return true;
@@ -810,10 +810,8 @@ bool Extension::LoadShortName(std::u16string* error) {
 ExtensionInfo::ExtensionInfo(const base::DictionaryValue* manifest,
                              const std::string& id,
                              const base::FilePath& path,
-                             Manifest::Location location)
-    : extension_id(id),
-      extension_path(path),
-      extension_location(location) {
+                             ManifestLocation location)
+    : extension_id(id), extension_path(path), extension_location(location) {
   if (manifest)
     extension_manifest = manifest->CreateDeepCopy();
 }

@@ -111,7 +111,8 @@ bool MaybeRebuildShortcut(const base::CommandLine& command_line) {
 // required by a Chrome upgrade.
 bool ShouldUpgradeShortcutFor(Profile* profile,
                               const extensions::Extension* extension) {
-  if (extension->location() == extensions::Manifest::COMPONENT ||
+  if (extension->location() ==
+          extensions::mojom::ManifestLocation::kComponent ||
       !extensions::ui_util::CanDisplayInAppLauncher(extension, profile)) {
     return false;
   }

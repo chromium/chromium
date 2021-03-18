@@ -326,7 +326,7 @@ bool InstallVerifier::MustRemainDisabled(const Extension* extension,
     return false;
   if (Manifest::IsUnpackedLocation(extension->location()))
     return false;
-  if (extension->location() == Manifest::COMPONENT)
+  if (extension->location() == mojom::ManifestLocation::kComponent)
     return false;
   if (AllowedByEnterprisePolicy(extension->id()))
     return false;

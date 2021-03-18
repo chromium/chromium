@@ -85,7 +85,7 @@ class PermissionsData {
   // NOTE: This is static because it is used during extension initialization,
   // before the extension has an associated PermissionsData object.
   static bool CanExecuteScriptEverywhere(const ExtensionId& extension_id,
-                                         Manifest::Location location);
+                                         mojom::ManifestLocation location);
 
   // Returns true if the given |url| is restricted for the given |extension|,
   // as is commonly the case for chrome:// urls.

@@ -11,6 +11,7 @@
 #include "base/version.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/common/manifest.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -35,7 +36,7 @@ class PendingExtensionInfo {
                        const base::Version& version,
                        ShouldAllowInstallPredicate should_allow_install,
                        bool is_from_sync,
-                       Manifest::Location install_source,
+                       mojom::ManifestLocation install_source,
                        int creation_flags,
                        bool mark_acknowledged,
                        bool remote_install);
@@ -66,7 +67,7 @@ class PendingExtensionInfo {
     return should_allow_install_(extension, context);
   }
   bool is_from_sync() const { return is_from_sync_; }
-  Manifest::Location install_source() const { return install_source_; }
+  mojom::ManifestLocation install_source() const { return install_source_; }
   int creation_flags() const { return creation_flags_; }
   bool mark_acknowledged() const { return mark_acknowledged_; }
   bool remote_install() const { return remote_install_; }
@@ -91,7 +92,7 @@ class PendingExtensionInfo {
   ShouldAllowInstallPredicate should_allow_install_;
 
   bool is_from_sync_;  // This update check was initiated from sync.
-  Manifest::Location install_source_;
+  mojom::ManifestLocation install_source_;
   int creation_flags_;
   bool mark_acknowledged_;
   bool remote_install_;

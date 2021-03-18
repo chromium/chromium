@@ -958,7 +958,8 @@ std::string IdentityGetAuthTokenFunction::GetOAuth2ClientId() const {
 
   // Component apps using auto_approve may use Chrome's client ID by
   // omitting the field.
-  if (client_id.empty() && extension()->location() == Manifest::COMPONENT &&
+  if (client_id.empty() &&
+      extension()->location() == mojom::ManifestLocation::kComponent &&
       oauth2_info.auto_approve) {
     client_id = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
   }

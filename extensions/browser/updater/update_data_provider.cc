@@ -136,7 +136,8 @@ UpdateDataProvider::GetData(bool install_immediately,
                                         ? "reinstall"
                                         : extension_data.install_source;
     crx_component->install_location =
-        ManifestFetchData::GetSimpleLocationString(extension->location());
+        ManifestFetchData::GetSimpleLocationString(
+            static_cast<Manifest::Location>(extension->location()));
   }
   return data;
 }

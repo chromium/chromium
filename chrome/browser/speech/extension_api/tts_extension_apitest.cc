@@ -270,7 +270,7 @@ class TtsApiTest : public ExtensionApiTest {
         extensions::ExtensionSystem::Get(profile())->extension_service();
     service->component_loader()->AddNetworkSpeechSynthesisExtension();
     observer.Wait();
-    ASSERT_EQ(Manifest::COMPONENT,
+    ASSERT_EQ(mojom::ManifestLocation::kComponent,
               content::Source<const Extension>(observer.source())->location());
   }
 

@@ -39,6 +39,8 @@
 #include "extensions/common/extension_set.h"
 #include "url/gurl.h"
 
+using extensions::mojom::ManifestLocation;
+
 namespace extensions {
 
 BookmarkAppInstallFinalizer::BookmarkAppInstallFinalizer(Profile* profile)
@@ -74,27 +76,30 @@ void BookmarkAppInstallFinalizer::FinalizeInstall(
       // Manifest::Location values: INTERNAL vs EXTERNAL_PREF_DOWNLOAD?
     case webapps::WebappInstallSource::INTERNAL_DEFAULT:
     case webapps::WebappInstallSource::EXTERNAL_DEFAULT:
-      crx_installer->set_install_source(Manifest::EXTERNAL_PREF_DOWNLOAD);
+      crx_installer->set_install_source(
+          ManifestLocation::kExternalPrefDownload);
       // CrxInstaller::InstallWebApp will OR the creation flags with
       // FROM_BOOKMARK.
       crx_installer->set_creation_flags(Extension::WAS_INSTALLED_BY_DEFAULT);
       break;
     case webapps::WebappInstallSource::EXTERNAL_POLICY:
-      crx_installer->set_install_source(Manifest::EXTERNAL_POLICY_DOWNLOAD);
+      crx_installer->set_install_source(
+          ManifestLocation::kExternalPolicyDownload);
       break;
     case webapps::WebappInstallSource::SYSTEM_DEFAULT:
       // System Apps are considered EXTERNAL_COMPONENT as they are downloaded
       // from the WebUI they point to. COMPONENT seems like the more correct
       // value, but usages (icon loading, filesystem cleanup), are tightly
       // coupled to this value, making it unsuitable.
-      crx_installer->set_install_source(Manifest::EXTERNAL_COMPONENT);
+      crx_installer->set_install_source(ManifestLocation::kExternalComponent);
       // InstallWebApp will OR the creation flags with FROM_BOOKMARK.
       crx_installer->set_creation_flags(Extension::WAS_INSTALLED_BY_DEFAULT);
       break;
     case webapps::WebappInstallSource::ARC:
       // Ensure that WebApk is not synced. There is some mechanism to propagate
       // the local source of data in place of usual extension sync.
-      crx_installer->set_install_source(Manifest::EXTERNAL_PREF_DOWNLOAD);
+      crx_installer->set_install_source(
+          ManifestLocation::kExternalPrefDownload);
       break;
     case webapps::WebappInstallSource::COUNT:
       NOTREACHED();

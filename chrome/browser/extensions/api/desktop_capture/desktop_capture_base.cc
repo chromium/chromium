@@ -147,8 +147,8 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
 
 std::string DesktopCaptureChooseDesktopMediaFunctionBase::GetCallerDisplayName()
     const {
-  if (extension()->location() == Manifest::COMPONENT ||
-      extension()->location() == Manifest::EXTERNAL_COMPONENT) {
+  if (extension()->location() == mojom::ManifestLocation::kComponent ||
+      extension()->location() == mojom::ManifestLocation::kExternalComponent) {
     return l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME);
   } else {
     return extension()->name();

@@ -118,7 +118,8 @@ void LoginScreenExtensionsLifetimeManager::OnSessionStateChanged() {
 void LoginScreenExtensionsLifetimeManager::OnExtensionLoaded(
     content::BrowserContext* /*browser_context*/,
     const extensions::Extension* extension) {
-  if (extension->location() == extensions::Manifest::EXTERNAL_POLICY_DOWNLOAD &&
+  if (extension->location() ==
+          extensions::mojom::ManifestLocation::kExternalPolicyDownload &&
       !ShouldEnableLoginScreenPolicyExtensions()) {
     // The policy extensions should be disabled, however the extension got
     // loaded - due to the policy change or due to some internal reason in the

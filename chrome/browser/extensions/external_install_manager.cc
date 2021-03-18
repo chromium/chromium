@@ -246,7 +246,7 @@ void ExternalInstallManager::OnExtensionInstalled(
   // auto-acknowledge any extension that came from one of them.
   // Extensions recommended by policy can also be auto-acknowledged.
   if (Manifest::IsPolicyLocation(extension->location()) ||
-      extension->location() == Manifest::EXTERNAL_COMPONENT ||
+      extension->location() == mojom::ManifestLocation::kExternalComponent ||
       is_recommended_by_policy) {
     AcknowledgeExternalExtension(extension->id());
     return;

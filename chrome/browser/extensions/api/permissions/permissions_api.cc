@@ -191,9 +191,8 @@ PermissionsRequestFunction::PermissionsRequestFunction() {}
 PermissionsRequestFunction::~PermissionsRequestFunction() {}
 
 ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
-  if (!user_gesture() &&
-      !ignore_user_gesture_for_tests &&
-      extension_->location() != Manifest::COMPONENT) {
+  if (!user_gesture() && !ignore_user_gesture_for_tests &&
+      extension_->location() != mojom::ManifestLocation::kComponent) {
     return RespondNow(Error(kUserGestureRequiredError));
   }
 
@@ -300,7 +299,8 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
           ->GetPermissionMessages(message_provider->GetAllPermissionIDs(
               *total_new_permissions, extension()->GetType()))
           .empty();
-  if (has_no_warnings || extension_->location() == Manifest::COMPONENT) {
+  if (has_no_warnings ||
+      extension_->location() == mojom::ManifestLocation::kComponent) {
     OnInstallPromptDone(ExtensionInstallPrompt::Result::ACCEPTED);
     return did_respond() ? AlreadyResponded() : RespondLater();
   }

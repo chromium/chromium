@@ -275,7 +275,7 @@ void ExtensionKeybindingRegistry::OnExtensionCommandAdded(
   // Component extensions trigger OnExtensionLoaded() for extension
   // installs as well as loads. This can cause adding of multiple key
   // targets.
-  if (extension->location() == Manifest::COMPONENT)
+  if (extension->location() == mojom::ManifestLocation::kComponent)
     return;
 
   AddExtensionKeybindings(extension, command.command_name());

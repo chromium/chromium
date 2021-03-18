@@ -493,7 +493,7 @@ bool ValidateExtensionIconSet(const ExtensionIconSet& icon_set,
       return false;
     }
 
-    if (extension->location() == Manifest::UNPACKED) {
+    if (extension->location() == mojom::ManifestLocation::kUnpacked) {
       const bool is_sufficiently_visible =
           image_util::IsIconAtPathSufficientlyVisible(path);
       const bool is_sufficiently_visible_rendered =

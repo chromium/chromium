@@ -821,7 +821,7 @@ TEST_F(ExtensionServiceTest, LoadAllExtensionsFromDirectorySuccess) {
             loaded_[0]->name());
   EXPECT_EQ(std::string("The first extension that I made."),
             loaded_[0]->description());
-  EXPECT_EQ(Manifest::INTERNAL, loaded_[0]->location());
+  EXPECT_EQ(ManifestLocation::kInternal, loaded_[0]->location());
   EXPECT_TRUE(registry()->enabled_extensions().GetByID(loaded_[0]->id()));
   EXPECT_EQ(expected_num_extensions, registry()->enabled_extensions().size());
 
@@ -883,7 +883,7 @@ TEST_F(ExtensionServiceTest, LoadAllExtensionsFromDirectorySuccess) {
   EXPECT_EQ(loaded_[1]->GetResourceURL("background.html"),
             BackgroundInfo::GetBackgroundURL(loaded_[1].get()));
   EXPECT_TRUE(ContentScriptsInfo::GetContentScripts(loaded_[1].get()).empty());
-  EXPECT_EQ(Manifest::INTERNAL, loaded_[1]->location());
+  EXPECT_EQ(ManifestLocation::kInternal, loaded_[1]->location());
 
   int index = expected_num_extensions - 1;
   EXPECT_EQ(std::string(good2), loaded_[index]->id());
@@ -891,7 +891,7 @@ TEST_F(ExtensionServiceTest, LoadAllExtensionsFromDirectorySuccess) {
   EXPECT_EQ(std::string(), loaded_[index]->description());
   EXPECT_TRUE(
       ContentScriptsInfo::GetContentScripts(loaded_[index].get()).empty());
-  EXPECT_EQ(Manifest::INTERNAL, loaded_[index]->location());
+  EXPECT_EQ(ManifestLocation::kInternal, loaded_[index]->location());
 }
 
 // Test loading bad extensions from the profile directory.
@@ -1255,21 +1255,13 @@ TEST_F(ExtensionServiceTest, UninstallingExternalExtensions) {
 
   // Try adding the same extension from an external update URL.
   ASSERT_FALSE(service()->pending_extension_manager()->AddFromExternalUpdateUrl(
-      good_crx,
-      std::string(),
-      GURL("http:://fake.update/url"),
-      Manifest::EXTERNAL_PREF_DOWNLOAD,
-      Extension::NO_FLAGS,
-      false));
+      good_crx, std::string(), GURL("http:://fake.update/url"),
+      ManifestLocation::kExternalPrefDownload, Extension::NO_FLAGS, false));
 
   // Installation of the same extension through the policy should be successful.
   ASSERT_TRUE(service()->pending_extension_manager()->AddFromExternalUpdateUrl(
-      good_crx,
-      std::string(),
-      GURL("http:://fake.update/url"),
-      Manifest::EXTERNAL_POLICY_DOWNLOAD,
-      Extension::NO_FLAGS,
-      false));
+      good_crx, std::string(), GURL("http:://fake.update/url"),
+      ManifestLocation::kExternalPolicyDownload, Extension::NO_FLAGS, false));
   EXPECT_TRUE(service()->pending_extension_manager()->IsIdPending(good_crx));
   EXPECT_TRUE(service()->pending_extension_manager()->Remove(good_crx));
 
@@ -2553,7 +2545,7 @@ TEST_F(ExtensionServiceTest,
   // Verify that Load was successful
   EXPECT_EQ(0u, GetErrors().size());
   ASSERT_EQ(1u, loaded_.size());
-  EXPECT_EQ(Manifest::UNPACKED, loaded_[0]->location());
+  EXPECT_EQ(ManifestLocation::kUnpacked, loaded_[0]->location());
   EXPECT_EQ(1u, registry()->enabled_extensions().size());
   EXPECT_EQ("1.0", loaded_[0]->VersionString());
 
@@ -2590,7 +2582,7 @@ TEST_F(ExtensionServiceTest,
   EXPECT_EQ(1u, GetErrors().size());
   // Verify that ReloadExtension() was successful.
   ASSERT_EQ(1u, loaded_.size());
-  EXPECT_EQ(Manifest::UNPACKED, loaded_[0]->location());
+  EXPECT_EQ(ManifestLocation::kUnpacked, loaded_[0]->location());
   EXPECT_EQ(1u, registry()->enabled_extensions().size());
   EXPECT_EQ("2.0", loaded_[0]->VersionString());
 }
@@ -3011,7 +3003,7 @@ TEST_F(ExtensionServiceTest, UpdateExtensionPreservesLocation) {
   UpdateExtension(good_crx, path, ENABLED);
   const Extension* good2 = registry()->enabled_extensions().GetByID(good_crx);
   ASSERT_EQ("1.0.0.1", good2->version().GetString());
-  EXPECT_EQ(good2->location(), Manifest::EXTERNAL_PREF);
+  EXPECT_EQ(good2->location(), ManifestLocation::kExternalPref);
 }
 
 // Makes sure that LOAD extension types can downgrade.
@@ -3041,7 +3033,7 @@ TEST_F(ExtensionServiceTest, LoadExtensionsCanDowngrade) {
 
   EXPECT_EQ(0u, GetErrors().size());
   ASSERT_EQ(1u, loaded_.size());
-  EXPECT_EQ(Manifest::UNPACKED, loaded_[0]->location());
+  EXPECT_EQ(ManifestLocation::kUnpacked, loaded_[0]->location());
   EXPECT_EQ(1u, registry()->enabled_extensions().size());
   EXPECT_EQ("2.0", loaded_[0]->VersionString());
 
@@ -3055,7 +3047,7 @@ TEST_F(ExtensionServiceTest, LoadExtensionsCanDowngrade) {
 
   EXPECT_EQ(0u, GetErrors().size());
   ASSERT_EQ(1u, loaded_.size());
-  EXPECT_EQ(Manifest::UNPACKED, loaded_[0]->location());
+  EXPECT_EQ(ManifestLocation::kUnpacked, loaded_[0]->location());
   EXPECT_EQ(1u, registry()->enabled_extensions().size());
   EXPECT_EQ("1.0", loaded_[0]->VersionString());
 }
@@ -3210,12 +3202,8 @@ TEST_F(ExtensionServiceTest, UpdatePendingTheme) {
 TEST_F(ExtensionServiceTest, UpdatePendingExternalCrx) {
   InitializeEmptyExtensionService();
   EXPECT_TRUE(service()->pending_extension_manager()->AddFromExternalUpdateUrl(
-      theme_crx,
-      std::string(),
-      GURL(),
-      Manifest::EXTERNAL_PREF_DOWNLOAD,
-      Extension::NO_FLAGS,
-      false));
+      theme_crx, std::string(), GURL(), ManifestLocation::kExternalPrefDownload,
+      Extension::NO_FLAGS, false));
 
   EXPECT_TRUE(service()->pending_extension_manager()->IsIdPending(theme_crx));
 
@@ -3257,18 +3245,14 @@ TEST_F(ExtensionServiceTest, UpdatePendingExternalCrxWinsOverSync) {
 
   // Add a crx to be updated, with the same ID, from a non-sync source.
   EXPECT_TRUE(service()->pending_extension_manager()->AddFromExternalUpdateUrl(
-      kGoodId,
-      std::string(),
-      GURL(kGoodUpdateURL),
-      Manifest::EXTERNAL_PREF_DOWNLOAD,
-      Extension::NO_FLAGS,
-      false));
+      kGoodId, std::string(), GURL(kGoodUpdateURL),
+      ManifestLocation::kExternalPrefDownload, Extension::NO_FLAGS, false));
 
   // Check that there is a pending crx, with is_from_sync set to false.
   ASSERT_TRUE((pending_extension_info =
                    service()->pending_extension_manager()->GetById(kGoodId)));
   EXPECT_FALSE(pending_extension_info->is_from_sync());
-  EXPECT_EQ(Manifest::EXTERNAL_PREF_DOWNLOAD,
+  EXPECT_EQ(ManifestLocation::kExternalPrefDownload,
             pending_extension_info->install_source());
 
   // Add a crx to be installed from the update mechanism.
@@ -3284,7 +3268,7 @@ TEST_F(ExtensionServiceTest, UpdatePendingExternalCrxWinsOverSync) {
   ASSERT_TRUE((pending_extension_info =
                    service()->pending_extension_manager()->GetById(kGoodId)));
   EXPECT_FALSE(pending_extension_info->is_from_sync());
-  EXPECT_EQ(Manifest::EXTERNAL_PREF_DOWNLOAD,
+  EXPECT_EQ(ManifestLocation::kExternalPrefDownload,
             pending_extension_info->install_source());
 }
 
@@ -4166,7 +4150,7 @@ TEST_F(ExtensionServiceTest, ManagementPolicyProhibitsLoadFromPrefs) {
   // though we're testing loading from prefs, so that we don't need to provide
   // an extension key.
   ExtensionInfo extension_info(&manifest, std::string(), path,
-                               Manifest::UNPACKED);
+                               ManifestLocation::kUnpacked);
 
   // Ensure we can load it with no management policy in place.
   GetManagementPolicy()->UnregisterAllProviders();
@@ -4412,7 +4396,7 @@ TEST_F(ExtensionServiceTest, PolicyBlockedPermissionConflictsWithForceInstall) {
   const Extension* installed =
       registry()->GetInstalledExtension(permissions_blocklist);
   ASSERT_TRUE(installed);
-  EXPECT_EQ(installed->location(), Manifest::EXTERNAL_POLICY_DOWNLOAD);
+  EXPECT_EQ(installed->location(), ManifestLocation::kExternalPolicyDownload);
 }
 
 // Tests that newer versions of an extension with conflicting required
@@ -5539,7 +5523,7 @@ TEST_F(ExtensionServiceTest, LoadExtension) {
     const Extension* extension =
         get_extension_by_name(registry()->enabled_extensions(), kGoodExtension);
     ASSERT_TRUE(extension);
-    EXPECT_EQ(Manifest::UNPACKED, extension->location());
+    EXPECT_EQ(ManifestLocation::kUnpacked, extension->location());
   }
 
   // Try loading an extension with no manifest. It should fail.
@@ -5578,7 +5562,7 @@ TEST_F(ExtensionServiceTest, GenerateID) {
   EXPECT_EQ(0u, GetErrors().size());
   ASSERT_EQ(1u, loaded_.size());
   ASSERT_TRUE(crx_file::id_util::IdIsValid(loaded_[0]->id()));
-  EXPECT_EQ(loaded_[0]->location(), Manifest::UNPACKED);
+  EXPECT_EQ(loaded_[0]->location(), ManifestLocation::kUnpacked);
 
   ValidatePrefKeyCount(1);
 
@@ -5628,7 +5612,7 @@ void ExtensionServiceTest::TestExternalProvider(MockExternalProvider* provider,
 
   ASSERT_EQ(0u, GetErrors().size());
   ASSERT_EQ(1u, loaded_.size());
-  ASSERT_EQ(location, loaded_[0]->location());
+  ASSERT_EQ(location, static_cast<Manifest::Location>(loaded_[0]->location()));
   ASSERT_EQ("1.0.0.0", loaded_[0]->version().GetString());
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   EXPECT_TRUE(prefs->GetInstalledExtensionInfo(good_crx));
@@ -5857,7 +5841,7 @@ TEST_F(ExtensionServiceTest, MultipleExternalUpdateCheck) {
   EXPECT_EQ(2, provider->visit_count());
   ASSERT_EQ(0u, GetErrors().size());
   ASSERT_EQ(1u, loaded_.size());
-  ASSERT_EQ(Manifest::EXTERNAL_PREF, loaded_[0]->location());
+  ASSERT_EQ(ManifestLocation::kExternalPref, loaded_[0]->location());
   ASSERT_EQ("1.0.0.0", loaded_[0]->version().GetString());
   ValidatePrefKeyCount(1);
   ValidateIntegerPref(good_crx, "state", Extension::ENABLED);
@@ -6423,7 +6407,7 @@ TEST_F(ExtensionServiceTest, ComponentExtensions) {
 
   EXPECT_EQ(0u, GetErrors().size());
   ASSERT_EQ(1u, loaded_.size());
-  EXPECT_EQ(Manifest::COMPONENT, loaded_[0]->location());
+  EXPECT_EQ(ManifestLocation::kComponent, loaded_[0]->location());
   EXPECT_EQ(1u, registry()->enabled_extensions().size());
 
   // Component extensions get a prefs entry on first install.
@@ -6536,15 +6520,17 @@ TEST_F(ExtensionServiceTest, InstallPriorityExternalLocalFile) {
   // sources: Registry (EXTERNAL_REGISTRY) overrides external pref
   // (EXTERNAL_PREF), and external pref overrides user install (INTERNAL).
   // The following assertions verify these assumptions:
-  ASSERT_EQ(Manifest::EXTERNAL_REGISTRY,
-            Manifest::GetHigherPriorityLocation(Manifest::EXTERNAL_REGISTRY,
-                                                 Manifest::EXTERNAL_PREF));
-  ASSERT_EQ(Manifest::EXTERNAL_REGISTRY,
-            Manifest::GetHigherPriorityLocation(Manifest::EXTERNAL_REGISTRY,
-                                                 Manifest::INTERNAL));
-  ASSERT_EQ(Manifest::EXTERNAL_PREF,
-            Manifest::GetHigherPriorityLocation(Manifest::EXTERNAL_PREF,
-                                                 Manifest::INTERNAL));
+  ASSERT_EQ(
+      ManifestLocation::kExternalRegistry,
+      Manifest::GetHigherPriorityLocation(ManifestLocation::kExternalRegistry,
+                                          ManifestLocation::kExternalPref));
+  ASSERT_EQ(
+      ManifestLocation::kExternalRegistry,
+      Manifest::GetHigherPriorityLocation(ManifestLocation::kExternalRegistry,
+                                          ManifestLocation::kInternal));
+  ASSERT_EQ(ManifestLocation::kExternalPref,
+            Manifest::GetHigherPriorityLocation(ManifestLocation::kExternalPref,
+                                                ManifestLocation::kInternal));
 
   PendingExtensionManager* pending = service()->pending_extension_manager();
   EXPECT_FALSE(pending->IsIdPending(kGoodId));
@@ -6760,12 +6746,8 @@ class ExtensionSourcePriorityTest : public ExtensionServiceTest {
   // Fake an external source adding a URL to fetch an extension from.
   bool AddPendingExternalPrefUrl() {
     return service()->pending_extension_manager()->AddFromExternalUpdateUrl(
-        crx_id_,
-        std::string(),
-        GURL(),
-        Manifest::EXTERNAL_PREF_DOWNLOAD,
-        Extension::NO_FLAGS,
-        false);
+        crx_id_, std::string(), GURL(), ManifestLocation::kExternalPrefDownload,
+        Extension::NO_FLAGS, false);
   }
 
   // Fake an external file from external_extensions.json.
@@ -6796,7 +6778,7 @@ class ExtensionSourcePriorityTest : public ExtensionServiceTest {
   }
 
   // Get the install source of a pending extension.
-  Manifest::Location GetPendingLocation() {
+  ManifestLocation GetPendingLocation() {
     const PendingExtensionInfo* info;
     EXPECT_TRUE(
         (info = service()->pending_extension_manager()->GetById(crx_id_)));
@@ -6842,18 +6824,18 @@ TEST_F(ExtensionSourcePriorityTest, PendingExternalFileOverSync) {
       NOTIFICATION_CRX_INSTALLER_DONE,
       content::NotificationService::AllSources());
   EXPECT_TRUE(AddPendingSyncInstall());
-  ASSERT_EQ(Manifest::INTERNAL, GetPendingLocation());
+  ASSERT_EQ(ManifestLocation::kInternal, GetPendingLocation());
   EXPECT_TRUE(GetPendingIsFromSync());
   ASSERT_FALSE(IsCrxInstalled());
 
   // Install pending as external prefs json would.
   AddPendingExternalPrefFileInstall();
-  ASSERT_EQ(Manifest::EXTERNAL_PREF, GetPendingLocation());
+  ASSERT_EQ(ManifestLocation::kExternalPref, GetPendingLocation());
   ASSERT_FALSE(IsCrxInstalled());
 
   // Another request from sync should be ignored.
   EXPECT_FALSE(AddPendingSyncInstall());
-  ASSERT_EQ(Manifest::EXTERNAL_PREF, GetPendingLocation());
+  ASSERT_EQ(ManifestLocation::kExternalPref, GetPendingLocation());
   ASSERT_FALSE(IsCrxInstalled());
 
   observer.Wait();
@@ -6868,17 +6850,17 @@ TEST_F(ExtensionSourcePriorityTest, PendingExternalUrlOverSync) {
   ASSERT_FALSE(IsCrxInstalled());
 
   EXPECT_TRUE(AddPendingSyncInstall());
-  ASSERT_EQ(Manifest::INTERNAL, GetPendingLocation());
+  ASSERT_EQ(ManifestLocation::kInternal, GetPendingLocation());
   EXPECT_TRUE(GetPendingIsFromSync());
   ASSERT_FALSE(IsCrxInstalled());
 
   ASSERT_TRUE(AddPendingExternalPrefUrl());
-  ASSERT_EQ(Manifest::EXTERNAL_PREF_DOWNLOAD, GetPendingLocation());
+  ASSERT_EQ(ManifestLocation::kExternalPrefDownload, GetPendingLocation());
   EXPECT_FALSE(GetPendingIsFromSync());
   ASSERT_FALSE(IsCrxInstalled());
 
   EXPECT_FALSE(AddPendingSyncInstall());
-  ASSERT_EQ(Manifest::EXTERNAL_PREF_DOWNLOAD, GetPendingLocation());
+  ASSERT_EQ(ManifestLocation::kExternalPrefDownload, GetPendingLocation());
   EXPECT_FALSE(GetPendingIsFromSync());
   ASSERT_FALSE(IsCrxInstalled());
 }
@@ -7859,7 +7841,7 @@ TEST_F(ExtensionServiceTest, UserInstalledExtensionThenRequiredByPolicy) {
   const Extension* extension = InstallCRX(path, INSTALL_NEW);
   ASSERT_TRUE(extension);
   EXPECT_EQ(good_crx, extension->id());
-  EXPECT_EQ(Manifest::INTERNAL, extension->location());
+  EXPECT_EQ(ManifestLocation::kInternal, extension->location());
 
   std::string kVersionStr = "1.0.0.0";
   EXPECT_EQ(kVersionStr, extension->VersionString());
@@ -7918,7 +7900,7 @@ TEST_F(ExtensionServiceTest,
   const Extension* extension = InstallCRX(path, INSTALL_NEW);
   ASSERT_TRUE(extension);
   EXPECT_EQ(good_crx, extension->id());
-  EXPECT_EQ(Manifest::INTERNAL, extension->location());
+  EXPECT_EQ(ManifestLocation::kInternal, extension->location());
 
   std::string kVersionStr = "1.0.0.0";
   EXPECT_EQ(kVersionStr, extension->VersionString());
@@ -7952,7 +7934,7 @@ TEST_F(ExtensionServiceTest,
   // remain installed.
   EXPECT_TRUE(policy->MustRemainInstalled(extension, nullptr));
   EXPECT_FALSE(policy->UserMayModifySettings(extension, nullptr));
-  EXPECT_EQ(extension->location(), Manifest::EXTERNAL_POLICY_DOWNLOAD);
+  EXPECT_EQ(extension->location(), ManifestLocation::kExternalPolicyDownload);
 
   EXPECT_TRUE(registry()->enabled_extensions().GetByID(good_crx));
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
@@ -7965,7 +7947,7 @@ TEST_F(ExtensionServiceTest,
   EXPECT_TRUE(registry()->enabled_extensions().Contains(good_crx));
   extension = registry()->GetInstalledExtension(good_crx);
   // The location should remain same on restart.
-  EXPECT_EQ(extension->location(), Manifest::EXTERNAL_POLICY_DOWNLOAD);
+  EXPECT_EQ(extension->location(), ManifestLocation::kExternalPolicyDownload);
   // Extension should behave similar to force installed on restart.
   EXPECT_TRUE(policy->MustRemainInstalled(extension, nullptr));
   EXPECT_FALSE(policy->UserMayModifySettings(extension, nullptr));
@@ -7995,7 +7977,7 @@ TEST_F(ExtensionServiceTest, InstallingUnacknowledgedExternalExtension) {
       registry()->enabled_extensions().GetByID(good_crx);
   ASSERT_TRUE(extension);
   EXPECT_EQ(good_crx, extension->id());
-  EXPECT_EQ(Manifest::EXTERNAL_PREF_DOWNLOAD, extension->location());
+  EXPECT_EQ(ManifestLocation::kExternalPrefDownload, extension->location());
   EXPECT_EQ(version_str, extension->VersionString());
 
   ExtensionManagement::InstallationMode installation_mode =

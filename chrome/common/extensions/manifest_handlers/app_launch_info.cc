@@ -193,7 +193,8 @@ bool AppLaunchInfo::LoadLaunchURL(Extension* extension, std::u16string* error) {
         set_launch_web_url_error();
         return false;
       }
-    } else if (extension->location() != Manifest::EXTERNAL_COMPONENT) {
+    } else if (extension->location() !=
+               mojom::ManifestLocation::kExternalComponent) {
       // For non-component Bookmark Apps we only accept
       // kValidBookmarkAppSchemes.
       URLPattern pattern(Extension::kValidBookmarkAppSchemes);

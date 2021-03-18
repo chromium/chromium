@@ -219,7 +219,8 @@ void BackgroundModeManager::BackgroundModeData::BuildProfileMenu(
       //
       // The compromise is to disable the item, avoiding the non-actionable
       // navigate to the extensions page and preserving the user model.
-      if (application->location() == extensions::Manifest::COMPONENT) {
+      if (application->location() ==
+          extensions::mojom::ManifestLocation::kComponent) {
         GURL options_page =
             extensions::OptionsPageInfo::GetOptionsPage(application.get());
         if (!options_page.is_valid())

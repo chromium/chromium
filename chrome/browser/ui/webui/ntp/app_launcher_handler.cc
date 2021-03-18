@@ -373,8 +373,9 @@ void AppLauncherHandler::CreateExtensionInfo(const Extension* extension,
           extensions::AppLaunchInfo::GetLaunchContainer(extension)));
   ExtensionPrefs* prefs = ExtensionPrefs::Get(extension_service_->profile());
   value->SetInteger("launch_type", extensions::GetLaunchType(prefs, extension));
-  value->SetBoolean("is_component",
-                    extension->location() == extensions::Manifest::COMPONENT);
+  value->SetBoolean(
+      "is_component",
+      extension->location() == extensions::mojom::ManifestLocation::kComponent);
   value->SetBoolean("is_webstore",
       extension->id() == extensions::kWebStoreAppId);
 

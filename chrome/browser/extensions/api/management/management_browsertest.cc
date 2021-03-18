@@ -51,6 +51,7 @@ using extensions::Extension;
 using extensions::ExtensionRegistry;
 using extensions::ExtensionService;
 using extensions::Manifest;
+using extensions::mojom::ManifestLocation;
 using policy::PolicyMap;
 using testing::_;
 using testing::Return;
@@ -609,12 +610,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalUrlUpdate) {
   // before this test function starts.
 
   EXPECT_TRUE(pending_extension_manager->AddFromExternalUpdateUrl(
-      kExtensionId,
-      std::string(),
-      GURL("http://localhost/autoupdate/manifest"),
-      Manifest::EXTERNAL_PREF_DOWNLOAD,
-      Extension::NO_FLAGS,
-      false));
+      kExtensionId, std::string(), GURL("http://localhost/autoupdate/manifest"),
+      ManifestLocation::kExternalPrefDownload, Extension::NO_FLAGS, false));
 
   extensions::TestExtensionRegistryObserver install_observer(registry);
   // Run autoupdate and make sure version 2 of the extension was installed.
@@ -639,12 +636,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalUrlUpdate) {
   // Try to install the extension again from an external source. It should fail
   // because of the killbit.
   EXPECT_FALSE(pending_extension_manager->AddFromExternalUpdateUrl(
-      kExtensionId,
-      std::string(),
-      GURL("http://localhost/autoupdate/manifest"),
-      Manifest::EXTERNAL_PREF_DOWNLOAD,
-      Extension::NO_FLAGS,
-      false));
+      kExtensionId, std::string(), GURL("http://localhost/autoupdate/manifest"),
+      ManifestLocation::kExternalPrefDownload, Extension::NO_FLAGS, false));
   EXPECT_FALSE(pending_extension_manager->IsIdPending(kExtensionId))
       << "External reinstall of a killed extension shouldn't work.";
   EXPECT_TRUE(extension_prefs->IsExternalExtensionUninstalled(kExtensionId))
@@ -729,7 +722,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalPolicyRefresh) {
       registry->enabled_extensions().GetByID(kExtensionId);
   ASSERT_TRUE(extension);
   ASSERT_EQ("2.0", extension->VersionString());
-  EXPECT_EQ(Manifest::EXTERNAL_POLICY_DOWNLOAD, extension->location());
+  EXPECT_EQ(ManifestLocation::kExternalPolicyDownload, extension->location());
 
   // Try to disable and uninstall the extension which should fail.
   DisableExtension(kExtensionId);
@@ -812,7 +805,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   const Extension* extension =
       registry->enabled_extensions().GetByID(kExtensionId);
   ASSERT_TRUE(extension);
-  EXPECT_EQ(Manifest::INTERNAL, extension->location());
+  EXPECT_EQ(ManifestLocation::kInternal, extension->location());
   EXPECT_TRUE(service->IsExtensionEnabled(kExtensionId));
 
   // Setup the force install policy. It should override the location.
@@ -829,7 +822,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   ASSERT_EQ(size_before + 1, registry->enabled_extensions().size());
   extension = registry->enabled_extensions().GetByID(kExtensionId);
   ASSERT_TRUE(extension);
-  EXPECT_EQ(Manifest::EXTERNAL_POLICY_DOWNLOAD, extension->location());
+  EXPECT_EQ(ManifestLocation::kExternalPolicyDownload, extension->location());
   EXPECT_TRUE(service->IsExtensionEnabled(kExtensionId));
 
   // Remove the policy, and verify that the extension was uninstalled.
@@ -848,7 +841,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   ASSERT_EQ(size_before + 1, registry->enabled_extensions().size());
   extension = registry->enabled_extensions().GetByID(kExtensionId);
   ASSERT_TRUE(extension);
-  EXPECT_EQ(Manifest::INTERNAL, extension->location());
+  EXPECT_EQ(ManifestLocation::kInternal, extension->location());
   EXPECT_TRUE(service->IsExtensionEnabled(kExtensionId));
   EXPECT_TRUE(registry->disabled_extensions().is_empty());
 
@@ -870,7 +863,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   ASSERT_EQ(size_before + 1, registry->enabled_extensions().size());
   extension = registry->enabled_extensions().GetByID(kExtensionId);
   ASSERT_TRUE(extension);
-  EXPECT_EQ(Manifest::EXTERNAL_POLICY_DOWNLOAD, extension->location());
+  EXPECT_EQ(ManifestLocation::kExternalPolicyDownload, extension->location());
   EXPECT_TRUE(service->IsExtensionEnabled(kExtensionId));
   EXPECT_TRUE(registry->disabled_extensions().is_empty());
 }

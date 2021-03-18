@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionStartupTest, NoFileAccess) {
   for (extensions::ExtensionSet::const_iterator it =
            registry->enabled_extensions().begin();
        it != registry->enabled_extensions().end(); ++it) {
-    if ((*it)->location() == extensions::Manifest::COMPONENT)
+    if ((*it)->location() == extensions::mojom::ManifestLocation::kComponent)
       continue;
     if (extensions::util::AllowFileAccess((*it)->id(), browser()->profile()))
       extension_list.push_back(it->get());

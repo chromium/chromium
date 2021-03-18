@@ -281,7 +281,8 @@ void ProfileResetter::ResetExtensions() {
   DCHECK(extension_registry);
   std::vector<extensions::ExtensionId> extension_ids_to_reenable;
   for (const auto& extension : extension_registry->disabled_extensions()) {
-    if (extension->location() == extensions::Manifest::EXTERNAL_COMPONENT)
+    if (extension->location() ==
+        extensions::mojom::ManifestLocation::kExternalComponent)
       extension_ids_to_reenable.push_back(extension->id());
   }
   for (const auto& extension_id : extension_ids_to_reenable) {

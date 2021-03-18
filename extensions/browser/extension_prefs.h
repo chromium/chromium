@@ -220,7 +220,7 @@ class ExtensionPrefs : public KeyedService {
 
   // Called when an extension is uninstalled, so that prefs get cleaned up.
   void OnExtensionUninstalled(const std::string& extension_id,
-                              const Manifest::Location& location,
+                              const mojom::ManifestLocation location,
                               bool external_uninstall);
 
   // Sets the extension's state to enabled and clears disable reasons.
@@ -743,7 +743,7 @@ class ExtensionPrefs : public KeyedService {
   // loaded again after this.
   void MarkObsoleteComponentExtensionAsRemoved(
       const std::string& extension_id,
-      const Manifest::Location& location);
+      const mojom::ManifestLocation location);
 
   // When called before the ExtensionService is created, alerts that are
   // normally suppressed in first run will still trigger.

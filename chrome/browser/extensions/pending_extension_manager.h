@@ -15,6 +15,7 @@
 #include "chrome/browser/extensions/pending_extension_info.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 
 class GURL;
 
@@ -158,7 +159,7 @@ class PendingExtensionManager {
   bool AddFromExternalUpdateUrl(const std::string& id,
                                 const std::string& install_parameter,
                                 const GURL& update_url,
-                                Manifest::Location location,
+                                mojom::ManifestLocation location,
                                 int creation_flags,
                                 bool mark_acknowledged);
 

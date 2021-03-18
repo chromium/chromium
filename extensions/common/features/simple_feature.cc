@@ -247,7 +247,8 @@ Feature::Availability SimpleFeature::IsAvailableToContext(
 
   if (extension) {
     Availability manifest_availability = GetManifestAvailability(
-        extension->hashed_id(), extension->GetType(), extension->location(),
+        extension->hashed_id(), extension->GetType(),
+        static_cast<Manifest::Location>(extension->location()),
         extension->manifest_version());
     if (!manifest_availability.is_available())
       return manifest_availability;
@@ -470,7 +471,8 @@ bool SimpleFeature::MatchesManifestLocation(
       return manifest_location == Manifest::EXTERNAL_POLICY ||
              manifest_location == Manifest::EXTERNAL_POLICY_DOWNLOAD;
     case SimpleFeature::UNPACKED_LOCATION:
-      return Manifest::IsUnpackedLocation(manifest_location);
+      return Manifest::IsUnpackedLocation(
+          static_cast<mojom::ManifestLocation>(manifest_location));
   }
   NOTREACHED();
   return false;

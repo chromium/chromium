@@ -62,7 +62,7 @@ void ExtensionRegistrar::AddExtension(
         version_compare_result < 0) {
       UMA_HISTOGRAM_ENUMERATION(
           "Extensions.AttemptedToDowngradeVersionLocation",
-          extension->location(), Manifest::NUM_LOCATIONS);
+          extension->location());
       UMA_HISTOGRAM_ENUMERATION("Extensions.AttemptedToDowngradeVersionType",
                                 extension->GetType(), Manifest::NUM_LOAD_TYPES);
 

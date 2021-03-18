@@ -428,7 +428,7 @@ TEST_F(ExtensionFromWebApp, ExternalPolicyLocation) {
   EXPECT_TRUE(extension->from_bookmark());
   EXPECT_FALSE(extension->is_legacy_packaged_app());
 
-  EXPECT_EQ(Manifest::EXTERNAL_POLICY, extension->location());
+  EXPECT_EQ(mojom::ManifestLocation::kExternalPolicy, extension->location());
 }
 
 // Tests that a scope not ending in "/" works correctly.

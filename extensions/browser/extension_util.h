@@ -75,9 +75,10 @@ bool MapUrlToLocalFilePath(const ExtensionSet* extensions,
 // Returns true if the browser can potentially withhold permissions from the
 // extension.
 bool CanWithholdPermissionsFromExtension(const Extension& extension);
-bool CanWithholdPermissionsFromExtension(const std::string& extension_id,
-                                         const Manifest::Type type,
-                                         const Manifest::Location location);
+bool CanWithholdPermissionsFromExtension(
+    const std::string& extension_id,
+    const Manifest::Type type,
+    const mojom::ManifestLocation location);
 
 // Returns a unique int id for each context.
 int GetBrowserContextId(content::BrowserContext* context);

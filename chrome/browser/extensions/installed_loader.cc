@@ -275,7 +275,7 @@ void InstalledLoader::LoadAllExtensions() {
 
     // Skip extensions that were loaded from the command-line because we don't
     // want those to persist across browser restart.
-    if (info->extension_location == Manifest::COMMAND_LINE)
+    if (info->extension_location == mojom::ManifestLocation::kCommandLine)
       continue;
 
     ManifestReloadReason reload_reason = ShouldReloadExtensionManifest(*info);
@@ -291,11 +291,10 @@ void InstalledLoader::LoadAllExtensions() {
       base::ThreadRestrictions::ScopedAllowIO allow_io;
 
       std::string error;
-      scoped_refptr<const Extension> extension(
-          file_util::LoadExtension(info->extension_path,
-                                   info->extension_location,
-                                   GetCreationFlags(info),
-                                   &error));
+      scoped_refptr<const Extension> extension(file_util::LoadExtension(
+          info->extension_path,
+          static_cast<Manifest::Location>(info->extension_location),
+          GetCreationFlags(info), &error));
 
       if (!extension.get() || extension->id() != info->extension_id) {
         invalid_extensions_.insert(info->extension_path);
@@ -313,7 +312,8 @@ void InstalledLoader::LoadAllExtensions() {
   }
 
   for (size_t i = 0; i < extensions_info->size(); ++i) {
-    if (extensions_info->at(i)->extension_location != Manifest::COMMAND_LINE)
+    if (extensions_info->at(i)->extension_location !=
+        mojom::ManifestLocation::kCommandLine)
       Load(*extensions_info->at(i), should_write_prefs);
   }
 
@@ -377,7 +377,7 @@ void InstalledLoader::RecordExtensionsMetrics() {
        iter != extensions.end();
        ++iter) {
     const Extension* extension = iter->get();
-    Manifest::Location location = extension->location();
+    mojom::ManifestLocation location = extension->location();
     Manifest::Type type = extension->GetType();
 
     // For the first few metrics, include all extensions and apps (component,
@@ -385,15 +385,12 @@ void InstalledLoader::RecordExtensionsMetrics() {
     // muck up any of the stats. Later, though, we want to omit component and
     // unpacked, as they are less interesting.
     if (extension->is_app())
-      UMA_HISTOGRAM_ENUMERATION(
-          "Extensions.AppLocation", location, Manifest::NUM_LOCATIONS);
+      UMA_HISTOGRAM_ENUMERATION("Extensions.AppLocation", location);
     else if (extension->is_extension())
-      UMA_HISTOGRAM_ENUMERATION(
-          "Extensions.ExtensionLocation", location, Manifest::NUM_LOCATIONS);
+      UMA_HISTOGRAM_ENUMERATION("Extensions.ExtensionLocation", location);
 
     if (!extension_management->UpdatesFromWebstore(*extension)) {
-      UMA_HISTOGRAM_ENUMERATION(
-          "Extensions.NonWebstoreLocation", location, Manifest::NUM_LOCATIONS);
+      UMA_HISTOGRAM_ENUMERATION("Extensions.NonWebstoreLocation", location);
 
       // Check for inconsistencies if the extension was supposedly installed
       // from the webstore.

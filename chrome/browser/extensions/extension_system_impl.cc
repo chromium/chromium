@@ -482,7 +482,7 @@ void ExtensionSystemImpl::RegisterExtensionWithRequestContexts(
     const Extension* extension,
     base::OnceClosure callback) {
   base::Time install_time;
-  if (extension->location() != Manifest::COMPONENT) {
+  if (extension->location() != mojom::ManifestLocation::kComponent) {
     install_time = ExtensionPrefs::Get(profile_)->
         GetInstallTime(extension->id());
   }

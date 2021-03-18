@@ -399,7 +399,7 @@ class ExtensionPrefsVersionString : public ExtensionPrefsTest {
     extension = prefs_.AddExtension("test");
     EXPECT_EQ("0.1", prefs()->GetVersionString(extension->id()));
     prefs()->OnExtensionUninstalled(extension->id(),
-                                    Manifest::INTERNAL, false);
+                                    mojom::ManifestLocation::kInternal, false);
   }
 
   void Verify() override {
@@ -1166,11 +1166,13 @@ class ExtensionPrefsIsExternalExtensionUninstalled : public ExtensionPrefsTest {
             ->id();
 
     prefs()->OnExtensionUninstalled(uninstalled_external_id_,
-                                    Manifest::EXTERNAL_PREF, false);
+                                    mojom::ManifestLocation::kExternalPref,
+                                    false);
     prefs()->OnExtensionUninstalled(uninstalled_by_program_external_id_,
-                                    Manifest::EXTERNAL_PREF, true);
+                                    mojom::ManifestLocation::kExternalPref,
+                                    true);
     prefs()->OnExtensionUninstalled(uninstalled_internal_id_,
-                                    Manifest::INTERNAL, false);
+                                    mojom::ManifestLocation::kInternal, false);
   }
 
   void Verify() override {

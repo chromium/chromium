@@ -267,7 +267,7 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   const base::FilePath& path() const { return path_; }
   const GURL& url() const { return extension_url_; }
   url::Origin origin() const { return url::Origin::Create(extension_url_); }
-  Manifest::Location location() const;
+  mojom::ManifestLocation location() const;
   const ExtensionId& id() const;
   const HashedExtensionId& hashed_id() const;
   const ExtensionGuid& guid() const;
@@ -481,7 +481,7 @@ struct ExtensionInfo {
   ExtensionInfo(const base::DictionaryValue* manifest,
                 const ExtensionId& id,
                 const base::FilePath& path,
-                Manifest::Location location);
+                mojom::ManifestLocation location);
   ~ExtensionInfo();
 
   // Note: This may be null (e.g. for unpacked extensions retrieved from the
@@ -490,7 +490,7 @@ struct ExtensionInfo {
 
   ExtensionId extension_id;
   base::FilePath extension_path;
-  Manifest::Location extension_location;
+  mojom::ManifestLocation extension_location;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ExtensionInfo);

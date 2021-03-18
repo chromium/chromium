@@ -66,7 +66,8 @@ ExtensionMsg_Loaded_Params::ExtensionMsg_Loaded_Params(
     base::Optional<ActivationSequence> worker_activation_sequence)
     : manifest(static_cast<base::DictionaryValue&&>(
           extension->manifest()->value()->Clone())),
-      location(extension->location()),
+      location(
+          static_cast<extensions::Manifest::Location>(extension->location())),
       path(extension->path()),
       active_permissions(extension->permissions_data()->active_permissions()),
       withheld_permissions(

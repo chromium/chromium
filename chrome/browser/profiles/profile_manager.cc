@@ -304,7 +304,8 @@ size_t GetEnabledAppCount(Profile* profile) {
        iter != extensions.end();
        ++iter) {
     if ((*iter)->is_app() &&
-        (*iter)->location() != extensions::Manifest::COMPONENT) {
+        (*iter)->location() !=
+            extensions::mojom::ManifestLocation::kComponent) {
       ++installed_apps;
     }
   }

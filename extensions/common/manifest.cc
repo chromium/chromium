@@ -20,6 +20,8 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handler_helpers.h"
 
+using extensions::mojom::ManifestLocation;
+
 namespace extensions {
 
 namespace keys = manifest_keys;
@@ -31,62 +33,63 @@ namespace {
 // An extension installed from two locations will have the location
 // with the higher rank, as returned by this function. The actual
 // integer values may change, and should never be persisted.
-int GetLocationRank(Manifest::Location location) {
+int GetLocationRank(ManifestLocation location) {
   const int kInvalidRank = -1;
   int rank = kInvalidRank;  // Will CHECK that rank is not kInvalidRank.
 
   switch (location) {
-    // Component extensions can not be overriden by any other type.
-    case Manifest::COMPONENT:
+    // Component extensions can not be overridden by any other type.
+    case ManifestLocation::kComponent:
       rank = 9;
       break;
 
-    case Manifest::EXTERNAL_COMPONENT:
+    case ManifestLocation::kExternalComponent:
       rank = 8;
       break;
 
     // Policy controlled extensions may not be overridden by any type
     // that is not part of chrome.
-    case Manifest::EXTERNAL_POLICY:
+    case ManifestLocation::kExternalPolicy:
       rank = 7;
       break;
 
-    case Manifest::EXTERNAL_POLICY_DOWNLOAD:
+    case ManifestLocation::kExternalPolicyDownload:
       rank = 6;
       break;
 
     // A developer-loaded extension should override any installed type
     // that a user can disable. Anything specified on the command-line should
     // override one loaded via the extensions UI.
-    case Manifest::COMMAND_LINE:
+    case ManifestLocation::kCommandLine:
       rank = 5;
       break;
 
-    case Manifest::UNPACKED:
+    case ManifestLocation::kUnpacked:
       rank = 4;
       break;
 
     // The relative priority of various external sources is not important,
     // but having some order ensures deterministic behavior.
-    case Manifest::EXTERNAL_REGISTRY:
+    case ManifestLocation::kExternalRegistry:
       rank = 3;
       break;
 
-    case Manifest::EXTERNAL_PREF:
+    case ManifestLocation::kExternalPref:
       rank = 2;
       break;
 
-    case Manifest::EXTERNAL_PREF_DOWNLOAD:
+    case ManifestLocation::kExternalPrefDownload:
       rank = 1;
       break;
 
     // User installed extensions are overridden by any external type.
-    case Manifest::INTERNAL:
+    case ManifestLocation::kInternal:
       rank = 0;
       break;
 
-    default:
-      NOTREACHED() << "Need to add new extension location " << location;
+    // kInvalidLocation should never be passed to this function.
+    case ManifestLocation::kInvalidLocation:
+      break;
   }
 
   CHECK(rank != kInvalidRank);
@@ -179,12 +182,12 @@ class AvailableValuesFilter {
 };
 
 // Verifies that extensions::Manifest::Location and
-// extensions::mojom::ManifestLocation are kept in sync.
+// extensions::ManifestLocation are kept in sync.
 // This static asserts will be removed after replacing all Manifest::Location
 // enum with ManifestLocation Mojo enum.
-#define STATIC_ASSERT_ENUM(native, mojo)                             \
-  static_assert(static_cast<int>(Manifest::Location::native) ==      \
-                    static_cast<int>(mojom::ManifestLocation::mojo), \
+#define STATIC_ASSERT_ENUM(native, mojo)                        \
+  static_assert(static_cast<int>(Manifest::Location::native) == \
+                    static_cast<int>(ManifestLocation::mojo),   \
                 "mismatching enums: Manifest::Location::" #native)
 
 STATIC_ASSERT_ENUM(INVALID_LOCATION, kInvalidLocation);
@@ -202,8 +205,8 @@ STATIC_ASSERT_ENUM(EXTERNAL_COMPONENT, kExternalComponent);
 }  // namespace
 
 // static
-Manifest::Location Manifest::GetHigherPriorityLocation(
-    Location loc1, Location loc2) {
+ManifestLocation Manifest::GetHigherPriorityLocation(ManifestLocation loc1,
+                                                     ManifestLocation loc2) {
   if (loc1 == loc2)
     return loc1;
 
@@ -247,9 +250,9 @@ Manifest::Type Manifest::GetTypeFromManifestValue(
 }
 
 // static
-bool Manifest::ShouldAlwaysLoadExtension(Manifest::Location location,
+bool Manifest::ShouldAlwaysLoadExtension(ManifestLocation location,
                                          bool is_theme) {
-  if (location == Manifest::COMPONENT)
+  if (location == ManifestLocation::kComponent)
     return true;  // Component extensions are always allowed.
 
   if (is_theme)
@@ -264,10 +267,10 @@ bool Manifest::ShouldAlwaysLoadExtension(Manifest::Location location,
 
 // static
 std::unique_ptr<Manifest> Manifest::CreateManifestForLoginScreen(
-    mojom::ManifestLocation location,
+    ManifestLocation location,
     std::unique_ptr<base::DictionaryValue> value,
     ExtensionId extension_id) {
-  CHECK(IsPolicyLocation(static_cast<Location>(location)));
+  CHECK(IsPolicyLocation(location));
   // Use base::WrapUnique + new because the constructor is private.
   return base::WrapUnique(new Manifest(static_cast<Location>(location),
                                        std::move(value),
@@ -330,7 +333,7 @@ bool Manifest::ValidateManifest(
     }
   }
 
-  if (IsUnpackedLocation(location_) &&
+  if (IsUnpackedLocation(static_cast<ManifestLocation>(location_)) &&
       value_->FindPath(manifest_keys::kDifferentialFingerprint)) {
     warnings->push_back(
         InstallWarning(manifest_errors::kHasDifferentialFingerprint,

@@ -112,7 +112,8 @@ class ContentVerifierTest : public ExtensionBrowserTest {
                      base::OnceClosure callback) {
     scoped_refptr<CrxInstaller> installer(
         CrxInstaller::CreateSilent(extension_service()));
-    installer->set_install_source(Manifest::EXTERNAL_POLICY_DOWNLOAD);
+    installer->set_install_source(
+        mojom::ManifestLocation::kExternalPolicyDownload);
     installer->set_install_immediately(true);
     installer->set_allow_silent_install(true);
     installer->set_off_store_install_allow_reason(

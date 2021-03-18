@@ -107,7 +107,7 @@ void InvokeCallbackOnTaskRunner(
 //     to keep the directory in scope while the app is being installed.
 // |callback| - callback to which the loaded app should be passed.
 void LoadInstalledExtension(const std::string& extension_id,
-                            extensions::Manifest::Location install_source,
+                            extensions::mojom::ManifestLocation install_source,
                             int creation_flags,
                             std::unique_ptr<base::ScopedTempDir> temp_copy,
                             ExtensionCallback callback,
@@ -120,7 +120,9 @@ void LoadInstalledExtension(const std::string& extension_id,
   std::string error;
   scoped_refptr<const extensions::Extension> extension =
       extensions::file_util::LoadExtension(
-          version_dir, extension_id, install_source, creation_flags, &error);
+          version_dir, extension_id,
+          static_cast<extensions::Manifest::Location>(install_source),
+          creation_flags, &error);
   std::move(callback).Run(extension);
 }
 

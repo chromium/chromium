@@ -185,6 +185,8 @@
 #include "ui/wm/public/activation_client.h"
 #include "url/gurl.h"
 
+using extensions::mojom::ManifestLocation;
+
 namespace extensions {
 namespace {
 
@@ -1284,11 +1286,13 @@ AutotestPrivateGetExtensionsInfoFunction::Run() {
                          GetHostPermissions(extension, true));
     extension_value->Set("apiPermissions", GetAPIPermissions(extension));
 
-    Manifest::Location location = extension->location();
-    extension_value->SetBoolean("isComponent", location == Manifest::COMPONENT);
-    extension_value->SetBoolean("isInternal", location == Manifest::INTERNAL);
+    ManifestLocation location = extension->location();
+    extension_value->SetBoolean("isComponent",
+                                location == ManifestLocation::kComponent);
+    extension_value->SetBoolean("isInternal",
+                                location == ManifestLocation::kInternal);
     extension_value->SetBoolean("isUserInstalled",
-                                location == Manifest::INTERNAL ||
+                                location == ManifestLocation::kInternal ||
                                     Manifest::IsUnpackedLocation(location));
     extension_value->SetBoolean("isEnabled", service->IsExtensionEnabled(id));
     extension_value->SetBoolean(

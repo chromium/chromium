@@ -77,7 +77,8 @@ bool OAuth2ManifestHandler::Parse(Extension* extension, std::u16string* error) {
     info->client_id = client_id->GetString();
 
   if (info->client_id.empty() &&
-      (extension->location() != Manifest::COMPONENT || !info->auto_approve)) {
+      (extension->location() != mojom::ManifestLocation::kComponent ||
+       !info->auto_approve)) {
     *error = base::ASCIIToUTF16(errors::kInvalidOAuth2ClientId);
     return false;
   }

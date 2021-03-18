@@ -30,6 +30,7 @@ using content::PluginService;
 using content::WebContents;
 using extensions::Extension;
 using extensions::Manifest;
+using extensions::mojom::ManifestLocation;
 
 namespace {
 
@@ -184,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(NaClExtensionTest, DISABLED_NonWebStoreExtension) {
 IN_PROC_BROWSER_TEST_F(NaClExtensionTest, DISABLED_ComponentExtension) {
   const Extension* extension = InstallExtension(INSTALL_TYPE_COMPONENT);
   ASSERT_TRUE(extension);
-  ASSERT_EQ(extension->location(), Manifest::COMPONENT);
+  ASSERT_EQ(extension->location(), ManifestLocation::kComponent);
   CheckPluginsCreated(extension, PLUGIN_TYPE_ALL);
 }
 
@@ -193,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(NaClExtensionTest, DISABLED_ComponentExtension) {
 IN_PROC_BROWSER_TEST_F(NaClExtensionTest, DISABLED_UnpackedExtension) {
   const Extension* extension = InstallExtension(INSTALL_TYPE_UNPACKED);
   ASSERT_TRUE(extension);
-  ASSERT_EQ(extension->location(), Manifest::UNPACKED);
+  ASSERT_EQ(extension->location(), ManifestLocation::kUnpacked);
   CheckPluginsCreated(extension, PLUGIN_TYPE_ALL);
 }
 

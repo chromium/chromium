@@ -105,8 +105,7 @@ TEST_F(InstallVerifierTest, TestIsFromStoreAndMustRemainDisabled) {
     }
     scoped_refptr<const Extension> extension = extension_builder.Build();
 
-    if (Manifest::IsPolicyLocation(
-            static_cast<Manifest::Location>(test_case.location)))
+    if (Manifest::IsPolicyLocation(test_case.location))
       AddExtensionAsPolicyInstalled(extension->id());
 
     EXPECT_EQ(test_case.expected_from_store_status == FROM_STORE,

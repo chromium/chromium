@@ -280,7 +280,7 @@ int ErrorConsole::GetMaskForExtension(const std::string& extension_id) const {
   const Extension* extension =
       ExtensionRegistry::Get(profile_)->GetExtensionById(
           extension_id, ExtensionRegistry::EVERYTHING);
-  if (extension && extension->location() == Manifest::UNPACKED)
+  if (extension && extension->location() == mojom::ManifestLocation::kUnpacked)
     return (1 << ExtensionError::NUM_ERROR_TYPES) - 1;
 
   // Otherwise, use the default mask.

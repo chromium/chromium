@@ -683,7 +683,8 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
         CrxInstaller::Create(extension_service(), std::move(install_ui)));
     installer->set_expected_id(id);
     installer->set_creation_flags(creation_flags);
-    installer->set_install_source(install_source);
+    installer->set_install_source(
+        static_cast<mojom::ManifestLocation>(install_source));
     installer->set_install_immediately(install_immediately);
     installer->set_allow_silent_install(grant_permissions);
     if (!installer->is_gallery_install()) {

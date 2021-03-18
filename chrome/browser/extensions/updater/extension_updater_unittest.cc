@@ -421,17 +421,10 @@ void SetupPendingExtensionManagerForTest(
     std::string id =
         crx_file::id_util::GenerateId(base::StringPrintf("extension%i", i));
 
-    pending_extension_manager->AddForTesting(
-        PendingExtensionInfo(id,
-                             std::string(),
-                             update_url,
-                             base::Version(),
-                             should_allow_install,
-                             kIsFromSync,
-                             Manifest::INTERNAL,
-                             Extension::NO_FLAGS,
-                             kMarkAcknowledged,
-                             kRemoteInstall));
+    pending_extension_manager->AddForTesting(PendingExtensionInfo(
+        id, std::string(), update_url, base::Version(), should_allow_install,
+        kIsFromSync, mojom::ManifestLocation::kInternal, Extension::NO_FLAGS,
+        kMarkAcknowledged, kRemoteInstall));
   }
 }
 
@@ -811,8 +804,9 @@ class ExtensionUpdaterTest : public testing::Test {
 
       helper.downloader().AddPendingExtensionWithVersion(
           id, ManifestURL::GetUpdateURL(extensions[i].get()),
-          extensions[i]->location(), false, 0, fetch_priority,
-          extensions[i]->version(), extensions[i]->GetType(), std::string());
+          static_cast<Manifest::Location>(extensions[i]->location()), false, 0,
+          fetch_priority, extensions[i]->version(), extensions[i]->GetType(),
+          std::string());
     }
 
     // Get the headers our loader was asked to fetch.
@@ -1591,17 +1585,10 @@ class ExtensionUpdaterTest : public testing::Test {
       const bool kRemoteInstall = false;
       PendingExtensionManager* pending_extension_manager =
           service->pending_extension_manager();
-      pending_extension_manager->AddForTesting(
-          PendingExtensionInfo(id,
-                               std::string(),
-                               test_url,
-                               version,
-                               &ShouldAlwaysInstall,
-                               kIsFromSync,
-                               Manifest::INTERNAL,
-                               Extension::NO_FLAGS,
-                               kMarkAcknowledged,
-                               kRemoteInstall));
+      pending_extension_manager->AddForTesting(PendingExtensionInfo(
+          id, std::string(), test_url, version, &ShouldAlwaysInstall,
+          kIsFromSync, mojom::ManifestLocation::kInternal, Extension::NO_FLAGS,
+          kMarkAcknowledged, kRemoteInstall));
     }
 
     if (retry) {

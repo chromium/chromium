@@ -89,46 +89,57 @@ class Manifest final {
   // Given two install sources, return the one which should take priority
   // over the other. If an extension is installed from two sources A and B,
   // its install source should be set to GetHigherPriorityLocation(A, B).
-  static Location GetHigherPriorityLocation(Location loc1, Location loc2);
+  static mojom::ManifestLocation GetHigherPriorityLocation(
+      mojom::ManifestLocation loc1,
+      mojom::ManifestLocation loc2);
 
   // Whether the |location| is external or not.
-  static inline bool IsExternalLocation(Location location) {
-    return location == EXTERNAL_PREF || location == EXTERNAL_REGISTRY ||
-           location == EXTERNAL_PREF_DOWNLOAD || location == EXTERNAL_POLICY ||
-           location == EXTERNAL_POLICY_DOWNLOAD ||
-           location == EXTERNAL_COMPONENT;
+  static inline bool IsExternalLocation(mojom::ManifestLocation location) {
+    return location == mojom::ManifestLocation::kExternalPref ||
+           location == mojom::ManifestLocation::kExternalRegistry ||
+           location == mojom::ManifestLocation::kExternalPrefDownload ||
+           location == mojom::ManifestLocation::kExternalPolicy ||
+           location == mojom::ManifestLocation::kExternalPolicyDownload ||
+           location == mojom::ManifestLocation::kExternalComponent;
   }
 
   // Whether the |location| is unpacked (no CRX) or not.
-  static inline bool IsUnpackedLocation(Location location) {
-    return location == UNPACKED || location == COMMAND_LINE;
+  static inline bool IsUnpackedLocation(mojom::ManifestLocation location) {
+    return location == mojom::ManifestLocation::kUnpacked ||
+           location == mojom::ManifestLocation::kCommandLine;
   }
 
   // Whether extensions with |location| are auto-updatable or not.
-  static inline bool IsAutoUpdateableLocation(Location location) {
+  static inline bool IsAutoUpdateableLocation(
+      mojom::ManifestLocation location) {
     // Only internal and external extensions can be autoupdated.
-    return location == INTERNAL || IsExternalLocation(location);
+    return location == mojom::ManifestLocation::kInternal ||
+           IsExternalLocation(location);
   }
 
   // Whether the |location| is a source of extensions force-installed through
   // policy.
-  static inline bool IsPolicyLocation(Location location) {
-    return location == EXTERNAL_POLICY || location == EXTERNAL_POLICY_DOWNLOAD;
+  static inline bool IsPolicyLocation(mojom::ManifestLocation location) {
+    return location == mojom::ManifestLocation::kExternalPolicy ||
+           location == mojom::ManifestLocation::kExternalPolicyDownload;
   }
 
   // Whether the |location| is an extension intended to be an internal part of
   // Chrome.
-  static inline bool IsComponentLocation(Location location) {
-    return location == COMPONENT || location == EXTERNAL_COMPONENT;
+  static inline bool IsComponentLocation(mojom::ManifestLocation location) {
+    return location == mojom::ManifestLocation::kComponent ||
+           location == mojom::ManifestLocation::kExternalComponent;
   }
 
-  static inline bool IsValidLocation(Location location) {
-    return location > INVALID_LOCATION && location < NUM_LOCATIONS;
+  static inline bool IsValidLocation(mojom::ManifestLocation location) {
+    return location > mojom::ManifestLocation::kInvalidLocation &&
+           location <= mojom::ManifestLocation::kMaxValue;
   }
 
   // Unpacked extensions start off with file access since they are a developer
   // feature.
-  static inline bool ShouldAlwaysAllowFileAccess(Location location) {
+  static inline bool ShouldAlwaysAllowFileAccess(
+      mojom::ManifestLocation location) {
     return IsUnpackedLocation(location);
   }
 
@@ -138,7 +149,7 @@ class Manifest final {
 
   // Returns true if an item with the given |location| should always be loaded,
   // even if extensions are otherwise disabled.
-  static bool ShouldAlwaysLoadExtension(Manifest::Location location,
+  static bool ShouldAlwaysLoadExtension(mojom::ManifestLocation location,
                                         bool is_theme);
 
   // Creates a Manifest for a login screen context. Note that this won't always

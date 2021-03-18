@@ -224,7 +224,7 @@ void UnpackedInstaller::OnInstallChecksComplete(
 int UnpackedInstaller::GetFlags() {
   std::string id = crx_file::id_util::GenerateIdForPath(extension_path_);
   bool allow_file_access =
-      Manifest::ShouldAlwaysAllowFileAccess(Manifest::UNPACKED);
+      Manifest::ShouldAlwaysAllowFileAccess(mojom::ManifestLocation::kUnpacked);
   ExtensionPrefs* prefs = ExtensionPrefs::Get(service_weak_->profile());
   if (allow_file_access_.has_value()) {
     allow_file_access = *allow_file_access_;

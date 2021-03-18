@@ -35,6 +35,7 @@
 
 using extensions::Extension;
 using extensions::Manifest;
+using extensions::mojom::ManifestLocation;
 using metrics::ExtensionInstallProto;
 
 namespace {
@@ -156,33 +157,30 @@ ExtensionInstallProto::Type GetType(Manifest::Type type) {
 }
 
 ExtensionInstallProto::InstallLocation GetInstallLocation(
-    Manifest::Location location) {
+    ManifestLocation location) {
   switch (location) {
-    case Manifest::INVALID_LOCATION:
+    case ManifestLocation::kInvalidLocation:
       return ExtensionInstallProto::UNKNOWN_LOCATION;
-    case Manifest::INTERNAL:
+    case ManifestLocation::kInternal:
       return ExtensionInstallProto::INTERNAL;
-    case Manifest::EXTERNAL_PREF:
+    case ManifestLocation::kExternalPref:
       return ExtensionInstallProto::EXTERNAL_PREF;
-    case Manifest::EXTERNAL_REGISTRY:
+    case ManifestLocation::kExternalRegistry:
       return ExtensionInstallProto::EXTERNAL_REGISTRY;
-    case Manifest::UNPACKED:
+    case ManifestLocation::kUnpacked:
       return ExtensionInstallProto::UNPACKED;
-    case Manifest::COMPONENT:
+    case ManifestLocation::kComponent:
       return ExtensionInstallProto::COMPONENT;
-    case Manifest::EXTERNAL_PREF_DOWNLOAD:
+    case ManifestLocation::kExternalPrefDownload:
       return ExtensionInstallProto::EXTERNAL_PREF_DOWNLOAD;
-    case Manifest::EXTERNAL_POLICY_DOWNLOAD:
+    case ManifestLocation::kExternalPolicyDownload:
       return ExtensionInstallProto::EXTERNAL_POLICY_DOWNLOAD;
-    case Manifest::COMMAND_LINE:
+    case ManifestLocation::kCommandLine:
       return ExtensionInstallProto::COMMAND_LINE;
-    case Manifest::EXTERNAL_POLICY:
+    case ManifestLocation::kExternalPolicy:
       return ExtensionInstallProto::EXTERNAL_POLICY;
-    case Manifest::EXTERNAL_COMPONENT:
+    case ManifestLocation::kExternalComponent:
       return ExtensionInstallProto::EXTERNAL_COMPONENT;
-    case Manifest::NUM_LOCATIONS:
-      NOTREACHED();
-      // Fall through.
   }
   return ExtensionInstallProto::UNKNOWN_LOCATION;
 }

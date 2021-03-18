@@ -76,7 +76,7 @@ void SetCorsOriginAccessListForExtensionHelper(
 bool CanBeIncognitoEnabled(const Extension* extension) {
   return IncognitoInfo::IsIncognitoAllowed(extension) &&
          (!extension->is_platform_app() ||
-          extension->location() == Manifest::COMPONENT);
+          extension->location() == mojom::ManifestLocation::kComponent);
 }
 
 bool IsIncognitoEnabled(const std::string& extension_id,
@@ -210,7 +210,7 @@ bool CanWithholdPermissionsFromExtension(const Extension& extension) {
 
 bool CanWithholdPermissionsFromExtension(const ExtensionId& extension_id,
                                          Manifest::Type type,
-                                         Manifest::Location location) {
+                                         mojom::ManifestLocation location) {
   // Some extensions must retain privilege to all requested host permissions.
   // Specifically, extensions that don't show up in chrome:extensions (where
   // withheld permissions couldn't be granted), extensions that are part of

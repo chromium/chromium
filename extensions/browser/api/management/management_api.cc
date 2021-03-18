@@ -50,6 +50,7 @@
 #include "url/url_constants.h"
 
 using content::BrowserThread;
+using extensions::mojom::ManifestLocation;
 
 namespace keys = extension_management_api_constants;
 
@@ -191,28 +192,25 @@ management::ExtensionInfo CreateExtensionInfo(
   }
 
   switch (extension.location()) {
-    case Manifest::INTERNAL:
+    case ManifestLocation::kInternal:
       info.install_type = management::EXTENSION_INSTALL_TYPE_NORMAL;
       break;
-    case Manifest::UNPACKED:
-    case Manifest::COMMAND_LINE:
+    case ManifestLocation::kUnpacked:
+    case ManifestLocation::kCommandLine:
       info.install_type = management::EXTENSION_INSTALL_TYPE_DEVELOPMENT;
       break;
-    case Manifest::EXTERNAL_PREF:
-    case Manifest::EXTERNAL_REGISTRY:
-    case Manifest::EXTERNAL_PREF_DOWNLOAD:
+    case ManifestLocation::kExternalPref:
+    case ManifestLocation::kExternalRegistry:
+    case ManifestLocation::kExternalPrefDownload:
       info.install_type = management::EXTENSION_INSTALL_TYPE_SIDELOAD;
       break;
-    case Manifest::EXTERNAL_POLICY:
-    case Manifest::EXTERNAL_POLICY_DOWNLOAD:
+    case ManifestLocation::kExternalPolicy:
+    case ManifestLocation::kExternalPolicyDownload:
       info.install_type = management::EXTENSION_INSTALL_TYPE_ADMIN;
       break;
-    case Manifest::NUM_LOCATIONS:
-      NOTREACHED();
-      FALLTHROUGH;
-    case Manifest::INVALID_LOCATION:
-    case Manifest::COMPONENT:
-    case Manifest::EXTERNAL_COMPONENT:
+    case ManifestLocation::kInvalidLocation:
+    case ManifestLocation::kComponent:
+    case ManifestLocation::kExternalComponent:
       info.install_type = management::EXTENSION_INSTALL_TYPE_OTHER;
       break;
   }
@@ -364,9 +362,9 @@ void ManagementGetPermissionWarningsByManifestFunction::OnParse(
   }
 
   std::string error;
-  scoped_refptr<Extension> extension = Extension::Create(
-      base::FilePath(), mojom::ManifestLocation::kInvalidLocation,
-      *parsed_manifest, Extension::NO_FLAGS, &error);
+  scoped_refptr<Extension> extension =
+      Extension::Create(base::FilePath(), ManifestLocation::kInvalidLocation,
+                        *parsed_manifest, Extension::NO_FLAGS, &error);
   // TODO(lazyboy): Do we need to use |error|?
   if (!extension) {
     Respond(Error(keys::kExtensionCreateError));

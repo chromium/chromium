@@ -135,7 +135,7 @@ bool URLOverridesHandler::Parse(Extension* extension, std::u16string* error) {
 
     // For component extensions, add override URL to extent patterns.
     if (extension->is_legacy_packaged_app() &&
-        extension->location() == Manifest::COMPONENT) {
+        extension->location() == mojom::ManifestLocation::kComponent) {
       URLPattern pattern(URLPattern::SCHEME_CHROMEUI);
       std::string url =
           base::StringPrintf(kOverrideExtentUrlPatternFormat, page.c_str());
