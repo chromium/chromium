@@ -695,9 +695,13 @@ void WorkspaceWindowResizer::CompleteDrag() {
   // Update window state if the window has been snapped.
   if (snap_type_ != SnapType::kNone) {
     if (!window_state()->HasRestoreBounds()) {
-      gfx::Rect bounds = details().restore_bounds_in_parent.IsEmpty()
-                             ? details().initial_bounds_in_parent
-                             : details().restore_bounds_in_parent;
+      // Use `restore_bounds_for_gesture_` for touch dragging which is inside
+      // parent's bounds and would not put window to different display.
+      gfx::Rect bounds = details().source == ::wm::WINDOW_MOVE_SOURCE_TOUCH
+                             ? restore_bounds_for_gesture_
+                             : details().restore_bounds_in_parent.IsEmpty()
+                                   ? details().initial_bounds_in_parent
+                                   : details().restore_bounds_in_parent;
       window_state()->SetRestoreBoundsInParent(bounds);
     }
 
@@ -932,6 +936,14 @@ WorkspaceWindowResizer::WorkspaceWindowResizer(
   } else {
     restore_bounds_for_gesture_ = details().restore_bounds_in_parent;
   }
+
+  // Ensures |restore_bounds_for_gesture_| touches parent's local bounds so
+  // that fling maximize does not move the window to a different display
+  // and clear gesture states. See https://crbug.com/1162541.
+  const gfx::Rect parent_local_bounds(
+      window_state->window()->parent()->bounds().size());
+  if (!parent_local_bounds.Intersects(restore_bounds_for_gesture_))
+    restore_bounds_for_gesture_.AdjustToFit(parent_local_bounds);
 
   window_state->OnDragStarted(details().window_component);
   StartDragForAttachedWindows();
