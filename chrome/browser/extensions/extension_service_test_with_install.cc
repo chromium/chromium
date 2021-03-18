@@ -422,6 +422,11 @@ void ExtensionServiceTestWithInstall::InstallCRXInternal(
   // did so a bunch of stuff fails. Migrate this over.
   extension_loader.set_ignore_manifest_warnings(true);
   extension_loader.LoadExtension(crx_path);
+
+  // Make sure RegisterClient calls for storage are finished to avoid flaky
+  // crashes in QuotaManagerImpl::RegisterClient on test shutdown.
+  // TODO(crbug.com/1182630) : Remove this when 1182630 is fixed.
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace extensions
