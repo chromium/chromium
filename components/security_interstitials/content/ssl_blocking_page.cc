@@ -61,6 +61,7 @@ SSLBlockingPage::SSLBlockingPage(
     const GURL& support_url,
     std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
     bool overridable,
+    bool can_show_enhanced_protection_message,
     std::unique_ptr<
         security_interstitials::SecurityInterstitialControllerClient>
         controller_client)
@@ -71,6 +72,7 @@ SSLBlockingPage::SSLBlockingPage(
                           std::move(ssl_cert_reporter),
                           overridable,
                           time_triggered,
+                          can_show_enhanced_protection_message,
                           std::move(controller_client)),
       ssl_info_(ssl_info),
       overridable_(overridable),

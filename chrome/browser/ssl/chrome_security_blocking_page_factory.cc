@@ -188,6 +188,7 @@ ChromeSecurityBlockingPageFactory::CreateSSLPage(
   page = std::make_unique<SSLBlockingPage>(
       web_contents, cert_error, ssl_info, request_url, options_mask,
       time_triggered, support_url, std::move(ssl_cert_reporter), overridable,
+      /*can_show_enhanced_protection_message=*/true,
       std::move(controller_client));
 
   DoChromeSpecificSetup(page.get());
@@ -204,7 +205,7 @@ ChromeSecurityBlockingPageFactory::CreateCaptivePortalBlockingPage(
     int cert_error) {
   auto page = std::make_unique<CaptivePortalBlockingPage>(
       web_contents, request_url, login_url, std::move(ssl_cert_reporter),
-      ssl_info,
+      /*can_show_enhanced_protection_message=*/true, ssl_info,
       std::make_unique<SSLErrorControllerClient>(
           web_contents, ssl_info, cert_error, request_url,
           CreateMetricsHelperAndStartRecording(web_contents, request_url,
@@ -227,7 +228,8 @@ ChromeSecurityBlockingPageFactory::CreateBadClockBlockingPage(
     std::unique_ptr<SSLCertReporter> ssl_cert_reporter) {
   auto page = std::make_unique<BadClockBlockingPage>(
       web_contents, cert_error, ssl_info, request_url, time_triggered,
-      clock_state, std::move(ssl_cert_reporter),
+      /*can_show_enhanced_protection_message=*/true, clock_state,
+      std::move(ssl_cert_reporter),
       std::make_unique<SSLErrorControllerClient>(
           web_contents, ssl_info, cert_error, request_url,
           CreateMetricsHelperAndStartRecording(web_contents, request_url,
@@ -247,7 +249,7 @@ ChromeSecurityBlockingPageFactory::CreateLegacyTLSBlockingPage(
     const net::SSLInfo& ssl_info) {
   auto page = std::make_unique<LegacyTLSBlockingPage>(
       web_contents, cert_error, request_url, std::move(ssl_cert_reporter),
-      ssl_info,
+      /*can_show_enhanced_protection_message=*/true, ssl_info,
       std::make_unique<SSLErrorControllerClient>(
           web_contents, ssl_info, cert_error, request_url,
           CreateMetricsHelperAndStartRecording(web_contents, request_url,
@@ -268,7 +270,8 @@ ChromeSecurityBlockingPageFactory::CreateMITMSoftwareBlockingPage(
     const std::string& mitm_software_name) {
   auto page = std::make_unique<MITMSoftwareBlockingPage>(
       web_contents, cert_error, request_url, std::move(ssl_cert_reporter),
-      ssl_info, mitm_software_name, IsEnterpriseManaged(),
+      /*can_show_enhanced_protection_message=*/true, ssl_info,
+      mitm_software_name, IsEnterpriseManaged(),
       std::make_unique<SSLErrorControllerClient>(
           web_contents, ssl_info, cert_error, request_url,
           CreateMetricsHelperAndStartRecording(web_contents, request_url,
@@ -288,7 +291,7 @@ ChromeSecurityBlockingPageFactory::CreateBlockedInterceptionBlockingPage(
     const net::SSLInfo& ssl_info) {
   auto page = std::make_unique<BlockedInterceptionBlockingPage>(
       web_contents, cert_error, request_url, std::move(ssl_cert_reporter),
-      ssl_info,
+      /*can_show_enhanced_protection_message=*/true, ssl_info,
       std::make_unique<SSLErrorControllerClient>(
           web_contents, ssl_info, cert_error, request_url,
           CreateMetricsHelperAndStartRecording(web_contents, request_url,

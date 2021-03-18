@@ -33,6 +33,7 @@ class SSLBlockingPageBase
       std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
       bool overridable,
       const base::Time& time_triggered,
+      bool can_show_enhanced_protection_message,
       std::unique_ptr<
           security_interstitials::SecurityInterstitialControllerClient>
           controller_client);

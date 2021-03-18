@@ -42,6 +42,7 @@ class BadClockBlockingPage : public SSLBlockingPageBase {
       const net::SSLInfo& ssl_info,
       const GURL& request_url,
       const base::Time& time_triggered,
+      bool can_show_enhanced_protection_message,
       ssl_errors::ClockState clock_state,
       std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
       std::unique_ptr<

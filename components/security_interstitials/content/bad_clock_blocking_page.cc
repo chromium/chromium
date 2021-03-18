@@ -40,6 +40,7 @@ BadClockBlockingPage::BadClockBlockingPage(
     const net::SSLInfo& ssl_info,
     const GURL& request_url,
     const base::Time& time_triggered,
+    bool can_show_enhanced_protection_message,
     ssl_errors::ClockState clock_state,
     std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
     std::unique_ptr<
@@ -52,6 +53,7 @@ BadClockBlockingPage::BadClockBlockingPage(
                           std::move(ssl_cert_reporter),
                           false /* overridable */,
                           time_triggered,
+                          can_show_enhanced_protection_message,
                           std::move(controller_client)),
       ssl_info_(ssl_info),
       bad_clock_ui_(new security_interstitials::BadClockUI(request_url,

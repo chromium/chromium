@@ -34,6 +34,7 @@ LegacyTLSBlockingPage::LegacyTLSBlockingPage(
     int cert_error,
     const GURL& request_url,
     std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
+    bool can_show_enhanced_protection_message,
     const net::SSLInfo& ssl_info,
     std::unique_ptr<
         security_interstitials::SecurityInterstitialControllerClient>
@@ -45,6 +46,7 @@ LegacyTLSBlockingPage::LegacyTLSBlockingPage(
                           std::move(ssl_cert_reporter),
                           true /* overridable */,
                           base::Time::Now(),
+                          can_show_enhanced_protection_message,
                           std::move(controller_client)),
       ssl_info_(ssl_info),
       legacy_tls_ui_(new security_interstitials::LegacyTLSUI(request_url,

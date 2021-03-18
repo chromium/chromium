@@ -54,6 +54,7 @@ CertReportHelper::CertReportHelper(
     CertificateErrorReport::InterstitialReason interstitial_reason,
     bool overridable,
     const base::Time& interstitial_time,
+    bool can_show_enhanced_protection_message,
     security_interstitials::MetricsHelper* metrics_helper)
     : ssl_cert_reporter_(std::move(ssl_cert_reporter)),
       web_contents_(web_contents),
@@ -62,6 +63,8 @@ CertReportHelper::CertReportHelper(
       interstitial_reason_(interstitial_reason),
       overridable_(overridable),
       interstitial_time_(interstitial_time),
+      can_show_enhanced_protection_message_(
+          can_show_enhanced_protection_message),
       metrics_helper_(metrics_helper) {}
 
 CertReportHelper::~CertReportHelper() = default;
@@ -197,10 +200,16 @@ bool CertReportHelper::ShouldShowCertificateReporterCheckbox() {
 }
 
 bool CertReportHelper::ShouldShowEnhancedProtectionMessage() {
-  // Only show the enhanced protection message iff the user is part of the
-  // respective Finch group and the window is not incognito and Safe Browsing is
-  // not managed by policy and the user is not already in enhanced protection
-  // mode.
+  // Only show the enhanced protection message if all the following are true:
+  // |can_show_enhanced_protection_message_| is set to true AND
+  // user is in the relevant Finch group AND
+  // the window is not incognito AND
+  // Safe Browsing is not managed by policy AND
+  // the user is not already in enhanced protection mode.
+  if (!can_show_enhanced_protection_message_) {
+    return false;
+  }
+
   const bool in_incognito =
       web_contents_->GetBrowserContext()->IsOffTheRecord();
   const PrefService* pref_service = GetPrefs(web_contents_);
