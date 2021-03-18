@@ -31,6 +31,8 @@ NSView* FakeWebpageController::GetView() {
 }
 
 void FakeWebpageController::PageURLChangedTo(const GURL& url) {
+  visited_urls_.push_back(url);
+
   enabled_ = !enabled_;
   [view_ setHidden:!enabled_];
   blocked_changed_callback_.Run(enabled_);

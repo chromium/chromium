@@ -3161,6 +3161,8 @@ static_library("ui") {
       "cocoa/screentime/history_deleter_impl.mm",
       "cocoa/screentime/screentime_features.cc",
       "cocoa/screentime/screentime_features.h",
+      "cocoa/screentime/screentime_policy.cc",
+      "cocoa/screentime/screentime_policy.h",
       "cocoa/screentime/tab_helper.h",
       "cocoa/screentime/tab_helper.mm",
       "cocoa/screentime/webpage_controller.h",

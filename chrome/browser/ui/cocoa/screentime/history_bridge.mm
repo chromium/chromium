@@ -11,6 +11,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/cocoa/screentime/history_deleter.h"
+#include "chrome/browser/ui/cocoa/screentime/screentime_policy.h"
 
 namespace screentime {
 
@@ -43,7 +44,7 @@ void HistoryBridge::OnURLsDeleted(history::HistoryService* service,
     // If the time range isn't valid at all, this is a URL delete, which has no
     // time bounds.
     for (const auto& row : deletion_info.deleted_rows())
-      deleter_->DeleteHistoryForURL(row.url());
+      deleter_->DeleteHistoryForURL(URLForReporting(row.url()));
   }
 }
 

@@ -88,6 +88,8 @@ class HistoryBridgeTest : public ::testing::Test {
     loop.Run();
   }
 
+  void DeleteHistoryForURL(const GURL& url) { service()->DeleteURLs({url}); }
+
   void DeleteAllHistory() { DeleteHistoryBetween(base::Time(), base::Time()); }
 
  private:
@@ -100,8 +102,8 @@ class HistoryBridgeTest : public ::testing::Test {
 };
 
 TEST_F(HistoryBridgeTest, DeleteAll) {
-  AddPage(GURL("https://www.chromium.org/a"));
-  AddPage(GURL("https://www.chromium.org/b"));
+  AddPage(GURL("https://www.chromium.org/"));
+  AddPage(GURL("https://test.chromium.org/"));
 
   DeleteAllHistory();
   deleter()->WaitForDelete();
@@ -109,10 +111,10 @@ TEST_F(HistoryBridgeTest, DeleteAll) {
 }
 
 TEST_F(HistoryBridgeTest, DeleteURLs) {
-  const GURL kTestUrlA("https://www.chromium.org/a");
+  const GURL kTestUrlA("https://www.chromium.org/");
   const base::Time now = base::Time::Now();
   AddPage(kTestUrlA, now - base::TimeDelta::FromSeconds(2));
-  AddPage(GURL("https://www.chromium.org/b"),
+  AddPage(GURL("https://test.chromium.org/"),
           now - base::TimeDelta::FromSeconds(1));
 
   service()->DeleteURLs({kTestUrlA});
@@ -134,6 +136,16 @@ TEST_F(HistoryBridgeTest, DeleteTimeInterval) {
   EXPECT_EQ(deleter()->deleted_interval()->first,
             now - base::TimeDelta::FromSeconds(3));
   EXPECT_EQ(deleter()->deleted_interval()->second, now);
+}
+
+TEST_F(HistoryBridgeTest, OnlyOriginsAreDeleted) {
+  const GURL kTestURL("https://www.chromium.org/abc");
+  const GURL kStrippedTestURL("https://www.chromium.org/");
+  AddPage(kTestURL);
+  DeleteHistoryForURL(kTestURL);
+  deleter()->WaitForDelete();
+  EXPECT_EQ(deleter()->deleted_urls().size(), 1U);
+  EXPECT_EQ(deleter()->deleted_urls().count(kStrippedTestURL), 1U);
 }
 
 }  // namespace screentime

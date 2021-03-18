@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_COCOA_SCREENTIME_FAKE_WEBPAGE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_COCOA_SCREENTIME_FAKE_WEBPAGE_CONTROLLER_H_
 
+#include <vector>
+
 #include "base/mac/scoped_nsobject.h"
 #include "chrome/browser/ui/cocoa/screentime/webpage_controller.h"
 
@@ -27,10 +29,17 @@ class FakeWebpageController : public WebpageController {
   NSView* GetView() override;
   void PageURLChangedTo(const GURL& url) override;
 
+  const std::vector<GURL>& visited_urls_for_testing() const {
+    return visited_urls_;
+  }
+
  private:
   bool enabled_ = false;
   base::scoped_nsobject<NSView> view_;
   BlockedChangedCallback blocked_changed_callback_;
+
+  // For unit tests:
+  std::vector<GURL> visited_urls_;
 };
 
 }  // namespace screentime

@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/cocoa/screentime/fake_webpage_controller.h"
 #include "chrome/browser/ui/cocoa/screentime/screentime_features.h"
+#include "chrome/browser/ui/cocoa/screentime/screentime_policy.h"
 #include "chrome/browser/ui/cocoa/screentime/tab_helper.h"
 #include "chrome/browser/ui/cocoa/screentime/webpage_controller.h"
 #include "chrome/browser/ui/cocoa/screentime/webpage_controller_impl.h"
@@ -50,7 +51,7 @@ void TabHelper::DidFinishNavigation(content::NavigationHandle* handle) {
   // probably be a good idea here. It's not unimaginable that ScreenTime would
   // misbehave and end up occluding those URLs, which would be very bad.
   if (handle->IsInMainFrame() && handle->HasCommitted())
-    page_controller_->PageURLChangedTo(handle->GetURL());
+    page_controller_->PageURLChangedTo(URLForReporting(handle->GetURL()));
 }
 
 std::unique_ptr<WebpageController> TabHelper::MakeWebpageController() {

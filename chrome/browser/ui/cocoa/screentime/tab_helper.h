@@ -35,6 +35,10 @@ class TabHelper : public content::WebContentsObserver,
   // WebContentsObserver:
   void DidFinishNavigation(content::NavigationHandle* handle) override;
 
+  WebpageController* page_controller_for_testing() const {
+    return page_controller_.get();
+  }
+
  private:
   friend class content::WebContentsUserData<TabHelper>;
 
