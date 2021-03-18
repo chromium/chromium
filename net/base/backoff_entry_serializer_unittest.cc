@@ -47,7 +47,7 @@ class TestTickClock : public base::TickClock {
 // base::TimeTicks::operator- does not protect against overflow. Because
 // SerializeToValue never returns null, its resolution strategy is to default to
 // a zero base::TimeDelta when the subtraction would overflow.
-TEST(BackoffEntrySerializerTest, CheckBackoffDurationOverflow) {
+TEST(BackoffEntrySerializerTest, SpecialCasesOfBackoffDuration) {
   const base::TimeTicks kZeroTicks;
 
   struct TestCase {
@@ -109,13 +109,22 @@ TEST(BackoffEntrySerializerTest, CheckBackoffDurationOverflow) {
           .timeticks_now = base::TimeTicks::Max(),
           .expected_backoff_duration = base::TimeDelta(),
       },
-      // Defaults to zero when the subtraction would overflow, even when neither
+      // Defaults to zero when the subtraction overflows, even when neither
       // operand is infinity.
       {
           .release_time =
-              kZeroTicks + base::TimeDelta::FromMicroseconds(
-                               std::numeric_limits<int64_t>::max() - 1),
+              base::TimeTicks::Max() - base::TimeDelta::FromMicroseconds(1),
           .timeticks_now = kZeroTicks + base::TimeDelta::FromMicroseconds(-1),
+          .expected_backoff_duration = base::TimeDelta(),
+      },
+      // Defaults to zero when the computed backoff_duration cannot be
+      // represented as a double.
+      {
+          // Note that |release_time| must be finite. Otherwise,
+          // SerializeToValue will not compute |release_time - timeticks_now|.
+          .release_time =
+              base::TimeTicks::Max() - base::TimeDelta::FromMicroseconds(1),
+          .timeticks_now = kZeroTicks,
           .expected_backoff_duration = base::TimeDelta(),
       },
   };
@@ -138,6 +147,42 @@ TEST(BackoffEntrySerializerTest, CheckBackoffDurationOverflow) {
         base::TimeDelta::FromSecondsD(serialized_backoff_duration_double);
     EXPECT_EQ(serialized_backoff_duration, test_case.expected_backoff_duration);
   }
+}
+
+// This test verifies that BackoffEntrySerializer::SerializeToValue will not
+// serialize an infinite release time.
+//
+// In pseudocode, this is how absolute_release_time is computed:
+//   backoff_duration = release_time - now;
+//   absolute_release_time = backoff_duration + original_time;
+//
+// This test induces backoff_duration to be a nonzero duration and directly sets
+// original_time as a large value, such that their addition will overflow.
+TEST(BackoffEntrySerializerTest, SerializeFiniteReleaseTime) {
+  const TimeTicks release_time = TimeTicks() + TimeDelta::FromMicroseconds(5);
+  const Time original_time = Time::Max() - TimeDelta::FromMicroseconds(4);
+
+  TestTickClock original_ticks;
+  original_ticks.set_now(TimeTicks());
+  BackoffEntry original(&base_policy, &original_ticks);
+  original.SetCustomReleaseTime(release_time);
+  std::unique_ptr<base::Value> serialized =
+      BackoffEntrySerializer::SerializeToValue(original, original_time);
+
+  // Reach into the serialization and check the string-formatted release time.
+  const std::string& serialized_release_time =
+      serialized->GetList()[3].GetString();
+  EXPECT_EQ(serialized_release_time, "0");
+
+  // Test that |DeserializeFromValue| notices this zero-valued release time and
+  // does not take it at face value.
+  const Time parse_time =
+      Time::FromJsTime(1430907555111);  // May 2015 for realism
+  std::unique_ptr<BackoffEntry> deserialized =
+      BackoffEntrySerializer::DeserializeFromValue(*serialized, &base_policy,
+                                                   &original_ticks, parse_time);
+  ASSERT_TRUE(deserialized.get());
+  EXPECT_EQ(original.GetReleaseTime(), deserialized->GetReleaseTime());
 }
 
 TEST(BackoffEntrySerializerTest, SerializeNoFailures) {

@@ -25,6 +25,13 @@ const int kSerializationFormatVersion = 1;
 // a conservative lower bound for BackoffEntry::Policy::multiply_factor,
 // ceil(log(2**63-1, 1.01)) = 4389.
 const int kMaxFailureCount = 4389;
+
+// This function returns true iff |duration| is finite and can be converted to
+// double and back without becoming infinite.
+bool BackoffDurationSafeToSerialize(const base::TimeDelta& duration) {
+  return !duration.is_inf() &&
+         !base::TimeDelta::FromSecondsD(duration.InSecondsF()).is_inf();
+}
 }  // namespace
 
 namespace net {
@@ -47,15 +54,20 @@ std::unique_ptr<base::Value> BackoffEntrySerializer::SerializeToValue(
   if (!kReleaseTime.is_inf() && !kTimeTicksNow.is_inf()) {
     backoff_duration = kReleaseTime - kTimeTicksNow;
   }
-  // We cannot serialize infinity doubles as JSON values, so default to zero.
-  if (backoff_duration.is_inf()) {
+  if (!BackoffDurationSafeToSerialize(backoff_duration)) {
     backoff_duration = base::TimeDelta();
+  }
+
+  base::Time absolute_release_time = backoff_duration + time_now;
+  // If the computed release time is infinite, default to zero. The deserializer
+  // should pick up on this.
+  if (absolute_release_time.is_inf()) {
+    absolute_release_time = base::Time();
   }
 
   // Redundantly stores both the remaining time delta and the absolute time.
   // The delta is used to work around some cases where wall clock time changes.
   serialized->AppendDouble(backoff_duration.InSecondsF());
-  base::Time absolute_release_time = backoff_duration + time_now;
   serialized->AppendString(
       base::NumberToString(absolute_release_time.ToInternalValue()));
 
@@ -105,22 +117,29 @@ std::unique_ptr<BackoffEntry> BackoffEntrySerializer::DeserializeFromValue(
       base::TimeDelta::FromSecondsD(original_backoff_duration_double);
   base::Time absolute_release_time =
       base::Time::FromInternalValue(absolute_release_time_us);
-  // Before computing |backoff_duration|, throw out +/- infinity values for
-  // either operand. This way, we can use base::TimeDelta's saturated math.
-  if (absolute_release_time.is_min() || absolute_release_time.is_max() ||
-      time_now.is_min() || time_now.is_max()) {
-    return nullptr;
-  }
-  base::TimeDelta backoff_duration =
-      absolute_release_time.ToDeltaSinceWindowsEpoch() -
-      time_now.ToDeltaSinceWindowsEpoch();
-  // In cases where the system wall clock is rewound, use the redundant
-  // original_backoff_duration to ensure the backoff duration isn't longer
-  // than it was before serializing (note that it's not possible to protect
-  // against the clock being wound forward).
-  if (backoff_duration > original_backoff_duration)
+
+  base::TimeDelta backoff_duration;
+  if (absolute_release_time == base::Time()) {
+    // When the serializer cannot compute a finite release time, it uses zero.
+    // When we see this, fall back to the redundant original_backoff_duration.
     backoff_duration = original_backoff_duration;
-  if (backoff_duration.is_min() || backoff_duration.is_max())
+  } else {
+    // Before computing |backoff_duration|, throw out +/- infinity values for
+    // either operand. This way, we can use base::TimeDelta's saturated math.
+    if (absolute_release_time.is_inf() || time_now.is_inf())
+      return nullptr;
+
+    backoff_duration = absolute_release_time.ToDeltaSinceWindowsEpoch() -
+                       time_now.ToDeltaSinceWindowsEpoch();
+
+    // In cases where the system wall clock is rewound, use the redundant
+    // original_backoff_duration to ensure the backoff duration isn't longer
+    // than it was before serializing (note that it's not possible to protect
+    // against the clock being wound forward).
+    if (backoff_duration > original_backoff_duration)
+      backoff_duration = original_backoff_duration;
+  }
+  if (!BackoffDurationSafeToSerialize(backoff_duration))
     return nullptr;
   entry->SetCustomReleaseTime(
       entry->BackoffDurationToReleaseTime(backoff_duration));

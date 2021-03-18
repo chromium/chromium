@@ -166,6 +166,11 @@ DEFINE_PROTO_FUZZER(const fuzz_proto::FuzzerInput& input) {
   }
 
   ProtoTranslator translator(input);
+  // Skip this input if any of the time values are infinite.
+  if (translator.now_ticks().is_inf() || translator.parse_time().is_inf() ||
+      translator.serialize_time().is_inf()) {
+    return;
+  }
   TestDeserialize(translator);
   TestSerialize(translator);
 }
