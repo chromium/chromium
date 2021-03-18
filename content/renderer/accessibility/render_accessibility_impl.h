@@ -11,6 +11,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/common/render_accessibility.mojom.h"
 #include "content/public/renderer/plugin_ax_tree_source.h"
@@ -298,7 +299,7 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // The longest amount of time spent serializing the accessibility tree
   // in SendPendingAccessibilityEvents. This is periodically uploaded as
   // a UKM and then reset.
-  int slowest_serialization_ms_ = 0;
+  base::TimeDelta slowest_serialization_time_;
 
   // The amount of time since the last UKM upload.
   std::unique_ptr<base::ElapsedTimer> ukm_timer_;
