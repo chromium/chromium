@@ -567,8 +567,24 @@ bool DrmDevice::CommitPropertiesInternal(
     id = page_flip_manager_->GetNextId();
   }
 
-  if (!drmModeAtomicCommit(file_.GetPlatformFile(), properties, flags,
-                           reinterpret_cast<void*>(id))) {
+  int result = drmModeAtomicCommit(file_.GetPlatformFile(), properties, flags,
+                                   reinterpret_cast<void*>(id));
+  if (result && errno == EBUSY && (flags & DRM_MODE_ATOMIC_NONBLOCK)) {
+    VLOG(1) << "Nonblocking atomic commit failed with EBUSY, retry without "
+               "nonblock";
+    // There have been cases where we get back EBUSY when attempting a
+    // non-blocking atomic commit. If we return false from here, that will cause
+    // the GPU process to CHECK itself. These are likely due to kernel bugs,
+    // which should be fixed, but rather than crashing we should retry the
+    // commit without the non-blocking flag and then it should work. This will
+    // cause a slight delay, but that should be imperceptible and better than
+    // crashing. We still do want the underlying driver bugs fixed, but this
+    // provide a better user experience.
+    flags &= ~DRM_MODE_ATOMIC_NONBLOCK;
+    result = drmModeAtomicCommit(file_.GetPlatformFile(), properties, flags,
+                                 reinterpret_cast<void*>(id));
+  }
+  if (!result) {
     if (page_flip_request) {
       page_flip_manager_->RegisterCallback(id, crtc_count,
                                            page_flip_request->AddPageFlip());
