@@ -29,7 +29,7 @@
 #endif  // defined(OS_ANDROID)
 
 #if !defined(OS_ANDROID)
-#include "mojo/public/cpp/bindings/shared_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/tracing/public/cpp/system_tracing_service.h"
 #endif
 
@@ -425,9 +425,8 @@ void PosixSystemProducer::ConnectSocket() {
 
 #if !defined(OS_ANDROID)
   // If the child process hasn't received the Mojo remote, try again later.
-  auto shared_remote =
-      TracedProcessImpl::GetInstance()->system_tracing_service();
-  if (!shared_remote.is_bound()) {
+  auto& remote = TracedProcessImpl::GetInstance()->system_tracing_service();
+  if (!remote.is_bound()) {
     DelayedReconnect();
     return;
   }
@@ -456,7 +455,7 @@ void PosixSystemProducer::ConnectSocket() {
       std::move(producer_name), weak_ptr_factory_.GetWeakPtr());
 
   // Open the socket remotely using Mojo.
-  shared_remote->OpenProducerSocket(std::move(callback));
+  remote->OpenProducerSocket(std::move(callback));
 #endif  // !defined(OS_ANDROID)
 }
 
