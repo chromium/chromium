@@ -1575,7 +1575,9 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
       feature_info_->feature_flags().ext_texture_format_dxt5;
   caps.texture_format_etc1 =
       feature_info_->feature_flags().oes_compressed_etc1_rgb8_texture;
-  caps.texture_format_etc1_npot = caps.texture_format_etc1;
+  caps.texture_format_etc1_npot =
+      caps.texture_format_etc1 &&
+      !feature_info_->workarounds().etc1_power_of_two_only;
   caps.texture_rectangle = feature_info_->feature_flags().arb_texture_rectangle;
   caps.texture_usage = feature_info_->feature_flags().angle_texture_usage;
   caps.texture_storage = feature_info_->feature_flags().ext_texture_storage;
