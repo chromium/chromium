@@ -346,13 +346,9 @@ ExtensionFunction::ResponseAction AutomationInternalEnableTabFunction::Run() {
           ax_tree_id.ToString(), tab_id)));
 }
 
-ExtensionFunction::ResponseAction AutomationInternalEnableTreeFunction::Run() {
-  using api::automation_internal::EnableTree::Params;
-
-  std::unique_ptr<Params> params(Params::Create(*args_));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
-
-  ui::AXTreeID ax_tree_id = ui::AXTreeID::FromString(params->tree_id);
+base::Optional<std::string> AutomationInternalEnableTreeFunction::EnableTree(
+    const ui::AXTreeID& ax_tree_id,
+    const ExtensionId& extension_id) {
   ui::AXActionHandlerRegistry* registry =
       ui::AXActionHandlerRegistry::GetInstance();
   ui::AXActionHandlerBase* action_handler =
@@ -363,7 +359,7 @@ ExtensionFunction::ResponseAction AutomationInternalEnableTreeFunction::Run() {
     // is required whenever the client extension is reloaded.
     ui::AXActionData action;
     action.target_tree_id = ax_tree_id;
-    action.source_extension_id = extension_id();
+    action.source_extension_id = extension_id;
     action.action = ax::mojom::Action::kInternalInvalidateTree;
     action_handler->PerformAction(action);
   }
@@ -371,12 +367,12 @@ ExtensionFunction::ResponseAction AutomationInternalEnableTreeFunction::Run() {
   AutomationInternalApiDelegate* automation_api_delegate =
       ExtensionsAPIClient::Get()->GetAutomationInternalApiDelegate();
   if (automation_api_delegate->EnableTree(ax_tree_id))
-    return RespondNow(NoArguments());
+    return base::nullopt;
 
   content::RenderFrameHost* rfh =
       content::RenderFrameHost::FromAXTreeID(ax_tree_id);
   if (!rfh)
-    return RespondNow(Error("unable to load tab"));
+    return "unable to load tab";
 
   content::WebContents* contents =
       content::WebContents::FromRenderFrameHost(rfh);
@@ -387,20 +383,43 @@ ExtensionFunction::ResponseAction AutomationInternalEnableTreeFunction::Run() {
   if (!rfh->GetParent())
     contents->EnableWebContentsOnlyAccessibilityMode();
 
-  return RespondNow(NoArguments());
+  return base::nullopt;
 }
 
-ExtensionFunction::ResponseAction
+ExtensionFunction::ResponseAction AutomationInternalEnableTreeFunction::Run() {
+  using api::automation_internal::EnableTree::Params;
+
+  std::unique_ptr<Params> params(Params::Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params.get());
+
+  ui::AXTreeID ax_tree_id = ui::AXTreeID::FromString(params->tree_id);
+  base::Optional<std::string> error = EnableTree(ax_tree_id, extension_id());
+  if (error) {
+    return RespondNow(Error(error.value()));
+  } else {
+    return RespondNow(NoArguments());
+  }
+}
+
+AutomationInternalPerformActionFunction::Result
 AutomationInternalPerformActionFunction::ConvertToAXActionData(
-    api::automation_internal::PerformAction::Params* params,
+    const ui::AXTreeID& tree_id,
+    int32_t automation_node_id,
+    const std::string& action_type_string,
+    int request_id,
+    const base::DictionaryValue& additional_properties,
+    const std::string& extension_id,
     ui::AXActionData* action) {
-  action->target_tree_id = ui::AXTreeID::FromString(params->args.tree_id);
-  action->source_extension_id = extension_id();
-  action->target_node_id = params->args.automation_node_id;
-  int* request_id = params->args.request_id.get();
-  action->request_id = request_id ? *request_id : -1;
+  AutomationInternalPerformActionFunction::Result validation_error_result;
+  validation_error_result.validation_success = false;
+  AutomationInternalPerformActionFunction::Result success_result;
+  success_result.validation_success = true;
+  action->target_tree_id = tree_id;
+  action->source_extension_id = extension_id;
+  action->target_node_id = automation_node_id;
+  action->request_id = request_id;
   api::automation::ActionType action_type =
-      api::automation::ParseActionType(params->args.action_type);
+      api::automation::ParseActionType(action_type_string);
   switch (action_type) {
     case api::automation::ACTION_TYPE_BLUR:
       action->action = ax::mojom::Action::kBlur;
@@ -422,9 +441,11 @@ AutomationInternalPerformActionFunction::ConvertToAXActionData(
       break;
     case api::automation::ACTION_TYPE_GETIMAGEDATA: {
       api::automation_internal::GetImageDataParams get_image_data_params;
-      EXTENSION_FUNCTION_VALIDATE(
-          api::automation_internal::GetImageDataParams::Populate(
-              params->opt_args.additional_properties, &get_image_data_params));
+      bool result = api::automation_internal::GetImageDataParams::Populate(
+          additional_properties, &get_image_data_params);
+      if (!result) {
+        return validation_error_result;
+      }
       action->action = ax::mojom::Action::kGetImageData;
       action->target_rect = gfx::Rect(0, 0, get_image_data_params.max_width,
                                       get_image_data_params.max_height);
@@ -432,15 +453,18 @@ AutomationInternalPerformActionFunction::ConvertToAXActionData(
     }
     case api::automation::ACTION_TYPE_HITTEST: {
       api::automation_internal::HitTestParams hit_test_params;
-      EXTENSION_FUNCTION_VALIDATE(
-          api::automation_internal::HitTestParams::Populate(
-              params->opt_args.additional_properties, &hit_test_params));
+      bool result = api::automation_internal::HitTestParams::Populate(
+          additional_properties, &hit_test_params);
+      if (!result) {
+        return validation_error_result;
+      }
       action->action = ax::mojom::Action::kHitTest;
       action->target_point = gfx::Point(hit_test_params.x, hit_test_params.y);
       action->hit_test_event_to_fire = ui::ParseAXEnum<ax::mojom::Event>(
           hit_test_params.event_to_fire.c_str());
-      if (action->hit_test_event_to_fire == ax::mojom::Event::kNone)
-        return RespondNow(NoArguments());
+      if (action->hit_test_event_to_fire == ax::mojom::Event::kNone) {
+        return success_result;
+      }
       break;
     }
     case api::automation::ACTION_TYPE_LOADINLINETEXTBOXES:
@@ -478,10 +502,12 @@ AutomationInternalPerformActionFunction::ConvertToAXActionData(
       break;
     case api::automation::ACTION_TYPE_SETSELECTION: {
       api::automation_internal::SetSelectionParams selection_params;
-      EXTENSION_FUNCTION_VALIDATE(
-          api::automation_internal::SetSelectionParams::Populate(
-              params->opt_args.additional_properties, &selection_params));
-      action->anchor_node_id = params->args.automation_node_id;
+      bool result = api::automation_internal::SetSelectionParams::Populate(
+          additional_properties, &selection_params);
+      if (!result) {
+        return validation_error_result;
+      }
+      action->anchor_node_id = automation_node_id;
       action->anchor_offset = selection_params.anchor_offset;
       action->focus_node_id = selection_params.focus_node_id;
       action->focus_offset = selection_params.focus_offset;
@@ -501,10 +527,12 @@ AutomationInternalPerformActionFunction::ConvertToAXActionData(
     case api::automation::ACTION_TYPE_CUSTOMACTION: {
       api::automation_internal::PerformCustomActionParams
           perform_custom_action_params;
-      EXTENSION_FUNCTION_VALIDATE(
+      bool result =
           api::automation_internal::PerformCustomActionParams::Populate(
-              params->opt_args.additional_properties,
-              &perform_custom_action_params));
+              additional_properties, &perform_custom_action_params);
+      if (!result) {
+        return validation_error_result;
+      }
       action->action = ax::mojom::Action::kCustomAction;
       action->custom_action_id = perform_custom_action_params.custom_action_id;
       break;
@@ -512,28 +540,34 @@ AutomationInternalPerformActionFunction::ConvertToAXActionData(
     case api::automation::ACTION_TYPE_REPLACESELECTEDTEXT: {
       api::automation_internal::ReplaceSelectedTextParams
           replace_selected_text_params;
-      EXTENSION_FUNCTION_VALIDATE(
+      bool result =
           api::automation_internal::ReplaceSelectedTextParams::Populate(
-              params->opt_args.additional_properties,
-              &replace_selected_text_params));
+              additional_properties, &replace_selected_text_params);
+      if (!result) {
+        return validation_error_result;
+      }
       action->action = ax::mojom::Action::kReplaceSelectedText;
       action->value = replace_selected_text_params.value;
       break;
     }
     case api::automation::ACTION_TYPE_SETVALUE: {
       api::automation_internal::SetValueParams set_value_params;
-      EXTENSION_FUNCTION_VALIDATE(
-          api::automation_internal::SetValueParams::Populate(
-              params->opt_args.additional_properties, &set_value_params));
+      bool result = api::automation_internal::SetValueParams::Populate(
+          additional_properties, &set_value_params);
+      if (!result) {
+        return validation_error_result;
+      }
       action->action = ax::mojom::Action::kSetValue;
       action->value = set_value_params.value;
       break;
     }
     case api::automation::ACTION_TYPE_SCROLLTOPOINT: {
       api::automation_internal::ScrollToPointParams scroll_to_point_params;
-      EXTENSION_FUNCTION_VALIDATE(
-          api::automation_internal::ScrollToPointParams::Populate(
-              params->opt_args.additional_properties, &scroll_to_point_params));
+      bool result = api::automation_internal::ScrollToPointParams::Populate(
+          additional_properties, &scroll_to_point_params);
+      if (!result) {
+        return validation_error_result;
+      }
       action->action = ax::mojom::Action::kScrollToPoint;
       action->target_point =
           gfx::Point(scroll_to_point_params.x, scroll_to_point_params.y);
@@ -541,10 +575,11 @@ AutomationInternalPerformActionFunction::ConvertToAXActionData(
     }
     case api::automation::ACTION_TYPE_SETSCROLLOFFSET: {
       api::automation_internal::SetScrollOffsetParams set_scroll_offset_params;
-      EXTENSION_FUNCTION_VALIDATE(
-          api::automation_internal::SetScrollOffsetParams::Populate(
-              params->opt_args.additional_properties,
-              &set_scroll_offset_params));
+      bool result = api::automation_internal::SetScrollOffsetParams::Populate(
+          additional_properties, &set_scroll_offset_params);
+      if (!result) {
+        return validation_error_result;
+      }
       action->action = ax::mojom::Action::kSetScrollOffset;
       action->target_point =
           gfx::Point(set_scroll_offset_params.x, set_scroll_offset_params.y);
@@ -553,10 +588,12 @@ AutomationInternalPerformActionFunction::ConvertToAXActionData(
     case api::automation::ACTION_TYPE_GETTEXTLOCATION: {
       api::automation_internal::GetTextLocationDataParams
           get_text_location_params;
-      EXTENSION_FUNCTION_VALIDATE(
+      bool result =
           api::automation_internal::GetTextLocationDataParams::Populate(
-              params->opt_args.additional_properties,
-              &get_text_location_params));
+              additional_properties, &get_text_location_params);
+      if (!result) {
+        return validation_error_result;
+      }
       action->action = ax::mojom::Action::kGetTextLocation;
       action->start_index = get_text_location_params.start_index;
       action->end_index = get_text_location_params.end_index;
@@ -580,7 +617,92 @@ AutomationInternalPerformActionFunction::ConvertToAXActionData(
     case api::automation::ACTION_TYPE_NONE:
       break;
   }
-  return RespondNow(NoArguments());
+  return success_result;
+}
+
+AutomationInternalPerformActionFunction::Result::Result() = default;
+AutomationInternalPerformActionFunction::Result::Result(const Result&) =
+    default;
+AutomationInternalPerformActionFunction::Result::~Result() = default;
+
+AutomationInternalPerformActionFunction::Result
+AutomationInternalPerformActionFunction::PerformAction(
+    const ui::AXTreeID& tree_id,
+    int32_t automation_node_id,
+    const std::string& action_type,
+    int request_id,
+    const base::DictionaryValue& additional_properties,
+    const std::string& extension_id,
+    const Extension* extension,
+    const AutomationInfo* automation_info) {
+  Result result;
+  result.validation_success = true;
+
+  ui::AXActionHandlerRegistry* registry =
+      ui::AXActionHandlerRegistry::GetInstance();
+
+  // The ash implementation of crosapi registers itself as an action observer.
+  // This allows it to forward actions in parallel to Lacros.
+  registry->PerformAction(tree_id, automation_node_id, action_type, request_id,
+                          additional_properties);
+
+  ui::AXActionHandlerBase* action_handler = registry->GetActionHandler(tree_id);
+  if (action_handler) {
+    // Handle an AXActionHandler with a rfh first. Some actions require a rfh ->
+    // web contents and this api requires web contents to perform a permissions
+    // check.
+    content::RenderFrameHost* rfh =
+        content::RenderFrameHost::FromAXTreeID(tree_id);
+    if (rfh) {
+      content::WebContents* contents =
+          content::WebContents::FromRenderFrameHost(rfh);
+      if (extension && automation_info) {
+        if (!ExtensionsAPIClient::Get()
+                 ->GetAutomationInternalApiDelegate()
+                 ->CanRequestAutomation(extension, automation_info, contents)) {
+          result.automation_error = kCannotRequestAutomationOnPage;
+          return result;
+        }
+      } else {
+        // If |extension| is nullptr, then Lacros is receiving a crosapi request
+        // from ash to perform an action. We make the assumption this this is
+        // allowed.
+        // TODO(https://crbug.com/1185764): Confirm whether this assumption is
+        // valid.
+      }
+
+      // Handle internal actions.
+      api::automation_internal::ActionTypePrivate internal_action_type =
+          api::automation_internal::ParseActionTypePrivate(action_type);
+      content::MediaSession* session = content::MediaSession::Get(contents);
+      switch (internal_action_type) {
+        case api::automation_internal::ACTION_TYPE_PRIVATE_STARTDUCKINGMEDIA:
+          session->StartDucking();
+          return result;
+        case api::automation_internal::ACTION_TYPE_PRIVATE_STOPDUCKINGMEDIA:
+          session->StopDucking();
+          return result;
+        case api::automation_internal::ACTION_TYPE_PRIVATE_RESUMEMEDIA:
+          session->Resume(content::MediaSession::SuspendType::kSystem);
+          return result;
+        case api::automation_internal::ACTION_TYPE_PRIVATE_SUSPENDMEDIA:
+          session->Suspend(content::MediaSession::SuspendType::kSystem);
+          return result;
+        case api::automation_internal::ACTION_TYPE_PRIVATE_NONE:
+          // Not a private action.
+          break;
+      }
+    }
+
+    ui::AXActionData data;
+    Result result = ConvertToAXActionData(
+        tree_id, automation_node_id, action_type, request_id,
+        additional_properties, extension_id, &data);
+    action_handler->PerformAction(data);
+    return result;
+  }
+  result.automation_error = "Unable to perform action on unknown tree.";
+  return result;
 }
 
 ExtensionFunction::ResponseAction
@@ -591,56 +713,24 @@ AutomationInternalPerformActionFunction::Run() {
   using api::automation_internal::PerformAction::Params;
   std::unique_ptr<Params> params(Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params.get());
-  ui::AXActionHandlerRegistry* registry =
-      ui::AXActionHandlerRegistry::GetInstance();
-  ui::AXActionHandlerBase* action_handler = registry->GetActionHandler(
-      ui::AXTreeID::FromString(params->args.tree_id));
-  if (action_handler) {
-    // Handle an AXActionHandler with a rfh first. Some actions require a rfh ->
-    // web contents and this api requires web contents to perform a permissions
-    // check.
-    content::RenderFrameHost* rfh = content::RenderFrameHost::FromAXTreeID(
-        ui::AXTreeID::FromString(params->args.tree_id));
-    if (rfh) {
-      content::WebContents* contents =
-          content::WebContents::FromRenderFrameHost(rfh);
-      if (!ExtensionsAPIClient::Get()
-               ->GetAutomationInternalApiDelegate()
-               ->CanRequestAutomation(extension(), automation_info, contents)) {
-        return RespondNow(Error(kCannotRequestAutomationOnPage));
-      }
 
-      // Handle internal actions.
-      api::automation_internal::ActionTypePrivate internal_action_type =
-          api::automation_internal::ParseActionTypePrivate(
-              params->args.action_type);
-      content::MediaSession* session = content::MediaSession::Get(contents);
-      switch (internal_action_type) {
-        case api::automation_internal::ACTION_TYPE_PRIVATE_STARTDUCKINGMEDIA:
-          session->StartDucking();
-          return RespondNow(NoArguments());
-        case api::automation_internal::ACTION_TYPE_PRIVATE_STOPDUCKINGMEDIA:
-          session->StopDucking();
-          return RespondNow(NoArguments());
-        case api::automation_internal::ACTION_TYPE_PRIVATE_RESUMEMEDIA:
-          session->Resume(content::MediaSession::SuspendType::kSystem);
-          return RespondNow(NoArguments());
-        case api::automation_internal::ACTION_TYPE_PRIVATE_SUSPENDMEDIA:
-          session->Suspend(content::MediaSession::SuspendType::kSystem);
-          return RespondNow(NoArguments());
-        case api::automation_internal::ACTION_TYPE_PRIVATE_NONE:
-          // Not a private action.
-          break;
-      }
-    }
-
-    ui::AXActionData data;
-    ExtensionFunction::ResponseAction result =
-        ConvertToAXActionData(params.get(), &data);
-    action_handler->PerformAction(data);
-    return result;
+  int* request_id_ptr = params->args.request_id.get();
+  int request_id = request_id_ptr ? *request_id_ptr : -1;
+  Result result =
+      PerformAction(ui::AXTreeID::FromString(params->args.tree_id),
+                    params->args.automation_node_id, params->args.action_type,
+                    request_id, params->opt_args.additional_properties,
+                    extension_id(), extension(), automation_info);
+  if (!result.validation_success) {
+    // This macro has a built in |return|.
+    EXTENSION_FUNCTION_VALIDATE(false);
   }
-  return RespondNow(Error("Unable to perform action on unknown tree."));
+
+  if (result.automation_error) {
+    return RespondNow(Error(result.automation_error.value()));
+  } else {
+    return RespondNow(NoArguments());
+  }
 }
 
 ExtensionFunction::ResponseAction

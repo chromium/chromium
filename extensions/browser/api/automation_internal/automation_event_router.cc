@@ -47,7 +47,9 @@ AutomationEventRouter::AutomationEventRouter()
 #endif
 }
 
-AutomationEventRouter::~AutomationEventRouter() = default;
+AutomationEventRouter::~AutomationEventRouter() {
+  CHECK(!remote_router_);
+}
 
 void AutomationEventRouter::RegisterListenerForOneTree(
     const ExtensionId& extension_id,
@@ -180,6 +182,14 @@ void AutomationEventRouter::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
+void AutomationEventRouter::RegisterRemoteRouter(
+    AutomationEventRouterInterface* router) {
+  // There can be at most 1 remote router. So either this method is setting the
+  // remote router, or it's unsetting the remote router.
+  CHECK(!router || !remote_router_);
+  remote_router_ = router;
+}
+
 AutomationEventRouter::AutomationListener::AutomationListener() = default;
 
 AutomationEventRouter::AutomationListener::AutomationListener(
@@ -225,6 +235,12 @@ void AutomationEventRouter::DispatchAccessibilityEvents(
     std::vector<ui::AXTreeUpdate> updates,
     const gfx::Point& mouse_location,
     std::vector<ui::AXEvent> events) {
+  if (remote_router_) {
+    remote_router_->DispatchAccessibilityEvents(
+        tree_id, std::move(updates), mouse_location, std::move(events));
+    return;
+  }
+
   ExtensionMsg_AccessibilityEventBundleParams event_bundle;
   event_bundle.tree_id = tree_id;
   event_bundle.updates = std::move(updates);

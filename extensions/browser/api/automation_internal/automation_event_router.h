@@ -79,6 +79,11 @@ class AutomationEventRouter : public content::RenderProcessHostObserver,
       const ui::AXActionData& data,
       const base::Optional<gfx::Rect>& rect) override;
 
+  // If a remote router is registered, then all events are directly forwarded to
+  // it. The caller of this method is responsible for calling it again with
+  // |nullptr| before the remote router is destroyed to prevent UaF.
+  void RegisterRemoteRouter(AutomationEventRouterInterface* router);
+
  private:
   struct AutomationListener {
     AutomationListener();
@@ -125,6 +130,11 @@ class AutomationEventRouter : public content::RenderProcessHostObserver,
   std::vector<AutomationListener> listeners_;
 
   content::BrowserContext* active_context_;
+
+  // The caller of RegisterRemoteRouter is responsible for ensuring that this
+  // pointer is valid. The remote router must be unregistered with
+  // RegisterRemoteRouter(nullptr) before it is destroyed.
+  AutomationEventRouterInterface* remote_router_ = nullptr;
 
   ScopedObserver<content::RenderProcessHost, content::RenderProcessHostObserver>
       rph_observers_{this};

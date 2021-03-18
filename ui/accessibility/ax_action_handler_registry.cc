@@ -28,6 +28,27 @@ void AXActionHandlerRegistry::SetFrameIDForAXTreeID(
   ax_tree_to_frame_id_map_[ax_tree_id] = frame_id;
 }
 
+void AXActionHandlerRegistry::AddObserver(AXActionHandlerObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void AXActionHandlerRegistry::RemoveObserver(
+    AXActionHandlerObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void AXActionHandlerRegistry::PerformAction(
+    const ui::AXTreeID& tree_id,
+    int32_t automation_node_id,
+    const std::string& action_type,
+    int32_t request_id,
+    const base::DictionaryValue& optional_args) {
+  for (AXActionHandlerObserver& observer : observers_) {
+    observer.PerformAction(tree_id, automation_node_id, action_type, request_id,
+                           optional_args);
+  }
+}
+
 AXActionHandlerRegistry::FrameID AXActionHandlerRegistry::GetFrameID(
     const AXTreeID& ax_tree_id) {
   auto it = ax_tree_to_frame_id_map_.find(ax_tree_id);
