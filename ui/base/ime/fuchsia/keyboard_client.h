@@ -20,7 +20,7 @@ class InputEventSink;
 class COMPONENT_EXPORT(UI_BASE_IME_FUCHSIA) KeyboardClient
     : public fuchsia::ui::input3::KeyboardListener {
  public:
-  // |event_sink| must outlive |this|.
+  // |keyboard_service| and |event_sink| must outlive |this|.
   KeyboardClient(fuchsia::ui::input3::Keyboard* keyboard_service,
                  fuchsia::ui::views::ViewRef view_ref,
                  InputEventSink* event_sink);
@@ -42,7 +42,16 @@ class COMPONENT_EXPORT(UI_BASE_IME_FUCHSIA) KeyboardClient
 
   // Computes the ui EventFlags value based on key modifiers and current keys
   // that are held down.
-  int ComputeFlagValue(fuchsia::ui::input3::Modifiers modifiers);
+  int ComputeFlagValue(const fuchsia::ui::input3::Modifiers& modifiers);
+
+  // Converts the state of modifiers managed by Fuchsia (e.g. Caps and Num Lock)
+  // into flags.
+  int SystemManagedModifiersToFlags(
+      const fuchsia::ui::input3::Modifiers& modifiers);
+
+  // Translate state of locally tracked modifier keys (e.g. shift, alt) into
+  // flags.
+  int LocalModifiersToFlags();
 
   // fuchsia::ui::input3::KeyboardListener implementation.
   void OnKeyEvent(

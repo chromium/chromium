@@ -53,15 +53,13 @@ bool KeyboardClient::ProcessKeyEvent(
   EventType event_type;
   switch (key_event.type()) {
     case fuchsia::ui::input3::KeyEventType::PRESSED:
+    case fuchsia::ui::input3::KeyEventType::SYNC:
       event_type = ET_KEY_PRESSED;
       break;
     case fuchsia::ui::input3::KeyEventType::RELEASED:
+    case fuchsia::ui::input3::KeyEventType::CANCEL:
       event_type = ET_KEY_RELEASED;
       break;
-    case fuchsia::ui::input3::KeyEventType::SYNC:
-    case fuchsia::ui::input3::KeyEventType::CANCEL:
-      // TODO(http://fxbug.dev/69620): Add support for SYNC and CANCEL.
-      return false;
     default:
       NOTIMPLEMENTED() << "Unknown KeyEventType received: "
                        << static_cast<int>(event_type);
@@ -71,22 +69,19 @@ bool KeyboardClient::ProcessKeyEvent(
   // Update activation flags of modifier keys (SHIFT, ALT, etc).
   UpdateModifiers(key_event);
 
-  if (key_event.type() == fuchsia::ui::input3::KeyEventType::RELEASED)
-    return true;
-
   // Convert |key_event| to a ui::KeyEvent.
   DomCode dom_code =
       KeycodeConverter::UsbKeycodeToDomCode(static_cast<int>(key_event.key()));
-  DomKey dom_key;
-  KeyboardCode key_code;
   int flags =
       key_event.has_modifiers() ? ComputeFlagValue(key_event.modifiers()) : 0;
 
   // TODO(https://crbug.com/1187257): Use input3.KeyMeaning instead of US layout
   // as the default.
+  DomKey dom_key;
+  KeyboardCode key_code;
   if (!DomCodeToUsLayoutDomKey(dom_code, flags, &dom_key, &key_code)) {
     LOG(ERROR) << "DomCodeToUsLayoutDomKey() failed for key: "
-               << static_cast<int>(key_event.key());
+               << static_cast<uint32_t>(key_event.key());
   }
 
   ui::KeyEvent ui_key_event(event_type, key_code, dom_code, flags, dom_key,
@@ -128,7 +123,13 @@ void KeyboardClient::UpdateModifiers(
   }
 }
 
-int KeyboardClient::ComputeFlagValue(fuchsia::ui::input3::Modifiers modifiers) {
+int KeyboardClient::ComputeFlagValue(
+    const fuchsia::ui::input3::Modifiers& modifiers) {
+  return SystemManagedModifiersToFlags(modifiers) | LocalModifiersToFlags();
+}
+
+int KeyboardClient::SystemManagedModifiersToFlags(
+    const fuchsia::ui::input3::Modifiers& modifiers) {
   int flags = 0;
   if ((modifiers & fuchsia::ui::input3::Modifiers::CAPS_LOCK) ==
       fuchsia::ui::input3::Modifiers::CAPS_LOCK) {
@@ -142,13 +143,17 @@ int KeyboardClient::ComputeFlagValue(fuchsia::ui::input3::Modifiers modifiers) {
       fuchsia::ui::input3::Modifiers::SCROLL_LOCK) {
     flags |= EF_SCROLL_LOCK_ON;
   }
+  return flags;
+}
+
+int KeyboardClient::LocalModifiersToFlags() {
+  int flags = 0;
   if (left_shift_ || right_shift_)
     flags |= EF_SHIFT_DOWN;
   if (left_alt_ || right_alt_)
     flags |= EF_ALT_DOWN;
   if (left_ctrl_ || right_ctrl_)
     flags |= EF_CONTROL_DOWN;
-
   return flags;
 }
 
