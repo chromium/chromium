@@ -3678,3 +3678,39 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest,
   EXPECT_EQ(optimization_guide::OptimizationTypeDecision::kNoHintAvailable,
             optimization_type_decision);
 }
+
+class OptimizationGuideHintsManagerFetchingNoBatchUpdateTest
+    : public OptimizationGuideHintsManagerTest {
+ public:
+  OptimizationGuideHintsManagerFetchingNoBatchUpdateTest() {
+    scoped_list_.InitAndEnableFeatureWithParameters(
+        optimization_guide::features::kRemoteOptimizationGuideFetching,
+        {{"batch_update_hints_for_top_hosts", "false"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_list_;
+};
+
+TEST_F(OptimizationGuideHintsManagerFetchingNoBatchUpdateTest,
+       BatchUpdateHintsFetchNotScheduledIfNotAllowed) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
+  std::unique_ptr<FakeTopHostProvider> top_host_provider =
+      std::make_unique<FakeTopHostProvider>(
+          std::vector<std::string>({"example1.com", "example2.com"}));
+
+  // Force hints fetch scheduling.
+  CreateHintsManager(top_host_provider.get());
+  hints_manager()->RegisterOptimizationTypes(
+      {optimization_guide::proto::DEFER_ALL_SCRIPT});
+  hints_manager()->SetHintsFetcherFactoryForTesting(
+      BuildTestHintsFetcherFactory(
+          {HintsFetcherEndState::kFetchSuccessWithHostHints}));
+  InitializeWithDefaultConfig("1.0.0");
+
+  // Force timer to expire and schedule a hints fetch.
+  MoveClockForwardBy(base::TimeDelta::FromSeconds(kUpdateFetchHintsTimeSecs));
+  // Hints fetcher should not even be created.
+  EXPECT_FALSE(batch_update_hints_fetcher());
+}

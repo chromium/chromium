@@ -87,6 +87,15 @@ base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod() {
       kPageTextExtraction, "outstanding_requests_grace_period_ms", 1000));
 }
 
+bool ShouldBatchUpdateHintsForActiveTabsAndTopHosts() {
+  if (base::FeatureList::IsEnabled(kRemoteOptimizationGuideFetching)) {
+    return GetFieldTrialParamByFeatureAsBool(kRemoteOptimizationGuideFetching,
+                                             "batch_update_hints_for_top_hosts",
+                                             true);
+  }
+  return false;
+}
+
 size_t MaxHintsFetcherTopHostBlocklistSize() {
   // The blocklist will be limited to the most engaged hosts and will hold twice
   // (2*N) as many hosts that the HintsFetcher request hints for. The extra N

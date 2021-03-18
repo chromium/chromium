@@ -33,6 +33,9 @@ extern const base::Feature kPageTextExtraction;
 // requests to respond after DidFinishLoad.
 base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod();
 
+// Whether hints for active tabs and top hosts should be batch updated.
+bool ShouldBatchUpdateHintsForActiveTabsAndTopHosts();
+
 // The maximum number of hosts that can be stored in the
 // |kHintsFetcherTopHostBlocklist| dictionary pref when initialized. The top
 // hosts will also be returned in order of most engaged. This prevents the most

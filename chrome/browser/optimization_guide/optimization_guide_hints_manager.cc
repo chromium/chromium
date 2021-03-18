@@ -623,6 +623,11 @@ void OptimizationGuideHintsManager::MaybeScheduleActiveTabsHintsFetch() {
     return;
   }
 
+  if (!optimization_guide::features::
+          ShouldBatchUpdateHintsForActiveTabsAndTopHosts()) {
+    return;
+  }
+
   if (optimization_guide::switches::ShouldOverrideFetchHintsTimer()) {
     SetLastHintsFetchAttemptTime(clock_->Now());
     FetchHintsForActiveTabs();
