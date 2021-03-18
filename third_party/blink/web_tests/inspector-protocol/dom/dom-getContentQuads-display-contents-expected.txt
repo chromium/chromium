@@ -1,0 +1,12 @@
+Tests DOM.getContentQuads method with text inside display:contents elements.
+{
+    result : {
+        className : HTMLAnchorElement
+        description : a
+        objectId : <string>
+        subtype : node
+        type : object
+    }
+}
+Returned quads count: 1
+

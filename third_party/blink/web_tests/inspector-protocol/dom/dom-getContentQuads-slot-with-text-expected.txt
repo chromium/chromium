@@ -1,0 +1,22 @@
+Tests DOM.getContentQuads method with text nodes inside shadow DOM.
+{
+    result : {
+        className : HTMLAnchorElement
+        description : a#inner-link
+        objectId : <string>
+        subtype : node
+        type : object
+    }
+}
+Returned quads count: 1
+{
+    result : {
+        className : HTMLElement
+        description : my-link
+        objectId : <string>
+        subtype : node
+        type : object
+    }
+}
+Quads are equal: true
+
