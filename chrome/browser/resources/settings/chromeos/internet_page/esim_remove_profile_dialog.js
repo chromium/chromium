@@ -31,18 +31,6 @@ Polymer({
       type: String,
       value: '',
     },
-
-    /** @private {string} */
-    errorMessage_: {
-      type: String,
-      value: '',
-    },
-
-    /** @private {boolean} */
-    isRemoveInProgress_: {
-      type: Boolean,
-      value: false,
-    }
   },
 
   /** @private {?chromeos.cellularSetup.mojom.ESimProfileRemote} */
@@ -88,23 +76,15 @@ Polymer({
    * @private
    */
   onRemoveProfileTap_(event) {
-    this.isRemoveInProgress_ = true;
-    this.esimProfileRemote_.uninstallProfile().then(response => {
-      this.handleRemoveProfileResponse(response.result);
-    });
-  },
-
-  /**
-   * @param {chromeos.cellularSetup.mojom.ESimOperationResult} result
-   * @private
-   */
-  handleRemoveProfileResponse(result) {
-    this.isRemoveInProgress_ = false;
-    if (result === chromeos.cellularSetup.mojom.ESimOperationResult.kFailure) {
-      this.errorMessage_ = this.i18n('eSimRemoveProfileDialogError');
-      return;
-    }
+    this.esimProfileRemote_.uninstallProfile();
     this.$.dialog.close();
+    const params = new URLSearchParams;
+    params.append(
+        'type',
+        OncMojo.getNetworkTypeString(
+            chromeos.networkConfig.mojom.NetworkType.kCellular));
+    settings.Router.getInstance().setCurrentRoute(
+        settings.routes.INTERNET_NETWORKS, params, /*isPopState=*/ true);
   },
 
   /**

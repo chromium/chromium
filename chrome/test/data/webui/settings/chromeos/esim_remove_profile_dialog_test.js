@@ -12,6 +12,7 @@
 // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertEquals, assertTrue} from '../../chai_assert.js';
+// #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // clang-format on
 
 suite('EsimRemoveProfileDialog', function() {
@@ -89,6 +90,13 @@ suite('EsimRemoveProfileDialog', function() {
     profiles = (await euicc.getProfileList()).profiles;
     foundProfile = await getProfileForIccid(profiles, '1');
     assertFalse(!!foundProfile);
+
+    assertEquals(
+        settings.routes.INTERNET_NETWORKS,
+        settings.Router.getInstance().getCurrentRoute());
+    assertEquals(
+        'type=Cellular',
+        settings.Router.getInstance().getQueryParameters().toString());
   });
 
   test('Remove esim profile fails', async function() {
@@ -98,9 +106,6 @@ suite('EsimRemoveProfileDialog', function() {
     init();
 
     await flushAsync();
-
-    assertTrue(esimRemoveProfileDialog.$$('#errorMessage').hidden);
-
     const euicc = (await eSimManagerRemote.getAvailableEuiccs()).euiccs[0];
     let profiles = (await euicc.getProfileList()).profiles;
 
@@ -111,18 +116,22 @@ suite('EsimRemoveProfileDialog', function() {
 
     const removeBtn = esimRemoveProfileDialog.$$('#remove');
     assertTrue(!!removeBtn);
-    assertFalse(removeBtn.disabled);
+
     removeBtn.click();
     await flushAsync();
-    assertTrue(removeBtn.disabled);
     foundProfile.resolveUninstallProfilePromise();
     await flushAsync();
-    assertFalse(removeBtn.disabled);
 
     profiles = (await euicc.getProfileList()).profiles;
     foundProfile = await getProfileForIccid(profiles, '1');
     assertTrue(!!foundProfile);
-    assertFalse(esimRemoveProfileDialog.$$('#errorMessage').hidden);
+
+    assertEquals(
+        settings.routes.INTERNET_NETWORKS,
+        settings.Router.getInstance().getCurrentRoute());
+    assertEquals(
+        'type=Cellular',
+        settings.Router.getInstance().getQueryParameters().toString());
   });
 
   test('Warning message visibility', function() {
