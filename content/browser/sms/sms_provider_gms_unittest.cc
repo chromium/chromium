@@ -40,7 +40,7 @@ class MockObserver : public SmsProvider::Observer {
                bool(const OriginList&,
                     const std::string& one_time_code,
                     SmsFetcher::UserConsent));
-  MOCK_METHOD1(OnFailure, bool(SmsFetcher::FailureType));
+  MOCK_METHOD1(OnFailure, bool(SmsFetchFailureType));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockObserver);
@@ -307,7 +307,7 @@ TEST_F(SmsProviderGmsAutoTest, ExpectedFailuresShouldFallback) {
 TEST_F(SmsProviderGmsAutoTest, FailureOnRemoteRequestShouldNotFallback) {
   {
     EXPECT_CALL(*observer(),
-                OnFailure(SmsFetcher::FailureType::kBackendNotAvailable))
+                OnFailure(SmsFetchFailureType::kBackendNotAvailable))
         .Times(1);
 
     provider()->Retrieve(main_rfh(), SmsFetchType::kRemote);
@@ -318,7 +318,7 @@ TEST_F(SmsProviderGmsAutoTest, FailureOnRemoteRequestShouldNotFallback) {
 
   {
     EXPECT_CALL(*observer(),
-                OnFailure(SmsFetcher::FailureType::kBackendNotAvailable))
+                OnFailure(SmsFetchFailureType::kBackendNotAvailable))
         .Times(1);
 
     provider()->Retrieve(main_rfh(), SmsFetchType::kRemote);
@@ -329,7 +329,7 @@ TEST_F(SmsProviderGmsAutoTest, FailureOnRemoteRequestShouldNotFallback) {
 
   {
     EXPECT_CALL(*observer(),
-                OnFailure(SmsFetcher::FailureType::kBackendNotAvailable))
+                OnFailure(SmsFetchFailureType::kBackendNotAvailable))
         .Times(1);
 
     provider()->Retrieve(main_rfh(), SmsFetchType::kRemote);
@@ -344,7 +344,7 @@ TEST_F(SmsProviderGmsAutoTest, FailureOnRemoteRequestShouldNotFallback) {
 TEST_F(SmsProviderGmsVerificationTest, ExpectedFailuresShouldCancel) {
   {
     EXPECT_CALL(*observer(),
-                OnFailure(SmsFetcher::FailureType::kBackendNotAvailable))
+                OnFailure(SmsFetchFailureType::kBackendNotAvailable))
         .Times(1);
 
     provider()->Retrieve(main_rfh(), SmsFetchType::kLocal);
@@ -355,7 +355,7 @@ TEST_F(SmsProviderGmsVerificationTest, ExpectedFailuresShouldCancel) {
 
   {
     EXPECT_CALL(*observer(),
-                OnFailure(SmsFetcher::FailureType::kBackendNotAvailable))
+                OnFailure(SmsFetchFailureType::kBackendNotAvailable))
         .Times(1);
 
     provider()->Retrieve(main_rfh(), SmsFetchType::kLocal);
@@ -366,7 +366,7 @@ TEST_F(SmsProviderGmsVerificationTest, ExpectedFailuresShouldCancel) {
 
   {
     EXPECT_CALL(*observer(),
-                OnFailure(SmsFetcher::FailureType::kBackendNotAvailable))
+                OnFailure(SmsFetchFailureType::kBackendNotAvailable))
         .Times(1);
 
     provider()->Retrieve(main_rfh(), SmsFetchType::kLocal);

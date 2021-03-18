@@ -81,15 +81,15 @@ void SmsProviderGms::OnReceive(JNIEnv* env, jstring message, jint backend) {
 }
 
 void SmsProviderGms::OnTimeout(JNIEnv* env) {
-  NotifyFailure(SmsFetcher::FailureType::kPromptTimeout);
+  NotifyFailure(SmsFetchFailureType::kPromptTimeout);
 }
 
 void SmsProviderGms::OnCancel(JNIEnv* env) {
-  NotifyFailure(SmsFetcher::FailureType::kPromptCancelled);
+  NotifyFailure(SmsFetchFailureType::kPromptCancelled);
 }
 
 void SmsProviderGms::OnNotAvailable(JNIEnv* env) {
-  NotifyFailure(SmsFetcher::FailureType::kBackendNotAvailable);
+  NotifyFailure(SmsFetchFailureType::kBackendNotAvailable);
 }
 
 void SmsProviderGms::SetClientAndWindowForTesting(

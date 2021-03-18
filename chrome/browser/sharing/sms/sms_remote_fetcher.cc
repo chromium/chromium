@@ -11,6 +11,7 @@
 #include "chrome/browser/sharing/sms/sms_flags.h"
 #include "components/sync_device_info/device_info.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/sms_fetcher.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -21,10 +22,14 @@ const uint32_t kDefaultTimeoutSeconds = 60;
 void FetchRemoteSms(
     content::BrowserContext* context,
     const url::Origin& origin,
-    base::OnceCallback<void(base::Optional<OriginList>,
-                            base::Optional<std::string>)> callback) {
+    base::OnceCallback<void(base::Optional<std::vector<url::Origin>>,
+                            base::Optional<std::string>,
+                            base::Optional<content::SmsFetchFailureType>)>
+        callback) {
+  // TODO(crbug.com/1015645): We should have a new failure type when the feature
+  // is disabled or no device is available.
   if (!base::FeatureList::IsEnabled(kWebOTPCrossDevice)) {
-    std::move(callback).Run(base::nullopt, base::nullopt);
+    std::move(callback).Run(base::nullopt, base::nullopt, base::nullopt);
     return;
   }
 
@@ -36,7 +41,7 @@ void FetchRemoteSms(
 
   if (devices.empty()) {
     // No devices available to call.
-    std::move(callback).Run(base::nullopt, base::nullopt);
+    std::move(callback).Run(base::nullopt, base::nullopt, base::nullopt);
     return;
   }
 
@@ -53,25 +58,36 @@ void FetchRemoteSms(
       *device.get(), base::TimeDelta::FromSeconds(kDefaultTimeoutSeconds),
       std::move(request),
       base::BindOnce(
-          [](base::OnceCallback<void(base::Optional<OriginList>,
-                                     base::Optional<std::string>)> callback,
+          [](base::OnceCallback<void(
+                 base::Optional<std::vector<url::Origin>>,
+                 base::Optional<std::string>,
+                 base::Optional<content::SmsFetchFailureType>)> callback,
              SharingSendMessageResult result,
              std::unique_ptr<chrome_browser_sharing::ResponseMessage>
                  response) {
             if (result != SharingSendMessageResult::kSuccessful) {
-              std::move(callback).Run(base::nullopt, base::nullopt);
+              std::move(callback).Run(base::nullopt, base::nullopt,
+                                      base::nullopt);
               return;
             }
 
             DCHECK(response);
             DCHECK(response->has_sms_fetch_response());
+            if (response->sms_fetch_response().has_failure_type()) {
+              std::move(callback).Run(
+                  base::nullopt, base::nullopt,
+                  static_cast<content::SmsFetchFailureType>(
+                      response->sms_fetch_response().failure_type()));
+              return;
+            }
             auto origin_strings = response->sms_fetch_response().origin();
-            OriginList origin_list;
+            std::vector<url::Origin> origin_list;
             for (auto origin_string : origin_strings)
               origin_list.push_back(url::Origin::Create(GURL(origin_string)));
 
             std::move(callback).Run(
-                origin_list, response->sms_fetch_response().one_time_code());
+                origin_list, response->sms_fetch_response().one_time_code(),
+                base::nullopt);
           },
           std::move(callback)));
 }

@@ -3990,6 +3990,14 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
         Send text to Your Devices
       </message>
 
+      <!-- Sms Fetcher -->
+      <message name="IDS_SMS_FETCHER_NOTIFICATION_TITLE" translateable="false" desc="Title text shown when the browser has received an SMS on the user's behalf.">
+        Tap to verify your phone number on desktop
+      </message>
+      <message name="IDS_SMS_FETCHER_NOTIFICATION_TEXT" translateable="false" desc="Content text shown when the browser has received an SMS on the user's behalf.">
+        <ph name="ONE_TIME_CODE">%1$s<ex>123</ex></ph> is your code for <ph name="ORIGIN">%2$s<ex>example.com</ex></ph>
+      </message>
+
       <!-- Interventions -->
       <message name="IDS_REDIRECT_BLOCKED_MESSAGE" desc="The message stating that a redirect (noun) was blocked on this page. This will be followed on a separate line with the address the user was being redirected to.">
          Redirect blocked:

@@ -233,6 +233,7 @@ void WebOTPService::OnFailure(FailureType failure_type) {
     case FailureType::kPromptTimeout:
     case FailureType::kPromptCancelled:
     case FailureType::kBackendNotAvailable:
+    case FailureType::kNoFailure:
       NOTREACHED();
       break;
   }

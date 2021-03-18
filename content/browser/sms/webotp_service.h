@@ -50,7 +50,7 @@ class CONTENT_EXPORT WebOTPService
                 mojo::PendingReceiver<blink::mojom::WebOTPService>);
   ~WebOTPService() override;
 
-  using FailureType = SmsFetcher::FailureType;
+  using FailureType = SmsFetchFailureType;
   using SmsParsingStatus = SmsParser::SmsParsingStatus;
   using UserConsent = SmsFetcher::UserConsent;
 

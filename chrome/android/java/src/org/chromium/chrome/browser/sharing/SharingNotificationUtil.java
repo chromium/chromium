@@ -39,6 +39,7 @@ public final class SharingNotificationUtil {
      * @param group The notification group.
      * @param id The notification id.
      * @param contentIntent The notification content intent.
+     * @param deleteIntent The notification delete intent.
      * @param contentTitle The notification title text.
      * @param contentText The notification content text.
      * @param largeIconId The large notification icon resource id, 0 if not used.
@@ -46,9 +47,9 @@ public final class SharingNotificationUtil {
      * @param startsActivity Whether the {@code contentIntent} starts an Activity.
      */
     public static void showNotification(@SystemNotificationType int type, String group, int id,
-            PendingIntentProvider contentIntent, String contentTitle, String contentText,
-            @DrawableRes int smallIconId, @DrawableRes int largeIconId, int color,
-            boolean startsActivity) {
+            PendingIntentProvider contentIntent, PendingIntentProvider deleteIntent,
+            String contentTitle, String contentText, @DrawableRes int smallIconId,
+            @DrawableRes int largeIconId, int color, boolean startsActivity) {
         Context context = ContextUtils.getApplicationContext();
         Resources resources = context.getResources();
         NotificationWrapperBuilder builder =
@@ -72,6 +73,10 @@ public final class SharingNotificationUtil {
             builder.setContentIntent(contentIntent.getPendingIntent());
         } else {
             builder.setContentIntent(contentIntent);
+        }
+
+        if (deleteIntent != null) {
+            builder.setDeleteIntent(deleteIntent);
         }
 
         if (largeIconId != 0) {

@@ -1038,6 +1038,10 @@
         android:exported="false"
         android:name="org.chromium.chrome.browser.sharing.shared_clipboard.SharedClipboardMessageHandler$TryAgainReceiver">
     </receiver>  # DIFF-ANCHOR: 729144c9
+    <receiver  # DIFF-ANCHOR: e61d98d4
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.sharing.sms_fetcher.SmsFetcherMessageHandler$NotificationReceiver">
+    </receiver>  # DIFF-ANCHOR: e61d98d4
     <receiver  # DIFF-ANCHOR: aa6748fc
         android:exported="false"
         android:name="org.chromium.chrome.browser.upgrade.PackageReplacedBroadcastReceiver">

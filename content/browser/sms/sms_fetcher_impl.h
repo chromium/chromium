@@ -29,6 +29,8 @@ class CONTENT_EXPORT SmsFetcherImpl : public content::SmsFetcher,
                                       public base::SupportsUserData::Data,
                                       public SmsProvider::Observer {
  public:
+  using FailureType = SmsFetchFailureType;
+
   SmsFetcherImpl(BrowserContext* context, SmsProvider* provider);
   ~SmsFetcherImpl() override;
 
@@ -48,13 +50,14 @@ class CONTENT_EXPORT SmsFetcherImpl : public content::SmsFetcher,
   bool OnReceive(const OriginList& origin_list,
                  const std::string& one_time_code,
                  UserConsent) override;
-  bool OnFailure(SmsFetcher::FailureType failure_type) override;
+  bool OnFailure(FailureType failure_type) override;
 
   bool HasSubscribers() override;
 
  private:
   void OnRemote(base::Optional<OriginList>,
-                base::Optional<std::string> one_time_code);
+                base::Optional<std::string> one_time_code,
+                base::Optional<FailureType> failure_type);
 
   bool Notify(const OriginList& origin_list,
               const std::string& one_time_code,

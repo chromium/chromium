@@ -60,7 +60,7 @@ namespace content {
 class RenderFrameHost;
 
 using Entry = ukm::builders::SMSReceiver;
-using FailureType = SmsFetcher::FailureType;
+using FailureType = SmsFetchFailureType;
 using UserConsent = SmsFetcher::UserConsent;
 
 namespace {

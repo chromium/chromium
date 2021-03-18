@@ -3508,6 +3508,7 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/sharing/SharingServiceProxy.java",
     "java/src/org/chromium/chrome/browser/sharing/click_to_call/ClickToCallMessageHandler.java",
     "java/src/org/chromium/chrome/browser/sharing/shared_clipboard/SharedClipboardMessageHandler.java",
+    "java/src/org/chromium/chrome/browser/sharing/sms_fetcher/SmsFetcherMessageHandler.java",
     "java/src/org/chromium/chrome/browser/signin/SigninBridge.java",
     "java/src/org/chromium/chrome/browser/signin/SigninManagerImpl.java",
     "java/src/org/chromium/chrome/browser/site_settings/CookieControlsServiceBridge.java",

@@ -12,18 +12,19 @@
 
 namespace content {
 class BrowserContext;
+enum class SmsFetchFailureType;
 }
 
 namespace url {
 class Origin;
 }
 
-using OriginList = std::vector<url::Origin>;
-
 // Uses the SharingService to fetch an SMS from a remote device.
-void FetchRemoteSms(content::BrowserContext* context,
-                    const url::Origin& origin,
-                    base::OnceCallback<void(base::Optional<OriginList>,
-                                            base::Optional<std::string>)>);
+void FetchRemoteSms(
+    content::BrowserContext* context,
+    const url::Origin& origin,
+    base::OnceCallback<void(base::Optional<std::vector<url::Origin>>,
+                            base::Optional<std::string>,
+                            base::Optional<content::SmsFetchFailureType>)>);
 
 #endif  // CHROME_BROWSER_SHARING_SMS_SMS_REMOTE_FETCHER_H_

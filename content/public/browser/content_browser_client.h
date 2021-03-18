@@ -187,6 +187,7 @@ class FileSystemBackend;
 
 namespace content {
 enum class PermissionType;
+enum class SmsFetchFailureType;
 class AuthenticatorRequestClientDelegate;
 class BluetoothDelegate;
 class BrowserChildProcessHost;
@@ -1890,13 +1891,15 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Requests an SMS from |origin| from a remote device with telephony
   // capabilities, for example the user's mobile phone. Callbacks |callback|
-  // with the origins and one-time-code from the SMS upon success or an empty
-  // response on error.
+  // with the origins and one-time-code from the SMS upon success or a failure
+  // type on error.
   virtual void FetchRemoteSms(
       content::BrowserContext* browser_context,
       const url::Origin& origin,
       base::OnceCallback<void(base::Optional<std::vector<url::Origin>>,
-                              base::Optional<std::string>)> callback);
+                              base::Optional<std::string>,
+                              base::Optional<content::SmsFetchFailureType>)>
+          callback);
 
   // Check whether paste is allowed. To paste, an implementation may require a
   // `render_frame_host` to have user activation or various permissions.

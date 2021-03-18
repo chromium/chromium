@@ -45,7 +45,7 @@ namespace {
 class SmsBrowserTest : public ContentBrowserTest {
  public:
   using Entry = ukm::builders::SMSReceiver;
-  using FailureType = SmsFetcher::FailureType;
+  using FailureType = SmsFetchFailureType;
 
   SmsBrowserTest() = default;
   ~SmsBrowserTest() override = default;

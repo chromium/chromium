@@ -96,9 +96,14 @@ bool SmsFetcherImpl::Notify(const OriginList& origin_list,
 }
 
 void SmsFetcherImpl::OnRemote(base::Optional<OriginList> origin_list,
-                              base::Optional<std::string> one_time_code) {
+                              base::Optional<std::string> one_time_code,
+                              base::Optional<FailureType> failure_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (failure_type) {
+    OnFailure(failure_type.value());
+    return;
+  }
   if (!origin_list || !one_time_code)
     return;
 
@@ -112,7 +117,7 @@ bool SmsFetcherImpl::OnReceive(const OriginList& origin_list,
   return Notify(origin_list, one_time_code, consent_requirement);
 }
 
-bool SmsFetcherImpl::OnFailure(SmsFetcher::FailureType failure_type) {
+bool SmsFetcherImpl::OnFailure(FailureType failure_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return subscribers_.NotifyFailure(failure_type);
 }

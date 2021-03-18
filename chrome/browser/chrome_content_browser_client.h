@@ -56,6 +56,7 @@ namespace content {
 class BrowserContext;
 class FontAccessDelegate;
 class QuotaPermissionContext;
+enum class SmsFetchFailureType;
 }  // namespace content
 
 namespace safe_browsing {
@@ -652,7 +653,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context,
       const url::Origin& origin,
       base::OnceCallback<void(base::Optional<std::vector<url::Origin>>,
-                              base::Optional<std::string>)> callback) override;
+                              base::Optional<std::string>,
+                              base::Optional<content::SmsFetchFailureType>)>
+          callback) override;
 #endif
 
   bool IsClipboardPasteAllowed(

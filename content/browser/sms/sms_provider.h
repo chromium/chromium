@@ -31,7 +31,7 @@ enum class SmsFetchType {
 // inject custom providers.
 class CONTENT_EXPORT SmsProvider {
  public:
-  using FailureType = SmsFetcher::FailureType;
+  using FailureType = SmsFetchFailureType;
   using SmsParsingStatus = SmsParser::SmsParsingStatus;
   using UserConsent = SmsFetcher::UserConsent;
 
@@ -42,7 +42,7 @@ class CONTENT_EXPORT SmsProvider {
     virtual bool OnReceive(const OriginList&,
                            const std::string& one_time_code,
                            UserConsent) = 0;
-    virtual bool OnFailure(SmsFetcher::FailureType failure_type) = 0;
+    virtual bool OnFailure(FailureType failure_type) = 0;
     virtual void NotifyParsingFailure(SmsParser::SmsParsingStatus) {}
   };
 

@@ -52,7 +52,7 @@ public class NotificationUmaTracker {
             SystemNotificationType.TRUSTED_WEB_ACTIVITY_SITES, SystemNotificationType.OFFLINE_PAGES,
             SystemNotificationType.SEND_TAB_TO_SELF, SystemNotificationType.UPDATES,
             SystemNotificationType.CLICK_TO_CALL, SystemNotificationType.SHARED_CLIPBOARD,
-            SystemNotificationType.PERMISSION_REQUESTS,
+            SystemNotificationType.SMS_FETCHER, SystemNotificationType.PERMISSION_REQUESTS,
             SystemNotificationType.PERMISSION_REQUESTS_HIGH, SystemNotificationType.ANNOUNCEMENT,
             SystemNotificationType.SHARE_SAVE_IMAGE, SystemNotificationType.TWA_DISCLOSURE_INITIAL,
             SystemNotificationType.TWA_DISCLOSURE_SUBSEQUENT,
@@ -91,8 +91,9 @@ public class NotificationUmaTracker {
         int CHROME_REENGAGEMENT_2 = 26;
         int CHROME_REENGAGEMENT_3 = 27;
         int PRICE_DROP_ALERTS = 28;
+        int SMS_FETCHER = 29;
 
-        int NUM_ENTRIES = 29;
+        int NUM_ENTRIES = 30;
     }
 
     /*
@@ -211,6 +212,10 @@ public class NotificationUmaTracker {
                 recordNotificationAgeHistogram(
                         "Mobile.SystemNotification.Content.Click.Age.SharedClipboard", createTime);
                 break;
+            case SystemNotificationType.SMS_FETCHER:
+                recordNotificationAgeHistogram(
+                        "Mobile.SystemNotification.Content.Click.Age.SmsFetcher", createTime);
+                break;
         }
     }
 
@@ -240,6 +245,10 @@ public class NotificationUmaTracker {
             case SystemNotificationType.SHARED_CLIPBOARD:
                 recordNotificationAgeHistogram(
                         "Mobile.SystemNotification.Dismiss.Age.SharedClipboard", createTime);
+                break;
+            case SystemNotificationType.SMS_FETCHER:
+                recordNotificationAgeHistogram(
+                        "Mobile.SystemNotification.Dismiss.Age.SmsFetcher", createTime);
                 break;
         }
     }
@@ -272,6 +281,10 @@ public class NotificationUmaTracker {
             case SystemNotificationType.SHARED_CLIPBOARD:
                 recordNotificationAgeHistogram(
                         "Mobile.SystemNotification.Action.Click.Age.SharedClipboard", createTime);
+                break;
+            case SystemNotificationType.SMS_FETCHER:
+                recordNotificationAgeHistogram(
+                        "Mobile.SystemNotification.Action.Click.Age.SmsFetcher", createTime);
                 break;
         }
     }
