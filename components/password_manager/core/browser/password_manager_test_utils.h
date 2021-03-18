@@ -54,11 +54,11 @@ struct PasswordFormData {
   const char* signon_realm;
   const char* origin;
   const char* action;
-  const wchar_t* submit_element;
-  const wchar_t* username_element;
-  const wchar_t* password_element;
-  const wchar_t* username_value;  // Set to NULL for a blocklist entry.
-  const wchar_t* password_value;
+  const char16_t* submit_element;
+  const char16_t* username_element;
+  const char16_t* password_element;
+  const char16_t* username_value;  // Set to NULL for a blocklist entry.
+  const char16_t* password_value;
   const double last_usage_time;
   const double creation_time;
 };
