@@ -133,7 +133,7 @@ class WebApkInstaller {
       const std::string& version,
       std::map<std::string, WebApkIconHasher::Icon> icon_url_to_murmur2_hash,
       bool is_manifest_stale,
-      WebApkUpdateReason update_reason,
+      std::vector<WebApkUpdateReason> update_reasons,
       base::OnceCallback<void(bool)> callback);
 
  protected:

@@ -35,6 +35,7 @@ import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.webapk.lib.client.WebApkVersion;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,18 +81,20 @@ public class WebApkUpdateManagerTest {
     private Tab mTab;
     private EmbeddedTestServer mTestServer;
 
+    private List<Integer> mLastUpdateReasons;
+
     /**
      * Subclass of {@link WebApkUpdateManager} which notifies the {@link CallbackHelper} passed to
      * the constructor when it has been determined whether an update is needed.
      */
-    private static class TestWebApkUpdateManager extends WebApkUpdateManager {
+    private class TestWebApkUpdateManager extends WebApkUpdateManager {
         private CallbackHelper mWaiter;
-        private boolean mNeedsUpdate;
 
         public TestWebApkUpdateManager(CallbackHelper waiter, ActivityTabProvider tabProvider,
                 ActivityLifecycleDispatcher lifecycleDispatcher) {
             super(tabProvider, lifecycleDispatcher);
             mWaiter = waiter;
+            mLastUpdateReasons = new ArrayList<>();
         }
 
         @Override
@@ -104,12 +107,8 @@ public class WebApkUpdateManagerTest {
         @Override
         protected void storeWebApkUpdateRequestToFile(String updateRequestPath, WebappInfo info,
                 String primaryIconUrl, String splashIconUrl, boolean isManifestStale,
-                @WebApkUpdateReason int updateReason, Callback<Boolean> callback) {
-            mNeedsUpdate = true;
-        }
-
-        public boolean needsUpdate() {
-            return mNeedsUpdate;
+                List<Integer> updateReasons, Callback<Boolean> callback) {
+            mLastUpdateReasons = updateReasons;
         }
     }
 
@@ -186,7 +185,11 @@ public class WebApkUpdateManagerTest {
         });
         waiter.waitForCallback(0);
 
-        return updateManager.needsUpdate();
+        return !mLastUpdateReasons.isEmpty();
+    }
+
+    private void assertUpdateReasonsEqual(@WebApkUpdateReason Integer... reasons) {
+        Assert.assertEquals(Arrays.asList(reasons), mLastUpdateReasons);
     }
 
     /**
@@ -224,6 +227,7 @@ public class WebApkUpdateManagerTest {
         WebappTestPage.navigateToServiceWorkerPageWithManifest(
                 mTestServer, mTab, WEBAPK_MANIFEST_URL);
         Assert.assertTrue(checkUpdateNeeded(creationData));
+        assertUpdateReasonsEqual(WebApkUpdateReason.START_URL_DIFFERS);
     }
 
     @Test
@@ -272,6 +276,9 @@ public class WebApkUpdateManagerTest {
 
         Assert.assertEquals(WebappsIconUtils.doesAndroidSupportMaskableIcons(),
                 checkUpdateNeeded(creationData));
+        if (WebappsIconUtils.doesAndroidSupportMaskableIcons()) {
+            assertUpdateReasonsEqual(WebApkUpdateReason.PRIMARY_ICON_MASKABLE_DIFFERS);
+        }
     }
 
     @Test
@@ -293,5 +300,27 @@ public class WebApkUpdateManagerTest {
         WebappTestPage.navigateToServiceWorkerPageWithManifest(
                 mTestServer, mTab, WEBAPK_MANIFEST_TOO_MANY_SHORTCUTS_URL);
         Assert.assertFalse(checkUpdateNeeded(creationData));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"WebApk"})
+    public void testMultipleUpdateReasons() throws Exception {
+        CreationData creationData = defaultCreationData();
+        creationData.startUrl =
+                mTestServer.getURL("/chrome/test/data/banners/manifest_test_page.html");
+
+        creationData.name += "!";
+        creationData.shortName += "!";
+        creationData.backgroundColor -= 1;
+        creationData.iconUrlToMurmur2HashMap.put(
+                mTestServer.getURL(WEBAPK_ICON_URL), WEBAPK_ICON_MURMUR2_HASH + "1");
+
+        WebappTestPage.navigateToServiceWorkerPageWithManifest(
+                mTestServer, mTab, WEBAPK_MANIFEST_URL);
+        Assert.assertTrue(checkUpdateNeeded(creationData));
+        assertUpdateReasonsEqual(WebApkUpdateReason.PRIMARY_ICON_HASH_DIFFERS,
+                WebApkUpdateReason.SPLASH_ICON_HASH_DIFFERS, WebApkUpdateReason.SHORT_NAME_DIFFERS,
+                WebApkUpdateReason.NAME_DIFFERS, WebApkUpdateReason.BACKGROUND_COLOR_DIFFERS);
     }
 }
