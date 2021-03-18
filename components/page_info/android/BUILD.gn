@@ -85,6 +85,7 @@ android_library("java") {
     "java/src/org/chromium/components/page_info/PageInfoCookiesController.java",
     "java/src/org/chromium/components/page_info/PageInfoCookiesPreference.java",
     "java/src/org/chromium/components/page_info/PageInfoDialog.java",
+    "java/src/org/chromium/components/page_info/PageInfoDiscoverabilityMetrics.java",
     "java/src/org/chromium/components/page_info/PageInfoFeatureList.java",
     "java/src/org/chromium/components/page_info/PageInfoMainController.java",
     "java/src/org/chromium/components/page_info/PageInfoPermissionsController.java",

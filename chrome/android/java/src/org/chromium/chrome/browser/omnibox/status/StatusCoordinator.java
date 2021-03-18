@@ -266,7 +266,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
                         /*offlinePageLoadUrlDelegate=*/
                         new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab)),
                 new ChromePermissionParamsListBuilderDelegate(), mMediator.getLastPermission());
-        mMediator.stopShowPermissionIcon();
+        mMediator.onPageInfoOpened();
     }
 
     /**

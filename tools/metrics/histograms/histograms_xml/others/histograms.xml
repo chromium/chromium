@@ -18275,6 +18275,25 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="WebsiteSettings.Discoverability.Action"
+    enum="WebsiteSettingsDiscoverabilityAction" expires_after="M94">
+  <owner>eokoyomon@chromium.org</owner>
+  <owner>dullweber@chromium.org</owner>
+  <summary>
+    Tracks actions related to page info when discoverability has been activated.
+  </summary>
+</histogram>
+
+<histogram name="WebsiteSettings.Discoverability.TimeToOpen" units="ms"
+    expires_after="M94">
+  <owner>eokoyomon@chromium.org</owner>
+  <owner>dullweber@chromium.org</owner>
+  <summary>
+    Records the amount of time the discoverability icon is shown in the omnibox
+    before the user clicks into page info.
+  </summary>
+</histogram>
+
 <histogram name="WebsiteSettings.Menu.PermissionChanged" enum="ContentType"
     expires_after="M81">
   <owner>miguelg@chromium.org</owner>
