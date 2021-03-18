@@ -109,7 +109,8 @@ void CookieControlsController::OnCookieBlockingEnabledForSite(
 
 bool CookieControlsController::FirstPartyCookiesBlocked() {
   const GURL& url = GetWebContents()->GetURL();
-  return !cookie_settings_->IsCookieAccessAllowed(url, url, base::nullopt);
+  return !cookie_settings_->IsCookieAccessAllowed(url, url,
+                                                  url::Origin::Create(url));
 }
 
 int CookieControlsController::GetAllowedCookieCount() {
