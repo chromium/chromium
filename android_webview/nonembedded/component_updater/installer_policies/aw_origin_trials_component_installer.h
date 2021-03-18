@@ -32,6 +32,9 @@ class AwOriginTrialsComponentInstallerPolicy
   AwOriginTrialsComponentInstallerPolicy& operator=(
       const AwOriginTrialsComponentInstallerPolicy&) = delete;
 
+  update_client::CrxInstaller::Result OnCustomInstall(
+      const base::DictionaryValue& manifest,
+      const base::FilePath& install_dir) override;
   void OnCustomUninstall() override;
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,

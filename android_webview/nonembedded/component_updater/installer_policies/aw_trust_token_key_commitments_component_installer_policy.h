@@ -38,6 +38,9 @@ class AwTrustTokenKeyCommitmentsComponentInstallerPolicy
   AwTrustTokenKeyCommitmentsComponentInstallerPolicy& operator=(
       const AwTrustTokenKeyCommitmentsComponentInstallerPolicy&) = delete;
 
+  update_client::CrxInstaller::Result OnCustomInstall(
+      const base::DictionaryValue& manifest,
+      const base::FilePath& install_dir) override;
   void OnCustomUninstall() override;
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,

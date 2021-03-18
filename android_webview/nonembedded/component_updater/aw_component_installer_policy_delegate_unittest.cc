@@ -5,19 +5,19 @@
 #include "android_webview/nonembedded/component_updater/aw_component_installer_policy_delegate.h"
 
 #include <stdint.h>
-
 #include <iterator>
 #include <memory>
 #include <utility>
 
-#include "android_webview/common/aw_paths.h"
-#include "base/android/path_utils.h"
-#include "base/files/file_enumerator.h"
+#include "android_webview/nonembedded/component_updater/aw_component_update_service.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/test/scoped_path_override.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "components/component_updater/component_installer.h"
+#include "components/update_client/update_client.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace android_webview {
@@ -31,15 +31,15 @@ constexpr uint8_t kSha256Hash[] = {
     0x54, 0xb0, 0xd2, 0xdd, 0xa5, 0x6e, 0x05, 0x6b, 0xe8, 0x73, 0x47,
     0xf6, 0xc4, 0x11, 0x9f, 0xbc, 0xb3, 0x09, 0xb3, 0x5b, 0x40};
 
-std::unique_ptr<base::DictionaryValue> test_manifest(
-    const base::Version& version) {
+constexpr char kTestVersion[] = "123.456.789";
+
+std::unique_ptr<base::DictionaryValue> test_manifest() {
   auto manifest = std::make_unique<base::DictionaryValue>();
-  manifest->SetString("version", version.GetString());
+  manifest->SetString("version", kTestVersion);
   return manifest;
 }
 
 void CreateTestFiles(const base::FilePath& install_dir) {
-  base::CreateDirectory(install_dir);
   ASSERT_TRUE(base::WriteFile(install_dir.AppendASCII("file1.txt"), "1"));
   ASSERT_TRUE(base::WriteFile(install_dir.AppendASCII("file2.txt"), "2"));
   ASSERT_TRUE(base::CreateDirectory(install_dir.AppendASCII("sub_dir")));
@@ -55,7 +55,83 @@ void AssertTestFiles(const base::FilePath& install_dir) {
       install_dir.AppendASCII("sub_dir").AppendASCII("file3.txt")));
 }
 
+class MockInstallerPolicy : public component_updater::ComponentInstallerPolicy {
+ public:
+  MockInstallerPolicy() {
+    std::vector<uint8_t> hash;
+    GetHash(&hash);
+    delegate_ = std::make_unique<AwComponentInstallerPolicyDelegate>(hash);
+  }
+  ~MockInstallerPolicy() override = default;
+
+  MockInstallerPolicy(const MockInstallerPolicy&) = delete;
+  MockInstallerPolicy& operator=(const MockInstallerPolicy&) = delete;
+
+  update_client::CrxInstaller::Result OnCustomInstall(
+      const base::DictionaryValue& manifest,
+      const base::FilePath& install_dir) override {
+    return delegate_->OnCustomInstall(manifest, install_dir);
+  }
+
+  void ComponentReady(
+      const base::Version& version,
+      const base::FilePath& install_dir,
+      std::unique_ptr<base::DictionaryValue> manifest) override {
+    delegate_->ComponentReady(version, install_dir, std::move(manifest));
+  }
+
+  void OnCustomUninstall() override { delegate_->OnCustomUninstall(); }
+
+  MOCK_CONST_METHOD2(VerifyInstallation,
+                     bool(const base::DictionaryValue& manifest,
+                          const base::FilePath& dir));
+  MOCK_CONST_METHOD0(SupportsGroupPolicyEnabledComponentUpdates, bool());
+  MOCK_CONST_METHOD0(RequiresNetworkEncryption, bool());
+  MOCK_CONST_METHOD0(GetRelativeInstallDir, base::FilePath());
+  MOCK_CONST_METHOD0(GetName, std::string());
+  MOCK_CONST_METHOD0(GetInstallerAttributes,
+                     update_client::InstallerAttributes());
+
+  void GetHash(std::vector<uint8_t>* hash) const override {
+    hash->assign(std::begin(kSha256Hash), std::end(kSha256Hash));
+  }
+
+ private:
+  std::unique_ptr<AwComponentInstallerPolicyDelegate> delegate_;
+};
+
 }  // namespace
+
+class MockAwComponentUpdateService : public AwComponentUpdateService {
+ public:
+  explicit MockAwComponentUpdateService(bool notify_result)
+      : notify_result_(notify_result) {}
+  ~MockAwComponentUpdateService() override = default;
+
+  bool NotifyNewVersion(const std::string& component_id,
+                        const base::FilePath& install_dir,
+                        const base::Version& version) override {
+    component_id_ = component_id;
+    install_dir_ = install_dir;
+    version_ = version;
+
+    // Check that all files are copied to the new install_dir.
+    AssertTestFiles(install_dir_);
+
+    return notify_result_;
+  }
+
+  std::string GetComponentId() const { return component_id_; }
+  base::FilePath GetNewInstallDir() const { return install_dir_; }
+  base::Version GetVersion() const { return version_; }
+
+ private:
+  const bool notify_result_;
+
+  std::string component_id_;
+  base::FilePath install_dir_;
+  base::Version version_;
+};
 
 class AwComponentInstallerPolicyDelegateTest : public testing::Test {
  public:
@@ -67,26 +143,15 @@ class AwComponentInstallerPolicyDelegateTest : public testing::Test {
   AwComponentInstallerPolicyDelegateTest& operator=(
       const AwComponentInstallerPolicyDelegateTest&) = delete;
 
-  // Override from testing::Test
-  void SetUp() override {
-    scoped_path_override_ =
-        std::make_unique<base::ScopedPathOverride>(DIR_COMPONENTS_TEMP);
-
-    ASSERT_TRUE(base::android::GetDataDirectory(&cps_component_path_));
-    cps_component_path_ = cps_component_path_.AppendASCII("components")
-                              .AppendASCII("cps")
-                              .AppendASCII(kComponentId);
-
-    ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
-    CreateTestFiles(GetTestInstallPath());
-
-    std::vector<uint8_t> hash;
-    hash.assign(std::begin(kSha256Hash), std::end(kSha256Hash));
-    delegate_ = std::make_unique<AwComponentInstallerPolicyDelegate>(hash);
+  static void SetUpTestSuite() {
+    base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
+        "ComponentInstallerPolicyDelegateTest");
   }
 
-  void TearDown() override {
-    ASSERT_TRUE(base::DeletePathRecursively(cps_component_path_));
+  // Override from testing::Test
+  void SetUp() override {
+    mock_policy_ = std::make_unique<MockInstallerPolicy>();
+    ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
   }
 
   base::FilePath GetTestInstallPath() const {
@@ -94,65 +159,43 @@ class AwComponentInstallerPolicyDelegateTest : public testing::Test {
   }
 
  protected:
-  base::FilePath cps_component_path_;
-  std::unique_ptr<AwComponentInstallerPolicyDelegate> delegate_;
+  std::unique_ptr<MockInstallerPolicy> mock_policy_;
 
  private:
   base::ScopedTempDir scoped_temp_dir_;
-  std::unique_ptr<base::ScopedPathOverride> scoped_path_override_;
 };
 
-TEST_F(AwComponentInstallerPolicyDelegateTest, TestNoExistingVersions) {
-  const base::Version testVersion("1.2.3.4");
+TEST_F(AwComponentInstallerPolicyDelegateTest,
+       TestSuccessfullNotifyNewVersion) {
+  MockAwComponentUpdateService mock_service(/* notify_result= */ true);
+  SetAwComponentUpdateServiceForTesting(&mock_service);
+  CreateTestFiles(GetTestInstallPath());
 
-  delegate_->ComponentReady(testVersion, GetTestInstallPath(),
-                            test_manifest(testVersion));
+  std::unique_ptr<base::DictionaryValue> manifest = test_manifest();
+  const int result =
+      mock_policy_->OnCustomInstall(*manifest, GetTestInstallPath()).error;
+  EXPECT_EQ(result, static_cast<int>(update_client::InstallError::NONE));
+
+  EXPECT_EQ(mock_service.GetVersion().GetString(), kTestVersion);
+  EXPECT_EQ(mock_service.GetComponentId(), kComponentId);
 
   // Check that the original install path still has files.
   AssertTestFiles(GetTestInstallPath());
 
-  AssertTestFiles(
-      cps_component_path_.AppendASCII("1_" + testVersion.GetString()));
+  // The incoming `install_dir` has to be different from the original one.
+  EXPECT_NE(mock_service.GetNewInstallDir(), GetTestInstallPath());
 }
 
-TEST_F(AwComponentInstallerPolicyDelegateTest, TestExistingOtherVersions) {
-  const base::Version testVersion("1.2.3.4");
+TEST_F(AwComponentInstallerPolicyDelegateTest, TestFailedNotifyNewVersion) {
+  MockAwComponentUpdateService mock_service(/* notify_result= */ false);
+  SetAwComponentUpdateServiceForTesting(&mock_service);
+  CreateTestFiles(GetTestInstallPath());
 
-  CreateTestFiles(cps_component_path_.AppendASCII("1_4.3.2.1"));
-  CreateTestFiles(cps_component_path_.AppendASCII("10_2.3.4.1"));
-
-  delegate_->ComponentReady(testVersion, GetTestInstallPath(),
-                            test_manifest(testVersion));
-
-  // Check that the original install path still has files.
-  AssertTestFiles(GetTestInstallPath());
-
-  AssertTestFiles(
-      cps_component_path_.AppendASCII("11_" + testVersion.GetString()));
-}
-
-TEST_F(AwComponentInstallerPolicyDelegateTest, TestExistingSameVersion) {
-  const base::Version testVersion("1.2.3.4");
-
-  CreateTestFiles(
-      cps_component_path_.AppendASCII("5_" + testVersion.GetString()));
-
-  delegate_->ComponentReady(testVersion, GetTestInstallPath(),
-                            test_manifest(testVersion));
-
-  // Check that the original install path still has files.
-  AssertTestFiles(GetTestInstallPath());
-
-  // Directory should only contain "<component-id>/5/1.2.3.4/", no other files
-  // or directories should exist.
-  base::FileEnumerator file_enumerator(
-      cps_component_path_, /* recursive= */ false,
-      base::FileEnumerator::DIRECTORIES | base::FileEnumerator::FILES);
-  for (base::FilePath path = file_enumerator.Next(); !path.value().empty();
-       path = file_enumerator.Next()) {
-    EXPECT_EQ(path.BaseName().MaybeAsASCII(), "5_" + testVersion.GetString());
-    AssertTestFiles(path);
-  }
+  std::unique_ptr<base::DictionaryValue> manifest = test_manifest();
+  const int result =
+      mock_policy_->OnCustomInstall(*manifest, GetTestInstallPath()).error;
+  EXPECT_EQ(result,
+            static_cast<int>(update_client::InstallError::GENERIC_ERROR));
 }
 
 }  // namespace android_webview
