@@ -501,8 +501,15 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest, DownloadService_Acceptance) {
   EXPECT_FALSE(guid.empty());
 }
 
+// Flaky on linux: crbug.com/1182296
+#if defined(OS_LINUX)
+#define MAYBE_RecordBackgroundFetchUkmEvent \
+  DISABLED_RecordBackgroundFetchUkmEvent
+#else
+#define MAYBE_RecordBackgroundFetchUkmEvent RecordBackgroundFetchUkmEvent
+#endif
 IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
-                       RecordBackgroundFetchUkmEvent) {
+                       MAYBE_RecordBackgroundFetchUkmEvent) {
   // Start a Background Fetch for a single to-be-downloaded file and  test that
   // the expected UKM data for the BackgroundFetch UKM event has been recorded.
 
