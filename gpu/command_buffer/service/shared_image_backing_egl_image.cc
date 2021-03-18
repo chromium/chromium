@@ -236,6 +236,8 @@ std::unique_ptr<T> SharedImageBackingEglImage::ProduceGLTextureInternal(
   }
 
   auto texture_holder = GenEGLImageSibling();
+  if (!texture_holder)
+    return nullptr;
   return std::make_unique<T>(manager, this, tracker, std::move(texture_holder));
 }
 
