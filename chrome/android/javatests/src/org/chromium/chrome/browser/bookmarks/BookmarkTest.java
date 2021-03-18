@@ -1710,6 +1710,7 @@ public class BookmarkTest {
     @Test
     @SmallTest
     @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
+    @FlakyTest(message = "https://crbug.com/1187267")
     public void testReadingListFolderShownOneUnreadPage() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
         openBookmarkManager();
