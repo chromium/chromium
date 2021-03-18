@@ -584,11 +584,8 @@
     'chromium.swangle': {
       'linux-swangle-chromium-x64': 'gpu_tests_release_trybot',
       'linux-swangle-tot-angle-x64': 'angle_deqp_release_trybot',
-      'linux-swangle-tot-angle-x86': 'angle_deqp_release_trybot_x86',
       'linux-swangle-tot-swiftshader-x64': 'angle_deqp_release_trybot',
-      'linux-swangle-tot-swiftshader-x86': 'angle_deqp_release_trybot_x86',
       'linux-swangle-x64': 'angle_deqp_release_trybot',
-      'linux-swangle-x86': 'angle_deqp_release_trybot_x86',
       'mac-swangle-chromium-x64': 'gpu_tests_release_trybot_deterministic_mac',
       'win-swangle-chromium-x86': 'gpu_tests_release_trybot_x86_resource_allowlisting',
       'win-swangle-tot-angle-x64': 'angle_deqp_release_trybot',
@@ -1101,11 +1098,8 @@
     'tryserver.chromium.swangle': {
       'linux-swangle-chromium-try-x64': 'gpu_tests_release_trybot',
       'linux-swangle-try-tot-angle-x64': 'angle_deqp_release_trybot',
-      'linux-swangle-try-tot-angle-x86': 'angle_deqp_release_trybot_x86',
       'linux-swangle-try-tot-swiftshader-x64': 'angle_deqp_release_trybot',
-      'linux-swangle-try-tot-swiftshader-x86': 'angle_deqp_release_trybot_x86',
       'linux-swangle-try-x64': 'angle_deqp_release_trybot',
-      'linux-swangle-try-x86': 'angle_deqp_release_trybot_x86',
       'mac-swangle-chromium-try-x64': 'gpu_tests_release_trybot_deterministic_mac',
       'win-swangle-chromium-try-x86': 'gpu_tests_release_trybot_x86_resource_allowlisting',
       'win-swangle-try-tot-angle-x64': 'angle_deqp_release_trybot',

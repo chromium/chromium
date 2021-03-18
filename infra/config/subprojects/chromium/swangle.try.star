@@ -44,29 +44,13 @@ try_.chromium_swangle_linux_builder(
 )
 
 try_.chromium_swangle_linux_builder(
-    name = "linux-swangle-try-tot-angle-x86",
-    pool = "luci.chromium.swangle.linux.x86.try",
-)
-
-try_.chromium_swangle_linux_builder(
     name = "linux-swangle-try-tot-swiftshader-x64",
     pool = "luci.chromium.swangle.sws.linux.x64.try",
 )
 
 try_.chromium_swangle_linux_builder(
-    name = "linux-swangle-try-tot-swiftshader-x86",
-    pool = "luci.chromium.swangle.linux.x86.try",
-)
-
-try_.chromium_swangle_linux_builder(
     name = "linux-swangle-try-x64",
     pool = "luci.chromium.swangle.deps.linux.x64.try",
-    pinned = False,
-)
-
-try_.chromium_swangle_linux_builder(
-    name = "linux-swangle-try-x86",
-    pool = "luci.chromium.swangle.linux.x86.try",
     pinned = False,
 )
 

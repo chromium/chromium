@@ -5663,14 +5663,6 @@ ci.swangle_linux_builder(
 )
 
 ci.swangle_linux_builder(
-    name = "linux-swangle-tot-angle-x86",
-    console_view_entry = consoles.console_view_entry(
-        category = "ToT ANGLE|Linux",
-        short_name = "x86",
-    ),
-)
-
-ci.swangle_linux_builder(
     name = "linux-swangle-tot-swiftshader-x64",
     console_view_entry = consoles.console_view_entry(
         category = "ToT SwiftShader|Linux",
@@ -5679,27 +5671,10 @@ ci.swangle_linux_builder(
 )
 
 ci.swangle_linux_builder(
-    name = "linux-swangle-tot-swiftshader-x86",
-    console_view_entry = consoles.console_view_entry(
-        category = "ToT SwiftShader|Linux",
-        short_name = "x86",
-    ),
-)
-
-ci.swangle_linux_builder(
     name = "linux-swangle-x64",
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Linux",
         short_name = "x64",
-    ),
-    pinned = False,
-)
-
-ci.swangle_linux_builder(
-    name = "linux-swangle-x86",
-    console_view_entry = consoles.console_view_entry(
-        category = "DEPS|Linux",
-        short_name = "x86",
     ),
     pinned = False,
 )
