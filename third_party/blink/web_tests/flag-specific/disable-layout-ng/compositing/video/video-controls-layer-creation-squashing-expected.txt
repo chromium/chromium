@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV",
+      "name": "LayoutBlockFlow (positioned) DIV",
       "bounds": [300, 300],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
@@ -19,18 +19,18 @@
       "drawsContent": false
     },
     {
-      "name": "LayoutNGFlexibleBox (relative positioned) DIV class='use-default-poster sizing-small test-mode phase-pre-ready state-no-source'",
+      "name": "LayoutFlexibleBox (relative positioned) DIV class='use-default-poster sizing-small test-mode phase-pre-ready state-no-source'",
       "bounds": [272, 153],
       "contentsOpaque": true,
       "backgroundColor": "#333333"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV",
+      "name": "LayoutBlockFlow (positioned) DIV",
       "bounds": [272, 153],
       "drawsContent": false
     },
     {
-      "name": "LayoutNGFlexibleBox DIV",
+      "name": "LayoutFlexibleBox DIV",
       "bounds": [272, 153]
     }
   ],
