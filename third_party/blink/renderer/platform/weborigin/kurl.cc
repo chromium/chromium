@@ -830,6 +830,14 @@ void KURL::Init(const KURL& base,
                                      charset_converter, &output, &parsed_);
   }
 
+  // url canonicalizes to 7-bit ASCII, using punycode and percent-escapes
+  // This makes it safe to call FromUTF8() below and still keep using parsed_
+  // which stores byte offsets: Since it's all ASCII, UTF-8 byte offsets
+  // map 1-to-1 to UTF-16 codepoint offsets.
+  for (int i = 0; i < output.length(); ++i) {
+    DCHECK(WTF::IsASCII(output.data()[i]));
+  }
+
   // AtomicString::fromUTF8 will re-hash the raw output and check the
   // AtomicStringTable (addWithTranslator) for the string. This can be very
   // expensive for large URLs. However, since many URLs are generated from
