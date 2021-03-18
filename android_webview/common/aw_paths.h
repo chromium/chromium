@@ -18,6 +18,9 @@ enum {
   DIR_COMPONENTS_ROOT,  // Directory where components installed via component
                         // updater.
 
+  DIR_COMPONENTS_TEMP,  // Directory where temporary copies of components are
+                        // made.
+
   DIR_SAFE_BROWSING,  // Directory where safe browsing related cookies are
                       // stored.
 

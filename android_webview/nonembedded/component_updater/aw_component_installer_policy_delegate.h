@@ -38,15 +38,14 @@ class AwComponentInstallerPolicyDelegate {
       const AwComponentInstallerPolicyDelegate&) = delete;
 
   // These methods should match the methods in ComponentInstallerPolicy
-  update_client::CrxInstaller::Result OnCustomInstall(
-      const base::DictionaryValue& manifest,
-      const base::FilePath& install_dir);
   void OnCustomUninstall();
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,
                       std::unique_ptr<base::DictionaryValue> manifest);
 
  private:
+  base::FilePath GetComponentsProviderServiceDirectory();
+
   const std::string component_id_;
 };
 
