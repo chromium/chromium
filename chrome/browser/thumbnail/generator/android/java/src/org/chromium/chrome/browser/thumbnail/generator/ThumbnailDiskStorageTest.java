@@ -202,6 +202,7 @@ public class ThumbnailDiskStorageTest {
      */
     @Test
     @SmallTest
+    @FlakyTest(message = "crbug.com/1189744")
     public void testRepeatedInsertShouldBeUpdated() {
         mTestThumbnailDiskStorage.addToDisk(CONTENT_ID1, BITMAP1, ICON_WIDTH1);
         mTestThumbnailDiskStorage.addToDisk(CONTENT_ID1, BITMAP2, ICON_WIDTH1);
