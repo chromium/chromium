@@ -66,12 +66,13 @@ std::unique_ptr<ProfileOAuth2TokenServiceDelegate> CreateCrOsOAuthDelegate(
     AccountTrackerService* account_tracker_service,
     network::NetworkConnectionTracker* network_connection_tracker,
     ash::AccountManager* account_manager,
+    account_manager::AccountManagerFacade* account_manager_facade,
     bool is_regular_profile) {
   DCHECK(account_manager);
   if (base::FeatureList::IsEnabled(switches::kUseAccountManagerFacade)) {
     return std::make_unique<signin::ProfileOAuth2TokenServiceDelegateChromeOS>(
         account_tracker_service, network_connection_tracker, account_manager,
-        is_regular_profile);
+        account_manager_facade, is_regular_profile);
   }
   return std::make_unique<
       signin::ProfileOAuth2TokenServiceDelegateChromeOSLegacy>(
@@ -116,6 +117,7 @@ CreateOAuth2TokenServiceDelegate(
     SigninClient* signin_client,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::AccountManager* account_manager,
+    account_manager::AccountManagerFacade* account_manager_facade,
     bool is_regular_profile,
 #endif
 #if !defined(OS_ANDROID)
@@ -139,7 +141,7 @@ CreateOAuth2TokenServiceDelegate(
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   return CreateCrOsOAuthDelegate(account_tracker_service,
                                  network_connection_tracker, account_manager,
-                                 is_regular_profile);
+                                 account_manager_facade, is_regular_profile);
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Fall back to |MutableProfileOAuth2TokenServiceDelegate| on all platforms
   // other than Android, iOS, and Chrome OS.
@@ -165,6 +167,7 @@ std::unique_ptr<ProfileOAuth2TokenService> BuildProfileOAuth2TokenService(
     signin::AccountConsistencyMethod account_consistency,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::AccountManager* account_manager,
+    account_manager::AccountManagerFacade* account_manager_facade,
     bool is_regular_profile,
 #endif
 #if !defined(OS_ANDROID)
@@ -193,7 +196,7 @@ std::unique_ptr<ProfileOAuth2TokenService> BuildProfileOAuth2TokenService(
       CreateOAuth2TokenServiceDelegate(
           account_tracker_service, account_consistency, signin_client,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-          account_manager, is_regular_profile,
+          account_manager, account_manager_facade, is_regular_profile,
 #endif
 #if !defined(OS_ANDROID)
           delete_signin_cookies_on_exit, token_web_data,

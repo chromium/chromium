@@ -43,6 +43,10 @@ class TokenWebData;
 namespace ash {
 class AccountManager;
 }
+
+namespace account_manager {
+class AccountManagerFacade;
+}
 #endif
 
 std::unique_ptr<ProfileOAuth2TokenService> BuildProfileOAuth2TokenService(
@@ -52,6 +56,7 @@ std::unique_ptr<ProfileOAuth2TokenService> BuildProfileOAuth2TokenService(
     signin::AccountConsistencyMethod account_consistency,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::AccountManager* account_manager,
+    account_manager::AccountManagerFacade* account_manager_facade,
     bool is_regular_profile,
 #endif
 #if !defined(OS_ANDROID)

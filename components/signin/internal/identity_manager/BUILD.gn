@@ -212,6 +212,7 @@ static_library("test_support") {
       "test_profile_oauth2_token_service_delegate_chromeos.cc",
       "test_profile_oauth2_token_service_delegate_chromeos.h",
     ]
+    deps = [ "//chromeos/crosapi/mojom" ]
   }
 
   public_deps = [

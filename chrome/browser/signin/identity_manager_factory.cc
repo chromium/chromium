@@ -33,6 +33,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/account_manager/account_manager_factory.h"
+#include "chrome/browser/account_manager_facade_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #endif
@@ -121,6 +122,8 @@ KeyedService* IdentityManagerFactory::BuildServiceInstanceFor(
   DCHECK(factory);
   params.account_manager =
       factory->GetAccountManager(profile->GetPath().value());
+  params.account_manager_facade =
+      GetAccountManagerFacade(profile->GetPath().value());
   params.is_regular_profile =
       chromeos::ProfileHelper::IsRegularProfile(profile);
 #endif

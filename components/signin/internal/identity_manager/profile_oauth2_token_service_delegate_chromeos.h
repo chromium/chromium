@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/account_manager_core/account.h"
+#include "components/account_manager_core/account_manager_facade.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
@@ -28,12 +29,16 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
       public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
   // Accepts non-owning pointers to |AccountTrackerService|,
-  // |NetworkConnectorTracker|, and |ash::AccountManager|. These objects
-  // must all outlive |this| delegate.
+  // |NetworkConnectorTracker|, |ash::AccountManager| and
+  // |account_manager::AccountManagerFacade|. These objects must all outlive
+  // |this| delegate.
+  // TODO(https://crbug.com/1117472): Remove AccountManager after migrating this
+  //                                  class to AccountManagerFacade.
   ProfileOAuth2TokenServiceDelegateChromeOS(
       AccountTrackerService* account_tracker_service,
       network::NetworkConnectionTracker* network_connection_tracker,
       ash::AccountManager* account_manager,
+      account_manager::AccountManagerFacade* account_manager_facade,
       bool is_regular_profile);
   ~ProfileOAuth2TokenServiceDelegateChromeOS() override;
 
@@ -90,6 +95,7 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
   AccountTrackerService* const account_tracker_service_;
   network::NetworkConnectionTracker* const network_connection_tracker_;
   ash::AccountManager* const account_manager_;
+  account_manager::AccountManagerFacade* const account_manager_facade_;
 
   // A cache of AccountKeys.
   std::set<account_manager::AccountKey> account_keys_;

@@ -372,11 +372,16 @@ class IdentityManagerTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_));
     ash_account_manager->SetPrefService(&pref_service_);
+
+    auto* ash_account_manager_ash =
+        GetAccountManagerFactory()->GetAccountManagerAsh(
+            temp_profile_dir_.GetPath().value());
+
     auto token_service = std::make_unique<CustomFakeProfileOAuth2TokenService>(
         &pref_service_,
         std::make_unique<TestProfileOAuth2TokenServiceDelegateChromeOS>(
             account_tracker_service.get(), ash_account_manager,
-            /*is_regular_profile=*/true));
+            ash_account_manager_ash, /*is_regular_profile=*/true));
 #else
     auto token_service =
         std::make_unique<CustomFakeProfileOAuth2TokenService>(&pref_service_);

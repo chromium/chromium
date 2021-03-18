@@ -45,6 +45,10 @@ class NetworkConnectionTracker;
 namespace ash {
 class AccountManager;
 }
+
+namespace account_manager {
+class AccountManagerFacade;
+}
 #endif
 
 namespace signin {
@@ -71,6 +75,7 @@ struct IdentityManagerBuildParams {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::AccountManager* account_manager;
+  account_manager::AccountManagerFacade* account_manager_facade;
   bool is_regular_profile;
 #endif
 

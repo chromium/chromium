@@ -69,10 +69,12 @@ ProfileOAuth2TokenServiceDelegateChromeOS::
         AccountTrackerService* account_tracker_service,
         network::NetworkConnectionTracker* network_connection_tracker,
         ash::AccountManager* account_manager,
+        account_manager::AccountManagerFacade* account_manager_facade,
         bool is_regular_profile)
     : account_tracker_service_(account_tracker_service),
       network_connection_tracker_(network_connection_tracker),
       account_manager_(account_manager),
+      account_manager_facade_(account_manager_facade),
       backoff_entry_(&kBackoffPolicy),
       backoff_error_(GoogleServiceAuthError::NONE),
       is_regular_profile_(is_regular_profile),
