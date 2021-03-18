@@ -6,110 +6,9 @@
 <link rel="help" href="https://www.w3.org/TR/resource-timing-2/#sec-performanceresourcetiming"/>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/resource-loaders.js"></script>
+<script src="resources/entry-invariants.js"></script>
 <script>
-
-// Returns a promise that settles once the given path has been fetched as an
-// image resource.
-const load_image = path => {
-  return new Promise(resolve => {
-    const img = new Image();
-    img.onload = img.onerror = resolve;
-    img.src = path;
-  });
-}
-
-// Returns a promise that settles once the given path has been fetched as a
-// font resource.
-const load_font = path => {
-  document.getElementById('forFonts').innerHTML = `
-    <style>
-    @font-face {
-        font-family: ahem;
-        src: url('${path}');
-    }
-    </style>
-    <div style="font-family: ahem;">This fetches ahem font.</div>
-  `;
-  return document.fonts.ready;
-}
-
-const assert_ordered = (entry, attributes) => {
-  let before = attributes[0];
-  attributes.slice(1).forEach(after => {
-    assert_greater_than_equal(entry[after], entry[before],
-      `${after} should be greater than ${before}`);
-    before = after;
-  });
-}
-
-const assert_zeroed = (entry, attributes) => {
-  attributes.forEach(attribute => {
-    assert_equals(entry[attribute], 0, `${attribute} should be 0`);
-  });
-}
-
-const assert_not_negative = (entry, attributes) => {
-  attributes.forEach(attribute => {
-    assert_greater_than_equal(entry[attribute], 0,
-      `${attribute} should be greater than or equal to 0`);
-  });
-}
-
-const assert_positive = (entry, attributes) => {
-  attributes.forEach(attribute => {
-    assert_greater_than(entry[attribute], 0,
-      `${attribute} should be greater than 0`);
-  });
-}
-
-const assert_http_resource = entry => {
-  assert_ordered(entry, [
-    "fetchStart",
-    "domainLookupStart",
-    "domainLookupEnd",
-    "connectStart",
-    "connectEnd",
-    "requestStart",
-    "responseStart",
-    "responseEnd",
-  ]);
-
-  assert_zeroed(entry, [
-    "workerStart",
-    "secureConnectionStart",
-    "redirectStart",
-    "redirectEnd",
-  ]);
-
-  assert_not_negative(entry, [
-    "duration",
-  ]);
-
-  assert_positive(entry, [
-    "fetchStart",
-    "transferSize",
-    "encodedBodySize",
-    "decodedBodySize",
-  ]);
-}
-
-const assert_same_origin_redirected_resource = entry => {
-  assert_positive(entry, [
-    "redirectStart",
-  ]);
-
-  assert_equals(entry.redirectStart, entry.startTime,
-    "redirectStart should be equal to startTime");
-
-  assert_ordered(entry, [
-    "redirectStart",
-    "redirectEnd",
-    "fetchStart",
-    "domainLookupStart",
-    "domainLookupEnd",
-    "connectStart",
-  ]);
-}
 
 // Given a resource-loader and a PerformanceResourceTiming validator, loads a
 // resource and validates the resulting entry.
@@ -131,22 +30,22 @@ const attribute_test = (load_resource, validate, test_label) => {
 }
 
 attribute_test(
-  () => load_image("resources/fake_responses.py#hash=1"),
+  () => load.image("resources/fake_responses.py#hash=1"),
   entry => {
     assert_true(entry.name.includes('#hash=1'),
       "There should be a hash in the resource name");
-    assert_http_resource(entry);
+    invariants.assert_http_resource(entry);
   },
   "Image resources should generate conformant entries");
 
 attribute_test(
-  () => load_font("/fonts/Ahem.ttf"),
-  assert_http_resource,
+  () => load.font("/fonts/Ahem.ttf"),
+  invariants.assert_http_resource,
   "Font resources should generate conformant entries");
 
 attribute_test(
-  () => load_image("/common/redirect.py?location=resources/fake_responses.py"),
-  assert_same_origin_redirected_resource,
+  () => load.image("/common/redirect.py?location=resources/fake_responses.py"),
+  invariants.assert_same_origin_redirected_resource,
   "Same-origin redirects should populate redirectStart/redirectEnd");
 </script>
 </head>
@@ -154,6 +53,5 @@ attribute_test(
 <h1>Description</h1>
 <p>This test validates that PerformanceResourceTiming entries' attributes are
 populated with the correct values.</p>
-<div id="forFonts"></div>
 </body>
 </html>
