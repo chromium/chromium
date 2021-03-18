@@ -9,7 +9,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/command_line.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -72,7 +71,7 @@ bool IsInHeadlessMode() {
 // Enables ozone platform headless via command line.
 void EnableHeadlessMode() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
-  command_line->AppendSwitchASCII(switches::kOzonePlatform, "headless");
+  command_line->AppendSwitchASCII(switches::kOzonePlatform, kHeadless);
 }
 
 // Returns non-empty account ID string if a MGS is active.
@@ -344,15 +343,19 @@ ArcDataSnapshotdManager::ArcDataSnapshotdManager(
 
   if (IsRestoredSession()) {
     state_ = State::kRestored;
-  } else {
-    if (snapshot_.is_blocked_ui_mode() && IsSnapshotEnabled() &&
-        IsFirstExecAfterBoot()) {
-      state_ = State::kBlockedUi;
-      EnableHeadlessMode();
-    }
+    DoClearSnapshots();
+    return;
   }
-  // Ensure the snapshot's info is up-to-date.
-  DoClearSnapshots();
+
+  if (local_state->GetAllPrefStoresInitializationStatus() !=
+      PrefService::INITIALIZATION_STATUS_SUCCESS) {
+    local_state->AddPrefInitObserver(
+        base::BindOnce(&ArcDataSnapshotdManager::OnLocalStateInitialized,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    // Ensure the snapshot's info is up-to-date.
+    OnLocalStateInitialized(true /* initialized */);
+  }
 }
 
 ArcDataSnapshotdManager::~ArcDataSnapshotdManager() {
@@ -600,6 +603,22 @@ bool ArcDataSnapshotdManager::IsSnapshotEnabled() {
   if (ArcDataSnapshotdManager::is_snapshot_enabled_for_testing())
     return true;
   return policy_service_.is_snapshot_enabled();
+}
+
+void ArcDataSnapshotdManager::OnLocalStateInitialized(bool initialized) {
+  if (!initialized)
+    LOG(ERROR) << "Local State intiialization failed.";
+
+  if (snapshot_.is_blocked_ui_mode() && IsFirstExecAfterBoot() &&
+      IsSnapshotEnabled()) {
+    if (!IsInHeadlessMode()) {
+      EnableHeadlessMode();
+      delegate_->RestartChrome(*base::CommandLine::ForCurrentProcess());
+      return;
+    }
+    state_ = State::kBlockedUi;
+  }
+  DoClearSnapshots();
 }
 
 void ArcDataSnapshotdManager::StopDaemon(base::OnceClosure callback) {

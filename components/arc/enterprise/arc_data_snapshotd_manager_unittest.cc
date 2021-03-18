@@ -86,6 +86,10 @@ class FakeDelegate : public ArcDataSnapshotdManager::Delegate {
     return std::make_unique<FakeAppsTracker>();
   }
 
+  void RestartChrome(const base::CommandLine& cmd) override {
+    EXPECT_EQ(cmd.GetSwitchValueASCII(switches::kOzonePlatform), kHeadless);
+  }
+
   bool stopped_callback_num() const { return stopped_callback_num_; }
 
  private:
@@ -170,6 +174,7 @@ class ArcDataSnapshotdManagerBasicTest : public testing::Test {
     upstart_client_ = std::make_unique<TestUpstartClient>();
 
     arc::prefs::RegisterLocalStatePrefs(local_state_.registry());
+    local_state_.SetInitializationCompleted();
 
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         chromeos::switches::kFirstExecAfterBoot);
@@ -375,10 +380,9 @@ class ArcDataSnapshotdManagerFlowTest
 
   bool is_dbus_client_available() { return GetParam(); }
 
-  void CheckHeadlessMode() {
+  void EnableHeadlessMode() {
     auto* command_line = base::CommandLine::ForCurrentProcess();
-    EXPECT_EQ(command_line->GetSwitchValueASCII(switches::kOzonePlatform),
-              "headless");
+    command_line->AppendSwitchASCII(switches::kOzonePlatform, kHeadless);
   }
 
   void RunUntilIdle() override {
@@ -991,11 +995,11 @@ TEST_P(ArcDataSnapshotdManagerFlowTest, BlockedUiBasic) {
   // Stop once finished clearing.
   ExpectStopDaemon(true /*success */);
   bool is_attempt_user_exit_called = false;
+  EnableHeadlessMode();
   auto* manager = CreateManager(
       base::BindLambdaForTesting([&is_attempt_user_exit_called]() {
         is_attempt_user_exit_called = true;
       }));
-  CheckHeadlessMode();
   EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kBlockedUi);
   EXPECT_TRUE(manager->IsAutoLoginConfigured());
   EXPECT_FALSE(manager->IsAutoLoginAllowed());

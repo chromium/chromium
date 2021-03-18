@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/command_line.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/arc/enterprise/arc_apps_tracker.h"
@@ -91,6 +92,8 @@ class ArcDataSnapshotdManager final
 
     // Creates an ARC apps tracker.
     virtual std::unique_ptr<ArcAppsTracker> CreateAppsTracker() = 0;
+
+    virtual void RestartChrome(const base::CommandLine& command_line) = 0;
   };
 
   // This class operates with a snapshot related info either last or
@@ -301,6 +304,9 @@ class ArcDataSnapshotdManager final
   }
 
  private:
+  // Local State initialization observer.
+  void OnLocalStateInitialized(bool intialized);
+
   // Attempts to arc-data-snapshotd daemon regardless of state of the class.
   // Runs |callback| once finished.
   void StopDaemon(base::OnceClosure callback);

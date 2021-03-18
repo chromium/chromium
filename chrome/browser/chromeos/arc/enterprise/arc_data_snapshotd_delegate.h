@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_ARC_ENTERPRISE_ARC_DATA_SNAPSHOTD_DELEGATE_H_
 
 #include "base/callback.h"
+#include "base/command_line.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager_observer.h"
 #include "components/arc/enterprise/arc_apps_tracker.h"
 #include "components/arc/enterprise/arc_data_snapshotd_manager.h"
@@ -36,6 +37,7 @@ class ArcDataSnapshotdDelegate : public ArcDataSnapshotdManager::Delegate,
   std::unique_ptr<ArcSnapshotRebootNotification> CreateRebootNotification()
       override;
   std::unique_ptr<ArcAppsTracker> CreateAppsTracker() override;
+  void RestartChrome(const base::CommandLine& command_line) override;
 
   // arc::ArcSessionManagerObserver overrides:
   void OnArcSessionStopped(arc::ArcStopReason reason) override;

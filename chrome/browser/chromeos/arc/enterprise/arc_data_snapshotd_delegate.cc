@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/arc/enterprise/arc_data_snapshotd_delegate.h"
+#include "chrome/browser/ash/login/chrome_restart_request.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/arc/enterprise/arc_force_installed_apps_tracker.h"
 #include "chrome/browser/chromeos/arc/enterprise/arc_snapshot_reboot_notification_impl.h"
@@ -71,6 +72,12 @@ ArcDataSnapshotdDelegate::CreateRebootNotification() {
 
 std::unique_ptr<ArcAppsTracker> ArcDataSnapshotdDelegate::CreateAppsTracker() {
   return std::make_unique<ArcForceInstalledAppsTracker>();
+}
+
+void ArcDataSnapshotdDelegate::RestartChrome(
+    const base::CommandLine& command_line) {
+  chromeos::RestartChrome(command_line,
+                          chromeos::RestartChromeReason::kUserless);
 }
 
 void ArcDataSnapshotdDelegate::OnArcSessionStopped(arc::ArcStopReason reason) {
