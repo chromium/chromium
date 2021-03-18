@@ -14,9 +14,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -31,8 +32,10 @@ public class WebFeedMainMenuItem extends FrameLayout {
     private final Context mContext;
 
     private GURL mUrl;
+    private AppMenuHandler mAppMenuHandler;
     private ImageView mIcon;
     private LargeIconBridge mLargeIconBridge;
+    private WebFeedBridge mWebFeedBridge;
 
     /**
      * Constructs a new {@link WebFeedMainMenuItem} with the appropriate context.
@@ -48,9 +51,20 @@ public class WebFeedMainMenuItem extends FrameLayout {
         super.onFinishInflate();
     }
 
-    public void initialize(GURL url, LargeIconBridge largeIconBridge) {
+    /**
+     * Initialize the Web Feed main menu item.
+     *
+     * @param url {@link GURL} of the page.
+     * @param appMenuHandler {@link AppMenuHandler} to control hiding the app menu.
+     * @param largeIconBridge {@link LargeIconBridge} to get the favicon of the page.
+     * @param webFeedBridge {@link WebFeedHelper} to display the menu item and follow/unfollow.
+     */
+    public void initialize(GURL url, AppMenuHandler appMenuHandler, LargeIconBridge largeIconBridge,
+            WebFeedBridge webFeedBridge) {
         mUrl = url;
+        mAppMenuHandler = appMenuHandler;
         mLargeIconBridge = largeIconBridge;
+        mWebFeedBridge = webFeedBridge;
 
         initializeFavicon();
         initializeText();
@@ -72,12 +86,36 @@ public class WebFeedMainMenuItem extends FrameLayout {
     }
 
     private void initializeChipView() {
-        ChipView chipView = findViewById(R.id.chip_view);
+        ChipView chipView;
+        CharSequence chipText;
+        @DrawableRes
+        int chipIconRes;
+        OnClickListener onClickListener;
+        // TODO(crbug/1152592): Account for different loading/unknown cases and add
+        // success/failure snackbars.
+        WebFeedBridge.FollowedIds followedIds = mWebFeedBridge.getFollowedIds(mUrl);
+        if (followedIds != null) {
+            chipView = findViewById(R.id.following_chip_view);
+            chipText = mContext.getText(R.string.menu_following);
+            chipIconRes = R.drawable.ic_check_googblue_24dp;
+            onClickListener = (view) -> {
+                mWebFeedBridge.unfollow(followedIds.followId, (result) -> {});
+                mAppMenuHandler.hideAppMenu();
+            };
+        } else {
+            chipView = findViewById(R.id.follow_chip_view);
+            chipText = mContext.getText(R.string.menu_follow);
+            chipIconRes = R.drawable.ic_add;
+            onClickListener = (view) -> {
+                mWebFeedBridge.followFromUrl(mUrl, (result) -> {});
+                mAppMenuHandler.hideAppMenu();
+            };
+        }
         TextView chipTextView = chipView.getPrimaryTextView();
-
-        // TODO(crbug/1152592): Account for following case.
-        chipTextView.setText(mContext.getText(R.string.menu_follow));
-        chipView.setIcon(AppCompatResources.getDrawable(mContext, R.drawable.ic_add), true);
+        chipTextView.setText(chipText);
+        chipView.setIcon(chipIconRes, /*tintWithTextColor=*/true);
+        chipView.setOnClickListener(onClickListener);
+        chipView.setVisibility(VISIBLE);
     }
 
     /**

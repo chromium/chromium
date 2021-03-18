@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtilsJni;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
@@ -118,6 +119,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock
     private ContentFeatureListImpl.Natives mContentFeatureListJniMock;
     @Mock
+    private WebFeedBridge mWebFeedBridge;
+    @Mock
     private OfflinePageUtils.Internal mOfflinePageUtils;
 
     private OneshotSupplierImpl<OverviewModeBehavior> mOverviewModeSupplier =
@@ -151,13 +154,14 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mContentFeatureListJniMock.isEnabled(
                      ContentFeatureList.EXPERIMENTAL_ACCESSIBILITY_LABELS))
                 .thenReturn(false);
+        when(mWebFeedBridge.getFollowedIds(any())).thenReturn(null);
         OfflinePageUtils.setInstanceForTesting(mOfflinePageUtils);
         FeatureList.setTestCanUseDefaultsForTesting();
 
         mTabbedAppMenuPropertiesDelegate = Mockito.spy(new TabbedAppMenuPropertiesDelegate(
                 ContextUtils.getApplicationContext(), mActivityTabProvider,
                 mMultiWindowModeStateDispatcher, mTabModelSelector, mToolbarManager, mDecorView,
-                mAppMenuDelegate, mOverviewModeSupplier, mBookmarkBridgeSupplier));
+                mAppMenuDelegate, mOverviewModeSupplier, mBookmarkBridgeSupplier, mWebFeedBridge));
     }
 
     @Test

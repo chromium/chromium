@@ -43,11 +43,20 @@
             android:singleLine="true" />
 
         <org.chromium.ui.widget.ChipView
-            android:id="@+id/chip_view"
+            android:id="@+id/follow_chip_view"
             style="@style/MenuFooterChip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end" />
+            android:layout_gravity="end"
+            android:visibility="gone" />
+
+        <org.chromium.ui.widget.ChipView
+            android:id="@+id/following_chip_view"
+            style="@style/MenuFooterChipInverse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:visibility="gone" />
 
     </LinearLayout>
 

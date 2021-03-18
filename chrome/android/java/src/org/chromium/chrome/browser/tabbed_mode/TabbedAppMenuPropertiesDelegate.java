@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.datareduction.DataReductionMainMenuItem;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedMainMenuItem;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -37,16 +38,19 @@ import org.chromium.components.favicon.LargeIconBridge;
  */
 public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateImpl {
     AppMenuDelegate mAppMenuDelegate;
+    WebFeedBridge mWebFeedBridge;
 
     public TabbedAppMenuPropertiesDelegate(Context context, ActivityTabProvider activityTabProvider,
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             TabModelSelector tabModelSelector, ToolbarManager toolbarManager, View decorView,
             AppMenuDelegate appMenuDelegate,
             OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
-            ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier) {
+            ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
+            WebFeedBridge webFeedBridge) {
         super(context, activityTabProvider, multiWindowModeStateDispatcher, tabModelSelector,
                 toolbarManager, decorView, overviewModeBehaviorSupplier, bookmarkBridgeSupplier);
         mAppMenuDelegate = appMenuDelegate;
+        mWebFeedBridge = webFeedBridge;
     }
 
     private boolean shouldShowDataSaverMenuItem() {
@@ -81,8 +85,9 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     public void onFooterViewInflated(AppMenuHandler appMenuHandler, View view) {
         if (view instanceof WebFeedMainMenuItem) {
             ((WebFeedMainMenuItem) view)
-                    .initialize(mActivityTabProvider.get().getOriginalUrl(),
-                            new LargeIconBridge(Profile.getLastUsedRegularProfile()));
+                    .initialize(mActivityTabProvider.get().getOriginalUrl(), appMenuHandler,
+                            new LargeIconBridge(Profile.getLastUsedRegularProfile()),
+                            mWebFeedBridge);
         }
     }
 

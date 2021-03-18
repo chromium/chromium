@@ -120,6 +120,11 @@
         <item name="verticalInset">@dimen/menu_footer_chip_vertical_inset</item>
     </style>
 
+    <style name="MenuFooterChipInverse" parent="MenuFooterChip">
+        <item name="chipColor">@color/default_bg_color</item>
+        <item name="solidColorChip">false</item>
+    </style>
+
     <!-- Used by Chrome and Content -->
     <style name="TextAppearance" parent="android:TextAppearance" tools:ignore="UnusedResources" />
     <style name="TextAppearance.RobotoMediumStyle">
