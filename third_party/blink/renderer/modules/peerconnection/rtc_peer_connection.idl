@@ -182,9 +182,7 @@ enum RTCPeerConnectionState {
 callback RTCPeerConnectionErrorCallback = void (DOMException error);
 
 // https://w3c.github.io/webrtc-pc/#dom-rtcsessiondescriptioncallback
-// TODO(yukishiino): The argument type must be RTCSessionDescriptionInit instead
-// of RTCSessionDescription.
-callback RTCSessionDescriptionCallback = void (RTCSessionDescription description);
+callback RTCSessionDescriptionCallback = void (RTCSessionDescriptionInit description);
 
 // No spec.  Blink specific definition.
 callback RTCStatsCallback = void (RTCStatsResponse response);
