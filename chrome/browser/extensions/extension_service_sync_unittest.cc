@@ -1576,8 +1576,9 @@ TEST_F(ExtensionServiceSyncCustomGalleryTest, ProcessSyncDataDeferredEnable) {
   PackCRXAndUpdateExtension(id, path, pem_path, ENABLED);
 }
 
+// Flaky on a few platforms.
 TEST_F(ExtensionServiceSyncCustomGalleryTest,
-       ProcessSyncDataPermissionApproval) {
+       DISABLED_ProcessSyncDataPermissionApproval) {
   InitializeEmptyExtensionService();
   extension_sync_service()->MergeDataAndStartSyncing(
       syncer::EXTENSIONS, syncer::SyncDataList(),
