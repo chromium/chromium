@@ -98,8 +98,8 @@ scoped_refptr<Extension> CreateTestExtension(const std::string& name,
 
   std::string error;
   scoped_refptr<Extension> extension(
-      Extension::Create(path, Manifest::INTERNAL, manifest, Extension::NO_FLAGS,
-                        extension_id, &error));
+      Extension::Create(path, mojom::ManifestLocation::kInternal, manifest,
+                        Extension::NO_FLAGS, extension_id, &error));
   EXPECT_TRUE(extension.get()) << error;
   return extension;
 }
@@ -126,8 +126,9 @@ scoped_refptr<Extension> CreateWebStoreExtension() {
   path = path.AppendASCII("web_store");
 
   std::string error;
-  scoped_refptr<Extension> extension(Extension::Create(
-      path, Manifest::COMPONENT, *manifest, Extension::NO_FLAGS, &error));
+  scoped_refptr<Extension> extension(
+      Extension::Create(path, mojom::ManifestLocation::kComponent, *manifest,
+                        Extension::NO_FLAGS, &error));
   EXPECT_TRUE(extension.get()) << error;
   return extension;
 }

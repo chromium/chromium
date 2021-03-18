@@ -67,9 +67,9 @@ scoped_refptr<extensions::Extension> AddMediaGalleriesApp(
   base::FilePath path = extension_prefs->install_directory().AppendASCII(name);
   std::string errors;
   scoped_refptr<extensions::Extension> extension =
-      extensions::Extension::Create(path, extensions::Manifest::INTERNAL,
-                                    *manifest.get(),
-                                    extensions::Extension::NO_FLAGS, &errors);
+      extensions::Extension::Create(
+          path, extensions::mojom::ManifestLocation::kInternal, *manifest.get(),
+          extensions::Extension::NO_FLAGS, &errors);
   EXPECT_TRUE(extension.get() != nullptr) << errors;
   EXPECT_TRUE(crx_file::id_util::IdIsValid(extension->id()));
   if (!extension.get() || !crx_file::id_util::IdIsValid(extension->id()))

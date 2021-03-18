@@ -171,8 +171,8 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
   // with std::u16string
   std::string utf8_error;
   scoped_refptr<Extension> extension =
-      Extension::Create(temp_dir.GetPath(), Manifest::INTERNAL, *root,
-                        Extension::NO_FLAGS, &utf8_error);
+      Extension::Create(temp_dir.GetPath(), mojom::ManifestLocation::kInternal,
+                        *root, Extension::NO_FLAGS, &utf8_error);
   *error = base::UTF8ToUTF16(utf8_error);
   if (!extension.get()) {
     NOTREACHED() << "Could not init extension " << *error;

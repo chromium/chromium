@@ -156,7 +156,7 @@ std::unique_ptr<KeyedService> BuildMockThemeService(
 scoped_refptr<extensions::Extension> MakeThemeExtension(
     const base::FilePath& extension_path,
     const string& name,
-    extensions::Manifest::Location location,
+    extensions::mojom::ManifestLocation location,
     const string& update_url) {
   base::DictionaryValue source;
   source.SetString(extensions::manifest_keys::kName, name);
@@ -232,8 +232,8 @@ class ThemeSyncableServiceTest : public testing::Test,
   }
 
   // Overridden in PolicyInstalledThemeTest below.
-  virtual extensions::Manifest::Location GetThemeLocation() {
-    return extensions::Manifest::INTERNAL;
+  virtual extensions::mojom::ManifestLocation GetThemeLocation() {
+    return extensions::mojom::ManifestLocation::kInternal;
   }
 
   FakeThemeService* BuildForProfile(Profile* profile) {
@@ -282,8 +282,8 @@ class ThemeSyncableServiceTest : public testing::Test,
 };
 
 class PolicyInstalledThemeTest : public ThemeSyncableServiceTest {
-  extensions::Manifest::Location GetThemeLocation() override {
-    return extensions::Manifest::EXTERNAL_POLICY_DOWNLOAD;
+  extensions::mojom::ManifestLocation GetThemeLocation() override {
+    return extensions::mojom::ManifestLocation::kExternalPolicyDownload;
   }
 };
 

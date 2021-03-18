@@ -234,7 +234,8 @@ scoped_refptr<Extension> LoadExtension(
   }
 
   scoped_refptr<Extension> extension(Extension::Create(
-      extension_path, location, *manifest, flags, extension_id, error));
+      extension_path, static_cast<mojom::ManifestLocation>(location), *manifest,
+      flags, extension_id, error));
   if (!extension.get())
     return nullptr;
 

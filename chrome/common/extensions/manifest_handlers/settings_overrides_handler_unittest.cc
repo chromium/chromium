@@ -113,9 +113,10 @@ namespace manifest_keys = extensions::manifest_keys;
 
 scoped_refptr<Extension> CreateExtension(const base::DictionaryValue& manifest,
                                          std::string* error) {
-  scoped_refptr<Extension> extension = Extension::Create(
-      base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
-      Manifest::INVALID_LOCATION, manifest, Extension::NO_FLAGS, error);
+  scoped_refptr<Extension> extension =
+      Extension::Create(base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
+                        extensions::mojom::ManifestLocation::kInvalidLocation,
+                        manifest, Extension::NO_FLAGS, error);
   return extension;
 }
 

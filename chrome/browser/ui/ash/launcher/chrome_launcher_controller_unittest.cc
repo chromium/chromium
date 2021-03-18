@@ -158,6 +158,7 @@ using base::ASCIIToUTF16;
 using extensions::Extension;
 using extensions::Manifest;
 using extensions::UnloadedExtensionReason;
+using extensions::mojom::ManifestLocation;
 
 namespace {
 constexpr char kOfflineGmailUrl[] = "https://mail.google.com/mail/mu/u";
@@ -412,33 +413,33 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
     StartAppSyncService(app_list_syncable_service_->GetAllSyncDataForTesting());
 
     std::string error;
-    extension_chrome_ = Extension::Create(base::FilePath(), Manifest::UNPACKED,
-                                          manifest, Extension::NO_FLAGS,
-                                          extension_misc::kChromeAppId, &error);
-    extension1_ = Extension::Create(base::FilePath(), Manifest::UNPACKED,
-                                    manifest, Extension::NO_FLAGS,
-                                    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", &error);
-    extension2_ = Extension::Create(base::FilePath(), Manifest::UNPACKED,
-                                    manifest, Extension::NO_FLAGS,
-                                    "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", &error);
-    extension5_ = Extension::Create(base::FilePath(), Manifest::UNPACKED,
-                                    manifest, Extension::NO_FLAGS,
-                                    "cccccccccccccccccccccccccccccccc", &error);
-    extension6_ = Extension::Create(base::FilePath(), Manifest::UNPACKED,
-                                    manifest, Extension::NO_FLAGS,
-                                    "dddddddddddddddddddddddddddddddd", &error);
-    extension7_ = Extension::Create(base::FilePath(), Manifest::UNPACKED,
-                                    manifest, Extension::NO_FLAGS,
-                                    "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", &error);
-    extension8_ = Extension::Create(base::FilePath(), Manifest::UNPACKED,
-                                    manifest, Extension::NO_FLAGS,
-                                    "ffffffffffffffffffffffffffffffff", &error);
+    extension_chrome_ = Extension::Create(
+        base::FilePath(), ManifestLocation::kUnpacked, manifest,
+        Extension::NO_FLAGS, extension_misc::kChromeAppId, &error);
+    extension1_ = Extension::Create(
+        base::FilePath(), ManifestLocation::kUnpacked, manifest,
+        Extension::NO_FLAGS, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", &error);
+    extension2_ = Extension::Create(
+        base::FilePath(), ManifestLocation::kUnpacked, manifest,
+        Extension::NO_FLAGS, "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", &error);
+    extension5_ = Extension::Create(
+        base::FilePath(), ManifestLocation::kUnpacked, manifest,
+        Extension::NO_FLAGS, "cccccccccccccccccccccccccccccccc", &error);
+    extension6_ = Extension::Create(
+        base::FilePath(), ManifestLocation::kUnpacked, manifest,
+        Extension::NO_FLAGS, "dddddddddddddddddddddddddddddddd", &error);
+    extension7_ = Extension::Create(
+        base::FilePath(), ManifestLocation::kUnpacked, manifest,
+        Extension::NO_FLAGS, "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", &error);
+    extension8_ = Extension::Create(
+        base::FilePath(), ManifestLocation::kUnpacked, manifest,
+        Extension::NO_FLAGS, "ffffffffffffffffffffffffffffffff", &error);
     extension_platform_app_ = Extension::Create(
-        base::FilePath(), Manifest::UNPACKED, manifest_platform_app,
+        base::FilePath(), ManifestLocation::kUnpacked, manifest_platform_app,
         Extension::NO_FLAGS, "gggggggggggggggggggggggggggggggg", &error);
-    arc_support_host_ =
-        Extension::Create(base::FilePath(), Manifest::UNPACKED, manifest,
-                          Extension::NO_FLAGS, arc::kPlayStoreAppId, &error);
+    arc_support_host_ = Extension::Create(
+        base::FilePath(), ManifestLocation::kUnpacked, manifest,
+        Extension::NO_FLAGS, arc::kPlayStoreAppId, &error);
     extension_service_->AddExtension(extension_chrome_.get());
 
     // Fake Gmail app.
@@ -456,22 +457,22 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
     manifest_gmail.Set(extensions::manifest_keys::kWebURLs, std::move(list));
 
     extension_gmail_app_ = Extension::Create(
-        base::FilePath(), Manifest::UNPACKED, manifest_gmail,
+        base::FilePath(), ManifestLocation::kUnpacked, manifest_gmail,
         Extension::NO_FLAGS, extension_misc::kGmailAppId, &error);
     // Fake Google Doc app.
     extension_doc_app_ = Extension::Create(
-        base::FilePath(), Manifest::UNPACKED, manifest, Extension::NO_FLAGS,
-        extension_misc::kGoogleDocAppId, &error);
+        base::FilePath(), ManifestLocation::kUnpacked, manifest,
+        Extension::NO_FLAGS, extension_misc::kGoogleDocAppId, &error);
 
     // Fake Youtube app.
     extension_youtube_app_ = Extension::Create(
-        base::FilePath(), Manifest::UNPACKED, manifest, Extension::NO_FLAGS,
-        extension_misc::kYoutubeAppId, &error);
+        base::FilePath(), ManifestLocation::kUnpacked, manifest,
+        Extension::NO_FLAGS, extension_misc::kYoutubeAppId, &error);
 
     // Fake File Manager app.
     extension_files_app_ = Extension::Create(
-        base::FilePath(), Manifest::UNPACKED, manifest, Extension::NO_FLAGS,
-        extension_misc::kFilesManagerAppId, &error);
+        base::FilePath(), ManifestLocation::kUnpacked, manifest,
+        Extension::NO_FLAGS, extension_misc::kFilesManagerAppId, &error);
 
     MaybeStartWebAppProvider();
   }
@@ -1176,8 +1177,8 @@ class ChromeLauncherControllerExtendedShelfTest
       manifest.SetString(extensions::manifest_keys::kName,
                          extension_id_name.second);
       scoped_refptr<Extension> extension = Extension::Create(
-          base::FilePath(), Manifest::UNPACKED, manifest, Extension::NO_FLAGS,
-          extension_id_name.first, &error);
+          base::FilePath(), ManifestLocation::kUnpacked, manifest,
+          Extension::NO_FLAGS, extension_id_name.first, &error);
       extension_service_->AddExtension(extension.get());
       extra_extensions_.emplace_back(extension);
     }

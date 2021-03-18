@@ -116,9 +116,9 @@ scoped_refptr<Extension> ManifestTest::LoadExtension(
   DCHECK(value.is_dict());
   const base::DictionaryValue* dictionary_manifest = nullptr;
   value.GetAsDictionary(&dictionary_manifest);
-  return Extension::Create(test_data_dir.DirName(), location,
-                           *dictionary_manifest, flags, GetTestExtensionID(),
-                           error);
+  return Extension::Create(
+      test_data_dir.DirName(), static_cast<mojom::ManifestLocation>(location),
+      *dictionary_manifest, flags, GetTestExtensionID(), error);
 }
 
 scoped_refptr<Extension> ManifestTest::LoadAndExpectSuccess(

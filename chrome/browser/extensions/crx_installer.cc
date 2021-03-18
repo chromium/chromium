@@ -307,9 +307,9 @@ void CrxInstaller::UpdateExtensionFromUnpackedCrx(
 
 void CrxInstaller::ConvertWebAppOnSharedFileThread(
     const WebApplicationInfo& web_app) {
-  scoped_refptr<Extension> extension(
-      ConvertWebAppToExtension(web_app, base::Time::Now(), install_directory_,
-                               creation_flags_, install_source_));
+  scoped_refptr<Extension> extension(ConvertWebAppToExtension(
+      web_app, base::Time::Now(), install_directory_, creation_flags_,
+      static_cast<mojom::ManifestLocation>(install_source_)));
   if (!extension.get()) {
     // Validation should have stopped any potential errors before getting here.
     NOTREACHED() << "Could not convert web app to extension.";
@@ -382,8 +382,9 @@ base::Optional<CrxInstallError> CrxInstaller::AllowInstall(
           WebstoreInstaller::MANIFEST_CHECK_LEVEL_LOOSE) {
         std::string error;
         scoped_refptr<Extension> dummy_extension = Extension::Create(
-            base::FilePath(), install_source_, *expected_manifest_,
-            creation_flags_, extension->id(), &error);
+            base::FilePath(),
+            static_cast<mojom::ManifestLocation>(install_source_),
+            *expected_manifest_, creation_flags_, extension->id(), &error);
         if (error.empty()) {
           valid = !(PermissionMessageProvider::Get()->IsPrivilegeIncrease(
               dummy_extension->permissions_data()->active_permissions(),

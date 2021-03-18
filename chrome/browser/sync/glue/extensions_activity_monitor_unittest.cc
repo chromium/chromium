@@ -45,7 +45,7 @@ scoped_refptr<Extension> MakeExtension(const std::string& name) {
   value.SetString(keys::kName, name);
   std::string error;
   scoped_refptr<Extension> extension(Extension::Create(
-      path, extensions::Manifest::INVALID_LOCATION, value,
+      path, extensions::mojom::ManifestLocation::kInvalidLocation, value,
       Extension::NO_FLAGS, &error));
   EXPECT_TRUE(error.empty());
   return extension;

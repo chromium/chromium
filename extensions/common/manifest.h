@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/hashed_extension_id.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 
 namespace extensions {
 struct InstallWarning;
@@ -144,7 +145,7 @@ class Manifest final {
   // result in a Manifest of TYPE_LOGIN_SCREEN_EXTENSION, since other items
   // (like platform apps) may be installed in the same login screen profile.
   static std::unique_ptr<Manifest> CreateManifestForLoginScreen(
-      Location location,
+      mojom::ManifestLocation location,
       std::unique_ptr<base::DictionaryValue> value,
       ExtensionId extension_id);
 

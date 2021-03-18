@@ -115,8 +115,8 @@ class PlatformUtilTestBase : public BrowserWithTestWindowTest {
     scoped_refptr<extensions::Extension> extension =
         extensions::Extension::Create(
             test_directory.AppendASCII("invalid-extension"),
-            extensions::Manifest::INVALID_LOCATION, *manifest_dictionary,
-            extensions::Extension::NO_FLAGS, &error);
+            extensions::mojom::ManifestLocation::kInvalidLocation,
+            *manifest_dictionary, extensions::Extension::NO_FLAGS, &error);
     ASSERT_TRUE(error.empty()) << error;
     extensions::ExtensionRegistry::Get(GetProfile())->AddEnabled(extension);
   }

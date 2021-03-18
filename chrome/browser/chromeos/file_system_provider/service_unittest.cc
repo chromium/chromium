@@ -80,8 +80,8 @@ scoped_refptr<extensions::Extension> CreateFakeExtension(
 
   scoped_refptr<extensions::Extension> extension =
       extensions::Extension::Create(
-          base::FilePath(), extensions::Manifest::UNPACKED, manifest,
-          extensions::Extension::NO_FLAGS, extension_id, &error);
+          base::FilePath(), extensions::mojom::ManifestLocation::kUnpacked,
+          manifest, extensions::Extension::NO_FLAGS, extension_id, &error);
   EXPECT_TRUE(extension) << error;
   return extension;
 }

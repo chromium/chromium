@@ -409,9 +409,11 @@ AppManagerImpl::State AppManagerImpl::AddAppToLockScreenProfile(
 
   std::string error;
   scoped_refptr<extensions::Extension> lock_profile_app =
-      extensions::Extension::Create(lock_profile_app_path, app->location(),
-                                    *app->manifest()->value()->CreateDeepCopy(),
-                                    app->creation_flags(), app->id(), &error);
+      extensions::Extension::Create(
+          lock_profile_app_path,
+          static_cast<extensions::mojom::ManifestLocation>(app->location()),
+          *app->manifest()->value()->CreateDeepCopy(), app->creation_flags(),
+          app->id(), &error);
 
   // While extension creation can fail in general, in this case the lock screen
   // profile extension creation arguments come from an app already installed in
@@ -552,9 +554,11 @@ AppManagerImpl::GetChromeAppForLockScreenAppLaunch() {
 
   std::string error;
   scoped_refptr<extensions::Extension> lock_profile_app =
-      extensions::Extension::Create(app->path(), app->location(),
-                                    *app->manifest()->value()->CreateDeepCopy(),
-                                    app->creation_flags(), app->id(), &error);
+      extensions::Extension::Create(
+          app->path(),
+          static_cast<extensions::mojom::ManifestLocation>(app->location()),
+          *app->manifest()->value()->CreateDeepCopy(), app->creation_flags(),
+          app->id(), &error);
 
   extensions::ExtensionService* extension_service =
       extensions::ExtensionSystem::Get(lock_screen_profile_)

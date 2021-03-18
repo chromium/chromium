@@ -54,7 +54,7 @@ scoped_refptr<extensions::Extension> CreateExtension(
                       : extensions::Extension::NO_FLAGS;
   scoped_refptr<extensions::Extension> extension =
       extensions::Extension::Create(
-          base::FilePath(), extensions::Manifest::UNPACKED,
+          base::FilePath(), extensions::mojom::ManifestLocation::kUnpacked,
           static_cast<base::DictionaryValue&>(manifest), flags, extension_id,
           &error);
   return extension;

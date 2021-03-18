@@ -231,11 +231,8 @@ class MDnsAPITest : public extensions::ExtensionServiceTestBase {
     std::string error;
     return extensions::Extension::Create(
         bogus_file_pathname(name),
-        extensions::Manifest::INVALID_LOCATION,
-        manifest,
-        Extension::NO_FLAGS,
-        extension_id,
-        &error);
+        extensions::mojom::ManifestLocation::kInvalidLocation, manifest,
+        Extension::NO_FLAGS, extension_id, &error);
   }
 
   content::RenderProcessHost* render_process_host() const {

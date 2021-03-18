@@ -52,7 +52,8 @@ scoped_refptr<extensions::Extension> MakeApp(
   value.SetString("version", "0.0");
   value.SetString("app.launch.web_url", "http://google.com");
   scoped_refptr<extensions::Extension> app = extensions::Extension::Create(
-      base::FilePath(), extensions::Manifest::INTERNAL, value, flags, id, &err);
+      base::FilePath(), extensions::mojom::ManifestLocation::kInternal, value,
+      flags, id, &err);
   EXPECT_EQ(err, "");
   return app;
 }

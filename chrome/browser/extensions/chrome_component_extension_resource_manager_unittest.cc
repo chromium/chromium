@@ -58,11 +58,9 @@ TEST_F(ChromeComponentExtensionResourceManagerTest,
   resources_path = resources_path.AppendASCII("file_manager");
 
   // Create a simulated component extension.
-  scoped_refptr<Extension> extension = Extension::Create(resources_path,
-                                                         Manifest::COMPONENT,
-                                                         *manifest,
-                                                         Extension::NO_FLAGS,
-                                                         &error);
+  scoped_refptr<Extension> extension =
+      Extension::Create(resources_path, mojom::ManifestLocation::kComponent,
+                        *manifest, Extension::NO_FLAGS, &error);
   ASSERT_TRUE(extension.get());
 
   // Load one of the icons.

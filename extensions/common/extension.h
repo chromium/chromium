@@ -25,6 +25,7 @@
 #include "extensions/common/hashed_extension_id.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/url_pattern_set.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -156,7 +157,7 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   static const int kInitFromValueFlagBits;
 
   static scoped_refptr<Extension> Create(const base::FilePath& path,
-                                         Manifest::Location location,
+                                         mojom::ManifestLocation location,
                                          const base::DictionaryValue& value,
                                          int flags,
                                          std::string* error);
@@ -164,7 +165,7 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   // In a few special circumstances, we want to create an Extension and give it
   // an explicit id. Most consumers should just use the other Create() method.
   static scoped_refptr<Extension> Create(const base::FilePath& path,
-                                         Manifest::Location location,
+                                         mojom::ManifestLocation location,
                                          const base::DictionaryValue& value,
                                          int flags,
                                          const ExtensionId& explicit_id,

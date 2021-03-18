@@ -287,8 +287,8 @@ TEST_F(DNRManifestTest, EmptyExtensionRootPath) {
 
   std::string error;
   scoped_refptr<Extension> extension = Extension::Create(
-      base::FilePath(), Manifest::INTERNAL, *CreateManifest({ruleset}),
-      Extension::FROM_WEBSTORE, &error);
+      base::FilePath(), mojom::ManifestLocation::kInternal,
+      *CreateManifest({ruleset}), Extension::FROM_WEBSTORE, &error);
 
   EXPECT_TRUE(extension);
   EXPECT_TRUE(error.empty()) << error;

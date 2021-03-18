@@ -223,9 +223,9 @@ TEST_F(ManifestHandlerTest, FailingHandlers) {
 
   // Succeeds when "a" is not recognized.
   std::string error;
-  scoped_refptr<Extension> extension =
-      Extension::Create(base::FilePath(), Manifest::INVALID_LOCATION,
-                        *manifest_a, Extension::NO_FLAGS, &error);
+  scoped_refptr<Extension> extension = Extension::Create(
+      base::FilePath(), mojom::ManifestLocation::kInvalidLocation, *manifest_a,
+      Extension::NO_FLAGS, &error);
   EXPECT_TRUE(extension.get());
 
   // Register a handler for "a" that fails.
@@ -235,12 +235,9 @@ TEST_F(ManifestHandlerTest, FailingHandlers) {
       "A", SingleKey("a"), std::vector<std::string>(), &watcher));
   ManifestHandler::FinalizeRegistration();
 
-  extension = Extension::Create(
-      base::FilePath(),
-      Manifest::INVALID_LOCATION,
-      *manifest_a,
-      Extension::NO_FLAGS,
-      &error);
+  extension = Extension::Create(base::FilePath(),
+                                mojom::ManifestLocation::kInvalidLocation,
+                                *manifest_a, Extension::NO_FLAGS, &error);
   EXPECT_FALSE(extension.get());
   EXPECT_EQ("A", error);
 }

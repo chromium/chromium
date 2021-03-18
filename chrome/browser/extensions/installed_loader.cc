@@ -191,10 +191,8 @@ void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
   if (info.extension_manifest) {
     extension = Extension::Create(
         info.extension_path,
-        info.extension_location,
-        *info.extension_manifest,
-        GetCreationFlags(&info),
-        &error);
+        static_cast<mojom::ManifestLocation>(info.extension_location),
+        *info.extension_manifest, GetCreationFlags(&info), &error);
   } else {
     error = manifest_errors::kManifestUnreadable;
   }

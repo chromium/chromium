@@ -573,7 +573,8 @@ TEST_F(SafeBrowsingUIManagerTest, NoInterstitialInExtensions) {
   std::string error;
   scoped_refptr<extensions::Extension> app;
   app = extensions::Extension::Create(
-      base::FilePath(), extensions::Manifest::COMPONENT, manifest, 0, &error);
+      base::FilePath(), extensions::mojom::ManifestLocation::kComponent,
+      manifest, 0, &error);
   extensions::ProcessManager* extension_manager =
       extensions::ProcessManager::Get(web_contents()->GetBrowserContext());
   extension_manager->CreateBackgroundHost(app.get(), GURL("background.html"));

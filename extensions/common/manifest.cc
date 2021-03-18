@@ -19,7 +19,6 @@
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handler_helpers.h"
-#include "extensions/common/mojom/manifest.mojom-shared.h"
 
 namespace extensions {
 
@@ -265,13 +264,14 @@ bool Manifest::ShouldAlwaysLoadExtension(Manifest::Location location,
 
 // static
 std::unique_ptr<Manifest> Manifest::CreateManifestForLoginScreen(
-    Location location,
+    mojom::ManifestLocation location,
     std::unique_ptr<base::DictionaryValue> value,
     ExtensionId extension_id) {
-  CHECK(IsPolicyLocation(location));
+  CHECK(IsPolicyLocation(static_cast<Location>(location)));
   // Use base::WrapUnique + new because the constructor is private.
-  return base::WrapUnique(
-      new Manifest(location, std::move(value), std::move(extension_id), true));
+  return base::WrapUnique(new Manifest(static_cast<Location>(location),
+                                       std::move(value),
+                                       std::move(extension_id), true));
 }
 
 Manifest::Manifest(Location location,

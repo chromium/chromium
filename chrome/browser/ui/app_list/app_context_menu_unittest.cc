@@ -250,8 +250,8 @@ class AppContextMenuTest : public AppListTestBase {
     value.GetAsDictionary(&dictionary_manifest);
     std::string error;
     return extensions::Extension::Create(
-        path.DirName(), extensions::Manifest::INTERNAL, *dictionary_manifest,
-        extensions::Extension::NO_FLAGS, app_id, &error);
+        path.DirName(), extensions::mojom::ManifestLocation::kInternal,
+        *dictionary_manifest, extensions::Extension::NO_FLAGS, app_id, &error);
   }
 
   void TestExtensionApp(const std::string& app_id,
@@ -299,7 +299,7 @@ class AppContextMenuTest : public AppListTestBase {
     value.SetString("version", "0.0");
     value.SetString("app.launch.web_url", "http://google.com");
     scoped_refptr<extensions::Extension> app = extensions::Extension::Create(
-        base::FilePath(), extensions::Manifest::INTERNAL, value,
+        base::FilePath(), extensions::mojom::ManifestLocation::kInternal, value,
         extensions::Extension::WAS_INSTALLED_BY_DEFAULT,
         extension_misc::kChromeAppId, &err);
     EXPECT_EQ(err, "");

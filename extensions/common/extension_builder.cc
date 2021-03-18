@@ -155,7 +155,7 @@ scoped_refptr<const Extension> ExtensionBuilder::Build() {
 
   std::string error;
   scoped_refptr<const Extension> extension = Extension::Create(
-      path_, static_cast<Manifest::Location>(location_),
+      path_, location_,
       manifest_data_ ? *manifest_data_->GetValue() : *manifest_value_, flags_,
       id_, &error);
 

@@ -45,7 +45,9 @@ scoped_refptr<Extension> LoadManifestUnchecked(const std::string& dir,
   CHECK(result->GetAsDictionary(&dict));
 
   scoped_refptr<Extension> extension = Extension::Create(
-      path.DirName(), location, *dict, extra_flags, id, error);
+      path.DirName(),
+      static_cast<extensions::mojom::ManifestLocation>(location), *dict,
+      extra_flags, id, error);
   return extension;
 }
 

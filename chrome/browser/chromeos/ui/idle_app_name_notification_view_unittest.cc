@@ -42,25 +42,17 @@ class IdleAppNameNotificationViewTest : public BrowserWithTestWindowTest {
     manifest.SetString("author.email", "Someone");
 
     std::string error;
-    correct_extension_ =
-        extensions::Extension::Create(base::FilePath(),
-                                      extensions::Manifest::UNPACKED,
-                                      manifest,
-                                      extensions::Extension::NO_FLAGS,
-                                      kTestAppName,
-                                      &error);
+    correct_extension_ = extensions::Extension::Create(
+        base::FilePath(), extensions::mojom::ManifestLocation::kUnpacked,
+        manifest, extensions::Extension::NO_FLAGS, kTestAppName, &error);
     base::DictionaryValue manifest2;
     manifest2.SetString(extensions::manifest_keys::kName, "Test");
     manifest2.SetString(extensions::manifest_keys::kVersion, "1");
     manifest2.SetString(extensions::manifest_keys::kDescription, "Test app");
 
-    incorrect_extension_ =
-        extensions::Extension::Create(base::FilePath(),
-                                      extensions::Manifest::UNPACKED,
-                                      manifest2,
-                                      extensions::Extension::NO_FLAGS,
-                                      kTestAppName,
-                                      &error);
+    incorrect_extension_ = extensions::Extension::Create(
+        base::FilePath(), extensions::mojom::ManifestLocation::kUnpacked,
+        manifest2, extensions::Extension::NO_FLAGS, kTestAppName, &error);
   }
 
   void TearDown() override {

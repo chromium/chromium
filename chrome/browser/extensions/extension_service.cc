@@ -569,7 +569,8 @@ void ExtensionService::MaybeFinishShutdownDelayed() {
     if (info->extension_manifest) {
       std::string error;
       extension = Extension::Create(
-          info->extension_path, info->extension_location,
+          info->extension_path,
+          static_cast<mojom::ManifestLocation>(info->extension_location),
           *info->extension_manifest,
           extension_prefs_->GetDelayedInstallCreationFlags(info->extension_id),
           info->extension_id, &error);

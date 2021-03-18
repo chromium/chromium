@@ -48,6 +48,8 @@
 #include "net/base/filename_util.h"
 #include "url/url_util.h"
 
+using extensions::mojom::ManifestLocation;
+
 namespace extensions {
 
 namespace keys = manifest_keys;
@@ -201,7 +203,7 @@ const int Extension::kValidHostPermissionSchemes =
 
 // static
 scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
-                                           Manifest::Location location,
+                                           ManifestLocation location,
                                            const base::DictionaryValue& value,
                                            int flags,
                                            std::string* utf8_error) {
@@ -216,7 +218,7 @@ scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
 // TODO(sungguk): Continue removing std::string errors and replacing
 // with std::u16string. See http://crbug.com/71980.
 scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
-                                           Manifest::Location location,
+                                           ManifestLocation location,
                                            const base::DictionaryValue& value,
                                            int flags,
                                            const std::string& explicit_id,
@@ -238,8 +240,9 @@ scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
     manifest = Manifest::CreateManifestForLoginScreen(
         location, value.CreateDeepCopy(), std::move(extension_id));
   } else {
-    manifest = std::make_unique<Manifest>(location, value.CreateDeepCopy(),
-                                          std::move(extension_id));
+    manifest = std::make_unique<Manifest>(
+        static_cast<Manifest::Location>(location), value.CreateDeepCopy(),
+        std::move(extension_id));
   }
 
   std::vector<InstallWarning> install_warnings;

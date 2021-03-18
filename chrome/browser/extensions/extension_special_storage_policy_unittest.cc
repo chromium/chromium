@@ -28,6 +28,7 @@ using content::BrowserThread;
 using extensions::Extension;
 using extensions::ExtensionSet;
 using extensions::Manifest;
+using extensions::mojom::ManifestLocation;
 using storage::SpecialStoragePolicy;
 
 typedef SpecialStoragePolicy::StoragePolicy StoragePolicy;
@@ -115,9 +116,9 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
     list->AppendString("*://*.wildcards/protected");
     manifest.Set(keys::kWebURLs, std::move(list));
     std::string error;
-    scoped_refptr<Extension> protected_app = Extension::Create(
-        path, Manifest::INVALID_LOCATION, manifest,
-        Extension::NO_FLAGS, &error);
+    scoped_refptr<Extension> protected_app =
+        Extension::Create(path, ManifestLocation::kInvalidLocation, manifest,
+                          Extension::NO_FLAGS, &error);
     EXPECT_TRUE(protected_app.get()) << error;
     return protected_app;
   }
@@ -140,9 +141,9 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
     list->AppendString("*://*.wildcards/unlimited");
     manifest.Set(keys::kWebURLs, std::move(list));
     std::string error;
-    scoped_refptr<Extension> unlimited_app = Extension::Create(
-        path, Manifest::INVALID_LOCATION, manifest,
-        Extension::NO_FLAGS, &error);
+    scoped_refptr<Extension> unlimited_app =
+        Extension::Create(path, ManifestLocation::kInvalidLocation, manifest,
+                          Extension::NO_FLAGS, &error);
     EXPECT_TRUE(unlimited_app.get()) << error;
     return unlimited_app;
   }
@@ -158,9 +159,9 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
     manifest.SetString(keys::kVersion, "1");
     manifest.SetString(keys::kPlatformAppBackgroundPage, "background.html");
     std::string error;
-    scoped_refptr<Extension> app = Extension::Create(
-        path, Manifest::INVALID_LOCATION, manifest,
-        Extension::NO_FLAGS, &error);
+    scoped_refptr<Extension> app =
+        Extension::Create(path, ManifestLocation::kInvalidLocation, manifest,
+                          Extension::NO_FLAGS, &error);
     EXPECT_TRUE(app.get()) << error;
     return app;
   }

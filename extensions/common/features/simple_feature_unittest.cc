@@ -330,9 +330,9 @@ TEST_F(SimpleFeatureTest, Context) {
   manifest.SetString("app.launch.local_path", "foo.html");
 
   std::string error;
-  scoped_refptr<const Extension> extension(Extension::Create(
-      base::FilePath(), Manifest::INTERNAL, manifest, Extension::NO_FLAGS,
-      &error));
+  scoped_refptr<const Extension> extension(
+      Extension::Create(base::FilePath(), mojom::ManifestLocation::kInternal,
+                        manifest, Extension::NO_FLAGS, &error));
   EXPECT_EQ("", error);
   ASSERT_TRUE(extension.get());
 
@@ -437,8 +437,8 @@ TEST_F(SimpleFeatureTest, SessionType) {
 
   std::string error;
   scoped_refptr<const Extension> extension(
-      Extension::Create(base::FilePath(), Manifest::INTERNAL, manifest,
-                        Extension::NO_FLAGS, &error));
+      Extension::Create(base::FilePath(), mojom::ManifestLocation::kInternal,
+                        manifest, Extension::NO_FLAGS, &error));
   EXPECT_EQ("", error);
   ASSERT_TRUE(extension.get());
 

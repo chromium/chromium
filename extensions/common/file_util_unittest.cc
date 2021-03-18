@@ -48,7 +48,7 @@ const base::FilePath::CharType kCustomManifestFilename[] =
 scoped_refptr<Extension> LoadExtensionManifest(
     const base::DictionaryValue& manifest,
     const base::FilePath& manifest_dir,
-    Manifest::Location location,
+    mojom::ManifestLocation location,
     int extra_flags,
     std::string* error) {
   scoped_refptr<Extension> extension =
@@ -59,7 +59,7 @@ scoped_refptr<Extension> LoadExtensionManifest(
 scoped_refptr<Extension> LoadExtensionManifest(
     const std::string& manifest_value,
     const base::FilePath& manifest_dir,
-    Manifest::Location location,
+    mojom::ManifestLocation location,
     int extra_flags,
     std::string* error) {
   JSONStringValueDeserializer deserializer(manifest_value);
@@ -363,7 +363,7 @@ TEST_F(FileUtilTest, ValidateThemeUTF8) {
       non_ascii_file.c_str());
   std::string error;
   scoped_refptr<Extension> extension = LoadExtensionManifest(
-      kManifest, temp.GetPath(), Manifest::UNPACKED, 0, &error);
+      kManifest, temp.GetPath(), mojom::ManifestLocation::kUnpacked, 0, &error);
   ASSERT_TRUE(extension.get()) << error;
 
   std::vector<InstallWarning> warnings;
@@ -388,7 +388,7 @@ TEST_F(FileUtilTest, BackgroundScriptsMustExist) {
   std::string error;
   std::vector<InstallWarning> warnings;
   scoped_refptr<Extension> extension = LoadExtensionManifest(
-      *value, temp.GetPath(), Manifest::UNPACKED, 0, &error);
+      *value, temp.GetPath(), mojom::ManifestLocation::kUnpacked, 0, &error);
   ASSERT_TRUE(extension.get()) << error;
 
   EXPECT_FALSE(
@@ -402,8 +402,8 @@ TEST_F(FileUtilTest, BackgroundScriptsMustExist) {
   scripts->Clear();
   scripts->AppendString("http://google.com/foo.js");
 
-  extension = LoadExtensionManifest(*value, temp.GetPath(), Manifest::UNPACKED,
-                                    0, &error);
+  extension = LoadExtensionManifest(
+      *value, temp.GetPath(), mojom::ManifestLocation::kUnpacked, 0, &error);
   ASSERT_TRUE(extension.get()) << error;
 
   warnings.clear();

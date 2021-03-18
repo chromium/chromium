@@ -485,7 +485,7 @@ scoped_refptr<Extension>
   }
 
   return Extension::Create(
-      base::FilePath(), Manifest::INTERNAL,
+      base::FilePath(), extensions::mojom::ManifestLocation::kInternal,
       localized_manifest.get() ? *localized_manifest : *manifest, flags, id,
       error);
 }

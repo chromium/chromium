@@ -188,7 +188,7 @@ SandboxedUnpacker::SandboxedUnpacker(
     SandboxedUnpackerClient* client)
     : client_(client),
       extensions_dir_(extensions_dir),
-      location_(location),
+      location_(static_cast<mojom::ManifestLocation>(location)),
       creation_flags_(creation_flags),
       unpacker_io_task_runner_(unpacker_io_task_runner) {
   // Tracking for crbug.com/692069. The location must be valid. If it's invalid,

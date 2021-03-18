@@ -47,6 +47,10 @@ using blink::WebVector;
 using content::WebPluginInfo;
 using content::WebPluginMimeType;
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+using extensions::mojom::ManifestLocation;
+#endif
+
 namespace {
 
 #if BUILDFLAG(ENABLE_NACL)
@@ -90,8 +94,10 @@ class ChromeContentRendererClientTest : public testing::Test {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 scoped_refptr<const extensions::Extension> CreateTestExtension(
-    extensions::Manifest::Location location, bool is_from_webstore,
-    bool is_hosted_app, const std::string& app_url) {
+    ManifestLocation location,
+    bool is_from_webstore,
+    bool is_hosted_app,
+    const std::string& app_url) {
   int flags = is_from_webstore ?
       extensions::Extension::FROM_WEBSTORE:
       extensions::Extension::NO_FLAGS;
@@ -113,23 +119,21 @@ scoped_refptr<const extensions::Extension> CreateTestExtension(
 
 scoped_refptr<const extensions::Extension> CreateExtension(
     bool is_from_webstore) {
-  return CreateTestExtension(
-      extensions::Manifest::INTERNAL, is_from_webstore, kNotHostedApp,
-      std::string());
+  return CreateTestExtension(ManifestLocation::kInternal, is_from_webstore,
+                             kNotHostedApp, std::string());
 }
 
 scoped_refptr<const extensions::Extension> CreateExtensionWithLocation(
-    extensions::Manifest::Location location, bool is_from_webstore) {
+    ManifestLocation location,
+    bool is_from_webstore) {
   return CreateTestExtension(
       location, is_from_webstore, kNotHostedApp, std::string());
 }
 
 scoped_refptr<const extensions::Extension> CreateHostedApp(
     bool is_from_webstore, const std::string& app_url) {
-  return CreateTestExtension(extensions::Manifest::INTERNAL,
-                             is_from_webstore,
-                             kHostedApp,
-                             app_url);
+  return CreateTestExtension(ManifestLocation::kInternal, is_from_webstore,
+                             kHostedApp, app_url);
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -160,7 +164,7 @@ TEST_F(ChromeContentRendererClientTest, NaClRestriction) {
   {
     EXPECT_TRUE(ChromeContentRendererClient::IsNativeNaClAllowed(
         GURL(kExtensionUrl), kNaClRestricted,
-        CreateExtensionWithLocation(extensions::Manifest::UNPACKED,
+        CreateExtensionWithLocation(ManifestLocation::kUnpacked,
                                     kExtensionNotFromWebStore)
             .get()));
   }
@@ -168,14 +172,14 @@ TEST_F(ChromeContentRendererClientTest, NaClRestriction) {
   {
     EXPECT_TRUE(ChromeContentRendererClient::IsNativeNaClAllowed(
         GURL(kExtensionUrl), kNaClRestricted,
-        CreateExtensionWithLocation(extensions::Manifest::COMPONENT,
+        CreateExtensionWithLocation(ManifestLocation::kComponent,
                                     kExtensionNotFromWebStore)
             .get()));
   }
   {
     EXPECT_TRUE(ChromeContentRendererClient::IsNativeNaClAllowed(
         GURL(kExtensionUrl), kNaClRestricted,
-        CreateExtensionWithLocation(extensions::Manifest::EXTERNAL_COMPONENT,
+        CreateExtensionWithLocation(ManifestLocation::kExternalComponent,
                                     kExtensionNotFromWebStore)
             .get()));
   }
@@ -184,14 +188,13 @@ TEST_F(ChromeContentRendererClientTest, NaClRestriction) {
   {
     EXPECT_TRUE(ChromeContentRendererClient::IsNativeNaClAllowed(
         GURL(kExtensionUrl), kNaClRestricted,
-        CreateExtensionWithLocation(extensions::Manifest::EXTERNAL_POLICY,
+        CreateExtensionWithLocation(ManifestLocation::kExternalPolicy,
                                     kExtensionNotFromWebStore)
             .get()));
     EXPECT_TRUE(ChromeContentRendererClient::IsNativeNaClAllowed(
         GURL(kExtensionUrl), kNaClRestricted,
-        CreateExtensionWithLocation(
-            extensions::Manifest::EXTERNAL_POLICY_DOWNLOAD,
-            kExtensionNotFromWebStore)
+        CreateExtensionWithLocation(ManifestLocation::kExternalPolicyDownload,
+                                    kExtensionNotFromWebStore)
             .get()));
   }
   // CWS extensions are allowed without --enable-nacl if called from an

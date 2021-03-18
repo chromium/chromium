@@ -68,6 +68,7 @@
 #include "base/win/shortcut.h"
 #endif
 
+using extensions::mojom::ManifestLocation;
 
 namespace {
 
@@ -349,7 +350,7 @@ class MockInstantService : public InstantService {
 
 scoped_refptr<Extension> CreateExtension(const std::u16string& name,
                                          const base::FilePath& path,
-                                         Manifest::Location location,
+                                         ManifestLocation location,
                                          extensions::Manifest::Type type,
                                          bool installed_by_default) {
   base::DictionaryValue manifest;
@@ -533,8 +534,8 @@ TEST_F(ProfileResetterTest, ResetExtensionsByDisabling) {
   test::ThemeServiceChangedWaiter waiter(theme_service);
 
   scoped_refptr<Extension> theme = CreateExtension(
-      base::ASCIIToUTF16("example1"), temp_dir.GetPath(), Manifest::UNPACKED,
-      extensions::Manifest::TYPE_THEME, false);
+      base::ASCIIToUTF16("example1"), temp_dir.GetPath(),
+      ManifestLocation::kUnpacked, extensions::Manifest::TYPE_THEME, false);
   service_->FinishInstallationForTest(theme.get());
   waiter.WaitForThemeChanged();
 
@@ -542,37 +543,33 @@ TEST_F(ProfileResetterTest, ResetExtensionsByDisabling) {
 
   scoped_refptr<Extension> ext2 = CreateExtension(
       base::ASCIIToUTF16("example2"),
-      base::FilePath(FILE_PATH_LITERAL("//nonexistent")), Manifest::UNPACKED,
-      extensions::Manifest::TYPE_EXTENSION, false);
+      base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
+      ManifestLocation::kUnpacked, extensions::Manifest::TYPE_EXTENSION, false);
   service_->AddExtension(ext2.get());
   // Component extensions and policy-managed extensions shouldn't be disabled.
-  scoped_refptr<Extension> ext3 = CreateExtension(
-      base::ASCIIToUTF16("example3"),
-      base::FilePath(FILE_PATH_LITERAL("//nonexistent2")),
-      Manifest::COMPONENT,
-      extensions::Manifest::TYPE_EXTENSION,
-      false);
+  scoped_refptr<Extension> ext3 =
+      CreateExtension(base::ASCIIToUTF16("example3"),
+                      base::FilePath(FILE_PATH_LITERAL("//nonexistent2")),
+                      ManifestLocation::kComponent,
+                      extensions::Manifest::TYPE_EXTENSION, false);
   service_->AddExtension(ext3.get());
   scoped_refptr<Extension> ext4 =
       CreateExtension(base::ASCIIToUTF16("example4"),
                       base::FilePath(FILE_PATH_LITERAL("//nonexistent3")),
-                      Manifest::EXTERNAL_POLICY_DOWNLOAD,
-                      extensions::Manifest::TYPE_EXTENSION,
-                      false);
+                      ManifestLocation::kExternalPolicyDownload,
+                      extensions::Manifest::TYPE_EXTENSION, false);
   service_->AddExtension(ext4.get());
-  scoped_refptr<Extension> ext5 = CreateExtension(
-      base::ASCIIToUTF16("example5"),
-      base::FilePath(FILE_PATH_LITERAL("//nonexistent4")),
-      Manifest::EXTERNAL_COMPONENT,
-      extensions::Manifest::TYPE_EXTENSION,
-      false);
+  scoped_refptr<Extension> ext5 =
+      CreateExtension(base::ASCIIToUTF16("example5"),
+                      base::FilePath(FILE_PATH_LITERAL("//nonexistent4")),
+                      ManifestLocation::kExternalComponent,
+                      extensions::Manifest::TYPE_EXTENSION, false);
   service_->AddExtension(ext5.get());
-  scoped_refptr<Extension> ext6 = CreateExtension(
-      base::ASCIIToUTF16("example6"),
-      base::FilePath(FILE_PATH_LITERAL("//nonexistent5")),
-      Manifest::EXTERNAL_POLICY,
-      extensions::Manifest::TYPE_EXTENSION,
-      false);
+  scoped_refptr<Extension> ext6 =
+      CreateExtension(base::ASCIIToUTF16("example6"),
+                      base::FilePath(FILE_PATH_LITERAL("//nonexistent5")),
+                      ManifestLocation::kExternalPolicy,
+                      extensions::Manifest::TYPE_EXTENSION, false);
   service_->AddExtension(ext6.get());
   EXPECT_EQ(6u, registry()->enabled_extensions().size());
 
@@ -590,14 +587,14 @@ TEST_F(ProfileResetterTest, ResetExtensionsByDisabling) {
 TEST_F(ProfileResetterTest, ResetExtensionsByDisablingNonOrganic) {
   scoped_refptr<Extension> ext2 = CreateExtension(
       base::ASCIIToUTF16("example2"),
-      base::FilePath(FILE_PATH_LITERAL("//nonexistent")), Manifest::UNPACKED,
-      extensions::Manifest::TYPE_EXTENSION, false);
+      base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
+      ManifestLocation::kUnpacked, extensions::Manifest::TYPE_EXTENSION, false);
   service_->AddExtension(ext2.get());
   // Components and external policy extensions shouldn't be deleted.
   scoped_refptr<Extension> ext3 = CreateExtension(
       base::ASCIIToUTF16("example3"),
-      base::FilePath(FILE_PATH_LITERAL("//nonexistent2")), Manifest::UNPACKED,
-      extensions::Manifest::TYPE_EXTENSION, false);
+      base::FilePath(FILE_PATH_LITERAL("//nonexistent2")),
+      ManifestLocation::kUnpacked, extensions::Manifest::TYPE_EXTENSION, false);
   service_->AddExtension(ext3.get());
   EXPECT_EQ(2u, registry()->enabled_extensions().size());
 
@@ -620,8 +617,8 @@ TEST_F(ProfileResetterTest, ResetExtensionsAndDefaultApps) {
   test::ThemeServiceChangedWaiter waiter(theme_service);
 
   scoped_refptr<Extension> ext1 = CreateExtension(
-      base::ASCIIToUTF16("example1"), temp_dir.GetPath(), Manifest::UNPACKED,
-      extensions::Manifest::TYPE_THEME, false);
+      base::ASCIIToUTF16("example1"), temp_dir.GetPath(),
+      ManifestLocation::kUnpacked, extensions::Manifest::TYPE_THEME, false);
   service_->FinishInstallationForTest(ext1.get());
   waiter.WaitForThemeChanged();
 
@@ -629,14 +626,14 @@ TEST_F(ProfileResetterTest, ResetExtensionsAndDefaultApps) {
 
   scoped_refptr<Extension> ext2 = CreateExtension(
       base::ASCIIToUTF16("example2"),
-      base::FilePath(FILE_PATH_LITERAL("//nonexistent2")), Manifest::UNPACKED,
-      extensions::Manifest::TYPE_EXTENSION, false);
+      base::FilePath(FILE_PATH_LITERAL("//nonexistent2")),
+      ManifestLocation::kUnpacked, extensions::Manifest::TYPE_EXTENSION, false);
   service_->AddExtension(ext2.get());
 
   scoped_refptr<Extension> ext3 = CreateExtension(
       base::ASCIIToUTF16("example2"),
-      base::FilePath(FILE_PATH_LITERAL("//nonexistent3")), Manifest::UNPACKED,
-      extensions::Manifest::TYPE_HOSTED_APP, true);
+      base::FilePath(FILE_PATH_LITERAL("//nonexistent3")),
+      ManifestLocation::kUnpacked, extensions::Manifest::TYPE_HOSTED_APP, true);
   service_->AddExtension(ext3.get());
   EXPECT_EQ(3u, registry()->enabled_extensions().size());
 
@@ -658,7 +655,7 @@ TEST_F(ProfileResetterTest, ResetExtensionsByReenablingExternalComponents) {
   scoped_refptr<Extension> ext =
       CreateExtension(base::ASCIIToUTF16("example"),
                       base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
-                      Manifest::EXTERNAL_COMPONENT,
+                      ManifestLocation::kExternalComponent,
                       extensions::Manifest::TYPE_EXTENSION, false);
   service_->AddExtension(ext.get());
 
@@ -824,8 +821,8 @@ TEST_F(ProfileResetterTest, CheckSnapshots) {
 
   scoped_refptr<Extension> ext = CreateExtension(
       base::ASCIIToUTF16("example"),
-      base::FilePath(FILE_PATH_LITERAL("//nonexistent")), Manifest::UNPACKED,
-      extensions::Manifest::TYPE_EXTENSION, false);
+      base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
+      ManifestLocation::kUnpacked, extensions::Manifest::TYPE_EXTENSION, false);
   ASSERT_TRUE(ext.get());
   service_->AddExtension(ext.get());
 
@@ -909,8 +906,8 @@ TEST_F(ProfileResetterTest, FeedbackSerializationAsProtoTest) {
 
   scoped_refptr<Extension> ext = CreateExtension(
       base::ASCIIToUTF16("example"),
-      base::FilePath(FILE_PATH_LITERAL("//nonexistent")), Manifest::UNPACKED,
-      extensions::Manifest::TYPE_EXTENSION, false);
+      base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
+      ManifestLocation::kUnpacked, extensions::Manifest::TYPE_EXTENSION, false);
   ASSERT_TRUE(ext.get());
   service_->AddExtension(ext.get());
 
@@ -970,8 +967,8 @@ struct FeedbackCapture {
 TEST_F(ProfileResetterTest, GetReadableFeedback) {
   scoped_refptr<Extension> ext = CreateExtension(
       base::WideToUTF16(L"Tiësto"),
-      base::FilePath(FILE_PATH_LITERAL("//nonexistent")), Manifest::UNPACKED,
-      extensions::Manifest::TYPE_EXTENSION, false);
+      base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
+      ManifestLocation::kUnpacked, extensions::Manifest::TYPE_EXTENSION, false);
   ASSERT_TRUE(ext.get());
   service_->AddExtension(ext.get());
 

@@ -38,6 +38,7 @@
 
 using base::Time;
 using base::TimeDelta;
+using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 
@@ -486,8 +487,9 @@ class ExtensionPrefsDelayedInstallInfo : public ExtensionPrefsTest {
     base::FilePath path =
         prefs_.extensions_dir().AppendASCII(base::NumberToString(num));
     std::string errors;
-    scoped_refptr<Extension> extension = Extension::Create(
-        path, Manifest::INTERNAL, manifest, Extension::NO_FLAGS, id, &errors);
+    scoped_refptr<Extension> extension =
+        Extension::Create(path, ManifestLocation::kInternal, manifest,
+                          Extension::NO_FLAGS, id, &errors);
     ASSERT_TRUE(extension.get()) << errors;
     ASSERT_EQ(id, extension->id());
     prefs()->SetDelayedInstallInfo(extension.get(),
@@ -613,8 +615,9 @@ class ExtensionPrefsFinishDelayedInstallInfo : public ExtensionPrefsTest {
     base::FilePath path =
         prefs_.extensions_dir().AppendASCII("test_0.2");
     std::string errors;
-    scoped_refptr<Extension> new_extension = Extension::Create(
-        path, Manifest::INTERNAL, manifest, Extension::NO_FLAGS, id_, &errors);
+    scoped_refptr<Extension> new_extension =
+        Extension::Create(path, ManifestLocation::kInternal, manifest,
+                          Extension::NO_FLAGS, id_, &errors);
     ASSERT_TRUE(new_extension.get()) << errors;
     ASSERT_EQ(id_, new_extension->id());
     prefs()->SetDelayedInstallInfo(new_extension.get(),
@@ -743,34 +746,22 @@ PrefsPrepopulatedTestBase::PrefsPrepopulatedTestBase()
   simple_dict.SetInteger(manifest_keys::kManifestVersion, 2);
   simple_dict.SetString(manifest_keys::kName, "unused");
 
-  extension1_ = Extension::Create(
-      prefs_.temp_dir().AppendASCII("ext1_"),
-      Manifest::EXTERNAL_PREF,
-      simple_dict,
-      Extension::NO_FLAGS,
-      &error);
-  extension2_ = Extension::Create(
-      prefs_.temp_dir().AppendASCII("ext2_"),
-      Manifest::EXTERNAL_PREF,
-      simple_dict,
-      Extension::NO_FLAGS,
-      &error);
-  extension3_ = Extension::Create(
-      prefs_.temp_dir().AppendASCII("ext3_"),
-      Manifest::EXTERNAL_PREF,
-      simple_dict,
-      Extension::NO_FLAGS,
-      &error);
-  extension4_ = Extension::Create(
-      prefs_.temp_dir().AppendASCII("ext4_"),
-      Manifest::EXTERNAL_PREF,
-      simple_dict,
-      Extension::NO_FLAGS,
-      &error);
+  extension1_ = Extension::Create(prefs_.temp_dir().AppendASCII("ext1_"),
+                                  ManifestLocation::kExternalPref, simple_dict,
+                                  Extension::NO_FLAGS, &error);
+  extension2_ = Extension::Create(prefs_.temp_dir().AppendASCII("ext2_"),
+                                  ManifestLocation::kExternalPref, simple_dict,
+                                  Extension::NO_FLAGS, &error);
+  extension3_ = Extension::Create(prefs_.temp_dir().AppendASCII("ext3_"),
+                                  ManifestLocation::kExternalPref, simple_dict,
+                                  Extension::NO_FLAGS, &error);
+  extension4_ = Extension::Create(prefs_.temp_dir().AppendASCII("ext4_"),
+                                  ManifestLocation::kExternalPref, simple_dict,
+                                  Extension::NO_FLAGS, &error);
 
   internal_extension_ = Extension::Create(
-      prefs_.temp_dir().AppendASCII("internal extension"), Manifest::INTERNAL,
-      simple_dict, Extension::NO_FLAGS, &error);
+      prefs_.temp_dir().AppendASCII("internal extension"),
+      ManifestLocation::kInternal, simple_dict, Extension::NO_FLAGS, &error);
 
   for (size_t i = 0; i < kNumInstalledExtensions; ++i)
     installed_[i] = false;
@@ -945,7 +936,7 @@ class ExtensionPrefsComponentExtension : public ExtensionPrefsTest {
     // Adding a component extension.
     component_extension_ =
         ExtensionBuilder("a")
-            .SetLocation(mojom::ManifestLocation::kComponent)
+            .SetLocation(ManifestLocation::kComponent)
             .SetPath(prefs_.extensions_dir().AppendASCII("a"))
             .Build();
     prefs_.AddExtension(component_extension_.get());
@@ -953,7 +944,7 @@ class ExtensionPrefsComponentExtension : public ExtensionPrefsTest {
     // Adding a non component extension.
     no_component_extension_ =
         ExtensionBuilder("b")
-            .SetLocation(mojom::ManifestLocation::kInternal)
+            .SetLocation(ManifestLocation::kInternal)
             .SetPath(prefs_.extensions_dir().AppendASCII("b"))
             .Build();
     prefs_.AddExtension(no_component_extension_.get());

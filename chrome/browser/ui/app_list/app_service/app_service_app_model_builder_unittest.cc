@@ -128,7 +128,7 @@ scoped_refptr<extensions::Extension> MakeApp(const std::string& name,
   value.SetString("version", version);
   value.SetString("app.launch.web_url", url);
   scoped_refptr<extensions::Extension> app = extensions::Extension::Create(
-      base::FilePath(), extensions::Manifest::INTERNAL, value,
+      base::FilePath(), extensions::mojom::ManifestLocation::kInternal, value,
       extensions::Extension::WAS_INSTALLED_BY_DEFAULT, id, &err);
   EXPECT_EQ(err, "");
   return app;

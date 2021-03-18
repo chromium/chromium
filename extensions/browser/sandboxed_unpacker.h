@@ -292,7 +292,7 @@ class SandboxedUnpacker : public base::RefCountedThreadSafe<SandboxedUnpacker> {
   std::string extension_id_;
 
   // Location to use for the unpacked extension.
-  Manifest::Location location_;
+  mojom::ManifestLocation location_;
 
   // Creation flags to use for the extension. These flags will be used
   // when calling Extension::Create() by the CRX installer.

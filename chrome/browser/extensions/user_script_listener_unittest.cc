@@ -67,8 +67,8 @@ scoped_refptr<Extension> LoadExtension(const std::string& filename,
   std::unique_ptr<base::DictionaryValue> value = LoadManifestFile(path, error);
   if (!value)
     return nullptr;
-  return Extension::Create(path.DirName(), Manifest::UNPACKED, *value,
-                           Extension::NO_FLAGS, error);
+  return Extension::Create(path.DirName(), mojom::ManifestLocation::kUnpacked,
+                           *value, Extension::NO_FLAGS, error);
 }
 
 }  // namespace

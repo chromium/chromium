@@ -101,8 +101,9 @@ scoped_refptr<Extension> ExtensionMsg_Loaded_Params::ConvertToExtension(
   // We pass in the |id| to the create call because it will save work in the
   // normal case, and because in tests, extensions may not have paths or keys,
   // but it's important to retain the same id.
-  scoped_refptr<Extension> extension =
-      Extension::Create(path, location, manifest, creation_flags, id, error);
+  scoped_refptr<Extension> extension = Extension::Create(
+      path, static_cast<extensions::mojom::ManifestLocation>(location),
+      manifest, creation_flags, id, error);
   if (extension.get()) {
     const extensions::PermissionsData* permissions_data =
         extension->permissions_data();

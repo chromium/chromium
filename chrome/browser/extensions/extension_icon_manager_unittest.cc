@@ -122,9 +122,9 @@ TEST_F(ExtensionIconManagerTest, LoadRemoveLoad) {
   ASSERT_TRUE(manifest.get() != NULL);
 
   std::string error;
-  scoped_refptr<Extension> extension(
-      Extension::Create(manifest_path.DirName(), Manifest::INVALID_LOCATION,
-                        *manifest, Extension::NO_FLAGS, &error));
+  scoped_refptr<Extension> extension(Extension::Create(
+      manifest_path.DirName(), mojom::ManifestLocation::kInvalidLocation,
+      *manifest, Extension::NO_FLAGS, &error));
   ASSERT_TRUE(extension.get());
   ExtensionIconManager icon_manager;
   icon_manager.set_observer(this);
@@ -166,8 +166,8 @@ TEST_F(ExtensionIconManagerTest, LoadComponentExtensionResource) {
 
   std::string error;
   scoped_refptr<Extension> extension(Extension::Create(
-      manifest_path.DirName(), Manifest::COMPONENT, *manifest.get(),
-      Extension::NO_FLAGS, &error));
+      manifest_path.DirName(), mojom::ManifestLocation::kComponent,
+      *manifest.get(), Extension::NO_FLAGS, &error));
   ASSERT_TRUE(extension.get());
 
   ExtensionIconManager icon_manager;
@@ -209,9 +209,9 @@ TEST_F(ExtensionIconManagerTest, ScaleFactors) {
   ASSERT_TRUE(manifest);
 
   std::string error;
-  scoped_refptr<Extension> extension(
-      Extension::Create(manifest_path.DirName(), Manifest::INVALID_LOCATION,
-                        *manifest, Extension::NO_FLAGS, &error));
+  scoped_refptr<Extension> extension(Extension::Create(
+      manifest_path.DirName(), mojom::ManifestLocation::kInvalidLocation,
+      *manifest, Extension::NO_FLAGS, &error));
   ASSERT_TRUE(extension);
 
   constexpr int kMaxIconSizeInManifest = 32;

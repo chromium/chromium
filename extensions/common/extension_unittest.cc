@@ -14,6 +14,8 @@
 #include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using extensions::mojom::ManifestLocation;
+
 namespace extensions {
 namespace {
 
@@ -24,8 +26,9 @@ testing::AssertionResult RunManifestVersionSuccess(
     bool expect_warning = false,
     Extension::InitFromValueFlags custom_flag = Extension::NO_FLAGS) {
   std::string error;
-  scoped_refptr<const Extension> extension = Extension::Create(
-      base::FilePath(), Manifest::INTERNAL, *manifest, custom_flag, &error);
+  scoped_refptr<const Extension> extension =
+      Extension::Create(base::FilePath(), ManifestLocation::kInternal,
+                        *manifest, custom_flag, &error);
   if (!extension) {
     return testing::AssertionFailure()
            << "Extension creation failed: " << error;
@@ -61,8 +64,9 @@ testing::AssertionResult RunManifestVersionFailure(
     std::unique_ptr<base::DictionaryValue> manifest,
     Extension::InitFromValueFlags custom_flag = Extension::NO_FLAGS) {
   std::string error;
-  scoped_refptr<const Extension> extension = Extension::Create(
-      base::FilePath(), Manifest::INTERNAL, *manifest, custom_flag, &error);
+  scoped_refptr<const Extension> extension =
+      Extension::Create(base::FilePath(), ManifestLocation::kInternal,
+                        *manifest, custom_flag, &error);
   if (extension)
     return testing::AssertionFailure() << "Extension creation succeeded.";
 
@@ -71,7 +75,7 @@ testing::AssertionResult RunManifestVersionFailure(
 
 testing::AssertionResult RunCreationWithFlags(
     const base::DictionaryValue* manifest,
-    Manifest::Location location,
+    mojom::ManifestLocation location,
     Manifest::Type expected_type,
     Extension::InitFromValueFlags custom_flag = Extension::NO_FLAGS) {
   std::string error;
@@ -247,12 +251,12 @@ TEST(ExtensionTest, LoginScreenFlag) {
       .Set("manifest_version", 2);
   std::unique_ptr<base::DictionaryValue> manifest = builder.Build();
 
-  EXPECT_TRUE(RunCreationWithFlags(manifest.get(), Manifest::EXTERNAL_POLICY,
-                                   Manifest::TYPE_EXTENSION,
-                                   Extension::NO_FLAGS));
-  EXPECT_TRUE(RunCreationWithFlags(manifest.get(), Manifest::EXTERNAL_POLICY,
-                                   Manifest::TYPE_LOGIN_SCREEN_EXTENSION,
-                                   Extension::FOR_LOGIN_SCREEN));
+  EXPECT_TRUE(
+      RunCreationWithFlags(manifest.get(), ManifestLocation::kExternalPolicy,
+                           Manifest::TYPE_EXTENSION, Extension::NO_FLAGS));
+  EXPECT_TRUE(RunCreationWithFlags(
+      manifest.get(), ManifestLocation::kExternalPolicy,
+      Manifest::TYPE_LOGIN_SCREEN_EXTENSION, Extension::FOR_LOGIN_SCREEN));
 }
 
 }  // namespace extensions

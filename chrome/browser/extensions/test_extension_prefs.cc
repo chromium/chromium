@@ -171,8 +171,9 @@ scoped_refptr<Extension> TestExtensionPrefs::AddExtensionWithManifestAndFlags(
   EXPECT_TRUE(manifest.GetString(manifest_keys::kName, &name));
   base::FilePath path =  extensions_dir_.AppendASCII(name);
   std::string errors;
-  scoped_refptr<Extension> extension = Extension::Create(
-      path, location, manifest, extra_flags, &errors);
+  scoped_refptr<Extension> extension =
+      Extension::Create(path, static_cast<mojom::ManifestLocation>(location),
+                        manifest, extra_flags, &errors);
   EXPECT_TRUE(extension.get()) << errors;
   if (!extension.get())
     return nullptr;

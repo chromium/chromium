@@ -71,7 +71,8 @@ class ManifestUnitTest : public testing::Test {
     ExtensionId extension_id = manifest->get()->extension_id();
     if (for_login_screen) {
       *manifest = Manifest::CreateManifestForLoginScreen(
-          Manifest::EXTERNAL_POLICY, std::move(manifest_value), extension_id);
+          mojom::ManifestLocation::kExternalPolicy, std::move(manifest_value),
+          extension_id);
     } else {
       *manifest = std::make_unique<Manifest>(
           Manifest::INTERNAL, std::move(manifest_value), extension_id);

@@ -211,7 +211,7 @@ scoped_refptr<Extension> ConvertWebAppToExtension(
     const base::Time& create_time,
     const base::FilePath& extensions_dir,
     int extra_creation_flags,
-    Manifest::Location install_source) {
+    mojom::ManifestLocation install_source) {
   base::FilePath install_temp_dir =
       file_util::GetInstallTempDir(extensions_dir);
   if (install_temp_dir.empty()) {

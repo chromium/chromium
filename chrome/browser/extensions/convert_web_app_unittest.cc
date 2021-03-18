@@ -49,6 +49,8 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
 
+using extensions::mojom::ManifestLocation;
+
 namespace extensions {
 
 namespace keys = manifest_keys;
@@ -154,7 +156,7 @@ TEST_F(ExtensionFromWebApp, GetScopeURLFromBookmarkApp) {
 
   std::string error;
   scoped_refptr<Extension> bookmark_app =
-      Extension::Create(ExtensionPath(), Manifest::INTERNAL, manifest,
+      Extension::Create(ExtensionPath(), ManifestLocation::kInternal, manifest,
                         Extension::FROM_BOOKMARK, &error);
   ASSERT_TRUE(bookmark_app.get());
 
@@ -172,7 +174,7 @@ TEST_F(ExtensionFromWebApp, GetScopeURLFromBookmarkApp_NoURLHandlers) {
 
   std::string error;
   scoped_refptr<Extension> bookmark_app =
-      Extension::Create(ExtensionPath(), Manifest::INTERNAL, manifest,
+      Extension::Create(ExtensionPath(), ManifestLocation::kInternal, manifest,
                         Extension::FROM_BOOKMARK, &error);
   ASSERT_TRUE(bookmark_app.get());
 
@@ -207,7 +209,7 @@ TEST_F(ExtensionFromWebApp, GetScopeURLFromBookmarkApp_WrongURLHandler) {
 
   std::string error;
   scoped_refptr<Extension> bookmark_app =
-      Extension::Create(ExtensionPath(), Manifest::INTERNAL, manifest,
+      Extension::Create(ExtensionPath(), ManifestLocation::kInternal, manifest,
                         Extension::FROM_BOOKMARK, &error);
   ASSERT_TRUE(bookmark_app.get());
 
@@ -250,7 +252,7 @@ TEST_F(ExtensionFromWebApp, GetScopeURLFromBookmarkApp_ExtraURLHandler) {
 
   std::string error;
   scoped_refptr<Extension> bookmark_app =
-      Extension::Create(ExtensionPath(), Manifest::INTERNAL, manifest,
+      Extension::Create(ExtensionPath(), ManifestLocation::kInternal, manifest,
                         Extension::FROM_BOOKMARK, &error);
   ASSERT_TRUE(bookmark_app.get());
 
@@ -293,7 +295,7 @@ TEST_F(ExtensionFromWebApp, Basic) {
 
   scoped_refptr<Extension> extension = ConvertWebAppToExtension(
       web_app, GetTestTime(1978, 12, 11, 0, 0, 0, 0), ExtensionPath(),
-      Extension::NO_FLAGS, Manifest::INTERNAL);
+      Extension::NO_FLAGS, ManifestLocation::kInternal);
   ASSERT_TRUE(extension.get());
 
   base::ScopedTempDir extension_dir;
@@ -307,7 +309,8 @@ TEST_F(ExtensionFromWebApp, Basic) {
   EXPECT_FALSE(extension->was_installed_by_default());
   EXPECT_FALSE(extension->was_installed_by_oem());
   EXPECT_FALSE(extension->from_webstore());
-  EXPECT_EQ(Manifest::INTERNAL, extension->location());
+  EXPECT_EQ(ManifestLocation::kInternal,
+            static_cast<ManifestLocation>(extension->location()));
 
   EXPECT_EQ("zVvdNZy3Mp7CFU8JVSyXNlDuHdVLbP7fDO3TGVzj/0w=",
             extension->public_key());
@@ -353,7 +356,7 @@ TEST_F(ExtensionFromWebApp, Minimal) {
 
   scoped_refptr<Extension> extension = ConvertWebAppToExtension(
       web_app, GetTestTime(1978, 12, 11, 0, 0, 0, 0), ExtensionPath(),
-      Extension::NO_FLAGS, Manifest::INTERNAL);
+      Extension::NO_FLAGS, ManifestLocation::kInternal);
   ASSERT_TRUE(extension.get());
 
   base::ScopedTempDir extension_dir;
@@ -367,7 +370,8 @@ TEST_F(ExtensionFromWebApp, Minimal) {
   EXPECT_FALSE(extension->was_installed_by_default());
   EXPECT_FALSE(extension->was_installed_by_oem());
   EXPECT_FALSE(extension->from_webstore());
-  EXPECT_EQ(Manifest::INTERNAL, extension->location());
+  EXPECT_EQ(ManifestLocation::kInternal,
+            static_cast<ManifestLocation>(extension->location()));
 
   EXPECT_EQ("zVvdNZy3Mp7CFU8JVSyXNlDuHdVLbP7fDO3TGVzj/0w=",
             extension->public_key());
@@ -393,7 +397,7 @@ TEST_F(ExtensionFromWebApp, ExtraInstallationFlags) {
   scoped_refptr<Extension> extension = ConvertWebAppToExtension(
       web_app, GetTestTime(1978, 12, 11, 0, 0, 0, 0), ExtensionPath(),
       Extension::FROM_WEBSTORE | Extension::WAS_INSTALLED_BY_OEM,
-      Manifest::INTERNAL);
+      ManifestLocation::kInternal);
   ASSERT_TRUE(extension.get());
 
   EXPECT_TRUE(extension->is_app());
@@ -404,7 +408,8 @@ TEST_F(ExtensionFromWebApp, ExtraInstallationFlags) {
   EXPECT_TRUE(extension->was_installed_by_oem());
   EXPECT_TRUE(extension->from_webstore());
   EXPECT_FALSE(extension->was_installed_by_default());
-  EXPECT_EQ(Manifest::INTERNAL, extension->location());
+  EXPECT_EQ(ManifestLocation::kInternal,
+            static_cast<ManifestLocation>(extension->location()));
 }
 
 TEST_F(ExtensionFromWebApp, ExternalPolicyLocation) {
@@ -415,7 +420,7 @@ TEST_F(ExtensionFromWebApp, ExternalPolicyLocation) {
 
   scoped_refptr<Extension> extension = ConvertWebAppToExtension(
       web_app, GetTestTime(1978, 12, 11, 0, 0, 0, 0), ExtensionPath(),
-      Extension::NO_FLAGS, Manifest::EXTERNAL_POLICY);
+      Extension::NO_FLAGS, ManifestLocation::kExternalPolicy);
   ASSERT_TRUE(extension.get());
 
   EXPECT_TRUE(extension->is_app());
@@ -440,7 +445,7 @@ TEST_F(ExtensionFromWebApp, ScopeDoesNotEndInSlash) {
 
   scoped_refptr<Extension> extension = ConvertWebAppToExtension(
       web_app, GetTestTime(1978, 12, 11, 0, 0, 0, 0), ExtensionPath(),
-      Extension::NO_FLAGS, Manifest::INTERNAL);
+      Extension::NO_FLAGS, ManifestLocation::kInternal);
   ASSERT_TRUE(extension.get());
   EXPECT_EQ(web_app.scope, GetScopeURLFromBookmarkApp(extension.get()));
 }
@@ -475,7 +480,7 @@ TEST_F(ExtensionFromWebApp, FileHandlersAreCorrectlyConverted) {
 
   scoped_refptr<Extension> extension = ConvertWebAppToExtension(
       web_app, GetTestTime(1978, 12, 11, 0, 0, 0, 0), ExtensionPath(),
-      Extension::NO_FLAGS, Manifest::INTERNAL);
+      Extension::NO_FLAGS, ManifestLocation::kInternal);
 
   ASSERT_TRUE(extension.get());
 
@@ -538,7 +543,7 @@ TEST_F(ExtensionFromWebApp, WebAppFileHandlersAreCorrectlyConverted) {
 
   scoped_refptr<Extension> extension = ConvertWebAppToExtension(
       web_app, GetTestTime(1978, 12, 11, 0, 0, 0, 0), ExtensionPath(),
-      Extension::NO_FLAGS, Manifest::INTERNAL);
+      Extension::NO_FLAGS, ManifestLocation::kInternal);
 
   ASSERT_TRUE(extension.get());
 
@@ -617,7 +622,7 @@ TEST_F(ExtensionFromWebAppWithShortcutsMenu,
 
   scoped_refptr<Extension> extension = ConvertWebAppToExtension(
       web_app, GetTestTime(1978, 12, 11, 0, 0, 0, 0), ExtensionPath(),
-      Extension::FROM_BOOKMARK, Manifest::INTERNAL);
+      Extension::FROM_BOOKMARK, ManifestLocation::kInternal);
 
   ASSERT_TRUE(extension.get());
 

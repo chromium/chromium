@@ -104,7 +104,7 @@ const base::FilePath::CharType kExtensionFilePath[] =
 static scoped_refptr<extensions::Extension> CreateExtension(
     const std::string& name,
     const std::string& id,
-    extensions::Manifest::Location location) {
+    extensions::mojom::ManifestLocation location) {
   base::DictionaryValue manifest;
   manifest.SetString(extensions::manifest_keys::kVersion, "1.0.0.0");
   manifest.SetInteger(extensions::manifest_keys::kManifestVersion, 2);
@@ -214,17 +214,16 @@ TEST_F(ProfileSigninConfirmationHelperTest, PromptForNewProfile_Extensions) {
   // Profile is new but has synced extensions (The web store doesn't count).
   profile_->SetIsNewProfile(true);
   scoped_refptr<extensions::Extension> webstore =
-      CreateExtension("web store",
-                      extensions::kWebStoreAppId,
-                      extensions::Manifest::COMPONENT);
+      CreateExtension("web store", extensions::kWebStoreAppId,
+                      extensions::mojom::ManifestLocation::kComponent);
   extensions::ExtensionPrefs::Get(profile_.get())
       ->AddGrantedPermissions(webstore->id(), extensions::PermissionSet());
   extensions->AddExtension(webstore.get());
   EXPECT_FALSE(GetCallbackResult(
       base::BindOnce(&ui::CheckShouldPromptForNewProfile, profile_.get())));
 
-  scoped_refptr<extensions::Extension> extension =
-      CreateExtension("foo", std::string(), extensions::Manifest::INTERNAL);
+  scoped_refptr<extensions::Extension> extension = CreateExtension(
+      "foo", std::string(), extensions::mojom::ManifestLocation::kInternal);
   extensions::ExtensionPrefs::Get(profile_.get())
       ->AddGrantedPermissions(extension->id(), extensions::PermissionSet());
   extensions->AddExtension(extension.get());

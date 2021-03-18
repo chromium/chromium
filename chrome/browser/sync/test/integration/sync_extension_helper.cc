@@ -376,9 +376,9 @@ scoped_refptr<Extension> CreateExtension(const base::FilePath& base_dir,
     return nullptr;
   }
   std::string error;
-  scoped_refptr<Extension> extension =
-      Extension::Create(extension_dir, Manifest::INTERNAL, source,
-                        Extension::NO_FLAGS, &error);
+  scoped_refptr<Extension> extension = Extension::Create(
+      extension_dir, extensions::mojom::ManifestLocation::kInternal, source,
+      Extension::NO_FLAGS, &error);
   if (!error.empty()) {
     ADD_FAILURE() << error;
     return nullptr;

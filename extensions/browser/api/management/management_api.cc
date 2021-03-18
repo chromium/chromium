@@ -364,9 +364,9 @@ void ManagementGetPermissionWarningsByManifestFunction::OnParse(
   }
 
   std::string error;
-  scoped_refptr<Extension> extension =
-      Extension::Create(base::FilePath(), Manifest::INVALID_LOCATION,
-                        *parsed_manifest, Extension::NO_FLAGS, &error);
+  scoped_refptr<Extension> extension = Extension::Create(
+      base::FilePath(), mojom::ManifestLocation::kInvalidLocation,
+      *parsed_manifest, Extension::NO_FLAGS, &error);
   // TODO(lazyboy): Do we need to use |error|?
   if (!extension) {
     Respond(Error(keys::kExtensionCreateError));

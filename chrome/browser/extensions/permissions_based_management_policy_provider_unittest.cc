@@ -73,7 +73,8 @@ class PermissionsBasedManagementPolicyProviderTest : public testing::Test {
     }
     std::string error;
     scoped_refptr<const Extension> extension = Extension::Create(
-        base::FilePath(), location, manifest_dict, Extension::NO_FLAGS, &error);
+        base::FilePath(), static_cast<mojom::ManifestLocation>(location),
+        manifest_dict, Extension::NO_FLAGS, &error);
     CHECK(extension.get()) << error;
     return extension;
   }

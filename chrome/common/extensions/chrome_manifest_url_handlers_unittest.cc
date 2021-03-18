@@ -25,9 +25,9 @@ TEST(ChromeURLOverridesHandlerTest, TestFileMissing) {
   std::vector<InstallWarning> warnings;
   base::ScopedTempDir dir;
   ASSERT_TRUE(dir.CreateUniqueTempDir());
-  scoped_refptr<Extension> extension =
-      Extension::Create(dir.GetPath(), Manifest::INTERNAL, *manifest_value,
-                        Extension::NO_FLAGS, std::string(), &error);
+  scoped_refptr<Extension> extension = Extension::Create(
+      dir.GetPath(), mojom::ManifestLocation::kInternal, *manifest_value,
+      Extension::NO_FLAGS, std::string(), &error);
   ASSERT_TRUE(extension);
   EXPECT_FALSE(
       file_util::ValidateExtension(extension.get(), &error, &warnings));

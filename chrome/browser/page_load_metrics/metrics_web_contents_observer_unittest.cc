@@ -81,7 +81,7 @@ TEST_F(MetricsWebContentsObserverTest,
   scoped_refptr<extensions::Extension> extension =
       extensions::Extension::Create(
           base::FilePath(FILE_PATH_LITERAL("//no-such-file")),
-          extensions::Manifest::INVALID_LOCATION, manifest,
+          extensions::mojom::ManifestLocation::kInvalidLocation, manifest,
           extensions::Extension::NO_FLAGS, "mbflcebpggnecokmikipoihdbecnjfoj",
           &error);
   ASSERT_TRUE(error.empty());

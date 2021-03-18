@@ -88,8 +88,8 @@ const Extension* CastExtensionSystem::LoadExtensionByManifest(
   }
 
   scoped_refptr<extensions::Extension> extension(extensions::Extension::Create(
-      base::FilePath(), extensions::Manifest::COMMAND_LINE, *manifest, 0,
-      std::string(), &error));
+      base::FilePath(), extensions::mojom::ManifestLocation::kCommandLine,
+      *manifest, 0, std::string(), &error));
   if (!extension.get()) {
     LOG(ERROR) << "Failed to create extension: " << error;
     return nullptr;
