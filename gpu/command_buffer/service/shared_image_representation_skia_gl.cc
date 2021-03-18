@@ -74,6 +74,8 @@ SharedImageRepresentationSkiaGL::SharedImageRepresentationSkiaGL(
 SharedImageRepresentationSkiaGL::~SharedImageRepresentationSkiaGL() {
   DCHECK_EQ(RepresentationAccessMode::kNone, mode_);
   surface_.reset();
+  if (!has_context())
+    gl_representation_->OnContextLost();
 }
 
 sk_sp<SkSurface> SharedImageRepresentationSkiaGL::BeginWriteAccess(
