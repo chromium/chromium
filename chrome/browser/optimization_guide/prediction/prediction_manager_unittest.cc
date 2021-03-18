@@ -473,15 +473,16 @@ class TestPredictionManager : public PredictionManager {
   bool create_valid_prediction_model_ = true;
 };
 
-class PredictionManagerTest : public ProtoDatabaseProviderTestBase {
+class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
  public:
   using StoreEntry = proto::StoreEntry;
   using StoreEntryMap = std::map<OptimizationGuideStore::EntryKey, StoreEntry>;
-  PredictionManagerTest() = default;
-  ~PredictionManagerTest() override = default;
+  PredictionManagerTestBase() = default;
+  ~PredictionManagerTestBase() override = default;
 
-  PredictionManagerTest(const PredictionManagerTest&) = delete;
-  PredictionManagerTest& operator=(const PredictionManagerTest&) = delete;
+  PredictionManagerTestBase(const PredictionManagerTestBase&) = delete;
+  PredictionManagerTestBase& operator=(const PredictionManagerTestBase&) =
+      delete;
 
   void SetUp() override {
     ProtoDatabaseProviderTestBase::SetUp();
@@ -618,6 +619,12 @@ class PredictionManagerTest : public ProtoDatabaseProviderTestBase {
     return &task_environment_;
   }
 
+ protected:
+  // |feature_list_| needs to be destroyed after |task_environment_|, to avoid
+  // tsan flakes caused by other tasks running while |feature_list_| is
+  // destroyed.
+  base::test::ScopedFeatureList feature_list_;
+
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,
@@ -633,11 +640,18 @@ class PredictionManagerTest : public ProtoDatabaseProviderTestBase {
   std::unique_ptr<content::TestWebContentsFactory> web_contents_factory_;
 };
 
-TEST_F(PredictionManagerTest, RemoteFetchingDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kRemoteOptimizationGuideFetching);
+class PredictionManagerRemoteFetchingDisabledTest
+    : public PredictionManagerTestBase {
+ public:
+  PredictionManagerRemoteFetchingDisabledTest() {
+    // This needs to be done before any tasks are run that might check if a
+    // feature is enabled, to avoid tsan errors.
+    feature_list_.InitAndDisableFeature(
+        features::kRemoteOptimizationGuideFetching);
+  }
+};
 
+TEST_F(PredictionManagerRemoteFetchingDisabledTest, RemoteFetchingDisabled) {
   CreatePredictionManager();
 
   prediction_manager()->SetPredictionModelFetcherForTesting(
@@ -652,10 +666,17 @@ TEST_F(PredictionManagerTest, RemoteFetchingDisabled) {
   EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
 }
 
-TEST_F(PredictionManagerTest, OptimizationTargetNotRegisteredForNavigation) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
+class PredictionManagerTest : public PredictionManagerTestBase {
+ public:
+  PredictionManagerTest() {
+    // This needs to be done before any tasks are run that might check if a
+    // feature is enabled, to avoid tsan errors.
+    feature_list_.InitAndEnableFeature(
+        features::kRemoteOptimizationGuideFetching);
+  }
+};
 
+TEST_F(PredictionManagerTest, OptimizationTargetNotRegisteredForNavigation) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
       CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
@@ -704,9 +725,6 @@ TEST_F(PredictionManagerTest, OptimizationTargetNotRegisteredForNavigation) {
 }
 
 TEST_F(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   base::HistogramTester histogram_tester;
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
       CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
@@ -800,8 +818,6 @@ TEST_F(PredictionManagerTest,
        AddObserverForOptimizationTargetModelAddAnotherObserverForSameTarget) {
   // Fails under "threadsafe" mode.
   testing::GTEST_FLAG(death_test_style) = "fast";
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
 
   CreatePredictionManager();
 
@@ -848,9 +864,6 @@ TEST_F(PredictionManagerTest,
 
 TEST_F(PredictionManagerTest,
        AddObserverForOptimizationTargetModelCommandLineOverride) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   optimization_guide::proto::Any metadata;
   metadata.set_type_url("sometypeurl");
   std::string encoded_metadata;
@@ -914,9 +927,6 @@ TEST_F(PredictionManagerTest,
 
 TEST_F(PredictionManagerTest,
        NoPredictionModelForRegisteredOptimizationTarget) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   base::HistogramTester histogram_tester;
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
       CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
@@ -951,9 +961,6 @@ TEST_F(PredictionManagerTest,
 }
 
 TEST_F(PredictionManagerTest, EvaluatePredictionModel) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   base::HistogramTester histogram_tester;
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
       CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
@@ -1006,9 +1013,6 @@ TEST_F(PredictionManagerTest, EvaluatePredictionModel) {
 }
 
 TEST_F(PredictionManagerTest, UpdatePredictionModelsWithInvalidModel) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   base::HistogramTester histogram_tester;
   CreatePredictionManager();
   prediction_manager()->SetPredictionModelFetcherForTesting(
@@ -1039,9 +1043,6 @@ TEST_F(PredictionManagerTest, UpdatePredictionModelsWithInvalidModel) {
 }
 
 TEST_F(PredictionManagerTest, UpdateModelWithSameVersion) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   base::HistogramTester histogram_tester;
   CreatePredictionManager();
   prediction_manager()->SetPredictionModelFetcherForTesting(
@@ -1085,9 +1086,6 @@ TEST_F(PredictionManagerTest, UpdateModelWithSameVersion) {
 }
 
 TEST_F(PredictionManagerTest, UpdateModelFileWithSameVersion) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   base::HistogramTester histogram_tester;
 
   CreatePredictionManager();
@@ -1129,9 +1127,6 @@ TEST_F(PredictionManagerTest, UpdateModelFileWithSameVersion) {
 
 TEST_F(PredictionManagerTest,
        EvaluatePredictionModelUsesDecisionFromPostiveEvalIfModelWasEvaluated) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
       CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
           GURL("https://foo.com"));
@@ -1172,9 +1167,6 @@ TEST_F(PredictionManagerTest,
 
 TEST_F(PredictionManagerTest,
        EvaluatePredictionModelUsesDecisionFromNegativeEvalIfModelWasEvaluated) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   base::HistogramTester histogram_tester;
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
       CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
@@ -1218,9 +1210,6 @@ TEST_F(PredictionManagerTest,
 
 TEST_F(PredictionManagerTest,
        EvaluatePredictionModelUsesDecisionFromHoldbackEvalIfModelWasEvaluated) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
       CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
           GURL("https://foo.com"));
@@ -1259,9 +1248,6 @@ TEST_F(PredictionManagerTest,
 }
 
 TEST_F(PredictionManagerTest, DownloadManagerUnavailableShouldNotFetch) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   base::HistogramTester histogram_tester;
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
       CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
@@ -1289,9 +1275,6 @@ TEST_F(PredictionManagerTest, DownloadManagerUnavailableShouldNotFetch) {
 }
 
 TEST_F(PredictionManagerTest, UpdateModelWithDownloadUrl) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   base::HistogramTester histogram_tester;
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
       CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
@@ -1329,9 +1312,6 @@ TEST_F(PredictionManagerTest, UpdateModelWithDownloadUrl) {
 }
 
 TEST_F(PredictionManagerTest, EvaluatePredictionModelPopulatesNavData) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   base::HistogramTester histogram_tester;
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
       CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
@@ -1382,69 +1362,7 @@ TEST_F(PredictionManagerTest, EvaluatePredictionModelPopulatesNavData) {
                      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
 }
 
-TEST_F(PredictionManagerTest,
-       EvaluatePredictionModelPopulatesNavDataEvenWithHoldback) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{features::kOptimizationTargetPrediction,
-        {{"painful_page_load_metrics_only", "true"}}},
-       {features::kRemoteOptimizationGuideFetching, {}}},
-      {});
-
-  base::HistogramTester histogram_tester;
-
-  std::unique_ptr<content::MockNavigationHandle> navigation_handle =
-      CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
-          GURL("https://foo.com"));
-
-  CreatePredictionManager();
-  prediction_manager()->SetPredictionModelFetcherForTesting(
-      BuildTestPredictionModelFetcher(
-          PredictionModelFetcherEndState::
-              kFetchSuccessWithModelsAndHostsModelFeatures));
-
-  prediction_manager()->RegisterOptimizationTargets(
-      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, base::nullopt}});
-
-  SetStoreInitialized();
-  EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
-  models_and_features_store()->RunUpdateHostModelFeaturesCallback();
-
-    EXPECT_EQ(OptimizationTargetDecision::kModelPredictionHoldback,
-              prediction_manager()->ShouldTargetNavigation(
-                  navigation_handle.get(),
-                  proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, {}));
-
-    TestPredictionModel* test_prediction_model =
-        static_cast<TestPredictionModel*>(
-            prediction_manager()->GetPredictionModelForTesting(
-                proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
-    EXPECT_TRUE(test_prediction_model);
-    EXPECT_TRUE(test_prediction_model->WasModelEvaluated());
-
-  OptimizationGuideNavigationData* nav_data =
-      OptimizationGuideNavigationData::GetFromNavigationHandle(
-          navigation_handle.get());
-  EXPECT_EQ(2, *nav_data->GetModelVersionForOptimizationTarget(
-                   proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
-  EXPECT_EQ(0.6, *nav_data->GetModelPredictionScoreForOptimizationTarget(
-                     proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
-
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.ShouldTargetNavigation.PredictionModelStatus",
-      PredictionManagerModelStatus::kModelAvailable, 1);
-
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.ShouldTargetNavigation.PredictionModelStatus." +
-          GetStringNameForOptimizationTarget(
-              proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
-      PredictionManagerModelStatus::kModelAvailable, 1);
-}
-
 TEST_F(PredictionManagerTest, ShouldTargetNavigationStoreAvailableNoModel) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   base::HistogramTester histogram_tester;
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
       CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
@@ -1479,9 +1397,6 @@ TEST_F(PredictionManagerTest, ShouldTargetNavigationStoreAvailableNoModel) {
 
 TEST_F(PredictionManagerTest,
        ShouldTargetNavigationStoreAvailableModelNotLoaded) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   base::HistogramTester histogram_tester;
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
       CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
@@ -1519,9 +1434,6 @@ TEST_F(PredictionManagerTest,
 
 TEST_F(PredictionManagerTest,
        ShouldTargetNavigationStoreUnavailableModelUnknown) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   base::HistogramTester histogram_tester;
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
       CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
@@ -1552,9 +1464,6 @@ TEST_F(PredictionManagerTest,
 }
 
 TEST_F(PredictionManagerTest, UpdateModelForUnregisteredTarget) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   base::HistogramTester histogram_tester;
   CreatePredictionManager();
   prediction_manager()->SetPredictionModelFetcherForTesting(
@@ -1588,9 +1497,6 @@ TEST_F(PredictionManagerTest, UpdateModelForUnregisteredTarget) {
 }
 
 TEST_F(PredictionManagerTest, UpdateModelForUnregisteredTargetOnModelReady) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   base::HistogramTester histogram_tester;
   CreatePredictionManager();
 
@@ -1613,9 +1519,6 @@ TEST_F(PredictionManagerTest, UpdateModelForUnregisteredTargetOnModelReady) {
 }
 
 TEST_F(PredictionManagerTest, UpdateModelForRegisteredTargetButNowFile) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
       CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
           GURL("https://foo.com"));
@@ -1660,9 +1563,6 @@ TEST_F(PredictionManagerTest, UpdateModelForRegisteredTargetButNowFile) {
 }
 
 TEST_F(PredictionManagerTest, UpdateModelWithUnsupportedOptimizationTarget) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
       CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
           GURL("https://foo.com"));
@@ -1700,9 +1600,6 @@ TEST_F(PredictionManagerTest, UpdateModelWithUnsupportedOptimizationTarget) {
 }
 
 TEST_F(PredictionManagerTest, HasHostModelFeaturesForHost) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   base::HistogramTester histogram_tester;
 
   CreatePredictionManager();
@@ -1733,9 +1630,6 @@ TEST_F(PredictionManagerTest, HasHostModelFeaturesForHost) {
 }
 
 TEST_F(PredictionManagerTest, NoHostModelFeaturesForHost) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   base::HistogramTester histogram_tester;
 
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
@@ -1776,9 +1670,6 @@ TEST_F(PredictionManagerTest, NoHostModelFeaturesForHost) {
 }
 
 TEST_F(PredictionManagerTest, UpdateHostModelFeaturesMissingHost) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   CreatePredictionManager();
   prediction_manager()->SetPredictionModelFetcherForTesting(
       BuildTestPredictionModelFetcher(
@@ -1803,9 +1694,6 @@ TEST_F(PredictionManagerTest, UpdateHostModelFeaturesMissingHost) {
 }
 
 TEST_F(PredictionManagerTest, UpdateHostModelFeaturesNoFeature) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   CreatePredictionManager();
   prediction_manager()->SetPredictionModelFetcherForTesting(
       BuildTestPredictionModelFetcher(
@@ -1829,9 +1717,6 @@ TEST_F(PredictionManagerTest, UpdateHostModelFeaturesNoFeature) {
 }
 
 TEST_F(PredictionManagerTest, UpdateHostModelFeaturesNoFeatureName) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   CreatePredictionManager();
   prediction_manager()->SetPredictionModelFetcherForTesting(
       BuildTestPredictionModelFetcher(
@@ -1858,9 +1743,6 @@ TEST_F(PredictionManagerTest, UpdateHostModelFeaturesNoFeatureName) {
 }
 
 TEST_F(PredictionManagerTest, UpdateHostModelFeaturesDoubleValue) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   CreatePredictionManager();
   prediction_manager()->SetPredictionModelFetcherForTesting(
       BuildTestPredictionModelFetcher(
@@ -1886,9 +1768,6 @@ TEST_F(PredictionManagerTest, UpdateHostModelFeaturesDoubleValue) {
 }
 
 TEST_F(PredictionManagerTest, UpdateHostModelFeaturesIntValue) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   CreatePredictionManager();
   prediction_manager()->SetPredictionModelFetcherForTesting(
       BuildTestPredictionModelFetcher(
@@ -1916,9 +1795,6 @@ TEST_F(PredictionManagerTest, UpdateHostModelFeaturesIntValue) {
 }
 
 TEST_F(PredictionManagerTest, RestrictHostModelFeaturesCacheSize) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   CreatePredictionManager();
   prediction_manager()->SetPredictionModelFetcherForTesting(
       BuildTestPredictionModelFetcher(
@@ -1944,9 +1820,6 @@ TEST_F(PredictionManagerTest, RestrictHostModelFeaturesCacheSize) {
 }
 
 TEST_F(PredictionManagerTest, FetchWithoutTopHostProvider) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   base::HistogramTester histogram_tester;
 
   CreatePredictionManagerWithoutTopHostProvider();
@@ -1968,9 +1841,6 @@ TEST_F(PredictionManagerTest, FetchWithoutTopHostProvider) {
 }
 
 TEST_F(PredictionManagerTest, UpdateHostModelFeaturesUpdateDataInMap) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   base::HistogramTester histogram_tester;
 
   CreatePredictionManager();
@@ -2021,6 +1891,71 @@ TEST_F(PredictionManagerTest, UpdateHostModelFeaturesUpdateDataInMap) {
   EXPECT_EQ(6.0, (*host_model_features)["host_feat_added"]);
 }
 
+class PredictionManagerPainfulPageLoadMetricsTest
+    : public PredictionManagerTestBase {
+ public:
+  PredictionManagerPainfulPageLoadMetricsTest() {
+    // This needs to be done before any tasks are run that might check if a
+    // feature is enabled, to avoid tsan errors.
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kOptimizationTargetPrediction,
+          {{"painful_page_load_metrics_only", "true"}}},
+         {features::kRemoteOptimizationGuideFetching, {}}},
+        {});
+  }
+};
+TEST_F(PredictionManagerPainfulPageLoadMetricsTest,
+       EvaluatePredictionModelPopulatesNavDataEvenWithHoldback) {
+  base::HistogramTester histogram_tester;
+
+  std::unique_ptr<content::MockNavigationHandle> navigation_handle =
+      CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
+          GURL("https://foo.com"));
+
+  CreatePredictionManager();
+  prediction_manager()->SetPredictionModelFetcherForTesting(
+      BuildTestPredictionModelFetcher(
+          PredictionModelFetcherEndState::
+              kFetchSuccessWithModelsAndHostsModelFeatures));
+
+  prediction_manager()->RegisterOptimizationTargets(
+      {{proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, base::nullopt}});
+
+  SetStoreInitialized();
+  EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
+  models_and_features_store()->RunUpdateHostModelFeaturesCallback();
+
+  EXPECT_EQ(OptimizationTargetDecision::kModelPredictionHoldback,
+            prediction_manager()->ShouldTargetNavigation(
+                navigation_handle.get(),
+                proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, {}));
+
+  TestPredictionModel* test_prediction_model =
+      static_cast<TestPredictionModel*>(
+          prediction_manager()->GetPredictionModelForTesting(
+              proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
+  EXPECT_TRUE(test_prediction_model);
+  EXPECT_TRUE(test_prediction_model->WasModelEvaluated());
+
+  OptimizationGuideNavigationData* nav_data =
+      OptimizationGuideNavigationData::GetFromNavigationHandle(
+          navigation_handle.get());
+  EXPECT_EQ(2, *nav_data->GetModelVersionForOptimizationTarget(
+                   proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
+  EXPECT_EQ(0.6, *nav_data->GetModelPredictionScoreForOptimizationTarget(
+                     proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
+
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.ShouldTargetNavigation.PredictionModelStatus",
+      PredictionManagerModelStatus::kModelAvailable, 1);
+
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.ShouldTargetNavigation.PredictionModelStatus." +
+          GetStringNameForOptimizationTarget(
+              proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD),
+      PredictionManagerModelStatus::kModelAvailable, 1);
+}
+
 class PredictionManagerClientFeatureTest
     : public PredictionManagerTest,
       public testing::WithParamInterface<proto::ClientModelFeature> {
@@ -2040,9 +1975,6 @@ INSTANTIATE_TEST_SUITE_P(ClientFeature,
                                         proto::ClientModelFeature_MAX));
 
 TEST_P(PredictionManagerClientFeatureTest, ClientFeature) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   base::HistogramTester histogram_tester;
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
       CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
@@ -2094,9 +2026,6 @@ TEST_P(PredictionManagerClientFeatureTest, ClientFeature) {
 }
 
 TEST_F(PredictionManagerTest, PreviousSessionStatisticsUsed) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   base::HistogramTester histogram_tester;
   GURL previous_url = GURL("https://foo.com");
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
@@ -2163,9 +2092,6 @@ TEST_F(PredictionManagerTest, PreviousSessionStatisticsUsed) {
 
 TEST_F(PredictionManagerTest,
        OverriddenClientModelFeaturesUsedIfProvidedBackfilledIfNot) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   base::HistogramTester histogram_tester;
   GURL previous_url = GURL("https://foo.com");
   std::unique_ptr<content::MockNavigationHandle> navigation_handle =
@@ -2239,9 +2165,6 @@ TEST_F(PredictionManagerTest,
 
 TEST_F(PredictionManagerTest,
        StoreInitializedAfterOptimizationTargetRegistered) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   base::HistogramTester histogram_tester;
   CreatePredictionManager();
   // Ensure that the fetch does not cause any models or features to load.
@@ -2266,9 +2189,6 @@ TEST_F(PredictionManagerTest,
 
 TEST_F(PredictionManagerTest,
        StoreInitializedBeforeOptimizationTargetRegistered) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   base::HistogramTester histogram_tester;
   CreatePredictionManager();
   // Ensure that the fetch does not cause any models or features to load.
@@ -2294,9 +2214,6 @@ TEST_F(PredictionManagerTest,
 }
 
 TEST_F(PredictionManagerTest, ModelFetcherTimerRetryDelay) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(
       switches::kFetchModelsAndHostModelFeaturesOverrideTimer);
 
@@ -2324,9 +2241,6 @@ TEST_F(PredictionManagerTest, ModelFetcherTimerRetryDelay) {
 }
 
 TEST_F(PredictionManagerTest, ModelFetcherTimerFetchSucceeds) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kRemoteOptimizationGuideFetching);
-
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(
       switches::kFetchModelsAndHostModelFeaturesOverrideTimer);
 
