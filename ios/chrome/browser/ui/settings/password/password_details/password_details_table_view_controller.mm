@@ -196,6 +196,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 - (TableViewTextEditItem*)websiteItem {
   TableViewTextEditItem* item =
       [[TableViewTextEditItem alloc] initWithType:ItemTypeWebsite];
+  item.textFieldBackgroundColor = [UIColor clearColor];
   item.textFieldName = l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_SITE);
   item.textFieldValue = self.password.website;
   item.textFieldEnabled = NO;
@@ -206,6 +207,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 - (TableViewTextEditItem*)usernameItem {
   TableViewTextEditItem* item =
       [[TableViewTextEditItem alloc] initWithType:ItemTypeUsername];
+  item.textFieldBackgroundColor = [UIColor clearColor];
   item.textFieldName =
       l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_USERNAME);
   item.textFieldValue = self.password.username;
@@ -228,6 +230,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 - (TableViewTextEditItem*)passwordItem {
   TableViewTextEditItem* item =
       [[TableViewTextEditItem alloc] initWithType:ItemTypePassword];
+  item.textFieldBackgroundColor = [UIColor clearColor];
   item.textFieldName =
       l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_PASSWORD);
   item.textFieldValue = [self isPasswordShown] || self.tableView.editing
@@ -256,6 +259,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 - (TableViewTextEditItem*)federationItem {
   TableViewTextEditItem* item =
       [[TableViewTextEditItem alloc] initWithType:ItemTypeFederation];
+  item.textFieldBackgroundColor = [UIColor clearColor];
   item.textFieldName =
       l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_FEDERATION);
   item.textFieldValue = self.password.federation;
@@ -399,8 +403,6 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
                     action:@selector(didTapUsernameErrorInfo:)
           forControlEvents:UIControlEventTouchUpInside];
       self.usernameErrorAnchorView = textFieldCell.iconView;
-      textFieldCell.textField.backgroundColor = UIColor.clearColor;
-      textFieldCell.textLabel.backgroundColor = UIColor.clearColor;
       break;
     }
     case ItemTypePassword: {
@@ -411,20 +413,12 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
                  addTarget:self
                     action:@selector(didTapShowHideButton:)
           forControlEvents:UIControlEventTouchUpInside];
-      textFieldCell.textField.backgroundColor = UIColor.clearColor;
-      textFieldCell.textLabel.backgroundColor = UIColor.clearColor;
       break;
     }
+    case ItemTypeWebsite:
+    case ItemTypeFederation:
     case ItemTypeChangePasswordButton:
       break;
-    case ItemTypeWebsite:
-    case ItemTypeFederation: {
-      TableViewTextEditCell* textFieldCell =
-          base::mac::ObjCCastStrict<TableViewTextEditCell>(cell);
-      textFieldCell.textField.backgroundColor = UIColor.clearColor;
-      textFieldCell.textLabel.backgroundColor = UIColor.clearColor;
-      break;
-    }
     case ItemTypeChangePasswordRecommendation:
       cell.selectionStyle = UITableViewCellSelectionStyleNone;
       break;
