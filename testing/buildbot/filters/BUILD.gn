@@ -223,13 +223,6 @@ source_set("viz_unittests_filters") {
   ]
 }
 
-source_set("webview_cts_tests_filters") {
-  testonly = true
-
-  data =
-      [ "//testing/buildbot/filters/mojo.fyi.network_webview_CTS_test.filter" ]
-}
-
 source_set("webview_instrumentation_test_apk_filters") {
   testonly = true
 
