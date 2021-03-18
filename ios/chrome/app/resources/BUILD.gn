@@ -45,7 +45,7 @@ ios_chrome_repack_locales("repack_locales") {
   output_locales = ios_packed_locales_as_mac_outputs
 }
 
-ios_chrome_repack_all_scales("repack_scalable_resources") {
+ios_chrome_repack_scalables("repack_scalable_resources") {
   visibility = [ ":packed_resources" ]
   scales = [
     "100",

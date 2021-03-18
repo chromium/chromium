@@ -5,8 +5,24 @@
 import("//build/config/chrome_build.gni")
 import("//tools/grit/repack.gni")
 
-# Wraps repack_locales(), setting the source_patterns and deps required for
-# Chrome.
+declare_args() {
+  # Additional source_patterns for ios_chrome_repack_locales.
+  ios_locales_pack_extra_source_patterns = []
+
+  # Additional dependencies for ios_chrome_repack_locales.
+  ios_locales_pack_extra_deps = []
+
+  # Additional source_patterns for ios_chrome_repack_all_scales.
+  ios_scalable_pack_extra_source_patterns = []
+
+  # Additional dependencies for ios_chrome_repack_all_scales.
+  ios_scalable_pack_extra_deps = []
+}
+
+# Wraps repack_locales() with default needed to pack localized strings for
+# Chrome on iOS. Additional source_patterns and deps can be passed via gn
+# variables when using internal iOS repository.
+#
 # Generates a collection of bundle_data targets.
 template("ios_chrome_repack_locales") {
   repack_locales(target_name) {
@@ -22,6 +38,15 @@ template("ios_chrome_repack_locales") {
       "${root_gen_dir}/ui/strings/ui_strings_",
     ]
 
+    foreach(_source_pattern, ios_locales_pack_extra_source_patterns) {
+      _source_pattern =
+          string_replace(_source_pattern, "%branding%", branding_path_component)
+      _source_pattern =
+          string_replace(_source_pattern, "%root_gen_dir%", root_gen_dir)
+
+      source_patterns += [ _source_pattern ]
+    }
+
     deps = [
       "//components/strings:components_${branding_path_component}_strings",
       "//components/strings:components_locale_settings",
@@ -33,45 +58,18 @@ template("ios_chrome_repack_locales") {
       "//ui/strings:ui_strings",
     ]
 
+    foreach(_target, ios_locales_pack_extra_deps) {
+      _target = string_replace(_target, "%branding%", branding_path_component)
+      deps += [ _target ]
+    }
+
     copy_data_to_bundle = true
   }
 }
 
-# Template to repack all scalable resources at a given scale.
-#
-# Arguments
-#
-#     scale
-#         string, scale as a percentage, e.g. "200" corresponds to @2x scale.
-#
-# Generates a bundle_data target for convenience.
-template("_ios_chrome_repack_one_scale") {
-  assert(defined(invoker.scale), "scale must be defined for ${target_name}")
-
-  repack(target_name) {
-    forward_variables_from(invoker,
-                           [
-                             "testonly",
-                             "visibility",
-                           ])
-
-    sources = [
-      "${root_gen_dir}/components/components_resources_${invoker.scale}_percent.pak",
-      "${root_gen_dir}/ios/chrome/ios_theme_resources_${invoker.scale}_percent.pak",
-      "${root_gen_dir}/ui/resources/ui_resources_${invoker.scale}_percent.pak",
-    ]
-    deps = [
-      "//components/resources",
-      "//ios/chrome/app/theme",
-      "//ui/resources",
-    ]
-
-    output = "$target_gen_dir/chrome_${invoker.scale}_percent.pak"
-    copy_data_to_bundle = true
-  }
-}
-
-# Template to repack all scalable resources at all scales.
+# Template to repack all scalable resources at all scales. Additional
+# source_patterns and deps can be passed via gn variables when using
+# internal iOS repository
 #
 # Arguments
 #
@@ -80,18 +78,43 @@ template("_ios_chrome_repack_one_scale") {
 #       corresponds to @2x scale.
 #
 # Generates a collection of bundle_data targets for convenience.
-template("ios_chrome_repack_all_scales") {
-  assert(defined(invoker.scales), "scales must be defined for ${target_name}")
-
-  _scale_targets = []
+template("ios_chrome_repack_scalables") {
+  _scale_target_names = []
   _target_name = target_name
 
   foreach(_scale, invoker.scales) {
-    _scale_targets += [ ":${_target_name}_${_scale}_percent" ]
-    _ios_chrome_repack_one_scale("${_target_name}_${_scale}_percent") {
-      forward_variables_from(invoker, [ "testonly" ])
-      visibility = [ ":${_target_name}" ]
-      scale = _scale
+    _scale_target_name = "${target_name}_${_scale}"
+    _scale_target_names += [ ":$_scale_target_name" ]
+
+    repack("$_scale_target_name") {
+      forward_variables_from(invoker,
+                             [
+                               "deps",
+                               "testonly",
+                             ])
+      visibility = [ ":$_target_name" ]
+
+      sources = [
+        "${root_gen_dir}/components/components_resources_${_scale}_percent.pak",
+        "${root_gen_dir}/ios/chrome/ios_theme_resources_${_scale}_percent.pak",
+        "${root_gen_dir}/ui/resources/ui_resources_${_scale}_percent.pak",
+      ]
+      foreach(_source_pattern, ios_scalable_pack_extra_source_patterns) {
+        _source_pattern = string_replace(_source_pattern, "%scale%", _scale)
+        _source_pattern =
+            string_replace(_source_pattern, "%root_gen_dir%", root_gen_dir)
+
+        sources += [ _source_pattern ]
+      }
+
+      deps = [
+               "//components/resources",
+               "//ios/chrome/app/theme",
+               "//ui/resources",
+             ] + ios_scalable_pack_extra_deps
+
+      output = "$target_gen_dir/chrome_${_scale}_percent.pak"
+      copy_data_to_bundle = true
     }
   }
 
@@ -101,6 +124,6 @@ template("ios_chrome_repack_all_scales") {
                              "testonly",
                              "visibility",
                            ])
-    public_deps = _scale_targets
+    public_deps = _scale_target_names
   }
 }
