@@ -4,6 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Test that the command menu is properly filled.\n`);
+  await TestRunner.loadLegacyModule('quick_open');
 
   self.runtime.loadModulePromise('quick_open').then(() => {
     var categories = new Set();

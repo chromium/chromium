@@ -5,6 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests the AudioContextSelector.`);
   await TestRunner.loadModule('web_audio');
+  await TestRunner.loadLegacyModule('web_audio');
 
   /** @type {!Protocol.WebAudio.BaseAudioContext} */
   const context1 = {

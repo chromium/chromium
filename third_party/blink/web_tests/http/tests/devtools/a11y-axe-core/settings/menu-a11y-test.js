@@ -8,6 +8,7 @@
 
   await TestRunner.loadModule('axe_core_test_runner');
   await TestRunner.loadModule('settings');
+  await TestRunner.loadLegacyModule('settings');
 
   await UI.actionRegistry.action('settings.show').execute();
 

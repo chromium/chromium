@@ -5,6 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that breakpoints can be edited in snippets before execution.\n`);
   await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('snippets');
   await TestRunner.showPanel('sources');
 
   const uiSourceCode1 = await Snippets.ScriptSnippetFileSystem.findSnippetsProject().createFile('s1', null, '');

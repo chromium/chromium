@@ -5,6 +5,7 @@
 (async function() {
   TestRunner.addResult(`Verify that search doesn't search in binary resources.\n`);
   await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('search');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
       <img src="./resources/pink.jpg">

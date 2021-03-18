@@ -6,6 +6,7 @@
   TestRunner.addResult(`Tests the node model.\n`);
 
   await TestRunner.showPanel('web-audio');
+  await TestRunner.loadLegacyModule('web_audio');
 
   const nodeData1 = {
     nodeId: 'node1',

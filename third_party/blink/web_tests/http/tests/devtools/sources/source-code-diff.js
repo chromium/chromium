@@ -5,6 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that diff markers correctly appear in the gutter.\n`);
   await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('source_frame');
   await TestRunner.showPanel('sources');
   await TestRunner.addStylesheetTag('resources/diff-before.css');
   await TestRunner.addStylesheetTag('resources/diff-after.css');

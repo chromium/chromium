@@ -1,5 +1,6 @@
 (async function() {
     await TestRunner.loadModule("quick_open");
+    await TestRunner.loadLegacyModule('quick_open');
     TestRunner.addResult("Check to see that FilteredItemSelectionDialog uses proper regex to filter results.");
 
     var overridenInput = [];

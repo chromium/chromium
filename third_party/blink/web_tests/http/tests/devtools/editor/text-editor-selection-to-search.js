@@ -5,6 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests synchronizing the search input field to the editor selection.\n`);
   await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('search');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('../sources/debugger/resources/edit-me.js');
 

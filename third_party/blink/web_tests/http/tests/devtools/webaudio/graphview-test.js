@@ -6,6 +6,7 @@
   TestRunner.addResult(`Tests the graph model.\n`);
 
   await TestRunner.showPanel('web-audio');
+  await TestRunner.loadLegacyModule('web_audio');
 
   const contextId = 'contextId';
   const graph = new WebAudio.GraphVisualizer.GraphView(contextId);

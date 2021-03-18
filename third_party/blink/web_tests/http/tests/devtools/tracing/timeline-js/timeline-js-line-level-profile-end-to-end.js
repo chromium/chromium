@@ -6,6 +6,7 @@
   TestRunner.addResult(`Tests that a line-level CPU profile is collected and shown in the text editor.`);
   await TestRunner.loadModule('sources_test_runner');
   await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('source_frame');
   await TestRunner.showPanel('timeline');
   await TestRunner.showPanel('sources');
 
@@ -30,7 +31,7 @@
   SourcesTestRunner.showScriptSource('test_file.js', () => {});
 
   function decorationAdded(line, type, element) {
-    if (type !== 'CodeMirror-gutter-performance' || line !== 15)
+    if (type !== 'CodeMirror-gutter-performance' || line !== 16)
       return;
     const value = parseFloat(element.textContent);
     TestRunner.addResult(`Decoration found: ${isFinite(value)}`);

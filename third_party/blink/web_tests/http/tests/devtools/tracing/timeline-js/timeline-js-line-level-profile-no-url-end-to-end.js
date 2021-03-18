@@ -7,6 +7,7 @@
   await TestRunner.loadModule('console_test_runner');
   await TestRunner.loadModule('sources_test_runner');
   await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('source_frame');
   await TestRunner.showPanel('timeline');
   await TestRunner.showPanel('sources');
 

@@ -5,6 +5,7 @@
 (async function() {
   TestRunner.addResult(`Verify that suggest box gets hidden whenever a cursor jumps over smart brace.\n`);
   await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('text_editor');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('debugger/resources/edit-me.js');
 

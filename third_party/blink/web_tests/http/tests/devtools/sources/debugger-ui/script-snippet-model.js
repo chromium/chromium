@@ -6,6 +6,7 @@
   TestRunner.addResult(`Tests script snippet model.\n`);
   await TestRunner.loadModule('console_test_runner');
   await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('snippets');
 
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML('<p></p>');

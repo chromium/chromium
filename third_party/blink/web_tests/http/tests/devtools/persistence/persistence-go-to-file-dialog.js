@@ -6,6 +6,7 @@
   TestRunner.addResult(`Verify that GoTo source dialog filters out mapped uiSourceCodes.\n`);
   await TestRunner.loadModule('sources_test_runner');
   await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadLegacyModule('quick_open');
   await TestRunner.addScriptTag('resources/foo.js');
 
   var testMapping = BindingsTestRunner.initializeTestMapping();

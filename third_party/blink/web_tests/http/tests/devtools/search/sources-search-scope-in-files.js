@@ -6,6 +6,7 @@
   TestRunner.addResult(`Tests that ScriptSearchScope performs search across all sources correctly.\n`);
   await TestRunner.loadModule('bindings_test_runner');
   await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('search');
   await TestRunner.showPanel('sources');
 
   function fileSystemUISourceCodes() {

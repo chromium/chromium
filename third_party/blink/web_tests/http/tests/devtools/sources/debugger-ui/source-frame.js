@@ -9,6 +9,7 @@
   await TestRunner.loadModule('sources_test_runner');
   await TestRunner.loadModule('network_test_runner');
   await TestRunner.loadModule('application_test_runner');
+  await TestRunner.loadLegacyModule('source_frame');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function addErrorToConsole()

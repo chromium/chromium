@@ -9,6 +9,7 @@
   await ApplicationTestRunner.resetState();
 
   await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('source_frame');
   await TestRunner.showPanel('resources');
   await TestRunner.loadHTML(`
       <img src="../resources/image.png">

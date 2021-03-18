@@ -15,6 +15,7 @@
 
   await TestRunner.loadModule('axe_core_test_runner');
   await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('snippets');
 
   await UI.viewManager.showView('sources');
 

@@ -4,6 +4,7 @@
   TestRunner.addResult('');
 
   await TestRunner.loadModule('source_frame');
+  await TestRunner.loadLegacyModule('source_frame');
   const base64content =
       'c2VuZGluZyB0aGlzIHV0Zi04IHN0cmluZyBhcyBhIGJpbmFyeSBtZXNzYWdlLi4u';
   const factory = new SourceFrame.BinaryResourceViewFactory(
