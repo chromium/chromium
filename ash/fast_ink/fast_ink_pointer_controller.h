@@ -13,6 +13,8 @@
 #include "ui/events/devices/input_device_event_observer.h"
 #include "ui/events/event_handler.h"
 
+class PrefChangeRegistrar;
+
 namespace aura {
 class Window;
 }  // namespace aura
@@ -50,7 +52,7 @@ class FastInkPointerController : public ui::EventHandler,
   // Whether the event should be processed and stop propagation.
   virtual bool ShouldProcessEvent(ui::LocatedEvent* event);
 
-  bool enabled_for_mouse_event() const { return enabled_for_mouse_event_; }
+  bool IsEnabledForMouseEvent() const;
 
   // Return true if the location of the event is in one of the excluded windows.
   bool IsPointerInExcludedWindows(ui::LocatedEvent* event);
@@ -70,6 +72,9 @@ class FastInkPointerController : public ui::EventHandler,
   // ui::InputDeviceEventObserver:
   void OnDeviceListsComplete() override;
 
+  void OnHasSeenStylusPrefChanged();
+  void UpdateEnabledForMouseEvent();
+
   // Returns the pointer view.
   virtual views::View* GetPointerView() const = 0;
 
@@ -88,8 +93,8 @@ class FastInkPointerController : public ui::EventHandler,
   const base::TimeDelta presentation_delay_;
 
   bool enabled_ = false;
-  // True if enabled for mouse event.
-  bool enabled_for_mouse_event_ = false;
+  bool has_stylus_ = false;
+  bool has_seen_stylus_ = false;
 
   // Set of touch ids.
   std::set<int> touch_ids_;
@@ -97,6 +102,8 @@ class FastInkPointerController : public ui::EventHandler,
   // If the pointer event is in the bound of any of the |excluded_windows_|.
   // Skip processing the event.
   aura::WindowTracker excluded_windows_;
+
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_local_;
 
   base::ScopedObservation<ui::DeviceDataManager, ui::InputDeviceEventObserver>
       input_device_event_observation_{this};

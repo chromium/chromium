@@ -4,7 +4,11 @@
 
 #include "ash/fast_ink/fast_ink_pointer_controller.h"
 
+#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/stylus_utils.h"
+#include "ash/shell.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
@@ -20,13 +24,25 @@ const int kPresentationDelayMs = 18;
 
 }  // namespace
 
-// TODO(llin): Update |enabled_for_mouse_event_| based on whether the user has
-// been interacted with a stylus.
 FastInkPointerController::FastInkPointerController()
     : presentation_delay_(
-          base::TimeDelta::FromMilliseconds(kPresentationDelayMs)),
-      enabled_for_mouse_event_(!ash::stylus_utils::HasStylusInput()) {
+          base::TimeDelta::FromMilliseconds(kPresentationDelayMs)) {
   input_device_event_observation_.Observe(ui::DeviceDataManager::GetInstance());
+
+  auto* local_state = ash::Shell::Get()->local_state();
+  // |local_state| could be null in tests.
+  if (!local_state)
+    return;
+
+  pref_change_registrar_local_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_local_->Init(local_state);
+  pref_change_registrar_local_->Add(
+      ash::prefs::kHasSeenStylus,
+      base::BindRepeating(&FastInkPointerController::OnHasSeenStylusPrefChanged,
+                          base::Unretained(this)));
+
+  OnDeviceListsComplete();
+  OnHasSeenStylusPrefChanged();
 }
 
 FastInkPointerController::~FastInkPointerController() {}
@@ -78,6 +94,10 @@ bool FastInkPointerController::ShouldProcessEvent(ui::LocatedEvent* event) {
          event->type() == ui::ET_MOUSE_PRESSED ||
          event->type() == ui::ET_MOUSE_RELEASED ||
          event->type() == ui::ET_MOUSE_MOVED;
+}
+
+bool FastInkPointerController::IsEnabledForMouseEvent() const {
+  return !has_stylus_ || !has_seen_stylus_;
 }
 
 bool FastInkPointerController::IsPointerInExcludedWindows(
@@ -162,7 +182,7 @@ void FastInkPointerController::OnTouchEvent(ui::TouchEvent* event) {
 }
 
 void FastInkPointerController::OnMouseEvent(ui::MouseEvent* event) {
-  if (!enabled_ || !enabled_for_mouse_event_ || !ShouldProcessEvent(event))
+  if (!enabled_ || !IsEnabledForMouseEvent() || !ShouldProcessEvent(event))
     return;
 
   // Update pointer view and stop event propagation if pointer view is
@@ -174,7 +194,13 @@ void FastInkPointerController::OnMouseEvent(ui::MouseEvent* event) {
 }
 
 void FastInkPointerController::OnDeviceListsComplete() {
-  enabled_for_mouse_event_ = !ash::stylus_utils::HasStylusInput();
+  has_stylus_ = ash::stylus_utils::HasStylusInput();
+}
+
+void FastInkPointerController::OnHasSeenStylusPrefChanged() {
+  auto* local_state = pref_change_registrar_local_->prefs();
+  has_seen_stylus_ =
+      local_state && local_state->GetBoolean(ash::prefs::kHasSeenStylus);
 }
 
 }  // namespace fast_ink
