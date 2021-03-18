@@ -88,7 +88,7 @@ class ASH_EXPORT WindowCycleEventFilter : public ui::EventHandler {
 
   // Depending on the properties of |event|, may continuously scroll the window
   // cycle list, move the cycle view's focus ring or complete cycling.
-  bool ProcessGestureEvent(ui::GestureEvent* event);
+  void ProcessGestureEvent(ui::GestureEvent* event);
 
   // Called by ProcessMouseEvent() and OnScrollEvent(). May cycle the window
   // cycle list. Returns true if the event has been handled and should not be

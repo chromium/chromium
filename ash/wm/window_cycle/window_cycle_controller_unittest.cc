@@ -1393,6 +1393,49 @@ TEST_F(InteractiveWindowCycleControllerTest, KeysConfirmSelection) {
   EXPECT_TRUE(wm::IsActiveWindow(w1.get()));
 }
 
+// Tests that pressing the enter key or space key really quickly doesn't crash.
+// See crbug.com/1187242.
+TEST_F(InteractiveWindowCycleControllerTest, RapidConfirmSelection) {
+  std::unique_ptr<Window> w0 = CreateTestWindow();
+  std::unique_ptr<Window> w1 = CreateTestWindow();
+  std::unique_ptr<Window> w2 = CreateTestWindow();
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  WindowCycleController* controller = Shell::Get()->window_cycle_controller();
+
+  // Start cycling and press space twice. This should not crash.
+  controller->StartCycling();
+  controller->HandleCycleWindow(
+      WindowCycleController::WindowCyclingDirection::kForward);
+  generator->PressKey(ui::VKEY_SPACE, ui::EF_NONE);
+  generator->PressKey(ui::VKEY_SPACE, ui::EF_NONE);
+  EXPECT_TRUE(wm::IsActiveWindow(w1.get()));
+
+  // Start cycling and press enter twice. This should not crash.
+  controller->StartCycling();
+  controller->HandleCycleWindow(
+      WindowCycleController::WindowCyclingDirection::kForward);
+  generator->PressKey(ui::VKEY_RETURN, ui::EF_NONE);
+  generator->PressKey(ui::VKEY_RETURN, ui::EF_NONE);
+  EXPECT_TRUE(wm::IsActiveWindow(w2.get()));
+
+  // Press down alt and tab. Release alt key and press enter. This should not
+  // crash.
+  generator->PressKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+  EXPECT_TRUE(controller->IsCycling());
+  generator->ReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+  generator->PressKey(ui::VKEY_RETURN, ui::EF_NONE);
+  EXPECT_TRUE(wm::IsActiveWindow(w1.get()));
+
+  // Start cycling and press enter once and then right key. This should not
+  // crash and the right key should not affect the selection.
+  controller->StartCycling();
+  controller->HandleCycleWindow(
+      WindowCycleController::WindowCyclingDirection::kForward);
+  generator->PressKey(ui::VKEY_RETURN, ui::EF_NONE);
+  generator->PressKey(ui::VKEY_RIGHT, ui::EF_NONE);
+  EXPECT_TRUE(wm::IsActiveWindow(w2.get()));
+}
+
 // Tests that mouse events are filtered until the mouse is actually used,
 // preventing the mouse from unexpectedly triggering events.
 // See crbug.com/1143275.
