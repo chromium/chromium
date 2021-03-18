@@ -41,10 +41,8 @@ app_time::WebTimeLimitEnforcer* ChildUserService::TestApi::web_time_enforcer() {
 
 ChildUserService::ChildUserService(content::BrowserContext* context) {
   DCHECK(context);
-  if (app_time::AppTimeController::ArePerAppTimeLimitsEnabled()) {
-    app_time_controller_ = std::make_unique<app_time::AppTimeController>(
-        Profile::FromBrowserContext(context));
-  }
+  app_time_controller_ = std::make_unique<app_time::AppTimeController>(
+      Profile::FromBrowserContext(context));
 }
 
 ChildUserService::~ChildUserService() = default;

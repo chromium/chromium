@@ -8,7 +8,6 @@
 
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -31,7 +30,6 @@
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
@@ -201,15 +199,6 @@ base::Time AppTimeController::TestApi::GetLastResetTime() const {
 
 AppActivityRegistry* AppTimeController::TestApi::app_registry() {
   return controller_->app_registry_.get();
-}
-
-// static
-bool AppTimeController::ArePerAppTimeLimitsEnabled() {
-  return base::FeatureList::IsEnabled(features::kPerAppTimeLimits);
-}
-
-bool AppTimeController::IsAppActivityReportingEnabled() {
-  return base::FeatureList::IsEnabled(features::kAppActivityReporting);
 }
 
 // static

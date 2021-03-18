@@ -67,9 +67,6 @@ class AppTimeController : public SystemClockClient::Observer,
     AppTimeController* const controller_;
   };
 
-  static bool ArePerAppTimeLimitsEnabled();
-  static bool IsAppActivityReportingEnabled();
-
   // Registers preferences
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 

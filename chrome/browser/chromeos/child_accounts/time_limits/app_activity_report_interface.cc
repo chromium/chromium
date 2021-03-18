@@ -6,7 +6,6 @@
 
 #include "chrome/browser/chromeos/child_accounts/child_user_service.h"
 #include "chrome/browser/chromeos/child_accounts/child_user_service_factory.h"
-#include "chrome/browser/chromeos/child_accounts/time_limits/app_time_controller.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace chromeos {
@@ -16,12 +15,6 @@ namespace app_time {
 AppActivityReportInterface* AppActivityReportInterface::Get(Profile* profile) {
   return static_cast<AppActivityReportInterface*>(
       ChildUserServiceFactory::GetForBrowserContext(profile));
-}
-
-// static
-bool AppActivityReportInterface::ShouldReportAppActivity() {
-  return AppTimeController::ArePerAppTimeLimitsEnabled() &&
-         AppTimeController::IsAppActivityReportingEnabled();
 }
 
 AppActivityReportInterface::~AppActivityReportInterface() = default;

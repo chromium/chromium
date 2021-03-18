@@ -36,7 +36,7 @@ class ChildUserServiceTest : public testing::Test {
 
   // Enables web time limits feature. Recreates ChildUserService object.
   void EnableWebTimeLimits() {
-    EnableFeatures({features::kPerAppTimeLimits, features::kWebTimeLimits});
+    EnableFeatures({features::kWebTimeLimits});
     service_ = std::make_unique<ChildUserService>(&profile_);
     service_test_api_ =
         std::make_unique<ChildUserService::TestApi>(service_.get());
@@ -50,14 +50,6 @@ class ChildUserServiceTest : public testing::Test {
         app_time::GetChromeAppId(),
         app_time::AppLimit(app_time::AppRestriction::kTimeLimit,
                            base::TimeDelta::FromHours(1), base::Time::Now()));
-  }
-
-  // Enables per-app time limits feature. Recreates ChildUserService object.
-  void EnablePerAppTimeLimits() {
-    EnableFeatures({features::kPerAppTimeLimits});
-    service_ = std::make_unique<ChildUserService>(&profile_);
-    service_test_api_ =
-        std::make_unique<ChildUserService::TestApi>(service_.get());
   }
 
   Profile* profile() { return &profile_; }

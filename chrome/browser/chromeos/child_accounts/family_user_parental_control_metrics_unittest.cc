@@ -83,8 +83,7 @@ class FamilyUserParentalControlMetricsTest : public testing::Test {
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kPerAppTimeLimits,
-                              features::kWebTimeLimits},
+        /*enabled_features=*/{features::kWebTimeLimits},
         /*disabled_features=*/{});
 
     base::Time start_time;

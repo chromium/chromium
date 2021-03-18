@@ -34,8 +34,6 @@ class AppActivityReportInterface {
   // KeyedService.
   static AppActivityReportInterface* Get(Profile* profile);
 
-  static bool ShouldReportAppActivity();
-
   virtual ~AppActivityReportInterface();
 
   // Populates child status |report| with collected app activity.

@@ -81,7 +81,7 @@ class AppTimeTest : public MixinBasedInProcessBrowserTest {
 
   // MixinBasedInProcessBrowserTest:
   void SetUp() override {
-    std::vector<base::Feature> enabled_features{features::kPerAppTimeLimits};
+    std::vector<base::Feature> enabled_features;
     std::vector<base::Feature> disabled_features;
     if (ShouldEnableWebTimeLimit())
       enabled_features.push_back(features::kWebTimeLimits);

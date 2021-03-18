@@ -117,8 +117,6 @@ class AppTimeControllerTest : public testing::Test {
   void SetUp() override;
   void TearDown() override;
 
-  void EnablePerAppTimeLimits();
-
   void DisableWebTimeLimit();
 
   void CreateActivityForApp(const AppId& app_id,
@@ -201,13 +199,9 @@ void AppTimeControllerTest::TearDown() {
   testing::Test::TearDown();
 }
 
-void AppTimeControllerTest::EnablePerAppTimeLimits() {
-  scoped_feature_list_.InitAndEnableFeature(features::kPerAppTimeLimits);
-}
-
 void AppTimeControllerTest::DisableWebTimeLimit() {
   scoped_feature_list_.InitWithFeatures(
-      /* enabled_features */ {{features::kPerAppTimeLimits}},
+      /* enabled_features */ {},
       /* disabled_features */ {{features::kWebTimeLimits}});
 
   // Recreate app time controller.
@@ -287,11 +281,6 @@ void AppTimeControllerTest::DeleteController() {
 void AppTimeControllerTest::InstantiateController() {
   controller_ = std::make_unique<AppTimeController>(&profile_);
   test_api_ = std::make_unique<AppTimeController::TestApi>(controller_.get());
-}
-
-TEST_F(AppTimeControllerTest, EnableFeature) {
-  EnablePerAppTimeLimits();
-  EXPECT_TRUE(AppTimeController::ArePerAppTimeLimitsEnabled());
 }
 
 TEST_F(AppTimeControllerTest, GetNextResetTime) {

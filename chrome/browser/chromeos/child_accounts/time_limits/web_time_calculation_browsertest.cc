@@ -87,8 +87,7 @@ class WebTimeCalculationBrowserTest : public MixinBasedInProcessBrowserTest {
 
 void WebTimeCalculationBrowserTest::SetUp() {
   scoped_feature_list_.InitWithFeatures(
-      /* enabled_features */ {features::kPerAppTimeLimits,
-                              features::kWebTimeLimits},
+      /* enabled_features */ {features::kWebTimeLimits},
       /* disabled_features */ {});
 
   builder_.SetUp();
