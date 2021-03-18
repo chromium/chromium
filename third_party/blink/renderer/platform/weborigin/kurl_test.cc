@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "url/gurl.h"
 #include "url/gurl_abstract_tests.h"
 #include "url/url_util.h"
 
@@ -773,10 +774,12 @@ TEST(KURLTest, DeepCopyInnerURL) {
 
 TEST(KURLTest, LastPathComponent) {
   const KURL url1("http://host/path/to/file.txt");
+  EXPECT_TRUE(url1.IsValid());
   EXPECT_EQ("file.txt", url1.LastPathComponent());
 
   const KURL invalid_utf8("http://a@9%aa%:/path/to/file.txt");
-  EXPECT_EQ(String(), invalid_utf8.LastPathComponent());
+  EXPECT_FALSE(invalid_utf8.IsValid());
+  EXPECT_EQ("", invalid_utf8.LastPathComponent());
 }
 
 TEST(KURLTest, IsHierarchical) {
@@ -785,6 +788,7 @@ TEST(KURLTest, IsHierarchical) {
   // url never has a valid hostname (the inner URL does)."
   const char* standard_urls[] = {
       "http://host/path/to/file.txt",
+      "http://a@9%aa%:/path/to/file.txt",  // Invalid, but hierarchical.
       "ftp://andrew.cmu.edu/foo",
       "file:///path/to/resource",
       "file://hostname/etc/",
@@ -803,7 +807,6 @@ TEST(KURLTest, IsHierarchical) {
   const char* nonstandard_urls[] = {
       "blob:null/guid-goes-here",
       "blob:http://example.com/guid-goes-here",
-      "http://a@9%aa%:/path/to/file.txt",
       "about:blank://hostname",
       "about:blank",
       "javascript:void(0);",
@@ -824,7 +827,7 @@ TEST(KURLTest, PathAfterLastSlash) {
   EXPECT_EQ(20u, url1.PathAfterLastSlash());
 
   KURL invalid_utf8("http://a@9%aa%:/path/to/file.txt");
-  EXPECT_EQ(0u, invalid_utf8.PathAfterLastSlash());
+  EXPECT_EQ(22u, invalid_utf8.PathAfterLastSlash());
 }
 
 TEST(KURLTest, ProtocolIsInHTTPFamily) {
@@ -1059,6 +1062,29 @@ TEST(KURLTest, SetFileProtocolToNonSpecial) {
   EXPECT_TRUE(url.SetProtocol("non-special-scheme"));
   EXPECT_EQ(url.Protocol(), "non-special-scheme");
   EXPECT_EQ(url.GetPath(), "///path");
+}
+
+TEST(KURLTest, InvalidKURLToGURL) {
+  // This contains an invalid percent escape (%T%) and also a valid
+  // percent escape that's not 7-bit ascii (%ae), so that the unescaped
+  // host contains both an invalid percent escape and invalid UTF-8.
+  KURL kurl("http://%T%Ae");
+  EXPECT_FALSE(kurl.IsValid());
+
+  // KURL returns empty strings for components on invalid urls.
+  EXPECT_EQ(kurl.Protocol(), "");
+  EXPECT_EQ(kurl.Host(), "");
+
+  // This passes the original internal url to GURL, check that it arrives
+  // in an internally self-consistent state.
+  GURL gurl = kurl;
+  EXPECT_FALSE(gurl.is_valid());
+  EXPECT_TRUE(gurl.SchemeIs(url::kHttpScheme));
+
+  // GURL exposes host for invalid hosts. The invalid percent escape
+  // becomes an escaped percent sign (%25), and the invalid UTF-8
+  // character becomes REPLACEMENT CHARACTER' (U+FFFD) encoded as UTF-8.
+  EXPECT_EQ(gurl.host_piece(), "%25t%EF%BF%BD");
 }
 
 enum class PortIsValid {
