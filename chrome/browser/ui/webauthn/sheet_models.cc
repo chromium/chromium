@@ -599,7 +599,7 @@ AuthenticatorAndroidAccessorySheetModel::
     : AuthenticatorSheetModelBase(dialog_model),
       other_transports_menu_model_(std::make_unique<OtherTransportsMenuModel>(
           dialog_model,
-          AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy)) {}
+          AuthenticatorTransport::kAndroidAccessory)) {}
 
 AuthenticatorAndroidAccessorySheetModel::
     ~AuthenticatorAndroidAccessorySheetModel() = default;
@@ -631,10 +631,6 @@ std::u16string AuthenticatorAndroidAccessorySheetModel::GetStepDescription()
 ui::MenuModel*
 AuthenticatorAndroidAccessorySheetModel::GetOtherTransportsMenuModel() {
   return other_transports_menu_model_.get();
-}
-
-void AuthenticatorAndroidAccessorySheetModel::OnBack() {
-  dialog_model()->ShowCable();
 }
 
 // AuthenticatorPaaskV2SheetModel  -----------------------------------------

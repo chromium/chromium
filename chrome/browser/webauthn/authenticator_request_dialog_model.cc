@@ -200,6 +200,7 @@ void AuthenticatorRequestDialogModel::StartGuidedFlowForTransport(
   DCHECK(current_step() == Step::kTransportSelection ||
          current_step() == Step::kUsbInsertAndActivate ||
          current_step() == Step::kCableActivate ||
+         current_step() == Step::kAndroidAccessory ||
          current_step() == Step::kNotStarted);
   switch (transport) {
     case AuthenticatorTransport::kUsbHumanInterfaceDevice:
@@ -213,6 +214,9 @@ void AuthenticatorRequestDialogModel::StartGuidedFlowForTransport(
       break;
     case AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy:
       EnsureBleAdapterIsPoweredAndContinueWithCable();
+      break;
+    case AuthenticatorTransport::kAndroidAccessory:
+      SetCurrentStep(Step::kAndroidAccessory);
       break;
     default:
       break;

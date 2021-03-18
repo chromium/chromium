@@ -58,10 +58,7 @@ void OtherTransportsMenuModel::PopulateWithTransportsExceptFor(
     AuthenticatorTransport current_transport) {
   for (const auto transport :
        dialog_model_->transport_availability()->available_transports) {
-    if (transport == current_transport ||
-        // kAndroidAccessory is never shown as an option to the user. It's a
-        // fallback for caBLE.
-        transport == AuthenticatorTransport::kAndroidAccessory) {
+    if (transport == current_transport) {
       continue;
     }
 

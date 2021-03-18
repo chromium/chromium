@@ -10666,6 +10666,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_TRANSPORT_CABLE" desc="Menu item text. The user selects this to use their phone, once connected to their computer over Bluetooth Low Energy, to sign in to web site on their computer.">
         Your phone
       </message>
+      <message name="IDS_WEBAUTHN_TRANSPORT_AOA" desc="Menu item text. The user selects this to use their phone, once physically connected with a USB cable, to sign in to a web site on their computer. This appears next to the similar string 'Your phone' with TC ID 4865460888230929643.">
+        Your phone with a USB cable
+      </message>
       <message name="IDS_WEBAUTHN_TRANSPORT_POPUP_DIFFERENT_AUTHENTICATOR_WIN" desc="Menu item text. The user selects this to use a security key (an external physical device for user authentication) connected to the computer, or a hardware-based authentication mechanism that is built in to the computer, such as a fingerprint reader.">
         External security key or built-in sensor
       </message>
@@ -10734,6 +10737,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_WEBAUTHN_TRANSPORT_POPUP_CABLE" desc="Menu item text. The user selects this to verify their identity on a web site (i.e. sign in) using their phone. They wirelessly connect their phone to their computer over Bluetooth Low Energy, and then use the phone to sign in to web sites on their computer.">
         Verify via your phone
+      </message>
+      <message name="IDS_WEBAUTHN_TRANSPORT_POPUP_AOA" desc="Menu item text. The user selects this to verify their identity on a web site (i.e. sign in) using their phone. They physically connect the phone with a USB cable. This appears next to the similar string 'Verify via your phone' with TC ID 4577976468067558540.">
+        Verify via your phone with a USB cable
       </message>
       <message name="IDS_WEBAUTHN_CABLE_ACTIVATE_TITLE" desc="Title of the dialog shown when the user tries to sign-in using a phone as a security key.">
         Check your phone

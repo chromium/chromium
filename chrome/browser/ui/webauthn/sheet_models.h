@@ -289,7 +289,6 @@ class AuthenticatorAndroidAccessorySheetModel
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
   ui::MenuModel* GetOtherTransportsMenuModel() override;
-  void OnBack() override;
 
   std::unique_ptr<OtherTransportsMenuModel> other_transports_menu_model_;
 };
