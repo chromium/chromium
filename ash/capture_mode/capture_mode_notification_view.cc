@@ -9,6 +9,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/scoped_light_mode_as_default.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
@@ -17,15 +18,20 @@ namespace ash {
 
 namespace {
 
-// Constants related to the banner view on the image capture notification.
+// Constants related to the banner view on the image capture notifications.
 constexpr int kBannerHeightDip = 36;
 constexpr int kBannerHorizontalInsetDip = 12;
 constexpr int kBannerVerticalInsetDip = 8;
 constexpr int kBannerIconTextSpacingDip = 8;
 constexpr int kBannerIconSizeDip = 20;
 
+// Constants related to the play icon view for video capture notifications.
+constexpr int kPlayIconSizeDip = 24;
+constexpr int kPlayIconBackgroundCornerRadiusDip = 20;
+constexpr gfx::Size kPlayIconViewSize{40, 40};
+
 // Creates the banner view that will show on top of the notification image.
-std::unique_ptr<views::View> CreateBannerViewImpl() {
+std::unique_ptr<views::View> CreateBannerView() {
   std::unique_ptr<views::View> banner_view = std::make_unique<views::View>();
 
   // Use the light mode as default as notification is still using light
@@ -61,15 +67,34 @@ std::unique_ptr<views::View> CreateBannerViewImpl() {
   return banner_view;
 }
 
+// Creates the play icon view which shows on top of the video thumbnail in the
+// notification.
+std::unique_ptr<views::View> CreatePlayIconView() {
+  auto play_view = std::make_unique<views::ImageView>();
+  auto* color_provider = AshColorProvider::Get();
+  const SkColor icon_color = color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kIconColorPrimary);
+  play_view->SetImage(gfx::CreateVectorIcon(kCaptureModePlayIcon,
+                                            kPlayIconSizeDip, icon_color));
+  play_view->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
+  play_view->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
+  const SkColor background_color = color_provider->GetBaseLayerColor(
+      AshColorProvider::BaseLayerType::kTransparent80);
+  play_view->SetBackground(views::CreateRoundedRectBackground(
+      background_color, kPlayIconBackgroundCornerRadiusDip));
+  return play_view;
+}
+
 }  // namespace
 
 CaptureModeNotificationView::CaptureModeNotificationView(
-    const message_center::Notification& notification)
-    : message_center::NotificationViewMD(notification) {
-  // Create the banner view if notification image is not empty. The banner
-  // will show on top of the notification image.
+    const message_center::Notification& notification,
+    CaptureModeType capture_type)
+    : message_center::NotificationViewMD(notification),
+      capture_type_(capture_type) {
+  // Creates the extra view which will depend on the type of the notification.
   if (!notification.image().IsEmpty())
-    CreateBannerView();
+    CreateExtraView();
 
   // We need to observe this view as |this| view will be re-used for
   // notifications for with/without image scenarios if |this| is not destroyed
@@ -81,33 +106,51 @@ CaptureModeNotificationView::~CaptureModeNotificationView() = default;
 
 // static
 std::unique_ptr<message_center::MessageView>
-CaptureModeNotificationView::Create(
+CaptureModeNotificationView::CreateForImage(
     const message_center::Notification& notification) {
-  return std::make_unique<CaptureModeNotificationView>(notification);
+  return std::make_unique<CaptureModeNotificationView>(notification,
+                                                       CaptureModeType::kImage);
+}
+
+// static
+std::unique_ptr<message_center::MessageView>
+CaptureModeNotificationView::CreateForVideo(
+    const message_center::Notification& notification) {
+  return std::make_unique<CaptureModeNotificationView>(notification,
+                                                       CaptureModeType::kVideo);
 }
 
 void CaptureModeNotificationView::Layout() {
   message_center::NotificationViewMD::Layout();
-  if (!banner_view_)
+  if (!extra_view_)
     return;
 
-  // Calculate the banner view's desired bounds.
-  gfx::Rect banner_bounds = image_container_view()->GetContentsBounds();
-  banner_bounds.set_y(banner_bounds.bottom() - kBannerHeightDip);
-  banner_bounds.set_height(kBannerHeightDip);
-  banner_view_->SetBoundsRect(banner_bounds);
+  gfx::Rect extra_view_bounds = image_container_view()->GetContentsBounds();
+
+  if (capture_type_ == CaptureModeType::kImage) {
+    // The extra view in this case is a banner laid out at the bottom of the
+    // image container.
+    extra_view_bounds.set_y(extra_view_bounds.bottom() - kBannerHeightDip);
+    extra_view_bounds.set_height(kBannerHeightDip);
+  } else {
+    DCHECK_EQ(capture_type_, CaptureModeType::kVideo);
+    // The extra view in this case is a play icon centered in the view.
+    extra_view_bounds.ClampToCenteredSize(kPlayIconViewSize);
+  }
+
+  extra_view_->SetBoundsRect(extra_view_bounds);
 }
 
 void CaptureModeNotificationView::OnChildViewAdded(views::View* observed_view,
                                                    views::View* child) {
   if (observed_view == this && child == image_container_view())
-    CreateBannerView();
+    CreateExtraView();
 }
 
 void CaptureModeNotificationView::OnChildViewRemoved(views::View* observed_view,
                                                      views::View* child) {
   if (observed_view == this && child == image_container_view())
-    banner_view_ = nullptr;
+    extra_view_ = nullptr;
 }
 
 void CaptureModeNotificationView::OnViewIsDeleting(View* observed_view) {
@@ -115,11 +158,13 @@ void CaptureModeNotificationView::OnViewIsDeleting(View* observed_view) {
   views::View::RemoveObserver(this);
 }
 
-void CaptureModeNotificationView::CreateBannerView() {
+void CaptureModeNotificationView::CreateExtraView() {
   DCHECK(image_container_view());
   DCHECK(!image_container_view()->children().empty());
-  DCHECK(!banner_view_);
-  banner_view_ = image_container_view()->AddChildView(CreateBannerViewImpl());
+  DCHECK(!extra_view_);
+  extra_view_ = image_container_view()->AddChildView(
+      capture_type_ == CaptureModeType::kImage ? CreateBannerView()
+                                               : CreatePlayIconView());
 }
 
 }  // namespace ash

@@ -25,6 +25,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom-forward.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace recording {
 
@@ -178,6 +179,11 @@ class RecordingService : public mojom::RecordingService,
   // a single client of this service.
   mojo::Remote<mojom::RecordingServiceClient> client_remote_
       GUARDED_BY_CONTEXT(main_thread_checker_);
+
+  // A cached scaled down rgb image of the first valid video frame which will be
+  // used to provide the client with an image thumbnail representing the
+  // recorded video.
+  gfx::ImageSkia video_thumbnail_ GUARDED_BY_CONTEXT(main_thread_checker_);
 
   // True if a failure has been propagated from |encoder_muxer_| that we will
   // end recording abruptly and ignore any incoming audio/video frames.

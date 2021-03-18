@@ -11,5 +11,6 @@ mojom("mojom") {
     "//media/mojo/mojom",
     "//services/audio/public/mojom",
     "//services/viz/privileged/mojom/compositing",
+    "//ui/gfx/image/mojom",
   ]
 }

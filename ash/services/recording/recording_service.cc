@@ -18,8 +18,11 @@
 #include "media/base/audio_codecs.h"
 #include "media/base/status.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_util.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
+#include "media/renderers/paint_canvas_video_renderer.h"
 #include "services/audio/public/cpp/device_factory.h"
+#include "ui/gfx/image/image_skia_operations.h"
 
 namespace recording {
 
@@ -41,6 +44,11 @@ constexpr float kBitsPerSecondPerSquarePixel =
 // the capture size (like the bitrate), or a function of the time since the last
 // IPC call to the client.
 constexpr int kMaxBufferedChunks = 238;
+
+// The size within which we will try to fit a thumbnail image extracted from the
+// first valid video frame. The value was chosen to be suitable with the image
+// container in the notification UI.
+constexpr gfx::Size kThumbnailSize{328, 184};
 
 // Calculates the bitrate used to initialize the video encoder based on the
 // given |capture_size|.
@@ -70,6 +78,34 @@ media::AudioParameters GetAudioParameters() {
   return media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                 media::CHANNEL_LAYOUT_STEREO, kAudioSampleRate,
                                 kAudioSampleRate / 100);
+}
+
+// Extracts a potentially scaled-down RGB image from the given video |frame|,
+// which is suitable to use as a thumbnail for the video.
+gfx::ImageSkia ExtractImageFromVideoFrame(const media::VideoFrame& frame) {
+  const gfx::Size visible_size = frame.visible_rect().size();
+  media::PaintCanvasVideoRenderer renderer;
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(visible_size.width(), visible_size.height());
+  renderer.ConvertVideoFrameToRGBPixels(&frame, bitmap.getPixels(),
+                                        bitmap.rowBytes());
+
+  // Since this image will be used as a thumbnail, we can scale it down to save
+  // on memory if needed. For example, if recording a FHD display, that will be
+  // (for 12 bits/pixel):
+  // 1920 * 1080 * 12 / 8, which is approx. = 3 MB, which is a lot to keep
+  // around for a thumbnail.
+  const gfx::ImageSkia thumbnail = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+  if (visible_size.width() <= kThumbnailSize.width() &&
+      visible_size.height() <= kThumbnailSize.height()) {
+    return thumbnail;
+  }
+
+  const gfx::Size scaled_size =
+      media::ScaleSizeToFitWithinTarget(visible_size, kThumbnailSize);
+  return gfx::ImageSkiaOperations::CreateResizedImage(
+      thumbnail, skia::ImageOperations::ResizeMethod::RESIZE_BETTER,
+      scaled_size);
 }
 
 }  // namespace
@@ -255,6 +291,9 @@ void RecordingService::OnFrameCaptured(
       std::move(mapping), std::move(callbacks)));
   frame->set_metadata(info->metadata);
   frame->set_color_space(info->color_space.value());
+
+  if (video_thumbnail_.isNull())
+    video_thumbnail_ = ExtractImageFromVideoFrame(*frame);
 
   encoder_muxer_.AsyncCall(&RecordingEncoderMuxer::EncodeVideo).WithArgs(frame);
 }
@@ -453,7 +492,7 @@ void RecordingService::SignalRecordingEndedToClient(bool success) {
   DCHECK(encoder_muxer_);
 
   encoder_muxer_.Reset();
-  client_remote_->OnRecordingEnded(success);
+  client_remote_->OnRecordingEnded(success, video_thumbnail_);
 }
 
 void RecordingService::OnMuxerWrite(base::StringPiece data) {
