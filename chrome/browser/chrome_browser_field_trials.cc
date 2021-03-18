@@ -176,18 +176,6 @@ void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
         kBackgroundThreadPoolTrial, group_name);
   }
-
-  // If isolated splits are enabled at build time, Monochrome and Trichrome will
-  // have a different bundle layout, so measure N+ even though isolated splits
-  // are only supported by Android in O+.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SDK_VERSION_NOUGAT) {
-    static constexpr char kIsolatedSplitsTrial[] = "IsolatedSplitsSynthetic";
-    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-        kIsolatedSplitsTrial,
-        base::android::BundleUtils::IsolatedSplitsEnabled() ? "Enabled"
-                                                            : "Disabled");
-  }
 #endif  // defined(OS_ANDROID)
 }
 

@@ -77,7 +77,6 @@ public final class BundleUtils {
         sIsBundle = isBundle;
     }
 
-    @CalledByNative
     public static boolean isolatedSplitsEnabled() {
         return BuildConfig.ISOLATED_SPLITS_ENABLED;
     }

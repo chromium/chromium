@@ -70,11 +70,6 @@ bool BundleUtils::IsBundle() {
 }
 
 // static
-bool BundleUtils::IsolatedSplitsEnabled() {
-  return Java_BundleUtils_isolatedSplitsEnabled(AttachCurrentThread());
-}
-
-// static
 void* BundleUtils::DlOpenModuleLibraryPartition(const std::string& library_name,
                                                 const std::string& partition,
                                                 const std::string& split_name) {

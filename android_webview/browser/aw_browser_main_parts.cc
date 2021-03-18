@@ -153,19 +153,6 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
   }
   AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       metrics, kWebViewApkTypeTrial, apk_type_string);
-
-  // If isolated splits are enabled at build time, Monochrome and Trichrome will
-  // have a different bundle layout, so measure N+ even though isolated splits
-  // are only supported by Android in O+.
-  if (apk_type == ApkType::MONOCHROME &&
-      base::android::BuildInfo::GetInstance()->sdk_int() >=
-          base::android::SDK_VERSION_NOUGAT) {
-    static constexpr char kIsolatedSplitsTrial[] = "IsolatedSplitsSynthetic";
-    AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-        metrics, kIsolatedSplitsTrial,
-        base::android::BundleUtils::IsolatedSplitsEnabled() ? "Enabled"
-                                                            : "Disabled");
-  }
 }
 
 int AwBrowserMainParts::PreMainMessageLoopRun() {
