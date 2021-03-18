@@ -812,9 +812,7 @@ class TabSwitcherMediator
      */
     static boolean isShowingTabsInMRUOrder() {
         String feature = StartSurfaceConfiguration.START_SURFACE_VARIATION.getValue();
-        return TextUtils.equals(feature, "twopanes")
-                || StartSurfaceConfiguration.SHOW_TABS_IN_MRU_ORDER.getValue()
-                && TextUtils.equals(feature, "single");
+        return TextUtils.equals(feature, "twopanes");
     }
 
     /**
