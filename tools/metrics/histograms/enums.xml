@@ -41094,6 +41094,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="14" label="JSON conversion failure"/>
 </enum>
 
+<enum name="JavaJsBridgeMethodInvocationError">
+  <int value="0" label="MethodInvocationAsConstructorDisallowed"/>
+  <int value="1" label="MethodInvocationNonexistentMethod"/>
+  <int value="2" label="MethodInvocationOnNonInjectedObjectDisallowed"/>
+  <int value="3" label="MethodInvocationErrorMessage"/>
+</enum>
+
 <enum name="JavaScriptDialogDismissalCause">
   <int value="0" label="Tab closed">The tab owning the dialog was closed</int>
   <int value="1" label="New dialog">
