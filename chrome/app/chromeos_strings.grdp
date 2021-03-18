@@ -3957,10 +3957,10 @@
     Loading...
   </message>
   <message name="IDS_ARC_SNAPSHOT_RESTART_NOTIFICATION_TITLE" desc="Title of the notification shown to the user when ARC data snapshot must be updated">
-    Restart requested
+    Restart to update organization’s apps
   </message>
   <message name="IDS_ARC_SNAPSHOT_RESTART_NOTIFICATION_MESSAGE" desc="Message in the notification shown to the user when ARC data snapshot must be updated">
-    Your administrator requested to restart your device to update apps. This may take several minutes to complete.
+    This update from your administrator will make your organization’s apps open faster. This may take a few minutes.
   </message>
   <message name="IDS_ARC_SNAPSHOT_RESTART_NOTIFICATION_RESTART_BUTTON" desc="Label on button in the notification shown to the user when ARC data snapshot must be updated">
     Restart
