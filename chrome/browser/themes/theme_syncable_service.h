@@ -28,11 +28,24 @@ class ThemeSpecifics;
 
 class ThemeSyncableService : public syncer::SyncableService {
  public:
+  // State of local theme after applying sync changes.
+  enum class ThemeSyncState {
+    // The remote theme has been applied locally or the other way around (or
+    // there was no change to apply).
+    kApplied,
+    // Remote theme failed to apply locally.
+    kFailed,
+    // Remote theme is an extension theme that is not installed locally, yet.
+    // Theme sync triggered the installation that may not be applied yet (as
+    // extension installation is in nature async and also can fail).
+    kWaitingForExtensionInstallation
+  };
+
   class Observer : public base::CheckedObserver {
    public:
     // Called when theme sync gets started. Observers that register after theme
     // sync gets started are called right away when they register.
-    virtual void OnThemeSyncStarted() = 0;
+    virtual void OnThemeSyncStarted(ThemeSyncState state) = 0;
   };
 
   // `profile` may be nullptr in tests (and is the one used by theme_service,
@@ -47,7 +60,7 @@ class ThemeSyncableService : public syncer::SyncableService {
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
-  void NotifyOnSyncStartedForTesting();
+  void NotifyOnSyncStartedForTesting(ThemeSyncState startup_state);
 
   // syncer::SyncableService implementation.
   void WaitUntilReadyToSync(base::OnceClosure done) override;
@@ -78,10 +91,11 @@ class ThemeSyncableService : public syncer::SyncableService {
 
   // Set theme from theme specifics in |sync_data| using
   // SetCurrentThemeFromThemeSpecifics() if it's different from |current_specs|.
-  void MaybeSetTheme(const sync_pb::ThemeSpecifics& current_specs,
-                     const syncer::SyncData& sync_data);
-
-  void SetCurrentThemeFromThemeSpecifics(
+  // Returns the state of themes after the operation.
+  ThemeSyncState MaybeSetTheme(const sync_pb::ThemeSpecifics& current_specs,
+                               const syncer::SyncData& sync_data);
+  // Returns the state of themes after the operation.
+  ThemeSyncState SetCurrentThemeFromThemeSpecifics(
       const sync_pb::ThemeSpecifics& theme_specifics);
 
   // If the current theme is syncable, fills in the passed |theme_specifics|
@@ -108,6 +122,9 @@ class ThemeSyncableService : public syncer::SyncableService {
   // Persist use_system_theme_by_default for platforms that use it, even if
   // we're not on one.
   bool use_system_theme_by_default_;
+
+  // Captures the state of theme sync after initial data merge.
+  ThemeSyncState startup_state_ = ThemeSyncState::kFailed;
 
   base::ThreadChecker thread_checker_;
 
