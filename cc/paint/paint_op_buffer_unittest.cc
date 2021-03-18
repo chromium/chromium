@@ -2613,6 +2613,10 @@ TEST(PaintOpBufferTest, ValidateRects) {
       static_cast<char*>(
           base::AlignedAlloc(buffer_size, PaintOpBuffer::PaintOpAlign)));
 
+  // Used for QuickRejectDraw
+  SkCanvas device(256, 256);
+  SkCanvas* canvas = &device;
+
   SkRect bad_rect = SkRect::MakeEmpty();
   bad_rect.fBottom = std::numeric_limits<float>::quiet_NaN();
   EXPECT_FALSE(bad_rect.isFinite());
@@ -2647,6 +2651,14 @@ TEST(PaintOpBufferTest, ValidateRects) {
         serialized.get(), bytes_written, deserialized.get(), buffer_size,
         &bytes_read, options_provider.deserialize_options());
     EXPECT_FALSE(written) << "op: " << op_idx;
+
+    // Additionally, every draw op should be rejected by QuickRejectDraw if
+    // the paint op buffer were played back directly without going through
+    // deserialization (e.g. canvas2D, crbug.com/1186392)
+    if (op->IsDrawOp()) {
+      EXPECT_TRUE(PaintOp::QuickRejectDraw(op, canvas));
+    }
+
     ++op_idx;
   }
 }
