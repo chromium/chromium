@@ -144,12 +144,20 @@ base::ThreadSafePartitionRoot* AlignedAllocator() {
 #else
   // Since the general-purpose allocator uses the thread cache, this one cannot.
   static base::NoDestructor<base::ThreadSafePartitionRoot> aligned_allocator(
-      base::PartitionOptions{base::PartitionOptions::Alignment::kAlignedAlloc,
-                             base::PartitionOptions::ThreadCache::kDisabled,
-                             base::PartitionOptions::Quarantine::kAllowed,
-                             base::PartitionOptions::RefCount::kDisabled});
-  return aligned_allocator.get();
+      base::PartitionOptions {
+        base::PartitionOptions::Alignment::kAlignedAlloc,
+            base::PartitionOptions::ThreadCache::kDisabled,
+            base::PartitionOptions::Quarantine::kAllowed,
+#if BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+            // Given the outer #if, this is possible only when DCHECK_IS_ON().
+            base::PartitionOptions::RefCount::kEnabled
+#else
+            base::PartitionOptions::RefCount::kDisabled
 #endif
+      });
+  return aligned_allocator.get();
+#endif  // !DCHECK_IS_ON() && (!BUILDFLAG(USE_BACKUP_REF_PTR) ||
+        //                     BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION))
 }
 
 #if defined(OS_WIN) && defined(ARCH_CPU_X86)

@@ -38,9 +38,11 @@ PartitionRefCount* PartitionRefCountPointer(void* slot_start) {
   // reserved). Instead, refcount is stored in the subsequent page metadata.
 
   auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromSlotStartPtr(slot_start);
-  PA_DCHECK(slot_span);
 #if DCHECK_IS_ON()
-  PartitionCookieCheckValue(slot_start);
+  PA_DCHECK(slot_span);
+  auto* root = PartitionRoot<ThreadSafe>::FromSlotSpan(slot_span);
+  if (root->allow_cookies)
+    PartitionCookieCheckValue(slot_start);
 #endif
   uint8_t* partition_ref_count_ptr;
   if (UNLIKELY(slot_span->CanStoreRawSize())) {

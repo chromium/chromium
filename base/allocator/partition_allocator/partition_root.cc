@@ -477,24 +477,14 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
       internal::PartitionAddressSpace::Init();
 #endif
 
-    // If alignment needs to be enforced, disallow adding a cookie and/or
-    // ref-count at the beginning of the slot.
-    if (opts.alignment == PartitionOptions::Alignment::kAlignedAlloc) {
-      allow_cookies = false;
-      allow_ref_count = false;
-      // There should be no configuration where aligned root and ref-count are
-      // requested at the same time. In theory REF_COUNT_AT_END_OF_ALLOCATION
-      // allows these to co-exist, but in this case aligned root is not even
-      // created.
-      PA_CHECK(opts.ref_count == PartitionOptions::RefCount::kDisabled);
-    } else {
-      allow_cookies = true;
-      // Allow ref-count if it's explicitly requested *and* GigaCage is enabled.
-      // Without GigaCage it'd be unused, thus wasteful.
-      allow_ref_count =
-          (opts.ref_count == PartitionOptions::RefCount::kEnabled) &&
-          features::IsPartitionAllocGigaCageEnabled();
-    }
+    // If alignment needs to be enforced, disallow adding a cookie.
+    allow_cookies =
+        opts.alignment != PartitionOptions::Alignment::kAlignedAlloc;
+    // Allow ref-count if it's explicitly requested *and* GigaCage is enabled.
+    // Without GigaCage it'd be unused, thus wasteful.
+    allow_ref_count =
+        (opts.ref_count == PartitionOptions::RefCount::kEnabled) &&
+        features::IsPartitionAllocGigaCageEnabled();
 
 #if PARTITION_EXTRAS_REQUIRED
     extras_size = 0;
@@ -513,6 +503,10 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
       extras_offset += internal::kPartitionRefCountOffsetAdjustment;
     }
 #endif
+
+    // Partitions that allow AlignedAlloc can't have pre-allocation extras.
+    PA_CHECK(opts.alignment != PartitionOptions::Alignment::kAlignedAlloc ||
+             !extras_offset);
 
     quarantine_mode =
 #if PA_ALLOW_PCSCAN
