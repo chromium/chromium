@@ -3424,11 +3424,17 @@ class SimpleURLLoaderMockTimeTest : public testing::Test {
  public:
   SimpleURLLoaderMockTimeTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        disallow_blocking_(std::make_unique<base::ScopedDisallowBlocking>()) {
+        disallow_blocking_(std::make_unique<base::ScopedDisallowBlocking>()) {}
+  ~SimpleURLLoaderMockTimeTest() override = default;
+
+  void SetUp() override {
     SimpleURLLoader::SetTimeoutTickClockForTest(
         task_environment_.GetMockTickClock());
   }
-  ~SimpleURLLoaderMockTimeTest() override {}
+
+  void TearDown() override {
+    SimpleURLLoader::SetTimeoutTickClockForTest(nullptr);
+  }
 
   std::unique_ptr<SimpleLoaderTestHelper> CreateHelper() {
     std::unique_ptr<network::ResourceRequest> resource_request =
