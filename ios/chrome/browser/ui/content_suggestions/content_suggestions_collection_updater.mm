@@ -582,6 +582,12 @@ addSuggestionsToModel:(NSArray<CSCollectionViewItem*>*)suggestions
   return [self addItem:item toSectionWithIdentifier:sectionIdentifier];
 }
 
+- (BOOL)isReturnToRecentTabSection:(NSInteger)section {
+  return [self.collectionViewController.collectionViewModel
+             sectionIdentifierForSection:section] ==
+         SectionIdentifierReturnToRecentTab;
+}
+
 - (BOOL)isMostVisitedSection:(NSInteger)section {
   return
       [self.collectionViewController.collectionViewModel

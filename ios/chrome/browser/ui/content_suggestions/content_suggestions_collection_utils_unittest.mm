@@ -201,7 +201,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, shrunkDoodleFrameIPhone) {
       doodleTopMargin(YES, kTopInset, IPhonePortraitTraitCollection());
   EXPECT_EQ(68, heightLogoPortrait);
   EXPECT_EQ(60, heightNoLogoPortrait);
-  EXPECT_EQ(114, topMarginPortrait);
+  EXPECT_EQ(95, topMarginPortrait);
 }
 
 }  // namespace content_suggestions

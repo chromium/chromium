@@ -115,6 +115,10 @@ class WebStateList;
 // Get the maximum number of sites shown.
 + (NSUInteger)maxSitesShown;
 
+// Whether the most recent tab tile is being shown. Returns YES if
+// configureMostRecentTabItemWithWebState: has been called.
+- (BOOL)mostRecentTabStartSurfaceTileIsShowing;
+
 // Configures the most recent tab item for |webState|.
 - (void)configureMostRecentTabItemWithWebState:(web::WebState*)webState;
 

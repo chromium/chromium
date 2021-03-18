@@ -35,6 +35,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_alert_factory.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_updater.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
@@ -678,6 +680,18 @@ const char kNTPHelpURL[] =
           : self.suggestionsViewController.collectionView;
   UIEdgeInsets contentInset = collectionView.contentInset;
   CGPoint contentOffset = collectionView.contentOffset;
+  if ([self.suggestionsMediator mostRecentTabStartSurfaceTileIsShowing]) {
+    // Return to Recent tab tile is only shown one time, so subtract it's
+    // vertical space to preserve relative scroll position from top.
+    CGFloat tileSectionHeight =
+        [ContentSuggestionsReturnToRecentTabCell defaultSize].height +
+        content_suggestions::kReturnToRecentTabSectionBottomMargin;
+    if (contentOffset.y >
+        tileSectionHeight +
+            [self.headerCollectionInteractionHandler pinnedOffsetY]) {
+      contentOffset.y -= tileSectionHeight;
+    }
+  }
 
   contentOffset.y -=
       self.headerCollectionInteractionHandler.collectionShiftingOffset;

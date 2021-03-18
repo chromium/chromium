@@ -13,6 +13,9 @@ extern const int kSearchFieldBackgroundColor;
 
 extern const CGFloat kHintTextScale;
 
+// Bottom margin for the Return to Recent Tab tile.
+extern const CGFloat kReturnToRecentTabSectionBottomMargin;
+
 // Returns the proper height for the doodle. |logoIsShowing| is YES if showing
 // the Google logo. |doodleisShowing| is YES if the doodle is showing. The
 // SizeClass of the |traitCollection| of the view displaying the doodle is used

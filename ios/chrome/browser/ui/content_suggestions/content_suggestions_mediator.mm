@@ -150,8 +150,9 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 @property(nonatomic, strong) ContentSuggestionsDiscoverItem* discoverItem;
 // Number of unread items in reading list model.
 @property(nonatomic, assign) NSInteger readingListUnreadCount;
-// Whether to show the most recent tab tile.
-@property(nonatomic, assign) BOOL showMostRecentTabStartSurfaceTile;
+// YES if the Return to Recent Tab tile is being shown.
+@property(nonatomic, assign, getter=mostRecentTabStartSurfaceTileIsShowing)
+    BOOL showMostRecentTabStartSurfaceTile;
 // Whether the incognito mode is available.
 @property(nonatomic, assign) BOOL incognitoAvailable;
 

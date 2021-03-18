@@ -590,6 +590,16 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
     parentInset.top = 0;
     parentInset.left = 0;
     parentInset.right = 0;
+  } else if ([self.collectionUpdater isReturnToRecentTabSection:section]) {
+    CGFloat collectionWidth = collectionView.bounds.size.width;
+    CGFloat maxCardWidth = content_suggestions::searchFieldWidth(
+        collectionWidth, self.traitCollection);
+    CGFloat margin =
+        MAX(0, (collectionView.frame.size.width - maxCardWidth) / 2);
+    parentInset.left = margin;
+    parentInset.right = margin;
+    parentInset.bottom =
+        content_suggestions::kReturnToRecentTabSectionBottomMargin;
   } else if ([self.collectionUpdater isMostVisitedSection:section] ||
              [self.collectionUpdater isPromoSection:section]) {
     CGFloat margin = CenteredTilesMarginForWidth(

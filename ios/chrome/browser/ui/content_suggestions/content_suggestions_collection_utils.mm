@@ -34,7 +34,7 @@ const CGFloat kSearchFieldMinMargin = 8;
 // Top margin for the doodle.
 const CGFloat kDoodleTopMarginRegularXRegular = 162;
 const CGFloat kDoodleTopMarginOther = 48;
-const CGFloat kShrunkDoodleTopMarginOther = 84;
+const CGFloat kShrunkDoodleTopMarginOther = 65;
 // Size of the doodle top margin which is multiplied by the scaled font factor,
 // and added to |kDoodleTopMarginOther| on non Regular x Regular form factors.
 const CGFloat kDoodleScaledTopMarginOther = 10;
@@ -45,6 +45,7 @@ const CGFloat kShrunkLogoSearchFieldTopMargin = 22;
 
 // Bottom margin for the search field.
 const CGFloat kNTPSearchFieldBottomPadding = 18;
+const CGFloat kNTPShrunkLogoSearchFieldBottomPadding = 20;
 
 const CGFloat kTopSpacingMaterial = 24;
 
@@ -67,6 +68,7 @@ namespace content_suggestions {
 
 const int kSearchFieldBackgroundColor = 0xF1F3F4;
 const CGFloat kHintTextScale = 0.15;
+const CGFloat kReturnToRecentTabSectionBottomMargin = 25;
 
 CGFloat doodleHeight(BOOL logoIsShowing,
                      BOOL doodleIsShowing,
@@ -125,13 +127,16 @@ CGFloat heightForLogoHeader(BOOL logoIsShowing,
                             BOOL toolbarPresent,
                             CGFloat topInset,
                             UITraitCollection* traitCollection) {
+  CGFloat bottomPadding = ShouldShowReturnToMostRecentTabForStartSurface()
+                              ? kNTPShrunkLogoSearchFieldBottomPadding
+                              : kNTPSearchFieldBottomPadding;
   CGFloat headerHeight =
       doodleTopMargin(toolbarPresent, topInset, traitCollection) +
       doodleHeight(logoIsShowing, doodleIsShowing, traitCollection) +
       searchFieldTopMargin() +
       ToolbarExpandedHeight(
           [UIApplication sharedApplication].preferredContentSizeCategory) +
-      kNTPSearchFieldBottomPadding;
+      bottomPadding;
   if (!IsRegularXRegularSizeClass(traitCollection)) {
     return headerHeight;
   }
