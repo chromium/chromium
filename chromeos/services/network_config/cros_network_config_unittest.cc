@@ -787,6 +787,20 @@ TEST_F(CrosNetworkConfigTest, ESimNetworkNameComesFromHermes) {
   EXPECT_EQ(kTestProfileName, network->name);
 }
 
+TEST_F(CrosNetworkConfigTest, SimAbsentMeansCellularIsDisabled) {
+  mojom::DeviceStatePropertiesPtr cellular =
+      GetDeviceStateFromList(mojom::NetworkType::kCellular);
+  EXPECT_EQ(mojom::DeviceStateType::kEnabled, cellular->device_state);
+
+  helper().device_test()->SetDeviceProperty(
+      kCellularDevicePath, shill::kSIMPresentProperty, base::Value(false),
+      /*notify_changed=*/true);
+  base::RunLoop().RunUntilIdle();
+
+  cellular = GetDeviceStateFromList(mojom::NetworkType::kCellular);
+  EXPECT_EQ(mojom::DeviceStateType::kDisabled, cellular->device_state);
+}
+
 TEST_F(CrosNetworkConfigTest, GetDeviceStateList) {
   std::vector<mojom::DeviceStatePropertiesPtr> devices = GetDeviceStateList();
   ASSERT_EQ(4u, devices.size());

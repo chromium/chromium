@@ -11,6 +11,7 @@ static_library("network_config") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos/components/sync_wifi:network_eligibility_checker",
     "//chromeos/dbus/hermes",
