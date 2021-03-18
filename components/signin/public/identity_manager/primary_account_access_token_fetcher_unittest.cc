@@ -47,7 +47,8 @@ class PrimaryAccountAccessTokenFetcherTest
       StrictMock<MockCallback<AccessTokenFetcher::TokenCallback>>;
 
   PrimaryAccountAccessTokenFetcherTest()
-      : access_token_info_("access token",
+      : identity_test_env_(std::make_unique<IdentityTestEnvironment>()),
+        access_token_info_("access token",
                            base::Time::Now() + base::TimeDelta::FromHours(1),
                            "id_token") {}
 
@@ -61,7 +62,7 @@ class PrimaryAccountAccessTokenFetcherTest
     std::set<std::string> scopes = {
         GaiaConstants::kChromeSafeBrowsingOAuth2Scope};
     return std::make_unique<PrimaryAccountAccessTokenFetcher>(
-        "test_consumer", identity_test_env_.identity_manager(), scopes,
+        "test_consumer", identity_test_env_->identity_manager(), scopes,
         std::move(callback), mode, consent);
   }
 
@@ -73,11 +74,15 @@ class PrimaryAccountAccessTokenFetcherTest
     return CreateFetcher(std::move(callback), mode, consent);
   }
 
-  IdentityTestEnvironment* identity_test_env() { return &identity_test_env_; }
+  IdentityTestEnvironment* identity_test_env() {
+    return identity_test_env_.get();
+  }
+
+  void ShutdownIdentityManager() { identity_test_env_.reset(); }
 
   // Signs the user in to the primary account, returning the account ID.
   CoreAccountId SignIn() {
-    return identity_test_env_.MakePrimaryAccountAvailable("me@gmail.com")
+    return identity_test_env_->MakePrimaryAccountAvailable("me@gmail.com")
         .account_id;
   }
 
@@ -89,7 +94,7 @@ class PrimaryAccountAccessTokenFetcherTest
 
  private:
   base::test::TaskEnvironment task_environment_;
-  IdentityTestEnvironment identity_test_env_;
+  std::unique_ptr<IdentityTestEnvironment> identity_test_env_;
   AccessTokenInfo access_token_info_;
 };
 
@@ -331,6 +336,43 @@ TEST_P(PrimaryAccountAccessTokenFetcherTest,
           AccessTokenInfo()));
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
+}
+
+// Shutting down the identity manager while a fetch is in progress should not
+// crash. Regression test for https://crbug.com/1187288
+TEST_P(PrimaryAccountAccessTokenFetcherTest, IdentityManagerShutdown) {
+  TestTokenCallback callback;
+
+  CoreAccountId account_id = SignIn();
+
+  // Signed in and refresh token already exists, so this should result in a
+  // request for an access token.
+  auto fetcher = CreateFetcher(
+      callback.Get(),
+      PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable);
+
+  EXPECT_CALL(
+      callback,
+      Run(GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED),
+          AccessTokenInfo()));
+  ShutdownIdentityManager();
+}
+
+// Shutting down the identity manager while waiting for the account should not
+// crash. Regression test for https://crbug.com/1187288
+TEST_P(PrimaryAccountAccessTokenFetcherTest, IdentityManagerShutdownNoAccount) {
+  TestTokenCallback callback;
+
+  // The account is not present, the fetcher starts waiting for the account.
+  auto fetcher = CreateFetcher(
+      callback.Get(),
+      PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable);
+
+  EXPECT_CALL(
+      callback,
+      Run(GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED),
+          AccessTokenInfo()));
+  ShutdownIdentityManager();
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

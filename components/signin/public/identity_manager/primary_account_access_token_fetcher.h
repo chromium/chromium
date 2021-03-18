@@ -131,7 +131,9 @@ struct AccessTokenInfo;
 //     // the test can now perform any desired validation of expected actions
 //     // |MyClass| took in response.
 //   }
-class PrimaryAccountAccessTokenFetcher : public IdentityManager::Observer {
+class PrimaryAccountAccessTokenFetcher
+    : public IdentityManager::Observer,
+      public IdentityManager::DiagnosticsObserver {
  public:
   // Specifies how this instance should behave:
   // |kImmediate|: Makes one-shot immediate request.
@@ -181,6 +183,9 @@ class PrimaryAccountAccessTokenFetcher : public IdentityManager::Observer {
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
 
+  // IdentityManager::DiagnosticsObserver implementation.
+  void OnIdentityManagerShutdown() override;
+
   // Checks whether credentials are now available and starts an access token
   // request if so. Should only be called in mode |kWaitUntilAvailable|.
   void ProcessSigninStateChange();
@@ -201,6 +206,11 @@ class PrimaryAccountAccessTokenFetcher : public IdentityManager::Observer {
 
   base::ScopedObservation<IdentityManager, IdentityManager::Observer>
       identity_manager_observation_{this};
+  base::ScopedObservation<IdentityManager,
+                          IdentityManager::DiagnosticsObserver,
+                          &IdentityManager::AddDiagnosticsObserver,
+                          &IdentityManager::RemoveDiagnosticsObserver>
+      identity_manager_diagnositcs_observation_{this};
 
   // Internal fetcher that does the actual access token request.
   std::unique_ptr<AccessTokenFetcher> access_token_fetcher_;

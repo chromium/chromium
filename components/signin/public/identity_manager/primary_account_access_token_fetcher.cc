@@ -28,6 +28,8 @@ PrimaryAccountAccessTokenFetcher::PrimaryAccountAccessTokenFetcher(
       access_token_retried_(false),
       mode_(mode),
       consent_(consent) {
+  identity_manager_diagnositcs_observation_.Observe(identity_manager_);
+
   if (mode_ == Mode::kImmediate || AreCredentialsAvailable()) {
     StartAccessTokenRequest();
     return;
@@ -92,6 +94,17 @@ void PrimaryAccountAccessTokenFetcher::OnPrimaryAccountChanged(
 void PrimaryAccountAccessTokenFetcher::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
   ProcessSigninStateChange();
+}
+
+void PrimaryAccountAccessTokenFetcher::OnIdentityManagerShutdown() {
+  identity_manager_diagnositcs_observation_.Reset();
+  identity_manager_observation_.Reset();
+  access_token_fetcher_.reset();
+  if (callback_) {
+    std::move(callback_).Run(
+        GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED),
+        AccessTokenInfo());
+  }
 }
 
 void PrimaryAccountAccessTokenFetcher::ProcessSigninStateChange() {
