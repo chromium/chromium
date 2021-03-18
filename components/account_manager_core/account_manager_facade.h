@@ -70,12 +70,6 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
   AccountManagerFacade& operator=(const AccountManagerFacade&) = delete;
   virtual ~AccountManagerFacade() = 0;
 
-  // Returns |true| if |AccountManager| is connected and has been fully
-  // initialized.
-  // Note: For out-of-process implementations, it returns |false| if the IPC
-  // pipe to |AccountManager| is disconnected.
-  virtual bool IsInitialized() = 0;
-
   // Registers an observer. Ensures the observer wasn't already registered.
   virtual void AddObserver(Observer* observer) = 0;
   // Unregisters an observer that was registered using AddObserver.

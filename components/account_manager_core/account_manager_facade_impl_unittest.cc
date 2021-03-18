@@ -209,37 +209,10 @@ class AccountManagerFacadeImplTest : public testing::Test {
   FakeAccountManager account_manager_;
 };
 
-TEST_F(AccountManagerFacadeImplTest,
-       FacadeIsInitializedOnConnectIfAccountManagerIsInitialized) {
-  account_manager().SetIsInitialized(true);
-
+TEST_F(AccountManagerFacadeImplTest, InitializationStatusIsCorrectlySet) {
+  // This will wait for an initialization callback to be called.
   std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
-  EXPECT_TRUE(account_manager_facade->IsInitialized());
-}
-
-TEST_F(AccountManagerFacadeImplTest, FacadeIsUninitializedByDefault) {
-  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
-      CreateFacade();
-  EXPECT_FALSE(account_manager_facade->IsInitialized());
-}
-
-TEST_F(AccountManagerFacadeImplTest,
-       UninitializedFacadeIsInitializedOnFirstTokenUpsertedNotification) {
-  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
-      CreateFacade();
-  ASSERT_FALSE(account_manager_facade->IsInitialized());
-
-  testing::StrictMock<MockObserver> observer;
-  account_manager_facade->AddObserver(&observer);
-
-  base::RunLoop run_loop;
-  EXPECT_CALL(observer, OnAccountUpserted(testing::_))
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-  account_manager().NotifyOnTokenUpsertedObservers(
-      CreateTestGaiaAccount(kTestAccountEmail));
-  run_loop.Run();
-
   EXPECT_TRUE(account_manager_facade->IsInitialized());
 }
 

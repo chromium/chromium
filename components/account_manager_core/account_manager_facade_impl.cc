@@ -92,10 +92,6 @@ AccountManagerFacadeImpl::AccountManagerFacadeImpl(
 
 AccountManagerFacadeImpl::~AccountManagerFacadeImpl() = default;
 
-bool AccountManagerFacadeImpl::IsInitialized() {
-  return is_remote_initialized_;
-}
-
 void AccountManagerFacadeImpl::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
 }
@@ -197,16 +193,8 @@ void AccountManagerFacadeImpl::OnReceiverReceived(
   receiver_ =
       std::make_unique<mojo::Receiver<crosapi::mojom::AccountManagerObserver>>(
           this, std::move(receiver));
-  // At this point (|receiver_| exists), we are subscribed to Account Manager.
+  // At this point (`receiver_` exists), we are subscribed to Account Manager.
 
-  account_manager_remote_->IsInitialized(base::BindOnce(
-      &AccountManagerFacadeImpl::OnInitialized, weak_factory_.GetWeakPtr()));
-}
-
-void AccountManagerFacadeImpl::OnInitialized(bool is_initialized) {
-  if (is_initialized)
-    is_remote_initialized_ = true;
-  // else: We will receive a notification in |OnTokenUpserted|.
   FinishInitSequenceIfNotAlreadyFinished();
 }
 
@@ -236,12 +224,6 @@ void AccountManagerFacadeImpl::FinishAddAccount(
 
 void AccountManagerFacadeImpl::OnTokenUpserted(
     crosapi::mojom::AccountPtr account) {
-  is_remote_initialized_ = true;
-  // |OnTokenUpserted| may be invoked before |OnInitialized|. Invoking
-  // initialization sequence callbacks before observers makes sure observers
-  // aren't confused by the call order.
-  FinishInitSequenceIfNotAlreadyFinished();
-
   base::Optional<Account> maybe_account = FromMojoAccount(account);
   if (!maybe_account) {
     LOG(WARNING) << "Can't unmarshal account of type: "
@@ -281,9 +263,11 @@ void AccountManagerFacadeImpl::GetPersistentErrorInternal(
 }
 
 void AccountManagerFacadeImpl::FinishInitSequenceIfNotAlreadyFinished() {
-  if (is_initialization_sequence_finished_)
+  if (is_initialized_) {
     return;
-  is_initialization_sequence_finished_ = true;
+  }
+
+  is_initialized_ = true;
   for (auto& cb : initialization_callbacks_) {
     std::move(cb).Run();
   }
@@ -292,11 +276,15 @@ void AccountManagerFacadeImpl::FinishInitSequenceIfNotAlreadyFinished() {
 
 void AccountManagerFacadeImpl::RunAfterInitializationSequence(
     base::OnceClosure closure) {
-  if (!is_initialization_sequence_finished_) {
+  if (!is_initialized_) {
     initialization_callbacks_.emplace_back(std::move(closure));
   } else {
     std::move(closure).Run();
   }
+}
+
+bool AccountManagerFacadeImpl::IsInitialized() {
+  return is_initialized_;
 }
 
 void AccountManagerFacadeImpl::FlushMojoForTesting() {
