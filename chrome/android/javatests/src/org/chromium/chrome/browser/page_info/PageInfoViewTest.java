@@ -19,7 +19,9 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.util.Batch.PER_CLASS;
 import static org.chromium.chrome.test.util.ViewUtils.hasBackgroundColor;
@@ -54,6 +56,7 @@ import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -246,6 +249,8 @@ public class PageInfoViewTest {
     @After
     public void tearDown() throws TimeoutException {
         LocationUtils.setFactory(null);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(null); });
         // Notification channels don't get cleaned up automatically.
         // TODO(crbug.com/951402): Find a general solution to avoid leaking channels between tests.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -588,6 +593,22 @@ public class PageInfoViewTest {
                        hasDescendant(withText(
                                context.getString(R.string.website_settings_device_location)))))
                 .check(matches(hasBackgroundColor(R.color.iph_highlight_blue)));
+    }
+
+    /**
+     * Tests that a close button is shown with accessibility enabled and that it closes the dialog.
+     */
+    @Test
+    @MediumTest
+    @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
+    public void testCloseButton() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true); });
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        PageInfoController controller = PageInfoController.getLastPageInfoControllerForTesting();
+        assertTrue(controller.isDialogShowingForTesting());
+        onView(withId(R.id.page_info_close)).perform(click());
+        assertFalse(controller.isDialogShowingForTesting());
     }
 
     // TODO(1071762): Add tests for preview pages, offline pages, offline state and other states.

@@ -277,6 +277,11 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             containerParams.urlTitleClickCallback = mContainer::toggleUrlTruncation;
             containerParams.urlTitleLongClickCallback = viewParams.urlTitleLongClickCallback;
             containerParams.urlTitleShown = viewParams.urlTitleShown;
+            // Show close button for tablets and when accessibility is enabled to make it easier
+            // to close the UI.
+            containerParams.showCloseButton =
+                    !isSheet(mContext) || mDelegate.isAccessibilityEnabled();
+            containerParams.closeButtonClickCallback = this::dismiss;
             mContainer.setParams(containerParams);
             mDelegate.getFavicon(mFullUrl.getSpec(), favicon -> {
                 // Return early if PageInfo has been dismissed.
@@ -364,6 +369,12 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
                 webContents.getViewAndroidDelegate().getContainerView(), isSheet(mContext),
                 delegate.getModalDialogManager(), this);
         mDialog.show();
+    }
+
+    private void dismiss() {
+        if (mDialog != null) {
+            mDialog.dismiss(true);
+        }
     }
 
     private void destroy() {
@@ -572,6 +583,11 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
     public View getPageInfoViewForTesting() {
         if (mContainer != null) return mContainer;
         return mView;
+    }
+
+    @VisibleForTesting
+    public boolean isDialogShowingForTesting() {
+        return mDialog != null;
     }
 
     /**

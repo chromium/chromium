@@ -38,10 +38,13 @@ public class PageInfoContainer extends FrameLayout {
         public boolean previewUIShown;
         // The icon used for preview UI.
         public Drawable previewUIIcon;
+        // Whether the close button is displayed.
+        public boolean showCloseButton;
 
         public Runnable urlTitleClickCallback;
         public Runnable urlTitleLongClickCallback;
         public Runnable backButtonClickCallback;
+        public Runnable closeButtonClickCallback;
     }
     private PageInfoView.ElidedUrlTextView mExpandedUrlTitle;
     private TextView mTruncatedUrlTitle;
@@ -85,6 +88,10 @@ public class PageInfoContainer extends FrameLayout {
 
         View previewWrapper = findViewById(R.id.page_info_preview_message_wrapper);
         previewWrapper.setVisibility(params.previewUIShown ? VISIBLE : GONE);
+
+        ChromeImageButton closeButton = findViewById(R.id.page_info_close);
+        closeButton.setVisibility(params.showCloseButton ? VISIBLE : GONE);
+        closeButton.setOnClickListener(v -> params.closeButtonClickCallback.run());
 
         ChromeImageButton backButton = findViewById(R.id.subpage_back_button);
         backButton.setOnClickListener(v -> params.backButtonClickCallback.run());

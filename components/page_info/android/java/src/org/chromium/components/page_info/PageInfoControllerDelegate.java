@@ -216,5 +216,12 @@ public abstract class PageInfoControllerDelegate {
      */
     public abstract void getFavicon(String url, Callback<Drawable> callback);
 
+    /**
+     * Checks to see that touch exploration or an accessibility service that can perform gestures
+     * is enabled.
+     * @return Whether or not accessibility and touch exploration are enabled.
+     */
+    public abstract boolean isAccessibilityEnabled();
+
     public abstract FragmentManager getFragmentManager();
 }
