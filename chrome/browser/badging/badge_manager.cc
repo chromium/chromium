@@ -240,7 +240,6 @@ void BadgeManager::ClearBadge() {
 std::vector<std::tuple<web_app::AppId, GURL>>
 BadgeManager::FrameBindingContext::GetAppIdsAndUrlsForBadging() const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   content::RenderFrameHost* frame =
       content::RenderFrameHost::FromID(process_id_, frame_id_);
   if (!frame)
@@ -251,11 +250,12 @@ BadgeManager::FrameBindingContext::GetAppIdsAndUrlsForBadging() const {
   if (!contents)
     return std::vector<std::tuple<web_app::AppId, GURL>>{};
 
-  const web_app::AppRegistrar& registrar =
-      web_app::WebAppProviderBase::GetProviderBase(
-          Profile::FromBrowserContext(contents->GetBrowserContext()))
-          ->registrar();
+  auto* provider = web_app::WebAppProviderBase::GetProviderBase(
+      Profile::FromBrowserContext(contents->GetBrowserContext()));
+  if (!provider)
+    return std::vector<std::tuple<web_app::AppId, GURL>>{};
 
+  const web_app::AppRegistrar& registrar = provider->registrar();
   const base::Optional<web_app::AppId> app_id =
       registrar.FindAppWithUrlInScope(frame->GetLastCommittedURL());
   if (!app_id)
@@ -273,10 +273,12 @@ BadgeManager::ServiceWorkerBindingContext::GetAppIdsAndUrlsForBadging() const {
   if (!render_process_host)
     return std::vector<std::tuple<web_app::AppId, GURL>>{};
 
-  const web_app::AppRegistrar& registrar =
-      web_app::WebAppProviderBase::GetProviderBase(
-          Profile::FromBrowserContext(render_process_host->GetBrowserContext()))
-          ->registrar();
+  auto* provider = web_app::WebAppProviderBase::GetProviderBase(
+      Profile::FromBrowserContext(render_process_host->GetBrowserContext()));
+  if (!provider)
+    return std::vector<std::tuple<web_app::AppId, GURL>>{};
+
+  const web_app::AppRegistrar& registrar = provider->registrar();
   std::vector<std::tuple<web_app::AppId, GURL>> app_ids_urls{};
   for (const auto& app_id : registrar.FindAppsInScope(scope_)) {
     app_ids_urls.push_back(
