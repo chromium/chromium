@@ -2830,18 +2830,18 @@
   },
   {
     "name": "files-zip-mount",
-    "owners": [ "fdegros", "jboulic", "dats" ],
-    "expiry_milestone": 90
+    "owners": [ "fdegros", "jboulic"],
+    "expiry_milestone": 95
   },
   {
     "name": "files-zip-pack",
-    "owners": [ "fdegros", "jboulic", "dats" ],
-    "expiry_milestone": 90
+    "owners": [ "fdegros", "jboulic"],
+    "expiry_milestone": 100
   },
   {
     "name": "files-zip-unpack",
-    "owners": [ "fdegros", "jboulic", "dats" ],
-    "expiry_milestone": 90
+    "owners": [ "fdegros", "jboulic"],
+    "expiry_milestone": 100
   },
   {
     "name": "fill-on-account-select",
