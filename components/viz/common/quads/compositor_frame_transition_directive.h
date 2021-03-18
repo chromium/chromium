@@ -5,7 +5,10 @@
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_COMPOSITOR_FRAME_TRANSITION_DIRECTIVE_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_COMPOSITOR_FRAME_TRANSITION_DIRECTIVE_H_
 
+#include <vector>
+
 #include "base/time/time.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/viz_common_export.h"
 
 namespace viz {
@@ -50,10 +53,18 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
   // Constructs a new directive. Note that if type is `kSave`, the effect and
   // duration should be specified for a desired effect. These are ignored for
   // the `kAnimate` type.
-  CompositorFrameTransitionDirective(uint32_t sequence_id,
-                                     Type type,
-                                     Effect effect = Effect::kNone,
-                                     base::TimeDelta duration = {});
+  CompositorFrameTransitionDirective(
+      uint32_t sequence_id,
+      Type type,
+      Effect effect = Effect::kNone,
+      base::TimeDelta duration = {},
+      std::vector<CompositorRenderPassId> shared_passes = {});
+
+  CompositorFrameTransitionDirective(const CompositorFrameTransitionDirective&);
+  ~CompositorFrameTransitionDirective();
+
+  CompositorFrameTransitionDirective& operator=(
+      const CompositorFrameTransitionDirective&);
 
   // A monotonically increasing sequence_id for a given communication channel
   // (i.e. surface). This is used to distinguish new directives from directives
@@ -77,6 +88,8 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
   Effect effect_ = Effect::kNone;
 
   base::TimeDelta duration_;
+
+  std::vector<CompositorRenderPassId> shared_passes_;
 };
 
 }  // namespace viz

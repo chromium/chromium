@@ -1142,6 +1142,8 @@ static cc::RenderSurfaceReason RenderSurfaceReasonForEffect(
       effect.BlendMode() != SkBlendMode::kDstIn) {
     return cc::RenderSurfaceReason::kBlendMode;
   }
+  if (effect.DocumentTransitionSharedElementId().valid())
+    return cc::RenderSurfaceReason::kDocumentTransitionParticipant;
   return cc::RenderSurfaceReason::kNone;
 }
 
@@ -1168,6 +1170,8 @@ void PropertyTreeManager::PopulateCcEffectNode(
   }
   effect_node.double_sided = !transform.IsBackfaceHidden();
   effect_node.effect_changed = effect.NodeChangeAffectsRaster();
+  effect_node.document_transition_shared_element_id =
+      effect.DocumentTransitionSharedElementId();
 }
 
 }  // namespace blink

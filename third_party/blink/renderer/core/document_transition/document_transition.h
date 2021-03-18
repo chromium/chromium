@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/graphics/document_transition_shared_element_id.h"
 
 namespace blink {
 
@@ -54,6 +55,10 @@ class CORE_EXPORT DocumentTransition
 
   // Returns true if the given element is active in this transition.
   bool IsActiveElement(const Element*) const;
+
+  // Returns an identifier for the given shared element. Note that the element
+  // must be active (i.e. `IsActive(element)` must be true).
+  DocumentTransitionSharedElementId GetSharedElementId(const Element*) const;
 
   // We require shared elements to be contained. This check verifies that and
   // removes it from the shared list if it isn't. See
@@ -102,6 +107,10 @@ class CORE_EXPORT DocumentTransition
   // and start sequence ids are technically in a different namespace, but this
   // avoids any confusion while debugging.
   uint32_t next_sequence_id_ = 1u;
+
+  // The document tag identifies the document to which this transition belongs.
+  // It's unique among other local documents.
+  uint32_t document_tag_ = 0u;
 };
 
 }  // namespace blink

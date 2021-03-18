@@ -9,6 +9,8 @@
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/input/overscroll_behavior.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -49,6 +51,7 @@
 #include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/svg_root_painter.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
+#include "third_party/blink/renderer/platform/graphics/document_transition_shared_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 
@@ -66,6 +69,22 @@ bool AreSubtreeUpdateReasonsIsolationPiercing(unsigned reasons) {
   return reasons &
          ~(static_cast<unsigned>(
              SubtreePaintPropertyUpdateReason::kContainerChainMayChange));
+}
+
+DocumentTransitionSharedElementId GetSharedElementId(
+    const LayoutObject& object) {
+  Element* element = DynamicTo<Element>(object.GetNode());
+  // If we're not compositing this element for document transition, then it has
+  // no shared element id.
+  if (!element || !element->ShouldCompositeForDocumentTransition())
+    return {};
+
+  auto* document_transition_supplement =
+      DocumentTransitionSupplement::FromIfExists(element->GetDocument());
+  if (!document_transition_supplement)
+    return {};
+  return document_transition_supplement->GetTransition()->GetSharedElementId(
+      element);
 }
 
 }  // namespace
@@ -1270,6 +1289,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       state.has_active_opacity_animation = style.HasCurrentOpacityAnimation();
       state.has_active_backdrop_filter_animation =
           style.HasCurrentBackdropFilterAnimation();
+
+      state.document_transition_shared_element_id = GetSharedElementId(object_);
 
       EffectPaintPropertyNode::AnimationState animation_state;
       animation_state.is_running_opacity_animation_on_compositor =

@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <limits>
 #include <list>
+#include <map>
 #include <string>
 
 #include "base/auto_reset.h"
@@ -1176,12 +1177,14 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
     size_t surface_index = render_surface_list_size - 1 - i;
     RenderSurfaceImpl* render_surface =
         (*frame->render_surface_list)[surface_index];
+    const auto& shared_element_id =
+        render_surface->GetDocumentTransitionSharedElementId();
 
     bool is_root_surface =
         render_surface->EffectTreeIndex() == EffectTree::kContentsRootNodeId;
     bool should_draw_into_render_pass =
         is_root_surface || render_surface->contributes_to_drawn_surface() ||
-        render_surface->CopyOfOutputRequired();
+        render_surface->CopyOfOutputRequired() || shared_element_id.valid();
     if (should_draw_into_render_pass)
       frame->render_passes.push_back(render_surface->CreateRenderPass());
   }
@@ -2231,10 +2234,6 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
         delegated_ink_metadata->ToString());
     metadata.delegated_ink_metadata = std::move(delegated_ink_metadata);
   }
-
-  for (auto& request : active_tree_->TakeDocumentTransitionRequests())
-    metadata.transition_directives.push_back(request->ConstructDirective());
-
   return metadata;
 }
 
@@ -2495,6 +2494,25 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   }
 
   viz::CompositorFrameMetadata metadata = MakeCompositorFrameMetadata();
+
+  std::map<DocumentTransitionSharedElementId, viz::CompositorRenderPassId>
+      shared_element_render_pass_id_map;
+  for (RenderSurfaceImpl* render_surface : *frame->render_surface_list) {
+    const auto& shared_element_id =
+        render_surface->GetDocumentTransitionSharedElementId();
+    if (!shared_element_id.valid())
+      continue;
+    DCHECK(
+        !base::Contains(shared_element_render_pass_id_map, shared_element_id));
+    shared_element_render_pass_id_map[shared_element_id] =
+        render_surface->render_pass_id();
+  }
+
+  for (auto& request : active_tree_->TakeDocumentTransitionRequests()) {
+    metadata.transition_directives.push_back(
+        request->ConstructDirective(shared_element_render_pass_id_map));
+  }
+
   PopulateMetadataContentColorUsage(frame, &metadata);
   metadata.may_contain_video = frame->may_contain_video;
   metadata.deadline = viz::FrameDeadline(

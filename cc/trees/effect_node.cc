@@ -146,6 +146,8 @@ const char* RenderSurfaceReasonToString(RenderSurfaceReason reason) {
       return "mirrored";
     case RenderSurfaceReason::kSubtreeIsBeingCaptured:
       return "subtree being captured";
+    case RenderSurfaceReason::kDocumentTransitionParticipant:
+      return "document transition participant";
     case RenderSurfaceReason::kTest:
       return "test";
     default:

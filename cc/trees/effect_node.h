@@ -6,6 +6,7 @@
 #define CC_TREES_EFFECT_NODE_H_
 
 #include "cc/cc_export.h"
+#include "cc/document_transition/document_transition_shared_element_id.h"
 #include "cc/paint/element_id.h"
 #include "cc/paint/filter_operations.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
@@ -46,6 +47,7 @@ enum class RenderSurfaceReason : uint8_t {
   kCopyRequest,
   kMirrored,
   kSubtreeIsBeingCaptured,
+  kDocumentTransitionParticipant,
   // This must be the last value because it's used in tracing code to know the
   // number of reasons.
   kTest,
@@ -159,6 +161,9 @@ struct CC_EXPORT EffectNode {
   int closest_ancestor_with_cached_render_surface_id;
   int closest_ancestor_with_copy_request_id;
   int closest_ancestor_being_captured_id;
+
+  // Represents a shared element id for the document transition API.
+  DocumentTransitionSharedElementId document_transition_shared_element_id;
 
   bool HasRenderSurface() const {
     return render_surface_reason != RenderSurfaceReason::kNone;

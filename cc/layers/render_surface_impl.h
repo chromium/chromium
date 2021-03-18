@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "cc/cc_export.h"
+#include "cc/document_transition/document_transition_shared_element_id.h"
 #include "cc/layers/draw_mode.h"
 #include "cc/layers/layer_collections.h"
 #include "cc/trees/occlusion.h"
@@ -209,6 +210,9 @@ class CC_EXPORT RenderSurfaceImpl {
   int EffectTreeIndex() const;
 
   const EffectNode* OwningEffectNode() const;
+
+  const DocumentTransitionSharedElementId&
+  GetDocumentTransitionSharedElementId() const;
 
  private:
   void SetContentRect(const gfx::Rect& content_rect);

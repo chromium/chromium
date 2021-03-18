@@ -35,6 +35,7 @@ cc_component("cc") {
     "benchmarks/unittest_only_benchmark_impl.h",
     "document_transition/document_transition_request.cc",
     "document_transition/document_transition_request.h",
+    "document_transition/document_transition_shared_element_id.h",
     "input/actively_scrolling_type.h",
     "input/browser_controls_offset_manager.cc",
     "input/browser_controls_offset_manager.h",

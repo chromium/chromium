@@ -4,13 +4,17 @@
 
 #include "cc/document_transition/document_transition_request.h"
 
+#include <map>
 #include <memory>
 #include <sstream>
 #include <utility>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
+#include "cc/document_transition/document_transition_shared_element_id.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 
 namespace cc {
 namespace {
@@ -64,46 +68,71 @@ uint32_t DocumentTransitionRequest::s_next_sequence_id_ = 1;
 std::unique_ptr<DocumentTransitionRequest>
 DocumentTransitionRequest::CreatePrepare(Effect effect,
                                          base::TimeDelta duration,
+                                         uint32_t document_tag,
+                                         uint32_t shared_element_count,
                                          base::OnceClosure commit_callback) {
   return base::WrapUnique(new DocumentTransitionRequest(
-      effect, duration, std::move(commit_callback)));
+      effect, duration, document_tag, shared_element_count,
+      std::move(commit_callback)));
 }
 
 // static
 std::unique_ptr<DocumentTransitionRequest>
-DocumentTransitionRequest::CreateStart(base::OnceClosure commit_callback) {
-  return base::WrapUnique(
-      new DocumentTransitionRequest(std::move(commit_callback)));
+DocumentTransitionRequest::CreateStart(uint32_t document_tag,
+                                       uint32_t shared_element_count,
+                                       base::OnceClosure commit_callback) {
+  return base::WrapUnique(new DocumentTransitionRequest(
+      document_tag, shared_element_count, std::move(commit_callback)));
 }
 
 DocumentTransitionRequest::DocumentTransitionRequest(
     Effect effect,
     base::TimeDelta duration,
+    uint32_t document_tag,
+    uint32_t shared_element_count,
     base::OnceClosure commit_callback)
     : type_(Type::kSave),
       effect_(effect),
       duration_(duration),
+      document_tag_(document_tag),
+      shared_element_count_(shared_element_count),
       commit_callback_(std::move(commit_callback)),
       sequence_id_(s_next_sequence_id_++) {}
 
 DocumentTransitionRequest::DocumentTransitionRequest(
+    uint32_t document_tag,
+    uint32_t shared_element_count,
     base::OnceClosure commit_callback)
     : type_(Type::kAnimate),
+      document_tag_(document_tag),
+      shared_element_count_(shared_element_count),
       commit_callback_(std::move(commit_callback)),
       sequence_id_(s_next_sequence_id_++) {}
 
 DocumentTransitionRequest::~DocumentTransitionRequest() = default;
 
 viz::CompositorFrameTransitionDirective
-DocumentTransitionRequest::ConstructDirective() const {
+DocumentTransitionRequest::ConstructDirective(
+    const std::map<DocumentTransitionSharedElementId,
+                   viz::CompositorRenderPassId>&
+        shared_element_render_pass_id_map) const {
   // Note that the clamped_duration is also verified at
   // CompositorFrameTransitionDirective deserialization time.
   auto clamped_duration =
       duration_ < viz::CompositorFrameTransitionDirective::kMaxDuration
           ? duration_
           : viz::CompositorFrameTransitionDirective::kMaxDuration;
-  return viz::CompositorFrameTransitionDirective(sequence_id_, type_, effect_,
-                                                 clamped_duration);
+
+  std::vector<viz::CompositorRenderPassId> shared_passes(shared_element_count_);
+  for (uint32_t i = 0; i < shared_passes.size(); ++i) {
+    auto it = shared_element_render_pass_id_map.find(
+        DocumentTransitionSharedElementId{document_tag_, i});
+    if (it == shared_element_render_pass_id_map.end())
+      continue;
+    shared_passes[i] = it->second;
+  }
+  return viz::CompositorFrameTransitionDirective(
+      sequence_id_, type_, effect_, clamped_duration, std::move(shared_passes));
 }
 
 std::string DocumentTransitionRequest::ToString() const {

@@ -57,11 +57,17 @@ DocumentTransition::Request::Effect ParseRootTransition(
              : DocumentTransition::Request::Effect::kNone;
 }
 
+uint32_t NextDocumentTag() {
+  static uint32_t next_document_tag = 1u;
+  return next_document_tag++;
+}
+
 }  // namespace
 
 DocumentTransition::DocumentTransition(Document* document)
     : ExecutionContextLifecycleObserver(document->GetExecutionContext()),
-      document_(document) {}
+      document_(document),
+      document_tag_(NextDocumentTag()) {}
 
 void DocumentTransition::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
@@ -138,7 +144,7 @@ ScriptPromise DocumentTransition::prepare(
 
   state_ = State::kPreparing;
   pending_request_ = Request::CreatePrepare(
-      effect, duration,
+      effect, duration, document_tag_, prepare_shared_element_count_,
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
           &DocumentTransition::NotifyPrepareFinished,
           WrapCrossThreadWeakPersistent(this), last_prepare_sequence_id_)));
@@ -178,8 +184,9 @@ ScriptPromise DocumentTransition::start(
   state_ = State::kStarted;
   start_promise_resolver_ =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  pending_request_ =
-      Request::CreateStart(ConvertToBaseOnceCallback(CrossThreadBindOnce(
+  pending_request_ = Request::CreateStart(
+      document_tag_, prepare_shared_element_count_,
+      ConvertToBaseOnceCallback(CrossThreadBindOnce(
           &DocumentTransition::NotifyStartFinished,
           WrapCrossThreadWeakPersistent(this), last_start_sequence_id_)));
   NotifyHasChangesToCommit();
@@ -243,6 +250,15 @@ bool DocumentTransition::IsActiveElement(const Element* element) const {
   return active_shared_elements_.Contains(element);
 }
 
+DocumentTransitionSharedElementId DocumentTransition::GetSharedElementId(
+    const Element* element) const {
+  DCHECK(IsActiveElement(element));
+  wtf_size_t index = active_shared_elements_.Find(element);
+  DCHECK_NE(index, kNotFound);
+  return DocumentTransitionSharedElementId{document_tag_,
+                                           static_cast<uint32_t>(index)};
+}
+
 void DocumentTransition::VerifySharedElements() {
   for (auto& active_element : active_shared_elements_) {
     if (!active_element)
@@ -279,9 +295,14 @@ void DocumentTransition::InvalidateActiveElements() {
     if (!element)
       continue;
 
-    auto* box = DynamicTo<LayoutBoxModelObject>(element->GetLayoutObject());
+    auto* box = element->GetLayoutBox();
     if (!box || !box->HasSelfPaintingLayer())
       continue;
+
+    // We propagate the shared element id on an effect node for the object. This
+    // means that we should update the paint properties to update the shared
+    // element id.
+    box->SetNeedsPaintPropertyUpdate();
 
     // We might need to composite or decomposite this layer.
     box->Layer()->SetNeedsCompositingInputsUpdate();

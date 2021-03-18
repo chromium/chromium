@@ -880,6 +880,7 @@ component("platform") {
     "graphics/decoding_image_generator.h",
     "graphics/deferred_image_decoder.cc",
     "graphics/deferred_image_decoder.h",
+    "graphics/document_transition_shared_element_id.h",
     "graphics/dom_node_id.h",
     "graphics/draw_looper_builder.cc",
     "graphics/draw_looper_builder.h",

@@ -4,6 +4,8 @@
 
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 
+#include <utility>
+
 #include "base/time/time.h"
 
 namespace viz {
@@ -17,12 +19,24 @@ CompositorFrameTransitionDirective::CompositorFrameTransitionDirective(
     uint32_t sequence_id,
     Type type,
     Effect effect,
-    base::TimeDelta duration)
+    base::TimeDelta duration,
+    std::vector<CompositorRenderPassId> shared_passes)
     : sequence_id_(sequence_id),
       type_(type),
       effect_(effect),
-      duration_(duration) {
+      duration_(duration),
+      shared_passes_(std::move(shared_passes)) {
   DCHECK_LE(duration_, kMaxDuration);
 }
+
+CompositorFrameTransitionDirective::CompositorFrameTransitionDirective(
+    const CompositorFrameTransitionDirective&) = default;
+
+CompositorFrameTransitionDirective::~CompositorFrameTransitionDirective() =
+    default;
+
+CompositorFrameTransitionDirective&
+CompositorFrameTransitionDirective::operator=(
+    const CompositorFrameTransitionDirective&) = default;
 
 }  // namespace viz

@@ -18270,7 +18270,8 @@ TEST_F(LayerTreeHostImplTest, DocumentTransitionRequestCausesDamage) {
 
   // Adding a transition effect should cause us to redraw.
   host_impl_->active_tree()->AddDocumentTransitionRequest(
-      DocumentTransitionRequest::CreateStart(base::OnceClosure()));
+      DocumentTransitionRequest::CreateStart(
+          /*document_tag=*/0, /*shared_element_count=*/0, base::OnceClosure()));
 
   // Ensure there is damage and we requested a redraw.
   host_impl_->OnDraw(draw_transform, draw_viewport, resourceless_software_draw,

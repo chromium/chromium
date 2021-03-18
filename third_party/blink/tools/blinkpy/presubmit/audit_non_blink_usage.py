@@ -1362,6 +1362,12 @@ _CONFIG = [
         ],
         'allowed': ['viz::ResourceId'],
     },
+    {
+        'paths': [
+            'third_party/blink/renderer/platform/graphics/document_transition_shared_element_id.h'
+        ],
+        'allowed': ['cc::DocumentTransitionSharedElementId'],
+    }
 ]
 
 

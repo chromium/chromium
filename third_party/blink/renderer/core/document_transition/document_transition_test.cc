@@ -192,7 +192,7 @@ TEST_P(DocumentTransitionTest, EffectParsing) {
   auto request = transition->TakePendingRequest();
   ASSERT_TRUE(request);
 
-  auto directive = request->ConstructDirective();
+  auto directive = request->ConstructDirective({});
   EXPECT_EQ(directive.effect(), DocumentTransition::Request::Effect::kNone);
 
   // Test "explode" effect parsing.
@@ -204,7 +204,7 @@ TEST_P(DocumentTransitionTest, EffectParsing) {
   request = transition->TakePendingRequest();
   ASSERT_TRUE(request);
 
-  directive = request->ConstructDirective();
+  directive = request->ConstructDirective({});
   EXPECT_EQ(directive.effect(), DocumentTransition::Request::Effect::kExplode);
 }
 
@@ -222,7 +222,7 @@ TEST_P(DocumentTransitionTest, DurationParsing) {
   auto request = transition->TakePendingRequest();
   ASSERT_TRUE(request);
 
-  auto directive = request->ConstructDirective();
+  auto directive = request->ConstructDirective({});
   EXPECT_EQ(directive.duration(), base::TimeDelta::FromMilliseconds(300));
 
   // Test set duration parsing.
@@ -233,7 +233,7 @@ TEST_P(DocumentTransitionTest, DurationParsing) {
   request = transition->TakePendingRequest();
   ASSERT_TRUE(request);
 
-  directive = request->ConstructDirective();
+  directive = request->ConstructDirective({});
   EXPECT_EQ(directive.duration(), base::TimeDelta::FromMilliseconds(123));
 }
 
