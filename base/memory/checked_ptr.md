@@ -210,6 +210,30 @@ field 'checked_ptr' has a non-trivial destructor
 
 ### Runtime errors
 
+#### Invalid pointer assignment
+
+It is unsafe to assign `CheckedPtr` a raw pointer to freed memory even if the
+`CheckedPtr` instance is never dereferenced, i.e. the following snippet will
+likely cause a crash:
+
+```cpp
+void* ptr = malloc();
+free(ptr);
+[...]
+CheckedPtr<void> checked_ptr = ptr;
+```
+
+At the very least, nothing prevents the memory slot, which is additionally used
+to store the `CheckedPtr` metadata, from being decommitted. Furthermore, the
+code pattern might lead to free list corruptions and concurrency issues.
+
+On the other hand, assigning a dangling `CheckedPtr` to another `CheckedPtr` is
+supported because the slot is guaranteed to be kept alive. Therefore, a
+`CheckedPtr` instance should be only assigned a valid raw pointer, `nullptr` or
+another `CheckedPtr`. Note that pointers right past the end of an allocation
+considered valid in C++.
+
+
 #### Assignment via reinterpret_cast
 
 `CheckedPtr` maintains an internal ref-count associated with the piece of memory

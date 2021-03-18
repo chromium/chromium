@@ -26,7 +26,10 @@ std::bitset<AddressPoolManagerBitmap::kNonBRPPoolBits>
     AddressPoolManagerBitmap::non_brp_pool_bits_;  // GUARDED_BY(GetLock())
 std::bitset<AddressPoolManagerBitmap::kBRPPoolBits>
     AddressPoolManagerBitmap::brp_pool_bits_;  // GUARDED_BY(GetLock())
-
+#if BUILDFLAG(USE_GIGACAGE_BLOCKLIST)
+std::array<std::atomic_uint32_t, AddressPoolManagerBitmap::kBRPPoolBits>
+    AddressPoolManagerBitmap::non_gigcage_refcount_map_;
+#endif
 }  // namespace internal
 }  // namespace base
 

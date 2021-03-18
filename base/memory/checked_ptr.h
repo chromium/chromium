@@ -149,7 +149,7 @@ struct BackupRefPtrImpl {
     //
     // 64-bit systems don't have this problem, because there is only one BRP
     // pool region, positioned *after* the non-BRP pool.
-#if !(defined(ARCH_CPU_64_BITS) && !defined(OS_NACL))
+#if !defined(PA_HAS_64_BITS_POINTERS)
     auto* adjusted_ptr = static_cast<char*>(ptr) - 1;
     ret &= IsManagedByPartitionAllocBRPPool(adjusted_ptr);
 #endif
@@ -164,6 +164,10 @@ struct BackupRefPtrImpl {
       DCHECK(ptr != nullptr);
       AcquireInternal(ptr);
     }
+#if !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_GIGACAGE_BLOCKLIST)
+    else
+      AddressPoolManagerBitmap::IncrementNonGigacagePtrRefCount(ptr);
+#endif
 
     return ptr;
   }
@@ -174,12 +178,16 @@ struct BackupRefPtrImpl {
       DCHECK(wrapped_ptr != nullptr);
       ReleaseInternal(wrapped_ptr);
     }
+#if !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_GIGACAGE_BLOCKLIST)
+    else
+      AddressPoolManagerBitmap::DecrementNonGigacagePtrRefCount(wrapped_ptr);
+#endif
   }
 
   // Unwraps the pointer, while asserting that memory hasn't been freed. The
   // function is allowed to crash on nullptr.
   static ALWAYS_INLINE void* SafelyUnwrapPtrForDereference(void* wrapped_ptr) {
-#if DCHECK_IS_ON()
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     if (IsSupportedAndNotNull(wrapped_ptr)) {
       DCHECK(wrapped_ptr != nullptr);
       DCHECK(IsPointeeAlive(wrapped_ptr));
@@ -213,7 +221,14 @@ struct BackupRefPtrImpl {
 
   // Advance the wrapped pointer by |delta| bytes.
   static ALWAYS_INLINE void* Advance(void* wrapped_ptr, ptrdiff_t delta) {
-    return static_cast<char*>(wrapped_ptr) + delta;
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+    if (IsSupportedAndNotNull(wrapped_ptr))
+      CHECK(IsValidDelta(wrapped_ptr, delta));
+#endif
+    void* new_wrapped_ptr =
+        WrapRawPtr(reinterpret_cast<char*>(wrapped_ptr) + delta);
+    ReleaseWrappedPtr(wrapped_ptr);
+    return new_wrapped_ptr;
   }
 
   // Returns a copy of a wrapped pointer, without making an assertion on whether
@@ -236,6 +251,7 @@ struct BackupRefPtrImpl {
   static BASE_EXPORT NOINLINE void AcquireInternal(void* ptr);
   static BASE_EXPORT NOINLINE void ReleaseInternal(void* ptr);
   static BASE_EXPORT NOINLINE bool IsPointeeAlive(void* ptr);
+  static BASE_EXPORT NOINLINE bool IsValidDelta(void* ptr, ptrdiff_t delta);
 };
 
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)

@@ -40,6 +40,11 @@ bool BackupRefPtrImpl::IsPointeeAlive(void* ptr) {
   return PartitionRefCountPointer(slot_start)->IsAlive();
 }
 
+bool BackupRefPtrImpl::IsValidDelta(void* ptr, ptrdiff_t delta) {
+  DCHECK(features::IsPartitionAllocGigaCageEnabled());
+  return PartitionAllocIsValidPtrDelta(ptr, delta);
+}
+
 }  // namespace internal
 
 }  // namespace base

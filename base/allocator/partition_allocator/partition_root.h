@@ -709,7 +709,7 @@ PartitionAllocGetSlotSpanForSizeQuery(void* ptr) {
 
 // Gets the pointer to the beginning of the allocated slot.
 //
-// This isn't a general pupose function, it is used specifically for obtaining
+// This isn't a general purpose function, it is used specifically for obtaining
 // BackupRefPtr's ref-count. The caller is responsible for ensuring that the
 // ref-count is in place for this allocation.
 //
@@ -748,6 +748,40 @@ ALWAYS_INLINE void* PartitionAllocGetSlotStart(void* ptr) {
   return reinterpret_cast<void*>(
       slot_span_start +
       bucket->slot_size * bucket->GetSlotNumber(offset_in_slot_span));
+}
+
+// Checks whether a given pointer stays within the same allocation slot after
+// modification.
+//
+// This isn't a general purpose function. The caller is responsible for ensuring
+// that the ref-count is in place for this allocation.
+//
+// This function is not a template, and can be used on either variant
+// (thread-safe or not) of the allocator. This relies on the two PartitionRoot<>
+// having the same layout, which is enforced by static_assert().
+ALWAYS_INLINE bool PartitionAllocIsValidPtrDelta(void* ptr, ptrdiff_t delta) {
+  // Required for pointers right past an allocation. See
+  // |PartitionAllocGetSlotStart()|.
+  void* adjusted_ptr =
+      reinterpret_cast<char*>(ptr) - kPartitionPastAllocationAdjustment;
+
+  internal::DCheckIfManagedByPartitionAllocBRPPool(adjusted_ptr);
+  auto* slot_span =
+      internal::PartitionAllocGetSlotSpanForSizeQuery<internal::ThreadSafe>(
+          adjusted_ptr);
+  auto* root = PartitionRoot<internal::ThreadSafe>::FromSlotSpan(slot_span);
+  // Double check that ref-count is indeed present.
+  PA_DCHECK(root->allow_ref_count);
+
+  uintptr_t user_data_start = reinterpret_cast<uintptr_t>(
+      root->AdjustPointerForExtrasAdd(PartitionAllocGetSlotStart(ptr)));
+  size_t user_data_size = slot_span->GetUsableSize(root);
+  uintptr_t new_ptr = reinterpret_cast<uintptr_t>(ptr) + delta;
+
+  return user_data_start <= new_ptr &&
+         // We use "greater then or equal" below because we want to include
+         // pointers right past the end of an allocation.
+         new_ptr <= user_data_start + user_data_size;
 }
 
 // TODO(glazunov): Simplify the function once the non-thread-safe PartitionRoot

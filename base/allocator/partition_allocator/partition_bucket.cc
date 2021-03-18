@@ -274,6 +274,47 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
     super_page = AddressPoolManager::GetInstance()->Reserve(
         root->UseBRPPool() ? GetBRPPool() : GetNonBRPPool(), requested_address,
         kSuperPageSize);
+
+#if !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_GIGACAGE_BLOCKLIST)
+    if (root->UseBRPPool()) {
+      constexpr int kMaxRandomAddressTries = 10;
+      for (int i = 0; i < kMaxRandomAddressTries; ++i) {
+        if (!super_page ||
+            AddressPoolManagerBitmap::IsAllowedSuperPageForGigaCage(super_page))
+          break;
+        AddressPoolManager::GetInstance()->UnreserveAndDecommit(
+            GetBRPPool(), super_page, kSuperPageSize);
+        super_page = AddressPoolManager::GetInstance()->Reserve(
+            GetBRPPool(), nullptr, kSuperPageSize);
+      }
+
+      // If the allocation attempt succeeds, we will break out of the following
+      // loop immediately.
+      //
+      // Last resort: sequentially scan the whole 32-bit address space. The
+      // number of blocked super-pages should be very small, so we expect to
+      // practically never need to run the following code. Note that it may fail
+      // to find an available page, e.g., when it becomes available after the
+      // scan passes through it, but we accept the risk.
+      for (uintptr_t ptr = kSuperPageSize; ptr != 0; ptr += kSuperPageSize) {
+        if (!super_page ||
+            AddressPoolManagerBitmap::IsAllowedSuperPageForGigaCage(super_page))
+          break;
+        AddressPoolManager::GetInstance()->UnreserveAndDecommit(
+            GetBRPPool(), super_page, kSuperPageSize);
+        super_page = AddressPoolManager::GetInstance()->Reserve(
+            GetBRPPool(), reinterpret_cast<void*>(ptr), kSuperPageSize);
+      }
+
+      if (super_page &&
+          !AddressPoolManagerBitmap::IsAllowedSuperPageForGigaCage(
+              super_page)) {
+        AddressPoolManager::GetInstance()->UnreserveAndDecommit(
+            GetBRPPool(), super_page, kSuperPageSize);
+        super_page = nullptr;
+      }
+    }
+#endif
   } else {
     super_page = reinterpret_cast<char*>(
         AllocPages(requested_address, kSuperPageSize, kSuperPageAlignment,

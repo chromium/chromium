@@ -5,6 +5,8 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_ADDRESS_POOL_MANAGER_BITMAP_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_ADDRESS_POOL_MANAGER_BITMAP_H_
 
+#include <array>
+#include <atomic>
 #include <bitset>
 
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -74,6 +76,41 @@ class BASE_EXPORT AddressPoolManagerBitmap {
         .test(address_as_uintptr >> kBitShiftOfBRPPoolBitmap);
   }
 
+#if BUILDFLAG(USE_GIGACAGE_BLOCKLIST)
+  static void IncrementNonGigacagePtrRefCount(const void* address) {
+    uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
+
+    non_gigcage_refcount_map_[address_as_uintptr >> kSuperPageShift].fetch_add(
+        1, std::memory_order_relaxed);
+  }
+
+  static void DecrementNonGigacagePtrRefCount(const void* address) {
+    uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
+
+    non_gigcage_refcount_map_[address_as_uintptr >> kSuperPageShift].fetch_sub(
+        1, std::memory_order_relaxed);
+  }
+
+  static bool IsAllowedSuperPageForGigaCage(const void* address) {
+    uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
+
+    // The only potentially dangerous scenario, in which this check is used, is
+    // when the assignment of the first |CheckedPtr| object for a non-GigaCage
+    // address is racing with the allocation of a new GigCage super-page at the
+    // same address. We assume that if |CheckedPtr| is being initialized with a
+    // raw pointer, the associated allocation is "alive"; otherwise, the issue
+    // should be fixed by rewriting the raw pointer variable as |CheckedPtr|.
+    // In the worst case, when such a fix is impossible, we should just undo the
+    // |raw pointer -> CheckedPtr| rewrite of the problematic field. If the
+    // above assumption holds, the existing allocation will prevent us from
+    // reserving the super-page region and, thus, having the race condition.
+    // Since we rely on that external synchronization, the relaxed memory
+    // ordering should be sufficient.
+    return non_gigcage_refcount_map_[address_as_uintptr >> kSuperPageShift]
+               .load(std::memory_order_relaxed) == 0;
+  }
+#endif
+
  private:
   friend class AddressPoolManager;
 
@@ -81,6 +118,10 @@ class BASE_EXPORT AddressPoolManagerBitmap {
 
   static std::bitset<kNonBRPPoolBits> non_brp_pool_bits_ GUARDED_BY(GetLock());
   static std::bitset<kBRPPoolBits> brp_pool_bits_ GUARDED_BY(GetLock());
+#if BUILDFLAG(USE_GIGACAGE_BLOCKLIST)
+  static std::array<std::atomic_uint32_t, kBRPPoolBits>
+      non_gigcage_refcount_map_;
+#endif
 };
 
 }  // namespace internal

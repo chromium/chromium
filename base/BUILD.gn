@@ -85,6 +85,10 @@ declare_args() {
   # Set to true to lower normal bucket bitmap to PartitionPageSize() on 32bit
   # systems.
   make_gigacage_granularity_partition_page_size = true
+
+  # Ensure that a non-GigaCage memory region can't be reused for GigaCage while
+  # there are associated CheckedPtr instances left.
+  use_gigacage_blocklist = false
 }
 
 # Mutex priority inheritance is disabled by default due to security
@@ -113,6 +117,11 @@ assert(use_backup_ref_ptr || !enable_runtime_backup_ref_ptr_control,
 # is true.
 assert(use_backup_ref_ptr || !enable_backup_ref_ptr_slow_checks,
        "Can't enable additional BackupRefPtr checks if it isn't enabled at all")
+
+# use_gigacage_blocklist can only be used if use_backup_ref_ptr
+# is true.
+assert(use_backup_ref_ptr || !use_gigacage_blocklist,
+       "The GigaCage blocklist is a BackupRefPtr-specific feature")
 
 # is_ref_count_at_end_of_allocation can only be used if use_backup_ref_ptr
 # is true.
@@ -2415,11 +2424,13 @@ buildflag_header("anchor_functions_buildflags") {
 should_use_backup_ref_ptr =
     use_backup_ref_ptr && use_partition_alloc && !is_nacl
 should_enable_runtime_backup_ref_ptr_control =
-    enable_runtime_backup_ref_ptr_control && use_partition_alloc && !is_nacl
+    enable_runtime_backup_ref_ptr_control && should_use_backup_ref_ptr
 should_enable_backup_ref_ptr_slow_checks =
-    enable_backup_ref_ptr_slow_checks && use_partition_alloc && !is_nacl
+    enable_backup_ref_ptr_slow_checks && should_use_backup_ref_ptr
 should_place_ref_count_at_end_of_allocation =
-    is_ref_count_at_end_of_allocation && use_partition_alloc && !is_nacl
+    is_ref_count_at_end_of_allocation && should_use_backup_ref_ptr
+should_use_gigacage_blocklist =
+    use_gigacage_blocklist && should_use_backup_ref_ptr
 
 buildflag_header("partition_alloc_buildflags") {
   header = "partition_alloc_buildflags.h"
@@ -2431,6 +2442,7 @@ buildflag_header("partition_alloc_buildflags") {
     "ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL=$should_enable_runtime_backup_ref_ptr_control",
     "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$should_enable_backup_ref_ptr_slow_checks",
     "REF_COUNT_AT_END_OF_ALLOCATION=$should_place_ref_count_at_end_of_allocation",
+    "USE_GIGACAGE_BLOCKLIST=$should_use_gigacage_blocklist",
     "MAKE_GIGACAGE_GRANULARITY_PARTITION_PAGE_SIZE=$make_gigacage_granularity_partition_page_size",
   ]
 }
