@@ -1149,6 +1149,22 @@ TEST_F(WindowCycleControllerTest, AltTabMultiDisplay) {
   CompleteCycling(cycle_controller);
 }
 
+// Test that alt-tab handles window destruction properly.
+TEST_F(WindowCycleControllerTest, WindowDestruction) {
+  std::unique_ptr<Window> w0 = CreateTestWindow();
+  std::unique_ptr<Window> w1 = CreateTestWindow();
+  std::unique_ptr<Window> w2 = CreateTestWindow();
+
+  // Start cycling and then destroy a window. We should still be cycling and
+  // there should now only be two items.
+  auto* controller = Shell::Get()->window_cycle_controller();
+  controller->StartCycling();
+  EXPECT_TRUE(controller->IsCycling());
+  w1.reset();
+  EXPECT_TRUE(controller->IsCycling());
+  EXPECT_EQ(2u, GetWindows(controller).size());
+}
+
 class LimitedWindowCycleControllerTest : public WindowCycleControllerTest {
  public:
   LimitedWindowCycleControllerTest() = default;
@@ -2042,9 +2058,12 @@ class ModeSelectionWindowCycleControllerTest
     generator_ = GetEventGenerator();
   }
 
-  void SwitchPerDeskAltTabMode(bool per_desk_mode) {
+  void SwitchPerDeskAltTabMode(bool per_desk_mode,
+                               bool use_slow_duration = false) {
     ui::ScopedAnimationDurationScaleMode animation_scale(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+        use_slow_duration
+            ? ui::ScopedAnimationDurationScaleMode::SLOW_DURATION
+            : ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
     gfx::Point button_center =
         GetWindowCycleTabSliderButtons()[per_desk_mode ? 1 : 0]
             ->GetBoundsInScreen()
@@ -2053,6 +2072,10 @@ class ModeSelectionWindowCycleControllerTest
     generator_->ClickLeftButton();
     EXPECT_EQ(per_desk_mode,
               Shell::Get()->window_cycle_controller()->IsAltTabPerActiveDesk());
+  }
+
+  bool IsAnimatingModeSwitch(WindowCycleController* controller) {
+    return controller->window_cycle_list()->IsCycleViewAnimatingForTesting();
   }
 
  private:
@@ -2828,6 +2851,45 @@ TEST_F(ModeSelectionWindowCycleControllerTest, ChromeVoxNoWindow) {
   CompleteCycling(cycle_controller);
   EXPECT_FALSE(wm::IsActiveWindow(win0.get()));
   EXPECT_FALSE(wm::IsActiveWindow(win1.get()));
+}
+
+// Tests that alt-tab handles window destruction during mode switch.
+TEST_F(ModeSelectionWindowCycleControllerTest, WindowDestruction) {
+  UpdateDisplay("1200x800");
+
+  // Create four windows on the current desk.
+  const gfx::Rect default_rect(0, 0, 100, 200);
+  std::unique_ptr<Window> w0 = CreateAppWindow(default_rect);
+  std::unique_ptr<Window> w1 = CreateAppWindow(default_rect);
+  std::unique_ptr<Window> w2 = CreateAppWindow(default_rect);
+  std::unique_ptr<Window> w3 = CreateAppWindow(default_rect);
+
+  // Create a second desk, switch to it and create 2 windows.
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk_2 = desks_controller->desks()[1].get();
+  ActivateDesk(desk_2);
+  EXPECT_EQ(desk_2, desks_controller->active_desk());
+  std::unique_ptr<Window> w4 = CreateAppWindow(default_rect);
+  std::unique_ptr<Window> w5 = CreateAppWindow(default_rect);
+
+  // Start cycling. The default mode is all desks so there should be 6 windows
+  // in the window cycle list currently.
+  auto* cycle_controller = Shell::Get()->window_cycle_controller();
+  cycle_controller->StartCycling();
+  EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
+  EXPECT_EQ(6u, GetWindows(cycle_controller).size());
+
+  // Switch modes to per-desk alt-tab. During the scaling animation, destroy
+  // |w5|. This shouldn't crash, the mode should be switched and we should still
+  // be cycling.
+  SwitchPerDeskAltTabMode(true, /*use_slow_duration=*/true);
+  EXPECT_TRUE(IsAnimatingModeSwitch(cycle_controller));
+  w5.reset();
+  EXPECT_EQ(1u, GetWindows(cycle_controller).size());
+  EXPECT_TRUE(cycle_controller->IsAltTabPerActiveDesk());
+  EXPECT_TRUE(cycle_controller->IsCycling());
 }
 
 namespace {

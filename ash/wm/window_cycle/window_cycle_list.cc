@@ -741,6 +741,10 @@ class WindowCycleView : public views::WidgetDelegateView,
     return target_window_;
   }
 
+  bool IsCycleViewAnimatingForTesting() {
+    return layer()->GetAnimator()->is_animating();
+  }
+
   void OnModePrefsChanged() {
     if (tab_slider_container_)
       tab_slider_container_->OnModePrefsChanged();
@@ -1195,6 +1199,10 @@ WindowCycleList::GetWindowCycleNoRecentItemsLabelForTesting() const {
 
 const aura::Window* WindowCycleList::GetTargetWindowForTesting() const {
   return cycle_view_->GetTargetWindowForTesting();  // IN-TEST
+}
+
+bool WindowCycleList::IsCycleViewAnimatingForTesting() const {
+  return cycle_view_->IsCycleViewAnimatingForTesting();  // IN-TEST
 }
 
 }  // namespace ash

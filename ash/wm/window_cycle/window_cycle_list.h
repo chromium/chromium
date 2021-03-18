@@ -105,6 +105,7 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   friend class WindowCycleControllerTest;
   friend class MultiUserWindowCycleControllerTest;
   friend class InteractiveWindowCycleListGestureHandlerTest;
+  friend class ModeSelectionWindowCycleControllerTest;
 
   static void DisableInitialDelayForTesting();
 
@@ -157,6 +158,9 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
 
   // Returns the window cycle list's target window.
   const aura::Window* GetTargetWindowForTesting() const;
+
+  // Returns whether the cycle view is animating.
+  bool IsCycleViewAnimatingForTesting() const;
 
   WindowCycleView* cycle_view_for_testing() const { return cycle_view_; }
 
