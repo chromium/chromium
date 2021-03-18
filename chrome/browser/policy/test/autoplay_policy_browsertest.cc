@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -96,7 +97,13 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, AutoplayAllowedByPolicy) {
   EXPECT_TRUE(TryAutoplay(GetChildFrame()));
 }
 
-IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, AutoplayWhitelist_Allowed) {
+// Flaky on Linux. See: crbug.com/1189597.
+#if defined(OS_LINUX)
+#define MAYBE_AutoplayWhitelist_Allowed DISABLED_AutoplayWhitelist_Allowed
+#else
+#define MAYBE_AutoplayWhitelist_Allowed AutoplayWhitelist_Allowed
+#endif
+IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, MAYBE_AutoplayWhitelist_Allowed) {
   NavigateToTestPage();
 
   // Check that autoplay was not allowed.
