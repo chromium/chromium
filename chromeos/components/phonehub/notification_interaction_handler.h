@@ -21,8 +21,9 @@ class NotificationInteractionHandler {
   // Called by PhoneHubNotificationController to notify the click event.
   virtual void HandleNotificationClicked(int64_t notification_id) = 0;
 
-  void AddNotificationClickHandler(NotificationClickHandler* handler);
-  void RemoveNotificationClickHandler(NotificationClickHandler* handler);
+  virtual void AddNotificationClickHandler(NotificationClickHandler* handler);
+  virtual void RemoveNotificationClickHandler(
+      NotificationClickHandler* handler);
 
  protected:
   NotificationInteractionHandler();

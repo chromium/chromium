@@ -51,11 +51,28 @@ static_library("eche_app_ui") {
   ]
 }
 
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_feature_status_provider.cc",
+    "fake_feature_status_provider.h",
+  ]
+
+  public_deps = [ ":eche_app_ui" ]
+
+  deps = [ "//base" ]
+}
+
 source_set("unit_tests") {
   testonly = true
-  sources = [ "eche_feature_status_provider_unittest.cc" ]
+  sources = [
+    "eche_feature_status_provider_unittest.cc",
+    "eche_notification_click_handler_unittest.cc",
+  ]
   deps = [
     ":eche_app_ui",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//chromeos/components/multidevice",

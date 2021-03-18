@@ -26,11 +26,7 @@ EcheAppManager::EcheAppManager(
     secure_channel::SecureChannelClient* secure_channel_client,
     EcheNotificationClickHandler::LaunchEcheAppFunction
         launch_eche_app_function)
-    : eche_notification_click_handler_(
-          std::make_unique<EcheNotificationClickHandler>(
-              phone_hub_manager,
-              launch_eche_app_function)),
-      connection_manager_(
+    : connection_manager_(
           std::make_unique<secure_channel::ConnectionManagerImpl>(
               multidevice_setup_client,
               device_sync_client,
@@ -44,6 +40,11 @@ EcheAppManager::EcheAppManager(
           device_sync_client,
           multidevice_setup_client,
           connection_manager_.get())),
+      eche_notification_click_handler_(
+          std::make_unique<EcheNotificationClickHandler>(
+              phone_hub_manager,
+              feature_status_provider_.get(),
+              launch_eche_app_function)),
       eche_connector_(
           std::make_unique<EcheConnector>(feature_status_provider_.get(),
                                           connection_manager_.get())),
@@ -60,9 +61,9 @@ void EcheAppManager::BindInterface(
 void EcheAppManager::Shutdown() {
   signaler_.reset();
   eche_connector_.reset();
+  eche_notification_click_handler_.reset();
   feature_status_provider_.reset();
   connection_manager_.reset();
-  eche_notification_click_handler_.reset();
 }
 
 }  // namespace eche_app

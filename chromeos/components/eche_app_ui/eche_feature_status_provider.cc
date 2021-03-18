@@ -174,6 +174,7 @@ FeatureStatus EcheFeatureStatusProvider::ComputeStatus() {
     case secure_channel::ConnectionManager::Status::kConnected:
       return FeatureStatus::kConnected;
   }
+  PA_LOG(INFO) << "Unexpected feature status state, returning default";
   return FeatureStatus::kDisconnected;
 }
 

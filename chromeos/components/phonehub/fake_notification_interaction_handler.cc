@@ -18,5 +18,15 @@ void FakeNotificationInteractionHandler::HandleNotificationClicked(
   handled_notification_count_++;
 }
 
+void FakeNotificationInteractionHandler::AddNotificationClickHandler(
+    NotificationClickHandler* handler) {
+  notification_click_handler_count_++;
+}
+
+void FakeNotificationInteractionHandler::RemoveNotificationClickHandler(
+    NotificationClickHandler* handler) {
+  notification_click_handler_count_--;
+}
+
 }  // namespace phonehub
 }  // namespace chromeos
