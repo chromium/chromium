@@ -375,6 +375,8 @@ FloatQuad LocalToAbsoluteQuadOf(const LocalCaretRect&);
 // -------------------------------------------------------------------------
 
 // Functions dispatch InputEvent
+InputEvent::EventCancelable InputTypeIsCancelable(
+    InputEvent::InputType input_type);
 const StaticRangeVector* TargetRangesForInputEvent(const Node&);
 DispatchEventResult DispatchBeforeInputInsertText(
     Node*,

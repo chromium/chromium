@@ -94,17 +94,6 @@ std::ostream& operator<<(std::ostream& os, PositionMoveType type) {
   return os << *it;
 }
 
-InputEvent::EventCancelable InputTypeIsCancelable(
-    InputEvent::InputType input_type) {
-  using InputType = InputEvent::InputType;
-  switch (input_type) {
-    case InputType::kInsertCompositionText:
-      return InputEvent::EventCancelable::kNotCancelable;
-    default:
-      return InputEvent::EventCancelable::kIsCancelable;
-  }
-}
-
 UChar WhitespaceRebalancingCharToAppend(const String& string,
                                         bool start_is_start_of_paragraph,
                                         bool should_emit_nbsp_before_end,
@@ -1659,6 +1648,17 @@ wtf_size_t ComputeDistanceToRightGraphemeBoundary(const Position& position) {
 
 FloatQuad LocalToAbsoluteQuadOf(const LocalCaretRect& caret_rect) {
   return caret_rect.layout_object->LocalRectToAbsoluteQuad(caret_rect.rect);
+}
+
+InputEvent::EventCancelable InputTypeIsCancelable(
+    InputEvent::InputType input_type) {
+  using InputType = InputEvent::InputType;
+  switch (input_type) {
+    case InputType::kInsertCompositionText:
+      return InputEvent::EventCancelable::kNotCancelable;
+    default:
+      return InputEvent::EventCancelable::kIsCancelable;
+  }
 }
 
 const StaticRangeVector* TargetRangesForInputEvent(const Node& node) {

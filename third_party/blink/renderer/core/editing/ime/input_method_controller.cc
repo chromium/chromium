@@ -392,7 +392,7 @@ void InputMethodController::DispatchBeforeInputFromComposition(
   // TODO(editing-dev): Pass appropriate |ranges| after it's defined on spec.
   // http://w3c.github.io/editing/input-events.html#dom-inputevent-inputtype
   InputEvent* before_input_event = InputEvent::CreateBeforeInput(
-      input_type, data, InputEvent::kNotCancelable,
+      input_type, data, InputTypeIsCancelable(input_type),
       InputEvent::EventIsComposing::kIsComposing, nullptr);
   target->DispatchEvent(*before_input_event);
 }
