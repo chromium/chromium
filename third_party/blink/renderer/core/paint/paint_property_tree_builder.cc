@@ -316,14 +316,7 @@ static bool NeedsScrollOrScrollTranslation(
 }
 
 static bool NeedsReplacedContentTransform(const LayoutObject& object) {
-  // Quick reject.
-  if (!object.IsLayoutReplaced())
-    return false;
-
-  if (object.IsSVGRoot())
-    return true;
-
-  return false;
+  return object.IsSVGRoot();
 }
 
 static bool NeedsPaintOffsetTranslationForOverflowControls(
@@ -339,18 +332,6 @@ static bool NeedsPaintOffsetTranslationForOverflowControls(
 
 static bool NeedsIsolationNodes(const LayoutObject& object) {
   if (!object.HasLayer())
-    return false;
-
-  // Non-SVG replaced content should not have isolation nodes. Specifically if
-  // these nodes generate a replaced content transform, they don't update the
-  // current transform (See UpdateReplacedContentTransform()). This means that
-  // if we put isolation nodes, which isolate the current transform, then while
-  // getting FragmentData::PostScrollTranslation(), we return a wrong transform
-  // chain (isolation -> "current" transform, instead of replaced transform ->
-  // "current" transform). Note that using ReplacedContentTransform() and
-  // isolating that would violate the condition that the replaced content
-  // transform should not update the current transform (in the non-svg case).
-  if (NeedsReplacedContentTransform(object) && !object.IsSVGRoot())
     return false;
 
   // Paint containment establishes isolation.
@@ -1893,15 +1874,6 @@ void FragmentPaintPropertyTreeBuilder::UpdatePerspective() {
   }
 }
 
-static AffineTransform RectToRect(const FloatRect& src_rect,
-                                  const FloatRect& dst_rect) {
-  float x_scale = dst_rect.Width() / src_rect.Width();
-  float y_scale = dst_rect.Height() / src_rect.Height();
-  float x_offset = dst_rect.X() - src_rect.X() * x_scale;
-  float y_offset = dst_rect.Y() - src_rect.Y() * y_scale;
-  return AffineTransform(x_scale, 0.f, 0.f, y_scale, x_offset, y_offset);
-}
-
 void FragmentPaintPropertyTreeBuilder::UpdateReplacedContentTransform() {
   DCHECK(properties_);
 
@@ -1913,19 +1885,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateReplacedContentTransform() {
       content_to_parent_space =
           SVGRootPainter(To<LayoutSVGRoot>(object_))
               .TransformToPixelSnappedBorderBox(context_.current.paint_offset);
-    } else if (const auto* layout_image = DynamicTo<LayoutImage>(object_)) {
-      PhysicalRect layout_replaced_rect = layout_image->ReplacedContentRect();
-      layout_replaced_rect.Move(context_.current.paint_offset);
-      IntRect replaced_rect = PixelSnappedIntRect(layout_replaced_rect);
-      scoped_refptr<Image> image =
-          layout_image->ImageResource()->GetImage(replaced_rect.Size());
-      if (image && !image->IsNull()) {
-        IntRect src_rect(
-            IntPoint(), image->Size(LayoutObject::ShouldRespectImageOrientation(
-                            layout_image)));
-        content_to_parent_space =
-            RectToRect(FloatRect(src_rect), FloatRect(replaced_rect));
-      }
     } else {
       NOTREACHED();
     }
