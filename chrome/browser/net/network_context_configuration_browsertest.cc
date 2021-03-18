@@ -1273,8 +1273,13 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   MakeLongLivedRequestThatHangsUntilShutdown();
 }
 
+#if defined(OS_CHROMEOS)
+#define MAYBE_UserAgentAndLanguagePrefs DISABLED_UserAgentAndLanguagePrefs
+#else
+#define MAYBE_UserAgentAndLanguagePrefs UserAgentAndLanguagePrefs
+#endif
 IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
-                       UserAgentAndLanguagePrefs) {
+                       MAYBE_UserAgentAndLanguagePrefs) {
   if (IsRestartStateWithInProcessNetworkService())
     return;
   // The system and SafeBrowsing network contexts aren't associated with any
