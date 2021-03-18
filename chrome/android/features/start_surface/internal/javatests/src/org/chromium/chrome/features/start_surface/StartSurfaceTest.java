@@ -416,17 +416,13 @@ public class StartSurfaceTest {
     @MediumTest
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({BASE_PARAMS + "/single/home_button_on_grid_tab_switcher/false"})
-    @DisabledTest(message = "Failing/flaky on several bots, see crbug.com/1177359")
     public void testShow_SingleAsHomepage() {
         if (!mImmediateReturn) {
             onView(withId(org.chromium.chrome.tab_ui.R.id.home_button)).perform(click());
         }
-        CriteriaHelper.pollUiThread(
-                ()
-                        -> mActivityTestRule.getActivity().getLayoutManager() != null
-                        && mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+        waitForOverviewVisible();
 
-        onView(withId(R.id.primary_tasks_surface_view)).check(matches(isDisplayed()));
+        waitForView(withId(R.id.primary_tasks_surface_view));
         onView(withId(R.id.search_box_text)).check(matches(isDisplayed()));
         onView(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_container))
                 .check(matches(isDisplayed()));
@@ -453,6 +449,8 @@ public class StartSurfaceTest {
             fail("Failed to tap 'more tabs' " + e.toString());
         }
         onViewWaiting(withId(R.id.secondary_tasks_surface_view));
+        waitForView(allOf(withParent(withId(R.id.secondary_tasks_surface_view)),
+                withId(org.chromium.chrome.tab_ui.R.id.tab_list_view)));
         assertEquals(mActivityTestRule.getActivity()
                              .findViewById(R.id.home_button_on_tab_switcher)
                              .getVisibility(),
@@ -460,14 +458,6 @@ public class StartSurfaceTest {
 
         pressBack();
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
-
-        if (isInstantReturn()
-                && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-                        && Build.VERSION.SDK_INT < Build.VERSION_CODES.O)) {
-            // TODO(crbug.com/1092642): Fix androidx.test.espresso.PerformException issue when
-            // performing a single click on position: 0. See code below.
-            return;
-        }
 
         OverviewModeBehaviorWatcher hideWatcher =
                 TabUiTestHelper.createOverviewHideWatcher(mActivityTestRule.getActivity());
@@ -2120,6 +2110,14 @@ public class StartSurfaceTest {
     private boolean isTabGridDialogHidden(ChromeTabbedActivity cta) {
         View dialogView = cta.findViewById(org.chromium.chrome.tab_ui.R.id.dialog_parent_view);
         return dialogView.getVisibility() == View.GONE;
+    }
+
+    private void waitForOverviewVisible() {
+        CriteriaHelper.pollUiThread(
+                ()
+                        -> mActivityTestRule.getActivity().getLayoutManager() != null
+                        && mActivityTestRule.getActivity().getLayoutManager().overviewVisible(),
+                MAX_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 }
 
