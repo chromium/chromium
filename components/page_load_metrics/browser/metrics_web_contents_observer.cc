@@ -103,6 +103,11 @@ void MetricsWebContentsObserver::WebContentsDestroyed() {
   // TODO(csharrison): Use a more user-initiated signal for CLOSE.
   NotifyPageEndAllLoads(END_CLOSE, UserInitiatedInfo::NotUserInitiated());
 
+  // Do this before clearing committed_load_, so that the observers don't hit
+  // the DCHECK in MetricsWebContentsObserver::GetDelegateForCommittedLoad.
+  for (auto& observer : testing_observers_)
+    observer.OnGoingAway();
+
   // We tear down PageLoadTrackers in WebContentsDestroyed, rather than in the
   // destructor, since |web_contents()| returns nullptr in the destructor, and
   // PageLoadMetricsObservers can cause code to execute that wants to be able to
@@ -111,9 +116,6 @@ void MetricsWebContentsObserver::WebContentsDestroyed() {
   ukm_smoothness_data_ = {};
   provisional_loads_.clear();
   aborted_provisional_loads_.clear();
-
-  for (auto& observer : testing_observers_)
-    observer.OnGoingAway();
 }
 
 void MetricsWebContentsObserver::RegisterInputEventObserver(
@@ -994,9 +996,9 @@ void MetricsWebContentsObserver::TestingObserver::OnGoingAway() {
   observer_ = nullptr;
 }
 
-const PageLoadMetricsObserverDelegate&
+const PageLoadMetricsObserverDelegate*
 MetricsWebContentsObserver::TestingObserver::GetDelegateForCommittedLoad() {
-  return observer_->GetDelegateForCommittedLoad();
+  return observer_ ? &observer_->GetDelegateForCommittedLoad() : nullptr;
 }
 
 void MetricsWebContentsObserver::BroadcastEventToObservers(

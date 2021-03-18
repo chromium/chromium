@@ -78,8 +78,9 @@ class MetricsWebContentsObserver
     virtual void OnRestoredFromBackForwardCache(PageLoadTracker* tracker) {}
 
     // Returns the observer delegate for the committed load associated with
-    // the MetricsWebContentsObserver.
-    const PageLoadMetricsObserverDelegate& GetDelegateForCommittedLoad();
+    // the MetricsWebContentsObserver, or null if the observer has gone away
+    // (via MetricsWebContentsObserver::WebContentsDestroyed).
+    const PageLoadMetricsObserverDelegate* GetDelegateForCommittedLoad();
 
    private:
     page_load_metrics::MetricsWebContentsObserver* observer_;
