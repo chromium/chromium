@@ -856,10 +856,6 @@ void DCLayerOverlayProcessor::ProcessForUnderlay(
   // composition visual tree.
   dc_layer->z_order = -1 - processed_overlay_count;
 
-  const SharedQuadState* shared_quad_state = it->shared_quad_state;
-  const gfx::Rect rect = it->visible_rect;
-  const bool needs_blending = it->needs_blending;
-
   // If the video is translucent and uses SrcOver blend mode, we can achieve the
   // same result as compositing with video on top if we replace video quad with
   // a solid color quad with DstOut blend mode, and rely on SrcOver blending
@@ -874,18 +870,9 @@ void DCLayerOverlayProcessor::ProcessForUnderlay(
   bool is_opaque = false;
 
   if (it->ShouldDrawWithBlending() &&
-      shared_quad_state->blend_mode == SkBlendMode::kSrcOver) {
-    SharedQuadState* new_shared_quad_state =
-        render_pass->shared_quad_state_list.AllocateAndCopyFrom(
-            shared_quad_state);
-    new_shared_quad_state->blend_mode = SkBlendMode::kDstOut;
-
-    auto* replacement =
-        render_pass->quad_list.ReplaceExistingElement<SolidColorDrawQuad>(it);
-    // Use needs_blending from original quad because blending might be because
-    // of this flag or opacity.
-    replacement->SetAll(new_shared_quad_state, rect, rect, needs_blending,
-                        SK_ColorBLACK, true /* force_anti_aliasing_off */);
+      it->shared_quad_state->blend_mode == SkBlendMode::kSrcOver) {
+    render_pass->ReplaceExistingQuadWithSolidColor(it, SK_ColorBLACK,
+                                                   SkBlendMode::kDstOut);
   } else {
     // When the opacity == 1.0, drawing with transparent will be done without
     // blending and will have the proper effect of completely clearing the
@@ -895,11 +882,11 @@ void DCLayerOverlayProcessor::ProcessForUnderlay(
     is_opaque = true;
   }
 
-  bool display_rect_changed = (display_rect != previous_display_rect_);
-  bool underlay_rect_unchanged =
+  const bool display_rect_changed = (display_rect != previous_display_rect_);
+  const bool underlay_rect_unchanged =
       IsPreviousFrameUnderlayRect(quad_rectangle, processed_overlay_count);
-  bool is_axis_aligned =
-      shared_quad_state->quad_to_target_transform.Preserves2dAxisAlignment();
+  const bool is_axis_aligned = it->shared_quad_state->quad_to_target_transform
+                                   .Preserves2dAxisAlignment();
 
   if (is_axis_aligned && is_opaque && underlay_rect_unchanged &&
       !display_rect_changed) {
