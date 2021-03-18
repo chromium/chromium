@@ -5,6 +5,7 @@
 (async function() {
   TestRunner.addResult(`Verify that navigator's 'Make a copy' works as expected.\n`);
   await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
   var fs = new BindingsTestRunner.TestFileSystem('file:///var/www');

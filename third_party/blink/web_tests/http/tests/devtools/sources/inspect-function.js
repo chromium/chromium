@@ -5,6 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that inspect object action works for function and resolve bound function location.\n`);
   await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
   var revealed = 0;

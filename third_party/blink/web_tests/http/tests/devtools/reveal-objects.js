@@ -6,6 +6,8 @@
   TestRunner.addResult(`Tests object revelation in the UI.\n`);
   await TestRunner.loadModule('elements_test_runner');
   await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadLegacyModule('sources');
+  await TestRunner.loadLegacyModule('resources');
   await TestRunner.showPanel('elements');
   await TestRunner.showPanel('sources');
   await TestRunner.showPanel('resources');

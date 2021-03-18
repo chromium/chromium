@@ -40,6 +40,7 @@ function setOriginCheckbox(value) {
   Root.Runtime.experiments.setEnabled('backgroundServices', true);
 
   TestRunner.addResult(`Tests that the grid shows information as expected.\n`);
+  await TestRunner.loadLegacyModule('resources');
   await TestRunner.showPanel('resources');
 
   const backgroundServiceModel = TestRunner.mainTarget.model(Resources.BackgroundServiceModel);
