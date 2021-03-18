@@ -4,6 +4,7 @@
 
 package org.chromium.weblayer_private;
 
+import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -48,6 +49,8 @@ public final class DownloadImpl extends IDownload.Stub {
 
     // These actions have to be synchronized with the receiver defined in AndroidManifest.xml.
     private static final String OPEN_INTENT = DOWNLOADS_PREFIX + ".OPEN";
+    private static final String ACTIVATE_TRANSIENT_INTENT =
+            DOWNLOADS_PREFIX + ".ACTIVATE_TRANSIENT";
     private static final String DELETE_INTENT = DOWNLOADS_PREFIX + ".DELETE";
     private static final String PAUSE_INTENT = DOWNLOADS_PREFIX + ".PAUSE";
     private static final String RESUME_INTENT = DOWNLOADS_PREFIX + ".RESUME";
@@ -62,6 +65,8 @@ public final class DownloadImpl extends IDownload.Stub {
             DOWNLOADS_PREFIX + ".NOTIFICATION_PROFILE";
     private static final String EXTRA_NOTIFICATION_PROFILE_IS_INCOGNITO =
             DOWNLOADS_PREFIX + ".NOTIFICATION_PROFILE_IS_INCOGNITO";
+    private static final String EXTRA_NOTIFICATION_SESSION_ID =
+            DOWNLOADS_PREFIX + ".NOTIFICATION_SESSION_ID";
     // The intent prefix is used as the notification's tag since it's guaranteed not to conflict
     // with intent prefixes used by other subsystems that display notifications.
     private static final String NOTIFICATION_TAG = DOWNLOADS_PREFIX;
@@ -160,6 +165,10 @@ public final class DownloadImpl extends IDownload.Stub {
             download.cancel();
         } else if (intent.getAction().equals(DELETE_INTENT)) {
             sMap.remove(id);
+            DownloadImplJni.get().onFinishedImpl(download.mNativeDownloadImpl, /*activated=*/false);
+        } else if (intent.getAction().equals(ACTIVATE_TRANSIENT_INTENT)) {
+            assert download.mIsTransient;
+            DownloadImplJni.get().onFinishedImpl(download.mNativeDownloadImpl, /*activated=*/true);
         }
     }
 
@@ -364,8 +373,7 @@ public final class DownloadImpl extends IDownload.Stub {
         Context context = ContextUtils.getApplicationContext();
 
         Intent deleteIntent = createIntent(DELETE_INTENT);
-        PendingIntentProvider deletePendingIntent =
-                PendingIntentProvider.getBroadcast(context, mNotificationId, deleteIntent, 0);
+        PendingIntentProvider deletePendingIntent = getPendingIntentProvider(deleteIntent);
 
         @DownloadState
         int state = getState();
@@ -417,24 +425,22 @@ public final class DownloadImpl extends IDownload.Stub {
                     .setAutoCancel(true)
                     .setProgress(0, 0, false);
 
+            Intent openIntent = null;
+
             if (mIsTransient) {
                 builder.setContentText(
                         resources.getString(R.string.download_notification_completed));
-                // TODO(estade): for transient downloads, create an intent that delegates back to
-                // native code.
+                openIntent = createIntent(ACTIVATE_TRANSIENT_INTENT);
             } else {
                 builder.setContentText(
                         resources.getString(R.string.download_notification_completed_with_size,
                                 DownloadUtils.getStringForBytes(context, getTotalBytes())));
 
-                Intent openIntent = createIntent(OPEN_INTENT);
+                openIntent = createIntent(OPEN_INTENT);
                 openIntent.putExtra(EXTRA_NOTIFICATION_LOCATION, getLocation());
                 openIntent.putExtra(EXTRA_NOTIFICATION_MIME_TYPE, getMimeType());
-                PendingIntentProvider openPendingIntent =
-                        PendingIntentProvider.getBroadcast(context, mNotificationId, openIntent, 0);
-
-                builder.setContentIntent(openPendingIntent);
             }
+            builder.setContentIntent(getPendingIntentProvider(openIntent));
         } else if (state == DownloadState.FAILED) {
             builder.setContentText(resources.getString(R.string.download_notification_failed))
                     .setOngoing(false)
@@ -442,8 +448,7 @@ public final class DownloadImpl extends IDownload.Stub {
                     .setProgress(0, 0, false);
         } else if (state == DownloadState.IN_PROGRESS) {
             Intent pauseIntent = createIntent(PAUSE_INTENT);
-            PendingIntentProvider pausePendingIntent =
-                    PendingIntentProvider.getBroadcast(context, mNotificationId, pauseIntent, 0);
+            PendingIntentProvider pausePendingIntent = getPendingIntentProvider(pauseIntent);
 
             long bytes = getReceivedBytes();
             long totalBytes = getTotalBytes();
@@ -453,26 +458,27 @@ public final class DownloadImpl extends IDownload.Stub {
                 progressCurrent = (int) (bytes * 100 / totalBytes);
             }
 
-            String contentText;
-            String bytesString = DownloadUtils.getStringForBytes(context, bytes);
-            if (indeterminate) {
-                contentText =
-                        resources.getString(R.string.download_ui_indeterminate_bytes, bytesString);
-            } else {
-                String totalString = DownloadUtils.getStringForBytes(context, totalBytes);
-                contentText = resources.getString(
-                        R.string.download_ui_determinate_bytes, bytesString, totalString);
+            if (!mIsTransient) {
+                String contentText;
+                String bytesString = DownloadUtils.getStringForBytes(context, bytes);
+                if (indeterminate) {
+                    contentText = resources.getString(
+                            R.string.download_ui_indeterminate_bytes, bytesString);
+                } else {
+                    String totalString = DownloadUtils.getStringForBytes(context, totalBytes);
+                    contentText = resources.getString(
+                            R.string.download_ui_determinate_bytes, bytesString, totalString);
+                }
+                builder.setContentText(contentText);
             }
-            builder.setContentText(contentText)
-                    .addAction(0 /* no icon */,
-                            resources.getString(R.string.download_notification_pause_button),
-                            pausePendingIntent, 0 /* no action for UMA */)
+            builder.addAction(0 /* no icon */,
+                           resources.getString(R.string.download_notification_pause_button),
+                           pausePendingIntent, 0 /* no action for UMA */)
                     .setSmallIcon(android.R.drawable.stat_sys_download)
                     .setProgress(100, progressCurrent, indeterminate);
         } else if (state == DownloadState.PAUSED) {
             Intent resumeIntent = createIntent(RESUME_INTENT);
-            PendingIntentProvider resumePendingIntent =
-                    PendingIntentProvider.getBroadcast(context, mNotificationId, resumeIntent, 0);
+            PendingIntentProvider resumePendingIntent = getPendingIntentProvider(resumeIntent);
             builder.setContentText(resources.getString(R.string.download_notification_paused))
                     .addAction(0 /* no icon */,
                             resources.getString(R.string.download_notification_resume_button),
@@ -483,14 +489,23 @@ public final class DownloadImpl extends IDownload.Stub {
 
         if (state == DownloadState.IN_PROGRESS || state == DownloadState.PAUSED) {
             Intent cancelIntent = createIntent(CANCEL_INTENT);
-            PendingIntentProvider cancelPendingIntent =
-                    PendingIntentProvider.getBroadcast(context, mNotificationId, cancelIntent, 0);
+            PendingIntentProvider cancelPendingIntent = getPendingIntentProvider(cancelIntent);
             builder.addAction(0 /* no icon */,
                     resources.getString(R.string.download_notification_cancel_button),
                     cancelPendingIntent, 0 /* no action for UMA */);
         }
 
         notificationManager.notify(builder.buildNotificationWrapper());
+    }
+
+    private PendingIntentProvider getPendingIntentProvider(Intent notificationIntent) {
+        // Transient intents use FLAG_CANCEL_CURRENT because the IDs can overlap across sessions.
+        // CANCEL_CURRENT makes sure the PendingIntent is not also reused, and prevents intents from
+        // old sessions from working (e.g. notifications lingering after WebLayer has crashed and
+        // failed to clear them).
+        return PendingIntentProvider.getBroadcast(ContextUtils.getApplicationContext(),
+                mNotificationId, notificationIntent,
+                mIsTransient ? PendingIntent.FLAG_CANCEL_CURRENT : 0);
     }
 
     /**
@@ -522,6 +537,9 @@ public final class DownloadImpl extends IDownload.Stub {
     private void onNativeDestroyed() {
         mNativeDownloadImpl = 0;
         sMap.remove(mNotificationId);
+        if (mIsTransient) {
+            getNotificationManager().cancel(NOTIFICATION_TAG, mNotificationId);
+        }
         // TODO: this should likely notify delegate in some way.
     }
 
@@ -534,6 +552,7 @@ public final class DownloadImpl extends IDownload.Stub {
         void pauseImpl(long nativeDownloadImpl);
         void resumeImpl(long nativeDownloadImpl);
         void cancelImpl(long nativeDownloadImpl);
+        void onFinishedImpl(long nativeDownloadImpl, boolean activated);
         String getLocationImpl(long nativeDownloadImpl);
         String getFileNameToReportToUserImpl(long nativeDownloadImpl);
         String getMimeTypeImpl(long nativeDownloadImpl);

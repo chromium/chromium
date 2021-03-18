@@ -111,6 +111,10 @@ class BackgroundFetchDelegateImpl : public content::BackgroundFetchDelegate,
   void ResumeDownload(const std::string& job_id);
   void CancelDownload(const std::string& job_id);
 
+  // Called when the UI has finished showing. If |activated| is true, it was
+  // tapped, otherwise it was dismissed.
+  void OnUiFinished(const std::string& job_id, bool activated);
+
   // TODO(estade): make these override virtual methods from a base class that's
   // shared with Chrome.
   void OnJobCreated(const std::string& job_id, const JobDetails* job);
@@ -145,11 +149,9 @@ class BackgroundFetchDelegateImpl : public content::BackgroundFetchDelegate,
   std::map<std::string, std::string> download_job_id_map_;
 
   // Map from job unique ids to the details of the job.
-  // TODO(estade): this map needs to have its items erased at some point.
   std::map<std::string, JobDetails> job_details_map_;
 
   // Map from job unique ids to the UI item for the job.
-  // TODO(estade): this map needs to have its items erased at some point.
   std::map<std::string, BackgroundFetchDownload> ui_item_map_;
 
   std::unique_ptr<download::DownloadService> download_service_;

@@ -101,4 +101,9 @@ const SkBitmap* BackgroundFetchDownload::GetLargeIcon() {
   return &job_->fetch_description->icon;
 }
 
+void BackgroundFetchDownload::OnFinished(bool activated) {
+  controller_->OnUiFinished(job_id_, activated);
+  // |this| is deleted.
+}
+
 }  // namespace weblayer

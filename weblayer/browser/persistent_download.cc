@@ -148,6 +148,10 @@ const SkBitmap* PersistentDownload::GetLargeIcon() {
   return nullptr;
 }
 
+void PersistentDownload::OnFinished(bool activated) {
+  // For this type of download, activation is handled purely in Java.
+}
+
 void PersistentDownload::ResumeInternal() {
   if (resume_pending_) {
     resume_pending_ = false;

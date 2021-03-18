@@ -223,6 +223,22 @@ void BackgroundFetchDelegateImpl::CancelDownload(const std::string& job_id) {
   }
 }
 
+void BackgroundFetchDelegateImpl::OnUiFinished(const std::string& job_id,
+                                               bool activated) {
+  auto job_details_iter = job_details_map_.find(job_id);
+  DCHECK(job_details_iter != job_details_map_.end());
+
+  if (activated) {
+    JobDetails& job_details = job_details_iter->second;
+    DCHECK_EQ(JobDetails::State::kJobComplete, job_details.job_state);
+
+    job_details.client->OnUIActivated(job_id);
+  }
+
+  job_details_map_.erase(job_details_iter);
+  ui_item_map_.erase(job_id);
+}
+
 void BackgroundFetchDelegateImpl::OnJobCreated(const std::string& job_id,
                                                const JobDetails* job) {
   ui_item_map_.emplace(std::piecewise_construct, std::forward_as_tuple(job_id),
@@ -231,11 +247,12 @@ void BackgroundFetchDelegateImpl::OnJobCreated(const std::string& job_id,
 
 void BackgroundFetchDelegateImpl::UpdateUiAndUpdateObservers(
     const std::string& job_id) {
-  DCHECK(ui_item_map_.count(job_id));
-  BackgroundFetchDownload* download = &ui_item_map_.find(job_id)->second;
+  auto iter = ui_item_map_.find(job_id);
+  if (iter == ui_item_map_.end())
+    return;
 
-  // Do nothing if it has not yet been added to the UI. For example, if it's
-  // aborted before the download starts.
+  BackgroundFetchDownload* download = &iter->second;
+
   if (!download->HasBeenAddedToUi())
     return;
 
@@ -280,12 +297,27 @@ void BackgroundFetchDelegateImpl::MarkJobComplete(const std::string& job_id) {
   auto job_details_iter = job_details_map_.find(job_id);
   DCHECK(job_details_iter != job_details_map_.end());
 
+  if (job_details_iter->second.job_state == JobDetails::State::kCancelled) {
+    OnUiFinished(job_id, /*activated=*/false);
+    return;
+  }
+
   JobDetails& job_details = job_details_iter->second;
   job_details.job_state = JobDetails::State::kJobComplete;
 
   // Clear the |job_details| internals that are no longer needed.
   job_details.current_fetch_guids.clear();
-  job_details.fetch_description.reset();
+
+  // The UI should have already been updated to the Completed state, however,
+  // sometimes Android drops notification updates if there have been too many
+  // requested in a short span of time, so make sure the completed state is
+  // reflected in the UI after a brief delay. See
+  // https://developer.android.com/training/notify-user/build-notification#Updating
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&BackgroundFetchDelegateImpl::UpdateUiAndUpdateObservers,
+                     weak_ptr_factory_.GetWeakPtr(), job_id),
+      base::TimeDelta::FromMilliseconds(1500));
 }
 
 void BackgroundFetchDelegateImpl::UpdateUI(

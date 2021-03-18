@@ -42,6 +42,7 @@ class PersistentDownload : public DownloadImpl {
   bool IsTransient() override;
   GURL GetSourceUrl() override;
   const SkBitmap* GetLargeIcon() override;
+  void OnFinished(bool activated) override;
 
  private:
   explicit PersistentDownload(download::DownloadItem* item);

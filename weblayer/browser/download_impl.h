@@ -37,6 +37,9 @@ class DownloadImpl : public Download, public base::SupportsUserData::Data {
   void PauseImpl(JNIEnv* env) { Pause(); }
   void ResumeImpl(JNIEnv* env) { Resume(); }
   void CancelImpl(JNIEnv* env) { Cancel(); }
+  void OnFinishedImpl(JNIEnv* env, jboolean activated) {
+    OnFinished(activated);
+  }
   base::android::ScopedJavaLocalRef<jstring> GetLocationImpl(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jstring> GetFileNameToReportToUserImpl(
       JNIEnv* env);
@@ -63,6 +66,10 @@ class DownloadImpl : public Download, public base::SupportsUserData::Data {
   // Gets the icon to display. If the return value is null or draws nothing, no
   // icon will be displayed.
   virtual const SkBitmap* GetLargeIcon() = 0;
+
+  // Called when the UI is gone. |activated| is true if the UI was activated, or
+  // false if it was simply dismissed.
+  virtual void OnFinished(bool activated) = 0;
 
   // Returns whether this download has been added to the UI via
   // DownloadDelegate::OnDownloadStarted.
