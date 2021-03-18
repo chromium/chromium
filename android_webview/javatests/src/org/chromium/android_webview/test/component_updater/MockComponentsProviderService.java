@@ -50,11 +50,6 @@ public class MockComponentsProviderService extends Service {
                     resultReceiver.send(ComponentsProviderService.RESULT_FAILED, null);
                 }
             }
-
-            @Override
-            public boolean onNewVersion(String componentId, String installPath, String version) {
-                throw new UnsupportedOperationException();
-            }
         };
     }
 }

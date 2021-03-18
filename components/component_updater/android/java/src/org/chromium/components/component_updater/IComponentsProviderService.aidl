@@ -29,27 +29,4 @@ interface IComponentsProviderService {
      * @param resultReceiver a callback to receive the result
      */
     oneway void getFilesForComponent(String componentId, in ResultReceiver resultReceiver);
-
-    // TODO(crbug.com/1178769): this is specific to WebView's implementation and should be moved
-    // into android_webview.
-    /**
-     * Called by the component installer to notify the service that a new version is installed. This
-     * method may only be called from WebView UID, otherwise a SecurityException will be thrown.
-     *
-     * This is a synchronous call. The service will move component files from the installPath into
-     * its own directory and subsequent file requests for this component will serve this version. If
-     * another version was installed, it will be deleted after the new version is moved into place.
-     * If version is the same as the currently installed version, this is a noop.
-     *
-     * The componentId is the unique name of the component as returned by
-     * ComponentInstallerPolicy#getHash. The installPath is the absolute path of a writable
-     * directory containing the component files.
-     *
-     * @param componentId the component to be updated or installed
-     * @param installPath the absolute path to this version's component files
-     * @param version to be installed
-     *
-     * @return true on success, false otherwise (for example if the service failed to move files)
-     */
-    boolean onNewVersion(String componentId, String installPath, String version);
 }
