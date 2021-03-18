@@ -199,6 +199,9 @@ crbug.com/1183788 [ Linux ] external/wpt/webrtc/RTCPeerConnection-restartIce.htt
 crbug.com/1183788 [ Linux ] external/wpt/webrtc/RTCPeerConnection-onnegotiationneeded.html [ Pass Failure ]
 crbug.com/1183788 [ Linux ] external/wpt/webrtc/RTCRtpTransceiver.https.html [ Pass Failure ]
 
+# Sheriff 2021-03-18
+crbug.com/1177856 [ Linux ] http/tests/devtools/elements/shadow/inspect-slot-not-in-shadow-tree.js [ Pass Failure ]
+
 # These tests are flaky on the Leak bots but seem reliable elsewhere
 crbug.com/1164553 [ Linux ] http/tests/devtools/a11y-axe-core/console/console-error-a11y-test.js [ Pass Failure ]
 crbug.com/1164553 [ Linux ] http/tests/devtools/console/console-external-array.js [ Pass Failure ]
