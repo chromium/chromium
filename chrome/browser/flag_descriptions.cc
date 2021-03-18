@@ -4661,12 +4661,6 @@ const char kSelectToSpeakNavigationControlName[] =
 const char kSelectToSpeakNavigationControlDescription[] =
     "Enables enhanced Select-to-speak navigation features.";
 
-const char kSeparatePointingStickSettingsName[] =
-    "Separate pointing stick settings";
-const char kSeparatePointingStickSettingsDescription[] =
-    "Enables a separate group of settings (speed, button swap, and "
-    "acceleration) for pointing sticks (such as TrackPoints).";
-
 const char kSharesheetContentPreviewsName[] = "Sharesheet Content Previews";
 const char kSharesheetContentPreviewsDescription[] =
     "Chrome OS content previews for sharesheet.";

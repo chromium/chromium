@@ -4618,11 +4618,6 @@
     "expiry_milestone": 93
   },
   {
-    "name": "separate-pointing-stick-settings",
-    "owners": [ "hcutts", "khorimoto", "zentaro" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "set-market-url-for-testing",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/omaha/OWNERS" ],
     // This is required by test teams to verify functionality on devices which

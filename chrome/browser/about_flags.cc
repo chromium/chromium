@@ -6871,11 +6871,6 @@ const FeatureEntry kFeatureEntries[] = {
          app_list_features::kEnableOmniboxRichEntities,
          kOmniboxRichEntitiesInLauncherVariations,
          "OmniboxRichEntitiesInLauncher")},
-
-    {"separate-pointing-stick-settings",
-     flag_descriptions::kSeparatePointingStickSettingsName,
-     flag_descriptions::kSeparatePointingStickSettingsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kSeparatePointingStickSettings)},
 #endif
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch

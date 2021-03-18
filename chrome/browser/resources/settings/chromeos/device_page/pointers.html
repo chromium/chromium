@@ -38,7 +38,7 @@
         padding-inline-end: 0;
       }
     </style>
-    <div id="mouse" hidden$="[[!showMouseSection_]]">
+    <div id="mouse" hidden$="[[!hasMouse]]">
       <!-- Subsection title only appears if multiple sections are visible. -->
       <h2 hidden$="[[!showHeadings_]]">$i18n{mouseTitle}</h2>
       <div class$="[[subsectionClass_]]">
@@ -50,7 +50,6 @@
               aria-labeledby="mouseSwapButtonLabel"
               pref="{{prefs.settings.mouse.primary_right}}"
               menu-options="[[swapPrimaryOptions]]"
-              on-settings-control-change="onMousePrimaryButtonChanged_"
               deep-link-focus-id$="[[Setting.kMouseSwapPrimaryButtons]]">
           </settings-dropdown-menu>
         </div>
@@ -59,7 +58,6 @@
               class="hr"
               pref="{{prefs.settings.mouse.acceleration}}"
               label="$i18n{mouseAccelerationLabel}"
-              on-change="onMouseAccelerationChanged_"
               deep-link-focus-id$="[[Setting.kMouseAcceleration]]">
           </settings-toggle-button>
         </template>
@@ -73,7 +71,6 @@
               label-aria="$i18n{mouseSpeed}"
               label-min="$i18n{pointerSlow}"
               label-max="$i18n{pointerFast}"
-              on-cr-slider-value-changed="onMouseSpeedChanged_"
               deep-link-focus-id$="[[Setting.kMouseSpeed]]">
           </settings-slider>
         </div>
@@ -114,48 +111,46 @@
         </div>
       </div>
     </div>
-    <template is="dom-if" if="[[separatePointingStickSettings_]]">
-      <div id="pointingStick" hidden$="[[!hasPointingStick]]">
-        <!-- Subsection title only appears if multiple sections are visible. -->
-        <h2 hidden$="[[!showHeadings_]]">$i18n{pointingStickTitle}</h2>
-        <div class$="[[subsectionClass_]]">
-          <div class="settings-box">
-            <div class="start settings-box-text"
-                id="pointingStickSwapButtonLabel">
-              $i18n{pointingStickPrimaryButton}
-            </div>
-            <settings-dropdown-menu id="pointingStickSwapButtonDropdown"
-                aria-labeledby="pointingStickSwapButtonLabel"
-                pref="{{prefs.settings.pointing_stick.primary_right}}"
-                menu-options="[[swapPrimaryOptions]]"
-                deep-link-focus-id$=
-                    "[[Setting.kPointingStickSwapPrimaryButtons]]">
-            </settings-dropdown-menu>
+    <div id="pointingStick" hidden$="[[!hasPointingStick]]">
+      <!-- Subsection title only appears if multiple sections are visible. -->
+      <h2 hidden$="[[!showHeadings_]]">$i18n{pointingStickTitle}</h2>
+      <div class$="[[subsectionClass_]]">
+        <div class="settings-box">
+          <div class="start settings-box-text"
+              id="pointingStickSwapButtonLabel">
+            $i18n{pointingStickPrimaryButton}
           </div>
-          <template is="dom-if" if="[[allowDisableAcceleration_]]">
-            <settings-toggle-button id="pointingStickAcceleration"
-                class="hr"
-                pref="{{prefs.settings.pointing_stick.acceleration}}"
-                label="$i18n{pointingStickAccelerationLabel}"
-                deep-link-focus-id$="[[Setting.kPointingStickAcceleration]]">
-            </settings-toggle-button>
-          </template>
-          <div class="settings-box">
-            <div class="start" id="pointingStickSpeedLabel" aria-hidden="true">
-              $i18n{pointingStickSpeed}
-            </div>
-            <settings-slider id="pointingStickSpeedSlider"
-                pref="{{prefs.settings.pointing_stick.sensitivity}}"
-                ticks="[[sensitivityValues_]]"
-                label-aria="$i18n{pointingStickSpeed}"
-                label-min="$i18n{pointerSlow}"
-                label-max="$i18n{pointerFast}"
-                deep-link-focus-id$="[[Setting.kPointingStickSpeed]]">
-            </settings-slider>
+          <settings-dropdown-menu id="pointingStickSwapButtonDropdown"
+              aria-labeledby="pointingStickSwapButtonLabel"
+              pref="{{prefs.settings.pointing_stick.primary_right}}"
+              menu-options="[[swapPrimaryOptions]]"
+              deep-link-focus-id$=
+                  "[[Setting.kPointingStickSwapPrimaryButtons]]">
+          </settings-dropdown-menu>
+        </div>
+        <template is="dom-if" if="[[allowDisableAcceleration_]]">
+          <settings-toggle-button id="pointingStickAcceleration"
+              class="hr"
+              pref="{{prefs.settings.pointing_stick.acceleration}}"
+              label="$i18n{pointingStickAccelerationLabel}"
+              deep-link-focus-id$="[[Setting.kPointingStickAcceleration]]">
+          </settings-toggle-button>
+        </template>
+        <div class="settings-box">
+          <div class="start" id="pointingStickSpeedLabel" aria-hidden="true">
+            $i18n{pointingStickSpeed}
           </div>
+          <settings-slider id="pointingStickSpeedSlider"
+              pref="{{prefs.settings.pointing_stick.sensitivity}}"
+              ticks="[[sensitivityValues_]]"
+              label-aria="$i18n{pointingStickSpeed}"
+              label-min="$i18n{pointerSlow}"
+              label-max="$i18n{pointerFast}"
+              deep-link-focus-id$="[[Setting.kPointingStickSpeed]]">
+          </settings-slider>
         </div>
       </div>
-    </template>
+    </div>
     <div id="touchpad" hidden$="[[!hasTouchpad]]">
       <!-- Subsection title only appears if multiple sections are visible. -->
       <h2 hidden$="[[!showHeadings_]]">$i18n{touchpadTitle}</h2>

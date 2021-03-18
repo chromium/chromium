@@ -187,11 +187,6 @@ const base::Feature kWebUIFeedback{"WebUIFeedback",
 // https://crbug.com/903908
 const base::Feature kHiddenNetworkWarning{"HiddenNetworkWarning",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables a separate group of settings (speed, button swap, and acceleration)
-// for pointing sticks (such as TrackPoints).
-const base::Feature kSeparatePointingStickSettings{
-    "SeparatePointingStickSettings", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace features
