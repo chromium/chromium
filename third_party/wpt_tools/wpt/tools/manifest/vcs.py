@@ -2,7 +2,9 @@ import abc
 import os
 import stat
 from collections import deque
-from collections.abc import MutableMapping
+
+from six import with_metaclass, PY2
+from six.moves.collections_abc import MutableMapping
 
 from . import jsonlib
 from .utils import git
@@ -17,7 +19,10 @@ if MYPY:
     # MYPY is set to True when run under Mypy.
     from typing import Dict, Optional, List, Set, Text, Iterable, Any, Tuple, Iterator
     from .manifest import Manifest  # cyclic import under MYPY guard
-    stat_result = os.stat_result
+    if PY2:
+        stat_result = Any
+    else:
+        stat_result = os.stat_result
 
     GitIgnoreCacheType = MutableMapping[bytes, bool]
 else:
@@ -127,7 +132,7 @@ class FileSystem(object):
                 cache.dump()
 
 
-class CacheFile(metaclass=abc.ABCMeta):
+class CacheFile(with_metaclass(abc.ABCMeta)):
     def __init__(self, cache_root, tests_root, rebuild=False):
         # type: (Text, Text, bool) -> None
         self.tests_root = tests_root

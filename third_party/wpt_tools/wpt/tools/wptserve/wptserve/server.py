@@ -1,16 +1,18 @@
+from six.moves import BaseHTTPServer
 import errno
-import http.server
 import os
 import socket
-from socketserver import ThreadingMixIn
+from six.moves.socketserver import ThreadingMixIn
 import ssl
 import sys
 import threading
 import time
 import traceback
+from six import binary_type, text_type
 import uuid
 from collections import OrderedDict
-from queue import Queue
+
+from six.moves.queue import Queue
 
 from h2.config import H2Configuration
 from h2.connection import H2Connection
@@ -19,7 +21,7 @@ from h2.exceptions import StreamClosedError, ProtocolError
 from h2.settings import SettingCodes
 from h2.utilities import extract_method_header
 
-from urllib.parse import urlsplit, urlunsplit
+from six.moves.urllib.parse import urlsplit, urlunsplit
 
 from mod_pywebsocket import dispatch
 from mod_pywebsocket.handshake import HandshakeException
@@ -36,12 +38,13 @@ from .ws_h2_handshake import WsH2Handshaker
 
 # We need to stress test that browsers can send/receive many headers (there is
 # no specified limit), but the Python stdlib has an arbitrary limit of 100
-# headers. Hitting the limit leads to HTTP 431, so we monkey patch it higher.
+# headers. Hitting the limit would produce an exception that is silently caught
+# in Python 2 but leads to HTTP 431 in Python 3, so we monkey patch it higher.
 # https://bugs.python.org/issue26586
 # https://github.com/web-platform-tests/wpt/pull/24451
-import http.client
-assert isinstance(getattr(http.client, '_MAXHEADERS'), int)
-setattr(http.client, '_MAXHEADERS', 512)
+from six.moves import http_client
+assert isinstance(getattr(http_client, '_MAXHEADERS'), int)
+setattr(http_client, '_MAXHEADERS', 512)
 
 """
 HTTP server designed for testing purposes.
@@ -103,7 +106,7 @@ class RequestRewriter(object):
         :param output_path: Path to replace the input path with in
                             the request.
         """
-        if isinstance(methods, (bytes, str)):
+        if isinstance(methods, (binary_type, text_type)):
             methods = [methods]
         self.rules[input_path] = (methods, output_path)
 
@@ -126,7 +129,7 @@ class RequestRewriter(object):
                 request_handler.path = new_url
 
 
-class WebTestServer(ThreadingMixIn, http.server.HTTPServer):
+class WebTestServer(ThreadingMixIn, BaseHTTPServer.HTTPServer):
     allow_reuse_address = True
     acceptable_errors = (errno.EPIPE, errno.ECONNABORTED)
     request_queue_size = 2000
@@ -187,7 +190,8 @@ class WebTestServer(ThreadingMixIn, http.server.HTTPServer):
         else:
             hostname_port = ("",server_address[1])
 
-        http.server.HTTPServer.__init__(self, hostname_port, request_handler_cls, **kwargs)
+        #super doesn't work here because BaseHTTPServer.HTTPServer is old-style
+        BaseHTTPServer.HTTPServer.__init__(self, hostname_port, request_handler_cls, **kwargs)
 
         if config is not None:
             Server.config = config
@@ -232,12 +236,12 @@ class WebTestServer(ThreadingMixIn, http.server.HTTPServer):
             self.logger.error(traceback.format_exc())
 
 
-class BaseWebTestRequestHandler(http.server.BaseHTTPRequestHandler):
+class BaseWebTestRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     """RequestHandler for WebTestHttpd"""
 
     def __init__(self, *args, **kwargs):
         self.logger = get_logger()
-        http.server.BaseHTTPRequestHandler.__init__(self, *args, **kwargs)
+        BaseHTTPServer.BaseHTTPRequestHandler.__init__(self, *args, **kwargs)
 
     def finish_handling_h1(self, request_line_is_valid):
 
@@ -478,19 +482,14 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
         try:
             handshaker.do_handshake()
         except HandshakeException as e:
-            self.logger.info('Handshake failed for error: %s' % e)
+            self.logger.info('Handshake failed for error: %s', e)
             h2response.set_error(e.status)
             h2response.write()
             return
 
         # h2 Handshaker prepares the headers but does not send them down the
         # wire. Flush the headers here.
-        try:
-            h2response.write_status_headers()
-        except StreamClosedError:
-            # work around https://github.com/web-platform-tests/wpt/issues/27786
-            # The stream was already closed.
-            return
+        h2response.write_status_headers()
 
         request_wrapper._dispatcher = dispatcher
 
@@ -523,13 +522,7 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
 
     def _stream_ws_sub_thread(self, request, stream_handler, queue):
         dispatcher = request._dispatcher
-        try:
-            dispatcher.transfer_data(request)
-        except StreamClosedError:
-            # work around https://github.com/web-platform-tests/wpt/issues/27786
-            # The stream was already closed.
-            queue.put(None)
-            return
+        dispatcher.transfer_data(request)
 
         stream_id = stream_handler.h2_stream_id
         with stream_handler.conn as connection:

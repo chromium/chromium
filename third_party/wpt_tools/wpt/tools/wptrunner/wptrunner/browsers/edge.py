@@ -68,8 +68,7 @@ class EdgeBrowser(Browser):
     used_ports = set()
     init_timeout = 60
 
-    def __init__(self, logger, webdriver_binary,
-            timeout_multiplier=None, webdriver_args=None, **kwargs):
+    def __init__(self, logger, webdriver_binary, timeout_multiplier=None, webdriver_args=None):
         Browser.__init__(self, logger)
         self.server = EdgeDriverServer(self.logger,
                                        binary=webdriver_binary,

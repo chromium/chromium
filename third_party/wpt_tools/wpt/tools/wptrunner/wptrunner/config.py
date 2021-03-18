@@ -1,4 +1,4 @@
-from configparser import SafeConfigParser
+from six.moves.configparser import SafeConfigParser
 import os
 import sys
 from collections import OrderedDict

@@ -1,7 +1,7 @@
 import os
 import traceback
 
-from urllib.parse import urljoin
+from six.moves.urllib.parse import urljoin
 
 from .base import WdspecProtocol, WdspecExecutor, get_pages
 from .executorwebdriver import WebDriverProtocol, WebDriverRefTestExecutor, WebDriverRun

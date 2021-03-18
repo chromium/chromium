@@ -9,7 +9,7 @@ import time
 import zipfile
 from io import BytesIO
 from socket import error as SocketError  # NOQA: N812
-from urllib.request import urlopen
+from six.moves.urllib.request import urlopen
 
 MYPY = False
 if MYPY:

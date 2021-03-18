@@ -1,3 +1,5 @@
+from six.moves import range
+
 class NodeVisitor(object):
     def visit(self, node):
         # This is ugly as hell, but we don't have multimethods and

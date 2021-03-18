@@ -77,8 +77,7 @@ class ServoWebDriverBrowser(Browser):
     init_timeout = 300  # Large timeout for cases where we're booting an Android emulator
 
     def __init__(self, logger, binary, debug_info=None, webdriver_host="127.0.0.1",
-                 server_config=None, binary_args=None,
-                 user_stylesheets=None, headless=None, **kwargs):
+                 server_config=None, binary_args=None, user_stylesheets=None, headless=None):
         Browser.__init__(self, logger)
         self.binary = binary
         self.binary_args = binary_args or []

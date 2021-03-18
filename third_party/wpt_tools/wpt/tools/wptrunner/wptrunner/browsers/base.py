@@ -3,6 +3,7 @@ import platform
 import socket
 from abc import ABCMeta, abstractmethod
 from copy import deepcopy
+from six import iteritems
 
 from ..wptcommandline import require_arg  # noqa: F401
 
@@ -162,10 +163,6 @@ class Browser(object):
         with which it should be instantiated"""
         return ExecutorBrowser, {}
 
-    def maybe_parse_tombstone(self):
-        """Possibly parse tombstones on Android device for Android target"""
-        pass
-
     def check_crash(self, process, test):
         """Check if a crash occured and output any useful information to the
         log. Returns a boolean indicating whether a crash occured."""
@@ -205,5 +202,5 @@ class ExecutorBrowser(object):
     up the browser from the runner process.
     """
     def __init__(self, **kwargs):
-        for k, v in kwargs.items():
+        for k, v in iteritems(kwargs):
             setattr(self, k, v)

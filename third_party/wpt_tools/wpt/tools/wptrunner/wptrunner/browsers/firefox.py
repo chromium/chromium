@@ -196,8 +196,7 @@ def run_info_extras(**kwargs):
           "fission": kwargs.get("enable_fission") or get_bool_pref("fission.autostart"),
           "sessionHistoryInParent": (kwargs.get("enable_fission") or
                                      get_bool_pref("fission.autostart") or
-                                     get_bool_pref("fission.sessionHistoryInParent")),
-          "swgl": get_bool_pref("gfx.webrender.software")}
+                                     get_bool_pref("fission.sessionHistoryInParent"))}
 
     # The value of `sw-e10s` defaults to whether the "parent_intercept"
     # implementation is enabled for the current build. This value, however,
@@ -227,7 +226,7 @@ def run_info_browser_version(**kwargs):
 
 
 def update_properties():
-    return (["os", "debug", "webrender", "fission", "e10s", "sw-e10s", "processor", "swgl"],
+    return (["os", "debug", "webrender", "fission", "e10s", "sw-e10s", "processor"],
             {"os": ["version"], "processor": ["bits"]})
 
 

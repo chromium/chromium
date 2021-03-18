@@ -3,6 +3,7 @@
     "path": "serve.py",
     "script": "run",
     "parser": "get_parser",
+    "py3only": true,
     "help": "Start the QUIC server for WebTransport",
     "virtualenv": true,
     "requirements": [

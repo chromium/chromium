@@ -3,6 +3,7 @@ import os
 import platform
 import sys
 from distutils.spawn import find_executable
+from six.moves import input
 
 wpt_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 sys.path.insert(0, os.path.abspath(os.path.join(wpt_root, "tools")))
@@ -756,8 +757,9 @@ def setup_logging(kwargs, default_config=None, formatter_defaults=None):
 
 def setup_wptrunner(venv, **kwargs):
     from wptrunner import wptcommandline
+    from six import iteritems
 
-    kwargs = utils.Kwargs(kwargs.items())
+    kwargs = utils.Kwargs(iteritems(kwargs))
 
     kwargs["product"] = kwargs["product"].replace("-", "_")
 

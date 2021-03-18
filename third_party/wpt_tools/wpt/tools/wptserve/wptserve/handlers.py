@@ -3,7 +3,8 @@ import os
 import traceback
 from collections import defaultdict
 
-from urllib.parse import quote, unquote, urljoin
+from six.moves.urllib.parse import quote, unquote, urljoin
+from six import iteritems
 
 from .constants import content_types
 from .pipes import Pipeline, template
@@ -481,7 +482,7 @@ class StringHandler(object):
         self.data = data
 
         self.resp_headers = [("Content-Type", content_type)]
-        for k, v in headers.items():
+        for k, v in iteritems(headers):
             self.resp_headers.append((k.replace("_", "-"), v))
 
         self.handler = handler(self.handle_request)

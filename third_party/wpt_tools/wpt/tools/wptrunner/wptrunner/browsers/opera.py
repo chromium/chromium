@@ -71,7 +71,7 @@ class OperaBrowser(Browser):
     """
 
     def __init__(self, logger, binary, webdriver_binary="operadriver",
-                 webdriver_args=None, **kwargs):
+                 webdriver_args=None):
         """Creates a new representation of Opera.  The `binary` argument gives
         the browser binary to use for testing."""
         Browser.__init__(self, logger)

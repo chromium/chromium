@@ -4,6 +4,8 @@ import json
 import os
 import sys
 
+from six import iteritems, itervalues
+
 import wptserve
 from wptserve import sslutils
 
@@ -65,8 +67,6 @@ def get_loader(test_paths, product, debug=None, run_info_extras=None, chunker_kw
     manifest_filters = []
 
     include = kwargs["include"]
-    if kwargs["include_file"]:
-        include.extend(testloader.read_include_from_file(kwargs["include_file"]))
     if test_groups:
         include = testloader.update_include_for_groups(test_groups, include)
 
@@ -117,7 +117,7 @@ def list_disabled(test_paths, product, **kwargs):
     run_info, test_loader = get_loader(test_paths, product,
                                        run_info_extras=run_info_extras, **kwargs)
 
-    for test_type, tests in test_loader.disabled_tests.items():
+    for test_type, tests in iteritems(test_loader.disabled_tests):
         for test in tests:
             rv.append({"test": test.id, "reason": test.disabled()})
     print(json.dumps(rv, indent=2))
@@ -144,7 +144,7 @@ def get_pause_after_test(test_loader, **kwargs):
         if kwargs["debug_test"]:
             return True
         tests = test_loader.tests
-        is_single_testharness = (sum(len(item) for item in tests.values()) == 1 and
+        is_single_testharness = (sum(len(item) for item in itervalues(tests)) == 1 and
                                  len(tests.get("testharness", [])) == 1)
         if kwargs["repeat"] == 1 and kwargs["rerun"] == 1 and is_single_testharness:
             return True
@@ -201,7 +201,6 @@ def run_tests(config, test_paths, product, **kwargs):
         skipped_tests = 0
         test_total = 0
         unexpected_total = 0
-        unexpected_pass_total = 0
 
         if len(test_loader.test_ids) == 0 and kwargs["test_list"]:
             logger.critical("Unable to find any tests at the path(s):")
@@ -256,7 +255,6 @@ def run_tests(config, test_paths, product, **kwargs):
 
                 test_count = 0
                 unexpected_count = 0
-                unexpected_pass_count = 0
 
                 tests = []
                 for test_type in test_loader.test_types:
@@ -347,13 +345,10 @@ def run_tests(config, test_paths, product, **kwargs):
                             raise
                         test_count += manager_group.test_count()
                         unexpected_count += manager_group.unexpected_count()
-                        unexpected_pass_count += manager_group.unexpected_pass_count()
                 recording.set(["after-end"])
                 test_total += test_count
                 unexpected_total += unexpected_count
-                unexpected_pass_total += unexpected_pass_count
-                logger.info("Got %i unexpected results, with %i unexpected passes" %
-                            (unexpected_count, unexpected_pass_count))
+                logger.info("Got %i unexpected results" % unexpected_count)
                 logger.suite_end()
                 if repeat_until_unexpected and unexpected_total > 0:
                     break
@@ -373,13 +368,6 @@ def run_tests(config, test_paths, product, **kwargs):
 
     if unexpected_total and not kwargs["fail_on_unexpected"]:
         logger.info("Tolerating %s unexpected results" % unexpected_total)
-        return True
-
-    all_unexpected_passed = (unexpected_total and
-                             unexpected_total == unexpected_pass_total)
-    if all_unexpected_passed and not kwargs["fail_on_unexpected_pass"]:
-        logger.info("Tolerating %i unexpected results because they all PASS" %
-                    unexpected_pass_total)
         return True
 
     return unexpected_total == 0

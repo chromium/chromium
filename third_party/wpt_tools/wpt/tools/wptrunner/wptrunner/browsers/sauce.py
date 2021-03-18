@@ -12,7 +12,7 @@ import time
 
 import requests
 
-from io import StringIO
+from six.moves import cStringIO as StringIO
 
 from .base import Browser, ExecutorBrowser, require_arg
 from .base import get_timeout_multiplier   # noqa: F401
@@ -228,7 +228,7 @@ class SauceException(Exception):
 class SauceBrowser(Browser):
     init_timeout = 300
 
-    def __init__(self, logger, sauce_config, **kwargs):
+    def __init__(self, logger, sauce_config):
         Browser.__init__(self, logger)
         self.sauce_config = sauce_config
 

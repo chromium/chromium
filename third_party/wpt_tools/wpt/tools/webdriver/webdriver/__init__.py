@@ -35,5 +35,3 @@ from .error import (
     UnknownMethodException,
     UnsupportedOperationException,
     WebDriverException)
-from .bidi import (
-    BidiSession)

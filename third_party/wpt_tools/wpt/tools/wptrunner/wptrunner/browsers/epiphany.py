@@ -72,6 +72,6 @@ def run_info_extras(**kwargs):
 
 class EpiphanyBrowser(WebKitBrowser):
     def __init__(self, logger, binary=None, webdriver_binary=None,
-                 webdriver_args=None, **kwargs):
+                 webdriver_args=None):
         WebKitBrowser.__init__(self, logger, binary, webdriver_binary,
                                webdriver_args)

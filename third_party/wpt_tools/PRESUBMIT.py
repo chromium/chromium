@@ -20,8 +20,7 @@ def _TestWPTLint(input_api, output_api):
     name='web_tests/external/PRESUBMIT_test.py',
     cmd=[abspath_to_test],
     kwargs={},
-    message=output_api.PresubmitError,
-    python3=True
+    message=output_api.PresubmitError
   )
   if input_api.verbose:
     print('Running ' + abspath_to_test)
@@ -46,7 +45,7 @@ def _TestWPTManifest(input_api, output_api):
         blink_path, 'web_tests', 'external', 'wpt')
     try:
       input_api.subprocess.check_output(
-          ['python3', wpt_exec_path, 'manifest', '--no-download',
+          ['python', wpt_exec_path, 'manifest', '--no-download',
            '--path', f.name, '--tests-root', external_wpt])
     except input_api.subprocess.CalledProcessError as exc:
       return [output_api.PresubmitError('wpt manifest failed:', long_text=exc.output)]

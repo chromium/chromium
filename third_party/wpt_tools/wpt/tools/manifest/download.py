@@ -7,7 +7,8 @@ import json
 import io
 import os
 from datetime import datetime, timedelta
-from urllib.request import urlopen
+
+from six.moves.urllib.request import urlopen
 
 try:
     import zstandard

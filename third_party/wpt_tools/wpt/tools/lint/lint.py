@@ -14,7 +14,6 @@ import sys
 import tempfile
 
 from collections import defaultdict
-from urllib.parse import urlsplit, urljoin
 
 from . import fnmatch
 from . import rules
@@ -25,7 +24,9 @@ from ..wpt import testfiles
 from ..manifest.vcs import walk
 
 from ..manifest.sourcefile import SourceFile, js_meta_re, python_meta_re, space_chars, get_any_variants
-from six import ensure_binary, ensure_text
+from six import binary_type, ensure_binary, ensure_text, iteritems, itervalues, with_metaclass
+from six.moves import range
+from six.moves.urllib.parse import urlsplit, urljoin
 
 MYPY = False
 if MYPY:
@@ -324,7 +325,7 @@ def check_css_globally_unique(repo_root, paths):
 
     errors = []
 
-    for name, colliding in test_files.items():
+    for name, colliding in iteritems(test_files):
         if len(colliding) > 1:
             if not _all_files_equal([os.path.join(repo_root, x) for x in colliding]):
                 # Only compute by_spec if there are prima-facie collisions because of cost
@@ -341,7 +342,7 @@ def check_css_globally_unique(repo_root, paths):
                             continue
                         by_spec[spec].add(path)
 
-                for spec, spec_paths in by_spec.items():
+                for spec, spec_paths in iteritems(by_spec):
                     if not _all_files_equal([os.path.join(repo_root, x) for x in spec_paths]):
                         for x in spec_paths:
                             context1 = (name, spec, ", ".join(sorted(spec_paths)))
@@ -350,7 +351,7 @@ def check_css_globally_unique(repo_root, paths):
 
     for rule_class, d in [(rules.CSSCollidingRefName, ref_files),
                           (rules.CSSCollidingSupportName, support_files)]:
-        for name, colliding in d.items():
+        for name, colliding in iteritems(d):
             if len(colliding) > 1:
                 if not _all_files_equal([os.path.join(repo_root, x) for x in colliding]):
                     context2 = (name, ", ".join(sorted(colliding)))
@@ -450,7 +451,7 @@ def filter_ignorelist_errors(data, errors):
         # which explains how to fix it correctly and shouldn't be skipped.
         if error_type in data and error_type != "IGNORED PATH":
             wl_files = data[error_type]
-            for file_match, allowed_lines in wl_files.items():
+            for file_match, allowed_lines in iteritems(wl_files):
                 if None in allowed_lines or line in allowed_lines:
                     if fnmatch.fnmatchcase(normpath, file_match):
                         skipped[i] = True
@@ -667,7 +668,7 @@ def check_parsed(repo_root, path, f):
 
     return errors
 
-class ASTCheck(metaclass=abc.ABCMeta):
+class ASTCheck(with_metaclass(abc.ABCMeta)):
     @abc.abstractproperty
     def rule(self):
         # type: () -> Type[rules.Rule]
@@ -740,7 +741,7 @@ def check_script_metadata(repo_root, path, f):
     done = False
     errors = []
     for idx, line in enumerate(f):
-        assert isinstance(line, bytes), line
+        assert isinstance(line, binary_type), line
 
         m = meta_re.match(line)
         if m:
@@ -974,7 +975,7 @@ def create_parser():
 
 def main(**kwargs_str):
     # type: (**Any) -> int
-    kwargs = {ensure_text(key): value for key, value in kwargs_str.items()}
+    kwargs = {ensure_text(key): value for key, value in iteritems(kwargs_str)}
 
     assert logger is not None
     if kwargs.get("json") and kwargs.get("markdown"):
@@ -1102,7 +1103,7 @@ def lint(repo_root, paths, output_format, ignore_glob=None, github_checks_output
     if error_count and github_checks_outputter:
         github_checks_outputter.output("```")
 
-    return sum(error_count.values())
+    return sum(itervalues(error_count))
 
 
 path_lints = [check_file_type, check_path_length, check_worker_collision, check_ahem_copy,

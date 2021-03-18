@@ -1,8 +1,9 @@
 import os
 import subprocess
 import sys
+from six.moves.urllib.parse import urljoin
 from collections import defaultdict
-from urllib.parse import urljoin
+from six import iteritems, string_types
 
 from .wptmanifest.parser import atoms
 
@@ -306,7 +307,7 @@ class Test(object):
         rv = {}
         for meta in self.itermeta(None):
             threshold = meta.leak_threshold
-            for key, value in threshold.items():
+            for key, value in iteritems(threshold):
                 if key not in rv:
                     rv[key] = value
         return rv
@@ -348,7 +349,7 @@ class Test(object):
 
         try:
             expected = metadata.get("expected")
-            if isinstance(expected, str):
+            if isinstance(expected, string_types):
                 return expected
             elif isinstance(expected, list):
                 return expected[0]
