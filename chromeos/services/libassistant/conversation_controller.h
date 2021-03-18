@@ -98,6 +98,10 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
     return &observers_;
   }
 
+  assistant::action::CrosActionModule* action_module() {
+    return action_module_.get();
+  }
+
  private:
   class AssistantManagerDelegateImpl;
 

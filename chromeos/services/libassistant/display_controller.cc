@@ -61,12 +61,22 @@ void DisplayController::Bind(
   receiver_.Bind(std::move(receiver));
 }
 
+void DisplayController::SetActionModule(
+    chromeos::assistant::action::CrosActionModule* action_module) {
+  DCHECK(action_module);
+  action_module_ = action_module;
+}
+
 void DisplayController::SetArcPlayStoreEnabled(bool enabled) {
   display_connection_->SetArcPlayStoreEnabled(enabled);
 }
 
 void DisplayController::SetDeviceAppsEnabled(bool enabled) {
   display_connection_->SetDeviceAppsEnabled(enabled);
+
+  DCHECK(action_module_);
+  action_module_->SetAppSupportEnabled(
+      chromeos::assistant::features::IsAppSupportEnabled() && enabled);
 }
 
 void DisplayController::SetRelatedInfoEnabled(bool enabled) {

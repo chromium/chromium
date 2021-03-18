@@ -19,6 +19,12 @@ namespace mojom {
 class SpeechRecognitionObserver;
 }  // namespace mojom
 }  // namespace libassistant
+
+namespace assistant {
+namespace action {
+class CrosActionModule;
+}  // namespace action
+}  // namespace assistant
 }  // namespace chromeos
 
 namespace chromeos {
@@ -38,6 +44,9 @@ class DisplayController
   ~DisplayController() override;
 
   void Bind(mojo::PendingReceiver<mojom::DisplayController> receiver);
+
+  void SetActionModule(
+      chromeos::assistant::action::CrosActionModule* action_module);
 
   // mojom::DisplayController implementation:
   void SetArcPlayStoreEnabled(bool enabled) override;
@@ -79,6 +88,9 @@ class DisplayController
 
   assistant_client::AssistantManagerInternal* assistant_manager_internal_ =
       nullptr;
+
+  // Owned by |ConversationController|.
+  chromeos::assistant::action::CrosActionModule* action_module_ = nullptr;
 
   // The callbacks from Libassistant are called on a different sequence,
   // so this sequence checker ensures that no other methods are called on the

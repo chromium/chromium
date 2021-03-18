@@ -10,7 +10,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/thread_annotations.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chromeos/assistant/internal/action/cros_action_module.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/public/cpp/migration/libassistant_v1_api.h"
@@ -250,12 +249,6 @@ void ConversationController::OnAssistantManagerCreated(
 
   assistant_manager_internal->SetAssistantManagerDelegate(
       assistant_manager_delegate_.get());
-
-  auto* v1_api = assistant::LibassistantV1Api::Get();
-  // LibassistantV1Api should be ready to use by this time.
-  DCHECK(v1_api);
-
-  v1_api->SetActionModule(action_module_.get());
 }
 
 void ConversationController::OnAssistantManagerRunning(

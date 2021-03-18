@@ -626,8 +626,6 @@ void AssistantManagerServiceImpl::OnDeviceAppsEnabled(bool enabled) {
     return;
 
   display_controller().SetDeviceAppsEnabled(enabled);
-  action_module()->SetAppSupportEnabled(
-      assistant::features::IsAppSupportEnabled() && enabled);
 }
 
 void AssistantManagerServiceImpl::AddTimeToTimer(const std::string& id,
@@ -759,12 +757,6 @@ assistant_client::AssistantManagerInternal*
 AssistantManagerServiceImpl::assistant_manager_internal() {
   auto* api = LibassistantV1Api::Get();
   return api ? api->assistant_manager_internal() : nullptr;
-}
-
-assistant::action::CrosActionModule*
-AssistantManagerServiceImpl::action_module() {
-  auto* api = LibassistantV1Api::Get();
-  return api ? api->action_module() : nullptr;
 }
 
 void AssistantManagerServiceImpl::SetMicState(bool mic_open) {

@@ -84,6 +84,7 @@ LibassistantService::LibassistantService(
 
   conversation_controller_.AddActionObserver(&device_settings_controller_);
   conversation_controller_.AddActionObserver(&display_controller_);
+  display_controller_.SetActionModule(conversation_controller_.action_module());
   platform_api_.SetAudioInputProvider(
       &audio_input_controller_.audio_input_provider());
 }

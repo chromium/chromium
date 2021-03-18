@@ -118,13 +118,7 @@ class FakeLibassistantV1Api : public LibassistantV1Api {
  public:
   explicit FakeLibassistantV1Api(FakeAssistantManager* assistant_manager)
       : LibassistantV1Api(assistant_manager,
-                          &assistant_manager->assistant_manager_internal()) {
-    SetActionModule(&action_module_);
-  }
-
- private:
-  action::CrosActionModule action_module_{features::IsAppSupportEnabled(),
-                                          features::IsWaitSchedulingEnabled()};
+                          &assistant_manager->assistant_manager_internal()) {}
 };
 
 class AssistantManagerServiceImplTest : public testing::Test {
@@ -206,10 +200,6 @@ class AssistantManagerServiceImplTest : public testing::Test {
   }
 
   FakeServiceContext* fake_service_context() { return service_context_.get(); }
-
-  action::CrosActionModule* action_module() {
-    return assistant_manager_service_->action_module();
-  }
 
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
 

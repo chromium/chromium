@@ -18,7 +18,6 @@
 #include "base/scoped_observation.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
-#include "chromeos/assistant/internal/action/cros_action_module.h"
 #include "chromeos/services/assistant/assistant_manager_service.h"
 #include "chromeos/services/assistant/assistant_settings_impl.h"
 #include "chromeos/services/assistant/proxy/assistant_proxy.h"
@@ -179,8 +178,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   // AppListEventSubscriber overrides:
   void OnAndroidAppListRefreshed(
       const std::vector<AndroidAppInfo>& apps_info) override;
-
-  action::CrosActionModule* action_module();
 
   void SetMicState(bool mic_open);
 
