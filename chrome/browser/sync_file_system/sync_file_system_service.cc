@@ -313,7 +313,7 @@ void SyncFileSystemService::DumpFiles(const GURL& origin,
   DCHECK(!origin.is_empty());
 
   content::StoragePartition* storage_partition =
-      content::BrowserContext::GetStoragePartitionForSite(profile_, origin);
+      content::BrowserContext::GetStoragePartitionForUrl(profile_, origin);
   storage::FileSystemContext* file_system_context =
       storage_partition->GetFileSystemContext();
   local_service_->MaybeInitializeFileSystemContext(

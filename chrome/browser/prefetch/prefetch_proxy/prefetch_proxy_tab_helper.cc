@@ -1287,7 +1287,7 @@ void PrefetchProxyTabHelper::CheckEligibilityOfURL(
   // place where service workers are observed by
   // |PrefetchProxyServiceWorkersObserver|.
   if (default_storage_partition !=
-      content::BrowserContext::GetStoragePartitionForSite(
+      content::BrowserContext::GetStoragePartitionForUrl(
           profile, url,
           /*can_create=*/false)) {
     std::move(result_callback)

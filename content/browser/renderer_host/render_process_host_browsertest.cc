@@ -538,8 +538,8 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
       SetBrowserClientForTesting(&modified_client);
   StoragePartition* default_storage =
       BrowserContext::GetDefaultStoragePartition(browser_context);
-  StoragePartition* custom_storage =
-      BrowserContext::GetStoragePartitionForSite(browser_context, test_site);
+  StoragePartition* custom_storage = BrowserContext::GetStoragePartition(
+      browser_context, test_site_instance.get());
   EXPECT_NE(default_storage, custom_storage);
 
   // Open a test window - it should be associated with the default storage

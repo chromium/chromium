@@ -98,7 +98,7 @@ void StartServiceWorkerForDispatch(ServiceWorkerMetrics::EventType event_type,
                                    ServiceWorkerStartCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   StoragePartition* partition =
-      BrowserContext::GetStoragePartitionForSite(browser_context, origin);
+      BrowserContext::GetStoragePartitionForUrl(browser_context, origin);
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context =
       static_cast<ServiceWorkerContextWrapper*>(
           partition->GetServiceWorkerContext());

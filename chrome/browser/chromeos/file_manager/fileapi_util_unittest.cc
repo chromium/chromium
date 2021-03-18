@@ -138,7 +138,7 @@ TEST_F(FileManagerFileAPIUtilTest,
 
   // Obtain the file system context.
   content::StoragePartition* const partition =
-      content::BrowserContext::GetStoragePartitionForSite(
+      content::BrowserContext::GetStoragePartitionForUrl(
           profile, GURL("http://example.com"));
   ASSERT_TRUE(partition);
   storage::FileSystemContext* const context = partition->GetFileSystemContext();

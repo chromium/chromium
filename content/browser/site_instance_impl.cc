@@ -371,11 +371,34 @@ StoragePartitionId SiteInfo::GetStoragePartitionId(
 
 StoragePartitionConfig SiteInfo::GetStoragePartitionConfig(
     BrowserContext* browser_context) const {
-  if (site_url().is_empty())
+  return GetStoragePartitionConfigForUrl(browser_context, site_url(),
+                                         /*is_site_url=*/true);
+}
+
+// static
+StoragePartitionConfig SiteInfo::GetStoragePartitionConfigForUrl(
+    BrowserContext* browser_context,
+    const GURL& url,
+    bool is_site_url) {
+  if (url.is_empty())
     return StoragePartitionConfig::CreateDefault(browser_context);
 
+  if (!is_site_url && url.SchemeIs(kGuestScheme)) {
+    // Guest schemes should only appear in site URLs. Generate a crash
+    // dump to help debug unexpected callers that might not be setting
+    // |is_site_url| correctly.
+    // TODO(acolwell): Once we have confidence all callers are setting
+    // |is_site_url| correctly, replace crash reporting with code that returns a
+    // default config for this scheme in the non-site URL case.
+    static auto* guest_url_crash_key = base::debug::AllocateCrashKeyString(
+        "guest_url", base::debug::CrashKeySize::Size256);
+    base::debug::SetCrashKeyString(guest_url_crash_key,
+                                   url.possibly_invalid_spec());
+    base::debug::DumpWithoutCrashing();
+  }
+
   return GetContentClient()->browser()->GetStoragePartitionConfigForSite(
-      browser_context, site_url());
+      browser_context, url);
 }
 
 void SiteInfo::WriteIntoTracedValue(perfetto::TracedValue context) const {
@@ -1263,8 +1286,7 @@ bool SiteInstanceImpl::IsGuest() {
 std::string SiteInstanceImpl::GetPartitionDomain(
     StoragePartitionImpl* storage_partition) {
   auto storage_partition_config =
-      GetContentClient()->browser()->GetStoragePartitionConfigForSite(
-          GetBrowserContext(), GetSiteURL());
+      site_info_.GetStoragePartitionConfig(GetBrowserContext());
 
   // The DCHECK here is to allow the trybots to detect any attempt to introduce
   // new code that violates this assumption.

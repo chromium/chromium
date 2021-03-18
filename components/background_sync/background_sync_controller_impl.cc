@@ -79,7 +79,7 @@ void BackgroundSyncControllerImpl::OnContentSettingChanged(
       continue;
 
     auto* storage_partition =
-        content::BrowserContext::GetStoragePartitionForSite(
+        content::BrowserContext::GetStoragePartitionForUrl(
             browser_context_, origin.GetURL(), /* can_create= */ false);
     if (!storage_partition)
       continue;

@@ -1620,7 +1620,7 @@ instance_id::InstanceIDDriver* PushMessagingServiceImpl::GetInstanceIDDriver()
 content::DevToolsBackgroundServicesContext*
 PushMessagingServiceImpl::GetDevToolsContext(const GURL& origin) const {
   auto* storage_partition =
-      content::BrowserContext::GetStoragePartitionForSite(profile_, origin);
+      content::BrowserContext::GetStoragePartitionForUrl(profile_, origin);
   if (!storage_partition)
     return nullptr;
 

@@ -61,7 +61,7 @@ void OriginPolicyThrottle::AddExceptionFor(BrowserContext* browser_context,
                                            const GURL& url) {
   DCHECK(browser_context);
   StoragePartitionImpl* storage_partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetStoragePartitionForSite(browser_context, url));
+      BrowserContext::GetStoragePartitionForUrl(browser_context, url));
   network::mojom::OriginPolicyManager* origin_policy_manager =
       storage_partition->GetOriginPolicyManagerForBrowserProcess();
 

@@ -220,14 +220,13 @@ StoragePartition* BrowserContext::GetStoragePartition(
     BrowserContext* browser_context,
     SiteInstance* site_instance,
     bool can_create) {
-  if (!site_instance) {
-    return GetStoragePartition(
-        browser_context, StoragePartitionConfig::CreateDefault(browser_context),
-        can_create);
-  }
-
-  return GetStoragePartitionForSite(browser_context,
-                                    site_instance->GetSiteURL(), can_create);
+  auto* site_instance_impl = static_cast<SiteInstanceImpl*>(site_instance);
+  auto partition_config =
+      site_instance_impl
+          ? site_instance_impl->GetSiteInfo().GetStoragePartitionConfig(
+                browser_context)
+          : StoragePartitionConfig::CreateDefault(browser_context);
+  return GetStoragePartition(browser_context, partition_config, can_create);
 }
 
 StoragePartition* BrowserContext::GetStoragePartition(
@@ -245,13 +244,12 @@ StoragePartition* BrowserContext::GetStoragePartition(
   return partition_map->Get(storage_partition_config, can_create);
 }
 
-StoragePartition* BrowserContext::GetStoragePartitionForSite(
+StoragePartition* BrowserContext::GetStoragePartitionForUrl(
     BrowserContext* browser_context,
-    const GURL& site,
+    const GURL& url,
     bool can_create) {
-  auto storage_partition_config =
-      GetContentClient()->browser()->GetStoragePartitionConfigForSite(
-          browser_context, site);
+  auto storage_partition_config = SiteInfo::GetStoragePartitionConfigForUrl(
+      browser_context, url, /*is_site_url=*/false);
 
   return GetStoragePartition(browser_context, storage_partition_config,
                              can_create);

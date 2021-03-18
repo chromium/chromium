@@ -62,7 +62,7 @@ network::mojom::CookieManager*
 AndroidSmsAppSetupControllerImpl::PwaDelegate::GetCookieManager(
     const GURL& app_url,
     Profile* profile) {
-  return content::BrowserContext::GetStoragePartitionForSite(profile, app_url)
+  return content::BrowserContext::GetStoragePartitionForUrl(profile, app_url)
       ->GetCookieManagerForBrowserProcess();
 }
 

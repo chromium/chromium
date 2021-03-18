@@ -134,8 +134,8 @@ class BackgroundSyncManagerTest
     // Create a StoragePartition with the correct BrowserContext so that the
     // BackgroundSyncManager can find the BrowserContext through it.
     storage_partition_impl_ = static_cast<StoragePartitionImpl*>(
-        BrowserContext::GetStoragePartitionForSite(
-            helper_->browser_context(), GURL("https://example.com")));
+        BrowserContext::GetStoragePartitionForUrl(helper_->browser_context(),
+                                                  GURL("https://example.com")));
     helper_->context_wrapper()->set_storage_partition(storage_partition_impl_);
 
     SetMaxSyncAttemptsAndRestartManager(1);

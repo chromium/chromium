@@ -73,7 +73,7 @@ scoped_refptr<storage::FileSystemContext> GetFileSystemContext(
     const GURL& url) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::StoragePartition* storage =
-      content::BrowserContext::GetStoragePartitionForSite(context, url);
+      content::BrowserContext::GetStoragePartitionForUrl(context, url);
   return storage->GetFileSystemContext();
 }
 

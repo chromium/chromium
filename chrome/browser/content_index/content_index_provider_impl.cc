@@ -170,7 +170,7 @@ void ContentIndexProviderImpl::OpenItem(
     const ContentId& id) {
   auto components = GetEntryKeyComponents(id.id);
 
-  auto* storage_partition = content::BrowserContext::GetStoragePartitionForSite(
+  auto* storage_partition = content::BrowserContext::GetStoragePartitionForUrl(
       profile_, components.origin.GetURL(), /* can_create= */ false);
 
   if (!storage_partition || !storage_partition->GetContentIndexContext())
@@ -212,7 +212,7 @@ void ContentIndexProviderImpl::DidOpenTab(content::ContentIndexEntry entry,
 void ContentIndexProviderImpl::RemoveItem(const ContentId& id) {
   auto components = GetEntryKeyComponents(id.id);
 
-  auto* storage_partition = content::BrowserContext::GetStoragePartitionForSite(
+  auto* storage_partition = content::BrowserContext::GetStoragePartitionForUrl(
       profile_, components.origin.GetURL(), /* can_create= */ false);
 
   if (!storage_partition || !storage_partition->GetContentIndexContext())
@@ -242,7 +242,7 @@ void ContentIndexProviderImpl::GetItemById(const ContentId& id,
                                            SingleItemCallback callback) {
   auto components = GetEntryKeyComponents(id.id);
 
-  auto* storage_partition = content::BrowserContext::GetStoragePartitionForSite(
+  auto* storage_partition = content::BrowserContext::GetStoragePartitionForUrl(
       profile_, components.origin.GetURL(), /* can_create= */ false);
 
   if (!storage_partition || !storage_partition->GetContentIndexContext()) {
@@ -332,7 +332,7 @@ void ContentIndexProviderImpl::GetVisualsForItem(const ContentId& id,
                                                  VisualsCallback callback) {
   auto components = GetEntryKeyComponents(id.id);
 
-  auto* storage_partition = content::BrowserContext::GetStoragePartitionForSite(
+  auto* storage_partition = content::BrowserContext::GetStoragePartitionForUrl(
       profile_, components.origin.GetURL(), /* can_create= */ false);
 
   if (!storage_partition || !storage_partition->GetContentIndexContext()) {

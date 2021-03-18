@@ -370,7 +370,7 @@ void DispatchNotificationEvent(
   DCHECK(origin.is_valid());
 
   StoragePartition* partition =
-      BrowserContext::GetStoragePartitionForSite(browser_context, origin);
+      BrowserContext::GetStoragePartitionForUrl(browser_context, origin);
 
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context =
       static_cast<ServiceWorkerContextWrapper*>(

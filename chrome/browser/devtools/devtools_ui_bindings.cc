@@ -955,7 +955,7 @@ void DevToolsUIBindings::LoadNetworkResource(DispatchCallback callback,
       return;
     }
   } else {
-    auto* partition = content::BrowserContext::GetStoragePartitionForSite(
+    auto* partition = content::BrowserContext::GetStoragePartitionForUrl(
         web_contents_->GetBrowserContext(), gurl);
     url_loader_factory = partition->GetURLLoaderFactoryForBrowserProcess();
   }

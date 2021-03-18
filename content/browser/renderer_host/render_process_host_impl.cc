@@ -985,8 +985,9 @@ bool ShouldFindReusableProcessHostForSite(BrowserContext* browser_context,
     return false;
 
   return ShouldUseSiteProcessTracking(
-      browser_context, BrowserContext::GetStoragePartitionForSite(
-                           browser_context, site_info.site_url()));
+      browser_context, BrowserContext::GetStoragePartition(
+                           browser_context, site_info.GetStoragePartitionConfig(
+                                                browser_context)));
 }
 
 const void* const kUnmatchedServiceWorkerProcessTrackerKey =
@@ -3919,11 +3920,11 @@ bool RenderProcessHostImpl::IsSuitableHost(
   if (host->IsForGuestsOnly() || site_info.is_guest())
     return false;
 
-  // Check whether the given host and the intended site_url will be using the
+  // Check whether the given host and the intended site_info will be using the
   // same StoragePartition, since a RenderProcessHost can only support a
   // single StoragePartition.  This is relevant for packaged apps.
-  StoragePartition* dest_partition = BrowserContext::GetStoragePartitionForSite(
-      browser_context, site_info.site_url());
+  StoragePartition* dest_partition = BrowserContext::GetStoragePartition(
+      browser_context, site_info.GetStoragePartitionConfig(browser_context));
   if (!host->InSameStoragePartition(dest_partition))
     return false;
 

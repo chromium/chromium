@@ -199,8 +199,8 @@ void FileSystemRenameHandler::StartInternal() {
 scoped_refptr<network::SharedURLLoaderFactory>
 FileSystemRenameHandler::GetURLLoaderFactory(content::BrowserContext* context) {
   content::StoragePartition* partition =
-      content::BrowserContext::GetStoragePartitionForSite(context,
-                                                          settings_.home);
+      content::BrowserContext::GetStoragePartitionForUrl(context,
+                                                         settings_.home);
   return partition->GetURLLoaderFactoryForBrowserProcess();
 }
 

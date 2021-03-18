@@ -122,12 +122,12 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
 
   // Deprecated. Do not add new callers. Use the SiteInstance or
   // StoragePartitionConfig methods above instead.
-  // Returns a StoragePartition for the given site URL. By default this will
+  // Returns a StoragePartition for the given URL. By default this will
   // create a new StoragePartition if it doesn't exist, unless |can_create| is
   // false.
-  static StoragePartition* GetStoragePartitionForSite(
+  static StoragePartition* GetStoragePartitionForUrl(
       BrowserContext* browser_context,
-      const GURL& site,
+      const GURL& url,
       bool can_create = true);
 
   using StoragePartitionCallback =

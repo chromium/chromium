@@ -61,8 +61,7 @@ class BackgroundSyncSchedulerTest : public testing::Test {
     auto* scheduler = BackgroundSyncScheduler::GetFor(&test_browser_context_);
     DCHECK(scheduler);
     auto* storage_partition = static_cast<StoragePartitionImpl*>(
-        BrowserContext::GetStoragePartitionForSite(&test_browser_context_,
-                                                   url));
+        BrowserContext::GetStoragePartitionForUrl(&test_browser_context_, url));
     DCHECK(storage_partition);
 
     scheduler->ScheduleDelayedProcessing(storage_partition, sync_type, delay,
@@ -74,8 +73,7 @@ class BackgroundSyncSchedulerTest : public testing::Test {
     auto* scheduler = BackgroundSyncScheduler::GetFor(&test_browser_context_);
     DCHECK(scheduler);
     auto* storage_partition = static_cast<StoragePartitionImpl*>(
-        BrowserContext::GetStoragePartitionForSite(&test_browser_context_,
-                                                   url));
+        BrowserContext::GetStoragePartitionForUrl(&test_browser_context_, url));
     DCHECK(storage_partition);
 
     scheduler->CancelDelayedProcessing(storage_partition, sync_type);

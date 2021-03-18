@@ -188,7 +188,7 @@ void PrefetchProxyPageLoadMetricsObserver::CheckForCookiesOnURL(
     content::BrowserContext* browser_context,
     const GURL& url) {
   content::StoragePartition* partition =
-      content::BrowserContext::GetStoragePartitionForSite(browser_context, url);
+      content::BrowserContext::GetStoragePartitionForUrl(browser_context, url);
 
   partition->GetCookieManagerForBrowserProcess()->GetCookieList(
       url, net::CookieOptions::MakeAllInclusive(),
