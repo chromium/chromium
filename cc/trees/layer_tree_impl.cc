@@ -1491,7 +1491,7 @@ LayerImpl* LayerTreeImpl::LayerById(int id) const {
   return iter != layer_id_map_.end() ? iter->second : nullptr;
 }
 
-// TODO(masonfreed): If this shows up on profiles, this could use
+// TODO(masonf): If this shows up on profiles, this could use
 // a layer_element_map_ approach similar to LayerById().
 LayerImpl* LayerTreeImpl::LayerByElementId(ElementId element_id) const {
   auto it =

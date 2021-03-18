@@ -22887,7 +22887,7 @@
     },
     {
       'name': 'WebComponentsV0Enabled',
-      'owners': ['masonfreed@chromium.org', 'chrishtr@chromium.org'],
+      'owners': ['masonf@chromium.org', 'chrishtr@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'example_value': True,
@@ -22910,7 +22910,7 @@
     },
     {
       'name': 'UseLegacyFormControls',
-      'owners': ['masonfreed@chromium.org', 'chrishtr@chromium.org', 'hwi@chromium.org', 'nsull@google.com'],
+      'owners': ['masonf@chromium.org', 'chrishtr@chromium.org', 'hwi@chromium.org', 'nsull@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'example_value': True,

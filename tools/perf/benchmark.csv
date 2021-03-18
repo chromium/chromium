@@ -12,14 +12,14 @@ blink_perf.accessibility,dmazzoni@chromium.org,Blink>Accessibility,https://bit.l
 blink_perf.bindings,"jbroman@chromium.org, yukishiino@chromium.org, haraken@chromium.org",Blink>Bindings,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.css,"futhark@chromium.org, andruud@chromium.org",Blink>CSS,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.display_locking,vmpstr@chromium.org,Blink>Paint,https://bit.ly/blink-perf-benchmarks,all
-blink_perf.dom,masonfreed@chromium.org,Blink>DOM,https://bit.ly/blink-perf-benchmarks,all
-blink_perf.events,masonfreed@chromium.org,Blink>DOM,https://bit.ly/blink-perf-benchmarks,all
+blink_perf.dom,masonf@chromium.org,Blink>DOM,https://bit.ly/blink-perf-benchmarks,all
+blink_perf.events,masonf@chromium.org,Blink>DOM,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.image_decoder,cblume@chromium.org,Internals>Images>Codecs,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.layout,"ikilpatrick@chromium.org, kojii@chromium.org",Blink>Layout,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.owp_storage,dmurph@chromium.org,Blink>Storage,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.paint,"pdr@chromium.org, wangxianzhu@chromium.org",Blink>Paint,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.parser,"jbroman@chromium.org, yukishiino@chromium.org, haraken@chromium.org",Blink>Bindings,https://bit.ly/blink-perf-benchmarks,all
-blink_perf.shadow_dom,masonfreed@chromium.org,Blink>DOM>ShadowDOM,https://bit.ly/blink-perf-benchmarks,all
+blink_perf.shadow_dom,masonf@chromium.org,Blink>DOM>ShadowDOM,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.svg,"fs@opera.com, pdr@chromium.org",Blink>SVG,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.webaudio,"hongchan@chromium.org, rtoy@chromium.org",Blink>WebAudio,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.webgl,"kbr@chromium.org, enga@chromium.org, webgl-team@google.com",Blink>WebGL,https://bit.ly/blink-perf-benchmarks,

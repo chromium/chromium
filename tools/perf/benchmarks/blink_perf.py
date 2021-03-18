@@ -522,7 +522,8 @@ class BlinkPerfCSS(_BlinkPerfBenchmark):
   def Name(cls):
     return 'blink_perf.css'
 
-@benchmark.Info(emails=['masonfreed@chromium.org'],
+
+@benchmark.Info(emails=['masonf@chromium.org'],
                 component='Blink>DOM',
                 documentation_url='https://bit.ly/blink-perf-benchmarks')
 class BlinkPerfDOM(_BlinkPerfBenchmark):
@@ -534,7 +535,7 @@ class BlinkPerfDOM(_BlinkPerfBenchmark):
     return 'blink_perf.dom'
 
 
-@benchmark.Info(emails=['masonfreed@chromium.org'],
+@benchmark.Info(emails=['masonf@chromium.org'],
                 component='Blink>DOM',
                 documentation_url='https://bit.ly/blink-perf-benchmarks')
 class BlinkPerfEvents(_BlinkPerfBenchmark):
@@ -640,7 +641,7 @@ class BlinkPerfSVG(_BlinkPerfBenchmark):
     return 'blink_perf.svg'
 
 
-@benchmark.Info(emails=['masonfreed@chromium.org'],
+@benchmark.Info(emails=['masonf@chromium.org'],
                 component='Blink>DOM>ShadowDOM',
                 documentation_url='https://bit.ly/blink-perf-benchmarks')
 class BlinkPerfShadowDOM(_BlinkPerfBenchmark):

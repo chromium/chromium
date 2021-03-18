@@ -2953,12 +2953,12 @@
   },
   {
     "name": "form-controls-dark-mode",
-    "owners": [ "sasebree@microsoft.com", "masonfreed", "yuzhehan", "//third_party/blink/renderer/core/OWNERS" ],
+    "owners": [ "sasebree@microsoft.com", "masonf", "yuzhehan", "//third_party/blink/renderer/core/OWNERS" ],
     "expiry_milestone": 92
   },
   {
     "name": "form-controls-refresh",
-    "owners": [ "iopopesc@microsoft.com", "masonfreed", "yuzhehan", "//third_party/blink/renderer/core/OWNERS" ],
+    "owners": [ "iopopesc@microsoft.com", "masonf", "yuzhehan", "//third_party/blink/renderer/core/OWNERS" ],
     "expiry_milestone": 92
   },
   {
