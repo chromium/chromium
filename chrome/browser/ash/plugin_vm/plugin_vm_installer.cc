@@ -669,10 +669,6 @@ void PluginVmInstaller::OnImportDiskImage(base::Optional<ReplyType> reply) {
 
   ReplyType response = reply.value();
 
-  // TODO(https://crbug.com/966397): handle cases where this jumps straight to
-  // completed?
-  // TODO(https://crbug.com/966396): Handle error case when image already
-  // exists.
   switch (response.status()) {
     case vm_tools::concierge::DiskImageStatus::DISK_STATUS_IN_PROGRESS:
       VLOG(1) << "Disk image creation/import is now in progress";
