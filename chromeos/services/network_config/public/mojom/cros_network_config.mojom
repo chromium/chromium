@@ -116,6 +116,25 @@ enum CertificateType {
   kUserCert,
 };
 
+// Reasons why the Cellular Device may have its scanning inhibited (i.e.,
+// temporarily stopped).
+enum InhibitReason {
+  // Not inhibited.
+  kNotInhibited,
+  // Inhibited because an eSIM profile is being installed.
+  kInstallingProfile,
+  // Inhibited because an eSIM profile is being renamed.
+  kRenamingProfile,
+  // Inhibited because an eSIM profile is being removed.
+  kRemovingProfile,
+  // Inhibited because a connection is in progress which requires that the
+  // device switch to a different eSIM profile.
+  kConnectingToProfile,
+  // Inhibited because the list of pending eSIM profiles is being refreshed by
+  // checking with an SMDS server.
+  kRefreshingProfileList
+};
+
 // The SIM card lock status for Cellular networks.
 struct SIMLockStatus {
   // The status of SIM lock. Possible values are 'sim-pin', 'sim-puk' or empty.
@@ -253,6 +272,8 @@ struct DeviceStateProperties {
   // Details about the physical SIM and eSIM available on the device if Type =
   // Cellular. Note that the array will be ordered by the |slot_id|.
   array<SIMInfo>? sim_infos;
+  // The reason for cellular scans to be inhibited; only set if Type = Cellular.
+  InhibitReason inhibit_reason = kNotInhibited;
   // True when a SIM is required and not present.
   bool sim_absent = false;
   DeviceStateType device_state;

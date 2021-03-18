@@ -32,6 +32,7 @@ void CrosNetworkConfigTestHelper::Initialize(
     cros_network_config_impl_ = std::make_unique<CrosNetworkConfig>(
         network_state_helper_.network_state_handler(),
         network_state_helper_.network_device_handler(),
+        /*cellular_inhibitor=*/nullptr,
         /*cellular_esim_profile_handler=*/nullptr,
         network_configuration_handler,
         /*network_connection_handler=*/nullptr,

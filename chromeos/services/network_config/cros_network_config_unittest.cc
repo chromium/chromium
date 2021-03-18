@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/shill/fake_shill_device_client.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -29,6 +30,7 @@
 #include "chromeos/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/network/system_token_cert_db_storage.h"
 #include "chromeos/network/test_cellular_esim_profile_handler.h"
+#include "chromeos/network/test_cellular_inhibitor.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_observer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-shared.h"
 #include "components/onc/onc_constants.h"
@@ -101,6 +103,9 @@ class CrosNetworkConfigTest : public testing::Test {
             helper_.network_state_handler(), network_profile_handler_.get(),
             network_device_handler_.get(), network_configuration_handler_.get(),
             ui_proxy_config_service_.get());
+    cellular_inhibitor_ = std::make_unique<TestCellularInhibitor>();
+    cellular_inhibitor_->Init(helper_.network_state_handler(),
+                              network_device_handler_.get());
     cellular_esim_profile_handler_ =
         std::make_unique<TestCellularESimProfileHandler>();
     cellular_esim_profile_handler_->Init();
@@ -114,7 +119,7 @@ class CrosNetworkConfigTest : public testing::Test {
         std::make_unique<NetworkCertificateHandler>();
     cros_network_config_ = std::make_unique<CrosNetworkConfig>(
         helper_.network_state_handler(), network_device_handler_.get(),
-        cellular_esim_profile_handler_.get(),
+        cellular_inhibitor_.get(), cellular_esim_profile_handler_.get(),
         managed_network_configuration_handler_.get(),
         network_connection_handler_.get(), network_certificate_handler_.get());
     SetupPolicy();
@@ -525,6 +530,23 @@ class CrosNetworkConfigTest : public testing::Test {
     return false;
   }
 
+  std::unique_ptr<CellularInhibitor::InhibitLock> InhibitCellularScanning(
+      CellularInhibitor::InhibitReason inhibit_reason) {
+    base::RunLoop run_loop;
+
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock;
+    cellular_inhibitor_->InhibitCellularScanning(
+        inhibit_reason,
+        base::BindLambdaForTesting(
+            [&](std::unique_ptr<CellularInhibitor::InhibitLock> result) {
+              inhibit_lock = std::move(result);
+              run_loop.Quit();
+            }));
+
+    run_loop.Run();
+    return inhibit_lock;
+  }
+
   NetworkStateTestHelper& helper() { return helper_; }
   CrosNetworkConfigTestObserver* observer() { return observer_.get(); }
   CrosNetworkConfig* cros_network_config() {
@@ -550,6 +572,7 @@ class CrosNetworkConfigTest : public testing::Test {
   std::unique_ptr<NetworkConfigurationHandler> network_configuration_handler_;
   std::unique_ptr<ManagedNetworkConfigurationHandler>
       managed_network_configuration_handler_;
+  std::unique_ptr<TestCellularInhibitor> cellular_inhibitor_;
   std::unique_ptr<TestCellularESimProfileHandler>
       cellular_esim_profile_handler_;
   std::unique_ptr<NetworkConnectionHandler> network_connection_handler_;
@@ -1232,6 +1255,22 @@ TEST_F(CrosNetworkConfigTest, SetNetworkTypeEnabledState) {
   ASSERT_EQ(4u, devices.size());
   EXPECT_EQ(mojom::NetworkType::kWiFi, devices[0]->type);
   EXPECT_EQ(mojom::DeviceStateType::kDisabled, devices[0]->device_state);
+}
+
+TEST_F(CrosNetworkConfigTest, CellularInhibitState) {
+  mojom::DeviceStatePropertiesPtr cellular =
+      GetDeviceStateFromList(mojom::NetworkType::kCellular);
+  ASSERT_TRUE(cellular);
+  EXPECT_EQ(mojom::DeviceStateType::kEnabled, cellular->device_state);
+  EXPECT_EQ(mojom::InhibitReason::kNotInhibited, cellular->inhibit_reason);
+
+  std::unique_ptr<CellularInhibitor::InhibitLock> lock =
+      InhibitCellularScanning(
+          CellularInhibitor::InhibitReason::kInstallingProfile);
+  cellular = GetDeviceStateFromList(mojom::NetworkType::kCellular);
+  ASSERT_TRUE(cellular);
+  EXPECT_EQ(mojom::DeviceStateType::kInhibited, cellular->device_state);
+  EXPECT_EQ(mojom::InhibitReason::kInstallingProfile, cellular->inhibit_reason);
 }
 
 TEST_F(CrosNetworkConfigTest, SetCellularSimState) {

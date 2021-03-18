@@ -488,8 +488,32 @@ std::vector<mojom::SIMInfoPtr> CellularSIMInfosToMojo(
   return sim_info_mojos;
 }
 
+mojom::InhibitReason GetInhibitReason(CellularInhibitor* cellular_inhibitor) {
+  if (!cellular_inhibitor)
+    return mojom::InhibitReason::kNotInhibited;
+
+  base::Optional<CellularInhibitor::InhibitReason> inhibit_reason =
+      cellular_inhibitor->GetInhibitReason();
+  if (!inhibit_reason)
+    return mojom::InhibitReason::kNotInhibited;
+
+  switch (*inhibit_reason) {
+    case CellularInhibitor::InhibitReason::kInstallingProfile:
+      return mojom::InhibitReason::kInstallingProfile;
+    case CellularInhibitor::InhibitReason::kRenamingProfile:
+      return mojom::InhibitReason::kRenamingProfile;
+    case CellularInhibitor::InhibitReason::kRemovingProfile:
+      return mojom::InhibitReason::kRemovingProfile;
+    case CellularInhibitor::InhibitReason::kConnectingToProfile:
+      return mojom::InhibitReason::kConnectingToProfile;
+    case CellularInhibitor::InhibitReason::kRefreshingProfileList:
+      return mojom::InhibitReason::kRefreshingProfileList;
+  }
+}
+
 mojom::DeviceStatePropertiesPtr DeviceStateToMojo(
     const DeviceState* device,
+    CellularInhibitor* cellular_inhibitor,
     mojom::DeviceStateType technology_state) {
   mojom::NetworkType type = ShillTypeToMojo(device->type());
   if (type == mojom::NetworkType::kAll) {
@@ -534,6 +558,7 @@ mojom::DeviceStatePropertiesPtr DeviceStateToMojo(
   }
   if (type == mojom::NetworkType::kCellular) {
     result->sim_infos = CellularSIMInfosToMojo(device);
+    result->inhibit_reason = GetInhibitReason(cellular_inhibitor);
   }
   return result;
 }
@@ -1843,6 +1868,7 @@ CrosNetworkConfig::CrosNetworkConfig()
     : CrosNetworkConfig(
           NetworkHandler::Get()->network_state_handler(),
           NetworkHandler::Get()->network_device_handler(),
+          NetworkHandler::Get()->cellular_inhibitor(),
           NetworkHandler::Get()->cellular_esim_profile_handler(),
           NetworkHandler::Get()->managed_network_configuration_handler(),
           NetworkHandler::Get()->network_connection_handler(),
@@ -1851,12 +1877,14 @@ CrosNetworkConfig::CrosNetworkConfig()
 CrosNetworkConfig::CrosNetworkConfig(
     NetworkStateHandler* network_state_handler,
     NetworkDeviceHandler* network_device_handler,
+    CellularInhibitor* cellular_inhibitor,
     CellularESimProfileHandler* cellular_esim_profile_handler,
     ManagedNetworkConfigurationHandler* network_configuration_handler,
     NetworkConnectionHandler* network_connection_handler,
     NetworkCertificateHandler* network_certificate_handler)
     : network_state_handler_(network_state_handler),
       network_device_handler_(network_device_handler),
+      cellular_inhibitor_(cellular_inhibitor),
       cellular_esim_profile_handler_(cellular_esim_profile_handler),
       network_configuration_handler_(network_configuration_handler),
       network_connection_handler_(network_connection_handler),
@@ -1871,6 +1899,8 @@ CrosNetworkConfig::~CrosNetworkConfig() {
       network_certificate_handler_->HasObserver(this)) {
     network_certificate_handler_->RemoveObserver(this);
   }
+  if (cellular_inhibitor_ && cellular_inhibitor_->HasObserver(this))
+    cellular_inhibitor_->RemoveObserver(this);
 }
 
 void CrosNetworkConfig::BindReceiver(
@@ -1887,6 +1917,8 @@ void CrosNetworkConfig::AddObserver(
       !network_certificate_handler_->HasObserver(this)) {
     network_certificate_handler_->AddObserver(this);
   }
+  if (cellular_inhibitor_ && !cellular_inhibitor_->HasObserver(this))
+    cellular_inhibitor_->AddObserver(this);
   observers_.Add(std::move(observer));
 }
 
@@ -1966,12 +1998,14 @@ void CrosNetworkConfig::GetDeviceStateList(
       NET_LOG(ERROR) << "Device state unavailable: " << device->name();
       continue;
     }
-    if (technology_state == mojom::DeviceStateType::kEnabled &&
-        device->inhibited()) {
+    if (device->type() == shill::kTypeCellular &&
+        technology_state == mojom::DeviceStateType::kEnabled &&
+        cellular_inhibitor_ &&
+        cellular_inhibitor_->GetInhibitReason().has_value()) {
       technology_state = mojom::DeviceStateType::kInhibited;
     }
     mojom::DeviceStatePropertiesPtr mojo_device =
-        DeviceStateToMojo(device, technology_state);
+        DeviceStateToMojo(device, cellular_inhibitor_, technology_state);
     if (mojo_device)
       result.emplace_back(std::move(mojo_device));
   }
@@ -2784,6 +2818,10 @@ void CrosNetworkConfig::OnShuttingDown() {
 void CrosNetworkConfig::OnCertificatesChanged() {
   for (auto& observer : observers_)
     observer->OnNetworkCertificatesChanged();
+}
+
+void CrosNetworkConfig::OnInhibitStateChanged() {
+  DeviceListChanged();
 }
 
 const std::string& CrosNetworkConfig::GetServicePathFromGuid(
