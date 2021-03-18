@@ -348,31 +348,43 @@ void SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
 // as if the writing mode were horizontal left to right and top to bottom.
 static cc::ScrollSnapAlign GetPhysicalAlignment(
     const ComputedStyle& area_style,
-    const ComputedStyle& container_style) {
+    const ComputedStyle& container_style,
+    const PhysicalRect& area_rect,
+    const PhysicalRect& container_rect) {
   cc::ScrollSnapAlign align = area_style.GetScrollSnapAlign();
   cc::ScrollSnapAlign adjusted_alignment;
-  // TODO(crbug.com/1169092): Align choice of box for determining the writing
-  // mode with the spec, which states:
-  //   Start and end alignments are resolved with respect to the writing mode
-  //   of the snap container unless the scroll snap area is larger than the
-  //   snapport, in which case they are resolved with respect to the writing
-  //   mode of the box itself. (This allows items in a container to have
-  //   consistent snap alignment in general, while ensuring that start always
-  //   aligns the item to allow reading its contents from the beginning.)
+  // Start and end alignments are resolved with respect to the writing mode of
+  // the snap container unless the scroll snap area is larger than the snapport,
+  // in which case they are resolved with respect to the writing mode of the box
+  // itself. (This allows items in a container to have consistent snap alignment
+  // in general, while ensuring that start always aligns the item to allow
+  // reading its contents from the beginning.)
   WritingDirectionMode writing_direction =
       container_style.GetWritingDirection();
+  WritingDirectionMode area_writing_direction =
+      area_style.GetWritingDirection();
+  if (area_writing_direction.IsHorizontal()) {
+    if (area_rect.Width() > container_rect.Width())
+      writing_direction = area_writing_direction;
+  } else {
+    if (area_rect.Height() > container_rect.Height())
+      writing_direction = area_writing_direction;
+  }
+
+  bool rtl = (writing_direction.IsRtl());
   if (writing_direction.IsHorizontal()) {
-    bool rtl = (writing_direction.IsRtl());
     adjusted_alignment.alignment_inline =
         rtl ? AdjustForRtlWritingMode(align.alignment_inline)
             : align.alignment_inline;
     adjusted_alignment.alignment_block = align.alignment_block;
   } else {
-    bool rtl = writing_direction.IsFlippedBlocks();
+    bool flipped = writing_direction.IsFlippedBlocks();
     adjusted_alignment.alignment_inline =
-        rtl ? AdjustForRtlWritingMode(align.alignment_block)
-            : align.alignment_block;
-    adjusted_alignment.alignment_block = align.alignment_inline;
+        flipped ? AdjustForRtlWritingMode(align.alignment_block)
+                : align.alignment_block;
+    adjusted_alignment.alignment_block =
+        rtl ? AdjustForRtlWritingMode(align.alignment_inline)
+            : align.alignment_inline;
   }
   return adjusted_alignment;
 }
@@ -400,8 +412,10 @@ cc::SnapAreaData SnapCoordinator::CalculateSnapAreaData(
   area_rect.Expand(area_margin);
   snap_area_data.rect = FloatRect(area_rect);
 
-  snap_area_data.scroll_snap_align =
-      GetPhysicalAlignment(*area_style, *container_style);
+  PhysicalRect container_rect = snap_container.PhysicalBorderBoxRect();
+
+  snap_area_data.scroll_snap_align = GetPhysicalAlignment(
+      *area_style, *container_style, area_rect, container_rect);
 
   snap_area_data.must_snap =
       (area_style->ScrollSnapStop() == EScrollSnapStop::kAlways);
