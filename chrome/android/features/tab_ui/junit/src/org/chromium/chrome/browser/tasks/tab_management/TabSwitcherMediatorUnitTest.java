@@ -130,7 +130,7 @@ public class TabSwitcherMediatorUnitTest {
     @Mock
     MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     @Mock
-    PriceWelcomeMessageService mPriceWelcomeMessageService;
+    PriceMessageService mPriceMessageService;
 
     @Captor
     ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
@@ -585,50 +585,50 @@ public class TabSwitcherMediatorUnitTest {
 
     @Test
     public void removePriceWelcomeMessageWhenCloseBindingTab() {
-        mMediator.setPriceWelcomeMessageService(mPriceWelcomeMessageService);
+        mMediator.setPriceMessageService(mPriceMessageService);
 
         doReturn(1).when(mTabModel).getCount();
-        doReturn(TAB1_ID).when(mPriceWelcomeMessageService).getBindingTabId();
+        doReturn(TAB1_ID).when(mPriceMessageService).getBindingTabId();
         mTabModelObserverCaptor.getValue().willCloseTab(mTab1, false);
         verify(mPriceWelcomeMessageController, times(0)).removePriceWelcomeMessage();
 
         doReturn(2).when(mTabModel).getCount();
-        doReturn(TAB2_ID).when(mPriceWelcomeMessageService).getBindingTabId();
+        doReturn(TAB2_ID).when(mPriceMessageService).getBindingTabId();
         mTabModelObserverCaptor.getValue().willCloseTab(mTab1, false);
         verify(mPriceWelcomeMessageController, times(0)).removePriceWelcomeMessage();
 
         doReturn(2).when(mTabModel).getCount();
-        doReturn(TAB1_ID).when(mPriceWelcomeMessageService).getBindingTabId();
+        doReturn(TAB1_ID).when(mPriceMessageService).getBindingTabId();
         mTabModelObserverCaptor.getValue().willCloseTab(mTab1, false);
         verify(mPriceWelcomeMessageController, times(1)).removePriceWelcomeMessage();
     }
 
     @Test
     public void restorePriceWelcomeMessageWhenUndoBindingTabClosure() {
-        mMediator.setPriceWelcomeMessageService(mPriceWelcomeMessageService);
+        mMediator.setPriceMessageService(mPriceMessageService);
 
         doReturn(1).when(mTabModel).getCount();
-        doReturn(TAB1_ID).when(mPriceWelcomeMessageService).getBindingTabId();
+        doReturn(TAB1_ID).when(mPriceMessageService).getBindingTabId();
         mTabModelObserverCaptor.getValue().tabClosureUndone(mTab1);
         verify(mPriceWelcomeMessageController, times(1)).restorePriceWelcomeMessage();
 
         doReturn(2).when(mTabModel).getCount();
-        doReturn(TAB2_ID).when(mPriceWelcomeMessageService).getBindingTabId();
+        doReturn(TAB2_ID).when(mPriceMessageService).getBindingTabId();
         mTabModelObserverCaptor.getValue().tabClosureUndone(mTab1);
         verify(mPriceWelcomeMessageController, times(1)).restorePriceWelcomeMessage();
     }
 
     @Test
     public void invalidatePriceWelcomeMessageWhenBindingTabClosureCommitted() {
-        mMediator.setPriceWelcomeMessageService(mPriceWelcomeMessageService);
+        mMediator.setPriceMessageService(mPriceMessageService);
 
-        doReturn(TAB2_ID).when(mPriceWelcomeMessageService).getBindingTabId();
+        doReturn(TAB2_ID).when(mPriceMessageService).getBindingTabId();
         mTabModelObserverCaptor.getValue().tabClosureCommitted(mTab1);
-        verify(mPriceWelcomeMessageService, times(0)).invalidateMessage();
+        verify(mPriceMessageService, times(0)).invalidateMessage();
 
-        doReturn(TAB1_ID).when(mPriceWelcomeMessageService).getBindingTabId();
+        doReturn(TAB1_ID).when(mPriceMessageService).getBindingTabId();
         mTabModelObserverCaptor.getValue().tabClosureCommitted(mTab1);
-        verify(mPriceWelcomeMessageService, times(1)).invalidateMessage();
+        verify(mPriceMessageService, times(1)).invalidateMessage();
     }
 
     @Test

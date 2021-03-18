@@ -784,31 +784,31 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
-    public void priceWelcomeMessageItemNotDraggable() {
-        when(mMockViewHolder1.getItemViewType()).thenReturn(TabProperties.UiType.PRICE_WELCOME);
+    public void largeMessageItemNotDraggable() {
+        when(mMockViewHolder1.getItemViewType()).thenReturn(TabProperties.UiType.LARGE_MESSAGE);
         setupItemTouchHelperCallback(false);
         assertFalse(
                 mItemTouchHelperCallback.hasDragFlagForTesting(mRecyclerView, mMockViewHolder1));
     }
 
     @Test
-    public void priceWelcomeMessageItemSwipeable() {
-        when(mMockViewHolder1.getItemViewType()).thenReturn(TabProperties.UiType.PRICE_WELCOME);
+    public void largeMessageItemSwipeable() {
+        when(mMockViewHolder1.getItemViewType()).thenReturn(TabProperties.UiType.LARGE_MESSAGE);
         setupItemTouchHelperCallback(false);
         assertTrue(mItemTouchHelperCallback.hasSwipeFlag(mRecyclerView, mMockViewHolder1));
     }
 
     @Test
-    public void priceWelcomeMessageItemNotDropable() {
-        when(mMockViewHolder1.getItemViewType()).thenReturn(TabProperties.UiType.PRICE_WELCOME);
+    public void largeMessageItemNotDropable() {
+        when(mMockViewHolder1.getItemViewType()).thenReturn(TabProperties.UiType.LARGE_MESSAGE);
         setupItemTouchHelperCallback(false);
         assertFalse(mItemTouchHelperCallback.canDropOver(
                 mRecyclerView, mMockViewHolder2, mMockViewHolder1));
     }
 
     @Test(expected = AssertionError.class)
-    public void priceWelcomeMessageItemOnMoveFail() {
-        when(mMockViewHolder1.getItemViewType()).thenReturn(TabProperties.UiType.PRICE_WELCOME);
+    public void largeMessageItemOnMoveFail() {
+        when(mMockViewHolder1.getItemViewType()).thenReturn(TabProperties.UiType.LARGE_MESSAGE);
         setupItemTouchHelperCallback(false);
         mItemTouchHelperCallback.onMove(mRecyclerView, mMockViewHolder1, mMockViewHolder2);
     }

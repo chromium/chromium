@@ -8,11 +8,13 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
@@ -25,18 +27,23 @@ import org.chromium.ui.widget.ViewRectProvider;
 
 import java.lang.ref.WeakReference;
 
-class PriceWelcomeMessageCardView extends FrameLayout {
+/**
+ * Represents a large message card view in Grid Tab Switcher. The view contains a customized content
+ * section, an action button for acceptance, and a close button for dismissal.
+ */
+class LargeMessageCardView extends FrameLayout {
     private static WeakReference<Bitmap> sCloseButtonBitmapWeakRef;
 
     private final Context mContext;
     private final int mLandscapeSidePadding;
     private PriceCardView mPriceInfoBox;
+    private ChromeImageView mIcon;
     private TextView mTitle;
-    private TextView mContent;
+    private TextView mDescription;
     private ButtonCompat mActionButton;
     private ChromeImageView mCloseButton;
 
-    public PriceWelcomeMessageCardView(Context context, AttributeSet attrs) {
+    public LargeMessageCardView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
         mLandscapeSidePadding = (int) context.getResources().getDimension(
@@ -48,8 +55,9 @@ class PriceWelcomeMessageCardView extends FrameLayout {
         super.onFinishInflate();
 
         mPriceInfoBox = findViewById(R.id.price_info_box);
+        mIcon = findViewById(R.id.icon);
         mTitle = findViewById(R.id.title);
-        mContent = findViewById(R.id.content);
+        mDescription = findViewById(R.id.description);
         mActionButton = findViewById(R.id.action_button);
         mCloseButton = findViewById(R.id.close_button);
 
@@ -78,11 +86,11 @@ class PriceWelcomeMessageCardView extends FrameLayout {
     }
 
     /**
-     * Set content text.
-     * @param contentText Text to be displayed.
+     * Set description text.
+     * @param descriptionText Text to be displayed.
      */
-    void setContentText(String contentText) {
-        mContent.setText(contentText);
+    void setDescriptionText(String descriptionText) {
+        mDescription.setText(descriptionText);
     }
 
     /**
@@ -118,10 +126,35 @@ class PriceWelcomeMessageCardView extends FrameLayout {
     }
 
     /**
-     * Set price strings for the price info box.
+     * Setup the price info box.
      */
-    void setPriceInfoBoxStrings(ShoppingPersistedTabData.PriceDrop priceDrop) {
-        mPriceInfoBox.setPriceStrings(priceDrop.price, priceDrop.previousPrice);
+    void setupPriceInfoBox(@Nullable ShoppingPersistedTabData.PriceDrop priceDrop) {
+        if (priceDrop != null) {
+            mPriceInfoBox.setPriceStrings(priceDrop.price, priceDrop.previousPrice);
+            mPriceInfoBox.setVisibility(View.VISIBLE);
+        } else {
+            mPriceInfoBox.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * Set icon drawable.
+     * @param iconDrawable Drawable to be shown.
+     */
+    void setIconDrawable(Drawable iconDrawable) {
+        mIcon.setImageDrawable(iconDrawable);
+    }
+
+    /**
+     * Set icon visibility.
+     * @param visible Whether icon is visible.
+     */
+    void setIconVisibility(boolean visible) {
+        if (visible) {
+            mIcon.setVisibility(View.VISIBLE);
+        } else {
+            mIcon.setVisibility(View.GONE);
+        }
     }
 
     @VisibleForTesting

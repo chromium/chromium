@@ -241,7 +241,7 @@ class TabGridViewBinder {
                 PriceCardView priceCardView =
                         (PriceCardView) view.fastFindViewById(R.id.price_info_box_outer);
                 assert priceCardView.getVisibility() == View.VISIBLE;
-                PriceWelcomeMessageCardView.showPriceDropTooltip(
+                LargeMessageCardView.showPriceDropTooltip(
                         priceCardView.findViewById(R.id.current_price));
             }
         } else if (TabProperties.PAGE_INFO_LISTENER == propertyKey) {

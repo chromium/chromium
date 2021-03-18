@@ -49,7 +49,7 @@ import java.util.List;
  * Coordinator for showing UI for a list of tabs. Can be used in GRID or STRIP modes.
  */
 public class TabListCoordinator
-        implements PriceWelcomeMessageService.PriceWelcomeMessageProvider, Destroyable {
+        implements PriceMessageService.PriceWelcomeMessageProvider, Destroyable {
     /**
      * Modes of showing the list of tabs.
      *

@@ -5,13 +5,17 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import android.content.res.Configuration;
+import android.graphics.drawable.Drawable;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
@@ -31,10 +35,10 @@ import org.chromium.ui.widget.ChromeImageView;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Tests for {@link PriceWelcomeMessageCardViewBinder}.
+ * Tests for {@link LargeMessageCardViewBinder}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class PriceWelcomeMessageCardViewBinderTest extends DummyUiActivityTestCase {
+public class LargeMessageCardViewBinderTest extends DummyUiActivityTestCase {
     private static final String TITLE_TEXT = "titleText";
     private static final String ACTION_TEXT = "actionText";
     private static final String DESCRIPTION_TEXT = "descriptionText";
@@ -56,11 +60,13 @@ public class PriceWelcomeMessageCardViewBinderTest extends DummyUiActivityTestCa
     private final MessageCardView.DismissActionProvider mMessageServiceDismissHandler =
             (int messageType) -> mMessageServiceDismissCallbackRan.set(true);
 
+    private ChromeImageView mIcon;
     private TextView mTitle;
     private TextView mDescription;
     private ButtonCompat mActionButton;
     private ChromeImageView mCloseButton;
-    private PriceWelcomeMessageCardView mItemView;
+    private PriceCardView mPriceInfoBox;
+    private LargeMessageCardView mItemView;
     private PropertyModel mItemViewModel;
     private PropertyModelChangeProcessor mItemMCP;
 
@@ -73,12 +79,14 @@ public class PriceWelcomeMessageCardViewBinderTest extends DummyUiActivityTestCa
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             getActivity().setContentView(view);
 
-            mItemView = (PriceWelcomeMessageCardView) getActivity().getLayoutInflater().inflate(
-                    R.layout.price_welcome_message_card_item, null);
+            mItemView = (LargeMessageCardView) getActivity().getLayoutInflater().inflate(
+                    R.layout.large_message_card_item, null);
             view.addView(mItemView);
 
+            mPriceInfoBox = mItemView.findViewById(R.id.price_info_box);
+            mIcon = mItemView.findViewById(R.id.icon);
             mTitle = mItemView.findViewById(R.id.title);
-            mDescription = mItemView.findViewById(R.id.content);
+            mDescription = mItemView.findViewById(R.id.description);
             mActionButton = mItemView.findViewById(R.id.action_button);
             mCloseButton = mItemView.findViewById(R.id.close_button);
 
@@ -93,7 +101,7 @@ public class PriceWelcomeMessageCardViewBinderTest extends DummyUiActivityTestCa
                             .build();
 
             mItemMCP = PropertyModelChangeProcessor.create(
-                    mItemViewModel, mItemView, PriceWelcomeMessageCardViewBinder::bind);
+                    mItemViewModel, mItemView, LargeMessageCardViewBinder::bind);
         });
     }
 
@@ -110,13 +118,43 @@ public class PriceWelcomeMessageCardViewBinderTest extends DummyUiActivityTestCa
     @Test
     @UiThreadTest
     @SmallTest
-    public void testSetPriceInfoBoxStrings() {
+    public void testSetIconDrawable() {
+        assertNull(mIcon.getDrawable());
+
+        Drawable iconDrawable =
+                AppCompatResources.getDrawable(getActivity(), R.drawable.ic_globe_24dp);
+        mItemViewModel.set(MessageCardViewProperties.ICON_PROVIDER, () -> iconDrawable);
+        assertEquals(iconDrawable, mIcon.getDrawable());
+    }
+
+    @Test
+    @UiThreadTest
+    @SmallTest
+    public void testSetIconVisibility() {
+        assertEquals(View.GONE, mIcon.getVisibility());
+
+        mItemViewModel.set(MessageCardViewProperties.IS_ICON_VISIBLE, true);
+        assertEquals(View.VISIBLE, mIcon.getVisibility());
+        mItemViewModel.set(MessageCardViewProperties.IS_ICON_VISIBLE, false);
+        assertEquals(View.GONE, mIcon.getVisibility());
+    }
+
+    @Test
+    @UiThreadTest
+    @SmallTest
+    public void testSetupPriceInfoBox() {
+        assertEquals(View.GONE, mPriceInfoBox.getVisibility());
+
         mItemViewModel.set(MessageCardViewProperties.PRICE_DROP,
                 new ShoppingPersistedTabData.PriceDrop(PRICE, PREVIOUS_PRICE));
+        assertEquals(View.VISIBLE, mPriceInfoBox.getVisibility());
         assertEquals(PRICE,
                 ((TextView) mItemView.findViewById(R.id.current_price)).getText().toString());
         assertEquals(PREVIOUS_PRICE,
                 ((TextView) mItemView.findViewById(R.id.previous_price)).getText().toString());
+
+        mItemViewModel.set(MessageCardViewProperties.PRICE_DROP, null);
+        assertEquals(View.GONE, mPriceInfoBox.getVisibility());
     }
 
     @Test
