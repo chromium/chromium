@@ -249,33 +249,41 @@ source_set("blink_heap_unittests_sources") {
 
   sources = [ "../testing/run_all_tests.cc" ]
 
+  # TODO(1056170): Remove branch after implementing
+  # v8_wrapper/heap_test_unitilities.* as tests should work for both
+  # implementations.
   if (!enable_blink_heap_use_v8_oilpan) {
     sources += [
       "test/blink_gc_memory_dump_provider_test.cc",
-      "test/card_table_test.cc",
       "test/concurrent_marking_test.cc",
-      "test/gc_info_test.cc",
       "test/heap_compact_test.cc",
       "test/heap_linked_stack_test.cc",
-      "test/heap_stats_collector_test.cc",
       "test/heap_test.cc",
-      "test/heap_thread_test.cc",
       "test/heap_traits_test.cc",
       "test/incremental_marking_test.cc",
-      "test/marking_scheduling_oracle_test.cc",
-      "test/marking_verifier_test.cc",
-      "test/name_trait_test.cc",
-      "test/object_start_bitmap_test.cc",
       "test/persistent_test.cc",
-      "test/thread_state_scheduling_test.cc",
       "test/weakness_marking_test.cc",
-      "test/worklist_test.cc",
       "test/write_barrier_perftest.cc",
     ]
+  }
 
-    if (enable_blink_heap_young_generation) {
-      sources += [ "test/minor_gc_test.cc" ]
-    }
+  if (!enable_blink_heap_use_v8_oilpan) {
+    sources += [
+      "impl/test/card_table_test.cc",
+      "impl/test/gc_info_test.cc",
+      "impl/test/heap_stats_collector_test.cc",
+      "impl/test/heap_thread_test.cc",
+      "impl/test/marking_scheduling_oracle_test.cc",
+      "impl/test/marking_verifier_test.cc",
+      "impl/test/name_trait_test.cc",
+      "impl/test/object_start_bitmap_test.cc",
+      "impl/test/thread_state_scheduling_test.cc",
+      "impl/test/worklist_test.cc",
+    ]
+  }
+
+  if (enable_blink_heap_young_generation) {
+    sources += [ "test/minor_gc_test.cc" ]
   }
 
   configs += [
