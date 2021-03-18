@@ -490,10 +490,8 @@ void DOMMatrixReadOnly::SetMatrixValueFromString(
     return;
   }
 
-  const ComputedStyle& initial_style = ComputedStyle::InitialStyle();
   TransformOperations operations = TransformBuilder::CreateTransformOperations(
-      *value,
-      CSSToLengthConversionData(&initial_style, &initial_style, nullptr, 1.0f));
+      *value, CSSToLengthConversionData());
 
   if (operations.BoxSizeDependencies()) {
     exception_state.ThrowDOMException(
