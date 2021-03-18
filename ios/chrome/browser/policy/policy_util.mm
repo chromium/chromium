@@ -12,20 +12,21 @@
 #error "This file requires ARC support."
 #endif
 
-bool IsIncognitoModeDisabled(PrefService* pref_service) {
+bool IsIncognitoPolicyApplied(PrefService* pref_service) {
   if (!pref_service)
     return NO;
   return IsEnterprisePolicyEnabled() &&
-         pref_service->IsManagedPreference(prefs::kIncognitoModeAvailability) &&
+         pref_service->IsManagedPreference(prefs::kIncognitoModeAvailability);
+}
+
+bool IsIncognitoModeDisabled(PrefService* pref_service) {
+  return IsIncognitoPolicyApplied(pref_service) &&
          pref_service->GetInteger(prefs::kIncognitoModeAvailability) ==
              static_cast<int>(IncognitoModePrefs::kDisabled);
 }
 
 bool IsIncognitoModeForced(PrefService* pref_service) {
-  if (!pref_service)
-    return NO;
-  return IsEnterprisePolicyEnabled() &&
-         pref_service->IsManagedPreference(prefs::kIncognitoModeAvailability) &&
+  return IsIncognitoPolicyApplied(pref_service) &&
          pref_service->GetInteger(prefs::kIncognitoModeAvailability) ==
              static_cast<int>(IncognitoModePrefs::kForced);
 }

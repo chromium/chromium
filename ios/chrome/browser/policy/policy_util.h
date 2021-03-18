@@ -21,6 +21,9 @@ enum class IncognitoModePrefs {
   kForced,
 };
 
+// Returns true if IncognitoModeAvailability policy is set by enterprise.
+bool IsIncognitoPolicyApplied(PrefService* pref_service);
+
 // Returns true if incognito mode is disabled by enterprise policy.
 bool IsIncognitoModeDisabled(PrefService* pref_service);
 
