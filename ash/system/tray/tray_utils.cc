@@ -55,7 +55,15 @@ gfx::Insets GetTrayBubbleInsets() {
   if (!is_bottom_alignment)
     return insets;
 
+  int height_compensation = GetBubbleInsetHotseatCompensation();
+  insets.set_bottom(insets.bottom() + height_compensation);
+  return insets;
+}
+
+int GetBubbleInsetHotseatCompensation() {
   int height_compensation = kTrayBubbleInsetHotseatCompensation;
+  Shelf* shelf = Shelf::ForWindow(Shell::GetPrimaryRootWindow());
+
   switch (shelf->GetBackgroundType()) {
     case ShelfBackgroundType::kInApp:
     case ShelfBackgroundType::kOverview:
@@ -70,9 +78,7 @@ gfx::Insets GetTrayBubbleInsets() {
     default:
       break;
   }
-
-  insets.set_bottom(insets.bottom() + height_compensation);
-  return insets;
+  return height_compensation;
 }
 
 gfx::Insets GetSecondaryBubbleInsets() {

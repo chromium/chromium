@@ -24,6 +24,10 @@ SkColor TrayIconColor(session_manager::SessionState session_state);
 // Returns the insets above the shelf for positioning the quick settings bubble.
 gfx::Insets GetTrayBubbleInsets();
 
+// Calculates the height compensations in tablet mode based on whether the
+// hotseat is shown.
+int GetBubbleInsetHotseatCompensation();
+
 // Returns the separation above the shelf for positioning secondary tray
 // bubbles. (Palette Tray, IME Tray).
 gfx::Insets GetSecondaryBubbleInsets();
