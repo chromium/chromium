@@ -31,8 +31,6 @@ class EVENTS_EXPORT InputEventDispatcher {
  private:
   bool ProcessMouseEvent(const fuchsia::ui::input::PointerEvent& event) const;
   bool ProcessTouchEvent(const fuchsia::ui::input::PointerEvent& event) const;
-  bool ProcessKeyboardEvent(
-      const fuchsia::ui::input::KeyboardEvent& event) const;
 
   InputEventSink* event_sink_;
 
