@@ -834,6 +834,13 @@ void Tab::SetData(TabRendererData data) {
     alert_indicator_->TransitionToAlertState(new_alert_state);
   if (old.pinned != data_.pinned)
     showing_alert_indicator_ = false;
+  if (!data_.pinned && old.pinned) {
+    is_animating_from_pinned_ = true;
+    // We must set this to true early, because we don't want to set
+    // |is_animating_from_pinned_| to false if we lay out before the animation
+    // begins.
+    set_animating(true);
+  }
 
   if (new_alert_state != old_alert_state || data_.title != old.title)
     TooltipTextChanged();
@@ -935,12 +942,20 @@ void Tab::UpdateIconVisibility() {
                         : GetAlertStateToShow(data().alert_state))
           .has_value();
 
-  if (data().pinned) {
+  is_animating_from_pinned_ &= animating();
+
+  if (data().pinned || is_animating_from_pinned_) {
     // When the tab is pinned, we can show one of the two icons; the alert icon
     // is given priority over the favicon. The close buton is never shown.
     showing_alert_indicator_ = has_alert_icon;
     showing_icon_ = has_favicon && !has_alert_icon;
     showing_close_button_ = false;
+
+    // While animating to or from the pinned state, pinned tabs are rendered as
+    // normal tabs. Force the extra padding on so the favicon doesn't jitter
+    // left and then back right again as it resizes through layout regimes.
+    extra_padding_before_content_ = true;
+    extra_alert_indicator_padding_ = true;
     return;
   }
 

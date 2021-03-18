@@ -262,6 +262,9 @@ class Tab : public gfx::AnimationDelegate,
   // detect when it changes and layout appropriately.
   bool showing_close_button_ = false;
 
+  // Whether the tab is currently animating from a pinned to an unpinned state.
+  bool is_animating_from_pinned_ = false;
+
   // If there's room, we add additional padding to the left of the favicon to
   // balance the whitespace inside the non-hovered close button image;
   // otherwise, the tab contents look too close to the left edge. Once the tabs
