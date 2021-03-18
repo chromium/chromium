@@ -327,6 +327,11 @@ class CORE_EXPORT LocalFrame final
   void EndPrinting();
   bool ShouldUsePrintingLayout() const;
 
+  // Setup for a Paint Preview of the page which will paint the full page
+  // contents.
+  void StartPaintPreview();
+  void EndPaintPreview();
+
   // Save the current scroll offset of the scrollable area associated with the
   // given node (if not already saved). All saved scroll offsets can be restored
   // via RestoreScrollOffsets() (this will also clear all entries for saved
@@ -797,6 +802,10 @@ class CORE_EXPORT LocalFrame final
   void DisableNavigation() { ++navigation_disable_count_; }
 
   void PropagateInertToChildFrames();
+
+  // Internal implementation for starting and ending paint preview capture.
+  // `capturing` is true when capture starts and false when it ends.
+  void SetInvalidationForCapture(bool capturing);
 
   // Internal implementation for starting or ending printing.
   // |printing| is true when printing starts, false when printing ends.

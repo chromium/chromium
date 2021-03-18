@@ -1748,15 +1748,13 @@ bool WebLocalFrameImpl::CapturePaintPreview(const gfx::Rect& bounds,
   bool success = false;
   {
     Document::PaintPreviewScope paint_preview(*GetFrame()->GetDocument());
-    ResourceCacheValidationSuppressor validation_suppressor(
-        GetFrame()->GetDocument()->Fetcher());
-    GetFrame()->View()->ForceLayoutForPagination(float_bounds, float_bounds, 1);
+    GetFrame()->StartPaintPreview();
     PaintPreviewContext* paint_preview_context =
         MakeGarbageCollected<PaintPreviewContext>(GetFrame());
     success = paint_preview_context->Capture(canvas, float_bounds,
                                              include_linked_destinations);
+    GetFrame()->EndPaintPreview();
   }
-  GetFrame()->EndPrinting();
   return success;
 }
 

@@ -765,18 +765,17 @@ static String FrameDescription(const Frame& frame) {
   // origin instead.
   const LocalFrame* local_frame = DynamicTo<LocalFrame>(&frame);
   return local_frame
-             ? "with URL '" + local_frame->GetDocument()->Url().GetString() + "'"
+             ? "with URL '" + local_frame->GetDocument()->Url().GetString() +
+                   "'"
              : "with origin '" +
-                   frame.GetSecurityContext()
-                       ->GetSecurityOrigin()
-                       ->ToString() +
+                   frame.GetSecurityContext()->GetSecurityOrigin()->ToString() +
                    "'";
 }
 
 void LocalFrame::PrintNavigationErrorMessage(const Frame& target_frame,
                                              const String& reason) {
   String message = "Unsafe attempt to initiate navigation for frame " +
-                   FrameDescription(target_frame)+ " from frame with URL '" +
+                   FrameDescription(target_frame) + " from frame with URL '" +
                    GetDocument()->Url().GetString() + "'. " + reason + "\n";
 
   DomWindow()->PrintErrorMessage(message);
@@ -1229,6 +1228,36 @@ bool LocalFrame::ShouldUsePrintingLayout() const {
   auto* local_parent = DynamicTo<LocalFrame>(parent);
   return local_parent ? !local_parent->GetDocument()->Printing()
                       : Client()->UsePrintingLayout();
+}
+
+void LocalFrame::StartPaintPreview() {
+  SetInvalidationForCapture(true);
+}
+
+void LocalFrame::EndPaintPreview() {
+  SetInvalidationForCapture(false);
+}
+
+void LocalFrame::SetInvalidationForCapture(bool capturing) {
+  if (!capturing)
+    RestoreScrollOffsets();
+
+  ResourceCacheValidationSuppressor validation_suppressor(
+      GetDocument()->Fetcher());
+
+  // Subframes of the captured content should be updated.
+  for (Frame* child = Tree().FirstChild(); child;
+       child = child->Tree().NextSibling()) {
+    if (auto* child_local_frame = DynamicTo<LocalFrame>(child)) {
+      child_local_frame->SetInvalidationForCapture(capturing);
+    }
+  }
+
+  // Trigger a paint property update to ensure the unclipped behavior is
+  // applied to the frame level scroller.
+  if (auto* layout_view = View()->GetLayoutView()) {
+    layout_view->SetNeedsPaintPropertyUpdate();
+  }
 }
 
 void LocalFrame::EnsureSaveScrollOffset(Node& node) {
@@ -2005,7 +2034,6 @@ LocalFrame::LazyLoadImageSetting LocalFrame::GetLazyLoadImageSetting() const {
     return LocalFrame::LazyLoadImageSetting::kEnabledExplicit;
   return LocalFrame::LazyLoadImageSetting::kEnabledAutomatic;
 }
-
 
 WebURLLoaderFactory* LocalFrame::GetURLLoaderFactory() {
   if (!url_loader_factory_)
