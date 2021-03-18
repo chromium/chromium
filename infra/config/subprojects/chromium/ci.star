@@ -848,6 +848,10 @@ ci.android_builder(
         short_name = "M",
     ),
     cq_mirrors_console_view = "mirrors",
+    execution_timeout = branches.value(
+        for_main = 3 * time.hour,
+        for_branches = 4 * time.hour,
+    ),
     main_console_view = main_console_if_on_branch(),
     tree_closing = True,
 )
