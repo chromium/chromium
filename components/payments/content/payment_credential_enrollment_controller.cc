@@ -178,8 +178,8 @@ void PaymentCredentialEnrollmentController::RenderFrameDeleted(
   // Close the dialog if either the initiator frame (which may be an iframe) or
   // main frame was deleted.
   if (render_frame_host == web_contents()->GetMainFrame() ||
-      render_frame_host ==
-          content::RenderFrameHost::FromID(initiator_frame_routing_id_)) {
+      render_frame_host->GetGlobalFrameRoutingId() ==
+          initiator_frame_routing_id_) {
     CloseDialog();
   }
 }

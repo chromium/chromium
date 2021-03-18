@@ -806,8 +806,8 @@ void PaymentRequest::DidStartMainFrameNavigationToDifferentDocument(
 
 void PaymentRequest::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
-  DCHECK_EQ(render_frame_host,
-            content::RenderFrameHost::FromID(initiator_frame_routing_id_));
+  DCHECK_EQ(render_frame_host->GetGlobalFrameRoutingId(),
+            initiator_frame_routing_id_);
   // RenderFrameHost is usually deleted explicitly before PaymentRequest
   // destruction if the user closes the tab or browser window without closing
   // the payment request dialog.
