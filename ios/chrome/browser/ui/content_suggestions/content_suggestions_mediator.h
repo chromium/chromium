@@ -50,7 +50,7 @@ class WebStateList;
 @interface ContentSuggestionsMediator
     : NSObject <ContentSuggestionsDataSource,
                 ContentSuggestionsMetricsRecorderDelegate,
-                StartSurfaceRecentTabRemovalObserving>
+                StartSurfaceRecentTabObserving>
 
 // Initialize the mediator with the |contentService| to mediate.
 - (instancetype)

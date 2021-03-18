@@ -296,6 +296,9 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
       self.returnToRecentTabItem.icon = favicon.ToUIImage();
     }
   }
+  if (!self.returnToRecentTabItem.icon) {
+    driver->FetchFavicon(webState->GetLastCommittedURL(), false);
+  }
 
   self.returnToRecentTabItem.title =
       l10n_util::GetNSString(IDS_IOS_RETURN_TO_RECENT_TAB_TITLE);
@@ -313,11 +316,18 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   [self.dataSink clearSection:self.returnToRecentTabSectionInfo];
 }
 
-#pragma mark - StartSurfaceRecentTabRemovalObserving
+#pragma mark - StartSurfaceRecentTabObserving
 
 - (void)mostRecentTabWasRemoved:(web::WebState*)web_state {
   DCHECK(IsStartSurfaceEnabled());
   [self hideRecentTabTile];
+}
+
+- (void)mostRecentTabFaviconUpdatedWithImage:(UIImage*)image {
+  if (self.returnToRecentTabItem) {
+    self.returnToRecentTabItem.icon = image;
+    [self.dataSink itemHasChanged:self.returnToRecentTabItem];
+  }
 }
 
 #pragma mark - ContentSuggestionsDataSource

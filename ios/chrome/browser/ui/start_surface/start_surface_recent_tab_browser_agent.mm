@@ -18,7 +18,7 @@ BROWSER_USER_DATA_KEY_IMPL(StartSurfaceRecentTabBrowserAgent)
 
 StartSurfaceRecentTabBrowserAgent::StartSurfaceRecentTabBrowserAgent(
     Browser* browser)
-    : browser_(browser) {
+    : favicon_driver_observer_(this), browser_(browser) {
   browser_->AddObserver(this);
   browser_->GetWebStateList()->AddObserver(this);
 }
@@ -30,16 +30,19 @@ StartSurfaceRecentTabBrowserAgent::~StartSurfaceRecentTabBrowserAgent() =
 
 void StartSurfaceRecentTabBrowserAgent::SaveMostRecentTab() {
   most_recent_tab_ = browser_->GetWebStateList()->GetActiveWebState();
+  DCHECK(favicon::WebFaviconDriver::FromWebState(most_recent_tab_));
+  favicon_driver_observer_.Observe(
+      favicon::WebFaviconDriver::FromWebState(most_recent_tab_));
 }
 
 void StartSurfaceRecentTabBrowserAgent::AddObserver(
-    StartSurfaceRecentTabRemovalObserver* observer) {
+    StartSurfaceRecentTabObserver* observer) {
   DCHECK(!observers_.HasObserver(observer));
   observers_.AddObserver(observer);
 }
 
 void StartSurfaceRecentTabBrowserAgent::RemoveObserver(
-    StartSurfaceRecentTabRemovalObserver* observer) {
+    StartSurfaceRecentTabObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
@@ -66,5 +69,21 @@ void StartSurfaceRecentTabBrowserAgent::WebStateDetachedAt(
     }
     most_recent_tab_ = nullptr;
     return;
+  }
+}
+
+void StartSurfaceRecentTabBrowserAgent::OnFaviconUpdated(
+    favicon::FaviconDriver* driver,
+    NotificationIconType notification_icon_type,
+    const GURL& icon_url,
+    bool icon_url_changed,
+    const gfx::Image& image) {
+  if (driver->FaviconIsValid()) {
+    gfx::Image favicon = driver->GetFavicon();
+    if (!favicon.IsEmpty()) {
+      for (auto& observer : observers_) {
+        observer.MostRecentTabFaviconUpdated(image.ToUIImage());
+      }
+    }
   }
 }

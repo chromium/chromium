@@ -8,19 +8,27 @@
 #error "This file requires ARC support."
 #endif
 
-StartSurfaceRecentTabRemovalObserverBridge::
-    StartSurfaceRecentTabRemovalObserverBridge(
-        id<StartSurfaceRecentTabRemovalObserving> delegate)
+StartSurfaceRecentTabObserverBridge::StartSurfaceRecentTabObserverBridge(
+    id<StartSurfaceRecentTabObserving> delegate)
     : delegate_(delegate) {}
 
-StartSurfaceRecentTabRemovalObserverBridge::
-    ~StartSurfaceRecentTabRemovalObserverBridge() = default;
+StartSurfaceRecentTabObserverBridge::~StartSurfaceRecentTabObserverBridge() =
+    default;
 
-void StartSurfaceRecentTabRemovalObserverBridge::MostRecentTabRemoved(
+void StartSurfaceRecentTabObserverBridge::MostRecentTabRemoved(
     web::WebState* web_state) {
   const SEL selector = @selector(mostRecentTabWasRemoved:);
   if (![delegate_ respondsToSelector:selector])
     return;
 
   [delegate_ mostRecentTabWasRemoved:web_state];
+}
+
+void StartSurfaceRecentTabObserverBridge::MostRecentTabFaviconUpdated(
+    UIImage* image) {
+  const SEL selector = @selector(mostRecentTabFaviconUpdatedWithImage:);
+  if (![delegate_ respondsToSelector:selector])
+    return;
+
+  [delegate_ mostRecentTabFaviconUpdatedWithImage:image];
 }

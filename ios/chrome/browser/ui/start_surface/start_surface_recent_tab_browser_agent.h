@@ -6,6 +6,8 @@
 #define IOS_CHROME_BROWSER_UI_START_SURFACE_START_SURFACE_RECENT_TAB_BROWSER_AGENT_H_
 
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
+#include "components/favicon/ios/web_favicon_driver.h"
 #include "ios/chrome/browser/main/browser_observer.h"
 #import "ios/chrome/browser/main/browser_user_data.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
@@ -16,38 +18,42 @@ class WebState;
 
 class Browser;
 
-// Interface for listening to the removal of the most recent tab.
-class StartSurfaceRecentTabRemovalObserver {
+// Interface for listening to updates to the most recent tab.
+class StartSurfaceRecentTabObserver {
  public:
-  StartSurfaceRecentTabRemovalObserver() {}
+  StartSurfaceRecentTabObserver() {}
 
   // Not copyable or moveable.
-  StartSurfaceRecentTabRemovalObserver(
-      const StartSurfaceRecentTabRemovalObserver&) = delete;
-  StartSurfaceRecentTabRemovalObserver& operator=(
-      const StartSurfaceRecentTabRemovalObserver&) = delete;
+  StartSurfaceRecentTabObserver(const StartSurfaceRecentTabObserver&) = delete;
+  StartSurfaceRecentTabObserver& operator=(
+      const StartSurfaceRecentTabObserver&) = delete;
 
   // Notifies the receiver that the most recent tab was removed.
   virtual void MostRecentTabRemoved(web::WebState* web_state) {}
+  // Notifies the receiver that the favicon for the current page of the most
+  // recent tab was updated to |image|.
+  virtual void MostRecentTabFaviconUpdated(UIImage* image) {}
 
  protected:
-  virtual ~StartSurfaceRecentTabRemovalObserver() = default;
+  virtual ~StartSurfaceRecentTabObserver() = default;
 };
 
 // Browser Agent that manages the most recent WebState for the Start Surface and
-// listens to WebStateListObserver for instances of that WebState's removal.
+// listens to WebStateListObserver for instances of that WebState's removal and
+// updates to the current page's favicon for that WebState.
 class StartSurfaceRecentTabBrowserAgent
     : public BrowserUserData<StartSurfaceRecentTabBrowserAgent>,
       BrowserObserver,
-      public WebStateListObserver {
+      public WebStateListObserver,
+      public favicon::FaviconDriverObserver {
  public:
   // Notifies the Browser Agent to save the most recent WebState.
   void SaveMostRecentTab();
   // Returns the most recent WebState.
   web::WebState* most_recent_tab() { return most_recent_tab_; }
   // Add/Remove observers for this Browser Agent.
-  void AddObserver(StartSurfaceRecentTabRemovalObserver* observer);
-  void RemoveObserver(StartSurfaceRecentTabRemovalObserver* observer);
+  void AddObserver(StartSurfaceRecentTabObserver* observer);
+  void RemoveObserver(StartSurfaceRecentTabObserver* observer);
 
   ~StartSurfaceRecentTabBrowserAgent() override;
 
@@ -71,10 +77,20 @@ class StartSurfaceRecentTabBrowserAgent
                           web::WebState* web_state,
                           int index) override;
 
+  // favicon::FaviconDriverObserver
+  void OnFaviconUpdated(favicon::FaviconDriver* driver,
+                        NotificationIconType notification_icon_type,
+                        const GURL& icon_url,
+                        bool icon_url_changed,
+                        const gfx::Image& image) override;
+
   // A list of observers notified when the most recent tab is removed. Weak
   // references.
-  base::ObserverList<StartSurfaceRecentTabRemovalObserver, true>::Unchecked
-      observers_;
+  base::ObserverList<StartSurfaceRecentTabObserver, true>::Unchecked observers_;
+  // Manages observation relationship between |this| and WebFaviconDriver.
+  base::ScopedObservation<favicon::FaviconDriver,
+                          favicon::FaviconDriverObserver>
+      favicon_driver_observer_{this};
   // The most recent tab managed by this Browser Agent.
   web::WebState* most_recent_tab_ = nullptr;
   // Browser.

@@ -13,34 +13,38 @@ namespace web {
 class WebState;
 }  // namespace web
 
-// Protocol that corresponds to StartSurfaceRecentTabRemovalObserver API. Allows
-// registering Objective-C objects to listen to removal of the most recent tab.
-@protocol StartSurfaceRecentTabRemovalObserving <NSObject>
+// Protocol that corresponds to StartSurfaceRecentTabObserver API. Allows
+// registering Objective-C objects to listen to updates to the most recent tab.
+@protocol StartSurfaceRecentTabObserving <NSObject>
 @optional
 // Notifies the receiver that the most recent tab was removed.
 - (void)mostRecentTabWasRemoved:(web::WebState*)web_state;
+// Notifies the receiver that the favicon for the current page of the most
+// recent tab was updated with |image|.
+- (void)mostRecentTabFaviconUpdatedWithImage:(UIImage*)image;
 @end
 
-// Bridge to use an id<StartSurfaceRecentTabRemovalObserving> as a
-// StartSurfaceRecentTabRemovalObserver.
-class StartSurfaceRecentTabRemovalObserverBridge
-    : public StartSurfaceRecentTabRemovalObserver {
+// Bridge to use an id<StartSurfaceRecentTabObserving> as a
+// StartSurfaceRecentTabObserver.
+class StartSurfaceRecentTabObserverBridge
+    : public StartSurfaceRecentTabObserver {
  public:
-  StartSurfaceRecentTabRemovalObserverBridge(
-      id<StartSurfaceRecentTabRemovalObserving> delegate);
-  ~StartSurfaceRecentTabRemovalObserverBridge() override;
+  StartSurfaceRecentTabObserverBridge(
+      id<StartSurfaceRecentTabObserving> delegate);
+  ~StartSurfaceRecentTabObserverBridge() override;
 
   // Not copyable or moveable.
-  StartSurfaceRecentTabRemovalObserverBridge(
-      const StartSurfaceRecentTabRemovalObserverBridge&) = delete;
-  StartSurfaceRecentTabRemovalObserverBridge& operator=(
-      const StartSurfaceRecentTabRemovalObserverBridge&) = delete;
+  StartSurfaceRecentTabObserverBridge(
+      const StartSurfaceRecentTabObserverBridge&) = delete;
+  StartSurfaceRecentTabObserverBridge& operator=(
+      const StartSurfaceRecentTabObserverBridge&) = delete;
 
  private:
   // StartSurfaceBrowserAgentObserver.
   void MostRecentTabRemoved(web::WebState* web_state) override;
+  void MostRecentTabFaviconUpdated(UIImage* image) override;
 
-  __weak id<StartSurfaceRecentTabRemovalObserving> delegate_ = nil;
+  __weak id<StartSurfaceRecentTabObserving> delegate_ = nil;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_START_SURFACE_START_SURFACE_RECENT_TAB_REMOVAL_OBSERVER_BRIDGE_H_

@@ -105,9 +105,8 @@
     ThemeChangeDelegate,
     URLDropDelegate> {
   // Observer bridge for mediator to listen to
-  // StartSurfaceRecentTabRemovalObserverBridge.
-  std::unique_ptr<StartSurfaceRecentTabRemovalObserverBridge>
-      _startSurfaceObserver;
+  // StartSurfaceRecentTabObserverBridge.
+  std::unique_ptr<StartSurfaceRecentTabObserverBridge> _startSurfaceObserver;
 }
 
 @property(nonatomic, strong)
@@ -748,7 +747,7 @@
         configureMostRecentTabItemWithWebState:most_recent_tab];
     if (!_startSurfaceObserver) {
       _startSurfaceObserver =
-          std::make_unique<StartSurfaceRecentTabRemovalObserverBridge>(
+          std::make_unique<StartSurfaceRecentTabObserverBridge>(
               self.contentSuggestionsMediator);
       StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
           ->AddObserver(_startSurfaceObserver.get());
