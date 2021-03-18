@@ -19520,7 +19520,7 @@
         'per_profile': True,
       },
       'supported_on': ['chrome_os:70-'],
-      'caption': '''Contorls Network File Shares for ChromeOS availability''',
+      'caption': '''Controls Network File Shares for ChromeOS availability''',
       'example_value': True,
       'desc': '''Setting the policy to Enabled lets users use Network File Shares for <ph name="PRODUCT_NAME">$2<ex>Google Chrome OS</ex></ph>. Setting the policy to Disabled means users can't use this feature.''',
     },
