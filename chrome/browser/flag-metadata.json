@@ -2050,6 +2050,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-networking-in-diagnostics-app",
+    "owners": [ "//chromeos/components/diagnostics_ui/OWNERS" ],
+    "expiry_milestone": 98
+  },
+  {
     "name": "enable-neural-stylus-palm-rejection",
     "owners": [ "robsc", "napper", "adlr" ],
     // We add a neural net to change how fingers are handled. We set a milestone

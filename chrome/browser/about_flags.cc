@@ -5701,6 +5701,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrintServerScalingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kPrintServerScaling)},
 
+    {"enable-networking-in-diagnostics-app",
+     flag_descriptions::kEnableNetworkingInDiagnosticsAppName,
+     flag_descriptions::kEnableNetworkingInDiagnosticsAppDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kEnableNetworkingInDiagnosticsApp)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"enable-portals", flag_descriptions::kEnablePortalsName,

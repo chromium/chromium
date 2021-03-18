@@ -281,6 +281,10 @@ const base::Feature kEnableHostnameSetting{"EnableHostnameSetting",
 const base::Feature kEnableLocalSearchService{"EnableLocalSearchService",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
+// If enabled, the networking cards will be shown in the diagnostics app.
+const base::Feature kEnableNetworkingInDiagnosticsApp{
+    "EnableNetworkingInDiagnosticsApp", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the OOBE ChromeVox hint dialog and announcement feature.
 const base::Feature kEnableOobeChromeVoxHint{"EnableOobeChromeVoxHint",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
@@ -800,6 +804,10 @@ bool IsLoginDeviceManagementDisclosureEnabled() {
 
 bool IsMinimumChromeVersionEnabled() {
   return base::FeatureList::IsEnabled(kMinimumChromeVersion);
+}
+
+bool IsNetworkingInDiagnosticsAppEnabled() {
+  return base::FeatureList::IsEnabled(kEnableNetworkingInDiagnosticsApp);
 }
 
 bool IsNewOobeLayoutEnabled() {

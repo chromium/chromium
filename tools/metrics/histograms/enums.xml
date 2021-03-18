@@ -47537,6 +47537,7 @@ from previous Chrome versions.
   <int value="1435251818" label="AutofillNoLocalSaveOnUploadSuccess:enabled"/>
   <int value="1436454450" label="InterestFeedV2:disabled"/>
   <int value="1437413720" label="CooperativeScheduling:disabled"/>
+  <int value="1440618113" label="EnableNetworkingInDiagnosticsApp:disabled"/>
   <int value="1441897340" label="AndroidSpellCheckerNonLowEnd:enabled"/>
   <int value="1441978318" label="WifiSyncAndroid:disabled"/>
   <int value="1442129147"
@@ -47584,6 +47585,7 @@ from previous Chrome versions.
   <int value="1478075250" label="QuickAnswersTextAnnotator:disabled"/>
   <int value="1478461926" label="GlobalMediaControlsPictureInPicture:enabled"/>
   <int value="1479248574" label="disable-voice-input"/>
+  <int value="1480507924" label="EnableNetworkingInDiagnosticsApp:enabled"/>
   <int value="1481562816" label="disable-password-link"/>
   <int value="1482039233" label="SearchSuggestionsOnLocalNtp:disabled"/>
   <int value="1482245628" label="OmniboxNativeVoiceSuggestProvider:enabled"/>
