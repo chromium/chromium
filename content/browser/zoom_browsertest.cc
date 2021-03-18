@@ -214,7 +214,8 @@ void WaitAndCheckFrameZoom(
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(ZoomBrowserTest, ZoomPreservedOnReload) {
+// Flaky. crbug.com/1055282
+IN_PROC_BROWSER_TEST_F(ZoomBrowserTest, DISABLED_ZoomPreservedOnReload) {
   std::string top_level_host("a.com");
 
   GURL main_url(embedded_test_server()->GetURL(
