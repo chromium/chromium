@@ -5,6 +5,8 @@
 #include <functional>
 #include <string>
 
+#include <TargetConditionals.h>
+
 #include "base/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
@@ -68,7 +70,13 @@ std::string GetErrorMessage() {
 
 // Tests that the error page is correctly displayed after navigating back to it
 // multiple times. See http://crbug.com/944037 .
-- (void)testBackForwardErrorPage {
+// TODO:(crbug.com/1185639): Re-enable this test on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testBackForwardErrorPage FLAKY_testBackForwardErrorPage
+#else
+#define MAYBE_testBackForwardErrorPage testBackForwardErrorPage
+#endif
+- (void)MAYBE_testBackForwardErrorPage {
   // TODO(crbug.com/1153261): Going back/forward on the same host is failing.
   // Use chrome:// to have a different hosts.
   std::string errorText = net::ErrorToShortString(net::ERR_INVALID_URL);
@@ -103,7 +111,14 @@ std::string GetErrorMessage() {
 
 // Loads the URL which fails to load, then sucessfully navigates back/forward to
 // the page.
-- (void)testNavigateForwardToErrorPage {
+// TODO:(crbug.com/1185639): Re-enable this test on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testNavigateForwardToErrorPage \
+  FLAKY_testNavigateForwardToErrorPage
+#else
+#define MAYBE_testNavigateForwardToErrorPage testNavigateForwardToErrorPage
+#endif
+- (void)MAYBE_testNavigateForwardToErrorPage {
   self.serverRespondsWithContent = YES;
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo-query?bar")];
   [ChromeEarlGrey waitForWebStateContainingText:"bar"];
