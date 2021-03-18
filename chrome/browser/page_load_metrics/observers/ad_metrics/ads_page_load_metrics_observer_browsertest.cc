@@ -1601,8 +1601,16 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
 }
 
 // Verifies that reports are sent to all children.
+// crbug.com/1189635: flaky on win and linux.
+#if defined(OS_LINUX) || defined(OS_WIN)
+#define MAYBE_HeavyAdInterventionFired_ReportsToAllChildren \
+  DISABLED_HeavyAdInterventionFired_ReportsToAllChildren
+#else
+#define MAYBE_HeavyAdInterventionFired_ReportsToAllChildren \
+  HeavyAdInterventionFired_ReportsToAllChildren
+#endif
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
-                       HeavyAdInterventionFired_ReportsToAllChildren) {
+                       MAYBE_HeavyAdInterventionFired_ReportsToAllChildren) {
   SetRulesetWithRules(
       {subresource_filter::testing::CreateSuffixRule("frame_factory.html")});
   base::HistogramTester histogram_tester;
