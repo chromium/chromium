@@ -343,6 +343,8 @@ group("vaapi_fuzzers") {
 executable("decode_test") {
   testonly = true
   sources = [
+    "test/av1_decoder.cc",
+    "test/av1_decoder.h",
     "test/decode.cc",
     "test/macros.h",
     "test/scoped_va_config.cc",
@@ -363,6 +365,7 @@ executable("decode_test") {
     "//media",
     "//media:test_support",
     "//media/gpu:common",
+    "//third_party/libgav1:libgav1",
     "//third_party/libyuv",
     "//ui/gfx/codec:codec",
     "//ui/gfx/geometry",
