@@ -20,6 +20,9 @@ class ASH_EXPORT AppListTestApi {
   AppListTestApi(const AppListTestApi& other) = delete;
   AppListTestApi& operator=(const AppListTestApi& other) = delete;
 
+  // Returns whether there is an item for |app_id|.
+  bool HasApp(const std::string& app_id);
+
   // Returns ids of the items in top level app list view.
   std::vector<std::string> GetTopLevelViewIdList();
 

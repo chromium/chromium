@@ -28,6 +28,15 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/test/app_list_test_api.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ui/app_list/app_list_client_impl.h"
+#include "chrome/browser/ui/app_list/app_list_syncable_service.h"
+#include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
+#endif
+
 namespace web_app {
 
 class ExternalWebAppManagerBrowserTest
@@ -87,7 +96,13 @@ class ExternalWebAppManagerBrowserTest
     ExternalWebAppManager::SetFileUtilsForTesting(&file_utils);
 
     std::vector<base::Value> app_configs;
-    app_configs.push_back(*base::JSONReader::Read(app_config_string));
+    base::JSONReader::ValueWithError json_parse_result =
+        base::JSONReader::ReadAndReturnValueWithError(app_config_string);
+    EXPECT_TRUE(json_parse_result.value)
+        << "JSON parse error: " << json_parse_result.error_message;
+    if (!json_parse_result.value)
+      return base::nullopt;
+    app_configs.push_back(*std::move(json_parse_result.value));
     ExternalWebAppManager::SetConfigsForTesting(&app_configs);
 
     base::Optional<InstallResultCode> code;
@@ -590,6 +605,73 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest, OemInstalled) {
 
   AppId app_id = GenerateAppIdFromURL(GetAppUrl());
   EXPECT_TRUE(registrar().WasInstalledByOem(app_id));
+}
+
+IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
+                       UninstallFromTwoItemAppListFolder) {
+  GURL default_app_start_url("https://example.org/");
+  GURL user_app_start_url("https://test.org/");
+
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile());
+  AppListClientImpl::GetInstance()->UpdateProfile();
+  ash::AppListTestApi app_list_test_api;
+  app_list::AppListSyncableService* app_list_syncable_service =
+      app_list::AppListSyncableServiceFactory::GetForProfile(profile());
+
+  // Install default app.
+  constexpr char kAppConfigTemplate[] =
+      R"({
+        "app_url": "$1",
+        "launch_container": "window",
+        "user_type": ["unmanaged"],
+        "only_use_offline_manifest": true,
+        "offline_manifest": {
+          "name": "Test default app",
+          "display": "standalone",
+          "start_url": "$1",
+          "scope": "$1",
+          "icon_any_pngs": ["icon.png"]
+        }
+      })";
+  std::string app_config = base::ReplaceStringPlaceholders(
+      kAppConfigTemplate, {default_app_start_url.spec()}, nullptr);
+  EXPECT_EQ(SyncDefaultAppConfig(default_app_start_url, app_config),
+            InstallResultCode::kSuccessOfflineOnlyInstall);
+  AppId default_app_id = GenerateAppIdFromURL(default_app_start_url);
+
+  // Install user app.
+  auto web_application_info = std::make_unique<WebApplicationInfo>();
+  web_application_info->start_url = user_app_start_url;
+  web_application_info->title = base::UTF8ToUTF16("Test user app");
+  AppId user_app_id = InstallWebApp(profile(), std::move(web_application_info));
+
+  // Ensure the UI receives these apps.
+  proxy->FlushMojoCallsForTesting();
+
+  // Put apps in app list folder.
+  std::string folder_id =
+      app_list_test_api.CreateFolderWithApps({default_app_id, user_app_id});
+  EXPECT_EQ(app_list_syncable_service->GetSyncItem(default_app_id)->parent_id,
+            folder_id);
+  EXPECT_EQ(app_list_syncable_service->GetSyncItem(user_app_id)->parent_id,
+            folder_id);
+
+  // Uninstall default app.
+  proxy->UninstallSilently(default_app_id, apps::mojom::UninstallSource::kUser);
+
+  // Ensure the UI receives the app uninstall.
+  apps::AppServiceProxyFactory::GetForProfile(profile())
+      ->FlushMojoCallsForTesting();
+
+  // Default app should be removed from local app list but remain in sync list.
+  EXPECT_FALSE(registrar().IsInstalled(default_app_id));
+  EXPECT_TRUE(registrar().IsInstalled(user_app_id));
+  EXPECT_FALSE(app_list_test_api.HasApp(default_app_id));
+  EXPECT_TRUE(app_list_test_api.HasApp(user_app_id));
+  EXPECT_EQ(app_list_syncable_service->GetSyncItem(default_app_id)->parent_id,
+            "");
+  EXPECT_EQ(app_list_syncable_service->GetSyncItem(user_app_id)->parent_id, "");
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
