@@ -315,6 +315,9 @@ class ProfileManager : public content::NotificationObserver,
     std::unique_ptr<Profile> profile;
     // Strong references to this Profile once it's been created (e.g. a Browser
     // object, a BackgroundModeManager, ...)
+    //
+    // Initially contains a kWaitingForFirstBrowserWindow entry, which gets
+    // removed when a kBrowserWindow keepalive is added.
     std::map<ProfileKeepAliveOrigin, int> keep_alives;
     // Whether profile has been fully loaded (created and initialized).
     bool created;
@@ -327,6 +330,14 @@ class ProfileManager : public content::NotificationObserver,
   // off-the-record profile)
   void AddKeepAlive(const Profile* profile, ProfileKeepAliveOrigin origin);
   void RemoveKeepAlive(const Profile* profile, ProfileKeepAliveOrigin origin);
+
+  // Removes the kWaitingForFirstBrowserWindow keepalive. This allows a Profile*
+  // to be deleted from now on, even if it never had a visible browser window.
+  void ClearFirstBrowserWindowKeepAlive(const Profile* profile);
+
+  // Helper for RemoveKeepAlive() and ClearFirstBrowserWindowFlag(). If the
+  // refcount to this Profile is zero, calls RemoveKeepAlive().
+  void DeleteProfileIfNoKeepAlive(const ProfileInfo* info);
 
   // Does final initial actions.
   void DoFinalInit(ProfileInfo* profile_info, bool go_off_the_record);

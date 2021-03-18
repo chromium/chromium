@@ -41,8 +41,8 @@ enum class ProfileKeepAliveOrigin {
   // "launches" Chrome again.
   kAppControllerMac = 5,
 
-  // In the middle of clearing browsing data during browsing exit, for the
-  // ClearBrowsingDataOnExistList policy.
+  // In the middle of clearing browsing data, e.g. when the user deletes it via
+  // the Profile menu, or during ephemeral profile teardown.
   kClearingBrowsingData = 6,
 
   // An app (Chrome app, web app, etc.) has a window open.
