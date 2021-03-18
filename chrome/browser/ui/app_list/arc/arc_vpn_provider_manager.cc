@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/app_list/arc/arc_vpn_provider_manager.h"
 
+#include "base/check.h"
 #include "chrome/browser/ui/app_list/arc/arc_vpn_provider_manager_factory.h"
 
 namespace app_list {
@@ -160,7 +161,7 @@ ArcVpnProviderManager::ArcVpnProvider::ArcVpnProvider(
 ArcVpnProviderManager::ArcVpnProvider::~ArcVpnProvider() = default;
 
 ArcVpnProviderManager::Observer::~Observer() {
-  // TODO(jamescook): Add CHECK(!IsInObserverList()).
+  CHECK(!IsInObserverList());
 }
 
 }  // namespace app_list

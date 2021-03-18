@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -230,7 +231,7 @@ AppListSyncableService::SyncItem::~SyncItem() = default;
 // AppListSyncableService::Observer
 
 AppListSyncableService::Observer::~Observer() {
-  // TODO(jamescook): Add CHECK(!IsInObserverList()).
+  CHECK(!IsInObserverList());
 }
 
 // AppListSyncableService::ModelUpdaterObserver

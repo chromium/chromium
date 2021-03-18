@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/app_list/app_sync_ui_state_observer.h"
 
+#include "base/check.h"
+
 AppSyncUIStateObserver::~AppSyncUIStateObserver() {
-  // TODO(jamescook): Add CHECK(!IsInObserverList()).
+  CHECK(!IsInObserverList());
 }

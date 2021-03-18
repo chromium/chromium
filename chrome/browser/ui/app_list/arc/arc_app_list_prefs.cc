@@ -13,6 +13,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/ash_features.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
@@ -2126,5 +2127,5 @@ ArcAppListPrefs::PackageInfo::PackageInfo(
 ArcAppListPrefs::PackageInfo::~PackageInfo() = default;
 
 ArcAppListPrefs::Observer::~Observer() {
-  // TODO(jamescook): Add CHECK(!IsInObserverList()).
+  CHECK(!IsInObserverList());
 }
