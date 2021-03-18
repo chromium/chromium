@@ -473,6 +473,15 @@ CommandSource::CommandResults TabCommandSource::GetCommands(
     }
   }
 
+  if (chrome::CanMoveActiveTabToReadLater(browser)) {
+    if (auto item = ItemForTitle(u"Add to Read Later", finder, &ranges)) {
+      item->command =
+          base::BindOnce(IgnoreResult(&chrome::MoveCurrentTabToReadLater),
+                         base::Unretained(browser));
+      results.push_back((std::move(item)));
+    }
+  }
+
   return results;
 }
 
