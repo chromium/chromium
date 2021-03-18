@@ -144,6 +144,9 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegateBase {
   bool IsOrderedSet() const override;
   base::Optional<int> GetPosInSet() const override;
   base::Optional<int> GetSetSize() const override;
+  SkColor GetColor() const override;
+  SkColor GetBackgroundColor() const override;
+
   const std::vector<gfx::NativeViewAccessible> GetUIADescendants()
       const override;
   gfx::RectF GetLocation() const;

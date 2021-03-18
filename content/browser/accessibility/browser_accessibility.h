@@ -511,6 +511,8 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   bool IsOrderedSet() const override;
   base::Optional<int> GetPosInSet() const override;
   base::Optional<int> GetSetSize() const override;
+  SkColor GetColor() const override;
+  SkColor GetBackgroundColor() const override;
 
   // Returns true if this node is a list marker or if it's a descendant
   // of a list marker node. Returns false otherwise.

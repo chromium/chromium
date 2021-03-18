@@ -534,6 +534,14 @@ base::Optional<int> AXPlatformNodeDelegateBase::GetSetSize() const {
   return base::nullopt;
 }
 
+SkColor AXPlatformNodeDelegateBase::GetColor() const {
+  return SK_ColorBLACK;
+}
+
+SkColor AXPlatformNodeDelegateBase::GetBackgroundColor() const {
+  return SK_ColorWHITE;
+}
+
 bool AXPlatformNodeDelegateBase::AccessibilityPerformAction(
     const ui::AXActionData& data) {
   return false;

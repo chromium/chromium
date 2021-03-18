@@ -59,6 +59,13 @@ base::Optional<std::string> GetStringAttribute(
   return base::nullopt;
 }
 
+std::string FormatColor(int argb) {
+  // Don't output the alpha component; only the red, green and blue
+  // actually matter.
+  int rgb = (static_cast<uint32_t>(argb) & 0xffffff);
+  return base::StringPrintf("%06x", rgb);
+}
+
 std::string IntAttrToString(const ui::AXNode& node,
                             ax::mojom::IntAttribute attr,
                             int32_t value) {
@@ -129,6 +136,10 @@ std::string IntAttrToString(const ui::AXNode& node,
       return ui::ToString(static_cast<ax::mojom::TextPosition>(value));
     case ax::mojom::IntAttribute::kImageAnnotationStatus:
       return ui::ToString(static_cast<ax::mojom::ImageAnnotationStatus>(value));
+    case ax::mojom::IntAttribute::kBackgroundColor:
+      return FormatColor(node.ComputeBackgroundColor());
+    case ax::mojom::IntAttribute::kColor:
+      return FormatColor(node.ComputeColor());
     // No pretty printing necessary for these:
     case ax::mojom::IntAttribute::kActivedescendantId:
     case ax::mojom::IntAttribute::kAriaCellColumnIndex:
@@ -137,8 +148,6 @@ std::string IntAttrToString(const ui::AXNode& node,
     case ax::mojom::IntAttribute::kAriaCellColumnSpan:
     case ax::mojom::IntAttribute::kAriaCellRowSpan:
     case ax::mojom::IntAttribute::kAriaRowCount:
-    case ax::mojom::IntAttribute::kBackgroundColor:
-    case ax::mojom::IntAttribute::kColor:
     case ax::mojom::IntAttribute::kColorValue:
     case ax::mojom::IntAttribute::kDOMNodeId:
     case ax::mojom::IntAttribute::kErrormessageId:

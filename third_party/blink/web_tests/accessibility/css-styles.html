@@ -34,24 +34,20 @@
 
             if (window.accessibilityController) {
                 var axHeading = accessibilityController.accessibleElementById("h1");
-                shouldBeEqualToNumber("axHeading.backgroundColor", 0xff000000);  // Black
                 shouldBeEqualToNumber("axHeading.color", 0xff0000);  // Red
                 shouldBeEqualToNumber("axHeading.fontSize", 12);
 
                 var axParagraph = accessibilityController.accessibleElementById("p");
-                shouldBeEqualToNumber("axParagraph.backgroundColor", 0xff000000);  // Black
                 // 0xff00 is called "lime" in CSS.
                 shouldBeEqualToNumber("axParagraph.color", 0xff00);
                 shouldBeEqualToNumber("axParagraph.fontSize", 14);
 
                 var axButton = accessibilityController.accessibleElementById("button");
                 // Button's background is not transparent, so alpha value is included.
-                shouldBeEqualToNumber("axButton.backgroundColor", 0xffff0000);  // Red
                 shouldBeEqualToNumber("axButton.color", 0xff);  // Blue
                 shouldBeEqualToNumber("axButton.fontSize", 16);
 
                 var axText = accessibilityController.accessibleElementById("text");
-                shouldBeEqualToNumber("axText.backgroundColor", 0xffff0000);  // Red
                 shouldBeEqualToNumber("axText.color", 0xff);  // Blue
                 shouldBeEqualToNumber("axText.fontSize", 16);
             }

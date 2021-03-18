@@ -130,8 +130,8 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   // Properties of static elements.
   const AtomicString& AccessKey() const override;
   RGBA32 ColorValue() const final;
-  RGBA32 ComputeBackgroundColor() const final;
   RGBA32 GetColor() const final;
+  RGBA32 BackgroundColor() const override;
   String FontFamily() const final;
   // Font size is in pixels.
   float FontSize() const final;

@@ -260,6 +260,10 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
   base::Optional<int> GetPosInSet() const override;
   base::Optional<int> GetSetSize() const override;
 
+  // Computed colors, taking blending into account.
+  SkColor GetColor() const override;
+  SkColor GetBackgroundColor() const override;
+
   //
   // Events.
   //

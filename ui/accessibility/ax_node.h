@@ -15,6 +15,7 @@
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -202,6 +203,13 @@ class AX_EXPORT AXNode final {
   // Gets the text offsets where new lines start either from the node's data or
   // by computing them and caching the result.
   std::vector<int> GetOrComputeLineStartOffsets();
+
+  // If the color is transparent, blends with the ancestor's color.
+  // Note that this is imperfect; it won't work if a node is absolute-
+  // positioned outside of its ancestor. However, it handles the most
+  // common cases.
+  SkColor ComputeColor() const;
+  SkColor ComputeBackgroundColor() const;
 
   // Accessing accessibility attributes.
   // See |AXNodeData| for more information.
@@ -557,6 +565,10 @@ class AX_EXPORT AXNode final {
   // minimize cross-process communication between the renderer and the browser
   // processes.
   std::string GetValueForTextField() const;
+
+  // Compute the actual value of a color attribute that needs to be
+  // blended with ancestor colors.
+  SkColor ComputeColorAttribute(ax::mojom::IntAttribute color_attr) const;
 
   OwnerTree* const tree_;  // Owns this.
   size_t index_in_parent_;

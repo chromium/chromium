@@ -3783,8 +3783,8 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
                             2);
   text_data.AddIntAttribute(ax::mojom::IntAttribute::kTextUnderlineStyle, 3);
   text_data.AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
-                            0xDEADBEEFU);
-  text_data.AddIntAttribute(ax::mojom::IntAttribute::kColor, 0xDEADC0DEU);
+                            0xFFADBEEFU);
+  text_data.AddIntAttribute(ax::mojom::IntAttribute::kColor, 0xFFADC0DEU);
   text_data.AddStringAttribute(ax::mojom::StringAttribute::kLanguage, "fr-CA");
   text_data.SetTextDirection(ax::mojom::WritingDirection::kRtl);
   text_data.AddTextStyle(ax::mojom::TextStyle::kItalic);
@@ -3805,8 +3805,8 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   heading_data.role = ax::mojom::Role::kHeading;
   heading_data.AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel, 6);
   heading_data.AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
-                               0xDEADBEEFU);
-  heading_data.AddIntAttribute(ax::mojom::IntAttribute::kColor, 0xDEADC0DEU);
+                               0xFFADBEEFU);
+  heading_data.AddIntAttribute(ax::mojom::IntAttribute::kColor, 0xFFADC0DEU);
   heading_data.SetTextDirection(ax::mojom::WritingDirection::kRtl);
   heading_data.SetTextPosition(ax::mojom::TextPosition::kSuperscript);
   heading_data.AddState(ax::mojom::State::kEditable);
@@ -3817,9 +3817,9 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   heading_text_data.role = ax::mojom::Role::kStaticText;
   heading_text_data.AddState(ax::mojom::State::kInvisible);
   heading_text_data.AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
-                                    0xDEADBEEFU);
+                                    0xFFADBEEFU);
   heading_text_data.AddIntAttribute(ax::mojom::IntAttribute::kColor,
-                                    0xDEADC0DEU);
+                                    0xFFADC0DEU);
   heading_text_data.SetTextDirection(ax::mojom::WritingDirection::kRtl);
   heading_text_data.SetTextPosition(ax::mojom::TextPosition::kSuperscript);
   heading_text_data.AddState(ax::mojom::State::kEditable);
@@ -3837,8 +3837,8 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   mark_data.id = 5;
   mark_data.role = ax::mojom::Role::kMark;
   mark_data.AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
-                            0xDEADBEEFU);
-  mark_data.AddIntAttribute(ax::mojom::IntAttribute::kColor, 0xDEADC0DEU);
+                            0xFFADBEEFU);
+  mark_data.AddIntAttribute(ax::mojom::IntAttribute::kColor, 0xFFADC0DEU);
   mark_data.SetTextDirection(ax::mojom::WritingDirection::kRtl);
   mark_data.child_ids = {6};
 
@@ -3846,8 +3846,8 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   mark_text_data.id = 6;
   mark_text_data.role = ax::mojom::Role::kStaticText;
   mark_text_data.AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
-                                 0xDEADBEEFU);
-  mark_text_data.AddIntAttribute(ax::mojom::IntAttribute::kColor, 0xDEADC0DEU);
+                                 0xFFADBEEFU);
+  mark_text_data.AddIntAttribute(ax::mojom::IntAttribute::kColor, 0xFFADC0DEU);
   mark_text_data.SetTextDirection(ax::mojom::WritingDirection::kRtl);
   mark_text_data.SetTextAlign(ax::mojom::TextAlign::kNone);
   mark_text_data.SetName("marked text");
@@ -3857,8 +3857,8 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   list_data.role = ax::mojom::Role::kList;
   list_data.child_ids = {8, 10};
   list_data.AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
-                            0xDEADBEEFU);
-  list_data.AddIntAttribute(ax::mojom::IntAttribute::kColor, 0xDEADC0DEU);
+                            0xFFADBEEFU);
+  list_data.AddIntAttribute(ax::mojom::IntAttribute::kColor, 0xFFADC0DEU);
 
   ui::AXNodeData list_item_data;
   list_item_data.id = 8;
@@ -3868,16 +3868,16 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
       ax::mojom::IntAttribute::kListStyle,
       static_cast<int>(ax::mojom::ListStyle::kOther));
   list_item_data.AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
-                                 0xDEADBEEFU);
-  list_item_data.AddIntAttribute(ax::mojom::IntAttribute::kColor, 0xDEADC0DEU);
+                                 0xFFADBEEFU);
+  list_item_data.AddIntAttribute(ax::mojom::IntAttribute::kColor, 0xFFADC0DEU);
 
   ui::AXNodeData list_item_text_data;
   list_item_text_data.id = 9;
   list_item_text_data.role = ax::mojom::Role::kStaticText;
   list_item_text_data.AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
-                                      0xDEADBEEFU);
+                                      0xFFADBEEFU);
   list_item_text_data.AddIntAttribute(ax::mojom::IntAttribute::kColor,
-                                      0xDEADC0DEU);
+                                      0xFFADC0DEU);
   list_item_text_data.SetName("list item");
 
   ui::AXNodeData list_item2_data;
@@ -3888,16 +3888,16 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
       ax::mojom::IntAttribute::kListStyle,
       static_cast<int>(ax::mojom::ListStyle::kDisc));
   list_item2_data.AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
-                                  0xDEADBEEFU);
-  list_item2_data.AddIntAttribute(ax::mojom::IntAttribute::kColor, 0xDEADC0DEU);
+                                  0xFFADBEEFU);
+  list_item2_data.AddIntAttribute(ax::mojom::IntAttribute::kColor, 0xFFADC0DEU);
 
   ui::AXNodeData list_item2_text_data;
   list_item2_text_data.id = 11;
   list_item2_text_data.role = ax::mojom::Role::kStaticText;
   list_item2_text_data.AddIntAttribute(
-      ax::mojom::IntAttribute::kBackgroundColor, 0xDEADBEEFU);
+      ax::mojom::IntAttribute::kBackgroundColor, 0xFFADBEEFU);
   list_item2_text_data.AddIntAttribute(ax::mojom::IntAttribute::kColor,
-                                       0xDEADC0DEU);
+                                       0xFFADC0DEU);
   list_item2_text_data.SetName("list item 2");
 
   ui::AXNodeData input_text_data;
@@ -3910,8 +3910,8 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   input_text_data.AddStringAttribute(ax::mojom::StringAttribute::kPlaceholder,
                                      "placeholder2");
   input_text_data.AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
-                                  0xDEADBEEFU);
-  input_text_data.AddIntAttribute(ax::mojom::IntAttribute::kColor, 0xDEADC0DEU);
+                                  0xFFADBEEFU);
+  input_text_data.AddIntAttribute(ax::mojom::IntAttribute::kColor, 0xFFADC0DEU);
   input_text_data.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot,
                                    true);
   input_text_data.SetName("placeholder");
@@ -3921,9 +3921,9 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   placeholder_text_data.id = 13;
   placeholder_text_data.role = ax::mojom::Role::kStaticText;
   placeholder_text_data.AddIntAttribute(
-      ax::mojom::IntAttribute::kBackgroundColor, 0xDEADBEEFU);
+      ax::mojom::IntAttribute::kBackgroundColor, 0xFFADBEEFU);
   placeholder_text_data.AddIntAttribute(ax::mojom::IntAttribute::kColor,
-                                        0xDEADC0DEU);
+                                        0xFFADC0DEU);
   placeholder_text_data.SetName("placeholder");
 
   ui::AXNodeData input_text_data2;
@@ -3933,9 +3933,9 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   input_text_data2.AddStringAttribute(ax::mojom::StringAttribute::kPlaceholder,
                                       "placeholder2");
   input_text_data2.AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
-                                   0xDEADBEEFU);
+                                   0xFFADBEEFU);
   input_text_data2.AddIntAttribute(ax::mojom::IntAttribute::kColor,
-                                   0xDEADC0DEU);
+                                   0xFFADC0DEU);
   input_text_data2.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot,
                                     true);
   input_text_data2.SetName("foo");
@@ -3945,24 +3945,24 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   placeholder_text_data2.id = 15;
   placeholder_text_data2.role = ax::mojom::Role::kStaticText;
   placeholder_text_data2.AddIntAttribute(
-      ax::mojom::IntAttribute::kBackgroundColor, 0xDEADBEEFU);
+      ax::mojom::IntAttribute::kBackgroundColor, 0xFFADBEEFU);
   placeholder_text_data2.AddIntAttribute(ax::mojom::IntAttribute::kColor,
-                                         0xDEADC0DEU);
+                                         0xFFADC0DEU);
   placeholder_text_data2.SetName("placeholder2");
 
   ui::AXNodeData link_data;
   link_data.id = 16;
   link_data.role = ax::mojom::Role::kLink;
   link_data.AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
-                            0xDEADBEEFU);
-  link_data.AddIntAttribute(ax::mojom::IntAttribute::kColor, 0xDEADC0DEU);
+                            0xFFADBEEFU);
+  link_data.AddIntAttribute(ax::mojom::IntAttribute::kColor, 0xFFADC0DEU);
 
   ui::AXNodeData link_text_data;
   link_text_data.id = 17;
   link_text_data.role = ax::mojom::Role::kStaticText;
   link_text_data.AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
-                                 0xDEADBEEFU);
-  link_text_data.AddIntAttribute(ax::mojom::IntAttribute::kColor, 0xDEADC0DEU);
+                                 0xFFADBEEFU);
+  link_text_data.AddIntAttribute(ax::mojom::IntAttribute::kColor, 0xFFADC0DEU);
   link_data.child_ids = {17};
 
   ui::AXNodeData root_data;
@@ -4435,12 +4435,12 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   initial_state.nodes[3].role = ax::mojom::Role::kStaticText;
   initial_state.nodes[3].SetName("some text");
   initial_state.nodes[3].AddIntAttribute(
-      ax::mojom::IntAttribute::kBackgroundColor, 0xDEADBEEFU);
+      ax::mojom::IntAttribute::kBackgroundColor, 0xFFADBEEFU);
   initial_state.nodes[4].id = 5;
   initial_state.nodes[4].role = ax::mojom::Role::kStaticText;
   initial_state.nodes[4].SetName("more text");
   initial_state.nodes[4].AddIntAttribute(
-      ax::mojom::IntAttribute::kBackgroundColor, 0xDEADBEEFU);
+      ax::mojom::IntAttribute::kBackgroundColor, 0xFFADBEEFU);
 
   Init(initial_state);
 

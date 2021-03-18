@@ -1,0 +1,22 @@
+rootWebArea backgroundColor=ffffff color=000000
+++genericContainer ignored backgroundColor=ffffff color=000000
+++++genericContainer ignored backgroundColor=ffffff color=000000
+++++++genericContainer backgroundColor=ffffff color=000000
+++++++++staticText name='Document base color.' backgroundColor=ffffff color=000000
+++++++++++inlineTextBox name='Document base color.' backgroundColor=ffffff color=000000
+++++++genericContainer ignored backgroundColor=0000ff color=000000
+++++++++paragraph backgroundColor=0000ff color=000000
+++++++++++staticText name='Transparent color.' backgroundColor=0000ff color=000000
+++++++++++++inlineTextBox name='Transparent color.' backgroundColor=0000ff color=000000
+++++++genericContainer ignored backgroundColor=0000ff color=000000
+++++++++genericContainer ignored backgroundColor=008000 color=000000
+++++++++++paragraph backgroundColor=008000 color=000000
+++++++++++++staticText name='Obscuring background.' backgroundColor=008000 color=000000
+++++++++++++++inlineTextBox name='Obscuring background.' backgroundColor=008000 color=000000
+++++++paragraph backgroundColor=bfbfbf color=000000
+++++++++staticText name='Blended with document base color.' backgroundColor=9f9f9f color=000000
+++++++++++inlineTextBox name='Blended with document base color.' backgroundColor=9f9f9f color=000000
+++++++genericContainer ignored backgroundColor=bfbfbf color=000000
+++++++++paragraph backgroundColor=9f9f9f color=000000
+++++++++++staticText name='Blended with background color.' backgroundColor=8f8f8f color=000000
+++++++++++++inlineTextBox name='Blended with background color.' backgroundColor=8f8f8f color=000000

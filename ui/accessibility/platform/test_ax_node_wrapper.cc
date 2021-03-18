@@ -899,6 +899,14 @@ base::Optional<int> TestAXNodeWrapper::GetSetSize() const {
   return node_->GetSetSize();
 }
 
+SkColor TestAXNodeWrapper::GetColor() const {
+  return node_->ComputeColor();
+}
+
+SkColor TestAXNodeWrapper::GetBackgroundColor() const {
+  return node_->ComputeBackgroundColor();
+}
+
 gfx::RectF TestAXNodeWrapper::GetLocation() const {
   return GetData().relative_bounds.bounds;
 }

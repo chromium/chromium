@@ -2,16 +2,12 @@ This test ensures that various style attributes can be retrieved via the accessi
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-PASS axHeading.backgroundColor is 4278190080
 PASS axHeading.color is 16711680
 PASS axHeading.fontSize is 12
-PASS axParagraph.backgroundColor is 4278190080
 PASS axParagraph.color is 65280
 PASS axParagraph.fontSize is 14
-PASS axButton.backgroundColor is 4294901760
 PASS axButton.color is 255
 PASS axButton.fontSize is 16
-PASS axText.backgroundColor is 4294901760
 PASS axText.color is 255
 PASS axText.fontSize is 16
 PASS successfullyParsed is true
