@@ -607,9 +607,6 @@ const base::Feature kReleaseNotesSuggestionChip{
 const base::Feature kScanAppMediaLink{"ScanAppMediaLink",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables or disables a scanning UI on Chrome OS.
-const base::Feature kScanningUI{"ScanningUI", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables or disables long kill timeout for session manager daemon. When
 // enabled, session manager daemon waits for a longer time (e.g. 12s) for chrome
 // to exit before sending SIGABRT. Otherwise, it uses the default time out

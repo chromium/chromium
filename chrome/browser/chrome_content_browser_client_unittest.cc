@@ -16,7 +16,6 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
@@ -64,8 +63,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/policy/policy_cert_service.h"
 #include "chrome/browser/chromeos/policy/policy_cert_service_factory.h"
@@ -466,13 +463,9 @@ class ChromeContentSettingsRedirectTest
     : public ChromeContentBrowserClientTest {
  public:
   ChromeContentSettingsRedirectTest()
-      : testing_local_state_(TestingBrowserProcess::GetGlobal()) {
-    scoped_feature_list_.InitWithFeatures({chromeos::features::kScanningUI},
-                                          {});
-  }
+      : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   ScopedTestingLocalState testing_local_state_;
 };
 

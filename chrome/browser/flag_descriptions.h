@@ -2733,9 +2733,6 @@ extern const char kScalableStatusAreaDescription[];
 extern const char kScanAppMediaLinkName[];
 extern const char kScanAppMediaLinkDescription[];
 
-extern const char kScanningUIName[];
-extern const char kScanningUIDescription[];
-
 extern const char kSchedulerConfigurationName[];
 extern const char kSchedulerConfigurationDescription[];
 extern const char kSchedulerConfigurationConservative[];

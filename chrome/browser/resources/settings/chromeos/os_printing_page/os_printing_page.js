@@ -34,14 +34,6 @@ Polymer({
       },
     },
 
-    /** @private */
-    isScanningAppEnabled_: {
-      type: Boolean,
-      value: function() {
-        return loadTimeData.getBoolean('scanningAppEnabled');
-      }
-    },
-
     /**
      * Used by DeepLinkingBehavior to focus this page's deep links.
      * @type {!Set<!chromeos.settings.mojom.Setting>}
@@ -81,7 +73,6 @@ Polymer({
 
   /** @private */
   onOpenScanningApp_() {
-    assert(this.isScanningAppEnabled_);
     settings.CupsPrintersBrowserProxyImpl.getInstance().openScanningApp();
     settings.recordSettingChange(chromeos.settings.mojom.Setting.kScanningApp);
   }

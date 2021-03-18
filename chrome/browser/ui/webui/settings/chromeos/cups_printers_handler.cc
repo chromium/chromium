@@ -7,7 +7,6 @@
 #include <set>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
@@ -347,12 +346,10 @@ void CupsPrintersHandler::RegisterMessages() {
       "openPrintManagementApp",
       base::BindRepeating(&CupsPrintersHandler::HandleOpenPrintManagementApp,
                           base::Unretained(this)));
-  if (base::FeatureList::IsEnabled(chromeos::features::kScanningUI)) {
-    web_ui()->RegisterMessageCallback(
-        "openScanningApp",
-        base::BindRepeating(&CupsPrintersHandler::HandleOpenScanningApp,
-                            base::Unretained(this)));
-  }
+  web_ui()->RegisterMessageCallback(
+      "openScanningApp",
+      base::BindRepeating(&CupsPrintersHandler::HandleOpenScanningApp,
+                          base::Unretained(this)));
 }
 
 void CupsPrintersHandler::OnJavascriptAllowed() {
@@ -1295,7 +1292,6 @@ void CupsPrintersHandler::HandleOpenPrintManagementApp(
 
 void CupsPrintersHandler::HandleOpenScanningApp(const base::ListValue* args) {
   DCHECK(args->empty());
-  DCHECK(base::FeatureList::IsEnabled(chromeos::features::kScanningUI));
   chrome::ShowScanningApp(profile_);
 }
 

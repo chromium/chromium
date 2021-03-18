@@ -4533,11 +4533,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "scanning-ui",
-    "owners": [ "jschettler", "bmgordon" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "scheduler-configuration",
     "owners": [ "kerrnel", "mnissler" ],
     // This flag never expires because some users need to override CPU security

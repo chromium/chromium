@@ -773,10 +773,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
   if (url.host_piece() == chromeos::kChromeUIPrintManagementHost)
     return &NewWebUI<chromeos::printing::printing_manager::PrintManagementUI>;
-  if (base::FeatureList::IsEnabled(chromeos::features::kScanningUI) &&
-      url.host_piece() == chromeos::kChromeUIScanningAppHost) {
+  if (url.host_piece() == chromeos::kChromeUIScanningAppHost)
     return &NewWebUI<chromeos::ScanningUI>;
-  }
   if (base::FeatureList::IsEnabled(chromeos::features::kMediaApp)) {
     if (url.host_piece() == chromeos::kChromeUIMediaAppHost)
       return &NewComponentUI<chromeos::MediaAppUI, ChromeMediaAppUIDelegate>;

@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/printing_section.h"
 
-#include "ash/constants/ash_features.h"
-#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ui/webui/settings/chromeos/cups_printers_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
@@ -80,10 +78,6 @@ const std::vector<SearchConcept>& GetScanningAppSearchConcepts() {
   return *tags;
 }
 
-bool IsScanningAppEnabled() {
-  return base::FeatureList::IsEnabled(chromeos::features::kScanningUI);
-}
-
 }  // namespace
 
 PrintingSection::PrintingSection(Profile* profile,
@@ -94,9 +88,7 @@ PrintingSection::PrintingSection(Profile* profile,
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetPrintingSearchConcepts());
   updater.AddSearchTags(GetPrintingManagementSearchConcepts());
-
-  if (IsScanningAppEnabled())
-    updater.AddSearchTags(GetScanningAppSearchConcepts());
+  updater.AddSearchTags(GetScanningAppSearchConcepts());
 
   // Saved Printers search tags are added/removed dynamically.
   if (printers_manager_) {
@@ -265,7 +257,6 @@ void PrintingSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddString(
       "printingCUPSPrintPpdLearnMoreUrl",
       GetHelpUrlWithBoard(chrome::kCupsPrintPPDLearnMoreURL));
-  html_source->AddBoolean("scanningAppEnabled", IsScanningAppEnabled());
 }
 
 void PrintingSection::AddHandlers(content::WebUI* web_ui) {

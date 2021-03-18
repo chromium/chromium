@@ -381,7 +381,7 @@ bool SystemWebAppManager::IsAppEnabled(SystemAppType type) {
     case SystemAppType::PRINT_MANAGEMENT:
       return true;
     case SystemAppType::SCANNING:
-      return base::FeatureList::IsEnabled(chromeos::features::kScanningUI);
+      return true;
     case SystemAppType::DIAGNOSTICS:
       return base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp);
     case SystemAppType::CONNECTIVITY_DIAGNOSTICS:

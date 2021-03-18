@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
 #include "chrome/browser/chromeos/policy/system_features_disable_list_policy_handler.h"
@@ -21,16 +19,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-class ScanningAppIntegrationTest : public SystemWebAppIntegrationTest {
- public:
-  ScanningAppIntegrationTest() {
-    scoped_feature_list_.InitWithFeatures({chromeos::features::kScanningUI},
-                                          {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using ScanningAppIntegrationTest = SystemWebAppIntegrationTest;
 
 // Test that the Scanning App installs and launches correctly by running some
 // spot checks on the manifest.
