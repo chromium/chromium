@@ -33,10 +33,7 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
 
 // Adds a color mixer to |provider| that combine the above color sets with
 // recipes as necessary to produce all colors needed by ui/.
-COMPONENT_EXPORT(COLOR)
-void AddUiColorMixer(ColorProvider* provider,
-                     bool dark_window,
-                     bool high_contrast);
+COMPONENT_EXPORT(COLOR) void AddUiColorMixer(ColorProvider* provider);
 
 // Adds a color mixer to |provider| that can add to kColorSetNative.
 // Intended for colors needed by ui/ that this platform overrides but

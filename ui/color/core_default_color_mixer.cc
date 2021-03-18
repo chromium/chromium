@@ -68,14 +68,8 @@ void AddCoreDefaultColorMixer(ColorProvider* provider,
                           : AddMixerForLightMode(provider, high_contrast);
   mixer[kColorDisabledForeground] = BlendForMinContrast(
       gfx::kGoogleGrey600, kColorPrimaryBackground, kColorPrimaryForeground);
-  mixer[kColorEndpointBackground] =
-      GetColorWithMaxContrast(kColorEndpointForeground);
-  mixer[kColorEndpointForeground] =
-      GetColorWithMaxContrast(kColorPrimaryBackground);
   mixer[kColorItemSelectionBackground] =
       BlendForMinContrastWithSelf(kColorPrimaryBackground, 1.67f);
-  mixer[kColorSubtleAccent] = AlphaBlend(kColorAccent, kColorPrimaryBackground,
-                                         gfx::kGoogleGreyAlpha400);
   mixer[kColorSubtleEmphasisBackground] =
       BlendTowardMaxContrast(kColorPrimaryBackground, gfx::kGoogleGreyAlpha100);
   mixer[kColorTextSelectionForeground] =

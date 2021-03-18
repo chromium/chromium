@@ -60,7 +60,7 @@ ColorProviderManager& ColorProviderManager::Get() {
               contrast_mode == ColorProviderManager::ContrastMode::kHigh;
           ui::AddCoreDefaultColorMixer(provider, dark_mode, high_contrast);
           ui::AddNativeCoreColorMixer(provider, dark_mode, high_contrast);
-          ui::AddUiColorMixer(provider, dark_mode, high_contrast);
+          ui::AddUiColorMixer(provider);
           ui::AddNativeUiColorMixer(provider, dark_mode, high_contrast);
 #if defined(OS_MAC)
           // Always keep this mixer at the last so the system tint will be
