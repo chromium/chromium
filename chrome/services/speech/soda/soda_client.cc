@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "build/build_config.h"
 
 namespace soda {
 
@@ -45,6 +46,13 @@ SodaClient::SodaClient(base::FilePath library_path)
 
   base::UmaHistogramEnumeration("Accessibility.LiveCaption.LoadSodaResult",
                                 load_soda_result_);
+
+#if defined(OS_WIN)
+  if (load_soda_result_ == LoadSodaResultValue::kBinaryInvalid) {
+    base::UmaHistogramSparse("Accessibility.LiveCaption.LoadSodaErrorCode",
+                             lib_.GetError()->code);
+  }
+#endif  // OS_WIN
 }
 
 NO_SANITIZE("cfi-icall")
