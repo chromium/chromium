@@ -19,6 +19,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -142,7 +143,7 @@ class ArcAppListPrefs : public KeyedService,
         permissions;
   };
 
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Notifies an observer that new app is registered.
     virtual void OnAppRegistered(const std::string& app_id,
@@ -225,7 +226,7 @@ class ArcAppListPrefs : public KeyedService,
     virtual void OnArcAppListPrefsDestroyed() {}
 
    protected:
-    virtual ~Observer() {}
+    ~Observer() override;
   };
 
   static ArcAppListPrefs* Create(Profile* profile);
@@ -578,7 +579,7 @@ class ArcAppListPrefs : public KeyedService,
       app_connection_holder_for_testing_;
 
   // List of observers.
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
   // Keeps root folder where ARC app icons for different scale factor are
   // stored.
   base::FilePath base_path_;

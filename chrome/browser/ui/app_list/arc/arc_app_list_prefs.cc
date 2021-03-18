@@ -2124,3 +2124,7 @@ ArcAppListPrefs::PackageInfo::PackageInfo(
 // Need to add explicit destructor for chromium style checker error:
 // Complex class/struct needs an explicit out-of-line destructor
 ArcAppListPrefs::PackageInfo::~PackageInfo() = default;
+
+ArcAppListPrefs::Observer::~Observer() {
+  // TODO(jamescook): Add CHECK(!IsInObserverList()).
+}

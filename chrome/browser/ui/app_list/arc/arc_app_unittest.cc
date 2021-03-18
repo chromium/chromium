@@ -876,6 +876,9 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
   }
 
   void TearDown() override {
+    // Clean up any observers added in StartApp(). This is a no-op if we didn't
+    // add an observer.
+    arc_test()->arc_app_list_prefs()->RemoveObserver(this);
     scoped_supported_scale_factors_.reset();
     ArcAppModelBuilderRecreate::TearDown();
   }

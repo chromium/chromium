@@ -1716,6 +1716,7 @@ static_library("ui") {
       "app_list/app_sync_ui_state.h",
       "app_list/app_sync_ui_state_factory.cc",
       "app_list/app_sync_ui_state_factory.h",
+      "app_list/app_sync_ui_state_observer.cc",
       "app_list/app_sync_ui_state_observer.h",
       "app_list/app_sync_ui_state_watcher.cc",
       "app_list/app_sync_ui_state_watcher.h",

@@ -75,8 +75,7 @@ class ArcKpmDelegate {
 // 3- app A is mentioned in KeyPermissions user policy.
 class UserPrivateTokenArcKpmDelegate : public ArcKpmDelegate,
                                        public arc::ArcSessionManagerObserver,
-                                       public ArcAppListPrefs::Observer,
-                                       public base::CheckedObserver {
+                                       public ArcAppListPrefs::Observer {
  public:
   explicit UserPrivateTokenArcKpmDelegate(Profile* profile);
   UserPrivateTokenArcKpmDelegate(const UserPrivateTokenArcKpmDelegate&) =

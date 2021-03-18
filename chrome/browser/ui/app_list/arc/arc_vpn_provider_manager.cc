@@ -159,4 +159,8 @@ ArcVpnProviderManager::ArcVpnProvider::ArcVpnProvider(
 
 ArcVpnProviderManager::ArcVpnProvider::~ArcVpnProvider() = default;
 
+ArcVpnProviderManager::Observer::~Observer() {
+  // TODO(jamescook): Add CHECK(!IsInObserverList()).
+}
+
 }  // namespace app_list

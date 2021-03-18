@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/one_shot_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/sync/glue/sync_start_util.h"
@@ -64,13 +65,13 @@ class AppListSyncableService : public syncer::SyncableService,
     std::string ToString() const;
   };
 
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Notifies that sync model was updated.
     virtual void OnSyncModelUpdated() = 0;
 
    protected:
-    virtual ~Observer() = default;
+    ~Observer() override;
   };
 
   // An app list model updater factory function used by tests.
@@ -357,7 +358,7 @@ class AppListSyncableService : public syncer::SyncableService,
   base::OnceClosure wait_until_ready_to_sync_cb_;
 
   // List of observers.
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
   base::OneShotEvent on_initialized_;
 
   base::WeakPtrFactory<AppListSyncableService> weak_ptr_factory_{this};

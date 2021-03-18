@@ -227,6 +227,12 @@ AppListSyncableService::SyncItem::SyncItem(
 
 AppListSyncableService::SyncItem::~SyncItem() = default;
 
+// AppListSyncableService::Observer
+
+AppListSyncableService::Observer::~Observer() {
+  // TODO(jamescook): Add CHECK(!IsInObserverList()).
+}
+
 // AppListSyncableService::ModelUpdaterObserver
 
 class AppListSyncableService::ModelUpdaterObserver
