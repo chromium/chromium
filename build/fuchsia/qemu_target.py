@@ -54,6 +54,12 @@ class QemuTarget(emu_target.EmuTarget):
     self._require_kvm=require_kvm
     self._ram_size_mb=ram_size_mb
 
+  @staticmethod
+  def CreateFromArgs(args):
+    return QemuTarget(args.out_dir, args.target_cpu, args.system_log_file,
+                      args.cpu_cores, args.require_kvm, args.ram_size_mb,
+                      args.fuchsia_out_dir)
+
   def _IsKvmEnabled(self):
     kvm_supported = sys.platform.startswith('linux') and \
                     os.access('/dev/kvm', os.R_OK | os.W_OK)

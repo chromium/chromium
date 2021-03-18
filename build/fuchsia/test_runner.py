@@ -174,7 +174,7 @@ def main():
     test_realms = [TEST_REALM_NAME]
 
   try:
-    with GetDeploymentTargetForArgs() as target, \
+    with GetDeploymentTargetForArgs(args) as target, \
          SystemLogReader() as system_logger, \
          RunnerLogManager(args.runner_logs_dir, BuildIdsPaths(args.package)):
       target.Start()

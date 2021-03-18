@@ -21,44 +21,45 @@ from symbolizer import RunSymbolizer
 
 def RunTestOnFuchsiaDevice(script_cmd):
   """Preps Fuchsia device with pave and package update, then runs script."""
+
   parser = argparse.ArgumentParser()
   AddCommonArgs(parser)
-  args, test_args = parser.parse_known_args()
-  ConfigureLogging(args)
+  runner_script_args, test_args = parser.parse_known_args()
+  ConfigureLogging(runner_script_args)
 
-  additional_target_args = {}
-
-  # If output_dir is not set, assume the script is being launched
+  # If out_dir is not set, assume the script is being launched
   # from the output directory.
-  if not args.out_dir:
-    args.out_dir = os.getcwd()
-    additional_target_args['out_dir'] = args.out_dir
+  if not runner_script_args.out_dir:
+    runner_script_args.out_dir = os.getcwd()
 
   # Create a temporary log file that Telemetry will look to use to build
   # an artifact when tests fail.
   temp_log_file = False
-  if not args.system_log_file:
-    args.system_log_file = os.path.join(tempfile.mkdtemp(), 'system-log')
+  if not runner_script_args.system_log_file:
+    runner_script_args.system_log_file = os.path.join(tempfile.mkdtemp(),
+                                                      'system-log')
     temp_log_file = True
-    additional_target_args['system_log_file'] = args.system_log_file
 
   package_names = ['web_engine_with_webui', 'web_engine_shell']
-  web_engine_dir = os.path.join(args.out_dir, 'gen', 'fuchsia', 'engine')
+  web_engine_dir = os.path.join(runner_script_args.out_dir, 'gen', 'fuchsia',
+                                'engine')
 
-  # Pass all other arguments to the integration tests.
+  # Pass all other arguments to the gpu integration tests.
   script_cmd.extend(test_args)
   try:
-    with GetDeploymentTargetForArgs(additional_target_args) as target:
+    with GetDeploymentTargetForArgs(runner_script_args) as target:
       target.Start()
       fuchsia_device_address, fuchsia_ssh_port = target._GetEndpoint()
-      script_cmd.extend(['--chromium-output-directory', args.out_dir])
+      script_cmd.extend(
+          ['--chromium-output-directory', runner_script_args.out_dir])
       script_cmd.extend(['--fuchsia-device-address', fuchsia_device_address])
       script_cmd.extend(['--fuchsia-ssh-config', target._GetSshConfigPath()])
       if fuchsia_ssh_port:
         script_cmd.extend(['--fuchsia-ssh-port', str(fuchsia_ssh_port)])
-      script_cmd.extend(['--fuchsia-system-log-file', args.system_log_file])
+      script_cmd.extend(
+          ['--fuchsia-system-log-file', runner_script_args.system_log_file])
       # Add to the script
-      if args.verbose:
+      if runner_script_args.verbose:
         script_cmd.append('-v')
 
       # Set up logging of WebEngine
@@ -68,7 +69,8 @@ def RunTestOnFuchsiaDevice(script_cmd):
       build_ids_paths = map(
           lambda package_name: os.path.join(web_engine_dir, package_name,
                                             'ids.txt'), package_names)
-      RunSymbolizer(listener.stdout, open(args.system_log_file, 'w'),
+      RunSymbolizer(listener.stdout,
+                    open(runner_script_args.system_log_file, 'w'),
                     build_ids_paths)
 
       # Keep the Amber repository live while the test runs.
@@ -82,4 +84,4 @@ def RunTestOnFuchsiaDevice(script_cmd):
         return subprocess.call(script_cmd)
   finally:
     if temp_log_file:
-      shutil.rmtree(os.path.dirname(args.system_log_file))
+      shutil.rmtree(os.path.dirname(runner_script_args.system_log_file))
