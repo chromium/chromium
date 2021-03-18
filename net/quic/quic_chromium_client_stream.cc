@@ -15,6 +15,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_status_code.h"
 #include "net/log/net_log_event_type.h"
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_http_utils.h"
@@ -59,6 +60,17 @@ QuicChromiumClientStream::Handle::~Handle() {
     // so that it does not leak.
     // stream_->Reset(quic::QUIC_STREAM_CANCELLED);
   }
+}
+
+void QuicChromiumClientStream::Handle::OnEarlyHintsAvailable() {
+  if (!read_headers_callback_)
+    return;  // Wait for ReadInitialHeaders to be called.
+
+  DCHECK(read_headers_buffer_);
+  int rv = stream_->DeliverEarlyHints(read_headers_buffer_);
+  DCHECK_NE(ERR_IO_PENDING, rv);
+
+  ResetAndRun(std::move(read_headers_callback_), rv);
 }
 
 void QuicChromiumClientStream::Handle::OnInitialHeadersAvailable() {
@@ -160,12 +172,19 @@ int QuicChromiumClientStream::Handle::ReadInitialHeaders(
   if (!stream_)
     return net_error_;
 
-  int rv = stream_->DeliverInitialHeaders(header_block);
+  // Check Early Hints first.
+  int rv = stream_->DeliverEarlyHints(header_block);
+  if (rv != ERR_IO_PENDING) {
+    return rv;
+  }
+
+  rv = stream_->DeliverInitialHeaders(header_block);
   if (rv != ERR_IO_PENDING) {
     return rv;
   }
 
   read_headers_buffer_ = header_block;
+  DCHECK(!read_headers_callback_);
   SetCallback(std::move(callback), &read_headers_callback_);
   return ERR_IO_PENDING;
 }
@@ -463,6 +482,7 @@ void QuicChromiumClientStream::OnInitialHeadersComplete(
     bool fin,
     size_t frame_len,
     const quic::QuicHeaderList& header_list) {
+  DCHECK(!initial_headers_arrived_);
   quic::QuicSpdyStream::OnInitialHeadersComplete(fin, frame_len, header_list);
 
   spdy::Http2HeaderBlock header_block;
@@ -473,6 +493,43 @@ void QuicChromiumClientStream::OnInitialHeadersComplete(
     ConsumeHeaderList();
     Reset(quic::QUIC_BAD_APPLICATION_PAYLOAD);
     return;
+  }
+
+  // Handle informational response. If the response is an Early Hints response,
+  // deliver the response to the owner of the handle. Otherwise ignore the
+  // response.
+  // TODO(crbug.com/1096414): Fix tests and treat an empty list as an error.
+  // Some tests fail when we treat an empty header list as error. All valid
+  // responses must have the ":status" field.
+  if (!header_list.empty()) {
+    int response_code;
+    if (!ParseHeaderStatusCode(header_block, &response_code)) {
+      DLOG(ERROR) << "Received invalid response code: '"
+                  << header_block[":status"].as_string() << "' on stream "
+                  << id();
+      Reset(quic::QUIC_BAD_APPLICATION_PAYLOAD);
+      return;
+    }
+
+    if (response_code == HTTP_SWITCHING_PROTOCOLS) {
+      DLOG(ERROR) << "Received forbidden 101 response code on stream " << id();
+      Reset(quic::QUIC_BAD_APPLICATION_PAYLOAD);
+      return;
+    }
+
+    if (response_code >= 100 && response_code < 200) {
+      set_headers_decompressed(false);
+      ConsumeHeaderList();
+      if (response_code == HTTP_EARLY_HINTS) {
+        early_hints_.emplace_back(std::move(header_block), frame_len);
+        if (handle_)
+          handle_->OnEarlyHintsAvailable();
+      } else {
+        DVLOG(1) << "Ignore informational response " << response_code
+                 << " on stream" << id();
+      }
+      return;
+    }
   }
 
   ConsumeHeaderList();
@@ -677,6 +734,30 @@ void QuicChromiumClientStream::NotifyHandleOfTrailingHeadersAvailable() {
   // Post an async task to notify handle of the FIN flag.
   NotifyHandleOfDataAvailableLater();
   handle_->OnTrailingHeadersAvailable();
+}
+
+int QuicChromiumClientStream::DeliverEarlyHints(
+    spdy::Http2HeaderBlock* headers) {
+  if (early_hints_.empty()) {
+    return ERR_IO_PENDING;
+  }
+
+  DCHECK(!headers_delivered_);
+
+  EarlyHints& hints = early_hints_.front();
+  *headers = std::move(hints.headers);
+  size_t frame_len = hints.frame_len;
+  early_hints_.pop_front();
+
+  net_log_.AddEvent(
+      NetLogEventType::
+          QUIC_CHROMIUM_CLIENT_STREAM_READ_EARLY_HINTS_RESPONSE_HEADERS,
+      [&](NetLogCaptureMode capture_mode) {
+        return QuicResponseNetLogParams(id(), fin_received(), headers,
+                                        capture_mode);
+      });
+
+  return frame_len;
 }
 
 int QuicChromiumClientStream::DeliverInitialHeaders(

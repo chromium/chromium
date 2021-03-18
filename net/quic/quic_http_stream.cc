@@ -15,6 +15,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
@@ -695,6 +696,12 @@ int QuicHttpStream::ProcessResponseHeaders(
   if (!header_valid) {
     DLOG(WARNING) << "Invalid headers";
     return ERR_QUIC_PROTOCOL_ERROR;
+  }
+
+  if (response_info_->headers->response_code() == HTTP_EARLY_HINTS) {
+    DCHECK(!response_headers_received_);
+    headers_bytes_received_ = 0;
+    return OK;
   }
 
   // Put the peer's IP address and port into the response.

@@ -218,6 +218,12 @@ class QuicChromiumClientStreamTest
         "JBCScs_ejbKaqBDoB7ZGxTvqlrB__2ZmnHHjCr8RgMRtKNtIeuZAo ";
   }
 
+  spdy::Http2HeaderBlock CreateResponseHeaders(const std::string& status_code) {
+    spdy::Http2HeaderBlock headers;
+    headers[":status"] = status_code;
+    return headers;
+  }
+
   void ReadData(absl::string_view expected_data) {
     scoped_refptr<IOBuffer> buffer =
         base::MakeRefCounted<IOBuffer>(expected_data.length() + 1);
@@ -954,6 +960,156 @@ TEST_P(QuicChromiumClientStreamTest, ResetOnEmptyResponseHeaders) {
     int rv = handle_->ReadInitialHeaders(&headers_, CompletionOnceCallback());
     EXPECT_THAT(rv, IsError(ERR_INVALID_RESPONSE));
   }
+}
+
+// Tests that the stream resets when it receives an invalid ":status"
+// pseudo-header value.
+TEST_P(QuicChromiumClientStreamTest, InvalidStatus) {
+  spdy::Http2HeaderBlock headers = CreateResponseHeaders("xxx");
+
+  EXPECT_CALL(
+      *static_cast<quic::test::MockQuicConnection*>(session_.connection()),
+      OnStreamReset(quic::test::GetNthClientInitiatedBidirectionalStreamId(
+                        version_.transport_version, 0),
+                    quic::QUIC_BAD_APPLICATION_PAYLOAD));
+
+  EXPECT_CALL(
+      *static_cast<quic::test::MockQuicConnection*>(session_.connection()),
+      SendControlFrame(_));
+
+  ProcessHeaders(headers);
+  EXPECT_FALSE(handle_->IsOpen());
+  EXPECT_EQ(quic::QUIC_BAD_APPLICATION_PAYLOAD, handle_->stream_error());
+}
+
+// Tests that the stream resets when it receives 101 Switching Protocols.
+TEST_P(QuicChromiumClientStreamTest, SwitchingProtocolsResponse) {
+  spdy::Http2HeaderBlock informational_headers = CreateResponseHeaders("101");
+
+  EXPECT_CALL(
+      *static_cast<quic::test::MockQuicConnection*>(session_.connection()),
+      OnStreamReset(quic::test::GetNthClientInitiatedBidirectionalStreamId(
+                        version_.transport_version, 0),
+                    quic::QUIC_BAD_APPLICATION_PAYLOAD));
+
+  EXPECT_CALL(
+      *static_cast<quic::test::MockQuicConnection*>(session_.connection()),
+      SendControlFrame(_));
+
+  ProcessHeaders(informational_headers);
+  EXPECT_FALSE(handle_->IsOpen());
+  EXPECT_EQ(quic::QUIC_BAD_APPLICATION_PAYLOAD, handle_->stream_error());
+}
+
+// Tests that the stream ignores 100 Continue response.
+TEST_P(QuicChromiumClientStreamTest, ContinueResponse) {
+  spdy::Http2HeaderBlock informational_headers = CreateResponseHeaders("100");
+
+  // This informational headers should be ignored.
+  ProcessHeaders(informational_headers);
+
+  // Pass the initial headers.
+  InitializeHeaders();
+  quic::QuicHeaderList header_list = ProcessHeaders(headers_);
+
+  // Read the initial headers.
+  spdy::Http2HeaderBlock response_headers;
+  // Pass DoNothing because the initial headers is already available and the
+  // callback won't be called.
+  EXPECT_EQ(static_cast<int>(header_list.uncompressed_header_bytes()),
+            handle_->ReadInitialHeaders(&response_headers, base::DoNothing()));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(response_headers, headers_);
+}
+
+// Tests that the stream handles 103 Early Hints responses.
+TEST_P(QuicChromiumClientStreamTest, EarlyHintsResponses) {
+  // Pass Two Early Hints responses to the stream.
+  spdy::Http2HeaderBlock hints1_headers = CreateResponseHeaders("103");
+  hints1_headers["x-header1"] = "foo";
+  quic::QuicHeaderList header_list = ProcessHeaders(hints1_headers);
+  const size_t hints1_bytes = header_list.uncompressed_header_bytes();
+
+  spdy::Http2HeaderBlock hints2_headers = CreateResponseHeaders("103");
+  hints2_headers["x-header2"] = "foobarbaz";
+  header_list = ProcessHeaders(hints2_headers);
+  const size_t hints2_bytes = header_list.uncompressed_header_bytes();
+
+  // Pass the initial headers to the stream.
+  InitializeHeaders();
+  header_list = ProcessHeaders(headers_);
+  const size_t initial_headers_bytes = header_list.uncompressed_header_bytes();
+
+  spdy::Http2HeaderBlock headers;
+
+  // Read headers. The first two reads should return Early Hints.
+  EXPECT_EQ(static_cast<int>(hints1_bytes),
+            handle_->ReadInitialHeaders(&headers, base::DoNothing()));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(headers, hints1_headers);
+
+  EXPECT_EQ(static_cast<int>(hints2_bytes),
+            handle_->ReadInitialHeaders(&headers, base::DoNothing()));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(headers, hints2_headers);
+
+  // The third read should return the initial headers.
+  EXPECT_EQ(static_cast<int>(initial_headers_bytes),
+            handle_->ReadInitialHeaders(&headers, base::DoNothing()));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(headers, headers_);
+}
+
+// Tests that pending reads for Early Hints work.
+TEST_P(QuicChromiumClientStreamTest, EarlyHintsAsync) {
+  spdy::Http2HeaderBlock headers;
+  TestCompletionCallback hints_callback;
+
+  // Try to read headers. The read should be blocked.
+  EXPECT_EQ(ERR_IO_PENDING,
+            handle_->ReadInitialHeaders(&headers, hints_callback.callback()));
+
+  // Pass an Early Hints and the initial headers.
+  spdy::Http2HeaderBlock hints_headers = CreateResponseHeaders("103");
+  hints_headers["x-header1"] = "foo";
+  quic::QuicHeaderList header_list = ProcessHeaders(hints_headers);
+  const size_t hints_bytes = header_list.uncompressed_header_bytes();
+  InitializeHeaders();
+  header_list = ProcessHeaders(headers_);
+  const size_t initial_headers_bytes = header_list.uncompressed_header_bytes();
+
+  // Wait for the pending headers read. The result should be the Early Hints.
+  const int hints_result = hints_callback.WaitForResult();
+  EXPECT_EQ(hints_result, static_cast<int>(hints_bytes));
+  EXPECT_EQ(headers, hints_headers);
+
+  // Second read should return the initial headers.
+  EXPECT_EQ(static_cast<int>(initial_headers_bytes),
+            handle_->ReadInitialHeaders(&headers, base::DoNothing()));
+  EXPECT_EQ(headers, headers_);
+}
+
+// Tests that Early Hints after the initial headers is treated as an error.
+// TODO(crbug.com/1096414): Add a test similar to this test but doesn't read the
+// initial headers.
+TEST_P(QuicChromiumClientStreamTest, EarlyHintsAfterInitialHeaders) {
+  InitializeHeaders();
+  ProcessHeadersFull(headers_);
+
+  // Early Hints after the initial headers are treated as trailers, and it
+  // should result in an error because trailers must not contain pseudo-headers
+  // like ":status".
+  EXPECT_CALL(
+      *static_cast<quic::test::MockQuicConnection*>(session_.connection()),
+      CloseConnection(
+          quic::QUIC_INVALID_HEADERS_STREAM_DATA, _,
+          quic::ConnectionCloseBehavior::SEND_CONNECTION_CLOSE_PACKET));
+
+  spdy::Http2HeaderBlock hints_headers;
+  hints_headers[":status"] = "103";
+  ProcessHeaders(hints_headers);
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace

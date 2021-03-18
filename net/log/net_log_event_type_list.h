@@ -2311,6 +2311,12 @@ EVENT_TYPE(HTTP_STREAM_REQUEST_BOUND_TO_QUIC_SESSION)
 //   }
 EVENT_TYPE(QUIC_CHROMIUM_CLIENT_STREAM_SEND_REQUEST_HEADERS)
 
+// The stream has read a 103 Early Hints response headers.
+//   {
+//     "headers": <The list of header:value pairs>
+//   }
+EVENT_TYPE(QUIC_CHROMIUM_CLIENT_STREAM_READ_EARLY_HINTS_RESPONSE_HEADERS)
+
 // The stream has read the response headers.
 //   {
 //     "headers": <The list of header:value pairs>
