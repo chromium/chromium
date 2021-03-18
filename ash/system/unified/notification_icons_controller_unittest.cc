@@ -9,6 +9,7 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/vm_camera_mic_constants.h"
 #include "ash/system/tray/tray_item_view.h"
+#include "ash/system/unified/notification_counter_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,6 +17,11 @@
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace ash {
+
+namespace {
+const char kBatteryNotificationId[] = "battery";
+const char kUsbNotificationId[] = "usb-charger";
+}  // namespace
 
 class NotificationIconsControllerTest
     : public AshTestBase,
@@ -154,6 +160,43 @@ TEST_P(NotificationIconsControllerTest, ShowNotificationIcons) {
   EXPECT_FALSE(notification_icons_controller_->tray_items()[0]->GetVisible());
   EXPECT_FALSE(notification_icons_controller_->tray_items()[1]->GetVisible());
   EXPECT_FALSE(separator()->GetVisible());
+}
+
+TEST_P(NotificationIconsControllerTest, NotShowNotificationIcons) {
+  UpdateDisplay("800x800");
+
+  EXPECT_FALSE(notification_icons_controller_->tray_items()[0]->GetVisible());
+
+  AddNotification(true /* is_pinned */, false /* is_critical_warning */,
+                  kBatteryNotificationId);
+  // Battery notification should not be shown.
+  EXPECT_FALSE(notification_icons_controller_->tray_items()[0]->GetVisible());
+  EXPECT_FALSE(separator()->GetVisible());
+  // Notification count does update for this notification.
+  notification_icons_controller_->notification_counter_view()->Update();
+  EXPECT_EQ(1, notification_icons_controller_->notification_counter_view()
+                   ->count_for_display_for_testing());
+
+  AddNotification(true /* is_pinned */, false /* is_critical_warning */,
+                  kUsbNotificationId);
+  // Usb charging notification should not be shown.
+  EXPECT_FALSE(notification_icons_controller_->tray_items()[0]->GetVisible());
+  EXPECT_FALSE(separator()->GetVisible());
+  // Notification count does update for this notification.
+  notification_icons_controller_->notification_counter_view()->Update();
+  EXPECT_EQ(2, notification_icons_controller_->notification_counter_view()
+                   ->count_for_display_for_testing());
+
+  AddNotification(true /* is_pinned */, false /* is_critical_warning */,
+                  kVmCameraMicNotifierId);
+  // VM camera/mic notification should not be shown.
+  EXPECT_FALSE(notification_icons_controller_->tray_items()[0]->GetVisible());
+  EXPECT_FALSE(separator()->GetVisible());
+  // Notification count does not update for this notification (since there's
+  // another tray item for this).
+  notification_icons_controller_->notification_counter_view()->Update();
+  EXPECT_EQ(2, notification_icons_controller_->notification_counter_view()
+                   ->count_for_display_for_testing());
 }
 
 }  // namespace ash

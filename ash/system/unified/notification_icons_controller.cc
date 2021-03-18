@@ -5,6 +5,7 @@
 #include "ash/system/unified/notification_icons_controller.h"
 
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/vm_camera_mic_constants.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -34,11 +35,21 @@ constexpr int kMaxNotificationIconsShown = 2;
 constexpr int kNotificationIconSpacing = 1;
 constexpr gfx::Insets kSeparatorPadding(6, 4);
 
-// We only show notification icon in the tray if it is either:
-// *   Pinned (generally used for background process such as sharing your
-//     screen, capslock, etc.).
-// *   Critical warning (display failure, disk space critically low, etc.).
+const char kBatteryNotificationId[] = "battery";
+const char kUsbNotificationId[] = "usb-charger";
+
 bool ShouldShowNotification(message_center::Notification* notification) {
+  // We don't want to show these notifications since the information is already
+  // indicated by another item in tray.
+  std::string id = notification->notifier_id().id;
+  if (id == kVmCameraMicNotifierId || id == kBatteryNotificationId ||
+      id == kUsbNotificationId)
+    return false;
+
+  // We only show notification icon in the tray if it is either:
+  // *   Pinned (generally used for background process such as sharing your
+  //     screen, capslock, etc.).
+  // *   Critical warning (display failure, disk space critically low, etc.).
   return notification->pinned() ||
          notification->system_notification_warning_level() ==
              message_center::SystemNotificationWarningLevel::CRITICAL_WARNING;
