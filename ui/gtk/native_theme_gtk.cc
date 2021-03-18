@@ -436,6 +436,7 @@ NativeThemeGtk::NativeThemeGtk() {
   g_type_class_unref(g_type_class_ref(gtk_window_get_type()));
   g_type_class_unref(g_type_class_ref(gtk_combo_box_text_get_type()));
   g_type_class_unref(g_type_class_ref(gtk_cell_view_get_type()));
+  g_type_class_unref(g_type_class_ref(gtk_scale_get_type()));
 
   // Initialize the GtkTreeMenu type.  _gtk_tree_menu_get_type() is private, so
   // we need to initialize it indirectly.
