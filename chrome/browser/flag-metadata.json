@@ -110,11 +110,6 @@
     "expiry_milestone": 93
   },
   {
-    "name": "android-default-browser-promo",
-    "owners": [ "lazzzis@google.com", "twellington" ],
-    "expiry_milestone": 91
-  },
-  {
     "name": "android-detailed-language-settings",
     "owners": [ "perrier", "chrome-language@google.com" ],
     "expiry_milestone": 91

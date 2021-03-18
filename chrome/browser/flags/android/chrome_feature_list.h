@@ -15,7 +15,6 @@ namespace android {
 extern const base::Feature kAddToHomescreenIPH;
 extern const base::Feature kAllowNewIncognitoTabIntents;
 extern const base::Feature kAllowRemoteContextForNotifications;
-extern const base::Feature kAndroidDefaultBrowserPromo;
 extern const base::Feature kAndroidLayoutChangeTabReparenting;
 extern const base::Feature kAndroidManagedByMenuItem;
 extern const base::Feature kAndroidPartnerCustomizationPhenotype;

@@ -6543,11 +6543,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_ANDROID)
-    {"android-default-browser-promo",
-     flag_descriptions::kAndroidDefaultBrowserPromoName,
-     flag_descriptions::kAndroidDefaultBrowserPromoDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidDefaultBrowserPromo)},
-
     {"android-managed-by-menu-item",
      flag_descriptions::kAndroidManagedByMenuItemName,
      flag_descriptions::kAndroidManagedByMenuItemDescription, kOsAndroid,

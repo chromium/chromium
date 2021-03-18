@@ -130,7 +130,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kAddToHomescreenIPH,
     &kAllowNewIncognitoTabIntents,
     &kAllowRemoteContextForNotifications,
-    &kAndroidDefaultBrowserPromo,
     &kAndroidLayoutChangeTabReparenting,
     &kAndroidManagedByMenuItem,
     &kAndroidPartnerCustomizationPhenotype,
@@ -327,9 +326,6 @@ const base::Feature* FindFeatureExposedToJava(const std::string& feature_name) {
 
 const base::Feature kAddToHomescreenIPH{"AddToHomescreenIPH",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kAndroidDefaultBrowserPromo{
-    "AndroidDefaultBrowserPromo", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kAndroidLayoutChangeTabReparenting{
     "AndroidLayoutChangeTabReparenting", base::FEATURE_ENABLED_BY_DEFAULT};

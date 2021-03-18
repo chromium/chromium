@@ -8,7 +8,6 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserPromoDeps.java",
     "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserPromoManager.java",
-    "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserPromoMetrics.java",
     "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserPromoUtils.java",
   ]
   deps = [

@@ -618,6 +618,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.DefaultBrowserPromo.Outcome.NoDefault"
     enum="AndroidDefaultBrowserPromoOutcomeType" expires_after="2021-08-01">
+  <obsolete>
+    Removed Mar 2021; experiment is done and the data isn't useful.
+  </obsolete>
   <owner>lazzzis@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <owner>pavely@chromium.org</owner>
@@ -631,6 +634,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.DefaultBrowserPromo.Outcome.OtherDefault"
     enum="AndroidDefaultBrowserPromoOutcomeType" expires_after="2021-08-01">
+  <obsolete>
+    Removed Mar 2021; experiment is done and the data isn't useful.
+  </obsolete>
   <owner>lazzzis@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <owner>pavely@chromium.org</owner>
@@ -644,6 +650,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.DefaultBrowserPromo.RoleManagerShown"
     enum="AndroidDefaultBrowserPromoType" expires_after="2021-08-01">
+  <obsolete>
+    Removed Mar 2021; experiment is done and the data isn't useful.
+  </obsolete>
   <owner>lazzzis@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <owner>pavely@chromium.org</owner>

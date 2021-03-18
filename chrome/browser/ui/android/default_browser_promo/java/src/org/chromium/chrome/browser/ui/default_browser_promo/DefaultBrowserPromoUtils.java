@@ -9,7 +9,6 @@ import android.content.pm.ResolveInfo;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.ui.base.WindowAndroid;
@@ -99,7 +98,6 @@ public class DefaultBrowserPromoUtils {
      * Increment session count for triggering feature in the future.
      */
     public static void incrementSessionCount() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_DEFAULT_BROWSER_PROMO)) return;
         SharedPreferencesManager.getInstance().incrementInt(
                 ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_SESSION_COUNT);
     }

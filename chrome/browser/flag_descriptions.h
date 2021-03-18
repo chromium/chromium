@@ -1568,9 +1568,6 @@ extern const char kAImageReaderDescription[];
 extern const char kAndroidAutofillAccessibilityName[];
 extern const char kAndroidAutofillAccessibilityDescription[];
 
-extern const char kAndroidDefaultBrowserPromoName[];
-extern const char kAndroidDefaultBrowserPromoDescription[];
-
 extern const char kAndroidDetailedLanguageSettingsName[];
 extern const char kAndroidDetailedLanguageSettingsDescription[];
 
