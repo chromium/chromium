@@ -70,6 +70,7 @@ void RulesCacheDelegate::Init(RulesRegistry* registry) {
   registry_ = registry->GetWeakPtr();
   rules_registry_thread_ = registry->owner_thread();
   browser_context_ = registry->browser_context();
+  extension_registry_ = ExtensionRegistry::Get(browser_context_);
 
   if (browser_context_->IsOffTheRecord())
     log_storage_init_delay_ = false;
@@ -102,6 +103,13 @@ void RulesCacheDelegate::UpdateRules(const std::string& extension_id,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!browser_context_)
     return;
+
+  // The extension may have been uninstalled before any existing tasks are
+  // run.
+  if (!extension_registry_->GetExtensionById(extension_id,
+                                             ExtensionRegistry::EVERYTHING)) {
+    return;
+  }
 
   DCHECK(value.is_list());
   has_nonempty_ruleset_ = !value.GetList().empty();
@@ -242,8 +250,6 @@ void RulesCacheDelegate::SetDeclarativeRulesStored(
     bool rules_stored) {
   CHECK(browser_context_);
   DCHECK_EQ(Type::kPersistent, type_);
-  DCHECK(ExtensionRegistry::Get(browser_context_)
-             ->GetExtensionById(extension_id, ExtensionRegistry::EVERYTHING));
 
   ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(browser_context_);
   extension_prefs->UpdateExtensionPref(
