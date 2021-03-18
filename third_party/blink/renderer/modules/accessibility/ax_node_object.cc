@@ -4022,6 +4022,12 @@ bool AXNodeObject::CanHaveChildren() const {
       break;
   }
 
+  // Allow editable roots to expose any children they might have, complying
+  // with browser-side expectations that editable controls have children
+  // containing the actual text content.
+  if (IsEditable() && !IsRichlyEditable())
+    return true;
+
   switch (AriaRoleAttribute()) {
     case ax::mojom::blink::Role::kImage:
       return false;

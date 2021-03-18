@@ -1808,6 +1808,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-with-no-descendants.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityContenteditablePlaintextWithRole) {
+  RunHtmlTest(FILE_PATH_LITERAL("contenteditable-plaintext-with-role.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCustomElement) {
   RunHtmlTest(FILE_PATH_LITERAL("custom-element.html"));
 }
