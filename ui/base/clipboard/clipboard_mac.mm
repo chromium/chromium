@@ -483,10 +483,24 @@ SkBitmap ClipboardMac::ReadImageInternal(ClipboardBuffer buffer,
   // a blank image is better.
   base::scoped_nsobject<NSImage> image;
   @try {
-    image.reset([[NSImage alloc] initWithPasteboard:pasteboard]);
+    // TODO(crbug.com/1175483): remove first branch of this code when
+    // ClipboardFilenames feature flag is removed.
+    if ([[pasteboard types] containsObject:NSFilenamesPboardType]) {
+      // -[NSImage initWithPasteboard:] gets confused with copies of a single
+      // file from the Finder, so extract the path ourselves.
+      // http://crbug.com/553686
+      NSArray* paths = [pasteboard propertyListForType:NSFilenamesPboardType];
+      if ([paths count]) {
+        // If N number of files are selected from finder, choose the last one.
+        image.reset([[NSImage alloc]
+            initWithContentsOfURL:[NSURL fileURLWithPath:[paths lastObject]]]);
+      }
+    } else {
+      if (pasteboard)
+        image.reset([[NSImage alloc] initWithPasteboard:pasteboard]);
+    }
   } @catch (id exception) {
   }
-
   if (!image)
     return SkBitmap();
   if ([[image representations] count] == 0u)
