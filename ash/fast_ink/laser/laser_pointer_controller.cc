@@ -33,6 +33,24 @@ const int kAddStationaryPointsDelayMs = 16;
 
 }  // namespace
 
+// A class to hide and lock mouse cursor while it is alive.
+class LaserPointerController::ScopedLockedHiddenCursor {
+ public:
+  ScopedLockedHiddenCursor() : cursor_manager_(Shell::Get()->cursor_manager()) {
+    DCHECK(cursor_manager_);
+    // Hide and lock the cursor.
+    cursor_manager_->HideCursor();
+    cursor_manager_->LockCursor();
+  }
+  ~ScopedLockedHiddenCursor() {
+    // Unlock the cursor.
+    cursor_manager_->UnlockCursor();
+  }
+
+ private:
+  wm::CursorManager* const cursor_manager_;
+};
+
 LaserPointerController::LaserPointerController() {
   Shell::Get()->AddPreTargetHandler(this);
 }
@@ -54,8 +72,11 @@ void LaserPointerController::SetEnabled(bool enabled) {
     return;
 
   FastInkPointerController::SetEnabled(enabled);
-  if (!enabled)
+  if (!enabled) {
     DestroyPointerView();
+    // Unlock mouse cursor when disabling.
+    scoped_locked_hidden_cursor_.reset();
+  }
   NotifyStateChanged(enabled);
 }
 
@@ -85,6 +106,9 @@ void LaserPointerController::UpdatePointerView(ui::TouchEvent* event) {
     return;
   }
 
+  // Unlock mouse cursor when switch to touch event.
+  scoped_locked_hidden_cursor_.reset();
+
   laser_pointer_view->AddNewPoint(event->root_location_f(),
                                   event->time_stamp());
   if (event->type() == ui::ET_TOUCH_RELEASED) {
@@ -97,13 +121,17 @@ void LaserPointerController::UpdatePointerView(ui::MouseEvent* event) {
   LaserPointerView* laser_pointer_view = GetLaserPointerView();
   if (event->type() == ui::ET_MOUSE_MOVED) {
     if (IsPointerInExcludedWindows(event)) {
-      // Destroy the |LaserPointerView| since the cursor is in the bound of
-      // excluded windows.
+      // Destroy the |LaserPointerView| and unlock the cursor since the cursor
+      // is in the bound of excluded windows.
       DestroyPointerView();
+      scoped_locked_hidden_cursor_.reset();
       return;
     }
 
-    // TODO(llin): Hide the mouse cursor.
+    if (!scoped_locked_hidden_cursor_) {
+      scoped_locked_hidden_cursor_ =
+          std::make_unique<ScopedLockedHiddenCursor>();
+    }
   }
 
   laser_pointer_view->AddNewPoint(event->root_location_f(),

@@ -291,4 +291,45 @@ TEST_F(LaserPointerControllerTest, NotifyLaserPointerStateChanged) {
   controller_->RemoveObserver(observer());
 }
 
+// Test to ensure the class responsible for update cursor visibility state when
+// it handles mouse and touch events.
+TEST_F(LaserPointerControllerTest, MouseCursorState) {
+  ash::stylus_utils::SetNoStylusInputForTesting();
+
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+
+  // Verify that when disabled the cursor should be visible.
+  event_generator->MoveMouseTo(gfx::Point(1, 1));
+  EXPECT_FALSE(controller_test_api_->IsShowingLaserPointer());
+  EXPECT_TRUE(cursor_manager->IsCursorVisible());
+
+  // Verify that by enabling the mode, mouse cursor should be hidden.
+  controller_test_api_->SetEnabled(true);
+  event_generator->MoveMouseTo(gfx::Point(2, 2));
+  EXPECT_FALSE(cursor_manager->IsCursorVisible());
+  EXPECT_TRUE(cursor_manager->IsCursorLocked());
+
+  // Verify that after moving with touch, mouse cursor should be still hidden
+  // but unlocked.
+  event_generator->PressTouch();
+  event_generator->MoveTouch(gfx::Point(2, 2));
+  EXPECT_FALSE(cursor_manager->IsCursorVisible());
+  EXPECT_FALSE(cursor_manager->IsCursorLocked());
+  EXPECT_EQ(1, controller_test_api_->laser_points().GetNumberOfPoints());
+
+  // Verify that moving the mouse cursor shows the cursor.
+  event_generator->MoveMouseTo(gfx::Point(6, 6));
+  EXPECT_FALSE(cursor_manager->IsCursorVisible());
+  EXPECT_TRUE(cursor_manager->IsCursorLocked());
+  EXPECT_EQ(2, controller_test_api_->laser_points().GetNumberOfPoints());
+
+  // Verify that by disabling the mode, mouse cursor should be visible.
+  controller_test_api_->SetEnabled(false);
+  EXPECT_FALSE(controller_test_api_->IsShowingLaserPointer());
+  event_generator->MoveMouseTo(gfx::Point(7, 7));
+  EXPECT_TRUE(cursor_manager->IsCursorVisible());
+  EXPECT_FALSE(cursor_manager->IsCursorLocked());
+}
+
 }  // namespace ash

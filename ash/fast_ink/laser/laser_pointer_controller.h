@@ -41,6 +41,7 @@ class ASH_EXPORT LaserPointerController
 
  private:
   friend class LaserPointerControllerTestApi;
+  class ScopedLockedHiddenCursor;
 
   // fast_ink::FastInkPointerController:
   views::View* GetPointerView() const override;
@@ -62,6 +63,8 @@ class ASH_EXPORT LaserPointerController
   // pointer is enabled and activated (pressed or dragged).
   views::UniqueWidgetPtr laser_pointer_view_widget_;
   base::ObserverList<LaserPointerObserver> observers_;
+
+  std::unique_ptr<ScopedLockedHiddenCursor> scoped_locked_hidden_cursor_;
 
   DISALLOW_COPY_AND_ASSIGN(LaserPointerController);
 };
