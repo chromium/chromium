@@ -209,12 +209,18 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
                  "ScriptProcessorHandler::Process - data copy under lock",
                  "double_buffer_index", double_buffer_index);
 
+    // It is possible that the length of |internal_input_bus_| and
+    // |input_bus| can be different. See crbug.com/1189528.
     for (uint32_t i = 0; i < number_of_input_channels; ++i) {
-      float* destination =
+      internal_input_bus_->SetChannelMemory(
+          i,
           static_cast<float*>(shared_input_buffer->channels()[i].Data()) +
-          buffer_read_write_index_;
-      const float* source = input_bus->Channel(i)->Data();
-      memcpy(destination, source, sizeof(float) * frames_to_process);
+              buffer_read_write_index_,
+          frames_to_process);
+    }
+
+    if (number_of_input_channels) {
+      internal_input_bus_->CopyFrom(*input_bus);
     }
 
     for (uint32_t i = 0; i < number_of_output_channels; ++i) {
