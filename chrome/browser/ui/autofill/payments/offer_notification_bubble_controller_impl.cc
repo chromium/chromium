@@ -159,6 +159,11 @@ OfferNotificationBubbleControllerImpl::GetPageActionIconType() {
 }
 
 void OfferNotificationBubbleControllerImpl::DoShowBubble() {
+  // TODO(crbug.com/1187190): Add cross-tab status tracking for bubble so we
+  // show bubble only once per merchant.
+  if (!IsWebContentsActive())
+    return;
+
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   set_bubble_view(browser->window()
                       ->GetAutofillBubbleHandler()
@@ -170,6 +175,15 @@ void OfferNotificationBubbleControllerImpl::DoShowBubble() {
     observer_for_testing_->OnBubbleShown();
 
   AutofillMetrics::LogOfferNotificationBubbleOfferMetric(is_user_gesture_);
+}
+
+bool OfferNotificationBubbleControllerImpl::IsWebContentsActive() {
+  Browser* active_browser = chrome::FindBrowserWithActiveWindow();
+  if (!active_browser)
+    return false;
+
+  return active_browser->tab_strip_model()->GetActiveWebContents() ==
+         web_contents();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(OfferNotificationBubbleControllerImpl)

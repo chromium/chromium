@@ -4,10 +4,13 @@
 
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views_test_base.h"
 
-#include "build/build_config.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
@@ -24,61 +27,6 @@ class OfferNotificationBubbleViewsBrowserTest
       const OfferNotificationBubbleViewsBrowserTest&) = delete;
 };
 
-// Flaky on Linux. crbug.com/1182526
-#if defined(OS_LINUX)
-#define MAYBE_Navigation DISABLED_Navigation
-#else
-#define MAYBE_Navigation Navigation
-#endif
-IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
-                       MAYBE_Navigation) {
-  static const struct {
-    std::string url_navigated_to;
-    bool bubble_should_be_visible;
-  } test_cases[] = {
-      // Different page on same domain keeps bubble.
-      {"https://www.example.com/second/", true},
-      // Different domain not in offer's list dismisses bubble.
-      {"https://www.about.com/", false},
-      // Subdomain not in offer's list dismisses bubble.
-      {"https://support.example.com/first/", false},
-      // http vs. https mismatch dismisses bubble.
-      {"http://www.example.com/first/", false},
-      // Different domain in the offer's list keeps bubble.
-      {"https://www.test.com/first/", true},
-  };
-
-  // Set the initial origin that the bubble will be displayed on.
-  SetUpOfferDataWithDomains(
-      {GURL("https://www.example.com/"), GURL("https://www.test.com/")});
-
-  for (const auto& test_case : test_cases) {
-    NavigateTo(chrome::kChromeUINewTabURL);
-
-    ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-    NavigateTo("https://www.example.com/first");
-    WaitForObservedEvent();
-
-    // Bubble should be visible.
-    EXPECT_TRUE(IsIconVisible());
-    EXPECT_TRUE(GetOfferNotificationBubbleViews());
-
-    // Navigate to a different url, and verify bubble/icon visibility.
-    if (test_case.bubble_should_be_visible) {
-      NavigateTo(test_case.url_navigated_to);
-    } else {
-      views::test::WidgetDestroyedWaiter destroyed_waiter(
-          GetOfferNotificationBubbleViews()->GetWidget());
-      NavigateTo(test_case.url_navigated_to);
-      destroyed_waiter.Wait();
-    }
-
-    EXPECT_EQ(test_case.bubble_should_be_visible, IsIconVisible());
-    EXPECT_EQ(test_case.bubble_should_be_visible,
-              !!GetOfferNotificationBubbleViews());
-  }
-}
-
 // Tests that the offer notification bubble will not be shown if the offer data
 // is invalid (does not have a linked card).
 IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
@@ -92,6 +40,21 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
   // Neither icon nor bubble should be visible.
   NavigateTo("https://www.example.com/first/");
   EXPECT_FALSE(IsIconVisible());
+  EXPECT_FALSE(GetOfferNotificationBubbleViews());
+}
+
+IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest, OpenNewTab) {
+  SetUpOfferDataWithDomains(
+      {GURL("https://www.example.com/"), GURL("https://www.test.com/")});
+
+  NavigateTo(chrome::kChromeUINewTabURL);
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.example.com/"),
+      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  EXPECT_TRUE(IsIconVisible());
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
 }
 
