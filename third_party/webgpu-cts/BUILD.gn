@@ -1,0 +1,40 @@
+# Copyright 2021 The Chromium Authors.  All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("./scripts/node.gni")
+
+group("webgpu-cts") {
+  public_deps = [ ":compile_src" ]
+}
+
+input_ts_files = read_file("ts_sources.txt", "list lines")
+
+ts_source_inputs = [ "src/tsconfig.json" ]
+foreach(file, input_ts_files) {
+  ts_source_inputs += [ "src/$file" ]
+}
+
+node_action("compile_src") {
+  script = "//third_party/node/node_modules/typescript/lib/tsc.js"
+
+  inputs = ts_source_inputs
+  outputs = []
+  foreach(ts_file, input_ts_files) {
+    js_file = string_replace(ts_file, ".ts", ".js")
+    outputs += [ "$target_gen_dir/$js_file" ]
+  }
+
+  args = [
+    "--project",
+    rebase_path("src/tsconfig.json", root_build_dir),
+    "--outDir",
+    rebase_path("$target_gen_dir/src", root_build_dir),
+    "--noEmit",
+    "false",
+    "--declaration",
+    "false",
+    "--sourceMap",
+    "false",
+  ]
+}

@@ -1,0 +1,33 @@
+# Copyright 2021 The Chromium Authors.  All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+template("node_action") {
+  assert(defined(invoker.script),
+         "You must define the 'script' for a Node action")
+
+  action(target_name) {
+    script = "//third_party/node/node.py"
+
+    forward_variables_from(invoker,
+                           [
+                             "visibility",
+                             "deps",
+                             "public_deps",
+                             "outputs",
+                             "sources",
+                             "inputs",
+                             "testonly",
+                           ])
+
+    inputs += [ invoker.script ]
+    args = []
+    args += [ rebase_path(invoker.script, root_build_dir) ]
+    args += invoker.args
+  }
+}
+
+set_defaults("node_action") {
+  inputs = []
+  args = []
+}

@@ -1225,7 +1225,10 @@ if (!is_ios) {
           "--isolated-script-test-filter=wpt_internal/webgpu/*",
         ]
 
-    data_deps = [ ":blink_web_tests_support_data" ]
+    data_deps = [
+      ":blink_web_tests_support_data",
+      "//third_party/webgpu-cts",
+    ]
     data = [
       "//third_party/blink/web_tests/WebGPUExpectations",
       "//third_party/blink/web_tests/external/wpt/webgpu/",
