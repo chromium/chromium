@@ -236,6 +236,26 @@ suite('network-config', function() {
       });
     });
 
+    test('New Config: Authenticated, Not secure to secure', async function() {
+      // set default to insecure network
+      setNetworkType(chromeos.networkConfig.mojom.NetworkType.kWiFi);
+      setAuthenticated();
+      initNetworkConfig();
+      await flushAsync();
+      let share = networkConfig.$$('#share');
+      assertTrue(!!share);
+      assertTrue(share.disabled);
+      assertTrue(share.checked);
+
+      // change to secure network
+      networkConfig.securityType_ =
+          chromeos.networkConfig.mojom.SecurityType.kWepPsk;
+      await flushAsync();
+      assertTrue(!!share);
+      assertFalse(share.disabled);
+      assertFalse(share.checked);
+    });
+
     // Existing networks hide the shared control in the config UI.
     test('Existing Hides Shared', function() {
       const wifi1 = OncMojo.getDefaultManagedProperties(

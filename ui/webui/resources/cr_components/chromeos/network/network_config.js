@@ -661,11 +661,13 @@ Polymer({
       return;
     }
     if (this.shareAllowEnable) {
-      // New insecure WiFi networks are always shared.
-      if (this.mojoType_ === mojom.NetworkType.kWiFi &&
-          this.managedProperties_.typeProperties.wifi.security ===
-              mojom.SecurityType.kNone) {
-        this.shareNetwork_ = true;
+      // By default, Wi-Fi networks which require passwords are not shared,
+      // but "insecure" networks with no passwords are shared. In either case,
+      // the user can change the sharing setting by updating the toggle in the
+      // UI.
+
+      if (this.mojoType_ === mojom.NetworkType.kWiFi) {
+        this.shareNetwork_ = this.securityType_ === mojom.SecurityType.kNone;
         return;
       }
     }
