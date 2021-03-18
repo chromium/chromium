@@ -74,6 +74,7 @@ class StartSurfaceToolbarMediator {
     @StartSurfaceState
     private int mOverviewModeState;
     private boolean mIsGoogleSearchEngine;
+    private boolean mShouldShowStartSurfaceAsHomepage;
 
     private CallbackController mCallbackController = new CallbackController();
     private float mNonIncognitoHomepageTranslationY;
@@ -86,6 +87,7 @@ class StartSurfaceToolbarMediator {
             ObservableSupplier<Boolean> identityDiscStateSupplier,
             Supplier<ButtonData> identityDiscButtonSupplier,
             ObservableSupplier<Boolean> homepageEnabledSupplier,
+            ObservableSupplier<Boolean> startSurfaceAsHomepageSupplier,
             ObservableSupplier<Boolean> homepageManagedByPolicySupplier,
             OnClickListener homeButtonOnClickHandler,
             boolean shouldShowTabSwitcherButtonOnHomepage) {
@@ -107,6 +109,11 @@ class StartSurfaceToolbarMediator {
             mPropertyModel.set(
                     HOMEPAGE_MANAGED_BY_POLICY_SUPPLIER, homepageManagedByPolicySupplier);
             mPropertyModel.set(HOME_BUTTON_CLICK_HANDLER, homeButtonOnClickHandler);
+            startSurfaceAsHomepageSupplier.addObserver(
+                    mCallbackController.makeCancelable((showStartSurfaceAsHomepage) -> {
+                        mShouldShowStartSurfaceAsHomepage = showStartSurfaceAsHomepage;
+                        updateHomeButtonVisibility();
+                    }));
         }
         mShouldShowTabSwitcherButtonOnHomepage = shouldShowTabSwitcherButtonOnHomepage;
     }
@@ -338,9 +345,11 @@ class StartSurfaceToolbarMediator {
                 || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_TASKS_ONLY
                 || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_OMNIBOX_ONLY
                 || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_TRENDY_TERMS;
+        // If start surface is not shown as the homepage, home button shouldn't be shown on tab
+        // switcher page.
         mPropertyModel.set(HOME_BUTTON_IS_VISIBLE,
                 isShownTabswitcherState && !mPropertyModel.get(IS_INCOGNITO)
-                        && mShowHomeButtonOnTabSwitcher);
+                        && mShowHomeButtonOnTabSwitcher && mShouldShowStartSurfaceAsHomepage);
     }
 
     private void updateTabSwitcherButtonVisibility() {

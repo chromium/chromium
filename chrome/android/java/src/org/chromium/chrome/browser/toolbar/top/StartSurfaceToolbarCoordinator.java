@@ -59,6 +59,7 @@ public class StartSurfaceToolbarCoordinator {
             MenuButtonCoordinator menuButtonCoordinator,
             Supplier<ButtonData> identityDiscButtonSupplier, boolean isGridTabSwitcherEnabled,
             ObservableSupplier<Boolean> homepageEnabledSupplier,
+            ObservableSupplier<Boolean> startSurfaceAsHomepageSupplier,
             ObservableSupplier<Boolean> homepageManagedByPolicySupplier,
             OnClickListener homeButtonOnClickHandler) {
         mStub = startSurfaceToolbarStub;
@@ -90,7 +91,8 @@ public class StartSurfaceToolbarCoordinator {
                 StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB.getValue(),
                 StartSurfaceConfiguration.HOME_BUTTON_ON_GRID_TAB_SWITCHER.getValue(),
                 menuButtonCoordinator, identityDiscStateSupplier, identityDiscButtonSupplier,
-                homepageEnabledSupplier, homepageManagedByPolicySupplier, homeButtonOnClickHandler,
+                homepageEnabledSupplier, startSurfaceAsHomepageSupplier,
+                homepageManagedByPolicySupplier, homeButtonOnClickHandler,
                 StartSurfaceConfiguration.shouldShowNewSurfaceFromHomeButton());
 
         mThemeColorProvider = provider;

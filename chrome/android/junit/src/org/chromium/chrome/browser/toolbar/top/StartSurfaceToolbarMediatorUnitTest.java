@@ -103,6 +103,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
     private ButtonDataImpl mButtonData;
     private ButtonDataImpl mDisabledButtonData;
     private ObservableSupplierImpl<Boolean> mIdentityDiscStateSupplier;
+    private ObservableSupplierImpl<Boolean> mStartSurfaceAsHomepageSupplier;
 
     @Before
     public void setUp() {
@@ -118,6 +119,8 @@ public class StartSurfaceToolbarMediatorUnitTest {
         mButtonData = new ButtonDataImpl(false, mDrawable, mOnClickListener, 0, false, null, true);
         mDisabledButtonData = new ButtonDataImpl(false, null, null, 0, false, null, true);
         mIdentityDiscStateSupplier = new ObservableSupplierImpl<>();
+        mStartSurfaceAsHomepageSupplier = new ObservableSupplierImpl<>();
+        mStartSurfaceAsHomepageSupplier.set(true);
         doReturn(mButtonData)
                 .when(mIdentityDiscController)
                 .getForStartSurface(StartSurfaceState.SHOWN_HOMEPAGE);
@@ -714,6 +717,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
         mMediator.setStartSurfaceMode(true);
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_HOMEPAGE, true);
 
+        // Identity disc should be shown at start on homepage.
         assertEquals(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE), false);
         mButtonData.setCanShow(true);
         mButtonData.setButtonSpec(
@@ -730,6 +734,11 @@ public class StartSurfaceToolbarMediatorUnitTest {
         mLayoutStateObserverCaptor.getValue().onFinishedShowing(LayoutType.TAB_SWITCHER);
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_TABSWITCHER, true);
         assertEquals(mPropertyModel.get(TAB_SWITCHER_BUTTON_IS_VISIBLE), false);
+        assertEquals(mPropertyModel.get(HOME_BUTTON_IS_VISIBLE), true);
+
+        // Change homepage to customized.
+        mStartSurfaceAsHomepageSupplier.set(false);
+        assertEquals(mPropertyModel.get(HOME_BUTTON_IS_VISIBLE), false);
     }
 
     private void createMediator(boolean hideIncognitoSwitchWhenNoTabs) {
@@ -744,8 +753,8 @@ public class StartSurfaceToolbarMediatorUnitTest {
                 ()
                         -> mIdentityDiscController.getForStartSurface(
                                 mMediator.getOverviewModeStateForTesting()),
-                new ObservableSupplierImpl<>(), new ObservableSupplierImpl<>(), null,
-                shouldShowTabSwitcherButtonOnHomepage);
+                new ObservableSupplierImpl<>(), mStartSurfaceAsHomepageSupplier,
+                new ObservableSupplierImpl<>(), null, shouldShowTabSwitcherButtonOnHomepage);
 
         mMediator.setLayoutStateProvider(mLayoutStateProvider);
         verify(mLayoutStateProvider).addObserver(mLayoutStateObserverCaptor.capture());
