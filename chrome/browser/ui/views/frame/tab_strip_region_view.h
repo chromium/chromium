@@ -79,6 +79,10 @@ class TabStripRegionView final : public views::AccessiblePaneView,
   // whenever any input of the computation of the border's sizing changes.
   void UpdateNewTabButtonBorder();
 
+  // Changes the visibility of the scroll buttons, so they're hidden if they
+  // aren't needed to control tabstrip scrolling.
+  void UpdateScrollButtonVisibility();
+
   views::FlexLayout* layout_manager_ = nullptr;
   views::View* tab_strip_container_;
   views::View* reserved_grab_handle_space_;

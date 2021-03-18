@@ -214,9 +214,11 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
     trailing_scroll_button_ = AddChildView(CreateScrollButton(
         base::BindRepeating(&TabStripRegionView::ScrollTowardsTrailingTab,
                             base::Unretained(this))));
-    // Add 8dp of padding between the scroll buttons and the NTB.
-    trailing_scroll_button_->SetProperty(views::kMarginsKey,
-                                         gfx::Insets(0, 0, 0, 8));
+
+    // The space in dips between the scroll buttons and the NTB.
+    constexpr int kScrollButtonsTrailingMargin = 8;
+    trailing_scroll_button_->SetProperty(
+        views::kMarginsKey, gfx::Insets(0, 0, 0, kScrollButtonsTrailingMargin));
   }
 
   new_tab_button_ = AddChildView(std::make_unique<NewTabButton>(
@@ -363,6 +365,9 @@ void TabStripRegionView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 void TabStripRegionView::OnViewPreferredSizeChanged(View* view) {
   DCHECK_EQ(view, tab_strip_);
 
+  if (base::FeatureList::IsEnabled(features::kScrollableTabStripButtons))
+    UpdateScrollButtonVisibility();
+
   // The |tab_strip_|'s preferred size changing can change our own preferred
   // size; however, with scrolling enabled, the ScrollView does not propagate
   // ChildPreferredSizeChanged up the view hierarchy, instead assuming that its
@@ -380,7 +385,25 @@ int TabStripRegionView::GetTabStripAvailableWidth() const {
   // where we have never been laid out we will return something arbitrary (the
   // width of the region view is as good a choice as any, as it's strictly
   // larger than the tabstrip should be able to display).
-  return width_bound.min_of(width());
+  int tabstrip_available_width = width_bound.min_of(width());
+
+  // The scroll buttons should never prevent the tabstrip from being entirely
+  // visible (i.e. non-scrollable). In that sense, their layout space is always
+  // available for the tabstrip's use.
+  if (base::FeatureList::IsEnabled(features::kScrollableTabStripButtons) &&
+      leading_scroll_button_->GetVisible()) {
+    const int scroll_buttons_span =
+        new_tab_button_->x() - leading_scroll_button_->x();
+    // The NTB must immediately follow the scroll buttons for this approach
+    // to make sense. If these DCHECKS fail, we will need to revisit this
+    // assumption.
+    DCHECK_GT(scroll_buttons_span, 0);
+    DCHECK_EQ(GetIndexOf(trailing_scroll_button_) + 1,
+              GetIndexOf(new_tab_button_));
+    tabstrip_available_width += scroll_buttons_span;
+  }
+
+  return tabstrip_available_width;
 }
 
 void TabStripRegionView::ScrollTowardsLeadingTab() {
@@ -423,6 +446,16 @@ void TabStripRegionView::UpdateNewTabButtonBorder() {
   // account.
   new_tab_button_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets(extra_vertical_space / 2, 0, 0, kHorizontalInset)));
+}
+
+void TabStripRegionView::UpdateScrollButtonVisibility() {
+  DCHECK(base::FeatureList::IsEnabled(features::kScrollableTabStripButtons));
+  // Make the scroll buttons visible only if the tabstrip can be scrolled.
+  bool is_scrollable =
+      tab_strip_->GetMinimumSize().width() > GetTabStripAvailableWidth();
+
+  leading_scroll_button_->SetVisible(is_scrollable);
+  trailing_scroll_button_->SetVisible(is_scrollable);
 }
 
 BEGIN_METADATA(TabStripRegionView, views::AccessiblePaneView)
