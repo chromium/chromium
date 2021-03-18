@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -334,8 +335,14 @@ class PageTextObserverSingleProcessBrowserTest
   }
 };
 
+#if defined(OS_MAC)
+// https://crbug.com/1189556
+#define MAYBE_SameProcessIframe DISABLED_SameProcessIframe
+#else
+#define MAYBE_SameProcessIframe SameProcessIframe
+#endif
 IN_PROC_BROWSER_TEST_F(PageTextObserverSingleProcessBrowserTest,
-                       SameProcessIframe) {
+                       MAYBE_SameProcessIframe) {
   PageTextObserver::CreateForWebContents(web_contents());
   ASSERT_TRUE(observer());
 
