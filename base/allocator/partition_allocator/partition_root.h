@@ -73,11 +73,11 @@ namespace base {
 
 namespace internal {
 // Avoid including partition_address_space.h from this .h file, by moving the
-// call to IfManagedByPartitionAllocNormalBuckets into the .cc file.
+// call to IsManagedByPartitionAllocBRPPool into the .cc file.
 #if DCHECK_IS_ON()
-BASE_EXPORT void DCheckIfManagedByPartitionAllocNormalBuckets(void* ptr);
+BASE_EXPORT void DCheckIfManagedByPartitionAllocBRPPool(void* ptr);
 #else
-ALWAYS_INLINE void DCheckIfManagedByPartitionAllocNormalBuckets(void*) {}
+ALWAYS_INLINE void DCheckIfManagedByPartitionAllocBRPPool(void*) {}
 #endif
 }  // namespace internal
 
@@ -258,7 +258,7 @@ struct BASE_EXPORT PartitionRoot {
   ALWAYS_INLINE static bool IsValidSlotSpan(SlotSpan* slot_span);
   ALWAYS_INLINE static PartitionRoot* FromSlotSpan(SlotSpan* slot_span);
   ALWAYS_INLINE static PartitionRoot* FromSuperPage(char* super_page);
-  ALWAYS_INLINE static PartitionRoot* FromPointerInNormalBucketPool(char* ptr);
+  ALWAYS_INLINE static PartitionRoot* FromPointerInNormalBuckets(char* ptr);
 
   ALWAYS_INLINE void IncreaseCommittedPages(size_t len);
   ALWAYS_INLINE void DecreaseCommittedPages(size_t len);
@@ -353,12 +353,15 @@ struct BASE_EXPORT PartitionRoot {
     return total_size_of_committed_pages.load(std::memory_order_relaxed);
   }
 
-  bool UsesGigaCage() const {
-    return features::IsPartitionAllocGigaCageEnabled()
+  bool UseBRPPool() const {
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
-           && allow_ref_count
+    return allow_ref_count;
+#else
+    // This is counterintuitive, but when BRP isn't used, make all normal bucket
+    // allocations fall into the same pool, and BRP pool is a good place for
+    // that. PCScan requires this.
+    return true;
 #endif
-        ;
   }
 
   ALWAYS_INLINE bool IsQuarantineAllowed() const {
@@ -684,12 +687,15 @@ ALWAYS_INLINE constexpr size_t BucketIndexLookup::GetIndex(size_t size) {
 }
 
 // Gets the SlotSpanMetadata object of the slot span that contains |ptr|. It's
-// used with intention to do obtain the slot size. CAUTION! It works well for
-// normal buckets, but for direct-mapped allocations it'll only work if |ptr| is
-// in the first partition page of the allocation.
+// used with intention to do obtain the slot size.
+//
+// CAUTION! Use only for normal buckets. Using on direct-mapped allocations may
+// lead to undefined behavior.
 template <bool thread_safe>
 ALWAYS_INLINE internal::SlotSpanMetadata<thread_safe>*
 PartitionAllocGetSlotSpanForSizeQuery(void* ptr) {
+  // TODO(bartekn): Add a "is in normal buckets" DCHECK.
+
   // No need to lock here. Only |ptr| being freed by another thread could
   // cause trouble, and the caller is responsible for that not happening.
   auto* slot_span =
@@ -722,7 +728,8 @@ ALWAYS_INLINE void* PartitionAllocGetSlotStart(void* ptr) {
   // care of that detail.
   ptr = reinterpret_cast<char*>(ptr) - kPartitionPastAllocationAdjustment;
 
-  internal::DCheckIfManagedByPartitionAllocNormalBuckets(ptr);
+  internal::DCheckIfManagedByPartitionAllocBRPPool(ptr);
+
   auto* slot_span =
       internal::PartitionAllocGetSlotSpanForSizeQuery<internal::ThreadSafe>(
           ptr);
@@ -858,19 +865,16 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
 
     // On Android, malloc() interception is more fragile than on other
     // platforms, as we use wrapped symbols. However, the GigaCage allows us to
-    // quickly tell that a pointer was allocated with PartitionAlloc. GigaCage
-    // is unfortunately not used for the aligned partition when BackupRefPtr is
-    // enabled, yielding the set of conditions below.
+    // quickly tell that a pointer was allocated with PartitionAlloc.
     //
     // This is a crash to detect imperfect symbol interception. However, we can
     // forward allocations we don't own to the system malloc() implementation in
     // these rare cases, assuming that some remain.
-#if defined(OS_ANDROID) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    !BUILDFLAG(USE_BACKUP_REF_PTR)
+#if defined(OS_ANDROID) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   // GigaCage is always enabled on Android and is needed for PA_CHECK below.
   PA_DCHECK(features::IsPartitionAllocGigaCageEnabled());
-  PA_CHECK(IsManagedByPartitionAllocNormalBuckets(ptr) ||
-           IsManagedByPartitionAllocDirectMap(ptr));
+  PA_CHECK(IsManagedByPartitionAllocBRPPool(ptr) ||
+           IsManagedByPartitionAllocNonBRPPool(ptr));
 #endif
 
   // Call FromSlotInnerPtr instead of FromSlotStartPtr because the pointer
@@ -1048,10 +1052,12 @@ PartitionRoot<thread_safe>::FromSuperPage(char* super_page) {
   return root;
 }
 
+// CAUTION! Use only for normal buckets. Using on direct-mapped allocations may
+// lead to undefined behavior.
 template <bool thread_safe>
 ALWAYS_INLINE PartitionRoot<thread_safe>*
-PartitionRoot<thread_safe>::FromPointerInNormalBucketPool(char* ptr) {
-  PA_DCHECK(!IsManagedByPartitionAllocDirectMap(ptr));
+PartitionRoot<thread_safe>::FromPointerInNormalBuckets(char* ptr) {
+  // TODO(bartekn): Add a "is in normal buckets" DCHECK.
   char* super_page = reinterpret_cast<char*>(reinterpret_cast<uintptr_t>(ptr) &
                                              kSuperPageBaseMask);
   return FromSuperPage(super_page);

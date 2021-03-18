@@ -2855,7 +2855,7 @@ TEST_F(PartitionAllocTest, MAYBE_Bookkeeping) {
         PartitionRoot<ThreadSafe>::GetDirectMapMetadataAndGuardPagesSize();
     size_t alignment = PageAllocationGranularity();
 #if defined(PA_HAS_64_BITS_POINTERS)
-    if (root.UsesGigaCage())
+    if (features::IsPartitionAllocGigaCageEnabled())
       alignment = kSuperPageSize;
 #endif
     size_t expected_direct_map_size =

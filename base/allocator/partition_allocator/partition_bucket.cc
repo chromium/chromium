@@ -38,11 +38,12 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
   PA_DCHECK(slot_size <= map_size);
 
   char* ptr = nullptr;
-  // Allocate from GigaCage, if enabled.
+  // Allocate from GigaCage, if enabled. In this case, use non-BRP pool, because
+  // BackupRefPtr isn't supported in direct maps.
   bool with_giga_cage = features::IsPartitionAllocGigaCageEnabled();
   if (with_giga_cage) {
     ptr = internal::AddressPoolManager::GetInstance()->Reserve(
-        GetDirectMapPool(), nullptr, reserved_size);
+        GetNonBRPPool(), nullptr, reserved_size);
   } else {
     ptr = reinterpret_cast<char*>(
         AllocPages(nullptr, reserved_size, kSuperPageAlignment,
@@ -71,7 +72,7 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
   if (!ok) {
     if (with_giga_cage) {
       internal::AddressPoolManager::GetInstance()->UnreserveAndDecommit(
-          GetDirectMapPool(), ptr, reserved_size);
+          GetNonBRPPool(), ptr, reserved_size);
     } else {
       FreePages(ptr, reserved_size);
     }
@@ -267,13 +268,12 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSuperPage(
   // architectures.
   char* requested_address = root->next_super_page;
   char* super_page = nullptr;
-  // Allocate from GigaCage, if enabled. However, the exception to this is when
-  // ref-count isn't allowed, as CheckedPtr assumes that everything inside
-  // GigaCage uses ref-count (specifically, inside the GigaCage's normal bucket
-  // pool).
-  if (root->UsesGigaCage()) {
+  // Allocate from GigaCage, if enabled. Route to the appropriate GigaCage pool
+  // based on BackupRefPtr support.
+  if (features::IsPartitionAllocGigaCageEnabled()) {
     super_page = AddressPoolManager::GetInstance()->Reserve(
-        GetNormalBucketPool(), requested_address, kSuperPageSize);
+        root->UseBRPPool() ? GetBRPPool() : GetNonBRPPool(), requested_address,
+        kSuperPageSize);
   } else {
     super_page = reinterpret_cast<char*>(
         AllocPages(requested_address, kSuperPageSize, kSuperPageAlignment,

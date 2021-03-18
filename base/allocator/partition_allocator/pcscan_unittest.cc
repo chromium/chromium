@@ -170,7 +170,7 @@ template <typename SourceList, typename ValueList>
 void TestDanglingReference(PCScanTest& test,
                            SourceList* source,
                            ValueList* value) {
-  auto* value_root = ThreadSafePartitionRoot::FromPointerInNormalBucketPool(
+  auto* value_root = ThreadSafePartitionRoot::FromPointerInNormalBuckets(
       reinterpret_cast<char*>(value));
   {
     // Free |value| and leave the dangling reference in |source|.

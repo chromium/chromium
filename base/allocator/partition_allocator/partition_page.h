@@ -289,7 +289,10 @@ static_assert(offsetof(SubsequentPageMetadata, ref_count_buffer) %
               "");
 #endif
 
+// CAUTION! Use only for normal buckets. Using on direct-mapped allocations may
+// lead to undefined behavior.
 ALWAYS_INLINE char* PartitionSuperPageToMetadataArea(char* ptr) {
+  // TODO(bartekn): Add a "is in normal buckets" DCHECK.
   uintptr_t pointer_as_uint = reinterpret_cast<uintptr_t>(ptr);
   PA_DCHECK(!(pointer_as_uint & kSuperPageOffsetMask));
   // The metadata area is exactly one system page (the guard page) into the
@@ -337,8 +340,10 @@ ALWAYS_INLINE char* SuperPagePayloadEnd(char* super_page_base) {
   return super_page_base + kSuperPageSize - PartitionPageSize();
 }
 
+// CAUTION! Use only for normal buckets. Using on direct-mapped allocations may
+// lead to undefined behavior.
 ALWAYS_INLINE bool IsWithinSuperPagePayload(char* ptr, bool with_quarantine) {
-  PA_DCHECK(!IsManagedByPartitionAllocDirectMap(ptr));
+  // TODO(bartekn): Add a "is in normal buckets" DCHECK.
   char* super_page_base = reinterpret_cast<char*>(
       reinterpret_cast<uintptr_t>(ptr) & kSuperPageBaseMask);
   char* payload_start = SuperPagePayloadBegin(super_page_base, with_quarantine);
@@ -350,12 +355,15 @@ ALWAYS_INLINE bool IsWithinSuperPagePayload(char* ptr, bool with_quarantine) {
 // an existing slot span. The function may return a pointer even inside a
 // decommitted or free slot span, it's the caller responsibility to check if
 // memory is actually allocated.
-// The precondition is that |maybe_inner_ptr| must point to payload of a valid
-// super page.
+//
+// Furthermore, |maybe_inner_ptr| must point to payload of a valid super page.
+//
+// CAUTION! Use only for normal buckets. Using on direct-mapped allocations may
+// lead to undefined behavior.
 template <bool thread_safe>
 ALWAYS_INLINE char* GetSlotStartInSuperPage(char* maybe_inner_ptr) {
 #if DCHECK_IS_ON()
-  PA_DCHECK(!IsManagedByPartitionAllocDirectMap(maybe_inner_ptr));
+  // TODO(bartekn): Add a "is in normal buckets" DCHECK.
   char* super_page_ptr = reinterpret_cast<char*>(
       reinterpret_cast<uintptr_t>(maybe_inner_ptr) & kSuperPageBaseMask);
   auto* extent = reinterpret_cast<PartitionSuperPageExtentEntry<thread_safe>*>(
@@ -405,9 +413,13 @@ ALWAYS_INLINE void* PartitionPage<thread_safe>::ToSlotSpanStartPtr(
 // Converts from a pointer inside a slot into a pointer to the PartitionPage
 // object (within super pages's metadata) that describes the first partition
 // page of a slot span containing that slot.
+//
+// CAUTION! Use only for normal buckets. Using on direct-mapped allocations may
+// lead to undefined behavior.
 template <bool thread_safe>
 ALWAYS_INLINE PartitionPage<thread_safe>*
 PartitionPage<thread_safe>::FromSlotInnerPtr(void* ptr) {
+  // TODO(bartekn): Add a "is in normal buckets" DCHECK.
   uintptr_t pointer_as_uint = reinterpret_cast<uintptr_t>(ptr);
   char* super_page_ptr =
       reinterpret_cast<char*>(pointer_as_uint & kSuperPageBaseMask);
@@ -445,11 +457,14 @@ PartitionPage<thread_safe>::FromSlotStartPtr(void* slot_start) {
 
 // Converts from a pointer to the SlotSpanMetadata object (within super pages's
 // metadata) into a pointer to the beginning of the slot span.
+//
+// CAUTION! Use only for normal buckets. Using on direct-mapped allocations may
+// lead to undefined behavior.
 template <bool thread_safe>
 ALWAYS_INLINE void* SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(
     const SlotSpanMetadata* slot_span) {
+  // TODO(bartekn): Add a "is in normal buckets" DCHECK.
   uintptr_t pointer_as_uint = reinterpret_cast<uintptr_t>(slot_span);
-
   uintptr_t super_page_offset = (pointer_as_uint & kSuperPageOffsetMask);
 
   // A valid |page| must be past the first guard System page and within
@@ -597,11 +612,13 @@ ALWAYS_INLINE void DeferredUnmap::Run() {
 
 enum class QuarantineBitmapType { kMutator, kScanner };
 
+// CAUTION! Use only for normal buckets. Using on direct-mapped allocations may
+// lead to undefined behavior.
 ALWAYS_INLINE QuarantineBitmap* QuarantineBitmapFromPointer(
     QuarantineBitmapType type,
     size_t pcscan_epoch,
     void* ptr) {
-  PA_DCHECK(!IsManagedByPartitionAllocDirectMap(ptr));
+  // TODO(bartekn): Add a "is in normal buckets" DCHECK.
   auto* super_page_base = reinterpret_cast<char*>(
       reinterpret_cast<uintptr_t>(ptr) & kSuperPageBaseMask);
   auto* first_bitmap = SuperPageQuarantineBitmaps(super_page_base);

@@ -17,48 +17,61 @@ namespace base {
 
 namespace internal {
 
-// AddressPoolManagerBitmap is the bitmap that tracks whether a given address is
-// managed by the direct map or normal buckets.
+// AddressPoolManagerBitmap is a set of bitmaps that track whether a given
+// address is in a pool that supports BackupRefPtr, or in a pool that doesn't
+// support it. All PartitionAlloc allocations must be in either of the pools.
+//
+// This code is specific to 32-bit systems.
 class BASE_EXPORT AddressPoolManagerBitmap {
  public:
   static constexpr uint64_t kGiB = 1024 * 1024 * 1024ull;
   static constexpr uint64_t kAddressSpaceSize = 4ull * kGiB;
 
+  // BRP pool includes only normal buckets. 2MB granularity is used, unless
+  // MAKE_GIGACAGE_GRANULARITY_PARTITION_PAGE_SIZE is on, in which case we need
+  // to lower granularity down to partition page level to eliminate the guard
+  // pages at the end. This is needed so that pointers immediately past an
+  // allocation that immediately precede a super page in BRP pool don't
+  // accidentally fall into that pool.
 #if BUILDFLAG(MAKE_GIGACAGE_GRANULARITY_PARTITION_PAGE_SIZE)
-  static constexpr size_t kBitShiftOfNormalBucketBitmap = PartitionPageShift();
-  static constexpr size_t kBytesPer1BitOfNormalBucketBitmap =
-      PartitionPageSize();
-  static constexpr size_t kGuardOffsetOfNormalBucketBitmap = 1;
-  static constexpr size_t kGuardBitsOfNormalBucketBitmap = 2;
+  static constexpr size_t kBitShiftOfBRPPoolBitmap = PartitionPageShift();
+  static constexpr size_t kBytesPer1BitOfBRPPoolBitmap = PartitionPageSize();
+  static constexpr size_t kGuardOffsetOfBRPPoolBitmap = 1;
+  static constexpr size_t kGuardBitsOfBRPPoolBitmap = 2;
 #else
-  static constexpr size_t kBitShiftOfNormalBucketBitmap = kSuperPageShift;
-  static constexpr size_t kBytesPer1BitOfNormalBucketBitmap = kSuperPageSize;
-  static constexpr size_t kGuardOffsetOfNormalBucketBitmap = 0;
-  static constexpr size_t kGuardBitsOfNormalBucketBitmap = 0;
+  static constexpr size_t kBitShiftOfBRPPoolBitmap = kSuperPageShift;
+  static constexpr size_t kBytesPer1BitOfBRPPoolBitmap = kSuperPageSize;
+  static constexpr size_t kGuardOffsetOfBRPPoolBitmap = 0;
+  static constexpr size_t kGuardBitsOfBRPPoolBitmap = 0;
 #endif
-  static constexpr size_t kNormalBucketBits =
-      kAddressSpaceSize / kBytesPer1BitOfNormalBucketBitmap;
-  static constexpr size_t kDirectMapBits =
+  static constexpr size_t kBRPPoolBits =
+      kAddressSpaceSize / kBytesPer1BitOfBRPPoolBitmap;
+
+  // Non-BRP pool includes both normal bucket and direct map allocations, so
+  // PageAllocationGranularity() has to be used. No need to eliminate guard
+  // pages at the ends in the MAKE_GIGACAGE_GRANULARITY_PARTITION_PAGE_SIZE
+  // case, as this is a BackupRefPtr-specific concern.
+  static constexpr size_t kNonBRPPoolBits =
       kAddressSpaceSize / PageAllocationGranularity();
 
-  static bool IsManagedByDirectMapPool(const void* address) {
+  // Returns false for nullptr.
+  static bool IsManagedByNonBRPPool(const void* address) {
     uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
-    // It is safe to read |directmap_bits_| without a lock since the caller is
-    // responsible for guaranteeing that the address is inside a valid
+    // It is safe to read |non_brp_pool_bits_| without a lock since the caller
+    // is responsible for guaranteeing that the address is inside a valid
     // allocation and the deallocation call won't race with this call.
-    return TS_UNCHECKED_READ(directmap_bits_)
+    return TS_UNCHECKED_READ(non_brp_pool_bits_)
         .test(address_as_uintptr / PageAllocationGranularity());
   }
 
-  // BackupRefPtrImpl hardcodes assumption:
-  // IsManagedByNormalBucketPool(nullptr) == false
-  static bool IsManagedByNormalBucketPool(const void* address) {
+  // Returns false for nullptr.
+  static bool IsManagedByBRPPool(const void* address) {
     uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
-    // It is safe to read |normal_bucket_bits_| without a lock since the caller
+    // It is safe to read |brp_pool_bits_| without a lock since the caller
     // is responsible for guaranteeing that the address is inside a valid
     // allocation and the deallocation call won't race with this call.
-    return TS_UNCHECKED_READ(normal_bucket_bits_)
-        .test(address_as_uintptr >> kBitShiftOfNormalBucketBitmap);
+    return TS_UNCHECKED_READ(brp_pool_bits_)
+        .test(address_as_uintptr >> kBitShiftOfBRPPoolBitmap);
   }
 
  private:
@@ -66,22 +79,20 @@ class BASE_EXPORT AddressPoolManagerBitmap {
 
   static Lock& GetLock();
 
-  static std::bitset<kDirectMapBits> directmap_bits_ GUARDED_BY(GetLock());
-  static std::bitset<kNormalBucketBits> normal_bucket_bits_
-      GUARDED_BY(GetLock());
+  static std::bitset<kNonBRPPoolBits> non_brp_pool_bits_ GUARDED_BY(GetLock());
+  static std::bitset<kBRPPoolBits> brp_pool_bits_ GUARDED_BY(GetLock());
 };
 
 }  // namespace internal
 
-ALWAYS_INLINE bool IsManagedByPartitionAllocDirectMap(const void* address) {
-  return internal::AddressPoolManagerBitmap::IsManagedByDirectMapPool(address);
+// Returns false for nullptr.
+ALWAYS_INLINE bool IsManagedByPartitionAllocNonBRPPool(const void* address) {
+  return internal::AddressPoolManagerBitmap::IsManagedByNonBRPPool(address);
 }
 
-// BackupRefPtrImpl hardcodes assumption:
-// IsManagedByPartitionAllocNormalBuckets(nullptr) == false
-ALWAYS_INLINE bool IsManagedByPartitionAllocNormalBuckets(void* address) {
-  return internal::AddressPoolManagerBitmap::IsManagedByNormalBucketPool(
-      address);
+// Returns false for nullptr.
+ALWAYS_INLINE bool IsManagedByPartitionAllocBRPPool(void* address) {
+  return internal::AddressPoolManagerBitmap::IsManagedByBRPPool(address);
 }
 
 }  // namespace base

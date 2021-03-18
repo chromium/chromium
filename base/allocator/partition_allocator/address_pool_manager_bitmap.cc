@@ -8,6 +8,7 @@
 #include "base/lazy_instance.h"
 
 #if !defined(PA_HAS_64_BITS_POINTERS)
+
 namespace base {
 namespace internal {
 
@@ -21,10 +22,10 @@ Lock& AddressPoolManagerBitmap::GetLock() {
   return g_lock.Get();
 }
 
-std::bitset<AddressPoolManagerBitmap::kDirectMapBits>
-    AddressPoolManagerBitmap::directmap_bits_;  // GUARDED_BY(GetLock())
-std::bitset<AddressPoolManagerBitmap::kNormalBucketBits>
-    AddressPoolManagerBitmap::normal_bucket_bits_;  // GUARDED_BY(GetLock())
+std::bitset<AddressPoolManagerBitmap::kNonBRPPoolBits>
+    AddressPoolManagerBitmap::non_brp_pool_bits_;  // GUARDED_BY(GetLock())
+std::bitset<AddressPoolManagerBitmap::kBRPPoolBits>
+    AddressPoolManagerBitmap::brp_pool_bits_;  // GUARDED_BY(GetLock())
 
 }  // namespace internal
 }  // namespace base
