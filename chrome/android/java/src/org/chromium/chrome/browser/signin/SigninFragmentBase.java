@@ -243,8 +243,7 @@ public abstract class SigninFragmentBase
                         requireContext(), R.drawable.ic_account_child_20dp)
                 : ProfileDataCache.createWithDefaultImageSizeAndNoBadge(requireContext());
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DEPRECATE_MENAGERIE_API)
-                && mSigninAccessPoint == SigninAccessPoint.START_PAGE) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DEPRECATE_MENAGERIE_API)) {
             mProfileDataCache.disableGmsProfileDataSource();
         }
 
