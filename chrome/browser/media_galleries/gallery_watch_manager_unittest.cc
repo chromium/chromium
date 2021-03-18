@@ -388,7 +388,12 @@ TEST_F(GalleryWatchManagerTest, MAYBE_DropWatchOnStorageRemoved) {
   success_loop.Run();
 }
 
-TEST_F(GalleryWatchManagerTest, TestWatchOperation) {
+#if defined(OS_CHROMEOS)
+#define MAYBE_TestWatchOperation DISABLED_TestWatchOperation
+#else
+#define MAYBE_TestWatchOperation TestWatchOperation
+#endif
+TEST_F(GalleryWatchManagerTest, MAYBE_TestWatchOperation) {
   if (!GalleryWatchesSupported())
     return;
 
