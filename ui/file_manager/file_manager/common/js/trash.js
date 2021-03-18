@@ -25,7 +25,7 @@
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {util} from './util.m.js';
 // #import {FakeEntryImpl, CombinedReaders} from './files_app_entry_types.m.js';
-// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+// #import {VolumeManagerCommon} from './volume_manager_types.m.js';
 // clang-format on
 
 /**

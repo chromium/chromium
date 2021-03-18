@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import * as wrappedVolumeManagerCommon from '../../base/js/volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
+// #import * as wrappedVolumeManagerCommon from '../common/js/volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
 // #import {FilesAppEntry, FakeEntry} from './files_app_entry_interfaces.m.js';
 // clang-format on
 

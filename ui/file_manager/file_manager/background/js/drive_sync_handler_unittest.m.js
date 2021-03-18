@@ -6,7 +6,7 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals,assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 
-import {installMockChrome} from '../../../base/js/mock_chrome.m.js';
+import {installMockChrome} from '../../common/js/mock_chrome.m.js';
 import {ProgressItemState} from '../../common/js/progress_center_common.m.js';
 
 import {DriveSyncHandlerImpl} from './drive_sync_handler.m.js';

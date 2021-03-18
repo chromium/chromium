@@ -12,7 +12,7 @@
 // #import {VolumeInfo} from '../../externs/volume_info.m.js';
 // #import {VolumeManager} from '../../externs/volume_manager.m.js';
 // #import {FileType} from './file_type.m.js';
-// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+// #import {VolumeManagerCommon} from './volume_manager_types.m.js';
 // clang-format on
 
 // Namespace

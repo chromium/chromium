@@ -10,7 +10,7 @@
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {LocationLine} from './ui/location_line.m.js';
 // #import {str, strf} from '../../common/js/util.m.js';
-// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 // #import {SearchBox} from './ui/search_box.m.js';
 // clang-format on
 

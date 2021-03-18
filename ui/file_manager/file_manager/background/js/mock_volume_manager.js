@@ -8,7 +8,7 @@
 // #import {VolumeInfoListImpl} from './volume_info_list_impl.m.js';
 // #import * as wrappedVolumeManagerFactory from './volume_manager_factory.m.js'; const {volumeManagerFactory} = wrappedVolumeManagerFactory;
 // #import {VolumeManagerImpl} from './volume_manager_impl.m.js';
-// #import * as wrappedVolumeManagerCommon from '../../../base/js/volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
+// #import * as wrappedVolumeManagerCommon from '../../common/js/volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
 // #import {MockEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';
 // #import * as wrappedUtil from '../../common/js/util.m.js'; const {util} = wrappedUtil;
 // #import {str} from '../../common/js/util.m.js';

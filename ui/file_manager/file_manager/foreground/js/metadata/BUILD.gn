@@ -121,7 +121,7 @@ js_unittest("content_metadata_provider_unittest.m") {
     ":content_metadata_provider.m",
     ":metadata_request.m",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/base/js:test_error_reporting.m",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
   ]
 }
 
@@ -191,8 +191,8 @@ js_unittest("external_metadata_provider_unittest.m") {
     ":external_metadata_provider.m",
     ":metadata_request.m",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/base/js:mock_chrome.m",
-    "//ui/file_manager/base/js:test_error_reporting.m",
+    "//ui/file_manager/file_manager/common/js:mock_chrome.m",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
   ]
 }
 
@@ -215,7 +215,7 @@ js_unittest("file_system_metadata_provider_unittest.m") {
     ":file_system_metadata_provider.m",
     ":metadata_request.m",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/base/js:test_error_reporting.m",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
   ]
 }
 
@@ -424,7 +424,7 @@ js_unittest("metadata_model_unittest.m") {
     ":metadata_model.m",
     ":metadata_provider.m",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/base/js:test_error_reporting.m",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
   ]
 }
 
@@ -515,7 +515,7 @@ js_library("multi_metadata_provider.m") {
     ":metadata_item.m",
     ":metadata_provider.m",
     ":metadata_request.m",
-    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
     "//ui/file_manager/file_manager/externs:volume_manager.m",
     "//ui/webui/resources/js:assert.m",
   ]
@@ -531,8 +531,8 @@ js_unittest("multi_metadata_provider_unittest.m") {
     ":metadata_request.m",
     ":multi_metadata_provider.m",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/base/js:test_error_reporting.m",
-    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
     "//ui/file_manager/file_manager/externs:volume_manager.m",
   ]
 }
@@ -557,7 +557,7 @@ js_unittest("thumbnail_model_unittest.m") {
     ":metadata_model.m",
     ":thumbnail_model.m",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/base/js:test_error_reporting.m",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
   ]
 }
 

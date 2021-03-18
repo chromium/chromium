@@ -10,7 +10,7 @@ js_type_check("closure_compile") {
   deps = [
     ":remote_call",
     ":test_util",
-    "//ui/file_manager/base/js:volume_manager_types",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
   ]
 }
 

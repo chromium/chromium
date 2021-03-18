@@ -257,3 +257,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, UtilTest) {
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, VolumeManagerTest) {
   RunTestURL("background/js/volume_manager_unittest.m_gen.html");
 }
+
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, VolumeManagerTypesTest) {
+  RunTestURL("common/js/volume_manager_types_unittest.m_gen.html");
+}

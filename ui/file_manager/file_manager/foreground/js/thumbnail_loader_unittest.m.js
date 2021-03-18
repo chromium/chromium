@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 import {assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
-import {reportPromise} from '../../../base/js/test_error_reporting.m.js';
+
 import {ImageLoaderClient} from '../../../image_loader/image_loader_client.m.js';
 import {LoadImageRequest} from '../../../image_loader/load_image_request.m.js';
 import {MockEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';
+import {reportPromise} from '../../common/js/test_error_reporting.m.js';
+
 import {ThumbnailLoader} from './thumbnail_loader.m.js';
 
 function getLoadTarget(entry, metadata) {

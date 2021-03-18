@@ -26,7 +26,7 @@
 // #import {DirectoryTree, DirectoryItem} from './ui/directory_tree.m.js';
 // #import {EntryList} from '../../common/js/files_app_entry_types.m.js';
 // #import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
-// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 // #import {util, str, strf} from '../../common/js/util.m.js';
 // #import {DialogType} from './dialog_type.m.js';
 // #import {List} from 'chrome://resources/js/cr/ui/list.m.js';

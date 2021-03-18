@@ -6,7 +6,7 @@
 // #import {VolumeInfo} from '../../../externs/volume_info.m.js';
 // #import {VolumeManager} from '../../../externs/volume_manager.m.js';
 // #import {DirectoryModel} from '../directory_model.m.js';
-// #import {VolumeManagerCommon} from '../../../../base/js/volume_manager_types.m.js';
+// #import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.m.js';
 // #import {constants} from '../constants.m.js';
 // #import {HoldingSpaceUtil} from '../holding_space_util.m.js';
 // #import {queryRequiredElement} from 'chrome://resources/js/util.m.js';

@@ -11,7 +11,7 @@
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {DialogFooter} from './ui/dialog_footer.m.js';
 // #import {util, str} from '../../common/js/util.m.js';
-// #import {VolumeManagerCommon, AllowedPaths} from '../../../base/js/volume_manager_types.m.js';
+// #import {VolumeManagerCommon, AllowedPaths} from '../../common/js/volume_manager_types.m.js';
 // #import {DialogType} from './dialog_type.m.js';
 // #import {FileSelectionHandler} from './file_selection.m.js';
 // #import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';

@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {AllowedPaths} from '../../../base/js/volume_manager_types.m.js';
+// clang-format off
+// #import {AllowedPaths} from '../../common/js/volume_manager_types.m.js';
 // #import {DialogType} from './dialog_type.m.js';
+// clang-format on
 
 /**
  * @typedef {{

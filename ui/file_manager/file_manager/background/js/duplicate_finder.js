@@ -8,7 +8,7 @@
  */
 
 // clang-format off
-// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 
 // #import {VolumeManager} from '../../externs/volume_manager.m.js';
 // #import {importerHistoryInterfaces} from '../../externs/background/import_history.m.js';

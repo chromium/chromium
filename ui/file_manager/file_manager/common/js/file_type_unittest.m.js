@@ -4,7 +4,8 @@
 
 import {FileType} from './file_type.m.js';
 import {MockFileSystem} from './mock_entry.m.js';
-import * as wrappedVolumeManagerCommon from '../../../base/js/volume_manager_types.m.js';
+import * as wrappedVolumeManagerCommon from './volume_manager_types.m.js';
+
 const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
 import {assertEquals} from 'chrome://test/chai_assert.js';
 

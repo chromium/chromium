@@ -4,7 +4,7 @@
 
 import {assertEquals} from 'chrome://test/chai_assert.js';
 
-import {MockChromeStorageAPI} from '../../base/js/mock_chrome.m.js';
+import {MockChromeStorageAPI} from '../../file_manager/common/js/mock_chrome.m.js';
 
 import {NativeControlsVideoPlayer} from './video_player_native_controls.m.js';
 

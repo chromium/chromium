@@ -37,7 +37,6 @@ group("closure_compile") {
   deps = [
     "audio_player/elements:closure_compile",
     "audio_player/js:closure_compile",
-    "base/js:closure_compile",
     "file_manager/background/js:closure_compile",
     "file_manager/common/js:closure_compile",
     "file_manager/cws_widget:closure_compile",
@@ -58,7 +57,6 @@ group("closure_compile") {
 group("unit_test_data") {
   testonly = true
   deps = [
-    "base/js:js_test_gen_html",
     "file_manager/background/js:js_test_gen_html_modules",
     "file_manager/common/js:js_test_gen_html_modules",
     "file_manager/foreground/elements:js_test_gen_html_modules",
@@ -124,26 +122,24 @@ preprocess_if_expr("preprocess_generated") {
     "audio_player/elements/control_panel.m.js",
     "audio_player/elements/repeat_button.m.js",
 
-    # Base:
-    "base/js/app_util.m.js",
-    "base/js/error_counter.m.js",
-    "base/js/filtered_volume_manager.m.js",
-    "base/js/mediasession_types.m.js",
-    "base/js/volume_manager_types.m.js",
-
     # Common:
+    "file_manager/common/js/app_util.m.js",
     "file_manager/common/js/async_util.m.js",
+    "file_manager/common/js/error_counter.m.js",
     "file_manager/common/js/file_operation_common.m.js",
     "file_manager/common/js/file_type.m.js",
     "file_manager/common/js/files_app_entry_types.m.js",
+    "file_manager/common/js/filtered_volume_manager.m.js",
     "file_manager/common/js/importer_common.m.js",
     "file_manager/common/js/lru_cache.m.js",
+    "file_manager/common/js/mediasession_types.m.js",
     "file_manager/common/js/metrics.m.js",
     "file_manager/common/js/metrics_base.m.js",
     "file_manager/common/js/progress_center_common.m.js",
     "file_manager/common/js/storage_adapter.m.js",
     "file_manager/common/js/trash.m.js",
     "file_manager/common/js/util.m.js",
+    "file_manager/common/js/volume_manager_types.m.js",
 
     # Externs:
     "file_manager/externs/background/background_base.m.js",
@@ -374,7 +370,6 @@ preprocess_if_expr("preprocess_generated") {
   deps = [
     "//ui/file_manager/audio_player/elements:elements",
     "//ui/file_manager/audio_player/js:modulize",
-    "//ui/file_manager/base/js:modulize",
     "//ui/file_manager/file_manager:gen_main_html",
     "//ui/file_manager/file_manager/background/js:modulize",
     "//ui/file_manager/file_manager/common/js:modulize",

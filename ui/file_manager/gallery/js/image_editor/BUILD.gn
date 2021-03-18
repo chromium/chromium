@@ -165,7 +165,7 @@ js_unittest("image_encoder_unittest.m") {
     ":image_encoder.m",
     ":test_util.m",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/base/js:test_error_reporting.m",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_item.m",
   ]
   externs_list =

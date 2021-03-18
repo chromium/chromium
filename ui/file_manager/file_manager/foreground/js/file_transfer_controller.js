@@ -19,7 +19,7 @@
 // #import {FileSelectionHandler} from './file_selection.m.js';
 // #import {DragSelector} from './ui/drag_selector.m.js';
 // #import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 // #import {DirectoryItem, DirectoryTree} from './ui/directory_tree.m.js';
 // #import {TreeItem} from 'chrome://resources/js/cr/ui/tree.m.js';
 // #import {ThumbnailLoader} from './thumbnail_loader.m.js';

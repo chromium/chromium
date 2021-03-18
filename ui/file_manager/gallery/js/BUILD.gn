@@ -67,8 +67,8 @@ js_library("entry_list_watcher") {
 js_unittest("entry_list_watcher_unittest") {
   deps = [
     ":entry_list_watcher",
-    "//ui/file_manager/base/js:test_error_reporting",
     "//ui/file_manager/file_manager/common/js:mock_entry",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
   ]
 }
 
@@ -81,8 +81,8 @@ js_library("gallery") {
     ":gallery_constants",
     ":gallery_item",
     ":thumbnail_mode",
-    "//ui/file_manager/base/js:app_util",
-    "//ui/file_manager/base/js:filtered_volume_manager",
+    "//ui/file_manager/file_manager/common/js:app_util",
+    "//ui/file_manager/file_manager/common/js:filtered_volume_manager",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/js/ui:files_confirm_dialog",
     "//ui/file_manager/gallery/js:slide_mode",
@@ -108,7 +108,7 @@ js_unittest("gallery_data_model_unittest") {
   deps = [
     ":gallery_data_model",
     ":mock_gallery_item",
-    "//ui/file_manager/base/js:test_error_reporting",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
   ]
 }
 
@@ -129,7 +129,7 @@ js_unittest("gallery_item_unittest") {
   deps = [
     ":gallery_item",
     ":mock_gallery_item",
-    "//ui/file_manager/base/js:test_error_reporting",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
   ]
 }
 
@@ -139,9 +139,9 @@ js_library("gallery_metrics") {
 
 js_library("gallery_util") {
   deps = [
-    "//ui/file_manager/base/js:volume_manager_types",
     "//ui/file_manager/file_manager/common/js:file_type",
     "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_manager",
   ]
 }
@@ -149,8 +149,8 @@ js_library("gallery_util") {
 js_unittest("gallery_util_unittest") {
   deps = [
     ":gallery_util",
-    "//ui/file_manager/base/js:test_error_reporting",
     "//ui/file_manager/file_manager/common/js:mock_entry",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
   ]
 }
 
@@ -210,7 +210,7 @@ js_library("slide_mode") {
 js_unittest("slide_mode_unittest") {
   deps = [
     ":slide_mode",
-    "//ui/file_manager/base/js:test_error_reporting",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
   ]
 }
 

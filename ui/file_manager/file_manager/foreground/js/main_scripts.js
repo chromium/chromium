@@ -21,7 +21,7 @@
 // "whatever.js". You should rerun gyp to let the build files know.
 //
 // error_counter.js must be loaded before all other scripts of the Files app.
-// <include src="../../../base/js/error_counter.js">
+// <include src="../../../file_manager/common/js/error_counter.js">
 //
 // metrics_base.js and metrics.js initiates load performance tracking
 // so we want to parse it as early as possible.
@@ -82,8 +82,8 @@
 // <include src="../../common/js/async_util.js">
 // <include src="../../common/js/file_type.js">
 // <include src="../../common/js/files_app_entry_types.js">
-// <include src="../../../base/js/volume_manager_types.js">
-// <include src="../../../base/js/app_util.js">
+// <include src="../../../file_manager/common/js/volume_manager_types.js">
+// <include src="../../../file_manager/common/js/app_util.js">
 // <include src="../../common/js/util.js">
 // <include src="../../common/js/progress_center_common.js">
 // <include src="../../common/js/storage_adapter.js">
@@ -190,7 +190,7 @@
 // <include src="ui/providers_menu.js">
 // <include src="ui/search_box.js">
 // <include src="main_window_component.js">
-// <include src="../../../base/js/filtered_volume_manager.js">
+// <include src="../../../file_manager/common/js/filtered_volume_manager.js">
 // <include src="webui_command_extender.js">
 
 // // For accurate load performance tracking place main.js should be

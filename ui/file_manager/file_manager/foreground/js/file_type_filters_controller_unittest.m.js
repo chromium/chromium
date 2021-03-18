@@ -6,9 +6,9 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_t
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 
-import {installMockChrome} from '../../../base/js/mock_chrome.m.js';
-import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
 import {EntryList, FakeEntryImpl} from '../../common/js/files_app_entry_types.m.js';
+import {installMockChrome} from '../../common/js/mock_chrome.m.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.m.js';
 
 import {DirectoryModel} from './directory_model.m.js';

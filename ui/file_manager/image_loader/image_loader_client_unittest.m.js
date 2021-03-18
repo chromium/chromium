@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
-import {reportPromise} from '../base/js/test_error_reporting.m.js';
+import {reportPromise} from '../file_manager/common/js/test_error_reporting.m.js';
 import {ImageLoaderClient} from './image_loader_client.m.js';
 import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from './load_image_request.m.js';
 

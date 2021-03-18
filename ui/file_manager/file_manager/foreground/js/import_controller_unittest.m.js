@@ -5,12 +5,12 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 
-import {MockChromeStorageAPI, MockCommandLinePrivate} from '../../../base/js/mock_chrome.m.js';
-import {reportPromise} from '../../../base/js/test_error_reporting.m.js';
-import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
 import {TestMediaScanner} from '../../background/js/mock_media_scanner.m.js';
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.m.js';
+import {MockChromeStorageAPI, MockCommandLinePrivate} from '../../common/js/mock_chrome.m.js';
 import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';
+import {reportPromise} from '../../common/js/test_error_reporting.m.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 import {mediaImportInterfaces} from '../../externs/background/media_import_handler.m.js';
 import {mediaScannerInterfaces} from '../../externs/background/media_scanner.m.js';
 import {VolumeInfo} from '../../externs/volume_info.m.js';

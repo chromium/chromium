@@ -9,7 +9,7 @@
 
 // clang-format off
 // #import {VolumeInfoImpl} from './volume_info_impl.m.js';
-// #import * as wrappedVolumeManagerCommon from '../../../base/js/volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
+// #import * as wrappedVolumeManagerCommon from '../../common/js/volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
 // #import * as wrappedUtil from '../../common/js/util.m.js'; const {util} = wrappedUtil;
 // #import {str} from '../../common/js/util.m.js';
 // #import {VolumeInfo} from '../../externs/volume_info.m.js';

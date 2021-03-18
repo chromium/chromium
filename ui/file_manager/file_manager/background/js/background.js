@@ -20,7 +20,7 @@
 // #import {launcher, LaunchType, nextFileManagerWindowID, FILES_ID_PATTERN} from './launcher.m.js';
 // #import {FileOperationHandler} from './file_operation_handler.m.js';
 // #import {FileOperationManagerImpl} from './file_operation_manager.m.js';
-// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 // #import {volumeManagerFactory} from './volume_manager_factory.m.js';
 // #import {LauncherSearch} from './launcher_search.m.js';
 // #import {MountMetrics} from './mount_metrics.m.js';

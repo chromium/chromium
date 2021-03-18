@@ -5,7 +5,7 @@
 // clang-format off
 // #import './app_windows.m.js';
 // #import * as wrappedAsyncUtil from '../../common/js/async_util.m.js'; const {AsyncUtil} = wrappedAsyncUtil;
-// #import * as wrappedAppUtil from '../../../base/js/app_util.m.js'; const {appUtil} = wrappedAppUtil;
+// #import * as wrappedAppUtil from '../../common/js/app_util.m.js'; const {appUtil} = wrappedAppUtil;
 // #import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
 // clang-format on
 

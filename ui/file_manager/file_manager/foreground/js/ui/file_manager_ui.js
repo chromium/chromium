@@ -27,7 +27,7 @@
 // #import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
 // #import {LocationLine} from './location_line.m.js';
 // #import {ListContainer} from './list_container.m.js';
-// #import {AllowedPaths} from '../../../../base/js/volume_manager_types.m.js';
+// #import {AllowedPaths} from '../../../common/js/volume_manager_types.m.js';
 // #import {ActionsSubmenu} from './actions_submenu.m.js';
 // #import {ProvidersMenu} from './providers_menu.m.js';
 // #import {ComboButton} from './combobutton.m.js';

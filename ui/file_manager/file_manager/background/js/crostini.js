@@ -5,7 +5,7 @@
 // clang-format off
 // #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 // #import {Crostini} from '../../externs/background/crostini.m.js';
 // #import {VolumeManager} from '../../externs/volume_manager.m.js';
 // clang-format on

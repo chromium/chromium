@@ -18,7 +18,7 @@
 // #import {FileSelectionHandler} from './file_selection.m.js';
 // #import {util, strf, str} from '../../common/js/util.m.js';
 // #import {queryRequiredElement, getRequiredElement} from 'chrome://resources/js/util.m.js';
-// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 // #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
 // #import {metrics} from '../../common/js/metrics.m.js';
 // #import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';

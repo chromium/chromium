@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import {assertArrayEquals, assertEquals, assertNotReached, assertTrue} from 'chrome://test/chai_assert.js';
-import {reportPromise} from '../../../../base/js/test_error_reporting.m.js';
-import * as wrappedVolumeManagerCommon from '../../../../base/js/volume_manager_types.m.js';
+import {reportPromise} from '../../../common/js/test_error_reporting.m.js';
+import * as wrappedVolumeManagerCommon from '../../../common/js/volume_manager_types.m.js';
 const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
 import {ContentMetadataProvider} from './content_metadata_provider.m.js';
 import {ExternalMetadataProvider} from './external_metadata_provider.m.js';

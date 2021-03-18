@@ -4,8 +4,8 @@
 
 import {assertEquals, assertFalse, assertThrows} from 'chrome://test/chai_assert.js';
 
-import {reportPromise} from '../../../base/js/test_error_reporting.m.js';
 import {importer} from '../../common/js/importer_common.m.js';
+import {reportPromise} from '../../common/js/test_error_reporting.m.js';
 import {assertFileEntryPathsEqual} from '../../common/js/unittest_util.m.js';
 import {mediaScannerInterfaces} from '../../externs/background/media_scanner.m.js';
 

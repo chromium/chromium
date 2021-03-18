@@ -20,7 +20,7 @@
 // #import {ProgressCenterItem, ProgressItemType, ProgressItemState} from '../../common/js/progress_center_common.m.js';
 // #import {FileTransferController} from './file_transfer_controller.m.js';
 // #import {FilesConfirmDialog} from './ui/files_confirm_dialog.m.js';
-// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 // #import {FileType} from '../../common/js/file_type.m.js';
 // #import {constants} from './constants.m.js';
 // #import {util, strf, str} from '../../common/js/util.m.js';

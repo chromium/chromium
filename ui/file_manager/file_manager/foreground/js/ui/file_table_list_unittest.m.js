@@ -4,9 +4,9 @@
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 
-import {VolumeManagerCommon} from '../../../../base/js/volume_manager_types.m.js';
 import {MockVolumeManager} from '../../../background/js/mock_volume_manager.m.js';
 import {FakeEntryImpl} from '../../../common/js/files_app_entry_types.m.js';
+import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.m.js';
 import {importerHistoryInterfaces} from '../../../externs/background/import_history.m.js';
 import {DirectoryModel} from '../directory_model.m.js';
 import {FileListModel} from '../file_list_model.m.js';

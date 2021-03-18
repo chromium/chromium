@@ -9,7 +9,7 @@
 // #import {FileListModel} from './file_list_model.m.js';
 // #import {AsyncUtil} from '../../common/js/async_util.m.js';
 // #import {constants} from './constants.m.js';
-// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {util} from '../../common/js/util.m.js';
 // #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';

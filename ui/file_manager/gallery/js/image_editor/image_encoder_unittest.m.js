@@ -5,7 +5,7 @@
 /* eslint-disable no-var */
 
 import {assertEquals, assertThrows} from 'chrome://test/chai_assert.js';
-import {reportPromise} from '../../../base/js/test_error_reporting.m.js';
+import {reportPromise} from '../../../file_manager/common/js/test_error_reporting.m.js';
 import {MetadataItem} from '../../../file_manager/foreground/js/metadata/metadata_item.m.js';
 import {ImageEncoder} from './image_encoder.m.js';
 import {getSampleCanvas} from './test_util.m.js';

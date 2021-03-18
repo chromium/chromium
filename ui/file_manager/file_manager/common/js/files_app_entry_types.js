@@ -22,7 +22,7 @@
  */
 
 // clang-format off
-// #import * as wrappedVolumeManagerCommon from '../../../base/js/volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
+// #import * as wrappedVolumeManagerCommon from './volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
 // #import {FilesAppEntry, FilesAppDirEntry, FakeEntry} from '../../externs/files_app_entry_interfaces.m.js';
 // #import {VolumeInfo} from '../../externs/volume_info.m.js';
 // clang-format on

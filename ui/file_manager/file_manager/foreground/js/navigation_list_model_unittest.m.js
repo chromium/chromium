@@ -5,14 +5,14 @@
 // clang-format off
 import {assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
 
-import {MockCommandLinePrivate} from '../../../base/js/mock_chrome.m.js';
-import {reportPromise, waitUntil} from '../../../base/js/test_error_reporting.m.js';
-import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.m.js';
 import {VolumeInfoImpl} from '../../background/js/volume_info_impl.m.js';
 import { EntryList,FakeEntryImpl} from '../../common/js/files_app_entry_types.m.js';
+import {MockCommandLinePrivate} from '../../common/js/mock_chrome.m.js';
 import { MockFileEntry,MockFileSystem} from '../../common/js/mock_entry.m.js';
+import {reportPromise, waitUntil} from '../../common/js/test_error_reporting.m.js';
 import {util} from '../../common/js/util.m.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.m.js';
 
 import {AndroidAppListModel} from './android_app_list_model.m.js';

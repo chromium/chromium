@@ -1,6 +1,6 @@
 
 js_unittest("importer_common_unittest.m") {
   deps = [
-    "//ui/file_manager/base/js:mock_chrome",
+    "//ui/file_manager/file_manager/common/js:mock_chrome",
   ]
 }

@@ -4,7 +4,7 @@
 
 /**
  * This definition is required by
- * ui/file_manager/base/js/app_util.js.
+ * ui/file_manager/file_manager/common/js/app_util.js.
  * @type {string}
  */
 Window.prototype.appID;

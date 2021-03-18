@@ -9,7 +9,7 @@
 // #import {DirectoryModel} from './directory_model.m.js';
 // #import {LocationLine} from './ui/location_line.m.js';
 // #import {ListContainer} from './ui/list_container.m.js';
-// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 // #import {util, str, strf} from '../../common/js/util.m.js';
 // #import {FileSelectionHandler} from './file_selection.m.js';
 // #import {Command} from 'chrome://resources/js/cr/ui/command.m.js';

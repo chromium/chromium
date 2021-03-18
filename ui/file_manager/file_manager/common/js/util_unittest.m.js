@@ -6,7 +6,7 @@ import {EntryList, FakeEntryImpl, VolumeEntry} from './files_app_entry_types.m.j
 import {MockFileSystem} from './mock_entry.m.js';
 import * as wrappedUtil from './util.m.js';
 const {util} = wrappedUtil;
-import * as wrappedVolumeManagerCommon from '../../../base/js/volume_manager_types.m.js';
+import * as wrappedVolumeManagerCommon from './volume_manager_types.m.js';
 const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.m.js';
 import {assertEquals, assertTrue, assertFalse} from 'chrome://test/chai_assert.js';

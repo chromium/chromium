@@ -16,7 +16,7 @@
 // #import {ListContainer} from './ui/list_container.m.js';
 // #import {MetadataModel} from './metadata/metadata_model.m.js';
 // #import {CommandHandlerDeps} from '../../externs/command_handler_deps.m.js';
-// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 // #import {ThumbnailLoader} from './thumbnail_loader.m.js';
 // #import {ImageLoaderClient} from '../../../image_loader/image_loader_client.m.js';
 // #import {LoadImageResponseStatus, LoadImageRequest} from '../../../image_loader/load_image_request.m.js';

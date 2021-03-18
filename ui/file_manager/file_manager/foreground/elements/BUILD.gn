@@ -104,7 +104,7 @@ polymer_modulizer("files_format_dialog") {
   auto_imports = [
     "ui/file_manager/file_manager/common/js/util.html|util",
     "ui/file_manager/file_manager/common/js/files_app_entry_types.html|EntryList,VolumeEntry",
-    "ui/file_manager/base/js/volume_manager_types.html|VolumeManagerCommon",
+    "ui/file_manager/file_manager/common/js/volume_manager_types.html|VolumeManagerCommon",
     "ui/file_manager/file_manager/externs/volume_info.html|VolumeInfo",
   ]
 }
@@ -115,9 +115,9 @@ js_library("files_format_dialog.m") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/file_manager/base/js:volume_manager_types.m",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types.m",
     "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
     "//ui/file_manager/file_manager/externs:volume_info.m",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
@@ -241,7 +241,7 @@ js_unittest("files_password_dialog_unittest.m") {
   deps = [
     ":files_password_dialog.m",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/base/js:test_error_reporting.m",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
     "//ui/webui/resources/js:assert.m",
   ]
 }
@@ -404,7 +404,7 @@ js_unittest("files_tooltip_unittest.m") {
   deps = [
     ":files_tooltip.m",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/base/js:test_error_reporting.m",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
   ]
 }
 

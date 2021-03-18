@@ -8,7 +8,7 @@
  */
 
 // clang-format off
-// #import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
+// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 // #import {util} from '../../common/js/util.m.js';
 // #import {metrics} from '../../common/js/metrics.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';

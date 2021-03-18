@@ -4,11 +4,11 @@
 
 // clang-format off
 // #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {VolumeInfo} from '../../file_manager/externs/volume_info.m.js';
-// #import {VolumeInfoList} from '../../file_manager/externs/volume_info_list.m.js';
-// #import {VolumeManager, ExternallyUnmountedEvent} from '../../file_manager/externs/volume_manager.m.js';
-// #import {FilesAppEntry} from '../../file_manager/externs/files_app_entry_interfaces.m.js';
-// #import {EntryLocation} from '../../file_manager/externs/entry_location.m.js';
+// #import {VolumeInfo} from '../../externs/volume_info.m.js';
+// #import {VolumeInfoList} from '../../externs/volume_info_list.m.js';
+// #import {VolumeManager, ExternallyUnmountedEvent} from '../../externs/volume_manager.m.js';
+// #import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.m.js';
+// #import {EntryLocation} from '../../externs/entry_location.m.js';
 // #import * as wrappedVolumeManagerCommon from './volume_manager_types.m.js'; const {VolumeManagerCommon, AllowedPaths} = wrappedVolumeManagerCommon;
 // #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
 // #import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';

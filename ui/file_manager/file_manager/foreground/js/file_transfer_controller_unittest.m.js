@@ -8,10 +8,10 @@ import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_mod
 import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 
-import {installMockChrome} from '../../../base/js/mock_chrome.m.js';
-import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.m.js';
+import {installMockChrome} from '../../common/js/mock_chrome.m.js';
 import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.m.js';
 import {importerHistoryInterfaces} from '../../externs/background/import_history.m.js';
 import {ProgressCenter} from '../../externs/background/progress_center.m.js';

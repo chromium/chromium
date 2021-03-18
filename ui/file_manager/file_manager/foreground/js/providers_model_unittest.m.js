@@ -4,12 +4,12 @@
 
 import {assertEquals} from 'chrome://test/chai_assert.js';
 
-import {installMockChrome, MockCommandLinePrivate} from '../../../base/js/mock_chrome.m.js';
-import {reportPromise} from '../../../base/js/test_error_reporting.m.js';
-import {VolumeManagerCommon} from '../../../base/js/volume_manager_types.m.js';
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.m.js';
 import {VolumeInfoImpl} from '../../background/js/volume_info_impl.m.js';
+import {installMockChrome, MockCommandLinePrivate} from '../../common/js/mock_chrome.m.js';
 import {MockDirectoryEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';
+import {reportPromise} from '../../common/js/test_error_reporting.m.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 import {VolumeManager} from '../../externs/volume_manager.m.js';
 
 import {ProvidersModel} from './providers_model.m.js';

@@ -51,7 +51,7 @@
 // #import {ThumbnailModel} from './metadata/thumbnail_model.m.js';
 // #import {MetadataModel} from './metadata/metadata_model.m.js';
 // #import {ContentMetadataProvider} from './metadata/content_metadata_provider.m.js';
-// #import {FilteredVolumeManager} from '../../../base/js/filtered_volume_manager.m.js';
+// #import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.m.js';
 // #import {LaunchParam} from './launch_param.m.js';
 // #import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
 // #import {CommandButton} from './ui/commandbutton.m.js';
@@ -74,7 +74,7 @@
 // #import {SortMenuController} from './sort_menu_controller.m.js';
 // #import {ScanController} from './scan_controller.m.js';
 // #import {DriveDialogController} from './drive_dialog_controller.m.js';
-// #import {VolumeManagerCommon, AllowedPaths} from '../../../base/js/volume_manager_types.m.js';
+// #import {VolumeManagerCommon, AllowedPaths} from '../../common/js/volume_manager_types.m.js';
 // #import {AppStateController} from './app_state_controller.m.js';
 // #import {DialogType} from './dialog_type.m.js';
 // #import {FileMetadataFormatter} from './ui/file_metadata_formatter.m.js';
