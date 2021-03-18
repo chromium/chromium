@@ -73,4 +73,26 @@ TEST_F(InsertIncrementalTextCommandTest, SurrogatePairsTwo) {
       << "Replace 'U+1F63A U+1F63A with U+1F638";
 }
 
+TEST_F(InsertIncrementalTextCommandTest,
+       SurrogatePairsReplaceWithPreceedingNonEditableText) {
+  SetBodyContent(
+      "<div id=sample contenteditable><span "
+      "contenteditable='false'>•</span>&#x1F63A;&#x1F638;</div>");
+  Element* const sample = GetDocument().getElementById("sample");
+  const String new_text(Vector<UChar>{0xD83D, 0xDE38});  // U+1F638
+  Selection().SetSelection(SelectionInDOMTree::Builder()
+                               .Collapse(Position(sample->lastChild(), 2))
+                               .Extend(Position(sample->lastChild(), 4))
+                               .Build(),
+                           SetSelectionOptions());
+  CompositeEditCommand* const command =
+      MakeGarbageCollected<InsertIncrementalTextCommand>(GetDocument(),
+                                                         new_text);
+  command->Apply();
+
+  EXPECT_EQ(String(Vector<UChar>{0xD83D, 0xDE3A, 0xD83D, 0xDE38}),
+            sample->lastChild()->nodeValue())
+      << "Replace U+1F638 with U+1F638";
+}
+
 }  // namespace blink
