@@ -5980,12 +5980,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSafetyTipDescription, kOsAll,
      FEATURE_VALUE_TYPE(security_state::features::kSafetyTipUI)},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"crostini-webui-upgrader", flag_descriptions::kCrostiniWebUIUpgraderName,
-     flag_descriptions::kCrostiniWebUIUpgraderDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kCrostiniWebUIUpgrader)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
     {"turn-off-streaming-media-caching-on-battery",
      flag_descriptions::kTurnOffStreamingMediaCachingOnBatteryName,
      flag_descriptions::kTurnOffStreamingMediaCachingOnBatteryDescription,

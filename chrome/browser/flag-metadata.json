@@ -831,11 +831,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "crostini-webui-upgrader",
-    "owners": [ "nverne", "davidmunro@google.com", "benwells" ],
-    "expiry_milestone": 88
-  },
-  {
     "name": "cryptauth-v2-device-activity-status",
     "owners": [ "khorimoto", "nohle", "themaxli" ],
     "expiry_milestone": 93

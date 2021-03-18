@@ -2301,9 +2301,6 @@ extern const char kCrostiniUseBusterImageDescription[];
 extern const char kCrostiniGpuSupportName[];
 extern const char kCrostiniGpuSupportDescription[];
 
-extern const char kCrostiniWebUIUpgraderName[];
-extern const char kCrostiniWebUIUpgraderDescription[];
-
 extern const char kCrostiniUseDlcName[];
 extern const char kCrostiniUseDlcDescription[];
 

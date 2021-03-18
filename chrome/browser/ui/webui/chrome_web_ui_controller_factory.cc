@@ -743,8 +743,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
   if (url.host_piece() == chrome::kChromeUICrostiniInstallerHost)
     return &NewWebUI<chromeos::CrostiniInstallerUI>;
-  if (chromeos::CrostiniUpgraderUI::IsEnabled() &&
-      url.host_piece() == chrome::kChromeUICrostiniUpgraderHost)
+  if (url.host_piece() == chrome::kChromeUICrostiniUpgraderHost)
     return &NewWebUI<chromeos::CrostiniUpgraderUI>;
   if (url.host_piece() == chrome::kChromeUICryptohomeHost)
     return &NewWebUI<chromeos::CryptohomeUI>;

@@ -34,11 +34,6 @@
 
 namespace chromeos {
 
-bool CrostiniUpgraderUI::IsEnabled() {
-  return base::FeatureList::IsEnabled(
-      chromeos::features::kCrostiniWebUIUpgrader);
-}
-
 void AddStringResources(content::WebUIDataSource* source) {
   static constexpr webui::LocalizedString kStrings[] = {
       {"upgrade", IDS_CROSTINI_UPGRADER_UPGRADE_BUTTON},

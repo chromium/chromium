@@ -199,10 +199,6 @@ const base::Feature kCrostiniUseBusterImage{"CrostiniUseBusterImage",
 const base::Feature kCrostiniGpuSupport{"CrostiniGpuSupport",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables or disables the new WebUI Crostini upgrader.
-const base::Feature kCrostiniWebUIUpgrader{"CrostiniWebUIUpgrader",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Use DLC instead of component updater for managing the Termina image if set
 // (and component updater instead of DLC if not).
 const base::Feature kCrostiniUseDlc{"CrostiniUseDlc",

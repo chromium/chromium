@@ -3959,10 +3959,6 @@ const char kCrostiniUseBusterImageDescription[] =
 const char kCrostiniGpuSupportName[] = "Crostini GPU Support";
 const char kCrostiniGpuSupportDescription[] = "Enable Crostini GPU support.";
 
-const char kCrostiniWebUIUpgraderName[] = "Crostini WebUI Upgrader";
-const char kCrostiniWebUIUpgraderDescription[] =
-    "Enable the new WebUI Crostini Upgrader Dialog.";
-
 const char kCrostiniUseDlcName[] = "Crostini Use DLC";
 const char kCrostiniUseDlcDescription[] =
     "Download the termina VM using the new DLC service instead of the old "

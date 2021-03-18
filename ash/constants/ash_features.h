@@ -118,8 +118,6 @@ extern const base::Feature kCryptAuthV2DeviceActivityStatusUseConnectivity;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kDisableIdleSocketsCloseOnMemoryPressure;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kCrostiniWebUIUpgrader;
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCryptAuthV2DeviceSync;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCryptAuthV2Enrollment;

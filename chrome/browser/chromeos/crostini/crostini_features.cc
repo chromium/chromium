@@ -291,9 +291,7 @@ bool CrostiniFeatures::IsRootAccessAllowed(Profile* profile) {
 }
 
 bool CrostiniFeatures::IsContainerUpgradeUIAllowed(Profile* profile) {
-  return g_crostini_features->IsAllowedNow(profile) &&
-         base::FeatureList::IsEnabled(
-             chromeos::features::kCrostiniWebUIUpgrader);
+  return g_crostini_features->IsAllowedNow(profile);
 }
 
 void CrostiniFeatures::CanChangeAdbSideloading(

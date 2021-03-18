@@ -2045,21 +2045,6 @@
             ]
         }
     ],
-    "CrostiniWebUIUpgrader": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CrostiniWebUIUpgrader"
-                    ]
-                }
-            ]
-        }
-    ],
     "CupsIppPrintingBackend": [
         {
             "platforms": [
