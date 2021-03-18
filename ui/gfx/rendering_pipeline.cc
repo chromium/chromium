@@ -129,7 +129,6 @@ class RenderingPipelineImpl final : public RenderingPipeline {
  public:
   explicit RenderingPipelineImpl(const char* pipeline_type)
       : pipeline_type_(pipeline_type) {
-    RenderingStageScheduler::EnsureInitialized();
     DETACH_FROM_THREAD(bound_thread_);
   }
   ~RenderingPipelineImpl() override { TearDown(); }
