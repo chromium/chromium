@@ -346,6 +346,12 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
                              size_t plane,
                              const gfx::Size& coded_size);
 
+  // Returns the plane gfx::Size (in samples) for a plane of the given coded
+  // size and format.
+  static gfx::Size PlaneSizeInSamples(VideoPixelFormat format,
+                                      size_t plane,
+                                      const gfx::Size& coded_size);
+
   // Returns horizontal bits per pixel for given |plane| and |format|.
   static int PlaneHorizontalBitsPerPixel(VideoPixelFormat format, size_t plane);
 

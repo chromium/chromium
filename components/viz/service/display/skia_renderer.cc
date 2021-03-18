@@ -404,6 +404,26 @@ bool RenderPassRemainsTransparent(SkBlendMode blendMode) {
          src == SkBlendModeCoeff::kDC;
 }
 
+SkYUVAInfo::Subsampling SubsamplingFromTextureSizes(gfx::Size ya_size,
+                                                    gfx::Size uv_size) {
+  if (uv_size.height() == ya_size.height()) {
+    if (uv_size.width() == ya_size.width())
+      return SkYUVAInfo::Subsampling::k444;
+    if (uv_size.width() == (ya_size.width() + 1) / 2)
+      return SkYUVAInfo::Subsampling::k422;
+    if (uv_size.width() == (ya_size.width() + 3) / 4)
+      return SkYUVAInfo::Subsampling::k411;
+  } else if (uv_size.height() == (ya_size.height() + 1) / 2) {
+    if (uv_size.width() == ya_size.width())
+      return SkYUVAInfo::Subsampling::k440;
+    if (uv_size.width() == (ya_size.width() + 1) / 2)
+      return SkYUVAInfo::Subsampling::k420;
+    if (uv_size.width() == (ya_size.width() + 3) / 4)
+      return SkYUVAInfo::Subsampling::k410;
+  }
+  return SkYUVAInfo::Subsampling::kUnknown;
+}
+
 }  // namespace
 
 // chrome style prevents this from going in skia_renderer.h, but since it
@@ -636,7 +656,8 @@ class SkiaRenderer::ScopedYUVSkImageBuilder {
                          ? SkYUVAInfo::PlaneConfig::kY_UV_A
                          : SkYUVAInfo::PlaneConfig::kY_U_V_A;
     }
-    const SkYUVAInfo::Subsampling subsampling = SkYUVAInfo::Subsampling::k420;
+    SkYUVAInfo::Subsampling subsampling =
+        SubsamplingFromTextureSizes(quad->ya_tex_size, quad->uv_tex_size);
     const int number_of_textures = SkYUVAInfo::NumPlanes(plane_config);
     std::vector<ExternalUseClient::ImageContext*> contexts;
     contexts.reserve(number_of_textures);
