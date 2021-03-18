@@ -246,7 +246,7 @@ static_library("remoting_lib_ps") {
 # Makes the .mc file from the .mc.jinja file.
 remoting_localize("messages_localizing") {
   sources = [ "host_messages.mc.jinja2" ]
-  locale_list = remoting_locales_without_pseudolocales
+  locales = remoting_locales
   locale_dir = resources_locale_dir
   encoding = "utf-16"
 
@@ -524,5 +524,5 @@ remoting_localize("remoting_windows_resources") {
 
   encoding = "utf-16"
 
-  locale_list = remoting_locales_without_pseudolocales
+  locales = remoting_locales
 }
