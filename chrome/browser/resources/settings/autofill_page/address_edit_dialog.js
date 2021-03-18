@@ -92,6 +92,12 @@ Polymer({
           this.address.emailAddresses ? this.address.emailAddresses[0] : '';
 
       this.async(() => {
+        if (Object.keys(this.address).length === 0 && countryList.length > 0) {
+          // If the address is completely empty, the dialog is creating a new
+          // address. The first address in the country list is what we suspect
+          // the user's country is.
+          this.address.countryCode = countryList[0].countryCode;
+        }
         if (this.countryCode_ === this.address.countryCode) {
           this.updateAddressWrapper_();
         } else {
