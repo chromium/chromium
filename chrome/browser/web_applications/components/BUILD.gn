@@ -228,6 +228,7 @@ source_set("unit_tests") {
       "web_app_handler_registration_utils_win_unittest.cc",
       "web_app_protocol_handler_registration_win_unittest.cc",
       "web_app_run_on_os_login_win_unittest.cc",
+      "web_app_shortcut_win_unittest.cc",
     ]
   }
 

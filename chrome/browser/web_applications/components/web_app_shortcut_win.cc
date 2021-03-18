@@ -532,8 +532,8 @@ std::vector<base::FilePath> GetShortcutPaths(
       {creation_locations.applications_menu_location ==
            APP_MENU_LOCATION_SUBDIR_CHROMEAPPS,
        ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_APPS_DIR},
-      {// For Win7+, |in_quick_launch_bar| indicates that we are pinning to
-       // taskbar. This needs to be handled by callers.
+      {// For Windows 7 and 8, |in_quick_launch_bar| indicates that we are
+       // pinning to taskbar. This needs to be handled by callers.
        creation_locations.in_quick_launch_bar &&
            base::win::CanPinShortcutToTaskbar(),
        ShellUtil::SHORTCUT_LOCATION_QUICK_LAUNCH},

@@ -80,22 +80,20 @@ enum ApplicationsMenuLocation {
 
 // Info about which locations to create app shortcuts in.
 struct ShortcutLocations {
-  ShortcutLocations();
+  bool on_desktop = false;
 
-  bool on_desktop;
-
-  ApplicationsMenuLocation applications_menu_location;
+  ApplicationsMenuLocation applications_menu_location = APP_MENU_LOCATION_NONE;
 
   // For Windows, this refers to quick launch bar prior to Win7. In Win7,
   // this means "pin to taskbar". For Mac/Linux, this could be used for
   // Mac dock or the gnome/kde application launcher. However, those are not
   // implemented yet.
-  bool in_quick_launch_bar;
+  bool in_quick_launch_bar = false;
 
   // For Windows, this refers to the Startup folder.
   // For Mac, this refers to the Login Items list.
   // For Linux, this refers to the autostart folder.
-  bool in_startup;
+  bool in_startup = false;
 };
 
 // This encodes the cause of shortcut creation as the correct behavior in each
