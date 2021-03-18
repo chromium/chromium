@@ -14,23 +14,22 @@
         align-self: stretch;
         cursor: pointer;
         display: flex;
-        flex: 1;
         margin: 0;
         outline: none;
       }
 
-      :host(:hover) {
+      :host(:not([no-hover]):hover) {
         background-color: var(--cr-hover-background-color);
       }
 
-      :host(:active) {
+      :host(:not([no-hover]):active) {
         background-color: var(--cr-active-background-color);
       }
 
       /* Do not show hover or active states for cr-icon-buttons that are
        * embedded within the row to avoid showing multiple layers of
        * backgrounds. */
-      cr-icon-button {
+      :host(:not([no-hover])) cr-icon-button {
         --cr-icon-button-hover-background-color: transparent;
         --cr-icon-button-active-background-color: transparent;
       }
