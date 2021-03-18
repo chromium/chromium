@@ -2,8 +2,8 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
 <script src="/common/utils.js"></script>
-<script src="./resources/common.js"></script>
-<script src="./resources/dispatcher.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/dispatcher.js"></script>
 <script>
 
 const same_origin = get_host_info().HTTPS_ORIGIN;
@@ -25,23 +25,10 @@ const cookieFromResource = async (document_token, resource_origin) => {
 };
 
 promise_test_parallel(async test => {
-  // Set cookie on same_origin.
-  document.cookie = `${cookie_key}=${cookie_same_origin}`;
-
-  // Set cookie on cross_origin.
-  {
-    const w_token = token();
-    const w_url = cross_origin + executor_path + `&uuid=${w_token}`;
-    const w = window.open(w_url);
-
-    const reply_token = token();
-    send(w_token, `
-      document.cookie = "${cookie_key}=${cookie_cross_origin}";
-      send("${reply_token}", "done");
-    `);
-    assert_equals(await receive(reply_token), "done");
-    w.close();
-  }
+  await Promise.all([
+    setCookie(same_origin, cookie_key, cookie_same_origin),
+    setCookie(cross_origin, cookie_key, cookie_cross_origin),
+  ]);
 
   let credentialless_window = newCredentiallessWindow(same_origin);
 
