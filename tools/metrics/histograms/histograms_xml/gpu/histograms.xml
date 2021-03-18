@@ -1126,6 +1126,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="GPU.Scheduler.ThreadSuspendedTime" units="microseconds"
+    expires_after="2022-03-31">
+  <owner>berlu@chromium.org</owner>
+  <owner>chrome-gpu-metrics@google.com</owner>
+  <summary>
+    Records the wall time taken between calls to schedule the task run and the
+    actual run of the task. Ideally this should always be as close to 0 as
+    possible. Only recorded for clients with high resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="GPU.setIsAcceleratedCompositingActive"
     enum="GPUsetIsAcceleratedCompositingActive" expires_after="M85">
   <owner>vmiura@chromium.org</owner>

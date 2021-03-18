@@ -369,6 +369,9 @@ class GPU_EXPORT Scheduler {
 
   base::ThreadChecker thread_checker_;
 
+  // Indicate when the next task run was scheduled
+  base::TimeTicks run_next_task_scheduled_;
+
   // Invalidated on main thread.
   base::WeakPtr<Scheduler> weak_ptr_;
   base::WeakPtrFactory<Scheduler> weak_factory_{this};

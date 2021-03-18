@@ -531,6 +531,7 @@ void Scheduler::TryScheduleSequence(Sequence* sequence) {
     if (!running_) {
       TRACE_EVENT_ASYNC_BEGIN0("gpu", "Scheduler::Running", this);
       running_ = true;
+      run_next_task_scheduled_ = base::TimeTicks::Now();
       task_runner_->PostTask(
           FROM_HERE, base::BindOnce(&Scheduler::RunNextTask, weak_ptr_));
     }
@@ -561,6 +562,11 @@ void Scheduler::RebuildSchedulingQueue() {
 void Scheduler::RunNextTask() {
   DCHECK(thread_checker_.CalledOnValidThread());
   base::AutoLock auto_lock(lock_);
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "GPU.Scheduler.ThreadSuspendedTime",
+      base::TimeTicks::Now() - run_next_task_scheduled_,
+      base::TimeDelta::FromMicroseconds(10), base::TimeDelta::FromSeconds(30),
+      100);
 
   RebuildSchedulingQueue();
 
@@ -646,6 +652,7 @@ void Scheduler::RunNextTask() {
       base::TimeDelta::FromMicroseconds(10), base::TimeDelta::FromSeconds(30),
       100);
 
+  run_next_task_scheduled_ = base::TimeTicks::Now();
   task_runner_->PostTask(FROM_HERE,
                          base::BindOnce(&Scheduler::RunNextTask, weak_ptr_));
 }
