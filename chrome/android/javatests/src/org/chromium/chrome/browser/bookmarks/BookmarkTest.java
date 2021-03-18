@@ -1725,6 +1725,7 @@ public class BookmarkTest {
     @Test
     @SmallTest
     @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
+    @FlakyTest(message = "https://crbug.com/1189666")
     public void testReadingListFolderShownMultipleUnreadPages() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
         openBookmarkManager();
