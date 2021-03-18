@@ -572,7 +572,7 @@
     "name": "chromeos-direct-video-decoder",
     "owners": [ "chromeos-gfx-video@google.com" ],
     // TODO(b/159825227): remove when the "old" video decoder is fully launched.
-    "expiry_milestone": 90
+    "expiry_milestone": 99
   },
   {
     "name": "chromeos-sharing-hub",
