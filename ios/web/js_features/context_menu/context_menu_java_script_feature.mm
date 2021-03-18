@@ -85,9 +85,7 @@ ContextMenuJavaScriptFeature::GetScriptMessageHandlerName() const {
 void ContextMenuJavaScriptFeature::ScriptMessageReceived(
     WebState* web_state,
     const ScriptMessage& message) {
-  DCHECK(message.body());
-
-  if (!message.body()->is_dict()) {
+  if (!message.body() || !message.body()->is_dict()) {
     // Ignore malformed responses.
     return;
   }

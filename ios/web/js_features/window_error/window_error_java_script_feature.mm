@@ -55,7 +55,7 @@ void WindowErrorJavaScriptFeature::ScriptMessageReceived(
     const ScriptMessage& script_message) {
   ErrorDetails details;
 
-  if (!script_message.body()->is_dict()) {
+  if (!script_message.body() || !script_message.body()->is_dict()) {
     return;
   }
 

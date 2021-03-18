@@ -60,6 +60,10 @@ void JavaScriptConsoleFeature::ScriptMessageReceived(
     return;
   }
 
+  if (!script_message.body() || !script_message.body()->is_dict()) {
+    return;
+  }
+
   std::string* frame_id =
       script_message.body()->FindStringKey(kSenderFrameIdKey);
   if (!frame_id) {
