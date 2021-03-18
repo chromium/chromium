@@ -31,7 +31,7 @@ class APP_LIST_MODEL_EXPORT AppListItemObserver : public base::CheckedObserver {
   virtual void ItemBeingDestroyed() {}
 
  protected:
-  ~AppListItemObserver() override = default;
+  ~AppListItemObserver() override;
 };
 
 }  // namespace ash

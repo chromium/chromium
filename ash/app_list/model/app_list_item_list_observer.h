@@ -31,7 +31,7 @@ class APP_LIST_MODEL_EXPORT AppListItemListObserver
                                AppListItem* item) {}
 
  protected:
-  ~AppListItemListObserver() override = default;
+  ~AppListItemListObserver() override;
 };
 
 }  // namespace ash

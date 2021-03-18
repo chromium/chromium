@@ -41,7 +41,7 @@ class APP_LIST_MODEL_EXPORT AppListModelObserver
   virtual void OnCustomLauncherPageEnabledStateChanged(bool enabled) {}
 
  protected:
-  ~AppListModelObserver() override = default;
+  ~AppListModelObserver() override;
 };
 
 }  // namespace ash
