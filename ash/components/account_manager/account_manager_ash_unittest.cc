@@ -181,7 +181,7 @@ class AccountManagerSpy : public ash::AccountManager {
   // ash::AccountManager override:
   std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
       const ::account_manager::AccountKey& account_key,
-      OAuth2AccessTokenConsumer* consumer) const override {
+      OAuth2AccessTokenConsumer* consumer) override {
     num_access_token_fetches_++;
     last_access_token_account_key_ = account_key;
 

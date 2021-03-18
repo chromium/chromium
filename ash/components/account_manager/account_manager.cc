@@ -5,6 +5,8 @@
 #include "ash/components/account_manager/account_manager.h"
 
 #include <algorithm>
+#include <memory>
+#include <string>
 #include <utility>
 
 #include "ash/components/account_manager/tokens.pb.h"
@@ -17,6 +19,7 @@
 #include "base/files/important_file_writer.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/optional.h"
@@ -25,6 +28,7 @@
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/account_manager_core/account.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "google_apis/gaia/gaia_access_token_fetcher.h"
@@ -32,6 +36,8 @@
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/google_service_auth_error.h"
+#include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
@@ -164,6 +170,102 @@ class AccountManager::GaiaTokenRevocationRequest : public GaiaAuthConsumer {
   std::string refresh_token_;
 
   base::WeakPtrFactory<GaiaTokenRevocationRequest> weak_factory_{this};
+};
+
+class AccountManager::AccessTokenFetcher : public OAuth2AccessTokenFetcher {
+ public:
+  // Creates an instance of `AccessTokenFetcher`.
+  // `account_key` must be a Gaia account.
+  // `account_manager` is a non-owning pointer which must outlive `this`
+  // instance.
+  // `consumer` is a non-owning pointer.
+  AccessTokenFetcher(const ::account_manager::AccountKey& account_key,
+                     AccountManager* account_manager,
+                     OAuth2AccessTokenConsumer* consumer)
+      : OAuth2AccessTokenFetcher(consumer),
+        account_key_(account_key),
+        account_manager_(account_manager),
+        consumer_(consumer) {
+    DCHECK(account_manager_);
+    DCHECK(consumer_);
+    DCHECK(account_key_.IsValid());
+  }
+  AccessTokenFetcher(const AccessTokenFetcher&) = delete;
+  AccessTokenFetcher& operator=(const AccessTokenFetcher&) = delete;
+  ~AccessTokenFetcher() override = default;
+
+  // Returns a closure which marks `this` instance as ready for use.
+  base::OnceClosure UnblockTokenRequest() {
+    return base::BindOnce(&AccessTokenFetcher::UnblockTokenRequestInternal,
+                          weak_factory_.GetWeakPtr());
+  }
+
+  // OAuth2AccessTokenFetcher override:
+  void Start(const std::string& client_id,
+             const std::string& client_secret,
+             const std::vector<std::string>& scopes) override {
+    DCHECK(!is_request_pending_);
+    client_id_ = client_id;
+    client_secret_ = client_secret;
+    scopes_ = scopes;
+    if (!are_token_requests_allowed_) {
+      is_request_pending_ = true;
+      // This request will be started when the closure returned by
+      // `UnblockTokenRequest` is executed.
+      return;
+    }
+    StartInternal();
+  }
+
+  // OAuth2AccessTokenFetcher override:
+  void CancelRequest() override { access_token_fetcher_.reset(); }
+
+ private:
+  void UnblockTokenRequestInternal() {
+    are_token_requests_allowed_ = true;
+    if (is_request_pending_) {
+      StartInternal();
+    }
+  }
+
+  void StartInternal() {
+    DCHECK(are_token_requests_allowed_);
+    is_request_pending_ = false;
+
+    if (account_key_.account_type != ::account_manager::AccountType::kGaia) {
+      FireOnGetTokenFailure(GoogleServiceAuthError(
+          GoogleServiceAuthError::State::USER_NOT_SIGNED_UP));
+      return;
+    }
+
+    base::Optional<std::string> maybe_token =
+        account_manager_->GetRefreshToken(account_key_);
+    if (!maybe_token.has_value()) {
+      FireOnGetTokenFailure(GoogleServiceAuthError(
+          GoogleServiceAuthError::State::USER_NOT_SIGNED_UP));
+      return;
+    }
+
+    DCHECK(!access_token_fetcher_);
+    access_token_fetcher_ = GaiaAccessTokenFetcher::
+        CreateExchangeRefreshTokenForAccessTokenInstance(
+            consumer_, account_manager_->GetUrlLoaderFactory(),
+            maybe_token.value());
+    access_token_fetcher_->Start(client_id_, client_secret_, scopes_);
+  }
+
+  const ::account_manager::AccountKey account_key_;
+  AccountManager* const account_manager_;
+  OAuth2AccessTokenConsumer* const consumer_;
+
+  bool are_token_requests_allowed_ = false;
+  bool is_request_pending_ = false;
+  std::string client_id_;
+  std::string client_secret_;
+  std::vector<std::string> scopes_;
+  std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher_;
+
+  base::WeakPtrFactory<AccessTokenFetcher> weak_factory_{this};
 };
 
 AccountManager::Observer::Observer() = default;
@@ -652,17 +754,13 @@ void AccountManager::SetUrlLoaderFactoryForTests(
 std::unique_ptr<OAuth2AccessTokenFetcher>
 AccountManager::CreateAccessTokenFetcher(
     const ::account_manager::AccountKey& account_key,
-    OAuth2AccessTokenConsumer* consumer) const {
+    OAuth2AccessTokenConsumer* consumer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto it = accounts_.find(account_key);
-  if (it == accounts_.end() || it->second.token.empty()) {
-    return nullptr;
-  }
-
-  return GaiaAccessTokenFetcher::
-      CreateExchangeRefreshTokenForAccessTokenInstance(
-          consumer, url_loader_factory_, it->second.token);
+  auto access_token_fetcher =
+      std::make_unique<AccessTokenFetcher>(account_key, this, consumer);
+  RunOnInitialization(access_token_fetcher->UnblockTokenRequest());
+  return std::move(access_token_fetcher);
 }
 
 bool AccountManager::IsTokenAvailable(
@@ -763,6 +861,30 @@ void AccountManager::DeletePendingTokenRevocationRequest(
 
 bool AccountManager::IsEphemeralMode() const {
   return home_dir_.empty();
+}
+
+base::Optional<std::string> AccountManager::GetRefreshToken(
+    const ::account_manager::AccountKey& account_key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(init_state_, InitializationState::kInitialized);
+
+  DCHECK(account_key.IsValid());
+  DCHECK(account_key.account_type == ::account_manager::AccountType::kGaia);
+
+  auto it = accounts_.find(account_key);
+  if (it == accounts_.end() || it->second.token.empty()) {
+    return base::nullopt;
+  }
+
+  return base::make_optional<std::string>(it->second.token);
+}
+
+scoped_refptr<network::SharedURLLoaderFactory>
+AccountManager::GetUrlLoaderFactory() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(init_state_, InitializationState::kInitialized);
+
+  return url_loader_factory_;
 }
 
 }  // namespace ash

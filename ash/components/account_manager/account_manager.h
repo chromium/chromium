@@ -18,6 +18,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "components/account_manager_core/account.h"
 
@@ -206,13 +207,12 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccountManager {
   void SetUrlLoaderFactoryForTests(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
-  // Creates and returns an |OAuth2AccessTokenFetcher| using the refresh token
-  // stored for |account_key|. |IsTokenAvailable| should be |true| for
-  // |account_key|, otherwise a |nullptr| is returned.
-  // virtual for testing.
+  // Creates and returns an `OAuth2AccessTokenFetcher` using the refresh token
+  // stored for `account_key`.
+  // Virtual for testing.
   virtual std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
       const ::account_manager::AccountKey& account_key,
-      OAuth2AccessTokenConsumer* consumer) const;
+      OAuth2AccessTokenConsumer* consumer);
 
   // Returns |true| if an LST is available for |account_key|. Note that
   // "availability" does not guarantee "validity", i.e. this method will return
@@ -252,6 +252,9 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccountManager {
   // A util class to revoke Gaia tokens on server. This class is meant to be
   // used for a single request.
   class GaiaTokenRevocationRequest;
+
+  // A util class to fetch access tokens.
+  class AccessTokenFetcher;
 
   friend class AccountManagerTest;
   FRIEND_TEST_ALL_PREFIXES(AccountManagerTest, TestInitializationCompletes);
@@ -370,6 +373,16 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccountManager {
       base::OnceCallback<
           void(const std::vector<std::pair<::account_manager::Account, bool>>&)>
           callback) const;
+
+  // Returns the refresh token for `account_key`, if present. `account_key` must
+  // be a Gaia account. Assumes that `AccountManager` initialization
+  // (`init_state_`) is complete.
+  base::Optional<std::string> GetRefreshToken(
+      const ::account_manager::AccountKey& account_key);
+
+  // Returns `url_loader_factory_`. Assumes that `AccountManager` initialization
+  // (`init_state_`) is complete.
+  scoped_refptr<network::SharedURLLoaderFactory> GetUrlLoaderFactory();
 
   // Status of this object's initialization.
   InitializationState init_state_ = InitializationState::kNotStarted;

@@ -20,6 +20,10 @@
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/prefs/testing_pref_service.h"
+#include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/google_service_auth_error.h"
+#include "google_apis/gaia/oauth2_access_token_consumer.h"
+#include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -30,10 +34,24 @@ namespace ash {
 namespace {
 
 using ::testing::_;
+using ::testing::Eq;
+using ::testing::Field;
+using ::testing::Property;
 
 constexpr char kGaiaToken[] = "gaia_token";
 constexpr char kNewGaiaToken[] = "new_gaia_token";
 constexpr char kRawUserEmail[] = "user@example.com";
+constexpr char kFakeClientId[] = "fake-client-id";
+constexpr char kFakeClientSecret[] = "fake-client-secret";
+constexpr char kFakeAccessToken[] = "fake-access-token";
+// Same access token value as above in `kFakeAccessToken`.
+constexpr char kAccessTokenResponse[] = R"(
+    {
+      "access_token": "fake-access-token",
+      "expires_in": 3600,
+      "token_type": "Bearer",
+      "id_token": "id_token"
+    })";
 const ::account_manager::AccountKey kGaiaAccountKey = {
     "gaia_id", ::account_manager::AccountType::kGaia};
 const ::account_manager::AccountKey kActiveDirectoryAccountKey = {
@@ -178,6 +196,12 @@ class AccountManagerTest : public testing::Test {
     EXPECT_TRUE(account_manager->IsInitialized());
   }
 
+  void AddFakeAccessTokenResponse() {
+    GURL url(GaiaUrls::GetInstance()->oauth2_token_url());
+    test_url_loader_factory_.AddResponse(url.spec(), kAccessTokenResponse,
+                                         net::HTTP_OK);
+  }
+
   void RunAllPendingTasks() { task_environment_.RunUntilIdle(); }
 
   // Returns an unowned pointer to |AccountManager|.
@@ -285,6 +309,24 @@ class AccountManagerObserver : public AccountManager::Observer {
   ::account_manager::AccountKey last_removed_account_key_;
   std::string last_removed_account_email_;
   std::set<::account_manager::AccountKey> accounts_;
+};
+
+class MockAccessTokenConsumer : public OAuth2AccessTokenConsumer {
+ public:
+  MockAccessTokenConsumer() = default;
+  MockAccessTokenConsumer(const MockAccessTokenConsumer&) = delete;
+  MockAccessTokenConsumer& operator=(const MockAccessTokenConsumer&) = delete;
+  ~MockAccessTokenConsumer() override = default;
+
+  // OAuth2AccessTokenConsumer overrides.
+  MOCK_METHOD(void,
+              OnGetTokenSuccess,
+              (const TokenResponse& token_response),
+              (override));
+  MOCK_METHOD(void,
+              OnGetTokenFailure,
+              (const GoogleServiceAuthError& error),
+              (override));
 };
 
 TEST(AccountManagerKeyTest, TestValidity) {
@@ -644,6 +686,85 @@ TEST_F(AccountManagerTest, HasDummyGaiaTokenReturnsFalseForValidTokens) {
   account_manager()->UpsertAccount(kGaiaAccountKey, kRawUserEmail, kGaiaToken);
   RunAllPendingTasks();
   EXPECT_FALSE(HasDummyGaiaTokenBlocking(kGaiaAccountKey));
+}
+
+TEST_F(AccountManagerTest,
+       AccessTokenFetcherCanBeCreatedBeforeAccountManagerInitialization) {
+  {
+    // Persist a token for kGaiaAccountKey.
+    AccountManager account_manager;
+    InitializeAccountManager(&account_manager);
+    account_manager.UpsertAccount(kGaiaAccountKey, kRawUserEmail, kGaiaToken);
+    RunAllPendingTasks();
+  }
+
+  AddFakeAccessTokenResponse();
+  MockAccessTokenConsumer consumer;
+  // Create an instance of `AccountManager` but do not initialize it yet.
+  AccountManager account_manager;
+  std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher =
+      account_manager.CreateAccessTokenFetcher(kGaiaAccountKey, &consumer);
+  ASSERT_TRUE(access_token_fetcher != nullptr);
+
+  access_token_fetcher->Start(kFakeClientId, kFakeClientSecret, /*scopes=*/{});
+  EXPECT_CALL(consumer,
+              OnGetTokenSuccess(
+                  Field(&OAuth2AccessTokenConsumer::TokenResponse::access_token,
+                        Eq(kFakeAccessToken))));
+  InitializeAccountManager(&account_manager);
+  RunAllPendingTasks();
+  EXPECT_TRUE(account_manager.IsInitialized());
+}
+
+TEST_F(AccountManagerTest, AccessTokenFetchSucceedsForGaiaAccounts) {
+  ResetAndInitializeAccountManager();
+  account_manager()->UpsertAccount(kGaiaAccountKey, kRawUserEmail, kGaiaToken);
+  RunAllPendingTasks();
+
+  AddFakeAccessTokenResponse();
+  MockAccessTokenConsumer consumer;
+  EXPECT_CALL(consumer,
+              OnGetTokenSuccess(
+                  Field(&OAuth2AccessTokenConsumer::TokenResponse::access_token,
+                        Eq(kFakeAccessToken))));
+  std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher =
+      account_manager()->CreateAccessTokenFetcher(kGaiaAccountKey, &consumer);
+  access_token_fetcher->Start(kFakeClientId, kFakeClientSecret, /*scopes=*/{});
+  RunAllPendingTasks();
+}
+
+TEST_F(AccountManagerTest, AccessTokenFetchFailsForActiveDirectoryAccounts) {
+  ResetAndInitializeAccountManager();
+  account_manager()->UpsertAccount(kActiveDirectoryAccountKey, kRawUserEmail,
+                                   AccountManager::kActiveDirectoryDummyToken);
+  RunAllPendingTasks();
+
+  MockAccessTokenConsumer consumer;
+  EXPECT_CALL(consumer,
+              OnGetTokenFailure(Property(
+                  &GoogleServiceAuthError::state,
+                  Eq(GoogleServiceAuthError::State::USER_NOT_SIGNED_UP))));
+
+  std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher =
+      account_manager()->CreateAccessTokenFetcher(kActiveDirectoryAccountKey,
+                                                  &consumer);
+  access_token_fetcher->Start(kFakeClientId, kFakeClientSecret, /*scopes=*/{});
+  RunAllPendingTasks();
+}
+
+TEST_F(AccountManagerTest, AccessTokenFetchFailsForUnknownAccounts) {
+  ResetAndInitializeAccountManager();
+
+  MockAccessTokenConsumer consumer;
+  EXPECT_CALL(consumer,
+              OnGetTokenFailure(Property(
+                  &GoogleServiceAuthError::state,
+                  Eq(GoogleServiceAuthError::State::USER_NOT_SIGNED_UP))));
+
+  std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher =
+      account_manager()->CreateAccessTokenFetcher(kGaiaAccountKey, &consumer);
+  access_token_fetcher->Start(kFakeClientId, kFakeClientSecret, /*scopes=*/{});
+  RunAllPendingTasks();
 }
 
 }  // namespace ash
