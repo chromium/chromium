@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/ranges.h"
 #include "base/stl_util.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/display/de_jelly.h"
@@ -527,6 +528,8 @@ void SurfaceAggregator::EmitSurfaceContent(
   SurfaceId surface_id = surface->surface_id();
   if (referenced_surfaces_.count(surface_id))
     return;
+
+  ++stats_->copied_surface_count;
 
   const CompositorFrame& frame = surface->GetActiveOrInterpolatedFrame();
 
@@ -1196,6 +1199,8 @@ void SurfaceAggregator::CopyPasses(const CompositorFrame& frame,
   if (!valid_surfaces_.count(surface->surface_id()))
     return;
 
+  ++stats_->copied_surface_count;
+
   // TODO(vmpstr): provider check is a hack for unittests that don't set up a
   // resource provider.
   std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> empty_map;
@@ -1622,6 +1627,7 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(
   if (!valid_frame)
     return gfx::Rect();
   valid_surfaces_.insert(surface->surface_id());
+  ++stats_->prewalked_surface_count;
 
   CompositorRenderPass* last_pass = frame.render_pass_list.back().get();
   gfx::Rect damage_rect = DamageRectForSurface(surface, *last_pass);
@@ -1808,6 +1814,9 @@ AggregatedFrame SurfaceAggregator::Aggregate(
   if (!surface->HasActiveFrame())
     return {};
 
+  // Start recording new stats for this aggregation.
+  stats_.emplace();
+
   display_trace_id_ = display_trace_id;
   expected_display_time_ = expected_display_time;
 
@@ -1836,11 +1845,14 @@ AggregatedFrame SurfaceAggregator::Aggregate(
 
   DCHECK(referenced_surfaces_.empty());
 
+  base::ElapsedTimer prewalk_timer;
   PrewalkResult prewalk_result;
   gfx::Rect surfaces_damage_rect = PrewalkSurface(
       surface, /*in_moved_pixel_rp=*/false,
       /*parent_pass=*/AggregatedRenderPassId(),
       /*will_draw=*/true, /*damage_from_parent=*/gfx::Rect(), &prewalk_result);
+  stats_->prewalk_time = prewalk_timer.Elapsed();
+
   root_damage_rect_ = surfaces_damage_rect;
   // |root_damage_rect_| is used to restrict aggregating quads only if they
   // intersect this area.
@@ -1868,11 +1880,15 @@ AggregatedFrame SurfaceAggregator::Aggregate(
   frame.may_contain_video = prewalk_result.may_contain_video;
   frame.content_color_usage = prewalk_result.content_color_usage;
 
+  base::ElapsedTimer copy_timer;
   CopyUndrawnSurfaces(&prewalk_result);
   referenced_surfaces_.insert(surface_id);
   CopyPasses(root_surface_frame, surface);
   referenced_surfaces_.erase(surface_id);
   DCHECK(referenced_surfaces_.empty());
+  stats_->copy_time = copy_timer.Elapsed();
+
+  RecordStatHistograms();
 
   if (dest_pass_list_->empty()) {
     ResetAfterAggregate();
@@ -1930,6 +1946,26 @@ AggregatedFrame SurfaceAggregator::Aggregate(
     frame_annotator_->AnnotateAggregatedFrame(&frame);
 
   return frame;
+}
+
+void SurfaceAggregator::RecordStatHistograms() {
+  UMA_HISTOGRAM_COUNTS_100(
+      "Compositing.SurfaceAggregator.PrewalkedSurfaceCounted",
+      stats_->prewalked_surface_count);
+  UMA_HISTOGRAM_COUNTS_100("Compositing.SurfaceAggregator.CopiedSurfaceCount",
+                           stats_->copied_surface_count);
+
+  constexpr auto kMinTime = base::TimeDelta::FromMicroseconds(5);
+  constexpr auto kMaxTime = base::TimeDelta::FromMilliseconds(10);
+  constexpr int kTimeBuckets = 50;
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "Compositing.SurfaceAggregator.PrewalkUs", stats_->prewalk_time, kMinTime,
+      kMaxTime, kTimeBuckets);
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "Compositing.SurfaceAggregator.CopyUs", stats_->copy_time, kMinTime,
+      kMaxTime, kTimeBuckets);
+
+  stats_.reset();
 }
 
 void SurfaceAggregator::ResetAfterAggregate() {

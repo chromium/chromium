@@ -97,6 +97,14 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   struct RenderPassMapEntry;
   struct MaskFilterInfoExt;
 
+  struct AggregateStatistics {
+    int prewalked_surface_count = 0;
+    int copied_surface_count = 0;
+
+    base::TimeDelta prewalk_time;
+    base::TimeDelta copy_time;
+  };
+
   // Helper function that gets a list of render passes and returns a map from
   // render pass ids to render passes.
   static base::flat_map<CompositorRenderPassId, RenderPassMapEntry>
@@ -343,6 +351,9 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   // Update |last_frame_had_jelly_|, should be called once per frame.
   void SetLastFrameHadJelly(bool had_jelly);
 
+  // Records UMA histograms and resets |stats_|.
+  void RecordStatHistograms();
+
   // Resets member variables that were used during Aggregate().
   void ResetAfterAggregate();
 
@@ -384,6 +395,8 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
 
   SurfaceId root_surface_id_;
   gfx::Transform root_surface_transform_;
+
+  base::Optional<AggregateStatistics> stats_;
 
   // For each Surface used in the last aggregation, gives the frame_index at
   // that time.
