@@ -91,6 +91,8 @@ LayerAnimator* LayerAnimator::CreateImplicitAnimator() {
     if (duration.is_zero() && delegate() &&                            \
         (preemption_strategy_ != ENQUEUE_NEW_ANIMATION)) {             \
       StopAnimatingProperty(LayerAnimationElement::property);          \
+      if (!delegate())                                                 \
+        return;                                                        \
       delegate()->Set##name##FromAnimation(                            \
           value, PropertyChangeReason::NOT_FROM_ANIMATION);            \
       return;                                                          \

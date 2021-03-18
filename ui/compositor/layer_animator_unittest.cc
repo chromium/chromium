@@ -3433,6 +3433,30 @@ TEST(LayerAnimatorTest, ObserverDeletesLayerInStopAnimating) {
   EXPECT_TRUE(animator->is_animating());
 }
 
+TEST(LayerAnimatorTest,
+     SetPropertyWithObserverThatDeletesLayerInStopAnimating) {
+  scoped_refptr<LayerAnimator> animator(CreateDefaultTestAnimator());
+  LayerOwnerAnimationObserver observer(animator.get());
+  LayerAnimationDelegate* delegate = observer.animator_layer();
+
+  const double target_opacity = 1.0;
+  delegate->SetOpacityFromAnimation(0.0f,
+                                    PropertyChangeReason::NOT_FROM_ANIMATION);
+
+  base::TimeDelta time_delta = base::TimeDelta::FromSeconds(1);
+  LayerAnimationSequence* opacity = new LayerAnimationSequence(
+      LayerAnimationElement::CreateOpacityElement(target_opacity, time_delta));
+  opacity->AddObserver(&observer);
+  animator->ScheduleAnimation(opacity);
+  animator->Step(animator->last_step_time() +
+                 base::TimeDelta::FromMilliseconds(500));
+  EXPECT_TRUE(animator->is_animating());
+
+  animator->SetOpacity(1.0f);
+  EXPECT_EQ(nullptr, observer.animator_layer());
+  EXPECT_FALSE(animator->is_animating());
+}
+
 class CountCyclesObserver : public LayerAnimationObserver {
  public:
   explicit CountCyclesObserver(ui::LayerAnimator* animator)
