@@ -445,15 +445,25 @@ void WebAppsChromeOs::OnWebAppsDisabledModeChanged() {
         continue;
       }
       apps::mojom::AppPtr app = apps::mojom::App::New();
-      app->app_type = apps::mojom::AppType::kWeb;
+      app->app_type = app_type();
       app->app_id = web_app->app_id();
       UpdateAppDisabledMode(app);
       apps.push_back(std::move(app));
     }
   }
+
+  const bool should_notify_initialized = false;
+  if (subscribers().size() == 1) {
+    auto& subscriber = *subscribers().begin();
+    subscriber->OnApps(std::move(apps), app_type(), should_notify_initialized);
+    return;
+  }
   for (auto& subscriber : subscribers()) {
-    subscriber->OnApps(std::move(apps), apps::mojom::AppType::kWeb,
-                       false /* should_notify_initialized */);
+    std::vector<apps::mojom::AppPtr> cloned_apps;
+    for (const auto& app : apps)
+      cloned_apps.push_back(app.Clone());
+    subscriber->OnApps(std::move(cloned_apps), app_type(),
+                       should_notify_initialized);
   }
 }
 
