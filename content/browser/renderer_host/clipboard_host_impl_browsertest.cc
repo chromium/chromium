@@ -108,7 +108,13 @@ IN_PROC_BROWSER_TEST_F(ClipboardHostImplBrowserTest, ImageFile) {
   CopyPasteFiles({File{"small.jpg", "image/jpeg"}});
 }
 
-IN_PROC_BROWSER_TEST_F(ClipboardHostImplBrowserTest, Empty) {
+// Flaky on linux-ozone-rel. crbug.com/1189398
+#if defined(USE_OZONE)
+#define MAYBE_Empty DISABLED_Empty
+#else
+#define MAYBE_Empty Empty
+#endif
+IN_PROC_BROWSER_TEST_F(ClipboardHostImplBrowserTest, MAYBE_Empty) {
   CopyPasteFiles({});
 }
 
