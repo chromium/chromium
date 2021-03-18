@@ -587,7 +587,7 @@ void InputRouterImpl::KeyboardEventHandled(
     blink::mojom::InputEventResultState state,
     blink::mojom::DidOverscrollParamsPtr overscroll,
     blink::mojom::TouchActionOptionalPtr touch_action) {
-  TRACE_EVENT2("input", "InputRouterImpl::KeboardEventHandled", "type",
+  TRACE_EVENT2("input", "InputRouterImpl::KeyboardEventHandled", "type",
                WebInputEvent::GetName(event.event.GetType()), "ack",
                InputEventResultStateToString(state));
 
