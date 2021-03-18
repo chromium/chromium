@@ -196,7 +196,7 @@ class FakeCameraDeviceWatcher {
 
   const DevicesMap& devices() const { return devices_; }
 
-  // Removes camera device from the listd an returns corresponding
+  // Removes camera device from the list and returns the corresponding
   // FakeCameraStream and FakeCameraDevice. The caller may want to hold the
   // returned object, e.g. to ensure that the corresponding FIDL connections
   // are not dropped.
