@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/chromeos/arc/icon_decode_request.h"
 #include "chrome/common/chrome_features.h"
 #include "components/arc/arc_service_manager.h"
@@ -70,7 +71,6 @@ void ArcAppShortcutsRequest::OnGetAppShortcutItems(
       base::BindOnce(&ArcAppShortcutsRequest::OnAllIconDecodeRequestsDone,
                      base::Unretained(this)));
 
-  constexpr int kAppShortcutIconSize = 32;
   for (const auto& shortcut_item_ptr : shortcut_items) {
     ArcAppShortcutItem item;
     item.shortcut_id = shortcut_item_ptr->shortcut_id;
@@ -81,7 +81,7 @@ void ArcAppShortcutsRequest::OnGetAppShortcutItems(
 
     if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
       apps::ArcRawIconPngDataToImageSkia(
-          std::move(shortcut_item_ptr->icon), kAppShortcutIconSize,
+          std::move(shortcut_item_ptr->icon), apps::kAppShortcutIconSizeDip,
           base::BindOnce(&ArcAppShortcutsRequest::OnSingleIconDecodeRequestDone,
                          weak_ptr_factory_.GetWeakPtr(), items_->size() - 1));
       continue;
@@ -94,7 +94,7 @@ void ArcAppShortcutsRequest::OnGetAppShortcutItems(
       icon_decode_requests_.emplace_back(std::make_unique<IconDecodeRequest>(
           base::BindOnce(&ArcAppShortcutsRequest::OnSingleIconDecodeRequestDone,
                          weak_ptr_factory_.GetWeakPtr(), items_->size() - 1),
-          kAppShortcutIconSize));
+          apps::kAppShortcutIconSizeDip));
       icon_decode_requests_.back()->StartWithOptions(
           shortcut_item_ptr->icon_png);
       continue;
@@ -103,7 +103,7 @@ void ArcAppShortcutsRequest::OnGetAppShortcutItems(
     icon_decode_requests_.emplace_back(std::make_unique<IconDecodeRequest>(
         base::BindOnce(&ArcAppShortcutsRequest::OnSingleIconDecodeRequestDone,
                        weak_ptr_factory_.GetWeakPtr(), items_->size() - 1),
-        kAppShortcutIconSize));
+        apps::kAppShortcutIconSizeDip));
     icon_decode_requests_.back()->StartWithOptions(
         shortcut_item_ptr->icon->icon_png_data.value());
   }

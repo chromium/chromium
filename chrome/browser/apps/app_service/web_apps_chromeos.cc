@@ -317,10 +317,6 @@ void WebAppsChromeOs::OnShortcutsMenuIconsRead(
 
     gfx::ImageSkia icon;
     if (menu_item_icon_bitmaps) {
-      // TODO(crbug.com/1140356): Unify this constant with kAppShortcutIconSize
-      // from ArcAppShortcutsRequest class.
-      constexpr int kAppShortcutIconSizeDip = 32;
-
       // TODO(crbug.com/1152661): Remove kCrOsStandardIcon and add
       // kCrOsStandardBackground|kCrOsStandardMask effects for web app menu
       // maskable icons.
