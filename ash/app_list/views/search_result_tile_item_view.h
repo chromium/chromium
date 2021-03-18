@@ -102,6 +102,9 @@ class APP_LIST_EXPORT SearchResultTileItemView
 
   void UpdateBackgroundColor();
 
+  // Gets the bounds for the selection ring (shown when the result is selected).
+  gfx::RectF GetSelectionRingBounds() const;
+
   // Overridden from views::View:
   void Layout() override;
   const char* GetClassName() const override;

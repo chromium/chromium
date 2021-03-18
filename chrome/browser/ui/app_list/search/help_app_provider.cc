@@ -127,7 +127,7 @@ void HelpAppProvider::LoadIcon() {
           : apps::mojom::IconType::kUncompressed;
   app_service_proxy_->LoadIcon(
       apps::mojom::AppType::kWeb, web_app::kHelpAppId, icon_type,
-      ash::AppListConfig::instance().suggestion_chip_icon_dimension(),
+      ash::SharedAppListConfig::instance().suggestion_chip_icon_dimension(),
       /*allow_placeholder_icon=*/false,
       base::BindOnce(&HelpAppProvider::OnLoadIcon, weak_factory_.GetWeakPtr()));
 }

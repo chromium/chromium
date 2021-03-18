@@ -46,7 +46,7 @@ syncer::StringOrdinal AppListModelUpdater::GetFirstAvailablePositionInternal(
     // There may be multiple "page break" items at the end of page while empty
     // pages will not be shown in app list, so skip them.
     const int max_items_in_page =
-        ash::AppListConfig::instance().GetMaxNumOfItemsPerPage();
+        ash::SharedAppListConfig::instance().GetMaxNumOfItemsPerPage();
     if (items_in_page > 0 && items_in_page < max_items_in_page) {
       // Sometimes two continuous items may have the same position, so skip to
       // the next available position.

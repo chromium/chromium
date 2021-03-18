@@ -181,7 +181,7 @@ const gfx::VectorIcon& TypeToAnswerIcon(int type) {
 gfx::ImageSkia CreateAnswerIcon(const gfx::VectorIcon& vector_icon) {
   const auto& icon = gfx::CreateVectorIcon(vector_icon, SK_ColorWHITE);
   const int dimension =
-      ash::AppListConfig::instance().search_list_answer_icon_dimension();
+      ash::SharedAppListConfig::instance().search_list_answer_icon_dimension();
   return gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
       dimension / 2, gfx::kGoogleBlue600, icon);
 }
@@ -393,7 +393,7 @@ void OmniboxResult::UpdateIcon() {
     const gfx::VectorIcon& icon =
         is_bookmarked ? omnibox::kBookmarkIcon : TypeToVectorIcon(match_.type);
     SetIcon(gfx::CreateVectorIcon(
-        icon, ash::AppListConfig::instance().search_list_icon_dimension(),
+        icon, ash::SharedAppListConfig::instance().search_list_icon_dimension(),
         kListIconColor));
   }
 }
@@ -486,7 +486,7 @@ void OmniboxResult::SetZeroSuggestionActions() {
     std::u16string button_tooltip;
     bool visible_on_hover = false;
     const int kImageButtonIconSize =
-        ash::AppListConfig::instance().search_list_badge_icon_dimension();
+        ash::SharedAppListConfig::instance().search_list_badge_icon_dimension();
 
     switch (button_action) {
       case ash::OmniBoxZeroStateAction::kRemoveSuggestion:

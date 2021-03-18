@@ -230,7 +230,7 @@ void SearchResultSuggestionChipView::InitLayout() {
 
   // Icon.
   const int icon_size =
-      AppListConfig::instance().suggestion_chip_icon_dimension();
+      SharedAppListConfig::instance().suggestion_chip_icon_dimension();
   icon_view_ = AddChildView(std::make_unique<views::ImageView>());
   icon_view_->SetImageSize(gfx::Size(icon_size, icon_size));
   icon_view_->SetPreferredSize(gfx::Size(icon_size, icon_size));
@@ -241,7 +241,8 @@ void SearchResultSuggestionChipView::InitLayout() {
   text_view_ = AddChildView(std::make_unique<views::Label>());
   text_view_->SetAutoColorReadabilityEnabled(false);
   text_view_->SetSubpixelRenderingEnabled(false);
-  text_view_->SetFontList(AppListConfig::instance().app_title_font());
+  text_view_->SetFontList(SharedAppListConfig::instance()
+                              .search_result_recommendation_title_font());
   SetText(std::u16string());
   text_view_->SetEnabledColor(
       AppListColorProvider::Get()->GetSuggestionChipTextColor());

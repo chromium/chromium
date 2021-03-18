@@ -83,7 +83,7 @@ class AssistantSearchResult : public ChromeSearchResult {
     SetTitle(base::UTF8ToUTF16(conversation_starter.text));
     SetChipIcon(gfx::CreateVectorIcon(
         chromeos::kAssistantIcon,
-        ash::AppListConfig::instance().suggestion_chip_icon_dimension(),
+        ash::SharedAppListConfig::instance().suggestion_chip_icon_dimension(),
         gfx::kPlaceholderColor));
 
     // If |action_url_| is an Assistant deep link, odds are we'll be going to

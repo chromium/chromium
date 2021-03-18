@@ -1340,7 +1340,8 @@ int AppsGridView::TilesPerPage() const {
   if (folder_delegate_)
     return GetAppListConfig().max_folder_items_per_page();
 
-  return GetAppListConfig().GetMaxNumOfItemsPerPage();
+  return GetAppListConfig().preferred_cols() *
+         GetAppListConfig().preferred_rows();
 }
 
 void AppsGridView::UpdatePaging() {

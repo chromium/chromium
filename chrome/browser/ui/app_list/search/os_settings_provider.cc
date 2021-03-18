@@ -195,7 +195,7 @@ OsSettingsProvider::OsSettingsProvider(Profile* profile)
           : apps::mojom::IconType::kUncompressed;
   app_service_proxy_->LoadIcon(
       apps::mojom::AppType::kWeb, web_app::kOsSettingsAppId, icon_type,
-      ash::AppListConfig::instance().search_list_icon_dimension(),
+      ash::SharedAppListConfig::instance().search_list_icon_dimension(),
       /*allow_placeholder_icon=*/false,
       base::BindOnce(&OsSettingsProvider::OnLoadIcon,
                      weak_factory_.GetWeakPtr()));
@@ -300,7 +300,7 @@ void OsSettingsProvider::OnAppUpdate(const apps::AppUpdate& update) {
             : apps::mojom::IconType::kUncompressed;
     app_service_proxy_->LoadIcon(
         apps::mojom::AppType::kWeb, web_app::kOsSettingsAppId, icon_type,
-        ash::AppListConfig::instance().search_list_icon_dimension(),
+        ash::SharedAppListConfig::instance().search_list_icon_dimension(),
         /*allow_placeholder_icon=*/false,
         base::BindOnce(&OsSettingsProvider::OnLoadIcon,
                        weak_factory_.GetWeakPtr()));

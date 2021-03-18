@@ -9,7 +9,9 @@
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/ash_features.h"
+#include "base/check.h"
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "ui/gfx/color_palette.h"
 
 namespace ash {
@@ -248,6 +250,37 @@ int SuggestionChipContainerTopMarginForType(ash::AppListConfigType type) {
 
 }  // namespace
 
+SharedAppListConfig& SharedAppListConfig::instance() {
+  static base::NoDestructor<SharedAppListConfig> shared_config;
+  return *shared_config;
+}
+
+SharedAppListConfig::SharedAppListConfig()
+    : search_result_title_font_style_(ui::ResourceBundle::BaseFont),
+      search_result_recommendation_title_font_(
+          ui::ResourceBundle::GetSharedInstance().GetFontListWithDelta(1)) {}
+
+int SharedAppListConfig::GetMaxNumOfItemsPerPage() const {
+  return 20;
+}
+
+int SharedAppListConfig::GetPreferredIconDimension(
+    SearchResultDisplayType display_type) const {
+  switch (display_type) {
+    case SearchResultDisplayType::kTile:
+      return search_tile_icon_dimension_;
+    case SearchResultDisplayType::kChip:
+      return suggestion_chip_icon_dimension_;
+    case SearchResultDisplayType::kList:
+      return search_list_icon_dimension_;
+    case SearchResultDisplayType::kNone:  // Falls through.
+    case SearchResultDisplayType::kCard:
+      return 0;
+    case SearchResultDisplayType::kLast:
+      return 0;
+  }
+}
+
 AppListConfig::AppListConfig(AppListConfigType type)
     : type_(type),
       scale_x_(1),
@@ -268,15 +301,6 @@ AppListConfig::AppListConfig(AppListConfigType type)
       grid_fadeout_mask_height_(GridFadeoutMaskHeightForType(type)),
       grid_to_page_switcher_margin_(8),
       page_switcher_end_margin_(PageSwitcherEndMarginForType(type)),
-      search_tile_icon_dimension_(48),
-      search_tile_badge_icon_dimension_(22),
-      search_tile_badge_icon_offset_(5),
-      search_list_icon_dimension_(20),
-      search_list_answer_icon_dimension_(24),
-      search_list_image_icon_dimension_(32),
-      search_list_icon_vertical_bar_dimension_(48),
-      search_list_badge_icon_dimension_(14),
-      suggestion_chip_icon_dimension_(20),
       suggestion_chip_container_top_margin_(
           SuggestionChipContainerTopMarginForType(type)),
       suggestion_chip_container_height_(32),
@@ -320,18 +344,17 @@ AppListConfig::AppListConfig(AppListConfigType type)
           base::TimeDelta::FromMilliseconds(50)),
       folder_transition_in_duration_(base::TimeDelta::FromMilliseconds(250)),
       folder_transition_out_duration_(base::TimeDelta::FromMilliseconds(30)),
-      num_start_page_tiles_(5),
-      max_search_results_(6),
       max_folder_pages_(3),
       max_folder_items_per_page_(16),
       max_folder_name_chars_(28),
       all_apps_opacity_start_px_(8.0f),
       all_apps_opacity_end_px_(144.0f),
-      search_result_title_font_style_(ui::ResourceBundle::BaseFont),
-      search_tile_height_(92),
       cardified_background_color_(SkColorSetA(SK_ColorWHITE, 26 /* 10% */)),
       cardified_background_color_active_(
-          SkColorSetA(SK_ColorWHITE, 41 /* 16% */)) {}
+          SkColorSetA(SK_ColorWHITE, 41 /* 16% */)) {
+  DCHECK_EQ(SharedAppListConfig::instance().GetMaxNumOfItemsPerPage(),
+            preferred_cols_ * preferred_rows_);
+}
 
 AppListConfig::AppListConfig(const AppListConfig& base_config,
                              float scale_x,
@@ -385,22 +408,6 @@ AppListConfig::AppListConfig(const AppListConfig& base_config,
               : MinScale(base_config.grid_fadeout_mask_height_, scale_y, 1)),
       grid_to_page_switcher_margin_(base_config.grid_to_page_switcher_margin_),
       page_switcher_end_margin_(base_config.page_switcher_end_margin_),
-      search_tile_icon_dimension_(base_config.search_tile_icon_dimension_),
-      search_tile_badge_icon_dimension_(
-          base_config.search_tile_badge_icon_dimension_),
-      search_tile_badge_icon_offset_(
-          base_config.search_tile_badge_icon_offset_),
-      search_list_icon_dimension_(base_config.search_list_icon_dimension_),
-      search_list_answer_icon_dimension_(
-          base_config.search_list_answer_icon_dimension_),
-      search_list_image_icon_dimension_(
-          base_config.search_list_image_icon_dimension_),
-      search_list_icon_vertical_bar_dimension_(
-          base_config.search_list_icon_vertical_bar_dimension_),
-      search_list_badge_icon_dimension_(
-          base_config.search_list_badge_icon_dimension_),
-      suggestion_chip_icon_dimension_(
-          base_config.suggestion_chip_icon_dimension_),
       suggestion_chip_container_top_margin_(
           base_config.suggestion_chip_container_top_margin_),
       suggestion_chip_container_height_(
@@ -472,19 +479,17 @@ AppListConfig::AppListConfig(const AppListConfig& base_config,
           base_config.folder_transition_in_duration_),
       folder_transition_out_duration_(
           base_config.folder_transition_out_duration_),
-      num_start_page_tiles_(base_config.num_start_page_tiles_),
-      max_search_results_(base_config.max_search_results_),
       max_folder_pages_(base_config.max_folder_pages_),
       max_folder_items_per_page_(base_config.max_folder_items_per_page_),
       max_folder_name_chars_(base_config.max_folder_name_chars_),
       all_apps_opacity_start_px_(base_config.all_apps_opacity_start_px_),
       all_apps_opacity_end_px_(base_config.all_apps_opacity_end_px_),
-      search_result_title_font_style_(
-          base_config.search_result_title_font_style_),
-      search_tile_height_(base_config.search_tile_height_),
       cardified_background_color_(base_config.cardified_background_color_),
       cardified_background_color_active_(
-          base_config.cardified_background_color_active_) {}
+          base_config.cardified_background_color_active_) {
+  DCHECK_EQ(SharedAppListConfig::instance().GetMaxNumOfItemsPerPage(),
+            preferred_cols_ * preferred_rows_);
+}
 
 AppListConfig::~AppListConfig() = default;
 
@@ -492,27 +497,6 @@ AppListConfig::~AppListConfig() = default;
 AppListConfig& AppListConfig::instance() {
   return *AppListConfigProvider::Get().GetConfigForType(
       AppListConfigType::kShared, true /*can_create*/);
-}
-
-int AppListConfig::GetPreferredIconDimension(
-    SearchResultDisplayType display_type) const {
-  switch (display_type) {
-    case SearchResultDisplayType::kTile:
-      return search_tile_icon_dimension_;
-    case SearchResultDisplayType::kChip:
-      return suggestion_chip_icon_dimension_;
-    case SearchResultDisplayType::kList:
-      return search_list_icon_dimension_;
-    case SearchResultDisplayType::kNone:  // Falls through.
-    case SearchResultDisplayType::kCard:
-      return 0;
-    case SearchResultDisplayType::kLast:
-      return 0;
-  }
-}
-
-int AppListConfig::GetMaxNumOfItemsPerPage() const {
-  return preferred_cols_ * preferred_rows_;
 }
 
 int AppListConfig::GetMinGridHorizontalPadding() const {

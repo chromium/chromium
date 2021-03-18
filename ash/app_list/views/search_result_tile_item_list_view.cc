@@ -77,7 +77,7 @@ SearchResultTileItemListView::SearchResultTileItemListView(
       is_app_reinstall_recommendation_enabled_(
           app_list_features::IsAppReinstallZeroStateEnabled()),
       max_search_result_tiles_(
-          AppListConfig::instance().max_search_result_tiles()) {
+          SharedAppListConfig::instance().max_search_result_tiles()) {
   layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
       gfx::Insets(kItemListVerticalSpacing, kItemListHorizontalSpacing),
@@ -88,7 +88,7 @@ SearchResultTileItemListView::SearchResultTileItemListView(
     separator->SetVisible(false);
     separator->SetBorder(views::CreateEmptyBorder(
         kSeparatorTopPadding, kSeparatorLeftRightPadding,
-        AppListConfig::instance().search_tile_height() - kSeparatorHeight,
+        SharedAppListConfig::instance().search_tile_height() - kSeparatorHeight,
         kSeparatorLeftRightPadding));
     separator->SetColor(AppListColorProvider::Get()->GetSeparatorColor());
     separator_views_.push_back(separator);
@@ -244,7 +244,7 @@ int SearchResultTileItemListView::DoUpdate() {
   set_container_score(
       display_results.empty()
           ? -1.0
-          : AppListConfig::instance().app_tiles_container_score());
+          : SharedAppListConfig::instance().app_tiles_container_score());
 
   return display_results.size();
 }

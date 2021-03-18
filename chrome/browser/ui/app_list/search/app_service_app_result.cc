@@ -206,8 +206,9 @@ void AppServiceAppResult::CallLoadIcon(bool chip, bool allow_placeholder_icon) {
             : apps::mojom::IconType::kUncompressed;
     icon_loader_releaser_ = icon_loader_->LoadIcon(
         app_type_, app_id(), icon_type,
-        chip ? ash::AppListConfig::instance().suggestion_chip_icon_dimension()
-             : ash::AppListConfig::instance().GetPreferredIconDimension(
+        chip ? ash::SharedAppListConfig::instance()
+                   .suggestion_chip_icon_dimension()
+             : ash::SharedAppListConfig::instance().GetPreferredIconDimension(
                    display_type()),
         allow_placeholder_icon,
         base::BindOnce(&AppServiceAppResult::OnLoadIcon,

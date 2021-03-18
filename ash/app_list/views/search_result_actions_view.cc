@@ -89,7 +89,7 @@ SearchResultImageButton::SearchResultImageButton(
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
 
   SetButtonImage(action.image,
-                 AppListConfig::instance().search_list_icon_dimension());
+                 SharedAppListConfig::instance().search_list_icon_dimension());
 
   SetAccessibleName(action.tooltip_text);
 

@@ -137,7 +137,8 @@ void SearchResultView::CreateTitleRenderText() {
   render_text->SetText(result()->title());
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   render_text->SetFontList(
-      rb.GetFontList(AppListConfig::instance().search_result_title_font_style())
+      rb.GetFontList(
+            SharedAppListConfig::instance().search_result_title_font_style())
           .DeriveWithSizeDelta(kSearchResultTitleTextSizeDelta));
   // When result is an omnibox non-url search, the matched tag indicates
   // proposed query. For all other cases, the matched tag indicates typed search
@@ -225,7 +226,7 @@ void SearchResultView::Layout() {
   gfx::Rect badge_icon_bounds;
 
   const int badge_icon_dimension =
-      AppListConfig::instance().search_list_badge_icon_dimension();
+      SharedAppListConfig::instance().search_list_badge_icon_dimension();
   badge_icon_bounds = gfx::Rect(icon_bounds.right() - badge_icon_dimension / 2,
                                 icon_bounds.bottom() - badge_icon_dimension / 2,
                                 badge_icon_dimension, badge_icon_dimension);
@@ -404,7 +405,7 @@ void SearchResultView::OnMetadataChanged() {
 
       // Images could be rectangular, and we should preserve the aspect ratio.
       const int dimension =
-          AppListConfig::instance().search_list_image_icon_dimension();
+          SharedAppListConfig::instance().search_list_image_icon_dimension();
       int width = image.width();
       int height = image.height();
       if (width != height) {
@@ -421,8 +422,9 @@ void SearchResultView::OnMetadataChanged() {
     } else {
       const int dimension =
           IsAnswer()
-              ? AppListConfig::instance().search_list_answer_icon_dimension()
-              : AppListConfig::instance().search_list_icon_dimension();
+              ? SharedAppListConfig::instance()
+                    .search_list_answer_icon_dimension()
+              : SharedAppListConfig::instance().search_list_icon_dimension();
       SetIconImage(result()->icon(), icon_, gfx::Size(dimension, dimension));
       icon_->SetVisible(true);
       image_icon_->SetVisible(false);
@@ -448,7 +450,7 @@ void SearchResultView::OnMetadataChanged() {
     badge_icon_->SetVisible(false);
   } else {
     const int dimension =
-        AppListConfig::instance().search_list_badge_icon_dimension();
+        SharedAppListConfig::instance().search_list_badge_icon_dimension();
     SetIconImage(badge_icon_skia, badge_icon_, gfx::Size(dimension, dimension));
     badge_icon_->SetVisible(true);
   }

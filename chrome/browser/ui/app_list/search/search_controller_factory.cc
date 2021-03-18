@@ -113,7 +113,7 @@ std::unique_ptr<SearchController> CreateSearchController(
   size_t apps_group_id = controller->AddGroup(kMaxAppsGroupResults);
 
   size_t omnibox_group_id = controller->AddGroup(
-      ash::AppListConfig::instance().max_search_result_list_items());
+      ash::SharedAppListConfig::instance().max_search_result_list_items());
 
   // Add search providers.
   controller->AddProvider(

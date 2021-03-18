@@ -49,7 +49,7 @@ class Expect {
     EXPECT_EQ(r_.metrics_type(), ash::SearchResultType::ASSISTANT);
     EXPECT_TRUE(r_.chip_icon().BackedBySameObjectAs(gfx::CreateVectorIcon(
         chromeos::kAssistantIcon,
-        ash::AppListConfig::instance().suggestion_chip_icon_dimension(),
+        ash::SharedAppListConfig::instance().suggestion_chip_icon_dimension(),
         gfx::kPlaceholderColor)));
   }
 

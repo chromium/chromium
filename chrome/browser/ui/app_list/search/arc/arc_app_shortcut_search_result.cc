@@ -46,7 +46,7 @@ ArcAppShortcutSearchResult::ArcAppShortcutSearchResult(
   SetIsRecommendation(is_recommendation);
 
   const int icon_dimension =
-      ash::AppListConfig::instance().search_tile_icon_dimension();
+      ash::SharedAppListConfig::instance().search_tile_icon_dimension();
   if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
     DCHECK(data_->icon);
     apps::ArcRawIconPngDataToImageSkia(
@@ -72,7 +72,8 @@ ArcAppShortcutSearchResult::ArcAppShortcutSearchResult(
 
   badge_icon_loader_ = std::make_unique<AppServiceAppIconLoader>(
       profile_,
-      ash::AppListConfig::instance().search_tile_badge_icon_dimension(), this);
+      ash::SharedAppListConfig::instance().search_tile_badge_icon_dimension(),
+      this);
   badge_icon_loader_->FetchImage(GetAppId());
 }
 

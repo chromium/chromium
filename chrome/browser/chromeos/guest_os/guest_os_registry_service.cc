@@ -1088,7 +1088,8 @@ void GuestOsRegistryService::RequestContainerAppIcon(
   crostini::CrostiniManager::GetForProfile(profile_)->GetContainerAppIcons(
       crostini::ContainerId(registration->VmName(),
                             registration->ContainerName()),
-      desktop_file_ids, ash::AppListConfig::instance().grid_icon_dimension(),
+      desktop_file_ids,
+      ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
       icon_scale,
       base::BindOnce(&GuestOsRegistryService::OnContainerAppIcon,
                      weak_ptr_factory_.GetWeakPtr(), app_id, scale_factor));

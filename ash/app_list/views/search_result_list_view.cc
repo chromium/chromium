@@ -65,8 +65,8 @@ SearchResultListView::SearchResultListView(AppListMainView* main_view,
       views::BoxLayout::Orientation::kVertical));
 
   size_t result_count =
-      AppListConfig::instance().max_search_result_list_items() +
-      AppListConfig::instance().max_assistant_search_result_list_items();
+      SharedAppListConfig::instance().max_search_result_list_items() +
+      SharedAppListConfig::instance().max_assistant_search_result_list_items();
 
   for (size_t i = 0; i < result_count; ++i) {
     search_result_views_.emplace_back(
@@ -137,7 +137,7 @@ int SearchResultListView::DoUpdate() {
   set_container_score(
       display_results.empty()
           ? -1.0
-          : AppListConfig::instance().results_list_container_score());
+          : SharedAppListConfig::instance().results_list_container_score());
 
   return display_results.size();
 }
@@ -234,7 +234,7 @@ std::vector<SearchResult*> SearchResultListView::GetAssistantResults() {
                    AppListSearchResultType::kAssistantText;
       }),
       /*max_results=*/
-      AppListConfig::instance().max_assistant_search_result_list_items());
+      SharedAppListConfig::instance().max_assistant_search_result_list_items());
 }
 
 std::vector<SearchResult*> SearchResultListView::GetSearchResults() {
@@ -246,7 +246,7 @@ std::vector<SearchResult*> SearchResultListView::GetSearchResults() {
                        AppListSearchResultType::kAssistantText;
           }),
           /*max_results=*/
-          AppListConfig::instance().max_search_result_list_items());
+          SharedAppListConfig::instance().max_search_result_list_items());
 
   std::vector<SearchResult*> assistant_results = GetAssistantResults();
 

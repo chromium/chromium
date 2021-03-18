@@ -39,8 +39,9 @@ gfx::ImageSkia ApplyBackgroundAndMask(const gfx::ImageSkia& image) {
   return gfx::ImageSkiaOperations::CreateResizedImage(
       apps::ApplyBackgroundAndMask(image),
       skia::ImageOperations::RESIZE_LANCZOS3,
-      gfx::Size(ash::AppListConfig::instance().search_tile_icon_dimension(),
-                ash::AppListConfig::instance().search_tile_icon_dimension()));
+      gfx::Size(
+          ash::SharedAppListConfig::instance().search_tile_icon_dimension(),
+          ash::SharedAppListConfig::instance().search_tile_icon_dimension()));
 }
 }  // namespace
 
@@ -65,7 +66,7 @@ ArcAppReinstallAppResult::ArcAppReinstallAppResult(
   SetBadgeIcon(ui::ImageModel::FromVectorIcon(
       vector_icons::kCloudDownloadIcon,
       ui::NativeTheme::kColorId_DefaultIconColor,
-      ash::AppListConfig::instance().search_tile_badge_icon_dimension()));
+      ash::SharedAppListConfig::instance().search_tile_badge_icon_dimension()));
   SetUseBadgeIconBackground(true);
   SetNotifyVisibilityChange(true);
 

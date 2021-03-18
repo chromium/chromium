@@ -160,8 +160,8 @@ void SearchController::OnResultsChanged() {
 
   size_t num_max_results =
       query_for_recommendation_
-          ? ash::AppListConfig::instance().num_start_page_tiles()
-          : ash::AppListConfig::instance().max_search_results();
+          ? ash::SharedAppListConfig::instance().num_start_page_tiles()
+          : ash::SharedAppListConfig::instance().max_search_results();
   mixer_->MixAndPublish(num_max_results, last_query_);
 }
 

@@ -165,8 +165,9 @@ class MixerTest : public testing::Test {
     for (size_t i = 0; i < providers_.size(); ++i)
       providers_[i]->Start(query);
 
-    mixer_->MixAndPublish(ash::AppListConfig::instance().max_search_results(),
-                          std::u16string());
+    mixer_->MixAndPublish(
+        ash::SharedAppListConfig::instance().max_search_results(),
+        std::u16string());
   }
 
   std::string GetResults() const {

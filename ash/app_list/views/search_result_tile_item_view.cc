@@ -29,6 +29,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/themed_vector_icon.h"
@@ -45,7 +46,7 @@ namespace ash {
 namespace {
 
 // The width of the focus ring.
-constexpr int kFocusRingWidth = 2;
+constexpr int kSelectionRingWidth = 2;
 
 constexpr int kSearchTileWidth = 80;
 constexpr int kSearchTileTopPadding = 4;
@@ -151,12 +152,13 @@ void SearchResultTileItemView::OnResultChanged() {
   SetRating(result()->rating());
   SetPrice(result()->formatted_price());
 
-  const gfx::FontList& font = AppListConfig::instance().app_title_font();
+  const gfx::FontList& font =
+      SharedAppListConfig::instance().search_result_recommendation_title_font();
   if (rating_) {
     if (!IsSuggestedAppTile()) {
       // App search results use different fonts than AppList apps.
       rating_->SetFontList(ui::ResourceBundle::GetSharedInstance().GetFontList(
-          AppListConfig::instance().search_result_title_font_style()));
+          SharedAppListConfig::instance().search_result_title_font_style()));
     } else {
       rating_->SetFontList(font);
     }
@@ -165,7 +167,7 @@ void SearchResultTileItemView::OnResultChanged() {
     if (!IsSuggestedAppTile()) {
       // App search results use different fonts than AppList apps.
       price_->SetFontList(ui::ResourceBundle::GetSharedInstance().GetFontList(
-          AppListConfig::instance().search_result_title_font_style()));
+          SharedAppListConfig::instance().search_result_title_font_style()));
     } else {
       price_->SetFontList(font);
     }
@@ -174,8 +176,8 @@ void SearchResultTileItemView::OnResultChanged() {
     // App search results use different fonts than AppList apps.
     title_->SetFontList(
         ui::ResourceBundle::GetSharedInstance()
-            .GetFontList(
-                AppListConfig::instance().search_result_title_font_style())
+            .GetFontList(SharedAppListConfig::instance()
+                             .search_result_title_font_style())
             .DeriveWithSizeDelta(kSearchResultTileTitleTextSizeDelta));
   } else {
     title_->SetFontList(font);
@@ -286,17 +288,23 @@ void SearchResultTileItemView::PaintButtonContents(gfx::Canvas* canvas) {
   if (!result() || !selected())
     return;
 
-  gfx::Rect rect(GetContentsBounds());
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
-  flags.setStrokeWidth(kFocusRingWidth);
+  flags.setStrokeWidth(kSelectionRingWidth);
   flags.setColor(AppListColorProvider::Get()->GetFocusRingColor());
 
-  const int kLeftRightPadding = (rect.width() - kIconSelectedSize) / 2;
-  rect.Inset(kLeftRightPadding, kFocusRingWidth);
-  rect.set_height(kIconSelectedSize - 2 * kFocusRingWidth);
-  canvas->DrawRoundRect(gfx::RectF(rect), kIconSelectedCornerRadius, flags);
+  gfx::RectF selection_ring = GetSelectionRingBounds();
+  selection_ring.Inset(0, kSelectionRingWidth);
+  canvas->DrawRoundRect(selection_ring, kIconSelectedCornerRadius, flags);
+}
+
+gfx::RectF SearchResultTileItemView::GetSelectionRingBounds() const {
+  gfx::RectF bounds(GetContentsBounds());
+  const float horizontal_padding = (bounds.width() - kIconSelectedSize) / 2.0;
+  bounds.Inset(horizontal_padding, 0);
+  bounds.set_height(kIconSelectedSize);
+  return bounds;
 }
 
 void SearchResultTileItemView::OnMetadataChanged() {
@@ -331,9 +339,9 @@ void SearchResultTileItemView::OnGetContextMenuModel(
   if (!menu_model || (context_menu_ && context_menu_->IsShowingMenu()))
     return;
 
-  gfx::Rect anchor_rect = source->GetBoundsInScreen();
-  // Anchor the menu to the same rect that is used for selection highlight.
-  anchor_rect.ClampToCenteredSize(AppListConfig::instance().grid_focus_size());
+  // Anchor the menu to the same rect that is used for selection ring.
+  gfx::Rect anchor_rect = gfx::ToEnclosingRect(GetSelectionRingBounds());
+  views::View::ConvertRectToScreen(this, &anchor_rect);
 
   AppLaunchedMetricParams metric_params = {
       AppListLaunchedFrom::kLaunchedFromSearchBox,
@@ -382,7 +390,7 @@ void SearchResultTileItemView::ActivateResult(int event_flags,
     UMA_HISTOGRAM_EXACT_LINEAR(
         "Apps.AppListPlayStoreAppLaunchedIndex",
         group_index_in_container_view(),
-        AppListConfig::instance().max_search_result_tiles());
+        SharedAppListConfig::instance().max_search_result_tiles());
     if (launch_as_default) {
       UMA_HISTOGRAM_MEDIUM_TIMES(
           "Arc.PlayStoreSearch.DefaultResultClickLatency", activation_delay);
@@ -400,7 +408,8 @@ void SearchResultTileItemView::ActivateResult(int event_flags,
 }
 
 void SearchResultTileItemView::SetIcon(const gfx::ImageSkia& icon) {
-  const int icon_size = AppListConfig::instance().search_tile_icon_dimension();
+  const int icon_size =
+      SharedAppListConfig::instance().search_tile_icon_dimension();
   gfx::ImageSkia resized(gfx::ImageSkiaOperations::CreateResizedImage(
       icon, skia::ImageOperations::RESIZE_BEST,
       gfx::Size(icon_size, icon_size)));
@@ -428,7 +437,7 @@ void SearchResultTileItemView::SetBadgeIcon(const ui::ImageModel& badge_icon,
   gfx::ImageSkia resized_badge_icon(
       gfx::ImageSkiaOperations::CreateResizedImage(
           badge_icon_skia, skia::ImageOperations::RESIZE_BEST,
-          AppListConfig::instance().search_tile_badge_icon_size()));
+          SharedAppListConfig::instance().search_tile_badge_icon_size()));
 
   gfx::ShadowValues shadow_values;
   shadow_values.push_back(
@@ -532,9 +541,9 @@ void SearchResultTileItemView::Layout() {
   icon_->SetBoundsRect(icon_rect);
 
   const int badge_icon_dimension =
-      AppListConfig::instance().search_tile_badge_icon_dimension();
+      SharedAppListConfig::instance().search_tile_badge_icon_dimension();
   const int badge_icon_offset =
-      AppListConfig::instance().search_tile_badge_icon_offset();
+      SharedAppListConfig::instance().search_tile_badge_icon_offset();
   const gfx::Rect badge_rect(
       icon_rect.right() - badge_icon_dimension + badge_icon_offset,
       icon_rect.bottom() - badge_icon_dimension + badge_icon_offset,
@@ -589,7 +598,7 @@ gfx::Size SearchResultTileItemView::CalculatePreferredSize() const {
     return gfx::Size();
 
   return gfx::Size(kSearchTileWidth,
-                   AppListConfig::instance().search_tile_height());
+                   SharedAppListConfig::instance().search_tile_height());
 }
 
 std::u16string SearchResultTileItemView::GetTooltipText(

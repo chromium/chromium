@@ -52,12 +52,17 @@ constexpr base::TimeDelta kOverviewTransitionDelay =
 constexpr base::TimeDelta kGestureCancelationDuration =
     base::TimeDelta::FromMilliseconds(350);
 
+// The duration of transition from the home screen current scaled state to the
+// initial (unscaled) state when the gesture is canceled due to a back gesture.
+constexpr base::TimeDelta kGestureCancelationForBackDuration =
+    base::TimeDelta::FromMilliseconds(250);
+
 void UpdateHomeAnimationForGestureCancel(
     bool going_back,
     ui::ScopedLayerAnimationSettings* settings) {
-  settings->SetTransitionDuration(
-      going_back ? AppListConfig::instance().page_transition_duration()
-                 : kGestureCancelationDuration);
+  settings->SetTransitionDuration(going_back
+                                      ? kGestureCancelationForBackDuration
+                                      : kGestureCancelationDuration);
   settings->SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
   settings->SetPreemptionStrategy(
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);

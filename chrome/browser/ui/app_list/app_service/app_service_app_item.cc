@@ -167,11 +167,12 @@ void AppServiceAppItem::CallLoadIcon(bool allow_placeholder_icon) {
       (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
           ? apps::mojom::IconType::kStandard
           : apps::mojom::IconType::kUncompressed;
-  proxy->LoadIcon(app_type_, id(), icon_type,
-                  ash::AppListConfig::instance().grid_icon_dimension(),
-                  allow_placeholder_icon,
-                  base::BindOnce(&AppServiceAppItem::OnLoadIcon,
-                                 weak_ptr_factory_.GetWeakPtr()));
+  proxy->LoadIcon(
+      app_type_, id(), icon_type,
+      ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
+      allow_placeholder_icon,
+      base::BindOnce(&AppServiceAppItem::OnLoadIcon,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AppServiceAppItem::OnLoadIcon(apps::mojom::IconValuePtr icon_value) {
