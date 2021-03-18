@@ -237,6 +237,8 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
       "http://example.com/foo?email=foo@bar.com",
       "rtsp://root@example.com/",
       "https://aaaaaaaaaaaaaaaa.com",
+      "file:///var/log/messages",
+      "file:///usr/local/home/iby/web%20page%20test.html",
   };
   for (size_t i = 0; i < base::size(kURLs); ++i) {
     SCOPED_TRACE(kURLs[i]);

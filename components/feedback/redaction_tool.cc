@@ -252,7 +252,7 @@ std::string MaybeScrubIPAddress(const std::string& addr) {
 #define PORT DIGIT "*"
 
 // This is a diversion of RFC 3987
-#define SCHEME NCG("http|https|ftp|chrome|chrome-extension|android|rtsp")
+#define SCHEME NCG("http|https|ftp|chrome|chrome-extension|android|rtsp|file")
 
 #define IPRIVATE            \
   "["                       \
