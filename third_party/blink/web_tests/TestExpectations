@@ -1351,12 +1351,15 @@ crbug.com/891944 external/wpt/css/css-scrollbars/transparent-on-root.html [ Fail
 crbug.com/1133390 external/wpt/css/css-values/calc-catch-divide-by-0.html [ Failure ]
 crbug.com/1133390 external/wpt/css/css-values/calc-infinity-nan-computed.html [ Failure ]
 crbug.com/1133390 external/wpt/css/css-values/round-function.html [ Failure ]
-crbug.com/1133390 external/wpt/css/css-values/calc-infinity-nan.html [ Failure ]
+crbug.com/1133390 external/wpt/css/css-values/calc-infinity-nan-serialize-length.html [ Failure ]
+crbug.com/1133390 external/wpt/css/css-values/calc-infinity-nan-serialize-time.html [ Failure ]
+
 
 crbug.com/1133390 virtual/css-calc-infinity-and-nan/external/wpt/css/css-values/calc-catch-divide-by-0.html [ Pass ]
 crbug.com/1133390 virtual/css-calc-infinity-and-nan/external/wpt/css/css-values/calc-infinity-nan-computed.html [ Pass ]
 crbug.com/1133390 virtual/css-calc-infinity-and-nan/external/wpt/css/css-values/round-function.html [ Pass ]
-crbug.com/1133390 virtual/css-calc-infinity-and-nan/external/wpt/css/css-values/calc-infinity-nan.html [ Pass ]
+crbug.com/1133390 virtual/css-calc-infinity-and-nan/external/wpt/css/css-values/calc-infinity-nan-serialize-length.html [ Pass ]
+crbug.com/1133390 virtual/css-calc-infinity-and-nan/external/wpt/css/css-values/calc-infinity-nan-serialize-time.html [ Pass ]
 
 
 

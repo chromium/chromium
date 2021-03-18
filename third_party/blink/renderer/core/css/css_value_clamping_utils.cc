@@ -17,6 +17,10 @@ double CSSValueClampingUtils::ClampLength(double value) {
   return ClampDouble(value);
 }
 
+double CSSValueClampingUtils::ClampTime(double value) {
+  return ClampDouble(value);
+}
+
 float CSSValueClampingUtils::ClampLength(float value) {
   if (std::isnan(value))
     value = std::numeric_limits<float>::max();
