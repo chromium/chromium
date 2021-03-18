@@ -3,5 +3,6 @@
     "project_title": "Chromium M90",
     "is_main": false,
     "is_lts_branch": false,
-    "ref": "refs/branch-heads/4430"
+    "ref": "refs/branch-heads/4430",
+    "chrome_project": "chrome-m90"
 }

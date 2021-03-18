@@ -8,6 +8,7 @@ def _project_settings(
         project_title,
         is_main,
         is_lts_branch,
+        chrome_project,
         ref):
     """Declare settings for the project.
 
@@ -32,6 +33,7 @@ def _project_settings(
         is_main = is_main,
         is_lts_branch = is_lts_branch,
         ref = ref,
+        chrome_project = chrome_project,
     )
 
 settings = _project_settings(**json.decode(io.read_file("./settings.json")))

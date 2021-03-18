@@ -1796,7 +1796,7 @@ def chrome_internal_verifier(
         builder,
         **kwargs):
     branches.cq_tryjob_verifier(
-        builder = "chrome:try/" + builder,
+        builder = "{}:try/{}".format(settings.chrome_project, builder),
         cq_group = "cq",
         includable_only = True,
         owner_whitelist = [
@@ -1849,7 +1849,6 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "linux-chrome-stable",
-    branch_selector = branches.STANDARD_MILESTONE,
 )
 
 chrome_internal_verifier(
@@ -1863,7 +1862,6 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "mac-chrome-stable",
-    branch_selector = branches.STANDARD_MILESTONE,
 )
 
 chrome_internal_verifier(
@@ -1873,7 +1871,6 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "win-chrome-stable",
-    branch_selector = branches.STANDARD_MILESTONE,
 )
 
 chrome_internal_verifier(
@@ -1883,5 +1880,4 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "win64-chrome-stable",
-    branch_selector = branches.STANDARD_MILESTONE,
 )

@@ -53,7 +53,8 @@ class BranchIntegrationTest(unittest.TestCase):
             "project_title": "Chromium MXX",
             "is_main": false,
             "is_lts_branch": false,
-            "ref": "refs/branch-heads/YYYY"
+            "ref": "refs/branch-heads/YYYY",
+            "chrome_project": "chrome-mXX"
         }
         """))
 
