@@ -59,6 +59,10 @@ const CGFloat kContainerCornerRadius = 13.0;
 }
 
 - (void)presentationTransitionWillBegin {
+  // Set the identity chooser view as modal, so controls beneath it are
+  // non-selectable.
+  self.containerView.accessibilityViewIsModal = YES;
+
   self.closeButton =
       [AccessibilityCloseMenuButton buttonWithType:UIButtonTypeCustom];
   [self.closeButton addTarget:self
