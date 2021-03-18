@@ -1427,7 +1427,13 @@ TEST_F(IndexedDBDispatcherHostTest, DISABLED_NotifyIndexedDBContentChanged) {
   loop6.Run();
 }
 
-TEST_F(IndexedDBDispatcherHostTest, DatabaseOperationSequencing) {
+// Flaky on Mac and Linux ASAN builds. See: crbug.com/1189512.
+#if defined(OS_MAC) || (defined(OS_LINUX) && defined(ADDRESS_SANITIZER))
+#define MAYBE_DatabaseOperationSequencing DISABLED_DatabaseOperationSequencing
+#else
+#define MAYBE_DatabaseOperationSequencing DatabaseOperationSequencing
+#endif
+TEST_F(IndexedDBDispatcherHostTest, MAYBE_DatabaseOperationSequencing) {
   const int64_t kDBVersion = 1;
   const int64_t kTransactionId = 1;
   const std::u16string kObjectStoreName1 = u"os1";
