@@ -292,28 +292,10 @@ ScriptPromise GPUDevice::createRenderPipelineAsync(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  OwnedRenderPipelineDescriptor dawn_desc_info;
-  v8::Isolate* isolate = script_state->GetIsolate();
-  ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
-                                 "GPUVertexStateDescriptor");
-  ConvertToDawnType(isolate, this, descriptor, &dawn_desc_info,
-                    exception_state);
-  if (exception_state.HadException()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kOperationError,
-        "Error in parsing GPURenderPipelineDescriptor"));
-  } else {
-    auto* callback =
-        BindDawnCallback(&GPUDevice::OnCreateRenderPipelineAsyncCallback,
-                         WrapPersistent(this), WrapPersistent(resolver));
-    GetProcs().deviceCreateRenderPipelineAsync(
-        GetHandle(), &dawn_desc_info.dawn_desc, callback->UnboundCallback(),
-        callback->AsUserdata());
-  }
-
-  // WebGPU guarantees that promises are resolved in finite time so we need to
-  // ensure commands are flushed.
-  EnsureFlush();
+  // Temporarily immediately create the pipeline and resolve the promise while
+  // waiting for Dawn to change to take a RenderPipelineDescriptor for
+  // Device::CreateRenderPipelineAsync.
+  resolver->Resolve(GPURenderPipeline::Create(script_state, this, descriptor));
   return promise;
 }
 
