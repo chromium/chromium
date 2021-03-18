@@ -134,4 +134,25 @@ TEST_F(ApplyStyleCommandTest, JustifyRightWithSVGForeignObject) {
       "</svg>",
       GetSelectionTextFromBody());
 }
+
+// This is a regression test for https://crbug.com/1188946
+TEST_F(ApplyStyleCommandTest, JustifyCenterWithNonEditable) {
+  GetDocument().setDesignMode("on");
+  Selection().SetSelection(
+      SetSelectionTextToBody("|x<div contenteditable=false></div>"),
+      SetSelectionOptions());
+
+  auto* style = MakeGarbageCollected<MutableCSSPropertyValueSet>(kUASheetMode);
+  style->SetProperty(CSSPropertyID::kTextAlign, "center",
+                     /* important */ false,
+                     GetFrame().DomWindow()->GetSecureContextMode());
+  MakeGarbageCollected<ApplyStyleCommand>(
+      GetDocument(), MakeGarbageCollected<EditingStyle>(style),
+      InputEvent::InputType::kFormatJustifyCenter,
+      ApplyStyleCommand::kForceBlockProperties)
+      ->Apply();
+
+  EXPECT_EQ("<div style=\"text-align: center;\">|<br>x</div>",
+            GetSelectionTextFromBody());
+}
 }  // namespace blink

@@ -290,12 +290,16 @@ void ApplyStyleCommand::ApplyBlockStyle(EditingStyle* style,
   const int end_index = TextIterator::RangeLength(end_range, behavior);
 
   VisiblePosition paragraph_start(StartOfParagraph(visible_start));
-  Position beyond_end =
-      NextPositionOf(EndOfParagraph(visible_end)).DeepEquivalent();
-  while (
-      paragraph_start.IsNotNull() &&
-      (beyond_end.IsNull() || paragraph_start.DeepEquivalent() < beyond_end)) {
+  RelocatablePosition relocatable_beyond_end(
+      NextPositionOf(EndOfParagraph(visible_end)).DeepEquivalent());
+  while (paragraph_start.IsNotNull()) {
     DCHECK(paragraph_start.IsValidFor(GetDocument())) << paragraph_start;
+    const Position& beyond_end = relocatable_beyond_end.GetPosition();
+    DCHECK(beyond_end.IsValidFor(GetDocument())) << beyond_end;
+    if (beyond_end.IsNotNull() &&
+        beyond_end <= paragraph_start.DeepEquivalent())
+      break;
+
     RelocatablePosition next_paragraph_start(
         NextPositionOf(EndOfParagraph(paragraph_start)).DeepEquivalent());
     // RelocatablePosition turns the position into ParentAnchoredEquivalent(),
