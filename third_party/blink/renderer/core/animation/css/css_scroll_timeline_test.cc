@@ -353,4 +353,31 @@ TEST_F(CSSScrollTimelineTest, ResizeObserverTriggeredTimelines) {
             GetDocumentAnimations().GetUnvalidatedTimelinesForTesting().size());
 }
 
+TEST_F(CSSScrollTimelineTest, DocumentScrollerInQuirksMode) {
+  GetDocument().SetCompatibilityMode(Document::kQuirksMode);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    @keyframes anim {
+      from { z-index: 100; }
+      to { z-index: 100; }
+    }
+    @scroll-timeline timeline {
+      time-range: 10s;
+      source: auto;
+    }
+    #element {
+      animation: anim 10s timeline forwards;
+    }
+    </style>
+    <div id=element></div>
+  )HTML");
+
+  Element* element = GetDocument().getElementById("element");
+  ASSERT_TRUE(element);
+
+  EXPECT_EQ(100, element->GetComputedStyle()->ZIndex());
+  // Don't crash.
+}
+
 }  // namespace blink
