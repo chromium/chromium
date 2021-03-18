@@ -61,8 +61,12 @@ class PermissionChip : public views::AccessiblePaneView,
   }
 
  private:
+  bool ShouldBubbleStartOpen() const;
+
+  void Show(bool always_open_bubble);
   void ChipButtonPressed();
   void Collapse();
+  void ExpandAnimationEnded();
   void StartCollapseTimer();
   std::u16string GetPermissionMessage() const;
   const gfx::VectorIcon& GetPermissionIconId() const;

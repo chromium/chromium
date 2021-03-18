@@ -44396,6 +44396,7 @@ from previous Chrome versions.
   <int value="-1421676705" label="force-webxr-runtime"/>
   <int value="-1420542268" label="AutofillEnableAccountWalletStorage:disabled"/>
   <int value="-1419788257" label="enable-experimental-hotwording"/>
+  <int value="-1419449681" label="PermissionChipRequestTypeSensitive:enabled"/>
   <int value="-1417642561" label="AutofillCreditCardUploadFeedback:enabled"/>
   <int value="-1417122729"
       label="AutofillCreditCardAblationExperiment:disabled"/>
@@ -44532,6 +44533,7 @@ from previous Chrome versions.
       label="AutofillSaveCreditCardUsesImprovedMessaging:enabled"/>
   <int value="-1309066678" label="ServiceWorkerOnUI:enabled"/>
   <int value="-1308600417" label="NewNetErrorPageUI:disabled"/>
+  <int value="-1308389775" label="PermissionChipGestureSensitive:enabled"/>
   <int value="-1308184869" label="MediaFeedsBackgroundFetching:enabled"/>
   <int value="-1308102778" label="IPH_DesktopSnoozeFeature:disabled"/>
   <int value="-1304957199" label="OfflinePagesShowAlternateDinoPage:enabled"/>
@@ -45319,6 +45321,7 @@ from previous Chrome versions.
   <int value="-612480090" label="FasterLocationReload:enabled"/>
   <int value="-610411643" label="enable-printer-app-search"/>
   <int value="-608775184" label="PasswordsWeaknessCheck:enabled"/>
+  <int value="-608065163" label="PermissionChipRequestTypeSensitive:disabled"/>
   <int value="-607925721" label="WebViewVulkan:disabled"/>
   <int value="-606898702" label="MaterialDesignSettings:disabled"/>
   <int value="-606696801" label="TabGroupsUiImprovementsAndroid:enabled"/>
@@ -45982,6 +45985,7 @@ from previous Chrome versions.
   <int value="3826348" label="DarkenWebsitesCheckboxInThemesSetting:disabled"/>
   <int value="4588113" label="CacheOneGoogleBar:disabled"/>
   <int value="5654819" label="CrostiniGpuSupport:disabled"/>
+  <int value="6041813" label="PermissionChipGestureSensitive:disabled"/>
   <int value="7444737" label="NTPSuggestionsStandaloneUI:disabled"/>
   <int value="7533886" label="disable-offer-store-unmasked-wallet-cards"/>
   <int value="8891567" label="CaptionSettings:enabled"/>

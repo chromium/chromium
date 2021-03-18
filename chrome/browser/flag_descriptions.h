@@ -1129,6 +1129,12 @@ extern const char kPercentBasedScrollingDescription[];
 extern const char kPermissionChipName[];
 extern const char kPermissionChipDescription[];
 
+extern const char kPermissionChipGestureSensitiveName[];
+extern const char kPermissionChipGestureSensitiveDescription[];
+
+extern const char kPermissionChipRequestTypeSensitiveName[];
+extern const char kPermissionChipRequestTypeSensitiveDescription[];
+
 extern const char kPermissionPredictionsName[];
 extern const char kPermissionPredictionsDescription[];
 

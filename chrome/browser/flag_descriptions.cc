@@ -1916,6 +1916,19 @@ const char kPermissionChipDescription[] =
     "Enables an experimental permission prompt that uses a chip in the location"
     " bar.";
 
+const char kPermissionChipGestureSensitiveName[] =
+    "Gesture-sensitive Permissions Chip";
+const char kPermissionChipGestureSensitiveDescription[] =
+    "If the Permissions Chip Experiment is enabled, controls whether or not "
+    "the chip should be more prominent when the request is associated with a "
+    "gesture.";
+
+const char kPermissionChipRequestTypeSensitiveName[] =
+    "Request-type-sensitive Permissions Chip";
+const char kPermissionChipRequestTypeSensitiveDescription[] =
+    "If the Permissions Chip Experiment is enabled, controls whether or not "
+    "the chip should be more or less prominent depending on the request type.";
+
 const char kPermissionPredictionsName[] = "Permission Predictions";
 const char kPermissionPredictionsDescription[] =
     "Use the Permission Predictions Service to surface permission requests "

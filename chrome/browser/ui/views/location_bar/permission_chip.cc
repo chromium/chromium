@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_style.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/request_type.h"
 #include "components/strings/grit/components_strings.h"
@@ -78,7 +79,7 @@ PermissionChip::PermissionChip(Browser* browser) : browser_(browser) {
           chip_button_)));
 
   chip_button_->SetExpandAnimationEndedCallback(base::BindRepeating(
-      &PermissionChip::StartCollapseTimer, base::Unretained(this)));
+      &PermissionChip::ExpandAnimationEnded, base::Unretained(this)));
 }
 
 PermissionChip::~PermissionChip() {
@@ -91,6 +92,7 @@ void PermissionChip::DisplayRequest(
     permissions::PermissionPrompt::Delegate* delegate) {
   DCHECK(delegate);
   delegate_ = delegate;
+  requested_time_ = base::TimeTicks::Now();
 
   const std::vector<permissions::PermissionRequest*>& requests =
       delegate_->Requests();
@@ -107,21 +109,17 @@ void PermissionChip::DisplayRequest(
   chip_button_->SetText(GetPermissionMessage());
   chip_button_->SetIcon(&GetPermissionIconId());
 
-  SetVisible(true);
-  // TODO(olesiamarukhno): Add tests for animation logic.
-  chip_button_->ResetAnimation();
-  if (!delegate_->WasCurrentRequestAlreadyDisplayed())
-    chip_button_->AnimateExpand();
-  requested_time_ = base::TimeTicks::Now();
-  PreferredSizeChanged();
+  Show(ShouldBubbleStartOpen());
 
-  AnnouncePermissionRequested();
-  // In case the user didn't hear the initial alert, reannounce permission again
-  // with a 2 minute delay.
-  constexpr auto kDelayBeforeReannouncingRequest =
-      base::TimeDelta::FromMinutes(2);
-  announce_timer_.Start(FROM_HERE, kDelayBeforeReannouncingRequest, this,
-                        &PermissionChip::AnnouncePermissionRequested);
+  if (!ShouldBubbleStartOpen()) {
+    AnnouncePermissionRequested();
+    // In case the user didn't hear the initial alert, reannounce permission
+    // again with a 2 minute delay.
+    constexpr auto kDelayBeforeReannouncingRequest =
+        base::TimeDelta::FromMinutes(2);
+    announce_timer_.Start(FROM_HERE, kDelayBeforeReannouncingRequest, this,
+                          &PermissionChip::AnnouncePermissionRequested);
+  }
 }
 
 void PermissionChip::FinalizeRequest() {
@@ -138,13 +136,7 @@ void PermissionChip::FinalizeRequest() {
 void PermissionChip::Reshow() {
   if (GetVisible())
     return;
-
-  SetVisible(true);
-  // TODO(olesiamarukhno): Add tests for animation logic.
-  chip_button_->ResetAnimation();
-  if (!delegate_->WasCurrentRequestAlreadyDisplayed())
-    chip_button_->AnimateExpand();
-  PreferredSizeChanged();
+  Show(/*always_open_bubble=*/false);
 }
 
 void PermissionChip::Hide() {
@@ -153,6 +145,12 @@ void PermissionChip::Hide() {
 
 bool PermissionChip::GetActiveRequest() const {
   return !!delegate_;
+}
+
+void PermissionChip::ExpandAnimationEnded() {
+  StartCollapseTimer();
+  if (ShouldBubbleStartOpen())
+    OpenBubble();
 }
 
 void PermissionChip::OnMouseEntered(const ui::MouseEvent& event) {
@@ -183,6 +181,45 @@ void PermissionChip::OpenBubble() {
 
 bool PermissionChip::IsBubbleShowing() const {
   return prompt_bubble_ != nullptr;
+}
+
+bool PermissionChip::ShouldBubbleStartOpen() const {
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kPermissionChipGestureSensitive)) {
+    auto requests = delegate_->Requests();
+    const bool has_gesture =
+        std::any_of(requests.begin(), requests.end(), [](auto* request) {
+          return request->GetGestureType() ==
+                 permissions::PermissionRequestGestureType::GESTURE;
+        });
+    if (has_gesture)
+      return true;
+  }
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kPermissionChipRequestTypeSensitive)) {
+    // Notifications and geolocation are targeted here because they are usually
+    // not necessary for the website to function correctly, so they can safely
+    // be given less prominence.
+    auto requests = delegate_->Requests();
+    const bool is_geolocation_or_notifications =
+        std::any_of(requests.begin(), requests.end(), [](auto* request) {
+          auto request_type = request->GetRequestType();
+          return request_type == permissions::RequestType::kNotifications ||
+                 request_type == permissions::RequestType::kGeolocation;
+        });
+    if (!is_geolocation_or_notifications)
+      return true;
+  }
+  return false;
+}
+
+void PermissionChip::Show(bool always_open_bubble) {
+  SetVisible(true);
+  // TODO(olesiamarukhno): Add tests for animation logic.
+  chip_button_->ResetAnimation();
+  if (!delegate_->WasCurrentRequestAlreadyDisplayed() || always_open_bubble)
+    chip_button_->AnimateExpand();
+  PreferredSizeChanged();
 }
 
 void PermissionChip::ChipButtonPressed() {

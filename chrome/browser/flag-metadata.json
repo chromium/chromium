@@ -4139,7 +4139,17 @@
   {
     "name": "permission-chip",
     "owners": [ "bsep", "engedy", "olesiamarukhno" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 94
+  },
+  {
+    "name": "permission-chip-gesture",
+    "owners": [ "bsep", "engedy", "olesiamarukhno" ],
+    "expiry_milestone": 94
+  },
+  {
+    "name": "permission-chip-request-type",
+    "owners": [ "bsep", "engedy", "olesiamarukhno" ],
+    "expiry_milestone": 94
   },
   {
     "name": "permission-predictions",
