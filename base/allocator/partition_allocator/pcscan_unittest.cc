@@ -66,8 +66,8 @@ FullSlotSpanAllocation GetFullSlotSpan(ThreadSafePartitionRoot& root,
                                        size_t object_size) {
   CHECK_EQ(0u, root.get_total_size_of_committed_pages());
 
-  const size_t size_with_extra = root.AdjustSizeForExtrasAdd(object_size);
-  const size_t bucket_index = root.SizeToBucketIndex(size_with_extra);
+  const size_t raw_size = root.AdjustSizeForExtrasAdd(object_size);
+  const size_t bucket_index = root.SizeToBucketIndex(raw_size);
   ThreadSafePartitionRoot::Bucket& bucket = root.buckets[bucket_index];
   const size_t num_slots = (bucket.get_bytes_per_span()) / bucket.slot_size;
 

@@ -190,8 +190,7 @@ struct BASE_EXPORT PartitionRoot {
 #endif
 
 #if !PARTITION_EXTRAS_REQUIRED
-  // Teach the compiler that `AdjustSizeForExtrasAdd` etc. can be eliminated
-  // in builds that use no extras.
+  // Teach the compiler that code can be optimized in builds that use no extras.
   static constexpr uint32_t extras_size = 0;
   static constexpr uint32_t extras_offset = 0;
 #else
@@ -412,11 +411,49 @@ struct BASE_EXPORT PartitionRoot {
                          alignment);
   }
 
+  ALWAYS_INLINE size_t AdjustSize0IfNeeded(size_t size) const {
+#if BUILDFLAG(USE_BACKUP_REF_PTR) && !BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+    // The minimum slot size is base::kAlignment. If |requested_size| is 0 and
+    // there are extra before the allocation (which must be at least
+    // kAlignment), then these extras will fill the slot, leading to returning a
+    // pointer to the next slot. This is a problem, because e.g. FreeNoHooks()
+    // or ReallocFlags() call SlotSpan::FromSlotInnerPtr(ptr) prior to
+    // subtracting extras, thus getting a wrong, possibly non-existent, slot
+    // span.
+    //
+    // Adjust the size to counteract it.
+    //
+    // Having any extras after the allocation nullifies the issue, so no need
+    // for this adjustment in the REF_COUNT_AT_END_OF_ALLOCATION case. Same for
+    // DCHECK_IS_ON(), but we prefer not to change codepaths between Release and
+    // Debug.
+    //
+    // In theory, this can be further refined using run-time checks. No need
+    // for this adjustment if |!extras_offset || (extras_size - extras_offset)|,
+    // or IsPartitionAllocGigaCageEnabled() is false (because BackupRefPtr is
+    // effectively disabled without GigaCage), but we prefer not to add more
+    // checks, as this function may be called on hot paths.
+    if (UNLIKELY(size == 0))
+      return 1;
+#else
+    PA_DCHECK(!extras_offset || (extras_size - extras_offset));
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR) &&
+        // !BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+    return size;
+  }
+
+  // Adjusts the size by adding extras. Also include the 0->1 adjustment if
+  // needed.
   ALWAYS_INLINE size_t AdjustSizeForExtrasAdd(size_t size) const {
+    size = AdjustSize0IfNeeded(size);
     PA_DCHECK(size + extras_size >= size);
     return size + extras_size;
   }
 
+  // Adjusts the size by subtracing extras. Doesn't include the 0->1 adjustment,
+  // which leads to an asymmetry with AdjustSizeForExtrasAdd, but callers of
+  // AdjustSizeForExtrasSubtract either expect the adjustment to be included, or
+  // are indifferent.
   ALWAYS_INLINE size_t AdjustSizeForExtrasSubtract(size_t size) const {
     return size - extras_size;
   }
@@ -1153,21 +1190,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   //   b. Otherwise, call the "raw" allocator <-- Locking
   // 3. Handle cookies/ref-count, zero allocation if required
 
-  size_t raw_size = requested_size;
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
-  // Without the size adjustment below, |Alloc()| returns a pointer past the end
-  // of a slot (most of the time a pointer to the beginning of the next slot)
-  // for zero-sized allocations when |PartitionRefCount| is used. The returned
-  // value may lead to incorrect results when passed to a function that performs
-  // bitwise operations on pointers, e.g., |PartitionAllocGetSlotOffset()|.
-  //
-  // In theory, there is no need to do this if root's |allow_ref_count| is
-  // false, or IsPartitionAllocGigaCageEnabled() is false, but we prefer not to
-  // add more checks on the hot path.
-  if (UNLIKELY(raw_size == 0))
-    raw_size = 1;
-#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
-  raw_size = AdjustSizeForExtrasAdd(raw_size);
+  size_t raw_size = AdjustSizeForExtrasAdd(requested_size);
   PA_CHECK(raw_size >= requested_size);  // check for overflows
 
   uint16_t bucket_index = SizeToBucketIndex(raw_size);
