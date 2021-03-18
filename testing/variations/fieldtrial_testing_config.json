@@ -7583,6 +7583,21 @@
             ]
         }
     ],
+    "WebviewAccelerateSmallCanvases": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebviewAccelerateSmallCanvases"
+                    ]
+                }
+            ]
+        }
+    ],
     "WheelEventRegions": [
         {
             "platforms": [
