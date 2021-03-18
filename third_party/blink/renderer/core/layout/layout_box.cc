@@ -90,6 +90,7 @@
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_outside_info.h"
 #include "third_party/blink/renderer/core/page/autoscroll_controller.h"
+#include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/snap_coordinator.h"
 #include "third_party/blink/renderer/core/paint/background_image_geometry.h"
@@ -99,6 +100,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
+#include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/platform/geometry/double_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
@@ -366,6 +368,30 @@ void ApplyOverflowClip(OverflowClipAxes overflow_clip_axes,
   }
 }
 
+int HypotheticalScrollbarThickness(const LayoutBox& box,
+                                   ScrollbarOrientation scrollbar_orientation,
+                                   bool should_include_overlay_thickness) {
+  box.CheckIsNotDestroyed();
+
+  if (PaintLayerScrollableArea* scrollable_area = box.GetScrollableArea()) {
+    return scrollable_area->HypotheticalScrollbarThickness(
+        scrollbar_orientation, should_include_overlay_thickness);
+  } else {
+    Page* page = box.GetFrame()->GetPage();
+    ScrollbarTheme& theme = page->GetScrollbarTheme();
+
+    if (theme.UsesOverlayScrollbars() && !should_include_overlay_thickness) {
+      return 0;
+    } else {
+      ChromeClient& chrome_client = page->GetChromeClient();
+      Document& document = box.GetDocument();
+      float scale_from_dip =
+          chrome_client.WindowToViewportScalar(document.GetFrame(), 1.0f);
+      return theme.ScrollbarThickness(scale_from_dip);
+    }
+  }
+}
+
 }  // namespace
 
 BoxLayoutExtraInput::BoxLayoutExtraInput(LayoutBox& box) : box(box) {
@@ -416,7 +442,8 @@ PaintLayerType LayoutBox::LayerTypeRequired() const {
   if (HasNonVisibleOverflow())
     return kOverflowClipPaintLayer;
 
-  if (StyleRef().IsScrollbarGutterForce())
+  if (StyleRef().IsScrollbarGutterForce() &&
+      StyleRef().HasPseudoElementStyle(kPseudoIdScrollbar))
     return kNormalPaintLayer;
 
   return kNoPaintLayer;
@@ -1000,8 +1027,14 @@ int LayoutBox::PixelSnappedOffsetHeight(const Element*) const {
 
 LayoutUnit LayoutBox::ScrollWidth() const {
   NOT_DESTROYED();
-  if (IsScrollContainer() || StyleRef().IsScrollbarGutterForce())
+  if (IsScrollContainer())
     return GetScrollableArea()->ScrollWidth();
+  if (StyleRef().IsScrollbarGutterForce()) {
+    if (auto* scrollable_area = GetScrollableArea())
+      return scrollable_area->ScrollWidth();
+    else
+      return PhysicalLayoutOverflowRect().Width();
+  }
   // For objects with visible overflow, this matches IE.
   // FIXME: Need to work right with writing modes.
   if (StyleRef().IsLeftToRightDirection())
@@ -1012,8 +1045,14 @@ LayoutUnit LayoutBox::ScrollWidth() const {
 
 LayoutUnit LayoutBox::ScrollHeight() const {
   NOT_DESTROYED();
-  if (IsScrollContainer() || StyleRef().IsScrollbarGutterForce())
+  if (IsScrollContainer())
     return GetScrollableArea()->ScrollHeight();
+  if (StyleRef().IsScrollbarGutterForce()) {
+    if (auto* scrollable_area = GetScrollableArea())
+      return scrollable_area->ScrollHeight();
+    else
+      return PhysicalLayoutOverflowRect().Height();
+  }
   // For objects with visible overflow, this matches IE.
   // FIXME: Need to work right with writing modes.
   return std::max(ClientHeight(), LayoutOverflowRect().MaxY() - BorderTop());
@@ -1584,14 +1623,11 @@ NGPhysicalBoxStrut LayoutBox::ComputeScrollbarsInternal(
   NOT_DESTROYED();
   NGPhysicalBoxStrut scrollbars;
   PaintLayerScrollableArea* scrollable_area = GetScrollableArea();
-  if (!scrollable_area)
-    return scrollbars;
 
   if (include_scrollbar_gutter == kIncludeScrollbarGutter &&
       HasScrollbarGutters(kVerticalScrollbar)) {
-    LayoutUnit gutter_size =
-        LayoutUnit(scrollable_area->HypotheticalScrollbarThickness(
-            kVerticalScrollbar, /* should_include_overlay_thickness */ true));
+    LayoutUnit gutter_size = LayoutUnit(HypotheticalScrollbarThickness(
+        *this, kVerticalScrollbar, /* include_overlay_thickness */ true));
     if (ShouldPlaceVerticalScrollbarOnLeft()) {
       scrollbars.left = gutter_size;
       if (StyleRef().IsScrollbarGutterBoth())
@@ -1601,23 +1637,25 @@ NGPhysicalBoxStrut LayoutBox::ComputeScrollbarsInternal(
       if (StyleRef().IsScrollbarGutterBoth())
         scrollbars.left = gutter_size;
     }
-  } else if (ShouldPlaceVerticalScrollbarOnLeft()) {
-    scrollbars.left = LayoutUnit(scrollable_area->VerticalScrollbarWidth(
-        overlay_scrollbar_clip_behavior));
-  } else {
-    scrollbars.right = LayoutUnit(scrollable_area->VerticalScrollbarWidth(
-        overlay_scrollbar_clip_behavior));
+  } else if (scrollable_area) {
+    if (ShouldPlaceVerticalScrollbarOnLeft()) {
+      scrollbars.left = LayoutUnit(scrollable_area->VerticalScrollbarWidth(
+          overlay_scrollbar_clip_behavior));
+    } else {
+      scrollbars.right = LayoutUnit(scrollable_area->VerticalScrollbarWidth(
+          overlay_scrollbar_clip_behavior));
+    }
   }
 
   if (include_scrollbar_gutter == kIncludeScrollbarGutter &&
       HasScrollbarGutters(kHorizontalScrollbar)) {
-    LayoutUnit gutter_size =
-        LayoutUnit(scrollable_area->HypotheticalScrollbarThickness(
-            kHorizontalScrollbar, /* should_include_overlay_thickness */ true));
+    LayoutUnit gutter_size = LayoutUnit(
+        HypotheticalScrollbarThickness(*this, kHorizontalScrollbar,
+                                       /* include_overlay_thickness */ true));
     scrollbars.bottom = gutter_size;
     if (StyleRef().IsScrollbarGutterBoth())
       scrollbars.top = gutter_size;
-  } else {
+  } else if (scrollable_area) {
     scrollbars.bottom = LayoutUnit(scrollable_area->HorizontalScrollbarHeight(
         overlay_scrollbar_clip_behavior));
   }

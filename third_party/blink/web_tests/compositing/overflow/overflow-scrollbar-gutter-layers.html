@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<style>
+  body {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .container {
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+    background-color: green;
+    border: solid;
+  }
+
+  .content {
+    width: 100%;
+    height: 105px;
+    background-color: orange;
+  }
+
+  /* overflow */
+  .container.visible { overflow:   visible; }
+  .container.hidden  { overflow-y: hidden;  }
+  .container.clip    { overflow:   clip;  }
+
+  /* scrollbar-gutter */
+  .stable            { scrollbar-gutter: stable; }
+  .stable_both       { scrollbar-gutter: stable both; }
+  .stable_force      { scrollbar-gutter: stable force; }
+  .stable_both_force { scrollbar-gutter: stable both force; }
+  .always            { scrollbar-gutter: always; }
+  .always_both       { scrollbar-gutter: always both; }
+  .always_force      { scrollbar-gutter: always force; }
+  .always_both_force { scrollbar-gutter: always both force; }
+
+</style>
+<pre id="layerTree"></pre>
+<!-- These elements should not create new layers. -->
+<div class="container visible stable_force">
+  <div class="content"></div>
+</div>
+<div class="container visible stable_both_force">
+  <div class="content"></div>
+</div>
+<div class="container visible always_force">
+  <div class="content"></div>
+</div>
+<div class="container visible always_both_force">
+  <div class="content"></div>
+</div>
+<div class="container hidden stable_force">
+  <div class="content"></div>
+</div>
+<div class="container hidden stable_both_force">
+  <div class="content"></div>
+</div>
+<div class="container hidden always_force">
+  <div class="content"></div>
+</div>
+<div class="container hidden always_both_force">
+  <div class="content"></div>
+</div>
+<div class="container clip stable_force">
+  <div class="content"></div>
+</div>
+<div class="container clip stable_both_force">
+  <div class="content"></div>
+</div>
+<div class="container clip always_force">
+  <div class="content"></div>
+</div>
+<div class="container clip always_both_force">
+  <div class="content"></div>
+</div>
+<script>
+  if (window.testRunner) {
+    testRunner.dumpAsText();
+    document.getElementById("layerTree").innerText = internals.layerTreeAsText(document);
+  }
+</script>
