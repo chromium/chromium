@@ -24,7 +24,8 @@ enum ProcessSubtypes {
   kProcessSubtypeUnknown,
   kProcessSubtypePPAPIFlash,
   kProcessSubtypeExtensionPersistent,
-  kProcessSubtypeExtensionEvent
+  kProcessSubtypeExtensionEvent,
+  kProcessSubtypeNetworkProcess,
 };
 
 struct ProcessMetadata {

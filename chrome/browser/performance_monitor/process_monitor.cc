@@ -20,6 +20,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_constants.h"
 #include "extensions/buildflags/buildflags.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/extension_host.h"
@@ -194,6 +195,9 @@ std::vector<ProcessMetadata> ProcessMonitor::GatherProcessesOnIOThread() {
 
     if (iter.GetData().name == base::ASCIIToUTF16(content::kFlashPluginName)) {
       child_process_data.process_subtype = kProcessSubtypePPAPIFlash;
+    } else if (iter.GetData().metrics_name ==
+               network::mojom::NetworkService::Name_) {
+      child_process_data.process_subtype = kProcessSubtypeNetworkProcess;
     }
 
     processes.push_back(child_process_data);

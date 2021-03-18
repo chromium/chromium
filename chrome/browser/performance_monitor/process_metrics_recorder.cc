@@ -4,7 +4,7 @@
 
 #include "chrome/browser/performance_monitor/process_metrics_recorder.h"
 
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 
 namespace performance_monitor {
@@ -51,58 +51,58 @@ void ProcessMetricsRecorder::OnMetricsSampled(
   // hence the macro duplication for each process type.
   switch (process_metadata.process_type) {
     case content::PROCESS_TYPE_BROWSER:
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
+      base::UmaHistogramCustomCounts(
           "PerformanceMonitor.AverageCPU2.BrowserProcess",
           metrics.cpu_usage * kCPUUsageFactor, kHistogramMin, kHistogramMax,
           kHistogramBucketCount);
       // If CPU usage has consistently been above our threshold,
       // we *may* have an issue.
       if (metrics.cpu_usage > kHighCPUUtilizationThreshold) {
-        UMA_HISTOGRAM_BOOLEAN("PerformanceMonitor.HighCPU.BrowserProcess",
-                              true);
+        base::UmaHistogramBoolean("PerformanceMonitor.HighCPU.BrowserProcess",
+                                  true);
       }
 #if defined(OS_WIN)
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
+      base::UmaHistogramCustomCounts(
           "PerformanceMonitor.AverageDisk.BrowserProcess", metrics.disk_usage,
           kDiskUsageHistogramMin, kDiskUsageHistogramMax,
           kDiskUsageHistogramBucketCount);
 #endif
 #if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
     defined(OS_AIX)
-      UMA_HISTOGRAM_COUNTS_10000(
+      base::UmaHistogramCounts10000(
           "PerformanceMonitor.IdleWakeups.BrowserProcess",
           metrics.idle_wakeups);
 #endif
 #if defined(OS_MAC)
-      UMA_HISTOGRAM_COUNTS_1000(
+      base::UmaHistogramCounts1000(
           "PerformanceMonitor.PackageExitIdleWakeups.BrowserProcess",
           metrics.package_idle_wakeups);
-      UMA_HISTOGRAM_COUNTS_100000(
+      base::UmaHistogramCounts100000(
           "PerformanceMonitor.EnergyImpact.BrowserProcess",
           metrics.energy_impact);
 
 #endif
       break;
     case content::PROCESS_TYPE_RENDERER:
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
+      base::UmaHistogramCustomCounts(
           "PerformanceMonitor.AverageCPU2.RendererProcess2",
           metrics.cpu_usage * kCPUUsageFactor, kHistogramMin, kHistogramMax,
           kHistogramBucketCount);
       if (metrics.cpu_usage > kHighCPUUtilizationThreshold) {
-        UMA_HISTOGRAM_BOOLEAN("PerformanceMonitor.HighCPU.RendererProcess",
-                              true);
+        base::UmaHistogramBoolean("PerformanceMonitor.HighCPU.RendererProcess",
+                                  true);
       }
 #if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
     defined(OS_AIX)
-      UMA_HISTOGRAM_COUNTS_10000(
+      base::UmaHistogramCounts10000(
           "PerformanceMonitor.IdleWakeups.RendererProcess",
           metrics.idle_wakeups);
 #endif
 #if defined(OS_MAC)
-      UMA_HISTOGRAM_COUNTS_1000(
+      base::UmaHistogramCounts1000(
           "PerformanceMonitor.PackageExitIdleWakeups.RendererProcess",
           metrics.package_idle_wakeups);
-      UMA_HISTOGRAM_COUNTS_100000(
+      base::UmaHistogramCounts100000(
           "PerformanceMonitor.EnergyImpact.RendererProcess",
           metrics.energy_impact);
 
@@ -110,34 +110,41 @@ void ProcessMetricsRecorder::OnMetricsSampled(
 
       break;
     case content::PROCESS_TYPE_GPU:
-      UMA_HISTOGRAM_CUSTOM_COUNTS("PerformanceMonitor.AverageCPU2.GPUProcess",
-                                  metrics.cpu_usage * kCPUUsageFactor,
-                                  kHistogramMin, kHistogramMax,
-                                  kHistogramBucketCount);
+      base::UmaHistogramCustomCounts(
+          "PerformanceMonitor.AverageCPU2.GPUProcess",
+          metrics.cpu_usage * kCPUUsageFactor, kHistogramMin, kHistogramMax,
+          kHistogramBucketCount);
       if (metrics.cpu_usage > kHighCPUUtilizationThreshold)
-        UMA_HISTOGRAM_BOOLEAN("PerformanceMonitor.HighCPU.GPUProcess", true);
+        base::UmaHistogramBoolean("PerformanceMonitor.HighCPU.GPUProcess",
+                                  true);
 #if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
     defined(OS_AIX)
-      UMA_HISTOGRAM_COUNTS_10000("PerformanceMonitor.IdleWakeups.GPUProcess",
-                                 metrics.idle_wakeups);
+      base::UmaHistogramCounts10000("PerformanceMonitor.IdleWakeups.GPUProcess",
+                                    metrics.idle_wakeups);
 #endif
 #if defined(OS_MAC)
-      UMA_HISTOGRAM_COUNTS_1000(
+      base::UmaHistogramCounts1000(
           "PerformanceMonitor.PackageExitIdleWakeups.GPUProcess",
           metrics.package_idle_wakeups);
-      UMA_HISTOGRAM_COUNTS_100000("PerformanceMonitor.EnergyImpact.GPUProcess",
-                                  metrics.energy_impact);
+      base::UmaHistogramCounts100000(
+          "PerformanceMonitor.EnergyImpact.GPUProcess", metrics.energy_impact);
 
 #endif
 
       break;
     case content::PROCESS_TYPE_PPAPI_PLUGIN:
-      UMA_HISTOGRAM_CUSTOM_COUNTS("PerformanceMonitor.AverageCPU2.PPAPIProcess",
-                                  metrics.cpu_usage * kCPUUsageFactor,
-                                  kHistogramMin, kHistogramMax,
-                                  kHistogramBucketCount);
+      base::UmaHistogramCustomCounts(
+          "PerformanceMonitor.AverageCPU2.PPAPIProcess",
+          metrics.cpu_usage * kCPUUsageFactor, kHistogramMin, kHistogramMax,
+          kHistogramBucketCount);
       if (metrics.cpu_usage > kHighCPUUtilizationThreshold)
-        UMA_HISTOGRAM_BOOLEAN("PerformanceMonitor.HighCPU.PPAPIProcess", true);
+        base::UmaHistogramBoolean("PerformanceMonitor.HighCPU.PPAPIProcess",
+                                  true);
+      break;
+    case content::PROCESS_TYPE_UTILITY:
+      base::UmaHistogramCustomCounts(
+          "PerformanceMonitor.AverageCPU2.UtilityProcess", metrics.cpu_usage,
+          kHistogramMin, kHistogramMax, kHistogramBucketCount);
       break;
     default:
       break;
@@ -150,25 +157,30 @@ void ProcessMetricsRecorder::OnMetricsSampled(
       NOTREACHED() << "Flash isn't supported anymore.";
       break;
     case kProcessSubtypeExtensionPersistent:
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
+      base::UmaHistogramCustomCounts(
           "PerformanceMonitor.AverageCPU2.RendererExtensionPersistentProcess",
           metrics.cpu_usage * kCPUUsageFactor, kHistogramMin, kHistogramMax,
           kHistogramBucketCount);
       if (metrics.cpu_usage > kHighCPUUtilizationThreshold) {
-        UMA_HISTOGRAM_BOOLEAN(
+        base::UmaHistogramBoolean(
             "PerformanceMonitor.HighCPU.RendererExtensionPersistentProcess",
             true);
       }
       break;
     case kProcessSubtypeExtensionEvent:
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
+      base::UmaHistogramCustomCounts(
           "PerformanceMonitor.AverageCPU2.RendererExtensionEventProcess",
           metrics.cpu_usage * kCPUUsageFactor, kHistogramMin, kHistogramMax,
           kHistogramBucketCount);
       if (metrics.cpu_usage > kHighCPUUtilizationThreshold) {
-        UMA_HISTOGRAM_BOOLEAN(
+        base::UmaHistogramBoolean(
             "PerformanceMonitor.HighCPU.RendererExtensionEventProcess", true);
       }
+      break;
+    case kProcessSubtypeNetworkProcess:
+      base::UmaHistogramCustomCounts(
+          "PerformanceMonitor.AverageCPU2.NetworkProcess", metrics.cpu_usage,
+          kHistogramMin, kHistogramMax, kHistogramBucketCount);
       break;
   }
 }

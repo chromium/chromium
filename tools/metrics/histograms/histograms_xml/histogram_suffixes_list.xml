@@ -14099,6 +14099,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram_suffixes name="PerformanceMonitor" separator=".">
   <suffix name="BrowserProcess" label=""/>
   <suffix name="GPUProcess" label=""/>
+  <suffix name="NetworkProcess" label=""/>
   <suffix name="PluginProcess" label=""/>
   <suffix name="PPAPIFlashProcess" label="">
     <obsolete>
@@ -14109,6 +14110,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="RendererExtensionEventProcess" label=""/>
   <suffix name="RendererExtensionPersistentProcess" label=""/>
   <suffix name="RendererProcess" label=""/>
+  <suffix name="UtilityProcess" label=""/>
   <suffix name="WorkerProcess" label=""/>
   <affected-histogram name="PerformanceMonitor.AverageCPU"/>
   <affected-histogram name="PerformanceMonitor.AverageCPU2"/>
