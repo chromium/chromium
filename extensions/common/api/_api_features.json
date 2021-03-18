@@ -521,7 +521,8 @@
   },{
     "contexts": ["webui"],
     "matches": [
-      "chrome://password-change/*"
+      "chrome://password-change/*",
+      "chrome://file-manager/*"
     ]
   }],
   "runtime.sendNativeMessage": {
