@@ -36,8 +36,8 @@ information, etc.
 
 Beware that certain on certain platforms (e.g. Android Webview) we
 [sanitize the stack in the dump](https://cs.chromium.org/chromium/src/third_party/crashpad/crashpad/snapshot/sanitized/memory_snapshot_sanitized.h)
-and only crash keys on a
-[whitelist](https://cs.chromium.org/chromium/src/android_webview/common/crash_reporter/crash_keys.cc)
+and only crash keys on an
+[allowlist](https://cs.chromium.org/chromium/src/android_webview/common/crash_reporter/crash_keys.cc)
 will be captured.
 
 ## Getting Started with a Single Key-Value Pair
