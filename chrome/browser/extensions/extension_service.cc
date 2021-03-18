@@ -452,8 +452,7 @@ ExtensionService::ExtensionService(Profile* profile,
 
   if (extensions_enabled_) {
     ExternalProviderImpl::CreateExternalProviders(
-        this, profile_, pending_extension_manager(),
-        &external_extension_providers_);
+        this, profile_, &external_extension_providers_);
   }
 
   // Set this as the ExtensionService for app sorting to ensure it causes syncs
@@ -1923,6 +1922,9 @@ bool ExtensionService::OnExternalExtensionFileFound(
 
   // no client (silent install)
   scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(this));
+  installer->set_installer_callback(
+      base::BindOnce(&ExtensionService::InstallationFromExternalFileFinished,
+                     AsWeakPtr(), info.extension_id));
   installer->set_install_source(info.crx_location);
   installer->set_expected_id(info.extension_id);
   installer->set_expected_version(info.version,
@@ -1948,6 +1950,17 @@ bool ExtensionService::OnExternalExtensionFileFound(
     external_install_manager_->AcknowledgeExternalExtension(info.extension_id);
 
   return true;
+}
+
+void ExtensionService::InstallationFromExternalFileFinished(
+    const std::string& extension_id,
+    const base::Optional<CrxInstallError>& error) {
+  if (error != base::nullopt) {
+    // When installation is finished, the extension should not remain in the
+    // pending extension manager. For successful installations this is done in
+    // OnExtensionInstalled handler.
+    pending_extension_manager()->Remove(extension_id);
+  }
 }
 
 void ExtensionService::DidCreateMainFrameForBackgroundPage(

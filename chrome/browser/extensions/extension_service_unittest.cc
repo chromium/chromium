@@ -98,6 +98,7 @@
 #include "components/sync/model/string_ordinal.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/dom_storage_context.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/notification_service.h"
@@ -6477,6 +6478,45 @@ TEST_F(ExtensionServiceTest, InstallPriorityExternalUpdateUrl) {
   EXPECT_FALSE(pending->IsIdPending(kGoodId));
 }
 
+TEST_F(ExtensionServiceTest, FailedLocalFileInstallIsNotPending) {
+  base::Version version("1.0.0.0");
+
+  // We don't want the extension to be installed.  A path that doesn't
+  // point to a valid CRX ensures this.
+  const base::FilePath kInvalidPathToCrx(FILE_PATH_LITERAL("invalid_path"));
+
+  const int kCreationFlags = 0;
+  const bool kDontMarkAcknowledged = false;
+  const bool kDontInstallImmediately = false;
+
+  InitializeEmptyExtensionService();
+
+  PendingExtensionManager* pending = service()->pending_extension_manager();
+  EXPECT_FALSE(pending->IsIdPending(kGoodId));
+
+  ExternalInstallInfoFile info(kGoodId, version, kInvalidPathToCrx,
+                               Manifest::INTERNAL, kCreationFlags,
+                               kDontMarkAcknowledged, kDontInstallImmediately);
+  {
+    // Simulate an external source adding the extension.
+    content::WindowedNotificationObserver observer(
+        NOTIFICATION_CRX_INSTALLER_DONE,
+        content::NotificationService::AllSources());
+    EXPECT_TRUE(service()->OnExternalExtensionFileFound(info));
+    EXPECT_TRUE(pending->IsIdPending(kGoodId));
+    observer.Wait();
+
+    // Need to run already-queued loop events, since CrxInstaller doesn't call
+    // install_callback directly, but postpones it.
+    base::RunLoop run_loop;
+    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                                 run_loop.QuitClosure());
+    run_loop.Run();
+
+    EXPECT_FALSE(pending->IsIdPending(kGoodId));
+  }
+}
+
 TEST_F(ExtensionServiceTest, InstallPriorityExternalLocalFile) {
   base::Version older_version("0.1.0.0");
   base::Version newer_version("2.0.0.0");
@@ -6531,20 +6571,21 @@ TEST_F(ExtensionServiceTest, InstallPriorityExternalLocalFile) {
     info.crx_location = Manifest::EXTERNAL_PREF;
     EXPECT_TRUE(service()->OnExternalExtensionFileFound(info));
     EXPECT_TRUE(pending->IsIdPending(kGoodId));
+
+    // Simulate an external source adding as EXTERNAL_PREF again.
+    // This is rejected because the version and the location are the same as
+    // the previous installation, which is still pending.
+    EXPECT_FALSE(service()->OnExternalExtensionFileFound(info));
+    EXPECT_TRUE(pending->IsIdPending(kGoodId));
+
+    // Try INTERNAL again.  Should fail.
+    info.crx_location = Manifest::INTERNAL;
+    EXPECT_FALSE(service()->OnExternalExtensionFileFound(info));
+    EXPECT_TRUE(pending->IsIdPending(kGoodId));
+
     observer.Wait();
     VerifyCrxInstall(kInvalidPathToCrx, INSTALL_FAILED);
   }
-
-  // Simulate an external source adding as EXTERNAL_PREF again.
-  // This is rejected because the version and the location are the same as
-  // the previous installation, which is still pending.
-  EXPECT_FALSE(service()->OnExternalExtensionFileFound(info));
-  EXPECT_TRUE(pending->IsIdPending(kGoodId));
-
-  // Try INTERNAL again.  Should fail.
-  info.crx_location = Manifest::INTERNAL;
-  EXPECT_FALSE(service()->OnExternalExtensionFileFound(info));
-  EXPECT_TRUE(pending->IsIdPending(kGoodId));
 
   {
     // Now the registry adds the extension.
@@ -6554,20 +6595,19 @@ TEST_F(ExtensionServiceTest, InstallPriorityExternalLocalFile) {
     info.crx_location = Manifest::EXTERNAL_REGISTRY;
     EXPECT_TRUE(service()->OnExternalExtensionFileFound(info));
     EXPECT_TRUE(pending->IsIdPending(kGoodId));
+
+    // Registry outranks both external pref and internal, so both fail.
+    info.crx_location = Manifest::EXTERNAL_PREF;
+    EXPECT_FALSE(service()->OnExternalExtensionFileFound(info));
+    EXPECT_TRUE(pending->IsIdPending(kGoodId));
+
+    info.crx_location = Manifest::INTERNAL;
+    EXPECT_FALSE(service()->OnExternalExtensionFileFound(info));
+    EXPECT_TRUE(pending->IsIdPending(kGoodId));
+
     observer.Wait();
     VerifyCrxInstall(kInvalidPathToCrx, INSTALL_FAILED);
   }
-
-  // Registry outranks both external pref and internal, so both fail.
-  info.crx_location = Manifest::EXTERNAL_PREF;
-  EXPECT_FALSE(service()->OnExternalExtensionFileFound(info));
-  EXPECT_TRUE(pending->IsIdPending(kGoodId));
-
-  info.crx_location = Manifest::INTERNAL;
-  EXPECT_FALSE(service()->OnExternalExtensionFileFound(info));
-  EXPECT_TRUE(pending->IsIdPending(kGoodId));
-
-  pending->Remove(kGoodId);
 
   // Install the extension.
   base::FilePath path = data_dir().AppendASCII("good.crx");

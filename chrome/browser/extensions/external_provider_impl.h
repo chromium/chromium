@@ -25,8 +25,6 @@ class Version;
 
 namespace extensions {
 
-class PendingExtensionManager;
-
 // A specialization of the ExternalProvider that uses an instance of
 // ExternalLoader to provide external extensions. This class can be seen as a
 // bridge between the extension system and an ExternalLoader. Instances live
@@ -53,7 +51,6 @@ class ExternalProviderImpl : public ExternalProviderInterface {
   static void CreateExternalProviders(
       VisitorInterface* service,
       Profile* profile,
-      PendingExtensionManager* pending_extension_manager,
       ProviderCollection* provider_list);
 
   // Sets underlying prefs and notifies provider. Only to be called by the

@@ -15,10 +15,6 @@
 
 class Profile;
 
-namespace extensions {
-class PendingExtensionManager;
-}  // namespace extensions
-
 namespace chromeos {
 
 // Loader of extensions force-installed into the sign-in profile using the
@@ -33,9 +29,7 @@ namespace chromeos {
 class SigninScreenExtensionsExternalLoader : public extensions::ExternalLoader,
                                              public ExternalCacheDelegate {
  public:
-  explicit SigninScreenExtensionsExternalLoader(
-      Profile* profile,
-      extensions::PendingExtensionManager* pending_extension_manager);
+  explicit SigninScreenExtensionsExternalLoader(Profile* profile);
   SigninScreenExtensionsExternalLoader(
       const SigninScreenExtensionsExternalLoader&) = delete;
   SigninScreenExtensionsExternalLoader& operator=(
@@ -46,7 +40,6 @@ class SigninScreenExtensionsExternalLoader : public extensions::ExternalLoader,
 
   // ExternalCacheDelegate:
   void OnExtensionListsUpdated(const base::DictionaryValue* prefs) override;
-  void OnCachedExtensionFileDeleted(const extensions::ExtensionId& id) override;
 
  private:
   friend class base::RefCounted<SigninScreenExtensionsExternalLoader>;
@@ -63,7 +56,6 @@ class SigninScreenExtensionsExternalLoader : public extensions::ExternalLoader,
 
   Profile* const profile_;
   // Owned by ExtensionService, outlives |this|.
-  extensions::PendingExtensionManager* const pending_extension_manager_;
   ExternalCacheImpl external_cache_;
   PrefChangeRegistrar pref_change_registrar_;
   // Whether the list of extensions was already passed via LoadFinished().

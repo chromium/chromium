@@ -611,6 +611,15 @@ class ExtensionService : public ExtensionServiceInterface,
   // Uninstall extensions that have been migrated to component extensions.
   void UninstallMigratedExtensions();
 
+  // Callback for installation finish of an extension from external file, since
+  // we need to remove this extension from the pending extension manager in case
+  // of installation failure. This is only a need for extensions installed
+  // by file, since extensions installed by URL will be intentinally kept in
+  // the manager and retried later.
+  void InstallationFromExternalFileFinished(
+      const std::string& extension_id,
+      const base::Optional<CrxInstallError>& error);
+
   const base::CommandLine* command_line_ = nullptr;
 
   // The normal profile associated with this ExtensionService.

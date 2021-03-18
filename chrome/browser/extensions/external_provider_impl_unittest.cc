@@ -122,8 +122,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
 
     ProviderCollection providers;
     extensions::ExternalProviderImpl::CreateExternalProviders(
-        service_, profile_.get(), service_->pending_extension_manager(),
-        &providers);
+        service_, profile_.get(), &providers);
 
     for (std::unique_ptr<ExternalProviderInterface>& provider : providers)
       service_->AddProviderForTesting(std::move(provider));
