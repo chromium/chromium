@@ -202,7 +202,7 @@ MinMaxSizesResult NGMathRadicalLayoutAlgorithm::ComputeMinMaxSizes(
   GatherChildren(&base, &index);
 
   MinMaxSizes sizes;
-  bool depends_on_percentage_block_size = false;
+  bool depends_on_block_constraints = false;
   if (index) {
     const auto horizontal = GetRadicalHorizontalParameters(Style());
     sizes += horizontal.kern_before_degree.ClampNegativeToZero();
@@ -210,8 +210,7 @@ MinMaxSizesResult NGMathRadicalLayoutAlgorithm::ComputeMinMaxSizes(
     const auto index_result = ComputeMinAndMaxContentContributionForMathChild(
         Style(), ConstraintSpace(), index,
         input.percentage_resolution_block_size);
-    depends_on_percentage_block_size |=
-        index_result.depends_on_percentage_block_size;
+    depends_on_block_constraints |= index_result.depends_on_block_constraints;
     sizes += index_result.sizes;
 
     // kern_after_degree decreases the inline size, but is capped by the index
@@ -229,13 +228,12 @@ MinMaxSizesResult NGMathRadicalLayoutAlgorithm::ComputeMinMaxSizes(
     const auto base_result = ComputeMinAndMaxContentContributionForMathChild(
         Style(), ConstraintSpace(), base,
         input.percentage_resolution_block_size);
-    depends_on_percentage_block_size |=
-        base_result.depends_on_percentage_block_size;
+    depends_on_block_constraints |= base_result.depends_on_block_constraints;
     sizes += base_result.sizes;
   }
 
   sizes += BorderScrollbarPadding().InlineSum();
-  return MinMaxSizesResult(sizes, depends_on_percentage_block_size);
+  return MinMaxSizesResult(sizes, depends_on_block_constraints);
 }
 
 }  // namespace blink

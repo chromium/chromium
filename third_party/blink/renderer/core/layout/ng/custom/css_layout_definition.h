@@ -75,7 +75,7 @@ class CSSLayoutDefinition final : public GarbageCollected<CSSLayoutDefinition>,
                         const LayoutUnit child_available_block_size,
                         CustomLayoutScope*,
                         IntrinsicSizesResultOptions**,
-                        bool* child_depends_on_percentage_block_size);
+                        bool* child_depends_on_block_constraints);
 
     void Trace(Visitor*) const;
 

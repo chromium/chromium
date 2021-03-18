@@ -51,7 +51,7 @@ class CustomLayoutWorkTask final
   void Run(const NGConstraintSpace& parent_space,
            const ComputedStyle& parent_style,
            const LayoutUnit child_available_block_size,
-           bool* child_depends_on_percentage_block_size = nullptr);
+           bool* child_depends_on_block_constraints = nullptr);
 
  private:
   Member<CustomLayoutChild> child_;
@@ -67,7 +67,7 @@ class CustomLayoutWorkTask final
   void RunIntrinsicSizesTask(const ComputedStyle& parent_style,
                              const LayoutUnit child_available_block_size,
                              NGLayoutInputNode child,
-                             bool* child_depends_on_percentage_block_size);
+                             bool* child_depends_on_block_constraints);
 };
 
 }  // namespace blink

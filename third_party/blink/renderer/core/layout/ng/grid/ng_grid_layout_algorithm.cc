@@ -42,7 +42,7 @@ NGGridLayoutAlgorithm::NGGridLayoutAlgorithm(
           // "intrinsic" size.
           return MinMaxSizesResult(
               {border_scrollbar_padding, border_scrollbar_padding},
-              /* depends_on_percentage_block_size */ false);
+              /* depends_on_block_constraints */ false);
         });
 
     grid_min_available_size_.inline_size =
@@ -297,7 +297,7 @@ MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
   // TODO(janewman): Confirm that |input.percentage_resolution_block_size|
   // isn't used within grid layout.
   sizes += BorderScrollbarPadding().InlineSum();
-  return MinMaxSizesResult(sizes, /* depends_on_percentage_block_size */ false);
+  return MinMaxSizesResult(sizes, /* depends_on_block_constraints */ false);
 }
 
 NGGridLayoutAlgorithm::AutoPlacementType

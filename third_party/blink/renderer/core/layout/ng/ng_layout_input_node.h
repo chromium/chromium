@@ -52,12 +52,12 @@ struct MinMaxSizesInput {
 // |MinMaxSizesInput::percentage_resolution_block_size| value changes.
 struct MinMaxSizesResult {
   MinMaxSizesResult() = default;
-  MinMaxSizesResult(MinMaxSizes sizes, bool depends_on_percentage_block_size)
+  MinMaxSizesResult(MinMaxSizes sizes, bool depends_on_block_constraints)
       : sizes(sizes),
-        depends_on_percentage_block_size(depends_on_percentage_block_size) {}
+        depends_on_block_constraints(depends_on_block_constraints) {}
 
   MinMaxSizes sizes;
-  bool depends_on_percentage_block_size = false;
+  bool depends_on_block_constraints = false;
 };
 
 // Represents the input to a layout algorithm for a given node. The layout

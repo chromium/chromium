@@ -1471,7 +1471,7 @@ static LayoutUnit ComputeContentSize(
     NGLineBreakerMode mode,
     NGLineBreaker::MaxSizeCache* max_size_cache,
     base::Optional<LayoutUnit>* max_size_out,
-    bool* depends_on_percentage_block_size_out) {
+    bool* depends_on_block_constraints_out) {
   const ComputedStyle& style = node.Style();
   LayoutUnit available_inline_size =
       mode == NGLineBreakerMode::kMaxContent ? LayoutUnit::Max() : LayoutUnit();
@@ -1494,7 +1494,7 @@ static LayoutUnit ComputeContentSize(
                              /* handled_leading_floats_index */ 0u,
                              /* break_token */ nullptr, &empty_exclusion_space);
   line_breaker.SetIntrinsicSizeOutputs(max_size_cache,
-                                       depends_on_percentage_block_size_out);
+                                       depends_on_block_constraints_out);
   const NGInlineItemsData& items_data = line_breaker.ItemsData();
 
   // Computes max-size for floats in inline formatting context.
@@ -1700,9 +1700,9 @@ static LayoutUnit ComputeContentSize(
       LayoutUnit child_inline_margins =
           ComputeMinMaxMargins(style, float_node).InlineSum();
 
-      if (depends_on_percentage_block_size_out) {
-        *depends_on_percentage_block_size_out |=
-            child_result.depends_on_percentage_block_size;
+      if (depends_on_block_constraints_out) {
+        *depends_on_block_constraints_out |=
+            child_result.depends_on_block_constraints;
       }
 
       if (mode == NGLineBreakerMode::kMinContent) {
@@ -1761,10 +1761,10 @@ MinMaxSizesResult NGInlineNode::ComputeMinMaxSizes(
   NGLineBreaker::MaxSizeCache max_size_cache;
   MinMaxSizes sizes;
   base::Optional<LayoutUnit> max_size;
-  bool depends_on_percentage_block_size = false;
+  bool depends_on_block_constraints = false;
   sizes.min_size = ComputeContentSize(
       *this, container_writing_mode, input, NGLineBreakerMode::kMinContent,
-      &max_size_cache, &max_size, &depends_on_percentage_block_size);
+      &max_size_cache, &max_size, &depends_on_block_constraints);
   if (max_size) {
     sizes.max_size = *max_size;
   } else {
@@ -1776,7 +1776,7 @@ MinMaxSizesResult NGInlineNode::ComputeMinMaxSizes(
   // Negative text-indent can make min > max. Ensure min is the minimum size.
   sizes.min_size = std::min(sizes.min_size, sizes.max_size);
 
-  return MinMaxSizesResult(sizes, depends_on_percentage_block_size);
+  return MinMaxSizesResult(sizes, depends_on_block_constraints);
 }
 
 bool NGInlineNode::UseFirstLineStyle() const {

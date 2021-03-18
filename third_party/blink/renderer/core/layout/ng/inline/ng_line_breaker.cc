@@ -255,11 +255,11 @@ inline bool NGLineBreaker::HandleOverflowIfNeeded(NGLineInfo* line_info) {
 
 void NGLineBreaker::SetIntrinsicSizeOutputs(
     MaxSizeCache* max_size_cache,
-    bool* depends_on_percentage_block_size_out) {
+    bool* depends_on_block_constraints_out) {
   DCHECK_NE(mode_, NGLineBreakerMode::kContent);
   DCHECK(max_size_cache);
   max_size_cache_ = max_size_cache;
-  depends_on_percentage_block_size_out_ = depends_on_percentage_block_size_out;
+  depends_on_block_constraints_out_ = depends_on_block_constraints_out;
 }
 
 // Compute the base direction for bidi algorithm for this line.
@@ -1594,9 +1594,9 @@ void NGLineBreaker::HandleAtomicInline(
         ComputeMinAndMaxContentContribution(node_.Style(), child, input);
     if (mode_ == NGLineBreakerMode::kMinContent) {
       item_result->inline_size = result.sizes.min_size + inline_margins;
-      if (depends_on_percentage_block_size_out_) {
-        *depends_on_percentage_block_size_out_ |=
-            result.depends_on_percentage_block_size;
+      if (depends_on_block_constraints_out_) {
+        *depends_on_block_constraints_out_ |=
+            result.depends_on_block_constraints;
       }
       if (max_size_cache_) {
         if (max_size_cache_->IsEmpty())

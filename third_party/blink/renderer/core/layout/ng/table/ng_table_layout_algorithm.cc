@@ -534,7 +534,7 @@ MinMaxSizesResult NGTableLayoutAlgorithm::ComputeMinMaxSizes(
   }
   DCHECK_LE(min_max.min_size, min_max.max_size);
   return MinMaxSizesResult{min_max,
-                           /* depends_on_percentage_block_size */ false};
+                           /* depends_on_block_constraints */ false};
 }
 
 void NGTableLayoutAlgorithm::ComputeRows(

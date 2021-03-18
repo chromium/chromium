@@ -275,7 +275,7 @@ MinMaxSizesResult NGMathFractionLayoutAlgorithm::ComputeMinMaxSizes(
     return *result;
 
   MinMaxSizes sizes;
-  bool depends_on_percentage_block_size = false;
+  bool depends_on_block_constraints = false;
 
   for (NGLayoutInputNode child = Node().FirstChild(); child;
        child = child.NextSibling()) {
@@ -287,12 +287,11 @@ MinMaxSizesResult NGMathFractionLayoutAlgorithm::ComputeMinMaxSizes(
         child_input.percentage_resolution_block_size);
 
     sizes.Encompass(child_result.sizes);
-    depends_on_percentage_block_size |=
-        child_result.depends_on_percentage_block_size;
+    depends_on_block_constraints |= child_result.depends_on_block_constraints;
   }
 
   sizes += BorderScrollbarPadding().InlineSum();
-  return MinMaxSizesResult(sizes, depends_on_percentage_block_size);
+  return MinMaxSizesResult(sizes, depends_on_block_constraints);
 }
 
 }  // namespace blink

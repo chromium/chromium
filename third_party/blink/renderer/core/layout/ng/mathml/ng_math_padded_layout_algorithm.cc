@@ -128,13 +128,13 @@ MinMaxSizesResult NGMathPaddedLayoutAlgorithm::ComputeMinMaxSizes(
       Style(), ConstraintSpace(), content,
       input.percentage_resolution_block_size);
 
-  bool depends_on_percentage_block_size =
-      content_result.depends_on_percentage_block_size;
+  bool depends_on_block_constraints =
+      content_result.depends_on_block_constraints;
   MinMaxSizes sizes;
   sizes += content_result.sizes;
 
   sizes += BorderScrollbarPadding().InlineSum();
-  return MinMaxSizesResult(sizes, depends_on_percentage_block_size);
+  return MinMaxSizesResult(sizes, depends_on_block_constraints);
 }
 
 }  // namespace blink

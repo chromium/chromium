@@ -50,13 +50,13 @@ void CustomLayoutWorkTask::Trace(Visitor* visitor) const {
 void CustomLayoutWorkTask::Run(const NGConstraintSpace& parent_space,
                                const ComputedStyle& parent_style,
                                const LayoutUnit child_available_block_size,
-                               bool* child_depends_on_percentage_block_size) {
+                               bool* child_depends_on_block_constraints) {
   DCHECK(token_->IsValid());
   NGLayoutInputNode child = child_->GetLayoutNode();
 
   if (type_ == CustomLayoutWorkTask::TaskType::kIntrinsicSizes) {
     RunIntrinsicSizesTask(parent_style, child_available_block_size, child,
-                          child_depends_on_percentage_block_size);
+                          child_depends_on_block_constraints);
   } else {
     DCHECK_EQ(type_, CustomLayoutWorkTask::TaskType::kLayoutFragment);
     RunLayoutFragmentTask(parent_space, parent_style, child);
@@ -148,7 +148,7 @@ void CustomLayoutWorkTask::RunIntrinsicSizesTask(
     const ComputedStyle& parent_style,
     const LayoutUnit child_available_block_size,
     NGLayoutInputNode child,
-    bool* child_depends_on_percentage_block_size) {
+    bool* child_depends_on_block_constraints) {
   DCHECK_EQ(type_, CustomLayoutWorkTask::TaskType::kIntrinsicSizes);
   DCHECK(resolver_);
 
@@ -158,10 +158,8 @@ void CustomLayoutWorkTask::RunIntrinsicSizesTask(
   resolver_->Resolve(MakeGarbageCollected<CustomIntrinsicSizes>(
       child_, token_, result.sizes.min_size, result.sizes.max_size));
 
-  if (child_depends_on_percentage_block_size) {
-    *child_depends_on_percentage_block_size |=
-        result.depends_on_percentage_block_size;
-  }
+  if (child_depends_on_block_constraints)
+    *child_depends_on_block_constraints |= result.depends_on_block_constraints;
 }
 
 }  // namespace blink

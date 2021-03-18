@@ -413,8 +413,8 @@ MinMaxSizesResult NGFieldsetLayoutAlgorithm::ComputeMinMaxSizes(
       content_result.sizes +=
           ComputeMinMaxMargins(Style(), content).InlineSum();
       result.sizes.Encompass(content_result.sizes);
-      result.depends_on_percentage_block_size |=
-          content_result.depends_on_percentage_block_size;
+      result.depends_on_block_constraints |=
+          content_result.depends_on_block_constraints;
     }
   }
 

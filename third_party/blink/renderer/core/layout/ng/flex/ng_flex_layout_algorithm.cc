@@ -1382,7 +1382,7 @@ MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeMinMaxSizes(
     return *result;
 
   MinMaxSizes sizes;
-  bool depends_on_percentage_block_size = false;
+  bool depends_on_block_constraints = false;
 
   int number_of_items = 0;
   NGFlexChildIterator iterator(Node());
@@ -1397,8 +1397,7 @@ MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeMinMaxSizes(
     NGBoxStrut child_margins = ComputeMinMaxMargins(Style(), child);
     child_result.sizes += child_margins.InlineSum();
 
-    depends_on_percentage_block_size |=
-        child_result.depends_on_percentage_block_size;
+    depends_on_block_constraints |= child_result.depends_on_block_constraints;
     if (is_column_) {
       sizes.min_size = std::max(sizes.min_size, child_result.sizes.min_size);
       sizes.max_size = std::max(sizes.max_size, child_result.sizes.max_size);
@@ -1425,7 +1424,7 @@ MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeMinMaxSizes(
   // intrinsic width. Make sure that we never return a negative width.
   sizes.Encompass(LayoutUnit());
   sizes += BorderScrollbarPadding().InlineSum();
-  return MinMaxSizesResult(sizes, depends_on_percentage_block_size);
+  return MinMaxSizesResult(sizes, depends_on_block_constraints);
 }
 
 }  // namespace blink

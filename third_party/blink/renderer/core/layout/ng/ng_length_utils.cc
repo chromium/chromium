@@ -309,7 +309,7 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
       sizes = ResolveMainInlineLength(space, style, border_padding,
                                       min_max_sizes_func, inline_size);
       result = MinMaxSizesResult(sizes,
-                                 /* depends_on_percentage_block_size */ false);
+                                 /* depends_on_block_constraints */ false);
     } else {
       auto IntrinsicBlockSizeFunc = [&]() -> LayoutUnit {
         return min_max_sizes_func(inline_size.IsMinIntrinsic()
@@ -321,7 +321,7 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
       sizes = ResolveMainBlockLength(space, style, border_padding, inline_size,
                                      IntrinsicBlockSizeFunc);
       result = MinMaxSizesResult(sizes,
-                                 /* depends_on_percentage_block_size */ false);
+                                 /* depends_on_block_constraints */ false);
     }
   }
 
@@ -380,11 +380,11 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionForReplaced(
 
   // Replaced elements which have a percentage block-size use the
   // |MinMaxSizesInput::percentage_resolution_block_size| field.
-  bool depends_on_percentage_block_size =
+  bool depends_on_block_constraints =
       child_style.LogicalMinHeight().IsPercentOrCalc() ||
       child_style.LogicalHeight().IsPercentOrCalc() ||
       child_style.LogicalMaxHeight().IsPercentOrCalc();
-  return MinMaxSizesResult(result, depends_on_percentage_block_size);
+  return MinMaxSizesResult(result, depends_on_block_constraints);
 }
 
 }  // namespace
@@ -455,7 +455,7 @@ MinMaxSizes ComputeMinAndMaxContentContributionForTest(
     const MinMaxSizes& min_max_sizes) {
   auto MinMaxSizesFunc = [&](MinMaxSizesType) -> MinMaxSizesResult {
     return MinMaxSizesResult(min_max_sizes,
-                             /* depends_on_percentage_block_size */ false);
+                             /* depends_on_block_constraints */ false);
   };
   return ComputeMinAndMaxContentContributionInternal(parent_writing_mode, child,
                                                      MinMaxSizesFunc)
@@ -496,7 +496,7 @@ LayoutUnit ComputeInlineSizeForFragmentInternal(
   auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
     if (override_min_max_sizes) {
       return MinMaxSizesResult(*override_min_max_sizes,
-                               /* depends_on_percentage_block_size */ false);
+                               /* depends_on_block_constraints */ false);
     }
 
     MinMaxSizesInput input(space.PercentageResolutionBlockSize());
@@ -1625,7 +1625,7 @@ base::Optional<MinMaxSizesResult> CalculateMinMaxSizesIgnoringChildren(
   if (intrinsic_size_override != kIndefiniteSize) {
     sizes += intrinsic_size_override;
     return MinMaxSizesResult{sizes,
-                             /* depends_on_percentage_block_size */ false};
+                             /* depends_on_block_constraints */ false};
   } else {
     LayoutUnit default_inline_size = node.DefaultIntrinsicContentInlineSize();
     if (default_inline_size != kIndefiniteSize) {
@@ -1634,7 +1634,7 @@ base::Optional<MinMaxSizesResult> CalculateMinMaxSizesIgnoringChildren(
       if (node.IsTextArea())
         sizes -= ComputeScrollbarsForNonAnonymous(node).InlineSum();
       return MinMaxSizesResult{sizes,
-                               /* depends_on_percentage_block_size */ false};
+                               /* depends_on_block_constraints */ false};
     }
   }
 
@@ -1642,7 +1642,7 @@ base::Optional<MinMaxSizesResult> CalculateMinMaxSizesIgnoringChildren(
   // Also, if we don't have children, we can determine the size immediately.
   if (node.ShouldApplyInlineSizeContainment() || !node.FirstChild()) {
     return MinMaxSizesResult{sizes,
-                             /* depends_on_percentage_block_size */ false};
+                             /* depends_on_block_constraints */ false};
   }
 
   return base::nullopt;

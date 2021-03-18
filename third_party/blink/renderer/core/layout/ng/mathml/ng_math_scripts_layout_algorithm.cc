@@ -421,7 +421,7 @@ MinMaxSizesResult NGMathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
   DCHECK_GE(sub_sup_pairs.size(), 1ul);
 
   MinMaxSizes sizes;
-  bool depends_on_percentage_block_size = false;
+  bool depends_on_block_constraints = false;
 
   // TODO(layout-dev): Determine the italic-correction without calling layout
   // within ComputeMinMaxSizes, (or setup in an interoperable constraint-space).
@@ -431,8 +431,7 @@ MinMaxSizesResult NGMathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
       child_input.percentage_resolution_block_size);
 
   sizes = base_result.sizes;
-  depends_on_percentage_block_size |=
-      base_result.depends_on_percentage_block_size;
+  depends_on_block_constraints |= base_result.depends_on_block_constraints;
 
   LayoutUnit space = GetSpaceAfterScript(Style());
   switch (Node().ScriptType()) {
@@ -452,8 +451,8 @@ MinMaxSizesResult NGMathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
       if (sub)
         sizes -= base_italic_correction;
       sizes += space;
-      depends_on_percentage_block_size |=
-          first_post_script_result.depends_on_percentage_block_size;
+      depends_on_block_constraints |=
+          first_post_script_result.depends_on_block_constraints;
       break;
     }
     case MathScriptType::kSubSup:
@@ -481,17 +480,15 @@ MinMaxSizesResult NGMathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
 
         sizes += sub_sup_pair_size;
         sizes += space;
-        depends_on_percentage_block_size |=
-            sub_result.depends_on_percentage_block_size;
-        depends_on_percentage_block_size |=
-            sup_result.depends_on_percentage_block_size;
+        depends_on_block_constraints |= sub_result.depends_on_block_constraints;
+        depends_on_block_constraints |= sup_result.depends_on_block_constraints;
       } while (++index < sub_sup_pairs.size());
       break;
     }
   }
 
   sizes += BorderScrollbarPadding().InlineSum();
-  return MinMaxSizesResult(sizes, depends_on_percentage_block_size);
+  return MinMaxSizesResult(sizes, depends_on_block_constraints);
 }
 
 }  // namespace blink

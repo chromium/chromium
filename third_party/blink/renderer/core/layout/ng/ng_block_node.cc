@@ -798,7 +798,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
     if (!box_->GetFrameView()->IsInPerformLayout()) {
       sizes = ComputeMinMaxSizesFromLegacy(type, *constraint_space);
       return MinMaxSizesResult(sizes,
-                               /* depends_on_percentage_block_size */ false);
+                               /* depends_on_block_constraints */ false);
     }
 
     DCHECK(constraint_space);
@@ -809,7 +809,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
                        layout_result->PhysicalFragment())
                 .InlineSize();
     return MinMaxSizesResult(sizes,
-                             /* depends_on_percentage_block_size */ false);
+                             /* depends_on_block_constraints */ false);
   }
 
   // Synthesize a zero space if not provided.
@@ -854,9 +854,9 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
     MinMaxSizes sizes = box_->IsTable() && !box_->IsLayoutNGMixin()
                             ? box_->PreferredLogicalWidths()
                             : box_->IntrinsicLogicalWidths(type);
-    bool depends_on_percentage_block_size =
+    bool depends_on_block_constraints =
         box_->IntrinsicLogicalWidthsDependsOnPercentageBlockSize();
-    return MinMaxSizesResult(sizes, depends_on_percentage_block_size);
+    return MinMaxSizesResult(sizes, depends_on_block_constraints);
   }
 
   const NGFragmentGeometry fragment_geometry =
@@ -873,18 +873,18 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
           input.percentage_resolution_block_size,
           &uses_input_percentage_block_size);
 
-  bool cache_depends_on_percentage_block_size =
+  bool cache_depends_on_block_constraints =
       uses_input_percentage_block_size &&
       box_->IntrinsicLogicalWidthsChildDependsOnPercentageBlockSize();
 
   // We might still be able to use the cached values if our children don't
   // depend on the *input* %-block-size.
   if (can_use_cached_intrinsic_inline_sizes &&
-      !cache_depends_on_percentage_block_size) {
+      !cache_depends_on_block_constraints) {
     MinMaxSizes sizes = box_->IsTable() && !box_->IsLayoutNGMixin()
                             ? box_->PreferredLogicalWidths()
                             : box_->IntrinsicLogicalWidths(type);
-    return MinMaxSizesResult(sizes, cache_depends_on_percentage_block_size);
+    return MinMaxSizesResult(sizes, cache_depends_on_block_constraints);
   }
 
   box_->SetIntrinsicLogicalWidthsDirty(kMarkOnlyThis);
@@ -896,8 +896,8 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
     // inline-sizes themselves).
     box_->SetIntrinsicLogicalWidthsFromNG(
         input.percentage_resolution_block_size,
-        /* depends_on_percentage_block_size */ uses_input_percentage_block_size,
-        /* child_depends_on_percentage_block_size */ true,
+        /* depends_on_block_constraints */ uses_input_percentage_block_size,
+        /* child_depends_on_block_constraints */ true,
         /* sizes */ nullptr);
 
     return MinMaxSizesResult(sizes, uses_input_percentage_block_size);
@@ -915,9 +915,8 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
   if (UNLIKELY(IsContentMinimumInlineSizeZero(*this)))
     result.sizes.min_size = border_padding.InlineSum();
 
-  bool depends_on_percentage_block_size =
-      uses_input_percentage_block_size &&
-      result.depends_on_percentage_block_size;
+  bool depends_on_block_constraints =
+      uses_input_percentage_block_size && result.depends_on_block_constraints;
 
   if (!Style().AspectRatio().IsAuto() &&
       BlockLengthUnresolvable(*constraint_space, Style().LogicalHeight())) {
@@ -928,16 +927,16 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
         *constraint_space, Style(), border_padding);
     result.sizes.min_size = min_max.ClampSizeToMinAndMax(result.sizes.min_size);
     result.sizes.max_size = min_max.ClampSizeToMinAndMax(result.sizes.max_size);
-    depends_on_percentage_block_size =
-        depends_on_percentage_block_size ||
+    depends_on_block_constraints =
+        depends_on_block_constraints ||
         Style().LogicalMinHeight().IsPercentOrCalc() ||
         Style().LogicalMaxHeight().IsPercentOrCalc();
   }
 
   box_->SetIntrinsicLogicalWidthsFromNG(
-      input.percentage_resolution_block_size, depends_on_percentage_block_size,
-      /* child_depends_on_percentage_block_size */
-      result.depends_on_percentage_block_size, &result.sizes);
+      input.percentage_resolution_block_size, depends_on_block_constraints,
+      /* child_depends_on_block_constraints */
+      result.depends_on_block_constraints, &result.sizes);
 
   if (IsNGTableCell()) {
     To<LayoutNGTableCell>(box_)->SetIntrinsicLogicalWidthsBorderSizes(
@@ -946,7 +945,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
 
   // We report to our parent if we depend on the %-block-size if we used the
   // input %-block-size, or one of children said it depended on this.
-  result.depends_on_percentage_block_size = depends_on_percentage_block_size;
+  result.depends_on_block_constraints = depends_on_block_constraints;
   return result;
 }
 
