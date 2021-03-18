@@ -255,7 +255,13 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
 }
 
 // Check the custom tab bar is not instantiated for a popup window.
-IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, IsNotCreatedInPopup) {
+// Flaky on linux: crbug.com/1186608, crbug.com/1179071
+#if defined(OS_LINUX)
+#define MAYBE_IsNotCreatedInPopup DISABLED_IsNotCreatedInPopup
+#else
+#define MAYBE_IsNotCreatedInPopup IsNotCreatedInPopup
+#endif
+IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, MAYBE_IsNotCreatedInPopup) {
 #if defined(OS_LINUX)
   {
     auto* command_line = base::CommandLine::ForCurrentProcess();
