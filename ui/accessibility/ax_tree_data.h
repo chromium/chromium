@@ -13,10 +13,10 @@
 
 #include "base/optional.h"
 #include "base/strings/string_split.h"
+#include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_data.h"
-#include "ui/accessibility/ax_tree_id_registry.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ui {

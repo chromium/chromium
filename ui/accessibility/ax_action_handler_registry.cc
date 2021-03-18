@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/accessibility/ax_tree_id_registry.h"
+#include "ui/accessibility/ax_action_handler_registry.h"
 
 #include "base/memory/singleton.h"
 #include "base/strings/string_number_conversions.h"
@@ -11,12 +11,13 @@
 namespace ui {
 
 // static
-AXTreeIDRegistry* AXTreeIDRegistry::GetInstance() {
-  return base::Singleton<AXTreeIDRegistry>::get();
+AXActionHandlerRegistry* AXActionHandlerRegistry::GetInstance() {
+  return base::Singleton<AXActionHandlerRegistry>::get();
 }
 
-void AXTreeIDRegistry::SetFrameIDForAXTreeID(const FrameID& frame_id,
-                                             const AXTreeID& ax_tree_id) {
+void AXActionHandlerRegistry::SetFrameIDForAXTreeID(
+    const FrameID& frame_id,
+    const AXTreeID& ax_tree_id) {
   auto it = frame_to_ax_tree_id_map_.find(frame_id);
   if (it != frame_to_ax_tree_id_map_.end()) {
     NOTREACHED();
@@ -27,7 +28,7 @@ void AXTreeIDRegistry::SetFrameIDForAXTreeID(const FrameID& frame_id,
   ax_tree_to_frame_id_map_[ax_tree_id] = frame_id;
 }
 
-AXTreeIDRegistry::FrameID AXTreeIDRegistry::GetFrameID(
+AXActionHandlerRegistry::FrameID AXActionHandlerRegistry::GetFrameID(
     const AXTreeID& ax_tree_id) {
   auto it = ax_tree_to_frame_id_map_.find(ax_tree_id);
   if (it != ax_tree_to_frame_id_map_.end())
@@ -36,7 +37,8 @@ AXTreeIDRegistry::FrameID AXTreeIDRegistry::GetFrameID(
   return FrameID(-1, -1);
 }
 
-AXTreeID AXTreeIDRegistry::GetAXTreeID(AXTreeIDRegistry::FrameID frame_id) {
+AXTreeID AXActionHandlerRegistry::GetAXTreeID(
+    AXActionHandlerRegistry::FrameID frame_id) {
   auto it = frame_to_ax_tree_id_map_.find(frame_id);
   if (it != frame_to_ax_tree_id_map_.end())
     return it->second;
@@ -44,7 +46,8 @@ AXTreeID AXTreeIDRegistry::GetAXTreeID(AXTreeIDRegistry::FrameID frame_id) {
   return ui::AXTreeIDUnknown();
 }
 
-AXTreeID AXTreeIDRegistry::GetOrCreateAXTreeID(AXActionHandlerBase* handler) {
+AXTreeID AXActionHandlerRegistry::GetOrCreateAXTreeID(
+    AXActionHandlerBase* handler) {
   for (auto it : id_to_action_handler_) {
     if (it.second == handler)
       return it.first;
@@ -54,20 +57,21 @@ AXTreeID AXTreeIDRegistry::GetOrCreateAXTreeID(AXActionHandlerBase* handler) {
   return new_id;
 }
 
-AXActionHandlerBase* AXTreeIDRegistry::GetActionHandler(AXTreeID ax_tree_id) {
+AXActionHandlerBase* AXActionHandlerRegistry::GetActionHandler(
+    AXTreeID ax_tree_id) {
   auto it = id_to_action_handler_.find(ax_tree_id);
   if (it == id_to_action_handler_.end())
     return nullptr;
   return it->second;
 }
 
-void AXTreeIDRegistry::SetAXTreeID(const ui::AXTreeID& id,
-                                   AXActionHandlerBase* action_handler) {
+void AXActionHandlerRegistry::SetAXTreeID(const ui::AXTreeID& id,
+                                          AXActionHandlerBase* action_handler) {
   DCHECK(id_to_action_handler_.find(id) == id_to_action_handler_.end());
   id_to_action_handler_[id] = action_handler;
 }
 
-void AXTreeIDRegistry::RemoveAXTreeID(AXTreeID ax_tree_id) {
+void AXActionHandlerRegistry::RemoveAXTreeID(AXTreeID ax_tree_id) {
   auto frame_it = ax_tree_to_frame_id_map_.find(ax_tree_id);
   if (frame_it != ax_tree_to_frame_id_map_.end()) {
     frame_to_ax_tree_id_map_.erase(frame_it->second);
@@ -79,9 +83,8 @@ void AXTreeIDRegistry::RemoveAXTreeID(AXTreeID ax_tree_id) {
     id_to_action_handler_.erase(action_it);
 }
 
-AXTreeIDRegistry::AXTreeIDRegistry() {
-}
+AXActionHandlerRegistry::AXActionHandlerRegistry() {}
 
-AXTreeIDRegistry::~AXTreeIDRegistry() {}
+AXActionHandlerRegistry::~AXActionHandlerRegistry() {}
 
 }  // namespace ui

@@ -47,7 +47,7 @@ class AX_BASE_EXPORT AXActionHandlerBase {
   void SetAXTreeID(AXTreeID new_ax_tree_id);
 
  private:
-  // Register or unregister this class with |AXTreeIDRegistry|.
+  // Register or unregister this class with |AXActionHandlerRegistry|.
   void UpdateActiveState(bool active);
 
   // Manually set in this base class, but automatically set by instances of the

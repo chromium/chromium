@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_ACCESSIBILITY_AX_TREE_ID_REGISTRY_H_
-#define UI_ACCESSIBILITY_AX_TREE_ID_REGISTRY_H_
+#ifndef UI_ACCESSIBILITY_AX_ACTION_HANDLER_REGISTRY_H_
+#define UI_ACCESSIBILITY_AX_ACTION_HANDLER_REGISTRY_H_
 
 #include <map>
 #include <string>
@@ -31,12 +31,12 @@ class AXActionHandlerBase;
 // The first form allows underlying instances to change but refer to the same
 // frame.
 // The second form allows this registry to track the object for later retrieval.
-class AX_BASE_EXPORT AXTreeIDRegistry {
+class AX_BASE_EXPORT AXActionHandlerRegistry {
  public:
   using FrameID = std::pair<int, int>;
 
   // Get the single instance of this class.
-  static AXTreeIDRegistry* GetInstance();
+  static AXActionHandlerRegistry* GetInstance();
 
   // Gets the frame id based on an ax tree id.
   FrameID GetFrameID(const AXTreeID& ax_tree_id);
@@ -56,7 +56,7 @@ class AX_BASE_EXPORT AXTreeIDRegistry {
                              const AXTreeID& ax_tree_id);
 
  private:
-  friend struct base::DefaultSingletonTraits<AXTreeIDRegistry>;
+  friend struct base::DefaultSingletonTraits<AXActionHandlerRegistry>;
   friend AXActionHandler;
   friend AXActionHandlerBase;
 
@@ -67,8 +67,8 @@ class AX_BASE_EXPORT AXTreeIDRegistry {
   void SetAXTreeID(const AXTreeID& ax_tree_id,
                    AXActionHandlerBase* action_handler);
 
-  AXTreeIDRegistry();
-  virtual ~AXTreeIDRegistry();
+  AXActionHandlerRegistry();
+  virtual ~AXActionHandlerRegistry();
 
   // Maps an accessibility tree to its frame via ids.
   std::map<AXTreeID, FrameID> ax_tree_to_frame_id_map_;
@@ -79,9 +79,9 @@ class AX_BASE_EXPORT AXTreeIDRegistry {
   // Maps an id to its handler.
   std::map<AXTreeID, AXActionHandlerBase*> id_to_action_handler_;
 
-  DISALLOW_COPY_AND_ASSIGN(AXTreeIDRegistry);
+  DISALLOW_COPY_AND_ASSIGN(AXActionHandlerRegistry);
 };
 
 }  // namespace ui
 
-#endif  // UI_ACCESSIBILITY_AX_TREE_ID_REGISTRY_H_
+#endif  // UI_ACCESSIBILITY_AX_ACTION_HANDLER_REGISTRY_H_

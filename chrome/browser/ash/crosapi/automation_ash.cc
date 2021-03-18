@@ -12,7 +12,6 @@
 #include "components/version_info/channel.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "extensions/common/extension_messages.h"
-#include "ui/accessibility/ax_tree_id_registry.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
