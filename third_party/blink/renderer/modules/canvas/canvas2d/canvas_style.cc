@@ -73,11 +73,13 @@ static Color CurrentColor(HTMLCanvasElement* canvas) {
 }
 
 static mojom::blink::ColorScheme ColorScheme(HTMLCanvasElement* canvas) {
-  if (canvas && canvas->isConnected()) {
+  if (!canvas)
+    return mojom::blink::ColorScheme::kLight;
+  if (canvas->isConnected()) {
     if (auto* style = canvas->GetComputedStyle())
       return style->UsedColorScheme();
   }
-  return mojom::blink::ColorScheme::kLight;
+  return ComputedStyle::InitialStyle().UsedColorScheme();
 }
 
 bool ParseColorOrCurrentColor(Color& parsed_color,

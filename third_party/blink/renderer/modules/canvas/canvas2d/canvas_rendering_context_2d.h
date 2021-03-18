@@ -270,7 +270,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   void DrawFocusIfNeededInternal(const Path&, Element*);
   bool FocusRingCallIsValid(const Path&, Element*);
-  void DrawFocusRing(const Path&, Element*);
+  void DrawFocusRing(const Path&);
   void UpdateElementAccessibility(const Path&, Element*);
 
   CanvasRenderingContext::ContextType GetContextType() const override {
