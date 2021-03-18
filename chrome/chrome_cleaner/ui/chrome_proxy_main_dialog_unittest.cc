@@ -86,7 +86,8 @@ class ConfirmCleanupChromeProxyMainDialogTest
   StrictMock<MockSettings> mock_settings_;
 };
 
-TEST_P(ConfirmCleanupChromeProxyMainDialogTest, ConfirmCleanup) {
+// Flaky, see: crbug.com/1189076.
+TEST_P(ConfirmCleanupChromeProxyMainDialogTest, DISABLED_ConfirmCleanup) {
   constexpr UwSId kFakePupId = 1024;
   PromptUserResponse::PromptAcceptance prompt_acceptance = GetParam();
   bool accept_cleanup =
