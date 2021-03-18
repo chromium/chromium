@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/cors_origin_pattern_setter.h"
 #include "content/public/test/browser_test.h"
@@ -186,7 +187,14 @@ IN_PROC_BROWSER_TEST_F(CorsOriginPatternSetterBrowserTest,
 
 // Tests if complete allow list set does not allow a host with a different port
 // to pass.
-IN_PROC_BROWSER_TEST_F(CorsOriginPatternSetterBrowserTest, BlockDifferentPort) {
+// Flaky on Win/Mac. crbug.com/1188675
+#if defined(OS_WIN) || defined(OS_MAC)
+#define MAYBE_BlockDifferentPort DISABLED_BlockDifferentPort
+#else
+#define MAYBE_BlockDifferentPort BlockDifferentPort
+#endif
+IN_PROC_BROWSER_TEST_F(CorsOriginPatternSetterBrowserTest,
+                       MAYBE_BlockDifferentPort) {
   SetAllowList("http", kTestHost, kDisallowSubdomains);
 
   std::unique_ptr<TitleWatcher> watcher = CreateWatcher();
