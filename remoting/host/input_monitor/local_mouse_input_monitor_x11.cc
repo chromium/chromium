@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/files/file_descriptor_watcher_posix.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -73,9 +72,6 @@ class LocalMouseInputMonitorX11 : public LocalPointerInputMonitor {
 
     // Used to send mouse event notifications.
     LocalInputMonitor::PointerMoveCallback on_mouse_move_;
-
-    // Controls watching X events.
-    std::unique_ptr<base::FileDescriptorWatcher::Controller> controller_;
 
     x11::Connection* connection_ = nullptr;
 
@@ -150,25 +146,11 @@ void LocalMouseInputMonitorX11::Core::StartOnInputThread() {
       {connection_->default_root(),
        {{x11::Input::DeviceId::AllMaster, {mask}}}});
   connection_->Flush();
-
-  // Register OnConnectionData() to be called every time there is
-  // something to read from |connection_|.
-  controller_ = base::FileDescriptorWatcher::WatchReadable(
-      connection_->GetFd(),
-      base::BindRepeating(&Core::OnConnectionData, base::Unretained(this)));
-
-  // Fetch pending events if any.
-  OnConnectionData();
 }
 
 void LocalMouseInputMonitorX11::Core::StopOnInputThread() {
   DCHECK(input_task_runner_->BelongsToCurrentThread());
-  controller_.reset();
-}
-
-void LocalMouseInputMonitorX11::Core::OnConnectionData() {
-  DCHECK(input_task_runner_->BelongsToCurrentThread());
-  connection_->DispatchAll();
+  connection_->RemoveEventObserver(this);
 }
 
 void LocalMouseInputMonitorX11::Core::OnEvent(const x11::Event& event) {

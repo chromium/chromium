@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/files/file_descriptor_watcher_posix.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -56,9 +55,6 @@ class LocalHotkeyInputMonitorX11 : public LocalHotkeyInputMonitor {
     void StartOnInputThread();
     void StopOnInputThread();
 
-    // Called when there are pending X events.
-    void OnConnectionData();
-
     // x11::EventObserver:
     void OnEvent(const x11::Event& event) override;
 
@@ -70,9 +66,6 @@ class LocalHotkeyInputMonitorX11 : public LocalHotkeyInputMonitor {
 
     // Used to send session disconnect requests.
     base::OnceClosure disconnect_callback_;
-
-    // Controls watching X events.
-    std::unique_ptr<base::FileDescriptorWatcher::Controller> controller_;
 
     // True when Alt is pressed.
     bool alt_pressed_ = false;
@@ -154,25 +147,11 @@ void LocalHotkeyInputMonitorX11::Core::StartOnInputThread() {
       {connection_->default_root(),
        {{x11::Input::DeviceId::AllMaster, {mask}}}});
   connection_->Flush();
-
-  // Register OnConnectionData() to be called every time there is
-  // something to read from |connection_|.
-  controller_ = base::FileDescriptorWatcher::WatchReadable(
-      connection_->GetFd(),
-      base::BindRepeating(&Core::OnConnectionData, base::Unretained(this)));
-
-  // Fetch pending events if any.
-  OnConnectionData();
 }
 
 void LocalHotkeyInputMonitorX11::Core::StopOnInputThread() {
   DCHECK(input_task_runner_->BelongsToCurrentThread());
-  controller_.reset();
-}
-
-void LocalHotkeyInputMonitorX11::Core::OnConnectionData() {
-  DCHECK(input_task_runner_->BelongsToCurrentThread());
-  connection_->DispatchAll();
+  connection_->RemoveEventObserver(this);
 }
 
 void LocalHotkeyInputMonitorX11::Core::OnEvent(const x11::Event& event) {

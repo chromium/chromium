@@ -7,7 +7,6 @@
 #include "base/memory/ptr_util.h"
 
 #include "base/bind.h"
-#include "base/files/file_descriptor_watcher_posix.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "remoting/host/linux/x_server_clipboard.h"
@@ -32,7 +31,6 @@ class ClipboardX11 : public Clipboard, public x11::EventObserver {
  private:
   void OnClipboardChanged(const std::string& mime_type,
                           const std::string& data);
-  void PumpXEvents();
 
   // x11::EventObserver:
   void OnEvent(const x11::Event& event) override;
@@ -46,10 +44,6 @@ class ClipboardX11 : public Clipboard, public x11::EventObserver {
   // be accessed on the input thread.
   x11::Connection* connection_;
 
-  // Watcher used to handle X11 events from |display_|.
-  std::unique_ptr<base::FileDescriptorWatcher::Controller>
-      x_connection_watch_controller_;
-
   DISALLOW_COPY_AND_ASSIGN(ClipboardX11);
 };
 
@@ -59,7 +53,6 @@ ClipboardX11::~ClipboardX11() {
   if (connection_) {
     connection_->RemoveEventObserver(this);
   }
-  x_connection_watch_controller_ = nullptr;
 }
 
 void ClipboardX11::Start(
@@ -71,11 +64,6 @@ void ClipboardX11::Start(
   x_server_clipboard_.Init(
       connection_, base::BindRepeating(&ClipboardX11::OnClipboardChanged,
                                        base::Unretained(this)));
-
-  x_connection_watch_controller_ = base::FileDescriptorWatcher::WatchReadable(
-      connection_->GetFd(),
-      base::BindRepeating(&ClipboardX11::PumpXEvents, base::Unretained(this)));
-  PumpXEvents();
 }
 
 void ClipboardX11::InjectClipboardEvent(const protocol::ClipboardEvent& event) {
@@ -91,11 +79,6 @@ void ClipboardX11::OnClipboardChanged(const std::string& mime_type,
   if (client_clipboard_.get()) {
     client_clipboard_->InjectClipboardEvent(event);
   }
-}
-
-void ClipboardX11::PumpXEvents() {
-  DCHECK(connection_->Ready());
-  connection_->DispatchAll();
 }
 
 void ClipboardX11::OnEvent(const x11::Event& event) {
