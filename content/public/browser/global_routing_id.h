@@ -81,6 +81,13 @@ struct GlobalFrameRoutingId {
   }
 };
 
+inline std::ostream& operator<<(std::ostream& os,
+                                const GlobalFrameRoutingId& id) {
+  os << "GlobalFrameRoutingId(" << id.child_id << ", " << id.frame_routing_id
+     << ")";
+  return os;
+}
+
 struct GlobalFrameRoutingIdHasher {
   std::size_t operator()(const GlobalFrameRoutingId& id) const {
     return base::HashInts(id.child_id, id.frame_routing_id);
