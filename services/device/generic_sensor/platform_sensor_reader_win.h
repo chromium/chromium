@@ -59,7 +59,7 @@ class PlatformSensorReaderWin32 final : public PlatformSensorReaderWinBase {
   friend class EventListener;
 
   const std::unique_ptr<ReaderInitParams> init_params_;
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner> com_sta_task_runner_;
   // Following class members are protected by lock, because SetClient,
   // StartSensor and StopSensor are called from another thread by
   // PlatformSensorWin that can modify internal state of the object.
