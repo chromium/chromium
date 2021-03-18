@@ -23,11 +23,17 @@ BASE_I18N_EXPORT bool IsFilenameLegal(const std::u16string& file_name);
 // |replace_char|. |file_name| must not be a full or relative path, but just the
 // file name component (since slashes are considered illegal). Any leading or
 // trailing whitespace or periods in |file_name| is also replaced with the
-// |replace_char|.
+// |replace_char|, unless |replace_char| itself is a whitespace or period, in
+// which case they are trimmed.
 //
 // Example:
 //   "bad:file*name?.txt" will be turned into "bad_file_name_.txt" when
 //   |replace_char| is '_'.
+//
+// If |replace_char| is a whitespace or period and |file_name| contains no legal
+// characters, the result will be enclosed by '_'s.
+// If |replace_char| is a whitespace or period and |file_name| contains no legal
+// characters except a file extension, the result will have '_' prepended.
 //
 // Warning: Do not use this function as the sole means of sanitizing a filename.
 //   While the resulting filename itself would be legal, it doesn't necessarily

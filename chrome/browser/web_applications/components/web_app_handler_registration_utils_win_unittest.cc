@@ -245,16 +245,16 @@ TEST_F(WebAppHandlerRegistrationUtilsWinTest, CreateAppLauncherFile) {
   EXPECT_EQ(launcher_path.value().BaseName(), expected_launcher_filename);
 }
 
-// Test that invalid file name characters in app_name are replaced with '_'.
+// Test that invalid file name characters in app_name are replaced with ' '.
 TEST_F(WebAppHandlerRegistrationUtilsWinTest, AppNameWithInvalidChars) {
   // '*' is an invalid char in Windows file names, so it should be replaced
-  // with '_'.
+  // with ' '.
   std::wstring app_name = L"app*name";
   // On Windows 7 the extension is omitted.
   base::FilePath expected_launcher_name =
       base::win::GetVersion() > base::win::Version::WIN7
-          ? base::FilePath(L"app_name.exe")
-          : base::FilePath(L"app_name");
+          ? base::FilePath(L"app name.exe")
+          : base::FilePath(L"app name");
   EXPECT_EQ(GetAppSpecificLauncherFilename(app_name), expected_launcher_name);
 }
 

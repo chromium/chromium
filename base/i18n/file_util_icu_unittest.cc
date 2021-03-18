@@ -53,36 +53,43 @@ TEST_F(FileUtilICUTest, ReplaceIllegalCharactersInPathLinuxTest) {
 // characters are given as UTF-16 strings since its more convenient to specify
 // unicode characters. For Mac they should be converted to UTF-8, for Windows to
 // wide.
-static const struct goodbad_pair {
+static const struct FileUtilICUTestCases {
   const char16_t* bad_name;
-  const char16_t* good_name;
+  const char16_t* good_name_with_dash;
+  const char16_t* good_name_with_space;
 } kIllegalCharacterCases[] = {
-    {u"bad*file:name?.jpg", u"bad-file-name-.jpg"},
-    {u"**********::::.txt", u"--------------.txt"},
+    {u"bad*file:name?.jpg", u"bad-file-name-.jpg", u"bad file name .jpg"},
+    {u"**********::::.txt", u"--------------.txt", u"_.txt"},
     // We can't use UCNs (universal character names) for C0/C1 characters and
     // U+007F, but \x escape is interpreted by MSVC and gcc as we intend.
-    {u"bad\x0003\x0091 file\u200E\u200Fname.png", u"bad-- file--name.png"},
-    {u"bad*file\\?name.jpg", u"bad-file--name.jpg"},
-    {u"\t  bad*file\\name/.jpg", u"-  bad-file-name-.jpg"},
-    {u"this_file_name is okay!.mp3", u"this_file_name is okay!.mp3"},
-    {u"\u4E00\uAC00.mp3", u"\u4E00\uAC00.mp3"},
-    {u"\u0635\u200C\u0644.mp3", u"\u0635-\u0644.mp3"},
-    {u"\U00010330\U00010331.mp3", u"\U00010330\U00010331.mp3"},
+    {u"bad\x0003\x0091 file\u200E\u200Fname.png", u"bad-- file--name.png",
+     u"bad   file  name.png"},
+    {u"bad*file\\?name.jpg", u"bad-file--name.jpg", u"bad file  name.jpg"},
+    {u"\t  bad*file\\name/.jpg", u"-  bad-file-name-.jpg",
+     u"bad file name .jpg"},
+    {u"this_file_name is okay!.mp3", u"this_file_name is okay!.mp3",
+     u"this_file_name is okay!.mp3"},
+    {u"\u4E00\uAC00.mp3", u"\u4E00\uAC00.mp3", u"\u4E00\uAC00.mp3"},
+    {u"\u0635\u200C\u0644.mp3", u"\u0635-\u0644.mp3", u"\u0635 \u0644.mp3"},
+    {u"\U00010330\U00010331.mp3", u"\U00010330\U00010331.mp3",
+     u"\U00010330\U00010331.mp3"},
     // Unassigned codepoints are ok.
-    {u"\u0378\U00040001.mp3", u"\u0378\U00040001.mp3"},
+    {u"\u0378\U00040001.mp3", u"\u0378\U00040001.mp3", u"\u0378\U00040001.mp3"},
     // Non-characters are not allowed.
-    {u"bad\uFFFFfile\U0010FFFEname.jpg", u"bad-file-name.jpg"},
-    {u"bad\uFDD0file\uFDEFname.jpg", u"bad-file-name.jpg"},
+    {u"bad\uFFFFfile\U0010FFFEname.jpg", u"bad-file-name.jpg",
+     u"bad file name.jpg"},
+    {u"bad\uFDD0file\uFDEFname.jpg", u"bad-file-name.jpg",
+     u"bad file name.jpg"},
     // CVE-2014-9390
     {u"(\u200C.\u200D.\u200E.\u200F.\u202A.\u202B.\u202C.\u202D.\u202E.\u206A."
      u"\u206B.\u206C.\u206D.\u206F.\uFEFF)",
-     u"(-.-.-.-.-.-.-.-.-.-.-.-.-.-.-)"},
-    {u"config~1", u"config-1"},
-    {u" _ ", u"-_-"},
-    {u" ", u"-"},
-    {u"\u2008.(\u2007).\u3000", u"-.(\u2007).-"},
-    {u"     ", u"-   -"},
-    {u".    ", u"-   -"}};
+     u"(-.-.-.-.-.-.-.-.-.-.-.-.-.-.-)", u"( . . . . . . . . . . . . . . )"},
+    {u"config~1", u"config-1", u"config 1"},
+    {u" _ ", u"-_-", u"_"},
+    {u" ", u"-", u"_ _"},
+    {u"\u2008.(\u2007).\u3000", u"-.(\u2007).-", u"(\u2007)"},
+    {u"     ", u"-   -", u"_     _"},
+    {u".    ", u"-   -", u"_.    _"}};
 
 #if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_POSIX)
 
@@ -91,11 +98,25 @@ TEST_F(FileUtilICUTest, ReplaceIllegalCharactersInPathTest) {
 #if defined(OS_WIN)
     std::wstring bad_name = UTF16ToWide(i.bad_name);
     ReplaceIllegalCharactersInPath(&bad_name, '-');
-    EXPECT_EQ(UTF16ToWide(i.good_name), bad_name);
+    EXPECT_EQ(UTF16ToWide(i.good_name_with_dash), bad_name);
 #else
     std::string bad_name = UTF16ToUTF8(i.bad_name);
     ReplaceIllegalCharactersInPath(&bad_name, '-');
-    EXPECT_EQ(UTF16ToUTF8(i.good_name), bad_name);
+    EXPECT_EQ(UTF16ToUTF8(i.good_name_with_dash), bad_name);
+#endif
+  }
+}
+
+TEST_F(FileUtilICUTest, ReplaceIllegalCharactersInPathWithIllegalEndCharTest) {
+  for (auto i : kIllegalCharacterCases) {
+#if defined(OS_WIN)
+    std::wstring bad_name = UTF16ToWide(i.bad_name);
+    ReplaceIllegalCharactersInPath(&bad_name, ' ');
+    EXPECT_EQ(UTF16ToWide(i.good_name_with_space), bad_name);
+#else
+    std::string bad_name(UTF16ToUTF8(i.bad_name));
+    ReplaceIllegalCharactersInPath(&bad_name, ' ');
+    EXPECT_EQ(UTF16ToUTF8(i.good_name_with_space), bad_name);
 #endif
   }
 }
@@ -107,7 +128,7 @@ TEST_F(FileUtilICUTest, IsFilenameLegalTest) {
 
   for (const auto& test_case : kIllegalCharacterCases) {
     std::u16string bad_name = test_case.bad_name;
-    std::u16string good_name = test_case.good_name;
+    std::u16string good_name = test_case.good_name_with_dash;
 
     EXPECT_TRUE(IsFilenameLegal(good_name)) << good_name;
     if (good_name != bad_name)

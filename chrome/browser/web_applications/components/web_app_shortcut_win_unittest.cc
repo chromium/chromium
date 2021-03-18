@@ -46,14 +46,14 @@ base::FilePath GetShortcutPath(const base::FilePath shortcut_dir,
 using WebAppShortcutWinTest = WebAppTest;
 
 TEST_F(WebAppShortcutWinTest, GetSanitizedFileName) {
-  EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("")), GetSanitizedFileName(u""));
+  EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("__")), GetSanitizedFileName(u""));
   EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("clean filename")),
             GetSanitizedFileName(u"clean filename"));
-  EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("illegal_chars.._")),
+  EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("illegal chars")),
             GetSanitizedFileName(u"illegal*chars..."));
-  EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("path_separator")),
+  EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("path separator")),
             GetSanitizedFileName(u"path/separator"));
-  EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("___")),
+  EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("_   _")),
             GetSanitizedFileName(u"***"));
 }
 
@@ -161,13 +161,46 @@ TEST_F(WebAppShortcutWinTest, FindAppShortcutsByProfileAndTitle) {
                                     other_profile_shortcut_path));
 }
 
+TEST_F(WebAppShortcutWinTest,
+       FindAppShortcutsByProfileAndTitleIllegalCharacters) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath shortcut_dir = temp_dir.GetPath();
+
+  const base::FilePath::StringType shortcut_name =
+      FILE_PATH_LITERAL("shortcut*with*illegal*characters...");
+  const base::FilePath shortcut_path_old_syntax = GetShortcutPath(
+      shortcut_dir, FILE_PATH_LITERAL("shortcut_with_illegal_characters.._"));
+  const base::FilePath shortcut_path_new_syntax = GetShortcutPath(
+      shortcut_dir, FILE_PATH_LITERAL("shortcut with illegal characters"));
+
+  const base::FilePath profile_path(FILE_PATH_LITERAL("test/profile/path"));
+  const base::FilePath::StringType profile_name =
+      profile_path.BaseName().value();
+
+  ASSERT_TRUE(CreateTestAppShortcut(shortcut_path_old_syntax, profile_name));
+  ASSERT_TRUE(CreateTestAppShortcut(shortcut_path_new_syntax, profile_name));
+
+  // Find shortcuts matching |shortcut_name|. Both the shortcut matching the old
+  // syntax (sanitized with underscores) and new (sanitized with spaces) should
+  // be found.
+  std::vector<base::FilePath> result = FindAppShortcutsByProfileAndTitle(
+      shortcut_dir, profile_path, base::WideToUTF16(shortcut_name));
+  EXPECT_EQ(2u, result.size());
+  EXPECT_NE(result.end(),
+            std::find(result.begin(), result.end(), shortcut_path_old_syntax));
+  EXPECT_NE(result.end(),
+            std::find(result.begin(), result.end(), shortcut_path_new_syntax));
+}
+
 TEST_F(WebAppShortcutWinTest, GetIconFilePath) {
   const base::FilePath web_app_path(FILE_PATH_LITERAL("test\\web\\app\\dir"));
   EXPECT_EQ(GetIconFilePath(web_app_path, u"test app name"),
             base::FilePath(
                 FILE_PATH_LITERAL("test\\web\\app\\dir\\test app name.ico")));
-  EXPECT_EQ(GetIconFilePath(web_app_path, u"***"),
-            base::FilePath(FILE_PATH_LITERAL("test\\web\\app\\dir\\___.ico")));
+  EXPECT_EQ(
+      GetIconFilePath(web_app_path, u"***"),
+      base::FilePath(FILE_PATH_LITERAL("test\\web\\app\\dir\\_   _.ico")));
 }
 
 }  // namespace internals

@@ -314,11 +314,40 @@ void CreateIconAndSetRelaunchDetails(const base::FilePath& web_app_path,
   CheckAndSaveIcon(icon_file, shortcut_info.favicon, true);
 }
 
+// Looks for a shortcut at "|shortcut_path|/|sanitized_shortcut_name|.lnk", plus
+// any duplicates of it (i.e., ending in (1), (2), etc.). Appends any that are
+// app shortcuts for the profile at |profile_path| to |shortcut_paths|.
+void AppendShortcutsMatchingName(
+    std::vector<base::FilePath>& shortcut_paths,
+    const base::FilePath& shortcut_path,
+    const base::FilePath& profile_path,
+    const base::FilePath& sanitized_shortcut_name) {
+  const base::FilePath shortcut_filename =
+      sanitized_shortcut_name.AddExtension(FILE_PATH_LITERAL(".lnk"));
+  const base::FilePath shortcut_file_path =
+      shortcut_path.Append(shortcut_filename);
+  if (base::PathExists(shortcut_file_path) &&
+      IsAppShortcutForProfile(shortcut_file_path, profile_path)) {
+    shortcut_paths.push_back(shortcut_file_path);
+  }
+
+  base::FileEnumerator files(
+      shortcut_path, false, base::FileEnumerator::FILES,
+      shortcut_filename.InsertBeforeExtension(FILE_PATH_LITERAL(" (*)"))
+          .value());
+  base::FilePath shortcut_file = files.Next();
+  while (!shortcut_file.empty()) {
+    if (IsAppShortcutForProfile(shortcut_file, profile_path))
+      shortcut_paths.push_back(shortcut_file);
+    shortcut_file = files.Next();
+  }
+}
+
 }  // namespace
 
 base::FilePath GetSanitizedFileName(const std::u16string& name) {
   std::wstring file_name = base::AsWString(name);
-  base::i18n::ReplaceIllegalCharactersInPath(&file_name, '_');
+  base::i18n::ReplaceIllegalCharactersInPath(&file_name, ' ');
   return base::FilePath(file_name);
 }
 
@@ -340,25 +369,22 @@ std::vector<base::FilePath> FindAppShortcutsByProfileAndTitle(
       shortcut_file = files.Next();
     }
   } else {
-    // Find all shortcuts matching |shortcut_name|.
-    base::FilePath base_path =
-        shortcut_path.Append(GetSanitizedFileName(shortcut_name))
-            .AddExtension(FILE_PATH_LITERAL(".lnk"));
+    // Find all shortcuts matching |shortcut_name|. Includes duplicates, if any
+    // exist (e.g., "|shortcut_name| (2).lnk").
+    AppendShortcutsMatchingName(shortcut_paths, shortcut_path, profile_path,
+                                GetSanitizedFileName(shortcut_name));
 
-    const int fileNamesToCheck = 10;
-    for (int i = 0; i < fileNamesToCheck; ++i) {
-      base::FilePath shortcut_file = base_path;
-      if (i > 0) {
-        shortcut_file = shortcut_file.InsertBeforeExtensionASCII(
-            base::StringPrintf(" (%d)", i));
-      }
-      if (base::PathExists(shortcut_file) &&
-          IsAppShortcutForProfile(shortcut_file, profile_path)) {
-        shortcut_paths.push_back(shortcut_file);
-      }
+    // Find all shortcuts matching the old syntax for shortcut names.
+    // TODO(crbug.com/1188959): remove this and its unit test in April 2022.
+    const base::FilePath::StringType shortcut_name_wide =
+        base::UTF16ToWide(shortcut_name);
+    base::FilePath::StringType shortcut_name_old_syntax = shortcut_name_wide;
+    base::i18n::ReplaceIllegalCharactersInPath(&shortcut_name_old_syntax, '_');
+    if (shortcut_name_old_syntax != shortcut_name_wide) {
+      AppendShortcutsMatchingName(shortcut_paths, shortcut_path, profile_path,
+                                  base::FilePath(shortcut_name_old_syntax));
     }
   }
-
   return shortcut_paths;
 }
 

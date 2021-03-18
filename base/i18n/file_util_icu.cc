@@ -13,6 +13,7 @@
 #include "base/i18n/icu_string_conversions.h"
 #include "base/i18n/string_compare.h"
 #include "base/memory/singleton.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -96,6 +97,27 @@ IllegalCharacters::IllegalCharacters() {
   illegal_at_ends_.freeze();
 }
 
+// Returns the code point at position |cursor| in |file_name|, and increments
+// |cursor| to the next position.
+UChar32 GetNextCodePoint(const FilePath::StringType* const file_name,
+                         int& cursor) {
+  UChar32 code_point;
+#if defined(OS_WIN)
+  // Windows uses UTF-16 encoding for filenames.
+  U16_NEXT(file_name->data(), cursor, static_cast<int>(file_name->length()),
+           code_point);
+#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+  // Mac and Chrome OS use UTF-8 encoding for filenames.
+  // Linux doesn't actually define file system encoding. Try to parse as
+  // UTF-8.
+  U8_NEXT(file_name->data(), cursor, static_cast<int>(file_name->length()),
+          code_point);
+#else
+#error Unsupported platform
+#endif
+  return code_point;
+}
+
 }  // namespace
 
 bool IsFilenameLegal(const std::u16string& file_name) {
@@ -107,35 +129,70 @@ void ReplaceIllegalCharactersInPath(FilePath::StringType* file_name,
   IllegalCharacters* illegal = IllegalCharacters::GetInstance();
 
   DCHECK(!(illegal->IsDisallowedEverywhere(replace_char)));
-  DCHECK(!(illegal->IsDisallowedLeadingOrTrailing(replace_char)));
+  const bool is_replace_char_illegal_at_ends =
+      illegal->IsDisallowedLeadingOrTrailing(replace_char);
+  // Keep track of the earliest and latest legal begin/end characters and file-
+  // extension separator encountered, -1 if none yet.
+  int unreplaced_legal_range_begin = -1;
+  int unreplaced_legal_range_end = -1;
+  int last_extension_separator = -1;
+  static const UChar32 kExtensionSeparator =
+      checked_cast<UChar32>(FilePath::kExtensionSeparator);
 
   int cursor = 0;  // The ICU macros expect an int.
   while (cursor < static_cast<int>(file_name->size())) {
     int char_begin = cursor;
-    UChar32 code_point;
-#if defined(OS_WIN)
-    // Windows uses UTF-16 encoding for filenames.
-    U16_NEXT(file_name->data(), cursor, static_cast<int>(file_name->length()),
-             code_point);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
-    // Mac and Chrome OS use UTF-8 encoding for filenames.
-    // Linux doesn't actually define file system encoding. Try to parse as
-    // UTF-8.
-    U8_NEXT(file_name->data(), cursor, static_cast<int>(file_name->length()),
-            code_point);
-#else
-#error Unsupported platform
-#endif
+    const UChar32 code_point = GetNextCodePoint(file_name, cursor);
+
+    const bool is_illegal_at_ends =
+        illegal->IsDisallowedLeadingOrTrailing(code_point);
 
     if (illegal->IsDisallowedEverywhere(code_point) ||
         ((char_begin == 0 || cursor == static_cast<int>(file_name->length())) &&
-         illegal->IsDisallowedLeadingOrTrailing(code_point))) {
+         is_illegal_at_ends && !is_replace_char_illegal_at_ends)) {
       file_name->replace(char_begin, cursor - char_begin, 1, replace_char);
       // We just made the potentially multi-byte/word char into one that only
       // takes one byte/word, so need to adjust the cursor to point to the next
       // character again.
       cursor = char_begin + 1;
+    } else if (!is_illegal_at_ends) {
+      if (unreplaced_legal_range_begin == -1)
+        unreplaced_legal_range_begin = char_begin;
+      unreplaced_legal_range_end = cursor;
     }
+
+    if (code_point == kExtensionSeparator)
+      last_extension_separator = char_begin;
+  }
+
+  // If |replace_char| is not a legal starting/ending character, ensure that
+  // |replace_char| is not the first nor last character in |file_name|.
+  if (is_replace_char_illegal_at_ends) {
+    if (unreplaced_legal_range_begin == -1) {
+      // |file_name| has no characters that are legal at ends; enclose in '_'s.
+      file_name->insert(file_name->begin(), FILE_PATH_LITERAL('_'));
+      file_name->append(FILE_PATH_LITERAL("_"));
+    } else {
+      // Trim trailing instances of |replace_char| and other characters that are
+      // illegal at ends.
+      file_name->erase(unreplaced_legal_range_end, FilePath::StringType::npos);
+
+      // Trim leading instances of |replace_char| and other characters that are
+      // illegal at ends, while ensuring that the file-extension separator is
+      // not removed if present. The file-extension separator is considered the
+      // last '.' in |file_name| followed by a legal character.
+      if (last_extension_separator != -1 &&
+          last_extension_separator == unreplaced_legal_range_begin - 1) {
+        // If the file-extension separator is at the start of the resulting
+        // |file_name|, prepend '_' instead of trimming it, e.g.,
+        // "***.txt" -> "_.txt".
+        file_name->erase(0, last_extension_separator);
+        file_name->insert(file_name->begin(), FILE_PATH_LITERAL('_'));
+      } else {
+        file_name->erase(0, unreplaced_legal_range_begin);
+      }
+    }
+    DCHECK(!file_name->empty());
   }
 }
 
