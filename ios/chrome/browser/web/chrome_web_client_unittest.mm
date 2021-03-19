@@ -135,20 +135,6 @@ TEST_F(ChromeWebClientTest, UserAgent) {
   EXPECT_EQ(0u, product_str.find("CriOS/"));
 }
 
-// Tests that ChromeWebClient provides accessibility script for WKWebView.
-TEST_F(ChromeWebClientTest, WKWebViewEarlyPageScriptAccessibility) {
-  // Chrome scripts rely on __gCrWeb object presence.
-  WKWebView* web_view = web::BuildWKWebView(CGRectZero, browser_state());
-  web::test::ExecuteJavaScript(web_view, @"__gCrWeb = {};");
-
-  web::ScopedTestingWebClient web_client(std::make_unique<ChromeWebClient>());
-  NSString* script =
-      web_client.Get()->GetDocumentStartScriptForAllFrames(browser_state());
-  web::test::ExecuteJavaScript(web_view, script);
-  EXPECT_NSEQ(@"object", web::test::ExecuteJavaScript(
-                             web_view, @"typeof __gCrWeb.accessibility"));
-}
-
 // Tests that ChromeWebClient provides autofill controller script for WKWebView.
 TEST_F(ChromeWebClientTest, WKWebViewEarlyPageScriptAutofillController) {
   // Chrome scripts rely on __gCrWeb object presence.

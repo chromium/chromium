@@ -4,10 +4,7 @@
 
 #import "ios/public/provider/chrome/browser/text_zoom_provider.h"
 
-#import "base/values.h"
-#include "ios/web/public/js_messaging/web_frame.h"
-#include "ios/web/public/js_messaging/web_frames_manager.h"
-#import "ios/web/public/web_state.h"
+#import "ios/public/provider/chrome/browser/font_size_java_script_feature.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -18,17 +15,7 @@ TextZoomProvider::TextZoomProvider() = default;
 TextZoomProvider::~TextZoomProvider() = default;
 
 void TextZoomProvider::SetPageFontSize(web::WebState* web_state, int size) {
-  SetPageFontSizeJavascript(web_state, size);
-}
-
-void TextZoomProvider::SetPageFontSizeJavascript(web::WebState* web_state,
-                                                 int size) {
-  std::vector<base::Value> parameters;
-  parameters.push_back(base::Value(size));
-  for (web::WebFrame* frame :
-       web_state->GetWebFramesManager()->GetAllWebFrames()) {
-    frame->CallJavaScriptFunction("accessibility.adjustFontSize", parameters);
-  }
+  FontSizeJavaScriptFeature::GetInstance()->AdjustFontSize(web_state, size);
 }
 
 bool TextZoomProvider::IsTextZoomEnabled() {

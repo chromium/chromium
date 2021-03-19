@@ -62,7 +62,6 @@ source_set("fake_chrome_identity") {
   deps = [
     ":signin",
     "//base",
-    "//base/test:test_support",
   ]
 }
 

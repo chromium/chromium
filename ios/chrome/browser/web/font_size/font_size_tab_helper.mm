@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/web/font_size_tab_helper.h"
+#import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
 
 #import <UIKit/UIKit.h>
 
@@ -23,10 +23,8 @@
 #include "ios/chrome/browser/web/features.h"
 #include "ios/components/ui_util/dynamic_type_util.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/font_size_java_script_feature.h"
 #import "ios/public/provider/chrome/browser/text_zoom_provider.h"
-#include "ios/web/public/js_messaging/web_frame.h"
-#include "ios/web/public/js_messaging/web_frame_util.h"
-#include "ios/web/public/js_messaging/web_frames_manager.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -120,7 +118,7 @@ FontSizeTabHelper::FontSizeTabHelper(web::WebState* web_state)
       addObserverForName:UIContentSizeCategoryDidChangeNotification
                   object:nil
                    queue:nil
-              usingBlock:^(NSNotification* _Nonnull note) {
+              usingBlock:^(NSNotification* note) {
                 SetPageFontSize(GetFontSize());
               }];
 }
@@ -278,10 +276,7 @@ void FontSizeTabHelper::WebFrameDidBecomeAvailable(web::WebState* web_state,
   // when size != 100, but if zooming has happened before, then zooming to 100
   // may be necessary to reset a previous page to the correct zoom level.
   if (tab_helper_has_zoomed_ || size != 100) {
-    std::vector<base::Value> parameters;
-    parameters.push_back(base::Value(size));
-    web_frame->CallJavaScriptFunction("accessibility.adjustFontSize",
-                                      parameters);
+    FontSizeJavaScriptFeature::GetInstance()->AdjustFontSize(web_frame, size);
   }
 }
 

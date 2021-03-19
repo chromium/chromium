@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/providers/chromium_text_zoom_provider.h"
 
 #include "ios/chrome/browser/web/features.h"
+#import "ios/public/provider/chrome/browser/font_size_java_script_feature.h"
 #include "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -17,7 +18,7 @@ ChromiumTextZoomProvider::~ChromiumTextZoomProvider() = default;
 
 void ChromiumTextZoomProvider::SetPageFontSize(web::WebState* web_state,
                                                int size) {
-  TextZoomProvider::SetPageFontSizeJavascript(web_state, size);
+  FontSizeJavaScriptFeature::GetInstance()->AdjustFontSize(web_state, size);
 }
 
 bool ChromiumTextZoomProvider::IsTextZoomEnabled() {

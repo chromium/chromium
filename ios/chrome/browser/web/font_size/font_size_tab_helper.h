@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_WEB_FONT_SIZE_TAB_HELPER_H_
-#define IOS_CHROME_BROWSER_WEB_FONT_SIZE_TAB_HELPER_H_
+#ifndef IOS_CHROME_BROWSER_WEB_FONT_SIZE_FONT_SIZE_TAB_HELPER_H_
+#define IOS_CHROME_BROWSER_WEB_FONT_SIZE_FONT_SIZE_TAB_HELPER_H_
 
 #include "base/macros.h"
 #include "ios/web/public/web_state_observer.h"
@@ -120,4 +120,4 @@ class FontSizeTabHelper : public web::WebStateObserver,
   DISALLOW_COPY_AND_ASSIGN(FontSizeTabHelper);
 };
 
-#endif  // IOS_CHROME_BROWSER_WEB_FONT_SIZE_TAB_HELPER_H_
+#endif  // IOS_CHROME_BROWSER_WEB_FONT_SIZE_FONT_SIZE_TAB_HELPER_H_

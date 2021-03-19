@@ -23,6 +23,7 @@ source_set("providers") {
     "//ios/chrome/browser/providers/signin",
     "//ios/chrome/browser/web:feature_flags",
     "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser:font_size_java_script_feature",
     "//ios/public/provider/chrome/browser/discover_feed",
     "//ios/public/provider/chrome/browser/distribution",
     "//ios/public/provider/chrome/browser/signin",

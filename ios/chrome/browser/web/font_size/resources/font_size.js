@@ -3,22 +3,22 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Add functionality related to accessibility.
+ * @fileoverview Add functionality related to font size adjustment.
  */
-goog.provide('__crWeb.accessibility');
+goog.provide('__crWeb.font_size');
 
 /**
  * Namespace for this file. It depends on |__gCrWeb| having already been
  * injected.
  */
-__gCrWeb.accessibility = {};
+__gCrWeb.font_size = {};
 
 /**
  * Store common namespace object in a global __gCrWeb object referenced by a
  * string, so it does not get renamed by closure compiler during the
  * minification.
  */
-__gCrWeb['accessibility'] = __gCrWeb.accessibility;
+__gCrWeb['font_size'] = __gCrWeb.font_size;
 
 /**
  * Adjust the font size of current web page by "size%"
@@ -29,7 +29,7 @@ __gCrWeb['accessibility'] = __gCrWeb.accessibility;
  *
  * @param {number} size The ratio to apply to font scaling in %.
  */
-__gCrWeb.accessibility.adjustFontSize = function(size) {
+__gCrWeb.font_size.adjustFontSize = function(size) {
   try {
     document.body.style.webkitTextSizeAdjust = size + '%';
   } catch (error) {

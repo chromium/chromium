@@ -19,6 +19,7 @@ source_set("browser") {
     "text_zoom_provider.mm",
   ]
   deps = [
+    ":font_size_java_script_feature",
     "//base",
     "//components/metrics",
     "//ios/public/provider/chrome/browser/mailto",
@@ -28,6 +29,19 @@ source_set("browser") {
     "//url",
   ]
   frameworks = [ "CoreLocation.framework" ]
+}
+
+source_set("font_size_java_script_feature") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "font_size_java_script_feature.h",
+    "font_size_java_script_feature.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+  ]
 }
 
 source_set("test_support") {

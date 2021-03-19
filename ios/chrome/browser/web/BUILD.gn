@@ -13,8 +13,6 @@ source_set("web") {
     "error_page_controller_bridge.mm",
     "error_page_util.h",
     "error_page_util.mm",
-    "font_size_tab_helper.h",
-    "font_size_tab_helper.mm",
     "image_fetch_tab_helper.h",
     "image_fetch_tab_helper.mm",
     "invalid_url_tab_helper.h",
@@ -118,8 +116,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "error_page_util_unittest.mm",
-    "font_size_js_unittest.mm",
-    "font_size_tab_helper_unittest.mm",
     "image_fetch_js_unittest.mm",
     "image_fetch_tab_helper_unittest.mm",
     "invalid_url_tab_helper_unittest.mm",
@@ -133,7 +129,6 @@ source_set("unit_tests") {
     "web_state_delegate_tab_helper_unittest.mm",
   ]
   deps = [
-    ":accessibility",
     ":image_fetch",
     ":page_placeholder",
     ":tab_helper_delegates",
@@ -183,7 +178,6 @@ js_compile_bundle("chrome_bundle_all_frames") {
     "//components/autofill/ios/form_util/resources/fill.js",
     "//components/autofill/ios/form_util/resources/form.js",
     "//components/autofill/ios/form_util/resources/form_handlers.js",
-    "resources/accessibility.js",
     "resources/chrome_bundle_all_frames.js",
   ]
 }
@@ -200,12 +194,6 @@ js_compile_bundle("chrome_bundle_main_frame") {
     "resources/chrome_bundle_main_frame.js",
     "resources/image_fetch.js",
   ]
-}
-
-js_compile_checked("accessibility") {
-  sources = [ "resources/accessibility.js" ]
-
-  js_modules = [ "//ios/web/web_state/js/resources/base.js" ]
 }
 
 js_compile_checked("image_fetch") {

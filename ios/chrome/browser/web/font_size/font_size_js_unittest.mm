@@ -267,9 +267,8 @@ TEST_F(FontSizeJsTest, TestAdjustFontSizeForNestedElements) {
   float current_size_1 = 0;
   float current_size_2 = 0;
 
-  LoadHtml(
-      @"<div id='e1' style='font-size: 10px'>d<div id='e2' "
-      @"style='font-size:xx-large'>d</div></div>");
+  LoadHtml(@"<div id='e1' style='font-size: 10px'>d<div id='e2' "
+           @"style='font-size:xx-large'>d</div></div>");
   original_size_1 = GetElementFontSize(@"e1");
   original_size_2 = GetElementFontSize(@"e2");
   ASSERT_TRUE(AdjustFontSize(110));
@@ -278,9 +277,8 @@ TEST_F(FontSizeJsTest, TestAdjustFontSizeForNestedElements) {
   EXPECT_FLOAT_EQ(current_size_1, original_size_1 * 110 / 100);
   EXPECT_FLOAT_EQ(current_size_2, original_size_2 * 110 / 100);
 
-  LoadHtml(
-      @"<div id='e1' style='font-size: 10px'>d<div id='e2' "
-      @"style='font-size:1cm'>d</div></div>");
+  LoadHtml(@"<div id='e1' style='font-size: 10px'>d<div id='e2' "
+           @"style='font-size:1cm'>d</div></div>");
   original_size_1 = GetElementFontSize(@"e1");
   original_size_2 = GetElementFontSize(@"e2");
   ASSERT_TRUE(AdjustFontSize(110));
@@ -289,9 +287,8 @@ TEST_F(FontSizeJsTest, TestAdjustFontSizeForNestedElements) {
   EXPECT_FLOAT_EQ(current_size_1, original_size_1 * 110 / 100);
   EXPECT_FLOAT_EQ(current_size_2, original_size_2 * 110 / 100);
 
-  LoadHtml(
-      @"<div id='e1' style='font-size: 10px'>d<div id='e2' "
-      @"style='font-size:5mm'>d</div></div>");
+  LoadHtml(@"<div id='e1' style='font-size: 10px'>d<div id='e2' "
+           @"style='font-size:5mm'>d</div></div>");
   original_size_1 = GetElementFontSize(@"e1");
   original_size_2 = GetElementFontSize(@"e2");
   ASSERT_TRUE(AdjustFontSize(110));
@@ -300,9 +297,8 @@ TEST_F(FontSizeJsTest, TestAdjustFontSizeForNestedElements) {
   EXPECT_FLOAT_EQ(current_size_1, original_size_1 * 110 / 100);
   EXPECT_FLOAT_EQ(current_size_2, original_size_2 * 110 / 100);
 
-  LoadHtml(
-      @"<div id='e1' style='font-size: 10px'>d<div id='e2' "
-      @"style='font-size:1in'>d</div></div>");
+  LoadHtml(@"<div id='e1' style='font-size: 10px'>d<div id='e2' "
+           @"style='font-size:1in'>d</div></div>");
   original_size_1 = GetElementFontSize(@"e1");
   original_size_2 = GetElementFontSize(@"e2");
   ASSERT_TRUE(AdjustFontSize(110));
@@ -311,9 +307,8 @@ TEST_F(FontSizeJsTest, TestAdjustFontSizeForNestedElements) {
   EXPECT_FLOAT_EQ(current_size_1, original_size_1 * 110 / 100);
   EXPECT_FLOAT_EQ(current_size_2, original_size_2 * 110 / 100);
 
-  LoadHtml(
-      @"<div id='e1' style='font-size: 10px'>d<div id='e2' "
-      @"style='font-size:18pt'>d</div></div>");
+  LoadHtml(@"<div id='e1' style='font-size: 10px'>d<div id='e2' "
+           @"style='font-size:18pt'>d</div></div>");
   original_size_1 = GetElementFontSize(@"e1");
   original_size_2 = GetElementFontSize(@"e2");
   ASSERT_TRUE(AdjustFontSize(110));
@@ -322,9 +317,8 @@ TEST_F(FontSizeJsTest, TestAdjustFontSizeForNestedElements) {
   EXPECT_FLOAT_EQ(current_size_1, original_size_1 * 110 / 100);
   EXPECT_FLOAT_EQ(current_size_2, original_size_2 * 110 / 100);
 
-  LoadHtml(
-      @"<div id='e1' style='font-size: 10px'>d<div id='e2' "
-      @"style='font-size:2pc'>d</div></div>");
+  LoadHtml(@"<div id='e1' style='font-size: 10px'>d<div id='e2' "
+           @"style='font-size:2pc'>d</div></div>");
   original_size_1 = GetElementFontSize(@"e1");
   original_size_2 = GetElementFontSize(@"e2");
   ASSERT_TRUE(AdjustFontSize(110));
@@ -333,9 +327,8 @@ TEST_F(FontSizeJsTest, TestAdjustFontSizeForNestedElements) {
   EXPECT_FLOAT_EQ(current_size_1, original_size_1 * 110 / 100);
   EXPECT_FLOAT_EQ(current_size_2, original_size_2 * 110 / 100);
 
-  LoadHtml(
-      @"<div id='e1' style='font-size: 10px'>d<div id='e2' "
-      @"style='font-size:2.5em'>d</div></div>");
+  LoadHtml(@"<div id='e1' style='font-size: 10px'>d<div id='e2' "
+           @"style='font-size:2.5em'>d</div></div>");
   original_size_1 = GetElementFontSize(@"e1");
   original_size_2 = GetElementFontSize(@"e2");
   ASSERT_TRUE(AdjustFontSize(110));
@@ -344,9 +337,8 @@ TEST_F(FontSizeJsTest, TestAdjustFontSizeForNestedElements) {
   EXPECT_FLOAT_EQ(current_size_1, original_size_1 * 110 / 100);
   EXPECT_FLOAT_EQ(current_size_2, original_size_2 * 110 / 100);
 
-  LoadHtml(
-      @"<div id='e1' style='font-size: 10px'>d<div id='e2' "
-      @"style='font-size:0.8rem'>d</div></div>");
+  LoadHtml(@"<div id='e1' style='font-size: 10px'>d<div id='e2' "
+           @"style='font-size:0.8rem'>d</div></div>");
   original_size_1 = GetElementFontSize(@"e1");
   original_size_2 = GetElementFontSize(@"e2");
   ASSERT_TRUE(AdjustFontSize(110));
@@ -355,9 +347,8 @@ TEST_F(FontSizeJsTest, TestAdjustFontSizeForNestedElements) {
   EXPECT_FLOAT_EQ(current_size_1, original_size_1 * 110 / 100);
   EXPECT_FLOAT_EQ(current_size_2, original_size_2 * 110 / 100);
 
-  LoadHtml(
-      @"<div id='e1' style='font-size: 10px'>d<div id='e2' "
-      @"style='font-size:70%'>d</div></div>");
+  LoadHtml(@"<div id='e1' style='font-size: 10px'>d<div id='e2' "
+           @"style='font-size:70%'>d</div></div>");
   original_size_1 = GetElementFontSize(@"e1");
   original_size_2 = GetElementFontSize(@"e2");
   ASSERT_TRUE(AdjustFontSize(110));
@@ -366,9 +357,8 @@ TEST_F(FontSizeJsTest, TestAdjustFontSizeForNestedElements) {
   EXPECT_FLOAT_EQ(current_size_1, original_size_1 * 110 / 100);
   EXPECT_FLOAT_EQ(current_size_2, original_size_2 * 110 / 100);
 
-  LoadHtml(
-      @"<div id='e1' style='font-size: 10px'>d<div id='e2' "
-      @"style='font-size:10px'>d</div></div>");
+  LoadHtml(@"<div id='e1' style='font-size: 10px'>d<div id='e2' "
+           @"style='font-size:10px'>d</div></div>");
   original_size_1 = GetElementFontSize(@"e1");
   original_size_2 = GetElementFontSize(@"e2");
   ASSERT_TRUE(AdjustFontSize(110));
@@ -377,9 +367,8 @@ TEST_F(FontSizeJsTest, TestAdjustFontSizeForNestedElements) {
   EXPECT_FLOAT_EQ(current_size_1, original_size_1 * 110 / 100);
   EXPECT_FLOAT_EQ(current_size_2, original_size_2 * 110 / 100);
 
-  LoadHtml(
-      @"<div id='e1' style='font-size: 10px'>d<div id='e2' "
-      @"style='font-size:xx-large'>d</div></div>");
+  LoadHtml(@"<div id='e1' style='font-size: 10px'>d<div id='e2' "
+           @"style='font-size:xx-large'>d</div></div>");
   original_size_1 = GetElementFontSize(@"e1");
   original_size_2 = GetElementFontSize(@"e2");
   ASSERT_TRUE(AdjustFontSize(110));
@@ -388,9 +377,8 @@ TEST_F(FontSizeJsTest, TestAdjustFontSizeForNestedElements) {
   EXPECT_FLOAT_EQ(current_size_1, original_size_1 * 110 / 100);
   EXPECT_FLOAT_EQ(current_size_2, original_size_2 * 110 / 100);
 
-  LoadHtml(
-      @"<div id='e1' style='font-size: 10px'>d<div id='e2' "
-      @"style='font-size:inherit'>d</div></div>");
+  LoadHtml(@"<div id='e1' style='font-size: 10px'>d<div id='e2' "
+           @"style='font-size:inherit'>d</div></div>");
   original_size_1 = GetElementFontSize(@"e1");
   original_size_2 = GetElementFontSize(@"e2");
   ASSERT_TRUE(AdjustFontSize(110));
