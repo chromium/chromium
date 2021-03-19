@@ -24,6 +24,8 @@ class ProcessMetricsRecorder final : public ProcessMonitor::Observer {
   // ProcessMonitorObserver:
   void OnMetricsSampled(const ProcessMetadata& process_metadata,
                         const ProcessMonitor::Metrics& metrics) override;
+  void OnAggregatedMetricsSampled(
+      const ProcessMonitor::Metrics& metrics) override;
 
   base::ScopedObservation<ProcessMonitor, ProcessMonitor::Observer>
       process_monitor_observation_{this};
