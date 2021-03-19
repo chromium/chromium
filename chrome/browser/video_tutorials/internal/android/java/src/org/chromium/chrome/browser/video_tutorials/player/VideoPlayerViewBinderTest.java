@@ -177,6 +177,8 @@ public class VideoPlayerViewBinderTest {
     @SmallTest
     public void testShareButton() {
         View shareButton = mControls.findViewById(R.id.share_button);
+        mModel.set(VideoPlayerProperties.SHOW_SHARE, true);
+        assertEquals(View.VISIBLE, shareButton.getVisibility());
         AtomicBoolean buttonClicked = new AtomicBoolean();
         mModel.set(VideoPlayerProperties.CALLBACK_SHARE, () -> buttonClicked.set(true));
         shareButton.performClick();

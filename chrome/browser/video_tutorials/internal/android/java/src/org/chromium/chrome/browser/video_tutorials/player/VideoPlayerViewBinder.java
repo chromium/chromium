@@ -29,6 +29,11 @@ class VideoPlayerViewBinder implements ViewBinder<PropertyModel, VideoPlayerView
                     .findViewById(R.id.try_now)
                     .setVisibility(model.get(VideoPlayerProperties.SHOW_TRY_NOW) ? View.VISIBLE
                                                                                  : View.GONE);
+        } else if (propertyKey == VideoPlayerProperties.SHOW_SHARE) {
+            view.getView()
+                    .findViewById(R.id.share_button)
+                    .setVisibility(
+                            model.get(VideoPlayerProperties.SHOW_SHARE) ? View.VISIBLE : View.GONE);
         } else if (propertyKey == VideoPlayerProperties.SHOW_WATCH_NEXT) {
             view.getView()
                     .findViewById(R.id.watch_next)

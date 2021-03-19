@@ -34,7 +34,7 @@ TEST(VideoTutorialsConfigTest, ConfigDefaultParams) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kVideoTutorials);
   EXPECT_EQ(Config::GetTutorialsServerURL().spec(),
-            "https://staging-gsaprototype-pa.sandbox.googleapis.com/v1/"
+            "https://chromeupboarding-pa.googleapis.com/v1/"
             "videotutorials");
   EXPECT_EQ(Config::GetDefaultPreferredLocale(), "en");
   EXPECT_EQ(Config::GetFetchFrequency(), base::TimeDelta::FromDays(15));

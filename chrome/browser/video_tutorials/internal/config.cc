@@ -11,8 +11,7 @@
 namespace video_tutorials {
 
 // Default base URL string for the server.
-constexpr char kDefaultBaseURL[] =
-    "https://staging-gsaprototype-pa.sandbox.googleapis.com";
+constexpr char kDefaultBaseURL[] = "https://chromeupboarding-pa.googleapis.com";
 
 // Default URL string for GetTutorials RPC.
 constexpr char kDefaultGetTutorialsPath[] = "/v1/videotutorials";

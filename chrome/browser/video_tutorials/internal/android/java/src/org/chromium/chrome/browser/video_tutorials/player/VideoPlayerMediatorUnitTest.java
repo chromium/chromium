@@ -83,6 +83,7 @@ public class VideoPlayerMediatorUnitTest {
         mModel = new PropertyModel(VideoPlayerProperties.ALL_KEYS);
         mModel.addObserver(mPropertyObserver);
 
+        VideoPlayerMediator.sEnableShareForTesting = true;
         mTestVideoTutorialService = new TestVideoTutorialService();
         mMediator = new VideoPlayerMediator(mContext, mModel, mTestVideoTutorialService,
                 mLanguagePicker, mLanguageProvider, mWebContents, mPlaybackStateObserver,

@@ -8,6 +8,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.video_tutorials.LanguageInfoProvider;
 import org.chromium.chrome.browser.video_tutorials.PlaybackStateObserver;
 import org.chromium.chrome.browser.video_tutorials.PlaybackStateObserver.WatchStateInfo.State;
@@ -28,6 +29,9 @@ import org.chromium.ui.modelutil.PropertyModel;
  * interaction events, and player state.
  */
 class VideoPlayerMediator implements PlaybackStateObserver.Observer {
+    private static final String VARIATION_ENABLE_SHARE_BUTTON = "enable_share";
+    public static Boolean sEnableShareForTesting;
+
     private final Context mContext;
     private final VideoTutorialService mVideoTutorialService;
     private final PropertyModel mModel;
@@ -64,6 +68,12 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
         mModel.set(VideoPlayerProperties.CALLBACK_TRY_NOW, this::tryNow);
         mModel.set(VideoPlayerProperties.CALLBACK_SHARE, this::share);
         mModel.set(VideoPlayerProperties.CALLBACK_CLOSE, this::close);
+
+        boolean enableShare = sEnableShareForTesting == null
+                ? ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.VIDEO_TUTORIALS, VARIATION_ENABLE_SHARE_BUTTON, false)
+                : sEnableShareForTesting;
+        mModel.set(VideoPlayerProperties.SHOW_SHARE, enableShare);
     }
 
     /** Called when the player is getting destroyed. */
