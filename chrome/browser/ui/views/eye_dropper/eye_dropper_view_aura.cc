@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/eye_dropper/eye_dropper_view.h"
 
+#include "build/build_config.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window.h"
 
@@ -34,6 +35,14 @@ void EyeDropperView::PreEventDispatchHandler::OnMouseEvent(
 
 void EyeDropperView::MoveViewToFront() {
   // The view is already topmost when Aura is used.
+}
+
+void EyeDropperView::CaptureInputIfNeeded() {
+#if defined(OS_LINUX)
+  // The eye dropper needs to capture input since it is not activated
+  // in order to avoid dismissing the color picker.
+  GetWidget()->GetNativeWindow()->SetCapture();
+#endif
 }
 
 void EyeDropperView::HideCursor() {

@@ -63,6 +63,8 @@ class EyeDropperView : public content::EyeDropper,
 
   void MoveViewToFront();
 
+  void CaptureInputIfNeeded();
+
   void HideCursor();
   void ShowCursor();
 

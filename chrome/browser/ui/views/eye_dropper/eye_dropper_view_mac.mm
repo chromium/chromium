@@ -85,6 +85,10 @@ void EyeDropperView::MoveViewToFront() {
   [window makeKeyAndOrderFront:nil];
 }
 
+void EyeDropperView::CaptureInputIfNeeded() {
+  // There is no need to capture input on Mac.
+}
+
 void EyeDropperView::HideCursor() {
   [NSCursor hide];
 }
