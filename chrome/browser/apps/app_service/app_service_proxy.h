@@ -33,6 +33,7 @@
 #include "chrome/browser/apps/app_service/built_in_chromeos_apps.h"
 #include "chrome/browser/apps/app_service/crostini_apps.h"
 #include "chrome/browser/apps/app_service/extension_apps_chromeos.h"
+#include "chrome/browser/apps/app_service/lacros_web_apps.h"
 #include "chrome/browser/apps/app_service/plugin_vm_apps.h"
 #include "chrome/browser/apps/app_service/web_apps_chromeos.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
@@ -439,6 +440,7 @@ class AppServiceProxy : public KeyedService,
   std::unique_ptr<LacrosApps> lacros_apps_;
   std::unique_ptr<WebAppsChromeOs> web_apps_;
   std::unique_ptr<BorealisApps> borealis_apps_;
+  std::unique_ptr<LacrosWebApps> lacros_web_apps_;
 
   bool arc_is_registered_ = false;
 
