@@ -17,6 +17,9 @@ public class WebContentsState {
      */
     public static final int CONTENTS_STATE_CURRENT_VERSION = 2;
 
+    /**
+     * mBuffer should not be modified once it is set
+     */
     private final ByteBuffer mBuffer;
     private int mVersion;
 

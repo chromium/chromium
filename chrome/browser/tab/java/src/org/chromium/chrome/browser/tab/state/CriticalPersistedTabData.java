@@ -376,21 +376,15 @@ public class CriticalPersistedTabData extends PersistedTabData {
         }
         return () -> {
             try (TraceEvent e = TraceEvent.scoped("CriticalPersistedTabData.Serialize")) {
-                return builder
-                        .setWebContentsStateBytes(byteBuffer == null
-                                        ? ByteString.EMPTY
-                                        : ByteString.copyFrom(getContentStateByteArray(byteBuffer)))
-                        .build()
-                        .toByteArray();
+                if (byteBuffer == null) {
+                    builder.setWebContentsStateBytes(ByteString.EMPTY);
+                } else {
+                    byteBuffer.rewind();
+                    builder.setWebContentsStateBytes(ByteString.copyFrom(byteBuffer));
+                }
+                return builder.build().toByteArray();
             }
         };
-    }
-
-    protected static byte[] getContentStateByteArray(ByteBuffer buffer) {
-        byte[] contentsStateBytes = new byte[buffer.limit()];
-        buffer.rewind();
-        buffer.get(contentsStateBytes);
-        return contentsStateBytes;
     }
 
     @Override
