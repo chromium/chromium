@@ -599,12 +599,14 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
     return false;
   }
 
-  // Positioned elements and scrollable containers are important for
-  // determining bounding boxes.
-  if (IsScrollableContainer())
-    return false;
-  if (layout_object_->IsPositioned())
-    return false;
+  // Positioned elements and scrollable containers are important for determining
+  // bounding boxes, so don't ignore them unless they are pseudo-content.
+  if (!layout_object_->IsPseudoElement()) {
+    if (IsScrollableContainer())
+      return false;
+    if (layout_object_->IsPositioned())
+      return false;
+  }
 
   // Inner editor element of editable area with empty text provides bounds
   // used to compute the character extent for index 0. This is the same as

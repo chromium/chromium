@@ -283,6 +283,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunCSSTest(FILE_PATH_LITERAL("pseudo-element-alternative-text.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityCSSPseudoElementPositioned) {
+  RunCSSTest(FILE_PATH_LITERAL("pseudo-element-positioned.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSDOMElements) {
   RunCSSTest(FILE_PATH_LITERAL("dom-element-css-alternative-text.html"));
 }

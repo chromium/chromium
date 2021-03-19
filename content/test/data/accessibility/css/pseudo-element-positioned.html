@@ -1,0 +1,22 @@
+<!--
+@BLINK-ALLOW:htmlTag*
+-->
+<html>
+<head><style>
+  div::before, div::after {
+    content: "";
+    display: block;
+  }
+  div.positioned::before, div.positioned::after {
+    position: absolute;
+  }
+
+  div.content::before, div.content::after {
+    content: "pseudo";
+  }
+</style></head>
+<body>
+    <div>Empty before and after</div>
+    <div class="positioned">Empty positioned before and after</div>
+    <div class="postioned content">Positioned before and after with content</div>
+</html>
