@@ -291,10 +291,12 @@ CSSBorderImageLengthBoxInterpolationType::MaybeConvertNeutral(
 
 InterpolationValue
 CSSBorderImageLengthBoxInterpolationType::MaybeConvertInitial(
-    const StyleResolverState&,
+    const StyleResolverState& state,
     ConversionCheckers&) const {
   return ConvertBorderImageLengthBox(
-      GetBorderImageLengthBox(CssProperty(), ComputedStyle::InitialStyle()), 1);
+      GetBorderImageLengthBox(
+          CssProperty(), state.GetDocument().GetStyleResolver().InitialStyle()),
+      1);
 }
 
 InterpolationValue

@@ -38,7 +38,7 @@ class CollapsedBorderValueTest : public testing::Test {
       EBorderStyle border_style,
       const Color& color = Color::kBlack,
       EBorderPrecedence precedence = kBorderPrecedenceCell) {
-    auto style = ComputedStyle::Create();
+    auto style = ComputedStyle::Clone(*initial_style_);
     style->SetBorderLeftWidth(width);
     style->SetBorderLeftStyle(border_style);
     CollapsedBorderValue v(style->BorderLeft(), color, precedence);
@@ -49,6 +49,13 @@ class CollapsedBorderValueTest : public testing::Test {
     EXPECT_TRUE(v.VisuallyEquals(v));
     return v;
   }
+
+  void SetUp() override {
+    initial_style_ = ComputedStyle::CreateInitialStyleSingleton();
+  }
+
+ private:
+  scoped_refptr<const ComputedStyle> initial_style_;
 };
 
 TEST_F(CollapsedBorderValueTest, Default) {

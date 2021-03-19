@@ -240,13 +240,16 @@ static void CollectScopedResolversForHostedShadowTrees(
     resolvers.push_back(resolver);
 }
 
-StyleResolver::StyleResolver(Document& document) : document_(document) {
+StyleResolver::StyleResolver(Document& document)
+    : document_(document),
+      initial_style_(ComputedStyle::CreateInitialStyleSingleton()) {
   UpdateMediaType();
 }
 
 StyleResolver::~StyleResolver() = default;
 
 void StyleResolver::Dispose() {
+  initial_style_.reset();
   matched_properties_cache_.Clear();
 }
 
@@ -1049,14 +1052,11 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForPage(
 }
 
 const ComputedStyle& StyleResolver::InitialStyle() const {
-  // TODO(crbug.com/1115000): Return a singleton member.
-  return ComputedStyle::InitialStyle();
+  return *initial_style_;
 }
 
 scoped_refptr<ComputedStyle> StyleResolver::CreateComputedStyle() const {
-  // TODO(crbug.com/1115000): Clone the initial style singleton once we have a
-  // singleton per resolver instead of the static global in ComputedStyle.
-  return ComputedStyle::Create();
+  return ComputedStyle::Clone(*initial_style_);
 }
 
 scoped_refptr<ComputedStyle> StyleResolver::InitialStyleForElement() const {

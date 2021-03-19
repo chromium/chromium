@@ -123,19 +123,8 @@ struct SameSizeAsComputedStyle : public SameSizeAsComputedStyleBase,
 // ComputedStyle.
 ASSERT_SIZE(ComputedStyle, SameSizeAsComputedStyle);
 
-scoped_refptr<ComputedStyle> ComputedStyle::Create() {
-  return base::AdoptRef(new ComputedStyle(PassKey(), InitialStyle()));
-}
-
-scoped_refptr<ComputedStyle> ComputedStyle::CreateInitialStyle() {
+scoped_refptr<ComputedStyle> ComputedStyle::CreateInitialStyleSingleton() {
   return base::AdoptRef(new ComputedStyle(PassKey()));
-}
-
-const ComputedStyle& ComputedStyle::InitialStyle() {
-  LEAK_SANITIZER_DISABLED_SCOPE;
-  DEFINE_STATIC_REF(const ComputedStyle, initial_style,
-                    (ComputedStyle::CreateInitialStyle()));
-  return *initial_style;
 }
 
 scoped_refptr<ComputedStyle> ComputedStyle::Clone(const ComputedStyle& other) {

@@ -38,45 +38,59 @@
 
 namespace blink {
 
-TEST(ComputedStyleTest, ShapeOutsideBoxEqual) {
+class ComputedStyleTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    initial_style_ = ComputedStyle::CreateInitialStyleSingleton();
+  }
+
+  scoped_refptr<ComputedStyle> CreateComputedStyle() {
+    return ComputedStyle::Clone(*initial_style_);
+  }
+
+ private:
+  scoped_refptr<const ComputedStyle> initial_style_;
+};
+
+TEST_F(ComputedStyleTest, ShapeOutsideBoxEqual) {
   auto* shape1 = MakeGarbageCollected<ShapeValue>(CSSBoxType::kContent);
   auto* shape2 = MakeGarbageCollected<ShapeValue>(CSSBoxType::kContent);
-  scoped_refptr<ComputedStyle> style1 = ComputedStyle::Create();
-  scoped_refptr<ComputedStyle> style2 = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style1 = CreateComputedStyle();
+  scoped_refptr<ComputedStyle> style2 = CreateComputedStyle();
   style1->SetShapeOutside(shape1);
   style2->SetShapeOutside(shape2);
   EXPECT_EQ(*style1, *style2);
 }
 
-TEST(ComputedStyleTest, ShapeOutsideCircleEqual) {
+TEST_F(ComputedStyleTest, ShapeOutsideCircleEqual) {
   scoped_refptr<BasicShapeCircle> circle1 = BasicShapeCircle::Create();
   scoped_refptr<BasicShapeCircle> circle2 = BasicShapeCircle::Create();
   auto* shape1 = MakeGarbageCollected<ShapeValue>(std::move(circle1),
                                                   CSSBoxType::kContent);
   auto* shape2 = MakeGarbageCollected<ShapeValue>(std::move(circle2),
                                                   CSSBoxType::kContent);
-  scoped_refptr<ComputedStyle> style1 = ComputedStyle::Create();
-  scoped_refptr<ComputedStyle> style2 = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style1 = CreateComputedStyle();
+  scoped_refptr<ComputedStyle> style2 = CreateComputedStyle();
   style1->SetShapeOutside(shape1);
   style2->SetShapeOutside(shape2);
   EXPECT_EQ(*style1, *style2);
 }
 
-TEST(ComputedStyleTest, ClipPathEqual) {
+TEST_F(ComputedStyleTest, ClipPathEqual) {
   scoped_refptr<BasicShapeCircle> shape = BasicShapeCircle::Create();
   scoped_refptr<ShapeClipPathOperation> path1 =
       ShapeClipPathOperation::Create(shape);
   scoped_refptr<ShapeClipPathOperation> path2 =
       ShapeClipPathOperation::Create(shape);
-  scoped_refptr<ComputedStyle> style1 = ComputedStyle::Create();
-  scoped_refptr<ComputedStyle> style2 = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style1 = CreateComputedStyle();
+  scoped_refptr<ComputedStyle> style2 = CreateComputedStyle();
   style1->SetClipPath(path1);
   style2->SetClipPath(path2);
   EXPECT_EQ(*style1, *style2);
 }
 
-TEST(ComputedStyleTest, FocusRingWidth) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+TEST_F(ComputedStyleTest, FocusRingWidth) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   if (::features::IsFormControlsRefreshEnabled()) {
     style->SetOutlineStyleIsAuto(static_cast<bool>(OutlineIsAuto::kOn));
     EXPECT_EQ(3, style->GetOutlineStrokeWidthForFocusRing());
@@ -103,8 +117,8 @@ TEST(ComputedStyleTest, FocusRingWidth) {
   }
 }
 
-TEST(ComputedStyleTest, FocusRingOutset) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+TEST_F(ComputedStyleTest, FocusRingOutset) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   style->SetOutlineStyle(EBorderStyle::kSolid);
   style->SetOutlineStyleIsAuto(static_cast<bool>(OutlineIsAuto::kOn));
   style->SetEffectiveZoom(4.75);
@@ -119,14 +133,14 @@ TEST(ComputedStyleTest, FocusRingOutset) {
   }
 }
 
-TEST(ComputedStyleTest, SVGStackingContext) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+TEST_F(ComputedStyleTest, SVGStackingContext) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   style->UpdateIsStackingContextWithoutContainment(false, false, true);
   EXPECT_TRUE(style->IsStackingContextWithoutContainment());
 }
 
-TEST(ComputedStyleTest, Preserve3dForceStackingContext) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+TEST_F(ComputedStyleTest, Preserve3dForceStackingContext) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   style->SetTransformStyle3D(ETransformStyle3D::kPreserve3d);
   style->SetOverflowX(EOverflow::kHidden);
   style->SetOverflowY(EOverflow::kHidden);
@@ -135,8 +149,8 @@ TEST(ComputedStyleTest, Preserve3dForceStackingContext) {
   EXPECT_TRUE(style->IsStackingContextWithoutContainment());
 }
 
-TEST(ComputedStyleTest, LayoutContainmentStackingContext) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+TEST_F(ComputedStyleTest, LayoutContainmentStackingContext) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   EXPECT_FALSE(style->IsStackingContextWithoutContainment());
   style->SetContain(kContainsLayout);
   style->UpdateIsStackingContextWithoutContainment(false, false, false);
@@ -144,29 +158,29 @@ TEST(ComputedStyleTest, LayoutContainmentStackingContext) {
   EXPECT_FALSE(style->IsStackingContextWithoutContainment());
 }
 
-TEST(ComputedStyleTest, FirstPublicPseudoStyle) {
+TEST_F(ComputedStyleTest, FirstPublicPseudoStyle) {
   static_assert(kFirstPublicPseudoId == kPseudoIdFirstLine,
                 "Make sure we are testing the first public pseudo id");
 
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   style->SetHasPseudoElementStyle(kPseudoIdFirstLine);
   EXPECT_TRUE(style->HasPseudoElementStyle(kPseudoIdFirstLine));
   EXPECT_TRUE(style->HasAnyPseudoElementStyles());
 }
 
-TEST(ComputedStyleTest, LastPublicPseudoElementStyle) {
+TEST_F(ComputedStyleTest, LastPublicPseudoElementStyle) {
   static_assert(kFirstInternalPseudoId - 1 == kPseudoIdGrammarError,
                 "Make sure we are testing the last public pseudo id");
 
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   style->SetHasPseudoElementStyle(kPseudoIdGrammarError);
   EXPECT_TRUE(style->HasPseudoElementStyle(kPseudoIdGrammarError));
   EXPECT_TRUE(style->HasAnyPseudoElementStyles());
 }
 
-TEST(ComputedStyleTest,
-     UpdatePropertySpecificDifferencesRespectsTransformAnimation) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+TEST_F(ComputedStyleTest,
+       UpdatePropertySpecificDifferencesRespectsTransformAnimation) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
   other->SetHasCurrentTransformAnimation(true);
   StyleDifference diff;
@@ -174,9 +188,9 @@ TEST(ComputedStyleTest,
   EXPECT_TRUE(diff.TransformChanged());
 }
 
-TEST(ComputedStyleTest,
-     UpdatePropertySpecificDifferencesCompositingReasonsTransforom) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+TEST_F(ComputedStyleTest,
+       UpdatePropertySpecificDifferencesCompositingReasonsTransforom) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
 
   TransformOperations operations;
@@ -195,9 +209,9 @@ TEST(ComputedStyleTest,
   EXPECT_TRUE(diff.CompositingReasonsChanged());
 }
 
-TEST(ComputedStyleTest,
-     UpdatePropertySpecificDifferencesCompositingReasonsOpacity) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+TEST_F(ComputedStyleTest,
+       UpdatePropertySpecificDifferencesCompositingReasonsOpacity) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
 
   other->SetHasCurrentOpacityAnimation(true);
@@ -206,9 +220,9 @@ TEST(ComputedStyleTest,
   EXPECT_TRUE(diff.CompositingReasonsChanged());
 }
 
-TEST(ComputedStyleTest,
-     UpdatePropertySpecificDifferencesCompositingReasonsFilter) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+TEST_F(ComputedStyleTest,
+       UpdatePropertySpecificDifferencesCompositingReasonsFilter) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
 
   other->SetHasCurrentFilterAnimation(true);
@@ -217,9 +231,9 @@ TEST(ComputedStyleTest,
   EXPECT_TRUE(diff.CompositingReasonsChanged());
 }
 
-TEST(ComputedStyleTest,
-     UpdatePropertySpecificDifferencesCompositingReasonsBackdropFilter) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+TEST_F(ComputedStyleTest,
+       UpdatePropertySpecificDifferencesCompositingReasonsBackdropFilter) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
 
   other->SetHasCurrentBackdropFilterAnimation(true);
@@ -228,9 +242,9 @@ TEST(ComputedStyleTest,
   EXPECT_TRUE(diff.CompositingReasonsChanged());
 }
 
-TEST(ComputedStyleTest,
-     UpdatePropertySpecificDifferencesCompositingReasonsBackfaceVisibility) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+TEST_F(ComputedStyleTest,
+       UpdatePropertySpecificDifferencesCompositingReasonsBackfaceVisibility) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
 
   other->SetBackfaceVisibility(EBackfaceVisibility::kHidden);
@@ -239,9 +253,9 @@ TEST(ComputedStyleTest,
   EXPECT_TRUE(diff.CompositingReasonsChanged());
 }
 
-TEST(ComputedStyleTest,
-     UpdatePropertySpecificDifferencesCompositingReasonsWillChange) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+TEST_F(ComputedStyleTest,
+       UpdatePropertySpecificDifferencesCompositingReasonsWillChange) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
 
   other->SetBackfaceVisibility(EBackfaceVisibility::kHidden);
@@ -250,9 +264,9 @@ TEST(ComputedStyleTest,
   EXPECT_TRUE(diff.CompositingReasonsChanged());
 }
 
-TEST(ComputedStyleTest,
-     UpdatePropertySpecificDifferencesCompositingReasonsUsedStylePreserve3D) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+TEST_F(ComputedStyleTest,
+       UpdatePropertySpecificDifferencesCompositingReasonsUsedStylePreserve3D) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   style->SetTransformStyle3D(ETransformStyle3D::kPreserve3d);
   scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
 
@@ -263,9 +277,9 @@ TEST(ComputedStyleTest,
   EXPECT_TRUE(diff.CompositingReasonsChanged());
 }
 
-TEST(ComputedStyleTest,
-     UpdatePropertySpecificDifferencesCompositingReasonsOverflow) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+TEST_F(ComputedStyleTest,
+       UpdatePropertySpecificDifferencesCompositingReasonsOverflow) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
 
   other->SetOverflowX(EOverflow::kHidden);
@@ -274,9 +288,9 @@ TEST(ComputedStyleTest,
   EXPECT_TRUE(diff.CompositingReasonsChanged());
 }
 
-TEST(ComputedStyleTest,
-     UpdatePropertySpecificDifferencesCompositingReasonsContainsPaint) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+TEST_F(ComputedStyleTest,
+       UpdatePropertySpecificDifferencesCompositingReasonsContainsPaint) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
 
   // This induces a flat used transform style.
@@ -286,8 +300,8 @@ TEST(ComputedStyleTest,
   EXPECT_TRUE(diff.CompositingReasonsChanged());
 }
 
-TEST(ComputedStyleTest, UpdateBackgroundColorDifferencesHasAlpha) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+TEST_F(ComputedStyleTest, UpdateBackgroundColorDifferencesHasAlpha) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
 
   StyleDifference diff;
@@ -306,8 +320,8 @@ TEST(ComputedStyleTest, UpdateBackgroundColorDifferencesHasAlpha) {
   EXPECT_TRUE(diff.HasAlphaChanged());
 }
 
-TEST(ComputedStyleTest, UpdateBackgroundLayerDifferencesHasAlpha) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+TEST_F(ComputedStyleTest, UpdateBackgroundLayerDifferencesHasAlpha) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
 
   StyleDifference diff;
@@ -319,8 +333,8 @@ TEST(ComputedStyleTest, UpdateBackgroundLayerDifferencesHasAlpha) {
   EXPECT_TRUE(diff.HasAlphaChanged());
 }
 
-TEST(ComputedStyleTest, HasOutlineWithCurrentColor) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+TEST_F(ComputedStyleTest, HasOutlineWithCurrentColor) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   EXPECT_FALSE(style->HasOutline());
   EXPECT_FALSE(style->HasOutlineWithCurrentColor());
   style->SetOutlineColor(StyleColor::CurrentColor());
@@ -331,8 +345,8 @@ TEST(ComputedStyleTest, HasOutlineWithCurrentColor) {
   EXPECT_TRUE(style->HasOutlineWithCurrentColor());
 }
 
-TEST(ComputedStyleTest, HasBorderColorReferencingCurrentColor) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+TEST_F(ComputedStyleTest, HasBorderColorReferencingCurrentColor) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   EXPECT_FALSE(style->HasBorderColorReferencingCurrentColor());
   style->SetBorderBottomColor(StyleColor::CurrentColor());
   EXPECT_FALSE(style->HasBorderColorReferencingCurrentColor());
@@ -342,8 +356,8 @@ TEST(ComputedStyleTest, HasBorderColorReferencingCurrentColor) {
   EXPECT_TRUE(style->HasBorderColorReferencingCurrentColor());
 }
 
-TEST(ComputedStyleTest, BorderWidth) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+TEST_F(ComputedStyleTest, BorderWidth) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   style->SetBorderBottomWidth(5);
   EXPECT_EQ(style->BorderBottomWidth(), 0);
   EXPECT_EQ(style->BorderBottom().Width(), 5);
@@ -352,9 +366,9 @@ TEST(ComputedStyleTest, BorderWidth) {
   EXPECT_EQ(style->BorderBottom().Width(), 5);
 }
 
-TEST(ComputedStyleTest, CursorList) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
-  scoped_refptr<ComputedStyle> other = ComputedStyle::Create();
+TEST_F(ComputedStyleTest, CursorList) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+  scoped_refptr<ComputedStyle> other = CreateComputedStyle();
 
   auto* gradient = MakeGarbageCollected<cssvalue::CSSLinearGradientValue>(
       nullptr, nullptr, nullptr, nullptr, nullptr, cssvalue::kRepeating);
@@ -370,9 +384,9 @@ TEST(ComputedStyleTest, CursorList) {
   EXPECT_EQ(*style, *other);
 }
 
-TEST(ComputedStyleTest, BorderStyle) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
-  scoped_refptr<ComputedStyle> other = ComputedStyle::Create();
+TEST_F(ComputedStyleTest, BorderStyle) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+  scoped_refptr<ComputedStyle> other = CreateComputedStyle();
   style->SetBorderLeftStyle(EBorderStyle::kSolid);
   style->SetBorderTopStyle(EBorderStyle::kSolid);
   style->SetBorderRightStyle(EBorderStyle::kSolid);
@@ -437,8 +451,8 @@ TEST(ComputedStyleTest, BorderStyle) {
 
 #define TEST_ANIMATION_FLAG(flag, inherited)                               \
   do {                                                                     \
-    auto style = ComputedStyle::Create();                                  \
-    auto other = ComputedStyle::Create();                                  \
+    auto style = CreateComputedStyle();                                    \
+    auto other = CreateComputedStyle();                                    \
     EXPECT_FALSE(style->flag());                                           \
     EXPECT_FALSE(other->flag());                                           \
     style->Set##flag(true);                                                \
@@ -452,8 +466,8 @@ TEST(ComputedStyleTest, BorderStyle) {
 
 #define TEST_ANIMATION_FLAG_NO_DIFF(flag)                                  \
   do {                                                                     \
-    auto style = ComputedStyle::Create();                                  \
-    auto other = ComputedStyle::Create();                                  \
+    auto style = CreateComputedStyle();                                    \
+    auto other = CreateComputedStyle();                                    \
     EXPECT_FALSE(style->flag());                                           \
     EXPECT_FALSE(other->flag());                                           \
     style->Set##flag(true);                                                \
@@ -465,7 +479,7 @@ TEST(ComputedStyleTest, BorderStyle) {
     EXPECT_FALSE(diff.CompositingReasonsChanged());                        \
   } while (false)
 
-TEST(ComputedStyleTest, AnimationFlags) {
+TEST_F(ComputedStyleTest, AnimationFlags) {
   Persistent<Document> document = Document::CreateForTest();
   TEST_ANIMATION_FLAG(HasCurrentTransformAnimation, kNonInherited);
   TEST_ANIMATION_FLAG(HasCurrentOpacityAnimation, kNonInherited);
@@ -478,13 +492,13 @@ TEST(ComputedStyleTest, AnimationFlags) {
   TEST_ANIMATION_FLAG_NO_DIFF(IsRunningBackdropFilterAnimationOnCompositor);
 }
 
-TEST(ComputedStyleTest, CustomPropertiesEqual_Values) {
+TEST_F(ComputedStyleTest, CustomPropertiesEqual_Values) {
   auto dummy = std::make_unique<DummyPageHolder>(IntSize(0, 0));
   css_test_helpers::RegisterProperty(dummy->GetDocument(), "--x", "<length>",
                                      "0px", false);
 
-  scoped_refptr<ComputedStyle> style1 = ComputedStyle::Create();
-  scoped_refptr<ComputedStyle> style2 = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style1 = CreateComputedStyle();
+  scoped_refptr<ComputedStyle> style2 = CreateComputedStyle();
 
   using UnitType = CSSPrimitiveValue::UnitType;
 
@@ -508,13 +522,13 @@ TEST(ComputedStyleTest, CustomPropertiesEqual_Values) {
   EXPECT_FALSE(style1->CustomPropertiesEqual(properties, *style2));
 }
 
-TEST(ComputedStyleTest, CustomPropertiesEqual_Data) {
+TEST_F(ComputedStyleTest, CustomPropertiesEqual_Data) {
   auto dummy = std::make_unique<DummyPageHolder>(IntSize(0, 0));
   css_test_helpers::RegisterProperty(dummy->GetDocument(), "--x", "<length>",
                                      "0px", false);
 
-  scoped_refptr<ComputedStyle> style1 = ComputedStyle::Create();
-  scoped_refptr<ComputedStyle> style2 = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style1 = CreateComputedStyle();
+  scoped_refptr<ComputedStyle> style2 = CreateComputedStyle();
 
   auto value1 = css_test_helpers::CreateVariableData("foo");
   auto value2 = css_test_helpers::CreateVariableData("bar");
@@ -536,13 +550,13 @@ TEST(ComputedStyleTest, CustomPropertiesEqual_Data) {
   EXPECT_FALSE(style1->CustomPropertiesEqual(properties, *style2));
 }
 
-TEST(ComputedStyleTest, CustomPropertiesInheritance_FastPath) {
+TEST_F(ComputedStyleTest, CustomPropertiesInheritance_FastPath) {
   auto dummy = std::make_unique<DummyPageHolder>(IntSize(0, 0));
   css_test_helpers::RegisterProperty(dummy->GetDocument(), "--x", "<length>",
                                      "0px", true);
 
-  scoped_refptr<ComputedStyle> old_style = ComputedStyle::Create();
-  scoped_refptr<ComputedStyle> new_style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> old_style = CreateComputedStyle();
+  scoped_refptr<ComputedStyle> new_style = CreateComputedStyle();
 
   using UnitType = CSSPrimitiveValue::UnitType;
 
@@ -559,8 +573,8 @@ TEST(ComputedStyleTest, CustomPropertiesInheritance_FastPath) {
   EXPECT_EQ(ComputedStyle::Difference::kIndependentInherited,
             ComputedStyle::ComputeDifference(old_style.get(), new_style.get()));
 
-  old_style = ComputedStyle::Create();
-  new_style = ComputedStyle::Create();
+  old_style = CreateComputedStyle();
+  new_style = CreateComputedStyle();
 
   // Added a new variable
   new_style->SetVariableValue("--x", value2, true);
@@ -576,8 +590,8 @@ TEST(ComputedStyleTest, CustomPropertiesInheritance_FastPath) {
   EXPECT_EQ(ComputedStyle::Difference::kIndependentInherited,
             ComputedStyle::ComputeDifference(old_style.get(), new_style.get()));
 
-  old_style = ComputedStyle::Create();
-  new_style = ComputedStyle::Create();
+  old_style = CreateComputedStyle();
+  new_style = CreateComputedStyle();
 
   // New styles with variable declaration don't force style recalc
   old_style->SetVariableValue("--x", value1, true);
@@ -588,8 +602,8 @@ TEST(ComputedStyleTest, CustomPropertiesInheritance_FastPath) {
   EXPECT_EQ(ComputedStyle::Difference::kIndependentInherited,
             ComputedStyle::ComputeDifference(old_style.get(), new_style.get()));
 
-  old_style = ComputedStyle::Create();
-  new_style = ComputedStyle::Create();
+  old_style = CreateComputedStyle();
+  new_style = CreateComputedStyle();
 
   // New styles with variable reference don't force style recalc
   old_style->SetVariableValue("--x", value1, true);
@@ -602,13 +616,13 @@ TEST(ComputedStyleTest, CustomPropertiesInheritance_FastPath) {
             ComputedStyle::ComputeDifference(old_style.get(), new_style.get()));
 }
 
-TEST(ComputedStyleTest, CustomPropertiesInheritance_StyleRecalc) {
+TEST_F(ComputedStyleTest, CustomPropertiesInheritance_StyleRecalc) {
   auto dummy = std::make_unique<DummyPageHolder>(IntSize(0, 0));
   css_test_helpers::RegisterProperty(dummy->GetDocument(), "--x", "<length>",
                                      "0px", true);
 
-  scoped_refptr<ComputedStyle> old_style = ComputedStyle::Create();
-  scoped_refptr<ComputedStyle> new_style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> old_style = CreateComputedStyle();
+  scoped_refptr<ComputedStyle> new_style = CreateComputedStyle();
 
   using UnitType = CSSPrimitiveValue::UnitType;
 
@@ -628,8 +642,8 @@ TEST(ComputedStyleTest, CustomPropertiesInheritance_StyleRecalc) {
   EXPECT_EQ(ComputedStyle::Difference::kInherited,
             ComputedStyle::ComputeDifference(old_style.get(), new_style.get()));
 
-  old_style = ComputedStyle::Create();
-  new_style = ComputedStyle::Create();
+  old_style = CreateComputedStyle();
+  new_style = CreateComputedStyle();
 
   // New variable value
   // Old styles with variable declaration force style recalc
@@ -639,8 +653,8 @@ TEST(ComputedStyleTest, CustomPropertiesInheritance_StyleRecalc) {
   EXPECT_EQ(ComputedStyle::Difference::kInherited,
             ComputedStyle::ComputeDifference(old_style.get(), new_style.get()));
 
-  old_style = ComputedStyle::Create();
-  new_style = ComputedStyle::Create();
+  old_style = CreateComputedStyle();
+  new_style = CreateComputedStyle();
 
   // Change variable value
   // Old styles with variable declaration force style recalc
@@ -651,8 +665,8 @@ TEST(ComputedStyleTest, CustomPropertiesInheritance_StyleRecalc) {
   EXPECT_EQ(ComputedStyle::Difference::kInherited,
             ComputedStyle::ComputeDifference(old_style.get(), new_style.get()));
 
-  old_style = ComputedStyle::Create();
-  new_style = ComputedStyle::Create();
+  old_style = CreateComputedStyle();
+  new_style = CreateComputedStyle();
 
   // Change variable value
   // Old styles with variable reference force style recalc
@@ -664,7 +678,7 @@ TEST(ComputedStyleTest, CustomPropertiesInheritance_StyleRecalc) {
             ComputedStyle::ComputeDifference(old_style.get(), new_style.get()));
 }
 
-TEST(ComputedStyleTest, ApplyColorSchemeLightOnDark) {
+TEST_F(ComputedStyleTest, ApplyColorSchemeLightOnDark) {
   ScopedCSSColorSchemeUARenderingForTest scoped_ua_enabled(true);
 
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
@@ -679,7 +693,7 @@ TEST(ComputedStyleTest, ApplyColorSchemeLightOnDark) {
   StyleResolverState state(document, *document.documentElement(),
                            StyleRequest(initial.get()));
 
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   state.SetStyle(style);
 
   CSSPropertyRef ref("color-scheme", state.GetDocument());
@@ -697,7 +711,7 @@ TEST(ComputedStyleTest, ApplyColorSchemeLightOnDark) {
   EXPECT_EQ(mojom::blink::ColorScheme::kLight, style->UsedColorScheme());
 }
 
-TEST(ComputedStyleTest, ApplyInternalLightDarkColor) {
+TEST_F(ComputedStyleTest, ApplyInternalLightDarkColor) {
   using css_test_helpers::ParseDeclarationBlock;
 
   ScopedCSSColorSchemeUARenderingForTest scoped_ua_enabled(true);
@@ -714,7 +728,7 @@ TEST(ComputedStyleTest, ApplyInternalLightDarkColor) {
   StyleResolverState state(document, *document.documentElement(),
                            StyleRequest(initial.get()));
 
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   state.SetStyle(style);
 
   CSSValueList* dark_value = CSSValueList::CreateSpaceSeparated();
@@ -741,7 +755,7 @@ TEST(ComputedStyleTest, ApplyInternalLightDarkColor) {
   EXPECT_EQ(Color::kBlack, style->VisitedDependentColor(GetCSSPropertyColor()));
 }
 
-TEST(ComputedStyleTest, ApplyInternalLightDarkBackgroundImage) {
+TEST_F(ComputedStyleTest, ApplyInternalLightDarkBackgroundImage) {
   using css_test_helpers::ParseDeclarationBlock;
 
   ScopedCSSColorSchemeUARenderingForTest scoped_ua_enabled(true);
@@ -758,7 +772,7 @@ TEST(ComputedStyleTest, ApplyInternalLightDarkBackgroundImage) {
   StyleResolverState state(document, *document.documentElement(),
                            StyleRequest(initial.get()));
 
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   state.SetStyle(style);
 
   auto* bgimage_declaration = ParseDeclarationBlock(
@@ -776,7 +790,7 @@ TEST(ComputedStyleTest, ApplyInternalLightDarkBackgroundImage) {
   EXPECT_TRUE(style->HasBackgroundImage());
   EXPECT_TRUE(style->HasNonInheritedLightDarkValue());
 
-  style = ComputedStyle::Create();
+  style = CreateComputedStyle();
   state.SetStyle(style);
 
   StyleCascade cascade2(state);
@@ -787,7 +801,7 @@ TEST(ComputedStyleTest, ApplyInternalLightDarkBackgroundImage) {
   EXPECT_TRUE(style->HasNonInheritedLightDarkValue());
 }
 
-TEST(ComputedStyleTest, StrokeWidthZoomAndCalc) {
+TEST_F(ComputedStyleTest, StrokeWidthZoomAndCalc) {
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
       std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
@@ -797,7 +811,7 @@ TEST(ComputedStyleTest, StrokeWidthZoomAndCalc) {
   StyleResolverState state(document, *document.documentElement(),
                            StyleRequest(initial.get()));
 
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   style->SetEffectiveZoom(1.5);
   state.SetStyle(style);
 
@@ -819,15 +833,15 @@ TEST(ComputedStyleTest, StrokeWidthZoomAndCalc) {
   EXPECT_EQ(10, numeric_value->DoubleValue());
 }
 
-TEST(ComputedStyleTest, InitialVariableNamesEmpty) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+TEST_F(ComputedStyleTest, InitialVariableNamesEmpty) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   EXPECT_TRUE(style->GetVariableNames().IsEmpty());
 }
 
-TEST(ComputedStyleTest, InitialVariableNames) {
+TEST_F(ComputedStyleTest, InitialVariableNames) {
   using css_test_helpers::CreateLengthRegistration;
 
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
 
   PropertyRegistry* registry = MakeGarbageCollected<PropertyRegistry>();
   registry->RegisterProperty("--x", *CreateLengthRegistration("--x", 1));
@@ -839,10 +853,10 @@ TEST(ComputedStyleTest, InitialVariableNames) {
   EXPECT_TRUE(style->GetVariableNames().Contains("--y"));
 }
 
-TEST(ComputedStyleTest, InheritedVariableNames) {
+TEST_F(ComputedStyleTest, InheritedVariableNames) {
   using css_test_helpers::CreateVariableData;
 
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
 
   const bool inherited = true;
   style->SetVariableData("--a", CreateVariableData("foo"), inherited);
@@ -853,10 +867,10 @@ TEST(ComputedStyleTest, InheritedVariableNames) {
   EXPECT_TRUE(style->GetVariableNames().Contains("--b"));
 }
 
-TEST(ComputedStyleTest, NonInheritedVariableNames) {
+TEST_F(ComputedStyleTest, NonInheritedVariableNames) {
   using css_test_helpers::CreateVariableData;
 
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
 
   const bool inherited = true;
   style->SetVariableData("--a", CreateVariableData("foo"), !inherited);
@@ -867,10 +881,10 @@ TEST(ComputedStyleTest, NonInheritedVariableNames) {
   EXPECT_TRUE(style->GetVariableNames().Contains("--b"));
 }
 
-TEST(ComputedStyleTest, InheritedAndNonInheritedVariableNames) {
+TEST_F(ComputedStyleTest, InheritedAndNonInheritedVariableNames) {
   using css_test_helpers::CreateVariableData;
 
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
 
   const bool inherited = true;
   style->SetVariableData("--a", CreateVariableData("foo"), inherited);
@@ -885,11 +899,11 @@ TEST(ComputedStyleTest, InheritedAndNonInheritedVariableNames) {
   EXPECT_TRUE(style->GetVariableNames().Contains("--d"));
 }
 
-TEST(ComputedStyleTest, InitialAndInheritedAndNonInheritedVariableNames) {
+TEST_F(ComputedStyleTest, InitialAndInheritedAndNonInheritedVariableNames) {
   using css_test_helpers::CreateLengthRegistration;
   using css_test_helpers::CreateVariableData;
 
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
 
   PropertyRegistry* registry = MakeGarbageCollected<PropertyRegistry>();
   registry->RegisterProperty("--b", *CreateLengthRegistration("--b", 1));
@@ -910,7 +924,7 @@ TEST(ComputedStyleTest, InitialAndInheritedAndNonInheritedVariableNames) {
   EXPECT_TRUE(style->GetVariableNames().Contains("--e"));
 }
 
-TEST(ComputedStyleTest, BorderWidthZoom) {
+TEST_F(ComputedStyleTest, BorderWidthZoom) {
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
       std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
@@ -920,7 +934,7 @@ TEST(ComputedStyleTest, BorderWidthZoom) {
   StyleResolverState state(document, *document.documentElement(),
                            StyleRequest(initial.get()));
 
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   style->SetEffectiveZoom(2);
   style->SetBorderLeftStyle(EBorderStyle::kSolid);
   style->SetOutlineStyle(EBorderStyle::kSolid);
@@ -955,7 +969,8 @@ TEST(ComputedStyleTest, BorderWidthZoom) {
   }
 }
 
-TEST(ComputedStyleTest, TextDecorationEqualDoesNotRequireRecomputeInkOverflow) {
+TEST_F(ComputedStyleTest,
+       TextDecorationEqualDoesNotRequireRecomputeInkOverflow) {
   using css_test_helpers::ParseDeclarationBlock;
 
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
@@ -967,7 +982,7 @@ TEST(ComputedStyleTest, TextDecorationEqualDoesNotRequireRecomputeInkOverflow) {
   StyleResolverState state(document, *document.documentElement(),
                            StyleRequest(initial.get()));
 
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
 
   // Set up the initial text decoration properties
   style->SetTextDecorationStyle(ETextDecorationStyle::kSolid);
@@ -995,7 +1010,7 @@ TEST(ComputedStyleTest, TextDecorationEqualDoesNotRequireRecomputeInkOverflow) {
   EXPECT_FALSE(diff2.NeedsRecomputeVisualOverflow());
 }
 
-TEST(ComputedStyleTest, TextDecorationNotEqualRequiresRecomputeInkOverflow) {
+TEST_F(ComputedStyleTest, TextDecorationNotEqualRequiresRecomputeInkOverflow) {
   using css_test_helpers::ParseDeclarationBlock;
 
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
@@ -1007,7 +1022,7 @@ TEST(ComputedStyleTest, TextDecorationNotEqualRequiresRecomputeInkOverflow) {
   StyleResolverState state(document, *document.documentElement(),
                            StyleRequest(initial.get()));
 
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
 
   // Set up the initial text decoration properties
   style->SetTextDecorationStyle(ETextDecorationStyle::kSolid);
@@ -1069,8 +1084,8 @@ TEST(ComputedStyleTest, TextDecorationNotEqualRequiresRecomputeInkOverflow) {
 
 // Verify that cloned ComputedStyle is independent from source, i.e.
 // copy-on-write works as expected.
-TEST(ComputedStyleTest, ClonedStyleAnimationsAreIndependent) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+TEST_F(ComputedStyleTest, ClonedStyleAnimationsAreIndependent) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
 
   auto& animations = style->AccessAnimations();
   animations.DelayList().clear();
@@ -1087,8 +1102,8 @@ TEST(ComputedStyleTest, ClonedStyleAnimationsAreIndependent) {
   EXPECT_EQ(1u, style->Animations()->DelayList().size());
 }
 
-TEST(ComputedStyleTest, ClonedStyleTransitionsAreIndependent) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+TEST_F(ComputedStyleTest, ClonedStyleTransitionsAreIndependent) {
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
 
   auto& transitions = style->AccessTransitions();
   transitions.PropertyList().clear();
@@ -1105,7 +1120,7 @@ TEST(ComputedStyleTest, ClonedStyleTransitionsAreIndependent) {
   EXPECT_EQ(1u, style->Transitions()->PropertyList().size());
 }
 
-TEST(ComputedStyleTest, ApplyInitialAnimationNameAndTransitionProperty) {
+TEST_F(ComputedStyleTest, ApplyInitialAnimationNameAndTransitionProperty) {
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
       std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
@@ -1115,7 +1130,7 @@ TEST(ComputedStyleTest, ApplyInitialAnimationNameAndTransitionProperty) {
   StyleResolverState state(document, *document.documentElement(),
                            StyleRequest(initial.get()));
 
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
   state.SetStyle(style);
   EXPECT_FALSE(style->Animations());
   EXPECT_FALSE(style->Transitions());
@@ -1128,8 +1143,8 @@ TEST(ComputedStyleTest, ApplyInitialAnimationNameAndTransitionProperty) {
 
 #define TEST_STYLE_VALUE_NO_DIFF(field_name)                        \
   {                                                                 \
-    scoped_refptr<ComputedStyle> style1 = ComputedStyle::Create();  \
-    scoped_refptr<ComputedStyle> style2 = ComputedStyle::Create();  \
+    scoped_refptr<ComputedStyle> style1 = CreateComputedStyle();    \
+    scoped_refptr<ComputedStyle> style2 = CreateComputedStyle();    \
     style1->Set##field_name(                                        \
         ComputedStyleInitialValues::Initial##field_name());         \
     style2->Set##field_name(                                        \
@@ -1141,8 +1156,8 @@ TEST(ComputedStyleTest, ApplyInitialAnimationNameAndTransitionProperty) {
 // Ensures ref-counted values are compared by their values, not by pointers.
 #define TEST_STYLE_REFCOUNTED_VALUE_NO_DIFF(type, field_name)              \
   {                                                                        \
-    scoped_refptr<ComputedStyle> style1 = ComputedStyle::Create();         \
-    scoped_refptr<ComputedStyle> style2 = ComputedStyle::Create();         \
+    scoped_refptr<ComputedStyle> style1 = CreateComputedStyle();           \
+    scoped_refptr<ComputedStyle> style2 = CreateComputedStyle();           \
     scoped_refptr<type> value1 = base::MakeRefCounted<type>();             \
     scoped_refptr<type> value2 = base::MakeRefCounted<type>(value1->data); \
     style1->Set##field_name(value1);                                       \
@@ -1151,7 +1166,7 @@ TEST(ComputedStyleTest, ApplyInitialAnimationNameAndTransitionProperty) {
     EXPECT_FALSE(diff.HasDifference());                                    \
   }
 
-TEST(ComputedStyleTest, SvgStrokeStyleShouldCompareValue) {
+TEST_F(ComputedStyleTest, SvgStrokeStyleShouldCompareValue) {
   Persistent<Document> document = Document::CreateForTest();
   TEST_STYLE_VALUE_NO_DIFF(StrokeOpacity);
   TEST_STYLE_VALUE_NO_DIFF(StrokeMiterLimit);
@@ -1163,7 +1178,7 @@ TEST(ComputedStyleTest, SvgStrokeStyleShouldCompareValue) {
   TEST_STYLE_VALUE_NO_DIFF(InternalVisitedStrokePaint);
 }
 
-TEST(ComputedStyleTest, SvgMiscStyleShouldCompareValue) {
+TEST_F(ComputedStyleTest, SvgMiscStyleShouldCompareValue) {
   Persistent<Document> document = Document::CreateForTest();
   TEST_STYLE_VALUE_NO_DIFF(FloodColor);
   TEST_STYLE_VALUE_NO_DIFF(FloodOpacity);
@@ -1173,9 +1188,9 @@ TEST(ComputedStyleTest, SvgMiscStyleShouldCompareValue) {
 
 #if DCHECK_IS_ON()
 
-TEST(ComputedStyleTest, DebugDiffFields) {
-  scoped_refptr<ComputedStyle> style1 = ComputedStyle::Create();
-  scoped_refptr<ComputedStyle> style2 = ComputedStyle::Create();
+TEST_F(ComputedStyleTest, DebugDiffFields) {
+  scoped_refptr<ComputedStyle> style1 = CreateComputedStyle();
+  scoped_refptr<ComputedStyle> style2 = CreateComputedStyle();
 
   style1->SetWidth(Length(100.0, Length::kFixed));
   style2->SetWidth(Length(200.0, Length::kFixed));

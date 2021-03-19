@@ -39,7 +39,9 @@ static NGConstraintSpace ConstructConstraintSpace(
 
 class NGLengthUtilsTest : public testing::Test {
  protected:
-  void SetUp() override { style_ = ComputedStyle::Create(); }
+  void SetUp() override {
+    style_ = ComputedStyle::CreateInitialStyleSingleton();
+  }
 
   LayoutUnit ResolveMainInlineLength(
       const Length& length,
