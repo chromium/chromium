@@ -1996,7 +1996,8 @@ blink::ScreenInfos RenderWidgetHostImpl::GetScreenInfos() {
   // not to change it during resizes.  This means that the RWHV::GetScreenInfo
   // returned might be stale wrt GetAllDisplays() below.  Fix this.
   // For now, just return the legacy screen info for mac.
-#if defined(OS_MAC)
+  // TODO(enne): http://crbug.com/1189526, disabled due to Windows crashes.
+#if defined(OS_MAC) || defined(OS_WIN)
   return blink::ScreenInfos(current_screen_info);
 #else
 
