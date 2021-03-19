@@ -22,6 +22,7 @@
 #include "services/network/public/cpp/content_security_policy/csp_source_list.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_canon.h"
@@ -836,13 +837,15 @@ std::string UnrecognizedDirectiveErrorMessage(
       directive_name.c_str());
 }
 
-void AddContentSecurityPolicyFromHeader(base::StringPiece header,
-                                        mojom::ContentSecurityPolicyType type,
-                                        const GURL& base_url,
-                                        mojom::ContentSecurityPolicyPtr& out) {
+void AddContentSecurityPolicyFromHeader(
+    base::StringPiece header,
+    mojom::ContentSecurityPolicyType type,
+    mojom::ContentSecurityPolicySource source,
+    const GURL& base_url,
+    mojom::ContentSecurityPolicyPtr& out) {
   DirectivesMap directives = ParseHeaderValue(header);
-  out->header = mojom::ContentSecurityPolicyHeader::New(
-      header.as_string(), type, mojom::ContentSecurityPolicySource::kHTTP);
+  out->header =
+      mojom::ContentSecurityPolicyHeader::New(header.as_string(), type, source);
   out->self_origin = ComputeSelfOrigin(base_url);
 
   for (auto directive : directives) {
@@ -1067,23 +1070,32 @@ void AddContentSecurityPolicyFromHeaders(
   std::string header_value;
   while (headers.EnumerateHeader(&iter, "content-security-policy",
                                  &header_value)) {
-    AddContentSecurityPolicyFromHeaders(
-        header_value, mojom::ContentSecurityPolicyType::kEnforce, base_url,
-        out);
+    std::vector<mojom::ContentSecurityPolicyPtr> parsed =
+        ParseContentSecurityPolicies(
+            header_value, mojom::ContentSecurityPolicyType::kEnforce,
+            mojom::ContentSecurityPolicySource::kHTTP, base_url);
+    out->insert(out->end(), std::make_move_iterator(parsed.begin()),
+                std::make_move_iterator(parsed.end()));
   }
   iter = 0;
   while (headers.EnumerateHeader(&iter, "content-security-policy-report-only",
                                  &header_value)) {
-    AddContentSecurityPolicyFromHeaders(
-        header_value, mojom::ContentSecurityPolicyType::kReport, base_url, out);
+    std::vector<mojom::ContentSecurityPolicyPtr> parsed =
+        ParseContentSecurityPolicies(
+            header_value, mojom::ContentSecurityPolicyType::kReport,
+            mojom::ContentSecurityPolicySource::kHTTP, base_url);
+    out->insert(out->end(), std::make_move_iterator(parsed.begin()),
+                std::make_move_iterator(parsed.end()));
   }
 }
 
-void AddContentSecurityPolicyFromHeaders(
+std::vector<mojom::ContentSecurityPolicyPtr> ParseContentSecurityPolicies(
     base::StringPiece header_value,
-    network::mojom::ContentSecurityPolicyType type,
-    const GURL& base_url,
-    std::vector<mojom::ContentSecurityPolicyPtr>* out) {
+    mojom::ContentSecurityPolicyType type,
+    mojom::ContentSecurityPolicySource source,
+    const GURL& base_url) {
+  std::vector<mojom::ContentSecurityPolicyPtr> out;
+
   // RFC7230, section 3.2.2 specifies that headers appearing multiple times can
   // be combined with a comma. Walk the header string, and parse each comma
   // separated chunk as a separate header.
@@ -1091,10 +1103,12 @@ void AddContentSecurityPolicyFromHeaders(
        base::SplitStringPiece(header_value, ",", base::TRIM_WHITESPACE,
                               base::SPLIT_WANT_NONEMPTY)) {
     auto policy = mojom::ContentSecurityPolicy::New();
-    AddContentSecurityPolicyFromHeader(header, type, base_url, policy);
+    AddContentSecurityPolicyFromHeader(header, type, source, base_url, policy);
 
-    out->push_back(std::move(policy));
+    out.push_back(std::move(policy));
   }
+
+  return out;
 }
 
 mojom::AllowCSPFromHeaderValuePtr ParseAllowCSPFromHeader(

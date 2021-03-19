@@ -42,11 +42,11 @@ void AddContentSecurityPolicyFromHeaders(
     std::vector<mojom::ContentSecurityPolicyPtr>* out);
 
 COMPONENT_EXPORT(NETWORK_CPP)
-void AddContentSecurityPolicyFromHeaders(
+std::vector<mojom::ContentSecurityPolicyPtr> ParseContentSecurityPolicies(
     base::StringPiece header,
     mojom::ContentSecurityPolicyType type,
-    const GURL& base_url,
-    std::vector<mojom::ContentSecurityPolicyPtr>* out);
+    mojom::ContentSecurityPolicySource source,
+    const GURL& base_url);
 
 // Parse and return the Allow-CSP-From header value from |headers|.
 COMPONENT_EXPORT(NETWORK_CPP)

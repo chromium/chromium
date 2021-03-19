@@ -207,23 +207,20 @@ void PageTestBase::NavigateTo(const KURL& url,
   auto params = WebNavigationParams::CreateWithHTMLBufferForTesting(
       SharedBuffer::Create(), url);
 
-  StringBuilder raw_headers;
-  raw_headers.Append("HTTP/1.1 200 OK\n");
-  for (const auto& header : headers) {
+  for (const auto& header : headers)
     params->response.SetHttpHeaderField(header.key, header.value);
-    raw_headers.Append(header.key);
-    raw_headers.Append(": ");
-    raw_headers.Append(header.value);
-    raw_headers.Append("\n");
-  }
 
   MockPolicyContainerHost mock_policy_container_host;
   params->policy_container = std::make_unique<WebPolicyContainer>(
       WebPolicyContainerPolicies(),
       mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
-  network::mojom::blink::ParsedHeadersPtr parsed_headers =
-      ParseHeaders(raw_headers.ToString(), url);
-  for (auto& csp : parsed_headers->content_security_policy) {
+
+  // Add parsed Content Security Policies to the policy container, simulating
+  // what the browser does.
+  for (auto& csp : ParseContentSecurityPolicies(
+           params->response.HttpHeaderField("content-security-policy"),
+           network::mojom::blink::ContentSecurityPolicyType::kEnforce,
+           network::mojom::blink::ContentSecurityPolicySource::kHTTP, url)) {
     params->policy_container->policies.content_security_policies.emplace_back(
         ConvertToPublic(std::move(csp)));
   }

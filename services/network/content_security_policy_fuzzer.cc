@@ -38,11 +38,11 @@ int LLVMFuzzerInitialize(int* argc, char*** argv) {
 }
 
 int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  std::vector<network::mojom::ContentSecurityPolicyPtr> policies;
-  AddContentSecurityPolicyFromHeaders(
+  ParseContentSecurityPolicies(
       std::string(reinterpret_cast<const char*>(data), size),
       network::mojom::ContentSecurityPolicyType::kEnforce,
-      GURL("https://example.com/"), &policies);
+      network::mojom::ContentSecurityPolicySource::kHTTP,
+      GURL("https://example.com/"));
 
   return 0;
 }

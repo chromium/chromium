@@ -20,6 +20,7 @@
 
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 
+#include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
@@ -407,26 +408,22 @@ void HTMLFrameOwnerElement::CSPAttributeChanged() {
   if (is_swapping_frames_ || !ContentFrame())
     return;
 
-  String fake_header =
-      "HTTP/1.1 200 OK\nContent-Security-Policy: " + RequiredCsp();
-  // ParseHeaders needs a url to resolve report endpoints and for matching the
-  // keyword 'self'. However, the csp attribute does not allow report
-  // endpoints. Moreover, in the csp attribute, 'self' should not match the
-  // owner's url, but rather the frame src url. This is taken care by the
+  // ParseContentSecurityPolicies needs a url to resolve report endpoints and
+  // for matching the keyword 'self'. However, the csp attribute does not allow
+  // report endpoints. Moreover, in the csp attribute, 'self' should not match
+  // the owner's url, but rather the frame src url. This is taken care by the
   // Content-Security-Policy Embedded Enforcement algorithm, implemented in the
-  // AncestorThrottle. That's why we pass an empty url here.
-  network::mojom::blink::ParsedHeadersPtr parsed_headers =
-      ParseHeaders(fake_header, KURL());
-
-  DCHECK_LE(parsed_headers->content_security_policy.size(), 1u);
-
-  network::mojom::blink::ContentSecurityPolicyPtr csp =
-      parsed_headers->content_security_policy.IsEmpty()
-          ? nullptr
-          : std::move(parsed_headers->content_security_policy[0]);
+  // NavigationRequest. That's why we pass an empty url here.
+  Vector<network::mojom::blink::ContentSecurityPolicyPtr> csp =
+      ParseContentSecurityPolicies(
+          RequiredCsp(),
+          network::mojom::blink::ContentSecurityPolicyType::kEnforce,
+          network::mojom::blink::ContentSecurityPolicySource::kHTTP, KURL());
+  DCHECK_LE(csp.size(), 1u);
 
   GetDocument().GetFrame()->GetLocalFrameHostRemote().DidChangeCSPAttribute(
-      ContentFrame()->GetFrameToken(), std::move(csp));
+      ContentFrame()->GetFrameToken(),
+      csp.IsEmpty() ? nullptr : std::move(csp[0]));
 }
 
 void HTMLFrameOwnerElement::AddResourceTiming(const ResourceTimingInfo& info) {

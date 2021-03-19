@@ -89,15 +89,29 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return EXIT_SUCCESS;
   }
 
-  // Generate a pseudo-random |header_type|.
+  static const uint8_t kEnforcementBit = 0x01;
+  static const uint8_t kSourceBit1 = 0x02;
+  static const uint8_t kSourceBit2 = 0x04;
+
+  // Generate pseudo-random |header_type| and |header_source|.
   network::mojom::ContentSecurityPolicyType header_type =
-      data[0] & 0x01 ? network::mojom::ContentSecurityPolicyType::kEnforce
-                     : network::mojom::ContentSecurityPolicyType::kReport;
+      data[0] & kEnforcementBit
+          ? network::mojom::ContentSecurityPolicyType::kEnforce
+          : network::mojom::ContentSecurityPolicyType::kReport;
+
+  network::mojom::ContentSecurityPolicySource header_source =
+      network::mojom::ContentSecurityPolicySource::kHTTP;
+  if (data[0] & kSourceBit1) {
+    header_source =
+        (data[0] & kSourceBit2)
+            ? network::mojom::ContentSecurityPolicySource::kMeta
+            : network::mojom::ContentSecurityPolicySource::kOriginPolicy;
+  }
 
   // Parse the Content Security Policy string.
-  std::vector<network::mojom::ContentSecurityPolicyPtr> csp;
-  network::AddContentSecurityPolicyFromHeaders(raw_csp, header_type,
-                                               GURL(raw_url), &csp);
+  std::vector<network::mojom::ContentSecurityPolicyPtr> csp =
+      network::ParseContentSecurityPolicies(raw_csp, header_type, header_source,
+                                            GURL(raw_url));
 
   if (csp.size() > 0) {
     network::mojom::ContentSecurityPolicyPtr converted_csp =

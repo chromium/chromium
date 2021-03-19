@@ -42,6 +42,7 @@
 #include "cc/trees/render_frame_metadata_observer.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -69,6 +70,7 @@
 #include "third_party/blink/renderer/core/testing/fake_web_plugin.h"
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
@@ -238,13 +240,11 @@ void FillNavigationParamsResponse(WebNavigationParams* params) {
 
   // Parse Content Security Policy response headers into the policy container,
   // simulating what the browser does.
-  network::mojom::blink::ParsedHeadersPtr parsed_headers = ParseHeaders(
-      "HTTP/1.1 " + String::Number(params->response.HttpStatusCode()) + " " +
-          String(params->response.HttpStatusText()) +
-          "\nContent-Security-Policy: " +
-          String(params->response.HttpHeaderField("Content-Security-Policy")),
-      params->response.ResponseUrl());
-  for (auto& csp : parsed_headers->content_security_policy) {
+  for (auto& csp : ParseContentSecurityPolicies(
+           params->response.HttpHeaderField("Content-Security-Policy"),
+           network::mojom::blink::ContentSecurityPolicyType::kEnforce,
+           network::mojom::blink::ContentSecurityPolicySource::kHTTP,
+           params->response.ResponseUrl())) {
     params->policy_container->policies.content_security_policies.emplace_back(
         ConvertToPublic(std::move(csp)));
   }

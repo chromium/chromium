@@ -36,6 +36,7 @@
 #include "net/http/http_content_disposition.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
+#include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/mojom/parsed_headers.mojom-blink.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -794,6 +795,18 @@ network::mojom::blink::ParsedHeadersPtr ParseHeaders(const String& raw_headers,
       net::HttpUtil::AssembleRawHeaders(raw_headers.Latin1()));
   return network::mojom::ConvertToBlink(
       network::PopulateParsedHeaders(headers.get(), url));
+}
+
+// This function is simply calling network::ParseContentSecurityPolicies and
+// convert from/to blink types.
+Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+ParseContentSecurityPolicies(
+    const String& raw_policies,
+    network::mojom::blink::ContentSecurityPolicyType type,
+    network::mojom::blink::ContentSecurityPolicySource source,
+    const KURL& base_url) {
+  return network::mojom::ConvertToBlink(network::ParseContentSecurityPolicies(
+      raw_policies.Utf8(), type, source, base_url));
 }
 
 }  // namespace blink

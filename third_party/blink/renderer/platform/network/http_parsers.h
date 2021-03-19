@@ -33,6 +33,7 @@
 
 #include "base/optional.h"
 #include "base/time/time.h"
+#include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "services/network/public/mojom/parsed_headers.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/network/parsed_content_type.h"
 #include "third_party/blink/renderer/platform/network/server_timing_header.h"
@@ -149,6 +150,16 @@ ParseServerTimingHeader(const String&);
 PLATFORM_EXPORT network::mojom::blink::ParsedHeadersPtr ParseHeaders(
     const String& raw_headers,
     const KURL& url);
+
+// Parses Content Security Policies. This is the same as
+// network::ParseContentSecurityPolicies but using blink types.
+PLATFORM_EXPORT
+Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+ParseContentSecurityPolicies(
+    const String& raw_policies,
+    network::mojom::blink::ContentSecurityPolicyType type,
+    network::mojom::blink::ContentSecurityPolicySource source,
+    const KURL& base_url);
 
 }  // namespace blink
 
