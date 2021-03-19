@@ -425,7 +425,10 @@ BackForwardCacheImpl::CanPotentiallyStorePageLater(RenderFrameHostImpl* rfh) {
   // to determine whether to do a proactive BrowsingInstance swap or not, which
   // should not be done if the page has related active contents.
   unsigned expected_related_active_contents_count = is_current_rfh ? 1 : 0;
-  if (rfh->GetSiteInstance()->GetRelatedActiveContentsCount() !=
+  // We should never have fewer than expected.
+  DCHECK_GE(rfh->GetSiteInstance()->GetRelatedActiveContentsCount(),
+            expected_related_active_contents_count);
+  if (rfh->GetSiteInstance()->GetRelatedActiveContentsCount() >
       expected_related_active_contents_count) {
     result.NoDueToRelatedActiveContents(
         rfh->browsing_instance_not_swapped_reason());
