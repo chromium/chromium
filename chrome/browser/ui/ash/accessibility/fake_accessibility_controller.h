@@ -42,6 +42,8 @@ class FakeAccessibilityController : ash::AccessibilityController {
   void StartPointScan() override;
   void StopPointScan() override;
   void SetDictationActive(bool is_active) override;
+  void SetPointScanSpeedDipsPerSecond(
+      int point_scan_speed_dips_per_second) override;
   void ToggleDictationFromSource(ash::DictationToggleSource source) override;
   void HandleAutoclickScrollableBoundsFound(
       gfx::Rect& bounds_in_screen) override;

@@ -378,6 +378,8 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
                             std::vector<std::string> actions_to_show) override;
   void StartPointScan() override;
   void StopPointScan() override;
+  void SetPointScanSpeedDipsPerSecond(
+      int point_scan_speed_dips_per_second) override;
   void SetDictationActive(bool is_active) override;
   void ToggleDictationFromSource(DictationToggleSource source) override;
   void HandleAutoclickScrollableBoundsFound(
