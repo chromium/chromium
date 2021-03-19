@@ -679,46 +679,43 @@ TEST_F(TrackerImplTest, TestTrackingOnlyTriggering) {
   base::RunLoop().RunUntilIdle();
   base::UserActionTester user_action_tester;
 
-  // Tracking only kTrackerTestFeatureBaz should never be shown, but should be
-  // counted.
-  EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureBaz));
-  VerifyEventTriggerEvents(kTrackerTestFeatureBaz, 1u);
-  EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureFoo));
-  VerifyEventTriggerEvents(kTrackerTestFeatureFoo, 0u);
-  VerifyUserActionsTriggerChecks(user_action_tester, 1, 0, 1, 0);
-  VerifyUserActionsTriggered(user_action_tester, 0, 0, 0, 0);
-  VerifyUserActionsNotTriggered(user_action_tester, 1, 0, 0, 0);
-  VerifyUserActionsWouldHaveTriggered(user_action_tester, 0, 0, 1, 0);
-  VerifyUserActionsDismissed(user_action_tester, 0);
-  VerifyHistograms(true, 0, 1, 0, false, 0, 0, 0, true, 0, 0, 1, false, 0, 0,
-                   0);
-
-  // While in-product help is currently showing, even in a tracking only
-  // setting, no other features should be shown.
-  EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureFoo));
-  VerifyEventTriggerEvents(kTrackerTestFeatureFoo, 0);
-  VerifyUserActionsTriggerChecks(user_action_tester, 2, 0, 1, 0);
-  VerifyUserActionsTriggered(user_action_tester, 0, 0, 0, 0);
-  VerifyUserActionsNotTriggered(user_action_tester, 2, 0, 0, 0);
-  VerifyUserActionsWouldHaveTriggered(user_action_tester, 0, 0, 1, 0);
-  VerifyUserActionsDismissed(user_action_tester, 0);
-  VerifyHistograms(true, 0, 2, 0, false, 0, 0, 0, true, 0, 0, 1, false, 0, 0,
-                   0);
-
-  // After dismissing the current in-product help, that feature can not be shown
-  // again, but a different feature should.
-  tracker_->Dismissed(kTrackerTestFeatureBaz);
-  EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureBaz));
-  VerifyEventTriggerEvents(kTrackerTestFeatureBaz, 1u);
+  // When another feature is showing, tracking only features should not trigger.
   EXPECT_TRUE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureFoo));
   VerifyEventTriggerEvents(kTrackerTestFeatureFoo, 1u);
-  VerifyUserActionsTriggerChecks(user_action_tester, 3, 0, 2, 0);
+  EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureBaz));
+  VerifyEventTriggerEvents(kTrackerTestFeatureBaz, 0u);
+  VerifyUserActionsTriggerChecks(user_action_tester, 1, 0, 1, 0);
   VerifyUserActionsTriggered(user_action_tester, 1, 0, 0, 0);
-  VerifyUserActionsNotTriggered(user_action_tester, 2, 0, 1, 0);
-  VerifyUserActionsWouldHaveTriggered(user_action_tester, 0, 0, 1, 0);
-  VerifyUserActionsDismissed(user_action_tester, 1);
-  VerifyHistograms(true, 1, 2, 0, false, 0, 0, 0, true, 0, 1, 1, false, 0, 0,
+  VerifyUserActionsNotTriggered(user_action_tester, 0, 0, 1, 0);
+  VerifyUserActionsWouldHaveTriggered(user_action_tester, 0, 0, 0, 0);
+  VerifyUserActionsDismissed(user_action_tester, 0);
+  VerifyHistograms(true, 1, 0, 0, false, 0, 0, 0, true, 0, 1, 0, false, 0, 0,
                    0);
+
+  // Now verify tracking only kTrackerTestFeatureBaz would have triggered and is
+  // immediately be dismissed.
+  tracker_->Dismissed(kTrackerTestFeatureFoo);
+  VerifyUserActionsDismissed(user_action_tester, 1);
+  EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureBaz));
+  VerifyEventTriggerEvents(kTrackerTestFeatureBaz, 1u);
+  VerifyUserActionsTriggerChecks(user_action_tester, 1, 0, 2, 0);
+  VerifyUserActionsTriggered(user_action_tester, 1, 0, 0, 0);
+  VerifyUserActionsNotTriggered(user_action_tester, 0, 0, 1, 0);
+  VerifyUserActionsWouldHaveTriggered(user_action_tester, 0, 0, 1, 0);
+  VerifyUserActionsDismissed(user_action_tester, 2);
+  VerifyHistograms(true, 1, 0, 0, false, 0, 0, 0, true, 0, 1, 1, false, 0, 0,
+                   0);
+
+  // Other in-product help is should be showable after a tracking only feature
+  // would have been triggered, because nothing is currently showing.
+  EXPECT_TRUE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureBar));
+  VerifyEventTriggerEvents(kTrackerTestFeatureBar, 1u);
+  VerifyUserActionsTriggerChecks(user_action_tester, 1, 1, 2, 0);
+  VerifyUserActionsTriggered(user_action_tester, 1, 1, 0, 0);
+  VerifyUserActionsNotTriggered(user_action_tester, 0, 0, 1, 0);
+  VerifyUserActionsWouldHaveTriggered(user_action_tester, 0, 0, 1, 0);
+  VerifyUserActionsDismissed(user_action_tester, 2);
+  VerifyHistograms(true, 1, 0, 0, true, 1, 0, 0, true, 0, 1, 1, false, 0, 0, 0);
 }
 
 TEST_F(TrackerImplTest, TestHasEverTriggered) {

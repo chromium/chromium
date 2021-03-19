@@ -194,7 +194,19 @@ bool TrackerImpl::ShouldTriggerHelpUI(const base::Feature& feature) {
            << ": trigger=" << result.NoErrors()
            << " tracking_only=" << feature_config.tracking_only << " "
            << result;
-  return result.NoErrors() && !feature_config.tracking_only;
+
+  if (feature_config.tracking_only) {
+    if (result.NoErrors()) {
+      // Because tracking only features always return false to the client,
+      // clients do not have the context to correctly dismiss. The dismiss is
+      // needed because our condition validator thinks the feature is currently
+      // showing. See https://crbug.com/1188679 for more details.
+      Dismissed(feature);
+    }
+    return false;
+  } else {
+    return result.NoErrors();
+  }
 }
 
 bool TrackerImpl::WouldTriggerHelpUI(const base::Feature& feature) const {
