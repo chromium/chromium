@@ -33,6 +33,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/animation/bounds_animator.h"
+#include "ui/views/animation/bounds_animator_observer.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/mouse_watcher.h"
@@ -78,6 +79,7 @@ class TabStrip : public views::View,
                  public views::ViewObserver,
                  public views::ViewTargeterDelegate,
                  public views::WidgetObserver,
+                 public views::BoundsAnimatorObserver,
                  public TabController,
                  public BrowserRootView::DropTarget {
  public:
@@ -640,6 +642,10 @@ class TabStrip : public views::View,
 
   // views::WidgetObserver:
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+
+  // views::BoundsAnimatorObserver:
+  void OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) override {}
+  void OnBoundsAnimatorDone(views::BoundsAnimator* animator) override;
 
   void OnTouchUiChanged();
 
