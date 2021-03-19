@@ -4,6 +4,7 @@
 
 #include "ash/app_list/model/folder_image.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -195,10 +196,8 @@ std::vector<gfx::Rect> FolderImage::GetTopIconsBounds(
   std::vector<gfx::Rect> top_icon_bounds;
 
   const AppListConfig& base_config =
-      app_list_config.type() == AppListConfigType::kShared
-          ? AppListConfig::instance()
-          : *AppListConfigProvider::Get().GetConfigForType(
-                app_list_config.type(), true /*can_create*/);
+      *AppListConfigProvider::Get().GetConfigForType(app_list_config.type(),
+                                                     true /*can_create*/);
 
   // The folder icons are generated as unclipped icons for default app list
   // config, and then scaled down to the required unclipped folder size as
@@ -319,10 +318,8 @@ void FolderImage::RemoveObserver(FolderImageObserver* observer) {
 }
 
 void FolderImage::ItemIconChanged(AppListConfigType config_type) {
-  if (config_type != AppListConfigType::kShared &&
-      config_type != app_list_config_->type()) {
+  if (config_type != app_list_config_->type())
     return;
-  }
 
   // Note: Must update the image only (cannot simply call UpdateIcon), because
   // UpdateIcon removes and re-adds the FolderImage as an observer of the

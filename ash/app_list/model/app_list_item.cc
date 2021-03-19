@@ -5,6 +5,7 @@
 #include "ash/app_list/model/app_list_item.h"
 
 #include "ash/app_list/model/app_list_item_observer.h"
+#include "ash/public/cpp/app_list/app_list_config_provider.h"
 
 namespace ash {
 
@@ -20,11 +21,7 @@ AppListItem::~AppListItem() {
 
 void AppListItem::SetIcon(AppListConfigType config_type,
                           const gfx::ImageSkia& icon) {
-  if (config_type == AppListConfigType::kShared) {
-    metadata_->icon = icon;
-  } else {
-    per_config_icons_[config_type] = icon;
-  }
+  per_config_icons_[config_type] = icon;
   icon.EnsureRepsForSupportedScales();
 
   for (auto& observer : observers_)
@@ -33,13 +30,33 @@ void AppListItem::SetIcon(AppListConfigType config_type,
 
 const gfx::ImageSkia& AppListItem::GetIcon(
     AppListConfigType config_type) const {
-  if (config_type != AppListConfigType::kShared) {
-    const auto& it = per_config_icons_.find(config_type);
-    if (it != per_config_icons_.end())
-      return it->second;
-    // If icon for requested config cannt be found, default to the shared config
-    // icon.
+  const auto& it = per_config_icons_.find(config_type);
+  if (it != per_config_icons_.end())
+    return it->second;
+
+  // If icon for requested config cannt be found, default to the shared config
+  // icon.
+  return metadata_->icon;
+}
+
+void AppListItem::SetDefaultIcon(const gfx::ImageSkia& icon) {
+  metadata_->icon = icon;
+  icon.EnsureRepsForSupportedScales();
+
+  // If the item does not have a config specific icon, it will be represented by
+  // the (possibly scaled) default icon, which means that changing the default
+  // icon will also change item icons for configs that don't have a designated
+  // icon.
+  for (auto config_type :
+       AppListConfigProvider::Get().GetAvailableConfigTypes()) {
+    if (per_config_icons_.find(config_type) == per_config_icons_.end()) {
+      for (auto& observer : observers_)
+        observer.ItemIconChanged(config_type);
+    }
   }
+}
+
+const gfx::ImageSkia& AppListItem::GetDefaultIcon() const {
   return metadata_->icon;
 }
 

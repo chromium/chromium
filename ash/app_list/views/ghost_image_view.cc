@@ -148,10 +148,6 @@ void GhostImageView::OnPaint(gfx::Canvas* canvas) {
                                 ghost_radius - kGhostCircleStrokeWidth / 2);
     canvas->ClipPath(outer_circle_mask, true);
 
-    // Returns the bounds for each inner icon in the folder icon.
-    std::vector<gfx::Rect> top_icon_bounds = FolderImage::GetTopIconsBounds(
-        AppListConfig::instance(), icon_bounds_, num_items_.value());
-
     // Draw ghost items within the ghost folder circle.
     for (size_t i = 0; i < num_items_.value(); i++) {
       canvas->DrawImageInt(inner_folder_icon_outlines_[i],

@@ -219,10 +219,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
                 bool min_y_scale);
   ~AppListConfig();
 
-  // Gets default app list configuration.
-  // DEPRECATED: Valid usages are replaced by SharedAppListConfig::instance().
-  static AppListConfig& instance();
-
   AppListConfigType type() const { return type_; }
   float scale_x() const { return scale_x_; }
   float scale_y() const { return scale_y_; }

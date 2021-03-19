@@ -65,18 +65,15 @@ AppListConfig* AppListConfigProvider::GetConfigForType(AppListConfigType type,
   if (config_it != configs_.end())
     return config_it->second.get();
 
-  // Assume the shared config always exists.
-  if (type != AppListConfigType::kShared && !can_create)
+  if (!can_create)
     return nullptr;
 
   auto config = std::make_unique<AppListConfig>(type);
   auto* result = config.get();
   configs_.emplace(type, std::move(config));
 
-  if (type != AppListConfigType::kShared) {
-    for (auto& observer : observers_)
-      observer.OnAppListConfigCreated(type);
-  }
+  for (auto& observer : observers_)
+    observer.OnAppListConfigCreated(type);
 
   return result;
 }
@@ -158,6 +155,13 @@ std::unique_ptr<AppListConfig> AppListConfigProvider::CreateForAppListWidget(
   return std::make_unique<AppListConfig>(base_config, scale_x, scale_y,
                                          inner_tile_scale_y,
                                          scale_y == min_config_scale);
+}
+
+std::set<AppListConfigType> AppListConfigProvider::GetAvailableConfigTypes() {
+  std::set<AppListConfigType> types;
+  for (auto& config : configs_)
+    types.insert(config.first);
+  return types;
 }
 
 void AppListConfigProvider::ResetForTesting() {

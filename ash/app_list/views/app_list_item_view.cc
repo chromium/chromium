@@ -1035,10 +1035,9 @@ gfx::Rect AppListItemView::GetTitleBoundsForTargetViewBounds(
 }
 
 void AppListItemView::ItemIconChanged(AppListConfigType config_type) {
-  if (config_type != AppListConfigType::kShared &&
-      config_type != GetAppListConfig().type()) {
+  if (config_type != GetAppListConfig().type())
     return;
-  }
+
   DCHECK(item_weak_);
   SetIcon(item_weak_->GetIcon(GetAppListConfig().type()));
 }

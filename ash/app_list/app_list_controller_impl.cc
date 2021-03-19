@@ -329,7 +329,7 @@ void AppListControllerImpl::SetItemMetadata(
   // Folder icon is generated on ash side and chrome side passes a null
   // icon here. Skip it.
   if (data->icon.isNull())
-    data->icon = item->GetIcon(AppListConfigType::kShared);
+    data->icon = item->GetDefaultIcon();
 
   item->SetMetadata(std::move(data));
 }
@@ -338,7 +338,7 @@ void AppListControllerImpl::SetItemIcon(const std::string& id,
                                         const gfx::ImageSkia& icon) {
   AppListItem* item = model_->FindItem(id);
   if (item)
-    item->SetIcon(AppListConfigType::kShared, icon);
+    item->SetDefaultIcon(icon);
 }
 
 void AppListControllerImpl::SetItemNotificationBadgeColor(const std::string& id,

@@ -277,7 +277,8 @@ class FakeArcAppIconFactory : public arc::ArcAppIconFactory {
 
 ArcAppIconDescriptor GetAppListIconDescriptor(ui::ScaleFactor scale_factor) {
   return ArcAppIconDescriptor(
-      ash::AppListConfig::instance().grid_icon_dimension(), scale_factor);
+      ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
+      scale_factor);
 }
 
 ArcAppIconDescriptor GetAppListIconDescriptor(int dip_size,
@@ -310,7 +311,9 @@ void WaitForIconUpdates(Profile* profile,
                         int expected_update_count = kDefaultIconUpdateCount) {
   FakeAppIconLoaderDelegate delegate;
   AppServiceAppIconLoader icon_loader(
-      profile, ash::AppListConfig::instance().grid_icon_dimension(), &delegate);
+      profile,
+      ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
+      &delegate);
 
   icon_loader.FetchImage(app_id);
   delegate.WaitForIconUpdates(expected_update_count);
@@ -362,9 +365,11 @@ void OnPaiStartedCallback(bool* started_flag) {
 int GetAppListIconDimensionForScaleFactor(ui::ScaleFactor scale_factor) {
   switch (scale_factor) {
     case ui::SCALE_FACTOR_100P:
-      return ash::AppListConfig::instance().grid_icon_dimension();
+      return ash::SharedAppListConfig::instance().default_grid_icon_dimension();
     case ui::SCALE_FACTOR_200P:
-      return ash::AppListConfig::instance().grid_icon_dimension() * 2;
+      return ash::SharedAppListConfig::instance()
+                 .default_grid_icon_dimension() *
+             2;
     default:
       NOTREACHED();
       return 0;
@@ -997,8 +1002,9 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
       EXPECT_TRUE(model_updater()->FindItemIndexForTest(app_id, &index));
       ChromeAppListItem* item = model_updater()->ItemAtForTest(index);
       ASSERT_NE(nullptr, item);
-      ValidateIcon(item->icon(),
-                   ash::AppListConfig::instance().grid_icon_dimension());
+      ValidateIcon(
+          item->icon(),
+          ash::SharedAppListConfig::instance().default_grid_icon_dimension());
 
       LoadIconWithIconLoader(app_id, icon_loader, delegate);
 
@@ -1034,7 +1040,8 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
         // Force the icon to be loaded.
         WaitForIconCreation(
             ArcAppListPrefs::Get(profile()), app_id,
-            ash::AppListConfig::instance().grid_icon_dimension(), scale_factor);
+            ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
+            scale_factor);
       }
 
       // Wait AppServiceAppIconLoader to generate the bad icon image files.
@@ -1149,7 +1156,8 @@ class ArcDefaultAppTest : public ArcAppModelBuilderRecreate {
 
   void GetImageSkia(std::map<int, base::FilePath>& file_paths,
                     gfx::ImageSkia& output_image_skia) {
-    int size_in_dip = ash::AppListConfig::instance().grid_icon_dimension();
+    int size_in_dip =
+        ash::SharedAppListConfig::instance().default_grid_icon_dimension();
     for (auto scale_factor : ui::GetSupportedScaleFactors()) {
       base::FilePath file_path = file_paths[scale_factor];
       ASSERT_TRUE(base::PathExists(file_path));
@@ -1189,7 +1197,8 @@ class ArcDefaultAppTest : public ArcAppModelBuilderRecreate {
         base::PathService::Get(chrome::DIR_TEST_DATA, &base_path);
     DCHECK(valid_path);
 
-    int size_in_dip = ash::AppListConfig::instance().grid_icon_dimension();
+    int size_in_dip =
+        ash::SharedAppListConfig::instance().default_grid_icon_dimension();
     std::map<int, base::FilePath> foreground_paths;
     std::map<int, base::FilePath> background_paths;
     std::map<float, int> scale_to_size;
@@ -2442,7 +2451,8 @@ TEST_P(ArcAppModelBuilderTest, IconLoaderForShelfGroup) {
 
   FakeAppIconLoaderDelegate delegate;
   AppServiceAppIconLoader icon_loader(
-      profile(), ash::AppListConfig::instance().grid_icon_dimension(),
+      profile(),
+      ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
       &delegate);
   EXPECT_EQ(0UL, delegate.update_image_count());
 
@@ -2502,7 +2512,8 @@ TEST_P(ArcAppModelBuilderTest, IconLoaderForSuspendedApps) {
 
   FakeAppIconLoaderDelegate delegate;
   AppServiceAppIconLoader icon_loader(
-      profile(), ash::AppListConfig::instance().grid_icon_dimension(),
+      profile(),
+      ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
       &delegate);
 
   SendRefreshAppList({app});
@@ -2576,7 +2587,8 @@ TEST_P(ArcAppModelBuilderTest, IconLoaderWithBadIcon) {
 
   FakeAppIconLoaderDelegate delegate;
   AppServiceAppIconLoader icon_loader(
-      profile(), ash::AppListConfig::instance().grid_icon_dimension(),
+      profile(),
+      ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
       &delegate);
   icon_loader.FetchImage(app_id);
 
@@ -2593,9 +2605,10 @@ TEST_P(ArcAppModelBuilderTest, IconLoaderWithBadIcon) {
     // Force the icon to be loaded.
     app_item->icon().GetRepresentation(
         ui::GetScaleForScaleFactor(scale_factor));
-    WaitForIconCreation(prefs, app_id,
-                        ash::AppListConfig::instance().grid_icon_dimension(),
-                        scale_factor);
+    WaitForIconCreation(
+        prefs, app_id,
+        ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
+        scale_factor);
   }
 
   // After clear request record related to |app_id|, when bad icon is installed,
@@ -2632,7 +2645,8 @@ TEST_P(ArcAppModelBuilderTest, IconLoader) {
 
   FakeAppIconLoaderDelegate delegate;
   AppServiceAppIconLoader icon_loader(
-      profile(), ash::AppListConfig::instance().grid_icon_dimension(),
+      profile(),
+      ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
       &delegate);
   EXPECT_EQ(0UL, delegate.update_image_count());
   icon_loader.FetchImage(app_id);
@@ -2650,8 +2664,9 @@ TEST_P(ArcAppModelBuilderTest, IconLoader) {
   // Validate loaded image.
   EXPECT_EQ(1UL, delegate.update_image_count());
   EXPECT_EQ(app_id, delegate.app_id());
-  ValidateIcon(delegate.image(),
-               ash::AppListConfig::instance().grid_icon_dimension());
+  ValidateIcon(
+      delegate.image(),
+      ash::SharedAppListConfig::instance().default_grid_icon_dimension());
 
   // No more updates are expected.
   base::RunLoop().RunUntilIdle();
@@ -2754,7 +2769,8 @@ TEST_P(ArcAppModelIconTest, LoadManyIconsWithSomeBadIcons) {
 TEST_P(ArcAppModelBuilderTest, IconLoaderCompressed) {
   const arc::mojom::AppInfo& app = fake_apps()[0];
   const std::string app_id = ArcAppTest::GetAppId(app);
-  const int icon_size = ash::AppListConfig::instance().grid_icon_dimension();
+  const int icon_size =
+      ash::SharedAppListConfig::instance().default_grid_icon_dimension();
   const std::vector<ui::ScaleFactor>& scale_factors =
       ui::GetSupportedScaleFactors();
 
@@ -2926,7 +2942,8 @@ TEST_P(ArcAppModelIconTest, MAYBE_IconLoadNonSupportedScales) {
 
   FakeAppIconLoaderDelegate delegate;
   AppServiceAppIconLoader icon_loader(
-      profile(), ash::AppListConfig::instance().grid_icon_dimension(),
+      profile(),
+      ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
       &delegate);
   icon_loader.FetchImage(app_id);
   // Expected 1 update with default image and 2 representations should be
@@ -3357,7 +3374,8 @@ TEST_P(ArcAppLauncherForDefaultAppTest, DISABLED_AppIconUpdated) {
   FakeAppIconLoaderDelegate icon_delegate;
   std::unique_ptr<AppServiceAppIconLoader> icon_loader =
       std::make_unique<AppServiceAppIconLoader>(
-          profile(), ash::AppListConfig::instance().grid_icon_dimension(),
+          profile(),
+          ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
           &icon_delegate);
   icon_loader->FetchImage(app_id);
   icon_delegate.WaitForIconUpdates(1);
@@ -3369,7 +3387,8 @@ TEST_P(ArcAppLauncherForDefaultAppTest, DISABLED_AppIconUpdated) {
 
   FakeAppIconLoaderDelegate icon_delegate2;
   icon_loader = std::make_unique<AppServiceAppIconLoader>(
-      profile(), ash::AppListConfig::instance().grid_icon_dimension(),
+      profile(),
+      ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
       &icon_delegate2);
   icon_loader->FetchImage(app_id);
   // Default app icon becomes available once default apps loaded

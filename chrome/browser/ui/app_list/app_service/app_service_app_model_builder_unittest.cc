@@ -260,7 +260,8 @@ class ExtensionAppTest : public AppServiceAppModelBuilderTest {
     ASSERT_TRUE(extension);
 
     base::RunLoop run_loop;
-    int size_in_dip = ash::AppListConfig::instance().grid_icon_dimension();
+    int size_in_dip =
+        ash::SharedAppListConfig::instance().default_grid_icon_dimension();
     extensions::ImageLoader::Get(profile())->LoadImageAtEveryScaleFactorAsync(
         extension, gfx::Size(size_in_dip, size_in_dip),
         base::BindOnce(
@@ -344,7 +345,8 @@ class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
                           gfx::ImageSkia& output_image_skia) {
     std::vector<int> icon_sizes_in_px;
     apps::ScaleToSize scale_to_size_in_px;
-    int size_in_dip = ash::AppListConfig::instance().grid_icon_dimension();
+    int size_in_dip =
+        ash::SharedAppListConfig::instance().default_grid_icon_dimension();
     for (auto scale_factor : ui::GetSupportedScaleFactors()) {
       int size_in_px =
           gfx::ScaleToFlooredSize(gfx::Size(size_in_dip, size_in_dip),
@@ -611,8 +613,8 @@ TEST_F(ExtensionAppTest, LoadCompressedIcon) {
   apps::mojom::IconValuePtr dst_icon;
   apps::LoadIconFromExtension(
       apps::mojom::IconType::kCompressed,
-      ash::AppListConfig::instance().grid_icon_dimension(), profile(),
-      kPackagedApp1Id, icon_effects,
+      ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
+      profile(), kPackagedApp1Id, icon_effects,
       base::BindOnce(
           [](apps::mojom::IconValuePtr* output_icon,
              base::OnceClosure load_app_icon_callback,

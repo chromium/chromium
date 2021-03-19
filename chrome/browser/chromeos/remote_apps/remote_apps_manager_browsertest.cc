@@ -302,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddApp) {
           ? apps::IconEffects::kCrOsStandardIcon
           : apps::IconEffects::kResizeAndPad;
   apps::ApplyIconEffects(icon_effects, 64, &icon);
-  CheckIconsEqual(icon, item->GetIcon(ash::AppListConfigType::kShared));
+  CheckIconsEqual(icon, item->GetDefaultIcon());
 }
 
 IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddAppError) {

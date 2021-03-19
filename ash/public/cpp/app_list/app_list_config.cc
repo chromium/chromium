@@ -35,7 +35,6 @@ int MinScale(int value, float scale_1, float scale_2) {
 // padding for the unclipped folder icon.
 int MinYScaleHeightAdjustmentForType(ash::AppListConfigType type) {
   switch (type) {
-    case ash::AppListConfigType::kShared:
     case ash::AppListConfigType::kLarge:
       return 16;
     case ash::AppListConfigType::kMedium:
@@ -47,8 +46,6 @@ int MinYScaleHeightAdjustmentForType(ash::AppListConfigType type) {
 
 int GridTileWidthForType(ash::AppListConfigType type) {
   switch (type) {
-    case ash::AppListConfigType::kShared:
-      return 112;
     case ash::AppListConfigType::kLarge:
       return 120;
     case ash::AppListConfigType::kMedium:
@@ -60,7 +57,6 @@ int GridTileWidthForType(ash::AppListConfigType type) {
 
 int GridTileHeightForType(ash::AppListConfigType type) {
   switch (type) {
-    case ash::AppListConfigType::kShared:
     case ash::AppListConfigType::kLarge:
       return 120;
     case ash::AppListConfigType::kMedium:
@@ -72,7 +68,6 @@ int GridTileHeightForType(ash::AppListConfigType type) {
 
 int GridIconDimensionForType(ash::AppListConfigType type) {
   switch (type) {
-    case ash::AppListConfigType::kShared:
     case ash::AppListConfigType::kLarge:
       return 64;
     case ash::AppListConfigType::kMedium:
@@ -84,7 +79,6 @@ int GridIconDimensionForType(ash::AppListConfigType type) {
 
 int GridTitleTopPaddingForType(ash::AppListConfigType type) {
   switch (type) {
-    case ash::AppListConfigType::kShared:
     case ash::AppListConfigType::kLarge:
       return 92;
     case ash::AppListConfigType::kMedium:
@@ -96,7 +90,6 @@ int GridTitleTopPaddingForType(ash::AppListConfigType type) {
 
 int GridTitleBottomPaddingForType(ash::AppListConfigType type) {
   switch (type) {
-    case ash::AppListConfigType::kShared:
     case ash::AppListConfigType::kLarge:
       return 8;
     case ash::AppListConfigType::kMedium:
@@ -107,7 +100,6 @@ int GridTitleBottomPaddingForType(ash::AppListConfigType type) {
 
 int GridTitleHorizontalPaddingForType(ash::AppListConfigType type) {
   switch (type) {
-    case ash::AppListConfigType::kShared:
     case ash::AppListConfigType::kLarge:
       return 8;
     case ash::AppListConfigType::kMedium:
@@ -119,7 +111,6 @@ int GridTitleHorizontalPaddingForType(ash::AppListConfigType type) {
 
 int GridFocusDimensionForType(ash::AppListConfigType type) {
   switch (type) {
-    case ash::AppListConfigType::kShared:
     case ash::AppListConfigType::kLarge:
       return 80;
     case ash::AppListConfigType::kMedium:
@@ -131,7 +122,6 @@ int GridFocusDimensionForType(ash::AppListConfigType type) {
 
 int GridFocusCornerRadiusForType(ash::AppListConfigType type) {
   switch (type) {
-    case ash::AppListConfigType::kShared:
     case ash::AppListConfigType::kLarge:
       return 12;
     case ash::AppListConfigType::kMedium:
@@ -148,8 +138,6 @@ int GridFadeoutMaskHeightForType(ash::AppListConfigType type) {
     return 0;
 
   switch (type) {
-    case ash::AppListConfigType::kShared:
-      return 24;
     case ash::AppListConfigType::kLarge:
     case ash::AppListConfigType::kMedium:
     case ash::AppListConfigType::kSmall:
@@ -159,8 +147,6 @@ int GridFadeoutMaskHeightForType(ash::AppListConfigType type) {
 
 int PageSwitcherEndMarginForType(AppListConfigType type) {
   switch (type) {
-    case ash::AppListConfigType::kShared:
-      return 8;
     case ash::AppListConfigType::kLarge:
     case ash::AppListConfigType::kMedium:
     case ash::AppListConfigType::kSmall:
@@ -170,7 +156,6 @@ int PageSwitcherEndMarginForType(AppListConfigType type) {
 
 int AppTitleMaxLineHeightForType(ash::AppListConfigType type) {
   switch (type) {
-    case ash::AppListConfigType::kShared:
     case ash::AppListConfigType::kLarge:
       return 20;
     case ash::AppListConfigType::kMedium:
@@ -181,7 +166,6 @@ int AppTitleMaxLineHeightForType(ash::AppListConfigType type) {
 
 gfx::FontList AppTitleFontForType(ash::AppListConfigType type) {
   switch (type) {
-    case ash::AppListConfigType::kShared:
     case ash::AppListConfigType::kLarge:
       return ui::ResourceBundle::GetSharedInstance().GetFontListWithDelta(1);
     case ash::AppListConfigType::kMedium:
@@ -192,7 +176,6 @@ gfx::FontList AppTitleFontForType(ash::AppListConfigType type) {
 
 int FolderUnclippedIconDimensionForType(ash::AppListConfigType type) {
   switch (type) {
-    case ash::AppListConfigType::kShared:
     case ash::AppListConfigType::kLarge:
       return 88;
     case ash::AppListConfigType::kMedium:
@@ -204,7 +187,6 @@ int FolderUnclippedIconDimensionForType(ash::AppListConfigType type) {
 
 int FolderClippedIconDimensionForType(ash::AppListConfigType type) {
   switch (type) {
-    case ash::AppListConfigType::kShared:
     case ash::AppListConfigType::kLarge:
       return 72;
     case ash::AppListConfigType::kMedium:
@@ -216,7 +198,6 @@ int FolderClippedIconDimensionForType(ash::AppListConfigType type) {
 
 int ItemIconInFolderIconDimensionForType(ash::AppListConfigType type) {
   switch (type) {
-    case ash::AppListConfigType::kShared:
     case ash::AppListConfigType::kLarge:
       return 32;
     case ash::AppListConfigType::kMedium:
@@ -228,7 +209,6 @@ int ItemIconInFolderIconDimensionForType(ash::AppListConfigType type) {
 
 int ItemIconInFolderIconMarginForType(ash::AppListConfigType type) {
   switch (type) {
-    case ash::AppListConfigType::kShared:
     case ash::AppListConfigType::kLarge:
     case ash::AppListConfigType::kMedium:
       return 4;
@@ -243,8 +223,6 @@ int SuggestionChipContainerTopMarginForType(ash::AppListConfigType type) {
     case ash::AppListConfigType::kMedium:
     case ash::AppListConfigType::kLarge:
       return 16;
-    case ash::AppListConfigType::kShared:
-      return 24;
   }
 }
 
@@ -493,12 +471,6 @@ AppListConfig::AppListConfig(const AppListConfig& base_config,
 
 AppListConfig::~AppListConfig() = default;
 
-// static
-AppListConfig& AppListConfig::instance() {
-  return *AppListConfigProvider::Get().GetConfigForType(
-      AppListConfigType::kShared, true /*can_create*/);
-}
-
 int AppListConfig::GetMinGridHorizontalPadding() const {
   return page_switcher_end_margin_ + grid_to_page_switcher_margin_ +
          kPageSwitcherWidth;
@@ -507,9 +479,6 @@ int AppListConfig::GetMinGridHorizontalPadding() const {
 int AppListConfig::GetIdealHorizontalMargin(
     const gfx::Rect& available_bounds) const {
   const int available_width = available_bounds.width();
-  if (type_ == AppListConfigType::kShared)
-    return available_width / kAppsGridMarginRatio;
-
   if (available_width >= kAppsGridMarginRatio * GetMinGridHorizontalPadding())
     return available_width / kAppsGridMarginRatio;
   return available_width / kAppsGridMarginRatioForSmallWidth;

@@ -138,29 +138,12 @@ class AppListConfigProviderTest : public testing::Test {
   TestAppListConfigProviderObserver registry_observer_;
 };
 
-// Tests that shared AppListConfig type is considered available by default, and
-// that AppListConfig::instance() can be used to access the default, unscaled
-// ash::AppListConfigType::kShared app list config.
-TEST_F(AppListConfigProviderTest, SharedInstance) {
-  AppListConfig* shared_config = AppListConfigProvider::Get().GetConfigForType(
-      AppListConfigType::kShared, false);
-  ASSERT_TRUE(shared_config);
-  EXPECT_EQ(&AppListConfig::instance(), shared_config);
-  // Observer not expected to trigger, as the shared config is considered
-  // created by default (even though it's created lazily on first access).
-  EXPECT_EQ(std::vector<AppListConfigType>(),
-            registry_observer_.created_types());
-
-  EXPECT_EQ(AppListConfigType::kShared, shared_config->type());
-  EXPECT_EQ(1., shared_config->scale_x());
-  EXPECT_EQ(1., shared_config->scale_y());
-}
-
-// Tests GetConfigForType behavior for non-shared app list configs.
-TEST_F(AppListConfigProviderTest, NonSharedConfigGetters) {
+// Tests GetConfigForType behavior.
+TEST_F(AppListConfigProviderTest, ConfigGetters) {
   std::vector<AppListConfigType> test_cases = {AppListConfigType::kSmall,
                                                AppListConfigType::kMedium,
                                                AppListConfigType::kLarge};
+  std::set<AppListConfigType> created_types;
   for (const auto& config_type : test_cases) {
     SCOPED_TRACE(static_cast<int>(config_type));
 
@@ -177,10 +160,10 @@ TEST_F(AppListConfigProviderTest, NonSharedConfigGetters) {
     const AppListConfig* config = AppListConfigProvider::Get().GetConfigForType(
         config_type, true /*can_create*/);
     ASSERT_TRUE(config);
+    created_types.insert(config_type);
     EXPECT_EQ(config_type, config->type());
     const std::vector<AppListConfigType> expected_created_types = {config_type};
     EXPECT_EQ(expected_created_types, registry_observer_.created_types());
-    EXPECT_NE(&AppListConfig::instance(), config);
 
     // Subsequent calls to GetConfigForType will return previously created
     // config, and will not notify observers of config creation.
@@ -189,6 +172,9 @@ TEST_F(AppListConfigProviderTest, NonSharedConfigGetters) {
     EXPECT_EQ(config,
               AppListConfigProvider::Get().GetConfigForType(config_type, true));
     EXPECT_EQ(expected_created_types, registry_observer_.created_types());
+
+    EXPECT_EQ(created_types,
+              AppListConfigProvider::Get().GetAvailableConfigTypes());
 
     registry_observer_.ClearCreatedTypes();
   }

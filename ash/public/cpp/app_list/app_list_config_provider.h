@@ -60,14 +60,14 @@ class ASH_PUBLIC_EXPORT AppListConfigProvider {
   // shelf.
   // |current_config|: If not null, the app list config currently used by the
   //     app list.
-  // TODO(crbug.com/976947): Once ScalableAppList feature is removed (and
-  // enabled by default), this should return a reference or a pointer to an
-  // AppListConfig owned by |this|, as then the number of possible different
-  // configs will be restricted to the number of supported config types.
   std::unique_ptr<AppListConfig> CreateForAppListWidget(
       const gfx::Size& display_work_area_size,
       const gfx::Insets& shelf_insets,
       const AppListConfig* current_config);
+
+  // Returns all app list config types for which an AppListConfig instance has
+  // been created.
+  std::set<AppListConfigType> GetAvailableConfigTypes();
 
   // Clears the set of configs owned by the provider.
   void ResetForTesting();
