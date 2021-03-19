@@ -148,8 +148,8 @@ class ExternalWebAppMigrationBrowserTest : public InProcessBrowserTest {
             base::MakeRefCounted<extensions::ExternalTestingLoader>(
                 external_extension_config,
                 base::FilePath(FILE_PATH_LITERAL("//absolute/path"))),
-            profile(), extensions::Manifest::EXTERNAL_PREF,
-            extensions::Manifest::EXTERNAL_PREF_DOWNLOAD,
+            profile(), extensions::mojom::ManifestLocation::kExternalPref,
+            extensions::mojom::ManifestLocation::kExternalPrefDownload,
             // Matches |bundled_extension_creation_flags| in
             // ExternalProviderImpl::CreateExternalProviders().
             extensions::Extension::WAS_INSTALLED_BY_DEFAULT |

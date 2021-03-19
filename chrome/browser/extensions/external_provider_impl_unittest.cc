@@ -298,8 +298,8 @@ TEST_F(ExternalProviderImplTest, WebAppMigrationFlag) {
       service_,
       base::MakeRefCounted<ExternalTestingLoader>(
           json, base::FilePath(FILE_PATH_LITERAL("//absolute/path"))),
-      profile_.get(), Manifest::EXTERNAL_PREF, Manifest::EXTERNAL_PREF_DOWNLOAD,
-      Extension::NO_FLAGS));
+      profile_.get(), mojom::ManifestLocation::kExternalPref,
+      mojom::ManifestLocation::kExternalPrefDownload, Extension::NO_FLAGS));
 
   // App is not installed, we should not install if the flag is enabled.
   {

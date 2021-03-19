@@ -160,7 +160,7 @@ class Manifest final {
       std::unique_ptr<base::DictionaryValue> value,
       ExtensionId extension_id);
 
-  Manifest(Location location,
+  Manifest(mojom::ManifestLocation location,
            std::unique_ptr<base::DictionaryValue> value,
            ExtensionId extension_id);
   ~Manifest();
@@ -168,7 +168,7 @@ class Manifest final {
   const ExtensionId& extension_id() const { return extension_id_; }
   const HashedExtensionId& hashed_id() const { return hashed_id_; }
 
-  Location location() const { return location_; }
+  mojom::ManifestLocation location() const { return location_; }
 
   // Returns false and |error| will be non-empty if the manifest is malformed.
   // |warnings| will be populated if there are keys in the manifest that cannot
@@ -242,7 +242,7 @@ class Manifest final {
   }
 
  private:
-  Manifest(Location location,
+  Manifest(mojom::ManifestLocation location,
            std::unique_ptr<base::DictionaryValue> value,
            ExtensionId extension_id,
            bool for_login_screen);
@@ -258,7 +258,7 @@ class Manifest final {
   const HashedExtensionId hashed_id_;
 
   // The location the extension was loaded from.
-  const Location location_;
+  const mojom::ManifestLocation location_;
 
   // The underlying dictionary representation of the manifest.
   const std::unique_ptr<const base::DictionaryValue> value_;

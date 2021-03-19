@@ -292,8 +292,7 @@ void InstalledLoader::LoadAllExtensions() {
 
       std::string error;
       scoped_refptr<const Extension> extension(file_util::LoadExtension(
-          info->extension_path,
-          static_cast<Manifest::Location>(info->extension_location),
+          info->extension_path, info->extension_location,
           GetCreationFlags(info), &error));
 
       if (!extension.get() || extension->id() != info->extension_id) {

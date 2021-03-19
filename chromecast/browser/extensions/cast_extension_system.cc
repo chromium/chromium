@@ -114,9 +114,9 @@ const Extension* CastExtensionSystem::LoadExtension(
   CHECK(base::DirectoryExists(extension_dir)) << extension_dir.AsUTF8Unsafe();
   int load_flags = Extension::FOLLOW_SYMLINKS_ANYWHERE;
   std::string load_error;
-  scoped_refptr<Extension> extension =
-      file_util::LoadExtension(extension_dir, manifest_file, std::string(),
-                               Manifest::COMPONENT, load_flags, &load_error);
+  scoped_refptr<Extension> extension = file_util::LoadExtension(
+      extension_dir, manifest_file, std::string(),
+      mojom::ManifestLocation::kComponent, load_flags, &load_error);
   if (!extension.get()) {
     LOG(ERROR) << "Loading extension at " << extension_dir.value()
                << " failed with: " << load_error;

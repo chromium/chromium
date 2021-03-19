@@ -293,8 +293,8 @@ class TestKioskLoaderVisitor
     if (!extension_service_->pending_extension_manager()
              ->AddFromExternalUpdateUrl(
                  info.extension_id, info.install_parameter, info.update_url,
-                 static_cast<ManifestLocation>(info.download_location),
-                 info.creation_flags, info.mark_acknowledged)) {
+                 info.download_location, info.creation_flags,
+                 info.mark_acknowledged)) {
       return false;
     }
 
@@ -534,9 +534,8 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
         visitor,
         base::MakeRefCounted<KioskAppExternalLoader>(
             KioskAppExternalLoader::AppClass::kPrimary),
-        profile(), extensions::Manifest::EXTERNAL_POLICY,
-        extensions::Manifest::INVALID_LOCATION,
-        extensions::Extension::NO_FLAGS);
+        profile(), ManifestLocation::kExternalPolicy,
+        ManifestLocation::kInvalidLocation, extensions::Extension::NO_FLAGS);
     InitializeKioskAppsProvider(primary_app_provider_.get());
 
     secondary_apps_provider_ =
@@ -544,8 +543,8 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
             visitor,
             base::MakeRefCounted<KioskAppExternalLoader>(
                 KioskAppExternalLoader::AppClass::kSecondary),
-            profile(), extensions::Manifest::EXTERNAL_PREF,
-            extensions::Manifest::EXTERNAL_PREF_DOWNLOAD,
+            profile(), ManifestLocation::kExternalPref,
+            ManifestLocation::kExternalPrefDownload,
             extensions::Extension::NO_FLAGS);
     InitializeKioskAppsProvider(secondary_apps_provider_.get());
   }

@@ -217,8 +217,9 @@ class KioskAppData::WebstoreDataParser
       const std::string& id,
       const SkBitmap& icon,
       std::unique_ptr<base::DictionaryValue> parsed_manifest) override {
-    extensions::Manifest manifest(extensions::Manifest::INVALID_LOCATION,
-                                  std::move(parsed_manifest), id);
+    extensions::Manifest manifest(
+        extensions::mojom::ManifestLocation::kInvalidLocation,
+        std::move(parsed_manifest), id);
 
     if (!IsValidKioskAppManifest(manifest)) {
       ReportFailure();

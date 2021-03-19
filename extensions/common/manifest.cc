@@ -272,17 +272,16 @@ std::unique_ptr<Manifest> Manifest::CreateManifestForLoginScreen(
     ExtensionId extension_id) {
   CHECK(IsPolicyLocation(location));
   // Use base::WrapUnique + new because the constructor is private.
-  return base::WrapUnique(new Manifest(static_cast<Location>(location),
-                                       std::move(value),
-                                       std::move(extension_id), true));
+  return base::WrapUnique(
+      new Manifest(location, std::move(value), std::move(extension_id), true));
 }
 
-Manifest::Manifest(Location location,
+Manifest::Manifest(ManifestLocation location,
                    std::unique_ptr<base::DictionaryValue> value,
                    ExtensionId extension_id)
     : Manifest(location, std::move(value), std::move(extension_id), false) {}
 
-Manifest::Manifest(Location location,
+Manifest::Manifest(ManifestLocation location,
                    std::unique_ptr<base::DictionaryValue> value,
                    ExtensionId extension_id,
                    bool for_login_screen)
@@ -333,7 +332,7 @@ bool Manifest::ValidateManifest(
     }
   }
 
-  if (IsUnpackedLocation(static_cast<ManifestLocation>(location_)) &&
+  if (IsUnpackedLocation(location_) &&
       value_->FindPath(manifest_keys::kDifferentialFingerprint)) {
     warnings->push_back(
         InstallWarning(manifest_errors::kHasDifferentialFingerprint,

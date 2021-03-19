@@ -142,7 +142,7 @@ class ContentHashFetcherTest : public ExtensionsTest {
 
     std::string error;
     scoped_refptr<Extension> extension = file_util::LoadExtension(
-        destination, Manifest::INTERNAL, 0 /* flags */, &error);
+        destination, mojom::ManifestLocation::kInternal, 0 /* flags */, &error);
     EXPECT_NE(nullptr, extension.get()) << " error:'" << error << "'";
     return extension;
   }

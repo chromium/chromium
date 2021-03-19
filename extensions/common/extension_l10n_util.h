@@ -14,6 +14,7 @@
 #include "base/auto_reset.h"
 #include "base/strings/string_piece.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 
 namespace base {
 class DictionaryValue;
@@ -43,7 +44,7 @@ GzippedMessagesPermission GetGzippedMessagesPermissionForExtension(
 // Returns GzippedMessagesPermission::kAllowForTrustedSource for trusted
 // manifest locations, otherwise returns kDisallow.
 GzippedMessagesPermission GetGzippedMessagesPermissionForLocation(
-    extensions::Manifest::Location location);
+    extensions::mojom::ManifestLocation location);
 
 // Called from tests to temporarily allow loading gzipped messages for non
 // component test extensions.

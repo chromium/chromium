@@ -90,7 +90,8 @@ void PopulateExtensionInfo(
   if (serializer.Serialize(*extension.manifest()->value()))
     extension_info->mutable_manifest()->swap(manifest_json);
 
-  extension_info->set_manifest_location_type(extension.manifest()->location());
+  extension_info->set_manifest_location_type(
+      static_cast<int>(extension.manifest()->location()));
 }
 
 }  // namespace

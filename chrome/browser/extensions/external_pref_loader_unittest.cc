@@ -29,6 +29,8 @@
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using extensions::mojom::ManifestLocation;
+
 namespace extensions {
 
 namespace {
@@ -130,8 +132,8 @@ TEST_F(ExternalPrefLoaderTest, PrefReadInitiatesCorrectly) {
   scoped_refptr<ExternalPrefLoader> loader(
       new TestExternalPrefLoader(profile(), run_loop.QuitWhenIdleClosure()));
   ExternalProviderImpl provider(
-      nullptr, loader, profile(), Manifest::INVALID_LOCATION,
-      Manifest::INVALID_LOCATION, Extension::NO_FLAGS);
+      nullptr, loader, profile(), ManifestLocation::kInvalidLocation,
+      ManifestLocation::kInvalidLocation, Extension::NO_FLAGS);
   provider.VisitRegisteredExtension();
 
   // Initially CanSyncFeatureStart() returns true, returning false will let
@@ -160,8 +162,9 @@ TEST_F(ExternalPrefLoaderSplitSettingsSyncTest, OsSyncEnabled) {
       base::MakeRefCounted<TestExternalPrefLoader>(
           profile(), run_loop.QuitWhenIdleClosure());
   ExternalProviderImpl provider(
-      /*service=*/nullptr, loader, profile(), Manifest::INVALID_LOCATION,
-      Manifest::INVALID_LOCATION, Extension::NO_FLAGS);
+      /*service=*/nullptr, loader, profile(),
+      ManifestLocation::kInvalidLocation, ManifestLocation::kInvalidLocation,
+      Extension::NO_FLAGS);
   provider.VisitRegisteredExtension();
 
   PrefService* prefs = profile()->GetPrefs();
@@ -193,8 +196,9 @@ TEST_F(ExternalPrefLoaderSplitSettingsSyncTest, OsSyncDisable) {
       base::MakeRefCounted<TestExternalPrefLoader>(
           profile(), run_loop.QuitWhenIdleClosure());
   ExternalProviderImpl provider(
-      /*service=*/nullptr, loader, profile(), Manifest::INVALID_LOCATION,
-      Manifest::INVALID_LOCATION, Extension::NO_FLAGS);
+      /*service=*/nullptr, loader, profile(),
+      ManifestLocation::kInvalidLocation, ManifestLocation::kInvalidLocation,
+      Extension::NO_FLAGS);
   provider.VisitRegisteredExtension();
 
   PrefService* prefs = profile()->GetPrefs();
@@ -219,8 +223,9 @@ TEST_F(ExternalPrefLoaderSplitSettingsSyncTest, SyncDisabledByPolicy) {
       base::MakeRefCounted<TestExternalPrefLoader>(
           profile(), run_loop.QuitWhenIdleClosure());
   ExternalProviderImpl provider(
-      /*service=*/nullptr, loader, profile(), Manifest::INVALID_LOCATION,
-      Manifest::INVALID_LOCATION, Extension::NO_FLAGS);
+      /*service=*/nullptr, loader, profile(),
+      ManifestLocation::kInvalidLocation, ManifestLocation::kInvalidLocation,
+      Extension::NO_FLAGS);
   provider.VisitRegisteredExtension();
 
   // Loader doesn't need to wait, because sync will never enable.

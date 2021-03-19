@@ -18,8 +18,10 @@ TEST_F(ChromeManifestTest, ExperimentalPermission) {
       "experimental.json",
       "'experimental' requires the 'experimental-extension-apis' "
       "command line switch to be enabled.");
-  LoadAndExpectSuccess("experimental.json", extensions::Manifest::COMPONENT);
-  LoadAndExpectSuccess("experimental.json", extensions::Manifest::INTERNAL,
+  LoadAndExpectSuccess("experimental.json",
+                       extensions::mojom::ManifestLocation::kComponent);
+  LoadAndExpectSuccess("experimental.json",
+                       extensions::mojom::ManifestLocation::kInternal,
                        extensions::Extension::FROM_WEBSTORE);
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       extensions::switches::kEnableExperimentalExtensionApis);

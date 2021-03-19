@@ -38,12 +38,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using extensions::ExternalInstallInfoFile;
+using extensions::ExternalInstallInfoUpdateUrl;
+using extensions::mojom::ManifestLocation;
+using ::testing::_;
 using ::testing::Exactly;
 using ::testing::Invoke;
 using ::testing::Mock;
-using ::testing::_;
-using extensions::ExternalInstallInfoFile;
-using extensions::ExternalInstallInfoUpdateUrl;
 
 namespace {
 
@@ -344,8 +345,8 @@ TEST_F(ServicesCustomizationDocumentTest, NoCustomizationIdInVpd) {
 
   MockExternalProviderVisitor visitor;
   auto provider = std::make_unique<extensions::ExternalProviderImpl>(
-      &visitor, loader, profile.get(), extensions::Manifest::EXTERNAL_PREF,
-      extensions::Manifest::EXTERNAL_PREF_DOWNLOAD,
+      &visitor, loader, profile.get(), ManifestLocation::kExternalPref,
+      ManifestLocation::kExternalPrefDownload,
       extensions::Extension::FROM_WEBSTORE |
           extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
 
@@ -385,8 +386,8 @@ TEST_F(ServicesCustomizationDocumentTest, DefaultApps) {
 
   MockExternalProviderVisitor visitor;
   auto provider = std::make_unique<extensions::ExternalProviderImpl>(
-      &visitor, loader, profile.get(), extensions::Manifest::EXTERNAL_PREF,
-      extensions::Manifest::EXTERNAL_PREF_DOWNLOAD,
+      &visitor, loader, profile.get(), ManifestLocation::kExternalPref,
+      ManifestLocation::kExternalPrefDownload,
       extensions::Extension::FROM_WEBSTORE |
           extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
 
@@ -429,8 +430,8 @@ TEST_F(ServicesCustomizationDocumentTest, CustomizationManifestNotFound) {
 
   MockExternalProviderVisitor visitor;
   auto provider = std::make_unique<extensions::ExternalProviderImpl>(
-      &visitor, loader, profile.get(), extensions::Manifest::EXTERNAL_PREF,
-      extensions::Manifest::EXTERNAL_PREF_DOWNLOAD,
+      &visitor, loader, profile.get(), ManifestLocation::kExternalPref,
+      ManifestLocation::kExternalPrefDownload,
       extensions::Extension::FROM_WEBSTORE |
           extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
 

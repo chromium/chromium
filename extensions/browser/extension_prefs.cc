@@ -1544,9 +1544,10 @@ void ExtensionPrefs::UpdateManifest(const Extension* extension) {
 }
 
 void ExtensionPrefs::SetInstallLocation(const std::string& extension_id,
-                                        Manifest::Location location) {
-  UpdateExtensionPref(extension_id, kPrefLocation,
-                      std::make_unique<base::Value>(location));
+                                        mojom::ManifestLocation location) {
+  UpdateExtensionPref(
+      extension_id, kPrefLocation,
+      std::make_unique<base::Value>(static_cast<int>(location)));
 }
 
 std::unique_ptr<ExtensionInfo> ExtensionPrefs::GetInstalledInfoHelper(

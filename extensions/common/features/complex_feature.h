@@ -15,6 +15,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 
 namespace extensions {
 
@@ -30,7 +31,7 @@ class ComplexFeature : public Feature {
   // extensions::Feature:
   Availability IsAvailableToManifest(const HashedExtensionId& hashed_id,
                                      Manifest::Type type,
-                                     Manifest::Location location,
+                                     mojom::ManifestLocation location,
                                      int manifest_version,
                                      Platform platform) const override;
   Availability IsAvailableToContext(const Extension* extension,

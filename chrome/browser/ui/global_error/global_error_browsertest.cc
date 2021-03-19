@@ -186,7 +186,7 @@ void GlobalErrorBubbleTest::ShowUi(const std::string& name) {
 
     GlobalErrorWaiter waiter(profile);
     auto provider = std::make_unique<extensions::MockExternalProvider>(
-        extension_service, extensions::Manifest::EXTERNAL_PREF);
+        extension_service, extensions::mojom::ManifestLocation::kExternalPref);
     extensions::MockExternalProvider* provider_ptr = provider.get();
     extension_service->AddProviderForTesting(std::move(provider));
     provider_ptr->UpdateOrAddExtension(kExtensionWithUpdateUrl, "1.0.0.0",

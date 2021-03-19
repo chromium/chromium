@@ -22,6 +22,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using content::BrowserThread;
+using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 
@@ -57,8 +58,8 @@ class MockExternalPolicyProviderVisitor
             profile_.get(),
             ExtensionManagementFactory::GetForBrowserContext(profile_.get()),
             ExternalPolicyLoader::FORCED),
-        profile_.get(), Manifest::INVALID_LOCATION,
-        Manifest::EXTERNAL_POLICY_DOWNLOAD, Extension::NO_FLAGS));
+        profile_.get(), ManifestLocation::kInvalidLocation,
+        ManifestLocation::kExternalPolicyDownload, Extension::NO_FLAGS));
 
     // Extensions will be removed from this list as they visited,
     // so it should be emptied by the end.
@@ -77,13 +78,14 @@ class MockExternalPolicyProviderVisitor
       const extensions::ExternalInstallInfoUpdateUrl& info,
       bool is_initial_load) override {
     // Extension has the correct location.
-    EXPECT_EQ(Manifest::EXTERNAL_POLICY_DOWNLOAD, info.download_location);
+    EXPECT_EQ(ManifestLocation::kExternalPolicyDownload,
+              info.download_location);
 
     // Provider returns the correct location when asked.
-    Manifest::Location location1;
+    ManifestLocation location1;
     std::unique_ptr<base::Version> version1;
     provider_->GetExtensionDetails(info.extension_id, &location1, &version1);
-    EXPECT_EQ(Manifest::EXTERNAL_POLICY_DOWNLOAD, location1);
+    EXPECT_EQ(ManifestLocation::kExternalPolicyDownload, location1);
     EXPECT_FALSE(version1.get());
 
     // Remove the extension from our list.

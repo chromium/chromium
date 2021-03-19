@@ -156,7 +156,8 @@ bool PendingExtensionManager::AddFromSync(
   }
 
   static const bool kIsFromSync = true;
-  static const Manifest::Location kSyncLocation = Manifest::INTERNAL;
+  static const mojom::ManifestLocation kSyncLocation =
+      mojom::ManifestLocation::kInternal;
   static const bool kMarkAcknowledged = false;
 
   return AddExtensionImpl(id,
@@ -185,7 +186,8 @@ bool PendingExtensionManager::AddFromExtensionImport(
   }
 
   static const bool kIsFromSync = false;
-  static const Manifest::Location kManifestLocation = Manifest::INTERNAL;
+  static const mojom::ManifestLocation kManifestLocation =
+      mojom::ManifestLocation::kInternal;
   static const bool kMarkAcknowledged = false;
   static const bool kRemoteInstall = false;
 
@@ -235,14 +237,13 @@ bool PendingExtensionManager::AddFromExternalUpdateUrl(
   }
 
   return AddExtensionImpl(id, install_parameter, update_url, base::Version(),
-                          &AlwaysInstall, kIsFromSync,
-                          static_cast<Manifest::Location>(location),
-                          creation_flags, mark_acknowledged, kRemoteInstall);
+                          &AlwaysInstall, kIsFromSync, location, creation_flags,
+                          mark_acknowledged, kRemoteInstall);
 }
 
 bool PendingExtensionManager::AddFromExternalFile(
     const std::string& id,
-    Manifest::Location install_source,
+    mojom::ManifestLocation install_source,
     const base::Version& version,
     int creation_flags,
     bool mark_acknowledged) {
@@ -294,15 +295,14 @@ bool PendingExtensionManager::AddExtensionImpl(
     const base::Version& version,
     PendingExtensionInfo::ShouldAllowInstallPredicate should_allow_install,
     bool is_from_sync,
-    Manifest::Location install_source,
+    mojom::ManifestLocation install_source,
     int creation_flags,
     bool mark_acknowledged,
     bool remote_install) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 
   PendingExtensionInfo info(id, install_parameter, update_url, version,
-                            should_allow_install, is_from_sync,
-                            static_cast<ManifestLocation>(install_source),
+                            should_allow_install, is_from_sync, install_source,
                             creation_flags, mark_acknowledged, remote_install);
 
   if (const PendingExtensionInfo* pending = GetById(id)) {

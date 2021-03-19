@@ -129,8 +129,8 @@ void Provider::InitProfileState() {
 Provider::Provider(Profile* profile,
                    VisitorInterface* service,
                    scoped_refptr<extensions::ExternalLoader> loader,
-                   extensions::Manifest::Location crx_location,
-                   extensions::Manifest::Location download_location,
+                   extensions::mojom::ManifestLocation crx_location,
+                   extensions::mojom::ManifestLocation download_location,
                    int creation_flags)
     : extensions::ExternalProviderImpl(service,
                                        std::move(loader),

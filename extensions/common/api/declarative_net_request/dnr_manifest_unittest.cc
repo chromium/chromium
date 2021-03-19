@@ -46,7 +46,8 @@ class DNRManifestTest : public testing::Test {
   void LoadAndExpectError(const std::string& expected_error) {
     std::string error;
     scoped_refptr<Extension> extension = file_util::LoadExtension(
-        temp_dir_.GetPath(), Manifest::UNPACKED, Extension::NO_FLAGS, &error);
+        temp_dir_.GetPath(), mojom::ManifestLocation::kUnpacked,
+        Extension::NO_FLAGS, &error);
     EXPECT_FALSE(extension);
     EXPECT_EQ(expected_error, error);
   }
@@ -56,7 +57,8 @@ class DNRManifestTest : public testing::Test {
   void LoadAndExpectSuccess(const std::vector<TestRulesetInfo>& info) {
     std::string error;
     scoped_refptr<Extension> extension = file_util::LoadExtension(
-        temp_dir_.GetPath(), Manifest::UNPACKED, Extension::NO_FLAGS, &error);
+        temp_dir_.GetPath(), mojom::ManifestLocation::kUnpacked,
+        Extension::NO_FLAGS, &error);
     ASSERT_TRUE(extension) << error;
     EXPECT_TRUE(error.empty());
 

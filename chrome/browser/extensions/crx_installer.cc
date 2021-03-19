@@ -957,7 +957,7 @@ void CrxInstaller::ReloadExtensionAfterInstall(
   std::string extension_id = extension()->id();
   std::string error;
   extension_ = file_util::LoadExtension(
-      version_dir, static_cast<Manifest::Location>(install_source_),
+      version_dir, install_source_,
       // Note: modified by UpdateCreationFlagsAndCompleteInstall.
       creation_flags_, &error);
 

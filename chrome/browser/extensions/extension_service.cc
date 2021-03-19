@@ -257,8 +257,7 @@ bool ExtensionService::OnExternalExtensionUpdateUrlFound(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(crx_file::id_util::IdIsValid(info.extension_id));
 
-  if (Manifest::IsExternalLocation(
-          static_cast<ManifestLocation>(info.download_location))) {
+  if (Manifest::IsExternalLocation(info.download_location)) {
     // All extensions that are not user specific can be cached.
     ExtensionsBrowserClient::Get()->GetExtensionCache()->AllowCaching(
         info.extension_id);
@@ -277,8 +276,7 @@ bool ExtensionService::OnExternalExtensionUpdateUrlFound(
     if (!pending_extension_manager_.IsPolicyReinstallForCorruptionExpected(
             info.extension_id) &&
         current == Manifest::GetHigherPriorityLocation(
-                       current,
-                       static_cast<ManifestLocation>(info.download_location))) {
+                       current, info.download_location)) {
       install_stage_tracker->ReportFailure(
           info.extension_id,
           InstallStageTracker::FailureReason::ALREADY_INSTALLED);
@@ -287,16 +285,14 @@ bool ExtensionService::OnExternalExtensionUpdateUrlFound(
     // If the installation is requested from a higher priority source, update
     // its install location.
     if (current !=
-        Manifest::GetHigherPriorityLocation(
-            current, static_cast<ManifestLocation>(info.download_location))) {
+        Manifest::GetHigherPriorityLocation(current, info.download_location)) {
       UnloadExtension(info.extension_id, UnloadedExtensionReason::UPDATE);
 
       // Fetch the installation info from the prefs, and reload the extension
       // with a modified install location.
       std::unique_ptr<ExtensionInfo> installed_extension(
           extension_prefs_->GetInstalledExtensionInfo(info.extension_id));
-      installed_extension->extension_location =
-          static_cast<ManifestLocation>(info.download_location);
+      installed_extension->extension_location = info.download_location;
 
       // Load the extension with the new install location
       InstalledLoader(this).Load(*installed_extension, false);
@@ -346,8 +342,8 @@ bool ExtensionService::OnExternalExtensionUpdateUrlFound(
       info.extension_id, InstallStageTracker::Stage::PENDING);
   if (!pending_extension_manager()->AddFromExternalUpdateUrl(
           info.extension_id, info.install_parameter, info.update_url,
-          static_cast<ManifestLocation>(info.download_location),
-          info.creation_flags, info.mark_acknowledged)) {
+          info.download_location, info.creation_flags,
+          info.mark_acknowledged)) {
     // We can reach here if the extension from an equal or higher priority
     // source is already present in the |pending_extension_list_|. No need to
     // report the failure in this case.
@@ -1898,7 +1894,7 @@ bool ExtensionService::OnExternalExtensionFileFound(
     // app is already installed as internal, then do the version check.
     // TODO(grv) : Remove after Q1-2013.
     bool is_default_apps_migration =
-        (info.crx_location == Manifest::INTERNAL &&
+        (info.crx_location == mojom::ManifestLocation::kInternal &&
          Manifest::IsExternalLocation(existing->location()));
 
     if (!is_default_apps_migration) {
@@ -1940,10 +1936,10 @@ bool ExtensionService::OnExternalExtensionFileFound(
   installer->set_install_immediately(info.install_immediately);
   installer->set_creation_flags(info.creation_flags);
 
-  CRXFileInfo file_info(info.path,
-                        info.crx_location == Manifest::EXTERNAL_POLICY
-                            ? GetPolicyVerifierFormat()
-                            : GetExternalVerifierFormat());
+  CRXFileInfo file_info(
+      info.path, info.crx_location == mojom::ManifestLocation::kExternalPolicy
+                     ? GetPolicyVerifierFormat()
+                     : GetExternalVerifierFormat());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   InstallLimiter::Get(profile_)->Add(installer, file_info);
 #else

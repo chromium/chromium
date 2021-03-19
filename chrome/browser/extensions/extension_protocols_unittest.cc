@@ -586,7 +586,8 @@ TEST_F(ExtensionProtocolsTest, MetadataFolder) {
   base::FilePath extension_dir = GetTestPath("metadata_folder");
   std::string error;
   scoped_refptr<Extension> extension = file_util::LoadExtension(
-      extension_dir, Manifest::INTERNAL, Extension::NO_FLAGS, &error);
+      extension_dir, mojom::ManifestLocation::kInternal, Extension::NO_FLAGS,
+      &error);
   ASSERT_NE(extension.get(), nullptr) << "error: " << error;
 
   // Loading "/test.html" should succeed.
@@ -847,7 +848,8 @@ TEST_F(ExtensionProtocolsTest, MAYBE_ExtensionRequestsNotAborted) {
       GetTestPath("common").AppendASCII("background_script");
   std::string error;
   scoped_refptr<Extension> extension = file_util::LoadExtension(
-      extension_dir, Manifest::INTERNAL, Extension::NO_FLAGS, &error);
+      extension_dir, mojom::ManifestLocation::kInternal, Extension::NO_FLAGS,
+      &error);
   ASSERT_TRUE(extension.get()) << error;
 
   SimulateSystemSuspendForRequests();

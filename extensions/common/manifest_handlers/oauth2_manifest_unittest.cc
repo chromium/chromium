@@ -10,7 +10,10 @@
 #include "extensions/common/manifest_handler_helpers.h"
 #include "extensions/common/manifest_handlers/oauth2_manifest_handler.h"
 #include "extensions/common/manifest_test.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 
@@ -288,9 +291,8 @@ TEST_F(OAuth2ManifestTest, ComponentInvalidClientId) {
         CreateManifest(AUTO_APPROVE_NOT_SET, false, CLIENT_ID_NOT_SET);
     ManifestData manifest(std::move(ext_manifest), "test");
     std::string error;
-    LoadAndExpectError(manifest,
-                       errors::kInvalidOAuth2ClientId,
-                       extensions::Manifest::COMPONENT);
+    LoadAndExpectError(manifest, errors::kInvalidOAuth2ClientId,
+                       ManifestLocation::kComponent);
   }
 
   {
@@ -298,9 +300,8 @@ TEST_F(OAuth2ManifestTest, ComponentInvalidClientId) {
         CreateManifest(AUTO_APPROVE_NOT_SET, false, CLIENT_ID_EMPTY);
     ManifestData manifest(std::move(ext_manifest), "test");
     std::string error;
-    LoadAndExpectError(manifest,
-                       errors::kInvalidOAuth2ClientId,
-                       extensions::Manifest::COMPONENT);
+    LoadAndExpectError(manifest, errors::kInvalidOAuth2ClientId,
+                       ManifestLocation::kComponent);
   }
 }
 
@@ -310,7 +311,7 @@ TEST_F(OAuth2ManifestTest, ComponentWithChromeClientId) {
         CreateManifest(AUTO_APPROVE_TRUE, true, CLIENT_ID_NOT_SET);
     ManifestData manifest(std::move(ext_manifest), "test");
     scoped_refptr<extensions::Extension> extension =
-        LoadAndExpectSuccess(manifest, extensions::Manifest::COMPONENT);
+        LoadAndExpectSuccess(manifest, ManifestLocation::kComponent);
     EXPECT_TRUE(OAuth2Info::GetOAuth2Info(extension.get()).client_id.empty());
   }
 
@@ -319,7 +320,7 @@ TEST_F(OAuth2ManifestTest, ComponentWithChromeClientId) {
         CreateManifest(AUTO_APPROVE_TRUE, true, CLIENT_ID_EMPTY);
     ManifestData manifest(std::move(ext_manifest), "test");
     scoped_refptr<extensions::Extension> extension =
-        LoadAndExpectSuccess(manifest, extensions::Manifest::COMPONENT);
+        LoadAndExpectSuccess(manifest, ManifestLocation::kComponent);
     EXPECT_TRUE(OAuth2Info::GetOAuth2Info(extension.get()).client_id.empty());
   }
 }
@@ -329,7 +330,7 @@ TEST_F(OAuth2ManifestTest, ComponentWithStandardClientId) {
       CreateManifest(AUTO_APPROVE_TRUE, true, CLIENT_ID_DEFAULT);
   ManifestData manifest(std::move(ext_manifest), "test");
   scoped_refptr<extensions::Extension> extension =
-      LoadAndExpectSuccess(manifest, extensions::Manifest::COMPONENT);
+      LoadAndExpectSuccess(manifest, ManifestLocation::kComponent);
   EXPECT_EQ("client1", OAuth2Info::GetOAuth2Info(extension.get()).client_id);
 }
 

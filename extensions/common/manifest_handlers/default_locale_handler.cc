@@ -82,7 +82,7 @@ bool DefaultLocaleHandler::Validate(
 
   bool gzipped_messages_allowed =
       extension_l10n_util::GetGzippedMessagesPermissionForLocation(
-          static_cast<Manifest::Location>(extension->location())) ==
+          extension->location()) ==
       extension_l10n_util::GzippedMessagesPermission::kAllowForTrustedSource;
 
   base::FilePath locale_path;

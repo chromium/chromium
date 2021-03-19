@@ -15,7 +15,8 @@ class ThemeColorMatchesManifestTest : public ChromeManifestTest {};
 TEST_F(ThemeColorMatchesManifestTest, ThemeColor) {
   Testcase testcases[] = {
       Testcase("theme_color.json", std::string(),
-               extensions::Manifest::INTERNAL, Extension::FROM_BOOKMARK),
+               extensions::mojom::ManifestLocation::kInternal,
+               Extension::FROM_BOOKMARK),
   };
   RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_SUCCESS);
 

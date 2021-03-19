@@ -18,6 +18,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using default_apps::Provider;
+using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 
@@ -63,8 +64,8 @@ TEST_F(DefaultAppsTest, Install) {
   {
     // The default apps should be installed if kDefaultAppsInstallState
     // is unknown.
-    Provider provider(&profile, nullptr, loader, Manifest::INTERNAL,
-                      Manifest::INTERNAL, Extension::NO_FLAGS);
+    Provider provider(&profile, nullptr, loader, ManifestLocation::kInternal,
+                      ManifestLocation::kInternal, Extension::NO_FLAGS);
     EXPECT_TRUE(provider.default_apps_enabled());
     EXPECT_FALSE(provider.is_migration());
     EXPECT_TRUE(provider.perform_new_installation());
@@ -74,8 +75,8 @@ TEST_F(DefaultAppsTest, Install) {
 
   {
     // The default apps should only be installed once.
-    Provider provider(&profile, nullptr, loader, Manifest::INTERNAL,
-                      Manifest::INTERNAL, Extension::NO_FLAGS);
+    Provider provider(&profile, nullptr, loader, ManifestLocation::kInternal,
+                      ManifestLocation::kInternal, Extension::NO_FLAGS);
     EXPECT_TRUE(provider.default_apps_enabled());
     EXPECT_FALSE(provider.is_migration());
     EXPECT_FALSE(provider.perform_new_installation());
@@ -87,8 +88,8 @@ TEST_F(DefaultAppsTest, Install) {
     // The default apps should not be installed if the state is
     // kNeverProvideDefaultApps
     set_install_state(&profile, default_apps::kNeverInstallDefaultApps);
-    Provider provider(&profile, nullptr, loader, Manifest::INTERNAL,
-                      Manifest::INTERNAL, Extension::NO_FLAGS);
+    Provider provider(&profile, nullptr, loader, ManifestLocation::kInternal,
+                      ManifestLocation::kInternal, Extension::NO_FLAGS);
     EXPECT_TRUE(provider.default_apps_enabled());
     EXPECT_FALSE(provider.is_migration());
     EXPECT_FALSE(provider.perform_new_installation());
@@ -99,8 +100,8 @@ TEST_F(DefaultAppsTest, Install) {
   {
     // The old default apps with kAlwaysInstallDefaultApps should be migrated.
     set_install_state(&profile, default_apps::kProvideLegacyDefaultApps);
-    Provider provider(&profile, nullptr, loader, Manifest::INTERNAL,
-                      Manifest::INTERNAL, Extension::NO_FLAGS);
+    Provider provider(&profile, nullptr, loader, ManifestLocation::kInternal,
+                      ManifestLocation::kInternal, Extension::NO_FLAGS);
     EXPECT_TRUE(provider.default_apps_enabled());
     EXPECT_TRUE(provider.is_migration());
     EXPECT_FALSE(provider.perform_new_installation());
@@ -120,7 +121,7 @@ TEST_F(DefaultAppsTest, Install) {
     set_install_state(&default_testing_profile,
                       default_apps::kProvideLegacyDefaultApps);
     Provider provider(&default_testing_profile, nullptr, loader,
-                      Manifest::INTERNAL, Manifest::INTERNAL,
+                      ManifestLocation::kInternal, ManifestLocation::kInternal,
                       Extension::NO_FLAGS);
     EXPECT_TRUE(provider.default_apps_enabled());
     EXPECT_TRUE(provider.is_migration());

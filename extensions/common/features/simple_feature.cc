@@ -26,6 +26,7 @@
 #include "extensions/common/switches.h"
 
 using crx_file::id_util::HashedIdInHex;
+using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 
@@ -46,7 +47,7 @@ base::LazyInstance<AllowlistInfo>::Leaky g_allowlist_info =
 Feature::Availability IsAvailableToManifestForBind(
     const HashedExtensionId& hashed_id,
     Manifest::Type type,
-    Manifest::Location location,
+    ManifestLocation location,
     int manifest_version,
     Feature::Platform platform,
     const Feature* feature) {
@@ -218,7 +219,7 @@ SimpleFeature::~SimpleFeature() {}
 Feature::Availability SimpleFeature::IsAvailableToManifest(
     const HashedExtensionId& hashed_id,
     Manifest::Type type,
-    Manifest::Location location,
+    ManifestLocation location,
     int manifest_version,
     Platform platform) const {
   Availability environment_availability = GetEnvironmentAvailability(
@@ -247,8 +248,7 @@ Feature::Availability SimpleFeature::IsAvailableToContext(
 
   if (extension) {
     Availability manifest_availability = GetManifestAvailability(
-        extension->hashed_id(), extension->GetType(),
-        static_cast<Manifest::Location>(extension->location()),
+        extension->hashed_id(), extension->GetType(), extension->location(),
         extension->manifest_version());
     if (!manifest_availability.is_available())
       return manifest_availability;
@@ -460,19 +460,18 @@ bool SimpleFeature::IsIdInList(const HashedExtensionId& hashed_id,
 }
 
 bool SimpleFeature::MatchesManifestLocation(
-    Manifest::Location manifest_location) const {
+    ManifestLocation manifest_location) const {
   DCHECK(location_);
   switch (*location_) {
     case SimpleFeature::COMPONENT_LOCATION:
-      return manifest_location == Manifest::COMPONENT;
+      return manifest_location == ManifestLocation::kComponent;
     case SimpleFeature::EXTERNAL_COMPONENT_LOCATION:
-      return manifest_location == Manifest::EXTERNAL_COMPONENT;
+      return manifest_location == ManifestLocation::kExternalComponent;
     case SimpleFeature::POLICY_LOCATION:
-      return manifest_location == Manifest::EXTERNAL_POLICY ||
-             manifest_location == Manifest::EXTERNAL_POLICY_DOWNLOAD;
+      return manifest_location == ManifestLocation::kExternalPolicy ||
+             manifest_location == ManifestLocation::kExternalPolicyDownload;
     case SimpleFeature::UNPACKED_LOCATION:
-      return Manifest::IsUnpackedLocation(
-          static_cast<mojom::ManifestLocation>(manifest_location));
+      return Manifest::IsUnpackedLocation(manifest_location);
   }
   NOTREACHED();
   return false;
@@ -610,7 +609,7 @@ Feature::Availability SimpleFeature::GetEnvironmentAvailability(
 Feature::Availability SimpleFeature::GetManifestAvailability(
     const HashedExtensionId& hashed_id,
     Manifest::Type type,
-    Manifest::Location location,
+    ManifestLocation location,
     int manifest_version) const {
   // Check extension type first to avoid granting platform app permissions
   // to component extensions.
@@ -630,7 +629,8 @@ Feature::Availability SimpleFeature::GetManifestAvailability(
   // See http://crbug.com/370375 for more details.
   // Component extensions can access any feature.
   // NOTE: Deliberately does not match EXTERNAL_COMPONENT.
-  if (component_extensions_auto_granted_ && location == Manifest::COMPONENT)
+  if (component_extensions_auto_granted_ &&
+      location == ManifestLocation::kComponent)
     return CreateAvailability(IS_AVAILABLE);
 
   if (!allowlist_.empty() && !IsIdInAllowlist(hashed_id) &&

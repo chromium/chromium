@@ -45,6 +45,8 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using extensions::mojom::ManifestLocation;
+
 namespace chromeos {
 
 namespace {
@@ -91,7 +93,7 @@ class TestExternalProviderVisitor
   bool OnExternalExtensionFileFound(
       const extensions::ExternalInstallInfoFile& info) override {
     EXPECT_EQ(0u, loaded_crx_files_.count(info.extension_id));
-    EXPECT_EQ(extensions::Manifest::INTERNAL, info.crx_location)
+    EXPECT_EQ(ManifestLocation::kInternal, info.crx_location)
         << info.extension_id;
 
     loaded_crx_files_.emplace(
@@ -202,8 +204,8 @@ class DemoExtensionsExternalLoaderTest : public testing::Test {
         visitor,
         base::MakeRefCounted<DemoExtensionsExternalLoader>(
             base::FilePath() /*cache_dir*/),
-        profile_.get(), extensions::Manifest::INTERNAL,
-        extensions::Manifest::INTERNAL,
+        profile_.get(), ManifestLocation::kInternal,
+        ManifestLocation::kInternal,
         extensions::Extension::FROM_WEBSTORE |
             extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
   }
@@ -456,8 +458,7 @@ TEST_F(DemoExtensionsExternalLoaderTest, LoadApp) {
   std::unique_ptr<extensions::ExternalProviderImpl> external_provider =
       std::make_unique<extensions::ExternalProviderImpl>(
           &external_provider_visitor_, loader, profile_.get(),
-          extensions::Manifest::INTERNAL,
-          extensions::Manifest::EXTERNAL_PREF_DOWNLOAD,
+          ManifestLocation::kInternal, ManifestLocation::kExternalPrefDownload,
           extensions::Extension::FROM_WEBSTORE |
               extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
 

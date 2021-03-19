@@ -44,6 +44,8 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
 
+using extensions::mojom::ManifestLocation;
+
 namespace extensions {
 
 namespace {
@@ -112,8 +114,7 @@ class ContentVerifierTest : public ExtensionBrowserTest {
                      base::OnceClosure callback) {
     scoped_refptr<CrxInstaller> installer(
         CrxInstaller::CreateSilent(extension_service()));
-    installer->set_install_source(
-        mojom::ManifestLocation::kExternalPolicyDownload);
+    installer->set_install_source(ManifestLocation::kExternalPolicyDownload);
     installer->set_install_immediately(true);
     installer->set_allow_silent_install(true);
     installer->set_off_store_install_allow_reason(
@@ -279,12 +280,12 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest, PolicyCorrupted) {
   content_verifier_test::ForceInstallProvider policy(kExtensionId);
   system->management_policy()->RegisterProvider(&policy);
   auto external_provider = std::make_unique<MockExternalProvider>(
-      service, Manifest::EXTERNAL_POLICY_DOWNLOAD);
+      service, ManifestLocation::kExternalPolicyDownload);
   external_provider->UpdateOrAddExtension(
       std::make_unique<ExternalInstallInfoUpdateUrl>(
           kExtensionId, std::string() /* install_parameter */,
           extension_urls::GetWebstoreUpdateUrl(),
-          Manifest::EXTERNAL_POLICY_DOWNLOAD, 0 /* creation_flags */,
+          ManifestLocation::kExternalPolicyDownload, 0 /* creation_flags */,
           true /* mark_acknowldged */));
   service->AddProviderForTesting(std::move(external_provider));
 
@@ -353,13 +354,13 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
   content_verifier_test::ForceInstallProvider policy(kTestExtensionId);
   system->management_policy()->RegisterProvider(&policy);
   auto external_provider = std::make_unique<MockExternalProvider>(
-      service, Manifest::EXTERNAL_POLICY_DOWNLOAD);
+      service, ManifestLocation::kExternalPolicyDownload);
 
   external_provider->UpdateOrAddExtension(
       std::make_unique<ExternalInstallInfoUpdateUrl>(
           kTestExtensionId, std::string() /* install_parameter */,
           extension_urls::GetWebstoreUpdateUrl(),
-          Manifest::EXTERNAL_POLICY_DOWNLOAD, 0 /* creation_flags */,
+          ManifestLocation::kExternalPolicyDownload, 0 /* creation_flags */,
           true /* mark_acknowldged */));
   service->AddProviderForTesting(std::move(external_provider));
 

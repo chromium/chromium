@@ -22,6 +22,8 @@
 #include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using extensions::mojom::ManifestLocation;
+
 namespace extensions {
 
 namespace errors = manifest_errors;
@@ -60,7 +62,7 @@ class ManifestUnitTest : public testing::Test {
       manifest_value->Remove(key, nullptr);
     ExtensionId extension_id = manifest->get()->extension_id();
     *manifest = std::make_unique<Manifest>(
-        Manifest::INTERNAL, std::move(manifest_value), extension_id);
+        ManifestLocation::kInternal, std::move(manifest_value), extension_id);
   }
 
   // Helper function that replaces the manifest held by |manifest| with a copy
@@ -71,11 +73,11 @@ class ManifestUnitTest : public testing::Test {
     ExtensionId extension_id = manifest->get()->extension_id();
     if (for_login_screen) {
       *manifest = Manifest::CreateManifestForLoginScreen(
-          mojom::ManifestLocation::kExternalPolicy, std::move(manifest_value),
+          ManifestLocation::kExternalPolicy, std::move(manifest_value),
           extension_id);
     } else {
       *manifest = std::make_unique<Manifest>(
-          Manifest::INTERNAL, std::move(manifest_value), extension_id);
+          ManifestLocation::kInternal, std::move(manifest_value), extension_id);
     }
   }
 
@@ -93,7 +95,7 @@ TEST_F(ManifestUnitTest, Extension) {
   manifest_value->SetString("unknown_key", "foo");
 
   std::unique_ptr<Manifest> manifest(
-      new Manifest(Manifest::INTERNAL, std::move(manifest_value),
+      new Manifest(ManifestLocation::kInternal, std::move(manifest_value),
                    crx_file::id_util::GenerateId("extid")));
   std::string error;
   std::vector<InstallWarning> warnings;
@@ -114,7 +116,7 @@ TEST_F(ManifestUnitTest, Extension) {
 
   // Test EqualsForTesting.
   auto manifest2 = std::make_unique<Manifest>(
-      Manifest::INTERNAL, manifest->value()->CreateDeepCopy(),
+      ManifestLocation::kInternal, manifest->value()->CreateDeepCopy(),
       crx_file::id_util::GenerateId("extid"));
   EXPECT_TRUE(manifest->EqualsForTesting(*manifest2));
   EXPECT_TRUE(manifest2->EqualsForTesting(*manifest));
@@ -129,7 +131,7 @@ TEST_F(ManifestUnitTest, ExtensionTypes) {
   value->SetString(keys::kVersion, "1");
 
   std::unique_ptr<Manifest> manifest(
-      new Manifest(Manifest::INTERNAL, std::move(value),
+      new Manifest(ManifestLocation::kInternal, std::move(value),
                    crx_file::id_util::GenerateId("extid")));
   std::string error;
   std::vector<InstallWarning> warnings;
@@ -195,7 +197,7 @@ TEST_F(ManifestUnitTest, RestrictedKeys_ManifestVersion) {
           .Build();
 
   auto manifest =
-      std::make_unique<Manifest>(Manifest::INTERNAL, std::move(value),
+      std::make_unique<Manifest>(ManifestLocation::kInternal, std::move(value),
                                  crx_file::id_util::GenerateId("extid"));
   std::string error;
   std::vector<InstallWarning> warnings;
@@ -231,7 +233,7 @@ TEST_F(ManifestUnitTest, RestrictedKeys_ItemType) {
           .Build();
 
   auto manifest =
-      std::make_unique<Manifest>(Manifest::INTERNAL, std::move(value),
+      std::make_unique<Manifest>(ManifestLocation::kInternal, std::move(value),
                                  crx_file::id_util::GenerateId("extid"));
   std::string error;
   std::vector<InstallWarning> warnings;

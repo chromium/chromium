@@ -1141,7 +1141,7 @@ TEST_F(DeveloperPrivateApiUnitTest, RepairPolicyExtension) {
   // Set up a mock provider with a policy extension.
   std::unique_ptr<MockExternalProvider> mock_provider =
       std::make_unique<MockExternalProvider>(
-          service(), Manifest::EXTERNAL_POLICY_DOWNLOAD);
+          service(), mojom::ManifestLocation::kExternalPolicyDownload);
   MockExternalProvider* mock_provider_ptr = mock_provider.get();
   AddMockExternalProvider(std::move(mock_provider));
   mock_provider_ptr->UpdateOrAddExtension(extension_id, "1.0.0.0",

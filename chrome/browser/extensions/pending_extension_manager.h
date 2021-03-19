@@ -166,12 +166,11 @@ class PendingExtensionManager {
   // Add a pending extension record for an external CRX file.
   // Return true if the CRX should be installed, false if an existing
   // pending record overrides it.
-  bool AddFromExternalFile(
-      const std::string& id,
-      Manifest::Location location,
-      const base::Version& version,
-      int creation_flags,
-      bool mark_acknowledged);
+  bool AddFromExternalFile(const std::string& id,
+                           mojom::ManifestLocation location,
+                           const base::Version& version,
+                           int creation_flags,
+                           bool mark_acknowledged);
 
   // Get the list of pending IDs that should be installed from an update URL.
   // Pending extensions that will be installed from local files will not be
@@ -191,7 +190,7 @@ class PendingExtensionManager {
       const base::Version& version,
       PendingExtensionInfo::ShouldAllowInstallPredicate should_allow_install,
       bool is_from_sync,
-      Manifest::Location install_source,
+      mojom::ManifestLocation install_source,
       int creation_flags,
       bool mark_acknowledged,
       bool remote_install);

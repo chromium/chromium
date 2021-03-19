@@ -273,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsDisabledWithSettingsOverrideAPI,
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
   TestExtensionRegistryObserver observer(registry);
   auto provider = std::make_unique<MockExternalProvider>(
-      extension_service(), Manifest::EXTERNAL_PREF);
+      extension_service(), mojom::ManifestLocation::kExternalPref);
   provider->UpdateOrAddExtension(
       kExternalId, "2.1",
       test_data_dir_.AppendASCII("api_test/settings_overrides/homepage.crx"));

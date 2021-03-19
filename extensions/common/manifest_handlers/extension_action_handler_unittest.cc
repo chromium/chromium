@@ -45,7 +45,8 @@ TEST(ExtensionActionHandlerTest, LoadInvisibleBrowserActionIconUnpacked) {
   file_util::SetReportErrorForInvisibleIconForTesting(true);
   std::string error;
   scoped_refptr<Extension> extension(file_util::LoadExtension(
-      extension_dir, Manifest::UNPACKED, Extension::NO_FLAGS, &error));
+      extension_dir, mojom::ManifestLocation::kUnpacked, Extension::NO_FLAGS,
+      &error));
   file_util::SetReportErrorForInvisibleIconForTesting(false);
   EXPECT_FALSE(extension);
   EXPECT_EQ(
@@ -63,7 +64,8 @@ TEST(ExtensionActionHandlerTest, LoadInvisiblePageActionIconUnpacked) {
   file_util::SetReportErrorForInvisibleIconForTesting(true);
   std::string error;
   scoped_refptr<Extension> extension(file_util::LoadExtension(
-      extension_dir, Manifest::UNPACKED, Extension::NO_FLAGS, &error));
+      extension_dir, mojom::ManifestLocation::kUnpacked, Extension::NO_FLAGS,
+      &error));
   file_util::SetReportErrorForInvisibleIconForTesting(false);
   EXPECT_FALSE(extension);
   EXPECT_EQ(

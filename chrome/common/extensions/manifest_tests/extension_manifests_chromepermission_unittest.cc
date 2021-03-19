@@ -74,9 +74,8 @@ TEST_F(ChromePermissionManifestTest,
                            errors::kInvalidPermissionScheme,
                            manifest_keys::kPermissions, "chrome://resources/"));
   std::string error;
-  LoadExtension(ManifestData("permission_chrome_resources_url.json"),
-                &error,
-                extensions::Manifest::COMPONENT,
+  LoadExtension(ManifestData("permission_chrome_resources_url.json"), &error,
+                extensions::mojom::ManifestLocation::kComponent,
                 Extension::NO_FLAGS);
   EXPECT_EQ("", error);
 }

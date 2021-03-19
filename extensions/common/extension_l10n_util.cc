@@ -164,17 +164,16 @@ namespace extension_l10n_util {
 
 GzippedMessagesPermission GetGzippedMessagesPermissionForExtension(
     const extensions::Extension* extension) {
-  return extension ? GetGzippedMessagesPermissionForLocation(
-                         static_cast<extensions::Manifest::Location>(
-                             extension->location()))
-                   : GzippedMessagesPermission::kDisallow;
+  return extension
+             ? GetGzippedMessagesPermissionForLocation(extension->location())
+             : GzippedMessagesPermission::kDisallow;
 }
 
 GzippedMessagesPermission GetGzippedMessagesPermissionForLocation(
-    extensions::Manifest::Location location) {
+    extensions::mojom::ManifestLocation location) {
   // Component extensions are part of the chromium or chromium OS source and
   // as such are considered a trusted source.
-  return location == extensions::Manifest::COMPONENT
+  return location == extensions::mojom::ManifestLocation::kComponent
              ? GzippedMessagesPermission::kAllowForTrustedSource
              : GzippedMessagesPermission::kDisallow;
 }

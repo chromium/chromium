@@ -30,6 +30,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/url_pattern_set.h"
 #include "services/preferences/public/cpp/dictionary_value_update.h"
 #include "services/preferences/public/cpp/scoped_pref_update.h"
@@ -373,7 +374,7 @@ class ExtensionPrefs : public KeyedService {
   // For updating the prefs when the install location is changed for the
   // extension.
   void SetInstallLocation(const std::string& extension_id,
-                          Manifest::Location location);
+                          mojom::ManifestLocation location);
 
   // Returns whether the extension with |id| has its blocklist bit set.
   //

@@ -240,9 +240,8 @@ scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
     manifest = Manifest::CreateManifestForLoginScreen(
         location, value.CreateDeepCopy(), std::move(extension_id));
   } else {
-    manifest = std::make_unique<Manifest>(
-        static_cast<Manifest::Location>(location), value.CreateDeepCopy(),
-        std::move(extension_id));
+    manifest = std::make_unique<Manifest>(location, value.CreateDeepCopy(),
+                                          std::move(extension_id));
   }
 
   std::vector<InstallWarning> install_warnings;
@@ -453,8 +452,8 @@ const ExtensionGuid& Extension::guid() const {
   return guid_.AsLowercaseString();
 }
 
-mojom::ManifestLocation Extension::location() const {
-  return static_cast<mojom::ManifestLocation>(manifest_->location());
+ManifestLocation Extension::location() const {
+  return manifest_->location();
 }
 
 const std::string& Extension::id() const {

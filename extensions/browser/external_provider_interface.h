@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 
 namespace base {
 class Version;
@@ -86,7 +87,7 @@ class ExternalProviderInterface {
   // This function is no longer used outside unit tests.
   virtual bool GetExtensionDetails(
       const std::string& id,
-      Manifest::Location* location,
+      mojom::ManifestLocation* location,
       std::unique_ptr<base::Version>* version) const = 0;
 
   // Determines if this provider had loaded the list of external extensions

@@ -276,13 +276,13 @@ IN_PROC_BROWSER_TEST_F(UpdateServiceTest, PolicyCorrupted) {
   content_verifier_test::ForceInstallProvider policy(kExtensionId);
   system->management_policy()->RegisterProvider(&policy);
   auto external_provider = std::make_unique<MockExternalProvider>(
-      service, Manifest::EXTERNAL_POLICY_DOWNLOAD);
+      service, mojom::ManifestLocation::kExternalPolicyDownload);
   external_provider->UpdateOrAddExtension(
       std::make_unique<ExternalInstallInfoUpdateUrl>(
           kExtensionId, std::string() /* install_parameter */,
           extension_urls::GetWebstoreUpdateUrl(),
-          Manifest::EXTERNAL_POLICY_DOWNLOAD, 0 /* creation_flags */,
-          true /* mark_acknowledged */));
+          mojom::ManifestLocation::kExternalPolicyDownload,
+          0 /* creation_flags */, true /* mark_acknowledged */));
   service->AddProviderForTesting(std::move(external_provider));
 
   const Extension* extension =

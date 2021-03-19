@@ -485,7 +485,7 @@ scoped_refptr<Extension> UnzipToDirAndLoadExtension(
   }
   std::string error;
   scoped_refptr<Extension> extension = file_util::LoadExtension(
-      unzip_dir, Manifest::INTERNAL, 0 /* flags */, &error);
+      unzip_dir, mojom::ManifestLocation::kInternal, 0 /* flags */, &error);
   EXPECT_NE(nullptr, extension.get()) << " error:'" << error << "'";
   return extension;
 }
