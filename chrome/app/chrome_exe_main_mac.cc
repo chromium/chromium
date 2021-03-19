@@ -50,7 +50,79 @@ typedef int (*ChromeMainPtr)(int, char**);
 
 }  // namespace
 
+static void (*gRecordReplayAttach)(const char* dispatchAddress, const char* buildId);
+static void (*gRecordReplayRecordCommandLineArguments)(int*, char***);
+static void (*gRecordReplayFinishRecording)();
+
+template <typename Src, typename Dst>
+static inline void CastPointer(const Src src, Dst* dst) {
+  static_assert(sizeof(Src) == sizeof(uintptr_t), "bad size");
+  static_assert(sizeof(Dst) == sizeof(uintptr_t), "bad size");
+  memcpy((void*)dst, (const void*)&src, sizeof(uintptr_t));
+}
+
+template <typename T>
+static void RecordReplayLoadSymbol(void* handle, const char* name, T& function) {
+  void* sym = dlsym(handle, name);
+  if (!sym) {
+    fprintf(stderr, "Could not find %s in Record Replay driver.\n", name);
+    return;
+  }
+
+  CastPointer(sym, &function);
+}
+
+static const char* gBuildId = "chromium-experimental";
+
+static void RecordReplayAttach(int* pargc, char*** pargv) {
+  // Only renderer processes are recorded/replayed.
+  bool renderer = false;
+  for (int i = 0; i < *pargc; i++) {
+    if (!strcmp((*pargv)[i], "--type=renderer")) {
+      renderer = true;
+    }
+  }
+  if (!renderer) {
+    return;
+  }
+
+  const char* driver = getenv("RECORD_REPLAY_DRIVER");
+  if (!driver) {
+    return;
+  }
+
+  const char* dispatchAddress = getenv("RECORD_REPLAY_DISPATCH");
+  if (!dispatchAddress) {
+    fprintf(stderr, "RECORD_REPLAY_DISPATCH not set.\n");
+    return;
+  }
+
+  void* handle = dlopen(driver, RTLD_LAZY);
+  if (!handle) {
+    fprintf(stderr, "Loading Record Replay driver failed.\n");
+    return;
+  }
+
+  RecordReplayLoadSymbol(handle, "RecordReplayAttach", gRecordReplayAttach);
+  RecordReplayLoadSymbol(handle, "RecordReplayRecordCommandLineArguments",
+                         gRecordReplayRecordCommandLineArguments);
+  RecordReplayLoadSymbol(handle, "RecordReplayFinishRecording", gRecordReplayFinishRecording);
+
+  if (gRecordReplayAttach && gRecordReplayFinishRecording) {
+    gRecordReplayAttach(dispatchAddress, gBuildId);
+    gRecordReplayRecordCommandLineArguments(pargc, pargv);
+  }
+}
+
+static void RecordReplayFinish() {
+  if (gRecordReplayFinishRecording) {
+    gRecordReplayFinishRecording();
+  }
+}
+
 __attribute__((visibility("default"))) int main(int argc, char* argv[]) {
+  RecordReplayAttach(&argc, &argv);
+
   uint32_t exec_path_size = 0;
   int rv = _NSGetExecutablePath(NULL, &exec_path_size);
   if (rv != -1) {
@@ -112,6 +184,8 @@ __attribute__((visibility("default"))) int main(int argc, char* argv[]) {
     FatalError("dlsym ChromeMain: %s.", dlerror());
   }
   rv = chrome_main(argc, argv);
+
+  RecordReplayFinish();
 
   // exit, don't return from main, to avoid the apparent removal of main from
   // stack backtraces under tail call optimization.

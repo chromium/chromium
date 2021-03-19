@@ -88,6 +88,8 @@
 #include "v8/include/v8-profiler.h"
 #include "v8/include/v8.h"
 
+#include <dlfcn.h>
+
 namespace blink {
 
 static void ReportFatalErrorInMainThread(const char* location,
@@ -715,6 +717,12 @@ class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
 
 void V8Initializer::InitializeMainThread(const intptr_t* reference_table) {
   DCHECK(IsMainThread());
+
+  if (getenv("RECORD_REPLAY_DRIVER")) {
+    void* handle = dlopen(getenv("RECORD_REPLAY_DRIVER"), RTLD_LAZY);
+    CHECK(handle);
+    v8::recordreplay::SetRecordingOrReplaying(handle);
+  }
 
   DEFINE_STATIC_LOCAL(ArrayBufferAllocator, array_buffer_allocator, ());
   gin::IsolateHolder::Initialize(gin::IsolateHolder::kNonStrictMode,
