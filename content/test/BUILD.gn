@@ -993,6 +993,7 @@ test("content_browsertests") {
     "../browser/accessibility/dump_accessibility_node_browsertest.cc",
     "../browser/accessibility/dump_accessibility_scripts_browsertest.cc",
     "../browser/accessibility/dump_accessibility_tree_browsertest.cc",
+    "../browser/accessibility/dump_accessibility_tree_browsertest.h",
     "../browser/accessibility/fullscreen_browsertest.cc",
     "../browser/accessibility/hit_testing_browsertest.cc",
     "../browser/accessibility/hit_testing_browsertest.h",

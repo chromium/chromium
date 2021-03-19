@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/accessibility/dump_accessibility_tree_browsertest.h"
+
 #include <set>
 #include <string>
 #include <vector>
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
-#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -28,8 +29,6 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/base/escape.h"
-#include "ui/accessibility/accessibility_features.h"
-#include "ui/accessibility/accessibility_switches.h"
 
 #if defined(OS_MAC)
 #include "base/mac/mac_util.h"
@@ -46,203 +45,6 @@ namespace content {
 
 using ui::AXPropertyFilter;
 using ui::AXTreeFormatter;
-
-// See content/test/data/accessibility/readme.md for an overview.
-//
-// This test takes a snapshot of the platform BrowserAccessibility tree and
-// tests it against an expected baseline.
-//
-// The flow of the test is as outlined below.
-// 1. Load an html file from content/test/data/accessibility.
-// 2. Read the expectation.
-// 3. Browse to the page and serialize the platform specific tree into a human
-//    readable string.
-// 4. Perform a comparison between actual and expected and fail if they do not
-//    exactly match.
-class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
- public:
-  std::vector<ui::AXPropertyFilter> DefaultFilters() const override;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    DumpAccessibilityTestBase::SetUpCommandLine(command_line);
-    // Enable <dialog>, which is used in some tests.
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kEnableExperimentalWebPlatformFeatures);
-    // Enable accessibility object model, used in other tests.
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kEnableBlinkFeatures, "AccessibilityObjectModel");
-    // Enable display locking, used in some tests.
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kEnableBlinkFeatures, "CSSContentVisibilityHiddenMatchable");
-    // LayoutNGTable table trees have an additional row GenericContainer.
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kEnableBlinkFeatures, "LayoutNGTable");
-    // kDisableAXMenuList is true on Chrome OS by default. Make it consistent
-    // for these cross-platform tests.
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kDisableAXMenuList, "false");
-  }
-
-  void RunAccNameTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path = GetTestFilePath("accessibility", "accname");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
-    }
-    base::FilePath accname_file = test_path.Append(base::FilePath(file_path));
-    RunTest(accname_file, "accessibility/accname", FILE_PATH_LITERAL("tree"));
-  }
-
-  void RunAriaTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path = GetTestFilePath("accessibility", "aria");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
-    }
-    base::FilePath aria_file = test_path.Append(base::FilePath(file_path));
-
-    RunTest(aria_file, "accessibility/aria");
-  }
-
-  void RunAomTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path = GetTestFilePath("accessibility", "aom");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
-    }
-    base::FilePath aom_file = test_path.Append(base::FilePath(file_path));
-
-    RunTest(aom_file, "accessibility/aom");
-  }
-
-  void RunCSSTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path = GetTestFilePath("accessibility", "css");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
-    }
-    base::FilePath css_file = test_path.Append(base::FilePath(file_path));
-
-    RunTest(css_file, "accessibility/css");
-  }
-
-  void RunHtmlTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path = GetTestFilePath("accessibility", "html");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
-    }
-    base::FilePath html_file = test_path.Append(base::FilePath(file_path));
-
-    RunTest(html_file, "accessibility/html");
-  }
-
-  void RunDisplayLockingTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path =
-        GetTestFilePath("accessibility", "display-locking");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
-    }
-    base::FilePath html_file = test_path.Append(base::FilePath(file_path));
-
-    RunTest(html_file, "accessibility/display-locking");
-  }
-
-  void RunRegressionTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path = GetTestFilePath("accessibility", "regression");
-    base::FilePath test_file = test_path.Append(base::FilePath(file_path));
-
-    RunTest(test_file, "accessibility/regression");
-  }
-
-  std::vector<std::string> Dump(std::vector<std::string>& unused) override {
-    WebContentsImpl* web_contents =
-        static_cast<WebContentsImpl*>(shell()->web_contents());
-
-    // To make sure we've handled all accessibility events, add a sentinel by
-    // calling SignalEndOfTest and waiting for a kEndOfTest event in response.
-    AccessibilityNotificationWaiter waiter(web_contents, ui::kAXModeComplete,
-                                           ax::mojom::Event::kEndOfTest);
-    BrowserAccessibilityManager* manager =
-        web_contents->GetRootBrowserAccessibilityManager();
-    manager->SignalEndOfTest();
-    waiter.WaitForNotification();
-
-    std::unique_ptr<AXTreeFormatter> formatter(CreateFormatter());
-    formatter->SetPropertyFilters(scenario_.property_filters,
-                                  AXTreeFormatter::kFiltersDefaultSet);
-    formatter->SetNodeFilters(scenario_.node_filters);
-    std::string actual_contents =
-        formatter->Format(GetRootAccessibilityNode(web_contents));
-    std::string escaped_contents = net::EscapeNonASCII(actual_contents);
-
-    return base::SplitString(escaped_contents, "\n", base::KEEP_WHITESPACE,
-                             base::SPLIT_WANT_NONEMPTY);
-  }
-
-  void RunLanguageDetectionTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path =
-        GetTestFilePath("accessibility", "language-detection");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
-    }
-    base::FilePath language_detection_file =
-        test_path.Append(base::FilePath(file_path));
-
-    // Enable language detection for both static and dynamic content.
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        ::switches::kEnableExperimentalAccessibilityLanguageDetection);
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        ::switches::kEnableExperimentalAccessibilityLanguageDetectionDynamic);
-
-    RunTest(language_detection_file, "accessibility/language-detection");
-  }
-
-  // Testing of the Test Harness itself.
-  void RunTestHarnessTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path = GetTestFilePath("accessibility", "test-harness");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
-    }
-    base::FilePath test_harness_file =
-        test_path.Append(base::FilePath(file_path));
-
-    RunTest(test_harness_file, "accessibility/test-harness");
-  }
-
- protected:
-  // Override from DumpAccessibilityTestBase.
-  void ChooseFeatures(std::vector<base::Feature>* enabled_features,
-                      std::vector<base::Feature>* disabled_features) override {
-    // http://crbug.com/1063155 - temporary until this is enabled
-    // everywhere.
-    enabled_features->emplace_back(
-        features::kEnableAccessibilityExposeHTMLElement);
-    enabled_features->emplace_back(
-        features::kEnableAccessibilityAriaVirtualContent);
-    DumpAccessibilityTestBase::ChooseFeatures(enabled_features,
-                                              disabled_features);
-  }
-};
-
-// Subclass of DumpAccessibilityTreeTest that exposes ignored nodes.
-class DumpAccessibilityTreeTestWithIgnoredNodes
-    : public DumpAccessibilityTreeTest {
- protected:
-  // Override from DumpAccessibilityTreeTest.
-  void ChooseFeatures(std::vector<base::Feature>* enabled_features,
-                      std::vector<base::Feature>* disabled_features) override {
-    // http://crbug.com/1063155 - temporary until this is enabled
-    // everywhere.
-    enabled_features->emplace_back(
-        features::kEnableAccessibilityExposeIgnoredNodes);
-    DumpAccessibilityTreeTest::ChooseFeatures(enabled_features,
-                                              disabled_features);
-  }
-};
 
 std::vector<ui::AXPropertyFilter> DumpAccessibilityTreeTest::DefaultFilters()
     const {
@@ -267,6 +69,77 @@ std::vector<ui::AXPropertyFilter> DumpAccessibilityTreeTest::DefaultFilters()
   // After denying empty values, because we want to allow name=''
   property_filters.emplace_back("name=*", AXPropertyFilter::ALLOW_EMPTY);
   return property_filters;
+}
+
+void DumpAccessibilityTreeTest::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  DumpAccessibilityTestBase::SetUpCommandLine(command_line);
+  // Enable <dialog>, which is used in some tests.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableExperimentalWebPlatformFeatures);
+  // Enable accessibility object model, used in other tests.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kEnableBlinkFeatures, "AccessibilityObjectModel");
+  // Enable display locking, used in some tests.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kEnableBlinkFeatures, "CSSContentVisibilityHiddenMatchable");
+  // LayoutNGTable table trees have an additional row GenericContainer.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kEnableBlinkFeatures, "LayoutNGTable");
+  // kDisableAXMenuList is true on Chrome OS by default. Make it consistent
+  // for these cross-platform tests.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kDisableAXMenuList, "false");
+}
+
+std::vector<std::string> DumpAccessibilityTreeTest::Dump(
+    std::vector<std::string>& unused) {
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  // To make sure we've handled all accessibility events, add a sentinel by
+  // calling SignalEndOfTest and waiting for a kEndOfTest event in response.
+  AccessibilityNotificationWaiter waiter(web_contents, ui::kAXModeComplete,
+                                         ax::mojom::Event::kEndOfTest);
+  BrowserAccessibilityManager* manager =
+      web_contents->GetRootBrowserAccessibilityManager();
+  manager->SignalEndOfTest();
+  waiter.WaitForNotification();
+
+  std::unique_ptr<AXTreeFormatter> formatter(CreateFormatter());
+  formatter->SetPropertyFilters(scenario_.property_filters,
+                                AXTreeFormatter::kFiltersDefaultSet);
+  formatter->SetNodeFilters(scenario_.node_filters);
+  std::string actual_contents =
+      formatter->Format(GetRootAccessibilityNode(web_contents));
+  std::string escaped_contents = net::EscapeNonASCII(actual_contents);
+
+  return base::SplitString(escaped_contents, "\n", base::KEEP_WHITESPACE,
+                           base::SPLIT_WANT_NONEMPTY);
+}
+
+void DumpAccessibilityTreeTest::ChooseFeatures(
+    std::vector<base::Feature>* enabled_features,
+    std::vector<base::Feature>* disabled_features) {
+  // http://crbug.com/1063155 - temporary until this is enabled
+  // everywhere.
+  enabled_features->emplace_back(
+      features::kEnableAccessibilityExposeHTMLElement);
+  enabled_features->emplace_back(
+      features::kEnableAccessibilityAriaVirtualContent);
+  DumpAccessibilityTestBase::ChooseFeatures(enabled_features,
+                                            disabled_features);
+}
+
+void DumpAccessibilityTreeTestWithIgnoredNodes::ChooseFeatures(
+    std::vector<base::Feature>* enabled_features,
+    std::vector<base::Feature>* disabled_features) {
+  // http://crbug.com/1063155 - temporary until this is enabled
+  // everywhere.
+  enabled_features->emplace_back(
+      features::kEnableAccessibilityExposeIgnoredNodes);
+  DumpAccessibilityTreeTest::ChooseFeatures(enabled_features,
+                                            disabled_features);
 }
 
 // Parameterize the tests so that each test-pass is run independently.
