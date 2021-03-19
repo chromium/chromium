@@ -94,8 +94,10 @@ declare_args() {
   # Enable HLS with SAMPLE-AES decryption.
   enable_hls_sample_aes = proprietary_codecs && (is_chromecast || is_fuchsia)
 
-  # Enable logging override, e.g. enable DVLOGs at build time.
-  enable_logging_override = is_chromecast
+  # Enable logging override, e.g. enable DVLOGs through level 2 at build time.
+  # On Chromecast, these are logged as INFO.
+  # On Fuchsia, these are logged as VLOGs.
+  enable_logging_override = is_chromecast || is_fuchsia
 
   enable_dav1d_decoder = !is_ios
 
