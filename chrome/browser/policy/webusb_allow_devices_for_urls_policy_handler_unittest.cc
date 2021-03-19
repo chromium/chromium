@@ -340,9 +340,9 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
   EXPECT_FALSE(handler()->CheckPolicySettings(policy, &errors));
   EXPECT_EQ(1ul, errors.size());
 
-  const std::u16string kExpected = base::ASCIIToUTF16(
-      "Schema validation error at \"items[0].devices.items[0]\": The "
-      "vendor_id must be an unsigned short integer");
+  const std::u16string kExpected =
+      u"Schema validation error at \"items[0].devices.items[0].vendor_id\": "
+      u"Invalid value for integer";
   EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
 }
 
@@ -360,9 +360,9 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
   EXPECT_FALSE(handler()->CheckPolicySettings(policy, &errors));
   EXPECT_EQ(1ul, errors.size());
 
-  const std::u16string kExpected = base::ASCIIToUTF16(
-      "Schema validation error at \"items[0].devices.items[0]\": The "
-      "product_id must be an unsigned short integer");
+  const std::u16string kExpected =
+      u"Schema validation error at \"items[0].devices.items[0].product_id\": "
+      u"Invalid value for integer";
   EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
 }
 

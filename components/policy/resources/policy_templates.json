@@ -6126,8 +6126,8 @@
               'items': {
                 'type': 'object',
                 'properties': {
-                  'vendor_id': { 'type': 'integer' },
-                  'product_id': { 'type': 'integer' }
+                  'vendor_id': { 'type': 'integer', 'minimum': 0, 'maximum': 65535 },
+                  'product_id': { 'type': 'integer', 'minimum': 0, 'maximum': 65535 }
                 }
               }
             },
