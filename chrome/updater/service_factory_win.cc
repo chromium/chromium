@@ -18,8 +18,7 @@ namespace {
 class WRLModuleInitializer {
  public:
   WRLModuleInitializer() {
-    Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::Create(
-        []() { DVLOG(2) << "COM client is shutting down."; });
+    Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::GetModule();
   }
 
   static const WRLModuleInitializer& Get() {

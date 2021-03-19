@@ -32,6 +32,15 @@
 
 namespace updater {
 
+namespace {
+
+bool IsInternalService() {
+  return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+             kServerServiceSwitch) == kServerUpdateServiceInternalSwitchValue;
+}
+
+}  // namespace
+
 AppServer::AppServer() = default;
 
 AppServer::~AppServer() = default;
@@ -56,9 +65,12 @@ base::OnceClosure AppServer::ModeCheck() {
   if (this_version < active_version) {
     global_prefs = nullptr;
     uninstall_self_ = true;
+    if (IsInternalService()) {
+      return base::BindOnce(&AppServer::ActiveDutyInternal, this,
+                            MakeInactiveUpdateServiceInternal());
+    }
     return base::BindOnce(&AppServer::ActiveDuty, this,
-                          MakeInactiveUpdateService(),
-                          MakeInactiveUpdateServiceInternal());
+                          MakeInactiveUpdateService());
   }
 
   if (active_version != base::Version("0") && active_version != this_version) {
@@ -74,11 +86,13 @@ base::OnceClosure AppServer::ModeCheck() {
       return base::BindOnce(&AppServer::Shutdown, this, kErrorFailedToSwap);
   }
 
+  if (IsInternalService()) {
+    return base::BindOnce(&AppServer::ActiveDutyInternal, this,
+                          base::MakeRefCounted<UpdateServiceInternalImpl>());
+  }
   config_ = base::MakeRefCounted<Configurator>(std::move(global_prefs));
-  return base::BindOnce(
-      &AppServer::ActiveDuty, this,
-      base::MakeRefCounted<UpdateServiceImpl>(config_),
-      base::MakeRefCounted<UpdateServiceInternalImpl>(config_));
+  return base::BindOnce(&AppServer::ActiveDuty, this,
+                        base::MakeRefCounted<UpdateServiceImpl>(config_));
 }
 
 void AppServer::Uninitialize() {
@@ -106,7 +120,7 @@ void AppServer::MaybeUninstall() {
     if (updater_scope() == UpdaterScope::kSystem)
       command_line.AppendSwitch(kSystemSwitch);
     command_line.AppendSwitch("--enable-logging");
-    command_line.AppendSwitchASCII("--vmodule", "*/chrome/updater/*=2");
+    command_line.AppendSwitchASCII("--vmodule", "*/updater/*=2");
     DVLOG(2) << "Launching uninstall command: "
              << command_line.GetCommandLineString();
 
@@ -130,7 +144,11 @@ void AppServer::Qualify(std::unique_ptr<LocalPrefs> local_prefs) {
 
   // Start ActiveDuty with inactive service implementations. To use active
   // implementations, the server would have to ModeCheck again.
-  ActiveDuty(MakeInactiveUpdateService(), MakeInactiveUpdateServiceInternal());
+  if (IsInternalService()) {
+    ActiveDutyInternal(MakeInactiveUpdateServiceInternal());
+  } else {
+    ActiveDuty(MakeInactiveUpdateService());
+  }
 }
 
 bool AppServer::SwapVersions(GlobalPrefs* global_prefs) {

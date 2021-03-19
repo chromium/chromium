@@ -41,10 +41,11 @@ class AppServer : public App {
   void Initialize() final;
   void FirstTaskRun() final;
 
-  // Sets up the server for normal active version functions using the provided
-  // services.
-  virtual void ActiveDuty(
-      scoped_refptr<UpdateService> update_service,
+  // Sets up the server to handle active version RPCs.
+  virtual void ActiveDuty(scoped_refptr<UpdateService> update_service) = 0;
+
+  // Sets up the server to handle internal service RPCs.
+  virtual void ActiveDutyInternal(
       scoped_refptr<UpdateServiceInternal> update_service_internal) = 0;
 
   // Sets up all non-side-by-side RPC interfaces to point to this candidate

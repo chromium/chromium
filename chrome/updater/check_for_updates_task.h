@@ -13,22 +13,24 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/version.h"
+#include "chrome/updater/update_service.h"
 
 namespace update_client {
+class Configurator;
 class UpdateClient;
 enum class Error;
 }  // namespace update_client
 
 namespace updater {
-
-class Configurator;
 class PersistedData;
 
 class CheckForUpdatesTask
     : public base::RefCountedThreadSafe<CheckForUpdatesTask> {
  public:
-  CheckForUpdatesTask(scoped_refptr<updater::Configurator> config,
-                      base::OnceClosure callback);
+  CheckForUpdatesTask(
+      scoped_refptr<update_client::Configurator> config,
+      base::OnceCallback<void(UpdateService::Callback)> update_checker,
+      base::OnceClosure callback);
   void Run();
 
   // Provides a way to remove apps from the persisted data if the app is no
@@ -95,7 +97,8 @@ class CheckForUpdatesTask
   void UnregisterMissingAppsDone();
 
   SEQUENCE_CHECKER(sequence_checker_);
-  scoped_refptr<updater::Configurator> config_;
+  scoped_refptr<update_client::Configurator> config_;
+  base::OnceCallback<void(UpdateService::Callback)> update_checker_;
   scoped_refptr<updater::PersistedData> persisted_data_;
   scoped_refptr<update_client::UpdateClient> update_client_;
   base::OnceClosure callback_;

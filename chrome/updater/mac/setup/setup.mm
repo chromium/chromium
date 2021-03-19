@@ -143,7 +143,7 @@ base::ScopedCFTypeRef<CFDictionaryRef> CreateServiceLaunchdPlist(
     @LAUNCH_JOBKEY_LABEL : GetUpdateServiceLaunchdLabel(),
     @LAUNCH_JOBKEY_PROGRAMARGUMENTS : program_arguments,
     @LAUNCH_JOBKEY_MACHSERVICES : @{GetUpdateServiceMachName() : @YES},
-    @LAUNCH_JOBKEY_ABANDONPROCESSGROUP : @NO,
+    @LAUNCH_JOBKEY_ABANDONPROCESSGROUP : @YES,
     @LAUNCH_JOBKEY_LIMITLOADTOSESSIONTYPE : NSStringSessionType(scope)
   };
 
@@ -169,7 +169,7 @@ base::ScopedCFTypeRef<CFDictionaryRef> CreateWakeLaunchdPlist(
     @LAUNCH_JOBKEY_LABEL : GetWakeLaunchdLabel(),
     @LAUNCH_JOBKEY_PROGRAMARGUMENTS : program_arguments,
     @LAUNCH_JOBKEY_STARTINTERVAL : @3600,
-    @LAUNCH_JOBKEY_ABANDONPROCESSGROUP : @NO,
+    @LAUNCH_JOBKEY_ABANDONPROCESSGROUP : @YES,
     @LAUNCH_JOBKEY_LIMITLOADTOSESSIONTYPE : NSStringSessionType(scope)
   };
 

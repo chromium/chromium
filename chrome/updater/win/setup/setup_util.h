@@ -67,6 +67,7 @@ void AddInstallComInterfaceWorkItems(HKEY root,
 void AddInstallServerWorkItems(HKEY root,
                                CLSID iid,
                                const base::FilePath& executable_path,
+                               bool internal_service,
                                WorkItemList* list);
 
 // Adds work items to `list` to install the COM service.

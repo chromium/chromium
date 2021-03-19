@@ -37,10 +37,10 @@ class AppServerTest : public AppServer {
         .WillByDefault(Invoke(this, &AppServerTest::Shutdown0));
   }
 
+  MOCK_METHOD(void, ActiveDuty, (scoped_refptr<UpdateService>), (override));
   MOCK_METHOD(void,
-              ActiveDuty,
-              (scoped_refptr<UpdateService>,
-               scoped_refptr<UpdateServiceInternal>),
+              ActiveDutyInternal,
+              (scoped_refptr<UpdateServiceInternal>),
               (override));
   MOCK_METHOD(bool, SwapRPCInterfaces, (), (override));
   MOCK_METHOD(void, UninstallSelf, (), (override));

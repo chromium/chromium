@@ -7,6 +7,7 @@
 #include <wchar.h>
 
 #include "base/bind.h"
+#include "base/bind_post_task.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
@@ -200,7 +201,30 @@ HRESULT UpdaterImpl::RegisterApp(const wchar_t* app_id,
   return S_OK;
 }
 
-//  Called by the COM RPC runtime on one of its threads. Invokes the in-process
+// Called by the COM RPC runtime on one of its threads. Invokes the in-process
+// `update_service` on the main sequence. The callbacks received from
+// `update_service` arrive in the main sequence too.
+HRESULT UpdaterImpl::RunPeriodicTasks(IUpdaterCallback* callback) {
+  scoped_refptr<ComServerApp> com_server = AppServerSingletonInstance();
+  com_server->main_task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<UpdateService> update_service,
+             base::OnceClosure callback_closure) {
+            update_service->RunPeriodicTasks(std::move(callback_closure));
+          },
+          com_server->update_service(),
+          base::BindPostTask(
+              base::ThreadPool::CreateSequencedTaskRunner(
+                  {base::MayBlock(),
+                   base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}),
+              base::BindOnce(base::IgnoreResult(&IUpdaterCallback::Run),
+                             Microsoft::WRL::ComPtr<IUpdaterCallback>(callback),
+                             0))));
+  return S_OK;
+}
+
+// Called by the COM RPC runtime on one of its threads. Invokes the in-process
 // `update_service` on the main sequence. The callbacks received from
 // `update_service` arrive in the main sequence too. Since handling these
 // callbacks involves issuing outgoing COM RPC calls, which block, such COM

@@ -94,7 +94,8 @@ std::vector<GUID> GetActiveInterfaces() {
           __uuidof(IUpdateState),
           __uuidof(IUpdater),
           __uuidof(IUpdaterObserver),
-          __uuidof(IUpdaterRegisterAppCallback)};
+          __uuidof(IUpdaterRegisterAppCallback),
+          __uuidof(IUpdaterCallback)};
 }
 
 std::vector<CLSID> GetSideBySideServers() {
@@ -150,6 +151,7 @@ void AddInstallComInterfaceWorkItems(HKEY root,
 void AddInstallServerWorkItems(HKEY root,
                                CLSID clsid,
                                const base::FilePath& com_server_path,
+                               bool internal_service,
                                WorkItemList* list) {
   const std::wstring clsid_reg_path = GetComServerClsidRegistryPath(clsid);
 
@@ -167,6 +169,10 @@ void AddInstallServerWorkItems(HKEY root,
 
   base::CommandLine run_com_server_command(com_server_path);
   run_com_server_command.AppendSwitch(kServerSwitch);
+  run_com_server_command.AppendSwitchASCII(
+      kServerServiceSwitch, internal_service
+                                ? kServerUpdateServiceInternalSwitchValue
+                                : kServerUpdateServiceSwitchValue);
 #if !defined(NDEBUG)
   run_com_server_command.AppendSwitch(kEnableLoggingSwitch);
   run_com_server_command.AppendSwitchASCII(kLoggingModuleSwitch,
@@ -235,6 +241,7 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid) {
       {__uuidof(IUpdaterObserver), kUpdaterIndex},
       {__uuidof(IUpdaterRegisterAppCallback), kUpdaterIndex},
       {__uuidof(IUpdateState), kUpdaterIndex},
+      {__uuidof(IUpdaterCallback), kUpdaterIndex},
 
       // Updater internal typelib.
       {__uuidof(IUpdaterInternal), kUpdaterInternalIndex},

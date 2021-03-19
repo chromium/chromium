@@ -53,7 +53,7 @@ void AddComServerWorkItems(HKEY root,
   }
 
   for (const auto& clsid : GetSideBySideServers()) {
-    AddInstallServerWorkItems(root, clsid, com_server_path, list);
+    AddInstallServerWorkItems(root, clsid, com_server_path, true, list);
   }
 }
 

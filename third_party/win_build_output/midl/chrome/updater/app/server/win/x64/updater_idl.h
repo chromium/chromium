@@ -73,6 +73,13 @@ typedef interface IUpdaterObserver IUpdaterObserver;
 #endif 	/* __IUpdaterObserver_FWD_DEFINED__ */
 
 
+#ifndef __IUpdaterCallback_FWD_DEFINED__
+#define __IUpdaterCallback_FWD_DEFINED__
+typedef interface IUpdaterCallback IUpdaterCallback;
+
+#endif 	/* __IUpdaterCallback_FWD_DEFINED__ */
+
+
 #ifndef __IUpdater_FWD_DEFINED__
 #define __IUpdater_FWD_DEFINED__
 typedef interface IUpdater IUpdater;
@@ -561,6 +568,86 @@ EXTERN_C const IID IID_IUpdaterObserver;
 #endif 	/* __IUpdaterObserver_INTERFACE_DEFINED__ */
 
 
+#ifndef __IUpdaterCallback_INTERFACE_DEFINED__
+#define __IUpdaterCallback_INTERFACE_DEFINED__
+
+/* interface IUpdaterCallback */
+/* [unique][helpstring][uuid][dual][object] */ 
+
+
+EXTERN_C const IID IID_IUpdaterCallback;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("8BAB6F84-AD67-4819-B846-CC890880FD3B")
+    IUpdaterCallback : public IUnknown
+    {
+    public:
+        virtual HRESULT STDMETHODCALLTYPE Run( 
+            /* [in] */ LONG result) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IUpdaterCallbackVtbl
+    {
+        BEGIN_INTERFACE
+        
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IUpdaterCallback * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IUpdaterCallback * This);
+        
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IUpdaterCallback * This);
+        
+        HRESULT ( STDMETHODCALLTYPE *Run )( 
+            IUpdaterCallback * This,
+            /* [in] */ LONG result);
+        
+        END_INTERFACE
+    } IUpdaterCallbackVtbl;
+
+    interface IUpdaterCallback
+    {
+        CONST_VTBL struct IUpdaterCallbackVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IUpdaterCallback_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IUpdaterCallback_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IUpdaterCallback_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IUpdaterCallback_Run(This,result)	\
+    ( (This)->lpVtbl -> Run(This,result) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IUpdaterCallback_INTERFACE_DEFINED__ */
+
+
 #ifndef __IUpdater_INTERFACE_DEFINED__
 #define __IUpdater_INTERFACE_DEFINED__
 
@@ -589,6 +676,9 @@ EXTERN_C const IID IID_IUpdater;
             /* [string][in] */ const WCHAR *version,
             /* [string][in] */ const WCHAR *existence_checker_path,
             /* [in] */ IUpdaterRegisterAppCallback *callback) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE RunPeriodicTasks( 
+            /* [in] */ IUpdaterCallback *callback) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE Update( 
             /* [string][in] */ const WCHAR *app_id,
@@ -635,6 +725,10 @@ EXTERN_C const IID IID_IUpdater;
             /* [string][in] */ const WCHAR *existence_checker_path,
             /* [in] */ IUpdaterRegisterAppCallback *callback);
         
+        HRESULT ( STDMETHODCALLTYPE *RunPeriodicTasks )( 
+            IUpdater * This,
+            /* [in] */ IUpdaterCallback *callback);
+        
         HRESULT ( STDMETHODCALLTYPE *Update )( 
             IUpdater * This,
             /* [string][in] */ const WCHAR *app_id,
@@ -675,6 +769,9 @@ EXTERN_C const IID IID_IUpdater;
 
 #define IUpdater_RegisterApp(This,app_id,brand_code,tag,version,existence_checker_path,callback)	\
     ( (This)->lpVtbl -> RegisterApp(This,app_id,brand_code,tag,version,existence_checker_path,callback) ) 
+
+#define IUpdater_RunPeriodicTasks(This,callback)	\
+    ( (This)->lpVtbl -> RunPeriodicTasks(This,callback) ) 
 
 #define IUpdater_Update(This,app_id,observer)	\
     ( (This)->lpVtbl -> Update(This,app_id,observer) ) 

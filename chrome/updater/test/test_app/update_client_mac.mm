@@ -90,6 +90,9 @@
                             reply:reply];
 }
 
+- (void)runPeriodicTasksWithReply:(void (^)(void))reply {
+}
+
 - (void)checkForUpdatesWithUpdateState:
             (id<CRUUpdateStateObserving> _Nonnull)updateState
                                  reply:(void (^_Nonnull)(int rc))reply {

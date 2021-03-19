@@ -5,6 +5,7 @@
 #include "chrome/updater/update_service_impl_inactive.h"
 
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -34,6 +35,10 @@ class UpdateServiceImplInactive : public UpdateService {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), RegistrationResponse(-1)));
+  }
+
+  void RunPeriodicTasks(base::OnceClosure callback) override {
+    std::move(callback).Run();
   }
 
   void UpdateAll(StateChangeCallback state_update, Callback callback) override {

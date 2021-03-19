@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/bind_post_task.h"
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/logging.h"
@@ -187,6 +188,54 @@ class UpdaterRegisterCallback
   UpdateService::RegisterAppCallback callback_;
 };
 
+// This class implements the IUpdaterCallback interface and exposes it as a COM
+// object. The class has thread-affinity for the STA thread.  However, its
+// functions are invoked directly by COM RPC, and they are not sequenced through
+// the thread task runner. This means that sequence checkers can't be used in
+// this class.
+class UpdaterCallback
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          IUpdaterCallback> {
+ public:
+  UpdaterCallback(Microsoft::WRL::ComPtr<IUpdater> updater,
+                  base::OnceCallback<void(LONG)> callback);
+  UpdaterCallback(const UpdaterCallback&) = delete;
+  UpdaterCallback& operator=(const UpdaterCallback&) = delete;
+
+  // Overrides for IUpdaterCallback. These functions are called on
+  // the STA thread directly by the COM RPC runtime.
+  IFACEMETHODIMP Run(LONG status_code) override {
+    com_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&UpdaterCallback::OnRunOnSTA,
+                                  base::WrapRefCounted(this), status_code));
+    return S_OK;
+  }
+
+  // Disconnects this observer from its subject and ensures the callbacks are
+  // not posted after this function is called. Returns the completion callback
+  // so that the owner of this object can take back the callback ownership.
+  base::OnceCallback<void(LONG)> Disconnect();
+
+ private:
+  ~UpdaterCallback() override;
+
+  // Called in sequence on the `com_task_runner_`.
+  void OnRunOnSTA(LONG status_code);
+
+  // Bound to the STA thread.
+  THREAD_CHECKER(thread_checker_);
+
+  // Bound to the STA thread.
+  scoped_refptr<base::SequencedTaskRunner> com_task_runner_;
+
+  // Keeps a reference of the updater object alive, while this object is
+  // owned by the COM RPC runtime.
+  Microsoft::WRL::ComPtr<IUpdater> updater_;
+
+  base::OnceCallback<void(LONG)> callback_;
+};
+
 }  // namespace
 
 UpdaterObserver::UpdaterObserver(
@@ -354,6 +403,35 @@ void UpdaterRegisterCallback::OnRunOnSTA(LONG status_code) {
       base::BindOnce(std::move(callback_), RegistrationResponse(status_code)));
 }
 
+UpdaterCallback::UpdaterCallback(Microsoft::WRL::ComPtr<IUpdater> updater,
+                                 base::OnceCallback<void(LONG)> callback)
+    : com_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      updater_(updater),
+      callback_(std::move(callback)) {}
+
+UpdaterCallback::~UpdaterCallback() = default;
+
+base::OnceCallback<void(LONG)> UpdaterCallback::Disconnect() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DVLOG(2) << __func__;
+  updater_ = nullptr;
+  return std::move(callback_);
+}
+
+void UpdaterCallback::OnRunOnSTA(LONG status_code) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  DVLOG(4) << __func__;
+
+  if (!callback_) {
+    DVLOG(4) << "Skipping posting the callback.";
+    return;
+  }
+
+  com_task_runner_->PostTask(FROM_HERE,
+                             base::BindOnce(std::move(callback_), status_code));
+}
+
 UpdateServiceProxy::UpdateServiceProxy(UpdaterScope updater_scope)
     : main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       com_task_runner_(
@@ -399,6 +477,14 @@ void UpdateServiceProxy::RegisterApp(const RegistrationRequest& request,
                     FROM_HERE, base::BindOnce(std::move(callback), response));
               },
               base::SequencedTaskRunnerHandle::Get(), std::move(callback))));
+}
+
+void UpdateServiceProxy::RunPeriodicTasks(base::OnceClosure callback) {
+  com_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&UpdateServiceProxy::RunPeriodicTasksOnSTA, this,
+                     base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                                        std::move(callback))));
 }
 
 void UpdateServiceProxy::UpdateAll(StateChangeCallback state_update,
@@ -525,6 +611,28 @@ void UpdateServiceProxy::RegisterAppOnSTA(
   if (FAILED(hr)) {
     DVLOG(2) << "Failed to call IUpdater::RegisterApp" << std::hex << hr;
     callback_wrapper->Disconnect().Run(RegistrationResponse(hr));
+    return;
+  }
+}
+
+void UpdateServiceProxy::RunPeriodicTasksOnSTA(base::OnceClosure callback) {
+  DCHECK(com_task_runner_->BelongsToCurrentThread());
+  Microsoft::WRL::ComPtr<IUpdater> updater;
+  HRESULT hr = CreateUpdater(updater);
+  if (FAILED(hr)) {
+    DVLOG(2) << "Failed to create the updater interface: " << std::hex << hr;
+    std::move(callback).Run();
+    return;
+  }
+
+  auto callback_wrapper = Microsoft::WRL::Make<UpdaterCallback>(
+      updater, base::BindOnce([](base::OnceClosure callback,
+                                 LONG unused) { std::move(callback).Run(); },
+                              std::move(callback)));
+  hr = updater->RunPeriodicTasks(callback_wrapper.Get());
+  if (FAILED(hr)) {
+    DVLOG(2) << "Failed to call IUpdater::RunPeriodicTasks" << std::hex << hr;
+    callback_wrapper->Disconnect().Run(hr);
     return;
   }
 }

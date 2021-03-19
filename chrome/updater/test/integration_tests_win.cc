@@ -255,13 +255,28 @@ void ExpectNotActive(UpdaterScope scope, const std::string& id) {
 // legacy interfaces are available. Failure to query these interfaces indicates
 // an issue with typelib registration.
 void ExpectInterfacesRegistered() {
-  // IUpdater.
-  Microsoft::WRL::ComPtr<IUnknown> updater_server;
-  EXPECT_HRESULT_SUCCEEDED(::CoCreateInstance(__uuidof(UpdaterClass), nullptr,
-                                              CLSCTX_LOCAL_SERVER,
-                                              IID_PPV_ARGS(&updater_server)));
-  Microsoft::WRL::ComPtr<IUpdater> updater;
-  EXPECT_HRESULT_SUCCEEDED(updater_server.As(&updater));
+  {  // IUpdater, IGoogleUpdate3Web and IAppBundleWeb.
+    // The block is necessary so that updater_server goes out of scope and
+    // releases the prefs lock before updater_internal_server tries to acquire
+    // it to mode-check.
+    Microsoft::WRL::ComPtr<IUnknown> updater_server;
+    EXPECT_HRESULT_SUCCEEDED(::CoCreateInstance(__uuidof(UpdaterClass), nullptr,
+                                                CLSCTX_LOCAL_SERVER,
+                                                IID_PPV_ARGS(&updater_server)));
+    Microsoft::WRL::ComPtr<IUpdater> updater;
+    EXPECT_HRESULT_SUCCEEDED(updater_server.As(&updater));
+
+    Microsoft::WRL::ComPtr<IUnknown> updater_legacy_server;
+    EXPECT_HRESULT_SUCCEEDED(::CoCreateInstance(
+        __uuidof(GoogleUpdate3WebUserClass), nullptr, CLSCTX_LOCAL_SERVER,
+        IID_PPV_ARGS(&updater_legacy_server)));
+    Microsoft::WRL::ComPtr<IGoogleUpdate3Web> google_update;
+    EXPECT_HRESULT_SUCCEEDED(updater_legacy_server.As(&google_update));
+    Microsoft::WRL::ComPtr<IAppBundleWeb> app_bundle;
+    Microsoft::WRL::ComPtr<IDispatch> dispatch;
+    EXPECT_HRESULT_SUCCEEDED(google_update->createAppBundleWeb(&dispatch));
+    EXPECT_HRESULT_SUCCEEDED(dispatch.As(&app_bundle));
+  }
 
   // IUpdaterInternal.
   Microsoft::WRL::ComPtr<IUnknown> updater_internal_server;
@@ -270,18 +285,6 @@ void ExpectInterfacesRegistered() {
       IID_PPV_ARGS(&updater_internal_server)));
   Microsoft::WRL::ComPtr<IUpdaterInternal> updater_internal;
   EXPECT_HRESULT_SUCCEEDED(updater_internal_server.As(&updater_internal));
-
-  // IGoogleUpdate3Web and IAppBundleWeb.
-  Microsoft::WRL::ComPtr<IUnknown> updater_legacy_server;
-  EXPECT_HRESULT_SUCCEEDED(::CoCreateInstance(
-      __uuidof(GoogleUpdate3WebUserClass), nullptr, CLSCTX_LOCAL_SERVER,
-      IID_PPV_ARGS(&updater_legacy_server)));
-  Microsoft::WRL::ComPtr<IGoogleUpdate3Web> google_update;
-  EXPECT_HRESULT_SUCCEEDED(updater_legacy_server.As(&google_update));
-  Microsoft::WRL::ComPtr<IAppBundleWeb> app_bundle;
-  Microsoft::WRL::ComPtr<IDispatch> dispatch;
-  EXPECT_HRESULT_SUCCEEDED(google_update->createAppBundleWeb(&dispatch));
-  EXPECT_HRESULT_SUCCEEDED(dispatch.As(&app_bundle));
 }
 
 }  // namespace test

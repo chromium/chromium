@@ -45,6 +45,7 @@ class UpdateServiceProxy : public UpdateService {
       base::OnceCallback<void(const base::Version&)> callback) const override;
   void RegisterApp(const RegistrationRequest& request,
                    RegisterAppCallback callback) override;
+  void RunPeriodicTasks(base::OnceClosure callback) override;
   void UpdateAll(StateChangeCallback state_update, Callback callback) override;
   void Update(const std::string& app_id,
               Priority priority,
@@ -60,6 +61,7 @@ class UpdateServiceProxy : public UpdateService {
       base::OnceCallback<void(const base::Version&)> callback) const;
   void RegisterAppOnSTA(const RegistrationRequest& request,
                         RegisterAppCallback callback);
+  void RunPeriodicTasksOnSTA(base::OnceClosure callback);
   void UpdateAllOnSTA(StateChangeCallback state_update, Callback callback);
   void UpdateOnSTA(const std::string& app_id,
                    StateChangeCallback state_update,

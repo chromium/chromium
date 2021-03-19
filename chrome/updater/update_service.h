@@ -171,6 +171,10 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
   virtual void RegisterApp(const RegistrationRequest& request,
                            RegisterAppCallback callback) = 0;
 
+  // Runs periodic tasks such as checking for uninstallation of registered
+  // applications or doing background updates for registered applications.
+  virtual void RunPeriodicTasks(base::OnceClosure callback) = 0;
+
   // Initiates an update check for all registered applications. Receives state
   // change notifications through the repeating |state_update| callback.
   // Calls |callback| once  the operation is complete.

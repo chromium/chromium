@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -20,21 +19,23 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/version.h"
-#include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/update_service_impl.h"
 #include "chrome/updater/util.h"
 #include "components/prefs/pref_service.h"
+#include "components/update_client/configurator.h"
 #include "components/update_client/update_client.h"
 
 namespace updater {
 
 CheckForUpdatesTask::CheckForUpdatesTask(
-    scoped_refptr<updater::Configurator> config,
+    scoped_refptr<update_client::Configurator> config,
+    base::OnceCallback<void(UpdateService::Callback)> update_checker,
     base::OnceClosure callback)
     : config_(config),
+      update_checker_(std::move(update_checker)),
       persisted_data_(
           base::MakeRefCounted<PersistedData>(config_->GetPrefService())),
       update_client_(update_client::UpdateClientFactory(config_)),
@@ -68,9 +69,6 @@ bool CheckForUpdatesTask::WaitingOnUninstallPings() const {
 
 void CheckForUpdatesTask::MaybeCheckForUpdates() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  scoped_refptr<UpdateServiceImpl> update_service =
-      base::MakeRefCounted<UpdateServiceImpl>(config_);
-
   const base::Time lastUpdateTime =
       config_->GetPrefService()->GetTime(kPrefUpdateTime);
 
@@ -90,10 +88,10 @@ void CheckForUpdatesTask::MaybeCheckForUpdates() {
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
-          &updater::UpdateService::UpdateAll, update_service, base::DoNothing(),
+          std::move(update_checker_),
           base::BindOnce(
               [](base::OnceClosure closure,
-                 scoped_refptr<updater::Configurator> config,
+                 scoped_refptr<update_client::Configurator> config,
                  UpdateService::Result result) {
                 const int exit_code = static_cast<int>(result);
                 VLOG(0) << "UpdateAll complete: exit_code = " << exit_code;
