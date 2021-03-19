@@ -54,6 +54,25 @@ execution:
   EXPECT_EQ("00", EvalJs(JsReplace("$1 + $2", 0, "0")));
 ```
 
+## Simulating Input
+
+A wide range of methods are provided to simulate input such as clicks, touch,
+mouse moves and so on. Many reside in
+https://source.chromium.org/chromium/chromium/src/+/master:content/public/test/browser_test_utils.h.
+
+When using input in tests, be aware that the renderer drops all input
+received when the main frame is not being updated or rendered immediately
+after load. There are three ways, in order of preference, to ensure that
+the input will be processed. Use these when your test input seems to be having
+no effect:
+
+* Use the 'WaitForHitTestData method' from
+  `content/public/test/hit_test_region_observer.h`
+
+* Include visible text in the web contents you are interacting with.
+
+* Add 'blink::switches::kAllowPreCommitInput' as a command line flag.
+
 ## Cross-origin navigations
 
 For cross-origin navigations, it is to simplest to configure all hostnames to
