@@ -12,6 +12,7 @@ import json
 import tempfile
 import time
 import logging
+import zlib
 
 _log = logging.getLogger(__name__)
 
@@ -58,7 +59,11 @@ class TestShard(object):
     if self.total_shards == 1:
       return True
 
-    return (hash(test_path) % self.total_shards) == self.shard_index
+    # zlip.adler32 doesn't have perfect distribution, but should suffice for our
+    # needs. Note that the built-in string __hash__ in Python is
+    # non-deterministic between runs of Python so cannot be used for sharding!
+    hashed_path = zlib.adler32(test_path.encode('utf-8')) & 0xFFFFFFFF
+    return (hashed_path % self.total_shards) == self.shard_index
 
 class WebDriverTestResult(object):
   def __init__(self, test_name, test_status, messsage=None):

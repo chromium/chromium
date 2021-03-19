@@ -1012,8 +1012,11 @@ if (!is_ios) {
   if (!is_chromeos_ash && !is_ios && !is_fuchsia && !is_android) {
     # WPT Webdriver tests runner
     # chrome/test/chromedriver/test/run_webdriver_tests.py
-    group("webdriver_wpt_tests") {
-      testonly = true
+    script_test("webdriver_wpt_tests") {
+      # The script is wrapped in testing/xvfb.py; the actual
+      # run_webdriver_tests.py script is passed as an arg in gn_isolate_map.pyl
+      script = "//testing/xvfb.py"
+
       data = [
         "//chrome/test/chromedriver/chrome_paths.py",
         "//chrome/test/chromedriver/server/server.py",

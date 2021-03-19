@@ -128,3 +128,46 @@ wheel: <
   name: "infra/python/wheels/pillow/linux-amd64_cp38_cp38"
   version: "version:8.1.2"
 >
+
+# Used by:
+#   chrome/test/chromedriver/test/run_webdriver_tests.py
+
+wheel <
+  name: "infra/python/wheels/pytest-py2_py3"
+  version: "version:4.1.1"
+>
+
+wheel <
+  name: "infra/python/wheels/attrs-py2_py3"
+  version: "version:18.2.0"
+>
+
+wheel <
+  name: "infra/python/wheels/six-py2_py3"
+  version: "version:1.15.0"
+>
+
+wheel <
+  name: "infra/python/wheels/more-itertools-py2_py3"
+  version: "version:4.1.0"
+>
+
+wheel <
+  name: "infra/python/wheels/pluggy-py2_py3"
+  version: "version:0.8.1"
+>
+
+wheel <
+  name: "infra/python/wheels/py-py2_py3"
+  version: "version:1.5.3"
+>
+
+wheel <
+  name: "infra/python/wheels/funcsigs-py2_py3"
+  version: "version:1.0.2"
+>
+
+wheel: <
+  name: "infra/python/wheels/atomicwrites-py2_py3"
+  version: "version:1.3.0"
+>

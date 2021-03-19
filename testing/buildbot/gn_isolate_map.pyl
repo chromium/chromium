@@ -547,8 +547,7 @@
   },
   "webdriver_wpt_tests": {
     "label": "//:webdriver_wpt_tests",
-    "type": "script",
-    "script": "//testing/xvfb.py",
+    "type": "generated_script",
     "args": [
       "../../chrome/test/chromedriver/test/run_webdriver_tests.py",
       "-v",

@@ -91,7 +91,8 @@ def launch_dbus(env):
   if 'DBUS_SESSION_BUS_ADDRESS' in os.environ:
     return
   try:
-    dbus_output = subprocess.check_output(['dbus-launch'], env=env).split('\n')
+    dbus_output = subprocess.check_output(
+        ['dbus-launch'], env=env).decode('utf-8').split('\n')
     for line in dbus_output:
       m = re.match(r'([^=]+)\=(.+)', line)
       if m:
@@ -148,7 +149,7 @@ def run_executable(
     use_weston = True
     cmd.remove('--use-weston')
 
-  if sys.platform == 'linux2' and use_xvfb:
+  if sys.platform.startswith('linux') and use_xvfb:
     return _run_with_xvfb(cmd, env, stdoutfile, use_openbox, use_xcompmgr)
   elif use_weston:
     return _run_with_weston(cmd, env, stdoutfile)
@@ -166,6 +167,7 @@ def _run_with_xvfb(cmd, env, stdoutfile, use_openbox, use_xcompmgr):
   def set_xvfb_ready(*_):
     xvfb_ready.setvalue(True)
 
+  dbus_pid = None
   try:
     signal.signal(signal.SIGTERM, raise_xvfb_error)
     signal.signal(signal.SIGINT, raise_xvfb_error)
