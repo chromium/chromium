@@ -360,21 +360,6 @@ mojom::NetworkStatePropertiesPtr NetworkStateToMojo(
   auto result = mojom::NetworkStateProperties::New();
   result->type = type;
   result->connectable = network->connectable();
-  if (type == mojom::NetworkType::kCellular) {
-    // Ensure that a cellular network that has a locked sim state or is scanning
-    // is not connectable.
-    const DeviceState* device =
-        network_state_handler->GetDeviceState(network->device_path());
-    if (!device) {
-      // When a device is removed or SIM is replaced, the Shill Service may
-      // outlive the Device. Such services are not connectable.
-      NET_LOG(DEBUG) << "Cellular device is not available: "
-                     << network->device_path();
-      result->connectable = false;
-    } else if (device->IsSimLocked() || device->scanning()) {
-      result->connectable = false;
-    }
-  }
   result->connect_requested = network->connect_requested();
   bool technology_enabled = network->Matches(NetworkTypePattern::VPN()) ||
                             network_state_handler->IsTechnologyEnabled(
