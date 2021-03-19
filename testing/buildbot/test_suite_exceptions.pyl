@@ -25,6 +25,11 @@
 {
   'android_browsertests': {
     'modifications': {
+      'android-11-x86-fyi-rel': {
+        'swarming': {
+          'shards': 2,
+        },
+      },
       'android-pie-arm64-rel': {
         'args': [
           '--gtest_filter=-ImportantSitesUtilBrowserTest.DSENotConsideredImportantInRegularMode', # https://crbug.com/1034001
