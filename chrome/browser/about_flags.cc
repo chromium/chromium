@@ -6942,13 +6942,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsWin | kOsLinux | kOsCrOS,
      FEATURE_VALUE_TYPE(blink::features::kInsertKeyToggleMode)},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"connectivity-diagnostics-webui",
-     flag_descriptions::kConnectivityDiagnosticsWebUiName,
-     flag_descriptions::kConnectivityDiagnosticsWebUiDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kConnectivityDiagnosticsWebUi)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if defined(OS_ANDROID)
     {"enable-autofill-password-account-indicator-footer",
      flag_descriptions::

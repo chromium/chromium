@@ -3919,11 +3919,6 @@ const char kCellularUseExternalEuiccDescription[] =
     "When enabled Cellular Setup and Settings UI will use the first available "
     "external Euicc.";
 
-const char kConnectivityDiagnosticsWebUiName[] =
-    "Connectivity Diagnostics WebUI";
-const char kConnectivityDiagnosticsWebUiDescription[] =
-    "Use the WebUI version of the Connectivity Diagnostics App";
-
 const char kContextualNudgesName[] =
     "Contextual nudges for user gesture education";
 const char kContextualNudgesDescription[] =

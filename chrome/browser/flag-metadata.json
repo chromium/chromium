@@ -639,11 +639,6 @@
     "expiry_milestone": 96
   },
   {
-    "name": "connectivity-diagnostics-webui",
-    "owners": [ "tbegin", "stevenjb" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "content-languages-in-language-picker",
     "owners": [
       "basiaz",

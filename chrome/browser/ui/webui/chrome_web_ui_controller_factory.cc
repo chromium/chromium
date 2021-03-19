@@ -736,11 +736,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUICertificateManagerHost)
     return &NewWebUI<chromeos::CertificateManagerDialogUI>;
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kConnectivityDiagnosticsWebUi) &&
-      url.host_piece() == chromeos::kChromeUIConnectivityDiagnosticsHost) {
+  if (url.host_piece() == chromeos::kChromeUIConnectivityDiagnosticsHost)
     return &NewWebUI<chromeos::ConnectivityDiagnosticsUI>;
-  }
   if (url.host_piece() == chrome::kChromeUICrostiniInstallerHost)
     return &NewWebUI<chromeos::CrostiniInstallerUI>;
   if (url.host_piece() == chrome::kChromeUICrostiniUpgraderHost)

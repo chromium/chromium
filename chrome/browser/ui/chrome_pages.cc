@@ -455,8 +455,6 @@ void ShowPrintManagementApp(Profile* profile) {
 }
 
 void ShowConnectivityDiagnosticsApp(Profile* profile) {
-  DCHECK(base::FeatureList::IsEnabled(
-      chromeos::features::kConnectivityDiagnosticsWebUi));
   LaunchSystemWebAppAsync(profile,
                           web_app::SystemAppType::CONNECTIVITY_DIAGNOSTICS);
 }

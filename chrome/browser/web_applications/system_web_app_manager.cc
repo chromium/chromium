@@ -385,8 +385,7 @@ bool SystemWebAppManager::IsAppEnabled(SystemAppType type) {
     case SystemAppType::DIAGNOSTICS:
       return base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp);
     case SystemAppType::CONNECTIVITY_DIAGNOSTICS:
-      return base::FeatureList::IsEnabled(
-          chromeos::features::kConnectivityDiagnosticsWebUi);
+      return true;
     case SystemAppType::TELEMETRY:
       return install_experimental_apps &&
              base::FeatureList::IsEnabled(

@@ -74,7 +74,6 @@ function registerTest(componentName, webuiHost, testName, module, caseName) {
     get featureList() {
       return {
         enabled: [
-          'chromeos::features::kConnectivityDiagnosticsWebUi',
           'chromeos::features::kUpdatedCellularActivationUi',
         ],
       };

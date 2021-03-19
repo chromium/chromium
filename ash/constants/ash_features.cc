@@ -178,10 +178,6 @@ const base::Feature kCellularUseExternalEuicc{
 const base::Feature kChildSpecificSignin{"ChildSpecificSignin",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables or disables using the new Connectivity Diagnostics WebUI app.
-const base::Feature kConnectivityDiagnosticsWebUi{
-    "ConnectivityDiagnosticsWebUi", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // If enabled, options page for each input method will be opened in ChromeOS
 // settings. Otherwise it will be opened in a new web page in Chrome browser.
 const base::Feature kImeOptionsInSettings{"ImeOptionsInSettings",
