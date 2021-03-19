@@ -14,8 +14,8 @@ PresentationRequestNotificationItem::PresentationRequestNotificationItem(
     std::unique_ptr<media_router::StartPresentationContext> context)
     : id_(base::UnguessableToken::Create().ToString()),
       notification_service_(notification_service),
-      context_(std::move(context)) {
-  // TODO(jrw): Save a copy of |request| once it is actually used.
+      context_(std::move(context)),
+      request_(request) {
   DCHECK(!context || request == context->presentation_request());
 }
 

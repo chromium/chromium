@@ -40,6 +40,7 @@ class PresentationRequestNotificationItem final
   media_router::StartPresentationContext* context() const {
     return context_.get();
   }
+  const content::PresentationRequest request() const { return request_; }
 
  private:
   // media_message_center::MediaNotificationItem
@@ -51,7 +52,10 @@ class PresentationRequestNotificationItem final
 
   const std::string id_;
   MediaNotificationService* const notification_service_;
+  // It is possible that |context_| is nullptr when it is created for a default
+  // presentation request.
   std::unique_ptr<media_router::StartPresentationContext> context_;
+  const content::PresentationRequest request_;
   base::WeakPtrFactory<PresentationRequestNotificationItem> weak_ptr_factory_{
       this};
 };

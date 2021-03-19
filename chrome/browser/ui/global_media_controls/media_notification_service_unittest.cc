@@ -13,6 +13,7 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/media_dialog_delegate.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_observer.h"
@@ -23,6 +24,7 @@
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_message_center/media_notification_util.h"
 #include "components/media_message_center/media_session_notification_item.h"
+#include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/test/browser_task_environment.h"
@@ -32,6 +34,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using media_router::MediaRoute;
 using media_session::mojom::AudioFocusRequestState;
 using media_session::mojom::AudioFocusRequestStatePtr;
 using media_session::mojom::MediaSessionInfo;
@@ -446,13 +449,27 @@ class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
   base::HistogramTester histogram_tester_;
 };
 
-// TODO(takumif): Remove this class once |kGlobalMediaControlsForCast| is
-// enabled by default.
+// This class enables the features for starting/stopping cast sessions from
+// the Zenith dialog.
+// Also, it sets up the MockWebContentsPresentationManager as a test instance
+// that's used by the MediaNotificationService to get MediaRoute updates.
 class MediaNotificationServiceCastTest : public MediaNotificationServiceTest {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(media::kGlobalMediaControlsForCast);
+    feature_list_.InitWithFeatures(
+        {media_router::kGlobalMediaControlsCastStartStop,
+         media::kGlobalMediaControlsOverlayControls},
+        {});
+    presentation_manager_ =
+        std::make_unique<MockWebContentsPresentationManager>();
+    media_router::WebContentsPresentationManager::SetTestInstance(
+        presentation_manager_.get());
     MediaNotificationServiceTest::SetUp();
+  }
+
+  void TearDown() override {
+    media_router::WebContentsPresentationManager::SetTestInstance(nullptr);
+    MediaNotificationServiceTest::TearDown();
   }
 
   media_router::MediaRoute CreateMediaRoute(
@@ -465,7 +482,64 @@ class MediaNotificationServiceCastTest : public MediaNotificationServiceTest {
     return media_route;
   }
 
+  // Simulate a supplementalNotification for |web_contents()|.
+  std::string SimulateSupplementalNotification() {
+    auto presentation_request = content::PresentationRequest(
+        main_rfh()->GetGlobalFrameRoutingId(),
+        {GURL("http://example.com"), GURL("http://example2.com")},
+        url::Origin::Create(GURL("http://google.com")));
+
+    auto start_presentation_context =
+        GetStartPresentationContext(presentation_request);
+
+    // Create a PresentationRequestNotificationItem.
+    service()->OnStartPresentationContextCreated(
+        std::move(start_presentation_context));
+    auto notification_id = GetSupplementalNotification()->id();
+    EXPECT_FALSE(notification_id.empty());
+    auto item =
+        service()
+            ->presentation_request_notification_producer_->GetNotificationItem(
+                notification_id);
+    EXPECT_TRUE(item);
+    auto* pr_item =
+        static_cast<PresentationRequestNotificationItem*>(item.get());
+    EXPECT_EQ(pr_item->context()->presentation_request(), presentation_request);
+    return notification_id;
+  }
+
+  void SetMediaRoutesManagedByPresentationManager(
+      std::vector<media_router::MediaRoute> routes) {
+    ON_CALL(*presentation_manager_, GetMediaRoutes())
+        .WillByDefault(Return(routes));
+  }
+
+  base::WeakPtr<PresentationRequestNotificationItem>
+  GetSupplementalNotification() {
+    return service()
+        ->presentation_request_notification_producer_->GetNotificationItem();
+  }
+
+  MOCK_METHOD3(RequestSuccess,
+               void(const blink::mojom::PresentationInfo&,
+                    media_router::mojom::RoutePresentationConnectionPtr,
+                    const MediaRoute&));
+  MOCK_METHOD1(RequestError,
+               void(const blink::mojom::PresentationError& error));
+
  private:
+  std::unique_ptr<media_router::StartPresentationContext>
+  GetStartPresentationContext(
+      content::PresentationRequest presentation_request) {
+    return std::make_unique<media_router::StartPresentationContext>(
+        presentation_request,
+        base::BindOnce(&MediaNotificationServiceCastTest::RequestSuccess,
+                       base::Unretained(this)),
+        base::BindOnce(&MediaNotificationServiceCastTest::RequestError,
+                       base::Unretained(this)));
+  }
+
+  std::unique_ptr<MockWebContentsPresentationManager> presentation_manager_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -808,10 +882,7 @@ TEST_F(MediaNotificationServiceCastTest, ShowCastSessions) {
 TEST_F(MediaNotificationServiceCastTest,
        ShowCastSessionsForPresentationRequest) {
   MockMediaDialogDelegate dialog_delegate;
-  auto presentation_manager_ =
-      std::make_unique<MockWebContentsPresentationManager>();
-  media_router::WebContentsPresentationManager::SetTestInstance(
-      presentation_manager_.get());
+
   std::unique_ptr<content::WebContents> web_contents_1(
       content::RenderViewHostTestHarness::CreateTestWebContents());
   std::unique_ptr<content::WebContents> web_contents_2(
@@ -829,9 +900,7 @@ TEST_F(MediaNotificationServiceCastTest,
   // Open the dialog from |web_contents_1|. Overwrite the return value of
   // GetMediaRoutes() so that MediaNotificationService associates
   // |web_contents_1| with the cast notification.
-  ON_CALL(*presentation_manager_, GetMediaRoutes())
-      .WillByDefault(
-          Return(std::vector<media_router::MediaRoute>({media_route})));
+  SetMediaRoutesManagedByPresentationManager({media_route});
   EXPECT_CALL(dialog_delegate, ShowMediaSession(id_1, _));
   SimulateDialogOpenedForPresentationRequest(&dialog_delegate,
                                              web_contents_1.get());
@@ -840,13 +909,11 @@ TEST_F(MediaNotificationServiceCastTest,
 
   // Open the dialog from |web_contents_2|, which has a media session
   // notification and no cast session notification.
-  ON_CALL(*(presentation_manager_.get()), GetMediaRoutes())
-      .WillByDefault(Return(std::vector<media_router::MediaRoute>()));
+  SetMediaRoutesManagedByPresentationManager({});
   EXPECT_CALL(dialog_delegate, ShowMediaSession(id_2.ToString(), _));
   SimulateDialogOpenedForPresentationRequest(&dialog_delegate,
                                              web_contents_2.get());
   testing::Mock::VerifyAndClearExpectations(&dialog_delegate);
-  media_router::WebContentsPresentationManager::SetTestInstance(nullptr);
 }
 
 TEST_F(MediaNotificationServiceCastTest,
@@ -877,6 +944,89 @@ TEST_F(MediaNotificationServiceCastTest,
   SimulateDialogOpenedForPresentationRequest(&dialog_delegate,
                                              web_contents_2.get());
   testing::Mock::VerifyAndClearExpectations(&dialog_delegate);
+}
+
+TEST_F(MediaNotificationServiceCastTest, ShowSupplementalNotifications) {
+  MockMediaDialogDelegate dialog_delegate;
+  // Do not show a supplemental notification if there is no start presentation
+  // request context.
+  EXPECT_FALSE(GetSupplementalNotification());
+  EXPECT_CALL(dialog_delegate, ShowMediaSession(_, _)).Times(0);
+  SimulateDialogOpened(&dialog_delegate);
+  testing::Mock::VerifyAndClearExpectations(&dialog_delegate);
+  dialog_delegate.Close();
+
+  // Create a PresentationRequestNotificationItem.
+  auto supplemental_notification_id = SimulateSupplementalNotification();
+
+  // Open the dialog and a supplemental notification should show up.
+  EXPECT_CALL(dialog_delegate,
+              ShowMediaSession(supplemental_notification_id, _));
+  SimulateDialogOpened(&dialog_delegate);
+  testing::Mock::VerifyAndClearExpectations(&dialog_delegate);
+  dialog_delegate.Close();
+
+  EXPECT_CALL(dialog_delegate,
+              ShowMediaSession(supplemental_notification_id, _));
+  SimulateDialogOpenedForPresentationRequest(&dialog_delegate, web_contents());
+  testing::Mock::VerifyAndClearExpectations(&dialog_delegate);
+  dialog_delegate.Close();
+
+  // If there are notifications from other WebContents, still show dummy
+  // notifications.
+  std::unique_ptr<content::WebContents> test_web_contents(
+      content::RenderViewHostTestHarness::CreateTestWebContents());
+  auto media_session_id =
+      SimulatePlayingControllableMediaForWebContents(test_web_contents.get());
+  // Create a cast session not associated with any WebContents.
+  const std::string route_id = "route_id";
+  SimulateMediaRoutesUpdate({CreateMediaRoute(route_id)});
+  EXPECT_CALL(dialog_delegate, ShowMediaSession(route_id, _));
+  EXPECT_CALL(dialog_delegate,
+              ShowMediaSession(media_session_id.ToString(), _));
+  EXPECT_CALL(dialog_delegate,
+              ShowMediaSession(supplemental_notification_id, _));
+  SimulateDialogOpened(&dialog_delegate);
+  testing::Mock::VerifyAndClearExpectations(&dialog_delegate);
+  dialog_delegate.Close();
+}
+
+TEST_F(MediaNotificationServiceCastTest, HideSupplementalNotifications) {
+  MockMediaDialogDelegate dialog_delegate;
+  auto supplemental_notification_id = SimulateSupplementalNotification();
+  // If there is a media session, hide the supplemental notification.
+  auto media_session_id =
+      SimulatePlayingControllableMediaForWebContents(web_contents());
+
+  EXPECT_CALL(dialog_delegate,
+              ShowMediaSession(media_session_id.ToString(), _));
+  SimulateDialogOpened(&dialog_delegate);
+  testing::Mock::VerifyAndClearExpectations(&dialog_delegate);
+  dialog_delegate.Close();
+
+  EXPECT_CALL(dialog_delegate,
+              ShowMediaSession(media_session_id.ToString(), _));
+  SimulateDialogOpenedForPresentationRequest(&dialog_delegate, web_contents());
+  testing::Mock::VerifyAndClearExpectations(&dialog_delegate);
+  dialog_delegate.Close();
+
+  SimulateFocusLost(media_session_id);
+  // If there is a cast session, hide the supplemental notification.
+  auto media_route = CreateMediaRoute("route_id");
+  SimulateMediaRoutesUpdate({media_route});
+
+  SetMediaRoutesManagedByPresentationManager({media_route});
+  service()->OnCastNotificationsChanged();
+  EXPECT_CALL(dialog_delegate,
+              ShowMediaSession(media_route.media_route_id(), _));
+  SimulateDialogOpened(&dialog_delegate);
+  testing::Mock::VerifyAndClearExpectations(&observer());
+  dialog_delegate.Close();
+
+  EXPECT_CALL(dialog_delegate,
+              ShowMediaSession(media_route.media_route_id(), _));
+  SimulateDialogOpened(&dialog_delegate);
+  testing::Mock::VerifyAndClearExpectations(&observer());
 }
 
 // Regression test for https://crbug.com/1015903: we could end up in a

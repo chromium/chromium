@@ -55,10 +55,15 @@ class PresentationRequestNotificationProducer final
   // MediaNotificationProducer:
   base::WeakPtr<media_message_center::MediaNotificationItem>
   GetNotificationItem(const std::string& id) override;
+  // Returns the supplemental notification's id if it should be shown.
   std::set<std::string> GetActiveControllableNotificationIds() const override;
 
   void OnStartPresentationContextCreated(
       std::unique_ptr<media_router::StartPresentationContext> context);
+  // Returns the WebContents associated with the PresentationRequest that
+  // |this| manages.
+  content::WebContents* GetWebContents();
+  base::WeakPtr<PresentationRequestNotificationItem> GetNotificationItem();
 
  private:
   // MediaNotificationServiceObserver:
@@ -84,6 +89,11 @@ class PresentationRequestNotificationProducer final
   // presentation request.
   bool HasItemForNonDefaultRequest() const { return item_ && item_->context(); }
 
+  // Queries |notification_service_| for active sessions associated with the
+  // WebContents that |this| manages and stores the value in |should_hide_|.
+  // Show or hide |item_| if the visibility changed.
+  void ShowOrHideItem();
+
   MediaNotificationService* const notification_service_;
 
   // A copy of the WebContentsPresentationManager associated with the web
@@ -95,6 +105,13 @@ class PresentationRequestNotificationProducer final
 
   // The notification managed by this producer, if there is one.
   base::Optional<PresentationRequestNotificationItem> item_;
+
+  // True if |notification_service_| should hide |item_| because there are
+  // active notifications on WebContents managed by this producer.
+  bool should_hide_ = true;
+
+  base::WeakPtrFactory<PresentationRequestNotificationProducer> weak_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_PRESENTATION_REQUEST_NOTIFICATION_PRODUCER_H_

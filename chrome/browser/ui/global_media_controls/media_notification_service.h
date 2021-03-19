@@ -72,11 +72,6 @@ class MediaNotificationService
   // KeyedService implementation.
   void Shutdown() override;
 
-  // Adds a "suppplemental" notification, which should only be shown if there is
-  // no other notification associated with the same web contents.
-  void AddSupplementalNotification(const std::string& id,
-                                   content::WebContents* web_contents);
-
   // Called by the |overlay_media_notifications_manager_| when an overlay
   // notification is closed.
   void OnOverlayNotificationClosed(const std::string& id);
@@ -99,6 +94,10 @@ class MediaNotificationService
   // True if there are active non-frozen media session notifications or active
   // cast notifications.
   bool HasActiveNotifications() const;
+  // True if there are active non-frozen media session notifications or active
+  // cast notifications associated with |web_contents|.
+  bool HasActiveNotificationsForWebContents(
+      content::WebContents* web_contents) const;
 
   // True if there are active frozen media session notifications.
   bool HasFrozenNotifications() const;
@@ -144,7 +143,9 @@ class MediaNotificationService
   friend class MediaSessionNotificationProducer;
   friend class MediaNotificationProviderImplTest;
   friend class MediaNotificationServiceTest;
+  friend class MediaNotificationServiceCastTest;
   friend class MediaToolbarButtonControllerTest;
+
   FRIEND_TEST_ALL_PREFIXES(MediaNotificationServiceTest,
                            HideAfterTimeoutAndActiveAgainOnPlay);
   FRIEND_TEST_ALL_PREFIXES(MediaNotificationServiceTest,
@@ -154,6 +155,10 @@ class MediaNotificationService
                            HidesInactiveNotifications);
   FRIEND_TEST_ALL_PREFIXES(MediaNotificationServiceTest,
                            HidingNotification_FeatureDisabled);
+  FRIEND_TEST_ALL_PREFIXES(MediaNotificationServiceCastTest,
+                           ShowSupplementalNotifications);
+  FRIEND_TEST_ALL_PREFIXES(MediaNotificationServiceCastTest,
+                           HideSupplementalNotifications);
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -295,30 +300,17 @@ class MediaNotificationService
   // the argument, otherwise the argument should be nullptr.
   void OnNotificationChanged(const std::string* changed_notification_id);
 
-  bool HasSessionForWebContents(content::WebContents* web_contents) const;
-
-  std::string GetSupplementalNotificationForWebContents(
-      content::WebContents* web_contents) const;
-
   // Updates |dialog_delegate_| and notifies |observers_|. Called from
   // SetDialogDelegate() and SetDialogDelegateForPresentationRequest().
   void SetDialogDelegateCommon(MediaDialogDelegate* delegate);
 
   MediaDialogDelegate* dialog_delegate_ = nullptr;
 
-  // A mapping of supplemental notification IDs to their associated web
-  // contents.  See MediaNotificationController::AddSupplementalNotification for
-  // a description of supplemental notifications.
-  //
-  // This map should usually have at most one item.
-  base::flat_map<std::string, content::WebContents*>
-      supplemental_notifications_;
-
-  std::unique_ptr<PresentationRequestNotificationProducer>
-      presentation_request_notification_producer_;
-  std::unique_ptr<CastMediaNotificationProducer> cast_notification_producer_;
   std::unique_ptr<MediaSessionNotificationProducer>
       media_session_notification_producer_;
+  std::unique_ptr<CastMediaNotificationProducer> cast_notification_producer_;
+  std::unique_ptr<PresentationRequestNotificationProducer>
+      presentation_request_notification_producer_;
 
   // Pointers to all notification producers owned by |this|.
   std::set<MediaNotificationProducer*> notification_producers_;

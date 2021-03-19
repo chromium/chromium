@@ -345,8 +345,8 @@ void MediaNotificationService::RemoveItem(const std::string& id) {
   // Copy |id| to avoid a dangling reference after the item is deleted. This
   // happens when |id| refers to a string owned by the item being removed.
   const auto id_copy{id};
-  media_session_notification_producer_->RemoveItem(id);
-  supplemental_notifications_.erase(id_copy);
+  if (media_session_notification_producer_)
+    media_session_notification_producer_->RemoveItem(id_copy);
   OnNotificationChanged(&id_copy);
 }
 
@@ -368,15 +368,6 @@ void MediaNotificationService::Shutdown() {
   // which is another keyed service.
   cast_notification_producer_.reset();
   presentation_request_notification_producer_.reset();
-}
-
-void MediaNotificationService::AddSupplementalNotification(
-    const std::string& id,
-    content::WebContents* web_contents) {
-  DCHECK(web_contents);
-  supplemental_notifications_.emplace(id, web_contents);
-  if (!HasSessionForWebContents(web_contents))
-    ShowNotification(id);
 }
 
 void MediaNotificationService::OnOverlayNotificationClosed(
@@ -452,7 +443,8 @@ void MediaNotificationService::SetDialogDelegateForWebContents(
   }
 
   // Show the local media notification if any.
-  if (HasSessionForWebContents(contents)) {
+  if (media_session_notification_producer_
+          ->HasActiveControllableSessionForWebContents(contents)) {
     std::string notification_id =
         media_session_notification_producer_
             ->GetActiveControllableSessionForWebContents(contents);
@@ -468,19 +460,16 @@ void MediaNotificationService::SetDialogDelegateForWebContents(
 
   // Show a supplemental notification, e.g. to start a presentation from the web
   // page's PresentationRequest.
-  std::string notification_id =
-      GetSupplementalNotificationForWebContents(contents);
-  base::WeakPtr<media_message_center::MediaNotificationItem> item =
-      GetNotificationItem(notification_id);
+  auto item =
+      presentation_request_notification_producer_->GetNotificationItem();
   DCHECK(item);
-  dialog_delegate_->ShowMediaSession(notification_id, item);
+  DCHECK(presentation_request_notification_producer_->GetWebContents() ==
+         contents);
+  dialog_delegate_->ShowMediaSession(item->id(), item);
 }
 
 std::set<std::string>
 MediaNotificationService::GetActiveControllableNotificationIds() const {
-  // TODO(b/170488574): A supplemental notification shows up when there is a
-  // cast session associated with an inactive local media session. This
-  // notification should be removed.
   std::set<std::string> ids;
   for (auto* notification_provider : notification_producers_) {
     const std::set<std::string>& provider_ids =
@@ -492,6 +481,19 @@ MediaNotificationService::GetActiveControllableNotificationIds() const {
 
 bool MediaNotificationService::HasActiveNotifications() const {
   return !GetActiveControllableNotificationIds().empty();
+}
+
+bool MediaNotificationService::HasActiveNotificationsForWebContents(
+    content::WebContents* web_contents) const {
+  bool has_cast_session =
+      !media_router::WebContentsPresentationManager::Get(web_contents)
+           ->GetMediaRoutes()
+           .empty();
+  bool has_media_session =
+      media_session_notification_producer_ &&
+      media_session_notification_producer_
+          ->HasActiveControllableSessionForWebContents(web_contents);
+  return has_cast_session || has_media_session;
 }
 
 bool MediaNotificationService::HasFrozenNotifications() const {
@@ -573,42 +575,11 @@ MediaNotificationService::GetNotificationItem(const std::string& id) {
   return nullptr;
 }
 
+// TODO(muyaoxu@): Remove |changed_notification_id| since its no longer used.
 void MediaNotificationService::OnNotificationChanged(
     const std::string* changed_notification_id) {
   for (auto& observer : observers_)
     observer.OnNotificationListChanged();
-
-  // Avoid re-examining the supplemental notifications as a side-effect of
-  // hiding a supplemental notification.
-  if (!changed_notification_id ||
-      base::Contains(supplemental_notifications_, *changed_notification_id))
-    return;
-
-  // Hide supplemental notifications if necessary.
-  for (const auto& pair : supplemental_notifications_) {
-    // If there is an active session associated with the same web contents as
-    // this supplemental notification, hide it.
-    if (HasSessionForWebContents(pair.second)) {
-      HideNotification(pair.first);
-    }
-  }
-}
-
-bool MediaNotificationService::HasSessionForWebContents(
-    content::WebContents* web_contents) const {
-  return media_session_notification_producer_
-      ->HasActiveControllableSessionForWebContents(web_contents);
-}
-
-std::string MediaNotificationService::GetSupplementalNotificationForWebContents(
-    content::WebContents* web_contents) const {
-  auto notification_it = std::find_if(
-      supplemental_notifications_.begin(), supplemental_notifications_.end(),
-      [web_contents](const auto& pair) { return pair.second == web_contents; });
-
-  return notification_it == supplemental_notifications_.end()
-             ? ""
-             : notification_it->first;
 }
 
 void MediaNotificationService::SetDialogDelegateCommon(

@@ -35,6 +35,12 @@ GetActiveWebContentsPresentationManager() {
   return media_router::WebContentsPresentationManager::Get(web_contents);
 }
 
+content::WebContents* GetWebContentsFromPresentationRequest(
+    const content::PresentationRequest& request) {
+  auto* rfh = content::RenderFrameHost::FromID(request.render_frame_host_id);
+  DCHECK(rfh);
+  return content::WebContents::FromRenderFrameHost(rfh);
+}
 }  // namespace
 
 PresentationRequestNotificationProducer::
@@ -62,7 +68,8 @@ PresentationRequestNotificationProducer::GetNotificationItem(
 std::set<std::string>
 PresentationRequestNotificationProducer::GetActiveControllableNotificationIds()
     const {
-  return item_ ? std::set<std::string>({item_->id()}) : std::set<std::string>();
+  return (item_ && !should_hide_) ? std::set<std::string>({item_->id()})
+                                  : std::set<std::string>();
 }
 
 void PresentationRequestNotificationProducer::OnStartPresentationContextCreated(
@@ -72,7 +79,19 @@ void PresentationRequestNotificationProducer::OnStartPresentationContextCreated(
   CreateItemForPresentationRequest(request, std::move(context));
 }
 
-void PresentationRequestNotificationProducer::OnNotificationListChanged() {}
+content::WebContents*
+PresentationRequestNotificationProducer::GetWebContents() {
+  return GetWebContentsFromPresentationRequest(item_->request());
+}
+
+base::WeakPtr<PresentationRequestNotificationItem>
+PresentationRequestNotificationProducer::GetNotificationItem() {
+  return item_ ? item_->GetWeakPtr() : nullptr;
+}
+
+void PresentationRequestNotificationProducer::OnNotificationListChanged() {
+  ShowOrHideItem();
+}
 
 void PresentationRequestNotificationProducer::OnMediaDialogOpened() {
   // At the point where this method is called, MediaNotificationService is
@@ -82,7 +101,8 @@ void PresentationRequestNotificationProducer::OnMediaDialogOpened() {
       FROM_HERE,
       base::BindOnce(
           &PresentationRequestNotificationProducer::AfterMediaDialogOpened,
-          base::Unretained(this), GetActiveWebContentsPresentationManager()));
+          weak_factory_.GetWeakPtr(),
+          GetActiveWebContentsPresentationManager()));
 }
 
 void PresentationRequestNotificationProducer::OnMediaDialogClosed() {
@@ -92,7 +112,7 @@ void PresentationRequestNotificationProducer::OnMediaDialogClosed() {
       FROM_HERE,
       base::BindOnce(
           &PresentationRequestNotificationProducer::AfterMediaDialogClosed,
-          base::Unretained(this)));
+          weak_factory_.GetWeakPtr()));
 }
 
 void PresentationRequestNotificationProducer::AfterMediaDialogOpened(
@@ -147,19 +167,37 @@ void PresentationRequestNotificationProducer::CreateItemForPresentationRequest(
   // we've reached this point.
   item_.emplace(notification_service_, request, std::move(context));
 
-  auto* rfh = content::RenderFrameHost::FromID(request.render_frame_host_id);
-  DCHECK(rfh);
-  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
-  DCHECK(web_contents);
-  notification_service_->AddSupplementalNotification(item_->id(), web_contents);
+  ShowOrHideItem();
 }
 
 void PresentationRequestNotificationProducer::DeleteItemForPresentationRequest(
     const std::string& message) {
   if (item_) {
-    item_->context()->InvokeErrorCallback(blink::mojom::PresentationError(
-        blink::mojom::PresentationErrorType::PRESENTATION_REQUEST_CANCELLED,
-        message));
+    if (item_->context()) {
+      item_->context()->InvokeErrorCallback(blink::mojom::PresentationError(
+          blink::mojom::PresentationErrorType::PRESENTATION_REQUEST_CANCELLED,
+          message));
+    }
     item_.reset();
+  }
+}
+
+void PresentationRequestNotificationProducer::ShowOrHideItem() {
+  if (!item_) {
+    should_hide_ = true;
+    return;
+  }
+
+  bool new_visibility =
+      notification_service_->HasActiveNotificationsForWebContents(
+          GetWebContentsFromPresentationRequest(item_->request()));
+  if (should_hide_ == new_visibility)
+    return;
+
+  should_hide_ = new_visibility;
+  if (should_hide_) {
+    notification_service_->HideNotification(item_->id());
+  } else {
+    notification_service_->ShowNotification(item_->id());
   }
 }
