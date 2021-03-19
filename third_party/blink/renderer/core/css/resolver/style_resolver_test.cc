@@ -30,7 +30,7 @@ namespace blink {
 using animation_test_helpers::CreateSimpleKeyframeEffectForTest;
 
 class StyleResolverTest : public PageTestBase {
- public:
+ protected:
   scoped_refptr<ComputedStyle> StyleForId(AtomicString id) {
     Element* element = GetDocument().getElementById(id);
     auto style = GetStyleEngine().GetStyleResolver().ResolveStyle(
@@ -46,8 +46,12 @@ class StyleResolverTest : public PageTestBase {
         .CSSValueFromComputedStyle(style, nullptr, false)
         ->CssText();
   }
+};
 
+class StyleResolverTestCQ : public StyleResolverTest,
+                            public ScopedCSSContainerQueriesForTest {
  protected:
+  StyleResolverTestCQ() : ScopedCSSContainerQueriesForTest(true) {}
 };
 
 TEST_F(StyleResolverTest, StyleForTextInDisplayNone) {
@@ -394,9 +398,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // TODO(crbug.com/1180159): Remove this test when @container and transitions
 // work properly.
-TEST_F(StyleResolverTest, BaseNotReusableWithContainerQueries) {
-  ScopedCSSContainerQueriesForTest scoped_feature(true);
-
+TEST_F(StyleResolverTestCQ, BaseNotReusableWithContainerQueries) {
   GetDocument().documentElement()->setInnerHTML("<div id=div>Test</div>");
   UpdateAllLifecyclePhasesForTest();
   Element* div = GetDocument().getElementById("div");
@@ -1107,9 +1109,7 @@ TEST_F(StyleResolverTest, InheritStyleImagesFromDisplayContents) {
       << "-webkit-mask-image is fetched";
 }
 
-TEST_F(StyleResolverTest, DependsOnContainerQueries) {
-  ScopedCSSContainerQueriesForTest scoped_feature(true);
-
+TEST_F(StyleResolverTestCQ, DependsOnContainerQueries) {
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>
       #a { color: red; }
@@ -1147,9 +1147,7 @@ TEST_F(StyleResolverTest, DependsOnContainerQueries) {
   EXPECT_FALSE(e->ComputedStyleRef().DependsOnContainerQueries());
 }
 
-TEST_F(StyleResolverTest, DependsOnContainerQueriesPseudo) {
-  ScopedCSSContainerQueriesForTest scoped_feature(true);
-
+TEST_F(StyleResolverTestCQ, DependsOnContainerQueriesPseudo) {
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>
       main { contain: size layout; width: 100px; }
@@ -1180,9 +1178,7 @@ TEST_F(StyleResolverTest, DependsOnContainerQueriesPseudo) {
 
 // Verify that the ComputedStyle::DependsOnContainerQuery flag does
 // not end up in the MatchedPropertiesCache (MPC).
-TEST_F(StyleResolverTest, DependsOnContainerQueriesMPC) {
-  ScopedCSSContainerQueriesForTest scoped_feature(true);
-
+TEST_F(StyleResolverTestCQ, DependsOnContainerQueriesMPC) {
   GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>
       @container (min-width: 9999999px) {

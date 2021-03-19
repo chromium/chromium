@@ -1145,6 +1145,7 @@
     },
     {
       name: "LayoutNGGrid",
+      implied_by: ["CSSContainerQueries"],
     },
     {
       name: "LayoutNGLayoutOverflow",
