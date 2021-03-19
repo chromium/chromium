@@ -659,8 +659,17 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, Activation_iFrame) {
 
 // Makes sure that cross-origin subframe navigations are deferred during
 // prerendering.
+// Flaky on Android https://crbug.com/1190262.
+#if defined(OS_ANDROID)
+#define MAYBE_DeferCrossOriginSubframeNavigation \
+  DISABLED_DeferCrossOriginSubframeNavigation
+#else
+#define MAYBE_DeferCrossOriginSubframeNavigation \
+  DeferCrossOriginSubframeNavigation
+#endif
+
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
-                       DeferCrossOriginSubframeNavigation) {
+                       MAYBE_DeferCrossOriginSubframeNavigation) {
   // TODO(toyoshim, bokan): Enable this test with MPArch.
   // It seems NavigationThrottles are not constructed for iframe navigation
   // under MPArch environment. It needs some investigation to enable this with
