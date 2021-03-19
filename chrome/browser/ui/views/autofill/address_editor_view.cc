@@ -30,6 +30,11 @@ AddressEditorView::AddressEditorView(AddressEditorController* controller)
 
 AddressEditorView::~AddressEditorView() = default;
 
+void AddressEditorView::PreferredSizeChanged() {
+  views::View::PreferredSizeChanged();
+  SizeToPreferredSize();
+}
+
 const autofill::AutofillProfile& AddressEditorView::GetAddressProfile() {
   SaveFieldsToProfile();
   return controller_->GetAddressProfile();
@@ -196,9 +201,8 @@ std::unique_ptr<views::Combobox> AddressEditorView::CreateCountryCombobox(
 void AddressEditorView::UpdateEditorView() {
   RemoveAllChildViews(true);
   CreateEditorView();
-  Layout();
-  // TODO(crbug.com/1167060): upon layout, this view could have become shorter
-  // or longer. We need to resize main dialog.
+  PreferredSizeChanged();
+
   if (controller_->chosen_country_index() > 0UL &&
       controller_->chosen_country_index() < controller_->GetCountriesSize()) {
     views::Combobox* country_combo_box = static_cast<views::Combobox*>(

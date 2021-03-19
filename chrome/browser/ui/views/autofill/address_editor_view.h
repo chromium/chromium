@@ -29,6 +29,9 @@ class AddressEditorView : public views::View {
   AddressEditorView& operator=(const AddressEditorView&) = delete;
   ~AddressEditorView() override;
 
+  // views::View
+  void PreferredSizeChanged() override;
+
   // Stores the current state of the address profile in the controller, and
   // returns it.
   const autofill::AutofillProfile& GetAddressProfile();

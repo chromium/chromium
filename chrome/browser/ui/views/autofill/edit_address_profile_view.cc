@@ -65,6 +65,11 @@ void EditAddressProfileView::WindowClosing() {
   }
 }
 
+void EditAddressProfileView::ChildPreferredSizeChanged(views::View* child) {
+  const int width = fixed_width();
+  GetWidget()->SetSize(gfx::Size(width, GetHeightForWidth(width)));
+}
+
 AddressEditorView* EditAddressProfileView::GetAddressEditorViewForTesting() {
   return address_editor_view_;
 }
