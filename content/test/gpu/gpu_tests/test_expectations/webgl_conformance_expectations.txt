@@ -213,8 +213,13 @@ crbug.com/1082533 [ mac intel ] conformance/textures/misc/texture-copying-and-de
 crbug.com/1136231 [ win ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
 crbug.com/1136231 [ linux ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
 
-# Must handle rotated videos on all platforms.
-crbug.com/1136205 conformance/textures/misc/video-rotation.html [ Skip ]
+# This test uses H.264 and the ChromeOS and Fuchsia bots aren't compiled with
+# proprietary codecs.
+crbug.com/1136205 [ chromeos ] conformance/textures/misc/video-rotation.html [ Skip ]
+crbug.com/1136205 [ fuchsia ] conformance/textures/misc/video-rotation.html [ Skip ]
+
+# This test needs looser tolerances on some Windows platforms.
+crbug.com/1136205 [ win ] conformance/textures/misc/video-rotation.html [ Failure ]
 
 # Failing on most platforms. Only runs with passthrough.
 crbug.com/1175371 [ android ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]

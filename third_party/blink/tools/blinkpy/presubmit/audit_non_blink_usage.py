@@ -891,6 +891,7 @@ _CONFIG = [
             'gpu::MailboxHolder',
             'display::Display',
             'media::IsOpaque',
+            'media::kNoTransformation',
             'media::PaintCanvasVideoRenderer',
             'media::PIXEL_FORMAT_Y16',
             'media::VideoFrame',

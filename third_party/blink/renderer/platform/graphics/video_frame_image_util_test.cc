@@ -58,7 +58,38 @@ class ScopedFakeGpuContext {
   scoped_refptr<viz::TestContextProvider> test_context_provider_;
 };
 
+// TODO(crbug.com/1186864): Remove |expect_broken_tagging| when fixed.
+void TestOrientation(scoped_refptr<media::VideoFrame> frame,
+                     bool expect_broken_tagging = false) {
+  constexpr auto kTestTransform =
+      media::VideoTransformation(media::VIDEO_ROTATION_90, /*mirrored=*/true);
+  constexpr auto kTestOrientation = ImageOrientationEnum::kOriginLeftTop;
+
+  frame->metadata().transformation = kTestTransform;
+  auto image =
+      CreateImageFromVideoFrame(frame, true, nullptr, nullptr, gfx::Rect(),
+                                /*prefer_tagged_orientation=*/true);
+  if (expect_broken_tagging)
+    EXPECT_EQ(image->CurrentFrameOrientation(), ImageOrientationEnum::kDefault);
+  else
+    EXPECT_EQ(image->CurrentFrameOrientation(), kTestOrientation);
+
+  image = CreateImageFromVideoFrame(frame, true, nullptr, nullptr, gfx::Rect(),
+                                    /*prefer_tagged_orientation=*/false);
+  EXPECT_EQ(image->CurrentFrameOrientation(), ImageOrientationEnum::kDefault);
+}
+
 }  // namespace
+
+TEST(VideoFrameImageUtilTest, VideoTransformationToFromImageOrientation) {
+  for (int i = 0; i < static_cast<int>(ImageOrientationEnum::kMaxValue); ++i) {
+    auto blink_orientation = ImageOrientation::FromEXIFValue(i).Orientation();
+    auto media_transform =
+        ImageOrientationToVideoTransformation(blink_orientation);
+    EXPECT_EQ(blink_orientation,
+              VideoTransformationToImageOrientation(media_transform));
+  }
+}
 
 TEST(VideoFrameImageUtilTest, WillCreateAcceleratedImagesFromVideoFrame) {
   // I420A isn't a supported zero copy format.
@@ -125,7 +156,9 @@ TEST(VideoFrameImageUtilTest, CreateImageFromVideoFrameSoftwareFrame) {
                                    media::VideoFrame::STORAGE_OWNED_MEMORY,
                                    media::PIXEL_FORMAT_XRGB);
   auto image = CreateImageFromVideoFrame(cpu_frame);
-  ASSERT_FALSE(image->IsTextureBacked());
+  EXPECT_FALSE(image->IsTextureBacked());
+
+  TestOrientation(cpu_frame);
   task_environment_.RunUntilIdle();
 }
 
@@ -169,6 +202,7 @@ TEST(VideoFrameImageUtilTest, CreateAcceleratedImageFromGpuMemoryBufferFrame) {
                                    media::PIXEL_FORMAT_NV12);
   auto image = CreateImageFromVideoFrame(gmb_frame);
   ASSERT_TRUE(image->IsTextureBacked());
+  TestOrientation(gmb_frame, /*expect_broken_tagging=*/true);
 }
 
 TEST(VideoFrameImageUtilTest, CreateAcceleratedImageFromTextureFrame) {
@@ -180,6 +214,7 @@ TEST(VideoFrameImageUtilTest, CreateAcceleratedImageFromTextureFrame) {
   auto image = CreateImageFromVideoFrame(texture_frame,
                                          /*allow_zero_copy_images=*/false);
   ASSERT_TRUE(image->IsTextureBacked());
+  TestOrientation(texture_frame, /*expect_broken_tagging=*/true);
 }
 
 TEST(VideoFrameImageUtilTest, FlushedAcceleratedImage) {

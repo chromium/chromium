@@ -28,9 +28,11 @@ namespace blink {
 class CanvasResourceProvider;
 class StaticBitmapImage;
 
-// Converts a media orientation into a blink one.
+// Converts a media orientation into a blink one or vice versa.
 PLATFORM_EXPORT ImageOrientationEnum
 VideoTransformationToImageOrientation(media::VideoTransformation transform);
+PLATFORM_EXPORT media::VideoTransformation
+ImageOrientationToVideoTransformation(ImageOrientationEnum orientation);
 
 // Returns true if CreateImageFromVideoFrame() expects to create an
 // AcceleratedStaticBitmapImage. Note: This may be overridden if a software
@@ -56,12 +58,17 @@ PLATFORM_EXPORT bool WillCreateAcceleratedImagesFromVideoFrame(
 // When an external |resource_provider| is provided a |dest_rect| may also be
 // provided to control where in the canvas the VideoFrame will be drawn. A
 // non-empty |dest_rect| will disable zero copy image support.
+//
+// If |prefer_tagged_orientation| is true, CreateImageFromVideoFrame() will just
+// tag the StaticBitmapImage with the correct orientation ("soft flip") instead
+// of drawing the frame with the correct orientation ("hard flip").
 PLATFORM_EXPORT scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
     bool allow_zero_copy_images = true,
     CanvasResourceProvider* resource_provider = nullptr,
     media::PaintCanvasVideoRenderer* video_renderer = nullptr,
-    const gfx::Rect& dest_rect = gfx::Rect());
+    const gfx::Rect& dest_rect = gfx::Rect(),
+    bool prefer_tagged_orientation = true);
 
 // Similar to the above, but just skips creating the StaticBitmapImage from the
 // CanvasResourceProvider. Returns true if the frame could be drawn or false

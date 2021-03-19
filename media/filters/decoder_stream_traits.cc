@@ -201,6 +201,7 @@ void DecoderStreamTraits<DemuxerStream::VIDEO>::InitializeDecoder(
     const WaitingCB& waiting_cb) {
   DCHECK(config.IsValidConfig());
   stats_.video_decoder_info.decoder_type = VideoDecoderType::kUnknown;
+  transform_ = config.video_transformation();
   // |decoder| is owned by a DecoderSelector and will stay
   // alive at least until |init_cb| is finished executing.
   decoder->Initialize(
@@ -292,6 +293,8 @@ PostDecodeAction DecoderStreamTraits<DemuxerStream::VIDEO>::OnDecodeDone(
 
 void DecoderStreamTraits<DemuxerStream::VIDEO>::OnOutputReady(
     OutputType* buffer) {
+  buffer->metadata().transformation = transform_;
+
   if (!buffer->metadata().decode_begin_time.has_value())
     return;
 

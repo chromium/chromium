@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
@@ -400,37 +401,8 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
       continue;
     }
 
-    const auto orientation = decoder_->Orientation().Orientation();
-    switch (orientation) {
-      case ImageOrientationEnum::kOriginTopLeft:
-        break;
-      case ImageOrientationEnum::kOriginTopRight:
-        frame->metadata().transformation = media::VideoTransformation(
-            media::VIDEO_ROTATION_0, /*mirrored=*/true);
-        break;
-      case ImageOrientationEnum::kOriginBottomRight:
-        frame->metadata().transformation = media::VIDEO_ROTATION_180;
-        break;
-      case ImageOrientationEnum::kOriginBottomLeft:
-        frame->metadata().transformation = media::VideoTransformation(
-            media::VIDEO_ROTATION_180, /*mirrored=*/true);
-        break;
-      case ImageOrientationEnum::kOriginLeftTop:
-        frame->metadata().transformation = media::VideoTransformation(
-            media::VIDEO_ROTATION_90, /*mirrored=*/true);
-        break;
-      case ImageOrientationEnum::kOriginRightTop:
-        frame->metadata().transformation = media::VIDEO_ROTATION_90;
-        break;
-      case ImageOrientationEnum::kOriginRightBottom:
-        frame->metadata().transformation = media::VideoTransformation(
-            media::VIDEO_ROTATION_270, /*mirrored=*/true);
-        break;
-      case ImageOrientationEnum::kOriginLeftBottom:
-        frame->metadata().transformation = media::VIDEO_ROTATION_270;
-        break;
-    };
-
+    frame->metadata().transformation = ImageOrientationToVideoTransformation(
+        decoder_->Orientation().Orientation());
     frame->metadata().frame_duration =
         decoder_->FrameDurationAtIndex(request->frame_index);
 

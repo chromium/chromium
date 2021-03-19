@@ -100,6 +100,32 @@ ImageOrientationEnum VideoTransformationToImageOrientation(
   }
 }
 
+media::VideoTransformation ImageOrientationToVideoTransformation(
+    ImageOrientationEnum orientation) {
+  switch (orientation) {
+    case ImageOrientationEnum::kOriginTopLeft:
+      return media::kNoTransformation;
+    case ImageOrientationEnum::kOriginTopRight:
+      return media::VideoTransformation(media::VIDEO_ROTATION_0,
+                                        /*mirrored=*/true);
+    case ImageOrientationEnum::kOriginBottomRight:
+      return media::VIDEO_ROTATION_180;
+    case ImageOrientationEnum::kOriginBottomLeft:
+      return media::VideoTransformation(media::VIDEO_ROTATION_180,
+                                        /*mirrored=*/true);
+    case ImageOrientationEnum::kOriginLeftTop:
+      return media::VideoTransformation(media::VIDEO_ROTATION_90,
+                                        /*mirrored=*/true);
+    case ImageOrientationEnum::kOriginRightTop:
+      return media::VIDEO_ROTATION_90;
+    case ImageOrientationEnum::kOriginRightBottom:
+      return media::VideoTransformation(media::VIDEO_ROTATION_270,
+                                        /*mirrored=*/true);
+    case ImageOrientationEnum::kOriginLeftBottom:
+      return media::VIDEO_ROTATION_270;
+  };
+}
+
 bool WillCreateAcceleratedImagesFromVideoFrame(const media::VideoFrame* frame) {
   return CanUseZeroCopyImages(*frame) ||
          ShouldCreateAcceleratedImages(GetRasterContextProvider().get());
@@ -110,7 +136,8 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     bool allow_zero_copy_images,
     CanvasResourceProvider* resource_provider,
     media::PaintCanvasVideoRenderer* video_renderer,
-    const gfx::Rect& dest_rect) {
+    const gfx::Rect& dest_rect,
+    bool prefer_tagged_orientation) {
   DCHECK(frame);
   const auto transform =
       frame->metadata().transformation.value_or(media::kNoTransformation);
@@ -186,15 +213,22 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     resource_provider = local_resource_provider.get();
   }
 
+  // TODO(crbug.com/1186864): Accelerated CanvasResourceProviders don't always
+  // handle orientation correctly, so disable orientation tagging.
+  if (resource_provider->IsAccelerated())
+    prefer_tagged_orientation = false;
+
   if (!DrawVideoFrameIntoResourceProvider(
           std::move(frame), resource_provider, raster_context_provider.get(),
           final_dest_rect, video_renderer,
-          /*ignore_video_transformation=*/true)) {
+          /*ignore_video_transformation=*/prefer_tagged_orientation)) {
     return nullptr;
   }
 
   return resource_provider->Snapshot(
-      VideoTransformationToImageOrientation(transform));
+      prefer_tagged_orientation
+          ? VideoTransformationToImageOrientation(transform)
+          : ImageOrientationEnum::kDefault);
 }
 
 bool DrawVideoFrameIntoResourceProvider(

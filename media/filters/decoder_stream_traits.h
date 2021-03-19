@@ -143,6 +143,8 @@ class MEDIA_EXPORT DecoderStreamTraits<DemuxerStream::VIDEO> {
 
   PipelineStatistics stats_;
 
+  VideoTransformation transform_ = kNoTransformation;
+
   base::WeakPtr<DecoderStreamTraits<DemuxerStream::VIDEO>> weak_this_;
   base::WeakPtrFactory<DecoderStreamTraits<DemuxerStream::VIDEO>> weak_factory_{
       this};

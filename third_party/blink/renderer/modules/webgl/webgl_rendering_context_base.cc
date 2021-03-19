@@ -5911,6 +5911,11 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   else
     function_type = kTexSubImage;
 
+  // The CopyTexImage fast paths can't handle orientation, so if a non-default
+  // orientation is provided, we must disable them.
+  const auto transform = media_video_frame->metadata().transformation.value_or(
+      media::kNoTransformation);
+
   // TODO(crbug.com/1175907): Reconcile usage of natural size versus visible
   // rect. The existing <video> path uses natural size for |source_image_rect|
   // and visible size centered at zero for actual Paint/Copy operations. So for
@@ -5931,7 +5936,8 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
       function_id == kTexImage2D && source_image_rect_is_default &&
       depth == 1 && GL_TEXTURE_2D == target &&
       (have_image_external_essl3 || !may_need_image_external_essl3) &&
-      CanUseTexImageViaGPU(format, type);
+      CanUseTexImageViaGPU(format, type) &&
+      transform == media::kNoTransformation;
 
   // Callers may chose to provide a renderer which ensures that generated
   // intermediates will be cached across TexImage calls for the same frame.
@@ -6055,11 +6061,13 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   auto& image_cache =
       can_upload_via_gpu ? generated_video_cache_ : generated_image_cache_;
 
+  // Since TexImageImpl() and TexImageGPU() don't know how to handle tagged
+  // orientation, we set |prefer_tagged_orientation| to false.
   const auto visible_rect = media_video_frame->visible_rect();
   scoped_refptr<Image> image = CreateImageFromVideoFrame(
       std::move(media_video_frame), kAllowZeroCopyImages,
       image_cache.GetCanvasResourceProvider(IntSize(visible_rect.size())),
-      video_renderer);
+      video_renderer, gfx::Rect(), /*prefer_tagged_orientation=*/false);
   if (!image)
     return;
 
