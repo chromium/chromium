@@ -90,9 +90,9 @@ void ChromeAppListModelUpdater::AddItemToFolder(
 }
 
 void ChromeAppListModelUpdater::RemoveItem(const std::string& id) {
+  RemoveChromeItem(id);
   if (app_list_controller_)
     app_list_controller_->RemoveItem(id);
-  RemoveChromeItem(id);
 }
 
 void ChromeAppListModelUpdater::RemoveUninstalledItem(const std::string& id) {
