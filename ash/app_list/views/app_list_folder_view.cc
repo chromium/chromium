@@ -871,8 +871,8 @@ void AppListFolderView::StartSetupDragInRootLevelAppsGridView(
     bool has_native_drag) {
   // Converts the original_drag_view's bounds to the coordinate system of
   // root level grid view.
-  gfx::RectF rect_f(original_drag_view->GetLocalBounds());
-  views::View::ConvertRectToTarget(original_drag_view,
+  gfx::RectF rect_f(original_drag_view->bounds());
+  views::View::ConvertRectToTarget(items_grid_view_,
                                    container_view_->apps_grid_view(), &rect_f);
   gfx::Rect rect_in_root_grid_view = gfx::ToEnclosingRect(rect_f);
 
