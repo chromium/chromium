@@ -134,6 +134,15 @@ class MEDIA_EXPORT AudioRendererAlgorithm {
   std::vector<bool> channel_mask_for_testing() { return channel_mask_; }
 
  private:
+  enum class FillBufferMode {
+    kPassthrough,
+    kResampler,
+    kWSOLA,
+  };
+
+  // Remove buffered data that will be outdated if we switch fill mode.
+  void SetFillBufferMode(FillBufferMode mode);
+
   // Within |search_block_|, find the block of data that is most similar to
   // |target_block_|, and write it in |optimal_block_|. This method assumes that
   // there is enough data to perform a search, i.e. |search_block_| and
@@ -310,6 +319,8 @@ class MEDIA_EXPORT AudioRendererAlgorithm {
   // The initial and maximum capacity calculated by Initialize().
   int64_t initial_capacity_;
   int64_t max_capacity_;
+
+  FillBufferMode last_mode_ = FillBufferMode::kPassthrough;
 
   DISALLOW_COPY_AND_ASSIGN(AudioRendererAlgorithm);
 };

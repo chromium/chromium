@@ -118,6 +118,7 @@ class AudioRendererAlgorithmTest : public testing::Test {
 
     AudioParameters params(format, channel_layout, samples_per_second,
                            frames_per_buffer);
+    is_bitstream_format_ = params.IsBitstreamFormat();
     bool is_encrypted = false;
     algorithm_.Initialize(params, is_encrypted);
     algorithm_.SetChannelMask(std::move(channel_mask));
@@ -202,6 +203,7 @@ class AudioRendererAlgorithmTest : public testing::Test {
     int frame_delta = frames_enqueued_ - initial_frames_enqueued;
     int buffered_delta = algorithm_.BufferedFrames() - initial_frames_buffered;
     int consumed = frame_delta - buffered_delta;
+
     CHECK_GE(consumed, 0);
     return consumed;
   }
@@ -220,7 +222,6 @@ class AudioRendererAlgorithmTest : public testing::Test {
                         int total_frames_requested,
                         int dest_offset) {
     int initial_frames_enqueued = frames_enqueued_;
-    int initial_frames_buffered = algorithm_.BufferedFrames();
 
     std::unique_ptr<AudioBus> bus =
         AudioBus::Create(channels_, buffer_size_in_frames);
@@ -232,6 +233,15 @@ class AudioRendererAlgorithmTest : public testing::Test {
       EXPECT_EQ(0, frames_written);
       return;
     }
+
+    if (!is_bitstream_format_) {
+      // When we switch playback rates (specifically from non-1.0 to 1.0), the
+      // BufferedFrames() can change since some internal buffers are cleared.
+      // Fill 0 frames to make sure the BufferedFrames() is correct for the
+      // |playback_rate|.
+      algorithm_.FillBuffer(bus.get(), 0, 0, playback_rate);
+    }
+    int initial_frames_buffered = algorithm_.BufferedFrames();
 
     int frames_remaining = total_frames_requested;
     bool first_fill_buffer = true;
@@ -412,6 +422,7 @@ class AudioRendererAlgorithmTest : public testing::Test {
   SampleFormat sample_format_;
   int samples_per_second_;
   int bytes_per_sample_;
+  bool is_bitstream_format_;
 };
 
 TEST_F(AudioRendererAlgorithmTest, InitializeWithLargeParameters) {
