@@ -209,9 +209,22 @@ TEST_F(EuiccTest, RequestPendingProfiles) {
             RequestPendingProfiles(euicc));
   EXPECT_EQ(0u, observer()->profile_list_change_calls().size());
 
+  base::HistogramTester histogram_tester;
+
+  const uint64_t profile_discovery_latency = 3000;
+  HermesEuiccClient::Get()->GetTestInterface()->SetInteractiveDelay(
+      base::TimeDelta::FromMilliseconds(profile_discovery_latency));
+
   // Verify that successful request returns correct status code.
   EXPECT_EQ(mojom::ESimOperationResult::kSuccess,
             RequestPendingProfiles(euicc));
+
+  histogram_tester.ExpectTimeBucketCount(
+      "Network.Cellular.ESim.ProfileDiscovery.Latency",
+      base::TimeDelta::FromMilliseconds(profile_discovery_latency), 1);
+
+  histogram_tester.ExpectTotalCount(
+      "Network.Cellular.ESim.ProfileDiscovery.Latency", 1);
 }
 
 TEST_F(EuiccTest, GetEidQRCode) {
