@@ -21,6 +21,7 @@ include_rules = [
   "+crypto",
   "+net",
   "+net/test",
+  "+services/cert_verifier/public/mojom/trial_comparison_cert_verifier.mojom.h",
   "+services/network/public",
   "+services/network/test",
   "+third_party/blink/public/mojom",

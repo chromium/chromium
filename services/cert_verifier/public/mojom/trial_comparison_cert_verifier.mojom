@@ -8,7 +8,7 @@
 // removed when the trial is completed.
 // See https://crbug.com/649026
 
-module network.mojom;
+module cert_verifier.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/network_param.mojom";
@@ -73,11 +73,13 @@ struct CertVerifierDebugInfo {
 // Sends reports of differences found in the cert verifier trial.
 interface TrialComparisonCertVerifierReportClient {
   SendTrialReport(
-      string hostname, X509Certificate cert, bool enable_rev_checking,
-      bool require_rev_checking_local_anchors, bool enable_sha1_local_anchors,
-      bool disable_symantec_enforcement, array<uint8> stapled_ocsp,
-      array<uint8> sct_list, CertVerifyResult primary_result,
-      CertVerifyResult trial_result, CertVerifierDebugInfo debug_info);
+      string hostname, network.mojom.X509Certificate cert,
+      bool enable_rev_checking, bool require_rev_checking_local_anchors,
+      bool enable_sha1_local_anchors, bool disable_symantec_enforcement,
+      array<uint8> stapled_ocsp, array<uint8> sct_list,
+      network.mojom.CertVerifyResult primary_result,
+      network.mojom.CertVerifyResult trial_result,
+      CertVerifierDebugInfo debug_info);
 };
 
 // Parameters for initializing the cert verification trial.

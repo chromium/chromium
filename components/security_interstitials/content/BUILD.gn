@@ -100,6 +100,7 @@ static_library("security_interstitial_page") {
     "//content/public/browser",
     "//content/public/common",
     "//crypto",
+    "//services/cert_verifier/public/mojom",
     "//services/network/public/cpp:cpp",
     "//third_party/protobuf:protobuf_lite",
     "//third_party/re2",

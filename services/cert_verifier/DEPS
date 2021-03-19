@@ -1,5 +1,5 @@
 include_rules = [
-  "+crypto/nss_util_internal.h",
+  "+crypto",
   "+net",
   "+mojo/public/cpp",
   "+services/network/public",

@@ -130,7 +130,7 @@ void AddMacTrustFlagsToReport(
 }
 
 void AddMacPlatformDebugInfoToReport(
-    const network::mojom::MacPlatformVerifierDebugInfoPtr&
+    const cert_verifier::mojom::MacPlatformVerifierDebugInfoPtr&
         mac_platform_debug_info,
     chrome_browser_ssl::TrialVerificationInfo* trial_report) {
   if (!mac_platform_debug_info)
@@ -150,16 +150,19 @@ void AddMacPlatformDebugInfoToReport(
 
 chrome_browser_ssl::TrialVerificationInfo::MacTrustImplType
 TrustImplTypeFromMojom(
-    network::mojom::CertVerifierDebugInfo::MacTrustImplType input) {
+    cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType input) {
   switch (input) {
-    case network::mojom::CertVerifierDebugInfo::MacTrustImplType::kUnknown:
+    case cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::
+        kUnknown:
       return chrome_browser_ssl::TrialVerificationInfo::MAC_TRUST_IMPL_UNKNOWN;
-    case network::mojom::CertVerifierDebugInfo::MacTrustImplType::kDomainCache:
+    case cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::
+        kDomainCache:
       return chrome_browser_ssl::TrialVerificationInfo::
           MAC_TRUST_IMPL_DOMAIN_CACHE;
-    case network::mojom::CertVerifierDebugInfo::MacTrustImplType::kSimple:
+    case cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::kSimple:
       return chrome_browser_ssl::TrialVerificationInfo::MAC_TRUST_IMPL_SIMPLE;
-    case network::mojom::CertVerifierDebugInfo::MacTrustImplType::kMruCache:
+    case cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::
+        kMruCache:
       return chrome_browser_ssl::TrialVerificationInfo::
           MAC_TRUST_IMPL_MRU_CACHE;
   }
@@ -204,7 +207,7 @@ CertificateErrorReport::CertificateErrorReport(
     const std::string& sct_list,
     const net::CertVerifyResult& primary_result,
     const net::CertVerifyResult& trial_result,
-    network::mojom::CertVerifierDebugInfoPtr debug_info)
+    cert_verifier::mojom::CertVerifierDebugInfoPtr debug_info)
     : CertificateErrorReport(hostname,
                              *primary_result.verified_cert,
                              &unverified_cert,

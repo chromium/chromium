@@ -777,13 +777,14 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
           cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl::
               kSystem &&
       TrialComparisonCertVerifierController::MaybeAllowedForProfile(profile_)) {
-    mojo::PendingRemote<network::mojom::TrialComparisonCertVerifierConfigClient>
+    mojo::PendingRemote<
+        cert_verifier::mojom::TrialComparisonCertVerifierConfigClient>
         config_client;
     auto config_client_receiver =
         config_client.InitWithNewPipeAndPassReceiver();
 
     cert_verifier_creation_params->trial_comparison_cert_verifier_params =
-        network::mojom::TrialComparisonCertVerifierParams::New();
+        cert_verifier::mojom::TrialComparisonCertVerifierParams::New();
 
     if (!trial_comparison_cert_verifier_controller_) {
       trial_comparison_cert_verifier_controller_ =

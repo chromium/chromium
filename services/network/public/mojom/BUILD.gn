@@ -813,15 +813,6 @@ mojom("mojom") {
     enabled_features += [ "needs_crypt_config" ]
   }
 
-  if (trial_comparison_cert_verifier_supported) {
-    enabled_features += [ "is_trial_comparison_cert_verifier_supported" ]
-    sources += [ "trial_comparison_cert_verifier.mojom" ]
-  }
-
-  if (builtin_cert_verifier_feature_supported) {
-    enabled_features += [ "is_builtin_cert_verifier_feature_supported" ]
-  }
-
   # Typemaps which apply to both Blink and non-Blink bindings.
   shared_cpp_typemaps = []
 

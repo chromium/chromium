@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_PUBLIC_CPP_CERT_VERIFIER_TRIAL_COMPARISON_CERT_VERIFIER_MOJO_H_
-#define SERVICES_NETWORK_PUBLIC_CPP_CERT_VERIFIER_TRIAL_COMPARISON_CERT_VERIFIER_MOJO_H_
+#ifndef SERVICES_CERT_VERIFIER_TRIAL_COMPARISON_CERT_VERIFIER_MOJO_H_
+#define SERVICES_CERT_VERIFIER_TRIAL_COMPARISON_CERT_VERIFIER_MOJO_H_
 
 #include <memory>
 
@@ -16,7 +16,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cert/cert_verifier.h"
-#include "services/network/public/mojom/trial_comparison_cert_verifier.mojom.h"
+#include "services/cert_verifier/public/mojom/trial_comparison_cert_verifier.mojom.h"
 
 namespace net {
 class CertVerifyProc;
@@ -26,7 +26,7 @@ class TrialComparisonCertVerifier;
 
 FORWARD_DECLARE_TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo);
 
-namespace network {
+namespace cert_verifier {
 
 // Wrapper around TrialComparisonCertVerifier that does trial configuration and
 // reporting over Mojo pipes.
@@ -87,6 +87,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TrialComparisonCertVerifierMojo
   DISALLOW_COPY_AND_ASSIGN(TrialComparisonCertVerifierMojo);
 };
 
-}  // namespace network
+}  // namespace cert_verifier
 
-#endif  // SERVICES_NETWORK_PUBLIC_CPP_CERT_VERIFIER_TRIAL_COMPARISON_CERT_VERIFIER_MOJO_H_
+#endif  // SERVICES_CERT_VERIFIER_TRIAL_COMPARISON_CERT_VERIFIER_MOJO_H_

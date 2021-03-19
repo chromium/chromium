@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/public/cpp/cert_verifier/system_trust_store_provider_chromeos.h"
+#include "services/cert_verifier/system_trust_store_provider_chromeos.h"
 
 #include <pk11pub.h>
 
@@ -10,7 +10,7 @@
 
 #include "net/cert/internal/system_trust_store_nss.h"
 
-namespace network {
+namespace cert_verifier {
 
 SystemTrustStoreProviderChromeOS::SystemTrustStoreProviderChromeOS() {}
 
@@ -32,4 +32,4 @@ SystemTrustStoreProviderChromeOS::CreateSystemTrustStore() {
   return net::CreateSslSystemTrustStoreNSSWithNoUserSlots();
 }
 
-}  // namespace network
+}  // namespace cert_verifier

@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//net/features.gni")
 
 # This target provides a net::CertVerifier that transparently proxies cert
@@ -21,45 +20,18 @@ source_set("mojo_cert_verifier") {
   ]
 }
 
-source_set("cert_verifier_creation") {
-  sources = []
-
-  if (is_chromeos_ash) {
-    sources += [
-      "system_trust_store_provider_chromeos.cc",
-      "system_trust_store_provider_chromeos.h",
-    ]
-  }
-
-  if (trial_comparison_cert_verifier_supported) {
-    sources += [
-      "trial_comparison_cert_verifier_mojo.cc",
-      "trial_comparison_cert_verifier_mojo.h",
-    ]
-  }
-
-  deps = [
-    "//base",
-    "//build:chromeos_buildflags",
-    "//net",
-    "//services/network/public/mojom",
-  ]
-
-  public_deps = [ "//services/network/public/mojom" ]
-}
-
 source_set("cert_verifier_tests") {
   testonly = true
   sources = []
 
   deps = [
-    ":cert_verifier_creation",
     ":mojo_cert_verifier",
     "//base",
     "//base/test:test_support",
     "//mojo/public/cpp/test_support:test_utils",
     "//net",
     "//net:test_support",
+    "//services/network/public/mojom",
     "//testing/gtest",
   ]
 
@@ -67,8 +39,4 @@ source_set("cert_verifier_tests") {
     "cert_verifier_mojom_traits_unittest.cc",
     "mojo_cert_verifier_unittest.cc",
   ]
-
-  if (trial_comparison_cert_verifier_supported) {
-    sources += [ "trial_comparison_cert_verifier_mojo_unittest.cc" ]
-  }
 }

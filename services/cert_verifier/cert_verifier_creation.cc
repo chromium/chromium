@@ -16,7 +16,7 @@
 #include "net/cert/cert_verify_proc_builtin.h"
 #include "net/cert/internal/system_trust_store.h"
 #include "net/cert/multi_threaded_cert_verifier.h"
-#include "services/network/public/cpp/cert_verifier/system_trust_store_provider_chromeos.h"
+#include "services/cert_verifier/system_trust_store_provider_chromeos.h"
 #endif
 
 #if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED) || \
@@ -27,7 +27,7 @@
 #endif
 
 #if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
-#include "services/network/public/cpp/cert_verifier/trial_comparison_cert_verifier_mojo.h"
+#include "services/cert_verifier/trial_comparison_cert_verifier_mojo.h"
 #endif
 
 namespace cert_verifier {
@@ -55,7 +55,7 @@ scoped_refptr<net::CertVerifyProc> CreateCertVerifyProcForUser(
     crypto::ScopedPK11Slot user_public_slot) {
   return net::CreateCertVerifyProcBuiltin(
       std::move(net_fetcher),
-      std::make_unique<network::SystemTrustStoreProviderChromeOS>(
+      std::make_unique<SystemTrustStoreProviderChromeOS>(
           std::move(user_public_slot)));
 }
 
@@ -63,7 +63,7 @@ scoped_refptr<net::CertVerifyProc> CreateCertVerifyProcWithoutUserSlots(
     scoped_refptr<net::CertNetFetcher> net_fetcher) {
   return net::CreateCertVerifyProcBuiltin(
       std::move(net_fetcher),
-      std::make_unique<network::SystemTrustStoreProviderChromeOS>());
+      std::make_unique<SystemTrustStoreProviderChromeOS>());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -119,7 +119,7 @@ std::unique_ptr<net::CertVerifier> CreateCertVerifier(
 #if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
   if (!cert_verifier && creation_params &&
       creation_params->trial_comparison_cert_verifier_params) {
-    cert_verifier = std::make_unique<network::TrialComparisonCertVerifierMojo>(
+    cert_verifier = std::make_unique<TrialComparisonCertVerifierMojo>(
         creation_params->trial_comparison_cert_verifier_params->initial_allowed,
         std::move(creation_params->trial_comparison_cert_verifier_params
                       ->config_client_receiver),

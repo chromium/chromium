@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_PUBLIC_CPP_CERT_VERIFIER_SYSTEM_TRUST_STORE_PROVIDER_CHROMEOS_H_
-#define SERVICES_NETWORK_PUBLIC_CPP_CERT_VERIFIER_SYSTEM_TRUST_STORE_PROVIDER_CHROMEOS_H_
+#ifndef SERVICES_CERT_VERIFIER_SYSTEM_TRUST_STORE_PROVIDER_CHROMEOS_H_
+#define SERVICES_CERT_VERIFIER_SYSTEM_TRUST_STORE_PROVIDER_CHROMEOS_H_
 
 #include <certt.h>
 #include <memory>
@@ -18,7 +18,7 @@ namespace net {
 class SystemTrustStore;
 }
 
-namespace network {
+namespace cert_verifier {
 
 // A SystemTrustStoreProvider that supports creating SystemTrustStore instances
 // which will only consider user-imported certificates trusted if they are on a
@@ -47,6 +47,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SystemTrustStoreProviderChromeOS
   DISALLOW_COPY_AND_ASSIGN(SystemTrustStoreProviderChromeOS);
 };
 
-}  // namespace network
+}  // namespace cert_verifier
 
-#endif  // SERVICES_NETWORK_PUBLIC_CPP_CERT_VERIFIER_SYSTEM_TRUST_STORE_PROVIDER_CHROMEOS_H_
+#endif  // SERVICES_CERT_VERIFIER_SYSTEM_TRUST_STORE_PROVIDER_CHROMEOS_H_

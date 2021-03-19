@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/public/cpp/cert_verifier/trial_comparison_cert_verifier_mojo.h"
+#include "services/cert_verifier/trial_comparison_cert_verifier_mojo.h"
 
 #include <utility>
 
@@ -21,25 +21,28 @@
 namespace {
 
 #if defined(OS_MAC)
-network::mojom::CertVerifierDebugInfo::MacTrustImplType TrustImplTypeToMojom(
-    net::TrustStoreMac::TrustImplType input) {
+cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType
+TrustImplTypeToMojom(net::TrustStoreMac::TrustImplType input) {
   switch (input) {
     case net::TrustStoreMac::TrustImplType::kUnknown:
-      return network::mojom::CertVerifierDebugInfo::MacTrustImplType::kUnknown;
+      return cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::
+          kUnknown;
     case net::TrustStoreMac::TrustImplType::kDomainCache:
-      return network::mojom::CertVerifierDebugInfo::MacTrustImplType::
+      return cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::
           kDomainCache;
     case net::TrustStoreMac::TrustImplType::kSimple:
-      return network::mojom::CertVerifierDebugInfo::MacTrustImplType::kSimple;
+      return cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::
+          kSimple;
     case net::TrustStoreMac::TrustImplType::kMruCache:
-      return network::mojom::CertVerifierDebugInfo::MacTrustImplType::kMruCache;
+      return cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::
+          kMruCache;
   }
 }
 #endif
 
 }  // namespace
 
-namespace network {
+namespace cert_verifier {
 
 TrialComparisonCertVerifierMojo::TrialComparisonCertVerifierMojo(
     bool initial_allowed,
@@ -93,21 +96,20 @@ void TrialComparisonCertVerifierMojo::OnSendTrialReport(
     const std::string& sct_list,
     const net::CertVerifyResult& primary_result,
     const net::CertVerifyResult& trial_result) {
-  network::mojom::CertVerifierDebugInfoPtr debug_info =
-      network::mojom::CertVerifierDebugInfo::New();
+  mojom::CertVerifierDebugInfoPtr debug_info =
+      mojom::CertVerifierDebugInfo::New();
 #if defined(OS_MAC)
   auto* mac_platform_debug_info =
       net::CertVerifyProcMac::ResultDebugData::Get(&primary_result);
   if (mac_platform_debug_info) {
     debug_info->mac_platform_debug_info =
-        network::mojom::MacPlatformVerifierDebugInfo::New();
+        mojom::MacPlatformVerifierDebugInfo::New();
     debug_info->mac_platform_debug_info->trust_result =
         mac_platform_debug_info->trust_result();
     debug_info->mac_platform_debug_info->result_code =
         mac_platform_debug_info->result_code();
     for (const auto& cert_info : mac_platform_debug_info->status_chain()) {
-      network::mojom::MacCertEvidenceInfoPtr info =
-          network::mojom::MacCertEvidenceInfo::New();
+      mojom::MacCertEvidenceInfoPtr info = mojom::MacCertEvidenceInfo::New();
       info->status_bits = cert_info.status_bits;
       info->status_codes = cert_info.status_codes;
       debug_info->mac_platform_debug_info->status_chain.push_back(
@@ -148,4 +150,4 @@ void TrialComparisonCertVerifierMojo::OnSendTrialReport(
       trial_result, std::move(debug_info));
 }
 
-}  // namespace network
+}  // namespace cert_verifier

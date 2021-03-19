@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/public/cpp/cert_verifier/trial_comparison_cert_verifier_mojo.h"
+#include "services/cert_verifier/trial_comparison_cert_verifier_mojo.h"
 
 #include "base/containers/span.h"
 #include "base/test/task_environment.h"
@@ -31,15 +31,15 @@ struct ReceivedReport {
   std::vector<uint8_t> sct_list;
   net::CertVerifyResult primary_result;
   net::CertVerifyResult trial_result;
-  network::mojom::CertVerifierDebugInfoPtr debug_info;
+  cert_verifier::mojom::CertVerifierDebugInfoPtr debug_info;
 };
 
 class FakeReportClient
-    : public network::mojom::TrialComparisonCertVerifierReportClient {
+    : public cert_verifier::mojom::TrialComparisonCertVerifierReportClient {
  public:
   explicit FakeReportClient(
       mojo::PendingReceiver<
-          network::mojom::TrialComparisonCertVerifierReportClient>
+          cert_verifier::mojom::TrialComparisonCertVerifierReportClient>
           report_client_receiver)
       : receiver_(this, std::move(report_client_receiver)) {}
 
@@ -55,7 +55,7 @@ class FakeReportClient
       const std::vector<uint8_t>& sct_list,
       const net::CertVerifyResult& primary_result,
       const net::CertVerifyResult& trial_result,
-      network::mojom::CertVerifierDebugInfoPtr debug_info) override {
+      cert_verifier::mojom::CertVerifierDebugInfoPtr debug_info) override {
     ReceivedReport report;
     report.hostname = hostname;
     report.unverified_cert = unverified_cert;
@@ -79,7 +79,7 @@ class FakeReportClient
   void WaitForReport() { run_loop_.Run(); }
 
  private:
-  mojo::Receiver<network::mojom::TrialComparisonCertVerifierReportClient>
+  mojo::Receiver<cert_verifier::mojom::TrialComparisonCertVerifierReportClient>
       receiver_;
 
   std::vector<ReceivedReport> reports_;
@@ -143,11 +143,12 @@ TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo) {
   net::CertVerifyProcBuiltinResultDebugData::Create(&trial_result, time,
                                                     der_time);
 
-  mojo::PendingRemote<network::mojom::TrialComparisonCertVerifierReportClient>
+  mojo::PendingRemote<
+      cert_verifier::mojom::TrialComparisonCertVerifierReportClient>
       report_client_remote;
   FakeReportClient report_client(
       report_client_remote.InitWithNewPipeAndPassReceiver());
-  network::TrialComparisonCertVerifierMojo tccvm(
+  cert_verifier::TrialComparisonCertVerifierMojo tccvm(
       true, {}, std::move(report_client_remote), nullptr, nullptr);
 
   tccvm.OnSendTrialReport("example.com", unverified_cert, false, false, false,
@@ -189,8 +190,9 @@ TEST(TrialComparisonCertVerifierMojoTest, SendReportDebugInfo) {
 
   EXPECT_EQ(kExpectedTrustDebugInfo,
             report.debug_info->mac_combined_trust_debug_info);
-  EXPECT_EQ(network::mojom::CertVerifierDebugInfo::MacTrustImplType::kSimple,
-            report.debug_info->mac_trust_impl);
+  EXPECT_EQ(
+      cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::kSimple,
+      report.debug_info->mac_trust_impl);
 #endif
 
   EXPECT_EQ(time, report.debug_info->trial_verification_time);

@@ -8,7 +8,7 @@ import "mojo/public/mojom/base/file_path.mojom";
 import "services/network/public/mojom/cert_verifier_service.mojom";
 
 [EnableIf=is_trial_comparison_cert_verifier_supported]
-import "services/network/public/mojom/trial_comparison_cert_verifier.mojom";
+import "services/cert_verifier/public/mojom/trial_comparison_cert_verifier.mojom";
 
 // Parameters to specify how the net::CertVerifier and net::CertVerifyProc
 // objects should be instantiated.
@@ -35,8 +35,7 @@ struct CertVerifierCreationParams {
   // interface and embedders should not use it.
   // See https://crbug.com/649026
   [EnableIf=is_trial_comparison_cert_verifier_supported]
-  network.mojom.TrialComparisonCertVerifierParams?
-      trial_comparison_cert_verifier_params;
+  TrialComparisonCertVerifierParams? trial_comparison_cert_verifier_params;
 };
 
 // Parent interface for the CertVerifierProcess. Hands out new
