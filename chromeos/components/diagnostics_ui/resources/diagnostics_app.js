@@ -109,6 +109,6 @@ Polymer({
           this.toastText_ =
               loadTimeData.getString(`sessionLogToastText${result}`);
           this.$.toast.show();
-        })
+        }).catch(() => {/* File selection cancelled */});
   },
 });
