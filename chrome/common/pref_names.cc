@@ -2137,7 +2137,7 @@ const char kCertRevocationCheckingRequiredLocalAnchors[] =
     "ssl.rev_checking.required_for_local_anchors";
 
 // String specifying the minimum TLS version to negotiate. Supported values
-// are "tls1", "tls1.1", "tls1.2", "tls1.3".
+// are "tls1.2", "tls1.3".
 const char kSSLVersionMin[] = "ssl.version_min";
 
 // String specifying the maximum TLS version to negotiate. Supported values

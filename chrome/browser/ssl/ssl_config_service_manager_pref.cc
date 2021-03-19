@@ -74,14 +74,6 @@ std::vector<uint16_t> ParseCipherSuites(
 // false if the string is not recognized.
 bool SSLProtocolVersionFromString(const std::string& version_str,
                                   network::mojom::SSLVersion* version) {
-  if (version_str == switches::kSSLVersionTLSv1) {
-    *version = network::mojom::SSLVersion::kTLS1;
-    return true;
-  }
-  if (version_str == switches::kSSLVersionTLSv11) {
-    *version = network::mojom::SSLVersion::kTLS11;
-    return true;
-  }
   if (version_str == switches::kSSLVersionTLSv12) {
     *version = network::mojom::SSLVersion::kTLS12;
     return true;
@@ -260,8 +252,7 @@ SSLConfigServiceManagerPref::GetSSLConfigFromPrefs() const {
   }
 
   network::mojom::SSLVersion version_max;
-  if (SSLProtocolVersionFromString(version_max_str, &version_max) &&
-      version_max >= network::mojom::SSLVersion::kTLS12) {
+  if (SSLProtocolVersionFromString(version_max_str, &version_max)) {
     config->version_max = version_max;
   }
 

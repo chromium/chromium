@@ -7876,12 +7876,12 @@ IN_PROC_BROWSER_TEST_F(LegacyTLSInterstitialTest, ShowsInterstitial) {
                                1);
 }
 
-// When kLegacyTLSEnforcement is enabled but the SSLVersionMin enterprise policy
-// is set, the SSLVersionMin policy should also override the version we show the
-// legacy TLS interstitial on.
-IN_PROC_BROWSER_TEST_F(LegacyTLSInterstitialTest, PolicyOverridesInterstitial) {
-  // Set the SSLVersionMin policy and make sure that the network service has
-  // received the update.
+// Test that attempting to set the SSLVersionMin enterprise policy to "tls1"
+// (which is no longer supported) does not prevent the legacy TLS interstitial
+// from being shown.
+IN_PROC_BROWSER_TEST_F(LegacyTLSInterstitialTest,
+                       PolicyDoesNotOverrideInterstitial) {
+  // Attempt to set the SSLVersionMin policy.
   base::Value policy_value("tls1");  // TLS 1.0
   SetPolicy(policy::key::kSSLVersionMin, std::move(policy_value));
 
@@ -7893,11 +7893,8 @@ IN_PROC_BROWSER_TEST_F(LegacyTLSInterstitialTest, PolicyOverridesInterstitial) {
   ui_test_utils::NavigateToURL(browser(),
                                https_server()->GetURL("/ssl/google.html"));
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_FALSE(
+  EXPECT_TRUE(
       chrome_browser_interstitials::IsShowingLegacyTLSInterstitial(tab));
-
-  // Interstitial metrics should not have been recorded from this navigation.
-  histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 0);
 }
 
 // Check that if we have bypassed the legacy TLS error previously and then the

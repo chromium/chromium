@@ -161,8 +161,6 @@ extern const char kSimulateOutdatedNoAU[];
 extern const char kSimulateUpgrade[];
 extern const char kSSLVersionMax[];
 extern const char kSSLVersionMin[];
-extern const char kSSLVersionTLSv1[];
-extern const char kSSLVersionTLSv11[];
 extern const char kSSLVersionTLSv12[];
 extern const char kSSLVersionTLSv13[];
 extern const char kStartMaximized[];
