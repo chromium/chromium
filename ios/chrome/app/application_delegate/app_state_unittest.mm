@@ -354,8 +354,6 @@ TEST_F(AppStateTest, requiresHandlingAfterLaunchWithOptionsBackground) {
   AppState* appState = getAppStateWithMock();
 
   id browserLauncherMock = getBrowserLauncherMock();
-  BrowserInitializationStageType stageBasic = INITIALIZATION_STAGE_BASIC;
-  [[browserLauncherMock expect] startUpBrowserToStage:stageBasic];
   [[browserLauncherMock expect] setLaunchOptions:launchOptions];
 
   // Action.
@@ -417,8 +415,6 @@ TEST_F(AppStateTest, requiresHandlingAfterLaunchWithOptionsForegroundSafeMode) {
   [appState addAgent:[[SafeModeAppAgent alloc] init]];
 
   id browserLauncherMock = getBrowserLauncherMock();
-  BrowserInitializationStageType stageBasic = INITIALIZATION_STAGE_BASIC;
-  [[browserLauncherMock expect] startUpBrowserToStage:stageBasic];
   [[browserLauncherMock expect] setLaunchOptions:launchOptions];
 
   // Expected calls on AppState#coordinatorDidExitSafeMode.
@@ -503,8 +499,6 @@ TEST_F(AppStateTest, requiresHandlingAfterLaunchWithOptionsForeground) {
       applicationDidBecomeActive:[UIApplication sharedApplication]];
 
   id browserLauncherMock = getBrowserLauncherMock();
-  BrowserInitializationStageType stageBasic = INITIALIZATION_STAGE_BASIC;
-  [[browserLauncherMock expect] startUpBrowserToStage:stageBasic];
   BrowserInitializationStageType stageForeground =
       INITIALIZATION_STAGE_FOREGROUND;
   [[browserLauncherMock expect] startUpBrowserToStage:stageForeground];
@@ -882,9 +876,15 @@ TEST_F(AppStateTest,
 
   // The helper below calls makeKeyAndVisible.
   [[window expect] makeKeyAndVisible];
+
   AppState* appState = getAppStateWithRealWindow(window);
+  id browserLauncherMock = getBrowserLauncherMock();
+  NSDictionary* launchOptions = @{};
+  [[browserLauncherMock expect] setLaunchOptions:launchOptions];
 
   [appState addAgent:[[SafeModeAppAgent alloc] init]];
+  [appState requiresHandlingAfterLaunchWithOptions:launchOptions
+                                   stateBackground:YES];
 
   // Starting safe mode will call makeKeyAndVisible on the window.
   [[window expect] makeKeyAndVisible];

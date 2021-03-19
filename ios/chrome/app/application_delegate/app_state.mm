@@ -130,7 +130,7 @@ const NSTimeInterval kMemoryFootprintRecordingTimeInterval = 5;
 
 // This method is the first to be called when user launches the application.
 // Depending on the background tasks history, the state of the application is
-// either INITIALIZATION_STAGE_BASIC or INITIALIZATION_STAGE_BACKGROUND so this
+// INITIALIZATION_STAGE_BACKGROUND so this
 // step cannot be included in the |startUpBrowserToStage:| method.
 - (void)initializeUI;
 // Saves the current launch details to user defaults.
@@ -535,7 +535,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   [_browserLauncher setLaunchOptions:launchOptions];
   self.shouldPerformAdditionalDelegateHandling = YES;
 
-  [_browserLauncher startUpBrowserToStage:INITIALIZATION_STAGE_BASIC];
+  [self startInitStages];
+
   if (!stateBackground) {
     [self initializeUI];
   }
@@ -665,8 +666,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 - (void)initializeUI {
   _userInteracted = YES;
   [self saveLaunchDetailsToDefaults];
-
-  [self startInitStages];
 
   // TODO(crbug.com/1178809): Move this logic to the safe mode agent.
   if ([SafeModeCoordinator shouldStart]) {

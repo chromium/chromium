@@ -336,8 +336,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 // Helper methods to initialize the application to a specific stage.
 // Setting |_browserInitializationStage| to a specific stage requires the
 // corresponding function to return YES.
-// Initializes the application to INITIALIZATION_STAGE_BASIC, which is the
-// minimum initialization needed in all cases.
+// Initializes the application to the minimum initialization needed in all
+// cases.
 - (void)startUpBrowserBasicInitialization;
 // Initializes the application to INITIALIZATION_STAGE_BACKGROUND, which is
 // needed by background handlers.
@@ -375,12 +375,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 // This function starts up to only what is needed at each stage of the
 // initialization. It is possible to continue initialization later.
 - (void)startUpBrowserToStage:(BrowserInitializationStageType)stage {
-  if (_browserInitializationStage < INITIALIZATION_STAGE_BASIC &&
-      stage >= INITIALIZATION_STAGE_BASIC) {
-    [self startUpBrowserBasicInitialization];
-    _browserInitializationStage = INITIALIZATION_STAGE_BASIC;
-  }
-
   if (_browserInitializationStage < INITIALIZATION_STAGE_BACKGROUND &&
       stage >= INITIALIZATION_STAGE_BACKGROUND) {
     [self startUpBrowserBackgroundInitialization];
@@ -604,6 +598,13 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
     firstSceneHasInitializedUI:(SceneState*)sceneState {
   DCHECK(!appState.isInSafeMode);
   [self startUpAfterFirstWindowCreated];
+}
+
+- (void)appState:(AppState*)appState
+    didTransitionToInitStage:(InitStage)initStage {
+  if (initStage == InitStageStart) {
+    [self startUpBrowserBasicInitialization];
+  }
 }
 
 #pragma mark - Property implementation.
