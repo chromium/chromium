@@ -4440,6 +4440,8 @@ void HTMLMediaElement::DidMediaMetadataChange(
     bool has_audio,
     bool has_video,
     media::MediaContentType media_content_type) {
+  media_metadata_ = MediaMetadata(has_audio, has_video, media_content_type);
+
   for (auto& observer : media_player_observer_remote_set_)
     observer->OnMediaMetadataChanged(has_audio, has_video, media_content_type);
 }
@@ -4498,9 +4500,23 @@ HTMLMediaElement::GetMediaPlayerHostRemote() {
 void HTMLMediaElement::AddMediaPlayerObserver(
     mojo::PendingAssociatedRemote<media::mojom::blink::MediaPlayerObserver>
         observer) {
-  media_player_observer_remote_set_.Add(
+  auto new_id = media_player_observer_remote_set_.Add(
       std::move(observer),
       GetDocument().GetTaskRunner(TaskType::kInternalMedia));
+
+  // If we have received metadata from |web_media_player_| before this, we
+  // should send it to the new observer.
+  if (!media_metadata_.has_value())
+    return;
+
+  for (auto iter = media_player_observer_remote_set_.begin();
+       iter != media_player_observer_remote_set_.end(); iter++) {
+    if (iter.id() != new_id)
+      continue;
+    (*iter)->OnMediaMetadataChanged(media_metadata_->has_audio,
+                                    media_metadata_->has_video,
+                                    media_metadata_->media_content_type);
+  }
 }
 
 void HTMLMediaElement::RequestPlay() {

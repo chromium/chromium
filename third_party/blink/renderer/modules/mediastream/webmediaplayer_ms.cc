@@ -541,6 +541,11 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
     MaybeCreateWatchTimeReporter();
   }
 
+  client_->DidMediaMetadataChange(HasAudio(), HasVideo(),
+                                  media::MediaContentType::OneShot);
+  delegate_->DidMediaMetadataChange(delegate_id_, HasAudio(), HasVideo(),
+                                    media::MediaContentType::OneShot);
+
   return WebMediaPlayer::LoadTiming::kImmediate;
 }
 
