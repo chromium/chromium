@@ -73,7 +73,7 @@ class CORE_EXPORT LayoutShiftTracker final
 
   void NotifyPrePaintFinished();
   void NotifyInput(const WebInputEvent&);
-  void NotifyScroll(mojom::blink::ScrollType);
+  void NotifyScroll(mojom::blink::ScrollType, ScrollOffset delta);
   void NotifyViewportSizeChanged();
   void NotifyFindInPageInput();
   void NotifyChangeEvent();
@@ -178,6 +178,7 @@ class CORE_EXPORT LayoutShiftTracker final
 
   Member<LocalFrameView> frame_view_;
   bool is_active_;
+  bool enable_m91_improvements_;
 
   // The document cumulative layout shift (DCLS) score for this LocalFrame,
   // unweighted, with move distance applied.
@@ -220,6 +221,10 @@ class CORE_EXPORT LayoutShiftTracker final
   // The maximum distance any layout object has moved, across all animation
   // frames.
   float overall_max_distance_;
+
+  // Sum of all scroll deltas that occurred in the current animation frame.
+  // TODO(wangxianzhu): Remove when enabling CLSM91Improvements permanently.
+  ScrollOffset frame_scroll_delta_;
 
   // Whether either a user input or document scroll have been observed during
   // the session. (This is only tracked so UkmPageLoadMetricsObserver to report

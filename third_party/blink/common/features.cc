@@ -872,5 +872,8 @@ const base::Feature kScopeMemoryCachePerContext{
 const base::Feature kEnablePenetratingImageSelection{
     "EnablePenetratingImageSelection", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kCLSM91Improvements{"CLSM91Improvements",
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

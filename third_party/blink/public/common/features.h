@@ -360,6 +360,8 @@ BLINK_COMMON_EXPORT extern const base::Feature kScopeMemoryCachePerContext;
 
 BLINK_COMMON_EXPORT extern const base::Feature kEnablePenetratingImageSelection;
 
+BLINK_COMMON_EXPORT extern const base::Feature kCLSM91Improvements;
+
 }  // namespace features
 }  // namespace blink
 
