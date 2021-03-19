@@ -1,0 +1,25 @@
+{
+    "0": {
+        "benchmarks": {
+            "kraken": {
+                "abridged": false
+            }
+        }
+    },
+    "1": {
+        "benchmarks": {
+            "octane": {
+                "abridged": false
+            }
+        }
+    },
+    "extra_infos": {
+        "num_stories": 2,
+        "predicted_min_shard_time": 10,
+        "predicted_min_shard_index": 0,
+        "predicted_max_shard_time": 10,
+        "predicted_max_shard_index": 0,
+        "shard #0": 10,
+        "shard #1": 10
+    }
+}

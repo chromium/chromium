@@ -732,6 +732,30 @@ BUILDERS = {
             'synthetic_product_name': 'OptiPlex 7050 (Dell Inc.)'
         },
     },
+    'win-10_amd-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'win',
+        'target_bits':
+        64,
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            # Explicitly set GPU driver version and Windows OS version such
+            # that we can be informed if this
+            # version ever changes or becomes inconsistent. It is important
+            # that bots are homogeneous. See crbug.com/988045 for history.
+            'os': 'Windows-10-18363.476',
+            'gpu': '1002:15d8-27.20.1034.6',
+            'synthetic_product_name': '11A5S4L300 [ThinkCentre M75q-1] (LENOVO)'
+        },
+    },
     'Win 7 Perf': {
         'tests': [
             {
