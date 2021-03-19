@@ -5687,3 +5687,6 @@ crbug.com/1188098 [ Linux ] http/tests/devtools/network/network-worker-fetch-blo
 crbug.com/1188098 [ Linux ] http/tests/devtools/profiler/cpu-profiler-flame-chart-overview.js [ Pass Failure ]
 crbug.com/1188098 [ Linux ] http/tests/devtools/service-workers/service-worker-pause.js [ Pass Failure ]
 crbug.com/1188098 [ Linux ] http/tests/devtools/sources/debugger-ui/script-snippet-model.js [ Pass Failure ]
+
+# Sheriff 2021-03-19
+crbug.com/1189976 http/tests/devtools/sources/debugger-breakpoints/dom-breakpoints.js [ Failure ]
