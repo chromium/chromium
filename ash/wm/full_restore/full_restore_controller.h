@@ -81,6 +81,15 @@ class ASH_EXPORT FullRestoreController
   void SaveWindowImpl(WindowState* window_state,
                       base::Optional<int> activation_index);
 
+  // Returns the child of |parent| that |window| should be stacked below, based
+  // on restored activation indices. Returns nullptr if |window| should be
+  // placed at the top or if |window| does not have an activation index. This
+  // should be called before |window| is added as a child of |parent|.
+  // TODO(chinsenj): Move to static/anon namespace in the future when this has
+  // callers.
+  aura::Window* GetSiblingToStackBelow(aura::Window* window,
+                                       aura::Window* parent);
+
   // Sets a callback for testing that will be fired immediately when
   // SaveWindowImpl is about to notify the full restore component we want to
   // write to file.
