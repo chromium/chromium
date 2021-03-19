@@ -25,7 +25,6 @@
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
@@ -64,7 +63,8 @@ base::Value CookieKeyedLoadNetLogParams(const std::string& key,
 // end of the list, just before COOKIE_LOAD_PROBLEM_LAST_ENTRY.
 enum CookieLoadProblem {
   COOKIE_LOAD_PROBLEM_DECRYPT_FAILED = 0,
-  COOKIE_LOAD_PROBLEM_DECRYPT_TIMEOUT = 1,
+  // Deprecated 03/2021.
+  // COOKIE_LOAD_PROBLEM_DECRYPT_TIMEOUT = 1,
   COOKIE_LOAD_PROBLEM_NON_CANONICAL = 2,
   COOKIE_LOAD_PROBLEM_OPEN_DB = 3,
   COOKIE_LOAD_PROBLEM_RECOVERY_FAILED = 4,
@@ -110,38 +110,6 @@ const int kLoadDelayMilliseconds = 0;
 // Port number to use for cookies whose source port is unknown at the time of
 // database migration to V13. The value -1 comes from url::PORT_UNSPECIFIED.
 const int kDefaultUnknownPort = -1;
-
-// A little helper to help us log (on client thread) if the background runner
-// gets stuck.
-class TimeoutTracker : public base::RefCountedThreadSafe<TimeoutTracker> {
- public:
-  // Runs on background runner.
-  static scoped_refptr<TimeoutTracker> Begin(
-      const scoped_refptr<base::SequencedTaskRunner>& client_task_runner) {
-    scoped_refptr<TimeoutTracker> tracker = new TimeoutTracker;
-    client_task_runner->PostDelayedTask(
-        FROM_HERE, base::BindOnce(&TimeoutTracker::TimerElapsed, tracker),
-        base::TimeDelta::FromSeconds(60));
-    return tracker;
-  }
-
-  // Runs on background runner.
-  void End() { done_.Set(); }
-
- private:
-  friend class base::RefCountedThreadSafe<TimeoutTracker>;
-  TimeoutTracker() {}
-  ~TimeoutTracker() { DCHECK(done_.IsSet()); }
-
-  // Run on client runner.
-  void TimerElapsed() {
-    if (!done_.IsSet())
-      RecordCookieLoadProblem(COOKIE_LOAD_PROBLEM_DECRYPT_TIMEOUT);
-  }
-
-  base::AtomicFlag done_;
-  DISALLOW_COPY_AND_ASSIGN(TimeoutTracker);
-};
 
 }  // namespace
 
@@ -957,10 +925,7 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
     std::string value;
     std::string encrypted_value = smt.ColumnString(12);
     if (!encrypted_value.empty() && crypto_) {
-      scoped_refptr<TimeoutTracker> timeout_tracker =
-          TimeoutTracker::Begin(client_task_runner());
       bool decrypt_ok = crypto_->DecryptString(encrypted_value, &value);
-      timeout_tracker->End();
       if (!decrypt_ok) {
         RecordCookieLoadProblem(COOKIE_LOAD_PROBLEM_DECRYPT_FAILED);
         ok = false;

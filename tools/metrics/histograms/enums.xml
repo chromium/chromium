@@ -13848,7 +13848,12 @@ Called by update_net_error_codes.py.-->
 
 <enum name="CookieLoadProblem">
   <int value="0" label="Entry decryption failed"/>
-  <int value="1" label="Entry decryption taking over a minute"/>
+  <int value="1" label="Entry decryption taking over a minute">
+    <obsolete>
+      Removed 03/2021. The problem rarely happens and can be reported through
+      other mechanisms.
+    </obsolete>
+  </int>
   <int value="2" label="Cookie canonical form check failed"/>
   <int value="3" label="Could not open or initialize database"/>
   <int value="4" label="Attempt to delete broken (and related) rows failed"/>
