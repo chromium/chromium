@@ -431,7 +431,7 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
 
   v8::Context::Scope scope(script_state->GetContext());
 
-  DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
+  DEVTOOLS_TIMELINE_TRACE_EVENT(
       "EvaluateScript", inspector_evaluate_script_event::Data, frame,
       source.Url().GetString(), source.StartPosition());
 
@@ -678,8 +678,11 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CallFunction(
   v8::MicrotasksScope microtasks_scope(isolate, microtask_queue,
                                        v8::MicrotasksScope::kRunMicrotasks);
   if (!depth) {
-    DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
-        "FunctionCall", inspector_function_call_event::Data, context, function);
+    TRACE_EVENT_BEGIN1("devtools.timeline", "FunctionCall", "data",
+                       [&](perfetto::TracedValue trace_context) {
+                         inspector_function_call_event::Data(
+                             std::move(trace_context), context, function);
+                       });
   }
 
   probe::CallFunction probe(context, function, depth);
