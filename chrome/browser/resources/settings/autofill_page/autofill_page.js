@@ -7,7 +7,7 @@
  * 'settings-autofill-page' is the settings page containing settings for
  * passwords, payment methods and addresses.
  */
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.m.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import '../prefs/prefs.js';
 import '../settings_page/settings_animated_pages.js';

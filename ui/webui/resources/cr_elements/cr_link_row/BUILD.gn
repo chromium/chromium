@@ -5,30 +5,17 @@
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/polymer.gni")
 
-js_type_check("closure_compile") {
-  uses_legacy_modules = true
-  deps = [ ":cr_link_row" ]
-}
-
-js_library("cr_link_row") {
-  deps = [ "../cr_icon_button:cr_icon_button" ]
-}
-
 polymer_modulizer("cr_link_row") {
   js_file = "cr_link_row.js"
   html_file = "cr_link_row.html"
-  html_type = "dom-module"
+  html_type = "v3-ready"
 }
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
-  deps = [ ":cr_link_row.m" ]
+  deps = [ ":cr_link_row" ]
 }
 
-js_library("cr_link_row.m") {
-  sources = [
-    "$root_gen_dir/ui/webui/resources/cr_elements/cr_link_row/cr_link_row.m.js",
-  ]
+js_library("cr_link_row") {
   deps = [ "../cr_icon_button:cr_icon_button.m" ]
-  extra_deps = [ ":cr_link_row_module" ]
 }

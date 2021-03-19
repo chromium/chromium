@@ -456,7 +456,7 @@ js_library("site_settings_page_test") {
     ":test_util",
     "..:chai_assert",
     "//chrome/browser/resources/settings:lazy_load",
-    "//ui/webui/resources/cr_elements/cr_link_row:cr_link_row.m",
+    "//ui/webui/resources/cr_elements/cr_link_row:cr_link_row",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]

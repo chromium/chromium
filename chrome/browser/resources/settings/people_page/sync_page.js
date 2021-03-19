@@ -2,16 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Polymer, html, flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import '//resources/js/util.m.js';
-import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
-import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
 import '//resources/cr_elements/cr_button/cr_button.m.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import '//resources/cr_elements/cr_input/cr_input.m.js';
-import '//resources/cr_elements/cr_link_row/cr_link_row.m.js';
+import '//resources/cr_elements/cr_link_row/cr_link_row.js';
 import '//resources/cr_elements/icons.m.js';
 import '//resources/cr_elements/shared_style_css.m.js';
 import '//resources/cr_elements/shared_vars_css.m.js';
@@ -21,17 +16,22 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import './sync_account_control.js';
 import './sync_encryption_options.js';
-import {SyncBrowserProxy, SyncBrowserProxyImpl, PageStatus, StatusAction, SyncStatus, SyncPrefs} from './sync_browser_proxy.js';
-import {loadTimeData} from '../i18n_setup.js';
 import '../privacy_page/personalization_options.js';
-import {Route, Router, RouteObserverBehavior} from '../router.js';
 import '../settings_shared_css.js';
 import '../settings_vars_css.js';
-
 // <if expr="not chromeos">
 import '//resources/cr_elements/cr_toast/cr_toast.m.js';
 // </if>
 
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {flush, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../i18n_setup.js';
+import {Route, RouteObserverBehavior, Router} from '../router.js';
+
+import {PageStatus, StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from './sync_browser_proxy.js';
 
 // TODO(rbpotter): Remove this typedef when this file is no longer needed by OS
 // Settings.

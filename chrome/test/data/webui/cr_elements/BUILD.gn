@@ -184,7 +184,7 @@ js_library("cr_link_row_tests") {
   deps = [
     "..:chai_assert",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
-    "//ui/webui/resources/cr_elements/cr_link_row:cr_link_row.m",
+    "//ui/webui/resources/cr_elements/cr_link_row:cr_link_row",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

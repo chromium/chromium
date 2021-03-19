@@ -9,7 +9,7 @@
  */
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.m.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.js';

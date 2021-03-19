@@ -8,7 +8,7 @@
  * a link to the web store accessibility page on most platforms, and
  * a subpage with lots of other settings on Chrome OS.
  */
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.m.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_shared_css.js';
