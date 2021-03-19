@@ -20,7 +20,7 @@ void TestURLLoaderClient::OnReceiveEarlyHints(
   EXPECT_FALSE(has_received_response_);
   EXPECT_FALSE(has_received_cached_metadata_);
   EXPECT_FALSE(has_received_completion_);
-  // TODO(crbug.com/671310): Add member fields to keep `early_hints`.
+  early_hints_.push_back(std::move(early_hints));
 }
 
 void TestURLLoaderClient::OnReceiveResponse(

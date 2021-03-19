@@ -793,7 +793,7 @@ network::mojom::blink::ParsedHeadersPtr ParseHeaders(const String& raw_headers,
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(raw_headers.Latin1()));
   return network::mojom::ConvertToBlink(
-      network::PopulateParsedHeaders(headers, url));
+      network::PopulateParsedHeaders(headers.get(), url));
 }
 
 }  // namespace blink

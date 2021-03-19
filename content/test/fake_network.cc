@@ -102,7 +102,7 @@ bool FakeNetwork::HandleRequest(URLLoaderInterceptor::RequestParams* params) {
   response->headers->GetMimeType(&response->mime_type);
   response->network_accessed = response_info.network_accessed;
   response->parsed_headers =
-      network::PopulateParsedHeaders(info.headers, url_request.url);
+      network::PopulateParsedHeaders(info.headers.get(), url_request.url);
   mojo::Remote<network::mojom::URLLoaderClient>& client = params->client;
   client->OnReceiveResponse(std::move(response));
 

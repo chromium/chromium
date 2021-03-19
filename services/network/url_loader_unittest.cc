@@ -5414,6 +5414,62 @@ TEST_F(URLLoaderTest, RawResponseQUIC) {
   }
 }
 
+TEST_F(URLLoaderTest, EarlyHints) {
+  const std::string kPath = "/hinted";
+  const std::string kResponseBody = "content with hints";
+  const std::string kPreloadPath = "/hello.txt";
+
+  // Prepare a response with an Early Hints response.
+  spdy::Http2HeaderBlock response_headers;
+  response_headers[":status"] = "200";
+  response_headers[":path"] = kPath;
+  std::vector<spdy::Http2HeaderBlock> early_hints;
+  spdy::Http2HeaderBlock hints_headers;
+  hints_headers["link"] =
+      base::StringPrintf("<%s>; rel=preload", kPreloadPath.c_str());
+  early_hints.push_back(std::move(hints_headers));
+  net::QuicSimpleTestServer::AddResponseWithEarlyHints(
+      kPath, response_headers, kResponseBody, early_hints);
+
+  // Create a loader and a client to request `kPath`. The client should receive
+  // an Early Hints which contains a preload link header.
+  TestURLLoaderClient loader_client;
+  ResourceRequest request = CreateResourceRequest(
+      "GET", net::QuicSimpleTestServer::GetFileURL(kPath));
+
+  base::RunLoop delete_run_loop;
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  mojom::URLLoaderFactoryParams params;
+  params.process_id = kProcessId;
+  params.is_corb_enabled = false;
+  std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
+      context(), /*url_loader_factory=*/nullptr,
+      /*network_context_client=*/nullptr,
+      DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone,
+      request, loader_client.CreateRemote(),
+
+      TRAFFIC_ANNOTATION_FOR_TESTS, &params, /*coep_reporter=*/nullptr,
+      /*request_id=*/0, /*keepalive_request_size=*/0,
+      /*require_network_isolation_key=*/false, resource_scheduler_client(),
+      nullptr, /*header_client=*/nullptr, /* origin_policy_manager=*/nullptr,
+      /*trust_token_helper=*/nullptr, kEmptyOriginAccessList,
+      /*cookie_observer=*/mojo::NullRemote(),
+      /*url_loader_network_observer=*/mojo::NullRemote(),
+      /*devtools_observer=*/mojo::NullRemote());
+
+  delete_run_loop.Run();
+  loader_client.RunUntilComplete();
+  ASSERT_EQ(loader_client.completion_status().error_code, net::OK);
+
+  ASSERT_EQ(loader_client.early_hints().size(), 1UL);
+  const auto& hints = loader_client.early_hints()[0];
+  ASSERT_EQ(hints->headers->link_headers.size(), 1UL);
+  const auto& link_header = hints->headers->link_headers[0];
+  EXPECT_EQ(link_header->href,
+            net::QuicSimpleTestServer::GetFileURL(kPreloadPath));
+}
+
 TEST_F(URLLoaderTest, CookieReportingCategories) {
 
   net::test_server::EmbeddedTestServer https_server(

@@ -414,8 +414,8 @@ void TestRenderFrameHost::PrepareForCommitInternal(
   response->load_timing.send_start = base::TimeTicks::Now();
   response->load_timing.receive_headers_start = base::TimeTicks::Now();
   response->headers = response_headers;
-  response->parsed_headers =
-      network::PopulateParsedHeaders(response->headers, request->GetURL());
+  response->parsed_headers = network::PopulateParsedHeaders(
+      response->headers.get(), request->GetURL());
   response->dns_aliases = dns_aliases;
   // TODO(carlosk): Ideally, it should be possible someday to
   // fully commit the navigation at this call to CallOnResponseStarted.

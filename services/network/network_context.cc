@@ -1456,7 +1456,7 @@ void NetworkContext::ParseHeaders(
     const GURL& url,
     const scoped_refptr<net::HttpResponseHeaders>& headers,
     ParseHeadersCallback callback) {
-  std::move(callback).Run(PopulateParsedHeaders(headers, url));
+  std::move(callback).Run(PopulateParsedHeaders(headers.get(), url));
 }
 
 void NetworkContext::NotifyExternalCacheHit(

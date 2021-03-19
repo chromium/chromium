@@ -97,7 +97,7 @@ void PopulateResourceResponse(net::URLRequest* request,
   response->response_time = request->response_time();
   response->headers = request->response_headers();
   response->parsed_headers =
-      PopulateParsedHeaders(response->headers, request->url());
+      PopulateParsedHeaders(response->headers.get(), request->url());
 
   request->GetCharset(&response->charset);
   response->content_length = request->GetExpectedContentSize();
@@ -1906,8 +1906,9 @@ void URLLoader::NotifyEarlyResponse(
   DCHECK(url_loader_client_);
   DCHECK(headers);
   DCHECK_EQ(headers->response_code(), 103);
-  // TODO(crbug.com/671310): Notify the early response to `url_loader_client_`
-  // after https://crrev.com/c/2725403 is landed.
+
+  url_loader_client_->OnReceiveEarlyHints(mojom::EarlyHints::New(
+      PopulateParsedHeaders(headers.get(), url_request_->url())));
 }
 
 void URLLoader::SetRawRequestHeadersAndNotify(

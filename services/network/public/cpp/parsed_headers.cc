@@ -17,7 +17,7 @@
 namespace network {
 
 mojom::ParsedHeadersPtr PopulateParsedHeaders(
-    const scoped_refptr<net::HttpResponseHeaders>& headers,
+    const net::HttpResponseHeaders* headers,
     const GURL& url) {
   auto parsed_headers = mojom::ParsedHeaders::New();
   if (!headers)

@@ -176,8 +176,8 @@ void StartURLLoader(
   resource_response->headers = headers;
   // Headers from WebUI are trusted, so parsing can happen from a non-sandboxed
   // process.
-  resource_response->parsed_headers =
-      network::PopulateParsedHeaders(resource_response->headers, request.url);
+  resource_response->parsed_headers = network::PopulateParsedHeaders(
+      resource_response->headers.get(), request.url);
   resource_response->mime_type = source->source()->GetMimeType(path);
   // TODO: fill all the time related field i.e. request_time response_time
   // request_start response_start

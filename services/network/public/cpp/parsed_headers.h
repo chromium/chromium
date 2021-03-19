@@ -27,7 +27,7 @@ namespace network {
 // [pure-function]: https://en.wikipedia.org/wiki/Pure_function
 COMPONENT_EXPORT(NETWORK_CPP)
 mojom::ParsedHeadersPtr PopulateParsedHeaders(
-    const scoped_refptr<net::HttpResponseHeaders>& headers,
+    const net::HttpResponseHeaders* headers,
     const GURL& url);
 
 }  // namespace network

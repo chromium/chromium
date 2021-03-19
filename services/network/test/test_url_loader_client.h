@@ -76,6 +76,9 @@ class TestURLLoaderClient final : public mojom::URLLoaderClient {
   int64_t body_transfer_size() const { return body_transfer_size_; }
   int64_t current_upload_position() const { return current_upload_position_; }
   int64_t total_upload_size() const { return total_upload_size_; }
+  const std::vector<network::mojom::EarlyHintsPtr>& early_hints() const {
+    return early_hints_;
+  }
 
   void reset_has_received_upload_progress() {
     has_received_upload_progress_ = false;
@@ -122,6 +125,8 @@ class TestURLLoaderClient final : public mojom::URLLoaderClient {
   int64_t body_transfer_size_ = 0;
   int64_t current_upload_position_ = 0;
   int64_t total_upload_size_ = 0;
+
+  std::vector<network::mojom::EarlyHintsPtr> early_hints_;
 
   DISALLOW_COPY_AND_ASSIGN(TestURLLoaderClient);
 };
