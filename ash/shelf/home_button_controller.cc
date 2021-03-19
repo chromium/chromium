@@ -178,8 +178,6 @@ void HomeButtonController::OnAppListShown() {
   if (!Shell::Get()->IsInTabletMode())
     button_->AnimateInkDrop(views::InkDropState::ACTIVATED, nullptr);
   is_showing_app_list_ = true;
-  RootWindowController::ForWindow(button_->GetWidget()->GetNativeWindow())
-      ->UpdateShelfVisibility();
 }
 
 void HomeButtonController::OnAppListDismissed() {
@@ -192,8 +190,6 @@ void HomeButtonController::OnAppListDismissed() {
   button_->AnimateInkDrop(views::InkDropState::DEACTIVATED, nullptr);
 
   is_showing_app_list_ = false;
-  RootWindowController::ForWindow(button_->GetWidget()->GetNativeWindow())
-      ->UpdateShelfVisibility();
 }
 
 void HomeButtonController::InitializeAssistantOverlay() {
