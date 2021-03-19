@@ -2063,6 +2063,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.NotifyAddrChangeFailures" units="units"
     expires_after="2018-08-30">
+  <obsolete>
+    Deprecated as of 2021/03. The code to emit the metric is removed.
+  </obsolete>
   <owner>pauljensen@chromium.org</owner>
   <summary>
     On Windows, NetworkChangeNotifierWin calls NotifyAddrChange, which can fail

@@ -448,14 +448,6 @@ void NetworkChangeNotifierWin::WatchForAddressChange() {
   if (!WatchForAddressChangeInternal()) {
     ++sequential_failures_;
 
-    // TODO(mmenke):  If the UMA histograms indicate that this fixes
-    // http://crbug.com/69198, remove this histogram and consider reducing the
-    // retry interval.
-    if (sequential_failures_ == 2000) {
-      UMA_HISTOGRAM_COUNTS_10000("Net.NotifyAddrChangeFailures",
-                                 sequential_failures_);
-    }
-
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&NetworkChangeNotifierWin::WatchForAddressChange,
@@ -472,11 +464,6 @@ void NetworkChangeNotifierWin::WatchForAddressChange() {
     RecomputeCurrentConnectionTypeOnBlockingSequence(
         base::BindOnce(&NetworkChangeNotifierWin::NotifyObservers,
                        weak_factory_.GetWeakPtr()));
-  }
-
-  if (sequential_failures_ < 2000) {
-    UMA_HISTOGRAM_COUNTS_10000("Net.NotifyAddrChangeFailures",
-                               sequential_failures_);
   }
 
   is_watching_ = true;
