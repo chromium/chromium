@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/services/ime/public/proto/messages.pb.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/common/unicode/urename.h"
@@ -279,9 +280,23 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
 void NativeInputMethodEngine::ImeObserver::ProcessMessage(
     const std::vector<uint8_t>& message,
     ProcessMessageCallback callback) {
-  // NativeInputMethodEngine doesn't use binary messages, but it must run the
-  // callback to avoid dropping the connection.
-  std::move(callback).Run(std::vector<uint8_t>());
+  ime::Wrapper wrapper;
+  if (!wrapper.ParseFromArray(message.data(), message.size()) ||
+      !wrapper.has_public_message()) {
+    // We must run the callback to avoid dropping the connection.
+    std::move(callback).Run(std::vector<uint8_t>());
+    return;
+  }
+
+  const ime::PublicMessage& public_message = wrapper.public_message();
+  switch (public_message.param_case()) {
+    // TODO(crbug/1187982): Currently all public message cases are handled and
+    // converted to respective mojo calls in system_engine.cc. We are in the
+    // process of moving each of these cases to this switch here.
+    default:
+      std::move(callback).Run(std::vector<uint8_t>());
+      break;
+  }
 }
 
 void NativeInputMethodEngine::ImeObserver::OnFocus(
