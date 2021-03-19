@@ -42,6 +42,7 @@ FROM (
     AND run.time != 0
     AND run.is_unexpected IS FALSE
     AND DATEDIFF(CURRENT_DATE(), DATE(start_time)) < {num_last_days}
+    AND _PARTITIONTIME > DATE_ADD(CURRENT_DATE(), -{num_last_days}, "DAY")
   GROUP BY
     name,
     start_time
@@ -69,6 +70,7 @@ FROM (
     AND run.time != 0
     AND run.is_unexpected IS FALSE
     AND DATEDIFF(CURRENT_DATE(), DATE(start_time)) < {num_last_days}
+    AND _PARTITIONTIME > DATE_ADD(CURRENT_DATE(), -{num_last_days}, "DAY")
   GROUP BY
     name,
     start_time
