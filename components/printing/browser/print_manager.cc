@@ -82,12 +82,11 @@ void PrintManager::CheckForCancel(int32_t preview_ui_id,
                                   CheckForCancelCallback callback) {}
 #endif
 
-bool PrintManager::IsPrintRenderFrameConnected(content::RenderFrameHost* rfh) {
+bool PrintManager::IsPrintRenderFrameConnected(
+    content::RenderFrameHost* rfh) const {
   auto it = print_render_frames_.find(rfh);
-  if (it == print_render_frames_.end())
-    return false;
-
-  return it->second.is_bound() && it->second.is_connected();
+  return it != print_render_frames_.end() && it->second.is_bound() &&
+         it->second.is_connected();
 }
 
 const mojo::AssociatedRemote<printing::mojom::PrintRenderFrame>&

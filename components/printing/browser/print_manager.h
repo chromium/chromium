@@ -71,7 +71,7 @@ class PrintManager : public content::WebContentsObserver,
 
   // Helper method to determine if PrintRenderFrame associated remote interface
   // is still connected.
-  bool IsPrintRenderFrameConnected(content::RenderFrameHost* rfh);
+  bool IsPrintRenderFrameConnected(content::RenderFrameHost* rfh) const;
 
   // Helper method to fetch the PrintRenderFrame associated remote interface
   // pointer.
