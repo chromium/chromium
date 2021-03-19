@@ -14,7 +14,6 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
@@ -219,7 +218,7 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   //
   const GpuVideoDecodeGLClient gl_client_;
   const gpu::GpuDriverBugWorkarounds workarounds_;
-  MediaLog* media_log_;
+  std::unique_ptr<MediaLog> media_log_;
 
   VideoDecodeAccelerator::Client* client_ = nullptr;
   State state_ = STATE_DECODING;
@@ -306,11 +305,17 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   // Shared state (set up and torn down on GPU thread).
   //
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> decoder_task_runner_;
+
+  // WeakPtr to |this| for tasks on the |decoder_task_runner_|. Invalidated
+  // on the |decoder_task_runner_| during FlushTask(TASK_DESTROY).
+  base::WeakPtr<VTVideoDecodeAccelerator> decoder_weak_this_;
+
   base::WeakPtr<VTVideoDecodeAccelerator> weak_this_;
-  base::Thread decoder_thread_;
 
   // Declared last to ensure that all weak pointers are invalidated before
   // other destructors run.
+  base::WeakPtrFactory<VTVideoDecodeAccelerator> decoder_weak_this_factory_;
   base::WeakPtrFactory<VTVideoDecodeAccelerator> weak_this_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(VTVideoDecodeAccelerator);
