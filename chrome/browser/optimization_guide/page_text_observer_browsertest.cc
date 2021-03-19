@@ -203,7 +203,12 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, SimpleCaseNoSubframes) {
               }));
 }
 
-IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, FirstLayoutAndOnLoad) {
+#if defined(OS_CHROMEOS)
+#define MAYBE_FirstLayoutAndOnLoad DISABLED_FirstLayoutAndOnLoad
+#else
+#define MAYBE_FirstLayoutAndOnLoad FirstLayoutAndOnLoad
+#endif
+IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, MAYBE_FirstLayoutAndOnLoad) {
   PageTextObserver::CreateForWebContents(web_contents());
   ASSERT_TRUE(observer());
 
