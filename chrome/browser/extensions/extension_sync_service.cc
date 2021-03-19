@@ -23,7 +23,6 @@
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/common/buildflags.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_error_factory.h"
@@ -475,11 +474,8 @@ void ExtensionSyncService::ApplySyncData(
     }
 
     if (!extension_sync_data.bookmark_app_url().empty()) {
-      // Handles creating and updating the bookmark app only if
-      // kSyncBookmarkApps is enabled. Bookmark apps have been migrated to web
-      // apps and are now handled by WebAppSyncBridge.
-      if (base::FeatureList::IsEnabled(features::kSyncBookmarkApps))
-        ApplyBookmarkAppSyncData(extension_sync_data);
+      // Handles creating and updating the bookmark app.
+      ApplyBookmarkAppSyncData(extension_sync_data);
       return;
     }
   }
