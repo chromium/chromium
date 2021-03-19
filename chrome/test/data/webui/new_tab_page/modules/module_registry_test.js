@@ -25,7 +25,7 @@ suite('NewTabPageModulesModuleRegistryTest', () => {
     });
     metrics = fakeMetricsPrivate();
     testProxy = createTestProxy();
-    BrowserProxy.instance_ = testProxy;
+    BrowserProxy.setInstance(testProxy);
   });
 
   test('instantiates modules', async () => {

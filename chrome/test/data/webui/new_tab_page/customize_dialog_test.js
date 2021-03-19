@@ -27,7 +27,7 @@ suite('NewTabPageCustomizeDialogTest', () => {
     testProxy.handler.setResultFor('getBackgroundImages', Promise.resolve({
       images: [],
     }));
-    BrowserProxy.instance_ = testProxy;
+    BrowserProxy.setInstance(testProxy);
 
     customizeDialog = document.createElement('ntp-customize-dialog');
     document.body.appendChild(customizeDialog);

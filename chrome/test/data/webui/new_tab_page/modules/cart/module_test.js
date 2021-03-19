@@ -25,7 +25,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     testProxy = TestBrowserProxy.fromClass(ChromeCartProxy);
     testProxy.handler =
         TestBrowserProxy.fromClass(chromeCart.mojom.CartHandlerRemote);
-    ChromeCartProxy.instance_ = testProxy;
+    ChromeCartProxy.setInstance(testProxy);
     metrics = fakeMetricsPrivate();
     // Not show welcome surface by default.
     testProxy.handler.setResultFor(

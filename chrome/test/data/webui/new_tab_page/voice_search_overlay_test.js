@@ -65,7 +65,7 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
 
     testProxy = createTestProxy();
     testProxy.setResultFor('setTimeout', 0);
-    BrowserProxy.instance_ = testProxy;
+    BrowserProxy.setInstance(testProxy);
 
     voiceSearchOverlay = document.createElement('ntp-voice-search-overlay');
     document.body.appendChild(voiceSearchOverlay);

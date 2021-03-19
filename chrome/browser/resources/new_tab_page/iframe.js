@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {BrowserProxy} from './browser_proxy.js';
+import {strictQuery} from './utils.js';
 
 /**
  * @fileoverview Wrapper around <iframe> element that lets us mock out loading
@@ -40,8 +43,10 @@ class IframeElement extends PolymerElement {
    * @param {*} message
    */
   postMessage(message) {
+    assert(this.shadowRoot);
     BrowserProxy.getInstance().postMessage(
-        this.$.iframe, message, new URL(this.src).origin);
+        strictQuery(this.shadowRoot, '#iframe', HTMLIFrameElement), message,
+        new URL(this.src).origin);
   }
 
   /**

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.m.js';
+
 /**
  * Given a |container| that has scrollable content, <div>'s before and after the
  * |container| are created with an attribute "scroll-border". These <div>'s are
@@ -77,4 +79,20 @@ export function mojoTimeDelta(timeDelta) {
  */
 export function $$(element, selector) {
   return element.shadowRoot.querySelector(selector);
+}
+
+/**
+ * Queries |selector| on |root| and returns the resulting element. Throws
+ * exception if there is no resulting element or if element is not of type
+ * |type|.
+ * @param {!Element|!ShadowRoot} root
+ * @param {string} selector
+ * @param {!function(new:T)} type
+ * @return {!T}
+ * @template T
+ */
+export function strictQuery(root, selector, type) {
+  const element = root.querySelector(selector);
+  assert(element && element instanceof type);
+  return element;
 }

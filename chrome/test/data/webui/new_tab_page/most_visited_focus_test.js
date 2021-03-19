@@ -69,7 +69,7 @@ suite('NewTabPageMostVisitedFocusTest', () => {
                                                  addListener() {},
                                                  removeListener() {},
                                                }));
-    BrowserProxy.instance_ = testProxy;
+    BrowserProxy.setInstance(testProxy);
 
     mostVisited = document.createElement('ntp-most-visited');
     document.body.appendChild(mostVisited);

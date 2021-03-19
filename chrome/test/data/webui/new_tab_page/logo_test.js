@@ -106,7 +106,7 @@ suite('NewTabPageLogoTest', () => {
       interactionLogUrl: null,
       shareId: '',
     }));
-    BrowserProxy.instance_ = testProxy;
+    BrowserProxy.setInstance(testProxy);
   });
 
   [true, false].forEach(dark => {

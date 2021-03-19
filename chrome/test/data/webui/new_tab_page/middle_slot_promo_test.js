@@ -12,7 +12,7 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
 
   setup(() => {
     PolymerTest.clearBody();
-    BrowserProxy.instance_ = createTestProxy();
+    BrowserProxy.setInstance(createTestProxy());
 
     const promoBrowserCommandTestProxy = PromoBrowserCommandProxy.getInstance();
     promoBrowserCommandTestProxy.handler = TestBrowserProxy.fromClass(

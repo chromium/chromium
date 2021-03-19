@@ -19,7 +19,7 @@ suite('NewTabPageModulesTaskModuleTest', () => {
     testProxy = TestBrowserProxy.fromClass(TaskModuleHandlerProxy);
     testProxy.handler =
         TestBrowserProxy.fromClass(taskModule.mojom.TaskModuleHandlerRemote);
-    TaskModuleHandlerProxy.instance_ = testProxy;
+    TaskModuleHandlerProxy.setInstance(testProxy);
   });
 
   test('creates no module if no task', async () => {

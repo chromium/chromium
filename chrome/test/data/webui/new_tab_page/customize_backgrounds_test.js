@@ -36,7 +36,7 @@ suite('NewTabPageCustomizeBackgroundsTest', () => {
     handler.setResultFor('getBackgroundImages', Promise.resolve({
       images: [],
     }));
-    BrowserProxy.instance_ = testProxy;
+    BrowserProxy.setInstance(testProxy);
   });
 
   test('creating element shows background collection tiles', async () => {

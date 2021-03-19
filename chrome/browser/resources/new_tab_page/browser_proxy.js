@@ -14,14 +14,25 @@ import './realbox/omnibox.mojom-lite.js';
 import './realbox/realbox.mojom-lite.js';
 import './new_tab_page.mojom-lite.js';
 
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+/** @type {BrowserProxy} */
+let instance = null;
 
 export class BrowserProxy {
+  /** @return {!BrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new BrowserProxy());
+  }
+
+  /** @param {BrowserProxy} newInstance */
+  static setInstance(newInstance) {
+    instance = newInstance;
+  }
+
   constructor() {
-    /** @type {newTabPage.mojom.PageCallbackRouter} */
+    /** @type {!newTabPage.mojom.PageCallbackRouter} */
     this.callbackRouter = new newTabPage.mojom.PageCallbackRouter();
 
-    /** @type {newTabPage.mojom.PageHandlerRemote} */
+    /** @type {!newTabPage.mojom.PageHandlerRemote} */
     this.handler = new newTabPage.mojom.PageHandlerRemote();
 
     const factory = newTabPage.mojom.PageHandlerFactory.getRemote();
@@ -49,7 +60,7 @@ export class BrowserProxy {
     return window.setTimeout(callback, duration);
   }
 
-  /** @param {number} id */
+  /** @param {?number} id */
   clearTimeout(id) {
     window.clearTimeout(id);
   }
@@ -100,5 +111,3 @@ export class BrowserProxy {
     iframe.contentWindow.postMessage(message, targetOrigin);
   }
 }
-
-addSingletonGetter(BrowserProxy);

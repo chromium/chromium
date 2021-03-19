@@ -294,12 +294,13 @@ class MostVisitedElement extends PolymerElement {
 
     /** @private {!Function} */
     this.boundOnWidthChange_ = this.updateScreenWidth_.bind(this);
-    const {matchMedia} = BrowserProxy.getInstance();
     /** @private {!MediaQueryList} */
-    this.mediaListenerWideWidth_ = matchMedia('(min-width: 672px)');
+    this.mediaListenerWideWidth_ =
+        BrowserProxy.getInstance().matchMedia('(min-width: 672px)');
     this.mediaListenerWideWidth_.addListener(this.boundOnWidthChange_);
     /** @private {!MediaQueryList} */
-    this.mediaListenerMediumWidth_ = matchMedia('(min-width: 560px)');
+    this.mediaListenerMediumWidth_ =
+        BrowserProxy.getInstance().matchMedia('(min-width: 560px)');
     this.mediaListenerMediumWidth_.addListener(this.boundOnWidthChange_);
     this.updateScreenWidth_();
     /** @private {!function(Event)} */

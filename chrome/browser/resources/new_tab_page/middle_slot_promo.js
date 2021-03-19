@@ -31,11 +31,13 @@ export async function renderPromo() {
       return null;
     }
     const el = /** @type {!HTMLAnchorElement} */ (document.createElement('a'));
+    /** @type {?promoBrowserCommand.mojom.Command} */
     let commandId = null;
     if (!commandIdMatch) {
       el.href = target.url;
     } else {
-      commandId = +commandIdMatch[1];
+      commandId =
+          /** @type {promoBrowserCommand.mojom.Command} */ (+commandIdMatch[1]);
       // Make sure we don't send unsupported commands to the browser.
       if (!Object.values(promoBrowserCommand.mojom.Command)
                .includes(commandId)) {

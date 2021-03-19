@@ -202,7 +202,7 @@ suite('NewTabPageRealboxTest', () => {
     PolymerTest.clearBody();
 
     testProxy = createTestProxy();
-    RealboxBrowserProxy.instance_ = testProxy;
+    RealboxBrowserProxy.setInstance(testProxy);
 
     realbox = document.createElement('ntp-realbox');
     document.body.appendChild(realbox);

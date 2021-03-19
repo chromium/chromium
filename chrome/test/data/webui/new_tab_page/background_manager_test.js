@@ -5,6 +5,19 @@
 import {BackgroundManager, BrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {createTestProxy} from './test_support.js';
 
+class FakeIFrameElement extends HTMLIFrameElement {
+  constructor() {
+    super();
+    this.url = null;
+  }
+
+  get contentWindow() {
+    return {location: {replace: url => this.url = url}};
+  }
+}
+
+customElements.define('fake-iframe', FakeIFrameElement, {extends: 'iframe'});
+
 suite('NewTabPageBackgroundManagerTest', () => {
   /** @type {!BackgroundManager} */
   let backgroundManager;
@@ -31,17 +44,10 @@ suite('NewTabPageBackgroundManagerTest', () => {
     PolymerTest.clearBody();
 
     testProxy = createTestProxy();
-    BrowserProxy.instance_ = testProxy;
+    BrowserProxy.setInstance(testProxy);
 
-    backgroundImage = document.createElement('div');
+    backgroundImage = new FakeIFrameElement();
     backgroundImage.id = 'backgroundImage';
-    backgroundImage.contentWindow = {
-      location: {
-        replace: url => {
-          backgroundImage.url = url;
-        }
-      }
-    };
     document.body.appendChild(backgroundImage);
 
     backgroundManager = new BackgroundManager();

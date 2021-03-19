@@ -66,13 +66,7 @@ js_library("lazy_load") {
 }
 
 js_library("browser_proxy") {
-  deps = [
-    ":background_manager",
-    ":utils",
-    "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_js_library_for_compile",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:cr.m",
-  ]
+  deps = [ "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_js_library_for_compile" ]
 }
 
 js_library("app") {
@@ -96,10 +90,7 @@ js_library("app") {
 }
 
 js_library("promo_browser_command_proxy") {
-  deps = [
-    "//chrome/browser/promo_browser_command:mojo_bindings_js_library_for_compile",
-    "//ui/webui/resources/js:cr.m",
-  ]
+  deps = [ "//chrome/browser/promo_browser_command:mojo_bindings_js_library_for_compile" ]
 }
 
 js_library("middle_slot_promo") {
@@ -196,7 +187,10 @@ js_library("metrics_utils") {
 
 js_library("iframe") {
   deps = [
+    ":browser_proxy",
+    ":utils",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
   ]
 }
 
@@ -220,8 +214,10 @@ js_library("doodle_share_dialog") {
 
 js_library("background_manager") {
   deps = [
+    ":browser_proxy",
     ":utils",
     "//ui/webui/resources/js:event_tracker.m",
+    "//ui/webui/resources/js:promise_resolver.m",
   ]
 }
 

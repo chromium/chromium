@@ -139,7 +139,7 @@ suite('NewTabPageMostVisitedTest', () => {
       }
       return mediaListenerList;
     });
-    BrowserProxy.instance_ = testProxy;
+    BrowserProxy.setInstance(testProxy);
     mostVisited = document.createElement('ntp-most-visited');
     document.body.appendChild(mostVisited);
     assertEquals(2, testProxy.getCallCount('matchMedia'));

@@ -26,7 +26,7 @@ suite('NewTabPageCustomizeShortcutsTest', () => {
     testProxy.handler.setResultFor('updateMostVisitedTile', Promise.resolve({
       success: true,
     }));
-    BrowserProxy.instance_ = testProxy;
+    BrowserProxy.setInstance(testProxy);
 
     customizeShortcuts = document.createElement('ntp-customize-shortcuts');
     document.body.appendChild(customizeShortcuts);

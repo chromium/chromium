@@ -24,7 +24,6 @@ js_library("realbox") {
 js_library("realbox_browser_proxy") {
   deps = [
     "//chrome/browser/ui/webui/realbox:mojo_bindings_js_library_for_compile",
-    "//ui/webui/resources/js:cr.m",
   ]
 }
 
@@ -80,9 +79,7 @@ preprocess_if_expr("preprocess") {
   in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_manifest"
-  in_files = [
-    "realbox_browser_proxy.js",
-  ]
+  in_files = [ "realbox_browser_proxy.js" ]
 }
 
 preprocess_if_expr("preprocess_gen") {

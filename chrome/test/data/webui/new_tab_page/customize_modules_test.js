@@ -58,9 +58,9 @@ suite('NewTabPageCustomizeModulesTest', () => {
     PolymerTest.clearBody();
 
     testProxy = createTestProxy();
-    BrowserProxy.instance_ = testProxy;
+    BrowserProxy.setInstance(testProxy);
     moduleRegistry = TestBrowserProxy.fromClass(ModuleRegistry);
-    ModuleRegistry.instance_ = moduleRegistry;
+    ModuleRegistry.setInstance(moduleRegistry);
     metrics = fakeMetricsPrivate();
     loadTimeData.overrideValues({modulesVisibleManagedByPolicy: false});
   });

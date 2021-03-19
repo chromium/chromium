@@ -19,7 +19,7 @@ suite('NewTabPageDoodleShareDialogFocusTest', () => {
     PolymerTest.clearBody();
 
     testProxy = createTestProxy();
-    BrowserProxy.instance_ = testProxy;
+    BrowserProxy.setInstance(testProxy);
 
     doodleShareDialog = document.createElement('ntp-doodle-share-dialog');
     document.body.appendChild(doodleShareDialog);

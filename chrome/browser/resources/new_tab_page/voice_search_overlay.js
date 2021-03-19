@@ -211,8 +211,8 @@ class VoiceSearchOverlayElement extends PolymerElement {
     this.voiceRecognition_.onnomatch = () => {
       this.onError_(Error.kNoMatch);
     };
-    /** @private {number|undefined} */
-    this.timerId_ = undefined;
+    /** @private {?number} */
+    this.timerId_ = null;
   }
 
   /** @override */

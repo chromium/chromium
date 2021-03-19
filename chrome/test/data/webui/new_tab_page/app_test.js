@@ -58,16 +58,16 @@ suite('NewTabPageAppTest', () => {
                                                  removeListener() {},
                                                }));
     testProxy.setResultFor('waitForLazyRender', Promise.resolve());
-    BrowserProxy.instance_ = testProxy;
+    BrowserProxy.setInstance(testProxy);
     backgroundManager = TestBrowserProxy.fromClass(BackgroundManager);
     backgroundManager.setResultFor(
         'getBackgroundImageLoadTime', Promise.resolve(0));
-    BackgroundManager.instance_ = backgroundManager;
+    BackgroundManager.setInstance(backgroundManager);
     const moduleRegistry = TestBrowserProxy.fromClass(ModuleRegistry);
     moduleResolver = new PromiseResolver();
     moduleRegistry.setResultFor('getDescriptors', []);
     moduleRegistry.setResultFor('initializeModules', moduleResolver.promise);
-    ModuleRegistry.instance_ = moduleRegistry;
+    ModuleRegistry.setInstance(moduleRegistry);
     metrics = fakeMetricsPrivate();
 
     app = document.createElement('ntp-app');

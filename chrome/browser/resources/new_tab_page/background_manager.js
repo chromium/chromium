@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
 import {BrowserProxy} from './browser_proxy.js';
+import {strictQuery} from './utils.js';
 
 /**
  * @fileoverview The background manager brokers access to background related
@@ -55,10 +55,24 @@ class LoadTimeResolver {
   }
 }
 
+/** @type {BackgroundManager} */
+let instance = null;
+
 export class BackgroundManager {
+  /** @return {!BackgroundManager} */
+  static getInstance() {
+    return instance || (instance = new BackgroundManager());
+  }
+
+  /** @param {BackgroundManager} newInstance */
+  static setInstance(newInstance) {
+    instance = newInstance;
+  }
+
   constructor() {
-    /** @private {Element} */
-    this.backgroundImage_ = document.body.querySelector('#backgroundImage');
+    /** @private {!HTMLIFrameElement} */
+    this.backgroundImage_ =
+        strictQuery(document.body, '#backgroundImage', HTMLIFrameElement);
     /** @private {LoadTimeResolver} */
     this.loadTimeResolver_ = null;
     /** @private {string} */
@@ -144,5 +158,3 @@ export class BackgroundManager {
     return this.loadTimeResolver_.promise;
   }
 }
-
-addSingletonGetter(BackgroundManager);

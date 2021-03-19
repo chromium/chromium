@@ -48,7 +48,7 @@ js_library("module_header") {
 js_library("module_registry") {
   deps = [
     ":module_descriptor",
-    "//ui/webui/resources/js:cr.m",
+    "..:browser_proxy",
   ]
 }
 

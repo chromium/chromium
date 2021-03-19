@@ -24,7 +24,7 @@ suite('NewTabPageModulesModuleDescriptorTest', () => {
     });
     metrics = fakeMetricsPrivate();
     testProxy = createTestProxy();
-    BrowserProxy.instance_ = testProxy;
+    BrowserProxy.setInstance(testProxy);
   });
 
   test('instantiate module with data', async () => {

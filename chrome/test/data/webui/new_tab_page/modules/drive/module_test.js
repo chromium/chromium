@@ -18,7 +18,7 @@ suite('NewTabPageModulesDriveModuleTest', () => {
     testProxy = TestBrowserProxy.fromClass(DriveProxy);
     testProxy.handler =
         TestBrowserProxy.fromClass(drive.mojom.DriveHandlerRemote);
-    DriveProxy.instance_ = testProxy;
+    DriveProxy.setInstance(testProxy);
   });
 
   test('module appears on render', async () => {

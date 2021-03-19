@@ -28,7 +28,7 @@ suite('NewTabPageModulesModuleWrapperTest', () => {
     });
     metrics = fakeMetricsPrivate();
     testProxy = createTestProxy();
-    BrowserProxy.instance_ = testProxy;
+    BrowserProxy.setInstance(testProxy);
     moduleWrapper = document.createElement('ntp-module-wrapper');
     document.body.appendChild(moduleWrapper);
   });

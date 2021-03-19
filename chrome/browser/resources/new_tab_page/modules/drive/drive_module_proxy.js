@@ -4,19 +4,28 @@
 
 import './drive.mojom-lite.js';
 
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-
 /**
  * @fileoverview This file provides a class that exposes the Mojo handler
  * interface used for sending requests from NTP dummy module JS to the browser
  * and receiving the browser response.
  */
 
+/** @type {DriveProxy} */
+let instance = null;
+
 export class DriveProxy {
+  /** @return {!DriveProxy} */
+  static getInstance() {
+    return instance || (instance = new DriveProxy());
+  }
+
+  /** @param {DriveProxy} newInstance */
+  static setInstance(newInstance) {
+    instance = newInstance;
+  }
+
   constructor() {
     /** @type {!drive.mojom.DriveHandlerRemote} */
     this.handler = drive.mojom.DriveHandler.getRemote();
   }
 }
-
-addSingletonGetter(DriveProxy);
