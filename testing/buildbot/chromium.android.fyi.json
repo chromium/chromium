@@ -1322,7 +1322,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android30.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android30.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.content_shell_test_apk.filter"
         ],
         "merge": {
           "args": [
@@ -3930,7 +3931,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android30.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android30.textpb",
+          "--gtest_filter=-org.chromium.net.NetworkChangeNotifierTest.testNetworkChangeNotifierJavaObservers"
         ],
         "merge": {
           "args": [

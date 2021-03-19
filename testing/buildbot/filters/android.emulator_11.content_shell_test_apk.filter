@@ -1,0 +1,2 @@
+# crbug.com/1189746
+-org.chromium.net.NetworkChangeNotifierTest.testNetworkChangeNotifierJavaObservers
