@@ -238,6 +238,10 @@ public class GamepadList {
 
     private static boolean isGamepadDevice(InputDevice inputDevice) {
         if (inputDevice == null) return false;
+
+        // The fingerprint sensor is a SOURCE_JOYSTICK but is not a gamepad.
+        if (inputDevice.getName().equals("uinput-fpc")) return false;
+
         return ((inputDevice.getSources() & InputDevice.SOURCE_JOYSTICK)
                 == InputDevice.SOURCE_JOYSTICK);
     }
