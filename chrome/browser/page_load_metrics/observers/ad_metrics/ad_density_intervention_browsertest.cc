@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(
   const GURL url(embedded_test_server()->GetURL(
       "a.com", "/ads_observer/blank_with_adiframe_writer.html"));
 
-  waiter->AddMainFrameIntersectionExpectation();
+  waiter->SetMainFrameIntersectionExpectation();
   EXPECT_TRUE(content::NavigateToURL(web_contents, url));
   waiter->Wait();
 

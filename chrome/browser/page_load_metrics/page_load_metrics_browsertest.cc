@@ -2830,9 +2830,8 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
 
 // Creates a set of nested frames, with a cross origin subframe, within the
 // main frame and verifies their intersections with the main frame.
-// Disable due to run loop hang: crbug.com/1190048
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
-                       DISABLED_MainFrameIntersectionCrossOrigin) {
+                       MainFrameIntersectionCrossOrigin) {
   EXPECT_TRUE(embedded_test_server()->Start());
   auto waiter = CreatePageLoadMetricsTestWaiter();
   ui_test_utils::NavigateToURL(
@@ -2885,9 +2884,8 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
 // Creates a set of nested frames, with a cross origin subframe that is out of
 // view within the main frame and verifies their intersections with the main
 // frame.
-// Disable due to run loop hang: crbug.com/1190048
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
-                       DISABLED_MainFrameIntersectionCrossOriginOutOfView) {
+                       MainFrameIntersectionCrossOriginOutOfView) {
   EXPECT_TRUE(embedded_test_server()->Start());
   auto waiter = CreatePageLoadMetricsTestWaiter();
   ui_test_utils::NavigateToURL(
@@ -2928,9 +2926,8 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
 // view within the main frame and verifies their intersections with the main
 // frame. The out of view frame is then scrolled back into view and the
 // intersection is verified.
-// Disable due to run loop hang: crbug.com/1190048
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
-                       DISABLED_MainFrameIntersectionCrossOriginScrolled) {
+                       MainFrameIntersectionCrossOriginScrolled) {
   EXPECT_TRUE(embedded_test_server()->Start());
   auto waiter = CreatePageLoadMetricsTestWaiter();
   ui_test_utils::NavigateToURL(

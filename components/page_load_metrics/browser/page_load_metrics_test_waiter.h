@@ -59,9 +59,10 @@ class PageLoadMetricsTestWaiter
   // of |rect|. Subsequent calls overwrite unmet expectations.
   void AddMainFrameIntersectionExpectation(const gfx::Rect& rect);
 
-  // Adds a main frame intersection expectation for any main frame
-  // intersection update for the page load.
-  void AddMainFrameIntersectionExpectation();
+  // Indicates that we expect at least one main frame intersection update, with
+  // any rect allowed.
+  // TODO(skobes): Unify this API with AddMainFrameIntersectionExpectation.
+  void SetMainFrameIntersectionExpectation();
 
   // Add a single WebFeature expectation.
   void AddWebFeatureExpectation(blink::mojom::WebFeature web_feature);
@@ -289,7 +290,7 @@ class PageLoadMetricsTestWaiter
     bool subframe_data_ = false;
     std::set<gfx::Size, FrameSizeComparator> frame_sizes_;
     bool did_set_main_frame_intersection_ = false;
-    base::Optional<gfx::Rect> main_frame_intersection_;
+    std::vector<gfx::Rect> main_frame_intersections_;
     std::unordered_set<int> memory_update_frame_ids_;
   };
   State expected_;

@@ -48,10 +48,10 @@ void PageLoadMetricsTestWaiter::AddFrameSizeExpectation(const gfx::Size& size) {
 void PageLoadMetricsTestWaiter::AddMainFrameIntersectionExpectation(
     const gfx::Rect& rect) {
   expected_.did_set_main_frame_intersection_ = true;
-  expected_.main_frame_intersection_ = rect;
+  expected_.main_frame_intersections_.push_back(rect);
 }
 
-void PageLoadMetricsTestWaiter::AddMainFrameIntersectionExpectation() {
+void PageLoadMetricsTestWaiter::SetMainFrameIntersectionExpectation() {
   expected_.did_set_main_frame_intersection_ = true;
 }
 
@@ -211,8 +211,8 @@ void PageLoadMetricsTestWaiter::OnFrameIntersectionUpdate(
         frame_intersection_update) {
   if (frame_intersection_update.main_frame_intersection_rect) {
     observed_.did_set_main_frame_intersection_ = true;
-    observed_.main_frame_intersection_ =
-        frame_intersection_update.main_frame_intersection_rect;
+    observed_.main_frame_intersections_.push_back(
+        *frame_intersection_update.main_frame_intersection_rect);
   }
   if (ExpectationsSatisfied() && run_loop_)
     run_loop_->Quit();
@@ -369,10 +369,19 @@ bool PageLoadMetricsTestWaiter::MainFrameIntersectionExpectationsSatisfied()
     return true;
   if (!observed_.did_set_main_frame_intersection_)
     return false;
-  if (!expected_.main_frame_intersection_.has_value())
-    return true;
-  return *expected_.main_frame_intersection_ ==
-         *observed_.main_frame_intersection_;
+
+  // All expectations must be observed, in the same order.
+  // But extra observations are ok.
+  auto it = observed_.main_frame_intersections_.begin();
+  for (const gfx::Rect& expected : expected_.main_frame_intersections_) {
+    while (true) {
+      if (it == observed_.main_frame_intersections_.end())
+        return false;
+      if (*it++ == expected)
+        break;
+    }
+  }
+  return true;
 }
 
 bool PageLoadMetricsTestWaiter::MemoryUpdateExpectationsSatisfied() const {
