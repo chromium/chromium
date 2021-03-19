@@ -83,13 +83,6 @@ class AshEventGeneratorDelegate
     return Shell::GetRootWindowForDisplayId(display.id())->GetHost()->window();
   }
 
-  ui::EventDispatchDetails DispatchKeyEventToIME(ui::EventTarget* target,
-                                                 ui::KeyEvent* event) override {
-    // In Ash environment, the key event will be processed by event rewriters
-    // first.
-    return ui::EventDispatchDetails();
-  }
-
  private:
   DISALLOW_COPY_AND_ASSIGN(AshEventGeneratorDelegate);
 };

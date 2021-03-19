@@ -317,13 +317,6 @@ class EventGeneratorDelegateMac : public ui::EventTarget,
                               gfx::Point* point) const override {}
   void ConvertPointFromHost(const ui::EventTarget* hosted_target,
                             gfx::Point* point) const override {}
-  ui::EventDispatchDetails DispatchKeyEventToIME(EventTarget* target,
-                                                 ui::KeyEvent* event) override {
-    // InputMethodMac does not send native events nor do the necessary
-    // translation. Key events must be handled natively by an NSResponder which
-    // translates keyboard events into editing commands.
-    return ui::EventDispatchDetails();
-  }
 
  private:
   static EventGeneratorDelegateMac* instance_;
