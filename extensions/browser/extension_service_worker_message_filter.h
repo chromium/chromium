@@ -15,9 +15,9 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/activation_sequence.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/mojom/frame.mojom-forward.h"
 
 class GURL;
-struct ExtensionHostMsg_Request_Params;
 
 namespace content {
 class BrowserContext;
@@ -55,7 +55,7 @@ class ExtensionServiceWorkerMessageFilter
   void ShutdownOnUIThread();
 
   // Message handlers.
-  void OnRequestWorker(const ExtensionHostMsg_Request_Params& params);
+  void OnRequestWorker(const mojom::RequestParams& params);
   void OnResponseWorker(int request_id, int64_t service_worker_version_id);
   void OnIncrementServiceWorkerActivity(int64_t service_worker_version_id,
                                         const std::string& request_uuid);

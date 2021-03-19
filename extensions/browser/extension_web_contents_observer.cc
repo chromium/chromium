@@ -327,7 +327,7 @@ mojom::LocalFrame* ExtensionWebContentsObserver::GetLocalFrame(
 
 void ExtensionWebContentsObserver::OnRequest(
     content::RenderFrameHost* render_frame_host,
-    const ExtensionHostMsg_Request_Params& params) {
+    const mojom::RequestParams& params) {
   DCHECK(initialized_);
   dispatcher_.Dispatch(params, render_frame_host,
                        render_frame_host->GetProcess()->GetID());

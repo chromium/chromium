@@ -118,7 +118,7 @@ class ExtensionWebContentsObserver
 
  private:
   void OnRequest(content::RenderFrameHost* render_frame_host,
-                 const ExtensionHostMsg_Request_Params& params);
+                 const mojom::RequestParams& params);
 
   // The BrowserContext associated with the WebContents being observed.
   content::BrowserContext* browser_context_;

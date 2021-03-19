@@ -42,6 +42,7 @@
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/extension_set.h"
+#include "extensions/common/mojom/frame.mojom.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
 
@@ -60,8 +61,7 @@ void NotifyApiFunctionCalled(const std::string& extension_id,
                                         args);
 }
 
-bool IsRequestFromServiceWorker(
-    const ExtensionHostMsg_Request_Params& request_params) {
+bool IsRequestFromServiceWorker(const mojom::RequestParams& request_params) {
   return request_params.service_worker_version_id !=
          blink::mojom::kInvalidServiceWorkerVersionId;
 }
@@ -223,7 +223,7 @@ ExtensionFunctionDispatcher::~ExtensionFunctionDispatcher() {
 }
 
 void ExtensionFunctionDispatcher::Dispatch(
-    const ExtensionHostMsg_Request_Params& params,
+    const mojom::RequestParams& params,
     content::RenderFrameHost* render_frame_host,
     int render_process_id) {
   // Kill the renderer if it's an invalid request.
@@ -288,7 +288,7 @@ void ExtensionFunctionDispatcher::Dispatch(
 }
 
 void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
-    const ExtensionHostMsg_Request_Params& params,
+    const mojom::RequestParams& params,
     content::RenderFrameHost* render_frame_host,
     int render_process_id,
     const ExtensionFunction::ResponseCallback& callback) {
@@ -351,15 +351,15 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
 
   ExtensionSystem* extension_system = ExtensionSystem::Get(browser_context_);
   QuotaService* quota = extension_system->quota_service();
-  std::string violation_error = quota->Assess(extension->id(),
-                                              function.get(),
-                                              &params.arguments,
-                                              base::TimeTicks::Now());
+  std::string violation_error = quota->Assess(
+      extension->id(), function.get(),
+      &base::Value::AsListValue(params.arguments), base::TimeTicks::Now());
 
   if (violation_error.empty()) {
     // See crbug.com/39178.
     ExtensionsBrowserClient::Get()->PermitExternalProtocolHandler();
-    NotifyApiFunctionCalled(extension->id(), params.name, params.arguments,
+    NotifyApiFunctionCalled(extension->id(), params.name,
+                            base::Value::AsListValue(params.arguments),
                             browser_context_);
 
     // Note: Deliberately don't include external component extensions here -
@@ -476,7 +476,7 @@ void ExtensionFunctionDispatcher::ProcessServiceWorkerResponse(
 // static
 scoped_refptr<ExtensionFunction>
 ExtensionFunctionDispatcher::CreateExtensionFunction(
-    const ExtensionHostMsg_Request_Params& params,
+    const mojom::RequestParams& params,
     const Extension* extension,
     int requesting_process_id,
     const GURL* rfh_url,

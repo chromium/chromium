@@ -20,6 +20,7 @@
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/service_worker_task_queue.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/common/mojom/frame.mojom.h"
 
 namespace extensions {
 
@@ -122,7 +123,7 @@ bool ExtensionServiceWorkerMessageFilter::OnMessageReceived(
 }
 
 void ExtensionServiceWorkerMessageFilter::OnRequestWorker(
-    const ExtensionHostMsg_Request_Params& params) {
+    const mojom::RequestParams& params) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!browser_context_)
     return;

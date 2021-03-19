@@ -42,6 +42,36 @@ struct ExecuteCodeParams {
   string? injection_key;
 };
 
+// Parameters structure for ExtensionHostMsg_Request.
+struct RequestParams {
+  // Message name.
+  string name;
+  // List of message arguments.
+  mojo_base.mojom.ListValue arguments;
+  // Extension ID this request was sent from. This can be empty, in the case
+  // where we expose APIs to normal web pages using the extension function
+  // system.
+  string extension_id;
+  // URL of the frame the request was sent from. This isn't necessarily an
+  // extension url. Extension requests can also originate from content scripts,
+  // in which case extension_id will indicate the ID of the associated
+  // extension. Or, they can originate from hosted apps or normal web pages.
+  url.mojom.Url source_url;
+  // Unique request id to match requests and responses.
+  int32 request_id;
+  // True if request has a callback specified.
+  bool has_callback;
+  // True if request is executed in response to an explicit user gesture.
+  bool user_gesture;
+  // If this API call is for a service worker, then this is the worker thread
+  // id. Otherwise, this is kMainThreadId.
+  int32 worker_thread_id;
+  // If this API call is for a service worker, then this is the service
+  // worker version id. Otherwise, this is set to
+  // blink::mojom::kInvalidServiceWorkerVersionId.
+  int64 service_worker_version_id;
+};
+
 // Implemented in the renderer, this interface defines the local frame specific
 // methods.
 interface LocalFrame {
