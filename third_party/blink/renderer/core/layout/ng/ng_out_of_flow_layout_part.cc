@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_box_utils.h"
+#include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_absolute_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
@@ -35,19 +36,6 @@ namespace {
 bool IsAnonymousContainer(const LayoutObject* layout_object) {
   return layout_object->IsAnonymousBlock() &&
          layout_object->CanContainAbsolutePositionObjects();
-}
-
-// This saves the static-position for an OOF-positioned object into its
-// paint-layer.
-void SaveStaticPositionOnPaintLayer(const LayoutBox* layout_box,
-                                    const LayoutObject* container,
-                                    const NGLogicalStaticPosition& position) {
-  const LayoutObject* parent = layout_box->Parent();
-  if (parent == container ||
-      (parent->IsLayoutInline() && parent->ContainingBlock() == container)) {
-    DCHECK(layout_box->Layer());
-    layout_box->Layer()->SetStaticPositionFromNG(position);
-  }
 }
 
 // When the containing block is a split inline, Legacy and NG use different
@@ -507,10 +495,9 @@ void NGOutOfFlowLayoutPart::LayoutCandidates(
   while (candidates->size() > 0) {
     ComputeInlineContainingBlocks(*candidates);
     for (auto& candidate : *candidates) {
-      const LayoutBox* layout_box = candidate.node.GetLayoutBox();
-      SaveStaticPositionOnPaintLayer(layout_box,
-                                     container_builder_->GetLayoutObject(),
-                                     candidate.static_position);
+      LayoutBox* layout_box = candidate.node.GetLayoutBox();
+      if (!container_builder_->IsBlockFragmentationContextRoot())
+        SaveStaticPositionOnPaintLayer(layout_box, candidate.static_position);
       if (IsContainingBlockForCandidate(candidate) &&
           (!only_layout || layout_box == only_layout)) {
         if (has_block_fragmentation_) {
@@ -1550,6 +1537,30 @@ void NGOutOfFlowLayoutPart::ComputeStartFragmentIndexAndRelativeOffset(
   *start_index = child_index + additional_fragment_count;
   offset->block_offset = remaining_block_offset -
                          additional_fragment_count * fragmentainer_block_size;
+}
+
+void NGOutOfFlowLayoutPart::SaveStaticPositionOnPaintLayer(
+    LayoutBox* layout_box,
+    const NGLogicalStaticPosition& position) const {
+  const LayoutObject* parent = GetLayoutObjectForParentNode(layout_box);
+  const LayoutObject* container = container_builder_->GetLayoutObject();
+  if (parent == container ||
+      (parent->IsLayoutInline() && parent->ContainingBlock() == container)) {
+    DCHECK(layout_box->Layer());
+    layout_box->Layer()->SetStaticPositionFromNG(
+        ToStaticPositionForLegacy(position));
+  }
+}
+
+NGLogicalStaticPosition NGOutOfFlowLayoutPart::ToStaticPositionForLegacy(
+    NGLogicalStaticPosition position) const {
+  // Legacy expects the static position to include the block contribution from
+  // previous columns.
+  if (container_builder_->IsFragmentainerBoxType()) {
+    if (const auto* break_token = container_builder_->PreviousBreakToken())
+      position.offset.block_offset += break_token->ConsumedBlockSize();
+  }
+  return position;
 }
 
 }  // namespace blink

@@ -244,6 +244,14 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       wtf_size_t* start_index,
       LogicalOffset* offset) const;
 
+  // This saves the static-position for an OOF-positioned object into its
+  // paint-layer.
+  void SaveStaticPositionOnPaintLayer(
+      LayoutBox* layout_box,
+      const NGLogicalStaticPosition& position) const;
+  NGLogicalStaticPosition ToStaticPositionForLegacy(
+      NGLogicalStaticPosition position) const;
+
   NGBoxFragmentBuilder* container_builder_;
   ContainingBlockInfo default_containing_block_info_for_absolute_;
   ContainingBlockInfo default_containing_block_info_for_fixed_;
