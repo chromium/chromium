@@ -64,6 +64,10 @@ class AddressEditorController {
   void set_chosen_country_index(size_t chosen_country_index) {
     chosen_country_index_ = chosen_country_index;
   }
+  static void set_region_data_loader_for_testing(
+      autofill::RegionDataLoader* region_data_loader_for_testing) {
+    region_data_loader_for_testing_ = region_data_loader_for_testing;
+  }
 
   size_t GetCountriesSize();
 
@@ -81,6 +85,8 @@ class AddressEditorController {
 
   std::u16string GetProfileInfo(autofill::ServerFieldType type);
 
+  const autofill::AutofillProfile& GetAddressProfile();
+
  private:
   // Updates |countries_| with the content of |model| if it's not null,
   // otherwise use a local model.
@@ -92,6 +98,8 @@ class AddressEditorController {
   autofill::AutofillProfile profile_to_edit_;
 
   autofill::PersonalDataManager* pdm_;
+
+  static autofill::RegionDataLoader* region_data_loader_for_testing_;
 
   // The currently chosen country. Defaults to an invalid constant until
   // |countries_| is properly initialized and then 0 as the first entry in

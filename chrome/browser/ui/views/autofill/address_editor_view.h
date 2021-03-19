@@ -33,6 +33,13 @@ class AddressEditorView : public views::View {
   AddressEditorView& operator=(const AddressEditorView&) = delete;
   ~AddressEditorView() override;
 
+  // Stores the current state of the address profile in the controller, and
+  // returns it.
+  const autofill::AutofillProfile& GetAddressProfile();
+
+  void SetTextInputFieldValueForTesting(autofill::ServerFieldType type,
+                                        const std::u16string& value);
+
  private:
   const ComboboxMap& comboboxes() const { return comboboxes_; }
   const TextFieldsMap& text_fields() const { return text_fields_; }

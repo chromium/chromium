@@ -30,6 +30,19 @@ AddressEditorView::AddressEditorView(AddressEditorController* controller)
 
 AddressEditorView::~AddressEditorView() = default;
 
+const autofill::AutofillProfile& AddressEditorView::GetAddressProfile() {
+  SaveFieldsToProfile();
+  return controller_->GetAddressProfile();
+}
+
+void AddressEditorView::SetTextInputFieldValueForTesting(
+    autofill::ServerFieldType type,
+    const std::u16string& value) {
+  views::Textfield* text_field =
+      static_cast<views::Textfield*>(GetViewByID(GetInputFieldViewId(type)));
+  text_field->SetText(value);
+}
+
 void AddressEditorView::CreateEditorView() {
   text_fields_.clear();
   comboboxes_.clear();

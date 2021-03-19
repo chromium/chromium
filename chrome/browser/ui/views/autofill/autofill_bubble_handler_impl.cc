@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/constrained_window/constrained_window_views.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace autofill {
@@ -178,7 +179,10 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveAddressProfileBubble(
 AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowEditAddressProfileDialog(
     content::WebContents* web_contents,
     EditAddressProfileDialogController* controller) {
-  return new EditAddressProfileView(web_contents, controller);
+  EditAddressProfileView* dialog = new EditAddressProfileView(controller);
+  dialog->ShowForWebContents(web_contents);
+  constrained_window::ShowWebModalDialogViews(dialog, web_contents);
+  return dialog;
 }
 
 void AutofillBubbleHandlerImpl::OnPasswordSaved() {

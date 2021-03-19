@@ -36,6 +36,9 @@ std::unique_ptr<::i18n::addressinput::Storage> GetAddressInputStorage() {
 
 }  // namespace
 
+autofill::RegionDataLoader*
+    AddressEditorController::region_data_loader_for_testing_ = nullptr;
+
 AddressEditorController::AddressEditorController(
     const autofill::AutofillProfile& profile_to_edit,
     content::WebContents* web_contents)
@@ -230,7 +233,13 @@ void AddressEditorController::UpdateCountries(
   }
 }
 
+const autofill::AutofillProfile& AddressEditorController::GetAddressProfile() {
+  return profile_to_edit_;
+}
+
 autofill::RegionDataLoader* AddressEditorController::GetRegionDataLoader() {
+  if (region_data_loader_for_testing_)
+    return region_data_loader_for_testing_;
   return new autofill::RegionDataLoaderImpl(GetAddressInputSource().release(),
                                             GetAddressInputStorage().release(),
                                             locale_);

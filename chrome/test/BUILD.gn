@@ -4950,6 +4950,7 @@ test("unit_tests") {
       "../browser/ui/toolbar/media_router_contextual_menu_unittest.cc",
       "../browser/ui/toolbar/mock_media_router_action_controller.cc",
       "../browser/ui/toolbar/mock_media_router_action_controller.h",
+      "../browser/ui/views/autofill/edit_address_profile_view_unittest.cc",
       "../browser/ui/views/autofill/save_address_profile_view_unittest.cc",
       "../browser/ui/views/passwords/move_to_account_store_bubble_view_unittest.cc",
       "../browser/ui/views/passwords/password_bubble_view_test_base.cc",
