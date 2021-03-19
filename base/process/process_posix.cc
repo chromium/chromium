@@ -29,6 +29,8 @@
 #include "base/test/clang_profiling.h"
 #endif
 
+#include <dlfcn.h>
+
 namespace {
 
 #if !defined(OS_NACL_NONSFI)
@@ -277,6 +279,10 @@ void Process::TerminateCurrentProcessImmediately(int exit_code) {
 #if BUILDFLAG(CLANG_PROFILING)
   WriteClangProfilingProfile();
 #endif
+  void* ptr = dlsym(RTLD_DEFAULT, "V8RecordReplayFinishRecording");
+  if (ptr) {
+    reinterpret_cast<void (*)()>(ptr)();
+  }
   _exit(exit_code);
 }
 

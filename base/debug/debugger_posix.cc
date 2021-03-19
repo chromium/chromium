@@ -137,6 +137,8 @@ bool BeingDebugged() {
 }
 
 void VerifyDebugger() {
+  return;
+  /*
 #if BUILDFLAG(ENABLE_LLDBINIT_WARNING)
   if (Environment::Create()->HasVar("CHROMIUM_LLDBINIT_SOURCED"))
     return;
@@ -151,6 +153,7 @@ void VerifyDebugger() {
          "To continue anyway, type 'continue' in lldb. To always skip this "
          "check, define an environment variable CHROMIUM_LLDBINIT_SOURCED=1";
 #endif
+  */
 }
 
 #elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
