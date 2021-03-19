@@ -188,9 +188,17 @@ void NGFragmentChildIterator::SkipToBoxFragment() {
 
 void NGFragmentChildIterator::SkipToBlockBreakToken() {
   // There may be inline break tokens here. Ignore them.
-  while (child_break_token_idx_ < child_break_tokens_.size() &&
-         !child_break_tokens_[child_break_token_idx_]->IsBlockType())
+  while (child_break_token_idx_ < child_break_tokens_.size()) {
+    const auto* current_break_token = DynamicTo<NGBlockBreakToken>(
+        child_break_tokens_[child_break_token_idx_]);
+    // Skip over any out-of-flow positioned break tokens that are the result of
+    // a break before.
+    if (current_break_token &&
+        (!current_break_token->InputNode().IsOutOfFlowPositioned() ||
+         !current_break_token->IsBreakBefore()))
+      return;
     child_break_token_idx_++;
+  }
 }
 
 }  // namespace blink
