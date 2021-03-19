@@ -310,7 +310,7 @@ class BottomSheet extends FrameLayout
      * @param keyboardDelegate Delegate for hiding the keyboard.
      */
     public void init(Window window, KeyboardVisibilityDelegate keyboardDelegate) {
-        View root = (View) getParent();
+        mSheetContainer = (ViewGroup) getParent();
 
         mToolbarHolder =
                 (TouchRestrictingFrameLayout) findViewById(R.id.bottom_sheet_toolbar_container);
@@ -321,13 +321,14 @@ class BottomSheet extends FrameLayout
                 (TouchRestrictingFrameLayout) findViewById(R.id.bottom_sheet_content);
         mBottomSheetContentContainer.setBottomSheet(this);
 
-        mContainerWidth = root.getWidth();
-        mContainerHeight = root.getHeight();
-
+        mContainerWidth = mSheetContainer.getWidth();
+        mContainerHeight = mSheetContainer.getHeight();
         mContentWidth = mContainerWidth;
 
+        sizeAndPositionSheetInParent();
+
         // Listen to height changes on the root.
-        root.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+        mSheetContainer.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             private int mPreviousKeyboardHeight;
 
             @Override
@@ -345,6 +346,7 @@ class BottomSheet extends FrameLayout
                         setSheetState(SheetState.FULL, false);
                     }
                     invalidateContentDesiredHeight();
+                    sizeAndPositionSheetInParent();
                 }
 
                 int heightMinusKeyboard = (int) mContainerHeight;
@@ -403,7 +405,6 @@ class BottomSheet extends FrameLayout
             }
         });
 
-        mSheetContainer = (ViewGroup) this.getParent();
         mSheetContainer.removeView(this);
     }
 
@@ -799,7 +800,7 @@ class BottomSheet extends FrameLayout
                     toolbarHeight = layoutParams.height;
                 } else {
                     toolbarView.measure(
-                            MeasureSpec.makeMeasureSpec(mContainerWidth, MeasureSpec.EXACTLY),
+                            MeasureSpec.makeMeasureSpec(getMaxSheetWidth(), MeasureSpec.EXACTLY),
                             MeasureSpec.makeMeasureSpec(
                                     getMaxContentHeight(), MeasureSpec.AT_MOST));
                     toolbarHeight = toolbarView.getMeasuredHeight();
@@ -1057,12 +1058,30 @@ class BottomSheet extends FrameLayout
         return mContainerHeight;
     }
 
+    /** @return The maximum width of the bottom sheet based on its current state and container. */
+    private int getMaxSheetWidth() {
+        int narrowWidthThreshold =
+                getResources().getDimensionPixelSize(R.dimen.bottom_sheet_narrow_width_threshold);
+        if (mContainerWidth > narrowWidthThreshold) {
+            return getResources().getDimensionPixelSize(R.dimen.bottom_sheet_narrow_width);
+        }
+        return mContainerWidth;
+    }
+
+    /** Center and size the sheet in its container. */
+    private void sizeAndPositionSheetInParent() {
+        int maxSheetWidth = getMaxSheetWidth();
+        getLayoutParams().width = maxSheetWidth;
+        setTranslationX((mContainerWidth - maxSheetWidth) / 2f);
+        requestLayout();
+    }
+
     private void ensureContentDesiredHeightIsComputed() {
         if (mContentDesiredHeight != HEIGHT_UNSPECIFIED) {
             return;
         }
         mSheetContent.getContentView().measure(
-                MeasureSpec.makeMeasureSpec(mContentWidth, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(getMaxSheetWidth(), MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(getMaxContentHeight(), MeasureSpec.AT_MOST));
         mContentDesiredHeight = mSheetContent.getContentView().getMeasuredHeight();
     }

@@ -7,5 +7,8 @@
     <dimen name="bottom_sheet_min_full_half_distance">140dp</dimen>
     <dimen name="bottom_sheet_peek_height">56dp</dimen>
     <dimen name="bottom_sheet_shadow_length">16dp</dimen>
+
+    <dimen name="bottom_sheet_narrow_width">600dp</dimen>
+    <dimen name="bottom_sheet_narrow_width_threshold">680dp</dimen>
 </resources>
 
