@@ -630,6 +630,22 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // current page about the new offset and length.
   void SetHistoryOffsetAndLength(int history_offset, int history_length);
 
+  // Helper functions used to determine if it is safe to change the internal
+  // representation of StoragePartitionId.
+  //
+  // Called when a new StoragePartitionId is added to
+  // `session_storage_namespace_map_` and adds an entry to
+  // `partition_config_to_id_map_`.
+  void OnStoragePartitionIdAdded(const StoragePartitionId& partition_id);
+  // Called to log a crash dump when unique string representations result in
+  // the same StoragePartitionConfig, or an ID used to lookup a namespace
+  // contains a different config than the one used when the namespace was
+  // added to the map. Both situations imply that there is not a 1:1 mapping
+  // between representations.
+  void LogStoragePartitionIdCrashKeys(
+      const StoragePartitionId& original_partition_id,
+      const StoragePartitionId& new_partition_id);
+
   // ---------------------------------------------------------------------------
 
   // The FrameTree this instance belongs to. Each FrameTree gets its own
@@ -705,6 +721,15 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // NavigationController, only entries in the same StoragePartition may
   // share session storage state with one another.
   SessionStorageNamespaceMap session_storage_namespace_map_;
+
+  // Temporary map that is being used to verify that there is a 1:1
+  // relationship between the string representation used as the key in
+  // `session_storage_namespace_map_` and the StoragePartitionConfig
+  // representation that we plan to migrate the map key to.
+  // TODO(acolwell): Remove this map once we have enough data to determine if
+  // it is safe to change representations or not.
+  std::map<StoragePartitionConfig, StoragePartitionId>
+      partition_config_to_id_map_;
 
   // The maximum number of entries that a navigation controller can store.
   static size_t max_entry_count_for_testing_;

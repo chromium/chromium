@@ -44,6 +44,7 @@ typedef std::map<StoragePartitionId, scoped_refptr<SessionStorageNamespace>>
 // `session_storage_namespace` to the default StoragePartitionId.
 CONTENT_EXPORT SessionStorageNamespaceMap
 CreateMapWithDefaultSessionStorageNamespace(
+    BrowserContext* browser_context,
     scoped_refptr<SessionStorageNamespace> session_storage_namespace);
 
 }  // namespace content

@@ -7,9 +7,10 @@
 namespace content {
 
 SessionStorageNamespaceMap CreateMapWithDefaultSessionStorageNamespace(
+    BrowserContext* browser_context,
     scoped_refptr<SessionStorageNamespace> session_storage_namespace) {
   SessionStorageNamespaceMap session_storage_namespace_map;
-  session_storage_namespace_map[StoragePartitionId()] =
+  session_storage_namespace_map[StoragePartitionId(browser_context)] =
       session_storage_namespace;
   return session_storage_namespace_map;
 }

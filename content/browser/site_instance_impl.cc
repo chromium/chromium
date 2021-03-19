@@ -363,7 +363,7 @@ bool SiteInfo::ShouldUseProcessPerSite(BrowserContext* browser_context) const {
 StoragePartitionId SiteInfo::GetStoragePartitionId(
     BrowserContext* browser_context) const {
   if (site_url().is_empty())
-    return StoragePartitionId();
+    return StoragePartitionId(browser_context);
 
   return GetContentClient()->browser()->GetStoragePartitionIdForSite(
       browser_context, site_url());

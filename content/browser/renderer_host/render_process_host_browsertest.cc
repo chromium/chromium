@@ -510,8 +510,9 @@ class CustomStoragePartitionForSomeSites : public TestContentBrowserClient {
       BrowserContext* browser_context,
       const GURL& site) override {
     if (site == site_to_isolate_)
-      return StoragePartitionId(site.spec());
-    return StoragePartitionId();
+      return StoragePartitionId(
+          site.spec(), GetStoragePartitionConfigForSite(browser_context, site));
+    return StoragePartitionId(browser_context);
   }
 
  private:

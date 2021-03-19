@@ -52,7 +52,7 @@ void ProcessRestoreCommands(
         session_tab.navigations[selected_navigation_index].virtual_url();
     content::SessionStorageNamespaceMap session_storage_namespace_map =
         content::CreateMapWithDefaultSessionStorageNamespace(
-            session_storage_namespace);
+            browser_context, session_storage_namespace);
     content::BrowserURLHandler::GetInstance()->RewriteURLIfNecessary(
         &restore_url, browser_context);
     content::WebContents::CreateParams create_params(

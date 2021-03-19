@@ -40,6 +40,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
@@ -2113,6 +2114,7 @@ void NavigationControllerImpl::CopyStateFrom(NavigationController* temp,
     SessionStorageNamespaceImpl* source_namespace =
         static_cast<SessionStorageNamespaceImpl*>(it.second.get());
     session_storage_namespace_map_[it.first] = source_namespace->Clone();
+    OnStoragePartitionIdAdded(it.first);
   }
 
   FinishRestore(source->last_committed_entry_index_, RestoreType::kRestored);
@@ -2522,6 +2524,7 @@ void NavigationControllerImpl::SetSessionStorageNamespace(
                                      session_storage_namespace)))
           .second;
   CHECK(successful_insert) << "Cannot replace existing SessionStorageNamespace";
+  OnStoragePartitionIdAdded(partition_id);
 }
 
 bool NavigationControllerImpl::IsUnmodifiedBlankTab() {
@@ -2550,6 +2553,14 @@ SessionStorageNamespace* NavigationControllerImpl::GetSessionStorageNamespace(
     // Ensure that this namespace actually belongs to this partition.
     DCHECK(static_cast<SessionStorageNamespaceImpl*>(it->second.get())
                ->IsFromContext(context_wrapper));
+
+    // Verify that the config we generated now matches the one that
+    // was generated when the namespace was added to the map.
+    DCHECK_EQ(partition_config, it->first.config());
+    if (partition_config != it->first.config()) {
+      LogStoragePartitionIdCrashKeys(it->first, partition_id);
+    }
+
     return it->second.get();
   }
 
@@ -2560,6 +2571,7 @@ SessionStorageNamespace* NavigationControllerImpl::GetSessionStorageNamespace(
       session_storage_namespace.get();
   session_storage_namespace_map_[partition_id] =
       std::move(session_storage_namespace);
+  OnStoragePartitionIdAdded(partition_id);
 
   return session_storage_namespace_ptr;
 }
@@ -4027,6 +4039,33 @@ void NavigationControllerImpl::UpdateStateForFrame(
 
   frame_entry->SetPageState(page_state);
   NotifyEntryChanged(entry);
+}
+
+void NavigationControllerImpl::OnStoragePartitionIdAdded(
+    const StoragePartitionId& partition_id) {
+  auto it = partition_config_to_id_map_.insert(
+      std::make_pair(partition_id.config(), partition_id));
+  bool successful_insert = it.second;
+  DCHECK(successful_insert);
+  if (!successful_insert) {
+    LogStoragePartitionIdCrashKeys(it.first->second, partition_id);
+  }
+}
+
+void NavigationControllerImpl::LogStoragePartitionIdCrashKeys(
+    const StoragePartitionId& original_partition_id,
+    const StoragePartitionId& new_partition_id) {
+  base::debug::SetCrashKeyString(
+      base::debug::AllocateCrashKeyString("original_partition_id",
+                                          base::debug::CrashKeySize::Size256),
+      original_partition_id.ToString());
+
+  base::debug::SetCrashKeyString(
+      base::debug::AllocateCrashKeyString("new_partition_id",
+                                          base::debug::CrashKeySize::Size256),
+      new_partition_id.ToString());
+
+  base::debug::DumpWithoutCrashing();
 }
 
 }  // namespace content

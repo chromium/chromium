@@ -268,7 +268,8 @@ std::unique_ptr<WebContents> NoStatePrefetchContents::CreateWebContents(
   // multiple session storage namespaces per tab.
   return WebContents::CreateWithSessionStorage(
       WebContents::CreateParams(browser_context_),
-      CreateMapWithDefaultSessionStorageNamespace(session_storage_namespace));
+      CreateMapWithDefaultSessionStorageNamespace(browser_context_,
+                                                  session_storage_namespace));
 }
 
 void NoStatePrefetchContents::NotifyPrefetchStart() {

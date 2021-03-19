@@ -575,7 +575,7 @@ void BackgroundContentsService::LoadBackgroundContents(
 
   BackgroundContents* contents = CreateBackgroundContents(
       SiteInstance::CreateForURL(profile_, url), nullptr, true, frame_name,
-      application_id, content::StoragePartitionId(), nullptr);
+      application_id, content::StoragePartitionId(profile_), nullptr);
 
   contents->CreateRendererSoon(url);
 }

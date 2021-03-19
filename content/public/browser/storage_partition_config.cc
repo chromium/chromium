@@ -4,6 +4,8 @@
 
 #include "content/public/browser/storage_partition_config.h"
 
+#include <sstream>
+
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "content/public/browser/browser_context.h"
@@ -11,13 +13,19 @@
 
 namespace content {
 
-StoragePartitionId::StoragePartitionId(const std::string& partition_id)
-    : id_(partition_id) {
+StoragePartitionId::StoragePartitionId(BrowserContext* browser_context)
+    : config_(StoragePartitionConfig::CreateDefault(browser_context)) {}
+
+StoragePartitionId::StoragePartitionId(const std::string& partition_id,
+                                       const StoragePartitionConfig& config)
+    : id_(partition_id), config_(config) {
   DCHECK(id_.empty() || GURL(id_).is_valid());
 }
 
 std::string StoragePartitionId::ToString() const {
-  return id_;
+  std::stringstream ss;
+  ss << "id='" << id_ << "' config=" << config_;
+  return ss.str();
 }
 
 StoragePartitionConfig::StoragePartitionConfig(const StoragePartitionConfig&) =

@@ -517,7 +517,7 @@ StoragePartitionId ContentBrowserClient::GetStoragePartitionIdForSite(
     BrowserContext* browser_context,
     const GURL& site) {
   DCHECK(browser_context);
-  return StoragePartitionId();
+  return StoragePartitionId(browser_context);
 }
 
 StoragePartitionConfig ContentBrowserClient::GetStoragePartitionConfigForSite(

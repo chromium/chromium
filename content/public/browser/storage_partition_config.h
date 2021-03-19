@@ -104,10 +104,13 @@ CONTENT_EXPORT std::ostream& operator<<(std::ostream& out,
 // map key away from a string to a StoragePartitionConfig.
 class CONTENT_EXPORT StoragePartitionId {
  public:
-  StoragePartitionId() = default;
-  explicit StoragePartitionId(const std::string& partition_id);
+  explicit StoragePartitionId(BrowserContext* browser_context);
+  StoragePartitionId(const std::string& partition_id,
+                     const StoragePartitionConfig& config);
   StoragePartitionId(const StoragePartitionId&) = default;
   StoragePartitionId& operator=(const StoragePartitionId&) = default;
+
+  const StoragePartitionConfig& config() const { return config_; }
 
   bool operator==(const StoragePartitionId& rhs) const {
     return id_ == rhs.id_;
@@ -122,6 +125,16 @@ class CONTENT_EXPORT StoragePartitionId {
 
  private:
   std::string id_;
+
+  // Config generated with the same information used to generate `id_`.
+  // Currently this field is being used to determine if we can replace the
+  // string representation with a StoragePartitionConfig. This field is
+  // intentionally left out of the comparison operators because we want equality
+  // and less-than to work the exact same way they did before this field was
+  // added. This field is only intended to be used by code in
+  // NavigationControllerImpl to establish whether it is safe to change the
+  // StoragePartitionId representation.
+  StoragePartitionConfig config_;
 };
 
 }  // namespace content

@@ -1808,6 +1808,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, SessionStorageAfterTabReplace) {
 
     content::SessionStorageNamespaceMap session_storage_namespace_map =
         content::CreateMapWithDefaultSessionStorageNamespace(
+            browser()->profile(),
             controller->GetDefaultSessionStorageNamespace());
 
     std::unique_ptr<content::WebContents> web_contents(
