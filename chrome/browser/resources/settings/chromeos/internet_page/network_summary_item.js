@@ -116,7 +116,7 @@ Polymer({
         if (deviceState.deviceState === mojom.DeviceStateType.kDisabling) {
           return this.i18n('internetDeviceDisabling');
         }
-        if (deviceState.deviceState === mojom.DeviceStateType.kInhibited) {
+        if (OncMojo.deviceIsInhibited(deviceState)) {
           return this.i18n('internetDeviceBusy');
         }
       } else if (deviceState.type === mojom.NetworkType.kTether) {
@@ -291,7 +291,7 @@ Polymer({
   enableToggleIsEnabled_(deviceState) {
     return this.enableToggleIsVisible_(deviceState) &&
         deviceState.deviceState !== mojom.DeviceStateType.kProhibited &&
-        deviceState.deviceState !== mojom.DeviceStateType.kInhibited &&
+        !OncMojo.deviceIsInhibited(deviceState) &&
         !OncMojo.deviceStateIsIntermediate(deviceState.deviceState);
   },
 

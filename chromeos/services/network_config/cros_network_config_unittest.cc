@@ -1279,7 +1279,7 @@ TEST_F(CrosNetworkConfigTest, CellularInhibitState) {
           CellularInhibitor::InhibitReason::kInstallingProfile);
   cellular = GetDeviceStateFromList(mojom::NetworkType::kCellular);
   ASSERT_TRUE(cellular);
-  EXPECT_EQ(mojom::DeviceStateType::kInhibited, cellular->device_state);
+  EXPECT_EQ(mojom::DeviceStateType::kEnabled, cellular->device_state);
   EXPECT_EQ(mojom::InhibitReason::kInstallingProfile, cellular->inhibit_reason);
 }
 

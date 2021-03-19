@@ -68,7 +68,8 @@
     assert(type !== undefined);
     const deviceState = {
       type: type,
-      deviceState: chromeos.networkConfig.mojom.DeviceStateType.kUninitialized
+      deviceState: chromeos.networkConfig.mojom.DeviceStateType.kUninitialized,
+      inhibitReason: chromeos.networkConfig.mojom.InhibitReason.kNotInhibited
     };
     this.deviceStates_.set(type, deviceState);
     return deviceState;

@@ -1985,12 +1985,6 @@ void CrosNetworkConfig::GetDeviceStateList(
       NET_LOG(ERROR) << "Device state unavailable: " << device->name();
       continue;
     }
-    if (device->type() == shill::kTypeCellular &&
-        technology_state == mojom::DeviceStateType::kEnabled &&
-        cellular_inhibitor_ &&
-        cellular_inhibitor_->GetInhibitReason().has_value()) {
-      technology_state = mojom::DeviceStateType::kInhibited;
-    }
     mojom::DeviceStatePropertiesPtr mojo_device =
         DeviceStateToMojo(device, cellular_inhibitor_, technology_state);
     if (mojo_device)

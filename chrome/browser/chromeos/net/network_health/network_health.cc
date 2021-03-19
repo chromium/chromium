@@ -33,7 +33,6 @@ constexpr mojom::NetworkState DeviceStateToNetworkState(
       // UI, but not for purposes of network health, we can treat as Disabled.
       return mojom::NetworkState::kDisabled;
     case network_config::mojom::DeviceStateType::kEnabled:
-    case network_config::mojom::DeviceStateType::kInhibited:
       return mojom::NetworkState::kNotConnected;
     case network_config::mojom::DeviceStateType::kProhibited:
       return mojom::NetworkState::kProhibited;
