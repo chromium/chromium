@@ -41,15 +41,11 @@ std::pair<ReadStatus, std::unique_ptr<T>> Read(const base::FilePath& filepath) {
   return {ReadStatus::kOk, std::move(proto)};
 }
 
-template <class T>
-WriteStatus Write(const base::FilePath& filepath, const T* proto) {
+WriteStatus Write(const base::FilePath& filepath,
+                  const std::string& proto_str) {
   const auto directory = filepath.DirName();
   if (!base::DirectoryExists(directory))
     base::CreateDirectory(directory);
-
-  std::string proto_str;
-  if (!proto->SerializeToString(&proto_str))
-    return WriteStatus::kSerializationError;
 
   bool write_result;
   {
@@ -111,6 +107,10 @@ void PersistentProto<T>::OnReadComplete(
 
 template <class T>
 void PersistentProto<T>::QueueWrite() {
+  DCHECK(proto_);
+  if (!proto_)
+    return;
+
   // If a save is already queued, do nothing.
   if (write_is_queued_)
     return;
@@ -134,10 +134,22 @@ void PersistentProto<T>::OnQueueWrite() {
 
 template <class T>
 void PersistentProto<T>::StartWrite() {
+  DCHECK(proto_);
+  if (!proto_)
+    return;
+
+  // Serialize the proto outside of the posted task, because otherwise we need
+  // to pass a proto pointer into the task. This causes a rare race condition
+  // during destruction where the proto can be destroyed before serialization,
+  // causing a crash.
+  std::string proto_str;
+  if (!proto_->SerializeToString(&proto_str))
+    OnWriteComplete(WriteStatus::kSerializationError);
+
   // The SequentialTaskRunner ensures the writes won't trip over each other, so
   // we can schedule without checking whether another write is currently active.
   task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&Write<T>, path_, proto_.get()),
+      FROM_HERE, base::BindOnce(&Write, path_, proto_str),
       base::BindOnce(&PersistentProto<T>::OnWriteComplete,
                      weak_factory_.GetWeakPtr()));
 }
