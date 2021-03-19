@@ -69,12 +69,11 @@ bool AutocompleteMatchType::FromInteger(int value, Type* result) {
   return true;
 }
 
-static const wchar_t kAccessibilityLabelPrefixEndSentinal[] =
-    L"\uFFFC";  // Embedded object character.
+static const char16_t kAccessibilityLabelPrefixEndSentinal[] =
+    u"\uFFFC";  // Embedded object character.
 
 static int AccessibilityLabelPrefixLength(std::u16string accessibility_label) {
-  const std::u16string sentinal =
-      base::WideToUTF16(kAccessibilityLabelPrefixEndSentinal);
+  const std::u16string sentinal = kAccessibilityLabelPrefixEndSentinal;
   auto length = accessibility_label.find(sentinal);
   return length == std::u16string::npos ? 0 : static_cast<int>(length);
 }
@@ -86,8 +85,7 @@ std::u16string AddAdditionalMessaging(int message_id,
                                       int* label_prefix_length) {
   DCHECK(message_id != 0);
   if (label_prefix_length) {
-    const std::u16string sentinal =
-        base::WideToUTF16(kAccessibilityLabelPrefixEndSentinal);
+    const std::u16string sentinal = kAccessibilityLabelPrefixEndSentinal;
     *label_prefix_length += AccessibilityLabelPrefixLength(
         l10n_util::GetStringFUTF16(message_id, sentinal));
   }
@@ -161,8 +159,7 @@ std::u16string GetAccessibilityBaseLabel(const AutocompleteMatch& match,
   if (!message)
     return match_text;
 
-  const std::u16string sentinal =
-      base::WideToUTF16(kAccessibilityLabelPrefixEndSentinal);
+  const std::u16string sentinal = kAccessibilityLabelPrefixEndSentinal;
   std::u16string description;
   bool has_description = false;
   switch (message) {

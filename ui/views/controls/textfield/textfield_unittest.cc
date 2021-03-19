@@ -79,7 +79,6 @@
 
 using base::ASCIIToUTF16;
 using base::UTF8ToUTF16;
-using base::WideToUTF16;
 
 namespace views {
 namespace test {
@@ -972,9 +971,10 @@ TEST_F(TextfieldTest, KeyTestControlModifier) {
   SendKeyEvent('m', 0);
   SendKeyEvent('m', ui::EF_CONTROL_DOWN);
 
-  EXPECT_EQ(WideToUTF16(L"\x0448\x044C"
-                        L"im"),
-            textfield_->GetText());
+  EXPECT_EQ(
+      u"\x0448\x044C"
+      u"im",
+      textfield_->GetText());
 }
 #endif
 
@@ -1474,18 +1474,20 @@ TEST_F(TextfieldTest, TextInputType_InsertionTest) {
   SendKeyEvent(ui::VKEY_B);
   EXPECT_EQ(-1, textfield_->GetPasswordCharRevealIndex());
 
-  EXPECT_EQ(WideToUTF16(L"a\x05E1"
-                        L"b"),
-            textfield_->GetText());
+  EXPECT_EQ(
+      u"a\x05E1"
+      u"b",
+      textfield_->GetText());
 
   textfield_->SetReadOnly(true);
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, textfield_->GetTextInputType());
   SendKeyEvent(ui::VKEY_C);
 
   // No text should be inserted for read only textfields.
-  EXPECT_EQ(WideToUTF16(L"a\x05E1"
-                        L"b"),
-            textfield_->GetText());
+  EXPECT_EQ(
+      u"a\x05E1"
+      u"b",
+      textfield_->GetText());
 }
 
 TEST_F(TextfieldTest, ShouldDoLearning) {
@@ -2665,17 +2667,19 @@ TEST_F(TextfieldTest, TextCursorDisplayTest) {
   EXPECT_GE(1, std::abs(x - prev_x));
 
   SendKeyEvent('a');
-  EXPECT_EQ(WideToUTF16(L"\x05E1\x5E2"
-                        L"a"),
-            textfield_->GetText());
+  EXPECT_EQ(
+      u"\x05E1\x5E2"
+      u"a",
+      textfield_->GetText());
   x = GetCursorBounds().x();
   EXPECT_LT(prev_x, x);
   prev_x = x;
 
   SendKeyEvent('b');
-  EXPECT_EQ(WideToUTF16(L"\x05E1\x5E2"
-                        L"ab"),
-            textfield_->GetText());
+  EXPECT_EQ(
+      u"\x05E1\x5E2"
+      u"ab",
+      textfield_->GetText());
   x = GetCursorBounds().x();
   EXPECT_LT(prev_x, x);
 }
@@ -2725,17 +2729,19 @@ TEST_F(TextfieldTest, TextCursorDisplayInRTLTest) {
   prev_x = x;
 
   SendKeyEvent('a');
-  EXPECT_EQ(WideToUTF16(L"\x05E1\x5E2"
-                        L"a"),
-            textfield_->GetText());
+  EXPECT_EQ(
+      u"\x05E1\x5E2"
+      u"a",
+      textfield_->GetText());
   x = GetCursorBounds().x();
   EXPECT_GE(1, std::abs(x - prev_x));
   prev_x = x;
 
   SendKeyEvent('b');
-  EXPECT_EQ(WideToUTF16(L"\x05E1\x5E2"
-                        L"ab"),
-            textfield_->GetText());
+  EXPECT_EQ(
+      u"\x05E1\x5E2"
+      u"ab",
+      textfield_->GetText());
   x = GetCursorBounds().x();
   EXPECT_GE(1, std::abs(x - prev_x));
 
@@ -2850,8 +2856,8 @@ TEST_F(TextfieldTest, HitOutsideTextAreaTest) {
 
   // RTL-LTR string in LTR context.
   textfield_->SetText(
-      WideToUTF16(L"\x05E1\x5E2"
-                  L"ab"));
+      u"\x05E1\x5E2"
+      u"ab");
 
   SendHomeEvent(shift);
   bound = GetCursorBounds();
@@ -2872,8 +2878,8 @@ TEST_F(TextfieldTest, HitOutsideTextAreaInRTLTest) {
 
   // RTL-LTR string in RTL context.
   textfield_->SetText(
-      WideToUTF16(L"\x05E1\x5E2"
-                  L"ab"));
+      u"\x05E1\x5E2"
+      u"ab");
   const bool shift = false;
   SendHomeEvent(shift);
   gfx::Rect bound = GetCursorBounds();

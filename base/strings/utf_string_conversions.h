@@ -64,6 +64,13 @@ BASE_EXPORT std::wstring ASCIIToWide(StringPiece ascii) WARN_UNUSED_RESULT;
 BASE_EXPORT std::string WideToASCII(WStringPiece wide) WARN_UNUSED_RESULT;
 #endif  // defined(WCHAR_T_IS_UTF16)
 
+// The conversion functions in this file should not be used to convert string
+// literals. Instead, the corresponding prefixes (e.g. u"" for UTF16 or L"" for
+// Wide) should be used. Deleting the overloads here catches these cases at
+// compile time.
+template <size_t N>
+std::u16string WideToUTF16(const wchar_t (&kUseChar16LiteralInstead)[N]) =
+    delete;
 }  // namespace base
 
 #endif  // BASE_STRINGS_UTF_STRING_CONVERSIONS_H_

@@ -14,18 +14,18 @@ namespace i18n {
 
 namespace {
 
-const wchar_t kNonASCIIMixed[] =
-    L"\xC4\xD6\xE4\xF6\x20\xCF\xEF\x20\xF7\x25"
-    L"\xA4\x23\x2A\x5E\x60\x40\xA3\x24\x2030\x201A\x7E\x20\x1F07\x1F0F"
-    L"\x20\x1E00\x1E01";
-const wchar_t kNonASCIILower[] =
-    L"\xE4\xF6\xE4\xF6\x20\xEF\xEF"
-    L"\x20\xF7\x25\xA4\x23\x2A\x5E\x60\x40\xA3\x24\x2030\x201A\x7E\x20\x1F07"
-    L"\x1F07\x20\x1E01\x1E01";
-const wchar_t kNonASCIIUpper[] =
-    L"\xC4\xD6\xC4\xD6\x20\xCF\xCF"
-    L"\x20\xF7\x25\xA4\x23\x2A\x5E\x60\x40\xA3\x24\x2030\x201A\x7E\x20\x1F0F"
-    L"\x1F0F\x20\x1E00\x1E00";
+const char16_t kNonASCIIMixed[] =
+    u"\xC4\xD6\xE4\xF6\x20\xCF\xEF\x20\xF7\x25"
+    u"\xA4\x23\x2A\x5E\x60\x40\xA3\x24\x2030\x201A\x7E\x20\x1F07\x1F0F"
+    u"\x20\x1E00\x1E01";
+const char16_t kNonASCIILower[] =
+    u"\xE4\xF6\xE4\xF6\x20\xEF\xEF"
+    u"\x20\xF7\x25\xA4\x23\x2A\x5E\x60\x40\xA3\x24\x2030\x201A\x7E\x20\x1F07"
+    u"\x1F07\x20\x1E01\x1E01";
+const char16_t kNonASCIIUpper[] =
+    u"\xC4\xD6\xC4\xD6\x20\xCF\xCF"
+    u"\x20\xF7\x25\xA4\x23\x2A\x5E\x60\x40\xA3\x24\x2030\x201A\x7E\x20\x1F0F"
+    u"\x1F0F\x20\x1E00\x1E00";
 
 }  // namespace
 
@@ -45,9 +45,9 @@ TEST(CaseConversionTest, UpperLower) {
 }
 
 TEST(CaseConversionTest, NonASCII) {
-  const std::u16string mixed(WideToUTF16(kNonASCIIMixed));
-  const std::u16string expected_lower(WideToUTF16(kNonASCIILower));
-  const std::u16string expected_upper(WideToUTF16(kNonASCIIUpper));
+  const std::u16string mixed(kNonASCIIMixed);
+  const std::u16string expected_lower(kNonASCIILower);
+  const std::u16string expected_upper(kNonASCIIUpper);
 
   std::u16string result = ToLower(mixed);
   EXPECT_EQ(expected_lower, result);
@@ -88,10 +88,8 @@ TEST(CaseConversionTest, FoldCase) {
             FoldCase(ASCIIToUTF16("Hello, World")));
 
   // Non-ASCII cases from above. They should all fold to the same result.
-  EXPECT_EQ(FoldCase(WideToUTF16(kNonASCIIMixed)),
-            FoldCase(WideToUTF16(kNonASCIILower)));
-  EXPECT_EQ(FoldCase(WideToUTF16(kNonASCIIMixed)),
-            FoldCase(WideToUTF16(kNonASCIIUpper)));
+  EXPECT_EQ(FoldCase(kNonASCIIMixed), FoldCase(kNonASCIILower));
+  EXPECT_EQ(FoldCase(kNonASCIIMixed), FoldCase(kNonASCIIUpper));
 
   // Turkish cases from above. This is the lower-case expected result from the
   // US locale. It should be the same even when the current locale is Turkish.

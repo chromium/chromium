@@ -402,8 +402,8 @@ TEST(UrlFormatterTest, FormatUrlParsed) {
                 kFormatUrlOmitNothing, net::UnescapeRule::NONE, &parsed,
                 nullptr, nullptr);
   EXPECT_EQ(
-      WideToUTF16(L"http://%E3%82%B0:%E3%83%BC@\x30B0\x30FC\x30B0\x30EB.jp:8080"
-                  L"/%E3%82%B0/?q=%E3%82%B0#%E3%82%B0"),
+      u"http://%E3%82%B0:%E3%83%BC@\x30B0\x30FC\x30B0\x30EB.jp:8080"
+      u"/%E3%82%B0/?q=%E3%82%B0#%E3%82%B0",
       formatted);
   EXPECT_EQ(u"%E3%82%B0",
             formatted.substr(parsed.username.begin, parsed.username.len));
@@ -424,9 +424,10 @@ TEST(UrlFormatterTest, FormatUrlParsed) {
                      "%E3%82%B0/?q=%E3%82%B0#\xE3\x82\xB0"),
                 kFormatUrlOmitNothing, net::UnescapeRule::NORMAL, &parsed,
                 nullptr, nullptr);
-  EXPECT_EQ(WideToUTF16(L"http://\x30B0:\x30FC@\x30B0\x30FC\x30B0\x30EB.jp:8080"
-                        L"/\x30B0/?q=\x30B0#\x30B0"),
-            formatted);
+  EXPECT_EQ(
+      u"http://\x30B0:\x30FC@\x30B0\x30FC\x30B0\x30EB.jp:8080"
+      u"/\x30B0/?q=\x30B0#\x30B0",
+      formatted);
   EXPECT_EQ(u"\x30B0",
             formatted.substr(parsed.username.begin, parsed.username.len));
   EXPECT_EQ(u"\x30FC",
@@ -445,9 +446,10 @@ TEST(UrlFormatterTest, FormatUrlParsed) {
                      "%E3%82%B0/?q=%E3%82%B0#\xE3\x82\xB0"),
                 kFormatUrlOmitUsernamePassword, net::UnescapeRule::NORMAL,
                 &parsed, nullptr, nullptr);
-  EXPECT_EQ(WideToUTF16(L"http://\x30B0\x30FC\x30B0\x30EB.jp:8080"
-                        L"/\x30B0/?q=\x30B0#\x30B0"),
-            formatted);
+  EXPECT_EQ(
+      u"http://\x30B0\x30FC\x30B0\x30EB.jp:8080"
+      u"/\x30B0/?q=\x30B0#\x30B0",
+      formatted);
   EXPECT_FALSE(parsed.username.is_valid());
   EXPECT_FALSE(parsed.password.is_valid());
   EXPECT_EQ(u"\x30B0\x30FC\x30B0\x30EB.jp",

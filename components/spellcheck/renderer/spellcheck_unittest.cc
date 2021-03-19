@@ -28,8 +28,6 @@
 #include "third_party/blink/public/web/web_text_checking_completion.h"
 #include "third_party/blink/public/web/web_text_checking_result.h"
 
-#define TYPOGRAPHICAL_APOSTROPHE L"\x2019"
-
 namespace {
 
 const int kNoOffset = 0;
@@ -196,215 +194,352 @@ TEST_F(SpellCheckTest, SpellCheckStrings_EN_US) {
     size_t misspelling_start;
     size_t misspelling_length;
   } kTestCases[] = {
-    // Empty strings.
-    {L"", true},
-    {L" ", true},
-    {L"\xA0", true},
-    {L"\x3000", true},
+      // Empty strings.
+      {L"", true},
+      {L" ", true},
+      {L"\xA0", true},
+      {L"\x3000", true},
 
-    // A valid English word "hello".
-    {L"hello", true},
-    // A valid Chinese word (meaning "hello") consisting of two CJKV
-    // ideographs
-    {L"\x4F60\x597D", true},
-    // A valid Korean word (meaning "hello") consisting of five hangul
-    // syllables
-    {L"\xC548\xB155\xD558\xC138\xC694", true},
-    // A valid Japanese word (meaning "hello") consisting of five Hiragana
-    // letters
-    {L"\x3053\x3093\x306B\x3061\x306F", true},
-    // A valid Hindi word (meaning ?) consisting of six Devanagari letters
-    // (This word is copied from "http://b/issue?id=857583".)
-    {L"\x0930\x093E\x091C\x0927\x093E\x0928", true},
-    // A valid English word "affix" using a Latin ligature 'ffi'
-    {L"a\xFB03x", true},
-    // A valid English word "hello" (fullwidth version)
-    {L"\xFF28\xFF45\xFF4C\xFF4C\xFF4F", true},
-    // Two valid Greek words (meaning "hello") consisting of seven Greek
-    // letters
-    {L"\x03B3\x03B5\x03B9\x03AC" L" " L"\x03C3\x03BF\x03C5", true},
-    // A valid Russian word (meaning "hello") consisting of twelve Cyrillic
-    // letters
-    {L"\x0437\x0434\x0440\x0430\x0432\x0441"
-     L"\x0442\x0432\x0443\x0439\x0442\x0435", true},
-    // A valid English contraction
-    {L"isn't", true},
-    // A valid English contraction with a typographical apostrophe.
-    {L"isn" TYPOGRAPHICAL_APOSTROPHE L"t", true},
-    // A valid English word enclosed with underscores.
-    {L"_hello_", true},
+      // A valid English word "hello".
+      {L"hello", true},
+      // A valid Chinese word (meaning "hello") consisting of two CJKV
+      // ideographs
+      {L"\x4F60\x597D", true},
+      // A valid Korean word (meaning "hello") consisting of five hangul
+      // syllables
+      {L"\xC548\xB155\xD558\xC138\xC694", true},
+      // A valid Japanese word (meaning "hello") consisting of five Hiragana
+      // letters
+      {L"\x3053\x3093\x306B\x3061\x306F", true},
+      // A valid Hindi word (meaning ?) consisting of six Devanagari letters
+      // (This word is copied from "http://b/issue?id=857583".)
+      {L"\x0930\x093E\x091C\x0927\x093E\x0928", true},
+      // A valid English word "affix" using a Latin ligature 'ffi'
+      {L"a\xFB03x", true},
+      // A valid English word "hello" (fullwidth version)
+      {L"\xFF28\xFF45\xFF4C\xFF4C\xFF4F", true},
+      // Two valid Greek words (meaning "hello") consisting of seven Greek
+      // letters
+      {L"\x03B3\x03B5\x03B9\x03AC"
+       L" "
+       L"\x03C3\x03BF\x03C5",
+       true},
+      // A valid Russian word (meaning "hello") consisting of twelve Cyrillic
+      // letters
+      {L"\x0437\x0434\x0440\x0430\x0432\x0441"
+       L"\x0442\x0432\x0443\x0439\x0442\x0435",
+       true},
+      // A valid English contraction
+      {L"isn't", true},
+      // A valid English contraction with a typographical apostrophe.
+      {L"isn’t", true},
+      // A valid English word enclosed with underscores.
+      {L"_hello_", true},
 
-    // A valid English word with a preceding whitespace
-    {L" " L"hello", true},
-    // A valid English word with a preceding no-break space
-    {L"\xA0" L"hello", true},
-    // A valid English word with a preceding ideographic space
-    {L"\x3000" L"hello", true},
-    // A valid English word with a preceding Chinese word
-    {L"\x4F60\x597D" L"hello", true},
-    // [ROBUSTNESS] A valid English word with a preceding Korean word
-    {L"\xC548\xB155\xD558\xC138\xC694" L"hello", true},
-    // A valid English word with a preceding Japanese word
-    {L"\x3053\x3093\x306B\x3061\x306F" L"hello", true},
-    // [ROBUSTNESS] A valid English word with a preceding Hindi word
-    {L"\x0930\x093E\x091C\x0927\x093E\x0928" L"hello", true},
-    // [ROBUSTNESS] A valid English word with two preceding Greek words
-    {L"\x03B3\x03B5\x03B9\x03AC" L" " L"\x03C3\x03BF\x03C5"
-     L"hello", true},
-    // [ROBUSTNESS] A valid English word with a preceding Russian word
-    {L"\x0437\x0434\x0440\x0430\x0432\x0441"
-     L"\x0442\x0432\x0443\x0439\x0442\x0435" L"hello", true},
+      // A valid English word with a preceding whitespace
+      {L" "
+       L"hello",
+       true},
+      // A valid English word with a preceding no-break space
+      {L"\xA0"
+       L"hello",
+       true},
+      // A valid English word with a preceding ideographic space
+      {L"\x3000"
+       L"hello",
+       true},
+      // A valid English word with a preceding Chinese word
+      {L"\x4F60\x597D"
+       L"hello",
+       true},
+      // [ROBUSTNESS] A valid English word with a preceding Korean word
+      {L"\xC548\xB155\xD558\xC138\xC694"
+       L"hello",
+       true},
+      // A valid English word with a preceding Japanese word
+      {L"\x3053\x3093\x306B\x3061\x306F"
+       L"hello",
+       true},
+      // [ROBUSTNESS] A valid English word with a preceding Hindi word
+      {L"\x0930\x093E\x091C\x0927\x093E\x0928"
+       L"hello",
+       true},
+      // [ROBUSTNESS] A valid English word with two preceding Greek words
+      {L"\x03B3\x03B5\x03B9\x03AC"
+       L" "
+       L"\x03C3\x03BF\x03C5"
+       L"hello",
+       true},
+      // [ROBUSTNESS] A valid English word with a preceding Russian word
+      {L"\x0437\x0434\x0440\x0430\x0432\x0441"
+       L"\x0442\x0432\x0443\x0439\x0442\x0435"
+       L"hello",
+       true},
 
-    // A valid English word with a following whitespace
-    {L"hello" L" ", true},
-    // A valid English word with a following no-break space
-    {L"hello" L"\xA0", true},
-    // A valid English word with a following ideographic space
-    {L"hello" L"\x3000", true},
-    // A valid English word with a following Chinese word
-    {L"hello" L"\x4F60\x597D", true},
-    // [ROBUSTNESS] A valid English word with a following Korean word
-    {L"hello" L"\xC548\xB155\xD558\xC138\xC694", true},
-    // A valid English word with a following Japanese word
-    {L"hello" L"\x3053\x3093\x306B\x3061\x306F", true},
-    // [ROBUSTNESS] A valid English word with a following Hindi word
-    {L"hello" L"\x0930\x093E\x091C\x0927\x093E\x0928", true},
-    // [ROBUSTNESS] A valid English word with two following Greek words
-    {L"hello"
-     L"\x03B3\x03B5\x03B9\x03AC" L" " L"\x03C3\x03BF\x03C5", true},
-    // [ROBUSTNESS] A valid English word with a following Russian word
-    {L"hello" L"\x0437\x0434\x0440\x0430\x0432\x0441"
-     L"\x0442\x0432\x0443\x0439\x0442\x0435", true},
+      // A valid English word with a following whitespace
+      {L"hello"
+       L" ",
+       true},
+      // A valid English word with a following no-break space
+      {L"hello"
+       L"\xA0",
+       true},
+      // A valid English word with a following ideographic space
+      {L"hello"
+       L"\x3000",
+       true},
+      // A valid English word with a following Chinese word
+      {L"hello"
+       L"\x4F60\x597D",
+       true},
+      // [ROBUSTNESS] A valid English word with a following Korean word
+      {L"hello"
+       L"\xC548\xB155\xD558\xC138\xC694",
+       true},
+      // A valid English word with a following Japanese word
+      {L"hello"
+       L"\x3053\x3093\x306B\x3061\x306F",
+       true},
+      // [ROBUSTNESS] A valid English word with a following Hindi word
+      {L"hello"
+       L"\x0930\x093E\x091C\x0927\x093E\x0928",
+       true},
+      // [ROBUSTNESS] A valid English word with two following Greek words
+      {L"hello"
+       L"\x03B3\x03B5\x03B9\x03AC"
+       L" "
+       L"\x03C3\x03BF\x03C5",
+       true},
+      // [ROBUSTNESS] A valid English word with a following Russian word
+      {L"hello"
+       L"\x0437\x0434\x0440\x0430\x0432\x0441"
+       L"\x0442\x0432\x0443\x0439\x0442\x0435",
+       true},
 
-    // Two valid English words concatenated with a whitespace
-    {L"hello" L" " L"hello", true},
-    // Two valid English words concatenated with a no-break space
-    {L"hello" L"\xA0" L"hello", true},
-    // Two valid English words concatenated with an ideographic space
-    {L"hello" L"\x3000" L"hello", true},
-    // Two valid English words concatenated with a Chinese word
-    {L"hello" L"\x4F60\x597D" L"hello", true},
-    // [ROBUSTNESS] Two valid English words concatenated with a Korean word
-    {L"hello" L"\xC548\xB155\xD558\xC138\xC694" L"hello", true},
-    // Two valid English words concatenated with a Japanese word
-    {L"hello" L"\x3053\x3093\x306B\x3061\x306F" L"hello", true},
-    // [ROBUSTNESS] Two valid English words concatenated with a Hindi word
-    {L"hello" L"\x0930\x093E\x091C\x0927\x093E\x0928" L"hello" , true},
-    // [ROBUSTNESS] Two valid English words concatenated with two Greek words
-    {L"hello" L"\x03B3\x03B5\x03B9\x03AC" L" " L"\x03C3\x03BF\x03C5"
-     L"hello", true},
-    // [ROBUSTNESS] Two valid English words concatenated with a Russian word
-    {L"hello" L"\x0437\x0434\x0440\x0430\x0432\x0441"
-     L"\x0442\x0432\x0443\x0439\x0442\x0435" L"hello", true},
-    // [ROBUSTNESS] Two valid English words concatenated with a contraction
-    // character.
-    {L"hello:hello", true},
+      // Two valid English words concatenated with a whitespace
+      {L"hello"
+       L" "
+       L"hello",
+       true},
+      // Two valid English words concatenated with a no-break space
+      {L"hello"
+       L"\xA0"
+       L"hello",
+       true},
+      // Two valid English words concatenated with an ideographic space
+      {L"hello"
+       L"\x3000"
+       L"hello",
+       true},
+      // Two valid English words concatenated with a Chinese word
+      {L"hello"
+       L"\x4F60\x597D"
+       L"hello",
+       true},
+      // [ROBUSTNESS] Two valid English words concatenated with a Korean word
+      {L"hello"
+       L"\xC548\xB155\xD558\xC138\xC694"
+       L"hello",
+       true},
+      // Two valid English words concatenated with a Japanese word
+      {L"hello"
+       L"\x3053\x3093\x306B\x3061\x306F"
+       L"hello",
+       true},
+      // [ROBUSTNESS] Two valid English words concatenated with a Hindi word
+      {L"hello"
+       L"\x0930\x093E\x091C\x0927\x093E\x0928"
+       L"hello",
+       true},
+      // [ROBUSTNESS] Two valid English words concatenated with two Greek words
+      {L"hello"
+       L"\x03B3\x03B5\x03B9\x03AC"
+       L" "
+       L"\x03C3\x03BF\x03C5"
+       L"hello",
+       true},
+      // [ROBUSTNESS] Two valid English words concatenated with a Russian word
+      {L"hello"
+       L"\x0437\x0434\x0440\x0430\x0432\x0441"
+       L"\x0442\x0432\x0443\x0439\x0442\x0435"
+       L"hello",
+       true},
+      // [ROBUSTNESS] Two valid English words concatenated with a contraction
+      // character.
+      {L"hello:hello", true},
 
-    // An invalid English word
-    {L"ifmmp", false, 0, 5},
-    // An invalid English word "bffly" containing a Latin ligature 'ffl'
-    {L"b\xFB04y", false, 0, 3},
-    // An invalid English word "ifmmp" (fullwidth version)
-    {L"\xFF29\xFF46\xFF4D\xFF4D\xFF50", false, 0, 5},
-    // An invalid English contraction
-    {L"jtm'u", false, 0, 5},
-    // An invalid English word enclosed with underscores.
-    {L"_ifmmp_", false, 1, 5},
+      // An invalid English word
+      {L"ifmmp", false, 0, 5},
+      // An invalid English word "bffly" containing a Latin ligature 'ffl'
+      {L"b\xFB04y", false, 0, 3},
+      // An invalid English word "ifmmp" (fullwidth version)
+      {L"\xFF29\xFF46\xFF4D\xFF4D\xFF50", false, 0, 5},
+      // An invalid English contraction
+      {L"jtm'u", false, 0, 5},
+      // An invalid English word enclosed with underscores.
+      {L"_ifmmp_", false, 1, 5},
 
-    // An invalid English word with a preceding whitespace
-    {L" " L"ifmmp", false, 1, 5},
-    // An invalid English word with a preceding no-break space
-    {L"\xA0" L"ifmmp", false, 1, 5},
-    // An invalid English word with a preceding ideographic space
-    {L"\x3000" L"ifmmp", false, 1, 5},
-    // An invalid English word with a preceding Chinese word
-    {L"\x4F60\x597D" L"ifmmp", false, 2, 5},
-    // [ROBUSTNESS] An invalid English word with a preceding Korean word
-    {L"\xC548\xB155\xD558\xC138\xC694" L"ifmmp", false, 5, 5},
-    // An invalid English word with a preceding Japanese word
-    {L"\x3053\x3093\x306B\x3061\x306F" L"ifmmp", false, 5, 5},
-    // [ROBUSTNESS] An invalid English word with a preceding Hindi word
-    {L"\x0930\x093E\x091C\x0927\x093E\x0928" L"ifmmp", false, 6, 5},
-    // [ROBUSTNESS] An invalid English word with two preceding Greek words
-    {L"\x03B3\x03B5\x03B9\x03AC" L" " L"\x03C3\x03BF\x03C5"
-     L"ifmmp", false, 8, 5},
-    // [ROBUSTNESS] An invalid English word with a preceding Russian word
-    {L"\x0437\x0434\x0440\x0430\x0432\x0441"
-     L"\x0442\x0432\x0443\x0439\x0442\x0435" L"ifmmp", false, 12, 5},
+      // An invalid English word with a preceding whitespace
+      {L" "
+       L"ifmmp",
+       false, 1, 5},
+      // An invalid English word with a preceding no-break space
+      {L"\xA0"
+       L"ifmmp",
+       false, 1, 5},
+      // An invalid English word with a preceding ideographic space
+      {L"\x3000"
+       L"ifmmp",
+       false, 1, 5},
+      // An invalid English word with a preceding Chinese word
+      {L"\x4F60\x597D"
+       L"ifmmp",
+       false, 2, 5},
+      // [ROBUSTNESS] An invalid English word with a preceding Korean word
+      {L"\xC548\xB155\xD558\xC138\xC694"
+       L"ifmmp",
+       false, 5, 5},
+      // An invalid English word with a preceding Japanese word
+      {L"\x3053\x3093\x306B\x3061\x306F"
+       L"ifmmp",
+       false, 5, 5},
+      // [ROBUSTNESS] An invalid English word with a preceding Hindi word
+      {L"\x0930\x093E\x091C\x0927\x093E\x0928"
+       L"ifmmp",
+       false, 6, 5},
+      // [ROBUSTNESS] An invalid English word with two preceding Greek words
+      {L"\x03B3\x03B5\x03B9\x03AC"
+       L" "
+       L"\x03C3\x03BF\x03C5"
+       L"ifmmp",
+       false, 8, 5},
+      // [ROBUSTNESS] An invalid English word with a preceding Russian word
+      {L"\x0437\x0434\x0440\x0430\x0432\x0441"
+       L"\x0442\x0432\x0443\x0439\x0442\x0435"
+       L"ifmmp",
+       false, 12, 5},
 
-    // An invalid English word with a following whitespace
-    {L"ifmmp" L" ", false, 0, 5},
-    // An invalid English word with a following no-break space
-    {L"ifmmp" L"\xA0", false, 0, 5},
-    // An invalid English word with a following ideographic space
-    {L"ifmmp" L"\x3000", false, 0, 5},
-    // An invalid English word with a following Chinese word
-    {L"ifmmp" L"\x4F60\x597D", false, 0, 5},
-    // [ROBUSTNESS] An invalid English word with a following Korean word
-    {L"ifmmp" L"\xC548\xB155\xD558\xC138\xC694", false, 0, 5},
-    // An invalid English word with a following Japanese word
-    {L"ifmmp" L"\x3053\x3093\x306B\x3061\x306F", false, 0, 5},
-    // [ROBUSTNESS] An invalid English word with a following Hindi word
-    {L"ifmmp" L"\x0930\x093E\x091C\x0927\x093E\x0928", false, 0, 5},
-    // [ROBUSTNESS] An invalid English word with two following Greek words
-    {L"ifmmp"
-     L"\x03B3\x03B5\x03B9\x03AC" L" " L"\x03C3\x03BF\x03C5", false, 0, 5},
-    // [ROBUSTNESS] An invalid English word with a following Russian word
-    {L"ifmmp" L"\x0437\x0434\x0440\x0430\x0432\x0441"
-     L"\x0442\x0432\x0443\x0439\x0442\x0435", false, 0, 5},
+      // An invalid English word with a following whitespace
+      {L"ifmmp"
+       L" ",
+       false, 0, 5},
+      // An invalid English word with a following no-break space
+      {L"ifmmp"
+       L"\xA0",
+       false, 0, 5},
+      // An invalid English word with a following ideographic space
+      {L"ifmmp"
+       L"\x3000",
+       false, 0, 5},
+      // An invalid English word with a following Chinese word
+      {L"ifmmp"
+       L"\x4F60\x597D",
+       false, 0, 5},
+      // [ROBUSTNESS] An invalid English word with a following Korean word
+      {L"ifmmp"
+       L"\xC548\xB155\xD558\xC138\xC694",
+       false, 0, 5},
+      // An invalid English word with a following Japanese word
+      {L"ifmmp"
+       L"\x3053\x3093\x306B\x3061\x306F",
+       false, 0, 5},
+      // [ROBUSTNESS] An invalid English word with a following Hindi word
+      {L"ifmmp"
+       L"\x0930\x093E\x091C\x0927\x093E\x0928",
+       false, 0, 5},
+      // [ROBUSTNESS] An invalid English word with two following Greek words
+      {L"ifmmp"
+       L"\x03B3\x03B5\x03B9\x03AC"
+       L" "
+       L"\x03C3\x03BF\x03C5",
+       false, 0, 5},
+      // [ROBUSTNESS] An invalid English word with a following Russian word
+      {L"ifmmp"
+       L"\x0437\x0434\x0440\x0430\x0432\x0441"
+       L"\x0442\x0432\x0443\x0439\x0442\x0435",
+       false, 0, 5},
 
-    // Two invalid English words concatenated with a whitespace
-    {L"ifmmp" L" " L"ifmmp", false, 0, 5},
-    // Two invalid English words concatenated with a no-break space
-    {L"ifmmp" L"\xA0" L"ifmmp", false, 0, 5},
-    // Two invalid English words concatenated with an ideographic space
-    {L"ifmmp" L"\x3000" L"ifmmp", false, 0, 5},
-    // Two invalid English words concatenated with a Chinese word
-    {L"ifmmp" L"\x4F60\x597D" L"ifmmp", false, 0, 5},
-    // [ROBUSTNESS] Two invalid English words concatenated with a Korean word
-    {L"ifmmp" L"\xC548\xB155\xD558\xC138\xC694" L"ifmmp", false, 0, 5},
-    // Two invalid English words concatenated with a Japanese word
-    {L"ifmmp" L"\x3053\x3093\x306B\x3061\x306F" L"ifmmp", false, 0, 5},
-    // [ROBUSTNESS] Two invalid English words concatenated with a Hindi word
-    {L"ifmmp" L"\x0930\x093E\x091C\x0927\x093E\x0928" L"ifmmp" , false, 0, 5},
-    // [ROBUSTNESS] Two invalid English words concatenated with two Greek words
-    {L"ifmmp" L"\x03B3\x03B5\x03B9\x03AC" L" " L"\x03C3\x03BF\x03C5"
-     L"ifmmp", false, 0, 5},
-    // [ROBUSTNESS] Two invalid English words concatenated with a Russian word
-    {L"ifmmp" L"\x0437\x0434\x0440\x0430\x0432\x0441"
-     L"\x0442\x0432\x0443\x0439\x0442\x0435" L"ifmmp", false, 0, 5},
-    // [ROBUSTNESS] Two invalid English words concatenated with a contraction
-    // character.
-    {L"ifmmp:ifmmp", false, 0, 11},
+      // Two invalid English words concatenated with a whitespace
+      {L"ifmmp"
+       L" "
+       L"ifmmp",
+       false, 0, 5},
+      // Two invalid English words concatenated with a no-break space
+      {L"ifmmp"
+       L"\xA0"
+       L"ifmmp",
+       false, 0, 5},
+      // Two invalid English words concatenated with an ideographic space
+      {L"ifmmp"
+       L"\x3000"
+       L"ifmmp",
+       false, 0, 5},
+      // Two invalid English words concatenated with a Chinese word
+      {L"ifmmp"
+       L"\x4F60\x597D"
+       L"ifmmp",
+       false, 0, 5},
+      // [ROBUSTNESS] Two invalid English words concatenated with a Korean word
+      {L"ifmmp"
+       L"\xC548\xB155\xD558\xC138\xC694"
+       L"ifmmp",
+       false, 0, 5},
+      // Two invalid English words concatenated with a Japanese word
+      {L"ifmmp"
+       L"\x3053\x3093\x306B\x3061\x306F"
+       L"ifmmp",
+       false, 0, 5},
+      // [ROBUSTNESS] Two invalid English words concatenated with a Hindi word
+      {L"ifmmp"
+       L"\x0930\x093E\x091C\x0927\x093E\x0928"
+       L"ifmmp",
+       false, 0, 5},
+      // [ROBUSTNESS] Two invalid English words concatenated with two Greek
+      // words
+      {L"ifmmp"
+       L"\x03B3\x03B5\x03B9\x03AC"
+       L" "
+       L"\x03C3\x03BF\x03C5"
+       L"ifmmp",
+       false, 0, 5},
+      // [ROBUSTNESS] Two invalid English words concatenated with a Russian word
+      {L"ifmmp"
+       L"\x0437\x0434\x0440\x0430\x0432\x0441"
+       L"\x0442\x0432\x0443\x0439\x0442\x0435"
+       L"ifmmp",
+       false, 0, 5},
+      // [ROBUSTNESS] Two invalid English words concatenated with a contraction
+      // character.
+      {L"ifmmp:ifmmp", false, 0, 11},
 
-    // [REGRESSION] Issue 13432: "Any word of 13 or 14 characters is not
-    // spellcheck" <http://crbug.com/13432>.
-    {L"qwertyuiopasd", false, 0, 13},
-    {L"qwertyuiopasdf", false, 0, 14},
+      // [REGRESSION] Issue 13432: "Any word of 13 or 14 characters is not
+      // spellcheck" <http://crbug.com/13432>.
+      {L"qwertyuiopasd", false, 0, 13},
+      {L"qwertyuiopasdf", false, 0, 14},
 
-    // [REGRESSION] Issue 128896: "en_US hunspell dictionary includes
-    // acknowledgement but not acknowledgements" <http://crbug.com/128896>
-    {L"acknowledgement", true},
-    {L"acknowledgements", true},
+      // [REGRESSION] Issue 128896: "en_US hunspell dictionary includes
+      // acknowledgement but not acknowledgements" <http://crbug.com/128896>
+      {L"acknowledgement", true},
+      {L"acknowledgements", true},
 
-    // Issue 123290: "Spellchecker should treat numbers as word characters"
-    {L"0th", true},
-    {L"1st", true},
-    {L"2nd", true},
-    {L"3rd", true},
-    {L"4th", true},
-    {L"5th", true},
-    {L"6th", true},
-    {L"7th", true},
-    {L"8th", true},
-    {L"9th", true},
-    {L"10th", true},
-    {L"100th", true},
-    {L"1000th", true},
-    {L"25", true},
-    {L"2012", true},
-    {L"100,000,000", true},
-    {L"3.141592653", true},
+      // Issue 123290: "Spellchecker should treat numbers as word characters"
+      {L"0th", true},
+      {L"1st", true},
+      {L"2nd", true},
+      {L"3rd", true},
+      {L"4th", true},
+      {L"5th", true},
+      {L"6th", true},
+      {L"7th", true},
+      {L"8th", true},
+      {L"9th", true},
+      {L"10th", true},
+      {L"100th", true},
+      {L"1000th", true},
+      {L"25", true},
+      {L"2012", true},
+      {L"100,000,000", true},
+      {L"3.141592653", true},
   };
 
   for (size_t i = 0; i < base::size(kTestCases); ++i) {
@@ -1144,10 +1279,7 @@ TEST_F(SpellCheckTest, CreateTextCheckingResultsAddsGrammarMarkers) {
 // Verify that the SpellCheck preserves the original apostrophe type in the
 // checked text, regardless of the type of apostrophe the browser returns.
 TEST_F(SpellCheckTest, CreateTextCheckingResultsKeepsTypographicalApostrophe) {
-  std::u16string text = base::WideToUTF16(
-        L"Ik've havn" TYPOGRAPHICAL_APOSTROPHE L"t ni'n"
-        TYPOGRAPHICAL_APOSTROPHE L"out-s I've I" TYPOGRAPHICAL_APOSTROPHE
-        L"ve");
+  std::u16string text = u"Ik've havn’t ni'n’out-s I've I’ve";
   std::vector<SpellCheckResult> spellcheck_results;
 
   // All typewriter apostrophe results.
@@ -1166,24 +1298,17 @@ TEST_F(SpellCheckTest, CreateTextCheckingResultsKeepsTypographicalApostrophe) {
 
   // All typographical apostrophe results.
   spellcheck_results.push_back(
-      SpellCheckResult(SpellCheckResult::SPELLING, 0, 5,
-                       base::WideToUTF16(L"I" TYPOGRAPHICAL_APOSTROPHE L"ve")));
-  spellcheck_results.push_back(SpellCheckResult(
-      SpellCheckResult::SPELLING, 6, 6,
-      base::WideToUTF16(L"haven" TYPOGRAPHICAL_APOSTROPHE L"t")));
-  spellcheck_results.push_back(SpellCheckResult(
-      SpellCheckResult::SPELLING, 13, 10,
-      base::WideToUTF16(
-          L"in" TYPOGRAPHICAL_APOSTROPHE L"n" TYPOGRAPHICAL_APOSTROPHE L"ou"
-          L"t" TYPOGRAPHICAL_APOSTROPHE L"s")));
+      SpellCheckResult(SpellCheckResult::SPELLING, 0, 5, u"I’ve"));
+  spellcheck_results.push_back(
+      SpellCheckResult(SpellCheckResult::SPELLING, 6, 6, u"haven’t"));
+  spellcheck_results.push_back(
+      SpellCheckResult(SpellCheckResult::SPELLING, 13, 10, u"in’n’out’s"));
 
   // Replacements that differ only by apostrophe type should be ignored.
   spellcheck_results.push_back(
-      SpellCheckResult(SpellCheckResult::SPELLING, 24, 4,
-                       base::WideToUTF16(L"I" TYPOGRAPHICAL_APOSTROPHE L"ve")));
+      SpellCheckResult(SpellCheckResult::SPELLING, 24, 4, u"I’ve"));
   spellcheck_results.push_back(
-      SpellCheckResult(SpellCheckResult::SPELLING, 29, 4,
-                       base::WideToUTF16(L"I" TYPOGRAPHICAL_APOSTROPHE L"ve")));
+      SpellCheckResult(SpellCheckResult::SPELLING, 29, 4, u"I’ve"));
 
   // If we have no suggested replacements, we should keep this misspelling.
   spellcheck_results.push_back(SpellCheckResult(
@@ -1194,9 +1319,7 @@ TEST_F(SpellCheckTest, CreateTextCheckingResultsKeepsTypographicalApostrophe) {
   spellcheck_results.push_back(SpellCheckResult(
       SpellCheckResult::SPELLING, 0, 11,
       std::vector<std::u16string>(
-          {base::UTF8ToUTF16("Ik've havn'"),
-           base::WideToUTF16(L"Ik" TYPOGRAPHICAL_APOSTROPHE
-                             "ve havn" TYPOGRAPHICAL_APOSTROPHE)})));
+          {base::UTF8ToUTF16("Ik've havn'"), u"Ik’ve havn’"})));
 
   // If we have multiple replacements where some only differ by apostrophe type
   // and some don't, we should keep this misspelling, but remove the
@@ -1204,8 +1327,7 @@ TEST_F(SpellCheckTest, CreateTextCheckingResultsKeepsTypographicalApostrophe) {
   spellcheck_results.push_back(SpellCheckResult(
       SpellCheckResult::SPELLING, 0, 5,
       std::vector<std::u16string>(
-          {base::UTF8ToUTF16("I've"), base::UTF8ToUTF16("Ive"),
-           base::WideToUTF16(L"Ik" TYPOGRAPHICAL_APOSTROPHE "ve")})));
+          {base::UTF8ToUTF16("I've"), base::UTF8ToUTF16("Ive"), u"Ik’ve"})));
 
   // Similar to the previous case except with the apostrophe changing from
   // typographical to straight instead of the other direction
@@ -1229,15 +1351,15 @@ TEST_F(SpellCheckTest, CreateTextCheckingResultsKeepsTypographicalApostrophe) {
 
   static std::vector<std::vector<const wchar_t*>> kExpectedReplacements = {
       {L"I've"},
-      {L"haven" TYPOGRAPHICAL_APOSTROPHE L"t"},
-      {L"in'n" TYPOGRAPHICAL_APOSTROPHE L"out's"},
+      {L"haven’t"},
+      {L"in'n’out's"},
       {L"I've"},
-      {L"haven" TYPOGRAPHICAL_APOSTROPHE L"t"},
-      {L"in'n" TYPOGRAPHICAL_APOSTROPHE L"out" TYPOGRAPHICAL_APOSTROPHE L"s"},
+      {L"haven’t"},
+      {L"in'n’out’s"},
       std::vector<const wchar_t*>(),
       {L"I've", L"Ive"},
-      {L"havnt", L"haven" TYPOGRAPHICAL_APOSTROPHE "t"},
-      {L"have", L"haven" TYPOGRAPHICAL_APOSTROPHE "t"},
+      {L"havnt", L"haven’t"},
+      {L"have", L"haven’t"},
   };
 
   ASSERT_EQ(kExpectedReplacements.size(), textcheck_results.size());
@@ -1443,7 +1565,7 @@ TEST_F(SpellCheckTest, IsValidContraction) {
 
   static constexpr const wchar_t* kWords[] = {
       L"in'n'out",
-      L"in" TYPOGRAPHICAL_APOSTROPHE L"n" TYPOGRAPHICAL_APOSTROPHE L"out",
+      L"in’n’out",
   };
 
   for (size_t i = 0; i < base::size(kLanguages); ++i) {

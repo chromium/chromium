@@ -132,10 +132,10 @@ MultilineExample::MultilineExample()
 MultilineExample::~MultilineExample() = default;
 
 void MultilineExample::CreateExampleView(View* container) {
-  const std::u16string kTestString = base::WideToUTF16(
-      L"qwerty"
-      L"\x627\x644\x631\x626\x64A\x633\x64A\x629"
-      L"asdfgh");
+  const std::u16string kTestString =
+      u"qwerty"
+      u"\x627\x644\x631\x626\x64A\x633\x64A\x629"
+      u"asdfgh";
 
   auto render_text_view = std::make_unique<RenderTextView>();
   render_text_view->SetText(kTestString);

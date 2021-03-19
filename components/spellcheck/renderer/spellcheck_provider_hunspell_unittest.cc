@@ -140,10 +140,9 @@ TEST_F(SpellCheckProviderTest, CancelUnnecessaryRequests) {
 
   // Test that the SpellCheckProvider class sends a request when it receives a
   // Russian word.
-  const wchar_t kRussianWord[] = L"\x0431\x0451\x0434\x0440\x0430";
+  const char16_t kRussianWord[] = u"\x0431\x0451\x0434\x0440\x0430";
   provider_.RequestTextChecking(
-      WideToUTF16(kRussianWord),
-      std::make_unique<FakeTextCheckingCompletion>(&completion));
+      kRussianWord, std::make_unique<FakeTextCheckingCompletion>(&completion));
   EXPECT_EQ(completion.completion_count_, 4U);
   EXPECT_EQ(completion.cancellation_count_, 1U);
   CheckSpellingServiceCallCount(provider_.spelling_service_call_count_, 2U);

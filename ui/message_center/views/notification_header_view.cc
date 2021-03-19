@@ -65,7 +65,7 @@ constexpr int kExpandIconSize = 8;
 constexpr gfx::Insets kExpandIconViewPadding(13, 2, 9, 0);
 
 // Bullet character. The divider symbol between different parts of the header.
-constexpr wchar_t kNotificationHeaderDivider[] = L" \u2022 ";
+constexpr char16_t kNotificationHeaderDivider[] = u" \u2022 ";
 
 // "Roboto-Regular, 12sp" is specified in the mock.
 constexpr int kHeaderTextFontSize = 12;
@@ -220,7 +220,7 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
 
   // Summary text divider
   summary_text_divider_ = create_label();
-  summary_text_divider_->SetText(base::WideToUTF16(kNotificationHeaderDivider));
+  summary_text_divider_->SetText(kNotificationHeaderDivider);
   summary_text_divider_->SetVisible(false);
   detail_views_->AddChildView(summary_text_divider_);
 
@@ -232,7 +232,7 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
 
   // Timestamp divider
   timestamp_divider_ = create_label();
-  timestamp_divider_->SetText(base::WideToUTF16(kNotificationHeaderDivider));
+  timestamp_divider_->SetText(kNotificationHeaderDivider);
   timestamp_divider_->SetVisible(false);
   detail_views_->AddChildView(timestamp_divider_);
 

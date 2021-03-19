@@ -1364,9 +1364,8 @@ TEST_F(TemplateURLTest, ExtractSearchTermsFromUTF8URL) {
            "%D0%B2%D1%83%D0%B9,+%D0%BC%D0%B8%D1%80!"),
       search_terms_data_, &result));
   EXPECT_EQ(
-      base::WideToUTF16(
-          L"\x0417\x0434\x0440\x0430\x0432\x0441\x0442\x0432\x0443\x0439, "
-          L"\x043C\x0438\x0440!"),
+      u"\x0417\x0434\x0440\x0430\x0432\x0441\x0442\x0432\x0443\x0439, "
+      u"\x043C\x0438\x0440!",
       result);
 
   EXPECT_TRUE(url.ExtractSearchTermsFromURL(
@@ -1399,9 +1398,8 @@ TEST_F(TemplateURLTest, ExtractSearchTermsFromNonUTF8URL) {
            "%EC%E8%F0!"),
       search_terms_data_, &result));
   EXPECT_EQ(
-      base::WideToUTF16(
-          L"\x0417\x0434\x0440\x0430\x0432\x0441\x0442\x0432\x0443\x0439, "
-          L"\x043C\x0438\x0440!"),
+      u"\x0417\x0434\x0440\x0430\x0432\x0441\x0442\x0432\x0443\x0439, "
+      u"\x043C\x0438\x0440!",
       result);
 
   EXPECT_TRUE(url.ExtractSearchTermsFromURL(
@@ -1564,8 +1562,8 @@ TEST_F(TemplateURLTest, ReplaceSearchTermsInUTF8URL) {
   TemplateURL url(data);
 
   // Russian text which will be encoded with UTF-8.
-  TemplateURLRef::SearchTermsArgs search_terms(base::WideToUTF16(
-      L"\x0442\x0435\x043A\x0441\x0442"));
+  TemplateURLRef::SearchTermsArgs search_terms(
+      u"\x0442\x0435\x043A\x0441\x0442");
   GURL result;
 
   EXPECT_TRUE(url.ReplaceSearchTermsInURL(
@@ -1599,8 +1597,8 @@ TEST_F(TemplateURLTest, ReplaceSearchTermsInNonUTF8URL) {
   TemplateURL url(data);
 
   // Russian text which will be encoded with Windows-1251.
-  TemplateURLRef::SearchTermsArgs search_terms(base::WideToUTF16(
-      L"\x0442\x0435\x043A\x0441\x0442"));
+  TemplateURLRef::SearchTermsArgs search_terms(
+      u"\x0442\x0435\x043A\x0441\x0442");
   GURL result;
 
   EXPECT_TRUE(url.ReplaceSearchTermsInURL(

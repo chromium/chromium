@@ -987,11 +987,9 @@ TEST_F(OmniboxViewViewsTest, PasteAndGoToUrlOrSearchCommand) {
   // Test input that's search-like.
   expected_text =
 #if defined(OS_MAC)
-      base::WideToUTF16(
-          L"Pa&ste and Search for \x201Cthis is a test sentence\x201D");
+      u"Pa&ste and Search for \x201Cthis is a test sentence\x201D";
 #else
-      base::WideToUTF16(
-          L"Pa&ste and search for \x201Cthis is a test sentence\x201D");
+      u"Pa&ste and search for \x201Cthis is a test sentence\x201D";
 #endif
   ui::ScopedClipboardWriter(clipboard_buffer)
       .WriteText(base::ASCIIToUTF16("this is a test sentence"));

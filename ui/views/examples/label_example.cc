@@ -24,7 +24,6 @@
 #include "ui/views/view.h"
 
 using base::ASCIIToUTF16;
-using base::WideToUTF16;
 
 namespace views {
 namespace examples {
@@ -68,9 +67,9 @@ void LabelExample::CreateExampleView(View* container) {
   container->AddChildView(
       std::make_unique<Label>(ASCIIToUTF16("Hello world!")));
 
-  const wchar_t hello_world_hebrew[] =
-      L"\x5e9\x5dc\x5d5\x5dd \x5d4\x5e2\x5d5\x5dc\x5dd!";
-  auto label = std::make_unique<Label>(WideToUTF16(hello_world_hebrew));
+  const char16_t hello_world_hebrew[] =
+      u"\x5e9\x5dc\x5d5\x5dd \x5d4\x5e2\x5d5\x5dc\x5dd!";
+  auto label = std::make_unique<Label>(hello_world_hebrew);
   label->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
   container->AddChildView(std::move(label));
 

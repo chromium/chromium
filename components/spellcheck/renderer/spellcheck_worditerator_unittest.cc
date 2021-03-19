@@ -54,52 +54,52 @@ TEST(SpellcheckWordIteratorTest, SplitWord) {
   // normalize them so our spell-checker can check their spellings. If
   // characters are found that are not from the specified language the test
   // skips them.
-  const wchar_t kTestText[] =
+  const char16_t kTestText[] =
       // Graphic characters
-      L"!@#$%^&*()"
+      u"!@#$%^&*()"
       // Latin (including a contraction character and a ligature).
-      L"hello:hello a\xFB03x"
+      u"hello:hello a\xFB03x"
       // Greek
-      L"\x03B3\x03B5\x03B9\x03AC\x0020\x03C3\x03BF\x03C5"
+      u"\x03B3\x03B5\x03B9\x03AC\x0020\x03C3\x03BF\x03C5"
       // Cyrillic
-      L"\x0437\x0434\x0440\x0430\x0432\x0441\x0442\x0432"
-      L"\x0443\x0439\x0442\x0435"
+      u"\x0437\x0434\x0440\x0430\x0432\x0441\x0442\x0432"
+      u"\x0443\x0439\x0442\x0435"
       // Hebrew (including niqquds)
-      L"\x05e9\x05c1\x05b8\x05dc\x05d5\x05b9\x05dd "
+      u"\x05e9\x05c1\x05b8\x05dc\x05d5\x05b9\x05dd "
       // Hebrew words with U+0027 and U+05F3
-      L"\x05e6\x0027\x05d9\x05e4\x05e1 \x05e6\x05F3\x05d9\x05e4\x05e1 "
+      u"\x05e6\x0027\x05d9\x05e4\x05e1 \x05e6\x05F3\x05d9\x05e4\x05e1 "
       // Hebrew words with U+0022 and U+05F4
-      L"\x05e6\x05d4\x0022\x05dc \x05e6\x05d4\x05f4\x05dc "
+      u"\x05e6\x05d4\x0022\x05dc \x05e6\x05d4\x05f4\x05dc "
       // Hebrew words enclosed with ASCII quotes.
-      L"\"\x05e6\x05d4\x0022\x05dc\" '\x05e9\x05c1\x05b8\x05dc\x05d5'"
+      u"\"\x05e6\x05d4\x0022\x05dc\" '\x05e9\x05c1\x05b8\x05dc\x05d5'"
       // Arabic (including vowel marks)
-      L"\x0627\x064e\x0644\x0633\x064e\x0651\x0644\x0627\x0645\x064f "
-      L"\x0639\x064e\x0644\x064e\x064a\x0652\x0643\x064f\x0645\x0652 "
+      u"\x0627\x064e\x0644\x0633\x064e\x0651\x0644\x0627\x0645\x064f "
+      u"\x0639\x064e\x0644\x064e\x064a\x0652\x0643\x064f\x0645\x0652 "
       // Farsi/Persian (including vowel marks)
       // Make sure \u064b - \u0652 are removed.
-      L"\x0647\x0634\x064e\x0631\x062d "
-      L"\x0647\x062e\x0648\x0627\x0647 "
-      L"\x0650\x062f\x0631\x062f "
-      L"\x0631\x0645\x0627\x0646\x0652 "
-      L"\x0633\x0631\x0651 "
-      L"\x0646\x0646\x064e\x062c\x064f\x0633 "
-      L"\x0627\x0644\x062d\x0645\x062f "
+      u"\x0647\x0634\x064e\x0631\x062d "
+      u"\x0647\x062e\x0648\x0627\x0647 "
+      u"\x0650\x062f\x0631\x062f "
+      u"\x0631\x0645\x0627\x0646\x0652 "
+      u"\x0633\x0631\x0651 "
+      u"\x0646\x0646\x064e\x062c\x064f\x0633 "
+      u"\x0627\x0644\x062d\x0645\x062f "
       // Also make sure that class "Lm" (the \u0640) is filtered out too.
-      L"\x062c\x062c\x0640\x062c\x062c"
+      u"\x062c\x062c\x0640\x062c\x062c"
       // Hindi
-      L"\x0930\x093E\x091C\x0927\x093E\x0928"
+      u"\x0930\x093E\x091C\x0927\x093E\x0928"
       // Thai
-      L"\x0e2a\x0e27\x0e31\x0e2a\x0e14\x0e35\x0020\x0e04"
-      L"\x0e23\x0e31\x0e1a"
+      u"\x0e2a\x0e27\x0e31\x0e2a\x0e14\x0e35\x0020\x0e04"
+      u"\x0e23\x0e31\x0e1a"
       // Hiraganas
-      L"\x3053\x3093\x306B\x3061\x306F"
+      u"\x3053\x3093\x306B\x3061\x306F"
       // CJKV ideographs
-      L"\x4F60\x597D"
+      u"\x4F60\x597D"
       // Hangul Syllables
-      L"\xC548\xB155\xD558\xC138\xC694"
+      u"\xC548\xB155\xD558\xC138\xC694"
       // Full-width latin : Hello
-      L"\xFF28\xFF45\xFF4C\xFF4C\xFF4F "
-      L"e.g.,";
+      u"\xFF28\xFF45\xFF4C\xFF4C\xFF4F "
+      u"e.g.,";
 
   // The languages and expected results used in this test.
   static const TestCase kTestCases[] = {
@@ -163,7 +163,7 @@ TEST(SpellcheckWordIteratorTest, SplitWord) {
     SpellcheckCharAttribute attributes;
     attributes.SetDefaultLanguage(kTestCases[i].language);
 
-    std::u16string input(base::WideToUTF16(kTestText));
+    std::u16string input(kTestText);
     SpellcheckWordIterator iterator;
     EXPECT_TRUE(iterator.Initialize(&attributes,
                                     kTestCases[i].allow_contraction));
@@ -199,8 +199,8 @@ TEST(SpellcheckWordIteratorTest, RuleSetConsistency) {
   SpellcheckCharAttribute attributes;
   attributes.SetDefaultLanguage("en-US");
 
-  const wchar_t kTestText[] = L"\x1791\x17c1\x002e";
-  std::u16string input(base::WideToUTF16(kTestText));
+  const char16_t kTestText[] = u"\x1791\x17c1\x002e";
+  std::u16string input(kTestText);
 
   SpellcheckWordIterator iterator;
   EXPECT_TRUE(iterator.Initialize(&attributes, true));
@@ -455,8 +455,8 @@ TEST(SpellcheckWordIteratorTest, FindSkippableWordsRussian) {
 TEST(SpellcheckWordIteratorTest, FindSkippableWordsKhmer) {
   // A string containing two Russian characters followed by two, three, and
   // two-character Khmer words, and then English characters and punctuation.
-  std::u16string text(base::WideToUTF16(
-      L"\x041C\x0438 \x178F\x17BE\x179B\x17C4\x1780\x1798\x1780zoo. ,"));
+  std::u16string text(
+      u"\x041C\x0438 \x178F\x17BE\x179B\x17C4\x1780\x1798\x1780zoo. ,");
   BreakIterator iter(text, GetRulesForLanguage("km"));
   ASSERT_TRUE(iter.Init());
 

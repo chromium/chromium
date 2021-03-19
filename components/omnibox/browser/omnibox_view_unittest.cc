@@ -152,10 +152,10 @@ TEST_F(OmniboxViewTest, SanitizeTextForPaste) {
        ASCIIToUTF16("http://foo.com/a.  b")},
 
       // URL with unicode whitespace is also preserved as-is.
-      {base::WideToUTF16(L"http://foo.com/a\x3000"
-                         "b"),
-       base::WideToUTF16(L"http://foo.com/a\x3000"
-                         "b")},
+      {u"http://foo.com/a\x3000"
+       u"b",
+       u"http://foo.com/a\x3000"
+       u"b"},
   };
 
   for (const auto& testcase : kTestcases) {

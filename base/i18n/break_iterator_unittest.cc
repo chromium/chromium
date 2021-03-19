@@ -73,8 +73,8 @@ TEST(BreakIteratorTest, BreakWord) {
 TEST(BreakIteratorTest, BreakWordWide16) {
   // Two greek words separated by space.
   const std::u16string str(
-      WideToUTF16(L"\x03a0\x03b1\x03b3\x03ba\x03cc\x03c3\x03bc\x03b9"
-                  L"\x03bf\x03c2\x0020\x0399\x03c3\x03c4\x03cc\x03c2"));
+      u"\x03a0\x03b1\x03b3\x03ba\x03cc\x03c3\x03bc\x03b9"
+      u"\x03bf\x03c2\x0020\x0399\x03c3\x03c4\x03cc\x03c2");
   const std::u16string word1(str.substr(0, 10));
   const std::u16string word2(str.substr(11, 5));
   BreakIterator iter(str, BreakIterator::BREAK_WORD);
@@ -304,8 +304,8 @@ TEST(BreakIteratorTest, BreakSpaceSP) {
 TEST(BreakIteratorTest, BreakSpacekWide16) {
   // Two Greek words.
   const std::u16string str(
-      WideToUTF16(L"\x03a0\x03b1\x03b3\x03ba\x03cc\x03c3\x03bc\x03b9"
-                  L"\x03bf\x03c2\x0020\x0399\x03c3\x03c4\x03cc\x03c2"));
+      u"\x03a0\x03b1\x03b3\x03ba\x03cc\x03c3\x03bc\x03b9"
+      u"\x03bf\x03c2\x0020\x0399\x03c3\x03c4\x03cc\x03c2");
   const std::u16string word1(str.substr(0, 11));
   const std::u16string word2(str.substr(11, 5));
   BreakIterator iter(str, BreakIterator::BREAK_SPACE);
@@ -451,8 +451,8 @@ TEST(BreakIteratorTest, BreakLineNL) {
 TEST(BreakIteratorTest, BreakLineWide16) {
   // Two Greek words separated by newline.
   const std::u16string str(
-      WideToUTF16(L"\x03a0\x03b1\x03b3\x03ba\x03cc\x03c3\x03bc\x03b9"
-                  L"\x03bf\x03c2\x000a\x0399\x03c3\x03c4\x03cc\x03c2"));
+      u"\x03a0\x03b1\x03b3\x03ba\x03cc\x03c3\x03bc\x03b9"
+      u"\x03bf\x03c2\x000a\x0399\x03c3\x03c4\x03cc\x03c2");
   const std::u16string line1(str.substr(0, 11));
   const std::u16string line2(str.substr(11, 5));
   BreakIterator iter(str, BreakIterator::BREAK_NEWLINE);

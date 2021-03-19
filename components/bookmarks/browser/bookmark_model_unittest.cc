@@ -510,8 +510,8 @@ TEST_F(BookmarkModelTest, AddURL) {
 
 TEST_F(BookmarkModelTest, AddURLWithUnicodeTitle) {
   const BookmarkNode* root = model_->bookmark_bar_node();
-  const std::u16string title(base::WideToUTF16(
-      L"\u767e\u5ea6\u4e00\u4e0b\uff0c\u4f60\u5c31\u77e5\u9053"));
+  const std::u16string title(
+      u"\u767e\u5ea6\u4e00\u4e0b\uff0c\u4f60\u5c31\u77e5\u9053");
   const GURL url("https://www.baidu.com/");
 
   const BookmarkNode* new_node = model_->AddURL(root, 0, title, url);

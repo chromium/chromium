@@ -31,7 +31,6 @@ using base::ASCIIToUTF16;
 using base::UTF16ToUTF8;
 using base::UTF16ToWide;
 using base::UTF8ToUTF16;
-using base::WideToUTF16;
 
 namespace gfx {
 
@@ -1176,15 +1175,15 @@ TEST(TextEliderTest, ElideRectangleStringNotStrict) {
 TEST(TextEliderTest, ElideRectangleWide16) {
   // Two greek words separated by space.
   const std::u16string str(
-      WideToUTF16(L"\x03a0\x03b1\x03b3\x03ba\x03cc\x03c3\x03bc\x03b9"
-                  L"\x03bf\x03c2\x0020\x0399\x03c3\x03c4\x03cc\x03c2"));
+      u"\x03a0\x03b1\x03b3\x03ba\x03cc\x03c3\x03bc\x03b9"
+      u"\x03bf\x03c2\x0020\x0399\x03c3\x03c4\x03cc\x03c2");
   const std::u16string out1(
-      WideToUTF16(L"\x03a0\x03b1\x03b3\x03ba\n"
-                  L"\x03cc\x03c3\x03bc\x03b9\n"
-                  L"..."));
-  const std::u16string out2(WideToUTF16(
-      L"\x03a0\x03b1\x03b3\x03ba\x03cc\x03c3\x03bc\x03b9\x03bf\x03c2\x0020\n"
-      L"\x0399\x03c3\x03c4\x03cc\x03c2"));
+      u"\x03a0\x03b1\x03b3\x03ba\n"
+      u"\x03cc\x03c3\x03bc\x03b9\n"
+      u"...");
+  const std::u16string out2(
+      u"\x03a0\x03b1\x03b3\x03ba\x03cc\x03c3\x03bc\x03b9\x03bf\x03c2\x0020\n"
+      u"\x0399\x03c3\x03c4\x03cc\x03c2");
   std::u16string output;
   EXPECT_TRUE(ElideRectangleString(str, 2, 4, true, &output));
   EXPECT_EQ(out1, output);

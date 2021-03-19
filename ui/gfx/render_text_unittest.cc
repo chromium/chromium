@@ -862,12 +862,12 @@ TEST_F(RenderTextTest, ApplyColorSurrogatePair) {
 
 TEST_F(RenderTextTest, ApplyColorLongEmoji) {
   // A long emoji sequence.
-  static const wchar_t kLongEmoji[] = L"\U0001F468\u200D\u2708\uFE0F";
+  static const char16_t kLongEmoji[] = u"\U0001F468\u200D\u2708\uFE0F";
 
   RenderText* render_text = GetRenderText();
-  render_text->SetText(WideToUTF16(kLongEmoji));
-  render_text->AppendText(WideToUTF16(kLongEmoji));
-  render_text->AppendText(WideToUTF16(kLongEmoji));
+  render_text->SetText(kLongEmoji);
+  render_text->AppendText(kLongEmoji);
+  render_text->AppendText(kLongEmoji);
 
   render_text->ApplyColor(SK_ColorRED, Range(0, 2));
   render_text->ApplyColor(SK_ColorBLUE, Range(8, 13));
@@ -3810,13 +3810,13 @@ TEST_F(RenderTextTest, GraphemeIterator) {
 }
 
 TEST_F(RenderTextTest, GraphemeBoundaries) {
-  static const wchar_t text[] =
-      L"\u0065\u0301"        // Letter 'e' U+0065 and acute accent U+0301
-      L"\u0036\uFE0F\u20E3"  // Emoji 'keycap letter 6'
-      L"\U0001F468\u200D\u2708\uFE0F";  // Emoji 'pilot'.
+  static const char16_t text[] =
+      u"\u0065\u0301"        // Letter 'e' U+0065 and acute accent U+0301
+      u"\u0036\uFE0F\u20E3"  // Emoji 'keycap letter 6'
+      u"\U0001F468\u200D\u2708\uFE0F";  // Emoji 'pilot'.
 
   RenderText* render_text = GetRenderText();
-  render_text->SetText(WideToUTF16(text));
+  render_text->SetText(text);
 
   EXPECT_TRUE(render_text->IsGraphemeBoundary(0));
   EXPECT_FALSE(render_text->IsGraphemeBoundary(1));
@@ -7129,7 +7129,7 @@ INSTANTIATE_TEST_SUITE_P(FallbackFontCommonScript,
 #if defined(OS_WIN)
 // Ensures that locale is used for fonts selection.
 TEST_F(RenderTextTest, CJKFontWithLocale) {
-  const wchar_t kCJKTest[] = L"\u8AA4\u904E\u9AA8";
+  const char16_t kCJKTest[] = u"\u8AA4\u904E\u9AA8";
   static const char* kLocaleTests[] = {"zh-CN", "ja-JP", "ko-KR"};
 
   std::set<std::string> tested_font_names;
@@ -7138,7 +7138,7 @@ TEST_F(RenderTextTest, CJKFontWithLocale) {
     ResetRenderTextInstance();
 
     RenderTextHarfBuzz* render_text = GetRenderText();
-    render_text->SetText(WideToUTF16(kCJKTest));
+    render_text->SetText(kCJKTest);
 
     const std::vector<FontSpan> font_spans = GetFontSpans();
     ASSERT_EQ(font_spans.size(), 1U);
