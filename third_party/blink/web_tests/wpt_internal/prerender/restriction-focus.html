@@ -26,10 +26,10 @@ promise_test(async t => {
   startPrerendering(`resources/prerender-focus.html`);
 
   const result = await gotMessage;
-  assert_false(result, 'Prerendering document should not have focus.');
-
+  assert_true(result.activeElementUpdated);
+  assert_false(result.documentHasFocus);
   bc.close();
-}, 'Prerendering document should not have focus.');
+}, 'Prerendering document should update the active element but not have focus');
 
 </script>
 </body>

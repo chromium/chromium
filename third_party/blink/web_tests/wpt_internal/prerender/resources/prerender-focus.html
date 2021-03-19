@@ -9,13 +9,17 @@
 // Check this page is being prerendered.
 assert_true(document.prerendering);
 
-// Post the focus state to the initiator page.
 const bc = new BroadcastChannel('prerender-channel');
 
 // Try to set focus.
-document.getElementById('prerenderTextField').focus();
+const element = document.getElementById('prerenderTextField');
+element.focus();
 
-bc.postMessage(document.hasFocus());
+// Post the focus and active states to the initiator page.
+bc.postMessage({
+  activeElementUpdated: document.activeElement === element,
+  documentHasFocus: document.hasFocus()});
 bc.close();
+
 </script>
 </body>
