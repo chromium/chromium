@@ -156,10 +156,14 @@ class PrerenderBrowserTest
 
   PrerenderBrowserTest() {
     std::map<std::string, std::string> parameters;
-    if (IsMPArchActive()) {
-      parameters["implementation"] = "mparch";
+    switch (GetParam()) {
+      case kWebContents:
+        parameters["implementation"] = "webcontents";
+        break;
+      case kMPArch:
+        parameters["implementation"] = "mparch";
+        break;
     }
-
     feature_list_.InitAndEnableFeatureWithParameters(
         blink::features::kPrerender2, parameters);
   }
