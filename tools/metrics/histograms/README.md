@@ -51,7 +51,9 @@ histograms.
 
 It should be quite rare to introduce new top-level categories into the existing
 taxonomy. If you're tempted to do so, please look through the existing
-categories to see whether any matches the metric(s) that you are adding.
+categories to see whether any matches the metric(s) that you are adding. To
+create a new category, the CL must be reviewed by
+chromium-metrics-reviews@google.com.
 
 ## Coding (Emitting to Histograms)
 
@@ -274,15 +276,17 @@ a min, max, and bucket count for your histogram using the advice below.
 #### Count Histograms: Choosing Min and Max
 
 For histogram max, choose a value such that very few emissions to the histogram
-exceed the max. If many emissions hit the max, it can be difficult to compute
-statistics, such as the average. One rule of thumb is at most 1% of samples
-should be in the overflow bucket. This allows analysis of the 99th percentile.
-Err on the side of too large a range versus too short a range. (Remember that
-if you choose poorly, you'll have to wait for another release cycle to fix it.)
+exceed the max. If a metric emission is above the max value, it will get put
+into an "overflow" bucket. If this bucket is too large, it can be difficult to
+compute statistics. One rule of thumb is at most 1% of samples should be in the
+overflow bucket (and ideally, less). This allows analysis of the 99th
+percentile. Err on the side of too large a range versus too short a range.
+(Remember that if you choose poorly, you'll have to wait for another release
+cycle to fix it.)
 
 For histogram min, if you care about all possible values (zero and above),
-choose a min of 1. (All histograms have an underflow bucket for emitted zeros,
-so a min of 1 is appropriate.) Otherwise, choose the min appropriate for your
+choose a min of 1. All histograms have an underflow bucket for emitted zeros,
+so a min of 1 is appropriate. Otherwise, choose the min appropriate for your
 particular situation.
 
 #### Count Histograms: Choosing Number of Buckets
@@ -382,10 +386,12 @@ should be removed from the codebase along with marking the histogram definition
 as obsolete.
 
 In **rare** cases, the expiry can be set to "never". This is used to denote
-metrics of critical importance that are, typically, used for other reports.
-For example, all metrics of the "[heartbeat](https://uma.googleplex.com/p/chrome/variations)"
-are set to never expire. All metrics that never expire must have an XML comment
-describing why so that it can be audited in the future.
+metrics of critical importance that are, typically, used for other reports. For
+example, all metrics of the
+"[heartbeat](https://uma.googleplex.com/p/chrome/variations)" are set to never
+expire. All metrics that never expire must have an XML comment describing why so
+that it can be audited in the future. Setting an expiry to "never" must be
+reviewed by chromium-metrics-reviews@google.com.
 
 ```
 <!-- expires-never: "heartbeat" metric (internal: go/uma-heartbeats) -->
@@ -489,10 +495,13 @@ not entirely so.
 
 ## Revising Histograms
 
-When changing the semantics of a histogram (when it's emitted, what buckets
-mean, etc.), make it into a new histogram with a new name. Otherwise the
-"Everything" view on the dashboard will mix two different interpretations of the
-data and make no sense.
+When changing the semantics of a histogram (when it's emitted, what the buckets
+represent, the bucket range or number of buckets, etc.), create a new histogram
+with a new name. Otherwise analysis that mixes the data pre- and post- change
+may be misleading. If the histogram name is still the best name choice, the
+recommendation is to simply append a '2' to the name. See [Cleaning Up Histogram
+Entries](#Cleaning-Up-Histogram-Entries) for details on how to handle the XML
+changes.
 
 ## Deleting Histograms
 
@@ -525,10 +534,13 @@ practices and to look for other errors.
 Histogram descriptions should be roughly understandable to someone not familiar
 with your feature. Please add a sentence or two of background if necessary.
 
-It is good practice to note caveats associated with your histogram in this
-section, such as which platforms are supported (if the set of supported
-platforms is surprising). E.g., a desktop feature that happens not to be
-logged on Mac.
+Note any caveats associated with your histogram in the summary. For example, if
+the set of supported platforms is surprising, such as if a desktop feature is
+not available on Mac, the summary should explain where it is recorded. It is
+also common to have caveats along the lines of "this histogram is only recorded
+if X" (e.g., upon a successful connection to a service, a feature is enabled by
+the user).
+
 
 ### State When It Is Recorded
 
@@ -744,6 +756,11 @@ For more information, see [sparse_histograms.h](https://cs.chromium.org/chromium
 
 ## Reviewing Metrics CLs
 
+If you are a metric OWNER, you have the serious responsibility of ensuring
+Chrome's data collection is following best practices. If there's any concern
+about an incoming metrics changelist, please escalate by assigning to
+chromium-metrics-reviews@google.com.
+
 When reviewing metrics CLs, look at the following, listed in approximate order
 of importance:
 
@@ -817,7 +834,9 @@ interpretable and what data will have hidden surprises/gotchas.
   * When reviewing a CL that is trying to add many metrics at once, guide the CL
     author toward an appropriate solution for their needs. For example,
     multidimensional metrics can be recorded via UKM, and we are currently
-    building support for structured metrics in UMA.
+    building support for structured metrics in UMA. There's no hard rule, but
+    anything above 20 separate histograms should be escalated by being assigned
+    to chromium-metrics-reviews@google.com.
 
 * Are expiry dates being set
   [appropriately](#How-to-choose-expiry-for-histograms)?
