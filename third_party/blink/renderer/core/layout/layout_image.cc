@@ -200,25 +200,6 @@ void LayoutImage::InvalidatePaintAndMarkForLayoutIfNeeded(
   if (defer == CanDeferInvalidation::kYes && ImageResource() &&
       ImageResource()->MaybeAnimated())
     SetShouldDelayFullPaintInvalidation();
-
-  // Tell any potential compositing layers that the image needs updating.
-  ContentChanged(kImageChanged);
-}
-
-void LayoutImage::ImageNotifyFinished(ImageResourceContent* new_image) {
-  NOT_DESTROYED();
-  LayoutObject::ImageNotifyFinished(new_image);
-  if (!image_resource_)
-    return;
-
-  if (DocumentBeingDestroyed())
-    return;
-
-  if (new_image == image_resource_->CachedImage()) {
-    // tell any potential compositing layers
-    // that the image is done and they can reference it directly.
-    ContentChanged(kImageChanged);
-  }
 }
 
 void LayoutImage::PaintReplaced(const PaintInfo& paint_info,
