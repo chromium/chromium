@@ -75,8 +75,6 @@ no_check_targets = [
   "//chrome/browser/touch_to_fill/android:*",  # 8 errors
   "//chrome/test:*",  # 2682 errors
   "//extensions/browser/api/declarative_net_request:*",  # 18 errors
-  "//extensions/browser/api/declarative_webrequest:*",  # 29 errors
-  "//extensions/browser/api/web_request:*",  # 37 errors
   "//extensions/browser/api:*",  # 7 errors
   "//extensions/browser:*",  # 20 errors
   "//extensions:*",  # 75 errors
