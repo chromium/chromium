@@ -1426,11 +1426,6 @@ INSTANTIATE_TEST_SUITE_P(All,
 // Tests that access to local file system is deferred on prerendering pages.
 IN_PROC_BROWSER_TEST_P(PrerenderFileSystemAccessBrowserTest,
                        MAYBE_DeferFileSystemAccess) {
-  // TODO(https://crbug.com/1189017): Currently the MPArch doesn't fire the
-  // prerenderingchange event that is required for running this test.
-  if (IsMPArchActive())
-    return;
-
   base::FilePath temp_file;
   {
     base::ScopedAllowBlockingForTesting allow_blocking;

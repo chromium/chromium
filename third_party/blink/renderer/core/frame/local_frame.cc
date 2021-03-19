@@ -3544,6 +3544,20 @@ void LocalFrame::MixedContentFound(
       url_before_redirects, had_redirect, std::move(source));
 }
 
+void LocalFrame::ActivateForPrerendering() {
+  DCHECK(features::IsPrerender2Enabled());
+
+  // https://jeremyroman.github.io/alternate-loading-modes/#prerendering-browsing-context-activate
+  // Step 8.2. "Let inclusiveDescendants be successorBC extended with
+  // successorBC's active document's list of the descendant browsing contexts."
+  // Step 8.3. "For each bc of inclusiveDescendants, queue a global task on the
+  // networking task source, given bc's active window, to perform the following
+  // steps:"
+  GetTaskRunner(TaskType::kNetworking)
+      ->PostTask(FROM_HERE, WTF::Bind(&Document::ActivateForPrerendering,
+                                      WrapPersistent(GetDocument())));
+}
+
 bool LocalFrame::ShouldThrottleDownload() {
   const auto now = base::TimeTicks::Now();
   if (num_burst_download_requests_ == 0) {

@@ -1549,8 +1549,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void CancelPrerendering();
 
   // Prerender2:
-  // Called by PrerenderHost when a prerendered WebContents is activated.
-  void OnPrerenderedPageActivated();
+  // Tells the renderer to dispatch the prerenderingchange event. Expects to
+  // receive an acknowledgement via DidActivateForPrerendering().
+  void ActivateForPrerendering();
 
   // https://mikewest.github.io/corpp/#initialize-embedder-policy-for-global
   const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy()
@@ -1990,11 +1991,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojo::PendingReceiver<blink::mojom::PeerConnectionTrackerHost> receiver);
   void EnableWebRtcEventLogOutput(int lid, int output_period_ms) override;
   void DisableWebRtcEventLogOutput(int lid) override;
-
-  // When swapping pages between frame trees in prerendered activations, the
-  // source tree mojo binding policies must be released, as the document is now
-  // active, previous capability restrictions do not apply anymore.
-  void ReleaseMojoBinderPoliciesForPrerendering();
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   void PepperInstanceClosed(int32_t instance_id);

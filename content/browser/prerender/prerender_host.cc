@@ -222,9 +222,6 @@ class PrerenderHost::MPArchPageHolder
     // FrameTreeNode are stale.
     for (auto* rfh : AllDescendantActiveRenderFrameHosts(
              *(page->render_frame_host.get()))) {
-      // TODO(https://crbug.com/1186796): Determine what stage of activation the
-      // mojo binding policies should be released.
-      rfh->ReleaseMojoBinderPoliciesForPrerendering();
       rfh->frame_tree_node()->SetFrameTree(*target_frame_tree);
       rfh->SetFrameTree(*target_frame_tree);
       rfh->render_view_host()->SetFrameTree(*target_frame_tree);
@@ -305,10 +302,6 @@ class PrerenderHost::WebContentsPageHolder
     DCHECK(GetMainFrame()->frame_tree()->is_prerendering());
     GetMainFrame()->frame_tree()->ActivatePrerenderedFrameTree();
 
-    DCHECK(web_contents_);
-    auto* successor_web_contents =
-        static_cast<WebContentsImpl*>(web_contents_.get());
-
     // Tentatively use Portal's activation function.
     // TODO(https://crbug.com/1132746): Replace this with the MPArch.
     std::unique_ptr<WebContents> predecessor_web_contents =
@@ -317,13 +310,6 @@ class PrerenderHost::WebContentsPageHolder
 
     // Stop loading on the predecessor WebContents.
     predecessor_web_contents->Stop();
-
-    // Notify the renderer of activation to update the prerendering state and
-    // dispatch the prerenderingchange event.
-    // TODO(nhiroki): Send a message to dispatch the prerenderingchange event
-    // per frame from RenderFrameHostImpl::OnPrerenderedPageActivated(), not
-    // per page.
-    successor_web_contents->NotifyPrerenderingPageActivated();
 
     return nullptr;
   }
@@ -423,9 +409,6 @@ PrerenderHost::ActivatePrerenderedContents(
 
   DCHECK(is_ready_for_activation_);
   is_ready_for_activation_ = false;
-
-  // TODO(https://crbug.com/1142658): Notify renderer processes that the
-  // contents get activated.
 
   // NOTE: for activation with multiple WebContents, a nullptr will be returned.
   std::unique_ptr<BackForwardCacheImpl::Entry> entry =
