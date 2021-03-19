@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_view_controller.h"
+#include "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/import_data_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_coordinator.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller.h"
@@ -40,6 +41,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 @interface SettingsNavigationController () <
     GoogleServicesSettingsCoordinatorDelegate,
+    ManageSyncSettingsCoordinatorDelegate,
     PasswordsCoordinatorDelegate,
     UIAdaptivePresentationControllerDelegate,
     UINavigationControllerDelegate>
@@ -47,6 +49,10 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 // Google services settings coordinator.
 @property(nonatomic, strong)
     GoogleServicesSettingsCoordinator* googleServicesSettingsCoordinator;
+
+// Sync settings coordinator.
+@property(nonatomic, strong)
+    ManageSyncSettingsCoordinator* manageSyncSettingsCoordinator;
 
 // Saved passwords settings coordinator.
 @property(nonatomic, strong) PasswordsCoordinator* savedPasswordsCoordinator;
@@ -120,6 +126,19 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                          browser:browser
                         delegate:delegate];
   [nc showGoogleServices];
+  return nc;
+}
+
++ (instancetype)
+    syncSettingsControllerForBrowser:(Browser*)browser
+                            delegate:(id<SettingsNavigationControllerDelegate>)
+                                         delegate {
+  DCHECK(browser);
+  SettingsNavigationController* nc = [[SettingsNavigationController alloc]
+      initWithRootViewController:nil
+                         browser:browser
+                        delegate:delegate];
+  [nc showSyncServices];
   return nc;
 }
 
@@ -327,6 +346,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
   // GoogleServicesSettingsCoordinator and PasswordsCoordinator must be stopped
   // before dismissing the sync settings view.
+  [self stopSyncSettingsCoordinator];
   [self stopGoogleServicesSettingsCoordinator];
   [self stopPasswordsCoordinator];
 
@@ -389,10 +409,31 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self.googleServicesSettingsCoordinator start];
 }
 
+- (void)showSyncServices {
+  if ([self.topViewController
+          isKindOfClass:[ManageSyncSettingsCoordinator class]]) {
+    // The top view controller is already the Sync settings panel.
+    // No need to open it.
+    return;
+  }
+  DCHECK(!self.manageSyncSettingsCoordinator);
+  self.manageSyncSettingsCoordinator = [[ManageSyncSettingsCoordinator alloc]
+      initWithBaseNavigationController:self
+                               browser:self.browser];
+  self.manageSyncSettingsCoordinator.delegate = self;
+  [self.manageSyncSettingsCoordinator start];
+}
+
 // Stops the underlying Google services settings coordinator if it exists.
 - (void)stopGoogleServicesSettingsCoordinator {
   [self.googleServicesSettingsCoordinator stop];
   self.googleServicesSettingsCoordinator = nil;
+}
+
+// Stops the underlying Sync settings coordinator if it exists.
+- (void)stopSyncSettingsCoordinator {
+  [self.manageSyncSettingsCoordinator stop];
+  self.manageSyncSettingsCoordinator = nil;
 }
 
 // Shows the saved passwords and starts the password check is
@@ -421,6 +462,14 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     (GoogleServicesSettingsCoordinator*)coordinator {
   DCHECK_EQ(self.googleServicesSettingsCoordinator, coordinator);
   [self stopGoogleServicesSettingsCoordinator];
+}
+
+#pragma mark - ManageSyncSettingsCoordinatorDelegate
+
+- (void)manageSyncSettingsCoordinatorWasRemoved:
+    (ManageSyncSettingsCoordinator*)coordinator {
+  DCHECK_EQ(self.manageSyncSettingsCoordinator, coordinator);
+  [self stopSyncSettingsCoordinator];
 }
 
 #pragma mark - PasswordsCoordinatorDelegate
@@ -549,6 +598,12 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 - (void)showGoogleServicesSettingsFromViewController:
     (UIViewController*)baseViewController {
   [self showGoogleServices];
+}
+
+// TODO(crbug.com/779791) : Do not pass |baseViewController| through dispatcher.
+- (void)showSyncSettingsFromViewController:
+    (UIViewController*)baseViewController {
+  [self showSyncServices];
 }
 
 // TODO(crbug.com/779791) : Do not pass |baseViewController| through dispatcher.

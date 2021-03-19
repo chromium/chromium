@@ -1631,6 +1631,25 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 }
 
 // TODO(crbug.com/779791) : Remove show settings commands from MainController.
+- (void)showSyncSettingsFromViewController:
+    (UIViewController*)baseViewController {
+  DCHECK(!self.signinCoordinator);
+  if (self.settingsNavigationController) {
+    [self.settingsNavigationController
+        showSyncSettingsFromViewController:baseViewController];
+    return;
+  }
+
+  Browser* browser = self.mainInterface.browser;
+  self.settingsNavigationController =
+      [SettingsNavigationController syncSettingsControllerForBrowser:browser
+                                                            delegate:self];
+  [baseViewController presentViewController:self.settingsNavigationController
+                                   animated:YES
+                                 completion:nil];
+}
+
+// TODO(crbug.com/779791) : Remove show settings commands from MainController.
 - (void)showSyncPassphraseSettingsFromViewController:
     (UIViewController*)baseViewController {
   DCHECK(!self.signinCoordinator);

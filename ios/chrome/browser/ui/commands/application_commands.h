@@ -34,6 +34,12 @@ enum class KeyRetrievalTriggerForUMA;
     (UIViewController*)baseViewController;
 
 // TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
+// Shows the Sync settings UI, presenting from |baseViewController|.
+// If |baseViewController| is nil BVC will be used as presenterViewController.
+- (void)showSyncSettingsFromViewController:
+    (UIViewController*)baseViewController;
+
+// TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
 // Shows the sync encryption passphrase UI, presenting from
 // |baseViewController|.
 - (void)showSyncPassphraseSettingsFromViewController:

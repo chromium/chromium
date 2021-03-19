@@ -17,12 +17,14 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/driver/sync_service.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_features.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/pref_names.h"
+#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
@@ -35,6 +37,7 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -69,6 +72,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Only used in this class to openn the Sync and Google services settings.
 // This link should not be dispatched.
 const char kGoogleServicesSettingsURL[] = "settings://open_google_services";
+const char kSyncSettingsURL[] = "settings://open_sync";
 
 }  // namespace
 
@@ -212,15 +216,29 @@ const char kGoogleServicesSettingsURL[] = "settings://open_google_services";
   TableViewLinkHeaderFooterItem* showPrivacyFooterItem =
       [[TableViewLinkHeaderFooterItem alloc]
           initWithType:ItemTypePrivacyFooter];
-  showPrivacyFooterItem.text =
-      signin::IsMobileIdentityConsistencyEnabled()
-          ? l10n_util::GetNSString(IDS_IOS_PRIVACY_GOOGLE_SERVICES_FOOTER)
-          : l10n_util::GetNSString(
-                IDS_IOS_OPTIONS_PRIVACY_GOOGLE_SERVICES_FOOTER);
 
-  showPrivacyFooterItem.urls =
-      std::vector<GURL>{GURL(kGoogleServicesSettingsURL)};
+  NSString* privacyFooterText;
+  std::vector<GURL> urls;
 
+  syncer::SyncService* syncService =
+      ProfileSyncServiceFactory::GetInstance()->GetForBrowserState(
+          _browserState);
+
+  if (!signin::IsMobileIdentityConsistencyEnabled()) {
+    privacyFooterText =
+        l10n_util::GetNSString(IDS_IOS_OPTIONS_PRIVACY_GOOGLE_SERVICES_FOOTER);
+  } else if (syncService->IsSyncFeatureEnabled()) {
+    privacyFooterText =
+        l10n_util::GetNSString(IDS_IOS_PRIVACY_SYNC_AND_GOOGLE_SERVICES_FOOTER);
+    urls.push_back(GURL(kSyncSettingsURL));
+  } else {
+    privacyFooterText =
+        l10n_util::GetNSString(IDS_IOS_PRIVACY_GOOGLE_SERVICES_FOOTER);
+  }
+  urls.push_back(GURL(kGoogleServicesSettingsURL));
+
+  showPrivacyFooterItem.text = privacyFooterText;
+  showPrivacyFooterItem.urls = urls;
   return showPrivacyFooterItem;
 }
 
@@ -365,6 +383,8 @@ const char kGoogleServicesSettingsURL[] = "settings://open_google_services";
     // kGoogleServicesSettingsURL is not a realy link. It should be handled
     // with a special case.
     [self.dispatcher showGoogleServicesSettingsFromViewController:self];
+  } else if (URL == GURL(kSyncSettingsURL)) {
+    [self.dispatcher showSyncSettingsFromViewController:self];
   } else {
     [super view:view didTapLinkURL:URL];
   }
