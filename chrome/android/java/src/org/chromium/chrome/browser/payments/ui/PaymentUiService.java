@@ -1052,7 +1052,6 @@ public class PaymentUiService
                 new PaymentInformation(mUiShoppingCart, mShippingAddressesSection,
                         mUiShippingOptions, mContactSection, mPaymentMethodsSection));
         mPaymentInformationCallback = null;
-        mJourneyLogger.setShown();
     }
 
     /**

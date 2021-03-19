@@ -379,6 +379,7 @@ public class ChromePaymentRequestService
             mHasSkippedAppSelector = true;
         } else {
             mPaymentUiService.showAppSelector(isShowWaitingForUpdatedDetails);
+            mJourneyLogger.setShown();
         }
         return null;
     }

@@ -132,10 +132,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerSkipSheetTest, NoSkipWithoutUserGesture) {
       histogram_tester.GetAllSamples("PaymentRequest.Events");
   ASSERT_EQ(1U, buckets.size());
 
-  // TODO(crbug.com/1122198): EVENT_SHOWN is not always logged on Android.
-#if !defined(OS_ANDROID)
   EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
-#endif
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SKIPPED_SHOW);
   EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_AVAILABLE_METHOD_OTHER);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SELECTED_OTHER);
