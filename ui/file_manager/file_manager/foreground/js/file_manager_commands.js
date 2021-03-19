@@ -1311,11 +1311,32 @@ CommandHandler.COMMANDS_['restore-from-trash'] =
   canExecute(event, fileManager) {
     const entries = CommandUtil.getCommandEntries(fileManager, event.target);
 
-    const enabled = entries.length > 0 && entries.every(e => {
-      return e.rootType && e.rootType === VolumeManagerCommon.RootType.TRASH;
-    });
+    const enabled =
+        entries.length > 0 && entries.every(e => util.isTrashEntry(e));
     event.canExecute = enabled;
     event.command.setHidden(!enabled);
+  }
+};
+
+/**
+ * Empties (permanently deletes all) files from trash.
+ */
+CommandHandler.COMMANDS_['empty-trash'] = new class extends FilesCommand {
+  execute(event, fileManager) {
+    fileManager.ui.deleteConfirmDialog.show(
+        str('CONFIRM_EMPTY_TRASH'),
+        () => fileManager.fileOperationManager.emptyTrash());
+  }
+
+  /** @override */
+  canExecute(event, fileManager) {
+    // Always allow execute regardless of which files are selected to allow the
+    // trash toolbar action to run even if no files are selected.
+    event.canExecute = true;
+
+    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+    const visible = entries.length === 1 && util.isTrashRoot(entries[0]);
+    event.command.setHidden(!visible);
   }
 };
 

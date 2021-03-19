@@ -174,6 +174,37 @@ testcase.trashRestoreFromTrash = async () => {
 };
 
 /**
+ * Delete files (move them into trash) then empty trash.
+ */
+testcase.trashEmptyTrash = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
+
+  // Select hello.txt.
+  await remoteCall.waitAndClickElement(
+      appId, '#file-list [file-name="hello.txt"]');
+
+  // Delete item and wait for it to be removed (no dialog).
+  await remoteCall.waitAndClickElement(appId, '#delete-button');
+  await remoteCall.waitForElementLost(
+      appId, '#file-list [file-name="hello.txt"]');
+
+  // Navigate to /Trash and ensure the file is shown.
+  await navigateWithDirectoryTree(appId, '/Trash');
+  await remoteCall.waitAndClickElement(
+      appId, '#file-list [file-name="My files › Downloads › hello.txt"]');
+
+  // Empty trash and confirm delete (dialog shown).
+  await remoteCall.waitAndClickElement(appId, '#empty-trash-button');
+  await remoteCall.waitAndClickElement(
+      appId, '.files-confirm-dialog .cr-dialog-ok');
+
+  // Wait for completion of file deletion.
+  await remoteCall.waitForElementLost(
+      appId, '#file-list [file-name="My files › Downloads › hello.txt"]');
+};
+
+/**
  * Delete files (move them into trash) then permanently delete.
  */
 testcase.trashDeleteFromTrash = async () => {

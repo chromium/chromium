@@ -77,6 +77,7 @@
                shortcut="Enter|Ctrl">
       <command id="delete" shortcut="Backspace|Alt Delete">
       <command id="restore-from-trash" label="$i18n{RESTORE_FROM_TRASH_BUTTON_LABEL}">
+      <command id="empty-trash" shortcut="Backspace|Alt|Ctrl|Shift Delete|Ctrl|Shift" shortcut="" label="$i18n{EMPTY_TRASH_BUTTON_LABEL}">
       <command id="refresh" label="$i18n{REFRESH_BUTTON_LABEL}"
                shortcut="b|Ctrl" hidden>
       <command id="pin-folder"
@@ -248,6 +249,7 @@
         <cr-menu-item command="#rename"></cr-menu-item>
         <cr-menu-item command="#pin-folder"></cr-menu-item>
         <cr-menu-item command="#delete">$i18n{DELETE_BUTTON_LABEL}</cr-menu-item>
+        <cr-menu-item command="#empty-trash"></cr-menu-item>
         <hr visibleif="saveas-file full-page">
         <cr-menu-item command="#new-folder" visibleif="saveas-file full-page"></cr-menu-item>
       </cr-menu>
@@ -405,6 +407,13 @@
                 has-tooltip>
           <files-ripple></files-ripple>
           <div class="icon"></div>
+        </cr-button>
+        <cr-button id="empty-trash-button" class="icon-button menu-button" tabindex="0" hidden
+                aria-label="$i18n{EMPTY_TRASH_BUTTON_LABEL}"
+                visibleif="full-page"
+                has-tooltip>
+          <files-ripple></files-ripple>
+          $i18n{EMPTY_TRASH_BUTTON_LABEL}
         </cr-button>
         <div id="search-wrapper">
           <cr-button id="search-button" class="icon-button menu-button" tabindex="0"

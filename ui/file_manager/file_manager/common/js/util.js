@@ -632,6 +632,26 @@ util.isComputersEntry = entry => {
 };
 
 /**
+ * Returns true if the given entry is the root folder of Trash.
+ * @param {!Entry|!FilesAppEntry} entry Entry or a fake entry.
+ * @returns {boolean}
+ */
+util.isTrashRoot = entry => {
+  return entry.fullPath === '/' &&
+      entry.rootType == VolumeManagerCommon.RootType.TRASH;
+};
+
+/**
+ * Returns true if the given entry is a descendent of Trash.
+ * @param {!Entry|!FilesAppEntry} entry Entry or a fake entry.
+ * @returns {boolean}
+ */
+util.isTrashEntry = entry => {
+  return entry.fullPath !== '/' &&
+      entry.rootType == VolumeManagerCommon.RootType.TRASH;
+};
+
+/**
  * Creates an instance of UserDOMError subtype of DOMError because DOMError is
  * deprecated and its Closure extern is wrong, doesn't have the constructor
  * with 2 arguments. This DOMError looks like a FileError except that it does

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {TrashEntry} from '../../common/js/trash.m.js';
+// #import {TrashEntry, TrashRootEntry} from '../../common/js/trash.m.js';
 // #import {FakeEntry} from '../../externs/files_app_entry_interfaces.m.js';
 // #import {VolumeManager} from '../../externs/volume_manager.m.js';
 // #import {EntryLocation} from '../../externs/entry_location.m.js';
@@ -474,6 +474,29 @@
         this.serviceAllDeleteTasks_();
       }
     });
+  }
+
+  /**
+   * Schedules the Trash to be emptied.
+   */
+  emptyTrash() {
+    if (!this.volumeManager_) {
+      volumeManagerFactory.getInstance().then(volumeManager => {
+        this.volumeManager_ = volumeManager;
+        this.emptyTrash();
+      });
+      return;
+    }
+
+    const root = new TrashRootEntry(this.volumeManager_);
+    const reader = root.createReader();
+    const onRead = (entries) => {
+      if (entries.length > 0) {
+        this.deleteEntries(entries);
+        reader.readEntries(onRead);
+      }
+    };
+    reader.readEntries(onRead);
   }
 
   /**

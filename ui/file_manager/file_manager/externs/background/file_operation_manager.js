@@ -76,6 +76,11 @@
   restoreDeleted(entries) {}
 
   /**
+   * Schedules the Trash to be emptied.
+   */
+  emptyTrash() {}
+
+  /**
    * Creates a zip file for the selection of files.
    *
    * @param {!Array<!Entry>} selectionEntries The selected entries.

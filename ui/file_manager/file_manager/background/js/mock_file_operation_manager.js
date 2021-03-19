@@ -102,5 +102,6 @@
   willUseTrash() {}
   deleteEntries() {}
   restoreDeleted() {}
+  emptyTrash() {}
   zipSelection() {}
 }

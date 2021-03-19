@@ -1914,6 +1914,21 @@
   };
 
   /**
+   * Tests context menu for Trash root.
+   */
+  testcase.dirContextMenuTrash = async () => {
+    const trashMenu = [
+      ['#empty-trash', true],
+    ];
+
+    const appId =
+        await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
+
+    // Check the context menu for Trash.
+    await checkContextMenu(appId, '/Trash', trashMenu, /*rootMenu=*/ false);
+  };
+
+  /**
    * Tests that context menu in directory tree gets the focus, so ChromeVox can
    * announce it.
    */

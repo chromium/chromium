@@ -1136,6 +1136,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(TestCase("trashMoveToTrash").EnableTrash(),
                       TestCase("trashRestoreFromToast").EnableTrash(),
                       TestCase("trashRestoreFromTrash").EnableTrash(),
+                      TestCase("trashEmptyTrash").EnableTrash(),
                       TestCase("trashDeleteFromTrash").EnableTrash()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(

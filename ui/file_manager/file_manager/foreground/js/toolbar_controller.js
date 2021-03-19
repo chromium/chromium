@@ -82,6 +82,13 @@
      * @private {!HTMLElement}
      * @const
      */
+    this.emptyTrashButton_ =
+        queryRequiredElement('#empty-trash-button', this.toolbar_);
+
+    /**
+     * @private {!HTMLElement}
+     * @const
+     */
     this.readOnlyIndicator_ =
         queryRequiredElement('#read-only-indicator', this.toolbar_);
 
@@ -114,6 +121,15 @@
     this.restoreFromTrashCommand_ = assertInstanceof(
         queryRequiredElement(
             '#restore-from-trash', assert(this.toolbar_.ownerDocument.body)),
+        cr.ui.Command);
+
+    /**
+     * @private {!cr.ui.Command}
+     * @const
+     */
+    this.emptyTrashCommand_ = assertInstanceof(
+        queryRequiredElement(
+            '#empty-trash', assert(this.toolbar_.ownerDocument.body)),
         cr.ui.Command);
 
     /**
@@ -216,6 +232,9 @@
 
     this.restoreFromTrashButton_.addEventListener(
         'click', this.onRestoreFromTrashButtonClicked_.bind(this));
+
+    this.emptyTrashButton_.addEventListener(
+        'click', this.onEmptyTrashButtonClicked_.bind(this));
 
     if (util.isFilesNg()) {
       this.togglePinnedCommand_.addEventListener(
@@ -325,6 +344,11 @@
         this.directoryModel_.getCurrentRootType() !==
             VolumeManagerCommon.RootType.TRASH;
 
+    // Update visibility of the empty-trash button.
+    this.emptyTrashButton_.hidden =
+        this.directoryModel_.getCurrentRootType() !==
+        VolumeManagerCommon.RootType.TRASH;
+
     if (util.isFilesNg()) {
       this.togglePinnedCommand_.canExecuteChange(
           this.listContainer_.currentList);
@@ -375,6 +399,16 @@
     this.restoreFromTrashCommand_.canExecuteChange(
         this.listContainer_.currentList);
     this.restoreFromTrashCommand_.execute(this.listContainer_.currentList);
+  }
+
+  /**
+   * Handles click event for empty trash button to empty the trash.
+   * command.
+   * @private
+   */
+  onEmptyTrashButtonClicked_() {
+    this.emptyTrashCommand_.canExecuteChange(this.listContainer_.currentList);
+    this.emptyTrashCommand_.execute(this.listContainer_.currentList);
   }
 
   /**
