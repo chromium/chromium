@@ -38,6 +38,8 @@
   OP(kColorId_TextOnProminentButtonColor),                                     \
   /* ToggleButton */                                                           \
   OP(kColorId_ToggleButtonShadowColor),                                        \
+  OP(kColorId_ToggleButtonThumbColorOff),                                      \
+  OP(kColorId_ToggleButtonThumbColorOn),                                       \
   OP(kColorId_ToggleButtonTrackColorOff),                                      \
   OP(kColorId_ToggleButtonTrackColorOn),                                       \
   /* MenuItem */                                                               \

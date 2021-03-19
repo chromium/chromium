@@ -26,9 +26,9 @@ constexpr auto kNativeOSColorIds = base::MakeFixedFlatSet<ui::ColorId>({
     ui::kColorMenuItemForegroundDisabled,
     ui::kColorMenuItemForeground,
     ui::kColorMenuSeparator,
-    ui::kColorTextSelectionBackground,
+    ui::kColorTableBackgroundAlternate,
     ui::kColorTextfieldSelectionBackground,
-    ui::kColorTableBackgroundAlternate});
+    ui::kColorTextSelectionBackground});
 // clang-format on
 }
 
@@ -45,6 +45,13 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
                      skia::NSSystemColorToSkColor(
                          [NSColor selectedTextBackgroundColor])},
                 }});
+
+  // Because we changed the value of kColorTextSelectionBackground, we must
+  // repeat any lower-level transforms that depended on it that we want to make
+  // use of the new value. Otherwise these transforms, when run, will scan only
+  // from their local mixer downwards, and not see this new value.
+  mixer[kColorTextSelectionForeground] =
+      GetColorWithMaxContrast(kColorTextSelectionBackground);
 }
 
 void AddNativeUiColorMixer(ColorProvider* provider,
@@ -64,13 +71,7 @@ void AddNativeUiColorMixer(ColorProvider* provider,
             skia::NSSystemColorToSkColor([NSColor disabledControlTextColor])},
            {kColorMenuItemForeground,
             skia::NSSystemColorToSkColor([NSColor controlTextColor])},
-           {kColorTextSelectionBackground,
-            skia::NSSystemColorToSkColor(
-                [NSColor selectedTextBackgroundColor])},
        }});
-
-  mixer[kColorMenuItemForegroundHighlighted] = {kColorPrimaryForeground};
-  mixer[kColorMenuItemForegroundSelected] = {kColorPrimaryForeground};
 
   if (@available(macOS 10.14, *)) {
     mixer[kColorTableBackgroundAlternate] = {skia::NSSystemColorToSkColor(
