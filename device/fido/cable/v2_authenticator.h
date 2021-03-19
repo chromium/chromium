@@ -37,6 +37,7 @@ class Platform {
   virtual ~Platform();
 
   enum class Status {
+    // These values must match up with CableAuthenticatorUI.java.
     TUNNEL_SERVER_CONNECT = 1,
     HANDSHAKE_COMPLETE = 2,
     REQUEST_RECEIVED = 3,
@@ -44,6 +45,7 @@ class Platform {
   };
 
   enum class Error {
+    // These values must match up with CableAuthenticatorUI.java.
     UNEXPECTED_EOF = 100,
     TUNNEL_SERVER_CONNECT_FAILED = 101,
     HANDSHAKE_FAILED = 102,

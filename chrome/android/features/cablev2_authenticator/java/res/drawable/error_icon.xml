@@ -1,0 +1,39 @@
+<vector a:height='122.28571dp' a:viewportHeight='107'
+    a:viewportWidth='175' a:width='200dp' xmlns:a='http://schemas.android.com/apk/res/android'>
+    <path a:fillColor='#FFFFFF' a:fillType='nonZero'
+        a:pathData='M53.113,12.078L53.113,5.5C53.113,3.291 54.904,1.5 57.113,1.5L88.057,1.5C90.266,1.5 92.057,3.291 92.057,5.5L92.057,12.078L172,12.078C173.105,12.078 174,12.974 174,14.078L174,103.5C174,104.605 173.105,105.5 172,105.5L47,105.5C45.895,105.5 45,104.605 45,103.5L45,14.078C45,12.974 45.895,12.078 47,12.078L53.113,12.078Z'
+        a:strokeColor='#E8E9EB' a:strokeWidth='1'/>
+    <path a:fillColor='#D8D8D8' a:fillType='nonZero'
+        a:pathData='M92.879,55.586l0.707,-0.707l3.536,3.536l-0.707,0.707z'
+        a:strokeColor='#979797' a:strokeWidth='1'/>
+    <path a:fillColor='#D8D8D8' a:fillType='nonZero'
+        a:pathData='M96.414,54.879l0.707,0.707l-3.536,3.536l-0.707,-0.707z'
+        a:strokeColor='#979797' a:strokeWidth='1'/>
+    <path a:fillColor='#D8D8D8' a:fillType='nonZero'
+        a:pathData='M113.5,72.5l-0,1l-8,0l-0,-1z'
+        a:strokeColor='#979797' a:strokeWidth='1'/>
+    <path a:fillColor='#D8D8D8' a:fillType='nonZero'
+        a:pathData='M104.5,74.5l-2,0l-0,1l2,0z'
+        a:strokeColor='#979797' a:strokeWidth='1'/>
+    <path a:fillColor='#D8D8D8' a:fillType='nonZero'
+        a:pathData='M116.5,74.5l-2,0l-0,1l2,0z'
+        a:strokeColor='#979797' a:strokeWidth='1'/>
+    <path a:fillColor='#D8D8D8' a:fillType='nonZero'
+        a:pathData='M120.879,55.586l0.707,-0.707l3.536,3.536l-0.707,0.707z'
+        a:strokeColor='#979797' a:strokeWidth='1'/>
+    <path a:fillColor='#D8D8D8' a:fillType='nonZero'
+        a:pathData='M124.414,54.879l0.707,0.707l-3.536,3.536l-0.707,-0.707z'
+        a:strokeColor='#979797' a:strokeWidth='1'/>
+    <path a:fillColor='#F8F9FA' a:fillType='nonZero'
+        a:pathData='M57.5,20L161.5,20A3.5,3.5 0,0 1,165 23.5L165,23.5A3.5,3.5 0,0 1,161.5 27L57.5,27A3.5,3.5 0,0 1,54 23.5L54,23.5A3.5,3.5 0,0 1,57.5 20z'
+        a:strokeColor='#00000000' a:strokeWidth='1'/>
+    <path a:fillColor='#BDC1C6' a:fillType='nonZero'
+        a:pathData='M31,64.5m-31,0a31,31 0,1 1,62 0a31,31 0,1 1,-62 0'
+        a:strokeColor='#00000000' a:strokeWidth='1'/>
+    <path a:fillColor='#FFFFFF' a:fillType='nonZero'
+        a:pathData='M29.313,70.063C29.323,68.573 29.495,67.508 29.828,66.867C30.161,66.227 30.901,65.422 32.047,64.453C32.859,63.661 33.505,62.904 33.984,62.18C34.464,61.456 34.703,60.656 34.703,59.781C34.703,58.771 34.43,57.987 33.883,57.43C33.336,56.872 32.557,56.594 31.547,56.594C30.682,56.594 29.948,56.831 29.344,57.305C28.74,57.779 28.438,58.479 28.438,59.406L24.781,59.406L24.734,59.313C24.703,57.458 25.326,56.013 26.602,54.977C27.878,53.94 29.526,53.422 31.547,53.422C33.734,53.422 35.44,53.979 36.664,55.094C37.888,56.208 38.5,57.755 38.5,59.734C38.5,61.057 38.117,62.284 37.352,63.414C36.586,64.544 35.62,65.578 34.453,66.516C33.859,67.036 33.487,67.531 33.336,68C33.185,68.469 33.109,69.156 33.109,70.063L29.313,70.063ZM33.172,76.5L29.297,76.5L29.297,72.859L33.172,72.859L33.172,76.5Z'
+        a:strokeColor='#00000000' a:strokeWidth='1'/>
+    <path a:fillColor='#ACB0B5' a:fillType='nonZero'
+        a:pathData='M45,36.826C55.087,41.94 62,52.409 62,64.492C62,76.536 55.131,86.976 45.097,92.108C45.034,91.914 45,91.707 45,91.492L45,36.826L45,36.826Z'
+        a:strokeColor='#00000000' a:strokeWidth='1'/>
+</vector>

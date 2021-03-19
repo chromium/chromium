@@ -305,11 +305,12 @@ class CableAuthenticator {
      * @param ok true if the transaction completed successfully. Otherwise it
      *           indicates some form of error that could include tunnel server
      *           errors, handshake failures, etc.
+     * @param errorCode a value from cablev2::authenticator::Platform::Error.
      */
     @CalledByNative
-    public void onComplete(boolean ok) {
+    public void onComplete(boolean ok, int errorCode) {
         assert mTaskRunner.belongsToCurrentThread();
-        mUi.onComplete(ok);
+        mUi.onComplete(ok, errorCode);
     }
 
     void onActivityResult(int requestCode, int resultCode, Intent data) {

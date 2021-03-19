@@ -4167,6 +4167,26 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
         Processing request
       </message>
 
+      <message name="IDS_CABLEV2_ERROR_TITLE" desc="The title of an error screen shown when the user is trying to use their phone to sign into a website on a laptop, but something (probably out of their control) went wrong">
+        Something went wrong
+      </message>
+
+      <message name="IDS_CABLEV2_ERROR_TIMEOUT" desc="The description of an error shown when the user is trying to use their phone to sign into a website on a laptop, but the phone was until to contact the laptop within a reasonable amount of time.">
+        Can’t connect to your computer. Try another verification option.
+      </message>
+
+      <message name="IDS_CABLEV2_ERROR_GENERIC" desc="The description of an error shown when the user is trying to use their phone to sign into a website on a laptop, but some generic error occured.">
+        Try another verification option
+      </message>
+
+      <message name="IDS_CABLEV2_ERROR_CODE" desc="A line of text on an error screen that is shown with lower contrast in order to include a numeric error code to aid in debugging.">
+        (Error <ph name="error_code">%1$d<ex>104</ex></ph>)
+      </message>
+
+      <message name="IDS_CABLEV2_ERROR_CLOSE" desc="A button at the bottom on an error screen to dismiss it">
+        Close
+      </message>
+
       <!-- QR Code -->
       <message name="IDS_QR_CODE_SHARE_ICON_LABEL" desc="Icon label for sharing with QR Code activity.">
         QR Code
