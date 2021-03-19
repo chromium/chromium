@@ -863,27 +863,29 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
   // writing-mode).
   frame->GetDocument()->UpdateStyleAndLayoutTree();
 
-  // Set the concrete object size before a container size is available.
-  intrinsic_size_ = RoundedLayoutSize(ConcreteObjectSize(FloatSize(
-      LayoutReplaced::kDefaultWidth, LayoutReplaced::kDefaultHeight)));
-
   DCHECK(page_);
   switch (load_state_) {
     case kInDataChanged:
       load_state_ = kWaitingForAsyncLoadCompletion;
-      return RootElement() ? kSizeAvailableAndLoadingAsynchronously
-                           : kSizeUnavailable;
-
+      break;
     case kLoadCompleted:
-      return RootElement() ? kSizeAvailable : kSizeUnavailable;
-
+      break;
     case kDataChangedNotStarted:
     case kWaitingForAsyncLoadCompletion:
       CHECK(false);
       break;
   }
 
-  NOTREACHED();
+  if (!RootElement())
+    return kSizeUnavailable;
+
+  // Set the concrete object size before a container size is available.
+  intrinsic_size_ = RoundedLayoutSize(ConcreteObjectSize(FloatSize(
+      LayoutReplaced::kDefaultWidth, LayoutReplaced::kDefaultHeight)));
+
+  if (load_state_ == kWaitingForAsyncLoadCompletion)
+    return kSizeAvailableAndLoadingAsynchronously;
+  DCHECK_EQ(load_state_, kLoadCompleted);
   return kSizeAvailable;
 }
 
