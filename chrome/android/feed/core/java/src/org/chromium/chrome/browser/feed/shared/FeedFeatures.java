@@ -25,11 +25,6 @@ public final class FeedFeatures {
 
     private static PrefChangeRegistrar sPrefChangeRegistrar;
 
-    /** TODO(crbug.com/1187320): Remove when tests are fixed. */
-    public static boolean isV2Enabled() {
-        return true;
-    }
-
     /**
      * @return Whether the feed is allowed to be used. The feed is disabled if supervised user or
      * enterprise policy has once been added within the current session. The value returned by

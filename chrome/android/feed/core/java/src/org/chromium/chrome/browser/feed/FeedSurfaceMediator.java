@@ -221,17 +221,6 @@ public class FeedSurfaceMediator
                 mStreamContentChanged = true;
                 if (mSnapScrollHelper != null) mSnapScrollHelper.resetSearchBoxOnScroll(true);
 
-                // Feed's background is set to be transparent in {@link
-                // FeedSurfaceCoordinator#createStream} to show the Feed placeholder. When first
-                // batch of articles are about to show, set recyclerView back to non-transparent.
-                if (mCoordinator.isPlaceholderShown()) {
-                    stream.hidePlaceholder();
-                }
-            }
-
-            @Override
-            public void onAddFinished() {
-                // TODO(crbug.com/1187320): Remove this method altogether when bug fixed.
                 if (mContentFirstAvailableTimeMs == 0) {
                     mContentFirstAvailableTimeMs = SystemClock.elapsedRealtime();
                     if (mHasPendingUmaRecording) {
@@ -240,6 +229,13 @@ public class FeedSurfaceMediator
                     }
                 }
                 mIsLoadingFeed = false;
+
+                // Feed's background is set to be transparent in {@link
+                // FeedSurfaceCoordinator#createStream} to show the Feed placeholder. When first
+                // batch of articles are about to show, set recyclerView back to non-transparent.
+                if (mCoordinator.isPlaceholderShown()) {
+                    stream.hidePlaceholder();
+                }
             }
         };
         stream.addOnContentChangedListener(mStreamContentChangedListener);
