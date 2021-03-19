@@ -1495,10 +1495,10 @@ size_t CookieMonster::GarbageCollect(const Time& current,
       // 4.  High-priority non-secure cookies.
       // 5.  Medium-priority secure cookies.
       // 6.  High-priority secure cookies.
-      const static struct {
+      constexpr struct {
         CookiePriority priority;
         bool protect_secure_cookies;
-      } purge_rounds[] = {
+      } kPurgeRounds[] = {
           // 1.  Low-priority non-secure cookies.
           {COOKIE_PRIORITY_LOW, true},
           // 2.  Low-priority secure cookies.
@@ -1514,7 +1514,7 @@ size_t CookieMonster::GarbageCollect(const Time& current,
       };
 
       size_t quota = 0;
-      for (const auto& purge_round : purge_rounds) {
+      for (const auto& purge_round : kPurgeRounds) {
         // Adjust quota according to the priority of cookies. Each round should
         // protect certain number of cookies in order to avoid starvation.
         // For example, when each round starts to remove cookies, the number of
@@ -1642,7 +1642,7 @@ size_t CookieMonster::PurgeLeastRecentMatches(CookieItVector* cookies,
     secure_cookies = CountCookiesForPossibleDeletion(
         priority, cookies, protect_secure_cookies /* count secure cookies */);
     cookies_count_possibly_to_be_deleted -=
-        std::max(secure_cookies, to_protect - secure_cookies);
+        std::max(secure_cookies, to_protect);
   } else {
     cookies_count_possibly_to_be_deleted -= to_protect;
   }

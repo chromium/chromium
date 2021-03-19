@@ -623,6 +623,9 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
                         CookieMonster::kDomainPurgeCookies);
 
     auto cm = std::make_unique<CookieMonster>(nullptr, &net_log_);
+    // Key:
+    // Round 1 => LN; round 2 => LS; round 3 => MN.
+    // Round 4 => HN; round 5 => MS; round 6 => HS
 
     // Each test case adds 181 cookies, so 31 cookies are evicted.
     // Cookie same priority, repeated for each priority.
@@ -686,6 +689,9 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
                         CookieMonster::kDomainPurgeCookies);
 
     auto cm = std::make_unique<CookieMonster>(nullptr, &net_log_);
+    // Key:
+    // Round 1 => LN; round 2 => LS; round 3 => MN.
+    // Round 4 => HN; round 5 => MS; round 6 => HS
 
     // Each test case adds 181 cookies, so 31 cookies are evicted.
     // Cookie same priority, repeated for each priority.
@@ -743,6 +749,9 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
                         CookieMonster::kDomainPurgeCookies);
 
     auto cm = std::make_unique<CookieMonster>(nullptr, &net_log_);
+    // Key:
+    // Round 1 => LN; round 2 => LS; round 3 => MN.
+    // Round 4 => HN; round 5 => MS; round 6 => HS
 
     // Each test case adds 180 secure cookies, and some non-secure cookie. The
     // secure cookies take priority, so the non-secure cookie is removed, along
@@ -766,6 +775,18 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
     // Round 1 => none; round 2 => none; round 3 => none.
     // Round 4 => 1HN; round 5 => none; round 6 => 30HS.
     TestPriorityCookieCase(cm.get(), "180HS 1HN", 0U, 0U, 150U, 0U, 150U);
+
+    // Quotas should be correctly maintained when a given priority has both
+    // secure and non-secure cookies.
+    //
+    // Round 1 => 10LN; round 2 => none; round 3 => none.
+    // Round 4 => 21HN; round 5 => none; round 6 => none.
+    TestPriorityCookieCase(cm.get(), "39LN 1LS 141HN", 30U, 0U, 120U, 149U,
+                           1U);
+    // Round 1 => none; round 2 => none; round 3 => 10MN.
+    // Round 4 => none; round 5 => none; round 6 => 21HS.
+    TestPriorityCookieCase(cm.get(), "29LN 1LS 59MN 1MS 91HS", 30U, 50U, 70U,
+                           78U, 72U);
 
     // Low-priority secure cookies are removed before higher priority non-secure
     // cookies.
