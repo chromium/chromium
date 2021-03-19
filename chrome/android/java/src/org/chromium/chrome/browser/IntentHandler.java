@@ -1530,6 +1530,33 @@ public class IntentHandler {
     }
 
     /**
+     * Handles an inconsistency in the Android platform, where if an Activity finishes itself, then
+     * is resumed from recents, it's re-launched with the original intent that launched the activity
+     * initially.
+     *
+     * @return the provided intent, if the intent is not from Android Recents. Otherwise, rewrites
+     *         the intent to be a consistent MAIN intent from recents.
+     */
+    public static Intent rewriteFromHistoryIntent(Intent intent) {
+        // When a self-finished Activity is created from recents, Android launches it with its
+        // original base intent (with FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY added). This can lead
+        // to duplicating actions when launched from recents, like re-launching tabs, or firing
+        // additional app redirects, etc.
+        // Instead of teaching all of Chrome about this, just make intents consistent when Chrome is
+        // created from recents.
+        if (0 != (intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY)) {
+            Intent newIntent = new Intent(Intent.ACTION_MAIN);
+            // Make sure to carry over the FROM_HISTORY flag to avoid confusing metrics.
+            newIntent.setFlags(intent.getFlags());
+            newIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+            newIntent.setComponent(intent.getComponent());
+            newIntent.setPackage(intent.getPackage());
+            return newIntent;
+        }
+        return intent;
+    }
+
+    /**
      * Records whether the intent comes from a non-Chrome first party and contains a Chrome internal
      * scheme. This is so we can determine whether we can cut the feature.
      */

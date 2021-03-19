@@ -314,7 +314,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
 
     private final void onCreateInternal(Bundle savedInstanceState) {
         initializeStartupMetrics();
-        setIntent(validateIntent(getIntent()));
+        setIntent(IntentHandler.rewriteFromHistoryIntent(getIntent()));
 
         @LaunchIntentDispatcher.Action
         int dispatchAction = maybeDispatchLaunchIntent(getIntent(), savedInstanceState);
@@ -447,14 +447,6 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
      */
     protected boolean isStartedUpCorrectly(Intent intent) {
         return true;
-    }
-
-    /**
-     * Validates the intent that started this activity.
-     * @return The validated intent.
-     */
-    protected Intent validateIntent(final Intent intent) {
-        return intent;
     }
 
     /**

@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -26,6 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
@@ -600,5 +602,28 @@ public class IntentHandlerUnitTest {
 
         intent.removeExtra("trusted_application_code_extra");
         assertEquals(Tab.INVALID_TAB_ID, IntentHandler.getBringTabToFrontId(intent));
+    }
+
+    @Test
+    @SmallTest
+    public void testRewriteFromHistoryIntent() {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse("about:blank"));
+        intent.setComponent(new ComponentName(
+                ContextUtils.getApplicationContext(), IntentHandlerUnitTest.class));
+        intent.setPackage(ContextUtils.getApplicationContext().getPackageName());
+        intent.putExtra("key", true);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        assertEquals(intent, IntentHandler.rewriteFromHistoryIntent(intent));
+
+        intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
+        Intent newIntent = IntentHandler.rewriteFromHistoryIntent(intent);
+
+        Intent expected = new Intent(intent);
+        expected.setAction(Intent.ACTION_MAIN);
+        expected.removeExtra("key");
+        expected.addCategory(Intent.CATEGORY_LAUNCHER);
+        expected.setData(null);
+        assertEquals(expected.toUri(0), newIntent.toUri(0));
     }
 }
