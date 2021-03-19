@@ -34,7 +34,7 @@ namespace {
 const WebAccessibleResourcesInfo* GetResourcesInfo(const Extension* extension) {
   return static_cast<WebAccessibleResourcesInfo*>(extension->GetManifestData(
       WebAccessibleResourcesManifestKeys::kWebAccessibleResources));
-}  // namespace
+}
 
 URLPattern GetPattern(std::string relative_path, const Extension& extension) {
   URLPattern pattern(URLPattern::SCHEME_EXTENSION);
