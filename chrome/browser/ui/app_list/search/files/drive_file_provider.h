@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "chromeos/components/string_matching/tokenized_string.h"
 #include "components/drive/file_errors.h"
@@ -47,6 +48,7 @@ class DriveFileProvider : public SearchProvider {
   Profile* const profile_;
   drive::DriveIntegrationService* const drive_service_;
 
+  SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<DriveFileProvider> weak_factory_{this};
 };
 

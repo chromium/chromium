@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/app_list/search/files/local_file_provider.h"
 
 #include <cctype>
-#include <vector>
 
 #include "base/files/file_enumerator.h"
 #include "base/strings/strcat.h"
@@ -52,10 +51,30 @@ std::string CreateFnmatchQuery(const std::string& query) {
   return base::StrCat(query_pieces);
 }
 
+std::vector<base::FilePath> SearchFilesByPattern(
+    const base::FilePath& root_path,
+    const std::string& query) {
+  base::FileEnumerator enumerator(
+      root_path,
+      /*recursive=*/true, base::FileEnumerator::FILES,
+      CreateFnmatchQuery(query), base::FileEnumerator::FolderSearchPolicy::ALL);
+
+  std::vector<base::FilePath> matched_paths;
+  for (base::FilePath path = enumerator.Next(); !path.empty();
+       path = enumerator.Next()) {
+    matched_paths.emplace_back(path);
+
+    if (matched_paths.size() == kMaxResults)
+      break;
+  }
+  return matched_paths;
+}
+
 }  // namespace
 
 LocalFileProvider::LocalFileProvider(Profile* profile) : profile_(profile) {
   DCHECK(profile_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 LocalFileProvider::~LocalFileProvider() = default;
@@ -65,6 +84,7 @@ ash::AppListSearchResultType LocalFileProvider::ResultType() {
 }
 
 void LocalFileProvider::Start(const std::u16string& query) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Clear results and cancel any outgoing requests.
   ClearResultsSilently();
   weak_factory_.InvalidateWeakPtrs();
@@ -75,27 +95,23 @@ void LocalFileProvider::Start(const std::u16string& query) {
 
   last_tokenized_query_.emplace(query, TokenizedString::Mode::kWords);
 
-  base::ThreadPool::PostTask(
+  base::FilePath root_path =
+      file_manager::util::GetMyFilesFolderForProfile(profile_);
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&LocalFileProvider::SearchFilesByPattern,
-                     weak_factory_.GetWeakPtr(), base::UTF16ToUTF8(query)));
+      base::BindOnce(SearchFilesByPattern, root_path, base::UTF16ToUTF8(query)),
+      base::BindOnce(&LocalFileProvider::OnSearchComplete,
+                     weak_factory_.GetWeakPtr()));
 }
 
-void LocalFileProvider::SearchFilesByPattern(const std::string& query) {
-  base::FileEnumerator enumerator(
-      file_manager::util::GetMyFilesFolderForProfile(profile_),
-      /*recursive=*/true, base::FileEnumerator::FILES,
-      CreateFnmatchQuery(query), base::FileEnumerator::FolderSearchPolicy::ALL);
+void LocalFileProvider::OnSearchComplete(
+    const std::vector<base::FilePath>& paths) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   SearchProvider::Results results;
-
-  for (base::FilePath path = enumerator.Next(); !path.empty();
-       path = enumerator.Next()) {
+  for (const auto& path : paths)
     results.emplace_back(MakeResult(path));
-
-    // TODO(crbug.com/1154513): Also exit early if we reach a timeout.
-    if (results.size() == kMaxResults)
-      break;
-  }
   SwapResults(&results);
   // TODO(crbug.com/1154513): Log success and latency histograms.
 }
