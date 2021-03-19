@@ -34,14 +34,12 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_helper.h"
-#include "content/browser/resource_context_impl.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/render_message_filter.mojom.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/resource_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -83,7 +81,6 @@ RenderMessageFilter::RenderMessageFilter(
     RenderWidgetHelper* render_widget_helper,
     MediaInternals* media_internals)
     : BrowserAssociatedInterface<mojom::RenderMessageFilter>(this),
-      resource_context_(browser_context->GetResourceContext()),
       render_widget_helper_(render_widget_helper),
       render_process_id_(render_process_id),
       media_internals_(media_internals) {
@@ -101,7 +98,6 @@ bool RenderMessageFilter::OnMessageReceived(const IPC::Message& message) {
 }
 
 void RenderMessageFilter::OnDestruct() const {
-  const_cast<RenderMessageFilter*>(this)->resource_context_ = nullptr;
   BrowserThread::DeleteOnIOThread::Destruct(this);
 }
 

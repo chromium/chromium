@@ -30,8 +30,7 @@ TEST_F(CannedSharedWorkerHelperTest, Empty) {
   const url::Origin constructor_origin = url::Origin::Create(worker);
 
   auto helper = base::MakeRefCounted<CannedSharedWorkerHelper>(
-      content::BrowserContext::GetDefaultStoragePartition(browser_context()),
-      browser_context()->GetResourceContext());
+      content::BrowserContext::GetDefaultStoragePartition(browser_context()));
 
   EXPECT_TRUE(helper->empty());
   helper->AddSharedWorker(worker, name, constructor_origin);
@@ -49,8 +48,7 @@ TEST_F(CannedSharedWorkerHelperTest, Delete) {
   const url::Origin constructor_origin2 = url::Origin::Create(worker2);
 
   auto helper = base::MakeRefCounted<CannedSharedWorkerHelper>(
-      content::BrowserContext::GetDefaultStoragePartition(browser_context()),
-      browser_context()->GetResourceContext());
+      content::BrowserContext::GetDefaultStoragePartition(browser_context()));
 
   EXPECT_TRUE(helper->empty());
   helper->AddSharedWorker(worker1, name1, constructor_origin1);
@@ -68,8 +66,7 @@ TEST_F(CannedSharedWorkerHelperTest, IgnoreExtensionsAndDevTools) {
   const url::Origin constructor_origin2 = url::Origin::Create(worker2);
 
   auto helper = base::MakeRefCounted<CannedSharedWorkerHelper>(
-      content::BrowserContext::GetDefaultStoragePartition(browser_context()),
-      browser_context()->GetResourceContext());
+      content::BrowserContext::GetDefaultStoragePartition(browser_context()));
 
   EXPECT_TRUE(helper->empty());
   helper->AddSharedWorker(worker1, name, constructor_origin1);

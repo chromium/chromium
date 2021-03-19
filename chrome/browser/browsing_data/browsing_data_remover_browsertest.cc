@@ -482,8 +482,7 @@ class BrowsingDataRemoverBrowserTest
             native_io_context),
         BrowsingDataQuotaHelper::Create(profile),
         new browsing_data::ServiceWorkerHelper(service_worker_context),
-        new browsing_data::SharedWorkerHelper(storage_partition,
-                                              profile->GetResourceContext()),
+        new browsing_data::SharedWorkerHelper(storage_partition),
         new browsing_data::CacheStorageHelper(storage_partition),
         BrowsingDataMediaLicenseHelper::Create(file_system_context));
     base::RunLoop run_loop;

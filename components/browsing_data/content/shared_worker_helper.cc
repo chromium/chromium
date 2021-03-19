@@ -35,10 +35,8 @@ bool SharedWorkerHelper::SharedWorkerInfo::operator<(
 }
 
 SharedWorkerHelper::SharedWorkerHelper(
-    content::StoragePartition* storage_partition,
-    content::ResourceContext* resource_context)
-    : storage_partition_(storage_partition),
-      resource_context_(resource_context) {}
+    content::StoragePartition* storage_partition)
+    : storage_partition_(storage_partition) {}
 
 SharedWorkerHelper::~SharedWorkerHelper() = default;
 
@@ -62,9 +60,8 @@ void SharedWorkerHelper::DeleteSharedWorker(
 }
 
 CannedSharedWorkerHelper::CannedSharedWorkerHelper(
-    content::StoragePartition* storage_partition,
-    content::ResourceContext* resource_context)
-    : SharedWorkerHelper(storage_partition, resource_context) {}
+    content::StoragePartition* storage_partition)
+    : SharedWorkerHelper(storage_partition) {}
 
 CannedSharedWorkerHelper::~CannedSharedWorkerHelper() = default;
 

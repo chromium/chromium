@@ -63,8 +63,8 @@ LocalSharedObjectsContainer::LocalSharedObjectsContainer(
           content::BrowserContext::GetDefaultStoragePartition(browser_context)
               ->GetServiceWorkerContext())),
       shared_workers_(new CannedSharedWorkerHelper(
-          content::BrowserContext::GetDefaultStoragePartition(browser_context),
-          browser_context->GetResourceContext())),
+          content::BrowserContext::GetDefaultStoragePartition(
+              browser_context))),
       cache_storages_(new CannedCacheStorageHelper(
           content::BrowserContext::GetDefaultStoragePartition(
               browser_context))),

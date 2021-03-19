@@ -24,7 +24,6 @@ namespace content {
 class AppCacheHost;
 class BrowserContext;
 class ServiceWorkerMainResourceHandle;
-class ResourceContext;
 class WorkerScriptLoader;
 
 // WorkerScriptLoaderFactory creates a WorkerScriptLoader to load the main
@@ -37,10 +36,6 @@ class WorkerScriptLoader;
 class CONTENT_EXPORT WorkerScriptLoaderFactory
     : public network::mojom::URLLoaderFactory {
  public:
-  // Returns the resource context, or nullptr during shutdown. Must be called on
-  // the IO thread.
-  using ResourceContextGetter = base::RepeatingCallback<ResourceContext*(void)>;
-
   // Returns the browser context, or nullptr during shutdown. Must be called on
   // the UI thread.
   using BrowserContextGetter = base::RepeatingCallback<BrowserContext*(void)>;

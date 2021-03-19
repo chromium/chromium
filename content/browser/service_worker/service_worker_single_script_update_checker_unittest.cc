@@ -64,7 +64,8 @@ class ServiceWorkerSingleScriptUpdateCheckerTest : public testing::Test {
   ServiceWorkerSingleScriptUpdateCheckerTest()
       : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP),
         browser_context_(std::make_unique<TestBrowserContext>()) {
-    BrowserContext::EnsureResourceContextInitialized(browser_context_.get());
+    // Ensure the BrowserContext's storage partition is initialized.
+    BrowserContext::GetDefaultStoragePartition(browser_context_.get());
     base::RunLoop().RunUntilIdle();
   }
   ~ServiceWorkerSingleScriptUpdateCheckerTest() override = default;

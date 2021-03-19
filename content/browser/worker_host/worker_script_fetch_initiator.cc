@@ -37,7 +37,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/resource_context.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/url_loader_throttles.h"
 #include "content/public/browser/web_ui_url_loader_factory.h"
@@ -92,9 +91,7 @@ void WorkerScriptFetchInitiator::Start(
       << static_cast<int>(request_destination);
 
   BrowserContext* browser_context = storage_partition->browser_context();
-  ResourceContext* resource_context =
-      browser_context ? browser_context->GetResourceContext() : nullptr;
-  if (!browser_context || !resource_context) {
+  if (!browser_context || browser_context->ShutdownStarted()) {
     // The browser is shutting down. Just drop this request.
     return;
   }

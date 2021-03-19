@@ -1956,8 +1956,7 @@ std::unique_ptr<CookiesTreeModel> CookiesTreeModel::CreateForProfile(
       BrowsingDataQuotaHelper::Create(profile),
       new browsing_data::ServiceWorkerHelper(
           storage_partition->GetServiceWorkerContext()),
-      new browsing_data::SharedWorkerHelper(storage_partition,
-                                            profile->GetResourceContext()),
+      new browsing_data::SharedWorkerHelper(storage_partition),
       new browsing_data::CacheStorageHelper(storage_partition),
       BrowsingDataMediaLicenseHelper::Create(file_system_context));
 

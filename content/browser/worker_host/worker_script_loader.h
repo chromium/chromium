@@ -38,7 +38,6 @@ namespace content {
 class AppCacheHost;
 class BrowserContext;
 class NavigationLoaderInterceptor;
-class ResourceContext;
 class ServiceWorkerMainResourceHandle;
 
 // The URLLoader for loading a shared worker script. Only used for the main
@@ -55,10 +54,6 @@ class ServiceWorkerMainResourceHandle;
 class WorkerScriptLoader : public network::mojom::URLLoader,
                            public network::mojom::URLLoaderClient {
  public:
-  // Returns the resource context, or nullptr during shutdown. Must be called on
-  // the IO thread.
-  using ResourceContextGetter = base::RepeatingCallback<ResourceContext*(void)>;
-
   // Returns the browser context, or nullptr during shutdown. Must be called on
   // the UI thread.
   using BrowserContextGetter = base::RepeatingCallback<BrowserContext*(void)>;
