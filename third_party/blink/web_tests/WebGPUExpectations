@@ -69,8 +69,6 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureTo
 ## webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:*
 
 # Many formats failing on Windows
-[ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="Sample";* [ Failure ]
-
 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="Sample";format="rg11b10ufloat";* [ Failure ]
 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="Sample";format="rgb9e5ufloat";* [ Failure ]
 
@@ -141,6 +139,9 @@ crbug.com/dawn/130 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,vertex_s
 
 # Deprecations that need to be updated in the tests
 wpt_internal/webgpu/cts.html?q=webgpu:idl,constants,flags:* [ Failure ]
+
+# Test uses incorrect WGSL
+crbug.com/tint/354 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="Sample";* [ Failure ]
 
 ###
 ### Test bugs (fixed upstream)
