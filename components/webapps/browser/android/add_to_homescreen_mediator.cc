@@ -221,10 +221,11 @@ void AddToHomescreenMediator::RecordEventForAppMenu(
     AddToHomescreenInstaller::Event event,
     const AddToHomescreenParams& a2hs_params) {
   content::WebContents* web_contents = GetWebContents();
-  if (!web_contents)
+  if (!web_contents ||
+      a2hs_params.app_type == AddToHomescreenParams::AppType::NATIVE) {
     return;
+  }
 
-  DCHECK_NE(a2hs_params.app_type, AddToHomescreenParams::AppType::NATIVE);
   switch (event) {
     case AddToHomescreenInstaller::Event::INSTALL_STARTED:
       AppBannerSettingsHelper::RecordBannerEvent(
