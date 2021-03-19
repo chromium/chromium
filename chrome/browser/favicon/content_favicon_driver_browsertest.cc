@@ -30,10 +30,12 @@
 #include "components/favicon/core/favicon_handler.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/base/load_flags.h"
 #include "net/dns/mock_host_resolver.h"
@@ -808,6 +810,63 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, SVGFavicon) {
   auto result = GetFaviconForPageURL(url, favicon_base::IconType::kFavicon, 16);
   EXPECT_EQ(gfx::Size(16, 16), result.pixel_size);
   EXPECT_NE(nullptr, result.bitmap_data);
+}
+
+// Test that when a user visits a site after a cache deletion, the favicon is
+// fetched again.
+IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
+                       FetchFaviconAfterCacheDeletion) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/favicon/page_with_favicon.html");
+  GURL icon_url = embedded_test_server()->GetURL("/favicon/icon.png");
+
+  TestURLLoaderInterceptor url_loader_interceptor;
+  // Initial visit in order to populate the cache.
+  {
+    PendingTaskWaiter waiter(web_contents());
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), url, WindowOpenDisposition::CURRENT_TAB,
+        ui_test_utils::BROWSER_TEST_NONE);
+    waiter.Wait();
+  }
+  ASSERT_TRUE(url_loader_interceptor.was_loaded(icon_url));
+  url_loader_interceptor.Reset();
+  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+
+  // A normal visit should fetch the favicon from the favicon database.
+  {
+    PendingTaskWaiter waiter(web_contents());
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), url, WindowOpenDisposition::CURRENT_TAB,
+        ui_test_utils::BROWSER_TEST_NONE);
+    waiter.Wait();
+  }
+  ASSERT_FALSE(url_loader_interceptor.was_loaded(icon_url));
+  url_loader_interceptor.Reset();
+  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+
+  // Clear cache.
+  {
+    content::BrowsingDataRemover* remover =
+        content::BrowserContext::GetBrowsingDataRemover(browser()->profile());
+    content::BrowsingDataRemoverCompletionObserver observer(remover);
+    remover->RemoveAndReply(
+        base::Time(), base::Time::Max(),
+        content::BrowsingDataRemover::DATA_TYPE_CACHE,
+        content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB, &observer);
+    observer.BlockUntilCompletion();
+  }
+
+  // The favicon should be fetched again for navigations after cache deletion.
+  {
+    PendingTaskWaiter waiter(web_contents());
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), url, WindowOpenDisposition::CURRENT_TAB,
+        ui_test_utils::BROWSER_TEST_NONE);
+    waiter.Wait();
+  }
+  ASSERT_TRUE(url_loader_interceptor.was_loaded(icon_url));
+  url_loader_interceptor.Reset();
 }
 
 // Test that when a user visits a site in incognito, we download the favicon

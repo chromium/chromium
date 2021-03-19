@@ -130,6 +130,10 @@ class FaviconBackend {
   // with it.
   bool SetFaviconsOutOfDateForPage(const GURL& page_url);
 
+  // Mark all favicons as out of date that have been modified at or after
+  // |begin| and before |end|.
+  bool SetFaviconsOutOfDateBetween(base::Time begin, base::Time end);
+
   // See function of same name in HistoryService for details.
   void TouchOnDemandFavicon(const GURL& icon_url);
 

@@ -1818,6 +1818,14 @@ void HistoryBackend::SetFaviconsOutOfDateForPage(const GURL& page_url) {
   }
 }
 
+void HistoryBackend::SetFaviconsOutOfDateBetween(base::Time begin,
+                                                 base::Time end) {
+  if (favicon_backend_ &&
+      favicon_backend_->SetFaviconsOutOfDateBetween(begin, end)) {
+    ScheduleCommit();
+  }
+}
+
 void HistoryBackend::TouchOnDemandFavicon(const GURL& icon_url) {
   TRACE_EVENT0("browser", "HistoryBackend::TouchOnDemandFavicon");
 

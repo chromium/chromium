@@ -388,6 +388,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   void SetFaviconsOutOfDateForPage(const GURL& page_url);
 
+  void SetFaviconsOutOfDateBetween(base::Time begin, base::Time end);
+
   void TouchOnDemandFavicon(const GURL& icon_url);
 
   void SetImportedFavicons(

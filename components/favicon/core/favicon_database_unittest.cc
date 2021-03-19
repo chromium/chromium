@@ -13,8 +13,10 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/favicon/core/favicon_database.h"
+#include "components/favicon_base/favicon_types.h"
 #include "components/history/core/test/database_test_utils.h"
 #include "sql/database.h"
 #include "sql/recovery.h"
@@ -196,6 +198,12 @@ bool CompareIconMappingIconUrl(const IconMapping& a, const IconMapping& b) {
 
 void SortMappingsByIconUrl(std::vector<IconMapping>* mappings) {
   std::sort(mappings->begin(), mappings->end(), &CompareIconMappingIconUrl);
+}
+
+base::Time GetLastUpdated(FaviconDatabase* db, favicon_base::FaviconID icon) {
+  base::Time last_updated;
+  EXPECT_TRUE(db->GetFaviconLastUpdatedTime(icon, &last_updated));
+  return last_updated;
 }
 
 }  // namespace
@@ -1424,6 +1432,45 @@ TEST_F(FaviconDatabaseTest, GetFaviconsLastUpdatedBefore) {
   ASSERT_EQ(1u, ids.size());
   // |id2| is before |id1|, so it should be returned first.
   EXPECT_EQ(id2, ids[0]);
+}
+
+TEST_F(FaviconDatabaseTest, SetFaviconsOutOfDateBetween) {
+  FaviconDatabase db;
+  ASSERT_EQ(sql::INIT_OK, db.Init(file_name_));
+  db.BeginTransaction();
+
+  base::Time t1 = base::Time::Now() - base::TimeDelta::FromMinutes(3);
+  base::Time t2 = base::Time::Now() - base::TimeDelta::FromMinutes(2);
+  base::Time t3 = base::Time::Now() - base::TimeDelta::FromMinutes(1);
+
+  std::vector<unsigned char> data(kBlob1, kBlob1 + sizeof(kBlob1));
+  scoped_refptr<base::RefCountedBytes> favicon(new base::RefCountedBytes(data));
+  favicon_base::FaviconID icon1 =
+      db.AddFavicon(GURL("http://a.example.com/favicon.ico"),
+                    favicon_base::IconType::kFavicon, favicon,
+                    FaviconBitmapType::ON_VISIT, t1, gfx::Size());
+  favicon_base::FaviconID icon2 =
+      db.AddFavicon(GURL("http://b.example.com/favicon.ico"),
+                    favicon_base::IconType::kFavicon, favicon,
+                    FaviconBitmapType::ON_VISIT, t2, gfx::Size());
+  favicon_base::FaviconID icon3 =
+      db.AddFavicon(GURL("http://c.example.com/favicon.ico"),
+                    favicon_base::IconType::kFavicon, favicon,
+                    FaviconBitmapType::ON_VISIT, t3, gfx::Size());
+
+  EXPECT_EQ(t1, GetLastUpdated(&db, icon1));
+  EXPECT_EQ(t2, GetLastUpdated(&db, icon2));
+  EXPECT_EQ(t3, GetLastUpdated(&db, icon3));
+
+  db.SetFaviconsOutOfDateBetween(t2, t3);
+  EXPECT_EQ(t1, GetLastUpdated(&db, icon1));
+  EXPECT_EQ(base::Time(), GetLastUpdated(&db, icon2));
+  EXPECT_EQ(t3, GetLastUpdated(&db, icon3));
+
+  db.SetFaviconsOutOfDateBetween(base::Time(), base::Time::Max());
+  EXPECT_EQ(base::Time(), GetLastUpdated(&db, icon1));
+  EXPECT_EQ(base::Time(), GetLastUpdated(&db, icon2));
+  EXPECT_EQ(base::Time(), GetLastUpdated(&db, icon3));
 }
 
 }  // namespace favicon

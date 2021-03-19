@@ -391,6 +391,13 @@ class HistoryService : public KeyedService {
                                      base::OnceClosure callback,
                                      base::CancelableTaskTracker* tracker);
 
+  // Mark all favicons as out of date that have been modified at or after
+  // |begin| and before |end|. Calls |callback| when done.
+  void SetFaviconsOutOfDateBetween(base::Time begin,
+                                   base::Time end,
+                                   base::OnceClosure callback,
+                                   base::CancelableTaskTracker* tracker);
+
   // Removes all visits to the given URLs in the specified time range. Calls
   // ExpireHistoryBetween() to delete local visits, and handles deletion of
   // synced visits if appropriate.

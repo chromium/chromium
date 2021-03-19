@@ -18,6 +18,7 @@
 #include "components/history/core/browser/history_service.h"
 
 #include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -673,6 +674,21 @@ void HistoryService::SetFaviconsOutOfDateForPage(const GURL& page_url) {
   ScheduleTask(PRIORITY_NORMAL,
                base::BindOnce(&HistoryBackend::SetFaviconsOutOfDateForPage,
                               history_backend_, page_url));
+}
+
+void HistoryService::SetFaviconsOutOfDateBetween(
+    base::Time begin,
+    base::Time end,
+    base::OnceClosure callback,
+    base::CancelableTaskTracker* tracker) {
+  TRACE_EVENT0("browser", "HistoryService::SetFaviconsOutOfDateBetween");
+  DCHECK(backend_task_runner_) << "History service being called after cleanup";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  tracker->PostTaskAndReply(
+      backend_task_runner_.get(), FROM_HERE,
+      base::BindOnce(&HistoryBackend::SetFaviconsOutOfDateBetween,
+                     history_backend_, begin, end),
+      std::move(callback));
 }
 
 void HistoryService::TouchOnDemandFavicon(const GURL& icon_url) {
