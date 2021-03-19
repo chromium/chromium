@@ -1092,7 +1092,7 @@ TEST_F(PopulatedAppListTest, ScreenRotationDuringFolderItemDrag) {
   EXPECT_EQ("Item 1", apps_grid_view_->GetItemViewAt(1)->item()->id());
   EXPECT_EQ(folder->id(), apps_grid_view_->GetItemViewAt(2)->item()->id());
   EXPECT_EQ(dragged_view, folder_view()->items_grid_view()->GetItemViewAt(0));
-  EXPECT_EQ("Item 3", apps_grid_view_->GetItemViewAt(3)->item()->id());
+  EXPECT_EQ("Item 5", apps_grid_view_->GetItemViewAt(3)->item()->id());
 }
 
 // Tests that app list folder item reparenting drag (where a folder item is

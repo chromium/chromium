@@ -256,11 +256,7 @@ class AppsGridViewTest : public views::ViewsTestBase,
         true);
 
     // In production, page flip duration > page transition > overscroll.
-    apps_grid_view_->set_page_flip_delay_for_testing(
-        base::TimeDelta::FromMilliseconds(3));
-    GetPaginationModel()->SetTransitionDurations(
-        base::TimeDelta::FromMilliseconds(2),
-        base::TimeDelta::FromMilliseconds(1));
+    SetPageFlipDurationForTest(apps_grid_view_);
     page_flip_waiter_ = std::make_unique<PageFlipWaiter>(GetPaginationModel());
   }
 
@@ -274,6 +270,29 @@ class AppsGridViewTest : public views::ViewsTestBase,
   }
 
  protected:
+  void AnimateFolderViewPageFlip(int target_page) {
+    DCHECK(folder_apps_grid_view()->pagination_model()->total_pages() >
+           target_page);
+    AppsGridViewTestApi folder_grid_test_api(folder_apps_grid_view());
+    SetPageFlipDurationForTest(folder_apps_grid_view());
+    PageFlipWaiter page_flip_waiter(
+        folder_apps_grid_view()->pagination_model());
+    folder_apps_grid_view()->pagination_model()->SelectPage(target_page,
+                                                            true /*animate*/);
+    while (folder_grid_test_api.HasPendingPageFlip()) {
+      page_flip_waiter.Wait();
+    }
+    folder_grid_test_api.LayoutToIdealBounds();
+  }
+
+  void SetPageFlipDurationForTest(AppsGridView* apps_grid_view) {
+    apps_grid_view->set_page_flip_delay_for_testing(
+        base::TimeDelta::FromMilliseconds(3));
+    apps_grid_view->pagination_model()->SetTransitionDurations(
+        base::TimeDelta::FromMilliseconds(2),
+        base::TimeDelta::FromMilliseconds(1));
+  }
+
   const AppListConfig& GetAppListConfig() const {
     return contents_view_->GetAppListConfig();
   }
@@ -1121,17 +1140,7 @@ TEST_P(AppsGridViewTest, MouseDragItemOutOfFolderSecondPage) {
 
   // Switch to second page and check it's contents.
   AppsGridViewTestApi folder_grid_test_api(folder_apps_grid_view());
-  folder_apps_grid_view()->set_page_flip_delay_for_testing(
-      base::TimeDelta::FromMilliseconds(10));
-  folder_apps_grid_view()->pagination_model()->SetTransitionDurations(
-      base::TimeDelta::FromMilliseconds(10),
-      base::TimeDelta::FromMilliseconds(10));
-  PageFlipWaiter page_flip_waiter(folder_apps_grid_view()->pagination_model());
-  folder_pagination_model->SelectPage(1, true /*animate*/);
-  while (folder_grid_test_api.HasPendingPageFlip()) {
-    page_flip_waiter.Wait();
-  }
-  folder_grid_test_api.LayoutToIdealBounds();
+  AnimateFolderViewPageFlip(1);
   EXPECT_EQ(1, folder_pagination_model->selected_page());
   EXPECT_EQ(4, folder_apps_grid_view()->cols());
   EXPECT_EQ(4, folder_apps_grid_view()->rows_per_page());
@@ -1173,6 +1182,87 @@ TEST_P(AppsGridViewTest, MouseDragItemOutOfFolderSecondPage) {
   EXPECT_FALSE(item_16->IsInFolder());
   EXPECT_EQ(folder_item->id(), item_0->folder_id());
   EXPECT_EQ(std::string(folder_item->id() + ",Item 16"),
+            model_->GetModelContent());
+  EXPECT_EQ(kTotalItems - 1, folder_item->ChildItemCount());
+}
+
+TEST_P(AppsGridViewTest, MouseDropItemFromFolderSecondPage) {
+  // Creates a folder item with enough views to have a second page.
+  const size_t kTotalItems =
+      AppListConfig::instance().max_folder_items_per_page() + 1;
+  AppListFolderItem* folder_item =
+      model_->CreateAndPopulateFolderWithApps(kTotalItems);
+  EXPECT_EQ(1u, model_->top_level_item_list()->item_count());
+  EXPECT_EQ(AppListFolderItem::kItemType,
+            model_->top_level_item_list()->item_at(0)->GetItemType());
+  EXPECT_EQ(kTotalItems, folder_item->ChildItemCount());
+  // Fill the rest of the root grid view with new app list items. Leave 1 slot
+  // open so dropping an item from a folder to the root level apps grid does not
+  // cause a page overflow.
+  model_->PopulateApps(GetTilesPerPage() - 2);
+  EXPECT_EQ(19u, model_->top_level_item_list()->item_count());
+
+  // Open the folder and check it's contents.
+  test_api_->Update();
+  test_api_->PressItemAt(0);
+  EXPECT_EQ(4, folder_apps_grid_view()->cols());
+  EXPECT_EQ(4, folder_apps_grid_view()->rows_per_page());
+  ash::PaginationModel* folder_pagination_model =
+      folder_apps_grid_view()->pagination_model();
+  EXPECT_EQ(2, folder_pagination_model->total_pages());
+  EXPECT_EQ(0, folder_pagination_model->selected_page());
+  EXPECT_TRUE(folder_apps_grid_view()->is_in_folder());
+
+  // Switch to second page and check it's contents.
+  AppsGridViewTestApi folder_grid_test_api(folder_apps_grid_view());
+  AnimateFolderViewPageFlip(1);
+  EXPECT_EQ(1, folder_pagination_model->selected_page());
+  EXPECT_EQ(4, folder_apps_grid_view()->cols());
+  EXPECT_EQ(4, folder_apps_grid_view()->rows_per_page());
+  EXPECT_TRUE(folder_apps_grid_view()->is_in_folder());
+
+  gfx::Point from =
+      folder_grid_test_api.GetItemTileRectOnCurrentPageAt(0, 0).CenterPoint();
+  // Drag the first folder child on the second page out of the folder.
+  AppListItemView* drag_view =
+      InitiateDrag(AppsGridView::MOUSE, from, folder_apps_grid_view());
+  // Calculate the target destination for our drag and update the drag to that
+  // location.
+  gfx::Point empty_space =
+      app_list_folder_view()->GetLocalBounds().bottom_center() +
+      gfx::Vector2d(0, drag_view->height()
+                    /*padding to completely exit folder view*/);
+
+  UpdateDrag(AppsGridView::MOUSE, empty_space, folder_apps_grid_view(),
+             10 /*steps*/);
+
+  // Fire the reparent timer that should be started when an item is dragged out
+  // of folder bounds.
+  ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
+  // Calculate the coordinates for the drop point. Note that we we are dropping
+  // into the app list view not the folder view. We will drop between the folder
+  // and the rest of the app list items in the root level apps grid view.
+  gfx::Point drop_point = is_rtl_
+                              ? GetItemRectOnCurrentPageAt(0, 2).right_center()
+                              : GetItemRectOnCurrentPageAt(0, 0).right_center();
+  drop_point.set_x(apps_grid_view_->GetMirroredXInView(drop_point.x()));
+  views::View::ConvertPointToTarget(apps_grid_view_, folder_apps_grid_view(),
+                                    &drop_point);
+  UpdateDrag(AppsGridView::MOUSE, drop_point, folder_apps_grid_view(),
+             5 /*steps*/);
+
+  // End the drag and assert that the item has been dragged out of the folder
+  // and the app list's grid view has been updated accordingly.
+  EndDrag(folder_apps_grid_view(), false /*cancel*/);
+  AppListItem* item_0 = model_->FindItem("Item 0");
+  AppListItem* item_16 = model_->FindItem("Item 16");
+  EXPECT_TRUE(item_0->IsInFolder());
+  EXPECT_FALSE(item_16->IsInFolder());
+  EXPECT_EQ(folder_item->id(), item_0->folder_id());
+  EXPECT_EQ(std::string(folder_item->id() +
+                        ",Item 16,Item 17,Item 18,Item 19,Item 20,Item 21,Item "
+                        "22,Item 23,Item 24,Item 25,Item 26,Item 27,Item "
+                        "28,Item 29,Item 30,Item 31,Item 32,Item 33,Item 34"),
             model_->GetModelContent());
   EXPECT_EQ(kTotalItems - 1, folder_item->ChildItemCount());
 }
