@@ -53,6 +53,7 @@ class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
         },
     }
     self.assertEqual(expectation_map, expected_expectation_map)
+    self.assertIsInstance(expectation_map, data_types.TestExpectationMap)
 
   def testIndividualTests(self):
     """Tests reading expectations from a list of tests."""
@@ -67,18 +68,22 @@ class CreateTestExpectationMapUnittest(fake_filesystem_unittest.TestCase):
         },
     }
     self.assertEqual(expectation_map, expected_expectation_map)
+    self.assertIsInstance(expectation_map, data_types.TestExpectationMap)
 
 
 class FilterOutUnusedExpectationsUnittest(unittest.TestCase):
   def testNoUnused(self):
     """Tests that filtering is a no-op if there are no unused expectations."""
-    expectation_map = {
-        'foo/test': {
-            data_types.Expectation('foo/test', ['win'], ['Failure']): {
-                'SomeBuilder': [],
-            },
-        },
-    }
+    expectation_map = data_types.TestExpectationMap({
+        'foo/test':
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation('foo/test', ['win'], ['Failure']):
+            data_types.BuilderStepMap({
+                'SomeBuilder':
+                data_types.StepBuildStatsMap(),
+            }),
+        })
+    })
     expected_expectation_map = copy.deepcopy(expectation_map)
     unused_expectations = expectations.FilterOutUnusedExpectations(
         expectation_map)
@@ -87,21 +92,28 @@ class FilterOutUnusedExpectationsUnittest(unittest.TestCase):
 
   def testUnusedButNotEmpty(self):
     """Tests filtering if there is an unused expectation but no empty tests."""
-    expectation_map = {
-        'foo/test': {
-            data_types.Expectation('foo/test', ['win'], ['Failure']): {
-                'SomeBuilder': [],
-            },
-            data_types.Expectation('foo/test', ['linux'], ['Failure']): {},
-        },
-    }
-    expected_expectation_map = {
-        'foo/test': {
-            data_types.Expectation('foo/test', ['win'], ['Failure']): {
-                'SomeBuilder': [],
-            },
-        },
-    }
+    expectation_map = data_types.TestExpectationMap({
+        'foo/test':
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation('foo/test', ['win'], ['Failure']):
+            data_types.BuilderStepMap({
+                'SomeBuilder':
+                data_types.StepBuildStatsMap(),
+            }),
+            data_types.Expectation('foo/test', ['linux'], ['Failure']):
+            data_types.BuilderStepMap(),
+        })
+    })
+    expected_expectation_map = data_types.TestExpectationMap({
+        'foo/test':
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation('foo/test', ['win'], ['Failure']):
+            data_types.BuilderStepMap({
+                'SomeBuilder':
+                data_types.StepBuildStatsMap(),
+            }),
+        }),
+    })
     unused_expectations = expectations.FilterOutUnusedExpectations(
         expectation_map)
     self.assertEqual(
@@ -111,11 +123,13 @@ class FilterOutUnusedExpectationsUnittest(unittest.TestCase):
 
   def testUnusedAndEmpty(self):
     """Tests filtering if there is an expectation that causes an empty test."""
-    expectation_map = {
-        'foo/test': {
-            data_types.Expectation('foo/test', ['win'], ['Failure']): {},
-        },
-    }
+    expectation_map = data_types.TestExpectationMap({
+        'foo/test':
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation('foo/test', ['win'], ['Failure']):
+            data_types.BuilderStepMap(),
+        }),
+    })
     unused_expectations = expectations.FilterOutUnusedExpectations(
         expectation_map)
     self.assertEqual(unused_expectations,
@@ -127,40 +141,60 @@ class SplitExpectationsByStalenessUnittest(unittest.TestCase):
   def testEmptyInput(self):
     """Tests that nothing blows up with empty input."""
     stale_dict, semi_stale_dict, active_dict =\
-        expectations.SplitExpectationsByStaleness({})
+        expectations.SplitExpectationsByStaleness(
+            data_types.TestExpectationMap())
     self.assertEqual(stale_dict, {})
     self.assertEqual(semi_stale_dict, {})
     self.assertEqual(active_dict, {})
+    self.assertIsInstance(stale_dict, data_types.TestExpectationMap)
+    self.assertIsInstance(semi_stale_dict, data_types.TestExpectationMap)
+    self.assertIsInstance(active_dict, data_types.TestExpectationMap)
 
   def testStaleExpectations(self):
     """Tests output when only stale expectations are provided."""
-    expectation_map = {
-        'foo': {
-            data_types.Expectation('foo', ['win'], ['Failure']): {
-                'foo_builder': {
-                    'step1': uu.CreateStatsWithPassFails(1, 0),
-                    'step2': uu.CreateStatsWithPassFails(2, 0),
-                },
-                'bar_builder': {
-                    'step1': uu.CreateStatsWithPassFails(3, 0),
-                    'step2': uu.CreateStatsWithPassFails(4, 0)
-                },
-            },
-            data_types.Expectation('foo', ['linux'], ['RetryOnFailure']): {
-                'foo_builder': {
-                    'step1': uu.CreateStatsWithPassFails(5, 0),
-                    'step2': uu.CreateStatsWithPassFails(6, 0),
-                },
-            },
-        },
-        'bar': {
-            data_types.Expectation('bar', ['win'], ['Failure']): {
-                'foo_builder': {
-                    'step1': uu.CreateStatsWithPassFails(7, 0),
-                },
-            },
-        },
-    }
+    expectation_map = data_types.TestExpectationMap({
+        'foo':
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation('foo', ['win'], ['Failure']):
+            data_types.BuilderStepMap({
+                'foo_builder':
+                data_types.StepBuildStatsMap({
+                    'step1':
+                    uu.CreateStatsWithPassFails(1, 0),
+                    'step2':
+                    uu.CreateStatsWithPassFails(2, 0),
+                }),
+                'bar_builder':
+                data_types.StepBuildStatsMap({
+                    'step1':
+                    uu.CreateStatsWithPassFails(3, 0),
+                    'step2':
+                    uu.CreateStatsWithPassFails(4, 0)
+                }),
+            }),
+            data_types.Expectation('foo', ['linux'], ['RetryOnFailure']):
+            data_types.BuilderStepMap({
+                'foo_builder':
+                data_types.StepBuildStatsMap({
+                    'step1':
+                    uu.CreateStatsWithPassFails(5, 0),
+                    'step2':
+                    uu.CreateStatsWithPassFails(6, 0),
+                }),
+            }),
+        }),
+        'bar':
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation('bar', ['win'], ['Failure']):
+            data_types.BuilderStepMap({
+                'foo_builder':
+                data_types.StepBuildStatsMap({
+                    'step1':
+                    uu.CreateStatsWithPassFails(7, 0),
+                }),
+            }),
+        }),
+    })
     expected_stale_dict = copy.deepcopy(expectation_map)
     stale_dict, semi_stale_dict, active_dict =\
         expectations.SplitExpectationsByStaleness(expectation_map)
@@ -170,33 +204,49 @@ class SplitExpectationsByStalenessUnittest(unittest.TestCase):
 
   def testActiveExpectations(self):
     """Tests output when only active expectations are provided."""
-    expectation_map = {
-        'foo': {
-            data_types.Expectation('foo', ['win'], ['Failure']): {
-                'foo_builder': {
-                    'step1': uu.CreateStatsWithPassFails(0, 1),
-                    'step2': uu.CreateStatsWithPassFails(0, 2),
-                },
-                'bar_builder': {
-                    'step1': uu.CreateStatsWithPassFails(0, 3),
-                    'step2': uu.CreateStatsWithPassFails(0, 4)
-                },
-            },
-            data_types.Expectation('foo', ['linux'], ['RetryOnFailure']): {
-                'foo_builder': {
-                    'step1': uu.CreateStatsWithPassFails(0, 5),
-                    'step2': uu.CreateStatsWithPassFails(0, 6),
-                },
-            },
-        },
-        'bar': {
-            data_types.Expectation('bar', ['win'], ['Failure']): {
-                'foo_builder': {
-                    'step1': uu.CreateStatsWithPassFails(0, 7),
-                },
-            },
-        },
-    }
+    expectation_map = data_types.TestExpectationMap({
+        'foo':
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation('foo', ['win'], ['Failure']):
+            data_types.BuilderStepMap({
+                'foo_builder':
+                data_types.StepBuildStatsMap({
+                    'step1':
+                    uu.CreateStatsWithPassFails(0, 1),
+                    'step2':
+                    uu.CreateStatsWithPassFails(0, 2),
+                }),
+                'bar_builder':
+                data_types.StepBuildStatsMap({
+                    'step1':
+                    uu.CreateStatsWithPassFails(0, 3),
+                    'step2':
+                    uu.CreateStatsWithPassFails(0, 4)
+                }),
+            }),
+            data_types.Expectation('foo', ['linux'], ['RetryOnFailure']):
+            data_types.BuilderStepMap({
+                'foo_builder':
+                data_types.StepBuildStatsMap({
+                    'step1':
+                    uu.CreateStatsWithPassFails(0, 5),
+                    'step2':
+                    uu.CreateStatsWithPassFails(0, 6),
+                }),
+            }),
+        }),
+        'bar':
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation('bar', ['win'], ['Failure']):
+            data_types.BuilderStepMap({
+                'foo_builder':
+                data_types.StepBuildStatsMap({
+                    'step1':
+                    uu.CreateStatsWithPassFails(0, 7),
+                }),
+            }),
+        }),
+    })
     expected_active_dict = copy.deepcopy(expectation_map)
     stale_dict, semi_stale_dict, active_dict =\
         expectations.SplitExpectationsByStaleness(expectation_map)
@@ -206,36 +256,54 @@ class SplitExpectationsByStalenessUnittest(unittest.TestCase):
 
   def testSemiStaleExpectations(self):
     """Tests output when only semi-stale expectations are provided."""
-    expectation_map = {
-        'foo': {
-            data_types.Expectation('foo', ['win'], ['Failure']): {
-                'foo_builder': {
-                    'step1': uu.CreateStatsWithPassFails(1, 0),
-                    'step2': uu.CreateStatsWithPassFails(2, 2),
-                },
-                'bar_builder': {
-                    'step1': uu.CreateStatsWithPassFails(3, 0),
-                    'step2': uu.CreateStatsWithPassFails(0, 4)
-                },
-            },
-            data_types.Expectation('foo', ['linux'], ['RetryOnFailure']): {
-                'foo_builder': {
-                    'step1': uu.CreateStatsWithPassFails(5, 0),
-                    'step2': uu.CreateStatsWithPassFails(6, 6),
-                },
-            },
-        },
-        'bar': {
-            data_types.Expectation('bar', ['win'], ['Failure']): {
-                'foo_builder': {
-                    'step1': uu.CreateStatsWithPassFails(7, 0),
-                },
-                'bar_builder': {
-                    'step1': uu.CreateStatsWithPassFails(0, 8),
-                },
-            },
-        },
-    }
+    expectation_map = data_types.TestExpectationMap({
+        'foo':
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation('foo', ['win'], ['Failure']):
+            data_types.BuilderStepMap({
+                'foo_builder':
+                data_types.StepBuildStatsMap({
+                    'step1':
+                    uu.CreateStatsWithPassFails(1, 0),
+                    'step2':
+                    uu.CreateStatsWithPassFails(2, 2),
+                }),
+                'bar_builder':
+                data_types.StepBuildStatsMap({
+                    'step1':
+                    uu.CreateStatsWithPassFails(3, 0),
+                    'step2':
+                    uu.CreateStatsWithPassFails(0, 4)
+                }),
+            }),
+            data_types.Expectation('foo', ['linux'], ['RetryOnFailure']):
+            data_types.BuilderStepMap({
+                'foo_builder':
+                data_types.StepBuildStatsMap({
+                    'step1':
+                    uu.CreateStatsWithPassFails(5, 0),
+                    'step2':
+                    uu.CreateStatsWithPassFails(6, 6),
+                }),
+            }),
+        }),
+        'bar':
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation('bar', ['win'], ['Failure']):
+            data_types.BuilderStepMap({
+                'foo_builder':
+                data_types.StepBuildStatsMap({
+                    'step1':
+                    uu.CreateStatsWithPassFails(7, 0),
+                }),
+                'bar_builder':
+                data_types.StepBuildStatsMap({
+                    'step1':
+                    uu.CreateStatsWithPassFails(0, 8),
+                }),
+            }),
+        }),
+    })
     expected_semi_stale_dict = copy.deepcopy(expectation_map)
     stale_dict, semi_stale_dict, active_dict =\
         expectations.SplitExpectationsByStaleness(expectation_map)
@@ -245,40 +313,62 @@ class SplitExpectationsByStalenessUnittest(unittest.TestCase):
 
   def testAllExpectations(self):
     """Tests output when all three types of expectations are provided."""
-    expectation_map = {
-        'foo': {
-            data_types.Expectation('foo', ['stale'], 'Failure'): {
-                'foo_builder': {
-                    'step1': uu.CreateStatsWithPassFails(1, 0),
-                    'step2': uu.CreateStatsWithPassFails(2, 0),
-                },
-                'bar_builder': {
-                    'step1': uu.CreateStatsWithPassFails(3, 0),
-                    'step2': uu.CreateStatsWithPassFails(4, 0)
-                },
-            },
-            data_types.Expectation('foo', ['semistale'], 'Failure'): {
-                'foo_builder': {
-                    'step1': uu.CreateStatsWithPassFails(1, 0),
-                    'step2': uu.CreateStatsWithPassFails(2, 2),
-                },
-                'bar_builder': {
-                    'step1': uu.CreateStatsWithPassFails(3, 0),
-                    'step2': uu.CreateStatsWithPassFails(0, 4)
-                },
-            },
-            data_types.Expectation('foo', ['active'], 'Failure'): {
-                'foo_builder': {
-                    'step1': uu.CreateStatsWithPassFails(1, 1),
-                    'step2': uu.CreateStatsWithPassFails(2, 2),
-                },
-                'bar_builder': {
-                    'step1': uu.CreateStatsWithPassFails(3, 3),
-                    'step2': uu.CreateStatsWithPassFails(0, 4)
-                },
-            },
-        },
-    }
+    expectation_map = data_types.TestExpectationMap({
+        'foo':
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation('foo', ['stale'], 'Failure'):
+            data_types.BuilderStepMap({
+                'foo_builder':
+                data_types.StepBuildStatsMap({
+                    'step1':
+                    uu.CreateStatsWithPassFails(1, 0),
+                    'step2':
+                    uu.CreateStatsWithPassFails(2, 0),
+                }),
+                'bar_builder':
+                data_types.StepBuildStatsMap({
+                    'step1':
+                    uu.CreateStatsWithPassFails(3, 0),
+                    'step2':
+                    uu.CreateStatsWithPassFails(4, 0)
+                }),
+            }),
+            data_types.Expectation('foo', ['semistale'], 'Failure'):
+            data_types.BuilderStepMap({
+                'foo_builder':
+                data_types.StepBuildStatsMap({
+                    'step1':
+                    uu.CreateStatsWithPassFails(1, 0),
+                    'step2':
+                    uu.CreateStatsWithPassFails(2, 2),
+                }),
+                'bar_builder':
+                data_types.StepBuildStatsMap({
+                    'step1':
+                    uu.CreateStatsWithPassFails(3, 0),
+                    'step2':
+                    uu.CreateStatsWithPassFails(0, 4)
+                }),
+            }),
+            data_types.Expectation('foo', ['active'], 'Failure'):
+            data_types.BuilderStepMap({
+                'foo_builder':
+                data_types.StepBuildStatsMap({
+                    'step1':
+                    uu.CreateStatsWithPassFails(1, 1),
+                    'step2':
+                    uu.CreateStatsWithPassFails(2, 2),
+                }),
+                'bar_builder':
+                data_types.StepBuildStatsMap({
+                    'step1':
+                    uu.CreateStatsWithPassFails(3, 3),
+                    'step2':
+                    uu.CreateStatsWithPassFails(0, 4)
+                }),
+            }),
+        }),
+    })
     expected_stale = {
         'foo': {
             data_types.Expectation('foo', ['stale'], 'Failure'): {
@@ -621,19 +711,23 @@ class AddResultListToMapUnittest(unittest.TestCase):
 
   def GetEmptyMapForGenericRetryExpectation(self):
     foo_expectation = self.GetGenericRetryExpectation()
-    return {
-        'foo/test': {
-            foo_expectation: {},
-        },
-    }
+    return data_types.TestExpectationMap({
+        'foo/test':
+        data_types.ExpectationBuilderMap({
+            foo_expectation:
+            data_types.BuilderStepMap(),
+        }),
+    })
 
   def GetEmptyMapForGenericFailureExpectation(self):
     foo_expectation = self.GetGenericFailureExpectation()
-    return {
-        'foo/test': {
-            foo_expectation: {},
-        },
-    }
+    return data_types.TestExpectationMap({
+        'foo/test':
+        data_types.ExpectationBuilderMap({
+            foo_expectation:
+            data_types.BuilderStepMap(),
+        }),
+    })
 
   def GetPassedMapForExpectation(self, expectation):
     stats = data_types.BuildStats()
@@ -646,15 +740,18 @@ class AddResultListToMapUnittest(unittest.TestCase):
     return self.GetMapForExpectationAndStats(expectation, stats)
 
   def GetMapForExpectationAndStats(self, expectation, stats):
-    return {
-        expectation.test: {
-            expectation: {
-                'builder': {
+    return data_types.TestExpectationMap({
+        expectation.test:
+        data_types.ExpectationBuilderMap({
+            expectation:
+            data_types.BuilderStepMap({
+                'builder':
+                data_types.StepBuildStatsMap({
                     'pixel_tests': stats,
-                },
-            },
-        },
-    }
+                }),
+            }),
+        }),
+    })
 
   def testRetryOnlyPassMatching(self):
     """Tests when the only tests are retry expectations that pass and match."""
@@ -750,16 +847,19 @@ class MergeExpectationMapsUnittest(unittest.TestCase):
 
   def testEmptyBaseMap(self):
     """Tests that a merge with an empty base map copies the merge map."""
-    base_map = {}
-    merge_map = {
-        'foo': {
-            data_types.Expectation('foo', ['win'], 'Failure'): {
-                'builder': {
+    base_map = data_types.TestExpectationMap()
+    merge_map = data_types.TestExpectationMap({
+        'foo':
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation('foo', ['win'], 'Failure'):
+            data_types.BuilderStepMap({
+                'builder':
+                data_types.StepBuildStatsMap({
                     'step': data_types.BuildStats(),
-                },
-            },
-        },
-    }
+                }),
+            }),
+        }),
+    })
     original_merge_map = copy.deepcopy(merge_map)
     expectations.MergeExpectationMaps(base_map, merge_map)
     self.assertEqual(base_map, merge_map)
@@ -767,16 +867,19 @@ class MergeExpectationMapsUnittest(unittest.TestCase):
 
   def testEmptyMergeMap(self):
     """Tests that a merge with an empty merge map is a no-op."""
-    base_map = {
-        'foo': {
-            data_types.Expectation('foo', ['win'], 'Failure'): {
-                'builder': {
+    base_map = data_types.TestExpectationMap({
+        'foo':
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation('foo', ['win'], 'Failure'):
+            data_types.BuilderStepMap({
+                'builder':
+                data_types.StepBuildStatsMap({
                     'step': data_types.BuildStats(),
-                },
-            },
-        },
-    }
-    merge_map = {}
+                }),
+            }),
+        }),
+    })
+    merge_map = data_types.TestExpectationMap()
     original_base_map = copy.deepcopy(base_map)
     expectations.MergeExpectationMaps(base_map, merge_map)
     self.assertEqual(base_map, original_base_map)
@@ -784,39 +887,51 @@ class MergeExpectationMapsUnittest(unittest.TestCase):
 
   def testMissingKeys(self):
     """Tests that missing keys are properly copied to the base map."""
-    base_map = {
-        'foo': {
-            data_types.Expectation('foo', ['win'], 'Failure'): {
-                'builder': {
+    base_map = data_types.TestExpectationMap({
+        'foo':
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation('foo', ['win'], 'Failure'):
+            data_types.BuilderStepMap({
+                'builder':
+                data_types.StepBuildStatsMap({
                     'step': data_types.BuildStats(),
-                },
-            },
-        },
-    }
-    merge_map = {
-        'foo': {
-            data_types.Expectation('foo', ['win'], 'Failure'): {
-                'builder': {
+                }),
+            }),
+        }),
+    })
+    merge_map = data_types.TestExpectationMap({
+        'foo':
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation('foo', ['win'], 'Failure'):
+            data_types.BuilderStepMap({
+                'builder':
+                data_types.StepBuildStatsMap({
                     'step2': data_types.BuildStats(),
-                },
-                'builder2': {
+                }),
+                'builder2':
+                data_types.StepBuildStatsMap({
                     'step': data_types.BuildStats(),
-                },
-            },
-            data_types.Expectation('foo', ['mac'], 'Failure'): {
-                'builder': {
+                }),
+            }),
+            data_types.Expectation('foo', ['mac'], 'Failure'):
+            data_types.BuilderStepMap({
+                'builder':
+                data_types.StepBuildStatsMap({
                     'step': data_types.BuildStats(),
-                }
-            }
-        },
-        'bar': {
-            data_types.Expectation('bar', ['win'], 'Failure'): {
-                'builder': {
+                })
+            })
+        }),
+        'bar':
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation('bar', ['win'], 'Failure'):
+            data_types.BuilderStepMap({
+                'builder':
+                data_types.StepBuildStatsMap({
                     'step': data_types.BuildStats(),
-                },
-            },
-        },
-    }
+                }),
+            }),
+        }),
+    })
     expected_base_map = {
         'foo': {
             data_types.Expectation('foo', ['win'], 'Failure'): {
@@ -847,26 +962,32 @@ class MergeExpectationMapsUnittest(unittest.TestCase):
 
   def testMergeBuildStats(self):
     """Tests that BuildStats for the same step are merged properly."""
-    base_map = {
-        'foo': {
-            data_types.Expectation('foo', ['win'], 'Failure'): {
-                'builder': {
+    base_map = data_types.TestExpectationMap({
+        'foo':
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation('foo', ['win'], 'Failure'):
+            data_types.BuilderStepMap({
+                'builder':
+                data_types.StepBuildStatsMap({
                     'step': data_types.BuildStats(),
-                },
-            },
-        },
-    }
+                }),
+            }),
+        }),
+    })
     merge_stats = data_types.BuildStats()
     merge_stats.AddFailedBuild('1')
-    merge_map = {
-        'foo': {
-            data_types.Expectation('foo', ['win'], 'Failure'): {
-                'builder': {
+    merge_map = data_types.TestExpectationMap({
+        'foo':
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation('foo', ['win'], 'Failure'):
+            data_types.BuilderStepMap({
+                'builder':
+                data_types.StepBuildStatsMap({
                     'step': merge_stats,
-                },
-            },
-        },
-    }
+                }),
+            }),
+        }),
+    })
     expected_stats = data_types.BuildStats()
     expected_stats.AddFailedBuild('1')
     expected_base_map = {

@@ -307,11 +307,13 @@ class FillExpectationMapForBuildersUnittest(unittest.TestCase):
     self._query_mock.side_effect = SideEffect
 
     expectation = data_types.Expectation('foo', ['win'], 'RetryOnFailure')
-    expectation_map = {
-        'foo': {
-            expectation: {},
-        },
-    }
+    expectation_map = data_types.TestExpectationMap({
+        'foo':
+        data_types.ExpectationBuilderMap({
+            expectation:
+            data_types.BuilderStepMap(),
+        }),
+    })
     unmatched_results = self._querier._FillExpectationMapForBuilders(
         expectation_map, ['matched_builder', 'unmatched_builder'], 'ci')
     stats = data_types.BuildStats()
@@ -337,8 +339,8 @@ class FillExpectationMapForBuildersUnittest(unittest.TestCase):
     """Tests that a query failure is properly surfaced despite being async."""
     self._query_mock.side_effect = IndexError('failure')
     with self.assertRaises(IndexError):
-      self._querier._FillExpectationMapForBuilders({}, ['matched_builder'],
-                                                   'ci')
+      self._querier._FillExpectationMapForBuilders(
+          data_types.TestExpectationMap(), ['matched_builder'], 'ci')
 
 
 class GetTestFilterClausesForBuilderUnittest(unittest.TestCase):

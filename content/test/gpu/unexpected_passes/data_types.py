@@ -123,3 +123,90 @@ class BuildStats(object):
 
 def BuildLinkFromBuildId(build_id):
   return 'http://ci.chromium.org/b/%s' % build_id
+
+
+# These explicit overrides could likely be replaced by using regular dicts with
+# type hinting in Python 3. Based on https://stackoverflow.com/a/2588648, this
+# should cover all cases where the dict can be modified.
+class BaseTypedMap(dict):
+  """A base class for typed dictionaries.
+
+  Any child classes that override __setitem__ will have any modifications to the
+  dictionary go through the type checking in __setitem__.
+  """
+
+  def __init__(self, *args, **kwargs):  # pylint:disable=super-init-not-called
+    self.update(*args, **kwargs)
+
+  def update(self, *args, **kwargs):
+    if args:
+      assert len(args) == 1
+      other = dict(args[0])
+      for k, v in other.iteritems():
+        self[k] = v
+    for k, v in kwargs.iteritems():
+      self[k] = v
+
+  def setdefault(self, key, value=None):
+    if key not in self:
+      self[key] = value
+    return self[key]
+
+
+class TestExpectationMap(BaseTypedMap):
+  """Typed map for string types -> ExpectationBuilderMap.
+
+  This results in a dict in the following format:
+  {
+    test_name1 (str): {
+      expectation1 (data_types.Expectation): {
+        builder_name1 (str): {
+          step_name1 (str): stats1 (data_types.BuildStats),
+          step_name2 (str): stats2 (data_types.BuildStats),
+          ...
+        },
+        builder_name2 (str): { ... },
+      },
+      expectation2 (data_types.Expectation): { ... },
+      ...
+    },
+    test_name2 (str): { ... },
+    ...
+  }
+  """
+
+  def __setitem__(self, key, value):
+    assert IsStringType(key)
+    assert isinstance(value, ExpectationBuilderMap)
+    super(TestExpectationMap, self).__setitem__(key, value)
+
+
+class ExpectationBuilderMap(BaseTypedMap):
+  """Typed map for Expectation -> BuilderStepMap."""
+
+  def __setitem__(self, key, value):
+    assert isinstance(key, Expectation)
+    assert isinstance(value, BuilderStepMap)
+    super(ExpectationBuilderMap, self).__setitem__(key, value)
+
+
+class BuilderStepMap(BaseTypedMap):
+  """Typed map for string types -> BuilderStepMap."""
+
+  def __setitem__(self, key, value):
+    assert IsStringType(key)
+    assert isinstance(value, StepBuildStatsMap)
+    super(BuilderStepMap, self).__setitem__(key, value)
+
+
+class StepBuildStatsMap(BaseTypedMap):
+  """Typed map for string types -> BuildStats"""
+
+  def __setitem__(self, key, value):
+    assert IsStringType(key)
+    assert isinstance(value, BuildStats)
+    super(StepBuildStatsMap, self).__setitem__(key, value)
+
+
+def IsStringType(s):
+  return isinstance(s, str) or isinstance(s, unicode)

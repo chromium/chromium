@@ -151,14 +151,11 @@ def OutputResults(stale_dict,
   """Outputs script results to |file_handle|.
 
   Args:
-    stale_dict: A map in the format returned by
-        expectations.CreateTestExpectationMap() containing all the stale
+    stale_dict: A data_types.TestExpectationMap containing all the stale
         expectations.
-    semi_stale_dict: A map in the format returned by
-        expectations.CreateTestExpectationMap() containing all the semi-stale
-        expectations.
-    active_dict: A map in the format returned by
-        expectations.CreateTestExpectationMap() containing all the active
+    semi_stale_dict: A data_types.TestExpectationMap containing all the
+        semi-stale expectations.
+    active_dict: A data_types.TestExpectationmap containing all the active
         expectations.
     ummatched_results: Any unmatched results found while filling
         |test_expectation_map|, as returned by
@@ -170,6 +167,9 @@ def OutputResults(stale_dict,
     file_handle: An optional open file-like object to output to. If not
         specified, a suitable default will be used.
   """
+  assert isinstance(stale_dict, data_types.TestExpectationMap)
+  assert isinstance(semi_stale_dict, data_types.TestExpectationMap)
+  assert isinstance(active_dict, data_types.TestExpectationMap)
   logging.info('Outputting results in format %s', output_format)
   stale_str_dict = _ConvertTestExpectationMapToStringDict(stale_dict)
   semi_stale_str_dict = _ConvertTestExpectationMapToStringDict(semi_stale_dict)
@@ -308,8 +308,7 @@ def _ConvertTestExpectationMapToStringDict(test_expectation_map):
   """Converts |test_expectation_map| to a dict of strings for reporting.
 
   Args:
-    test_expectation_map: A dict in the format output by
-        expectations.CreateTestExpectationMap()
+    test_expectation_map: A data_types.TestExpectationMap.
 
   Returns:
     A string dictionary representation of |test_expectation_map| in the
@@ -334,6 +333,7 @@ def _ConvertTestExpectationMapToStringDict(test_expectation_map):
       }
     }
   """
+  assert isinstance(test_expectation_map, data_types.TestExpectationMap)
   output_dict = {}
   for test_name, expectation_map in test_expectation_map.iteritems():
     output_dict[test_name] = {}

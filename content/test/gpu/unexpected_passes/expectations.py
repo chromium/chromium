@@ -26,25 +26,8 @@ def CreateTestExpectationMap(expectation_file, tests):
         |expectation_file| must be None.
 
   Returns:
-    A dict in the following format:
-    {
-      test_name1 (str): {
-        expectation1 (data_types.Expectation): {
-          builder_name1 (str): {
-            step_name1 (str): stats1 (data_types.BuildStats),
-            step_name2 (str): stats2 (data_types.BuildStats),
-            ...
-          },
-          builder_name2 (str): { ... },
-        },
-        expectation2 (data_types.Expectation): { ... },
-        ...
-      },
-      test_name2 (str): { ... },
-      ...
-    }
-    although anything beyond the the data_types.Expectation keys will be left
-    empty to be filled at a later time.
+    A data_types.TestExpectationMap, although all its BuilderStepMap contents
+    will be empty.
   """
   logging.info('Creating test expectation map')
   assert expectation_file or tests
@@ -59,15 +42,16 @@ def CreateTestExpectationMap(expectation_file, tests):
       content += '%s [ RetryOnFailure ]\n' % t
 
   list_parser = expectations_parser.TaggedTestListParser(content)
-  expectation_map = {}
+  expectation_map = data_types.TestExpectationMap()
   logging.debug('Parsed %d expectations', len(list_parser.expectations))
   for e in list_parser.expectations:
     if 'Skip' in e.raw_results:
       continue
     expectation = data_types.Expectation(e.test, e.tags, e.raw_results)
-    expectations_for_test = expectation_map.setdefault(e.test, {})
+    expectations_for_test = expectation_map.setdefault(
+        e.test, data_types.ExpectationBuilderMap())
     assert expectation not in expectations_for_test
-    expectations_for_test[expectation] = {}
+    expectations_for_test[expectation] = data_types.BuilderStepMap()
 
   return expectation_map
 
@@ -80,12 +64,13 @@ def FilterOutUnusedExpectations(test_expectation_map):
   dictionary, that test entry will also be removed.
 
   Args:
-    test_expectation_map: A dict in the format returned by
-        CreateTestExpectationMap(). Will be modified in place.
+    test_expectation_map: A data_types.TestExpectationMap. Will be modified in
+        place.
 
   Returns:
     A list containing any Expectations that were removed.
   """
+  assert isinstance(test_expectation_map, data_types.TestExpectationMap)
   logging.info('Filtering out unused expectations')
   unused_expectations = []
   for _, expectation_map in test_expectation_map.iteritems():
@@ -113,40 +98,41 @@ def SplitExpectationsByStaleness(test_expectation_map):
   """Separates |test_expectation_map| based on expectation staleness.
 
   Args:
-    test_expectation_map: A dict in the format returned by
-        CreateTestExpectationMap() with any unused expectations already filtered
-        out.
+    test_expectation_map: A data_types.TestExpectationMap with any unused
+        expectations already filtered out.
 
   Returns:
-    Three dicts (stale_dict, semi_stale_dict, active_dict). All three combined
-    contain the information of |test_expectation_map| in the same format.
-    |stale_dict| contains entries for expectations that are no longer being
-    helpful, |semi_stale_dict| contains entries for expectations that might be
-    removable or modifiable, but have at least one failed test run.
-    |active_dict| contains entries for expectations that are preventing failures
-    on all builders they're active on, and thus shouldn't be removed.
+    Three data_types.TestExpectationMaps (stale_dict, semi_stale_dict,
+    active_dict). All three combined contain the information of
+    |test_expectation_map|. |stale_dict| contains entries for expectations that
+    are no longer being helpful, |semi_stale_dict| contains entries for
+    expectations that might be removable or modifiable, but have at least one
+    failed test run. |active_dict| contains entries for expectations that are
+    preventing failures on all builders they're active on, and thus shouldn't be
+    removed.
   """
+  assert isinstance(test_expectation_map, data_types.TestExpectationMap)
   FULL_PASS = 1
   NEVER_PASS = 2
   PARTIAL_PASS = 3
 
-  stale_dict = {}
-  semi_stale_dict = {}
-  active_dict = {}
+  stale_dict = data_types.TestExpectationMap()
+  semi_stale_dict = data_types.TestExpectationMap()
+  active_dict = data_types.TestExpectationMap()
   for test_name, expectation_map in test_expectation_map.iteritems():
     for expectation, builder_map in expectation_map.iteritems():
       # A temporary map to hold data so we can later determine whether an
       # expectation is stale, semi-stale, or active.
       tmp_map = {
-          FULL_PASS: {},
-          NEVER_PASS: {},
-          PARTIAL_PASS: {},
+          FULL_PASS: data_types.BuilderStepMap(),
+          NEVER_PASS: data_types.BuilderStepMap(),
+          PARTIAL_PASS: data_types.BuilderStepMap(),
       }
 
       for builder_name, step_map in builder_map.iteritems():
-        fully_passed = {}
-        partially_passed = {}
-        never_passed = {}
+        fully_passed = data_types.StepBuildStatsMap()
+        partially_passed = data_types.StepBuildStatsMap()
+        never_passed = data_types.StepBuildStatsMap()
 
         for step_name, stats in step_map.iteritems():
           if stats.passed_builds == stats.total_builds:
@@ -169,24 +155,28 @@ def SplitExpectationsByStaleness(test_expectation_map):
       def _CopyPassesIntoBuilderMap(builder_map, pass_types):
         for pt in pass_types:
           for builder, steps in tmp_map[pt].iteritems():
-            builder_map.setdefault(builder, {}).update(steps)
+            builder_map.setdefault(builder,
+                                   data_types.StepBuildStatsMap()).update(steps)
 
       # Handle the case of a stale expectation.
       if not (tmp_map[NEVER_PASS] or tmp_map[PARTIAL_PASS]):
-        builder_map = stale_dict.setdefault(test_name,
-                                            {}).setdefault(expectation, {})
+        builder_map = stale_dict.setdefault(
+            test_name, data_types.ExpectationBuilderMap()).setdefault(
+                expectation, data_types.BuilderStepMap())
         _CopyPassesIntoBuilderMap(builder_map, [FULL_PASS])
       # Handle the case of an active expectation.
       elif not tmp_map[FULL_PASS]:
-        builder_map = active_dict.setdefault(test_name,
-                                             {}).setdefault(expectation, {})
+        builder_map = active_dict.setdefault(
+            test_name, data_types.ExpectationBuilderMap()).setdefault(
+                expectation, data_types.BuilderStepMap())
         _CopyPassesIntoBuilderMap(builder_map, [NEVER_PASS, PARTIAL_PASS])
       # Handle the case of a semi-stale expectation.
       else:
         # TODO(crbug.com/998329): Sort by pass percentage so it's easier to find
         # problematic builders without highlighting.
-        builder_map = semi_stale_dict.setdefault(test_name, {}).setdefault(
-            expectation, {})
+        builder_map = semi_stale_dict.setdefault(
+            test_name, data_types.ExpectationBuilderMap()).setdefault(
+                expectation, data_types.BuilderStepMap())
         _CopyPassesIntoBuilderMap(builder_map,
                                   [FULL_PASS, PARTIAL_PASS, NEVER_PASS])
   return stale_dict, semi_stale_dict, active_dict
@@ -283,16 +273,20 @@ def MergeExpectationMaps(base_map, merge_map, reference_map=None):
   """Merges |merge_map| into |base_map|.
 
   Args:
-    base_map: A dict to be updated with the contents of |merge_map|. Will be
-        modified in place.
-    merge_map: A dict in the format returned by
-        expectations.CreateTestExpectationMap() whose contents will be merged
+    base_map: A data_types.TestExpectationMap to be updated with the contents of
+        |merge_map|. Will be modified in place.
+    merge_map: A data_types.TestExpectationMap whose contents will be merged
         into |base_map|.
     reference_map: A dict containing the information that was originally in
         |base_map|. Used for ensuring that a single expectation/builder/step
         combination is only ever updated once. If None, a copy of |base_map|
         will be used.
   """
+  # We only enforce that we're starting with a TestExpectationMap when this is
+  # initially called, not on the recursive calls.
+  if reference_map is None:
+    assert isinstance(base_map, data_types.TestExpectationMap)
+    assert isinstance(merge_map, data_types.TestExpectationMap)
   # We should only ever encounter a single updated BuildStats for an
   # expectation/builder/step combination. Use the reference map to determine
   # if a particular BuildStats has already been updated or not.
@@ -320,8 +314,7 @@ def AddResultListToMap(expectation_map, builder, results):
   """Adds |results| to |expectation_map|.
 
   Args:
-    expectation_map: A dict in the format returned by
-        expectations.CreateTestExpectationMap(). Will be modified in-place.
+    expectation_map: A data_types.TestExpectationMap. Will be modified in-place.
     builder: A string containing the builder |results| came from. Should be
         prefixed with something to distinguish between identically named CI and
         try builders.
@@ -332,6 +325,7 @@ def AddResultListToMap(expectation_map, builder, results):
     A list of data_types.Result objects who did not have a matching expectation
     in |expectation_map|.
   """
+  assert isinstance(expectation_map, data_types.TestExpectationMap)
   failure_results = set()
   pass_results = set()
   unmatched_results = []
@@ -364,8 +358,7 @@ def _AddResultToMap(result, builder, expectation_map):
   Args:
     result: A data_types.Result object to add.
     builder: A string containing the name of the builder |result| came from.
-    expectation_map: A dict in the format returned by
-        expectations.CreateTestExpectationMap(). Will be modified in-place.
+    expectation_map: A data_types.TestExpectationMap. Will be modified in-place.
 
   Returns:
     True if an expectation in |expectation_map| applied to |result|, otherwise
@@ -379,7 +372,8 @@ def _AddResultToMap(result, builder, expectation_map):
     for e, builder_map in expectations.iteritems():
       if e.AppliesToResult(result):
         found_matching_expectation = True
-        step_map = builder_map.setdefault(builder, {})
+        step_map = builder_map.setdefault(builder,
+                                          data_types.StepBuildStatsMap())
         stats = step_map.setdefault(result.step, data_types.BuildStats())
         if result.actual_result == 'Pass':
           stats.AddPassedBuild()

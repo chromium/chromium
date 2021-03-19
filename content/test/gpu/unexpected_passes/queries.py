@@ -205,8 +205,8 @@ class BigQueryQuerier(object):
     """Fills |expectation_map| with results from |builders|.
 
     Args:
-      expectation_map: A dict in the format returned by
-          expectations.CreateTestExpectationMap(). Will be modified in-place.
+      expectation_map: A data_types.TestExpectationMap. Will be modified
+          in-place.
       builders: A list of strings containing the names of builders to query.
       builder_type: A string containing the type of builder to query, either
           "ci" or "try".
@@ -222,6 +222,7 @@ class BigQueryQuerier(object):
         ],
       }
     """
+    assert isinstance(expectation_map, data_types.TestExpectationMap)
 
     # Spin up a separate process for each query/add step. This is wasteful in
     # the sense that we'll have a bunch of idle processes once faster steps
@@ -234,7 +235,7 @@ class BigQueryQuerier(object):
 
     results = process_pool.map(self._QueryAddCombined, args)
 
-    tmp_expectation_map = {}
+    tmp_expectation_map = data_types.TestExpectationMap()
     all_unmatched_results = {}
 
     for (unmatched_results, prefixed_builder_name, merge_map) in results:
