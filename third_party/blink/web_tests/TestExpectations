@@ -919,7 +919,6 @@ crbug.com/591099 [ Win ] fast/selectors/shadow-host-div-with-span.html [ Failure
 crbug.com/591099 [ Linux ] fast/selectors/shadow-host-div-with-text.html [ Failure ]
 crbug.com/591099 [ Win ] fast/selectors/shadow-host-div-with-text.html [ Failure ]
 crbug.com/591099 virtual/text-antialias/selection/inline-block-in-selection-root.html [ Failure ]
-crbug.com/591099 paint/invalidation/media-audio-no-spurious-repaints.html [ Failure Timeout ]
 crbug.com/591099 editing/selection/paint-hyphen.html [ Failure Pass ]
 crbug.com/591099 external/wpt/dom/ranges/Range-compareBoundaryPoints.html [ Timeout Failure Pass ]
 crbug.com/591099 [ Mac ] virtual/text-antialias/international/shape-across-elements-simple.html [ Failure ]

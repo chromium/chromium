@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -277,6 +278,36 @@ TEST_F(MediaControlInputElementTest, ShouldRecordDisplayStates_Preload) {
   MediaElement().setAttribute(html_names::kPreloadAttr, "auto");
   EXPECT_FALSE(
       MediaControlInputElement::ShouldRecordDisplayStates(MediaElement()));
+}
+
+TEST_F(MediaControlInputElementTest, StyleRecalcForIsWantedAndFit) {
+  GetDocument().body()->appendChild(&ControlInputElement());
+  ControlInputElement().SetIsWanted(false);
+  ControlInputElement().SetDoesFit(false);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(ControlInputElement().GetLayoutObject());
+
+  ControlInputElement().SetIsWanted(false);
+  ControlInputElement().SetDoesFit(false);
+  EXPECT_FALSE(ControlInputElement().NeedsStyleRecalc());
+
+  ControlInputElement().SetIsWanted(true);
+  ControlInputElement().SetDoesFit(false);
+  EXPECT_TRUE(ControlInputElement().NeedsStyleRecalc());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(ControlInputElement().GetLayoutObject());
+  EXPECT_FALSE(ControlInputElement().NeedsStyleRecalc());
+
+  ControlInputElement().SetIsWanted(true);
+  ControlInputElement().SetDoesFit(true);
+  EXPECT_TRUE(ControlInputElement().NeedsStyleRecalc());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(ControlInputElement().GetLayoutObject());
+  EXPECT_FALSE(ControlInputElement().NeedsStyleRecalc());
+
+  ControlInputElement().SetIsWanted(true);
+  ControlInputElement().SetDoesFit(true);
+  EXPECT_FALSE(ControlInputElement().NeedsStyleRecalc());
 }
 
 }  // namespace blink
