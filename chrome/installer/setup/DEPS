@@ -3,6 +3,7 @@ include_rules = [
   "+chrome/install_static",
   "+components/base32",
   "+components/metrics",
+  "+components/version_info/channel.h",
   "+components/zucchini",
   "+courgette",
   "+third_party/crashpad",

@@ -18,6 +18,7 @@
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/setup/installer_crash_reporting.h"
 #include "chrome/installer/util/google_update_settings.h"
+#include "components/version_info/channel.h"
 
 InstallerCrashReporterClient::InstallerCrashReporterClient(
     bool is_per_user_install)
@@ -54,7 +55,8 @@ void InstallerCrashReporterClient::GetProductNameAndVersion(
     *version = L"0.0.0.0-devel";
   }
 
-  *channel_name = install_static::GetChromeChannelName();
+  *channel_name =
+      install_static::GetChromeChannelName(/*with_extended_stable=*/true);
 }
 
 bool InstallerCrashReporterClient::ShouldShowRestartDialog(
@@ -76,7 +78,7 @@ bool InstallerCrashReporterClient::GetIsPerUserInstall() {
 
 bool InstallerCrashReporterClient::GetShouldDumpLargerDumps() {
   // Use large dumps for all but the stable channel.
-  return !install_static::GetChromeChannelName().empty();
+  return install_static::GetChromeChannel() != version_info::Channel::STABLE;
 }
 
 int InstallerCrashReporterClient::GetResultCodeRespawnFailed() {
