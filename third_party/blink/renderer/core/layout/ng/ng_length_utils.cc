@@ -462,10 +462,12 @@ MinMaxSizes ComputeMinAndMaxContentContributionForTest(
       .sizes;
 }
 
-LayoutUnit ComputeInlineSizeFromAspectRatio(const NGConstraintSpace& space,
-                                            const ComputedStyle& style,
-                                            const NGBoxStrut& border_padding,
-                                            LayoutUnit block_size) {
+LayoutUnit ComputeInlineSizeFromAspectRatio(
+    const NGConstraintSpace& space,
+    const ComputedStyle& style,
+    const NGBoxStrut& border_padding,
+    bool should_be_considered_as_replaced,
+    LayoutUnit block_size) {
   if (LIKELY(style.AspectRatio().IsAuto()))
     return kIndefiniteSize;
 
@@ -475,8 +477,9 @@ LayoutUnit ComputeInlineSizeFromAspectRatio(const NGConstraintSpace& space,
     } else if (!style.LogicalHeight().IsAuto()) {
       DCHECK(!style.HasOutOfFlowPosition())
           << "OOF should pass in a block size";
-      block_size = ComputeBlockSizeForFragment(space, style, border_padding,
-                                               kIndefiniteSize, base::nullopt);
+      block_size = ComputeBlockSizeForFragment(
+          space, style, border_padding, kIndefiniteSize, base::nullopt,
+          should_be_considered_as_replaced);
     }
     if (block_size == kIndefiniteSize)
       return kIndefiniteSize;
@@ -514,7 +517,8 @@ LayoutUnit ComputeInlineSizeForFragmentInternal(
   if (!style.AspectRatio().IsAuto()) {
     if (logical_width.IsAuto() || logical_width.IsMinContent() ||
         logical_width.IsMaxContent()) {
-      extent = ComputeInlineSizeFromAspectRatio(space, style, border_padding);
+      extent = ComputeInlineSizeFromAspectRatio(
+          space, style, border_padding, node.ShouldBeConsideredAsReplaced());
     }
     if (UNLIKELY(extent != kIndefiniteSize)) {
       // This means we successfully applied aspect-ratio and now need to check
@@ -638,6 +642,7 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
     const NGBoxStrut& border_padding,
     LayoutUnit intrinsic_size,
     base::Optional<LayoutUnit> inline_size,
+    bool should_be_considered_as_replaced,
     LayoutUnit available_block_size_adjustment = LayoutUnit(),
     const LayoutUnit* opt_percentage_resolution_block_size_for_min_max =
         nullptr) {
@@ -660,6 +665,7 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
   if (logical_height.IsPercentOrCalc() &&
       space.TableCellChildLayoutMode() ==
           NGTableCellChildLayoutMode::kMeasureRestricted &&
+      !should_be_considered_as_replaced &&
       (style.OverflowBlockDirection() == EOverflow::kAuto ||
        style.OverflowBlockDirection() == EOverflow::kScroll))
     return min_max.min_size;
@@ -708,6 +714,7 @@ LayoutUnit ComputeBlockSizeForFragment(
     const NGBoxStrut& border_padding,
     LayoutUnit intrinsic_size,
     base::Optional<LayoutUnit> inline_size,
+    bool should_be_considered_as_replaced,
     LayoutUnit available_block_size_adjustment) {
   // The |available_block_size_adjustment| should only be used for <table>s.
   DCHECK(available_block_size_adjustment == LayoutUnit() ||
@@ -731,7 +738,7 @@ LayoutUnit ComputeBlockSizeForFragment(
 
   return ComputeBlockSizeForFragmentInternal(
       constraint_space, style, border_padding, intrinsic_size, inline_size,
-      available_block_size_adjustment);
+      should_be_considered_as_replaced, available_block_size_adjustment);
 }
 
 // Computes size for a replaced element.
@@ -1272,8 +1279,11 @@ LayoutUnit ComputeInitialBlockSizeForFragment(
     base::Optional<LayoutUnit> inline_size) {
   if (space.IsFixedBlockSizeIndefinite())
     return intrinsic_size;
+  // <html> and <body> should not be considered as replaced.
+  const bool should_be_considered_as_replaced = false;
   return ComputeBlockSizeForFragment(space, style, border_padding,
-                                     intrinsic_size, inline_size);
+                                     intrinsic_size, inline_size,
+                                     should_be_considered_as_replaced);
 }
 
 // Clamp the inline size of the scrollbar, unless it's larger than the inline
@@ -1502,7 +1512,7 @@ LogicalSize CalculateReplacedChildPercentageSize(
   if (space.IsTableCell() && style.LogicalHeight().IsFixed()) {
     LayoutUnit block_size = ComputeBlockSizeForFragmentInternal(
         space, style, border_padding, kIndefiniteSize /* intrinsic_size */,
-        base::nullopt /* inline_size */);
+        base::nullopt /* inline_size */, node.ShouldBeConsideredAsReplaced());
     DCHECK_NE(block_size, kIndefiniteSize);
     return {child_available_size.inline_size,
             (block_size - border_scrollbar_padding.BlockSum())
@@ -1541,7 +1551,7 @@ LayoutUnit CalculateChildPercentageBlockSizeForMinMax(
     block_size = ComputeBlockSizeForFragmentInternal(
         space, style, border_padding,
         CalculateDefaultBlockSize(space, node, border_scrollbar_padding),
-        /* inline_size */ base::nullopt,
+        /* inline_size */ base::nullopt, node.ShouldBeConsideredAsReplaced(),
         /* available_block_size_adjustment */ LayoutUnit(),
         &input_percentage_block_size);
 

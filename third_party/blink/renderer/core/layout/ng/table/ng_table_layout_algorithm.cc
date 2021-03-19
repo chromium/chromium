@@ -575,7 +575,7 @@ void NGTableLayoutAlgorithm::ComputeRows(
 
   const LayoutUnit css_table_block_size = ComputeBlockSizeForFragment(
       ConstraintSpace(), Style(), table_border_padding, intrinsic_block_size,
-      table_grid_inline_size,
+      table_grid_inline_size, Node().ShouldBeConsideredAsReplaced(),
       /* available_block_size_adjustment */ captions_block_size);
 
   // In quirks mode, empty tables ignore any specified block-size.

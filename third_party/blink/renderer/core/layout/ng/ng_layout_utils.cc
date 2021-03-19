@@ -260,7 +260,8 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
 
     block_size = ComputeBlockSizeForFragment(
         new_space, style, fragment_geometry.border + fragment_geometry.padding,
-        intrinsic_block_size, fragment_geometry.border_box_size.inline_size);
+        intrinsic_block_size, fragment_geometry.border_box_size.inline_size,
+        node.ShouldBeConsideredAsReplaced());
 
     if (block_size == kIndefiniteSize)
       return NGLayoutCacheStatus::kNeedsLayout;

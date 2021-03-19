@@ -95,10 +95,10 @@ scoped_refptr<const NGLayoutResult> NGFieldsetLayoutAlgorithm::Layout() {
       intrinsic_block_size_ + borders_.block_end);
 
   // Recompute the block-axis size now that we know our content size.
-  border_box_size_.block_size =
-      ComputeBlockSizeForFragment(ConstraintSpace(), Style(), BorderPadding(),
-                                  intrinsic_block_size_ + consumed_block_size_,
-                                  border_box_size_.inline_size);
+  border_box_size_.block_size = ComputeBlockSizeForFragment(
+      ConstraintSpace(), Style(), BorderPadding(),
+      intrinsic_block_size_ + consumed_block_size_,
+      border_box_size_.inline_size, Node().ShouldBeConsideredAsReplaced());
 
   // The above computation utility knows nothing about fieldset weirdness. The
   // legend may eat from the available content box block size. Make room for
