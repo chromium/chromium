@@ -142,9 +142,14 @@ bool HasAriaCellRole(Element* elem) {
 
 // Return true if whitespace is not necessary to keep adjacent_node separate
 // in screen reader output from surrounding nodes.
-bool CanIgnoreSpaceNextTo(LayoutObject* layout_object, bool is_after) {
+bool CanIgnoreSpaceNextTo(LayoutObject* layout_object,
+                          bool is_after,
+                          int counter = 0) {
   if (!layout_object)
     return true;
+
+  if (counter > 3)
+    return false;  // Don't recurse more than 3 times.
 
   auto* elem = DynamicTo<Element>(layout_object->GetNode());
 
@@ -202,9 +207,10 @@ bool CanIgnoreSpaceNextTo(LayoutObject* layout_object, bool is_after) {
         is_after ? FlatTreeTraversal::NextSkippingChildren(*elem)
                  : FlatTreeTraversal::PreviousAbsoluteSibling(*elem);
     return adjacent_node &&
-           CanIgnoreSpaceNextTo(adjacent_node->GetLayoutObject(), is_after);
+           CanIgnoreSpaceNextTo(adjacent_node->GetLayoutObject(), is_after,
+                                ++counter);
   }
-  return CanIgnoreSpaceNextTo(child, is_after);
+  return CanIgnoreSpaceNextTo(child, is_after, ++counter);
 }
 
 bool IsTextRelevantForAccessibility(const LayoutText& layout_text) {
