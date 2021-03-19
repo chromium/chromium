@@ -5,6 +5,7 @@ AppInfoDialogBrowserTest.*
 AskGoogleForSuggestionsDialogTest.*
 BookmarkBubbleViewBrowserTest.*
 BookmarkEditorViewBrowserTest.*
+ChromeLabsUiTest.*
 ContentSettingBubbleDialogTest.*
 ExtensionInstallDialogViewInteractiveBrowserTest.*
 ExtensionUninstallDialogViewInteractiveBrowserTest.*
