@@ -498,7 +498,7 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
         AutomationUtil.isDescendantOf(
             ChromeVoxState.instance.currentRange.start.node, t)) {
       if (new Date() - this.lastValueChanged_ <=
-          DesktopAutomationHandler.VMIN_VALUE_CHANGE_DELAY_MS) {
+          DesktopAutomationHandler.MIN_VALUE_CHANGE_DELAY_MS) {
         return;
       }
 
@@ -760,7 +760,7 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
  * Time to wait until processing more value changed events.
  * @const {number}
  */
-DesktopAutomationHandler.VMIN_VALUE_CHANGE_DELAY_MS = 50;
+DesktopAutomationHandler.MIN_VALUE_CHANGE_DELAY_MS = 50;
 
 /**
  * Time to wait before announcing attribute changes that are otherwise too

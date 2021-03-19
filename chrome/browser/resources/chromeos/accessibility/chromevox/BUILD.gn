@@ -413,6 +413,7 @@ if (is_chromeos_ash) {
       "background/background_test.js",
       "background/braille_command_data_test.js",
       "background/color_test.js",
+      "background/desktop_automation_handler_test.js",
       "background/download_handler_test.js",
       "background/editing/editing_test.js",
       "background/editing/intent_handler_test.js",
