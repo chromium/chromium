@@ -18,8 +18,8 @@
 // #import {CommandHandlerDeps} from '../../externs/command_handler_deps.m.js';
 // #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
 // #import {ThumbnailLoader} from './thumbnail_loader.m.js';
-// #import {ImageLoaderClient} from '../../../image_loader/image_loader_client.m.js';
-// #import {LoadImageResponseStatus, LoadImageRequest} from '../../../image_loader/load_image_request.m.js';
+// #import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_loader_client.m.js';
+// #import {LoadImageResponseStatus, LoadImageRequest} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.m.js';
 // #import {FileType} from '../../common/js/file_type.m.js';
 // #import {CommandHandler} from './file_manager_commands.m.js';
 // #import {FilesConfirmDialog} from './ui/files_confirm_dialog.m.js';

@@ -7,8 +7,8 @@
 // #import {MetadataProvider} from './metadata_provider.m.js';
 // #import {ThumbnailLoader} from '../thumbnail_loader.m.js';
 // #import * as wrappedUtil from '../../../common/js/util.m.js'; const {util} = wrappedUtil;
-// #import {ImageLoaderClient} from '../../../../image_loader/image_loader_client.m.js';
-// #import {LoadImageRequest, LoadImageResponseStatus} from '../../../../image_loader/load_image_request.m.js';
+// #import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_loader_client.m.js';
+// #import {LoadImageRequest, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.m.js';
 // #import {FileType} from '../../../common/js/file_type.m.js';
 // #import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 // clang-format on

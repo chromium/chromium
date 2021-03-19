@@ -5,9 +5,9 @@
 // clang-format off
 // #import {ImageCache} from './cache.m.js';
 // #import {ImageLoaderUtil} from './image_loader_util.m.js';
-// #import {ImageOrientation} from '../file_manager/foreground/js/metadata/image_orientation.m.js';
+// #import {ImageOrientation} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/js/metadata/image_orientation.m.js';
 // #import {PiexLoader} from './piex_loader.m.js';
-// #import {FileType} from '../file_manager/common/js/file_type.m.js';
+// #import {FileType} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/common/js/file_type.m.js';
 // #import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from './load_image_request.m.js';
 // #import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
 // clang-format on

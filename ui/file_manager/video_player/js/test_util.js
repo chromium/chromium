@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
 // #import {openVideoPlayerWindow} from './background.m.js';
-// #import {test} from '../../file_manager/background/js/test_util_base.m.js';
+// #import {test} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/background/js/test_util_base.m.js';
+// clang-format on
 
 /**
  * Returns if a video element playing the specified file meet the condition

@@ -5,8 +5,8 @@
 // clang-format off
 // #import {ImageTransformParam} from './metadata/image_orientation.m.js';
 // #import {FileType} from '../../common/js/file_type.m.js';
-// #import {ImageLoaderClient} from '../../../image_loader/image_loader_client.m.js';
-// #import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from '../../../image_loader/load_image_request.m.js';
+// #import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_loader_client.m.js';
+// #import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.m.js';
 // #import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 // clang-format on
 

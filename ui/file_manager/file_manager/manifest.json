@@ -145,6 +145,19 @@
   // enough that anything is passed to web_accessible_resources. If there is
   // at least any file, then all files are allowed. http://crbug.com/179127.
   "web_accessible_resources": [
+    "common/js/app_util.m.js",
+    "common/js/file_type.m.js",
+    "common/js/files_app_entry_types.m.js",
+    "common/js/lru_cache.m.js",
+    "common/js/mock_chrome.m.js",
+    "common/js/test_error_reporting.m.js",
+    "common/js/volume_manager_types.m.js",
+    "externs/background/background_base.m.js",
+    "externs/entry_location.m.js",
+    "externs/files_app_entry_interfaces.m.js",
+    "externs/volume_info.m.js",
+    "externs/volume_info_list.m.js",
+    "externs/volume_manager.m.js",
     "foreground/elements/files_icon_button.html",
     "foreground/elements/files_icon_button.js",
     "foreground/elements/files_icon_button.m.js",
@@ -167,6 +180,7 @@
     "foreground/js/metadata/function_sequence.js",
     "foreground/js/metadata/id3_parser.js",
     "foreground/js/metadata/image_orientation.js",
+    "foreground/js/metadata/image_orientation.m.js",
     "foreground/js/metadata/image_parsers.js",
     "foreground/js/metadata/metadata_dispatcher.js",
     "foreground/js/metadata/metadata_parser.js",

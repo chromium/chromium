@@ -31,5 +31,10 @@
     ]
   },
   "natively_connectable": ["com.google.holding_space_thumbnail_loader"],
-  "web_accessible_resources": ["image_loader_client.js"]
+  "web_accessible_resources": [
+    "image_loader_client.js",
+    "image_loader_client.m.js",
+    "load_image_request.js",
+    "load_image_request.m.js"
+  ]
 }

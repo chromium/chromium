@@ -5,7 +5,7 @@
 // clang-format off
 // #import {LoadImageRequest, LoadImageResponse} from './load_image_request.m.js';
 // #import {ImageRequestTask} from './image_request_task.m.js';
-// #import {ImageOrientation} from '../file_manager/foreground/js/metadata/image_orientation.m.js';
+// #import {ImageOrientation} from 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/js/metadata/image_orientation.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {Scheduler} from './scheduler.m.js';
 // #import {ImageCache} from './cache.m.js';
