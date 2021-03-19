@@ -333,7 +333,8 @@ class OopPixelTest : public testing::Test,
         options.resource_size.width(), options.resource_size.height(),
         options.color_space.ToSkColorSpace());
     auto surface = SkSurface::MakeRenderTarget(
-        gles2_context_provider_->GrContext(), SkBudgeted::kYes, image_info);
+        gles2_context_provider_->GrContext(), SkBudgeted::kYes, image_info, 0,
+        &surface_props);
     SkCanvas* canvas = surface->getCanvas();
     if (options.preclear)
       canvas->drawColor(options.preclear_color);
@@ -1675,26 +1676,37 @@ sk_sp<SkTextBlob> BuildTextBlob(
   return builder.make();
 }
 
-TEST_F(OopPixelTest, DrawTextBlob) {
-  RasterOptions options;
-  options.resource_size = gfx::Size(100, 100);
-  options.content_size = options.resource_size;
-  options.full_raster_rect = gfx::Rect(options.content_size);
-  options.playback_rect = options.full_raster_rect;
-  options.color_space = gfx::ColorSpace::CreateSRGB();
+class OopTextBlobPixelTest : public OopPixelTest,
+                             public ::testing::WithParamInterface<bool> {
+ public:
+  bool UseLcdText() const { return GetParam(); }
+  void RunTest() {
+    RasterOptions options;
+    options.resource_size = gfx::Size(100, 100);
+    options.content_size = options.resource_size;
+    options.full_raster_rect = gfx::Rect(options.content_size);
+    options.playback_rect = options.full_raster_rect;
+    options.color_space = gfx::ColorSpace::CreateSRGB();
+    options.use_lcd_text = UseLcdText();
 
-  auto display_item_list = base::MakeRefCounted<DisplayItemList>();
-  display_item_list->StartPaint();
-  PaintFlags flags;
-  flags.setStyle(PaintFlags::kFill_Style);
-  flags.setColor(SK_ColorGREEN);
-  display_item_list->push<DrawTextBlobOp>(BuildTextBlob(), 0u, 0u, flags);
-  display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
-  display_item_list->Finalize();
+    auto display_item_list = base::MakeRefCounted<DisplayItemList>();
+    display_item_list->StartPaint();
+    PaintFlags flags;
+    flags.setStyle(PaintFlags::kFill_Style);
+    flags.setColor(SK_ColorGREEN);
+    display_item_list->push<DrawTextBlobOp>(
+        BuildTextBlob(SkTypeface::MakeDefault(), UseLcdText()), 0u, 0u, flags);
+    display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
+    display_item_list->Finalize();
 
-  auto actual = Raster(display_item_list, options);
-  auto expected = RasterExpectedBitmap(display_item_list, options);
-  ExpectEquals(actual, expected);
+    auto actual = Raster(display_item_list, options);
+    auto expected = RasterExpectedBitmap(display_item_list, options);
+    ExpectEquals(actual, expected);
+  }
+};
+
+TEST_P(OopTextBlobPixelTest, DrawTextBlob) {
+  RunTest();
 }
 
 class OopRecordShaderPixelTest : public OopPixelTest,
@@ -2195,6 +2207,7 @@ INSTANTIATE_TEST_SUITE_P(P, OopClearPixelTest, ::testing::Bool());
 INSTANTIATE_TEST_SUITE_P(P, OopRecordShaderPixelTest, ::testing::Bool());
 INSTANTIATE_TEST_SUITE_P(P, OopRecordFilterPixelTest, ::testing::Bool());
 INSTANTIATE_TEST_SUITE_P(P, OopPathPixelTest, ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(P, OopTextBlobPixelTest, ::testing::Bool());
 
 }  // namespace
 }  // namespace cc
