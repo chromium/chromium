@@ -30,7 +30,6 @@ struct AppShortcutItem {
   gfx::ImageSkia icon;
 
   // The category type of this shortcut.
-  // TODO(crbug.com/1140356): Move arc::mojom::AppShortcutItemType to apps::.
   arc::mojom::AppShortcutItemType type =
       arc::mojom::AppShortcutItemType::kStatic;
 
