@@ -65,7 +65,6 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
-#include "ui/message_center/message_center.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/public/activation_client.h"
@@ -194,7 +193,6 @@ AppListControllerImpl::AppListControllerImpl()
   shell->mru_window_tracker()->AddObserver(this);
   AssistantController::Get()->AddObserver(this);
   AssistantUiController::Get()->GetModel()->AddObserver(this);
-  message_center::MessageCenter::Get()->AddObserver(this);
 }
 
 AppListControllerImpl::~AppListControllerImpl() {
@@ -1653,7 +1651,6 @@ void AppListControllerImpl::Shutdown() {
   is_shutdown_ = true;
 
   Shell* shell = Shell::Get();
-  message_center::MessageCenter::Get()->RemoveObserver(this);
   AssistantController::Get()->RemoveObserver(this);
   AssistantUiController::Get()->GetModel()->RemoveObserver(this);
   shell->mru_window_tracker()->RemoveObserver(this);
@@ -1683,8 +1680,7 @@ gfx::Rect AppListControllerImpl::GetInitialAppListItemScreenBoundsForWindow(
 
 void AppListControllerImpl::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.HasBadgeChanged() &&
-      notification_badging_pref_enabled_.value_or(false) &&
-      !quiet_mode_enabled_.value_or(false)) {
+      notification_badging_pref_enabled_.value_or(false)) {
     UpdateItemNotificationBadge(update.AppId(), update.HasBadge());
   }
 }
@@ -1692,10 +1688,6 @@ void AppListControllerImpl::OnAppUpdate(const apps::AppUpdate& update) {
 void AppListControllerImpl::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
   Observe(nullptr);
-}
-
-void AppListControllerImpl::OnQuietModeChanged(bool in_quiet_mode) {
-  UpdateAppNotificationBadging();
 }
 
 void AppListControllerImpl::UpdateTrackedAppWindow() {
@@ -1730,24 +1722,18 @@ void AppListControllerImpl::UpdateAppNotificationBadging() {
                                  ? pref_change_registrar_->prefs()->GetBoolean(
                                        prefs::kAppNotificationBadgingEnabled)
                                  : false;
-  bool new_quiet_mode_enabled =
-      message_center::MessageCenter::Get()->IsQuietMode();
 
   if (notification_badging_pref_enabled_.has_value() &&
-      notification_badging_pref_enabled_.value() == new_badging_enabled &&
-      quiet_mode_enabled_.has_value() &&
-      quiet_mode_enabled_.value() == new_quiet_mode_enabled) {
+      notification_badging_pref_enabled_.value() == new_badging_enabled) {
     return;
   }
   notification_badging_pref_enabled_ = new_badging_enabled;
-  quiet_mode_enabled_ = new_quiet_mode_enabled;
 
   if (cache_) {
     cache_->ForEachApp([this](const apps::AppUpdate& update) {
       // Set the app notification badge hidden when the pref is disabled.
       apps::mojom::OptionalBool has_badge =
           notification_badging_pref_enabled_.value() &&
-                  !quiet_mode_enabled_.value() &&
                   (update.HasBadge() == apps::mojom::OptionalBool::kTrue)
               ? apps::mojom::OptionalBool::kTrue
               : apps::mojom::OptionalBool::kFalse;
