@@ -154,6 +154,13 @@ void PopupBlockerTabHelper::ShowBlockedPopup(
     HidePopupNotification();
 }
 
+void PopupBlockerTabHelper::ShowAllBlockedPopups() {
+  PopupIdMap blocked_popups = GetBlockedPopupRequests();
+  for (const auto& elem : blocked_popups) {
+    ShowBlockedPopup(elem.first, WindowOpenDisposition::CURRENT_TAB);
+  }
+}
+
 size_t PopupBlockerTabHelper::GetBlockedPopupsCount() const {
   return blocked_popups_.size();
 }

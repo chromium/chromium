@@ -41,6 +41,11 @@ class TestInfoBarManager : public infobars::ContentInfoBarManager {
 class PopupBlockedInfoBarDelegateTest
     : public content::RenderViewHostTestHarness {
  public:
+  PopupBlockedInfoBarDelegateTest() : content::RenderViewHostTestHarness() {
+    // Make sure the SafeBrowsingTriggeredPopupBlocker is not created.
+    feature_list_.InitAndDisableFeature(kAbusiveExperienceEnforce);
+  }
+
   ~PopupBlockedInfoBarDelegateTest() override {
     settings_map_->ShutdownOnUIThread();
   }
@@ -48,8 +53,6 @@ class PopupBlockedInfoBarDelegateTest
   // content::RenderViewHostTestHarness:
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
-    // Make sure the SafeBrowsingTriggeredPopupBlocker is not created.
-    feature_list_.InitAndDisableFeature(kAbusiveExperienceEnforce);
 
     HostContentSettingsMap::RegisterProfilePrefs(pref_service_.registry());
     settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(

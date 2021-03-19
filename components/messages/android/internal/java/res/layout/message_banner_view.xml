@@ -49,6 +49,7 @@
         <TextView
             android:id="@+id/message_description"
             style="@style/TextAppearance.TextSmall.Secondary"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>

@@ -385,6 +385,7 @@ test("components_unittests") {
       "//components/invalidation/impl",
       "//components/media_router/browser/android:java",
       "//components/media_router/browser/android:test_support_java",
+      "//components/messages/android:java",
       "//components/offline_items_collection/core:native_java_unittests_java",
       "//components/paint_preview/browser/android:java",
       "//components/paint_preview/player/android:unit_tests",
