@@ -24,6 +24,12 @@ std::vector<CellularESimProfile> GenerateProfilesFromHermes();
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 const DeviceState::CellularSIMSlotInfos GetSimSlotInfosWithUpdatedEid(
     const DeviceState* device);
+
+// Returns true if SIM with given |iccid| is in a primary slot on given
+// cellular |device|.
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+bool IsSimPrimary(const std::string& iccid, const DeviceState* device);
+
 }  // namespace chromeos
 
 #endif  // CHROMEOS_NETWORK_CELLULAR_UTILS_H_

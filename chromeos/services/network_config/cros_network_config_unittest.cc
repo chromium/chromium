@@ -202,6 +202,16 @@ class CrosNetworkConfigTest : public testing::Test {
         kCellularDevicePath, shill::kSIMPresentProperty, base::Value(true),
         /*notify_changed=*/false);
 
+    // Setup SimSlotInfo
+    base::Value::ListStorage ordered_sim_slot_info_list;
+    AddSimSlotInfoToList(ordered_sim_slot_info_list, /*eid=*/"",
+                         kCellularTestIccid,
+                         /*primary=*/true);
+    helper().device_test()->SetDeviceProperty(
+        kCellularDevicePath, shill::kSIMSlotInfoProperty,
+        base::Value(ordered_sim_slot_info_list),
+        /*notify_changed=*/false);
+
     // Note: These are Shill dictionaries, not ONC.
     helper().ConfigureService(
         R"({"GUID": "eth_guid", "Type": "ethernet", "State": "online"})");
