@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "content/browser/webauth/authenticator_common.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -38,6 +37,7 @@ class Origin;
 
 namespace content {
 
+class AuthenticatorCommon;
 class RenderFrameHost;
 
 // Implementation of the public Authenticator interface.
@@ -79,7 +79,6 @@ class CONTENT_EXPORT AuthenticatorImpl : public blink::mojom::Authenticator,
   // WebContentsObserver:
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
 
-  RenderFrameHost* const render_frame_host_;
   std::unique_ptr<AuthenticatorCommon> authenticator_common_;
 
   // Owns pipes to this Authenticator from |render_frame_host_|.

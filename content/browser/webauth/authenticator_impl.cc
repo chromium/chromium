@@ -25,23 +25,17 @@ AuthenticatorImpl::AuthenticatorImpl(
     RenderFrameHost* render_frame_host,
     std::unique_ptr<AuthenticatorCommon> authenticator_common)
     : WebContentsObserver(WebContents::FromRenderFrameHost(render_frame_host)),
-      render_frame_host_(render_frame_host),
       authenticator_common_(std::move(authenticator_common)) {
-  DCHECK(render_frame_host_);
   DCHECK(authenticator_common_);
 }
 
-AuthenticatorImpl::~AuthenticatorImpl() {
-  // This call exists to assert that |render_frame_host_| outlives this object.
-  // If this is violated, ASAN should notice.
-  render_frame_host_->GetRoutingID();
-}
+AuthenticatorImpl::~AuthenticatorImpl() = default;
 
 void AuthenticatorImpl::Bind(
     mojo::PendingReceiver<blink::mojom::Authenticator> receiver) {
-  // If |render_frame_host_| is being unloaded then binding requests are
+  // If the RenderFrameHost is being unloaded then binding requests are
   // rejected.
-  if (!render_frame_host_->IsCurrent()) {
+  if (!authenticator_common_->GetRenderFrameHost()->IsCurrent()) {
     return;
   }
 
@@ -54,8 +48,8 @@ void AuthenticatorImpl::MakeCredential(
     blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
     MakeCredentialCallback callback) {
   authenticator_common_->MakeCredential(
-      render_frame_host_->GetLastCommittedOrigin(), std::move(options),
-      std::move(callback));
+      authenticator_common_->GetRenderFrameHost()->GetLastCommittedOrigin(),
+      std::move(options), std::move(callback));
 }
 
 // mojom:Authenticator
@@ -63,8 +57,8 @@ void AuthenticatorImpl::GetAssertion(
     blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
     GetAssertionCallback callback) {
   authenticator_common_->GetAssertion(
-      render_frame_host_->GetLastCommittedOrigin(), std::move(options),
-      std::move(callback));
+      authenticator_common_->GetRenderFrameHost()->GetLastCommittedOrigin(),
+      std::move(options), std::move(callback));
 }
 
 void AuthenticatorImpl::IsUserVerifyingPlatformAuthenticatorAvailable(
@@ -86,7 +80,8 @@ void AuthenticatorImpl::DidFinishNavigation(
   // focus checks to fail if any Mojo requests are made in that state.
   if (!navigation_handle->HasCommitted() ||
       navigation_handle->IsSameDocument() ||
-      navigation_handle->GetRenderFrameHost() != render_frame_host_) {
+      navigation_handle->GetRenderFrameHost() !=
+          authenticator_common_->GetRenderFrameHost()) {
     return;
   }
 

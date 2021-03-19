@@ -544,7 +544,6 @@ void IsUserVerifyingPlatformAuthenticatorAvailableImpl(
 // transports the request handler will attempt to obtain FidoDiscovery
 // instances.
 base::flat_set<device::FidoTransportProtocol> GetAvailableTransports(
-    RenderFrameHost* render_frame_host,
     AuthenticatorRequestClientDelegate* delegate,
     device::FidoDiscoveryFactory* discovery_factory,
     const url::Origin& caller_origin) {
@@ -641,7 +640,7 @@ std::unique_ptr<device::FidoDiscoveryFactory> MakeDiscoveryFactory(
     constexpr device::VidPid kChromeOsU2fdVidPid{0x18d1, 0x502c};
     discovery_factory->set_hid_ignore_list({kChromeOsU2fdVidPid});
     discovery_factory->set_generate_request_id_callback(
-        request_delegate->GetGenerateRequestIdCallback(render_frame_host));
+        request_delegate->GetGenerateRequestIdCallback());
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -735,10 +734,9 @@ std::string SerializeWebAuthnCollectedClientDataToJson(
 }
 
 AuthenticatorCommon::AuthenticatorCommon(RenderFrameHost* render_frame_host)
-    : render_frame_host_(render_frame_host),
+    : render_frame_host_id_(render_frame_host->GetGlobalFrameRoutingId()),
       security_checker_(static_cast<RenderFrameHostImpl*>(render_frame_host)
                             ->GetWebAuthRequestSecurityChecker()) {
-  DCHECK(render_frame_host_);
   // Disable the back-forward cache for any document that makes WebAuthn
   // requests. Pages using privacy-sensitive APIs are generally exempt from
   // back-forward cache for now as a precaution.
@@ -746,23 +744,20 @@ AuthenticatorCommon::AuthenticatorCommon(RenderFrameHost* render_frame_host)
                                               "WebAuthenticationAPI");
 }
 
-AuthenticatorCommon::~AuthenticatorCommon() {
-  // This call exists to assert that |render_frame_host_| outlives this object.
-  // If this is violated, ASAN should notice.
-  render_frame_host_->GetRoutingID();
-}
+AuthenticatorCommon::~AuthenticatorCommon() = default;
 
 std::unique_ptr<AuthenticatorRequestClientDelegate>
 AuthenticatorCommon::CreateRequestDelegate() {
-  auto* frame_tree_node =
-      static_cast<RenderFrameHostImpl*>(render_frame_host_)->frame_tree_node();
+  RenderFrameHostImpl* const render_frame_host_impl =
+      static_cast<RenderFrameHostImpl*>(GetRenderFrameHost());
+  auto* frame_tree_node = render_frame_host_impl->frame_tree_node();
   if (AuthenticatorEnvironmentImpl::GetInstance()
           ->IsVirtualAuthenticatorEnabledFor(frame_tree_node)) {
     return std::make_unique<VirtualAuthenticatorRequestDelegate>(
         frame_tree_node);
   }
   return GetContentClient()->browser()->GetWebAuthenticationRequestDelegate(
-      render_frame_host_);
+      render_frame_host_impl);
 }
 
 void AuthenticatorCommon::StartMakeCredentialRequest(
@@ -777,8 +772,8 @@ void AuthenticatorCommon::StartMakeCredentialRequest(
 
   request_ = std::make_unique<device::MakeCredentialRequestHandler>(
       discovery_factory(),
-      GetAvailableTransports(render_frame_host_, request_delegate_.get(),
-                             discovery_factory(), caller_origin_),
+      GetAvailableTransports(request_delegate_.get(), discovery_factory(),
+                             caller_origin_),
       *ctap_make_credential_request_, *make_credential_options_,
       base::BindOnce(&AuthenticatorCommon::OnRegisterResponse,
                      weak_factory_.GetWeakPtr()));
@@ -816,8 +811,8 @@ void AuthenticatorCommon::StartGetAssertionRequest(
 
   request_ = std::make_unique<device::GetAssertionRequestHandler>(
       discovery_factory(),
-      GetAvailableTransports(render_frame_host_, request_delegate_.get(),
-                             discovery_factory(), caller_origin_),
+      GetAvailableTransports(request_delegate_.get(), discovery_factory(),
+                             caller_origin_),
       *ctap_get_assertion_request_, *ctap_get_assertion_options_,
       allow_skipping_pin_touch,
       base::BindOnce(&AuthenticatorCommon::OnSignResponse,
@@ -841,7 +836,7 @@ void AuthenticatorCommon::StartGetAssertionRequest(
 }
 
 bool AuthenticatorCommon::IsFocused() const {
-  return render_frame_host_->IsCurrent() && request_delegate_->IsFocused();
+  return GetRenderFrameHost()->IsCurrent() && request_delegate_->IsFocused();
 }
 
 void AuthenticatorCommon::OnLargeBlobCompressed(
@@ -970,7 +965,7 @@ void AuthenticatorCommon::MakeCredential(
         *options->relying_party.icon_url);
   }
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
-    bad_message::ReceivedBadMessage(render_frame_host_->GetProcess(),
+    bad_message::ReceivedBadMessage(GetRenderFrameHost()->GetProcess(),
                                     bad_message::AUTH_INVALID_ICON_URL);
     InvokeCallbackAndCleanup(std::move(callback), status, nullptr,
                              Focus::kDontCheck);
@@ -1060,7 +1055,7 @@ void AuthenticatorCommon::MakeCredential(
   make_credential_response_callback_ = std::move(callback);
 
   timer_->Start(
-      FROM_HERE, AdjustTimeout(options->timeout, render_frame_host_),
+      FROM_HERE, AdjustTimeout(options->timeout, GetRenderFrameHost()),
       base::BindOnce(&AuthenticatorCommon::OnTimeout, base::Unretained(this)));
 
   const bool origin_is_crypto_token_extension =
@@ -1107,7 +1102,7 @@ void AuthenticatorCommon::MakeCredential(
   make_credential_options_->large_blob_support = options->large_blob_enable;
   ctap_make_credential_request_->app_id = std::move(appid_exclude);
   ctap_make_credential_request_->is_off_the_record_context =
-      browser_context()->IsOffTheRecord();
+      GetBrowserContext()->IsOffTheRecord();
   // On dual protocol CTAP2/U2F devices, force credential creation over U2F.
   ctap_make_credential_request_->is_u2f_only = origin_is_crypto_token_extension;
 
@@ -1269,11 +1264,12 @@ void AuthenticatorCommon::GetAssertion(
   get_assertion_response_callback_ = std::move(callback);
 
   timer_->Start(
-      FROM_HERE, AdjustTimeout(options->timeout, render_frame_host_),
+      FROM_HERE, AdjustTimeout(options->timeout, GetRenderFrameHost()),
       base::BindOnce(&AuthenticatorCommon::OnTimeout, base::Unretained(this)));
 
-  ctap_get_assertion_request_ = CreateCtapGetAssertionRequest(
-      client_data_json_, options, app_id_, browser_context()->IsOffTheRecord());
+  ctap_get_assertion_request_ =
+      CreateCtapGetAssertionRequest(client_data_json_, options, app_id_,
+                                    GetBrowserContext()->IsOffTheRecord());
   ctap_get_assertion_options_.emplace();
 
   bool is_first = true;
@@ -1350,7 +1346,7 @@ void AuthenticatorCommon::IsUserVerifyingPlatformAuthenticatorAvailable(
                         : maybe_request_delegate.get();
 
   std::unique_ptr<device::FidoDiscoveryFactory> discovery_factory =
-      MakeDiscoveryFactory(render_frame_host_, request_delegate_ptr,
+      MakeDiscoveryFactory(GetRenderFrameHost(), request_delegate_ptr,
                            /*is_u2f_api_request=*/false);
   device::FidoDiscoveryFactory* discovery_factory_testing_override =
       AuthenticatorEnvironmentImpl::GetInstance()
@@ -1369,7 +1365,7 @@ void AuthenticatorCommon::IsUserVerifyingPlatformAuthenticatorAvailable(
       std::move(callback));
 
   IsUserVerifyingPlatformAuthenticatorAvailableImpl(
-      request_delegate_ptr, discovery_factory_ptr, browser_context(),
+      request_delegate_ptr, discovery_factory_ptr, GetBrowserContext(),
       std::move(post_done_callback));
 }
 
@@ -1865,9 +1861,14 @@ void AuthenticatorCommon::DisableUI() {
   disable_ui_ = true;
 }
 
-BrowserContext* AuthenticatorCommon::browser_context() const {
-  return content::WebContents::FromRenderFrameHost(render_frame_host_)
-      ->GetBrowserContext();
+RenderFrameHost* AuthenticatorCommon::GetRenderFrameHost() const {
+  RenderFrameHost* ret = RenderFrameHost::FromID(render_frame_host_id_);
+  DCHECK(ret);
+  return ret;
+}
+
+BrowserContext* AuthenticatorCommon::GetBrowserContext() const {
+  return GetRenderFrameHost()->GetBrowserContext();
 }
 
 device::FidoDiscoveryFactory* AuthenticatorCommon::discovery_factory() {
@@ -1882,7 +1883,7 @@ void AuthenticatorCommon::InitDiscoveryFactory() {
       WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
           caller_origin_);
   discovery_factory_ = MakeDiscoveryFactory(
-      render_frame_host_, request_delegate_.get(), is_u2f_api_request);
+      GetRenderFrameHost(), request_delegate_.get(), is_u2f_api_request);
   // TODO(martinkr): |discovery_factory_testing_override_| is a long-lived
   // VirtualFidoDeviceDiscovery so that tests can maintain and alter virtual
   // authenticator state in between requests. We should extract a longer-lived

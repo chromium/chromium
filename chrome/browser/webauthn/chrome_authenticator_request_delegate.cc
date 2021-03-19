@@ -184,7 +184,7 @@ void ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(
 
 ChromeAuthenticatorRequestDelegate::ChromeAuthenticatorRequestDelegate(
     content::RenderFrameHost* render_frame_host)
-    : render_frame_host_(render_frame_host) {}
+    : render_frame_host_id_(render_frame_host->GetGlobalFrameRoutingId()) {}
 
 ChromeAuthenticatorRequestDelegate::~ChromeAuthenticatorRequestDelegate() {
   // Currently, completion of the request is indicated by //content destroying
@@ -205,10 +205,9 @@ ChromeAuthenticatorRequestDelegate::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-content::BrowserContext* ChromeAuthenticatorRequestDelegate::browser_context()
+content::BrowserContext* ChromeAuthenticatorRequestDelegate::GetBrowserContext()
     const {
-  return content::WebContents::FromRenderFrameHost(render_frame_host())
-      ->GetBrowserContext();
+  return GetRenderFrameHost()->GetBrowserContext();
 }
 
 base::Optional<std::string>
@@ -317,7 +316,7 @@ bool ChromeAuthenticatorRequestDelegate::ShouldPermitIndividualAttestation(
   // actually a U2F request originating from cryptotoken), or is listed in the
   // enterprise policy, signal that individual attestation is permitted.
   return relying_party_id == kGoogleCorpAppId ||
-         IsWebauthnRPIDListedInEnterprisePolicy(browser_context(),
+         IsWebauthnRPIDListedInEnterprisePolicy(GetBrowserContext(),
                                                 relying_party_id);
 }
 
@@ -326,7 +325,7 @@ void ChromeAuthenticatorRequestDelegate::ShouldReturnAttestation(
     const device::FidoAuthenticator* authenticator,
     bool is_enterprise_attestation,
     base::OnceCallback<void(bool)> callback) {
-  if (IsWebauthnRPIDListedInEnterprisePolicy(browser_context(),
+  if (IsWebauthnRPIDListedInEnterprisePolicy(GetBrowserContext(),
                                              relying_party_id)) {
     // Enterprise attestations should have been approved already and not reach
     // this point.
@@ -442,14 +441,14 @@ void ChromeAuthenticatorRequestDelegate::SelectAccount(
 
 bool ChromeAuthenticatorRequestDelegate::IsFocused() {
   auto* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host());
+      content::WebContents::FromRenderFrameHost(GetRenderFrameHost());
   DCHECK(web_contents);
   return web_contents->GetVisibility() == content::Visibility::VISIBLE;
 }
 
 base::Optional<bool> ChromeAuthenticatorRequestDelegate::
     IsUserVerifyingPlatformAuthenticatorAvailableOverride() {
-  Profile* profile = Profile::FromBrowserContext(browser_context());
+  Profile* profile = Profile::FromBrowserContext(GetBrowserContext());
   // Platform authenticators are never available in Guest sessions. They may be
   // available (behind an additional interstitial) in Incognito mode.
   if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile()) {
@@ -489,11 +488,10 @@ ChromeAuthenticatorRequestDelegate::TouchIdAuthenticatorConfigForProfile(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 ChromeAuthenticatorRequestDelegate::ChromeOSGenerateRequestIdCallback
-ChromeAuthenticatorRequestDelegate::GetGenerateRequestIdCallback(
-    content::RenderFrameHost* render_frame_host) {
+ChromeAuthenticatorRequestDelegate::GetGenerateRequestIdCallback() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   aura::Window* window =
-      render_frame_host->GetNativeView()->GetToplevelWindow();
+      GetRenderFrameHost()->GetNativeView()->GetToplevelWindow();
   return ash::WebAuthnRequestRegistrar::Get()->GetRegisterCallback(window);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -501,7 +499,7 @@ ChromeAuthenticatorRequestDelegate::GetGenerateRequestIdCallback(
 void ChromeAuthenticatorRequestDelegate::UpdateLastTransportUsed(
     device::FidoTransportProtocol transport) {
   PrefService* prefs =
-      Profile::FromBrowserContext(browser_context())->GetPrefs();
+      Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
   prefs->SetString(kWebAuthnLastTransportUsedPrefName,
                    device::ToString(transport));
 }
@@ -530,7 +528,7 @@ void ChromeAuthenticatorRequestDelegate::SetConditionalRequest(
 base::Optional<ChromeAuthenticatorRequestDelegate::TouchIdAuthenticatorConfig>
 ChromeAuthenticatorRequestDelegate::GetTouchIdAuthenticatorConfig() {
   return TouchIdAuthenticatorConfigForProfile(
-      Profile::FromBrowserContext(browser_context()));
+      Profile::FromBrowserContext(GetBrowserContext()));
 }
 #endif  // defined(OS_MAC)
 
@@ -546,7 +544,7 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
                                 is_conditional_);
 
   content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host());
+      content::WebContents::FromRenderFrameHost(GetRenderFrameHost());
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
   if (browser) {
     browser->window()->UpdatePageActionIcon(PageActionIconType::kWebAuthn);
@@ -665,9 +663,17 @@ void ChromeAuthenticatorRequestDelegate::OnCancelRequest() {
 base::Optional<device::FidoTransportProtocol>
 ChromeAuthenticatorRequestDelegate::GetLastTransportUsed() const {
   PrefService* prefs =
-      Profile::FromBrowserContext(browser_context())->GetPrefs();
+      Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
   return device::ConvertToFidoTransportProtocol(
       prefs->GetString(kWebAuthnLastTransportUsedPrefName));
+}
+
+content::RenderFrameHost*
+ChromeAuthenticatorRequestDelegate::GetRenderFrameHost() const {
+  content::RenderFrameHost* ret =
+      content::RenderFrameHost::FromID(render_frame_host_id_);
+  DCHECK(ret);
+  return ret;
 }
 
 bool ChromeAuthenticatorRequestDelegate::ShouldPermitCableExtension(
@@ -698,7 +704,7 @@ ChromeAuthenticatorRequestDelegate::GetCablePairings() {
   }
 
   PrefService* prefs =
-      Profile::FromBrowserContext(browser_context())->GetPrefs();
+      Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
   const base::ListValue* pref_pairings =
       prefs->GetList(kWebAuthnCablePairingsPrefName);
 
@@ -741,7 +747,7 @@ void ChromeAuthenticatorRequestDelegate::HandleCablePairingEvent(
   // that session. While an argument could be made that it's safe to persist
   // such pairing for longer, this seems like the safe option initially.
   ListPrefUpdate update(
-      Profile::FromBrowserContext(browser_context())->GetPrefs(),
+      Profile::FromBrowserContext(GetBrowserContext())->GetPrefs(),
       kWebAuthnCablePairingsPrefName);
 
   if (auto* disabled_public_key =

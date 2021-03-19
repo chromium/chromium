@@ -88,8 +88,7 @@ AuthenticatorRequestClientDelegate::GetTouchIdAuthenticatorConfig() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 AuthenticatorRequestClientDelegate::ChromeOSGenerateRequestIdCallback
-AuthenticatorRequestClientDelegate::GetGenerateRequestIdCallback(
-    RenderFrameHost* render_frame_host) {
+AuthenticatorRequestClientDelegate::GetGenerateRequestIdCallback() {
   return base::NullCallback();
 }
 #endif

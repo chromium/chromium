@@ -189,13 +189,12 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   // Callback that should generate and return a unique request id.
   using ChromeOSGenerateRequestIdCallback = base::RepeatingCallback<uint32_t()>;
 
-  // Returns a callback to generate a request id for |render_frame_host|. The
-  // request id has two purposes: 1. ChromeOS UI will use the request id to
-  // find the source window and show a dialog accordingly; 2. The authenticator
-  // will include the request id when asking ChromeOS platform to cancel the
-  // request.
-  virtual ChromeOSGenerateRequestIdCallback GetGenerateRequestIdCallback(
-      RenderFrameHost* render_frame_host);
+  // Returns a callback to generate a request id for the |RenderFrameHost|
+  // associated with this delegate. The request id has two purposes: 1. ChromeOS
+  // UI will use the request id to find the source window and show a dialog
+  // accordingly; 2. The authenticator will include the request id when asking
+  // ChromeOS platform to cancel the request.
+  virtual ChromeOSGenerateRequestIdCallback GetGenerateRequestIdCallback();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Returns a bool if the result of the isUserVerifyingPlatformAuthenticator
