@@ -115,7 +115,10 @@ base::SingleThreadTaskRunner* MainThread::GetWorkerTaskRunner() {
       task_runner_->BelongsToCurrentThread() ||
       (worker_task_runner_ && worker_task_runner_->BelongsToCurrentThread()));
   if (!worker_task_runner_) {
-    CHECK(worker_thread_.Start());
+    base::Thread::Options options;
+    options.timer_slack = base::TIMER_SLACK_NONE;
+    options.priority = base::ThreadPriority::REALTIME_AUDIO;
+    CHECK(worker_thread_.StartWithOptions(options));
     worker_task_runner_ = worker_thread_.task_runner();
   }
   return worker_task_runner_.get();
