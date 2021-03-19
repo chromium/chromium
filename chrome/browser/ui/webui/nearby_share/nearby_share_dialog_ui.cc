@@ -134,8 +134,9 @@ void NearbyShareDialogUI::SetAttachmentFromQueryParameter(const GURL& url) {
            {"phone", TextAttachment::Type::kPhoneNumber},
            {"text", TextAttachment::Type::kText}}) {
     if (net::GetValueForKeyInQuery(url, text_type.first, &value)) {
-      attachments.push_back(
-          std::make_unique<TextAttachment>(text_type.second, value));
+      attachments.push_back(std::make_unique<TextAttachment>(
+          text_type.second, value, /*title=*/base::nullopt,
+          /*mime_type=*/base::nullopt));
       SetAttachments(std::move(attachments));
       return;
     }

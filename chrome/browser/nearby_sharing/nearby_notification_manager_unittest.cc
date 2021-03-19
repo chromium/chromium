@@ -72,11 +72,13 @@ MATCHER_P(MatchesTarget, target, "") {
 }
 
 TextAttachment CreateTextAttachment(TextAttachment::Type type) {
-  return TextAttachment(type, kTextBody);
+  return TextAttachment(type, kTextBody, /*title=*/base::nullopt,
+                        /*mime_type=*/base::nullopt);
 }
 
 TextAttachment CreateUrlAttachment() {
-  return TextAttachment(TextAttachment::Type::kUrl, kTextUrl);
+  return TextAttachment(TextAttachment::Type::kUrl, kTextUrl,
+                        /*title=*/base::nullopt, /*mime_type=*/base::nullopt);
 }
 
 FileAttachment CreateFileAttachment(FileAttachment::Type type) {
@@ -1341,7 +1343,9 @@ TEST_F(NearbyFilesHoldingSpaceTest, ShowSuccess_Text) {
   ShareTarget share_target;
   share_target.is_incoming = true;
 
-  TextAttachment attachment(TextAttachment::Type::kText, "Sample Text");
+  TextAttachment attachment(TextAttachment::Type::kText, "Sample Text",
+                            /*title=*/base::nullopt,
+                            /*mime_type=*/base::nullopt);
   share_target.text_attachments.push_back(std::move(attachment));
 
   manager()->ShowSuccess(share_target);
