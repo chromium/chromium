@@ -1419,18 +1419,18 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Values(kWebContents, kMPArch),
                          ToString);
 
-// TODO(https://crbug.com/1182032): Now File System Access API is not supported
-// on Android. Enable this browser test after https://crbug.com/1011535 is
-// fixed.
+// TODO(https://crbug.com/1182032): Now the File System Access API is not
+// supported on Android. Enable this browser test after
+// https://crbug.com/1011535 is fixed.
 #if defined(OS_ANDROID)
-#define MAYBE_DeferFileSystemAccess DISABLED_DeferFileSystemAccess
+#define MAYBE_FileSystemAccessError DISABLED_FileSystemAccessError
 #else
-#define MAYBE_DeferFileSystemAccess DeferFileSystemAccess
+#define MAYBE_FileSystemAccessError FileSystemAccessError
 #endif
 
-// Tests that access to local file system is deferred on prerendering pages.
+// Tests that the prerendering page cannot access the File System Access API.
 IN_PROC_BROWSER_TEST_P(PrerenderFileSystemAccessBrowserTest,
-                       MAYBE_DeferFileSystemAccess) {
+                       MAYBE_FileSystemAccessError) {
   base::FilePath temp_file;
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -1442,8 +1442,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderFileSystemAccessBrowserTest,
       new FakeSelectFileDialogFactory({temp_file}, &dialog_params));
 
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
-  const GURL kPrerenderingUrl =
-      GetUrl("/prerender/restriction_file_system.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html");
 
   // Navigate to an initial page.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -1457,27 +1456,14 @@ IN_PROC_BROWSER_TEST_P(PrerenderFileSystemAccessBrowserTest,
   RenderFrameHostImpl* prerender_render_frame_host =
       prerender_host->GetPrerenderedMainFrameHost();
 
-  // Access `temp_file` on the prerendered page.
-  ExecuteScriptAsync(prerender_render_frame_host, "startShowOpenFilePicker();");
-  // Run a event loop so the page can fail the test.
-  EXPECT_TRUE(ExecJs(prerender_render_frame_host, "runLoop();"));
-
-  NavigatePrimaryPage(kPrerenderingUrl);
-
-  // Wait for the completion of `startShowOpenFilePicker`.
-  EXPECT_EQ(temp_file.BaseName().AsUTF8Unsafe(),
-            EvalJs(prerender_render_frame_host, "result;"));
-
-  // Check the event sequence seen in the prerendered page.
-  EvalJsResult results = EvalJs(prerender_render_frame_host, "eventsSeen");
-  std::vector<std::string> eventsSeen;
-  for (auto& result : results.ExtractList())
-    eventsSeen.push_back(result.GetString());
-  EXPECT_THAT(eventsSeen, testing::ElementsAreArray(
-                              {"startShowOpenFilePicker (prerendering: true)",
-                               "prerenderingchange (prerendering: false)",
-                               "showOpenFilePicker (prerendering: false)"}));
-
+  // Executing showOpenFilePicker() on the prerendered page should fail.
+  auto result =
+      EvalJs(prerender_render_frame_host, "window.showOpenFilePicker()",
+             EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
+  EXPECT_THAT(result.error,
+              ::testing::HasSubstr(
+                  "Failed to execute 'showOpenFilePicker' on 'Window': Must be "
+                  "handling a user gesture to show a file picker."));
   ui::SelectFileDialog::SetFactory(nullptr);
 }
 
@@ -1525,9 +1511,9 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, RenderDocumentHostUserData) {
   EXPECT_EQ(data_after_activation.get(), data.get());
 }
 
-// Tests that accessing the clipboard via ExecCommand API results in cancelling
-// the prerender.
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, ClipboardByExecCommandCancel) {
+// Tests that accessing the clipboard via the execCommand API fails because the
+// page does not has any user activation.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, ClipboardByExecCommandFail) {
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html");
 
@@ -1543,14 +1529,14 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, ClipboardByExecCommandCancel) {
   RenderFrameHostImpl* prerendered_render_frame_host =
       prerender_host->GetPrerenderedMainFrameHost();
 
-  // Access the clipboard.
-  ignore_result(
-      ExecJs(prerendered_render_frame_host, "document.execCommand('copy');"));
-
-  // The corresponding prerender should be cancelled.
-  EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
+  // Access the clipboard and fail.
+  EXPECT_EQ(false, EvalJs(prerendered_render_frame_host,
+                          "document.execCommand('copy');",
+                          EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_EQ(false, EvalJs(prerendered_render_frame_host,
+                          "document.execCommand('paste');",
+                          EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
-
 
 // Tests that prerendering pages cannot access the Async Clipboard API because
 // they are not focused.
@@ -1575,9 +1561,10 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, AsyncClipboardAccessError) {
 
   // Accessing Clipboard on prerendering pages should fail because the
   // prerendering documents are not focused.
-  // (https://w3c.github.io/clipboard-apis/#privacy-async)
+  // https://w3c.github.io/clipboard-apis/#privacy-async
   auto result = EvalJs(prerendered_render_frame_host,
-                       "navigator.clipboard.writeText(location.href);");
+                       "navigator.clipboard.writeText(location.href);",
+                       EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
   EXPECT_THAT(result.error, ::testing::HasSubstr(
                                 "NotAllowedError: Document is not focused."));
 }
@@ -1606,7 +1593,8 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, PointerLockError) {
   // prerendering documents are not focused.
   // https://w3c.github.io/pointerlock/#extensions-to-the-element-interface
   auto result =
-      EvalJs(prerender_render_frame_host, "canvas.requestPointerLock();");
+      EvalJs(prerender_render_frame_host, "canvas.requestPointerLock();",
+             EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
   EXPECT_THAT(result.error, ::testing::HasSubstr(
                                 "WrongDocumentError: The root document of this "
                                 "element is not valid for pointer lock."));
