@@ -95,6 +95,9 @@ TEST_F(DriveServiceTest, PassesDataOnSuccess) {
                       "text": "bar foo bar"
                     }
                   ]
+                },
+                "primaryPerson": {
+                  "photoUrl": "https://google.com/userphoto"
                 }
               }
             },
@@ -113,13 +116,15 @@ TEST_F(DriveServiceTest, PassesDataOnSuccess) {
   EXPECT_EQ("application/vnd.google-apps.spreadsheet",
             actual_documents.at(0)->mime_type);
   EXPECT_EQ("Foo foo", actual_documents.at(0)->justification_text);
-  EXPECT_EQ("https://google.com/foo", actual_documents.at(0)->url.spec());
+  EXPECT_EQ("https://google.com/foo", actual_documents.at(0)->item_url.spec());
   EXPECT_EQ("Bar", actual_documents.at(1)->title);
   EXPECT_EQ("123", actual_documents.at(1)->id);
   EXPECT_EQ("application/vnd.google-apps.document",
             actual_documents.at(1)->mime_type);
   EXPECT_EQ("Foo bar foo bar", actual_documents.at(1)->justification_text);
-  EXPECT_EQ("https://google.com/bar", actual_documents.at(1)->url.spec());
+  EXPECT_EQ("https://google.com/bar", actual_documents.at(1)->item_url.spec());
+  EXPECT_EQ("https://google.com/userphoto",
+            actual_documents.at(1)->untrusted_photo_url.value());
 }
 
 TEST_F(DriveServiceTest, PassesDataToMultipleRequestsToDriveService) {

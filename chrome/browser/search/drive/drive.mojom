@@ -16,8 +16,11 @@ struct File {
   string mime_type;
   // The name of the Drive Item.
   string title;
+  // The URL of the active person's photo that
+  // must be served through SanitizedImageSource.
+  url.mojom.Url? untrusted_photo_url;
   // The URL to navigate to the Drive Item.
-  url.mojom.Url url;
+  url.mojom.Url item_url;
 };
 
 // Browser-side handler for requests from NTP Module UI.

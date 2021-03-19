@@ -29,21 +29,22 @@ suite('NewTabPageModulesDriveModuleTest', () => {
           title: 'Foo',
           id: '123',
           mimeType: 'application/vnd.google-apps.spreadsheet',
-          url: {url: 'https://foo.com'},
+          itemUrl: {url: 'https://foo.com'},
+          untrustedPhotoUrl: {url: 'https://photo.com'},
         },
         {
           justificationText: 'Edited today',
           title: 'Bar',
           id: '234',
           mimeType: 'application/vnd.google-apps.document',
-          url: {url: 'https://bar.com'},
+          itemUrl: {url: 'https://bar.com'},
         },
         {
           justificationText: 'Created today',
           title: 'Caz',
           id: '345',
           mimeType: 'application/vnd.google-apps.presentation',
-          url: {url: 'https://caz.com'},
+          itemUrl: {url: 'https://caz.com'},
         }
       ]
     };
@@ -65,13 +66,15 @@ suite('NewTabPageModulesDriveModuleTest', () => {
         items[1].querySelector('.file-description').textContent);
     assertEquals(
         'https://drive-thirdparty.googleusercontent.com/128/type/application/vnd.google-apps.spreadsheet',
-        items[0].querySelector('img').autoSrc);
+        items[0].querySelector('.file-icon').autoSrc);
     assertEquals(
         'https://drive-thirdparty.googleusercontent.com/128/type/application/vnd.google-apps.document',
-        items[1].querySelector('img').autoSrc);
+        items[1].querySelector('.file-icon').autoSrc);
     assertEquals(
         'https://drive-thirdparty.googleusercontent.com/128/type/application/vnd.google-apps.presentation',
-        items[2].querySelector('img').autoSrc);
+        items[2].querySelector('.file-icon').autoSrc);
+    assertEquals(
+        'https://photo.com', items[0].querySelector('.user-image').autoSrc);
     const urls = module.shadowRoot.querySelectorAll('.file');
     assertEquals('https://foo.com/', urls[0].href);
     assertEquals('https://bar.com/', urls[1].href);
@@ -86,6 +89,8 @@ suite('NewTabPageModulesDriveModuleTest', () => {
                          title: 'foo',
                          id: '123',
                          mimeType: 'application/vnd.google-apps.document',
+                         itemUrl: {url: 'https://foo.com'},
+                         untrustedPhotoUrl: {url: 'https://photo.com'},
                        }))
     }));
 

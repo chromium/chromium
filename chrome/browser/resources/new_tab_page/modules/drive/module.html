@@ -36,6 +36,14 @@
   .file-description {
     color: var(--cr-secondary-text-color);
   }
+
+  .file-info {
+    display: flex;
+  }
+
+  .user-image {
+    max-height: 30px;
+  }
 </style>
 <ntp-module-header
     disable-text="[[i18nRecursive('',
@@ -47,7 +55,7 @@
 <div id="files">
   <template id="fileRepeat" is="dom-repeat" on-dom-change="onDomChange_"
       items="[[files]]">
-    <a class="file" href="[[item.url.url]]" on-click="onFileClick_"
+    <a class="file" href="[[item.itemUrl.url]]" on-click="onFileClick_"
         on-auxclick="onFileClick_">
       <div class="file-icon-container">
         <img
@@ -57,8 +65,20 @@
             auto-src="[[getImageSrc_(item)]]">
         </img>
       </div>
-      <div class="file-title">[[item.title]]</div>
-      <div class="file-description">[[item.justificationText]]</div>
+      <div class="file-info">
+        <template is="dom-if" if="[[item.untrustedPhotoUrl.url]]">
+          <img
+              is="ntp-img"
+              class="user-image"
+              draggable="false"
+              auto-src="[[item.untrustedPhotoUrl.url]]">
+          </img>
+        </template>
+        <div>
+          <div class="file-title">[[item.title]]</div>
+          <div class="file-description">[[item.justificationText]]</div>
+        </div>
+      </div>
     </a>
   </template>
 </div>
