@@ -1170,8 +1170,7 @@
     {
       name: "LayoutNGTextControl",
       depends_on: ["EditingNG"],
-      // In Chrome, the flag is managed by Finch.
-      status: "test",
+      status: "stable",
     },
     {
       name: "LazyFrameLoading",
