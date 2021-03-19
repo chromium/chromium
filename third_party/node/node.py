@@ -24,19 +24,11 @@ def RunNode(cmd_parts, stdout=None):
       cmd, cwd=os.getcwd(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   stdout, stderr = process.communicate()
 
-  # TODO(crbug.com/1098074): Properly handle the returncode of
-  # process defined above. Right now, if the process would exit
-  # with a return code of non-zero, but the stderr is empty,
-  # we would still pass.
-  #
-  # However, we can't make this change here yet, as there are
-  # various presubmit scripts that rely on the runtime error
-  # and are unable to handle a `os.exit` call in this branch.
-  # These presubmit scripts need to spawn `subprocesses`
-  # themselves to handle the exitcode, before we can make the
-  # change here.
-  if stderr:
-    raise RuntimeError('%s failed: %s' % (cmd, stderr))
+  if process.returncode != 0:
+    # Handle cases where stderr is empty, even though the command failed, for
+    # example https://github.com/microsoft/TypeScript/issues/615
+    err = stderr if len(stderr) > 0 else stdout
+    raise RuntimeError('Command \'%s\' failed\n%s' % (' '.join(cmd), err))
 
   return stdout
 

@@ -32,24 +32,27 @@ class JsCheckerEsLintTest(unittest.TestCase):
     input_api.presubmit_local_path = _HERE_PATH
 
     checker = js_checker.JSChecker(input_api, MockOutputApi())
-    return checker.RunEsLintChecks(input_api.AffectedFiles(), format='json')
 
-  def _assertError(self, results_json, rule_id, line):
-    self.assertEqual(1, len(results_json))
-    results = json.loads(results_json[0].message)
+    try:
+      return checker.RunEsLintChecks(input_api.AffectedFiles(), format='json')
+    except RuntimeError as err:
+      # Extract ESLint's JSON error output from the error message.
+      json_error = err.message[err.message.index('['):]
+      return json.loads(json_error)[0].get('messages')
+
+  def _assertError(self, results, rule_id, line):
     self.assertEqual(1, len(results))
-    self.assertEqual(1, len(results[0].get('messages')))
-    message = results[0].get('messages')[0]
+    message = results[0]
     self.assertEqual(rule_id, message.get('ruleId'))
     self.assertEqual(line, message.get('line'))
 
   def testGetElementByIdCheck(self):
-    results_json = self._runChecks("const a = document.getElementById('foo');")
-    self._assertError(results_json, 'no-restricted-properties', 1)
+    results = self._runChecks("const a = document.getElementById('foo');")
+    self._assertError(results, 'no-restricted-properties', 1)
 
   def testPrimitiveWrappersCheck(self):
-    results_json = self._runChecks('const a = new Number(1);')
-    self._assertError(results_json, 'no-new-wrappers', 1)
+    results = self._runChecks('const a = new Number(1);')
+    self._assertError(results, 'no-new-wrappers', 1)
 
 
 if __name__ == '__main__':
