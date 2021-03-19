@@ -3,15 +3,7 @@
 // found in the LICENSE file.
 
 import {AsyncJobQueue} from '../../../async_job_queue.js';
-import {
-  assert,
-  assertInstanceof,
-  assertString,
-} from '../../../chrome_util.js';
-import {
-  CaptureStream,
-  StreamManager,
-} from '../../../device/stream_manager.js';
+import {assert, assertString} from '../../../chrome_util.js';
 import * as dom from '../../../dom.js';
 // eslint-disable-next-line no-unused-vars
 import {EncoderParameters} from '../../../h264.js';
@@ -160,12 +152,12 @@ export class VideoHandler {
  */
 export class Video extends ModeBase {
   /**
-   * @param {!CaptureStream} stream
+   * @param {!MediaStream} stream
    * @param {!Facing} facing
    * @param {!VideoHandler} handler
    */
   constructor(stream, facing, handler) {
-    super(stream.stream, facing, null);
+    super(stream, facing, null);
 
     /**
      * @const {!VideoHandler}
@@ -206,20 +198,6 @@ export class Video extends ModeBase {
      * Whether current recording ever paused/resumed before it ended.
      */
     this.everPaused_ = false;
-
-    /**
-     * @type {!CaptureStream}
-     * @private
-     */
-    this.captureStream_ = stream;
-  }
-
-  /**
-   * @override
-   */
-  async clear() {
-    await this.stopCapture();
-    await this.captureStream_.close();
   }
 
   /**
@@ -430,20 +408,12 @@ export class VideoFactory extends ModeFactory {
      * @private
      */
     this.handler_ = handler;
-
-    /**
-     * Stream for video capturing.
-     * @type {?CaptureStream}
-     * @private
-     */
-    this.captureStream_ = null;
   }
 
   /**
    * @override
    */
-  async prepareDevice(deviceOperator, constraints, resolution) {
-    this.captureResolution_ = resolution;
+  async prepareDevice(deviceOperator, constraints) {
     const deviceId = assertString(constraints.video.deviceId.exact);
     await deviceOperator.setCaptureIntent(
         deviceId, cros.mojom.CaptureIntent.VIDEO_RECORD);
@@ -464,26 +434,12 @@ export class VideoFactory extends ModeFactory {
       // range.
     }
     await deviceOperator.setFpsRange(deviceId, minFrameRate, maxFrameRate);
-
-    const captureConstraints = {
-      audio: constraints.audio,
-      video: {
-        deviceId: constraints.video.deviceId,
-        frameRate: constraints.video.frameRate,
-        width: resolution.width,
-        height: resolution.height,
-      },
-    };
-    this.captureStream_ =
-        await StreamManager.getInstance().openCaptureStream(captureConstraints);
   }
 
   /**
    * @override
    */
   produce_() {
-    return new Video(
-        assertInstanceof(this.captureStream_, CaptureStream), this.facing_,
-        this.handler_);
+    return new Video(this.previewStream_, this.facing_, this.handler_);
   }
 }

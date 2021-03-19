@@ -96,11 +96,6 @@ export const Facing = {
   USER: 'user',
   ENVIRONMENT: 'environment',
   EXTERNAL: 'external',
-  // VIRTUAL_{facing} is for labeling video device for configuring extra stream
-  // from corresponding {facing} video device.
-  VIRTUAL_USER: 'virtual_user',
-  VIRTUAL_ENV: 'virtual_environment',
-  VIRTUAL_EXT: 'virtual_external',
   NOT_SET: '(not set)',
   UNKNOWN: 'unknown',
 };
@@ -221,7 +216,6 @@ export const ErrorType = {
   PRELOAD_IMAGE_FAILURE: 'preload-image-failure',
   SET_FPS_RANGE_FAILURE: 'set-fps-range-failure',
   UNCAUGHT_PROMISE: 'uncaught-promise',
-  MULTIPLE_STREAMS_FAILURE: 'multiple-streams-failure',
 };
 
 /**

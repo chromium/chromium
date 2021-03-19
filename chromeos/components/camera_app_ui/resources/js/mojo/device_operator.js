@@ -270,12 +270,6 @@ export class DeviceOperator {
         return Facing.USER;
       case cros.mojom.CameraFacing.CAMERA_FACING_EXTERNAL:
         return Facing.EXTERNAL;
-      case cros.mojom.CameraFacing.CAMERA_FACING_VIRTUAL_BACK:
-        return Facing.VIRTUAL_ENV;
-      case cros.mojom.CameraFacing.CAMERA_FACING_VIRTUAL_FRONT:
-        return Facing.VIRTUAL_USER;
-      case cros.mojom.CameraFacing.CAMERA_FACING_VIRTUAL_EXTERNAL:
-        return Facing.VIRTUAL_EXT;
       default:
         assertNotReached(`Unexpected facing value: ${facing}`);
     }
@@ -536,19 +530,6 @@ export class DeviceOperator {
    */
   dropConnection(deviceId) {
     this.devices_.delete(deviceId);
-  }
-
-  /**
-   * Enables/Disables multiple streams on target camera device. The extra
-   * stream will be reported as virtual video device from
-   * navigator.mediaDevices.enumerateDevices().
-   * @param {string} deviceId The id of target camera device.
-   * @param {boolean} enabled True for enabling multiple streams.
-   */
-  async setMultipleStreamsEnabled(deviceId, enabled) {
-    if (deviceId) {
-      await this.deviceProvider_.setMultipleStreamsEnabled(deviceId, enabled);
-    }
   }
 
   /**

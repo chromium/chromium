@@ -262,7 +262,7 @@ export class ResolutionSettings extends BaseSettings {
     this.frontSetting_ = null;
 
     /**
-     * Device setting of back camera. Null if no back camera.
+     * Device setting of back camera. Null if no front camera.
      * @type {?DeviceSetting}
      * @private
      */
