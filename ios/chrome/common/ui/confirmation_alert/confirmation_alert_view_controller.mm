@@ -7,6 +7,7 @@
 #include "base/check.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/common/ui/util/dynamic_type_util.h"
 #import "ios/chrome/common/ui/util/image_util.h"
@@ -33,8 +34,6 @@ NSString* const kConfirmationAlertBarPrimaryActionAccessibilityIdentifier =
 
 namespace {
 
-constexpr CGFloat kButtonVerticalInsets = 17;
-constexpr CGFloat kPrimaryButtonCornerRadius = 13;
 constexpr CGFloat kScrollViewBottomInsets = 20;
 constexpr CGFloat kStackViewSpacing = 8;
 constexpr CGFloat kStackViewSpacingAfterIllustration = 27;
@@ -539,32 +538,19 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
 
 // Helper to create the primary action button.
 - (UIButton*)createPrimaryActionButton {
-  UIButton* primaryActionButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  BOOL pointerInteractionEnabled = NO;
+  if (@available(iOS 13.4, *)) {
+    pointerInteractionEnabled = self.pointerInteractionEnabled;
+  }
+  UIButton* primaryActionButton =
+      PrimaryActionButton(pointerInteractionEnabled);
   [primaryActionButton addTarget:self
                           action:@selector(didTapPrimaryActionButton)
                 forControlEvents:UIControlEventTouchUpInside];
   [primaryActionButton setTitle:self.primaryActionString.capitalizedString
                        forState:UIControlStateNormal];
-  primaryActionButton.contentEdgeInsets =
-      UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
-  [primaryActionButton setBackgroundColor:[UIColor colorNamed:kBlueColor]];
-  UIColor* titleColor = [UIColor colorNamed:kSolidButtonTextColor];
-  [primaryActionButton setTitleColor:titleColor forState:UIControlStateNormal];
-  primaryActionButton.titleLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-  primaryActionButton.layer.cornerRadius = kPrimaryButtonCornerRadius;
-  primaryActionButton.titleLabel.adjustsFontForContentSizeCategory = NO;
-  primaryActionButton.translatesAutoresizingMaskIntoConstraints = NO;
   primaryActionButton.accessibilityIdentifier =
       kConfirmationAlertPrimaryActionAccessibilityIdentifier;
-
-  if (@available(iOS 13.4, *)) {
-    if (self.pointerInteractionEnabled) {
-      primaryActionButton.pointerInteractionEnabled = YES;
-      primaryActionButton.pointerStyleProvider =
-          CreateOpaqueButtonPointerStyleProvider();
-    }
-  }
 
   return primaryActionButton;
 }
@@ -587,7 +573,6 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
                               forState:UIControlStateNormal];
   secondaryActionButton.titleLabel.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  secondaryActionButton.layer.cornerRadius = kPrimaryButtonCornerRadius;
   secondaryActionButton.titleLabel.adjustsFontForContentSizeCategory = NO;
   secondaryActionButton.translatesAutoresizingMaskIntoConstraints = NO;
   secondaryActionButton.accessibilityIdentifier =
