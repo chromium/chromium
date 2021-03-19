@@ -1698,7 +1698,8 @@ body:not(.files-ng) .downloads-warning {
   transition: height 70ms linear;
 }
 
-body.files-ng .downloads-warning {
+body.files-ng .downloads-warning,
+body.files-ng .trash-warning {
   align-items: center;
   border-bottom: 1px solid var(--cr-separator-color, rgb(224, 224, 224));
   display: flex;

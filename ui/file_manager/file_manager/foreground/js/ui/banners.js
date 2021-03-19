@@ -868,6 +868,16 @@ const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
   }
 
   /**
+   * Shows trash delete forever after 30d banner if Trash is selected.
+   * @param {Event} event The directory-changed event.
+   * @private
+   */
+  maybeShowTrashBanner_(event) {
+    this.document_.querySelector('#trash-deleted-forever').hidden =
+        event.newDirEntry.rootType !== VolumeManagerCommon.RootType.TRASH;
+  }
+
+  /**
    * @return {boolean} True if current directory is on Drive root of current
    * profile.
    */
@@ -948,6 +958,7 @@ const PHOTOS_WELCOME_COUNTER_LIMIT = 3;
    */
   onDirectoryChanged_(event) {
     this.maybeHidePhotosWelcomeBanner_();
+    this.maybeShowTrashBanner_(event);
 
     const rootVolume = this.volumeManager_.getVolumeInfo(event.newDirEntry);
     if (!rootVolume) {
