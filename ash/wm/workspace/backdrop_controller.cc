@@ -317,6 +317,9 @@ aura::Window* BackdropController::GetTopmostWindowWithBackdrop() {
     if (!WindowShouldHaveBackdrop(window))
       continue;
 
+    if (!window_util::ShouldShowForCurrentUser(window))
+      continue;
+
     return window;
   }
   return nullptr;
