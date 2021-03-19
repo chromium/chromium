@@ -31,8 +31,8 @@ CONNECT_RETRY_COUNT_BEFORE_LOGGING = 10
 # Number of seconds to wait for device discovery.
 BOOT_DISCOVERY_TIMEOUT_SECS = 2 * 60
 
-# The timeout limit for one call to the ffx tool.
-_FFX_TIMEOUT_LIMIT_SECS = \
+# The timeout limit for one call to the device-finder tool.
+_DEVICE_FINDER_TIMEOUT_LIMIT_SECS = \
     BOOT_DISCOVERY_TIMEOUT_SECS / BOOT_DISCOVERY_ATTEMPTS
 
 # Time between a reboot command is issued and when connection attempts from the
@@ -174,20 +174,25 @@ class DeviceTarget(target.Target):
     or waits up to |timeout| seconds and returns False if the device couldn't
     be found."""
 
-    ffx_path = GetHostToolPathFromPlatform('ffx')
+    dev_finder_path = GetHostToolPathFromPlatform('device-finder')
 
-    # Ffx command to list targets in short form.
-    # Example output: fe80::4415:3606:fb52:e2bc%zx pecan-guru-clerk-rhyme.
-    ffx_target_list_command = [
-        ffx_path, '-T',
-        "%d" % _FFX_TIMEOUT_LIMIT_SECS, 'target', 'list', '-f', 's'
-    ]
-
-    # List only a specific device if node name is present.
     if self._node_name:
-      ffx_target_list_command.append(self._node_name)
+      command = [
+          dev_finder_path,
+          'resolve',
+          '-timeout',
+          "%ds" % _DEVICE_FINDER_TIMEOUT_LIMIT_SECS,
+          '-device-limit',
+          '1',  # Exit early as soon as a host is found.
+          self._node_name
+      ]
+    else:
+      command = [
+          dev_finder_path, 'list', '-full', '-timeout',
+          "%ds" % _DEVICE_FINDER_TIMEOUT_LIMIT_SECS
+      ]
 
-    proc = subprocess.Popen(ffx_target_list_command,
+    proc = subprocess.Popen(command,
                             stdout=subprocess.PIPE,
                             stderr=open(os.devnull, 'w'))
 
@@ -195,20 +200,25 @@ class DeviceTarget(target.Target):
     if proc.returncode != 0:
       return False
 
-    name_host_pairs = [x.strip().split(' ') for x in output]
+    if self._node_name:
+      # Handle the result of "device-finder resolve".
+      self._host = output.pop().strip()
 
-    # Handle the output of "ffx target list -f s".
-    if len(name_host_pairs) > 1:
-      print('More than one device was discovered on the network.')
-      print('Use --node-name <name> to specify the device to use.')
-      print('\nList of devices:')
-      for pair in name_host_pairs:
-        print('  ' + pair[1])
-      print()
-      raise Exception('Ambiguous target device specification.')
+    else:
+      name_host_pairs = [x.strip().split(' ') for x in output]
 
-    assert len(name_host_pairs) == 1
-    self._host, self._node_name = name_host_pairs[0]
+      # Handle the output of "device-finder list".
+      if len(name_host_pairs) > 1:
+        print('More than one device was discovered on the network.')
+        print('Use --node-name <name> to specify the device to use.')
+        print('\nList of devices:')
+        for pair in name_host_pairs:
+          print('  ' + pair[1])
+        print()
+        raise Exception('Ambiguous target device specification.')
+
+      assert len(name_host_pairs) == 1
+      self._host, self._node_name = name_host_pairs[0]
 
     logging.info('Found device "%s" at address %s.' % (self._node_name,
                                                        self._host))

@@ -133,7 +133,7 @@ template("fuchsia_package_runner") {
     }
 
     data += [
-      "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/ffx",
+      "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/device-finder",
       "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/fvm",
       "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/merkleroot",
       "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/pm",
