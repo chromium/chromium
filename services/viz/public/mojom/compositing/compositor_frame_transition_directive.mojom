@@ -5,6 +5,7 @@
 module viz.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
+import "services/viz/public/mojom/compositing/compositor_render_pass_id.mojom";
 
 enum CompositorFrameTransitionDirectiveType {
   kSave,
@@ -36,4 +37,6 @@ struct CompositorFrameTransitionDirective {
   CompositorFrameTransitionDirectiveEffect effect;
 
   mojo_base.mojom.TimeDelta duration;
+
+  array<CompositorRenderPassId> shared_render_pass_ids;
 };

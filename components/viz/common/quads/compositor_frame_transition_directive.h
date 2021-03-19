@@ -58,7 +58,7 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
       Type type,
       Effect effect = Effect::kNone,
       base::TimeDelta duration = {},
-      std::vector<CompositorRenderPassId> shared_passes = {});
+      std::vector<CompositorRenderPassId> shared_render_pass_ids = {});
 
   CompositorFrameTransitionDirective(const CompositorFrameTransitionDirective&);
   ~CompositorFrameTransitionDirective();
@@ -80,6 +80,11 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
   // The effect for the transition.
   Effect effect() const { return effect_; }
 
+  // Shared element render passes.
+  const std::vector<CompositorRenderPassId> shared_render_pass_ids() const {
+    return shared_render_pass_ids_;
+  }
+
  private:
   uint32_t sequence_id_ = 0;
 
@@ -89,7 +94,7 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
 
   base::TimeDelta duration_;
 
-  std::vector<CompositorRenderPassId> shared_passes_;
+  std::vector<CompositorRenderPassId> shared_render_pass_ids_;
 };
 
 }  // namespace viz

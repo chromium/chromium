@@ -5,7 +5,10 @@
 #ifndef SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_COMPOSITOR_FRAME_TRANSITION_DIRECTIVE_MOJOM_TRAITS_H_
 #define SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_COMPOSITOR_FRAME_TRANSITION_DIRECTIVE_MOJOM_TRAITS_H_
 
+#include <vector>
+
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_transition_directive.mojom-shared.h"
 
 namespace mojo {
@@ -53,6 +56,11 @@ struct StructTraits<viz::mojom::CompositorFrameTransitionDirectiveDataView,
   static viz::CompositorFrameTransitionDirective::Effect effect(
       const viz::CompositorFrameTransitionDirective& directive) {
     return directive.effect();
+  }
+
+  static std::vector<viz::CompositorRenderPassId> shared_render_pass_ids(
+      const viz::CompositorFrameTransitionDirective& directive) {
+    return directive.shared_render_pass_ids();
   }
 
   static bool Read(viz::mojom::CompositorFrameTransitionDirectiveDataView data,

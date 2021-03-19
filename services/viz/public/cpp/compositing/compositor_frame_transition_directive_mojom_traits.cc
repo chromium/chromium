@@ -4,7 +4,12 @@
 
 #include "services/viz/public/cpp/compositing/compositor_frame_transition_directive_mojom_traits.h"
 
+#include <utility>
+#include <vector>
+
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
+#include "services/viz/public/cpp/compositing/compositor_render_pass_id_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_transition_directive.mojom-shared.h"
 
 namespace mojo {
@@ -131,16 +136,18 @@ bool StructTraits<viz::mojom::CompositorFrameTransitionDirectiveDataView,
   viz::CompositorFrameTransitionDirective::Type type;
   viz::CompositorFrameTransitionDirective::Effect effect;
   base::TimeDelta duration;
+  std::vector<viz::CompositorRenderPassId> shared_render_pass_ids;
   if (!data.ReadType(&type) || !data.ReadEffect(&effect) ||
-      !data.ReadDuration(&duration)) {
+      !data.ReadDuration(&duration) ||
+      !data.ReadSharedRenderPassIds(&shared_render_pass_ids)) {
     return false;
   }
 
   if (duration > viz::CompositorFrameTransitionDirective::kMaxDuration)
     return false;
 
-  *out = viz::CompositorFrameTransitionDirective(sequence_id, type, effect,
-                                                 duration);
+  *out = viz::CompositorFrameTransitionDirective(
+      sequence_id, type, effect, duration, std::move(shared_render_pass_ids));
   return true;
 }
 
