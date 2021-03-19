@@ -273,7 +273,7 @@ void WebAppInstallManager::EnqueueInstallAppFromSync(
   EnqueueTask(std::move(task), std::move(start_task));
 }
 
-std::set<AppId> WebAppInstallManager::GetEnqueuedInstallAppIdsForTesting() {
+std::set<AppId> WebAppInstallManager::GetEnqueuedAppIdsForTesting() {
   std::set<AppId> app_ids;
   if (current_queued_task_ &&
       current_queued_task_->app_id_to_expect().has_value()) {

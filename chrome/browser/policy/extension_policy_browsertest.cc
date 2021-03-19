@@ -269,6 +269,12 @@ class ExtensionPolicyTest : public PolicyTest {
   }
 
   const web_app::AppId InstallWebApp() {
+    // Waits for the shadow bookmark app to be installed to avoid extension
+    // system races.
+    content::WindowedNotificationObserver observer(
+        extensions::NOTIFICATION_CRX_INSTALLER_DONE,
+        content::NotificationService::AllSources());
+
     std::unique_ptr<WebApplicationInfo> web_application =
         std::make_unique<WebApplicationInfo>();
     web_application->title = base::ASCIIToUTF16("Web App");
@@ -286,6 +292,7 @@ class ExtensionPolicyTest : public PolicyTest {
             }));
     loop.Run();
 
+    observer.Wait();
 
     return return_app_id;
   }
