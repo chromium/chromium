@@ -71,6 +71,6 @@ python ../depot_tools/watchlists.py PATH/TO/FILE1 PATH/TO/FILE2 ....
 To override watchlist processing, use `git cl upload` with `--bypass-hooks`.
 
 [//]: # (the reference link section should be alphabetically sorted)
-[skia-autoroller]: https://skia.googlesource.com/buildbot/+/master/autoroll/README.md
+[skia-autoroller]: https://skia.googlesource.com/buildbot/+/HEAD/autoroll/README.md
 [crbug-982198]: https://bugs.chromium.org/p/chromium/issues/detail?id=982198
-[roller-configs]: https://skia.googlesource.com/buildbot/+/master/autoroll/config
+[roller-configs]: https://skia.googlesource.com/buildbot/+/HEAD/autoroll/config

@@ -69,9 +69,9 @@ reach out to infra-dev@chromium.org or [file a bug][11]!
 [3]: https://chromium.googlesource.com/chromium/tools/build/
 [4]: /tools/mb/mb_config.pyl
 [5]: /testing/buildbot/
-[6]: https://chromium.googlesource.com/chromium/tools/build/+/HEAD/scripts/slave/recipe_modules/chromium_tests/trybots.py
+[6]: https://chromium.googlesource.com/chromium/tools/build/+/HEAD/recipes/recipe_modules/chromium_tests/trybots.py
 [7]: https://ci.chromium.org/p/chromium/builders/ci/linux-rel
-[8]: https://chromium.googlesource.com/chromium/tools/build/+/master/scripts/slave/recipe_modules/chromium/api.py
-[9]: https://chromium.googlesource.com/chromium/tools/build/+/master/scripts/slave/recipe_modules/chromium_tests/api.py
-[10]: https://chromium.googlesource.com/chromium/tools/build/+/master/scripts/slave/recipes.py
+[8]: https://chromium.googlesource.com/chromium/tools/build/+/HEAD/recipes/recipe_modules/chromium/api.py
+[9]: https://chromium.googlesource.com/chromium/tools/build/+/HEAD/recipes/recipe_modules/chromium_tests/api.py
+[10]: https://chromium.googlesource.com/chromium/tools/build/+/HEAD/recipes/recipes.py
 [11]: https://g.co/bugatrooper
