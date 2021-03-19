@@ -460,10 +460,15 @@ void SurfaceAnimationManager::UpdateAnimationCurves(
   // Ensure we have no conflicting animation.
   animator_.RemoveAllKeyframeModels();
 
-  // We will use the "ease" timing function (used by CSS transitions).
+  // We will use the ease in or ease out timing function (used by CSS
+  // transitions) depending on whether the the new content is being covered or
+  // revealed. If it's being covered, then we want to immediately start moving,
+  // but ease into position, eg.
   std::unique_ptr<gfx::CubicBezierTimingFunction> timing_function =
       gfx::CubicBezierTimingFunction::CreatePreset(
-          gfx::CubicBezierTimingFunction::EaseType::EASE);
+          opacity_property_id == kSrcOpacity
+              ? gfx::CubicBezierTimingFunction::EaseType::EASE_IN
+              : gfx::CubicBezierTimingFunction::EaseType::EASE_OUT);
 
   // Create the transform curve.
   base::TimeDelta transform_duration =
@@ -489,16 +494,18 @@ void SurfaceAnimationManager::UpdateAnimationCurves(
                                       ? base::TimeDelta()
                                       : transform_duration - opacity_duration;
 
+  // Opacity transitions do not need to ease in or out. By passing nullptr for
+  // the timing function here, we are choosing the "linear" timing function.
   std::unique_ptr<gfx::KeyframedFloatAnimationCurve> float_curve(
       gfx::KeyframedFloatAnimationCurve::Create());
   if (!opacity_delay.is_zero()) {
-    float_curve->AddKeyframe(gfx::FloatKeyframe::Create(
-        base::TimeDelta(), start_opacity, timing_function->Clone()));
+    float_curve->AddKeyframe(
+        gfx::FloatKeyframe::Create(base::TimeDelta(), start_opacity, nullptr));
   }
-  float_curve->AddKeyframe(gfx::FloatKeyframe::Create(
-      opacity_delay, start_opacity, timing_function->Clone()));
-  float_curve->AddKeyframe(gfx::FloatKeyframe::Create(
-      opacity_duration, end_opacity, timing_function->Clone()));
+  float_curve->AddKeyframe(
+      gfx::FloatKeyframe::Create(opacity_delay, start_opacity, nullptr));
+  float_curve->AddKeyframe(
+      gfx::FloatKeyframe::Create(opacity_duration, end_opacity, nullptr));
   float_curve->set_target(this);
   animator_.AddKeyframeModel(gfx::KeyframeModel::Create(
       std::move(float_curve), gfx::KeyframeEffect::GetNextKeyframeModelId(),
