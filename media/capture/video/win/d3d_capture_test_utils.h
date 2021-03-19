@@ -94,11 +94,18 @@ class MockD3D11DeviceContext final : public MockInterface<ID3D11DeviceContext> {
               INT base_vertex_location) override;
   IFACEMETHODIMP_(void)
   Draw(UINT vertex_count, UINT start_vertex_location) override;
+  MOCK_METHOD5(OnMap,
+               HRESULT(ID3D11Resource*,
+                       UINT,
+                       D3D11_MAP,
+                       UINT,
+                       D3D11_MAPPED_SUBRESOURCE*));
   IFACEMETHODIMP Map(ID3D11Resource* resource,
                      UINT subresource,
                      D3D11_MAP MapType,
                      UINT MapFlags,
                      D3D11_MAPPED_SUBRESOURCE* mapped_resource) override;
+  MOCK_METHOD2(OnUnmap, void(ID3D11Resource*, UINT));
   IFACEMETHODIMP_(void)
   Unmap(ID3D11Resource* resource, UINT subresource) override;
   IFACEMETHODIMP_(void)

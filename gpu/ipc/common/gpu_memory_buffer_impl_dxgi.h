@@ -51,6 +51,8 @@ class GPU_EXPORT GpuMemoryBufferImplDXGI : public GpuMemoryBufferImpl {
   gfx::GpuMemoryBufferType GetType() const override;
   gfx::GpuMemoryBufferHandle CloneHandle() const override;
 
+  HANDLE GetHandle() const;
+
  private:
   GpuMemoryBufferImplDXGI(gfx::GpuMemoryBufferId id,
                           const gfx::Size& size,
@@ -58,12 +60,20 @@ class GPU_EXPORT GpuMemoryBufferImplDXGI : public GpuMemoryBufferImpl {
                           DestructionCallback callback,
                           base::win::ScopedHandle dxgi_handle,
                           GpuMemoryBufferManager* gpu_memory_buffer_manager,
-                          scoped_refptr<base::UnsafeSharedMemoryPool> pool);
+                          scoped_refptr<base::UnsafeSharedMemoryPool> pool,
+                          base::UnsafeSharedMemoryRegion region);
 
   base::win::ScopedHandle dxgi_handle_;
   GpuMemoryBufferManager* gpu_memory_buffer_manager_;
+
+  // Used to create and store shared memory for data, copied via request to
+  // gpu process.
   scoped_refptr<base::UnsafeSharedMemoryPool> shared_memory_pool_;
   std::unique_ptr<base::UnsafeSharedMemoryPool::Handle> shared_memory_handle_;
+
+  // Used to store shared memory passed from the capturer.
+  base::UnsafeSharedMemoryRegion unowned_region_;
+  base::WritableSharedMemoryMapping unowned_mapping_;
 
   DISALLOW_COPY_AND_ASSIGN(GpuMemoryBufferImplDXGI);
 };

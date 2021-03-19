@@ -506,7 +506,7 @@ void GetTextureSizeAndFormat(ID3D11Texture2D* texture,
 }
 
 HRESULT CopyTextureToGpuMemoryBuffer(ID3D11Texture2D* texture,
-                                     gfx::GpuMemoryBufferHandle gmb_handle) {
+                                     HANDLE dxgi_handle) {
   Microsoft::WRL::ComPtr<ID3D11Device> texture_device;
   texture->GetDevice(&texture_device);
 
@@ -520,8 +520,7 @@ HRESULT CopyTextureToGpuMemoryBuffer(ID3D11Texture2D* texture,
 
   // Open shared resource from GpuMemoryBuffer on source texture D3D11 device
   Microsoft::WRL::ComPtr<ID3D11Texture2D> target_texture;
-  hr = device1->OpenSharedResource1(gmb_handle.dxgi_handle.Get(),
-                                    IID_PPV_ARGS(&target_texture));
+  hr = device1->OpenSharedResource1(dxgi_handle, IID_PPV_ARGS(&target_texture));
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to open shared camera target texture: "
                 << logging::SystemErrorCodeToString(hr);
@@ -1440,6 +1439,14 @@ void VideoCaptureDeviceMFWin::SetPhotoOptions(
 
   std::move(callback).Run(true);
 }
+
+void VideoCaptureDeviceMFWin::OnUtilizationReport(
+    int frame_feedback_id,
+    media::VideoFrameFeedback feedback) {
+  base::AutoLock lock(lock_);
+  last_feedback_ = feedback;
+}
+
 void VideoCaptureDeviceMFWin::OnIncomingCapturedData(
     IMFMediaBuffer* buffer,
     base::TimeTicks reference_time,
@@ -1486,8 +1493,13 @@ HRESULT VideoCaptureDeviceMFWin::DeliverTextureToClient(
     return MF_E_UNEXPECTED;
   }
 
-  hr = CopyTextureToGpuMemoryBuffer(
-      texture, capture_buffer.handle_provider->GetGpuMemoryBufferHandle());
+  auto gmb_handle = capture_buffer.handle_provider->GetGpuMemoryBufferHandle();
+  hr = CopyTextureToGpuMemoryBuffer(texture, gmb_handle.dxgi_handle.Get());
+
+  if (last_feedback_.require_mapped_frame) {
+    gmb_handle.region =
+        capture_buffer.handle_provider->DuplicateAsUnsafeRegion();
+  }
 
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to copy camera device texture to output texture: "

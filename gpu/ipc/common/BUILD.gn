@@ -86,9 +86,12 @@ source_set("ipc_common_sources") {
 
   if (is_win) {
     sources += [
+      "dxgi_helpers.cc",
+      "dxgi_helpers.h",
       "gpu_memory_buffer_impl_dxgi.cc",
       "gpu_memory_buffer_impl_dxgi.h",
     ]
+    libs = [ "d3d11.lib" ]
   }
   if (is_linux || is_chromeos || use_ozone) {
     sources += [
@@ -123,6 +126,7 @@ source_set("ipc_common_sources") {
     "//gpu/command_buffer/client:client_sources",
     "//gpu/command_buffer/common:common_sources",
     "//gpu/config:config_sources",
+    "//third_party/libyuv",
     "//ui/base",
     "//ui/gfx:color_space",
     "//ui/gfx/geometry",

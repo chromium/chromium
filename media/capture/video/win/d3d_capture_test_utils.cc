@@ -44,10 +44,12 @@ IFACEMETHODIMP MockD3D11DeviceContext::Map(
     D3D11_MAP MapType,
     UINT MapFlags,
     D3D11_MAPPED_SUBRESOURCE* mapped_resource) {
-  return E_NOTIMPL;
+  return OnMap(resource, subresource, MapType, MapFlags, mapped_resource);
 }
 IFACEMETHODIMP_(void)
-MockD3D11DeviceContext::Unmap(ID3D11Resource* resource, UINT subresource) {}
+MockD3D11DeviceContext::Unmap(ID3D11Resource* resource, UINT subresource) {
+  OnUnmap(resource, subresource);
+}
 IFACEMETHODIMP_(void)
 MockD3D11DeviceContext::PSSetConstantBuffers(
     UINT start_slot,
@@ -799,6 +801,9 @@ void MockD3D11Device::SetupDefaultMocks() {
   ON_CALL(*this, OnGetDeviceRemovedReason).WillByDefault([]() { return S_OK; });
   ON_CALL(*this, DoOpenSharedResource1)
       .WillByDefault([](HANDLE, REFIID, void**) { return E_NOTIMPL; });
+  ON_CALL(*mock_immediate_context_.Get(), OnMap)
+      .WillByDefault([](ID3D11Resource*, UINT, D3D11_MAP, UINT,
+                        D3D11_MAPPED_SUBRESOURCE*) { return E_NOTIMPL; });
 }
 
 IFACEMETHODIMP MockDXGIResource::CreateSubresourceSurface(

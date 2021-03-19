@@ -12,4 +12,7 @@ specific_include_rules = {
     "+third_party/skia/include/gpu/GrTypes.h",
     "+third_party/skia/include/core/SkImageInfo.h",
   ],
+  "dxgi_helpers.cc": [
+    "+third_party/libyuv/include/libyuv/planar_functions.h",
+  ]
 }

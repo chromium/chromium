@@ -5,6 +5,7 @@
 #ifndef MEDIA_CAPTURE_VIDEO_WIN_GPU_MEMORY_BUFFER_TRACKER_H_
 #define MEDIA_CAPTURE_VIDEO_WIN_GPU_MEMORY_BUFFER_TRACKER_H_
 
+#include "gpu/ipc/common/gpu_memory_buffer_impl_dxgi.h"
 #include "media/base/win/dxgi_device_manager.h"
 #include "media/capture/video/video_capture_buffer_tracker.h"
 
@@ -39,9 +40,11 @@ class CAPTURE_EXPORT GpuMemoryBufferTracker final
   gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() override;
 
  private:
-  std::unique_ptr<gfx::GpuMemoryBuffer> buffer_;
+  std::unique_ptr<gpu::GpuMemoryBufferImplDXGI> buffer_;
   scoped_refptr<DXGIDeviceManager> dxgi_device_manager_;
   Microsoft::WRL::ComPtr<ID3D11Device> d3d_device_;
+  base::UnsafeSharedMemoryRegion region_;
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> staging_texture_;
   gfx::Size buffer_size_;
   bool CreateBufferInternal();
   bool EnsureD3DDevice();

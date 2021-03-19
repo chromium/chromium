@@ -70,6 +70,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   void GetPhotoState(GetPhotoStateCallback callback) override;
   void SetPhotoOptions(mojom::PhotoSettingsPtr settings,
                        SetPhotoOptionsCallback callback) override;
+  void OnUtilizationReport(int frame_feedback_id,
+                           media::VideoFrameFeedback feedback) override;
 
   // Captured new video data.
   void OnIncomingCapturedData(IMFMediaBuffer* buffer,
@@ -133,7 +135,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   HRESULT WaitOnCaptureEvent(GUID capture_event_guid);
   HRESULT DeliverTextureToClient(ID3D11Texture2D* texture,
                                  base::TimeTicks reference_time,
-                                 base::TimeDelta timestamp);
+                                 base::TimeDelta timestamp)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void OnIncomingCapturedDataInternal(
       IMFMediaBuffer* buffer,
       base::TimeTicks reference_time,
@@ -171,6 +174,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   base::WaitableEvent capture_error_;
   scoped_refptr<DXGIDeviceManager> dxgi_device_manager_;
   base::Optional<int> camera_rotation_;
+
+  media::VideoFrameFeedback last_feedback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

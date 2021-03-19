@@ -30,10 +30,10 @@ GpuMemoryBufferImplDXGI::CreateFromHandle(
     GpuMemoryBufferManager* gpu_memory_buffer_manager,
     scoped_refptr<base::UnsafeSharedMemoryPool> pool) {
   DCHECK(handle.dxgi_handle.IsValid());
-  return base::WrapUnique(
-      new GpuMemoryBufferImplDXGI(handle.id, size, format, std::move(callback),
-                                  std::move(handle.dxgi_handle),
-                                  gpu_memory_buffer_manager, std::move(pool)));
+  return base::WrapUnique(new GpuMemoryBufferImplDXGI(
+      handle.id, size, format, std::move(callback),
+      std::move(handle.dxgi_handle), gpu_memory_buffer_manager, std::move(pool),
+      std::move(handle.region)));
 }
 
 base::OnceClosure GpuMemoryBufferImplDXGI::AllocateForTesting(
@@ -93,6 +93,15 @@ bool GpuMemoryBufferImplDXGI::Map() {
   if (map_count_++)
     return true;
 
+  if (unowned_region_.IsValid()) {
+    unowned_mapping_ = unowned_region_.Map();
+    if (unowned_mapping_.IsValid()) {
+      return true;
+    }
+    // If failed to map unowned region - try to do manual copy as if the region
+    // was not provided.
+  }
+
   DCHECK(!shared_memory_handle_);
   DCHECK(gpu_memory_buffer_manager_);
   DCHECK(shared_memory_pool_);
@@ -119,13 +128,17 @@ void* GpuMemoryBufferImplDXGI::memory(size_t plane) {
   AssertMapped();
 
   if (plane > gfx::NumberOfPlanesForLinearBufferFormat(format_) ||
-      !shared_memory_handle_) {
+      (!shared_memory_handle_ && !unowned_mapping_.IsValid())) {
     return nullptr;
   }
 
   uint8_t* plane_addr =
-      shared_memory_handle_->GetMapping().GetMemoryAsSpan<uint8_t>().data();
-
+      (shared_memory_handle_ ? shared_memory_handle_->GetMapping()
+                             : unowned_mapping_)
+          .GetMemoryAsSpan<uint8_t>()
+          .data();
+  // This is safe, since we already checked that the requested plane is
+  // valid for current buffer format.
   plane_addr += gfx::BufferOffsetForBufferFormat(size_, format_, plane);
   return plane_addr;
 }
@@ -135,7 +148,12 @@ void GpuMemoryBufferImplDXGI::Unmap() {
   DCHECK_GT(map_count_, 0u);
   if (--map_count_)
     return;
-  shared_memory_handle_.reset();
+
+  if (shared_memory_handle_) {
+    shared_memory_handle_.reset();
+  } else {
+    unowned_mapping_ = base::WritableSharedMemoryMapping();
+  }
 }
 
 int GpuMemoryBufferImplDXGI::stride(size_t plane) const {
@@ -160,7 +178,14 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferImplDXGI::CloneHandle() const {
   if (!result)
     DPLOG(ERROR) << "Failed to duplicate DXGI resource handle.";
   handle.dxgi_handle.Set(duplicated_handle);
+  if (unowned_region_.IsValid()) {
+    handle.region = unowned_region_.Duplicate();
+  }
   return handle;
+}
+
+HANDLE GpuMemoryBufferImplDXGI::GetHandle() const {
+  return dxgi_handle_.Get();
 }
 
 GpuMemoryBufferImplDXGI::GpuMemoryBufferImplDXGI(
@@ -170,10 +195,11 @@ GpuMemoryBufferImplDXGI::GpuMemoryBufferImplDXGI(
     DestructionCallback callback,
     base::win::ScopedHandle dxgi_handle,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-    scoped_refptr<base::UnsafeSharedMemoryPool> pool)
+    scoped_refptr<base::UnsafeSharedMemoryPool> pool,
+    base::UnsafeSharedMemoryRegion region)
     : GpuMemoryBufferImpl(id, size, format, std::move(callback)),
       dxgi_handle_(std::move(dxgi_handle)),
       gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
-      shared_memory_pool_(std::move(pool)) {}
-
+      shared_memory_pool_(std::move(pool)),
+      unowned_region_(std::move(region)) {}
 }  // namespace gpu
