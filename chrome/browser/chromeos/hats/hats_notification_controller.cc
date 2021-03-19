@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/chromeos/hats/hats_config.h"
 #include "chrome/browser/chromeos/hats/hats_dialog.h"
 #include "chrome/browser/chromeos/hats/hats_finch_helper.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
@@ -43,18 +44,6 @@ const char kNotificationOriginUrl[] = "chrome://hats";
 
 const char kNotifierHats[] = "ash.hats";
 
-// Minimum amount of time before the notification is displayed again after a
-// user has interacted with it.
-constexpr base::TimeDelta kHatsThreshold = base::TimeDelta::FromDays(90);
-
-// The threshold for a Googler is less.
-constexpr base::TimeDelta kHatsGooglerThreshold = base::TimeDelta::FromDays(30);
-
-// Minimum amount of time after initial login or oobe after which we can show
-// the HaTS notification.
-constexpr base::TimeDelta kHatsNewDeviceThreshold =
-    base::TimeDelta::FromDays(7);
-
 // Returns true if the given |profile| interacted with HaTS by either
 // dismissing the notification or taking the survey within a given
 // |threshold_time|.
@@ -68,12 +57,12 @@ bool DidShowSurveyToProfileRecently(Profile* profile,
   return previous_interaction_timestamp + threshold_time > base::Time::Now();
 }
 
-// Returns true if at least |kHatsNewDeviceThreshold| time have passed since
+// Returns true if at least |new_device_threshold| time has passed since
 // OOBE. This is an indirect measure of whether the owner has used the device
-// for at least |kHatsNewDeviceThreshold| time.
-bool IsNewDevice() {
+// for at least |new_device_threshold| time.
+bool IsNewDevice(base::TimeDelta new_device_threshold) {
   return chromeos::StartupUtils::GetTimeSinceOobeFlagFileCreation() <=
-         kHatsNewDeviceThreshold;
+         new_device_threshold;
 }
 
 // Returns true if the |kForceHappinessTrackingSystem| flag is enabled.
@@ -89,13 +78,15 @@ namespace chromeos {
 // static
 const char HatsNotificationController::kNotificationId[] = "hats_notification";
 
-HatsNotificationController::HatsNotificationController(Profile* profile)
+HatsNotificationController::HatsNotificationController(
+    Profile* profile,
+    const HatsConfig& hats_config)
     : profile_(profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&IsNewDevice),
+      base::BindOnce(&IsNewDevice, hats_config.hatsNewDeviceThreshold),
       base::BindOnce(&HatsNotificationController::Initialize,
                      weak_pointer_factory_.GetWeakPtr()));
 }
@@ -127,7 +118,9 @@ void HatsNotificationController::Initialize(bool is_new_device) {
 }
 
 // static
-bool HatsNotificationController::ShouldShowSurveyToProfile(Profile* profile) {
+bool HatsNotificationController::ShouldShowSurveyToProfile(
+    Profile* profile,
+    const HatsConfig& hats_config) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (IsTestingEnabled())
@@ -136,7 +129,7 @@ bool HatsNotificationController::ShouldShowSurveyToProfile(Profile* profile) {
   // Do not show the survey if the HaTS feature is disabled for the device. This
   // flag is controlled by finch and is enabled only when the device has been
   // selected for the survey.
-  if (!base::FeatureList::IsEnabled(features::kHappinessTrackingSystem))
+  if (!base::FeatureList::IsEnabled(hats_config.feature))
     return false;
 
   // Do not show survey if this is a guest session.
@@ -162,15 +155,14 @@ bool HatsNotificationController::ShouldShowSurveyToProfile(Profile* profile) {
     return false;
 
   // Call finch helper only after all the profile checks are complete.
-  HatsFinchHelper hats_finch_helper(profile,
-                                    features::kHappinessTrackingSystem);
+  HatsFinchHelper hats_finch_helper(profile, hats_config.feature);
   if (!hats_finch_helper.IsDeviceSelectedForCurrentCycle())
     return false;
 
-  base::TimeDelta threshold_time =
+  const base::TimeDelta threshold_time =
       gaia::IsGoogleInternalAccountEmail(profile->GetProfileUserName())
-          ? kHatsGooglerThreshold
-          : kHatsThreshold;
+          ? hats_config.hatsGooglerThreshold
+          : hats_config.hatsThreshold;
   // Do not show survey to user if user has interacted with HaTS within the past
   // |threshold_time| time delta.
   if (DidShowSurveyToProfileRecently(profile, threshold_time)) {

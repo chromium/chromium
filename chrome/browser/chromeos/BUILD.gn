@@ -2131,6 +2131,8 @@ source_set("chromeos") {
     "guest_os/guest_os_share_path_factory.h",
     "guest_os/guest_os_stability_monitor.cc",
     "guest_os/guest_os_stability_monitor.h",
+    "hats/hats_config.cc",
+    "hats/hats_config.h",
     "hats/hats_dialog.cc",
     "hats/hats_dialog.h",
     "hats/hats_finch_helper.cc",

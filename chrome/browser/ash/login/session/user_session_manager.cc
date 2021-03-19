@@ -76,6 +76,7 @@
 #include "chrome/browser/chromeos/child_accounts/child_policy_observer.h"
 #include "chrome/browser/chromeos/first_run/first_run.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_service.h"
+#include "chrome/browser/chromeos/hats/hats_config.h"
 #include "chrome/browser/chromeos/logging.h"
 #include "chrome/browser/chromeos/policy/adb_sideloading_allowance_mode_policy_handler.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
@@ -2154,8 +2155,10 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
   if (should_launch_browser_ && !IsFullRestoreEnabled(profile))
     LaunchBrowser(profile);
 
-  if (HatsNotificationController::ShouldShowSurveyToProfile(profile))
-    hats_notification_controller_ = new HatsNotificationController(profile);
+  if (HatsNotificationController::ShouldShowSurveyToProfile(profile,
+                                                            kHatsGeneralSurvey))
+    hats_notification_controller_ =
+        new HatsNotificationController(profile, kHatsGeneralSurvey);
 
   base::OnceClosure login_host_finalized_callback = base::BindOnce(
       [] { session_manager::SessionManager::Get()->SessionStarted(); });
