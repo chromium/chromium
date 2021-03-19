@@ -567,6 +567,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         startedShowingCallback.waitForCallback(2);
         Assert.assertEquals(LayoutType.BROWSING, startedShowingCallback.layoutType);
 
+        finishedShowingCallback.waitForCallback(1);
         Assert.assertEquals(LayoutType.BROWSING, finishedShowingCallback.layoutType);
     }
 
