@@ -752,7 +752,7 @@ TEST_F(OmniboxViewViewsTest, OnBlur) {
   // than 0.
   omnibox_textfield()->OnFocus();
   const std::u16string kContentsRtl =
-      base::WideToUTF16(L"\x05e8\x05e2.\x05e7\x05d5\x05dd/0123/abcd");
+      u"\x05e8\x05e2.\x05e7\x05d5\x05dd/0123/abcd";
   omnibox_view()->SetWindowTextAndCaretPos(kContentsRtl, 0, false, false);
   EXPECT_EQ(gfx::NO_ELIDE, render_text->elide_behavior());
 

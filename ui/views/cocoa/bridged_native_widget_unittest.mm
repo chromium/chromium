@@ -739,7 +739,7 @@ void BridgedNativeWidgetTest::TestEditingCommands(NSArray* selectors) {
     bool is_rtl;
   } test_cases[] = {
       {u"ab c", false},
-      {base::WideToUTF16(L"\x0634\x0632 \x064A"), true},
+      {u"\x0634\x0632 \x064A", true},
   };
 
   for (const auto& test_case : test_cases) {

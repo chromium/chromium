@@ -147,7 +147,7 @@ TEST(KeyConverter, FrenchKeyOnEnglishLayout) {
   std::string e_acute = base::WideToUTF8(L"\u00E9");
   std::vector<KeyEvent> key_events;
   builder.SetText(e_acute, e_acute)->Generate(&key_events);
-  CheckEventsReleaseModifiers(base::WideToUTF16(L"\u00E9"), key_events);
+  CheckEventsReleaseModifiers(u"\u00E9", key_events);
 }
 
 #if defined(OS_WIN)

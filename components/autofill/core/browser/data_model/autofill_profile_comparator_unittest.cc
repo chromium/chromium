@@ -478,10 +478,9 @@ TEST_P(AutofillProfileComparatorTest, Compare) {
       comparator_.Compare(UTF8ToUTF16("1600 Amphitheatre, Pkwy."),
                           UTF8ToUTF16("1600 amphitheatre pkwy"),
                           AutofillProfileComparator::RETAIN_WHITESPACE));
-  EXPECT_TRUE(
-      comparator_.Compare(base::WideToUTF16(L"Mid\x2013Island\x2003 Plaza"),
-                          UTF8ToUTF16("mid island plaza"),
-                          AutofillProfileComparator::RETAIN_WHITESPACE));
+  EXPECT_TRUE(comparator_.Compare(
+      u"Mid\x2013Island\x2003 Plaza", UTF8ToUTF16("mid island plaza"),
+      AutofillProfileComparator::RETAIN_WHITESPACE));
   EXPECT_TRUE(
       comparator_.Compare(UTF8ToUTF16("1600 amphitheatre pkwy \n App. 2"),
                           UTF8ToUTF16("1600 amphitheatre pkwy app 2"),
@@ -522,8 +521,7 @@ TEST_P(AutofillProfileComparatorTest, NormalizeForComparison) {
 
   // Unicode punctuation (hyphen and space), multiple spaces collapsed.
   EXPECT_EQ(UTF8ToUTF16("mid island plaza"),
-            comparator_.NormalizeForComparison(
-                base::WideToUTF16(L"Mid\x2013Island\x2003 Plaza")));
+            comparator_.NormalizeForComparison(u"Mid\x2013Island\x2003 Plaza"));
 
   // Newline character removed.
   EXPECT_EQ(UTF8ToUTF16("1600 amphitheatre pkwy app 2"),

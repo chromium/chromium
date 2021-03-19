@@ -2235,13 +2235,11 @@ std::u16string BrowserView::GetWindowTitle() const {
   if (contents) {
     auto* helper = RecentlyAudibleHelper::FromWebContents(contents);
     if (helper && helper->WasRecentlyAudible()) {
-      title =
-          contents->IsAudioMuted()
-              ? l10n_util::GetStringFUTF16(IDS_WINDOW_AUDIO_MUTING_MAC, title,
-                                           base::WideToUTF16(L"\U0001F507"))
-              : title = l10n_util::GetStringFUTF16(
-                    IDS_WINDOW_AUDIO_PLAYING_MAC, title,
-                    base::WideToUTF16(L"\U0001F50A"));
+      title = contents->IsAudioMuted()
+                  ? l10n_util::GetStringFUTF16(IDS_WINDOW_AUDIO_MUTING_MAC,
+                                               title, u"\U0001F507")
+                  : title = l10n_util::GetStringFUTF16(
+                        IDS_WINDOW_AUDIO_PLAYING_MAC, title, u"\U0001F50A");
     }
   }
 #endif

@@ -87,7 +87,7 @@ TEST(StringMessageCodecTest, SelfTest_ASCII) {
 }
 
 TEST(StringMessageCodecTest, SelfTest_NonASCII) {
-  std::u16string message = base::WideToUTF16(L"hello \u263A");
+  std::u16string message = u"hello \u263A";
   std::u16string decoded;
   EXPECT_TRUE(DecodeStringMessage(EncodeStringMessage(message), &decoded));
   EXPECT_EQ(message, decoded);
@@ -106,7 +106,7 @@ TEST(StringMessageCodecTest, SelfToV8Test_ASCII) {
 }
 
 TEST(StringMessageCodecTest, SelfToV8Test_NonASCII) {
-  std::u16string message = base::WideToUTF16(L"hello \u263A");
+  std::u16string message = u"hello \u263A";
   EXPECT_EQ(message, DecodeWithV8(EncodeStringMessage(message)));
 }
 
@@ -123,7 +123,7 @@ TEST(StringMessageCodecTest, V8ToSelfTest_ASCII) {
 }
 
 TEST(StringMessageCodecTest, V8ToSelfTest_NonASCII) {
-  std::u16string message = base::WideToUTF16(L"hello \u263A");
+  std::u16string message = u"hello \u263A";
   std::u16string decoded;
   EXPECT_TRUE(DecodeStringMessage(EncodeWithV8(message), &decoded));
   EXPECT_EQ(message, decoded);

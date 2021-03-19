@@ -49,7 +49,7 @@ class MenuRunnerTest : public ViewsTestBase {
     menu_delegate_ = std::make_unique<TestMenuDelegate>();
     menu_item_view_ = new views::TestMenuItemView(menu_delegate_.get());
     menu_item_view_->AppendMenuItem(1, base::ASCIIToUTF16("One"));
-    menu_item_view_->AppendMenuItem(2, base::WideToUTF16(L"\x062f\x0648"));
+    menu_item_view_->AppendMenuItem(2, u"\x062f\x0648");
 
     owner_ = std::make_unique<Widget>();
     Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);

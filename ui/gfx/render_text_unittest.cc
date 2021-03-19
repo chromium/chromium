@@ -798,7 +798,7 @@ TEST_F(RenderTextTest, ApplyStyles) {
 
 TEST_F(RenderTextTest, ApplyStyleSurrogatePair) {
   RenderText* render_text = GetRenderText();
-  render_text->SetText(WideToUTF16(L"x\U0001F601x"));
+  render_text->SetText(u"x\U0001F601x");
   // Apply the style in the middle of a surrogate pair. The style should be
   // applied to the whole range of the codepoint.
   gfx::Range range(2, 3);
@@ -845,7 +845,7 @@ TEST_F(RenderTextTest, ApplyStyleMultipleGraphemes) {
 
 TEST_F(RenderTextTest, ApplyColorSurrogatePair) {
   RenderText* render_text = GetRenderText();
-  render_text->SetText(WideToUTF16(L"x\U0001F601x"));
+  render_text->SetText(u"x\U0001F601x");
   render_text->ApplyColor(SK_ColorRED, Range(2, 3));
   Draw();
 
@@ -891,7 +891,7 @@ TEST_F(RenderTextTest, ApplyColorLongEmoji) {
 
 TEST_F(RenderTextTest, ApplyColorObscuredEmoji) {
   RenderText* render_text = GetRenderText();
-  render_text->SetText(WideToUTF16(L"\U0001F628\U0001F628\U0001F628"));
+  render_text->SetText(u"\U0001F628\U0001F628\U0001F628");
   render_text->ApplyColor(SK_ColorRED, Range(0, 2));
   render_text->ApplyColor(SK_ColorBLUE, Range(4, 5));
 
@@ -1393,7 +1393,7 @@ TEST_F(RenderTextTest, ObscuredEmoji) {
   render_text->SetObscured(true);
   // Test U+1F601 😁 "Grinning face with smiling eyes", followed by 'y'.
   // Windows requires wide strings for \Unnnnnnnn universal character names.
-  render_text->SetText(WideToUTF16(L"\U0001F601y"));
+  render_text->SetText(u"\U0001F601y");
   render_text->Draw(canvas());
 
   // Emoji codepoints are replaced by bullets (e.g. "\u2022\u2022").
@@ -1411,7 +1411,7 @@ TEST_F(RenderTextTest, ObscuredEmoji) {
 
   // Test two U+1F4F7 📷 "Camera" characters in a row.
   // Windows requires wide strings for \Unnnnnnnn universal character names.
-  render_text->SetText(WideToUTF16(L"\U0001F4F7\U0001F4F7"));
+  render_text->SetText(u"\U0001F4F7\U0001F4F7");
   render_text->Draw(canvas());
 
   // Emoji codepoints are replaced by bullets (e.g. "\u2022\u2022").
@@ -1428,7 +1428,7 @@ TEST_F(RenderTextTest, ObscuredEmoji) {
   render_text->SetObscuredRevealIndex(0);
   render_text->Draw(canvas());
 
-  EXPECT_EQ(WideToUTF16(L"\U0001F4F7\u2022"), render_text->GetDisplayText());
+  EXPECT_EQ(u"\U0001F4F7\u2022", render_text->GetDisplayText());
   EXPECT_EQ(0U, test_api()->TextIndexToDisplayIndex(0U));
   EXPECT_EQ(0U, test_api()->TextIndexToDisplayIndex(1U));
   EXPECT_EQ(2U, test_api()->TextIndexToDisplayIndex(2U));
@@ -1442,7 +1442,7 @@ TEST_F(RenderTextTest, ObscuredEmoji) {
 TEST_F(RenderTextTest, ObscuredEmojiRevealed) {
   RenderText* render_text = GetRenderText();
 
-  std::u16string text = WideToUTF16(L"123\U0001F4F7\U0001F4F7x\U0001F601-");
+  std::u16string text = u"123\U0001F4F7\U0001F4F7x\U0001F601-";
   for (size_t i = 0; i < text.length(); ++i) {
     render_text->SetText(text);
     render_text->SetObscured(true);
@@ -2286,11 +2286,11 @@ TEST_F(RenderTextTest, SetElideBehavior) {
   render_text->SetCursorEnabled(false);
   render_text->SetDisplayRect(Rect(0, 0, 3 * kGlyphWidth, 100));
   render_text->SetElideBehavior(ELIDE_TAIL);
-  EXPECT_EQ(WideToUTF16(L"ab\u2026"), render_text->GetDisplayText());
+  EXPECT_EQ(u"ab\u2026", render_text->GetDisplayText());
 
   // Setting a different eliding behavior must trigger a relayout.
   render_text->SetElideBehavior(ELIDE_HEAD);
-  EXPECT_EQ(WideToUTF16(L"\u2026ef"), render_text->GetDisplayText());
+  EXPECT_EQ(u"\u2026ef", render_text->GetDisplayText());
 }
 
 TEST_F(RenderTextTest, SetWhitespaceElision) {
@@ -2304,11 +2304,11 @@ TEST_F(RenderTextTest, SetWhitespaceElision) {
   render_text->SetDisplayRect(Rect(0, 0, 3 * kGlyphWidth, 100));
   render_text->SetElideBehavior(ELIDE_TAIL);
   render_text->SetWhitespaceElision(false);
-  EXPECT_EQ(WideToUTF16(L"a \u2026"), render_text->GetDisplayText());
+  EXPECT_EQ(u"a \u2026", render_text->GetDisplayText());
 
   // Setting a different whitespace elision must trigger a relayout.
   render_text->SetWhitespaceElision(true);
-  EXPECT_EQ(WideToUTF16(L"a\u2026"), render_text->GetDisplayText());
+  EXPECT_EQ(u"a\u2026", render_text->GetDisplayText());
 }
 
 TEST_F(RenderTextTest, ElidedObscuredText) {
@@ -2685,8 +2685,7 @@ TEST_F(RenderTextTest, TruncatedObscuredText) {
 TEST_F(RenderTextTest, TruncatedObscuredTextWithGraphemes) {
   RenderText* render_text = GetRenderText();
   render_text->set_truncate_length(3);
-  render_text->SetText(
-      WideToUTF16(L"e\u0301\U0001F468\u200D\u2708\uFE0F\U0001D11E"));
+  render_text->SetText(u"e\u0301\U0001F468\u200D\u2708\uFE0F\U0001D11E");
   render_text->SetObscured(true);
   EXPECT_EQ(GetObscuredString(3), render_text->GetDisplayText());
 
@@ -3778,7 +3777,7 @@ TEST_F(RenderTextTest, GraphemeIterator) {
   iterator = render_text->GetGraphemeIteratorAtDisplayTextIndex(2);
   EXPECT_EQ(2U, render_text->GetTextIndex(iterator));
 
-  render_text->SetText(WideToUTF16(L"a\U0001F601b"));
+  render_text->SetText(u"a\U0001F601b");
   render_text->SetObscured(true);
   iterator = render_text->GetGraphemeIteratorAtDisplayTextIndex(0);
   EXPECT_EQ(0U, render_text->GetTextIndex(iterator));
@@ -3865,7 +3864,7 @@ TEST_F(RenderTextTest, GraphemePositions) {
 
   // LTR ab, 𝄞 'MUSICAL SYMBOL G CLEF' U+1D11E (surrogate pair), LTR cd.
   // Windows requires wide strings for \Unnnnnnnn universal character names.
-  const std::u16string kText3 = WideToUTF16(L"ab\U0001D11Ecd");
+  const std::u16string kText3 = u"ab\U0001D11Ecd";
 
   struct {
     std::u16string text;
@@ -4020,7 +4019,7 @@ TEST_F(RenderTextTest, FindCursorPosition_GraphemeBoundaries) {
       {UTF8ToUTF16("ab\u0915\u093fcd"), {0, 1, 2, 4, 5, 6}},
       // LTR ab, surrogate pair composed of two 16 bit characters, LTR cd.
       // Windows requires wide strings for \Unnnnnnnn universal character names.
-      {WideToUTF16(L"ab\U0001D11Ecd"), {0, 1, 2, 4, 5, 6}}};
+      {u"ab\U0001D11Ecd", {0, 1, 2, 4, 5, 6}}};
 
   RenderText* render_text = GetRenderText();
   render_text->SetDisplayRect(gfx::Rect(100, 30));
@@ -5077,8 +5076,7 @@ TEST_F(RenderTextTest, GetCursorBoundsWithGraphemes) {
   SetGlyphHeight(kGlyphHeight);
 
   RenderText* render_text = GetRenderText();
-  render_text->SetText(
-      WideToUTF16(L"a\u0300e\u0301\U0001F601x\U0001F573\uFE0F"));
+  render_text->SetText(u"a\u0300e\u0301\U0001F601x\U0001F573\uFE0F");
   render_text->SetDisplayRect(Rect(100, 20));
   render_text->SetVerticalAlignment(ALIGN_TOP);
 
@@ -6213,7 +6211,7 @@ TEST_F(RenderTextTest, ControlCharacterReplacement) {
 
   // Setting multiline, the newline character will be back to the original text.
   render_text->SetMultiline(true);
-  EXPECT_EQ(WideToUTF16(L"␈\r␇␉\n␋␌"), render_text->GetDisplayText());
+  EXPECT_EQ(u"␈\r␇␉\n␋␌", render_text->GetDisplayText());
 
   // The generic control characters should have been replaced by the replacement
   // codepoints.
@@ -6223,7 +6221,7 @@ TEST_F(RenderTextTest, ControlCharacterReplacement) {
 
 TEST_F(RenderTextTest, PrivateUseCharacterReplacement) {
   RenderText* render_text = GetRenderText();
-  render_text->SetText(WideToUTF16(L"xx\ue78d\ue78fa\U00100042z"));
+  render_text->SetText(u"xx\ue78d\ue78fa\U00100042z");
 
   // The private use characters should have been replaced. If the code point is
   // a surrogate pair, it needs to be replaced by two characters.
@@ -6232,14 +6230,14 @@ TEST_F(RenderTextTest, PrivateUseCharacterReplacement) {
 
   // The private use characters from Area-B must be replaced. The rewrite step
   // replaced 2 characters by 1 character.
-  render_text->SetText(WideToUTF16(L"x\U00100000\U00100001\U00100002"));
+  render_text->SetText(u"x\U00100000\U00100001\U00100002");
   EXPECT_EQ(UTF8ToUTF16("x\ufffd\ufffd\ufffd"), render_text->GetDisplayText());
 }
 
 TEST_F(RenderTextTest, InvalidSurrogateCharacterReplacement) {
   // Text with invalid surrogates (surrogates low 0xDC00 and high 0xD800).
   RenderText* render_text = GetRenderText();
-  render_text->SetText(WideToUTF16(L"\xDC00\xD800"));
+  render_text->SetText(u"\xDC00\xD800");
   EXPECT_EQ(UTF8ToUTF16("\ufffd\ufffd"), render_text->GetDisplayText());
 }
 
@@ -6492,7 +6490,7 @@ TEST_F(RenderTextTest, HarfBuzz_BreakRunsByEmoji) {
   // 😁 (U+1F601, a smile emoji) and ✨ (U+2728, a sparkle icon) can both be
   // drawn with color emoji fonts, so runs should be separated. crbug.com/448909
   // Windows requires wide strings for \Unnnnnnnn universal character names.
-  render_text->SetText(WideToUTF16(L"x\U0001F601y\u2728"));
+  render_text->SetText(u"x\U0001F601y\u2728");
   EXPECT_EQ(ToString16Vec({"x", "😁", "y", "✨"}), GetRunListStrings());
   // U+1F601 is represented as a surrogate pair in UTF-16.
   EXPECT_EQ("[0][1->2][3][4]", GetRunListStructureString());
@@ -6709,9 +6707,9 @@ TEST_F(RenderTextTest, HarfBuzz_ShapeRunsWithMultipleFonts) {
   render_text->SetText(
       UTF8ToUTF16(u8"\U0001F3F3\U0000FE0F\U00000020\U0001F308\U000020E0"));
   std::vector<std::u16string> expected;
-  expected.push_back(WideToUTF16(L"\U0001F3F3\U0000FE0F"));
+  expected.push_back(u"\U0001F3F3\U0000FE0F");
   expected.push_back(u" ");
-  expected.push_back(WideToUTF16(L"\U0001F308\U000020E0"));
+  expected.push_back(u"\U0001F308\U000020E0");
   EXPECT_EQ(expected, GetRunListStrings());
   EXPECT_EQ("[0->2][3][4->6]", GetRunListStructureString());
 
@@ -8284,7 +8282,7 @@ TEST_F(RenderTextTest, DrawVisualText_WithSelection) {
 
 TEST_F(RenderTextTest, DrawVisualText_WithSelectionOnObcuredEmoji) {
   RenderText* render_text = GetRenderText();
-  render_text->SetText(WideToUTF16(L"\U0001F628\U0001F628\U0001F628"));
+  render_text->SetText(u"\U0001F628\U0001F628\U0001F628");
   render_text->SetObscured(true);
   render_text->set_selection_color(SK_ColorRED);
   DrawVisualText({{4, 6}});

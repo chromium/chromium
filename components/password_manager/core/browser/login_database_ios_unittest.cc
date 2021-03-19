@@ -87,7 +87,7 @@ TEST_F(LoginDatabaseIOSTest, KeychainStorage) {
   std::u16string test_passwords[] = {
       base::ASCIIToUTF16("foo"),
       base::ASCIIToUTF16("bar"),
-      base::WideToUTF16(L"\u043F\u0430\u0440\u043E\u043B\u044C"),
+      u"\u043F\u0430\u0440\u043E\u043B\u044C",
       std::u16string(),
   };
 

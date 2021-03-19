@@ -57,9 +57,9 @@ TEST(CaseConversionTest, NonASCII) {
 }
 
 TEST(CaseConversionTest, TurkishLocaleConversion) {
-  const std::u16string mixed(WideToUTF16(L"\x49\x131"));
-  const std::u16string expected_lower(WideToUTF16(L"\x69\x131"));
-  const std::u16string expected_upper(WideToUTF16(L"\x49\x49"));
+  const std::u16string mixed(u"\x49\x131");
+  const std::u16string expected_lower(u"\x69\x131");
+  const std::u16string expected_upper(u"\x49\x49");
 
   test::ScopedRestoreICUDefaultLocale restore_locale;
   i18n::SetICUDefaultLocale("en_US");
@@ -72,8 +72,8 @@ TEST(CaseConversionTest, TurkishLocaleConversion) {
 
   i18n::SetICUDefaultLocale("tr");
 
-  const std::u16string expected_lower_turkish(WideToUTF16(L"\x131\x131"));
-  const std::u16string expected_upper_turkish(WideToUTF16(L"\x49\x49"));
+  const std::u16string expected_lower_turkish(u"\x131\x131");
+  const std::u16string expected_upper_turkish(u"\x49\x49");
 
   result = ToLower(mixed);
   EXPECT_EQ(expected_lower_turkish, result);
@@ -95,8 +95,8 @@ TEST(CaseConversionTest, FoldCase) {
 
   // Turkish cases from above. This is the lower-case expected result from the
   // US locale. It should be the same even when the current locale is Turkish.
-  const std::u16string turkish(WideToUTF16(L"\x49\x131"));
-  const std::u16string turkish_expected(WideToUTF16(L"\x69\x131"));
+  const std::u16string turkish(u"\x49\x131");
+  const std::u16string turkish_expected(u"\x69\x131");
 
   test::ScopedRestoreICUDefaultLocale restore_locale;
   i18n::SetICUDefaultLocale("en_US");
@@ -108,10 +108,10 @@ TEST(CaseConversionTest, FoldCase) {
   // Test a case that gets bigger when processed.
   // U+130 = LATIN CAPITAL LETTER I WITH DOT ABOVE gets folded to a lower case
   // "i" followed by U+307 COMBINING DOT ABOVE.
-  EXPECT_EQ(WideToUTF16(L"i\u0307j"), FoldCase(WideToUTF16(L"\u0130j")));
+  EXPECT_EQ(u"i\u0307j", FoldCase(u"\u0130j"));
 
   // U+00DF (SHARP S) and U+1E9E (CAPIRAL SHARP S) are both folded to "ss".
-  EXPECT_EQ(ASCIIToUTF16("ssss"), FoldCase(WideToUTF16(L"\u00DF\u1E9E")));
+  EXPECT_EQ(ASCIIToUTF16("ssss"), FoldCase(u"\u00DF\u1E9E"));
 }
 
 }  // namespace i18n

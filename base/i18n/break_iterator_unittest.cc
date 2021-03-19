@@ -564,8 +564,7 @@ TEST(BreakIteratorTest, GetWordBreakStatusBreakLine) {
   // A string containing the English word "foo", followed by two Khmer
   // characters, the English word "Can", and then two Russian characters and
   // punctuation.
-  std::u16string text(
-      base::WideToUTF16(L"foo \x1791\x17C1 \nCan \x041C\x0438..."));
+  std::u16string text(u"foo \x1791\x17C1 \nCan \x041C\x0438...");
   BreakIterator iter(text, BreakIterator::BREAK_LINE);
   ASSERT_TRUE(iter.Init());
 
@@ -575,7 +574,7 @@ TEST(BreakIteratorTest, GetWordBreakStatusBreakLine) {
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_LINE_OR_CHAR_BREAK);
   EXPECT_TRUE(iter.Advance());
   // Finds the Khmer characters, the next space, and the newline.
-  EXPECT_EQ(base::WideToUTF16(L"\x1791\x17C1 \n"), iter.GetString());
+  EXPECT_EQ(u"\x1791\x17C1 \n", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_LINE_OR_CHAR_BREAK);
   EXPECT_TRUE(iter.Advance());
   // Finds "Can" and the space.
@@ -583,7 +582,7 @@ TEST(BreakIteratorTest, GetWordBreakStatusBreakLine) {
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_LINE_OR_CHAR_BREAK);
   EXPECT_TRUE(iter.Advance());
   // Finds the Russian characters and periods.
-  EXPECT_EQ(base::WideToUTF16(L"\x041C\x0438..."), iter.GetString());
+  EXPECT_EQ(u"\x041C\x0438...", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_LINE_OR_CHAR_BREAK);
   EXPECT_FALSE(iter.Advance());
 }
@@ -596,8 +595,7 @@ TEST(BreakIteratorTest, GetWordBreakStatusBreakWord) {
   // A string containing the English word "foo", followed by two Khmer
   // characters, the English word "Can", and then two Russian characters and
   // punctuation.
-  std::u16string text(
-      base::WideToUTF16(L"foo \x1791\x17C1 \nCan \x041C\x0438..."));
+  std::u16string text(u"foo \x1791\x17C1 \nCan \x041C\x0438...");
   BreakIterator iter(text, BreakIterator::BREAK_WORD);
   ASSERT_TRUE(iter.Init());
 
@@ -610,7 +608,7 @@ TEST(BreakIteratorTest, GetWordBreakStatusBreakWord) {
   EXPECT_EQ(base::UTF8ToUTF16(" "), iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(base::WideToUTF16(L"\x1791\x17C1"), iter.GetString());
+  EXPECT_EQ(u"\x1791\x17C1", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_WORD_BREAK);
   EXPECT_TRUE(iter.Advance());
   // Finds the space and the newline.
@@ -628,7 +626,7 @@ TEST(BreakIteratorTest, GetWordBreakStatusBreakWord) {
   EXPECT_EQ(base::UTF8ToUTF16(" "), iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(base::WideToUTF16(L"\x041C\x0438"), iter.GetString());
+  EXPECT_EQ(u"\x041C\x0438", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_WORD_BREAK);
   EXPECT_TRUE(iter.Advance());
   // Finds the trailing periods.

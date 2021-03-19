@@ -130,40 +130,36 @@ TEST_F(TextfieldModelTest, EditString) {
 TEST_F(TextfieldModelTest, EditString_SimpleRTL) {
   TextfieldModel model(nullptr);
   // Append two strings.
-  model.Append(base::WideToUTF16(L"\x05d0\x05d1\x05d2"));
-  EXPECT_EQ(base::WideToUTF16(L"\x05d0\x05d1\x05d2"), model.text());
-  model.Append(base::WideToUTF16(L"\x05e0\x05e1\x05e2"));
-  EXPECT_EQ(base::WideToUTF16(L"\x05d0\x05d1\x05d2\x05e0\x05e1\x05e2"),
-            model.text());
+  model.Append(u"\x05d0\x05d1\x05d2");
+  EXPECT_EQ(u"\x05d0\x05d1\x05d2", model.text());
+  model.Append(u"\x05e0\x05e1\x05e2");
+  EXPECT_EQ(u"\x05d0\x05d1\x05d2\x05e0\x05e1\x05e2", model.text());
 
   // Insert "\x05f0".
   model.MoveCursorTo(1);
   model.InsertChar(0x05f0);
-  EXPECT_EQ(base::WideToUTF16(L"\x05d0\x05f0\x05d1\x05d2\x05e0\x05e1\x05e2"),
-            model.text());
+  EXPECT_EQ(u"\x05d0\x05f0\x05d1\x05d2\x05e0\x05e1\x05e2", model.text());
 
   // Replace "\x05d1" with "\x05f1".
   model.ReplaceChar(0x05f1);
-  EXPECT_EQ(base::WideToUTF16(L"\x05d0\x05f0\x5f1\x05d2\x05e0\x05e1\x05e2"),
-            model.text());
+  EXPECT_EQ(u"\x05d0\x05f0\x5f1\x05d2\x05e0\x05e1\x05e2", model.text());
 
   // Test Delete and backspace.
   EXPECT_EQ(3U, model.GetCursorPosition());
   EXPECT_TRUE(model.Delete());
-  EXPECT_EQ(base::WideToUTF16(L"\x05d0\x05f0\x5f1\x05e0\x05e1\x05e2"),
-            model.text());
+  EXPECT_EQ(u"\x05d0\x05f0\x5f1\x05e0\x05e1\x05e2", model.text());
   EXPECT_TRUE(model.Backspace());
   EXPECT_EQ(2U, model.GetCursorPosition());
-  EXPECT_EQ(base::WideToUTF16(L"\x05d0\x05f0\x05e0\x05e1\x05e2"), model.text());
+  EXPECT_EQ(u"\x05d0\x05f0\x05e0\x05e1\x05e2", model.text());
 }
 
 TEST_F(TextfieldModelTest, EditString_ComplexScript) {
   TextfieldModel model(nullptr);
 
   // Append two Hindi strings.
-  model.Append(base::WideToUTF16(L"\x0915\x093f\x0915\x094d\x0915"));
-  EXPECT_EQ(base::WideToUTF16(L"\x0915\x093f\x0915\x094d\x0915"), model.text());
-  model.Append(base::WideToUTF16(L"\x0915\x094d\x092e\x094d"));
+  model.Append(u"\x0915\x093f\x0915\x094d\x0915");
+  EXPECT_EQ(u"\x0915\x093f\x0915\x094d\x0915", model.text());
+  model.Append(u"\x0915\x094d\x092e\x094d");
   EXPECT_EQ(base::WideToUTF16(
                 L"\x0915\x093f\x0915\x094d\x0915\x0915\x094d\x092e\x094d"),
             model.text());
@@ -186,9 +182,7 @@ TEST_F(TextfieldModelTest, EditString_ComplexScript) {
 // characters turned into empty square due to font regression. So, not able
 // to test 2 characters belong to the same grapheme.
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  EXPECT_EQ(
-      base::WideToUTF16(L"\x0915\x093f\x0061\x0062\x0915\x094d\x092e\x094d"),
-      model.text());
+  EXPECT_EQ(u"\x0915\x093f\x0061\x0062\x0915\x094d\x092e\x094d", model.text());
 #endif
   EXPECT_EQ(4U, model.GetCursorPosition());
 
@@ -199,16 +193,15 @@ TEST_F(TextfieldModelTest, EditString_ComplexScript) {
   // to test 2 characters belong to the same grapheme.
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   EXPECT_TRUE(model.Delete());
-  EXPECT_EQ(base::WideToUTF16(L"\x0061\x0062\x0915\x094d\x092e\x094d"),
-            model.text());
+  EXPECT_EQ(u"\x0061\x0062\x0915\x094d\x092e\x094d", model.text());
   model.MoveCursorTo(model.text().length());
   EXPECT_EQ(model.text().length(), model.GetCursorPosition());
   EXPECT_TRUE(model.Backspace());
-  EXPECT_EQ(base::WideToUTF16(L"\x0061\x0062\x0915\x094d\x092e"), model.text());
+  EXPECT_EQ(u"\x0061\x0062\x0915\x094d\x092e", model.text());
 #endif
 
   // Test cursor position and deletion for Hindi Virama.
-  model.SetText(base::WideToUTF16(L"\x0D38\x0D4D\x0D15\x0D16\x0D2E"), 0);
+  model.SetText(u"\x0D38\x0D4D\x0D15\x0D16\x0D2E", 0);
   model.MoveCursorTo(0);
   EXPECT_EQ(0U, model.GetCursorPosition());
 
@@ -223,11 +216,10 @@ TEST_F(TextfieldModelTest, EditString_ComplexScript) {
   model.MoveCursorTo(2);
   EXPECT_EQ(3U, model.GetCursorPosition());
   EXPECT_TRUE(model.Backspace());
-  EXPECT_EQ(base::WideToUTF16(L"\x0D38\x0D4D\x0D16\x0D2E"), model.text());
+  EXPECT_EQ(u"\x0D38\x0D4D\x0D16\x0D2E", model.text());
 #endif
 
-  model.SetText(
-      base::WideToUTF16(L"\x05d5\x05b7\x05D9\x05B0\x05D4\x05B4\x05D9"), 0);
+  model.SetText(u"\x05d5\x05b7\x05D9\x05B0\x05D4\x05B4\x05D9", 0);
   model.MoveCursorTo(0);
   EXPECT_TRUE(model.Delete());
   EXPECT_TRUE(model.Delete());
@@ -236,17 +228,15 @@ TEST_F(TextfieldModelTest, EditString_ComplexScript) {
   EXPECT_EQ(u"", model.text());
 
   // The first 2 characters are not strong directionality characters.
-  model.SetText(
-      base::WideToUTF16(L"\x002C\x0020\x05D1\x05BC\x05B7\x05E9\x05BC"), 0);
+  model.SetText(u"\x002C\x0020\x05D1\x05BC\x05B7\x05E9\x05BC", 0);
   model.MoveCursor(gfx::LINE_BREAK, gfx::CURSOR_LEFT, gfx::SELECTION_NONE);
   EXPECT_TRUE(model.Backspace());
-  EXPECT_EQ(base::WideToUTF16(L"\x002C\x0020\x05D1\x05BC\x05B7\x05E9"),
-            model.text());
+  EXPECT_EQ(u"\x002C\x0020\x05D1\x05BC\x05B7\x05E9", model.text());
 
   // Halfwidth katakana ﾀﾞ:
   // "HALFWIDTH KATAKANA LETTER TA" + "HALFWIDTH KATAKANA VOICED SOUND MARK"
   // ("ABC" prefix as sanity check that the entire string isn't deleted).
-  model.SetText(base::WideToUTF16(L"ABC\xFF80\xFF9E"), 0);
+  model.SetText(u"ABC\xFF80\xFF9E", 0);
   model.MoveCursorTo(model.text().length());
   model.Backspace();
 #if defined(OS_APPLE)
@@ -255,13 +245,13 @@ TEST_F(TextfieldModelTest, EditString_ComplexScript) {
   EXPECT_EQ(u"ABC", model.text());
   EXPECT_EQ(3U, model.GetCursorPosition());
 #else
-  EXPECT_EQ(base::WideToUTF16(L"ABC\xFF80"), model.text());
+  EXPECT_EQ(u"ABC\xFF80", model.text());
   EXPECT_EQ(4U, model.GetCursorPosition());
 #endif
 
   // Emoji with Fitzpatrick modifier:
   // 'BOY' + 'EMOJI MODIFIER FITZPATRICK TYPE-5'
-  model.SetText(base::WideToUTF16(L"\U0001F466\U0001F3FE"), 0);
+  model.SetText(u"\U0001F466\U0001F3FE", 0);
   model.MoveCursorTo(model.text().length());
   model.Backspace();
 #if defined(OS_APPLE)
@@ -271,7 +261,7 @@ TEST_F(TextfieldModelTest, EditString_ComplexScript) {
   EXPECT_EQ(0U, model.GetCursorPosition());
 #else
   // https://crbug.com/829040
-  EXPECT_EQ(base::WideToUTF16(L"\U0001F466"), model.text());
+  EXPECT_EQ(u"\U0001F466", model.text());
   EXPECT_EQ(2U, model.GetCursorPosition());
 #endif
 }
@@ -387,8 +377,7 @@ TEST_F(TextfieldModelTest, Selection_BidiWithNonSpacingMarks) {
   model.MoveCursor(gfx::CHARACTER_BREAK, gfx::CURSOR_RIGHT,
                    gfx::SELECTION_RETAIN);
   EXPECT_EQ(gfx::Range(2, 7), model.render_text()->selection());
-  EXPECT_EQ(base::WideToUTF16(L"c\x05E9\x05BC\x05C1\x05B8"),
-            model.GetSelectedText());
+  EXPECT_EQ(u"c\x05E9\x05BC\x05C1\x05B8", model.GetSelectedText());
 
   model.MoveCursor(gfx::CHARACTER_BREAK, gfx::CURSOR_RIGHT,
                    gfx::SELECTION_RETAIN);
@@ -454,7 +443,7 @@ TEST_F(TextfieldModelTest, Selection_BidiWithNonSpacingMarks) {
                    gfx::SELECTION_RETAIN);
   model.MoveCursor(gfx::CHARACTER_BREAK, gfx::CURSOR_LEFT,
                    gfx::SELECTION_RETAIN);
-  EXPECT_EQ(base::WideToUTF16(L"a\x05E9"), model.GetSelectedText());
+  EXPECT_EQ(u"a\x05E9", model.GetSelectedText());
 
   model.MoveCursor(gfx::LINE_BREAK, gfx::CURSOR_RIGHT, gfx::SELECTION_NONE);
   model.MoveCursor(gfx::CHARACTER_BREAK, gfx::CURSOR_LEFT,
@@ -2414,9 +2403,9 @@ TEST_F(TextfieldModelTest, Clipboard_WhiteSpaceStringTest) {
 
 TEST_F(TextfieldModelTest, Transpose) {
   const std::u16string ltr = base::ASCIIToUTF16("12");
-  const std::u16string rtl = base::WideToUTF16(L"\x0634\x0632");
+  const std::u16string rtl = u"\x0634\x0632";
   const std::u16string ltr_transposed = base::ASCIIToUTF16("21");
-  const std::u16string rtl_transposed = base::WideToUTF16(L"\x0632\x0634");
+  const std::u16string rtl_transposed = u"\x0632\x0634";
 
   // This is a string with an 'a' between two emojis.
   const std::u16string surrogate_pairs({0xD83D, 0xDE07, 'a', 0xD83D, 0xDE0E});

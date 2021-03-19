@@ -308,7 +308,7 @@ TEST_F(LabelTest, AlignmentProperty) {
     for (size_t j = 0; j < 2; ++j) {
       label()->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
       const bool rtl = j == 0;
-      label()->SetText(rtl ? base::WideToUTF16(L"\x5d0") : ASCIIToUTF16("A"));
+      label()->SetText(rtl ? u"\x5d0" : ASCIIToUTF16("A"));
       EXPECT_EQ(gfx::ALIGN_TO_HEAD, label()->GetHorizontalAlignment());
     }
   }
@@ -1341,8 +1341,7 @@ TEST_F(LabelSelectionTest, MouseDragMultilineRTL) {
   label()->SetMultiLine(true);
   label()->SetText(ToRTL("012\n345"));
   // Sanity check.
-  EXPECT_EQ(WideToUTF16(L"\x5d0\x5d1\x5d2\n\x5d3\x5d4\x5d5"),
-            label()->GetText());
+  EXPECT_EQ(u"\x5d0\x5d1\x5d2\n\x5d3\x5d4\x5d5", label()->GetText());
 
   label()->SizeToPreferredSize();
   ASSERT_TRUE(label()->SetSelectable(true));

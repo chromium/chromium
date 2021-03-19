@@ -409,8 +409,8 @@ TEST(UrlFormatterTest, FormatUrlParsed) {
             formatted.substr(parsed.username.begin, parsed.username.len));
   EXPECT_EQ(u"%E3%83%BC",
             formatted.substr(parsed.password.begin, parsed.password.len));
-  EXPECT_EQ(WideToUTF16(L"\x30B0\x30FC\x30B0\x30EB.jp"),
-      formatted.substr(parsed.host.begin, parsed.host.len));
+  EXPECT_EQ(u"\x30B0\x30FC\x30B0\x30EB.jp",
+            formatted.substr(parsed.host.begin, parsed.host.len));
   EXPECT_EQ(u"8080", formatted.substr(parsed.port.begin, parsed.port.len));
   EXPECT_EQ(u"/%E3%82%B0/",
             formatted.substr(parsed.path.begin, parsed.path.len));
@@ -427,19 +427,17 @@ TEST(UrlFormatterTest, FormatUrlParsed) {
   EXPECT_EQ(WideToUTF16(L"http://\x30B0:\x30FC@\x30B0\x30FC\x30B0\x30EB.jp:8080"
                         L"/\x30B0/?q=\x30B0#\x30B0"),
             formatted);
-  EXPECT_EQ(WideToUTF16(L"\x30B0"),
-      formatted.substr(parsed.username.begin, parsed.username.len));
-  EXPECT_EQ(WideToUTF16(L"\x30FC"),
-      formatted.substr(parsed.password.begin, parsed.password.len));
-  EXPECT_EQ(WideToUTF16(L"\x30B0\x30FC\x30B0\x30EB.jp"),
-      formatted.substr(parsed.host.begin, parsed.host.len));
+  EXPECT_EQ(u"\x30B0",
+            formatted.substr(parsed.username.begin, parsed.username.len));
+  EXPECT_EQ(u"\x30FC",
+            formatted.substr(parsed.password.begin, parsed.password.len));
+  EXPECT_EQ(u"\x30B0\x30FC\x30B0\x30EB.jp",
+            formatted.substr(parsed.host.begin, parsed.host.len));
   EXPECT_EQ(u"8080", formatted.substr(parsed.port.begin, parsed.port.len));
-  EXPECT_EQ(WideToUTF16(L"/\x30B0/"),
-      formatted.substr(parsed.path.begin, parsed.path.len));
-  EXPECT_EQ(WideToUTF16(L"q=\x30B0"),
-      formatted.substr(parsed.query.begin, parsed.query.len));
-  EXPECT_EQ(WideToUTF16(L"\x30B0"),
-            formatted.substr(parsed.ref.begin, parsed.ref.len));
+  EXPECT_EQ(u"/\x30B0/", formatted.substr(parsed.path.begin, parsed.path.len));
+  EXPECT_EQ(u"q=\x30B0",
+            formatted.substr(parsed.query.begin, parsed.query.len));
+  EXPECT_EQ(u"\x30B0", formatted.substr(parsed.ref.begin, parsed.ref.len));
 
   // Omit_username_password + unescape case.
   formatted =
@@ -452,15 +450,13 @@ TEST(UrlFormatterTest, FormatUrlParsed) {
             formatted);
   EXPECT_FALSE(parsed.username.is_valid());
   EXPECT_FALSE(parsed.password.is_valid());
-  EXPECT_EQ(WideToUTF16(L"\x30B0\x30FC\x30B0\x30EB.jp"),
-      formatted.substr(parsed.host.begin, parsed.host.len));
+  EXPECT_EQ(u"\x30B0\x30FC\x30B0\x30EB.jp",
+            formatted.substr(parsed.host.begin, parsed.host.len));
   EXPECT_EQ(u"8080", formatted.substr(parsed.port.begin, parsed.port.len));
-  EXPECT_EQ(WideToUTF16(L"/\x30B0/"),
-      formatted.substr(parsed.path.begin, parsed.path.len));
-  EXPECT_EQ(WideToUTF16(L"q=\x30B0"),
-      formatted.substr(parsed.query.begin, parsed.query.len));
-  EXPECT_EQ(WideToUTF16(L"\x30B0"),
-            formatted.substr(parsed.ref.begin, parsed.ref.len));
+  EXPECT_EQ(u"/\x30B0/", formatted.substr(parsed.path.begin, parsed.path.len));
+  EXPECT_EQ(u"q=\x30B0",
+            formatted.substr(parsed.query.begin, parsed.query.len));
+  EXPECT_EQ(u"\x30B0", formatted.substr(parsed.ref.begin, parsed.ref.len));
 
   // View-source case.
   formatted =

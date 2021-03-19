@@ -167,7 +167,7 @@ TEST(AutocompleteInputTest, InputType) {
     {ASCIIToUTF16("http://0.0.0.1/"), metrics::OmniboxInputType::QUERY},
     {ASCIIToUTF16("browser.tabs.closeButtons"),
      metrics::OmniboxInputType::UNKNOWN},
-    {base::WideToUTF16(L"\u6d4b\u8bd5"), metrics::OmniboxInputType::UNKNOWN},
+    {u"\u6d4b\u8bd5", metrics::OmniboxInputType::UNKNOWN},
     {ASCIIToUTF16("[2001:]"), metrics::OmniboxInputType::QUERY},
     {ASCIIToUTF16("[2001:dB8::1]"), metrics::OmniboxInputType::URL},
     {ASCIIToUTF16("192.168.0.256"), metrics::OmniboxInputType::QUERY},
@@ -189,7 +189,7 @@ TEST(AutocompleteInputTest, InputType) {
     {ASCIIToUTF16("about://f;"), metrics::OmniboxInputType::QUERY},
     {ASCIIToUTF16("://w"), metrics::OmniboxInputType::UNKNOWN},
     {ASCIIToUTF16(":w"), metrics::OmniboxInputType::UNKNOWN},
-    {base::WideToUTF16(L".\u062A"), metrics::OmniboxInputType::UNKNOWN},
+    {u".\u062A", metrics::OmniboxInputType::UNKNOWN},
     // These tests are for https://tools.ietf.org/html/rfc6761.
     {ASCIIToUTF16("localhost"), metrics::OmniboxInputType::URL},
     {ASCIIToUTF16("localhost:8080"), metrics::OmniboxInputType::URL},
@@ -277,8 +277,7 @@ TEST(AutocompleteInputTest, InputTypeWithDesiredTLD) {
 // This tests for a regression where certain input in the omnibox caused us to
 // crash. As long as the test completes without crashing, we're fine.
 TEST(AutocompleteInputTest, InputCrash) {
-  AutocompleteInput input(base::WideToUTF16(L"\uff65@s"),
-                          metrics::OmniboxEventProto::OTHER,
+  AutocompleteInput input(u"\uff65@s", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
   // Not strictly necessary, but let's be thorough.
   input.set_prevent_inline_autocomplete(true);
@@ -300,7 +299,7 @@ TEST(AutocompleteInputTest, ParseForEmphasizeComponent) {
       {ASCIIToUTF16("http://foo/bar baz"), Component(0, 4), Component(7, 3)},
       {ASCIIToUTF16("link:foo.com"), Component(0, 4), kInvalidComponent},
       {ASCIIToUTF16("www.foo.com:81"), kInvalidComponent, Component(0, 11)},
-      {base::WideToUTF16(L"\u6d4b\u8bd5"), kInvalidComponent, Component(0, 2)},
+      {u"\u6d4b\u8bd5", kInvalidComponent, Component(0, 2)},
       {ASCIIToUTF16("view-source:http://www.foo.com/"), Component(12, 4),
        Component(19, 11)},
       {ASCIIToUTF16("view-source:https://example.com/"), Component(12, 5),

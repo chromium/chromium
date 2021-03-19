@@ -508,8 +508,7 @@ TEST_F(TitledUrlIndexTest, HonorMax) {
 // Makes sure if the lower case string of a bookmark title is more characters
 // than the upper case string no match positions are returned.
 TEST_F(TitledUrlIndexTest, EmptyMatchOnMultiwideLowercaseString) {
-  TitledUrlNode* n1 =
-      AddNode(base::WideToUTF16(L"\u0130 i"), GURL("http://www.google.com"));
+  TitledUrlNode* n1 = AddNode(u"\u0130 i", GURL("http://www.google.com"));
 
   std::vector<TitledUrlMatch> matches = GetResultsMatching("i", 100);
   ASSERT_EQ(1U, matches.size());

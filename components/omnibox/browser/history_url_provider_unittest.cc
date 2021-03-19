@@ -661,10 +661,9 @@ TEST_F(HistoryURLProviderTest, Fixup) {
   const UrlAndLegalDefault fixup_crash[] = {
     { "http://%EF%BD%A5@s/", false }
   };
-  RunTest(base::WideToUTF16(L"\uff65@s"), std::string(), false, fixup_crash,
+  RunTest(u"\uff65@s", std::string(), false, fixup_crash,
           base::size(fixup_crash));
-  RunTest(base::WideToUTF16(L"\u2015\u2015@ \uff7c"), std::string(), false,
-          nullptr, 0);
+  RunTest(u"\u2015\u2015@ \uff7c", std::string(), false, nullptr, 0);
 
   // Fixing up "file:" should result in an inline autocomplete offset of just
   // after "file:", not just after "file://".

@@ -2639,12 +2639,12 @@ TEST_F(TextfieldTest, TextCursorDisplayTest) {
   prev_x = x;
 
   SendKeyEvent(0x05E1);
-  EXPECT_EQ(WideToUTF16(L"ab\x05E1"), textfield_->GetText());
+  EXPECT_EQ(u"ab\x05E1", textfield_->GetText());
   x = GetCursorBounds().x();
   EXPECT_GE(1, std::abs(x - prev_x));
 
   SendKeyEvent(0x05E2);
-  EXPECT_EQ(WideToUTF16(L"ab\x05E1\x5E2"), textfield_->GetText());
+  EXPECT_EQ(u"ab\x05E1\x5E2", textfield_->GetText());
   x = GetCursorBounds().x();
   EXPECT_GE(1, std::abs(x - prev_x));
 
@@ -2654,13 +2654,13 @@ TEST_F(TextfieldTest, TextCursorDisplayTest) {
 
   // RTL-LTR string in LTR context.
   SendKeyEvent(0x05E1);
-  EXPECT_EQ(WideToUTF16(L"\x05E1"), textfield_->GetText());
+  EXPECT_EQ(u"\x05E1", textfield_->GetText());
   x = GetCursorBounds().x();
   EXPECT_EQ(GetDisplayRect().x(), x);
   prev_x = x;
 
   SendKeyEvent(0x05E2);
-  EXPECT_EQ(WideToUTF16(L"\x05E1\x05E2"), textfield_->GetText());
+  EXPECT_EQ(u"\x05E1\x05E2", textfield_->GetText());
   x = GetCursorBounds().x();
   EXPECT_GE(1, std::abs(x - prev_x));
 
@@ -2698,13 +2698,13 @@ TEST_F(TextfieldTest, TextCursorDisplayInRTLTest) {
   EXPECT_GE(1, std::abs(x - prev_x));
 
   SendKeyEvent(0x05E1);
-  EXPECT_EQ(WideToUTF16(L"ab\x05E1"), textfield_->GetText());
+  EXPECT_EQ(u"ab\x05E1", textfield_->GetText());
   x = GetCursorBounds().x();
   EXPECT_GT(prev_x, x);
   prev_x = x;
 
   SendKeyEvent(0x05E2);
-  EXPECT_EQ(WideToUTF16(L"ab\x05E1\x5E2"), textfield_->GetText());
+  EXPECT_EQ(u"ab\x05E1\x5E2", textfield_->GetText());
   x = GetCursorBounds().x();
   EXPECT_GT(prev_x, x);
 
@@ -2714,12 +2714,12 @@ TEST_F(TextfieldTest, TextCursorDisplayInRTLTest) {
 
   // RTL-LTR string in RTL context.
   SendKeyEvent(0x05E1);
-  EXPECT_EQ(WideToUTF16(L"\x05E1"), textfield_->GetText());
+  EXPECT_EQ(u"\x05E1", textfield_->GetText());
   x = GetCursorBounds().x();
   prev_x = x;
 
   SendKeyEvent(0x05E2);
-  EXPECT_EQ(WideToUTF16(L"\x05E1\x05E2"), textfield_->GetText());
+  EXPECT_EQ(u"\x05E1\x05E2", textfield_->GetText());
   x = GetCursorBounds().x();
   EXPECT_GT(prev_x, x);
   prev_x = x;
@@ -2776,7 +2776,7 @@ TEST_F(TextfieldTest, TextCursorPositionInLTRTest) {
 
 TEST_F(TextfieldTest, HitInsideTextAreaTest) {
   InitTextfield();
-  textfield_->SetText(WideToUTF16(L"ab\x05E1\x5E2"));
+  textfield_->SetText(u"ab\x05E1\x5E2");
   std::vector<gfx::Rect> cursor_bounds;
 
   // Save each cursor bound.
@@ -2833,7 +2833,7 @@ TEST_F(TextfieldTest, HitOutsideTextAreaTest) {
   InitTextfield();
 
   // LTR-RTL string in LTR context.
-  textfield_->SetText(WideToUTF16(L"ab\x05E1\x5E2"));
+  textfield_->SetText(u"ab\x05E1\x5E2");
 
   const bool shift = false;
   SendHomeEvent(shift);
@@ -2888,7 +2888,7 @@ TEST_F(TextfieldTest, HitOutsideTextAreaInRTLTest) {
   NonClientMouseClick();
 
   // LTR-RTL string in RTL context.
-  textfield_->SetText(WideToUTF16(L"ab\x05E1\x5E2"));
+  textfield_->SetText(u"ab\x05E1\x5E2");
   SendHomeEvent(shift);
   bound = GetCursorBounds();
   MouseClick(bound, -10);

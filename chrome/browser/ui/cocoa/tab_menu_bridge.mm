@@ -33,10 +33,10 @@ void UpdateItemForWebContents(NSMenuItem* item,
     std::u16string emoji;
     if (web_contents->IsAudioMuted()) {
       title_id = IDS_WINDOW_AUDIO_MUTING_MAC;
-      emoji = base::WideToUTF16(L"\U0001F507");
+      emoji = u"\U0001F507";
     } else {
       title_id = IDS_WINDOW_AUDIO_PLAYING_MAC;
-      emoji = base::WideToUTF16(L"\U0001F50A");
+      emoji = u"\U0001F50A";
     }
 
     item.title =

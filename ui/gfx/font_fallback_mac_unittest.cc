@@ -31,7 +31,7 @@ TEST(FontFallbackMacTest, GetFallbackFonts) {
 TEST(FontFallbackMacTest, GetFallbackFont) {
   Font arial("Helvetica", 12);
   const std::u16string ascii = base::ASCIIToUTF16("abc");
-  const std::u16string hebrew = base::WideToUTF16(L"\x5d0\x5d1\x5d2");
+  const std::u16string hebrew = u"\x5d0\x5d1\x5d2";
   const std::u16string emoji = base::UTF8ToUTF16("😋");
 
   Font fallback;

@@ -74,8 +74,7 @@ void LabelExample::CreateExampleView(View* container) {
   label->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
   container->AddChildView(std::move(label));
 
-  label = std::make_unique<Label>(
-      WideToUTF16(L"A UTF16 surrogate pair: \x5d0\x5b0"));
+  label = std::make_unique<Label>(u"A UTF16 surrogate pair: \x5d0\x5b0");
   label->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
   container->AddChildView(std::move(label));
 

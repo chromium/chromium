@@ -311,8 +311,8 @@ TEST_F(BrowserViewTest, DISABLED_AccessibleWindowTitle) {
 #if defined(OS_MAC)
 // Tests that audio playing state is reflected in the "Window" menu on Mac.
 TEST_F(BrowserViewTest, TitleAudioIndicators) {
-  std::u16string playing_icon = base::WideToUTF16(L"\U0001F50A");
-  std::u16string muted_icon = base::WideToUTF16(L"\U0001F507");
+  std::u16string playing_icon = u"\U0001F50A";
+  std::u16string muted_icon = u"\U0001F507";
 
   AddTab(browser_view()->browser(), GURL("about:blank"));
   content::WebContents* contents = browser_view()->GetActiveWebContents();

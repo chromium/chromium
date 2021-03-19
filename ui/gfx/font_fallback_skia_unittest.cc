@@ -55,7 +55,7 @@ TEST(FontFallbackSkiaTest, CJKLocaleFallback) {
   // common feature of written Chinese (hanzi), Japanese (kanji), and Korean
   // (hanja). The same text will be rendered using a different font based on
   // locale.
-  const std::u16string kCJKTest = base::WideToUTF16(L"\u8AA4\u904E\u9AA8");
+  const std::u16string kCJKTest = u"\u8AA4\u904E\u9AA8";
   Font base_font;
 
   Font fallback_font_zh_cn;

@@ -861,7 +861,7 @@ TEST_F(PersonalDataManagerTest, AddProfile_CrazyCharacters) {
                         L"\u0628\u0633\u0628\u0628 "
                         L"\u062a\u0635\u0631\u064a\u062d\u0627\u062a "
                         L"\u0645\u062c\u062a\u0632\u0623\u0629"));
-  profile1.SetRawInfo(NAME_MIDDLE, base::WideToUTF16(L"BANK\xcBERF\xc4LLE"));
+  profile1.SetRawInfo(NAME_MIDDLE, u"BANK\xcBERF\xc4LLE");
   profile1.SetRawInfo(EMAIL_ADDRESS,
                       base::WideToUTF16(L"\uacbd\uc81c \ub274\uc2a4 "
                                         L"\ub354\ubcf4\uae30@google.com"));
@@ -899,11 +899,9 @@ TEST_F(PersonalDataManagerTest, AddProfile_CrazyCharacters) {
 
   AutofillProfile profile4;
   profile4.SetRawInfo(NAME_FIRST, u"Joe 3254");
-  profile4.SetRawInfo(NAME_LAST,
-                      base::WideToUTF16(L"\u8bb0\u8d262\u5e74\u591a"));
-  profile4.SetRawInfo(
-      ADDRESS_HOME_ZIP,
-      base::WideToUTF16(L"\uff08\u90ae\u7f16\uff1a201504\uff09"));
+  profile4.SetRawInfo(NAME_LAST, u"\u8bb0\u8d262\u5e74\u591a");
+  profile4.SetRawInfo(ADDRESS_HOME_ZIP,
+                      u"\uff08\u90ae\u7f16\uff1a201504\uff09");
   profile4.SetRawInfo(EMAIL_ADDRESS, u"télévision@example.com");
   profile4.SetRawInfo(
       COMPANY_NAME,

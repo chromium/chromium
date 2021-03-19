@@ -294,14 +294,14 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, FindInPageFrames) {
   EXPECT_EQ(1, ordinal);
 
   // Try non-Latin characters ('Hreggvidur' with 'eth' for 'd' in left frame).
-  EXPECT_EQ(1, FindInPage16(web_contents, WideToUTF16(L"Hreggvi\u00F0ur"),
-                            kFwd, kIgnoreCase, &ordinal));
+  EXPECT_EQ(1, FindInPage16(web_contents, u"Hreggvi\u00F0ur", kFwd, kIgnoreCase,
+                            &ordinal));
   EXPECT_EQ(1, ordinal);
-  EXPECT_EQ(1, FindInPage16(web_contents, WideToUTF16(L"Hreggvi\u00F0ur"),
-                            kFwd, kCaseSensitive, &ordinal));
+  EXPECT_EQ(1, FindInPage16(web_contents, u"Hreggvi\u00F0ur", kFwd,
+                            kCaseSensitive, &ordinal));
   EXPECT_EQ(1, ordinal);
-  EXPECT_EQ(0, FindInPage16(web_contents, WideToUTF16(L"hreggvi\u00F0ur"),
-                            kFwd, kCaseSensitive, &ordinal));
+  EXPECT_EQ(0, FindInPage16(web_contents, u"hreggvi\u00F0ur", kFwd,
+                            kCaseSensitive, &ordinal));
   EXPECT_EQ(0, ordinal);
 }
 
@@ -856,13 +856,13 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, FindCrash_Issue1341577) {
   int ordinal = 0;
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  const std::u16string search_str = WideToUTF16(L"\u0D4C");
+  const std::u16string search_str = u"\u0D4C";
   FindInPage16(web_contents, search_str, kFwd, kIgnoreCase, &ordinal);
   FindInPage16(web_contents, search_str, kFwd, kIgnoreCase, &ordinal);
 
   // This should work fine.
-  EXPECT_EQ(1, FindInPage16(web_contents, WideToUTF16(L"\u0D24\u0D46"),
-                            kFwd, kIgnoreCase, &ordinal));
+  EXPECT_EQ(1, FindInPage16(web_contents, u"\u0D24\u0D46", kFwd, kIgnoreCase,
+                            &ordinal));
   EXPECT_EQ(1, ordinal);
   EXPECT_EQ(0, FindInPageASCII(web_contents, "nostring",
                                kFwd, kIgnoreCase, &ordinal));

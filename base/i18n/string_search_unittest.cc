@@ -151,18 +151,18 @@ TEST(StringSearchTest, UnicodeLocaleIndependent) {
   const std::u16string a_base = u"a";
 
   // Composed characters
-  const std::u16string e_with_acute_accent = WideToUTF16(L"\u00e9");
-  const std::u16string E_with_acute_accent = WideToUTF16(L"\u00c9");
-  const std::u16string e_with_grave_accent = WideToUTF16(L"\u00e8");
-  const std::u16string E_with_grave_accent = WideToUTF16(L"\u00c8");
-  const std::u16string a_with_acute_accent = WideToUTF16(L"\u00e1");
+  const std::u16string e_with_acute_accent = u"\u00e9";
+  const std::u16string E_with_acute_accent = u"\u00c9";
+  const std::u16string e_with_grave_accent = u"\u00e8";
+  const std::u16string E_with_grave_accent = u"\u00c8";
+  const std::u16string a_with_acute_accent = u"\u00e1";
 
   // Decomposed characters
-  const std::u16string e_with_acute_combining_mark = WideToUTF16(L"e\u0301");
-  const std::u16string E_with_acute_combining_mark = WideToUTF16(L"E\u0301");
-  const std::u16string e_with_grave_combining_mark = WideToUTF16(L"e\u0300");
-  const std::u16string E_with_grave_combining_mark = WideToUTF16(L"E\u0300");
-  const std::u16string a_with_acute_combining_mark = WideToUTF16(L"a\u0301");
+  const std::u16string e_with_acute_combining_mark = u"e\u0301";
+  const std::u16string E_with_acute_combining_mark = u"E\u0301";
+  const std::u16string e_with_grave_combining_mark = u"e\u0300";
+  const std::u16string E_with_grave_combining_mark = u"E\u0300";
+  const std::u16string a_with_acute_combining_mark = u"a\u0301";
 
   std::string default_locale(uloc_getDefault());
   bool locale_is_posix = (default_locale == "en_US_POSIX");
@@ -271,7 +271,7 @@ TEST(StringSearchTest, UnicodeLocaleDependent) {
   const std::u16string a_base = u"a";
 
   // Composed characters
-  const std::u16string a_with_ring = WideToUTF16(L"\u00e5");
+  const std::u16string a_with_ring = u"\u00e5";
 
   EXPECT_TRUE(StringSearchIgnoringCaseAndAccents(a_base, a_with_ring, nullptr,
                                                  nullptr));

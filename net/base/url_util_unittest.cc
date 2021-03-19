@@ -677,7 +677,7 @@ TEST(UrlUtilTest, GetIdentityFromURL) {
 
 // Try extracting a username which was encoded with UTF8.
 TEST(UrlUtilTest, GetIdentityFromURL_UTF8) {
-  GURL url(WideToUTF16(L"http://foo:\x4f60\x597d@blah.com"));
+  GURL url(u"http://foo:\x4f60\x597d@blah.com");
 
   EXPECT_EQ("foo", url.username());
   EXPECT_EQ("%E4%BD%A0%E5%A5%BD", url.password());
@@ -688,7 +688,7 @@ TEST(UrlUtilTest, GetIdentityFromURL_UTF8) {
 
   // Verify that it was decoded as UTF8.
   EXPECT_EQ(ASCIIToUTF16("foo"), username);
-  EXPECT_EQ(WideToUTF16(L"\x4f60\x597d"), password);
+  EXPECT_EQ(u"\x4f60\x597d", password);
 }
 
 TEST(UrlUtilTest, GoogleHost) {
