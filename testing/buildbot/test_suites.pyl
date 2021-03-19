@@ -4255,6 +4255,11 @@
       'unit_tests': {},
     },
 
+    'linux_chromeos_lacros_gtests': {
+      # Chrome OS (Ash) and Lacros only.
+      'chromeos_unittests': {},
+    },
+
     'linux_chromeos_oobe_specific_tests': {
       # TODO(crbug.com/1071693): Merge this suite back in to the main
       # browser_tests when the tests no longer fail on MSAN.
@@ -4277,7 +4282,6 @@
       'ash_unittests': {},
       'aura_unittests': {},
       'chromeos_components_unittests': {},
-      'chromeos_unittests': {},
       'exo_unittests': {},
       'gl_unittests_ozone': {},
       'keyboard_unittests': {},
@@ -4317,6 +4321,7 @@
           'shards': 10,
         },
       },
+      'chromeos_unittests': {},
       'components_unittests': {},
       'interactive_ui_tests': {
         'swarming': {
@@ -6681,12 +6686,14 @@
       # This is:
       #   linux_chromium_gtests
       #   - non_android_and_cast_and_chromeos_chromium_gtests
+      #   + linux_chromeos_lacros_gtests
       #   + linux_chromeos_specific_gtests
       'aura_gtests',
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
       'chromium_gtests_for_linux_and_chromeos_only',
       'chromium_gtests_for_win_and_linux_only',
+      'linux_chromeos_lacros_gtests',
       'linux_chromeos_specific_gtests',
       'linux_flavor_specific_chromium_gtests',
       'non_android_chromium_gtests',
@@ -6698,6 +6705,7 @@
       'chromium_gtests_for_devices_with_graphical_output',
       'chromium_gtests_for_linux_and_chromeos_only',
       'chromium_gtests_for_win_and_linux_only',
+      'linux_chromeos_lacros_gtests',
       'linux_chromeos_oobe_specific_tests',
       'linux_chromeos_specific_gtests',
       'linux_flavor_specific_chromium_gtests',
@@ -6708,12 +6716,14 @@
       # This is:
       #   linux_chromeos_gtests
       #   - linux_chromeos_specific_gtests
+      #   + linux_chromeos_lacros_gtests
       #   + linux_lacros_specific_gtests
       'aura_gtests',
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
       'chromium_gtests_for_linux_and_chromeos_only',
       'chromium_gtests_for_win_and_linux_only',
+      'linux_chromeos_lacros_gtests',
       'linux_flavor_specific_chromium_gtests',
       'linux_lacros_specific_gtests',
       'non_android_chromium_gtests',
