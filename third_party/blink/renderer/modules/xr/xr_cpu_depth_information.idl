@@ -12,7 +12,7 @@
     SameObject,
     SaveSameObject,
     MeasureAs=XRCPUDepthInformationDataAttribute
-  ] readonly attribute DataView data;
+  ] readonly attribute ArrayBuffer data;
 
   [RaisesException, MeasureAs=XRCPUDepthInformationGetDepth]
   float getDepthInMeters(float x, float y);

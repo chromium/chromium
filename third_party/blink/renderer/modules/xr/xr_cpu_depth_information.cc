@@ -9,13 +9,24 @@
 
 #include "base/numerics/checked_math.h"
 #include "base/numerics/ranges.h"
+#include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "ui/gfx/geometry/point3_f.h"
 
 namespace {
 constexpr char kOutOfBoundsAccess[] =
     "Attempted to access data that is out-of-bounds.";
+
+size_t GetBytesPerElement(device::mojom::XRDepthDataFormat data_format) {
+  switch (data_format) {
+    case device::mojom::XRDepthDataFormat::kLuminanceAlpha:
+      return 2;
+    case device::mojom::XRDepthDataFormat::kFloat32:
+      return 4;
+  }
+}
 }
 
 namespace blink {
@@ -25,19 +36,23 @@ XRCPUDepthInformation::XRCPUDepthInformation(
     const gfx::Size& size,
     const gfx::Transform& norm_texture_from_norm_view,
     float raw_value_to_meters,
-    DOMUint16Array* data)
+    device::mojom::XRDepthDataFormat data_format,
+    DOMArrayBuffer* data)
     : XRDepthInformation(xr_frame,
                          size,
                          norm_texture_from_norm_view,
                          raw_value_to_meters),
-      data_(data) {
+      data_(data),
+      data_format_(data_format),
+      bytes_per_element_(GetBytesPerElement(data_format)) {
   DVLOG(3) << __func__;
 
-  CHECK_EQ(base::CheckMul(2, size_.width(), size_.height()).ValueOrDie(),
-           data_->byteLength());
+  CHECK_EQ(base::CheckMul(bytes_per_element_, size_.width(), size_.height())
+               .ValueOrDie(),
+           data_->ByteLength());
 }
 
-DOMUint16Array* XRCPUDepthInformation::data(
+DOMArrayBuffer* XRCPUDepthInformation::data(
     ExceptionState& exception_state) const {
   if (!ValidateFrame(exception_state)) {
     return nullptr;
@@ -87,12 +102,39 @@ float XRCPUDepthInformation::getDepthInMeters(
   size_t index = checked_index.ValueOrDie();
 
   // Convert from data's native units to meters when accessing:
-  float result = data_->Item(index) * raw_value_to_meters_;
+  float result = GetItem(index) * raw_value_to_meters_;
 
   DVLOG(3) << __func__ << ": x=" << x << ", y=" << y << ", column=" << column
            << ", row=" << row << ", index=" << index << ", result=" << result;
 
   return result;
+}
+
+float XRCPUDepthInformation::GetItem(size_t index) const {
+  DVLOG(3) << __func__ << ": index=" << index;
+
+  switch (data_format_) {
+    case device::mojom::XRDepthDataFormat::kLuminanceAlpha: {
+      // Luminance-alpha is 2 bytes per entry & base::make_span expects the
+      // length to be provided in the number of elements. The constructor
+      // enforces that |data_|'s byte length matches the size of the array,
+      // taking into account the number of bytes per element.
+      base::span<const uint16_t> array =
+          base::make_span(reinterpret_cast<const uint16_t*>(data_->Data()),
+                          data_->ByteLength() / bytes_per_element_);
+      return array[index];
+    }
+    case device::mojom::XRDepthDataFormat::kFloat32: {
+      // Float32 is 4 bytes per entry & base::make_span expects the length to be
+      // provided in the number of elements. The constructor enforces that
+      // |data_|'s byte length matches the size of the array, taking into
+      // account the number of bytes per element.
+      base::span<const float> array =
+          base::make_span(reinterpret_cast<const float*>(data_->Data()),
+                          data_->ByteLength() / bytes_per_element_);
+      return array[index];
+    }
+  }
 }
 
 void XRCPUDepthInformation::Trace(Visitor* visitor) const {

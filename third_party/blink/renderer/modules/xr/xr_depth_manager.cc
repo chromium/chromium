@@ -98,7 +98,7 @@ XRCPUDepthInformation* XRDepthManager::GetCpuDepthInformation(
 
   return MakeGarbageCollected<XRCPUDepthInformation>(
       xr_frame, depth_data_->size, depth_data_->norm_texture_from_norm_view,
-      depth_data_->raw_value_to_meters, data_);
+      depth_data_->raw_value_to_meters, data_format_, data_);
 }
 
 XRWebGLDepthInformation* XRDepthManager::GetWebGLDepthInformation(
@@ -123,12 +123,9 @@ void XRDepthManager::EnsureData() {
     return;
   }
 
-  base::span<const uint16_t> pixel_data = base::make_span(
-      reinterpret_cast<const uint16_t*>(depth_data_->pixel_data.data()),
-      depth_data_->pixel_data.size() / 2);
-
-  // Copy the underlying pixel data into DOMUint16Array:
-  data_ = DOMUint16Array::Create(pixel_data.data(), pixel_data.size());
+  // Copy the pixel data into ArrayBuffer:
+  data_ = DOMArrayBuffer::Create(depth_data_->pixel_data.data(),
+                                 depth_data_->pixel_data.size());
 }
 
 void XRDepthManager::Trace(Visitor* visitor) const {
