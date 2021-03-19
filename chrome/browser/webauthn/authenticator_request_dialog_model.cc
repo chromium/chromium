@@ -122,32 +122,17 @@ void AuthenticatorRequestDialogModel::HideDialog() {
 void AuthenticatorRequestDialogModel::StartFlow(
     TransportAvailabilityInfo transport_availability,
     base::Optional<device::FidoTransportProtocol> last_used_transport,
-    bool is_conditional) {
+    bool use_location_bar_bubble) {
+  use_location_bar_bubble_ = use_location_bar_bubble;
   DCHECK_EQ(current_step(), Step::kNotStarted);
 
   transport_availability_ = std::move(transport_availability);
   last_used_transport_ = last_used_transport;
 
-  if (is_conditional) {
-    if (!transport_availability_.recognized_platform_authenticator_credentials
-             .empty()) {
-      // This is a conditional request and chrome has discovered credentials.
-      // Show the credential list to the user and dispatch to the authenticator
-      // *after* they select one.
-      // TODO(crbug.com/1171985): this should be a non-modal, less in-your-face
-      // dialog than the default credential selection dialog.
-      ephemeral_state_.users_ = {};
-      for (const auto& user :
-           transport_availability_
-               .recognized_platform_authenticator_credentials) {
-        ephemeral_state_.users_.push_back(user);
-      }
-      SetCurrentStep(Step::kSelectAccount);
-      return;
-    }
-    // This is a conditional request with no discovered credentials. Keep the UI
-    // hidden while dispatching requests to plugged in authenticators.
-    SetCurrentStep(Step::kSubtleUI);
+  if (use_location_bar_bubble_) {
+    // This is a conditional request so show a lightweight, non-modal dialog
+    // instead.
+    StartLocationBarBubbleRequest();
     return;
   }
   StartGuidedFlowForMostLikelyTransportOrShowTransportSelection();
@@ -158,6 +143,11 @@ void AuthenticatorRequestDialogModel::StartOver() {
 
   for (auto& observer : observers_)
     observer.OnStartOver();
+
+  if (use_location_bar_bubble_) {
+    StartLocationBarBubbleRequest();
+    return;
+  }
   SetCurrentStep(Step::kTransportSelection);
 }
 
@@ -391,7 +381,7 @@ void AuthenticatorRequestDialogModel::OnRequestComplete() {
 }
 
 void AuthenticatorRequestDialogModel::OnRequestTimeout() {
-  if (current_step_ == Step::kSubtleUI) {
+  if (current_step_ == Step::kLocationBarBubble) {
     Cancel();
     return;
   }
@@ -444,6 +434,12 @@ void AuthenticatorRequestDialogModel::OnAuthenticatorStorageFull() {
 }
 
 void AuthenticatorRequestDialogModel::OnUserConsentDenied() {
+  if (use_location_bar_bubble_) {
+    // Do not show a page-modal retry error sheet if the user cancelled out of
+    // their platform authenticator while displaying the location bar bubble UI.
+    Cancel();
+    return;
+  }
   SetCurrentStep(Step::kErrorInternalUnrecognized);
 }
 
@@ -531,6 +527,15 @@ void AuthenticatorRequestDialogModel::AddAuthenticator(
 void AuthenticatorRequestDialogModel::RemoveAuthenticator(
     base::StringPiece authenticator_id) {
   ephemeral_state_.saved_authenticators_.RemoveAuthenticator(authenticator_id);
+}
+
+void AuthenticatorRequestDialogModel::StartLocationBarBubbleRequest() {
+  ephemeral_state_.users_ = {};
+  for (const auto& user :
+       transport_availability_.recognized_platform_authenticator_credentials) {
+    ephemeral_state_.users_.push_back(user);
+  }
+  SetCurrentStep(Step::kLocationBarBubble);
 }
 
 void AuthenticatorRequestDialogModel::DispatchRequestAsync(

@@ -50,7 +50,7 @@ class AuthenticatorRequestDialogModel {
 
     // A more subtle version of the dialog is being shown as an icon or bubble
     // on the omnibox, prompting the user to tap their security key.
-    kSubtleUI,
+    kLocationBarBubble,
 
     kTransportSelection,
 
@@ -164,7 +164,7 @@ class AuthenticatorRequestDialogModel {
   }
   bool should_dialog_be_hidden() const {
     return current_step() == Step::kNotStarted ||
-           current_step() == Step::kSubtleUI;
+           current_step() == Step::kLocationBarBubble;
   }
 
   const TransportAvailabilityInfo* transport_availability() const {
@@ -182,11 +182,14 @@ class AuthenticatorRequestDialogModel {
   // Starts the UX flow, by either showing the transport selection screen or
   // the guided flow for them most likely transport.
   //
+  // If |use_location_bar_bubble| is true, a non-modal bubble will be displayed
+  // on the location bar instead of the full-blown page-modal UI.
+  //
   // Valid action when at step: kNotStarted.
   void StartFlow(
       TransportAvailabilityInfo transport_availability,
       base::Optional<device::FidoTransportProtocol> last_used_transport,
-      bool is_conditional);
+      bool use_location_bar_bubble);
 
   // Restarts the UX flow.
   void StartOver();
@@ -459,6 +462,8 @@ class AuthenticatorRequestDialogModel {
     std::vector<device::PublicKeyCredentialUserEntity> users_;
   };
 
+  void StartLocationBarBubbleRequest();
+
   void DispatchRequestAsync(AuthenticatorReference* authenticator);
   void DispatchRequestAsyncInternal(const std::string& authenticator_id);
 
@@ -499,6 +504,10 @@ class AuthenticatorRequestDialogModel {
   base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
       selection_callback_;
   base::Optional<device::PublicKeyCredentialUserEntity> preselected_account_;
+
+  // True if this request should use the non-modal location bar bubble UI
+  // instead of the page-modal, regular UI.
+  bool use_location_bar_bubble_ = false;
 
   // offer_try_again_in_ui_ indicates whether a button to retry the request
   // should be included on the dialog sheet shown when encountering certain

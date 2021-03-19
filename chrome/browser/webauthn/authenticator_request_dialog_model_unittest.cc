@@ -308,7 +308,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, TransportAutoSelection) {
     }
 
     model.StartFlow(std::move(transports_info), test_case.last_used_transport,
-                    /*is_conditional=*/false);
+                    /*use_location_bar_bubble=*/false);
     EXPECT_EQ(test_case.expected_first_step, model.current_step());
 
     if (!model.offer_try_again_in_ui()) {
@@ -329,7 +329,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, TransportList) {
                                    /*has_paired_phones=*/false,
                                    /*cable_qr_string=*/base::nullopt);
     model.StartFlow(std::move(transports_info), base::nullopt,
-                    /*is_conditional=*/false);
+                    /*use_location_bar_bubble=*/false);
     EXPECT_THAT(model.available_transports(),
                 ::testing::UnorderedElementsAre(
                     AuthenticatorTransport::kUsbHumanInterfaceDevice,
@@ -346,7 +346,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, NoAvailableTransports) {
 
   EXPECT_CALL(mock_observer, OnStepTransition());
   model.StartFlow(TransportAvailabilityInfo(),
-                  AuthenticatorTransport::kInternal, /*is_conditional=*/false);
+                  AuthenticatorTransport::kInternal,
+                  /*use_location_bar_bubble=*/false);
   EXPECT_EQ(Step::kErrorNoAvailableTransports, model.current_step());
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
@@ -384,7 +385,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, AwaitingAcknowledgement) {
 
     EXPECT_CALL(mock_observer, OnStepTransition());
     model.StartFlow(std::move(transports_info), base::nullopt,
-                    /*is_conditional=*/false);
+                    /*use_location_bar_bubble=*/false);
     EXPECT_EQ(Step::kTransportSelection, model.current_step());
     testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
@@ -423,7 +424,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, BleAdapterAlreadyPowered) {
     model.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
     model.set_cable_transport_info(true, false, base::nullopt);
     model.StartFlow(std::move(transports_info), base::nullopt,
-                    /*is_conditional=*/false);
+                    /*use_location_bar_bubble=*/false);
     EXPECT_EQ(test_case.expected_final_step, model.current_step());
     EXPECT_TRUE(model.ble_adapter_is_powered());
     EXPECT_FALSE(power_receiver.was_called());
@@ -452,7 +453,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, BleAdapterNeedToBeManuallyPowered) {
     model.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
     model.set_cable_transport_info(true, false, base::nullopt);
     model.StartFlow(std::move(transports_info), base::nullopt,
-                    /*is_conditional=*/false);
+                    /*use_location_bar_bubble=*/false);
 
     EXPECT_EQ(Step::kBlePowerOnManual, model.current_step());
     EXPECT_FALSE(model.ble_adapter_is_powered());
@@ -492,7 +493,7 @@ TEST_F(AuthenticatorRequestDialogModelTest,
     model.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
     model.set_cable_transport_info(true, false, base::nullopt);
     model.StartFlow(std::move(transports_info), base::nullopt,
-                    /*is_conditional=*/false);
+                    /*use_location_bar_bubble=*/false);
 
     EXPECT_EQ(Step::kBlePowerOnAutomatic, model.current_step());
 
@@ -527,7 +528,7 @@ TEST_F(AuthenticatorRequestDialogModelTest,
       /*device_id=*/"authenticator", AuthenticatorTransport::kInternal));
 
   model.StartFlow(std::move(transports_info), base::nullopt,
-                  /*is_conditional=*/false);
+                  /*use_location_bar_bubble=*/false);
   EXPECT_EQ(AuthenticatorRequestDialogModel::Step::kTransportSelection,
             model.current_step());
   EXPECT_EQ(0, num_called);
@@ -570,7 +571,7 @@ TEST_F(AuthenticatorRequestDialogModelTest,
       &dispatched_authenticator_ids));
 
   model.StartFlow(std::move(transports_info), base::nullopt,
-                  /*is_conditional=*/false);
+                  /*use_location_bar_bubble=*/false);
 
   EXPECT_TRUE(model.should_dialog_be_hidden());
   task_environment_.FastForwardUntilNoTasksRemain();
@@ -595,8 +596,8 @@ TEST_F(AuthenticatorRequestDialogModelTest,
   transports_info.available_transports = kAllTransports;
   transports_info.has_recognized_platform_authenticator_credential = true;
   model.StartFlow(std::move(transports_info), base::nullopt,
-                  /*is_conditional=*/true);
-  EXPECT_EQ(model.current_step(), Step::kSubtleUI);
+                  /*use_location_bar_bubble=*/true);
+  EXPECT_EQ(model.current_step(), Step::kLocationBarBubble);
   EXPECT_TRUE(model.should_dialog_be_hidden());
   EXPECT_EQ(num_called, 0);
 }
@@ -624,9 +625,9 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIRecognizedCredential) {
   transports_info.recognized_platform_authenticator_credentials = {user_1,
                                                                    user_2};
   model.StartFlow(std::move(transports_info), base::nullopt,
-                  /*is_conditional=*/true);
-  EXPECT_EQ(model.current_step(), Step::kSelectAccount);
-  EXPECT_FALSE(model.should_dialog_be_hidden());
+                  /*is_location_bar_bubble_ui==*/true);
+  EXPECT_EQ(model.current_step(), Step::kLocationBarBubble);
+  EXPECT_TRUE(model.should_dialog_be_hidden());
   EXPECT_EQ(num_called, 0);
 
   // After selecting an account, the request should be dispatched to the

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -65,10 +66,13 @@ void WebAuthnIconView::UpdateImpl() {
   }
 
   SetVisible(dialog_model->current_step() ==
-             AuthenticatorRequestDialogModel::Step::kSubtleUI);
+             AuthenticatorRequestDialogModel::Step::kLocationBarBubble);
   if (dialog_models_.find(web_contents) == dialog_models_.end()) {
     dialog_model->AddObserver(this);
     dialog_models_.insert({web_contents, dialog_model});
+    if (!dialog_model->users().empty()) {
+      ExecuteCommand(EXECUTE_SOURCE_MOUSE);
+    }
   }
 }
 
@@ -78,8 +82,12 @@ void WebAuthnIconView::OnExecuting(
     return;
   }
   content::WebContents* web_contents = GetWebContents();
+  AuthenticatorRequestDialogModel* model = dialog_models_.at(web_contents);
   webauthn_bubble_ = WebAuthnBubbleView::Create(
-      dialog_models_.at(web_contents)->relying_party_id(), web_contents);
+      model->relying_party_id(), model->users(),
+      base::BindOnce(&AuthenticatorRequestDialogModel::OnAccountSelected,
+                     model->GetWeakPtr()),
+      web_contents);
   webauthn_bubble_->GetWidget()->AddObserver(this);
 }
 
