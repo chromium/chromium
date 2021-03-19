@@ -57012,6 +57012,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="50" label="DuckDuckGo"/>
   <int value="51" label="Parsijoo"/>
   <int value="52" label="Qwant"/>
+  <int value="53" label="Givero"/>
+  <int value="54" label="GMX"/>
+  <int value="55" label="info.com"/>
+  <int value="56" label="MetaGer"/>
+  <int value="57" label="OceanHero"/>
+  <int value="58" label="PrivacyWall"/>
+  <int value="59" label="Ecosia"/>
 </enum>
 
 <enum name="OmniboxSuggestRequests">
