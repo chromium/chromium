@@ -68,27 +68,15 @@ const char* kNotVisitCart[] = {
 };
 
 const char* kVisitCheckout[] = {
-  "https://www.amazon.com/gp/buy/spc/handlers/display.html?",
-  "https://smile.amazon.com/gp/buy/spc/handlers/display.html?",
-  "https://pay.ebay.com/rgxo?action=view&sessionid=1111111111",
-  "https://www.example.com/chkout/rc",
-  "https://www.example.com/final-checkout",
-  "https://www.example.com/Secure-Checkout",
-  "https://www.example.com/Checkout-Begin",
-  "https://www.example.com/checkout-start",
+  "https://www.amazon.com/gp/cart/mobile/go-to-checkout.html/ref=ox_sc_proceed?proceedToCheckout=1",
+  "https://smile.amazon.com/gp/cart/mobile/go-to-checkout.html/ref=ox_sc_proceed?proceedToCheckout=1",
   "http://example.com/us/checkout/",
   "http://example.com/checkout/",
   "https://example.com/123/checkouts/456",
   "http://example.com/123/checkouts/456",
-  "http://example.com/123/SPcheckouts",
-  "https://www.example.com/intlcheckout"
 };
 
 const char* kNotVisitCheckout[] = {
-  "https://www.amazon.com/gp/spc/handlers/display.html?",
-  "https://www.amazon.com/gp/aw/c?ref_=navm_hdr_cart",
-  "https://cart.ebay.com/rgxo",
-  "https://pay.ebay.com/api/xo",
   "https://example.com/gp/cart/mobile/go-to-checkout.html/ref=ox_sc_proceed?proceedToCheckout=1",
   "http://example.com/checkoutput",
   "http://example.com/us/checkoutside/",
@@ -107,26 +95,12 @@ const char* kPurchaseText[] = {
   "PAY NOW",
   "PLACE ORDER",
   "Pay now",
-  "pay $24",
-  "pay $24.35",
-  "pay USD 24.35",
-  "make payment",
-  "confirm & pay",
-  "PURCHASE",
-  "MAKE THIS PURCHASE",
 };
 
 const char* kNotPurchaseText[] = {
   "I'd like to pay now",
   "replace order",
   "Pay nowadays",
-  "make payment later",
-  "confirm and continue"
-  "submit",
-  "Continue to Review Order",
-  "next step: review order"
-  "Process Order",
-  "",
 };
 
 const char* kSkipText[] = {
@@ -313,9 +287,9 @@ TEST(CommerceHintAgentTest, MAYBE_RegexBenchmark) {
     EXPECT_LT(elapsed_us, 50.0 * slow_factor);
 
     elapsed_us = BenchmarkIsVisitCheckout(url);
-    // Typical value is ~10us.
-    // Without capping the length, it would take at least 2000us.
-    EXPECT_LT(elapsed_us, 50.0 * slow_factor);
+    // Typical value is ~0.2us.
+    // Without capping the length, it would take at least 30us.
+    EXPECT_LT(elapsed_us, 2.0 * slow_factor);
 
     elapsed_us = BenchmarkIsPurchase(str);
     // Typical value is ~0.1us.
