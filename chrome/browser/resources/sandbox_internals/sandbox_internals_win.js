@@ -365,6 +365,22 @@ function makeMitigationEntry(platformMitigations) {
 }
 
 /**
+ * Formats a lowbox sid or appcontainer configuration (policies can only
+ * have one or the other).
+ * @param {PolicyDiagnostic} policy
+ * @return {Node}
+ */
+function makeLowboxAcEntry(policy) {
+  if (policy.lowboxSid) {
+    return makeTextEntry(policy.lowboxSid);
+  }
+  if (policy.appContainerSid) {
+    return makeTextEntry(policy.appContainerSid);
+  }
+  return makeTextEntry('');
+}
+
+/**
  * Adds policy information for a process to the sandbox-status table.
  * @param {number} pid
  * @param {string} type
@@ -381,9 +397,11 @@ function addRowForProcess(pid, type, name, sandbox, policy) {
     ].map(makeTextEntry);
     // Clickable mitigations item.
     entries.push(makeMitigationEntry(policy.platformMitigations));
+    entries.push(makeLowboxAcEntry(policy));
     addRow(entries);
   } else {
-    addRow([pid, type, name, 'Not Sandboxed', '', '', ''].map(makeTextEntry));
+    addRow(
+        [pid, type, name, 'Not Sandboxed', '', '', '', ''].map(makeTextEntry));
   }
 }
 
@@ -400,7 +418,8 @@ function onGetSandboxDiagnostics(results) {
 
   // Titles.
   addRow([
-    'Process', 'Type', 'Name', 'Sandbox', 'Lockdown', 'Integrity', 'Mitigations'
+    'Process', 'Type', 'Name', 'Sandbox', 'Lockdown', 'Integrity',
+    'Mitigations', 'Lowbox/AppContainer'
   ].map(makeTextEntry));
 
   // Browser Processes.
