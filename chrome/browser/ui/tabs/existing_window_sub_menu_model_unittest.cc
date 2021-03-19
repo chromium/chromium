@@ -202,10 +202,9 @@ TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuIncognito) {
   AddTabWithTitle(incognito_browser_1.get(), "Incognito Browser 1");
   AddTabWithTitle(incognito_browser_2.get(), "Incognito Browser 2");
 
-  const std::u16string kBrowser2ExpectedTitle = base::WideToUTF16(L"Browser 2");
-  const std::u16string kBrowser3ExpectedTitle = base::WideToUTF16(L"Browser 3");
-  const std::u16string kIncognitoBrowser2ExpectedTitle =
-      base::WideToUTF16(L"Incognito Browser 2");
+  const std::u16string kBrowser2ExpectedTitle = u"Browser 2";
+  const std::u16string kBrowser3ExpectedTitle = u"Browser 3";
+  const std::u16string kIncognitoBrowser2ExpectedTitle = u"Incognito Browser 2";
 
   // Test that a non-incognito browser only shows non-incognito windows.
   ExistingWindowSubMenuModel menu(nullptr, browser()->tab_strip_model(), 0);
@@ -239,8 +238,8 @@ TEST_F(ExistingWindowSubMenuModelTest, BuildSubmenuPopups) {
   AddTabWithTitle(browser_2.get(), "Browser 2");
   AddTabWithTitle(browser_3.get(), "Browser 3");
 
-  const std::u16string kBrowser2ExpectedTitle = base::WideToUTF16(L"Browser 2");
-  const std::u16string kBrowser3ExpectedTitle = base::WideToUTF16(L"Browser 3");
+  const std::u16string kBrowser2ExpectedTitle = u"Browser 2";
+  const std::u16string kBrowser3ExpectedTitle = u"Browser 3";
 
   // Test that popups do not show.
   ExistingWindowSubMenuModel menu(nullptr, browser()->tab_strip_model(), 0);

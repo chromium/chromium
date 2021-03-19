@@ -966,8 +966,7 @@ struct FeedbackCapture {
 // Make sure GetReadableFeedback handles non-ascii letters.
 TEST_F(ProfileResetterTest, GetReadableFeedback) {
   scoped_refptr<Extension> ext = CreateExtension(
-      base::WideToUTF16(L"Tiësto"),
-      base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
+      u"Tiësto", base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
       ManifestLocation::kUnpacked, extensions::Manifest::TYPE_EXTENSION, false);
   ASSERT_TRUE(ext.get());
   service_->AddExtension(ext.get());
@@ -1012,7 +1011,7 @@ TEST_F(ProfileResetterTest, GetReadableFeedback) {
     if (value == "Extensions") {
       std::u16string extensions;
       EXPECT_TRUE(dict->GetString("value", &extensions));
-      EXPECT_EQ(base::WideToUTF16(L"Tiësto"), extensions);
+      EXPECT_EQ(u"Tiësto", extensions);
       checked_extensions = true;
     } else if (value == "Shortcut targets") {
       std::u16string targets;

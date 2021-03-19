@@ -1060,7 +1060,7 @@ TEST_F(AXPositionTest, GetTextFromNullPosition) {
   TestPositionType text_position = AXNodePosition::CreateNullPosition();
   ASSERT_NE(nullptr, text_position);
   ASSERT_TRUE(text_position->IsNullPosition());
-  ASSERT_EQ(base::WideToUTF16(L""), text_position->GetText());
+  ASSERT_EQ(u"", text_position->GetText());
 }
 
 TEST_F(AXPositionTest, GetTextFromRoot) {
@@ -1078,7 +1078,7 @@ TEST_F(AXPositionTest, GetTextFromButton) {
       ax::mojom::TextAffinity::kUpstream);
   ASSERT_NE(nullptr, text_position);
   ASSERT_TRUE(text_position->IsTextPosition());
-  ASSERT_EQ(base::WideToUTF16(L""), text_position->GetText());
+  ASSERT_EQ(u"", text_position->GetText());
 }
 
 TEST_F(AXPositionTest, GetTextFromCheckbox) {
@@ -1087,7 +1087,7 @@ TEST_F(AXPositionTest, GetTextFromCheckbox) {
       ax::mojom::TextAffinity::kUpstream);
   ASSERT_NE(nullptr, text_position);
   ASSERT_TRUE(text_position->IsTextPosition());
-  ASSERT_EQ(base::WideToUTF16(L""), text_position->GetText());
+  ASSERT_EQ(u"", text_position->GetText());
 }
 
 TEST_F(AXPositionTest, GetTextFromTextField) {
@@ -1105,7 +1105,7 @@ TEST_F(AXPositionTest, GetTextFromStaticText) {
       ax::mojom::TextAffinity::kUpstream);
   ASSERT_NE(nullptr, text_position);
   ASSERT_TRUE(text_position->IsTextPosition());
-  ASSERT_EQ(base::WideToUTF16(L"Line 1"), text_position->GetText());
+  ASSERT_EQ(u"Line 1", text_position->GetText());
 }
 
 TEST_F(AXPositionTest, GetTextFromInlineTextBox) {
@@ -1114,7 +1114,7 @@ TEST_F(AXPositionTest, GetTextFromInlineTextBox) {
       ax::mojom::TextAffinity::kUpstream);
   ASSERT_NE(nullptr, text_position);
   ASSERT_TRUE(text_position->IsTextPosition());
-  ASSERT_EQ(base::WideToUTF16(L"Line 1"), text_position->GetText());
+  ASSERT_EQ(u"Line 1", text_position->GetText());
 }
 
 TEST_F(AXPositionTest, GetTextFromLineBreak) {
@@ -1296,7 +1296,7 @@ TEST_F(AXPositionTest, GetMaxTextOffsetAndGetTextWithGeneratedContent) {
   ASSERT_NE(nullptr, text_position);
   EXPECT_TRUE(text_position->IsTextPosition());
   EXPECT_EQ(38, text_position->MaxTextOffset());
-  EXPECT_EQ(base::WideToUTF16(L"Placeholder from generated content3.14"),
+  EXPECT_EQ(u"Placeholder from generated content3.14",
             text_position->GetText());
 }
 
@@ -10935,7 +10935,7 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
   EXPECT_EQ(inline_box_7.id, result_position->anchor_id());
   EXPECT_EQ(1, result_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, result_position->affinity());
-  EXPECT_EQ(base::WideToUTF16(L" world"), result_position->GetText());
+  EXPECT_EQ(u" world", result_position->GetText());
 
   // CreatePreviousWordStartPosition tests.
   position = std::move(result_position);
@@ -10954,7 +10954,7 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
   EXPECT_EQ(inline_box_3.id, result_position->anchor_id());
   EXPECT_EQ(0, result_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, result_position->affinity());
-  EXPECT_EQ(base::WideToUTF16(L"Hello "), result_position->GetText());
+  EXPECT_EQ(u"Hello ", result_position->GetText());
 
   // CreateNextWordEndPosition tests.
   position = std::move(result_position);
@@ -10964,7 +10964,7 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
   EXPECT_EQ(inline_box_3.id, result_position->anchor_id());
   EXPECT_EQ(6, result_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, result_position->affinity());
-  EXPECT_EQ(base::WideToUTF16(L"Hello "), result_position->GetText());
+  EXPECT_EQ(u"Hello ", result_position->GetText());
 
   position = std::move(result_position);
   result_position =
@@ -10985,7 +10985,7 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
   EXPECT_EQ(inline_box_7.id, result_position->anchor_id());
   EXPECT_EQ(6, result_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, result_position->affinity());
-  EXPECT_EQ(base::WideToUTF16(L" world"), result_position->GetText());
+  EXPECT_EQ(u" world", result_position->GetText());
 
   // CreatePreviousWordEndPosition tests.
   position = std::move(result_position);
@@ -11007,7 +11007,7 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
   EXPECT_EQ(inline_box_3.id, result_position->anchor_id());
   EXPECT_EQ(6, result_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, result_position->affinity());
-  EXPECT_EQ(base::WideToUTF16(L"Hello "), result_position->GetText());
+  EXPECT_EQ(u"Hello ", result_position->GetText());
 
   // Positions on descendants of empty objects that have been replaced by the
   // "embedded object replacement character" are valid, to allow for navigating

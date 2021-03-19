@@ -186,7 +186,7 @@ TEST(JSONStringEscapeTest, EscapeUTF16) {
   EXPECT_TRUE(IsStringUTF8AllowingNoncharacters(out));
 
   // now try with a NULL in the string
-  std::u16string null_prepend = WideToUTF16(L"test");
+  std::u16string null_prepend = u"test";
   null_prepend.push_back(0);
   in = null_prepend + in;
   std::string expected = "test\\u0000";

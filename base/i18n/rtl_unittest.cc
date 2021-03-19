@@ -525,7 +525,7 @@ TEST_F(RTLTest, SanitizeUserSuppliedString) {
 
   for (auto& i : cases) {
     // On Windows for an LTR locale, no changes to the string are made.
-    std::u16string prefix, suffix = WideToUTF16(L"");
+    std::u16string prefix, suffix = u"";
 #if !defined(OS_WIN)
     prefix = WideToUTF16(L"\x200e\x202b");
     suffix = WideToUTF16(L"\x202c\x200e");

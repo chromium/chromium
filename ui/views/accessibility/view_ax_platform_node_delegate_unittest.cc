@@ -416,12 +416,11 @@ TEST_F(ViewAXPlatformNodeDelegateTest, SetFocus) {
 }
 
 TEST_F(ViewAXPlatformNodeDelegateTest, GetAuthorUniqueIdDefault) {
-  ASSERT_EQ(base::WideToUTF16(L""), label_accessibility()->GetAuthorUniqueId());
+  ASSERT_EQ(u"", label_accessibility()->GetAuthorUniqueId());
 }
 
 TEST_F(ViewAXPlatformNodeDelegateTest, GetAuthorUniqueIdNonDefault) {
-  ASSERT_EQ(base::WideToUTF16(L"view_1"),
-            button_accessibility()->GetAuthorUniqueId());
+  ASSERT_EQ(u"view_1", button_accessibility()->GetAuthorUniqueId());
 }
 
 TEST_F(ViewAXPlatformNodeDelegateTest, IsOrderedSet) {

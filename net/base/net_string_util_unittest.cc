@@ -20,25 +20,25 @@ TEST(NetStringUtilTest, ToUpperEmpty) {
 }
 
 TEST(NetStringUtilTest, ToUpperSingleChar) {
-  std::u16string in(base::WideToUTF16(L"a"));
+  std::u16string in(u"a");
   std::u16string out;
-  std::u16string expected(base::WideToUTF16(L"A"));
+  std::u16string expected(u"A");
   ASSERT_TRUE(ToUpper(in, &out));
   ASSERT_EQ(expected, out);
 }
 
 TEST(NetStringUtilTest, ToUpperSimple) {
-  std::u16string in(base::WideToUTF16(L"hello world"));
+  std::u16string in(u"hello world");
   std::u16string out;
-  std::u16string expected(base::WideToUTF16(L"HELLO WORLD"));
+  std::u16string expected(u"HELLO WORLD");
   ASSERT_TRUE(ToUpper(in, &out));
   ASSERT_EQ(expected, out);
 }
 
 TEST(NetStringUtilTest, ToUpperAlreadyUpper) {
-  std::u16string in(base::WideToUTF16(L"HELLO WORLD"));
+  std::u16string in(u"HELLO WORLD");
   std::u16string out;
-  std::u16string expected(base::WideToUTF16(L"HELLO WORLD"));
+  std::u16string expected(u"HELLO WORLD");
   ASSERT_TRUE(ToUpper(in, &out));
   ASSERT_EQ(expected, out);
 }

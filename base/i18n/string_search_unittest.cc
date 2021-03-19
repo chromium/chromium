@@ -146,9 +146,9 @@ TEST(StringSearchTest, ASCII) {
 
 TEST(StringSearchTest, UnicodeLocaleIndependent) {
   // Base characters
-  const std::u16string e_base = WideToUTF16(L"e");
-  const std::u16string E_base = WideToUTF16(L"E");
-  const std::u16string a_base = WideToUTF16(L"a");
+  const std::u16string e_base = u"e";
+  const std::u16string E_base = u"E";
+  const std::u16string a_base = u"a";
 
   // Composed characters
   const std::u16string e_with_acute_accent = WideToUTF16(L"\u00e9");
@@ -268,7 +268,7 @@ TEST(StringSearchTest, UnicodeLocaleIndependent) {
 
 TEST(StringSearchTest, UnicodeLocaleDependent) {
   // Base characters
-  const std::u16string a_base = WideToUTF16(L"a");
+  const std::u16string a_base = u"a";
 
   // Composed characters
   const std::u16string a_with_ring = WideToUTF16(L"\u00e5");

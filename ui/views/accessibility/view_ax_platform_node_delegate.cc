@@ -634,7 +634,7 @@ std::u16string ViewAXPlatformNodeDelegate::GetAuthorUniqueId() const {
   if (v) {
     const int view_id = v->GetID();
     if (view_id)
-      return base::WideToUTF16(L"view_") + base::NumberToString16(view_id);
+      return u"view_" + base::NumberToString16(view_id);
   }
 
   return std::u16string();

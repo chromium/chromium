@@ -84,7 +84,7 @@ void LabelExample::CreateExampleView(View* container) {
   label->SetEnabledColor(SK_ColorBLUE);
   container->AddChildView(std::move(label));
 
-  label = std::make_unique<Label>(WideToUTF16(L"Password!"));
+  label = std::make_unique<Label>(u"Password!");
   label->SetObscured(true);
   container->AddChildView(std::move(label));
 

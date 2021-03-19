@@ -94,8 +94,7 @@ void Mutator:: FuzzString(std::string* value) {
 }
 
 void Mutator::FuzzString16(std::u16string* value) {
-  FuzzStringType<std::u16string>(
-      value, frequency_, base::WideToUTF16(L"BORKED"), base::WideToUTF16(L""));
+  FuzzStringType<std::u16string>(value, frequency_, u"BORKED", u"");
 }
 
 void Mutator::FuzzData(char* data, int length) {

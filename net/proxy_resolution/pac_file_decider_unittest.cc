@@ -743,8 +743,7 @@ class SynchronousSuccessDhcpFetcher : public DhcpPacFileFetcher {
 TEST(PacFileDeciderTest, AutodetectDhcpSuccess) {
   Rules rules;
   RuleBasedPacFileFetcher fetcher(&rules);
-  SynchronousSuccessDhcpFetcher dhcp_fetcher(
-      base::WideToUTF16(L"http://bingo/!FindProxyForURL"));
+  SynchronousSuccessDhcpFetcher dhcp_fetcher(u"http://bingo/!FindProxyForURL");
 
   ProxyConfig config;
   config.set_auto_detect(true);
@@ -769,8 +768,7 @@ TEST(PacFileDeciderTest, AutodetectDhcpSuccess) {
 TEST(PacFileDeciderTest, AutodetectDhcpFailParse) {
   Rules rules;
   RuleBasedPacFileFetcher fetcher(&rules);
-  SynchronousSuccessDhcpFetcher dhcp_fetcher(
-      base::WideToUTF16(L"http://bingo/!invalid-script"));
+  SynchronousSuccessDhcpFetcher dhcp_fetcher(u"http://bingo/!invalid-script");
 
   ProxyConfig config;
   config.set_auto_detect(true);

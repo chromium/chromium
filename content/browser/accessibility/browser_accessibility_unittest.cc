@@ -757,8 +757,7 @@ TEST_F(BrowserAccessibilityTest, GetAuthorUniqueId) {
       browser_accessibility_manager->GetRoot();
   ASSERT_NE(nullptr, root_accessible);
 
-  ASSERT_EQ(base::WideToUTF16(L"my_html_id"),
-            root_accessible->GetAuthorUniqueId());
+  ASSERT_EQ(u"my_html_id", root_accessible->GetAuthorUniqueId());
 }
 
 TEST_F(BrowserAccessibilityTest, NextWordPositionWithHypertext) {

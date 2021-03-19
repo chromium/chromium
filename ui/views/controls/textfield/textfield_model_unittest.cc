@@ -233,7 +233,7 @@ TEST_F(TextfieldModelTest, EditString_ComplexScript) {
   EXPECT_TRUE(model.Delete());
   EXPECT_TRUE(model.Delete());
   EXPECT_TRUE(model.Delete());
-  EXPECT_EQ(base::WideToUTF16(L""), model.text());
+  EXPECT_EQ(u"", model.text());
 
   // The first 2 characters are not strong directionality characters.
   model.SetText(
@@ -252,7 +252,7 @@ TEST_F(TextfieldModelTest, EditString_ComplexScript) {
 #if defined(OS_APPLE)
   // On Mac, the entire cluster should be deleted to match
   // NSTextField behavior.
-  EXPECT_EQ(base::WideToUTF16(L"ABC"), model.text());
+  EXPECT_EQ(u"ABC", model.text());
   EXPECT_EQ(3U, model.GetCursorPosition());
 #else
   EXPECT_EQ(base::WideToUTF16(L"ABC\xFF80"), model.text());
@@ -267,7 +267,7 @@ TEST_F(TextfieldModelTest, EditString_ComplexScript) {
 #if defined(OS_APPLE)
   // On Mac, the entire emoji should be deleted to match NSTextField
   // behavior.
-  EXPECT_EQ(base::WideToUTF16(L""), model.text());
+  EXPECT_EQ(u"", model.text());
   EXPECT_EQ(0U, model.GetCursorPosition());
 #else
   // https://crbug.com/829040
@@ -382,7 +382,7 @@ TEST_F(TextfieldModelTest, Selection_BidiWithNonSpacingMarks) {
   model.MoveCursor(gfx::CHARACTER_BREAK, gfx::CURSOR_RIGHT,
                    gfx::SELECTION_RETAIN);
   EXPECT_EQ(gfx::Range(2, 3), model.render_text()->selection());
-  EXPECT_EQ(base::WideToUTF16(L"c"), model.GetSelectedText());
+  EXPECT_EQ(u"c", model.GetSelectedText());
 
   model.MoveCursor(gfx::CHARACTER_BREAK, gfx::CURSOR_RIGHT,
                    gfx::SELECTION_RETAIN);
@@ -393,7 +393,7 @@ TEST_F(TextfieldModelTest, Selection_BidiWithNonSpacingMarks) {
   model.MoveCursor(gfx::CHARACTER_BREAK, gfx::CURSOR_RIGHT,
                    gfx::SELECTION_RETAIN);
   EXPECT_EQ(gfx::Range(2, 3), model.render_text()->selection());
-  EXPECT_EQ(base::WideToUTF16(L"c"), model.GetSelectedText());
+  EXPECT_EQ(u"c", model.GetSelectedText());
 
   model.MoveCursor(gfx::CHARACTER_BREAK, gfx::CURSOR_RIGHT,
                    gfx::SELECTION_RETAIN);
@@ -418,11 +418,11 @@ TEST_F(TextfieldModelTest, Selection_BidiWithNonSpacingMarks) {
   model.MoveCursorTo(0);
   model.MoveCursor(gfx::CHARACTER_BREAK, gfx::CURSOR_RIGHT,
                    gfx::SELECTION_RETAIN);
-  EXPECT_EQ(base::WideToUTF16(L"a"), model.GetSelectedText());
+  EXPECT_EQ(u"a", model.GetSelectedText());
 
   model.MoveCursor(gfx::CHARACTER_BREAK, gfx::CURSOR_RIGHT,
                    gfx::SELECTION_RETAIN);
-  EXPECT_EQ(base::WideToUTF16(L"a"), model.GetSelectedText());
+  EXPECT_EQ(u"a", model.GetSelectedText());
 
   model.MoveCursor(gfx::CHARACTER_BREAK, gfx::CURSOR_RIGHT,
                    gfx::SELECTION_RETAIN);
@@ -435,11 +435,11 @@ TEST_F(TextfieldModelTest, Selection_BidiWithNonSpacingMarks) {
   EXPECT_EQ(3U, model.GetCursorPosition());
   model.MoveCursor(gfx::CHARACTER_BREAK, gfx::CURSOR_LEFT,
                    gfx::SELECTION_RETAIN);
-  EXPECT_EQ(base::WideToUTF16(L"b"), model.GetSelectedText());
+  EXPECT_EQ(u"b", model.GetSelectedText());
 
   model.MoveCursor(gfx::CHARACTER_BREAK, gfx::CURSOR_LEFT,
                    gfx::SELECTION_RETAIN);
-  EXPECT_EQ(base::WideToUTF16(L"b"), model.GetSelectedText());
+  EXPECT_EQ(u"b", model.GetSelectedText());
 
   model.MoveCursor(gfx::CHARACTER_BREAK, gfx::CURSOR_LEFT,
                    gfx::SELECTION_RETAIN);

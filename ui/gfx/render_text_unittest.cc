@@ -6209,7 +6209,7 @@ TEST_F(RenderTextTest, ControlCharacterReplacement) {
   render_text->SetText(ASCIIToUTF16(kTextWithControlCharacters));
 
   // The control characters should have been replaced by their symbols.
-  EXPECT_EQ(WideToUTF16(L"␈␍␇␉␊␋␌"), render_text->GetDisplayText());
+  EXPECT_EQ(u"␈␍␇␉␊␋␌", render_text->GetDisplayText());
 
   // Setting multiline, the newline character will be back to the original text.
   render_text->SetMultiline(true);
@@ -6645,26 +6645,26 @@ TEST_F(RenderTextTest, HarfBuzz_BreakRunsByAscii) {
 
   // ▶ (U+25B6, Geometric Shapes) and an ascii character should have
   // different runs.
-  render_text->SetText(WideToUTF16(L"▶z"));
+  render_text->SetText(u"▶z");
   EXPECT_EQ(ToString16Vec({"▶", "z"}), GetRunListStrings());
   EXPECT_EQ("[0][1]", GetRunListStructureString());
 
   // ★ (U+2605, Miscellaneous Symbols) and an ascii character should have
   // different runs.
-  render_text->SetText(WideToUTF16(L"★1"));
+  render_text->SetText(u"★1");
   EXPECT_EQ(ToString16Vec({"★", "1"}), GetRunListStrings());
   EXPECT_EQ("[0][1]", GetRunListStructureString());
 
   // 🐱 (U+1F431, a cat face, Miscellaneous Symbols and Pictographs) and an
   // ASCII period should have separate runs.
-  render_text->SetText(WideToUTF16(L"🐱."));
+  render_text->SetText(u"🐱.");
   EXPECT_EQ(ToString16Vec({"🐱", "."}), GetRunListStrings());
   // U+1F431 is represented as a surrogate pair in UTF-16.
   EXPECT_EQ("[0->1][2]", GetRunListStructureString());
 
   // 🥴 (U+1f974, Supplemental Symbols and Pictographs) and an ascii character
   // should have different runs.
-  render_text->SetText(WideToUTF16(L"🥴$"));
+  render_text->SetText(u"🥴$");
   EXPECT_EQ(ToString16Vec({"🥴", "$"}), GetRunListStrings());
   EXPECT_EQ("[0->1][2]", GetRunListStructureString());
 }
@@ -6710,7 +6710,7 @@ TEST_F(RenderTextTest, HarfBuzz_ShapeRunsWithMultipleFonts) {
       UTF8ToUTF16(u8"\U0001F3F3\U0000FE0F\U00000020\U0001F308\U000020E0"));
   std::vector<std::u16string> expected;
   expected.push_back(WideToUTF16(L"\U0001F3F3\U0000FE0F"));
-  expected.push_back(WideToUTF16(L" "));
+  expected.push_back(u" ");
   expected.push_back(WideToUTF16(L"\U0001F308\U000020E0"));
   EXPECT_EQ(expected, GetRunListStrings());
   EXPECT_EQ("[0->2][3][4->6]", GetRunListStructureString());
@@ -8165,7 +8165,7 @@ TEST_F(RenderTextTest, MissingFlagEmoji) {
   // but cursor navigation should still behave as though they are joined. To get
   // placeholder glyphs, make up a non-existent country. The codes used are
   // based on ISO 3166-1 alpha-2. Codes starting with X are user-assigned.
-  std::u16string text(WideToUTF16(L"🇽🇽🇽🇽"));
+  std::u16string text(u"🇽🇽🇽🇽");
   // Each flag is 4 UTF16 characters (2 surrogate pair code points).
   EXPECT_EQ(8u, text.length());
 

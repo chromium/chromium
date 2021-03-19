@@ -335,10 +335,10 @@ class AXPosition {
     DCHECK_LE(text_offset_, int{max_text_offset}) << text;
     std::u16string annotated_text;
     if (text_offset_ == int{max_text_offset}) {
-      annotated_text = text + base::WideToUTF16(L"<>");
+      annotated_text = text + u"<>";
     } else {
-      annotated_text = text.substr(0, text_offset_) + base::WideToUTF16(L"<") +
-                       text[text_offset_] + base::WideToUTF16(L">") +
+      annotated_text = text.substr(0, text_offset_) + u"<" +
+                       text[text_offset_] + u">" +
                        text.substr(text_offset_ + 1);
     }
 

@@ -875,11 +875,9 @@ TEST_F(PersonalDataManagerTest, AddProfile_CrazyCharacters) {
       ADDRESS_HOME_CITY,
       base::WideToUTF16(L"\u653f\u5e9c\u4e0d\u6392\u9664\u7acb\u6cd5"
                         L"\u898f\u7ba1\u5c0e\u904a"));
-  profile1.SetRawInfo(ADDRESS_HOME_ZIP, base::WideToUTF16(L"YOHO_54676"));
-  profile1.SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
-                      base::WideToUTF16(L"861088828000"));
-  profile1.SetInfo(AutofillType(ADDRESS_HOME_COUNTRY),
-                   base::WideToUTF16(L"India"), "en-US");
+  profile1.SetRawInfo(ADDRESS_HOME_ZIP, u"YOHO_54676");
+  profile1.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"861088828000");
+  profile1.SetInfo(AutofillType(ADDRESS_HOME_COUNTRY), u"India", "en-US");
   profile1.FinalizeAfterImport();
   profiles.push_back(profile1);
 
@@ -888,26 +886,25 @@ TEST_F(PersonalDataManagerTest, AddProfile_CrazyCharacters) {
                       base::WideToUTF16(L"\u4e0a\u6d77\u5e02\u91d1\u5c71\u533a "
                                         L"\u677e\u9690\u9547\u4ead\u67ab\u516c"
                                         L"\u8def1915\u53f7"));
-  profile2.SetRawInfo(NAME_LAST, base::WideToUTF16(L"aguantó"));
-  profile2.SetRawInfo(ADDRESS_HOME_ZIP, base::WideToUTF16(L"HOME 94043"));
+  profile2.SetRawInfo(NAME_LAST, u"aguantó");
+  profile2.SetRawInfo(ADDRESS_HOME_ZIP, u"HOME 94043");
   profile2.FinalizeAfterImport();
   profiles.push_back(profile2);
 
   AutofillProfile profile3;
-  profile3.SetRawInfo(EMAIL_ADDRESS, base::WideToUTF16(L"sue@example.com"));
-  profile3.SetRawInfo(COMPANY_NAME, base::WideToUTF16(L"Company X"));
+  profile3.SetRawInfo(EMAIL_ADDRESS, u"sue@example.com");
+  profile3.SetRawInfo(COMPANY_NAME, u"Company X");
   profile3.FinalizeAfterImport();
   profiles.push_back(profile3);
 
   AutofillProfile profile4;
-  profile4.SetRawInfo(NAME_FIRST, base::WideToUTF16(L"Joe 3254"));
+  profile4.SetRawInfo(NAME_FIRST, u"Joe 3254");
   profile4.SetRawInfo(NAME_LAST,
                       base::WideToUTF16(L"\u8bb0\u8d262\u5e74\u591a"));
   profile4.SetRawInfo(
       ADDRESS_HOME_ZIP,
       base::WideToUTF16(L"\uff08\u90ae\u7f16\uff1a201504\uff09"));
-  profile4.SetRawInfo(EMAIL_ADDRESS,
-                      base::WideToUTF16(L"télévision@example.com"));
+  profile4.SetRawInfo(EMAIL_ADDRESS, u"télévision@example.com");
   profile4.SetRawInfo(
       COMPANY_NAME,
       base::WideToUTF16(L"\u0907\u0932\u0947\u0915\u093f\u091f\u094d"
@@ -919,14 +916,13 @@ TEST_F(PersonalDataManagerTest, AddProfile_CrazyCharacters) {
   profiles.push_back(profile4);
 
   AutofillProfile profile5;
-  profile5.SetRawInfo(NAME_FIRST, base::WideToUTF16(L"Larry"));
+  profile5.SetRawInfo(NAME_FIRST, u"Larry");
   profile5.SetRawInfo(
       NAME_LAST, base::WideToUTF16(L"\u0938\u094d\u091f\u093e\u0902\u092a "
                                    L"\u0921\u094d\u092f\u0942\u091f\u0940"));
-  profile5.SetRawInfo(ADDRESS_HOME_ZIP,
-                      base::WideToUTF16(L"111111111111110000GOOGLE"));
-  profile5.SetRawInfo(EMAIL_ADDRESS, base::WideToUTF16(L"page@000000.com"));
-  profile5.SetRawInfo(COMPANY_NAME, base::WideToUTF16(L"Google"));
+  profile5.SetRawInfo(ADDRESS_HOME_ZIP, u"111111111111110000GOOGLE");
+  profile5.SetRawInfo(EMAIL_ADDRESS, u"page@000000.com");
+  profile5.SetRawInfo(COMPANY_NAME, u"Google");
   profile5.FinalizeAfterImport();
   profiles.push_back(profile5);
 
@@ -943,24 +939,21 @@ TEST_F(PersonalDataManagerTest, AddProfile_CrazyCharacters) {
                         L"\u0627\u0644\u0633\u0648\u062f\u0627\u0646"
                         L"\u064a \u0639\u0645\u0631 "
                         L"\u0627\u0644\u0628\u0634\u064a\u0631"));
-  profile6.SetRawInfo(ADDRESS_HOME_ZIP, base::WideToUTF16(L"HOME 94043"));
+  profile6.SetRawInfo(ADDRESS_HOME_ZIP, u"HOME 94043");
   profile6.FinalizeAfterImport();
   profiles.push_back(profile6);
 
   AutofillProfile profile7;
-  profile7.SetRawInfo(NAME_FIRST,
-                      base::WideToUTF16(L"&$%$$$ TESTO *&*&^&^& MOKO"));
-  profile7.SetRawInfo(NAME_MIDDLE, base::WideToUTF16(L"WOHOOOO$$$$$$$$****"));
-  profile7.SetRawInfo(EMAIL_ADDRESS, base::WideToUTF16(L"yuvu@example.com"));
-  profile7.SetRawInfo(ADDRESS_HOME_LINE1,
-                      base::WideToUTF16(L"34544, anderson ST.(120230)"));
-  profile7.SetRawInfo(ADDRESS_HOME_CITY, base::WideToUTF16(L"Sunnyvale"));
-  profile7.SetRawInfo(ADDRESS_HOME_STATE, base::WideToUTF16(L"CA"));
-  profile7.SetRawInfo(ADDRESS_HOME_ZIP, base::WideToUTF16(L"94086"));
-  profile7.SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
-                      base::WideToUTF16(L"15466784565"));
-  profile7.SetInfo(AutofillType(ADDRESS_HOME_COUNTRY),
-                   base::WideToUTF16(L"United States"), "en-US");
+  profile7.SetRawInfo(NAME_FIRST, u"&$%$$$ TESTO *&*&^&^& MOKO");
+  profile7.SetRawInfo(NAME_MIDDLE, u"WOHOOOO$$$$$$$$****");
+  profile7.SetRawInfo(EMAIL_ADDRESS, u"yuvu@example.com");
+  profile7.SetRawInfo(ADDRESS_HOME_LINE1, u"34544, anderson ST.(120230)");
+  profile7.SetRawInfo(ADDRESS_HOME_CITY, u"Sunnyvale");
+  profile7.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
+  profile7.SetRawInfo(ADDRESS_HOME_ZIP, u"94086");
+  profile7.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"15466784565");
+  profile7.SetInfo(AutofillType(ADDRESS_HOME_COUNTRY), u"United States",
+                   "en-US");
   profile7.FinalizeAfterImport();
   profiles.push_back(profile7);
 
@@ -1225,16 +1218,16 @@ TEST_F(PersonalDataManagerTest, AddCreditCard_CrazyCharacters) {
   card1.SetRawInfo(CREDIT_CARD_NAME_FULL,
                    base::WideToUTF16(L"\u751f\u6d3b\u5f88\u6709\u89c4\u5f8b "
                                      L"\u4ee5\u73a9\u4e3a\u4e3b"));
-  card1.SetRawInfo(CREDIT_CARD_NUMBER, base::WideToUTF16(L"6011111111111117"));
-  card1.SetRawInfo(CREDIT_CARD_EXP_MONTH, base::WideToUTF16(L"12"));
-  card1.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, base::WideToUTF16(L"2011"));
+  card1.SetRawInfo(CREDIT_CARD_NUMBER, u"6011111111111117");
+  card1.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"12");
+  card1.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2011");
   cards.push_back(card1);
 
   CreditCard card2;
-  card2.SetRawInfo(CREDIT_CARD_NAME_FULL, base::WideToUTF16(L"John Williams"));
-  card2.SetRawInfo(CREDIT_CARD_NUMBER, base::WideToUTF16(L"WokoAwesome12345"));
-  card2.SetRawInfo(CREDIT_CARD_EXP_MONTH, base::WideToUTF16(L"10"));
-  card2.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, base::WideToUTF16(L"2015"));
+  card2.SetRawInfo(CREDIT_CARD_NAME_FULL, u"John Williams");
+  card2.SetRawInfo(CREDIT_CARD_NUMBER, u"WokoAwesome12345");
+  card2.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"10");
+  card2.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2015");
   cards.push_back(card2);
 
   CreditCard card3;
@@ -1251,8 +1244,8 @@ TEST_F(PersonalDataManagerTest, AddCreditCard_CrazyCharacters) {
       base::WideToUTF16(L"\u092a\u0941\u0928\u0930\u094d\u091c\u0940"
                         L"\u0935\u093f\u0924 \u0939\u094b\u0917\u093e "
                         L"\u0928\u093e\u0932\u0902\u0926\u093e"));
-  card3.SetRawInfo(CREDIT_CARD_EXP_MONTH, base::WideToUTF16(L"10"));
-  card3.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, base::WideToUTF16(L"2015"));
+  card3.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"10");
+  card3.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2015");
   cards.push_back(card3);
 
   CreditCard card4;
@@ -1264,10 +1257,9 @@ TEST_F(PersonalDataManagerTest, AddCreditCard_CrazyCharacters) {
                         L"\u03ba\u03b1\u03b9 "
                         L"\u03ba\u03b1\u03c4\u03b1\u03c1\u03b3\u03ae"
                         L"\u03c3\u03b5\u03b9\u03c2"));
-  card4.SetRawInfo(CREDIT_CARD_NUMBER,
-                   base::WideToUTF16(L"00000000000000000000000"));
-  card4.SetRawInfo(CREDIT_CARD_EXP_MONTH, base::WideToUTF16(L"01"));
-  card4.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, base::WideToUTF16(L"2016"));
+  card4.SetRawInfo(CREDIT_CARD_NUMBER, u"00000000000000000000000");
+  card4.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"01");
+  card4.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2016");
   cards.push_back(card4);
 
   personal_data_->SetCreditCards(&cards);
