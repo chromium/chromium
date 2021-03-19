@@ -8,6 +8,7 @@
 #include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/feedstore_util.h"
+#include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/test/callback_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1957,6 +1958,39 @@ TEST_F(FeedApiTest, RejectEphemeralChange) {
 
   ASSERT_EQ("loading -> 2 slices -> no-cards -> 2 slices",
             surface.DescribeUpdates());
+}
+
+// Test that we overwrite stored stream data, even if ContentId's do not change.
+TEST_F(FeedApiTest, StreamDataOverwritesOldStream) {
+  // Inject two FeedQuery responses with some different data.
+  {
+    std::unique_ptr<StreamModelUpdateRequest> new_state =
+        MakeTypicalInitialModelState();
+    new_state->shared_states[0].set_shared_state_data("new-shared-data");
+    new_state->content[0].set_frame("new-frame-data");
+
+    response_translator_.InjectResponse(MakeTypicalInitialModelState());
+    response_translator_.InjectResponse(std::move(new_state));
+  }
+
+  // Trigger stream load, unload stream, and wait until the stream data is
+  // stale.
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  surface.Detach();
+  task_environment_.FastForwardBy(base::TimeDelta::FromDays(20));
+
+  // Trigger stream load again, it should refersh from the network.
+  surface.Attach(stream_.get());
+  WaitForIdleTaskQueue();
+
+  // Verify the new data was stored.
+  std::unique_ptr<StreamModelUpdateRequest> stored_data =
+      StoredModelData(kForYouStream, store_.get());
+  ASSERT_TRUE(stored_data);
+  EXPECT_EQ("new-shared-data",
+            stored_data->shared_states[0].shared_state_data());
+  EXPECT_EQ("new-frame-data", stored_data->content[0].frame());
 }
 
 // Keep instantiations at the bottom.

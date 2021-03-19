@@ -38,6 +38,19 @@ namespace test {
 
 std::unique_ptr<StreamModel> LoadModelFromStore(const StreamType& stream_type,
                                                 FeedStore* store) {
+  std::unique_ptr<StreamModelUpdateRequest> data =
+      StoredModelData(stream_type, store);
+  if (data) {
+    auto model = std::make_unique<StreamModel>();
+    model->Update(std::move(data));
+    return model;
+  }
+  return nullptr;
+}
+
+std::unique_ptr<StreamModelUpdateRequest> StoredModelData(
+    const StreamType& stream_type,
+    FeedStore* store) {
   LoadStreamFromStoreTask::Result result;
   auto complete = [&](LoadStreamFromStoreTask::Result task_result) {
     result = std::move(task_result);
@@ -53,9 +66,7 @@ std::unique_ptr<StreamModel> LoadModelFromStore(const StreamType& stream_type,
   run_loop.Run();
 
   if (result.status == LoadStreamStatus::kLoadedFromStore) {
-    auto model = std::make_unique<StreamModel>();
-    model->Update(std::move(result.update_request));
-    return model;
+    return std::move(result.update_request);
   }
   LOG(WARNING) << "LoadModelFromStore failed with " << result.status;
   return nullptr;

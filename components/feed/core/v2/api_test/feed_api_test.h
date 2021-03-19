@@ -40,6 +40,9 @@ namespace test {
 
 std::unique_ptr<StreamModel> LoadModelFromStore(const StreamType& stream_type,
                                                 FeedStore* store);
+std::unique_ptr<StreamModelUpdateRequest> StoredModelData(
+    const StreamType& stream_type,
+    FeedStore* store);
 
 // Returns the model state string (|StreamModel::DumpStateForTesting()|),
 // given a model initialized with |update_request| and having |operations|
