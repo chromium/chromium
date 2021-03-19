@@ -470,16 +470,16 @@ AutomationPredicate = class {
       return true;
     }
 
-    // Ignore nodes acting as labels for another control, that don't
-    // have actionable descendants.
+    // Ignore nodes acting as labels for another control, that are unambiguously
+    // labels.
     if (node.labelFor && node.labelFor.length > 0 &&
-        !isActionableOrHasActionableDescendant(node)) {
+        node.role === Role.LABEL_TEXT) {
       return true;
     }
 
     // Similarly, ignore nodes acting as descriptions.
     if (node.descriptionFor && node.descriptionFor.length > 0 &&
-        !isActionableOrHasActionableDescendant(node)) {
+        node.role === Role.LABEL_TEXT) {
       return true;
     }
 
