@@ -5,10 +5,9 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_GENERATED_PASSWORD_LEAK_DETECTION_PREF_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_GENERATED_PASSWORD_LEAK_DETECTION_PREF_H_
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_service.h"
@@ -22,7 +21,6 @@ extern const char kGeneratedPasswordLeakDetectionPref[];
 // logic used to generate these behaviors.
 class GeneratedPasswordLeakDetectionPref
     : public extensions::settings_private::GeneratedPref,
-      public IdentityManagerFactory::Observer,
       public signin::IdentityManager::Observer,
       public syncer::SyncServiceObserver {
  public:
@@ -43,9 +41,7 @@ class GeneratedPasswordLeakDetectionPref
       const signin::PrimaryAccountChangeEvent& event_details) override;
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
   void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
-
-  // IdentityManagerFactory::Observer implementation.
-  void IdentityManagerShutdown(
+  void OnIdentityManagerShutdown(
       signin::IdentityManager* identity_manager) override;
 
   // syncer::SyncServiceObserver implementation.
@@ -56,11 +52,10 @@ class GeneratedPasswordLeakDetectionPref
   // Non-owning pointer to the profile this preference is generated for.
   Profile* const profile_;
 
-  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
       identity_manager_observer_{this};
-  ScopedObserver<IdentityManagerFactory, IdentityManagerFactory::Observer>
-      identity_manager_factory_observer_{this};
-  ScopedObserver<syncer::SyncService, syncer::SyncServiceObserver>
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observer_{this};
   PrefChangeRegistrar user_prefs_registrar_;
 };

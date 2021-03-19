@@ -98,8 +98,8 @@ IdentityManager::~IdentityManager() {
 }
 
 void IdentityManager::Shutdown() {
-  for (auto& observer : diagnostics_observation_list_)
-    observer.OnIdentityManagerShutdown();
+  for (auto& observer : observer_list_)
+    observer.OnIdentityManagerShutdown(this);
 
   // It is no longer safe to use the SigninClient beyond this point, everything
   // depending on it must be destroyed.

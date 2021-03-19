@@ -25,20 +25,14 @@ PrimaryAccountAccessTokenFetcher::PrimaryAccountAccessTokenFetcher(
       identity_manager_(identity_manager),
       scopes_(scopes),
       callback_(std::move(callback)),
-      access_token_retried_(false),
       mode_(mode),
       consent_(consent) {
-  identity_manager_diagnositcs_observation_.Observe(identity_manager_);
-
+  identity_manager_observation_.Observe(identity_manager_);
   if (mode_ == Mode::kImmediate || AreCredentialsAvailable()) {
     StartAccessTokenRequest();
     return;
   }
-
-  // Start observing the IdentityManager. This observer will be removed either
-  // when credentials are obtained and an access token request is started or
-  // when this object is destroyed.
-  identity_manager_observation_.Observe(identity_manager_);
+  waiting_for_account_available_ = true;
 }
 
 PrimaryAccountAccessTokenFetcher::~PrimaryAccountAccessTokenFetcher() = default;
@@ -57,8 +51,8 @@ void PrimaryAccountAccessTokenFetcher::StartAccessTokenRequest() {
   DCHECK(mode_ == Mode::kImmediate || AreCredentialsAvailable());
 
   // By the time of starting an access token request, we should no longer be
-  // listening for signin-related events.
-  DCHECK(!identity_manager_observation_.IsObservingSource(identity_manager_));
+  // waiting for the account.
+  DCHECK(!waiting_for_account_available_);
 
   // Note: We might get here even in cases where we know that there's no refresh
   // token. We're requesting an access token anyway, so that the token service
@@ -96,8 +90,8 @@ void PrimaryAccountAccessTokenFetcher::OnRefreshTokenUpdatedForAccount(
   ProcessSigninStateChange();
 }
 
-void PrimaryAccountAccessTokenFetcher::OnIdentityManagerShutdown() {
-  identity_manager_diagnositcs_observation_.Reset();
+void PrimaryAccountAccessTokenFetcher::OnIdentityManagerShutdown(
+    IdentityManager* identity_manager) {
   identity_manager_observation_.Reset();
   access_token_fetcher_.reset();
   if (callback_) {
@@ -108,14 +102,14 @@ void PrimaryAccountAccessTokenFetcher::OnIdentityManagerShutdown() {
 }
 
 void PrimaryAccountAccessTokenFetcher::ProcessSigninStateChange() {
-  DCHECK_EQ(Mode::kWaitUntilAvailable, mode_);
+  if (!waiting_for_account_available_)
+    return;
 
+  DCHECK_EQ(Mode::kWaitUntilAvailable, mode_);
   if (!AreCredentialsAvailable())
     return;
 
-  DCHECK(identity_manager_observation_.IsObservingSource(identity_manager_));
-  identity_manager_observation_.Reset();
-
+  waiting_for_account_available_ = false;
   StartAccessTokenRequest();
 }
 

@@ -171,6 +171,7 @@ void IdentityTestEnvironment::Initialize() {
   test_identity_manager_observer_ =
       std::make_unique<TestIdentityManagerObserver>(identity_manager());
   diagnostics_observation_.Observe(identity_manager());
+  identity_manager_observation_.Observe(identity_manager());
 }
 
 IdentityTestEnvironment::IdentityTestEnvironment(
@@ -567,11 +568,13 @@ void IdentityTestEnvironment::OnAccessTokenRequested(
                      weak_ptr_factory_.GetWeakPtr(), account_id));
 }
 
-void IdentityTestEnvironment::OnIdentityManagerShutdown() {
+void IdentityTestEnvironment::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
   // Remove the Observers that IdentityTestEnvironment added during its
   // initialization.
   test_identity_manager_observer_.reset();
   diagnostics_observation_.Reset();
+  identity_manager_observation_.Reset();
 }
 
 void IdentityTestEnvironment::HandleOnAccessTokenRequested(

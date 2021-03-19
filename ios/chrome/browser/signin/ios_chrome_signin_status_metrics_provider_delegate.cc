@@ -65,11 +65,6 @@ void IOSChromeSigninStatusMetricsProviderDelegate::IdentityManagerCreated(
   owner()->OnIdentityManagerCreated(manager);
 }
 
-void IOSChromeSigninStatusMetricsProviderDelegate::IdentityManagerShutdown(
-    signin::IdentityManager* manager) {
-  owner()->OnIdentityManagerShutdown(manager);
-}
-
 std::vector<ChromeBrowserState*>
 IOSChromeSigninStatusMetricsProviderDelegate::GetLoadedChromeBrowserStates() {
   return GetApplicationContext()

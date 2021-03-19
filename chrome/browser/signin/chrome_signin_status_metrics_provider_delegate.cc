@@ -112,11 +112,6 @@ void ChromeSigninStatusMetricsProviderDelegate::IdentityManagerCreated(
   owner()->OnIdentityManagerCreated(identity_manager);
 }
 
-void ChromeSigninStatusMetricsProviderDelegate::IdentityManagerShutdown(
-    signin::IdentityManager* identity_manager) {
-  owner()->OnIdentityManagerShutdown(identity_manager);
-}
-
 void ChromeSigninStatusMetricsProviderDelegate::UpdateStatusWhenBrowserAdded(
     bool signed_in) {
 #if !defined(OS_ANDROID)

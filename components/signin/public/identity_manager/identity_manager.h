@@ -145,6 +145,10 @@ class IdentityManager : public KeyedService,
 
     // Called after removing an account info.
     virtual void OnExtendedAccountInfoRemoved(const AccountInfo& info) {}
+
+    // Called on Shutdown(), for observers that aren't KeyedServices to remove
+    // their observers.
+    virtual void OnIdentityManagerShutdown(IdentityManager* identity_manager) {}
   };
 
   // Methods to register or remove observers.
@@ -346,10 +350,6 @@ class IdentityManager : public KeyedService,
     virtual void OnRefreshTokenRemovedForAccountFromSource(
         const CoreAccountId& account_id,
         const std::string& source) {}
-
-    // Called on Shutdown(), for observers that aren't KeyedServices to remove
-    // their observers.
-    virtual void OnIdentityManagerShutdown() {}
   };
 
   void AddDiagnosticsObserver(DiagnosticsObserver* observer);

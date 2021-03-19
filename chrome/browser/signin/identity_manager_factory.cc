@@ -142,14 +142,3 @@ KeyedService* IdentityManagerFactory::BuildServiceInstanceFor(
 
   return identity_manager.release();
 }
-
-void IdentityManagerFactory::BrowserContextShutdown(
-    content::BrowserContext* context) {
-  auto* identity_manager = static_cast<signin::IdentityManager*>(
-      GetServiceForBrowserContext(context, false));
-  if (identity_manager) {
-    for (Observer& observer : observer_list_)
-      observer.IdentityManagerShutdown(identity_manager);
-  }
-  BrowserContextKeyedServiceFactory::BrowserContextShutdown(context);
-}

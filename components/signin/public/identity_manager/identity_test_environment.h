@@ -50,7 +50,8 @@ class TestIdentityManagerObserver;
 // task environment. If your test doesn't already have one, use a
 // base::test::TaskEnvironment instance variable to fulfill this
 // requirement.
-class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver {
+class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
+                                public IdentityManager::Observer {
  public:
   struct PendingRequest {
     PendingRequest(CoreAccountId account_id,
@@ -400,7 +401,10 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver {
   void OnAccessTokenRequested(const CoreAccountId& account_id,
                               const std::string& consumer_id,
                               const ScopeSet& scopes) override;
-  void OnIdentityManagerShutdown() override;
+
+  // IdentityManager::Observer:
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
 
   // Handles the notification that an access token request was received for
   // |account_id|. Invokes |on_access_token_request_callback_| if the latter
@@ -446,6 +450,8 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver {
                           &IdentityManager::AddDiagnosticsObserver,
                           &IdentityManager::RemoveDiagnosticsObserver>
       diagnostics_observation_{this};
+  base::ScopedObservation<IdentityManager, IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   base::OnceClosure on_access_token_requested_callback_;
   std::vector<AccessTokenRequestState> requesters_;
