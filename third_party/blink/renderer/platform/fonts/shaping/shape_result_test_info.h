@@ -40,16 +40,19 @@ class PLATFORM_EXPORT ShapeResultBloberizerTestInfo {
                   Glyph glyph,
                   const SimpleFontData* font_data,
                   CanvasRotationInVertical canvas_rotation,
-                  float h_offset) {
-    bloberizer.Add(glyph, font_data, canvas_rotation, h_offset);
+                  float h_offset,
+                  unsigned character_index) {
+    bloberizer.Add(glyph, font_data, canvas_rotation, h_offset,
+                   character_index);
   }
 
   static void Add(ShapeResultBloberizer& bloberizer,
                   Glyph glyph,
                   const SimpleFontData* font_data,
                   CanvasRotationInVertical canvas_rotation,
-                  const FloatPoint& offset) {
-    bloberizer.Add(glyph, font_data, canvas_rotation, offset);
+                  const FloatPoint& offset,
+                  unsigned character_index) {
+    bloberizer.Add(glyph, font_data, canvas_rotation, offset, character_index);
   }
 
   static const SimpleFontData* PendingRunFontData(

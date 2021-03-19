@@ -659,7 +659,9 @@ void GraphicsContext::DrawText(const Font& font,
                                const PaintFlags& flags,
                                DOMNodeId node_id) {
   font.DrawText(canvas_, text_info, point, device_scale_factor_, node_id,
-                DarkModeFlags(this, flags, DarkModeFilter::ElementRole::kText));
+                DarkModeFlags(this, flags, DarkModeFilter::ElementRole::kText),
+                printing_ ? Font::DrawType::kGlyphsAndClusters
+                          : Font::DrawType::kGlyphsOnly);
 }
 
 template <typename DrawTextFunc>
@@ -689,7 +691,9 @@ void GraphicsContext::DrawTextInternal(const Font& font,
   DrawTextPasses([&](const PaintFlags& flags) {
     font.DrawText(
         canvas_, text_info, point, device_scale_factor_, node_id,
-        DarkModeFlags(this, flags, DarkModeFilter::ElementRole::kText));
+        DarkModeFlags(this, flags, DarkModeFilter::ElementRole::kText),
+        printing_ ? Font::DrawType::kGlyphsAndClusters
+                  : Font::DrawType::kGlyphsOnly);
   });
 }
 
@@ -745,7 +749,9 @@ void GraphicsContext::DrawBidiText(
     if (font.DrawBidiText(
             canvas_, run_info, point, custom_font_not_ready_action,
             device_scale_factor_,
-            DarkModeFlags(this, flags, DarkModeFilter::ElementRole::kText))) {
+            DarkModeFlags(this, flags, DarkModeFilter::ElementRole::kText),
+            printing_ ? Font::DrawType::kGlyphsAndClusters
+                      : Font::DrawType::kGlyphsOnly)) {
       paint_controller_.SetTextPainted();
     }
   });

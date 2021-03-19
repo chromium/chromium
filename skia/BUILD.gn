@@ -39,7 +39,7 @@ buildflag_header("buildflags") {
 
 # External-facing config for dependent code.
 config("skia_config") {
-  defines = []
+  defines = [ "SK_UNTIL_CRBUG_1187654_IS_FIXED" ]
   include_dirs = [ "//third_party/skia" ]
 
   if (!is_ios) {

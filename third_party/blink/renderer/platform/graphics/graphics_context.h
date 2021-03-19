@@ -168,8 +168,9 @@ class PLATFORM_EXPORT GraphicsContext {
   void SetDeviceScaleFactor(float factor) { device_scale_factor_ = factor; }
   float DeviceScaleFactor() const { return device_scale_factor_; }
 
-  // Set to true if context is for printing. Bitmaps won't  be resampled when
-  // printing to keep the best possible quality.
+  // Set to true if context is for printing. Bitmaps won't be resampled when
+  // printing to keep the best possible quality. When printing text will be
+  // provided along with glyphs.
   void SetPrinting(bool printing) { printing_ = printing; }
 
   SkColorFilter* GetColorFilter() const;

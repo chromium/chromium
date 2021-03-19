@@ -24,7 +24,7 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
   STACK_ALLOCATED();
 
  public:
-  enum class Type { kNormal, kTextIntercepts };
+  enum class Type { kNormal, kTextIntercepts, kEmitText };
 
   struct FillGlyphsNG;
   struct FillTextEmphasisGlyphsNG;
@@ -53,7 +53,8 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
   void Add(Glyph glyph,
            const SimpleFontData* font_data,
            CanvasRotationInVertical canvas_rotation,
-           float h_offset) {
+           float h_offset,
+           unsigned character_index) {
     // cannot mix x-only/xy offsets
     DCHECK(!HasPendingVerticalOffsets());
 
@@ -68,12 +69,18 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
 
     pending_glyphs_.push_back(glyph);
     pending_offsets_.push_back(h_offset);
+    if (!current_text_.IsNull()) {
+      DVLOG(5) << "  Appending glyph " << glyph << " with start index "
+               << character_index;
+      current_character_indexes_.push_back(character_index);
+    }
   }
 
   void Add(Glyph glyph,
            const SimpleFontData* font_data,
            CanvasRotationInVertical canvas_rotation,
-           const FloatPoint& offset) {
+           const FloatPoint& offset,
+           unsigned character_index) {
     // cannot mix x-only/xy offsets
     DCHECK(pending_glyphs_.IsEmpty() || HasPendingVerticalOffsets());
 
@@ -94,11 +101,16 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
     pending_offsets_.push_back(offset.X() +
                                pending_vertical_baseline_x_offset_);
     pending_offsets_.push_back(offset.Y());
+    if (!current_text_.IsNull()) {
+      DVLOG(5) << "  Appending glyph " << glyph << " with start index "
+               << character_index;
+      current_character_indexes_.push_back(character_index);
+    }
   }
 
   // Whether the FillFastHorizontalGlyphs or AddFastHorizontalGlyphToBloberizer
-  // can be used. Only applies for full runs with no vertical offsets and no
-  // text intercepts.
+  // can be used. Only applies for full runs with no vertical offsets, no text
+  // intercepts, and not emitting text.
   bool CanUseFastPath(unsigned from,
                       unsigned to,
                       unsigned length,
@@ -144,6 +156,11 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
 
   bool IsSkipInkException(const StringView& text, unsigned character_index);
 
+  void SetText(const StringView& text,
+               unsigned from,
+               unsigned to,
+               base::span<const unsigned> cluster_starts);
+  void CommitText();
   void CommitPendingRun();
   void CommitPendingBlob();
 
@@ -165,6 +182,14 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
       CanvasRotationInVertical::kRegular;
   Vector<Glyph, 1024> pending_glyphs_;
   Vector<float, 1024> pending_offsets_;
+
+  Vector<uint8_t, 1024> pending_utf8_;
+  Vector<uint32_t, 1024> pending_utf8_character_indexes_;
+  Vector<unsigned, 1024> current_character_indexes_;
+  Vector<unsigned, 1024> cluster_ends_;
+  unsigned cluster_ends_offset_ = 0;
+  StringView current_text_;
+
   float pending_vertical_baseline_x_offset_ = 0;
 
   // Constructed blobs.

@@ -209,9 +209,10 @@ void Font::DrawText(cc::PaintCanvas* canvas,
                     const TextRunPaintInfo& run_info,
                     const FloatPoint& point,
                     float device_scale_factor,
-                    const cc::PaintFlags& flags) const {
+                    const cc::PaintFlags& flags,
+                    DrawType draw_type) const {
   DrawText(canvas, run_info, point, device_scale_factor, cc::kInvalidNodeId,
-           flags);
+           flags, draw_type);
 }
 
 void Font::DrawText(cc::PaintCanvas* canvas,
@@ -219,7 +220,8 @@ void Font::DrawText(cc::PaintCanvas* canvas,
                     const FloatPoint& point,
                     float device_scale_factor,
                     cc::NodeId node_id,
-                    const cc::PaintFlags& flags) const {
+                    const cc::PaintFlags& flags,
+                    DrawType draw_type) const {
   // Don't draw anything while we are using custom fonts that are in the process
   // of loading.
   if (ShouldSkipDrawing())
@@ -230,7 +232,9 @@ void Font::DrawText(cc::PaintCanvas* canvas,
   word_shaper.FillResultBuffer(run_info, &buffer);
   ShapeResultBloberizer::FillGlyphs bloberizer(
       GetFontDescription(), device_scale_factor, run_info, buffer,
-      ShapeResultBloberizer::Type::kNormal);
+      draw_type == Font::DrawType::kGlyphsOnly
+          ? ShapeResultBloberizer::Type::kNormal
+          : ShapeResultBloberizer::Type::kEmitText);
   DrawBlobs(canvas, flags, bloberizer.Blobs(), point, node_id);
 }
 
@@ -239,7 +243,8 @@ void Font::DrawText(cc::PaintCanvas* canvas,
                     const FloatPoint& point,
                     float device_scale_factor,
                     cc::NodeId node_id,
-                    const cc::PaintFlags& flags) const {
+                    const cc::PaintFlags& flags,
+                    DrawType draw_type) const {
   // Don't draw anything while we are using custom fonts that are in the process
   // of loading.
   if (ShouldSkipDrawing())
@@ -248,7 +253,9 @@ void Font::DrawText(cc::PaintCanvas* canvas,
   ShapeResultBloberizer::FillGlyphsNG bloberizer(
       GetFontDescription(), device_scale_factor, text_info.text, text_info.from,
       text_info.to, text_info.shape_result,
-      ShapeResultBloberizer::Type::kNormal);
+      draw_type == Font::DrawType::kGlyphsOnly
+          ? ShapeResultBloberizer::Type::kNormal
+          : ShapeResultBloberizer::Type::kEmitText);
   DrawBlobs(canvas, flags, bloberizer.Blobs(), point, node_id);
 }
 
@@ -257,7 +264,8 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
                         const FloatPoint& point,
                         CustomFontNotReadyAction custom_font_not_ready_action,
                         float device_scale_factor,
-                        const cc::PaintFlags& flags) const {
+                        const cc::PaintFlags& flags,
+                        DrawType draw_type) const {
   // Don't draw anything while we are using custom fonts that are in the process
   // of loading, except if the 'force' argument is set to true (in which case it
   // will use a fallback font).
@@ -295,11 +303,14 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
 
     ShapeResultBuffer buffer;
     word_shaper.FillResultBuffer(subrun_info, &buffer);
+
     // Fix regression with -ftrivial-auto-var-init=pattern. See
     // crbug.com/1055652.
     STACK_UNINITIALIZED ShapeResultBloberizer::FillGlyphs bloberizer(
         GetFontDescription(), device_scale_factor, subrun_info, buffer,
-        ShapeResultBloberizer::Type::kNormal);
+        draw_type == Font::DrawType::kGlyphsOnly
+            ? ShapeResultBloberizer::Type::kNormal
+            : ShapeResultBloberizer::Type::kEmitText);
     DrawBlobs(canvas, flags, bloberizer.Blobs(), curr_point);
 
     bidi_run = bidi_run->Next();
