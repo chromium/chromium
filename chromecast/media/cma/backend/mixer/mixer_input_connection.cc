@@ -44,12 +44,9 @@ constexpr base::TimeDelta kDefaultFillTime =
 constexpr base::TimeDelta kDefaultFadeTime =
     base::TimeDelta::FromMilliseconds(5);
 constexpr base::TimeDelta kInactivityTimeout = base::TimeDelta::FromSeconds(5);
-constexpr double kPlaybackRateEpsilon = 0.001;
 
 constexpr int kAudioMessageHeaderSize =
     mixer_service::MixerSocket::kAudioMessageHeaderSize;
-
-constexpr int kRateShifterOutputFrames = 4096;
 
 enum MessageTypes : int {
   kReadyForPlayback = 1,
@@ -187,7 +184,12 @@ MixerInputConnection::MixerInputConnection(
       max_queued_frames_(std::max(GetQueueSize(params), algorithm_fill_size_)),
       start_threshold_frames_(GetStartThreshold(params)),
       never_timeout_connection_(params.never_timeout_connection()),
-      fader_(this,
+      rate_shifter_(this,
+                    channel_layout_,
+                    num_channels_,
+                    input_samples_per_second_,
+                    algorithm_fill_size_),
+      fader_(&rate_shifter_,
              params.has_fade_frames()
                  ? params.fade_frames()
                  : ::media::AudioTimestampHelper::TimeToFrames(
@@ -197,8 +199,6 @@ MixerInputConnection::MixerInputConnection(
       audio_clock_simulator_(&fader_),
       use_start_timestamp_(params.use_start_timestamp()),
       playback_start_timestamp_(use_start_timestamp_ ? INT64_MAX : INT64_MIN),
-      audio_buffer_pool_(
-          base::MakeRefCounted<::media::AudioBufferMemoryPool>()),
       weak_factory_(this) {
   weak_this_ = weak_factory_.GetWeakPtr();
 
@@ -440,43 +440,15 @@ void MixerInputConnection::SetMediaPlaybackRate(double rate) {
   LOG(INFO) << this << " SetMediaPlaybackRate rate=" << rate;
   DCHECK_GT(rate, 0);
 
-  if (std::abs(rate - 1.0) < kPlaybackRateEpsilon) {
-    // AudioRendererAlgorithm treats values close to 1 as exactly 1.
-    rate = 1.0;
-  }
-
   base::AutoLock lock(lock_);
-  if (rate == playback_rate_) {
-    return;
-  }
-
-  playback_rate_ = rate;
-  skip_next_fill_for_rate_change_ = true;
-  rate_shifted_offset_ = 0;
-  waiting_for_rate_shifter_fill_ = true;
-
-  if (rate == 1.0) {
-    rate_shifter_.reset();
-    rate_shifter_input_frames_ = rate_shifter_output_frames_ = 0;
+  rate_shifter_.SetPlaybackRate(rate);
+  playback_rate_ = rate_shifter_.playback_rate();
+  if (playback_rate_ == 1.0) {
     effective_playout_channel_.store(playout_channel_,
                                      std::memory_order_relaxed);
-    return;
-  }
-  // Always play all channels when playback is rate-shifted (b/151393870).
-  effective_playout_channel_.store(kChannelAll, std::memory_order_relaxed);
-
-  rate_shifter_ =
-      std::make_unique<::media::AudioRendererAlgorithm>(&media_log_);
-  rate_shifter_->Initialize(
-      mixer::CreateAudioParameters(
-          ::media::AudioParameters::AUDIO_PCM_LINEAR, channel_layout_,
-          num_channels_, input_samples_per_second_, algorithm_fill_size_),
-      false /* is_encrypted */);
-  rate_shifter_input_frames_ = rate_shifter_output_frames_ = 0;
-
-  if (!rate_shifter_output_) {
-    rate_shifter_output_ =
-        ::media::AudioBus::Create(num_channels_, kRateShifterOutputFrames);
+  } else {
+    // Always play all channels when playback is rate-shifted (b/151393870).
+    effective_playout_channel_.store(kChannelAll, std::memory_order_relaxed);
   }
 }
 
@@ -605,8 +577,7 @@ int64_t MixerInputConnection::QueueData(scoped_refptr<net::IOBuffer> data) {
   // Otherwise, drop |data| since it is before the start PTS.
 
   if (!started_ || paused_ ||
-      mixer_rendering_delay_.timestamp_microseconds == INT64_MIN ||
-      waiting_for_rate_shifter_fill_) {
+      mixer_rendering_delay_.timestamp_microseconds == INT64_MIN) {
     // Note that if we are waiting for the rate shifter to fill, we can't report
     // accurate rendering delay because we don't know when the audio will start
     // being filled to the mixer again (depends on how long it takes to fill the
@@ -619,28 +590,14 @@ int64_t MixerInputConnection::QueueData(scoped_refptr<net::IOBuffer> data) {
   // The other data includes:
   //   * The number of frames of the last mixer fill (since that will be played
   //     out starting at the last mixer rendering delay).
-  //   * Data buffered in the fader (this and the previous are included in
-  //     |extra_delay_frames_|).
-  //   * Queued data in |queue_|.
+  //   * Data in the audio clock simulator.
+  //   * Data buffered in the fader.
   //   * Data in the rate shifter, if any.
-  double extra_delay_frames = extra_delay_frames_ +
-                              queued_frames_ / playback_rate_ +
-                              audio_clock_simulator_.DelayFrames();
-  if (rate_shifter_) {
-    double rate_shifter_delay =
-        static_cast<double>(rate_shifter_input_frames_) / playback_rate_ -
-        rate_shifter_output_frames_;
-    extra_delay_frames += rate_shifter_delay;
-  }
-  if (skip_next_fill_for_rate_change_) {
-    // If a playback rate change happened since the last mixer fill request, we
-    // will fill the next mixer request with the data buffered in the fader
-    // (if any), which will be faded out, and the rest of the request will be
-    // filled with zeros. Add the number of zero frames that will be added to
-    // the next playback timestamp.
-    extra_delay_frames +=
-        std::max(0, mixer_read_size_ - fader_.buffered_frames());
-  }
+  //   * Queued data in |queue_|.
+  double extra_delay_frames =
+      mixer_read_size_ + audio_clock_simulator_.DelayFrames() +
+      fader_.buffered_frames() + rate_shifter_.BufferedFrames() +
+      (queued_frames_ / playback_rate_);
 
   int64_t mixer_timestamp = mixer_rendering_delay_.timestamp_microseconds +
                             mixer_rendering_delay_.delay_microseconds;
@@ -797,7 +754,6 @@ int MixerInputConnection::FillAudioPlaybackFrames(
   int filled = 0;
   bool queued_more_data = false;
   bool signal_eos = false;
-  bool underrun = false;
   bool remove_self = false;
   {
     base::AutoLock lock(lock_);
@@ -808,27 +764,6 @@ int MixerInputConnection::FillAudioPlaybackFrames(
     if (!started_ &&
         (state_ == State::kNormalPlayback || state_ == State::kGotEos)) {
       CheckAndStartPlaybackIfNecessary(num_frames, playback_absolute_timestamp);
-    }
-
-    bool can_complete_fill = true;
-    if (started_ && !paused_) {
-      can_complete_fill = PrepareDataForFill(num_frames);
-    }
-
-    // In normal playback, don't pass data to the fader if we can't satisfy the
-    // full request. This will allow us to buffer up more data so we can fully
-    // fade in.
-    if (state_ == State::kNormalPlayback && !can_complete_fill) {
-      AUDIO_LOG_IF(INFO, !zero_fader_frames_) << "Stream underrun for " << this;
-      zero_fader_frames_ = true;
-      underrun = true;
-    } else {
-      AUDIO_LOG_IF(INFO, started_ && zero_fader_frames_)
-          << "Stream underrun recovered for " << this;
-      zero_fader_frames_ = false;
-      if (!skip_next_fill_for_rate_change_) {
-        waiting_for_rate_shifter_fill_ = false;
-      }
     }
 
     DCHECK_GE(remaining_silence_frames_, 0);
@@ -852,10 +787,8 @@ int MixerInputConnection::FillAudioPlaybackFrames(
     }
     filled += audio_clock_simulator_.FillFrames(
         num_frames, playback_absolute_timestamp, channels);
-    skip_next_fill_for_rate_change_ = false;
 
     mixer_rendering_delay_ = rendering_delay;
-    extra_delay_frames_ = mixer_read_size_ + fader_.buffered_frames();
 
     // See if we can accept more data into the queue.
     if (pending_data_ &&
@@ -886,9 +819,6 @@ int MixerInputConnection::FillAudioPlaybackFrames(
   if (signal_eos) {
     io_task_runner_->PostTask(FROM_HERE, eos_task_);
   }
-  if (underrun) {
-    io_task_runner_->PostTask(FROM_HERE, post_stream_underrun_task_);
-  }
 
   if (remove_self) {
     mixer_->RemoveInput(this);
@@ -897,93 +827,25 @@ int MixerInputConnection::FillAudioPlaybackFrames(
   return filled;
 }
 
-bool MixerInputConnection::PrepareDataForFill(int num_frames) {
-  int needed_by_fader = fader_.FramesNeededFromSource(num_frames);
-  if (!rate_shifter_) {
-    return (queued_frames_ >= needed_by_fader);
-  }
-  return FillRateShifted(needed_by_fader);
-}
-
 int MixerInputConnection::FillFrames(int num_frames,
                                      int64_t playout_timestamp,
                                      float* const* channels) {
-  if (zero_fader_frames_ || !started_ || paused_ || state_ == State::kRemoved ||
-      skip_next_fill_for_rate_change_ || num_frames == 0) {
+  if (!started_ || paused_ || state_ == State::kRemoved || num_frames == 0) {
     return 0;
   }
 
-  if (!rate_shifter_) {
-    return FillAudio(num_frames, channels);
+  int filled = FillAudio(num_frames, channels);
+  if (filled != num_frames) {
+    if (!in_underrun_) {
+      AUDIO_LOG(INFO) << "Stream underrun for " << this;
+      in_underrun_ = true;
+      io_task_runner_->PostTask(FROM_HERE, post_stream_underrun_task_);
+    }
+  } else if (in_underrun_) {
+    AUDIO_LOG(INFO) << "Stream underrun recovered for " << this;
+    in_underrun_ = false;
   }
-
-  int filled = std::min(num_frames, rate_shifted_offset_);
-  for (int c = 0; c < num_channels_; ++c) {
-    float* rate_shifted = rate_shifter_output_->channel(c);
-    std::copy_n(rate_shifted, filled, channels[c]);
-    std::copy(rate_shifted + filled, rate_shifted + rate_shifted_offset_,
-              rate_shifted);
-  }
-  rate_shifted_offset_ -= filled;
-
   return filled;
-}
-
-bool MixerInputConnection::FillRateShifted(int needed_frames) {
-  DCHECK(rate_shifter_output_);
-  DCHECK(rate_shifter_);
-  if (rate_shifted_offset_ >= needed_frames) {
-    return true;
-  }
-
-  if (rate_shifter_output_->frames() < needed_frames) {
-    AUDIO_LOG(WARNING) << "Rate shifter output is too small; "
-                       << rate_shifter_output_->frames() << " < "
-                       << needed_frames;
-    auto output = ::media::AudioBus::Create(num_channels_, needed_frames);
-    rate_shifter_output_->CopyPartialFramesTo(0, rate_shifted_offset_, 0,
-                                              output.get());
-    rate_shifter_output_ = std::move(output);
-  }
-
-  int filled = rate_shifter_->FillBuffer(
-      rate_shifter_output_.get(), rate_shifted_offset_,
-      needed_frames - rate_shifted_offset_, playback_rate_);
-  rate_shifter_output_frames_ += filled;
-  rate_shifted_offset_ += filled;
-
-  while (rate_shifted_offset_ < needed_frames) {
-    // Get more data and queue it in the rate shifter.
-    auto buffer = ::media::AudioBuffer::CreateBuffer(
-        ::media::SampleFormat::kSampleFormatPlanarF32, channel_layout_,
-        num_channels_, input_samples_per_second_, algorithm_fill_size_,
-        audio_buffer_pool_);
-    int new_fill = FillAudio(
-        algorithm_fill_size_,
-        const_cast<float**>(
-            reinterpret_cast<float* const*>(buffer->channel_data().data())));
-    if (new_fill == 0) {
-      break;
-    }
-    buffer->TrimEnd(algorithm_fill_size_ - new_fill);
-
-    rate_shifter_->EnqueueBuffer(std::move(buffer));
-    rate_shifter_input_frames_ += new_fill;
-
-    // Now see if the rate shifter can produce more output.
-    filled = rate_shifter_->FillBuffer(
-        rate_shifter_output_.get(), rate_shifted_offset_,
-        needed_frames - rate_shifted_offset_, playback_rate_);
-    rate_shifter_output_frames_ += filled;
-    rate_shifted_offset_ += filled;
-
-    if (new_fill != algorithm_fill_size_) {
-      // Ran out of queued data.
-      break;
-    }
-  }
-
-  return (rate_shifted_offset_ >= needed_frames);
 }
 
 int MixerInputConnection::FillAudio(int num_frames, float* const* channels) {
