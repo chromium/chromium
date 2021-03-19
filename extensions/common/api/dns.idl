@@ -20,8 +20,8 @@ namespace dns {
     // Resolves the given hostname or IP address literal.
     // |hostname| : The hostname to resolve.
     // |callback| : Called when the resolution operation completes.
-    static void resolve(DOMString hostname,
-                        ResolveCallback callback);
+    [supportsPromises] static void resolve(DOMString hostname,
+                                           ResolveCallback callback);
   };
 
 };
