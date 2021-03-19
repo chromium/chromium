@@ -205,9 +205,13 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest, EmbedWithInitialCrossOriginFrame) {
 // potential race between the cross-origin renderer initiated navigation and
 // the navigation to "about:blank" started from the browser.
 //
-// Disabled due to flakiness: https://crbug.com/1002788.
-IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest,
-                       DISABLED_NavigationRaceFromEmbedder) {
+// Disabled on Linux due to flakiness: https://crbug.com/1002788.
+#if defined(OS_LINUX)
+#define MAYBE_NavigationRaceFromEmbedder DISABLED_NavigationRaceFromEmbedder
+#else
+#define MAYBE_NavigationRaceFromEmbedder NavigationRaceFromEmbedder
+#endif
+IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest, MAYBE_NavigationRaceFromEmbedder) {
   const std::string kTestName = "test_navigation_race_embedder";
   auto cross_origin_url =
       embedded_test_server()->GetURL("b.com", "/test_page.html").spec();
@@ -229,8 +233,9 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest,
 // other cross-origin content. On the embedder side, when the first page loads,
 // the <object> loads some text/csv content to create a MimeHandlerViewGuest.
 // The test passes if MHV loads.
+// TODO(crbug.com/1182355): Disabled due to flakes.
 IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest,
-                       NavigationRaceFromCrossProcessRenderer) {
+                       DISABLED_NavigationRaceFromCrossProcessRenderer) {
   const std::string kTestName = "test_navigation_race_cross_origin";
   auto cross_origin_url =
       embedded_test_server()->GetURL("b.com", "/test_page.html").spec();
