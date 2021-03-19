@@ -37,8 +37,8 @@ def main():
             inputs[input_file] = f.read()
 
     # Use file extensions to distinguish HTML from config inputs.
-    htmls = filter(lambda name: name.endswith(".html"), inputs)
-    configs = filter(lambda name: name.endswith(".txt"), inputs)
+    htmls = [name for name in inputs if name.endswith(".html")]
+    configs = [name for name in inputs if name.endswith(".txt")]
 
     # Generate each combo of html + config, and write it into --outdir.
     for html in htmls:
