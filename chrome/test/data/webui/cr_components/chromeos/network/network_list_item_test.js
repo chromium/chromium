@@ -41,9 +41,21 @@ suite('NetworkListItemTest', function() {
     Polymer.dom.flush();
   });
 
-  function initProperties(properties) {
-    assertTrue(!!properties.guid);
-    mojoApi_.setManagedPropertiesForTest(properties);
+  function initCellularNetwork(guid, name, iccid, eid, homeProviderName) {
+    const managedProperties = OncMojo.getDefaultManagedProperties(
+        chromeos.networkConfig.mojom.NetworkType.kCellular, guid, name);
+    managedProperties.typeProperties.cellular.homeProvider = {
+      name: homeProviderName
+    };
+    managedProperties.typeProperties.cellular.eid = eid;
+    mojoApi_.setManagedPropertiesForTest(managedProperties);
+
+    const networkState =
+        OncMojo.getDefaultNetworkState(mojom.NetworkType.kCellular, name);
+    networkState.typeState.cellular.iccid = iccid;
+    networkState.typeState.cellular.eid = eid;
+    mojoApi_.addNetworksForTest([networkState]);
+    return networkState;
   }
 
   function flushAsync() {
@@ -75,17 +87,10 @@ suite('NetworkListItemTest', function() {
     let providerName = listItem.$$('#subtitle');
     assertFalse(!!providerName.textContent.trim());
 
-    const cellular = OncMojo.getDefaultManagedProperties(
-        chromeos.networkConfig.mojom.NetworkType.kCellular, 'cellular1_guid',
-        '');
-    cellular.name = OncMojo.createManagedString('cellular1');
-    cellular.typeProperties.cellular.homeProvider = {name: 'Verizon Wireless'};
-    cellular.typeProperties.cellular.eid = '10000';
-    initProperties(cellular);
-
-    listItem.item = OncMojo.getDefaultNetworkState(
-        mojom.NetworkType.kCellular, 'cellular1');
-
+    const networkState = initCellularNetwork(
+        'cellular1_guid', 'cellular1', '11111111111111111111', '123456',
+        'Verizon Wireless');
+    listItem.item = networkState;
     await flushAsync();
 
     providerName = listItem.$$('#subtitle');
@@ -158,4 +163,40 @@ suite('NetworkListItemTest', function() {
         let spinner = listItem.$$('paper-spinner-lite');
         assertTrue(!!spinner);
       });
+
+  test('Only active SIMs should show scanning subtext', async () => {
+    const kTestIccid1 = '00000000000000000000';
+    const kTestIccid2 = '11111111111111111111';
+    const kTestEid = '124567890';
+    const networkStateText = listItem.$$('#networkStateText');
+
+    mojoApi_.setDeviceStateForTest({
+      type: mojom.NetworkType.kCellular,
+      deviceState: mojom.DeviceStateType.kEnabled,
+      simInfos: [
+        {slot_id: 1, eid: kTestEid, iccid: kTestIccid1, isPrimary: false},
+        {slot_id: 2, eid: '', iccid: kTestIccid2, isPrimary: true}
+      ],
+      scanning: true
+    });
+    const cellularNetwork1 = initCellularNetwork(
+        'cellular_1_guid', 'cellular_1', kTestIccid1, kTestEid, '');
+    const cellularNetwork2 = initCellularNetwork(
+        'cellular_2_guid', 'cellular_2', kTestIccid2, '', '');
+
+    // Assert that state text is hidden for inactive SIM.
+    listItem.deviceState =
+        mojoApi_.getDeviceStateForTest(mojom.NetworkType.kCellular);
+    listItem.item = cellularNetwork1;
+    await flushAsync();
+    assertTrue(networkStateText.hidden);
+
+    // Assert that scanning subtext is shown for active SIM.
+    listItem.item = cellularNetwork2;
+    await flushAsync();
+    assertFalse(networkStateText.hidden);
+    assertEquals(
+        networkStateText.textContent.trim(),
+        listItem.i18n('networkListItemScanning'));
+  });
 });

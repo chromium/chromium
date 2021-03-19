@@ -426,7 +426,7 @@ Polymer({
       if (this.shouldShowNotAvailableText_()) {
         return this.i18n('networkListItemNotAvailable');
       }
-      if (this.deviceState && this.deviceState.scanning) {
+      if (this.isCellularNetworkScanning_()) {
         return this.i18n('networkListItemScanning');
       }
       if (this.networkState.typeState.cellular.simLocked) {
@@ -598,4 +598,25 @@ Polymer({
         this.item.customItemType ===
         NetworkList.CustomItemType.ESIM_INSTALLING_PROFILE;
   },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isCellularNetworkScanning_() {
+    if (!this.deviceState || !this.deviceState.scanning) {
+      return false;
+    }
+
+    const iccid = this.networkState && this.networkState.typeState.cellular &&
+        this.networkState.typeState.cellular.iccid;
+    if (!iccid) {
+      return false;
+    }
+
+    // Scanning state should be shown only for the active SIM.
+    return this.deviceState.simInfos.some(simInfo => {
+      return simInfo.iccid === iccid && simInfo.isPrimary;
+    });
+  }
 });

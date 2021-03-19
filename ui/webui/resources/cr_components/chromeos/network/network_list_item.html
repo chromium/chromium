@@ -122,10 +122,10 @@
           </div>
           <div id="networkStateText"
               class="cr-secondary-text"
-              hidden$="[[!isStateTextVisible_(networkState)]]"
-              active$="[[isStateTextActive_(networkState,
+              hidden$="[[!isStateTextVisible_(networkState.*)]]"
+              active$="[[isStateTextActive_(networkState.*,
                            activationUnavailable)]]">
-            [[getNetworkStateText_(networkState, activationUnavailable)]]
+            [[getNetworkStateText_(networkState.*, activationUnavailable)]]
           </div>
         </div>
         <template is="dom-if" if="[[isPolicySource(networkState.source)]]">
