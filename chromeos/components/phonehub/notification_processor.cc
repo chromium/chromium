@@ -219,7 +219,11 @@ void NotificationProcessor::OnDecodedBitmapReady(
     const SkBitmap& decoded_bitmap) {
   gfx::ImageSkia image_skia =
       gfx::ImageSkia::CreateFrom1xBitmap(decoded_bitmap);
-  image_skia.MakeThreadSafe();
+
+  // If |image_skia| is null, indicating that the data decoder failed to decode
+  // the image, the image will be empty, and cannot be made thread safe.
+  if (!image_skia.isNull())
+    image_skia.MakeThreadSafe();
 
   auto it = id_to_images_map_.find(request.notification_id);
   if (it == id_to_images_map_.end()) {

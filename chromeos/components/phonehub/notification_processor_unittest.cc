@@ -75,14 +75,14 @@ class NotificationProcessorTest : public testing::Test {
       return decode_image_callbacks_.size();
     }
 
-    void RunNextCallback() {
-      std::move(decode_image_callbacks_.front()).Run(TestBitmap());
+    void RunNextCallback(SkBitmap bitmap) {
+      std::move(decode_image_callbacks_.front()).Run(bitmap);
       decode_image_callbacks_.pop();
     }
 
     void RunAllCallbacks() {
       while (!decode_image_callbacks_.empty())
-        RunNextCallback();
+        RunNextCallback(TestBitmap());
     }
 
     std::queue<DecodeImageCallback> decode_image_callbacks_;
@@ -162,6 +162,23 @@ class NotificationProcessorTest : public testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
+
+TEST_F(NotificationProcessorTest, FailedToDecodeImage) {
+  std::vector<proto::Notification> first_set_of_notifications;
+
+  // The icon should be an empty image as the decoder failed to decode the
+  // image.
+  first_set_of_notifications.emplace_back(CreateNewInlineReplyableNotification(
+      kNotificationIdA, kInlineReplyIdA, kIconDataA));
+  notification_processor()->AddNotifications(first_set_of_notifications);
+  image_decoder_delegate()->RunNextCallback(SkBitmap());
+
+  const Notification* notification =
+      fake_notification_manager()->GetNotification(kNotificationIdA);
+  EXPECT_TRUE(notification->app_metadata().icon.IsEmpty());
+  EXPECT_FALSE(notification->shared_image().has_value());
+  EXPECT_FALSE(notification->contact_image().has_value());
+}
 
 TEST_F(NotificationProcessorTest, ImageFieldPopulatedCorrectly) {
   std::vector<proto::Notification> first_set_of_notifications;
@@ -300,18 +317,18 @@ TEST_F(NotificationProcessorTest, AddRemoveWithRace) {
   // notification edit request to be executed.
   EXPECT_EQ(3u, image_decoder_delegate()->NumberOfDecodeImageCallbacks());
   EXPECT_EQ(3u, NumPendingRequests());
-  image_decoder_delegate()->RunNextCallback();
+  image_decoder_delegate()->RunNextCallback(TestBitmap());
 
   EXPECT_EQ(2u, image_decoder_delegate()->NumberOfDecodeImageCallbacks());
   EXPECT_EQ(3u, NumPendingRequests());
-  image_decoder_delegate()->RunNextCallback();
+  image_decoder_delegate()->RunNextCallback(TestBitmap());
 
   EXPECT_EQ(1u, image_decoder_delegate()->NumberOfDecodeImageCallbacks());
   EXPECT_EQ(3u, NumPendingRequests());
 
   // The scheduled remove callback will occur, then subsequently the add
   // notification with 1 image.
-  image_decoder_delegate()->RunNextCallback();
+  image_decoder_delegate()->RunNextCallback(TestBitmap());
   EXPECT_EQ(1u, NumPendingRequests());
   EXPECT_EQ(1u, image_decoder_delegate()->NumberOfDecodeImageCallbacks());
 
