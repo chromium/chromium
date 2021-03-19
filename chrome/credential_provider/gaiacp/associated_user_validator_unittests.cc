@@ -78,12 +78,16 @@ class AssociatedUserValidatorTest : public ::testing::Test {
     return &fake_internet_checker_;
   }
 
+  void CreateDefaultCloudPoliciesForUser(const std::wstring& sid);
+
  private:
   FakeOSUserManager fake_os_user_manager_;
   FakeWinHttpUrlFetcherFactory fake_http_url_fetcher_factory_;
   registry_util::RegistryOverrideManager registry_override_;
   FakeInternetAvailabilityChecker fake_internet_checker_;
   FakeScopedLsaPolicyFactory fake_scoped_lsa_factory_;
+  std::unique_ptr<FakeUserPoliciesManager> fake_user_policies_manager_;
+  std::unique_ptr<FakeTokenGenerator> fake_token_generator_;
 };
 
 AssociatedUserValidatorTest::AssociatedUserValidatorTest() = default;
@@ -93,6 +97,20 @@ void AssociatedUserValidatorTest::SetUp() {
   InitializeRegistryOverrideForTesting(&registry_override_);
   ScopedLsaPolicy::SetCreatorForTesting(
       fake_scoped_lsa_factory_.GetCreatorCallback());
+}
+
+void AssociatedUserValidatorTest::CreateDefaultCloudPoliciesForUser(
+    const std::wstring& sid) {
+  if (!fake_user_policies_manager_)
+    fake_user_policies_manager_.reset(new FakeUserPoliciesManager());
+  if (!fake_token_generator_)
+    fake_token_generator_.reset(new FakeTokenGenerator());
+
+  // Ensure user has policies and valid GCPW token.
+  fake_user_policies_manager_->SetUserPolicyStaleOrMissing(sid, false);
+  std::string dm_token = base::GenerateGUID();
+  fake_token_generator_->SetTokensForTesting({dm_token});
+  EXPECT_EQ(S_OK, GenerateGCPWDmToken(sid));
 }
 
 TEST_F(AssociatedUserValidatorTest, CleanupStaleUsers) {
@@ -178,6 +196,9 @@ TEST_F(AssociatedUserValidatorTest, ValidTokenHandle) {
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       L"username", L"password", L"fullname", L"comment",
                       L"gaia-id", std::wstring(), &sid));
+
+  // Ensure user has policies and valid GCPW token.
+  CreateDefaultCloudPoliciesForUser((BSTR)sid);
 
   // Valid token fetch result.
   fake_http_url_fetcher_factory()->SetFakeResponse(
@@ -281,6 +302,9 @@ TEST_F(AssociatedUserValidatorTest, InvalidTokenHandleTimeout) {
                       L"username", L"password", L"fullname", L"comment",
                       L"gaia-id", std::wstring(), &sid));
 
+  // Ensure user has policies and valid GCPW token.
+  CreateDefaultCloudPoliciesForUser((BSTR)sid);
+
   base::WaitableEvent http_fetcher_event;
   // Invalid token fetch result.
   fake_http_url_fetcher_factory()->SetFakeResponse(
@@ -303,6 +327,9 @@ TEST_F(AssociatedUserValidatorTest, TokenHandleValidityStillFresh) {
   ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                       L"username", L"password", L"fullname", L"comment",
                       L"gaia-id", std::wstring(), &sid));
+
+  // Ensure user has policies and valid GCPW token.
+  CreateDefaultCloudPoliciesForUser((BSTR)sid);
 
   // Valid token fetch result.
   fake_http_url_fetcher_factory()->SetFakeResponse(
@@ -836,6 +863,9 @@ TEST_P(AssociatedUserValidatorMultipleUploadDeviceFailuresTest,
       policy->StorePrivateData(store_key.c_str(), L"encrypted_data")));
   EXPECT_TRUE(policy->PrivateDataExists(store_key.c_str()));
 
+  // Ensure user has policies and valid GCPW token.
+  CreateDefaultCloudPoliciesForUser((BSTR)sid);
+
   // Set successful upload status and number of failures.
   ASSERT_EQ(S_OK, SetUserProperty((BSTR)sid, kRegDeviceDetailsUploadStatus,
                                   is_upload_device_details_failed ? 0 : 1));
@@ -881,6 +911,9 @@ TEST_F(AssociatedUserValidatorTest, ValidTokenHandle_Refresh) {
                       L"username", L"password", L"fullname", L"comment",
                       L"gaia-id", std::wstring(), &sid));
   ASSERT_EQ(S_OK, SetUserProperty(OLE2W(sid), kUserTokenHandle, L"th"));
+
+  // Ensure user has policies and valid GCPW token.
+  CreateDefaultCloudPoliciesForUser((BSTR)sid);
 
   // Valid token fetch result.
   fake_http_url_fetcher_factory()->SetFakeResponse(
@@ -955,6 +988,9 @@ TEST_F(AssociatedUserValidatorTest, ValidTokenHandle_PresentPasswordLsaData) {
   EXPECT_TRUE(SUCCEEDED(
       policy->StorePrivateData(store_key.c_str(), L"encrypted_data")));
   EXPECT_TRUE(policy->PrivateDataExists(store_key.c_str()));
+
+  // Ensure user has policies and valid GCPW token.
+  CreateDefaultCloudPoliciesForUser((BSTR)sid);
 
   // Valid token fetch result.
   fake_http_url_fetcher_factory()->SetFakeResponse(
