@@ -19,7 +19,6 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 
-import androidx.annotation.DimenRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -92,9 +91,6 @@ class BottomSheet extends FrameLayout
 
     /** The minimum distance between half and full states to allow the half state. */
     private final float mMinHalfFullDistance;
-
-    /** The height of the shadow that sits above the toolbar. */
-    private final int mToolbarShadowHeight;
 
     /** The view that contains the sheet. */
     private ViewGroup mSheetContainer;
@@ -174,11 +170,32 @@ class BottomSheet extends FrameLayout
     private AccessibilityUtil mAccessibilityUtil;
 
     /**
-     * This is the height that the sheet is capable of scrolling through. It extends past the top of
-     * the screen so that the opaque part of the sheet reaches the top of the screen as the shadow
-     * scrolls off.
+     * A view used to render a shadow behind the sheet and extends outside the bounds of its parent
+     * view.
      */
-    private int mScrollableHeight;
+    public static class ShadowLayerView extends View {
+        /** The length of the shadow in any direction. */
+        private int mShadowLength;
+
+        /** Constructor to inflate from XML. */
+        public ShadowLayerView(Context context, AttributeSet atts) {
+            super(context, atts);
+            mShadowLength = context.getResources().getDimensionPixelSize(
+                    R.dimen.bottom_sheet_shadow_length);
+            setTranslationX(-mShadowLength);
+            setTranslationY(-mShadowLength);
+        }
+
+        @Override
+        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+            super.onMeasure(MeasureSpec.makeMeasureSpec(
+                                    MeasureSpec.getSize(widthMeasureSpec) + 2 * mShadowLength,
+                                    MeasureSpec.EXACTLY),
+                    MeasureSpec.makeMeasureSpec(
+                            MeasureSpec.getSize(heightMeasureSpec) + mShadowLength,
+                            MeasureSpec.EXACTLY));
+        }
+    }
 
     /**
      * The instance passed to the current content that is allowed to
@@ -216,7 +233,6 @@ class BottomSheet extends FrameLayout
 
         mMinHalfFullDistance =
                 getResources().getDimensionPixelSize(R.dimen.bottom_sheet_min_full_half_distance);
-        mToolbarShadowHeight = getResources().getDimensionPixelOffset(getTopShadowResourceId());
 
         mGestureDetector = new BottomSheetSwipeDetector(context, this);
         mIsTouchEnabled = true;
@@ -225,15 +241,6 @@ class BottomSheet extends FrameLayout
     /** @param reporter A means of reporting an exception without crashing. */
     static void setExceptionReporter(Callback<Throwable> reporter) {
         sExceptionReporter = reporter;
-    }
-
-    /** @return The dimen describing the height of the shadow above the bottom sheet. */
-    static @DimenRes int getTopShadowResourceId() {
-        return R.dimen.bottom_sheet_toolbar_shadow_height;
-    }
-
-    static @DimenRes int getShadowTopOffsetResourceId() {
-        return R.dimen.bottom_sheet_shadow_top_offset;
     }
 
     /**
@@ -295,15 +302,6 @@ class BottomSheet extends FrameLayout
         return true;
     }
 
-    @Override
-    public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-        assert heightSize != 0;
-        int height = heightSize + mToolbarShadowHeight;
-        int mode = isFullHeightWrapContent() ? MeasureSpec.AT_MOST : MeasureSpec.EXACTLY;
-        super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(height, mode));
-    }
-
     /**
      * Adds layout change listeners to the views that the bottom sheet depends on. Namely the
      * heights of the root view and control container are important as they are used in many of the
@@ -316,20 +314,15 @@ class BottomSheet extends FrameLayout
 
         mToolbarHolder =
                 (TouchRestrictingFrameLayout) findViewById(R.id.bottom_sheet_toolbar_container);
-        mToolbarHolder.setBackgroundResource(R.drawable.top_round);
 
         mDefaultToolbarView = mToolbarHolder.findViewById(R.id.bottom_sheet_toolbar);
-
-        getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
 
         mBottomSheetContentContainer =
                 (TouchRestrictingFrameLayout) findViewById(R.id.bottom_sheet_content);
         mBottomSheetContentContainer.setBottomSheet(this);
-        mBottomSheetContentContainer.setBackgroundResource(R.drawable.top_round);
 
         mContainerWidth = root.getWidth();
         mContainerHeight = root.getHeight();
-        mScrollableHeight = mContainerHeight + mToolbarShadowHeight;
 
         mContentWidth = mContainerWidth;
 
@@ -346,7 +339,6 @@ class BottomSheet extends FrameLayout
                 int previousHeight = mContainerHeight;
                 mContainerWidth = right - left;
                 mContainerHeight = bottom - top;
-                mScrollableHeight = mContainerHeight + mToolbarShadowHeight;
 
                 if (previousWidth != mContainerWidth || previousHeight != mContainerHeight) {
                     if (mCurrentState == SheetState.HALF && !isHalfStateEnabled()) {
@@ -448,17 +440,17 @@ class BottomSheet extends FrameLayout
 
     @Override
     public float getMinOffsetPx() {
-        return (swipeToDismissEnabled() ? getHiddenRatio() : getPeekRatio()) * mScrollableHeight;
+        return (swipeToDismissEnabled() ? getHiddenRatio() : getPeekRatio()) * mContainerHeight;
     }
 
     /**
      * Test whether a motion event is in the area of the sheet considered to be usable (i.e. not
      * on the shadow shown above the sheet or some other decorative part of the view).
-     * @param e The motion event relative to the bottom sheet view.
+     * @param event The motion event relative to the bottom sheet view.
      * @return Whether the event is considered to be in the usable area of the sheet.
      */
     public boolean isTouchEventInUsableArea(MotionEvent event) {
-        return event.getY() > getToolbarShadowHeight();
+        return event.getY() > 0;
     }
 
     @Override
@@ -512,7 +504,7 @@ class BottomSheet extends FrameLayout
 
     @Override
     public float getMaxOffsetPx() {
-        return getFullRatio() * mScrollableHeight;
+        return getFullRatio() * mContainerHeight;
     }
 
     /**
@@ -671,7 +663,7 @@ class BottomSheet extends FrameLayout
             return 0;
         }
 
-        return getPeekRatio() * mScrollableHeight * mBrowserControlsHiddenRatio;
+        return getPeekRatio() * mContainerHeight * mBrowserControlsHiddenRatio;
     }
 
     /**
@@ -790,7 +782,7 @@ class BottomSheet extends FrameLayout
         if (mSheetContent != null && mSheetContent.getPeekHeight() != HeightMode.DEFAULT) {
             assert mSheetContent.getPeekHeight()
                     != HeightMode.WRAP_CONTENT : "The peek mode can't wrap content.";
-            float ratio = mSheetContent.getPeekHeight() / (float) mScrollableHeight;
+            float ratio = mSheetContent.getPeekHeight() / (float) mContainerHeight;
             assert ratio > 0 && ratio <= 1 : "Custom peek ratios must be in the range of (0, 1].";
             return ratio;
         }
@@ -814,7 +806,7 @@ class BottomSheet extends FrameLayout
                 }
             }
         }
-        return (toolbarHeight + mToolbarShadowHeight) / (float) mScrollableHeight;
+        return toolbarHeight / (float) mContainerHeight;
     }
 
     private View getToolbarView() {
@@ -850,9 +842,7 @@ class BottomSheet extends FrameLayout
 
         if (isFullHeightWrapContent()) {
             ensureContentDesiredHeightIsComputed();
-            float heightPx =
-                    Math.min(getMaxContentHeight(), mContentDesiredHeight) + mToolbarShadowHeight;
-            return heightPx / mScrollableHeight;
+            return Math.min(getMaxContentHeight(), mContentDesiredHeight) / mContainerHeight;
         }
 
         return customFullRatio == HeightMode.DEFAULT ? 1 : customFullRatio;
@@ -1059,7 +1049,7 @@ class BottomSheet extends FrameLayout
             ensureContentDesiredHeightIsComputed();
         }
 
-        return getRatioForState(state) * mScrollableHeight;
+        return getRatioForState(state) * mContainerHeight;
     }
 
     /** @return The max possible height that the content can be. */
@@ -1237,15 +1227,8 @@ class BottomSheet extends FrameLayout
         if (sIsSmallScreenForTesting != null) return sIsSmallScreenForTesting;
 
         // A small screen is defined by there being less than 160dp between half and full states.
-        float fullToHalfDiff = (1 - HALF_HEIGHT_RATIO) * mScrollableHeight;
+        float fullToHalfDiff = (1 - HALF_HEIGHT_RATIO) * mContainerHeight;
         return fullToHalfDiff < mMinHalfFullDistance;
-    }
-
-    /**
-     * @return The height of the toolbar shadow.
-     */
-    public int getToolbarShadowHeight() {
-        return mToolbarShadowHeight;
     }
 
     /**

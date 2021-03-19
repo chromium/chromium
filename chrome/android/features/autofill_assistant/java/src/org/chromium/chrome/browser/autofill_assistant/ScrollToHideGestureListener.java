@@ -170,7 +170,7 @@ public class ScrollToHideGestureListener implements GestureStateListenerWithScro
     }
 
     private int getMaxOffsetPx() {
-        return mContent.getContentView().getHeight() + mBottomSheetController.getTopShadowHeight();
+        return mContent.getContentView().getHeight();
     }
 
     private void resetScrollingState() {

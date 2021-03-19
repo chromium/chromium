@@ -38,6 +38,12 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     /** A handle to the {@link BottomSheet} that this class controls. */
     private BottomSheet mBottomSheet;
 
+    /**
+     * The container that the sheet exists in. This is one layer inside of the root coordinator view
+     * to support the view's shadow.
+     */
+    private ViewGroup mBottomSheetContainer;
+
     /** A queue for content that is waiting to be shown in the {@link BottomSheet}. */
     private PriorityQueue<BottomSheetContent> mContentQueue;
 
@@ -105,7 +111,13 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
      */
     private void initializeSheet(Callback<View> initializedCallback, Window window,
             KeyboardVisibilityDelegate keyboardDelegate, Supplier<ViewGroup> root) {
-        LayoutInflater.from(root.get().getContext()).inflate(R.layout.bottom_sheet, root.get());
+        mBottomSheetContainer = root.get();
+
+        // Mark the container is gone until we actually need it.
+        mBottomSheetContainer.setVisibility(View.GONE);
+
+        LayoutInflater.from(root.get().getContext())
+                .inflate(R.layout.bottom_sheet, mBottomSheetContainer);
         mBottomSheet = (BottomSheet) root.get().findViewById(R.id.bottom_sheet);
         initializedCallback.onResult(mBottomSheet);
 
@@ -190,6 +202,14 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
                 mIsSuppressingCurrentContent = false;
                 mIsProcessingHideRequest = false;
                 showNextContent(true);
+            }
+
+            @Override
+            public void onSheetContentChanged(BottomSheetContent newContent) {
+                if (newContent != null) return;
+
+                // If there are no more things to be shown, the container can avoid layouts.
+                mBottomSheetContainer.setVisibility(View.GONE);
             }
         });
 
@@ -287,11 +307,6 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     @Override
     public int getContainerHeight() {
         return mBottomSheet != null ? (int) mBottomSheet.getSheetContainerHeight() : 0;
-    }
-
-    @Override
-    public int getTopShadowHeight() {
-        return mBottomSheet != null ? (int) mBottomSheet.getToolbarShadowHeight() : 0;
     }
 
     @Override
@@ -476,6 +491,9 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         if (mBottomSheet.getSheetState() != SheetState.HIDDEN) {
             throw new RuntimeException("Showing next content before sheet is hidden!");
         }
+
+        // Make sure the container is visible as it is set to "gone" when there is no content.
+        mBottomSheetContainer.setVisibility(View.VISIBLE);
 
         if (mContentQueue.isEmpty()) {
             mBottomSheet.showContent(null);

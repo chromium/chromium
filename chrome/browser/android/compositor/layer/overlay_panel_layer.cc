@@ -89,50 +89,38 @@ void OverlayPanelLayer::SetProperties(
   float bar_bottom = bar_top_y + bar_height;
 
   bool is_rtl = l10n_util::IsLayoutRtl();
-  bool is_new_layout = rounded_bar_top_resource_id_ != kInvalidResourceID;
 
   int content_top_y = bar_top_y;
   int content_height = bar_height;
-  int rounded_top_adjust = 0;
-  int rounded_shadow_top = 0;
+  int rounded_top_height = 0;
   gfx::Size rounded_bar_top_size;
   gfx::PointF rounded_bar_top_position;
 
   ui::NinePatchResource* rounded_bar_top_resource = nullptr;
-  if (is_new_layout) {
-    content_top_y += bar_margin_top;
-    content_height -= bar_margin_top;
+  content_top_y += bar_margin_top;
+  content_height -= bar_margin_top;
 
-    rounded_bar_top_resource =
-        ui::NinePatchResource::From(resource_manager_->GetResource(
-            ui::ANDROID_RESOURCE_TYPE_STATIC, rounded_bar_top_resource_id_));
+  rounded_bar_top_resource =
+      ui::NinePatchResource::From(resource_manager_->GetStaticResourceWithTint(
+          rounded_bar_top_resource_id_, bar_background_color));
 
-    rounded_bar_top_size =
-        gfx::Size(rounded_bar_top_resource->size().width() -
-                      rounded_bar_top_resource->padding().width(),
-                  rounded_bar_top_resource->size().height() -
-                      rounded_bar_top_resource->padding().height());
+  rounded_bar_top_size = gfx::Size(rounded_bar_top_resource->size().width(),
+                                   rounded_bar_top_resource->size().height());
 
-    // TODO(donnd): fix correctly.
-    const int vertical_fudge_factor = 2;  // Create an overlap to avoid a seam.
-    rounded_top_adjust = rounded_bar_top_size.height() - vertical_fudge_factor;
-    // This is the position of the side-shadows vertically.
-    // TODO(donnd): fix this so it's pixel perfect.
-    rounded_shadow_top = rounded_top_adjust;
+  // TODO(donnd): fix correctly.
+  const int vertical_fudge_factor = 2;  // Create an overlap to avoid a seam.
+  rounded_top_height = rounded_bar_top_resource->size().height();
 
-    rounded_bar_top_position =
-        gfx::PointF(-rounded_bar_top_resource->padding().x(),
-                    bar_top_y - rounded_top_adjust);
-  }
+  rounded_bar_top_position =
+      gfx::PointF(-rounded_bar_top_resource->padding().x(),
+                  bar_top_y + vertical_fudge_factor);
 
   // ---------------------------------------------------------------------------
   // Panel Shadow
   // ---------------------------------------------------------------------------
   if (panel_shadow_resource_id_ != kInvalidResourceID) {
     if (panel_shadow_->parent() != layer_) {
-      layer_->AddChild(panel_shadow_);
-      if (is_new_layout)
-        layer_->AddChild(panel_shadow_right_);
+      layer_->InsertChild(panel_shadow_, 0);
     }
     ui::NinePatchResource* panel_shadow_resource =
         ui::NinePatchResource::From(resource_manager_->GetResource(
@@ -140,83 +128,50 @@ void OverlayPanelLayer::SetProperties(
     DCHECK(panel_shadow_resource);
 
     gfx::Size shadow_res_size = panel_shadow_resource->size();
-    gfx::Rect shadow_res_padding = panel_shadow_resource->padding();
     panel_shadow_->SetUIResourceId(panel_shadow_resource->ui_resource()->id());
     panel_shadow_->SetAperture(panel_shadow_resource->aperture());
-    if (is_new_layout) {
-      DCHECK(rounded_bar_top_resource);
 
-      gfx::Size shadow_bounds(shadow_res_size.width(),
-                              panel_height + shadow_res_size.height());
-      panel_shadow_->SetBounds(shadow_bounds);
-      panel_shadow_->SetBorder(panel_shadow_resource->Border(shadow_bounds));
-      // Position the top of the side shadow to the match the top of the
-      // rounded_bar_top shadow (which is indicated by its top padding).
-      // TODO(donnd): revisit side-shadow asset and positioning as discussed
-      // in https://crbug.com/1005975.
-      gfx::PointF shadow_position(-shadow_res_padding.size().width(),
-                                  bar_top_y - rounded_shadow_top);
-      panel_shadow_->SetPosition(shadow_position);
+    DCHECK(rounded_bar_top_resource);
 
-      // Do the right hand side as a mirror of the left shadow.
-      panel_shadow_right_->SetUIResourceId(
-          panel_shadow_resource->ui_resource()->id());
-      panel_shadow_right_->SetAperture(panel_shadow_resource->aperture());
-      panel_shadow_right_->SetBounds(shadow_bounds);
-      panel_shadow_right_->SetBorder(
-          panel_shadow_resource->Border(shadow_bounds));
-      gfx::PointF right_shadow_position(
-          panel_width + shadow_res_padding.size().width(),
-          bar_top_y - rounded_shadow_top);
-      panel_shadow_right_->SetPosition(right_shadow_position);
+    int shadow_thickness = shadow_res_size.height() - rounded_top_height;
 
-      // Flip it from the left side to the right side.
-      gfx::Transform flip_right_transform;
-      flip_right_transform.RotateAboutYAxis(180.0);
-      panel_shadow_right_->SetTransform(flip_right_transform);
-    } else {
-      gfx::Size shadow_bounds(panel_width + shadow_res_size.width() -
-                                  shadow_res_padding.size().width(),
-                              panel_height + shadow_res_size.height() -
-                                  shadow_res_padding.size().height());
-      panel_shadow_->SetBounds(shadow_bounds);
-      panel_shadow_->SetBorder(panel_shadow_resource->Border(shadow_bounds));
-      gfx::PointF shadow_position(-shadow_res_padding.origin().x(),
-                                  -shadow_res_padding.origin().y());
-      panel_shadow_->SetPosition(shadow_position);
-    }
+    gfx::Size shadow_bounds(panel_width + (shadow_thickness * 2),
+                            panel_height + shadow_thickness);
+    panel_shadow_->SetBounds(shadow_bounds);
+    panel_shadow_->SetBorder(panel_shadow_resource->Border(shadow_bounds));
+    gfx::PointF shadow_position(-shadow_thickness,
+                                bar_top_y - shadow_thickness);
+    panel_shadow_->SetPosition(shadow_position);
   }
 
   // ---------------------------------------------------------------------------
   // Rounded Bar Top
   // ---------------------------------------------------------------------------
-  if (is_new_layout) {
-    DCHECK(rounded_bar_top_resource_id_ != kInvalidResourceID);
-    rounded_bar_top_->SetIsDrawable(true);
 
-    DCHECK(rounded_bar_top_resource);
+  DCHECK(rounded_bar_top_resource_id_ != kInvalidResourceID);
+  rounded_bar_top_->SetIsDrawable(true);
 
-    gfx::Size bounds(panel_width - rounded_bar_top_size.width(),
-                     rounded_bar_top_resource->size().height());
+  DCHECK(rounded_bar_top_resource);
 
-    rounded_bar_top_->SetUIResourceId(
-        rounded_bar_top_resource->ui_resource()->id());
-    rounded_bar_top_->SetBounds(bounds);
-    rounded_bar_top_->SetAperture(rounded_bar_top_resource->aperture());
-    rounded_bar_top_->SetBorder(rounded_bar_top_resource->Border(bounds));
-    rounded_bar_top_->SetPosition(rounded_bar_top_position);
-    rounded_bar_top_->SetOpacity(1.0f);
-  }
+  gfx::Size bounds(panel_width, rounded_bar_top_resource->size().height());
+
+  rounded_bar_top_->SetUIResourceId(
+      rounded_bar_top_resource->ui_resource()->id());
+  rounded_bar_top_->SetBounds(bounds);
+  rounded_bar_top_->SetAperture(rounded_bar_top_resource->aperture());
+  rounded_bar_top_->SetBorder(rounded_bar_top_resource->Border(bounds));
+  rounded_bar_top_->SetPosition(rounded_bar_top_position);
+  rounded_bar_top_->SetOpacity(1.0f);
 
   // ---------------------------------------------------------------------------
   // Bar Background
   // ---------------------------------------------------------------------------
   // If we have a rounded_bar_top then it draws the top part of the bar
   // background.
-  gfx::Size background_size(panel_width, bar_height - rounded_top_adjust);
+  gfx::Size background_size(panel_width, bar_height - rounded_top_height);
   bar_background_->SetBounds(background_size);
   bar_background_->SetPosition(
-      gfx::PointF(0.f, bar_top_y + rounded_top_adjust));
+      gfx::PointF(0.f, bar_top_y + rounded_top_height));
   bar_background_->SetBackgroundColor(bar_background_color);
 
   // ---------------------------------------------------------------------------
@@ -465,7 +420,6 @@ OverlayPanelLayer::OverlayPanelLayer(ui::ResourceManager* resource_manager)
     : resource_manager_(resource_manager),
       layer_(cc::Layer::Create()),
       panel_shadow_(cc::NinePatchLayer::Create()),
-      panel_shadow_right_(cc::NinePatchLayer::Create()),
       rounded_bar_top_(cc::NinePatchLayer::Create()),
       bar_background_(cc::SolidColorLayer::Create()),
       bar_text_(cc::UIResourceLayer::Create()),
@@ -484,14 +438,9 @@ OverlayPanelLayer::OverlayPanelLayer(ui::ResourceManager* resource_manager)
   layer_->SetMasksToBounds(false);
   layer_->SetIsDrawable(true);
 
-  // Panel Shadow -- shadow on the left side of the panel, or the whole panel
-  // when not using the new layout.
+  // Panel Shadow -- the shadow around all sides of the panel.
   panel_shadow_->SetIsDrawable(true);
   panel_shadow_->SetFillCenter(false);
-
-  // Panel Shadow Right -- shadow on the right side of the panel.
-  panel_shadow_right_->SetIsDrawable(true);
-  panel_shadow_right_->SetFillCenter(false);
 
   // Rounded Bar Top
   // Puts the layer near the bottom -- we'll decide if it's actually drawable

@@ -71,15 +71,6 @@ public class BottomSheetTestSupport {
     }
 
     /**
-     * TODO(mdjones): Remove this method and others that can be accessed via the
-     *                {@link BottomSheetController}.
-     * @see {@link BottomSheet#getToolbarShadowHeight()}
-     */
-    public int getToolbarShadowHeight() {
-        return getBottomSheet().getToolbarShadowHeight();
-    }
-
-    /**
      * Force the sheet's state for testing.
      * @param state The state the sheet should be in.
      * @param animate Whether the sheet should animate to the specified state.

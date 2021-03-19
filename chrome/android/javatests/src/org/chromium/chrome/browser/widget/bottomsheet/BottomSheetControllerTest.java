@@ -474,8 +474,7 @@ public class BottomSheetControllerTest {
 
         expandSheet();
 
-        int computedOffset = (int) (customHalfHeight
-                * (mSheetController.getContainerHeight() + mSheetController.getTopShadowHeight()));
+        int computedOffset = (int) (customHalfHeight * mSheetController.getContainerHeight());
         assertEquals("Half height is incorrect for custom ratio.", computedOffset,
                 mSheetController.getCurrentOffset());
     }
@@ -489,8 +488,7 @@ public class BottomSheetControllerTest {
 
         maximizeSheet();
 
-        int computedOffset = (int) (customFullHeight
-                * (mSheetController.getContainerHeight() + mSheetController.getTopShadowHeight()));
+        int computedOffset = (int) (customFullHeight * mSheetController.getContainerHeight());
         assertEquals("Full height is incorrect for custom ratio.", computedOffset,
                 mSheetController.getCurrentOffset());
     }

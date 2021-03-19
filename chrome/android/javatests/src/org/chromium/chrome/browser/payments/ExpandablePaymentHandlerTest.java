@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.payments;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.swipeDown;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -16,6 +15,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.support.test.InstrumentationRegistry;
 import android.support.test.uiautomator.UiDevice;
+import android.view.View;
 
 import androidx.test.filters.SmallTest;
 
@@ -46,6 +46,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.page_info.PageInfoFeatureList;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
@@ -216,11 +217,20 @@ public class ExpandablePaymentHandlerTest {
     public void testSwipeDownCloseUI() throws Throwable {
         startDefaultServer();
         createPaymentHandlerAndShow(mDefaultIsIncognito);
+
         waitForUiShown();
 
-        onView(withId(org.chromium.components.browser_ui.bottomsheet.R.id
-                               .bottom_sheet_control_container))
-                .perform(swipeDown());
+        View sheetControlContainer = mRule.getActivity().findViewById(
+                org.chromium.components.browser_ui.bottomsheet.R.id.bottom_sheet_control_container);
+        int touchX = sheetControlContainer.getWidth() / 2;
+        int startY = sheetControlContainer.getHeight() / 2;
+
+        // Swipe past the end of the screen.
+        int endY = mRule.getActivity().getResources().getDisplayMetrics().heightPixels + 100;
+
+        TestTouchUtils.dragCompleteView(InstrumentationRegistry.getInstrumentation(),
+                sheetControlContainer, touchX, touchX, startY, endY, 20);
+
         waitForUiClosed();
     }
 

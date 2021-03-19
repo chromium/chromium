@@ -537,8 +537,7 @@ class AutofillAssistantUiTestUtil {
         DisplayMetrics displayMetrics = testRule.getActivity().getResources().getDisplayMetrics();
         BottomSheetController bottomSheetController =
                 testRule.getActivity().getRootUiCoordinatorForTesting().getBottomSheetController();
-        int totalBottomSheetHeight = bottomSheetController.getCurrentOffset()
-                + bottomSheetController.getTopShadowHeight();
+        int totalBottomSheetHeight = bottomSheetController.getCurrentOffset();
         if (x < 0 || x > displayMetrics.widthPixels || y < 0
                 || y > displayMetrics.heightPixels - totalBottomSheetHeight) {
             throw new IllegalArgumentException(Arrays.toString(elementIds)

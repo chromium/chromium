@@ -389,8 +389,9 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements Destroyable
 
     @Override
     public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
-        if (mSnackbarManager.get() == null) return;
-        mSnackbarManager.get().dismissAllSnackbars();
+        if (mSnackbarManager.get() != null) {
+            mSnackbarManager.get().dismissAllSnackbars();
+        }
     }
 
     @Override

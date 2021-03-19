@@ -180,6 +180,7 @@ android_resources("java_resources") {
     "java/res/drawable/app_menu_bg.xml",
     "java/res/drawable/async_image_view_unavailable.xml",
     "java/res/drawable/async_image_view_waiting.xml",
+    "java/res/drawable/bottom_sheet_background.xml",
     "java/res/drawable/hairline_border_card_background.xml",
     "java/res/drawable/hairline_border_card_dark_transparent_bg.xml",
     "java/res/drawable/ic_check_googblue_24dp_animated.xml",

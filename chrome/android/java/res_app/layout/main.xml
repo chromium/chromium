@@ -119,6 +119,13 @@
             android:layout="@layout/empty_background_view_tablet"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+
+        <FrameLayout
+            android:id="@+id/sheet_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipChildren="false" />
+
     </org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer>
 
     <!-- This empty view is used as the anchor for custom menu -->

@@ -879,9 +879,11 @@ public class RootUiCoordinator
 
         // TODO(1094000): Initialize after inflation so we don't need to pass in view suppliers.
         mBottomSheetController = BottomSheetControllerFactory.createBottomSheetController(
-                () -> mScrimCoordinator, sheetInitializedCallback, mActivity.getWindow(),
+                ()
+                        -> mScrimCoordinator,
+                sheetInitializedCallback, mActivity.getWindow(),
                 mActivity.getWindowAndroid().getKeyboardDelegate(),
-                () -> mActivity.findViewById(R.id.coordinator));
+                () -> mActivity.findViewById(R.id.sheet_container /*R.id.coordinator*/));
         BottomSheetControllerFactory.setExceptionReporter(
                 (throwable)
                         -> PureJavaExceptionReporter.reportJavaException((Throwable) throwable));

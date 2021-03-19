@@ -136,9 +136,6 @@ public interface BottomSheetController {
      */
     int getContainerHeight();
 
-    /** @return The height of the shadow above the bottom sheet in px. */
-    int getTopShadowHeight();
-
     /**
      * @return The srcim's coordinator. This can be used to customize the bottom sheet's interaction
      *         with the scrim if the default behavior is not desired -- fading in behind the sheet

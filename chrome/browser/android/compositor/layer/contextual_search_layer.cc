@@ -319,8 +319,9 @@ void ContextualSearchLayer::SetProperties(
     if (search_promo_container_->parent() != layer_) {
       // NOTE(donnd): This layer can appear just below the Bar so it should be
       // always placed before the Search Bar Shadow to make sure it won't
-      // occlude the shadow.
-      layer_->InsertChild(search_promo_container_, 0);
+      // occlude the shadow. Since layer 0 is the shadow for the sheet itself,
+      // this needs to be layer 1.
+      layer_->InsertChild(search_promo_container_, 1);
     }
 
     if (search_promo_resource) {

@@ -150,11 +150,9 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
 
         WebContents panelWebContents = panel.getWebContents();
 
-        int roundedBarTopResourceId =
-                org.chromium.components.browser_ui.styles.R.drawable.top_round;
+        int roundedBarTopResourceId = R.drawable.top_round_foreground;
         int separatorLineColor = panel.getSeparatorLineColor();
-        // The top_round resource includes the shadow so we only need a side shadow.
-        int panelShadowResourceId = R.drawable.overlay_side_shadow;
+        int panelShadowResourceId = R.drawable.top_round_shadow;
         int closeIconResourceId = INVALID_RESOURCE_ID;
 
         // TODO(donnd): crbug.com/1143472 - Remove parameters for the now
