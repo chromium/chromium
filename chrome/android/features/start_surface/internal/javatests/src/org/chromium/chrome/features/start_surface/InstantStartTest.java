@@ -75,6 +75,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
@@ -1154,6 +1155,7 @@ public class InstantStartTest {
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
             ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @DisabledTest(message = "https://crbug.com/1144666 Affecting M89 bots.")
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
             "force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS +

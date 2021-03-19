@@ -1355,6 +1355,7 @@ public class StartSurfaceLayoutTest {
     @Feature({"RenderTest"})
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    @DisabledTest(message = "https://crbug.com/1144666 Affecting M89 bots.")
     @CommandLineFlags.Add({BASE_PARAMS + "/thumbnail_aspect_ratio/0.85"})
     public void testRenderGrid_withAspectRatioPoint85() throws IOException {
         // clang-format on
