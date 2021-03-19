@@ -29,7 +29,6 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
@@ -70,8 +69,6 @@ ExecutionContext::ExecutionContext(v8::Isolate* isolate, Agent* agent)
       is_context_destroyed_(false),
       csp_delegate_(MakeGarbageCollected<ExecutionContextCSPDelegate>(*this)),
       window_interaction_tokens_(0),
-      referrer_policy_(network::mojom::ReferrerPolicy::kDefault),
-      address_space_(network::mojom::blink::IPAddressSpace::kUnknown),
       origin_trial_context_(MakeGarbageCollected<OriginTrialContext>(this)) {
   DCHECK(agent_);
 }
@@ -464,10 +461,7 @@ void ExecutionContext::ParseAndSetReferrerPolicy(
 }
 
 network::mojom::ReferrerPolicy ExecutionContext::GetReferrerPolicy() const {
-  if (base::FeatureList::IsEnabled(blink::features::kPolicyContainer))
-    return policy_container_->GetReferrerPolicy();
-
-  return referrer_policy_;
+  return policy_container_->GetReferrerPolicy();
 }
 
 void ExecutionContext::SetReferrerPolicy(
@@ -475,28 +469,19 @@ void ExecutionContext::SetReferrerPolicy(
   // When a referrer policy has already been set, the latest value takes
   // precedence.
   UseCounter::Count(this, WebFeature::kSetReferrerPolicy);
-  if (ExecutionContext::GetReferrerPolicy() !=
-      network::mojom::ReferrerPolicy::kDefault)
+  if (GetReferrerPolicy() != network::mojom::ReferrerPolicy::kDefault)
     UseCounter::Count(this, WebFeature::kResetReferrerPolicy);
 
-  if (base::FeatureList::IsEnabled(blink::features::kPolicyContainer))
-    policy_container_->UpdateReferrerPolicy(referrer_policy);
-  else
-    referrer_policy_ = referrer_policy;
+  policy_container_->UpdateReferrerPolicy(referrer_policy);
 }
 
 network::mojom::IPAddressSpace ExecutionContext::AddressSpace() const {
-  if (base::FeatureList::IsEnabled(blink::features::kPolicyContainer))
-    return policy_container_->GetIPAddressSpace();
-  return address_space_;
+  return policy_container_->GetIPAddressSpace();
 }
 
 void ExecutionContext::SetAddressSpace(
     network::mojom::blink::IPAddressSpace ip_address_space) {
-  if (base::FeatureList::IsEnabled(blink::features::kPolicyContainer))
-    GetPolicyContainer()->SetIPAddressSpace(ip_address_space);
-  else
-    address_space_ = ip_address_space;
+  GetPolicyContainer()->SetIPAddressSpace(ip_address_space);
 }
 
 void ExecutionContext::SetPolicyContainer(

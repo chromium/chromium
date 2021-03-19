@@ -314,13 +314,6 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
   DCHECK(page->MainFrame());
   LocalFrame& frame = *To<LocalFrame>(page->MainFrame());
 
-  if (!base::FeatureList::IsEnabled(blink::features::kPolicyContainer)) {
-    // If referrer policy is managed by the policy container, inheritance is
-    // already taken care by it.
-    if (request.GetShouldSendReferrer() == kMaybeSendReferrer)
-      frame.DomWindow()->SetReferrerPolicy(opener_window.GetReferrerPolicy());
-  }
-
   page->SetWindowFeatures(features);
 
   frame.View()->SetCanHaveScrollbars(features.scrollbars_visible);

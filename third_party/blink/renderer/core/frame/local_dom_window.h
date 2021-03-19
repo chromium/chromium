@@ -157,7 +157,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void AddInspectorIssue(mojom::blink::InspectorIssueInfoPtr) final;
   EventTarget* ErrorEventTarget() final { return this; }
   String OutgoingReferrer() const final;
-  network::mojom::ReferrerPolicy GetReferrerPolicy() const final;
   CoreProbeSink* GetProbeSink() final;
   const BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() const final;
   FrameOrWorkerScheduler* GetScheduler() final;

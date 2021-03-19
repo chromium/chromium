@@ -37,7 +37,6 @@
 #include "base/callback_helpers.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -57,7 +56,6 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
@@ -13895,9 +13893,6 @@ class TestLocalFrameHostForAnchorWithDownloadAttr : public FakeLocalFrameHost {
 };
 
 TEST_F(WebFrameTest, DownloadReferrerPolicy) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kPolicyContainer);
-
   TestLocalFrameHostForAnchorWithDownloadAttr frame_host;
   frame_test_helpers::TestWebFrameClient web_frame_client;
   frame_host.Init(web_frame_client.GetRemoteNavigationAssociatedInterfaces());

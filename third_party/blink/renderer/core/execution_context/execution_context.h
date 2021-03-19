@@ -294,7 +294,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   void ParseAndSetReferrerPolicy(const String& policy,
                                  ReferrerPolicySource source);
   void SetReferrerPolicy(network::mojom::ReferrerPolicy);
-  virtual network::mojom::ReferrerPolicy GetReferrerPolicy() const;
+  network::mojom::ReferrerPolicy GetReferrerPolicy() const;
 
   PolicyContainer* GetPolicyContainer() { return policy_container_.get(); }
   void SetPolicyContainer(std::unique_ptr<PolicyContainer> container);
@@ -488,12 +488,6 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // The |policy_container_| contains security policies for this
   // ExecutionContext.
   std::unique_ptr<PolicyContainer> policy_container_;
-
-  // |referrer_policy_| and |address_space_| are only used if
-  // ||mojom::features::kPolicyContainer| is disabled. Otherwise, the values of
-  // |the policies are stored in |policy_container_|.
-  network::mojom::ReferrerPolicy referrer_policy_;
-  network::mojom::blink::IPAddressSpace address_space_;
 
   Member<OriginTrialContext> origin_trial_context_;
 

@@ -728,12 +728,6 @@
     "args": ["--disable-features=LinkDisabledNewSpecBehavior"]
   },
   {
-    "prefix": "policy-container",
-    "bases": [ "external/wpt/referrer-policy",
-               "fast/dom/DOMImplementation" ],
-    "args": [ "--disable-features=PolicyContainer" ]
-  },
-  {
     "prefix": "document-domain-disabled-by-default",
     "bases": [
       "external/wpt/document-policy/experimental-features/document-domain"

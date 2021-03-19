@@ -4,9 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/css/media_query_list.h"
 #include "third_party/blink/renderer/core/css/media_query_matcher.h"
@@ -246,9 +244,6 @@ TEST_F(HTMLMetaElementTest, ColorSchemeForcedDarkeningAndMQ) {
 }
 
 TEST_F(HTMLMetaElementTest, ReferrerPolicyWithoutContent) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kPolicyContainer);
-
   GetDocument().head()->setInnerHTML(R"HTML(
     <meta name="referrer" content="strict-origin">
     <meta name="referrer" >
@@ -260,9 +255,6 @@ TEST_F(HTMLMetaElementTest, ReferrerPolicyWithoutContent) {
 }
 
 TEST_F(HTMLMetaElementTest, ReferrerPolicyUpdatesPolicyContainer) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(blink::features::kPolicyContainer);
-
   GetDocument().head()->setInnerHTML(R"HTML(
     <meta name="referrer" content="strict-origin">
   )HTML");

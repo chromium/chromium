@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -18,7 +17,6 @@
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
@@ -28,12 +26,6 @@ using ::testing::Pointee;
 
 namespace {
 class PolicyContainerHostBrowserTest : public content::ContentBrowserTest {
- public:
-  PolicyContainerHostBrowserTest() {
-    // enable policy container
-    feature_list_.InitAndEnableFeature(blink::features::kPolicyContainer);
-  }
-
  protected:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -48,9 +40,6 @@ class PolicyContainerHostBrowserTest : public content::ContentBrowserTest {
   RenderFrameHostImpl* current_frame_host() {
     return web_contents()->GetMainFrame();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 }  // namespace
 

@@ -37,7 +37,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/action_after_pagehide.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_disposition.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -397,25 +396,6 @@ String LocalDOMWindow::OutgoingReferrer() const {
 
   // Step: 3.1.4: "Let referrerSource be document's URL."
   return referrer_document->Url().StrippedForUseAsReferrer();
-}
-
-network::mojom::ReferrerPolicy LocalDOMWindow::GetReferrerPolicy() const {
-  network::mojom::ReferrerPolicy policy = ExecutionContext::GetReferrerPolicy();
-
-  // PolicyContainer took care already of policy inheritance.
-  if (base::FeatureList::IsEnabled(blink::features::kPolicyContainer)) {
-    return policy;
-  }
-  // For srcdoc documents without their own policy, walk up the frame
-  // tree to find the document that is either not a srcdoc or doesn't
-  // have its own policy. This algorithm is defined in
-  // https://html.spec.whatwg.org/C/#set-up-a-window-environment-settings-object.
-  if (!GetFrame() || policy != network::mojom::ReferrerPolicy::kDefault ||
-      !document()->IsSrcdocDocument()) {
-    return policy;
-  }
-  LocalFrame* frame = To<LocalFrame>(GetFrame()->Tree().Parent());
-  return frame->DomWindow()->GetReferrerPolicy();
 }
 
 CoreProbeSink* LocalDOMWindow::GetProbeSink() {
