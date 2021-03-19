@@ -3002,6 +3002,21 @@
             ]
         }
     ],
+    "ExperimentalAccessibilityLabels": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ExperimentalAccessibilityLabels"
+                    ]
+                }
+            ]
+        }
+    ],
     "ExploreSitesDense": [
         {
             "platforms": [
