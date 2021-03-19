@@ -88,7 +88,7 @@ RenderFrameProxy* RenderFrameProxy::CreateFrameProxy(
     const base::Optional<blink::FrameToken>& opener_frame_token,
     int render_view_routing_id,
     int parent_routing_id,
-    mojom::FrameReplicationStatePtr replicated_state,
+    blink::mojom::FrameReplicationStatePtr replicated_state,
     const base::UnguessableToken& devtools_frame_token) {
   RenderFrameProxy* parent = nullptr;
   if (parent_routing_id != MSG_ROUTING_NONE) {
@@ -225,7 +225,7 @@ void RenderFrameProxy::Init(blink::WebRemoteFrame* web_frame,
 }
 
 void RenderFrameProxy::SetReplicatedState(
-    mojom::FrameReplicationStatePtr state) {
+    blink::mojom::FrameReplicationStatePtr state) {
   DCHECK(web_frame_);
 
   web_frame_->SetReplicatedOrigin(

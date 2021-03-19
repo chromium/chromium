@@ -6,7 +6,6 @@ module content.mojom;
 
 import "cc/mojom/browser_controls_state.mojom";
 import "content/common/frame_messages.mojom";
-import "content/common/frame_replication_state.mojom";
 import "content/common/native_types.mojom";
 import "content/common/navigation_client.mojom";
 import "content/common/navigation_params.mojom";
@@ -34,6 +33,7 @@ import "third_party/blink/public/mojom/frame/frame.mojom";
 import "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom";
 import "third_party/blink/public/mojom/frame/frame_owner_properties.mojom";
 import "third_party/blink/public/mojom/frame/frame_policy.mojom";
+import "third_party/blink/public/mojom/frame/frame_replication_state.mojom";
 import "third_party/blink/public/mojom/frame/lifecycle.mojom";
 import "third_party/blink/public/mojom/frame/policy_container.mojom";
 import "third_party/blink/public/mojom/frame/tree_scope_type.mojom";
@@ -90,7 +90,7 @@ struct CreateViewParams {
 
   // Information that needs to be replicated to the view's main frame, e.g.
   // frame name and sandbox flags.
-  FrameReplicationState replication_state;
+  blink.mojom.FrameReplicationState replication_state;
 
   // Used for devtools instrumentation and trace-ability. The token is shared
   // across all frames (local or remotes) representing the same logical frame
@@ -229,7 +229,7 @@ struct CreateFrameParams {
   // When the new frame has a parent, |replication_state| holds the new frame's
   // properties replicated from the process rendering the parent frame, such as
   // the new frame's sandbox flags.
-  FrameReplicationState replication_state;
+  blink.mojom.FrameReplicationState replication_state;
 
   // Used for devtools instrumentation and trace-ability. The token is
   // propagated to Blink's LocalFrame and both Blink and content/
@@ -421,7 +421,7 @@ interface Frame {
   // since postMessage dispatch is always scheduled asynchronously.
   Unload(int32 new_remote_frame_routing_id,
          bool is_loading,
-         FrameReplicationState new_remote_frame_replication_state,
+         blink.mojom.FrameReplicationState new_remote_frame_replication_state,
          blink.mojom.RemoteFrameToken new_remote_frame_token);
 
   // Delete the frame. This is only called for child frames that the browser
@@ -612,7 +612,7 @@ interface FrameHost {
       pending_associated_receiver<blink.mojom.Portal> portal,
       pending_associated_remote<blink.mojom.PortalClient> client)
       => (int32 proxy_routing_id,
-          FrameReplicationState initial_replicated_state,
+          blink.mojom.FrameReplicationState initial_replicated_state,
           blink.mojom.PortalToken portal_token,
           blink.mojom.RemoteFrameToken frame_token,
           mojo_base.mojom.UnguessableToken devtools_frame_token);
@@ -627,7 +627,7 @@ interface FrameHost {
   //                          frame tree
   [Sync] AdoptPortal(blink.mojom.PortalToken portal_token)
       => (int32 proxy_routing_id,
-          FrameReplicationState replicated_state,
+          blink.mojom.FrameReplicationState replicated_state,
           blink.mojom.RemoteFrameToken frame_token,
           mojo_base.mojom.UnguessableToken devtools_frame_token);
 

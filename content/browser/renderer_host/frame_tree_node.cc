@@ -126,7 +126,7 @@ FrameTreeNode::FrameTreeNode(
       original_opener_(nullptr),
       has_committed_real_load_(false),
       is_collapsed_(false),
-      replication_state_(mojom::FrameReplicationState::New(
+      replication_state_(blink::mojom::FrameReplicationState::New(
           url::Origin(),
           name,
           unique_name,

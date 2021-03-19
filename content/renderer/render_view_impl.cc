@@ -384,7 +384,7 @@ WebView* RenderViewImpl::CreateView(
   view_params->web_preferences = webview_->GetWebPreferences();
   view_params->view_id = reply->route_id;
 
-  view_params->replication_state = mojom::FrameReplicationState::New();
+  view_params->replication_state = blink::mojom::FrameReplicationState::New();
   view_params->replication_state->frame_policy.sandbox_flags = sandbox_flags;
   view_params->replication_state->name = frame_name_utf8;
   view_params->devtools_main_frame_token = reply->devtools_main_frame_token;

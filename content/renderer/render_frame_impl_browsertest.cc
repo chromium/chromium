@@ -51,6 +51,7 @@
 #include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/public/common/widget/screen_infos.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
+#include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
@@ -125,8 +126,7 @@ class RenderFrameImplTest : public RenderViewTest {
     widget_params->widget = std::move(blink_widget_receiver);
     widget_params->widget_host = blink_widget_host.Unbind();
 
-    mojom::FrameReplicationStatePtr frame_replication_state =
-        mojom::FrameReplicationState::New();
+    auto frame_replication_state = blink::mojom::FrameReplicationState::New();
     frame_replication_state->name = "frame";
     frame_replication_state->unique_name = "frame-uniqueName";
 

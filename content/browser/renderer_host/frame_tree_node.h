@@ -20,12 +20,12 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_manager.h"
 #include "content/common/content_export.h"
-#include "content/common/frame_replication_state.mojom-forward.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/frame/user_activation_state.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
+#include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-forward.h"
 
@@ -269,7 +269,7 @@ class CONTENT_EXPORT FrameTreeNode {
         node.replication_state_->origin);
   }
 
-  const mojom::FrameReplicationState& current_replication_state() const {
+  const blink::mojom::FrameReplicationState& current_replication_state() const {
     return *replication_state_;
   }
 
@@ -535,7 +535,7 @@ class CONTENT_EXPORT FrameTreeNode {
 
   // Track information that needs to be replicated to processes that have
   // proxies for this frame.
-  mojom::FrameReplicationStatePtr replication_state_;
+  blink::mojom::FrameReplicationStatePtr replication_state_;
 
   // Track the pending sandbox flags and container policy for this frame. When a
   // parent frame dynamically updates 'sandbox', 'allow', 'allowfullscreen',

@@ -35,7 +35,6 @@
 #include "content/common/buildflags.h"
 #include "content/common/download/mhtml_file_writer.mojom.h"
 #include "content/common/frame.mojom.h"
-#include "content/common/frame_replication_state.mojom-forward.h"
 #include "content/common/navigation_params.mojom.h"
 #include "content/common/render_accessibility.mojom.h"
 #include "content/common/renderer.mojom.h"
@@ -84,6 +83,7 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-forward.h"
+#include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-forward.h"
@@ -176,7 +176,7 @@ class CONTENT_EXPORT RenderFrameImpl
       CompositorDependencies* compositor_deps,
       blink::WebFrame* opener,
       bool is_for_nested_main_frame,
-      mojom::FrameReplicationStatePtr replication_state,
+      blink::mojom::FrameReplicationStatePtr replication_state,
       const base::UnguessableToken& devtools_frame_token,
       mojom::CreateLocalMainFrameParamsPtr params);
 
@@ -214,7 +214,7 @@ class CONTENT_EXPORT RenderFrameImpl
       int parent_routing_id,
       int previous_sibling_routing_id,
       const base::UnguessableToken& devtools_frame_token,
-      mojom::FrameReplicationStatePtr replicated_state,
+      blink::mojom::FrameReplicationStatePtr replicated_state,
       CompositorDependencies* compositor_deps,
       mojom::CreateFrameWidgetParamsPtr widget_params,
       blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties,
@@ -853,7 +853,7 @@ class CONTENT_EXPORT RenderFrameImpl
   void SetWantErrorMessageStackTrace() override;
   void Unload(int proxy_routing_id,
               bool is_loading,
-              mojom::FrameReplicationStatePtr replicated_frame_state,
+              blink::mojom::FrameReplicationStatePtr replicated_frame_state,
               const blink::RemoteFrameToken& frame_token) override;
   void Delete(mojom::FrameDeleteIntention intent) override;
   void BlockRequests() override;

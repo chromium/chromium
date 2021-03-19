@@ -5581,7 +5581,7 @@ void RenderFrameHostImpl::CreatePortal(
 
   // Since the portal is newly created and has yet to commit a navigation, this
   // state is trivial.
-  const mojom::FrameReplicationState& initial_replicated_state =
+  const blink::mojom::FrameReplicationState& initial_replicated_state =
       proxy_host->frame_tree_node()->current_replication_state();
   DCHECK(initial_replicated_state.origin.opaque());
 

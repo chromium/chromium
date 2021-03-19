@@ -139,6 +139,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
+#include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
 #include "third_party/blink/public/mojom/leak_detector/leak_detector.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/leak_detector/leak_detector.mojom.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-test-utils.h"
@@ -6292,7 +6293,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // anymore.
   agent_scheduling_group_a->CreateFrameProxy(
       blink::RemoteFrameToken(), new_routing_id, base::nullopt, view_routing_id,
-      parent_routing_id, mojom::FrameReplicationState::New(),
+      parent_routing_id, blink::mojom::FrameReplicationState::New(),
       base::UnguessableToken::Create());
 
   // Ensure the subframe is detached in the browser process.
@@ -6369,7 +6370,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     params->token = frame_token;
     params->devtools_frame_token = base::UnguessableToken::Create();
     params->policy_container = CreateStubPolicyContainer();
-    params->replication_state = mojom::FrameReplicationState::New();
+    params->replication_state = blink::mojom::FrameReplicationState::New();
     agent_scheduling_group->CreateFrame(std::move(params));
   }
 
@@ -6460,7 +6461,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ParentDetachRemoteChild) {
                       .InitWithNewEndpointAndPassReceiver());
     params->widget_params->visual_properties.screen_infos =
         blink::ScreenInfos(blink::ScreenInfo());
-    params->replication_state = mojom::FrameReplicationState::New();
+    params->replication_state = blink::mojom::FrameReplicationState::New();
     params->replication_state->name = "name";
     params->replication_state->unique_name = "name";
     params->token = frame_token;

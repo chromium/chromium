@@ -11,7 +11,6 @@
 #include "content/common/content_export.h"
 #include "content/common/frame_messages.h"
 #include "content/common/frame_proxy.mojom.h"
-#include "content/common/frame_replication_state.mojom-forward.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -24,6 +23,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
+#include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-forward.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-forward.h"
@@ -95,7 +95,7 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
       const base::Optional<blink::FrameToken>& opener_frame_token,
       int render_view_routing_id,
       int parent_routing_id,
-      mojom::FrameReplicationStatePtr replicated_state,
+      blink::mojom::FrameReplicationStatePtr replicated_state,
       const base::UnguessableToken& devtools_frame_token);
 
   // Creates a RenderFrameProxy to be used with a portal owned by |parent|.
@@ -128,7 +128,7 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
 
   // Pass replicated information, such as security origin, to this
   // RenderFrameProxy's WebRemoteFrame.
-  void SetReplicatedState(mojom::FrameReplicationStatePtr state);
+  void SetReplicatedState(blink::mojom::FrameReplicationStatePtr state);
 
   int routing_id() { return routing_id_; }
   RenderViewImpl* render_view() { return render_view_; }

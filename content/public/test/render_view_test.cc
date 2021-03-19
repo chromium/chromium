@@ -48,6 +48,7 @@
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/widget/visual_properties.h"
+#include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
 #include "third_party/blink/public/mojom/leak_detector/leak_detector.mojom.h"
 #include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -491,7 +492,7 @@ void RenderViewTest::SetUp() {
   view_params->renderer_preferences = blink::RendererPreferences();
   view_params->web_preferences = blink::web_pref::WebPreferences();
   view_params->view_id = render_thread_->GetNextRoutingID();
-  view_params->replication_state = mojom::FrameReplicationState::New();
+  view_params->replication_state = blink::mojom::FrameReplicationState::New();
 
   auto main_frame_params = mojom::CreateLocalMainFrameParams::New();
   main_frame_params->routing_id = render_thread_->GetNextRoutingID();

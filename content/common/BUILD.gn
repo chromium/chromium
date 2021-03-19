@@ -442,7 +442,6 @@ mojom("mojo_bindings") {
     "frame.mojom",
     "frame_messages.mojom",
     "frame_proxy.mojom",
-    "frame_replication_state.mojom",
     "histogram_fetcher.mojom",
     "input/input_injector.mojom",
     "media/media_log_records.mojom",

@@ -1568,7 +1568,7 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
     CompositorDependencies* compositor_deps,
     blink::WebFrame* opener,
     bool is_for_nested_main_frame,
-    mojom::FrameReplicationStatePtr replication_state,
+    blink::mojom::FrameReplicationStatePtr replication_state,
     const base::UnguessableToken& devtools_frame_token,
     mojom::CreateLocalMainFrameParamsPtr params) {
   // A main frame RenderFrame must have a RenderWidget.
@@ -1644,7 +1644,7 @@ void RenderFrameImpl::CreateFrame(
     int parent_routing_id,
     int previous_sibling_routing_id,
     const base::UnguessableToken& devtools_frame_token,
-    mojom::FrameReplicationStatePtr replicated_state,
+    blink::mojom::FrameReplicationStatePtr replicated_state,
     CompositorDependencies* compositor_deps,
     mojom::CreateFrameWidgetParamsPtr widget_params,
     blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties,
@@ -2254,7 +2254,7 @@ void RenderFrameImpl::BindNavigationClient(
 void RenderFrameImpl::Unload(
     int proxy_routing_id,
     bool is_loading,
-    mojom::FrameReplicationStatePtr replicated_frame_state,
+    blink::mojom::FrameReplicationStatePtr replicated_frame_state,
     const blink::RemoteFrameToken& proxy_frame_token) {
   TRACE_EVENT1("navigation,rail", "RenderFrameImpl::UnloadFrame", "id",
                routing_id_);
@@ -3850,8 +3850,7 @@ RenderFrameImpl::CreatePortal(
         blink::mojom::PortalClientInterfaceBase> client_endpoint,
     const blink::WebElement& portal_element) {
   int proxy_routing_id = MSG_ROUTING_NONE;
-  mojom::FrameReplicationStatePtr initial_replicated_state =
-      mojom::FrameReplicationState::New();
+  auto initial_replicated_state = blink::mojom::FrameReplicationState::New();
   blink::PortalToken portal_token;
   blink::RemoteFrameToken frame_token;
   base::UnguessableToken devtools_frame_token;
@@ -3872,8 +3871,7 @@ blink::WebRemoteFrame* RenderFrameImpl::AdoptPortal(
   int proxy_routing_id = MSG_ROUTING_NONE;
   blink::RemoteFrameToken frame_token;
   base::UnguessableToken devtools_frame_token;
-  mojom::FrameReplicationStatePtr replicated_state =
-      mojom::FrameReplicationState::New();
+  auto replicated_state = blink::mojom::FrameReplicationState::New();
   GetFrameHost()->AdoptPortal(portal_token, &proxy_routing_id,
                               &replicated_state, &frame_token,
                               &devtools_frame_token);

@@ -77,6 +77,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/widget/device_emulation_params.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
+#include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -203,11 +204,11 @@ class WebUITestWebUIControllerFactory : public WebUIControllerFactory {
 // by content-layer, renderer code (still the constructed, partial
 // FrameReplicationState is sufficiently complete to avoid trigerring
 // asserts that a default/empty FrameReplicationState would).
-mojom::FrameReplicationStatePtr ReconstructReplicationStateForTesting(
+blink::mojom::FrameReplicationStatePtr ReconstructReplicationStateForTesting(
     TestRenderFrame* test_render_frame) {
   blink::WebLocalFrame* frame = test_render_frame->GetWebFrame();
 
-  mojom::FrameReplicationStatePtr result = mojom::FrameReplicationState::New();
+  auto result = blink::mojom::FrameReplicationState::New();
   // can't recover result.scope - no way to get blink::mojom::TreeScopeType via
   // public blink API...
   result->name = frame->AssignedName().Utf8();
@@ -1181,8 +1182,7 @@ TEST_F(RenderViewImplTest, OriginReplicationForUnload) {
 
   // Unload the child frame and pass a replicated origin to be set for
   // WebRemoteFrame.
-  content::mojom::FrameReplicationStatePtr replication_state =
-      ReconstructReplicationStateForTesting(child_frame);
+  auto replication_state = ReconstructReplicationStateForTesting(child_frame);
   replication_state->origin = url::Origin::Create(GURL("http://foo.com"));
   static_cast<mojom::Frame*>(child_frame)
       ->Unload(kProxyRoutingId, true, replication_state->Clone(),
@@ -1229,8 +1229,7 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
       MakeVisualPropertiesWithDeviceScaleFactor(device_scale);
 
   // Unload the main frame after which it should become a WebRemoteFrame.
-  mojom::FrameReplicationStatePtr replication_state =
-      ReconstructReplicationStateForTesting(frame());
+  auto replication_state = ReconstructReplicationStateForTesting(frame());
   // replication_state.origin = url::Origin(GURL("http://foo.com"));
   static_cast<mojom::Frame*>(frame())->Unload(kProxyRoutingId, true,
                                               replication_state->Clone(),
@@ -1323,8 +1322,7 @@ TEST_F(RenderViewImplTest, DetachingProxyAlsoDestroysProvisionalFrame) {
       RenderFrame::FromWebFrame(web_frame->FirstChild()->ToWebLocalFrame()));
 
   // Unload the child frame.
-  mojom::FrameReplicationStatePtr replication_state =
-      ReconstructReplicationStateForTesting(child_frame);
+  auto replication_state = ReconstructReplicationStateForTesting(child_frame);
   static_cast<mojom::Frame*>(child_frame)
       ->Unload(kProxyRoutingId, true, replication_state.Clone(),
                blink::RemoteFrameToken());
@@ -3056,7 +3054,7 @@ TEST_F(RenderViewImplAddMessageToConsoleTest,
 
         // Unloads the main frame.
         static_cast<mojom::Frame*>(frame())->Unload(
-            1, false, mojom::FrameReplicationState::New(),
+            1, false, blink::mojom::FrameReplicationState::New(),
             blink::RemoteFrameToken());
 
         was_callback_run = true;

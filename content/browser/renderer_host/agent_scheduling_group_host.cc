@@ -342,7 +342,7 @@ void AgentSchedulingGroupHost::CreateFrameProxy(
     const base::Optional<blink::FrameToken>& opener_frame_token,
     int32_t view_routing_id,
     int32_t parent_routing_id,
-    mojom::FrameReplicationStatePtr replicated_state,
+    blink::mojom::FrameReplicationStatePtr replicated_state,
     const base::UnguessableToken& devtools_frame_token) {
   DCHECK_EQ(state_, LifecycleState::kBound);
   mojo_remote_.get()->CreateFrameProxy(

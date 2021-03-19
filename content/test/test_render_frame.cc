@@ -29,6 +29,7 @@
 #include "services/network/public/cpp/not_implemented_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_navigation_control.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -154,7 +155,7 @@ class MockFrameHost : public mojom::FrameHost {
                     mojo::PendingAssociatedRemote<blink::mojom::PortalClient>,
                     CreatePortalCallback callback) override {
     std::move(callback).Run(MSG_ROUTING_NONE,
-                            mojom::FrameReplicationState::New(),
+                            blink::mojom::FrameReplicationState::New(),
                             blink::PortalToken(), blink::RemoteFrameToken(),
                             base::UnguessableToken());
   }
@@ -162,7 +163,7 @@ class MockFrameHost : public mojom::FrameHost {
   void AdoptPortal(const blink::PortalToken&,
                    AdoptPortalCallback callback) override {
     std::move(callback).Run(
-        MSG_ROUTING_NONE, mojom::FrameReplicationState::New(),
+        MSG_ROUTING_NONE, blink::mojom::FrameReplicationState::New(),
         blink::RemoteFrameToken(), base::UnguessableToken());
   }
 
