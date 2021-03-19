@@ -33,8 +33,8 @@ g.test('memcpy').fn(async t => {
               [[offset(0)]] value : u32;
           };
 
-          [[set(0), binding(0)]] var<storage_buffer> src : Data;
-          [[set(0), binding(1)]] var<storage_buffer> dst : Data;
+          [[group(0), binding(0)]] var<storage_buffer> src : Data;
+          [[group(0), binding(1)]] var<storage_buffer> dst : Data;
 
           [[stage(compute)]] fn main() -> void {
             dst.value = src.value;
@@ -62,7 +62,7 @@ g.test('memcpy').fn(async t => {
   pass.setBindGroup(0, bg);
   pass.dispatch(1);
   pass.endPass();
-  t.device.defaultQueue.submit([encoder.finish()]);
+  t.device.queue.submit([encoder.finish()]);
 
   t.expectContents(dst, data);
 });

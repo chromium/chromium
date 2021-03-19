@@ -30,16 +30,16 @@ export class BufferSyncTest extends GPUTest {
     const fence = this.queue.createFence();
     const data = new Uint32Array(kSize / 4).fill(initValue);
     const texture = this.device.createTexture({
-      size: { width: kSize / 4, height: 1, depth: 1 },
+      size: { width: kSize / 4, height: 1, depthOrArrayLayers: 1 },
       format: 'r32uint',
       usage: GPUTextureUsage.COPY_SRC | GPUTextureUsage.COPY_DST,
     });
 
-    this.device.defaultQueue.writeTexture(
+    this.device.queue.writeTexture(
       { texture, mipLevel: 0, origin: { x: 0, y: 0, z: 0 } },
       data,
       { offset: 0, bytesPerRow: kSize, rowsPerImage: 1 },
-      { width: kSize / 4, height: 1, depth: 1 }
+      { width: kSize / 4, height: 1, depthOrArrayLayers: 1 }
     );
 
     this.queue.signal(fence, 1);
@@ -61,7 +61,7 @@ export class BufferSyncTest extends GPUTest {
         [[offset(0)]] a : i32;
       };
 
-      [[set(0), binding(0)]] var<storage_buffer> data : Data;
+      [[group(0), binding(0)]] var<storage_buffer> data : Data;
       [[stage(compute)]] fn main() -> void {
         data.a = ${value};
         return;
@@ -96,7 +96,7 @@ export class BufferSyncTest extends GPUTest {
         [[offset(0)]] a : i32;
       };
 
-      [[set(0), binding(0)]] var<storage_buffer> data : Data;
+      [[group(0), binding(0)]] var<storage_buffer> data : Data;
       [[stage(fragment)]] fn frag_main() -> void {
         data.a = ${value};
         outColor = vec4<f32>(1.0, 0.0, 0.0, 1.0);
@@ -130,9 +130,9 @@ export class BufferSyncTest extends GPUTest {
   beginSimpleRenderPass(encoder) {
     const view = this.device
       .createTexture({
-        size: { width: 1, height: 1, depth: 1 },
+        size: { width: 1, height: 1, depthOrArrayLayers: 1 },
         format: 'rgba8unorm',
-        usage: GPUTextureUsage.OUTPUT_ATTACHMENT,
+        usage: GPUTextureUsage.RENDER_ATTACHMENT,
       })
       .createView();
     return encoder.beginRenderPass({
@@ -189,14 +189,14 @@ export class BufferSyncTest extends GPUTest {
     encoder.copyTextureToBuffer(
       { texture: tmpTexture, mipLevel: 0, origin: { x: 0, y: 0, z: 0 } },
       { buffer, bytesPerRow: 256 },
-      { width: 1, height: 1, depth: 1 }
+      { width: 1, height: 1, depthOrArrayLayers: 1 }
     );
   }
 
   // Write buffer via writeBuffer API on queue
   writeByWriteBuffer(buffer, value) {
     const data = new Uint32Array(kSize / 4).fill(value);
-    this.device.defaultQueue.writeBuffer(buffer, 0, data);
+    this.device.queue.writeBuffer(buffer, 0, data);
   }
 
   // Issue write operation via render pass, compute pass, copy, etc.
@@ -234,7 +234,7 @@ export class BufferSyncTest extends GPUTest {
     } else {
       const encoder = this.device.createCommandEncoder();
       await this.encodeWriteOp(encoder, writeOp, buffer, value);
-      this.device.defaultQueue.submit([encoder.finish()]);
+      this.device.queue.submit([encoder.finish()]);
     }
   }
 

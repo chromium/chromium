@@ -50,8 +50,8 @@ g.test('store_op_and_read_only')
 
     const depthAttachment = t.device.createTexture({
       format: 'depth24plus-stencil8',
-      size: { width: 1, height: 1, depth: 1 },
-      usage: GPUTextureUsage.OUTPUT_ATTACHMENT,
+      size: { width: 1, height: 1, depthOrArrayLayers: 1 },
+      usage: GPUTextureUsage.RENDER_ATTACHMENT,
     });
 
     const depthAttachmentView = depthAttachment.createView();

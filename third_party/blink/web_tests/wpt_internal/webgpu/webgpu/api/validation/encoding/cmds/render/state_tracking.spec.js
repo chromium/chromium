@@ -54,7 +54,7 @@ class F extends ValidationTest {
           {
             arrayStride: 3 * 4,
             attributes: range(bufferCount, i => ({
-              format: 'float3',
+              format: 'float32x3',
               offset: 0,
               shaderLocation: i,
             })),
@@ -67,8 +67,8 @@ class F extends ValidationTest {
   beginRenderPass(commandEncoder) {
     const attachmentTexture = this.device.createTexture({
       format: 'rgba8unorm',
-      size: { width: 16, height: 16, depth: 1 },
-      usage: GPUTextureUsage.OUTPUT_ATTACHMENT,
+      size: { width: 16, height: 16, depthOrArrayLayers: 1 },
+      usage: GPUTextureUsage.RENDER_ATTACHMENT,
     });
 
     return commandEncoder.beginRenderPass({

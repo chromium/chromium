@@ -213,8 +213,8 @@ class PrimitiveTopologyTest extends GPUTest {
   makeAttachmentTexture() {
     return this.device.createTexture({
       format: kColorFormat,
-      size: { width: kRTSize, height: kRTSize, depth: 1 },
-      usage: GPUTextureUsage.OUTPUT_ATTACHMENT | GPUTextureUsage.COPY_SRC,
+      size: { width: kRTSize, height: kRTSize, depthOrArrayLayers: 1 },
+      usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.COPY_SRC,
     });
   }
 
@@ -281,7 +281,7 @@ class PrimitiveTopologyTest extends GPUTest {
               arrayStride: 4 * Float32Array.BYTES_PER_ELEMENT,
               attributes: [
                 {
-                  format: 'float4',
+                  format: 'float32x4',
                   offset: 0,
                   shaderLocation: 0,
                 },
@@ -312,7 +312,7 @@ class PrimitiveTopologyTest extends GPUTest {
 
     renderPass.endPass();
 
-    this.device.defaultQueue.submit([encoder.finish()]);
+    this.device.queue.submit([encoder.finish()]);
 
     for (const testPixel of testLocations) {
       this.expectSinglePixelIn2DTexture(

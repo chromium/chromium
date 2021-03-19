@@ -102,6 +102,15 @@ export const listing = [
       "api",
       "operation",
       "command_buffer",
+      "image_copy"
+    ],
+    "description": "writeTexture + copyBufferToTexture + copyTextureToBuffer operation tests.\n\n* copy_with_various_rows_per_image_and_bytes_per_row: test that copying data with various bytesPerRow (including { ==, > } bytesInACompleteRow) and rowsPerImage (including { ==, > } copyExtent.height) values and minimum required bytes in copy works for every format. Also covers special code paths:\n  - bufferSize - offset < bytesPerImage * copyExtent.depthOrArrayLayers\n  - when bytesPerRow is not a multiple of 512 and copyExtent.depthOrArrayLayers > 1: copyExtent.depthOrArrayLayers % 2 == { 0, 1 }\n  - bytesPerRow == bytesInACompleteCopyImage\n\n* copy_with_various_offsets_and_data_sizes: test that copying data with various offset (including { ==, > } 0 and is/isn't power of 2) values and additional data paddings works for every format with 2d and 2d-array textures. Also covers special code paths:\n  - offset + bytesInCopyExtentPerRow { ==, > } bytesPerRow\n  - offset > bytesInACompleteCopyImage\n\n* copy_with_various_origins_and_copy_extents: test that copying slices of a texture works with various origin (including { origin.x, origin.y, origin.z } { ==, > } 0 and is/isn't power of 2) and copyExtent (including { copyExtent.x, copyExtent.y, copyExtent.z } { ==, > } 0 and is/isn't power of 2) values (also including {origin._ + copyExtent._ { ==, < } the subresource size of textureCopyView) works for all formats. origin and copyExtent values are passed as [number, number, number] instead of GPUExtent3DDict.\n\n* copy_various_mip_levels: test that copying various mip levels works for all formats. Also covers special code paths:\n  - the physical size of the subresouce is not equal to the logical size\n  - bufferSize - offset < bytesPerImage * copyExtent.depthOrArrayLayers and copyExtent needs to be clamped\n\n* copy_with_no_image_or_slice_padding_and_undefined_values: test that when copying a single row we can set any bytesPerRow value and when copying a single slice we can set rowsPerImage to 0. Also test setting offset, rowsPerImage, mipLevel, origin, origin.{x,y,z} to undefined.\n\n* TODO:\n  - add another initMethod which renders the texture\n  - test copyT2B with buffer size not divisible by 4 (not done because expectContents 4-byte alignment)\n  - add tests for 1d / 3d textures\n\nTODO: Fix this test for the various skipped formats:\n- snorm tests failing due to rounding\n- float tests failing because float values are not byte-preserved\n- compressed formats"
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "command_buffer",
       "programmable",
       "state_tracking"
     ],
@@ -134,7 +143,7 @@ export const listing = [
       "render",
       "state_tracking"
     ],
-    "description": "Ensure state is set correctly. Tries to stress state caching (setting different states multiple\ntimes in different orders) for setIndexBuffer and setVertexBuffer.\nEquivalent tests for setBindGroup and setPipeline are in programmable/state_tracking.spec.ts.\nEquivalent tests for viewport/scissor/blend/reference are in render/dynamic_state.spec.ts\n\nTODO: plan and implement\n- try setting states multiple times in different orders, check state is correct in a draw call.\n    - setIndexBuffer: specifically test changing the format, offset, size, without changing the buffer\n    - setVertexBuffer: specifically test changing the offset, size, without changing the buffer\n- try changing the pipeline {before,after} the vertex/index buffers.\n  (In D3D12, the vertex buffer stride is part of SetVertexBuffer instead of the pipeline.)"
+    "description": "Ensure state is set correctly. Tries to stress state caching (setting different states multiple\ntimes in different orders) for setIndexBuffer and setVertexBuffer.\nEquivalent tests for setBindGroup and setPipeline are in programmable/state_tracking.spec.ts.\nEquivalent tests for viewport/scissor/blend/reference are in render/dynamic_state.spec.ts\n\nTODO: plan and implement\n- try setting states multiple times in different orders, check state is correct in a draw call.\n    - setIndexBuffer: specifically test changing the format, offset, size, without changing the buffer\n    - setVertexBuffer: specifically test changing the offset, size, without changing the buffer\n- try changing the pipeline {before,after} the vertex/index buffers.\n  (In D3D12, the vertex buffer stride is part of SetVertexBuffer instead of the pipeline.)\n- Test that drawing after having set vertex buffer slots not used by the pipeline.\n- Test that setting / not setting the index buffer does not impact a non-indexed draw."
   },
   {
     "file": [
@@ -153,14 +162,6 @@ export const listing = [
       "entry_point_name"
     ],
     "description": "TODO:\n- Test some weird but valid values for entry point name (both module and pipeline creation\n  should succeed).\n- Test using each of many entry points in the module (should succeed).\n- Test using an entry point with the wrong stage (should fail)."
-  },
-  {
-    "file": [
-      "api",
-      "operation",
-      "copyBetweenLinearDataAndTexture"
-    ],
-    "description": "writeTexture + copyBufferToTexture + copyTextureToBuffer operation tests.\n\n* copy_with_various_rows_per_image_and_bytes_per_row: test that copying data with various bytesPerRow (including { ==, > } bytesInACompleteRow) and rowsPerImage (including { ==, > } copyExtent.height) values and minimum required bytes in copy works for every format. Also covers special code paths:\n  - bufferSize - offset < bytesPerImage * copyExtent.depth\n  - when bytesPerRow is not a multiple of 512 and copyExtent.depth > 1: copyExtent.depth % 2 == { 0, 1 }\n  - bytesPerRow == bytesInACompleteCopyImage\n\n* copy_with_various_offsets_and_data_sizes: test that copying data with various offset (including { ==, > } 0 and is/isn't power of 2) values and additional data paddings works for every format with 2d and 2d-array textures. Also covers special code paths:\n  - offset + bytesInCopyExtentPerRow { ==, > } bytesPerRow\n  - offset > bytesInACompleteCopyImage\n\n* copy_with_various_origins_and_copy_extents: test that copying slices of a texture works with various origin (including { origin.x, origin.y, origin.z } { ==, > } 0 and is/isn't power of 2) and copyExtent (including { copyExtent.x, copyExtent.y, copyExtent.z } { ==, > } 0 and is/isn't power of 2) values (also including {origin._ + copyExtent._ { ==, < } the subresource size of textureCopyView) works for all formats. origin and copyExtent values are passed as [number, number, number] instead of GPUExtent3DDict.\n\n* copy_various_mip_levels: test that copying various mip levels works for all formats. Also covers special code paths:\n  - the physical size of the subresouce is not equal to the logical size\n  - bufferSize - offset < bytesPerImage * copyExtent.depth and copyExtent needs to be clamped\n\n* copy_with_no_image_or_slice_padding_and_undefined_values: test that when copying a single row we can set any bytesPerRow value and when copying a single slice we can set rowsPerImage to 0. Also test setting offset, rowsPerImage, mipLevel, origin, origin.{x,y,z} to undefined.\n\n* TODO:\n  - add another initMethod which renders the texture\n  - test copyT2B with buffer size not divisible by 4 (not done because expectContents 4-byte alignment)\n  - add tests for 1d / 3d textures"
   },
   {
     "file": [
@@ -258,7 +259,7 @@ export const listing = [
       "queue",
       "writeBuffer"
     ],
-    "description": "TODO:\n- source.origin is unaligned\n- data given as ArrayBuffer\n- data given as each TypedArray variant"
+    "description": "Operation tests for GPUQueue.writeBuffer()"
   },
   {
     "file": [
@@ -365,16 +366,7 @@ export const listing = [
       "rendering",
       "draw"
     ],
-    "description": "Tests for the general aspects of draw/drawIndexed/drawIndirect/drawIndexedIndirect.\n\nTODO: plan and implement\n- draws (note bind group state is not tested here):\n    - various zero-sized draws\n    - draws with vertexCount not aligned to primitive topology (line-list or triangle-list) (should not error)\n    - index buffer is {unset, set}\n    - vertex buffers are {unset, set} (some that the pipeline uses, some it doesn't)\n      (note: to test this, the shader in the pipeline doesn't have to actually use inputs)\n    - x= {draw, drawIndexed, drawIndirect, drawIndexedIndirect}\n- ?"
-  },
-  {
-    "file": [
-      "api",
-      "operation",
-      "rendering",
-      "indexed_draw"
-    ],
-    "description": "Tests for the indexing-specific aspects of drawIndexed/drawIndexedIndirect.\n\nTODO: plan and implement\n- Test indexed draws with the combinations:\n  - Renderable cases:\n    - indexCount {=, >} the required points of primitive topology and\n      {<, =} the size of index buffer\n    - instanceCount is {1, largeish}\n    - {firstIndex, baseVertex, firstInstance} = 0\n    - firstIndex  {<, =} the size of index buffer\n  - Not renderable cases:\n    - indexCount = 0\n    - indexCount < the required points of primitive topology\n    - instanceCount = {undefined, 0}\n    - firstIndex out of buffer range\n    - firstIndex largeish\n  - x = {drawIndexed, drawIndexedIndirect}\n  - x = index formats\n- ?"
+    "description": "Tests for the general aspects of draw/drawIndexed/drawIndirect/drawIndexedIndirect.\n\nPrimitive topology tested in api/operation/render_pipeline/primitive_topology.spec.ts.\nIndex format tested in api/operation/command_buffer/render/state_tracking.spec.ts.\n\nTODO:\n* arguments - Test that draw arguments are passed correctly.\n  Test works by drawing triangles to the screen.\n  Horizontally across the screen are triangles with increasing \"primitive id\".\n  Vertically down the screen are triangles with increasing instance id.\n  Increasing the |first| param should skip some of the beginning triangles on the horizontal axis.\n  Increasing the |first_instance| param should skip of the beginning triangles on the vertical axis.\n  The vertex buffer contains two side-by-side triangles, and base_vertex is used to offset to select the second.\n  The test checks that the center of all of the expected triangles is drawn, and the others are empty.\n  The fragment shader also writes out to a storage buffer. If the draw is zero-sized, check that no value is written.\n\n  Params:\n  - count= {0, non-zero} either the vertexCount or indexCount\n  - instance_count= {0, non-zero}\n  - first={0, non-zero} - either the firstVertex or firstIndex\n  - first_instance={0, non-zero}\n  - mode= {draw, drawIndexed, drawIndirect, drawIndexedIndirect}\n  - base_vertex= {0, non-zero} - only for indexed draws\n\n* default_arguments - Test defaults to draw / drawIndexed.\n  - arg= {instance_count, first, first_instance, base_vertex}\n  - mode= {draw, drawIndexed}\n\n* vertex_attributes - Test fetching of vertex attributes\n  Each vertex attribute is a single value and written to one component of an output attachment.\n  4 components x 4 attachments is enough for 16 attributes. The test draws a grid of points\n  with a fixed number of primitives and instances.\n  Horizontally across the screen are primitives with increasing \"primitive id\".\n  Vertically down the screen are primitives with increasing instance id.\n\n  Params:\n  - vertex_attributes= {0, 1, max}\n  - vertex_buffer_count={0, 1, max} - where # attributes is > 0\n  - step_mode= {vertex, instanced, mixed} - where mixed only applies for vertex_attributes > 1\n\n* unaligned_vertex_count - Test that drawing with a number of vertices that's not a multiple of the vertices a given primitive list topology is not an error. The last primitive is not drawn.\n  - primitive_topology= {line-list, triangle-list}\n  - mode= {draw, drawIndexed, drawIndirect, drawIndexedIndirect}"
   },
   {
     "file": [
@@ -383,7 +375,7 @@ export const listing = [
       "rendering",
       "indirect_draw"
     ],
-    "description": "Tests for the indirect-specific aspects of drawIndirect/drawIndexedIndirect.\n\nTODO: plan and implement\n- indirect draws:\n    - indirectBuffer is {valid, invalid, destroyed, doesn't have usage)\n    - indirectOffset is {\n        - 0, 1, 4\n        - b.size - sizeof(args struct)\n        - b.size - sizeof(args struct) + min alignment (1 or 2 or 4)\n        - }\n    - x= {drawIndirect, drawIndexedIndirect}\n- ?"
+    "description": "Tests for the indirect-specific aspects of drawIndirect/drawIndexedIndirect.\n\nTODO:\n* parameter_packing - Test that the indirect draw parameters are tightly packed.\n  - offset= {0, 4, k * sizeof(args struct), k * sizeof(args struct) + 4}\n  - mode= {drawIndirect, drawIndexedIndirect}"
   },
   {
     "file": [
@@ -410,7 +402,7 @@ export const listing = [
       "sampling",
       "anisotropy"
     ],
-    "description": "Tests the behavior of anisotropic filtering.\n\nTODO:\nNote that anisotropic filtering is never guaranteed to occur, but we might be able to test some\nthings. If there are no guarantees we can issue warnings instead of failures. Ideas:\n  - No *more* than the provided maxAnisotropy samples are used, by testing how many unique\n    sample values come out of the sample operation.\n  - Result with and without anisotropic filtering is different (if the hardware supports it).\n  - Check anisotropy is done in the correct direciton (by having a 2D gradient and checking we get\n    more of the color in the correct direction).\nMore generally:\n  - Test very large and very small values (even if tests are very weak)."
+    "description": "Tests the behavior of anisotropic filtering.\n\nTODO:\nNote that anisotropic filtering is never guaranteed to occur, but we might be able to test some\nthings. If there are no guarantees we can issue warnings instead of failures. Ideas:\n  - No *more* than the provided maxAnisotropy samples are used, by testing how many unique\n    sample values come out of the sample operation.\n  - Check anisotropy is done in the correct direciton (by having a 2D gradient and checking we get\n    more of the color in the correct direction)."
   },
   {
     "file": [
@@ -555,35 +547,19 @@ export const listing = [
       "api",
       "validation",
       "capability_checks",
+      "features",
+      "queries"
+    ],
+    "description": ""
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
       "limits"
     ],
     "readme": "Test everything that shouldn't be valid without a higher-than-specified limit.\n\n- x= that limit {default, max supported (if different), lower than default (TODO: if allowed)}\n\nOne file for each limit name.\n\nTODO: implement"
-  },
-  {
-    "file": [
-      "api",
-      "validation",
-      "copy_between_linear_data_and_texture"
-    ],
-    "readme": "writeTexture + copyBufferToTexture + copyTextureToBuffer validation tests.\n\nTest coverage:\n* resource usages:\n\t- texture_usage_must_be_valid: for GPUTextureUsage::COPY_SRC, GPUTextureUsage::COPY_DST flags.\n\t- TODO: buffer_usage_must_be_valid\n\n* textureCopyView:\n\t- texture_must_be_valid: for valid, destroyed, error textures.\n\t- sample_count_must_be_1: for sample count 1 and 4.\n\t- mip_level_must_be_in_range: for various combinations of mipLevel and mipLevelCount.\n\t- texel_block_alignment_on_origin: for all formats and coordinates.\n\n* bufferCopyView:\n\t- TODO: buffer_must_be_valid\n\t- TODO: bytes_per_row_alignment\n\n* linear texture data:\n\t- bound_on_rows_per_image: for various combinations of copyDepth (1, >1), copyHeight, rowsPerImage.\n\t- offset_plus_required_bytes_in_copy_overflow\n\t- required_bytes_in_copy: testing minimal data size and data size too small for various combinations of bytesPerRow, rowsPerImage, copyExtent and offset. for the copy method, bytesPerRow is computed as bytesInACompleteRow aligned to be a multiple of 256 + bytesPerRowPadding * 256.\n\t- texel_block_alignment_on_rows_per_image: for all formats.\n\t- texel_block_alignment_on_offset: for all formats.\n\t- bound_on_bytes_per_row: for all formats and various combinations of bytesPerRow and copyExtent. for writeTexture, bytesPerRow is computed as (blocksPerRow * blockWidth * bytesPerBlock + additionalBytesPerRow) and copyExtent.width is computed as copyWidthInBlocks * blockWidth. for the copy methods, both values are mutliplied by 256.\n\t- bound_on_offset: for various combinations of offset and dataSize.\n\n* texture copy range:\n\t- 1d_texture: copyExtent.height isn't 1, copyExtent.depth isn't 1.\n\t- texel_block_alignment_on_size: for all formats and coordinates.\n\t- texture_range_conditons: for all coordinate and various combinations of origin, copyExtent, textureSize and mipLevel.\n\nTODO: more test coverage for 1D and 3D textures."
-  },
-  {
-    "file": [
-      "api",
-      "validation",
-      "copy_between_linear_data_and_texture",
-      "copyBetweenLinearDataAndTexture_dataRelated"
-    ],
-    "description": ""
-  },
-  {
-    "file": [
-      "api",
-      "validation",
-      "copy_between_linear_data_and_texture",
-      "copyBetweenLinearDataAndTexture_textureRelated"
-    ],
-    "description": ""
   },
   {
     "file": [
@@ -613,14 +589,6 @@ export const listing = [
     "file": [
       "api",
       "validation",
-      "createQuerySet"
-    ],
-    "description": "Tests for validation inside createQuerySet.\n\nTODO"
-  },
-  {
-    "file": [
-      "api",
-      "validation",
       "createRenderPipeline"
     ],
     "description": "createRenderPipeline validation tests.\n\nTODO: review existing tests, write descriptions, and make sure tests are complete.\n      Make sure the following is covered. Consider splitting the file if too large/disjointed.\n> - various attachment problems\n>\n> - interface matching between vertex and fragment shader\n>     - superset, subset, etc.\n>\n> - vertexStage {valid, invalid}\n> - fragmentStage {valid, invalid}\n> - primitiveTopology all possible values\n> - rasterizationState various values\n> - sampleCount {0, 1, 3, 4, 8, 16, 1024}\n> - sampleMask {0, 0xFFFFFFFF}\n> - alphaToCoverage:\n>     - alphaToCoverageEnabled is { true, false } and sampleCount { = 1, = 4 }.\n>       The only failing case is (true, 1).\n>     - output SV_Coverage semantics is statically used by fragmentStage and\n>       alphaToCoverageEnabled is { true (fails), false (passes) }.\n>     - sampleMask is being used and alphaToCoverageEnabled is { true (fails), false (passes) }."
@@ -639,7 +607,7 @@ export const listing = [
       "validation",
       "createTexture"
     ],
-    "description": "createTexture validation tests.\n\nTODO: review existing tests and merge with this plan:\n> All x= every texture format\n>\n> - {any dimension, mipLevelCount} = 0\n>     - x= every texture format\n> - sampleCount = {0, 1, 4, 8, 16, 256} with format/dimension that supports multisample\n>     - x= every texture format\n> - sampleCount = {1, 4}\n>     - with format that supports multisample, with all possible dimensions\n>     - with dimension that support multisample, with all possible formats\n>     - with format-dimension that support multisample, with {mipLevelCount, array layer count} = {1, 2}\n> - 1d, {width, height, depth} > whatever the max is\n>     - height max is 1 (unless 1d-array is added)\n>     - depth max is 1\n>     - x= every texture format\n> - 2d, {width, height, depth} > whatever the max is\n>     - depth (array layers) max differs from width/height\n>     - x= every texture format\n> - 3d, {width, height, depth} > whatever the max is\n>     - x= every texture format\n> - usage flags\n>     - {0, ... each single usage flag}\n>     - x= every texture format\n> - every possible pair of usage flags\n>     - with one common texture format\n> - any other conditions from the spec\n> - ...?\n\nTODO: move destroy tests out of this file"
+    "description": "createTexture validation tests."
   },
   {
     "file": [
@@ -674,7 +642,7 @@ export const listing = [
       "cmds",
       "buffer_texture_copies"
     ],
-    "description": "copyTextureToBuffer and copyBufferToTexture validation tests not covered by\ncopy_between_linear_data_and_texture or destroyed,*.\n\nTODO: plan"
+    "description": "copyTextureToBuffer and copyBufferToTexture validation tests not covered by\nthe general image_copy tests, or by destroyed,*.\n\nTODO:\nAdd tests to cover the validation rule that source.offset is a multiple of the texel block size of\ndestination.texture.[[format]]."
   },
   {
     "file": [
@@ -704,7 +672,7 @@ export const listing = [
       "cmds",
       "copyTextureToTexture"
     ],
-    "description": "copyTextureToTexture tests.\n\nTest Plan: (TODO(jiawei.shao@intel.com): add tests on aspects and 1D/3D textures)\n* the source and destination texture\n  - the {source, destination} texture is {invalid, valid}.\n  - mipLevel {>, =, <} the mipmap level count of the {source, destination} texture.\n  - the source texture is created {with, without} GPUTextureUsage::CopySrc.\n  - the destination texture is created {with, without} GPUTextureUsage::CopyDst.\n* sample count\n  - the sample count of the source texture {is, isn't} equal to the one of the destination texture\n  - when the sample count is greater than 1:\n    - it {is, isn't} a copy of the whole subresource of the source texture.\n    - it {is, isn't} a copy of the whole subresource of the destination texture.\n* texture format\n  - the format of the source texture {is, isn't} equal to the one of the destination texture.\n    - including: depth24plus-stencil8 to/from {depth24plus, stencil8}.\n  - for each depth and/or stencil format: a copy between two textures with same format:\n    - it {is, isn't} a copy of the whole subresource of the {source, destination} texture.\n* copy ranges\n  - if the texture dimension is 2D:\n    - (srcOrigin.x + copyExtent.width) {>, =, <} the width of the subresource size of source\n      textureCopyView.\n    - (srcOrigin.y + copyExtent.height) {>, =, <} the height of the subresource size of source\n      textureCopyView.\n    - (srcOrigin.z + copyExtent.depth) {>, =, <} the depth of the subresource size of source\n      textureCopyView.\n    - (dstOrigin.x + copyExtent.width) {>, =, <} the width of the subresource size of destination\n      textureCopyView.\n    - (dstOrigin.y + copyExtent.height) {>, =, <} the height of the subresource size of destination\n      textureCopyView.\n    - (dstOrigin.z + copyExtent.depth) {>, =, <} the depth of the subresource size of destination\n      textureCopyView.\n* when the source and destination texture are the same one:\n  - the set of source texture subresources {has, doesn't have} overlaps with the one of destination\n    texture subresources."
+    "description": "copyTextureToTexture tests.\n\nTest Plan: (TODO(jiawei.shao@intel.com): add tests on 1D/3D textures)\n* the source and destination texture\n  - the {source, destination} texture is {invalid, valid}.\n  - mipLevel {>, =, <} the mipmap level count of the {source, destination} texture.\n  - the source texture is created {with, without} GPUTextureUsage::CopySrc.\n  - the destination texture is created {with, without} GPUTextureUsage::CopyDst.\n* sample count\n  - the sample count of the source texture {is, isn't} equal to the one of the destination texture\n  - when the sample count is greater than 1:\n    - it {is, isn't} a copy of the whole subresource of the source texture.\n    - it {is, isn't} a copy of the whole subresource of the destination texture.\n* texture format\n  - the format of the source texture {is, isn't} equal to the one of the destination texture.\n    - including: depth24plus-stencil8 to/from {depth24plus, stencil8}.\n  - for each depth and/or stencil format: a copy between two textures with same format:\n    - it {is, isn't} a copy of the whole subresource of the {source, destination} texture.\n* copy ranges\n  - if the texture dimension is 2D:\n    - (srcOrigin.x + copyExtent.width) {>, =, <} the width of the subresource size of source\n      textureCopyView.\n    - (srcOrigin.y + copyExtent.height) {>, =, <} the height of the subresource size of source\n      textureCopyView.\n    - (srcOrigin.z + copyExtent.depthOrArrayLayers) {>, =, <} the depthOrArrayLayers of the subresource size of source\n      textureCopyView.\n    - (dstOrigin.x + copyExtent.width) {>, =, <} the width of the subresource size of destination\n      textureCopyView.\n    - (dstOrigin.y + copyExtent.height) {>, =, <} the height of the subresource size of destination\n      textureCopyView.\n    - (dstOrigin.z + copyExtent.depthOrArrayLayers) {>, =, <} the depthOrArrayLayers of the subresource size of destination\n      textureCopyView.\n* when the source and destination texture are the same one:\n  - the set of source texture subresources {has, doesn't have} overlaps with the one of destination\n    texture subresources."
   },
   {
     "file": [
@@ -746,7 +714,7 @@ export const listing = [
       "render",
       "other"
     ],
-    "description": "Does **not** test usage scopes (resource_usages/), programmable pass stuff (programmable,*),\nor state tracking (state_tracking).\n\nTODO: plan and implement. Notes:\n> All x= {render pass, render bundle}\n>\n> - setPipeline\n>     - {valid, invalid} GPURenderPipeline\n> - setIndexBuffer\n>     - buffer is {valid, invalid, doesn't have usage)\n>     - (offset, size) is\n>         - (0, 0)\n>         - (0, 1)\n>         - (0, 4)\n>         - (0, 5)\n>         - (0, b.size)\n>         - (min alignment, b.size - 4)\n>         - (4, b.size - 4)\n>         - (b.size - 4, 4)\n>         - (b.size, min size)\n>         - (0, min size), and if that's valid:\n>             - (b.size - min size, min size)\n> - setVertexBuffer\n>     - slot is {0, max, max+1}\n>     - buffer is {valid, invalid,  doesn't have usage)\n>     - (offset, size) is like above"
+    "description": "Does **not** test usage scopes (resource_usages/), programmable pass stuff (programmable,*),\nor state tracking (state_tracking).\n\nTODO: plan and implement. Notes:\n> All x= {render pass, render bundle}\n>\n> - setPipeline\n>     - {valid, invalid} GPURenderPipeline\n> - setIndexBuffer\n>     - buffer is {valid, invalid, doesn't have usage)\n>     - (offset, size) is\n>         - (0, 0)\n>         - (0, 1)\n>         - (0, 4)\n>         - (0, 5)\n>         - (0, b.size)\n>         - (min alignment, b.size - 4)\n>         - (4, b.size - 4)\n>         - (b.size - 4, 4)\n>         - (b.size, min size)\n>         - (0, min size), and if that's valid:\n>             - (b.size - min size, min size)\n> - setVertexBuffer\n>     - slot is {0, max, max+1}\n>     - buffer is {valid, invalid,  doesn't have usage)\n>     - (offset, size) is like above\n> - drawIndirect / drawIndexedIndirect\n>     - buffer is {valid, invalid, doesn't have usage)\n>     - (offset, b.size) is\n>         - (0, 0)\n>         - (0, min size - min alignment)\n>         - (0, min size - 1)\n>         - (0, min size)\n>         - (min alignment, min size + min alignment)\n>         - (min alignment, min alignment + min size - 1)\n>         - (min alignment +/- 1, min size + alignment)"
   },
   {
     "file": [
@@ -816,7 +784,7 @@ export const listing = [
       "queries",
       "general"
     ],
-    "description": "TODO:\n\n- For each way to start a query (all possible types in all possible encoders):\n    - queryIndex {in, out of} range for GPUQuerySet\n    - GPUQuerySet {valid, invalid}\n        - or {undefined}, for occlusionQuerySet\n    - ?"
+    "description": "TODO:\n\n- For each way to start a query (all possible types in all possible encoders):\n    - queryIndex {in, out of} range for GPUQuerySet\n    - GPUQuerySet {valid, invalid}\n        - or {undefined}, for occlusionQuerySet\n    - x = {occlusion, pipeline statistics, timestamp} query"
   },
   {
     "file": [
@@ -846,7 +814,7 @@ export const listing = [
       "queries",
       "resolveQuerySet"
     ],
-    "description": "TODO:\n- invalid GPUQuerySet\n- firstQuery and/or queryCount out of range\n- invalid destination buffer\n- destinationOffset out of range\n- ?"
+    "description": "Validation tests for resolveQuerySet."
   },
   {
     "file": [
@@ -887,6 +855,32 @@ export const listing = [
     "file": [
       "api",
       "validation",
+      "image_copy"
+    ],
+    "readme": "writeTexture + copyBufferToTexture + copyTextureToBuffer validation tests.\n\nTest coverage:\n* resource usages:\n\t- texture_usage_must_be_valid: for GPUTextureUsage::COPY_SRC, GPUTextureUsage::COPY_DST flags.\n\t- TODO: buffer_usage_must_be_valid\n\n* textureCopyView:\n\t- texture_must_be_valid: for valid, destroyed, error textures.\n\t- sample_count_must_be_1: for sample count 1 and 4.\n\t- mip_level_must_be_in_range: for various combinations of mipLevel and mipLevelCount.\n\t- texel_block_alignment_on_origin: for all formats and coordinates.\n\n* bufferCopyView:\n\t- TODO: buffer_must_be_valid\n\t- TODO: bytes_per_row_alignment\n\n* linear texture data:\n\t- bound_on_rows_per_image: for various combinations of copyDepth (1, >1), copyHeight, rowsPerImage.\n\t- offset_plus_required_bytes_in_copy_overflow\n\t- required_bytes_in_copy: testing minimal data size and data size too small for various combinations of bytesPerRow, rowsPerImage, copyExtent and offset. for the copy method, bytesPerRow is computed as bytesInACompleteRow aligned to be a multiple of 256 + bytesPerRowPadding * 256.\n\t- texel_block_alignment_on_rows_per_image: for all formats.\n\t- texel_block_alignment_on_offset: for all formats.\n\t- bound_on_bytes_per_row: for all formats and various combinations of bytesPerRow and copyExtent. for writeTexture, bytesPerRow is computed as (blocksPerRow * blockWidth * bytesPerBlock + additionalBytesPerRow) and copyExtent.width is computed as copyWidthInBlocks * blockWidth. for the copy methods, both values are mutliplied by 256.\n\t- bound_on_offset: for various combinations of offset and dataSize.\n\n* texture copy range:\n\t- 1d_texture: copyExtent.height isn't 1, copyExtent.depthOrArrayLayers isn't 1.\n\t- texel_block_alignment_on_size: for all formats and coordinates.\n\t- texture_range_conditons: for all coordinate and various combinations of origin, copyExtent, textureSize and mipLevel.\n\nTODO: more test coverage for 1D and 3D textures."
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "image_copy",
+      "layout_related"
+    ],
+    "description": ""
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "image_copy",
+      "texture_related"
+    ],
+    "description": ""
+  },
+  {
+    "file": [
+      "api",
+      "validation",
       "initialization",
       "requestDevice"
     ],
@@ -905,6 +899,15 @@ export const listing = [
       "api",
       "validation",
       "query_set",
+      "create"
+    ],
+    "description": "Tests for validation in createQuerySet."
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "query_set",
       "destroy"
     ],
     "description": "Destroying a query set more than once is allowed."
@@ -915,7 +918,7 @@ export const listing = [
       "validation",
       "queue"
     ],
-    "readme": "Tests for validation that occurs inside queued operations\n(submit, writeBuffer, writeTexture, copyImageBitmapToTexture).\n\nBufferMapStatesToTest = {\n  mapped -> unmapped,\n  mapped at creation -> unmapped,\n  mapping pending -> unmapped,\n  pending -> mapped (await map),\n  unmapped -> pending (noawait map),\n  created mapped-at-creation,\n}\n\nNote writeTexture is tested in copyBetweenLinearDataAndTexture."
+    "readme": "Tests for validation that occurs inside queued operations\n(submit, writeBuffer, writeTexture, copyImageBitmapToTexture).\n\nBufferMapStatesToTest = {\n  mapped -> unmapped,\n  mapped at creation -> unmapped,\n  mapping pending -> unmapped,\n  pending -> mapped (await map),\n  unmapped -> pending (noawait map),\n  created mapped-at-creation,\n}\n\nNote writeTexture is tested in image_copy."
   },
   {
     "file": [
@@ -1088,7 +1091,7 @@ export const listing = [
       "validation",
       "vertex_state"
     ],
-    "description": "vertexState validation tests.\n\nTODO: review existing tests, write descriptions, and make sure tests are complete.\n      Make sure the following is covered.\n> - In createRenderPipeline():\n> - An attribute is unused by the shader\n> - If invalid, test these (if valid, they should be operation tests instead):\n>     - Vertex buffer with zero attributes\n>     - Overlapping attributes\n>         - Verify correct sizing of every vertex format\n>     - Overlapping vertex buffer elements (an attribute offset + its size > arrayStride)\n>     - Shader tries to use an attribute location that's not bound\n>     - Alignment constraints on attributes, if any\n>     - Alignment constraints on arrayStride, if any"
+    "description": "vertexState validation tests."
   },
   {
     "file": [
@@ -1144,6 +1147,23 @@ export const listing = [
       "validation"
     ],
     "readme": "Positive and negative tests for all the validation rules of the shading language."
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "variable_and_const"
+    ],
+    "description": "Positive and negative validation tests for variable and const."
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "wgsl",
+      "basic"
+    ],
+    "description": "Basic WGSL validation tests to test the ShaderValidationTest fixture."
   },
   {
     "file": [

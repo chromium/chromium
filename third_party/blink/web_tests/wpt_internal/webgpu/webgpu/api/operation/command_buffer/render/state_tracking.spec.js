@@ -12,6 +12,8 @@ TODO: plan and implement
     - setVertexBuffer: specifically test changing the offset, size, without changing the buffer
 - try changing the pipeline {before,after} the vertex/index buffers.
   (In D3D12, the vertex buffer stride is part of SetVertexBuffer instead of the pipeline.)
+- Test that drawing after having set vertex buffer slots not used by the pipeline.
+- Test that setting / not setting the index buffer does not impact a non-indexed draw.
 `;
 import { makeTestGroup } from '../../../../../common/framework/test_group.js';
 import { GPUTest } from '../../../../gpu_test.js';

@@ -80,7 +80,7 @@ g.test('increasing_fence_value_by_more_than_1_succeeds').fn(async t => {
 g.test('signal_a_fence_on_a_different_device_than_it_was_created_on_is_invalid').fn(async t => {
   const anotherDevice = await t.device.adapter.requestDevice();
   assert(anotherDevice !== null);
-  const fence = anotherDevice.defaultQueue.createFence();
+  const fence = anotherDevice.queue.createFence();
 
   t.expectValidationError(() => {
     t.queue.signal(fence, 2);
@@ -90,7 +90,7 @@ g.test('signal_a_fence_on_a_different_device_than_it_was_created_on_is_invalid')
 g.test('signal_a_fence_on_a_different_device_does_not_update_fence_signaled_value').fn(async t => {
   const anotherDevice = await t.device.adapter.requestDevice();
   assert(anotherDevice !== null);
-  const fence = anotherDevice.defaultQueue.createFence({ initialValue: 1 });
+  const fence = anotherDevice.queue.createFence({ initialValue: 1 });
 
   t.expectValidationError(() => {
     t.queue.signal(fence, 2);
@@ -100,7 +100,7 @@ g.test('signal_a_fence_on_a_different_device_does_not_update_fence_signaled_valu
 
   anotherDevice.pushErrorScope('validation');
 
-  anotherDevice.defaultQueue.signal(fence, 2);
+  anotherDevice.queue.signal(fence, 2);
   await fence.onCompletion(2);
   t.expect(fence.getCompletedValue() === 2);
 

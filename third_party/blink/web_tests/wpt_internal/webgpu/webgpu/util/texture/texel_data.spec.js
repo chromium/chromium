@@ -31,7 +31,7 @@ function doTest(t) {
     usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.SAMPLED,
   });
 
-  t.device.defaultQueue.writeTexture(
+  t.device.queue.writeTexture(
     { texture },
     texelData,
     {
@@ -44,14 +44,14 @@ function doTest(t) {
   const { ReadbackTypedArray, shaderType } = getComponentReadbackTraits(getSingleDataType(format));
 
   const shader = `
-  [[set(0), binding(0)]] var<uniform_constant> tex : texture_2d<${shaderType}>;
+  [[group(0), binding(0)]] var tex : texture_2d<${shaderType}>;
 
   [[block]] struct Output {
     ${rep.componentOrder
       .map((C, i) => `[[offset(${i * 4})]] result${C} : ${shaderType};`)
       .join('\n')}
   };
-  [[set(0), binding(1)]] var<storage_buffer> output : Output;
+  [[group(0), binding(1)]] var<storage_buffer> output : Output;
 
   [[stage(compute)]]
   fn main() -> void {
@@ -98,7 +98,7 @@ function doTest(t) {
   pass.setBindGroup(0, bindGroup);
   pass.dispatch(1);
   pass.endPass();
-  t.device.defaultQueue.submit([encoder.finish()]);
+  t.device.queue.submit([encoder.finish()]);
 
   t.expectContents(
     outputBuffer,

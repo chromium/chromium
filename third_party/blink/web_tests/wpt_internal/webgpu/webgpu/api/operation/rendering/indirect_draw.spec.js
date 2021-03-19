@@ -3,16 +3,10 @@
  **/ export const description = `
 Tests for the indirect-specific aspects of drawIndirect/drawIndexedIndirect.
 
-TODO: plan and implement
-- indirect draws:
-    - indirectBuffer is {valid, invalid, destroyed, doesn't have usage)
-    - indirectOffset is {
-        - 0, 1, 4
-        - b.size - sizeof(args struct)
-        - b.size - sizeof(args struct) + min alignment (1 or 2 or 4)
-        - }
-    - x= {drawIndirect, drawIndexedIndirect}
-- ?
+TODO:
+* parameter_packing - Test that the indirect draw parameters are tightly packed.
+  - offset= {0, 4, k * sizeof(args struct), k * sizeof(args struct) + 4}
+  - mode= {drawIndirect, drawIndexedIndirect}
 `;
 import { makeTestGroup } from '../../../../common/framework/test_group.js';
 import { GPUTest } from '../../../gpu_test.js';

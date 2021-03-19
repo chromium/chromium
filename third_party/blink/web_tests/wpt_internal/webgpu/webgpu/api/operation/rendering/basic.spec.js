@@ -16,8 +16,8 @@ g.test('clear').fn(async t => {
 
   const colorAttachment = t.device.createTexture({
     format: 'rgba8unorm',
-    size: { width: 1, height: 1, depth: 1 },
-    usage: GPUTextureUsage.COPY_SRC | GPUTextureUsage.OUTPUT_ATTACHMENT,
+    size: { width: 1, height: 1, depthOrArrayLayers: 1 },
+    usage: GPUTextureUsage.COPY_SRC | GPUTextureUsage.RENDER_ATTACHMENT,
   });
 
   const colorAttachmentView = colorAttachment.createView();
@@ -37,10 +37,10 @@ g.test('clear').fn(async t => {
   encoder.copyTextureToBuffer(
     { texture: colorAttachment, mipLevel: 0, origin: { x: 0, y: 0, z: 0 } },
     { buffer: dst, bytesPerRow: 256 },
-    { width: 1, height: 1, depth: 1 }
+    { width: 1, height: 1, depthOrArrayLayers: 1 }
   );
 
-  t.device.defaultQueue.submit([encoder.finish()]);
+  t.device.queue.submit([encoder.finish()]);
 
   t.expectContents(dst, new Uint8Array([0x00, 0xff, 0x00, 0xff]));
 });
@@ -53,8 +53,8 @@ g.test('fullscreen_quad').fn(async t => {
 
   const colorAttachment = t.device.createTexture({
     format: 'rgba8unorm',
-    size: { width: 1, height: 1, depth: 1 },
-    usage: GPUTextureUsage.COPY_SRC | GPUTextureUsage.OUTPUT_ATTACHMENT,
+    size: { width: 1, height: 1, depthOrArrayLayers: 1 },
+    usage: GPUTextureUsage.COPY_SRC | GPUTextureUsage.RENDER_ATTACHMENT,
   });
 
   const colorAttachmentView = colorAttachment.createView();
@@ -64,7 +64,7 @@ g.test('fullscreen_quad').fn(async t => {
       module: t.device.createShaderModule({
         code: `
           [[builtin(position)]] var<out> Position : vec4<f32>;
-          [[builtin(vertex_idx)]] var<in> VertexIndex : i32;
+          [[builtin(vertex_index)]] var<in> VertexIndex : i32;
 
           [[stage(vertex)]] fn main() -> void {
             const pos : array<vec2<f32>, 3> = array<vec2<f32>, 3>(
@@ -115,10 +115,10 @@ g.test('fullscreen_quad').fn(async t => {
   encoder.copyTextureToBuffer(
     { texture: colorAttachment, mipLevel: 0, origin: { x: 0, y: 0, z: 0 } },
     { buffer: dst, bytesPerRow: 256 },
-    { width: 1, height: 1, depth: 1 }
+    { width: 1, height: 1, depthOrArrayLayers: 1 }
   );
 
-  t.device.defaultQueue.submit([encoder.finish()]);
+  t.device.queue.submit([encoder.finish()]);
 
   t.expectContents(dst, new Uint8Array([0x00, 0xff, 0x00, 0xff]));
 });

@@ -54,7 +54,7 @@ g.test('single')
 
     const encoder = t.device.createCommandEncoder();
     encoder.copyBufferToBuffer(src, srcOffset, dst, dstOffset, copySize);
-    t.device.defaultQueue.submit([encoder.finish()]);
+    t.device.queue.submit([encoder.finish()]);
 
     const expectedDstData = new Uint8Array(dstBufferSize);
     for (let i = 0; i < copySize; ++i) {
@@ -94,7 +94,7 @@ g.test('state_transitions')
     const encoder = t.device.createCommandEncoder();
     encoder.copyBufferToBuffer(src, 0, dst, 4, 4);
     encoder.copyBufferToBuffer(dst, 0, src, 4, 4);
-    t.device.defaultQueue.submit([encoder.finish()]);
+    t.device.queue.submit([encoder.finish()]);
 
     const expectedSrcData = new Uint8Array([1, 2, 3, 4, 10, 20, 30, 40]);
     const expectedDstData = new Uint8Array([10, 20, 30, 40, 1, 2, 3, 4]);
@@ -128,7 +128,7 @@ g.test('copy_order')
     const encoder = t.device.createCommandEncoder();
     encoder.copyBufferToBuffer(src, 0, dst, 0, 16);
     encoder.copyBufferToBuffer(src, 16, dst, 8, 16);
-    t.device.defaultQueue.submit([encoder.finish()]);
+    t.device.queue.submit([encoder.finish()]);
 
     const expectedDstData = new Uint32Array([1, 2, 5, 6, 7, 8, 0, 0]);
     t.expectContents(dst, expectedDstData);

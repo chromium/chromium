@@ -40,7 +40,7 @@ class F extends ValidationTest {
     } = options;
 
     return this.device.createTexture({
-      size: { width, height, depth: arrayLayerCount },
+      size: { width, height, depthOrArrayLayers: arrayLayerCount },
       mipLevelCount,
       sampleCount,
       dimension: '2d',
@@ -72,6 +72,11 @@ class F extends ValidationTest {
 export const g = makeTestGroup(F);
 
 g.test('creating_texture_view_on_a_2D_non_array_texture')
+  .desc(
+    `TODO: write description, and shorten name
+
+  TODO: mipLevelCount == 0 should mean 0, not "auto". "undefined" means "auto".`
+  )
   .params([
     { _success: true }, // default view works
     { arrayLayerCount: 1, _success: true }, // it is OK to create a 2D texture view on a 2D texture
@@ -109,6 +114,11 @@ g.test('creating_texture_view_on_a_2D_non_array_texture')
   });
 
 g.test('creating_texture_view_on_a_2D_array_texture')
+  .desc(
+    `TODO: write description, and shorten name
+
+  TODO: arrayLayerCount == 0 should mean 0, not "auto". "undefined" means "auto".`
+  )
   .params([
     { _success: true }, // default view works
     { dimension: '2d', arrayLayerCount: 1, _success: true }, // it is OK to create a 2D texture view on a 2D array texture

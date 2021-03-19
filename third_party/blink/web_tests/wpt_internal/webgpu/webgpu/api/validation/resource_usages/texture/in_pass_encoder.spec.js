@@ -65,11 +65,11 @@ class TextureUsageTracking extends ValidationTest {
       mipLevelCount = 1,
       sampleCount = 1,
       format = 'rgba8unorm',
-      usage = GPUTextureUsage.OUTPUT_ATTACHMENT | GPUTextureUsage.SAMPLED,
+      usage = GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.SAMPLED,
     } = options;
 
     return this.device.createTexture({
-      size: { width, height, depth: arrayLayerCount },
+      size: { width, height, depthOrArrayLayers: arrayLayerCount },
       mipLevelCount,
       sampleCount,
       dimension: '2d',
@@ -430,7 +430,7 @@ g.test('subresources_and_binding_types_combination_for_color')
     const texture = t.createTexture({
       arrayLayerCount: TOTAL_LAYERS,
       mipLevelCount: TOTAL_LEVELS,
-      usage: GPUTextureUsage.SAMPLED | GPUTextureUsage.STORAGE | GPUTextureUsage.OUTPUT_ATTACHMENT,
+      usage: GPUTextureUsage.SAMPLED | GPUTextureUsage.STORAGE | GPUTextureUsage.RENDER_ATTACHMENT,
     });
 
     const dimension0 = layerCount0 !== 1 ? '2d-array' : '2d';
@@ -588,6 +588,8 @@ g.test('subresources_and_binding_types_combination_for_aspect')
       _usageSuccess,
     } = t.params;
 
+    await t.selectDeviceOrSkipTestCase(kDepthStencilFormatInfo[format].extension);
+
     const texture = t.createTexture({
       arrayLayerCount: TOTAL_LAYERS,
       mipLevelCount: TOTAL_LEVELS,
@@ -692,7 +694,7 @@ g.test('shader_stages_and_visibility')
     // vertex stage is not included. Otherwise, it uses output attachment instead.
     const writeHasVertexStage = Boolean(writeVisibility & GPUShaderStage.VERTEX);
     const texUsage = writeHasVertexStage
-      ? GPUTextureUsage.SAMPLED | GPUTextureUsage.OUTPUT_ATTACHMENT
+      ? GPUTextureUsage.SAMPLED | GPUTextureUsage.RENDER_ATTACHMENT
       : GPUTextureUsage.SAMPLED | GPUTextureUsage.STORAGE;
 
     const texture = t.createTexture({ usage: texUsage });
@@ -801,7 +803,7 @@ g.test('replaced_binding')
     let success = bindingType !== 'writeonly-storage-texture';
     // Replaced bindings should not be validated in compute pass, because validation only occurs
     // inside dispatch() which only looks at the current resource usages.
-    success || (success = compute);
+    success ||= compute;
 
     t.expectValidationError(() => {
       encoder.finish();
@@ -832,7 +834,7 @@ g.test('bindings_in_bundle')
     const view = t
       .createTexture({
         usage:
-          GPUTextureUsage.OUTPUT_ATTACHMENT | GPUTextureUsage.STORAGE | GPUTextureUsage.SAMPLED,
+          GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.STORAGE | GPUTextureUsage.SAMPLED,
       })
       .createView();
 
@@ -919,10 +921,10 @@ g.test('unused_bindings_in_pipeline')
     // TODO: revisit the shader code once 'image' can be supported in wgsl.
     const wgslFragment = pp`
       ${pp._if(useBindGroup0)}
-      [[set(0), binding(0)]] var<image> image0 : [[access(read)]] texture_storage_2d<rgba8unorm>;
+      [[group(0), binding(0)]] var<image> image0 : [[access(read)]] texture_storage_2d<rgba8unorm>;
       ${pp._endif}
       ${pp._if(useBindGroup1)}
-      [[set(1), binding(0)]] var<image> image1 : [[access(read)]] texture_storage_2d<rgba8unorm>;
+      [[group(1), binding(0)]] var<image> image1 : [[access(read)]] texture_storage_2d<rgba8unorm>;
       ${pp._endif}
       [[stage(fragment)]] fn main() -> void {}
     `;
@@ -930,10 +932,10 @@ g.test('unused_bindings_in_pipeline')
     // TODO: revisit the shader code once 'image' can be supported in wgsl.
     const wgslCompute = pp`
       ${pp._if(useBindGroup0)}
-      [[set(0), binding(0)]] var<image> image0 : [[access(read)]] texture_storage_2d<rgba8unorm>;
+      [[group(0), binding(0)]] var<image> image0 : [[access(read)]] texture_storage_2d<rgba8unorm>;
       ${pp._endif}
       ${pp._if(useBindGroup1)}
-      [[set(1), binding(0)]] var<image> image1 : [[access(read)]] texture_storage_2d<rgba8unorm>;
+      [[group(1), binding(0)]] var<image> image1 : [[access(read)]] texture_storage_2d<rgba8unorm>;
       ${pp._endif}
       [[stage(compute)]] fn main() -> void {}
     `;

@@ -27,6 +27,16 @@ TODO: plan and implement. Notes:
 >     - slot is {0, max, max+1}
 >     - buffer is {valid, invalid,  doesn't have usage)
 >     - (offset, size) is like above
+> - drawIndirect / drawIndexedIndirect
+>     - buffer is {valid, invalid, doesn't have usage)
+>     - (offset, b.size) is
+>         - (0, 0)
+>         - (0, min size - min alignment)
+>         - (0, min size - 1)
+>         - (0, min size)
+>         - (min alignment, min size + min alignment)
+>         - (min alignment, min alignment + min size - 1)
+>         - (min alignment +/- 1, min size + alignment)
 `;
 import { makeTestGroup } from '../../../../../../common/framework/test_group.js';
 import { ValidationTest } from '../../../validation_test.js';

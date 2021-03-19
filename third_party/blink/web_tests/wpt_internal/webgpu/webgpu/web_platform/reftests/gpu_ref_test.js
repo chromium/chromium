@@ -12,7 +12,7 @@ export async function runRefTest(fn) {
   assert(adapter !== null);
   const device = await adapter.requestDevice();
   assert(device !== null);
-  const queue = device.defaultQueue;
+  const queue = device.queue;
 
   await fn({ device, queue });
 

@@ -35,7 +35,7 @@ g.test('same_cmdbuf')
     const encoder = t.device.createCommandEncoder();
     await t.encodeWriteOp(encoder, firstWriteOp, buffer, 1);
     await t.encodeWriteOp(encoder, secondWriteOp, buffer, 2);
-    t.device.defaultQueue.submit([encoder.finish()]);
+    t.device.queue.submit([encoder.finish()]);
 
     t.verifyData(buffer, 2);
   });
@@ -54,7 +54,7 @@ g.test('separate_cmdbufs')
     const command_buffers = [];
     command_buffers.push(await t.createCommandBufferWithWriteOp(firstWriteOp, buffer, 1));
     command_buffers.push(await t.createCommandBufferWithWriteOp(secondWriteOp, buffer, 2));
-    t.device.defaultQueue.submit(command_buffers);
+    t.device.queue.submit(command_buffers);
 
     t.verifyData(buffer, 2);
   });
@@ -109,7 +109,7 @@ g.test('two_draws_in_the_same_render_pass')
     }
 
     passEncoder.endPass();
-    t.device.defaultQueue.submit([encoder.finish()]);
+    t.device.queue.submit([encoder.finish()]);
     t.verifyDataTwoValidValues(buffer, 1, 2);
   });
 
@@ -137,7 +137,7 @@ g.test('two_draws_in_the_same_render_bundle')
 
     passEncoder.executeBundles([renderEncoder.finish()]);
     passEncoder.endPass();
-    t.device.defaultQueue.submit([encoder.finish()]);
+    t.device.queue.submit([encoder.finish()]);
     t.verifyDataTwoValidValues(buffer, 1, 2);
   });
 
@@ -161,6 +161,6 @@ g.test('two_dispatches_in_the_same_compute_pass')
     }
 
     pass.endPass();
-    t.device.defaultQueue.submit([encoder.finish()]);
+    t.device.queue.submit([encoder.finish()]);
     t.verifyData(buffer, 2);
   });

@@ -4,6 +4,8 @@
 import { kSizedTextureFormatInfo } from '../../capability_info.js';
 import { align, isAligned } from '../math.js';
 
+import { bytesInACompleteRow } from './image_copy.js';
+
 export const kBytesPerRowAlignment = 256;
 export const kBufferCopyAlignment = 4;
 
@@ -36,7 +38,7 @@ export function getTextureCopyLayout(format, dimension, size, options = kDefault
   mipSize[0] = align(mipSize[0], blockWidth);
   mipSize[1] = align(mipSize[1], blockHeight);
 
-  const minBytesPerRow = (mipSize[0] / blockWidth) * bytesPerBlock;
+  const minBytesPerRow = bytesInACompleteRow(mipSize[0], format);
   const alignedMinBytesPerRow = align(minBytesPerRow, kBytesPerRowAlignment);
   if (bytesPerRow !== undefined) {
     assert(bytesPerRow >= alignedMinBytesPerRow);
@@ -51,8 +53,7 @@ export function getTextureCopyLayout(format, dimension, size, options = kDefault
     rowsPerImage = mipSize[1];
   }
 
-  assert(isAligned(rowsPerImage, blockHeight));
-  const bytesPerSlice = bytesPerRow * (rowsPerImage / blockHeight);
+  const bytesPerSlice = bytesPerRow * rowsPerImage;
   const sliceSize =
     bytesPerRow * (mipSize[1] / blockHeight - 1) + bytesPerBlock * (mipSize[0] / blockWidth);
   const byteLength = bytesPerSlice * (mipSize[2] - 1) + sliceSize;

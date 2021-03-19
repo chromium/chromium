@@ -32,7 +32,7 @@ class F extends ValidationTest {
       .createTexture({
         size: [1, 1, 1],
         format,
-        usage: GPUTextureUsage.OUTPUT_ATTACHMENT,
+        usage: GPUTextureUsage.RENDER_ATTACHMENT,
         sampleCount,
       })
       .createView();
@@ -202,8 +202,10 @@ g.test('render_pass_and_bundle,depth_format')
       .combine(poptions('passFormat', kDepthStencilAttachmentFormats))
       .combine(poptions('bundleFormat', kDepthStencilAttachmentFormats))
   )
-  .fn(t => {
+  .fn(async t => {
     const { passFormat, bundleFormat } = t.params;
+    await t.selectDeviceForTextureFormatOrSkipTestCase([passFormat, bundleFormat]);
+
     const bundleEncoder = t.device.createRenderBundleEncoder({
       colorFormats: ['rgba8unorm'],
       depthStencilFormat: bundleFormat,
@@ -318,8 +320,10 @@ Test that the depth attachment format in render passes or bundles match the pipe
       .combine(poptions('encoderFormat', kDepthStencilAttachmentFormats))
       .combine(poptions('pipelineFormat', kDepthStencilAttachmentFormats))
   )
-  .fn(t => {
+  .fn(async t => {
     const { encoderType, encoderFormat, pipelineFormat } = t.params;
+    await t.selectDeviceForTextureFormatOrSkipTestCase([encoderFormat, pipelineFormat]);
+
     const pipeline = t.createRenderPipeline(
       [{ format: 'rgba8unorm' }],
       pipelineFormat !== undefined ? { format: pipelineFormat } : undefined

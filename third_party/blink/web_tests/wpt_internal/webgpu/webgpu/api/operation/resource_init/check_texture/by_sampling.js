@@ -44,13 +44,13 @@ export const checkContentsBySampling = (t, params, texture, state, subresourceRa
               [[offset(0)]] level : i32;
             };
 
-            [[set(0), binding(0)]] var<uniform> constants : Constants;
-            [[set(0), binding(1)]] var<uniform_constant> myTexture : texture${_multisampled}${_xd}<${shaderType}>;
+            [[group(0), binding(0)]] var<uniform> constants : Constants;
+            [[group(0), binding(1)]] var myTexture : texture${_multisampled}${_xd}<${shaderType}>;
 
             [[block]] struct Result {
               [[offset(0)]] values : [[stride(4)]] array<${shaderType}>;
             };
-            [[set(0), binding(3)]] var<storage_buffer> result : Result;
+            [[group(0), binding(3)]] var<storage_buffer> result : Result;
 
             [[builtin(global_invocation_id)]] var<in> GlobalInvocationID : vec3<u32>;
 
@@ -61,8 +61,8 @@ export const checkContentsBySampling = (t, params, texture, state, subresourceRa
               var texel : vec4<${shaderType}> = textureLoad(
                 myTexture, vec2<i32>(GlobalInvocationID.xy), constants.level);
 
-              for (var i : u32 = flatIndex; i < flatIndex + ${componentCount}u; i = i + 1) {
-                result.values[i] = texel.${indexExpression};
+              for (var i : u32 = 0u; i < ${componentCount}u; i = i + 1u) {
+                result.values[flatIndex + i] = texel.${indexExpression};
               }
               return;
             }`,

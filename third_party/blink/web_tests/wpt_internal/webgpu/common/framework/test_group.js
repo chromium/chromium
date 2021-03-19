@@ -1,7 +1,7 @@
 /**
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
  **/ import { SkipTestCase } from './fixture.js';
-import { extractPublicParams } from './params_utils.js';
+import { extractPublicParams, mergeParams } from './params_utils.js';
 import { kPathSeparator } from './query/separators.js';
 import { stringifyPublicParams, stringifyPublicParamsUniquely } from './query/stringify_params.js';
 import { validQueryPart } from './query/validQueryPart.js';
@@ -66,7 +66,8 @@ class TestGroup {
 }
 
 class TestBuilder {
-  cases = undefined;
+  caseParams = undefined;
+  subcaseParams = undefined;
 
   constructor(testPath, fixture, testCreationStack) {
     this.testPath = testPath;
@@ -107,12 +108,12 @@ class TestBuilder {
       return s;
     });
 
-    if (this.cases === undefined) {
+    if (this.caseParams === undefined) {
       return;
     }
 
     const seen = new Set();
-    for (const testcase of this.cases) {
+    for (const testcase of this.caseParams) {
       // stringifyPublicParams also checks for invalid params values
       const testcaseString = stringifyPublicParams(testcase);
 
@@ -128,32 +129,51 @@ class TestBuilder {
   }
 
   params(casesIterable) {
-    assert(this.cases === undefined, 'test case is already parameterized');
-    this.cases = Array.from(casesIterable);
+    return this.cases(casesIterable);
+  }
 
-    return this;
+  cases(casesIterable) {
+    assert(this.caseParams === undefined, 'test case is already parameterized');
+    const newSelf = this;
+    newSelf.caseParams = Array.from(casesIterable);
+
+    return newSelf;
+  }
+
+  subcases(specs) {
+    assert(this.subcaseParams === undefined, 'test subcases are already parameterized');
+    const newSelf = this;
+    newSelf.subcaseParams = specs;
+
+    return newSelf;
   }
 
   *iterate() {
     assert(this.testFn !== undefined, 'No test function (.fn()) for test');
-    for (const params of this.cases || [{}]) {
-      yield new RunCaseSpecific(this.testPath, params, this.fixture, this.testFn);
+    for (const params of this.caseParams || [{}]) {
+      yield new RunCaseSpecific(
+        this.testPath,
+        params,
+        this.subcaseParams,
+        this.fixture,
+        this.testFn
+      );
     }
   }
 }
 
 class RunCaseSpecific {
-  constructor(testPath, params, fixture, fn) {
+  constructor(testPath, params, subParamGen, fixture, fn) {
     this.id = { test: testPath, params: extractPublicParams(params) };
     this.params = params;
+    this.subParamGen = subParamGen;
     this.fixture = fixture;
     this.fn = fn;
   }
 
-  async run(rec) {
-    rec.start();
+  async runTest(rec, params, throwSkip) {
     try {
-      const inst = new this.fixture(rec, this.params || {});
+      const inst = new this.fixture(rec, params);
 
       try {
         await inst.init();
@@ -168,7 +188,40 @@ class RunCaseSpecific {
       // An error from init or test may have been a SkipTestCase.
       // An error from finalize may have been an eventualAsyncExpectation failure
       // or unexpected validation/OOM error from the GPUDevice.
+      if (throwSkip && ex instanceof SkipTestCase) {
+        throw ex;
+      }
       rec.threw(ex);
+    }
+  }
+
+  async run(rec) {
+    rec.start();
+    if (this.subParamGen) {
+      let totalCount = 0;
+      let skipCount = 0;
+      for (const subParams of this.subParamGen(this.params)) {
+        rec.info(new Error('subcase: ' + stringifyPublicParams(subParams)));
+        try {
+          await this.runTest(rec, mergeParams(this.params, subParams), true);
+        } catch (ex) {
+          if (ex instanceof SkipTestCase) {
+            // Convert SkipTestCase to info messages
+            ex.message = 'subcase skipped: ' + ex.message;
+            rec.info(ex);
+            ++skipCount;
+          } else {
+            // Since we are catching all error inside runTest(), this should never happen
+            rec.threw(ex);
+          }
+        }
+        ++totalCount;
+      }
+      if (skipCount === totalCount) {
+        rec.skipped(new SkipTestCase('all subcases were skipped'));
+      }
+    } else {
+      await this.runTest(rec, this.params, false);
     }
     rec.finish();
   }

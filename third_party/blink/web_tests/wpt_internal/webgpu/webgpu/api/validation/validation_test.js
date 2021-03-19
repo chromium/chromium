@@ -1,26 +1,23 @@
 /**
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
- **/ import { assert } from '../../../common/framework/util/util.js';
+ **/ import { assert, unreachable } from '../../../common/framework/util/util.js';
+import { kMaxQueryCount } from '../../capability_info.js';
 import { GPUTest } from '../../gpu_test.js';
 
 export const kEncoderTypes = ['non-pass', 'compute pass', 'render pass', 'render bundle'];
 
 export class ValidationTest extends GPUTest {
   createTextureWithState(state, descriptor) {
-    var _descriptor;
-    descriptor =
-      (_descriptor = descriptor) !== null && _descriptor !== void 0
-        ? _descriptor
-        : {
-            size: { width: 1, height: 1, depth: 1 },
-            format: 'rgba8unorm',
-            usage:
-              GPUTextureUsage.COPY_SRC |
-              GPUTextureUsage.COPY_DST |
-              GPUTextureUsage.SAMPLED |
-              GPUTextureUsage.STORAGE |
-              GPUTextureUsage.OUTPUT_ATTACHMENT,
-          };
+    descriptor = descriptor ?? {
+      size: { width: 1, height: 1, depthOrArrayLayers: 1 },
+      format: 'rgba8unorm',
+      usage:
+        GPUTextureUsage.COPY_SRC |
+        GPUTextureUsage.COPY_DST |
+        GPUTextureUsage.SAMPLED |
+        GPUTextureUsage.STORAGE |
+        GPUTextureUsage.RENDER_ATTACHMENT,
+    };
 
     switch (state) {
       case 'valid':
@@ -36,14 +33,10 @@ export class ValidationTest extends GPUTest {
   }
 
   createBufferWithState(state, descriptor) {
-    var _descriptor2;
-    descriptor =
-      (_descriptor2 = descriptor) !== null && _descriptor2 !== void 0
-        ? _descriptor2
-        : {
-            size: 4,
-            usage: GPUBufferUsage.VERTEX,
-          };
+    descriptor = descriptor ?? {
+      size: 4,
+      usage: GPUBufferUsage.VERTEX,
+    };
 
     switch (state) {
       case 'valid':
@@ -65,6 +58,34 @@ export class ValidationTest extends GPUTest {
         const buffer = this.device.createBuffer(descriptor);
         buffer.destroy();
         return buffer;
+      }
+    }
+  }
+
+  createQuerySetWithState(state, descriptor) {
+    descriptor = descriptor ?? {
+      type: 'occlusion',
+      count: 2,
+    };
+
+    switch (state) {
+      case 'valid':
+        return this.device.createQuerySet(descriptor);
+      case 'invalid': {
+        // Make the queryset invalid because of the count out of bounds.
+        this.device.pushErrorScope('validation');
+        const queryset = this.device.createQuerySet({
+          type: 'occlusion',
+          count: kMaxQueryCount + 1,
+        });
+
+        this.device.popErrorScope();
+        return queryset;
+      }
+      case 'destroyed': {
+        const queryset = this.device.createQuerySet(descriptor);
+        queryset.destroy();
+        return queryset;
       }
     }
   }
@@ -98,7 +119,7 @@ export class ValidationTest extends GPUTest {
 
   getSampledTexture(sampleCount = 1) {
     return this.device.createTexture({
-      size: { width: 16, height: 16, depth: 1 },
+      size: { width: 16, height: 16, depthOrArrayLayers: 1 },
       format: 'rgba8unorm',
       usage: GPUTextureUsage.SAMPLED,
       sampleCount,
@@ -107,16 +128,24 @@ export class ValidationTest extends GPUTest {
 
   getStorageTexture() {
     return this.device.createTexture({
-      size: { width: 16, height: 16, depth: 1 },
+      size: { width: 16, height: 16, depthOrArrayLayers: 1 },
       format: 'rgba8unorm',
       usage: GPUTextureUsage.STORAGE,
+    });
+  }
+
+  getRenderTexture() {
+    return this.device.createTexture({
+      size: { width: 16, height: 16, depthOrArrayLayers: 1 },
+      format: 'rgba8unorm',
+      usage: GPUTextureUsage.RENDER_ATTACHMENT,
     });
   }
 
   getErrorTexture() {
     this.device.pushErrorScope('validation');
     const texture = this.device.createTexture({
-      size: { width: 0, height: 0, depth: 0 },
+      size: { width: 0, height: 0, depthOrArrayLayers: 0 },
       format: 'rgba8unorm',
       usage: GPUTextureUsage.SAMPLED,
     });
@@ -215,7 +244,6 @@ export class ValidationTest extends GPUTest {
         const encoder = this.device.createCommandEncoder();
         return {
           encoder,
-
           finish: () => {
             return encoder.finish();
           },
@@ -253,8 +281,8 @@ export class ValidationTest extends GPUTest {
         const attachment = this.device
           .createTexture({
             format: colorFormat,
-            size: { width: 16, height: 16, depth: 1 },
-            usage: GPUTextureUsage.OUTPUT_ATTACHMENT,
+            size: { width: 16, height: 16, depthOrArrayLayers: 1 },
+            usage: GPUTextureUsage.RENDER_ATTACHMENT,
           })
           .createView();
         const encoder = commandEncoder.beginRenderPass({
@@ -275,6 +303,8 @@ export class ValidationTest extends GPUTest {
         };
       }
     }
+
+    unreachable();
   }
 
   /**
@@ -309,10 +339,10 @@ export class ValidationTest extends GPUTest {
       this.eventualAsyncExpectation(async niceStack => {
         const gpuValidationError = await promise;
         if (!gpuValidationError) {
-          niceStack.message = 'Validation error was expected.';
+          niceStack.message = 'Validation succeeded unexpectedly.';
           this.rec.validationFailed(niceStack);
         } else if (gpuValidationError instanceof GPUValidationError) {
-          niceStack.message = `Captured validation error - ${gpuValidationError.message}`;
+          niceStack.message = `Validation failed, as expected - ${gpuValidationError.message}`;
           this.rec.debug(niceStack);
         }
       });

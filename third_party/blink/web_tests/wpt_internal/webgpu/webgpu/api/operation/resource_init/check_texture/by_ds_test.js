@@ -7,7 +7,7 @@ function makeFullscreenVertexModule(device) {
   return device.createShaderModule({
     code: `
     [[builtin(position)]] var<out> Position : vec4<f32>;
-    [[builtin(vertex_idx)]] var<in> VertexIndex : i32;
+    [[builtin(vertex_index)]] var<in> VertexIndex : i32;
 
     [[stage(vertex)]]
     fn main() -> void {
@@ -107,7 +107,7 @@ const checkContents = (type, t, params, texture, state, subresourceRange) => {
     const renderTexture = t.device.createTexture({
       size: [width, height, 1],
       format: 'r8unorm',
-      usage: GPUTextureUsage.OUTPUT_ATTACHMENT | GPUTextureUsage.COPY_SRC,
+      usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.COPY_SRC,
       sampleCount: params.sampleCount,
     });
 
@@ -117,7 +117,7 @@ const checkContents = (type, t, params, texture, state, subresourceRange) => {
       resolveTexture = t.device.createTexture({
         size: [width, height, 1],
         format: 'r8unorm',
-        usage: GPUTextureUsage.OUTPUT_ATTACHMENT | GPUTextureUsage.COPY_SRC,
+        usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.COPY_SRC,
       });
 
       resolveTarget = resolveTexture.createView();

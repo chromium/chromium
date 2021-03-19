@@ -16,3 +16,12 @@ import { makeTestGroup } from '../../../../../common/framework/test_group.js';
 import { ValidationTest } from '../../validation_test.js';
 
 export const g = makeTestGroup(ValidationTest);
+
+g.test('resolveQuerySet')
+  .desc(
+    `
+Tests that use a destroyed buffer in resolveQuerySet.
+- x= {destroyed, not destroyed (control case)}
+  `
+  )
+  .unimplemented();

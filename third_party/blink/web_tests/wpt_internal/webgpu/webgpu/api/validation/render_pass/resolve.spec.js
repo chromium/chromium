@@ -19,7 +19,7 @@ Test various validation behaviors when a resolveTarget is provided.
 - base case (valid).
 - resolve source is not multisampled.
 - resolve target is not single sampled.
-- resolve target missing OUTPUT_ATTACHMENT usage.
+- resolve target missing RENDER_ATTACHMENT usage.
 - resolve target must have exactly one subresource:
     - base mip level {0, >0}, mip level count {1, >1}.
     - base array layer {0, >0}, array layer count {1, >1}.
@@ -38,7 +38,7 @@ Test various validation behaviors when a resolveTarget is provided.
     { colorAttachmentSamples: 1, _valid: false },
     // a multisampled resolve target should cause a validation error.
     { resolveTargetSamples: 4, _valid: false },
-    // resolveTargetUsage without OUTPUT_ATTACHMENT usage should cause a validation error.
+    // resolveTargetUsage without RENDER_ATTACHMENT usage should cause a validation error.
     { resolveTargetUsage: GPUConst.TextureUsage.COPY_SRC, _valid: false },
     // non-zero resolve target base mip level should be valid.
     {
@@ -83,7 +83,7 @@ Test various validation behaviors when a resolveTarget is provided.
       otherAttachmentFormat = 'rgba8unorm',
       colorAttachmentSamples = 4,
       resolveTargetSamples = 1,
-      resolveTargetUsage = GPUTextureUsage.COPY_SRC | GPUTextureUsage.OUTPUT_ATTACHMENT,
+      resolveTargetUsage = GPUTextureUsage.COPY_SRC | GPUTextureUsage.RENDER_ATTACHMENT,
       resolveTargetViewMipCount = 1,
       resolveTargetViewBaseMipLevel = 0,
       resolveTargetViewArrayLayerCount = 1,
@@ -110,9 +110,14 @@ Test various validation behaviors when a resolveTarget is provided.
           // Create the color attachment with resolve target with the configurable parameters.
           const resolveSourceColorAttachment = t.device.createTexture({
             format: colorAttachmentFormat,
-            size: { width: colorAttachmentWidth, height: colorAttachmentHeight, depth: 1 },
+            size: {
+              width: colorAttachmentWidth,
+              height: colorAttachmentHeight,
+              depthOrArrayLayers: 1,
+            },
+
             sampleCount: colorAttachmentSamples,
-            usage: GPUTextureUsage.COPY_SRC | GPUTextureUsage.OUTPUT_ATTACHMENT,
+            usage: GPUTextureUsage.COPY_SRC | GPUTextureUsage.RENDER_ATTACHMENT,
           });
 
           const resolveTarget = t.device.createTexture({
@@ -120,7 +125,8 @@ Test various validation behaviors when a resolveTarget is provided.
             size: {
               width: resolveTargetWidth,
               height: resolveTargetHeight,
-              depth: resolveTargetViewBaseArrayLayer + resolveTargetViewArrayLayerCount,
+              depthOrArrayLayers:
+                resolveTargetViewBaseArrayLayer + resolveTargetViewArrayLayerCount,
             },
 
             sampleCount: resolveTargetSamples,
@@ -144,9 +150,14 @@ Test various validation behaviors when a resolveTarget is provided.
           // and sample count must match the resolve source color attachment to be valid.
           const colorAttachment = t.device.createTexture({
             format: otherAttachmentFormat,
-            size: { width: colorAttachmentWidth, height: colorAttachmentHeight, depth: 1 },
+            size: {
+              width: colorAttachmentWidth,
+              height: colorAttachmentHeight,
+              depthOrArrayLayers: 1,
+            },
+
             sampleCount: colorAttachmentSamples,
-            usage: GPUTextureUsage.COPY_SRC | GPUTextureUsage.OUTPUT_ATTACHMENT,
+            usage: GPUTextureUsage.COPY_SRC | GPUTextureUsage.RENDER_ATTACHMENT,
           });
 
           const resolveTarget = t.device.createTexture({
@@ -154,11 +165,11 @@ Test various validation behaviors when a resolveTarget is provided.
             size: {
               width: colorAttachmentWidth,
               height: colorAttachmentHeight,
-              depth: 1,
+              depthOrArrayLayers: 1,
             },
 
             sampleCount: 1,
-            usage: GPUTextureUsage.COPY_SRC | GPUTextureUsage.OUTPUT_ATTACHMENT,
+            usage: GPUTextureUsage.COPY_SRC | GPUTextureUsage.RENDER_ATTACHMENT,
           });
 
           renderPassColorAttachmentDescriptors.push({

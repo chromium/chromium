@@ -19,11 +19,11 @@ class F extends ValidationTest {
       arrayLayerCount = 1,
       mipLevelCount = 1,
       sampleCount = 1,
-      usage = GPUTextureUsage.OUTPUT_ATTACHMENT,
+      usage = GPUTextureUsage.RENDER_ATTACHMENT,
     } = options;
 
     return this.device.createTexture({
-      size: { width, height, depth: arrayLayerCount },
+      size: { width, height, depthOrArrayLayers: arrayLayerCount },
       format,
       mipLevelCount,
       sampleCount,
@@ -409,7 +409,7 @@ g.test('it_is_invalid_to_use_a_resolve_target_with_mipmap_level_count_greater_th
   }
 );
 
-g.test('it_is_invalid_to_use_a_resolve_target_whose_usage_is_not_output_attachment').fn(async t => {
+g.test('it_is_invalid_to_use_a_resolve_target_whose_usage_is_not_RENDER_ATTACHMENT').fn(async t => {
   const multisampledColorTexture = t.createTexture({ sampleCount: 4 });
   const resolveTargetTexture = t.createTexture({
     usage: GPUTextureUsage.COPY_SRC | GPUTextureUsage.COPY_DST,

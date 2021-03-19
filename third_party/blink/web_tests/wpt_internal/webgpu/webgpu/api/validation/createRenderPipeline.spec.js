@@ -97,8 +97,8 @@ class F extends ValidationTest {
     const { format, sampleCount } = params;
 
     return this.device.createTexture({
-      size: { width: 4, height: 4, depth: 1 },
-      usage: GPUTextureUsage.OUTPUT_ATTACHMENT,
+      size: { width: 4, height: 4, depthOrArrayLayers: 1 },
+      usage: GPUTextureUsage.RENDER_ATTACHMENT,
       format,
       sampleCount,
     });
@@ -136,6 +136,8 @@ g.test('color_formats_must_be_renderable')
   .fn(async t => {
     const format = t.params.format;
     const info = kAllTextureFormatInfo[format];
+
+    await t.selectDeviceOrSkipTestCase(info.extension);
 
     const descriptor = t.getDescriptor({ colorStates: [{ format }] });
 

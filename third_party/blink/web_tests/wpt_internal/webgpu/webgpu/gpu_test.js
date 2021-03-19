@@ -4,6 +4,8 @@
 import { attemptGarbageCollection } from '../common/framework/util/collect_garbage.js';
 import { assert } from '../common/framework/util/util.js';
 
+import { kAllTextureFormatInfo } from './capability_info.js';
+import { makeBufferWithContents } from './util/buffer.js';
 import { DevicePool, TestOOMedShouldAttemptGC } from './util/device_pool.js';
 import { align } from './util/math.js';
 import { fillTextureDataWithTexelValue, getTextureCopyLayout } from './util/texture/layout.js';
@@ -27,7 +29,7 @@ export class GPUTest extends Fixture {
   }
 
   get queue() {
-    return this.device.defaultQueue;
+    return this.device.queue;
   }
 
   async init() {
@@ -39,12 +41,16 @@ export class GPUTest extends Fixture {
   /**
    * When a GPUTest test accesses `.device` for the first time, a "default" GPUDevice
    * (descriptor = `undefined`) is provided by default.
-   * However, some tests or cases need particular extensions to be enabled. Call this function with
-   * a descriptor (or undefined) to select a GPUDevice matching that descriptor.
+   * However, some tests or cases need particular nonGuaranteedFeatures to be enabled.
+   * Call this function with a descriptor or feature name (or `undefined`) to select a
+   * GPUDevice with matching capabilities.
    *
    * If the request descriptor can't be supported, throws an exception to skip the entire test case.
    */
   async selectDeviceOrSkipTestCase(descriptor) {
+    if (descriptor === undefined) return;
+    if (typeof descriptor === 'string') descriptor = { extensions: [descriptor] };
+
     assert(this.provider !== undefined);
     // Make sure the device isn't replaced after it's been retrieved once.
     assert(
@@ -58,6 +64,25 @@ export class GPUTest extends Fixture {
 
     this.provider = await devicePool.reserve(descriptor);
     this.acquiredDevice = this.provider.acquire();
+  }
+
+  async selectDeviceForTextureFormatOrSkipTestCase(formats) {
+    if (!Array.isArray(formats)) {
+      formats = [formats];
+    }
+    const extensions = new Set();
+    for (const format of formats) {
+      if (format !== undefined) {
+        const formatExtension = kAllTextureFormatInfo[format].extension;
+        if (formatExtension !== undefined) {
+          extensions.add(formatExtension);
+        }
+      }
+    }
+
+    if (extensions.size) {
+      await this.selectDeviceOrSkipTestCase({ extensions });
+    }
   }
 
   // Note: finalize is called even if init was unsuccessful.
@@ -119,7 +144,7 @@ export class GPUTest extends Fixture {
     return { dst, begin: offsetDifference, end: offsetDifference + size };
   }
 
-  expectContents(src, expected, srcOffset = 0) {
+  expectContents(src, expected, srcOffset = 0, { generateWarningOnly = false } = {}) {
     const { dst, begin, end } = this.createAlignedCopyForMapRead(
       src,
       expected.byteLength,
@@ -133,7 +158,91 @@ export class GPUTest extends Fixture {
       const check = this.checkBuffer(actual.subarray(begin, end), expected);
       if (check !== undefined) {
         niceStack.message = check;
-        this.rec.expectationFailed(niceStack);
+        if (generateWarningOnly) {
+          this.rec.warn(niceStack);
+        } else {
+          this.rec.expectationFailed(niceStack);
+        }
+      }
+      dst.destroy();
+    });
+  }
+
+  expectContentsBetweenTwoValues(src, expected, srcOffset = 0, { generateWarningOnly = false }) {
+    assert(expected[0].constructor === expected[1].constructor);
+    assert(expected[0].length === expected[1].length);
+    const { dst, begin, end } = this.createAlignedCopyForMapRead(
+      src,
+      expected[0].byteLength,
+      srcOffset
+    );
+
+    this.eventualAsyncExpectation(async niceStack => {
+      const constructor = expected[0].constructor;
+      await dst.mapAsync(GPUMapMode.READ);
+      const actual = new constructor(dst.getMappedRange());
+
+      const bounds = [new constructor(expected[0].length), new constructor(expected[1].length)];
+      for (let i = 0, len = expected[0].length; i < len; i++) {
+        bounds[0][i] = Math.min(expected[0][i], expected[1][i]);
+        bounds[1][i] = Math.max(expected[0][i], expected[1][i]);
+      }
+
+      const check = this.checkBufferFn(
+        actual.subarray(begin, end),
+        actual => {
+          if (actual.length !== expected[0].length) {
+            return false;
+          }
+          for (let i = 0, len = actual.length; i < len; i++) {
+            if (actual[i] < bounds[0][i] || actual[i] > bounds[1][i]) {
+              return false;
+            }
+          }
+          return true;
+        },
+        () => {
+          const lines = [];
+          const format = x => x.toString(16).padStart(2, '0');
+          const exp0Hex = Array.from(
+            new Uint8Array(
+              expected[0].buffer,
+              expected[0].byteOffset,
+              Math.min(expected[0].byteLength, 256)
+            ),
+
+            format
+          ).join('');
+          lines.push('EXPECT\nbetween:\t  ' + expected[0].join(' '));
+          lines.push('\t0x' + exp0Hex);
+          if (expected[0].byteLength > 256) {
+            lines.push(' ...');
+          }
+          const exp1Hex = Array.from(
+            new Uint8Array(
+              expected[1].buffer,
+              expected[1].byteOffset,
+              Math.min(expected[1].byteLength, 256)
+            )
+          )
+            .map(format)
+            .join('');
+          lines.push('and:    \t  ' + expected[1].join(' '));
+          lines.push('\t0x' + exp1Hex);
+          if (expected[1].byteLength > 256) {
+            lines.push(' ...');
+          }
+          return lines.join('\n');
+        }
+      );
+
+      if (check !== undefined) {
+        niceStack.message = check;
+        if (generateWarningOnly) {
+          this.rec.warn(niceStack);
+        } else {
+          this.rec.expectationFailed(niceStack);
+        }
       }
       dst.destroy();
     });
@@ -234,6 +343,35 @@ got [${failedByteActualValues.join(', ')}]`;
     return undefined;
   }
 
+  checkBufferFn(actual, checkFn, errorMsgFn) {
+    const result = checkFn(actual);
+
+    if (result) {
+      return undefined;
+    }
+
+    const summary = 'CheckBuffer failed';
+    const lines = [summary];
+
+    const actHex = Array.from(
+      new Uint8Array(actual.buffer, actual.byteOffset, Math.min(actual.byteLength, 256))
+    )
+      .map(x => x.toString(16).padStart(2, '0'))
+      .join('');
+    lines.push('ACTUAL:\t  ' + actual.join(' '));
+    lines.push('\t0x' + actHex);
+
+    if (actual.byteLength > 256) {
+      lines.push(' ...');
+    }
+
+    if (errorMsgFn !== undefined) {
+      lines.push(errorMsgFn());
+    }
+
+    return lines.join('\n');
+  }
+
   expectSingleColor(src, format, { size, exp, dimension = '2d', slice = 0, layout }) {
     const { byteLength, bytesPerRow, rowsPerImage, mipSize } = getTextureCopyLayout(
       format,
@@ -252,11 +390,7 @@ got [${failedByteActualValues.join(', ')}]`;
 
     const commandEncoder = this.device.createCommandEncoder();
     commandEncoder.copyTextureToBuffer(
-      {
-        texture: src,
-        mipLevel: layout === null || layout === void 0 ? void 0 : layout.mipLevel,
-        origin: { x: 0, y: 0, z: slice },
-      },
+      { texture: src, mipLevel: layout?.mipLevel, origin: { x: 0, y: 0, z: slice } },
       { buffer, bytesPerRow, rowsPerImage },
       mipSize
     );
@@ -267,9 +401,8 @@ got [${failedByteActualValues.join(', ')}]`;
     this.expectContents(buffer, new Uint8Array(arrayBuffer));
   }
 
-  // TODO: Add check for values of depth/stencil, probably through sampling of shader
-  // TODO(natashalee): Can refactor this and expectSingleColor to use a similar base expect
-  expectSinglePixelIn2DTexture(src, format, { x, y }, { exp, slice = 0, layout }) {
+  // return a GPUBuffer that data are going to be written into
+  readSinglePixelFrom2DTexture(src, format, { x, y }, { slice = 0, layout }) {
     const { byteLength, bytesPerRow, rowsPerImage, mipSize } = getTextureCopyLayout(
       format,
       '2d',
@@ -284,18 +417,36 @@ got [${failedByteActualValues.join(', ')}]`;
 
     const commandEncoder = this.device.createCommandEncoder();
     commandEncoder.copyTextureToBuffer(
-      {
-        texture: src,
-        mipLevel: layout === null || layout === void 0 ? void 0 : layout.mipLevel,
-        origin: { x, y, z: slice },
-      },
+      { texture: src, mipLevel: layout?.mipLevel, origin: { x, y, z: slice } },
       { buffer, bytesPerRow, rowsPerImage },
       mipSize
     );
 
     this.queue.submit([commandEncoder.finish()]);
 
-    this.expectContents(buffer, exp);
+    return buffer;
+  }
+
+  // TODO: Add check for values of depth/stencil, probably through sampling of shader
+  // TODO(natashalee): Can refactor this and expectSingleColor to use a similar base expect
+  expectSinglePixelIn2DTexture(
+    src,
+    format,
+    { x, y },
+    { exp, slice = 0, layout, generateWarningOnly = false }
+  ) {
+    const buffer = this.readSinglePixelFrom2DTexture(src, format, { x, y }, { slice, layout });
+    this.expectContents(buffer, exp, 0, { generateWarningOnly });
+  }
+
+  expectSinglePixelBetweenTwoValuesIn2DTexture(
+    src,
+    format,
+    { x, y },
+    { exp, slice = 0, layout, generateWarningOnly = false }
+  ) {
+    const buffer = this.readSinglePixelFrom2DTexture(src, format, { x, y }, { slice, layout });
+    this.expectContentsBetweenTwoValues(buffer, exp, 0, { generateWarningOnly });
   }
 
   expectGPUError(filter, fn, shouldError = true) {
@@ -337,16 +488,54 @@ got [${failedByteActualValues.join(', ')}]`;
   }
 
   makeBufferWithContents(dataArray, usage) {
-    const buffer = this.device.createBuffer({
-      mappedAtCreation: true,
-      size: dataArray.byteLength,
-      usage,
+    return makeBufferWithContents(this.device, dataArray, usage);
+  }
+
+  createTexture2DWithMipmaps(mipmapDataArray) {
+    const format = 'rgba8unorm';
+    const mipLevelCount = mipmapDataArray.length;
+    const textureSizeMipmap0 = 1 << (mipLevelCount - 1);
+    const texture = this.device.createTexture({
+      mipLevelCount,
+      size: { width: textureSizeMipmap0, height: textureSizeMipmap0, depthOrArrayLayers: 1 },
+      format,
+      usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.SAMPLED,
     });
 
-    const mappedBuffer = buffer.getMappedRange();
-    const constructor = dataArray.constructor;
-    new constructor(mappedBuffer).set(dataArray);
-    buffer.unmap();
-    return buffer;
+    const textureEncoder = this.device.createCommandEncoder();
+    for (let i = 0; i < mipLevelCount; i++) {
+      const { byteLength, bytesPerRow, rowsPerImage, mipSize } = getTextureCopyLayout(
+        format,
+        '2d',
+        [textureSizeMipmap0, textureSizeMipmap0, 1],
+        { mipLevel: i }
+      );
+
+      const data = new Uint8Array(byteLength);
+      const mipLevelData = mipmapDataArray[i];
+      assert(rowsPerImage === mipSize[0]); // format is rgba8unorm and block size should be 1
+      for (let r = 0; r < rowsPerImage; r++) {
+        const o = r * bytesPerRow;
+        for (let c = o, end = o + mipSize[1] * 4; c < end; c += 4) {
+          data[c] = mipLevelData[0];
+          data[c + 1] = mipLevelData[1];
+          data[c + 2] = mipLevelData[2];
+          data[c + 3] = mipLevelData[3];
+        }
+      }
+      const buffer = this.makeBufferWithContents(
+        data,
+        GPUBufferUsage.COPY_SRC | GPUBufferUsage.COPY_DST
+      );
+
+      textureEncoder.copyBufferToTexture(
+        { buffer, bytesPerRow, rowsPerImage },
+        { texture, mipLevel: i, origin: [0, 0, 0] },
+        mipSize
+      );
+    }
+    this.device.queue.submit([textureEncoder.finish()]);
+
+    return texture;
   }
 }

@@ -29,7 +29,7 @@ setup({
 
   for (const testcase of testcases) {
     const name = testcase.query.toString();
-    const wpt_fn = async t => {
+    const wpt_fn = async () => {
       const [rec, res] = log.record(name);
       if (worker) {
         await worker.run(rec, name);
@@ -37,12 +37,10 @@ setup({
         await testcase.run(rec);
       }
 
-      t.step(() => {
-        // Unfortunately, it seems not possible to surface any logs for warn/skip.
-        if (res.status === 'fail') {
-          throw (res.logs || []).map(s => s.toJSON()).join('\n\n');
-        }
-      });
+      // Unfortunately, it seems not possible to surface any logs for warn/skip.
+      if (res.status === 'fail') {
+        throw (res.logs || []).map(s => s.toJSON()).join('\n\n');
+      }
     };
 
     promise_test(wpt_fn, name);

@@ -2,6 +2,8 @@
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
  **/ import { comparePublicParamsPaths, Ordering } from './query/compare.js';
 import { kWildcard, kParamSeparator, kParamKVSeparator } from './query/separators.js';
+import { assert } from './util/util.js';
+
 // Consider adding more types here if needed
 //
 // TODO: This type isn't actually used to constrain what you're allowed to do in `.params()`, so
@@ -27,4 +29,13 @@ export const badParamValueChars = new RegExp(
 
 export function publicParamsEquals(x, y) {
   return comparePublicParamsPaths(x, y) === Ordering.Equal;
+}
+
+// (keyof A & keyof B) is not empty, so they overlapped
+
+export function mergeParams(a, b) {
+  for (const key of Object.keys(a)) {
+    assert(!(key in b), 'Duplicate key: ' + key);
+  }
+  return { ...a, ...b };
 }

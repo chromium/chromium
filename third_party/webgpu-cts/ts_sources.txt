@@ -6,6 +6,7 @@ src/common/framework/query/json_param_value.ts
 src/common/framework/query/stringify_params.ts
 src/common/framework/query/query.ts
 src/common/framework/query/compare.ts
+src/common/framework/util/types.ts
 src/common/framework/params_utils.ts
 src/common/framework/query/validQueryPart.ts
 src/common/framework/query/parseQuery.ts
@@ -18,7 +19,6 @@ src/common/framework/test_group.ts
 src/common/framework/test_suite_listing.ts
 src/common/framework/tree.ts
 src/common/framework/file_loader.ts
-src/common/framework/util/types.ts
 src/common/framework/params_builder.ts
 src/common/framework/preprocessor.ts
 src/common/framework/version.ts
@@ -59,15 +59,17 @@ src/unittests/test_query.spec.ts
 src/unittests/url_query.spec.ts
 src/webgpu/constants.ts
 src/webgpu/capability_info.ts
+src/webgpu/util/buffer.ts
 src/webgpu/util/navigator_gpu.ts
 src/webgpu/util/device_pool.ts
 src/webgpu/util/math.ts
+src/webgpu/util/unions.ts
+src/webgpu/util/texture/image_copy.ts
 src/webgpu/util/texture/layout.ts
 src/webgpu/util/conversion.ts
 src/webgpu/util/texture/texel_data.ts
 src/webgpu/gpu_test.ts
 src/webgpu/examples.spec.ts
-src/webgpu/api/operation/copyBetweenLinearDataAndTexture.spec.ts
 src/webgpu/api/operation/fences.spec.ts
 src/webgpu/api/operation/labels.spec.ts
 src/webgpu/api/operation/onuncapturederror.spec.ts
@@ -80,6 +82,7 @@ src/webgpu/api/operation/command_buffer/basic.spec.ts
 src/webgpu/api/operation/command_buffer/copyBufferToBuffer.spec.ts
 src/webgpu/util/texture/subresource.ts
 src/webgpu/api/operation/command_buffer/copyTextureToTexture.spec.ts
+src/webgpu/api/operation/command_buffer/image_copy.spec.ts
 src/webgpu/api/operation/command_buffer/programmable/state_tracking.spec.ts
 src/webgpu/api/operation/command_buffer/render/dynamic_state.spec.ts
 src/webgpu/api/operation/command_buffer/render/state_tracking.spec.ts
@@ -103,7 +106,6 @@ src/webgpu/api/operation/render_pipeline/sample_mask.spec.ts
 src/webgpu/api/operation/rendering/basic.spec.ts
 src/webgpu/api/operation/rendering/blending.spec.ts
 src/webgpu/api/operation/rendering/draw.spec.ts
-src/webgpu/api/operation/rendering/indexed_draw.spec.ts
 src/webgpu/api/operation/rendering/indirect_draw.spec.ts
 src/webgpu/api/operation/resource_init/buffer.spec.ts
 src/webgpu/api/operation/resource_init/check_texture/by_copy.ts
@@ -123,9 +125,9 @@ src/webgpu/api/validation/attachment_compatibility.spec.ts
 src/webgpu/api/validation/createBindGroup.spec.ts
 src/webgpu/api/validation/createBindGroupLayout.spec.ts
 src/webgpu/api/validation/createPipelineLayout.spec.ts
-src/webgpu/api/validation/createQuerySet.spec.ts
 src/webgpu/api/validation/createRenderPipeline.spec.ts
 src/webgpu/api/validation/createSampler.spec.ts
+src/webgpu/util/texture/base.ts
 src/webgpu/api/validation/createTexture.spec.ts
 src/webgpu/api/validation/createView.spec.ts
 src/webgpu/api/validation/create_pipeline.spec.ts
@@ -139,9 +141,7 @@ src/webgpu/api/validation/buffer/create.spec.ts
 src/webgpu/api/validation/buffer/destroy.spec.ts
 src/webgpu/api/validation/buffer/mapping.spec.ts
 src/webgpu/api/validation/buffer/threading.spec.ts
-src/webgpu/api/validation/copy_between_linear_data_and_texture/copyBetweenLinearDataAndTexture.ts
-src/webgpu/api/validation/copy_between_linear_data_and_texture/copyBetweenLinearDataAndTexture_dataRelated.spec.ts
-src/webgpu/api/validation/copy_between_linear_data_and_texture/copyBetweenLinearDataAndTexture_textureRelated.spec.ts
+src/webgpu/api/validation/capability_checks/features/queries.spec.ts
 src/webgpu/api/validation/encoding/beginRenderPass.spec.ts
 src/webgpu/api/validation/encoding/encoder_state.spec.ts
 src/webgpu/api/validation/encoding/render_bundle.spec.ts
@@ -163,7 +163,11 @@ src/webgpu/api/validation/encoding/queries/occlusion.spec.ts
 src/webgpu/api/validation/encoding/queries/pipeline_statistics.spec.ts
 src/webgpu/api/validation/encoding/queries/resolveQuerySet.spec.ts
 src/webgpu/api/validation/encoding/queries/timestamp.spec.ts
+src/webgpu/api/validation/image_copy/image_copy.ts
+src/webgpu/api/validation/image_copy/layout_related.spec.ts
+src/webgpu/api/validation/image_copy/texture_related.spec.ts
 src/webgpu/api/validation/initialization/requestDevice.spec.ts
+src/webgpu/api/validation/query_set/create.spec.ts
 src/webgpu/api/validation/query_set/destroy.spec.ts
 src/webgpu/api/validation/queue/buffer_mapped.spec.ts
 src/webgpu/api/validation/queue/copyImageBitmapToTexture.spec.ts
@@ -180,6 +184,9 @@ src/webgpu/api/validation/texture/destroy.spec.ts
 src/webgpu/idl/idl_test.ts
 src/webgpu/idl/constants/flags.spec.ts
 src/webgpu/shader/execution/robust_access_vertex.spec.ts
+src/webgpu/shader/validation/shader_validation_test.ts
+src/webgpu/shader/validation/variable_and_const.spec.ts
+src/webgpu/shader/validation/wgsl/basic.spec.ts
 src/webgpu/util/texture/texel_data.spec.ts
 src/webgpu/web_platform/copyImageBitmapToTexture.spec.ts
 src/webgpu/web_platform/canvas/configureSwapChain.spec.ts
