@@ -181,7 +181,7 @@ public interface BrowserPaymentRequest {
      * @param errorMessage Developer-facing error message to be used when rejecting the promise
      *                     returned from PaymentRequest.show().
      */
-    default void onInstrumentDetailsError(String errorMessage) {}
+    void onInstrumentDetailsError(String errorMessage);
 
     /**
      * Opens a payment handler window and creates a WebContents with the given url to display in it.
