@@ -14,6 +14,14 @@
 
 namespace content {
 
+constexpr const char kARIA[]{"aria"};
+constexpr const char kAOM[]{"aom"};
+constexpr const char kCSS[]{"css"};
+constexpr const char kHTML[]{"html"};
+constexpr const char kDisplayLocking[]{"display-locking"};
+constexpr const char kRegression[]{"regression"};
+constexpr const char kTestHarness[]{"test-harness"};
+
 // See content/test/data/accessibility/readme.md for an overview.
 //
 // This test takes a snapshot of the platform BrowserAccessibility tree and
@@ -34,6 +42,19 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
   void SetUpCommandLine(base::CommandLine* command_line) override;
   std::vector<std::string> Dump(std::vector<std::string>& unused) override;
 
+  template <const char* type>
+  void RunTypedTest(const base::FilePath::CharType* file_path) {
+    base::FilePath test_path = GetTestFilePath("accessibility", type);
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
+    }
+    base::FilePath test_file = test_path.Append(base::FilePath(file_path));
+
+    std::string dir(std::string() + "accessibility/" + type);
+    RunTest(test_file, dir.c_str());
+  }
+
   void RunAccNameTest(const base::FilePath::CharType* file_path) {
     base::FilePath test_path = GetTestFilePath("accessibility", "accname");
     {
@@ -45,66 +66,27 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
   }
 
   void RunAriaTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path = GetTestFilePath("accessibility", "aria");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
-    }
-    base::FilePath aria_file = test_path.Append(base::FilePath(file_path));
-
-    RunTest(aria_file, "accessibility/aria");
+    RunTypedTest<kARIA>(file_path);
   }
 
   void RunAomTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path = GetTestFilePath("accessibility", "aom");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
-    }
-    base::FilePath aom_file = test_path.Append(base::FilePath(file_path));
-
-    RunTest(aom_file, "accessibility/aom");
+    RunTypedTest<kAOM>(file_path);
   }
 
   void RunCSSTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path = GetTestFilePath("accessibility", "css");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
-    }
-    base::FilePath css_file = test_path.Append(base::FilePath(file_path));
-
-    RunTest(css_file, "accessibility/css");
+    RunTypedTest<kCSS>(file_path);
   }
 
   void RunHtmlTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path = GetTestFilePath("accessibility", "html");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
-    }
-    base::FilePath html_file = test_path.Append(base::FilePath(file_path));
-
-    RunTest(html_file, "accessibility/html");
+    RunTypedTest<kHTML>(file_path);
   }
 
   void RunDisplayLockingTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path =
-        GetTestFilePath("accessibility", "display-locking");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
-    }
-    base::FilePath html_file = test_path.Append(base::FilePath(file_path));
-
-    RunTest(html_file, "accessibility/display-locking");
+    RunTypedTest<kDisplayLocking>(file_path);
   }
 
   void RunRegressionTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path = GetTestFilePath("accessibility", "regression");
-    base::FilePath test_file = test_path.Append(base::FilePath(file_path));
-
-    RunTest(test_file, "accessibility/regression");
+    RunTypedTest<kRegression>(file_path);
   }
 
   void RunLanguageDetectionTest(const base::FilePath::CharType* file_path) {
@@ -128,15 +110,7 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
 
   // Testing of the Test Harness itself.
   void RunTestHarnessTest(const base::FilePath::CharType* file_path) {
-    base::FilePath test_path = GetTestFilePath("accessibility", "test-harness");
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
-    }
-    base::FilePath test_harness_file =
-        test_path.Append(base::FilePath(file_path));
-
-    RunTest(test_harness_file, "accessibility/test-harness");
+    RunTypedTest<kTestHarness>(file_path);
   }
 
  protected:
