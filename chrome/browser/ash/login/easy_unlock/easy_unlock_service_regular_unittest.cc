@@ -449,10 +449,33 @@ TEST_F(EasyUnlockServiceRegularTest, AuthenticateWithEasyUnlock) {
   InitializeService(true /* should_initialize_all_dependencies */);
   SetScreenLockState(true /* is_locked */);
 
-  static_cast<EasyUnlockService*>(easy_unlock_service_regular_.get())
-      ->AttemptAuth(account_id_);
-  static_cast<EasyUnlockService*>(easy_unlock_service_regular_.get())
-      ->FinalizeUnlock(true);
+  auto* service =
+      static_cast<EasyUnlockService*>(easy_unlock_service_regular_.get());
+
+  EXPECT_TRUE(service->AttemptAuth(account_id_));
+  service->FinalizeUnlock(true);
+
+  histogram_tester_.ExpectBucketCount("SmartLock.AuthResult.Unlock", 1, 0);
+
+  SetScreenLockState(false /* is_locked */);
+
+  histogram_tester_.ExpectBucketCount("SmartLock.AuthResult.Unlock", 1, 1);
+}
+
+// Regression test for crbug.com/974410.
+TEST_F(EasyUnlockServiceRegularTest, AuthenticateWithEasyUnlockMultipleTimes) {
+  InitializeService(true /* should_initialize_all_dependencies */);
+  SetScreenLockState(true /* is_locked */);
+
+  auto* service =
+      static_cast<EasyUnlockService*>(easy_unlock_service_regular_.get());
+
+  EXPECT_TRUE(service->AttemptAuth(account_id_));
+  service->FinalizeUnlock(true);
+
+  // The first auth attempt is still ongoing. A second auth attempt request
+  // should be rejected.
+  EXPECT_FALSE(service->AttemptAuth(account_id_));
 
   histogram_tester_.ExpectBucketCount("SmartLock.AuthResult.Unlock", 1, 0);
 

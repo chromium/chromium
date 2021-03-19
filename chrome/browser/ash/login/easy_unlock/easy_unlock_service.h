@@ -136,8 +136,10 @@ class EasyUnlockService : public KeyedService {
   bool UpdateScreenlockState(proximity_auth::ScreenlockState state);
 
   // Starts an auth attempt for the user associated with the service. The
-  // attempt type (unlock vs. signin) will depend on the service type.
-  void AttemptAuth(const AccountId& account_id);
+  // attempt type (unlock vs. signin) will depend on the service type. Returns
+  // true if no other attempt is in progress and the attempt request can be
+  // processed.
+  bool AttemptAuth(const AccountId& account_id);
 
   // Finalizes the previously started auth attempt for easy unlock. If called on
   // signin profile service, it will cancel the current auth attempt if one
