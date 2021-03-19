@@ -57,7 +57,8 @@ class BucketContext : public base::RefCountedDeleteOnSequence<BucketContext> {
   // and bind the blink::mojom::BucketManagerHost receiver.
   void BindBucketManagerHostOnIOThread(
       const url::Origin& origin,
-      mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver);
+      mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver,
+      mojo::ReportBadMessageCallback bad_message_callback);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

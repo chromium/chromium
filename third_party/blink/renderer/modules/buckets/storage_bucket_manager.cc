@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/modules/buckets/storage_bucket.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 
@@ -87,8 +88,12 @@ ScriptPromise StorageBucketManager::open(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  mojom::blink::BucketPoliciesPtr bucket_policies =
-      ToMojoBucketPolicies(options);
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  if (!context->GetSecurityOrigin()->CanAccessStorageBuckets()) {
+    exception_state.ThrowSecurityError(
+        "Access to Storage Buckets API is denied in this context.");
+    return promise;
+  }
 
   if (!IsValidName(name)) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -97,6 +102,8 @@ ScriptPromise StorageBucketManager::open(ScriptState* script_state,
     return promise;
   }
 
+  mojom::blink::BucketPoliciesPtr bucket_policies =
+      ToMojoBucketPolicies(options);
   GetBucketManager(script_state)
       ->OpenBucket(name, std::move(bucket_policies),
                    WTF::Bind(&StorageBucketManager::DidOpen,
@@ -109,6 +116,13 @@ ScriptPromise StorageBucketManager::keys(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  if (!context->GetSecurityOrigin()->CanAccessStorageBuckets()) {
+    exception_state.ThrowSecurityError(
+        "Access to Storage Buckets API is denied in this context.");
+    return promise;
+  }
+
   GetBucketManager(script_state)
       ->Keys(WTF::Bind(&StorageBucketManager::DidGetKeys, WrapPersistent(this),
                        WrapPersistent(resolver)));
@@ -120,6 +134,13 @@ ScriptPromise StorageBucketManager::Delete(ScriptState* script_state,
                                            ExceptionState& exception_state) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
+
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  if (!context->GetSecurityOrigin()->CanAccessStorageBuckets()) {
+    exception_state.ThrowSecurityError(
+        "Access to Storage Buckets API is denied in this context.");
+    return promise;
+  }
 
   if (!IsValidName(name)) {
     resolver->Reject(MakeGarbageCollected<DOMException>(

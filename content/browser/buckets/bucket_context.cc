@@ -44,9 +44,10 @@ void BucketContext::BindBucketManagerHost(
 #endif  // DCHECK_IS_ON()
 
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&BucketContext::BindBucketManagerHostOnIOThread,
-                                scoped_refptr<BucketContext>(this), origin,
-                                std::move(receiver)));
+      FROM_HERE,
+      base::BindOnce(&BucketContext::BindBucketManagerHostOnIOThread,
+                     scoped_refptr<BucketContext>(this), origin,
+                     std::move(receiver), mojo::GetBadMessageCallback()));
 }
 
 void BucketContext::InitializeOnIOThread() {
@@ -58,9 +59,11 @@ void BucketContext::InitializeOnIOThread() {
 
 void BucketContext::BindBucketManagerHostOnIOThread(
     const url::Origin& origin,
-    mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) {
+    mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver,
+    mojo::ReportBadMessageCallback bad_message_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  bucket_manager_->BindReceiver(origin, std::move(receiver));
+  bucket_manager_->BindReceiver(origin, std::move(receiver),
+                                std::move(bad_message_callback));
 }
 
 }  // namespace content

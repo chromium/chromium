@@ -14,7 +14,8 @@ BucketManager::~BucketManager() = default;
 
 void BucketManager::BindReceiver(
     const url::Origin& origin,
-    mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) {
+    mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver,
+    mojo::ReportBadMessageCallback bad_message_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto it = hosts_.find(origin);
@@ -24,7 +25,8 @@ void BucketManager::BindReceiver(
   }
 
   if (!network::IsOriginPotentiallyTrustworthy(origin)) {
-    mojo::ReportBadMessage("Called Buckets from an insecure context");
+    std::move(bad_message_callback)
+        .Run("Called Buckets from an insecure context");
     return;
   }
 

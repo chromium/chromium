@@ -36,7 +36,8 @@ class CONTENT_EXPORT BucketManager {
   // Binds `receiver` to the BucketManagerHost for `origin`.
   void BindReceiver(
       const url::Origin& origin,
-      mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver);
+      mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver,
+      mojo::ReportBadMessageCallback bad_message_callback);
 
   // This method may only be called on the BucketManagerHost sequence.
   void OnHostReceiverDisconnect(BucketManagerHost* host,
