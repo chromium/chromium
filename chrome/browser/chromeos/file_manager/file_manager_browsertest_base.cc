@@ -1679,12 +1679,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     arc::SetArcAvailableCommandLineForTesting(command_line);
   }
 
-  if (options.generic_documents_provider || options.photos_documents_provider) {
-    enabled_features.push_back(arc::kEnableDocumentsProviderInFilesAppFeature);
-  } else {
-    disabled_features.push_back(arc::kEnableDocumentsProviderInFilesAppFeature);
-  }
-
   if (options.unified_media_view) {
     enabled_features.push_back(chromeos::features::kUnifiedMediaView);
   } else {

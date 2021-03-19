@@ -109,10 +109,6 @@ void DocumentsProviderRootManager::RemoveObserver(Observer* observer) {
 
 void DocumentsProviderRootManager::SetEnabled(bool enabled) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!base::FeatureList::IsEnabled(
-          arc::kEnableDocumentsProviderInFilesAppFeature)) {
-    return;
-  }
   if (enabled == is_enabled_)
     return;
 

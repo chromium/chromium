@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/browser/chromeos/file_manager/documents_provider_root_manager.h"
 #include "chrome/test/base/testing_profile.h"
@@ -65,8 +64,6 @@ class DocumentsProviderRootManagerTest : public testing::Test {
   ~DocumentsProviderRootManagerTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        arc::kEnableDocumentsProviderInFilesAppFeature);
     arc_service_manager_ = std::make_unique<arc::ArcServiceManager>();
     profile_ = std::make_unique<TestingProfile>();
     arc::ArcFileSystemBridge::GetForBrowserContextForTesting(profile_.get());
@@ -114,7 +111,6 @@ class DocumentsProviderRootManagerTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<arc::ArcFileSystemOperationRunner> runner_;
   TestObserver observer_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(DocumentsProviderRootManagerTest);
 };
