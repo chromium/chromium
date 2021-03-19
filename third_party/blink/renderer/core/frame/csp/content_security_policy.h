@@ -208,8 +208,6 @@ class CORE_EXPORT ContentSecurityPolicy final
       network::mojom::ContentSecurityPolicyType,
       network::mojom::ContentSecurityPolicySource);
 
-  void ReportAccumulatedHeaders() const;
-
   void AddPolicies(
       Vector<network::mojom::blink::ContentSecurityPolicyPtr> policies);
 
