@@ -10,20 +10,21 @@
 #include <memory>
 #include <utility>
 
+#include "android_webview/common/aw_paths.h"
 #include "android_webview/nonembedded/component_updater/aw_component_updater_configurator.h"
-#include "android_webview/nonembedded/webview_apk_process.h"
 #include "base/android/path_utils.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/component_updater/component_installer.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/update_client/network.h"
+#include "components/update_client/update_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace android_webview {
@@ -216,13 +217,12 @@ class AwComponentUpdateServiceTest : public testing::Test {
   AwComponentUpdateServiceTest& operator=(const AwComponentUpdateServiceTest&) =
       delete;
 
-  static void SetUpTestSuite() {
-    base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
-        "ComponentInstallerPolicyDelegateTest");
-  }
+  static void SetUpTestSuite() { RegisterPathProvider(); }
 
   // Override from testing::Test
   void SetUp() override {
+    update_client::RegisterPrefs(test_pref_->registry());
+
     ASSERT_TRUE(base::android::GetDataDirectory(&component_install_dir_));
     component_install_dir_ = component_install_dir_.AppendASCII("components")
                                  .AppendASCII("cus")
@@ -236,21 +236,21 @@ class AwComponentUpdateServiceTest : public testing::Test {
 
  protected:
   base::FilePath component_install_dir_;
+  std::unique_ptr<TestingPrefServiceSimple> test_pref_ =
+      std::make_unique<TestingPrefServiceSimple>();
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(AwComponentUpdateServiceTest, TestComponentReadyWhenOffline) {
   CreateTestFiles(component_install_dir_.AppendASCII(kTestVersion));
 
-  TestAwComponentUpdateService service(base::MakeRefCounted<MockConfigurator>(
-      base::CommandLine::ForCurrentProcess(),
-      WebViewApkProcess::GetInstance()->GetPrefService()));
-
   base::RunLoop run_loop;
-  service.StartComponentUpdateService(run_loop.QuitClosure());
+  TestAwComponentUpdateService service(base::MakeRefCounted<MockConfigurator>(
+      base::CommandLine::ForCurrentProcess(), test_pref_.get()));
 
+  service.StartComponentUpdateService(run_loop.QuitClosure());
   run_loop.Run();
 
   EXPECT_EQ(service.GetMockPolicy()->GetVersion().GetString(), kTestVersion);

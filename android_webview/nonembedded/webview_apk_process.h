@@ -5,8 +5,10 @@
 #ifndef ANDROID_WEBVIEW_NONEMBEDDED_WEBVIEW_APK_PROCESS_H_
 #define ANDROID_WEBVIEW_NONEMBEDDED_WEBVIEW_APK_PROCESS_H_
 
-#include "base/no_destructor.h"
+#include <memory>
+
 #include "base/sequence_checker.h"
+#include "base/task/single_thread_task_executor.h"
 #include "components/prefs/pref_service.h"
 
 class PrefRegistrySimple;
@@ -15,18 +17,21 @@ namespace android_webview {
 // Class that holds global state in the webview apk process.
 class WebViewApkProcess {
  public:
+  static void Init();
   static WebViewApkProcess* GetInstance();
-  PrefService* GetPrefService();
+
+  PrefService* GetPrefService() const;
 
  private:
-  friend class base::NoDestructor<WebViewApkProcess>;
-
   WebViewApkProcess();
   ~WebViewApkProcess();
+
   void CreatePrefService();
   void RegisterPrefs(PrefRegistrySimple* pref_registry);
 
   std::unique_ptr<PrefService> pref_service_;
+
+  std::unique_ptr<base::SingleThreadTaskExecutor> main_task_executor_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

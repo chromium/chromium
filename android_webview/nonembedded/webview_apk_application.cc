@@ -14,7 +14,7 @@ namespace android_webview {
 void JNI_WebViewApkApplication_InitializeGlobalsAndResources(JNIEnv* env) {
   CHECK(base::android::OnJNIOnLoadInit());
   InitIcuAndResourceBundleBrowserSide();
-  WebViewApkProcess::GetInstance();
+  WebViewApkProcess::Init();
 }
 
 }  // namespace android_webview

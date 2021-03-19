@@ -7,43 +7,67 @@
 #include "android_webview/common/aw_paths.h"
 #include "base/android/library_loader/library_loader_hooks.h"
 #include "base/base_paths_android.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
+#include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
 #include "components/update_client/update_client.h"
 
 namespace android_webview {
 
+namespace {
+
+static WebViewApkProcess* g_webview_apk_process = nullptr;
+
+}  // namespace
+
 // static
 WebViewApkProcess* WebViewApkProcess::GetInstance() {
+  DCHECK(g_webview_apk_process);
+  return g_webview_apk_process;
+}
+
+// static
+// Must be called exactly once during the process startup.
+void WebViewApkProcess::Init() {
   // TODO(crbug.com/1179303): Add check to assert this is only loaded by
   // LibraryProcessType PROCESS_WEBVIEW_NONEMBEDDED.
-  static base::NoDestructor<WebViewApkProcess> instance;
-  return instance.get();
+
+  // This doesn't have to be thread safe, because it should only happen once on
+  // the main thread before any GetInstances calls are made.
+  DCHECK(!g_webview_apk_process);
+  g_webview_apk_process = new WebViewApkProcess();
 }
 
 WebViewApkProcess::WebViewApkProcess() {
-  if (!base::ThreadPoolInstance::Get()) {
-    base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
-        "WebViewApkProcess");
-  }
+  base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
+      "WebViewApkProcess");
+
+  // There's no UI message pump in nonembedded WebView, using
+  // `base::MessagePumpType::JAVA` so that the `SingleThreadExecutor` will bind
+  // to the java thread the `WebViewApkProcess` is created on.
+  main_task_executor_ = std::make_unique<base::SingleThreadTaskExecutor>(
+      base::MessagePumpType::JAVA);
 
   RegisterPathProvider();
   CreatePrefService();
 }
 
-WebViewApkProcess::~WebViewApkProcess() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
+WebViewApkProcess::~WebViewApkProcess() = default;
 
-PrefService* WebViewApkProcess::GetPrefService() {
+PrefService* WebViewApkProcess::GetPrefService() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   return pref_service_.get();
 }
 
 void WebViewApkProcess::CreatePrefService() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   auto pref_registry = base::MakeRefCounted<PrefRegistrySimple>();
   PrefServiceFactory pref_service_factory;
 
@@ -58,6 +82,8 @@ void WebViewApkProcess::CreatePrefService() {
 }
 
 void WebViewApkProcess::RegisterPrefs(PrefRegistrySimple* pref_registry) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   update_client::RegisterPrefs(pref_registry);
 }
 
