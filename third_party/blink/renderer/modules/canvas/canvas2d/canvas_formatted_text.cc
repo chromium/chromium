@@ -37,14 +37,15 @@ CanvasFormattedText* CanvasFormattedText::Create(
 }
 
 CanvasFormattedText::CanvasFormattedText(ExecutionContext* execution_context) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
-  style->SetDisplay(EDisplay::kBlock);
   // Refrain from extending the use of document, apart from creating layout
   // block flow. In the future we should handle execution_context's from worker
   // threads that do not have a document.
-  auto* window = To<LocalDOMWindow>(execution_context);
-  block_ = LayoutBlockFlow::CreateAnonymous(window->document(), style,
-                                            LegacyLayout::kAuto);
+  auto* document = To<LocalDOMWindow>(execution_context)->document();
+  scoped_refptr<ComputedStyle> style =
+      document->GetStyleResolver().CreateComputedStyle();
+  style->SetDisplay(EDisplay::kBlock);
+  block_ =
+      LayoutBlockFlow::CreateAnonymous(document, style, LegacyLayout::kAuto);
   block_->SetIsLayoutNGObjectForCanvasFormattedText(true);
 }
 
