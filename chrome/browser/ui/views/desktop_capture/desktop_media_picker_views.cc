@@ -28,6 +28,7 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -49,6 +50,7 @@
 
 #if defined(OS_CHROMEOS)
 #include "ash/public/cpp/projector/projector_controller.h"
+#include "ash/public/cpp/projector/projector_session.h"
 #endif
 
 using content::DesktopMediaID;
@@ -205,9 +207,30 @@ void ProjectorCheckboxPressed(views::Checkbox* presenter_checkbox) {
   SetProjectorToolsVisible(presenter_checkbox->GetChecked());
 }
 
-void StartProjectorSession() {
+void StartProjectorSession(const content::DesktopMediaID& accepted_id) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::ProjectorController::Get()->StartProjectorSession();
+  if (accepted_id.type == content::DesktopMediaID::TYPE_NONE)
+    return;
+
+  ash::SourceType scope;
+
+  switch (accepted_id.type) {
+    case content::DesktopMediaID::TYPE_SCREEN:
+      scope = ash::SourceType::kFullscreen;
+      break;
+    case content::DesktopMediaID::TYPE_WINDOW:
+      scope = ash::SourceType::kWindow;
+      break;
+    case content::DesktopMediaID::TYPE_WEB_CONTENTS:
+      scope = ash::SourceType::kTab;
+      break;
+    case content::DesktopMediaID::TYPE_NONE:
+      scope = ash::SourceType::kUnset;
+      break;
+  }
+
+  ash::ProjectorController::Get()->StartProjectorSession(
+      scope, content::DesktopMediaID::GetNativeWindowById(accepted_id));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -295,7 +318,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
             gfx::Rect(),                             // label_rect
             gfx::HorizontalAlignment::ALIGN_CENTER,  // text_alignment
             gfx::Rect(20, 20, 320, 240),             // image_rect
-            5);  // focus_rectangle_inset
+            5);                                      // focus_rectangle_inset
 
         const DesktopMediaSourceViewStyle kGenericScreenStyle(
             2,                                       // columns
@@ -304,7 +327,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
             gfx::Rect(15, 165, 240, 40),             // label_rect
             gfx::HorizontalAlignment::ALIGN_CENTER,  // text_alignment
             gfx::Rect(15, 15, 240, 150),             // image_rect
-            5);  // focus_rectangle_inset
+            5);                                      // focus_rectangle_inset
 
         std::unique_ptr<views::ScrollView> screen_scroll_view =
             views::ScrollView::CreateScrollViewWithBorder();
@@ -623,7 +646,7 @@ bool DesktopMediaPickerDialogView::Accept() {
       presenter_tools_checkbox_ && presenter_tools_checkbox_->GetChecked() &&
       IsProjectorEnabled();
   if (notify_projector_session_start) {
-    StartProjectorSession();
+    StartProjectorSession(source);
   }
 
   // Return true to close the window.

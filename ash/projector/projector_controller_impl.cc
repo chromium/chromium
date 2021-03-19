@@ -7,8 +7,10 @@
 #include "ash/projector/projector_metadata_controller.h"
 #include "ash/projector/projector_ui_controller.h"
 #include "ash/public/cpp/projector/projector_client.h"
+#include "ash/public/cpp/projector/projector_session.h"
 #include "ash/shell.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/aura/window.h"
 
 namespace ash {
 
@@ -60,7 +62,8 @@ void ProjectorControllerImpl::SetProjectorToolsVisible(bool is_visible) {
     ui_controller_->CloseToolbar();
 }
 
-void ProjectorControllerImpl::StartProjectorSession() {
+void ProjectorControllerImpl::StartProjectorSession(SourceType scope,
+                                                    aura::Window* window) {
   // TODO(https://crbug.com/1185262): Start projector session.
 }
 

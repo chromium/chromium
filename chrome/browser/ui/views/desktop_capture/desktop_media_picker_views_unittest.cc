@@ -40,6 +40,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/projector/projector_controller.h"
+#include "ash/public/cpp/projector/projector_session.h"
 #endif
 
 using content::DesktopMediaID;
@@ -402,7 +403,8 @@ class ProjectorControllerMock : public ash::ProjectorController {
                     const std::vector<base::TimeDelta>&,
                     bool));
   MOCK_METHOD1(SetProjectorToolsVisible, void(bool));
-  MOCK_METHOD0(StartProjectorSession, void());
+  MOCK_METHOD2(StartProjectorSession,
+               void(ash::SourceType scope, aura::Window* window));
   MOCK_CONST_METHOD0(IsEligible, bool());
 };
 
@@ -453,7 +455,8 @@ TEST_F(DesktopMediaPickerViewsTest, ProjectorStartSession) {
   test_api_.GetPresenterToolsCheckbox()->SetChecked(true);
   test_api_.FocusSourceAtIndex(0);
 
-  EXPECT_CALL(mock, StartProjectorSession()).Times(1);
+  EXPECT_CALL(mock, StartProjectorSession(ash::SourceType::kTab, testing::_))
+      .Times(1);
 
   GetPickerDialogView()->AcceptDialog();
   WaitForPickerDone();

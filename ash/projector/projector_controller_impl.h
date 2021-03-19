@@ -39,7 +39,7 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
                        const std::vector<base::TimeDelta>& word_offsets,
                        bool is_final) override;
   void SetProjectorToolsVisible(bool is_visible) override;
-  void StartProjectorSession() override;
+  void StartProjectorSession(SourceType scope, aura::Window* window) override;
   bool IsEligible() const override;
   // Set caption on/off state.
   void SetCaptionState(bool is_on);
