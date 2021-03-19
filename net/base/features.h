@@ -320,6 +320,13 @@ NET_EXPORT extern const base::Feature kSameSiteCookiesBugfix1166211;
 // notifications are still dispatched as usual.
 NET_EXPORT extern const base::Feature kNoCookieChangeNotificationOnLoad;
 
+#if BUILDFLAG(ENABLE_REPORTING)
+// When enabled this feature will allow a new Reporting-Endpoints header to
+// configure reporting endpoints for report delivery. This is used to support
+// the new Document Reporting spec.
+NET_EXPORT extern const base::Feature kDocumentReporting;
+#endif  // BUILDFLAG(ENABLE_REPORTING)
+
 }  // namespace features
 }  // namespace net
 

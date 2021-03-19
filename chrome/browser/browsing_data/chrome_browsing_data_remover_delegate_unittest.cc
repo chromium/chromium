@@ -867,9 +867,17 @@ class MockReportingService : public net::ReportingService {
     NOTREACHED();
   }
 
-  void ProcessHeader(const GURL& url,
-                     const net::NetworkIsolationKey& network_isolation_key,
-                     const std::string& header_value) override {
+  void ProcessReportToHeader(
+      const GURL& url,
+      const net::NetworkIsolationKey& network_isolation_key,
+      const std::string& header_value) override {
+    NOTREACHED();
+  }
+
+  void ProcessReportingEndpointsHeader(
+      const url::Origin& origin,
+      const net::NetworkIsolationKey& network_isolation_key,
+      const std::string& header_value) override {
     NOTREACHED();
   }
 

@@ -169,14 +169,15 @@ TEST_P(ReportingServiceTest, QueueReportNetworkIsolationKeyDisabled) {
   EXPECT_EQ(kType_, reports[0]->type);
 }
 
-TEST_P(ReportingServiceTest, ProcessHeader) {
-  service()->ProcessHeader(kUrl_, kNik_,
-                           "{\"endpoints\":[{\"url\":\"" + kEndpoint_.spec() +
-                               "\"}],"
-                               "\"group\":\"" +
-                               kGroup_ +
-                               "\","
-                               "\"max_age\":86400}");
+TEST_P(ReportingServiceTest, ProcessReportToHeader) {
+  service()->ProcessReportToHeader(kUrl_, kNik_,
+                                   "{\"endpoints\":[{\"url\":\"" +
+                                       kEndpoint_.spec() +
+                                       "\"}],"
+                                       "\"group\":\"" +
+                                       kGroup_ +
+                                       "\","
+                                       "\"max_age\":86400}");
   FinishLoading(true /* load_success */);
 
   EXPECT_EQ(1u, context()->cache()->GetEndpointCount());
@@ -184,19 +185,42 @@ TEST_P(ReportingServiceTest, ProcessHeader) {
       ReportingEndpointGroupKey(kNik_, kOrigin_, kGroup_), kEndpoint_));
 }
 
-TEST_P(ReportingServiceTest, ProcessHeaderPathAbsolute) {
-  service()->ProcessHeader(kUrl_, kNik_,
-                           "{\"endpoints\":[{\"url\":\"/path-absolute\"}],"
-                           "\"group\":\"" +
-                               kGroup_ +
-                               "\","
-                               "\"max_age\":86400}");
+TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeader) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kDocumentReporting);
+  service()->ProcessReportingEndpointsHeader(
+      kOrigin_, kNik_, kGroup_ + "=\"" + kEndpoint_.spec() + "\"");
+  FinishLoading(true /* load_success */);
+
+  EXPECT_EQ(1u, context()->cache()->GetEndpointCount());
+  EXPECT_TRUE(context()->cache()->GetEndpointForTesting(
+      ReportingEndpointGroupKey(kNik_, kOrigin_, kGroup_), kEndpoint_));
+}
+
+TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeaderPathAbsolute) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kDocumentReporting);
+  service()->ProcessReportingEndpointsHeader(kOrigin_, kNik_,
+                                             kGroup_ + "=\"/path-absolute\"");
   FinishLoading(true /* load_success */);
 
   EXPECT_EQ(1u, context()->cache()->GetEndpointCount());
 }
 
-TEST_P(ReportingServiceTest, ProcessHeader_TooLong) {
+TEST_P(ReportingServiceTest, ProcessReportToHeaderPathAbsolute) {
+  service()->ProcessReportToHeader(
+      kUrl_, kNik_,
+      "{\"endpoints\":[{\"url\":\"/path-absolute\"}],"
+      "\"group\":\"" +
+          kGroup_ +
+          "\","
+          "\"max_age\":86400}");
+  FinishLoading(true /* load_success */);
+
+  EXPECT_EQ(1u, context()->cache()->GetEndpointCount());
+}
+
+TEST_P(ReportingServiceTest, ProcessReportToHeader_TooLong) {
   const std::string header_too_long =
       "{\"endpoints\":[{\"url\":\"" + kEndpoint_.spec() +
       "\"}],"
@@ -207,12 +231,12 @@ TEST_P(ReportingServiceTest, ProcessHeader_TooLong) {
       "\"junk\":\"" + std::string(32 * 1024, 'a') + "\"}";
   // This does not trigger an attempt to load from the store because the header
   // is immediately rejected as invalid.
-  service()->ProcessHeader(kUrl_, kNik_, header_too_long);
+  service()->ProcessReportToHeader(kUrl_, kNik_, header_too_long);
 
   EXPECT_EQ(0u, context()->cache()->GetEndpointCount());
 }
 
-TEST_P(ReportingServiceTest, ProcessHeader_TooDeep) {
+TEST_P(ReportingServiceTest, ProcessReportToHeader_TooDeep) {
   const std::string header_too_deep = "{\"endpoints\":[{\"url\":\"" +
                                       kEndpoint_.spec() +
                                       "\"}],"
@@ -223,12 +247,12 @@ TEST_P(ReportingServiceTest, ProcessHeader_TooDeep) {
                                       "\"junk\":[[[[[[[[[[]]]]]]]]]]}";
   // This does not trigger an attempt to load from the store because the header
   // is immediately rejected as invalid.
-  service()->ProcessHeader(kUrl_, kNik_, header_too_deep);
+  service()->ProcessReportToHeader(kUrl_, kNik_, header_too_deep);
 
   EXPECT_EQ(0u, context()->cache()->GetEndpointCount());
 }
 
-TEST_P(ReportingServiceTest, ProcessHeaderNetworkIsolationKeyDisabled) {
+TEST_P(ReportingServiceTest, ProcessReportToHeaderNetworkIsolationKeyDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       features::kPartitionNelAndReportingByNetworkIsolationKey);
@@ -236,13 +260,14 @@ TEST_P(ReportingServiceTest, ProcessHeaderNetworkIsolationKeyDisabled) {
   // Re-create the store, so it reads the new feature value.
   Init();
 
-  service()->ProcessHeader(kUrl_, kNik_,
-                           "{\"endpoints\":[{\"url\":\"" + kEndpoint_.spec() +
-                               "\"}],"
-                               "\"group\":\"" +
-                               kGroup_ +
-                               "\","
-                               "\"max_age\":86400}");
+  service()->ProcessReportToHeader(kUrl_, kNik_,
+                                   "{\"endpoints\":[{\"url\":\"" +
+                                       kEndpoint_.spec() +
+                                       "\"}],"
+                                       "\"group\":\"" +
+                                       kGroup_ +
+                                       "\","
+                                       "\"max_age\":86400}");
   FinishLoading(true /* load_success */);
 
   EXPECT_EQ(1u, context()->cache()->GetEndpointCount());
@@ -261,13 +286,14 @@ TEST_P(ReportingServiceTest, WriteToStore) {
 
   // This first call to any public method triggers a load. The load will block
   // until we call FinishLoading.
-  service()->ProcessHeader(kUrl_, kNik_,
-                           "{\"endpoints\":[{\"url\":\"" + kEndpoint_.spec() +
-                               "\"}],"
-                               "\"group\":\"" +
-                               kGroup_ +
-                               "\","
-                               "\"max_age\":86400}");
+  service()->ProcessReportToHeader(kUrl_, kNik_,
+                                   "{\"endpoints\":[{\"url\":\"" +
+                                       kEndpoint_.spec() +
+                                       "\"}],"
+                                       "\"group\":\"" +
+                                       kGroup_ +
+                                       "\","
+                                       "\"max_age\":86400}");
   expected_commands.emplace_back(CommandType::LOAD_REPORTING_CLIENTS);
   EXPECT_THAT(store()->GetAllCommands(),
               testing::UnorderedElementsAreArray(expected_commands));
@@ -282,13 +308,14 @@ TEST_P(ReportingServiceTest, WriteToStore) {
   EXPECT_THAT(store()->GetAllCommands(),
               testing::UnorderedElementsAreArray(expected_commands));
 
-  service()->ProcessHeader(kUrl2_, kNik2_,
-                           "{\"endpoints\":[{\"url\":\"" + kEndpoint_.spec() +
-                               "\"}],"
-                               "\"group\":\"" +
-                               kGroup_ +
-                               "\","
-                               "\"max_age\":86400}");
+  service()->ProcessReportToHeader(kUrl2_, kNik2_,
+                                   "{\"endpoints\":[{\"url\":\"" +
+                                       kEndpoint_.spec() +
+                                       "\"}],"
+                                       "\"group\":\"" +
+                                       kGroup_ +
+                                       "\","
+                                       "\"max_age\":86400}");
   expected_commands.emplace_back(CommandType::ADD_REPORTING_ENDPOINT,
                                  kGroupKey2_, kEndpoint_);
   expected_commands.emplace_back(CommandType::ADD_REPORTING_ENDPOINT_GROUP,
@@ -334,24 +361,26 @@ TEST_P(ReportingServiceTest, WaitUntilLoadFinishesBeforeWritingToStore) {
 
   // This first call to any public method triggers a load. The load will block
   // until we call FinishLoading.
-  service()->ProcessHeader(kUrl_, kNik_,
-                           "{\"endpoints\":[{\"url\":\"" + kEndpoint_.spec() +
-                               "\"}],"
-                               "\"group\":\"" +
-                               kGroup_ +
-                               "\","
-                               "\"max_age\":86400}");
+  service()->ProcessReportToHeader(kUrl_, kNik_,
+                                   "{\"endpoints\":[{\"url\":\"" +
+                                       kEndpoint_.spec() +
+                                       "\"}],"
+                                       "\"group\":\"" +
+                                       kGroup_ +
+                                       "\","
+                                       "\"max_age\":86400}");
   expected_commands.emplace_back(CommandType::LOAD_REPORTING_CLIENTS);
   EXPECT_THAT(store()->GetAllCommands(),
               testing::UnorderedElementsAreArray(expected_commands));
 
-  service()->ProcessHeader(kUrl2_, kNik2_,
-                           "{\"endpoints\":[{\"url\":\"" + kEndpoint_.spec() +
-                               "\"}],"
-                               "\"group\":\"" +
-                               kGroup_ +
-                               "\","
-                               "\"max_age\":86400}");
+  service()->ProcessReportToHeader(kUrl2_, kNik2_,
+                                   "{\"endpoints\":[{\"url\":\"" +
+                                       kEndpoint_.spec() +
+                                       "\"}],"
+                                       "\"group\":\"" +
+                                       kGroup_ +
+                                       "\","
+                                       "\"max_age\":86400}");
   EXPECT_THAT(store()->GetAllCommands(),
               testing::UnorderedElementsAreArray(expected_commands));
 

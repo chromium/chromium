@@ -19847,11 +19847,17 @@ TEST_F(HttpNetworkTransactionTest, NoSupportedProxies) {
 // Reporting tests
 
 #if BUILDFLAG(ENABLE_REPORTING)
-class HttpNetworkTransactionReportingTest : public HttpNetworkTransactionTest {
+class HttpNetworkTransactionReportingTest
+    : public HttpNetworkTransactionTest,
+      public ::testing::WithParamInterface<bool> {
  protected:
   HttpNetworkTransactionReportingTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kPartitionNelAndReportingByNetworkIsolationKey);
+    std::vector<base::Feature> required_features = {
+        features::kPartitionNelAndReportingByNetworkIsolationKey};
+    if (UseDocumentReporting()) {
+      required_features.push_back(features::kDocumentReporting);
+    }
+    feature_list_.InitWithFeatures(required_features, {});
   }
 
   void SetUp() override {
@@ -19872,7 +19878,8 @@ class HttpNetworkTransactionReportingTest : public HttpNetworkTransactionTest {
     test_reporting_context_ = nullptr;
   }
 
-  // Makes an HTTPS request that should install a valid Reporting policy.
+  // Makes an HTTPS request that should install a valid Reporting policy
+  // using either Report-To header or Reporting-Endpoints header.
   void RequestPolicy(CertStatus cert_status = 0) {
     HttpRequestInfo request;
     request.method = "GET";
@@ -19886,11 +19893,20 @@ class HttpNetworkTransactionReportingTest : public HttpNetworkTransactionTest {
                   "Host: www.example.org\r\n"
                   "Connection: keep-alive\r\n\r\n"),
     };
+
+    MockRead reporting_header;
+    if (UseDocumentReporting()) {
+      reporting_header = MockRead(
+          "Reporting-Endpoints: nel=\"https://www.example.org/upload/\"\r\n");
+    } else {
+      reporting_header = MockRead(
+          "Report-To: {\"group\": \"nel\", \"max_age\": 86400, "
+          "\"endpoints\": [{\"url\": "
+          "\"https://www.example.org/upload/\"}]}\r\n");
+    }
     MockRead data_reads[] = {
         MockRead("HTTP/1.0 200 OK\r\n"),
-        MockRead("Report-To: {\"group\": \"nel\", \"max_age\": 86400, "
-                 "\"endpoints\": [{\"url\": "
-                 "\"https://www.example.org/upload/\"}]}\r\n"),
+        std::move(reporting_header),
         MockRead("\r\n"),
         MockRead("hello world"),
         MockRead(SYNCHRONOUS, OK),
@@ -19916,6 +19932,7 @@ class HttpNetworkTransactionReportingTest : public HttpNetworkTransactionTest {
   }
 
  protected:
+  bool UseDocumentReporting() const { return GetParam(); }
   std::string url_ = "https://www.example.org/";
 
  private:
@@ -19923,20 +19940,20 @@ class HttpNetworkTransactionReportingTest : public HttpNetworkTransactionTest {
   TestReportingContext* test_reporting_context_;
 };
 
-TEST_F(HttpNetworkTransactionReportingTest,
+TEST_P(HttpNetworkTransactionReportingTest,
        DontProcessReportToHeaderNoService) {
   clear_reporting_service();
   RequestPolicy();
   // No crash.
 }
 
-TEST_F(HttpNetworkTransactionReportingTest, DontProcessReportToHeaderHttp) {
+TEST_P(HttpNetworkTransactionReportingTest, DontProcessReportToHeaderHttp) {
   url_ = "http://www.example.org/";
   RequestPolicy();
   EXPECT_EQ(0u, reporting_context()->cache()->GetEndpointCount());
 }
 
-TEST_F(HttpNetworkTransactionReportingTest, ProcessReportToHeaderHttps) {
+TEST_P(HttpNetworkTransactionReportingTest, ProcessReportToHeaderHttps) {
   RequestPolicy();
   ASSERT_EQ(1u, reporting_context()->cache()->GetEndpointCount());
   const ReportingEndpoint endpoint =
@@ -19948,12 +19965,17 @@ TEST_F(HttpNetworkTransactionReportingTest, ProcessReportToHeaderHttps) {
   EXPECT_TRUE(endpoint);
 }
 
-TEST_F(HttpNetworkTransactionReportingTest,
+TEST_P(HttpNetworkTransactionReportingTest,
        DontProcessReportToHeaderInvalidHttps) {
   CertStatus cert_status = CERT_STATUS_COMMON_NAME_INVALID;
   RequestPolicy(cert_status);
   EXPECT_EQ(0u, reporting_context()->cache()->GetEndpointCount());
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HttpNetworkTransactionReportingTest,
+                         ::testing::Bool());
+
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
 //-----------------------------------------------------------------------------
