@@ -22,7 +22,6 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
@@ -59,23 +58,21 @@ public class PasswordCheckIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1110965")
     public void testDestroysComponentIfFirstInSettingsStack() {
         PasswordCheckFactory.getOrCreate(mMockSettingsLauncher);
         Activity activity = setUpUiLaunchedFromDialog();
         activity.finish();
-        CriteriaHelper.pollInstrumentationThread(() -> activity.isDestroyed());
+        CriteriaHelper.pollUiThread(() -> activity.isDestroyed());
         assertNull(PasswordCheckFactory.getPasswordCheckInstance());
     }
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1114096")
     public void testDoesNotDestroyComponentIfNotFirstInSettingsStack() {
         PasswordCheckFactory.getOrCreate(mMockSettingsLauncher);
         Activity activity = setUpUiLaunchedFromSettings();
         activity.finish();
-        CriteriaHelper.pollInstrumentationThread(() -> activity.isDestroyed());
+        CriteriaHelper.pollUiThread(() -> activity.isDestroyed());
         assertNotNull(PasswordCheckFactory.getPasswordCheckInstance());
         // Clean up the password check component.
         PasswordCheckFactory.destroy();

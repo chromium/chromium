@@ -1953,12 +1953,11 @@ public class PasswordSettingsTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    @DisabledTest(message = "crbug.com/1110965")
     public void testDestroysPasswordCheckIfFirstInSettingsStack() {
         mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
         SettingsActivity activity = startPasswordSettingsDirectly();
         activity.finish();
-        CriteriaHelper.pollInstrumentationThread(() -> activity.isDestroyed());
+        CriteriaHelper.pollUiThread(() -> activity.isDestroyed());
         Assert.assertNull(PasswordCheckFactory.getPasswordCheckInstance());
     }
 
@@ -1969,7 +1968,7 @@ public class PasswordSettingsTest {
         mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
         SettingsActivity activity = startPasswordSettingsFromMainSettings();
         activity.finish();
-        CriteriaHelper.pollInstrumentationThread(() -> activity.isDestroyed());
+        CriteriaHelper.pollUiThread(() -> activity.isDestroyed());
         Assert.assertNotNull(PasswordCheckFactory.getPasswordCheckInstance());
         // Clean up the password check component.
         PasswordCheckFactory.destroy();
