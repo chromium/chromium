@@ -10,10 +10,14 @@
 #include "pdf/pdf_view_plugin_base.h"
 #include "pdf/post_message_receiver.h"
 #include "pdf/post_message_sender.h"
+#include "pdf/ppapi_migration/graphics.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "v8/include/v8.h"
+
+class SkImage;
 
 namespace base {
 class Value;
@@ -29,7 +33,8 @@ namespace chrome_pdf {
 class PdfViewWebPlugin final : public PdfViewPluginBase,
                                public blink::WebPlugin,
                                public BlinkUrlLoader::Client,
-                               public PostMessageReceiver::Client {
+                               public PostMessageReceiver::Client,
+                               public SkiaGraphics::Client {
  public:
   explicit PdfViewWebPlugin(const blink::WebPluginParams& params);
   PdfViewWebPlugin(const PdfViewWebPlugin& other) = delete;
@@ -103,6 +108,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // PostMessageReceiver::Client:
   void OnMessage(const base::Value& message) override;
 
+  // SkiaGraphics::Client:
+  void UpdateSnapshot(sk_sp<SkImage> snapshot) override;
+
  protected:
   // PdfViewPluginBase:
   base::WeakPtr<PdfViewPluginBase> GetWeakPtr() override;
@@ -132,6 +140,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   v8::Persistent<v8::Object> scriptable_receiver_;
   PostMessageSender post_message_sender_;
+
+  sk_sp<SkImage> snapshot_;
 
   base::WeakPtrFactory<PdfViewWebPlugin> weak_factory_{this};
 };

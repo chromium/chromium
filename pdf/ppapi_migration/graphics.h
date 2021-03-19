@@ -5,10 +5,15 @@
 #ifndef PDF_PPAPI_MIGRATION_GRAPHICS_H_
 #define PDF_PPAPI_MIGRATION_GRAPHICS_H_
 
+#include <memory>
+
 #include "pdf/ppapi_migration/callback.h"
 #include "ppapi/cpp/graphics_2d.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/geometry/size.h"
+
+class SkImage;
 
 namespace gfx {
 class Point;
@@ -84,7 +89,19 @@ class PepperGraphics final : public Graphics {
 // A Skia graphics device.
 class SkiaGraphics final : public Graphics {
  public:
-  static std::unique_ptr<SkiaGraphics> Create(const gfx::Size& size);
+  // A client interface that needs to be registered when SkiaGraphics is
+  // created.
+  class Client {
+   public:
+    virtual ~Client() = default;
+
+    // Updates the client with the latest snapshot created by Flush().
+    virtual void UpdateSnapshot(sk_sp<SkImage> snapshot) = 0;
+  };
+
+  // `client` must remain valid throughout the lifespan of the object.
+  static std::unique_ptr<SkiaGraphics> Create(Client* client,
+                                              const gfx::Size& size);
 
   ~SkiaGraphics() override;
 
@@ -98,10 +115,11 @@ class SkiaGraphics final : public Graphics {
                          const gfx::Point& origin,
                          const gfx::Vector2d& translate) override;
 
-  sk_sp<SkImage> CreateSnapshot();
-
  private:
-  explicit SkiaGraphics(const gfx::Size& size);
+  explicit SkiaGraphics(Client* client, const gfx::Size& size);
+
+  // Unowned pointer. The client is required to outlive this object.
+  Client* client_;
 
   sk_sp<SkSurface> skia_graphics_;
 };

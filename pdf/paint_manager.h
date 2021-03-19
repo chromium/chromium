@@ -92,8 +92,9 @@ class PaintManager {
   // The Client is a non-owning pointer and must remain valid (normally the
   // object implementing the Client interface will own the paint manager).
   //
-  // You will need to call SetSize before this class will do anything. Normally
-  // you do this from the ViewChanged method of your plugin instance.
+  // You will need to call SetSize() before this class will do anything.
+  // Normally you do this from UpdateGeometryOnViewChanged() of your plugin
+  // instance.
   explicit PaintManager(Client* client);
   PaintManager(const PaintManager&) = delete;
   PaintManager& operator=(const PaintManager&) = delete;

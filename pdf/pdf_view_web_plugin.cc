@@ -20,6 +20,9 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "cc/paint/paint_canvas.h"
+#include "cc/paint/paint_flags.h"
+#include "cc/paint/paint_image.h"
+#include "cc/paint/paint_image_builder.h"
 #include "net/cookies/site_for_cookies.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/pdf_engine.h"
@@ -46,7 +49,11 @@
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkRect.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/base/cursor/cursor.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/skia_util.h"
 #include "v8/include/v8.h"
 
@@ -170,12 +177,46 @@ v8::Local<v8::Object> PdfViewWebPlugin::V8ScriptableObject(
 void PdfViewWebPlugin::UpdateAllLifecyclePhases(
     blink::DocumentUpdateReason reason) {}
 
-void PdfViewWebPlugin::Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) {}
+void PdfViewWebPlugin::Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
+  // Clip the intersection of the paint rect and the plugin rect, so that
+  // painting outside the plugin or the paint rect area can be avoided.
+  gfx::Rect plugin_rect(rect.origin(), plugin_size());
+  SkRect invalidate_rect =
+      gfx::RectToSkRect(gfx::IntersectRects(plugin_rect, rect));
+  cc::PaintCanvasAutoRestore auto_restore(canvas, /*save=*/true);
+  canvas->clipRect(invalidate_rect);
+
+  // Paint with the plugin's background color if the snapshot is not ready.
+  if (!snapshot_) {
+    cc::PaintFlags flags;
+    flags.setBlendMode(SkBlendMode::kSrc);
+    flags.setColor(GetBackgroundColor());
+    canvas->drawRect(invalidate_rect, flags);
+    return;
+  }
+
+  gfx::PointF origin(rect.origin());
+  if (device_scale() != 1.0 && device_scale() > 0.0) {
+    float inverse_scale = 1.0 / device_scale();
+    canvas->scale(inverse_scale, inverse_scale);
+    origin.Scale(device_scale());
+  }
+
+  cc::PaintImage snapshot =
+      cc::PaintImageBuilder::WithDefault()
+          .set_image(snapshot_, cc::PaintImage::GetNextContentId())
+          .set_id(cc::PaintImage::GetNextId())
+          .TakePaintImage();
+
+  canvas->drawImage(snapshot, origin.x(), origin.y());
+}
 
 void PdfViewWebPlugin::UpdateGeometry(const gfx::Rect& window_rect,
                                       const gfx::Rect& clip_rect,
                                       const gfx::Rect& unobscured_rect,
-                                      bool is_visible) {}
+                                      bool is_visible) {
+  OnViewportChanged(window_rect, container_->DeviceScaleFactor());
+}
 
 void PdfViewWebPlugin::UpdateFocus(bool focused,
                                    blink::mojom::FocusType focus_type) {}
@@ -275,7 +316,10 @@ bool PdfViewWebPlugin::IsValidLink(const std::string& url) {
 
 std::unique_ptr<Graphics> PdfViewWebPlugin::CreatePaintGraphics(
     const gfx::Size& size) {
-  auto graphics = SkiaGraphics::Create(size);
+  // `this` must be valid when creating new graphics. `this` is guaranteed to
+  // outlive `graphics`; the implemented client interface owns the paint manager
+  // in which the graphics device exists.
+  auto graphics = SkiaGraphics::Create(this, size);
   DCHECK(graphics);
   return graphics;
 }
@@ -327,6 +371,10 @@ PdfViewWebPlugin::CreateAssociatedURLLoader(
 
 void PdfViewWebPlugin::OnMessage(const base::Value& message) {
   PdfViewPluginBase::HandleMessage(message);
+}
+
+void PdfViewWebPlugin::UpdateSnapshot(sk_sp<SkImage> snapshot) {
+  snapshot_ = std::move(snapshot);
 }
 
 base::WeakPtr<PdfViewPluginBase> PdfViewWebPlugin::GetWeakPtr() {

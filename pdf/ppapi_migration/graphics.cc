@@ -81,22 +81,26 @@ void PepperGraphics::SetLayerTransform(float scale,
 }
 
 // static
-std::unique_ptr<SkiaGraphics> SkiaGraphics::Create(const gfx::Size& size) {
-  auto graphics = base::WrapUnique(new SkiaGraphics(size));
+std::unique_ptr<SkiaGraphics> SkiaGraphics::Create(Client* client,
+                                                   const gfx::Size& size) {
+  auto graphics = base::WrapUnique(new SkiaGraphics(client, size));
   if (!graphics->skia_graphics_)
     return nullptr;
 
   return graphics;
 }
 
-SkiaGraphics::SkiaGraphics(const gfx::Size& size)
+SkiaGraphics::SkiaGraphics(Client* client, const gfx::Size& size)
     : Graphics(size),
+      client_(client),
       skia_graphics_(
           SkSurface::MakeRasterN32Premul(size.width(), size.height())) {}
 
 SkiaGraphics::~SkiaGraphics() = default;
 
 bool SkiaGraphics::Flush(ResultCallback callback) {
+  client_->UpdateSnapshot(skia_graphics_->makeImageSnapshot());
+
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), 0));
   return true;
@@ -121,10 +125,6 @@ void SkiaGraphics::SetLayerTransform(float scale,
                                      const gfx::Point& origin,
                                      const gfx::Vector2d& translate) {
   NOTIMPLEMENTED_LOG_ONCE();
-}
-
-sk_sp<SkImage> SkiaGraphics::CreateSnapshot() {
-  return skia_graphics_->makeImageSnapshot();
 }
 
 }  // namespace chrome_pdf

@@ -6,13 +6,18 @@
 
 #include <utility>
 
+#include "base/callback_helpers.h"
+#include "base/test/task_environment.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "pdf/ppapi_migration/bitmap.h"
+#include "pdf/ppapi_migration/callback.h"
 #include "pdf/ppapi_migration/image.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSize.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/geometry/rect.h"
@@ -21,6 +26,17 @@
 
 namespace chrome_pdf {
 namespace {
+
+struct FakeSkiaGraphicsClient : public SkiaGraphics::Client {
+  FakeSkiaGraphicsClient() = default;
+  ~FakeSkiaGraphicsClient() override = default;
+
+  void UpdateSnapshot(sk_sp<SkImage> new_snapshot) override {
+    snapshot = std::move(new_snapshot);
+  }
+
+  sk_sp<SkImage> snapshot;
+};
 
 Image CreateSourceImage(const SkISize& src_size) {
   SkBitmap bitmap = CreateN32PremulSkBitmap(src_size);
@@ -39,18 +55,21 @@ void TestPaintImageResult(const SkISize& graphics_size,
                           const SkISize& src_size,
                           const gfx::Rect& paint_rect,
                           const SkIRect& overlapped_rect) {
-  auto graphics = SkiaGraphics::Create(gfx::SkISizeToSize(graphics_size));
+  base::test::TaskEnvironment task_environment;
+  FakeSkiaGraphicsClient client;
+  auto graphics =
+      SkiaGraphics::Create(&client, gfx::SkISizeToSize(graphics_size));
   ASSERT_TRUE(graphics);
 
   // Create snapshots as SkImage and SkBitmap after painting.
   graphics->PaintImage(CreateSourceImage(src_size), paint_rect);
-  sk_sp<SkImage> snapshot = graphics->CreateSnapshot();
+  graphics->Flush(base::DoNothing());
   SkBitmap snapshot_bitmap;
-  ASSERT_TRUE(snapshot->asLegacyBitmap(&snapshot_bitmap));
+  ASSERT_TRUE(client.snapshot->asLegacyBitmap(&snapshot_bitmap));
 
   // Verify snapshot dimensions.
-  EXPECT_EQ(snapshot->dimensions(), graphics_size)
-      << snapshot->width() << " x " << snapshot->height()
+  EXPECT_EQ(client.snapshot->dimensions(), graphics_size)
+      << client.snapshot->width() << " x " << client.snapshot->height()
       << " != " << graphics_size.width() << " x " << graphics_size.height();
 
   // Verify the snapshot matches the expected result.
@@ -61,6 +80,22 @@ void TestPaintImageResult(const SkISize& graphics_size,
                         cc::ExactPixelComparator(/*discard_alpha=*/false)))
       << "SkBitmap comparison failed for graphics size of "
       << graphics_size.width() << " x " << graphics_size.height();
+}
+
+TEST(SkiaGraphicsTest, Flush) {
+  base::test::TaskEnvironment task_environment;
+
+  FakeSkiaGraphicsClient client;
+  auto graphics = SkiaGraphics::Create(&client, gfx::Size(20, 20));
+  ASSERT_TRUE(graphics);
+
+  // The client's snapshot is nullptr before flushing.
+  EXPECT_FALSE(client.snapshot);
+
+  EXPECT_TRUE(graphics->Flush(base::DoNothing()));
+
+  // The client's snapshot has changed after flushing.
+  EXPECT_TRUE(client.snapshot);
 }
 
 TEST(SkiaGraphicsTest, PaintImage) {
