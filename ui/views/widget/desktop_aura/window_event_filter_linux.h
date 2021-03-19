@@ -11,6 +11,7 @@
 #include "ui/views/views_export.h"
 
 namespace ui {
+class LocatedEvent;
 class MouseEvent;
 class WmMoveResizeHandler;
 }  // namespace ui
@@ -27,9 +28,11 @@ class VIEWS_EXPORT WindowEventFilterLinux {
                          ui::WmMoveResizeHandler* handler);
   ~WindowEventFilterLinux();
 
-  void HandleMouseEventWithHitTest(int hit_test, ui::MouseEvent* event);
+  void HandleLocatedEventWithHitTest(int hit_test, ui::LocatedEvent* event);
 
  private:
+  bool HandleMouseEventWithHitTest(int hit_test, ui::MouseEvent* event);
+
   // Called when the user clicked the caption area.
   void OnClickedCaption(ui::MouseEvent* event, int previous_click_component);
 
@@ -41,7 +44,8 @@ class VIEWS_EXPORT WindowEventFilterLinux {
   // Dispatches a message to the window manager to tell it to act as if a border
   // or titlebar drag occurred with left mouse click. In case of X11, a
   // _NET_WM_MOVERESIZE message is sent.
-  void MaybeDispatchHostWindowDragMovement(int hittest, ui::MouseEvent* event);
+  void MaybeDispatchHostWindowDragMovement(int hittest,
+                                           ui::LocatedEvent* event);
 
   // A signal to lower an attached to this filter window to the bottom of the
   // stack.

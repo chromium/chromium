@@ -210,22 +210,24 @@ void DesktopWindowTreeHostLinux::DispatchEvent(ui::Event* event) {
   // non client area.) Likewise, we won't want to do the following in any
   // WindowTreeHost that hosts ash.
   int hit_test_code = HTNOWHERE;
-  if (event->IsMouseEvent()) {
-    ui::MouseEvent* mouse_event = event->AsMouseEvent();
+  if (event->IsMouseEvent() || event->IsTouchEvent()) {
+    ui::LocatedEvent* located_event = event->AsLocatedEvent();
     if (GetContentWindow() && GetContentWindow()->delegate()) {
-      int flags = mouse_event->flags();
-      gfx::Point location_in_dip = mouse_event->location();
+      int flags = located_event->flags();
+      gfx::Point location_in_dip = located_event->location();
       GetRootTransform().TransformPointReverse(&location_in_dip);
       hit_test_code = GetContentWindow()->delegate()->GetNonClientComponent(
           location_in_dip);
       if (hit_test_code != HTCLIENT && hit_test_code != HTNOWHERE)
         flags |= ui::EF_IS_NON_CLIENT;
-      mouse_event->set_flags(flags);
+      located_event->set_flags(flags);
     }
 
     // While we unset the urgency hint when we gain focus, we also must remove
     // it on mouse clicks because we can call FlashFrame() on an active window.
-    if (mouse_event->IsAnyButton() || mouse_event->IsMouseWheelEvent())
+    if (located_event->IsMouseEvent() &&
+        (located_event->AsMouseEvent()->IsAnyButton() ||
+         located_event->IsMouseWheelEvent()))
       FlashFrame(false);
   }
 
@@ -233,9 +235,10 @@ void DesktopWindowTreeHostLinux::DispatchEvent(ui::Event* event) {
   // or not as SendEventToSink results in copying the event and our copy of the
   // event will not set to handled unless a dispatcher or a target are
   // destroyed.
-  if (event->IsMouseEvent() && non_client_window_event_filter_) {
-    non_client_window_event_filter_->HandleMouseEventWithHitTest(
-        hit_test_code, event->AsMouseEvent());
+  if ((event->IsMouseEvent() || event->IsTouchEvent()) &&
+      non_client_window_event_filter_) {
+    non_client_window_event_filter_->HandleLocatedEventWithHitTest(
+        hit_test_code, event->AsLocatedEvent());
   }
 
   if (!event->handled())
