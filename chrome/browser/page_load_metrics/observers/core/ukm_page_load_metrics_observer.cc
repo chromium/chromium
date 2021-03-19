@@ -821,7 +821,7 @@ void UkmPageLoadMetricsObserver::RecordInternalTimingMetrics(
   }
   debug_builder
       .SetPaintTiming_ExperimentalLargestContentfulPaint_TerminationState(
-          static_cast<int>(lcp_state));
+          static_cast<int>(experimental_lcp_state));
   debug_builder.Record(ukm::UkmRecorder::Get());
 }
 
