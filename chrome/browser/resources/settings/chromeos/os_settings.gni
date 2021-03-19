@@ -332,5 +332,6 @@ os_settings_migrated_imports = [
   "chrome/browser/resources/settings/settings_page_css.html",
   "chrome/browser/resources/settings/settings_shared_css.html",
   "chrome/browser/resources/settings/settings_vars_css.html",
+  "ui/webui/resources/cr_elements/cr_drawer/cr_drawer.html",
   "ui/webui/resources/html/plural_string_proxy.html",
 ]

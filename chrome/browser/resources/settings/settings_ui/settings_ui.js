@@ -10,7 +10,7 @@
  *
  *    <settings-ui prefs="{{prefs}}"></settings-ui>
  */
-import 'chrome://resources/cr_elements/cr_drawer/cr_drawer.m.js';
+import 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import 'chrome://resources/cr_elements/cr_page_host_style_css.m.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/cr_elements/icons.m.js';

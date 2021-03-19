@@ -2,8 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../shared_vars_css.m.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertNotReached} from '../../js/assert.m.js';
+import {listenOnce} from '../../js/util.m.js';
+
 Polymer({
   is: 'cr-drawer',
+
+  _template: html`{__html_template__}`,
 
   properties: {
     heading: String,
@@ -141,4 +151,3 @@ Polymer({
     this.fire('close');
   },
 });
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');
