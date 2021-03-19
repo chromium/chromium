@@ -116,8 +116,8 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   }
   void RequestScriptInjectionForTesting(const Extension* extension,
                                         mojom::RunLocation run_location,
-                                        base::RepeatingClosure callback) {
-    return RequestScriptInjection(extension, run_location, callback);
+                                        base::OnceClosure callback) {
+    return RequestScriptInjection(extension, run_location, std::move(callback));
   }
   void ClearInjectionsForTesting(const Extension& extension) {
     pending_scripts_.erase(extension.id());
@@ -127,18 +127,19 @@ class ExtensionActionRunner : public content::WebContentsObserver,
  private:
   struct PendingScript {
     PendingScript(mojom::RunLocation run_location,
-                  base::RepeatingClosure permit_script);
-    PendingScript(const PendingScript& other);
+                  base::OnceClosure permit_script);
+    PendingScript(const PendingScript&) = delete;
+    PendingScript& operator=(const PendingScript&) = delete;
     ~PendingScript();
 
     // The run location that the script wants to inject at.
     mojom::RunLocation run_location;
 
     // The callback to run when the script is permitted by the user.
-    base::RepeatingClosure permit_script;
+    base::OnceClosure permit_script;
   };
 
-  using PendingScriptList = std::vector<PendingScript>;
+  using PendingScriptList = std::vector<std::unique_ptr<PendingScript>>;
   using PendingScriptMap = std::map<std::string, PendingScriptList>;
 
   // Returns true if the extension requesting script injection requires
@@ -152,7 +153,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // |callback| is run is that, if it is run, it will run on the current page.
   void RequestScriptInjection(const Extension* extension,
                               mojom::RunLocation run_location,
-                              base::RepeatingClosure callback);
+                              base::OnceClosure callback);
 
   // Runs any pending injections for the corresponding extension.
   void RunPendingScriptsForExtension(const Extension* extension);

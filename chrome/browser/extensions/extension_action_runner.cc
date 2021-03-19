@@ -58,13 +58,10 @@ const int kRefreshRequiredActionsMask =
 
 ExtensionActionRunner::PendingScript::PendingScript(
     mojom::RunLocation run_location,
-    base::RepeatingClosure permit_script)
-    : run_location(run_location), permit_script(permit_script) {}
+    base::OnceClosure permit_script)
+    : run_location(run_location), permit_script(std::move(permit_script)) {}
 
-ExtensionActionRunner::PendingScript::PendingScript(
-    const PendingScript& other) = default;
-
-ExtensionActionRunner::PendingScript::~PendingScript() {}
+ExtensionActionRunner::PendingScript::~PendingScript() = default;
 
 ExtensionActionRunner::ExtensionActionRunner(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
@@ -187,8 +184,8 @@ int ExtensionActionRunner::GetBlockedActions(const Extension* extension) {
     blocked_actions |= BLOCKED_ACTION_WEB_REQUEST;
   auto iter = pending_scripts_.find(extension->id());
   if (iter != pending_scripts_.end()) {
-    for (const PendingScript& script : iter->second) {
-      switch (script.run_location) {
+    for (const auto& script : iter->second) {
+      switch (script->run_location) {
         case mojom::RunLocation::kDocumentStart:
           blocked_actions |= BLOCKED_ACTION_SCRIPT_AT_START;
           break;
@@ -246,10 +243,11 @@ ExtensionActionRunner::RequiresUserConsentForScriptInjection(
 void ExtensionActionRunner::RequestScriptInjection(
     const Extension* extension,
     mojom::RunLocation run_location,
-    base::RepeatingClosure callback) {
+    base::OnceClosure callback) {
   CHECK(extension);
   PendingScriptList& list = pending_scripts_[extension->id()];
-  list.push_back(PendingScript(run_location, callback));
+  list.push_back(
+      std::make_unique<PendingScript>(run_location, std::move(callback)));
 
   // If this was the first entry, we need to notify that a new extension wants
   // to run.
@@ -287,8 +285,8 @@ void ExtensionActionRunner::RunPendingScriptsForExtension(
   pending_scripts_.erase(extension->id());
 
   // Run all pending injections for the given extension.
-  for (PendingScript& pending_script : scripts)
-    pending_script.permit_script.Run();
+  for (auto& pending_script : scripts)
+    std::move(pending_script->permit_script).Run();
 }
 
 void ExtensionActionRunner::OnRequestScriptInjectionPermission(
@@ -320,8 +318,8 @@ void ExtensionActionRunner::OnRequestScriptInjectionPermission(
       // by this object.
       RequestScriptInjection(
           extension, run_location,
-          base::BindRepeating(&ExtensionActionRunner::PermitScriptInjection,
-                              base::Unretained(this), request_id));
+          base::BindOnce(&ExtensionActionRunner::PermitScriptInjection,
+                         base::Unretained(this), request_id));
       break;
     case PermissionsData::PageAccess::kDenied:
       // We should usually only get a "deny access" if the page changed (as the

@@ -728,10 +728,10 @@ TEST_F(ExtensionContextMenuModelTest, TestPageAccessSubmenu) {
 
   // Pretend the extension wants to run.
   int run_count = 0;
-  base::RepeatingClosure increment_run_count(
-      base::BindRepeating(&Increment, &run_count));
+  auto increment_run_count_1 = base::BindOnce(&Increment, &run_count);
   action_runner->RequestScriptInjectionForTesting(
-      extension, mojom::RunLocation::kDocumentIdle, increment_run_count);
+      extension, mojom::RunLocation::kDocumentIdle,
+      std::move(increment_run_count_1));
 
   ExtensionContextMenuModel menu(extension, GetBrowser(),
                                  ExtensionContextMenuModel::PINNED, nullptr,
@@ -800,8 +800,10 @@ TEST_F(ExtensionContextMenuModelTest, TestPageAccessSubmenu) {
   EXPECT_FALSE(menu.IsCommandIdChecked(kRunOnAllSites));
 
   // Request another run.
+  auto increment_run_count_2 = base::BindOnce(&Increment, &run_count);
   action_runner->RequestScriptInjectionForTesting(
-      extension, mojom::RunLocation::kDocumentIdle, increment_run_count);
+      extension, mojom::RunLocation::kDocumentIdle,
+      std::move(increment_run_count_2));
 
   // Change the mode to be "Run on all sites".
   menu.ExecuteCommand(kRunOnAllSites, 0);
@@ -833,8 +835,10 @@ TEST_F(ExtensionContextMenuModelTest, TestPageAccessSubmenu) {
   EXPECT_FALSE(menu.IsCommandIdChecked(kRunOnSite));
   EXPECT_TRUE(menu.IsCommandIdChecked(kRunOnAllSites));
 
+  auto increment_run_count_3 = base::BindOnce(&Increment, &run_count);
   action_runner->RequestScriptInjectionForTesting(
-      extension, mojom::RunLocation::kDocumentIdle, increment_run_count);
+      extension, mojom::RunLocation::kDocumentIdle,
+      std::move(increment_run_count_3));
 
   // Return the mode to "Run on click".
   menu.ExecuteCommand(kRunOnClick, 0);
