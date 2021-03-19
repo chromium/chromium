@@ -58,9 +58,9 @@ void SVGShapePainter::Paint(const PaintInfo& paint_info) {
   ScopedSVGTransformState transform_state(paint_info, layout_svg_shape_);
   {
     ScopedSVGPaintState paint_state(layout_svg_shape_, paint_info);
+    SVGModelObjectPainter::RecordHitTestData(layout_svg_shape_, paint_info);
     if (!DrawingRecorder::UseCachedDrawingIfPossible(
             paint_info.context, layout_svg_shape_, paint_info.phase)) {
-      SVGModelObjectPainter::RecordHitTestData(layout_svg_shape_, paint_info);
       SVGDrawingRecorder recorder(paint_info.context, layout_svg_shape_,
                                   paint_info.phase);
       const ComputedStyle& style = layout_svg_shape_.StyleRef();
