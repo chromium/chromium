@@ -6,7 +6,6 @@
 #define IOS_WEB_PUBLIC_TEST_FAKES_FAKE_WEB_FRAME_H_
 
 #include <map>
-#include <memory>
 #include <vector>
 
 #include "ios/web/public/js_messaging/web_frame.h"
@@ -69,7 +68,9 @@ class FakeWebFrame : public WebFrame {
 
   // Sets |js_result| that will be passed into callback for |name| function
   // call. The same result will be pass regardless of call arguments.
-  void AddJsResultForFunctionCall(std::unique_ptr<base::Value> js_result,
+  // NOTE: The caller is responsible for keeping |js_result| alive for as
+  // long as this instance lives.
+  void AddJsResultForFunctionCall(base::Value* js_result,
                                   const std::string& function_name);
 
   void set_force_timeout(bool force_timeout) { force_timeout_ = force_timeout; }
@@ -84,7 +85,7 @@ class FakeWebFrame : public WebFrame {
   // Map holding values to be passed in CallJavaScriptFunction() callback. Keyed
   // by JavaScript function |name| expected to be passed into
   // CallJavaScriptFunction().
-  std::map<std::string, std::unique_ptr<base::Value>> result_map_;
+  std::map<std::string, base::Value*> result_map_;
   // The frame identifier which uniquely identifies this frame across the
   // application's lifetime.
   std::string frame_id_;

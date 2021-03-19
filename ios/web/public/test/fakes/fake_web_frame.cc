@@ -85,17 +85,16 @@ bool FakeWebFrame::CallJavaScriptFunction(
                           base::BindOnce(std::move(callback), nullptr),
                           timeout);
   } else {
-    const base::Value* js_result = result_map_[name].get();
     base::PostTask(FROM_HERE, {WebThread::UI},
-                   base::BindOnce(std::move(callback), js_result));
+                   base::BindOnce(std::move(callback), result_map_[name]));
   }
   return true;
 }
 
 void FakeWebFrame::AddJsResultForFunctionCall(
-    std::unique_ptr<base::Value> js_result,
+    base::Value* js_result,
     const std::string& function_name) {
-  result_map_[function_name] = std::move(js_result);
+  result_map_[function_name] = js_result;
 }
 
 // FakeMainWebFrame
