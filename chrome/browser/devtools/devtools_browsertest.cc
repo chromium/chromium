@@ -1570,16 +1570,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, TestEvaluateOnChromeScheme) {
 }
 
 // Tests that scripts are not duplicated after Scripts Panel switch.
-#if defined(MEMORY_SANITIZER)
-// Flaking on MSan runs: crbug.com/1184201
-#define MAYBE_TestNoScriptDuplicatesOnPanelSwitch \
-  DISABLED_TestNoScriptDuplicatesOnPanelSwitch
-#else
-#define MAYBE_TestNoScriptDuplicatesOnPanelSwitch \
-  TestNoScriptDuplicatesOnPanelSwitch
-#endif
-IN_PROC_BROWSER_TEST_F(DevToolsTest,
-                       MAYBE_TestNoScriptDuplicatesOnPanelSwitch) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, TestNoScriptDuplicatesOnPanelSwitch) {
   RunTest("testNoScriptDuplicatesOnPanelSwitch", kDebuggerTestPage);
 }
 
@@ -1613,46 +1604,22 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
 }
 
 // Tests network timing.
-#if defined(MEMORY_SANITIZER)
-// Flaking on MSan runs: crbug.com/1184201
-#define MAYBE_TestNetworkTiming DISABLED_TestNetworkTiming
-#else
-#define MAYBE_TestNetworkTiming TestNetworkTiming
-#endif
-IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestNetworkTiming) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, TestNetworkTiming) {
   RunTest("testNetworkTiming", kSlowTestPage);
 }
 
 // Tests network size.
-#if defined(MEMORY_SANITIZER)
-// Flaking on MSan runs: crbug.com/1184201
-#define MAYBE_TestNetworkSize DISABLED_TestNetworkSize
-#else
-#define MAYBE_TestNetworkSize TestNetworkSize
-#endif
-IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestNetworkSize) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, TestNetworkSize) {
   RunTest("testNetworkSize", kChunkedTestPage);
 }
 
 // Tests raw headers text.
-#if defined(MEMORY_SANITIZER)
-// Flaking on MSan runs: crbug.com/1184201
-#define MAYBE_TestNetworkSyncSize DISABLED_TestNetworkSyncSize
-#else
-#define MAYBE_TestNetworkSyncSize TestNetworkSyncSize
-#endif
-IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestNetworkSyncSize) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, TestNetworkSyncSize) {
   RunTest("testNetworkSyncSize", kChunkedTestPage);
 }
 
 // Tests raw headers text.
-#if defined(MEMORY_SANITIZER)
-// Flaking on MSan runs: crbug.com/1184201
-#define MAYBE_TestNetworkRawHeadersText DISABLED_TestNetworkRawHeadersText
-#else
-#define MAYBE_TestNetworkRawHeadersText TestNetworkRawHeadersText
-#endif
-IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestNetworkRawHeadersText) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest, TestNetworkRawHeadersText) {
   // This test expects headers to be exactly 112 bytes in length, so add an
   // extra header to reach that length.
   RunTest("testNetworkRawHeadersText",
