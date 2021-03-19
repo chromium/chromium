@@ -416,7 +416,7 @@ ExtensionFunction::~ExtensionFunction() {
     return false;
   };
 
-  CHECK(did_respond() || can_be_destroyed_before_responding()) << name();
+  DCHECK(did_respond() || can_be_destroyed_before_responding()) << name();
 #endif  // DCHECK_IS_ON()
 }
 
