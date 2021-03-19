@@ -41,7 +41,6 @@ class FeedbackDialog : public ui::WebDialogDelegate {
   void OnCloseContents(content::WebContents* source,
                        bool* out_close_dialog) override;
   bool ShouldShowDialogTitle() const override;
-  bool ShouldShowCloseButton() const override;
   ui::WebDialogDelegate::FrameKind GetWebDialogFrameKind() const override;
 
   std::unique_ptr<base::DictionaryValue> feedbackInfo_;

@@ -429,31 +429,9 @@ function performanceFeedbackChanged() {
 // </if>
 
 function resizeAppWindow() {
-  // We pick the width from the titlebar, which has no margins.
-  let width = $('title-bar').scrollWidth;
-  if (width < FEEDBACK_MIN_WIDTH) {
-    width = FEEDBACK_MIN_WIDTH;
-  }
-
-  // The Chrome App window's maxHeight is set to the available screen height. If
-  // |height| would result in a window that exceeds maxHeight a scrollbar will
-  // appear in the content-pane.
-  // |height| is calculated as the sum of the scrollHeights of the body's
-  // children. This is necessary as the content-pane is set to fill the
-  // remaining height of the body after its siblings have been laid out. Summing
-  // the children's scrollHeight gives us the desired height of the content area
-  // which the Chrome App window uses to size the window accordingly.
-  let height = Array.from(document.body.children)
-                   .reduce((acc, el) => acc + el.scrollHeight, 0);
-
-  let minHeight = FEEDBACK_MIN_HEIGHT;
-  if (feedbackInfo.flow == chrome.feedbackPrivate.FeedbackFlow.LOGIN) {
-    minHeight = FEEDBACK_MIN_HEIGHT_LOGIN;
-  }
-  height = Math.max(height, minHeight);
-
-  window.innerWidth = width;
-  window.innerHeight = height;
+  // TODO(crbug.com/1167223): The UI is now controlled by a WebDialog delegate
+  // which is set to not resizable for now. If needed, a message handler can
+  // be added to respond to resize request.
 }
 
 /**
