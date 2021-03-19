@@ -412,15 +412,23 @@ bool IsTransformToRootOf3DRenderingContextBackFaceVisible(
 
   const TransformNode& transform_node =
       *transform_tree.Node(transform_tree_index);
-  if (transform_node.delegates_to_parent_for_backface)
+  const TransformNode* root_node = &transform_node;
+  if (transform_node.delegates_to_parent_for_backface) {
     transform_tree_index = transform_node.parent_id;
+    root_node = transform_tree.Node(transform_tree_index);
+  }
 
   int root_id = transform_tree_index;
   int sorting_context_id = transform_node.sorting_context_id;
 
-  while (root_id > 0 && transform_tree.Node(root_id - 1)->sorting_context_id ==
-                            sorting_context_id)
-    root_id--;
+  while (root_id > TransformTree::kRootNodeId) {
+    int parent_id = root_node->parent_id;
+    const TransformNode* parent_node = transform_tree.Node(parent_id);
+    if (parent_node->sorting_context_id != sorting_context_id)
+      break;
+    root_id = parent_id;
+    root_node = parent_node;
+  }
 
   // TODO(chrishtr): cache this on the transform trees if needed, similar to
   // |to_target| and |to_screen|.
@@ -428,8 +436,7 @@ bool IsTransformToRootOf3DRenderingContextBackFaceVisible(
   if (transform_tree_index != root_id)
     property_trees->transform_tree.CombineTransformsBetween(
         transform_tree_index, root_id, &to_3d_root);
-  to_3d_root.PreconcatTransform(
-      property_trees->transform_tree.Node(root_id)->to_parent);
+  to_3d_root.PreconcatTransform(root_node->to_parent);
   return to_3d_root.IsBackFaceVisible();
 }
 
