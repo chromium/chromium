@@ -7288,7 +7288,7 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
 
   if (!strcmp(kLacrosSupportInternalName, entry.internal_name) ||
       !strcmp(kLacrosStabilityInternalName, entry.internal_name)) {
-    if (!crosapi::browser_util::IsLacrosAllowed(channel)) {
+    if (!crosapi::browser_util::IsLacrosAllowedToBeEnabled(channel)) {
       return true;
     }
   }

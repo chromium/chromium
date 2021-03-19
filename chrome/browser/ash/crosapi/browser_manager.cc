@@ -13,7 +13,10 @@
 #include <vector>
 
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/notification_utils.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
@@ -40,6 +43,7 @@
 #include "chrome/browser/ash/crosapi/test_mojo_connection_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
+#include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
@@ -49,6 +53,8 @@
 #include "google_apis/google_api_keys.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/public/cpp/notification_delegate.h"
 
 // TODO(crbug.com/1101667): Currently, this source has log spamming
 // by LOG(WARNING) for non critical errors to make it easy
@@ -71,6 +77,10 @@ constexpr uint32_t kGetHistogramsMinVersion = 7;
 // The min version of BrowserService mojo interface that supports
 // GetActiveTabUrl API.
 constexpr uint32_t kGetActiveTabUrlMinVersion = 8;
+
+const char kLacrosCannotLaunchNotificationID[] =
+    "lacros_cannot_launch_notification_id";
+const char kLacrosLauncherNotifierID[] = "lacros_launcher";
 
 base::FilePath LacrosLogPath() {
   return browser_util::GetUserDataDir().Append("lacros.log");
@@ -225,6 +235,29 @@ void BrowserManager::SetLoadCompleteCallback(LoadCompleteCallback callback) {
 void BrowserManager::NewWindow() {
   if (!browser_util::IsLacrosEnabled())
     return;
+
+  if (!browser_util::IsLacrosAllowedToLaunch()) {
+    std::unique_ptr<message_center::Notification> notification =
+        ash::CreateSystemNotification(
+            message_center::NOTIFICATION_TYPE_SIMPLE,
+            kLacrosCannotLaunchNotificationID,
+            /*title=*/std::u16string(),
+            l10n_util::GetStringUTF16(
+                IDS_LACROS_CANNOT_LAUNCH_MULTI_SIGNIN_MESSAGE),
+            /* display_source= */ std::u16string(), GURL(),
+            message_center::NotifierId(
+                message_center::NotifierType::SYSTEM_COMPONENT,
+                kLacrosLauncherNotifierID),
+            message_center::RichNotificationData(),
+            base::MakeRefCounted<
+                message_center::HandleNotificationClickDelegate>(
+                base::RepeatingClosure()),
+            gfx::kNoneIcon,
+            message_center::SystemNotificationWarningLevel::NORMAL);
+
+    SystemNotificationHelper::GetInstance()->Display(*notification);
+    return;
+  }
 
   if (!IsReady()) {
     LOG(WARNING) << "lacros component image not yet available";

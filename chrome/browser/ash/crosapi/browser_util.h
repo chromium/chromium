@@ -55,7 +55,7 @@ base::FilePath GetUserDataDir();
 
 // Returns true if the Lacros feature is allowed to be enabled. This checks
 // current user type, chrome channel and enterprise policy.
-bool IsLacrosAllowed(version_info::Channel channel);
+bool IsLacrosAllowedToBeEnabled(version_info::Channel channel);
 
 // Returns true if the Lacros feature is enabled.
 bool IsLacrosEnabled();
@@ -77,6 +77,11 @@ bool IsLacrosPrimaryBrowser(version_info::Channel channel);
 // Note that IsLacrosPrimaryBrowser may return false, even if this returns
 // true, specifically, the feature is disabled by user/policy.
 bool IsLacrosPrimaryBrowserAllowed(version_info::Channel channel);
+
+// Returns true if Lacros is allowed to launch and show a window. This can
+// return false if the user is using multi-signin, which is mutually exclusive
+// with Lacros.
+bool IsLacrosAllowedToLaunch();
 
 // Returns true if |window| is an exo ShellSurface window representing a Lacros
 // browser.

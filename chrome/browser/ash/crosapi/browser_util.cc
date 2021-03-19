@@ -124,7 +124,7 @@ base::FilePath GetUserDataDir() {
   return base_path.Append("lacros");
 }
 
-bool IsLacrosAllowed(Channel channel) {
+bool IsLacrosAllowedToBeEnabled(Channel channel) {
   // Allows tests to avoid enabling the flag, constructing a fake user manager,
   // creating g_browser_process->local_state(), etc.
   if (g_lacros_enabled_for_test)
@@ -175,7 +175,7 @@ bool IsLacrosEnabled(Channel channel) {
   if (g_lacros_enabled_for_test)
     return true;
 
-  if (!IsLacrosAllowed(channel))
+  if (!IsLacrosAllowedToBeEnabled(channel))
     return false;
 
   return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
@@ -201,7 +201,7 @@ bool IsLacrosPrimaryBrowser(Channel channel) {
 }
 
 bool IsLacrosPrimaryBrowserAllowed(Channel channel) {
-  if (!IsLacrosAllowed(channel))
+  if (!IsLacrosAllowedToBeEnabled(channel))
     return false;
 
   switch (channel) {
@@ -217,6 +217,10 @@ bool IsLacrosPrimaryBrowserAllowed(Channel channel) {
       // browser, yet.
       return false;
   }
+}
+
+bool IsLacrosAllowedToLaunch() {
+  return user_manager::UserManager::Get()->GetLoggedInUsers().size() <= 1;
 }
 
 bool IsLacrosWindow(const aura::Window* window) {
