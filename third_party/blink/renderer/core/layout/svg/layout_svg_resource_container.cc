@@ -56,6 +56,9 @@ void LayoutSVGResourceContainer::UpdateLayout() {
 
 void LayoutSVGResourceContainer::InvalidateClientsIfActiveResource() {
   NOT_DESTROYED();
+  // Avoid doing unnecessary work if the document is being torn down.
+  if (DocumentBeingDestroyed())
+    return;
   // If this is the 'active' resource (the first element with the specified 'id'
   // in tree order), notify any clients that they need to reevaluate the
   // resource's contents.
