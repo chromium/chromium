@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/strings/string16.h"
+#include "base/time/time.h"
 #include "ui/aura/window_observer.h"
 
 namespace ash {
@@ -54,6 +55,8 @@ class ASH_EXPORT Desk {
 
   const std::vector<aura::Window*>& windows() const { return windows_; }
 
+  const base::Time& creation_time() const { return creation_time_; }
+
   const base::string16& name() const { return name_; }
 
   bool is_active() const { return is_active_; }
@@ -65,6 +68,12 @@ class ASH_EXPORT Desk {
   }
 
   bool is_name_set_by_user() const { return is_name_set_by_user_; }
+
+  // Sets the desk's |creation_time_| to |creation_time|. This will overwrite
+  // |creation_time_| so this should only be called when restoring desks.
+  void set_creation_time(base::Time creation_time) {
+    creation_time_ = creation_time;
+  }
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -130,6 +139,10 @@ class ASH_EXPORT Desk {
   // when desk is already removed from |desks_| in DesksController.
   void SetDeskBeingRemoved();
 
+  // Records the lifetime of the desk based on its desk index. Should be called
+  // when this desk is removed by the user.
+  void RecordLifetimeHistogram();
+
  private:
   void MoveWindowToDeskInternal(aura::Window* window,
                                 Desk* target_desk,
@@ -180,6 +193,9 @@ class ASH_EXPORT Desk {
 
   // True if the desk is being removed.
   bool is_desk_being_removed_ = false;
+
+  // The time this desk was created at. Used to record desk lifetimes.
+  base::Time creation_time_;
 
   DISALLOW_COPY_AND_ASSIGN(Desk);
 };

@@ -190,10 +190,13 @@ class ASH_EXPORT DesksController : public DesksHelper,
   // it was never modified by users.
   void RevertDeskNameToDefault(Desk* desk);
 
-  // Restores the desk at |index| to the given |name|. This is only for user-
-  // modified desk names, and hence |name| should never be empty since users are
-  // not allowed to set empty names.
+  // Restores the desk at |index| to the given |name|. This is only for
+  // user-modified desk names, and hence |name| should never be empty since
+  // users are not allowed to set empty names.
   void RestoreNameOfDeskAtIndex(base::string16 name, size_t index);
+
+  // Restores the metrics of the desk at |index|.
+  void RestoreMetricsOfDeskAtIndex(base::Time creation_time, size_t index);
 
   // Called explicitly by the RootWindowController when a root window has been
   // added or about to be removed in order to update all the available desks.

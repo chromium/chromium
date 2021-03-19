@@ -169,6 +169,10 @@ const char kContextualTooltips[] = "settings.contextual_tooltip.shown_info";
 // name will appear in this list as an empty string. The desk names are stored
 // as UTF8 strings.
 const char kDesksNamesList[] = "ash.desks.desks_names_list";
+// This list stores the metrics of virtual desks. Like |kDesksNamesList|, this
+// list stores entries in the same order of the desks in the overview desks bar.
+// Values are stored as dictionaries.
+const char kDesksMetricsList[] = "ash.desks.desks_metrics_list";
 // An integer index of a user's active desk.
 const char kDesksActiveDesk[] = "ash.desks.active_desk";
 

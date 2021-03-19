@@ -25,6 +25,7 @@
 #include "ash/wm/workspace_controller.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
@@ -35,6 +36,9 @@
 namespace ash {
 
 namespace {
+
+// Prefix for the desks lifetime histogram.
+constexpr char kDeskLifetimeHistogramNamePrefix[] = "Ash.Desks.DeskLifetime_";
 
 void UpdateBackdropController(aura::Window* desk_container) {
   auto* workspace_controller = GetWorkspaceController(desk_container);
@@ -180,7 +184,8 @@ class DeskContainerObserver : public aura::WindowObserver {
 // Desk:
 
 Desk::Desk(int associated_container_id)
-    : container_id_(associated_container_id) {
+    : container_id_(associated_container_id),
+      creation_time_(base::Time::Now()) {
   // For the very first default desk added during initialization, there won't be
   // any root windows yet. That's OK, OnRootWindowAdded() will be called
   // explicitly by the RootWindowController when they're initialized.
@@ -487,6 +492,15 @@ void Desk::UpdateDeskBackdrops() {
 
 void Desk::SetDeskBeingRemoved() {
   is_desk_being_removed_ = true;
+}
+
+void Desk::RecordLifetimeHistogram() {
+  // Desk index is 1-indexed in histograms.
+  const int desk_index =
+      Shell::Get()->desks_controller()->GetDeskIndex(this) + 1;
+  base::UmaHistogramCounts1000(
+      base::StringPrintf("%s%i", kDeskLifetimeHistogramNamePrefix, desk_index),
+      (base::Time::Now() - creation_time_).InHours());
 }
 
 void Desk::MoveWindowToDeskInternal(aura::Window* window,
