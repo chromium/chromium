@@ -398,7 +398,7 @@ function testGetKeyPairRejectsRSAPSS() {
       callbackFail('Algorithm not supported.'));
 }
 
-function verifyKeyPairValidity(publicKey, privateKey) {
+function verifyRsaKeyPairValidity(publicKey, privateKey) {
   var expectedAlgorithm = {
     modulusLength: 2048,
     name: 'RSASSA-PKCS1-v1_5',
@@ -426,11 +426,35 @@ function verifyKeyPairValidity(publicKey, privateKey) {
           });
 }
 
-function testGetRsaKeyPairRejectEcdsa() {
-  const KEY_PARAMS = {name: 'ECDSA', namedCurve: 'P-256'};
+const EC_KEY_PARAMS = {
+  name: 'ECDSA',
+  namedCurve: 'P-256'
+};
 
+async function verifyEcKeyPairValidity(publicKey, privateKey) {
+  assertEq(EC_KEY_PARAMS, publicKey.algorithm);
+  assertEq(EC_KEY_PARAMS, privateKey.algorithm);
+
+  checkPublicKeyFormat(publicKey);
+  checkPrivateKeyFormat(privateKey);
+
+  let actualPublicKeySpki;
+  try {
+    actualPublicKeySpki =
+        await chrome.platformKeys.subtleCrypto().exportKey('spki', publicKey);
+  } catch (error) {
+    fail('Export failed: ' + error);
+  }
+  const actualPublicKeySpkiArray = new Uint8Array(actualPublicKeySpki);
+  assertEq(
+      data.ec_spki, actualPublicKeySpkiArray,
+      'Match did not contain correct public key');
+  succeed();
+}
+
+function testGetRsaKeyPairRejectEcdsa() {
   chrome.platformKeys.getKeyPair(
-      data.client_1.buffer, KEY_PARAMS,
+      data.client_1.buffer, EC_KEY_PARAMS,
       callbackFail(
           'The requested Algorithm is not permitted by the certificate.'));
 }
@@ -453,12 +477,12 @@ function testGetRsaKeyPair() {
   chrome.platformKeys.getKeyPair(
       data.client_1.buffer, keyParams,
       callbackPass(function(publicKey, privateKey) {
-        verifyKeyPairValidity(publicKey, privateKey);
+        verifyRsaKeyPairValidity(publicKey, privateKey);
       }));
   chrome.platformKeys.getKeyPairBySpki(
       data.client_1_spki.buffer, keyParams,
       callbackPass(function(publicKey, privateKey) {
-        verifyKeyPairValidity(publicKey, privateKey);
+        verifyRsaKeyPairValidity(publicKey, privateKey);
       }));
 }
 
@@ -474,31 +498,15 @@ function verifySignWithNoHash(privateKey, signParams) {
 }
 
 function testGetEcKeyPair() {
-  const KEY_PARAMS = {name: 'ECDSA', namedCurve: 'P-256'};
-
   chrome.platformKeys.getKeyPair(
-      data.ec_cert.buffer, KEY_PARAMS,
-      callbackPass(function(publicKey, privateKey) {
-        assertEq(KEY_PARAMS, publicKey.algorithm);
-        assertEq(KEY_PARAMS, privateKey.algorithm);
+      data.ec_cert.buffer, EC_KEY_PARAMS, function(publicKey, privateKey) {
+        verifyEcKeyPairValidity(publicKey, privateKey);
+      });
 
-        checkPublicKeyFormat(publicKey);
-        checkPrivateKeyFormat(privateKey);
-
-        chrome.platformKeys.subtleCrypto()
-            .exportKey('spki', publicKey)
-            .then(
-                callbackPass(function(actualPublicKeySpki) {
-                  const actualPublicKeySpkiArray =
-                      new Uint8Array(actualPublicKeySpki);
-                  assertTrue(
-                      checkDeepEq(data.ec_spki, actualPublicKeySpkiArray),
-                      'Match did not contain correct public key');
-                }),
-                function(error) {
-                  fail('Export failed: ' + error);
-                });
-      }));
+  chrome.platformKeys.getKeyPairBySpki(
+      data.ec_spki.buffer, EC_KEY_PARAMS, function(publicKey, privateKey) {
+        verifyEcKeyPairValidity(publicKey, privateKey);
+      });
 }
 
 function testSignNoHash() {

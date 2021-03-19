@@ -119,6 +119,13 @@ struct PublicKeyInfo {
 void BuildWebCryptoRSAAlgorithmDictionary(const PublicKeyInfo& key_info,
                                           base::DictionaryValue* algorithm);
 
+// Builds a partial WebCrypto Algorithm object from the parameters available in
+// |key_info|, which must be the info of an EC key. For more information about
+// EcKeyAlgorithm dictionary, please refer to:
+// https://www.w3.org/TR/WebCryptoAPI/#EcKeyAlgorithm-dictionary
+void BuildWebCryptoEcdsaAlgorithmDictionary(const PublicKeyInfo& key_info,
+                                            base::DictionaryValue* algorithm);
+
 // Obtains information about the public key in |certificate|.
 // If |certificate| contains an RSA key, sets |key_size_bits| to the modulus
 // length, and |key_type| to type RSA and returns true.

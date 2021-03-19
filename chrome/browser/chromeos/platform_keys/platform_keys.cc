@@ -23,16 +23,6 @@ using crosapi::keystore_service_util::kWebCryptoEcdsa;
 using crosapi::keystore_service_util::kWebCryptoNamedCurveP256;
 using crosapi::keystore_service_util::kWebCryptoRsassaPkcs1v15;
 
-void BuildWebCryptoEcdsaAlgorithmDictionary(
-    const chromeos::platform_keys::PublicKeyInfo& key_info,
-    base::DictionaryValue* algorithm) {
-  CHECK_EQ(net::X509Certificate::kPublicKeyTypeECDSA, key_info.key_type);
-  algorithm->SetStringKey("name", kWebCryptoEcdsa);
-
-  // Only P-256 named curve is supported.
-  algorithm->SetStringKey("namedCurve", kWebCryptoNamedCurveP256);
-}
-
 void IntersectOnWorkerThread(const net::CertificateList& certs1,
                              const net::CertificateList& certs2,
                              net::CertificateList* intersection) {
@@ -211,6 +201,15 @@ void BuildWebCryptoRSAAlgorithmDictionary(const PublicKeyInfo& key_info,
   static constexpr uint8_t kDefaultPublicExponent[] = {0x01, 0x00, 0x01};
   algorithm->SetKey("publicExponent",
                     base::Value(base::make_span(kDefaultPublicExponent)));
+}
+
+void BuildWebCryptoEcdsaAlgorithmDictionary(const PublicKeyInfo& key_info,
+                                            base::DictionaryValue* algorithm) {
+  CHECK_EQ(net::X509Certificate::kPublicKeyTypeECDSA, key_info.key_type);
+  algorithm->SetStringKey("name", kWebCryptoEcdsa);
+
+  // Only P-256 named curve is supported.
+  algorithm->SetStringKey("namedCurve", kWebCryptoNamedCurveP256);
 }
 
 ClientCertificateRequest::ClientCertificateRequest() = default;

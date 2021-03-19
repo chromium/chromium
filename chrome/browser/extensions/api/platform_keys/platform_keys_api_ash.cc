@@ -129,21 +129,26 @@ PlatformKeysInternalGetPublicKeyBySpkiFunction::Run() {
   if (!chromeos::platform_keys::GetPublicKeyBySpki(key_info.public_key_spki_der,
                                                    &key_info.key_type,
                                                    &key_info.key_size_bits) ||
-      key_info.key_type != net::X509Certificate::kPublicKeyTypeRSA) {
+      (key_info.key_type != net::X509Certificate::kPublicKeyTypeRSA &&
+       key_info.key_type != net::X509Certificate::kPublicKeyTypeECDSA)) {
     return RespondNow(Error(StatusToString(
         chromeos::platform_keys::Status::kErrorAlgorithmNotSupported)));
   }
 
-  // Currently, the only supported combination is:
-  //   A SPKI declaring rsaEncryption used with the RSASSA-PKCS1-v1.5 algorithm.
-  if (params->algorithm_name != kWebCryptoRsassaPkcs1v15) {
-    return RespondNow(Error(StatusToString(
-        chromeos::platform_keys::Status::kErrorAlgorithmNotSupported)));
-  }
-
+  // Currently, the only supported combinations are either an SPKI declaring
+  // rsaEncryption used with the RSASSA-PKCS1-v1.5 algorithm or an SPKI
+  // declaring id-ecPublicKey used with P-256 curve name.
   api_pki::GetPublicKeyBySpki::Results::Algorithm algorithm;
-  chromeos::platform_keys::BuildWebCryptoRSAAlgorithmDictionary(
-      key_info, &algorithm.additional_properties);
+  if (params->algorithm_name == kWebCryptoRsassaPkcs1v15) {
+    chromeos::platform_keys::BuildWebCryptoRSAAlgorithmDictionary(
+        key_info, &algorithm.additional_properties);
+  } else if (params->algorithm_name == kWebCryptoEcdsa) {
+    chromeos::platform_keys::BuildWebCryptoEcdsaAlgorithmDictionary(
+        key_info, &algorithm.additional_properties);
+  } else {
+    return RespondNow(Error(StatusToString(
+        chromeos::platform_keys::Status::kErrorAlgorithmNotSupported)));
+  }
 
   return RespondNow(ArgumentList(api_pki::GetPublicKeyBySpki::Results::Create(
       public_key_spki_der, algorithm)));

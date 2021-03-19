@@ -1740,7 +1740,6 @@ bool GetPublicKeyBySpki(const std::string& spki,
                         size_t* key_size_bits) {
   net::X509Certificate::PublicKeyType key_type_tmp =
       net::X509Certificate::kPublicKeyTypeUnknown;
-  size_t key_size_bits_tmp = 0;
 
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
   CBS cbs;
@@ -1750,21 +1749,36 @@ bool GetPublicKeyBySpki(const std::string& spki,
     LOG(WARNING) << "Could not extract public key from SPKI.";
     return false;
   }
-  int type = EVP_PKEY_type(pkey->type);
-  if (type == EVP_PKEY_RSA) {
-    key_type_tmp = net::X509Certificate::kPublicKeyTypeRSA;
-  } else {
-    LOG(WARNING) << "Keys of other type than RSA are not supported.";
-    return false;
-  }
-  key_size_bits_tmp = base::saturated_cast<size_t>(EVP_PKEY_bits(pkey.get()));
-
-  if (!VerifyRSAPublicExponent(pkey.get())) {
-    return false;
+  switch (EVP_PKEY_type(pkey->type)) {
+    case EVP_PKEY_RSA: {
+      if (!VerifyRSAPublicExponent(pkey.get())) {
+        return false;
+      }
+      key_type_tmp = net::X509Certificate::kPublicKeyTypeRSA;
+      break;
+    }
+    case EVP_PKEY_EC: {
+      EC_KEY* ec = EVP_PKEY_get0_EC_KEY(pkey.get());
+      if (!ec) {
+        LOG(WARNING) << "Could not get EC from PKEY.";
+        return false;
+      }
+      if (EC_GROUP_get_curve_name(EC_KEY_get0_group(ec)) !=
+          NID_X9_62_prime256v1) {
+        LOG(WARNING) << "Only P-256 named curve is supported.";
+        return false;
+      }
+      key_type_tmp = net::X509Certificate::kPublicKeyTypeECDSA;
+      break;
+    }
+    default: {
+      LOG(WARNING) << "Only RSA and EC keys are supported.";
+      return false;
+    }
   }
 
   *key_type = key_type_tmp;
-  *key_size_bits = key_size_bits_tmp;
+  *key_size_bits = base::saturated_cast<size_t>(EVP_PKEY_bits(pkey.get()));
   return true;
 }
 
