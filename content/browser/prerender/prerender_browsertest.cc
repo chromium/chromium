@@ -397,9 +397,9 @@ class PrerenderBrowserTest
   base::Lock lock_;
 };
 
-// TODO(crbug.com/1189150): Some MPArch fail on android-asan and therefore
-// disabled.
-#if defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/1189150, crbug.com/1189276): Some MPArch fail on android and
+// therefore disabled.
+#if defined(OS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(All,
                          PrerenderBrowserTest,
                          testing::Values(kWebContents),
