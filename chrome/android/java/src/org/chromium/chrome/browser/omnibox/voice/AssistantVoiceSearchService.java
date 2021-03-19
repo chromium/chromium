@@ -192,7 +192,8 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
      * conditions.
      */
     public boolean canRequestAssistantVoiceSearch() {
-        return isDeviceEligibleForAssistant(/* returnImmediately= */ true, /* outList= */ null);
+        return mIsAssistantVoiceSearchEnabled
+                && isDeviceEligibleForAssistant(/* returnImmediately= */ true, /* outList= */ null);
     }
 
     /**
