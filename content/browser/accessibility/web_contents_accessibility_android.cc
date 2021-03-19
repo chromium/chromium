@@ -570,6 +570,21 @@ void WebContentsAccessibilityAndroid::HandleEditableTextChanged(
                                                               unique_id);
 }
 
+void WebContentsAccessibilityAndroid::SignalEndOfTestForTesting(JNIEnv* env) {
+  BrowserAccessibilityManager* manager =
+      web_contents_->GetRootBrowserAccessibilityManager();
+  manager->SignalEndOfTest();
+}
+
+void WebContentsAccessibilityAndroid::HandleEndOfTestSignal() {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null())
+    return;
+
+  Java_WebContentsAccessibilityImpl_handleEndOfTestSignal(env, obj);
+}
+
 void WebContentsAccessibilityAndroid::HandleSliderChanged(int32_t unique_id) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);

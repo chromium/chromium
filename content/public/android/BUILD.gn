@@ -229,6 +229,7 @@ android_library("content_full_java") {
     "java/src/org/chromium/content/browser/ViewEventSinkImpl.java",
     "java/src/org/chromium/content/browser/WindowEventObserver.java",
     "java/src/org/chromium/content/browser/WindowEventObserverManager.java",
+    "java/src/org/chromium/content/browser/accessibility/AccessibilityActionAndEventTracker.java",
     "java/src/org/chromium/content/browser/accessibility/AccessibilityDelegate.java",
     "java/src/org/chromium/content/browser/accessibility/AccessibilityEventDispatcher.java",
     "java/src/org/chromium/content/browser/accessibility/BrowserAccessibilityState.java",
@@ -548,6 +549,7 @@ android_library("content_javatests") {
     "javatests/src/org/chromium/content/browser/ViewportTest.java",
     "javatests/src/org/chromium/content/browser/WakeLockTest.java",
     "javatests/src/org/chromium/content/browser/WebContentsObserverAndroidTest.java",
+    "javatests/src/org/chromium/content/browser/accessibility/AccessibilityContentShellActivityTestRule.java",
     "javatests/src/org/chromium/content/browser/accessibility/AccessibilityContentShellTestData.java",
     "javatests/src/org/chromium/content/browser/accessibility/AccessibilityContentShellTestUtils.java",
     "javatests/src/org/chromium/content/browser/accessibility/AccessibilityEventDispatcherTest.java",
@@ -555,6 +557,7 @@ android_library("content_javatests") {
     "javatests/src/org/chromium/content/browser/accessibility/TestViewStructure.java",
     "javatests/src/org/chromium/content/browser/accessibility/TestViewStructureFactory.java",
     "javatests/src/org/chromium/content/browser/accessibility/TestViewStructureInterface.java",
+    "javatests/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityEventsTest.java",
     "javatests/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityTest.java",
     "javatests/src/org/chromium/content/browser/accessibility/captioning/CaptioningChangeDelegateTest.java",
     "javatests/src/org/chromium/content/browser/androidoverlay/DialogOverlayImplPixelTest.java",
@@ -583,6 +586,7 @@ android_library("content_javatests") {
   ]
 
   data = [
+    "//content/test/data/accessibility/event/",
     "//content/test/data/android/",
     "//content/test/data/media/",
   ]

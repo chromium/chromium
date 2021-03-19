@@ -89,35 +89,35 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
             "ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE";
 
     // Constants defined in the M SDK. (API Level 23, Android 6)
-    private static final int ACTION_CONTEXT_CLICK = 0x0102003c;
-    private static final int ACTION_SHOW_ON_SCREEN = 0x01020036;
-    private static final int ACTION_SCROLL_UP = 0x01020038;
-    private static final int ACTION_SCROLL_DOWN = 0x0102003a;
-    private static final int ACTION_SCROLL_LEFT = 0x01020039;
-    private static final int ACTION_SCROLL_RIGHT = 0x0102003b;
-    private static final int ACTION_SCROLL_TO_POSITION = 0x01020037;
+    public static final int ACTION_CONTEXT_CLICK = 0x0102003c;
+    public static final int ACTION_SHOW_ON_SCREEN = 0x01020036;
+    public static final int ACTION_SCROLL_UP = 0x01020038;
+    public static final int ACTION_SCROLL_DOWN = 0x0102003a;
+    public static final int ACTION_SCROLL_LEFT = 0x01020039;
+    public static final int ACTION_SCROLL_RIGHT = 0x0102003b;
+    public static final int ACTION_SCROLL_TO_POSITION = 0x01020037;
 
     // Constants defined in the N SDK. (API Level 24+25, Android 7)
-    private static final int ACTION_SET_PROGRESS = 0x0102003d;
+    public static final int ACTION_SET_PROGRESS = 0x0102003d;
     private static final String ACTION_ARGUMENT_PROGRESS_VALUE =
             "android.view.accessibility.action.ARGUMENT_PROGRESS_VALUE";
 
     // Constants defined in the O SDK. (API Level 26+27, Android 8)
-    private static final int ACTION_MOVE_WINDOW = 0x01020042;
+    public static final int ACTION_MOVE_WINDOW = 0x01020042;
 
     // Constants defined in the P SDK. (API Level 28, Android 9)
-    private static final int ACTION_SHOW_TOOLTIP = 0x01020044;
-    private static final int ACTION_HIDE_TOOLTIP = 0x01020045;
+    public static final int ACTION_SHOW_TOOLTIP = 0x01020044;
+    public static final int ACTION_HIDE_TOOLTIP = 0x01020045;
 
     // Constants defined in the Q SDK. (API Level 29, Android 10)
-    private static final int ACTION_PAGE_UP = 0x01020046;
-    private static final int ACTION_PAGE_DOWN = 0x01020047;
-    private static final int ACTION_PAGE_LEFT = 0x01020048;
-    private static final int ACTION_PAGE_RIGHT = 0x01020049;
+    public static final int ACTION_PAGE_UP = 0x01020046;
+    public static final int ACTION_PAGE_DOWN = 0x01020047;
+    public static final int ACTION_PAGE_LEFT = 0x01020048;
+    public static final int ACTION_PAGE_RIGHT = 0x01020049;
 
     // Constants defined in the R SDK. (API Level 30, Android 11)
-    private static final int ACTION_IME_ENTER = 0x01020054;
-    private static final int ACTION_PRESS_AND_HOLD = 0x0102004a;
+    public static final int ACTION_IME_ENTER = 0x01020054;
+    public static final int ACTION_PRESS_AND_HOLD = 0x0102004a;
 
     // Constant for no granularity selected.
     private static final int NO_GRANULARITY_SELECTED = 0;
@@ -156,6 +156,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
     private int mSelectionStart;
     private int mCursorIndex;
     private String mSupportedHtmlElementTypes;
+
+    // Tracker for all actions performed and events sent by this instance, used for testing.
+    private AccessibilityActionAndEventTracker mTracker;
 
     // Whether or not the next selection event should be fired. We only want to sent one traverse
     // and one selection event per granularity move, this ensures no double events while still
@@ -366,6 +369,25 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
     public int getMaxContentChangedEventsToFireForTesting() {
         return WebContentsAccessibilityImplJni.get().getMaxContentChangedEventsToFireForTesting(
                 mNativeObj);
+    }
+
+    @VisibleForTesting
+    public void setAccessibilityTrackerForTesting(AccessibilityActionAndEventTracker tracker) {
+        mTracker = tracker;
+    }
+
+    @VisibleForTesting
+    public void signalEndOfTestForTesting() {
+        WebContentsAccessibilityImplJni.get().signalEndOfTestForTesting(mNativeObj);
+    }
+
+    @CalledByNative
+    public void handleEndOfTestSignal() {
+        // We have received a signal that we have reached the end of a unit test. If we have a
+        // tracker listening, set the test is complete.
+        if (mTracker != null) {
+            mTracker.signalEndOfTest();
+        }
     }
 
     // WindowEventObserver
@@ -684,6 +706,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
                         mNativeObj, WebContentsAccessibilityImpl.this, virtualViewId)) {
             return false;
         }
+
+        if (mTracker != null) mTracker.addAction(action, arguments);
 
         switch (action) {
             case AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS:
@@ -1230,6 +1254,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         // The container view is indicated by a virtualViewId of NO_ID; post these events directly
         // since there's no web-specific information to attach.
         if (virtualViewId == View.NO_ID) {
+            if (mTracker != null) mTracker.addEvent(AccessibilityEvent.obtain(eventType));
             mView.sendAccessibilityEvent(eventType);
             return;
         }
@@ -1779,9 +1804,17 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
 
     private void requestSendAccessibilityEvent(AccessibilityEvent event) {
         // If there is no parent, then the event can be ignored. In general the parent is only
-        // transiently null (such as during teardown, switching tabs...).
-        if (mView.getParent() != null) {
-            mView.getParent().requestSendAccessibilityEvent(mView, event);
+        // transiently null (such as during teardown, switching tabs...). Also ensure that
+        // accessibility is still enabled, throttling may result in events sent late.
+        if (mView.getParent() != null && isAccessibilityEnabled()) {
+            if (mTracker != null) mTracker.addEvent(event);
+            try {
+                mView.getParent().requestSendAccessibilityEvent(mView, event);
+            } catch (IllegalStateException ignored) {
+                // During boot-up of some content shell tests, events will erroneously be sent even
+                // though the AccessibilityManager is not enabled, resulting in a crash.
+                // TODO(mschillaci): Address flakiness to remove this try/catch, crbug.com/1186376.
+            }
         }
     }
 
@@ -2125,5 +2158,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         void setMaxContentChangedEventsToFireForTesting(long nativeWebContentsAccessibilityAndroid,
                 WebContentsAccessibilityImpl caller, int maxEvents);
         int getMaxContentChangedEventsToFireForTesting(long nativeWebContentsAccessibilityAndroid);
+        void signalEndOfTestForTesting(long nativeWebContentsAccessibilityAndroid);
     }
 }

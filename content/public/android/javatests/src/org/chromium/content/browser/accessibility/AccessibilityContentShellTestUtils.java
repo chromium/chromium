@@ -13,6 +13,14 @@ import android.view.accessibility.AccessibilityNodeInfo;
  * Helper class with various testing util methods for content shell accessibility tests.
  */
 public class AccessibilityContentShellTestUtils {
+    // Common test output error messages
+    public static final String ANP_ERROR =
+            "Could not find AccessibilityNodeProvider object for WebContentsAccessibilityImpl";
+    public static final String NODE_TIMEOUT_ERROR =
+            "Could not find specified node before polling timeout.";
+    public static final String END_OF_TEST_ERROR =
+            "Did not receive kEndOfTest signal before polling timeout.";
+
     /**
      * Basic interface to define a way to match |AccessibilityNodeInfo| objects based on the
      * expected value of a given element of type T.
@@ -66,91 +74,80 @@ public class AccessibilityContentShellTestUtils {
     static AccessibilityNodeInfoMatcher<String> sRangeInfoMatcher =
             (node, element) -> node.getRangeInfo() != null;
 
-    // Helper methods for common AccessibilityEvent tracking conditions.
+    /**
+     * Main AccessibilityDelegate for accessibility content shell tests.
+     *
+     * The delegate will set values in the |AccessibilityContentShellTestData| singleton based
+     * on the event type. The method will always return |false| so that the AccessibilityEvent
+     * is not actually sent to AT, which would make the test fail.
+     */
+    public static View.AccessibilityDelegate sContentShellDelegate =
+            new View.AccessibilityDelegate() {
+                @Override
+                public boolean onRequestSendAccessibilityEvent(
+                        ViewGroup host, View child, AccessibilityEvent event) {
+                    AccessibilityContentShellTestData data =
+                            AccessibilityContentShellTestData.getInstance();
 
-    public static View.AccessibilityDelegate textIndicesDelegate(
-            AccessibilityContentShellTestData data) {
-        return new View.AccessibilityDelegate() {
-            @Override
-            public boolean onRequestSendAccessibilityEvent(
-                    ViewGroup host, View child, AccessibilityEvent event) {
-                if (event.getEventType()
-                        == AccessibilityEvent.TYPE_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY) {
-                    data.setTraverseFromIndex(event.getFromIndex());
-                    data.setTraverseToIndex(event.getToIndex());
-                } else if (event.getEventType()
-                        == AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED) {
-                    data.setSelectionFromIndex(event.getFromIndex());
-                    data.setSelectionToIndex(event.getToIndex());
+                    // Switch on eventType and save relevant data as needed.
+                    switch (event.getEventType()) {
+                        // Save the text of proactive announcements.
+                        case AccessibilityEvent.TYPE_ANNOUNCEMENT: {
+                            data.setAnnouncementText(event.getText().get(0).toString());
+                            break;
+                        }
+
+                        // Save the traverse and selection indices during text traversal.
+                        case AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED: {
+                            data.setSelectionFromIndex(event.getFromIndex());
+                            data.setSelectionToIndex(event.getToIndex());
+                            break;
+                        }
+                        case AccessibilityEvent.TYPE_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY: {
+                            data.setTraverseFromIndex(event.getFromIndex());
+                            data.setTraverseToIndex(event.getToIndex());
+                            break;
+                        }
+
+                        // Save that a particular type of event has been sent.
+                        case AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED: {
+                            data.setReceivedAccessibilityFocusEvent(true);
+                            break;
+                        }
+                        case AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED: {
+                            data.incrementWindowContentChangedCount();
+                            break;
+                        }
+                        case AccessibilityEvent.TYPE_VIEW_SCROLLED: {
+                            data.setReceivedEvent(true);
+                            break;
+                        }
+
+                        // Currently unused/ignored for content shell test purposes.
+                        case AccessibilityEvent.TYPE_ASSIST_READING_CONTEXT:
+                        case AccessibilityEvent.TYPE_GESTURE_DETECTION_END:
+                        case AccessibilityEvent.TYPE_GESTURE_DETECTION_START:
+                        case AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED:
+                        case AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_END:
+                        case AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_START:
+                        case AccessibilityEvent.TYPE_TOUCH_INTERACTION_END:
+                        case AccessibilityEvent.TYPE_TOUCH_INTERACTION_START:
+                        case AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED:
+                        case AccessibilityEvent.TYPE_VIEW_CLICKED:
+                        case AccessibilityEvent.TYPE_VIEW_CONTEXT_CLICKED:
+                        case AccessibilityEvent.TYPE_VIEW_FOCUSED:
+                        case AccessibilityEvent.TYPE_VIEW_HOVER_ENTER:
+                        case AccessibilityEvent.TYPE_VIEW_HOVER_EXIT:
+                        case AccessibilityEvent.TYPE_VIEW_LONG_CLICKED:
+                        case AccessibilityEvent.TYPE_VIEW_SELECTED:
+                        case AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED:
+                        case AccessibilityEvent.TYPE_WINDOWS_CHANGED:
+                        case AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED:
+                            break;
+                    }
+
+                    // Return false so that an accessibility event is not actually sent.
+                    return false;
                 }
-
-                // Return false so that an accessibility event is not actually sent.
-                return false;
-            }
-        };
-    }
-
-    public static View.AccessibilityDelegate announcementDelegate(
-            AccessibilityContentShellTestData data) {
-        return new View.AccessibilityDelegate() {
-            @Override
-            public boolean onRequestSendAccessibilityEvent(
-                    ViewGroup host, View child, AccessibilityEvent event) {
-                if (event.getEventType() == AccessibilityEvent.TYPE_ANNOUNCEMENT) {
-                    data.setAnnouncementText(event.getText().get(0).toString());
-                }
-
-                // Return false so that an accessibility event is not actually sent.
-                return false;
-            }
-        };
-    }
-
-    public static View.AccessibilityDelegate contentChangeDelegate(
-            AccessibilityContentShellTestData data) {
-        return new View.AccessibilityDelegate() {
-            @Override
-            public boolean onRequestSendAccessibilityEvent(
-                    ViewGroup host, View child, AccessibilityEvent event) {
-                if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
-                    data.incrementWindowContentChangedCount();
-                }
-
-                // Return false so that an accessibility event is not actually sent.
-                return false;
-            }
-        };
-    }
-
-    public static View.AccessibilityDelegate inputRangeScrollDelegate(
-            AccessibilityContentShellTestData data) {
-        return new View.AccessibilityDelegate() {
-            @Override
-            public boolean onRequestSendAccessibilityEvent(
-                    ViewGroup host, View child, AccessibilityEvent event) {
-                if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
-                    data.setReceivedEvent(true);
-                }
-
-                // Return false so that an accessibility event is not actually sent.
-                return false;
-            }
-        };
-    }
-
-    public static View.AccessibilityDelegate accessibilityFocusDelegate(
-            AccessibilityContentShellTestData data) {
-        return new View.AccessibilityDelegate() {
-            @Override
-            public boolean onRequestSendAccessibilityEvent(
-                    ViewGroup host, View child, AccessibilityEvent event) {
-                if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
-                    data.setReceivedAccessibilityFocusEvent(true);
-                }
-
-                // Return false so that an accessibility event is not actually sent.
-                return false;
-            }
-        };
-    }
+            };
 }

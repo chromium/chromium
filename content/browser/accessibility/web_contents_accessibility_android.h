@@ -295,6 +295,9 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // Reset count of content changed events fired this atomic update.
   void ResetContentChangedEventsCounter() { content_changed_events_ = 0; }
 
+  // Call the BrowserAccessibilityManager to trigger an kEndOfTest event.
+  void SignalEndOfTestForTesting(JNIEnv* env);
+
   // --------------------------------------------------------------------------
   // Methods called from the BrowserAccessibilityManager
   // --------------------------------------------------------------------------
@@ -317,6 +320,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void HandleHover(int32_t unique_id);
   void HandleNavigate();
   void ClearNodeInfoCacheForGivenId(int32_t unique_id);
+  void HandleEndOfTestSignal();
 
   base::WeakPtr<WebContentsAccessibilityAndroid> GetWeakPtr();
 

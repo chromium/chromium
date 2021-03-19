@@ -172,6 +172,9 @@ void BrowserAccessibilityManagerAndroid::FireBlinkEvent(
     case ax::mojom::Event::kClicked:
       wcax->HandleClicked(android_node->unique_id());
       break;
+    case ax::mojom::Event::kEndOfTest:
+      wcax->HandleEndOfTestSignal();
+      break;
     case ax::mojom::Event::kHover:
       HandleHoverEvent(node);
       break;

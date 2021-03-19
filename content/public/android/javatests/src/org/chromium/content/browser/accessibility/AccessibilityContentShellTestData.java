@@ -5,9 +5,22 @@
 package org.chromium.content.browser.accessibility;
 
 /**
- * Simple POJO used for tracking accessibility data during content shell unit tests.
+ * Singleton used for tracking accessibility data during content shell unit tests.
  */
 public class AccessibilityContentShellTestData {
+    private static AccessibilityContentShellTestData sInstance;
+
+    public static AccessibilityContentShellTestData getInstance() {
+        if (sInstance == null) {
+            sInstance = new AccessibilityContentShellTestData();
+        }
+        return sInstance;
+    }
+
+    public static void resetData() {
+        sInstance = null;
+    }
+
     public int traverseFromIndex;
     public int traverseToIndex;
     public int selectionFromIndex;
@@ -17,7 +30,7 @@ public class AccessibilityContentShellTestData {
     public boolean receivedEvent;
     public boolean receivedAccessibilityFocusEvent;
 
-    public AccessibilityContentShellTestData() {
+    private AccessibilityContentShellTestData() {
         traverseFromIndex = -1;
         traverseToIndex = -1;
         selectionFromIndex = -1;
