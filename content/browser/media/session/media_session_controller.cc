@@ -51,62 +51,34 @@ bool MediaSessionController::OnPlaybackStarted() {
 
 void MediaSessionController::OnSuspend(int player_id) {
   DCHECK_EQ(player_id_, player_id);
-
-  media::mojom::MediaPlayer* remote =
-      web_contents_->media_web_contents_observer()->GetMediaPlayerRemote(id_);
-  if (!remote) {
-    // TODO(https://crbug.com/1161551): Remove this when lifetime bug is fixed.
-    NOTREACHED() << "Controller should not outlive remote MediaPlayer";
-    return;
-  }
-
   // TODO(crbug.com/953645): Set triggered_by_user to true ONLY if that action
   // was actually triggered by user as this will activate the frame.
-  remote->RequestPause(/*triggered_by_user=*/true);
+  web_contents_->media_web_contents_observer()
+      ->GetMediaPlayerRemote(id_)
+      ->RequestPause(/*triggered_by_user=*/true);
 }
 
 void MediaSessionController::OnResume(int player_id) {
   DCHECK_EQ(player_id_, player_id);
-
-  media::mojom::MediaPlayer* remote =
-      web_contents_->media_web_contents_observer()->GetMediaPlayerRemote(id_);
-  if (!remote) {
-    // TODO(https://crbug.com/1161551): Remove this when lifetime bug is fixed.
-    NOTREACHED() << "Controller should not outlive remote MediaPlayer";
-    return;
-  }
-
-  remote->RequestPlay();
+  web_contents_->media_web_contents_observer()
+      ->GetMediaPlayerRemote(id_)
+      ->RequestPlay();
 }
 
 void MediaSessionController::OnSeekForward(int player_id,
                                            base::TimeDelta seek_time) {
   DCHECK_EQ(player_id_, player_id);
-
-  media::mojom::MediaPlayer* remote =
-      web_contents_->media_web_contents_observer()->GetMediaPlayerRemote(id_);
-  if (!remote) {
-    // TODO(https://crbug.com/1161551): Remove this when lifetime bug is fixed.
-    NOTREACHED() << "Controller should not outlive remote MediaPlayer";
-    return;
-  }
-
-  remote->RequestSeekForward(seek_time);
+  web_contents_->media_web_contents_observer()
+      ->GetMediaPlayerRemote(id_)
+      ->RequestSeekForward(seek_time);
 }
 
 void MediaSessionController::OnSeekBackward(int player_id,
                                             base::TimeDelta seek_time) {
   DCHECK_EQ(player_id_, player_id);
-
-  media::mojom::MediaPlayer* remote =
-      web_contents_->media_web_contents_observer()->GetMediaPlayerRemote(id_);
-  if (!remote) {
-    // TODO(https://crbug.com/1161551): Remove this when lifetime bug is fixed.
-    NOTREACHED() << "Controller should not outlive remote MediaPlayer";
-    return;
-  }
-
-  remote->RequestSeekBackward(seek_time);
+  web_contents_->media_web_contents_observer()
+      ->GetMediaPlayerRemote(id_)
+      ->RequestSeekBackward(seek_time);
 }
 
 void MediaSessionController::OnSetVolumeMultiplier(int player_id,
@@ -114,13 +86,11 @@ void MediaSessionController::OnSetVolumeMultiplier(int player_id,
   DCHECK_EQ(player_id_, player_id);
 
   if (base::FeatureList::IsEnabled(media::kUseMediaPlayerMojoInterface)) {
-    auto* remote =
-        web_contents_->media_web_contents_observer()->GetMediaPlayerRemote(id_);
-    // |remote| may be null in tests.
-    if (!remote)
+    auto* observer = web_contents_->media_web_contents_observer();
+    // The MediaPlayer mojo interface may not be available in tests.
+    if (!observer->IsMediaPlayerRemoteAvailable(id_))
       return;
-
-    remote->SetVolumeMultiplier(volume_multiplier);
+    observer->GetMediaPlayerRemote(id_)->SetVolumeMultiplier(volume_multiplier);
   } else {
     auto* render_frame_host = RenderFrameHost::FromID(id_.frame_routing_id);
     if (!render_frame_host)
@@ -134,29 +104,17 @@ void MediaSessionController::OnSetVolumeMultiplier(int player_id,
 void MediaSessionController::OnEnterPictureInPicture(int player_id) {
   DCHECK_EQ(player_id_, player_id);
 
-  media::mojom::MediaPlayer* remote =
-      web_contents_->media_web_contents_observer()->GetMediaPlayerRemote(id_);
-  if (!remote) {
-    // TODO(https://crbug.com/1161551): Remove this when lifetime bug is fixed.
-    NOTREACHED() << "Controller should not outlive remote MediaPlayer";
-    return;
-  }
-
-  remote->RequestEnterPictureInPicture();
+  web_contents_->media_web_contents_observer()
+      ->GetMediaPlayerRemote(id_)
+      ->RequestEnterPictureInPicture();
 }
 
 void MediaSessionController::OnExitPictureInPicture(int player_id) {
   DCHECK_EQ(player_id_, player_id);
 
-  media::mojom::MediaPlayer* remote =
-      web_contents_->media_web_contents_observer()->GetMediaPlayerRemote(id_);
-  if (!remote) {
-    // TODO(https://crbug.com/1161551): Remove this when lifetime bug is fixed.
-    NOTREACHED() << "Controller should not outlive remote MediaPlayer";
-    return;
-  }
-
-  remote->RequestExitPictureInPicture();
+  web_contents_->media_web_contents_observer()
+      ->GetMediaPlayerRemote(id_)
+      ->RequestExitPictureInPicture();
 }
 
 void MediaSessionController::OnSetAudioSinkId(
@@ -181,15 +139,9 @@ void MediaSessionController::OnSetAudioSinkId(
   static_cast<RenderFrameHostImpl*>(render_frame_host)
       ->SetAudioOutputDeviceIdForGlobalMediaControls(hashed_sink_id);
 
-  media::mojom::MediaPlayer* remote =
-      web_contents_->media_web_contents_observer()->GetMediaPlayerRemote(id_);
-  if (!remote) {
-    // TODO(https://crbug.com/1161551): Remove this when lifetime bug is fixed.
-    NOTREACHED() << "Controller should not outlive remote MediaPlayer";
-    return;
-  }
-
-  remote->SetAudioSinkId(hashed_sink_id);
+  web_contents_->media_web_contents_observer()
+      ->GetMediaPlayerRemote(id_)
+      ->SetAudioSinkId(hashed_sink_id);
 }
 
 RenderFrameHost* MediaSessionController::render_frame_host() const {

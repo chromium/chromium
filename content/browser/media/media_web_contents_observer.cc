@@ -267,12 +267,9 @@ void MediaWebContentsObserver::RequestPersistentVideo(bool value) {
   if (!fullscreen_player_)
     return;
   if (base::FeatureList::IsEnabled(media::kUseMediaPlayerMojoInterface)) {
-    auto* remote = GetMediaPlayerRemote(*fullscreen_player_);
-    DCHECK(remote);
-
     // The message is sent to the renderer even though the video is already the
     // fullscreen element itself. It will eventually be handled by Blink.
-    remote->SetPersistentState(value);
+    GetMediaPlayerRemote(*fullscreen_player_)->SetPersistentState(value);
   } else {
     auto* render_frame_host =
         RenderFrameHost::FromID(fullscreen_player_->frame_routing_id);
@@ -523,14 +520,14 @@ void MediaWebContentsObserver::OnReceivedTranslatedDeviceId(
                                                          raw_device_id);
 }
 
-media::mojom::MediaPlayer* MediaWebContentsObserver::GetMediaPlayerRemote(
+bool MediaWebContentsObserver::IsMediaPlayerRemoteAvailable(
     const MediaPlayerId& player_id) {
-  if (media_player_remotes_.contains(player_id)) {
-    DCHECK(media_player_remotes_[player_id].is_bound());
-    return media_player_remotes_.at(player_id).get();
-  }
+  return media_player_remotes_.contains(player_id);
+}
 
-  return nullptr;
+mojo::AssociatedRemote<media::mojom::MediaPlayer>&
+MediaWebContentsObserver::GetMediaPlayerRemote(const MediaPlayerId& player_id) {
+  return media_player_remotes_.at(player_id);
 }
 
 void MediaWebContentsObserver::OnMediaPlayerObserverDisconnected(
@@ -633,9 +630,8 @@ void MediaWebContentsObserver::OnExperimentStateChanged(MediaPlayerId id,
   use_after_free_checker_.check();
 
   if (base::FeatureList::IsEnabled(media::kUseMediaPlayerMojoInterface)) {
-    auto* remote = GetMediaPlayerRemote(*fullscreen_player_);
-    DCHECK(remote);
-    remote->SetPowerExperimentState(is_starting);
+    GetMediaPlayerRemote(*fullscreen_player_)
+        ->SetPowerExperimentState(is_starting);
   } else {
     auto* render_frame_host = RenderFrameHost::FromID(id.frame_routing_id);
     DCHECK(render_frame_host);
