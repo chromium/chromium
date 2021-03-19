@@ -5,15 +5,24 @@
 #include "components/account_manager_core/account_manager_facade_impl.h"
 
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
+#include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
 #include "components/account_manager_core/account_manager_util.h"
+#include "google_apis/gaia/google_service_auth_error.h"
+#include "google_apis/gaia/oauth2_access_token_consumer.h"
+#include "google_apis/gaia/oauth2_access_token_fetcher.h"
+#include "google_apis/gaia/oauth2_access_token_fetcher_immediate_error.h"
 
 namespace account_manager {
 
@@ -33,6 +42,8 @@ constexpr uint32_t kMinVersionWithShowAddAccountDialog = 3;
 constexpr uint32_t kMinVersionWithManageAccountsSettings = 4;
 // MinVersion of crosapi::mojom::AccountManager::GetPersistentErrorForAccount.
 constexpr uint32_t kMinVersionWithGetPersistentErrorForAccount = 5;
+// MinVersion of crosapi::mojom::AccountManager::CreateAccessTokenFetcher.
+constexpr uint32_t kMinVersionWithCreateAccessTokenFetcher = 6;
 
 void UnmarshalAccounts(
     base::OnceCallback<void(const std::vector<Account>&)> callback,
@@ -68,6 +79,140 @@ void UnmarshalPersistentError(
 
 }  // namespace
 
+// Fetches access tokens over the Mojo remote to `AccountManager`.
+class AccountManagerFacadeImpl::AccessTokenFetcher
+    : public OAuth2AccessTokenFetcher {
+ public:
+  AccessTokenFetcher(AccountManagerFacadeImpl* account_manager_facade_impl,
+                     const account_manager::AccountKey& account_key,
+                     const std::string& oauth_consumer_name,
+                     OAuth2AccessTokenConsumer* consumer)
+      : OAuth2AccessTokenFetcher(consumer),
+        account_manager_facade_impl_(account_manager_facade_impl),
+        account_key_(account_key),
+        oauth_consumer_name_(oauth_consumer_name) {}
+
+  AccessTokenFetcher(const AccessTokenFetcher&) = delete;
+  AccessTokenFetcher& operator=(const AccessTokenFetcher&) = delete;
+
+  ~AccessTokenFetcher() override = default;
+
+  // Returns a closure, which marks `this` instance as ready for use. This
+  // happens when `AccountManagerFacadeImpl`'s initialization sequence is
+  // complete.
+  base::OnceClosure UnblockTokenRequest() {
+    return base::BindOnce(&AccessTokenFetcher::UnblockTokenRequestInternal,
+                          weak_factory_.GetWeakPtr());
+  }
+
+  // Returns a closure which handles Mojo connection errors tied to Account
+  // Manager.
+  base::OnceClosure MojoDisconnectionClosure() {
+    return base::BindOnce(&AccessTokenFetcher::OnMojoError,
+                          weak_factory_.GetWeakPtr());
+  }
+
+  // OAuth2AccessTokenFetcher override:
+  // Note: This implementation ignores `client_id` and `client_secret` because
+  // AccountManager's Mojo API does not support overriding OAuth client id and
+  // secret.
+  void Start(const std::string& client_id,
+             const std::string& client_secret,
+             const std::vector<std::string>& scopes) override {
+    DCHECK(!is_request_pending_);
+    is_request_pending_ = true;
+    scopes_ = scopes;
+    if (!are_token_requests_allowed_) {
+      return;
+    }
+    StartInternal();
+  }
+
+  // OAuth2AccessTokenFetcher override:
+  void CancelRequest() override {
+    access_token_fetcher_.reset();
+    is_request_pending_ = false;
+  }
+
+ private:
+  void UnblockTokenRequestInternal() {
+    are_token_requests_allowed_ = true;
+    if (is_request_pending_) {
+      StartInternal();
+    }
+  }
+
+  void StartInternal() {
+    DCHECK(are_token_requests_allowed_);
+    bool is_remote_connected =
+        account_manager_facade_impl_->CreateAccessTokenFetcher(
+            account_manager::ToMojoAccountKey(account_key_),
+            oauth_consumer_name_,
+            base::BindOnce(&AccessTokenFetcher::FetchAccessToken,
+                           weak_factory_.GetWeakPtr()));
+
+    if (!is_remote_connected) {
+      OnMojoError();
+    }
+  }
+
+  void FetchAccessToken(
+      mojo::PendingRemote<crosapi::mojom::AccessTokenFetcher> pending_remote) {
+    access_token_fetcher_.Bind(std::move(pending_remote));
+    access_token_fetcher_->Start(
+        scopes_, base::BindOnce(&AccessTokenFetcher::OnAccessTokenFetchComplete,
+                                weak_factory_.GetWeakPtr()));
+  }
+
+  void OnAccessTokenFetchComplete(crosapi::mojom::AccessTokenResultPtr result) {
+    DCHECK(is_request_pending_);
+    is_request_pending_ = false;
+
+    if (result->is_error()) {
+      base::Optional<GoogleServiceAuthError> maybe_error =
+          account_manager::FromMojoGoogleServiceAuthError(result->get_error());
+
+      if (!maybe_error.has_value()) {
+        LOG(ERROR) << "Unable to parse error result of access token fetch: "
+                   << result->get_error()->state;
+        FireOnGetTokenFailure(GoogleServiceAuthError(
+            GoogleServiceAuthError::State::UNEXPECTED_SERVICE_RESPONSE));
+      } else {
+        FireOnGetTokenFailure(maybe_error.value());
+      }
+      return;
+    }
+
+    FireOnGetTokenSuccess(
+        OAuth2AccessTokenConsumer::TokenResponse::Builder()
+            .WithAccessToken(result->get_access_token_info()->access_token)
+            .WithExpirationTime(
+                result->get_access_token_info()->expiration_time)
+            .WithIdToken(result->get_access_token_info()->id_token)
+            .build());
+  }
+
+  void OnMojoError() {
+    if (!is_request_pending_)
+      return;
+
+    CancelRequest();
+    FireOnGetTokenFailure(
+        GoogleServiceAuthError(GoogleServiceAuthError::State::SERVICE_ERROR));
+  }
+
+  AccountManagerFacadeImpl* const account_manager_facade_impl_;
+  const account_manager::AccountKey account_key_;
+  const std::string oauth_consumer_name_;
+
+  bool are_token_requests_allowed_ = false;
+  bool is_request_pending_ = false;
+  std::vector<std::string> scopes_;
+  mojo::Remote<crosapi::mojom::AccessTokenFetcher> access_token_fetcher_;
+
+  base::WeakPtrFactory<AccessTokenFetcher> weak_factory_{this};
+};
+
 AccountManagerFacadeImpl::AccountManagerFacadeImpl(
     mojo::Remote<crosapi::mojom::AccountManager> account_manager_remote,
     uint32_t remote_version,
@@ -85,6 +230,9 @@ AccountManagerFacadeImpl::AccountManagerFacadeImpl(
     FinishInitSequenceIfNotAlreadyFinished();
     return;
   }
+
+  account_manager_remote_.set_disconnect_handler(base::BindOnce(
+      &AccountManagerFacadeImpl::OnMojoError, weak_factory_.GetWeakPtr()));
   account_manager_remote_->AddObserver(
       base::BindOnce(&AccountManagerFacadeImpl::OnReceiverReceived,
                      weak_factory_.GetWeakPtr()));
@@ -182,6 +330,29 @@ void AccountManagerFacadeImpl::ShowManageAccountsSettings() {
   account_manager_remote_->ShowManageAccountsSettings();
 }
 
+std::unique_ptr<OAuth2AccessTokenFetcher>
+AccountManagerFacadeImpl::CreateAccessTokenFetcher(
+    const AccountKey& account,
+    const std::string& oauth_consumer_name,
+    OAuth2AccessTokenConsumer* consumer) {
+  if (!account_manager_remote_ ||
+      remote_version_ < kMinVersionWithCreateAccessTokenFetcher) {
+    VLOG(1) << "Found remote at: " << remote_version_
+            << ", expected: " << kMinVersionWithCreateAccessTokenFetcher
+            << " for CreateAccessTokenFetcher";
+    return std::make_unique<OAuth2AccessTokenFetcherImmediateError>(
+        consumer,
+        GoogleServiceAuthError(GoogleServiceAuthError::State::SERVICE_ERROR));
+  }
+
+  auto access_token_fetcher = std::make_unique<AccessTokenFetcher>(
+      /*account_manager_facade_impl=*/this, account, oauth_consumer_name,
+      consumer);
+  RunAfterInitializationSequence(access_token_fetcher->UnblockTokenRequest());
+  RunOnMojoDisconnection(access_token_fetcher->MojoDisconnectionClosure());
+  return std::move(access_token_fetcher);
+}
+
 // static
 std::string AccountManagerFacadeImpl::
     GetAccountAdditionResultStatusHistogramNameForTesting() {
@@ -262,6 +433,19 @@ void AccountManagerFacadeImpl::GetPersistentErrorInternal(
       base::BindOnce(&UnmarshalPersistentError, std::move(callback)));
 }
 
+bool AccountManagerFacadeImpl::CreateAccessTokenFetcher(
+    crosapi::mojom::AccountKeyPtr account_key,
+    const std::string& oauth_consumer_name,
+    crosapi::mojom::AccountManager::CreateAccessTokenFetcherCallback callback) {
+  if (!account_manager_remote_) {
+    return false;
+  }
+
+  account_manager_remote_->CreateAccessTokenFetcher(
+      std::move(account_key), oauth_consumer_name, std::move(callback));
+  return true;
+}
+
 void AccountManagerFacadeImpl::FinishInitSequenceIfNotAlreadyFinished() {
   if (is_initialized_) {
     return;
@@ -283,11 +467,32 @@ void AccountManagerFacadeImpl::RunAfterInitializationSequence(
   }
 }
 
+void AccountManagerFacadeImpl::RunOnMojoDisconnection(
+    base::OnceClosure closure) {
+  if (!account_manager_remote_) {
+    std::move(closure).Run();
+    return;
+  }
+  mojo_disconnection_handlers_.emplace_back(std::move(closure));
+}
+
+void AccountManagerFacadeImpl::OnMojoError() {
+  LOG(ERROR) << "Account Manager disconnected";
+  for (auto& cb : mojo_disconnection_handlers_) {
+    std::move(cb).Run();
+  }
+  mojo_disconnection_handlers_.clear();
+  account_manager_remote_.reset();
+}
+
 bool AccountManagerFacadeImpl::IsInitialized() {
   return is_initialized_;
 }
 
 void AccountManagerFacadeImpl::FlushMojoForTesting() {
+  if (!account_manager_remote_) {
+    return;
+  }
   account_manager_remote_.FlushForTesting();
 }
 

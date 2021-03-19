@@ -5,18 +5,23 @@
 #include "components/account_manager_core/account_manager_facade_impl.h"
 
 #include <limits>
+#include <memory>
 
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/account_manager_test_util.h"
 #include "components/account_manager_core/account_manager_util.h"
+#include "google_apis/gaia/oauth2_access_token_consumer.h"
+#include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -29,7 +34,80 @@ namespace account_manager {
 
 namespace {
 
-const char kFakeEmail[] = "fake_email@example.com";
+using base::MockOnceCallback;
+using ::testing::_;
+using ::testing::Eq;
+using ::testing::Field;
+using ::testing::Invoke;
+using ::testing::WithArgs;
+
+constexpr char kTestAccountEmail[] = "test@gmail.com";
+constexpr char kAnotherTestAccountEmail[] = "another_test@gmail.com";
+constexpr char kFakeOAuthConsumerName[] = "fake-oauth-consumer-name";
+constexpr char kFakeClientId[] = "fake-client-id";
+constexpr char kFakeClientSecret[] = "fake-client-secret";
+constexpr char kFakeAccessToken[] = "fake-access-token";
+constexpr char kFakeIdToken[] = "fake-id-token";
+
+void AccessTokenFetchSuccess(
+    base::OnceCallback<void(crosapi::mojom::AccessTokenResultPtr)> callback) {
+  crosapi::mojom::AccessTokenInfoPtr access_token_info =
+      crosapi::mojom::AccessTokenInfo::New(kFakeAccessToken, base::Time::Now(),
+                                           kFakeIdToken);
+  crosapi::mojom::AccessTokenResultPtr result =
+      crosapi::mojom::AccessTokenResult::NewAccessTokenInfo(
+          std::move(access_token_info));
+  std::move(callback).Run(std::move(result));
+}
+
+void AccessTokenFetchServiceError(
+    base::OnceCallback<void(crosapi::mojom::AccessTokenResultPtr)> callback) {
+  crosapi::mojom::AccessTokenResultPtr result =
+      crosapi::mojom::AccessTokenResult::NewError(
+          account_manager::ToMojoGoogleServiceAuthError(
+              GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_ERROR)));
+  std::move(callback).Run(std::move(result));
+}
+
+class MockAccessTokenFetcher : public crosapi::mojom::AccessTokenFetcher {
+ public:
+  MockAccessTokenFetcher() : receiver_(this) {}
+  MockAccessTokenFetcher(const MockAccessTokenFetcher&) = delete;
+  MockAccessTokenFetcher& operator=(const MockAccessTokenFetcher&) = delete;
+  ~MockAccessTokenFetcher() override = default;
+
+  void Bind(
+      mojo::PendingReceiver<crosapi::mojom::AccessTokenFetcher> receiver) {
+    receiver_.Bind(std::move(receiver));
+  }
+
+  // crosapi::mojom::AccessTokenFetcher override.
+  MOCK_METHOD(void,
+              Start,
+              (const std::vector<std::string>& scopes, StartCallback callback),
+              (override));
+
+ private:
+  mojo::Receiver<crosapi::mojom::AccessTokenFetcher> receiver_;
+};
+
+class MockOAuthConsumer : public OAuth2AccessTokenConsumer {
+ public:
+  MockOAuthConsumer() = default;
+  MockOAuthConsumer(const MockOAuthConsumer&) = delete;
+  MockOAuthConsumer& operator=(const MockOAuthConsumer&) = delete;
+  ~MockOAuthConsumer() override = default;
+
+  // OAuth2AccessTokenConsumer overrides.
+  MOCK_METHOD(void,
+              OnGetTokenSuccess,
+              (const TokenResponse& token_response),
+              (override));
+  MOCK_METHOD(void,
+              OnGetTokenFailure,
+              (const GoogleServiceAuthError& error),
+              (override));
+};
 
 class FakeAccountManager : public crosapi::mojom::AccountManager {
  public:
@@ -90,11 +168,20 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
     show_manage_accounts_settings_calls_++;
   }
 
+  void SetMockAccessTokenFetcher(
+      std::unique_ptr<MockAccessTokenFetcher> mock_access_token_fetcher) {
+    access_token_fetcher_ = std::move(mock_access_token_fetcher);
+  }
+
   void CreateAccessTokenFetcher(
       crosapi::mojom::AccountKeyPtr mojo_account_key,
       const std::string& oauth_consumer_name,
       CreateAccessTokenFetcherCallback callback) override {
+    if (!access_token_fetcher_)
+      access_token_fetcher_ = std::make_unique<MockAccessTokenFetcher>();
     mojo::PendingRemote<crosapi::mojom::AccessTokenFetcher> pending_remote;
+    access_token_fetcher_->Bind(
+        pending_remote.InitWithNewPipeAndPassReceiver());
     std::move(callback).Run(std::move(pending_remote));
   }
 
@@ -130,6 +217,8 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
     add_account_result_ = result;
   }
 
+  void ClearReceivers() { receivers_.Clear(); }
+
   int show_add_account_dialog_calls() const {
     return show_add_account_dialog_calls_;
   }
@@ -146,11 +235,12 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
   int show_add_account_dialog_calls_ = 0;
   int show_reauth_account_dialog_calls_ = 0;
   int show_manage_accounts_settings_calls_ = 0;
-  bool is_initialized_{false};
+  bool is_initialized_ = false;
   std::vector<Account> accounts_;
   std::map<AccountKey, GoogleServiceAuthError> persistent_errors_;
   AccountAdditionResult add_account_result_{
       AccountAdditionResult::Status::kUnexpectedResponse};
+  std::unique_ptr<MockAccessTokenFetcher> access_token_fetcher_;
   mojo::ReceiverSet<crosapi::mojom::AccountManager> receivers_;
   mojo::RemoteSet<crosapi::mojom::AccountManagerObserver> observers_;
 };
@@ -175,11 +265,6 @@ MATCHER_P(AccountEq, expected_account, "") {
                             testing::StrEq(expected_account.raw_email)),
              arg, result_listener);
 }
-
-using base::MockOnceCallback;
-
-constexpr char kTestAccountEmail[] = "test@gmail.com";
-constexpr char kAnotherTestAccountEmail[] = "another_test@gmail.com";
 
 }  // namespace
 
@@ -275,7 +360,7 @@ TEST_F(AccountManagerFacadeImplTest, GetAccountsCorrectlyMarshalsTwoAccounts) {
 }
 
 TEST_F(AccountManagerFacadeImplTest,
-       GetAccountsIsSafeToCallBeforeAccountManagerFacadeIsNotInitialized) {
+       GetAccountsIsSafeToCallBeforeAccountManagerFacadeIsInitialized) {
   Account account = CreateTestGaiaAccount(kTestAccountEmail);
   account_manager().SetAccounts({account});
 
@@ -382,7 +467,7 @@ TEST_F(AccountManagerFacadeImplTest, ShowReauthAccountDialogCallsMojo) {
   account_manager_facade->ShowReauthAccountDialog(
       account_manager::AccountManagerFacade::AccountAdditionSource::
           kSettingsAddAccountButton,
-      kFakeEmail);
+      kTestAccountEmail);
   account_manager_facade->FlushMojoForTesting();
   EXPECT_EQ(1, account_manager().show_reauth_account_dialog_calls());
 }
@@ -393,7 +478,7 @@ TEST_F(AccountManagerFacadeImplTest, ShowReauthAccountDialogUMA) {
       CreateFacade();
   auto source = AccountManagerFacade::AccountAdditionSource::kContentArea;
 
-  account_manager_facade->ShowReauthAccountDialog(source, kFakeEmail);
+  account_manager_facade->ShowReauthAccountDialog(source, kTestAccountEmail);
   account_manager_facade->FlushMojoForTesting();
 
   // Check that UMA stats were sent.
@@ -408,6 +493,117 @@ TEST_F(AccountManagerFacadeImplTest, ShowManageAccountsSettingsCallsMojo) {
   account_manager_facade->ShowManageAccountsSettings();
   account_manager_facade->FlushMojoForTesting();
   EXPECT_EQ(1, account_manager().show_manage_accounts_settings_calls());
+}
+
+TEST_F(AccountManagerFacadeImplTest,
+       AccessTokenFetcherReturnsAnErrorForUninitializedRemote) {
+  auto account_manager_facade = std::make_unique<AccountManagerFacadeImpl>(
+      mojo::Remote<crosapi::mojom::AccountManager>(),
+      /*remote_version=*/std::numeric_limits<uint32_t>::max());
+  const Account account = CreateTestGaiaAccount(kTestAccountEmail);
+
+  MockOAuthConsumer consumer;
+  GoogleServiceAuthError error(GoogleServiceAuthError::SERVICE_ERROR);
+  EXPECT_CALL(consumer, OnGetTokenFailure(Eq(error)));
+
+  std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher =
+      account_manager_facade->CreateAccessTokenFetcher(
+          account.key, kFakeOAuthConsumerName, &consumer);
+
+  access_token_fetcher->Start(kFakeClientId, kFakeClientSecret, /*scopes=*/{});
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(AccountManagerFacadeImplTest,
+       AccessTokenFetcherCanBeCreatedBeforeAccountManagerFacadeInitialization) {
+  auto account_manager_facade = std::make_unique<AccountManagerFacadeImpl>(
+      account_manager().CreateRemote(),
+      /*remote_version=*/std::numeric_limits<uint32_t>::max());
+  const Account account = CreateTestGaiaAccount(kTestAccountEmail);
+
+  auto mock_access_token_fetcher = std::make_unique<MockAccessTokenFetcher>();
+  EXPECT_CALL(*mock_access_token_fetcher.get(), Start(_, _))
+      .WillOnce(WithArgs<1>(Invoke(&AccessTokenFetchSuccess)));
+  account_manager().SetMockAccessTokenFetcher(
+      std::move(mock_access_token_fetcher));
+  MockOAuthConsumer consumer;
+
+  std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher =
+      account_manager_facade->CreateAccessTokenFetcher(
+          account.key, kFakeOAuthConsumerName, &consumer);
+  EXPECT_FALSE(account_manager_facade->IsInitialized());
+  access_token_fetcher->Start(kFakeClientId, kFakeClientSecret, /*scopes=*/{});
+  EXPECT_CALL(consumer,
+              OnGetTokenSuccess(
+                  Field(&OAuth2AccessTokenConsumer::TokenResponse::access_token,
+                        Eq(kFakeAccessToken))));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(account_manager_facade->IsInitialized());
+}
+
+TEST_F(AccountManagerFacadeImplTest,
+       AccessTokenFetcherCanHandleMojoRemoteDisconnection) {
+  account_manager().SetIsInitialized(true);
+  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
+      CreateFacade();
+  const Account account = CreateTestGaiaAccount(kTestAccountEmail);
+
+  MockOAuthConsumer consumer;
+  GoogleServiceAuthError error(GoogleServiceAuthError::SERVICE_ERROR);
+  EXPECT_CALL(consumer, OnGetTokenFailure(Eq(error)));
+
+  std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher =
+      account_manager_facade->CreateAccessTokenFetcher(
+          account.key, kFakeOAuthConsumerName, &consumer);
+  access_token_fetcher->Start(kFakeClientId, kFakeClientSecret, /*scopes=*/{});
+  account_manager().ClearReceivers();
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(AccountManagerFacadeImplTest, AccessTokenFetchSucceeds) {
+  account_manager().SetIsInitialized(true);
+  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
+      CreateFacade();
+  const Account account = CreateTestGaiaAccount(kTestAccountEmail);
+
+  auto mock_access_token_fetcher = std::make_unique<MockAccessTokenFetcher>();
+  EXPECT_CALL(*mock_access_token_fetcher.get(), Start(_, _))
+      .WillOnce(WithArgs<1>(Invoke(&AccessTokenFetchSuccess)));
+  account_manager().SetMockAccessTokenFetcher(
+      std::move(mock_access_token_fetcher));
+  MockOAuthConsumer consumer;
+  EXPECT_CALL(consumer,
+              OnGetTokenSuccess(
+                  Field(&OAuth2AccessTokenConsumer::TokenResponse::access_token,
+                        Eq(kFakeAccessToken))));
+
+  std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher =
+      account_manager_facade->CreateAccessTokenFetcher(
+          account.key, kFakeOAuthConsumerName, &consumer);
+  access_token_fetcher->Start(kFakeClientId, kFakeClientSecret, /*scopes=*/{});
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(AccountManagerFacadeImplTest, AccessTokenFetchErrorResponse) {
+  account_manager().SetIsInitialized(true);
+  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
+      CreateFacade();
+  const Account account = CreateTestGaiaAccount(kTestAccountEmail);
+
+  auto mock_access_token_fetcher = std::make_unique<MockAccessTokenFetcher>();
+  EXPECT_CALL(*mock_access_token_fetcher.get(), Start(_, _))
+      .WillOnce(WithArgs<1>(Invoke(&AccessTokenFetchServiceError)));
+  account_manager().SetMockAccessTokenFetcher(
+      std::move(mock_access_token_fetcher));
+  MockOAuthConsumer consumer;
+  GoogleServiceAuthError error(GoogleServiceAuthError::SERVICE_ERROR);
+  EXPECT_CALL(consumer, OnGetTokenFailure(Eq(error)));
+
+  std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher =
+      account_manager_facade->CreateAccessTokenFetcher(
+          account.key, kFakeOAuthConsumerName, &consumer);
+  access_token_fetcher->Start(kFakeClientId, kFakeClientSecret, /*scopes=*/{});
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace account_manager

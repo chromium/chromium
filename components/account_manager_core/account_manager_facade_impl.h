@@ -6,7 +6,9 @@
 #define COMPONENTS_ACCOUNT_MANAGER_CORE_ACCOUNT_MANAGER_FACADE_IMPL_H_
 
 #include <memory>
+#include <string>
 
+#include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -15,6 +17,9 @@
 #include "components/account_manager_core/account_manager_facade.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+class OAuth2AccessTokenFetcher;
+class OAuth2AccessTokenConsumer;
 
 namespace account_manager {
 
@@ -54,6 +59,10 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
   void ShowReauthAccountDialog(const AccountAdditionSource& source,
                                const std::string& email) override;
   void ShowManageAccountsSettings() override;
+  std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
+      const AccountKey& account,
+      const std::string& oauth_consumer_name,
+      OAuth2AccessTokenConsumer* consumer) override;
 
   // crosapi::mojom::AccountManagerObserver overrides:
   void OnTokenUpserted(crosapi::mojom::AccountPtr account) override;
@@ -72,7 +81,13 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
                            ShowManageAccountsSettingsCallsMojo);
   FRIEND_TEST_ALL_PREFIXES(AccountManagerFacadeImplTest,
                            InitializationStatusIsCorrectlySet);
+  FRIEND_TEST_ALL_PREFIXES(
+      AccountManagerFacadeImplTest,
+      AccessTokenFetcherCanBeCreatedBeforeAccountManagerFacadeInitialization);
   static std::string GetAccountAdditionResultStatusHistogramNameForTesting();
+
+  // A utility class to fetch access tokens over Mojo.
+  class AccessTokenFetcher;
 
   void OnReceiverReceived(
       mojo::PendingReceiver<AccountManagerObserver> receiver);
@@ -93,12 +108,14 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
       const AccountKey& account,
       base::OnceCallback<void(const GoogleServiceAuthError&)> callback);
 
-  bool IsInitialized();
-
-  void FlushMojoForTesting();
-
-  // Mojo API version on the remote (Ash) side.
-  const uint32_t remote_version_;
+  // Proxy method to call `CreateAccessTokenFetcher` on
+  // `account_manager_remote_`. Returns `true` if `account_manager_remote_` is
+  // bound and the call was queued successfully.
+  bool CreateAccessTokenFetcher(
+      crosapi::mojom::AccountKeyPtr account_key,
+      const std::string& oauth_consumer_name,
+      crosapi::mojom::AccountManager::CreateAccessTokenFetcherCallback
+          callback);
 
   // The initialization sequence for `AccountManagerFacadeImpl` consists of
   // adding an observer to the remote.
@@ -114,8 +131,21 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
   // See `FinishInitSequenceIfNotAlreadyFinished` for details.
   void RunAfterInitializationSequence(base::OnceClosure closure);
 
+  // Runs `closure` if/when `account_manager_remote_` gets disconnected.
+  void RunOnMojoDisconnection(base::OnceClosure closure);
+  // Mojo disconnect handler.
+  void OnMojoError();
+
+  bool IsInitialized();
+
+  void FlushMojoForTesting();
+
+  // Mojo API version on the remote (Ash) side.
+  const uint32_t remote_version_;
+
   bool is_initialized_ = false;
   std::vector<base::OnceClosure> initialization_callbacks_;
+  std::vector<base::OnceClosure> mojo_disconnection_handlers_;
 
   mojo::Remote<crosapi::mojom::AccountManager> account_manager_remote_;
   std::unique_ptr<mojo::Receiver<crosapi::mojom::AccountManagerObserver>>

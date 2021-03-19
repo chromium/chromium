@@ -52,6 +52,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base/test:test_support",
     "//chromeos/crosapi/mojom",
+    "//google_apis:google_apis",
     "//testing/gtest",
   ]
 }

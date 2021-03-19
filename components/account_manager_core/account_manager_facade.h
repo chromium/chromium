@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ACCOUNT_MANAGER_CORE_ACCOUNT_MANAGER_FACADE_H_
 #define COMPONENTS_ACCOUNT_MANAGER_CORE_ACCOUNT_MANAGER_FACADE_H_
 
+#include <memory>
 #include <string>
 
 #include "base/callback.h"
@@ -12,6 +13,9 @@
 #include "base/observer_list_types.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
+
+class OAuth2AccessTokenFetcher;
+class OAuth2AccessTokenConsumer;
 
 namespace account_manager {
 
@@ -106,6 +110,14 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
 
   // Launches OS Settings > Accounts.
   virtual void ShowManageAccountsSettings() = 0;
+
+  // Creates an access token fetcher for `account`.
+  // Currently, `account` must be a Gaia account.
+  // The returned object should not outlive `AccountManagerFacade` itself.
+  virtual std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
+      const AccountKey& account,
+      const std::string& oauth_consumer_name,
+      OAuth2AccessTokenConsumer* consumer) = 0;
 };
 
 }  // namespace account_manager
