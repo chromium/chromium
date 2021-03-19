@@ -39,7 +39,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   void SetVideoThumbnail(const gfx::ImageSkia& thumbnail);
 
   // CaptureModeDelegate:
-  base::FilePath GetActiveUserDownloadsDir() const override;
+  base::FilePath GetScreenCaptureDir() const override;
   void ShowScreenCaptureItemInFolder(const base::FilePath& file_path) override;
   void OpenScreenshotInImageEditor(const base::FilePath& file_path) override;
   bool Uses24HourFormat() const override;

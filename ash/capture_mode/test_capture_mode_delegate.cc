@@ -136,7 +136,7 @@ void TestCaptureModeDelegate::SetVideoThumbnail(
     fake_service_->set_thumbnail(thumbnail);
 }
 
-base::FilePath TestCaptureModeDelegate::GetActiveUserDownloadsDir() const {
+base::FilePath TestCaptureModeDelegate::GetScreenCaptureDir() const {
   return fake_downloads_dir_;
 }
 
