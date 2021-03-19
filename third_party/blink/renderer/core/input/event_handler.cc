@@ -2141,6 +2141,15 @@ WebInputEventResult EventHandler::ShowNonLocatedContextMenu(
     int right = std::max(start_point.X(), end_point.X());
     int bottom = std::max(start_point.Y(), end_point.Y());
 
+    // If selection is a caret and is inside an anchor element, then set that
+    // as the "focused" element so we can show "open link" option in context
+    // menu.
+    if (visible_selection.IsCaret()) {
+      Element* anchor_element =
+          EnclosingAnchorElement(visible_selection.ComputeStartPosition());
+      if (anchor_element)
+        focused_element = anchor_element;
+    }
     // Intersect the selection rect and the visible bounds of focused_element.
     if (focused_element) {
       IntRect clipped_rect = view->ViewportToFrame(

@@ -1136,6 +1136,55 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
                                      IDC_CONTENT_CONTEXT_COPYIMAGELOCATION,
                                      IDC_CONTENT_CONTEXT_SAVEIMAGEAS}));
 }
+
+// Check whether correct non-located context menu shows up for anchor element
+// inside an editable element.
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
+                       NonLocatedContextMenuOnAnchorElement) {
+  const char kDataURIPrefix[] = "data:text/html;charset=utf-8,";
+  const char kAnchorHtml[] =
+      "<div contenteditable='true'>Some text and "
+      "<a href='https://test.com' id='anchor1'>link</a></div> ";
+  ui_test_utils::NavigateToURL(browser(),
+                               GURL(std::string(kDataURIPrefix) + kAnchorHtml));
+
+  // Open and close a context menu.
+  ContextMenuWaiter menu_observer;
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  int x;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
+      tab,
+      "var bounds = document.getElementById('anchor1')"
+      ".getBoundingClientRect();"
+      "domAutomationController.send("
+      "    Math.floor(bounds.left + bounds.width / 2));",
+      &x));
+  int y;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
+      tab,
+      "var bounds = document.getElementById('anchor1')"
+      ".getBoundingClientRect();"
+      "domAutomationController.send("
+      "    Math.floor(bounds.top + bounds.height / 2));",
+      &y));
+
+  // Focus in the middle of an anchor element.
+  content::SimulateMouseClickAt(tab, /*modifiers=*/0,
+                                blink::WebMouseEvent::Button::kLeft,
+                                gfx::Point(x, y));
+
+  // Simulate non-located context menu on anchor element with Shift + F10.
+  content::SimulateKeyPress(tab, ui::DomKey::F10, ui::DomCode::F10,
+                            ui::VKEY_F10, /*control=*/false, /*shift=*/true,
+                            /*alt=*/false, /*command=*/false);
+  menu_observer.WaitForMenuOpenAndClose();
+
+  // Verify that the expected context menu items are present.
+  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
+              testing::IsSupersetOf({IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
+                                     IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW}));
+}
 #endif
 
 // Check filename on clicking "Save Link As" is ignored for cross origin.
