@@ -4,11 +4,13 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import './shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -35,6 +37,17 @@ Polymer({
     loadSigninInProgess_: {
       type: Boolean,
       value: false,
+    },
+
+    /**
+     * The disclaimer for managed devices.
+     * @private {boolean}
+     */
+    managedDeviceDisclaimer_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('managedDeviceDisclaimer');
+      },
     },
   },
 

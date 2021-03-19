@@ -290,6 +290,10 @@
         <include name="IDR_PROFILE_CUSTOMIZATION_HTML" file="resources\signin\profile_customization\profile_customization.html" type="BINDATA" />
         <include name="IDR_PROFILE_CUSTOMIZATION_APP_JS" file="${root_gen_dir}\chrome\browser\resources\signin\profile_customization\profile_customization_app.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_PROFILE_CUSTOMIZATION_BROWSER_PROXY_JS" file="resources\signin\profile_customization\profile_customization_browser_proxy.js" type="BINDATA" />
+        <include name="IDR_ENTERPRISE_PROFILE_WELCOME_HTML" file="resources\signin\enterprise_profile_welcome\enterprise_profile_welcome.html" type="BINDATA" />
+        <include name="IDR_ENTERPRISE_PROFILE_WELCOME_APP_JS" file="${root_gen_dir}\chrome\browser\resources\signin\enterprise_profile_welcome\enterprise_profile_welcome_app.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_ENTERPRISE_PROFILE_WELCOME_BROWSER_PROXY_JS" file="resources\signin\enterprise_profile_welcome\enterprise_profile_welcome_browser_proxy.js" type="BINDATA" />
+        <include name="IDR_ENTERPRISE_PROFILE_WELCOME_ILLUSTRATION_SVG" file="resources\signin\enterprise_profile_welcome\images\enterprise_profile_welcome_illustration.svg" type="BINDATA" />
       </if>
       <if expr="not is_android">
         <include name="IDR_IDENTITY_INTERNALS_HTML" file="resources\identity_internals\identity_internals.html" type="BINDATA" />

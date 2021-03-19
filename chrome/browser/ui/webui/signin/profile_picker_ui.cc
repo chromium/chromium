@@ -6,6 +6,7 @@
 #include "base/feature_list.h"
 
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/browser_signin_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/signin/profile_creation_customize_themes_handler.h"
@@ -33,6 +35,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "url/gurl.h"
@@ -65,6 +68,20 @@ bool IsBrowserSigninAllowed() {
 bool IsSignInProfileCreationFlowSupported() {
   return AccountConsistencyModeManager::IsDiceSignInAllowed() &&
          base::FeatureList::IsEnabled(features::kSignInProfileCreation);
+}
+
+std::string GetManagedDeviceDisclaimer() {
+  base::Optional<std::string> device_manager =
+      chrome::GetDeviceManagerIdentity();
+  if (!device_manager)
+    return std::string();
+  if (device_manager->empty()) {
+    return l10n_util::GetStringUTF8(
+        IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DEVICE_MANAGED_DESCRIPTION);
+  }
+  return l10n_util::GetStringFUTF8(
+      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DEVICE_MANAGED_BY_DESCRIPTION,
+      base::UTF8ToUTF16(*device_manager));
 }
 
 void AddStrings(content::WebUIDataSource* html_source) {
@@ -160,6 +177,9 @@ void AddStrings(content::WebUIDataSource* html_source) {
 
   html_source->AddInteger("placeholderAvatarIndex",
                           profiles::GetPlaceholderAvatarIndex());
+
+  html_source->AddString("managedDeviceDisclaimer",
+                         GetManagedDeviceDisclaimer());
 
   // Add policies.
   html_source->AddBoolean("isBrowserSigninAllowed", IsBrowserSigninAllowed());

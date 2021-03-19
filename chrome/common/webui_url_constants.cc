@@ -385,6 +385,10 @@ const char kChromeUISandboxHost[] = "sandbox";
     (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 const char kChromeUIBrowserSwitchHost[] = "browser-switch";
 const char kChromeUIBrowserSwitchURL[] = "chrome://browser-switch/";
+const char kChromeUIEnterpriseProfileWelcomeHost[] =
+    "enterprise-profile-welcome";
+const char kChromeUIEnterpriseProfileWelcomeURL[] =
+    "chrome://enterprise-profile-welcome/";
 const char kChromeUIProfileCustomizationHost[] = "profile-customization";
 const char kChromeUIProfileCustomizationURL[] =
     "chrome://profile-customization";
