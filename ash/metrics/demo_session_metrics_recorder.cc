@@ -85,8 +85,11 @@ DemoModeApp GetAppFromAppId(const std::string& app_id) {
     return DemoModeApp::kGoogleKeepChromeApp;
   if (app_id == extensions::kWebStoreAppId)
     return DemoModeApp::kWebStore;
-  if (app_id == extension_misc::kYoutubeAppId)
+  if (app_id == extension_misc::kYoutubeAppId ||
+      app_id == extension_misc::kYoutubePwaLauncherAppId) {
     return DemoModeApp::kYouTube;
+  }
+
   return DemoModeApp::kOtherChromeApp;
 }
 
