@@ -49,7 +49,9 @@ import android.view.View;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
@@ -64,7 +66,6 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
@@ -83,6 +84,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.OverviewMode
 import org.chromium.chrome.features.start_surface.StartSurfaceMediator.SecondaryTasksSurfaceInitializer;
 import org.chromium.chrome.features.start_surface.StartSurfaceMediator.SurfaceMode;
 import org.chromium.chrome.start_surface.R;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -98,6 +100,8 @@ public class StartSurfaceMediatorUnitTest {
     private PropertyModel mPropertyModel;
     private PropertyModel mSecondaryTasksSurfacePropertyModel;
 
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
     @Mock
     private TabSwitcher.Controller mMainTabGridController;
     @Mock
@@ -1570,12 +1574,12 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
+    @Features.EnableFeatures(INSTANT_START)
     public void feedPlaceholderFromWarmStart() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
-        CachedFeatureFlags.setForTesting(INSTANT_START, true);
         StartSurfaceMediator mediator =
                 createStartSurfaceMediator(SurfaceMode.SINGLE_PANE, /* excludeMVTiles= */ false,
                         /* hadWarmStart= */ true);

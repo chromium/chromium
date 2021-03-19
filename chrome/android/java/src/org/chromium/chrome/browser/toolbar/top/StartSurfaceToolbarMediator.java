@@ -63,6 +63,7 @@ class StartSurfaceToolbarMediator {
     private final boolean mHideIncognitoSwitchWhenNoTabs;
     private final boolean mShouldShowTabSwitcherButtonOnHomepage;
     private final Supplier<ButtonData> mIdentityDiscButtonSupplier;
+    private final boolean mIsTabGroupsAndroidContinuationEnabled;
 
     private TabModelSelector mTabModelSelector;
     private TabCountProvider mTabCountProvider;
@@ -89,14 +90,15 @@ class StartSurfaceToolbarMediator {
             ObservableSupplier<Boolean> homepageEnabledSupplier,
             ObservableSupplier<Boolean> startSurfaceAsHomepageSupplier,
             ObservableSupplier<Boolean> homepageManagedByPolicySupplier,
-            OnClickListener homeButtonOnClickHandler,
-            boolean shouldShowTabSwitcherButtonOnHomepage) {
+            OnClickListener homeButtonOnClickHandler, boolean shouldShowTabSwitcherButtonOnHomepage,
+            boolean isTabGroupsAndroidContinuationEnabled) {
         mPropertyModel = model;
         mOverviewModeState = StartSurfaceState.NOT_SHOWN;
         mShowIPHCallback = showIPHCallback;
         mHideIncognitoSwitchWhenNoTabs = hideIncognitoSwitchWhenNoTabs;
         mMenuButtonCoordinator = menuButtonCoordinator;
         mIdentityDiscButtonSupplier = identityDiscButtonSupplier;
+        mIsTabGroupsAndroidContinuationEnabled = isTabGroupsAndroidContinuationEnabled;
         identityDiscStateSupplier.addObserver((canShowHint) -> {
             // If the identity disc wants to be hidden and is hidden, there's nothing we need to do.
             if (!canShowHint && !mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE)) return;
@@ -330,14 +332,17 @@ class StartSurfaceToolbarMediator {
     }
 
     private void updateNewTabButtonVisibility() {
-        // This toolbar is only shown for tab switcher when accessibility is enabled. Note that
-        // OverviewListLayout will be shown as the tab switcher instead of the star surface.
         boolean isShownTabswitcherState = mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER
                 || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_TASKS_ONLY
                 || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_OMNIBOX_ONLY
-                || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_TRENDY_TERMS
-                || ChromeAccessibilityUtil.get().isAccessibilityEnabled();
-        mPropertyModel.set(NEW_TAB_BUTTON_IS_VISIBLE, isShownTabswitcherState);
+                || mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER_TRENDY_TERMS;
+
+        // This button is only shown for homepage when accessibility is enabled and
+        // OverviewListLayout is shown as the tab switcher instead of the start surface.
+        mPropertyModel.set(NEW_TAB_BUTTON_IS_VISIBLE,
+                isShownTabswitcherState
+                        || (ChromeAccessibilityUtil.get().isAccessibilityEnabled()
+                                && !mIsTabGroupsAndroidContinuationEnabled));
     }
 
     private void updateHomeButtonVisibility() {

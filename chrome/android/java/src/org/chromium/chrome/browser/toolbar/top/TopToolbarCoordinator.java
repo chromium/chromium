@@ -118,6 +118,8 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param isGridTabSwitcherEnabled Whether grid tab switcher is enabled via a feature flag.
      * @param isTabToGtsAnimationEnabled Whether Tab-to-GTS animation is enabled via a feature flag.
      * @param isStartSurfaceEnabled Whether start surface is enabled via a feature flag.
+     * @param isTabGroupsAndroidContinuationEnabled Whether flag TabGroupsContinuationAndroid is
+     *         enabled.
      */
     public TopToolbarCoordinator(ToolbarControlContainer controlContainer,
             ToolbarLayout toolbarLayout, ToolbarDataProvider toolbarDataProvider,
@@ -138,7 +140,7 @@ public class TopToolbarCoordinator implements Toolbar {
             OneshotSupplier<StartSurface> startSurfaceSupplier,
             Supplier<ResourceManager> resourceManagerSupplier, BooleanSupplier isInVrSupplier,
             boolean isGridTabSwitcherEnabled, boolean isTabToGtsAnimationEnabled,
-            boolean isStartSurfaceEnabled) {
+            boolean isStartSurfaceEnabled, boolean isTabGroupsAndroidContinuationEnabled) {
         mControlContainer = controlContainer;
         mToolbarLayout = toolbarLayout;
         mMenuButtonCoordinator = browsingModeMenuButtonCoordinator;
@@ -161,7 +163,8 @@ public class TopToolbarCoordinator implements Toolbar {
                         overviewThemeColorProvider, overviewModeMenuButtonCoordinator,
                         identityDiscButtonSupplier, isGridTabSwitcherEnabled,
                         homepageEnabledSupplier, startSurfaceAsHomepageSupplier,
-                        homepageManagedByPolicySupplier, homeButtonOnClickListener);
+                        homepageManagedByPolicySupplier, homeButtonOnClickListener,
+                        isTabGroupsAndroidContinuationEnabled);
             } else {
                 mTabSwitcherModeCoordinatorPhone = new TabSwitcherModeTTCoordinatorPhone(
                         controlContainer.getRootView().findViewById(R.id.tab_switcher_toolbar_stub),
