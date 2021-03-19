@@ -401,7 +401,7 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
     const char* log_tag_data = log_tag.data();
 
     fx_logger_config_t config = {
-        .min_severity = FX_LOG_INFO,
+        .min_severity = g_vlog_info ? FX_LOG_DEBUG : FX_LOG_INFO,
         .console_fd = -1,
         .tags = &log_tag_data,
         .num_tags = 1,
