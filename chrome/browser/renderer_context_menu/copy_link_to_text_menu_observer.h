@@ -11,9 +11,6 @@
 #include "url/gurl.h"
 
 class RenderViewContextMenuProxy;
-namespace ui {
-class DataTransferEndpoint;
-}
 
 // A class that implements the menu item for copying selected text and a link
 // to the selected text to the user's clipboard.
@@ -62,7 +59,6 @@ class CopyLinkToTextMenuObserver : public RenderViewContextMenuObserver {
   GURL url_;
   base::Optional<std::string> generated_link_;
   base::Optional<std::string> generated_selector_for_testing_;
-  std::unique_ptr<ui::DataTransferEndpoint> data_transfer_endpoint_;
 
   base::WeakPtrFactory<CopyLinkToTextMenuObserver> weak_ptr_factory_{this};
 };

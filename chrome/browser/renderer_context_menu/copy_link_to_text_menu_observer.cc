@@ -131,9 +131,6 @@ void CopyLinkToTextMenuObserver::RequestLinkGeneration() {
   if (!main_frame)
     return;
 
-  data_transfer_endpoint_ = std::make_unique<ui::DataTransferEndpoint>(
-      main_frame->GetLastCommittedOrigin());
-
   // Check whether current url is blocklisted for link to text generation. This
   // check should happen before iframe check so that if both conditions are
   // present then blocklist error is logged.
@@ -172,8 +169,16 @@ void CopyLinkToTextMenuObserver::RequestLinkGeneration() {
 }
 
 void CopyLinkToTextMenuObserver::CopyLinkToClipboard() {
+  content::RenderFrameHost* main_frame =
+      proxy_->GetWebContents()->GetMainFrame();
+
+  std::unique_ptr<ui::DataTransferEndpoint> data_transfer_endpoint =
+      main_frame ? std::make_unique<ui::DataTransferEndpoint>(
+                       main_frame->GetLastCommittedOrigin())
+                 : nullptr;
+
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste,
-                                std::move(data_transfer_endpoint_));
+                                std::move(data_transfer_endpoint));
   scw.WriteText(base::UTF8ToUTF16(generated_link_.value()));
 }
 
