@@ -84,6 +84,8 @@ class Bot(object):
 class PerfDeviceTriggerer(base_test_triggerer.BaseTestTriggerer):
   def __init__(self, args, swarming_args):
     super(PerfDeviceTriggerer, self).__init__()
+    self._sharded_query_failed = False
+
     if not args.multiple_trigger_configs:
       # Represents the list of current dimensions requested
       # by the parent swarming job.
@@ -308,17 +310,33 @@ class PerfDeviceTriggerer(base_test_triggerer.BaseTestTriggerer):
     values = [
       ('tags', '%s:%s' % (k, v)) for k, v in self._dimensions.iteritems()
     ]
-    # Append the shard as a tag
-    values.append(('tags', '%s:%s' % ('shard', str(shard_index))))
     values.sort()
+
+    # Append the shard as a tag
+    values_with_shard = list(values)
+    values_with_shard.append(('tags', '%s:%s' % ('shard', str(shard_index))))
+    values_with_shard.sort()
+
     # TODO(eyaich): For now we are ignoring the state of the returned
     # task (ie completed, timed_out, bot_died, etc) as we are just
     # answering the question "What bot did we last trigger this shard on?"
     # Evaluate if this is the right decision going forward.
 
-    # Query for the last task that ran with these dimensions and this shard
-    query_result = self.query_swarming(
-          'tasks/list', values, True, limit='1', server=self._swarming_server)
+    # Query for the last task that ran with these dimensions and this shard.
+    # Query with the shard param first. This will sometimes time out for queries
+    # we've never done before, so try querying without it if that happens.
+    try:
+      if not self._sharded_query_failed:
+        query_result = self.query_swarming(
+              'tasks/list', values_with_shard, True, limit='1',
+              server=self._swarming_server)
+    except Exception:
+      self._sharded_query_failed = True
+    if self._sharded_query_failed:
+      query_result = self.query_swarming(
+            'tasks/list', values, True, limit='1',
+            server=self._swarming_server)
+
     tasks = query_result.get('items')
     if tasks:
       # We queried with a limit of 1 so we could only get back
