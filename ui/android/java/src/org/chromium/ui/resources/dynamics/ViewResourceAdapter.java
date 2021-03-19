@@ -32,6 +32,8 @@ import org.chromium.ui.resources.ResourceFactory;
 import org.chromium.ui.resources.statics.NinePatchData;
 
 import java.nio.ByteBuffer;
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * An adapter that exposes a {@link View} as a {@link DynamicResource}. In order to properly use
  * this adapter {@link ViewResourceAdapter#invalidate(Rect)} must be called when parts of the
@@ -48,10 +50,13 @@ public class ViewResourceAdapter extends DynamicResource implements OnLayoutChan
     private long mLastGetBitmapTimestamp;
     private AcceleratedImageReader mReader;
     private boolean mUseHardwareBitmapDraw;
+    // Incremented each time we enqueue a Hardware drawn Bitmap. Only used if
+    // |mUseHardwareBitmapDraw| is true.
+    protected AtomicInteger mCurrentBitmapRequestId;
 
     // When using Hardware Acceleration the conversion from canvas to Bitmap occurs on a different
     // thread.
-    private static Handler sHandler;
+    protected static Handler sHandler;
     // AcceleratedImageReader starts in NEW, and on the first request for an Bitmap we move into
     // INITIALIZING, until we complete the first Bitmap when we move to UPDATED. We then on
     // future requests return the current Bitmap to prevent us blocking but send a new request
@@ -64,6 +69,9 @@ public class ViewResourceAdapter extends DynamicResource implements OnLayoutChan
     // well.
     @TargetApi(Build.VERSION_CODES.Q)
     private class AcceleratedImageReader implements ImageReader.OnImageAvailableListener {
+        // Track the last BitmapRequestId so we only return one image per request (in case of
+        // animations during that draw).
+        private int mLastBitmapRequestId;
         private ImageReader mReaderDelegate;
         private ImageReaderStatus mImageReaderStatus;
         // To prevent having to take synchronized locks on the UI thread the hardware acceleration
@@ -103,9 +111,12 @@ public class ViewResourceAdapter extends DynamicResource implements OnLayoutChan
         // exists because of a lint error that we suppress below.
         @SuppressWarnings("WrongConstant")
         private void init(int width, int height) {
-            final int maxBitmapsInMemory = 1;
+            // Due to how ImageReader works, it is an error to attempt to acquire more than
+            // |maxBitmapsToAcquire|. We need 1 acquire to convert to a bitmap, and 2 to acquire
+            // and discard any images that are queued (by animations).
+            final int maxBitmapsToAcquire = 3;
             mReaderDelegate = ImageReader.newInstance(
-                    width, height, PixelFormat.RGBA_8888, maxBitmapsInMemory);
+                    width, height, PixelFormat.RGBA_8888, maxBitmapsToAcquire);
             mReaderDelegate.setOnImageAvailableListener(this, sHandler);
             mState = new State(0, 0, 0, null);
         }
@@ -144,6 +155,7 @@ public class ViewResourceAdapter extends DynamicResource implements OnLayoutChan
             assert renderNode != null;
             mTaskRunner.postTask(() -> {
                 try (TraceEvent e = TraceEvent.scoped("AcceleratedImageReader::requestDraw")) {
+                    mCurrentBitmapRequestId.incrementAndGet();
                     Surface s = mReaderDelegate.getSurface();
                     Canvas hwCanvas = s.lockHardwareCanvas();
                     hwCanvas.drawRenderNode(renderNode);
@@ -155,8 +167,28 @@ public class ViewResourceAdapter extends DynamicResource implements OnLayoutChan
         @Override
         public void onImageAvailable(ImageReader reader) {
             try (TraceEvent e = TraceEvent.scoped("AcceleratedImageReader::onImageAvailable")) {
-                android.media.Image image = reader.acquireNextImage();
-                assert image != null;
+                // acquireLatestImage will discard any images in the queue up to the most recent
+                // one.
+                android.media.Image image = reader.acquireLatestImage();
+                if (image == null) {
+                    return;
+                }
+
+                int request = mCurrentBitmapRequestId.get();
+                if (request == mLastBitmapRequestId) {
+                    // If there was an animation when we requested a draw, we will receive each
+                    // frame of the animation. For now we just take the first one (though the last
+                    // would be better there is no good way to know when its the last of the frame).
+                    //
+                    // TODO(nuskos): We should either a) not grab a bitmap with an animation at all
+                    //               (likely the image we had before the animation is actually
+                    //               correct and we're just doing extra work). Or we should figure
+                    //               out how to get the last one.
+                    image.close();
+                    return;
+                }
+                mLastBitmapRequestId = request;
+
                 android.media.Image.Plane[] planes = image.getPlanes();
                 assert planes.length != 0;
                 ByteBuffer buffer = planes[0].getBuffer();
@@ -226,6 +258,7 @@ public class ViewResourceAdapter extends DynamicResource implements OnLayoutChan
                 thread.start();
                 sHandler = new Handler(thread.getLooper());
             }
+            mCurrentBitmapRequestId = new AtomicInteger(0);
             // We can't set up |mReader| here because |mView| might not have had its first layout
             // yet and image reader needs to know the width and the height.
         }
