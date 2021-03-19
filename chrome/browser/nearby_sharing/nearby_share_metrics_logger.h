@@ -35,6 +35,11 @@ void RecordNearbySharePayloadFinalStatusMetric(
     location::nearby::connections::mojom::PayloadStatus status,
     base::Optional<location::nearby::connections::mojom::Medium> medium);
 
+void RecordNearbySharePayloadMediumMetric(
+    base::Optional<location::nearby::connections::mojom::Medium> medium,
+    nearby_share::mojom::ShareTargetType type,
+    uint64_t num_bytes_transferred);
+
 void RecordNearbySharePayloadNumAttachmentsMetric(size_t num_text_attachments,
                                                   size_t num_file_attachments);
 

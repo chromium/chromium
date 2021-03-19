@@ -52860,6 +52860,20 @@ Called by update_use_counter_css.py.-->
   <int value="8" label="Unsupported attachment type"/>
 </enum>
 
+<enum name="NearbyShareUpgradedMedium">
+  <int value="0" label="Unknown upgraded medium"/>
+  <int value="1" label="mDNS"/>
+  <int value="2" label="Bluetooth"/>
+  <int value="3" label="WiFi hotspot"/>
+  <int value="4" label="BLE"/>
+  <int value="5" label="WiFi LAN"/>
+  <int value="6" label="WiFi Aware"/>
+  <int value="7" label="NFC"/>
+  <int value="8" label="WiFi Direct"/>
+  <int value="9" label="WebRTC"/>
+  <int value="10" label="No upgrade"/>
+</enum>
+
 <enum name="NearbyShareVisibility">
   <int value="0" label="Unknown"/>
   <int value="1" label="No one"/>
