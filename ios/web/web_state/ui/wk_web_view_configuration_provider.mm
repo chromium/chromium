@@ -46,16 +46,6 @@ WKUserScript* InternalGetDocumentStartScriptForMainFrame(
       forMainFrameOnly:YES];
 }
 
-// Returns a WKUserScript for JavsScript injected into the main frame at the
-// end of the document load.
-WKUserScript* InternalGetDocumentEndScriptForMainFrame(
-    BrowserState* browser_state) {
-  return [[WKUserScript alloc]
-        initWithSource:GetDocumentEndScriptForMainFrame(browser_state)
-         injectionTime:WKUserScriptInjectionTimeAtDocumentEnd
-      forMainFrameOnly:YES];
-}
-
 // Returns a WKUserScript for JavsScript injected into all frames at the
 // beginning of the document load.
 WKUserScript* InternalGetDocumentStartScriptForAllFrames(
@@ -234,8 +224,6 @@ void WKWebViewConfigurationProvider::UpdateScripts() {
       addUserScript:InternalGetDocumentStartScriptForMainFrame(browser_state_)];
   [configuration_.userContentController
       addUserScript:InternalGetDocumentEndScriptForAllFrames(browser_state_)];
-  [configuration_.userContentController
-      addUserScript:InternalGetDocumentEndScriptForMainFrame(browser_state_)];
 }
 
 void WKWebViewConfigurationProvider::Purge() {

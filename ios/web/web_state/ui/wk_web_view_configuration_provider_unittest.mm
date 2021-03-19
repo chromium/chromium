@@ -182,12 +182,6 @@ TEST_F(WKWebViewConfigurationProviderTest, UserScript) {
       GetDocumentEndScriptForAllFrames(&browser_state_));
   ASSERT_TRUE(late_all_frames_script);
   EXPECT_FALSE(late_all_frames_script.isForMainFrameOnly);
-
-  WKUserScript* late_main_frame_script = FindWKUserScriptContaining(
-      user_content_controller.userScripts,
-      GetDocumentEndScriptForMainFrame(&browser_state_));
-  ASSERT_TRUE(late_main_frame_script);
-  EXPECT_TRUE(late_main_frame_script.isForMainFrameOnly);
 }
 
 // Tests that configuration's userContentController has different scripts after

@@ -32,6 +32,7 @@ static NSString* kPageHTML =
 
 namespace web {
 
+// typedef WebTestWithWebState JavaScriptFeatureTest;
 // Sets up a FakeJavaScriptFeature in the page content world.
 class JavaScriptFeaturePageContentWorldTest : public WebTestWithWebState {
  protected:

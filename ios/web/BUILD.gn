@@ -650,16 +650,6 @@ js_compile_bundle("all_frames_document_end_web_bundle") {
   ]
 }
 
-js_compile_bundle("main_frame_document_end_web_bundle") {
-  visibility = [ ":js_resources" ]
-  closure_entry_point = "__crWeb.mainFrameDocumentEndWebBundle"
-
-  sources = [
-    "favicon/resources/favicon.js",
-    "web_state/js/resources/main_frame_document_end_web_bundle.js",
-  ]
-}
-
 js_compile_bundle("plugin_placeholder_js") {
   visibility = [ ":web" ]
   closure_entry_point = "__crWeb.pluginPlaceholder"
@@ -692,7 +682,6 @@ js_compile_checked("js_resources") {
   public_deps = [
     ":all_frames_document_end_web_bundle",
     ":all_frames_web_bundle",
-    ":main_frame_document_end_web_bundle",
     ":main_frame_web_bundle",
   ]
 

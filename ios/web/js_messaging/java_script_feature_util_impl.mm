@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/web/favicon/favicon_java_script_feature.h"
 #import "ios/web/find_in_page/find_in_page_java_script_feature.h"
 #include "ios/web/js_features/context_menu/context_menu_java_script_feature.h"
 #include "ios/web/js_features/scroll_helper/scroll_helper_java_script_feature.h"
@@ -38,6 +39,17 @@ NSString* EscapedQuotedString(NSString* string) {
   return [string stringByReplacingOccurrencesOfString:@"'" withString:@"\\'"];
 }
 static dispatch_once_t get_plugin_placeholder_once;
+
+web::FaviconJavaScriptFeature* GetFaviconJavaScriptFeature() {
+  // Static storage is ok for |favicon_feature| as it holds no state.
+  static std::unique_ptr<web::FaviconJavaScriptFeature> favicon_feature =
+      nullptr;
+  static dispatch_once_t once;
+  dispatch_once(&once, ^{
+    favicon_feature = std::make_unique<web::FaviconJavaScriptFeature>();
+  });
+  return favicon_feature.get();
+}
 
 web::WindowErrorJavaScriptFeature* GetWindowErrorJavaScriptFeature() {
   // Static storage is ok for |window_error_feature| as it holds no state.
@@ -102,6 +114,7 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
     BrowserState* browser_state) {
   return {ContextMenuJavaScriptFeature::FromBrowserState(browser_state),
           FindInPageJavaScriptFeature::GetInstance(),
+          GetFaviconJavaScriptFeature(),
           GetPluginPlaceholderJavaScriptFeature(),
           GetScrollHelperJavaScriptFeature(),
           GetWindowErrorJavaScriptFeature()};

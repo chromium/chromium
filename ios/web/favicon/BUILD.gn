@@ -3,22 +3,39 @@
 # found in the LICENSE file.
 
 import("//ios/build/config.gni")
+import("//ios/web/js_compile.gni")
 
 source_set("favicon") {
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
+    ":favicon_event_listeners_js",
+    ":favicon_js",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/web_state:web_state_impl_header",
   ]
   sources = [
-    "favicon_manager.h",
-    "favicon_manager.mm",
+    "favicon_java_script_feature.h",
+    "favicon_java_script_feature.mm",
     "favicon_status.cc",
     "favicon_url.cc",
     "favicon_util.h",
     "favicon_util.mm",
   ]
+}
+
+js_compile_bundle("favicon_js") {
+  visibility = [ ":favicon" ]
+  closure_entry_point = "__crWeb.favicon"
+
+  sources = [ "resources/favicon.js" ]
+}
+
+js_compile_bundle("favicon_event_listeners_js") {
+  visibility = [ ":favicon" ]
+  closure_entry_point = "__crWeb.faviconEventListeners"
+
+  sources = [ "resources/favicon_event_listeners.js" ]
 }
 
 source_set("unittests") {

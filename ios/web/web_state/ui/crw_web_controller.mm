@@ -22,7 +22,6 @@
 #include "ios/web/common/features.h"
 #import "ios/web/common/uikit_ui_util.h"
 #include "ios/web/common/url_util.h"
-#import "ios/web/favicon/favicon_manager.h"
 #import "ios/web/find_in_page/find_in_page_manager_impl.h"
 #include "ios/web/history_state_util.h"
 #include "ios/web/js_features/scroll_helper/scroll_helper_java_script_feature.h"
@@ -149,9 +148,6 @@ NSString* const kSessionRestoreScriptMessageName = @"session_restore";
 
   // State of user interaction with web content.
   web::UserInteractionState _userInteractionState;
-
-  // Manager for favicon JavaScript messages.
-  std::unique_ptr<web::FaviconManager> _faviconManager;
 
   // Logger for cookie;.error message.
   std::unique_ptr<web::CookieBlockingErrorLogger> _cookieBlockingErrorLogger;
@@ -310,7 +306,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
     _certVerificationController = [[CRWCertVerificationController alloc]
         initWithBrowserState:browserState];
     web::FindInPageManagerImpl::CreateForWebState(_webStateImpl);
-    _faviconManager = std::make_unique<web::FaviconManager>(_webStateImpl);
     _cookieBlockingErrorLogger =
         std::make_unique<web::CookieBlockingErrorLogger>(_webStateImpl);
 
