@@ -41,9 +41,11 @@ abstract class GamepadMappings {
     static final int PS_DUALSHOCK_4_USB_RECEIVER_PRODUCT_ID = 2976;
 
     @VisibleForTesting
-    static final int XBOX_ONE_S_2016_FIRMWARE_VENDOR_ID = 0x045e;
+    static final int MICROSOFT_VENDOR_ID = 0x045e;
     @VisibleForTesting
     static final int XBOX_ONE_S_2016_FIRMWARE_PRODUCT_ID = 0x02e0;
+    @VisibleForTesting
+    static final int XBOX_SERIES_X_BLUETOOTH_PRODUCT_ID = 0x0b13;
 
     @VisibleForTesting
     static final int BROADCOM_VENDOR_ID = 0x0a5c;
@@ -53,7 +55,7 @@ abstract class GamepadMappings {
     private static final float BUTTON_AXIS_DEADZONE = 0.01f;
 
     public static GamepadMappings getMappings(InputDevice device, int[] axes, BitSet buttons) {
-        GamepadMappings mappings = getMappings(device.getProductId(), device.getVendorId(), axes);
+        GamepadMappings mappings = getMappings(device.getVendorId(), device.getProductId(), axes);
         if (mappings == null) {
             mappings = getMappings(device.getName());
         }
@@ -64,7 +66,7 @@ abstract class GamepadMappings {
     }
 
     @VisibleForTesting
-    static GamepadMappings getMappings(int productId, int vendorId, int[] axes) {
+    static GamepadMappings getMappings(int vendorId, int productId, int[] axes) {
         // Device name of a DualShock 4 gamepad is "Wireless Controller". This is not reliably
         // unique so we better go by the product and vendor ids.
         if (vendorId == PS_DUALSHOCK_4_VENDOR_ID
@@ -79,14 +81,18 @@ abstract class GamepadMappings {
             }
             return new Dualshock4GamepadMappingsPreP();
         }
-        // Microsoft released a firmware update for the Xbox One S gamepad that modified the button
-        // and axis assignments. With the new firmware, these gamepads work correctly in Android
-        // using the default mapping, but a custom mapping is still required for the old firmware.
-        // Both gamepads return the same device name, so we must compare hardware IDs to distinguish
-        // them.
-        if (vendorId == XBOX_ONE_S_2016_FIRMWARE_VENDOR_ID
-                && productId == XBOX_ONE_S_2016_FIRMWARE_PRODUCT_ID) {
-            return new XboxOneS2016FirmwareMappings();
+        if (vendorId == MICROSOFT_VENDOR_ID) {
+            // Microsoft released a firmware update for the Xbox One S gamepad that modified the
+            // button and axis assignments. With the new firmware, these gamepads work correctly in
+            // Android using the default mapping, but a custom mapping is still required for the old
+            // firmware. Both gamepads return the same device name, so we must compare hardware IDs
+            // to distinguish them.
+            if (productId == XBOX_ONE_S_2016_FIRMWARE_PRODUCT_ID) {
+                return new XboxOneS2016FirmwareMappings();
+            }
+            if (productId == XBOX_SERIES_X_BLUETOOTH_PRODUCT_ID) {
+                return new XboxSeriesXBluetoothMappings();
+            }
         }
         if (vendorId == BROADCOM_VENDOR_ID && productId == SNAKEBYTE_IDROIDCON_PRODUCT_ID) {
             return new SnakebyteIDroidConMappings(axes);
@@ -424,6 +430,34 @@ abstract class GamepadMappings {
         public int getButtonsLength() {
             // No meta button.
             return CanonicalButtonIndex.COUNT - 1;
+        }
+    }
+
+    private static class XboxSeriesXBluetoothMappings extends GamepadMappings {
+        private static final int BUTTON_INDEX_SHARE = CanonicalButtonIndex.COUNT;
+
+        /**
+         * Method for mapping Xbox Series X controller (in Bluetooth mode) to
+         * standard gamepad button and axes values.
+         */
+        @Override
+        public void mapToStandardGamepad(
+                float[] mappedAxes, float[] mappedButtons, float[] rawAxes, float[] rawButtons) {
+            mapCommonXYABButtons(mappedButtons, rawButtons);
+            mapTriggerButtonsToTopShoulder(mappedButtons, rawButtons);
+            mapCommonThumbstickButtons(mappedButtons, rawButtons);
+            mapCommonStartSelectMetaButtons(mappedButtons, rawButtons);
+            mapHatAxisToDpadButtons(mappedButtons, rawAxes);
+            mapXYAxes(mappedAxes, rawAxes);
+            mapZAndRZAxesToRightStick(mappedAxes, rawAxes);
+            mapPedalAxesToBottomShoulder(mappedButtons, rawAxes);
+            mappedButtons[BUTTON_INDEX_SHARE] = rawButtons[KeyEvent.KEYCODE_MEDIA_RECORD];
+        }
+
+        @Override
+        public int getButtonsLength() {
+            // Include the Share button.
+            return CanonicalButtonIndex.COUNT + 1;
         }
     }
 
