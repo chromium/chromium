@@ -1094,7 +1094,7 @@ deps = {
   },
 
   'src/third_party/javalang/src': {
-      'url': Var('chromium_git') + '/external/github.com/c2nes/javalang.git' + '@' + 'f98ffcb31d1daa57fbe5bd6def8ad7c3126d8242',
+      'url': Var('chromium_git') + '/external/github.com/c2nes/javalang.git' + '@' + '0664afb7f4d40254312693f2e833c1ed4ac551c7',
       'condition': 'checkout_android',
   },
 
