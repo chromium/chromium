@@ -92,7 +92,6 @@ class _RenderingBenchmark(perf_benchmark.PerfBenchmark):
     options.SetTimelineBasedMetrics([
         'renderingMetric',
         'umaMetric',
-        'memoryAblationMetric',
         # Unless --experimentatil-tbmv3-metric flag is used, the following tbmv3
         # metrics do nothing.
         'tbmv3:uma_metrics'
