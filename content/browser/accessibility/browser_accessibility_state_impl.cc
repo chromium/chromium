@@ -18,11 +18,21 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace content {
+
+// Auto-disable accessibility if this many seconds elapse with user input
+// events but no accessibility API usage.
+constexpr int kAutoDisableAccessibilityTimeSecs = 30;
+
+// Minimum number of user input events with no accessibility API usage
+// before auto-disabling accessibility.
+constexpr int kAutoDisableAccessibilityEventCount = 3;
 
 // IMPORTANT!
 // These values are written to logs.  Do not renumber or delete
@@ -61,7 +71,11 @@ BrowserAccessibilityStateImpl* BrowserAccessibilityStateImpl::GetInstance() {
 }
 
 BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
-    : BrowserAccessibilityState(), disable_hot_tracking_(false) {
+    : BrowserAccessibilityState() {
+  force_renderer_accessibility_ =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceRendererAccessibility);
+
   ResetAccessibilityModeValue();
 
   // We need to AddRef() the leaky singleton so that Bind doesn't
@@ -123,10 +137,8 @@ bool BrowserAccessibilityStateImpl::IsRendererAccessibilityEnabled() {
 
 void BrowserAccessibilityStateImpl::ResetAccessibilityModeValue() {
   accessibility_mode_ = ui::AXMode();
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceRendererAccessibility)) {
+  if (force_renderer_accessibility_)
     AddAccessibilityModeFlags(ui::kAXModeComplete);
-  }
 }
 
 void BrowserAccessibilityStateImpl::ResetAccessibilityMode() {
@@ -173,8 +185,7 @@ void BrowserAccessibilityStateImpl::UpdateHistogramsOnUIThread() {
   ui_thread_histogram_callbacks_.clear();
 
   UMA_HISTOGRAM_BOOLEAN("Accessibility.ManuallyEnabled",
-                        base::CommandLine::ForCurrentProcess()->HasSwitch(
-                            switches::kForceRendererAccessibility));
+                        force_renderer_accessibility_);
 #if defined(OS_WIN)
   UMA_HISTOGRAM_ENUMERATION(
       "Accessibility.WinHighContrastTheme",
@@ -198,6 +209,40 @@ void BrowserAccessibilityStateImpl::OnAXModeAdded(ui::AXMode mode) {
 
 ui::AXMode BrowserAccessibilityStateImpl::GetAccessibilityMode() {
   return accessibility_mode_;
+}
+
+void BrowserAccessibilityStateImpl::OnUserInputEvent() {
+  // No need to do anything if accessibility is off, or if it was forced on.
+  if (accessibility_mode_.is_mode_off() || force_renderer_accessibility_)
+    return;
+
+  // Check if the feature to auto-disable accessibility is even enabled.
+  if (!features::IsAutoDisableAccessibilityEnabled())
+    return;
+
+  // If we get at least kAutoDisableAccessibilityEventCount user input
+  // events, more than kAutoDisableAccessibilityTimeSecs apart, with
+  // no accessibility API usage in-between disable accessibility.
+  // (See also OnAccessibilityApiUsage()).
+  base::TimeTicks now = ui::EventTimeForNow();
+  user_input_event_count_++;
+  if (user_input_event_count_ == 1) {
+    first_user_input_event_time_ = now;
+    return;
+  }
+
+  if (user_input_event_count_ < kAutoDisableAccessibilityEventCount)
+    return;
+
+  if (now - first_user_input_event_time_ >
+      base::TimeDelta::FromSeconds(kAutoDisableAccessibilityTimeSecs)) {
+    DisableAccessibility();
+  }
+}
+
+void BrowserAccessibilityStateImpl::OnAccessibilityApiUsage() {
+  // See OnUserInputEvent for how this is used to disable accessibility.
+  user_input_event_count_ = 0;
 }
 
 #if !defined(OS_ANDROID) && !defined(OS_WIN) && !defined(OS_MAC)
@@ -255,11 +300,8 @@ void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
 
 void BrowserAccessibilityStateImpl::RemoveAccessibilityModeFlags(
     ui::AXMode mode) {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceRendererAccessibility) &&
-      mode == ui::kAXModeComplete) {
+  if (force_renderer_accessibility_ && mode == ui::kAXModeComplete)
     return;
-  }
 
   int raw_flags =
       accessibility_mode_.mode() ^ (mode.mode() & accessibility_mode_.mode());

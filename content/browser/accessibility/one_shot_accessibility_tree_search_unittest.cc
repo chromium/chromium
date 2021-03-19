@@ -7,12 +7,12 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/test/task_environment.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #ifdef OS_ANDROID
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
 #endif
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -44,7 +44,7 @@ class OneShotAccessibilityTreeSearchTest : public testing::TestWithParam<bool> {
  protected:
   void SetUp() override;
 
-  base::test::TaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<BrowserAccessibilityManager> tree_;
 
