@@ -147,11 +147,11 @@ const char kTouchscreenUsableWhileScreenOff[] =
 // Hides all Message Center notification popups (toasts). Used for testing.
 const char kSuppressMessageCenterPopups[] = "suppress-message-center-popups";
 
-// If set, the device will be forced to stay in physical tablet state. Then the
-// UI will stay in tablet mode without external mouse, or clamshell mode if an
-// external mouse is attached. Screen auto rotation will be supported if
-// accelerometer data can be detected.
-const char kForceInTabletPhysicalState[] = "force-in-tablet-physical-state";
+// TODO(minch): Rename the string to "supports-clamshell-auto-rotation" after it
+// is updated at ChromeOS side.
+// If set, the device will be forced to stay in clamshell UI mode but screen
+// auto rotation will be supported. E.g, chromebase device Dooly.
+const char kSupportsClamshellAutoRotation[] = "force-in-tablet-physical-state";
 
 base::Optional<base::TimeDelta> ContextualNudgesInterval() {
   int numeric_cooldown_time;

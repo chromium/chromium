@@ -40,10 +40,14 @@ const float kDisplayRotationStickyAngleDegrees = 60.0f;
 // to gravity, with the current value requiring at least a 25 degree rise.
 const float kMinimumAccelerationScreenRotation = 4.2f;
 
-// Return true if auto-rotation is allowed which happens when the device is in a
-// physical tablet state.
+// Return true if auto-rotation is allowed. It happens when the device is in a
+// physical tablet state or the device supports auto rotation even in clamshell.
 bool IsAutoRotationAllowed() {
-  return Shell::Get()->tablet_mode_controller()->is_in_tablet_physical_state();
+  return Shell::Get()
+             ->tablet_mode_controller()
+             ->is_in_tablet_physical_state() ||
+         base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kSupportsClamshellAutoRotation);
 }
 
 OrientationLockType GetDisplayNaturalOrientation() {
@@ -229,8 +233,7 @@ ScreenOrientationController::ScreenOrientationController()
   SplitViewController::Get(Shell::GetPrimaryRootWindow())->AddObserver(this);
   display::Screen::GetScreen()->AddObserver(this);
   Shell::Get()->window_tree_host_manager()->AddObserver(this);
-
-  OnTabletPhysicalStateChanged();
+  AccelerometerReader::GetInstance()->AddObserver(this);
 }
 
 ScreenOrientationController::~ScreenOrientationController() {
@@ -456,8 +459,6 @@ void ScreenOrientationController::OnTabletPhysicalStateChanged() {
   auto* shell = Shell::Get();
 
   if (IsAutoRotationAllowed()) {
-    AccelerometerReader::GetInstance()->AddObserver(this);
-
     // Do not exit early, as the internal display can be determined after
     // Maximize Mode has started. (chrome-os-partner:38796) Always start
     // observing.
@@ -473,8 +474,6 @@ void ScreenOrientationController::OnTabletPhysicalStateChanged() {
       return;
     ApplyLockForTopMostWindowOnInternalDisplay();
   } else {
-    AccelerometerReader::GetInstance()->RemoveObserver(this);
-
     if (!display::Display::HasInternalDisplay())
       return;
 
