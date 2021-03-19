@@ -12,7 +12,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/geo/test_region_data_loader.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -73,7 +72,6 @@ class EditAddressProfileViewTest : public ChromeViewsTestBase {
   views::Widget* widget_ = nullptr;
   EditAddressProfileView* dialog_;
   testing::NiceMock<MockEditAddressProfileDialogController> mock_controller_;
-  autofill::TestRegionDataLoader test_region_data_loader_;
 };
 
 EditAddressProfileViewTest::EditAddressProfileViewTest() {
@@ -91,8 +89,6 @@ void EditAddressProfileViewTest::CreateViewAndShow() {
       .WillByDefault(testing::ReturnRef(address_profile_to_edit()));
 
   dialog_ = new EditAddressProfileView(mock_controller());
-  AddressEditorController::set_region_data_loader_for_testing(
-      &test_region_data_loader_);
   dialog_->ShowForWebContents(test_web_contents_.get());
 
   gfx::NativeView parent = gfx::kNullNativeView;

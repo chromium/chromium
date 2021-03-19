@@ -12,32 +12,13 @@
 #include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
-#include "components/autofill/core/browser/geo/region_data_loader_impl.h"
 #include "components/autofill/core/browser/ui/country_combobox_model.h"
-#include "components/autofill/core/browser/ui/region_combobox_model.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/libaddressinput/chromium/chrome_metadata_source.h"
 #include "third_party/libaddressinput/messages.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace {
-
-std::unique_ptr<::i18n::addressinput::Source> GetAddressInputSource() {
-  return base::WrapUnique(new autofill::ChromeMetadataSource(
-      I18N_ADDRESS_VALIDATION_DATA_URL,
-      g_browser_process->system_network_context_manager()
-          ->GetSharedURLLoaderFactory()));
-}
-
-std::unique_ptr<::i18n::addressinput::Storage> GetAddressInputStorage() {
-  return autofill::ValidationRulesStorageFactory::CreateStorage();
-}
-
-}  // namespace
-
-autofill::RegionDataLoader*
-    AddressEditorController::region_data_loader_for_testing_ = nullptr;
 
 AddressEditorController::AddressEditorController(
     const autofill::AutofillProfile& profile_to_edit,
@@ -61,39 +42,12 @@ size_t AddressEditorController::GetCountriesSize() {
 }
 
 std::unique_ptr<ui::ComboboxModel>
-AddressEditorController::GetComboboxModelForType(
-    const autofill::ServerFieldType& type,
-    base::OnceClosure failed_to_load_region_data_callback) {
-  switch (type) {
-    case autofill::ADDRESS_HOME_COUNTRY: {
-      auto model = std::make_unique<autofill::CountryComboboxModel>();
-      model->SetCountries(*pdm_, /*filter=*/base::NullCallback(), locale_);
-      if (model->countries().size() != countries_.size())
-        UpdateCountries(model.get());
-      return model;
-    }
-    case autofill::ADDRESS_HOME_STATE: {
-      auto model = std::make_unique<autofill::RegionComboboxModel>();
-      if (chosen_country_index_ < countries_.size()) {
-        model->LoadRegionData(countries_[chosen_country_index_].first,
-                              GetRegionDataLoader());
-        if (!model->IsPendingRegionDataLoad()) {
-          // If the data was already pre-loaded, the observer won't get notified
-          // so we have to check for failure here.
-          failed_to_load_region_data_ = model->failed_to_load_data();
-        }
-      } else {
-        failed_to_load_region_data_ = true;
-      }
-      if (failed_to_load_region_data_)
-        std::move(failed_to_load_region_data_callback).Run();
-      return model;
-    }
-    default:
-      NOTREACHED();
-      break;
-  }
-  return nullptr;
+AddressEditorController::GetCountryComboboxModel() {
+  auto model = std::make_unique<autofill::CountryComboboxModel>();
+  model->SetCountries(*pdm_, /*filter=*/base::NullCallback(), locale_);
+  if (model->countries().size() != countries_.size())
+    UpdateCountries(model.get());
+  return model;
 }
 
 void AddressEditorController::UpdateEditorFields() {
@@ -151,11 +105,8 @@ void AddressEditorController::UpdateEditorFields() {
           autofill::GetFieldTypeFromString(field_type);
       EditorField::ControlType control_type =
           EditorField::ControlType::TEXTFIELD;
-      if (server_field_type == autofill::ADDRESS_HOME_COUNTRY ||
-          (server_field_type == autofill::ADDRESS_HOME_STATE &&
-           !failed_to_load_region_data_)) {
+      if (server_field_type == autofill::ADDRESS_HOME_COUNTRY)
         control_type = EditorField::ControlType::COMBOBOX;
-      }
       editor_fields_.emplace_back(server_field_type,
                                   base::UTF8ToUTF16(field_name), length_hint,
                                   control_type);
@@ -174,10 +125,6 @@ void AddressEditorController::UpdateEditorFields() {
   editor_fields_.emplace_back(autofill::EMAIL_ADDRESS, u"Email",
                               EditorField::LengthHint::HINT_LONG,
                               EditorField::ControlType::TEXTFIELD);
-}
-
-void AddressEditorController::OnSelectedCountryChanged() {
-  failed_to_load_region_data_ = false;
 }
 
 void AddressEditorController::SetProfileInfo(autofill::ServerFieldType type,
@@ -235,12 +182,4 @@ void AddressEditorController::UpdateCountries(
 
 const autofill::AutofillProfile& AddressEditorController::GetAddressProfile() {
   return profile_to_edit_;
-}
-
-autofill::RegionDataLoader* AddressEditorController::GetRegionDataLoader() {
-  if (region_data_loader_for_testing_)
-    return region_data_loader_for_testing_;
-  return new autofill::RegionDataLoaderImpl(GetAddressInputSource().release(),
-                                            GetAddressInputStorage().release(),
-                                            locale_);
 }

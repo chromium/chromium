@@ -45,7 +45,6 @@ void AddressEditorView::SetTextInputFieldValueForTesting(
 
 void AddressEditorView::CreateEditorView() {
   text_fields_.clear();
-  comboboxes_.clear();
   constexpr int kRowHorizontalInsets = 16;
 
   // The editor view is padded horizontally.
@@ -158,7 +157,9 @@ views::View* AddressEditorView::CreateInputField(views::GridLayout* layout,
       break;
     }
     case EditorField::ControlType::COMBOBOX: {
-      std::unique_ptr<views::Combobox> combobox = CreateComboboxForField(field);
+      DCHECK_EQ(field.type, autofill::ADDRESS_HOME_COUNTRY);
+      std::unique_ptr<views::Combobox> combobox =
+          CreateCountryCombobox(field.label);
       // |combobox| will now be owned by |row|.
       focusable_field =
           layout->AddView(std::move(combobox), 1.0, 1.0,
@@ -172,25 +173,23 @@ views::View* AddressEditorView::CreateInputField(views::GridLayout* layout,
   return focusable_field;
 }
 
-std::unique_ptr<views::Combobox> AddressEditorView::CreateComboboxForField(
-    const EditorField& field) {
+std::unique_ptr<views::Combobox> AddressEditorView::CreateCountryCombobox(
+    const std::u16string& label) {
   auto combobox =
-      std::make_unique<views::Combobox>(controller_->GetComboboxModelForType(
-          field.type, base::BindOnce(&AddressEditorView::OnDataChanged,
-                                     weak_ptr_factory_.GetWeakPtr())));
-  combobox->SetAccessibleName(field.label);
+      std::make_unique<views::Combobox>(controller_->GetCountryComboboxModel());
+  combobox->SetAccessibleName(label);
 
-  std::u16string initial_value = controller_->GetProfileInfo(field.type);
+  std::u16string initial_value =
+      controller_->GetProfileInfo(autofill::ADDRESS_HOME_COUNTRY);
 
   if (!initial_value.empty())
     combobox->SelectValue(initial_value);
 
   // Using autofill field type as a view ID.
-  combobox->SetID(GetInputFieldViewId(field.type));
+  combobox->SetID(GetInputFieldViewId(autofill::ADDRESS_HOME_COUNTRY));
   combobox->SetCallback(base::BindRepeating(&AddressEditorView::OnPerformAction,
                                             base::Unretained(this),
                                             combobox.get()));
-  comboboxes_.insert(std::make_pair(combobox.get(), field));
   return combobox;
 }
 
@@ -228,18 +227,8 @@ void AddressEditorView::SaveFieldsToProfile() {
     controller_->SetProfileInfo(autofill::ADDRESS_HOME_COUNTRY, country);
   }
 
-  for (const auto& field : text_fields()) {
+  for (const auto& field : text_fields_) {
     controller_->SetProfileInfo(field.second.type, field.first->GetText());
-  }
-  for (const auto& field : comboboxes()) {
-    // The country has already been dealt with.
-    if (combobox->GetID() ==
-        GetInputFieldViewId(autofill::ADDRESS_HOME_COUNTRY)) {
-      continue;
-    }
-    controller_->SetProfileInfo(
-        field.second.type,
-        combobox->GetTextForRow(combobox->GetSelectedIndex()));
   }
 }
 
@@ -250,7 +239,6 @@ void AddressEditorView::OnPerformAction(views::Combobox* combobox) {
   if (controller_->chosen_country_index() !=
       static_cast<size_t>(combobox->GetSelectedIndex())) {
     controller_->set_chosen_country_index(combobox->GetSelectedIndex());
-    controller_->OnSelectedCountryChanged();
     OnDataChanged();
   }
 }

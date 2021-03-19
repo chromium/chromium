@@ -14,7 +14,6 @@
 #include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
-class RegionDataLoader;
 class CountryComboboxModel;
 class PersonalDataManager;
 }  // namespace autofill
@@ -64,21 +63,13 @@ class AddressEditorController {
   void set_chosen_country_index(size_t chosen_country_index) {
     chosen_country_index_ = chosen_country_index;
   }
-  static void set_region_data_loader_for_testing(
-      autofill::RegionDataLoader* region_data_loader_for_testing) {
-    region_data_loader_for_testing_ = region_data_loader_for_testing;
-  }
 
   size_t GetCountriesSize();
 
-  std::unique_ptr<ui::ComboboxModel> GetComboboxModelForType(
-      const autofill::ServerFieldType& type,
-      base::OnceClosure failed_to_load_region_data_callback);
+  std::unique_ptr<ui::ComboboxModel> GetCountryComboboxModel();
 
   // Updates |editor_fields_| based on the current country.
   void UpdateEditorFields();
-
-  void OnSelectedCountryChanged();
 
   void SetProfileInfo(autofill::ServerFieldType type,
                       const std::u16string& value);
@@ -92,14 +83,9 @@ class AddressEditorController {
   // otherwise use a local model.
   void UpdateCountries(autofill::CountryComboboxModel* model);
 
-  // Creates a new region data loader that will self delete,
-  autofill::RegionDataLoader* GetRegionDataLoader();
-
   autofill::AutofillProfile profile_to_edit_;
 
   autofill::PersonalDataManager* pdm_;
-
-  static autofill::RegionDataLoader* region_data_loader_for_testing_;
 
   // The currently chosen country. Defaults to an invalid constant until
   // |countries_| is properly initialized and then 0 as the first entry in
@@ -123,9 +109,6 @@ class AddressEditorController {
   const std::string locale_;
 
   std::vector<EditorField> editor_fields_;
-
-  // Identifies whether we tried and failed to load region data.
-  bool failed_to_load_region_data_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_AUTOFILL_ADDRESS_EDITOR_CONTROLLER_H_

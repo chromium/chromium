@@ -24,10 +24,6 @@ namespace autofill {
 
 class AddressEditorView : public views::View {
  public:
-  using TextFieldsMap =
-      std::unordered_map<views::Textfield*, const EditorField>;
-  using ComboboxMap = std::unordered_map<views::Combobox*, const EditorField>;
-
   explicit AddressEditorView(AddressEditorController* controller);
   AddressEditorView(const AddressEditorView&) = delete;
   AddressEditorView& operator=(const AddressEditorView&) = delete;
@@ -41,9 +37,6 @@ class AddressEditorView : public views::View {
                                         const std::u16string& value);
 
  private:
-  const ComboboxMap& comboboxes() const { return comboboxes_; }
-  const TextFieldsMap& text_fields() const { return text_fields_; }
-
   // Creates the whole editor view to go within the editor dialog. It
   // encompasses all the input fields created by CreateInputField().
   void CreateEditorView();
@@ -54,10 +47,10 @@ class AddressEditorView : public views::View {
   views::View* CreateInputField(views::GridLayout* layout,
                                 const EditorField& field);
 
-  // Will create a combobox according to the |field| definition. Will also keep
-  // track of this field to populate the edited model on save.
-  std::unique_ptr<views::Combobox> CreateComboboxForField(
-      const EditorField& field);
+  // Will create a country combobox with |label|. Will also keep track of this
+  // field to populate the edited model on save.
+  std::unique_ptr<views::Combobox> CreateCountryCombobox(
+      const std::u16string& label);
 
   // Update the editor view by removing all it's child views and recreating
   // the input fields using |editor_fields_|. Note that
@@ -74,12 +67,8 @@ class AddressEditorView : public views::View {
   // synchronously.
   void OnDataChanged();
 
-  // Used to remember the association between the input field UI element and
-  // the original field definition. The Textfield* and Combobox* are owned
-  // by their parent view, this only keeps a reference that is good as long
-  // as the input field is visible.
-  TextFieldsMap text_fields_;
-  ComboboxMap comboboxes_;
+  // Map from TextField to the object that describes it
+  std::unordered_map<views::Textfield*, const EditorField> text_fields_;
   const std::string locale_;
   AddressEditorController* controller_;
 
