@@ -2177,20 +2177,40 @@ v8::Isolate::DisallowJavascriptExecutionScope no_js_exec_scope(
     v8::Isolate::DisallowJavascriptExecutionScope::CRASH_ON_FAILURE);
 {blink_class}* blink_receiver =
     ToScriptWrappable(v8_receiver)->ToImpl<{blink_class}>();
-blink::NoAllocDirectCallScope no_alloc_direct_call_scope(blink_receiver,
-                                                         &arg_callback_options);
-return blink_receiver->{member_func}({blink_arguments});\
+blink::NoAllocDirectCallScope no_alloc_direct_call_scope(
+    blink_receiver, &arg_callback_options);\
 """
     blink_class = blink_class_name(cg_context.interface)
+    body.append(TextNode(_format(pattern, blink_class=blink_class)))
+
+    blink_arguments = [arg_name for arg_type, arg_name in arg_type_and_names]
+
+    if cg_context.may_throw_exception:
+        pattern = """\
+NoAllocDirectCallExceptionState no_alloc_exception_state(
+    blink_receiver,
+    isolate,
+    ExceptionState::kExecutionContext,
+    "{interface_name}",
+    "{property_name}");\
+"""
+        body.append(
+            TextNode(
+                _format(pattern,
+                        interface_name=cg_context.class_like.identifier,
+                        property_name=func_like.identifier)))
+        blink_arguments.append("no_alloc_exception_state")
+        body.accumulate(
+            CodeGenAccumulator.require_include_headers([
+                "third_party/blink/renderer/platform/bindings/no_alloc_direct_call_exception_state.h"
+            ]))
+
     member_func = backward_compatible_api_func(cg_context)
-    blink_arguments = ", ".join(
-        [arg_name for arg_type, arg_name in arg_type_and_names])
     body.append(
         TextNode(
-            _format(pattern,
-                    blink_class=blink_class,
+            _format("return blink_receiver->{member_func}({blink_arguments});",
                     member_func=member_func,
-                    blink_arguments=blink_arguments)))
+                    blink_arguments=", ".join(blink_arguments))))
 
     return func_def
 

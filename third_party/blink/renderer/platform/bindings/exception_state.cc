@@ -181,6 +181,13 @@ void ExceptionState::SetException(ExceptionCode exception_code,
   }
 }
 
+void ExceptionState::SetExceptionCode(ExceptionCode exception_code) {
+  CHECK(exception_code);
+  DCHECK(message_.IsEmpty());
+  DCHECK(exception_.IsEmpty());
+  code_ = exception_code;
+}
+
 void ExceptionState::PushContextScope(ContextScope* scope) {
   scope->SetParent(context_stack_top_);
   context_stack_top_ = scope;

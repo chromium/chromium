@@ -185,7 +185,7 @@ class PLATFORM_EXPORT ExceptionState {
   // that V8ThrowDOMException::CreateOrEmpty may return an empty handle.
   bool HadException() const { return code_; }
 
-  void ClearException();
+  virtual void ClearException();
 
   ExceptionCode Code() const { return code_; }
 
@@ -215,6 +215,8 @@ class PLATFORM_EXPORT ExceptionState {
 
  protected:
   void SetException(ExceptionCode, const String&, v8::Local<v8::Value>);
+  void SetExceptionCode(ExceptionCode);
+  v8::Isolate* GetIsolate() { return isolate_; }
 
  private:
   void PushContextScope(ContextScope* scope);
