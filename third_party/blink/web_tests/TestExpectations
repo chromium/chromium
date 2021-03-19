@@ -5689,5 +5689,5 @@ crbug.com/1188098 [ Linux ] http/tests/devtools/service-workers/service-worker-p
 crbug.com/1188098 [ Linux ] http/tests/devtools/sources/debugger-ui/script-snippet-model.js [ Pass Failure ]
 
 # Sheriff 2021-03-19
-crbug.com/1189976 http/tests/devtools/sources/debugger-breakpoints/dom-breakpoints.js [ Failure ]
-crbug.com/1189976 http/tests/devtools/sources/debugger-breakpoints/dom-breakpoints-editing-dom-from-inspector.js [ Failure ]
+crbug.com/1189976 http/tests/devtools/sources/debugger-breakpoints/dom-breakpoints.js [ Skip ]
+crbug.com/1189976 http/tests/devtools/sources/debugger-breakpoints/dom-breakpoints-editing-dom-from-inspector.js [ Skip ]
