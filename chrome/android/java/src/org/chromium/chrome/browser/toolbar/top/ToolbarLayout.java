@@ -604,6 +604,12 @@ public abstract class ToolbarLayout
     void onTabSwitcherTransitionFinished() {}
 
     /**
+     * Called when start surface state is changed.
+     * @param isShowingStartSurface Whether start surface homepage is showing.
+     */
+    void onStartSurfaceStateChanged(boolean isShowingStartSurface) {}
+
+    /**
      * Gives inheriting classes the chance to observe tab count changes.
      * @param tabCountProvider The {@link TabCountProvider} subclasses can observe.
      */

@@ -474,10 +474,10 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         });
 
         // Calls the {@link triggerUrlFocusAnimation()} here to finish the pending focus request if
-        // it is skipped in {@link handleOmniboxInOverviewMode()}.
+        // it has been skipped in {@link onStartSurfaceStateChanged()}.
         if (mPendingTriggerUrlFocusRequest) {
-            // This pending focus request must be from user's click on the fake omnibox on start
-            // surface before native library is ready.
+            // This pending focus must be requested before native initialization when instant start
+            // is enabled, whether user clicks omnibox or not.
             assert getToolbarDataProvider().isInOverviewAndShowingOmnibox();
             mPendingTriggerUrlFocusRequest = false;
             triggerUrlFocusAnimation(true);
@@ -1778,7 +1778,10 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
      */
     public void setTabSwitcherMode(boolean inTabSwitcherMode, boolean showToolbar,
             boolean delayAnimation, boolean animate) {
-        if (handleOmniboxInOverviewMode(inTabSwitcherMode)) return;
+        // This method is only used for grid tab switcher with the start surface disabled. When
+        // start surface is enabled, omnibox state is updated in onStartSurfaceStateChanged(), which
+        // is always called before setTabSwitcherMode(), so skip here.
+        if (getToolbarDataProvider().shouldShowLocationBarInOverviewMode()) return;
 
         // If setting tab switcher mode to true and the browser is already animating or in the tab
         // switcher skip.
@@ -1852,34 +1855,35 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         }
     }
 
-    /**
-     * Handles animating the omnibox state when switching in or out of the tab switcher when the tab
-     *  switcher is displaying the omnibox.
-     * @param inTabSwitcherMode Whether we are entering tab switcher.
-     * @return Whether we handled showing the omnibox on the tab switcher.
-     */
-    private boolean handleOmniboxInOverviewMode(boolean inTabSwitcherMode) {
-        if (!getToolbarDataProvider().shouldShowLocationBarInOverviewMode()) return false;
-        mIsShowingStartSurface = inTabSwitcherMode;
+    @Override
+    void onStartSurfaceStateChanged(boolean isShowingStartSurface) {
+        super.onStartSurfaceStateChanged(isShowingStartSurface);
+        mIsShowingStartSurface = isShowingStartSurface;
+        updateUrlExpansionState();
+    }
 
+    /**
+     * Update url expansion state when start surface state is changed. If start surface homepage is
+     * showing, |mIsShowingStartSurface| is set to true, and toolbar is always expanded. Otherwise
+     * expansion state is consistent with urlHasFocus().
+     */
+    private void updateUrlExpansionState() {
         if (mToggleTabStackButton != null) {
-            boolean isGone = inTabSwitcherMode;
+            boolean isGone = mIsShowingStartSurface;
             mToggleTabStackButton.setVisibility(isGone ? GONE : VISIBLE);
         }
 
-        getMenuButtonCoordinator().setVisibility(!inTabSwitcherMode);
+        getMenuButtonCoordinator().setVisibility(!mIsShowingStartSurface);
 
         // The URL focusing animator set shouldn't be populated before native initialization. It is
         // possible that this function is called before native initialization when Instant Start
-        // is enabled. Keyboard shouldn't be shown here.
+        // is enabled.
         if (isNativeLibraryReady()) {
             // When the url has got focused, we don't clear the focus.
             triggerUrlFocusAnimation(urlHasFocus());
         } else {
             mPendingTriggerUrlFocusRequest = true;
         }
-
-        return true;
     }
 
     @Override
@@ -2090,12 +2094,9 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     private void triggerUrlFocusAnimation(boolean showExpandedState) {
         boolean shouldShowKeyboard = urlHasFocus();
 
-        // Sometimes when it's exiting start surface and showing a normal tab,
-        // |getToolbarDataProvider().isInOverviewAndShowingOmnibox()| is not updated yet and still
-        // true. So we need to check |mIsEnteringStartSurface| here.
+        // On start surface omnibox should be always expanded without being focused, while whether
+        // the keyboard should show up or not depends on whether url has focus.
         if (mIsShowingStartSurface) {
-            // If now it's on start surface, omnibox should be expanded without showing the keyboard
-            // even though it's not focus.
             showExpandedState = true;
         }
 

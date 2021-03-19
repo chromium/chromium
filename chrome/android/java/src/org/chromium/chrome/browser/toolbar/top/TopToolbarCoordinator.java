@@ -648,6 +648,7 @@ public class TopToolbarCoordinator implements Toolbar {
             return;
         }
         mStartSurfaceToolbarCoordinator.onStartSurfaceStateChanged(newState, requestToShow);
+        mToolbarLayout.onStartSurfaceStateChanged(newState == StartSurfaceState.SHOWN_HOMEPAGE);
         updateToolbarLayoutVisibility();
     }
 
