@@ -190,6 +190,10 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   MOCK_METHOD(bool, IsAutofillAssistantUIVisible, (), (const, override));
   MOCK_METHOD(SyncState, GetPasswordSyncState, (), (const, override));
   MOCK_METHOD(FieldInfoManager*, GetFieldInfoManager, (), (const, override));
+  MOCK_METHOD(profile_metrics::BrowserProfileType,
+              GetProfileType,
+              (),
+              (const, override));
 
   // Workaround for std::unique_ptr<> lacking a copy constructor.
   bool PromptUserToSaveOrUpdatePassword(
@@ -3959,6 +3963,84 @@ TEST_P(PasswordManagerTest, IsFormManagerPendingPasswordUpdate) {
   EXPECT_TRUE(manager()->GetSubmittedManagerForTest());
   // OnFormManagerPendingPasswordUpdate() still returns true after submission.
   EXPECT_TRUE(manager()->IsFormManagerPendingPasswordUpdate());
+}
+
+// Test submission of "PasswordManager.FormVisited.PerProfileType" and
+// "PasswordManager.FormSubmission.PerProfileType" for Incognito mode.
+TEST_P(PasswordManagerTest, IncognitoProfileTypeMetricSubmission) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(client_, GetProfileType())
+      .WillRepeatedly(Return(profile_metrics::BrowserProfileType::kIncognito));
+
+  std::vector<FormData> observed;
+  PasswordForm form(MakeFormWithOnlyNewPasswordField());
+  observed.push_back(form.form_data);
+  EXPECT_CALL(*store_, GetLogins)
+      .WillRepeatedly(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed, true);
+
+  // Test if visit is properly recorded and submission is not marked.
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.FormVisited.PerProfileType",
+      profile_metrics::BrowserProfileType::kIncognito, 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.FormSubmission.PerProfileType", 0);
+
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form.url))
+      .WillRepeatedly(Return(true));
+  OnPasswordFormSubmitted(form.form_data);
+
+  // Test if submission is properly recorded.
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.FormSubmission.PerProfileType",
+      profile_metrics::BrowserProfileType::kIncognito, 1);
+
+  // And nothing in other buckets.
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.FormVisited.PerProfileType", 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.FormSubmission.PerProfileType", 1);
+}
+
+// Test submission of "PasswordManager.FormVisited.PerProfileType" and
+// "PasswordManager.FormSubmission.PerProfileType" for Guest mode.
+TEST_P(PasswordManagerTest, GuestProfileTypeMetricSubmission) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(client_, GetProfileType())
+      .WillRepeatedly(Return(profile_metrics::BrowserProfileType::kGuest));
+
+  std::vector<FormData> observed;
+  PasswordForm form(MakeFormWithOnlyNewPasswordField());
+  observed.push_back(form.form_data);
+  EXPECT_CALL(*store_, GetLogins)
+      .WillRepeatedly(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed, true);
+
+  // Test if visit is properly recorded and submission is not marked.
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.FormVisited.PerProfileType",
+      profile_metrics::BrowserProfileType::kGuest, 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.FormSubmission.PerProfileType", 0);
+
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form.url))
+      .WillRepeatedly(Return(true));
+  OnPasswordFormSubmitted(form.form_data);
+
+  // Test if submission is properly recorded.
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.FormSubmission.PerProfileType",
+      profile_metrics::BrowserProfileType::kGuest, 1);
+
+  // And nothing in other buckets.
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.FormVisited.PerProfileType", 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.FormSubmission.PerProfileType", 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(, PasswordManagerTest, testing::Bool());

@@ -4113,6 +4113,38 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, ParserAnnotations) {
   EXPECT_EQ("confirmation_password_element", cofirmation_password_annotation);
 }
 
+// Test if |PasswordManager.FormVisited.PerProfileType| and
+// |PasswordManager.FormSubmission.PerProfileType| metrics are recorded as
+// expected.
+IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
+                       ProfileTypeMetricSubmission) {
+  base::HistogramTester histogram_tester;
+
+  NavigateToFile("/password/simple_password.html");
+
+  // Test if visit is properly recorded and submission is not marked.
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.FormVisited.PerProfileType",
+      profile_metrics::BrowserProfileType::kRegular, 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.FormSubmission.PerProfileType", 0);
+
+  // Fill a form and submit through a <input type="submit"> button. Nothing
+  // special.
+  NavigationObserver observer(WebContents());
+  constexpr char kFillAndSubmit[] =
+      "document.getElementById('username_field').value = 'temp';"
+      "document.getElementById('password_field').value = 'random';"
+      "document.getElementById('input_submit_button').click()";
+  ASSERT_TRUE(content::ExecuteScript(WebContents(), kFillAndSubmit));
+  observer.Wait();
+
+  // Test if submission is properly recorded.
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.FormSubmission.PerProfileType",
+      profile_metrics::BrowserProfileType::kRegular, 1);
+}
+
 IN_PROC_BROWSER_TEST_F(PasswordManagerBackForwardCacheBrowserTest,
                        SavePasswordOnRestoredPage) {
   // Navigate to a page with a password form.

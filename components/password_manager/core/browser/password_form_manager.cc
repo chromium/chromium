@@ -915,7 +915,6 @@ PasswordFormManager::PasswordFormManager(
   }
   password_save_manager_->Init(client_, form_fetcher_, metrics_recorder_,
                                &votes_uploader_);
-  // TODO(https://crbug.com/1167475): Add test for this metric.
   base::UmaHistogramEnumeration("PasswordManager.FormVisited.PerProfileType",
                                 client_->GetProfileType());
 }
