@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 
 // Test that an ad with a different origin as the main page is cross origin.
 // This test is flaky on Win10, see https://crbug.com/1189868.
-#if defined(OS_WIN)
+#if defined(OS_WIN) || defined(OS_LINUX)
 #define MAYBE_OriginStatusMetricCross DISABLED_OriginStatusMetricCross
 #else
 #define MAYBE_OriginStatusMetricCross OriginStatusMetricCross
