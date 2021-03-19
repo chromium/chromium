@@ -882,6 +882,9 @@
                   '|chrome/browser/chromeos/policy/status_collector/'\
                   '|components/policy/proto/record',
     },
+    'cros_sharesheet': {
+      'filepath': 'chrome/browser/ui/ash/sharesheet/',
+    },
     'crostini': {
       'filepath': 'cicerone'\
                   '|concierge'\
@@ -1702,7 +1705,10 @@
                   '|ui/webui/resources/cr_components/chromeos/'\
                   '|ui/webui/resources/cr_elements/chromeos/',
     },
-   'share_sheet': {
+    'share_service': {
+      'filepath': 'chrome/browser/sharesheet/',
+    },
+    'share_sheet': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/share/'\
                   '|chrome/android/java/res/layout/share_sheet_.*'\
                   '|chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/',
@@ -2462,6 +2468,7 @@
            'yyanagisawa+cc@chromium.org'],
     'cr_elements': ['michaelpg+watch-elements@chromium.org'],
     'cros_reporting': ['cros-reporting-reviews@google.com'],
+    'cros_sharesheet': ['melzhang+watch+sharesheet@chromium.org'],
     'crostini': ['crostini-ui@chromium.org'],
     'cups_printing': ['print-reviews+cups@chromium.org',
                       'cros-printing-reviews@google.com'],
@@ -2773,6 +2780,7 @@
     'settings_os_settings': ['hsuregan+watch-os-settings@chromium.org',
                              'khorimoto+watch-os-settings@chromium.org',
                              'zentaro+watch-os-settings@chromium.org'],
+    'share_service': ['melzhang+watch+share-service@chromium.org'],
     'share_sheet': ['chrome-sharing-eng+watch@google.com',
                     'ramyan+watch@chromium.org'],
     'sharing': ['knollr+watch-sharing@chromium.org',
@@ -2904,7 +2912,7 @@
     'webcodecs': ['feature-media-reviews@chromium.org'],
     'webgpu': ['cwallez+watch@chromium.org',
                'kainino+watch@chromium.org'],
-    'weblayer': ['cricke+watch@chromium.org'], 
+    'weblayer': ['cricke+watch@chromium.org'],
     'weblayer_safe_browsing' : ['carlosil+watch@chromium.org'],
     'weblayer_ssl' : ['carlosil+watch@chromium.org'],
     'webrtc_browser_tests': ['phoglund+watch@chromium.org'],
