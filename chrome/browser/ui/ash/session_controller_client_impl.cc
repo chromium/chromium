@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/login/users/multi_profile_user_controller.h"
@@ -259,6 +260,10 @@ void SessionControllerClientImpl::ShowMultiProfileLogin() {
 
   // Launch sign in screen to add another user to current session.
   DCHECK(!UserManager::Get()->GetUsersAllowedForMultiProfile().empty());
+
+  // Lacros and multiprofile are mutually exclusive.
+  DCHECK(!crosapi::BrowserManager::Get()->IsRunningOrWillRun());
+
   // Don't show the dialog if any logged-in user in the multi-profile session
   // dismissed it.
   bool show_intro = true;
@@ -310,6 +315,11 @@ bool SessionControllerClientImpl::IsMultiProfileAvailable() {
     return false;
   if (chromeos::SessionTerminationManager::Get() &&
       chromeos::SessionTerminationManager::Get()->IsLockedToSingleUser()) {
+    return false;
+  }
+  // Multiprofile mode is not allowed when Lacros is running.
+  if (crosapi::BrowserManager::Get() &&
+      crosapi::BrowserManager::Get()->IsRunningOrWillRun()) {
     return false;
   }
   size_t users_logged_in = UserManager::Get()->GetLoggedInUsers().size();
@@ -381,9 +391,19 @@ SessionControllerClientImpl::GetAddUserSessionPolicy() {
     return ash::AddUserSessionPolicy::ERROR_NOT_ALLOWED_PRIMARY_USER;
   }
 
-  if (UserManager::Get()->GetLoggedInUsers().size() >=
+  if (user_manager->GetLoggedInUsers().size() >=
       session_manager::kMaximumNumberOfUserSessions) {
     return ash::AddUserSessionPolicy::ERROR_MAXIMUM_USERS_REACHED;
+  }
+
+  // Multiprofile mode is not allowed when Lacros is running.
+  if (crosapi::BrowserManager::Get()) {
+    if (crosapi::BrowserManager::Get()->IsRunningOrWillRun())
+      return ash::AddUserSessionPolicy::ERROR_LACROS_RUNNING;
+  } else {
+    // If multiprofile is queried while browser manager is not set,
+    // we want to make sure that this is done before any user logs in.
+    DCHECK(user_manager->GetLoggedInUsers().empty());
   }
 
   return ash::AddUserSessionPolicy::ALLOWED;

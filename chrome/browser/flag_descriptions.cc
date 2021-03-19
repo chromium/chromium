@@ -4525,9 +4525,7 @@ const char kLacrosStabilityMoreStableDescription[] =
 
 const char kLacrosSupportName[] = "Lacros support";
 const char kLacrosSupportDescription[] =
-    "Support for the experimental lacros-chrome browser. This disables "
-    "the existing Chrome OS multiple sign-in. Please use Lacros multi-profile "
-    "instead.";
+    "Support for the experimental lacros-chrome browser.";
 
 const char kLacrosWebAppsName[] = " Lacros web apps";
 const char kLacrosWebAppsDescription[] = "Support web apps in Lacros browser.";

@@ -32,6 +32,7 @@ class FakeBrowserManager : public BrowserManager {
 
   // BrowserManager:
   bool IsRunning() const override;
+  bool IsRunningOrWillRun() const override;
   void GetFeedbackData(GetFeedbackDataCallback callback) override;
 
  private:
