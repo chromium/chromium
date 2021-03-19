@@ -392,6 +392,7 @@ shared_library("weston_test") {
   deps = [
     ":compositor",
     ":libweston",
+    ":libweston_desktop",
     "//third_party/wayland-protocols:weston_test",
   ]
 
