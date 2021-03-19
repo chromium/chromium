@@ -28,11 +28,18 @@ AutomationManagerLacros::AutomationManagerLacros() {
   impl->automation_remote()->RegisterAutomationClient(
       receiver_.BindNewPipeAndPassRemote(), id_);
 
-  // TODO(https://crbug.com/1185764): Register as a receiver for events from
-  // AutomationEventRouter.
+  extensions::AutomationEventRouter::GetInstance()->RegisterRemoteRouter(this);
 }
 
-AutomationManagerLacros::~AutomationManagerLacros() = default;
+AutomationManagerLacros::~AutomationManagerLacros() {
+  chromeos::LacrosChromeServiceImpl* impl =
+      chromeos::LacrosChromeServiceImpl::Get();
+  if (!impl->IsAutomationAvailable())
+    return;
+
+  extensions::AutomationEventRouter::GetInstance()->RegisterRemoteRouter(
+      nullptr);
+}
 
 void AutomationManagerLacros::DispatchAccessibilityEvents(
     const ui::AXTreeID& tree_id,
@@ -103,8 +110,9 @@ void AutomationManagerLacros::Enable() {
 }
 
 void AutomationManagerLacros::EnableTree(const base::UnguessableToken& token) {
-  // TODO(https://crbug.com/1185764): Plumb this into
-  // AutomationInternalEnableTreeFunction.
+  ui::AXTreeID tree_id = ui::AXTreeID::FromToken(token);
+  extensions::AutomationInternalEnableTreeFunction::EnableTree(
+      tree_id, /*extension_id=*/"");
 }
 
 void AutomationManagerLacros::PerformActionPrototype(
@@ -113,6 +121,10 @@ void AutomationManagerLacros::PerformActionPrototype(
     const std::string& action_type,
     int32_t request_id,
     base::Value optional_args) {
-  // TODO(https://crbug.com/1185764): Plumb this into
-  // AutomationInternalPerformActionFunction.
+  ui::AXTreeID tree_id = ui::AXTreeID::FromToken(token);
+  const base::DictionaryValue& dict =
+      base::Value::AsDictionaryValue(optional_args);
+  extensions::AutomationInternalPerformActionFunction::PerformAction(
+      tree_id, automation_node_id, action_type, request_id, dict,
+      /*extension_id=*/"", /*extension=*/nullptr, /*automation_info=*/nullptr);
 }

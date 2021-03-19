@@ -11,13 +11,15 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_tree_id.h"
 
 namespace crosapi {
 
 // Implements the crosapi interface for automation. Lives in Ash-Chrome on
 // the UI thread.
-class AutomationAsh : public mojom::Automation {
+class AutomationAsh : public mojom::Automation,
+                      public ui::AXActionHandlerObserver {
  public:
   AutomationAsh();
   AutomationAsh(const AutomationAsh&) = delete;
@@ -39,13 +41,12 @@ class AutomationAsh : public mojom::Automation {
                              const base::UnguessableToken& token,
                              const std::string& window_id) override;
 
-  // Forwards an action to all crosapi clients. This has no effect on production
-  // builds of chrome. It exists for prototyping for developers.
-  void ForwardActionPrototype(const ui::AXTreeID& tree_id,
-                              int32_t automation_node_id,
-                              const std::string& action_type,
-                              int32_t request_id,
-                              const base::DictionaryValue& optional_args);
+  // ui::AXActionHandlerObserver:
+  void PerformAction(const ui::AXTreeID& tree_id,
+                     int32_t automation_node_id,
+                     const std::string& action_type,
+                     int32_t request_id,
+                     const base::DictionaryValue& optional_args) override;
 
  private:
   // Called when an AutomationClient is disconnected.

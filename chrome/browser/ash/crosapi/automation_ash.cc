@@ -18,10 +18,12 @@
 namespace crosapi {
 
 AutomationAsh::AutomationAsh() {
-  // TODO(https://crbug.com/1185764): Add a hook to listen for all actions.
+  ui::AXActionHandlerRegistry::GetInstance()->AddObserver(this);
 }
 
-AutomationAsh::~AutomationAsh() = default;
+AutomationAsh::~AutomationAsh() {
+  ui::AXActionHandlerRegistry::GetInstance()->RemoveObserver(this);
+}
 
 void AutomationAsh::BindReceiver(
     mojo::PendingReceiver<mojom::Automation> pending_receiver) {
@@ -100,16 +102,18 @@ void AutomationAsh::ReceiveEventPrototype(
     }
   }
 
-  // TODO(https://crbug.com/1185764): Forward the event to
-  // AutomationEventRouter.
+  extensions::AutomationEventRouter::GetInstance()->DispatchAccessibilityEvents(
+      event_bundle.tree_id, std::move(event_bundle.updates),
+      event_bundle.mouse_location, std::move(event_bundle.events));
 }
 
-void AutomationAsh::ForwardActionPrototype(
-    const ui::AXTreeID& tree_id,
-    int32_t automation_node_id,
-    const std::string& action_type,
-    int32_t request_id,
-    const base::DictionaryValue& optional_args) {
+// Forwards an action to all crosapi clients. This has no effect on production
+// builds of chrome. It exists for prototyping for developers.
+void AutomationAsh::PerformAction(const ui::AXTreeID& tree_id,
+                                  int32_t automation_node_id,
+                                  const std::string& action_type,
+                                  int32_t request_id,
+                                  const base::DictionaryValue& optional_args) {
   // This prototype method is only implemented on developer builds of Chrome. We
   // check for this by checking that the build of Chrome is unbranded.
   if (chrome::GetChannel() != version_info::Channel::UNKNOWN)
