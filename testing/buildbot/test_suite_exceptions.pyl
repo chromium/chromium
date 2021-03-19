@@ -195,6 +195,16 @@
           'shards': 25,
         },
       },
+      'Mac10.15 Tests': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'gpu': None,
+            },
+          ],
+          'shards': 25,
+        },
+      },
       'V8 Blink Linux Debug': {
         # This builder compiles Chromium in release mode, but V8 in debug.
         # TODO(machenbach): Change name and out directory of this builder to
@@ -424,7 +434,10 @@
       'CrWinAsan(dll)', # https://crbug.com/935598
       'linux-win_cross-rel',
       'ToTLinuxTSan',  # https://crbug.com/368525
-      'Mac10.13 Tests',  # https://crbug.com/1042757
+      # TODO(crbug.com/1171053): Enable the suite in 'Mac10.13 Tests' once it's
+      # off CQ.
+      'Mac10.13 Tests', # https://crbug.com/1042757
+      'Mac10.15 Tests', # https://crbug.com/1042757
       'Linux TSan Tests',  # https://crbug.com/368525
       'Win10 Tests x64 (dbg)',
     ],
@@ -1906,6 +1919,7 @@
       'Mac10.11 Tests',
       'Mac10.13 Tests',
       'Mac10.13 Tests (dbg)',
+      'Mac10.15 Tests',
       'Mac ASan 64 Tests (1)',
       'ToTMacASan',
     ],
@@ -1941,6 +1955,7 @@
       'Mac10.11 Tests',
       'Mac10.13 Tests',
       'Mac10.13 Tests (dbg)',
+      'Mac10.15 Tests',
       'Mac ASan 64 Tests (1)',
       'ToTMacASan',
     ],
@@ -1957,6 +1972,7 @@
       'Mac10.11 Tests',
       'Mac10.13 Tests',
       'Mac10.13 Tests (dbg)',
+      'Mac10.15 Tests',
       'Mac ASan 64 Tests (1)',
       'ToTMacASan',
     ],
@@ -1972,6 +1988,7 @@
       'Mac10.11 Tests',
       'Mac10.13 Tests',
       'Mac10.13 Tests (dbg)',
+      'Mac10.15 Tests',
       'Mac ASan 64 Tests (1)',
       'ToTMacASan',
     ],
@@ -1992,6 +2009,7 @@
       'Mac10.11 Tests',
       'Mac10.13 Tests',
       'Mac10.13 Tests (dbg)',
+      'Mac10.15 Tests',
       'Mac ASan 64 Tests (1)',
       'ToTMacASan',
     ],
@@ -2549,6 +2567,12 @@
             '--gtest_filter=-*',
           ],
       },
+      # TODO(crbug.com/1131588) Tests are flaky only on CQ.
+      'Mac10.15 Tests': {
+        'precommit_args': [
+            '--gtest_filter=-*',
+          ],
+      },
       'ToTLinuxTSan': {
         'swarming': {
           'shards': 6,
@@ -2667,6 +2691,7 @@
       'Mac10.11 Tests',
       'Mac10.13 Tests',
       'Mac10.13 Tests (dbg)',
+      'Mac10.15 Tests',
       'Linux - Future (dbg)',  # client.v8.chromium
       'Win10 Tests x64',
       'Win10 Tests x64 (dbg)',
