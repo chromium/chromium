@@ -31908,6 +31908,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3855" label="V8Navigator_JoinAdInterestGroup_Method"/>
   <int value="3856" label="V8Navigator_LeaveAdInterestGroup_Method"/>
   <int value="3857" label="V8Navigator_RunAdAuction_Method"/>
+  <int value="3858" label="XHRJSONEncodingDetection"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

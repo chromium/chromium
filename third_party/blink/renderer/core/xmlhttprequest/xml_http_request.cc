@@ -1761,6 +1761,14 @@ void XMLHttpRequest::DidFinishLoadingInternal() {
 
   if (decoder_) {
     auto text = decoder_->Flush();
+
+    if (response_type_code_ == kResponseTypeJSON) {
+      // See https://crbug.com/1189627: We want to deprecate the BOM sniffing.
+      if (decoder_->Encoding() != UTF8Encoding()) {
+        GetExecutionContext()->CountUse(WebFeature::kXHRJSONEncodingDetection);
+      }
+    }
+
     if (!text.IsEmpty() && !response_text_overflow_) {
       response_text_.Concat(isolate_, text);
       response_text_overflow_ = response_text_.IsEmpty();
