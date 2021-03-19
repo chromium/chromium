@@ -1168,6 +1168,8 @@ bool TranslateManager::MaterializeDecision(
                   GetLanguageState()->InTranslateNavigation()
                       ? TranslationType::kAutomaticTranslationByLink
                       : TranslationType::kAutomaticTranslationByPref);
+    GetActiveTranslateMetricsLogger()->LogTriggerDecision(
+        TriggerDecision::kAutomaticTranslationByHref);
     return false;
   }
 
@@ -1208,6 +1210,8 @@ bool TranslateManager::MaterializeDecision(
     did_show_ui = translate_client_->ShowTranslateUI(
         translate::TRANSLATE_STEP_BEFORE_TRANSLATE, page_language_code,
         decision.href_translate_target, TranslateErrors::NONE, false);
+    GetActiveTranslateMetricsLogger()->LogTriggerDecision(
+        TriggerDecision::kShowUIFromHref);
   }
 
   if (did_show_ui)

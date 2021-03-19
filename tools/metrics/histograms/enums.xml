@@ -77226,6 +77226,8 @@ Full version information for the fingerprint enum values:
   <int value="13" label="Show UI"/>
   <int value="14" label="Automatic translation, by link"/>
   <int value="15" label="Automatic translation, by user preference"/>
+  <int value="16" label="Show UI, from Href"/>
+  <int value="17" label="Automatic translation, by Href"/>
 </enum>
 
 <enum name="TranslateUIInteraction">

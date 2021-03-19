@@ -688,6 +688,47 @@ TEST_F(TranslateMetricsLoggerImplTest, LogHrefTriggerDecision) {
       TriggerDecision::kDisabledNeverTranslateLanguage, 1);
 }
 
+TEST_F(TranslateMetricsLoggerImplTest, LogHrefOverrideTriggerDecision) {
+  // Check that the TriggerDecision::kAutomaticTranslationByHref overrides the
+  // earlier trigger decision.
+  translate_metrics_logger()->LogTriggerDecision(
+      TriggerDecision::kDisabledDoesntNeedTranslation);
+  translate_metrics_logger()->LogTriggerDecision(
+      TriggerDecision::kAutomaticTranslationByHref);
+  translate_metrics_logger()->RecordMetrics(true);
+
+  histogram_tester()->ExpectUniqueSample(
+      kTranslatePageLoadTriggerDecision,
+      TriggerDecision::kAutomaticTranslationByHref, 1);
+
+  // Check that the TriggerDecision::kShowUIFromHref overrides the earlier
+  // trigger decision.
+  ResetTest();
+  translate_metrics_logger()->LogTriggerDecision(
+      TriggerDecision::kDisabledDoesntNeedTranslation);
+  translate_metrics_logger()->LogTriggerDecision(
+      TriggerDecision::kShowUIFromHref);
+  translate_metrics_logger()->RecordMetrics(true);
+
+  histogram_tester()->ExpectUniqueSample(kTranslatePageLoadTriggerDecision,
+                                         TriggerDecision::kShowUIFromHref, 1);
+
+  // Check that TriggerDecision::kShowUIFromHref doesn't override
+  // TriggerDecision::kAutomaticTranslationByHref.
+  ResetTest();
+  translate_metrics_logger()->LogTriggerDecision(
+      TriggerDecision::kDisabledDoesntNeedTranslation);
+  translate_metrics_logger()->LogTriggerDecision(
+      TriggerDecision::kAutomaticTranslationByHref);
+  translate_metrics_logger()->LogTriggerDecision(
+      TriggerDecision::kShowUIFromHref);
+  translate_metrics_logger()->RecordMetrics(true);
+
+  histogram_tester()->ExpectUniqueSample(
+      kTranslatePageLoadTriggerDecision,
+      TriggerDecision::kAutomaticTranslationByHref, 1);
+}
+
 TEST_F(TranslateMetricsLoggerImplTest,
        LogAutofillAssistantDeferredTriggerDecision) {
   TriggerDecision trigger_decision = TriggerDecision::kShowUI;
