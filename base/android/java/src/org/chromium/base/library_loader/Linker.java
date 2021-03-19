@@ -87,8 +87,18 @@ abstract class Linker {
 
     protected final Object mLock = new Object();
 
+    // Information about the relevant native library memory mappings in the current process. Can be
+    // filled out gradually. For example, the ModernLinker initially can find out the the library
+    // load region, then extract the RELRO region (to compare it with the one coming from another
+    // process), and later can potentially set the RELRO FD after converting the region to shared
+    // memory. Will be serialized for use in other processes if this process is a "RELRO producer".
     @GuardedBy("mLock")
-    protected LibInfo mLibInfo;
+    protected LibInfo mLocalLibInfo;
+
+    // The library info that was transferred from another process. Only useful if it contains RELRO
+    // FD.
+    @GuardedBy("mLock")
+    protected LibInfo mRemoteLibInfo;
 
     // Whether this Linker instance should potentially create the RELRO region. Even if true, the
     // library loading can fall back to the system linker without producing the region. The default
@@ -247,7 +257,7 @@ abstract class Linker {
         assert !library.equals(LINKER_JNI_LIBRARY);
         try {
             loadLibraryImplLocked(library, loadAddress, relroMode);
-            if (!mLinkerWasWaitingSynchronously && mLibInfo != null && mState == State.DONE) {
+            if (!mLinkerWasWaitingSynchronously && mRemoteLibInfo != null && mState == State.DONE) {
                 atomicReplaceRelroLocked(true /* relroAvailableImmediately */);
             }
         } finally {
@@ -291,8 +301,7 @@ abstract class Linker {
     }
 
     /**
-     * Serializes information and about the RELRO region to be passed to a Linker in another
-     * process.
+     * Serializes information about the RELRO region to be passed to a Linker in another process.
      * @param bundle The Bundle to serialize to.
      */
     void putSharedRelrosToBundle(Bundle bundle) {
@@ -300,7 +309,7 @@ abstract class Linker {
         synchronized (mLock) {
             if (mState == State.DONE_PROVIDE_RELRO) {
                 assert mRelroProducer;
-                relros = mLibInfo.toBundle();
+                relros = mLocalLibInfo.toBundle();
             }
         }
         bundle.putBundle(SHARED_RELROS, relros);
@@ -318,8 +327,8 @@ abstract class Linker {
         Bundle relros = bundle.getBundle(SHARED_RELROS);
         if (relros != null) {
             synchronized (mLock) {
-                assert mLibInfo == null;
-                mLibInfo = LibInfo.fromBundle(relros);
+                assert mRemoteLibInfo == null;
+                mRemoteLibInfo = LibInfo.fromBundle(relros);
                 if (mState == State.DONE) {
                     atomicReplaceRelroLocked(false /* relroAvailableImmediately */);
                 } else {
@@ -368,7 +377,10 @@ abstract class Linker {
             String libraryName, long loadAddress, @RelroSharingMode int relroMode);
 
     /**
-     * Atomically replaces the RELRO with the shared memory region described in the |mLibInfo|.
+     * Atomically replaces the RELRO with the shared memory region described in the
+     * |mRemoteLibInfo|. In order to perform the replacement verifies that the replacement is safe
+     * by inspecting |mLocalLibInfo| for equality of the library address range and the contents of
+     * the RELRO region.
      *
      * By *not* calling {@link #waitForSharedRelrosLocked()} when loading the library subclasses opt
      * into supporting the atomic replacement of RELRO and override this method.
@@ -409,23 +421,21 @@ abstract class Linker {
         mState = State.INITIALIZED;
     }
 
-    // Used internally to wait for shared RELROs. Returns once provideSharedRelros() has been
+    // Used internally to wait for shared RELROs. Returns once takeSharedRelrosFromBundle() has been
     // called to supply a valid shared RELROs bundle.
     @GuardedBy("mLock")
     protected final void waitForSharedRelrosLocked() {
         if (DEBUG) Log.i(TAG, "waitForSharedRelros() called");
         mLinkerWasWaitingSynchronously = true;
 
-        // Wait until notified by provideSharedRelros() that shared RELROs have arrived.
-        //
-        // Note that the relocations may already have been provided by the time we arrive here, so
-        // this may return immediately.
+        // Most likely the relocations already have been provided at this point. If not, wait until
+        // takeSharedRelrosFromBundle() notifies about RELROs arrival.
         long startTime = DEBUG ? SystemClock.uptimeMillis() : 0;
-        while (mLibInfo == null) {
+        while (mRemoteLibInfo == null) {
             try {
                 mLock.wait();
             } catch (InterruptedException e) {
-                // Continue waiting even if we were just interrupted.
+                // Continue waiting even if just interrupted.
             }
         }
 

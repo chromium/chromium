@@ -51,7 +51,7 @@ class ModernLinker extends Linker {
                 // System.loadLibrary() below implements the fallback.
                 libInfo.mRelroFd = -1;
             }
-            mLibInfo = libInfo;
+            mLocalLibInfo = libInfo;
             RecordHistogram.recordBooleanHistogram(
                     "ChromiumAndroidLinker.RelroProvidedSuccessfully", libInfo.mRelroFd != -1);
 
@@ -60,20 +60,13 @@ class ModernLinker extends Linker {
             mState = State.DONE_PROVIDE_RELRO;
         } else {
             assert relroMode == RelroSharingMode.CONSUME;
-            // Running in a child process, also with a fixed load address that is suitable for
-            // shared RELRO.
-            //
-            // Two LibInfo objects are used: |mLibInfo| that brings the RELRO FD, and a temporary
-            // LibInfo to load the library. Before replacing the library's RELRO with the one from
-            // |mLibInfo|, the two objects are compared to make sure the memory ranges and the
-            // contents match.
-            LibInfo libInfoForLoad = new LibInfo();
-            assert libFilePath.equals(mLibInfo.mLibFilePath);
+            mLocalLibInfo = new LibInfo();
+            assert libFilePath.equals(mRemoteLibInfo.mLibFilePath);
             if (!nativeLoadLibrary(
-                        libFilePath, loadAddress, libInfoForLoad, false /* spawnRelroRegion */)) {
+                        libFilePath, loadAddress, mLocalLibInfo, false /* spawnRelroRegion */)) {
                 resetAndThrow(String.format("Unable to load library: %s", libFilePath));
             }
-            assert libInfoForLoad.mRelroFd == -1;
+            assert mLocalLibInfo.mRelroFd == -1;
 
             // Done loading the library, but using an externally provided RELRO may happen later.
             mState = State.DONE;
@@ -96,13 +89,13 @@ class ModernLinker extends Linker {
     @Override
     @GuardedBy("mLock")
     protected void atomicReplaceRelroLocked(boolean relroAvailableImmediately) {
-        assert mLibInfo != null;
+        assert mRemoteLibInfo != null;
         assert mState == State.DONE;
-        if (mLibInfo.mRelroFd == -1) return;
-        Log.d(TAG, "Received mLibInfo: mLoadAddress=0x%x, mLoadSize=%d", mLibInfo.mLoadAddress,
-                mLibInfo.mLoadSize);
-        nativeUseRelros(mLibInfo);
-        mLibInfo.close();
+        if (mRemoteLibInfo.mRelroFd == -1) return;
+        Log.d(TAG, "Received mRemoteLibInfo: mLoadAddress=0x%x, mLoadSize=%d",
+                mRemoteLibInfo.mLoadAddress, mRemoteLibInfo.mLoadSize);
+        nativeUseRelros(mRemoteLibInfo);
+        mRemoteLibInfo.close();
         Log.d(TAG, "Immediate RELRO availability: %b", relroAvailableImmediately);
         RecordHistogram.recordBooleanHistogram(
                 "ChromiumAndroidLinker.RelroAvailableImmediately", relroAvailableImmediately);

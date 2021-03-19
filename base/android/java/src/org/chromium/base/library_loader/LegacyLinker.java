@@ -58,16 +58,16 @@ class LegacyLinker extends Linker {
                             libInfo.toString());
                 }
             }
-            mLibInfo = libInfo;
-            useSharedRelrosLocked(mLibInfo);
+            mLocalLibInfo = libInfo;
+            useSharedRelrosLocked(mLocalLibInfo);
             mState = State.DONE_PROVIDE_RELRO;
         } else {
             assert relroMode == RelroSharingMode.CONSUME;
             waitForSharedRelrosLocked();
-            assert libFilePath.equals(mLibInfo.mLibFilePath);
-            useSharedRelrosLocked(mLibInfo);
-            mLibInfo.close();
-            mLibInfo = null;
+            assert libFilePath.equals(mRemoteLibInfo.mLibFilePath);
+            useSharedRelrosLocked(mRemoteLibInfo);
+            mRemoteLibInfo.close();
+            mRemoteLibInfo = null;
             mState = State.DONE;
         }
     }
