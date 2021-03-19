@@ -35,6 +35,10 @@
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view.h"
 
+#if defined(OS_CHROMEOS)
+#include "third_party/blink/public/common/switches.h"
+#endif
+
 using base::ASCIIToUTF16;
 using content::WebContents;
 using ui_test_utils::IsViewFocused;
@@ -70,6 +74,15 @@ class FindInPageTest : public InProcessBrowserTest {
   FindInPageTest() {
     FindBarHost::disable_animations_during_testing_ = true;
   }
+
+#if defined(OS_CHROMEOS)
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    // ChromeOS testing via linux-chromeos-rel, and maybe others, is flaky
+    // due to slower loading interacting with deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
+  }
+#endif
 
   FindBarHost* GetFindBarHost() {
     FindBar* find_bar = browser()->GetFindBarController()->find_bar();

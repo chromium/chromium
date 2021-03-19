@@ -149,6 +149,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 
+#if defined(OS_CHROMEOS)
+#include "third_party/blink/public/common/switches.h"
+#endif
+
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/safe_browsing/download_protection/download_feedback_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
@@ -607,6 +611,15 @@ class DownloadTest : public InProcessBrowserTest {
     host_resolver()->AddRule("bar.com", "127.0.0.1");
     content::SetupCrossSiteRedirector(embedded_test_server());
   }
+
+#if defined(OS_CHROMEOS)
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    // ChromeOS testing via linux-chromeos-rel, and maybe others, is flaky
+    // due to slower loading interacting with deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
+  }
+#endif
 
   void TearDownOnMainThread() override {
     // Needs to be torn down on the main thread. file_activity_observer_ holds a

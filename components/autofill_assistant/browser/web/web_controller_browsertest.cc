@@ -42,6 +42,9 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(kSitePerProcess);
+    // Necessary to avoid flakiness or failure due to input arriving
+    // before the first compositor commit.
+    command_line->AppendSwitch("--allow-pre-commit-input");
   }
 
   void SetUpOnMainThread() override {

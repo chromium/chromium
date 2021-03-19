@@ -22,6 +22,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -431,4 +432,10 @@ std::string FullscreenKeyboardBrowserTestBase::GetFullscreenFramePath() {
 
 void FullscreenKeyboardBrowserTestBase::SetUpOnMainThread() {
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(GetActiveBrowser()));
+}
+
+void FullscreenKeyboardBrowserTestBase::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  BrowserTestBase::SetUpCommandLine(command_line);
+  command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
 }

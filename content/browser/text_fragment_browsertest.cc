@@ -21,6 +21,10 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
 
+#if defined(OS_CHROMEOS)
+#include "third_party/blink/public/common/switches.h"
+#endif
+
 // RunUntilInputProcessed will force a Blink lifecycle which is needed
 // because did_scroll is set in an onscroll handler which may be delayed from
 // the scroll by a frame.
@@ -51,6 +55,11 @@ class TextFragmentAnchorBrowserTest : public ContentBrowserTest {
     ContentBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                     "TextFragmentIdentifiers");
+#if defined(OS_CHROMEOS)
+    // ChromeOS testing via linux-chromeos-rel, and maybe others, is flaky
+    // due to slower loading interacting with deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
+#endif
   }
 
   // Simulates a click on the middle of the DOM element with the given |id|.

@@ -41,6 +41,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/latency/latency_info.h"
 
+#if defined(OS_CHROMEOS)
+#include "third_party/blink/public/common/switches.h"
+#endif
+
 namespace content {
 
 namespace {
@@ -99,12 +103,17 @@ class RenderWidgetHostBrowserTest : public ContentBrowserTest {
   }
 };
 
-// This test enables --site-per-porcess flag.
+// This test enables --site-per-process flag.
 class RenderWidgetHostSitePerProcessTest : public ContentBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ContentBrowserTest::SetUpCommandLine(command_line);
     IsolateAllSitesForTesting(command_line);
+#if defined(OS_CHROMEOS)
+    // ChromeOS testing via linux-chromeos-rel, and maybe others, is flaky
+    // due to slower loading interacting with deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
+#endif
   }
 
   void SetUpOnMainThread() override {

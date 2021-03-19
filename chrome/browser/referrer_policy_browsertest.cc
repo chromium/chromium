@@ -45,6 +45,10 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
+#if defined(OS_CHROMEOS)
+#include "third_party/blink/public/common/switches.h"
+#endif
+
 class ReferrerPolicyTest : public InProcessBrowserTest {
  public:
   ReferrerPolicyTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
@@ -66,6 +70,15 @@ class ReferrerPolicyTest : public InProcessBrowserTest {
     EXPECT_FULL_REFERRER,
     EXPECT_ORIGIN_AS_REFERRER
   };
+
+#if defined(OS_CHROMEOS)
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    // ChromeOS testing via linux-chromeos-rel, and maybe others, is flaky
+    // due to slower loading interacting with deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
+  }
+#endif
 
  protected:
   // Callback to verify that HTTP requests have the correct headers;

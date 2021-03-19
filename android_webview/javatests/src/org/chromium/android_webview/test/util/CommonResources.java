@@ -135,8 +135,8 @@ public class CommonResources {
     public static String makeHtmlPageWithSimpleLinkTo(String headers, String destination) {
         return makeHtmlPageFrom(headers,
                 "<a href=\"" + destination + "\" id=\"link\">"
-                + "  <img class=\"big\" />"
-                + "</a>");
+                        + "  <img class=\"big\" /><p>Some text</p>"
+                        + "</a>");
     }
 
     public static String makeHtmlPageWithSimpleLinkTo(String destination) {

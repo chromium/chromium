@@ -85,8 +85,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -127,6 +127,14 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     os_hooks_suppress_ =
         web_app::OsIntegrationManager::ScopedSuppressOsHooksForTesting();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Tests in this suite make use of documents with no significant
+    // rendered content, and such documents do not accept input for 500ms
+    // unless we allow it.
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
  protected:
@@ -1533,6 +1541,13 @@ class LoadImageBrowserTest : public InProcessBrowserTest {
     // Go to a page with an image in it
     GURL page_url(embedded_test_server()->GetURL(page_path));
     ui_test_utils::NavigateToURL(browser(), page_url);
+  }
+
+  // Some platforms are flaky due to slower loading interacting with deferred
+  // commits.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
   void AttemptLoadImage() {

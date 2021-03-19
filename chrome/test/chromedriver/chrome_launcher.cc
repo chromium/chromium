@@ -76,6 +76,7 @@ namespace {
 const char* const kCommonSwitches[] = {
     embedder_support::kDisablePopupBlocking,
     "enable-automation",
+    "allow-pre-commit-input",
 };
 
 const char* const kDesktopSwitches[] = {

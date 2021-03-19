@@ -119,7 +119,9 @@ public class AwPageLoadMetricsTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testFirstInputDelay4() throws Throwable {
-        final String data = "<html><head></head><body><input type='text' id='text1'></body></html>";
+        final String data = "<html><head></head><body>"
+                + "<p>Hello World</p><input type='text' id='text1'>"
+                + "</body></html>";
         final String url = mWebServer.setResponse(MAIN_FRAME_FILE, data, null);
         int firstInputDelay4 = RecordHistogram.getHistogramTotalCountForTesting(
                 "PageLoad.InteractiveTiming.FirstInputDelay4");
