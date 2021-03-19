@@ -20,7 +20,7 @@ TEST(ValueStoreChangeTest, NullOldValue) {
   ValueStoreChange change("key", base::nullopt, base::Value("value"));
 
   EXPECT_EQ("key", change.key());
-  EXPECT_EQ(NULL, change.old_value());
+  EXPECT_EQ(nullptr, change.old_value());
   {
     base::Value expected("value");
     EXPECT_TRUE(change.new_value()->Equals(&expected));
@@ -35,7 +35,7 @@ TEST(ValueStoreChangeTest, NullNewValue) {
     base::Value expected("value");
     EXPECT_TRUE(change.old_value()->Equals(&expected));
   }
-  EXPECT_EQ(NULL, change.new_value());
+  EXPECT_EQ(nullptr, change.new_value());
 }
 
 TEST(ValueStoreChangeTest, NonNullValues) {
@@ -53,7 +53,7 @@ TEST(ValueStoreChangeTest, NonNullValues) {
   }
 }
 
-TEST(ValueStoreChangeTest, ToJson) {
+TEST(ValueStoreChangeTest, ToValue) {
   // Create a mildly complicated structure that has dots in it.
   std::unique_ptr<base::DictionaryValue> value =
       DictionaryBuilder()
@@ -69,9 +69,7 @@ TEST(ValueStoreChangeTest, ToJson) {
   change_list.push_back(
       ValueStoreChange("key.with.dots", value->Clone(), value->Clone()));
 
-  std::string json = ValueStoreChange::ToJson(change_list);
-  base::Optional<base::Value> from_json = base::JSONReader::Read(json);
-  ASSERT_TRUE(from_json);
+  base::Value changes_value = ValueStoreChange::ToValue(std::move(change_list));
 
   DictionaryBuilder v1(*value);
   DictionaryBuilder v2(*value);
@@ -89,7 +87,7 @@ TEST(ValueStoreChangeTest, ToJson) {
                                     .Build())
           .Build();
 
-  EXPECT_TRUE(from_json->Equals(expected_from_json.get()));
+  EXPECT_TRUE(changes_value.Equals(expected_from_json.get()));
 }
 
 }  // namespace

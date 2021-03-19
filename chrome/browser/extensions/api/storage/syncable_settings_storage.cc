@@ -198,7 +198,7 @@ SyncableSettingsStorage::SendLocalSettingsToSync(
   }
 
   base::Optional<syncer::ModelError> error =
-      sync_processor_->SendChanges(changes);
+      sync_processor_->SendChanges(std::move(changes));
   if (error.has_value())
     StopSyncing();
   return error;
@@ -337,7 +337,7 @@ base::Optional<syncer::ModelError> SyncableSettingsStorage::ProcessSyncChanges(
 
   observers_->Notify(FROM_HERE, &SettingsObserver::OnSettingsChanged,
                      extension_id_, settings_namespace::SYNC,
-                     ValueStoreChange::ToJson(changes));
+                     ValueStoreChange::ToValue(std::move(changes)));
 
   // TODO(kalman): Something sensible with multiple errors.
   if (errors.empty())

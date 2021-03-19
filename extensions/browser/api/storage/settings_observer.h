@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_API_STORAGE_SETTINGS_OBSERVER_H_
 
 #include "base/observer_list_threadsafe.h"
+#include "base/values.h"
 #include "extensions/browser/value_store/settings_namespace.h"
 
 namespace extensions {
@@ -17,7 +18,7 @@ class SettingsObserver {
   virtual void OnSettingsChanged(
       const std::string& extension_id,
       settings_namespace::Namespace settings_namespace,
-      const std::string& changes_json) = 0;
+      const base::Value& changes) = 0;
 
   virtual ~SettingsObserver() {}
 };

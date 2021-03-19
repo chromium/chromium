@@ -88,17 +88,17 @@ ValueStore::WriteResult TestingValueStore::Set(
   if (!status_.ok())
     return WriteResult(CreateStatusCopy(status_));
 
-  std::unique_ptr<ValueStoreChangeList> changes(new ValueStoreChangeList());
+  ValueStoreChangeList changes;
   for (base::DictionaryValue::Iterator it(settings);
        !it.IsAtEnd(); it.Advance()) {
     base::Value* old_value = NULL;
     if (!storage_.GetWithoutPathExpansion(it.key(), &old_value) ||
         !old_value->Equals(&it.value())) {
-      changes->push_back(ValueStoreChange(
-          it.key(),
-          old_value ? base::Optional<base::Value>(old_value->Clone())
-                    : base::nullopt,
-          it.value().Clone()));
+      changes.emplace_back(it.key(),
+                           old_value
+                               ? base::Optional<base::Value>(old_value->Clone())
+                               : base::nullopt,
+                           it.value().Clone());
       storage_.SetWithoutPathExpansion(it.key(), it.value().CreateDeepCopy());
     }
   }
@@ -115,12 +115,11 @@ ValueStore::WriteResult TestingValueStore::Remove(
   if (!status_.ok())
     return WriteResult(CreateStatusCopy(status_));
 
-  std::unique_ptr<ValueStoreChangeList> changes(new ValueStoreChangeList());
+  ValueStoreChangeList changes;
   for (auto it = keys.cbegin(); it != keys.cend(); ++it) {
     std::unique_ptr<base::Value> old_value;
     if (storage_.RemoveWithoutPathExpansion(*it, &old_value)) {
-      changes->push_back(
-          ValueStoreChange(*it, std::move(*old_value), base::nullopt));
+      changes.emplace_back(*it, std::move(*old_value), base::nullopt);
     }
   }
   return WriteResult(std::move(changes), CreateStatusCopy(status_));

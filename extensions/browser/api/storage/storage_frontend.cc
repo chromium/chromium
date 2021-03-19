@@ -62,10 +62,9 @@ class DefaultObserver : public SettingsObserver {
   // SettingsObserver implementation.
   void OnSettingsChanged(const std::string& extension_id,
                          settings_namespace::Namespace settings_namespace,
-                         const std::string& change_json) override {
-    TRACE_EVENT2("browser", "SettingsObserver:OnSettingsChanged",
-                 "extension_id", extension_id, "change_size",
-                 change_json.size());
+                         const base::Value& changes) override {
+    TRACE_EVENT1("browser", "SettingsObserver:OnSettingsChanged",
+                 "extension_id", extension_id);
 
     // Alias extension_id for investigation of shutdown hangs. crbug.com/1154997
     // Extension IDs are exactly 32 characters in length.
@@ -75,25 +74,14 @@ class DefaultObserver : public SettingsObserver {
                   base::size(extension_id_str));
     base::debug::Alias(extension_id_str);
 
-    std::unique_ptr<base::Value> changes =
-        base::JSONReader::ReadDeprecated(change_json);
-    DCHECK(changes);
-    // TODO(devlin): crbug.com/645500 implies this can sometimes fail. If this
-    // safeguard fixes it, that means there's an underlying problem (why are we
-    // passing invalid json here?).
-    if (!changes)
-      changes = std::make_unique<base::DictionaryValue>();
-
     const std::string namespace_string =
         settings_namespace::ToString(settings_namespace);
     EventRouter* event_router = EventRouter::Get(browser_context_);
 
     // Event for each storage(sync, local, managed).
     {
-      // TODO(gdk): This is a temporary hack while the refactoring for
-      // string-based event payloads is removed. http://crbug.com/136045
       std::unique_ptr<base::ListValue> args(new base::ListValue());
-      args->Append(std::make_unique<base::Value>(changes->Clone()));
+      args->Append(changes.Clone());
       args->AppendString(namespace_string);
       std::unique_ptr<Event> event(
           new Event(events::STORAGE_ON_CHANGED,
@@ -104,7 +92,7 @@ class DefaultObserver : public SettingsObserver {
     // Event for StorageArea.
     {
       auto args = std::make_unique<base::ListValue>();
-      args->Append(changes->Clone());
+      args->Append(changes.Clone());
       auto event = std::make_unique<Event>(
           NamespaceToEventHistogram(settings_namespace),
           base::StringPrintf("storage.%s.onChanged", namespace_string.c_str()),

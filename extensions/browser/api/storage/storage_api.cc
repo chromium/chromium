@@ -101,7 +101,7 @@ ExtensionFunction::ResponseValue SettingsFunction::UseWriteResult(
   if (!result.changes().empty()) {
     observers_->Notify(FROM_HERE, &SettingsObserver::OnSettingsChanged,
                        extension_id(), settings_namespace_,
-                       ValueStoreChange::ToJson(result.changes()));
+                       ValueStoreChange::ToValue(result.PassChanges()));
   }
 
   return NoArguments();
