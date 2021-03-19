@@ -45,6 +45,13 @@ constexpr int kInvalidUtteranceId = -1;
 const wchar_t kAttributesKey[] = L"Attributes";
 const wchar_t kLanguageValue[] = L"Language";
 
+// Original blog detailing how to use this registry.
+// https://social.msdn.microsoft.com/Forums/en-US/8bbe761c-69c7-401c-8261-1442935c57c8/why-isnt-my-program-detecting-all-tts-voices
+// Microsoft docs on how to view system registry keys.
+// https://docs.microsoft.com/en-us/troubleshoot/windows-client/deployment/view-system-registry-with-64-bit-windows
+const wchar_t* kSPCategoryOneCoreVoices =
+    L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Speech_OneCore\\Voices";
+
 // This COM interface is receiving the TTS events on the ISpVoice asynchronous
 // worker thread and is emitting a notification task
 // TtsPlatformImplBackgroundWorker::SendTtsEvent(...) on the worker sequence.
@@ -119,6 +126,10 @@ class TtsPlatformImplBackgroundWorker {
 
  private:
   void GetVoices(std::vector<VoiceData>* voices);
+
+  // Search the newer OneCore or the older SAPI locations for voice tokens.
+  // This ensures new voices are shown and that the method works on Windows 7.
+  bool GetVoiceTokens(Microsoft::WRL::ComPtr<IEnumSpObjectTokens>* out_tokens);
 
   void SetVoiceFromName(const std::string& name);
 
@@ -414,8 +425,9 @@ void TtsPlatformImplBackgroundWorker::GetVoices(
 
   Microsoft::WRL::ComPtr<IEnumSpObjectTokens> voice_tokens;
   unsigned long voice_count;
-  if (S_OK != SpEnumTokens(SPCAT_VOICES, NULL, NULL, &voice_tokens))
+  if (!this->GetVoiceTokens(&voice_tokens)) {
     return;
+  }
   if (S_OK != voice_tokens->GetCount(&voice_count))
     return;
 
@@ -466,8 +478,9 @@ void TtsPlatformImplBackgroundWorker::SetVoiceFromName(
 
   Microsoft::WRL::ComPtr<IEnumSpObjectTokens> voice_tokens;
   unsigned long voice_count;
-  if (S_OK != SpEnumTokens(SPCAT_VOICES, NULL, NULL, &voice_tokens))
+  if (!this->GetVoiceTokens(&voice_tokens)) {
     return;
+  }
   if (S_OK != voice_tokens->GetCount(&voice_count))
     return;
 
@@ -484,6 +497,16 @@ void TtsPlatformImplBackgroundWorker::SetVoiceFromName(
       break;
     }
   }
+}
+
+bool TtsPlatformImplBackgroundWorker::GetVoiceTokens(
+    Microsoft::WRL::ComPtr<IEnumSpObjectTokens>* out_tokens) {
+  if (S_OK ==
+      SpEnumTokens(kSPCategoryOneCoreVoices, NULL, NULL, &(*out_tokens))) {
+  } else if (S_OK != SpEnumTokens(SPCAT_VOICES, NULL, NULL, &(*out_tokens))) {
+    return false;
+  }
+  return true;
 }
 
 //
