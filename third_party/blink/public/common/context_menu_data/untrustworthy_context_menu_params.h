@@ -132,6 +132,10 @@ struct BLINK_COMMON_EXPORT UntrustworthyContextMenuParams {
   // Start position of the selection text.
   int selection_start_offset;
 
+  // The context menu was opened by right clicking on an existing
+  // highlight/fragment.
+  bool opened_from_highlight = false;
+
  private:
   void Assign(const UntrustworthyContextMenuParams& other);
 };

@@ -18,7 +18,9 @@
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/xml_document.h"
+#include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -1380,6 +1382,53 @@ TEST_P(ContextMenuControllerTest,
   histograms.ExpectBucketCount("Blink.ContextMenu.ImageSelection.Outcome",
                                ContextMenuController::kBlockedByCrossFrameNode,
                                0);
+}
+
+TEST_P(ContextMenuControllerTest, OpenedFromHighlight) {
+  WebURL url = url_test_helpers::ToKURL("http://www.test.com/");
+  frame_test_helpers::LoadHTMLString(LocalMainFrame(),
+      R"(<html><head><style>body
+      {background-color:transparent}</style></head>
+      <p id="one">This is a test page one</p>
+      <p id="two">This is a test page two</p>
+      <p id="three">This is a test page three</p>
+      <p id="four">This is a test page four</p>
+      </html>
+      )", url);
+
+  Document* document = GetDocument();
+  ASSERT_TRUE(IsA<HTMLDocument>(document));
+
+  Element* first_element = document->getElementById("one");
+  Element* middle_element = document->getElementById("one");
+  Element* third_element = document->getElementById("three");
+  Element* last_element = document->getElementById("four");
+
+  // Install a text fragment marker from the beginning of <p> one to near the
+  // end of <p> three.
+  EphemeralRange dom_range =
+      EphemeralRange(Position(first_element->firstChild(), 0),
+                     Position(third_element->firstChild(), 22));
+  document->Markers().AddTextFragmentMarker(dom_range);
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  // Opening the context menu from the last <p> should not set
+  // |opened_from_highlight|.
+  EXPECT_TRUE(ShowContextMenuForElement(last_element, kMenuSourceMouse));
+  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_FALSE(context_menu_data.opened_from_highlight);
+
+  // Opening the context menu from the second <p> should set
+  // |opened_from_highlight|.
+  EXPECT_TRUE(ShowContextMenuForElement(middle_element, kMenuSourceMouse));
+  context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_TRUE(context_menu_data.opened_from_highlight);
+
+  // Opening the context menu from the middle of the third <p> should set
+  // |opened_from_highlight|.
+  EXPECT_TRUE(ShowContextMenuForElement(third_element, kMenuSourceMouse));
+  context_menu_data = GetWebFrameClient().GetContextMenuData();
+  EXPECT_TRUE(context_menu_data.opened_from_highlight);
 }
 
 // TODO(crbug.com/1184996): Add additional unit test for blocking frame logging.

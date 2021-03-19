@@ -182,6 +182,11 @@ struct BLINK_COMMON_EXPORT
     return r.selection_start_offset;
   }
 
+  static bool opened_from_highlight(
+      const blink::UntrustworthyContextMenuParams& r) {
+    return r.opened_from_highlight;
+  }
+
   static bool Read(blink::mojom::UntrustworthyContextMenuParamsDataView r,
                    blink::UntrustworthyContextMenuParams* out);
 };

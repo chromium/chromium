@@ -207,6 +207,10 @@ struct UntrustworthyContextMenuParams {
 
   // Start position of the selection text.
   int32 selection_start_offset;
+
+  // Whether the context contains text highlighted by a text fragment.
+  // See TextFragmentAnchor.
+  bool opened_from_highlight;
 };
 
 // Defines methods for Context menu to commnicate from the renderer to the

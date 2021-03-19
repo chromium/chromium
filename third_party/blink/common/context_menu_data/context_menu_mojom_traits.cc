@@ -59,6 +59,7 @@ bool StructTraits<blink::mojom::UntrustworthyContextMenuParamsDataView,
   out->writing_direction_right_to_left = data.writing_direction_right_to_left();
   out->edit_flags = data.edit_flags();
   out->selection_start_offset = data.selection_start_offset();
+  out->opened_from_highlight = data.opened_from_highlight();
   return true;
 }
 

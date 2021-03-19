@@ -52,6 +52,8 @@
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
+#include "third_party/blink/renderer/core/editing/markers/document_marker.h"
+#include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/selection_controller.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
@@ -622,6 +624,24 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     // browser will request |TextFragmentSelectorGenerator| to generate
     // selector.
     UpdateTextFragmentSelectorGenerator(selected_frame);
+  }
+
+  // If there is a text fragment at the same location as the click indicate that
+  // the context menu is being opened from an existing highlight.
+  DocumentMarkerController& marker_controller =
+      selected_frame->GetDocument()->Markers();
+  PositionWithAffinity pos_with_affinity = result.GetPosition();
+  const Position marker_position = pos_with_affinity.GetPosition();
+  auto markers = marker_controller.MarkersAroundPosition(
+      ToPositionInFlatTree(marker_position),
+      DocumentMarker::MarkerTypes::TextFragment());
+  if (!markers.IsEmpty()) {
+    for (const auto& marker : markers) {
+      if (marker.second->GetType() == DocumentMarker::kTextFragment) {
+        data.opened_from_highlight = true;
+        break;
+      }
+    }
   }
 
   if (result.IsContentEditable()) {

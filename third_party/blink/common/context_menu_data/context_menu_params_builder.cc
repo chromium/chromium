@@ -63,6 +63,7 @@ UntrustworthyContextMenuParams ContextMenuParamsBuilder::Build(
   params.referrer_policy = data.referrer_policy;
   params.suggested_filename = base::UTF8ToUTF16(data.suggested_filename);
   params.input_field_type = data.input_field_type;
+  params.opened_from_highlight = data.opened_from_highlight;
 
   for (const auto& suggestion : data.dictionary_suggestions)
     params.dictionary_suggestions.push_back(suggestion);

@@ -153,6 +153,10 @@ struct ContextMenuData {
 
   WebMenuSourceType source_type;
 
+  // True when the context contains text selected by a text fragment. See
+  // TextFragmentAnchor.
+  bool opened_from_highlight = false;
+
   ContextMenuData()
       : media_type(blink::mojom::ContextMenuDataMediaType::kNone),
         has_image_contents(false),
