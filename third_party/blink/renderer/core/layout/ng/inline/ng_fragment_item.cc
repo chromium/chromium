@@ -580,7 +580,7 @@ void NGFragmentItem::RecalcInkOverflow(
 
   if (Type() == kLine) {
     // Line boxes don't have self overflow. Compute content overflow only.
-    *self_and_contents_rect_out = contents_rect;
+    *self_and_contents_rect_out = UnionRect(LocalRect(), contents_rect);
     ink_overflow_type_ =
         ink_overflow_.SetContents(InkOverflowType(), contents_rect, Size());
     return;
