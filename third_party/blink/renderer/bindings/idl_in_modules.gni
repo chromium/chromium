@@ -76,6 +76,8 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/cache_storage/multi_cache_query_options.idl",
           "//third_party/blink/renderer/modules/cache_storage/window_cache_storage.idl",
           "//third_party/blink/renderer/modules/cache_storage/worker_cache_storage.idl",
+          "//third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter.idl",
+          "//third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter_dictionary.idl",
           "//third_party/blink/renderer/modules/canvas/canvas2d/canvas_formatted_text.idl",
           "//third_party/blink/renderer/modules/canvas/canvas2d/canvas_formatted_text_run.idl",
           "//third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.idl",

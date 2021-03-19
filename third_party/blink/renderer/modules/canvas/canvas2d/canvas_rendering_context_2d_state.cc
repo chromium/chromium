@@ -45,7 +45,7 @@ CanvasRenderingContext2DState::CanvasRenderingContext2DState()
       global_alpha_(1.0),
       line_dash_offset_(0.0),
       unparsed_font_(defaultFont),
-      unparsed_filter_(defaultFilter),
+      unparsed_css_filter_(defaultFilter),
       text_align_(kStartTextAlign),
       realized_font_(false),
       is_transform_invertible_(true),
@@ -96,8 +96,9 @@ CanvasRenderingContext2DState::CanvasRenderingContext2DState(
       unparsed_font_(other.unparsed_font_),
       font_(other.font_),
       font_for_filter_(other.font_for_filter_),
-      unparsed_filter_(other.unparsed_filter_),
-      filter_value_(other.filter_value_),
+      canvas_filter_(other.canvas_filter_),
+      unparsed_css_filter_(other.unparsed_css_filter_),
+      css_filter_value_(other.css_filter_value_),
       resolved_filter_(other.resolved_filter_),
       text_align_(other.text_align_),
       text_baseline_(other.text_baseline_),
@@ -142,7 +143,8 @@ void CanvasRenderingContext2DState::FontsNeedUpdate(FontSelector* font_selector,
 void CanvasRenderingContext2DState::Trace(Visitor* visitor) const {
   visitor->Trace(stroke_style_);
   visitor->Trace(fill_style_);
-  visitor->Trace(filter_value_);
+  visitor->Trace(css_filter_value_);
+  visitor->Trace(canvas_filter_);
   FontSelectorClient::Trace(visitor);
 }
 
@@ -334,15 +336,19 @@ void CanvasRenderingContext2DState::ResetTransform() {
 sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilterForOffscreenCanvas(
     IntSize canvas_size,
     BaseRenderingContext2D* context) const {
-  if (!filter_value_)
+  if (!css_filter_value_ && !canvas_filter_)
     return nullptr;
 
   if (resolved_filter_)
     return resolved_filter_;
 
-  FilterOperations operations =
-      FilterOperationResolver::CreateOffscreenFilterOperations(
-          *filter_value_, font_for_filter_);
+  FilterOperations operations;
+  if (canvas_filter_) {
+    operations = canvas_filter_->Operations();
+  } else {
+    operations = FilterOperationResolver::CreateOffscreenFilterOperations(
+        *css_filter_value_, font_for_filter_);
+  }
 
   // We can't reuse m_fillFlags and m_strokeFlags for the filter, since these
   // incorporate the global alpha, which isn't applicable here.
@@ -373,19 +379,26 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilter(
     Element* style_resolution_host,
     IntSize canvas_size,
     CanvasRenderingContext2D* context) const {
-  if (!filter_value_)
+  // TODO(1189879): Investigate refactoring all filter logic into the
+  // CanvasFilterOperationResolver class
+  if (!css_filter_value_ && !canvas_filter_)
     return nullptr;
 
-  // StyleResolverState cannot be used in frame-less documents.
-  if (!style_resolution_host->GetDocument().GetFrame())
-    return nullptr;
+  if (resolved_filter_)
+    return resolved_filter_;
 
-  if (!resolved_filter_) {
+  FilterOperations operations;
+  if (canvas_filter_) {
+    operations = canvas_filter_->Operations();
+  } else {
+    // StyleResolverState cannot be used in frame-less documents.
+    if (!style_resolution_host->GetDocument().GetFrame())
+      return nullptr;
     // Update the filter value to the proper base URL if needed.
-    if (filter_value_->MayContainUrl()) {
+    if (css_filter_value_->MayContainUrl()) {
       style_resolution_host->GetDocument().UpdateStyleAndLayout(
           DocumentUpdateReason::kCanvas);
-      filter_value_->ReResolveUrl(style_resolution_host->GetDocument());
+      css_filter_value_->ReResolveUrl(style_resolution_host->GetDocument());
     }
 
     scoped_refptr<ComputedStyle> filter_style =
@@ -412,33 +425,36 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilter(
 
     StyleBuilder::ApplyProperty(
         GetCSSPropertyFilter(), resolver_state,
-        ScopedCSSValue(*filter_value_, &style_resolution_host->GetDocument()));
+        ScopedCSSValue(*css_filter_value_,
+                       &style_resolution_host->GetDocument()));
     resolver_state.LoadPendingResources();
 
-    // We can't reuse m_fillFlags and m_strokeFlags for the filter, since these
-    // incorporate the global alpha, which isn't applicable here.
-    PaintFlags fill_flags_for_filter;
-    fill_style_->ApplyToFlags(fill_flags_for_filter);
-    fill_flags_for_filter.setColor(fill_style_->PaintColor());
-    PaintFlags stroke_flags_for_filter;
-    stroke_style_->ApplyToFlags(stroke_flags_for_filter);
-    stroke_flags_for_filter.setColor(stroke_style_->PaintColor());
+    operations = filter_style->Filter();
+  }
 
-    FilterEffectBuilder filter_effect_builder(
-        FloatRect((FloatPoint()), FloatSize(canvas_size)),
-        1.0f,  // Deliberately ignore zoom on the canvas element.
-        &fill_flags_for_filter, &stroke_flags_for_filter);
+  // We can't reuse m_fillFlags and m_strokeFlags for the filter, since these
+  // incorporate the global alpha, which isn't applicable here.
+  PaintFlags fill_flags_for_filter;
+  fill_style_->ApplyToFlags(fill_flags_for_filter);
+  fill_flags_for_filter.setColor(fill_style_->PaintColor());
+  PaintFlags stroke_flags_for_filter;
+  stroke_style_->ApplyToFlags(stroke_flags_for_filter);
+  stroke_flags_for_filter.setColor(stroke_style_->PaintColor());
 
-    FilterEffect* last_effect = filter_effect_builder.BuildFilterEffect(
-        filter_style->Filter(), !context->OriginClean());
-    if (last_effect) {
-      resolved_filter_ =
-          paint_filter_builder::Build(last_effect, kInterpolationSpaceSRGB);
-      if (resolved_filter_) {
-        context->UpdateFilterReferences(filter_style->Filter());
-        if (last_effect->OriginTainted())
-          context->SetOriginTainted();
-      }
+  FilterEffectBuilder filter_effect_builder(
+      FloatRect((FloatPoint()), FloatSize(canvas_size)),
+      1.0f,  // Deliberately ignore zoom on the canvas element.
+      &fill_flags_for_filter, &stroke_flags_for_filter);
+
+  FilterEffect* last_effect = filter_effect_builder.BuildFilterEffect(
+      operations, !context->OriginClean());
+  if (last_effect) {
+    resolved_filter_ =
+        paint_filter_builder::Build(last_effect, kInterpolationSpaceSRGB);
+    if (resolved_filter_) {
+      context->UpdateFilterReferences(operations);
+      if (last_effect->OriginTainted())
+        context->SetOriginTainted();
     }
   }
 
@@ -550,8 +566,16 @@ void CanvasRenderingContext2DState::SetShadowColor(SkColor shadow_color) {
   ShadowParameterChanged();
 }
 
-void CanvasRenderingContext2DState::SetFilter(const CSSValue* filter_value) {
-  filter_value_ = filter_value;
+void CanvasRenderingContext2DState::SetCSSFilter(const CSSValue* filter_value) {
+  css_filter_value_ = filter_value;
+  canvas_filter_ = nullptr;
+  resolved_filter_.reset();
+}
+
+void CanvasRenderingContext2DState::SetCanvasFilter(
+    CanvasFilter* canvas_filter) {
+  canvas_filter_ = canvas_filter;
+  css_filter_value_ = nullptr;
   resolved_filter_.reset();
 }
 
@@ -664,7 +688,7 @@ const PaintFlags* CanvasRenderingContext2DState::GetFlags(
   }
 
   if (shadow_mode == kDrawShadowOnly) {
-    if (image_type == kNonOpaqueImage || filter_value_) {
+    if (image_type == kNonOpaqueImage || css_filter_value_) {
       flags->setLooper(nullptr);
       flags->setImageFilter(ShadowOnlyImageFilter());
       return flags;
