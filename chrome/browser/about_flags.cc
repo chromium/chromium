@@ -5821,13 +5821,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kSmartDimNewMlAgent)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_ANDROID)
-    {"privacy-reordered-android",
-     flag_descriptions::kPrivacyReorderedAndroidName,
-     flag_descriptions::kPrivacyReorderedAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kPrivacyReorderedAndroid)},
-#endif
-
     {"privacy-sandbox-settings", flag_descriptions::kPrivacySandboxSettingsName,
      flag_descriptions::kPrivacySandboxSettingsDescription,
      kOsDesktop | kOsAndroid,

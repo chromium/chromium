@@ -57,9 +57,6 @@ public class PrivacySettings
     private static final String PREF_SYNC_AND_SERVICES_LINK = "sync_and_services_link";
     private static final String PREF_CLEAR_BROWSING_DATA = "clear_browsing_data";
     private static final String PREF_PRIVACY_SANDBOX = "privacy_sandbox";
-    private static final String[] NEW_PRIVACY_PREFERENCE_ORDER = {PREF_CLEAR_BROWSING_DATA,
-            PREF_SAFE_BROWSING, PREF_CAN_MAKE_PAYMENT, PREF_NETWORK_PREDICTIONS, PREF_USAGE_STATS,
-            PREF_SECURE_DNS, PREF_DO_NOT_TRACK, PREF_PRIVACY_SANDBOX, PREF_SYNC_AND_SERVICES_LINK};
 
     private ManagedPreferenceDelegate mManagedPreferenceDelegate;
 
@@ -68,17 +65,6 @@ public class PrivacySettings
         PrivacyPreferencesManagerImpl privacyPrefManager =
                 PrivacyPreferencesManagerImpl.getInstance();
         SettingsUtils.addPreferencesFromResource(this, R.xml.privacy_preferences);
-        assert NEW_PRIVACY_PREFERENCE_ORDER.length
-                == getPreferenceScreen().getPreferenceCount()
-            : "All preferences in the screen should be added in the new order list. "
-                        + "If you add a new preference, please also update "
-                        + "NEW_PRIVACY_PREFERENCE_ORDER.";
-
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_REORDERED_ANDROID)) {
-            for (int i = 0; i < NEW_PRIVACY_PREFERENCE_ORDER.length; i++) {
-                findPreference(NEW_PRIVACY_PREFERENCE_ORDER[i]).setOrder(i);
-            }
-        }
 
         if (PrivacySandboxBridge.isPrivacySandboxSettingsFunctional()) {
             findPreference(PREF_PRIVACY_SANDBOX)

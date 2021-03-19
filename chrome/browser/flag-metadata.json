@@ -4206,15 +4206,6 @@
     "expiry_milestone": 94
   },
   {
-    "name": "privacy-reordered-android",
-    "owners": [
-      "vakh",
-      "xinghuilu",
-      "chrome-safebrowsing-core@google.com"
-    ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "privacy-sandbox-settings",
     "owners": [
       "harrisonsean",

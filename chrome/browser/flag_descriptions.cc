@@ -1949,11 +1949,6 @@ const char kPrivacyAdvisorName[] = "Privacy Advisor";
 const char kPrivacyAdvisorDescription[] =
     "Provides contextual entry points for adjusting privacy settings";
 
-const char kPrivacyReorderedAndroidName[] =
-    "Reorder settings in Privacy on Android";
-const char kPrivacyReorderedAndroidDescription[] =
-    "Reorder settings in the Privacy settings page for better user experience.";
-
 const char kPrivacySandboxSettingsName[] = "Privacy Sandbox Settings";
 const char kPrivacySandboxSettingsDescription[] =
     "Enables privacy sandbox settings. Requires at least one of the Privacy "
