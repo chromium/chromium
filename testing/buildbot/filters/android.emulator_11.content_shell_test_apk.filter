@@ -1,2 +1,6 @@
 # crbug.com/1189746
 -org.chromium.net.NetworkChangeNotifierTest.testNetworkChangeNotifierJavaObservers
+
+# crbug.com/1189804
+-org.chromium.content.browser.input.ImeInputModeTest.testShowAndHideInputMode
+-org.chromium.content.browser.input.ImeInputModeTest.testShowAndHideInputModeWithPhysicalKeyboard
