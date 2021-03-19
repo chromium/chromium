@@ -1603,9 +1603,7 @@ try_.chromium_win_builder(
     executable = "recipe:chromium_libfuzzer_trybot",
     main_list_view = "try",
     os = os.WINDOWS_ANY,
-
-    # TODO(crbug.com/119024): Put back in the CQ when green again.
-    # tryjob = try_.job(),
+    tryjob = try_.job(),
 )
 
 try_.chromium_win_builder(
