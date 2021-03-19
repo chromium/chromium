@@ -809,3 +809,40 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, SVGFavicon) {
   EXPECT_EQ(gfx::Size(16, 16), result.pixel_size);
   EXPECT_NE(nullptr, result.bitmap_data);
 }
+
+// Test that when a user visits a site in incognito, we download the favicon
+// even if it was cached in regular mode.
+IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
+                       IncognitoDownloadsCachedFavicon) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/favicon/page_with_favicon.html");
+  GURL icon_url = embedded_test_server()->GetURL("/favicon/icon.png");
+
+  TestURLLoaderInterceptor url_loader_interceptor;
+  // Initial visit in order to populate the cache.
+  {
+    PendingTaskWaiter waiter(web_contents());
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), url, WindowOpenDisposition::CURRENT_TAB,
+        ui_test_utils::BROWSER_TEST_NONE);
+    waiter.Wait();
+  }
+  ASSERT_TRUE(url_loader_interceptor.was_loaded(icon_url));
+  url_loader_interceptor.Reset();
+  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+
+  // Visiting the site in incognito mode should always load the favicon.
+  Browser* incognito = Browser::Create(Browser::CreateParams(
+      browser()->profile()->GetPrimaryOTRProfile(), true));
+  AddBlankTabAndShow(incognito);
+  {
+    PendingTaskWaiter waiter(
+        incognito->tab_strip_model()->GetActiveWebContents());
+    ui_test_utils::NavigateToURLWithDisposition(
+        incognito, url, WindowOpenDisposition::CURRENT_TAB,
+        ui_test_utils::BROWSER_TEST_NONE);
+    waiter.Wait();
+  }
+  ASSERT_TRUE(url_loader_interceptor.was_loaded(icon_url));
+  url_loader_interceptor.Reset();
+}

@@ -15,7 +15,6 @@
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/favicon/core/favicon_driver.h"
@@ -552,7 +551,6 @@ class FaviconHandlerTest : public testing::Test {
 };
 
 TEST_F(FaviconHandlerTest, GetFaviconFromHistory) {
-  base::HistogramTester histogram_tester;
   const GURL kIconURL("http://www.google.com/favicon");
 
   favicon_service_.fake()->Store(kPageURL, kIconURL,
@@ -564,6 +562,24 @@ TEST_F(FaviconHandlerTest, GetFaviconFromHistory) {
 
   RunHandlerWithSimpleFaviconCandidates({kIconURL});
   EXPECT_THAT(delegate_.downloads(), IsEmpty());
+}
+
+TEST_F(FaviconHandlerTest, GetFaviconFromHistoryInIncognito) {
+  ON_CALL(delegate_, IsOffTheRecord()).WillByDefault(Return(true));
+  const GURL kIconURL("http://www.google.com/favicon");
+
+  // Store a favicon in the favicon service. When used in incognito mode, this
+  // favicon is treated as expired and downloaded again so website can't detect
+  // if a site was visited in regular mode.
+  favicon_service_.fake()->Store(kPageURL, kIconURL,
+                                 CreateRawBitmapResult(kIconURL));
+
+  EXPECT_CALL(delegate_, OnFaviconUpdated(
+                             kPageURL, FaviconDriverObserver::NON_TOUCH_16_DIP,
+                             kIconURL, /*icon_url_changed=*/true, _));
+
+  RunHandlerWithSimpleFaviconCandidates({kIconURL});
+  EXPECT_THAT(delegate_.downloads(), ElementsAre(kIconURL));
 }
 
 // Test that UpdateFaviconsAndFetch() is called with the appropriate parameters

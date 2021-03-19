@@ -589,8 +589,11 @@ void FaviconHandler::OnFaviconDataForInitialURLFromFaviconService(
         favicon_bitmap_results) {
   got_favicon_from_history_ = true;
   bool has_valid_result = HasValidResult(favicon_bitmap_results);
+  // For off-the-record profiles pretend that favicons from FaviconService are
+  // expired so websites don't know if a site was previously visited in regular
+  // mode.
   initial_history_result_expired_or_incomplete_ =
-      !has_valid_result ||
+      !has_valid_result || delegate_->IsOffTheRecord() ||
       HasExpiredOrIncompleteResult(preferred_icon_size(),
                                    favicon_bitmap_results);
   redownload_icons_ = initial_history_result_expired_or_incomplete_ &&
@@ -673,9 +676,13 @@ void FaviconHandler::GetFaviconAndUpdateMappingsUnlessIncognito(
 void FaviconHandler::OnFaviconData(const std::vector<
     favicon_base::FaviconRawBitmapResult>& favicon_bitmap_results) {
   bool has_valid_result = HasValidResult(favicon_bitmap_results);
+  // For off-the-record profiles pretend that favicons from FaviconService are
+  // expired so websites don't know if a site was previously visited in regular
+  // mode.
   bool has_expired_or_incomplete_result =
-      !has_valid_result || HasExpiredOrIncompleteResult(preferred_icon_size(),
-                                                        favicon_bitmap_results);
+      !has_valid_result || delegate_->IsOffTheRecord() ||
+      HasExpiredOrIncompleteResult(preferred_icon_size(),
+                                   favicon_bitmap_results);
 
   if (has_valid_result) {
     // There is a valid favicon. Notify any observers. It is useful to notify
