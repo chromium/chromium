@@ -104,8 +104,12 @@ public class NativePageFactory {
         }
 
         protected NativePage buildDownloadsPage(Tab tab) {
+            // For preloaded tabs, the tab model might not be initialized yet. Use tab to figure
+            // out if it is a regular profile.
+            Profile profile = tab.isIncognito() ? mActivity.getCurrentTabModel().getProfile()
+                                                : Profile.getLastUsedRegularProfile();
             return new DownloadPage(mActivity, mActivity.getSnackbarManager(),
-                    mActivity.getModalDialogManager(), mActivity.getTabModelSelectorSupplier(),
+                    mActivity.getModalDialogManager(), profile.getOTRProfileID(),
                     new TabShim(tab, mActivity));
         }
 
