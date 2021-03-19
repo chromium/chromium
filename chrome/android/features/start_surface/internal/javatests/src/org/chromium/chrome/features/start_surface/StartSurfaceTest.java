@@ -1349,6 +1349,7 @@ public class StartSurfaceTest {
     @Feature({"StartSurface"})
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
+    @DisableIf.Build(sdk_is_less_than = N, message = "crbug.com/1185009")
     public void testShow_SingleAsHomepage_ResetScrollPosition() {
         // clang-format on
         if (!mImmediateReturn) {
