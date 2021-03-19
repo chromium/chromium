@@ -11,6 +11,7 @@ js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
     ":battery_status_card",
+    ":connectivity_card",
     ":cpu_card",
     ":data_point",
     ":diagnostics_app",
@@ -51,6 +52,13 @@ js_library("battery_status_card") {
   ]
 }
 
+js_library("connectivity_card") {
+  deps = [
+    ":routine_section",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 js_library("cpu_card") {
   deps = [
     ":data_point",
@@ -70,6 +78,7 @@ js_library("data_point") {
 js_library("diagnostics_app") {
   deps = [
     ":battery_status_card",
+    ":connectivity_card",
     ":cpu_card",
     ":diagnostics_browser_proxy",
     ":diagnostics_card",
@@ -214,6 +223,7 @@ js_library("text_badge") {
 html_to_js("web_components") {
   js_files = [
     "battery_status_card.js",
+    "connectivity_card.js",
     "cpu_card.js",
     "data_point.js",
     "diagnostics_app.js",

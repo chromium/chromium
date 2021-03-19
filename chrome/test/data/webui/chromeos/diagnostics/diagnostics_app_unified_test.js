@@ -6,6 +6,7 @@
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
 import {batteryStatusCardTestSuite} from './battery_status_card_test.js';
+import {connectivityCardTestSuite} from './connectivity_card_test.js';
 import {cpuCardTestSuite} from './cpu_card_test.js';
 import {dataPointTestSuite} from './data_point_test.js';
 import {appTestSuite} from './diagnostics_app_test.js';
@@ -34,6 +35,7 @@ function runSuite(suiteName, testFn) {
 
 runSuite('App', appTestSuite);
 runSuite('BatteryStatusCard', batteryStatusCardTestSuite);
+runSuite('ConnectivityCard', connectivityCardTestSuite);
 runSuite('CpuCard', cpuCardTestSuite);
 runSuite('DataPoint', dataPointTestSuite);
 runSuite('DiagnosticsUtils', diagnosticsUtilsTestSuite);

@@ -71,6 +71,11 @@
         is-test-running="{{isTestRunning}}">
       </memory-card>
     </div>
+    <div class="card-width" hidden="[[!isNetworkingEnabled_()]]">
+      <connectivity-card id="connectivityCard"
+        is-test-running="{{isTestRunning}}">
+      </connectivity-card>
+    </div>
   </div>
   <div class="session-log-container">
     <cr-button on-click="onSessionLogClick_" class="session-log-button"

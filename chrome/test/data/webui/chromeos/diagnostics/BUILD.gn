@@ -13,6 +13,7 @@ js_type_check("closure_compile") {
                   ]
   deps = [
     ":battery_status_card_test",
+    ":connectivity_card_test",
     ":cpu_card_test",
     ":data_point_test",
     ":diagnostics_app_test",
@@ -46,6 +47,17 @@ js_library("battery_status_card_test") {
     "//chromeos/components/diagnostics_ui/resources:fake_data",
     "//chromeos/components/diagnostics_ui/resources:routine_section",
     "//ui/webui/resources/js:load_time_data.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("connectivity_card_test") {
+  deps = [
+    "../..:chai_assert",
+    "../..:test_util.m",
+    "//chromeos/components/diagnostics_ui/resources:connectivity_card",
+    "//chromeos/components/diagnostics_ui/resources:diagnostics_types",
+    "//chromeos/components/diagnostics_ui/resources:routine_section",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

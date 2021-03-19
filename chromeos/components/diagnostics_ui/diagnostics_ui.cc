@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/diagnostics_ui/backend/diagnostics_manager.h"
@@ -127,6 +128,8 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
   source->AddResourcePath("test_loader_util.js",
                           IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
   source->AddBoolean("isLoggedIn", LoginState::Get()->IsUserLoggedIn());
+  source->AddBoolean("isNetworkingEnabled",
+                     features::IsNetworkingInDiagnosticsAppEnabled());
 }
 
 }  // namespace

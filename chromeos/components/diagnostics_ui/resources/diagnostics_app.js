@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_toast/cr_toast.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './battery_status_card.js';
+import './connectivity_card.js';
 import './cpu_card.js';
 import './diagnostics_fonts_css.js';
 import './diagnostics_shared_css.js';
@@ -120,5 +121,13 @@ Polymer({
               loadTimeData.getString(`sessionLogToastText${result}`);
           this.$.toast.show();
         }).catch(() => {/* File selection cancelled */});
+  },
+
+  /**
+   * @protected
+   * @return {boolean}
+   */
+  isNetworkingEnabled_() {
+    return loadTimeData.getBoolean('isNetworkingEnabled');
   },
 });

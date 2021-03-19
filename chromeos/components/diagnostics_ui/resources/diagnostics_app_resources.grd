@@ -19,6 +19,7 @@
       <include name="IDR_DIAGNOSTICS_BATTERY_STATUS_CARD_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/battery_status_card.js" resource_path="battery_status_card.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_BROWSER_PROXY_JS" file="diagnostics_browser_proxy.js" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_CARD_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/diagnostics_card.js" resource_path="diagnostics_card.js" use_base_dir="false" type="BINDATA"/>
+      <include name="IDR_DIAGNOSTICS_CONNECTIVITY_CARD_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/connectivity_card.js" resource_path="connectivity_card.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_CPU_CARD_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/cpu_card.js" resource_path="cpu_card.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_DATA_POINT_JS" file="${root_gen_dir}/chromeos/components/diagnostics_ui/resources/data_point.js" resource_path="data_point.js" use_base_dir="false" type="BINDATA"/>
       <include name="IDR_DIAGNOSTICS_FAKE_DATA_JS" file="fake_data.js" type="BINDATA"/>

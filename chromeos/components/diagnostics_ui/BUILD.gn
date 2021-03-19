@@ -13,6 +13,7 @@ static_library("diagnostics_ui") {
   ]
 
   deps = [
+    "//ash/constants",
     "//chromeos/components/diagnostics_ui/backend",
     "//chromeos/components/diagnostics_ui/mojom",
     "//chromeos/login/login_state",
