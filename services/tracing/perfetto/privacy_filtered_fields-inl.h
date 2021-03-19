@@ -171,7 +171,7 @@ constexpr int kChromeMessagePumpIndices[] = {1, 2, -1};
 constexpr MessageInfo kChromeMessagePump = {kChromeMessagePumpIndices, nullptr};
 
 // Proto Message: ChromeMojoEventInfo
-constexpr int kChromeMojoEventInfoIndices[] = {1, -1};
+constexpr int kChromeMojoEventInfoIndices[] = {1, 2, 3, -1};
 constexpr MessageInfo kChromeMojoEventInfo = {kChromeMojoEventInfoIndices,
                                               nullptr};
 
@@ -225,6 +225,11 @@ constexpr int kChromeTaskGraphRunnerIndices[] = {1, -1};
 constexpr MessageInfo kChromeTaskGraphRunner = {kChromeTaskGraphRunnerIndices,
                                                 nullptr};
 
+// Proto Message: ChromeMessagePumpForUI
+constexpr int kChromeMessagePumpForUIIndices[] = {1, -1};
+constexpr MessageInfo kChromeMessagePumpForUI = {kChromeMessagePumpForUIIndices,
+                                                 nullptr};
+
 // Proto Message: RenderFrameImplDeletion
 constexpr int kRenderFrameImplDeletionIndices[] = {1, 2, 3, 4, -1};
 constexpr MessageInfo kRenderFrameImplDeletion = {
@@ -241,9 +246,9 @@ constexpr MessageInfo kFrameTreeNodeInfo = {kFrameTreeNodeInfoIndices, nullptr};
 
 // Proto Message: TrackEvent
 constexpr int kTrackEventIndices[] = {
-    1,  2,  3,    5,    6,    9,    10,   11,   12,   16,   17,   24, 25, 26,
-    27, 28, 29,   30,   31,   32,   33,   34,   35,   36,   38,   39, 40, 41,
-    42, 43, 1001, 1002, 1003, 1004, 1005, 1006, 1008, 1009, 1010, -1};
+    1,  2,  3,    5,    6,    9,    10,   11,   12,   16,   17,   24,   25, 26,
+    27, 28, 29,   30,   31,   32,   33,   34,   35,   36,   38,   39,   40, 41,
+    42, 43, 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010, -1};
 constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     nullptr,
     nullptr,
@@ -281,6 +286,7 @@ constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     &kChromeProfileDestroyer,
     &kChromeTaskPostedToDisabledQueue,
     &kChromeTaskGraphRunner,
+    &kChromeMessagePumpForUI,
     &kRenderFrameImplDeletion,
     &kShouldSwapBrowsingInstancesResult,
     &kFrameTreeNodeInfo};
@@ -368,9 +374,9 @@ constexpr MessageInfo kTraceMetadata = {kTraceMetadataIndices,
                                         kTraceMetadataComplexMessages};
 
 // Proto Message: ChromeMetadataPacket
-constexpr int kChromeMetadataPacketIndices[] = {1, 2, -1};
+constexpr int kChromeMetadataPacketIndices[] = {1, 2, 3, -1};
 constexpr MessageInfo const* kChromeMetadataPacketComplexMessages[] = {
-    &kTraceMetadata, nullptr};
+    &kTraceMetadata, nullptr, nullptr};
 constexpr MessageInfo kChromeMetadataPacket = {
     kChromeMetadataPacketIndices, kChromeMetadataPacketComplexMessages};
 
