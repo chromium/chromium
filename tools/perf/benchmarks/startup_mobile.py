@@ -67,10 +67,8 @@ from devil.android.sdk import intent # pylint: disable=import-error
 #            --output-dir=/tmp/maps_pwa_output --upload
 # Note: "startup_mobile_benchmark" instead of "startup.mobile".
 
-# Updated the number of iterations to reduce repeats on a single device, and
-# increase repeats across devices, with changes on cross_device_test_config.py.
-_NUMBER_OF_ITERATIONS = 1
-_NUMBER_OF_ITERATIONS_FOR_WEBLAYER = 5
+_NUMBER_OF_ITERATIONS = 10
+_NUMBER_OF_ITERATIONS_FOR_WEBLAYER = 20
 _MAX_BATTERY_TEMP = 32
 
 class _MobileStartupSharedState(story_module.SharedState):
