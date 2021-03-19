@@ -1772,6 +1772,11 @@ void SkiaOutputSurfaceImplOnGpu::CheckReadbackCompletion() {
   ScheduleCheckReadbackCompletion();
 }
 
+void SkiaOutputSurfaceImplOnGpu::PreserveChildSurfaceControls() {
+  if (gl_surface_)
+    gl_surface_->PreserveChildSurfaceControls();
+}
+
 #if defined(OS_APPLE)
 std::unique_ptr<gpu::SharedImageRepresentationSkia>
 SkiaOutputSurfaceImplOnGpu::GetOrCreateRenderPassOverlayBacking(

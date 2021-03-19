@@ -107,6 +107,10 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   // Get the underlying platform specific surface "handle".
   virtual void* GetHandle() = 0;
 
+  // Android SurfaceControl specific, notifies that we should not detach child
+  // surface controls during destruction.
+  virtual void PreserveChildSurfaceControls() {}
+
   // Returns whether or not the surface supports SwapBuffersWithBounds
   virtual bool SupportsSwapBuffersWithBounds();
 

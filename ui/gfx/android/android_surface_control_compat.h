@@ -123,6 +123,7 @@ class GFX_EXPORT SurfaceControl {
     void SetColorSpace(const Surface& surface,
                        const gfx::ColorSpace& color_space);
     void SetFrameRate(const Surface& surface, float frame_rate);
+    void SetParent(const Surface& surface, Surface* new_parent);
 
     // Sets the callback which will be dispatched when the transaction is acked
     // by the framework.

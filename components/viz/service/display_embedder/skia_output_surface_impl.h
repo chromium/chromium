@@ -128,6 +128,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
                   std::unique_ptr<CopyOutputRequest> request) override;
   void AddContextLostObserver(ContextLostObserver* observer) override;
   void RemoveContextLostObserver(ContextLostObserver* observer) override;
+  void PreserveChildSurfaceControls() override;
   gpu::SyncToken Flush() override;
 
 #if defined(OS_APPLE)
@@ -281,7 +282,10 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   // increments or flips.
   gfx::OverlayTransform display_transform_ = gfx::OVERLAY_TRANSFORM_NONE;
 
-  // |impl_on_gpu| is created and destroyed on the GPU thread.
+  // |impl_on_gpu| is created and destroyed on the GPU thread by a posted task
+  // from SkiaOutputSurfaceImpl::Initialize and SkiaOutputSurfaceImpl::dtor. So
+  // it's safe to use base::Unretained for posting tasks during life time of
+  // SkiaOutputSurfaceImpl.
   std::unique_ptr<SkiaOutputSurfaceImplOnGpu> impl_on_gpu_;
 
   sk_sp<GrContextThreadSafeProxy> gr_context_thread_safe_;

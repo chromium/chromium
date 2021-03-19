@@ -85,7 +85,9 @@ using pASurfaceTransaction_setFrameRate =
              ASurfaceControl* surface_control,
              float frameRate,
              int8_t compatibility);
-
+using pASurfaceTransaction_reparent = void (*)(ASurfaceTransaction*,
+                                               ASurfaceControl* surface_control,
+                                               ASurfaceControl* new_parent);
 // ASurfaceTransactionStats
 using pASurfaceTransactionStats_getPresentFenceFd =
     int (*)(ASurfaceTransactionStats* stats);
@@ -145,6 +147,7 @@ struct SurfaceControlMethods {
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_delete);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_apply);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setOnComplete);
+    LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_reparent);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setVisibility);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setZOrder);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setBuffer);
@@ -176,6 +179,7 @@ struct SurfaceControlMethods {
   pASurfaceTransaction_delete ASurfaceTransaction_deleteFn;
   pASurfaceTransaction_apply ASurfaceTransaction_applyFn;
   pASurfaceTransaction_setOnComplete ASurfaceTransaction_setOnCompleteFn;
+  pASurfaceTransaction_reparent ASurfaceTransaction_reparentFn;
   pASurfaceTransaction_setVisibility ASurfaceTransaction_setVisibilityFn;
   pASurfaceTransaction_setZOrder ASurfaceTransaction_setZOrderFn;
   pASurfaceTransaction_setBuffer ASurfaceTransaction_setBufferFn;
@@ -489,6 +493,13 @@ void SurfaceControl::Transaction::SetFrameRate(const Surface& surface,
   SurfaceControlMethods::Get().ASurfaceTransaction_setFrameRateFn(
       transaction_, surface.surface(), frame_rate,
       ANATIVEWINDOW_FRAME_RATE_COMPATIBILITY_FIXED_SOURCE);
+}
+
+void SurfaceControl::Transaction::SetParent(const Surface& surface,
+                                            Surface* new_parent) {
+  SurfaceControlMethods::Get().ASurfaceTransaction_reparentFn(
+      transaction_, surface.surface(),
+      new_parent ? new_parent->surface() : nullptr);
 }
 
 void SurfaceControl::Transaction::SetOnCompleteCb(

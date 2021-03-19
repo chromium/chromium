@@ -23,7 +23,7 @@ public interface CompositorSurfaceManager {
         public void surfaceRedrawNeededAsync(Runnable drawingFinished);
         public void surfaceChanged(Surface surface, int format, int width, int height);
         public void surfaceCreated(Surface surface);
-        public void surfaceDestroyed(Surface surface);
+        public void surfaceDestroyed(Surface surface, boolean androidSurfaceDestroyed);
         public void unownedSurfaceDestroyed();
     }
 

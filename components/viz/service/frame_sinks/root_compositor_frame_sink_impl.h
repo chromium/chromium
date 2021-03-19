@@ -69,6 +69,7 @@ class RootCompositorFrameSinkImpl : public mojom::CompositorFrameSink,
   void UpdateRefreshRate(float refresh_rate) override;
   void SetSupportedRefreshRates(
       const std::vector<float>& supported_refresh_rates) override;
+  void PreserveChildSurfaceControls() override;
 #endif
   void AddVSyncParameterObserver(
       mojo::PendingRemote<mojom::VSyncParameterObserver> observer) override;

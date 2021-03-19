@@ -340,8 +340,11 @@ void CompositorView::BrowserChildProcessKilled(
     const content::ChildProcessTerminationInfo& info) {
   LOG(WARNING) << "Child process died (type=" << data.process_type
                << ") pid=" << data.GetProcess().Pid() << ")";
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <=
-          base::android::SDK_VERSION_JELLY_BEAN_MR2 &&
+
+  // On Android R surface control layers leak if GPU process crashes, so we need
+  // to re-create surface to get rid of them.
+  if (base::android::BuildInfo::GetInstance()->sdk_int() ==
+          base::android::SDK_VERSION_R &&
       data.process_type == content::PROCESS_TYPE_GPU) {
     JNIEnv* env = base::android::AttachCurrentThread();
     compositor_->SetSurface(nullptr, false);
@@ -386,6 +389,12 @@ void CompositorView::OnTabChanged(
         // and record a histogram.
       },
       std::move(tracker)));
+}
+
+void CompositorView::PreserveChildSurfaceControls(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& object) {
+  compositor_->PreserveChildSurfaceControls();
 }
 
 }  // namespace android

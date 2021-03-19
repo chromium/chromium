@@ -113,7 +113,24 @@ void GLSurfaceEGLSurfaceControl::PrepareToDestroy(bool have_context) {
   weak_factory_.InvalidateWeakPtrs();
 }
 
+void GLSurfaceEGLSurfaceControl::PreserveChildSurfaceControls() {
+  TRACE_EVENT_INSTANT0(
+      "gpu", "GLSurfaceEGLSurfaceControl::PreserveChildSurfaceControls",
+      TRACE_EVENT_SCOPE_THREAD);
+  preserve_children_ = true;
+}
+
 void GLSurfaceEGLSurfaceControl::Destroy() {
+  TRACE_EVENT0("gpu", "GLSurfaceEGLSurfaceControl::Destroy");
+  // Detach all child layers to prevent leaking unless browser asked us not too.
+  if (!preserve_children_) {
+    gfx::SurfaceControl::Transaction transaction;
+    for (auto& surface : surface_list_) {
+      transaction.SetParent(*surface.surface, nullptr);
+    }
+    transaction.Apply();
+  }
+
   pending_transaction_.reset();
   surface_list_.clear();
   root_surface_.reset();
