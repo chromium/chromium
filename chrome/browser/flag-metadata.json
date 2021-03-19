@@ -5065,7 +5065,7 @@
   {
     "name": "use-hdr-transfer-function",
     "owners": [ "mcasas", "chromeos-gfx@google.com" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 99
   },
   {
     "name": "use-js-error-page",
