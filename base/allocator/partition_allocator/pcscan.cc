@@ -11,6 +11,7 @@
 #include <numeric>
 #include <set>
 #include <thread>
+#include <unordered_map>
 #include <vector>
 
 #include "base/allocator/partition_allocator/address_pool_manager.h"
@@ -29,7 +30,7 @@
 #include "base/debug/alias.h"
 #include "base/immediate_crash.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -164,6 +165,18 @@ class MetadataAllocator {
   }
 };
 
+template <typename T>
+using MetadataVector = std::vector<T, MetadataAllocator<T>>;
+template <typename T>
+using MetadataSet = std::set<T, std::less<>, MetadataAllocator<T>>;
+template <typename K, typename V>
+using MetadataHashMap =
+    std::unordered_map<K,
+                       V,
+                       std::hash<K>,
+                       std::equal_to<>,
+                       MetadataAllocator<std::pair<const K, V>>>;
+
 void LogStats(size_t swept_bytes, size_t last_size, size_t new_size) {
   VLOG(2) << "quarantine size: " << last_size << " -> " << new_size
           << ", swept bytes: " << swept_bytes
@@ -227,57 +240,40 @@ class StatsCollector final {
   };
 
   template <Context context>
-  class Scope final {
-    using IdType =
-        std::conditional_t<context == Context::kMutator, MutatorId, ScannerId>;
+  using IdType =
+      std::conditional_t<context == Context::kMutator, MutatorId, ScannerId>;
 
+  // We don't immediately trave events, but instead defer it to the point when
+  // scanning is done. This is needed to avoid reentrant allocations that can
+  // recursively fall into the safepoint.
+  struct DeferredTraceEvent {
+    base::TimeTicks start_time;
+    base::TimeTicks end_time;
+  };
+
+  // Maps thread id to multiple events.
+  template <Context context>
+  using DeferredTraceEventMap = MetadataHashMap<
+      PlatformThreadId,
+      std::array<DeferredTraceEvent,
+                 static_cast<size_t>(IdType<context>::kNumIds)>>;
+
+  template <Context context>
+  class Scope final {
    public:
-    Scope(StatsCollector& stats, IdType type)
+    Scope(StatsCollector& stats, IdType<context> type)
         : stats_(stats), type_(type), start_time_(base::TimeTicks::Now()) {
-      TRACE_EVENT_BEGIN0(kTraceCategory, ToTracingString(type));
+      stats_.RegisterEventFromCurrentThread(type, EventType::kBegin);
     }
 
     Scope(const Scope&) = delete;
     Scope& operator=(const Scope&) = delete;
 
-    ~Scope() {
-      TRACE_EVENT_END0(kTraceCategory, ToTracingString(type_));
-      stats_.IncreaseScopeTime(type_, base::TimeTicks::Now() - start_time_);
-    }
+    ~Scope() { stats_.RegisterEventFromCurrentThread(type_, EventType::kEnd); }
 
    private:
-    static constexpr char kTraceCategory[] = "partition_alloc";
-
-    static constexpr const char* ToTracingString(ScannerId id) {
-      switch (id) {
-        case ScannerId::kClear:
-          return "PCScan.Scanner.Clear";
-        case ScannerId::kScan:
-          return "PCScan.Scanner.Scan";
-        case ScannerId::kSweep:
-          return "PCScan.Scanner.Sweep";
-        case ScannerId::kOverall:
-          return "PCScan.Scanner";
-        case ScannerId::kNumIds:
-          __builtin_unreachable();
-      }
-    }
-
-    static constexpr const char* ToTracingString(MutatorId id) {
-      switch (id) {
-        case MutatorId::kClear:
-          return "PCScan.Mutator.Clear";
-        case MutatorId::kScan:
-          return "PCScan.Mutator.Scan";
-        case MutatorId::kOverall:
-          return "PCScan.Mutator";
-        case MutatorId::kNumIds:
-          __builtin_unreachable();
-      }
-    }
-
     StatsCollector& stats_;
-    IdType type_;
+    IdType<context> type_;
     base::TimeTicks start_time_;
   };
 
@@ -290,20 +286,6 @@ class StatsCollector final {
   StatsCollector(const StatsCollector&) = delete;
   StatsCollector& operator=(const StatsCollector&) = delete;
 
-  void IncreaseScopeTime(ScannerId type, base::TimeDelta duration) {
-    const int64_t ms = duration.InMicroseconds();
-    PA_DCHECK(ms <= std::numeric_limits<uint32_t>::max());
-    scanner_scopes_[static_cast<size_t>(type)].fetch_add(
-        ms, std::memory_order_relaxed);
-  }
-
-  void IncreaseScopeTime(MutatorId type, base::TimeDelta duration) {
-    const int64_t ms = duration.InMicroseconds();
-    PA_DCHECK(ms <= std::numeric_limits<uint32_t>::max());
-    mutator_scopes_[static_cast<size_t>(type)].fetch_add(
-        ms, std::memory_order_relaxed);
-  }
-
   void IncreaseSurvivedQuarantineSize(size_t size) {
     survived_quarantine_size_.fetch_add(size, std::memory_order_relaxed);
   }
@@ -314,32 +296,47 @@ class StatsCollector final {
   void IncreaseSweptSize(size_t size) { swept_size_ += size; }
   size_t swept_size() const { return swept_size_; }
 
-  void UpdateHistograms() {
-    if (!process_name_) {
-      // Don't update histograms if |process_name_| is not set.
-      return;
-    }
-#define UPDATE_UMA(name)                                                 \
-  UMA_HISTOGRAM_TIMES(                                                   \
-      ToUMAString(ScannerId::k##name).c_str(),                           \
-      base::TimeDelta::FromMicroseconds(                                 \
-          scanner_scopes_[static_cast<size_t>(ScannerId::k##name)].load( \
-              std::memory_order_relaxed)));
-    FOR_ALL_PCSCAN_SCANNER_SCOPES(UPDATE_UMA)
-#undef UPDATE_UMA
-#define UPDATE_UMA(name)                                                 \
-  UMA_HISTOGRAM_TIMES(                                                   \
-      ToUMAString(MutatorId::k##name).c_str(),                           \
-      base::TimeDelta::FromMicroseconds(                                 \
-          mutator_scopes_[static_cast<size_t>(MutatorId::k##name)].load( \
-              std::memory_order_relaxed)));
-    FOR_ALL_PCSCAN_MUTATOR_SCOPES(UPDATE_UMA)
-#undef UPDATE_UMA
+  void ReportTracesAndHists() {
+    ReportTracesAndHistsImpl<Context::kMutator>(mutator_trace_events_);
+    ReportTracesAndHistsImpl<Context::kScanner>(scanner_trace_events_);
   }
 
  private:
   using MetadataString =
       std::basic_string<char, std::char_traits<char>, MetadataAllocator<char>>;
+  enum class EventType : uint8_t {
+    kBegin,
+    kEnd,
+  };
+  static constexpr char kTraceCategory[] = "partition_alloc";
+
+  static constexpr const char* ToTracingString(ScannerId id) {
+    switch (id) {
+      case ScannerId::kClear:
+        return "PCScan.Scanner.Clear";
+      case ScannerId::kScan:
+        return "PCScan.Scanner.Scan";
+      case ScannerId::kSweep:
+        return "PCScan.Scanner.Sweep";
+      case ScannerId::kOverall:
+        return "PCScan.Scanner";
+      case ScannerId::kNumIds:
+        __builtin_unreachable();
+    }
+  }
+
+  static constexpr const char* ToTracingString(MutatorId id) {
+    switch (id) {
+      case MutatorId::kClear:
+        return "PCScan.Mutator.Clear";
+      case MutatorId::kScan:
+        return "PCScan.Mutator.Scan";
+      case MutatorId::kOverall:
+        return "PCScan.Mutator";
+      case MutatorId::kNumIds:
+        __builtin_unreachable();
+    }
+  }
 
   MetadataString ToUMAString(ScannerId id) const {
     PA_DCHECK(process_name_);
@@ -373,10 +370,67 @@ class StatsCollector final {
     }
   }
 
-  std::array<std::atomic<uint32_t>, static_cast<size_t>(ScannerId::kNumIds)>
-      scanner_scopes_;
-  std::array<std::atomic<uint32_t>, static_cast<size_t>(MutatorId::kNumIds)>
-      mutator_scopes_;
+  template <typename Events, typename IdType>
+  void RegisterEventFromCurrentThreadImpl(Events& events,
+                                          IdType id,
+                                          EventType event_type) {
+    const auto tid = base::PlatformThread::CurrentId();
+    const auto now = base::TimeTicks::Now();
+    auto& event_array = events[tid];
+    auto& event = event_array[static_cast<size_t>(id)];
+    if (event_type == EventType::kBegin) {
+      PA_DCHECK(event.start_time.is_null());
+      PA_DCHECK(event.end_time.is_null());
+      event.start_time = now;
+    } else {
+      PA_DCHECK(!event.start_time.is_null());
+      PA_DCHECK(event.end_time.is_null());
+      event.end_time = now;
+    }
+  }
+
+  void RegisterEventFromCurrentThread(MutatorId id, EventType event_type) {
+    RegisterEventFromCurrentThreadImpl(mutator_trace_events_, id, event_type);
+  }
+  void RegisterEventFromCurrentThread(ScannerId id, EventType event_type) {
+    RegisterEventFromCurrentThreadImpl(scanner_trace_events_, id, event_type);
+  }
+
+  template <Context context, typename EventMap>
+  void ReportTracesAndHistsImpl(const EventMap& event_map) {
+    std::array<base::TimeDelta, static_cast<size_t>(IdType<context>::kNumIds)>
+        accumulated_events{};
+    // First, report traces and accumulate each trace scope to report UMA hists.
+    for (const auto& tid_and_events : event_map) {
+      const PlatformThreadId tid = tid_and_events.first;
+      const auto& events = tid_and_events.second;
+      PA_DCHECK(accumulated_events.size() == events.size());
+      for (size_t id = 0; id < events.size(); ++id) {
+        const auto& event = events[id];
+        TRACE_EVENT_BEGIN(
+            kTraceCategory,
+            perfetto::StaticString(
+                ToTracingString(static_cast<IdType<context>>(id))),
+            perfetto::ThreadTrack::ForThread(tid), event.start_time);
+        TRACE_EVENT_END(kTraceCategory, perfetto::ThreadTrack::ForThread(tid),
+                        event.end_time);
+        accumulated_events[id] += (event.end_time - event.start_time);
+      }
+    }
+    // Report UMA if process_name is set.
+    if (!process_name_)
+      return;
+    for (size_t id = 0; id < accumulated_events.size(); ++id) {
+      if (accumulated_events[id].is_zero())
+        continue;
+      UmaHistogramTimes(ToUMAString(static_cast<IdType<context>>(id)).c_str(),
+                        accumulated_events[id]);
+    }
+  }
+
+  DeferredTraceEventMap<Context::kMutator> mutator_trace_events_;
+  DeferredTraceEventMap<Context::kScanner> scanner_trace_events_;
+
   std::atomic<size_t> survived_quarantine_size_{0u};
   size_t swept_size_ = 0u;
   const char* process_name_ = nullptr;
@@ -567,7 +621,7 @@ class PCScanSnapshot final {
     uintptr_t* begin = nullptr;
     uintptr_t* end = nullptr;
   };
-  using ScanAreas = std::vector<ScanArea, MetadataAllocator<ScanArea>>;
+  using ScanAreas = MetadataVector<ScanArea>;
 
   // Large scan areas have their slot size recorded which allows to iterate
   // based on objects, potentially skipping over objects if possible.
@@ -577,13 +631,11 @@ class PCScanSnapshot final {
 
     size_t slot_size = 0;
   };
-  using LargeScanAreas =
-      std::vector<LargeScanArea, MetadataAllocator<LargeScanArea>>;
+  using LargeScanAreas = MetadataVector<LargeScanArea>;
 
   // BRP pool is guaranteed to have only normal buckets, so everything there
   // deals in super pages.
-  using SuperPages =
-      std::set<uintptr_t, std::less<>, MetadataAllocator<uintptr_t>>;
+  using SuperPages = MetadataSet<uintptr_t>;
 
   PCScanSnapshot() = default;
 
@@ -1135,7 +1187,7 @@ void PCScanTask::SweepQuarantine() {
 }
 
 void PCScanTask::FinishScanner() {
-  stats_.UpdateHistograms();
+  stats_.ReportTracesAndHists();
   LogStats(stats_.swept_size(), pcscan_.quarantine_data_.last_size(),
            stats_.survived_quarantine_size());
 
