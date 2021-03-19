@@ -58,17 +58,11 @@ void PowerMonitorSource::ProcessPowerEvent(PowerEvent event_id) {
           PowerMonitor::NotifyPowerStateChange(new_on_battery_power);
       }
       break;
-    case RESUME_EVENT:
-      if (source->suspended_) {
-        source->suspended_ = false;
+      case RESUME_EVENT:
         PowerMonitor::NotifyResume();
-      }
       break;
-    case SUSPEND_EVENT:
-      if (!source->suspended_) {
-        source->suspended_ = true;
+      case SUSPEND_EVENT:
         PowerMonitor::NotifySuspend();
-      }
       break;
   }
 }

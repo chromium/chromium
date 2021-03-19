@@ -140,4 +140,27 @@ TEST_F(PowerMonitorTest, AddObserverBeforeAndAfterInitialization) {
   PowerMonitor::RemovePowerSuspendObserver(&observer2);
 }
 
+TEST_F(PowerMonitorTest, SuspendStateReturnedFromAddObserver) {
+  PowerMonitorTestObserver observer1;
+  PowerMonitorTestObserver observer2;
+
+  PowerMonitorInitialize();
+
+  EXPECT_FALSE(
+      PowerMonitor::AddPowerSuspendObserverAndReturnSuspendedState(&observer1));
+
+  source()->GenerateSuspendEvent();
+
+  EXPECT_TRUE(
+      PowerMonitor::AddPowerSuspendObserverAndReturnSuspendedState(&observer2));
+
+  EXPECT_EQ(observer1.suspends(), 1);
+  EXPECT_EQ(observer2.suspends(), 0);
+  EXPECT_EQ(observer1.resumes(), 0);
+  EXPECT_EQ(observer2.resumes(), 0);
+
+  PowerMonitor::RemovePowerSuspendObserver(&observer1);
+  PowerMonitor::RemovePowerSuspendObserver(&observer2);
+}
+
 }  // namespace base

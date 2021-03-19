@@ -72,7 +72,6 @@ class BASE_EXPORT PowerMonitorSource {
 
  private:
   bool on_battery_power_ GUARDED_BY(battery_lock_) = false;
-  bool suspended_ = false;
 
   // This lock guards access to on_battery_power_, to ensure that
   // IsOnBatteryPower can be called from any thread.

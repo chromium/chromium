@@ -4,7 +4,6 @@
 
 #include "base/power_monitor/power_monitor.h"
 
-#include <atomic>
 #include <utility>
 
 #include "base/logging.h"
@@ -13,10 +12,6 @@
 #include "build/build_config.h"
 
 namespace base {
-
-namespace {
-std::atomic_bool g_is_process_suspended{false};
-}
 
 void PowerMonitor::Initialize(std::unique_ptr<PowerMonitorSource> source) {
   DCHECK(!IsInitialized());
@@ -57,6 +52,15 @@ void PowerMonitor::RemovePowerThermalObserver(PowerThermalObserver* obs) {
   GetInstance()->thermal_state_observers_->RemoveObserver(obs);
 }
 
+// static
+bool PowerMonitor::AddPowerSuspendObserverAndReturnSuspendedState(
+    PowerSuspendObserver* obs) {
+  PowerMonitor* power_monitor = GetInstance();
+  AutoLock auto_lock(power_monitor->is_system_suspended_lock_);
+  power_monitor->power_suspend_observers_->AddObserver(obs);
+  return power_monitor->is_system_suspended_;
+}
+
 PowerMonitorSource* PowerMonitor::Source() {
   return GetInstance()->source_.get();
 }
@@ -68,11 +72,12 @@ bool PowerMonitor::IsOnBatteryPower() {
 
 void PowerMonitor::ShutdownForTesting() {
   GetInstance()->source_ = nullptr;
-  g_is_process_suspended.store(false, std::memory_order_relaxed);
-}
 
-bool PowerMonitor::IsProcessSuspended() {
-  return g_is_process_suspended.load(std::memory_order_relaxed);
+  PowerMonitor* power_monitor = GetInstance();
+  {
+    AutoLock auto_lock(power_monitor->is_system_suspended_lock_);
+    power_monitor->is_system_suspended_ = false;
+  }
 }
 
 // static
@@ -109,9 +114,14 @@ void PowerMonitor::NotifySuspend() {
   TRACE_EVENT_INSTANT0("base", "PowerMonitor::NotifySuspend",
                        TRACE_EVENT_SCOPE_PROCESS);
   DVLOG(1) << "Power Suspending";
-  g_is_process_suspended.store(true, std::memory_order_relaxed);
-  GetInstance()->power_suspend_observers_->Notify(
-      FROM_HERE, &PowerSuspendObserver::OnSuspend);
+
+  PowerMonitor* power_monitor = GetInstance();
+  AutoLock auto_lock(power_monitor->is_system_suspended_lock_);
+  if (!power_monitor->is_system_suspended_) {
+    power_monitor->is_system_suspended_ = true;
+    GetInstance()->power_suspend_observers_->Notify(
+        FROM_HERE, &PowerSuspendObserver::OnSuspend);
+  }
 }
 
 void PowerMonitor::NotifyResume() {
@@ -119,9 +129,14 @@ void PowerMonitor::NotifyResume() {
   TRACE_EVENT_INSTANT0("base", "PowerMonitor::NotifyResume",
                        TRACE_EVENT_SCOPE_PROCESS);
   DVLOG(1) << "Power Resuming";
-  g_is_process_suspended.store(false, std::memory_order_relaxed);
-  GetInstance()->power_suspend_observers_->Notify(
-      FROM_HERE, &PowerSuspendObserver::OnResume);
+
+  PowerMonitor* power_monitor = GetInstance();
+  AutoLock auto_lock(power_monitor->is_system_suspended_lock_);
+  if (power_monitor->is_system_suspended_) {
+    power_monitor->is_system_suspended_ = false;
+    GetInstance()->power_suspend_observers_->Notify(
+        FROM_HERE, &PowerSuspendObserver::OnResume);
+  }
 }
 
 void PowerMonitor::NotifyThermalStateChange(

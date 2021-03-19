@@ -50,15 +50,18 @@ class BASE_EXPORT PowerMonitor {
   static void AddPowerThermalObserver(PowerThermalObserver* observer);
   static void RemovePowerThermalObserver(PowerThermalObserver* observer);
 
+  // Atomically add a PowerSuspendObserver and read the current power suspended
+  // state. This variant must be used to avoid race between adding an observer
+  // and reading the power state. The following code would be racy:
+  //    AddOPowerSuspendbserver(...);
+  //    if (PowerMonitor::IsSystemSuspended()) { ... }
+  // Returns true if the system is currently suspended.
+  static bool AddPowerSuspendObserverAndReturnSuspendedState(
+      PowerSuspendObserver* observer);
+
   // Is the computer currently on battery power. May only be called if the
   // PowerMonitor has been initialized.
   static bool IsOnBatteryPower();
-
-  // Is the computer currently in suspend mode. Safe to call on any thread. Safe
-  // to call even if the PowerMonitor hasn't been initialized. When called
-  // before initialisation, the process is assumed to not be suspended no matter
-  // what is the real power state.
-  static bool IsProcessSuspended();
 
   // Read the current DeviceThermalState if known. Can be called on any thread.
   // May only be called if the PowerMonitor has been initialized.
@@ -98,6 +101,9 @@ class BASE_EXPORT PowerMonitor {
       PowerThermalObserver::DeviceThermalState new_state);
 
   static PowerMonitor* GetInstance();
+
+  bool is_system_suspended_ GUARDED_BY(is_system_suspended_lock_) = false;
+  Lock is_system_suspended_lock_;
 
   scoped_refptr<ObserverListThreadSafe<PowerStateObserver>>
       power_state_observers_;
