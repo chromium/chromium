@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "components/heavy_ad_intervention/heavy_ad_features.h"
 #include "components/page_load_metrics/browser/ads_page_load_metrics_test_waiter.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/ads_page_load_metrics_observer.h"
@@ -138,8 +139,14 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 }
 
 // Test that an ad with a different origin as the main page is cross origin.
+// This test is flaky on Win10, see https://crbug.com/1189868.
+#if defined(OS_WIN)
+#define MAYBE_OriginStatusMetricCross DISABLED_OriginStatusMetricCross
+#else
+#define MAYBE_OriginStatusMetricCross OriginStatusMetricCross
+#endif
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       OriginStatusMetricCross) {
+                       MAYBE_OriginStatusMetricCross) {
   // Note: Cannot navigate cross-origin without dynamically generating the URL.
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
