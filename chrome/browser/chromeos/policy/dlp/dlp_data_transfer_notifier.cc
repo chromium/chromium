@@ -147,7 +147,7 @@ void DlpDataTransferNotifier::OnWidgetClosing(views::Widget* widget) {
 
 void DlpDataTransferNotifier::OnWidgetActivationChanged(views::Widget* widget,
                                                         bool active) {
-  if (!active)
+  if (!active && widget->IsVisible())
     CloseWidget(widget, views::Widget::ClosedReason::kLostFocus);
 }
 
