@@ -28,6 +28,15 @@ ROOT_SRC_DIR = os.path.dirname(
 # "iphoneos" or "macosx" generally).
 
 
+def LoadPList(path):
+  """Loads Plist at |path| and returns it as a dictionary."""
+  # Cloned from //build/apple/plist_util.py.
+  if sys.version_info.major == 2:
+    return plistlib.readPlist(path)
+  with open(path, 'rb') as f:
+    return plistlib.load(f)
+
+
 def SplitVersion(version):
   """Splits the Xcode version to 3 values.
 
@@ -61,7 +70,7 @@ def FillXcodeVersion(settings, developer_dir):
   if developer_dir:
     xcode_version_plist_path = os.path.join(developer_dir,
                                             'Contents/version.plist')
-    version_plist = plistlib.readPlist(xcode_version_plist_path)
+    version_plist = LoadPList(xcode_version_plist_path)
     settings['xcode_version'] = FormatVersion(
         version_plist['CFBundleShortVersionString'])
     settings['xcode_version_int'] = int(settings['xcode_version'], 10)

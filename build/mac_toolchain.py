@@ -29,6 +29,15 @@ import shutil
 import subprocess
 import sys
 
+
+def LoadPList(path):
+  """Loads Plist at |path| and returns it as a dictionary."""
+  if sys.version_info.major == 2:
+    return plistlib.readPlist(path)
+  with open(path, 'rb') as f:
+    return plistlib.load(f)
+
+
 # This contains binaries from Xcode 12.4 12D4e, along with the macOS 11 SDK.
 # To build these packages, see comments in build/xcode_binaries.yaml
 MAC_BINARIES_LABEL = 'infra_internal/ios/xcode/xcode_binaries/mac-amd64'
@@ -130,18 +139,18 @@ def InstallXcodeBinaries(binaries_root=None):
   # currently accepted version.
   cipd_xcode_version_plist_path = os.path.join(binaries_root,
                                                'Contents/version.plist')
-  cipd_xcode_version_plist = plistlib.readPlist(cipd_xcode_version_plist_path)
+  cipd_xcode_version_plist = LoadPList(cipd_xcode_version_plist_path)
   cipd_xcode_version = cipd_xcode_version_plist['CFBundleShortVersionString']
 
   cipd_license_path = os.path.join(binaries_root,
                                    'Contents/Resources/LicenseInfo.plist')
-  cipd_license_plist = plistlib.readPlist(cipd_license_path)
+  cipd_license_plist = LoadPList(cipd_license_path)
   cipd_license_version = cipd_license_plist['licenseID']
 
   should_overwrite_license = True
   current_license_path = '/Library/Preferences/com.apple.dt.Xcode.plist'
   if os.path.exists(current_license_path):
-    current_license_plist = plistlib.readPlist(current_license_path)
+    current_license_plist = LoadPList(current_license_path)
     xcode_version = current_license_plist.get(
         'IDEXcodeVersionForAgreedToGMLicense')
     if (xcode_version is not None and pkg_resources.parse_version(xcode_version)
