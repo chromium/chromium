@@ -8033,6 +8033,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       Replaced with IPH_ContextualSearchWebSearch.
     </obsolete>
   </suffix>
+  <suffix name="IPH_ContextualSearchInPanelHelp"
+      label="Promote Longpress from within the Panel."/>
   <suffix name="IPH_ContextualSearchOptIn"
       label="In product help for opting-in for contextual search."/>
   <suffix name="IPH_ContextualSearchPanel" label="">

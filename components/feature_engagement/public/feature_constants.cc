@@ -71,6 +71,8 @@ const base::Feature kIPHContextualSearchOptInFeature{
 const base::Feature kIPHContextualSearchTappedButShouldLongpressFeature{
     "IPH_ContextualSearchTappedButShouldLongpress",
     base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHContextualSearchInPanelHelpFeature{
+    "IPH_ContextualSearchInPanelHelp", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHDownloadSettingsFeature{
     "IPH_DownloadSettings", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHDownloadInfoBarDownloadContinuingFeature{

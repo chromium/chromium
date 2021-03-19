@@ -61,6 +61,9 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
     /** The interface that the help section uses to communicate with this Panel. */
     interface ContextualSearchHelpSectionHost extends ContextualSearchPanelSectionHost {
+        /** Returns whether the help section of the panel is enabled for the current user. */
+        boolean isPanelHelpEnabled();
+
         /** Notifies that the user has clicked the OK button in the help section of the panel. */
         void onPanelHelpOkClicked();
     }
@@ -1039,6 +1042,11 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
                     // The help section is causing movement which means the promo below
                     // it will move.
                     getPromoControl().onUpdateForMovement(hasStarted);
+                }
+
+                @Override
+                public boolean isPanelHelpEnabled() {
+                    return mManagementDelegate.isPanelHelpEnabled();
                 }
 
                 @Override

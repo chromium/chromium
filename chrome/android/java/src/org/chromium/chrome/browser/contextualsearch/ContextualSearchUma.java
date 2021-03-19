@@ -1302,6 +1302,11 @@ public class ContextualSearchUma {
         }
     }
 
+    /** Logs a UserAction that the user just acknowledged the Longpress in-panel-help. */
+    static void logInPanelHelpAcknowledged() {
+        RecordUserAction.record("ContextualSearch.logInPanelHelpAcknowledged");
+    }
+
     /**
      * Logs that the system automatically expanded the selection when a user triggered
      * Contextual Search on a multiword phrase that could be identified by the server.

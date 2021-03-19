@@ -701,11 +701,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "contextual-search-longpress-panel-help",
-    "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS" ],
-    "expiry_milestone": 92
-  },
-  {
     "name": "contextual-search-longpress-resolve",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS" ],
     "expiry_milestone": 92

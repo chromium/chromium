@@ -1670,9 +1670,6 @@ extern const char kContextualSearchForceCaptionDescription[];
 extern const char kContextualSearchLiteralSearchTapName[];
 extern const char kContextualSearchLiteralSearchTapDescription[];
 
-extern const char kContextualSearchLongpressPanelHelpName[];
-extern const char kContextualSearchLongpressPanelHelpDescription[];
-
 extern const char kContextualSearchLongpressResolveName[];
 extern const char kContextualSearchLongpressResolveDescription[];
 

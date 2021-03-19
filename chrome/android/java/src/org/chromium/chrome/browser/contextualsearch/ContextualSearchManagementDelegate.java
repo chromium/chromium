@@ -90,6 +90,9 @@ public interface ContextualSearchManagementDelegate {
      */
     void onPromoOptIn();
 
+    /** Returns whether the In-Panel-Help is currently enabled. */
+    boolean isPanelHelpEnabled();
+
     /**
      * Called when the Help section of the panel has its OK button clicked.
      */

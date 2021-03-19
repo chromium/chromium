@@ -79,12 +79,6 @@ class ContextualSearchPolicy {
     private boolean mAllowSendingPageUrlForTesting;
 
     /**
-     * Tracks whether the In-Panel-Help has been shown.
-     * TODO(donnd): replace with Feature Engagement.
-     */
-    private boolean mWasInPanelHelpAccepted;
-
-    /**
      * ContextualSearchPolicy constructor.
      */
     public ContextualSearchPolicy(ContextualSearchSelectionController selectionController,
@@ -228,16 +222,13 @@ class ContextualSearchPolicy {
         return isUserUndecided();
     }
 
-    boolean isPanelHelpEnabled() {
-        return !mWasInPanelHelpAccepted
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.CONTEXTUAL_SEARCH_LONGPRESS_PANEL_HELP);
-    }
-
-    /** Handles notification that the OK button was pressed on the In-Panel-Help promo. */
-    void onPanelHelpOkClicked() {
-        // TODO(donnd): use Feature Engagement to manage this help feature.
-        mWasInPanelHelpAccepted = true;
+    /**
+     * Returns whether conditions are right for an IPH for Longpress to be shown.
+     * We only show this for users that have already opted-in because it's all about using page
+     * context with the right gesture.
+     */
+    boolean isLongpressInPanelHelpCondition() {
+        return mSelectionController.isTapSelection() && canResolveLongpress() && !isUserUndecided();
     }
 
     /**

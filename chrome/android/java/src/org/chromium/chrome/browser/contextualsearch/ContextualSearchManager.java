@@ -446,7 +446,7 @@ public class ContextualSearchManager
         mSearchRequest = null;
         mRelatedSearches = new String[] {};
 
-        mInProductHelp.onCloseContextualSearch();
+        mInProductHelp.onCloseContextualSearch(Profile.getLastUsedRegularProfile());
 
         if (mIsShowingPromo && !mDidLogPromoOutcome && mSearchPanel.wasPromoInteractive()) {
             ContextualSearchUma.logPromoOutcome(mWasActivatedByTap, mIsMandatoryPromo);
@@ -523,7 +523,7 @@ public class ContextualSearchManager
             mSearchPanel.setIsPromoActive(true, mIsMandatoryPromo);
             mSearchPanel.setDidSearchInvolvePromo();
         }
-        mSearchPanel.setIsPanelHelpActive(mPolicy.isPanelHelpEnabled());
+        mSearchPanel.setIsPanelHelpActive(true);
 
         mSearchPanel.requestPanelShow(stateChangeReason);
 
@@ -1300,8 +1300,14 @@ public class ContextualSearchManager
     }
 
     @Override
+    public boolean isPanelHelpEnabled() {
+        return mPolicy.isLongpressInPanelHelpCondition()
+                && mInProductHelp.startShowingInPanelHelp(Profile.getLastUsedRegularProfile());
+    }
+
+    @Override
     public void onPanelHelpOkClicked() {
-        mPolicy.onPanelHelpOkClicked();
+        mInProductHelp.onPanelHelpOkClicked(Profile.getLastUsedRegularProfile());
     }
 
     @Override

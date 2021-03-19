@@ -41,6 +41,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:layout_marginEnd="12dp"
             android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
             app:leading="@dimen/text_size_small_leading" />
         <org.chromium.ui.widget.ButtonCompat
@@ -48,7 +50,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_marginEnd="12dp"
+            android:layout_marginEnd="18dp"
             android:layout_marginBottom="12dp"
             android:text="@string/ok"
             style="@style/FilledButton.Flat" />

@@ -35,6 +35,7 @@ public class ContextualSearchIPH {
     private RectProvider mRectProvider;
     private String mFeatureName;
     private boolean mIsShowing;
+    private boolean mIsShowingInPanel;
     private boolean mDidShow;
     private boolean mIsPositionedByPanel;
     private boolean mHasUserEverEngaged;
@@ -216,6 +217,7 @@ public class ContextualSearchIPH {
         maybeSetPreferredOrientation();
         mHelpBubble.show();
         mIsShowing = true;
+        mIsShowingInPanel = false;
         mDidShow = true;
     }
 
@@ -223,9 +225,23 @@ public class ContextualSearchIPH {
      * Updates the position of the help bubble if it is showing.
      */
     void updateBubblePosition() {
-        if (!mIsShowing || mHelpBubble == null || !mHelpBubble.isShowing()) return;
-
+        if (!mIsShowing || mIsShowingInPanel || mHelpBubble == null || !mHelpBubble.isShowing()) {
+            return;
+        }
         mRectProvider.setRect(getHelpBubbleAnchorRect());
+    }
+
+    /** Returns whether to show the In-Panel-Help and start tracking that IPH. */
+    boolean startShowingInPanelHelp(Profile profile) {
+        boolean shouldShow = TrackerFactory.getTrackerForProfile(profile).shouldTriggerHelpUI(
+                FeatureConstants.CONTEXTUAL_SEARCH_IN_PANEL_HELP_FEATURE);
+        if (shouldShow) {
+            // Start tracking this alternative to the bubble being shown.
+            mFeatureName = FeatureConstants.CONTEXTUAL_SEARCH_IN_PANEL_HELP_FEATURE;
+        }
+        mIsShowing = shouldShow;
+        mIsShowingInPanel = mIsShowing;
+        return shouldShow;
     }
 
     /**
@@ -267,12 +283,18 @@ public class ContextualSearchIPH {
 
     /**
      * Notifies that the search has completed so we can dismiss the In-Product Help UI, etc.
+     * @param profile The current user profile.
      */
-    void onCloseContextualSearch() {
+    void onCloseContextualSearch(Profile profile) {
         recordOptedInOutcome();
         if (!mIsShowing || TextUtils.isEmpty(mFeatureName)) return;
 
-        mHelpBubble.dismiss();
+        if (mIsShowingInPanel) {
+            assert mHelpBubble == null;
+            dismissInPanelHelp(profile);
+        } else {
+            mHelpBubble.dismiss();
+        }
 
         mIsShowing = false;
     }
@@ -336,7 +358,31 @@ public class ContextualSearchIPH {
     }
 
     /**
-     * Records UMA metrics inidcated whether the user Opted-in.
+     * Handles notification that the OK button was pressed on the In-Panel-Help view.
+     * @param profile The current user profile.
+     */
+    void onPanelHelpOkClicked(Profile profile) {
+        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+        tracker.notifyEvent(EventConstants.CONTEXTUAL_SEARCH_ACKNOWLEDGED_IN_PANEL_HELP);
+        // Although tracker logs a user action too, it's OK to duplicate it with a Contextual
+        // Search specific user action for ease of discovery in the analysis tool.
+        ContextualSearchUma.logInPanelHelpAcknowledged();
+    }
+
+    /**
+     * Dismisses In-Panel-Help from the tracker so it knows that the help is no longer shown.
+     * @param profile The current user profile.
+     */
+    private void dismissInPanelHelp(Profile profile) {
+        if (EventConstants.CONTEXTUAL_SEARCH_ACKNOWLEDGED_IN_PANEL_HELP.equals(mFeatureName)) {
+            Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+            tracker.dismissed(mFeatureName);
+            mFeatureName = null;
+        }
+    }
+
+    /**
+     * Records UMA metrics indicated whether the user Opted-in.
      */
     private void recordOptedInOutcome() {
         // If we showed the suggestion to Opt-in for Translations, Log whether the user did or not.

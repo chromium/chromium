@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelAnimation;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelInflater;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel.ContextualSearchHelpSectionHost;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
@@ -83,8 +82,7 @@ public class ContextualSearchPanelHelp {
      */
     ContextualSearchPanelHelp(OverlayPanel panel, ContextualSearchHelpSectionHost helpSectionHost,
             Context context, ViewGroup container, DynamicResourceLoader resourceLoader) {
-        mIsEnabled = ChromeFeatureList.isEnabled(
-                ChromeFeatureList.CONTEXTUAL_SEARCH_LONGPRESS_PANEL_HELP);
+        mIsEnabled = helpSectionHost.isPanelHelpEnabled();
         mDpToPx = context.getResources().getDisplayMetrics().density;
         // We match the Opt-in promo background color so the views are seamless when together.
         mContainerBackgroundColor = ApiCompatibilityUtils.getColor(
@@ -144,7 +142,7 @@ public class ContextualSearchPanelHelp {
      * Shows the View. This includes inflating the View and setting its initial state.
      */
     void show() {
-        if (mIsVisible) return;
+        if (mIsVisible || !mIsEnabled) return;
 
         // Invalidates the View in order to generate a snapshot, but do not show the View yet.
         // The View should only be displayed when in the expanded state.

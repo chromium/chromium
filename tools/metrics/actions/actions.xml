@@ -5293,6 +5293,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContextualSearch.logInPanelHelpAcknowledged">
+  <owner>donnd@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
+  <description>
+    Logged when the user acknowledges the In-Panel-Help that promotes a
+    longpress gesture to trigger an intelligent Contextual Search instead of a
+    tap gesture.
+  </description>
+</action>
+
 <action name="ContextualSearch.LongpressPeek">
   <owner>donnd@chromium.org</owner>
   <description>
@@ -27874,6 +27884,8 @@ should be able to be added at any place in this file.
   <suffix name="ChromeHomePullToRefresh"
       label="For ChromeHomePullToRefresh feature."/>
   <suffix name="ContextualSearch" label="For ContextualSearch feature."/>
+  <suffix name="ContextualSearchInPanelHelp"
+      label="For ContextualSearchInPanelHelp feature."/>
   <suffix name="ContextualSearchOptIn"
       label="For ContextualSearchOptIn feature."/>
   <suffix name="ContextualSearchPanel"

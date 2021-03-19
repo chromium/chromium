@@ -122,6 +122,12 @@ public final class EventConstants {
             "contextual_search_tapped_but_should_longpress";
 
     /**
+     * Contextual Search acknowledged the suggestion that they should longpress instead of tap.
+     */
+    public static final String CONTEXTUAL_SEARCH_ACKNOWLEDGED_IN_PANEL_HELP =
+            "contextual_search_acknowledged_in_panel_help";
+
+    /**
      * Contextual Search user fully enabled access to page content through the opt-in.
      */
     public static final String CONTEXTUAL_SEARCH_ENABLED_OPT_IN =

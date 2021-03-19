@@ -51,6 +51,7 @@ extern const base::Feature kIPHContextualSearchPromoteTapFeature;
 extern const base::Feature kIPHContextualSearchPromotePanelOpenFeature;
 extern const base::Feature kIPHContextualSearchOptInFeature;
 extern const base::Feature kIPHContextualSearchTappedButShouldLongpressFeature;
+extern const base::Feature kIPHContextualSearchInPanelHelpFeature;
 extern const base::Feature kIPHDownloadSettingsFeature;
 extern const base::Feature kIPHDownloadInfoBarDownloadContinuingFeature;
 extern const base::Feature kIPHDownloadInfoBarDownloadsAreFasterFeature;

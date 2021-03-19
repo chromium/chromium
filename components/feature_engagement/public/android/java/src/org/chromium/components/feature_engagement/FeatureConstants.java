@@ -26,6 +26,7 @@ import java.lang.annotation.RetentionPolicy;
         FeatureConstants.CONTEXTUAL_SEARCH_PROMOTE_PANEL_OPEN_FEATURE,
         FeatureConstants.CONTEXTUAL_SEARCH_OPT_IN_FEATURE,
         FeatureConstants.CONTEXTUAL_SEARCH_TAPPED_BUT_SHOULD_LONGPRESS_FEATURE,
+        FeatureConstants.CONTEXTUAL_SEARCH_IN_PANEL_HELP_FEATURE,
         FeatureConstants.KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE,
         FeatureConstants.KEYBOARD_ACCESSORY_BAR_SWIPING_FEATURE,
         FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE,
@@ -104,6 +105,11 @@ public @interface FeatureConstants {
      */
     String CONTEXTUAL_SEARCH_TAPPED_BUT_SHOULD_LONGPRESS_FEATURE =
             "IPH_ContextualSearchTappedButShouldLongpress";
+
+    /**
+     * Another IPH to use longpress instead of tap, but this one appears inside the Panel.
+     */
+    String CONTEXTUAL_SEARCH_IN_PANEL_HELP_FEATURE = "IPH_ContextualSearchInPanelHelp";
 
     /**
      * An IPH feature indicating to users that there are settings for downloads and they are
