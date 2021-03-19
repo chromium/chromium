@@ -408,7 +408,13 @@ struct CommitNavigationParams {
   // Whether this navigation was browser initiated.
   bool is_browser_initiated = false;
 
-  // Whether this navigation was for prerendering.
+  // Whether this navigation is happening in a prerendering frame tree.
+  // Should not be referred to in the browser process, as it is only guaranteed
+  // to be accurate just before sending it to the renderer process. The browser
+  // process should use the frame tree's `is_prerendering` state instead.
+  // TODO(crbug.com/1189481): With MPArch, the NavigationRequest should be
+  // notified when it transfers frame trees, and commit_params should be updated
+  // then.
   bool is_prerendering = false;
 
   // The physical URL of Web Bundle from which the document is loaded.

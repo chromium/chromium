@@ -3596,6 +3596,16 @@ void NavigationRequest::CommitErrorPage(
   redirect_chain_.clear();
   redirect_chain_.push_back(GetURL());
 
+  // Set `is_prerendering` here so it's accurate before sending it to the
+  // renderer, as it may be out of sync with the source of truth which is the
+  // frame tree state. The frame tree may have changed if activation happened
+  // while this navigation is occurring in an iframe.
+  // TODO(crbug.com/1189481): With MPArch, the NavigationRequest should be
+  // notified when it transfers frame trees, and commit_params should be updated
+  // then.
+  commit_params_->is_prerendering =
+      frame_tree_node_->frame_tree()->is_prerendering();
+
   ReadyToCommitNavigation(true /* is_error */);
 
   // Use a separate cache shard, and no cookies, for error pages.
@@ -3790,6 +3800,16 @@ void NavigationRequest::CommitNavigation() {
         !render_frame_host_->GetSiteInstance()->IsRelatedSiteInstance(
             GetStartingSiteInstance());
   }
+
+  // Set `is_prerendering` here so it's accurate before sending it to the
+  // renderer, as it may be out of sync with the source of truth which is the
+  // frame tree state. The frame tree may have changed if activation happened
+  // while this navigation is occurring in an iframe.
+  // TODO(crbug.com/1189481): With MPArch, the NavigationRequest should be
+  // notified when it transfers frame trees, and commit_params should be updated
+  // then.
+  commit_params_->is_prerendering =
+      frame_tree_node_->frame_tree()->is_prerendering();
 
   auto common_params = common_params_->Clone();
   auto commit_params = commit_params_.Clone();

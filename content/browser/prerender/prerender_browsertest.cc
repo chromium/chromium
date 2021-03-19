@@ -743,13 +743,10 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
   RenderFrameHost* cross_origin_render_frame_host =
       FindRenderFrameHost(*prerender_frame_host, kCrossOriginSubframeUrl);
   DCHECK(cross_origin_render_frame_host);
-  // TODO(toyoshim): Enable the following EXPECT_EQs once the relevant bug is
-  // fixed. Currently, deferred frame creates a document after the activation,
-  // but with is_prerendering being true due to an existing bug.
-  // EXPECT_EQ(false, EvalJs(cross_origin_render_frame_host,
-  //                        kInitialDocumentPrerenderingScript));
-  // EXPECT_EQ(false, EvalJs(cross_origin_render_frame_host,
-  //                        kCurrentDocumentPrerenderingScript));
+  EXPECT_EQ(false, EvalJs(cross_origin_render_frame_host,
+                          kInitialDocumentPrerenderingScript));
+  EXPECT_EQ(false, EvalJs(cross_origin_render_frame_host,
+                          kCurrentDocumentPrerenderingScript));
   EXPECT_EQ(false, EvalJs(cross_origin_render_frame_host,
                           kOnprerenderingchangeObservedScript));
 }
@@ -824,13 +821,10 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
   RenderFrameHost* cross_origin_render_frame_host =
       FindRenderFrameHost(*prerender_frame_host, kCrossOriginSubframeUrl);
   DCHECK(cross_origin_render_frame_host);
-  // TODO(toyoshim): Enable the following EXPECT_EQs once the relevant bug is
-  // fixed. Currently, deferred frame creates a document after the activation,
-  // but with is_prerendering being true due to an existing bug.
-  // EXPECT_EQ(false, EvalJs(cross_origin_render_frame_host,
-  //                        kInitialDocumentPrerenderingScript));
-  // EXPECT_EQ(false, EvalJs(cross_origin_render_frame_host,
-  //                        kCurrentDocumentPrerenderingScript));
+  EXPECT_EQ(false, EvalJs(cross_origin_render_frame_host,
+                          kInitialDocumentPrerenderingScript));
+  EXPECT_EQ(false, EvalJs(cross_origin_render_frame_host,
+                          kCurrentDocumentPrerenderingScript));
   EXPECT_EQ(false, EvalJs(cross_origin_render_frame_host,
                           kOnprerenderingchangeObservedScript));
 }
