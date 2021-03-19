@@ -52,7 +52,6 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_surface_layer_bridge.h"
 #include "third_party/blink/public/platform/web_video_frame_submitter.h"
 #include "third_party/blink/public/web/blink.h"
@@ -533,10 +532,11 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
 
 blink::WebEncryptedMediaClient* MediaFactory::EncryptedMediaClient() {
   if (!web_encrypted_media_client_) {
-    web_encrypted_media_client_ =
-        std::make_unique<media::WebEncryptedMediaClientImpl>(
-            GetCdmFactory(), render_frame_->GetMediaPermission(),
-            render_frame_->GetWebFrame()->GetContentSettingsClient());
+    web_encrypted_media_client_ = std::make_unique<
+        media::WebEncryptedMediaClientImpl>(
+        GetCdmFactory(), render_frame_->GetMediaPermission(),
+        std::make_unique<media::KeySystemConfigSelector::WebLocalFrameDelegate>(
+            render_frame_->GetWebFrame()));
   }
   return web_encrypted_media_client_.get();
 }

@@ -257,6 +257,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   void SetContentSettingsClient(WebContentSettingsClient*) override;
   void ReloadImage(const WebNode&) override;
   bool IsAllowedToDownload() const override;
+  bool IsCrossOriginToMainFrame() const override;
   bool FindForTesting(int identifier,
                       const WebString& search_text,
                       bool match_case,

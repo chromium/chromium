@@ -19,7 +19,6 @@
 namespace blink {
 
 class WebContentDecryptionModuleResult;
-class WebContentSettingsClient;
 struct WebMediaKeySystemConfiguration;
 class WebSecurityOrigin;
 
@@ -37,7 +36,8 @@ class MEDIA_BLINK_EXPORT WebEncryptedMediaClientImpl
   WebEncryptedMediaClientImpl(
       CdmFactory* cdm_factory,
       MediaPermission* media_permission,
-      blink::WebContentSettingsClient* content_settings_client);
+      std::unique_ptr<KeySystemConfigSelector::WebLocalFrameDelegate>
+          web_frame_delegate);
   ~WebEncryptedMediaClientImpl() override;
 
   // WebEncryptedMediaClient implementation.

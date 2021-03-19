@@ -101,11 +101,12 @@ class WebEncryptedMediaClientImpl::Reporter {
 WebEncryptedMediaClientImpl::WebEncryptedMediaClientImpl(
     CdmFactory* cdm_factory,
     MediaPermission* media_permission,
-    blink::WebContentSettingsClient* content_settings_client)
+    std::unique_ptr<KeySystemConfigSelector::WebLocalFrameDelegate>
+        web_frame_delegate)
     : cdm_factory_(cdm_factory),
       key_system_config_selector_(KeySystems::GetInstance(),
                                   media_permission,
-                                  content_settings_client) {
+                                  std::move(web_frame_delegate)) {
   DCHECK(cdm_factory_);
 }
 

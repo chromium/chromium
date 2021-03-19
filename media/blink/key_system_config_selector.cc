@@ -26,6 +26,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/modules/media/webmediaplayer_util.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -67,10 +68,11 @@ EmeConfigRule GetDistinctiveIdentifierConfigRule(
   // NOT_ALLOWED or REQUIRED. Those values will be checked individually when
   // the option is resolved.
   //
-  //                   NOT_ALLOWED    OPTIONAL       REQUIRED
-  //    NOT_SUPPORTED  I_NOT_ALLOWED  I_NOT_ALLOWED  NOT_SUPPORTED
-  //      REQUESTABLE  I_NOT_ALLOWED  SUPPORTED      I_REQUIRED
-  //   ALWAYS_ENABLED  NOT_SUPPORTED  I_REQUIRED     I_REQUIRED
+  //                  |---------------Requirement-------------------
+  //   Support        | NOT_ALLOWED   | OPTIONAL      | REQUIRED
+  //    NOT_SUPPORTED | I_NOT_ALLOWED | I_NOT_ALLOWED | NOT_SUPPORTED
+  //      REQUESTABLE | I_NOT_ALLOWED | SUPPORTED     | I_REQUIRED
+  //   ALWAYS_ENABLED | NOT_SUPPORTED | I_REQUIRED    | I_REQUIRED
   DCHECK(support == EmeFeatureSupport::NOT_SUPPORTED ||
          support == EmeFeatureSupport::REQUESTABLE ||
          support == EmeFeatureSupport::ALWAYS_ENABLED);
@@ -109,10 +111,11 @@ EmeConfigRule GetPersistentStateConfigRule(EmeFeatureSupport support,
   // Note that even though a distinctive identifier can not be required for
   // persistent state, it may still be required for persistent sessions.
   //
-  //                   NOT_ALLOWED    OPTIONAL       REQUIRED
-  //    NOT_SUPPORTED  P_NOT_ALLOWED  P_NOT_ALLOWED  NOT_SUPPORTED
-  //      REQUESTABLE  P_NOT_ALLOWED  SUPPORTED      P_REQUIRED
-  //   ALWAYS_ENABLED  NOT_SUPPORTED  P_REQUIRED     P_REQUIRED
+  //                  |---------------Requirement-------------------
+  //   Support        | NOT_ALLOWED   | OPTIONAL      | REQUIRED
+  //    NOT_SUPPORTED | P_NOT_ALLOWED | P_NOT_ALLOWED | NOT_SUPPORTED
+  //      REQUESTABLE | P_NOT_ALLOWED | SUPPORTED     | P_REQUIRED
+  //   ALWAYS_ENABLED | NOT_SUPPORTED | P_REQUIRED    | P_REQUIRED
   DCHECK(support == EmeFeatureSupport::NOT_SUPPORTED ||
          support == EmeFeatureSupport::REQUESTABLE ||
          support == EmeFeatureSupport::ALWAYS_ENABLED);
@@ -198,6 +201,21 @@ bool IsSupportedMediaType(const std::string& container_mime_type,
 }
 
 }  // namespace
+
+bool KeySystemConfigSelector::WebLocalFrameDelegate::
+    IsCrossOriginToMainFrame() {
+  DCHECK(web_frame_);
+  return web_frame_->IsCrossOriginToMainFrame();
+}
+
+bool KeySystemConfigSelector::WebLocalFrameDelegate::AllowStorageAccessSync(
+    blink::WebContentSettingsClient::StorageType storage_type) {
+  DCHECK(web_frame_);
+  blink::WebContentSettingsClient* content_settings_client =
+      web_frame_->GetContentSettingsClient();
+  return !content_settings_client ||
+         content_settings_client->AllowStorageAccessSync(storage_type);
+}
 
 struct KeySystemConfigSelector::SelectionRequest {
   std::string key_system;
@@ -338,13 +356,14 @@ class KeySystemConfigSelector::ConfigState {
 KeySystemConfigSelector::KeySystemConfigSelector(
     KeySystems* key_systems,
     MediaPermission* media_permission,
-    blink::WebContentSettingsClient* content_settings_client)
+    std::unique_ptr<WebLocalFrameDelegate> web_frame_delegate)
     : key_systems_(key_systems),
       media_permission_(media_permission),
-      content_settings_client_(content_settings_client),
+      web_frame_delegate_(std::move(web_frame_delegate)),
       is_supported_media_type_cb_(base::BindRepeating(&IsSupportedMediaType)) {
   DCHECK(key_systems_);
   DCHECK(media_permission_);
+  DCHECK(web_frame_delegate_);
 }
 
 KeySystemConfigSelector::~KeySystemConfigSelector() = default;
@@ -523,7 +542,7 @@ bool KeySystemConfigSelector::GetSupportedCapabilities(
     //
     // Since |config_state| is also the output parameter, this also updates the
     // "partial configuration" as specified in
-    // "3.1.1.2. Get Supported Configuration and Consent"
+    // "Get Supported Configuration and Consent"
     // https://w3c.github.io/encrypted-media/#get-supported-configuration-and-consent
     // Step 16.3 and 17.3: Set the {video|audio}Capabilities member of
     // accumulated configuration to {video|audio} capabilities.
@@ -599,13 +618,9 @@ KeySystemConfigSelector::GetSupportedConfiguration(
   // 5. If distinctive identifier requirement is "optional" and Distinctive
   //    Identifiers are not allowed according to restrictions, set distinctive
   //    identifier requirement to "not-allowed".
-  EmeFeatureSupport distinctive_identifier_support =
-      key_systems_->GetDistinctiveIdentifierSupport(key_system);
-  if (distinctive_identifier == EmeFeatureRequirement::kOptional) {
-    if (distinctive_identifier_support == EmeFeatureSupport::INVALID ||
-        distinctive_identifier_support == EmeFeatureSupport::NOT_SUPPORTED) {
-      distinctive_identifier = EmeFeatureRequirement::kNotAllowed;
-    }
+  if (distinctive_identifier == EmeFeatureRequirement::kOptional &&
+      !config_state->IsRuleSupported(EmeConfigRule::IDENTIFIER_REQUIRED)) {
+    distinctive_identifier = EmeFeatureRequirement::kNotAllowed;
   }
 
   // 6. Follow the steps for distinctive identifier requirement from the
@@ -620,6 +635,16 @@ KeySystemConfigSelector::GetSupportedConfiguration(
   //        return NotSupported.
   // We also reject OPTIONAL when distinctive identifiers are ALWAYS_ENABLED and
   // permission has already been denied. This would happen anyway later.
+  EmeFeatureSupport distinctive_identifier_support =
+      key_systems_->GetDistinctiveIdentifierSupport(key_system);
+  // NOTE: This is an additional action we are taking here that is not in the
+  // spec currently.  Specifically, we are not allowing a distinctive identifier
+  // for cross-origin frames.
+  if (web_frame_delegate_->IsCrossOriginToMainFrame()) {
+    if (distinctive_identifier_support == EmeFeatureSupport::ALWAYS_ENABLED)
+      return CONFIGURATION_NOT_SUPPORTED;
+    distinctive_identifier_support = EmeFeatureSupport::NOT_SUPPORTED;
+  }
   EmeConfigRule di_rule = GetDistinctiveIdentifierConfigRule(
       distinctive_identifier_support, distinctive_identifier);
   if (!config_state->IsRuleSupported(di_rule)) {
@@ -640,19 +665,9 @@ KeySystemConfigSelector::GetSupportedConfiguration(
   // 9. If persistent state requirement is "optional" and persisting state is
   //    not allowed according to restrictions, set persistent state requirement
   //    to "not-allowed".
-  const bool local_storage_allowed =
-      !content_settings_client_ ||
-      content_settings_client_->AllowStorageAccessSync(
-          blink::WebContentSettingsClient::StorageType::kLocalStorage);
-  EmeFeatureSupport persistent_state_support =
-      local_storage_allowed
-          ? key_systems_->GetPersistentStateSupport(key_system)
-          : EmeFeatureSupport::NOT_SUPPORTED;
-  if (persistent_state == EmeFeatureRequirement::kOptional) {
-    if (persistent_state_support == EmeFeatureSupport::INVALID ||
-        persistent_state_support == EmeFeatureSupport::NOT_SUPPORTED) {
-      persistent_state = EmeFeatureRequirement::kNotAllowed;
-    }
+  if (persistent_state == EmeFeatureRequirement::kOptional &&
+      !config_state->IsRuleSupported(EmeConfigRule::PERSISTENCE_REQUIRED)) {
+    persistent_state = EmeFeatureRequirement::kNotAllowed;
   }
 
   // 10. Follow the steps for persistent state requirement from the following
@@ -664,6 +679,16 @@ KeySystemConfigSelector::GetSupportedConfiguration(
   //       - "not-allowed": If the implementation requires persisting state in
   //         combination with accumulated configuration and restrictions,
   //         return NotSupported.
+  EmeFeatureSupport persistent_state_support =
+      key_systems_->GetPersistentStateSupport(key_system);
+  // If preferences disallow local storage, then indicate persistent state is
+  // not supported.
+  if (!web_frame_delegate_->AllowStorageAccessSync(
+          blink::WebContentSettingsClient::StorageType::kLocalStorage)) {
+    if (persistent_state_support == EmeFeatureSupport::ALWAYS_ENABLED)
+      return CONFIGURATION_NOT_SUPPORTED;
+    persistent_state_support = EmeFeatureSupport::NOT_SUPPORTED;
+  }
   EmeConfigRule ps_rule =
       GetPersistentStateConfigRule(persistent_state_support, persistent_state);
   if (!config_state->IsRuleSupported(ps_rule)) {
@@ -869,7 +894,7 @@ KeySystemConfigSelector::GetSupportedConfiguration(
     EmeConfigRule required_rule = GetPersistentStateConfigRule(
         key_systems_->GetPersistentStateSupport(key_system),
         EmeFeatureRequirement::kRequired);
-    // |distinctiveIdentifier| should not be affected after it is decided.
+    // |persistent_state| should not be affected after it is decided.
     DCHECK(not_allowed_rule == EmeConfigRule::NOT_SUPPORTED ||
            not_allowed_rule == EmeConfigRule::PERSISTENCE_NOT_ALLOWED);
     DCHECK(required_rule == EmeConfigRule::NOT_SUPPORTED ||
@@ -895,8 +920,6 @@ KeySystemConfigSelector::GetSupportedConfiguration(
   // 20. If implementation in the configuration specified by the combination of
   //     the values in accumulated configuration is not supported or not allowed
   //     in the origin, return NotSupported.
-  // TODO(jrummell): can we check that the CDM can't be loaded by the origin?
-
   // 21. If accumulated configuration's distinctiveIdentifier value is
   //     "required" and the Distinctive Identifier(s) associated with
   //     accumulated configuration are not unique per origin and profile
