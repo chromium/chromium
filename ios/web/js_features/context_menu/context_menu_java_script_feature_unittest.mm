@@ -24,12 +24,6 @@ namespace web {
 typedef WebTestWithWebState ContextMenuJavaScriptFeatureTest;
 
 TEST_F(ContextMenuJavaScriptFeatureTest, FetchElement) {
-  ContextMenuJavaScriptFeature* feature =
-      ContextMenuJavaScriptFeature::FromBrowserState(GetBrowserState());
-
-  JavaScriptFeatureManager::FromBrowserState(GetBrowserState())
-      ->ConfigureFeatures({feature});
-
   NSString* html =
       @"<html><head>"
        "<style>body { font-size:14em; }</style>"
@@ -41,18 +35,19 @@ TEST_F(ContextMenuJavaScriptFeatureTest, FetchElement) {
   std::string request_id("123");
 
   __block bool callback_called = false;
-  feature->GetElementAtPoint(
-      web_state(), request_id, CGPointMake(10.0, 10.0),
-      CGSizeMake(100.0, 100.0),
-      base::BindOnce(^(const std::string& callback_request_id,
-                       const web::ContextMenuParams& params) {
-        EXPECT_EQ(request_id, callback_request_id);
-        EXPECT_EQ(true, params.is_main_frame);
-        EXPECT_NSEQ(@"destination", params.menu_title);
-        EXPECT_NSEQ(@"link", params.link_text);
-        EXPECT_EQ("http://destination/", params.link_url.spec());
-        callback_called = true;
-      }));
+  ContextMenuJavaScriptFeature::FromBrowserState(GetBrowserState())
+      ->GetElementAtPoint(
+          web_state(), request_id, CGPointMake(10.0, 10.0),
+          CGSizeMake(100.0, 100.0),
+          base::BindOnce(^(const std::string& callback_request_id,
+                           const web::ContextMenuParams& params) {
+            EXPECT_EQ(request_id, callback_request_id);
+            EXPECT_EQ(true, params.is_main_frame);
+            EXPECT_NSEQ(@"destination", params.menu_title);
+            EXPECT_NSEQ(@"link", params.link_text);
+            EXPECT_EQ("http://destination/", params.link_url.spec());
+            callback_called = true;
+          }));
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
     return callback_called;

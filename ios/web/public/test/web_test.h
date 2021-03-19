@@ -15,6 +15,7 @@
 namespace web {
 
 class BrowserState;
+class JavaScriptFeature;
 class WebClient;
 class WebTestRenderProcessCrashObserver;
 
@@ -28,12 +29,13 @@ class WebTest : public PlatformTest {
           WebTaskEnvironment::Options = WebTaskEnvironment::Options::DEFAULT);
   ~WebTest() override;
 
-  // Manually configures JavaScriptFeatures from |GetWebClient()|. This needs to
-  // called from |SetUp| when features are manually set on a FakeWebClient.
-  // NOTE: Do not call this when using a ChromeWebClient as this will override
-  // built in features features with only the features returned by the web
-  // client.
-  void ConfigureJavaScriptFeatures();
+  // Manually overrides the built in JavaScriptFeatures and those from
+  // |GetWebClient()::GetJavaScriptFeatures()|. This is intended to be used to
+  // replace an instance of a built in feature with one created by the test.
+  // NOTE: Do not call this when using a ChromeWebClient or
+  // |FakeWebClient::SetJavaScriptFeatures| as this will override those
+  // features.
+  void OverrideJavaScriptFeatures(std::vector<JavaScriptFeature*> features);
 
   // Returns the WebClient that is used for testing.
   virtual web::WebClient* GetWebClient();

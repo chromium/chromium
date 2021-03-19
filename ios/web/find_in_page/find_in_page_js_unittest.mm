@@ -15,7 +15,6 @@
 #include "ios/web/js_messaging/web_frame_impl.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
-#import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
@@ -48,20 +47,14 @@ namespace web {
 // correct.
 class FindInPageJsTest : public WebTestWithWebState {
  protected:
-  FindInPageJsTest() : WebTestWithWebState(std::make_unique<FakeWebClient>()) {
-    GetWebClient()->SetJavaScriptFeatures(
-        {FindInPageJavaScriptFeature::GetInstance()});
-  }
-
-  web::FakeWebClient* GetWebClient() override {
-    return static_cast<web::FakeWebClient*>(
-        WebTestWithWebState::GetWebClient());
-  }
 
   void SetUp() override {
     WebTestWithWebState::SetUp();
 
-    ConfigureJavaScriptFeatures();
+    WKWebViewConfigurationProvider& configuration_provider =
+        WKWebViewConfigurationProvider::FromBrowserState(GetBrowserState());
+    // Force the creation of the content worlds.
+    configuration_provider.GetWebViewConfiguration();
 
     content_world_ =
         JavaScriptFeatureManager::FromBrowserState(GetBrowserState())

@@ -38,15 +38,9 @@ namespace web {
 // FindInPageManagerDelegate are correct.
 class FindInPageManagerTest : public WebTestWithWebState {
  protected:
-  FindInPageManagerTest()
-      : WebTestWithWebState(std::make_unique<FakeWebClient>()) {
-    static_cast<web::FakeWebClient*>(WebTestWithWebState::GetWebClient())
-        ->SetJavaScriptFeatures({FindInPageJavaScriptFeature::GetInstance()});
-  }
 
   void SetUp() override {
     WebTestWithWebState::SetUp();
-    ConfigureJavaScriptFeatures();
 
     test_server_.RegisterRequestHandler(base::BindRepeating(
         &net::test_server::HandlePrefixedRequest, "/echo-query",
@@ -85,6 +79,7 @@ TEST_F(FindInPageManagerTest, FindMatchInMainFrame) {
       kFindPageUrl +
       net::EscapeQueryParamValue(kFindInPageIFrameUrl, /*use_plus=*/true);
   test::LoadUrl(web_state(), test_server_.GetURL(url_spec));
+
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
     return web_state()->GetWebFramesManager()->GetAllWebFrames().size() == 2;
   }));

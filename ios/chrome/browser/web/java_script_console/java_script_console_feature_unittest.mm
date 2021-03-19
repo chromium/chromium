@@ -106,11 +106,6 @@ class JavaScriptConsoleFeatureTest : public ChromeWebTest {
     GetWebClient()->SetJavaScriptFeatures({feature});
   }
 
-  void SetUp() override {
-    ChromeWebTest::SetUp();
-    ConfigureJavaScriptFeatures();
-  }
-
   web::FakeWebClient* GetWebClient() override {
     return static_cast<web::FakeWebClient*>(
         WebTestWithWebState::GetWebClient());

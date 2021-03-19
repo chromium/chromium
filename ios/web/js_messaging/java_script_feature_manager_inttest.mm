@@ -9,6 +9,7 @@
 #include "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/test/fakes/fake_java_script_feature.h"
@@ -24,53 +25,60 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace web {
 
-typedef WebTestWithWebState JavaScriptFeatureManagerIntTest;
+// Sets up a FakeJavaScriptFeature in the page content world.
+class JavaScriptFeatureManagerPageContentWorldIntTest
+    : public WebTestWithWebState {
+ protected:
+  JavaScriptFeatureManagerPageContentWorldIntTest()
+      : WebTestWithWebState(std::make_unique<web::FakeWebClient>()),
+        feature_(JavaScriptFeature::ContentWorld::kPageContentWorld) {}
+
+  void SetUp() override {
+    WebTestWithWebState::SetUp();
+
+    static_cast<web::FakeWebClient*>(WebTestWithWebState::GetWebClient())
+        ->SetJavaScriptFeatures({feature()});
+  }
+
+  FakeJavaScriptFeature* feature() { return &feature_; }
+
+ private:
+  FakeJavaScriptFeature feature_;
+};
 
 // Tests that a JavaScriptFeature added by JavaScriptFeatureManager to the page
 // content world correctly receives script message callbacks.
-TEST_F(JavaScriptFeatureManagerIntTest, AddFeatureToPageContentWorld) {
-  FakeJavaScriptFeature feature(
-      JavaScriptFeature::ContentWorld::kPageContentWorld);
-
-  web::JavaScriptFeatureManager::FromBrowserState(GetBrowserState())
-      ->ConfigureFeatures({&feature});
-
+TEST_F(JavaScriptFeatureManagerPageContentWorldIntTest,
+       AddFeatureToPageContentWorld) {
   ASSERT_TRUE(LoadHtml("<html></html>"));
 
-  ASSERT_FALSE(feature.last_received_web_state());
-  ASSERT_FALSE(feature.last_received_message());
+  ASSERT_FALSE(feature()->last_received_web_state());
+  ASSERT_FALSE(feature()->last_received_message());
 
   std::vector<base::Value> parameters;
   parameters.push_back(
       base::Value(kFakeJavaScriptFeaturePostMessageReplyValue));
-  feature.ReplyWithPostMessage(GetMainFrame(web_state()), parameters);
+  feature()->ReplyWithPostMessage(GetMainFrame(web_state()), parameters);
 
-  FakeJavaScriptFeature* feature_ptr = &feature;
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-    return feature_ptr->last_received_web_state();
+    return feature()->last_received_web_state();
   }));
 
-  EXPECT_EQ(web_state(), feature.last_received_web_state());
+  EXPECT_EQ(web_state(), feature()->last_received_web_state());
 
-  ASSERT_TRUE(feature.last_received_message()->body());
+  ASSERT_TRUE(feature()->last_received_message()->body());
   const std::string* reply =
-      feature.last_received_message()->body()->GetIfString();
+      feature()->last_received_message()->body()->GetIfString();
   ASSERT_TRUE(reply);
   EXPECT_STREQ(kFakeJavaScriptFeaturePostMessageReplyValue, reply->c_str());
 }
 
-TEST_F(JavaScriptFeatureManagerIntTest,
+TEST_F(JavaScriptFeatureManagerPageContentWorldIntTest,
        PageContentWorldIFrameScriptMessageHandler) {
-  FakeJavaScriptFeature feature(
-      JavaScriptFeature::ContentWorld::kPageContentWorld);
-
-  web::JavaScriptFeatureManager::FromBrowserState(GetBrowserState())
-      ->ConfigureFeatures({&feature});
-
   ASSERT_TRUE(LoadHtml("<html><iframe></iframe></html>"));
 
-  ASSERT_FALSE(feature.last_received_web_state());
-  ASSERT_FALSE(feature.last_received_message());
+  ASSERT_FALSE(feature()->last_received_web_state());
+  ASSERT_FALSE(feature()->last_received_message());
 
   __block std::set<WebFrame*> web_frames;
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
@@ -91,65 +99,73 @@ TEST_F(JavaScriptFeatureManagerIntTest,
   std::vector<base::Value> parameters;
   parameters.push_back(
       base::Value(kFakeJavaScriptFeaturePostMessageReplyValue));
-  feature.ReplyWithPostMessage(child_frame, parameters);
+  feature()->ReplyWithPostMessage(child_frame, parameters);
 
-  FakeJavaScriptFeature* feature_ptr = &feature;
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-    return feature_ptr->last_received_web_state();
+    return feature()->last_received_web_state();
   }));
 
-  EXPECT_EQ(web_state(), feature.last_received_web_state());
+  EXPECT_EQ(web_state(), feature()->last_received_web_state());
 
-  ASSERT_TRUE(feature.last_received_message()->body());
+  ASSERT_TRUE(feature()->last_received_message()->body());
   const std::string* reply =
-      feature.last_received_message()->body()->GetIfString();
+      feature()->last_received_message()->body()->GetIfString();
   ASSERT_TRUE(reply);
   EXPECT_STREQ(kFakeJavaScriptFeaturePostMessageReplyValue, reply->c_str());
 }
 
-TEST_F(JavaScriptFeatureManagerIntTest, AddFeatureToIsolatedWorld) {
-  FakeJavaScriptFeature feature(
-      JavaScriptFeature::ContentWorld::kAnyContentWorld);
+// Sets up a FakeJavaScriptFeature in an isolated world.
+class JavaScriptFeatureManagerAnyContentWorldIntTest
+    : public WebTestWithWebState {
+ protected:
+  JavaScriptFeatureManagerAnyContentWorldIntTest()
+      : WebTestWithWebState(std::make_unique<web::FakeWebClient>()),
+        feature_(JavaScriptFeature::ContentWorld::kAnyContentWorld) {}
 
-  web::JavaScriptFeatureManager::FromBrowserState(GetBrowserState())
-      ->ConfigureFeatures({&feature});
+  void SetUp() override {
+    WebTestWithWebState::SetUp();
 
+    static_cast<web::FakeWebClient*>(WebTestWithWebState::GetWebClient())
+        ->SetJavaScriptFeatures({feature()});
+  }
+
+  FakeJavaScriptFeature* feature() { return &feature_; }
+
+ private:
+  FakeJavaScriptFeature feature_;
+};
+
+TEST_F(JavaScriptFeatureManagerAnyContentWorldIntTest,
+       AddFeatureToIsolatedWorld) {
   ASSERT_TRUE(LoadHtml("<html></html>"));
 
-  ASSERT_FALSE(feature.last_received_web_state());
-  ASSERT_FALSE(feature.last_received_message());
+  ASSERT_FALSE(feature()->last_received_web_state());
+  ASSERT_FALSE(feature()->last_received_message());
 
   std::vector<base::Value> parameters;
   parameters.push_back(
       base::Value(kFakeJavaScriptFeaturePostMessageReplyValue));
-  feature.ReplyWithPostMessage(GetMainFrame(web_state()), parameters);
+  feature()->ReplyWithPostMessage(GetMainFrame(web_state()), parameters);
 
-  FakeJavaScriptFeature* feature_ptr = &feature;
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-    return feature_ptr->last_received_web_state();
+    return feature()->last_received_web_state();
   }));
 
-  EXPECT_EQ(web_state(), feature.last_received_web_state());
+  EXPECT_EQ(web_state(), feature()->last_received_web_state());
 
-  ASSERT_TRUE(feature.last_received_message()->body());
+  ASSERT_TRUE(feature()->last_received_message()->body());
   const std::string* reply =
-      feature.last_received_message()->body()->GetIfString();
+      feature()->last_received_message()->body()->GetIfString();
   ASSERT_TRUE(reply);
   EXPECT_STREQ(kFakeJavaScriptFeaturePostMessageReplyValue, reply->c_str());
 }
 
-TEST_F(JavaScriptFeatureManagerIntTest,
+TEST_F(JavaScriptFeatureManagerAnyContentWorldIntTest,
        IsolatedWorldIFrameScriptMessageHandler) {
-  FakeJavaScriptFeature feature(
-      JavaScriptFeature::ContentWorld::kAnyContentWorld);
-
-  web::JavaScriptFeatureManager::FromBrowserState(GetBrowserState())
-      ->ConfigureFeatures({&feature});
-
   ASSERT_TRUE(LoadHtml("<html><iframe></iframe></html>"));
 
-  ASSERT_FALSE(feature.last_received_web_state());
-  ASSERT_FALSE(feature.last_received_message());
+  ASSERT_FALSE(feature()->last_received_web_state());
+  ASSERT_FALSE(feature()->last_received_message());
 
   __block std::set<WebFrame*> web_frames;
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
@@ -170,18 +186,17 @@ TEST_F(JavaScriptFeatureManagerIntTest,
   std::vector<base::Value> parameters;
   parameters.push_back(
       base::Value(kFakeJavaScriptFeaturePostMessageReplyValue));
-  feature.ReplyWithPostMessage(child_frame, parameters);
+  feature()->ReplyWithPostMessage(child_frame, parameters);
 
-  FakeJavaScriptFeature* feature_ptr = &feature;
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-    return feature_ptr->last_received_web_state();
+    return feature()->last_received_web_state();
   }));
 
-  EXPECT_EQ(web_state(), feature.last_received_web_state());
+  EXPECT_EQ(web_state(), feature()->last_received_web_state());
 
-  ASSERT_TRUE(feature.last_received_message()->body());
+  ASSERT_TRUE(feature()->last_received_message()->body());
   const std::string* reply =
-      feature.last_received_message()->body()->GetIfString();
+      feature()->last_received_message()->body()->GetIfString();
   ASSERT_TRUE(reply);
   EXPECT_STREQ(kFakeJavaScriptFeaturePostMessageReplyValue, reply->c_str());
 }
