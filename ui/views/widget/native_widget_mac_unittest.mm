@@ -573,10 +573,8 @@ TEST_F(NativeWidgetMacTest, SetCursor) {
 
   Widget* widget = CreateTopLevelPlatformWidget();
   widget->SetBounds(gfx::Rect(0, 0, 300, 300));
-  widget->non_client_view()->frame_view()->AddChildView(
-      new CursorView(0, hand));
-  widget->non_client_view()->frame_view()->AddChildView(
-      new CursorView(100, ibeam));
+  widget->GetContentsView()->AddChildView(new CursorView(0, hand));
+  widget->GetContentsView()->AddChildView(new CursorView(100, ibeam));
   widget->Show();
   NSWindow* widget_window = widget->GetNativeWindow().GetNativeNSWindow();
 
@@ -879,8 +877,8 @@ TEST_F(NativeWidgetMacTest, Tooltips) {
   const std::u16string long_tooltip(2000, 'W');
 
   // Create a nested layout to test corner cases.
-  LabelButton* back = widget->non_client_view()->frame_view()->AddChildView(
-      std::make_unique<LabelButton>());
+  LabelButton* back =
+      widget->GetContentsView()->AddChildView(std::make_unique<LabelButton>());
   back->SetBounds(10, 10, 80, 80);
   widget->Show();
 
@@ -945,7 +943,7 @@ TEST_F(NativeWidgetMacTest, TwoWidgetTooltips) {
   CustomTooltipView* view_below =
       new CustomTooltipView(base::ASCIIToUTF16("Back"), view_above);
   view_below->SetBoundsRect(widget_below->GetContentsView()->bounds());
-  widget_below->non_client_view()->frame_view()->AddChildView(view_below);
+  widget_below->GetContentsView()->AddChildView(view_below);
 
   widget_below->Show();
   widget_above->Show();

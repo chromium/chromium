@@ -117,7 +117,7 @@ class ViewMacTest : public test::WidgetTest {
 
     view_ = new ThreeFingerSwipeView;
     view_->SetSize(widget_->GetClientAreaBoundsInScreen().size());
-    widget_->non_client_view()->frame_view()->AddChildView(view_);
+    widget_->GetContentsView()->AddChildView(view_);
   }
 
   void TearDown() override {

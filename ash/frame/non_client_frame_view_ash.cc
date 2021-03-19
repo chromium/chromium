@@ -327,16 +327,16 @@ gfx::Size NonClientFrameViewAsh::CalculatePreferredSize() const {
 }
 
 void NonClientFrameViewAsh::Layout() {
-  views::NonClientFrameView::Layout();
-  if (!GetFrameEnabled())
+  if (!GetEnabled())
     return;
+  views::NonClientFrameView::Layout();
   aura::Window* frame_window = frame_->GetNativeWindow();
   frame_window->SetProperty(aura::client::kTopViewInset,
                             NonClientTopBorderHeight());
 }
 
 gfx::Size NonClientFrameViewAsh::GetMinimumSize() const {
-  if (!GetFrameEnabled())
+  if (!GetEnabled())
     return gfx::Size();
 
   gfx::Size min_client_view_size(frame_->client_view()->GetMinimumSize());
@@ -358,6 +358,13 @@ gfx::Size NonClientFrameViewAsh::GetMaximumSize() const {
   return gfx::Size(width, height);
 }
 
+void NonClientFrameViewAsh::SetVisible(bool visible) {
+  overlay_view_->SetVisible(visible);
+  views::View::SetVisible(visible);
+  // We need to re-layout so that client view will occupy entire window.
+  InvalidateLayout();
+}
+
 void NonClientFrameViewAsh::SetShouldPaintHeader(bool paint) {
   header_view_->SetShouldPaintHeader(paint);
 }
@@ -365,7 +372,7 @@ void NonClientFrameViewAsh::SetShouldPaintHeader(bool paint) {
 int NonClientFrameViewAsh::NonClientTopBorderHeight() const {
   // The frame should not occupy the window area when it's in fullscreen,
   // not visible or disabled.
-  if (frame_->IsFullscreen() || !GetFrameEnabled() ||
+  if (frame_->IsFullscreen() || !GetVisible() || !GetEnabled() ||
       header_view_->in_immersive_mode()) {
     return 0;
   }
@@ -386,15 +393,6 @@ SkColor NonClientFrameViewAsh::GetActiveFrameColorForTest() const {
 
 SkColor NonClientFrameViewAsh::GetInactiveFrameColorForTest() const {
   return frame_->GetNativeWindow()->GetProperty(kFrameInactiveColorKey);
-}
-
-void NonClientFrameViewAsh::SetFrameEnabled(bool enabled) {
-  if (enabled == frame_enabled_)
-    return;
-
-  frame_enabled_ = enabled;
-  overlay_view_->SetVisible(frame_enabled_);
-  InvalidateLayout();
 }
 
 void NonClientFrameViewAsh::OnDidSchedulePaint(const gfx::Rect& r) {

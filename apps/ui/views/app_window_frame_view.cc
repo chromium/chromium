@@ -249,11 +249,8 @@ gfx::Size AppWindowFrameView::CalculatePreferredSize() const {
 }
 
 void AppWindowFrameView::Layout() {
-  NonClientFrameView::Layout();
-
   if (!draw_frame_)
     return;
-
   gfx::Size close_size = close_button_->GetPreferredSize();
   const int kButtonOffsetY = 0;
   const int kButtonSpacing = 1;

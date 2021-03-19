@@ -338,8 +338,6 @@ void BrowserNonClientFrameViewMac::OnPaint(gfx::Canvas* canvas) {
 }
 
 void BrowserNonClientFrameViewMac::Layout() {
-  NonClientFrameView::Layout();
-
   const int available_height = GetTopInset(true);
   int leading_x = kFramePaddingLeft;
   int trailing_x = width();

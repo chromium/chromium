@@ -11,7 +11,6 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/hit_test.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/rect_based_targeting_utils.h"
 #include "ui/views/view_targeter.h"
@@ -24,6 +23,18 @@
 #endif
 
 namespace views {
+
+namespace {
+
+// The frame view and the client view are always at these specific indices,
+// because the RootView message dispatch sends messages to items higher in the
+// z-order first and we always want the client view to have first crack at
+// handling mouse messages.
+constexpr int kFrameViewIndex = 0;
+constexpr int kClientViewIndex = 1;
+// The overlay view is always on top (view == children().back()).
+
+}  // namespace
 
 NonClientFrameView::~NonClientFrameView() = default;
 
@@ -118,17 +129,18 @@ void NonClientFrameView::OnThemeChanged() {
   SchedulePaint();
 }
 
-void NonClientFrameView::Layout() {
-  views::ClientView* client_view = GetWidget()->client_view();
-  client_view->SetBoundsRect(GetBoundsForClientView());
-  SkPath client_clip;
-  if (GetClientMask(client_view->size(), &client_clip))
-    client_view->SetClipPath(client_clip);
-  views::View::Layout();
-}
-
 NonClientFrameView::NonClientFrameView() {
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
+}
+
+// ViewTargeterDelegate:
+bool NonClientFrameView::DoesIntersectRect(const View* target,
+                                           const gfx::Rect& rect) const {
+  CHECK_EQ(target, this);
+
+  // For the default case, we assume the non-client frame view never overlaps
+  // the client view.
+  return !GetWidget()->client_view()->bounds().Intersects(rect);
 }
 
 #if defined(OS_WIN)
@@ -153,18 +165,13 @@ NonClientView::~NonClientView() {
 
 void NonClientView::SetFrameView(
     std::unique_ptr<NonClientFrameView> frame_view) {
-  // If there is an existing frame view, remove the client view before removing
-  // the frame view to prevent the client view from being deleted.
-  if (frame_view_.get()) {
-    frame_view_->RemoveChildView(client_view_);
+  // See comment in header about ownership.
+  frame_view->set_owned_by_client();
+  if (frame_view_.get())
     RemoveChildView(frame_view_.get());
-  }
-
   frame_view_ = std::move(frame_view);
-  if (parent()) {
-    AddChildViewAt(frame_view_.get(), 0);
-    frame_view_->AddChildViewAt(client_view_, 0);
-  }
+  if (parent())
+    AddChildViewAt(frame_view_.get(), kFrameViewIndex);
 }
 
 void NonClientView::SetOverlayView(View* view) {
@@ -255,6 +262,11 @@ void NonClientView::Layout() {
   // into a View hierarchy once" ( http://codereview.chromium.org/27317 ), but
   // where that is still the case it should simply be fixed.
   frame_view_->SetBoundsRect(GetLocalBounds());
+  client_view_->SetBoundsRect(frame_view_->GetBoundsForClientView());
+
+  SkPath client_clip;
+  if (frame_view_->GetClientMask(client_view_->size(), &client_clip))
+    client_view_->SetClipPath(client_clip);
 
   if (overlay_view_)
     overlay_view_->SetBoundsRect(GetLocalBounds());
@@ -290,8 +302,8 @@ void NonClientView::ViewHierarchyChanged(
   // the various setters, and create and add children directly in the
   // constructor.
   if (details.is_add && GetWidget() && details.child == this) {
-    AddChildViewAt(frame_view_.get(), 0);
-    frame_view_->AddChildViewAt(client_view_, 0);
+    AddChildViewAt(frame_view_.get(), kFrameViewIndex);
+    AddChildViewAt(client_view_, kClientViewIndex);
     if (overlay_view_)
       AddChildView(overlay_view_);
   }

@@ -543,19 +543,19 @@ TEST_F(NonClientFrameViewAshTest, FrameVisibility) {
       delegate->non_client_frame_view();
   EXPECT_EQ(client_bounds, widget->client_view()->GetLocalBounds().size());
 
-  non_client_frame_view->SetFrameEnabled(false);
+  non_client_frame_view->SetVisible(false);
   widget->GetRootView()->Layout();
   EXPECT_EQ(gfx::Size(200, 100),
             widget->client_view()->GetLocalBounds().size());
-  EXPECT_FALSE(non_client_frame_view->GetFrameEnabled());
+  EXPECT_FALSE(widget->non_client_view()->frame_view()->GetVisible());
   EXPECT_EQ(
       window_bounds,
       non_client_frame_view->GetClientBoundsForWindowBounds(window_bounds));
 
-  non_client_frame_view->SetFrameEnabled(true);
+  non_client_frame_view->SetVisible(true);
   widget->GetRootView()->Layout();
   EXPECT_EQ(client_bounds, widget->client_view()->GetLocalBounds().size());
-  EXPECT_TRUE(non_client_frame_view->GetFrameEnabled());
+  EXPECT_TRUE(widget->non_client_view()->frame_view()->GetVisible());
   EXPECT_EQ(32, delegate->GetNonClientFrameViewTopBorderHeight());
   EXPECT_EQ(
       gfx::Rect(gfx::Point(10, 42), client_bounds),

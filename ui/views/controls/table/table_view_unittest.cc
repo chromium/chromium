@@ -445,13 +445,12 @@ class TableViewTest : public ViewsTestBase,
     helper_ = std::make_unique<TableViewTestHelper>(table_);
 
     widget_ = std::make_unique<Widget>();
-    Widget::InitParams params =
-        CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     params.bounds = gfx::Rect(0, 0, 650, 650);
     params.delegate = GetWidgetDelegate(widget_.get());
     widget_->Init(std::move(params));
-    widget_->GetRootView()->AddChildView(std::move(scroll_view));
+    widget_->GetContentsView()->AddChildView(std::move(scroll_view));
     widget_->Show();
   }
 
