@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/animation/length_property_functions.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/scoped_css_value.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -58,10 +59,12 @@ InterpolationValue CSSLengthInterpolationType::MaybeConvertNeutral(
 }
 
 InterpolationValue CSSLengthInterpolationType::MaybeConvertInitial(
-    const StyleResolverState&,
+    const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
   Length initial_length;
-  if (!LengthPropertyFunctions::GetInitialLength(CssProperty(), initial_length))
+  if (!LengthPropertyFunctions::GetInitialLength(
+          CssProperty(), state.GetDocument().GetStyleResolver().InitialStyle(),
+          initial_length))
     return nullptr;
   return InterpolationValue(
       InterpolableLength::MaybeConvertLength(initial_length, 1));

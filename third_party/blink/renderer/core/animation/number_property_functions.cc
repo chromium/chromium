@@ -9,8 +9,9 @@
 namespace blink {
 
 base::Optional<double> NumberPropertyFunctions::GetInitialNumber(
-    const CSSProperty& property) {
-  return GetNumber(property, ComputedStyle::InitialStyle());
+    const CSSProperty& property,
+    const ComputedStyle& initial_style) {
+  return GetNumber(property, initial_style);
 }
 
 base::Optional<double> NumberPropertyFunctions::GetNumber(

@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_quad_value.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
@@ -41,9 +42,7 @@ const BorderImageLengthBox& GetBorderImageLengthBox(
       return style.MaskBoxImageWidth();
     default:
       NOTREACHED();
-      return GetBorderImageLengthBox(
-          CSSProperty::Get(CSSPropertyID::kBorderImageOutset),
-          ComputedStyle::InitialStyle());
+      return style.BorderImageOutset();
   }
 }
 

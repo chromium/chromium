@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
@@ -140,10 +141,12 @@ InterpolationValue CSSFilterListInterpolationType::MaybeConvertNeutral(
 }
 
 InterpolationValue CSSFilterListInterpolationType::MaybeConvertInitial(
-    const StyleResolverState&,
+    const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
   return ConvertFilterList(
-      GetFilterList(CssProperty(), ComputedStyle::InitialStyle()), 1);
+      GetFilterList(CssProperty(),
+                    state.GetDocument().GetStyleResolver().InitialStyle()),
+      1);
 }
 
 InterpolationValue CSSFilterListInterpolationType::MaybeConvertInherit(

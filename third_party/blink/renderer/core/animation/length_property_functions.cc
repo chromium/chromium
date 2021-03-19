@@ -90,8 +90,10 @@ bool LengthPropertyFunctions::GetPixelsForKeyword(const CSSProperty& property,
   }
 }
 
-bool LengthPropertyFunctions::GetInitialLength(const CSSProperty& property,
-                                               Length& result) {
+bool LengthPropertyFunctions::GetInitialLength(
+    const CSSProperty& property,
+    const ComputedStyle& initial_style,
+    Length& result) {
   switch (property.PropertyID()) {
     // The computed value of "initial" for the following properties is 0px if
     // the associated *-style property resolves to "none" or "hidden".
@@ -118,7 +120,7 @@ bool LengthPropertyFunctions::GetInitialLength(const CSSProperty& property,
       return true;
 
     default:
-      return GetLength(property, ComputedStyle::InitialStyle(), result);
+      return GetLength(property, initial_style, result);
   }
 }
 

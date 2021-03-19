@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/animation/image_slice_property_functions.h"
 #include "third_party/blink/renderer/core/animation/side_index.h"
 #include "third_party/blink/renderer/core/css/css_border_image_slice_value.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 
 namespace blink {
@@ -178,10 +179,12 @@ InterpolationValue CSSImageSliceInterpolationType::MaybeConvertNeutral(
 }
 
 InterpolationValue CSSImageSliceInterpolationType::MaybeConvertInitial(
-    const StyleResolverState&,
+    const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
   return ConvertImageSlice(
-      ImageSlicePropertyFunctions::GetInitialImageSlice(CssProperty()), 1);
+      ImageSlicePropertyFunctions::GetInitialImageSlice(
+          CssProperty(), state.GetDocument().GetStyleResolver().InitialStyle()),
+      1);
 }
 
 InterpolationValue CSSImageSliceInterpolationType::MaybeConvertInherit(

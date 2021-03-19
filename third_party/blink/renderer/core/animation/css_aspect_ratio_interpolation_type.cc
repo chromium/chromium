@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/animation/interpolable_aspect_ratio.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/style_aspect_ratio.h"
@@ -99,9 +100,10 @@ InterpolationValue CSSAspectRatioInterpolationType::MaybeConvertNeutral(
 }
 
 InterpolationValue CSSAspectRatioInterpolationType::MaybeConvertInitial(
-    const StyleResolverState&,
+    const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
-  StyleAspectRatio initial_ratio = ComputedStyle::InitialStyle().AspectRatio();
+  StyleAspectRatio initial_ratio =
+      state.GetDocument().GetStyleResolver().InitialStyle().AspectRatio();
   return InterpolationValue(
       CreateInterpolableAspectRatio(initial_ratio),
       CSSAspectRatioNonInterpolableValue::Create(initial_ratio));

@@ -69,13 +69,16 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
       const StyleRecalcContext&,
       const StyleRequest& = StyleRequest());
 
-  // Create a new ComputedStyle instance populated with initial values.
-  scoped_refptr<ComputedStyle> CreateComputedStyle();
+  // Return a reference to the initial style singleton.
+  const ComputedStyle& InitialStyle() const;
+
+  // Create a new ComputedStyle copy based on the initial style singleton.
+  scoped_refptr<ComputedStyle> CreateComputedStyle() const;
 
   // Create a ComputedStyle for initial styles to be used as the basis for the
   // root element style. In addition to initial values things like zoom, font,
   // forced color mode etc. is set.
-  scoped_refptr<ComputedStyle> InitialStyleForElement();
+  scoped_refptr<ComputedStyle> InitialStyleForElement() const;
 
   static CompositorKeyframeValue* CreateCompositorKeyframeValueSnapshot(
       Element&,

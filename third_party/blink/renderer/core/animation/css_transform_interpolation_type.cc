@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/css/css_function_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/resolver/transform_builder.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -62,9 +63,10 @@ InterpolationValue CSSTransformInterpolationType::MaybeConvertNeutral(
 }
 
 InterpolationValue CSSTransformInterpolationType::MaybeConvertInitial(
-    const StyleResolverState&,
+    const StyleResolverState& state,
     ConversionCheckers&) const {
-  return ConvertTransform(ComputedStyle::InitialStyle().Transform());
+  return ConvertTransform(
+      state.GetDocument().GetStyleResolver().InitialStyle().Transform());
 }
 
 InterpolationValue CSSTransformInterpolationType::MaybeConvertInherit(

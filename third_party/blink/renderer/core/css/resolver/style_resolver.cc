@@ -1048,13 +1048,18 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForPage(
   return state.TakeStyle();
 }
 
-scoped_refptr<ComputedStyle> StyleResolver::CreateComputedStyle() {
+const ComputedStyle& StyleResolver::InitialStyle() const {
+  // TODO(crbug.com/1115000): Return a singleton member.
+  return ComputedStyle::InitialStyle();
+}
+
+scoped_refptr<ComputedStyle> StyleResolver::CreateComputedStyle() const {
   // TODO(crbug.com/1115000): Clone the initial style singleton once we have a
   // singleton per resolver instead of the static global in ComputedStyle.
   return ComputedStyle::Create();
 }
 
-scoped_refptr<ComputedStyle> StyleResolver::InitialStyleForElement() {
+scoped_refptr<ComputedStyle> StyleResolver::InitialStyleForElement() const {
   const LocalFrame* frame = GetDocument().GetFrame();
 
   scoped_refptr<ComputedStyle> initial_style = CreateComputedStyle();
