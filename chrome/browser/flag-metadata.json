@@ -1074,7 +1074,7 @@
   {
     "name": "disable-virtual-keyboard",
     "owners": [ "myy", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 95
   },
   {
     "name": "disable-webrtc-hw-decoding",
@@ -1477,7 +1477,7 @@
   {
     "name": "enable-cros-ime-assist-autocorrect",
     "owners": [ "jopalmer", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 95
   },
   {
     "name": "enable-cros-ime-assist-multi-word",
@@ -1487,22 +1487,22 @@
   {
     "name": "enable-cros-ime-assist-personal-info",
     "owners": [ "jiwan", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 95
   },
   {
     "name": "enable-cros-ime-emoji-suggest-addition",
     "owners": [ "myy", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 95
   },
   {
     "name": "enable-cros-ime-mozc-proto",
     "owners": [ "essential-inputs-team@google.com" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 95
   },
   {
     "name": "enable-cros-ime-service-decoder",
     "owners": [ "essential-inputs-team@google.com" ],
-    "expiry_milestone": 91
+    "expiry_milestone": 95
   },
   {
     "name": "enable-cros-ime-system-emoji-picker",
@@ -1512,7 +1512,7 @@
   {
     "name": "enable-cros-language-settings-update",
     "owners": [ "essential-inputs-team@google.com" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 95
   },
   {
     "name": "enable-cros-language-settings-update-2",
@@ -1522,7 +1522,7 @@
   {
     "name": "enable-cros-multilingual-typing",
     "owners": [ "tranbaoduy", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 95
   },
   {
     "name": "enable-cros-on-device-grammar-check",
@@ -1537,7 +1537,7 @@
   {
     "name": "enable-cros-virtual-keyboard-bordered-key",
     "owners": [ "essential-inputs-team@google.com" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 95
   },
   {
     "name": "enable-cros-virtual-keyboard-multipaste",
@@ -3022,11 +3022,6 @@
     "name": "global-media-controls-seamless-transfer",
     "owners": [ "noahrose@google.com", "steimel", "media-dev" ],
     "expiry_milestone": 93
-  },
-  {
-    "name": "handwriting-gesture",
-    "owners": [ "essential-inputs-team@google.com" ],
-    "expiry_milestone": 90
   },
   {
     "name": "handwriting-gesture-editing",

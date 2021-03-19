@@ -751,9 +751,6 @@ extern const char kGlobalMediaControlsOverlayControlsDescription[];
 extern const char kGpuRasterizationName[];
 extern const char kGpuRasterizationDescription[];
 
-extern const char kHandwritingGestureName[];
-extern const char kHandwritingGestureDescription[];
-
 extern const char kHandwritingGestureEditingName[];
 extern const char kHandwritingGestureEditingDescription[];
 
