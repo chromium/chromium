@@ -160,6 +160,11 @@ builder.
   * [`//tools/clang/scripts/update.py`](https://cs.chromium.org/search?q=package:%5Echromium$+file:tools/clang/scripts/update.py)
   * [`//ui/gl/.+`](https://cs.chromium.org/chromium/src/ui/gl/)
 
+* [branch-config-verifier](https://ci.chromium.org/p/chromium/builders/try/branch-config-verifier) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+branch-config-verifier)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+branch-config-verifier))
+
+  Path regular expressions:
+  * [`//infra/config/.+`](https://cs.chromium.org/chromium/src/infra/config/)
+
 * [chromeos-amd64-generic-dbg](https://ci.chromium.org/p/chromium/builders/try/chromeos-amd64-generic-dbg) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+chromeos-amd64-generic-dbg)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+chromeos-amd64-generic-dbg))
 
   Path regular expressions:

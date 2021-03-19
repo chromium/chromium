@@ -172,6 +172,22 @@ try_.builder(
     name = "branch-config-verifier",
     executable = "recipe:branch_configuration/tester",
     main_list_view = "try",
+    properties = {
+        "branch_script": "infra/config/scripts/branch.py",
+        "branch_types": ["standard", "lts"],
+        "verification_scripts": ["infra/config/main.star", "infra/config/dev.star"],
+    },
+    tryjob = try_.job(
+        # Errors that this builder would catch would go unnoticed until a
+        # project is set up on a branch day or even worse when a branch was
+        # turned into an LTS branch, long after the change has been made, so
+        # disable reuse to ensure it's checked with current code. The builder
+        # runs in a few minutes and only for infra/config changes, so it won't
+        # impose a heavy burden on our capacity.
+        disable_reuse = True,
+        add_default_excludes = False,
+        location_regexp = [r".+/[+]/infra/config/.+"],
+    ),
 )
 
 try_.blink_builder(
