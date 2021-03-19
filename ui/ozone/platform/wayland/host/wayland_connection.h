@@ -22,6 +22,10 @@ namespace gfx {
 class Point;
 }
 
+namespace wl {
+class WaylandProxy;
+}
+
 namespace ui {
 
 class WaylandBufferManagerHost;
@@ -255,6 +259,11 @@ class WaylandConnection {
 
   std::unique_ptr<WaylandDataDragController> data_drag_controller_;
   std::unique_ptr<WaylandWindowDragController> window_drag_controller_;
+
+  // Helper class that lets input emulation access some data of objects
+  // that Wayland holds. For example, wl_surface and others. It's only
+  // created when platform window test config is set.
+  std::unique_ptr<wl::WaylandProxy> wayland_proxy_;
 
   // Manages Wayland windows.
   WaylandWindowManager wayland_window_manager_;

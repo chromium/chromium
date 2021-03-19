@@ -212,6 +212,7 @@ source_set("wayland") {
     "//ui/ozone/common",
     "//ui/ozone/public/mojom/wayland:wayland_mojom",
     "//ui/platform_window",
+    "//ui/platform_window/common",
     "//ui/platform_window/wm",
   ]
 
@@ -276,6 +277,14 @@ source_set("wayland") {
     ]
     deps += [ "//gpu/vulkan" ]
   }
+
+  # Proxy implementation that is used by input emulation.
+  sources += [
+    "host/proxy/wayland_proxy_impl.cc",
+    "host/proxy/wayland_proxy_impl.h",
+  ]
+
+  deps += [ ":wayland_proxy" ]
 
   configs += [ "//third_party/khronos:khronos_headers" ]
 }
@@ -449,5 +458,27 @@ fuzzer_test("wayland_buffer_fuzzer") {
     "//mojo/public/cpp/system",
     "//ui/gfx:test_support",
     "//ui/platform_window:platform_window",
+  ]
+}
+
+component("wayland_proxy") {
+  visibility = []
+  visibility += [
+    ":ui_test_support",
+    ":wayland",
+  ]
+
+  sources = [
+    "host/proxy/wayland_proxy.cc",
+    "host/proxy/wayland_proxy.h",
+  ]
+
+  defines = [ "IS_WAYLAND_PROXY_IMPL" ]
+
+  deps = [
+    "//base",
+    "//ui/gfx",
+    "//ui/platform_window",
+    "//ui/platform_window/common",
   ]
 }

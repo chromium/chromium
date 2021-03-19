@@ -22,6 +22,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/gtk_primary_selection_device_manager.h"
+#include "ui/ozone/platform/wayland/host/proxy/wayland_proxy_impl.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_clipboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor.h"
@@ -43,6 +44,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_zwp_linux_dmabuf.h"
 #include "ui/ozone/platform/wayland/host/xdg_foreign_wrapper.h"
 #include "ui/ozone/platform/wayland/host/zwp_primary_selection_device_manager.h"
+#include "ui/platform_window/common/platform_window_defaults.h"
 
 #if defined(USE_LIBWAYLAND_STUBS)
 #include <dlfcn.h>
@@ -161,6 +163,9 @@ bool WaylandConnection::Initialize() {
   // announced.
   if (!seat_)
     LOG(WARNING) << "No wl_seat object. The functionality may suffer.";
+
+  if (UseTestConfigForPlatformWindows())
+    wayland_proxy_ = std::make_unique<wl::WaylandProxyImpl>(this);
 
   return true;
 }
