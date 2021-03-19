@@ -1164,51 +1164,6 @@ using ManifestUpdateManagerWebAppsBrowserTest =
     ManifestUpdateManagerBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerWebAppsBrowserTest,
-                       CheckFindsThemeColorChangeForShadowBookmarkApp) {
-  auto* extensions_registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
-  extensions::TestExtensionRegistryObserver extensions_registry_observer(
-      extensions_registry);
-
-  extensions::BookmarkAppRegistrar bookmark_app_registrar{browser()->profile()};
-
-  constexpr char kManifestTemplate[] = R"(
-    {
-      "name": "Test app name",
-      "start_url": ".",
-      "scope": "/",
-      "display": "standalone",
-      "icons": $1,
-      "theme_color": "$2"
-    }
-  )";
-  OverrideManifest(kManifestTemplate, {kInstallableIconList, "blue"});
-  AppId app_id = InstallWebApp();
-  EXPECT_EQ(GetProvider().registrar().GetAppThemeColor(app_id), SK_ColorBLUE);
-
-  scoped_refptr<const extensions::Extension> extension =
-      extensions_registry_observer.WaitForExtensionInstalled();
-  EXPECT_EQ(extension->id(), app_id);
-  EXPECT_EQ(bookmark_app_registrar.GetAppThemeColor(app_id).value(),
-            SK_ColorBLUE);
-
-  OverrideManifest(kManifestTemplate, {kInstallableIconList, "red"});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
-            ManifestUpdateResult::kAppUpdated);
-  CheckShortcutInfoUpdated(app_id, kInstallableIconTopLeftColor);
-  EXPECT_EQ(GetProvider().registrar().GetAppThemeColor(app_id), SK_ColorRED);
-
-  // Wait for all update events sequentially. Otherwise the test is flaky.
-  extensions_registry_observer.WaitForExtensionUnloaded();
-  extensions_registry_observer.WaitForExtensionLoaded();
-  extension = extensions_registry_observer.WaitForExtensionReady();
-
-  EXPECT_EQ(extension->id(), app_id);
-  EXPECT_EQ(bookmark_app_registrar.GetAppThemeColor(app_id).value(),
-            SK_ColorRED);
-}
-
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerWebAppsBrowserTest,
                        CheckFindsAddedShareTarget) {
   constexpr char kManifestTemplate[] = R"(
     {

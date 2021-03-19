@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/notification_service.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -37,7 +39,7 @@ std::unique_ptr<web_app::WebAppInstallObserver>
 SetupSyncInstallObserverForProfile(Profile* profile) {
   auto apps_to_be_sync_installed = web_app::WebAppProvider::Get(profile)
                                        ->install_manager()
-                                       .GetEnqueuedAppIdsForTesting();
+                                       .GetEnqueuedInstallAppIdsForTesting();
 
   if (apps_to_be_sync_installed.empty()) {
     return nullptr;
@@ -207,7 +209,7 @@ void AwaitWebAppQuiescence(std::vector<Profile*> profiles) {
   for (auto* profile : profiles) {
     DCHECK(web_app::WebAppProvider::Get(profile)
                ->install_manager()
-               .GetEnqueuedAppIdsForTesting()
+               .GetEnqueuedInstallAppIdsForTesting()
                .empty());
 
     std::set<web_app::AppId> apps_in_sync_uninstall =
@@ -217,6 +219,31 @@ void AwaitWebAppQuiescence(std::vector<Profile*> profiles) {
             ->GetAppsInSyncUninstallForTest();
     DCHECK(apps_in_sync_uninstall.empty());
   }
+}
+
+web_app::AppId InstallWebApp(Profile* profile, const WebApplicationInfo& info) {
+  DCHECK(info.start_url.is_valid());
+  base::RunLoop run_loop;
+  web_app::AppId app_id;
+  auto* provider = web_app::WebAppProvider::Get(profile);
+  provider->install_manager().InstallWebAppFromInfo(
+      std::make_unique<WebApplicationInfo>(info),
+      web_app::ForInstallableSite::kYes,
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+      base::BindLambdaForTesting(
+          [&run_loop, &app_id](const web_app::AppId& new_app_id,
+                               web_app::InstallResultCode code) {
+            DCHECK_EQ(code, web_app::InstallResultCode::kSuccessNewInstall);
+            app_id = new_app_id;
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  const web_app::AppRegistrar& registrar = provider->registrar();
+  DCHECK_EQ(base::UTF8ToUTF16(registrar.GetAppShortName(app_id)), info.title);
+  DCHECK_EQ(registrar.GetAppStartUrl(app_id), info.start_url);
+
+  return app_id;
 }
 
 }  // namespace apps_helper

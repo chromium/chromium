@@ -15,6 +15,7 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
+#include "components/sync/test/fake_server/fake_server_verifier.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -192,6 +193,26 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   EXPECT_FALSE(web_app_registrar->IsInstalled(app_id));
 }
 
+// Web app install should not commit APPS sync entity.
+IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
+                       AppInstallDoNotSyncBookmarkApp) {
+  ASSERT_TRUE(SetupSync());
+  WebApplicationInfo info;
+  std::string name = "Test name";
+  info.title = base::UTF8ToUTF16(name);
+  info.description = base::UTF8ToUTF16("Test description");
+  info.start_url = GURL("http://www.chromium.org/path");
+  info.scope = GURL("http://www.chromium.org/");
+  web_app::AppId app_id = apps_helper::InstallWebApp(GetProfile(0), info);
+  ASSERT_TRUE(SetupSync());
+
+  fake_server::FakeServerVerifier fake_server_verifier(fake_server_.get());
+  EXPECT_TRUE(fake_server_verifier.VerifyEntityCountByTypeAndName(
+      1, syncer::WEB_APPS, name));
+  EXPECT_TRUE(fake_server_verifier.VerifyEntityCountByTypeAndName(
+      0, syncer::APPS, name));
+}
+
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
                        AppWithMalformedIdNotSyncInstalled) {
   const std::string app_id = "invalid_id";
@@ -222,5 +243,26 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncBookmarkAppTest,
                                 .AsWebAppRegistrar();
 
   EXPECT_TRUE(web_app_registrar->IsInstalled(app_id));
+}
+
+// Web app install should commit APPS sync entity when kSyncBookmarkApps is
+// enabled.
+IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncBookmarkAppTest,
+                       AppInstallSyncBookmarkApp) {
+  ASSERT_TRUE(SetupSync());
+  WebApplicationInfo info;
+  std::string name = "Test name";
+  info.title = base::UTF8ToUTF16(name);
+  info.description = base::UTF8ToUTF16("Test description");
+  info.start_url = GURL("http://www.chromium.org/path");
+  info.scope = GURL("http://www.chromium.org/");
+  web_app::AppId app_id = apps_helper::InstallWebApp(GetProfile(0), info);
+  ASSERT_TRUE(SetupSync());
+
+  fake_server::FakeServerVerifier fake_server_verifier(fake_server_.get());
+  EXPECT_TRUE(fake_server_verifier.VerifyEntityCountByTypeAndName(
+      1, syncer::WEB_APPS, name));
+  EXPECT_TRUE(fake_server_verifier.VerifyEntityCountByTypeAndName(
+      1, syncer::APPS, name));
 }
 }  // namespace

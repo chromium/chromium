@@ -81,11 +81,14 @@ class WebAppMigrationManagerBrowserTest : public InProcessBrowserTest {
  public:
   WebAppMigrationManagerBrowserTest() {
     if (content::IsPreTest()) {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kDesktopPWAsWithoutExtensions);
+      scoped_feature_list_.InitWithFeatures(
+          {features::kSyncBookmarkApps},
+          {features::kDesktopPWAsWithoutExtensions});
     } else {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kDesktopPWAsWithoutExtensions);
+      scoped_feature_list_.InitWithFeatures(
+          {features::kDesktopPWAsWithoutExtensions,
+           features::kSyncBookmarkApps},
+          {});
     }
   }
 

@@ -32,6 +32,7 @@
 #include "chrome/browser/web_applications/web_app_installation_utils.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -201,7 +202,8 @@ void WebAppInstallFinalizer::FinalizeInstall(
   // We should install shadow bookmark app only for kSync source (we sync only
   // user-installed apps). System, Policy, WebAppStore, Default apps should not
   // get a shadow bookmark app.
-  if (legacy_finalizer_ && is_synced) {
+  if (legacy_finalizer_ && is_synced &&
+      base::FeatureList::IsEnabled(features::kSyncBookmarkApps)) {
     legacy_finalizer_->FinalizeInstall(web_app_info, options,
                                        base::DoNothing());
   }
@@ -470,7 +472,8 @@ void WebAppInstallFinalizer::FinalizeUpdateWithShortcutInfo(
   SetWebAppManifestFieldsAndWriteData(web_app_info, std::move(web_app),
                                       std::move(commit_callback));
 
-  if (legacy_finalizer_ && is_synced)
+  if (legacy_finalizer_ && is_synced &&
+      base::FeatureList::IsEnabled(features::kSyncBookmarkApps))
     legacy_finalizer_->FinalizeUpdate(web_app_info, base::DoNothing());
 }
 
