@@ -68,6 +68,66 @@ class BranchUnitTest(unittest.TestCase):
             }
             """))
 
+  def test_set_type_parse_args_fails_when_missing_required_args(self):
+    with self.assertRaises(ParseError) as caught:
+      branch.parse_args(['set-type'], parser_type=ArgumentParser)
+    self.assertEqual(str(caught.exception),
+                     'the following arguments are required: --type')
+
+  def test_set_type_parse_args_fails_for_invalid_type(self):
+    with self.assertRaises(ParseError) as caught:
+      branch.parse_args(['set-type', '--type', 'foo'],
+                        parser_type=ArgumentParser)
+    self.assertIn("invalid choice: 'foo'", str(caught.exception))
+
+  def test_set_type_parse_args(self):
+    args = branch.parse_args(['set-type', '--type', 'lts'])
+    self.assertEqual(args.type, 'lts')
+
+  def test_set_type_standard(self):
+    input = textwrap.dedent("""\
+        {
+            "project": "chromium-mMM",
+            "project_title": "Chromium MMM",
+            "is_main": true,
+            "is_lts_branch": true,
+            "ref": "refs/branch-heads/AAAA"
+        }""")
+    output = branch.set_type(input, 'standard')
+    self.assertEqual(
+        output,
+        textwrap.dedent("""\
+            {
+                "project": "chromium-mMM",
+                "project_title": "Chromium MMM",
+                "is_main": false,
+                "is_lts_branch": false,
+                "ref": "refs/branch-heads/AAAA"
+            }
+            """))
+
+  def test_set_type_lts(self):
+    input = textwrap.dedent("""\
+        {
+            "project": "chromium-mMM",
+            "project_title": "Chromium MMM",
+            "is_main": true,
+            "is_lts_branch": false,
+            "ref": "refs/branch-heads/AAAA"
+        }""")
+    output = branch.set_type(input, 'lts')
+    self.assertEqual(
+        output,
+        textwrap.dedent("""\
+            {
+                "project": "chromium-mMM",
+                "project_title": "Chromium MMM",
+                "is_main": false,
+                "is_lts_branch": true,
+                "ref": "refs/branch-heads/AAAA"
+            }
+            """))
+
 
 if __name__ == '__main__':
   unittest.main()

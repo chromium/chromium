@@ -20,7 +20,6 @@ Usage:
 import argparse
 import json
 import os
-import sys
 
 INFRA_CONFIG_DIR = os.path.abspath(os.path.join(__file__, '..', '..'))
 
@@ -48,6 +47,15 @@ def parse_args(args=None, *, parser_type=None):
       required=True,
       help='The branch name, must correspond to a ref in refs/branch-heads')
 
+  set_type_parser = subparsers.add_parser(
+      'set-type', help='Change the branch type of the project')
+  set_type_parser.set_defaults(func=set_type_cmd)
+  set_type_parser.add_argument(
+      '--type',
+      required=True,
+      choices=BRANCH_TYPE_SETTINGS.keys(),
+      help='The type of the branch to change the project config to')
+
   args = parser.parse_args(args)
   if args.func is None:
     parser.error('no sub-command specified')
@@ -70,6 +78,39 @@ def initialize_cmd(args):
 
   with open(args.settings_json, 'w') as f:
     f.write(settings)
+
+
+BRANCH_TYPE_SETTINGS = {
+    'standard': {
+        'is_main': False,
+        'is_lts_branch': False
+    },
+    'lts': {
+        'is_main': False,
+        'is_lts_branch': True
+    },
+}
+
+
+def set_type(settings_json, branch_type):
+  assert branch_type in BRANCH_TYPE_SETTINGS, (
+      'Unknown branch_type {!r}'.format(branch_type))
+
+  settings = json.loads(settings_json)
+  branch_settings = BRANCH_TYPE_SETTINGS[branch_type]
+  settings.update(branch_settings)
+  return json.dumps(settings, indent=4) + '\n'
+
+
+def set_type_cmd(args):
+  with open(args.settings_json) as f:
+    settings = f.read()
+
+  settings = set_type(settings, args.type)
+
+  with open(args.settings_json, 'w') as f:
+    f.write(settings)
+
 
 def main():
   args = parse_args()

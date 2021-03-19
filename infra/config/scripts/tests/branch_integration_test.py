@@ -58,5 +58,46 @@ class BranchIntegrationTest(unittest.TestCase):
         }
         """))
 
+  def test_set_type_fails_when_missing_required_args(self):
+    result = self._execute_branch_py(['set-type'])
+    self.assertNotEqual(result.returncode, 0)
+    self.assertIn('the following arguments are required: --type', result.stderr)
+
+  def test_set_type_fails_for_invalid_type(self):
+    result = self._execute_branch_py(['set-type', '--type', 'foo'])
+    self.assertNotEqual(result.returncode, 0)
+    self.assertIn("invalid choice: 'foo'", str(result.stderr))
+
+  def test_set_type_rewrites_settings_json(self):
+    with open(self._settings_json, 'w') as f:
+      settings = {
+          "project": "chromium-mXX",
+          "project_title": "Chromium MXX",
+          "is_main": True,
+          "is_lts_branch": False,
+          "ref": "refs/branch-heads/YYYY"
+      }
+      json.dump(settings, f)
+
+    result = self._execute_branch_py(['set-type', '--type', 'lts'])
+    self.assertEqual(result.returncode, 0,
+                     (f'subprocess failed\n***COMMAND***\n{result.args}\n'
+                      f'***STDERR***\n{result.stderr}\n'))
+
+    with open(self._settings_json) as f:
+      settings = f.read()
+    self.assertEqual(
+        settings,
+        textwrap.dedent("""\
+            {
+                "project": "chromium-mXX",
+                "project_title": "Chromium MXX",
+                "is_main": false,
+                "is_lts_branch": true,
+                "ref": "refs/branch-heads/YYYY"
+            }
+            """))
+
+
 if __name__ == '__main__':
   unittest.main()
