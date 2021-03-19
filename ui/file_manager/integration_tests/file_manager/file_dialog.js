@@ -797,6 +797,9 @@ testcase.openFileDialogFileListShowContextMenu = async () => {
     ['Linux files', '--', 'Folder'],
     ['Trash', '--', 'Folder'],
   ];
+  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
+    expectedRows.pop();
+  }
   await remoteCall.waitForFiles(
       appId, expectedRows, {ignoreLastModifiedTime: true});
 

@@ -112,7 +112,8 @@ async function keyboardDelete(path, deleteHasDialog) {
       'deleteFile failed');
 
   // Run the delete entry confirmation dialog.
-  if (deleteHasDialog) {
+  if (deleteHasDialog ||
+      await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
     await waitAndAcceptDialog(appId);
   }
 
@@ -144,7 +145,8 @@ async function keyboardDeleteFolder(path, treeItem, deleteHasDialog) {
       'deleteFile failed');
 
   // Run the delete entry confirmation dialog.
-  if (deleteHasDialog) {
+  if (deleteHasDialog ||
+      await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
     await waitAndAcceptDialog(appId);
   }
 

@@ -580,6 +580,9 @@ async function checkMyFilesRootItemContextMenu(itemName, commandStates) {
     ['Linux files', '--', 'Folder'],
     ['Trash', '--', 'Folder'],
   ];
+  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
+    expectedRows.pop();
+  }
   await remoteCall.waitForFiles(
       appId, expectedRows,
       {ignoreFileSize: true, ignoreLastModifiedTime: true});

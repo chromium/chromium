@@ -148,6 +148,11 @@ struct TestCase {
     return *this;
   }
 
+  TestCase& EnableTrash() {
+    options.enable_trash = true;
+    return *this;
+  }
+
   TestCase& EnableHoldingSpace(bool enable) {
     options.enable_holding_space = enable;
     return *this;
@@ -193,6 +198,9 @@ struct TestCase {
 
     if (!options.enable_js_modules)
       full_name += "_NonJsModule";
+
+    if (options.enable_trash)
+      full_name += "_Trash";
 
     return full_name;
   }
@@ -424,12 +432,16 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(TestCase("keyboardDeleteDownloads").InGuestMode(),
                       TestCase("keyboardDeleteDownloads"),
                       TestCase("keyboardDeleteDownloads").DisableJsModules(),
+                      TestCase("keyboardDeleteDownloads").EnableTrash(),
                       TestCase("keyboardDeleteDrive"),
+                      TestCase("keyboardDeleteDrive").EnableTrash(),
                       TestCase("keyboardDeleteFolderDownloads").InGuestMode(),
                       TestCase("keyboardDeleteFolderDownloads"),
+                      TestCase("keyboardDeleteFolderDownloads").EnableTrash(),
                       TestCase("keyboardDeleteFolderDrive"),
                       TestCase("keyboardCopyDownloads").InGuestMode(),
                       TestCase("keyboardCopyDownloads"),
+                      TestCase("keyboardCopyDownloads").EnableTrash(),
                       TestCase("keyboardCopyDrive"),
                       TestCase("keyboardFocusOutlineVisible"),
                       TestCase("keyboardFocusOutlineVisibleMouse"),
@@ -510,6 +522,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("toolbarDeleteEntry").InGuestMode(),
         TestCase("toolbarDeleteEntry"),
         TestCase("toolbarDeleteEntry").DisableJsModules(),
+        TestCase("toolbarDeleteEntry").EnableTrash(),
         TestCase("toolbarRefreshButtonWithSelection").EnableArc(),
         TestCase("toolbarAltACommand"),
         TestCase("toolbarRefreshButtonHiddenInRecents"),
@@ -571,6 +584,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openQuickViewTabIndexAudio"),
         TestCase("openQuickViewTabIndexVideo"),
         TestCase("openQuickViewTabIndexDeleteDialog"),
+        TestCase("openQuickViewTabIndexDeleteDialog").EnableTrash(),
         TestCase("openQuickViewToggleInfoButtonKeyboard"),
         TestCase("openQuickViewToggleInfoButtonClick"),
         TestCase("openQuickViewWithMultipleFiles"),
@@ -580,10 +594,15 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openQuickViewWithMultipleFilesKeyboardLeftRight"),
         TestCase("openQuickViewFromDirectoryTree"),
         TestCase("openQuickViewAndDeleteSingleSelection"),
+        TestCase("openQuickViewAndDeleteSingleSelection").EnableTrash(),
         TestCase("openQuickViewAndDeleteCheckSelection"),
+        TestCase("openQuickViewAndDeleteCheckSelection").EnableTrash(),
         TestCase("openQuickViewDeleteEntireCheckSelection"),
+        TestCase("openQuickViewDeleteEntireCheckSelection").EnableTrash(),
         TestCase("openQuickViewClickDeleteButton"),
+        TestCase("openQuickViewClickDeleteButton").EnableTrash(),
         TestCase("openQuickViewDeleteButtonNotShown"),
+        TestCase("openQuickViewDeleteButtonNotShown").EnableTrash(),
         TestCase("openQuickViewUmaViaContextMenu"),
         TestCase("openQuickViewUmaForCheckSelectViaContextMenu"),
         TestCase("openQuickViewUmaViaSelectionMenu"),
@@ -753,6 +772,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("transferDragAndHover"),
         TestCase("transferFromDownloadsToDownloads"),
         TestCase("transferDeletedFile"),
+        TestCase("transferDeletedFile").EnableTrash(),
         TestCase("transferInfoIsRemembered"),
         TestCase("transferToUsbHasDestinationText"),
         TestCase("transferDismissedErrorIsRemembered"),
@@ -977,6 +997,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
                       TestCase("fileListKeyboardSelectionA11y"),
                       TestCase("fileListMouseSelectionA11y"),
                       TestCase("fileListDeleteMultipleFiles"),
+                      TestCase("fileListDeleteMultipleFiles").EnableTrash(),
                       TestCase("fileListRenameSelectedItem"),
                       TestCase("fileListRenameFromSelectAll")));
 
@@ -996,6 +1017,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         TestCase("directoryTreeRefresh"),
         TestCase("showMyFiles"),
+        TestCase("showMyFiles").EnableTrash(),
         TestCase("myFilesDisplaysAndOpensEntries"),
         TestCase("myFilesFolderRename"),
         TestCase("myFilesUpdatesWhenAndroidVolumeMounts").DontMountVolumes(),
@@ -1111,10 +1133,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Trash, /* trash.js */
     FilesAppBrowserTest,
-    ::testing::Values(TestCase("trashMoveToTrash"),
-                      TestCase("trashRestoreFromToast"),
-                      TestCase("trashRestoreFromTrash"),
-                      TestCase("trashDeleteFromTrash")));
+    ::testing::Values(TestCase("trashMoveToTrash").EnableTrash(),
+                      TestCase("trashRestoreFromToast").EnableTrash(),
+                      TestCase("trashRestoreFromTrash").EnableTrash(),
+                      TestCase("trashDeleteFromTrash").EnableTrash()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     AndroidPhotos, /* android_photos.js */

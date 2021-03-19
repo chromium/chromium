@@ -56,11 +56,30 @@ testcase.toolbarDeleteButtonOpensDeleteConfirmDialog = async () => {
 testcase.toolbarDeleteButtonKeepFocus = async () => {
   // Open Files app.
   const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.desktop]);
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
-  // Select My Desktop Background.png
+  // USB delete never uses trash and always shows the delete dialog.
+  const USB_VOLUME_QUERY = '#directory-tree [volume-type-icon="removable"]';
+
+  // Mount a USB volume.
+  await sendTestMessage({name: 'mountFakeUsb'});
+
+  // Wait for the USB volume to mount.
+  await remoteCall.waitForElement(appId, USB_VOLUME_QUERY);
+
+  // Click to open the USB volume.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'fakeMouseClick', appId, [USB_VOLUME_QUERY]),
+      'fakeMouseClick failed');
+
+  // Check: the USB files should appear in the file list.
+  const files = TestEntryInfo.getExpectedRows(BASIC_FAKE_ENTRY_SET);
+  await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
+
+  // Select hello.txt
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [ENTRIES.desktop.nameText]));
+      'selectFile', appId, [ENTRIES.hello.nameText]));
 
   // Click the toolbar Delete button.
   await remoteCall.simulateUiClick(appId, '#delete-button');
@@ -116,6 +135,17 @@ testcase.toolbarDeleteEntry = async () => {
   // Click delete button in the toolbar.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'fakeMouseClick', appId, ['#delete-button']));
+
+  // Confirm that the confirmation dialog is shown.
+  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
+    await remoteCall.waitForElement(appId, '.cr-dialog-container.shown');
+
+    // Press delete button.
+    chrome.test.assertTrue(
+        !!await remoteCall.callRemoteTestUtil(
+            'fakeMouseClick', appId, ['button.cr-dialog-ok']),
+        'fakeMouseClick failed');
+  }
 
   // Confirm the file is removed.
   await remoteCall.waitForFiles(

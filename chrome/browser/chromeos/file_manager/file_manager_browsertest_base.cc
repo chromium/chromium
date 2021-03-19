@@ -1666,9 +1666,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
   // Make sure to run the ARC storage UI toast tests.
   enabled_features.push_back(arc::kUsbStorageUIFeature);
 
-  // Use Trash in tests.
-  enabled_features.push_back(chromeos::features::kFilesTrash);
-
   if (options.files_swa) {
     enabled_features.push_back(chromeos::features::kFilesSWA);
   } else {
@@ -1715,6 +1712,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
 
   if (options.single_partition_format) {
     enabled_features.push_back(chromeos::features::kFilesSinglePartitionFormat);
+  }
+
+  if (options.enable_trash) {
+    enabled_features.push_back(chromeos::features::kFilesTrash);
+  } else {
+    disabled_features.push_back(chromeos::features::kFilesTrash);
   }
 
   if (options.enable_holding_space) {
@@ -2629,6 +2632,11 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
   if (name == "isSmbEnabled") {
     *output = options.native_smb ? "true" : "false";
+    return;
+  }
+
+  if (name == "isTrashEnabled") {
+    *output = options.enable_trash ? "true" : "false";
     return;
   }
 

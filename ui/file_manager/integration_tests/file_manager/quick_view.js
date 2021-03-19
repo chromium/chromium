@@ -209,6 +209,31 @@
   }
 
   /**
+   * Mount and select USB.
+   *
+   * @param {string} appId Files app windowId.
+   */
+  async function mountAndSelectUsb(appId) {
+    const USB_VOLUME_QUERY = '#directory-tree [volume-type-icon="removable"]';
+
+    // Mount a USB volume.
+    await sendTestMessage({name: 'mountFakeUsb'});
+
+    // Wait for the USB volume to mount.
+    await remoteCall.waitForElement(appId, USB_VOLUME_QUERY);
+
+    // Click to open the USB volume.
+    chrome.test.assertTrue(
+        !!await remoteCall.callRemoteTestUtil(
+            'fakeMouseClick', appId, [USB_VOLUME_QUERY]),
+        'fakeMouseClick failed');
+
+    // Check: the USB files should appear in the file list.
+    const files = TestEntryInfo.getExpectedRows(BASIC_FAKE_ENTRY_SET);
+    await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
+  }
+
+  /**
    * Assuming that Quick View is currently open per openQuickView above, closes
    * the Quick View dialog.
    *
@@ -426,29 +451,12 @@
    * Tests opening Quick View on a USB file.
    */
   testcase.openQuickViewUsb = async () => {
-    const USB_VOLUME_QUERY = '#directory-tree [volume-type-icon="removable"]';
-
     // Open Files app on Downloads containing ENTRIES.photos.
     const appId =
         await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
-    // Mount a USB volume.
-    await sendTestMessage({name: 'mountFakeUsb'});
-
-    // Wait for the USB volume to mount.
-    await remoteCall.waitForElement(appId, USB_VOLUME_QUERY);
-
-    // Click to open the USB volume.
-    chrome.test.assertTrue(
-        !!await remoteCall.callRemoteTestUtil(
-            'fakeMouseClick', appId, [USB_VOLUME_QUERY]),
-        'fakeMouseClick failed');
-
-    // Check: the USB files should appear in the file list.
-    const files = TestEntryInfo.getExpectedRows(BASIC_FAKE_ENTRY_SET);
-    await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
-
     // Open a USB file in Quick View.
+    await mountAndSelectUsb(appId);
     await openQuickView(appId, ENTRIES.hello.nameText);
   };
 
@@ -2770,9 +2778,11 @@
   testcase.openQuickViewTabIndexDeleteDialog = async () => {
     // Open Files app.
     const appId =
-        await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
+        await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
-    // Open the file in Quick View.
+    // Open a USB file in Quick View. USB delete never uses trash and always
+    // shows the delete dialog.
+    await mountAndSelectUsb(appId);
     await openQuickView(appId, ENTRIES.hello.nameText);
 
     // Open the Quick View delete confirm dialog.
@@ -2813,30 +2823,32 @@
    * that Quick View closes when there are no more items to view.
    */
   testcase.openQuickViewAndDeleteSingleSelection = async () => {
-    // Open Files app.
+    // Open Files app on Downloads containing ENTRIES.hello.
     const appId =
-        await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
+        await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
     // Open the file in Quick View.
     await openQuickView(appId, ENTRIES.hello.nameText);
 
-    // Open the Quick View delete confirm dialog.
+    // Press delete key.
     const deleteKey = ['#quick-view', 'Delete', false, false, false];
     chrome.test.assertTrue(
         await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, deleteKey),
         'Pressing Delete failed.');
 
-    // Check: the delete confirm dialog should focus the 'Cancel' button.
-    let defaultDialogButton = ['#quick-view', '.cr-dialog-cancel:focus'];
-    defaultDialogButton =
-        await remoteCall.waitForElement(appId, defaultDialogButton);
-    chrome.test.assertEq('Cancel', defaultDialogButton.text);
+    if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
+      // Check: the delete confirm dialog should focus the 'Cancel' button.
+      let defaultDialogButton = ['#quick-view', '.cr-dialog-cancel:focus'];
+      defaultDialogButton =
+          await remoteCall.waitForElement(appId, defaultDialogButton);
+      chrome.test.assertEq('Cancel', defaultDialogButton.text);
 
-    // Click the delete confirm dialog 'Delete' button.
-    let deleteDialogButton = ['#quick-view', '.cr-dialog-ok:not([hidden])'];
-    deleteDialogButton =
-        await remoteCall.waitAndClickElement(appId, deleteDialogButton);
-    chrome.test.assertEq('Delete', deleteDialogButton.text);
+      // Click the delete confirm dialog 'Delete' button.
+      let deleteDialogButton = ['#quick-view', '.cr-dialog-ok:not([hidden])'];
+      deleteDialogButton =
+          await remoteCall.waitAndClickElement(appId, deleteDialogButton);
+      chrome.test.assertEq('Delete', deleteDialogButton.text);
+    }
 
     // Check: |hello.txt| should have been deleted.
     await remoteCall.waitForElementLost(
@@ -2853,9 +2865,9 @@
    * deletion.
    */
   testcase.openQuickViewAndDeleteCheckSelection = async () => {
-    // Open Files app.
-    const appId =
-        await setupAndWaitUntilReady(RootPath.DRIVE, [], BASIC_LOCAL_ENTRY_SET);
+    // Open Files app on Downloads containing BASIC_LOCAL_ENTRY_SET.
+    const appId = await setupAndWaitUntilReady(
+        RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
     const caller = getCaller();
 
@@ -2877,23 +2889,25 @@
     chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
         'fakeKeyDown', appId, quickViewArrowUp));
 
-    // Open the Quick View delete confirm dialog.
+    // Press delete key.
     const deleteKey = ['#quick-view', 'Delete', false, false, false];
     chrome.test.assertTrue(
         await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, deleteKey),
         'Pressing Delete failed.');
 
-    // Check: the delete confirm dialog should focus the 'Cancel' button.
-    let defaultDialogButton = ['#quick-view', '.cr-dialog-cancel:focus'];
-    defaultDialogButton =
-        await remoteCall.waitForElement(appId, defaultDialogButton);
-    chrome.test.assertEq('Cancel', defaultDialogButton.text);
+    if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
+      // Check: the delete confirm dialog should focus the 'Cancel' button.
+      let defaultDialogButton = ['#quick-view', '.cr-dialog-cancel:focus'];
+      defaultDialogButton =
+          await remoteCall.waitForElement(appId, defaultDialogButton);
+      chrome.test.assertEq('Cancel', defaultDialogButton.text);
 
-    // Click the delete confirm dialog 'Delete' button.
-    let deleteDialogButton = ['#quick-view', '.cr-dialog-ok:not([hidden])'];
-    deleteDialogButton =
-        await remoteCall.waitAndClickElement(appId, deleteDialogButton);
-    chrome.test.assertEq('Delete', deleteDialogButton.text);
+      // Click the delete confirm dialog 'Delete' button.
+      let deleteDialogButton = ['#quick-view', '.cr-dialog-ok:not([hidden])'];
+      deleteDialogButton =
+          await remoteCall.waitAndClickElement(appId, deleteDialogButton);
+      chrome.test.assertEq('Delete', deleteDialogButton.text);
+    }
 
     // Check: |hello.txt| should have been deleted.
     await remoteCall.waitForElementLost(
@@ -2989,6 +3003,12 @@
         await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, deleteKey),
         'Pressing Delete failed.');
 
+    // Click the delete confirm dialog OK button.
+    const deleteConfirm = ['#quick-view', '.cr-dialog-ok:not([hidden])'];
+    if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
+      await remoteCall.waitAndClickElement(appId, deleteConfirm);
+    }
+
     // Check: |Beautiful Song.ogg| should have been deleted.
     await remoteCall.waitForElementLost(
         appId, '#file-list [file-name="Beautiful Song.ogg"]');
@@ -3021,6 +3041,11 @@
         await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, deleteKey),
         'Pressing Delete failed.');
 
+    // Click the delete confirm dialog OK button.
+    if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
+      await remoteCall.waitAndClickElement(appId, deleteConfirm);
+    }
+
     // Check: |My Desktop Background.png| should have been deleted.
     await remoteCall.waitForElementLost(
         appId, '#file-list [file-name="My Desktop Background.png"]');
@@ -3044,6 +3069,12 @@
     const quickViewDeleteButton =
         ['#quick-view', '#delete-button:not([hidden])'];
     await remoteCall.waitAndClickElement(appId, quickViewDeleteButton);
+
+    // Click the delete confirm dialog OK button.
+    if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
+      const deleteConfirm = ['#quick-view', '.cr-dialog-ok:not([hidden])'];
+      await remoteCall.waitAndClickElement(appId, deleteConfirm);
+    }
 
     // Check: |hello.txt| should have been deleted.
     await remoteCall.waitForElementLost(
@@ -3071,6 +3102,9 @@
       ['Linux files', '--', 'Folder'],
       ['Trash', '--', 'Folder'],
     ];
+    if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
+      expectedRows.pop();
+    }
     await remoteCall.waitForFiles(
         appId, expectedRows, {ignoreLastModifiedTime: true});
 
