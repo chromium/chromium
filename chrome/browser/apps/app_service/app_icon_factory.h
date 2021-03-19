@@ -110,7 +110,7 @@ void ArcActivityIconsToImageSkias(
     base::OnceCallback<void(const std::vector<gfx::ImageSkia>& icons)>
         callback);
 
-// TODO(crbug.com/1140356): Unify this function with IconLoadingPipeline class.
+// TODO(crbug.com/1189994): Unify this function with IconLoadingPipeline class.
 // It's the same as IconLoadingPipeline::OnReadWebAppIcon().
 gfx::ImageSkia ConvertSquareBitmapsToImageSkia(
     const std::map<SquareSizePx, SkBitmap>& icon_bitmaps,

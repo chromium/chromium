@@ -1232,7 +1232,7 @@ gfx::ImageSkia ConvertSquareBitmapsToImageSkia(
     SkBitmap bitmap = it->second;
     // Resize |bitmap| to match |icon_scale|.
     //
-    // TODO(crbug.com/1140356): All conversions in app_icon_factory.cc must
+    // TODO(crbug.com/1189994): All conversions in app_icon_factory.cc must
     // perform CPU-heavy operations off the Browser UI thread.
     if (bitmap.width() != icon_size_in_px) {
       bitmap = skia::ImageOperations::Resize(
