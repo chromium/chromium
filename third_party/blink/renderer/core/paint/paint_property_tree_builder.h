@@ -65,6 +65,10 @@ struct PaintPropertyTreeBuilderFragmentContext {
     // layout shift root.
     PhysicalOffset additional_offset_to_layout_shift_root_delta;
 
+    // Similar to additional_offset_to_layout_shift_root_delta but for scroll
+    // offsets.
+    FloatSize scroll_offset_to_layout_shift_root_delta;
+
     // For paint invalidation optimization for subpixel movement under
     // composited layer. It's reset to zero if subpixel can't be propagated
     // thus the optimization is not applicable (e.g. when crossing a
@@ -154,7 +158,7 @@ struct PaintPropertyTreeBuilderFragmentContext {
 
   // The delta between the old and new accumulated offsets of 2d translation
   // transforms to the layout shift root.
-  PhysicalOffset translation_2d_to_layout_shift_root_delta;
+  FloatSize translation_2d_to_layout_shift_root_delta;
 };
 
 struct PaintPropertyTreeBuilderContext {
