@@ -33,7 +33,6 @@ class InstrumentationTestInstanceTest(unittest.TestCase):
          mock.patch('%s._initializeDataDependencyAttributes' % c)), (
          mock.patch('%s._initializeTestFilterAttributes' %c)), (
          mock.patch('%s._initializeFlagAttributes' % c)), (
-         mock.patch('%s._initializeDriverAttributes' % c)), (
          mock.patch('%s._initializeTestControlAttributes' % c)), (
          mock.patch('%s._initializeTestCoverageAttributes' % c)), (
          mock.patch('%s._initializeSkiaGoldAttributes' % c)):
