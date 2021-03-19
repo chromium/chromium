@@ -297,8 +297,11 @@ public class OMADownloadHandler extends BroadcastReceiver {
                     if (fileDescriptor > 0) {
                         fd = ParcelFileDescriptor.fromFd(fileDescriptor);
                     }
-                } else {
+                } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                     fd = manager.openDownloadedFile(mDownloadId);
+                } else {
+                    fd = ParcelFileDescriptor.open(new File(mDownloadInfo.getFilePath()),
+                            ParcelFileDescriptor.MODE_READ_ONLY);
                 }
                 if (fd != null) {
                     omaInfo = parseDownloadDescriptor(new FileInputStream(fd.getFileDescriptor()));
