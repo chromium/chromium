@@ -8,6 +8,7 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 import("//chromecast/build/tests/cast_test.gni")
 import("//chromecast/chromecast.gni")
+import("//chromecast/resource_sizes/chromecast_resource_sizes.gni")
 import("//media/media_options.gni")
 import("//tools/grit/repack.gni")
 import("//v8/gni/v8.gni")
@@ -65,6 +66,14 @@ config("iot_service") {
   if (iot_service_rpath != "") {
     ldflags = [ "-Wl,-rpath=${iot_service_rpath}" ]
   }
+}
+
+chromecast_resource_sizes_test("resource_sizes_chromecast") {
+  data_deps = [
+    ":cast_shell",
+    ":cast_shell_pak",
+    ":chromecast_locales_pak",
+  ]
 }
 
 # A list of all public test() binaries. This is an organizational target that
