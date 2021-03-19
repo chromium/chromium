@@ -117,14 +117,12 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
 
     private String getHtmlForPageWithJsAssignLinkTo(String url) {
         return makeHtmlPageFrom("",
-                "<img onclick=\"location.href='" + url
-                        + "'\" class=\"big\" id=\"link\" /><p>Text</p>");
+                "<img onclick=\"location.href='" + url + "'\" class=\"big\" id=\"link\" />");
     }
 
     private String getHtmlForPageWithJsReplaceLinkTo(String url) {
         return makeHtmlPageFrom("",
-                "<img onclick=\"location.replace('" + url
-                        + "');\" class=\"big\" id=\"link\" /><p>Text</p>");
+                "<img onclick=\"location.replace('" + url + "');\" class=\"big\" id=\"link\" />");
     }
 
     private String getHtmlForPageWithMetaRefreshRedirectTo(String url) {

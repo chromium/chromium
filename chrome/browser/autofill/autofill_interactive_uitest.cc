@@ -1276,7 +1276,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnDeleteValueAfterAutofill) {
 // background color when choosing an option from the datalist suggestion list.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnSelectOptionFromDatalist) {
   static const char kTestForm[] =
-      "<p>The text is some page content to paint</p>"
       "<form action=\"https://www.example.com/\" method=\"POST\">"
       "  <input list=\"dl\" type=\"search\" id=\"firstname\"><br>"
       "  <datalist id=\"dl\">"
@@ -1314,7 +1313,6 @@ IN_PROC_BROWSER_TEST_F(
     AutofillInteractiveTest,
     OnSelectOptionFromDatalistTurningToPasswordFieldAndBack) {
   static const char kTestForm[] =
-      "<p>The text is some page content to paint</p>"
       "<form action=\"https://www.example.com/\" method=\"POST\">"
       "  <input list=\"dl\" type=\"search\" id=\"firstname\"><br>"
       "  <datalist id=\"dl\">"
@@ -1696,7 +1694,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
 // Test that we can Autofill dynamically generated forms.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, DynamicFormFill) {
   static const char kDynamicForm[] =
-      "<p>Some text to paint</p>"
       "<form id=\"form\" action=\"https://www.example.com/\""
       "      method=\"POST\"></form>"
       "<script>"

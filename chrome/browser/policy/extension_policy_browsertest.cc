@@ -73,10 +73,6 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 
-#if defined(OS_CHROMEOS)
-#include "third_party/blink/public/common/switches.h"
-#endif
-
 #if defined(OS_WIN)
 #include "base/win/win_util.h"
 #endif
@@ -214,15 +210,6 @@ class ExtensionPolicyTest : public PolicyTest {
     os_hooks_suppress_ =
         web_app::OsIntegrationManager::ScopedSuppressOsHooksForTesting();
   }
-
-#if defined(OS_CHROMEOS)
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    PolicyTest::SetUpCommandLine(command_line);
-    // ChromeOS testing via linux-chromeos-rel, and maybe others, is flaky
-    // due to slower loading interacting with deferred commits.
-    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
-  }
-#endif
 
   extensions::ExtensionCacheFake* extension_cache() {
     return test_extension_cache_.get();

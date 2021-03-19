@@ -75,10 +75,6 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
-#if defined(OS_CHROMEOS)
-#include "third_party/blink/public/common/switches.h"
-#endif
-
 using content::NativeWebKeyboardEvent;
 using content::WebContents;
 using testing::_;
@@ -112,15 +108,6 @@ class PopupBlockerBrowserTest : public InProcessBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
-
-#if defined(OS_CHROMEOS)
-  // ChromeOS testing via linux-chromeos-rel, and maybe others, is flaky
-  // due to slower loading interacting with deferred commits.
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
-  }
-#endif
 
   int GetBlockedContentsCount() {
     // Do a round trip to the renderer first to flush any in-flight IPCs to

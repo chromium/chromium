@@ -34,7 +34,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/switches.h"
 
 using autofill::test::TestAutofillAsyncObserver;
 using base::ASCIIToUTF16;
@@ -96,13 +95,6 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
         ->client()
         ->HideAutofillPopup(PopupHidingReason::kTabGone);
     test::ReenableSystemServices();
-  }
-
-  // Necessary to avoid flakiness or failure due to input arriving
-  // before the first compositor commit.
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
   // Uses the browser to open the file named |filename| based on the given

@@ -24,7 +24,6 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "third_party/blink/public/common/switches.h"
 
 namespace {
 
@@ -200,10 +199,6 @@ void WebAppNavigationBrowserTest::TearDownInProcessBrowserTestFixture() {
 
 void WebAppNavigationBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
-  // Allow pre-commit input because the content used in the test does not paint
-  // anything and relies on script execution to create links, and we do not want
-  // to wait for the commit timeout.
-  command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   cert_verifier_.SetUpCommandLine(command_line);
 }
 

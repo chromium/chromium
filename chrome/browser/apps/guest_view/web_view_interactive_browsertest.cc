@@ -43,7 +43,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
-#include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/text_input_test_utils.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -1504,7 +1503,6 @@ IN_PROC_BROWSER_TEST_F(WebViewImeInteractiveTest,
   ExtensionTestMessageListener focus_listener("WebViewImeTest.InputFocused",
                                               false);
   content::WebContents* target_web_contents = guest_web_contents;
-  WaitForHitTestData(guest_web_contents);
 
   // The guest page has a large input box and (50, 50) lies inside the box.
   content::SimulateMouseClickAt(target_web_contents, 0,
@@ -1571,7 +1569,6 @@ IN_PROC_BROWSER_TEST_F(WebViewImeInteractiveTest, CompositionRangeUpdates) {
   // mode where input is always sent to the embedder process first (then hops
   // back to the browser and then to the guest).
   content::WebContents* target_web_contents = guest_web_contents;
-  WaitForHitTestData(guest_web_contents);
 
   // The guest page has a large input box and (50, 50) lies inside the box.
   content::SimulateMouseClickAt(target_web_contents, 0,

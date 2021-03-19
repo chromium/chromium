@@ -58,10 +58,6 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
-#if defined(OS_CHROMEOS)
-#include "third_party/blink/public/common/switches.h"
-#endif
-
 using base::ASCIIToUTF16;
 using base::UTF16ToASCII;
 using testing::_;
@@ -138,15 +134,6 @@ class AutofillTest : public InProcessBrowserTest {
     autofill_manager->client()->HideAutofillPopup(PopupHidingReason::kTabGone);
     test::ReenableSystemServices();
   }
-
-#if defined(OS_CHROMEOS)
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
-    // ChromeOS testing via linux-chromeos-rel, and maybe others, is flaky
-    // due to slower loading interacting with deferred commits.
-    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
-  }
-#endif
 
   PersonalDataManager* personal_data_manager() {
     return PersonalDataManagerFactory::GetForProfile(browser()->profile());
@@ -809,15 +796,6 @@ class FormSubmissionDetectionTest
     NavigateToPage("/form.html");
     Mock();
   }
-
-#if defined(OS_CHROMEOS)
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
-    // ChromeOS testing via linux-chromeos-rel, and maybe others, is flaky
-    // due to slower loading interacting with deferred commits.
-    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
-  }
-#endif
 
   void TearDownOnMainThread() override {}
 

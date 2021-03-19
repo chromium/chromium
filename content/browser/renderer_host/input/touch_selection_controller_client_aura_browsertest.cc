@@ -27,7 +27,6 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/blink/public/common/switches.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/display/display_switches.h"
@@ -216,7 +215,6 @@ class TouchSelectionControllerClientAuraCAPFeatureTest
                                         ? switches::kEnableBlinkFeatures
                                         : switches::kDisableBlinkFeatures,
                                     "CompositeAfterPaint");
-    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 };
 
@@ -913,7 +911,6 @@ class TouchSelectionControllerClientAuraScaleFactorCAPFeatureTest
                                         ? switches::kEnableBlinkFeatures
                                         : switches::kDisableBlinkFeatures,
                                     "CompositeAfterPaint");
-    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 };
 
