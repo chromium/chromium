@@ -136,6 +136,7 @@ class UsbDeviceHandleMac : public UsbDeviceHandle {
       transfers_;
 
   ScopedIOUSBDeviceInterface device_interface_;
+  base::ScopedCFTypeRef<CFRunLoopSourceRef> device_source_;
   scoped_refptr<UsbDeviceMac> device_;
 
   // Both maps take the interface number in as the respective key.

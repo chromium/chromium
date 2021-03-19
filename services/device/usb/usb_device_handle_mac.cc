@@ -143,10 +143,19 @@ void UsbDeviceHandleMac::Close() {
   if (!device_)
     return;
 
+  if (device_source_) {
+    CFRunLoopRemoveSource(CFRunLoopGetCurrent(), device_source_.get(),
+                          kCFRunLoopDefaultMode);
+  }
+
+  for (const auto& source : sources_) {
+    CFRunLoopRemoveSource(CFRunLoopGetCurrent(), source.second.get(),
+                          kCFRunLoopDefaultMode);
+  }
+
   IOReturn kr = (*device_interface_)->USBDeviceClose(device_interface_);
   if (kr != kIOReturnSuccess) {
-    USB_LOG(ERROR) << "Failed to close device: " << std::hex << kr;
-    return;
+    USB_LOG(DEBUG) << "Failed to close device: " << std::hex << kr;
   }
 
   Clear();
@@ -414,14 +423,20 @@ void UsbDeviceHandleMac::ControlTransfer(
     return;
   }
 
-  auto interface_it = interfaces_.find(index & 0xff);
-  if (interface_it == interfaces_.end()) {
-    std::move(callback).Run(mojom::UsbTransferStatus::TRANSFER_ERROR,
-                            std::move(buffer), 0);
-    return;
+  if (!device_source_) {
+    IOReturn kr = (*device_interface_)
+                      ->CreateDeviceAsyncEventSource(
+                          device_interface_, device_source_.InitializeInto());
+    if (kr != kIOReturnSuccess) {
+      USB_LOG(ERROR) << "Unable to create device async event source: "
+                     << std::hex << kr;
+      std::move(callback).Run(mojom::UsbTransferStatus::TRANSFER_ERROR,
+                              std::move(buffer), 0);
+    }
+    CFRunLoopAddSource(CFRunLoopGetCurrent(), device_source_.get(),
+                       kCFRunLoopDefaultMode);
   }
 
-  ScopedIOUSBInterfaceInterface interface = interface_it->second;
   IOUSBDevRequestTO device_request;
   device_request.bRequest = request;
   device_request.wValue = value;
@@ -440,11 +455,10 @@ void UsbDeviceHandleMac::ControlTransfer(
 
   Transfer* transfer_ptr = transfer.get();
   auto result = transfers_.insert(std::move(transfer));
-  IOReturn kr =
-      (*interface)
-          ->ControlRequestAsyncTO(interface, /*pipeRef=*/0, &device_request,
-                                  &AsyncIoCallback,
-                                  reinterpret_cast<void*>(transfer_ptr));
+  IOReturn kr = (*device_interface_)
+                    ->DeviceRequestAsyncTO(
+                        device_interface_, &device_request, &AsyncIoCallback,
+                        reinterpret_cast<void*>(transfer_ptr));
 
   if (kr != kIOReturnSuccess) {
     USB_LOG(ERROR) << "Failed to send control request: " << std::hex << kr;
