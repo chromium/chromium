@@ -347,9 +347,6 @@ class AutocompleteController : public AutocompleteProviderListener,
   // boolean is true, we are definitely within the synchronous pass.
   bool in_start_;
 
-  // Indicate whether it is the first query since startup.
-  bool first_query_;
-
   // True if the signal predicting a likely search has already been sent to the
   // service worker context during the current input session. False on
   // controller creation and after |ResetSession| is called.

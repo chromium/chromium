@@ -1112,6 +1112,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Omnibox.WarmupTime" units="ms" expires_after="M85">
+  <obsolete>
+    Deprecated as of 03/2021. Code is removed.
+  </obsolete>
   <owner>etienneb@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>

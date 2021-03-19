@@ -272,7 +272,6 @@ AutocompleteController::AutocompleteController(
       stop_timer_duration_(OmniboxFieldTrial::StopTimerFieldTrialDuration()),
       done_(true),
       in_start_(false),
-      first_query_(true),
       search_service_worker_signal_sent_(false),
       template_url_service_(provider_client_->GetTemplateURLService()) {
   provider_types &= ~OmniboxFieldTrial::GetDisabledProviderTypes();
@@ -481,17 +480,6 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   UpdateResult(false, true);
 
   in_start_ = false;
-
-  // Omnibox has dependencies that may be lazily initialized. This metric will
-  // help tracking regression on the first use.
-  if (first_query_) {
-    base::TimeTicks end_time = base::TimeTicks::Now();
-    base::HistogramBase* counter =
-        base::Histogram::FactoryGet("Omnibox.WarmupTime", 1, 1000, 50,
-                                    base::Histogram::kUmaTargetedHistogramFlag);
-    counter->Add(static_cast<int>((end_time - start_time).InMilliseconds()));
-    first_query_ = false;
-  }
 
   // If the input looks like a query, send a signal predicting that the user is
   // going to issue a search (either to the default search engine or to a
