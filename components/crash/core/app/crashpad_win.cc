@@ -41,11 +41,6 @@ void GetPlatformCrashpadAnnotations(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Empty means stable.
   const bool allow_empty_channel = true;
-  if (channel_name == "extended") {
-    // Extended stable reports as stable (empty string) with an extra bool.
-    channel_name.clear();
-    annotations["extended_stable_channel"] = "true";
-  }
 #else
   const bool allow_empty_channel = false;
 #endif

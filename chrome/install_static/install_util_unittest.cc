@@ -710,8 +710,7 @@ TEST_P(InstallStaticUtilTest, UsageStatsPolicy) {
 }
 
 TEST_P(InstallStaticUtilTest, GetChromeChannelName) {
-  EXPECT_EQ(default_channel(),
-            GetChromeChannelName(/*with_extended_stable=*/false));
+  EXPECT_EQ(default_channel(), GetChromeChannelName());
 }
 
 TEST_P(InstallStaticUtilTest, GetSandboxSidPrefix) {

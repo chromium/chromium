@@ -128,7 +128,7 @@ void ChromeCrashReporterClient::GetProductNameAndVersion(
   GetProductNameAndVersion(&c_product_name, &c_version);
   *product_name = c_product_name;
   *version = c_version;
-  *channel = chrome::GetChannelName(chrome::WithExtendedStable(true));
+  *channel = chrome::GetChannelName();
 }
 
 base::FilePath ChromeCrashReporterClient::GetReporterLogFilename() {

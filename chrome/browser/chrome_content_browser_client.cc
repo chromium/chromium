@@ -2189,8 +2189,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
     if (client_info)
       switch_value = client_info->client_id;
     switch_value.push_back(',');
-    switch_value.append(
-        chrome::GetChannelName(chrome::WithExtendedStable(true)));
+    switch_value.append(chrome::GetChannelName());
     command_line->AppendSwitchASCII(switches::kEnableCrashReporter,
                                     switch_value);
   }

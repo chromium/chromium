@@ -14,8 +14,9 @@ namespace chrome {
 
 std::string GetChannelName(WithExtendedStable with_extended_stable) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  std::wstring channel(
-      install_static::GetChromeChannelName(with_extended_stable.value()));
+  std::wstring channel((with_extended_stable && IsExtendedStableChannel())
+                           ? L"extended"
+                           : install_static::GetChromeChannelName());
 #if defined(DCHECK_IS_CONFIGURABLE)
   // Adorn the channel when DCHECKs are baked into the build, as there will be
   // a performance hit. See https://crbug.com/812058 for details.

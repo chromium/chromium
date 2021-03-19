@@ -688,13 +688,12 @@ void GetExecutableVersionDetails(const std::wstring& exe_path,
       GetValueFromVersionResource(data.get(), L"SpecialBuild", special_build);
     }
   }
-  *channel_name = GetChromeChannelName(/*with_extended_stable=*/true);
+  *channel_name = GetChromeChannelName();
 }
 
 version_info::Channel GetChromeChannel() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  std::wstring channel_name(
-      GetChromeChannelName(/*with_extended_stable=*/false));
+  std::wstring channel_name(GetChromeChannelName());
   if (channel_name.empty()) {
     return version_info::Channel::STABLE;
   }
@@ -712,9 +711,7 @@ version_info::Channel GetChromeChannel() {
   return version_info::Channel::UNKNOWN;
 }
 
-std::wstring GetChromeChannelName(bool with_extended_stable) {
-  if (with_extended_stable && IsExtendedStableChannel())
-    return L"extended";
+std::wstring GetChromeChannelName() {
   return InstallDetails::Get().channel();
 }
 

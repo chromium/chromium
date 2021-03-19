@@ -230,22 +230,20 @@ bool HasEnvironmentVariable(const std::string& variable_name);
 bool HasEnvironmentVariable(const std::wstring& variable_name);
 
 // Gets the exe version details like the |product_name|, |version|,
-// |special_build|, and |channel_name| from the browser executable at
-// |exe_path|. |channel_name| will be "extended" for clients that follow the
-// extended stable update channel.
+// |special_build|, |channel_name|, etc. Most of this information is read
+// from the version resource. |exe_path| is the path of chrome.exe.
+// TODO(ananta)
+// http://crbug.com/604923
+// Unify this with the Browser Distribution code.
 void GetExecutableVersionDetails(const std::wstring& exe_path,
                                  std::wstring* product_name,
                                  std::wstring* version,
                                  std::wstring* special_build,
                                  std::wstring* channel_name);
 
-// Gets the channel for the current Chrome process.
+// Gets the channel or channel name for the current Chrome process.
 version_info::Channel GetChromeChannel();
-
-// Gets the channel for the current Chrome process. Unless
-// `with_extended_stable` is true, extended stable will be reported as regular
-// stable (i.e., an empty string).
-std::wstring GetChromeChannelName(bool with_extended_stable);
+std::wstring GetChromeChannelName();
 
 // Returns true if the current Chrome process is on the extended stable channel.
 bool IsExtendedStableChannel();
