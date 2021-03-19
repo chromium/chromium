@@ -351,9 +351,6 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
                           MapCoordinatesFlags) const override;
 
  private:
-  const LayoutObject* PushMappingToContainer(
-      const LayoutBoxModelObject* ancestor_to_stop_at,
-      LayoutGeometryMap&) const override;
   bool CanHaveChildren() const override;
 
   void UpdateBlockLayout(bool relayout_children) override;

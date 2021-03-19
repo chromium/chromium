@@ -651,10 +651,6 @@ void WebRuntimeFeatures::EnableRestrictGamepadAccess(bool enable) {
   RuntimeEnabledFeatures::SetRestrictGamepadAccessEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableCompositingOptimizations(bool enable) {
-  RuntimeEnabledFeatures::SetCompositingOptimizationsEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnableConversionMeasurementInfraSupport(bool enable) {
   RuntimeEnabledFeatures::SetConversionMeasurementInfraSupportEnabled(enable);
 }

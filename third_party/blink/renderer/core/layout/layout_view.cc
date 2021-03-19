@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
-#include "third_party/blink/renderer/core/layout/layout_geometry_map.h"
 #include "third_party/blink/renderer/core/layout/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
@@ -417,37 +416,6 @@ void LayoutView::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
         GetFrameView()->MapLocalToRemoteMainFrame(transform_state);
     }
   }
-}
-
-const LayoutObject* LayoutView::PushMappingToContainer(
-    const LayoutBoxModelObject* ancestor_to_stop_at,
-    LayoutGeometryMap& geometry_map) const {
-  NOT_DESTROYED();
-  PhysicalOffset offset;
-  LayoutObject* container = nullptr;
-
-  if (geometry_map.GetMapCoordinatesFlags() & kTraverseDocumentBoundaries) {
-    if (auto* parent_doc_layout_object = GetFrame()->OwnerLayoutObject()) {
-      offset += parent_doc_layout_object->PhysicalContentBoxOffset();
-      container = parent_doc_layout_object;
-    }
-  }
-
-  // If a container was specified, and was not 0 or the LayoutView, then we
-  // should have found it by now unless we're traversing to a parent document.
-  DCHECK(!ancestor_to_stop_at || ancestor_to_stop_at == this || container);
-
-  if ((!ancestor_to_stop_at || container) &&
-      ShouldUseTransformFromContainer(container)) {
-    TransformationMatrix t;
-    GetTransformFromContainer(container, PhysicalOffset(), t);
-    geometry_map.Push(this, t, kContainsFixedPosition,
-                      OffsetForFixedPosition());
-  } else {
-    geometry_map.Push(this, offset, 0, OffsetForFixedPosition());
-  }
-
-  return container;
 }
 
 void LayoutView::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,

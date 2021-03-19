@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_COMPOSITING_COMPOSITING_INPUTS_UPDATER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_COMPOSITING_COMPOSITING_INPUTS_UPDATER_H_
 
-#include "third_party/blink/renderer/core/layout/layout_geometry_map.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -76,7 +75,7 @@ class CompositingInputsUpdater {
                                            AncestorInfo);
   void UpdateAncestorDependentCompositingInputs(PaintLayer*,
                                                 const AncestorInfo&);
-  // This is a recursive method to compute the geometry_map_ and AncestorInfo
+  // This is a recursive method to update AncestorInfo
   // starting from the root layer down to the compositing_inputs_root_.
   void ApplyAncestorInfoToSelfAndAncestorsRecursively(PaintLayer*,
                                                       UpdateType&,
@@ -87,7 +86,6 @@ class CompositingInputsUpdater {
 
   bool NeedsPaintOffsetTranslationForCompositing(PaintLayer*);
 
-  base::Optional<LayoutGeometryMap> geometry_map_;
   PaintLayer* root_layer_;
   PaintLayer* compositing_inputs_root_;
 };

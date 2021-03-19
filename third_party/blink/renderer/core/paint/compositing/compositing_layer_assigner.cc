@@ -262,8 +262,6 @@ void CompositingLayerAssigner::UpdateSquashingAssignment(
     squashing_state.most_recent_mapping->SetNeedsGraphicsLayerUpdate(
         kGraphicsLayerUpdateSubtree);
 
-    layer->ClearClipRects();
-
     // Issue a paint invalidation, since |layer| may have been added to an
     // already-existing squashing layer.
     layers_needing_paint_invalidation.push_back(layer);

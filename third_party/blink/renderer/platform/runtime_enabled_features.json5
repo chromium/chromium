@@ -386,10 +386,6 @@
       status: "stable"
     },
     {
-      name: "CompositingOptimizations",
-      status: "stable"
-    },
-    {
       name: "ComputedAccessibilityInfo",
       status: "experimental",
     },

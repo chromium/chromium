@@ -34,7 +34,6 @@ namespace blink {
 class AffineTransform;
 class FloatPoint;
 class FloatRect;
-class LayoutGeometryMap;
 class LayoutBoxModelObject;
 class LayoutObject;
 class ComputedStyle;
@@ -92,10 +91,6 @@ class CORE_EXPORT SVGLayoutSupport {
                                  const LayoutBoxModelObject* ancestor,
                                  TransformState&,
                                  MapCoordinatesFlags);
-  static const LayoutObject* PushMappingToContainer(
-      const LayoutObject*,
-      const LayoutBoxModelObject* ancestor_to_stop_at,
-      LayoutGeometryMap&);
 
   // Shared between SVG layoutObjects and resources.
   static void ApplyStrokeStyleToStrokeData(StrokeData&,

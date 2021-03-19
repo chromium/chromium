@@ -32,7 +32,6 @@ blink_core_sources_paint = [
   "clip_rect.cc",
   "clip_rect.h",
   "clip_rects.h",
-  "clip_rects_cache.h",
   "collapsed_border_painter.cc",
   "collapsed_border_painter.h",
   "compositing/composited_layer_mapping.cc",

@@ -1482,8 +1482,7 @@ void CompositedLayerMapping::UpdateLocalClipRectForSquashedLayer(
   const PaintLayer* ancestor_layer = ancestor_paint_info->paint_layer;
   ClipRectsContext clip_rects_context(
       ancestor_layer,
-      &ancestor_layer->GetLayoutObject().PrimaryStitchingFragment(),
-      kUncachedClipRects);
+      &ancestor_layer->GetLayoutObject().PrimaryStitchingFragment());
   ClipRect parent_clip_rect;
   paint_info.paint_layer
       ->Clipper(PaintLayer::GeometryMapperOption::kUseGeometryMapper)

@@ -236,7 +236,6 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnableConversionMeasurementInfraSupport(
       bool);
 
-  BLINK_PLATFORM_EXPORT static void EnableCompositingOptimizations(bool);
   BLINK_PLATFORM_EXPORT static void EnableTargetBlankImpliesNoOpener(bool);
 
   BLINK_PLATFORM_EXPORT static void EnableParseUrlProtocolHandler(bool);

@@ -511,10 +511,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
       LineDirectionMode,
       LinePositionMode = kPositionOnContainingLine) const = 0;
 
-  const LayoutObject* PushMappingToContainer(
-      const LayoutBoxModelObject* ancestor_to_stop_at,
-      LayoutGeometryMap&) const override;
-
   void ContentChanged(ContentChangeType);
 
   // Returns true if the background is painted opaque in the given rect.

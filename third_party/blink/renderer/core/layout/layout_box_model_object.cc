@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
-#include "third_party/blink/renderer/core/layout/layout_geometry_map.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
@@ -272,9 +271,6 @@ void LayoutBoxModelObject::StyleWillChange(StyleDifference diff,
           .InvalidatePaintIncludingNonCompositingDescendants();
     }
   }
-
-  if (HasLayer() && diff.CssClipChanged())
-    Layer()->ClearClipRects();
 
   LayoutObject::StyleWillChange(diff, new_style);
 }
@@ -1407,70 +1403,6 @@ LayoutRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
   return current_style.IsHorizontalWritingMode()
              ? LayoutRect(x, y, caret_width, height)
              : LayoutRect(y, x, height, caret_width);
-}
-
-const LayoutObject* LayoutBoxModelObject::PushMappingToContainer(
-    const LayoutBoxModelObject* ancestor_to_stop_at,
-    LayoutGeometryMap& geometry_map) const {
-  NOT_DESTROYED();
-  DCHECK_NE(ancestor_to_stop_at, this);
-
-  AncestorSkipInfo skip_info(ancestor_to_stop_at);
-  LayoutObject* container = Container(&skip_info);
-  if (!container)
-    return nullptr;
-
-  bool is_inline = IsLayoutInline();
-  bool is_fixed_pos =
-      !is_inline && StyleRef().GetPosition() == EPosition::kFixed;
-  bool contains_fixed_position = CanContainFixedPositionObjects();
-
-  TransformationMatrix adjustment_for_skipped_ancestor;
-  bool adjustment_for_skipped_ancestor_is_translate_2d = true;
-  if (skip_info.AncestorSkipped()) {
-    // There can't be a transform between container and ancestor_to_stop_at,
-    // because transforms create containers, so it should be safe to just
-    // subtract the delta between the container and ancestor_to_stop_at.
-    PhysicalOffset ancestor_offset =
-        ancestor_to_stop_at->OffsetFromAncestor(container);
-    adjustment_for_skipped_ancestor.Translate(-ancestor_offset.left.ToFloat(),
-                                              -ancestor_offset.top.ToFloat());
-  }
-
-  PhysicalOffset container_offset = OffsetFromContainer(container);
-  bool offset_depends_on_point = OffsetForContainerDependsOnPoint(container);
-  if (offset_depends_on_point && IsLayoutFlowThread())
-    container_offset += PhysicalOffsetToBeNoop(ColumnOffset(LayoutPoint()));
-
-  bool preserve3d =
-      container->StyleRef().Preserves3D() || StyleRef().Preserves3D();
-  GeometryInfoFlags flags = 0;
-  if (preserve3d)
-    flags |= kAccumulatingTransform;
-  if (offset_depends_on_point)
-    flags |= kIsNonUniform;
-  if (is_fixed_pos)
-    flags |= kIsFixedPosition;
-  if (contains_fixed_position)
-    flags |= kContainsFixedPosition;
-  if (ShouldUseTransformFromContainer(container)) {
-    TransformationMatrix t;
-    GetTransformFromContainer(container, container_offset, t);
-    adjustment_for_skipped_ancestor.Multiply(t);
-    geometry_map.Push(this, adjustment_for_skipped_ancestor, flags,
-                      PhysicalOffset());
-  } else if (adjustment_for_skipped_ancestor_is_translate_2d) {
-    container_offset += PhysicalOffset::FromFloatSizeRound(
-        adjustment_for_skipped_ancestor.To2DTranslation());
-    geometry_map.Push(this, container_offset, flags, PhysicalOffset());
-  } else {
-    adjustment_for_skipped_ancestor.Translate(container_offset.left,
-                                              container_offset.top);
-    geometry_map.Push(this, adjustment_for_skipped_ancestor, flags,
-                      PhysicalOffset());
-  }
-
-  return skip_info.AncestorSkipped() ? ancestor_to_stop_at : container;
 }
 
 void LayoutBoxModelObject::MoveChildTo(

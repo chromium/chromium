@@ -45,9 +45,6 @@ class LayoutSVGBlock : public LayoutBlockFlow {
   void MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
                           TransformState&,
                           MapCoordinatesFlags) const final;
-  const LayoutObject* PushMappingToContainer(
-      const LayoutBoxModelObject* ancestor_to_stop_at,
-      LayoutGeometryMap&) const final;
 
   AffineTransform LocalSVGTransform() const final {
     NOT_DESTROYED();

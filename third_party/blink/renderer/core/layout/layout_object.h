@@ -79,7 +79,6 @@ class LayoutBoxModelObject;
 class LayoutBlock;
 class LayoutBlockFlow;
 class LayoutFlowThread;
-class LayoutGeometryMap;
 class LayoutMultiColumnSpannerPlaceholder;
 class LayoutNGGridInterface;
 class LayoutNGTableInterface;
@@ -2791,14 +2790,6 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   virtual void MapAncestorToLocal(const LayoutBoxModelObject*,
                                   TransformState&,
                                   MapCoordinatesFlags) const;
-
-  // Pushes state onto LayoutGeometryMap about how to map coordinates from this
-  // layoutObject to its container, or ancestorToStopAt (whichever is
-  // encountered first). Returns the layoutObject which was mapped to (container
-  // or ancestorToStopAt).
-  virtual const LayoutObject* PushMappingToContainer(
-      const LayoutBoxModelObject* ancestor_to_stop_at,
-      LayoutGeometryMap&) const;
 
   bool ShouldUseTransformFromContainer(const LayoutObject* container) const;
 

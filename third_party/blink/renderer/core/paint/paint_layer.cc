@@ -116,7 +116,7 @@ struct SameSizeAsPaintLayer : DisplayItemClient {
   // has only 8-bit data.
   unsigned bit_fields1 : 24;
   unsigned bit_fields2;
-  void* pointers[11];
+  void* pointers[10];
 #if DCHECK_IS_ON()
   void* pointer;
 #endif
@@ -354,7 +354,6 @@ void PaintLayer::UpdateLayerPositionsAfterLayout() {
       V8PerIsolateData::MainThreadIsolate(),
       RuntimeCallStats::CounterId::kUpdateLayerPositionsAfterLayout);
 
-  ClearClipRects();
   const LayoutBlock* enclosing_scrollport_box =
       GetLayoutObject().EnclosingScrollportBox();
   UpdateLayerPositionRecursive(
@@ -536,12 +535,6 @@ void PaintLayer::UpdateTransform(const ComputedStyle* old_style,
       EnsureRareData().transform = std::make_unique<TransformationMatrix>();
     else
       rare_data_->transform.reset();
-
-    // PaintLayers with transforms act as clip rects roots, so clear the cached
-    // clip rects here.
-    ClearClipRects();
-  } else if (has_transform) {
-    ClearClipRects(kAbsoluteClipRectsIgnoringViewportClip);
   }
 
   UpdateTransformationMatrix();
@@ -1192,29 +1185,15 @@ void PaintLayer::SetChildNeedsCompositingInputsUpdateUpToAncestor(
 }
 
 const IntRect PaintLayer::ClippedAbsoluteBoundingBox() const {
-  if (RuntimeEnabledFeatures::CompositingOptimizationsEnabled()) {
-    PhysicalRect mapping_rect = LocalBoundingBoxForCompositingOverlapTest();
-    GetLayoutObject().MapToVisualRectInAncestorSpace(
-        GetLayoutObject().View(), mapping_rect, kUseGeometryMapper);
-    // We use PixelSnappedIntRect here to match the behavior in
-    // CIU:: UpdateAncestorDependentCompositingInputs, even though the code
-    // in UnclippedAbsoluteBoundingBox and its equivalent in
-    // CIU::UpdateAncestorDependentCompositingInputs uses EnclosingIntRect.
-    return PixelSnappedIntRect(mapping_rect);
-  } else {
-    return GetAncestorDependentCompositingInputs()
-        .clipped_absolute_bounding_box;
-  }
+  PhysicalRect mapping_rect = LocalBoundingBoxForCompositingOverlapTest();
+  GetLayoutObject().MapToVisualRectInAncestorSpace(
+      GetLayoutObject().View(), mapping_rect, kUseGeometryMapper);
+  return PixelSnappedIntRect(mapping_rect);
 }
 const IntRect PaintLayer::UnclippedAbsoluteBoundingBox() const {
-  if (RuntimeEnabledFeatures::CompositingOptimizationsEnabled()) {
-    return EnclosingIntRect(GetLayoutObject().LocalToAbsoluteRect(
-        LocalBoundingBoxForCompositingOverlapTest(),
-        kUseGeometryMapperMode | kIgnoreScrollOffset));
-  } else {
-    return GetAncestorDependentCompositingInputs()
-        .unclipped_absolute_bounding_box;
-  }
+  return EnclosingIntRect(GetLayoutObject().LocalToAbsoluteRect(
+      LocalBoundingBoxForCompositingOverlapTest(),
+      kUseGeometryMapperMode | kIgnoreScrollOffset));
 }
 
 void PaintLayer::SetNeedsCompositingInputsUpdateInternal() {
@@ -1459,11 +1438,6 @@ void PaintLayer::RemoveChild(PaintLayer* old_child) {
     old_child->ClearPaginationRecursive();
 }
 
-void PaintLayer::ClearClipRects(ClipRectsCacheSlot cache_slot) {
-  Clipper(GeometryMapperOption::kDoNotUseGeometryMapper)
-      .ClearClipRectsIncludingDescendants(cache_slot);
-}
-
 void PaintLayer::RemoveOnlyThisLayerAfterStyleChange(
     const ComputedStyle* old_style) {
   if (!parent_)
@@ -1499,8 +1473,6 @@ void PaintLayer::RemoveOnlyThisLayerAfterStyleChange(
             parent_->EnclosingSelfPaintingLayer())
       enclosing_self_painting_layer->MergeNeedsPaintPhaseFlagsFrom(*this);
   }
-
-  ClearClipRects();
 
   PaintLayer* next_sib = NextSibling();
 
@@ -1540,9 +1512,6 @@ void PaintLayer::InsertOnlyThisLayerAfterStyleChange() {
             parent_->EnclosingSelfPaintingLayer())
       MergeNeedsPaintPhaseFlagsFrom(*enclosing_self_painting_layer);
   }
-
-  // Clear out all the clip rects.
-  ClearClipRects();
 }
 
 // Returns the layer reached on the walk up towards the ancestor.
@@ -1727,8 +1696,8 @@ void PaintLayer::AppendSingleFragmentIgnoringPagination(
   PaintLayerFragment fragment;
   ClipRectsContext clip_rects_context(
       root_layer, &root_layer->GetLayoutObject().FirstFragment(),
-      kUncachedClipRects, overlay_scrollbar_clip_behavior,
-      respect_overflow_clip, sub_pixel_accumulation);
+      overlay_scrollbar_clip_behavior, respect_overflow_clip,
+      sub_pixel_accumulation);
   Clipper(GeometryMapperOption::kUseGeometryMapper)
       .CalculateRects(clip_rects_context, &GetLayoutObject().FirstFragment(),
                       cull_rect, fragment.layer_bounds,
@@ -1822,9 +1791,8 @@ void PaintLayer::CollectFragments(
     }
 
     ClipRectsContext clip_rects_context(
-        root_layer, root_fragment_data, kUncachedClipRects,
-        overlay_scrollbar_clip_behavior, respect_overflow_clip,
-        sub_pixel_accumulation);
+        root_layer, root_fragment_data, overlay_scrollbar_clip_behavior,
+        respect_overflow_clip, sub_pixel_accumulation);
 
     base::Optional<CullRect> fragment_cull_rect;
     if (cull_rect) {
@@ -2119,8 +2087,7 @@ PaintLayer* PaintLayer::HitTestLayer(PaintLayer* root_layer,
           .CalculateBackgroundClipRect(
               ClipRectsContext(
                   root_layer, &root_layer->GetLayoutObject().FirstFragment(),
-                  kUncachedClipRects, kExcludeOverlayScrollbarSizeForHitTesting,
-                  clip_behavior),
+                  kExcludeOverlayScrollbarSizeForHitTesting, clip_behavior),
               clip_rect);
       // Go ahead and test the enclosing clip now.
       if (!clip_rect.Intersects(recursion_data.location))
@@ -2824,9 +2791,6 @@ IntRect PaintLayer::ExpandedBoundingBoxForCompositingOverlapTest(
       !IsAffectedByScrollOf(root_layer)) {
     PaintLayerScrollableArea* scrollable_area = root_layer->GetScrollableArea();
     ScrollOffset current_scroll_offset = scrollable_area->GetScrollOffset();
-    // Move the bounds to absolute coords
-    if (!RuntimeEnabledFeatures::CompositingOptimizationsEnabled())
-      abs_bounds.Move(RoundedIntSize(current_scroll_offset));
 
     if (IsTopMostNotAffectedByScrollOf(root_layer)) {
       // For overlap testing, expand the rect used for fixed-pos content in

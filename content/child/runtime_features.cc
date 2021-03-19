@@ -232,8 +232,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      features::kCapabilityDelegationPaymentRequest},
     {wf::EnableClickPointerEvent, features::kClickPointerEvent},
     {wf::EnableCompositeBGColorAnimation, features::kCompositeBGColorAnimation},
-    {wf::EnableCompositingOptimizations,
-     blink::features::kCompositingOptimizations},
     {wf::EnableConsolidatedMovementXY, features::kConsolidatedMovementXY},
     {wf::EnableConversionMeasurementInfraSupport,
      features::kConversionMeasurement},

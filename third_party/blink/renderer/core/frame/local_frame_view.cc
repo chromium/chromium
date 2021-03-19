@@ -2227,8 +2227,6 @@ LayoutEmbeddedContent* LocalFrameView::GetLayoutEmbeddedContent() const {
 
 void LocalFrameView::VisualViewportScrollbarsChanged() {
   SetVisualViewportNeedsRepaint();
-  if (LayoutView* layout_view = GetLayoutView())
-    layout_view->Layer()->ClearClipRects();
 }
 
 void LocalFrameView::UpdateGeometriesIfNeeded() {
