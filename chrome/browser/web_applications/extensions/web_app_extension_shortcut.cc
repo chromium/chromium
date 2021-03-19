@@ -111,7 +111,14 @@ void CreateShortcutsWithInfo(ShortcutCreationReason reason,
         extensions::ExtensionRegistry::Get(profile);
     const extensions::Extension* extension = registry->GetExtensionById(
         shortcut_info->extension_id, extensions::ExtensionRegistry::EVERYTHING);
-    if (!extension) {
+    bool is_app_installed = false;
+    auto* app_provider = WebAppProviderBase::GetProviderBase(profile);
+    if (app_provider &&
+        app_provider->registrar().IsInstalled(shortcut_info->extension_id)) {
+      is_app_installed = true;
+    }
+
+    if (!extension && !is_app_installed) {
       std::move(callback).Run(false /* created_shortcut */);
       return;
     }
