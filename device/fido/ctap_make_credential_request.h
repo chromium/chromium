@@ -16,6 +16,7 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/pin.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_params.h"
 #include "device/fido/public_key_credential_rp_entity.h"
@@ -71,9 +72,11 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapMakeCredentialRequest {
   AuthenticatorAttachment authenticator_attachment =
       AuthenticatorAttachment::kAny;
   bool resident_key_required = false;
+
   // hmac_secret indicates whether the "hmac-secret" extension should be
   // asserted to CTAP2 authenticators.
   bool hmac_secret = false;
+
   // large_blob_key indicates whether a large blob key should be associated to
   // the new credential through the "largeBlobKey" extension.
   bool large_blob_key = false;
@@ -86,10 +89,26 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapMakeCredentialRequest {
   bool is_off_the_record_context = false;
 
   std::vector<PublicKeyCredentialDescriptor> exclude_list;
+
+  // The pinUvAuthParam field. This is the result of calling
+  // |pin::TokenResponse::PinAuth(client_data_hash)| with the PIN/UV Auth Token
+  // response obtained from the authenticator.
   base::Optional<std::vector<uint8_t>> pin_auth;
+
+  // The pinUvAuthProtocol field. It is the version of the PIN/UV Auth Token
+  // response obtained from the authenticator.
   base::Optional<PINUVAuthProtocol> pin_protocol;
+
+  // The PIN/UV Auth Token response obtained from the authenticator. This field
+  // is only used for computing a fresh pinUvAuthParam for getAssertion requests
+  // during silent probing of |exclude_list| credentials. It is ignored when
+  // encoding this request to CBOR (|pin_auth| and |pin_protocol| are used for
+  // that).
+  base::Optional<pin::TokenResponse> pin_token_for_exclude_list_probing;
+
   AttestationConveyancePreference attestation_preference =
       AttestationConveyancePreference::kNone;
+
   // U2F AppID for excluding credentials.
   base::Optional<std::string> app_id;
 
@@ -97,6 +116,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapMakeCredentialRequest {
   // This depends on a CTAP2 extension that not all authenticators will support.
   // This is filled out by |MakeCredentialRequestHandler|.
   base::Optional<CredProtect> cred_protect;
+
   // If |cred_protect| is not |nullopt|, this is true if the credProtect level
   // must be provided by the target authenticator for the MakeCredential request
   // to be sent. This only makes sense when there is a collection of

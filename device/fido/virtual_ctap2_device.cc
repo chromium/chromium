@@ -965,7 +965,7 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
   }
   CtapMakeCredentialRequest request = std::move(*opt_request);
 
-  bool user_verified;
+  bool user_verified = false;
   const base::Optional<CtapDeviceResponseCode> uv_error = CheckUserVerification(
       /*is_make_credential=*/true, *device_info_, request.rp.id,
       request.pin_auth, request.pin_protocol, mutable_state()->pin_token,

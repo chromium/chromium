@@ -343,6 +343,8 @@ VirtualFidoDevice::PrivateKey::FreshInvalidForTestingKey() {
 // VirtualFidoDevice::RegistrationData ----------------------------------------
 
 VirtualFidoDevice::RegistrationData::RegistrationData() = default;
+VirtualFidoDevice::RegistrationData::RegistrationData(const std::string& rp_id)
+    : application_parameter(fido_parsing_utils::CreateSHA256Hash(rp_id)) {}
 VirtualFidoDevice::RegistrationData::RegistrationData(
     std::unique_ptr<PrivateKey> private_key,
     base::span<const uint8_t, kRpIdHashLength> application_parameter,
@@ -371,18 +373,17 @@ VirtualFidoDevice::State::~State() = default;
 
 bool VirtualFidoDevice::State::InjectRegistration(
     base::span<const uint8_t> credential_id,
-    const std::string& relying_party_id) {
-  auto application_parameter =
-      fido_parsing_utils::CreateSHA256Hash(relying_party_id);
-
-  RegistrationData registration(PrivateKey::FreshP256Key(),
-                                std::move(application_parameter),
-                                0 /* signature counter */);
-
+    RegistrationData registration) {
   bool was_inserted;
   std::tie(std::ignore, was_inserted) = registrations.emplace(
       fido_parsing_utils::Materialize(credential_id), std::move(registration));
   return was_inserted;
+}
+
+bool VirtualFidoDevice::State::InjectRegistration(
+    base::span<const uint8_t> credential_id,
+    const std::string& relying_party_id) {
+  return InjectRegistration(credential_id, RegistrationData(relying_party_id));
 }
 
 bool VirtualFidoDevice::State::InjectResidentKey(

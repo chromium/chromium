@@ -841,6 +841,7 @@ void MakeCredentialRequestHandler::DispatchRequestWithToken(
   state_ = State::kWaitingForResponseWithToken;
   std::tie(request->pin_protocol, request->pin_auth) =
       token.PinAuth(request->client_data_hash);
+  request->pin_token_for_exclude_list_probing = std::move(token);
 
   ReportMakeCredentialRequestTransport(authenticator);
 
