@@ -980,7 +980,8 @@ void BrowserMainLoop::RunMainMessageLoop() {
 #else   // defined(OS_ANDROID)
 
   auto main_run_loop = std::make_unique<base::RunLoop>();
-  parts_->WillRunMainMessageLoop(main_run_loop);
+  if (parts_)
+    parts_->WillRunMainMessageLoop(main_run_loop);
   if (main_run_loop)
     main_run_loop->Run();
 #endif  // defined(OS_ANDROID)
