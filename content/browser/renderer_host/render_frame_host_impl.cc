@@ -4588,6 +4588,10 @@ void RenderFrameHostImpl::SendAccessibilityEventsToManager(
 }
 
 bool RenderFrameHostImpl::IsInactiveAndDisallowActivation() {
+  TRACE_EVENT1("navigation",
+               "RenderFrameHostImpl::IsInactiveAndDisallowActivation",
+               "render_frame_host", this);
+
   switch (lifecycle_state_) {
     case LifecycleState::kRunningUnloadHandlers:
     case LifecycleState::kReadyToBeDeleted:
