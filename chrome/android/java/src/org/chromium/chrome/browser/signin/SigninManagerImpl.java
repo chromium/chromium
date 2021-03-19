@@ -53,8 +53,7 @@ import java.util.List;
  * <p/>
  * See chrome/browser/android/signin/signin_manager_android.h for more details.
  */
-class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededListener,
-                                   IdentityManager.Observer, SigninManager {
+class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     private static final String TAG = "SigninManager";
 
     /**
@@ -126,8 +125,6 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
 
         mSigninAllowedByPolicy =
                 SigninManagerImplJni.get().isSigninAllowedByPolicy(mNativeSigninManagerAndroid);
-
-        mAccountTrackerService.addSystemAccountsSeededListener(this);
         mIdentityManager.addObserver(this);
 
         reloadAllAccountsFromSystem();
@@ -143,7 +140,6 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
     @CalledByNative
     void destroy() {
         mIdentityManager.removeObserver(this);
-        mAccountTrackerService.removeSystemAccountsSeededListener(this);
         mNativeSigninManagerAndroid = 0;
     }
 
@@ -266,17 +262,6 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
     }
 
     /**
-     * Continue pending sign in after system accounts have been seeded into AccountTrackerService.
-     */
-    @Override
-    public void onSystemAccountsSeedingComplete() {
-        if (mSignInState != null && mSignInState.mBlockedOnAccountSeeding) {
-            mSignInState.mBlockedOnAccountSeeding = false;
-            progressSignInFlowCheckPolicy();
-        }
-    }
-
-    /**
      * Starts the sign-in flow, and executes the callback when finished.
      *
      * The sign-in flow goes through the following steps:
@@ -367,12 +352,7 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
 
         mSignInState = signinState;
         notifySignInAllowedChanged();
-
-        if (mAccountTrackerService.checkAndSeedSystemAccounts()) {
-            progressSignInFlowCheckPolicy();
-        } else {
-            mSignInState.mBlockedOnAccountSeeding = true;
-        }
+        mAccountTrackerService.seedAccountsIfNeeded(this::progressSignInFlowCheckPolicy);
     }
 
     /**
@@ -721,14 +701,6 @@ class SigninManagerImpl implements AccountTrackerService.OnSystemAccountsSeededL
         private final @SigninAccessPoint Integer mAccessPoint;
         final Account mAccount;
         final SignInCallback mCallback;
-
-        /**
-         * If the system accounts need to be seeded, the sign in flow will block for that to occur.
-         * This boolean should be set to true during that time and then reset back to false
-         * afterwards. This allows the manager to know if it should progress the flow when the
-         * account tracker broadcasts updates.
-         */
-        boolean mBlockedOnAccountSeeding;
 
         /**
          * Contains the full Core account info, which can be retrieved only once account seeding is

@@ -85,7 +85,13 @@ public class SigninManagerImplTest {
         // Pretend Google Play services are available as it is required for the sign-in
         when(mExternalAuthUtils.isGooglePlayServicesMissing(any())).thenReturn(false);
         // Suppose that the accounts are already seeded
-        when(mAccountTrackerService.checkAndSeedSystemAccounts()).thenReturn(true);
+        doAnswer(invocation -> {
+            Runnable runnable = invocation.getArgument(0);
+            runnable.run();
+            return null;
+        })
+                .when(mAccountTrackerService)
+                .seedAccountsIfNeeded(any(Runnable.class));
         when(mIdentityManagerNativeMock
                         .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
                                 NATIVE_IDENTITY_MANAGER, ACCOUNT_INFO.getEmail()))
