@@ -43,7 +43,7 @@ namespace rlwe {
 
 // Function used to injectively hash RlwePlaintextId proto to string. This hash
 // is not cryptographically secure, nor very compact.
-std::string HashRlwePlaintextId(RlwePlaintextId id);
+std::string HashRlwePlaintextId(const RlwePlaintextId& id);
 
 // Function used to hash the nonsensitive portion of a RlwePlaintextId, using a
 // salt to force adversaries to recompute rainbow tables.

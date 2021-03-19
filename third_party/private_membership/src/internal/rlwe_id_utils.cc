@@ -64,10 +64,17 @@ namespace rlwe {
   return stored_encrypted_id;
 }
 
-std::string HashRlwePlaintextId(RlwePlaintextId id) {
-  // Prepending the lengths of each identifier makes the function injective.
-  return absl::StrCat(id.non_sensitive_id().length(), id.non_sensitive_id(),
-                      id.sensitive_id().length(), id.sensitive_id());
+std::string HashRlwePlaintextId(const RlwePlaintextId& id) {
+  // For backward compatibility. We can show that if non_sensitive_id length is
+  // 0, it is okay to concatenate without delimiters to make it injective.
+  if (id.non_sensitive_id().length() == 0) {
+    return absl::StrCat(0, id.sensitive_id().length(), id.sensitive_id());
+  }
+  static constexpr char delimiter[] = "/";
+  // Add delimiters in between to make the function injective.
+  return absl::StrCat(id.non_sensitive_id().length(), delimiter,
+                      id.non_sensitive_id(), delimiter,
+                      id.sensitive_id().length(), delimiter, id.sensitive_id());
 }
 
 ::rlwe::StatusOr<std::string> HashNonsensitiveIdWithSalt(

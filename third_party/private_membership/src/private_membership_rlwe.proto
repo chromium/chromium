@@ -127,6 +127,9 @@ message EncryptedBucketsParameters {
   // The total number of encrypted buckets can be derived from this field,
   // i.e. 2^encrypted_bucket_id_length.
   int32 encrypted_bucket_id_length = 1;
+
+  // The type of hash function to be used to generate the encrypted bucket ID.
+  private_membership.EncryptedBucketHashType sensitive_id_hash_type = 2;
 }
 
 // Public Ring-LWE encryption scheme parameters.

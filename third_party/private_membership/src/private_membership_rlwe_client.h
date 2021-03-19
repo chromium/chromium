@@ -111,6 +111,9 @@ class PirClientImpl : public PirClient {
   // Maximum allowed levels of recursion.
   static constexpr int kMaxLevelsOfRecursion = 100;
 
+  // Maximum number of entries in request.
+  static constexpr int kMaxRequestEntries = 10000000;
+
   // Parameters for protocol.
   const RlweParameters rlwe_params_;
 

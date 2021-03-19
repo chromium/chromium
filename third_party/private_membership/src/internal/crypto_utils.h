@@ -15,6 +15,7 @@
 #ifndef THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_CRYPTO_UTILS_H_
 #define THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_CRYPTO_UTILS_H_
 
+#include "absl/strings/str_cat.h"
 #include "third_party/private-join-and-compute/src/crypto/context.h"
 #include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
 #include "third_party/private_membership/src/private_membership.pb.h"
