@@ -98,21 +98,6 @@ ChromeProcessDescriptor::ProcessType GetProcessType(const std::string& name) {
   return ChromeProcessDescriptor::PROCESS_UNSPECIFIED;
 }
 
-void WriteMetadataProto(ChromeMetadataPacket* metadata_proto,
-                        bool privacy_filtering_enabled) {
-#if defined(OS_ANDROID) && defined(OFFICIAL_BUILD)
-  // Version code is only set for official builds on Android.
-  const char* version_code_str =
-      base::android::BuildInfo::GetInstance()->package_version_code();
-  if (version_code_str) {
-    int version_code = 0;
-    bool res = base::StringToInt(version_code_str, &version_code);
-    DCHECK(res);
-    metadata_proto->set_chrome_version_code(version_code);
-  }
-#endif  // defined(OS_ANDROID) && defined(OFFICIAL_BUILD)
-}
-
 static_assert(
     sizeof(TraceEventDataSource::SessionFlags) <= sizeof(uint64_t),
     "SessionFlags should remain small to ensure lock-free atomic operations");
@@ -151,7 +136,8 @@ TraceEventMetadataSource::TraceEventMetadataSource()
       origin_task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   g_trace_event_metadata_source_for_testing = this;
   PerfettoTracedProcess::Get()->AddDataSource(this);
-  AddGeneratorFunction(base::BindRepeating(&WriteMetadataProto));
+  AddGeneratorFunction(base::BindRepeating(
+      &TraceEventMetadataSource::WriteMetadataPacket, base::Unretained(this)));
   AddGeneratorFunction(base::BindRepeating(
       &TraceEventMetadataSource::GenerateTraceConfigMetadataDict,
       base::Unretained(this)));
@@ -188,6 +174,29 @@ void TraceEventMetadataSource::AddGeneratorFunction(
     packet_generator_functions_.push_back(generator);
   }
   GenerateMetadataPacket(generator);
+}
+
+void TraceEventMetadataSource::WriteMetadataPacket(
+    perfetto::protos::pbzero::ChromeMetadataPacket* metadata_proto,
+    bool privacy_filtering_enabled) {
+#if defined(OS_ANDROID) && defined(OFFICIAL_BUILD)
+  // Version code is only set for official builds on Android.
+  const char* version_code_str =
+      base::android::BuildInfo::GetInstance()->package_version_code();
+  if (version_code_str) {
+    int version_code = 0;
+    bool res = base::StringToInt(version_code_str, &version_code);
+    DCHECK(res);
+    metadata_proto->set_chrome_version_code(version_code);
+  }
+#endif  // defined(OS_ANDROID) && defined(OFFICIAL_BUILD)
+
+  AutoLockWithDeferredTaskPosting lock(lock_);
+
+  if (parsed_chrome_config_) {
+    metadata_proto->set_enabled_categories(
+        parsed_chrome_config_->ToCategoryFilterString());
+  }
 }
 
 std::unique_ptr<base::DictionaryValue>

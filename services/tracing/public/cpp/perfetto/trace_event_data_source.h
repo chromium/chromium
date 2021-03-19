@@ -120,6 +120,9 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventMetadataSource
       perfetto::protos::pbzero::ChromeEventBundle* event_bundle);
   void GenerateMetadataPacket(
       const TraceEventMetadataSource::PacketGeneratorFunction& generator);
+
+  void WriteMetadataPacket(perfetto::protos::pbzero::ChromeMetadataPacket*,
+                           bool privacy_filtering_enabled);
   std::unique_ptr<base::DictionaryValue> GenerateTraceConfigMetadataDict();
 
   // All members are protected by |lock_|.
