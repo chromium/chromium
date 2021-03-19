@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/controller/performance_manager/v8_worker_memory_reporter.h"
@@ -212,13 +211,19 @@ class V8ProcessMemoryReporter : public RefCounted<V8ProcessMemoryReporter> {
   bool worker_measurement_done_ = false;
 };
 
+V8DetailedMemoryReporterImpl& GetV8DetailedMemoryReporter() {
+  DEFINE_STATIC_LOCAL(V8DetailedMemoryReporterImpl, v8_memory_reporter, ());
+  return v8_memory_reporter;
+}
+
 }  // namespace
 
 // static
-void V8DetailedMemoryReporterImpl::Create(
+void V8DetailedMemoryReporterImpl::Bind(
     mojo::PendingReceiver<mojom::blink::V8DetailedMemoryReporter> receiver) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<V8DetailedMemoryReporterImpl>(),
-                              std::move(receiver));
+  // This should be called only once per process on RenderProcessWillLaunch.
+  DCHECK(!GetV8DetailedMemoryReporter().receiver_.is_bound());
+  GetV8DetailedMemoryReporter().receiver_.Bind(std::move(receiver));
 }
 
 void V8DetailedMemoryReporterImpl::GetV8MemoryUsage(
