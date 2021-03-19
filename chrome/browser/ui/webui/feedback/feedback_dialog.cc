@@ -8,8 +8,10 @@
 #include <utility>
 
 #include "base/json/json_writer.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -76,7 +78,7 @@ std::u16string FeedbackDialog::GetDialogTitle() const {
 }
 
 GURL FeedbackDialog::GetDialogContentURL() const {
-  return GURL("chrome://feedback");
+  return GURL(chrome::kChromeUIFeedbackURL);
 }
 
 void FeedbackDialog::GetDialogSize(gfx::Size* size) const {
@@ -92,6 +94,30 @@ std::string FeedbackDialog::GetDialogArgs() const {
   std::string data;
   base::JSONWriter::Write(*feedbackInfo_, &data);
   return data;
+}
+void FeedbackDialog::OnWebContentsFinishedLoad() {
+  if (this->widget_->IsVisible())
+    this->widget_->Hide();
+}
+
+void FeedbackDialog::OnMainFrameResourceLoadComplete(
+    const blink::mojom::ResourceLoadInfo& resource_load_info) {
+  this->widget_->Show();
+}
+
+void FeedbackDialog::RequestMediaAccessPermission(
+    content::WebContents* web_contents,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback) {
+  MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
+      web_contents, request, std::move(callback), nullptr /* extension */);
+}
+
+bool FeedbackDialog::CheckMediaAccessPermission(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& security_origin,
+    blink::mojom::MediaStreamType type) {
+  return true;
 }
 
 void FeedbackDialog::OnDialogClosed(const std::string& json_retval) {

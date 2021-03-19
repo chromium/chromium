@@ -42,6 +42,16 @@ class FeedbackDialog : public ui::WebDialogDelegate {
                        bool* out_close_dialog) override;
   bool ShouldShowDialogTitle() const override;
   ui::WebDialogDelegate::FrameKind GetWebDialogFrameKind() const override;
+  void OnWebContentsFinishedLoad() override;
+  void OnMainFrameResourceLoadComplete(
+      const blink::mojom::ResourceLoadInfo& resource_load_info) override;
+  void RequestMediaAccessPermission(
+      content::WebContents* web_contents,
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) override;
+  bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
+                                  const GURL& security_origin,
+                                  blink::mojom::MediaStreamType type) override;
 
   std::unique_ptr<base::DictionaryValue> feedbackInfo_;
   extensions::api::feedback_private::FeedbackFlow feedbackFlow_;

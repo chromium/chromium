@@ -27,9 +27,11 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/screen_capture_notification_ui.h"
 #include "chrome/browser/ui/simple_message_box.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -93,6 +95,13 @@ bool ShouldDisplayNotification(const extensions::Extension* extension) {
   return !(extension &&
            (extension->location() == ManifestLocation::kComponent ||
             extension->location() == ManifestLocation::kExternalComponent));
+}
+
+// Returns true if an on-screen notification should not be displayed after
+// desktop capture is taken for the |url|.
+bool HasNotificationExemption(const GURL& url) {
+  return (url.spec() == chrome::kChromeUIFeedbackURL &&
+          base::FeatureList::IsEnabled(features::kWebUIFeedback));
 }
 
 #if !defined(OS_ANDROID)
@@ -174,7 +183,7 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
       MediaCaptureDevicesDispatcher::IsOriginForCasting(
           request.security_origin) ||
       IsExtensionAllowedForScreenCapture(extension) ||
-      IsBuiltInExtension(request.security_origin);
+      IsBuiltInFeedbackUI(request.security_origin);
 
   const bool origin_is_secure =
       network::IsUrlPotentiallyTrustworthy(request.security_origin) ||
@@ -209,7 +218,8 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
 
     // Some extensions do not require user approval, because they provide their
     // own user approval UI.
-    bool is_approved = IsDefaultApproved(extension);
+    bool is_approved = IsDefaultApproved(extension) ||
+                       IsDefaultApproved(request.security_origin);
     if (!is_approved) {
       std::u16string application_name =
           base::UTF8ToUTF16(request.security_origin.spec());
@@ -255,7 +265,8 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
 
       // Determine if the extension is required to display a notification.
       const bool display_notification =
-          display_notification_ && ShouldDisplayNotification(extension);
+          display_notification_ && ShouldDisplayNotification(extension) &&
+          !HasNotificationExemption(request.security_origin);
 
       if (!content::WebContents::FromRenderFrameHost(
               content::RenderFrameHost::FromID(request.render_process_id,
@@ -290,6 +301,13 @@ bool DesktopCaptureAccessHandler::IsDefaultApproved(
          (extension->location() == ManifestLocation::kComponent ||
           extension->location() == ManifestLocation::kExternalComponent ||
           IsExtensionAllowedForScreenCapture(extension));
+}
+
+bool DesktopCaptureAccessHandler::IsDefaultApproved(const GURL& url) {
+  // allow the Feedback WebUI chrome://feedback/ to take screenshot without
+  // user's approval. The screenshot will not be shared by default. So the
+  // user can still decide whether the screenshot taken is shared or not.
+  return url.spec() == chrome::kChromeUIFeedbackURL;
 }
 
 bool DesktopCaptureAccessHandler::SupportsStreamType(

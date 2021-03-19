@@ -81,6 +81,10 @@ class DesktopCaptureAccessHandler : public CaptureAccessHandlerBase,
   // approved.
   static bool IsDefaultApproved(const extensions::Extension* extension);
 
+  // Returns whether desktop capture is always approved for |url|.
+  // Currently chrome://feedback/ is default approved.
+  static bool IsDefaultApproved(const GURL& url);
+
   // WebContentsCollection::Observer:
   void WebContentsDestroyed(content::WebContents* web_contents) override;
 
