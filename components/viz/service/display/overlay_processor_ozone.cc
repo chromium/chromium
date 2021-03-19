@@ -10,6 +10,7 @@
 
 #include "base/logging.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/viz/common/features.h"
 #include "components/viz/service/display/overlay_strategy_fullscreen.h"
 #include "components/viz/service/display/overlay_strategy_single_on_top.h"
@@ -65,6 +66,25 @@ void ReportSharedImageExists(bool exists) {
       "SharedImageExists",
       exists);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool AllowColorSpaceCombination(
+    const gfx::ColorSpace& source_color_space,
+    const gfx::ColorSpace& destination_color_space) {
+  // Allow invalid source color spaces because the assumption is that the
+  // compositor won't do a color space conversion in this case anyway, so it
+  // should be consistent with the overlay path.
+  if (!source_color_space.IsValid())
+    return true;
+
+  // Always allow color space mismatches as long as both the source and
+  // destination color spaces are in the same "bucket" (color usage); that way,
+  // we don't reject a negligible mismatch that may occur if, e.g., the content
+  // is SDR and the display primaries are very close (yet not equal) to SDR.
+  return source_color_space.GetContentColorUsage() ==
+         destination_color_space.GetContentColorUsage();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -159,6 +179,25 @@ void OverlayProcessorOzone::CheckOverlaySupport(
          ozone_surface_iterator++, surface_iterator++) {
       ConvertToOzoneOverlaySurface(*surface_iterator,
                                    &(*ozone_surface_iterator));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      // On Chrome OS, skip the candidate if a color space conversion might be
+      // needed; the reason is that on Chrome OS, we don't yet have an API to
+      // set up color space conversion per plane. Note however that we should
+      // only do this if the candidate does not require an overlay (e.g., for
+      // protected content, it's better to display it with an incorrect color
+      // space than to not display it at all).
+      // TODO(b/181974042): plumb the color space all the way to the ozone DRM
+      // backend when we get an API for per-plane color management.
+      DCHECK(primary_plane);
+      if (!surface_iterator->requires_overlay &&
+          !AllowColorSpaceCombination(
+              /*source_color_space=*/surface_iterator->color_space,
+              /*destination_color_space=*/primary_plane->color_space)) {
+        *ozone_surface_iterator = ui::OverlaySurfaceCandidate();
+        ozone_surface_iterator->plane_z_order = surface_iterator->plane_z_order;
+        continue;
+      }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       if (shared_image_interface_) {
         bool result = SetNativePixmapForCandidate(&(*ozone_surface_iterator),
                                                   surface_iterator->mailbox,
