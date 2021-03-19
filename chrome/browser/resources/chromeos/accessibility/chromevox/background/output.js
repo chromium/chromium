@@ -151,7 +151,8 @@ Output = class {
       case 'checked':
         return node.checked && node.checked !== 'false';
       case 'hasPopup':
-        return node.hasPopup && node.hasPopup !== 'false';
+        return node.hasPopup &&
+            node.hasPopup !== chrome.automation.HasPopup.FALSE;
 
       // Chrome automatically calculates these attributes.
       case 'posInSet':

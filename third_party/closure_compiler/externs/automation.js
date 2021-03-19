@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -453,6 +453,7 @@ chrome.automation.Restriction = {
  * @see https://developer.chrome.com/extensions/automation#type-HasPopup
  */
 chrome.automation.HasPopup = {
+  FALSE: 'false',
   TRUE: 'true',
   MENU: 'menu',
   LISTBOX: 'listbox',
@@ -1262,15 +1263,7 @@ chrome.automation.AutomationNode.prototype.wordEnds;
 chrome.automation.AutomationNode.prototype.sentenceStarts;
 
 /**
- * The end indexes of each sentence within the node's name. For most nodes, the
- * size of sentenceStarts array should be equal to the size of sentenceEnds
- * array. Two exceptions are (1) node at the begining of a paragraph but the end
- * of the node's sentences is in its following node. Such a node has one more
- * start index. (2) Node at the end of a paragraph but the start of the node's
- * sentences is in its previous node. Such a node has one more end index. For
- * example, <p><b>Hello</b> world.</p> has two nodes. The first one has one
- * start index (i.e., 0) but no end index. The second node has one end index
- * (i.e., 7) but no start index.
+ * The end indexes of each sentence within the node's name. For most nodes, the size of sentenceStarts array should be equal to the size of sentenceEnds array. Two exceptions are (1) node at the begining of a paragraph but the end of the node's sentences is in its following node. Such a node has one more start index. (2) Node at the end of a paragraph but the start of the node's sentences is in its previous node. Such a node has one more end index. For example, <p><b>Hello</b> world.</p> has two nodes. The first one has one start index (i.e., 0) but no end index. The second node has one end index (i.e., 7) but no start index.
  * @type {(!Array<number>|undefined)}
  * @see https://developer.chrome.com/extensions/automation#type-sentenceEnds
  */
@@ -1902,8 +1895,8 @@ chrome.automation.AutomationNode.prototype.language;
 chrome.automation.AutomationNode.prototype.detectedLanguage;
 
 /**
- * Indicates the availability and type of interactive popup element true - the popup is a menu menu - the popup is a menu listbox - the popup is a listbox tree - the popup is a tree grid - the popup is a grid dialog - the popup is a dialog
- * @type {(string|undefined)}
+ * Indicates the availability and type of an interactive popup element.
+ * @type {(!chrome.automation.HasPopup|undefined)}
  * @see https://developer.chrome.com/extensions/automation#type-hasPopup
  */
 chrome.automation.AutomationNode.prototype.hasPopup;
