@@ -8,6 +8,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/browser/api/messaging/message_service.h"
@@ -346,18 +347,16 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
   // stopping the service worker doesn't cause message port in
   // |message_port_extension| to crash.
   ExtensionTestMessageListener worker_running_listener("worker_running", false);
-  service_worker_test_utils::TestRegistrationObserver registration_observer(
-      browser()->profile());
 
   TestExtensionDir worker_extension_dir;
   const Extension* service_worker_extension =
-      LoadExtension(WriteServiceWorkerExtensionToDir(&worker_extension_dir));
+      LoadExtension(WriteServiceWorkerExtensionToDir(&worker_extension_dir),
+                    {.wait_for_registration_stored = true});
   const ExtensionId worker_extension_id = service_worker_extension->id();
   ASSERT_TRUE(service_worker_extension);
 
   // Wait for the extension service worker to settle before moving to next step.
   EXPECT_TRUE(worker_running_listener.WaitUntilSatisfied());
-  registration_observer.WaitForRegistrationStored();
 
   {
     // Stop the worker, and ensure its completion.

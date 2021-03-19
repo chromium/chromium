@@ -67,6 +67,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/notification_types.h"
+#include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/browser/updater/extension_cache_fake.h"
@@ -74,6 +75,7 @@
 #include "extensions/common/extension_set.h"
 #include "extensions/common/file_test_util.h"
 #include "extensions/common/file_util.h"
+#include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/switches.h"
 #include "extensions/common/value_builder.h"
 
@@ -82,6 +84,8 @@
 #endif
 
 namespace extensions {
+
+using extensions::service_worker_test_utils::TestRegistrationObserver;
 
 namespace {
 
@@ -315,10 +319,23 @@ const Extension* ExtensionBrowserTest::LoadExtension(
       return nullptr;
   }
 
+  std::unique_ptr<TestRegistrationObserver> registration_observer;
+
+  if (options.wait_for_registration_stored) {
+    registration_observer =
+        std::make_unique<TestRegistrationObserver>(profile_);
+  }
+
   scoped_refptr<const Extension> extension =
       loader.LoadExtension(extension_path);
   if (extension)
     observer_->set_last_loaded_extension_id(extension->id());
+
+  if (options.wait_for_registration_stored &&
+      BackgroundInfo::IsServiceWorkerBased(extension.get())) {
+    registration_observer->WaitForRegistrationStored();
+  }
+
   return extension.get();
 }
 

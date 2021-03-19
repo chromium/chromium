@@ -1701,20 +1701,17 @@ class TestWorkerObserver : public content::ServiceWorkerContextObserver {
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
                        EventsToStoppedWorker) {
-  // Set up an observer to wait for the registration to be stored.
-  service_worker_test_utils::TestRegistrationObserver observer(
-      browser()->profile());
-
   ExtensionTestMessageListener event_listener_added("ready", false);
   event_listener_added.set_failure_message("ERROR");
 
   // Note: Extension is packed to avoid reloading while loading.
-  const Extension* extension =
-      LoadExtension(PackExtension(test_data_dir_.AppendASCII(
-          "service_worker/worker_based_background/events_to_stopped_worker")));
+  const Extension* extension = LoadExtension(
+      PackExtension(test_data_dir_.AppendASCII(
+          "service_worker/worker_based_background/events_to_stopped_worker")),
+      // Wait for the registration to be stored so that it's persistent
+      // before the test terminates.
+      {.wait_for_registration_stored = true});
   ASSERT_TRUE(extension);
-
-  observer.WaitForRegistrationStored();
   EXPECT_TRUE(event_listener_added.WaitUntilSatisfied());
 
   // Stop the service worker.
@@ -2249,10 +2246,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, TabsOnCreated) {
 #endif
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
                        MAYBE_PRE_FilteredEventsAfterRestart) {
-  // Set up an observer to wait for the registration to be stored.
-  service_worker_test_utils::TestRegistrationObserver observer(
-      browser()->profile());
-
   ExtensionTestMessageListener listener_added("ready", false);
   base::FilePath test_dir =
       test_data_dir_.AppendASCII("service_worker/worker_based_background");
@@ -2262,10 +2255,14 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
 
-  const Extension* extension = LoadExtension(PackExtensionWithOptions(
-      test_dir.AppendASCII("filtered_events_after_restart"),
-      scoped_temp_dir.GetPath().AppendASCII("test_extension.crx"), pem_path,
-      base::FilePath()));
+  const Extension* extension = LoadExtension(
+      PackExtensionWithOptions(
+          test_dir.AppendASCII("filtered_events_after_restart"),
+          scoped_temp_dir.GetPath().AppendASCII("test_extension.crx"), pem_path,
+          base::FilePath()),
+      // Wait for the registration to be stored so that it's persistent
+      // before the test terminates.
+      {.wait_for_registration_stored = true});
   ASSERT_TRUE(extension);
   EXPECT_EQ(kTestExtensionId, extension->id());
   ProcessManager* pm = ProcessManager::Get(browser()->profile());
@@ -2274,8 +2271,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   EXPECT_LT(pm->GetLazyKeepaliveCount(extension), 1);
   EXPECT_TRUE(pm->GetLazyKeepaliveActivities(extension).empty());
   EXPECT_TRUE(listener_added.WaitUntilSatisfied());
-
-  observer.WaitForRegistrationStored();
 }
 
 // After browser restarts, this test step ensures that opening a tab fires

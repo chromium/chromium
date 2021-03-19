@@ -119,6 +119,10 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
 
     // An optional install param.
     const char* install_param = nullptr;
+
+    // If this is a Service Worker-based extension, wait for the
+    // Service Worker's registration to be stored before returning.
+    bool wait_for_registration_stored = false;
   };
 
   ExtensionBrowserTest();
