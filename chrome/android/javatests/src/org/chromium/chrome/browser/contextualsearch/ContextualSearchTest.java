@@ -59,7 +59,7 @@ import org.chromium.ui.touch_selection.SelectionEventType;
         ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS,
         ChromeFeatureList.CONTEXTUAL_SEARCH_LITERAL_SEARCH_TAP})
 @Batch(Batch.PER_CLASS)
-public class ContextualSearchTapEventTest {
+public class ContextualSearchTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
@@ -151,8 +151,8 @@ public class ContextualSearchTapEventTest {
     private static class MockCSSelectionController extends ContextualSearchSelectionController {
         private StubbedSelectionPopupController mPopupController;
 
-        public MockCSSelectionController(ChromeActivity activity,
-                ContextualSearchSelectionHandler handler) {
+        public MockCSSelectionController(
+                ChromeActivity activity, ContextualSearchSelectionHandler handler) {
             super(activity, handler);
             mPopupController = new StubbedSelectionPopupController();
         }
@@ -192,7 +192,8 @@ public class ContextualSearchTapEventTest {
     private void mockLongpressText(String text) {
         mContextualSearchManager.getBaseSelectionPopupController().setSelectedText(text);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mContextualSearchClient.onSelectionEvent(
+                ()
+                        -> mContextualSearchClient.onSelectionEvent(
                                 SelectionEventType.SELECTION_HANDLES_SHOWN, 0, 0));
     }
 
@@ -282,8 +283,8 @@ public class ContextualSearchTapEventTest {
 
         Assert.assertEquals(mPanelManager.getRequestPanelShowCount(), 1);
         Assert.assertEquals(mPanelManager.getPanelHideCount(), 0);
-        Assert.assertEquals(mContextualSearchManager.getSelectionController().getSelectedText(),
-                "text");
+        Assert.assertEquals(
+                mContextualSearchManager.getSelectionController().getSelectedText(), "text");
 
         // Fake tap on non-text.
         mockTapEmptySpace();
