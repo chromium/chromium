@@ -9,8 +9,8 @@
 ] interface AppHistoryNavigateEvent : Event {
   [CallWith=ExecutionContext] constructor(DOMString type, optional AppHistoryNavigateEventInit eventInit = {});
 
-  // readonly attribute boolean userInitiated;
   readonly attribute boolean canRespond;
+  readonly attribute boolean userInitiated;
   readonly attribute boolean hashChange;
   // readonly attribute AppHistoryEntry destination;
   // readonly attribute AbortSignal signal;

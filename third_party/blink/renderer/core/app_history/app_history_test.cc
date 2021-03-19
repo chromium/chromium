@@ -5,14 +5,21 @@
 #include "third_party/blink/renderer/core/app_history/app_history.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/commit_result/commit_result.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 
 namespace blink {
 
-class AppHistoryTest : public testing::Test {};
+class AppHistoryTest : public testing::Test {
+ public:
+  void TearDown() override {
+    url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
+  }
+};
 
 class BeginNavigationClient : public frame_test_helpers::TestWebFrameClient {
  public:
@@ -49,6 +56,29 @@ TEST_F(AppHistoryTest, NavigateEventCtrlClick) {
   // If the navigate event handler was executed, the navigation will have been
   // cancelled, so check whether the begin navigation count was called.
   EXPECT_TRUE(client.BeginNavigationCalled());
+}
+
+TEST_F(AppHistoryTest, NavigateEventCancelable) {
+  url_test_helpers::RegisterMockedURLLoad(
+      url_test_helpers::ToKURL(
+          "https://example.com/apphistory/onnavigate-preventDefault.html"),
+      test::CoreTestDataPath("apphistory/onnavigate-preventDefault.html"));
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.InitializeAndLoad(
+      "https://example.com/apphistory/onnavigate-preventDefault.html");
+
+  // Emulate a same-document back-forward navigation initiated by browser UI.
+  // It should be uncancelable, even though the onnavigate handler will try.
+  auto& frame_loader = web_view_helper.LocalMainFrame()->GetFrame()->Loader();
+  HistoryItem* item = frame_loader.GetDocumentLoader()->GetHistoryItem();
+  auto result = frame_loader.GetDocumentLoader()->CommitSameDocumentNavigation(
+      item->Url(), WebFrameLoadType::kBackForward, item,
+      ClientRedirectPolicy::kNotClientRedirect,
+      false /* has_transient_user_activation */, nullptr,
+      mojom::blink::TriggeringEventInfo::kUnknown, nullptr);
+
+  EXPECT_EQ(result, mojom::blink::CommitResult::Ok);
 }
 
 }  // namespace blink

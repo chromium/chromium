@@ -27,20 +27,24 @@ AppHistory* AppHistory::appHistory(LocalDOMWindow& window) {
 AppHistory::AppHistory(LocalDOMWindow& window)
     : Supplement<LocalDOMWindow>(window) {}
 
-// event_type_names::kNavigate
 bool AppHistory::DispatchNavigateEvent(const KURL& url,
                                        HTMLFormElement* form,
                                        bool same_document,
                                        WebFrameLoadType type,
+                                       UserNavigationInvolvement involvement,
                                        SerializedScriptValue* state_object) {
   const KURL& current_url = GetSupplementable()->Url();
 
   auto* init = AppHistoryNavigateEventInit::Create();
-  init->setCancelable(true);
-  init->setCanRespond(CanChangeToUrlForHistoryApi(
-      url, GetSupplementable()->GetSecurityOrigin(), current_url));
+  init->setCancelable(involvement != UserNavigationInvolvement::kBrowserUI ||
+                      type != WebFrameLoadType::kBackForward);
+  init->setCanRespond(
+      CanChangeToUrlForHistoryApi(url, GetSupplementable()->GetSecurityOrigin(),
+                                  current_url) &&
+      (same_document || type != WebFrameLoadType::kBackForward));
   init->setHashChange(same_document && url != current_url &&
                       EqualIgnoringFragmentIdentifier(url, current_url));
+  init->setUserInitiated(involvement != UserNavigationInvolvement::kNone);
   init->setFormData(form ? FormData::Create(form, ASSERT_NO_EXCEPTION)
                          : nullptr);
   auto* navigate_event = AppHistoryNavigateEvent::Create(

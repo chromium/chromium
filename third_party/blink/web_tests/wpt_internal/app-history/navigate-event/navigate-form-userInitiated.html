@@ -1,17 +1,22 @@
 <!doctype html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<form id="form" action=""></form>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<form id="form" action="">
+<input id="submit" type="submit" value="Submit">
+</form>
 <script>
 async_test(t => {
   appHistory.onnavigate = t.step_func_done(e => {
     assert_true(e.cancelable);
     assert_true(e.canRespond);
-    assert_false(e.userInitiated);
+    assert_true(e.userInitiated);
     assert_false(e.hashChange);
     assert_not_equals(e.formData, null);
     e.preventDefault();
   });
-  window.onload = t.step_func(() => form.submit());
+  window.onload = t.step_func(() => test_driver.click(submit));
 }, "<form> submission fires navigate event");
 </script>

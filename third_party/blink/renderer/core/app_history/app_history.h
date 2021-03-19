@@ -19,6 +19,10 @@ class HTMLFormElement;
 class KURL;
 class SerializedScriptValue;
 
+// TODO(japhet): This should probably move to frame_loader_types.h and possibly
+// be used more broadly once it is in the HTML spec.
+enum class UserNavigationInvolvement { kBrowserUI, kActivation, kNone };
+
 class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
                                      public Supplement<LocalDOMWindow> {
   DEFINE_WRAPPERTYPEINFO();
@@ -36,6 +40,7 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
                              HTMLFormElement* form,
                              bool same_document,
                              WebFrameLoadType,
+                             UserNavigationInvolvement,
                              SerializedScriptValue* = nullptr);
 
   // EventTargetWithInlineData overrides:

@@ -41,6 +41,7 @@ class AppHistoryNavigateEvent final : public Event,
   void SetStateObject(SerializedScriptValue* state) { state_object_ = state; }
 
   bool canRespond() const { return can_respond_; }
+  bool userInitiated() const { return user_initiated_; }
   bool hashChange() const { return hash_change_; }
   FormData* formData() const { return form_data_; }
 
@@ -53,6 +54,7 @@ class AppHistoryNavigateEvent final : public Event,
 
  private:
   bool can_respond_;
+  bool user_initiated_;
   bool hash_change_;
   Member<FormData> form_data_;
 

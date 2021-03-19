@@ -4,8 +4,8 @@
 
 // https://github.com/WICG/app-history/
 dictionary AppHistoryNavigateEventInit : EventInit {
-  // readonly attribute boolean userInitiated;
   boolean canRespond = false;
+  boolean userInitiated = false;
   boolean hashChange = false;
   // readonly attribute AppHistoryEntry destination;
   // readonly attribute AbortSignal signal;

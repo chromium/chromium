@@ -1195,7 +1195,7 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
     ClientRedirectPolicy client_redirect_policy,
     bool has_transient_user_activation,
     LocalDOMWindow* origin_window,
-    bool has_event,
+    mojom::blink::TriggeringEventInfo triggering_event_info,
     std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) {
   DCHECK(!IsReloadLoadType(frame_load_type));
   DCHECK(frame_->GetDocument());
@@ -1218,8 +1218,15 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
   }
 
   if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow())) {
-    if (!app_history->DispatchNavigateEvent(url, nullptr, true,
-                                            frame_load_type)) {
+    UserNavigationInvolvement involvement = UserNavigationInvolvement::kNone;
+    if (triggering_event_info == mojom::blink::TriggeringEventInfo::kUnknown) {
+      involvement = UserNavigationInvolvement::kBrowserUI;
+    } else if (triggering_event_info ==
+               mojom::blink::TriggeringEventInfo::kFromTrustedEvent) {
+      involvement = UserNavigationInvolvement::kActivation;
+    }
+    if (!app_history->DispatchNavigateEvent(url, nullptr, true, frame_load_type,
+                                            involvement)) {
       return mojom::blink::CommitResult::Aborted;
     }
   }
@@ -1243,12 +1250,12 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
             WTF::Bind(&DocumentLoader::CommitSameDocumentNavigationInternal,
                       WrapWeakPersistent(this), url, frame_load_type,
                       WrapPersistent(history_item), client_redirect_policy,
-                      has_transient_user_activation, !!origin_window, has_event,
-                      std::move(extra_data)));
+                      has_transient_user_activation, !!origin_window,
+                      triggering_event_info, std::move(extra_data)));
   } else {
     CommitSameDocumentNavigationInternal(
         url, frame_load_type, history_item, client_redirect_policy,
-        has_transient_user_activation, origin_window, has_event,
+        has_transient_user_activation, origin_window, triggering_event_info,
         std::move(extra_data));
   }
   return mojom::CommitResult::Ok;
@@ -1261,7 +1268,7 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
     ClientRedirectPolicy client_redirect,
     bool has_transient_user_activation,
     bool is_content_initiated,
-    bool has_event,
+    mojom::blink::TriggeringEventInfo triggering_event_info,
     std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) {
   // If this function was scheduled to run asynchronously, this DocumentLoader
   // might have been detached before the task ran.
@@ -1269,8 +1276,10 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
     return;
 
   if (!IsBackForwardLoadType(frame_load_type)) {
-    SetNavigationType(has_event ? kWebNavigationTypeLinkClicked
-                                : kWebNavigationTypeOther);
+    SetNavigationType(triggering_event_info !=
+                              mojom::blink::TriggeringEventInfo::kNotFromEvent
+                          ? kWebNavigationTypeLinkClicked
+                          : kWebNavigationTypeOther);
     if (history_item_ && url == history_item_->Url())
       frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
   }

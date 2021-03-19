@@ -661,16 +661,18 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
     document_loader_->CommitSameDocumentNavigation(
         url, frame_load_type, nullptr, request.ClientRedirect(),
         resource_request.HasUserGesture(), origin_window,
-        request.GetTriggeringEventInfo() !=
-            mojom::blink::TriggeringEventInfo::kNotFromEvent,
-        nullptr /* extra_data */);
+        request.GetTriggeringEventInfo(), nullptr /* extra_data */);
     return;
   }
 
   if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow())) {
     if (request.GetNavigationPolicy() == kNavigationPolicyCurrentTab) {
-      if (!app_history->DispatchNavigateEvent(url, request.Form(), false,
-                                              frame_load_type)) {
+      if (!app_history->DispatchNavigateEvent(
+              url, request.Form(), false, frame_load_type,
+              request.GetTriggeringEventInfo() ==
+                      mojom::blink::TriggeringEventInfo::kFromTrustedEvent
+                  ? UserNavigationInvolvement::kActivation
+                  : UserNavigationInvolvement::kNone)) {
         return;
       }
     }
@@ -951,8 +953,12 @@ void FrameLoader::CommitNavigation(
 
   if (!navigation_params->is_browser_initiated) {
     if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow())) {
-      app_history->DispatchNavigateEvent(navigation_params->url, nullptr, false,
-                                         navigation_params->frame_load_type);
+      app_history->DispatchNavigateEvent(
+          navigation_params->url, nullptr, false,
+          navigation_params->frame_load_type,
+          navigation_params->is_browser_initiated
+              ? UserNavigationInvolvement::kBrowserUI
+              : UserNavigationInvolvement::kNone);
     }
   }
 

@@ -1,12 +1,16 @@
 <script>
 appHistory.onnavigate = e => {
   let message = "";
+  if (e.cancelable)
+    message += "cancelable,";
   if (e.canRespond)
-    message += "canRespond";
+    message += "canRespond,";
+  if (e.userInitiated)
+    message += "userInitiated,";
   if (e.hashChange)
-    message += "hashChange";
+    message += "hashChange,";
   if (e.formData != null)
-    message += "formData";
+    message += "formData,";
   e.preventDefault();
   top.postMessage(message, "*");
 };

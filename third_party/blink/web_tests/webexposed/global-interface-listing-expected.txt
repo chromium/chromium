@@ -239,6 +239,7 @@ interface AppHistoryNavigateEvent : Event
     getter canRespond
     getter formData
     getter hashChange
+    getter userInitiated
     method constructor
     method respondWith
 interface Attr : Node

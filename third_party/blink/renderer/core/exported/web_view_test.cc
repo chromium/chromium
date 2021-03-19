@@ -2490,18 +2490,18 @@ TEST_F(WebViewTest, BackForwardRestoreScroll) {
   main_frame_local->Loader().GetDocumentLoader()->CommitSameDocumentNavigation(
       item1->Url(), WebFrameLoadType::kBackForward, item1.Get(),
       ClientRedirectPolicy::kNotClientRedirect,
-      false /* has_transient_user_activation */, nullptr, false /* has_event */,
-      nullptr);
+      false /* has_transient_user_activation */, nullptr,
+      mojom::blink::TriggeringEventInfo::kNotFromEvent, nullptr);
   main_frame_local->Loader().GetDocumentLoader()->CommitSameDocumentNavigation(
       item2->Url(), WebFrameLoadType::kBackForward, item2.Get(),
       ClientRedirectPolicy::kNotClientRedirect,
-      false /* has_transient_user_activation */, nullptr, false /* has_event */,
-      nullptr);
+      false /* has_transient_user_activation */, nullptr,
+      mojom::blink::TriggeringEventInfo::kNotFromEvent, nullptr);
   main_frame_local->Loader().GetDocumentLoader()->CommitSameDocumentNavigation(
       item1->Url(), WebFrameLoadType::kBackForward, item1.Get(),
       ClientRedirectPolicy::kNotClientRedirect,
-      false /* has_transient_user_activation */, nullptr, false /* has_event */,
-      nullptr);
+      false /* has_transient_user_activation */, nullptr,
+      mojom::blink::TriggeringEventInfo::kNotFromEvent, nullptr);
   web_view_impl->MainFrameWidget()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);
 
@@ -2520,14 +2520,14 @@ TEST_F(WebViewTest, BackForwardRestoreScroll) {
   main_frame_local->Loader().GetDocumentLoader()->CommitSameDocumentNavigation(
       item1->Url(), WebFrameLoadType::kBackForward, item1.Get(),
       ClientRedirectPolicy::kNotClientRedirect,
-      false /* has_transient_user_activation */, nullptr, false /* has_event */,
-      nullptr);
+      false /* has_transient_user_activation */, nullptr,
+      mojom::blink::TriggeringEventInfo::kNotFromEvent, nullptr);
 
   main_frame_local->Loader().GetDocumentLoader()->CommitSameDocumentNavigation(
       item3->Url(), WebFrameLoadType::kBackForward, item3.Get(),
       ClientRedirectPolicy::kNotClientRedirect,
-      false /* has_transient_user_activation */, nullptr, false /* has_event */,
-      nullptr);
+      false /* has_transient_user_activation */, nullptr,
+      mojom::blink::TriggeringEventInfo::kNotFromEvent, nullptr);
   // The scroll offset is only applied via invoking the anchor via the main
   // lifecycle, or a forced layout.
   // TODO(chrishtr): At the moment, WebLocalFrameImpl::GetScrollOffset() does

@@ -53,6 +53,7 @@ AppHistoryNavigateEvent::AppHistoryNavigateEvent(
     : Event(type, init),
       ExecutionContextClient(context),
       can_respond_(init->canRespond()),
+      user_initiated_(init->userInitiated()),
       hash_change_(init->hashChange()),
       form_data_(init->formData()) {
   DCHECK(IsA<LocalDOMWindow>(context));

@@ -2334,8 +2334,7 @@ blink::mojom::CommitResult WebLocalFrameImpl::CommitSameDocumentNavigation(
       is_client_redirect ? ClientRedirectPolicy::kClientRedirect
                          : ClientRedirectPolicy::kNotClientRedirect,
       has_transient_user_activation, nullptr, /* origin_document */
-      false,                                  /* has_event */
-      std::move(extra_data));
+      mojom::blink::TriggeringEventInfo::kNotFromEvent, std::move(extra_data));
 }
 
 void WebLocalFrameImpl::LoadJavaScriptURL(const WebURL& url) {
