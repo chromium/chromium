@@ -97,7 +97,8 @@ std::string NetworkTestHelper::ConfigureWiFiNetwork(const std::string& ssid,
                                                     bool owned_by_user,
                                                     bool configured_by_sync,
                                                     bool is_from_policy,
-                                                    bool is_hidden) {
+                                                    bool is_hidden,
+                                                    bool auto_connect) {
   std::string security_entry =
       is_secured ? R"("SecurityClass": "psk", "Passphrase": "secretsauce", )"
                  : R"("SecurityClass": "none", )";
@@ -119,9 +120,10 @@ std::string NetworkTestHelper::ConfigureWiFiNetwork(const std::string& ssid,
       network_state_helper_.ConfigureService(base::StringPrintf(
           R"({"GUID": "%s", "Type": "wifi", "SSID": "%s",
             %s "State": "ready", "Strength": 100,
-            %s "AutoConnect": true, "Connectable": true%s%s})",
+            %s "AutoConnect": %s, "Connectable": true%s%s})",
           guid.c_str(), ssid.c_str(), security_entry.c_str(),
-          profile_entry.c_str(), ui_data.c_str(), hidden.c_str()));
+          profile_entry.c_str(), auto_connect ? "true" : "false",
+          ui_data.c_str(), hidden.c_str()));
 
   base::RunLoop().RunUntilIdle();
 

@@ -62,6 +62,15 @@ class LocalNetworkCollector {
   // Provides the metadata store which gets constructed later.
   virtual void SetNetworkMetadataStore(
       base::WeakPtr<NetworkMetadataStore> network_metadata_store) = 0;
+
+  // Fixes networks affected by b/180854680, to be removed after M-91.
+  virtual void FixAutoconnect(
+      std::vector<sync_pb::WifiConfigurationSpecifics> protos,
+      base::OnceClosure callback) = 0;
+
+  // Executes the given callback after the local mojo networks have been loaded.
+  // If already loaded, the callback will be executed immediately.
+  virtual void ExecuteAfterNetworksLoaded(base::OnceClosure callback) = 0;
 };
 
 }  // namespace sync_wifi

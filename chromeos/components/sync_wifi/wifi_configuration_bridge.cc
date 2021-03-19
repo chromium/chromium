@@ -90,6 +90,7 @@ WifiConfigurationBridge::~WifiConfigurationBridge() {
 // static
 void WifiConfigurationBridge::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kIsFirstRun, true);
+  registry->RegisterBooleanPref(kHasFixedAutoconnect, false);
 }
 
 void WifiConfigurationBridge::OnShuttingDown() {
@@ -324,6 +325,13 @@ void WifiConfigurationBridge::OnReadAllData(
       base::BindOnce(&WifiConfigurationBridge::OnReadAllMetadata,
                      weak_ptr_factory_.GetWeakPtr()));
 
+  // Temporary fix for networks which accidentally had autoconnect disabled.
+  if (!pref_service_->GetBoolean(kHasFixedAutoconnect)) {
+    local_network_collector_->ExecuteAfterNetworksLoaded(
+        base::BindOnce(&WifiConfigurationBridge::FixAutoconnect,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
   int entries_size = entries_.size();
   // Do not log the total network count during OOBE. It returns 0 even if there
   // are networks synced since MergeSyncData has not executed yet.
@@ -340,6 +348,24 @@ void WifiConfigurationBridge::OnReadAllData(
   if (entries_size == 0) {
     local_network_collector_->RecordZeroNetworksEligibleForSync();
   }
+}
+
+void WifiConfigurationBridge::FixAutoconnect() {
+  // Temporary fix for networks which accidentally had autoconnect disabled.
+  if (!pref_service_->GetBoolean(kHasFixedAutoconnect)) {
+    std::vector<sync_pb::WifiConfigurationSpecifics> protos;
+    for (const auto& entry : entries_) {
+      protos.push_back(entry.second);
+    }
+    local_network_collector_->FixAutoconnect(
+        protos,
+        base::BindOnce(&WifiConfigurationBridge::OnFixAutoconnectComplete,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void WifiConfigurationBridge::OnFixAutoconnectComplete() {
+  pref_service_->SetBoolean(kHasFixedAutoconnect, true);
 }
 
 void WifiConfigurationBridge::OnReadAllMetadata(
