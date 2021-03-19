@@ -332,7 +332,7 @@ void ModulesInitializer::NotifyScreensChanged(LocalFrame& frame) {
 void ModulesInitializer::RegisterInterfaces(mojo::BinderMap& binders) {
   DCHECK(Platform::Current());
   binders.Add(ConvertToBaseRepeatingCallback(
-                  CrossThreadBindRepeating(&WebDatabaseImpl::Create)),
+                  CrossThreadBindRepeating(&WebDatabaseImpl::Bind)),
               Platform::Current()->GetIOTaskRunner());
 }
 
