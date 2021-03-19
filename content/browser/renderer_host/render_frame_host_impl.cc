@@ -7791,7 +7791,7 @@ void RenderFrameHostImpl::RequestAXTreeSnapshotCallback(
 void RenderFrameHostImpl::CreatePaymentManager(
     mojo::PendingReceiver<payments::mojom::PaymentManager> receiver) {
   if (!IsFeatureEnabled(blink::mojom::PermissionsPolicyFeature::kPayment)) {
-    mojo::ReportBadMessage("Feature policy blocks Payment");
+    mojo::ReportBadMessage("Permissions policy blocks Payment");
     return;
   }
   GetProcess()->CreatePaymentManagerForOrigin(GetLastCommittedOrigin(),
@@ -8077,7 +8077,7 @@ void RenderFrameHostImpl::BindNFCReceiver(
 void RenderFrameHostImpl::BindSerialService(
     mojo::PendingReceiver<blink::mojom::SerialService> receiver) {
   if (!IsFeatureEnabled(blink::mojom::PermissionsPolicyFeature::kSerial)) {
-    mojo::ReportBadMessage("Feature policy blocks access to Serial.");
+    mojo::ReportBadMessage("Permissions policy blocks access to Serial.");
     return;
   }
 
@@ -8106,7 +8106,8 @@ void RenderFrameHostImpl::BindIdleManager(
     mojo::PendingReceiver<blink::mojom::IdleManager> receiver) {
   if (!IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::kIdleDetection)) {
-    mojo::ReportBadMessage("Feature policy blocks access to IdleDetection.");
+    mojo::ReportBadMessage(
+        "Permissions policy blocks access to IdleDetection.");
     return;
   }
 

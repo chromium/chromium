@@ -1429,7 +1429,7 @@ ScriptPromise XRSystem::requestSession(ScriptState* script_state,
       required_features.valid_features.insert(feature);
     } else {
       DVLOG(2) << __func__
-               << ": feature policy not satisfied for a default feature: "
+               << ": permissions policy not satisfied for a default feature: "
                << feature;
       required_features.invalid_features = true;
     }

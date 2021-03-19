@@ -541,7 +541,7 @@ Request* Request::CreateRequestWithRequestOrString(
           "trustToken: Redemption ('token-redemption') and signing "
           "('send-redemption-record') operations require that the "
           "trust-token-redemption "
-          "Feature Policy feature be enabled.");
+          "Permissions Policy feature be enabled.");
       return nullptr;
     }
 

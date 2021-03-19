@@ -2019,7 +2019,8 @@ const char kRewriteLevelDBOnDeletionDescription[] =
 
 const char kRestrictGamepadAccessName[] = "Restrict gamepad access";
 const char kRestrictGamepadAccessDescription[] =
-    "Enables Feature Policy and Secure Context restrictions on the Gamepad API";
+    "Enables Permissions Policy and Secure Context restrictions on the Gamepad "
+    "API";
 
 const char kMBIModeName[] = "MBI Scheduling Mode";
 const char kMBIModeDescription[] =

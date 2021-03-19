@@ -1473,7 +1473,7 @@ void XMLHttpRequest::setTrustToken(const TrustToken* trust_token,
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Trust Tokens redemption and signing require the "
-        "trust-token-redemption Feature Policy feature.");
+        "trust-token-redemption Permissions Policy feature.");
     return;
   }
 

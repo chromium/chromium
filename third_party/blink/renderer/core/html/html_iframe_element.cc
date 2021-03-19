@@ -447,7 +447,7 @@ HTMLIFrameElement::ConstructTrustTokenParams() const {
             mojom::blink::ConsoleMessageSource::kOther,
             mojom::blink::ConsoleMessageLevel::kError,
             "Trust Tokens: Attempted redemption or signing without the "
-            "trust-token-redemption Feature Policy feature present."));
+            "trust-token-redemption Permissions Policy feature present."));
     return nullptr;
   }
 

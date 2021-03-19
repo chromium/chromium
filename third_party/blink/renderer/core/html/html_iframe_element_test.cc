@@ -319,8 +319,8 @@ TEST_F(HTMLIFrameElementSimTest, AllowAttributeParsingError) {
          "even though there might be multiple call to "
          "PermissionsPolicyParser::ParseAttribute.";
   EXPECT_TRUE(ConsoleMessages().front().StartsWith("Unrecognized feature"))
-      << "Expect feature policy parser raising error for unrecognized feature "
-         "but got: "
+      << "Expect permissions policy parser raising error for unrecognized "
+         "feature but got: "
       << ConsoleMessages().front();
 }
 
