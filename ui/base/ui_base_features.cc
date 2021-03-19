@@ -29,7 +29,7 @@ const base::Feature kCalculateNativeWinOcclusion{
 // window occlusion detection - Windows-only.
 const base::Feature kScreenPowerListenerForNativeWinOcclusion{
     "ScreenPowerListenerForNativeWinOcclusion",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // OW_WIN
 
 // Whether or not filenames are supported on the clipboard.

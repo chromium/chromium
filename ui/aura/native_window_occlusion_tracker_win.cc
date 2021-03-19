@@ -290,7 +290,6 @@ void NativeWindowOcclusionTrackerWin::OnSessionChange(
 void NativeWindowOcclusionTrackerWin::OnDisplayStateChanged(bool display_on) {
   static bool screen_power_listener_enabled = base::FeatureList::IsEnabled(
       features::kScreenPowerListenerForNativeWinOcclusion);
-
   if (!screen_power_listener_enabled)
     return;
 
@@ -298,10 +297,13 @@ void NativeWindowOcclusionTrackerWin::OnDisplayStateChanged(bool display_on) {
     return;
 
   display_on_ = display_on;
-  // Display changing to on will cause a foreground window change,
-  // which will trigger an occlusion calculation on its own.
-  if (!display_on_)
+  if (display_on_) {
+    // Notify the window occlusion calculator of the display turning on
+    // which will schedule an occlusion calculation.
+    WindowOcclusionCalculator::GetInstance()->HandleVisibilityChanged(true);
+  } else {
     MarkNonIconicWindowsOccluded();
+  }
 }
 
 void NativeWindowOcclusionTrackerWin::MarkNonIconicWindowsOccluded() {
