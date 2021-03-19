@@ -609,12 +609,6 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
 }
 
 - (void)didEndMainMessageLoop {
-  if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
-    // With DestroyProfileOnBrowserClose, Profiles get deleted earlier. So
-    // _lastProfile is already null, and and we cannot load it from disk now.
-    DCHECK_EQ(nullptr, _lastProfile);
-    return;
-  }
   if (!_lastProfile) {
     // If only the profile picker is open and closed again, there is no profile
     // loaded when main message loop ends and we cannot load it from disk now.
