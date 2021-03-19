@@ -4,6 +4,7 @@
 
 #include "chrome/browser/policy/messaging_layer/util/report_queue_manual_test_context.h"
 
+#include "base/task/thread_pool.h"
 #include "base/task_runner.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/policy/dm_token_utils.h"

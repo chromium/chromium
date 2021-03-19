@@ -6,6 +6,7 @@
 
 #include "base/guid.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/thread_pool.h"
 #include "chrome/services/sharing/nearby/nearby_connections.h"
 #include "chrome/services/sharing/nearby/platform/atomic_boolean.h"
 #include "chrome/services/sharing/nearby/platform/atomic_uint32.h"

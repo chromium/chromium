@@ -5,6 +5,7 @@
 #include "services/tracing/public/cpp/background_tracing/background_tracing_agent_impl.h"
 
 #include "base/run_loop.h"
+#include "base/task/thread_pool.h"
 
 #include "base/metrics/histogram_macros.h"
 #include "base/test/task_environment.h"

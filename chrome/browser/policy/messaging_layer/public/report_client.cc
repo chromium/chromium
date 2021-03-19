@@ -16,6 +16,7 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/system_network_context_manager.h"

@@ -7,6 +7,7 @@
 #include "components/reporting/storage/resources/resource_interface.h"
 
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/task_runner.h"
 #include "base/test/task_environment.h"
 #include "components/reporting/util/test_support_callbacks.h"

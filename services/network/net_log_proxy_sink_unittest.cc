@@ -5,6 +5,7 @@
 #include "services/network/net_log_proxy_sink.h"
 
 #include "base/run_loop.h"
+#include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "net/log/test_net_log.h"
 #include "testing/gtest/include/gtest/gtest.h"

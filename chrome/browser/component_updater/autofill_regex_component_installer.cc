@@ -16,6 +16,7 @@
 #include "base/path_service.h"
 #include "base/stl_util.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/version.h"
 #include "components/autofill/core/browser/pattern_provider/pattern_configuration_parser.h"
 #include "components/component_updater/component_updater_paths.h"

@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"

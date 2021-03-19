@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "content/browser/native_io/native_io_manager.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom.h"

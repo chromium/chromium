@@ -7,6 +7,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 
 namespace optimization_guide {

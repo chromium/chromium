@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/strings/strcat.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_root_map.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/browser/chromeos/drive/drive_integration_service.h"

@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
+#include "base/task/thread_pool.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/reporting/client/mock_report_queue.h"

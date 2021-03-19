@@ -4,6 +4,7 @@
 
 #include "chrome/services/sharing/nearby/platform/webrtc.h"
 
+#include "base/task/thread_pool.h"
 #include "chrome/services/sharing/webrtc/ipc_network_manager.h"
 #include "chrome/services/sharing/webrtc/ipc_packet_socket_factory.h"
 #include "chrome/services/sharing/webrtc/mdns_responder_adapter.h"

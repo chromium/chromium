@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_macros_local.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"

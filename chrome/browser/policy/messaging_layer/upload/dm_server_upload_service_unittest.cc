@@ -11,6 +11,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/thread_pool.h"
 #include "base/task_runner.h"
 #include "base/test/task_environment.h"
 #include "chrome/test/base/testing_profile.h"
