@@ -36,7 +36,6 @@ import org.chromium.base.CollectionUtil;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -303,7 +302,6 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug/1166585")
     public void testExitFirstRunWithPolicy() {
         skipTosDialogViaPolicy();
 
