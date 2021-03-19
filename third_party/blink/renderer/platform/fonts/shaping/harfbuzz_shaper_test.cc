@@ -26,6 +26,10 @@
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+#if defined(OS_ANDROID)
+#include "base/android/build_info.h"
+#endif
+
 using testing::ElementsAre;
 
 namespace blink {
@@ -1842,7 +1846,15 @@ TEST_F(HarfBuzzShaperTest, EmojiPercentage) {
     unsigned expected_broken_clusters;
   };
 
-  const Expectation expectations[] = {{3, 2}, {3, 2}, {6, 4}};
+  Expectation expectations[] = {{3, 2}, {3, 2}, {6, 4}};
+#if defined(OS_ANDROID)
+  // On Android 11, SDK level 30, fallback occurs to an emoji
+  // font that has coverage for the last segment. Adjust the expectation.
+  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+      base::android::SdkVersion::SDK_VERSION_R) {
+    expectations[2].expected_broken_clusters = 0;
+  }
+#endif
   unsigned num_calls = 0;
   HarfBuzzShaper::EmojiMetricsCallback metrics_callback =
       base::BindLambdaForTesting(
