@@ -122,3 +122,8 @@ void WebContentRunner::RegisterComponent(
 void WebContentRunner::SetOnEmptyCallback(base::OnceClosure on_empty) {
   on_empty_callback_ = std::move(on_empty);
 }
+
+void WebContentRunner::DestroyWebContext() {
+  DCHECK(get_context_params_callback_);
+  context_ = nullptr;
+}
