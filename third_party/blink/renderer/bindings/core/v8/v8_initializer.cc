@@ -715,19 +715,8 @@ class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
 
 }  // namespace
 
-static void MaybeSetRecordingOrReplaying() {
-  const char* driver = getenv("RECORD_REPLAY_DRIVER");
-  if (driver) {
-    void* handle = dlopen(driver, RTLD_LAZY);
-    CHECK(handle);
-    v8::recordreplay::SetRecordingOrReplaying(handle);
-  }
-}
-
 void V8Initializer::InitializeMainThread(const intptr_t* reference_table) {
   DCHECK(IsMainThread());
-
-  MaybeSetRecordingOrReplaying();
 
   DEFINE_STATIC_LOCAL(ArrayBufferAllocator, array_buffer_allocator, ());
   gin::IsolateHolder::Initialize(gin::IsolateHolder::kNonStrictMode,

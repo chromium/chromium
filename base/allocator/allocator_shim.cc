@@ -372,6 +372,11 @@ ALWAYS_INLINE void ShimAlignedFree(void* address, void* context) {
 namespace base {
 namespace allocator {
 void InitializeAllocatorShim() {
+  // Don't alter memory allocation behavior when recording/replaying.
+  if (getenv("RECORD_REPLAY_DRIVER")) {
+    return;
+  }
+
   // Prepares the default dispatch. After the intercepted malloc calls have
   // traversed the shim this will route them to the default malloc zone.
   InitializeDefaultDispatchToMacAllocator();

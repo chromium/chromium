@@ -262,6 +262,10 @@ BOOL ZombieInit() {
   if (initialized)
     return YES;
 
+  // Don't alter internal classes when recording/replaying.
+  if (getenv("RECORD_REPLAY_DRIVER"))
+    return NO;
+
   Class rootClass = [NSObject class];
   g_originalDeallocIMP = reinterpret_cast<RealIMP>(
       class_getMethodImplementation(rootClass, @selector(dealloc)));

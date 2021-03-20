@@ -185,6 +185,8 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
                                     UnguessableToken::Create());
 }
 
+extern "C" uintptr_t V8RecordReplayValue(const char* why, uintptr_t value);
+
 // static
 bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
     PlatformHandle handle,
@@ -209,7 +211,11 @@ bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
   bool is_read_only = kr == KERN_INVALID_RIGHT;
   bool expected_read_only = mode == Mode::kReadOnly;
 
-  if (is_read_only != expected_read_only) {
+  // mach_vm_map doesn't behave identically when replaying, so we manually
+  // enforce that the match result is consistent.
+  bool mismatch = V8RecordReplayValue("CheckPlatformHandlePermissionsCorrespondToMode",
+                                      is_read_only != expected_read_only);
+  if (mismatch) {
     // TODO(crbug.com/838365): convert to DLOG when bug fixed.
     LOG(ERROR) << "VM region has a wrong protection mask: it is"
                << (is_read_only ? " " : " not ") << "read-only but it should"

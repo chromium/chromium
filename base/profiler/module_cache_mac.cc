@@ -140,6 +140,10 @@ class MacModule : public ModuleCache::Module {
 // static
 std::unique_ptr<const ModuleCache::Module> ModuleCache::CreateModuleForAddress(
     uintptr_t address) {
+  if (getenv("RECORD_REPLAY_DRIVER")) {
+    // When recording/replaying dladdr doesn't behave as expected.
+    return nullptr;
+  }
   Dl_info info;
   if (!dladdr(reinterpret_cast<const void*>(address), &info))
     return nullptr;

@@ -4,6 +4,9 @@
 
 #include <stdint.h>
 
+#define _GNU_SOURCE
+#include <dlfcn.h>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -56,6 +59,28 @@ int ChromeMain(int argc, const char** argv);
 }
 #endif
 
+extern "C" void V8SetRecordingOrReplaying(void* handle);
+
+static void MaybeSetRecordingOrReplaying(int argc, const char** argv) {
+  // Only renderer processes are recorded/replayed.
+  bool renderer = false;
+  for (int i = 0; i < argc; i++) {
+    if (!strcmp(argv[i], "--type=renderer")) {
+      renderer = true;
+    }
+  }
+  if (!renderer) {
+    return;
+  }
+
+  const char* driver = getenv("RECORD_REPLAY_DRIVER");
+  if (driver) {
+    void* handle = dlopen(driver, RTLD_LAZY);
+    CHECK(handle);
+    V8SetRecordingOrReplaying(handle);
+  }
+}
+
 #if defined(OS_WIN)
 DLLEXPORT int __cdecl ChromeMain(
     HINSTANCE instance,
@@ -66,6 +91,8 @@ DLLEXPORT int __cdecl ChromeMain(
 int ChromeMain(int argc, const char** argv) {
   int64_t exe_entry_point_ticks = 0;
 #endif
+
+  MaybeSetRecordingOrReplaying(argc, argv);
 
 #if defined(OS_WIN)
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)

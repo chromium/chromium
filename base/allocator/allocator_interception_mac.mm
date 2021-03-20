@@ -365,6 +365,12 @@ void InterceptAllocationsMac() {
 
   g_oom_killer_enabled = true;
 
+  // Don't alter memory allocation behavior when recording/replaying.
+  if (getenv("RECORD_REPLAY_DRIVER")) {
+    g_replaced_default_zone = true;
+    return;
+  }
+
 // === C malloc/calloc/valloc/realloc/posix_memalign ===
 
 // This approach is not perfect, as requests for amounts of memory larger than

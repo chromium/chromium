@@ -52,7 +52,6 @@ typedef int (*ChromeMainPtr)(int, char**);
 
 static void (*gRecordReplayAttach)(const char* dispatchAddress, const char* buildId);
 static void (*gRecordReplayRecordCommandLineArguments)(int*, char***);
-static void (*gRecordReplayFinishRecording)();
 
 template <typename Src, typename Dst>
 static inline void CastPointer(const Src src, Dst* dst) {
@@ -106,17 +105,10 @@ static void RecordReplayAttach(int* pargc, char*** pargv) {
   RecordReplayLoadSymbol(handle, "RecordReplayAttach", gRecordReplayAttach);
   RecordReplayLoadSymbol(handle, "RecordReplayRecordCommandLineArguments",
                          gRecordReplayRecordCommandLineArguments);
-  RecordReplayLoadSymbol(handle, "RecordReplayFinishRecording", gRecordReplayFinishRecording);
 
-  if (gRecordReplayAttach && gRecordReplayFinishRecording) {
+  if (gRecordReplayAttach) {
     gRecordReplayAttach(dispatchAddress, gBuildId);
     gRecordReplayRecordCommandLineArguments(pargc, pargv);
-  }
-}
-
-static void RecordReplayFinish() {
-  if (gRecordReplayFinishRecording) {
-    gRecordReplayFinishRecording();
   }
 }
 
@@ -184,8 +176,6 @@ __attribute__((visibility("default"))) int main(int argc, char* argv[]) {
     FatalError("dlsym ChromeMain: %s.", dlerror());
   }
   rv = chrome_main(argc, argv);
-
-  RecordReplayFinish();
 
   // exit, don't return from main, to avoid the apparent removal of main from
   // stack backtraces under tail call optimization.
