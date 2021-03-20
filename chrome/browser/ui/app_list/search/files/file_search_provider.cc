@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/search/files/local_file_provider.h"
+#include "chrome/browser/ui/app_list/search/files/file_search_provider.h"
 
 #include <cctype>
 
@@ -20,7 +20,7 @@ namespace {
 
 using chromeos::string_matching::TokenizedString;
 
-constexpr char kLocalFileSchema[] = "local_file://";
+constexpr char kFileSearchSchema[] = "file_search://";
 constexpr int kMaxResults = 25;
 
 // Construct a case-insensitive fnmatch query from |query|. E.g. for abc123, the
@@ -72,18 +72,18 @@ std::vector<base::FilePath> SearchFilesByPattern(
 
 }  // namespace
 
-LocalFileProvider::LocalFileProvider(Profile* profile) : profile_(profile) {
+FileSearchProvider::FileSearchProvider(Profile* profile) : profile_(profile) {
   DCHECK(profile_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-LocalFileProvider::~LocalFileProvider() = default;
+FileSearchProvider::~FileSearchProvider() = default;
 
-ash::AppListSearchResultType LocalFileProvider::ResultType() {
-  return ash::AppListSearchResultType::kLocalFile;
+ash::AppListSearchResultType FileSearchProvider::ResultType() {
+  return ash::AppListSearchResultType::kFileSearch;
 }
 
-void LocalFileProvider::Start(const std::u16string& query) {
+void FileSearchProvider::Start(const std::u16string& query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Clear results and cancel any outgoing requests.
   ClearResultsSilently();
@@ -101,11 +101,11 @@ void LocalFileProvider::Start(const std::u16string& query) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(SearchFilesByPattern, root_path, base::UTF16ToUTF8(query)),
-      base::BindOnce(&LocalFileProvider::OnSearchComplete,
+      base::BindOnce(&FileSearchProvider::OnSearchComplete,
                      weak_factory_.GetWeakPtr()));
 }
 
-void LocalFileProvider::OnSearchComplete(
+void FileSearchProvider::OnSearchComplete(
     const std::vector<base::FilePath>& paths) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -116,12 +116,12 @@ void LocalFileProvider::OnSearchComplete(
   // TODO(crbug.com/1154513): Log success and latency histograms.
 }
 
-std::unique_ptr<FileResult> LocalFileProvider::MakeResult(
+std::unique_ptr<FileResult> FileSearchProvider::MakeResult(
     const base::FilePath& path) {
   const double relevance =
       CalculateFilenameRelevance(last_tokenized_query_, path);
   return std::make_unique<FileResult>(
-      kLocalFileSchema, path, ash::AppListSearchResultType::kLocalFile,
+      kFileSearchSchema, path, ash::AppListSearchResultType::kFileSearch,
       ash::SearchResultDisplayType::kList, relevance, profile_);
 }
 

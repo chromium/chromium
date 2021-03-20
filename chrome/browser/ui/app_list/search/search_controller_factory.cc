@@ -22,9 +22,9 @@
 #include "chrome/browser/ui/app_list/search/arc/arc_playstore_search_provider.h"
 #include "chrome/browser/ui/app_list/search/assistant_search_provider.h"
 #include "chrome/browser/ui/app_list/search/assistant_text_search_provider.h"
-#include "chrome/browser/ui/app_list/search/files/drive_file_provider.h"
-#include "chrome/browser/ui/app_list/search/files/drive_zero_state_provider.h"
-#include "chrome/browser/ui/app_list/search/files/local_file_provider.h"
+#include "chrome/browser/ui/app_list/search/files/drive_search_provider.h"
+#include "chrome/browser/ui/app_list/search/files/file_search_provider.h"
+#include "chrome/browser/ui/app_list/search/files/zero_state_drive_provider.h"
 #include "chrome/browser/ui/app_list/search/files/zero_state_file_provider.h"
 #include "chrome/browser/ui/app_list/search/help_app_provider.h"
 #include "chrome/browser/ui/app_list/search/launcher_search/launcher_search_provider.h"
@@ -61,12 +61,12 @@ constexpr size_t kGenericMaxResults = 10;
 // (tile and chip) being created for each app.
 constexpr size_t kMaxAppsGroupResults = 14;
 constexpr size_t kMaxLauncherSearchResults = 4;
-constexpr size_t kMaxDriveFileResults = 6;
-constexpr size_t kMaxLocalFileResults = 6;
+constexpr size_t kMaxFileSearchResults = 6;
+constexpr size_t kMaxDriveSearchResults = 6;
 // We need twice as many ZeroState and Drive file results as we need
 // duplicates of these results for the suggestion chips.
 constexpr size_t kMaxZeroStateFileResults = 20;
-constexpr size_t kMaxDriveZeroStateResults = 10;
+constexpr size_t kMaxZeroStateDriveResults = 10;
 constexpr size_t kMaxAppReinstallSearchResults = 1;
 // We show up to 6 Play Store results. However, part of Play Store results may
 // be filtered out because they may correspond to already installed Web apps. So
@@ -142,12 +142,12 @@ std::unique_ptr<SearchController> CreateSearchController(
   // guest session and running on Chrome OS.
   if (!profile->IsGuestSession()) {
     if (kUseNewFileProviders) {
-      size_t local_file_group_id = controller->AddGroup(kMaxLocalFileResults);
+      size_t local_file_group_id = controller->AddGroup(kMaxFileSearchResults);
       controller->AddProvider(local_file_group_id,
-                              std::make_unique<LocalFileProvider>(profile));
-      size_t drive_file_group_id = controller->AddGroup(kMaxDriveFileResults);
+                              std::make_unique<FileSearchProvider>(profile));
+      size_t drive_file_group_id = controller->AddGroup(kMaxDriveSearchResults);
       controller->AddProvider(drive_file_group_id,
-                              std::make_unique<DriveFileProvider>(profile));
+                              std::make_unique<DriveSearchProvider>(profile));
     } else {
       size_t search_api_group_id =
           controller->AddGroup(kMaxLauncherSearchResults);
@@ -208,10 +208,10 @@ std::unique_ptr<SearchController> CreateSearchController(
     controller->AddProvider(zero_state_files_group_id,
                             std::make_unique<ZeroStateFileProvider>(profile));
     size_t drive_zero_state_group_id =
-        controller->AddGroup(kMaxDriveZeroStateResults);
+        controller->AddGroup(kMaxZeroStateDriveResults);
     controller->AddProvider(
         drive_zero_state_group_id,
-        std::make_unique<DriveZeroStateProvider>(
+        std::make_unique<ZeroStateDriveProvider>(
             profile, controller.get(),
             content::BrowserContext::GetDefaultStoragePartition(profile)
                 ->GetURLLoaderFactoryForBrowserProcess()));

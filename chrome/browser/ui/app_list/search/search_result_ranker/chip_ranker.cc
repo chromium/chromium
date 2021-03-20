@@ -134,7 +134,7 @@ void ChipRanker::Rank(Mixer::SortedResults* results) {
       case ash::AppListSearchResultType::kFileChip:
         local_results.emplace_back(&result);
         break;
-      case ash::AppListSearchResultType::kDriveQuickAccessChip:
+      case ash::AppListSearchResultType::kDriveChip:
         drive_results.emplace_back(&result);
         break;
       default:

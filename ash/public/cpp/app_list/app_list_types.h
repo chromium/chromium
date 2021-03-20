@@ -144,16 +144,16 @@ enum class AppListSearchResultType {
   kPlayStoreReinstallApp,  // Reinstall recommendations from PlayStore.
   kArcAppShortcut,         // ARC++ app shortcuts.
   kZeroStateFile,          // Zero state local file results.
-  kDriveQuickAccess,       // Drive QuickAccess results.
+  kZeroStateDrive,         // Drive QuickAccess results.
   kFileChip,               // Local file results in suggestion chips.
-  kDriveQuickAccessChip,   // Drive file results in suggestion chips.
+  kDriveChip,              // Drive file results in suggestion chips.
   kAssistantChip,          // Assistant results in suggestion chips.
   kOsSettings,             // OS settings results.
   kInternalPrivacyInfo,    // Result used internally by privacy notices.
   kAssistantText,          // Assistant text results.
   kHelpApp,                // Help App (aka Explore) results.
-  kLocalFile,              // Local file search results.
-  kDriveFile,              // Drive file search results.
+  kFileSearch,             // Local file search results.
+  kDriveSearch,            // Drive file search results.
   // Add new values here.
 };
 

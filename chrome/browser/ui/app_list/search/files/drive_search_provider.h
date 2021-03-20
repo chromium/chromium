@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_DRIVE_FILE_PROVIDER_H_
-#define CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_DRIVE_FILE_PROVIDER_H_
+#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_DRIVE_SEARCH_PROVIDER_H_
+#define CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_DRIVE_SEARCH_PROVIDER_H_
 
 #include <vector>
 
@@ -25,13 +25,13 @@ namespace app_list {
 
 class FileResult;
 
-class DriveFileProvider : public SearchProvider {
+class DriveSearchProvider : public SearchProvider {
  public:
-  explicit DriveFileProvider(Profile* profile);
-  ~DriveFileProvider() override;
+  explicit DriveSearchProvider(Profile* profile);
+  ~DriveSearchProvider() override;
 
-  DriveFileProvider(const DriveFileProvider&) = delete;
-  DriveFileProvider& operator=(const DriveFileProvider&) = delete;
+  DriveSearchProvider(const DriveSearchProvider&) = delete;
+  DriveSearchProvider& operator=(const DriveSearchProvider&) = delete;
 
   // SearchProvider:
   ash::AppListSearchResultType ResultType() override;
@@ -49,9 +49,9 @@ class DriveFileProvider : public SearchProvider {
   drive::DriveIntegrationService* const drive_service_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  base::WeakPtrFactory<DriveFileProvider> weak_factory_{this};
+  base::WeakPtrFactory<DriveSearchProvider> weak_factory_{this};
 };
 
 }  // namespace app_list
 
-#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_DRIVE_FILE_PROVIDER_H_
+#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_DRIVE_SEARCH_PROVIDER_H_

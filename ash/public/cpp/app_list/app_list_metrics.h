@@ -79,7 +79,7 @@ enum SearchResultType {
   // A zero-state result representing a local file.
   ZERO_STATE_FILE,
   // A result from the Drive QuickAccess provider.
-  DRIVE_QUICK_ACCESS,
+  ZERO_STATE_DRIVE,
   // A result from the Assistant provider.
   ASSISTANT,
   // An OsSettingsResult.
@@ -103,9 +103,9 @@ enum SearchResultType {
   // A rich entity result from omnibox with image icon.
   OMNIBOX_RICH_ENTITY_IMAGE_ENTITY,
   // A local file search result.
-  LOCAL_FILE_SEARCH,
+  FILE_SEARCH,
   // A Drive file search result.
-  DRIVE_FILE_SEARCH,
+  DRIVE_SEARCH,
   // Boundary is always last.
   SEARCH_RESULT_TYPE_BOUNDARY
 };

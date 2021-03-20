@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_DRIVE_ZERO_STATE_PROVIDER_H_
-#define CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_DRIVE_ZERO_STATE_PROVIDER_H_
+#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_ZERO_STATE_DRIVE_PROVIDER_H_
+#define CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_ZERO_STATE_DRIVE_PROVIDER_H_
 
 #include <string>
 #include <vector>
@@ -27,17 +27,17 @@ namespace app_list {
 
 class SearchController;
 
-class DriveZeroStateProvider : public SearchProvider,
+class ZeroStateDriveProvider : public SearchProvider,
                                public drive::DriveIntegrationServiceObserver {
  public:
-  DriveZeroStateProvider(
+  ZeroStateDriveProvider(
       Profile* profile,
       SearchController* search_controller,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
-  ~DriveZeroStateProvider() override;
+  ~ZeroStateDriveProvider() override;
 
-  DriveZeroStateProvider(const DriveZeroStateProvider&) = delete;
-  DriveZeroStateProvider& operator=(const DriveZeroStateProvider&) = delete;
+  ZeroStateDriveProvider(const ZeroStateDriveProvider&) = delete;
+  ZeroStateDriveProvider& operator=(const ZeroStateDriveProvider&) = delete;
 
   // drive::DriveIntegrationServiceObserver:
   void OnFileSystemMounted() override;
@@ -82,9 +82,9 @@ class DriveZeroStateProvider : public SearchProvider,
   SEQUENCE_CHECKER(sequence_checker_);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  base::WeakPtrFactory<DriveZeroStateProvider> weak_factory_{this};
+  base::WeakPtrFactory<ZeroStateDriveProvider> weak_factory_{this};
 };
 
 }  // namespace app_list
 
-#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_DRIVE_ZERO_STATE_PROVIDER_H_
+#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_ZERO_STATE_DRIVE_PROVIDER_H_

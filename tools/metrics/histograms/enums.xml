@@ -3180,7 +3180,7 @@ Unknown properties are collapsed to zero. -->
   <int value="27" label="Omnibox, Search Suggest"/>
   <int value="28" label="Omnibox, Personalized Suggestion"/>
   <int value="29" label="Zero State Local File"/>
-  <int value="30" label="Drive Quick Access"/>
+  <int value="30" label="Zero State Drive File"/>
   <int value="31" label="Assistant"/>
   <int value="32" label="OS Settings"/>
   <int value="33" label="Plugin VM App"/>

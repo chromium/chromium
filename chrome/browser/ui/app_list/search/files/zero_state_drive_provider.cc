@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/search/files/drive_zero_state_provider.h"
+#include "chrome/browser/ui/app_list/search/files/zero_state_drive_provider.h"
 
 #include <algorithm>
 #include <memory>
@@ -33,8 +33,8 @@ namespace app_list {
 namespace {
 
 // Schemas of result IDs for the results list and suggestion chips.
-constexpr char kListSchema[] = "drive_zero_state://";
-constexpr char kChipSchema[] = "drive_zero_state_chip://";
+constexpr char kListSchema[] = "zero_state_drive://";
+constexpr char kChipSchema[] = "drive_chip://";
 
 // Outcome of a call to DriverZeroStateProvider::Start. These values persist to
 // logs. Entries should not be renumbered and numeric values should never be
@@ -69,7 +69,7 @@ base::FilePath ReparentToDriveMount(
 
 }  // namespace
 
-DriveZeroStateProvider::DriveZeroStateProvider(
+ZeroStateDriveProvider::ZeroStateDriveProvider(
     Profile* profile,
     SearchController* search_controller,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
@@ -108,16 +108,16 @@ DriveZeroStateProvider::DriveZeroStateProvider(
   }
   if (base::FeatureList::IsEnabled(
           app_list_features::kEnableLauncherSearchNormalization)) {
-    normalizer_.emplace("drive_zero_state_provider", profile, 25);
+    normalizer_.emplace("zero_state_drive_provider", profile, 25);
   }
 }
 
-DriveZeroStateProvider::~DriveZeroStateProvider() {
+ZeroStateDriveProvider::~ZeroStateDriveProvider() {
   if (suggested_files_enabled_ && drive_service_)
     drive_service_->RemoveObserver(this);
 }
 
-void DriveZeroStateProvider::OnFileSystemMounted() {
+void ZeroStateDriveProvider::OnFileSystemMounted() {
   // This method is called on login, and each time the device wakes from sleep.
   // We only want to warm the cache once.
   if (have_warmed_up_cache_)
@@ -127,16 +127,16 @@ void DriveZeroStateProvider::OnFileSystemMounted() {
   item_suggest_cache_.UpdateCache();
 }
 
-void DriveZeroStateProvider::AppListShown() {
+void ZeroStateDriveProvider::AppListShown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   item_suggest_cache_.UpdateCache();
 }
 
-ash::AppListSearchResultType DriveZeroStateProvider::ResultType() {
-  return ash::AppListSearchResultType::kDriveQuickAccess;
+ash::AppListSearchResultType ZeroStateDriveProvider::ResultType() {
+  return ash::AppListSearchResultType::kZeroStateDrive;
 }
 
-void DriveZeroStateProvider::Start(const std::u16string& query) {
+void ZeroStateDriveProvider::Start(const std::u16string& query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ClearResultsSilently();
 
@@ -171,11 +171,11 @@ void DriveZeroStateProvider::Start(const std::u16string& query) {
   }
 
   drive_service_->LocateFilesByItemIds(
-      item_ids, base::BindOnce(&DriveZeroStateProvider::OnFilePathsLocated,
+      item_ids, base::BindOnce(&ZeroStateDriveProvider::OnFilePathsLocated,
                                weak_factory_.GetWeakPtr()));
 }
 
-void DriveZeroStateProvider::OnFilePathsLocated(
+void ZeroStateDriveProvider::OnFilePathsLocated(
     base::Optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>> paths) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!paths) {
@@ -237,21 +237,21 @@ void DriveZeroStateProvider::OnFilePathsLocated(
                       base::TimeTicks::Now() - query_start_time_);
 }
 
-std::unique_ptr<FileResult> DriveZeroStateProvider::MakeListResult(
+std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeListResult(
     const base::FilePath& filepath,
     const float relevance) {
   return std::make_unique<FileResult>(
       kListSchema, ReparentToDriveMount(filepath, drive_service_),
-      ash::AppListSearchResultType::kDriveQuickAccess,
+      ash::AppListSearchResultType::kZeroStateDrive,
       ash::SearchResultDisplayType::kList, relevance, profile_);
 }
 
-std::unique_ptr<FileResult> DriveZeroStateProvider::MakeChipResult(
+std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeChipResult(
     const base::FilePath& filepath,
     const float relevance) {
   return std::make_unique<FileResult>(
       kChipSchema, ReparentToDriveMount(filepath, drive_service_),
-      ash::AppListSearchResultType::kDriveQuickAccessChip,
+      ash::AppListSearchResultType::kDriveChip,
       ash::SearchResultDisplayType::kChip, relevance, profile_);
 }
 

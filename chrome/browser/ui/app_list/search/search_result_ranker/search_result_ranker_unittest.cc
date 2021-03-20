@@ -361,7 +361,7 @@ TEST_F(SearchResultRankerTest, ZeroStateColdStart) {
   auto results =
       MakeSearchResults({"Z", "O", "D"},
                         {ResultType::kZeroStateFile, ResultType::kOmnibox,
-                         ResultType::kDriveQuickAccess},
+                         ResultType::kZeroStateDrive},
                         {-0.1f, 0.2f, 0.1f});
   ranker->Rank(&results);
 
@@ -386,7 +386,7 @@ TEST_F(SearchResultRankerTest, ZeroStateAllGroupsPresent) {
       {"A2", "O1", "Z1", "Z2", "A1", "D1"},
       {ResultType::kInstalledApp, ResultType::kOmnibox,
        ResultType::kZeroStateFile, ResultType::kZeroStateFile,
-       ResultType::kInstalledApp, ResultType::kDriveQuickAccess},
+       ResultType::kInstalledApp, ResultType::kZeroStateDrive},
       {8.1f, 0.4f, 0.8f, 0.2f, 8.2f, 0.1f});
 
   ranker->Rank(&results);
@@ -423,8 +423,8 @@ TEST_F(SearchResultRankerTest, ZeroStateMissingGroupAdded) {
       {ResultType::kInstalledApp, ResultType::kInstalledApp,
        ResultType::kZeroStateFile, ResultType::kZeroStateFile,
        ResultType::kZeroStateFile, ResultType::kZeroStateFile,
-       ResultType::kZeroStateFile, ResultType::kDriveQuickAccess,
-       ResultType::kDriveQuickAccess},
+       ResultType::kZeroStateFile, ResultType::kZeroStateDrive,
+       ResultType::kZeroStateDrive},
       {8.2f, 8.1f, 1.0f, 0.95f, 0.9f, 0.85f, 0.8f, 0.3f, 0.7f});
 
   ranker->Rank(&results);
@@ -463,7 +463,7 @@ TEST_F(SearchResultRankerTest, ZeroStateTwoMissingGroupsAdded) {
                         {ResultType::kZeroStateFile, ResultType::kZeroStateFile,
                          ResultType::kZeroStateFile, ResultType::kZeroStateFile,
                          ResultType::kZeroStateFile,
-                         ResultType::kDriveQuickAccess, ResultType::kOmnibox},
+                         ResultType::kZeroStateDrive, ResultType::kOmnibox},
                         {1.0f, 0.95f, 0.9f, 0.85f, 0.8f, 0.75f, 0.7f});
 
   ranker->Rank(&results);
@@ -500,7 +500,7 @@ TEST_F(SearchResultRankerTest, ZeroStateStaleResultIgnored) {
       {ResultType::kInstalledApp, ResultType::kInstalledApp,
        ResultType::kZeroStateFile, ResultType::kZeroStateFile,
        ResultType::kZeroStateFile, ResultType::kZeroStateFile,
-       ResultType::kZeroStateFile, ResultType::kDriveQuickAccess},
+       ResultType::kZeroStateFile, ResultType::kZeroStateDrive},
       {8.2f, 8.1f, 1.0f, 0.95f, 0.9f, 0.85f, 0.8f, 0.7f});
 
   for (int i = 0; i < 3; ++i) {
@@ -552,16 +552,16 @@ TEST_F(SearchResultRankerTest, ZeroStateCacheResetWhenTopResultChanges) {
       {ResultType::kInstalledApp, ResultType::kInstalledApp,
        ResultType::kZeroStateFile, ResultType::kZeroStateFile,
        ResultType::kZeroStateFile, ResultType::kZeroStateFile,
-       ResultType::kZeroStateFile, ResultType::kDriveQuickAccess,
-       ResultType::kDriveQuickAccess},
+       ResultType::kZeroStateFile, ResultType::kZeroStateDrive,
+       ResultType::kZeroStateDrive},
       {8.2f, 8.1f, 1.0f, 0.95f, 0.9f, 0.85f, 0.8f, 0.7f, 0.1f});
   const auto results_2 = MakeSearchResults(
       {"A1", "A2", "Z1", "Z2", "Z3", "Z4", "Z5", "D2", "D1"},
       {ResultType::kInstalledApp, ResultType::kInstalledApp,
        ResultType::kZeroStateFile, ResultType::kZeroStateFile,
        ResultType::kZeroStateFile, ResultType::kZeroStateFile,
-       ResultType::kZeroStateFile, ResultType::kDriveQuickAccess,
-       ResultType::kDriveQuickAccess},
+       ResultType::kZeroStateFile, ResultType::kZeroStateDrive,
+       ResultType::kZeroStateDrive},
       {8.2f, 8.1f, 1.0f, 0.95f, 0.9f, 0.85f, 0.8f, 0.7f, 0.1f});
 
   for (int i = 0; i < 3; ++i) {

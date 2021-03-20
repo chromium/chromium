@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_LOCAL_FILE_PROVIDER_H_
-#define CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_LOCAL_FILE_PROVIDER_H_
+#ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_FILE_SEARCH_PROVIDER_H_
+#define CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_FILE_SEARCH_PROVIDER_H_
 
 #include <vector>
 
@@ -20,13 +20,13 @@ namespace app_list {
 
 class FileResult;
 
-class LocalFileProvider : public SearchProvider {
+class FileSearchProvider : public SearchProvider {
  public:
-  explicit LocalFileProvider(Profile* profile);
-  ~LocalFileProvider() override;
+  explicit FileSearchProvider(Profile* profile);
+  ~FileSearchProvider() override;
 
-  LocalFileProvider(const LocalFileProvider&) = delete;
-  LocalFileProvider& operator=(const LocalFileProvider&) = delete;
+  FileSearchProvider(const FileSearchProvider&) = delete;
+  FileSearchProvider& operator=(const FileSearchProvider&) = delete;
 
   // SearchProvider:
   ash::AppListSearchResultType ResultType() override;
@@ -42,9 +42,9 @@ class LocalFileProvider : public SearchProvider {
   Profile* const profile_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  base::WeakPtrFactory<LocalFileProvider> weak_factory_{this};
+  base::WeakPtrFactory<FileSearchProvider> weak_factory_{this};
 };
 
 }  // namespace app_list
 
-#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_LOCAL_FILE_PROVIDER_H_
+#endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_FILE_SEARCH_PROVIDER_H_

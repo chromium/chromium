@@ -75,24 +75,21 @@ FileResult::FileResult(const std::string& schema,
   set_id(schema + filepath.value());
   set_relevance(relevance);
 
-  // TODO(crbug.com/1034842): Rename or replace the DriveQuickAccess and
-  // ZeroStateFile enum values.
-
   SetResultType(result_type);
   switch (result_type) {
-    case ResultType::kDriveQuickAccess:
-    case ResultType::kDriveQuickAccessChip:
-      SetMetricsType(ash::DRIVE_QUICK_ACCESS);
+    case ResultType::kDriveChip:
+    case ResultType::kZeroStateDrive:
+      SetMetricsType(ash::ZERO_STATE_DRIVE);
       break;
     case ResultType::kFileChip:
     case ResultType::kZeroStateFile:
       SetMetricsType(ash::ZERO_STATE_FILE);
       break;
-    case ResultType::kLocalFile:
-      SetMetricsType(ash::LOCAL_FILE_SEARCH);
+    case ResultType::kFileSearch:
+      SetMetricsType(ash::FILE_SEARCH);
       break;
-    case ResultType::kDriveFile:
-      SetMetricsType(ash::DRIVE_FILE_SEARCH);
+    case ResultType::kDriveSearch:
+      SetMetricsType(ash::DRIVE_SEARCH);
       break;
     default:
       NOTREACHED();

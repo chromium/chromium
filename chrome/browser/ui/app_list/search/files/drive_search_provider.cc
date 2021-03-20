@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/search/files/drive_file_provider.h"
+#include "chrome/browser/ui/app_list/search/files/drive_search_provider.h"
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/bind.h"
@@ -17,12 +17,12 @@ namespace {
 
 using chromeos::string_matching::TokenizedString;
 
-constexpr char kDriveFileSchema[] = "drive_file://";
+constexpr char kDriveSearchSchema[] = "drive_search://";
 constexpr int kMaxResults = 10;
 
 }  // namespace
 
-DriveFileProvider::DriveFileProvider(Profile* profile)
+DriveSearchProvider::DriveSearchProvider(Profile* profile)
     : profile_(profile),
       drive_service_(
           drive::DriveIntegrationServiceFactory::GetForProfile(profile)) {
@@ -31,13 +31,13 @@ DriveFileProvider::DriveFileProvider(Profile* profile)
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-DriveFileProvider::~DriveFileProvider() = default;
+DriveSearchProvider::~DriveSearchProvider() = default;
 
-ash::AppListSearchResultType DriveFileProvider::ResultType() {
-  return ash::AppListSearchResultType::kDriveFile;
+ash::AppListSearchResultType DriveSearchProvider::ResultType() {
+  return ash::AppListSearchResultType::kDriveSearch;
 }
 
-void DriveFileProvider::Start(const std::u16string& query) {
+void DriveSearchProvider::Start(const std::u16string& query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Clear results and cancel any outgoing requests.
@@ -61,12 +61,12 @@ void DriveFileProvider::Start(const std::u16string& query) {
       base::UTF16ToUTF8(query), kMaxResults,
       drivefs::mojom ::QueryParameters::SortField::kNone,
       drivefs::mojom ::QueryParameters::SortDirection::kAscending,
-      base::BindOnce(&DriveFileProvider::SetSearchResults,
+      base::BindOnce(&DriveSearchProvider::SetSearchResults,
                      weak_factory_.GetWeakPtr()));
 }
 
-void DriveFileProvider::SetSearchResults(drive::FileError error,
-                                         std::vector<base::FilePath> paths) {
+void DriveSearchProvider::SetSearchResults(drive::FileError error,
+                                           std::vector<base::FilePath> paths) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (error != drive::FileError::FILE_ERROR_OK) {
@@ -83,7 +83,7 @@ void DriveFileProvider::SetSearchResults(drive::FileError error,
   // TODO(crbug.com/1154513): Log success and latency histograms.
 }
 
-std::unique_ptr<FileResult> DriveFileProvider::MakeResult(
+std::unique_ptr<FileResult> DriveSearchProvider::MakeResult(
     const base::FilePath& path) {
   // Strip leading separators so that the path can be reparented.
   // TODO(crbug.com/1154513): Remove this step once the drive backend returns
@@ -102,10 +102,10 @@ std::unique_ptr<FileResult> DriveFileProvider::MakeResult(
   const double relevance =
       CalculateFilenameRelevance(last_tokenized_query_, relative_path);
 
-  return std::make_unique<FileResult>(kDriveFileSchema, reparented_path,
-                                      ash::AppListSearchResultType::kDriveFile,
-                                      ash::SearchResultDisplayType::kList,
-                                      relevance, profile_);
+  return std::make_unique<FileResult>(
+      kDriveSearchSchema, reparented_path,
+      ash::AppListSearchResultType::kDriveSearch,
+      ash::SearchResultDisplayType::kList, relevance, profile_);
 }
 
 }  // namespace app_list
