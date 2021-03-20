@@ -90,4 +90,28 @@ TEST_F(LayoutVideoTest, PosterSizeAfterPlay) {
   EXPECT_EQ(width, 10);
 }
 
+// TODO(1190335): Remove this once "default poster image" is not longer
+// supported. Blink embedders (such as Webview) can set the default poster image
+// for a video using `blink::Settings`. The default poster image should not be
+// used to affect the layout of a video, even when a normal poster image would.
+TEST_F(LayoutVideoTest, DefaultPosterImageSize) {
+  // Override the default poster image
+  GetDocument().GetSettings()->SetDefaultVideoPosterURL(
+      "https://www.example.com/foo.jpg");
+
+  SetBodyInnerHTML(R"HTML(
+    <video id='video' src='http://example.com/foo.mp4' />
+  )HTML");
+
+  // Pretend we loaded the poster
+  CreateAndSetImage("video", 10, 10);
+
+  // Width should be the default video width, NOT poster image width
+  int width = To<LayoutBox>(GetLayoutObjectByElementId("video"))
+                  ->AbsoluteBoundingBoxRect()
+                  .Width();
+  EXPECT_NE(width, 10);
+  EXPECT_EQ(width, LayoutVideo::kDefaultWidth);
+}
+
 }  // namespace blink

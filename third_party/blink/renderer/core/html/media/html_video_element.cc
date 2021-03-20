@@ -518,6 +518,10 @@ KURL HTMLVideoElement::PosterImageURL() const {
   return GetDocument().CompleteURL(url);
 }
 
+bool HTMLVideoElement::IsDefaultPosterImageURL() const {
+  return ImageSourceURL() == default_poster_url_;
+}
+
 scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
     bool allow_accelerated_images) {
   media::PaintCanvasVideoRenderer* video_renderer = nullptr;
