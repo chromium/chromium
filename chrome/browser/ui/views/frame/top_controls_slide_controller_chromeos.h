@@ -124,6 +124,11 @@ class TopControlsSlideControllerChromeOS : public TopControlsSlideController,
   // size.
   void UpdateDoBrowserControlsShrinkRendererSize();
 
+  // Returns the tab observer associated with the given |contents|, or nullptr
+  // if |contents| is not observed yet.
+  TopControlsSlideTabObserver* GetTabSlideObserverForWebContents(
+      const content::WebContents* contents) const;
+
   BrowserView* browser_view_;
 
   // The omnibox can be focused via a keyboard shortcut, in which case, we have

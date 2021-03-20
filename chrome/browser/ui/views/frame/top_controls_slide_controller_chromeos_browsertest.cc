@@ -1419,6 +1419,43 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestToggleChromeVox) {
                                TopChromeShownState::kFullyHidden);
 }
 
+// Regression test for https://crbug.com/1163276.
+IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
+                       NoCrashOnNewTabWhileScrolling) {
+  ToggleTabletMode();
+  ASSERT_TRUE(GetTabletModeEnabled());
+  EXPECT_TRUE(top_controls_slide_controller()->IsEnabled());
+  EXPECT_FLOAT_EQ(top_controls_slide_controller()->GetShownRatio(), 1.f);
+
+  NavigateActiveTabToUrl(
+      embedded_test_server()->GetURL("/top_controls_scroll.html"));
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
+
+  aura::Window* browser_window = browser()->window()->GetNativeWindow();
+  ui::test::EventGenerator event_generator(browser_window->GetRootWindow(),
+                                           browser_window);
+  const gfx::Point start_point = event_generator.current_screen_location();
+  auto* active_contents = browser_view()->GetActiveWebContents();
+
+  // Create a new tab while gesture scrolling is in progress, and top-chrome is
+  // fully hidden.
+  event_generator.PressTouch();
+  SynchronizeBrowserWithRenderer(active_contents);
+  auto current_point = start_point;
+  while (!(
+      top_controls_slide_controller()->IsTopControlsGestureScrollInProgress() &&
+      top_controls_slide_controller()->GetShownRatio() == 0.f)) {
+    current_point += gfx::Vector2d(0, -1);
+    event_generator.MoveTouch(current_point);
+    SynchronizeBrowserWithRenderer(active_contents);
+  }
+  constexpr int kFlags = ui::EF_CONTROL_DOWN;
+  event_generator.PressKey(ui::VKEY_T, kFlags);
+  event_generator.ReleaseKey(ui::VKEY_T, kFlags);
+  event_generator.ReleaseTouch();
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
+}
+
 // TODO(crbug.com/989131): Add test coverage that covers using WebUITabStrip.
 
 }  // namespace

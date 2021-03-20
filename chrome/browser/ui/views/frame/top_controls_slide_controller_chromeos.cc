@@ -387,13 +387,8 @@ bool TopControlsSlideControllerChromeOS::DoBrowserControlsShrinkRendererSize(
   if (!IsEnabled())
     return false;
 
-  auto iter = observed_tabs_.find(contents);
-  if (iter == observed_tabs_.end()) {
-    // this may be called for a new tab that hasn't attached yet to the tabstrip
-    return false;
-  }
-
-  return iter->second->shrink_renderer_size();
+  auto* tab_observer = GetTabSlideObserverForWebContents(contents);
+  return tab_observer && tab_observer->shrink_renderer_size();
 }
 
 void TopControlsSlideControllerChromeOS::SetTopControlsGestureScrollInProgress(
@@ -850,7 +845,19 @@ void TopControlsSlideControllerChromeOS::
   if (!active_contents)
     return;
 
-  DCHECK(observed_tabs_.count(active_contents));
+  auto* tab_observer = GetTabSlideObserverForWebContents(active_contents);
+  if (tab_observer)
+    tab_observer->UpdateDoBrowserControlsShrinkRendererSize();
+}
 
-  observed_tabs_[active_contents]->UpdateDoBrowserControlsShrinkRendererSize();
+TopControlsSlideTabObserver*
+TopControlsSlideControllerChromeOS::GetTabSlideObserverForWebContents(
+    const content::WebContents* contents) const {
+  auto iter = observed_tabs_.find(contents);
+  if (iter == observed_tabs_.end()) {
+    // this may be called for a new tab that hasn't attached yet to the
+    // tabstrip.
+    return nullptr;
+  }
+  return iter->second.get();
 }
