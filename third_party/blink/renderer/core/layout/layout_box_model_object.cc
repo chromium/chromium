@@ -87,6 +87,7 @@ static ContinuationMap& GetContinuationMap() {
 
 void LayoutBoxModelObject::ContentChanged(ContentChangeType change_type) {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
   if (!HasLayer())
     return;
 

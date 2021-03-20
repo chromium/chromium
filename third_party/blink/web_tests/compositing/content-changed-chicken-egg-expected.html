@@ -8,27 +8,20 @@
         border: 3px solid black;
         overflow: scroll;
       }
-
-      canvas {
+      #container::-webkit-scrollbar {
+        display: none;
+      }
+      #canvas {
+        width: 50px;
+        height: 200px;
         background-color: gray;
         border: 1px solid black;
       }
     </style>
-    <script>
-      function doTest() {
-        var canvas = document.getElementById("canvas");
-        var context = canvas.getContext('2d');
-        context.fillStyle = 'green';
-        context.fillRect(0, 0, 150, 100);
-        canvas.height = "200px";
-      }
-
-      window.onload = doTest;
-    </script>
   </head>
 <body>
   <div id="container">
-    <canvas id="canvas" width="50" height="50"></canvas>
+    <div id="canvas"></div>
   </div>
 </body>
 </html>

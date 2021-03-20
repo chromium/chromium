@@ -89,17 +89,6 @@ static PhysicalRect ContentsRect(const LayoutObject& layout_object) {
   return To<LayoutBox>(layout_object).PhysicalContentBoxRect();
 }
 
-static inline bool IsTextureLayerCanvas(const LayoutObject& layout_object) {
-  if (layout_object.IsCanvas()) {
-    auto* canvas = To<HTMLCanvasElement>(layout_object.GetNode());
-    if (canvas->SurfaceLayerBridge())
-      return false;
-    if (CanvasRenderingContext* context = canvas->RenderingContext())
-      return context->IsComposited();
-  }
-  return false;
-}
-
 static bool HasBoxDecorationsOrBackgroundImage(const ComputedStyle& style) {
   return style.HasBoxDecorations() || style.HasBackgroundImage();
 }
@@ -1324,11 +1313,6 @@ bool CompositedLayerMapping::ContainsPaintedContent() const {
 
   // FIXME: it's O(n^2). A better solution is needed.
   return PaintsChildren();
-}
-
-void CompositedLayerMapping::ContentChanged(ContentChangeType change_type) {
-  if (change_type == kCanvasChanged && IsTextureLayerCanvas(GetLayoutObject()))
-    graphics_layer_->InvalidateContents();
 }
 
 // Return the offset from the top-left of this compositing layer at which the

@@ -1371,10 +1371,14 @@ void WebGLRenderingContextBase::MarkContextChanged(
 
   if (!marked_canvas_dirty_) {
     marked_canvas_dirty_ = true;
-    LayoutBox* layout_box = canvas()->GetLayoutBox();
-    auto* settings = canvas()->GetDocument().GetSettings();
-    if (layout_box && settings->GetAcceleratedCompositingEnabled())
-      layout_box->ContentChanged(change_type);
+    if (auto* cc_layer = CcLayer())
+      cc_layer->SetNeedsDisplay();
+    if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+      LayoutBox* layout_box = canvas()->GetLayoutBox();
+      auto* settings = canvas()->GetDocument().GetSettings();
+      if (layout_box && settings->GetAcceleratedCompositingEnabled())
+        layout_box->ContentChanged(change_type);
+    }
     IntSize canvas_size = ClampedCanvasSize();
     DidDraw(SkIRect::MakeXYWH(0, 0, canvas_size.Width(), canvas_size.Height()));
   }
