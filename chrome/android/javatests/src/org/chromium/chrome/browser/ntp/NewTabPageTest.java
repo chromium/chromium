@@ -265,16 +265,13 @@ public class NewTabPageTest {
     @Feature({"NewTabPage", "FeedNewTabPage"})
     public void testFocusFakebox() {
         int initialFakeboxTop = getFakeboxTop(mNtp);
-        boolean isTablet = mActivityTestRule.getActivity().isTablet();
 
         TouchCommon.singleClickView(mFakebox);
 
-        // Tablet doesn't animate fakebox but simply focuses Omnibox upon click.
-        // Skip the check on animation.
-        if (!isTablet) waitForFakeboxFocusAnimationComplete(mNtp);
+        waitForFakeboxFocusAnimationComplete(mNtp);
         UrlBar urlBar = (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);
         OmniboxTestUtils.waitForFocusAndKeyboardActive(urlBar, true);
-        if (!isTablet) {
+        if (!mActivityTestRule.getActivity().isTablet()) {
             int afterFocusFakeboxTop = getFakeboxTop(mNtp);
             Assert.assertTrue(afterFocusFakeboxTop < initialFakeboxTop);
         }
@@ -290,24 +287,19 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @DisabledTest(message = "Test is flaky. crbug.com/593007, crbug.com/1033654")
     public void testSearchFromFakebox() {
         TouchCommon.singleClickView(mFakebox);
         waitForFakeboxFocusAnimationComplete(mNtp);
         final UrlBar urlBar = (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);
         OmniboxTestUtils.waitForFocusAndKeyboardActive(urlBar, true);
 
-        InstrumentationRegistry.getInstrumentation().sendStringSync(TEST_PAGE);
+        InstrumentationRegistry.getInstrumentation().sendStringSync(UrlConstants.CHROME_BLANK_URL);
         LocationBarLayout locationBar =
                 (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
         OmniboxTestUtils.waitForOmniboxSuggestions(locationBar);
-
-        ChromeTabUtils.waitForTabPageLoaded(mTab, null, new Runnable() {
-            @Override
-            public void run() {
-                KeyUtils.singleKeyEventView(InstrumentationRegistry.getInstrumentation(), urlBar,
-                        KeyEvent.KEYCODE_ENTER);
-            }
+        ChromeTabUtils.waitForTabPageLoaded(mTab, null, () -> {
+            KeyUtils.singleKeyEventView(
+                    InstrumentationRegistry.getInstrumentation(), urlBar, KeyEvent.KEYCODE_ENTER);
         });
     }
 
@@ -612,6 +604,9 @@ public class NewTabPageTest {
     }
 
     private void waitForFakeboxFocusAnimationComplete(NewTabPage ntp) {
+        // Tablet doesn't animate fakebox but simply focuses Omnibox upon click.
+        // Skip the check on animation.
+        if (mActivityTestRule.getActivity().isTablet()) return;
         waitForUrlFocusPercent(ntp, 1f);
     }
 
