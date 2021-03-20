@@ -57,8 +57,7 @@ class ASH_EXPORT FrameThrottlingController
   // Ends throttling of all throttled windows.
   void EndThrottling();
 
-  void AddObserver(FrameThrottlingObserver* observer);
-  void RemoveObserver(FrameThrottlingObserver* observer);
+  std::vector<viz::FrameSinkId> GetFrameSinkIdsToThrottle() const;
 
   void AddArcObserver(FrameThrottlingObserver* observer);
   void RemoveArcObserver(FrameThrottlingObserver* observer);
@@ -66,13 +65,10 @@ class ASH_EXPORT FrameThrottlingController
   uint8_t throttled_fps() const { return throttled_fps_; }
 
  private:
-  void StartThrottlingFrameSinks(
-      const std::vector<viz::FrameSinkId>& frame_sink_ids);
   void StartThrottlingArc(const std::vector<aura::Window*>& windows);
-  void EndThrottlingFrameSinks();
   void EndThrottlingArc();
 
-  void UpdateThrottling();
+  void UpdateThrottlingOnBrowserWindows();
 
   ui::ContextFactory* context_factory_ = nullptr;
   base::ObserverList<FrameThrottlingObserver> observers_;
@@ -86,9 +82,13 @@ class ASH_EXPORT FrameThrottlingController
   // FrameSinkIds.
   WindowTreeHostMap host_to_ids_map_;
 
+  // Frame sink ids to be throttled in special UI modes, such as overview and
+  // window cycling. This set will be empty when UI is not in such modes.
+  base::flat_set<viz::FrameSinkId> manually_throttled_ids_;
+
   // The fps used for throttling.
   uint8_t throttled_fps_ = kDefaultThrottleFps;
-  bool windows_throttled_ = false;
+  bool windows_manually_throttled_ = false;
 };
 
 }  // namespace ash

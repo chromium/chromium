@@ -95,12 +95,6 @@ class MockFrameSinkManagerImpl : public TestFrameSinkManagerImpl {
   MOCK_METHOD2(UnregisterFrameSinkHierarchy,
                void(const FrameSinkId& parent, const FrameSinkId& child));
   MOCK_METHOD(void,
-              StartThrottling,
-              (const std::vector<FrameSinkId>& frame_sink_ids,
-               base::TimeDelta interval),
-              (override));
-  MOCK_METHOD(void, EndThrottling, (), (override));
-  MOCK_METHOD(void,
               Throttle,
               (const std::vector<FrameSinkId>& ids, base::TimeDelta interval),
               (override));
@@ -494,14 +488,10 @@ TEST_F(HostFrameSinkManagerTest, ContextLossRecreateNonRoot) {
 TEST_F(HostFrameSinkManagerTest, ThrottleFramePainting) {
   const std::vector<FrameSinkId> frame_sink_ids{
       FrameSinkId(1, 1), FrameSinkId(2, 2), FrameSinkId(3, 3)};
-  constexpr base::TimeDelta interval = base::TimeDelta::FromSeconds(1) / 10;
-  EXPECT_CALL(impl(), StartThrottling(frame_sink_ids, interval)).Times(1);
-  host().StartThrottling(frame_sink_ids, interval);
-  EXPECT_CALL(impl(), EndThrottling()).Times(1);
-  host().EndThrottling();
-
+  constexpr base::TimeDelta interval = base::TimeDelta::FromHz(10);
   EXPECT_CALL(impl(), Throttle(frame_sink_ids, interval));
   host().Throttle(frame_sink_ids, interval);
+
   FlushHostAndVerifyExpectations();
 }
 }  // namespace viz

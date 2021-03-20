@@ -140,9 +140,6 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
                        EvictBackBufferCallback callback) override;
   void UpdateDebugRendererSettings(
       const DebugRendererSettings& debug_settings) override;
-  void StartThrottling(const std::vector<FrameSinkId>& frame_sink_ids,
-                       base::TimeDelta interval) override;
-  void EndThrottling() override;
   void Throttle(const std::vector<FrameSinkId>& ids,
                 base::TimeDelta interval) override;
 
@@ -344,9 +341,6 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
       video_capturers_;
 
   base::flat_map<uint32_t, base::ScopedClosureRunner> cached_back_buffers_;
-
-  // This tells if any frame sinks are currently throttled.
-  bool frame_sinks_throttled_ = false;
 
   THREAD_CHECKER(thread_checker_);
 

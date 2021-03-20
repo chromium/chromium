@@ -50,7 +50,7 @@ void VSyncTimingManager::OnUpdateVSyncParameters(base::TimeTicks timebase,
 void VSyncTimingManager::OnThrottlingStarted(
     const std::vector<aura::Window*>& windows,
     uint8_t fps) {
-  throttled_interval_ = base::TimeDelta::FromSeconds(1) / fps;
+  throttled_interval_ = base::TimeDelta::FromHz(fps);
   OnUpdateVSyncParameters(last_timebase_, last_interval_);
 }
 

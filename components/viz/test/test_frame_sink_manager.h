@@ -66,9 +66,6 @@ class TestFrameSinkManagerImpl : public mojom::FrameSinkManager {
                        EvictBackBufferCallback callback) override {}
   void UpdateDebugRendererSettings(
       const DebugRendererSettings& debug_settings) override {}
-  void StartThrottling(const std::vector<FrameSinkId>& frame_sink_ids,
-                       base::TimeDelta interval) override {}
-  void EndThrottling() override {}
   void Throttle(const std::vector<FrameSinkId>& ids,
                 base::TimeDelta interval) override {}
 

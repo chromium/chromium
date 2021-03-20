@@ -172,17 +172,6 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   void RequestCopyOfOutput(const SurfaceId& surface_id,
                            std::unique_ptr<CopyOutputRequest> request);
 
-  // Starts throttling the frame sinks specified by |frame_sink_ids| and all
-  // their descendant sinks to send BeginFrames at an interval of |interval|.
-  // |interval| should be greater than zero. Previous throttling operation
-  // on any frame sinks must be ended by EndThrottling() before applying the
-  // current throttling operation.
-  void StartThrottling(const std::vector<FrameSinkId>& frame_sink_ids,
-                       base::TimeDelta interval);
-
-  // Ends throttling of all previously throttled frame sinks.
-  void EndThrottling();
-
   void Throttle(const std::vector<FrameSinkId>& ids, base::TimeDelta interval);
 
   // Add/Remove an observer to receive notifications of when the host receives
