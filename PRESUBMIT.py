@@ -1699,35 +1699,6 @@ def CheckFlakyTestUsage(input_api, output_api):
   return []
 
 
-def CheckNoNewWStrings(input_api, output_api):
-  """Checks to make sure we don't introduce use of wstrings."""
-  problems = []
-  for f in input_api.AffectedFiles():
-    if (not f.LocalPath().endswith(('.cc', '.h')) or
-        f.LocalPath().endswith(('test.cc', '_win.cc', '_win.h')) or
-        '/win/' in f.LocalPath() or
-        'chrome_elf' in f.LocalPath() or
-        'install_static' in f.LocalPath()):
-      continue
-
-    allowWString = False
-    for line_num, line in f.ChangedContents():
-      if 'presubmit: allow wstring' in line:
-        allowWString = True
-      elif not allowWString and 'wstring' in line:
-        problems.append('    %s:%d' % (f.LocalPath(), line_num))
-        allowWString = False
-      else:
-        allowWString = False
-
-  if not problems:
-    return []
-  return [output_api.PresubmitPromptWarning('New code should not use wstrings.'
-      '  If you are calling a cross-platform API that accepts a wstring, '
-      'fix the API.\n' +
-      '\n'.join(problems))]
-
-
 def CheckNoDEPSGIT(input_api, output_api):
   """Make sure .DEPS.git is never modified manually."""
   if any(f.LocalPath().endswith('.DEPS.git') for f in

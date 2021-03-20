@@ -162,10 +162,16 @@ Place platform-specific #includes in their own section below the "normal"
     not have been compiled with the same sizes for things like `int` and
     `size_t`. However, to the greatest degree possible, avoid letting these
     sized types bleed through the APIs of the layers in question.
-  * Don't use `std::wstring`. Use `std::u16string` or `base::FilePath` instead.
-    (Windows-specific code interfacing with system APIs using `wstring` and
-    `wchar_t` can still use `string16` and `char16`; it is safe to assume that
-    these are equivalent to the "wide" types.)
+  * The Google Style Guide [bans
+    UTF-16](https://google.github.io/styleguide/cppguide.html#Non-ASCII_Characters).
+    For various reasons, Chromium uses UTF-16 extensively. Use `std::u16string`
+    and `char16_t*` for 16-bit strings, `u"..."` to declare UTF-16 literals, and
+    either the actual characters or the `\uXXXX` or `\UXXXXXXXX` escapes for
+    Unicode characters. Avoid `\xXX...`-style escapes, which can cause subtle
+    problems if someone attempts to change the type of string that holds the
+    literal. In code used only on Windows, it may be necessary to use
+    `std::wstring` and `wchar_t*`; these are legal, but note that they are
+    distinct types and are often not 16-bit on other platforms.
 
 ## Object ownership and calling conventions
 
