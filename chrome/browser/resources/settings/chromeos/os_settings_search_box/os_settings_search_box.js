@@ -410,6 +410,11 @@ Polymer({
 
   /** @private */
   onSearchResultsChanged_() {
+    // Select the first search result if it exists.
+    if (this.searchResultsExist_) {
+      this.selectedItem_ = this.searchResults_[0];
+    }
+
     // Only show dropdown if focus is on search field with a non empty query.
     this.shouldShowDropdown_ =
         this.$.search.isSearchFocused() && !!this.getCurrentQuery_();
@@ -422,9 +427,6 @@ Polymer({
       this.fire('iron-announce', {text: this.i18n('searchNoResults')});
       return;
     }
-
-    // Select the first search result.
-    this.selectedItem_ = this.searchResults_[0];
   },
 
   /**
