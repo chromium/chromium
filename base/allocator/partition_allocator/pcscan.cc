@@ -243,38 +243,69 @@ class StatsCollector final {
   using IdType =
       std::conditional_t<context == Context::kMutator, MutatorId, ScannerId>;
 
-  // We don't immediately trave events, but instead defer it to the point when
-  // scanning is done. This is needed to avoid reentrant allocations that can
-  // recursively fall into the safepoint.
+  // We don't immediately trace events, but instead defer it until scanning is
+  // done. This is needed to avoid unpredictable work that can be done by traces
+  // (e.g. recursive mutex lock).
   struct DeferredTraceEvent {
     base::TimeTicks start_time;
     base::TimeTicks end_time;
   };
 
-  // Maps thread id to multiple events.
+  // Thread-safe hash-map that maps thread id to scanner events. Doesn't
+  // accumulate events, i.e. every event can only be registered once.
   template <Context context>
-  using DeferredTraceEventMap = MetadataHashMap<
-      PlatformThreadId,
-      std::array<DeferredTraceEvent,
-                 static_cast<size_t>(IdType<context>::kNumIds)>>;
+  class DeferredTraceEventMap final {
+   public:
+    using IdType = IdType<context>;
+    using UnderlyingMap = MetadataHashMap<
+        PlatformThreadId,
+        std::array<DeferredTraceEvent, static_cast<size_t>(IdType::kNumIds)>>;
+
+    void RegisterBeginEventFromCurrentThread(IdType id) {
+      std::lock_guard<std::mutex> lock(mutex_);
+      const auto tid = base::PlatformThread::CurrentId();
+      const auto now = base::TimeTicks::Now();
+      auto& event_array = events_[tid];
+      auto& event = event_array[static_cast<size_t>(id)];
+      PA_DCHECK(event.start_time.is_null());
+      PA_DCHECK(event.end_time.is_null());
+      event.start_time = now;
+    }
+
+    void RegisterEndEventFromCurrentThread(IdType id) {
+      std::lock_guard<std::mutex> lock(mutex_);
+      const auto tid = base::PlatformThread::CurrentId();
+      const auto now = base::TimeTicks::Now();
+      auto& event_array = events_[tid];
+      auto& event = event_array[static_cast<size_t>(id)];
+      PA_DCHECK(!event.start_time.is_null());
+      PA_DCHECK(event.end_time.is_null());
+      event.end_time = now;
+    }
+
+    const UnderlyingMap& get_underlying_map_unsafe() const { return events_; }
+
+   private:
+    std::mutex mutex_;
+    UnderlyingMap events_;
+  };
 
   template <Context context>
   class Scope final {
    public:
     Scope(StatsCollector& stats, IdType<context> type)
-        : stats_(stats), type_(type), start_time_(base::TimeTicks::Now()) {
-      stats_.RegisterEventFromCurrentThread(type, EventType::kBegin);
+        : stats_(stats), type_(type) {
+      stats_.RegisterBeginEventFromCurrentThread(type);
     }
 
     Scope(const Scope&) = delete;
     Scope& operator=(const Scope&) = delete;
 
-    ~Scope() { stats_.RegisterEventFromCurrentThread(type_, EventType::kEnd); }
+    ~Scope() { stats_.RegisterEndEventFromCurrentThread(type_); }
 
    private:
     StatsCollector& stats_;
     IdType<context> type_;
-    base::TimeTicks start_time_;
   };
 
   using ScannerScope = Scope<Context::kScanner>;
@@ -304,10 +335,6 @@ class StatsCollector final {
  private:
   using MetadataString =
       std::basic_string<char, std::char_traits<char>, MetadataAllocator<char>>;
-  enum class EventType : uint8_t {
-    kBegin,
-    kEnd,
-  };
   static constexpr char kTraceCategory[] = "partition_alloc";
 
   static constexpr const char* ToTracingString(ScannerId id) {
@@ -370,30 +397,17 @@ class StatsCollector final {
     }
   }
 
-  template <typename Events, typename IdType>
-  void RegisterEventFromCurrentThreadImpl(Events& events,
-                                          IdType id,
-                                          EventType event_type) {
-    const auto tid = base::PlatformThread::CurrentId();
-    const auto now = base::TimeTicks::Now();
-    auto& event_array = events[tid];
-    auto& event = event_array[static_cast<size_t>(id)];
-    if (event_type == EventType::kBegin) {
-      PA_DCHECK(event.start_time.is_null());
-      PA_DCHECK(event.end_time.is_null());
-      event.start_time = now;
-    } else {
-      PA_DCHECK(!event.start_time.is_null());
-      PA_DCHECK(event.end_time.is_null());
-      event.end_time = now;
-    }
+  void RegisterBeginEventFromCurrentThread(MutatorId id) {
+    mutator_trace_events_.RegisterBeginEventFromCurrentThread(id);
   }
-
-  void RegisterEventFromCurrentThread(MutatorId id, EventType event_type) {
-    RegisterEventFromCurrentThreadImpl(mutator_trace_events_, id, event_type);
+  void RegisterEndEventFromCurrentThread(MutatorId id) {
+    mutator_trace_events_.RegisterEndEventFromCurrentThread(id);
   }
-  void RegisterEventFromCurrentThread(ScannerId id, EventType event_type) {
-    RegisterEventFromCurrentThreadImpl(scanner_trace_events_, id, event_type);
+  void RegisterBeginEventFromCurrentThread(ScannerId id) {
+    scanner_trace_events_.RegisterBeginEventFromCurrentThread(id);
+  }
+  void RegisterEndEventFromCurrentThread(ScannerId id) {
+    scanner_trace_events_.RegisterEndEventFromCurrentThread(id);
   }
 
   template <Context context, typename EventMap>
@@ -401,7 +415,7 @@ class StatsCollector final {
     std::array<base::TimeDelta, static_cast<size_t>(IdType<context>::kNumIds)>
         accumulated_events{};
     // First, report traces and accumulate each trace scope to report UMA hists.
-    for (const auto& tid_and_events : event_map) {
+    for (const auto& tid_and_events : event_map.get_underlying_map_unsafe()) {
       const PlatformThreadId tid = tid_and_events.first;
       const auto& events = tid_and_events.second;
       PA_DCHECK(accumulated_events.size() == events.size());
