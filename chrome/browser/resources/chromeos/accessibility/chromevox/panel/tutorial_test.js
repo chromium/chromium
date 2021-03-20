@@ -66,6 +66,12 @@ ChromeVoxTutorialTest = class extends ChromeVoxPanelTestBase {
     });
   }
 
+  doGesture(gesture, opt_x, opt_y) {
+    return () => {
+      GestureCommandHandler.onAccessibilityGesture_(gesture, opt_x, opt_y);
+    };
+  }
+
   getTutorial() {
     return this.getPanel().tutorial;
   }
@@ -673,5 +679,22 @@ TEST_F('ChromeVoxTutorialTest', 'StartStopInteractiveMode', function() {
     tutorial.showLessonMenu_();
     makeAssertions(
         {createdCount: 2, destroyedCount: 2, interactiveMode: false});
+  });
+});
+
+// Tests that gestures can be used in the tutorial to navigate.
+TEST_F('ChromeVoxTutorialTest', 'Gestures', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(this.simpleDoc, async function(root) {
+    await this.launchAndWaitForTutorial();
+    const tutorial = this.getTutorial();
+    mockFeedback.expectSpeech('ChromeVox tutorial')
+        .call(this.doGesture('swipeRight1'))
+        .expectSpeech('Quick orientation', 'Link')
+        .call(this.doGesture('swipeRight1'))
+        .expectSpeech('Essential keys', 'Link')
+        .call(this.doGesture('swipeLeft1'))
+        .expectSpeech('Quick orientation', 'Link')
+        .replay();
   });
 });

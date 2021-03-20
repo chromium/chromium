@@ -68,13 +68,19 @@ GestureCommandHandler.onAccessibilityGesture_ = function(gesture, x, y) {
   // Handle gestures mapped to keys. Global keys are handled in place of
   // commands, and menu key overrides are handled only in menus.
   let key;
-  if (ChromeVoxState.instance.currentRange) {
-    const range = ChromeVoxState.instance.currentRange;
-    if (commandData.menuKeyOverride && range.start && range.start.node &&
-        ((range.start.node.role === RoleType.MENU_ITEM &&
-          range.start.node.root.role === RoleType.DESKTOP) ||
-         range.start.node.root.docUrl.indexOf(
-             chrome.extension.getURL('chromevox/panel/panel.html')) === 0)) {
+  const range = ChromeVoxState.instance.currentRange;
+  if (range && range.start && range.start.node) {
+    let inMenu = false;
+    let node = range.start.node;
+    while (node) {
+      if (AutomationPredicate.menuItem(node)) {
+        inMenu = true;
+        break;
+      }
+      node = node.parent;
+    }
+
+    if (commandData.menuKeyOverride && inMenu) {
       key = commandData.menuKeyOverride;
     }
   }
