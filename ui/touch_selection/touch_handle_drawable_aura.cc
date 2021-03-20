@@ -64,7 +64,6 @@ TouchHandleDrawableAura::TouchHandleDrawableAura(aura::Window* parent)
       orientation_(TouchHandleOrientation::UNDEFINED) {
   window_delegate_->set_image_offset(gfx::Vector2d(kSelectionHandlePadding,
                                                    kSelectionHandlePadding));
-  window_delegate_->set_background_color(SK_ColorTRANSPARENT);
   window_->SetTransparent(true);
   window_->Init(LAYER_TEXTURED);
   window_->set_owned_by_parent(false);
