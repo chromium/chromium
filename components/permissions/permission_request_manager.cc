@@ -675,6 +675,9 @@ void PermissionRequestManager::FinalizeCurrentRequests(
   }
   requests_.clear();
 
+  for (Observer& observer : observer_list_)
+    observer.OnRequestsFinalized();
+
   ScheduleDequeueRequestIfNeeded();
 }
 

@@ -223,7 +223,7 @@ class TopControlsSlideTabObserver
     UpdateBrowserControlsStateShown(/*animate=*/true);
   }
 
-  void OnBubbleRemoved() override {
+  void OnRequestsFinalized() override {
     // This will update the shown constraints.
     UpdateBrowserControlsStateShown(/*animate=*/false);
   }

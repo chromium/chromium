@@ -74,6 +74,13 @@ class PermissionRequestManager
    public:
     virtual void OnBubbleAdded() {}
     virtual void OnBubbleRemoved() {}
+    // Called when the current batch of requests have been handled and the
+    // bubble is no longer visible. Note that there might be some queued
+    // permission requests that will get shown after this. This differs from
+    // OnBubbleRemoved() in that the bubble may disappear while there are still
+    // in-flight requests (e.g. when switching tabs while the bubble is still
+    // visible).
+    virtual void OnRequestsFinalized() {}
 
    protected:
     virtual ~Observer() = default;
