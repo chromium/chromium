@@ -21,3 +21,6 @@
 ++++[static] name='invalid=unknown'
 ++[form]
 ++++[entry] invalid-entry selectable-text
+++[entry] invalid-entry selectable-text
+++[entry] selectable-text
+++[entry] invalid-entry selectable-text

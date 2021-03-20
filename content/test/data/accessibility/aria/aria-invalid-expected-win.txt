@@ -1,4 +1,4 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE offset:0 invalid:true offset:1 offset:6 invalid:unknown offset:7 ia2_hypertext='<obj0><obj1><obj2><obj3><obj4><obj5><obj6><obj7>'
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE offset:0 invalid:true offset:1 offset:6 invalid:unknown offset:7 offset:8 invalid:true offset:9 offset:10 invalid:true ia2_hypertext='<obj0><obj1><obj2><obj3><obj4><obj5><obj6><obj7><obj8><obj9><obj10>'
 ++IA2_ROLE_SECTION IA2_STATE_INVALID_ENTRY offset:0 invalid:true ia2_hypertext='invalid=true'
 ++++ROLE_SYSTEM_STATICTEXT name='invalid=true' offset:0 invalid:true ia2_hypertext='invalid=true'
 ++ROLE_SYSTEM_TEXT value='An error via invalid=spelling' FOCUSABLE offset:0 offset:3 invalid:spelling offset:4 ia2_hypertext='An <obj1> via invalid=spelling'
@@ -21,3 +21,6 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE offset:0 invalid:true offset:1 offset:6 
 ++++ROLE_SYSTEM_STATICTEXT name='invalid=unknown' offset:0 invalid:unknown ia2_hypertext='invalid=unknown'
 ++IA2_ROLE_FORM offset:0 invalid:true ia2_hypertext='<obj0>'
 ++++ROLE_SYSTEM_TEXT value='1234' FOCUSABLE IA2_STATE_INVALID_ENTRY offset:0 invalid:true ia2_hypertext='1234'
+++ROLE_SYSTEM_TEXT value='a' FOCUSABLE IA2_STATE_INVALID_ENTRY offset:0 invalid:true ia2_hypertext='a'
+++ROLE_SYSTEM_TEXT value='a' FOCUSABLE offset:0 ia2_hypertext='a'
+++ROLE_SYSTEM_TEXT value='a' FOCUSABLE IA2_STATE_INVALID_ENTRY offset:0 invalid:true ia2_hypertext='a'

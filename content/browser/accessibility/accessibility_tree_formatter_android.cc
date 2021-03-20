@@ -173,6 +173,7 @@ void AccessibilityTreeFormatterAndroid::AddProperties(
   dict->SetBoolean("collapsed", android_node->IsCollapsed());
   dict->SetBoolean("collection", android_node->IsCollection());
   dict->SetBoolean("collection_item", android_node->IsCollectionItem());
+  dict->SetBoolean("content_invalid", android_node->IsContentInvalid());
   dict->SetBoolean("disabled", !android_node->IsEnabled());
   dict->SetBoolean("dismissable", android_node->IsDismissable());
   dict->SetBoolean("editable_text", android_node->IsTextField());

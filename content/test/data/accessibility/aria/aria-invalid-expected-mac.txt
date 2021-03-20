@@ -21,3 +21,6 @@ AXWebArea AXInvalid='false'
 ++++AXStaticText AXValue='invalid=unknown'
 ++AXGroup
 ++++AXTextField AXInvalid='true' AXValue='1234'
+++AXTextField AXInvalid='true' AXValue='a'
+++AXTextField AXInvalid='false' AXValue='a'
+++AXTextField AXInvalid='true' AXValue='a'

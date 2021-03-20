@@ -128,7 +128,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
 
     // Throttle time for content invalid utterances. Content invalid will only be announced at most
     // once per this time interval in milliseconds for a given focused node.
-    private static final int CONTENT_INVALID_THROTTLE_DELAY = 3000;
+    private static final int CONTENT_INVALID_THROTTLE_DELAY = 4500;
 
     private static SparseArray<AccessibilityAction> sAccessibilityActionMap =
             new SparseArray<AccessibilityAction>();

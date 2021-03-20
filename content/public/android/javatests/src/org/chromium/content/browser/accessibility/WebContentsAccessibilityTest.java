@@ -861,7 +861,7 @@ public class WebContentsAccessibilityTest {
     @Test
     @SmallTest
     public void testNodeInfo_errorMessage_true() {
-        setupTestWithHTML("<input type='text' aria-invalid='true'>");
+        setupTestWithHTML("<input type='text' aria-invalid='true' value='123456789'>");
 
         int textNodeVirtualViewId =
                 waitForNodeMatching(sClassNameMatcher, "android.widget.EditText");
@@ -878,7 +878,7 @@ public class WebContentsAccessibilityTest {
     @Test
     @SmallTest
     public void testNodeInfo_errorMessage_spelling() {
-        setupTestWithHTML("<input type='text' aria-invalid='spelling'>");
+        setupTestWithHTML("<input type='text' aria-invalid='spelling' value='123456789'>");
 
         int textNodeVirtualViewId =
                 waitForNodeMatching(sClassNameMatcher, "android.widget.EditText");
@@ -895,7 +895,7 @@ public class WebContentsAccessibilityTest {
     @Test
     @SmallTest
     public void testNodeInfo_errorMessage_grammar() {
-        setupTestWithHTML("<input type='text' aria-invalid='grammar'>");
+        setupTestWithHTML("<input type='text' aria-invalid='grammar' value='123456789'>");
 
         int textNodeVirtualViewId =
                 waitForNodeMatching(sClassNameMatcher, "android.widget.EditText");

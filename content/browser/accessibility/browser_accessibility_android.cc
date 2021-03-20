@@ -56,6 +56,12 @@ enum { ANDROID_VIEW_ACCESSIBILITY_RANGE_TYPE_FLOAT = 1 };
 
 namespace content {
 
+namespace {
+// The minimum amount of characters that must be typed into a text field before
+// AT will communicate invalid content to the user.
+constexpr int kMinimumCharacterCountForInvalid = 7;
+}  // namespace
+
 // static
 BrowserAccessibility* BrowserAccessibility::Create() {
   return new BrowserAccessibilityAndroid();
@@ -210,8 +216,14 @@ bool BrowserAccessibilityAndroid::IsComboboxControl() const {
 }
 
 bool BrowserAccessibilityAndroid::IsContentInvalid() const {
-  return HasIntAttribute(ax::mojom::IntAttribute::kInvalidState) &&
-         GetData().GetInvalidState() != ax::mojom::InvalidState::kFalse;
+  if (HasIntAttribute(ax::mojom::IntAttribute::kInvalidState) &&
+      GetData().GetInvalidState() != ax::mojom::InvalidState::kFalse) {
+    // We will not report content as invalid until a certain number of
+    // characters have been typed to prevent verbose announcements to the user.
+    return (GetInnerText().length() > kMinimumCharacterCountForInvalid);
+  }
+
+  return false;
 }
 
 bool BrowserAccessibilityAndroid::IsDisabledDescendant() const {
