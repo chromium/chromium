@@ -381,12 +381,14 @@ def fyi_builder(
         name,
         execution_timeout = 10 * time.hour,
         goma_backend = builders.goma.backend.RBE_PROD,
+        executable = "recipe:chromium (bbagent)",
         **kwargs):
     return ci.builder(
         name = name,
         builder_group = "chromium.fyi",
         execution_timeout = execution_timeout,
         goma_backend = goma_backend,
+        executable = executable,
         **kwargs
     )
 
