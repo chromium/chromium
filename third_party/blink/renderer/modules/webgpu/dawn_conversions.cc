@@ -929,7 +929,7 @@ WGPUExtent3D AsDawnType(
     GPUDevice* device) {
   DCHECK(webgpu_extent);
 
-  WGPUExtent3D dawn_extent = {1, 1, 1};
+  WGPUExtent3D dawn_extent = {1, 1, 1, 1};
 
   if (webgpu_extent->IsUnsignedLongEnforceRangeSequence()) {
     const Vector<uint32_t>& webgpu_extent_sequence =
