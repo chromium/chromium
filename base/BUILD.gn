@@ -1747,7 +1747,7 @@ component("base") {
     sources += [
       "hash/md5_nacl.cc",
       "hash/md5_nacl.h",
-      "hash/sha1.cc",
+      "hash/sha1_nacl.cc",
     ]
   } else {
     sources += [
