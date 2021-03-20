@@ -161,6 +161,8 @@ def CheckEnumsMatch(input_api, output_api):
                    'SortDirectionType', errs, output_api)
   CheckMatchingEnum(ax_enums, 'HasPopup', automation_enums,
                    'HasPopup', errs, output_api)
+  CheckMatchingEnum(ax_enums, 'AriaCurrentState', automation_enums,
+                   'AriaCurrentState', errs, output_api)
   return errs
 
 # Given a full path to c++ header, return an array of the first static

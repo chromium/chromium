@@ -464,6 +464,20 @@ chrome.automation.HasPopup = {
 
 /**
  * @enum {string}
+ * @see https://developer.chrome.com/extensions/automation#type-AriaCurrentState
+ */
+chrome.automation.AriaCurrentState = {
+  FALSE: 'false',
+  TRUE: 'true',
+  PAGE: 'page',
+  STEP: 'step',
+  LOCATION: 'location',
+  DATE: 'date',
+  TIME: 'time',
+};
+
+/**
+ * @enum {string}
  * @see https://developer.chrome.com/extensions/automation#type-DefaultActionVerb
  */
 chrome.automation.DefaultActionVerb = {
@@ -2012,6 +2026,13 @@ chrome.automation.AutomationNode.prototype.fontFamily;
  * @see https://developer.chrome.com/extensions/automation#type-editableRoot
  */
 chrome.automation.AutomationNode.prototype.editableRoot;
+
+/**
+ * Indicates aria-current state.
+ * @type {(!chrome.automation.AriaCurrentState|undefined)}
+ * @see https://developer.chrome.com/extensions/automation#type-ariaCurrentState
+ */
+chrome.automation.AutomationNode.prototype.ariaCurrentState;
 
 /**
  * Walking the tree.

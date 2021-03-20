@@ -427,6 +427,13 @@ var GetHasPopup = natives.GetHasPopup;
 /**
  * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
+ * @return {automation.AriaCurrentState}
+ */
+var GetAriaCurrentState = natives.GetAriaCurrentState;
+
+/**
+ * @param {string} axTreeID The id of the accessibility tree.
+ * @param {number} nodeID The id of a node.
  * @param {string} searchStr
  * @param {boolean} backward
  * @return {{treeId: string, nodeId: number}}
@@ -825,6 +832,10 @@ AutomationNodeImpl.prototype = {
 
   get hasPopup() {
     return GetHasPopup(this.treeID, this.id);
+  },
+
+  get ariaCurrentState() {
+    return GetAriaCurrentState(this.treeID, this.id);
   },
 
   get tableCellColumnHeaders() {
@@ -1908,6 +1919,7 @@ utils.expose(AutomationNode, AutomationNodeImpl, {
   readonly: $Array.concat(
       publicAttributes,
       [
+        'ariaCurrentState',
         'bold',
         'checked',
         'children',

@@ -1550,6 +1550,21 @@ void AutomationInternalCustomBindings::AddRoutes() {
         result.Set(v8::String::NewFromUtf8(isolate, has_popup_str.c_str())
                        .ToLocalChecked());
       });
+  RouteNodeIDFunction(
+      "GetAriaCurrentState",
+      [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
+         AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node) {
+        ax::mojom::AriaCurrentState current_state =
+            static_cast<ax::mojom::AriaCurrentState>(
+                node->data().GetIntAttribute(
+                    ax::mojom::IntAttribute::kAriaCurrentState));
+        if (current_state == ax::mojom::AriaCurrentState::kNone)
+          return;
+        const std::string& current_state_string = ui::ToString(current_state);
+        result.Set(
+            v8::String::NewFromUtf8(isolate, current_state_string.c_str())
+                .ToLocalChecked());
+      });
   RouteNodeIDPlusStringBoolFunction(
       "GetNextTextMatch",
       [this](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,

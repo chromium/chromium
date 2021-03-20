@@ -471,6 +471,17 @@
     dialog
   };
 
+  // Indicates the ARIA-current state.
+  enum AriaCurrentState {
+    false,
+    true,
+    page,
+    step,
+    location,
+    date,
+    time
+  };
+
   // Describes possible actions when performing a do default action.
   enum DefaultActionVerb {
     activate,
@@ -1276,6 +1287,9 @@ enum SortDirectionType {
 
     // Indicates whether this is a root of an editable subtree.
     boolean editableRoot;
+
+    // Indicates aria-current state.
+    AriaCurrentState? ariaCurrentState;
 
     //
     // Walking the tree.
