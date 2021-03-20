@@ -1349,7 +1349,7 @@ bool SwapChainPresenter::ReallocateSwapChain(
     TRACE_EVENT0("gpu", trace_event_stream.str().c_str());
 
     desc.Format = swap_chain_format;
-    desc.Flags = 0;
+    desc.Flags = DXGI_SWAP_CHAIN_FLAG_FULLSCREEN_VIDEO;
     if (IsProtectedVideo(protected_video_type))
       desc.Flags |= DXGI_SWAP_CHAIN_FLAG_DISPLAY_ONLY;
     if (protected_video_type == gfx::ProtectedVideoType::kHardwareProtected)
