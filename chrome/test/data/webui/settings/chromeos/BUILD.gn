@@ -55,6 +55,7 @@ js_modulizer("modulize") {
     "app_management/test_util.js",
     "app_management/uninstall_button_test.js",
     "bluetooth_page_tests.js",
+    "cellular_banner_test.js",
     "cellular_networks_list_test.js",
     "cellular_setup_dialog_test.js",
     "crostini_page_test.js",

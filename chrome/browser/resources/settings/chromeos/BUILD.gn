@@ -290,6 +290,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/internet_page/esim_install_error_dialog.m.js",
     "chromeos/internet_page/esim_remove_profile_dialog.m.js",
     "chromeos/internet_page/esim_rename_dialog.m.js",
+    "chromeos/internet_page/cellular_banner.m.js",
     "chromeos/internet_page/cellular_networks_list.m.js",
     "chromeos/internet_page/cellular_setup_dialog.m.js",
     "chromeos/internet_page/cellular_setup_settings_delegate.m.js",

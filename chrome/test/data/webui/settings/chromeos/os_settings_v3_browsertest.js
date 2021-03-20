@@ -367,6 +367,7 @@ TEST_F(
  ['AppManagementToggleRow', 'toggle_row_test.m.js'],
  ['AppManagementUninstallButton', 'uninstall_button_test.m.js'],
  ['BluetoothPage', 'bluetooth_page_tests.m.js'],
+ ['CellularBanner', 'cellular_banner_test.m.js'],
  ['CellularNetworksList', 'cellular_networks_list_test.m.js'],
  ['CellularSetupDialog', 'cellular_setup_dialog_test.m.js'],
  ['CrostiniPage', 'crostini_page_test.m.js'],

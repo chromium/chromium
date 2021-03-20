@@ -728,6 +728,16 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_NETWORK_REMOVE_PROFILE_DIALOG_OKAY},
       {"eSimDialogConnectionWarning",
        IDS_SETTINGS_INTERNET_ESIM_DIALOG_CONNECTION_WARNING},
+      {"cellularNetworkInstallingProfile",
+       IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_INSTALLING_PROFILE},
+      {"cellularNetworkRemovingProfile",
+       IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_REMOVING_PROFILE},
+      {"cellularNetworkRenamingProfile",
+       IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_RENAMING_PROFILE},
+      {"cellularNetworkConnectingToProfile",
+       IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_CONNECTING_TO_PROFILE},
+      {"cellularNetworRefreshingProfileListProfile",
+       IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_REFRESHING_PROFILE_LIST},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

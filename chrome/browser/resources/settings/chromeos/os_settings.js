@@ -20,6 +20,7 @@ import './device_page/storage_external.m.js';
 import './device_page/storage_external_entry.m.js';
 import './device_page/stylus.m.js';
 import './google_assistant_page/google_assistant_page.m.js';
+import './internet_page/cellular_banner.m.js';
 import './internet_page/cellular_setup_dialog.m.js';
 import './internet_page/esim_remove_profile_dialog.m.js';
 import './internet_page/internet_config.m.js';
