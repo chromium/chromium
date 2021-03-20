@@ -225,7 +225,7 @@ void BlinkInitializer::RegisterInterfaces(mojo::BinderMap& binders) {
 #endif
 
   binders.Add(ConvertToBaseRepeatingCallback(
-                  CrossThreadBindRepeating(&BlinkLeakDetector::Create)),
+                  CrossThreadBindRepeating(&BlinkLeakDetector::Bind)),
               main_thread->GetTaskRunner());
 
   binders.Add(ConvertToBaseRepeatingCallback(
