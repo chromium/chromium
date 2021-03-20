@@ -23,7 +23,8 @@ public class LensUma {
             LensSupportStatus.INVALID_PACKAGE, LensSupportStatus.LENS_SHOP_SUPPORTED,
             LensSupportStatus.LENS_SHOP_AND_SEARCH_SUPPORTED,
             LensSupportStatus.CAMERA_NOT_AVAILABLE, LensSupportStatus.DISABLED_ON_LOW_END_DEVICE,
-            LensSupportStatus.AGSA_VERSION_NOT_SUPPORTED, LensSupportStatus.DISABLED_ON_INCOGNITO})
+            LensSupportStatus.AGSA_VERSION_NOT_SUPPORTED, LensSupportStatus.DISABLED_ON_INCOGNITO,
+            LensSupportStatus.DISABLED_ON_TABLET})
     @Retention(RetentionPolicy.SOURCE)
     public static @interface LensSupportStatus {
         int LENS_SEARCH_SUPPORTED = 0;
@@ -39,7 +40,8 @@ public class LensUma {
         int DISABLED_ON_LOW_END_DEVICE = 10;
         int AGSA_VERSION_NOT_SUPPORTED = 11;
         int DISABLED_ON_INCOGNITO = 12;
-        int NUM_ENTRIES = 13;
+        int DISABLED_ON_TABLET = 13;
+        int NUM_ENTRIES = 14;
     }
 
     public static void recordLensSupportStatus(

@@ -23,6 +23,7 @@ public class LensQueryParams {
     private String mSrcUrl;
     private boolean mIsIncognito;
     private @LensEntryPoint int mLensEntryPoint;
+    private boolean mIsTablet;
 
     /**
      * Builder class for LensQueryParams.
@@ -36,15 +37,25 @@ public class LensQueryParams {
         private String mSrcUrl;
         private boolean mIsIncognito;
         private @LensEntryPoint int mLensEntryPoint;
+        private boolean mIsTablet;
 
+        // TODO(yusuyoutube): remove this constructor once downstream references are updated.
         public Builder() {}
 
-        // TODO(yusuyoutube): remove the with* methods for the required params once
-        // downstream references are updated.
+        // TODO(yusuyoutube): remove this constructor once downstream references are updated.
         public Builder(@LensEntryPoint int lensEntryPoint, boolean isIncognito) {
             this();
             this.mLensEntryPoint = lensEntryPoint;
             this.mIsIncognito = isIncognito;
+        }
+
+        // TODO(yusuyoutube): remove the with* methods for the required params once
+        // downstream references are updated.
+        public Builder(@LensEntryPoint int lensEntryPoint, boolean isIncognito, boolean isTablet) {
+            this();
+            this.mLensEntryPoint = lensEntryPoint;
+            this.mIsIncognito = isIncognito;
+            this.mIsTablet = isTablet;
         }
 
         /**
@@ -135,6 +146,7 @@ public class LensQueryParams {
             lensQueryParams.mWebContents = this.mWebContents;
             lensQueryParams.mSrcUrl = this.mSrcUrl;
             lensQueryParams.mIsIncognito = this.mIsIncognito;
+            lensQueryParams.mIsTablet = this.mIsTablet;
             return lensQueryParams;
         }
     }
@@ -187,5 +199,10 @@ public class LensQueryParams {
     /** Returns the {@link LensEntryPoint} for this set of params. */
     public @LensEntryPoint int getLensEntryPoint() {
         return mLensEntryPoint;
+    }
+
+    /** Returns the isTablet for this set of params. */
+    public boolean getIsTablet() {
+        return mIsTablet;
     }
 }

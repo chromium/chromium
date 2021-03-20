@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -114,7 +115,8 @@ public class SearchBoxCoordinator {
     }
 
     public boolean isLensEnabled(@LensEntryPoint int lensEntryPoint) {
-        return mMediator.isLensEnabled(lensEntryPoint, mIsIncognito);
+        return mMediator.isLensEnabled(
+                lensEntryPoint, mIsIncognito, DeviceFormFactor.isWindowOnTablet(mWindowAndroid));
     }
 
     public void startLens(@LensEntryPoint int lensEntryPoint) {

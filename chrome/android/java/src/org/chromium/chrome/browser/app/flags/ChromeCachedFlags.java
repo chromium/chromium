@@ -95,6 +95,7 @@ public class ChromeCachedFlags {
                 ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_SESSION_TIME_MS,
                 LensFeature.DISABLE_LENS_CAMERA_ASSISTED_SEARCH_ON_INCOGNITO,
                 LensFeature.ENABLE_LENS_CAMERA_ASSISTED_SEARCH_ON_LOW_END_DEVICE,
+                LensFeature.ENABLE_LENS_CAMERA_ASSISTED_SEARCH_ON_TABLET,
                 LensFeature.SEARCH_BOX_START_VARIANT_LENS_CAMERA_ASSISTED_SEARCH,
                 LensFeature.MIN_AGSA_VERSION_LENS_CAMERA_ASSISTED_SEARCH,
                 PageAnnotationsServiceConfig.PAGE_ANNOTATIONS_BASE_URL,
