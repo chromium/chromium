@@ -26,6 +26,10 @@
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 
+#ifdef OS_MAC
+#include <dlfcn.h>
+#endif
+
 #if defined(OS_WIN)
 #include <io.h>
 #include <windows.h>
@@ -885,8 +889,31 @@ LogMessage::~LogMessage() {
   }
 }
 
+#ifdef OS_MAC
+static void (*gRecordReplayPrintFn)(const char*, va_list);
+#endif
+
+static void RecordReplayPrint(const char* aFormat, ...) {
+#ifdef OS_MAC
+  if (!gRecordReplayPrintFn) {
+    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayPrint");
+    if (!fnptr) {
+      return;
+    }
+    gRecordReplayPrintFn = reinterpret_cast<void(*)(const char*, va_list)>(fnptr);
+  }
+
+  va_list ap;
+  va_start(ap, aFormat);
+  gRecordReplayPrintFn(aFormat, ap);
+  va_end(ap);
+#endif
+}
+
 // writes the common header info to the stream
 void LogMessage::Init(const char* file, int line) {
+  RecordReplayPrint("LogMessage::Init %s:%d", file, line);
+
   base::StringPiece filename(file);
   size_t last_slash_pos = filename.find_last_of("\\/");
   if (last_slash_pos != base::StringPiece::npos)

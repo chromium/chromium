@@ -71,6 +71,8 @@ ReadOnlySharedMemoryMapping ReadOnlySharedMemoryRegion::Map() const {
   return MapAt(0, handle_.GetSize());
 }
 
+extern "C" void V8RecordReplayBytes(const char*, void*, size_t);
+
 ReadOnlySharedMemoryMapping ReadOnlySharedMemoryRegion::MapAt(
     off_t offset,
     size_t size) const {
@@ -81,6 +83,10 @@ ReadOnlySharedMemoryMapping ReadOnlySharedMemoryRegion::MapAt(
   size_t mapped_size = 0;
   if (!handle_.MapAt(offset, size, &memory, &mapped_size))
     return {};
+
+#ifdef OS_MAC
+  V8RecordReplayBytes("ReadOnlySharedMemoryRegion::MapAt", memory, size);
+#endif
 
   return ReadOnlySharedMemoryMapping(memory, size, mapped_size,
                                      handle_.GetGUID());
