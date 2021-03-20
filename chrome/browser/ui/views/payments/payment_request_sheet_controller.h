@@ -27,6 +27,8 @@ class PaymentRequestState;
 // views shown in the PaymentRequestDialog.
 class PaymentRequestSheetController {
  public:
+  using ButtonCallback = base::RepeatingClosure;
+
   // Objects of this class are owned by |dialog|, so it's a non-owned pointer
   // that should be valid throughout this object's lifetime.
   // |state| and |spec| are also not owned by this and are guaranteed to outlive
@@ -86,7 +88,7 @@ class PaymentRequestSheetController {
   // button.  By default the dialog shows a "pay" button.
   virtual bool ShouldShowPrimaryButton();
   virtual std::u16string GetPrimaryButtonLabel();
-  virtual views::Button::PressedCallback GetPrimaryButtonCallback();
+  virtual ButtonCallback GetPrimaryButtonCallback();
   virtual int GetPrimaryButtonId();
   virtual bool GetPrimaryButtonEnabled();
 
@@ -94,7 +96,7 @@ class PaymentRequestSheetController {
   // button.  By default the dialog shows a "cancel payment" button.
   virtual bool ShouldShowSecondaryButton();
   virtual std::u16string GetSecondaryButtonLabel();
-  virtual views::Button::PressedCallback GetSecondaryButtonCallback();
+  virtual ButtonCallback GetSecondaryButtonCallback();
   virtual int GetSecondaryButtonId();
 
   // Returns whether this sheet should display a back arrow in the header next

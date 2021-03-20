@@ -268,7 +268,7 @@ std::u16string CvcUnmaskViewController::GetPrimaryButtonLabel() {
   return l10n_util::GetStringUTF16(IDS_CONFIRM);
 }
 
-views::Button::PressedCallback
+PaymentRequestSheetController::ButtonCallback
 CvcUnmaskViewController::GetPrimaryButtonCallback() {
   return base::BindRepeating(&CvcUnmaskViewController::CvcConfirmed,
                              base::Unretained(this));

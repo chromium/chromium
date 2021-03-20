@@ -147,7 +147,7 @@ class EditorViewController : public PaymentRequestSheetController,
 
   // PaymentRequestSheetController:
   std::u16string GetPrimaryButtonLabel() override;
-  views::Button::PressedCallback GetPrimaryButtonCallback() override;
+  ButtonCallback GetPrimaryButtonCallback() override;
   int GetPrimaryButtonId() override;
   bool GetPrimaryButtonEnabled() override;
   bool ShouldShowSecondaryButton() override;

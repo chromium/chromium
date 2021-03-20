@@ -30,13 +30,6 @@ namespace payments {
 
 namespace {
 
-// This event is used to run the Button callback when its event parameter
-// doesn't matter, only the sender.
-class DummyEvent : public ui::Event {
- public:
-  DummyEvent() : ui::Event(ui::ET_UNKNOWN, base::TimeTicks(), 0) {}
-};
-
 // This class is the actual sheet that gets pushed on the view_stack_. It
 // implements views::FocusTraversable to trap focus within its hierarchy. This
 // way, focus doesn't leave the topmost sheet on the view stack to go on views
@@ -362,7 +355,7 @@ std::u16string PaymentRequestSheetController::GetPrimaryButtonLabel() {
       continue_button ? IDS_PAYMENTS_CONTINUE_BUTTON : IDS_PAYMENTS_PAY_BUTTON);
 }
 
-views::Button::PressedCallback
+PaymentRequestSheetController::ButtonCallback
 PaymentRequestSheetController::GetPrimaryButtonCallback() {
   return base::BindRepeating(
       [](const base::WeakPtr<PaymentRequestDialogView>& dialog) {
@@ -388,7 +381,7 @@ std::u16string PaymentRequestSheetController::GetSecondaryButtonLabel() {
   return l10n_util::GetStringUTF16(IDS_PAYMENTS_CANCEL_PAYMENT);
 }
 
-views::Button::PressedCallback
+PaymentRequestSheetController::ButtonCallback
 PaymentRequestSheetController::GetSecondaryButtonCallback() {
   return base::BindRepeating(&PaymentRequestSheetController::CloseButtonPressed,
                              base::Unretained(this));
@@ -528,9 +521,9 @@ void PaymentRequestSheetController::PerformPrimaryButtonAction(
 
   if (dialog()->IsInteractive() && primary_button_ &&
       primary_button_->GetEnabled()) {
-    views::Button::PressedCallback callback = GetPrimaryButtonCallback();
+    ButtonCallback callback = GetPrimaryButtonCallback();
     if (callback)
-      callback.Run(DummyEvent());
+      callback.Run();
   }
 }
 

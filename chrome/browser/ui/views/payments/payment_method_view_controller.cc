@@ -223,7 +223,7 @@ std::u16string PaymentMethodViewController::GetSecondaryButtonLabel() {
   return l10n_util::GetStringUTF16(IDS_PAYMENTS_ADD_CARD);
 }
 
-views::Button::PressedCallback
+PaymentRequestSheetController::ButtonCallback
 PaymentMethodViewController::GetSecondaryButtonCallback() {
   return base::BindRepeating(
       &PaymentRequestDialogView::ShowCreditCardEditor, dialog(),

@@ -32,7 +32,7 @@ class PaymentMethodViewController : public PaymentRequestSheetController {
   bool ShouldShowPrimaryButton() override;
   bool ShouldShowSecondaryButton() override;
   std::u16string GetSecondaryButtonLabel() override;
-  views::Button::PressedCallback GetSecondaryButtonCallback() override;
+  ButtonCallback GetSecondaryButtonCallback() override;
   int GetSecondaryButtonId() override;
 
   PaymentRequestItemList payment_method_list_;

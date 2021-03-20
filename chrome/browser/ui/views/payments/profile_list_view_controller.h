@@ -91,7 +91,7 @@ class ProfileListViewController : public PaymentRequestSheetController {
 
   // PaymentRequestSheetController:
   bool ShouldShowPrimaryButton() override;
-  views::Button::PressedCallback GetSecondaryButtonCallback() override;
+  ButtonCallback GetSecondaryButtonCallback() override;
   void FillContentView(views::View* content_view) override;
 
  private:

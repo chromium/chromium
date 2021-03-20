@@ -29,7 +29,7 @@ std::u16string ErrorMessageViewController::GetPrimaryButtonLabel() {
   return l10n_util::GetStringUTF16(IDS_CLOSE);
 }
 
-views::Button::PressedCallback
+PaymentRequestSheetController::ButtonCallback
 ErrorMessageViewController::GetPrimaryButtonCallback() {
   return base::BindRepeating(&ErrorMessageViewController::CloseButtonPressed,
                              base::Unretained(this));

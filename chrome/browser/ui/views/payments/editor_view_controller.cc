@@ -124,7 +124,7 @@ std::u16string EditorViewController::GetPrimaryButtonLabel() {
   return l10n_util::GetStringUTF16(IDS_DONE);
 }
 
-views::Button::PressedCallback
+PaymentRequestSheetController::ButtonCallback
 EditorViewController::GetPrimaryButtonCallback() {
   return base::BindRepeating(&EditorViewController::SaveButtonPressed,
                              base::Unretained(this));

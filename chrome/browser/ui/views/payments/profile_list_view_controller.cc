@@ -360,7 +360,7 @@ bool ProfileListViewController::ShouldShowPrimaryButton() {
   return false;
 }
 
-views::Button::PressedCallback
+PaymentRequestSheetController::ButtonCallback
 ProfileListViewController::GetSecondaryButtonCallback() {
   return base::BindRepeating(&ProfileListViewController::ShowEditor,
                              base::Unretained(this), nullptr);
