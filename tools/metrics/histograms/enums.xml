@@ -80765,6 +80765,14 @@ Called by update_scheduler_enums.py.-->
   <int value="6" label="Enter Site Details"/>
 </enum>
 
+<enum name="WebsiteSettingsDiscoverabilityAction">
+  <int value="0" label="Permission icon shown in omnibox"/>
+  <int value="1"
+      label="Page info opened while permission icon was shown in omnibox"/>
+  <int value="2" label="Permissions opened after click on permissions icon"/>
+  <int value="3" label="Permission changed after click on permissions icon"/>
+</enum>
+
 <enum name="WebSocketCloseCode">
   <int value="0" label="Normal Closure">1000</int>
   <int value="1" label="Going Away">1001</int>

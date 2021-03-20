@@ -35,6 +35,8 @@ import org.chromium.components.browser_ui.site_settings.ContentSettingsResources
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.page_info.PageInfoDiscoverabilityMetrics;
+import org.chromium.components.page_info.PageInfoDiscoverabilityMetrics.DiscoverabilityAction;
 import org.chromium.components.page_info.PageInfoFeatureList;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -87,6 +89,8 @@ public class StatusMediator implements PermissionDialogController.Observer {
     @ContentSettingsType
     private int mLastPermission = ContentSettingsType.DEFAULT;
     private final PageInfoIPHController mPageInfoIPHController;
+    private final PageInfoDiscoverabilityMetrics mDiscoverabilityMetrics =
+            new PageInfoDiscoverabilityMetrics();
 
     private boolean mUrlBarTextIsSearch = true;
 
@@ -698,9 +702,11 @@ public class StatusMediator implements PermissionDialogController.Observer {
         if (!PageInfoFeatureList.isEnabled(PageInfoFeatureList.PAGE_INFO_DISCOVERABILITY)) {
             return;
         }
-        mLastPermission = SingleWebsiteSettings.getHighestPriorityPermission(permissions);
+        @ContentSettingsType
+        int permission = SingleWebsiteSettings.getHighestPriorityPermission(permissions);
         // The permission is not available in the settings page. Do not show an icon.
-        if (mLastPermission == ContentSettingsType.DEFAULT) return;
+        if (permission == ContentSettingsType.DEFAULT) return;
+        mLastPermission = permission;
 
         Drawable permissionIcon =
                 ContentSettingsResources.getContentSettingsIcon(mContext, mLastPermission, result);
@@ -712,6 +718,8 @@ public class StatusMediator implements PermissionDialogController.Observer {
         mModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIcon);
         mPermissionTaskHandler.postDelayed(
                 this::resetPermissionIcon, PERMISSION_ICON_DISPLAY_TIMEOUT_MS);
+        mDiscoverabilityMetrics.recordDiscoverabilityAction(
+                DiscoverabilityAction.PERMISSION_ICON_SHOWN);
         if (mPageInfoIPHController != null) {
             // We only want to show the IPH after the icon transition is finished.
             mPermissionTaskHandler.postDelayed(
@@ -729,9 +737,11 @@ public class StatusMediator implements PermissionDialogController.Observer {
         return PERMISSION_ICON_DISPLAY_TIMEOUT_MS - (2 * StatusView.ICON_ROTATION_DURATION_MS);
     }
 
-    /** Triggers an update to the status icon to stop showing the permission icon. */
-    public void stopShowPermissionIcon() {
+    /** Notifies that the page info was opened. */
+    void onPageInfoOpened() {
         if (mLastPermission != ContentSettingsType.DEFAULT) {
+            mDiscoverabilityMetrics.recordDiscoverabilityAction(
+                    DiscoverabilityAction.PAGE_INFO_OPENED);
             mPermissionTaskHandler.removeCallbacksAndMessages(null);
             resetPermissionIcon();
         }

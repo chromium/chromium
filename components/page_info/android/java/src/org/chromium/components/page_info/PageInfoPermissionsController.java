@@ -16,6 +16,7 @@ import androidx.fragment.app.FragmentManager;
 
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.page_info.PageInfoDiscoverabilityMetrics.DiscoverabilityAction;
 
 import java.util.List;
 
@@ -34,6 +35,8 @@ public class PageInfoPermissionsController
     private int mHighlightedPermission = ContentSettingsType.DEFAULT;
     @ColorRes
     private int mHighlightColor;
+    private final PageInfoDiscoverabilityMetrics mDiscoverabilityMetrics =
+            new PageInfoDiscoverabilityMetrics();
 
     public PageInfoPermissionsController(PageInfoMainController mainController,
             PageInfoRowView view, PageInfoControllerDelegate delegate, String pageUrl,
@@ -49,6 +52,10 @@ public class PageInfoPermissionsController
     }
 
     private void launchSubpage() {
+        if (mHighlightedPermission != ContentSettingsType.DEFAULT) {
+            mDiscoverabilityMetrics.recordDiscoverabilityAction(
+                    DiscoverabilityAction.PERMISSIONS_OPENED);
+        }
         mMainController.recordAction(PageInfoAction.PAGE_INFO_PERMISSION_DIALOG_OPENED);
         mMainController.launchSubpage(this);
     }
@@ -170,6 +177,10 @@ public class PageInfoPermissionsController
 
     @Override
     public void onPermissionChanged() {
+        if (mHighlightedPermission != ContentSettingsType.DEFAULT) {
+            mDiscoverabilityMetrics.recordDiscoverabilityAction(
+                    DiscoverabilityAction.PERMISSION_CHANGED);
+        }
         mMainController.recordAction(PageInfoAction.PAGE_INFO_CHANGED_PERMISSION);
         mMainController.refreshPermissions();
     }
