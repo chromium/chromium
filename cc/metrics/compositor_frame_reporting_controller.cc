@@ -177,7 +177,8 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
     uint32_t frame_token,
     const viz::BeginFrameId& current_frame_id,
     const viz::BeginFrameId& last_activated_frame_id,
-    EventMetricsSet events_metrics) {
+    EventMetricsSet events_metrics,
+    bool has_missing_content) {
   bool is_activated_frame_new =
       (last_activated_frame_id != last_submitted_frame_id_);
 
@@ -279,6 +280,7 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
         StageType::kSubmitCompositorFrameToPresentationCompositorFrame, Now());
     main_reporter->SetEventsMetrics(
         std::move(events_metrics.main_event_metrics));
+    main_reporter->set_has_missing_content(has_missing_content);
     submitted_compositor_frames_.emplace_back(frame_token,
                                               std::move(main_reporter));
   }
@@ -289,6 +291,7 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
         StageType::kSubmitCompositorFrameToPresentationCompositorFrame, Now());
     impl_reporter->SetEventsMetrics(
         std::move(events_metrics.impl_event_metrics));
+    impl_reporter->set_has_missing_content(has_missing_content);
     submitted_compositor_frames_.emplace_back(frame_token,
                                               std::move(impl_reporter));
   }

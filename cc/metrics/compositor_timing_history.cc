@@ -789,10 +789,11 @@ void CompositorTimingHistory::DidSubmitCompositorFrame(
     uint32_t frame_token,
     const viz::BeginFrameId& current_frame_id,
     const viz::BeginFrameId& last_activated_frame_id,
-    EventMetricsSet events_metrics) {
+    EventMetricsSet events_metrics,
+    bool has_missing_content) {
   compositor_frame_reporting_controller_->DidSubmitCompositorFrame(
       frame_token, current_frame_id, last_activated_frame_id,
-      std::move(events_metrics));
+      std::move(events_metrics), has_missing_content);
 }
 
 void CompositorTimingHistory::DidNotProduceFrame(

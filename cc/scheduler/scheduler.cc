@@ -152,10 +152,12 @@ void Scheduler::SetNeedsPrepareTiles() {
 }
 
 void Scheduler::DidSubmitCompositorFrame(uint32_t frame_token,
-                                         EventMetricsSet events_metrics) {
+                                         EventMetricsSet events_metrics,
+                                         bool has_missing_content) {
   compositor_timing_history_->DidSubmitCompositorFrame(
       frame_token, begin_main_frame_args_.frame_id,
-      last_activate_origin_frame_args_.frame_id, std::move(events_metrics));
+      last_activate_origin_frame_args_.frame_id, std::move(events_metrics),
+      has_missing_content);
   state_machine_.DidSubmitCompositorFrame();
 
   // There is no need to call ProcessScheduledActions here because

@@ -721,7 +721,8 @@ DrawResult SingleThreadProxy::DoComposite(LayerTreeHostImpl::FrameData* frame) {
         if (scheduler_on_impl_thread_) {
           // Drawing implies we submitted a frame to the LayerTreeFrameSink.
           scheduler_on_impl_thread_->DidSubmitCompositorFrame(
-              frame->frame_token, host_impl_->TakeEventsMetrics());
+              frame->frame_token, host_impl_->TakeEventsMetrics(),
+              frame->has_missing_content);
         }
         single_thread_client_->DidSubmitCompositorFrame();
       }

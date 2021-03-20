@@ -288,6 +288,10 @@ class CC_EXPORT CompositorFrameReporter {
     tick_clock_ = tick_clock;
   }
 
+  void set_has_missing_content(bool has_missing_content) {
+    has_missing_content_ = has_missing_content;
+  }
+
   void SetPartialUpdateDecider(CompositorFrameReporter* decider);
 
   size_t partial_update_dependents_size_for_testing() const {
@@ -411,6 +415,10 @@ class CC_EXPORT CompositorFrameReporter {
 
   const SmoothThread smooth_thread_;
   const int layer_tree_host_id_;
+
+  // Indicates whether the submitted frame had any missing content (i.e. content
+  // with checkerboarding).
+  bool has_missing_content_ = false;
 
   // For a reporter A, if the main-thread takes a long time to respond
   // to a begin-main-frame, then all reporters created (and terminated) until
