@@ -5,6 +5,9 @@
 package org.chromium.chrome.browser.permissions;
 
 import android.support.test.InstrumentationRegistry;
+import android.view.View;
+
+import androidx.annotation.IdRes;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -298,18 +301,20 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
      * Utility functions to support permissions testing in other contexts.
      */
     public static void replyToDialog(boolean allow, ChromeActivity activity) {
-        // Wait a tiny bit before clicking the dialog. Sometimes the click happens too quick and the
-        // dialog is not ready. See crbug.com/1098806 for example flaky tests.
-        try {
-            Thread.sleep(300);
-        } catch (Exception ex) {
-        }
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
+        // Wait for button view to appear in view hierarchy. If the browser controls are not visible
+        // then ModalDialogPresenter will first trigger animation for showing browser controls and
+        // only then add modal dialog view into the container.
+        @IdRes
+        int buttonId = allow ? R.id.positive_button : R.id.negative_button;
+        CriteriaHelper.pollUiThread(() -> {
             TabModalPresenter presenter = (TabModalPresenter) activity.getModalDialogManager()
                                                   .getCurrentPresenterForTest();
-            TouchCommon.singleClickView(presenter.getDialogContainerForTest().findViewById(
-                    allow ? R.id.positive_button : R.id.negative_button));
+            View buttonView = presenter.getDialogContainerForTest().findViewById(buttonId);
+            if (buttonView == null) {
+                return false;
+            }
+            TouchCommon.singleClickView(buttonView);
+            return true;
         });
     }
 
