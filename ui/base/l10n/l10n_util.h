@@ -115,6 +115,15 @@ COMPONENT_EXPORT(UI_BASE) bool IsValidLocaleSyntax(const std::string& locale);
 COMPONENT_EXPORT(UI_BASE) std::string GetStringUTF8(int message_id);
 COMPONENT_EXPORT(UI_BASE) std::u16string GetStringUTF16(int message_id);
 
+// Given a format string, replace $i with replacements[i] for all
+// i < replacements.size(). Additionally, $$ is replaced by $.
+// If non-NULL |offsets| will be replaced with the start points of the replaced
+// strings.
+COMPONENT_EXPORT(UI_BASE)
+std::u16string FormatString(const std::u16string& format_string,
+                            const std::vector<std::u16string>& replacements,
+                            std::vector<size_t>* offsets);
+
 // Get a resource string and replace $i with replacements[i] for all
 // i < replacements.size(). Additionally, $$ is replaced by $.
 // If non-NULL |offsets| will be replaced with the start points of the replaced

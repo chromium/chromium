@@ -108,7 +108,7 @@ struct AutocompleteMatchType {
       const std::u16string& match_text,
       size_t match_index = 0,
       size_t total_matches = 0,
-      int additional_message_id = 0,
+      const std::u16string& additional_message_format = std::u16string(),
       int* label_prefix_length = nullptr);
 };
 

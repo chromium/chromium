@@ -45,11 +45,10 @@ class OmniboxPedal {
                  int id_accessibility_hint);
     LabelStrings(const LabelStrings&);
     ~LabelStrings();
-    const std::u16string hint;
-    const std::u16string hint_short;
-    const std::u16string suggestion_contents;
-    const int id_accessibility_suffix;
-    const std::u16string accessibility_hint;
+    std::u16string hint;
+    std::u16string suggestion_contents;
+    std::u16string accessibility_suffix;
+    std::u16string accessibility_hint;
   };
 
   class SynonymGroup {

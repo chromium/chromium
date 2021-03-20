@@ -587,6 +587,7 @@ std::u16string OmniboxPopupModel::GetAccessibilityLabelForCurrentSelection(
   const AutocompleteMatch& match = result().match_at(line);
 
   int additional_message_id = 0;
+  std::u16string additional_message;
   switch (selection_.state) {
     case FOCUSED_BUTTON_HEADER: {
       bool group_hidden = result().IsSuggestionGroupIdHidden(
@@ -608,8 +609,8 @@ std::u16string OmniboxPopupModel::GetAccessibilityLabelForCurrentSelection(
         available_actions_count++;
       }
       if (IsControlPresentOnMatch(Selection(line, FOCUSED_BUTTON_PEDAL))) {
-        additional_message_id =
-            match.pedal->GetLabelStrings().id_accessibility_suffix;
+        additional_message =
+            match.pedal->GetLabelStrings().accessibility_suffix;
         available_actions_count++;
       }
       if (IsControlPresentOnMatch(
@@ -639,6 +640,9 @@ std::u16string OmniboxPopupModel::GetAccessibilityLabelForCurrentSelection(
     default:
       break;
   }
+  if (additional_message_id != 0 && additional_message.empty()) {
+    additional_message = l10n_util::GetStringUTF16(additional_message_id);
+  }
 
   if (selection_.IsButtonFocused())
     include_positional_info = false;
@@ -647,7 +651,7 @@ std::u16string OmniboxPopupModel::GetAccessibilityLabelForCurrentSelection(
 
   // If there's a button focused, we don't want the "n of m" message announced.
   return AutocompleteMatchType::ToAccessibilityLabel(
-      match, match_text, line, total_matches, additional_message_id,
+      match, match_text, line, total_matches, additional_message,
       label_prefix_length);
 }
 

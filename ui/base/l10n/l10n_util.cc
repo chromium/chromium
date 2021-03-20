@@ -760,16 +760,9 @@ std::u16string GetStringUTF16(int message_id) {
   return str;
 }
 
-std::u16string GetStringFUTF16(int message_id,
-                               const std::vector<std::u16string>& replacements,
-                               std::vector<size_t>* offsets) {
-  // TODO(tc): We could save a string copy if we got the raw string as
-  // a StringPiece and were able to call ReplaceStringPlaceholders with
-  // a StringPiece format string and std::u16string substitution strings.  In
-  // practice, the strings should be relatively short.
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  const std::u16string& format_string = rb.GetLocalizedString(message_id);
-
+std::u16string FormatString(const std::u16string& format_string,
+                            const std::vector<std::u16string>& replacements,
+                            std::vector<size_t>* offsets) {
 #if DCHECK_IS_ON()
   // Make sure every replacement string is being used, so we don't just
   // silently fail to insert one. If |offsets| is non-NULL, then don't do this
@@ -801,6 +794,18 @@ std::u16string GetStringFUTF16(int message_id,
   AdjustParagraphDirectionality(&formatted);
 
   return formatted;
+}
+
+std::u16string GetStringFUTF16(int message_id,
+                               const std::vector<std::u16string>& replacements,
+                               std::vector<size_t>* offsets) {
+  // TODO(tc): We could save a string copy if we got the raw string as
+  // a StringPiece and were able to call ReplaceStringPlaceholders with
+  // a StringPiece format string and std::u16string substitution strings.  In
+  // practice, the strings should be relatively short.
+  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
+  const std::u16string& format_string = rb.GetLocalizedString(message_id);
+  return FormatString(format_string, replacements, offsets);
 }
 
 std::string GetStringFUTF8(int message_id, const std::u16string& a) {

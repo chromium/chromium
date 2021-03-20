@@ -50,7 +50,7 @@ OmniboxPedal::LabelStrings::LabelStrings(int id_hint,
                                          int id_accessibility_hint)
     : hint(l10n_util::GetStringUTF16(id_hint)),
       suggestion_contents(l10n_util::GetStringUTF16(id_suggestion_contents)),
-      id_accessibility_suffix(id_accessibility_suffix),
+      accessibility_suffix(l10n_util::GetStringUTF16(id_accessibility_suffix)),
       accessibility_hint(l10n_util::GetStringUTF16(id_accessibility_hint)) {}
 
 OmniboxPedal::LabelStrings::LabelStrings(const LabelStrings&) = default;
@@ -107,8 +107,8 @@ namespace trace_event {
 size_t EstimateMemoryUsage(const OmniboxPedal::LabelStrings& self) {
   size_t total = 0;
   total += base::trace_event::EstimateMemoryUsage(self.hint);
-  total += base::trace_event::EstimateMemoryUsage(self.hint_short);
   total += base::trace_event::EstimateMemoryUsage(self.suggestion_contents);
+  total += base::trace_event::EstimateMemoryUsage(self.accessibility_suffix);
   total += base::trace_event::EstimateMemoryUsage(self.accessibility_hint);
   return total;
 }
