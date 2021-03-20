@@ -264,10 +264,9 @@ TEST(PermissionsDataTest, SocketPermissions) {
   EXPECT_FALSE(CheckSocketPermission(
       extension, SocketPermissionRequest::TCP_CONNECT, "www.example.com", 80));
 
-  extension = LoadManifestUnchecked("socket_permissions",
-                                    "socket1.json",
-                                    Manifest::INTERNAL, Extension::NO_FLAGS,
-                                    &error);
+  extension = LoadManifestUnchecked("socket_permissions", "socket1.json",
+                                    mojom::ManifestLocation::kInternal,
+                                    Extension::NO_FLAGS, &error);
   EXPECT_TRUE(extension.get() == NULL);
   std::string expected_error_msg_header = ErrorUtils::FormatErrorMessage(
       manifest_errors::kInvalidPermissionWithDetail,
@@ -541,10 +540,9 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, Permissions) {
   // Having chrome://*/ should not work for regular extensions. Note that
   // for favicon access, we require the explicit pattern chrome://favicon/*.
   std::string error;
-  extension = LoadManifestUnchecked("script_and_capture",
-                                    "extension_wildcard_chrome.json",
-                                    Manifest::INTERNAL, Extension::NO_FLAGS,
-                                    &error);
+  extension = LoadManifestUnchecked(
+      "script_and_capture", "extension_wildcard_chrome.json",
+      mojom::ManifestLocation::kInternal, Extension::NO_FLAGS, &error);
   const std::vector<InstallWarning>& warnings = extension->install_warnings();
   EXPECT_FALSE(warnings.empty());
   EXPECT_EQ(ErrorUtils::FormatErrorMessage(
@@ -576,8 +574,9 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, Permissions) {
 
   // Component extensions with <all_urls> should get everything except for
   // "chrome" scheme URLs.
-  extension = LoadManifest("script_and_capture", "extension_component_all.json",
-      Manifest::COMPONENT, Extension::NO_FLAGS);
+  extension =
+      LoadManifest("script_and_capture", "extension_component_all.json",
+                   mojom::ManifestLocation::kComponent, Extension::NO_FLAGS);
   EXPECT_EQ(ALLOWED_SCRIPT_AND_CAPTURE,
             GetExtensionAccess(extension.get(), http_url));
   EXPECT_EQ(ALLOWED_SCRIPT_AND_CAPTURE,
@@ -590,9 +589,9 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, Permissions) {
             GetExtensionAccess(extension.get(), chrome_untrusted_url));
 
   // Component extensions should only get access to what they ask for.
-  extension = LoadManifest("script_and_capture",
-      "extension_component_google.json", Manifest::COMPONENT,
-      Extension::NO_FLAGS);
+  extension =
+      LoadManifest("script_and_capture", "extension_component_google.json",
+                   mojom::ManifestLocation::kComponent, Extension::NO_FLAGS);
   EXPECT_EQ(ALLOWED_SCRIPT_ONLY, GetExtensionAccess(extension.get(), http_url));
   EXPECT_EQ(DISALLOWED, GetExtensionAccess(extension.get(), https_url));
   EXPECT_EQ(DISALLOWED, GetExtensionAccess(extension.get(), file_url));
@@ -662,10 +661,9 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, PermissionsWithChromeURLsEnabled) {
   // Having chrome://*/ should work for regular extensions with the flag
   // enabled.
   std::string error;
-  extension = LoadManifestUnchecked("script_and_capture",
-                                    "extension_wildcard_chrome.json",
-                                    Manifest::INTERNAL, Extension::NO_FLAGS,
-                                    &error);
+  extension = LoadManifestUnchecked(
+      "script_and_capture", "extension_wildcard_chrome.json",
+      mojom::ManifestLocation::kInternal, Extension::NO_FLAGS, &error);
   EXPECT_FALSE(extension.get() == NULL);
   EXPECT_EQ(DISALLOWED, GetExtensionAccess(extension.get(), http_url));
   EXPECT_EQ(DISALLOWED, GetExtensionAccess(extension.get(), https_url));
@@ -699,8 +697,9 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, PermissionsWithChromeURLsEnabled) {
 
   // Component extensions with <all_urls> should get everything except for
   // "chrome" scheme URLs.
-  extension = LoadManifest("script_and_capture", "extension_component_all.json",
-                           Manifest::COMPONENT, Extension::NO_FLAGS);
+  extension =
+      LoadManifest("script_and_capture", "extension_component_all.json",
+                   mojom::ManifestLocation::kComponent, Extension::NO_FLAGS);
   EXPECT_EQ(ALLOWED_SCRIPT_AND_CAPTURE,
             GetExtensionAccess(extension.get(), http_url));
   EXPECT_EQ(ALLOWED_SCRIPT_AND_CAPTURE,
@@ -715,7 +714,7 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, PermissionsWithChromeURLsEnabled) {
   // Component extensions should only get access to what they ask for.
   extension =
       LoadManifest("script_and_capture", "extension_component_google.json",
-                   Manifest::COMPONENT, Extension::NO_FLAGS);
+                   mojom::ManifestLocation::kComponent, Extension::NO_FLAGS);
   EXPECT_EQ(ALLOWED_SCRIPT_ONLY, GetExtensionAccess(extension.get(), http_url));
   EXPECT_EQ(DISALLOWED, GetExtensionAccess(extension.get(), https_url));
   EXPECT_EQ(DISALLOWED, GetExtensionAccess(extension.get(), file_url));
@@ -1141,8 +1140,9 @@ TEST_F(ExtensionScriptAndCaptureVisibleTest, PolicyHostRestrictions) {
 
   // Component extensions with <all_urls> should get everything regardless of
   // policy, except for chrome scheme URLs.
-  extension = LoadManifest("script_and_capture", "extension_component_all.json",
-                           Manifest::COMPONENT, Extension::NO_FLAGS);
+  extension =
+      LoadManifest("script_and_capture", "extension_component_all.json",
+                   mojom::ManifestLocation::kComponent, Extension::NO_FLAGS);
   extension->permissions_data()->SetUsesDefaultHostRestrictions(context_id);
   PermissionsData::SetDefaultPolicyHostRestrictions(0, default_blocked,
                                                     default_allowed);

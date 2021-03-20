@@ -600,7 +600,7 @@ bool Extension::InitFromValue(int flags, std::u16string* error) {
   finished_parsing_manifest_ = true;
 
   permissions_data_ = std::make_unique<PermissionsData>(
-      id(), GetType(), static_cast<Manifest::Location>(location()),
+      id(), GetType(), location(),
       PermissionsParser::GetRequiredPermissions(this).Clone());
 
   return true;

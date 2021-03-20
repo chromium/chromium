@@ -46,7 +46,7 @@ class ExtensionDownloaderTest : public ExtensionsTest {
         CreateManifestFetchData(kUpdateUrl));
     ManifestFetchData::PingData zero_days(0, 0, true, 0);
     fetch->AddExtension(kTestExtensionId, "1.0", &zero_days, "", "",
-                        Manifest::Location::INTERNAL,
+                        mojom::ManifestLocation::kInternal,
                         ManifestFetchData::FetchPriority::BACKGROUND);
     return fetch;
   }

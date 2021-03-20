@@ -13,6 +13,7 @@
 #include "base/optional.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 
 namespace base {
 class FilePath;
@@ -51,7 +52,7 @@ class ChromeTestExtensionLoader {
     creation_flags_ |= flag;
   }
   void set_creation_flags(int flags) { creation_flags_ = flags; }
-  void set_location(Manifest::Location location) { location_ = location; }
+  void set_location(mojom::ManifestLocation location) { location_ = location; }
   void set_should_fail(bool should_fail) { should_fail_ = should_fail; }
   void set_pack_extension(bool pack_extension) {
     pack_extension_ = pack_extension;
@@ -136,7 +137,7 @@ class ChromeTestExtensionLoader {
 
   // The install location of the added extension. Not valid for unpacked
   // extensions.
-  Manifest::Location location_ = Manifest::INTERNAL;
+  mojom::ManifestLocation location_ = mojom::ManifestLocation::kInternal;
 
   // Whether or not the extension load should fail.
   bool should_fail_ = false;

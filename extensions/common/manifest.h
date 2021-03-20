@@ -25,48 +25,6 @@ struct InstallWarning;
 // properties of the manifest using ManifestFeatureProvider.
 class Manifest final {
  public:
-  // Historically, where an extension was loaded from, and whether an
-  // extension's files were inside or outside of the profile's directory. In
-  // modern usage, a Location can be thought of as the installation source:
-  // whether an extension was explicitly installed by the user (through the
-  // UI), or implicitly installed by other means. For example, enterprise
-  // policy, being part of Chrome per se (but implemented as an extension), or
-  // installed as a side effect of installing third party software.
-  //
-  // NOTE: These values are stored as integers in the preferences and used
-  // in histograms so don't remove or reorder existing items.  Just append
-  // to the end.
-  enum Location {
-    INVALID_LOCATION,
-    INTERNAL,  // A crx file from the internal Extensions directory. This
-               // includes extensions explicitly installed by the user. It also
-               // includes installed-by-default extensions that are not part of
-               // Chrome itself (and thus not a COMPONENT), but are part of a
-               // larger system (such as Chrome OS).
-    EXTERNAL_PREF,      // A crx file from an external directory (via prefs).
-    EXTERNAL_REGISTRY,  // A crx file from an external directory (via eg the
-                        // registry on Windows).
-    UNPACKED,           // From loading an unpacked extension from the
-                        // extensions settings page.
-    COMPONENT,          // An integral component of Chrome itself, which
-                        // happens to be implemented as an extension. We don't
-                        // show these in the management UI.
-    EXTERNAL_PREF_DOWNLOAD,    // A crx file from an external directory (via
-                               // prefs), installed from an update URL.
-    EXTERNAL_POLICY_DOWNLOAD,  // A crx file from an external directory (via
-                               // admin policies), installed from an update URL.
-    COMMAND_LINE,              // --load-extension.
-    EXTERNAL_POLICY,     // A crx file from an external directory (via admin
-                         // policies), cached locally and installed from the
-                         // cache.
-    EXTERNAL_COMPONENT,  // Similar to COMPONENT in that it's considered an
-                         // internal implementation detail of chrome, but
-    // installed from an update URL like the *DOWNLOAD ones.
-
-    // New enum values must go above here.
-    NUM_LOCATIONS
-  };
-
   // Do not change the order of entries or remove entries in this list as this
   // is used in ExtensionType enum in tools/metrics/histograms/enums.xml.
   enum Type {

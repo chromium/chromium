@@ -2064,7 +2064,8 @@ class DevToolsExtensionForceInstallTest : public extensions::ExtensionBrowserTes
                    .AppendASCII("extensions")
                    .AppendASCII("options.crx");
     const Extension* extension = InstallExtension(
-        crx_path, 1, extensions::Manifest::EXTERNAL_POLICY_DOWNLOAD);
+        crx_path, 1,
+        extensions::mojom::ManifestLocation::kExternalPolicyDownload);
     ASSERT_TRUE(extension);
     *extension_id = extension->id();
   }

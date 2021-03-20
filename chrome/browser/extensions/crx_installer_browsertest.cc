@@ -1067,7 +1067,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, InstallToSharedLocation) {
 
   base::FilePath crx_path = test_data_dir_.AppendASCII("crx_installer/v1.crx");
   const extensions::Extension* extension = InstallExtension(
-      crx_path, 1, extensions::Manifest::EXTERNAL_PREF);
+      crx_path, 1, extensions::mojom::ManifestLocation::kExternalPref);
   base::FilePath extension_path = extension->path();
   EXPECT_TRUE(cache_dir.GetPath().IsParent(extension_path));
   EXPECT_TRUE(base::PathExists(extension_path));

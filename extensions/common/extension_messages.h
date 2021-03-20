@@ -39,6 +39,7 @@
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/mojom/injection_type.mojom-shared.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/socket_permission_data.h"
@@ -337,7 +338,7 @@ struct ExtensionMsg_Loaded_Params {
   base::DictionaryValue manifest;
 
   // The location the extension was installed from.
-  extensions::Manifest::Location location;
+  extensions::mojom::ManifestLocation location;
 
   // The path the extension was loaded from. This is used in the renderer only
   // to generate the extension ID for extensions that are loaded unpacked.

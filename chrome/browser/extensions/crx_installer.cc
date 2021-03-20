@@ -187,8 +187,8 @@ void CrxInstaller::InstallCrxFile(const CRXFileInfo& source_file) {
   source_file_ = source_file.path;
 
   auto unpacker = base::MakeRefCounted<SandboxedUnpacker>(
-      static_cast<Manifest::Location>(install_source_), creation_flags_,
-      install_directory_, GetUnpackerTaskRunner(), this);
+      install_source_, creation_flags_, install_directory_,
+      GetUnpackerTaskRunner(), this);
 
   if (!GetUnpackerTaskRunner()->PostTask(
           FROM_HERE, base::BindOnce(&SandboxedUnpacker::StartWithCrx, unpacker,
@@ -209,8 +209,8 @@ void CrxInstaller::InstallUnpackedCrx(const std::string& extension_id,
   source_file_ = unpacked_dir;
 
   auto unpacker = base::MakeRefCounted<SandboxedUnpacker>(
-      static_cast<Manifest::Location>(install_source_), creation_flags_,
-      install_directory_, GetUnpackerTaskRunner(), this);
+      install_source_, creation_flags_, install_directory_,
+      GetUnpackerTaskRunner(), this);
 
   if (!GetUnpackerTaskRunner()->PostTask(
           FROM_HERE,

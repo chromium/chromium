@@ -84,7 +84,7 @@ class SimpleFeature : public Feature {
                           const char* const array[],
                           size_t array_length);
 
-  // Similar to Manifest::Location, these are the classes of locations
+  // Similar to mojom::ManifestLocation, these are the classes of locations
   // supported in feature files. These should only be used in this class and in
   // generated files.
   enum Location {

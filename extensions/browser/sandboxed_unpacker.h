@@ -24,6 +24,7 @@
 #include "extensions/browser/install/crx_install_error.h"
 #include "extensions/browser/json_file_sanitizer.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/mojom/json_parser.mojom.h"
@@ -140,7 +141,7 @@ class SandboxedUnpacker : public base::RefCountedThreadSafe<SandboxedUnpacker> {
   // TODO(devlin): SKIP_ON_SHUTDOWN is also not quite sufficient for this. We
   // should probably instead be using base::ImportantFileWriter or similar.
   SandboxedUnpacker(
-      Manifest::Location location,
+      mojom::ManifestLocation location,
       int creation_flags,
       const base::FilePath& extensions_dir,
       const scoped_refptr<base::SequencedTaskRunner>& unpacker_io_task_runner,

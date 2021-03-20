@@ -569,8 +569,7 @@ void ExtensionService::MaybeFinishShutdownDelayed() {
     if (info->extension_manifest) {
       std::string error;
       extension = Extension::Create(
-          info->extension_path,
-          static_cast<ManifestLocation>(info->extension_location),
+          info->extension_path, info->extension_location,
           *info->extension_manifest,
           extension_prefs_->GetDelayedInstallCreationFlags(info->extension_id),
           info->extension_id, &error);
@@ -1927,8 +1926,7 @@ bool ExtensionService::OnExternalExtensionFileFound(
   installer->set_installer_callback(
       base::BindOnce(&ExtensionService::InstallationFromExternalFileFinished,
                      AsWeakPtr(), info.extension_id));
-  installer->set_install_source(
-      static_cast<ManifestLocation>(info.crx_location));
+  installer->set_install_source(info.crx_location);
   installer->set_expected_id(info.extension_id);
   installer->set_expected_version(info.version,
                                   true /* fail_install_if_unexpected */);

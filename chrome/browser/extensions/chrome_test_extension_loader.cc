@@ -236,8 +236,7 @@ scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadCrx(
         CrxInstaller::Create(extension_service_, std::move(install_ui));
     installer->set_expected_id(expected_id_);
     installer->set_creation_flags(creation_flags_);
-    installer->set_install_source(
-        static_cast<mojom::ManifestLocation>(location_));
+    installer->set_install_source(location_);
     installer->set_install_immediately(install_immediately_);
     installer->set_allow_silent_install(grant_permissions_);
     if (!installer->is_gallery_install()) {

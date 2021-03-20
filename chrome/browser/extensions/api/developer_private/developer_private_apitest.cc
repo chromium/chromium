@@ -29,8 +29,8 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, Basics) {
   // setings in the API test.
   base::FilePath base_dir = test_data_dir_.AppendASCII("developer");
   EXPECT_TRUE(LoadExtension(base_dir.AppendASCII("hosted_app")));
-  EXPECT_TRUE(InstallExtension(
-      base_dir.AppendASCII("packaged_app"), 1, Manifest::INTERNAL));
+  EXPECT_TRUE(InstallExtension(base_dir.AppendASCII("packaged_app"), 1,
+                               mojom::ManifestLocation::kInternal));
   LoadExtension(base_dir.AppendASCII("simple_extension"));
 
   ASSERT_TRUE(RunPlatformAppTestWithFlags("developer/test", kFlagNone,

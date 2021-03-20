@@ -309,8 +309,7 @@ TEST_F(ExtensionFromWebApp, Basic) {
   EXPECT_FALSE(extension->was_installed_by_default());
   EXPECT_FALSE(extension->was_installed_by_oem());
   EXPECT_FALSE(extension->from_webstore());
-  EXPECT_EQ(ManifestLocation::kInternal,
-            static_cast<ManifestLocation>(extension->location()));
+  EXPECT_EQ(ManifestLocation::kInternal, extension->location());
 
   EXPECT_EQ("zVvdNZy3Mp7CFU8JVSyXNlDuHdVLbP7fDO3TGVzj/0w=",
             extension->public_key());
@@ -370,8 +369,7 @@ TEST_F(ExtensionFromWebApp, Minimal) {
   EXPECT_FALSE(extension->was_installed_by_default());
   EXPECT_FALSE(extension->was_installed_by_oem());
   EXPECT_FALSE(extension->from_webstore());
-  EXPECT_EQ(ManifestLocation::kInternal,
-            static_cast<ManifestLocation>(extension->location()));
+  EXPECT_EQ(ManifestLocation::kInternal, extension->location());
 
   EXPECT_EQ("zVvdNZy3Mp7CFU8JVSyXNlDuHdVLbP7fDO3TGVzj/0w=",
             extension->public_key());
@@ -408,8 +406,7 @@ TEST_F(ExtensionFromWebApp, ExtraInstallationFlags) {
   EXPECT_TRUE(extension->was_installed_by_oem());
   EXPECT_TRUE(extension->from_webstore());
   EXPECT_FALSE(extension->was_installed_by_default());
-  EXPECT_EQ(ManifestLocation::kInternal,
-            static_cast<ManifestLocation>(extension->location()));
+  EXPECT_EQ(ManifestLocation::kInternal, extension->location());
 }
 
 TEST_F(ExtensionFromWebApp, ExternalPolicyLocation) {

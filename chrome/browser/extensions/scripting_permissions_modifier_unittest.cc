@@ -319,7 +319,7 @@ TEST_F(ScriptingPermissionsModifierUnitTest,
       data_dir().AppendASCII("permissions/update.pem");
   scoped_refptr<const Extension> extension = PackAndInstallCRX(
       test_extension_dir.UnpackedPath(), pem_path, INSTALL_NEW,
-      Extension::WITHHOLD_PERMISSIONS, Manifest::Location::INTERNAL);
+      Extension::WITHHOLD_PERMISSIONS, mojom::ManifestLocation::kInternal);
   // Cache the ID, since the extension will be invalidated across updates.
   ExtensionId extension_id = extension->id();
   // Hold onto references for the extension dirs so they don't get deleted

@@ -83,6 +83,8 @@
 #include "ash/constants/ash_switches.h"
 #endif
 
+using extensions::mojom::ManifestLocation;
+
 namespace extensions {
 
 using extensions::service_worker_test_utils::TestRegistrationObserver;
@@ -304,7 +306,7 @@ const Extension* ExtensionBrowserTest::LoadExtension(
       options.require_modern_manifest_version);
   if (options.load_for_login_screen) {
     loader.add_creation_flag(Extension::FOR_LOGIN_SCREEN);
-    loader.set_location(Manifest::EXTERNAL_POLICY);
+    loader.set_location(ManifestLocation::kExternalPolicy);
   }
   loader.set_wait_for_renderers(options.wait_for_renderers);
 
@@ -604,16 +606,17 @@ const Extension* ExtensionBrowserTest::UpdateExtensionWaitForIdle(
     const base::FilePath& path,
     int expected_change) {
   return InstallOrUpdateExtension(id, path, INSTALL_UI_TYPE_NONE,
-                                  expected_change, Manifest::INTERNAL,
+                                  expected_change, ManifestLocation::kInternal,
                                   browser(), Extension::NO_FLAGS, false, false);
 }
 
 const Extension* ExtensionBrowserTest::InstallExtensionFromWebstore(
     const base::FilePath& path,
     int expected_change) {
-  return InstallOrUpdateExtension(
-      std::string(), path, INSTALL_UI_TYPE_AUTO_CONFIRM, expected_change,
-      Manifest::INTERNAL, browser(), Extension::FROM_WEBSTORE, true, false);
+  return InstallOrUpdateExtension(std::string(), path,
+                                  INSTALL_UI_TYPE_AUTO_CONFIRM, expected_change,
+                                  ManifestLocation::kInternal, browser(),
+                                  Extension::FROM_WEBSTORE, true, false);
 }
 
 const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
@@ -622,7 +625,7 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
     InstallUIType ui_type,
     int expected_change) {
   return InstallOrUpdateExtension(id, path, ui_type, expected_change,
-                                  Manifest::INTERNAL, browser(),
+                                  ManifestLocation::kInternal, browser(),
                                   Extension::NO_FLAGS, true, false);
 }
 
@@ -634,8 +637,8 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
     Browser* browser,
     Extension::InitFromValueFlags creation_flags) {
   return InstallOrUpdateExtension(id, path, ui_type, expected_change,
-                                  Manifest::INTERNAL, browser, creation_flags,
-                                  true, false);
+                                  ManifestLocation::kInternal, browser,
+                                  creation_flags, true, false);
 }
 
 const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
@@ -643,7 +646,7 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
     const base::FilePath& path,
     InstallUIType ui_type,
     int expected_change,
-    Manifest::Location install_source) {
+    ManifestLocation install_source) {
   return InstallOrUpdateExtension(id, path, ui_type, expected_change,
                                   install_source, browser(),
                                   Extension::NO_FLAGS, true, false);
@@ -654,7 +657,7 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
     const base::FilePath& path,
     InstallUIType ui_type,
     int expected_change,
-    Manifest::Location install_source,
+    ManifestLocation install_source,
     Browser* browser,
     Extension::InitFromValueFlags creation_flags,
     bool install_immediately,
@@ -682,7 +685,7 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
       int run_flags = ExtensionCreator::kNoRunFlags;
       if (creation_flags & Extension::FROM_BOOKMARK) {
         run_flags = ExtensionCreator::kBookmarkApp;
-        if (install_source == Manifest::EXTERNAL_COMPONENT)
+        if (install_source == ManifestLocation::kExternalComponent)
           run_flags |= ExtensionCreator::kSystemApp;
       }
 
@@ -700,8 +703,7 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
         CrxInstaller::Create(extension_service(), std::move(install_ui)));
     installer->set_expected_id(id);
     installer->set_creation_flags(creation_flags);
-    installer->set_install_source(
-        static_cast<mojom::ManifestLocation>(install_source));
+    installer->set_install_source(install_source);
     installer->set_install_immediately(install_immediately);
     installer->set_allow_silent_install(grant_permissions);
     if (!installer->is_gallery_install()) {

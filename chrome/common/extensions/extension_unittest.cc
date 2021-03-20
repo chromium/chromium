@@ -46,16 +46,17 @@ namespace extensions {
 // We persist location values in the preferences, so this is a sanity test that
 // someone doesn't accidentally change them.
 TEST(ExtensionTest, LocationValuesTest) {
-  ASSERT_EQ(0, Manifest::INVALID_LOCATION);
-  ASSERT_EQ(1, Manifest::INTERNAL);
-  ASSERT_EQ(2, Manifest::EXTERNAL_PREF);
-  ASSERT_EQ(3, Manifest::EXTERNAL_REGISTRY);
-  ASSERT_EQ(4, Manifest::UNPACKED);
-  ASSERT_EQ(5, Manifest::COMPONENT);
-  ASSERT_EQ(6, Manifest::EXTERNAL_PREF_DOWNLOAD);
-  ASSERT_EQ(7, Manifest::EXTERNAL_POLICY_DOWNLOAD);
-  ASSERT_EQ(8, Manifest::COMMAND_LINE);
-  ASSERT_EQ(9, Manifest::EXTERNAL_POLICY);
+  ASSERT_EQ(0, static_cast<int>(ManifestLocation::kInvalidLocation));
+  ASSERT_EQ(1, static_cast<int>(ManifestLocation::kInternal));
+  ASSERT_EQ(2, static_cast<int>(ManifestLocation::kExternalPref));
+  ASSERT_EQ(3, static_cast<int>(ManifestLocation::kExternalRegistry));
+  ASSERT_EQ(4, static_cast<int>(ManifestLocation::kUnpacked));
+  ASSERT_EQ(5, static_cast<int>(ManifestLocation::kComponent));
+  ASSERT_EQ(6, static_cast<int>(ManifestLocation::kExternalPrefDownload));
+  ASSERT_EQ(7, static_cast<int>(ManifestLocation::kExternalPolicyDownload));
+  ASSERT_EQ(8, static_cast<int>(ManifestLocation::kCommandLine));
+  ASSERT_EQ(9, static_cast<int>(ManifestLocation::kExternalPolicy));
+  ASSERT_EQ(10, static_cast<int>(ManifestLocation::kExternalComponent));
 }
 
 TEST(ExtensionTest, LocationPriorityTest) {

@@ -216,7 +216,7 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
   void SetupApp(const base::FilePath& app_folder) {
     DCHECK_EQ(GetParam(), AppType::HOSTED_APP);
     const Extension* app = InstallExtensionWithSourceAndFlags(
-        app_folder, 1, extensions::Manifest::INTERNAL,
+        app_folder, 1, extensions::mojom::ManifestLocation::kInternal,
         app_type_ == AppType::HOSTED_APP
             ? extensions::Extension::NO_FLAGS
             : extensions::Extension::FROM_BOOKMARK);

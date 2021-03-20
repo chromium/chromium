@@ -105,18 +105,13 @@ void WebRequestActionWithThreadsTest::SetUp() {
   std::string error;
   extension_ = LoadManifestUnchecked("permissions",
                                      "web_request_com_host_permissions.json",
-                                     Manifest::INVALID_LOCATION,
-                                     Extension::NO_FLAGS,
-                                     "ext_id_1",
-                                     &error);
+                                     mojom::ManifestLocation::kInvalidLocation,
+                                     Extension::NO_FLAGS, "ext_id_1", &error);
   ASSERT_TRUE(extension_.get()) << error;
-  extension_all_urls_ =
-      LoadManifestUnchecked("permissions",
-                            "web_request_all_host_permissions.json",
-                            Manifest::INVALID_LOCATION,
-                            Extension::NO_FLAGS,
-                            "ext_id_2",
-                            &error);
+  extension_all_urls_ = LoadManifestUnchecked(
+      "permissions", "web_request_all_host_permissions.json",
+      mojom::ManifestLocation::kInvalidLocation, Extension::NO_FLAGS,
+      "ext_id_2", &error);
   ASSERT_TRUE(extension_all_urls_.get()) << error;
   ExtensionRegistry::Get(browser_context())->AddEnabled(extension_);
   ExtensionRegistry::Get(browser_context())->AddEnabled(extension_all_urls_);

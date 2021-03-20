@@ -39,6 +39,7 @@
 
 using extensions::Extension;
 using extensions::Manifest;
+using extensions::mojom::ManifestLocation;
 
 namespace {
 
@@ -97,7 +98,7 @@ class ExtensionManagementApiTest : public extensions::ExtensionApiTest {
 
   void InstallNamedExtension(const base::FilePath& path,
                              const std::string& name,
-                             Manifest::Location install_source) {
+                             ManifestLocation install_source) {
     const Extension* extension = InstallExtension(path.AppendASCII(name), 1,
                                                   install_source);
     ASSERT_TRUE(extension);
@@ -112,12 +113,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiTest, Basics) {
   LoadExtensions();
 
   base::FilePath basedir = test_data_dir_.AppendASCII("management");
-  InstallNamedExtension(basedir, "internal_extension", Manifest::INTERNAL);
+  InstallNamedExtension(basedir, "internal_extension",
+                        ManifestLocation::kInternal);
   InstallNamedExtension(basedir, "external_extension",
-                        Manifest::EXTERNAL_PREF);
+                        ManifestLocation::kExternalPref);
   InstallNamedExtension(basedir, "admin_extension",
-                        Manifest::EXTERNAL_POLICY_DOWNLOAD);
-  InstallNamedExtension(basedir, "version_name", Manifest::INTERNAL);
+                        ManifestLocation::kExternalPolicyDownload);
+  InstallNamedExtension(basedir, "version_name", ManifestLocation::kInternal);
 
   ASSERT_TRUE(RunExtensionSubtest("management/test", "basics.html"));
 }

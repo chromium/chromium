@@ -62,7 +62,7 @@ constexpr const char kPrefRunning[] = "running";
 // Whether this extension had windows when it was last running.
 constexpr const char kIsActive[] = "is_active";
 
-// Where an extension was installed from. (see Manifest::Location)
+// Where an extension was installed from. (see mojom::ManifestLocation)
 constexpr const char kPrefLocation[] = "location";
 
 // Enabled, disabled, killed, etc. (see Extension::State)
@@ -736,7 +736,7 @@ bool ExtensionPrefs::ReadPrefAsURLPatternSet(const std::string& extension_id,
     return false;
   int location;
   if (extension->GetInteger(kPrefLocation, &location) &&
-      static_cast<Manifest::Location>(location) == Manifest::COMPONENT) {
+      static_cast<ManifestLocation>(location) == ManifestLocation::kComponent) {
     valid_schemes |= URLPattern::SCHEME_CHROMEUI;
   }
 
@@ -1544,7 +1544,7 @@ void ExtensionPrefs::UpdateManifest(const Extension* extension) {
 }
 
 void ExtensionPrefs::SetInstallLocation(const std::string& extension_id,
-                                        mojom::ManifestLocation location) {
+                                        ManifestLocation location) {
   UpdateExtensionPref(
       extension_id, kPrefLocation,
       std::make_unique<base::Value>(static_cast<int>(location)));
@@ -2716,8 +2716,7 @@ void ExtensionPrefs::MigrateToNewWithholdingPref() {
     // from.
     Manifest::Type type =
         Manifest::GetTypeFromManifestValue(*info->extension_manifest);
-    ManifestLocation location =
-        static_cast<ManifestLocation>(info->extension_location);
+    ManifestLocation location = info->extension_location;
     if (!util::CanWithholdPermissionsFromExtension(extension_id, type,
                                                    location))
       continue;

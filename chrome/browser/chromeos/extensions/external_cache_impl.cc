@@ -268,8 +268,9 @@ void ExternalCacheImpl::CheckCache() {
 
       if (update_url.is_valid()) {
         downloader_->AddPendingExtensionWithVersion(
-            entry.first, update_url, extensions::Manifest::EXTERNAL_POLICY,
-            false, 0, extensions::ManifestFetchData::FetchPriority::BACKGROUND,
+            entry.first, update_url,
+            extensions::mojom::ManifestLocation::kExternalPolicy, false, 0,
+            extensions::ManifestFetchData::FetchPriority::BACKGROUND,
             base::Version(version), extensions::Manifest::TYPE_UNKNOWN,
             std::string());
       }

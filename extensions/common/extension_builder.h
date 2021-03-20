@@ -151,7 +151,7 @@ class ExtensionBuilder {
   // Defaults to FilePath().
   ExtensionBuilder& SetPath(const base::FilePath& path);
 
-  // Defaults to Manifest::UNPACKED.
+  // Defaults to mojom::ManifestLocation::kUnpacked.
   ExtensionBuilder& SetLocation(mojom::ManifestLocation location);
 
   // Merge another manifest into the current manifest, with new keys taking

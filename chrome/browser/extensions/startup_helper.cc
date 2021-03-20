@@ -128,7 +128,7 @@ class ValidateCrxHelper : public SandboxedUnpackerClient {
   void StartOnBlockingThread() {
     DCHECK(GetExtensionFileTaskRunner()->RunsTasksInCurrentSequence());
     auto unpacker = base::MakeRefCounted<SandboxedUnpacker>(
-        Manifest::INTERNAL, 0, /* no special creation flags */
+        mojom::ManifestLocation::kInternal, 0, /* no special creation flags */
         temp_dir_, GetExtensionFileTaskRunner().get(), this);
     unpacker->StartWithCrx(crx_file_);
   }

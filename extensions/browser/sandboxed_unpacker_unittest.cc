@@ -170,9 +170,10 @@ class SandboxedUnpackerTest : public ExtensionsTest {
   }
 
   void InitSandboxedUnpacker() {
-    sandboxed_unpacker_ = new SandboxedUnpacker(
-        Manifest::INTERNAL, Extension::NO_FLAGS, extensions_dir_.GetPath(),
-        base::ThreadTaskRunnerHandle::Get(), client_);
+    sandboxed_unpacker_ =
+        new SandboxedUnpacker(mojom::ManifestLocation::kInternal,
+                              Extension::NO_FLAGS, extensions_dir_.GetPath(),
+                              base::ThreadTaskRunnerHandle::Get(), client_);
   }
 
   void TearDown() override {

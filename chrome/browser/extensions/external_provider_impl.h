@@ -37,7 +37,7 @@ class ExternalProviderImpl : public ExternalProviderInterface {
   // |crx_location|: extensions originating from crx files
   // |download_location|: extensions originating from update URLs
   // If either of the origins is not supported by this provider, then it should
-  // be initialized as Manifest::INVALID_LOCATION.
+  // be initialized as mojom::ManifestLocation::kInvalidLocation.
   ExternalProviderImpl(VisitorInterface* service,
                        const scoped_refptr<ExternalLoader>& loader,
                        Profile* profile,

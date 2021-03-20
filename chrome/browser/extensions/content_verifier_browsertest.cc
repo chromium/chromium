@@ -291,8 +291,8 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest, PolicyCorrupted) {
 
   base::FilePath crx_path =
       test_data_dir_.AppendASCII("content_verifier/v1.crx");
-  const Extension* extension =
-      InstallExtension(crx_path, 1, Manifest::EXTERNAL_POLICY_DOWNLOAD);
+  const Extension* extension = InstallExtension(
+      crx_path, 1, mojom::ManifestLocation::kExternalPolicyDownload);
   ASSERT_TRUE(extension);
 
   TestExtensionRegistryObserver registry_observer(

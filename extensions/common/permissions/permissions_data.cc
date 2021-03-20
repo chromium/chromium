@@ -75,7 +75,7 @@ class AutoLockOnValidThread {
 PermissionsData::PermissionsData(
     const ExtensionId& extension_id,
     Manifest::Type manifest_type,
-    Manifest::Location location,
+    mojom::ManifestLocation location,
     std::unique_ptr<const PermissionSet> initial_permissions)
     : extension_id_(extension_id),
       manifest_type_(manifest_type),
@@ -106,8 +106,7 @@ bool PermissionsData::CanExecuteScriptEverywhere(
 
 bool PermissionsData::IsRestrictedUrl(const GURL& document_url,
                                       std::string* error) const {
-  if (CanExecuteScriptEverywhere(
-          extension_id_, static_cast<mojom::ManifestLocation>(location_)))
+  if (CanExecuteScriptEverywhere(extension_id_, location_))
     return false;
 
   if (g_policy_delegate &&
@@ -391,7 +390,7 @@ bool PermissionsData::CanCaptureVisiblePage(
     // blocked host in a different page and then capture that, but it's better
     // than nothing (and policy hosts can set their x-frame options
     // accordingly).
-    if (location_ != Manifest::COMPONENT &&
+    if (location_ != mojom::ManifestLocation::kComponent &&
         IsPolicyBlockedHostUnsafe(origin_url)) {
       if (error)
         *error = extension_misc::kPolicyBlockedScripting;
@@ -528,7 +527,7 @@ PermissionsData::PageAccess PermissionsData::CanRunOnPage(
     const URLPatternSet* tab_url_patterns,
     std::string* error) const {
   runtime_lock_.AssertAcquired();
-  if (location_ != Manifest::COMPONENT &&
+  if (location_ != mojom::ManifestLocation::kComponent &&
       IsPolicyBlockedHostUnsafe(document_url)) {
     if (error)
       *error = extension_misc::kPolicyBlockedScripting;

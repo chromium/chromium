@@ -121,7 +121,7 @@ class RemoteAppsImplBrowsertest : public policy::DevicePolicyCrosBrowserTest {
         ->SetIdGeneratorForTesting(std::move(id_generator));
 
     extensions::ChromeTestExtensionLoader loader(profile);
-    loader.set_location(extensions::Manifest::EXTERNAL_POLICY);
+    loader.set_location(extensions::mojom::ManifestLocation::kExternalPolicy);
     loader.set_pack_extension(true);
     loader.set_pem_path(pem_path);
     // When |set_pack_extension_| is true, the |loader| first packs and then

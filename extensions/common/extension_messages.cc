@@ -27,6 +27,7 @@ using extensions::ManifestPermission;
 using extensions::ManifestPermissionSet;
 using extensions::PermissionSet;
 using extensions::URLPatternSet;
+using extensions::mojom::ManifestLocation;
 
 ExtensionMsg_PermissionSetStruct::ExtensionMsg_PermissionSetStruct() {
 }
@@ -55,7 +56,7 @@ ExtensionMsg_PermissionSetStruct::ToPermissionSet() const {
 }
 
 ExtensionMsg_Loaded_Params::ExtensionMsg_Loaded_Params()
-    : location(Manifest::INVALID_LOCATION),
+    : location(ManifestLocation::kInvalidLocation),
       creation_flags(Extension::NO_FLAGS) {}
 
 ExtensionMsg_Loaded_Params::~ExtensionMsg_Loaded_Params() {}
@@ -66,8 +67,7 @@ ExtensionMsg_Loaded_Params::ExtensionMsg_Loaded_Params(
     base::Optional<ActivationSequence> worker_activation_sequence)
     : manifest(static_cast<base::DictionaryValue&&>(
           extension->manifest()->value()->Clone())),
-      location(
-          static_cast<extensions::Manifest::Location>(extension->location())),
+      location(extension->location()),
       path(extension->path()),
       active_permissions(extension->permissions_data()->active_permissions()),
       withheld_permissions(
@@ -102,9 +102,8 @@ scoped_refptr<Extension> ExtensionMsg_Loaded_Params::ConvertToExtension(
   // We pass in the |id| to the create call because it will save work in the
   // normal case, and because in tests, extensions may not have paths or keys,
   // but it's important to retain the same id.
-  scoped_refptr<Extension> extension = Extension::Create(
-      path, static_cast<extensions::mojom::ManifestLocation>(location),
-      manifest, creation_flags, id, error);
+  scoped_refptr<Extension> extension =
+      Extension::Create(path, location, manifest, creation_flags, id, error);
   if (extension.get()) {
     const extensions::PermissionsData* permissions_data =
         extension->permissions_data();

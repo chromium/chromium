@@ -20,6 +20,8 @@
 #include "extensions/common/verifier_formats.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using extensions::mojom::ManifestLocation;
+
 namespace extensions {
 
 namespace {
@@ -115,7 +117,7 @@ const Extension* ExtensionServiceTestWithInstall::PackAndInstallCRX(
     const base::FilePath& pem_path,
     InstallState install_state,
     int creation_flags,
-    Manifest::Location install_location) {
+    ManifestLocation install_location) {
   base::FilePath crx_path;
   base::ScopedTempDir temp_dir;
   EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -130,19 +132,19 @@ const Extension* ExtensionServiceTestWithInstall::PackAndInstallCRX(
     const base::FilePath& pem_path,
     InstallState install_state) {
   return PackAndInstallCRX(dir_path, pem_path, install_state,
-                           Extension::NO_FLAGS, Manifest::Location::INTERNAL);
+                           Extension::NO_FLAGS, ManifestLocation::kInternal);
 }
 
 const Extension* ExtensionServiceTestWithInstall::PackAndInstallCRX(
     const base::FilePath& dir_path,
     InstallState install_state) {
   return PackAndInstallCRX(dir_path, base::FilePath(), install_state,
-                           Extension::NO_FLAGS, Manifest::Location::INTERNAL);
+                           Extension::NO_FLAGS, ManifestLocation::kInternal);
 }
 
 const Extension* ExtensionServiceTestWithInstall::PackAndInstallCRX(
     const base::FilePath& dir_path,
-    Manifest::Location install_location,
+    ManifestLocation install_location,
     InstallState install_state) {
   return PackAndInstallCRX(dir_path, base::FilePath(), install_state,
                            Extension::NO_FLAGS, install_location);
@@ -158,14 +160,14 @@ const Extension* ExtensionServiceTestWithInstall::InstallCRX(
     InstallState install_state,
     int creation_flags,
     const std::string& expected_old_name) {
-  InstallCRXInternal(path, Manifest::Location::INTERNAL, install_state,
+  InstallCRXInternal(path, ManifestLocation::kInternal, install_state,
                      creation_flags);
   return VerifyCrxInstall(path, install_state);
 }
 
 const Extension* ExtensionServiceTestWithInstall::InstallCRX(
     const base::FilePath& path,
-    Manifest::Location install_location,
+    ManifestLocation install_location,
     InstallState install_state,
     int creation_flags) {
   InstallCRXInternal(path, install_location, install_state, creation_flags);
@@ -192,7 +194,7 @@ const Extension* ExtensionServiceTestWithInstall::InstallCRX(
 const Extension* ExtensionServiceTestWithInstall::InstallCRXFromWebStore(
     const base::FilePath& path,
     InstallState install_state) {
-  InstallCRXInternal(path, Manifest::Location::INTERNAL, install_state,
+  InstallCRXInternal(path, ManifestLocation::kInternal, install_state,
                      Extension::FROM_WEBSTORE);
   return VerifyCrxInstall(path, install_state);
 }
@@ -407,7 +409,7 @@ void ExtensionServiceTestWithInstall::OnExtensionWillBeInstalled(
 // error checking.
 void ExtensionServiceTestWithInstall::InstallCRXInternal(
     const base::FilePath& crx_path,
-    Manifest::Location install_location,
+    ManifestLocation install_location,
     InstallState install_state,
     int creation_flags) {
   ChromeTestExtensionLoader extension_loader(profile());

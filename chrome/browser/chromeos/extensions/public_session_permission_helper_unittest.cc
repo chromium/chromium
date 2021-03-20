@@ -45,9 +45,10 @@ const char kNonWhitelistedId[] = "bogus";
 
 scoped_refptr<Extension> LoadManifestHelper(const std::string& id) {
   std::string error;
-  scoped_refptr<Extension> extension = LoadManifestUnchecked(
-      "common/background_page", "manifest.json", Manifest::INVALID_LOCATION,
-      Extension::NO_FLAGS, id, &error);
+  scoped_refptr<Extension> extension =
+      LoadManifestUnchecked("common/background_page", "manifest.json",
+                            mojom::ManifestLocation::kInvalidLocation,
+                            Extension::NO_FLAGS, id, &error);
   EXPECT_TRUE(extension.get()) << error;
   return extension;
 }

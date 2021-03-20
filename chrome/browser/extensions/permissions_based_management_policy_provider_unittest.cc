@@ -56,7 +56,7 @@ class PermissionsBasedManagementPolicyProviderTest : public testing::Test {
   // Create an extension with specified |location|, |required_permissions| and
   // |optional_permissions|.
   scoped_refptr<const Extension> CreateExtensionWithPermission(
-      Manifest::Location location,
+      mojom::ManifestLocation location,
       const base::ListValue* required_permissions,
       const base::ListValue* optional_permissions) {
     base::DictionaryValue manifest_dict;
@@ -73,8 +73,7 @@ class PermissionsBasedManagementPolicyProviderTest : public testing::Test {
     }
     std::string error;
     scoped_refptr<const Extension> extension = Extension::Create(
-        base::FilePath(), static_cast<mojom::ManifestLocation>(location),
-        manifest_dict, Extension::NO_FLAGS, &error);
+        base::FilePath(), location, manifest_dict, Extension::NO_FLAGS, &error);
     CHECK(extension.get()) << error;
     return extension;
   }
@@ -101,10 +100,9 @@ TEST_F(PermissionsBasedManagementPolicyProviderTest, APIPermissions) {
   optional_permissions.AppendString(
       GetAPIPermissionName(APIPermission::kProxy));
 
-  scoped_refptr<const Extension> extension =
-      CreateExtensionWithPermission(Manifest::EXTERNAL_POLICY_DOWNLOAD,
-                                    &required_permissions,
-                                    &optional_permissions);
+  scoped_refptr<const Extension> extension = CreateExtensionWithPermission(
+      mojom::ManifestLocation::kExternalPolicyDownload, &required_permissions,
+      &optional_permissions);
 
   std::u16string error16;
   // The extension should be allowed to be loaded by default.

@@ -222,7 +222,7 @@ class ComponentLoader {
 
   ExtensionSystem* extension_system_;
 
-  // List of registered component extensions (see Manifest::Location).
+  // List of registered component extensions (see mojom::ManifestLocation).
   typedef std::vector<ComponentExtensionInfo> RegisteredComponentExtensions;
   RegisteredComponentExtensions component_extensions_;
 

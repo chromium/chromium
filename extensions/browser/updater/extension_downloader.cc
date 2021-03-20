@@ -259,7 +259,7 @@ ExtensionDownloader::~ExtensionDownloader() = default;
 bool ExtensionDownloader::AddPendingExtension(
     const std::string& id,
     const GURL& update_url,
-    Manifest::Location install_location,
+    mojom::ManifestLocation install_location,
     bool is_corrupt_reinstall,
     int request_id,
     ManifestFetchData::FetchPriority fetch_priority) {
@@ -275,7 +275,7 @@ bool ExtensionDownloader::AddPendingExtension(
 bool ExtensionDownloader::AddPendingExtensionWithVersion(
     const std::string& id,
     const GURL& update_url,
-    Manifest::Location install_location,
+    mojom::ManifestLocation install_location,
     bool is_corrupt_reinstall,
     int request_id,
     ManifestFetchData::FetchPriority fetch_priority,
@@ -339,7 +339,7 @@ bool ExtensionDownloader::AddExtensionData(
     const std::string& id,
     const base::Version& version,
     Manifest::Type extension_type,
-    Manifest::Location extension_location,
+    mojom::ManifestLocation extension_location,
     const GURL& extension_update_url,
     const ExtraParams& extra,
     int request_id,
@@ -415,7 +415,7 @@ bool ExtensionDownloader::AddExtensionData(
   // Find or create a ManifestFetchData to add this extension to.
   bool added = false;
   bool is_new_extension_force_installed =
-      extension_location == Manifest::Location::EXTERNAL_POLICY_DOWNLOAD;
+      extension_location == mojom::ManifestLocation::kExternalPolicyDownload;
   FetchDataGroupKey key(request_id, update_url,
                         is_new_extension_force_installed);
   auto existing_iter = fetches_preparing_.find(key);

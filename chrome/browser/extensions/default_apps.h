@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 
 class Profile;
 

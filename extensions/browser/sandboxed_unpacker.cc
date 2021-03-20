@@ -181,20 +181,20 @@ SandboxedUnpacker::ScopedVerifierFormatOverrideForTest::
 }
 
 SandboxedUnpacker::SandboxedUnpacker(
-    Manifest::Location location,
+    mojom::ManifestLocation location,
     int creation_flags,
     const base::FilePath& extensions_dir,
     const scoped_refptr<base::SequencedTaskRunner>& unpacker_io_task_runner,
     SandboxedUnpackerClient* client)
     : client_(client),
       extensions_dir_(extensions_dir),
-      location_(static_cast<mojom::ManifestLocation>(location)),
+      location_(location),
       creation_flags_(creation_flags),
       unpacker_io_task_runner_(unpacker_io_task_runner) {
   // Tracking for crbug.com/692069. The location must be valid. If it's invalid,
   // the utility process kills itself for a bad IPC.
-  CHECK_GT(location, Manifest::INVALID_LOCATION);
-  CHECK_LT(location, Manifest::NUM_LOCATIONS);
+  CHECK_GT(location, mojom::ManifestLocation::kInvalidLocation);
+  CHECK_LE(location, mojom::ManifestLocation::kMaxValue);
 }
 
 bool SandboxedUnpacker::CreateTempDirectory() {

@@ -181,27 +181,6 @@ class AvailableValuesFilter {
   }
 };
 
-// Verifies that extensions::Manifest::Location and
-// extensions::ManifestLocation are kept in sync.
-// This static asserts will be removed after replacing all Manifest::Location
-// enum with ManifestLocation Mojo enum.
-#define STATIC_ASSERT_ENUM(native, mojo)                        \
-  static_assert(static_cast<int>(Manifest::Location::native) == \
-                    static_cast<int>(ManifestLocation::mojo),   \
-                "mismatching enums: Manifest::Location::" #native)
-
-STATIC_ASSERT_ENUM(INVALID_LOCATION, kInvalidLocation);
-STATIC_ASSERT_ENUM(INTERNAL, kInternal);
-STATIC_ASSERT_ENUM(EXTERNAL_PREF, kExternalPref);
-STATIC_ASSERT_ENUM(EXTERNAL_REGISTRY, kExternalRegistry);
-STATIC_ASSERT_ENUM(UNPACKED, kUnpacked);
-STATIC_ASSERT_ENUM(COMPONENT, kComponent);
-STATIC_ASSERT_ENUM(EXTERNAL_PREF_DOWNLOAD, kExternalPrefDownload);
-STATIC_ASSERT_ENUM(EXTERNAL_POLICY_DOWNLOAD, kExternalPolicyDownload);
-STATIC_ASSERT_ENUM(COMMAND_LINE, kCommandLine);
-STATIC_ASSERT_ENUM(EXTERNAL_POLICY, kExternalPolicy);
-STATIC_ASSERT_ENUM(EXTERNAL_COMPONENT, kExternalComponent);
-
 }  // namespace
 
 // static

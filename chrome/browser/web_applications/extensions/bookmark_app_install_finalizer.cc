@@ -73,7 +73,7 @@ void BookmarkAppInstallFinalizer::FinalizeInstall(
 
   switch (options.install_source) {
       // TODO(nigeltao/ortuno): should these two cases lead to different
-      // Manifest::Location values: INTERNAL vs EXTERNAL_PREF_DOWNLOAD?
+      // mojom::ManifestLocation values: kInternal vs kExternalPrefDownload?
     case webapps::WebappInstallSource::INTERNAL_DEFAULT:
     case webapps::WebappInstallSource::EXTERNAL_DEFAULT:
       crx_installer->set_install_source(

@@ -187,7 +187,7 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
 
   std::unique_ptr<developer::ExtensionInfo> CreateExtensionInfoFromPath(
       const base::FilePath& extension_path,
-      Manifest::Location location) {
+      mojom::ManifestLocation location) {
     ChromeTestExtensionLoader loader(browser_context());
     loader.set_location(location);
     loader.set_creation_flags(Extension::REQUIRE_KEY);
@@ -209,7 +209,8 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
 
     // Produce test output.
     std::unique_ptr<developer::ExtensionInfo> info =
-        CreateExtensionInfoFromPath(extension_path, Manifest::UNPACKED);
+        CreateExtensionInfoFromPath(extension_path,
+                                    mojom::ManifestLocation::kUnpacked);
     info->views = std::move(views);
     std::unique_ptr<base::DictionaryValue> actual_output_data = info->ToValue();
     ASSERT_TRUE(actual_output_data);

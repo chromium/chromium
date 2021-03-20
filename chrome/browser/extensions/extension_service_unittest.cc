@@ -1026,9 +1026,9 @@ TEST_F(ExtensionServiceTest, ReloadExtensionWithPendingImports) {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
 
   // Install version 1.
-  const Extension* extension =
-      PackAndInstallCRX(installed_path, pem_path, INSTALL_NEW,
-                        Extension::FROM_WEBSTORE, Manifest::Location::INTERNAL);
+  const Extension* extension = PackAndInstallCRX(
+      installed_path, pem_path, INSTALL_NEW, Extension::FROM_WEBSTORE,
+      mojom::ManifestLocation::kInternal);
   content::RunAllTasksUntilIdle();
   ASSERT_TRUE(extension);
   const std::string id = extension->id();
@@ -1953,7 +1953,7 @@ TEST_F(ExtensionServiceTest, DefaultAppsGrantedPermissions) {
 
   const Extension* extension = PackAndInstallCRX(
       path, pem_path, INSTALL_NEW, Extension::WAS_INSTALLED_BY_DEFAULT,
-      Manifest::Location::INTERNAL);
+      mojom::ManifestLocation::kInternal);
 
   EXPECT_EQ(0u, GetErrors().size());
   ASSERT_EQ(1u, registry()->enabled_extensions().size());
@@ -3009,8 +3009,9 @@ TEST_F(ExtensionServiceTest, UpdateExtensionPreservesLocation) {
   InitializeEmptyExtensionService();
   base::FilePath path = data_dir().AppendASCII("good.crx");
 
-  const Extension* good = InstallCRX(path, Manifest::EXTERNAL_PREF, INSTALL_NEW,
-                                     Extension::NO_FLAGS);
+  const Extension* good =
+      InstallCRX(path, mojom::ManifestLocation::kExternalPref, INSTALL_NEW,
+                 Extension::NO_FLAGS);
 
   ASSERT_EQ("1.0.0.0", good->VersionString());
   ASSERT_EQ(good_crx, good->id());
@@ -6537,8 +6538,8 @@ TEST_F(ExtensionServiceTest, InstallPriorityExternalLocalFile) {
 
   // The test below uses install source constants to test that
   // priority is enforced.  It assumes a specific ranking of install
-  // sources: Registry (EXTERNAL_REGISTRY) overrides external pref
-  // (EXTERNAL_PREF), and external pref overrides user install (INTERNAL).
+  // sources: Registry (kExternalRegistry) overrides external pref
+  // (kExternalPref), and external pref overrides user install (kInternal).
   // The following assertions verify these assumptions:
   ASSERT_EQ(
       ManifestLocation::kExternalRegistry,
@@ -6559,7 +6560,7 @@ TEST_F(ExtensionServiceTest, InstallPriorityExternalLocalFile) {
                                ManifestLocation::kInternal, kCreationFlags,
                                kDontMarkAcknowledged, kDontInstallImmediately);
   {
-    // Simulate an external source adding the extension as INTERNAL.
+    // Simulate an external source adding the extension as kInternal.
     content::WindowedNotificationObserver observer(
         NOTIFICATION_CRX_INSTALLER_DONE,
         content::NotificationService::AllSources());
@@ -6570,7 +6571,7 @@ TEST_F(ExtensionServiceTest, InstallPriorityExternalLocalFile) {
   }
 
   {
-    // Simulate an external source adding the extension as EXTERNAL_PREF.
+    // Simulate an external source adding the extension as kExternalPref.
     content::WindowedNotificationObserver observer(
         NOTIFICATION_CRX_INSTALLER_DONE,
         content::NotificationService::AllSources());
@@ -6667,7 +6668,7 @@ TEST_F(ExtensionServiceTest, InstallPriorityExternalLocalFile) {
   EXPECT_TRUE(service()->OnExternalExtensionFileFound(info));
   EXPECT_TRUE(pending->IsIdPending(kGoodId));
 
-  // Because EXTERNAL_PREF is a lower priority source than EXTERNAL_REGISTRY,
+  // Because kExternalPref is a lower priority source than kExternalRegistry,
   // adding from external pref will now fail.
   info.crx_location = ManifestLocation::kExternalPref;
   EXPECT_FALSE(service()->OnExternalExtensionFileFound(info));
@@ -7900,7 +7901,7 @@ TEST_F(ExtensionServiceTest, UserInstalledExtensionThenRequiredByPolicy) {
   // remain installed.
   EXPECT_TRUE(policy->MustRemainInstalled(extension, nullptr));
   // TODO(devlin): This currently doesn't work, because the extension is still
-  // installed with Manifest::Location INTERNAL.
+  // installed with mojom::ManifestLocation kInternal.
   // EXPECT_FALSE(policy->UserMayModifySettings(extension, nullptr));
 
   EXPECT_TRUE(registry()->enabled_extensions().GetByID(good_crx));

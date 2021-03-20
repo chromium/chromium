@@ -15,6 +15,7 @@
 #include "base/threading/thread_checker.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permission_message.h"
 #include "extensions/common/permissions/permission_set.h"
@@ -76,7 +77,7 @@ class PermissionsData {
 
   PermissionsData(const ExtensionId& extension_id,
                   Manifest::Type manifest_type,
-                  Manifest::Location location,
+                  mojom::ManifestLocation location,
                   std::unique_ptr<const PermissionSet> initial_permissions);
   virtual ~PermissionsData();
 
@@ -310,7 +311,7 @@ class PermissionsData {
   Manifest::Type manifest_type_;
 
   // The associated extension's location.
-  Manifest::Location location_;
+  mojom::ManifestLocation location_;
 
   mutable base::Lock runtime_lock_;
 

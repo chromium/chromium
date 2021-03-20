@@ -399,7 +399,7 @@ class ExtensionPrefsVersionString : public ExtensionPrefsTest {
     extension = prefs_.AddExtension("test");
     EXPECT_EQ("0.1", prefs()->GetVersionString(extension->id()));
     prefs()->OnExtensionUninstalled(extension->id(),
-                                    mojom::ManifestLocation::kInternal, false);
+                                    ManifestLocation::kInternal, false);
   }
 
   void Verify() override {
@@ -599,8 +599,8 @@ class ExtensionPrefsFinishDelayedInstallInfo : public ExtensionPrefsTest {
     dictionary.SetString(manifest_keys::kVersion, "0.1");
     dictionary.SetInteger(manifest_keys::kManifestVersion, 2);
     dictionary.SetString(manifest_keys::kBackgroundPage, "background.html");
-    scoped_refptr<Extension> extension =
-        prefs_.AddExtensionWithManifest(dictionary, Manifest::INTERNAL);
+    scoped_refptr<Extension> extension = prefs_.AddExtensionWithManifest(
+        dictionary, ManifestLocation::kInternal);
     id_ = extension->id();
 
 
@@ -685,7 +685,7 @@ class ExtensionPrefsFlags : public ExtensionPrefsTest {
       dictionary.SetString(manifest_keys::kVersion, "0.1");
       dictionary.SetInteger(manifest_keys::kManifestVersion, 2);
       webstore_extension_ = prefs_.AddExtensionWithManifestAndFlags(
-          dictionary, Manifest::INTERNAL, Extension::FROM_WEBSTORE);
+          dictionary, ManifestLocation::kInternal, Extension::FROM_WEBSTORE);
     }
 
     {
@@ -694,7 +694,7 @@ class ExtensionPrefsFlags : public ExtensionPrefsTest {
       dictionary.SetString(manifest_keys::kVersion, "0.1");
       dictionary.SetInteger(manifest_keys::kManifestVersion, 2);
       bookmark_extension_ = prefs_.AddExtensionWithManifestAndFlags(
-          dictionary, Manifest::INTERNAL, Extension::FROM_BOOKMARK);
+          dictionary, ManifestLocation::kInternal, Extension::FROM_BOOKMARK);
     }
 
     {
@@ -703,8 +703,7 @@ class ExtensionPrefsFlags : public ExtensionPrefsTest {
       dictionary.SetString(manifest_keys::kVersion, "0.1");
       dictionary.SetInteger(manifest_keys::kManifestVersion, 2);
       default_extension_ = prefs_.AddExtensionWithManifestAndFlags(
-          dictionary,
-          Manifest::INTERNAL,
+          dictionary, ManifestLocation::kInternal,
           Extension::WAS_INSTALLED_BY_DEFAULT);
     }
 
@@ -714,7 +713,8 @@ class ExtensionPrefsFlags : public ExtensionPrefsTest {
       dictionary.SetString(manifest_keys::kVersion, "0.1");
       dictionary.SetInteger(manifest_keys::kManifestVersion, 2);
       oem_extension_ = prefs_.AddExtensionWithManifestAndFlags(
-          dictionary, Manifest::INTERNAL, Extension::WAS_INSTALLED_BY_OEM);
+          dictionary, ManifestLocation::kInternal,
+          Extension::WAS_INSTALLED_BY_OEM);
     }
   }
 
@@ -1145,34 +1145,35 @@ class ExtensionPrefsIsExternalExtensionUninstalled : public ExtensionPrefsTest {
     uninstalled_external_id_ =
         prefs_
             .AddExtensionWithLocation("external uninstall",
-                                      Manifest::EXTERNAL_PREF)
+                                      ManifestLocation::kExternalPref)
             ->id();
     uninstalled_by_program_external_id_ =
         prefs_
             .AddExtensionWithLocation("external uninstall by program",
-                                      Manifest::EXTERNAL_PREF)
+                                      ManifestLocation::kExternalPref)
             ->id();
     installed_external_id_ =
         prefs_
             .AddExtensionWithLocation("external install",
-                                      Manifest::EXTERNAL_PREF)
+                                      ManifestLocation::kExternalPref)
             ->id();
     uninstalled_internal_id_ =
         prefs_
-            .AddExtensionWithLocation("internal uninstall", Manifest::INTERNAL)
+            .AddExtensionWithLocation("internal uninstall",
+                                      ManifestLocation::kInternal)
             ->id();
     installed_internal_id_ =
-        prefs_.AddExtensionWithLocation("internal install", Manifest::INTERNAL)
+        prefs_
+            .AddExtensionWithLocation("internal install",
+                                      ManifestLocation::kInternal)
             ->id();
 
     prefs()->OnExtensionUninstalled(uninstalled_external_id_,
-                                    mojom::ManifestLocation::kExternalPref,
-                                    false);
+                                    ManifestLocation::kExternalPref, false);
     prefs()->OnExtensionUninstalled(uninstalled_by_program_external_id_,
-                                    mojom::ManifestLocation::kExternalPref,
-                                    true);
+                                    ManifestLocation::kExternalPref, true);
     prefs()->OnExtensionUninstalled(uninstalled_internal_id_,
-                                    mojom::ManifestLocation::kInternal, false);
+                                    ManifestLocation::kInternal, false);
   }
 
   void Verify() override {
@@ -1220,7 +1221,7 @@ TEST_F(ExtensionPrefsSimpleTest, OldWithholdingPrefMigration) {
   std::string force_installed_id =
       prefs
           .AddExtensionWithLocation("Force installed",
-                                    Manifest::EXTERNAL_POLICY)
+                                    ManifestLocation::kExternalPolicy)
           ->id();
 
   // We need to explicitly remove the default value for the new pref as it is
@@ -1295,10 +1296,11 @@ TEST_F(ExtensionPrefsSimpleTest, MigrateToNewExternalUninstallBits) {
   std::string external_extension =
       prefs
           .AddExtensionWithLocation("external uninstall",
-                                    Manifest::EXTERNAL_PREF)
+                                    ManifestLocation::kExternalPref)
           ->id();
   std::string internal_extension =
-      prefs.AddExtensionWithLocation("internal", Manifest::INTERNAL)->id();
+      prefs.AddExtensionWithLocation("internal", ManifestLocation::kInternal)
+          ->id();
 
   EXPECT_TRUE(has_extension_pref_entry(external_extension));
   EXPECT_TRUE(has_extension_pref_entry(internal_extension));

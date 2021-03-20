@@ -238,17 +238,13 @@ void WebRequestRulesRegistryTest::SetUp() {
   std::string error;
   extension_ = LoadManifestUnchecked("permissions",
                                      "web_request_all_host_permissions.json",
-                                     Manifest::INVALID_LOCATION,
-                                     Extension::NO_FLAGS,
-                                     kExtensionId,
-                                     &error);
+                                     mojom::ManifestLocation::kInvalidLocation,
+                                     Extension::NO_FLAGS, kExtensionId, &error);
   ASSERT_TRUE(extension_.get()) << error;
-  extension2_ = LoadManifestUnchecked("permissions",
-                                      "web_request_all_host_permissions.json",
-                                      Manifest::INVALID_LOCATION,
-                                      Extension::NO_FLAGS,
-                                      kExtensionId2,
-                                      &error);
+  extension2_ = LoadManifestUnchecked(
+      "permissions", "web_request_all_host_permissions.json",
+      mojom::ManifestLocation::kInvalidLocation, Extension::NO_FLAGS,
+      kExtensionId2, &error);
   ASSERT_TRUE(extension2_.get()) << error;
   CHECK(ExtensionRegistry::Get(&profile_));
   ExtensionRegistry::Get(&profile_)->AddEnabled(extension_);

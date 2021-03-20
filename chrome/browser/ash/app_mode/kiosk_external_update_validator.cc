@@ -29,8 +29,9 @@ KioskExternalUpdateValidator::~KioskExternalUpdateValidator() {
 
 void KioskExternalUpdateValidator::Start() {
   auto unpacker = base::MakeRefCounted<extensions::SandboxedUnpacker>(
-      extensions::Manifest::EXTERNAL_PREF, extensions::Extension::NO_FLAGS,
-      crx_unpack_dir_, backend_task_runner_.get(), this);
+      extensions::mojom::ManifestLocation::kExternalPref,
+      extensions::Extension::NO_FLAGS, crx_unpack_dir_,
+      backend_task_runner_.get(), this);
   if (!backend_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(&extensions::SandboxedUnpacker::StartWithCrx,

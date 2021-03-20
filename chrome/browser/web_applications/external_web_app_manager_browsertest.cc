@@ -284,7 +284,8 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest, UninstallAndReplace) {
   const char kChromeAppName[] = "App Test";
   const extensions::Extension* app = InstallExtensionWithSourceAndFlags(
       test_data_dir_.AppendASCII(kChromeAppDirectory), 1,
-      extensions::Manifest::INTERNAL, extensions::Extension::NO_FLAGS);
+      extensions::mojom::ManifestLocation::kInternal,
+      extensions::Extension::NO_FLAGS);
   EXPECT_EQ(app->name(), kChromeAppName);
 
   // Start listening for Chrome app uninstall.

@@ -335,8 +335,7 @@ bool ExtensionUpdater::AddExtensionToDownloader(
         extension::GetUpdateURLData(extension_prefs_, extension.id());
 
   return downloader_->AddPendingExtensionWithVersion(
-      extension.id(), update_url,
-      static_cast<Manifest::Location>(extension.location()),
+      extension.id(), update_url, extension.location(),
       false /*is_corrupt_reinstall*/, request_id, fetch_priority,
       extension.version(), extension.GetType(), update_url_data);
 }
@@ -397,8 +396,7 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
         update_check_params.update_info[pending_id].is_corrupt_reinstall =
             is_corrupt_reinstall;
       } else if (downloader_->AddPendingExtension(
-                     pending_id, info->update_url(),
-                     static_cast<Manifest::Location>(info->install_source()),
+                     pending_id, info->update_url(), info->install_source(),
                      is_corrupt_reinstall, request_id,
                      is_high_priority_extension_pending
                          ? ManifestFetchData::FOREGROUND

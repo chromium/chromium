@@ -861,7 +861,8 @@ class MenuManagerStorageTest : public MenuManagerTest,
     dictionary.SetPath(manifest_keys::kBackgroundScripts, std::move(value));
     dictionary.SetPath(manifest_keys::kBackgroundPersistent,
                        base::Value(false));
-    return prefs_.AddExtensionWithManifest(dictionary, Manifest::INTERNAL);
+    return prefs_.AddExtensionWithManifest(dictionary,
+                                           mojom::ManifestLocation::kInternal);
   }
 
   scoped_refptr<const Extension> AddServiceWorkerExtension(
@@ -870,7 +871,8 @@ class MenuManagerStorageTest : public MenuManagerTest,
     TestExtensionPrefs::AddDefaultManifestKeys(name, &dictionary);
     dictionary.SetStringPath(manifest_keys::kBackgroundServiceWorkerScript,
                              "background.js");
-    return prefs_.AddExtensionWithManifest(dictionary, Manifest::INTERNAL);
+    return prefs_.AddExtensionWithManifest(dictionary,
+                                           mojom::ManifestLocation::kInternal);
   }
 
   scoped_refptr<const Extension> CreateTestExtension() {

@@ -33,6 +33,7 @@
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 
 class Profile;
 
@@ -237,11 +238,11 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
         std::string(), path, INSTALL_UI_TYPE_NONE, expected_change);
   }
 
-  // Same as above, but an install source other than Manifest::INTERNAL can be
-  // specified.
+  // Same as above, but an install source other than
+  // mojom::ManifestLocation::kInternal can be specified.
   const Extension* InstallExtension(const base::FilePath& path,
                                     int expected_change,
-                                    Manifest::Location install_source) {
+                                    mojom::ManifestLocation install_source) {
     return InstallOrUpdateExtension(std::string(),
                                     path,
                                     INSTALL_UI_TYPE_NONE,
@@ -257,7 +258,8 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
       int expected_change) {
     return InstallOrUpdateExtension(
         std::string(), file_path, INSTALL_UI_TYPE_NONE, expected_change,
-        Manifest::INTERNAL, browser(), Extension::NO_FLAGS, false, true);
+        mojom::ManifestLocation::kInternal, browser(), Extension::NO_FLAGS,
+        false, true);
   }
 
   // Installs extension as if it came from the Chrome Webstore.
@@ -289,7 +291,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
   const Extension* InstallExtensionWithSourceAndFlags(
       const base::FilePath& path,
       int expected_change,
-      Manifest::Location install_source,
+      mojom::ManifestLocation install_source,
       Extension::InitFromValueFlags creation_flags) {
     return InstallOrUpdateExtension(std::string(), path, INSTALL_UI_TYPE_NONE,
                                     expected_change, install_source, browser(),
@@ -418,17 +420,18 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
       int expected_change,
       Browser* browser,
       Extension::InitFromValueFlags creation_flags);
-  const Extension* InstallOrUpdateExtension(const std::string& id,
-                                            const base::FilePath& path,
-                                            InstallUIType ui_type,
-                                            int expected_change,
-                                            Manifest::Location install_source);
   const Extension* InstallOrUpdateExtension(
       const std::string& id,
       const base::FilePath& path,
       InstallUIType ui_type,
       int expected_change,
-      Manifest::Location install_source,
+      mojom::ManifestLocation install_source);
+  const Extension* InstallOrUpdateExtension(
+      const std::string& id,
+      const base::FilePath& path,
+      InstallUIType ui_type,
+      int expected_change,
+      mojom::ManifestLocation install_source,
       Browser* browser,
       Extension::InitFromValueFlags creation_flags,
       bool wait_for_idle,
