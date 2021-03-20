@@ -650,7 +650,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
 #if !defined(OS_ANDROID)
   void FetchRemoteSms(
-      content::BrowserContext* browser_context,
+      content::WebContents* web_contents,
       const url::Origin& origin,
       base::OnceCallback<void(base::Optional<std::vector<url::Origin>>,
                               base::Optional<std::string>,

@@ -62,7 +62,7 @@ PageActionIconType SharedClipboardUiController::GetIconType() {
 }
 
 sync_pb::SharingSpecificFields::EnabledFeatures
-SharedClipboardUiController::GetRequiredFeature() {
+SharedClipboardUiController::GetRequiredFeature() const {
   return sync_pb::SharingSpecificFields::SHARED_CLIPBOARD_V2;
 }
 
@@ -77,7 +77,9 @@ void SharedClipboardUiController::OnDeviceChosen(
   sharing_message.mutable_shared_clipboard_message()->set_text(
       base::UTF16ToUTF8(text_));
 
-  SendMessageToDevice(device, std::move(sharing_message));
+  SendMessageToDevice(device, /*response_timeout=*/base::nullopt,
+                      std::move(sharing_message),
+                      /*callback=*/base::nullopt);
 }
 
 void SharedClipboardUiController::OnAppChosen(const SharingApp& app) {

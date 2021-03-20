@@ -100,6 +100,7 @@ class PageActionIconController : public zoom::ZoomEventManagerObserver {
   autofill::SavePaymentIconView* save_payment_icon_ = nullptr;
   send_tab_to_self::SendTabToSelfIconView* send_tab_to_self_icon_ = nullptr;
   SharingIconView* shared_clipboard_icon_ = nullptr;
+  SharingIconView* sms_remote_fetcher_icon_ = nullptr;
   TranslateIconView* translate_icon_ = nullptr;
   WebAuthnIconView* webauthn_icon_ = nullptr;
   ZoomView* zoom_icon_ = nullptr;

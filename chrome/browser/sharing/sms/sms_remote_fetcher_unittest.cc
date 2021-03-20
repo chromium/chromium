@@ -16,7 +16,9 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/sync_device_info/device_info.h"
 #include "content/public/browser/sms_fetcher.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_web_contents_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -47,11 +49,13 @@ url::Origin GetOriginForURL(const std::string url) {
 TEST(SmsRemoteFetcherTest, DisabledByDefault) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
+  content::WebContents::CreateParams create_params(&profile, nullptr);
+  auto web_contents = content::WebContents::Create(create_params);
 
   base::RunLoop loop;
 
   FetchRemoteSms(
-      &profile, GetOriginForURL("a.com"),
+      web_contents.get(), GetOriginForURL("a.com"),
       BindLambdaForTesting(
           [&loop](base::Optional<std::vector<url::Origin>>,
                   base::Optional<std::string> result,
@@ -67,6 +71,8 @@ TEST(SmsRemoteFetcherTest, NoDevicesAvailable) {
   base::test::ScopedFeatureList flags;
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
+  content::WebContents::CreateParams create_params(&profile, nullptr);
+  auto web_contents = content::WebContents::Create(create_params);
 
   flags.InitAndEnableFeature(kWebOTPCrossDevice);
 
@@ -79,7 +85,7 @@ TEST(SmsRemoteFetcherTest, NoDevicesAvailable) {
   base::RunLoop loop;
 
   FetchRemoteSms(
-      &profile, GetOriginForURL("a.com"),
+      web_contents.get(), GetOriginForURL("a.com"),
       BindLambdaForTesting(
           [&loop](base::Optional<std::vector<url::Origin>>,
                   base::Optional<std::string> result,
@@ -95,6 +101,8 @@ TEST(SmsRemoteFetcherTest, OneDevice) {
   base::test::ScopedFeatureList flags;
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
+  content::WebContents::CreateParams create_params(&profile, nullptr);
+  auto web_contents = content::WebContents::Create(create_params);
 
   flags.InitAndEnableFeature(kWebOTPCrossDevice);
 
@@ -120,7 +128,7 @@ TEST(SmsRemoteFetcherTest, OneDevice) {
       }));
 
   FetchRemoteSms(
-      &profile, GetOriginForURL("a.com"),
+      web_contents.get(), GetOriginForURL("a.com"),
       BindLambdaForTesting(
           [&loop](base::Optional<std::vector<url::Origin>>,
                   base::Optional<std::string> result,
@@ -137,6 +145,8 @@ TEST(SmsRemoteFetcherTest, OneDeviceTimesOut) {
   base::test::ScopedFeatureList flags;
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
+  content::WebContents::CreateParams create_params(&profile, nullptr);
+  auto web_contents = content::WebContents::Create(create_params);
 
   flags.InitAndEnableFeature(kWebOTPCrossDevice);
 
@@ -160,7 +170,7 @@ TEST(SmsRemoteFetcherTest, OneDeviceTimesOut) {
       }));
 
   FetchRemoteSms(
-      &profile, GetOriginForURL("a.com"),
+      web_contents.get(), GetOriginForURL("a.com"),
       BindLambdaForTesting(
           [&loop](base::Optional<std::vector<url::Origin>>,
                   base::Optional<std::string> result,

@@ -9,14 +9,14 @@
 #include "content/browser/sms/sms_parser.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 
 namespace content {
 
 const char kSmsFetcherImplKeyName[] = "sms_fetcher";
 
-SmsFetcherImpl::SmsFetcherImpl(BrowserContext* context, SmsProvider* provider)
-    : context_(context), provider_(provider) {
+SmsFetcherImpl::SmsFetcherImpl(SmsProvider* provider) : provider_(provider) {
   if (provider_)
     provider_->AddObserver(this);
 }
@@ -30,7 +30,7 @@ SmsFetcherImpl::~SmsFetcherImpl() {
 SmsFetcher* SmsFetcher::Get(BrowserContext* context) {
   if (!context->GetUserData(kSmsFetcherImplKeyName)) {
     auto fetcher = std::make_unique<SmsFetcherImpl>(
-        context, BrowserMainLoop::GetInstance()->GetSmsProvider());
+        BrowserMainLoop::GetInstance()->GetSmsProvider());
     context->SetUserData(kSmsFetcherImplKeyName, std::move(fetcher));
   }
 
@@ -64,7 +64,7 @@ void SmsFetcherImpl::Subscribe(const OriginList& origin_list,
   // Fetches a remote SMS.
   // TODO(1015645): Support iframe in cross-device WebOTP.
   GetContentClient()->browser()->FetchRemoteSms(
-      context_, origin_list[0],
+      WebContents::FromRenderFrameHost(render_frame_host), origin_list[0],
       base::BindOnce(&SmsFetcherImpl::OnRemote,
                      weak_ptr_factory_.GetWeakPtr()));
 

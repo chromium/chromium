@@ -94,7 +94,7 @@ PageActionIconType ClickToCallUiController::GetIconType() {
 }
 
 sync_pb::SharingSpecificFields::EnabledFeatures
-ClickToCallUiController::GetRequiredFeature() {
+ClickToCallUiController::GetRequiredFeature() const {
   return sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2;
 }
 
@@ -131,7 +131,9 @@ void ClickToCallUiController::SendNumberToDevice(
   sharing_message.mutable_click_to_call_message()->set_phone_number(
       phone_number);
 
-  SendMessageToDevice(device, std::move(sharing_message));
+  SendMessageToDevice(device, /*response_timeout=*/base::nullopt,
+                      std::move(sharing_message),
+                      /*callback=*/base::nullopt);
 }
 
 void ClickToCallUiController::OnAppChosen(const SharingApp& app) {

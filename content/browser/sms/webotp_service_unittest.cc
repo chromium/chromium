@@ -80,7 +80,7 @@ class Service {
   Service(WebContents* web_contents,
           const Origin& origin,
           std::unique_ptr<UserConsentHandler> user_consent_handler)
-      : fetcher_(web_contents->GetBrowserContext(), &provider_),
+      : fetcher_(&provider_),
         consent_handler_(std::move(user_consent_handler)) {
     // Set a stub delegate because sms service checks existence of delegate and
     // cancels requests early if one does not exist.
@@ -378,7 +378,7 @@ TEST_F(WebOTPServiceTest, CleansUp) {
   web_contents_impl->SetDelegate(&delegate);
 
   NiceMock<MockSmsProvider> provider;
-  SmsFetcherImpl fetcher(web_contents()->GetBrowserContext(), &provider);
+  SmsFetcherImpl fetcher(&provider);
   mojo::Remote<blink::mojom::WebOTPService> service;
   EXPECT_TRUE(WebOTPService::Create(&fetcher, main_rfh(),
                                     service.BindNewPipeAndPassReceiver()));
@@ -413,7 +413,7 @@ TEST_F(WebOTPServiceTest, CancelForNoDelegate) {
   NavigateAndCommit(GURL(kTestUrl));
 
   NiceMock<MockSmsProvider> provider;
-  SmsFetcherImpl fetcher(web_contents()->GetBrowserContext(), &provider);
+  SmsFetcherImpl fetcher(&provider);
   mojo::Remote<blink::mojom::WebOTPService> service;
   EXPECT_TRUE(WebOTPService::Create(&fetcher, main_rfh(),
                                     service.BindNewPipeAndPassReceiver()));
@@ -468,7 +468,7 @@ TEST_F(WebOTPServiceTest, RecordMetricsForNewPage) {
   web_contents_impl->SetDelegate(&delegate);
 
   NiceMock<MockSmsProvider> provider;
-  SmsFetcherImpl fetcher(web_contents()->GetBrowserContext(), &provider);
+  SmsFetcherImpl fetcher(&provider);
   mojo::Remote<blink::mojom::WebOTPService> service;
   EXPECT_TRUE(WebOTPService::Create(&fetcher, main_rfh(),
                                     service.BindNewPipeAndPassReceiver()));
@@ -506,7 +506,7 @@ TEST_F(WebOTPServiceTest, RecordMetricsForSamePage) {
   web_contents_impl->SetDelegate(&delegate);
 
   NiceMock<MockSmsProvider> provider;
-  SmsFetcherImpl fetcher(web_contents()->GetBrowserContext(), &provider);
+  SmsFetcherImpl fetcher(&provider);
   mojo::Remote<blink::mojom::WebOTPService> service;
   EXPECT_TRUE(WebOTPService::Create(&fetcher, main_rfh(),
                                     service.BindNewPipeAndPassReceiver()));
@@ -839,7 +839,7 @@ TEST_F(WebOTPServiceTest, RecordMetricsForExistingPage) {
   web_contents_impl->SetDelegate(&delegate);
 
   NiceMock<MockSmsProvider> provider;
-  SmsFetcherImpl fetcher(web_contents()->GetBrowserContext(), &provider);
+  SmsFetcherImpl fetcher(&provider);
   mojo::Remote<blink::mojom::WebOTPService> service;
   EXPECT_TRUE(WebOTPService::Create(&fetcher, main_rfh(),
                                     service.BindNewPipeAndPassReceiver()));
@@ -991,7 +991,7 @@ TEST_F(WebOTPServiceTest, RecordUnhandledRequestOnNavigation) {
   web_contents_impl->SetDelegate(&delegate);
 
   NiceMock<MockSmsProvider> provider;
-  SmsFetcherImpl fetcher(web_contents()->GetBrowserContext(), &provider);
+  SmsFetcherImpl fetcher(&provider);
   mojo::Remote<blink::mojom::WebOTPService> service;
   EXPECT_TRUE(WebOTPService::Create(&fetcher, main_rfh(),
                                     service.BindNewPipeAndPassReceiver()));

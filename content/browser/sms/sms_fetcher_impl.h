@@ -19,7 +19,6 @@
 
 namespace content {
 
-class BrowserContext;
 class SmsProvider;
 
 // SmsFetcherImpls coordinate between local and remote SMS providers as well as
@@ -29,9 +28,9 @@ class CONTENT_EXPORT SmsFetcherImpl : public content::SmsFetcher,
                                       public base::SupportsUserData::Data,
                                       public SmsProvider::Observer {
  public:
+  explicit SmsFetcherImpl(SmsProvider* provider);
   using FailureType = SmsFetchFailureType;
 
-  SmsFetcherImpl(BrowserContext* context, SmsProvider* provider);
   ~SmsFetcherImpl() override;
 
   // Called by devices that do not have telephony capabilities and exclusively
@@ -62,10 +61,6 @@ class CONTENT_EXPORT SmsFetcherImpl : public content::SmsFetcher,
   bool Notify(const OriginList& origin_list,
               const std::string& one_time_code,
               UserConsent);
-
-  // |context_| is safe because all instances of SmsFetcherImpl are owned by
-  // the BrowserContext itself.
-  BrowserContext* context_;
 
   // |provider_| is safe because all instances of SmsProvider are owned
   // by the BrowserMainLoop, which outlive instances of this class.

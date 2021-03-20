@@ -1894,7 +1894,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // with the origins and one-time-code from the SMS upon success or a failure
   // type on error.
   virtual void FetchRemoteSms(
-      content::BrowserContext* browser_context,
+      content::WebContents* web_contents,
       const url::Origin& origin,
       base::OnceCallback<void(base::Optional<std::vector<url::Origin>>,
                               base::Optional<std::string>,

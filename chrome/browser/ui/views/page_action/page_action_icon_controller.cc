@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
 #include "chrome/browser/sharing/shared_clipboard/shared_clipboard_ui_controller.h"
+#include "chrome/browser/sharing/sms/sms_remote_fetcher_ui_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_icon_view.h"
@@ -161,6 +162,17 @@ void PageActionIconController::Init(const PageActionIconParams& params,
             base::BindRepeating(SharingDialogView::GetAsBubble));
         page_action_icons_.push_back(shared_clipboard_icon_);
         break;
+      case PageActionIconType::kSmsRemoteFetcher:
+        sms_remote_fetcher_icon_ = new SharingIconView(
+            params.icon_label_bubble_delegate, params.page_action_icon_delegate,
+            base::BindRepeating([](content::WebContents* contents) {
+              return static_cast<SharingUiController*>(
+                  SmsRemoteFetcherUiController::GetOrCreateFromWebContents(
+                      contents));
+            }),
+            base::BindRepeating(SharingDialogView::GetAsBubble));
+        page_action_icons_.push_back(sms_remote_fetcher_icon_);
+        break;
       case PageActionIconType::kTranslate:
         DCHECK(params.command_updater);
         translate_icon_ = new TranslateIconView(
@@ -237,6 +249,8 @@ PageActionIconView* PageActionIconController::GetIconView(
       return send_tab_to_self_icon_;
     case PageActionIconType::kSharedClipboard:
       return shared_clipboard_icon_;
+    case PageActionIconType::kSmsRemoteFetcher:
+      return sms_remote_fetcher_icon_;
     case PageActionIconType::kTranslate:
       return translate_icon_;
     case PageActionIconType::kWebAuthn:

@@ -29,6 +29,7 @@
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/shared_clipboard/feature_flags.h"
+#include "chrome/browser/sharing/sms/sms_flags.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -267,6 +268,8 @@ void LocationBarView::Init() {
       params.types_enabled.push_back(PageActionIconType::kQRCodeGenerator);
     if (base::FeatureList::IsEnabled(kSharedClipboardUI))
       params.types_enabled.push_back(PageActionIconType::kSharedClipboard);
+    if (base::FeatureList::IsEnabled(kWebOTPCrossDevice))
+      params.types_enabled.push_back(PageActionIconType::kSmsRemoteFetcher);
     if (!base::FeatureList::IsEnabled(
             autofill::features::kAutofillEnableToolbarStatusChip)) {
       params.types_enabled.push_back(PageActionIconType::kManagePasswords);

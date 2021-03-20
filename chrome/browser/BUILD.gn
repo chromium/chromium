@@ -3992,6 +3992,8 @@ static_library("browser") {
       "sharing/sharing_notification_handler.h",
       "sharing/sharing_ui_controller.cc",
       "sharing/sharing_ui_controller.h",
+      "sharing/sms/sms_remote_fetcher_ui_controller.cc",
+      "sharing/sms/sms_remote_fetcher_ui_controller.h",
       "signin/signin_promo.cc",
       "signin/signin_promo.h",
       "signin/signin_ui_util.cc",

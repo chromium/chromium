@@ -11,7 +11,7 @@
 #include "base/optional.h"
 
 namespace content {
-class BrowserContext;
+class WebContents;
 enum class SmsFetchFailureType;
 }
 
@@ -19,9 +19,9 @@ namespace url {
 class Origin;
 }
 
-// Uses the SharingService to fetch an SMS from a remote device.
+// Uses the SmsRemoteFetcherUiCOntroller to fetch an SMS from a remote device.
 void FetchRemoteSms(
-    content::BrowserContext* context,
+    content::WebContents* web_contents,
     const url::Origin& origin,
     base::OnceCallback<void(base::Optional<std::vector<url::Origin>>,
                             base::Optional<std::string>,

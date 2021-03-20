@@ -7445,6 +7445,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_SHARING_REMOTE_COPY_NOTIFICATION_PROCESSING_IMAGE" desc="Subtext shown in a Remote Copy notification while processing the received image.">
         Processing image
       </message>
+      <message name="IDS_OMNIBOX_TOOLTIP_SMS_REMOTE_FETCHER" translateable="false" desc="The label of item for sms remote fetcher in the omnibox for showing device name when one device is available.">
+        Tap the notification on <ph name="DEVICE_NAME">$1<ex>Jimmy's Pixel</ex></ph> to verify your phone number
+      </message>
       <if expr="not use_titlecase">
         <message name="IDS_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES" desc="The label of item for click to call in context menu when multiple devices are available.">
           Call from your device
