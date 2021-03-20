@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/renderer_context_menu/copy_link_to_text_menu_observer.h"
+#include "chrome/browser/renderer_context_menu/link_to_text_menu_observer.h"
 
 #include <memory>
 
@@ -27,10 +27,10 @@ constexpr char kTextFragmentUrlClassifier[] = "#:~:text=";
 
 // Indicates how long context menu should wait for link generation result.
 constexpr base::TimeDelta kTimeoutMs = base::TimeDelta::FromMilliseconds(500);
-}
+}  // namespace
 
 // static
-std::unique_ptr<CopyLinkToTextMenuObserver> CopyLinkToTextMenuObserver::Create(
+std::unique_ptr<LinkToTextMenuObserver> LinkToTextMenuObserver::Create(
     RenderViewContextMenuProxy* proxy) {
   // WebContents can be null in tests.
   content::WebContents* web_contents = proxy->GetWebContents();
@@ -41,16 +41,18 @@ std::unique_ptr<CopyLinkToTextMenuObserver> CopyLinkToTextMenuObserver::Create(
     return nullptr;
   }
 
-  return base::WrapUnique(new CopyLinkToTextMenuObserver(proxy));
+  return base::WrapUnique(new LinkToTextMenuObserver(proxy));
 }
 
-CopyLinkToTextMenuObserver::CopyLinkToTextMenuObserver(
+LinkToTextMenuObserver::LinkToTextMenuObserver(
     RenderViewContextMenuProxy* proxy)
     : proxy_(proxy) {}
-CopyLinkToTextMenuObserver::~CopyLinkToTextMenuObserver() = default;
+LinkToTextMenuObserver::~LinkToTextMenuObserver() = default;
 
-void CopyLinkToTextMenuObserver::InitMenu(
+void LinkToTextMenuObserver::InitMenu(
     const content::ContextMenuParams& params) {
+  highlight_exists_ = params.opened_from_highlight;
+  raw_url_ = params.page_url;
   if (params.page_url.has_ref()) {
     GURL::Replacements replacements;
     replacements.ClearRef();
@@ -62,16 +64,22 @@ void CopyLinkToTextMenuObserver::InitMenu(
   proxy_->AddMenuItem(
       IDC_CONTENT_CONTEXT_COPYLINKTOTEXT,
       l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_COPYLINKTOTEXT));
+  if (params.opened_from_highlight) {
+    proxy_->AddMenuItem(
+        IDC_CONTENT_CONTEXT_REMOVELINKTOTEXT,
+        l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_REMOVELINKTOTEXT));
+  }
 
   if (ShouldPreemptivelyGenerateLink())
     RequestLinkGeneration();
 }
 
-bool CopyLinkToTextMenuObserver::IsCommandIdSupported(int command_id) {
-  return command_id == IDC_CONTENT_CONTEXT_COPYLINKTOTEXT;
+bool LinkToTextMenuObserver::IsCommandIdSupported(int command_id) {
+  return command_id == IDC_CONTENT_CONTEXT_COPYLINKTOTEXT ||
+         command_id == IDC_CONTENT_CONTEXT_REMOVELINKTOTEXT;
 }
 
-bool CopyLinkToTextMenuObserver::IsCommandIdEnabled(int command_id) {
+bool LinkToTextMenuObserver::IsCommandIdEnabled(int command_id) {
   // This should only be called for the command for copying link to text.
   DCHECK(IsCommandIdSupported(command_id));
 
@@ -83,18 +91,26 @@ bool CopyLinkToTextMenuObserver::IsCommandIdEnabled(int command_id) {
   return true;
 }
 
-void CopyLinkToTextMenuObserver::ExecuteCommand(int command_id) {
+void LinkToTextMenuObserver::ExecuteCommand(int command_id) {
   // This should only be called for the command for copying link to text.
   DCHECK(IsCommandIdSupported(command_id));
 
-  if (ShouldPreemptivelyGenerateLink()) {
-    CopyLinkToClipboard();
-  } else {
-    RequestLinkGeneration();
+  if (command_id == IDC_CONTENT_CONTEXT_COPYLINKTOTEXT) {
+    if (highlight_exists_) {
+      CopyPageURLToClipboard();
+    } else {
+      if (ShouldPreemptivelyGenerateLink()) {
+        CopyLinkToClipboard();
+      } else {
+        RequestLinkGeneration();
+      }
+    }
+  } else if (command_id == IDC_CONTENT_CONTEXT_REMOVELINKTOTEXT) {
+    RemoveHighlight();
   }
 }
 
-void CopyLinkToTextMenuObserver::OnRequestLinkGenerationCompleted(
+void LinkToTextMenuObserver::OnRequestLinkGenerationCompleted(
     const std::string& selector) {
   if (ShouldPreemptivelyGenerateLink()) {
     if (selector.empty()) {
@@ -115,17 +131,17 @@ void CopyLinkToTextMenuObserver::OnRequestLinkGenerationCompleted(
   CopyLinkToClipboard();
 }
 
-void CopyLinkToTextMenuObserver::OverrideGeneratedSelectorForTesting(
+void LinkToTextMenuObserver::OverrideGeneratedSelectorForTesting(
     const std::string& selector) {
   generated_selector_for_testing_ = url_.spec() + selector;
 }
 
-bool CopyLinkToTextMenuObserver::ShouldPreemptivelyGenerateLink() {
+bool LinkToTextMenuObserver::ShouldPreemptivelyGenerateLink() {
   return base::FeatureList::IsEnabled(
       shared_highlighting::kPreemptiveLinkToTextGeneration);
 }
 
-void CopyLinkToTextMenuObserver::RequestLinkGeneration() {
+void LinkToTextMenuObserver::RequestLinkGeneration() {
   content::RenderFrameHost* main_frame =
       proxy_->GetWebContents()->GetMainFrame();
   if (!main_frame)
@@ -158,17 +174,17 @@ void CopyLinkToTextMenuObserver::RequestLinkGeneration() {
   // the generated string if it succeeds or an empty string if it fails.
   main_frame->GetRemoteInterfaces()->GetInterface(
       remote_.BindNewPipeAndPassReceiver());
-  remote_->RequestSelector(base::BindOnce(
-      &CopyLinkToTextMenuObserver::OnRequestLinkGenerationCompleted,
-      weak_ptr_factory_.GetWeakPtr()));
+  remote_->RequestSelector(
+      base::BindOnce(&LinkToTextMenuObserver::OnRequestLinkGenerationCompleted,
+                     weak_ptr_factory_.GetWeakPtr()));
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&CopyLinkToTextMenuObserver::Timeout,
+      base::BindOnce(&LinkToTextMenuObserver::Timeout,
                      weak_ptr_factory_.GetWeakPtr()),
       kTimeoutMs);
 }
 
-void CopyLinkToTextMenuObserver::CopyLinkToClipboard() {
+void LinkToTextMenuObserver::CopyLinkToClipboard() {
   content::RenderFrameHost* main_frame =
       proxy_->GetWebContents()->GetMainFrame();
 
@@ -182,7 +198,7 @@ void CopyLinkToTextMenuObserver::CopyLinkToClipboard() {
   scw.WriteText(base::UTF8ToUTF16(generated_link_.value()));
 }
 
-void CopyLinkToTextMenuObserver::Timeout() {
+void LinkToTextMenuObserver::Timeout() {
   DCHECK(ShouldPreemptivelyGenerateLink());
   DCHECK(remote_.is_bound());
   DCHECK(remote_.is_connected());
@@ -193,3 +209,20 @@ void CopyLinkToTextMenuObserver::Timeout() {
   shared_highlighting::LogGenerateErrorTimeout();
   OnRequestLinkGenerationCompleted(std::string());
 }
+
+void LinkToTextMenuObserver::CopyPageURLToClipboard() {
+  content::RenderFrameHost* main_frame =
+      proxy_->GetWebContents()->GetMainFrame();
+
+  std::unique_ptr<ui::DataTransferEndpoint> data_transfer_endpoint =
+      main_frame ? std::make_unique<ui::DataTransferEndpoint>(
+                       main_frame->GetLastCommittedOrigin())
+                 : nullptr;
+
+  ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste,
+                                std::move(data_transfer_endpoint));
+  scw.WriteText(
+      base::UTF8ToUTF16(raw_url_.is_empty() ? std::string() : raw_url_.spec()));
+}
+
+void LinkToTextMenuObserver::RemoveHighlight() {}

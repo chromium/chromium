@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/renderer_context_menu/copy_link_to_text_menu_observer.h"
+#include "chrome/browser/renderer_context_menu/link_to_text_menu_observer.h"
 
 #include "base/macros.h"
 
@@ -23,11 +23,10 @@
 
 namespace {
 
-class CopyLinkToTextMenuObserverTest
-    : public extensions::ExtensionBrowserTest,
-      public ::testing::WithParamInterface<bool> {
+class LinkToTextMenuObserverTest : public extensions::ExtensionBrowserTest,
+                                   public ::testing::WithParamInterface<bool> {
  public:
-  CopyLinkToTextMenuObserverTest();
+  LinkToTextMenuObserverTest();
 
   void SetUp() override {
     base::test::ScopedFeatureList scoped_feature_list;
@@ -67,7 +66,7 @@ class CopyLinkToTextMenuObserverTest
 
   void Reset(bool incognito) {
     menu_ = std::make_unique<MockRenderViewContextMenu>(incognito);
-    observer_ = CopyLinkToTextMenuObserver::Create(menu_.get());
+    observer_ = LinkToTextMenuObserver::Create(menu_.get());
     menu_->SetObserver(observer_.get());
   }
 
@@ -77,22 +76,22 @@ class CopyLinkToTextMenuObserverTest
 
   bool ShouldPreemptivelyGenerateLink() { return GetParam(); }
 
-  ~CopyLinkToTextMenuObserverTest() override;
+  ~LinkToTextMenuObserverTest() override;
   MockRenderViewContextMenu* menu() { return menu_.get(); }
-  CopyLinkToTextMenuObserver* observer() { return observer_.get(); }
+  LinkToTextMenuObserver* observer() { return observer_.get(); }
 
  private:
-  std::unique_ptr<CopyLinkToTextMenuObserver> observer_;
+  std::unique_ptr<LinkToTextMenuObserver> observer_;
   std::unique_ptr<MockRenderViewContextMenu> menu_;
-  DISALLOW_COPY_AND_ASSIGN(CopyLinkToTextMenuObserverTest);
+  DISALLOW_COPY_AND_ASSIGN(LinkToTextMenuObserverTest);
 };
 
-CopyLinkToTextMenuObserverTest::CopyLinkToTextMenuObserverTest() = default;
-CopyLinkToTextMenuObserverTest::~CopyLinkToTextMenuObserverTest() = default;
+LinkToTextMenuObserverTest::LinkToTextMenuObserverTest() = default;
+LinkToTextMenuObserverTest::~LinkToTextMenuObserverTest() = default;
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest, AddsMenuItem) {
+IN_PROC_BROWSER_TEST_P(LinkToTextMenuObserverTest, AddsCopyMenuItem) {
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.com/");
   params.selection_text = base::UTF8ToUTF16("hello world");
@@ -111,7 +110,34 @@ IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest, AddsMenuItem) {
   }
 }
 
-IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest, CopiesLinkToText) {
+IN_PROC_BROWSER_TEST_P(LinkToTextMenuObserverTest, AddsCopyAndRemoveMenuItems) {
+  content::ContextMenuParams params;
+  params.page_url = GURL("http://foo.com/");
+  params.opened_from_highlight = true;
+  observer()->OverrideGeneratedSelectorForTesting(std::string());
+  InitMenu(params);
+  EXPECT_EQ(2u, menu()->GetMenuSize());
+  MockRenderViewContextMenu::MockMenuItem item;
+
+  // Check Copy item.
+  menu()->GetMenuItem(0, &item);
+  EXPECT_EQ(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, item.command_id);
+  EXPECT_FALSE(item.checked);
+  EXPECT_FALSE(item.hidden);
+  if (ShouldPreemptivelyGenerateLink()) {
+    EXPECT_FALSE(item.enabled);
+  } else {
+    EXPECT_TRUE(item.enabled);
+  }
+
+  // Check Remove item.
+  menu()->GetMenuItem(1, &item);
+  EXPECT_EQ(IDC_CONTENT_CONTEXT_REMOVELINKTOTEXT, item.command_id);
+  EXPECT_FALSE(item.checked);
+  EXPECT_FALSE(item.hidden);
+}
+
+IN_PROC_BROWSER_TEST_P(LinkToTextMenuObserverTest, CopiesLinkToText) {
   content::BrowserTestClipboardScope test_clipboard_scope;
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.com/");
@@ -126,8 +152,7 @@ IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest, CopiesLinkToText) {
   EXPECT_EQ(base::UTF8ToUTF16("http://foo.com/#:~:text=hello%20world"), text);
 }
 
-IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest,
-                       CopiesLinkForEmptySelector) {
+IN_PROC_BROWSER_TEST_P(LinkToTextMenuObserverTest, CopiesLinkForEmptySelector) {
   content::BrowserTestClipboardScope test_clipboard_scope;
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.com/");
@@ -147,7 +172,7 @@ IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest, ReplacesRefInURL) {
+IN_PROC_BROWSER_TEST_P(LinkToTextMenuObserverTest, ReplacesRefInURL) {
   content::BrowserTestClipboardScope test_clipboard_scope;
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.com/#:~:text=hello%20world");
@@ -163,8 +188,7 @@ IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest, ReplacesRefInURL) {
 }
 
 // crbug.com/1139864
-IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest,
-                       InvalidSelectorForIframe) {
+IN_PROC_BROWSER_TEST_P(LinkToTextMenuObserverTest, InvalidSelectorForIframe) {
   GURL main_url(
       embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
 
@@ -197,7 +221,7 @@ IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest, HiddenForExtensions) {
+IN_PROC_BROWSER_TEST_P(LinkToTextMenuObserverTest, HiddenForExtensions) {
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("simple_with_file"));
   ui_test_utils::NavigateToURL(browser(),
@@ -206,12 +230,12 @@ IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest, HiddenForExtensions) {
       browser()->tab_strip_model()->GetActiveWebContents();
   menu()->set_web_contents(web_contents);
 
-  std::unique_ptr<CopyLinkToTextMenuObserver> observer =
-      CopyLinkToTextMenuObserver::Create(menu());
+  std::unique_ptr<LinkToTextMenuObserver> observer =
+      LinkToTextMenuObserver::Create(menu());
   EXPECT_EQ(nullptr, observer);
 }
 
-IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest, Blocklist) {
+IN_PROC_BROWSER_TEST_P(LinkToTextMenuObserverTest, Blocklist) {
   content::BrowserTestClipboardScope test_clipboard_scope;
   content::ContextMenuParams params;
   params.page_url = GURL("http://facebook.com/my-profile");
@@ -231,5 +255,5 @@ IN_PROC_BROWSER_TEST_P(CopyLinkToTextMenuObserverTest, Blocklist) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         CopyLinkToTextMenuObserverTest,
+                         LinkToTextMenuObserverTest,
                          ::testing::Values(true, false));

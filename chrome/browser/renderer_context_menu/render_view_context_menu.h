@@ -35,7 +35,7 @@
 
 class AccessibilityLabelsMenuObserver;
 class ClickToCallContextMenuObserver;
-class CopyLinkToTextMenuObserver;
+class LinkToTextMenuObserver;
 class PrintPreviewContextMenuObserver;
 class Profile;
 class QuickAnswersMenuObserver;
@@ -172,7 +172,7 @@ class RenderViewContextMenu : public RenderViewContextMenuBase {
   void AppendPageItems();
   void AppendExitFullscreenItem();
   void AppendCopyItem();
-  void AppendCopyLinkToTextItem();
+  void AppendLinkToTextItems();
   void AppendPrintItem();
   void AppendMediaRouterItem();
   void AppendRotationItems();
@@ -295,7 +295,7 @@ class RenderViewContextMenu : public RenderViewContextMenuBase {
   std::unique_ptr<PrintPreviewContextMenuObserver> print_preview_menu_observer_;
 #endif
 
-  std::unique_ptr<CopyLinkToTextMenuObserver> copy_link_to_text_menu_observer_;
+  std::unique_ptr<LinkToTextMenuObserver> link_to_text_menu_observer_;
 
   // In the case of a MimeHandlerView this will point to the WebContents that
   // embeds the MimeHandlerViewGuest. Otherwise this will be the same as

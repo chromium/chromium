@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_RENDERER_CONTEXT_MENU_COPY_LINK_TO_TEXT_MENU_OBSERVER_H_
-#define CHROME_BROWSER_RENDERER_CONTEXT_MENU_COPY_LINK_TO_TEXT_MENU_OBSERVER_H_
+#ifndef CHROME_BROWSER_RENDERER_CONTEXT_MENU_LINK_TO_TEXT_MENU_OBSERVER_H_
+#define CHROME_BROWSER_RENDERER_CONTEXT_MENU_LINK_TO_TEXT_MENU_OBSERVER_H_
 
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -14,15 +14,14 @@ class RenderViewContextMenuProxy;
 
 // A class that implements the menu item for copying selected text and a link
 // to the selected text to the user's clipboard.
-class CopyLinkToTextMenuObserver : public RenderViewContextMenuObserver {
+class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
  public:
-  static std::unique_ptr<CopyLinkToTextMenuObserver> Create(
+  static std::unique_ptr<LinkToTextMenuObserver> Create(
       RenderViewContextMenuProxy* proxy);
 
-  CopyLinkToTextMenuObserver(const CopyLinkToTextMenuObserver&) = delete;
-  CopyLinkToTextMenuObserver& operator=(const CopyLinkToTextMenuObserver&) =
-      delete;
-  ~CopyLinkToTextMenuObserver() override;
+  LinkToTextMenuObserver(const LinkToTextMenuObserver&) = delete;
+  LinkToTextMenuObserver& operator=(const LinkToTextMenuObserver&) = delete;
+  ~LinkToTextMenuObserver() override;
 
   // RenderViewContextMenuObserver.
   void InitMenu(const content::ContextMenuParams& params) override;
@@ -35,7 +34,7 @@ class CopyLinkToTextMenuObserver : public RenderViewContextMenuObserver {
   void OverrideGeneratedSelectorForTesting(const std::string& selector);
 
  private:
-  explicit CopyLinkToTextMenuObserver(RenderViewContextMenuProxy* proxy);
+  explicit LinkToTextMenuObserver(RenderViewContextMenuProxy* proxy);
   // Returns true if the link should be generated from the constructor, vs
   // determined when executed.
   bool ShouldPreemptivelyGenerateLink();
@@ -51,16 +50,25 @@ class CopyLinkToTextMenuObserver : public RenderViewContextMenuObserver {
   // Copies the generated link to the user's clipboard.
   void CopyLinkToClipboard();
 
+  // Copies the current URL to the clipboard. Used to reshare an
+  // existing highlight.
+  void CopyPageURLToClipboard();
+
+  // Removes the highlight from the page and updates the URL.
+  void RemoveHighlight();
+
   // Cancels link generation if we are still waiting for it.
   void Timeout();
 
   mojo::Remote<blink::mojom::TextFragmentSelectorProducer> remote_;
   RenderViewContextMenuProxy* proxy_;
   GURL url_;
+  GURL raw_url_;
+  bool highlight_exists_ = false;
   base::Optional<std::string> generated_link_;
   base::Optional<std::string> generated_selector_for_testing_;
 
-  base::WeakPtrFactory<CopyLinkToTextMenuObserver> weak_ptr_factory_{this};
+  base::WeakPtrFactory<LinkToTextMenuObserver> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_RENDERER_CONTEXT_MENU_COPY_LINK_TO_TEXT_MENU_OBSERVER_H_
+#endif  // CHROME_BROWSER_RENDERER_CONTEXT_MENU_LINK_TO_TEXT_MENU_OBSERVER_H_

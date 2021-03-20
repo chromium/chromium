@@ -6579,7 +6579,7 @@ if (!is_android) {
       "../browser/password_manager/password_manager_interactive_test_base.h",
       "../browser/password_manager/password_manager_interactive_uitest.cc",
       "../browser/portal/portal_interactive_uittest.cc",
-      "../browser/renderer_context_menu/copy_link_to_text_menu_observer_interactive_uitest.cc",
+      "../browser/renderer_context_menu/link_to_text_menu_observer_interactive_uitest.cc",
       "../browser/renderer_context_menu/mock_render_view_context_menu.cc",
       "../browser/renderer_context_menu/mock_render_view_context_menu.h",
       "../browser/renderer_context_menu/render_view_context_menu_browsertest_util.cc",

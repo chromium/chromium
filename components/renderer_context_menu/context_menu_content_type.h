@@ -46,7 +46,8 @@ class ContextMenuContentType {
     ITEM_GROUP_DEVELOPER,
     ITEM_GROUP_DEVTOOLS_UNPACKED_EXT,
     ITEM_GROUP_PRINT_PREVIEW,
-    ITEM_GROUP_PASSWORD
+    ITEM_GROUP_PASSWORD,
+    ITEM_GROUP_EXISTING_LINK_TO_TEXT
   };
 
   // Returns if |group| is enabled.

@@ -69,6 +69,7 @@ bool ContextMenuContentType::SupportsGroupInternal(int group) {
   const bool is_password =
       params_.input_field_type ==
       blink::mojom::ContextMenuDataInputFieldType::kPassword;
+  const bool existing_highlight = params_.opened_from_highlight;
 
   switch (group) {
     case ITEM_GROUP_CUSTOM:
@@ -77,7 +78,7 @@ bool ContextMenuContentType::SupportsGroupInternal(int group) {
     case ITEM_GROUP_PAGE: {
       bool is_candidate =
           params_.media_type == ContextMenuDataMediaType::kNone && !has_link &&
-          !params_.is_editable && !has_selection;
+          !params_.is_editable && !has_selection && !existing_highlight;
 
       if (!is_candidate && params_.page_url.is_empty())
         DCHECK(params_.frame_url.is_empty());
@@ -123,6 +124,9 @@ bool ContextMenuContentType::SupportsGroupInternal(int group) {
 
     case ITEM_GROUP_COPY:
       return !params_.is_editable && has_selection;
+
+    case ITEM_GROUP_EXISTING_LINK_TO_TEXT:
+      return params_.opened_from_highlight;
 
     case ITEM_GROUP_SEARCH_PROVIDER:
       return has_selection && !is_password;
