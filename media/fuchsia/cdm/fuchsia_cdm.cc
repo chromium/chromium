@@ -68,7 +68,8 @@ fuchsia::media::drm::LicenseSessionType ToFuchsiaLicenseSessionType(
     case CdmSessionType::kPersistentLicense:
       return fuchsia::media::drm::LicenseSessionType::PERSISTENT_LICENSE;
     case CdmSessionType::kPersistentUsageRecord:
-      return fuchsia::media::drm::LicenseSessionType::PERSISTENT_USAGE_RECORD;
+      NOTREACHED();
+      return fuchsia::media::drm::LicenseSessionType::TEMPORARY;
   }
 }
 
@@ -575,9 +576,9 @@ void FuchsiaCdm::RemoveSession(const std::string& session_id,
   CdmSession* session = it->second.get();
   DCHECK(session);
 
-  // For temporary session, the API will remove the keys and close the session.
-  // For persistent license and persistent usage record, the API will invalidate
-  // the keys and generates a license release message.
+  // For a temporary session, the API will remove the keys and close the
+  // session. For a persistent license session, the API will invalidate the keys
+  // and generates a license release message.
   session->GenerateLicenseRelease(
       base::BindOnce(&FuchsiaCdm::OnGenerateLicenseReleaseStatus,
                      base::Unretained(this), session_id, promise_id));
