@@ -139,7 +139,8 @@ class PageInfo : public content::WebContentsObserver {
     PAGE_INFO_COOKIES_CLEARED = 13,
     PAGE_INFO_PERMISSION_DIALOG_OPENED = 14,
     PAGE_INFO_PERMISSIONS_CLEARED = 15,
-    PAGE_INFO_PERMISSIONS_CHANGED = 16,
+    // No longer used; indicated permission change but was a duplicate metric.
+    // PAGE_INFO_PERMISSIONS_CHANGED = 16,
     PAGE_INFO_COUNT
   };
 
