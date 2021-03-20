@@ -29,6 +29,8 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesProfileClient {
    public:
     // Clears the Profile properties for the given path.
     virtual void ClearProfile(const dbus::ObjectPath& carrier_profile_path) = 0;
+    // Sets service state to connected after eSIM profiles are enabled.
+    virtual void SetConnectedAfterEnable(bool connected_after_enable) = 0;
   };
 
   // Hermes profile properties.

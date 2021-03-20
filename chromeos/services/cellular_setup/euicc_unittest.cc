@@ -52,6 +52,11 @@ class EuiccTest : public ESimTestBase {
     SetupEuicc();
   }
 
+  void TearDown() override {
+    HermesProfileClient::Get()->GetTestInterface()->SetConnectedAfterEnable(
+        /*connected_after_enable=*/false);
+  }
+
   InstallResultPair InstallProfileFromActivationCode(
       const mojo::Remote<mojom::Euicc>& euicc,
       const std::string& activation_code,
@@ -167,6 +172,23 @@ TEST_F(EuiccTest, InstallProfileFromActivationCode) {
 
   histogram_tester.ExpectTotalCount(
       "Network.Cellular.ESim.ProfileDownload.ActivationCode.Latency", 1);
+}
+
+TEST_F(EuiccTest, InstallProfileAlreadyConnected) {
+  mojo::Remote<mojom::Euicc> euicc = GetEuiccForEid(ESimTestBase::kTestEid);
+  ASSERT_TRUE(euicc.is_bound());
+
+  HermesProfileClient::Get()->GetTestInterface()->SetConnectedAfterEnable(
+      /*connected_after_enable=*/true);
+
+  InstallResultPair result_pair = InstallProfileFromActivationCode(
+      euicc,
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode(),
+      /*confirmation_code=*/std::string(), /*wait_for_connect=*/false,
+      /*fail_connect=*/false);
+  EXPECT_EQ(mojom::ProfileInstallResult::kSuccess, result_pair.first);
 }
 
 TEST_F(EuiccTest, InstallPendingProfileFromActivationCode) {

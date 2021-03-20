@@ -61,6 +61,11 @@ void FakeHermesProfileClient::ClearProfile(
   properties_map_.erase(carrier_profile_path);
 }
 
+void FakeHermesProfileClient::SetConnectedAfterEnable(
+    bool connected_after_enable) {
+  connected_after_enable_ = connected_after_enable;
+}
+
 void FakeHermesProfileClient::EnableCarrierProfile(
     const dbus::ObjectPath& object_path,
     HermesResponseCallback callback) {
@@ -181,17 +186,19 @@ void FakeHermesProfileClient::UpdateCellularServices(const std::string& iccid,
     if (!service_iccid || !type || *type != shill::kTypeCellular)
       continue;
 
+    bool is_current_service = iccid == *service_iccid;
     // All services except one with given |iccid| will have connectable set to
     // false.
-    bool service_connectable = iccid == *service_iccid ? connectable : false;
+    bool service_connectable = is_current_service ? connectable : false;
     service_test->SetServiceProperty(service_path.GetString(),
                                      shill::kConnectableProperty,
                                      base::Value(service_connectable));
-    // Set all cellular services to idle state. A new connect call must be
-    // issued to connect to a cellular service.
+    const char* service_state = is_current_service && connected_after_enable_
+                                    ? shill::kStateOnline
+                                    : shill::kStateIdle;
     service_test->SetServiceProperty(service_path.GetString(),
                                      shill::kStateProperty,
-                                     base::Value(shill::kStateIdle));
+                                     base::Value(service_state));
   }
 }
 

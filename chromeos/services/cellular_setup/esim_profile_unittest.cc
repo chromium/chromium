@@ -12,6 +12,7 @@
 #include "chromeos/network/fake_network_connection_handler.h"
 #include "chromeos/services/cellular_setup/esim_test_base.h"
 #include "chromeos/services/cellular_setup/esim_test_utils.h"
+#include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom-shared.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace chromeos {
@@ -105,6 +106,11 @@ class ESimProfileTest : public ESimTestBase {
   void SetUp() override {
     ESimTestBase::SetUp();
     SetupEuicc();
+  }
+
+  void TearDown() override {
+    HermesProfileClient::Get()->GetTestInterface()->SetConnectedAfterEnable(
+        /*connected_after_enable=*/false);
   }
 
   mojo::Remote<mojom::ESimProfile> GetESimProfileForIccid(
@@ -229,6 +235,26 @@ TEST_F(ESimProfileTest, InstallProfile) {
 
   histogram_tester.ExpectTotalCount(
       "Network.Cellular.ESim.ProfileDownload.PendingProfile.Latency", 1);
+}
+
+TEST_F(ESimProfileTest, InstallProfileAlreadyConnected) {
+  dbus::ObjectPath profile_path =
+      HermesEuiccClient::Get()->GetTestInterface()->AddFakeCarrierProfile(
+          dbus::ObjectPath(ESimTestBase::kTestEuiccPath),
+          hermes::profile::State::kPending, /*activation_code=*/std::string(),
+          /*service_only=*/false);
+  HermesProfileClient::Properties* dbus_properties =
+      HermesProfileClient::Get()->GetProperties(profile_path);
+  mojo::Remote<mojom::ESimProfile> esim_profile = GetESimProfileForIccid(
+      ESimTestBase::kTestEid, dbus_properties->iccid().value());
+
+  HermesProfileClient::Get()->GetTestInterface()->SetConnectedAfterEnable(
+      /*connected_after_enable=*/true);
+
+  mojom::ProfileInstallResult install_result =
+      InstallProfile(esim_profile, /*wait_for_connect=*/false,
+                     /*fail_connect=*/false);
+  EXPECT_EQ(mojom::ProfileInstallResult::kSuccess, install_result);
 }
 
 TEST_F(ESimProfileTest, InstallConnectFailure) {

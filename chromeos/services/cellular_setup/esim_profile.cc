@@ -17,6 +17,7 @@
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/services/cellular_setup/esim_manager.h"
 #include "chromeos/services/cellular_setup/esim_mojo_utils.h"
 #include "chromeos/services/cellular_setup/euicc.h"
@@ -369,6 +370,19 @@ void ESimProfile::OnPendingProfileInstallResult(
 }
 
 void ESimProfile::OnNewProfileEnableSuccess(const std::string& service_path) {
+  const NetworkState* network_state =
+      esim_manager_->network_state_handler()->GetNetworkState(service_path);
+  if (!network_state) {
+    OnNewProfileConnectFailure(NetworkConnectionHandler::kErrorNotFound,
+                               /*error_data=*/nullptr);
+    return;
+  }
+
+  if (network_state->IsConnectingOrConnected()) {
+    OnNewProfileConnectSuccess();
+    return;
+  }
+
   esim_manager_->network_connection_handler()->ConnectToNetwork(
       service_path,
       base::BindOnce(&ESimProfile::OnNewProfileConnectSuccess,

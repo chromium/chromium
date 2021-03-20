@@ -72,7 +72,7 @@ void ESimTestBase::SetUp() {
       cellular_esim_connection_handler_.get(),
       cellular_esim_profile_handler_.get(),
       cellular_esim_uninstall_handler_.get(), cellular_inhibitor_.get(),
-      network_connection_handler_.get());
+      network_connection_handler_.get(), network_state_handler_.get());
   observer_ = std::make_unique<ESimManagerTestObserver>();
   esim_manager_->AddObserver(observer_->GenerateRemote());
 }

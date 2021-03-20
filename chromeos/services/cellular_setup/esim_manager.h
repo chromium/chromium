@@ -25,6 +25,7 @@ class CellularESimConnectionHandler;
 class CellularESimUninstallHandler;
 class CellularInhibitor;
 class NetworkConnectionHandler;
+class NetworkStateHandler;
 
 namespace cellular_setup {
 
@@ -45,7 +46,8 @@ class ESimManager : public mojom::ESimManager,
               CellularESimProfileHandler* cellular_esim_profile_handler,
               CellularESimUninstallHandler* cellular_esim_uninstall_handler,
               CellularInhibitor* cellular_inhibitor,
-              NetworkConnectionHandler* network_connection_handler);
+              NetworkConnectionHandler* network_connection_handler,
+              NetworkStateHandler* network_state_handler);
   ESimManager(const ESimManager&) = delete;
   ESimManager& operator=(const ESimManager&) = delete;
   ~ESimManager() override;
@@ -88,6 +90,10 @@ class ESimManager : public mojom::ESimManager,
     return network_connection_handler_;
   }
 
+  NetworkStateHandler* network_state_handler() {
+    return network_state_handler_;
+  }
+
  private:
   void UpdateAvailableEuiccs();
   // Removes Euicc objects in |available_euiiccs_| that are not in
@@ -104,6 +110,7 @@ class ESimManager : public mojom::ESimManager,
   CellularInhibitor* cellular_inhibitor_;
 
   NetworkConnectionHandler* network_connection_handler_;
+  NetworkStateHandler* network_state_handler_;
 
   std::vector<std::unique_ptr<Euicc>> available_euiccs_;
   mojo::RemoteSet<mojom::ESimManagerObserver> observers_;
