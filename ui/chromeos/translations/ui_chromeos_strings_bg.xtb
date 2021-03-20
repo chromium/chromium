@@ -87,6 +87,7 @@
 <translation id="1853795129690976061">Тази папка е споделена с Linux</translation>
 <translation id="1864756863218646478">Файлът не можа да бъде намерен.</translation>
 <translation id="1920670151694390848">Малаялам (транслитерация)</translation>
+<translation id="1920798810075583923">Диня</translation>
 <translation id="1924372192547904021">Устройството „<ph name="DRIVE_NAME" />“ бе форматирано</translation>
 <translation id="1931134289871235022">словашки</translation>
 <translation id="1933345018156373194">Преместването не бе успешно. Възникна неочаквана грешка: <ph name="ERROR_MESSAGE" /></translation>
@@ -120,6 +121,7 @@
 <translation id="2288278176040912387">Грамофон</translation>
 <translation id="2291538123825441971">Отварят се <ph name="NUMBER_OF_FILES" /> файла.</translation>
 <translation id="2303301624314357662">Файлът „<ph name="FILE_NAME" />“ се отваря.</translation>
+<translation id="2304820083631266885">Планета</translation>
 <translation id="2305020378527873881">Изваждането на „<ph name="VOLUME_NAME" />“ завърши.</translation>
 <translation id="2325650632570794183">Този файлов тип не се поддържа. Моля, посетете уеб магазина на Chrome, за да намерите приложение, което може да отвори съответния тип.</translation>
 <translation id="2326539130272988168">Български</translation>
@@ -218,10 +220,12 @@
 <translation id="3335337277364016868">Година на записване</translation>
 <translation id="3353984535370177728">Избиране на папка за качване</translation>
 <translation id="3356580349448036450">Завършено</translation>
+<translation id="3358452157379365236">Китара</translation>
 <translation id="3382143449143186018">Непалски с клавиатура InScript</translation>
 <translation id="3408236822532681288">Немски (Германия) с клавиатура Neo 2</translation>
 <translation id="3414856743105198592">При форматирането на изваждащия се носител ще се изтрият всички данни. Искате ли да продължите?</translation>
 <translation id="3437801641691368414">Час на създаване</translation>
+<translation id="343907260260897561">Фотоапарат за незабавни снимки</translation>
 <translation id="3455931012307786678">Естонски</translation>
 <translation id="3466147780910026086">Мултимедийното ви устройство се сканира...</translation>
 <translation id="3468522857997926824">На <ph name="FILE_COUNT" /> снимки бяха създадени резервни копия в <ph name="BEGIN_LINK" />Google Диск<ph name="END_LINK" /></translation>
@@ -297,6 +301,7 @@
 <translation id="4309915981827077375">Обща информация</translation>
 <translation id="432252891123397018">Румънски със стандартна клавиатура</translation>
 <translation id="4325128273762811722">Словенски</translation>
+<translation id="4326142238881453352">Ботаник</translation>
 <translation id="4326192123064055915">Кафе</translation>
 <translation id="4336032328163998280">Копирането не бе успешно. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">Кюрдски (сорани) с базирана на арабски клавиатура</translation>
@@ -412,6 +417,7 @@
 <ph name="MARKUP_7" />Споделяйте, създавайте и работете съвместно<ph name="MARKUP_8" />
 по файлове с други хора – всичко от едно място.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Възстановени от Google Диск файлове</translation>
+<translation id="5288441970121584418">Хамбургер</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5318819489018851358">Споделяне с Linux</translation>
@@ -502,10 +508,12 @@
 <translation id="6248400709929739064">Активиране на субтитрите</translation>
 <translation id="6269630227984243955">Малайски</translation>
 <translation id="6287852322318138013">Изберете приложение за отваряне на този файл</translation>
+<translation id="6321303798550928047">Махане с ръка</translation>
 <translation id="6339145975392024142">Американска международна (PC)</translation>
 <translation id="6346310558342052870">Достъпът е ограничен</translation>
 <translation id="6356685157277930264">Прозорец с информация за файловете</translation>
 <translation id="6358884629796491903">Дракон</translation>
+<translation id="6367976544441405720">Микробус</translation>
 <translation id="637062427944097960">Този файл се отвори на друг работен плот. Преминете към <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), за да го прегледате.</translation>
 <translation id="6394388407447716302">Само за четене</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> елемента</translation>
@@ -529,6 +537,7 @@
 <translation id="6650726141019353908">Розова пеперуда</translation>
 <translation id="6657585470893396449">Парола</translation>
 <translation id="6673674183150363784">Френски (Франция) с клавиатура BÉPO</translation>
+<translation id="6710022688720561421">Робот</translation>
 <translation id="6710213216561001401">Предишно</translation>
 <translation id="6751256176799620176">Избрахте 1 папка</translation>
 <translation id="6790428901817661496">Пускане</translation>
@@ -562,6 +571,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6970230597523682626">български</translation>
 <translation id="6973630695168034713">Папки</translation>
+<translation id="6976795442547527108">Лъв</translation>
 <translation id="6978611942794658017">Този файл е предназначен за компютри със софтуер Windows и не е съвместим с устройството ви с Chrome OS. Моля, потърсете в уеб магазина на Chrome подходящо приложение със същата функционалност.</translation>
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6989942356279143254">Шведски</translation>
@@ -608,6 +618,7 @@
 <translation id="7532029025027028521">Персийски (транслитерация)</translation>
 <translation id="7544830582642184299">Даване на приложенията за Linux на достъп до файловете в профила ви в Google Диск. Промените ще се синхронизират с другите ви устройства.</translation>
 <translation id="7544853251252956727">Разбъркване</translation>
+<translation id="7547009467130558110">Маратонка</translation>
 <translation id="7547780573915868306">Литовски</translation>
 <translation id="7547811415869834682">нидерландски</translation>
 <translation id="7551643184018910560">Фиксиране в лавицата</translation>
@@ -747,6 +758,7 @@
 <translation id="8860454412039442620">Електронна таблица в Excel</translation>
 <translation id="8866284467018526531">Арабски (транслитерация)</translation>
 <translation id="8900820606136623064">унгарски</translation>
+<translation id="8903931173357132290">Абитуриент</translation>
 <translation id="8919081441417203123">датски</translation>
 <translation id="8965697826696209160">Няма достатъчно място.</translation>
 <translation id="8970501467542182729">Този файл е предназначен за компютри със софтуер за Macintosh. Не е съвместим с устройството ви, което работи с Chrome OS. <ph name="BEGIN_LINK_HELP" />Научете повече<ph name="END_LINK_HELP" /> за отварянето на файлове в Chrome OS.</translation>

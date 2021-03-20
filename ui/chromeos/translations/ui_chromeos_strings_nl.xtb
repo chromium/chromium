@@ -68,7 +68,7 @@
 <translation id="1729953886957086472">Duits (Duitsland)</translation>
 <translation id="1730235522912993863">Chinees (Cangjie)</translation>
 <translation id="1731889557567069540"><ph name="NUMBER_OF_ITEMS" /> items gekopieerd.</translation>
-<translation id="174173592514158117">Alle Play-mappen weergeven</translation>
+<translation id="174173592514158117">Alle Play-mappen tonen</translation>
 <translation id="1742316578210444689">Hebreeuws (transliteratie)</translation>
 <translation id="1747761757048858544">Nederlands (Nederland)</translation>
 <translation id="174937106936716857">Totaal aantal bestanden</translation>
@@ -87,6 +87,7 @@
 <translation id="1853795129690976061">Deze map wordt gedeeld met Linux</translation>
 <translation id="1864756863218646478">Het bestand kan niet worden gevonden.</translation>
 <translation id="1920670151694390848">Malayalam (transliteratie)</translation>
+<translation id="1920798810075583923">Watermeloen</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> is geformatteerd</translation>
 <translation id="1931134289871235022">Slowaaks</translation>
 <translation id="1933345018156373194">Verplaatsen mislukt. Onverwachte fout: <ph name="ERROR_MESSAGE" /></translation>
@@ -120,6 +121,7 @@
 <translation id="2288278176040912387">Platenspeler</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> bestanden openen.</translation>
 <translation id="2303301624314357662">Bestand <ph name="FILE_NAME" /> wordt geopend.</translation>
+<translation id="2304820083631266885">Planeet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> is verwijderd.</translation>
 <translation id="2325650632570794183">Dit bestandstype wordt niet ondersteund. Ga naar de Chrome Web Store om een app te vinden die dit bestandstype kan openen.</translation>
 <translation id="2326539130272988168">Bulgaars</translation>
@@ -218,10 +220,12 @@
 <translation id="3335337277364016868">Opnamejaar</translation>
 <translation id="3353984535370177728">Een map voor uploaden selecteren</translation>
 <translation id="3356580349448036450">Voltooid</translation>
+<translation id="3358452157379365236">Gitaar</translation>
 <translation id="3382143449143186018">Nepalees met InScript-toetsenbord</translation>
 <translation id="3408236822532681288">Duits (Duitsland) met Neo 2-toetsenbord</translation>
 <translation id="3414856743105198592">Als je het verwisselbare medium formatteert, worden alle gegevens gewist. Wil je doorgaan?</translation>
 <translation id="3437801641691368414">Gemaakt op</translation>
+<translation id="343907260260897561">Instantcamera</translation>
 <translation id="3455931012307786678">Estlands</translation>
 <translation id="3466147780910026086">Je media-apparaat scannen...</translation>
 <translation id="3468522857997926824">Er is een back-up van <ph name="FILE_COUNT" /> foto's gemaakt in <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
@@ -297,6 +301,7 @@
 <translation id="4309915981827077375">Algemene informatie</translation>
 <translation id="432252891123397018">Roemeens met standaard toetsenbord</translation>
 <translation id="4325128273762811722">Sloveens</translation>
+<translation id="4326142238881453352">Plantkundige</translation>
 <translation id="4326192123064055915">Koffie</translation>
 <translation id="4336032328163998280">Kopiëren mislukt. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">Koerdisch Sorani met Arabisch toetsenbord</translation>
@@ -375,7 +380,7 @@
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Een bewerking duurt langer dan verwacht. Wil je deze afbreken?</translation>
 <translation id="5036159836254554629">Delen met Parallels Desktop beheren</translation>
-<translation id="5038625366300922036">Meer weergeven…</translation>
+<translation id="5038625366300922036">Meer tonen…</translation>
 <translation id="5044852990838351217">Armeens</translation>
 <translation id="5059127710849015030">Nepalees (transliteratie)</translation>
 <translation id="5061708541166515394">Contrast</translation>
@@ -413,6 +418,7 @@
     <ph name="MARKUP_7" />Bestanden delen, maken en eraan samenwerken<ph name="MARKUP_8" />
     met anderen allemaal op één locatie.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Bestanden hersteld vanaf Google Drive</translation>
+<translation id="5288441970121584418">Hamburger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Opslaan</translation>
 <translation id="5318819489018851358">Delen met Linux</translation>
@@ -482,7 +488,7 @@
 <translation id="6040143037577758943">Sluiten</translation>
 <translation id="6074825444536523002">Google-formulier</translation>
 <translation id="6079871810119356840">Hongaars met Qwerty-toetsenbord</translation>
-<translation id="6096979789310008754">Zoektekst is gewist, alle bestanden en mappen worden weergegeven.</translation>
+<translation id="6096979789310008754">Zoektekst is gewist. Alle bestanden en mappen worden getoond.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> verplaatsen naar <ph name="FOLDER_NAME" /></translation>
 <translation id="6129953537138746214">Spatie</translation>
 <translation id="6133173853026656527"><ph name="FILE_NAME" /> verplaatsen...</translation>
@@ -503,10 +509,12 @@
 <translation id="6248400709929739064">Ondertiteling inschakelen</translation>
 <translation id="6269630227984243955">Maleis</translation>
 <translation id="6287852322318138013">Een app selecteren om dit bestand te openen</translation>
+<translation id="6321303798550928047">Zwaaien</translation>
 <translation id="6339145975392024142">Amerikaans internationaal (pc)</translation>
 <translation id="6346310558342052870">Beperkte toegang</translation>
 <translation id="6356685157277930264">Feedbackvenster voor bestanden</translation>
 <translation id="6358884629796491903">Draak</translation>
+<translation id="6367976544441405720">Busje</translation>
 <translation id="637062427944097960">Dit bestand is op een ander bureaublad geopend. Verplaats het naar <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) om het te bekijken.</translation>
 <translation id="6394388407447716302">Alleen lezen</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> items</translation>
@@ -530,6 +538,7 @@
 <translation id="6650726141019353908">Roze vlinder</translation>
 <translation id="6657585470893396449">Wachtwoord</translation>
 <translation id="6673674183150363784">Frans (Frankrijk) met Bépo-toetsenbord</translation>
+<translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Vorige</translation>
 <translation id="6751256176799620176">1 map geselecteerd</translation>
 <translation id="6790428901817661496">Spelen</translation>
@@ -563,6 +572,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6970230597523682626">Bulgaars</translation>
 <translation id="6973630695168034713">Mappen</translation>
+<translation id="6976795442547527108">Leeuw</translation>
 <translation id="6978611942794658017">Dit bestand is bedoeld voor een pc met Windows-software. Dit is niet compatibel met je apparaat dat Chrome OS gebruikt. Zoek in de Chrome Web Store naar een geschikte vervangende app.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Zweeds</translation>
@@ -603,12 +613,13 @@
     <ph name="LINE_BREAK1" />
     Klaar om back-up te maken in <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
 <translation id="7495372004724182530">Malayalam (fonetisch)</translation>
-<translation id="7505167922889582512">Verborgen bestanden weergeven</translation>
+<translation id="7505167922889582512">Verborgen bestanden tonen</translation>
 <translation id="7508545000531937079">Diavoorstelling</translation>
 <translation id="751507702149411736">Wit-Russisch</translation>
 <translation id="7532029025027028521">Perzisch (transliteratie)</translation>
 <translation id="7544830582642184299">Linux-apps toegang geven tot bestanden in je Google Drive. Wijzigingen worden gesynchroniseerd met je andere apparaten.</translation>
 <translation id="7544853251252956727">Shuffle</translation>
+<translation id="7547009467130558110">Sneaker</translation>
 <translation id="7547780573915868306">Litouws</translation>
 <translation id="7547811415869834682">Nederlands</translation>
 <translation id="7551643184018910560">Vastzetten op plank</translation>
@@ -632,7 +643,7 @@
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> gekopieerd.</translation>
 <translation id="7711920809702896782">Afbeeldingsgegevens</translation>
 <translation id="7724603315864178912">Knip</translation>
-<translation id="7730494089396812859">Details van cloudback-up weergeven</translation>
+<translation id="7730494089396812859">Details van cloudback-up tonen</translation>
 <translation id="7748626145866214022">Meer opties beschikbaar op de actiebalk. Druk op Alt+A om de focus op de actiebalk te plaatsen.</translation>
 <translation id="7760449188139285140">Chinees (Wubi)</translation>
 <translation id="7765158879357617694">Verplaatsen</translation>
@@ -748,6 +759,7 @@
 <translation id="8860454412039442620">Excel-spreadsheet</translation>
 <translation id="8866284467018526531">Arabisch (transliteratie)</translation>
 <translation id="8900820606136623064">Hongaars</translation>
+<translation id="8903931173357132290">Afgestudeerde</translation>
 <translation id="8919081441417203123">Deens</translation>
 <translation id="8965697826696209160">Er is onvoldoende ruimte.</translation>
 <translation id="8970501467542182729">Dit bestand is bedoeld voor een computer met Macintosh-software. Het is niet geschikt voor jouw apparaat, waarop Chrome OS wordt gebruikt. Bekijk <ph name="BEGIN_LINK_HELP" />meer informatie<ph name="END_LINK_HELP" /> over hoe je bestanden opent in Chrome OS.</translation>

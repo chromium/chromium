@@ -8,6 +8,7 @@
 <translation id="358997566136285270">Chromium-Logo</translation>
 <translation id="4365115785552740256">Chromium wird durch das Open-Source-Projekt <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> und andere <ph name="BEGIN_LINK_OSS" />Open-Source-Software<ph name="END_LINK_OSS" /> ermöglicht.</translation>
 <translation id="4559775032954821361">Gehen Sie zum Chromium-Menü &gt; "<ph name="SETTINGS_TITLE" />" &gt; "<ph name="ADVANCED_TITLE" />" &gt; "<ph name="PROXIES_TITLE" />" &gt; "LAN-Einstellungen" und deaktivieren Sie das Kästchen "Proxyserver für LAN verwenden".</translation>
+<translation id="4622039161600275920">Diese Seite wurde von Chromium blockiert</translation>
 <translation id="48558539577516920">Erlauben Sie Chromium in Ihren Firewall- und Virenschutzeinstellungen den Zugriff auf das Netzwerk.</translation>
 <translation id="580822234363523061">Gehen Sie zum Chromium-Menü &gt; "<ph name="SETTINGS_TITLE" />" &gt; "<ph name="ADVANCED_TITLE" />" &gt; "<ph name="PROXIES_TITLE" />" und vergewissern Sie sich, dass in Ihrer Konfiguration die Einstellung "Kein Proxy" oder "Direkt" verwendet wird.</translation>
 <translation id="6613594504749178791">Ihre Änderungen werden beim nächsten Neustart von Chromium wirksam.</translation>

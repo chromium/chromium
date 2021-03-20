@@ -56,7 +56,7 @@
 <translation id="1175875016430184367">కుడివైపు ట్రిపుల్ స్టేపుల్</translation>
 <translation id="1178581264944972037">పాజ్ చేయి</translation>
 <translation id="1181037720776840403">తీసివేయి</translation>
-<translation id="1186201132766001848">పాస్‌వర్డ్‌లను తనిఖీ చేయి</translation>
+<translation id="1186201132766001848">పాస్‌వర్డ్‌లను చెక్ చేయండి</translation>
 <translation id="1195558154361252544">మీరు అనుమతించినవి మినహా, ఇతర అన్ని సైట్‌లకు నోటిఫికేషన్‌లు ఆటోమేటిక్‌గా బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="1197088940767939838">నారింజ రంగు</translation>
 <translation id="1201402288615127009">తరువాత</translation>
@@ -413,6 +413,7 @@
 <translation id="2482878487686419369">నోటిఫికేషన్‌లు</translation>
 <translation id="248348093745724435">మెషీన్ విధానాలు</translation>
 <translation id="2491120439723279231">సర్వర్ యొక్క ప్రమాణపత్రంలో లోపాలు ఉన్నాయి.</translation>
+<translation id="2491414235131909199">ఒక ఎక్స్‌టెన్షన్ ద్వారా ఈ పేజీ బ్లాక్ చేయబడింది</translation>
 <translation id="2493640343870896922">లెటర్-ప్లస్</translation>
 <translation id="2495083838625180221">JSON పార్సర్</translation>
 <translation id="2495093607237746763">ఎంచుకుంటే, Chromium వేగవంతమైన ఫారమ్ పూరింపు కోసం ఈ పరికరంలో మీ కార్డ్ కాపీని నిల్వ చేస్తుంది.</translation>
@@ -836,6 +837,7 @@
 <translation id="4173315687471669144">ఫుల్‌స్కేప్</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{మరో <ph name="ITEM_COUNT" /> అంశం}other{మరో <ph name="ITEM_COUNT" /> అంశాలు}}</translation>
 <translation id="4176463684765177261">ఆపివేయబడింది</translation>
+<translation id="4178883739871311481"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google డాక్‌ను క్రియేట్ చేయడానికి Tabను, ఆ తర్వాత Enterను నొక్కండి</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">మీ కార్డ్‌ను ప్రస్తుతం సేవ్ చేయలేము</translation>
 <translation id="4196861286325780578">&amp;తరలించడాన్ని పునరావృతం చేయి</translation>
@@ -1082,6 +1084,7 @@
 <translation id="5045550434625856497">సరికాని పాస్‌వర్డ్</translation>
 <translation id="5056549851600133418">మీ కోసం కథనాలు</translation>
 <translation id="5061227663725596739">మీరు <ph name="LOOKALIKE_DOMAIN" /> గురించి అడిగారా?</translation>
+<translation id="5066056036849835175">ప్రింటింగ్ హిస్టరీ</translation>
 <translation id="5068524481479508725">A10</translation>
 <translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 వినియోగంలో ఉంది)}other{(# వినియోగంలో ఉన్నాయి)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />ప్రాక్సీ చిరునామాను తనిఖీ చేయడం<ph name="END_LINK" /></translation>
@@ -1319,7 +1322,7 @@
 <translation id="5967867314010545767">చరిత్ర నుండి తీసివేయి</translation>
 <translation id="5968793460449681917">ప్రతి సందర్శనలో</translation>
 <translation id="5975083100439434680">దూరంగా జూమ్ చేయి</translation>
-<translation id="5979084224081478209">పాస్‌వర్డ్‌లను తనిఖీ చేయి</translation>
+<translation id="5979084224081478209">పాస్‌వర్డ్‌లను చెక్ చేయండి</translation>
 <translation id="5980920751713728343">సూచిక-3x5</translation>
 <translation id="5984570616552610254">చాంబర్‌లోని తేమ</translation>
 <translation id="598637245381783098">చెల్లింపు యాప్‌ను తెరవడం సాధ్యం కాదు</translation>
@@ -1525,6 +1528,7 @@
 <translation id="6852204201400771460">యాప్‌ను మళ్లీ లోడ్ చేయాలా?</translation>
 <translation id="6865412394715372076">ప్రస్తుతం ఈ కార్డ్‌ని ధృవీకరించడం సాధ్యపడదు</translation>
 <translation id="6874604403660855544">&amp;జోడించడాన్ని పునరావృతం చేయి</translation>
+<translation id="6881240511396774766">కొత్త Google డాక్‌ను త్వరగా క్రియేట్ చేయండి</translation>
 <translation id="6884662655240309489">పరిమాణం 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">మరింత తేలికగా చదవడానికి వీలుగా Chrome ఈ పేజీని సులభతరం చేసింది. సురక్షితం కాని కనెక్షన్ ద్వారా Chrome అసలు పేజీని తిరిగి పొందింది.</translation>
@@ -1534,6 +1538,7 @@
 <translation id="6898699227549475383">సంస్థ (O)</translation>
 <translation id="6907293445143367439">దీనికి <ph name="SITE_NAME" />ను అనుమతించండి:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> మీ MIDI పరికరాలకు పూర్తి నియంత్రణను పొందాలనుకుంటోంది</translation>
+<translation id="691325982945105493">Google డాక్ బటన్‌ను క్రియేట్ చేయండి, కొత్త Google డాక్‌ను త్వరగా క్రియేట్ చేయడానికి Enterను నొక్కండి</translation>
 <translation id="6915804003454593391">వినియోగదారు:</translation>
 <translation id="6934672428414710184">ఇది మీ Google ఖాతాలో ఉన్న పేరు</translation>
 <translation id="6944692733090228304"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> నిర్వహించని ఒక సైట్‌లో మీరు మీ పాస్‌వర్డ్‌ని నమోదు చేసారు. మీ ఖాతాని రక్షించడం కోసం, మీ పాస్‌వర్డ్‌ని ఇతర యాప్‌లు మరియు సైట్‌లలో తిరిగి ఉపయోగించవద్దు.</translation>
@@ -1605,7 +1610,7 @@
 <translation id="7181261019481237103">అజ్ఞాత విండోను తెరువు</translation>
 <translation id="7182878459783632708">విధానాలను సెట్ చేయలేదు</translation>
 <translation id="7186367841673660872">ఈ పేజీ<ph name="ORIGINAL_LANGUAGE" />నుండి<ph name="LANGUAGE_LANGUAGE" />కు అనువదించబడింది</translation>
-<translation id="7192203810768312527"><ph name="SIZE" />ను ఖాళీ చేస్తుంది. మీ తదుపరి సందర్శనలో కొన్ని సైట్‌లు మరింత నెమ్మదిగా లోడ్ కావచ్చు.</translation>
+<translation id="7192203810768312527"><ph name="SIZE" /> స్టోరేజీని ఖాళీ చేస్తుంది. కొన్ని సైట్‌లను మీరు తర్వాతిసారి సందర్శించినప్పుడు అవి మరింత నెమ్మదిగా లోడ్ కావచ్చు.</translation>
 <translation id="719464814642662924">వీసా</translation>
 <translation id="7201591969684833065">మీ నిర్వాహకుడు వీటిని చూడగలరు:</translation>
 <translation id="7202346780273620635">లెటర్-అదనం</translation>
@@ -1658,7 +1663,7 @@
 <translation id="7378627244592794276">వద్దు</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7390545607259442187">కార్డ్‌ని నిర్ధారించండి</translation>
-<translation id="7399802613464275309">భద్రతా తనిఖీ</translation>
+<translation id="7399802613464275309">భద్రతా చెక్-అప్</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403591733719184120">మీ <ph name="DEVICE_NAME" /> నిర్వహించబడుతోంది</translation>
 <translation id="7407424307057130981">&lt;p&gt;మీ Windows కంప్యూటర్‌లో Superfish సాఫ్ట్‌వేర్ ఉన్నట్లయితే మీకు ఈ ఎర్రర్ కనిపిస్తుంది.&lt;/p&gt;
@@ -2064,6 +2069,7 @@
 <translation id="8931333241327730545">మీరు ఈ కార్డ్‌ను మీ Google ఖాతాకు సేవ్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="8932102934695377596">మీ గడియారం సమయం గతంలో ఉంది</translation>
 <translation id="893332455753468063">పేరుని జోడించండి</translation>
+<translation id="8934418770423095813">Google డాక్‌ను క్రియేట్ చేయండి</translation>
 <translation id="8942355029279167844">ప్రోడక్ట్ అనుభవాన్ని మెరుగుపరచడం కోసం, <ph name="APP_NAME" />కు సమస్య విశ్లేషణ డేటాను సేకరించడానికి మీ అడ్మినిస్ట్రేట‌ర్ అనుమతిచ్చారు. మరింత సమాచారం కోసం <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />ను చూడండి.</translation>
 <translation id="8943282376843390568">నిమ్మపండు రంగు</translation>
 <translation id="8957210676456822347">క్యాప్టివ్ పోర్టల్ ప్రామాణీకరణ</translation>

@@ -278,6 +278,13 @@
 <translation id="1413936351612032792">Linux uygulamalarının kullanımıyla ilgili bilgileri raporla</translation>
 <translation id="1417888712677507140">Farklı kaynaklı alt çerçevelerden tetiklenen JavaScript iletişim kutuları engellenir</translation>
 <translation id="1418387035898607074">Güvenilir kaynaklardan indirilen dosyalar için Güvenli Tarama kontrollerini atla</translation>
+<translation id="1418968246960170056">Politikanın ayarlanması, <ph name="VENDOR_ID_FIELD_NAME" /> ve <ph name="PRODUCT_ID_FIELD_NAME" /> alanıyla eşleşen tedarikçi ve ürün kimliklerine sahip USB seri cihazlarına erişmesine otomatik olarak izin verilen sitelerin listesini oluşturmanıza olanak tanır. <ph name="PRODUCT_ID_FIELD_NAME" /> alanının atlanması, belirtilen sitelere <ph name="VENDOR_ID_FIELD_NAME" /> alanı ve herhangi bir ürün kimliğiyle eşleşen tedarikçi kimliğine sahip cihazlara erişim izni verir.
+
+      URL'ler geçerli olmalıdır; aksi halde, politika yok sayılır. Yalnızca URL'nin kaynağı (şema, ana makine ve bağlantı noktası) dikkate alınır.
+
+      Bu politika <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> ve kullanıcının tercihlerini geçersiz kılar.
+
+      Bu politika, yalnızca Web Serial API üzerinden USB cihazlarına erişimi etkiler. WebUSB API üzerinden USB cihazlarına erişim izni vermek için <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" /> politikasını inceleyin.</translation>
 <translation id="142346659686073702">Bağlı olmayan kullanıcıların Crostini'yi kullanmasına izin verir</translation>
 <translation id="1425551776320718592">Bu cihaz kullanıcılarının, Powerwash işlemini zorlamadan, cihazı güvenlik açısından şüpheli bir durumda bırakabilecek ADB başka cihazdan yükleme işlevini kullanmalarını engelleyin.</translation>
 <translation id="1426170570389588560">Yazdırma işleri meta verilerinin saklanacağı dönemi gün cinsinden ayarla</translation>
@@ -595,6 +602,11 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
       Politika Devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" />, tanımlanan URL'leri alternatif tarayıcıda açmaya çalışmaz.</translation>
 <translation id="1797233582739332495">Kullanıcıya yeniden başlatmanın gerektiğini belirten yinelenen bir istem gösterme</translation>
 <translation id="1798559516913615713">GPO önbellek ömrü</translation>
+<translation id="180130467244315277">Bu politika, yöneticilerin <ph name="PRODUCT_NAME" /> ürününün ayarlarında tercih edilen dillerin sıralamasını yapılandırmalarına olanak tanır.
+
+      Listenin sırası, chrome://settings/languages adresindeki "Dilleri tercihinize göre sıralayın" bölümün altındaki liste ile aynı sırada görünür. Kullanıcılar, politika tarafından ayarlanan dilleri kaldıramaz veya sırasını değiştiremezler ancak politika tarafından ayarlanan dillerin altında yeni diller ekleyebilirler. Diğer politikalar tarafından uygulanmadığı sürece kullanıcılar ayrıca, tarayıcının hem kullanıcı arayüzü hem de çeviri/yazım denetimi ayarları üzerinde tam kontrol sahibi olurlar.
+
+      Politikanın ayarlanmadan bırakılması, kullanıcıların tercih edilen diller listesinin tamamını manipüle etmelerine olanak tanır.</translation>
 <translation id="1803646570632580723">Başlatıcıda gösterilecek sabitlenmiş uygulamalar listesi</translation>
 <translation id="1808715480127969042">Bu sitelerdeki çerezleri engelle</translation>
 <translation id="1810261428246410396">Anında Tethering'in kullanılmasına izin ver.</translation>
@@ -2569,6 +2581,7 @@ Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yerel bil
 <translation id="4492287494009043413">Ekran görüntüleri almayı devre dışı bırak</translation>
 <translation id="4494132853995232608">Wilco DTC</translation>
 <translation id="449423975179525290"><ph name="PLUGIN_VM_NAME" /> ile ilgili politikaları yapılandırır.</translation>
+<translation id="449784980858429908">Sitelere, tüm seri bağlantı noktalarına bağlanmak için otomatik olarak izin ver.</translation>
 <translation id="4510923771103268849">Kullanıcının, Crostini kapsayıcılarına root erişimi olmasına izin verilir</translation>
 <translation id="4515404363392014383">Güvenilen kaynaklar için Güvenli Tarama'yı etkinleştir</translation>
 <translation id="4518251772179446575">Bir site, kullanıcının fiziksel konumunu izlemek istediğinde sor</translation>
@@ -2720,6 +2733,7 @@ Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yerel bil
       Bu politika ayarlanmadığında veya etkinken DNS müdahale kontrolleri yapılır. Açıkça devre dışı bırakıldığında kontrol yapılmaz.</translation>
 <translation id="4700190441681139987">Hiçbir sitenin sensörlere erişmesine izin verme</translation>
 <translation id="4703402283970867140">Ekranın karartma süresini uzatmak için akıllı karartma modelini etkinleştir</translation>
+<translation id="4704958130749494760">Sitelere, USB seri cihazlara bağlanmak için otomatik olarak izin ver.</translation>
 <translation id="4722122254122249791">Site İzolasyonu'nu belirtilen kaynaklar için etkinleştirme</translation>
 <translation id="4723122879352880315">Bu ayar, kullanıcıların <ph name="PRODUCT_OS_NAME" /> oturum açma kimlik bilgilerini kullanarak NTLM kimlik doğrulaması güvenliğine sahip yönetilen proxy'de kimlik doğrulaması yapmalarına olanak tanır.
 
@@ -4114,6 +4128,11 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 
       Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa yazdırma komutları, baskı önizleme ekranını tetikler.</translation>
 <translation id="6658245400435704251">Bir güncelleme sunucuya ilk gönderildiği andan itibaren bir cihazın rastgele şekilde güncelleme yüklemesini geciktirebileceği süreyi saniye olarak belirtir. Cihaz bu sürenin bir kısmında gerçek zaman olarak, geri kalan kısmında ise güncelleme denetlemelerinin sayısınca bekleyebilir. Cihazın bir güncellemeyi sürekli bekler durumda kalmaması için, dağılım her durumda üst sınır olarak sabit bir süre ile kısıtlıdır.</translation>
+<translation id="6662162847932043943">Politikanın ayarlanması, kullanılabilen tüm seri bağlantı noktalarına erişmesine otomatik olarak izin verilen sitelerin listesini oluşturmanıza olanak tanır.
+
+      URL'ler geçerli olmalıdır; aksi halde, politika yok sayılır. Yalnızca URL'nin kaynağı (şema, ana makine ve bağlantı noktası) dikkate alınır.
+
+      Bu politika <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> ve kullanıcının tercihlerini geçersiz kılar.</translation>
 <translation id="6665670272107384733">Hızlı kilit açmayı kullanmak için kullanıcının şifreyi hangi sıklıkta girmesi gerektiğini ayarla</translation>
 <translation id="6667586534922258705">Şifre görüntüleme düğmesini giriş ve kilit ekranında gösterir.</translation>
 <translation id="6669700740683748046">Bu özellik, tam URL'nin adres çubuğunda görüntülenmesini sağlar.
@@ -4172,7 +4191,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 
       Not: Bu politika ayrıca <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> kullanılarak zorunlu yüklenmiş uzantıları ve uygulamaları da etkiler.</translation>
 <translation id="6731757988219967594">Üst düzey siteleri (ancak yerleştirilmiş iframe'leri değil) yetişkinlere yönelik içerik için filtrele</translation>
-<translation id="6734521799274931721">ChromeOS için Ağ Üzerinde Dosya Paylaşımı'nın kullanılabilirliğini kontrol eder</translation>
 <translation id="6735701345096330595">Yazım denetimi dillerini etkinleştirmeye zorla</translation>
 <translation id="6740611636377710500">Bu kullanıcının PluginVm çalıştırmasına izin verir.
 
@@ -4309,13 +4327,6 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="6907778402784621686">Bu sitelerde güvenli olmayan içeriği engelle</translation>
 <translation id="6908640907898649429">Varsayılan arama sağlayıcıyı yapılandırır. Kullanıcının kullanacağı varsayılan arama sağlayıcıyı belirleyebilir veya varsayılan aramayı devre dışı bırakmayı seçebilirsiniz.</translation>
 <translation id="6913068954484253496"><ph name="PRODUCT_NAME" /> ürününün tüm IP adreslerindeki Yayın cihazlarına bağlanmasına izin ver</translation>
-<translation id="6916817094593836501">Bu politika, listelenen sitelerde benzer URL uyarılarının gösterilmesini engeller. Bu uyarılar genellikle <ph name="PRODUCT_NAME" />, bir sitenin, kullanıcının aşina olduğu başka bir siteyle ilgili sahtecilik yapmaya çalıştığını düşünürse o sitede gösterilir.
-
-       Politika etkinleştirilerek bir veya daha fazla alan adına ayarlanırsa kullanıcı o alan adındaki sayfaları ziyaret ederken benzer uyarı sayfaları gösterilmez.
-
-       Politika devre dışı bırakılır, ayarlanmaz veya boş listeye ayarlanırsa uyarılar kullanıcının ziyaret ettiği her sitede gösterilebilir.
-
-       Ana makine adı tam olarak eşleşirse veya alan adında eşleşme söz konusu olursa ana makine adına izin verilebilir. Örneğin, bu listede "foo.example.com" veya "example.com" yer alıyorsa "https://foo.example.com/bar" gibi bir URL için uyarılar gizlenebilir.</translation>
 <translation id="6922884955650325312"><ph name="FLASH_PLUGIN_NAME" /> eklentisini engelle</translation>
 <translation id="6923731550900440989">Giriş ekranında metin vurgu kutusunu etkinleştir</translation>
 <translation id="6924223708804692571">Yazım denetimi dillerini zorla devre dışı bırakır. Bu listedeki tanınmayan diller yoksayılır.
@@ -4397,6 +4408,15 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       Politikayı <ph name="BR_UNDER_USER_CONTROL" /> değerine ayarlamak, kullanıcıların yedekleme ve geri yükleme özelliğini kullanmak için istemleri göreceği anlamına gelir. Kullanıcı, yedekleme ve geri yükleme özelliğini açarsa Android uygulama verileri, Android yedekleme sunucularına yüklenip uyumlu uygulamaların yeniden yüklemeleri sırasında geri yüklenir.
 
       Kullanıcılar, ilk kurulumdan sonra yedekleme ve geri yükleme özelliğini açabilir veya kapatabilir.</translation>
+<translation id="6981537713216575858">Politikayı ayarlamak, tedarikçi ve ürün kimlikleri olan USB cihazına otomatik olarak erişme izni verilen siteleri belirten URL kalıplarının listesini yapmanıza olanak tanır. Politikanın geçerli olabilmesi için listedeki her öğe hem <ph name="DEVICES_FIELD_NAME" /> hem de <ph name="URLS_FIELD_NAME" /> alanlarını gerektirir. <ph name="DEVICES_FIELD_NAME" /> alanındaki her öğe, <ph name="VENDOR_ID_FIELD_NAME" /> ve <ph name="PRODUCT_ID_FIELD_NAME" /> alanı içerebilir. <ph name="VENDOR_ID_FIELD_NAME" /> alanının atlanması, her cihazla eşleşen bir politika oluşturur. <ph name="PRODUCT_ID_FIELD_NAME" /> alanının atlanması, belirtilen satıcı kimliğiyle her cihazla eşleşen bir politika oluşturur. <ph name="PRODUCT_ID_FIELD_NAME" /> alanı olup <ph name="VENDOR_ID_FIELD_NAME" /> alanı olmayan politika geçersizdir.
+
+      USB izin modeli, belirtilen URL'nin USB cihazına üst seviye kaynak olarak erişmesine izin verir. Yerleşik çerçevelerin USB cihazlarına erişmesi gerekiyorsa erişim izni vermek için "usb" <ph name="FEATURE_POLICY_HEADER_NAME" /> başlığı kullanılmalıdır. URL geçerli olmalıdır; aksi halde politika yok sayılır.
+
+      Kullanımdan kaldırıldı: Hem istekte bulunan URL'nin hem de yerleştirme URL'sinin belirtilmesini desteklemek için kullanılan USB izin modeli. Bu izin modeli, kullanımdan kaldırılmıştır ve yalnızca geriye dönük uyumluluk için şu şekilde desteklenir: Hem istekte bulunan URL hem de yerleştirme URL'si belirtilirse yerleştirme URL'sine üst seviye kaynak olarak izin verilip istekte bulunan URL tamamen yok sayılır.
+
+      Bu politika <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />, <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />, <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> politikalarını ve kullanıcının tercihlerini geçersiz kılar.
+
+      Bu politika, yalnızca WebUSB API üzerinden USB cihazlarına erişimi etkiler. Web Serial API üzerinden USB cihazlarına erişim izni vermek için <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" /> politikasını inceleyin.</translation>
 <translation id="6986172482189158664">Tarama Verisi Geçerlilik Süresi Ayarları</translation>
 <translation id="6986838929449128437">Bu politika kullanımdan kaldırıldı, lütfen bunun yerine <ph name="SAFE_BROWSING_ALLOWLIST_DOMAINS_POLICY_NAME" /> politikasını kullanın.
 
@@ -4989,6 +5009,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="776110834126722255">Kullanımdan kaldırıldı</translation>
 <translation id="7763614521440615342">Yeni Sekme sayfasında içerik önerileri göster</translation>
 <translation id="7765879851993224640">Smart Lock oturum açmanın kullanılmasına izin ver</translation>
+<translation id="7771298620150437359">İçeriği ve tercih edilen diller sıralamasını yapılandır</translation>
 <translation id="7774768074957326919">Sistem proxy ayarlarını kullan</translation>
 <translation id="777734450201217641">Giriş ekranında erişilebilirlik özellikleri kısayollarını etkinleştirin.
 

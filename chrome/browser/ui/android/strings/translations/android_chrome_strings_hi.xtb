@@ -425,7 +425,6 @@
 <translation id="395206256282351086">खोज और साइट सुझाव बंद हैं</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{तैयार होने पर Chrome आपका पेज लोड करेगा}one{तैयार होने पर Chrome आपके पेज लोड करेगा}other{तैयार होने पर Chrome आपके पेज लोड करेगा}}</translation>
 <translation id="3963007978381181125">लंबा पासवर्ड सुरक्षित करने के तरीके में Google Pay से भुगतान करने की विधि और पते शामिल नहीं हैं. सिर्फ़ वह इंसान आपका सुरक्षित किया हुआ डेटा पढ़ सकता है जिसके पास आपका लंबा पासवर्ड है. Google की ओर से लंबा पासवर्ड भेजा या संग्रहित नहीं किया जाता है. अगर आप अपना लंबा पासवर्ड भूल जाते हैं या इस सेटिंग को बदलना चाहते हैं, तो आपको सिंक रीसेट करना होगा. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
-<translation id="3967822245660637423">डाउनलोड पूरा हुआ</translation>
 <translation id="3969142555815019568">Chrome आपके पासवर्ड की जांच नहीं कर सकता</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" />, Chrome में खुलेगा. जारी रखने का मतलब है कि आप <ph name="BEGIN_LINK1" />Google की सेवा की शर्तों<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />Google Chrome और Chrome OS की सेवा की अतिरिक्त शर्तों<ph name="END_LINK2" /> से सहमत हैं. साथ ही, आप <ph name="BEGIN_LINK3" />Family Link से प्रबंधित होने वाले Google खातों के लिए निजता सूचना<ph name="END_LINK3" /> से भी सहमत हैं.</translation>
 <translation id="397583555483684758">समन्‍वयन ने काम करना बंद कर दिया है</translation>
@@ -471,6 +470,7 @@
 <translation id="4314815835985389558">सिंक प्रबंधित करें</translation>
 <translation id="4320177379694898372">कोई इंटरनेट कनेक्‍शन नहीं</translation>
 <translation id="4321739720395210191">कैमरा खाेला नहीं जा सकता. अपने डिवाइस को रीस्टार्ट करके, फिर से कोशिश करें.</translation>
+<translation id="433213510553688132">फ़ॉलो किया जा रहा है...</translation>
 <translation id="4335835283689002019">सुरक्षित ब्राउज़िंग की सुविधा बंद है</translation>
 <translation id="4351244548802238354">संवाद बंद करें</translation>
 <translation id="4378154925671717803">फ़ोन</translation>
@@ -486,7 +486,7 @@
 <translation id="447252321002412580">Chrome के फ़ीचर और परफ़ॉर्मेंस को बेहतर बनाने में सहायता करें</translation>
 <translation id="4479972344484327217">Chrome के लिए <ph name="MODULE" /> इंस्टॉल किया जा रहा है…</translation>
 <translation id="4487967297491345095">Chrome का सभी ऐप्लिकेशन डेटा हमेशा केे लिए हटा दिया जाएगा. इसमें सभी फ़ाइलें, सेटिंग, खाते, डेटाबेस वगैरह शामिल हैं.</translation>
-<translation id="449126573531210296">अपने Google खाते के साथ सिंक किए गए पासवर्ड एन्क्रिप्ट (सुरक्षित) करें</translation>
+<translation id="449126573531210296">अपने Google खाते के क्रेडेंशियल का इस्तेमाल कर, सिंक किए गए पासवर्ड को सुरक्षित करें.</translation>
 <translation id="4493497663118223949">लाइट मोड चालू है</translation>
 <translation id="4508528996305412043">फ़ीड कार्ड मेन्यू खुल गया है</translation>
 <translation id="4508642716788467538">अपनी भाषा चुनें</translation>

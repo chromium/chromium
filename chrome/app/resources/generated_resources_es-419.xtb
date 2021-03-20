@@ -270,6 +270,7 @@
 <translation id="1294807885394205587">Este proceso puede tardar unos minutos. Se está iniciando el administrador de contenedores.</translation>
 <translation id="1296911687402551044">Fijar la pestaña seleccionada</translation>
 <translation id="1297175357211070620">Destino</translation>
+<translation id="129770436432446029">Enviar comentarios acerca de <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="1300806585489372370">Para cambiar esta configuración, primero <ph name="BEGIN_LINK" />activa los identificadores<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> puede editar los siguientes archivos</translation>
 <translation id="1302227299132585524">Permitir JavaScript para eventos de Apple</translation>
@@ -315,12 +316,12 @@
 <translation id="1347256498747320987">Instala actualizaciones y apps. Al continuar, aceptas que este dispositivo también descargue e instale automáticamente actualizaciones y apps de Google, tu administrador y el fabricante del dispositivo, posiblemente a través de datos móviles. Es posible que algunas de estas apps ofrezcan compras directas desde la aplicación. <ph name="BEGIN_LINK1" />Más información<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Almacenamiento en Linux</translation>
 <translation id="1347975661240122359">La actualización comenzará cuando el nivel de la batería alcance el <ph name="BATTERY_LEVEL" />%.</translation>
+<translation id="1353275871123211385">Para usar los controles parentales, como la aprobación de apps y los límites de tiempo de uso, el niño debe tener una Cuenta de Google que administre el padre o la madre. Para usar herramientas como Google Classroom, se puede agregar una cuenta de institución educativa en otro momento.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1353980523955420967">No se puede encontrar el archivo PPD. Comprueba que tu Chromebook esté en línea y vuelve a intentarlo.</translation>
 <translation id="1354045473509304750">Seguir permitiendo que <ph name="HOST" /> use y mueva la cámara</translation>
 <translation id="1355088139103479645">¿Quieres borrar todos los datos?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> está bloqueado</translation>
-<translation id="1357896526834120583">Reinicia tu dispositivo</translation>
 <translation id="1358741672408003399">Ortografía y gramática</translation>
 <translation id="1359923111303110318">Puedes desbloquear tu dispositivo mediante Smart Lock. Presiona Intro para permitir el acceso.</translation>
 <translation id="1361164813881551742">Agregar manualmente</translation>
@@ -666,6 +667,7 @@
 <translation id="1722687688096767818">Agregando perfil…</translation>
 <translation id="1723824996674794290">&amp;Nueva ventana</translation>
 <translation id="1725149567830788547">Mostrar &amp;controles</translation>
+<translation id="1725562816265788801">Desplazamiento de pestañas</translation>
 <translation id="1726100011689679555">Servidores de nombres</translation>
 <translation id="1727662110063605623">Abre la Configuración para conectar el dispositivo <ph name="USB_DEVICE_NAME" /> a Parallels Desktop o Linux.</translation>
 <translation id="1729533290416704613">También controla qué página se muestra al realizar búsquedas desde el cuadro multifunción.</translation>
@@ -821,6 +823,7 @@
 <translation id="1877860345998737529">Asignación de interruptores a acciones</translation>
 <translation id="1878155070920054810">Al parecer, tu Chromebook se quedará sin energía antes de que se complete la actualización. Para evitar interrupciones, asegúrate de que se cargue correctamente.</translation>
 <translation id="1879000426787380528">Acceder como</translation>
+<translation id="18802377548000045">Las pestañas se achican a un ancho grande</translation>
 <translation id="1880905663253319515">¿Eliminar certificado "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Diseño del teclado</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Elemento}other{# elementos}}</translation>
@@ -1410,7 +1413,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2541002089857695151">¿Quieres optimizar la transmisión en pantalla completa?</translation>
 <translation id="2541706104884128042">Se estableció una nueva hora de dormir</translation>
 <translation id="2542050502251273923">Establece el nivel de depuración del administrador de conexiones de red y otros servicios mediante ff_debug.</translation>
-<translation id="2544292303401268586">El administrador solicitó que se reiniciara tu dispositivo para actualizar las apps. Este proceso puede demorar varios minutos.</translation>
 <translation id="2544352060595557290">Esta pestaña</translation>
 <translation id="2544853746127077729">Certificado de autenticación rechazado por la red</translation>
 <translation id="2546283357679194313">Datos de sitios y cookies</translation>
@@ -1844,6 +1846,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3012804260437125868">Conexiones seguras al mismo sitio únicamente</translation>
 <translation id="3012917896646559015">Comunícate con el fabricante del hardware de inmediato para enviar tu computadora a reparación.</translation>
 <translation id="3013291976881901233">Dispositivos MIDI</translation>
+<translation id="301525898020410885">Tu organización configuró el idioma</translation>
 <translation id="3015639418649705390">Reiniciar ahora</translation>
 <translation id="3016381065346027039">No hay entradas de registro</translation>
 <translation id="3016641847947582299">Componente actualizado</translation>
@@ -2221,6 +2224,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3468298837301810372">Etiqueta</translation>
 <translation id="3468999815377931311">Teléfono Android</translation>
 <translation id="3470442499439619530">Quitar este usuario</translation>
+<translation id="3471350386419633991">Haz clic con el botón derecho en una pestaña o haz clic en el ícono de Favoritos para agregar pestañas a una lista de lectura. Accede a la pestaña desde la barra de favoritos.</translation>
 <translation id="3471876058939596279">No se pueden usar los puertos HDMI y USB tipo C al mismo tiempo para transmitir video. Usa otro puerto de video.</translation>
 <translation id="3473241910002674503">Con los botones del modo tablet, puedes navegar hacia la pantalla de inicio, regresar y cambiar de apps.</translation>
 <translation id="3473479545200714844">Lupa</translation>
@@ -2267,6 +2271,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3518985090088779359">Aceptar y continuar</translation>
 <translation id="3519564332031442870">Servicio de backend de impresión</translation>
 <translation id="3521606918211282604">Cambiar el tamaño del disco</translation>
+<translation id="3522088408596898827">Hay muy poco espacio disponible en el disco. Libera espacio y vuelve a intentarlo.</translation>
 <translation id="3524965460886318643">Exportar actividades</translation>
 <translation id="3526034519184079374">No se pueden leer ni cambiar los datos del sitio</translation>
 <translation id="3527085408025491307">Carpeta</translation>
@@ -2916,6 +2921,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4252852543720145436">Identificadores de contenido protegidos</translation>
 <translation id="4252899949534773101">Bluetooth está inhabilitado</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" />: Se compartió el contenido de la pestaña</translation>
+<translation id="4253183225471855471">No se encontraron redes. Inserta tu SIM y reinicia el dispositivo antes de intentarlo de nuevo.</translation>
 <translation id="4254813446494774748">Idioma de la traducción:</translation>
 <translation id="425573743389990240">Tasa de descarga de batería en vatios (un valor negativo significa que la batería se está cargando)</translation>
 <translation id="4256316378292851214">Guardar &amp;video como...</translation>
@@ -3009,6 +3015,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4374831787438678295">Instalador de Linux</translation>
 <translation id="4375035964737468845">Abrir archivos descargados</translation>
 <translation id="4376226992615520204">Ubicación desactivada</translation>
+<translation id="4377058670119819762">Permite el desplazamiento de izquierda a derecha en la barra de pestañas cuando está completa.</translation>
 <translation id="4377363674125277448">Se produjo un error con el certificado del servidor.</translation>
 <translation id="4378154925671717803">Teléfono</translation>
 <translation id="4378551569595875038">Conectando…</translation>
@@ -3642,6 +3649,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5111646998522066203">Salir del modo incógnito</translation>
 <translation id="5111692334209731439">Adminis&amp;trador de favoritos</translation>
 <translation id="5112577000029535889">Herramientas del &amp;desarrollador</translation>
+<translation id="5113533693789703768">Herramientas del presentador</translation>
 <translation id="5113739826273394829">Si haces clic en este ícono, bloquearás manualmente el dispositivo <ph name="DEVICE_TYPE" />. La próxima vez, deberás escribir la contraseña para ingresar.</translation>
 <translation id="51143538739122961">Inserta tu llave de seguridad y presiónala</translation>
 <translation id="5114987907971894280">realidad virtual</translation>
@@ -3731,6 +3739,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="520621735928254154">Error en la importación de certificado</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{Cambiaste correctamente la contraseña hackeada. Tienes # contraseña hackeada más. Chrome te recomienda revisar esta contraseña ahora.}other{Cambiaste correctamente la contraseña hackeada. Tienes # contraseñas hackeadas más. Chrome te recomienda revisar estas contraseñas ahora.}}</translation>
 <translation id="5207949376430453814">Destacar el símbolo de intercalación de texto</translation>
+<translation id="520902706163766447">Habilita una burbuja emergente en la parte superior de la IU de Chrome para realizar búsquedas en las pestañas abiertas actualmente.</translation>
 <translation id="5209320130288484488">No se encontraron dispositivos.</translation>
 <translation id="5210365745912300556">Cerrar pestaña</translation>
 <translation id="5213481667492808996">Ya puedes usar tu servicio de datos de "<ph name="NAME" />"</translation>
@@ -3971,7 +3980,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5488468185303821006">Permitir modo incógnito</translation>
 <translation id="5488508217173274228">Sincronizar las opciones de encriptación</translation>
 <translation id="5489435190927933437">Contraseñas guardadas para <ph name="DOMAIN" /></translation>
-<translation id="5489451338260400630">No permitir que los sitios visualicen texto ni imágenes del portapapeles</translation>
 <translation id="5490721031479690399">Desconectar el dispositivo Bluetooth</translation>
 <translation id="5490798133083738649">Permitir que Linux acceda a tu micrófono</translation>
 <translation id="549211519852037402">Beige y blanco</translation>
@@ -4489,6 +4497,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6078323886959318429">Agregar un acceso directo</translation>
 <translation id="6078752646384677957">Comprueba el micrófono y los niveles de audio.</translation>
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" quiere conectarse a un dispositivo HID</translation>
+<translation id="608029822688206592">No se encontraron redes. Inserta tu tarjeta SIM y vuelve a intentarlo.</translation>
 <translation id="6080515710685820702">¿Usas una computadora compartida? Intenta abrir una ventana de incógnito.</translation>
 <translation id="6080689532560039067">Comprobar la hora del sistema</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" />: Parte de un grupo sin nombre</translation>
@@ -4678,6 +4687,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6291741848715722067">Código de confirmación</translation>
 <translation id="6291949900244949761">Preguntarme cuando un sitio desee acceder a dispositivos USB (recomendado)</translation>
 <translation id="6291953229176937411">Mo&amp;strar en Buscador</translation>
+<translation id="6292699686837272722">Las pestañas se achican a un ancho mediano</translation>
 <translation id="6295158916970320988">Todos los sitios</translation>
 <translation id="6295855836753816081">Guardando…</translation>
 <translation id="6298962879096096191">Usar Google Play para instalar apps de Android</translation>
@@ -4687,7 +4697,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="630292539633944562">Sugerencias de información personal</translation>
 <translation id="6305607932814307878">Política global:</translation>
 <translation id="6307990684951724544">Sistema ocupado</translation>
-<translation id="6308077700132376815">No permitir imágenes</translation>
 <translation id="6308493641021088955">Acceso proporcionado por <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Guardar &amp;enlace como...</translation>
 <translation id="6309443618838462258">Tu administrador no permite este método de entrada</translation>
@@ -4742,6 +4751,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Agregar familiares y amigos</translation>
 <translation id="6367985768157257101">¿Quieres recibir contenido mediante Compartir con Nearby?</translation>
+<translation id="6368276408895187373">Habilitado: <ph name="VARIATION_NAME" /></translation>
 <translation id="636850387210749493">Registro de empresa</translation>
 <translation id="6370021412472292592">No se pudo cargar el manifiesto.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
@@ -4913,6 +4923,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6562117348069327379">Almacena los registros del sistema en el directorio Descargas.</translation>
 <translation id="656293578423618167">La ruta de acceso o el nombre del archivo es demasiado largo. Guarda con un nombre más corto o en otra ubicación.</translation>
 <translation id="6563469144985748109">Tu administrador aún no lo aprobó</translation>
+<translation id="6568283005472142698">Búsqueda de pestañas</translation>
 <translation id="6569934958368283244">Otras personas</translation>
 <translation id="6573497332121198392">No se puede quitar el acceso directo.</translation>
 <translation id="657402800789773160">&amp;Volver a cargar esta página</translation>
@@ -5238,6 +5249,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6938606182859551396">Si quieres recibir notificaciones del teléfono en tu <ph name="DEVICE_TYPE" />, sigue las instrucciones que aparecen en el teléfono para otorgar a los Servicios de Google Play acceso a las notificaciones.</translation>
 <translation id="6938789263968032501">Personas</translation>
 <translation id="6939815295902433669">Revisar el software del dispositivo</translation>
+<translation id="694168622559714949">Tu administrador configuró un idioma predeterminado, el cual no puede modificarse.</translation>
 <translation id="6941937518557314510">Accede a <ph name="TOKEN_NAME" /> para autenticarte en <ph name="HOST_NAME" /> con tu certificado.</translation>
 <translation id="6943060957016121200">Habilitar la Conexión instantánea mediante dispositivo móvil</translation>
 <translation id="6943176775188458830">Cancelar impresión</translation>
@@ -5612,6 +5624,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7370592524170198497">Ethernet EAP:</translation>
 <translation id="7371006317849674875">Hora de inicio</translation>
 <translation id="7371490947952970241">Para inhabilitar la Ubicación, desactiva la configuración de la ubicación principal en este dispositivo. También puedes desactivar el uso de Wi-Fi, redes móviles y sensores para obtener la ubicación en la configuración de la ubicación.</translation>
+<translation id="7371917887111892735">Las pestañas se achican al ancho de las pestañas fijas</translation>
 <translation id="7374376573160927383">Administrar dispositivos USB</translation>
 <translation id="7375235221357833624">{0,plural, =1{Actualiza el dispositivo en el transcurso de una hora}other{Actualiza el dispositivo en el transcurso de # horas}}</translation>
 <translation id="7376553024552204454">Resaltar el cursor del mouse cuando se mueve</translation>
@@ -6764,6 +6777,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="8676770494376880701">Cargador de baja potencia conectado</translation>
 <translation id="8677212948402625567">Contraer todo...</translation>
 <translation id="8677859815076891398">No hay álbumes. Crea un álbum en <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
+<translation id="8678582529642151449">Las pestañas no se achican</translation>
 <translation id="8678933587484842200">¿Cómo deseas que se ejecute esta app?</translation>
 <translation id="8680251145628383637">Accede para obtener tus favoritos, el historial, las contraseñas y otras opciones de configuración en todos tus dispositivos. Además, accederás de forma automática a los servicios de Google.</translation>
 <translation id="8681614230122836773">Chrome encontró software dañino en tu computadora</translation>
@@ -7328,6 +7342,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="992592832486024913">Inhabilitar ChromeVox (comentarios por voz)</translation>
 <translation id="992778845837390402">La copia de seguridad de Linux está en curso</translation>
 <translation id="993540765962421562">La instalación está en curso</translation>
+<translation id="993611649451704398">Seleccionar el estado del experimento</translation>
 <translation id="994289308992179865">Bucle</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Estableciendo una conexión segura...</translation>

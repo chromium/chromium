@@ -71,7 +71,7 @@
 <translation id="1605405588277479165">Uit: niet aanbevolen</translation>
 <translation id="1605658421715042784">Afbeelding kopiëren</translation>
 <translation id="1608337082864370066">Zoeken naar gekopieerde afbeelding</translation>
-<translation id="1612730193129642006">Tabbladraster weergeven</translation>
+<translation id="1612730193129642006">Tabbladraster tonen</translation>
 <translation id="1644574205037202324">Geschiedenis</translation>
 <translation id="1650222530560417226">Tik op de knop 'Logboekregistratie starten' om toekomstige logboeken van JavaScript-console en fouten van alle tabbladen te verzamelen. Er worden logboeken verzameld (en alleen opgeslagen in het geheugen) totdat de pagina wordt gesloten of op 'Logboekregistratie stoppen' wordt getikt.</translation>
 <translation id="1657011748321897393">Delen is mislukt omdat je niet verbonden bent met het netwerk.</translation>
@@ -93,18 +93,18 @@
 <translation id="1813414402673211292">Browsegegevens wissen</translation>
 <translation id="1815941218935345331">Toegangscode</translation>
 <translation id="1820259098641718022">Toegevoegd aan leeslijst</translation>
-<translation id="1870148520156231997">Wachtwoord weergeven</translation>
+<translation id="1870148520156231997">Wachtwoord tonen</translation>
 <translation id="1872096359983322073">Zaklamp</translation>
 <translation id="1911619930368729126">Uploaden naar Google Drive</translation>
 <translation id="1923342640370224680">Afgelopen uur</translation>
 <translation id="1941314575388338491">Dubbeltik om te kopiëren.</translation>
-<translation id="1952172573699511566">Websites worden indien mogelijk weergegeven in je voorkeurstaal.</translation>
+<translation id="1952172573699511566">Websites worden indien mogelijk getoond in je voorkeurstaal.</translation>
 <translation id="1952728750904661634">Inloggen met een beheerd account</translation>
 <translation id="1965935827552890526">Maak af wat je aan het doen was in het andere geopende Chrome-venster.</translation>
 <translation id="1973912524893600642">Gegevens behouden</translation>
 <translation id="1974060860693918893">Geavanceerd</translation>
 <translation id="1989112275319619282">Browsen</translation>
-<translation id="2015722694326466240">Als je wachtwoorden wilt weergeven, moet je eerst een toegangscode instellen op je apparaat.</translation>
+<translation id="2015722694326466240">Als je wachtwoorden wilt zien, moet je eerst een toegangscode instellen op je apparaat.</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> dagen geleden actief</translation>
 <translation id="2074131957428911366">Je kunt altijd in de <ph name="BEGIN_LINK" />instellingen<ph name="END_LINK" /> bepalen wat je wilt synchroniseren.</translation>
 <translation id="2079545284768500474">Ongedaan maken</translation>
@@ -139,7 +139,7 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 <translation id="2386793615875593361">1 geselecteerd</translation>
 <translation id="2421004566762153674">Cookies van derden blokkeren</translation>
 <translation id="2421044535038393232">Doorgaan met bewerken</translation>
-<translation id="2435457462613246316">Wachtwoord weergeven</translation>
+<translation id="2435457462613246316">Wachtwoord tonen</translation>
 <translation id="2497852260688568942">Synchronisatie is uitgeschakeld door je beheerder</translation>
 <translation id="2500374554657206846">Opties voor 'Wachtwoord opslaan'</translation>
 <translation id="2523363575747517183">Deze website probeert herhaaldelijk een andere app te openen.</translation>
@@ -302,11 +302,11 @@ Volg de onderstaande stappen:</translation>
 <translation id="4121993058175073134">Als je netto-exportgegevens wilt verzenden, configureer je je e-mailaccount in de app Instellingen.</translation>
 <translation id="4124987746317609294">Periode</translation>
 <translation id="4152011295694446843">Hier vind je je bookmarks</translation>
-<translation id="4172051516777682613">Altijd weergeven</translation>
+<translation id="4172051516777682613">Altijd tonen</translation>
 <translation id="418156467088430727">Offline versie bekijken op nieuw tabblad</translation>
 <translation id="4181841719683918333">Talen</translation>
 <translation id="424315890655130736">Wachtwoordzin opgeven</translation>
-<translation id="4263576668337963058">Beschikbare pagina-acties weergeven</translation>
+<translation id="4263576668337963058">Beschikbare pagina-acties tonen</translation>
 <translation id="4267380167363222949">Volgend tabblad</translation>
 <translation id="4272631900155121838">Als je een QR-code wilt scannen, schakel je de camera in via Instellingen</translation>
 <translation id="4277990410970811858">Safe Browsing</translation>
@@ -419,9 +419,9 @@ Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze
 <translation id="5490005495580364134">Alle cookies blokkeren (niet aanbevolen)</translation>
 <translation id="5508435575041083207">Uitloggen en gegevens van dit apparaat wissen</translation>
 <translation id="5525269841082836315">Wachtwoordzin maken</translation>
-<translation id="5548760955356983418">Met Handoff kun je een website browsen op dit apparaat en vervolgens gemakkelijk doorgaan op je Mac. De momenteel geopende website wordt weergegeven in het Dock van je Mac.
+<translation id="5548760955356983418">Met Handoff kun je een website op dit apparaat bezoeken en vervolgens makkelijk verder bezoeken op je Mac. De momenteel geopende website zie je in het Dock van je Mac.
 
-Handoff moet ook zijn ingeschakeld in het gedeelte 'Algemeen' van 'Instellingen' en je apparaten moeten hetzelfde iCloud-account gebruiken.</translation>
+Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je apparaten moeten hetzelfde iCloud-account gebruiken.</translation>
 <translation id="5551897871312988470">Aanbieden om te vertalen</translation>
 <translation id="5556459405103347317">Opnieuw laden</translation>
 <translation id="5592679540098330836">Schakel synchronisatie in voor <ph name="NAME" /></translation>
@@ -482,7 +482,7 @@ Handoff moet ook zijn ingeschakeld in het gedeelte 'Algemeen' van 'Instellingen'
 <translation id="6144589619057374135">${url} openen in de incognitomodus</translation>
 <translation id="616831107264507309">Later lezen</translation>
 <translation id="6177442314419606057">Zoeken in Chrome</translation>
-<translation id="6184086493125982861">Tabbladen weergeven</translation>
+<translation id="6184086493125982861">Tabbladen tonen</translation>
 <translation id="6187302354554850004">Laatst gesynchroniseerd: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">Ongelezen</translation>
 <translation id="6196207969502475924">Gesproken zoekopdrachten</translation>
@@ -560,7 +560,7 @@ Probeer een uniek wachtwoord te gebruiken voor elke site.</translation>
 <translation id="6785453220513215166">Crashrapport verzenden...</translation>
 <translation id="679325081238418596">Je bookmarks, geschiedenis, wachtwoorden en andere instellingen beschikbaar maken op al je apparaten</translation>
 <translation id="6797885426782475225">Gesproken zoekopdracht</translation>
-<translation id="6807889908376551050">Alles weergeven...</translation>
+<translation id="6807889908376551050">Alles tonen...</translation>
 <translation id="681368974849482173">Item gemaakt</translation>
 <translation id="6831043979455480757">Vertalen</translation>
 <translation id="6851516051005285358">Desktopsite opvragen</translation>
@@ -607,6 +607,7 @@ Probeer een uniek wachtwoord te gebruiken voor elke site.</translation>
 <translation id="7272437679830969316">Kan je identiteit niet verifiëren. Wachtwoord niet gekopieerd.</translation>
 <translation id="7291368939935408496">Wachtwoorden voorbereiden...</translation>
 <translation id="7293171162284876153">Schakel 'Je Chrome-gegevens synchroniseren' in om de synchronisatie te starten.</translation>
+<translation id="7299000566397147023">Meest recente tabblad openen</translation>
 <translation id="7313347584264171202">Hier vind je je incognitotabbladen</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> procent gedownload</translation>
 <translation id="7340958967809483333">Opties voor Discover</translation>
@@ -761,7 +762,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8981454092730389528">Google-activiteitsopties</translation>
 <translation id="8985320356172329008">Ingelogd bij Google als</translation>
 <translation id="9034759925968272072">Je wordt niet uitgelogd van je Google-account. Voor je Google-account kunnen andere vormen van browsegeschiedenis beschikbaar zijn via <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
-<translation id="9037965129289936994">Origineel weergeven</translation>
+<translation id="9037965129289936994">Origineel tonen</translation>
 <translation id="9039373489628511875">Bandbreedte</translation>
 <translation id="9055772144595778347">Kan niet inloggen</translation>
 <translation id="9065203028668620118">Bewerken</translation>

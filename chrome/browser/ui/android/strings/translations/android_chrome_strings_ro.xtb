@@ -98,7 +98,7 @@
 <translation id="1697284962337958118">Adaugă în</translation>
 <translation id="1718835860248848330">Ultima oră</translation>
 <translation id="1724977129262658800">Deblochează pentru a modifica parola</translation>
-<translation id="173522743738009831">Despre mediul de testare securizat pentru confidențialitate</translation>
+<translation id="173522743738009831">Despre Privacy Sandbox</translation>
 <translation id="1736419249208073774">Explorează</translation>
 <translation id="1749561566933687563">Sincronizează marcajele</translation>
 <translation id="17513872634828108">File deschise</translation>
@@ -349,19 +349,19 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="3384347053049321195">Trimite imaginea</translation>
 <translation id="3387650086002190359">Descărcarea fișierului <ph name="FILE_NAME" /> nu a reușit din cauza unor erori privind sistemul de fișiere.</translation>
 <translation id="3389286852084373014">Textul este prea mare</translation>
-<translation id="3391512812407811893">Perioadele de încercare pentru mediul de testare securizat pentru confidențialitate</translation>
+<translation id="3391512812407811893">Perioadele de încercare pentru Privacy Sandbox</translation>
 <translation id="3398320232533725830">Deschide managerul de marcaje</translation>
 <translation id="3414952576877147120">Dimensiune:</translation>
 <translation id="3429160811076349561">Funcțiile de încercare sunt dezactivate</translation>
 <translation id="3440975416244667276">Atinge lung pentru mai multe informații relevante</translation>
 <translation id="3443221991560634068">Reîncarcă pagina curentă</translation>
-<translation id="3451542610083122179">Mediul de testare securizat pentru confidențialitate este o inițiativă continuă de a păstra un web deschis care te va apăra de mecanismele de urmărire.
+<translation id="3451542610083122179">Privacy Sandbox este o inițiativă continuă de a păstra un web deschis care te va apăra de mecanismele de urmărire.
 
 Site-urile din ziua de azi se bazează pe multe tehnologii, cum sunt cookie-urile terțe, pentru servicii importante, precum afișarea de anunțuri relevante și măsurarea performanței unui site.
 
-Mediul de testare securizat pentru confidențialitate păstrează vitalitatea unui web deschis, creând moduri mai bune de a oferi aceste servicii, fără a afecta site-urile și împiedicând urmărirea ta pe web.
+Privacy Sandbox păstrează vitalitatea unui web deschis, creând moduri mai bune de a oferi aceste servicii, fără a afecta site-urile și împiedicând urmărirea ta pe web.
 
-Mediul de testare securizat pentru confidențialitate este încă în dezvoltare și este disponibil în anumite regiuni. Pentru moment, site-urile pot încerca Mediul de testare securizat pentru confidențialitate în timp ce folosesc mai departe tehnologiile web actuale, precum cookie-urile terțe. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
+Privacy Sandbox este încă în dezvoltare și este disponibil în anumite regiuni. Pentru moment, site-urile pot încerca Privacy Sandbox în timp ce folosesc mai departe tehnologiile web actuale, precum cookie-urile terțe. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">Poți alege motorul de căutare</translation>
 <translation id="3492207499832628349">Filă incognito nouă</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /> despre conținutul sugerat</translation>
@@ -425,7 +425,6 @@ Mediul de testare securizat pentru confidențialitate este încă în dezvoltare
 <translation id="395206256282351086">Sugestiile de căutare și de site-uri sunt dezactivate</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome va încărca pagina când este gata}few{Chrome va încărca paginile când este gata}other{Chrome va încărca paginile când este gata}}</translation>
 <translation id="3963007978381181125">Criptarea expresiei de acces nu include metodele de plată și adresele din Google Pay. Numai cine are expresia ta de acces poate citi datele tale criptate. Expresia de acces nu este trimisă sau stocată la Google. Dacă îți uiți expresia de acces sau vrei să modifici această setare, va trebui să resetezi sincronizarea. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
-<translation id="3967822245660637423">Descărcare finalizată</translation>
 <translation id="3969142555815019568">Chrome nu îți poate verifica parolele</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> se va deschide în Chrome. Dacă alegi să continui, ești de acord cu <ph name="BEGIN_LINK1" />Termenii și condițiile Google<ph name="END_LINK1" /> și cu <ph name="BEGIN_LINK2" />Termenii și condițiile suplimentare pentru Google Chrome și Sistemul de operare Chrome<ph name="END_LINK2" />. Se aplică și <ph name="BEGIN_LINK3" />Notificarea privind confidențialitatea pentru Conturile Google gestionate cu Family Link<ph name="END_LINK3" />.</translation>
 <translation id="397583555483684758">Sincronizarea nu mai funcționează</translation>
@@ -471,6 +470,7 @@ Mediul de testare securizat pentru confidențialitate este încă în dezvoltare
 <translation id="4314815835985389558">Gestionează sincronizarea</translation>
 <translation id="4320177379694898372">Nu există conexiune la internet</translation>
 <translation id="4321739720395210191">Nu se poate deschide camera. Repornește dispozitivul și încearcă din nou.</translation>
+<translation id="433213510553688132">Urmărești...</translation>
 <translation id="4335835283689002019">Navigarea sigură este dezactivată</translation>
 <translation id="4351244548802238354">Închide caseta de dialog</translation>
 <translation id="4378154925671717803">Telefon</translation>
@@ -1066,7 +1066,7 @@ Datele din sesiunea incognito vor fi șterse din Chrome numai când <ph name="BE
 <translation id="8156139159503939589">În ce limbi poți să citești?</translation>
 <translation id="8168435359814927499">Conținut</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> fișiere rămase</translation>
-<translation id="8189750580333936930">Mediul de testare securizat pentru confidențialitate</translation>
+<translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">1 zi rămasă</translation>
 <translation id="8200772114523450471">Reia</translation>
 <translation id="8209050860603202033">Deschideți imaginea</translation>

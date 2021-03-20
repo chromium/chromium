@@ -87,6 +87,7 @@
 <translation id="1853795129690976061">Այս պանակը հասանելի է Լինուքսին</translation>
 <translation id="1864756863218646478">Ֆայլը չգտնվեց:</translation>
 <translation id="1920670151694390848">մալայալամ տառադարձում</translation>
+<translation id="1920798810075583923">Ձմերուկ</translation>
 <translation id="1924372192547904021">«<ph name="DRIVE_NAME" />» կրիչը ձևաչափվեց</translation>
 <translation id="1931134289871235022">սլովակերեն</translation>
 <translation id="1933345018156373194">Չհաջողվեց տեղափոխել։ Անսպասելի սխալ առաջացավ՝ <ph name="ERROR_MESSAGE" /></translation>
@@ -120,6 +121,7 @@
 <translation id="2288278176040912387">Գրամոֆոն</translation>
 <translation id="2291538123825441971">Բացվում է <ph name="NUMBER_OF_FILES" /> ֆայլ։</translation>
 <translation id="2303301624314357662">Բացվում է <ph name="FILE_NAME" /> ֆայլը։</translation>
+<translation id="2304820083631266885">Մոլորակ</translation>
 <translation id="2305020378527873881">Չհաջողվեց առբերել <ph name="VOLUME_NAME" /> պանակը։</translation>
 <translation id="2325650632570794183">Ֆայլի այս տեսակը չի աջակցվում: Այցելեք Chrome Web Store, որպեսզի գտնեք համապատասխան հավելված, որը կարող է բացել այս տեսակի ֆայլը:</translation>
 <translation id="2326539130272988168">բուլղարերեն</translation>
@@ -218,10 +220,12 @@
 <translation id="3335337277364016868">Ձայնագրության տարեթիվը</translation>
 <translation id="3353984535370177728">Ընտրեք պանակ՝ վերբեռնելու համար</translation>
 <translation id="3356580349448036450">Ավարտված է</translation>
+<translation id="3358452157379365236">Կիթառ</translation>
 <translation id="3382143449143186018">նեպալերեն (InScript ստեղնաշար)</translation>
 <translation id="3408236822532681288">գերմաներեն (Գերմանիա)՝ Neo 2 ստեղնաշարով</translation>
 <translation id="3414856743105198592">Հեռացվելի կրիչի ձևաչափումը կջնջի բոլոր տվյալները: Ցանկանո՞ւմ եք շարունակել:</translation>
 <translation id="3437801641691368414">Ստեղծման ժամը</translation>
+<translation id="343907260260897561">Ակնթարթային տեսախցիկ</translation>
 <translation id="3455931012307786678">էստոներեն</translation>
 <translation id="3466147780910026086">Որոնում մեդիա սարքում…</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> լուսանկար կրկնօրինակվեց <ph name="BEGIN_LINK" />Google Drive-ում<ph name="END_LINK" /></translation>
@@ -297,6 +301,7 @@
 <translation id="4309915981827077375">Ընդհանուր տեղեկություններ</translation>
 <translation id="432252891123397018">ռումիներեն (ստանդարտ)</translation>
 <translation id="4325128273762811722">սլովեներեն</translation>
+<translation id="4326142238881453352">Բուսաբան</translation>
 <translation id="4326192123064055915">Սուրճ</translation>
 <translation id="4336032328163998280">Պատճենումը չհաջողվեց: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">սորանի (արաբական այբուբեն)</translation>
@@ -412,6 +417,7 @@
     <ph name="MARKUP_7" />Ստեղծեք, կիսվեք և համագործակցեք<ph name="MARKUP_8" />
     ուրիշների հետ մեկ վայրում:<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Վերականգնված ֆայլեր Google Drive-ից</translation>
+<translation id="5288441970121584418">Բուրգեր</translation>
 <translation id="5317780077021120954">Պահել</translation>
 <translation id="5318819489018851358">Հասանելի դարձնել Լինուքսին</translation>
 <translation id="5323213332664049067">Լատինամերիկյան</translation>
@@ -501,10 +507,12 @@
 <translation id="6248400709929739064">Միացնել ենթագրերը</translation>
 <translation id="6269630227984243955">մալայերեն</translation>
 <translation id="6287852322318138013">Այս ֆայլը բացելու համար ընտրեք հավելված</translation>
+<translation id="6321303798550928047">Ձեռքով ողջույն</translation>
 <translation id="6339145975392024142">ԱՄՆ միջազգային (PC)</translation>
 <translation id="6346310558342052870">Սահմանափակ հասանելիություն</translation>
 <translation id="6356685157277930264">Ֆայլերի մասին տեղեկությունների պատուհան</translation>
 <translation id="6358884629796491903">Վիշապ</translation>
+<translation id="6367976544441405720">Միկրոավտոբուս</translation>
 <translation id="637062427944097960">Այս ֆայլը բացված է այլ աշխատասեղանի վրա: Այն դիտելու համար տեղափոխվեք <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />):</translation>
 <translation id="6394388407447716302">Միայն կարդալու</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> տարր</translation>
@@ -528,6 +536,7 @@
 <translation id="6650726141019353908">Վարդագույն թիթեռ</translation>
 <translation id="6657585470893396449">Գաղտնաբառ</translation>
 <translation id="6673674183150363784">ֆրանսերեն (Ֆրանսիա)՝ Bépo ստեղնաշարով</translation>
+<translation id="6710022688720561421">Ռոբոտ</translation>
 <translation id="6710213216561001401">Նախորդը</translation>
 <translation id="6751256176799620176">Ընտրված է 1 պանակ</translation>
 <translation id="6790428901817661496">Նվագարկել</translation>
@@ -561,6 +570,7 @@
 <translation id="6965382102122355670">Եղավ</translation>
 <translation id="6970230597523682626">Բուլղարական</translation>
 <translation id="6973630695168034713">Պանակներ</translation>
+<translation id="6976795442547527108">Առյուծ</translation>
 <translation id="6978611942794658017">Այս ֆայլը նախատեսված է Windows ծրագրակազմ օգտագործող համակարգիչների համար: Այն համատեղելի չէ ձեր Chrome OS-ով աշխատող սարքի հետ: Որոնեք համապատասխան փոխարինող հավելված Chrome Web Store-ում:</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">շվեդերեն</translation>
@@ -607,6 +617,7 @@
 <translation id="7532029025027028521">պարսկերեն (տառադարձություն)</translation>
 <translation id="7544830582642184299">Հասանելի դարձրեք ձեր Google Drive-ի ֆայլերը Լինուքսին։ Փոփոխությունները կհամաժամացվեն ձեր մյուս սարքերի հետ։</translation>
 <translation id="7544853251252956727">Խառնել</translation>
+<translation id="7547009467130558110">Սպորտային կոշիկ</translation>
 <translation id="7547780573915868306">լիտվերեն</translation>
 <translation id="7547811415869834682">Հոլանդական</translation>
 <translation id="7551643184018910560">Ամրացնել դարակում</translation>
@@ -746,6 +757,7 @@
 <translation id="8860454412039442620">Excel աղյուսակ</translation>
 <translation id="8866284467018526531">արաբերեն (տառադարձություն)</translation>
 <translation id="8900820606136623064">Հունգարական</translation>
+<translation id="8903931173357132290">Շրջանավարտ</translation>
 <translation id="8919081441417203123">Դանիական</translation>
 <translation id="8965697826696209160">Բավարար տարածք չկա:</translation>
 <translation id="8970501467542182729">Այս ֆայլը նախատեսված է Macintosh ծրագրակազմով համակարգչի համար։ Այն համատեղելի չէ Chrome OS-ով աշխատող ձեր սարքի հետ: <ph name="BEGIN_LINK_HELP" />Իմացեք ավելին<ph name="END_LINK_HELP" />, թե ինչպես ֆայլերը բացել Chrome OS-ում։</translation>

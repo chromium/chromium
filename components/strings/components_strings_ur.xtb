@@ -412,6 +412,7 @@
 <translation id="2482878487686419369">اطلاعات</translation>
 <translation id="248348093745724435">مشین کی پالیسیاں</translation>
 <translation id="2491120439723279231">سرور کے سرٹیفکیٹ میں خرابیاں ہیں۔</translation>
+<translation id="2491414235131909199">اس صفحے کو ایک ایکسٹینشن نے مسدود کر دیا ہے</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">‏JSON پارسر</translation>
 <translation id="2495093607237746763">‏نشان زد کیے جانے پر، زیادہ تیزی سے فارم بھرنے کیلئے Chromium آپ کے کارڈ کی ایک کاپی اس آلہ پر اسٹور کرے گا۔</translation>
@@ -627,6 +628,7 @@
 <translation id="3371076217486966826">‏<ph name="URL" /> درج ذیل چیزیں کرنا چاہتا ہے:
       • اپنے اطراف کا ایک 3D نقشہ تخلیق کرنا اور کیمرے کی پوزیشن کو ٹریک کرنا
       • اپنے کیمرے کا استعمال کرنا</translation>
+<translation id="3372389303668969359">‏ادائیگی کے اس طریقے سے خریداری کرنے کے لئے اگلی بار اس آلے کا استعمال کرتے وقت اس بات کی فوری طور پر توثیق کرنے کے لئے کہ یہ آپ ہی ہیں آپ Windows Hello کا استعمال کر سکتے ہیں۔</translation>
 <translation id="337363190475750230">کالعدم کردہ</translation>
 <translation id="3377144306166885718">‏سرور نے TLS کا متروک ورژن استعمال کیا۔</translation>
 <translation id="3377188786107721145">پالیسی پارس کرنے کی خرابی</translation>
@@ -700,6 +702,7 @@
 <translation id="3615877443314183785">ایک درست تاریخ اختتام درج کریں</translation>
 <translation id="36224234498066874">براؤزنگ ڈیٹا صاف کریں…</translation>
 <translation id="362276910939193118">پوری سرگزشت دکھائیں</translation>
+<translation id="3625635938337243871">آپ کے پوشیدگی وضع سے باہر نکلنے کے بعد، سائن ان ڈیٹا اس آلے پر اسٹور کیا جائے گا۔</translation>
 <translation id="3630155396527302611">اگر یہ پہلے سے ہی نیٹ ورک تک رسائی کیلئے اجازت یافتہ پروگرام کے بطور مندرج
       ہے تو اسے فہرست سے ہٹانے اور دوبارہ شامل کرنے کی کوشش کریں۔</translation>
 <translation id="3630699740441428070">اس آلہ کے منتظمین نے آپ کے نیٹ ورک کنکشن کو ترتیب دیا ہے، جس کی مدد سے وہ آپ کی ملاحظہ کردہ ویب سائٹس سمیت آپ کی نیٹ ورک ٹریفک دیکھ سکتے ہیں۔</translation>
@@ -837,6 +840,7 @@
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> مزید آئٹم}other{<ph name="ITEM_COUNT" /> مزید آئٹمز}}</translation>
 <translation id="4176463684765177261">غیر فعال</translation>
+<translation id="4178883739871311481">‏<ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />، Google Doc تخلیق کرنے کے لئے ٹیب کے بعد اینٹر دبائیں</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">آپ کا کارڈ ابھی محفوظ نہیں کیا جا سکا</translation>
 <translation id="4196861286325780578">منتقلی &amp;واپس لائیں</translation>
@@ -934,6 +938,7 @@
 <translation id="4477350412780666475">اگلا ٹریک</translation>
 <translation id="4482953324121162758">اس سائٹ کا ترجمہ نہیں کیا جائے گا۔</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">‏مطابقت پذیر کردہ پاس ورڈز کو اپنے Google اکاؤنٹ کے ساتھ مرموز کریں</translation>
 <translation id="4492519888999857993">‏یہ خصوصیات بذریعہ ڈیفالٹ غیر فعال ہیں۔ یہ Chrome کے آئندہ کے ورژنز میں دستیاب نہیں ہوں گی۔</translation>
 <translation id="4493480324863638523">‏غلط URL۔ معیاری اسکیم والا URL ہونا ضروری ہے، جیسے http://example.com یا https://example.com۔</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
@@ -1082,6 +1087,7 @@
 <translation id="5045550434625856497">غلط پاس ورڈ</translation>
 <translation id="5056549851600133418">آپ کیلئے مضامین</translation>
 <translation id="5061227663725596739">کیا آپ کا مطلب <ph name="LOOKALIKE_DOMAIN" /> ہے؟</translation>
+<translation id="5066056036849835175">پرنٹنگ کی سرگزشت</translation>
 <translation id="5068524481479508725">A10</translation>
 <translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 زیر استعمال ہے)}other{(# زیر استعمال ہیں)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />پراکسی پتہ چیک کیا جا رہا ہے<ph name="END_LINK" /></translation>
@@ -1103,6 +1109,7 @@
 <translation id="5126510351761255129">اپنے کارڈ کی توثیق کریں</translation>
 <translation id="5135404736266831032">پتوں کا نظم کریں...</translation>
 <translation id="5138227688689900538">کم دکھائیں</translation>
+<translation id="514010763713772514">اگلی بار زیادہ جلدی توثیق کریں</translation>
 <translation id="5145883236150621069">خرابی کوڈ پالیسی جواب میں موجود ہے</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> کیلئے اطلاعات مسدود ہیں</translation>
 <translation id="5148809049217731050">سامنے</translation>
@@ -1525,6 +1532,7 @@
 <translation id="6852204201400771460">ایپ دوبارہ لوڈ کریں؟</translation>
 <translation id="6865412394715372076">ابھی اس کارڈ کی توثیق نہیں کی جا سکتی</translation>
 <translation id="6874604403660855544">&amp;دوبارہ شامل کریں</translation>
+<translation id="6881240511396774766">‏تیزی سے ایک نئی Google Doc تخلیق کریں</translation>
 <translation id="6884662655240309489">سائز 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">‏پڑھنے کو زیادہ آسان بنانے کے ليے Chrome نے اس صفحے کو آسان بنایا۔ Chrome نے غیر محفوظ کنکشن پر اصل صفحہ کو بازیاب کیا۔</translation>
@@ -1534,6 +1542,7 @@
 <translation id="6898699227549475383">‏تنظیم (O)</translation>
 <translation id="6907293445143367439"><ph name="SITE_NAME" /> کو اس کی اجازت دیں:</translation>
 <translation id="6910240653697687763">‏<ph name="URL" /> آپ کے MIDI آلات کا پورا کنٹرول حاصل کرنا چاہتا ہے</translation>
+<translation id="691325982945105493">‏'Google Doc تخلیق کریں' بٹن، تیزی سے ایک نئی Google Doc تخلیق کرنے کے لئے اینٹر دبائیں</translation>
 <translation id="6915804003454593391">صارف:</translation>
 <translation id="6934672428414710184">‏یہ نام آپ کے Google اکاؤنٹ سے ہے</translation>
 <translation id="6944692733090228304">آپ نے اپنا پاس ورڈ ایک ایسی سائٹ پر درج کیا ہے جو <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> کے زیر انتظام نہیں ہے۔ اپنے اکاؤنٹ کے تحفظ کے لیے، دیگر ایپس اور سائٹس پر اپنا پاس ورڈ دوبارہ استعمال نہ کریں۔</translation>
@@ -1852,6 +1861,7 @@
 <translation id="8086971161893892807">مسودہ</translation>
 <translation id="8088680233425245692">مضمون دیکھنے میں ناکام:</translation>
 <translation id="808894953321890993">پاس ورڈ تبدیل کریں</translation>
+<translation id="8090329638663751802">‏ادائیگی کے اس طریقے سے خریداری کرنے کے لئے اگلی بار اس آلے کا استعمال کرتے وقت اس بات کی فوری طور پر توثیق کرنے کے لئے کہ یہ آپ ہی ہیں آپ Touch ID کا استعمال کر سکتے ہیں۔</translation>
 <translation id="8090403583893450254">سائز 20</translation>
 <translation id="8091372947890762290">فعالیت سرور پر زیر التواء ہے</translation>
 <translation id="8092774999298748321">گہرا جامنی</translation>
@@ -2063,6 +2073,7 @@
 <translation id="8931333241327730545">‏کیا آپ اس کارڈ کو اپنے Google اکاؤنٹ میں محفوظ کرنا چاہتے ہیں؟</translation>
 <translation id="8932102934695377596">آپ کی گھڑی پیچھے ہے</translation>
 <translation id="893332455753468063">نام شامل کریں</translation>
+<translation id="8934418770423095813">‏Google Doc تخلیق کریں</translation>
 <translation id="8942355029279167844">‏آپ کے منتظم نے <ph name="APP_NAME" /> کو پروڈکٹ کے تجربے کو بہتر بنانے کے لیے ڈائیگناسٹکس ڈیٹا جمع کرنے کی اجازت دے دی ہے۔ مزید معلومات کے لیے <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> دیکھیں۔</translation>
 <translation id="8943282376843390568">لائم</translation>
 <translation id="8957210676456822347">کیپٹو پورٹل اجازت دہندگی</translation>

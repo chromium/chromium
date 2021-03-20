@@ -279,6 +279,13 @@
 <translation id="1413936351612032792">Segnala informazioni sull'utilizzo delle app Linux</translation>
 <translation id="1417888712677507140">Blocca le finestre di dialogo JavaScript attivate da un diverso frame secondario di origine.</translation>
 <translation id="1418387035898607074">Salta i controlli di Navigazione sicura per i file scaricati da fonti attendibili</translation>
+<translation id="1418968246960170056">La configurazione del criterio consente di elencare i siti a cui viene concessa automaticamente l'autorizzazione ad accedere ai dispositivi seriali USB con ID fornitore e prodotto corrispondenti ai valori dei campi <ph name="VENDOR_ID_FIELD_NAME" /> e <ph name="PRODUCT_ID_FIELD_NAME" />. Se il campo <ph name="PRODUCT_ID_FIELD_NAME" /> non viene specificato, i siti indicati sono autorizzati ad accedere ai dispositivi con ID fornitore corrispondente al valore del campo <ph name="VENDOR_ID_FIELD_NAME" /> e con qualsiasi ID prodotto.
+
+      Se gli URL non sono validi, il criterio viene ignorato. Viene considerata soltanto l'origine (schema, host e porta) dell'URL.
+
+      Questo criterio sostituisce i criteri <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> e le preferenze dell'utente.
+
+      Questo criterio viene applicato soltanto per l'accesso ai dispositivi USB tramite l'API Web Serial. Per concedere l'accesso ai dispositivi USB tramite l'API WebUSB, vedi il criterio <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="142346659686073702">Consenti agli utenti non affiliati di usare Crostini</translation>
 <translation id="1425551776320718592">Impedisci agli utenti di questo dispositivo di utilizzare il processo sideload ADB senza forzare la funzione Powerwash, che potrebbe lasciare il dispositivo in uno stato di sicurezza discutibile</translation>
 <translation id="1426170570389588560">Imposta il periodo di tempo in giorni per memorizzare i metadati dei processi di stampa</translation>
@@ -592,6 +599,11 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       Se il criterio viene impostato su Disattivato o se non viene impostato, <ph name="PRODUCT_NAME" /> non proverà ad avviare gli URL impostati in un browser alternativo.</translation>
 <translation id="1797233582739332495">Mostra all'utente un messaggio ricorrente che indica che è necessario un riavvio</translation>
 <translation id="1798559516913615713">Durata della cache del GPO</translation>
+<translation id="180130467244315277">Questo criterio consente agli amministratori di configurare l'ordine delle lingue preferite nelle impostazioni di <ph name="PRODUCT_NAME" />.
+
+      L'ordine dell'elenco sarà uguale a quello nella sezione "Ordina le lingue in base alle tue preferenze" della pagina chrome://settings/languages. Gli utenti non potranno rimuovere o cambiare l'ordine delle lingue impostate nel criterio, ma potranno aggiungere lingue sotto quelle impostate nel criterio. Gli utenti avranno inoltre il pieno controllo della lingua dell'interfaccia utente del browser e delle impostazioni di traduzione/controllo ortografico, a meno che non vengano applicate da altri criteri.
+
+      Se il criterio non viene configurato, gli utenti possono modificare l'intero elenco di lingue preferite.</translation>
 <translation id="1803646570632580723">Elenco di applicazioni bloccate da visualizzare in Avvio applicazioni</translation>
 <translation id="1808715480127969042">Blocca cookie su questi siti</translation>
 <translation id="1810261428246410396">Consenti l'uso del tethering istantaneo.</translation>
@@ -2569,6 +2581,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="4492287494009043413">Disabilita l'acquisizione di screenshot</translation>
 <translation id="4494132853995232608">DTC wilco</translation>
 <translation id="449423975179525290">Imposta le norme relative a <ph name="PLUGIN_VM_NAME" />.</translation>
+<translation id="449784980858429908">Concedi automaticamente ai siti l'autorizzazione a connettersi a tutte le porte seriali</translation>
 <translation id="4510923771103268849">L'utente può avere accesso root ai contenitori Crostini</translation>
 <translation id="4515404363392014383">Attiva Navigazione sicura per le origini attendibili</translation>
 <translation id="4518251772179446575">Chiedi ogni volta che un sito desidera monitorare la posizione fisica degli utenti</translation>
@@ -2720,6 +2733,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Se questo criterio non viene impostato o viene attivato, i controlli dell'intercettazione DNS vengono eseguiti. Se viene disattivato, i controlli non vengono eseguiti.</translation>
 <translation id="4700190441681139987">Non consentire a nessun sito di accedere ai sensori</translation>
 <translation id="4703402283970867140">Attiva il modello di oscuramento smart per ritardare l'oscuramento dello schermo</translation>
+<translation id="4704958130749494760">Concedi automaticamente ai siti l'autorizzazione a connettersi a dispositivi seriali USB</translation>
 <translation id="4722122254122249791">Attiva isolamento dei siti per origini specificate
 </translation>
 <translation id="4723122879352880315">Questa impostazione consente agli utenti di eseguire l'autenticazione su un proxy gestito protetto tramite l'autenticazione NTLM usando le credenziali di accesso di <ph name="PRODUCT_OS_NAME" />.
@@ -4123,6 +4137,11 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, i comandi di stampa attivano la schermata dell'anteprima di stampa.</translation>
 <translation id="6658245400435704251">Consente di specificare il numero di secondi massimo per cui un dispositivo può ritardare in modo casuale il download di un suo aggiornamento dal momento della pubblicazione dell'aggiornamento sul server. Il dispositivo può attendere una parte di questo tempo in termini di tempo reale e la parte rimanente in termini di numero di controlli della disponibilità di aggiornamenti. In ogni caso, la dispersione ha un limite massimo pari a un periodo di tempo costante in modo che un dispositivo non si blocchi mai in attesa di scaricare un aggiornamento.</translation>
+<translation id="6662162847932043943">La configurazione del criterio consente di elencare i siti a cui viene concessa automaticamente l'autorizzazione ad accedere a tutte le porte seriali disponibili.
+
+      Se gli URL non sono validi, il criterio viene ignorato. Viene considerata soltanto l'origine (schema, host e porta) dell'URL.
+
+      Questo criterio sostituisce i criteri <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> e le preferenze dell'utente.</translation>
 <translation id="6665670272107384733">Imposta la frequenza di inserimento della password per poter usare lo sblocco rapido</translation>
 <translation id="6667586534922258705">Mostra il pulsante di visualizzazione della password nella schermata di accesso e di blocco</translation>
 <translation id="6669700740683748046">Questa funzionalità consente la visualizzazione dell'URL completo nella barra degli indirizzi.
@@ -4181,7 +4200,6 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 
       Nota: questo criterio riguarda anche le estensioni e le app con installazione forzata tramite <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />.</translation>
 <translation id="6731757988219967594">Filtra i siti di contenuti per adulti di primo livello (ma non gli iframe incorporati)</translation>
-<translation id="6734521799274931721">Consente di controllare la disponibilità della funzione Condivisioni file di rete per Chrome OS</translation>
 <translation id="6735701345096330595">Forza attivazione lingue per controllo ortografico</translation>
 <translation id="6740611636377710500">Consenti all'utente di eseguire PluginVm.
 
@@ -4318,13 +4336,6 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 <translation id="6907778402784621686">Blocca contenuti non sicuri su questi siti</translation>
 <translation id="6908640907898649429">Configura il provider di ricerca predefinito. Puoi specificare il provider di ricerca predefinito che l'utente utilizzerà oppure scegliere di disattivare la ricerca predefinita.</translation>
 <translation id="6913068954484253496">Consenti a <ph name="PRODUCT_NAME" /> di connettersi ai dispositivi Cast su tutti gli indirizzi IP.</translation>
-<translation id="6916817094593836501">Questo criterio impedisce la visualizzazione di avvisi di URL simili sui siti elencati. Questi avvisi sono solitamente mostrati sui siti in cui <ph name="PRODUCT_NAME" /> crede che sia in atto un tentativo di spoofing di un altro sito noto all'utente.
-
-       Se il criterio non viene attivato e viene impostato su uno o più domini, non verrà visualizzata alcuna pagina di avviso di somiglianza quando l'utente visita le pagine di quel dominio.
-
-       Se il criterio è disattivato, non è impostato o è impostato su un elenco vuoto, gli avvisi potrebbero essere visualizzati su qualsiasi sito visitato dall'utente.
-
-       Un nome host può essere consentito nel caso di una completa corrispondenza del nome host o della corrispondenza con un qualsiasi dominio. Ad esempio, gli avvisi per un URL come "https://foo.example.com/bar" potrebbero essere eliminati se l'elenco include "foo.example.com" o "example.com".</translation>
 <translation id="6922884955650325312">Blocca il plug-in <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="6923731550900440989">Attiva l'evidenziazione del cursore del testo nella schermata di accesso</translation>
 <translation id="6924223708804692571">Forza la disattivazione delle lingue per correttore ortografico. Le lingue non riconosciute di quell'elenco verranno ignorate.
@@ -4406,6 +4417,15 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
       Se il criterio è impostato su <ph name="BR_UNDER_USER_CONTROL" />, agli utenti viene chiesto di utilizzare il backup e ripristino. Se gli utenti attivano il backup e ripristino, i dati delle app Android vengono caricati sui server di backup di Android e ripristinati durante la reinstallazione delle app.
 
       Dopo la configurazione iniziale, gli utenti possono attivare o disattivare il backup e ripristino.</translation>
+<translation id="6981537713216575858">La configurazione del criterio consente di elencare i pattern URL che specificano i siti a cui viene concessa automaticamente l'autorizzazione di accesso a un dispositivo USB con gli ID fornitore e prodotto indicati. Perché il criterio sia valido, ogni elemento nell'elenco richiede entrambi i campi <ph name="DEVICES_FIELD_NAME" /> e <ph name="URLS_FIELD_NAME" />. Ogni elemento nel campo <ph name="DEVICES_FIELD_NAME" /> può avere un campo <ph name="VENDOR_ID_FIELD_NAME" /> e un campo <ph name="PRODUCT_ID_FIELD_NAME" />. Se il campo <ph name="VENDOR_ID_FIELD_NAME" /> non viene specificato, il criterio può corrispondere a qualsiasi dispositivo. Se il campo <ph name="PRODUCT_ID_FIELD_NAME" /> non viene specificato, il criterio può corrispondere a qualsiasi dispositivo con l'ID fornitore specificato. Un criterio con un campo <ph name="PRODUCT_ID_FIELD_NAME" /> senza un campo <ph name="VENDOR_ID_FIELD_NAME" /> non è valido.
+
+      Il modello di autorizzazioni USB consentirà all'URL specificato di accedere al dispositivo USB come origine di primo livello. Se i frame incorporati devono accedere ai dispositivi USB, per concedere l'accesso è necessario usare l'intestazione "usb" del criterio <ph name="FEATURE_POLICY_HEADER_NAME" />. Se l'URL non è valido, il criterio viene ignorato.
+
+      Deprecato. Il modello di autorizzazioni USB supportava la specifica di entrambi gli URL richiedente e di incorporamento. Questo modello è deprecato e supportato soltanto per la compatibilità con le versioni precedenti nel seguente modo: se vengono specificati entrambi gli URL richiedente e di incorporamento, all'URL di incorporamento verrà concessa l'autorizzazione come origine di primo livello, mentre l'URL richiedente verrà ignorato completamente.
+
+      Questo criterio sostituisce i criteri <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />, <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />, <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> e le preferenze dell'utente.
+
+      Questo criterio viene applicato soltanto per l'accesso ai dispositivi USB tramite l'API WebUSB. Per concedere l'accesso ai dispositivi USB tramite l'API Web Serial, vedi il criterio <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="6986172482189158664">Impostazioni del periodo di validità dei dati di navigazione</translation>
 <translation id="6986838929449128437">Questo criterio è deprecato. Usa il criterio <ph name="SAFE_BROWSING_ALLOWLIST_DOMAINS_POLICY_NAME" />.
 
@@ -4997,6 +5017,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="776110834126722255">Deprecata</translation>
 <translation id="7763614521440615342">Mostra suggerimenti di contenuti nella pagina Nuova scheda</translation>
 <translation id="7765879851993224640">Consenti l'uso dell'accesso tramite Smart Lock.</translation>
+<translation id="7771298620150437359">Configura i contenuti e l'ordine delle lingue preferite</translation>
 <translation id="7774768074957326919">Utilizza le impostazioni proxy di sistema</translation>
 <translation id="777734450201217641">Consente di attivare le scorciatoie delle funzioni di accessibilità nella schermata di accesso.
 

@@ -425,7 +425,6 @@
 <translation id="395206256282351086">Предлози за претрагу и сајтове су онемогућени</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome ће учитати страницу када буде спремна}one{Chrome ће учитати странице када буду спремне}few{Chrome ће учитати странице када буду спремне}other{Chrome ће учитати странице када буду спремне}}</translation>
 <translation id="3963007978381181125">Шифровање помоћу приступне фразе не обухвата начине плаћања и адресе из Google Pay-а. Само неко ко има приступну фразу може да чита шифроване податке. Приступна фраза се не шаље Google-у нити је он чува. Ако заборавите приступну фразу или пожелите да промените ово подешавање, треба да ресетујете синхронизацију. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
-<translation id="3967822245660637423">Преузимање је довршено</translation>
 <translation id="3969142555815019568">Chrome не може да вам проверава лозинке</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> ће се отворити у Chrome-у. Ако наставите, прихватате <ph name="BEGIN_LINK1" />Google услове коришћења услуге<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />додатне услове коришћења услуге за Google Chrome и Chrome ОС<ph name="END_LINK2" />. Примењује се и <ph name="BEGIN_LINK3" />Обавештење о приватности за Google налоге којима се управља преко Family Link-а<ph name="END_LINK3" />.</translation>
 <translation id="397583555483684758">Синхронизација више не функционише</translation>
@@ -471,6 +470,7 @@
 <translation id="4314815835985389558">Управљајте синхронизацијом</translation>
 <translation id="4320177379694898372">Нема интернет везе</translation>
 <translation id="4321739720395210191">Не можемо да отворимо камеру. Рестартујте уређај и пробајте поново.</translation>
+<translation id="433213510553688132">Прати се…</translation>
 <translation id="4335835283689002019">Безбедно прегледање је искључено</translation>
 <translation id="4351244548802238354">Затвори дијалог</translation>
 <translation id="4378154925671717803">Телефон</translation>

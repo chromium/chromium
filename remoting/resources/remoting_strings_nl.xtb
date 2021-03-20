@@ -76,7 +76,7 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4563926062592110512">Verbinding met client verbroken: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4635770493235256822">Externe apparaten</translation>
-<translation id="4660011489602794167">Toetsenbord weergeven</translation>
+<translation id="4660011489602794167">Toetsenbord tonen</translation>
 <translation id="4703799847237267011">Je Chromoting-sessie is beëindigd.</translation>
 <translation id="4741792197137897469">Verificatie mislukt. Log opnieuw in bij Chrome.</translation>
 <translation id="4784508858340177375">De X-server is gecrasht of kan niet worden gestart.</translation>
@@ -121,7 +121,7 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="6612717000975622067">Ctrl-Alt-Del verzenden</translation>
 <translation id="6654753848497929428">Delen</translation>
 <translation id="677755392401385740">Host gestart voor gebruiker: <ph name="HOST_USERNAME" />.</translation>
-<translation id="6939719207673461467">Toetsenbord weergeven/verbergen.</translation>
+<translation id="6939719207673461467">Toetsenbord tonen/verbergen.</translation>
 <translation id="6963936880795878952">Verbindingen met de externe computer zijn tijdelijk geblokkeerd omdat iemand heeft geprobeerd met een ongeldige pincode verbinding te maken met de computer. Probeer het later opnieuw.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985691951107243942">Weet je zeker dat je externe verbindingen met <ph name="HOSTNAME" /> wilt uitschakelen? Als je van gedachten verandert, moet je naar die computer gaan om de verbindingen weer in te schakelen.</translation>

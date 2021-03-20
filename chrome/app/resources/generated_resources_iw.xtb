@@ -322,7 +322,6 @@
 <translation id="1354045473509304750">זה בסדר, אפשר להמשיך להרשות ל-<ph name="HOST" /> להשתמש במצלמה ולהזיז אותה</translation>
 <translation id="1355088139103479645">למחוק את כל הנתונים?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> חסום</translation>
-<translation id="1357896526834120583">נשלחה בקשה להפעלה מחדש</translation>
 <translation id="1358741672408003399">איות ודקדוק</translation>
 <translation id="1359923111303110318">‏אפשר לבטל את נעילת המכשיר באמצעות Smart Lock. יש להקיש על Enter כדי לבטל את הנעילה.</translation>
 <translation id="1361164813881551742">הוספה ידנית</translation>
@@ -1412,7 +1411,6 @@
 <translation id="2541002089857695151">לבצע אופטימיזציה של העברת מסך מלא?</translation>
 <translation id="2541706104884128042">הוגדרה שעת שינה חדשה</translation>
 <translation id="2542050502251273923">‏קובעת את רמת ניפוי הבאגים של מנהל החיבור לרשת ושירותים אחרים שמשתמשים ב-ff_debug.</translation>
-<translation id="2544292303401268586">התקבלה בקשה ממנהל המערכת להפעיל מחדש את המכשיר שלך כדי לעדכן אפליקציות. השלמת הפעולה עשויה להימשך מספר דקות.</translation>
 <translation id="2544352060595557290">הכרטיסייה הזו</translation>
 <translation id="2544853746127077729">אישור האימות נדחה על ידי הרשת</translation>
 <translation id="2546283357679194313">‏נתוני אתר וקובצי Cookie</translation>
@@ -3974,7 +3972,6 @@
 <translation id="5488468185303821006">לאפשר במצב אנונימי</translation>
 <translation id="5488508217173274228">אפשרויות הצפנת סנכרון</translation>
 <translation id="5489435190927933437">סיסמאות שמורות בשביל <ph name="DOMAIN" /></translation>
-<translation id="5489451338260400630">לא לאפשר לאתרים לראות טקסט או תמונות בלוח</translation>
 <translation id="5490721031479690399">‏ניתוק התקן Bluetooth</translation>
 <translation id="5490798133083738649">‏מתן הרשאה למערכת Linux לגשת למיקרופון שלך</translation>
 <translation id="549211519852037402">בז' ולבן</translation>
@@ -4690,7 +4687,6 @@
 <translation id="630292539633944562">הצעות מידע אישי</translation>
 <translation id="6305607932814307878">מדיניות גלובלית:</translation>
 <translation id="6307990684951724544">המערכת עמוסה</translation>
-<translation id="6308077700132376815">חסימת תמונות</translation>
 <translation id="6308493641021088955">הכניסה מבוצעת בעזרת <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">שמירת קישור&amp; בשם...</translation>
 <translation id="6309443618838462258">שיטת הקלט הזו לא מאושרת על ידי מנהל המערכת</translation>

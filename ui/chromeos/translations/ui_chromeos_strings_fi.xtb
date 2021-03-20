@@ -87,6 +87,7 @@
 <translation id="1853795129690976061">Tämä kansio on jaettu Linuxille</translation>
 <translation id="1864756863218646478">Tiedostoa ei löytynyt.</translation>
 <translation id="1920670151694390848">translitteroitu malajalam</translation>
+<translation id="1920798810075583923">Vesimeloni</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> alustettu</translation>
 <translation id="1931134289871235022">slovakki</translation>
 <translation id="1933345018156373194">Siirto epäonnistui odottamattoman virheen vuoksi: <ph name="ERROR_MESSAGE" /></translation>
@@ -120,6 +121,7 @@
 <translation id="2288278176040912387">Levysoitin</translation>
 <translation id="2291538123825441971">Avataan <ph name="NUMBER_OF_FILES" /> tiedostoa.</translation>
 <translation id="2303301624314357662">Avataan tiedostoa <ph name="FILE_NAME" />.</translation>
+<translation id="2304820083631266885">Planeetta</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> on poistettu.</translation>
 <translation id="2325650632570794183">Tätä tiedostotyyppiä ei tueta. Etsi tämäntyyppisiä tiedostoja avaava sovellus Chrome Web Storesta.</translation>
 <translation id="2326539130272988168">bulgaria</translation>
@@ -218,10 +220,12 @@
 <translation id="3335337277364016868">Nauhoitusvuosi</translation>
 <translation id="3353984535370177728">Valitse lähetettävä kansio</translation>
 <translation id="3356580349448036450">Valmis</translation>
+<translation id="3358452157379365236">Kitara</translation>
 <translation id="3382143449143186018">nepali, InScript-näppäimistö</translation>
 <translation id="3408236822532681288">saksa (Saksa), Neo 2 ‑näppäimistö</translation>
 <translation id="3414856743105198592">Siirrettävän tietovälineen alustaminen poistaa kaikki sen tiedot. Haluatko jatkaa?</translation>
 <translation id="3437801641691368414">Luontiaika</translation>
+<translation id="343907260260897561">Pikakamera</translation>
 <translation id="3455931012307786678">viro</translation>
 <translation id="3466147780910026086">Tarkistetaan medialaitettasi…</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> kuvaa on varmuuskopioitu <ph name="BEGIN_LINK" />Google Driveen<ph name="END_LINK" />.</translation>
@@ -297,6 +301,7 @@
 <translation id="4309915981827077375">Yleistiedot</translation>
 <translation id="432252891123397018">romania, vakionäppäimistö</translation>
 <translation id="4325128273762811722">sloveeni</translation>
+<translation id="4326142238881453352">Kasvitieteilijä</translation>
 <translation id="4326192123064055915">Kahvi</translation>
 <translation id="4336032328163998280">Kopiointi epäonnistui. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">soranî, arabiaan perustuva näppäimistö</translation>
@@ -412,6 +417,7 @@
         <ph name="MARKUP_7" />Jaa, luo ja muokkaa<ph name="MARKUP_8" />
         tiedostoja yhdessä muiden käyttäjien kanssa.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Drivesta palautetut tiedostot</translation>
+<translation id="5288441970121584418">Hampurilainen</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Tallenna</translation>
 <translation id="5318819489018851358">Jaa Linuxilla</translation>
@@ -502,10 +508,12 @@
 <translation id="6248400709929739064">Ota tekstitykset käyttöön</translation>
 <translation id="6269630227984243955">malaiji</translation>
 <translation id="6287852322318138013">Valitse sovellus, jolla haluat avata tämän tiedoston</translation>
+<translation id="6321303798550928047">Vilkuttaa</translation>
 <translation id="6339145975392024142">US, kansainvälinen (PC)</translation>
 <translation id="6346310558342052870">Käyttö rajoitettu</translation>
 <translation id="6356685157277930264">Tiedostojen tietoikkuna</translation>
 <translation id="6358884629796491903">Lohikäärme</translation>
+<translation id="6367976544441405720">Pakettiauto</translation>
 <translation id="637062427944097960">Tämä tiedosto avattiin toisella työpöydällä. Näet tiedoston siirtymällä profiiliin <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Vain luku</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> kohdetta</translation>
@@ -529,6 +537,7 @@
 <translation id="6650726141019353908">Vaaleanpunainen perhonen</translation>
 <translation id="6657585470893396449">Salasana</translation>
 <translation id="6673674183150363784">ranska (Ranska), Bépo-näppäimistö</translation>
+<translation id="6710022688720561421">Robotti</translation>
 <translation id="6710213216561001401">Edellinen</translation>
 <translation id="6751256176799620176">1 kansio valittu</translation>
 <translation id="6790428901817661496">Toista</translation>
@@ -562,6 +571,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6970230597523682626">bulgaria</translation>
 <translation id="6973630695168034713">Kansiot</translation>
+<translation id="6976795442547527108">Leijona</translation>
 <translation id="6978611942794658017">Tämä tiedosto on tarkoitettu tietokoneelle, joka käyttää Windowsia. Se ei ole yhteensopiva Chrome-käyttöjärjestelmää käyttävän laitteesi kanssa. Etsi sopiva korvaava sovellus Chrome Web Storesta.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">ruotsi</translation>
@@ -608,6 +618,7 @@
 <translation id="7532029025027028521">translitteroitu persia</translation>
 <translation id="7544830582642184299">Myönnä Linux-sovelluksille pääsy Google Driveesi tallennettuihin tiedostoihin. Muutokset synkronoidaan muille laitteillesi.</translation>
 <translation id="7544853251252956727">Satunnaistoisto</translation>
+<translation id="7547009467130558110">Lenkkari</translation>
 <translation id="7547780573915868306">liettua</translation>
 <translation id="7547811415869834682">hollanti</translation>
 <translation id="7551643184018910560">Kiinnitä hyllyyn</translation>
@@ -747,6 +758,7 @@
 <translation id="8860454412039442620">Excel-laskentataulukko</translation>
 <translation id="8866284467018526531">translitteroitu arabia</translation>
 <translation id="8900820606136623064">unkari</translation>
+<translation id="8903931173357132290">Valmistunut</translation>
 <translation id="8919081441417203123">tanska</translation>
 <translation id="8965697826696209160">Tallennustila ei riitä.</translation>
 <translation id="8970501467542182729">Tämä tiedosto on tarkoitettu tietokoneelle, joka käyttää Macintosh-ohjelmistoa. Se ei ole yhteensopiva Chrome-käyttöjärjestelmää käyttävän laitteesi kanssa. <ph name="BEGIN_LINK_HELP" />Lue lisää<ph name="END_LINK_HELP" /> tiedostojen avaamisesta Chrome-käyttöjärjestelmällä.</translation>

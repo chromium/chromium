@@ -1080,6 +1080,7 @@
 <translation id="5045550434625856497">गलत पासवर्ड</translation>
 <translation id="5056549851600133418">तपाईँका लागि लेखहरू</translation>
 <translation id="5061227663725596739">तपाईंले <ph name="LOOKALIKE_DOMAIN" /> भन्न चाहनुभएको हो?</translation>
+<translation id="5066056036849835175">विगतमा प्रिन्ट गरिएका कुराहरू</translation>
 <translation id="5068524481479508725">A10</translation>
 <translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(१ कुकी प्रयोगमा छ)}other{(# कुकीहरू प्रयोगमा छन्)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />प्रोक्सीको ठेगानालाई जाँच गर्नुहोस्<ph name="END_LINK" /></translation>

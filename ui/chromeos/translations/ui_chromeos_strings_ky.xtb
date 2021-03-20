@@ -87,6 +87,7 @@
 <translation id="1853795129690976061">Бул файл Linux менен бөлүшүлүп жатат</translation>
 <translation id="1864756863218646478">Бир да файл табылган жок.</translation>
 <translation id="1920670151694390848">Малайаламча (транслитерация)</translation>
+<translation id="1920798810075583923">Дарбыз</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> форматталды</translation>
 <translation id="1931134289871235022">Словакча</translation>
 <translation id="1933345018156373194">Жылбай калды, күтүүсүз ката кетти: <ph name="ERROR_MESSAGE" /></translation>
@@ -120,6 +121,7 @@
 <translation id="2288278176040912387">Жазууну ойноткуч</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> файл ачылууда.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> файлы ачылууда.</translation>
+<translation id="2304820083631266885">Планета</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> чыгарылды.</translation>
 <translation id="2325650632570794183">Мындай файл түрү колдоого алынбайт. Бул файлдын түрүн ача алган колдонмону табуу үчүн Chrome Желе дүкөнүнө кириңиз.</translation>
 <translation id="2326539130272988168">Болгарча</translation>
@@ -218,10 +220,12 @@
 <translation id="3335337277364016868">Жаздырылган жылы</translation>
 <translation id="3353984535370177728">Жүктөлө турган куржунду тандоо</translation>
 <translation id="3356580349448036450">Аяктады</translation>
+<translation id="3358452157379365236">Гитара</translation>
 <translation id="3382143449143186018">Непалча баскычтоп (InScript)</translation>
 <translation id="3408236822532681288">Немисче (Германия) жана Neo 2 баскычтобу</translation>
 <translation id="3414856743105198592">Суурулма каражат форматталганда, андагы бардык дайындар өчүп калат. Уланта бересизби?</translation>
 <translation id="3437801641691368414">Түзүлгөн убакыты</translation>
+<translation id="343907260260897561">Ыкчам камера</translation>
 <translation id="3455931012307786678">Эстончо</translation>
 <translation id="3466147780910026086">Медиа түзмөгүңүз скандалууда…</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> сүрөттүн камдык көчүрмөсү <ph name="BEGIN_LINK" />Google Drive'га<ph name="END_LINK" /> сакталды</translation>
@@ -297,6 +301,7 @@
 <translation id="4309915981827077375">Жалпы маалымат</translation>
 <translation id="432252891123397018">Румынча (стандарттуу баскычтоп)</translation>
 <translation id="4325128273762811722">Словенче</translation>
+<translation id="4326142238881453352">Ботаник</translation>
 <translation id="4326192123064055915">Кофе</translation>
 <translation id="4336032328163998280">Көчүрүү аракети аткарылбай калды. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">Сорани (арабча баскычтоп)</translation>
@@ -412,6 +417,7 @@
     Файлдарыңыздын баарын бир жерден
     <ph name="MARKUP_7" />бөлүшүп, түзүп жана башкалар менен иштешиңиз<ph name="MARKUP_8" />.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Калыбына келтирилген Google Drive файлдары</translation>
+<translation id="5288441970121584418">Бургер</translation>
 <translation id="5317780077021120954">Сактоо</translation>
 <translation id="5318819489018851358">Linux аркылуу бөлүшүү</translation>
 <translation id="5323213332664049067">Латын Америкалыкча</translation>
@@ -501,10 +507,12 @@
 <translation id="6248400709929739064">Коштомо жазууларды иштетүү</translation>
 <translation id="6269630227984243955">Малайча</translation>
 <translation id="6287852322318138013">Бул файлды ачуу үчүн колдонмо тандаңыз</translation>
+<translation id="6321303798550928047">Кол булгалоо</translation>
 <translation id="6339145975392024142">Эл аралык АКШ баскычтобу (жеке компьютер үчүн)</translation>
 <translation id="6346310558342052870">Кирүү мүмкүнчүлүгү чектелген</translation>
 <translation id="6356685157277930264">Files колдонмосу тууралуу пикирлер көрсөтүлгөн терезе</translation>
 <translation id="6358884629796491903">Ажыдаар</translation>
+<translation id="6367976544441405720">Фургон</translation>
 <translation id="637062427944097960">Бул файл башка иштактада ачылган. Аны көрүү үчүн <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) карай жылыңыз.</translation>
 <translation id="6394388407447716302">Окуу үчүн гана</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> элемент</translation>
@@ -528,6 +536,7 @@
 <translation id="6650726141019353908">Кызгылтым көпөлөк</translation>
 <translation id="6657585470893396449">Сырсөз</translation>
 <translation id="6673674183150363784">Французча (Франция) жана Bépo баскычтобу</translation>
+<translation id="6710022688720561421">Робот</translation>
 <translation id="6710213216561001401">Мурунку</translation>
 <translation id="6751256176799620176">1 куржун тандалды</translation>
 <translation id="6790428901817661496">Ойнотуу</translation>
@@ -561,6 +570,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6970230597523682626">Болгарча</translation>
 <translation id="6973630695168034713">Куржундар</translation>
+<translation id="6976795442547527108">Арстан</translation>
 <translation id="6978611942794658017">Бул файл Windows программасын колдонгон компьютер үчүн түзүлгөн. Ал Chrome OS негизинде иштеген түзмөгүңүзгө дал келбейт. Chrome Желе дүкөнүнөн анын ордуна колдонула турган ылайыктуу колдонмо издеп көрүңүз.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Шведче</translation>
@@ -607,6 +617,7 @@
 <translation id="7532029025027028521">Фарсиче (транслитерация)</translation>
 <translation id="7544830582642184299">Linux колдонмолоруна Google Drive'дагы файлдарга кирүүгө уруксат бериңиз. Киргизилген өзгөртүүлөр башка түзмөктөрүңүздө шайкештирилет.</translation>
 <translation id="7544853251252956727">Аралаш</translation>
+<translation id="7547009467130558110">Спорт бут кийими</translation>
 <translation id="7547780573915868306">Литвача</translation>
 <translation id="7547811415869834682">Голландча</translation>
 <translation id="7551643184018910560">Текчеге кадап коюу</translation>
@@ -746,6 +757,7 @@
 <translation id="8860454412039442620">Excel электрондук жадыбалы</translation>
 <translation id="8866284467018526531">Арабча (транслитерация)</translation>
 <translation id="8900820606136623064">Венгерче</translation>
+<translation id="8903931173357132290">Бүтүрүүчү</translation>
 <translation id="8919081441417203123">Датча</translation>
 <translation id="8965697826696209160">Бош орун жетишсиз.</translation>
 <translation id="8970501467542182729">Бул файл Macintosh программасын колдонгон компьютер үчүн түзүлгөн. Ал Chrome OS негизинде иштеген түзмөгүңүзгө дал келбейт. Файлдарды Chrome OS'то ачуу жөнүндө <ph name="BEGIN_LINK_HELP" />кеңири маалымат<ph name="END_LINK_HELP" /> алыңыз.</translation>

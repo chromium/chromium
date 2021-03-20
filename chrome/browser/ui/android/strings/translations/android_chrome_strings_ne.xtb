@@ -349,7 +349,7 @@
 <translation id="3384347053049321195">छवि सेयर गर्नुहोस्</translation>
 <translation id="3387650086002190359"><ph name="FILE_NAME" /> डाउनलोड फाइल प्रणाली त्रूटिका कारण असफल भयो।</translation>
 <translation id="3389286852084373014">पाठ ज्यादै ठुलो छ</translation>
-<translation id="3391512812407811893">गोपनीयता स्यान्डबक्सको ट्रायल अवधि</translation>
+<translation id="3391512812407811893">प्राइभेसी स्यान्डबक्सको ट्रायल अवधि</translation>
 <translation id="3398320232533725830">पुस्तक चिन्ह प्रबन्धक खोल्नुहोस्</translation>
 <translation id="3414952576877147120">आकार:</translation>
 <translation id="3429160811076349561">ट्रायल सुविधाहरू अफ गरिएका छन्</translation>
@@ -425,7 +425,6 @@
 <translation id="395206256282351086">खोज र साइटसम्बन्धी सुझावहरू असक्षम पारियो</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{यन्त्र तयार भएपछि Chrome ले तपाईंको पृष्ठ लोड गर्ने छ}other{यन्त्र तयार भएपछि Chrome ले तपाईंका पृष्ठहरू लोड गर्ने छ}}</translation>
 <translation id="3963007978381181125">पासफ्रेजमार्फत इन्क्रिप्सन गर्ने कार्यअन्तर्गत Google Pay का भुक्तानी विधि र ठेगानाहरू समावेश हुँदैनन्। तपाईंको पासफ्रेज थाहा हुने व्यक्तिले मात्र तपाईंको इन्क्रिप्ट गरिएको डेटा पढ्न सक्छ। उक्त पासफ्रेज Google मा पठाइँदैन वा त्यहाँ भण्डारण गरिँदैन। तपाईंले आफ्नो पासफ्रेज बिर्सनुभयो वा तपाईं यो सेटिङ परिवर्तन गर्न चाहनुहुन्छ भने तपाईंले सिंक रिसेट गर्नु पर्ने हुन्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
-<translation id="3967822245660637423">डाउनलोड पूर्ण भयो</translation>
 <translation id="3969142555815019568">Chrome ले तपाईंका पासवर्डहरू जाँच्न सकेन</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> Chrome मा खुल्ने छ। जारी राखेर तपाईं <ph name="BEGIN_LINK1" />Google का सेवाका सर्तहरू<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Google Chrome र Chrome OS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" />मा सहमति जनाउनुहुन्छ। <ph name="BEGIN_LINK3" />Family Link मार्फत व्यवस्थापन गरिएका Google खाताहरूको गोपनीयता सूचना<ph name="END_LINK3" /> पनि लागू हुन्छ।</translation>
 <translation id="397583555483684758">सिंकले काम गर्न छाड्यो</translation>
@@ -471,6 +470,7 @@
 <translation id="4314815835985389558">सिंक व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4320177379694898372">कुनै इन्टरनेट जडान छैन</translation>
 <translation id="4321739720395210191">तपाईंको क्यामेरा खोल्न सकिएन। आफ्नो यन्त्र पुनः सुरु गरी फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="433213510553688132">फलो गरिँदै छ…</translation>
 <translation id="4335835283689002019">Safe Browsing अफ छ</translation>
 <translation id="4351244548802238354">सम्बाद बन्द गर्नुहोस्</translation>
 <translation id="4378154925671717803">फोन</translation>
@@ -1065,7 +1065,7 @@
 <translation id="8156139159503939589">तपाईं कुन कुन भाषा पढ्नुहुन्छ?</translation>
 <translation id="8168435359814927499">सामग्री</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> फाइलहरू बाँकी छन्</translation>
-<translation id="8189750580333936930">गोपनीयताको स्यान्डबक्स</translation>
+<translation id="8189750580333936930">प्राइभेसी स्यान्डबक्स</translation>
 <translation id="8190358571722158785">१ दिन बाँकी छ</translation>
 <translation id="8200772114523450471">रिजुमी</translation>
 <translation id="8209050860603202033">छवि खोल्नुहोस्</translation>

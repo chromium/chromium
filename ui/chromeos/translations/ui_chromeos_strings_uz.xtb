@@ -87,6 +87,7 @@
 <translation id="1853795129690976061">Bu jild Linuxga ulashilgan</translation>
 <translation id="1864756863218646478">Fayl topilmadi.</translation>
 <translation id="1920670151694390848">Malayalam tili transliteratsiyasi</translation>
+<translation id="1920798810075583923">Tarvuz</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> formatlandi</translation>
 <translation id="1931134289871235022">Slovak</translation>
 <translation id="1933345018156373194">Bajarilmadi, kutilmagan xatolik: <ph name="ERROR_MESSAGE" /></translation>
@@ -120,6 +121,7 @@
 <translation id="2288278176040912387">Patefon</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ta fayl ochilmoqda.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> fayli ochilmoqda.</translation>
+<translation id="2304820083631266885">Sayyora</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> tizimdan uzildi.</translation>
 <translation id="2325650632570794183">Bunday fayl turi qo‘llab-quvvatlanmaydi. Bu faylni ocha oladigan ilovani topish uchun Chrome Internet do‘koniga kiring.</translation>
 <translation id="2326539130272988168">Bolgar</translation>
@@ -218,10 +220,12 @@
 <translation id="3335337277364016868">Yozilgan yili</translation>
 <translation id="3353984535370177728">Yuklash uchun jildni tanlang</translation>
 <translation id="3356580349448036450">Tayyor</translation>
+<translation id="3358452157379365236">Gitara</translation>
 <translation id="3382143449143186018">Nepal va InScript klaviaturasi</translation>
 <translation id="3408236822532681288">Nemis (Germaniya) va Neo 2 klaviaturasi</translation>
 <translation id="3414856743105198592">Tashqi xotira qurilmasini formatlash undagi barcha ma’lumotlarni tozalaydi. Davom etasizmi?</translation>
 <translation id="3437801641691368414">Yaratilgan vaqti</translation>
+<translation id="343907260260897561">Polaroid</translation>
 <translation id="3455931012307786678">Eston</translation>
 <translation id="3466147780910026086">Media qurilmasi tekshirilmoqda...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> ta rasm <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> omboriga zaxiralandi</translation>
@@ -297,6 +301,7 @@
 <translation id="4309915981827077375">Umumiy tafsilotlar</translation>
 <translation id="432252891123397018">Rumin (Standart klaviatura)</translation>
 <translation id="4325128273762811722">Sloven</translation>
+<translation id="4326142238881453352">Botanik</translation>
 <translation id="4326192123064055915">Kofe</translation>
 <translation id="4336032328163998280">Nusxalash amali bajarilmadi. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">Suroni (kurd) va arab yozuvidagi klaviatura</translation>
@@ -412,6 +417,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
     <ph name="MARKUP_7" />Ulashing, yarating va boshqalar bilan birga<ph name="MARKUP_8" />
     bir joyda joylashgan fayllaringiz ustida hamkorlikda ishlang. <ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Disk‘dan tiklangan fayllar</translation>
+<translation id="5288441970121584418">Burger</translation>
 <translation id="5317780077021120954">Saqlash</translation>
 <translation id="5318819489018851358">Linux bilan ulashish</translation>
 <translation id="5323213332664049067">Lotin Amerikasi klaviaturasi</translation>
@@ -501,10 +507,12 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6248400709929739064">Taglavhalarni yoqish</translation>
 <translation id="6269630227984243955">Malay</translation>
 <translation id="6287852322318138013">Ushbu faylni ochish uchun kerakli dasturni tanlang</translation>
+<translation id="6321303798550928047">Salomlashish</translation>
 <translation id="6339145975392024142">AQSH halqaro klaviaturasi (PC)</translation>
 <translation id="6346310558342052870">Ruxsat cheklangan</translation>
 <translation id="6356685157277930264">Fayllar haqida axborot oynasi</translation>
 <translation id="6358884629796491903">Ajdar</translation>
+<translation id="6367976544441405720">Furgon</translation>
 <translation id="637062427944097960">Ushbu fayl boshqa ish stolida ochilgan. Uni ko‘rish uchun <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) profiliga o‘tib oling.</translation>
 <translation id="6394388407447716302">Faqat oʻqish</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ta fayl</translation>
@@ -528,6 +536,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6650726141019353908">Pushti kapalak</translation>
 <translation id="6657585470893396449">Parol</translation>
 <translation id="6673674183150363784">Fransuz (Fransiya) va Bépo klaviaturasi</translation>
+<translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Avvalgi</translation>
 <translation id="6751256176799620176">1 ta jild tanlandi</translation>
 <translation id="6790428901817661496">Ijro etish</translation>
@@ -561,6 +570,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6965382102122355670">OK</translation>
 <translation id="6970230597523682626">Balgar tili</translation>
 <translation id="6973630695168034713">Jildlar</translation>
+<translation id="6976795442547527108">Sher</translation>
 <translation id="6978611942794658017">Ushbu fayl Windows platformasidagi kompyuterlar uchun ishlab chiqilgan va qurilmangizdagi Chrome OS’da ishga tushmaydi. Uni ochishga mos ilova topish uchun Chrome internet-do‘koniga tashrif buyuring.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Shved</translation>
@@ -607,6 +617,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7532029025027028521">Fors tili transliteratsiyasi</translation>
 <translation id="7544830582642184299">Parallels Desktopga Google Drive omboringizdagi fayllarni ochishga ruxsat bering. Oʻzgarishlar boshqa qurilmalaringizga sinxronlanadi.</translation>
 <translation id="7544853251252956727">Tasodifiy</translation>
+<translation id="7547009467130558110">Sport oyoq kiyimi</translation>
 <translation id="7547780573915868306">Litva</translation>
 <translation id="7547811415869834682">Golland tili</translation>
 <translation id="7551643184018910560">Javonga qadab qo‘yish</translation>
@@ -746,6 +757,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8860454412039442620">Excel elektron jadvali</translation>
 <translation id="8866284467018526531">Arab (transliteratsiya)</translation>
 <translation id="8900820606136623064">Venger tili</translation>
+<translation id="8903931173357132290">Bitiruvchi</translation>
 <translation id="8919081441417203123">Datcha</translation>
 <translation id="8965697826696209160">Bo‘sh joy yetarli emas.</translation>
 <translation id="8970501467542182729">Bu fayl Mac platformasi uchun ishlab chiqilgan. U qurilmangizdagi Chrome OS da ishga tushmaydi. Chrome OS da fayllarni ochish haqida <ph name="BEGIN_LINK_HELP" />batafsil<ph name="END_LINK_HELP" />.</translation>

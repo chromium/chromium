@@ -87,6 +87,7 @@
 <translation id="1853795129690976061">Бұл қалта Linux арқылы бөлісілді.</translation>
 <translation id="1864756863218646478">Файлды табу мүмкін емес.</translation>
 <translation id="1920670151694390848">Малаялам (транслитерация)</translation>
+<translation id="1920798810075583923">Қарбыз</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> форматталды.</translation>
 <translation id="1931134289871235022">Словак</translation>
 <translation id="1933345018156373194">Тасымалданбады, күтпеген қате шықты: <ph name="ERROR_MESSAGE" /></translation>
@@ -120,6 +121,7 @@
 <translation id="2288278176040912387">Пластина ойнатқыш</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> файл ашылуда.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> файлы ашылуда.</translation>
+<translation id="2304820083631266885">Планета</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> шығарылды.</translation>
 <translation id="2325650632570794183">Бұл файл түріне қолдау көрсетілмеген. Бұл файл түрін ашатын қолданбаны табу үшін Chrome веб-дүкеніне кіріңіз.</translation>
 <translation id="2326539130272988168">Болгар</translation>
@@ -218,10 +220,12 @@
 <translation id="3335337277364016868">Жазылған жылы</translation>
 <translation id="3353984535370177728">Жүктеп салу үшін қалтаны таңдау</translation>
 <translation id="3356580349448036450">Аяқталған</translation>
+<translation id="3358452157379365236">Гитара</translation>
 <translation id="3382143449143186018">Непал (InScript пернетақтасымен)</translation>
 <translation id="3408236822532681288">Неміс (Германия), NEO 2 пернетақтасымен</translation>
 <translation id="3414856743105198592">Алынбалы тасымалдаушыны пішімдеу әрекеті барлық деректерді өшіреді. Жалғастырасыз ба?</translation>
 <translation id="3437801641691368414">Жасалған уақыты</translation>
+<translation id="343907260260897561">Лезде басып шығаратын камера</translation>
 <translation id="3455931012307786678">Эстон</translation>
 <translation id="3466147780910026086">Мультимедиа құрылғыңыз тексерілуде…</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> фотосуреттің сақтық көшірмесі <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> ішіне сақталды</translation>
@@ -297,6 +301,7 @@
 <translation id="4309915981827077375">Жалпы ақпарат</translation>
 <translation id="432252891123397018">Румын (стандартты пернетақтамен)</translation>
 <translation id="4325128273762811722">Словен</translation>
+<translation id="4326142238881453352">Ботаник</translation>
 <translation id="4326192123064055915">Кофе</translation>
 <translation id="4336032328163998280">Көшіру операциясы сәтсіз аяқталды. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">Сорани күрд (араб тілі негізіндегі пернетақтамен)</translation>
@@ -412,6 +417,7 @@
     <ph name="MARKUP_7" />Файлдарыңыздың барлығын бір жерден бөлісіңіз, жасаңыз және<ph name="MARKUP_8" />
     басқалармен бірлесіп жұмыс істеңіз.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Drive жүйесінен қалпына келтірілген файлдар</translation>
+<translation id="5288441970121584418">Бургер</translation>
 <translation id="5317780077021120954">Сақтау</translation>
 <translation id="5318819489018851358">Linux арқылы бөлісу</translation>
 <translation id="5323213332664049067">Латын американдық</translation>
@@ -501,10 +507,12 @@
 <translation id="6248400709929739064">Субтитрлерді қосу</translation>
 <translation id="6269630227984243955">Малай</translation>
 <translation id="6287852322318138013">Бұл файлды ашатын қолданбаны таңдаңыз</translation>
+<translation id="6321303798550928047">Қол бұлғау</translation>
 <translation id="6339145975392024142">АҚШ халықаралық (ДК)</translation>
 <translation id="6346310558342052870">Пайдалануға тыйым салынған</translation>
 <translation id="6356685157277930264">Файлдар пікірлері терезесі</translation>
 <translation id="6358884629796491903">Айдаһар</translation>
+<translation id="6367976544441405720">Фургон</translation>
 <translation id="637062427944097960">Бұл файл басқа жұмыс үстелінде ашылды. Оны көру үшін <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) мекенжайына өтіңіз.</translation>
 <translation id="6394388407447716302">Тек оқуға арналған</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> элемент</translation>
@@ -528,6 +536,7 @@
 <translation id="6650726141019353908">Қызғылт көбелек</translation>
 <translation id="6657585470893396449">Құпия сөз</translation>
 <translation id="6673674183150363784">Француз (Франция, Bépo пернетақтасымен)</translation>
+<translation id="6710022688720561421">Робот</translation>
 <translation id="6710213216561001401">Алдыңғы</translation>
 <translation id="6751256176799620176">1 қалта таңдалды</translation>
 <translation id="6790428901817661496">Ойнату</translation>
@@ -561,6 +570,7 @@
 <translation id="6965382102122355670">Жарайды</translation>
 <translation id="6970230597523682626">болгар</translation>
 <translation id="6973630695168034713">Қалталар</translation>
+<translation id="6976795442547527108">Арыстан</translation>
 <translation id="6978611942794658017">Бұл файл Windows бағдарламалық жасақтамасын пайдаланатын компьютерге арналған. Бұл Chrome OS арқылы жұмыс істейін құрылғыңызбен үйлесімді емес. Chrome Web Store дүкенінен сәйкес келетін баламалы қолданбаны іздеңіз.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Швед</translation>
@@ -607,6 +617,7 @@
 <translation id="7532029025027028521">Парсы (транслитерация)</translation>
 <translation id="7544830582642184299">Linux қолданбаларына Google Drive дискісіндегі файлдарды пайдалануға рұқсат беріңіз. Өзгертулер барлық құрылғыда болады.</translation>
 <translation id="7544853251252956727">Кездейсоқ</translation>
+<translation id="7547009467130558110">Кроссовка</translation>
 <translation id="7547780573915868306">Литва</translation>
 <translation id="7547811415869834682">голланд</translation>
 <translation id="7551643184018910560">Сөреге бекіту</translation>
@@ -746,6 +757,7 @@
 <translation id="8860454412039442620">Excel электрондық кестесі</translation>
 <translation id="8866284467018526531">Arabic (транслитерация)</translation>
 <translation id="8900820606136623064">мадьяр</translation>
+<translation id="8903931173357132290">Түлек</translation>
 <translation id="8919081441417203123">дат</translation>
 <translation id="8965697826696209160">Бос орын жеткіліксіз.</translation>
 <translation id="8970501467542182729">Бұл файл Macintosh бағдарламалық құралын пайдаланатын компьютерге арналған. Яғни Chrome OS арқылы жұмыс істейтін құрылғыңызбен үйлесімді емес. Chrome OS жүйесінде файлдарды ашу туралы <ph name="BEGIN_LINK_HELP" />толығырақ<ph name="END_LINK_HELP" /> ақпарат алыңыз.</translation>

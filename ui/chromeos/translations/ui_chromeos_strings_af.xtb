@@ -87,6 +87,7 @@
 <translation id="1853795129690976061">Hierdie vouer word met Linux gedeel</translation>
 <translation id="1864756863218646478">Die lêer kon nie gevind word nie.</translation>
 <translation id="1920670151694390848">Malabaarse transliterasie</translation>
+<translation id="1920798810075583923">Waatlemoen</translation>
 <translation id="1924372192547904021">Het <ph name="DRIVE_NAME" /> geformateer</translation>
 <translation id="1931134289871235022">Slowaaks</translation>
 <translation id="1933345018156373194">Kon nie skuif nie; 'n onverwagse fout: <ph name="ERROR_MESSAGE" /></translation>
@@ -120,6 +121,7 @@
 <translation id="2288278176040912387">Platespeler</translation>
 <translation id="2291538123825441971">Maak tans <ph name="NUMBER_OF_FILES" /> lêers oop.</translation>
 <translation id="2303301624314357662">Maak tans lêer <ph name="FILE_NAME" /> oop.</translation>
+<translation id="2304820083631266885">Planeet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> is uitgegooi.</translation>
 <translation id="2325650632570794183">Hierdie lêertipe word nie gesteun nie. Besoek asseblief die Chrome Webwinkel om 'n program te vind wat hierdie tipe lêer kan oopmaak.</translation>
 <translation id="2326539130272988168">Bulgaars</translation>
@@ -218,10 +220,12 @@
 <translation id="3335337277364016868">Jaar opgeneem</translation>
 <translation id="3353984535370177728">Kies 'n vouer om op te laai</translation>
 <translation id="3356580349448036450">Voltooi</translation>
+<translation id="3358452157379365236">Kitaar</translation>
 <translation id="3382143449143186018">Nepalees met InScript-sleutelbord</translation>
 <translation id="3408236822532681288">Duits (Duitsland) met Neo 2-sleutelbord</translation>
 <translation id="3414856743105198592">Die formatering van verwyderbare media gaan alle data uitvee. Wil jy voortgaan?</translation>
 <translation id="3437801641691368414">Tyd geskep</translation>
+<translation id="343907260260897561">Kitskamera</translation>
 <translation id="3455931012307786678">Esties</translation>
 <translation id="3466147780910026086">Skandeer tans jou mediatoestel …</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> foto's is gerugsteun na <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
@@ -297,6 +301,7 @@
 <translation id="4309915981827077375">Algemene inligting</translation>
 <translation id="432252891123397018">Roemeens met standaardsleutelbord</translation>
 <translation id="4325128273762811722">Sloweens</translation>
+<translation id="4326142238881453352">Plantkundige</translation>
 <translation id="4326192123064055915">Koffie</translation>
 <translation id="4336032328163998280">Kopieerhandeling het misluk. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">Sorani-Koerdies met sleutelbord wat op Arabies gegrond is</translation>
@@ -412,6 +417,7 @@
     <ph name="MARKUP_7" />Deel, skep en werk saam met ander<ph name="MARKUP_8" />
     aan lêers op een plek.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Het lêers van Google Drive herwin</translation>
+<translation id="5288441970121584418">Burger</translation>
 <translation id="5317780077021120954">Berg</translation>
 <translation id="5318819489018851358">Deel met Linux</translation>
 <translation id="5323213332664049067">Latyns-Amerikaans</translation>
@@ -501,10 +507,12 @@
 <translation id="6248400709929739064">Aktiveer onderskrifte</translation>
 <translation id="6269630227984243955">Maleis</translation>
 <translation id="6287852322318138013">Kies 'n program om hierdie lêer oop te maak</translation>
+<translation id="6321303798550928047">Waai</translation>
 <translation id="6339145975392024142">VSA-internasionaal (PC)</translation>
 <translation id="6346310558342052870">Toegang is beperk</translation>
 <translation id="6356685157277930264">Lêersterugvoervenster</translation>
 <translation id="6358884629796491903">Draak</translation>
+<translation id="6367976544441405720">Afleweringvoertuig</translation>
 <translation id="637062427944097960">Hierdie lêer het op 'n ander werkskerm oopgemaak. Beweeg na <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) om dit te bekyk.</translation>
 <translation id="6394388407447716302">Leesalleen</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> items</translation>
@@ -528,6 +536,7 @@
 <translation id="6650726141019353908">Pienk skoenlapper</translation>
 <translation id="6657585470893396449">Wagwoord</translation>
 <translation id="6673674183150363784">Frans (Frankryk) met Bépo-sleutelbord</translation>
+<translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Vorige</translation>
 <translation id="6751256176799620176">1 vouer is gekies</translation>
 <translation id="6790428901817661496">Speel</translation>
@@ -561,6 +570,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6970230597523682626">Bulgaars</translation>
 <translation id="6973630695168034713">Vouers</translation>
+<translation id="6976795442547527108">Leeu</translation>
 <translation id="6978611942794658017">Hierdie lêer is ontwerp vir 'n rekenaar met Windows-sagteware. Dit is nie versoenbaar met jou toestel wat Chrome-bedryfstelsel laat loop nie. Deursoek asseblief die Chrome-webwinkel vir 'n geskikte plaasvervangerprogram.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Sweeds</translation>
@@ -607,6 +617,7 @@
 <translation id="7532029025027028521">Persiese transliterasie</translation>
 <translation id="7544830582642184299">Gee Linux-programme toegang tot lêers in jou Google Drive. Veranderinge sal met jou ander toestelle gesinkroniseer word.</translation>
 <translation id="7544853251252956727">Skommel</translation>
+<translation id="7547009467130558110">Tekkie</translation>
 <translation id="7547780573915868306">Litaus</translation>
 <translation id="7547811415869834682">Nederlands</translation>
 <translation id="7551643184018910560">Speld aan rak vas</translation>
@@ -746,6 +757,7 @@
 <translation id="8860454412039442620">Excel-sigblad</translation>
 <translation id="8866284467018526531">Arabiese transliterasie</translation>
 <translation id="8900820606136623064">Hongaars</translation>
+<translation id="8903931173357132290">Gegradueerde</translation>
 <translation id="8919081441417203123">Deens</translation>
 <translation id="8965697826696209160">Daar is nie genoeg spasie nie.</translation>
 <translation id="8970501467542182729">Hierdie lêer is ontwerp vir 'n rekenaar wat Macintosh-sagteware gebruik. Dit is nie versoenbaar met jou toestel wat Chrome OS gebruik nie. <ph name="BEGIN_LINK_HELP" />Kom meer te wete<ph name="END_LINK_HELP" /> oor hoe om lêers op Chrome OS oop te maak.</translation>

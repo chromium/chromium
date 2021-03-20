@@ -38,14 +38,14 @@
 <translation id="4555020257205549924">Als deze functie is ingeschakeld, biedt Chromium aan pagina's die zijn geschreven in andere talen te vertalen met Google Translate. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Je kunt Chromium nu gebruiken als je op links in berichten, documenten en andere apps tikt.</translation>
 <translation id="4681781466797808448">Chromium-scanner inschakelen</translation>
-<translation id="4787850887676698916">Tabbladen die je op andere apparaten in Chromium hebt geopend, worden hier weergegeven.</translation>
+<translation id="4787850887676698916">Hier zie je tabbladen die je op andere apparaten in Chromium hebt geopend.</translation>
 <translation id="4828317641996116749">Chromium kan niet alle wachtwoorden checken. Probeer het later opnieuw.</translation>
 <translation id="4985291216379576555">Offline. Chromium kan niet checken op updates</translation>
 <translation id="4999538639245140991">Omdat je uitlogt van een account dat wordt beheerd door <ph name="SIGNOUT_MANAGED_DOMAIN" />, worden je Chromium-gegevens van dit apparaat verwijderd. Je gegevens blijven echter wel in je Google-account staan.</translation>
 <translation id="5224391634244552924">Geen opgeslagen wachtwoorden. Chromium kan je wachtwoorden checken als je deze hebt opgeslagen.</translation>
 <translation id="5308226104666789935">Chromium kan niet checken op updates</translation>
 <translation id="5521125884468363740">Log in en schakel synchroniseren in om je tabbladen te bekijken vanaf elk apparaat waarop je Chromium gebruikt</translation>
-<translation id="5573014823074921752">Chromium-tip. Voor meer tabbladopties tik je op de werkbalk onder- of bovenaan het scherm op de knop 'Tabbladen weergeven' en houd je deze vast.</translation>
+<translation id="5573014823074921752">Chromium-tip. Voor meer tabbladopties tik je in de werkbalk onder- of bovenaan het scherm op de knop Tabbladen tonen en houd je deze vast.</translation>
 <translation id="5700709190537129682">Chromium kan je wachtwoorden niet checken</translation>
 <translation id="5742135483959137648">Chromium gebruiken om links te openen</translation>
 <translation id="5777187867430702742">Chromium-pagina</translation>
@@ -71,7 +71,7 @@
 <translation id="7400689562045506105">Chromium overal gebruiken</translation>
 <translation id="766897673682622022">Je wachtwoord is gelekt bij een gegevenslek. Chromium raadt je aan om het wachtwoord nu te wijzigen.</translation>
 <translation id="7674213385180944843">Open Instellingen &gt; Privacy &gt; Camera &gt; Chromium en zet de camera aan.</translation>
-<translation id="7746854981345936341">Chromium-tip. Sommige knoppen zoals Terug, Vooruit en Zoeken worden nu onderaan het scherm weergegeven.</translation>
+<translation id="7746854981345936341">Chromium-tip. Sommige knoppen zoals Terug, Vooruit en Zoeken zie je nu onderaan het scherm.</translation>
 <translation id="786327964234957808">Je wijzigt het synchronisatieaccount van <ph name="USER_EMAIL1" /> in <ph name="USER_EMAIL2" />. Je bestaande Chromium-gegevens worden beheerd door <ph name="DOMAIN" />. Hierdoor worden je gegevens van dit apparaat verwijderd. Je gegevens blijven echter opgeslagen in <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Chromium-scanner gebruiken</translation>
 <translation id="7931842119211730154">Incognitotabbladen vergrendelen als je Chromium sluit</translation>

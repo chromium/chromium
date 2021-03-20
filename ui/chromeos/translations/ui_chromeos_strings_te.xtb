@@ -87,6 +87,7 @@
 <translation id="1853795129690976061">ఈ ఫోల్డర్ Linuxతో షేర్ చేయబడింది</translation>
 <translation id="1864756863218646478">ఫైల్‌ను కనుగొనబడలేదు.</translation>
 <translation id="1920670151694390848">మలయాళం ట్రాన్స్‌లిటరేషన్</translation>
+<translation id="1920798810075583923">పుచ్చకాయ</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> ఫార్మాట్ చేయబడింది</translation>
 <translation id="1931134289871235022">స్లోవక్</translation>
 <translation id="1933345018156373194">తరలింపు విఫలమైంది, తెలియని ఎర్రర్: <ph name="ERROR_MESSAGE" /></translation>
@@ -120,6 +121,7 @@
 <translation id="2288278176040912387">రికార్డ్ ప్లేయర్</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ఫైల్‌లను తెరుస్తోంది.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> ఫైల్‌ని తెరుస్తోంది.</translation>
+<translation id="2304820083631266885">గ్రహం</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> తొలగించబడింది.</translation>
 <translation id="2325650632570794183">ఈ ఫైల్ రకానికి మద్దతు లేదు. దయచేసి ఈ రకమైన ఫైల్‌ను తెరవగల యాప్‌ను కనుగొనడానికి Chrome వెబ్ స్టోర్‌ను సందర్శించండి.</translation>
 <translation id="2326539130272988168">బల్గేరియన్</translation>
@@ -218,10 +220,12 @@
 <translation id="3335337277364016868">రికార్డ్ చేసిన సంవత్సరం</translation>
 <translation id="3353984535370177728">అప్‌లోడ్ చేయడానికి ఫోల్టర్‌ను ఎంచుకోండి</translation>
 <translation id="3356580349448036450">పూర్తయింది</translation>
+<translation id="3358452157379365236">గిటార్</translation>
 <translation id="3382143449143186018">ఇన్‌స్క్రిప్ట్ కీబోర్డ్‌తో నేపాలీ</translation>
 <translation id="3408236822532681288">నియో 2 కీబోర్డ్‌తో జర్మన్ (జర్మనీ)</translation>
 <translation id="3414856743105198592">తొలగించగల మీడియాను ఫార్మాట్ చేయడం వలన మొత్తం డేటా తుడిచి వేయబడుతుంది. మీరు కొనసాగించాలనుకుంటున్నారా?</translation>
 <translation id="3437801641691368414">సృష్టించిన సమయం</translation>
+<translation id="343907260260897561">ఇన్‌స్టంట్ కెమెరా</translation>
 <translation id="3455931012307786678">ఎస్టోనియన్</translation>
 <translation id="3466147780910026086">మీ మీడియా పరికరాన్ని స్కాన్ చేస్తోంది...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> ఫోటోలు <ph name="BEGIN_LINK" />Google డిస్క్<ph name="END_LINK" />కి బ్యాకప్ చేయబడ్డాయి</translation>
@@ -297,6 +301,7 @@
 <translation id="4309915981827077375">సాధారణ సమాచారం</translation>
 <translation id="432252891123397018">స్టాండర్డ్ కీబోర్డ్‌తో రోమేనియన్</translation>
 <translation id="4325128273762811722">స్లోవేనియన్</translation>
+<translation id="4326142238881453352">బోటనిస్ట్</translation>
 <translation id="4326192123064055915">కాఫీ</translation>
 <translation id="4336032328163998280">కాపీ ఆపరేషన్ విఫలమైంది. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">అరబిక్-ఆధారిత కీబోర్డ్‌తో సొరానీ కురిడిష్</translation>
@@ -412,6 +417,7 @@
     అన్ని ఫైల్‌లు ఒకే చోట ఉంటాయి, కాబట్టి <ph name="MARKUP_7" />షేర్ చేయండి, సృష్టించండి,
     వాటిపై ఇతరులతో కలిసి పని చేయండి<ph name="MARKUP_8" />.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google డిస్క్ నుండి పునరుద్ధరించబడిన ఫైల్‌లు</translation>
+<translation id="5288441970121584418">బర్గర్</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">సేవ్ చేయి</translation>
 <translation id="5318819489018851358">Linuxతో షేర్ చేయి</translation>
@@ -502,10 +508,12 @@
 <translation id="6248400709929739064">ఉపశీర్షికలను ప్రారంభించు</translation>
 <translation id="6269630227984243955">మలయ్</translation>
 <translation id="6287852322318138013">ఈ ఫైల్‌ను తెరవడానికి యాప్‌ను ఎంచుకోండి</translation>
+<translation id="6321303798550928047">చేయి ఊపడం</translation>
 <translation id="6339145975392024142">US అంతర్జాతీయం (PC)</translation>
 <translation id="6346310558342052870">యాక్సెస్ నియంత్రించబడింది</translation>
 <translation id="6356685157277930264">ఫైల్స్ అభిప్రాయ విండో</translation>
 <translation id="6358884629796491903">డ్రాగన్</translation>
+<translation id="6367976544441405720">వ్యాన్</translation>
 <translation id="637062427944097960">ఈ పైల్ వేరే డెస్క్‌టాప్‌లో తెరవబడింది. దీన్ని వీక్షించడానికి <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)కు తరలించండి.</translation>
 <translation id="6394388407447716302">చదవడానికి మాత్రమే</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> అంశాలు</translation>
@@ -529,6 +537,7 @@
 <translation id="6650726141019353908">గులాబి రంగు సీతాకోకచిలుక</translation>
 <translation id="6657585470893396449">పాస్‌వర్డ్</translation>
 <translation id="6673674183150363784">Bépo కీబోర్డ్‌తో ఫ్రెంచ్ (ఫ్రాన్స్)</translation>
+<translation id="6710022688720561421">రోబోట్</translation>
 <translation id="6710213216561001401">మునుపటి</translation>
 <translation id="6751256176799620176">1 ఫోల్డర్ ఎంచుకోబడింది</translation>
 <translation id="6790428901817661496">ప్లే చేయి</translation>
@@ -562,6 +571,7 @@
 <translation id="6965382102122355670">సరే</translation>
 <translation id="6970230597523682626">బల్గేరియన్</translation>
 <translation id="6973630695168034713">ఫోల్డర్‌లు</translation>
+<translation id="6976795442547527108">సింహం</translation>
 <translation id="6978611942794658017">ఈ ఫైల్ Windows సాఫ్ట్‌వేర్‌ను ఉపయోగించే PC కోసం రూపొందించబడింది. ఇది Chrome OS అమలయ్యే మీ పరికరానికి అనుకూలంగా లేదు. దయచేసి తగిన ప్రత్యామ్నాయ యాప్‌ కోసం Chrome వెబ్ స్టోర్‌లో శోధించండి.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">స్వీడిష్</translation>
@@ -608,6 +618,7 @@
 <translation id="7532029025027028521">పర్షియన్ ట్రాన్స్‌లిటరేషన్</translation>
 <translation id="7544830582642184299">మీ Google Driveలో ఫైల్స్‌ను యాక్సెస్ చేయడానికి Linux యాప్‌లకు అనుమతి ఇవ్వండి. మార్పులు మీ ఇతర పరికరాలలో కూడా సింక్ చేయబడతాయి.</translation>
 <translation id="7544853251252956727">షఫుల్ చేయి</translation>
+<translation id="7547009467130558110">స్నీకర్</translation>
 <translation id="7547780573915868306">లిథువేనియన్</translation>
 <translation id="7547811415869834682">డచ్</translation>
 <translation id="7551643184018910560">అరకు పిన్ చేయండి</translation>
@@ -747,6 +758,7 @@
 <translation id="8860454412039442620">Excel స్ప్రెడ్‌షీట్</translation>
 <translation id="8866284467018526531">అరబిక్ ట్రాన్స్‌లిటరేషన్</translation>
 <translation id="8900820606136623064">హంగేరియన్</translation>
+<translation id="8903931173357132290">గ్రాడ్యుయేట్</translation>
 <translation id="8919081441417203123">డేనిష్</translation>
 <translation id="8965697826696209160">తగినంత ఖాళీ లేదు.</translation>
 <translation id="8970501467542182729">ఈ ఫైల్ Macintosh సాఫ్ట్‌వేర్‌ను ఉపయోగించే కంప్యూటర్ కోసం రూపొందించబడింది. ఇది Chrome OSను అమలు చేసే మీ పరికరానికి అనుకూలంగా లేదు. Chrome OSలో ఫైల్స్‌ను తెరవడం గురించి <ph name="BEGIN_LINK_HELP" />మరింత తెలుసుకోండి<ph name="END_LINK_HELP" />.</translation>

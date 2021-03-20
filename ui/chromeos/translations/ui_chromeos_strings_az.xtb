@@ -87,6 +87,7 @@
 <translation id="1853795129690976061">Bu qovluq Linux ilə paylaşılır</translation>
 <translation id="1864756863218646478">Fayl tapılmadı.</translation>
 <translation id="1920670151694390848">Malayalam dilində Transliterasiya</translation>
+<translation id="1920798810075583923">Qarpız</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> formatlandı</translation>
 <translation id="1931134289871235022">Slovak</translation>
 <translation id="1933345018156373194">Köçürmək alınmadı, gözlənilməz xəta baş verdi: <ph name="ERROR_MESSAGE" /></translation>
@@ -120,6 +121,7 @@
 <translation id="2288278176040912387">Rekord oyunçu</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> fayl açılır.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> faylı açılır.</translation>
+<translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> çıxarılıb.</translation>
 <translation id="2325650632570794183">Bu fayl növü dəstəklənmir. Bu faylı aça bilən tətbiqi tapmaq üçün Chrome Veb Marketə daxil olun.</translation>
 <translation id="2326539130272988168">Bolqar</translation>
@@ -218,10 +220,12 @@
 <translation id="3335337277364016868">Qeydə alındığı il</translation>
 <translation id="3353984535370177728">Yükləmək üçün qovluq seçin</translation>
 <translation id="3356580349448036450">Tamamlandı</translation>
+<translation id="3358452157379365236">Gitara</translation>
 <translation id="3382143449143186018">InScript klaviaturası ilə Nepal dili</translation>
 <translation id="3408236822532681288">Neo 2 klaviaturası ilə Alman (Almaniya)</translation>
 <translation id="3414856743105198592">Kənarlaşdırıla bilən medianın format edilməsi bütün datanın silinməsi ilə nəticələnir. Davam edirsiniz?</translation>
 <translation id="3437801641691368414">Yaranma tarixi</translation>
+<translation id="343907260260897561">Ani Kamera</translation>
 <translation id="3455931012307786678">Eston</translation>
 <translation id="3466147780910026086">Media cihazınız skan edilir...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> şəkil <ph name="BEGIN_LINK" />Google Diskə<ph name="END_LINK" /> yedəkləndi</translation>
@@ -297,6 +301,7 @@
 <translation id="4309915981827077375">Ümumi məlumat</translation>
 <translation id="432252891123397018">Standart klaviatura ilə rumın dili</translation>
 <translation id="4325128273762811722">Sloven</translation>
+<translation id="4326142238881453352">Botanik</translation>
 <translation id="4326192123064055915">Qəhvə</translation>
 <translation id="4336032328163998280">Kopyalama əməliyyatı uğursuz oldu. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">Ərəb dili klaviaturası ilə Sorani Kürd dili</translation>
@@ -412,6 +417,7 @@
     <ph name="MARKUP_7" />Bir məkandan başqaları ilə faylları<ph name="MARKUP_8" />
     paylaşın, yaradın əməkdaşlıq edin.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Diskdən bərpa edilmiş fayllar</translation>
+<translation id="5288441970121584418">Burger</translation>
 <translation id="5317780077021120954">Yadda saxlayın</translation>
 <translation id="5318819489018851358">Linux ilə paylaşın</translation>
 <translation id="5323213332664049067">Latın Amerikası</translation>
@@ -501,10 +507,12 @@
 <translation id="6248400709929739064">Subtitri aktiv edin</translation>
 <translation id="6269630227984243955">Malay</translation>
 <translation id="6287852322318138013">Bu faylı açmaq üçün bir tətbiq seçin</translation>
+<translation id="6321303798550928047">Əl yelləyir</translation>
 <translation id="6339145975392024142">ABŞ beynəlxalq (PC) klaviaturası</translation>
 <translation id="6346310558342052870">Giriş məhdudlaşdırılıb</translation>
 <translation id="6356685157277930264">Fayllar üçün rəy pəncərəsi</translation>
 <translation id="6358884629796491903">Əjdaha</translation>
+<translation id="6367976544441405720">Furqon</translation>
 <translation id="637062427944097960">Bu fayl başqa masaüstündə açıldı. Ona baxmaq üçün <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) köçürün.</translation>
 <translation id="6394388407447716302">Yalnız oxunan</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> element</translation>
@@ -528,6 +536,7 @@
 <translation id="6650726141019353908">Çəhrayı kəpənək</translation>
 <translation id="6657585470893396449">Parol</translation>
 <translation id="6673674183150363784">Bépo klaviaturası ilə Fransız (Fransa)</translation>
+<translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Əvvəlki</translation>
 <translation id="6751256176799620176">1 qovluq seçildi</translation>
 <translation id="6790428901817661496">Oxudun</translation>
@@ -561,6 +570,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6970230597523682626">Bolqar</translation>
 <translation id="6973630695168034713">Qovluqlar</translation>
+<translation id="6976795442547527108">Aslan</translation>
 <translation id="6978611942794658017">Bu fayl Windows proqram təminatından istifadə edən stolüstü kompüter üçündür, Chrome OS işlədən cihazınız üçün uyğun deyil.</translation>
 <translation id="6979158407327259162">Google Disk</translation>
 <translation id="6989942356279143254">İsveç</translation>
@@ -607,6 +617,7 @@
 <translation id="7532029025027028521">Fars dilində Transliterasiya</translation>
 <translation id="7544830582642184299">Linux tətbiqlərinə Google Diskinizdəki fayllara giriş icazəsi verin. Dəyişikliklər digər cihazlara sinxronizasiya ediləcək.</translation>
 <translation id="7544853251252956727">Qarışdırın</translation>
+<translation id="7547009467130558110">İdman ayaqqabısı</translation>
 <translation id="7547780573915868306">Litva</translation>
 <translation id="7547811415869834682">Holland</translation>
 <translation id="7551643184018910560">Rəfə sancaqlayın</translation>
@@ -744,6 +755,7 @@
 <translation id="8860454412039442620">Excel cədvəli</translation>
 <translation id="8866284467018526531">Ərəb dilində Transliterasiya</translation>
 <translation id="8900820606136623064">Macar</translation>
+<translation id="8903931173357132290">Məzun</translation>
 <translation id="8919081441417203123">Danimarka</translation>
 <translation id="8965697826696209160">Yer çatmır.</translation>
 <translation id="8970501467542182729">Bu fayl Macintosh proqram təminatından istifadə edən kompüter üçündür. Bu, Chrome OS işlədən cihazınız üçün uyğun deyil. Chrome OS'də faylların açılması barədə <ph name="BEGIN_LINK_HELP" />ətraflı məlumat<ph name="END_LINK_HELP" />.</translation>

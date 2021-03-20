@@ -87,6 +87,7 @@
 <translation id="1853795129690976061">ਇਹ ਫੋਲਡਰ Linux ਨਾਲ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="1864756863218646478">ਫਾਈਲ ਨਹੀਂ ਲੱਭੀ ਜਾ ਸਕੀ।</translation>
 <translation id="1920670151694390848">ਮਲਿਆਲਮ ਲਿਪੀਅੰਤਰਨ</translation>
+<translation id="1920798810075583923">ਤਰਬੂਜ</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> ਨੂੰ ਫਾਰਮੈਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1931134289871235022">ਸਲੋਵਾਕ</translation>
 <translation id="1933345018156373194">ਜਗ੍ਹਾ ਬਦਲਣਾ ਅਸਫਲ ਰਿਹਾ, ਅਣਕਿਆਸੀ ਗੜਬੜ: <ph name="ERROR_MESSAGE" /></translation>
@@ -120,6 +121,7 @@
 <translation id="2288278176040912387">ਰਿਕਾਰਡ ਪਲੇਅਰ</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹੀਆਂ ਜਾ ਰਹੀਆਂ ਹਨ।</translation>
 <translation id="2303301624314357662">ਫ਼ਾਈਲ <ph name="FILE_NAME" /> ਨੂੰ ਖੋਲ੍ਹਿਆ ਜਾ ਰਿਹਾ ਹੈ।</translation>
+<translation id="2304820083631266885">ਗ੍ਰਹਿ</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ਨੂੰ ਕੱਢ ਦਿੱਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="2325650632570794183">ਇਹ ਫ਼ਾਈਲ ਕਿਸਮ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਅਜਿਹੀ ਐਪ ਲੱਭਣ ਲਈ 'Chrome ਵੈੱਬ ਸਟੋਰ' 'ਤੇ ਜਾਓ ਜੋ ਇਸ ਕਿਸਮ ਦੀ ਫ਼ਾਈਲ ਖੋਲ੍ਹ ਸਕਦੀ ਹੈ।</translation>
 <translation id="2326539130272988168">ਬੁਲਗਾਰੀਆਈ</translation>
@@ -218,10 +220,12 @@
 <translation id="3335337277364016868">ਰਿਕਾਰਡ ਕਰਨ ਦਾ ਸਾਲ</translation>
 <translation id="3353984535370177728">ਅਪਲੋਡ ਕਰਨ ਲਈ ਇੱਕ ਫੋਲਡਰ ਚੁਣੋ</translation>
 <translation id="3356580349448036450">ਪੂਰਾ</translation>
+<translation id="3358452157379365236">ਗਿਟਾਰ</translation>
 <translation id="3382143449143186018">ਇਨਸਕ੍ਰਿਪਟ ਕੀ-ਬੋਰਡ ਨਾਲ ਨੇਪਾਲੀ</translation>
 <translation id="3408236822532681288">ਨੀਓ 2 ਕੀ-ਬੋਰਡ ਨਾਲ ਜਰਮਨ (ਜਰਮਨੀ)</translation>
 <translation id="3414856743105198592">ਹਟਾਉਣਯੋਗ ਮੀਡੀਆ ਨੂੰ ਫੌਰਮੈਟ ਕਰਨ ਨਾਲ ਸਾਰਾ ਡਾਟਾ ਮਿਟ ਜਾਏਗਾ। ਕੀ ਤੁਸੀਂ ਜਾਰੀ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="3437801641691368414">ਬਣਾਉਣ ਦਾ ਸਮਾਂ</translation>
+<translation id="343907260260897561">ਤਤਕਾਲ ਫ਼ੋਟੋ ਖਿੱਚਣ ਵਾਲਾ ਕੈਮਰਾ</translation>
 <translation id="3455931012307786678">ਇਸਤੋਨੀਆਈ</translation>
 <translation id="3466147780910026086">ਤੁਹਾਡਾ ਮੀਡੀਆ ਡੀਵਾਈਸ ਸਕੈਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> ਫ਼ੋਟੋਆਂ <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> ਵਿੱਚ ਬੈਕ ਅਪ ਕੀਤੀਆਂ ਗਈਆਂ</translation>
@@ -297,6 +301,7 @@
 <translation id="4309915981827077375">ਸਧਾਰਨ ਜਾਣਕਾਰੀ</translation>
 <translation id="432252891123397018">ਮਿਆਰੀ ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਰੋਮਾਨੀਆਈ</translation>
 <translation id="4325128273762811722">ਸਲੋਵੀਨੀ</translation>
+<translation id="4326142238881453352">ਬਨਸਪਤੀ ਵਿਗਿਆਨੀ</translation>
 <translation id="4326192123064055915">ਕੌਫ਼ੀ</translation>
 <translation id="4336032328163998280">ਕਾਪੀ ਓਪਰੇਸ਼ਨ ਅਸਫਲ ਹੋਇਆ। <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">ਅਰਬੀ-ਆਧਾਰਿਤ ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਸੋਰਾਨੀ ਕੁਰਦੀ</translation>
@@ -412,6 +417,7 @@
     <ph name="MARKUP_7" />ਇੱਕੋ ਥਾਂ ਵਿੱਚ ਫ਼ਾਈਲਾਂ ਨੂੰ ਹੋਰਾਂ ਨਾਲ<ph name="MARKUP_8" />
     ਸਾਂਝਾ ਕਰੋ, ਬਣਾਓ, ਅਤੇ ਉਹਨਾਂ 'ਤੇ ਸਹਿਯੋਗ ਦਿਓ।<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Drive ਤੋਂ ਰਿਕਵਰ ਕੀਤੀਆਂ ਫਾਈਲਾਂ</translation>
+<translation id="5288441970121584418">ਬਰਗਰ</translation>
 <translation id="5317780077021120954">ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5318819489018851358">Linux ਨਾਲ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="5323213332664049067">ਲਾਤੀਨੀ ਅਮਰੀਕੀ</translation>
@@ -501,10 +507,12 @@
 <translation id="6248400709929739064">ਉਪਸਿਰਲੇਖਾਂ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="6269630227984243955">ਮਲਾਏ</translation>
 <translation id="6287852322318138013">ਇਸ ਫ਼ਾਈਲ ਨੂੰ ਖੋਲ੍ਹਣ ਲਈ ਇੱਕ ਐਪ ਚੁਣੋ</translation>
+<translation id="6321303798550928047">ਹੱਥ ਹਿਲਾਉਂਦੇ ਹੋਏ</translation>
 <translation id="6339145975392024142">ਅਮਰੀਕੀ ਅੰਤਰਰਾਸ਼ਟਰੀ (PC)</translation>
 <translation id="6346310558342052870">ਪਹੁੰਚ ਪ੍ਰਤਿਬੰਧਿਤ ਕੀਤੀ ਗਈ</translation>
 <translation id="6356685157277930264">Files ਸੰਬੰਧੀ ਵਿਚਾਰ ਵਾਲੀ ਵਿੰਡੋ</translation>
 <translation id="6358884629796491903">ਡਰੈਗਨ</translation>
+<translation id="6367976544441405720">ਵੈਨ</translation>
 <translation id="637062427944097960">ਇਹ ਫਾਈਲ ਇੱਕ ਵੱਖਰੇ ਡੈਸਕਟਾਪ 'ਤੇ ਖੁੱਲੀ ਹੋਈ ਹੈ। ਇਸਨੂੰ ਦੇਖਣ ਲਈ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) 'ਤੇ ਹਲਚਲ ਕਰੋ।</translation>
 <translation id="6394388407447716302">ਸਿਰਫ਼ ਪੜ੍ਹਨ ਲਈ</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ਆਈਟਮਾਂ</translation>
@@ -528,6 +536,7 @@
 <translation id="6650726141019353908">ਗੁਲਾਬੀ ਤਿਤਲੀ</translation>
 <translation id="6657585470893396449">ਪਾਸਵਰਡ</translation>
 <translation id="6673674183150363784">Bépo ਕੀ-ਬੋਰਡ ਨਾਲ ਫ਼ਰਾਂਸੀਸੀ (ਫ਼ਰਾਂਸ)</translation>
+<translation id="6710022688720561421">ਰੋਬੋਟ</translation>
 <translation id="6710213216561001401">ਪਿਛਲਾ</translation>
 <translation id="6751256176799620176">1 ਫੋਲਡਰ ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="6790428901817661496">ਪਲੇ ਕਰੋ</translation>
@@ -561,6 +570,7 @@
 <translation id="6965382102122355670">ਠੀਕ</translation>
 <translation id="6970230597523682626">Bulgarian</translation>
 <translation id="6973630695168034713">ਫੋਲਡਰ</translation>
+<translation id="6976795442547527108">ਸ਼ੇਰ</translation>
 <translation id="6978611942794658017">ਇਹ ਫ਼ਾਈਲ Windows ਸਾਫ਼ਟਵੇਅਰ ਵਰਤਣ ਵਾਲੇ PC ਲਈ ਤਿਆਰ ਕੀਤੀ ਗਈ ਹੈ। ਇਹ ਤੁਹਾਡੇ Chrome OS ਨਾਲ ਚਲਣ ਵਾਲੇ ਡੀਵਾਈਸ ਦੇ ਅਨੁਕੂਲ ਨਹੀਂ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਦੇ ਬਦਲਾਅ ਵਜੋਂ ਕਿਸੇ ਅਨੁਕੂਲ ਐਪ ਲਈ 'Chrome ਵੈੱਬ ਸਟੋਰ' ਖੋਜੋ।</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">ਸਵੀਡਿਸ਼</translation>
@@ -607,6 +617,7 @@
 <translation id="7532029025027028521">ਫ਼ਾਰਸੀ ਲਿਪੀਅੰਤਰਨ</translation>
 <translation id="7544830582642184299">Linux ਐਪਾਂ ਨੂੰ ਤੁਹਾਡੀ Google Drive ਵਿਚਲੀਆਂ ਫ਼ਾਈਲਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ। ਤਬਦੀਲੀਆਂ ਦਾ ਤੁਹਾਡੇ ਹੋਰ ਡੀਵਾਈਸਾਂ ਨਾਲ ਸਮਕਾਲੀਕਰਨ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="7544853251252956727">ਸ਼ੱਫਲ ਕਰੋ</translation>
+<translation id="7547009467130558110">ਸਨੀਕਰ</translation>
 <translation id="7547780573915868306">ਲਿਥੁਆਨੀਆਈ</translation>
 <translation id="7547811415869834682">ਡੱਚ</translation>
 <translation id="7551643184018910560">ਸ਼ੈਲਫ ਤੇ ਪਿਨ ਕਰੋ</translation>
@@ -746,6 +757,7 @@
 <translation id="8860454412039442620">Excel spreadsheet</translation>
 <translation id="8866284467018526531">ਅਰਬੀ ਲਿਪੀਅੰਤਰਨ</translation>
 <translation id="8900820606136623064">Hungarian</translation>
+<translation id="8903931173357132290">ਗ੍ਰੈਜੂਏਟ</translation>
 <translation id="8919081441417203123">ਡੈਨਿਸ਼</translation>
 <translation id="8965697826696209160">ਕਾਫ਼ੀ ਸਪੇਸ ਨਹੀਂ ਹੈ।</translation>
 <translation id="8970501467542182729">ਇਹ ਫ਼ਾਈਲ Macintosh ਸਾਫ਼ਟਵੇਅਰ ਵਰਤਣ ਵਾਲੇ ਕੰਪਿਊਟਰ ਲਈ ਤਿਆਰ ਕੀਤੀ ਗਈ ਹੈ। ਇਹ ਤੁਹਾਡੇ Chrome OS ਨਾਲ ਚਲਣ ਵਾਲੇ ਡੀਵਾਈਸ ਦੇ ਅਨੁਰੂਪ ਨਹੀਂ ਹੈ। Chrome OS 'ਤੇ ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹਣ ਬਾਰੇ <ph name="BEGIN_LINK_HELP" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_HELP" />.</translation>

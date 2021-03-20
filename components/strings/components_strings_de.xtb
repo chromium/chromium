@@ -407,6 +407,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="2482878487686419369">Benachrichtigungen</translation>
 <translation id="248348093745724435">Computerrichtlinien</translation>
 <translation id="2491120439723279231">Das Serverzertifikat enthält Fehler.</translation>
+<translation id="2491414235131909199">Diese Seite wurde von einer Erweiterung blockiert</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON-Parser</translation>
 <translation id="2495093607237746763">Wenn Sie diese Option auswählen, speichert Chromium eine Kopie Ihrer Karte auf diesem Gerät, damit Formulare schneller ausgefüllt werden können.</translation>
@@ -618,6 +619,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="3371076217486966826"><ph name="URL" /> möchte:
       • eine dreidimensionale Karte Ihrer Umgebung erstellen und die Kameraposition verfolgen
       • Ihre Kamera verwenden</translation>
+<translation id="3372389303668969359">Sie können Windows Hello verwenden, um schnell Ihre Identität zu bestätigen, wenn Sie auf diesem Gerät wieder etwas mit dieser Zahlungsmethode kaufen.</translation>
 <translation id="337363190475750230">Bereitstellung aufgehoben</translation>
 <translation id="3377144306166885718">Der Server hat eine veraltete TLS-Version verwendet.</translation>
 <translation id="3377188786107721145">Fehler beim Parsen der Richtlinie</translation>
@@ -690,6 +692,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="3615877443314183785">Geben Sie ein gültiges Ablaufdatum ein</translation>
 <translation id="36224234498066874">Browserdaten löschen...</translation>
 <translation id="362276910939193118">Gesamtverlauf anzeigen</translation>
+<translation id="3625635938337243871">Nach dem Verlassen des Inkognitomodus werden Anmeldedaten auf diesem Gerät gespeichert.</translation>
 <translation id="3630155396527302611">Falls das Programm schon in der Liste mit erlaubtem Netzwerkzugriff eingetragen ist, entfernen Sie es aus der Liste und fügen Sie es noch einmal hinzu.</translation>
 <translation id="3630699740441428070">Administratoren dieses Geräts haben Ihre Netzwerkverbindung konfiguriert. Dadurch erhalten sie möglicherweise Einblick in Ihren Netzwerkverkehr und können sehen, welche Websites Sie besuchen.</translation>
 <translation id="3631244953324577188">Biometrisches Verfahren</translation>
@@ -825,6 +828,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{<ph name="ITEM_COUNT" /> weiteres Element}other{<ph name="ITEM_COUNT" /> weitere Elemente}}</translation>
 <translation id="4176463684765177261">Deaktiviert</translation>
+<translation id="4178883739871311481"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücken Sie die Tabulatortaste und dann die Eingabetaste, um das Google-Dokument zu erstellen</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" />: <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">Ihre Karte kann momentan nicht gespeichert werden</translation>
 <translation id="4196861286325780578">&amp;Verschieben wiederholen</translation>
@@ -918,6 +922,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="4477350412780666475">Nächster Titel</translation>
 <translation id="4482953324121162758">Diese Website wird nicht übersetzt.</translation>
 <translation id="4490717597759821841">A7</translation>
+<translation id="449126573531210296">Synchronisierte Passwörter mit meinem Google-Konto verschlüsseln</translation>
 <translation id="4492519888999857993">Diese Funktionen sind standardmäßig deaktiviert. Sie werden in künftigen Versionen von Chrome nicht länger verfügbar sein.</translation>
 <translation id="4493480324863638523">Ungültige URL. Dies muss eine URL mit einem Standardschema sein, z. B. "http://example.com" oder "https://example.com".</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
@@ -1066,6 +1071,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="5045550434625856497">Falsches Passwort</translation>
 <translation id="5056549851600133418">Artikel für mich</translation>
 <translation id="5061227663725596739">Meinten Sie <ph name="LOOKALIKE_DOMAIN" />?</translation>
+<translation id="5066056036849835175">Druckverlauf</translation>
 <translation id="5068524481479508725">A10</translation>
 <translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 wird verwendet)}other{(# werden verwendet)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Proxyadresse prüfen<ph name="END_LINK" /></translation>
@@ -1087,6 +1093,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="5126510351761255129">Karte bestätigen</translation>
 <translation id="5135404736266831032">Adressen verwalten…</translation>
 <translation id="5138227688689900538">Weniger anzeigen</translation>
+<translation id="514010763713772514">Das nächste Mal schneller bezahlen</translation>
 <translation id="5145883236150621069">Fehlercode in der Richtlinienantwort</translation>
 <translation id="5146995429444047494">Benachrichtigungen von <ph name="ORIGIN" /> werden blockiert</translation>
 <translation id="5148809049217731050">Vorderseite nach oben</translation>
@@ -1508,6 +1515,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="6852204201400771460">App neu laden?</translation>
 <translation id="6865412394715372076">Diese Karte kann momentan nicht geprüft werden</translation>
 <translation id="6874604403660855544">&amp;Hinzufügen wiederholen</translation>
+<translation id="6881240511396774766">Schnell ein neues Google-Dokument erstellen</translation>
 <translation id="6884662655240309489">Größe 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Diese Seite wird in Chrome vereinfacht dargestellt, damit sie leichter zu lesen ist. Die Originalseite hat Chrome über eine unsichere Verbindung abgerufen.</translation>
@@ -1517,6 +1525,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="6898699227549475383">Organisation (O)</translation>
 <translation id="6907293445143367439">„<ph name="SITE_NAME" />“ Folgendes gestatten:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> fordert die vollständige Kontrolle über Ihre MIDI-Geräte</translation>
+<translation id="691325982945105493">Schaltfläche „Google-Dokument erstellen“ – drücken Sie die Eingabetaste, um schnell ein neues Google-Dokument zu erstellen</translation>
 <translation id="6915804003454593391">Nutzer: </translation>
 <translation id="6934672428414710184">Dieser Name stammt aus Ihrem Google-Konto</translation>
 <translation id="6944692733090228304">Sie haben Ihr Passwort auf einer Website eingegeben, die nicht von <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> verwaltet wird. Zum Schutz Ihres Kontos sollten Sie das Passwort nicht für andere Apps und Websites verwenden.</translation>
@@ -1835,6 +1844,7 @@ Weitere Details:
 <translation id="8086971161893892807">Entwurf</translation>
 <translation id="8088680233425245692">Der Artikel kann nicht angezeigt werden.</translation>
 <translation id="808894953321890993">Passwort ändern</translation>
+<translation id="8090329638663751802">Sie können Touch ID verwenden, um schnell Ihre Identität zu bestätigen, wenn Sie auf diesem Gerät wieder etwas mit dieser Zahlungsmethode kaufen.</translation>
 <translation id="8090403583893450254">Größe 20</translation>
 <translation id="8091372947890762290">Aktivierung auf dem Server steht noch aus.</translation>
 <translation id="8092774999298748321">Dunkelviolett</translation>
@@ -2047,6 +2057,7 @@ Weitere Details:
 <translation id="8931333241327730545">Möchten Sie diese Karte in Ihrem Google-Konto speichern?</translation>
 <translation id="8932102934695377596">Ihre Uhr geht nach</translation>
 <translation id="893332455753468063">Namen hinzufügen</translation>
+<translation id="8934418770423095813">Google-Dokument erstellen</translation>
 <translation id="8942355029279167844">Ihr Administrator hat der App "<ph name="APP_NAME" />" erlaubt, Diagnosedaten zu erheben, um die Produktqualität zu verbessern. Weitere Informationen erhalten Sie unter <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">Limone</translation>
 <translation id="8957210676456822347">Erfassungsportal-Autorisierung</translation>

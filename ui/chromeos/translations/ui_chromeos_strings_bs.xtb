@@ -87,6 +87,7 @@
 <translation id="1853795129690976061">Ovaj folder se dijeli s Linuxom</translation>
 <translation id="1864756863218646478">Nije moguće pronaći fajl.</translation>
 <translation id="1920670151694390848">malajalamski (transliteracija)</translation>
+<translation id="1920798810075583923">Lubenica</translation>
 <translation id="1924372192547904021">Disk <ph name="DRIVE_NAME" /> je formatiran</translation>
 <translation id="1931134289871235022">Slovačka</translation>
 <translation id="1933345018156373194">Premještanje nije uspjelo, došlo je do neočekivane greške: <ph name="ERROR_MESSAGE" /></translation>
@@ -120,6 +121,7 @@
 <translation id="2288278176040912387">Gramofon</translation>
 <translation id="2291538123825441971">Broj fajlova koji se trenutno otvara: <ph name="NUMBER_OF_FILES" />.</translation>
 <translation id="2303301624314357662">Otvaranje datoteke <ph name="FILE_NAME" />.</translation>
+<translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> je izbačen.</translation>
 <translation id="2325650632570794183">Ova vrsta fajla nije podržana. Posjetite Chrome Web trgovinu da pronađete aplikaciju koja može otvoriti ovu vrstu fajla.</translation>
 <translation id="2326539130272988168">bugarski</translation>
@@ -218,10 +220,12 @@
 <translation id="3335337277364016868">Godina snimanja</translation>
 <translation id="3353984535370177728">Odaberite folder za otpremanje</translation>
 <translation id="3356580349448036450">Završi</translation>
+<translation id="3358452157379365236">Gitara</translation>
 <translation id="3382143449143186018">nepalski s tastaturom InScript</translation>
 <translation id="3408236822532681288">njemački (Njemačka) s Neo 2 tastaturom</translation>
 <translation id="3414856743105198592">Formatiranjem izmjenjivih medija izbrisat će se svi podaci. Želite li nastaviti?</translation>
 <translation id="3437801641691368414">Vrijeme kreiranja</translation>
+<translation id="343907260260897561">Instant kamera</translation>
 <translation id="3455931012307786678">estonski</translation>
 <translation id="3466147780910026086">Skeniranje vašeg medijskog uređaja...</translation>
 <translation id="3468522857997926824">Napravljena je sigurnosna kopija fotografija (<ph name="FILE_COUNT" />) na <ph name="BEGIN_LINK" />Google Disku<ph name="END_LINK" /></translation>
@@ -297,6 +301,7 @@
 <translation id="4309915981827077375">Opće informacije</translation>
 <translation id="432252891123397018">rumunski sa standardnom tastaturom</translation>
 <translation id="4325128273762811722">slovenački</translation>
+<translation id="4326142238881453352">Botaničar</translation>
 <translation id="4326192123064055915">Kafa</translation>
 <translation id="4336032328163998280">Kopiranje nije uspjelo. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">centralnokurdski s arapskom tastaturom</translation>
@@ -412,6 +417,7 @@
     <ph name="MARKUP_7" />Dijelite, stvarajte i surađujte<ph name="MARKUP_8" />
     na datotekama s drugima i sve to na jednom mjestu.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Oporavljeni fajlovi iz Google Diska</translation>
+<translation id="5288441970121584418">Pljeskavica</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5318819489018851358">Dijeli s Linuxom</translation>
@@ -502,10 +508,12 @@
 <translation id="6248400709929739064">Omogući titlove</translation>
 <translation id="6269630227984243955">malajski</translation>
 <translation id="6287852322318138013">Odaberite aplikaciju da otvorite ovaj fajl</translation>
+<translation id="6321303798550928047">Mahanje</translation>
 <translation id="6339145975392024142">SAD međunarodna (PC)</translation>
 <translation id="6346310558342052870">Pristup je ograničen</translation>
 <translation id="6356685157277930264">Prozor za povratne informacije za fajlove</translation>
 <translation id="6358884629796491903">Zmaj</translation>
+<translation id="6367976544441405720">Kombi</translation>
 <translation id="637062427944097960">Ovaj fajl se otvorio na drugoj radnoj površini. Prebacite na korisnika <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) da ga vidite.</translation>
 <translation id="6394388407447716302">Samo za čitanje</translation>
 <translation id="6395575651121294044">Broj stavki: <ph name="NUMBER_OF_FILES" /></translation>
@@ -529,6 +537,7 @@
 <translation id="6650726141019353908">Ružičasti leptir</translation>
 <translation id="6657585470893396449">Lozinka</translation>
 <translation id="6673674183150363784">francuski (Francuska) s Bépo tastaturom</translation>
+<translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Nazad</translation>
 <translation id="6751256176799620176">Odabran je 1 folder</translation>
 <translation id="6790428901817661496">Pokreni</translation>
@@ -562,6 +571,7 @@
 <translation id="6965382102122355670">Uredu</translation>
 <translation id="6970230597523682626">Bugarska</translation>
 <translation id="6973630695168034713">Folderi</translation>
+<translation id="6976795442547527108">Lav</translation>
 <translation id="6978611942794658017">Ovaj fajl je dizajniran za PC računar koji koristi Windows softver. Sadržaj nije kompatibilan s vašim uređajem koji koristi Chrome OS. Pretražite Chrome Web trgovinu da pronađete odgovarajuću zamjensku aplikaciju.</translation>
 <translation id="6979158407327259162">Google Disk</translation>
 <translation id="6989942356279143254">švedski</translation>
@@ -608,6 +618,7 @@
 <translation id="7532029025027028521">perzijski (transliteracija)</translation>
 <translation id="7544830582642184299">Odobrite Linux aplikacijama da pristupaju fajlovima na vašem Google Disku. Promjene će se sinhronizirati na vašim drugim uređajima.</translation>
 <translation id="7544853251252956727">Izmiješaj</translation>
+<translation id="7547009467130558110">Patika</translation>
 <translation id="7547780573915868306">litvanski</translation>
 <translation id="7547811415869834682">Holandska</translation>
 <translation id="7551643184018910560">Zakači za policu</translation>
@@ -747,6 +758,7 @@
 <translation id="8860454412039442620">Tabela u Excelu</translation>
 <translation id="8866284467018526531">arapski (transliteracija)</translation>
 <translation id="8900820606136623064">Mađarska</translation>
+<translation id="8903931173357132290">Diplomac</translation>
 <translation id="8919081441417203123">danski</translation>
 <translation id="8965697826696209160">Nema dovoljno prostora.</translation>
 <translation id="8970501467542182729">Ovaj fajl je dizajniran za računar koji koristi Macintosh softver. Sadržaj nije kompatibilan s vašim uređajem koji koristi Chrome OS. <ph name="BEGIN_LINK_HELP" />Saznajte više<ph name="END_LINK_HELP" /> o otvaranju fajlova na Chrome OS-u.</translation>

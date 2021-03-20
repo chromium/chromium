@@ -1072,6 +1072,7 @@
 <translation id="5045550434625856497">密碼不正確</translation>
 <translation id="5056549851600133418">為您推薦的文章</translation>
 <translation id="5061227663725596739">您是不是要前往 <ph name="LOOKALIKE_DOMAIN" />？</translation>
+<translation id="5066056036849835175">列印記錄</translation>
 <translation id="5068524481479508725">A10</translation>
 <translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(正在使用 1 個 Cookie)}other{(正在使用 # 個 Cookie)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />檢查 Proxy 地址<ph name="END_LINK" /></translation>

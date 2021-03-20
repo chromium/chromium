@@ -147,7 +147,7 @@
 <translation id="1462951478840426066">使用電腦上的字型，方便你建立高傳真內容</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">向左</translation>
-<translation id="1468653229182955856">你的驗證碼是 <ph name="ONE_TIME_CODE" />；如要以 <ph name="EMBEDDED_ORIGIN" /> 的身分繼續使用 <ph name="TOP_ORIGIN" />，就必須輸入這組驗證碼</translation>
+<translation id="1468653229182955856">你的 <ph name="EMBEDDED_ORIGIN" /> 驗證碼是 <ph name="ONE_TIME_CODE" />，請輸入此驗證碼，以便繼續使用 <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">顯示更多</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -1073,6 +1073,7 @@
 <translation id="5045550434625856497">密碼不正確</translation>
 <translation id="5056549851600133418">為你推薦的文章</translation>
 <translation id="5061227663725596739">你是不是要前往 <ph name="LOOKALIKE_DOMAIN" />？</translation>
+<translation id="5066056036849835175">列印記錄</translation>
 <translation id="5068524481479508725">A10</translation>
 <translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(目前使用 1 個 Cookie)}other{(目前使用 # 個 Cookie)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />檢查 Proxy 位址<ph name="END_LINK" /></translation>

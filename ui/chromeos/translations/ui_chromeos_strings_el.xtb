@@ -88,6 +88,7 @@
 <translation id="1853795129690976061">Αυτός ο φάκελος χρησιμοποιείται από κοινού με το Linux.</translation>
 <translation id="1864756863218646478">Δεν ήταν δυνατή η εύρεση του αρχείου.</translation>
 <translation id="1920670151694390848">Μεταγραφή στα Μαλαγιαλαμικά</translation>
+<translation id="1920798810075583923">Καρπούζι</translation>
 <translation id="1924372192547904021">Έγινε μορφοποίηση της συσκευής <ph name="DRIVE_NAME" /></translation>
 <translation id="1931134289871235022">Σλοβακικά</translation>
 <translation id="1933345018156373194">Αποτυχία μετακίνησης, μη αναμενόμενο σφάλμα: <ph name="ERROR_MESSAGE" /></translation>
@@ -122,6 +123,7 @@
 <translation id="2288278176040912387">Πικάπ</translation>
 <translation id="2291538123825441971">Άνοιγμα <ph name="NUMBER_OF_FILES" /> αρχείων.</translation>
 <translation id="2303301624314357662">Άνοιγμα αρχείου <ph name="FILE_NAME" />.</translation>
+<translation id="2304820083631266885">Πλανήτης</translation>
 <translation id="2305020378527873881">Το στοιχείο <ph name="VOLUME_NAME" /> καταργήθηκε.</translation>
 <translation id="2325650632570794183">Αυτός ο τύπος αρχείου δεν υποστηρίζεται. Επισκεφτείτε το Chrome Web Store για να εντοπίσετε μια εφαρμογή που να μπορεί να ανοίξει αυτόν τον τύπο αρχείου.</translation>
 <translation id="2326539130272988168">Βουλγαρικά</translation>
@@ -224,10 +226,12 @@
 <translation id="3335337277364016868">Έτος ηχογράφησης</translation>
 <translation id="3353984535370177728">Επιλέξτε έναν φάκελο για μεταφόρτωση</translation>
 <translation id="3356580349448036450">Ολοκληρώθηκε</translation>
+<translation id="3358452157379365236">Κιθάρα</translation>
 <translation id="3382143449143186018">Νεπαλικά με πληκτρολόγιο InScript</translation>
 <translation id="3408236822532681288">Γερμανικά (Γερμανίας) με πληκτρολόγιο Neo 2</translation>
 <translation id="3414856743105198592">Η μορφοποίηση του αφαιρούμενου μέσου θα διαγράψει όλα τα δεδομένα. Θέλετε να συνεχίσετε;</translation>
 <translation id="3437801641691368414">Ώρα δημιουργίας</translation>
+<translation id="343907260260897561">Στιγμιαία φωτογραφική μηχανή</translation>
 <translation id="3455931012307786678">Εσθονικά</translation>
 <translation id="3466147780910026086">Σάρωση της συσκευής μέσων σας…</translation>
 <translation id="3468522857997926824">Δημιουργήθηκαν αντίγραφα ασφαλείας για <ph name="FILE_COUNT" /> φωτογραφίες στο <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
@@ -305,6 +309,7 @@
 <translation id="4309915981827077375">Γενικές πληροφορίες</translation>
 <translation id="432252891123397018">Ρουμανικά με βασικό πληκτρολόγιο</translation>
 <translation id="4325128273762811722">Σλοβενικά</translation>
+<translation id="4326142238881453352">Βοτανολόγος</translation>
 <translation id="4326192123064055915">Καφές</translation>
 <translation id="4336032328163998280">Αποτυχία λειτουργίας αντιγραφής. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">Σορανί Κουρδικά με πληκτρολόγιο βασισμένο στα Αραβικά</translation>
@@ -424,6 +429,7 @@
     <ph name="MARKUP_7" />Κοινή χρήση, δημιουργία και συνεργασία<ph name="MARKUP_8" />
     σε αρχεία με άλλους χρήστες σε ένα μέρος.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Ανακτημένα αρχεία από το Google Drive</translation>
+<translation id="5288441970121584418">Μπέργκερ</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">Αποθήκευση</translation>
 <translation id="5318819489018851358">Κοινοποίηση σε Linux</translation>
@@ -515,10 +521,12 @@
 <translation id="6248400709929739064">Ενεργοποίηση υπότιτλων</translation>
 <translation id="6269630227984243955">Μαλαισιανά</translation>
 <translation id="6287852322318138013">Επιλέξτε μια εφαρμογή για να ανοίξετε αυτό το αρχείο</translation>
+<translation id="6321303798550928047">Χαιρετισμός</translation>
 <translation id="6339145975392024142">Διεθνές ΗΠΑ (PC)</translation>
 <translation id="6346310558342052870">Περιορισμένη πρόσβαση</translation>
 <translation id="6356685157277930264">Παράθυρο πληροφοριών αρχείων</translation>
 <translation id="6358884629796491903">Δράκος</translation>
+<translation id="6367976544441405720">Βαν</translation>
 <translation id="637062427944097960">Αυτό το αρχείο άνοιξε σε διαφορετικό προφίλ. Μεταβείτε στο προφίλ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) για να το δείτε.</translation>
 <translation id="6394388407447716302">Μόνο για ανάγνωση</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> στοιχεία</translation>
@@ -542,6 +550,7 @@
 <translation id="6650726141019353908">Ροζ πεταλούδα</translation>
 <translation id="6657585470893396449">Κωδικός πρόσβασης</translation>
 <translation id="6673674183150363784">Γαλλικά (Γαλλίας) με πληκτρολόγιο BÉPO</translation>
+<translation id="6710022688720561421">Ρομπότ</translation>
 <translation id="6710213216561001401">Προηγούμενο</translation>
 <translation id="6751256176799620176">Επιλέχθηκε 1 φάκελος</translation>
 <translation id="6790428901817661496">Αναπαραγωγή</translation>
@@ -576,6 +585,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6970230597523682626">Βουλγαρικά</translation>
 <translation id="6973630695168034713">Φάκελοι</translation>
+<translation id="6976795442547527108">Λιοντάρι</translation>
 <translation id="6978611942794658017">Αυτό το αρχείο έχει σχεδιαστεί για έναν υπολογιστή ο οποίος χρησιμοποιεί λογισμικό Windows. Δεν είναι συμβατό με τη συσκευή σας η οποία χρησιμοποιεί Chrome OS. Αναζήτηστε μια κατάλληλη εφαρμογή αντικατάστασης στο Chrome Web Store.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Σουηδικά</translation>
@@ -624,6 +634,7 @@
 <translation id="7532029025027028521">Μεταγραφή σε Περσικά</translation>
 <translation id="7544830582642184299">Δώστε στις εφαρμογές Linux άδεια πρόσβασης σε αρχεία στο Google Drive σας. Οι αλλαγές θα συγχρονιστούν με τις άλλες συσκευές σας.</translation>
 <translation id="7544853251252956727">Τυχαία αναπαραγωγή</translation>
+<translation id="7547009467130558110">Αθλητικό παπούτσι</translation>
 <translation id="7547780573915868306">Λιθουανικά</translation>
 <translation id="7547811415869834682">Ολλανδικά
 </translation>
@@ -769,6 +780,7 @@
 <translation id="8866284467018526531">Μεταγραφή σε Αραβικά</translation>
 <translation id="8900820606136623064">Ουγγρικά
 </translation>
+<translation id="8903931173357132290">Απόφοιτος</translation>
 <translation id="8919081441417203123">Δανικά
 </translation>
 <translation id="8965697826696209160">Δεν υπάρχει αρκετός χώρος.</translation>

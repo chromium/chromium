@@ -98,7 +98,7 @@
 <translation id="1697284962337958118">Bæta við</translation>
 <translation id="1718835860248848330">Undanfarna klukkustund</translation>
 <translation id="1724977129262658800">Taktu úr lás til að breyta aðgangsorðinu</translation>
-<translation id="173522743738009831">Um persónuverndarafmörkun</translation>
+<translation id="173522743738009831">Um Privacy Sandbox</translation>
 <translation id="1736419249208073774">Kanna</translation>
 <translation id="1749561566933687563">Samstilltu bókamerkin þín</translation>
 <translation id="17513872634828108">Opnir flipar</translation>
@@ -349,19 +349,19 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="3384347053049321195">Deila mynd</translation>
 <translation id="3387650086002190359">Niðurhal á <ph name="FILE_NAME" /> mistókst vegna villu í skráakerfi.</translation>
 <translation id="3389286852084373014">Textinn er of stór</translation>
-<translation id="3391512812407811893">Prufuútgáfur persónuverndarafmörkunar</translation>
+<translation id="3391512812407811893">Prufuútgáfur Privacy Sandbox</translation>
 <translation id="3398320232533725830">Opna bókamerkjaumsjón</translation>
 <translation id="3414952576877147120">Stærð:</translation>
 <translation id="3429160811076349561">Slökkt er á prufueiginleikum</translation>
 <translation id="3440975416244667276">Haltu fingri á atriði til að fá ítarlegri upplýsingar</translation>
 <translation id="3443221991560634068">Endurhlaða þessa síðu</translation>
-<translation id="3451542610083122179">Persónuverndarafmörkun er viðvarandi verkefni sem snýst um að varðveita opinn vef sem ver þig fyrir rakningartækni.
+<translation id="3451542610083122179">Privacy Sandbox er viðvarandi verkefni sem snýst um að varðveita opinn vef sem ver þig fyrir rakningartækni.
 
 Vefsvæði reiða sig á ýmsa tækni, s.s. fótspor þriðju aðila, til að hægt sé að veita mikilvæga þjónustu eins og að birta viðeigandi auglýsingar og mæla árangur vefsvæða.
 
-Persónuverndarafmörkun varðveitir virkni opna vefsins með því að búa til betri aðferðir til að veita þessa þjónustu án þess að virkni þín sé rakin á milli vefsvæða í laumi.
+Privacy Sandbox varðveitir virkni opna vefsins með því að búa til betri aðferðir til að veita þessa þjónustu án þess að virkni þín sé rakin á milli vefsvæða í laumi.
 
-Persónuverndarafmörkun er enn í þróun og er í boði á völdum svæðum. Eins og er geta vefsvæði prófað persónuverndarafmörkun á sama tíma og þau nota núverandi veftækni á borð við fótspor þriðja aðila. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
+Privacy Sandbox er enn í þróun og er í boði á völdum svæðum. Eins og er geta vefsvæði prófað Privacy Sandbox á sama tíma og þau nota núverandi veftækni á borð við fótspor þriðja aðila. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">Þú getur valið leitarvélina þína</translation>
 <translation id="3492207499832628349">Nýr huliðsflipi</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /> um uppástungur að efni</translation>
@@ -425,7 +425,6 @@ Persónuverndarafmörkun er enn í þróun og er í boði á völdum svæðum. E
 <translation id="395206256282351086">Slökkt á tillögum fyrir leit og vefsvæði</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome hleður síðunni þegar hún er tilbúin}one{Chrome hleður síðunum þegar þær eru tilbúnar}other{Chrome hleður síðunum þegar þær eru tilbúnar}}</translation>
 <translation id="3963007978381181125">Dulkóðun aðgangsorðs inniheldur ekki greiðslumáta og heimilisföng af Google Pay. Aðeins þeir sem vita aðgangsorðið þitt geta lesið dulkóðuðu gögnin þín. Aðgangsorðið er hvorki sent til Google né geymt. Ef þú gleymir aðgangsorðinu eða vilt breyta þessari stillingu þarftu að endurstilla samstillingu. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
-<translation id="3967822245660637423">Niðurhali lokið</translation>
 <translation id="3969142555815019568">Chrome getur ekki athugað aðgangsorðin þín</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> mun opnast í Chrome. Með því að halda áfram samþykkir þú <ph name="BEGIN_LINK1" />þjónustuskilmála Google<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />viðbótarskilmála Google Chrome og Chrome OS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Persónuvernd fyrir Google reikninga sem stjórnað er með Family Link<ph name="END_LINK3" /> gildir einnig.</translation>
 <translation id="397583555483684758">Samstilling er hætt að virka</translation>
@@ -471,6 +470,7 @@ Persónuverndarafmörkun er enn í þróun og er í boði á völdum svæðum. E
 <translation id="4314815835985389558">Stjórna samstillingu</translation>
 <translation id="4320177379694898372">Engin nettenging</translation>
 <translation id="4321739720395210191">Ekki tókst að opna myndavélina. Endurræstu tækið og reyndu aftur.</translation>
+<translation id="433213510553688132">Fylgist með...</translation>
 <translation id="4335835283689002019">Slökkt er á öruggri vefnotkun</translation>
 <translation id="4351244548802238354">Loka glugga</translation>
 <translation id="4378154925671717803">Sími</translation>
@@ -1066,7 +1066,7 @@ Gögnum úr huliðslotum verður aðeins eytt úr Chrome þegar þú <ph name="B
 <translation id="8156139159503939589">Hvaða tungumál geturðu lesið?</translation>
 <translation id="8168435359814927499">Efni</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> skrár eftir</translation>
-<translation id="8189750580333936930">Persónuverndarsandkassi</translation>
+<translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">Einn dagur eftir</translation>
 <translation id="8200772114523450471">Halda áfram</translation>
 <translation id="8209050860603202033">Opna mynd</translation>

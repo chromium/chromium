@@ -87,6 +87,7 @@
 <translation id="1853795129690976061">Le folda yabelenwe ne-Linux</translation>
 <translation id="1864756863218646478">Ifayela alikwazanga ukutholwa</translation>
 <translation id="1920670151694390848">Ukuguqulwa kwamaletha ngesi-Malayalam</translation>
+<translation id="1920798810075583923">Ikhabe</translation>
 <translation id="1924372192547904021">Kufomethwe i-<ph name="DRIVE_NAME" /></translation>
 <translation id="1931134289871235022">Isi-Slovak</translation>
 <translation id="1933345018156373194">Ukuhambisa kuhlulekile, iphutha elingalindelekile: <ph name="ERROR_MESSAGE" /></translation>
@@ -120,6 +121,7 @@
 <translation id="2288278176040912387">Isidlali serekhodi</translation>
 <translation id="2291538123825441971">Ukuvula amafayela e-<ph name="NUMBER_OF_FILES" />.</translation>
 <translation id="2303301624314357662">Ivula ifayela <ph name="FILE_NAME" />.</translation>
+<translation id="2304820083631266885">Iplanethi</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ikhishiwe.</translation>
 <translation id="2325650632570794183">Uhlobo lwefayela alusekelwe. Sicela uvakashele isitolo sewebhu se-Chrome ukuze uthole uhlelo lokusebenza olungavula lolu hlobo lwefayela.</translation>
 <translation id="2326539130272988168">Isi-Bulgaria</translation>
@@ -218,10 +220,12 @@
 <translation id="3335337277364016868">Unyaka okurekhodwe ngawo</translation>
 <translation id="3353984535370177728">Khetha ifolda okumele uyilayishe</translation>
 <translation id="3356580349448036450">Qedile</translation>
+<translation id="3358452157379365236">Isiginci</translation>
 <translation id="3382143449143186018">Isi-Nepali ngekhibhodi ye-InScript</translation>
 <translation id="3408236822532681288">Isi-German (Germany) esinekhibhodi ye-Neo 2</translation>
 <translation id="3414856743105198592">Ukufometha imidiya engasuswa kuzosula yonke idatha. Ingabe ufisa ukuqhubeka?</translation>
 <translation id="3437801641691368414">Isikhathi okudalwe ngaso</translation>
+<translation id="343907260260897561">Ikhamera esheshayo</translation>
 <translation id="3455931012307786678">Isi-Estonia</translation>
 <translation id="3466147780910026086">Iskena idivayisi yakho yemidiya...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> izithombe zenziwe isipele ku-<ph name="BEGIN_LINK" />Google Drayivu<ph name="END_LINK" /></translation>
@@ -297,6 +301,7 @@
 <translation id="4309915981827077375">Ulwazi oluvamile</translation>
 <translation id="432252891123397018">Isi-Romanian esinekhibhodi Evamile</translation>
 <translation id="4325128273762811722">Isi-Slovenian</translation>
+<translation id="4326142238881453352">Ingcweti yezitshalo</translation>
 <translation id="4326192123064055915">Ikhofi</translation>
 <translation id="4336032328163998280">Ukusebenza kwekhophi kuhlulekile. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">Isi-Sorani Kurdish esinekhibhodi esekelwe ku-Arabic</translation>
@@ -412,6 +417,7 @@
     <ph name="MARKUP_7" />Yabelana, dala futhi hlanganyela<ph name="MARKUP_8" />
     kumafayela nabanye endaweni eyodwa.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Amafayela atholiwe kusuka ku-Google Drayivu</translation>
+<translation id="5288441970121584418">Ibhega</translation>
 <translation id="5317780077021120954">Londoloza</translation>
 <translation id="5318819489018851358">Yabelana ne-Linux</translation>
 <translation id="5323213332664049067">Isi-Latin American</translation>
@@ -501,10 +507,12 @@
 <translation id="6248400709929739064">Nika amandla imibhalo engezansi</translation>
 <translation id="6269630227984243955">Isi-Malay</translation>
 <translation id="6287852322318138013">Khetha uhlelo lokusebenza ukuze livule leli fayela</translation>
+<translation id="6321303798550928047">Ukphakamisa isandla</translation>
 <translation id="6339145975392024142">I-US international (PC)</translation>
 <translation id="6346310558342052870">Ukufinyelela kukhawulelwe</translation>
 <translation id="6356685157277930264">Impendulo yewindi le-Files</translation>
 <translation id="6358884629796491903">Isilo</translation>
+<translation id="6367976544441405720">Iveni</translation>
 <translation id="637062427944097960">Leli fayela livuleke kudeskithophu ehlukile. Iya ku-<ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) ukuze ulibuke.</translation>
 <translation id="6394388407447716302">Funda kuphela</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> izinto</translation>
@@ -528,6 +536,7 @@
 <translation id="6650726141019353908">Uvemvane ophinki</translation>
 <translation id="6657585470893396449">Igama lokungena</translation>
 <translation id="6673674183150363784">Ikhibhodi yesi-French (France) ene-Bépo</translation>
+<translation id="6710022688720561421">I-Robot</translation>
 <translation id="6710213216561001401">Okwedlule</translation>
 <translation id="6751256176799620176">1 ifolda ekhethiwe</translation>
 <translation id="6790428901817661496">Dlala</translation>
@@ -561,6 +570,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6970230597523682626">Isi-Bulgarian</translation>
 <translation id="6973630695168034713">Amafolda</translation>
+<translation id="6976795442547527108">Ibhubezi</translation>
 <translation id="6978611942794658017">Leli fayela lidizayinelwe i-PC esebenzisa isofthiwe ye-Windows. Lokhu akuhambisani nedivayisi yakho esebenzisa i-Chrome OS. Sicela useshe Isitolo Sewebhu se-Chrome ukuze uthole uhlelo lokusebenza lokungena esikhundleni olufanele.</translation>
 <translation id="6979158407327259162">I-Google Drayivu</translation>
 <translation id="6989942356279143254">Isi-Swedish</translation>
@@ -607,6 +617,7 @@
 <translation id="7532029025027028521">Ukuguqulwa kwamaletha esi-Persian</translation>
 <translation id="7544830582642184299">Nikeza i-Linux imvume yezinhlelo zokusebenza ukufinyelela amafayela ku-Google Drayivu yakho. Izinguquko zizovumelanisa kwamanye amadivayisi akho.</translation>
 <translation id="7544853251252956727">Shova</translation>
+<translation id="7547009467130558110">Iteki</translation>
 <translation id="7547780573915868306">isi-Lithuanian</translation>
 <translation id="7547811415869834682">Isi-Dutch</translation>
 <translation id="7551643184018910560">Phina kushelufu</translation>
@@ -746,6 +757,7 @@
 <translation id="8860454412039442620">Isipredishithi se-Excel</translation>
 <translation id="8866284467018526531">Ukuguqulwa kwamaletha we-Arabic</translation>
 <translation id="8900820606136623064">Isi-Hungarian</translation>
+<translation id="8903931173357132290">Thola iziqu</translation>
 <translation id="8919081441417203123">Isi-Danish</translation>
 <translation id="8965697826696209160">Asikho isikhala esanele.</translation>
 <translation id="8970501467542182729">Leli fayela lidizayinelwe ikhompuyutha esebenzisa isofthiwe ye-Macintosh. Lokhu akuhambelani nedivayisi yakho esebenzisa i-Chrome OS. <ph name="BEGIN_LINK_HELP" />Funda kabanzi<ph name="END_LINK_HELP" /> ngokuvula amafayela ku-Chrome OS.</translation>

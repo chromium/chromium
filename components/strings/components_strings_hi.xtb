@@ -622,7 +622,7 @@
 <translation id="3371076217486966826"><ph name="URL" /> ये काम करना चाहता है:
       • आपके आस-पास की जगहों का 3D मैप बनाना और कैमरे की स्थिति ट्रैक करना
       • कैमरे का इस्तेमाल करना</translation>
-<translation id="3372389303668969359">आप Windows Hello का इस्तेमाल कर सकते हैं, ताकि अगली बार इस डिवाइस पर पैसे चुकाने का यह तरीका इस्तेमाल करते समय आपकी पहचान की पुष्टि फटाफट हो सके.</translation>
+<translation id="3372389303668969359">आप Windows Hello का इस्तेमाल कर सकते हैं, ताकि इस डिवाइस पर पैसे चुकाने का यह तरीका इस्तेमाल करते समय आपकी पहचान की पुष्टि फटाफट हो सके.</translation>
 <translation id="337363190475750230">प्रावधान रद्द</translation>
 <translation id="3377144306166885718">सर्वर, TLS के पुराने वर्शन का इस्तेमाल कर रहा है.</translation>
 <translation id="3377188786107721145">नीति पार्स गड़बड़ी</translation>
@@ -932,7 +932,7 @@
 <translation id="4477350412780666475">अगला ट्रैक</translation>
 <translation id="4482953324121162758">इस साइट का अनुवाद नहीं किया जाएगा.</translation>
 <translation id="4490717597759821841">ए7</translation>
-<translation id="449126573531210296">अपने Google खाते के साथ सिंक किए गए पासवर्ड एन्क्रिप्ट (सुरक्षित) करें</translation>
+<translation id="449126573531210296">अपने Google खाते के क्रेडेंशियल का इस्तेमाल कर, सिंक किए गए पासवर्ड को सुरक्षित करें.</translation>
 <translation id="4492519888999857993">ये सुविधाएं डिफ़ॉल्ट रूप से बंद कर दी गई हैं. Chrome के आने वाले वर्शन पर ये सुविधाएं उपलब्ध नहीं होंगी.</translation>
 <translation id="4493480324863638523">यूआरएल गलत है. यूआरएल में सामान्य स्कीम, जैसे कि, http://example.com या https://example.com.ज़रूर होनी चाहिए.</translation>
 <translation id="4503882053543859973">आर्किटेक्चर-डी</translation>
@@ -1081,6 +1081,7 @@
 <translation id="5045550434625856497">ग़लत पासवर्ड</translation>
 <translation id="5056549851600133418">आपके लिए लेख</translation>
 <translation id="5061227663725596739">क्या आपका मतलब <ph name="LOOKALIKE_DOMAIN" /> से है?</translation>
+<translation id="5066056036849835175">प्रिंट करने का इतिहास</translation>
 <translation id="5068524481479508725">ए10</translation>
 <translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 कुकी इस्तेमाल में है)}one{(# कुकी इस्तेमाल में हैं)}other{(# कुकी इस्तेमाल में हैं)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />प्रॉक्सी पते की जाँच करें<ph name="END_LINK" /></translation>
@@ -1102,7 +1103,7 @@
 <translation id="5126510351761255129">कार्ड की पुष्टि करें</translation>
 <translation id="5135404736266831032">पते प्रबंधित करें...</translation>
 <translation id="5138227688689900538">कम दिखाएं</translation>
-<translation id="514010763713772514">अगली बार और जल्दी पैसे चुकाएं</translation>
+<translation id="514010763713772514">अगली बार और जल्दी पुष्टि करें</translation>
 <translation id="5145883236150621069">नीति प्रतिसाद में गड़बड़ी कोड मौजूद है</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> के लिए सूचनाओं को ब्लॉक किया गया है</translation>
 <translation id="5148809049217731050">सीधा करके रखें</translation>
@@ -1853,7 +1854,7 @@
 <translation id="8086971161893892807">ड्राफ़्ट</translation>
 <translation id="8088680233425245692">लेख देखा नहीं जा सका.</translation>
 <translation id="808894953321890993">पासवर्ड बदलें</translation>
-<translation id="8090329638663751802">आप Touch ID का इस्तेमाल कर सकते हैं, ताकि अगली बार इस डिवाइस पर पैसे चुकाने का यह तरीका इस्तेमाल करते समय आपकी पहचान की पुष्टि फटाफट हो सके.</translation>
+<translation id="8090329638663751802">आप Touch ID का इस्तेमाल कर सकते हैं, ताकि इस डिवाइस पर पैसे चुकाने का यह तरीका इस्तेमाल करते समय आपकी पहचान की पुष्टि फटाफट हो सके.</translation>
 <translation id="8090403583893450254">आकार 20</translation>
 <translation id="8091372947890762290">सर्वर पर सक्रियण लंबित है</translation>
 <translation id="8092774999298748321">गहरा बैंगनी</translation>

@@ -98,7 +98,7 @@
 <translation id="1697284962337958118">Pridať do</translation>
 <translation id="1718835860248848330">Posledná hodina</translation>
 <translation id="1724977129262658800">Ak chcete upraviť heslo, odomknite</translation>
-<translation id="173522743738009831">Karanténa na ochranu súkromia</translation>
+<translation id="173522743738009831">Informácie o technológiách Privacy Sandbox</translation>
 <translation id="1736419249208073774">Preskúmať</translation>
 <translation id="1749561566933687563">Synchronizujte svoje záložky</translation>
 <translation id="17513872634828108">Otvorené karty</translation>
@@ -349,19 +349,19 @@ Vyhľadávanie spustíte pridržaním ľubovoľného slova. Spresníte ho výber
 <translation id="3384347053049321195">Zdieľať obrázok</translation>
 <translation id="3387650086002190359">Súbor <ph name="FILE_NAME" /> sa nepodarilo stiahnuť z dôvodu chýb systému súborov.</translation>
 <translation id="3389286852084373014">Text je príliš veľký</translation>
-<translation id="3391512812407811893">Skúšobné verzie karantény na ochranu súkromia</translation>
+<translation id="3391512812407811893">Skúšobné verzie Privacy Sandbox</translation>
 <translation id="3398320232533725830">Otvorenie správcu záložiek</translation>
 <translation id="3414952576877147120">Veľkosť:</translation>
 <translation id="3429160811076349561">Skúšobné funkcie sú vypnuté</translation>
 <translation id="3440975416244667276">Ďalšie relevantné informácie získate pridržaním</translation>
 <translation id="3443221991560634068">Opätovné načítanie aktuálnej stránky</translation>
-<translation id="3451542610083122179">Karanténa na ochranu súkromia je prebiehajúca iniciatíva na ochranu otvoreného internetu, ktorá vás pomôže ochrániť pred mechanizmami sledovania.
+<translation id="3451542610083122179">Privacy Sandbox je prebiehajúca iniciatíva na ochranu otvoreného internetu, ktorá vás pomôže ochrániť pred mechanizmami sledovania.
 
-V súčasnosti weby využívajú mnoho technológií (napríklad súbory cookie tretej strany) pre dôležité služby, ako je zobrazovanie relevantných reklám a meranie výkonnosti webu.
+V súčasnosti weby využívajú mnoho technológií (napríklad súbory cookie tretej strany) pre dôležité služby, ako sú zobrazovanie relevantných reklám a meranie výkonnosti webu.
 
-Karanténa na ochranu súkromia zachováva vitalitu otvoreného internetu vytváraním lepších spôsobov poskytovania týchto služieb bez poškodenia webov a súčasnej ochrany pred skrytým sledovaním na internete.
+Privacy Sandbox zachováva vitalitu otvoreného internetu vytváraním lepších spôsobov poskytovania týchto služieb bez poškodenia webov a súčasnej ochrany pred skrytým sledovaním na internete.
 
-Na vývoji karantény na ochranu súkromia sa stále aktívne pracuje a je k dispozícii len vo vybraných oblastiach. Weby si zatiaľ môžu karanténu na ochranu súkromia vyskúšať a zároveň používať aktuálne internetové technológie, ako sú súbory cookie tretej strany. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
+Na vývoji technológií Privacy Sandbox sa stále aktívne pracuje a je k dispozícii len vo vybraných oblastiach. Weby si zatiaľ môžu Privacy Sandbox vyskúšať a zároveň používať aktuálne internetové technológie, ako sú súbory cookie tretej strany. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">Môžete si vybrať vyhľadávač</translation>
 <translation id="3492207499832628349">Nová karta inkognito</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /> o návrhoch obsahu</translation>
@@ -425,7 +425,6 @@ Na vývoji karantény na ochranu súkromia sa stále aktívne pracuje a je k d
 <translation id="395206256282351086">Návrhy vyhľadávania a webov sú deaktivované</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome stránku načíta, keď bude k dispozícii}few{Chrome stránku načíta, keď bude k dispozícii}many{Chrome stránku načíta, keď bude k dispozícii}other{Chrome stránku načíta, keď bude k dispozícii}}</translation>
 <translation id="3963007978381181125">Šifrovanie pomocou prístupovej frázy nezahŕňa spôsoby platby a adresy zo služby Google Pay. Šifrované údaje si môže prečítať iba používateľ s prístupovou frázou. Prístupová fráza sa neodosiela do Googlu a nie je na Googli uložená. Ak ju zabudnete alebo toto nastavenie budete chcieť zmeniť, bude nutné synchronizáciu resetovať. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
-<translation id="3967822245660637423">Sťahovanie dokončené</translation>
 <translation id="3969142555815019568">Chrome nemôže skontrolovať heslá</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> sa otvorí v Chrome. Pokračovaním vyjadrujete súhlas so <ph name="BEGIN_LINK1" />zmluvnými podmienkami spoločnosti Google<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />dodatočnými zmluvnými podmienkami prehliadača Google Chrome a systému Chrome OS<ph name="END_LINK2" />. Platí aj <ph name="BEGIN_LINK3" />oznámenie o ochrane súkromia pre účty Google spravované pomocou aplikácie Family Link<ph name="END_LINK3" />.</translation>
 <translation id="397583555483684758">Synchronizácia prestala fungovať</translation>
@@ -471,6 +470,7 @@ Na vývoji karantény na ochranu súkromia sa stále aktívne pracuje a je k d
 <translation id="4314815835985389558">Správa synchronizácie</translation>
 <translation id="4320177379694898372">Žiadne internetové pripojenie</translation>
 <translation id="4321739720395210191">Vaša kamera sa nedá otvoriť. Reštartujte zariadenie a skúste to znova.</translation>
+<translation id="433213510553688132">Sledované…</translation>
 <translation id="4335835283689002019">Bezpečné prehliadanie je vypnuté</translation>
 <translation id="4351244548802238354">Zavrieť dialógové okno</translation>
 <translation id="4378154925671717803">Telefón</translation>
@@ -1066,7 +1066,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="8156139159503939589">Akým jazykom rozumiete?</translation>
 <translation id="8168435359814927499">Obsah</translation>
 <translation id="8186512483418048923">Zostávajúce súbory: <ph name="FILES" /></translation>
-<translation id="8189750580333936930">Karanténa na ochranu súkromia</translation>
+<translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">Zostáva: 1 d</translation>
 <translation id="8200772114523450471">Pokračovať</translation>
 <translation id="8209050860603202033">Otvoriť obrázok</translation>

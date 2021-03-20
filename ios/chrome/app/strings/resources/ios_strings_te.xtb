@@ -410,7 +410,7 @@
 <translation id="5388358297987318779">చిత్రాన్ని తెరువు</translation>
 <translation id="5407969256130905701">మార్పులను విస్మరించు</translation>
 <translation id="5416022985862681400">గత 7 రోజులు</translation>
-<translation id="543338862236136125">పాస్‌వర్డ్‌ను సవరించు</translation>
+<translation id="543338862236136125">పాస్‌వర్డ్‌ను ఎడిట్ చేయండి</translation>
 <translation id="5433691172869980887">వినియోగదారు పేరు కాపీ చేయబడింది</translation>
 <translation id="54401264925851789">పేజీ భద్రతా సమాచారం</translation>
 <translation id="5443952882982198570">క్రెడిట్ కార్డ్‌లు</translation>
@@ -607,6 +607,7 @@
 <translation id="7272437679830969316">మీ గుర్తింపును ధృవీకరించడం సాధ్యపడలేదు. పాస్‌వర్డ్ కాపీ చేయబడలేదు.</translation>
 <translation id="7291368939935408496">పాస్‌వర్డ్‌లను సిద్ధం చేస్తోంది...</translation>
 <translation id="7293171162284876153">సింక్‌ను మొదలుపెట్టడానికి, "మీ Chrome డేటాను సింక్ చేయడం" ఆన్ చేయండి</translation>
+<translation id="7299000566397147023">అత్యంత ఇటీవలి ట్యాబ్‌ను తెరవండి</translation>
 <translation id="7313347584264171202">మీ అజ్ఞాత ట్యాబ్‌లను ఇక్కడ చూడగలరు</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> శాతం డౌన్‌లోడ్ అయ్యింది</translation>
 <translation id="7340958967809483333">Discover కోసం ఆప్షన్‌లు</translation>
@@ -662,7 +663,7 @@
 <translation id="7839985698273989086">ఆఫ్‌లైన్ పేజీ</translation>
 <translation id="7840771868269352570">మీరు ఎంచుకున్న అంశాలు తీసివేయబడతాయి.</translation>
 <translation id="7856733331829174190">డౌన్‌లోడ్ సాధ్యపడలేదు</translation>
-<translation id="7859704718976024901">బ్రౌజింగ్ చరిత్ర</translation>
+<translation id="7859704718976024901">బ్రౌజింగ్ హిస్టరీ</translation>
 <translation id="7887198238286927132">మీ గోప్యతను సంరక్షించడానికి, Chrome ఈ ఫీల్డ్‌ను ఆటోమేటిక్‌గా పూరించదు.</translation>
 <translation id="7918293828610777738">మీ చదవాల్సిన జాబితా ఆఫ్‌లైన్‌లో అందుబాటులో ఉంది. మీ చదవాల్సిన జాబితాకు పేజీని జోడించడానికి, <ph name="SHARE_OPENING_ICON" />ని నొక్కి తర్వాత <ph name="READ_LATER_TEXT" /> ఎంపికను నొక్కండి.</translation>
 <translation id="7938254975914653459">FaceTime</translation>

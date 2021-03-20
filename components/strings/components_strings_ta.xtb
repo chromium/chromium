@@ -411,6 +411,7 @@
 <translation id="2482878487686419369">அறிவிப்புகள்</translation>
 <translation id="248348093745724435">சாதனக் கொள்கைகள்</translation>
 <translation id="2491120439723279231">சேவையகச் சான்றிதழில் பிழைகள் உள்ளன.</translation>
+<translation id="2491414235131909199">இந்தப் பக்கத்தை நீட்டிப்பு தடுத்துள்ளது</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON பார்சர்</translation>
 <translation id="2495093607237746763">இது தேர்ந்தெடுக்கப்பட்டால், விரைவாகப் படிவத்தை நிரப்ப, உங்கள் கார்டின் நகலை Chromium இந்தச் சாதனத்தில் சேமிக்கும்.</translation>
@@ -830,6 +831,7 @@
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{மேலும் <ph name="ITEM_COUNT" /> உருப்படி}other{மேலும் <ph name="ITEM_COUNT" /> உருப்படிகள்}}</translation>
 <translation id="4176463684765177261">முடக்கப்பட்டது</translation>
+<translation id="4178883739871311481"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Google ஆவணத்தை உருவாக்க, Tab விசையை அழுத்திவிட்டு Enter விசையை அழுத்துங்கள்</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">உங்கள் கார்டு விவரங்களைத் தற்போது சேமிக்க இயலாது</translation>
 <translation id="4196861286325780578">&amp;நகர்த்தலை மீண்டும் செய்</translation>
@@ -1076,6 +1078,7 @@
 <translation id="5045550434625856497">தவறான கடவுச்சொல்</translation>
 <translation id="5056549851600133418">உங்களுக்கான செய்திக் கட்டுரைகள்</translation>
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" />ஐக் குறிப்பிடுகிறீர்களா?</translation>
+<translation id="5066056036849835175">பிரிண்டிங் வரலாறு</translation>
 <translation id="5068524481479508725">A10</translation>
 <translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(ஒன்று பயன்பாட்டில் உள்ளது)}other{(# பயன்பாட்டில் உள்ளன)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />ப்ராக்ஸி முகவரியைச் சரிபார்த்தல்<ph name="END_LINK" /></translation>
@@ -1518,6 +1521,7 @@
 <translation id="6852204201400771460">ஆப்ஸை ரெஃப்ரெஷ் செய்யவா?</translation>
 <translation id="6865412394715372076">இந்தக் கார்டை இப்போது சரிபார்க்க முடியாது</translation>
 <translation id="6874604403660855544">&amp;சேர்த்தலை மீண்டும் செய்</translation>
+<translation id="6881240511396774766">புதிய Google ஆவணத்தை விரைவாக உருவாக்குங்கள்</translation>
 <translation id="6884662655240309489">அளவு: 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">சுலபமாகப் படிப்பதற்கு ஏற்றவகையில் Chrome இந்தப் பக்கத்தை எளிதாக்கியுள்ளது. பாதுகாப்பற்ற இணைப்பின் மூலம் அசல் பக்கத்தை Chrome மீட்டெடுத்தது.</translation>
@@ -1527,6 +1531,7 @@
 <translation id="6898699227549475383">நிறுவனம் (O)</translation>
 <translation id="6907293445143367439"><ph name="SITE_NAME" /> இவற்றை அணுக அனுமதிக்கவும்:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> MIDI சாதனங்களின் முழுக் கட்டுப்பாடையும் பெற விரும்புகிறது</translation>
+<translation id="691325982945105493">Google ஆவணத்தை உருவாக்கும் பட்டன். புதிய Google ஆவணத்தை விரைவாக உருவாக்க, Enter விசையை அழுத்துங்கள்</translation>
 <translation id="6915804003454593391">பயனர்:</translation>
 <translation id="6934672428414710184">இந்தப் பெயர் உங்கள் ‘Google கணக்கிலிருந்து’ பெறப்பட்டது</translation>
 <translation id="6944692733090228304"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> நிர்வகிக்காத ஒரு தளத்தில் உங்கள் கடவுச்சொல்லை உள்ளிட்டுள்ளீர்கள். உங்கள் கணக்கைப் பாதுகாக்க, பிற ஆப்ஸிலும் தளங்களிலும் உங்கள் கடவுச்சொல்லை மீண்டும் பயன்படுத்த வேண்டாம்.</translation>
@@ -1640,7 +1645,7 @@
 <translation id="7349430561505560861">A4-Extra</translation>
 <translation id="7353601530677266744">கட்டளை வரி</translation>
 <translation id="7359588939039777303">விளம்பரங்கள் தடுக்கப்பட்டன.</translation>
-<translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome அமைப்புகளில் இணைய முகவரிகளைச் சேர்க்கவும் நிர்வகிக்கவும், Tab விசையை அழுத்திவிட்டு Enter விசையை அழுத்துங்கள்</translation>
+<translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome அமைப்புகளில் இணைய முகவரிகளைச் சேர்க்கவும் நிர்வகிக்கவும் Tab விசையை அழுத்திவிட்டு Enter விசையை அழுத்துங்கள்</translation>
 <translation id="7365849542400970216">சாதனத்தில் நீங்கள் செயலில் இருப்பதை அறிந்துகொள்ளவா?</translation>
 <translation id="7372973238305370288">தேடல் முடிவு</translation>
 <translation id="7374733840632556089">உங்களாலோ வேறொருவராலோ உங்கள் சாதனத்தில் நிறுவப்பட்டுள்ள சான்றிதழே இந்தச் சிக்கலுக்குக் காரணம் ஆகும். இது நெட்வொர்க்குகளைக் கண்காணிப்பதற்கும் அவற்றில் குறுக்கிடுவதற்கும் பயன்படுத்தப்படும் சான்றிதழ் ஆகும், எனவே இதை Chrome நம்பவில்லை. பள்ளி அல்லது நிறுவன நெட்வொர்க் போன்றதைக் கண்காணிக்க வேண்டிய நியாயமான சூழல்கள் இருக்குமெனினும், உங்களால் தடுக்க முடியாதபோதும் இது நிகழ்கிறது என்பதை நீங்கள் அறிய வேண்டுமென Chrome விரும்புகிறது. இணையத்தை அணுகக்கூடிய எந்த உலாவியும் ஆப்ஸும் கண்காணிக்கப்படக்கூடும்.</translation>
@@ -2057,6 +2062,7 @@
 <translation id="8931333241327730545">இந்தக் கார்டை உங்கள் Google கணக்கில் சேமிக்க வேண்டுமா?</translation>
 <translation id="8932102934695377596">உங்கள் கடிகாரம் மிகவும் பின்தங்கி இருக்கிறது</translation>
 <translation id="893332455753468063">பெயரைச் சேர்க்கவும்</translation>
+<translation id="8934418770423095813">Google ஆவணத்தை உருவாக்கு</translation>
 <translation id="8942355029279167844">தயாரிப்பு அனுபவத்தை மேம்படுத்துவதற்காகப் பகுப்பாய்வுத் தரவைச் சேகரிக்க, <ph name="APP_NAME" /> ஆப்ஸுக்கு உங்கள் நிர்வாகி அனுமதி வழங்கியுள்ளார். கூடுதல் தகவல்களுக்கு <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> என்ற தளத்திற்குச் செல்லவும்.</translation>
 <translation id="8943282376843390568">சுண்ணாம்பு நிறம்</translation>
 <translation id="8957210676456822347">கேப்டிவ் போர்டல் அங்கீகாரம்</translation>

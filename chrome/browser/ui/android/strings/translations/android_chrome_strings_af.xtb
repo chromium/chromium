@@ -98,7 +98,7 @@
 <translation id="1697284962337958118">Voeg by</translation>
 <translation id="1718835860248848330">Afgelope uur</translation>
 <translation id="1724977129262658800">Ontsluit om jou wagwoord te wysig</translation>
-<translation id="173522743738009831">Meer oor Privaatheidsandpunt</translation>
+<translation id="173522743738009831">Meer oor Privacy Sandbox</translation>
 <translation id="1736419249208073774">Verken</translation>
 <translation id="1749561566933687563">Sinkroniseer jou boekmerke</translation>
 <translation id="17513872634828108">Oop oortjies</translation>
@@ -349,19 +349,19 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="3384347053049321195">Deel prent</translation>
 <translation id="3387650086002190359">Kon <ph name="FILE_NAME" /> weens lêerstelselfoute nie aflaai nie.</translation>
 <translation id="3389286852084373014">Teks is te groot</translation>
-<translation id="3391512812407811893">Privaatheidsandpunt-proeflopies</translation>
+<translation id="3391512812407811893">Privacy Sandbox-proeflopies</translation>
 <translation id="3398320232533725830">Maak die boekmerkbestuurder oop</translation>
 <translation id="3414952576877147120">Grootte:</translation>
 <translation id="3429160811076349561">Proeflopiekenmerke is af</translation>
 <translation id="3440975416244667276">Raak en hou vir meer relevante inligting</translation>
 <translation id="3443221991560634068">Herlaai die huidige bladsy</translation>
-<translation id="3451542610083122179">Privaatheidsandput is 'n deurlopende inisiatief om die oop web in stand te hou wat sal help om jou teen nasporingmeganismes te beskerm.
+<translation id="3451542610083122179">Privacy Sandbox is 'n deurlopende inisiatief om die oop web in stand te hou wat sal help om jou teen nasporingmeganismes te beskerm.
 
 Webwerwe maak deesdae staat op baie tegnologieë, soos derdepartywebkoekies, vir belangrike dienste soos om relevante advertensies te wys en 'n werf se werkverrigting te meet.
 
-Privaatheidsandput hou die lewenskragtigheid van die oop web in stand deur beter maniere te skep om hierdie dienste uit te voer – sonder om werwe te breek en terwyl dit voorkom dat jy ongemerk op die web nagespoor word.
+Privacy Sandbox hou die lewenskragtigheid van die oop web in stand deur beter maniere te skep om hierdie dienste uit te voer – sonder om werwe te breek en terwyl dit voorkom dat jy ongemerk op die web nagespoor word.
 
-Privaatheidsandput word nog aktief ontwikkel en is in sekere streke beskikbaar. Vir nou kan werwe Privaatheidsandput probeer terwyl hulle steeds huidige webtegnologieë soos derdepartywebkoekies gebruik. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
+Privacy Sandbox word nog aktief ontwikkel en is in sekere streke beskikbaar. Vir nou kan werwe Privacy Sandbox probeer terwyl hulle steeds huidige webtegnologieë soos derdepartywebkoekies gebruik. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">Jy kan jou soekenjin kies</translation>
 <translation id="3492207499832628349">Nuwe incognito-oortjie</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /> oor voorgestelde inhoud</translation>
@@ -425,7 +425,6 @@ Privaatheidsandput word nog aktief ontwikkel en is in sekere streke beskikbaar. 
 <translation id="395206256282351086">Soek- en werfvoorstelle is gedeaktiveer</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome sal jou bladsy laai wanneer dit gereed is}other{Chrome sal jou bladsye laai wanneer dit gereed is}}</translation>
 <translation id="3963007978381181125">Wagfrase-enkripsie sluit nie betaalmetodes en adresse van Google Pay af in nie. Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word nie na Google toe gestuur of deur Google geberg nie. As jy jou wagfrase vergeet of hierdie instelling wil verander, sal jy sinkronisering moet terugstel. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
-<translation id="3967822245660637423">Aflaai is voltooi</translation>
 <translation id="3969142555815019568">Chrome kan nie jou wagwoorde nagaan nie</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> sal in Chrome oopmaak. As jy voortgaan, stem jy in tot <ph name="BEGIN_LINK1" />Google se diensbepalings<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />Google Chrome en Chrome-bedryfstelsel se bykomende diensbepalings<ph name="END_LINK2" />. Die <ph name="BEGIN_LINK3" />Privaatheidskennisgewing vir Google-rekeninge wat met Family Link bestuur word<ph name="END_LINK3" /> is ook van toepassing.</translation>
 <translation id="397583555483684758">Sinkronisering het ophou werk</translation>
@@ -471,6 +470,7 @@ Privaatheidsandput word nog aktief ontwikkel en is in sekere streke beskikbaar. 
 <translation id="4314815835985389558">Bestuur sinkronisering</translation>
 <translation id="4320177379694898372">Geen internetverbinding nie</translation>
 <translation id="4321739720395210191">Kan nie jou kamera oopmaak nie. Herbegin jou toestel en probeer weer.</translation>
+<translation id="433213510553688132">Volg tans …</translation>
 <translation id="4335835283689002019">Veiligblaai is af</translation>
 <translation id="4351244548802238354">Maak dialoog toe</translation>
 <translation id="4378154925671717803">Foon</translation>
@@ -1066,7 +1066,7 @@ Data van jou Incognito-sessie af sal slegs in Chrome uitgevee word wanneer jy <p
 <translation id="8156139159503939589">Watter tale lees jy?</translation>
 <translation id="8168435359814927499">Inhoud</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> lêers oor</translation>
-<translation id="8189750580333936930">Privaatheidsandput</translation>
+<translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">1 dag oor</translation>
 <translation id="8200772114523450471">Hervat</translation>
 <translation id="8209050860603202033">Maak prent oop</translation>

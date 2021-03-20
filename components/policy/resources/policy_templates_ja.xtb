@@ -275,6 +275,7 @@
 <translation id="1413936351612032792">Linux アプリの使用に関する情報を報告します</translation>
 <translation id="1417888712677507140">異なる生成元のサブフレームからトリガーされた JavaScript ダイアログをブロックします。</translation>
 <translation id="1418387035898607074">信頼できる提供元からのファイルのダウンロードに対してセーフ ブラウジング チェックをスキップする</translation>
+<translation id="1418968246960170056">このポリシーでは、ベンダー ID と製品 ID が <ph name="VENDOR_ID_FIELD_NAME" /> および <ph name="PRODUCT_ID_FIELD_NAME" /> フィールドに一致する USB シリアル デバイスへのアクセスを自動的に許可するサイトのリストを指定できます。<ph name="PRODUCT_ID_FIELD_NAME" /> フィールドを省略すると、<ph name="VENDOR_ID_FIELD_NAME" /> フィールドに一致するベンダー ID と任意の製品 ID を持つデバイスへのアクセスをサイトに許可することになります。必ず有効な URL を指定してください。無効な URL を指定した場合、このポリシーは無視されます。URL のオリジン（スキーム、ホストとポート）のみが考慮されます。このポリシーは、<ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />、<ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />、<ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />、ユーザーの設定をオーバーライドします。このポリシーは、Web Serial API 経由での USB デバイスへのアクセスのみに影響を与えます。WebUSB API 経由での USB デバイスへのアクセスを許可するには、<ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" /> ポリシーを参照してください。</translation>
 <translation id="142346659686073702">外部のユーザーに Crostini の使用を許可する</translation>
 <translation id="1425551776320718592">このデバイスのユーザーによる ADB サイドローディングの使用を禁止しますが、Powerwash の強制的な実行は行いません。これによりデバイスのセキュリティに問題が生じる可能性があります</translation>
 <translation id="1426170570389588560">印刷ジョブのメタデータを保存する期間（日数）を設定する</translation>
@@ -588,6 +589,7 @@
       このポリシーを無効に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> は指定された URL に対して代替ブラウザを起動しません。</translation>
 <translation id="1797233582739332495">再起動が必要であることを示すメッセージをユーザーに繰り返し表示する</translation>
 <translation id="1798559516913615713">GPO のキャッシュ期間</translation>
+<translation id="180130467244315277">このポリシーでは、管理者が <ph name="PRODUCT_NAME" /> の設定で使用言語の順序を設定できるようにします。リストの順序は、chrome://settings/languages の [言語を希望の順序に並べ替えます] の順序と同じになります。ユーザーは、ポリシーで設定された言語を削除したり、並べ替えたりできませんが、ポリシーで設定された言語の下に言語を追加することができます。また、他のポリシーで強制されていない限り、ユーザーはブラウザの UI の言語と翻訳やスペルチェックの設定を自由に管理できます。このポリシーを未設定のままにした場合、ユーザーは使用言語のリスト全体を操作できます。</translation>
 <translation id="1803646570632580723">ランチャーに表示する固定アプリのリスト</translation>
 <translation id="1808715480127969042">これらのサイトの Cookie をブロックする</translation>
 <translation id="1810261428246410396">インスタント テザリングの使用を許可する</translation>
@@ -1072,6 +1074,7 @@
       このポリシーをプラットフォーム レベルで設定する場合は、プラットフォーム レベルで同期を無効にする必要があります。
       このポリシーをユーザーレベルで設定する場合は、そのユーザーに対して同期を無効にする必要があります。
       </translation>
+<translation id="244950822854046436"><ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /> に適用する設定のリストです。これはファイルがダウンロードされるときに呼び出されます。<ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MIME_TYPES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> フィールドは、ウェブページからダウンロードされるファイルをコネクタがサービス プロバイダに送信すべきかどうかを判別する際に使用されます。ウェブページの URL は、「有効」パターンと関連付けられ、かつ「無効」パターンと関連付けられていないパターンに一致する必要があります。ファイルの MIME タイプも、「有効」パターンと関連付けられ、かつ「無効」パターンと関連付けられていないパターンに一致する必要があります。<ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> フィールドでは、この設定が対応している分析サービス プロバイダを指定します。<ph name="ENTERPRISE_CONNECTOR_ENTERPRISE_ID_FIELD" /> フィールドは、サービス プロバイダでお客様のアカウントを識別するパートナー サービス プロバイダの一意の ID です。<ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /> の設定の一部としてログインが必要な場合、このお客様のサービス プロバイダ アカウントと関連付けられたユーザー アカウントのみが許可されます。このポリシーは <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> からのみ設定できます。</translation>
 <translation id="2454228136871844693">安定性を重視します。</translation>
 <translation id="2455033019778127130">デフォルトのブラウザ処理を行い、利用規約を表示してユーザーの同意を待ちます。</translation>
 <translation id="2460127623195247744">このポリシーはサポートが終了しています。代わりに <ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" /> ポリシーを使用してください。
@@ -2520,6 +2523,7 @@
 <translation id="4492287494009043413">スクリーンショットの使用を無効にする</translation>
 <translation id="4494132853995232608">Wilco DTC</translation>
 <translation id="449423975179525290"><ph name="PLUGIN_VM_NAME" /> に関連するポリシーを設定します。</translation>
+<translation id="449784980858429908">すべてのシリアルポートへの接続を自動的にサイトに許可します。</translation>
 <translation id="4510923771103268849">Crostini コンテナへのルートアクセスをユーザーに許可する</translation>
 <translation id="4515404363392014383">信頼できる提供元に対してセーフ ブラウジングを有効にする</translation>
 <translation id="4518251772179446575">サイトがユーザーの物理的な現在地を追跡しようとしたときに毎回確認する</translation>
@@ -2670,6 +2674,7 @@
       このポリシーを設定しないか有効に設定した場合は、DNS 傍受チェックが実行されます。明示的に無効に設定した場合、DNS 傍受チェックは実行されません。</translation>
 <translation id="4700190441681139987">どのサイトにもセンサーへのアクセスを許可しない</translation>
 <translation id="4703402283970867140">スマート消灯モデルを有効にして、画面が暗くなるまでの時間を延長する</translation>
+<translation id="4704958130749494760">USB シリアル デバイスへの接続を自動的にサイトに許可します。</translation>
 <translation id="4722122254122249791">指定した発行元に対してサイト分離を有効にする</translation>
 <translation id="4723122879352880315">NTLM 認証で保護されている管理対象プロキシに対して、ユーザーが <ph name="PRODUCT_OS_NAME" /> のログイン認証情報を使って認証を行うことを許可します。
 
@@ -4019,6 +4024,7 @@
 
       このポリシーを無効に設定するか未設定のままにした場合、印刷コマンドを実行すると印刷プレビュー画面が表示されます。</translation>
 <translation id="6658245400435704251">最初にアップデートがサーバーにプッシュされた時刻から、デバイスによるアップデートのダウンロードをランダムに遅延できる最大時間を秒数で指定します。デバイスは、この時間の一部を実際の経過時間として、残りの時間をアップデート チェックとして待機できます。どのような場合でも、係数にはある一定の時間の上限があるため、アップデートのダウンロードを永遠に待機してデバイスが停止し続けることはありません。</translation>
+<translation id="6662162847932043943">このポリシーでは、使用可能なすべてのシリアルポートへのアクセスを自動的に許可するサイトのリストを指定できます。必ず有効な URL を指定してください。無効な URL を指定した場合、このポリシーは無視されます。URL のオリジン（スキーム、ホストとポート）のみが考慮されます。このポリシーは、<ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />、<ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />、<ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />、ユーザーの設定をオーバーライドします。</translation>
 <translation id="6665670272107384733">ロックのクイック解除機能を使用するために必要なパスワード入力の頻度を設定する</translation>
 <translation id="6667586534922258705">ログイン画面とロック画面にパスワード表示ボタンを表示する</translation>
 <translation id="6669700740683748046">この機能は、アドレスバーに URL 全体を表示できるようにします。
@@ -4071,7 +4077,6 @@
 
       注: このポリシーは、<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> を使用して強制的にインストールされる拡張機能やアプリにも影響します。</translation>
 <translation id="6731757988219967594">アダルト コンテンツに基づいて最上位サイト（埋め込み iframe 以外）を除外する</translation>
-<translation id="6734521799274931721">Chrome OS でネットワーク ファイル共有を使用できるかどうかの設定</translation>
 <translation id="6735701345096330595">言語のスペルチェックを強制的に有効にする</translation>
 <translation id="6740611636377710500">このユーザーに PluginVm の実行を許可します。
 
@@ -4200,13 +4205,6 @@
 <translation id="6907778402784621686">指定サイトで安全でないコンテンツをブロックする</translation>
 <translation id="6908640907898649429">デフォルトの検索プロバイダを設定します。ユーザーが使用するデフォルトの検索プロバイダを指定するか、既定の検索を無効にすることができます。</translation>
 <translation id="6913068954484253496">すべての IP アドレスのキャスト デバイスに接続することを <ph name="PRODUCT_NAME" /> に許可する</translation>
-<translation id="6916817094593836501">このポリシーでは、偽 URL の警告を表示しないサイトを指定できます。通常、偽 URL の警告は、ユーザーがよく使用しているサイトになりすましていると <ph name="PRODUCT_NAME" /> で判断したサイトに対して表示されます。
-
-       このポリシーを有効にして、ドメインを 1 つ以上指定した場合、ユーザーがそのドメインのページにアクセスしても、偽 URL の警告ページは表示されません。
-
-       こポリシーを無効にした場合や未設定のままにした場合、または空白のリストを指定した場合、ユーザーがアクセスする任意のサイトに対して警告が表示されます。
-
-       警告は、指定したドメインと完全に一致する、または一部が一致するホストについて表示されなくなります。たとえば、リストに「foo.example.com」または「example.com」と指定した場合、「https://foo.example.com/bar」の URL について警告は表示されません。</translation>
 <translation id="6922884955650325312"><ph name="FLASH_PLUGIN_NAME" /> プラグインをブロックする</translation>
 <translation id="6923731550900440989">ログイン画面でテキストカーソルによるハイライト表示を有効にする</translation>
 <translation id="6924223708804692571">言語のスペルチェックを自動的に無効にします。指定した言語のうち認識されないものは無視されます。
@@ -4286,6 +4284,13 @@
       このポリシーを <ph name="BR_UNDER_USER_CONTROL" /> に設定した場合、バックアップと復元を使用するよう促すメッセージがユーザーに表示されます。ユーザーがバックアップと復元をオンにした場合は、Android アプリのデータが Android のバックアップ サーバーにアップロードされ、対応するアプリの再インストール時にデータが復元されます。
 
       初期設定が完了した後、ユーザーはバックアップと復元のオンとオフを切り替えることができます。</translation>
+<translation id="6981537713216575858">このポリシーでは、特定のベンダー ID と製品 ID の USB デバイスへのアクセスを自動的に許可するサイトの URL パターンリストを指定できます。リストの各項目では、「<ph name="DEVICES_FIELD_NAME" />」と「<ph name="URLS_FIELD_NAME" />」フィールドの両方を指定する必要があります。「<ph name="DEVICES_FIELD_NAME" />」フィールドの各項目には、「<ph name="VENDOR_ID_FIELD_NAME" />」と「<ph name="PRODUCT_ID_FIELD_NAME" />」フィールドを指定できます。「<ph name="VENDOR_ID_FIELD_NAME" />」フィールドを省略した場合、あらゆるデバイスに一致するポリシーが作成されます。「<ph name="PRODUCT_ID_FIELD_NAME" />」フィールドを省略した場合、指定したベンダー ID のあらゆるデバイスに一致するポリシーが作成されます。「<ph name="PRODUCT_ID_FIELD_NAME" />」フィールドを指定して「<ph name="VENDOR_ID_FIELD_NAME" />」フィールドは指定しなかった場合、ポリシーは無効になります。
+
+      USB のアクセス許可モデルでは、指定した URL に最上位のオリジンとして USB デバイスへのアクセスを許可します。埋め込みフレームから USB デバイスにアクセスする必要がある場合は、「usb」<ph name="FEATURE_POLICY_HEADER_NAME" /> ヘッダーを使用してアクセスを許可します。必ず有効な URL を指定してください。無効な URL を指定した場合、このポリシーは無視されます。
+
+      サポートの終了: USB のアクセス許可モデルでは、以前はリクエスト元 URL と埋め込み元 URL の両方を指定してアクセスを許可することができました。現在このサポートは終了し、次の方法による下位互換のみがサポートされています。リクエスト元 URL と埋め込み元 URL の両方を指定した場合、埋め込み元 URL は最上位のオリジンとしてアクセスが許可され、リクエスト元 URL は完全に無視されます。
+
+      このポリシーは、<ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />、<ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />、<ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />、ユーザーの設定をオーバーライドします。このポリシーは、WebUSB API 経由での USB デバイスへのアクセスのみに影響を与えます。Web Serial API 経由での USB デバイスへのアクセスを許可するには、<ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" /> ポリシーを参照してください。</translation>
 <translation id="6986172482189158664">閲覧データの有効期間の設定</translation>
 <translation id="6986838929449128437">このポリシーはサポートが終了しています。代わりに <ph name="SAFE_BROWSING_ALLOWLIST_DOMAINS_POLICY_NAME" /> を使用してください。
 
@@ -4861,6 +4866,7 @@
 <translation id="776110834126722255">廃止</translation>
 <translation id="7763614521440615342">[新しいタブ] ページにおすすめのコンテンツを表示します</translation>
 <translation id="7765879851993224640">Smart Lock Signin の使用を許可する</translation>
+<translation id="7771298620150437359">使用言語の内容と順序を設定する</translation>
 <translation id="7774768074957326919">システムのプロキシ設定を使用する</translation>
 <translation id="777734450201217641">ログイン画面でユーザー補助機能のショートカットを有効にします。
 
@@ -5341,6 +5347,7 @@
       詳しくは、https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744 をご覧ください。</translation>
 <translation id="8424255554404582727">再起動のたびにデフォルトのディスプレイ回転方法を再適用する</translation>
 <translation id="8426231401662877819">画面を時計回りに 90 度回転</translation>
+<translation id="8426819027631706846"><ph name="JS_ALERT" />、<ph name="JS_CONFIRM" />、<ph name="JS_PROMPT" /> によってトリガーされた JavaScript モード ダイアログは、トリガーしたサブフレームの生成元がメインフレームの生成元とは異なる場合に <ph name="PRODUCT_NAME" /> でブロックされます（参照: https://www.chromestatus.com/feature/5148698084376576）。このポリシーは前述の変更を許可します。このポリシーが有効に設定されている、または未設定の場合、生成元が異なるサブフレームからトリガーされた JavaScript ダイアログはブロックされます。ポリシーが無効に設定されている場合、生成元が異なるサブフレームからトリガーされた JavaScript ダイアログはブロックされません。このポリシーは <ph name="PRODUCT_NAME" /> バージョン 95 で削除されます。</translation>
 <translation id="8433186206711564395">ネットワーク設定</translation>
 <translation id="8433769814000220721">おすすめのコンテンツを有効にする</translation>
 <translation id="843609873781525167">このポリシーを True に設定すると、<ph name="PRODUCT_NAME" /> で起動時にデフォルトのブラウザであるかが常に確認され、可能であれば自動的に登録されます。このポリシーを False に設定した場合、<ph name="PRODUCT_NAME" /> でデフォルトであるかどうかが確認されなくなり、このオプションに対するユーザー制御がオフになります。このポリシーを未設定のままにした場合は、<ph name="PRODUCT_NAME" /> でデフォルトに指定するかどうかをユーザーが制御でき、またデフォルトにしない場合はユーザー通知が表示されるかどうかを制御できます。注: <ph name="MS_WIN_NAME" /> 管理者の場合は、Windows 7 が稼働するマシンについてのみ、この設定をオンにできます。それ以後のバージョンについては、<ph name="PRODUCT_NAME" /> を <ph name="HTTPS_PROTOCOL" /> プロトコルと <ph name="HTTP_PROTOCOL" /> プロトコル（必要に応じて <ph name="FTP_PROTOCOL" /> プロトコルとその他のファイル形式）のハンドラにする、「デフォルトのアプリケーション関連付け」ファイルをデプロイする必要があります。Chrome ヘルプ（https://support.google.com/chrome?p=make_chrome_default_win）をご覧ください。</translation>

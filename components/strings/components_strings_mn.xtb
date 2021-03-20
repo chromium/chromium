@@ -1085,6 +1085,7 @@
 <translation id="5045550434625856497">Буруу нууц үг</translation>
 <translation id="5056549851600133418">Танд зориулсан нийтлэл</translation>
 <translation id="5061227663725596739">Та <ph name="LOOKALIKE_DOMAIN" />-г хайсан уу?</translation>
+<translation id="5066056036849835175">Хэвлэлийн түүх</translation>
 <translation id="5068524481479508725">A10</translation>
 <translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1-г ашиглаж байгаа)}other{(#-г ашиглаж байгаа)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Прокси хаягийг шалгаж байна<ph name="END_LINK" /></translation>

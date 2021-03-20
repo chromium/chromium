@@ -87,6 +87,7 @@
 <translation id="1853795129690976061">‏این پوشه با Linux هم‌رسانی شده است</translation>
 <translation id="1864756863218646478">این فایل پیدا نشد.</translation>
 <translation id="1920670151694390848">نویسه‌گردانی مالایالم</translation>
+<translation id="1920798810075583923">هندوانه</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> قالب‌بندی شد</translation>
 <translation id="1931134289871235022">اسلواکی</translation>
 <translation id="1933345018156373194">انتقال انجام نشد، خطای غیرمنتظره: <ph name="ERROR_MESSAGE" /></translation>
@@ -120,6 +121,7 @@
 <translation id="2288278176040912387">ضبط صوت</translation>
 <translation id="2291538123825441971">درحال باز کردن <ph name="NUMBER_OF_FILES" /> فایل.</translation>
 <translation id="2303301624314357662">درحال باز کردن فایل <ph name="FILE_NAME" />.</translation>
+<translation id="2304820083631266885">سیاره</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> خارج شد.</translation>
 <translation id="2325650632570794183">‏این نوع فایل پشتیبانی نمی‌شود. لطفاً به «نت‌بازار Chrome» بروید تا برنامه‌ای را پیدا کنید که بتواند این نوع فایل را باز کند.</translation>
 <translation id="2326539130272988168">بلغاری</translation>
@@ -218,10 +220,12 @@
 <translation id="3335337277364016868">سال ضبط</translation>
 <translation id="3353984535370177728">انتخاب یک پوشه برای بارگذاری</translation>
 <translation id="3356580349448036450">کامل</translation>
+<translation id="3358452157379365236">گیتار</translation>
 <translation id="3382143449143186018">نپالی با صفحه‌کلید هندی</translation>
 <translation id="3408236822532681288">‏آلمانی (آلمان) با صفحه‌کلید Neo 2</translation>
 <translation id="3414856743105198592">قالب‌بندی رسانه حذف شدنی سبب پاک شدن تمام داده‌ها می‌شود. ادامه می‌دهید؟</translation>
 <translation id="3437801641691368414">زمان ایجاد</translation>
+<translation id="343907260260897561">دوربین عکاسی فوری</translation>
 <translation id="3455931012307786678">استونیایی</translation>
 <translation id="3466147780910026086">در حال اسکن دستگاه رسانه شما...</translation>
 <translation id="3468522857997926824">‏<ph name="FILE_COUNT" /> عکس در <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> پشتیبان گرفته شدند</translation>
@@ -297,6 +301,7 @@
 <translation id="4309915981827077375">اطلاعات عمومی</translation>
 <translation id="432252891123397018">رومانیایی با صفحه‌کلید استاندارد</translation>
 <translation id="4325128273762811722">اسلوونیایی</translation>
+<translation id="4326142238881453352">گیاه‌شناس</translation>
 <translation id="4326192123064055915">قهوه</translation>
 <translation id="4336032328163998280">فرایند رونوشت‌برداری انجام نشد. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">کردی سورانی با صفحه‌کلید مبتنی بر عربی</translation>
@@ -412,6 +417,7 @@
        فایل‌ها را با دیگران <ph name="MARKUP_7" />اشتراک‌گذاری، ایجاد و مشارکت<ph name="MARKUP_8" />
        کنید، همه این کارها را در یک مکان انجام دهید.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">‏فایل‌های بازیابی‌شده از Google Drive</translation>
+<translation id="5288441970121584418">همبرگر</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">ذخیره</translation>
 <translation id="5318819489018851358">‏هم‌رسانی با Linux</translation>
@@ -502,10 +508,12 @@
 <translation id="6248400709929739064">فعال کردن زیرنویس</translation>
 <translation id="6269630227984243955">مالایی</translation>
 <translation id="6287852322318138013">یک برنامه را برای باز کردن این فایل انتخاب کنید</translation>
+<translation id="6321303798550928047">دست تکان دادن</translation>
 <translation id="6339145975392024142">بین‌المللی آمریکایی (رایانه شخصی)</translation>
 <translation id="6346310558342052870">دسترسی محدود</translation>
 <translation id="6356685157277930264">پنجره بازخورد فایل‌ها</translation>
 <translation id="6358884629796491903">اژدها</translation>
+<translation id="6367976544441405720">ون</translation>
 <translation id="637062427944097960">این فایل در میزکار دیگری باز شده است. به <ph name="USER_NAME" /> ‏(<ph name="MAIL_ADDRESS" />) بروید تا آن را مشاهده کنید.</translation>
 <translation id="6394388407447716302">فقط خواندنی</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> مورد</translation>
@@ -529,6 +537,7 @@
 <translation id="6650726141019353908">پروانه صورتی</translation>
 <translation id="6657585470893396449">گذرواژه</translation>
 <translation id="6673674183150363784">‏فرانسوی (فرانسه) با صفحه‌کلید Bépo</translation>
+<translation id="6710022688720561421">ربات</translation>
 <translation id="6710213216561001401">قبلی</translation>
 <translation id="6751256176799620176">۱ پوشه انتخاب شد</translation>
 <translation id="6790428901817661496">پخش</translation>
@@ -562,6 +571,7 @@
 <translation id="6965382102122355670">قبول</translation>
 <translation id="6970230597523682626">بلغاری</translation>
 <translation id="6973630695168034713">پوشه‌ها</translation>
+<translation id="6976795442547527108">شیر</translation>
 <translation id="6978611942794658017">‏این فایل برای رایانه‌ای که از نرم‌افزار Windows استفاده می‌کند طراحی شده است. این فایل با دستگاه شما که Chrome OS را اجرا می‌کند، سازگار نیست. لطفاً «نت‌بازار Chrome» را برای یک برنامه جایگزین مناسب جستجو کنید.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">سوئدی</translation>
@@ -608,6 +618,7 @@
 <translation id="7532029025027028521">نویسه‌گردانی فارسی</translation>
 <translation id="7544830582642184299">‏به برنامه‌های Linux اجازه دهید به فایل‌های Google Drive شما دسترسی داشته باشند. تغییرات در دیگر دستگاه‌هایتان همگام‌سازی خواهد شد.</translation>
 <translation id="7544853251252956727">درهم</translation>
+<translation id="7547009467130558110">کفش کتانی</translation>
 <translation id="7547780573915868306">لیتوانیایی</translation>
 <translation id="7547811415869834682">هلند</translation>
 <translation id="7551643184018910560">پین کردن به فقسه</translation>
@@ -747,6 +758,7 @@
 <translation id="8860454412039442620">‏صفحه‌گسترده Excel </translation>
 <translation id="8866284467018526531">عربی (نویسه‌گردانی)</translation>
 <translation id="8900820606136623064">مجارستانی</translation>
+<translation id="8903931173357132290">فارغ‌التحصیل</translation>
 <translation id="8919081441417203123">دانمارکی</translation>
 <translation id="8965697826696209160">فضای کافی وجود ندارد.</translation>
 <translation id="8970501467542182729">‏این فایل برای رایانه‌ای که از نرم‌افزار Macintosh استفاده می‌کند طراحی شده است. این فایل با دستگاه شما که سیستم‌عامل Chrome را اجرا می‌کند سازگار نیست. درباره باز کردن فایل‌ها در Chrome OS <ph name="BEGIN_LINK_HELP" />بیشتر بدانید<ph name="END_LINK_HELP" />.</translation>

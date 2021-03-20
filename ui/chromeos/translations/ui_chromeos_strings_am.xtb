@@ -87,6 +87,7 @@
 <translation id="1853795129690976061">ይህ አቃፊ ለLinux ተጋርቷል</translation>
 <translation id="1864756863218646478">ፋይሉ ሊገኝ አልቻለም።</translation>
 <translation id="1920670151694390848">በማላያላምኛ ቋንቋ ፊደል መጻፍ</translation>
+<translation id="1920798810075583923">ሐብሐብ</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> ላይ ቅርጸት ተሰርቷል</translation>
 <translation id="1931134289871235022">ስሎቫክኛ</translation>
 <translation id="1933345018156373194">መውሰድ አልተሳካም፣ ያልተጠበቀ ስህተት፦ <ph name="ERROR_MESSAGE" /></translation>
@@ -120,6 +121,7 @@
 <translation id="2288278176040912387">የሙዚቃ ማጫወቻ</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ፋይሎችን በመክፈት ላይ።</translation>
 <translation id="2303301624314357662">ፋይል <ph name="FILE_NAME" />ን በመክፈት ላይ።</translation>
+<translation id="2304820083631266885">ፕላኔት</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ወጥቷል።</translation>
 <translation id="2325650632570794183">ይህ ፋይል አይነት አይደገፍም። የዚህ አይነት ፋይል መክፈት የሚችል መተግበሪያን ለማግኘት እባክዎ Chrome የድር ሱቁን ይጎብኙ።</translation>
 <translation id="2326539130272988168">ቡልጋሪያኛ</translation>
@@ -218,10 +220,12 @@
 <translation id="3335337277364016868">የተቀረጸበት ዓመት</translation>
 <translation id="3353984535370177728">የሚሰቅሉትን አቃፊ ይምረጡ</translation>
 <translation id="3356580349448036450">ተጠናቅቋል</translation>
+<translation id="3358452157379365236">ጊታር</translation>
 <translation id="3382143449143186018">ኔፓልኛ በInScript ቁልፍ ሰሌዳ</translation>
 <translation id="3408236822532681288">ጀርመንኛ (ጀርመን) በNeo 2 ቁልፍ ሰሌዳ</translation>
 <translation id="3414856743105198592">ተነቃይ ማህደረ ትውስታው ላይ ቅርጸት መስራት ሁሉንም ውሂብ ያጠፋል። መቀጠል ይፈልጋሉ?</translation>
 <translation id="3437801641691368414">የተፈጠረበት ጊዜ</translation>
+<translation id="343907260260897561">ቅጽበታዊ ካሜራ</translation>
 <translation id="3455931012307786678">ኤስቶኒያኛ</translation>
 <translation id="3466147780910026086">የእርስዎን ሚዲያ መሣሪያ በመቃኘት ላይ...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> ፎቶዎች ወደ <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> በምትኬ ተቀምጠዋል</translation>
@@ -297,6 +301,7 @@
 <translation id="4309915981827077375">አጠቃላይ መረጃ</translation>
 <translation id="432252891123397018">ሮማኒያኛ በመደበኛ ቁልፍ ሰሌዳ</translation>
 <translation id="4325128273762811722">ስሎቬኒያኛ</translation>
+<translation id="4326142238881453352">የእጽዋት ባለሙያ</translation>
 <translation id="4326192123064055915">ቡና</translation>
 <translation id="4336032328163998280">የመገልበጥ ክወና አልተሳካም። <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">ሶራኒ ኩርዲኛ በአረብኛ ላይ በተመሠረተ ቁልፍ ሰሌዳ</translation>
@@ -412,6 +417,7 @@
         ፋይሎችን በአንድ ቦታ ላይ 
         <ph name="MARKUP_7" />ያጋሩ፣ ይፍጠሩ እና ያቀናጁ<ph name="MARKUP_8" />።<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">ከGoogle Drive መልሰው የተገኙ ፋይሎች</translation>
+<translation id="5288441970121584418">በርገር</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">አስቀምጥ</translation>
 <translation id="5318819489018851358">ለLinux አጋራ</translation>
@@ -502,10 +508,12 @@
 <translation id="6248400709929739064">የግርጌ ጽሑፎችን አንቃ</translation>
 <translation id="6269630227984243955">ማላይኛ</translation>
 <translation id="6287852322318138013">ይህን ፋይል የሚከፍቱበት መተግበሪያ ይምረጡ</translation>
+<translation id="6321303798550928047">ማውለብለብ</translation>
 <translation id="6339145975392024142">የአሜሪካ ዓለምአቀፍ (ተኮ)</translation>
 <translation id="6346310558342052870">መዳረሻ ተገድቧል</translation>
 <translation id="6356685157277930264">የፋይሎች ግብረመልስ መስኮት</translation>
 <translation id="6358884629796491903">ድራጎን</translation>
+<translation id="6367976544441405720">ቫን</translation>
 <translation id="637062427944097960">ይህ ፋይል በሌላ ዴስክቶፕ ላይ ተከፍቷል። እሱን ለማየት ወደ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) ይውሰዱት።</translation>
 <translation id="6394388407447716302">ተነባቢ-ብቻ</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ንጥሎች</translation>
@@ -529,6 +537,7 @@
 <translation id="6650726141019353908">ሮዝ ቢራቢሮ</translation>
 <translation id="6657585470893396449">የይለፍ ቃል፦</translation>
 <translation id="6673674183150363784">ፈረንሳይኛ (ፈረንሳይ) በBépo ቁልፍ ሰሌዳ</translation>
+<translation id="6710022688720561421">ሮቦት</translation>
 <translation id="6710213216561001401">ቀዳሚ</translation>
 <translation id="6751256176799620176">1 አቃፊ ተመርጧል</translation>
 <translation id="6790428901817661496">አጫውት</translation>
@@ -562,6 +571,7 @@
 <translation id="6965382102122355670">እሺ</translation>
 <translation id="6970230597523682626">ቡልጋሪኛ</translation>
 <translation id="6973630695168034713">አቃፊዎች</translation>
+<translation id="6976795442547527108">አንበሳ</translation>
 <translation id="6978611942794658017">ይህ ፋይል የተሰራው የWindows ሶፍትዌር ለሚጠቀም ተኮ ነው። ይሄ Chrome OSን ከሚያሄደው መሣሪያዎ ጋር ተኳሃኝ አይደለም። አግባብ የሆነውን ተተኪ መተግበሪያ ለማግኘት እባክዎ የChrome ድር መደብሩን ይፈልጉ።</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">ስዊድንኛ</translation>
@@ -608,6 +618,7 @@
 <translation id="7532029025027028521">በፋርስኛ ቋንቋ ፊደል መጻፍ</translation>
 <translation id="7544830582642184299">የLinux መተግበሪያዎች በእርስዎ Google Drive ውስጥ ፋይሎችን የመድረስ ፈቃድ ይስጧቸው። ለውጦች ከሌሎች መሣሪያዎችዎ ጋር ይሳመራሉ።</translation>
 <translation id="7544853251252956727">በውዝ</translation>
+<translation id="7547009467130558110">ስኒከር</translation>
 <translation id="7547780573915868306">ሊቱዌኒያኛ</translation>
 <translation id="7547811415869834682">ደች</translation>
 <translation id="7551643184018910560">መደርደሪያ ላይ ሰካ</translation>
@@ -747,6 +758,7 @@
 <translation id="8860454412039442620">የExcel ተመን ሉህ</translation>
 <translation id="8866284467018526531">በአረብኛ ቋንቋ ፊደል መጻፍ</translation>
 <translation id="8900820606136623064">ሀንጋሪኛ</translation>
+<translation id="8903931173357132290">ትምህርት ይጨርሱ</translation>
 <translation id="8919081441417203123">ዴኒሽ</translation>
 <translation id="8965697826696209160">በቂ ቦታ የለም።</translation>
 <translation id="8970501467542182729">ይህ ፋይል የMacintosh ሶፍትዌር ለሚጠቀም ኮምፒውተር ነው የተሰራው። ይህ Chrome OS ከሚያሄደው መሣሪያዎ ጋር ተኳኋኝ አይደለም። በChrome OS ላይ ፋይሎችን ስለመክፈት<ph name="BEGIN_LINK_HELP" />የበለጠ ይወቁ<ph name="END_LINK_HELP" />።</translation>

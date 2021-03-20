@@ -87,6 +87,7 @@
 <translation id="1853795129690976061">Linux와 공유된 폴더입니다.</translation>
 <translation id="1864756863218646478">파일을 찾지 못했습니다.</translation>
 <translation id="1920670151694390848">말라얄람어(음역)</translation>
+<translation id="1920798810075583923">수박</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" />이(가) 포맷되었습니다.</translation>
 <translation id="1931134289871235022">슬로바키아어</translation>
 <translation id="1933345018156373194">이동에 실패했습니다. 예상치 못한 오류: <ph name="ERROR_MESSAGE" /></translation>
@@ -120,6 +121,7 @@
 <translation id="2288278176040912387">레코드 플레이어</translation>
 <translation id="2291538123825441971">파일 <ph name="NUMBER_OF_FILES" />개를 열고 있습니다.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> 파일을 엽니다.</translation>
+<translation id="2304820083631266885">행성</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" />이(가) 제거되었습니다.</translation>
 <translation id="2325650632570794183">이 파일 형식은 지원되지 않습니다. Chrome 웹 스토어에서 이 파일 형식을 열 수 있는 앱을 검색하세요.</translation>
 <translation id="2326539130272988168">불가리아어</translation>
@@ -218,10 +220,12 @@
 <translation id="3335337277364016868">녹음된 연도</translation>
 <translation id="3353984535370177728">업로드할 폴더 선택</translation>
 <translation id="3356580349448036450">완료</translation>
+<translation id="3358452157379365236">기타</translation>
 <translation id="3382143449143186018">네팔어(인스크립트 키보드)</translation>
 <translation id="3408236822532681288">독일어(독일, Neo 2 키보드)</translation>
 <translation id="3414856743105198592">이동식 미디어를 포맷하면 데이터가 모두 삭제됩니다. 계속하시겠습니까?</translation>
 <translation id="3437801641691368414">만든 시간</translation>
+<translation id="343907260260897561">즉석 카메라</translation>
 <translation id="3455931012307786678">에스토니아어</translation>
 <translation id="3466147780910026086">미디어 기기 스캔 중...</translation>
 <translation id="3468522857997926824">사진 <ph name="FILE_COUNT" />장을 <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />에 백업</translation>
@@ -297,6 +301,7 @@
 <translation id="4309915981827077375">일반 정보</translation>
 <translation id="432252891123397018">루마니아어(표준 키보드)</translation>
 <translation id="4325128273762811722">슬로베니아어</translation>
+<translation id="4326142238881453352">식물학자</translation>
 <translation id="4326192123064055915">커피</translation>
 <translation id="4336032328163998280">복사 작업에 실패했습니다. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">소라니 쿠르드어(아랍어 기반 키보드)</translation>
@@ -412,6 +417,7 @@
     <ph name="MARKUP_7" />다른 사용자와 한 곳에서 파일을<ph name="MARKUP_8" />
     공유하고 만들고 공동작업하세요.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google Drive에서 복구된 파일</translation>
+<translation id="5288441970121584418">햄버거</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">저장</translation>
 <translation id="5318819489018851358">Linux로 공유</translation>
@@ -502,10 +508,12 @@
 <translation id="6248400709929739064">자막 사용</translation>
 <translation id="6269630227984243955">말레이어</translation>
 <translation id="6287852322318138013">이 파일을 열 때 사용할 앱 선택</translation>
+<translation id="6321303798550928047">손 흔들기</translation>
 <translation id="6339145975392024142">미국 국제(PC)</translation>
 <translation id="6346310558342052870">액세스 제한됨</translation>
 <translation id="6356685157277930264">파일 의견 창</translation>
 <translation id="6358884629796491903">용</translation>
+<translation id="6367976544441405720">승합차</translation>
 <translation id="637062427944097960">파일이 다른 데스크톱에서 열려 있습니다. 파일을 보려면 <ph name="USER_NAME" />(<ph name="MAIL_ADDRESS" />)(으)로 이동하세요.</translation>
 <translation id="6394388407447716302">읽기 전용</translation>
 <translation id="6395575651121294044">항목 <ph name="NUMBER_OF_FILES" />개</translation>
@@ -529,6 +537,7 @@
 <translation id="6650726141019353908">분홍 나비</translation>
 <translation id="6657585470893396449">비밀번호</translation>
 <translation id="6673674183150363784">프랑스어(프랑스, 베포 키보드)</translation>
+<translation id="6710022688720561421">로봇</translation>
 <translation id="6710213216561001401">이전</translation>
 <translation id="6751256176799620176">폴더 1개 선택됨</translation>
 <translation id="6790428901817661496">재생</translation>
@@ -562,6 +571,7 @@
 <translation id="6965382102122355670">확인</translation>
 <translation id="6970230597523682626">불가리아어</translation>
 <translation id="6973630695168034713">폴더</translation>
+<translation id="6976795442547527108">사자</translation>
 <translation id="6978611942794658017">이 파일은 Windows 소프트웨어를 사용하는 PC용으로 설계되었으며 Chrome OS를 실행하는 기기와 호환되지 않습니다. 적합한 대체 앱을 찾으려면 Chrome 웹 스토어를 검색하세요.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">스웨덴어</translation>
@@ -608,6 +618,7 @@
 <translation id="7532029025027028521">페르시아어(음역)</translation>
 <translation id="7544830582642184299">Linux 앱이 Google Drive의 파일에 액세스하도록 허용합니다. 변경사항은 다른 기기에 동기화됩니다.</translation>
 <translation id="7544853251252956727">셔플</translation>
+<translation id="7547009467130558110">운동화</translation>
 <translation id="7547780573915868306">리투아니아어</translation>
 <translation id="7547811415869834682">네덜란드어</translation>
 <translation id="7551643184018910560">실행기에 고정</translation>
@@ -747,6 +758,7 @@
 <translation id="8860454412039442620">Excel 스프레드시트</translation>
 <translation id="8866284467018526531">아랍어(음역)</translation>
 <translation id="8900820606136623064">헝가리어</translation>
+<translation id="8903931173357132290">졸업생</translation>
 <translation id="8919081441417203123">덴마크어</translation>
 <translation id="8965697826696209160">저장 공간이 부족합니다.</translation>
 <translation id="8970501467542182729">이 파일은 Macintosh 소프트웨어를 사용하는 컴퓨터용으로 설계되었습니다. 따라서 Chrome OS를 실행하는 기기와는 호환되지 않습니다. Chrome OS에서 파일을 여는 방법을 <ph name="BEGIN_LINK_HELP" />자세히 알아보세요<ph name="END_LINK_HELP" />.</translation>

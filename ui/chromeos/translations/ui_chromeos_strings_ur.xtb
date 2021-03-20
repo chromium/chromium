@@ -87,6 +87,7 @@
 <translation id="1853795129690976061">‏اس فولڈر کا اشتراک Linux کے ساتھ کر دیا گیا ہے</translation>
 <translation id="1864756863218646478">فائل تلاش نہیں کی جا سکی۔</translation>
 <translation id="1920670151694390848">ملیالم نقل حرفی</translation>
+<translation id="1920798810075583923">تربوز</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> کو فارمیٹ کر دیا گیا</translation>
 <translation id="1931134289871235022">سلاواکی</translation>
 <translation id="1933345018156373194">منتقلی ناکام ہو گئی، غیر متوقع خرابی: <ph name="ERROR_MESSAGE" /></translation>
@@ -120,6 +121,7 @@
 <translation id="2288278176040912387">ریکارڈ پلیئر</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> فائلیں کھل رہی ہیں۔</translation>
 <translation id="2303301624314357662">فائل <ph name="FILE_NAME" /> کھل رہی ہے۔</translation>
+<translation id="2304820083631266885">سیارہ</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> کو خارج کر دیا گیا ہے۔</translation>
 <translation id="2325650632570794183">‏فائل کی یہ قسم تعاون یافتہ نہیں ہے۔ اس قسم کی فائل کو کھول سکنے والی ایپ تلاش کرنے کیلئے براہ کرم Chrome ویب اسٹور ملاحظہ کریں۔</translation>
 <translation id="2326539130272988168">بلغاریائی</translation>
@@ -218,10 +220,12 @@
 <translation id="3335337277364016868">ریکارڈ کردہ سال</translation>
 <translation id="3353984535370177728">اپ لوڈ کرنے کیلئے ایک فولڈر منتخب کریں</translation>
 <translation id="3356580349448036450">مکمل</translation>
+<translation id="3358452157379365236">گٹار</translation>
 <translation id="3382143449143186018">‏InScript کی بورڈ کے ساتھ نیپالی</translation>
 <translation id="3408236822532681288">نیو 2 کی بورڈ کے ساتھ جرمن (جرمنی)</translation>
 <translation id="3414856743105198592">ہٹانے لائق میڈیا کو فارمیٹ کرنے سے سبھی ڈیٹا مٹ جائے گا۔ کیا آپ جاری رکھنا چاہتے ہیں؟</translation>
 <translation id="3437801641691368414">بنانے کا وقت</translation>
+<translation id="343907260260897561">فوری کیمرا</translation>
 <translation id="3455931012307786678">اسٹونين</translation>
 <translation id="3466147780910026086">آپ کے میڈیا آلے کو سکین کیا جا رہا ہے…</translation>
 <translation id="3468522857997926824">‏<ph name="FILE_COUNT" /> تصاویر کا <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> میں بیک اپ لیا گیا</translation>
@@ -297,6 +301,7 @@
 <translation id="4309915981827077375">عمومی معلومات</translation>
 <translation id="432252891123397018">معیاری کی بورڈ کے ساتھ رومانیائی</translation>
 <translation id="4325128273762811722">سلووینیائی</translation>
+<translation id="4326142238881453352">ماہرِ نباتیات</translation>
 <translation id="4326192123064055915">کافی</translation>
 <translation id="4336032328163998280">کاپی آپریشن ناکام ہو گیا۔ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">عربی پر مبنی کی بورڈ کے ساتھ سورانی کردش</translation>
@@ -412,6 +417,7 @@
     دوسروں کے ساتھ فائلیں <ph name="MARKUP_7" />اشتراک کریں، بنائیں اور ان پر اکٹھے کام کریں<ph name="MARKUP_8" />
     سب کچھ ایک جگہ سے۔<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">‏Google Drive سے بازیافت کردہ فائلیں</translation>
+<translation id="5288441970121584418">برگر</translation>
 <translation id="5317780077021120954">محفوظ کریں</translation>
 <translation id="5318819489018851358">‏Linux کے ساتھ اشتراک کریں</translation>
 <translation id="5323213332664049067">لاطینی امریکی</translation>
@@ -501,10 +507,12 @@
 <translation id="6248400709929739064">سب ٹائٹلز کو فعال کریں</translation>
 <translation id="6269630227984243955">مالے</translation>
 <translation id="6287852322318138013">یہ فائل کھولنے کیلئے ایک ایپ منتخب کریں</translation>
+<translation id="6321303798550928047">ہاتھ ہلانا</translation>
 <translation id="6339145975392024142">‏امریکی بین الاقوامی (PC)</translation>
 <translation id="6346310558342052870">رسائی روک دی گئی</translation>
 <translation id="6356685157277930264">فائلوں کے تاثرات کی ونڈو</translation>
 <translation id="6358884629796491903">ڈریگن</translation>
+<translation id="6367976544441405720">وین</translation>
 <translation id="637062427944097960">یہ فائل ایک مختلف ڈیسک ٹاپ پر کھولی گئی ہے۔ اسے دیکھنے کیلئے <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) پر منتقل ہوں۔</translation>
 <translation id="6394388407447716302">صرف پڑھنے کے لیے</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> آئٹمز</translation>
@@ -528,6 +536,7 @@
 <translation id="6650726141019353908">گلابی تتلی</translation>
 <translation id="6657585470893396449">پاس ورڈ</translation>
 <translation id="6673674183150363784">‏Bépo کی بورڈ کے ساتھ فراسنیسی (فرانس)</translation>
+<translation id="6710022688720561421">روبوٹ</translation>
 <translation id="6710213216561001401">گزشتہ</translation>
 <translation id="6751256176799620176">1 فولڈر منتخب کیا گیا</translation>
 <translation id="6790428901817661496">چلائیں</translation>
@@ -561,6 +570,7 @@
 <translation id="6965382102122355670">ٹھیک ہے</translation>
 <translation id="6970230597523682626">بلغاری</translation>
 <translation id="6973630695168034713">فولڈرز</translation>
+<translation id="6976795442547527108">شیر</translation>
 <translation id="6978611942794658017">‏یہ فائل Windows سافٹ ویئر استعمال کر رہے PC کیلئے بنائی گئی ہے۔ یہ آپ کے اس آلہ کے ساتھ مطابقت پذیر نہیں ہے جو Chrome OS چلاتا ہے۔ براہ کرم ایک مناسب متبادل ایپ کیلئے Chrome ویب اسٹور تلاش کریں۔</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">سویڈش</translation>
@@ -607,6 +617,7 @@
 <translation id="7532029025027028521">فارسی نقل حرفی</translation>
 <translation id="7544830582642184299">‏Linux ایپس کو اپنے Google Drive میں فائلز تک رسائی کرنے کی اجازت دیں۔ آپ کے دیگر آلات پر تبدیلیوں کی مطابقت پذیری کی جائے گی۔</translation>
 <translation id="7544853251252956727">شفل کریں</translation>
+<translation id="7547009467130558110">اسنیکر</translation>
 <translation id="7547780573915868306">لتھوانیائی</translation>
 <translation id="7547811415869834682">ڈچ</translation>
 <translation id="7551643184018910560">شیلف میں پن کریں</translation>
@@ -746,6 +757,7 @@
 <translation id="8860454412039442620">‏Excel اسپریڈشیٹ</translation>
 <translation id="8866284467018526531">عربی نقل حرفی</translation>
 <translation id="8900820606136623064">ہنگیرین</translation>
+<translation id="8903931173357132290">گریجویٹ</translation>
 <translation id="8919081441417203123">ڈينش</translation>
 <translation id="8965697826696209160">اس میں کافی جگہ نہیں ہے۔</translation>
 <translation id="8970501467542182729">‏یہ فائل Macintosh سافٹ ویئر استعمال کر رہے کمپیوٹر کیلئے بنائی گئی ہے۔ یہ آپ کے اس آلے کے ساتھ موافق نہیں ہے جو Chrome OS چلاتا ہے۔ Chrome OS پر فائلز کھولنے کے بارے میں <ph name="BEGIN_LINK_HELP" />مزید جانیں<ph name="END_LINK_HELP" />۔</translation>

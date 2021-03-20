@@ -333,6 +333,7 @@
 <translation id="457386861538956877">更多...</translation>
 <translation id="4592368184551360546">键盘</translation>
 <translation id="461440297010471931">目前所用的搜索引擎是 Google</translation>
+<translation id="4619564267100705184">请验证是您本人在操作</translation>
 <translation id="4619615317237390068">从其他设备打开的标签页</translation>
 <translation id="4620246317052452550">您浏览过的网页</translation>
 <translation id="4630540211544979320">翻译网页</translation>
@@ -548,6 +549,7 @@
 <translation id="6656103420185847513">修改文件夹</translation>
 <translation id="6657585470893396449">密码</translation>
 <translation id="6668619169535738264">修改书签</translation>
+<translation id="6674571176963658787">若要开始同步，请输入您的密码</translation>
 <translation id="667999046851023355">文档</translation>
 <translation id="6691331417640343772">通过 Google 信息中心管理已同步的数据</translation>
 <translation id="6710079714193676716">由贵组织管理。未必能使用所有功能。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -605,12 +607,14 @@
 <translation id="7272437679830969316">无法验证您的身份。未复制密码。</translation>
 <translation id="7291368939935408496">正在准备密码…</translation>
 <translation id="7293171162284876153">要开始同步，请开启“同步 Chrome 数据”。</translation>
+<translation id="7299000566397147023">打开最近用过的标签页</translation>
 <translation id="7313347584264171202">您已打开的无痕模式标签页会显示在此处</translation>
 <translation id="7336264872878993241">已下载<ph name="PERCENT" />%</translation>
 <translation id="7340958967809483333">“探索”功能的选项</translation>
 <translation id="7346909386216857016">知道了</translation>
 <translation id="734758817008927353">卡片信息保存选项</translation>
 <translation id="7348502496356775519">添加书签</translation>
+<translation id="7353432112255316844">请验证是您本人在操作</translation>
 <translation id="7383797227493018512">阅读清单</translation>
 <translation id="7398893703713203428">创建链接</translation>
 <translation id="739941347996872055">上一个标签页</translation>
@@ -690,6 +694,7 @@
 <translation id="8105368624971345109">关闭</translation>
 <translation id="8114753159095730575">已可下载文件。选项位于屏幕底部附近。</translation>
 <translation id="8131740175452115882">确认</translation>
+<translation id="8156478151976189188">无法同步密码</translation>
 <translation id="8197543752516192074">翻译网页</translation>
 <translation id="8205564605687841303">取消</translation>
 <translation id="8206354486702514201">此设置是由您的管理员执行的。</translation>

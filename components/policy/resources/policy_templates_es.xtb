@@ -279,6 +279,13 @@
 <translation id="1413936351612032792">Proporcionar información sobre el uso de aplicaciones de Linux</translation>
 <translation id="1417888712677507140">Bloquear los cuadros de diálogo de JavaScript que se activen desde un submarco de origen diferente</translation>
 <translation id="1418387035898607074">Saltar comprobaciones de Navegación segura para las descargas de archivos desde fuentes de confianza</translation>
+<translation id="1418968246960170056">Establecer esta política permite definir una lista de sitios a los que se les concederá permiso automáticamente para acceder a dispositivos serie USB que tengan IDs de proveedor y de producto coincidentes con los campos <ph name="VENDOR_ID_FIELD_NAME" /> y <ph name="PRODUCT_ID_FIELD_NAME" />. Si se omite el campo <ph name="PRODUCT_ID_FIELD_NAME" />, los sitios establecidos obtendrán permiso para acceder a los dispositivos que tengan un ID de proveedor coincidente con el campo <ph name="VENDOR_ID_FIELD_NAME" /> y con cualquier ID de producto.
+
+      Las URLs deben ser válidas; si no, se ignorará la política. Solo se tiene en cuenta el origen de la URL (esquema, host y puerto).
+
+      Esta política anula las políticas <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> y <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />, así como las preferencias del usuario.
+
+      Esta política solo afecta al acceso a los dispositivos USB a través de la API Web Serial. Para conceder acceso a dispositivos USB a través de la API WebUSB, consulta la política <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="142346659686073702">Permitir que los usuarios no afiliados utilicen Crostini</translation>
 <translation id="1425551776320718592">Impide que los usuarios de este dispositivo utilicen la instalación de fuente desconocida adb sin forzar un Powerwash, lo cual puede dejar el dispositivo en un estado de seguridad vulnerable</translation>
 <translation id="1426170570389588560">Define el periodo, en número de días, durante el que se almacenarán los metadatos de los trabajos de impresión</translation>
@@ -595,6 +602,11 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
       Si se le asigna el valor "Inhabilitada" o no se le asigna ninguno, <ph name="PRODUCT_NAME" /> no intentará abrir las URL designadas en un navegador alternativo.</translation>
 <translation id="1797233582739332495">Mostrar un mensaje periódico al usuario indicando que es necesario reiniciar el navegador</translation>
 <translation id="1798559516913615713">Duración en caché de GPO</translation>
+<translation id="180130467244315277">Esta política permite a los administradores establecer el orden de los idiomas preferidos en la configuración de <ph name="PRODUCT_NAME" />.
+
+      La lista aparecerá en el mismo orden en la sección "Ordena los idiomas según tus preferencias" (en chrome://settings/languages). Los usuarios no podrán eliminar los idiomas establecidos por la política ni cambiar su orden, pero podrán añadir idiomas al final de la lista. Los usuarios tendrán el control total de los ajustes de traducción, del corrector ortográfico y del idioma de la interfaz del navegador, a menos que otras políticas los definan.
+
+      Si no se establece esta política, los usuarios podrán gestionar la lista completa de idiomas preferidos.</translation>
 <translation id="1803646570632580723">Lista de aplicaciones fijadas que deben aparecer en la barra de aplicaciones</translation>
 <translation id="1808715480127969042">Bloquear cookies en estos sitios</translation>
 <translation id="1810261428246410396">Permitir conexión compartida instantánea.</translation>
@@ -2592,6 +2604,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="4492287494009043413">Inhabilitar la realización de capturas de pantalla</translation>
 <translation id="4494132853995232608">Wilco DTC</translation>
 <translation id="449423975179525290">Configura las políticas relacionadas con <ph name="PLUGIN_VM_NAME" />.</translation>
+<translation id="449784980858429908">Permite conceder permiso automáticamente a sitios para conectarse a todos los puertos serie.</translation>
 <translation id="4510923771103268849">El usuario puede tener acceso root a los contenedores de Crostini</translation>
 <translation id="4515404363392014383">Habilitar Navegación segura en fuentes de confianza</translation>
 <translation id="4518251772179446575">Preguntar siempre que un sitio quiera hacer un seguimiento de la ubicación física de los usuarios</translation>
@@ -2743,6 +2756,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si esta política se habilita o no se establece, se realizarán las comprobaciones de interceptación de DNS. Si se inhabilita, no se realizarán las comprobaciones.</translation>
 <translation id="4700190441681139987">No permitir a ningún sitio web acceder a los sensores</translation>
 <translation id="4703402283970867140">Habilitar el modelo de atenuación inteligente para alargar el tiempo que pasa hasta que la pantalla se atenúe.</translation>
+<translation id="4704958130749494760">Permite conceder permiso automáticamente a sitios para conectarse a dispositivos serie USB.</translation>
 <translation id="4722122254122249791">Habilitar el aislamiento de sitios web específicos</translation>
 <translation id="4723122879352880315">Esta opción permite que los usuarios se autentiquen en un proxy administrado y protegido con autenticación NTLM usando las credenciales de inicio de sesión de <ph name="PRODUCT_OS_NAME" />.
 
@@ -4170,6 +4184,11 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Si se inhabilita la política o no se establece, los comandos de impresión muestran la pantalla de vista previa de impresión</translation>
 <translation id="6658245400435704251">Especifica el número de segundos hasta los que un dispositivo puede retrasar aleatoriamente la descarga de una actualización desde el momento en el que esta se envío al servidor por primera vez. El dispositivo puede dedicar una parte de este tiempo al propio proceso de actualización y el resto a realizar las comprobaciones necesarias. En cualquier caso, el límite superior de la dispersión es un periodo de tiempo constante, para que el dispositivo no se quede bloqueado mientras descarga una actualización.</translation>
+<translation id="6662162847932043943">Establecer esta política permite definir una lista de sitios a los que se les concederá permiso automáticamente para acceder a todos los puertos serie disponibles.
+
+      Las URLs deben ser válidas; si no, se ignorará la política. Solo se tiene en cuenta el origen de la URL (esquema, host y puerto).
+
+      Esta política anula las políticas <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> y <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />, así como las preferencias del usuario.</translation>
 <translation id="6665670272107384733">Definir la frecuencia con la que el usuario debe introducir la contraseña para utilizar el desbloqueo rápido</translation>
 <translation id="6667586534922258705">Muestra el botón para mostrar la contraseña en las pantallas de inicio de sesión y bloqueo</translation>
 <translation id="6669700740683748046">Esta función permite mostrar la URL completa en la barra de direcciones.
@@ -4228,7 +4247,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Nota: Esta política también afecta a las extensiones y aplicaciones que se deban instalar de manera forzada mediante <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />.</translation>
 <translation id="6731757988219967594">Filtrar contenido para adultos de sitios web de nivel superior (y no de los iframes insertados)</translation>
-<translation id="6734521799274931721">Controlar si el uso compartido de archivos del sistema estará disponible en Chrome OS</translation>
 <translation id="6735701345096330595">Forzar que se habilite el corrector ortográfico de idiomas</translation>
 <translation id="6740611636377710500">Permite al usuario ejecutar PluginVm.
 
@@ -4365,13 +4383,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6907778402784621686">Permite bloquear el contenido no seguro en estos sitios web</translation>
 <translation id="6908640907898649429">Permite configurar el proveedor de búsquedas predeterminadas. Puedes especificar el proveedor de búsquedas predeterminadas que utilizarán los usuarios o inhabilitar las búsquedas predeterminadas.</translation>
 <translation id="6913068954484253496">Permitir que <ph name="PRODUCT_NAME" /> se conecte a dispositivos de transmisión de todas las direcciones IP.</translation>
-<translation id="6916817094593836501">Esta política evita que aparezcan advertencias URL similares en los sitios web incluidos en la lista. Normalmente, estas advertencias aparecen en sitios web que <ph name="PRODUCT_NAME" /> considera que podrían tratar de falsificar mediante spoofing un sitio web conocido por el usuario.
-
-       Si se habilita esta política y se establece uno o más dominios, no se mostrarán páginas de advertencia similares cuando el usuario visite páginas de esos dominios.
-
-       Si se inhabilita, no se define o se le asigna una lista vacía a esta política, es posible que aparezcan advertencias en cualquier sitio web que visite el usuario.
-
-       Se puede permitir un nombre de host con una coincidencia completa o cualquier coincidencia con el dominio. Por ejemplo, es posible que se eliminen las advertencias en una URL como "https://foo.example.com/bar" si la lista incluye "foo.example.com" o "example.com".</translation>
 <translation id="6922884955650325312">Bloquear el complemento <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="6923731550900440989">Habilita el resaltado del símbolo de intercalación de texto en la pantalla de inicio de sesión</translation>
 <translation id="6924223708804692571">Permite forzar la inhabilitación del corrector ortográfico de idiomas. Se ignorarán los idiomas no reconocidos de esa lista.
@@ -4453,6 +4464,15 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si se le asigna el valor <ph name="BR_UNDER_USER_CONTROL" />, se muestran mensajes a los usuarios para preguntarles si quieren utilizar el servicio de copia de seguridad y restauración. Si los usuarios activan el servicio de copia de seguridad y restauración, los datos de la aplicación Android se subirán a los servidores de copia de seguridad de Android y se restaurarán cuando se vuelvan a instalar las aplicaciones compatibles.
 
       Los usuarios podrán activar o desactivar el servicio de copia de seguridad y restauración después de la configuración inicial.</translation>
+<translation id="6981537713216575858">Habilitar esta política permite definir una lista de patrones de URL que especifica qué sitios obtendrán permiso automáticamente para acceder a un dispositivo USB que tenga el ID de proveedor y de producto establecidos. Para que la política sea válida, cada elemento de la lista debe tener los campos <ph name="DEVICES_FIELD_NAME" /> y <ph name="URLS_FIELD_NAME" />. Cada elemento del campo <ph name="DEVICES_FIELD_NAME" /> puede tener un campo <ph name="VENDOR_ID_FIELD_NAME" /> y un campo <ph name="PRODUCT_ID_FIELD_NAME" />. Si se omite el campo <ph name="VENDOR_ID_FIELD_NAME" />, se creará una política referida a todos los dispositivos. Si se omite el campo <ph name="PRODUCT_ID_FIELD_NAME" />, se creará una política referida a todos los dispositivos con el ID de proveedor proporcionado. Una política que tenga un campo <ph name="PRODUCT_ID_FIELD_NAME" />, pero que no tenga un campo <ph name="VENDOR_ID_FIELD_NAME" />, no es válida.
+
+      El modelo de permisos USB otorgará a la URL especificada el permiso de acceso al dispositivo USB como origen de nivel destacado. Si los marcos insertados requieren acceder a dispositivos USB, se deberá usar el encabezado usb <ph name="FEATURE_POLICY_HEADER_NAME" /> para otorgar acceso. La URL debe ser válida; si no, se ignorará la política.
+
+      Obsoleto: El modelo de permisos USB permitía especificar la URL solicitante y la URL de inserción. Esta opción, aunque ya no está disponible, es retrocompatible: si se especifica una URL solicitante y una URL de inserción, esta última obtendrá el permiso como origen destacado, y la URL solicitante se ignorará por completo.
+
+      Esta política anula las políticas <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />, <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" /> y <ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" />, así como las preferencias del usuario.
+
+      Esta política solo afecta al acceso a los dispositivos USB a través de la API WebUSB. Para conceder acceso a dispositivos USB a través de la API Web Serial, consulta la política <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="6986172482189158664">Ajustes del periodo de vida de los datos de navegación</translation>
 <translation id="6986838929449128437">Esta política está obsoleta. Usa <ph name="SAFE_BROWSING_ALLOWLIST_DOMAINS_POLICY_NAME" /> en su lugar.
 
@@ -5045,6 +5065,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="776110834126722255">Obsoleta</translation>
 <translation id="7763614521440615342">Mostrar sugerencias de contenido en la página Nueva pestaña</translation>
 <translation id="7765879851993224640">Permitir que se use el inicio de sesión con Smart Lock</translation>
+<translation id="7771298620150437359">Permite configurar el contenido y el orden de los idiomas preferidos</translation>
 <translation id="7774768074957326919">Utilizar configuración de proxy del sistema</translation>
 <translation id="777734450201217641">Esta política habilita las combinaciones de teclas para las funciones de accesibilidad en la pantalla de inicio de sesión.
 

@@ -622,7 +622,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3371076217486966826"><ph name="URL" /> vuole:
       • Creare una mappa 3D dell'ambiente circostante e monitorare la posizione della fotocamera
       • Usare la fotocamera</translation>
-<translation id="3372389303668969359">Potrai usare Windows Hello per verificare rapidamente la tua identità la volta successiva che userai questo dispositivo per effettuare un acquisto con questo metodo di pagamento.</translation>
+<translation id="3372389303668969359">Potrai usare Windows Hello per verificare rapidamente la tua identità le prossime volte che userai il dispositivo per effettuare un acquisto con questo metodo di pagamento.</translation>
 <translation id="337363190475750230">Deprovisioning effettuato</translation>
 <translation id="3377144306166885718">Il server usava una versione obsoleta di TLS.</translation>
 <translation id="3377188786107721145">Errore di analisi del criterio</translation>
@@ -1081,6 +1081,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5045550434625856497">Password non corretta</translation>
 <translation id="5056549851600133418">Articoli per te</translation>
 <translation id="5061227663725596739">Forse cercavi: <ph name="LOOKALIKE_DOMAIN" /></translation>
+<translation id="5066056036849835175">Cronologia di stampa</translation>
 <translation id="5068524481479508725">A10</translation>
 <translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 in uso)}other{(# in uso)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Controllare l'indirizzo proxy<ph name="END_LINK" /></translation>
@@ -1852,7 +1853,7 @@ Ulteriori dettagli:
 <translation id="8086971161893892807">Bozza</translation>
 <translation id="8088680233425245692">Impossibile visualizzare l'articolo.</translation>
 <translation id="808894953321890993">Cambia password</translation>
-<translation id="8090329638663751802">Potrai usare Touch ID per verificare rapidamente la tua identità la volta successiva che userai questo dispositivo per effettuare un acquisto con questo metodo di pagamento.</translation>
+<translation id="8090329638663751802">Potrai usare Touch ID per verificare rapidamente la tua identità le prossime volte che userai il dispositivo per effettuare un acquisto con questo metodo di pagamento.</translation>
 <translation id="8090403583893450254">Dimensione 20</translation>
 <translation id="8091372947890762290">Attivazione in attesa sul server</translation>
 <translation id="8092774999298748321">Viola scuro</translation>

@@ -87,6 +87,7 @@
 <translation id="1853795129690976061">Linux-മായി ഈ ഫോൾഡർ പങ്കിട്ടു</translation>
 <translation id="1864756863218646478">ഫയൽ കണ്ടെത്താൻ കഴിഞ്ഞില്ല.</translation>
 <translation id="1920670151694390848">മലയാള ലിപ്യന്തരണം</translation>
+<translation id="1920798810075583923">തണ്ണിമത്തൻ</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> ഫോർമാറ്റ് ചെയ്തു</translation>
 <translation id="1931134289871235022">സ്ലോവാക്</translation>
 <translation id="1933345018156373194">അപ്രതീക്ഷിത പിശക് കാരണം നീക്കാനായില്ല: <ph name="ERROR_MESSAGE" /></translation>
@@ -120,6 +121,7 @@
 <translation id="2288278176040912387">റെക്കോർഡ് പ്ലേയർ</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ഫയലുകൾ തുറക്കുന്നു.</translation>
 <translation id="2303301624314357662"><ph name="FILE_NAME" /> ഫയൽ തുറക്കുന്നു.</translation>
+<translation id="2304820083631266885">ഗ്രഹം</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ഒഴിവാക്കി.</translation>
 <translation id="2325650632570794183">ഈ ഫയൽ തരം പിന്തുണയ്‌ക്കുന്നില്ല. ഈ ഫയൽ തരം തുറക്കാൻ കഴിയുന്ന ഒരു ആപ്പ് കണ്ടെത്തുന്നതിന് ഒരു Chrome വെബ് സ്റ്റോർ കണ്ടെത്തുക.</translation>
 <translation id="2326539130272988168">ബൾഗേറിയൻ</translation>
@@ -218,10 +220,12 @@
 <translation id="3335337277364016868">റെക്കോർഡ് ചെയ്‌ത വർഷം</translation>
 <translation id="3353984535370177728">അപ്‌ലോഡുചെയ്യുന്നതിന് ഒരു ഫോൾഡർ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3356580349448036450">പൂര്‍ത്തിയാക്കൂ</translation>
+<translation id="3358452157379365236">ഗിറ്റാർ</translation>
 <translation id="3382143449143186018">InScript കീബോർഡ് ഉള്ള നേപ്പാളി</translation>
 <translation id="3408236822532681288">നിയോ 2 കീബോർഡ് ഉള്ള ജർമ്മൻ (ജർമ്മനി)</translation>
 <translation id="3414856743105198592">നീക്കം ചെയ്യാവുന്ന മീഡിയയിലെ ഫോർമാറ്റിംഗ് എല്ലാ ഡാറ്റയും മായ്‍ക്കും. തുടരാൻ നിങ്ങൾ ആഗ്രഹിക്കുന്നുണ്ടോ?</translation>
 <translation id="3437801641691368414">സൃഷ്‌ടിച്ച സമയം</translation>
+<translation id="343907260260897561">തൽക്ഷണ ക്യാമറ</translation>
 <translation id="3455931012307786678">എസ്തോണിയൻ</translation>
 <translation id="3466147780910026086">നിങ്ങളുടെ മീഡിയാ ഉപകരണം സ്‌‌കാൻ ചെയ്യുന്നു...</translation>
 <translation id="3468522857997926824"><ph name="FILE_COUNT" /> ഫോട്ടോകൾ <ph name="BEGIN_LINK" />Google ഡ്രൈവിലേക്ക്<ph name="END_LINK" /> ബാക്കപ്പുചെയ്‌തു</translation>
@@ -297,6 +301,7 @@
 <translation id="4309915981827077375">പൊതുവായ വിവരം</translation>
 <translation id="432252891123397018">സാധാരണ കീബോർഡ് ഉള്ള റൊമേനിയൻ</translation>
 <translation id="4325128273762811722">സ്ലോവേനിയൻ</translation>
+<translation id="4326142238881453352">സസ്യശാസ്ത്രജ്ഞൻ</translation>
 <translation id="4326192123064055915">കോഫി</translation>
 <translation id="4336032328163998280">പകർത്താനായില്ല. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4348495354623233847">അറബി അധിഷ്‌ഠിത കീബോർഡ് ഉള്ള സൊറാനി കുർദ്ദിഷ്</translation>
@@ -412,6 +417,7 @@
        <ph name="MARKUP_7" />മറ്റുള്ളവരുമായി ഒരിടത്തു നിന്നുതന്നെ ഫയലുകൾ<ph name="MARKUP_8" />
         പങ്കിടുകയും സൃഷ്‌ടിക്കുകയും സഹകരിക്കുകയും ചെയ്യുക.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google ഡ്രൈവിൽ നിന്നും ഫയലുകൾ വീണ്ടെടുത്തു</translation>
+<translation id="5288441970121584418">ബർഗർ</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
 <translation id="5317780077021120954">സംരക്ഷിക്കുക</translation>
 <translation id="5318819489018851358">Linux-മായി പങ്കിടുക</translation>
@@ -502,10 +508,12 @@
 <translation id="6248400709929739064">സബ്‌ടൈറ്റിലുകൾ പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="6269630227984243955">മലെയ്</translation>
 <translation id="6287852322318138013">ഈ ഫയൽ തുറക്കാനായി ഒരു ആപ്പ് തിരഞ്ഞെടുക്കുക</translation>
+<translation id="6321303798550928047">കൈവീശുന്നു</translation>
 <translation id="6339145975392024142">യുഎസ് അന്തര്‍ദേശീയ (PC)</translation>
 <translation id="6346310558342052870">ആക്‌സസ് നിയന്ത്രിതമാണ്</translation>
 <translation id="6356685157277930264">ഫയലുകളുടെ ഫീഡ്‌ബാക്ക് വിൻ‍ഡോ</translation>
 <translation id="6358884629796491903">ഡ്രാഗൺ</translation>
+<translation id="6367976544441405720">വാൻ</translation>
 <translation id="637062427944097960">ഈ ഫയൽ മറ്റൊരു ഡെസ്‌ക്‌ടോപ്പിലാണ് തുറന്നിരിക്കുന്നത്. അത് കാണാൻ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) എന്നതിലേക്ക് നീക്കുക.</translation>
 <translation id="6394388407447716302">വായന മാത്രം</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ഇനങ്ങൾ</translation>
@@ -529,6 +537,7 @@
 <translation id="6650726141019353908">പിങ്ക് ചിത്രശലഭം</translation>
 <translation id="6657585470893396449">പാസ്‌വേഡ്</translation>
 <translation id="6673674183150363784">BÉPO കീബോർഡ് ഉള്ള ഫ്രഞ്ച് (ഫ്രാൻസ്)</translation>
+<translation id="6710022688720561421">റോബോട്ട്</translation>
 <translation id="6710213216561001401">മുമ്പത്തേത്</translation>
 <translation id="6751256176799620176">ഒരു ഫോൾഡർ തിരഞ്ഞെടുത്തു</translation>
 <translation id="6790428901817661496">പ്ലേചെയ്യുക</translation>
@@ -562,6 +571,7 @@
 <translation id="6965382102122355670">ശരി</translation>
 <translation id="6970230597523682626">ബള്‍ഗേറിയന്‍</translation>
 <translation id="6973630695168034713">ഫോൾഡറുകൾ</translation>
+<translation id="6976795442547527108">സിംഹം</translation>
 <translation id="6978611942794658017">ഈ ഫയൽ, Windows സോഫ്‌റ്റ്‌വെയർ ഉപയോഗിക്കുന്ന PC-‌യ്ക്കായി രൂപകൽപ്പന ചെയ്‌തിരിക്കുന്നു. ഇത് Chrome OS പ്രവർത്തിക്കുന്ന നിങ്ങളുടെ ഉപകരണത്തിന് അനുയോജ്യമായതല്ല. അനുയോജ്യമായ മറ്റൊരു ആപ്പിനായി Chrome വെബ് സ്‌റ്റോറിൽ തിരയുക.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">സ്വീഡിഷ്</translation>
@@ -608,6 +618,7 @@
 <translation id="7532029025027028521">പേർഷ്യൻ ലിപ്യന്തരണം</translation>
 <translation id="7544830582642184299">നിങ്ങളുടെ Google Drive-ലെ ഫയലുകൾ ആക്‌സസ് ചെയ്യാൻ Linux ആപ്പുകൾക്ക് അനുമതി നൽകുക. മാറ്റങ്ങൾ, നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിലേക്ക് സമന്വയിപ്പിക്കും.</translation>
 <translation id="7544853251252956727">ഷഫിൾ ചെയ്യുക</translation>
+<translation id="7547009467130558110">സ്‌നീക്കർ</translation>
 <translation id="7547780573915868306">ലിത്വാനിയൻ</translation>
 <translation id="7547811415869834682">ഡച്ച്</translation>
 <translation id="7551643184018910560">ഷെൽഫിലേക്ക് പിൻ ചെയ്യുക</translation>
@@ -747,6 +758,7 @@
 <translation id="8860454412039442620">Excel സ്‌പ്രെഡ്‌ഷീറ്റ്</translation>
 <translation id="8866284467018526531">അറബി ലിപ്യന്തരണം</translation>
 <translation id="8900820606136623064">ഹംഗേറിയന്‍</translation>
+<translation id="8903931173357132290">ഗ്രാജ്വേറ്റ്</translation>
 <translation id="8919081441417203123">ഡാനിഷ്</translation>
 <translation id="8965697826696209160">പര്യാപ്‌തമായ ഇടമില്ല.</translation>
 <translation id="8970501467542182729">ഈ ഫയൽ, Macintosh സോഫ്റ്റ്‌വെയർ ഉപയോഗിക്കുന്ന ഒരു കമ്പ്യൂട്ടറിനായി രൂപകൽപ്പന ചെയ്തിരിക്കുന്നു. Chrome OS-ൽ റൺ ചെയ്യുന്ന നിങ്ങളുടെ ഉപകരണത്തിന് ഇത് അനുയോജ്യമല്ല. Chrome OS-ൽ ഫയലുകൾ തുറക്കുന്നതിനെ കുറിച്ച് <ph name="BEGIN_LINK_HELP" />കൂടുതലറിയുക<ph name="END_LINK_HELP" />.</translation>

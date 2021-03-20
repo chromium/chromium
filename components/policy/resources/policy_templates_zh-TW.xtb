@@ -277,6 +277,13 @@
 <translation id="1413936351612032792">回報 Linux 應用程式使用情形資訊</translation>
 <translation id="1417888712677507140">封鎖從不同來源子頁框觸發的 JavaScript 對話方塊。</translation>
 <translation id="1418387035898607074">針對從信任的來源下載的檔案略過安全瀏覽檢查</translation>
+<translation id="1418968246960170056">你可以透過這項政策設定網站清單，指定哪些網站會自動取得權限，能夠存取廠商 ID 和產品 ID 分別與 <ph name="VENDOR_ID_FIELD_NAME" /> 和 <ph name="PRODUCT_ID_FIELD_NAME" /> 欄位相符的 USB 序列裝置。如果省略 <ph name="PRODUCT_ID_FIELD_NAME" /> 欄位，系統就會授權指定網站存取廠商 ID 與 <ph name="VENDOR_ID_FIELD_NAME" /> 欄位相符的裝置，裝置的產品 ID 則沒有限制。
+
+      網址必須是有效網址，否則系統會忽略這項政策。系統只會檢視網址的來源 (配置、主機和埠)。
+
+      這項政策會覆寫 <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />、<ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />、<ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> 和使用者的偏好設定。
+
+      這項政策只會影響透過 Web Serial API 存取 USB 裝置的權限。如要授予透過 WebUSB API 存取 USB 裝置的權限，請參閱 <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" /> 政策。</translation>
 <translation id="142346659686073702">允許無關聯的使用者使用 Crostini</translation>
 <translation id="1425551776320718592">禁止這部裝置的使用者採用 ADB 側載，且不強制執行 Powerwash (這可能會讓裝置處於不安全的狀態)</translation>
 <translation id="1426170570389588560">設定儲存列印工作中繼資料的時間範圍 (以天為單位)</translation>
@@ -593,6 +600,11 @@
       如果將這項政策設為停用或不設定，<ph name="PRODUCT_NAME" /> 不會嘗試在替代瀏覽器中開啟指定的網址。</translation>
 <translation id="1797233582739332495">顯示週期性提示，要求使用者重新啟動瀏覽器</translation>
 <translation id="1798559516913615713">GPO 快取生命週期</translation>
+<translation id="180130467244315277">管理員可以透過這項政策配置 <ph name="PRODUCT_NAME" /> 設定中的偏好語言順序。
+
+      設定完成後，chrome://settings/languages 的「根據你的偏好設定排列語言順序」部分就會顯示同樣的順序。使用者將無法移除或調整這項政策設定的語言與順序，但可以在這類語言底下新增其他語言。使用者也能全面控管瀏覽器的 UI 語言和翻譯/拼字檢查設定，但前提是其他政策未強制執行相關設定。
+
+      如果不設定這項政策，使用者就能完全控制偏好語言清單。</translation>
 <translation id="1803646570632580723">要顯示在啟動器中的固定應用程式清單</translation>
 <translation id="1808715480127969042">封鎖這些網站的 Cookie</translation>
 <translation id="1810261428246410396">允許使用即時網路共用功能。</translation>
@@ -2546,6 +2558,7 @@
 <translation id="4492287494009043413">停用螢幕畫面擷取功能</translation>
 <translation id="4494132853995232608">Wilco DTC</translation>
 <translation id="449423975179525290">設定 <ph name="PLUGIN_VM_NAME" /> 的相關政策。</translation>
+<translation id="449784980858429908">自動授權網站連線至所有序列埠。</translation>
 <translation id="4510923771103268849">允許使用者擁有 Crostini 容器的 Root 權限</translation>
 <translation id="4515404363392014383">針對信任的來源啟用「安全瀏覽」</translation>
 <translation id="4518251772179446575">詢問網站何時要追蹤使用者的實際位置</translation>
@@ -2696,6 +2709,7 @@
       如果不設定這項政策或設為啟用，系統會執行 DNS 攔截檢查。如果明確指定停用這項政策，系統就不會執行 DNS 攔截檢查。</translation>
 <translation id="4700190441681139987">不允許任何網站存取感應器</translation>
 <translation id="4703402283970867140">啟用智慧型調光模式來延長使用時間，直到螢幕變暗為止</translation>
+<translation id="4704958130749494760">自動授權網站連線至 USB 序列裝置。</translation>
 <translation id="4722122254122249791">為指定來源啟用網站隔離</translation>
 <translation id="4723122879352880315">你可以透過這項設定，允許使用者利用 <ph name="PRODUCT_OS_NAME" />登入憑證，向採用 NTLM 驗證防護機制的受管理 Proxy 進行驗證。
 
@@ -4077,6 +4091,11 @@
 
       如果將這項政策設為停用或不設定，則列印指令會觸發列印預覽畫面。</translation>
 <translation id="6658245400435704251">指定裝置可以任意延遲下載某項更新的秒數上限 (以該項更新初次被推送到伺服器的時間為準)。你可以將這項裝置等待時間的其中一部分設定為等待的時間長度，剩下的部分則設定為檢查更新的次數。不論採取哪種方式，分散時間皆不得超過固定時間長度，這樣就可以避免裝置由於持續等待下載某項更新而停止回應。</translation>
+<translation id="6662162847932043943">你可以透過這項政策設定網站清單，指定哪些網站會自動取得權限，能夠存取所有現有序列埠。
+
+      網址必須是有效網址，否則系統會忽略這項政策。系統只會檢視網址的來源 (配置、主機和埠)。
+
+      這項政策會覆寫 <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />、<ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />、<ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> 和使用者的偏好設定。</translation>
 <translation id="6665670272107384733">設定使用者使用快速解鎖功能時需輸入密碼的頻率</translation>
 <translation id="6667586534922258705">在登入畫面和鎖定畫面上啟用密碼顯示按鈕</translation>
 <translation id="6669700740683748046">這項功能可讓系統在網址列中顯示完整網址。
@@ -4135,7 +4154,6 @@
 
       注意：這項政策也會影響使用 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 強制安裝的擴充功能和應用程式。</translation>
 <translation id="6731757988219967594">過濾含有成人內容的頂層網站 (而非嵌入的 iframe)</translation>
-<translation id="6734521799274931721">控管是否允許在 Chrome 作業系統使用網路檔案共用功能</translation>
 <translation id="6735701345096330595">強制執行拼字檢查的語言</translation>
 <translation id="6740611636377710500">允許這位使用者執行 PluginVm。
 
@@ -4273,15 +4291,6 @@
 <translation id="6907778402784621686">封鎖這些網站上的不安全內容</translation>
 <translation id="6908640907898649429">設定預設搜尋引擎。你可以指定使用者要使用的預設搜尋引擎或選擇停用預設搜尋。</translation>
 <translation id="6913068954484253496">允許 <ph name="PRODUCT_NAME" /> 連線至所有 IP 位址上的 Cast 裝置。</translation>
-<translation id="6916817094593836501">這項政策會禁止系統在列出的網站上顯示相似網址的警告訊息。一般而言，當 <ph name="PRODUCT_NAME" /> 認為網站可能試圖假冒成使用者熟悉的其他網站時，就會在網站上顯示這類警告訊息。
-
-
-       如果啟用這項政策並設為一或多個網域，當使用者造訪該網域的網頁時，系統不會顯示任何相似警告訊息網頁。
-
-       如果停用這項政策、不設定或設為空白清單，系統可能會在使用者造訪的任何網站上顯示警告訊息。
-
-
-       系統可允許主機完全相符或網域相符的主機名稱。舉例來說，如果這份清單包含「foo.example.com」或「example.com」，「https://foo.example.com/bar」這類網址可能不會顯示警告訊息。</translation>
 <translation id="6922884955650325312">封鎖 <ph name="FLASH_PLUGIN_NAME" /> 外掛程式</translation>
 <translation id="6923731550900440989">在登入畫面上啟用插入點醒目顯示功能</translation>
 <translation id="6924223708804692571">這項政策會強制停用指定語言的拼字檢查功能。系統會忽略該清單中無法辨識的語言。
@@ -4363,6 +4372,15 @@
       如果將這項政策設為 <ph name="BR_UNDER_USER_CONTROL" />，系統會提示使用者使用備份與還原功能。如果使用者啟用這項功能，系統會將 Android 應用程式資料上傳至 Android 備份伺服器，並在使用者重新安裝相容的應用程式時還原資料。
 
       完成初始設定後，使用者可以啟用或停用備份與還原功能。</translation>
+<translation id="6981537713216575858">你可以透過這項政策設定網址模式清單，指定哪些網站會自動取得權限，能夠存取具備指定廠商 ID 和產品 ID 的 USB 裝置。清單中的每個項目都必須包含 <ph name="DEVICES_FIELD_NAME" /> 和 <ph name="URLS_FIELD_NAME" /> 欄位，這項政策才會生效。<ph name="DEVICES_FIELD_NAME" /> 欄位中的每個項目皆可包含 <ph name="VENDOR_ID_FIELD_NAME" /> 和 <ph name="PRODUCT_ID_FIELD_NAME" /> 欄位。如果省略 <ph name="VENDOR_ID_FIELD_NAME" /> 欄位，建立的政策將適用於所有裝置。如果省略 <ph name="PRODUCT_ID_FIELD_NAME" /> 欄位，建立的政策將適用於具備指定廠商 ID 的裝置。要是政策包含 <ph name="PRODUCT_ID_FIELD_NAME" /> 欄位，但缺少 <ph name="VENDOR_ID_FIELD_NAME" /> 欄位，將無法生效。
+
+      USB 權限模型會授予指定網址將 USB 裝置做為頂層來源進行存取的權限。如果內嵌頁框需要存取 USB 裝置，系統則應使用「usb」<ph name="FEATURE_POLICY_HEADER_NAME" /> 標頭進行授權。網址必須是有效網址，否則系統會忽略這項政策。
+
+      已淘汰：作用是支援指明要求網址及嵌入網址的 USB 權限模型。這類模型已淘汰，只有透過以下方式進行回溯相容時可獲得支援：如果同時指定要求網址和嵌入網址，嵌入網址將獲得頂層來源的權限，要求網址則將被完全忽略。
+
+      這項政策會覆寫 <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />、<ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" />、<ph name="WEB_USB_BLOCKED_FOR_URLS_POLICY_NAME" /> 和使用者的偏好設定。
+
+      這項政策只會影響透過 WebUSB API 存取 USB 裝置的權限。如要授予透過 Web Serial API 存取 USB 裝置的權限，請參閱 <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" /> 政策。</translation>
 <translation id="6986172482189158664">瀏覽資料生命週期設定</translation>
 <translation id="6986838929449128437">這項政策已遭淘汰，請改用 <ph name="SAFE_BROWSING_ALLOWLIST_DOMAINS_POLICY_NAME" />。
 
@@ -4945,6 +4963,7 @@
 <translation id="776110834126722255">已淘汰</translation>
 <translation id="7763614521440615342">在新分頁顯示內容建議</translation>
 <translation id="7765879851993224640">允許使用 Smart Lock 登入功能。</translation>
+<translation id="7771298620150437359">設定偏好語言的內容和順序</translation>
 <translation id="7774768074957326919">使用系統 Proxy 設定</translation>
 <translation id="777734450201217641">在登入畫面上啟用無障礙功能快速鍵。
 

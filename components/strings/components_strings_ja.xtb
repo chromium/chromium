@@ -407,6 +407,7 @@
 <translation id="2482878487686419369">通知</translation>
 <translation id="248348093745724435">マシンポリシー</translation>
 <translation id="2491120439723279231">サーバーの証明書にエラーがあります。</translation>
+<translation id="2491414235131909199">このページは拡張機能によってブロックされています</translation>
 <translation id="2493640343870896922">Letter-Plus</translation>
 <translation id="2495083838625180221">JSON パーサー</translation>
 <translation id="2495093607237746763">チェックボックスをオンにすると、Chromium がカード情報をこのデバイスに保存するためフォームにすばやく入力できるようになります。</translation>
@@ -829,6 +830,7 @@
 <translation id="4173315687471669144">Foolscap</translation>
 <translation id="4173827307318847180">{MORE_ITEMS,plural, =1{他 <ph name="ITEM_COUNT" /> 件のアイテム}other{他 <ph name="ITEM_COUNT" /> 件のアイテム}}</translation>
 <translation id="4176463684765177261">停止中</translation>
+<translation id="4178883739871311481"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Google ドキュメントを作成します</translation>
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">現在、カードを保存できません</translation>
 <translation id="4196861286325780578">移動のやり直し（&amp;R）</translation>
@@ -1071,6 +1073,7 @@
 <translation id="5045550434625856497">パスワードが正しくありません</translation>
 <translation id="5056549851600133418">おすすめの記事</translation>
 <translation id="5061227663725596739">もしかして: <ph name="LOOKALIKE_DOMAIN" /></translation>
+<translation id="5066056036849835175">印刷履歴</translation>
 <translation id="5068524481479508725">A10</translation>
 <translation id="5068778127327928576">{NUM_COOKIES,plural, =1{（1 個が使用中）}other{（# 個が使用中）}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />プロキシ アドレスを確認する<ph name="END_LINK" /></translation>
@@ -1514,6 +1517,7 @@
 <translation id="6852204201400771460">アプリを再読み込みしますか？</translation>
 <translation id="6865412394715372076">現在、このカードを確認できません</translation>
 <translation id="6874604403660855544">追加のやり直し（&amp;R）</translation>
+<translation id="6881240511396774766">新しい Google ドキュメントをすばやく作成します</translation>
 <translation id="6884662655240309489">サイズ 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">ページを見やすくするため、Chrome によって簡易表示されています。Chrome による元のページの取得は、保護されていない接続を介して行われました。</translation>
@@ -1523,6 +1527,7 @@
 <translation id="6898699227549475383">組織（O）</translation>
 <translation id="6907293445143367439"><ph name="SITE_NAME" /> に次の権限を許可:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> から、MIDI デバイスをフル コントロールする許可を求められています</translation>
+<translation id="691325982945105493">[Google ドキュメントを作成] ボタンです。Enter キーを押すと、新しい Google ドキュメントをすばやく作成します</translation>
 <translation id="6915804003454593391">ユーザー:</translation>
 <translation id="6934672428414710184">Google アカウントで設定されている名前です</translation>
 <translation id="6944692733090228304"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> が管理していないサイトでパスワードを入力しました。アカウントを保護するには、他のアプリやサイトでパスワードを再使用しないでください。</translation>
@@ -2054,6 +2059,7 @@
 <translation id="8931333241327730545">このカードを Google アカウントに保存しますか？</translation>
 <translation id="8932102934695377596">時計が遅れています</translation>
 <translation id="893332455753468063">名前の追加</translation>
+<translation id="8934418770423095813">Google ドキュメントを作成</translation>
 <translation id="8942355029279167844">管理者は、<ph name="APP_NAME" /> がサービス改善のために診断データを収集することを許可しています。詳しくは、<ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> をご覧ください。</translation>
 <translation id="8943282376843390568">ライム</translation>
 <translation id="8957210676456822347">キャプティブ ポータル認証</translation>

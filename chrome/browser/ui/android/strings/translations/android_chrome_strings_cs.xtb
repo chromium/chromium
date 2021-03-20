@@ -98,7 +98,7 @@
 <translation id="1697284962337958118">Přidat do</translation>
 <translation id="1718835860248848330">Poslední hodina</translation>
 <translation id="1724977129262658800">Chcete-li upravit heslo, odemkněte zařízení</translation>
-<translation id="173522743738009831">Informace o Izolovaném prostoru k ochraně soukromí</translation>
+<translation id="173522743738009831">Informace o funkci Privacy Sandbox</translation>
 <translation id="1736419249208073774">Prozkoumat</translation>
 <translation id="1749561566933687563">Synchronizace záložek</translation>
 <translation id="17513872634828108">Otevřené karty</translation>
@@ -349,19 +349,19 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="3384347053049321195">Sdílet obrázek</translation>
 <translation id="3387650086002190359">Stažení souboru <ph name="FILE_NAME" /> se nezdařilo z důvodu chyb systému souborů.</translation>
 <translation id="3389286852084373014">Text je příliš dlouhý</translation>
-<translation id="3391512812407811893">Izolovaný prostor k ochraně soukromí</translation>
+<translation id="3391512812407811893">Privacy Sandbox</translation>
 <translation id="3398320232533725830">Otevřít správce záložek</translation>
 <translation id="3414952576877147120">Velikost:</translation>
 <translation id="3429160811076349561">Zkušební funkce jsou vypnuté</translation>
 <translation id="3440975416244667276">Přidržením zobrazíte relevantnější informace</translation>
 <translation id="3443221991560634068">Znovu načíst aktuální stránku</translation>
-<translation id="3451542610083122179">Izolovaný prostor k ochraně soukromí je trvalá iniciativa pro zachování otevřeného webu, která vás bude pomáhat chránit před sledováním.
+<translation id="3451542610083122179">Privacy Sandbox je trvalá iniciativa pro zachování otevřeného webu, která vás bude pomáhat chránit před sledováním.
 
 Weby v současné době k poskytování důležitých služeb, jako je zobrazování relevantních reklam nebo měření výkonnosti webu, využívají mnoho technologií, jako například soubory cookie třetích stran.
 
-Izolovaný prostor k ochraně soukromí zachovává zdravé prostředí otevřeného webu, protože přináší lepší možnosti, jak tyto služby poskytovat i bez narušení webů, a zároveň zabraňuje tomu, abyste byli na webu tajně sledováni.
+Privacy Sandbox zachovává zdravé prostředí otevřeného webu, protože přináší lepší možnosti, jak tyto služby poskytovat i bez narušení webů, a zároveň zabraňuje tomu, abyste byli na webu tajně sledováni.
 
-Izolovaný prostor k ochraně soukromí se stále aktivně vyvíjí a je dostupný jen ve vybraných oblastech. Prozatím mohou weby Izolovaný prostor k ochraně soukromí vyzkoušet, i když budou dál používat aktuální technologie, jako jsou soubory cookie třetích stran. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
+Privacy Sandbox se stále aktivně vyvíjí a je dostupný jen ve vybraných oblastech. Prozatím mohou weby Privacy Sandbox vyzkoušet, i když budou dál používat aktuální technologie, jako jsou soubory cookie třetích stran. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">Můžete si vybrat vyhledávač</translation>
 <translation id="3492207499832628349">Nová anonymní karta</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /> o navrhovaném obsahu</translation>
@@ -425,7 +425,6 @@ Izolovaný prostor k ochraně soukromí se stále aktivně vyvíjí a je dostu
 <translation id="395206256282351086">Návrhy vyhledávacích dotazů a webů jsou vypnuty</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome stránku načte, až bude připraven}few{Chrome stránky načte, až bude připraven}many{Chrome stránky načte, až bude připraven}other{Chrome stránky načte, až bude připraven}}</translation>
 <translation id="3963007978381181125">Šifrování pomocí heslové fráze se nevztahuje na platební metody a adresy ze služby Google Pay. Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslovou frázi. Heslová fráze se neodesílá do Googlu a není na Googlu uložena. Pokud ji zapomenete nebo toto nastavení budete chtít změnit, bude nutné synchronizaci resetovat. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
-<translation id="3967822245660637423">Stahování bylo dokončeno</translation>
 <translation id="3969142555815019568">Chrome nemůže zkontrolovat vaše hesla</translation>
 <translation id="3974987681202239636">Aplikace <ph name="APP_NAME" /> se otevře v Chromu. Pokračováním vyjadřujete souhlas se <ph name="BEGIN_LINK1" />smluvními podmínkami společnosti Google<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />doplňujícími smluvními podmínkami prohlížeče Chrome a systému Chrome OS<ph name="END_LINK2" />. Platí také <ph name="BEGIN_LINK3" />upozornění ve věci ochrany soukromí pro účty Google spravované prostřednictvím služby Family<ph name="END_LINK3" />.</translation>
 <translation id="397583555483684758">Synchronizace přestala fungovat</translation>
@@ -471,6 +470,7 @@ Izolovaný prostor k ochraně soukromí se stále aktivně vyvíjí a je dostu
 <translation id="4314815835985389558">Správa synchronizace</translation>
 <translation id="4320177379694898372">Žádné připojení k internetu</translation>
 <translation id="4321739720395210191">Kameru nelze otevřít. Restartujte zařízení a zkuste to znovu.</translation>
+<translation id="433213510553688132">Sledování…</translation>
 <translation id="4335835283689002019">Bezpečné prohlížení je vypnuté</translation>
 <translation id="4351244548802238354">Zavřít dialogové okno</translation>
 <translation id="4378154925671717803">Telefon</translation>
@@ -1066,7 +1066,7 @@ Data z anonymní relace budou vymazána jedině po <ph name="BEGIN_BOLD2" />zav
 <translation id="8156139159503939589">Jaké jazyky ovládáte?</translation>
 <translation id="8168435359814927499">Obsah</translation>
 <translation id="8186512483418048923">Zbývající soubory: <ph name="FILES" /></translation>
-<translation id="8189750580333936930">Izolovaný prostor k ochraně soukromí</translation>
+<translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">Zbývá: 1 d</translation>
 <translation id="8200772114523450471">Pokračovat</translation>
 <translation id="8209050860603202033">Otevřít obrázek</translation>

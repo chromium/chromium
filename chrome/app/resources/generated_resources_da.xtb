@@ -271,6 +271,7 @@
 <translation id="1294807885394205587">Denne proces kan tage et par minutter. Starter containeradministration.</translation>
 <translation id="1296911687402551044">Fastgør den valgte fane</translation>
 <translation id="1297175357211070620">Destination</translation>
+<translation id="129770436432446029">Send feedback om <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="1300806585489372370">Hvis du vil ændre denne indstilling, skal du først <ph name="BEGIN_LINK" />aktivere id<ph name="END_LINK" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> kan redigere følgende filer</translation>
 <translation id="1302227299132585524">Tillad JavaScript via Apple Events</translation>
@@ -316,12 +317,12 @@
 <translation id="1347256498747320987">Installer opdateringer og apps. Hvis du fortsætter, accepterer du, at denne enhed også kan downloade og installere opdateringer og apps automatisk fra Google, dit mobilselskab og producenten af din enhed. Dette kan ske ved hjælp af mobildata. Nogle af disse apps tilbyder muligvis køb i appen. <ph name="BEGIN_LINK1" />Få flere oplysninger<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux-lagerplads</translation>
 <translation id="1347975661240122359">Opdateringen starter, når batteriniveauet er på <ph name="BATTERY_LEVEL" /> %.</translation>
+<translation id="1353275871123211385">Hvis du vil bruge forældreindstillinger såsom godkendelse af apps og grænser for skærmtid, skal barnet have en Google-konto, som administreres af en forælder. Der kan tilføjes en skolekonto senere, som kan bruges til værktøjer som f.eks. Google Classroom.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1353980523955420967">PPD-filen kan ikke findes. Sørg for, at din Chromebook er online, og prøv igen.</translation>
 <translation id="1354045473509304750">Tillad fortsat, at <ph name="HOST" /> kan bruge og flytte dit kamera</translation>
 <translation id="1355088139103479645">Vil du slette alle data?</translation>
 <translation id="1355466263109342573"><ph name="PLUGIN_NAME" /> er blokeret</translation>
-<translation id="1357896526834120583">Der er anmodet om en genstart</translation>
 <translation id="1358741672408003399">Stavning og grammatik</translation>
 <translation id="1359923111303110318">Din enhed kan låses op ved hjælp af Smart Lock. Tryk på Enter for at låse op.</translation>
 <translation id="1361164813881551742">Tilføj manuelt</translation>
@@ -670,6 +671,7 @@
 <translation id="1722687688096767818">Tilføjer profilen...</translation>
 <translation id="1723824996674794290">&amp;Nyt vindue</translation>
 <translation id="1725149567830788547">Vis &amp;kontroller</translation>
+<translation id="1725562816265788801">Fanerulning</translation>
 <translation id="1726100011689679555">Navneservere</translation>
 <translation id="1727662110063605623">Åbn Indstillinger for at knytte <ph name="USB_DEVICE_NAME" /> til Parallels Desktop eller Linux</translation>
 <translation id="1729533290416704613">Den styrer også, hvilken side der vises, når du søger via omnifeltet.</translation>
@@ -825,6 +827,7 @@
 <translation id="1877860345998737529">Tildeling af handlinger for kontakter</translation>
 <translation id="1878155070920054810">Det ser ud til, at din Chromebook løber tør for strøm, før opdateringen er fuldført. Sørg for, at du oplader korrekt, så opdateringen ikke afbrydes.</translation>
 <translation id="1879000426787380528">Log ind som</translation>
+<translation id="18802377548000045">Faner formindskes til stor bredde</translation>
 <translation id="1880905663253319515">Slet certifikatet "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Tastaturlayout</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Element}one{# element}other{# elementer}}</translation>
@@ -1414,7 +1417,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2541002089857695151">Vil du optimere casting til fuld skærm?</translation>
 <translation id="2541706104884128042">Ny sengetid er angivet</translation>
 <translation id="2542050502251273923">Angiver fejlretningsniveauet for netværksforbindelsens administrator og andre tjenester ved brug af ff_debug.</translation>
-<translation id="2544292303401268586">Din administrator har anmodet om at genstarte din enhed for at opdatere dine apps. Dette kan tage flere minutter.</translation>
 <translation id="2544352060595557290">Denne fane</translation>
 <translation id="2544853746127077729">Godkendelsescertifikatet blev afvist af netværk</translation>
 <translation id="2546283357679194313">Cookies og websitedata</translation>
@@ -1848,6 +1850,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3012804260437125868">Kun sikre forbindelser på samme website</translation>
 <translation id="3012917896646559015">Kontakt straks din hardwareproducent, og send din computer til reparation.</translation>
 <translation id="3013291976881901233">MIDI-enheder</translation>
+<translation id="301525898020410885">Sprog, din organisation har angivet</translation>
 <translation id="3015639418649705390">Genstart nu</translation>
 <translation id="3016381065346027039">Ingen logfilposter</translation>
 <translation id="3016641847947582299">Komponenten er opdateret</translation>
@@ -2225,6 +2228,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3468298837301810372">Etiket</translation>
 <translation id="3468999815377931311">Android-telefon</translation>
 <translation id="3470442499439619530">Fjern denne bruger</translation>
+<translation id="3471350386419633991">Højreklik på en fane, eller klik på bogmærkeikonet for at føje faner til en læseliste. Du finder ikonet på bogmærkelinjen.</translation>
 <translation id="3471876058939596279">Portene til HDMI og USB-C kan ikke bruges til video på samme tid. Brug en anden videoport.</translation>
 <translation id="3473241910002674503">Gå til startsiden, gå tilbage, og skift mellem apps ved hjælp af knapperne i tablettilstand.</translation>
 <translation id="3473479545200714844">Skærmforstørrer</translation>
@@ -2271,6 +2275,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3518985090088779359">Acceptér og fortsæt</translation>
 <translation id="3519564332031442870">Backendtjeneste til printer</translation>
 <translation id="3521606918211282604">Skift diskstørrelse</translation>
+<translation id="3522088408596898827">Der er næsten ikke mere diskplads. Frigør diskplads, og prøv igen.</translation>
 <translation id="3524965460886318643">Eksportér aktiviteter</translation>
 <translation id="3526034519184079374">Kan hverken læse eller ændre websitedata</translation>
 <translation id="3527085408025491307">Mappe</translation>
@@ -2920,6 +2925,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4252852543720145436">Beskyttet indholds-id</translation>
 <translation id="4252899949534773101">Bluetooth er deaktiveret</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – faneindholdet deles</translation>
+<translation id="4253183225471855471">Der blev ikke fundet nogen netværk. Indsæt dit SIM-kort, og genstart din enhed, før du prøver igen.</translation>
 <translation id="4254813446494774748">Sprog, der skal oversættes til:</translation>
 <translation id="425573743389990240">Batteriets afladningshastighed i watt (en negativ værdi betyder, at batteriet oplader)</translation>
 <translation id="4256316378292851214">Ge&amp;m video som...</translation>
@@ -3013,6 +3019,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4374831787438678295">Linux-installationsprogram</translation>
 <translation id="4375035964737468845">Åbne downloadede filer</translation>
 <translation id="4376226992615520204">Placering er slået fra</translation>
+<translation id="4377058670119819762">Aktiverer rulning mod venstre og højre på fanelinjen, når den er fuld.</translation>
 <translation id="4377363674125277448">Der opstod et problem med serverens certifikat.</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4378551569595875038">Tilslutter...</translation>
@@ -3646,6 +3653,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5111646998522066203">Afslut inkognito</translation>
 <translation id="5111692334209731439">&amp;Bogmærkeadministrator</translation>
 <translation id="5112577000029535889">&amp;Udviklerværktøjer</translation>
+<translation id="5113533693789703768">Præsentationsværktøjer</translation>
 <translation id="5113739826273394829">Hvis du klikker på dette ikon, låses denne <ph name="DEVICE_TYPE" /> manuelt. Næste gang skal du indtaster adgangskoden for at få adgang.</translation>
 <translation id="51143538739122961">Indsæt din sikkerhedsnøgle, og tryk på den</translation>
 <translation id="5114987907971894280">virtual reality</translation>
@@ -3735,6 +3743,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="520621735928254154">Fejl ved import af certifikat</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{Den kompromitterede adgangskode blev ændret. Du har # anden kompromitteret adgangskode. Chrome anbefaler, at du tjekker denne adgangskode nu.}one{Den kompromitterede adgangskode blev ændret. Du har # anden kompromitteret adgangskode. Chrome anbefaler, at du tjekker denne adgangskode nu.}other{Den kompromitterede adgangskode blev ændret. Du har # andre kompromitterede adgangskoder. Chrome anbefaler, at du tjekker disse adgangskoder nu.}}</translation>
 <translation id="5207949376430453814">Fremhæv tekstmarkør</translation>
+<translation id="520902706163766447">Aktivér en pop op-boble i den øverste Chrome-brugerflade for at søge oven på de åbne faner.</translation>
 <translation id="5209320130288484488">Der blev ikke fundet nogen enheder</translation>
 <translation id="5210365745912300556">Luk fanen</translation>
 <translation id="5213481667492808996">Din datatjeneste fra "<ph name="NAME" />" er klar til brug</translation>
@@ -3975,7 +3984,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5488468185303821006">Tillad i inkognito</translation>
 <translation id="5488508217173274228">Indstillinger for synkronisering af kryptering</translation>
 <translation id="5489435190927933437">Gemte adgangskoder til <ph name="DOMAIN" /></translation>
-<translation id="5489451338260400630">Tillad ikke, at websites ser tekst eller billeder fra din udklipsholder</translation>
 <translation id="5490721031479690399">Afbryd forbindelsen til Bluetooth-enhed</translation>
 <translation id="5490798133083738649">Tillad, at Linux får adgang til din mikrofon</translation>
 <translation id="549211519852037402">Beige og hvid</translation>
@@ -4493,6 +4501,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6078323886959318429">Tilføj genvej</translation>
 <translation id="6078752646384677957">Tjek din mikrofon og dine lydniveauer.</translation>
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" anmoder om at oprette forbindelse til en HID-enhed</translation>
+<translation id="608029822688206592">Der blev ikke fundet nogen netværk. Indsæt dit SIM-kort, og prøv igen.</translation>
 <translation id="6080515710685820702">Bruger du en delt computer? Prøv at åbne et inkognitovindue.</translation>
 <translation id="6080689532560039067">Se systemklokkeslættet</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – del af en unavngiven gruppe</translation>
@@ -4682,6 +4691,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6291741848715722067">Bekræftelseskode</translation>
 <translation id="6291949900244949761">Spørg, når et website vil have adgang til USB-enheder (anbefales)</translation>
 <translation id="6291953229176937411">&amp;Vis i Finder</translation>
+<translation id="6292699686837272722">Faner formindske til medium bredde</translation>
 <translation id="6295158916970320988">Alle websites</translation>
 <translation id="6295855836753816081">Gemmer...</translation>
 <translation id="6298962879096096191">Brug Google Play til at installere Android-apps</translation>
@@ -4691,7 +4701,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="630292539633944562">Forslag til personlige oplysninger</translation>
 <translation id="6305607932814307878">Global politik:</translation>
 <translation id="6307990684951724544">Systemet er optaget</translation>
-<translation id="6308077700132376815">Bloker billeder</translation>
 <translation id="6308493641021088955">Login leveres af <ph name="EXTENSION_NAME" /></translation>
 <translation id="6308937455967653460">Gem lin&amp;k som...</translation>
 <translation id="6309443618838462258">Din administrator tillader ikke denne indtastningsmetode</translation>
@@ -4746,6 +4755,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Tilføj familie og venner</translation>
 <translation id="6367985768157257101">Vil du modtage via "Deling tæt på"?</translation>
+<translation id="6368276408895187373">Aktiveret – <ph name="VARIATION_NAME" /></translation>
 <translation id="636850387210749493">Tilmelding af virksomhed</translation>
 <translation id="6370021412472292592">Manifestet kunne ikke indlæses.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
@@ -4917,6 +4927,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6562117348069327379">Gem systemlogs i mappen Downloads.</translation>
 <translation id="656293578423618167">Filstien eller -navnet er for langt. Gem med et kortere navn eller på en anden placering.</translation>
 <translation id="6563469144985748109">Din administrator har ikke godkendt det endnu</translation>
+<translation id="6568283005472142698">Fanesøgning</translation>
 <translation id="6569934958368283244">Andre personer</translation>
 <translation id="6573497332121198392">Genvejen kan ikke fjernes</translation>
 <translation id="657402800789773160">&amp;Genindlæs denne side</translation>
@@ -5242,6 +5253,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6938606182859551396">Hvis du vil modtage notifikationer fra din telefon på din <ph name="DEVICE_TYPE" />, skal du følge vejledningen på din telefon for at give Google Play-tjenester adgang til notifikationer.</translation>
 <translation id="6938789263968032501">Personer</translation>
 <translation id="6939815295902433669">Gennemse enhedens software</translation>
+<translation id="694168622559714949">Din administrator har angivet et standardsprog, der ikke kan ændres.</translation>
 <translation id="6941937518557314510">Log ind på <ph name="TOKEN_NAME" /> for at give <ph name="HOST_NAME" /> autorisation med dit certifikat.</translation>
 <translation id="6943060957016121200">Aktivér Automatisk netdeling</translation>
 <translation id="6943176775188458830">Annuller udskrivning</translation>
@@ -5616,6 +5628,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7370592524170198497">Ethernet EAP:</translation>
 <translation id="7371006317849674875">Starttidspunkt</translation>
 <translation id="7371490947952970241">Du kan deaktivere Placering ved at deaktivere den overordnede placeringsindstilling på denne enhed. Du kan også deaktivere brugen af Wi-Fi, mobilnetværk og sensorer ifm. placering i placeringsindstillingerne.</translation>
+<translation id="7371917887111892735">Faner formindskes til bredden for fastgjorte faner</translation>
 <translation id="7374376573160927383">Administrer USB-enheder</translation>
 <translation id="7375235221357833624">{0,plural, =1{Genstart enheden inden for en time}one{Genstart enheden inden for # time}other{Genstart enheden inden for # timer}}</translation>
 <translation id="7376553024552204454">Fremhæv musemarkøren, når den bevæger sig</translation>
@@ -6767,6 +6780,7 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
 <translation id="8676770494376880701">Oplader med lav kraft er tilsluttet</translation>
 <translation id="8677212948402625567">Skjul alle...</translation>
 <translation id="8677859815076891398">Der er ingen album. Opret et album i <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
+<translation id="8678582529642151449">Faner formindskes ikke</translation>
 <translation id="8678933587484842200">Hvordan vil du starte denne app?</translation>
 <translation id="8680251145628383637">Log ind for at få dine bogmærker, din historik, dine adgangskoder og dine øvrige indstillinger på alle dine enheder. Du bliver også automatisk logget ind på dine Google-tjenester.</translation>
 <translation id="8681614230122836773">Chrome har registreret skadelig software på din computer</translation>
@@ -7333,6 +7347,7 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
 <translation id="992592832486024913">Deaktiver ChromeVox (talefeedback)</translation>
 <translation id="992778845837390402">Linux er i øjeblikket ved at blive sikkerhedskopieret</translation>
 <translation id="993540765962421562">Installationen er i gang</translation>
+<translation id="993611649451704398">Vælg eksperimenttilstand</translation>
 <translation id="994289308992179865">&amp;Sløjfe</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Etablerer sikker forbindelse...</translation>

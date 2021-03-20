@@ -1079,6 +1079,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5045550434625856497">Parol noto‘g‘ri</translation>
 <translation id="5056549851600133418">Sizga atalgan maqolalar</translation>
 <translation id="5061227663725596739">Buni nazarda tutdingizmi: <ph name="LOOKALIKE_DOMAIN" />?</translation>
+<translation id="5066056036849835175">Chop etish tarixi</translation>
 <translation id="5068524481479508725">A10</translation>
 <translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 ta cookie fayl ishlatilmoqda)}other{(# ta cookie fayl ishlatilmoqda)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Proksi-server manzilini tekshirish<ph name="END_LINK" /></translation>
@@ -1521,7 +1522,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6852204201400771460">Ilova qayta yuklansinmi?</translation>
 <translation id="6865412394715372076">Hozir bu kartani tekshirib bo‘lmaydi</translation>
 <translation id="6874604403660855544">&amp;Qaytadan qo‘shish</translation>
-<translation id="6881240511396774766">Tezda yangi Google Doc hujjatini yaratish</translation>
+<translation id="6881240511396774766">Yangi Google Doc hujjatini tezda yaratish</translation>
 <translation id="6884662655240309489">Hajmi: 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Mutolaani osonlashtirish uchun bu sahifa Chrome tomonidan soddalashtirildi. Chrome asl sahifani xavfli ulanish orqali yuklab oldi.</translation>
@@ -1531,7 +1532,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6898699227549475383">Tashkilot (O)</translation>
 <translation id="6907293445143367439"><ph name="SITE_NAME" /> uchun ruxsatlar:</translation>
 <translation id="6910240653697687763"><ph name="URL" /> sayti MIDI qurilmalaringizni boshqarishga to‘liq ruxsat so‘ramoqda</translation>
-<translation id="691325982945105493">Google Doc hujjatini yaratish tugmasi, Tezda yangi Google Doc hujjatini yaratish uchun Enter tugmasini bosing</translation>
+<translation id="691325982945105493">Google Doc hujjatini yaratish tugmasi, yangi Google Doc hujjatini tezda yaratish uchun Enter tugmasini bosing</translation>
 <translation id="6915804003454593391">Foydalanuvchi:</translation>
 <translation id="6934672428414710184">Bu nom Google hisobingizga biriktirilgan</translation>
 <translation id="6944692733090228304">Siz parol kiritgan sayt <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> tomonidan boshqarilmaydi. Hisobingizni himoya qilish uchun boshqa ilova va saytlarda bu paroldan foydalanmang.</translation>

@@ -12,7 +12,7 @@
 <translation id="1242008676835033345">Ingesloten in <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1289742167380433257">De afbeeldingen op deze pagina zijn door Google geoptimaliseerd om data te besparen.</translation>
-<translation id="129382876167171263">Bestanden die worden opgeslagen door websites, worden hier weergegeven</translation>
+<translation id="129382876167171263">Hier zie je bestanden die worden opgeslagen door websites</translation>
 <translation id="1317194122196776028">Deze site vergeten</translation>
 <translation id="1364532808393826295"><ph name="APP_NAME" /> - <ph name="NOTIFICATION_MESSAGE" /></translation>
 <translation id="1369915414381695676">Site <ph name="SITE_NAME" /> toegevoegd</translation>
@@ -81,7 +81,7 @@
 <translation id="3008272652534848354">Rechten resetten</translation>
 <translation id="301521992641321250">Automatisch geblokkeerd</translation>
 <translation id="3114012059975132928">Videospeler</translation>
-<translation id="3115898365077584848">Informatie weergeven</translation>
+<translation id="3115898365077584848">Informatie tonen</translation>
 <translation id="3123473560110926937">Geblokkeerd op bepaalde sites</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> opgeslagen gegevens</translation>
 <translation id="321187648315454507">Als je wilt dat <ph name="APP_NAME" /> je meldingen stuurt, moet je meldingen ook inschakelen via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
@@ -104,6 +104,7 @@
 <translation id="385051799172605136">Terug</translation>
 <translation id="3859306556332390985">Vooruit zoeken</translation>
 <translation id="3955193568934677022">Toestaan dat sites beschermde content afspelen (aanbevolen)</translation>
+<translation id="3967822245660637423">Downloaden voltooid</translation>
 <translation id="3987993985790029246">Link kop.</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> van ?</translation>
 <translation id="4002066346123236978">Titel</translation>
@@ -157,7 +158,7 @@
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(en nog 1)}other{(en nog #)}}</translation>
 <translation id="5403592356182871684">Namen</translation>
 <translation id="5489227211564503167">De verstreken tijd is <ph name="ELAPSED_TIME" /> van <ph name="TOTAL_TIME" />.</translation>
-<translation id="5494752089476963479">Advertenties blokkeren op sites die opdringerige of misleidende advertenties weergeven</translation>
+<translation id="5494752089476963479">Advertenties blokkeren op sites die opdringerige of misleidende advertenties tonen</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> toegestaan, <ph name="PERMISSION_2" /> geblokkeerd</translation>
 <translation id="5505264765875738116">Sites kunnen niet vragen of ze je meldingen mogen sturen</translation>
 <translation id="5516455585884385570">Instellingen voor meldingen openen</translation>
