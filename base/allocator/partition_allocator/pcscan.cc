@@ -30,8 +30,11 @@
 #include "base/debug/alias.h"
 #include "base/immediate_crash.h"
 #include "base/logging.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/optional.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
@@ -61,6 +64,26 @@ namespace internal {
 }
 
 namespace {
+
+struct ReentrantScannerGuard final {
+ public:
+  ReentrantScannerGuard() {
+    PA_DCHECK(!guard_);
+    guard_ = true;
+  }
+  ~ReentrantScannerGuard() {
+    PA_DCHECK(guard_);
+    guard_ = false;
+  }
+
+  static bool is_entered() { return guard_; }
+
+ private:
+  // Since this variable has hidden visibility (not referenced by other DSOs),
+  // assume that thread_local works on all supported architectures.
+  static thread_local size_t guard_;
+};
+thread_local size_t ReentrantScannerGuard::guard_ = 0;
 
 #if defined(PA_HAS_64_BITS_POINTERS)
 // Bytemap that represent regions (cards) that contain quarantined objects.
@@ -475,6 +498,7 @@ SimdSupport DetectSimdSupport() {
 class PCScanInternal final {
  public:
   using Root = PCScan::Root;
+  using TaskHandle = scoped_refptr<PCScanTask>;
 
   static constexpr size_t kMaxNumberOfRoots = 8u;
   class Roots final : private std::array<Root*, kMaxNumberOfRoots> {
@@ -514,6 +538,12 @@ class PCScanInternal final {
   PCScanInternal(const PCScanInternal&) = delete;
   PCScanInternal& operator=(const PCScanInternal&) = delete;
 
+  TaskHandle current_pcscan_task() const { return current_task_; }
+  void set_current_pcscan_task(TaskHandle task) {
+    current_task_ = std::move(task);
+  }
+  void reset_current_pcscan_task() { current_task_.reset(); }
+
   void RegisterScannableRoot(Root* root);
   void RegisterNonScannableRoot(Root* root);
 
@@ -538,6 +568,7 @@ class PCScanInternal final {
 
   PCScanInternal();
 
+  TaskHandle current_task_;
   Roots scannable_roots_{};
   Roots nonscannable_roots_{};
   const char* process_name_ = nullptr;
@@ -629,13 +660,42 @@ void PCScanInternal::ClearRootsForTesting() {
 
 class PCScanSnapshot final {
  public:
+  template <typename T>
+  class Worklist : std::vector<T, MetadataAllocator<T>> {
+    using Base = std::vector<T, MetadataAllocator<T>>;
+
+   public:
+    base::Optional<T> Pop() {
+      std::lock_guard<std::mutex> _(mutex_);
+      if (Base::empty())
+        return base::nullopt;
+      auto result = std::move(Base::back());
+      Base::pop_back();
+      // std::move since result type is different.
+      return std::move(result);
+    }
+
+   private:
+    friend class PCScanSnapshot;
+
+    void PushUnsafe(const T& t) { Base::push_back(t); }
+
+    void ReserveUnsafe(size_t size) { Base::reserve(size); }
+
+    template <typename InputIt>
+    void InsertUnsafe(InputIt begin, InputIt end) {
+      Base::insert(Base::end(), begin, end);
+    }
+
+    std::mutex mutex_;
+  };
+
   struct ScanArea {
     ScanArea(uintptr_t* begin, uintptr_t* end) : begin(begin), end(end) {}
 
     uintptr_t* begin = nullptr;
     uintptr_t* end = nullptr;
   };
-  using ScanAreas = MetadataVector<ScanArea>;
 
   // Large scan areas have their slot size recorded which allows to iterate
   // based on objects, potentially skipping over objects if possible.
@@ -645,7 +705,11 @@ class PCScanSnapshot final {
 
     size_t slot_size = 0;
   };
-  using LargeScanAreas = MetadataVector<LargeScanArea>;
+
+  // Worklists that are shared and processed by different scanners.
+  using ScanAreasWorklist = Worklist<ScanArea>;
+  using LargeScanAreasWorklist = Worklist<LargeScanArea>;
+  using SuperPagesWorklist = Worklist<uintptr_t>;
 
   // BRP pool is guaranteed to have only normal buckets, so everything there
   // deals in super pages.
@@ -653,22 +717,33 @@ class PCScanSnapshot final {
 
   PCScanSnapshot() = default;
 
-  void Take(size_t pcscan_epoch);
+  void EnsureTaken(size_t pcscan_epoch);
 
-  ScanAreas& scan_areas() { return scan_areas_; }
-  const ScanAreas& scan_areas() const { return scan_areas_; }
+  ScanAreasWorklist& scan_areas_worklist() { return scan_areas_worklist_; }
+  LargeScanAreasWorklist& large_scan_areas_worklist() {
+    return large_scan_areas_worklist_;
+  }
+  SuperPagesWorklist& quarantinable_super_pages_worklist() {
+    return super_pages_worklist_;
+  }
 
-  LargeScanAreas& large_scan_areas() { return large_scan_areas_; }
-  const LargeScanAreas& large_scan_areas() const { return large_scan_areas_; }
-
-  SuperPages& quarantinable_super_pages() { return super_pages_; }
   const SuperPages& quarantinable_super_pages() const { return super_pages_; }
 
  private:
-  ScanAreas scan_areas_;
-  LargeScanAreas large_scan_areas_;
+  void Take(size_t pcscan_epoch);
+
   SuperPages super_pages_;
+
+  ScanAreasWorklist scan_areas_worklist_;
+  LargeScanAreasWorklist large_scan_areas_worklist_;
+  SuperPagesWorklist super_pages_worklist_;
+
+  std::once_flag once_flag_;
 };
+
+void PCScanSnapshot::EnsureTaken(size_t pcscan_epoch) {
+  std::call_once(once_flag_, &PCScanSnapshot::Take, this, pcscan_epoch);
+}
 
 void PCScanSnapshot::Take(size_t pcscan_epoch) {
   using Root = PartitionRoot<ThreadSafe>;
@@ -679,7 +754,7 @@ void PCScanSnapshot::Take(size_t pcscan_epoch) {
   // Take a snapshot of all allocated non-empty slot spans.
   static constexpr size_t kScanAreasReservationSize = 128;
 
-  scan_areas_.reserve(kScanAreasReservationSize);
+  scan_areas_worklist_.ReserveUnsafe(kScanAreasReservationSize);
 
   auto& pcscan_internal = PCScanInternal::Instance();
   for (Root* root : pcscan_internal.scannable_roots()) {
@@ -708,10 +783,10 @@ void PCScanSnapshot::Take(size_t pcscan_epoch) {
               auto* payload_end =
                   payload_begin + (provisioned_size / sizeof(uintptr_t));
               if (slot_span->bucket->slot_size >= kLargeScanAreaThreshold) {
-                large_scan_areas_.push_back(
+                large_scan_areas_worklist_.PushUnsafe(
                     {payload_begin, payload_end, slot_span->bucket->slot_size});
               } else {
-                scan_areas_.push_back({payload_begin, payload_end});
+                scan_areas_worklist_.PushUnsafe({payload_begin, payload_end});
               }
               return true;
             });
@@ -740,13 +815,14 @@ void PCScanSnapshot::Take(size_t pcscan_epoch) {
       }
     }
   }
+  super_pages_worklist_.InsertUnsafe(super_pages_.begin(), super_pages_.end());
 }
 
 }  // namespace
 
 // This class is responsible for performing the entire PCScan task.
 // TODO(bikineev): Move PCScan algorithm out of PCScanTask.
-class PCScanTask final {
+class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask> {
  public:
   static void* operator new(size_t size) {
     return PCScanMetadataAllocator().AllocFlagsNoHooks(0, size);
@@ -761,6 +837,9 @@ class PCScanTask final {
 
   PCScanTask(PCScanTask&&) noexcept = delete;
   PCScanTask& operator=(PCScanTask&&) noexcept = delete;
+
+  // Execute PCScan from mutator inside safepoint.
+  void RunFromMutator();
 
   // Execute PCScan from the scanner thread. Must be called only once from the
   // scanner thread.
@@ -798,6 +877,32 @@ class PCScanTask final {
     const PCScanSnapshot& snapshot;
   };
 
+  // Used to notify other scanning threads about one thread being done.
+  class SyncScope final {
+   public:
+    explicit SyncScope(PCScanTask& task) : task_(task) {
+      task_.number_of_scanning_threads_.fetch_add(1, std::memory_order_relaxed);
+    }
+    ~SyncScope() {
+      // Notify other scanning threads that this thread is done.
+      {
+        // The lock is required as otherwise there is a race between
+        // fetch_sub/notify in the mutator and checking
+        // number_of_scanning_threads_/waiting in the scanner.
+        std::lock_guard<std::mutex> lock(task_.mutex_);
+        task_.number_of_scanning_threads_.fetch_sub(1,
+                                                    std::memory_order_relaxed);
+      }
+      task_.condvar_.notify_all();
+    }
+
+   private:
+    PCScanTask& task_;
+  };
+
+  friend class base::RefCountedThreadSafe<PCScanTask>;
+  ~PCScanTask() = default;
+
   template <typename LookupPolicy>
   ALWAYS_INLINE QuarantineBitmap* TryFindScannerBitmapForPointer(
       uintptr_t maybe_ptr) const;
@@ -810,6 +915,11 @@ class PCScanTask final {
   // Scans all registeres partitions and marks reachable quarantined objects.
   // Returns the size of marked objects.
   void ScanPartitions();
+
+  // Waits for other scanning threads to finish. This makes sure that a mutator
+  // thread doesn't do potentially malicious work while other threads are still
+  // scanning.
+  void SynchronizeAllScanningThreads();
 
   // Clear quarantined objects and prepare card table for fast lookup
   void ClearQuarantinedObjectsAndPrepareCardTable();
@@ -826,6 +936,10 @@ class PCScanTask final {
   const size_t pcscan_epoch_;
   PCScanSnapshot snapshot_;
   StatsCollector stats_;
+  // Mutex and codvar that are used to synchronize scanning threads.
+  std::mutex mutex_;
+  std::condition_variable condvar_;
+  std::atomic<size_t> number_of_scanning_threads_{0u};
   PCScan& pcscan_;
 };
 
@@ -873,7 +987,7 @@ PCScanTask::TryMarkObjectInNormalBuckets(uintptr_t maybe_ptr) const {
 
   // Check if pointer was in the quarantine bitmap.
   const uintptr_t base = GetObjectStartInSuperPage(maybe_ptr, *root);
-  if (!base || !scanner_bitmap->template CheckBit<AccessType::kNonAtomic>(base))
+  if (!base || !scanner_bitmap->template CheckBit<AccessType::kAtomic>(base))
     return 0;
 
   PA_DCHECK((maybe_ptr & kSuperPageBaseMask) == (base & kSuperPageBaseMask));
@@ -891,7 +1005,7 @@ PCScanTask::TryMarkObjectInNormalBuckets(uintptr_t maybe_ptr) const {
   // the mutator bitmap and clear from the scanner bitmap. Note that since
   // PCScan has exclusive access to the scanner bitmap, we can avoid atomic rmw
   // operation for it.
-  scanner_bitmap->template ClearBit<AccessType::kNonAtomic>(base);
+  scanner_bitmap->template ClearBit<AccessType::kAtomic>(base);
   QuarantineBitmapFromPointer(QuarantineBitmapType::kMutator, pcscan_epoch_,
                               reinterpret_cast<char*>(base))
       ->template SetBit<AccessType::kAtomic>(base);
@@ -902,11 +1016,13 @@ void PCScanTask::ClearQuarantinedObjectsAndPrepareCardTable() {
   using AccessType = QuarantineBitmap::AccessType;
 
   const bool giga_cage_enabled = features::IsPartitionAllocGigaCageEnabled();
-  for (auto super_page : snapshot_.quarantinable_super_pages()) {
+  while (auto super_page =
+             snapshot_.quarantinable_super_pages_worklist().Pop()) {
+    const uintptr_t super_page_base = *super_page;
     auto* bitmap = QuarantineBitmapFromPointer(
         QuarantineBitmapType::kScanner, pcscan_epoch_,
-        reinterpret_cast<char*>(super_page));
-    auto* root = Root::FromSuperPage(reinterpret_cast<char*>(super_page));
+        reinterpret_cast<char*>(super_page_base));
+    auto* root = Root::FromSuperPage(reinterpret_cast<char*>(super_page_base));
     bitmap->template Iterate<AccessType::kNonAtomic>(
         [root, giga_cage_enabled](uintptr_t ptr) {
           auto* object = reinterpret_cast<void*>(ptr);
@@ -1135,33 +1251,47 @@ void PCScanTask::ScanPartitions() {
   // For scanning large areas, it's worthwhile checking whether the range that
   // is scanned contains quarantined objects.
   size_t quarantine_size = 0;
-  for (auto scan_area : snapshot_.large_scan_areas()) {
+  while (auto scan_area = snapshot_.large_scan_areas_worklist().Pop()) {
     // The bitmap is (a) always guaranteed to exist and (b) the same for all
     // objects in a given slot span.
     // TODO(chromium:1129751): Check mutator bitmap as well if performance
     // allows.
     auto* bitmap = QuarantineBitmapFromPointer(
         QuarantineBitmapType::kScanner, pcscan_epoch_,
-        reinterpret_cast<char*>(scan_area.begin));
-    for (uintptr_t* current_slot = scan_area.begin;
-         current_slot < scan_area.end;
-         current_slot += (scan_area.slot_size / sizeof(uintptr_t))) {
+        reinterpret_cast<char*>(scan_area->begin));
+    for (uintptr_t* current_slot = scan_area->begin;
+         current_slot < scan_area->end;
+         current_slot += (scan_area->slot_size / sizeof(uintptr_t))) {
       // It is okay to skip objects as their payload has been zapped at this
       // point which means that the pointers no longer retain other objects.
       if (bitmap->CheckBit(reinterpret_cast<uintptr_t>(current_slot))) {
         continue;
       }
       uintptr_t* current_slot_end =
-          current_slot + (scan_area.slot_size / sizeof(uintptr_t));
-      PA_DCHECK(current_slot_end <= scan_area.end);
+          current_slot + (scan_area->slot_size / sizeof(uintptr_t));
+      PA_DCHECK(current_slot_end <= scan_area->end);
       quarantine_size += scan_loop.Run(current_slot, current_slot_end);
     }
   }
   // Scan areas with regular size slots.
-  for (auto scan_area : snapshot_.scan_areas()) {
-    quarantine_size += scan_loop.Run(scan_area.begin, scan_area.end);
+  while (auto scan_area = snapshot_.scan_areas_worklist().Pop()) {
+    quarantine_size += scan_loop.Run(scan_area->begin, scan_area->end);
   }
   stats_.IncreaseSurvivedQuarantineSize(quarantine_size);
+}
+
+void PCScanTask::SynchronizeAllScanningThreads() {
+  {
+    std::unique_lock<std::mutex> lock(mutex_);
+    condvar_.wait(lock, [this] {
+      return !number_of_scanning_threads_.load(std::memory_order_relaxed);
+    });
+  }
+  // Notify mutators that scan is done and there is no need to enter
+  // or reenter the safepoint. This must be acquire-release to make sure
+  // that scanning has indeed finished.
+  pcscan_.state_.store(PCScan::State::kSweepingAndFinishing,
+                       std::memory_order_release);
 }
 
 void PCScanTask::SweepQuarantine() {
@@ -1211,32 +1341,72 @@ void PCScanTask::FinishScanner() {
   pcscan_.quarantine_data_.Account(stats_.survived_quarantine_size());
   pcscan_.quarantine_data_.GrowLimitIfNeeded(total_pa_heap_size);
 
+  PCScanInternal::Instance().reset_current_pcscan_task();
   // Check that concurrent task can't be scheduled twice.
   PA_CHECK(pcscan_.state_.exchange(PCScan::State::kNotRunning,
                                    std::memory_order_acq_rel) ==
            PCScan::State::kSweepingAndFinishing);
 }
 
-void PCScanTask::RunFromScanner() {
+void PCScanTask::RunFromMutator() {
+  // Unfortunately, some functions can still allocate while scanning (e.g. trace
+  // scopes). Therefore we have to guard against recursive scanning.
+  if (UNLIKELY(ReentrantScannerGuard::is_entered()))
+    return;
+  ReentrantScannerGuard reentrancy_guard;
+  StatsCollector::MutatorScope overall_scope(
+      stats_, StatsCollector::MutatorId::kOverall);
   {
-    StatsCollector::ScannerScope overall_scope(
-        stats_, StatsCollector::ScannerId::kOverall);
-    // Take snapshot of partition-alloc heap.
-    snapshot_.Take(pcscan_epoch_);
+    SyncScope sync_scope(*this);
+    // Mutator might start entering the safepoint while scanning was already
+    // finished.
+    if (!pcscan_.IsJoinable())
+      return;
+    // Take snapshot of partition-alloc heap if not yet taken.
+    snapshot_.EnsureTaken(pcscan_epoch_);
     {
-      // Clear all quarantined objects and prepare the card table.
-      StatsCollector::ScannerScope clear_scope(
-          stats_, StatsCollector::ScannerId::kClear);
+      // Clear all quarantined objects and prepare card table.
+      StatsCollector::MutatorScope clear_scope(
+          stats_, StatsCollector::MutatorId::kClear);
       ClearQuarantinedObjectsAndPrepareCardTable();
     }
     {
       // Scan heap for dangling references.
-      StatsCollector::ScannerScope scan_scope(stats_,
-                                              StatsCollector::ScannerId::kScan);
+      StatsCollector::MutatorScope scan_scope(stats_,
+                                              StatsCollector::MutatorId::kScan);
       ScanPartitions();
     }
-    pcscan_.state_.store(PCScan::State::kSweepingAndFinishing,
-                         std::memory_order_relaxed);
+  }
+  SynchronizeAllScanningThreads();
+}
+
+void PCScanTask::RunFromScanner() {
+  // Unfortunately, some functions can still allocate while scanning (e.g. trace
+  // scopes). Therefore we have to guard against recursive scanning.
+  if (UNLIKELY(ReentrantScannerGuard::is_entered()))
+    return;
+  ReentrantScannerGuard reentrancy_guard;
+  {
+    StatsCollector::ScannerScope overall_scope(
+        stats_, StatsCollector::ScannerId::kOverall);
+    {
+      SyncScope sync_scope(*this);
+      // Take snapshot of partition-alloc heap.
+      snapshot_.EnsureTaken(pcscan_epoch_);
+      {
+        // Clear all quarantined objects and prepare the card table.
+        StatsCollector::ScannerScope clear_scope(
+            stats_, StatsCollector::ScannerId::kClear);
+        ClearQuarantinedObjectsAndPrepareCardTable();
+      }
+      {
+        // Scan heap for dangling references.
+        StatsCollector::ScannerScope scan_scope(
+            stats_, StatsCollector::ScannerId::kScan);
+        ScanPartitions();
+      }
+    }
+    SynchronizeAllScanningThreads();
     {
       // Sweep unreachable quarantined objects.
       StatsCollector::ScannerScope sweep_scope(
@@ -1249,7 +1419,7 @@ void PCScanTask::RunFromScanner() {
 
 class PCScan::PCScanThread final {
  public:
-  using TaskHandle = std::unique_ptr<PCScanTask>;
+  using TaskHandle = PCScanInternal::TaskHandle;
 
   static PCScanThread& Instance() {
     // Lazily instantiate the scanning thread.
@@ -1287,7 +1457,7 @@ class PCScan::PCScanThread final {
         condvar_.wait(lock, [this] { return posted_task_.get(); });
         std::swap(current_task, posted_task_);
       }
-      std::move(*current_task).RunFromScanner();
+      current_task->RunFromScanner();
     }
   }
 
@@ -1338,13 +1508,25 @@ void PCScan::PerformScan(InvocationMode invocation_mode) {
   quarantine_data_.ResetAndAdvanceEpoch();
 
   // Create PCScan task.
-  auto task = std::make_unique<PCScanTask>(*this);
+  auto task = base::MakeRefCounted<PCScanTask>(*this);
 
+  // Set current task and change the state. The acquire-release semantics is
+  // needed to "publish" the change, so that mutators can expect consistent
+  // state.
+  PCScanInternal::Instance().set_current_pcscan_task(task);
+  // Make sure PCScanThread is initialized since initialization can allocate and
+  // we don't want to enter safepoint yet.
+  auto& thread = PCScanThread::Instance();
+  // Publish the change of the state, so that mutators can expect consistent
+  // state.
   state_.store(State::kScanning, std::memory_order_release);
+
+  if (UNLIKELY(invocation_mode == InvocationMode::kScheduleOnlyForTesting))
+    return;
 
   // Post PCScan task.
   if (LIKELY(invocation_mode == InvocationMode::kNonBlocking)) {
-    PCScanThread::Instance().PostTask(std::move(task));
+    thread.PostTask(std::move(task));
   } else {
     PA_DCHECK(InvocationMode::kBlocking == invocation_mode ||
               InvocationMode::kForcedBlocking == invocation_mode);
@@ -1358,6 +1540,22 @@ void PCScan::PerformScanIfNeeded(InvocationMode invocation_mode) {
   if (invocation_mode == InvocationMode::kForcedBlocking ||
       quarantine_data_.MinimumScanningThresholdReached())
     PerformScan(invocation_mode);
+}
+
+void PCScan::JoinScan() {
+  auto& internal = PCScanInternal::Instance();
+  // Current task can be destroyed by the scanner.
+  // TODO(bikineev): This should actually be something like
+  // std::atomic_shared_ptr.
+  if (auto current_task = internal.current_pcscan_task())
+    current_task->RunFromMutator();
+}
+
+void PCScan::FinishScanForTesting() {
+  auto& internal = PCScanInternal::Instance();
+  auto current_task = internal.current_pcscan_task();
+  PA_CHECK(current_task.get());
+  current_task->RunFromScanner();
 }
 
 void PCScan::RegisterScannableRoot(Root* root) {

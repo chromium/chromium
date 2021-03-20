@@ -37,6 +37,19 @@ class PCScanTest : public testing::Test {
     PCScan::Instance().PerformScan(PCScan::InvocationMode::kBlocking);
   }
 
+  void SchedulePCScan() {
+    PCScan::Instance().PerformScan(
+        PCScan::InvocationMode::kScheduleOnlyForTesting);
+  }
+
+  void JoinPCScanAsMutator() {
+    auto& instance = PCScan::Instance();
+    PA_CHECK(instance.IsJoinable());
+    instance.JoinScan();
+  }
+
+  void FinishPCScanAsScanner() { PCScan::Instance().FinishScanForTesting(); }
+
   bool IsInQuarantine(void* ptr) const {
     return QuarantineBitmapFromPointer(
                QuarantineBitmapType::kMutator,
@@ -195,7 +208,6 @@ void TestDanglingReference(PCScanTest& test,
         IsInFreeList(value_root->AdjustPointerForExtrasSubtract(value)));
   }
 }
-
 }  // namespace
 
 TEST_F(PCScanTest, DanglingReferenceSameBucket) {
@@ -397,6 +409,65 @@ TEST_F(PCScanTest, DoubleFree) {
   EXPECT_DEATH(List<1>::Destroy(root(), list), "");
 }
 #endif
+
+namespace {
+template <typename SourceList, typename ValueList>
+void TestDanglingReferenceWithSafepoint(PCScanTest& test,
+                                        SourceList* source,
+                                        ValueList* value) {
+  auto* value_root = ThreadSafePartitionRoot::FromPointerInNormalBuckets(
+      reinterpret_cast<char*>(value));
+  {
+    // Free |value| and leave the dangling reference in |source|.
+    ValueList::Destroy(*value_root, value);
+    // Check that |value| is in the quarantine now.
+    EXPECT_TRUE(test.IsInQuarantine(value));
+    // Schedule PCScan but don't scan.
+    test.SchedulePCScan();
+    // Enter safepoint and scan from mutator.
+    test.JoinPCScanAsMutator();
+    // Check that the object is still quarantined since it's referenced by
+    // |source|.
+    EXPECT_TRUE(test.IsInQuarantine(value));
+    // Check that |value| is not in the freelist.
+    EXPECT_FALSE(
+        IsInFreeList(test.root().AdjustPointerForExtrasSubtract(value)));
+    // Run sweeper.
+    test.FinishPCScanAsScanner();
+    // Check that |value| still exists.
+    EXPECT_FALSE(
+        IsInFreeList(test.root().AdjustPointerForExtrasSubtract(value)));
+  }
+  {
+    // Get rid of the dangling reference.
+    source->next = nullptr;
+    // Schedule PCScan but don't scan.
+    test.SchedulePCScan();
+    // Enter safepoint and scan from mutator.
+    test.JoinPCScanAsMutator();
+    // Check that the object is no longer in the quarantine.
+    EXPECT_FALSE(test.IsInQuarantine(value));
+    // Check that |value| is not in the freelist yet, since sweeper didn't run.
+    EXPECT_FALSE(
+        IsInFreeList(test.root().AdjustPointerForExtrasSubtract(value)));
+    test.FinishPCScanAsScanner();
+    // Check that |value| is in the freelist now.
+    EXPECT_TRUE(
+        IsInFreeList(test.root().AdjustPointerForExtrasSubtract(value)));
+  }
+}
+}  // namespace
+
+TEST_F(PCScanTest, Safepoint) {
+  using SourceList = List<64>;
+  using ValueList = SourceList;
+
+  auto* source = SourceList::Create(root());
+  auto* value = ValueList::Create(root());
+  source->next = value;
+
+  TestDanglingReferenceWithSafepoint(*this, source, value);
+}
 
 }  // namespace internal
 }  // namespace base

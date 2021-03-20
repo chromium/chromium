@@ -50,6 +50,7 @@ class BASE_EXPORT PCScan final {
     kBlocking,
     kNonBlocking,
     kForcedBlocking,
+    kScheduleOnlyForTesting,
   };
 
   static PCScan& Instance() {
@@ -74,6 +75,10 @@ class BASE_EXPORT PCScan final {
 
   // Performs scanning only if a certain quarantine threshold was reached.
   void PerformScanIfNeeded(InvocationMode invocation_mode);
+
+  // Join scan from safepoint in mutator thread. As soon as PCScan is scheduled,
+  // mutators can join PCScan helping out with clearing and scanning.
+  void JoinScanIfNeeded();
 
   // Checks if there is a PCScan task currently in progress.
   ALWAYS_INLINE bool IsInProgress() const;
@@ -128,10 +133,18 @@ class BASE_EXPORT PCScan final {
     kSweepingAndFinishing
   };
 
+  ALWAYS_INLINE bool IsJoinable() const;
+
   inline constexpr PCScan();
 
   // Performs scanning unconditionally.
   void PerformScan(InvocationMode invocation_mode);
+
+  // Joins scan unconditionally.
+  void JoinScan();
+
+  // Finish scan as scanner thread.
+  void FinishScanForTesting();
 
   // PA_CONSTINIT for fast access (avoiding static thread-safe initialization).
   static PCScan instance_ PA_CONSTINIT;
@@ -153,6 +166,17 @@ constexpr PCScan::PCScan() = default;
 
 ALWAYS_INLINE bool PCScan::IsInProgress() const {
   return state_.load(std::memory_order_relaxed) != State::kNotRunning;
+}
+
+ALWAYS_INLINE bool PCScan::IsJoinable() const {
+  // We can only join PCScan in the mutator if it's running and not sweeping.
+  // This has acquire semantics since a mutator relies on the task being set up.
+  return state_.load(std::memory_order_acquire) == State::kScanning;
+}
+
+ALWAYS_INLINE void PCScan::JoinScanIfNeeded() {
+  if (UNLIKELY(IsJoinable()))
+    JoinScan();
 }
 
 ALWAYS_INLINE void PCScan::MoveToQuarantine(void* ptr, size_t slot_size) {
