@@ -270,6 +270,7 @@ DownloadItemView::DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
       &DownloadItemView::OpenButtonPressed, base::Unretained(this)));
 
   file_name_label_ = AddChildView(std::make_unique<views::Label>());
+  file_name_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   file_name_label_->SetTextContext(CONTEXT_DOWNLOAD_SHELF);
   file_name_label_->GetViewAccessibility().OverrideIsIgnored(true);
   const std::u16string filename = ElidedFilename(*file_name_label_);
