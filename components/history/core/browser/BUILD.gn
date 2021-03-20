@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/optimization_guide/features.gni")
+
 static_library("browser") {
   sources = [
     "browsing_history_driver.h",
@@ -90,6 +92,7 @@ static_library("browser") {
   ]
 
   public_deps = [
+    "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//components/sync/protocol",
     "//skia",
   ]
@@ -139,6 +142,13 @@ static_library("browser") {
       "android/urls_sql_handler.h",
       "android/visit_sql_handler.cc",
       "android/visit_sql_handler.h",
+    ]
+  }
+
+  if (build_with_tflite_lib) {
+    sources += [
+      "visit_annotations_database.cc",
+      "visit_annotations_database.h",
     ]
   }
 
@@ -237,5 +247,8 @@ source_set("unit_tests") {
   ]
   if (is_android) {
     sources += [ "android/android_history_types_unittest.cc" ]
+  }
+  if (build_with_tflite_lib) {
+    sources += [ "visit_annotations_database_unittest.cc" ]
   }
 }

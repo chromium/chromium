@@ -674,6 +674,38 @@ enum class UrlsModifiedReason {
   kAndroidDb,
 };
 
+// Annotations -----------------------------------------------------------------
+
+// A structure containing the annotations made to page content for a visit.
+struct VisitContentAnnotations {
+  struct Category {
+    Category();
+    Category(int id, int weight);
+    bool operator==(const Category& other) const;
+    bool operator!=(const Category& other) const;
+
+    int id = 0;
+    int weight = 0;
+  };
+
+  VisitContentAnnotations();
+  VisitContentAnnotations(float floc_protected_score,
+                          const std::vector<Category>& categories,
+                          int64_t page_topics_model_version);
+  VisitContentAnnotations(const VisitContentAnnotations& other);
+  ~VisitContentAnnotations();
+
+  // A value from 0 to 1 that represents whether the page content is
+  // FLoC-protected.
+  float floc_protected_score = -1.0;
+  // A vector that contains category IDs and their weights. It is guaranteed
+  // that there will not be duplicates in the category IDs contained in this
+  // field.
+  std::vector<Category> categories;
+  // The version of the page topics model that was used to annotate content.
+  int64_t page_topics_model_version = -1;
+};
+
 }  // namespace history
 
 #endif  // COMPONENTS_HISTORY_CORE_BROWSER_HISTORY_TYPES_H_

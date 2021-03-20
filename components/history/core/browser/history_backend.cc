@@ -475,6 +475,20 @@ void HistoryBackend::SetFlocAllowed(ContextID context_id,
   }
 }
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+void HistoryBackend::AddContentAnnotationsForVisit(
+    VisitID visit_id,
+    const VisitContentAnnotations& content_annotations) {
+  TRACE_EVENT0("browser", "HistoryBackend::AddContentAnnotationsForVisit");
+
+  if (!db_)
+    return;
+
+  db_->AddContentAnnotationsForVisit(visit_id, content_annotations);
+  ScheduleCommit();
+}
+#endif
+
 void HistoryBackend::UpdateVisitDuration(VisitID visit_id, const Time end_ts) {
   if (!db_)
     return;

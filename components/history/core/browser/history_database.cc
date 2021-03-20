@@ -83,7 +83,7 @@ HistoryDatabase::HistoryDatabase(
            // BeginExclusiveMode below which is called later (we have to be in
            // shared mode to start out for the in-memory backend to read the
            // data).
-           // TODO(1153459) Remove this dependency on normal locking mode. 
+           // TODO(1153459) Remove this dependency on normal locking mode.
            .exclusive_locking = false,
            // Set the database page size to something a little larger to give us
            // better performance (we're typically seek rather than bandwidth
@@ -125,6 +125,10 @@ sql::InitStatus HistoryDatabase::Init(const base::FilePath& history_name) {
       !InitKeywordSearchTermsTable() || !InitDownloadTable() ||
       !InitSegmentTables() || !InitSyncTable())
     return LogInitFailure(InitStep::CREATE_TABLES);
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  if (!InitVisitAnnotationsTables())
+    return LogInitFailure(InitStep::CREATE_TABLES);
+#endif
   CreateMainURLIndex();
 
   // TODO(benjhayden) Remove at some point.
@@ -322,6 +326,13 @@ bool HistoryDatabase::RecreateAllTablesButURL() {
     return false;
   if (!InitSegmentTables())
     return false;
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  if (!DropVisitAnnotationsTables())
+    return false;
+  if (!InitVisitAnnotationsTables())
+    return false;
+#endif
 
   return true;
 }

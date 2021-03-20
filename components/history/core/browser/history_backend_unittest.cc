@@ -1563,6 +1563,47 @@ TEST_F(HistoryBackendTest, SetFlocAllowed) {
   EXPECT_TRUE(visit.floc_allowed);
 }
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+TEST_F(HistoryBackendTest, AddContentAnnotations) {
+  ASSERT_TRUE(backend_.get());
+
+  GURL url("http://pagewithvisit.com");
+  ContextID context_id = reinterpret_cast<ContextID>(1);
+  int nav_entry_id = 1;
+
+  HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
+                             GURL(), history::RedirectList(),
+                             ui::PAGE_TRANSITION_TYPED, false,
+                             history::SOURCE_BROWSED, false, true, false);
+  backend_->AddPage(request);
+
+  VisitVector visits;
+  URLRow row;
+  URLID id = backend_->db()->GetRowForURL(url, &row);
+  ASSERT_TRUE(backend_->db()->GetVisitsForURL(id, &visits));
+  ASSERT_EQ(1U, visits.size());
+  VisitID visit_id = visits[0].visit_id;
+
+  VisitContentAnnotations content_annotations(
+      0.5f, {{/*id=*/1, /*weight=*/1}, {/*id=*/2, /*weight=*/1}}, 123);
+  backend_->AddContentAnnotationsForVisit(visit_id, content_annotations);
+
+  base::Optional<VisitContentAnnotations> got_content_annotations =
+      backend_->db()->GetContentAnnotationsForVisit(visit_id);
+  ASSERT_TRUE(got_content_annotations);
+  EXPECT_EQ(0.5f, got_content_annotations->floc_protected_score);
+  EXPECT_THAT(
+      got_content_annotations->categories,
+      ElementsAre(VisitContentAnnotations::Category(/*id=*/1, /*weight=*/1),
+                  VisitContentAnnotations::Category(/*id=*/2, /*weight=*/1)));
+  EXPECT_EQ(123, got_content_annotations->page_topics_model_version);
+
+  // Now, delete the URL. Content Annotations should be deleted.
+  backend_->DeleteURL(url);
+  ASSERT_FALSE(backend_->db()->GetContentAnnotationsForVisit(visit_id));
+}
+#endif
+
 TEST_F(HistoryBackendTest, AddVisitsSource) {
   ASSERT_TRUE(backend_.get());
 

@@ -425,6 +425,19 @@ void HistoryService::SetFlocAllowed(ContextID context_id,
                               context_id, nav_entry_id, url));
 }
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+void HistoryService::AddContentAnnotationsForVisit(
+    VisitID visit_id,
+    const VisitContentAnnotations& content_annotations) {
+  TRACE_EVENT0("browser", "HistoryService::AddContentAnnotationsForVisit");
+  DCHECK(backend_task_runner_) << "History service being called after cleanup";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ScheduleTask(PRIORITY_NORMAL,
+               base::BindOnce(&HistoryBackend::AddContentAnnotationsForVisit,
+                              history_backend_, visit_id, content_annotations));
+}
+#endif
+
 void HistoryService::AddPageWithDetails(const GURL& url,
                                         const std::u16string& title,
                                         int visit_count,

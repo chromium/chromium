@@ -36,6 +36,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/keyword_id.h"
 #include "components/history/core/browser/visit_tracker.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "sql/init_status.h"
 
 class SkBitmap;
@@ -243,6 +244,11 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
                              const GURL& url,
                              base::Time end_ts);
   void SetFlocAllowed(ContextID context_id, int nav_entry_id, const GURL& url);
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  void AddContentAnnotationsForVisit(
+      VisitID visit_id,
+      const VisitContentAnnotations& content_annotations);
+#endif
 
   // Querying ------------------------------------------------------------------
 

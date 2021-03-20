@@ -364,4 +364,33 @@ DeletionInfo::DeletionInfo(DeletionInfo&& other) noexcept = default;
 
 DeletionInfo& DeletionInfo::operator=(DeletionInfo&& rhs) noexcept = default;
 
+// Annotations
+// ----------------------------------------------------------
+
+VisitContentAnnotations::Category::Category(int id, int weight)
+    : id(id), weight(weight) {}
+VisitContentAnnotations::Category::Category() = default;
+
+bool VisitContentAnnotations::Category::operator==(
+    const VisitContentAnnotations::Category& other) const {
+  return id == other.id && weight == other.weight;
+}
+
+bool VisitContentAnnotations::Category::operator!=(
+    const VisitContentAnnotations::Category& other) const {
+  return !(*this == other);
+}
+
+VisitContentAnnotations::VisitContentAnnotations(
+    float floc_protected_score,
+    const std::vector<Category>& categories,
+    int64_t page_topics_model_version)
+    : floc_protected_score(floc_protected_score),
+      categories(categories),
+      page_topics_model_version(page_topics_model_version) {}
+VisitContentAnnotations::VisitContentAnnotations() = default;
+VisitContentAnnotations::VisitContentAnnotations(
+    const VisitContentAnnotations&) = default;
+VisitContentAnnotations::~VisitContentAnnotations() = default;
+
 }  // namespace history
