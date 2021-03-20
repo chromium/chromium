@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/string_conversions_util.h"
 #include "components/autofill_assistant/browser/top_padding.h"
@@ -1628,7 +1629,14 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
   // mover roughly to the center.
 }
 
-IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, TapElement) {
+#if defined(OS_ANDROID)
+#define MAYBE_TapElement DISABLED_TapElement
+#else
+#define MAYBE_TapElement TapElement
+#endif
+
+// https://crbug.com/1190377 Disabled due to flakiness.
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, MAYBE_TapElement) {
   Selector area_two({"#touch_area_two"});
   ClickOrTapElement(area_two, ClickType::TAP);
   WaitForElementRemove(area_two);
