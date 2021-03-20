@@ -58,7 +58,7 @@ class MockDedicatedWorker
           receiver_.BindNewPipeAndPassRemote());
     } else {
       factory_->CreateWorkerHost(
-          blink::DedicatedWorkerToken(),
+          blink::DedicatedWorkerToken(), /*script_url=*/GURL(),
           browser_interface_broker_.BindNewPipeAndPassReceiver(),
           remote_host_.BindNewPipeAndPassReceiver(), base::DoNothing());
     }

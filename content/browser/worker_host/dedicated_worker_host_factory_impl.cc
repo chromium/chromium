@@ -62,6 +62,7 @@ DedicatedWorkerHostFactoryImpl::~DedicatedWorkerHostFactoryImpl() = default;
 
 void DedicatedWorkerHostFactoryImpl::CreateWorkerHost(
     const blink::DedicatedWorkerToken& token,
+    const GURL& script_url,
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> broker_receiver,
     mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host_receiver,
     base::OnceCallback<void(const network::CrossOriginEmbedderPolicy&)>
@@ -101,6 +102,7 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHost(
       isolation_info_, cross_origin_embedder_policy_, std::move(coep_reporter),
       std::move(host_receiver));
   host->BindBrowserInterfaceBrokerReceiver(std::move(broker_receiver));
+  host->MaybeCountWebFeature(script_url);
 }
 
 // PlzDedicatedWorker:

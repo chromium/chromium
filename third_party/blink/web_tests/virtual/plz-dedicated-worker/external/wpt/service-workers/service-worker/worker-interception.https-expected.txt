@@ -1,5 +1,6 @@
 This is a testharness.js-based test.
 PASS Verify a dedicated worker script request issued from a uncontrolled document is intercepted by worker's own service worker.
+PASS Verify an out-of-scope dedicated worker script request issued from a controlled document should not be intercepted by document's service worker.
 PASS Verify a shared worker script request issued from a uncontrolled document is intercepted by worker's own service worker.
 PASS Verify a same-origin worker script served by a service worker succeeds in starting a dedicated worker.
 PASS Verify a same-origin worker script served by a service worker succeeds in starting a shared worker.

@@ -37,6 +37,7 @@ DedicatedWorkerHostFactoryClient::~DedicatedWorkerHostFactoryClient() = default;
 
 void DedicatedWorkerHostFactoryClient::CreateWorkerHostDeprecated(
     const blink::DedicatedWorkerToken& dedicated_worker_token,
+    const blink::WebURL& script_url,
     base::OnceCallback<void(const network::CrossOriginEmbedderPolicy&)>
         callback) {
   DCHECK(!base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
@@ -44,7 +45,7 @@ void DedicatedWorkerHostFactoryClient::CreateWorkerHostDeprecated(
       browser_interface_broker;
   mojo::PendingRemote<blink::mojom::DedicatedWorkerHost> dedicated_worker_host;
   factory_->CreateWorkerHost(
-      dedicated_worker_token,
+      dedicated_worker_token, script_url,
       browser_interface_broker.InitWithNewPipeAndPassReceiver(),
       dedicated_worker_host.InitWithNewPipeAndPassReceiver(),
       std::move(callback));

@@ -3166,6 +3166,7 @@ enum WebFeature {
   kV8Navigator_LeaveAdInterestGroup_Method = 3856,
   kV8Navigator_RunAdAuction_Method = 3857,
   kXHRJSONEncodingDetection = 3858,
+  kWorkerControlledByServiceWorkerOutOfScope = 3859,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

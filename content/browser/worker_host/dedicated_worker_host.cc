@@ -34,6 +34,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
 
@@ -627,6 +628,31 @@ void DedicatedWorkerHost::UpdateSubresourceLoaderFactories() {
 
   subresource_loader_updater_->UpdateSubresourceLoaderFactories(
       std::move(subresource_loader_factories));
+}
+
+void DedicatedWorkerHost::MaybeCountWebFeature(const GURL& script_url) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(!base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
+
+  RenderFrameHostImpl* ancestor_render_frame_host =
+      RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
+  if (!ancestor_render_frame_host)
+    return;
+
+  base::WeakPtr<ServiceWorkerContainerHost> container_host =
+      ancestor_render_frame_host->GetLastCommittedServiceWorkerHost();
+  if (!container_host)
+    return;
+
+  // Count the number of dedicated workers that are controlled by the service
+  // worker that is inherited from a controlled document, and will not be
+  // controlled after PlzDedicatedWorker is enabled.
+  if (container_host->controller_registration() &&
+      !blink::ServiceWorkerScopeMatches(
+          container_host->controller_registration()->scope(), script_url)) {
+    container_host->CountFeature(
+        blink::mojom::WebFeature::kWorkerControlledByServiceWorkerOutOfScope);
+  }
 }
 
 }  // namespace content

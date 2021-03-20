@@ -40,6 +40,7 @@ class WebDedicatedWorkerHostFactoryClient {
   // enabled by default.
   virtual void CreateWorkerHostDeprecated(
       const DedicatedWorkerToken& dedicated_worker_token,
+      const blink::WebURL& script_url,
       base::OnceCallback<void(const network::CrossOriginEmbedderPolicy&)>
           callback) = 0;
   // For PlzDedicatedWorker.

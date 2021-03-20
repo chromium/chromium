@@ -113,6 +113,10 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
 
   void ReportNoBinderForInterface(const std::string& error);
 
+  // TODO(crbug.com/906991): Remove this method once PlzDedicatedWorker is
+  // enabled by default.
+  void MaybeCountWebFeature(const GURL& script_url);
+
   const net::NetworkIsolationKey& GetNetworkIsolationKey() const {
     return isolation_info_.network_isolation_key();
   }

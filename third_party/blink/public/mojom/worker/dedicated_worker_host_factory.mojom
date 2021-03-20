@@ -71,14 +71,17 @@ interface DedicatedWorkerHostFactoryClient {
 // An interface used to instantiate a dedicated worker host. The implementation
 // of this interface lives in the browser process.
 interface DedicatedWorkerHostFactory {
+  // TODO(crbug.com/906991): Remove this after PlzDedicatedWorker ships.
   // Non-PlzDedicatedWorker:
   // The factory client should call this instead of
   // CreateWorkerHostAndStartScriptLoad() when PlzDedicatedWorker is disabled.
   //
-  // Creates a new DedicatedWorkerHost, and requests |browser_interface_broker|
+  // Creates a new DedicatedWorkerHost, and requests `browser_interface_broker`
   // to provide the worker access to mojo interfaces.
+  // `script_url` is used only for UMA purposes.
   CreateWorkerHost(
       blink.mojom.DedicatedWorkerToken token,
+      url.mojom.Url script_url,
       pending_receiver<blink.mojom.BrowserInterfaceBroker>
           browser_interface_broker,
       pending_receiver<DedicatedWorkerHost> host) =>
@@ -89,10 +92,10 @@ interface DedicatedWorkerHostFactory {
   // PlzDedicatedWorker is enabled.
   //
   // Creates a new DedicatedWorkerHost, and requests to start top-level worker
-  // script loading for |script_url| using |credentials_mode| and
-  // |outside_fetch_client_settings_object|.
-  // |blob_url_token| should be non-null when |script_url| is a blob URL.
-  // |client| is used for notifying the renderer process of results of worker
+  // script loading for `script_url` using `credentials_mode` and
+  // `outside_fetch_client_settings_object`.
+  // `blob_url_token` should be non-null when `script_url` is a blob URL.
+  // `client` is used for notifying the renderer process of results of worker
   // host creation and script loading.
   CreateWorkerHostAndStartScriptLoad(
       blink.mojom.DedicatedWorkerToken token,
