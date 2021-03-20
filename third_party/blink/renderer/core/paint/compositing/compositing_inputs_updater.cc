@@ -64,17 +64,14 @@ void CompositingInputsUpdater::Update() {
     return;
   }
 
-  CompositingReasons initial_compositing_reasons =
-      layer->DirectCompositingReasons();
   ApplyAncestorInfoToSelfAndAncestorsRecursively(layer, update_type, info);
   UpdateSelfAndDescendantsRecursively(layer, update_type, info);
 
-  // The layer has changed from non-compositing to compositing
-  if (initial_compositing_reasons == CompositingReason::kNone &&
-      LayerOrDescendantShouldBeComposited(layer)) {
+  if (LayerOrDescendantShouldBeComposited(layer)) {
     // Update all parent layers
     PaintLayer* parent_layer = layer->Parent();
-    while (parent_layer) {
+    while (parent_layer &&
+           !parent_layer->DescendantHasDirectOrScrollingCompositingReason()) {
       parent_layer->SetDescendantHasDirectOrScrollingCompositingReason(true);
       parent_layer = parent_layer->Parent();
     }
