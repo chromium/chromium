@@ -190,11 +190,12 @@ bool IsForcedColorsEnabled() {
   return forced_colors_enabled;
 }
 
-// Enables the eye-dropper in the refresh color-picker for Windows and Mac.
-// This feature will be released for other platforms in later milestones.
+// Enables the eye-dropper in the refresh color-picker for Windows, Mac
+// and Linux. This feature will be released for other platforms in later
+// milestones.
 const base::Feature kEyeDropper {
   "EyeDropper",
-#if defined(OS_WIN) || defined(OS_MAC)
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
