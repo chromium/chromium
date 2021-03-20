@@ -7,6 +7,10 @@
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
 #include "chrome/browser/reputation/local_heuristics.h"
 
+#include "base/metrics/field_trial_params.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/common/chrome_features.h"
+#include "components/security_state/core/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -181,5 +185,46 @@ TEST(SafetyTipHeuristicsTest, SensitiveKeywordsTest) {
         << "Expected that \"" << test_case.url << "\" would"
         << (test_case.should_trigger ? "" : "n't") << " trigger but it did"
         << (test_case.should_trigger ? "n't" : "");
+  }
+}
+
+TEST(SafetyTipHeuristicsTest, ShouldTriggerSafetyTipFromLookalike) {
+  base::FieldTrialParams params;
+  params["editdistance"] = "true";
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeatureWithParameters(
+      security_state::features::kSafetyTipUI, params);
+
+  struct TestCase {
+    GURL navigated_url;
+    GURL engaged_url;
+    GURL expected_safe_url;
+  } kTestCases[] = {
+      // Top domain matches should have https:// scheme for safe URLs.
+      {GURL("https://gooogle.com"), GURL(), GURL("https://google.com")},
+      {GURL("http://gooogle.com"), GURL(), GURL("https://google.com")},
+
+      // Engaged site matches should use the scheme of the lookalike URL for
+      // safe URLs.
+      {GURL("http://teestsite.com"), GURL("https://testsite.com"),
+       GURL("http://testsite.com")},
+      {GURL("http://teestsite.com"), GURL("http://testsite.com"),
+       GURL("http://testsite.com")},
+      {GURL("https://teestsite.com"), GURL("https://testsite.com"),
+       GURL("https://testsite.com")},
+      {GURL("https://teestsite.com"), GURL("http://testsite.com"),
+       GURL("https://testsite.com")},
+  };
+
+  for (const TestCase& test_case : kTestCases) {
+    std::vector<DomainInfo> engaged_sites;
+    if (test_case.engaged_url.is_valid()) {
+      engaged_sites.push_back(GetDomainInfo(test_case.engaged_url));
+    }
+    GURL safe_url;
+    EXPECT_TRUE(ShouldTriggerSafetyTipFromLookalike(
+        test_case.navigated_url, GetDomainInfo(test_case.navigated_url),
+        engaged_sites, &safe_url));
+    EXPECT_EQ(test_case.expected_safe_url, safe_url);
   }
 }
