@@ -89,6 +89,27 @@ UserActionMonitor = class {
     return expectedAction.shouldPropagate;
   }
 
+  /**
+   * Returns true if the gesture should be allowed to propagate, false
+   * otherwise.
+   * @param {string} actualGesture
+   * @return {boolean}
+   */
+  onGesture(actualGesture) {
+    const expectedAction = this.getExpectedAction_();
+    if (expectedAction.type !== ActionType.GESTURE) {
+      return false;
+    }
+
+    const expectedGesture = expectedAction.value;
+    if (expectedGesture !== actualGesture) {
+      return false;
+    }
+
+    this.expectedActionMatched_();
+    return expectedAction.shouldPropagate;
+  }
+
   // Private methods.
 
   /** @private */

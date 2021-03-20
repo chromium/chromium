@@ -8,6 +8,7 @@
 
 goog.provide('GestureCommandHandler');
 
+goog.require('ChromeVoxState');
 goog.require('CommandHandler');
 goog.require('EventGenerator');
 goog.require('EventSourceState');
@@ -45,6 +46,14 @@ GestureCommandHandler.onAccessibilityGesture_ = function(gesture, x, y) {
   }
 
   EventSourceState.set(EventSourceType.TOUCH_GESTURE);
+
+  const chromeVoxState = ChromeVoxState.instance;
+  const monitor = chromeVoxState ? chromeVoxState.getUserActionMonitor() : null;
+  if (monitor && !monitor.onGesture(gesture)) {
+    // UserActionMonitor returns true if this gesture should propagate.
+    // Prevent this gesture from propagating if it returns false.
+    return;
+  }
 
   if (gesture === chrome.accessibilityPrivate.Gesture.TOUCH_EXPLORE) {
     GestureCommandHandler.pointerHandler_.onTouchMove(x, y);
