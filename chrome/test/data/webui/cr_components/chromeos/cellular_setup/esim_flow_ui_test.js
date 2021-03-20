@@ -17,6 +17,7 @@
 // #import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.m.js';
 // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 // #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
+// #import {LoadingPageState} from 'chrome://resources/cr_components/chromeos/cellular_setup/setup_loading_page.m.js';
 // clang-format on
 
 suite('CrComponentsEsimFlowUiTest', function() {
@@ -678,4 +679,30 @@ suite('CrComponentsEsimFlowUiTest', function() {
       endFlowAndVerifyResult(ESimSetupFlowResult.NO_NETWORK);
     });
   });
+
+  test(
+      'Show cellular disconnect warning if connected to pSIM network',
+      async function() {
+        const pSimNetwork = OncMojo.getDefaultNetworkState(
+            chromeos.networkConfig.mojom.NetworkType.kCellular, 'cellular');
+        pSimNetwork.connectionState =
+            chromeos.networkConfig.mojom.ConnectionStateType.kConnected;
+        networkConfigRemote.addNetworksForTest([pSimNetwork]);
+        network_config.MojoInterfaceProviderImpl.getInstance().remote_ =
+            networkConfigRemote;
+        await flushAsync();
+
+        assertEquals(
+            profileLoadingPage.state,
+            LoadingPageState.CELLULAR_DISCONNECT_WARNING);
+
+        // Disconnect from the network.
+        networkConfigRemote.removeNetworkForTest(pSimNetwork);
+        await flushAsync();
+
+        // The warning should still be showing.
+        assertEquals(
+            profileLoadingPage.state,
+            LoadingPageState.CELLULAR_DISCONNECT_WARNING);
+      });
 });

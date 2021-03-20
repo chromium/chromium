@@ -124,7 +124,7 @@ cr.define('cellular_setup', function() {
       },
 
       /** @private */
-      hasActivePSimNetwork_: {
+      hasHadActivePSimNetwork_: {
         type: Boolean,
         value: false,
       },
@@ -562,7 +562,12 @@ cr.define('cellular_setup', function() {
     /** NetworkListenerBehavior override */
     onNetworkStateListChanged() {
       hasActivePSimNetwork().then((hasActive) => {
-        this.hasActivePSimNetwork_ = hasActive;
+        // If hasHadActivePSimNetwork_ has been set to true, don't set to false
+        // again as we should show the cellular disconnect warning for the
+        // duration of the flow's lifecycle.
+        if (hasActive) {
+          this.hasHadActivePSimNetwork_ = hasActive;
+        }
       });
     },
 
