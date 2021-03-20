@@ -35,20 +35,10 @@
 namespace chromeos {
 
 const char DemoAppLauncher::kDemoAppId[] = "klimoghijjogocdbaikffefjfcfheiel";
-const base::FilePath::CharType kDefaultDemoAppPath[] =
-    FILE_PATH_LITERAL("/usr/share/chromeos-assets/demo_app");
 
-// static
-base::FilePath* DemoAppLauncher::demo_app_path_ = NULL;
+DemoAppLauncher::DemoAppLauncher() {}
 
-DemoAppLauncher::DemoAppLauncher() {
-  if (!demo_app_path_)
-    demo_app_path_ = new base::FilePath(kDefaultDemoAppPath);
-}
-
-DemoAppLauncher::~DemoAppLauncher() {
-  delete demo_app_path_;
-}
+DemoAppLauncher::~DemoAppLauncher() {}
 
 void DemoAppLauncher::StartDemoAppLaunch() {
   DVLOG(1) << "Launching demo app...";
@@ -63,53 +53,7 @@ bool DemoAppLauncher::IsDemoAppSession(const AccountId& account_id) {
   return account_id == user_manager::DemoAccountId();
 }
 
-// static
-void DemoAppLauncher::SetDemoAppPathForTesting(const base::FilePath& path) {
-  delete demo_app_path_;
-  demo_app_path_ = new base::FilePath(path);
-}
-
-void DemoAppLauncher::OnProfileLoaded(Profile* profile) {
-  DVLOG(1) << "Profile loaded... Starting demo app launch.";
-
-  kiosk_profile_loader_.reset();
-
-  // Load our demo app, then launch it.
-  extensions::ExtensionService* extension_service =
-      extensions::ExtensionSystem::Get(profile)->extension_service();
-  CHECK(demo_app_path_);
-  const std::string extension_id = extension_service->component_loader()->Add(
-      IDR_DEMO_APP_MANIFEST, *demo_app_path_);
-
-  extensions::ExtensionRegistry* extension_registry =
-      extensions::ExtensionRegistry::Get(profile);
-  const extensions::Extension* extension =
-      extension_registry->enabled_extensions().GetByID(extension_id);
-  if (!extension) {
-    // We've already done too much setup at this point to just return out, it
-    // is safer to just restart.
-    chrome::AttemptUserExit();
-    return;
-  }
-
-  // Disable network before launching the app.
-  LOG(WARNING) << "Disabling network before launching demo app..";
-  NetworkHandler::Get()->network_state_handler()->SetTechnologyEnabled(
-      NetworkTypePattern::Physical(), false,
-      chromeos::network_handler::ErrorCallback());
-
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->BrowserAppLauncher()
-      ->LaunchAppWithParams(apps::AppLaunchParams(
-          extension_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
-          WindowOpenDisposition::NEW_WINDOW,
-          apps::mojom::AppLaunchSource::kSourceChromeInternal, true));
-  KioskAppManager::Get()->InitSession(profile, extension_id);
-
-  session_manager::SessionManager::Get()->SessionStarted();
-
-  LoginDisplayHost::default_host()->Finalize(base::OnceClosure());
-}
+void DemoAppLauncher::OnProfileLoaded(Profile* profile) {}
 
 void DemoAppLauncher::OnProfileLoadFailed(KioskAppLaunchError::Error error) {
   LOG(ERROR) << "Loading the Kiosk Profile failed: "

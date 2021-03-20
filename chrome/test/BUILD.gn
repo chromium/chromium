@@ -2476,7 +2476,6 @@ if (!is_android) {
         "../browser/ash/login/configuration_based_oobe_browsertest.cc",
         "../browser/ash/login/crash_restore_browsertest.cc",
         "../browser/ash/login/debug_overlay_browsertest.cc",
-        "../browser/ash/login/demo_mode/demo_app_launcher_browsertest.cc",
         "../browser/ash/login/demo_mode/demo_session_browsertest.cc",
         "../browser/ash/login/demo_mode/demo_setup_browsertest.cc",
         "../browser/ash/login/demo_mode/demo_setup_test_utils.cc",
