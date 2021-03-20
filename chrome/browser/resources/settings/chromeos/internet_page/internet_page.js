@@ -138,6 +138,12 @@ Polymer({
     },
 
     /** @private {boolean} */
+    isConnectedToNonCellularNetwork_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @private {boolean} */
     showESimProfileRenameDialog_: {
       type: Boolean,
       value: false,
@@ -323,6 +329,9 @@ Polymer({
     hasActivePSimNetwork().then((hasActive) => {
       this.hasActivePSimNetwork_ = hasActive;
     });
+    isConnectedToNonCellularNetwork().then((isConnected) => {
+      this.isConnectedToNonCellularNetwork_ = isConnected;
+    });
   },
 
   onVpnProvidersChanged() {
@@ -368,8 +377,12 @@ Polymer({
    * @private
    */
   onShowCellularSetupDialog_(event) {
-    this.showCellularSetupDialog_ = true;
-    this.cellularSetupDialogPageName_ = event.detail.pageName;
+    if (this.isConnectedToNonCellularNetwork_) {
+      this.showCellularSetupDialog_ = true;
+      this.cellularSetupDialogPageName_ = event.detail.pageName;
+    } else {
+      this.$.errorToast.show();
+    }
   },
 
   /** @private */

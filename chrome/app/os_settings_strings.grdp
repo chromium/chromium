@@ -2480,6 +2480,9 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_SHOW_EID_POPUP_BUTTON_LABEL" desc="A11y and tooltop label for EID and QR code popup show button when viewing cellular network list">
     Show device EID and QR code popup
   </message>
+  <message name="IDS_SETTINGS_INTERNET_ESIM_NO_CONNECTION_ERROR_TOAST" desc="Message in toast displayed when user tries to perform an eSIM operation when not connected to a non-cellular network.">
+    Establish an internet connection first
+  </message>
 
   <!-- Users Page (OS Settings) -->
   <message name="IDS_SETTINGS_USERS_MODIFIED_BY_OWNER_LABEL" desc="Label saying settings may only be modified by the device owner.">

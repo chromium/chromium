@@ -700,6 +700,8 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"cellularNetworkTetherLabel", IDS_SETTINGS_INTERNET_TETHER_LABEL},
       {"showEidPopupButtonLabel",
        IDS_SETTINGS_INTERNET_SHOW_EID_POPUP_BUTTON_LABEL},
+      {"eSimNoConnectionErrorToast",
+       IDS_SETTINGS_INTERNET_ESIM_NO_CONNECTION_ERROR_TOAST},
       {"eSimInstallErrorDialogTitle",
        IDS_SETTINGS_INTERNET_NETWORK_INSTALL_ERROR_DIALOG_TITLE},
       {"eSimInstallErrorDialogConfirmationCodeMessage",
