@@ -24,7 +24,7 @@ Prerequisite:
             ```
             -Xss2m
             -Xms1g
-            -Xmx10g
+            -Xmx15g
             ...
             ```
         1. (Optional) Setup `Edit Custom Properties`:
@@ -43,16 +43,18 @@ Prerequisite:
       directory; this should be the parent directory to `src`. Selecting `src`
       instead would result in some CLion IDE files appearing in your repository.
 1. (Optional) Modify the `CMakeLists.txt` file
-    1. Open the `CMakeLists.txt` file
+    1. Open the `CMakeLists.txt` file.
     1. Replace the `include_directories` with the following. This will help
        with navigating between files.
        ```
        include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
+       include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/out/Default/gen)
+       include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/third_party/googletest/src/googletest/include)
        ```
-    1. (Optional) Replace the `add_executable` files to include a single file.
-       Doing this might improve CLion performance. Leaving at least 1 file is
-       required in order for CLion to provide code completion, navigation, etc.
-       The file should now look like:
+    1. (Optional) Replace the `add_executable` files to include a single file;
+       the file used is irrelevant. Doing this might improve CLion performance.
+       Leaving at least 1 file is required in order for CLion to provide code
+       completion, navigation, etc. The file should now look like:
        ```
        cmake_minimum_required(VERSION 3.10)
        project(chromium)
@@ -60,6 +62,8 @@ Prerequisite:
        set(CMAKE_CXX_STANDARD 14)
 
        include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
+       include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/out/Default/gen)
+       include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/third_party/googletest/src/googletest/include)
 
        add_executable(chromium src/components/omnibox/browser/document_provider.cc)
        ```
