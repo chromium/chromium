@@ -183,7 +183,7 @@ class CORE_EXPORT LayoutShiftTracker final
 
   Member<LocalFrameView> frame_view_;
   bool is_active_;
-  bool enable_m91_improvements_;
+  bool enable_m90_improvements_;
 
   // The document cumulative layout shift (DCLS) score for this LocalFrame,
   // unweighted, with move distance applied.
@@ -228,7 +228,7 @@ class CORE_EXPORT LayoutShiftTracker final
   float overall_max_distance_;
 
   // Sum of all scroll deltas that occurred in the current animation frame.
-  // TODO(wangxianzhu): Remove when enabling CLSM91Improvements permanently.
+  // TODO(wangxianzhu): Remove when enabling CLSM90Improvements permanently.
   ScrollOffset frame_scroll_delta_;
 
   // Whether either a user input or document scroll have been observed during
