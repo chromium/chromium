@@ -15,12 +15,12 @@
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_profile_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
+#include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/fake_network_connection_handler.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_device_handler.h"
 #include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/test_cellular_inhibitor.h"
 #include "dbus/object_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -62,7 +62,7 @@ class CellularESimUninstallHandlerTest : public testing::Test {
             network_state_handler_.get(), network_device_handler_.get()));
     network_connection_handler_ =
         std::make_unique<FakeNetworkConnectionHandler>();
-    cellular_inhibitor_ = std::make_unique<TestCellularInhibitor>();
+    cellular_inhibitor_ = std::make_unique<CellularInhibitor>();
     cellular_inhibitor_->Init(network_state_handler_.get(),
                               network_device_handler_.get());
 

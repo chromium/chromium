@@ -56,6 +56,7 @@ class CellularInhibitorTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
+    helper_.device_test()->SetSimulateUninhibitScanning(false);
     helper_.device_test()->ClearDevices();
     cellular_inhibitor_.Init(helper_.network_state_handler(),
                              helper_.network_device_handler());

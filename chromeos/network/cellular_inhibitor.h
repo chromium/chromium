@@ -126,9 +126,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularInhibitor
 
   void CheckScanningIfNeeded();
   void CheckForScanningStarted();
-  virtual bool HasScanningStarted();
+  bool HasScanningStarted();
   void CheckForScanningStopped();
-  virtual bool HasScanningStopped();
+  bool HasScanningStopped();
 
   void PopRequestAndProcessNext();
 

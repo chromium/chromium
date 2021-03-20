@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/shill/fake_shill_device_client.h"
 #include "chromeos/login/login_state/login_state.h"
+#include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_certificate_handler.h"
@@ -30,7 +31,6 @@
 #include "chromeos/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/network/system_token_cert_db_storage.h"
 #include "chromeos/network/test_cellular_esim_profile_handler.h"
-#include "chromeos/network/test_cellular_inhibitor.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_observer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-shared.h"
 #include "components/onc/onc_constants.h"
@@ -103,7 +103,7 @@ class CrosNetworkConfigTest : public testing::Test {
             helper_.network_state_handler(), network_profile_handler_.get(),
             network_device_handler_.get(), network_configuration_handler_.get(),
             ui_proxy_config_service_.get());
-    cellular_inhibitor_ = std::make_unique<TestCellularInhibitor>();
+    cellular_inhibitor_ = std::make_unique<CellularInhibitor>();
     cellular_inhibitor_->Init(helper_.network_state_handler(),
                               network_device_handler_.get());
     cellular_esim_profile_handler_ =
@@ -582,7 +582,7 @@ class CrosNetworkConfigTest : public testing::Test {
   std::unique_ptr<NetworkConfigurationHandler> network_configuration_handler_;
   std::unique_ptr<ManagedNetworkConfigurationHandler>
       managed_network_configuration_handler_;
-  std::unique_ptr<TestCellularInhibitor> cellular_inhibitor_;
+  std::unique_ptr<CellularInhibitor> cellular_inhibitor_;
   std::unique_ptr<TestCellularESimProfileHandler>
       cellular_esim_profile_handler_;
   std::unique_ptr<NetworkConnectionHandler> network_connection_handler_;
