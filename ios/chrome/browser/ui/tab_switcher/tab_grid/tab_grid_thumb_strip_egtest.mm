@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -24,6 +25,8 @@
 
 using chrome_test_util::ContentSuggestionCollectionView;
 using chrome_test_util::PrimaryToolbar;
+using chrome_test_util::RegularTabGrid;
+using chrome_test_util::TabGridBackground;
 using chrome_test_util::TabGridDoneButton;
 using chrome_test_util::TabGridOtherDevicesPanelButton;
 using chrome_test_util::TabGridOpenTabsPanelButton;
@@ -175,6 +178,63 @@ id<GREYMatcher> cellWithLabel(NSString* label) {
                                               @"ThumbStripPlusSignButton"),
                                           nil)]
       assertWithMatcher:grey_minimumVisiblePercent(.1)];
+}
+
+- (void)testTappingBackgroundClosesThumbStrip {
+  // The feature only works on iPad.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Thumb strip is not enabled on iPhone");
+  }
+
+  // See crbug.com/1143299.
+  if (!base::ios::IsRunningOnIOS13OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iOS 12 devices.");
+  }
+
+  [self setUpTestServer];
+
+  const GURL URL = self.testServer->GetURL("/querytitle?Tab1");
+
+  // A relative X-position in a view far to the trailing side.
+  CGFloat trailingPercentage = [ChromeEarlGrey isRTL] ? 0.02 : 0.98;
+  // A relative X-position in a view far to the leading side.
+  CGFloat leadingPercentage = 1 - trailingPercentage;
+
+  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey waitForWebStateContainingText:"Tab1"];
+
+  // Swipe down to reveal the thumb strip.
+  [[EarlGrey selectElementWithMatcher:PrimaryToolbar()]
+      performAction:grey_swipeSlowInDirection(kGREYDirectionDown)];
+
+  // Make sure that the entire tab thumbnail is fully visible and not covered.
+  // This acts as a good proxy to the entire thumbstrip being visible.
+  [[EarlGrey selectElementWithMatcher:cellWithLabel(@"Tab1")]
+      assertWithMatcher:grey_minimumVisiblePercent(1)];
+
+  // Tap the background, vertically close to the top and at the far leading
+  // edge. (This should do nothing).
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(TabGridBackground(),
+                                          grey_ancestor(RegularTabGrid()), nil)]
+      performAction:chrome_test_util::TapAtPointPercentage(leadingPercentage,
+                                                           0.05)];
+
+  // Check that the grid is still visible
+  [[EarlGrey selectElementWithMatcher:cellWithLabel(@"Tab1")]
+      assertWithMatcher:grey_minimumVisiblePercent(1)];
+
+  // Now tap the background again at the far trailing edge. This should dismiss
+  // the thumb strip.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(TabGridBackground(),
+                                          grey_ancestor(RegularTabGrid()), nil)]
+      performAction:chrome_test_util::TapAtPointPercentage(trailingPercentage,
+                                                           0.05)];
+
+  // Check that the thumb strip is indeed dismissed.
+  [[EarlGrey selectElementWithMatcher:cellWithLabel(@"Tab1")]
+      assertWithMatcher:grey_notVisible()];
 }
 
 // After scrolling the thumb strip so the currently selected tab is offscreen,

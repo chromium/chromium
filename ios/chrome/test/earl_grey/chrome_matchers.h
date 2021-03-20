@@ -439,6 +439,15 @@ id<GREYMatcher> TabGridIncognitoTabsPanelButton();
 // the tab grid.
 id<GREYMatcher> TabGridOtherDevicesPanelButton();
 
+// Returns the GREYMatcher for the tab grid background.
+id<GREYMatcher> TabGridBackground();
+
+// Returns the GREYMatcher for the regular tab grid.
+id<GREYMatcher> RegularTabGrid();
+
+// Returns the GREYMatcher for the incognito tab grid.
+id<GREYMatcher> IncognitoTabGrid();
+
 // Returns the GREYMatcher for the button to close the cell at |index| in the
 // tab grid.
 id<GREYMatcher> TabGridCloseButtonForCellAtIndex(unsigned int index);

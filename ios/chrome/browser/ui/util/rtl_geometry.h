@@ -193,4 +193,11 @@ UIEdgeInsets UIEdgeInsetsMakeDirected(CGFloat top,
 CGFloat UIEdgeInsetsGetLeading(UIEdgeInsets insets);
 CGFloat UIEdgeInsetsGetTrailing(UIEdgeInsets insets);
 
+// Utilities for testing RTL-dependent relations.
+
+// YES if |a| is to the leading side of |b| given |direction|.
+BOOL EdgeLeadsEdge(CGFloat a, CGFloat b, base::i18n::TextDirection direction);
+// As above, |direction| == LayoutDirection().
+BOOL EdgeLeadsEdge(CGFloat a, CGFloat b);
+
 #endif  // IOS_CHROME_BROWSER_UI_UTIL_RTL_GEOMETRY_H_

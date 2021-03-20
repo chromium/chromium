@@ -549,6 +549,18 @@ id<GREYMatcher> TabGridOtherDevicesPanelButton() {
   return [ChromeMatchersAppInterface tabGridOtherDevicesPanelButton];
 }
 
+id<GREYMatcher> TabGridBackground() {
+  return [ChromeMatchersAppInterface tabGridBackground];
+}
+
+id<GREYMatcher> RegularTabGrid() {
+  return [ChromeMatchersAppInterface regularTabGrid];
+}
+
+id<GREYMatcher> IncognitoTabGrid() {
+  return [ChromeMatchersAppInterface incognitoTabGrid];
+}
+
 id<GREYMatcher> TabGridCloseButtonForCellAtIndex(unsigned int index) {
   return [ChromeMatchersAppInterface tabGridCloseButtonForCellAtIndex:index];
 }

@@ -89,6 +89,10 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeEarlGreyAppInterface)
   return idiom == UIUserInterfaceIdiomPad;
 }
 
+- (BOOL)isRTL {
+  return [ChromeEarlGreyAppInterface isRTL];
+}
+
 - (BOOL)isCompactWidth {
   UIUserInterfaceSizeClass horizontalSpace =
       [[[[GREY_REMOTE_CLASS_IN_APP(UIApplication) sharedApplication] keyWindow]

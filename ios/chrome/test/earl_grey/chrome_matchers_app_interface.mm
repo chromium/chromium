@@ -855,6 +855,18 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kTabGridRemoteTabsPageButtonIdentifier);
 }
 
++ (id<GREYMatcher>)tabGridBackground {
+  return grey_accessibilityID(kGridBackgroundIdentifier);
+}
+
++ (id<GREYMatcher>)regularTabGrid {
+  return grey_accessibilityID(kRegularTabGridIdentifier);
+}
+
++ (id<GREYMatcher>)incognitoTabGrid {
+  return grey_accessibilityID(kIncognitoTabGridIdentifier);
+}
+
 + (id<GREYMatcher>)tabGridCloseButtonForCellAtIndex:(unsigned int)index {
   return grey_allOf(
       grey_ancestor(grey_accessibilityID(IdentifierForCellAtIndex(index))),

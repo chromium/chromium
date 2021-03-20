@@ -13,6 +13,7 @@
 #include "base/numerics/ranges.h"
 #import "base/numerics/safe_conversions.h"
 #include "ios/chrome/browser/procedural_block_types.h"
+#import "ios/chrome/browser/ui/commands/thumb_strip_commands.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view.h"
@@ -26,7 +27,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/plus_sign_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_transition_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
-#include "ios/chrome/browser/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -97,6 +98,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 @property(nonatomic, strong)
     UICollectionViewTransitionLayout* gridHorizontalTransitionLayout;
 
+// Gesture recognizer to dismiss the thumb strip.
+@property(nonatomic, strong)
+    UITapGestureRecognizer* thumbStripDismissRecognizer;
+
 // YES while batch updates and the batch update completion are being performed.
 @property(nonatomic) BOOL updating;
 
@@ -136,6 +141,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   collectionView.backgroundView = [[UIView alloc] init];
   collectionView.backgroundView.backgroundColor =
       [UIColor colorNamed:kGridBackgroundColor];
+  collectionView.backgroundView.accessibilityIdentifier =
+      kGridBackgroundIdentifier;
 
   // CollectionView, in contrast to TableView, doesn’t inset the
   // cell content to the safe area guide by default. We will just manage the
@@ -572,7 +579,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       self.blockingView.logoView.hidden = YES;
 
       [self.blockingView.authenticateButton
-                 addTarget:self.handler
+                 addTarget:self.reauthHandler
                     action:@selector(authenticateIncognitoContent)
           forControlEvents:UIControlEventTouchUpInside];
     }
@@ -765,18 +772,29 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                     completion:
                         (void (^)(BOOL completed, BOOL finished))completion {
   FlowLayout* nextLayout;
+  BOOL thumbStripDismissEnabled;
   switch (nextState) {
     case LayoutSwitcherState::Horizontal:
       nextLayout = self.horizontalLayout;
+      thumbStripDismissEnabled = YES;
       break;
     case LayoutSwitcherState::Grid:
       nextLayout = self.gridLayout;
+      thumbStripDismissEnabled = NO;
       break;
   }
+
+  // If the dismiss recognizer needs to be disabled, do it now so the user won't
+  // trigger it during the transformation.
+  if (!thumbStripDismissEnabled)
+    self.thumbStripDismissRecognizer.enabled = NO;
+
   __weak __typeof(self) weakSelf = self;
   auto completionBlock = ^(BOOL completed, BOOL finished) {
     weakSelf.collectionView.scrollEnabled = YES;
     weakSelf.currentLayout = nextLayout;
+    if (thumbStripDismissEnabled)
+      self.thumbStripDismissRecognizer.enabled = YES;
     if (completion) {
       completion(completed, finished);
     }
@@ -1051,10 +1069,25 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // Make sure the collection view isn't in the middle of a transition.
   DCHECK(![collectionView.collectionViewLayout
       isKindOfClass:[UICollectionViewTransitionLayout class]]);
+
+  // Install tap gesture recognizer in collection to handle user taps on the
+  // thumb strip background, assuming it hasn't already been installed.
+
+  if (!self.thumbStripDismissRecognizer) {
+    self.thumbStripDismissRecognizer = [[UITapGestureRecognizer alloc]
+        initWithTarget:self
+                action:@selector(handleThumbStripBackgroundTapGesture:)];
+    DCHECK(collectionView.backgroundView);
+    [collectionView.backgroundView
+        addGestureRecognizer:self.thumbStripDismissRecognizer];
+  }
+
   if (panHandler.currentState == ViewRevealState::Revealed) {
+    self.thumbStripDismissRecognizer.enabled = NO;
     collectionView.collectionViewLayout = self.gridLayout;
     self.currentLayout = self.gridLayout;
   } else {
+    self.thumbStripDismissRecognizer.enabled = YES;
     collectionView.collectionViewLayout = self.horizontalLayout;
     self.currentLayout = self.horizontalLayout;
   }
@@ -1073,6 +1106,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // Make sure the collection view isn't in the middle of a transition.
   DCHECK(![collectionView.collectionViewLayout
       isKindOfClass:[UICollectionViewTransitionLayout class]]);
+
+  [collectionView.backgroundView
+      removeGestureRecognizer:self.thumbStripDismissRecognizer];
+  self.thumbStripDismissRecognizer = nil;
+
   collectionView.collectionViewLayout = gridLayout;
   self.currentLayout = gridLayout;
 
@@ -1080,6 +1118,33 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [collectionView reloadData];
 
   _thumbStripEnabled = NO;
+}
+
+#pragma mark-- Thumbstrip tap dismiss handling
+
+- (void)handleThumbStripBackgroundTapGesture:(UIGestureRecognizer*)recognizer {
+  if (recognizer.state != UIGestureRecognizerStateEnded)
+    return;
+
+  UICollectionView* collectionView = self.collectionView;
+  CGPoint tapLocation = [recognizer locationInView:collectionView];
+
+  // Check that the tap wasn't to the leading side of the trailing edge of
+  // the last cell. This should exclude any cells in the collection view as
+  // well as the gaps between them.
+  NSIndexPath* lastCellIndex =
+      CreateIndexPath([collectionView numberOfItemsInSection:0] - 1);
+  UICollectionViewCell* lastCell =
+      [collectionView cellForItemAtIndexPath:lastCellIndex];
+  if (lastCell) {
+    CGRect lastCellFrame = [recognizer.view convertRect:lastCell.bounds
+                                               fromView:lastCell];
+    if (EdgeLeadsEdge(tapLocation.x, CGRectGetTrailingEdge(lastCellFrame)))
+      return;
+  }
+
+  // Handle the tap.
+  [self.thumbStripHandler closeThumbStrip];
 }
 
 @end

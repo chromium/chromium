@@ -20,6 +20,9 @@
 // the app binary and can be called from either app or test code.
 @interface ChromeEarlGreyAppInterface : NSObject
 
+// YES if the current interface language uses RTL layout.
++ (BOOL)isRTL;
+
 // Clears browsing history and waits for history to finish clearing before
 // returning. Returns nil on success, or else an NSError indicating why the
 // operation failed.

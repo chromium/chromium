@@ -520,7 +520,23 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (_reauthHandler == reauthHandler)
     return;
   _reauthHandler = reauthHandler;
-  self.incognitoTabsViewController.handler = self.reauthHandler;
+  self.incognitoTabsViewController.reauthHandler = self.reauthHandler;
+}
+
+- (void)setRegularThumbStripHandler:(id<ThumbStripCommands>)handler {
+  if (_regularThumbStripHandler == handler)
+    return;
+  _regularThumbStripHandler = handler;
+  self.regularTabsViewController.thumbStripHandler =
+      self.regularThumbStripHandler;
+}
+
+- (void)setIncognitoThumbStripHandler:(id<ThumbStripCommands>)handler {
+  if (_incognitoThumbStripHandler == handler)
+    return;
+  _incognitoThumbStripHandler = handler;
+  self.regularTabsViewController.thumbStripHandler =
+      self.incognitoThumbStripHandler;
 }
 
 #pragma mark - TabGridPaging
@@ -947,6 +963,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   UIView* contentView = self.scrollContentView;
   GridViewController* viewController = self.incognitoTabsViewController;
   viewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  viewController.view.accessibilityIdentifier = kIncognitoTabGridIdentifier;
   [self addChildViewController:viewController];
   [contentView addSubview:viewController.view];
   [viewController didMoveToParentViewController:self];
@@ -976,6 +993,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   UIView* contentView = self.scrollContentView;
   GridViewController* viewController = self.regularTabsViewController;
   viewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  viewController.view.accessibilityIdentifier = kRegularTabGridIdentifier;
   [self addChildViewController:viewController];
   [contentView addSubview:viewController.view];
   [viewController didMoveToParentViewController:self];

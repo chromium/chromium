@@ -13,12 +13,13 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_theme.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
 
-@protocol IncognitoReauthCommands;
 @protocol GridDragDropHandler;
 @protocol GridEmptyView;
 @protocol GridImageDataSource;
 @class GridTransitionLayout;
 @class GridViewController;
+@protocol IncognitoReauthCommands;
+@protocol ThumbStripCommands;
 
 // Protocol used to relay relevant user interactions from a grid UI.
 @protocol GridViewControllerDelegate
@@ -74,7 +75,9 @@
 // The visual look of the grid.
 @property(nonatomic, assign) GridTheme theme;
 // Handler for reauth commands.
-@property(nonatomic, weak) id<IncognitoReauthCommands> handler;
+@property(nonatomic, weak) id<IncognitoReauthCommands> reauthHandler;
+// Handler for thumbstrip commands.
+@property(nonatomic, weak) id<ThumbStripCommands> thumbStripHandler;
 // Delegate is informed of user interactions in the grid UI.
 @property(nonatomic, weak) id<GridViewControllerDelegate> delegate;
 // Handles drag and drop interactions that involved the model layer.

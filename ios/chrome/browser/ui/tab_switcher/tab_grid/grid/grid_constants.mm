@@ -15,6 +15,9 @@ NSString* const kGridCellIdentifierPrefix = @"GridCellIdentifierPrefix";
 NSString* const kGridCellCloseButtonIdentifier =
     @"GridCellCloseButtonIdentifier";
 
+// Accessibility identifier for the background of the grid.
+NSString* const kGridBackgroundIdentifier = @"GridBackgroundIdentifier";
+
 // Grid styling.
 NSString* const kGridBackgroundColor = @"grid_background_color";
 

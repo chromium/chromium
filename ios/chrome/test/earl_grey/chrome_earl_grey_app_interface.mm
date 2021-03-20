@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/menu_util.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
+#import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
@@ -97,6 +98,10 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
 }
 
 @implementation ChromeEarlGreyAppInterface
+
++ (BOOL)isRTL {
+  return UseRTLLayout();
+}
 
 + (NSError*)clearBrowsingHistory {
   if (chrome_test_util::ClearBrowsingHistory()) {

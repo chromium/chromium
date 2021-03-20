@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/commands/thumb_strip_commands.h"
 #import "ios/chrome/browser/ui/gestures/view_controller_trait_collection_observer.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/history/history_coordinator.h"
@@ -410,6 +411,11 @@
   thumbStripCoordinator.regularBrowser = self.regularBrowser;
   thumbStripCoordinator.incognitoBrowser = self.incognitoBrowser;
   [thumbStripCoordinator start];
+
+  self.baseViewController.regularThumbStripHandler = HandlerForProtocol(
+      self.regularBrowser->GetCommandDispatcher(), ThumbStripCommands);
+  self.baseViewController.incognitoThumbStripHandler = HandlerForProtocol(
+      self.incognitoBrowser->GetCommandDispatcher(), ThumbStripCommands);
 
   ViewRevealingVerticalPanHandler* panHandler =
       thumbStripCoordinator.panHandler;

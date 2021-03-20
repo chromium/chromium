@@ -14,17 +14,18 @@
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
 
 @protocol ApplicationCommands;
-@protocol IncognitoReauthCommands;
-@protocol IncognitoReauthConsumer;
 @protocol GridConsumer;
 @protocol GridCommands;
 @protocol GridDragDropHandler;
 @protocol GridImageDataSource;
 class GURL;
+@protocol IncognitoReauthCommands;
+@protocol IncognitoReauthConsumer;
 @protocol PopupMenuCommands;
 @protocol RecentTabsConsumer;
 @class RecentTabsTableViewController;
 @class TabGridViewController;
+@protocol ThumbStripCommands;
 @protocol ViewControllerTraitCollectionObserver;
 
 // Configurations for tab grid pages.
@@ -80,6 +81,9 @@ enum class TabGridPageConfiguration {
 // Handlers for popup menu commands for the regular and incognito states.
 @property(nonatomic, weak) id<PopupMenuCommands> regularPopupMenuHandler;
 @property(nonatomic, weak) id<PopupMenuCommands> incognitoPopupMenuHandler;
+// Handlers for thumb strip commands for the regular and incognito states.
+@property(nonatomic, weak) id<ThumbStripCommands> regularThumbStripHandler;
+@property(nonatomic, weak) id<ThumbStripCommands> incognitoThumbStripHandler;
 
 // Delegate for this view controller to handle presenting tab UI.
 @property(nonatomic, weak) id<TabPresentationDelegate> tabPresentationDelegate;
