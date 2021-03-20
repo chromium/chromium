@@ -72,7 +72,7 @@ static void RecordReplayLoadSymbol(void* handle, const char* name, T& function) 
   CastPointer(sym, &function);
 }
 
-static const char* gBuildId = "chromium-experimental";
+static const char* gBuildId = "macOS-chromium-experimental";
 
 static void RecordReplayAttach(int* pargc, char*** pargv) {
   // Only renderer processes are recorded/replayed.

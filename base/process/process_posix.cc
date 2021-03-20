@@ -274,15 +274,14 @@ bool Process::CanBackgroundProcesses() {
 #endif  // !defined(OS_LINUX) && !defined(OS_CHROMEOS) && !defined(OS_MAC) &&
         // !defined(OS_AIX)
 
+extern "C" void V8RecordReplayFinishRecording();
+
 // static
 void Process::TerminateCurrentProcessImmediately(int exit_code) {
 #if BUILDFLAG(CLANG_PROFILING)
   WriteClangProfilingProfile();
 #endif
-  void* ptr = dlsym(RTLD_DEFAULT, "V8RecordReplayFinishRecording");
-  if (ptr) {
-    reinterpret_cast<void (*)()>(ptr)();
-  }
+  V8RecordReplayFinishRecording();
   _exit(exit_code);
 }
 
