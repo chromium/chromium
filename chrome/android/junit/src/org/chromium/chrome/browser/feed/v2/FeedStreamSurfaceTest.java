@@ -156,7 +156,7 @@ public class FeedStreamSurfaceTest {
         Profile.setLastUsedProfileForTesting(mProfileMock);
         mFeedStreamSurface = Mockito.spy(new FeedStreamSurface(mActivity, false, mSnackbarManager,
                 mPageNavigationDelegate, mBottomSheetController, mHelpAndFeedbackLauncherImpl,
-                /* isPlaceholderShown= */ false, mShareHelper));
+                /* isPlaceholderShown= */ false, mShareHelper, null));
         mContentManager = mFeedStreamSurface.getFeedListContentManagerForTesting();
         mFeedStreamSurface.mRootView = Mockito.spy(mFeedStreamSurface.mRootView);
         mRecyclerView = mFeedStreamSurface.mRootView;
