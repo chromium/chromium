@@ -113,6 +113,17 @@ ScriptPromise DeviceService::getDirectoryId(ScriptState* script_state) {
   return promise;
 }
 
+ScriptPromise DeviceService::getHostname(ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  pending_promises_.insert(resolver);
+
+  ScriptPromise promise = resolver->Promise();
+  GetService()->GetHostname(
+      WTF::Bind(&DeviceService::OnAttributeReceived, WrapWeakPersistent(this),
+                WrapPersistent(script_state), WrapPersistent(resolver)));
+  return promise;
+}
+
 ScriptPromise DeviceService::getSerialNumber(ScriptState* script_state) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   pending_promises_.insert(resolver);

@@ -118,6 +118,10 @@ void DeviceServiceImpl::GetDirectoryId(GetDirectoryIdCallback callback) {
   device_attribute_api::GetDirectoryId(std::move(callback));
 }
 
+void DeviceServiceImpl::GetHostname(GetHostnameCallback callback) {
+  device_attribute_api::GetHostname(std::move(callback));
+}
+
 void DeviceServiceImpl::GetSerialNumber(GetSerialNumberCallback callback) {
   device_attribute_api::GetSerialNumber(std::move(callback));
 }

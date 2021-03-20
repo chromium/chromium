@@ -62,6 +62,7 @@ class MODULES_EXPORT DeviceService final
 
   // Device Attributes API:
   ScriptPromise getDirectoryId(ScriptState* script_state);
+  ScriptPromise getHostname(ScriptState* script_state);
   ScriptPromise getSerialNumber(ScriptState* script_state);
   ScriptPromise getAnnotatedAssetId(ScriptState* script_state);
   ScriptPromise getAnnotatedLocation(ScriptState* script_state);

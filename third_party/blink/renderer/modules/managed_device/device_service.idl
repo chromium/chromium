@@ -15,6 +15,7 @@
 
   // Device Attributes API.
   [CallWith=ScriptState] Promise<DOMString> getDirectoryId();
+  [CallWith=ScriptState] Promise<DOMString> getHostname();
   [CallWith=ScriptState] Promise<DOMString> getSerialNumber();
   [CallWith=ScriptState] Promise<DOMString> getAnnotatedAssetId();
   [CallWith=ScriptState] Promise<DOMString> getAnnotatedLocation();

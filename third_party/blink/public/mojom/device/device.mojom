@@ -32,6 +32,11 @@ interface DeviceAPIService {
   // returns nullopt as |attribute|.
   GetDirectoryId() => (DeviceAttributeResult result);
 
+  // Fetches the device's hostname as set by DeviceHostnameTemplate policy.
+  // If the current user is not affiliated or no hostname has been set by the the
+  // enterprise policy, returns nullopt as |attribute|.
+  GetHostname() => (DeviceAttributeResult result);
+
   // Fetches the device's serial number. Please note the purpose of this API is
   // to administrate the device (e.g. generating Certificate Sign Requests for
   // device-wide certificates). If the current user is not affiliated, returns nullopt

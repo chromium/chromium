@@ -39,6 +39,7 @@ class DeviceServiceImpl final
       mojo::PendingRemote<blink::mojom::ManagedConfigurationObserver> observer)
       override;
   void GetDirectoryId(GetDirectoryIdCallback callback) override;
+  void GetHostname(GetHostnameCallback callback) override;
   void GetSerialNumber(GetSerialNumberCallback callback) override;
   void GetAnnotatedAssetId(GetAnnotatedAssetIdCallback callback) override;
   void GetAnnotatedLocation(GetAnnotatedLocationCallback callback) override;

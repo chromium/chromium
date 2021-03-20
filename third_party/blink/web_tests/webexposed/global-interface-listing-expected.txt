@@ -4167,6 +4167,7 @@ interface DeviceService : EventTarget
     method getAnnotatedAssetId
     method getAnnotatedLocation
     method getDirectoryId
+    method getHostname
     method getManagedConfiguration
     method getSerialNumber
     setter onmanagedconfigurationchange

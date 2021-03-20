@@ -12,6 +12,7 @@ using blink::mojom::DeviceAPIService;
 namespace device_attribute_api {
 
 void GetDirectoryId(DeviceAPIService::GetDirectoryIdCallback callback);
+void GetHostname(DeviceAPIService::GetHostnameCallback callback);
 void GetSerialNumber(DeviceAPIService::GetSerialNumberCallback callback);
 void GetAnnotatedAssetId(
     DeviceAPIService::GetAnnotatedAssetIdCallback callback);

@@ -14,6 +14,7 @@ namespace {
 constexpr char kAnnotatedAssetId[] = "annotated_asset_id";
 constexpr char kAnnotatedLocation[] = "annotated_location";
 constexpr char kDirectoryApiId[] = "directory_api_id";
+constexpr char kHostname[] = "hostname";
 constexpr char kSerialNumber[] = "serial_number";
 
 }  // namespace
@@ -55,6 +56,11 @@ IN_PROC_BROWSER_TEST_F(DeviceAttributeAPIUnsetTest, AllAttributes) {
         EXPECT_FALSE(result->get_attribute().has_value());
       }));
 
+  device_attribute_api::GetHostname(
+      base::BindOnce([](blink::mojom::DeviceAttributeResultPtr result) {
+        EXPECT_FALSE(result->get_attribute().has_value());
+      }));
+
   base::RunLoop().RunUntilIdle();
 }
 
@@ -70,6 +76,9 @@ class DeviceAttributeAPITest : public policy::DevicePolicyCrosBrowserTest {
     device_policy()->policy_data().set_annotated_asset_id(kAnnotatedAssetId);
     device_policy()->policy_data().set_annotated_location(kAnnotatedLocation);
     device_policy()->policy_data().set_directory_api_id(kDirectoryApiId);
+    enterprise_management::NetworkHostnameProto* proto =
+        device_policy()->payload().mutable_network_hostname();
+    proto->set_device_hostname_template(kHostname);
     device_policy()->Build();
     RefreshDevicePolicy();
 
@@ -96,6 +105,11 @@ IN_PROC_BROWSER_TEST_F(DeviceAttributeAPITest, AllAttributes) {
   device_attribute_api::GetAnnotatedLocation(
       base::BindOnce([](blink::mojom::DeviceAttributeResultPtr result) {
         EXPECT_EQ(result->get_attribute(), kAnnotatedLocation);
+      }));
+
+  device_attribute_api::GetHostname(
+      base::BindOnce([](blink::mojom::DeviceAttributeResultPtr result) {
+        EXPECT_EQ(result->get_attribute(), kHostname);
       }));
 
   device_attribute_api::GetSerialNumber(
