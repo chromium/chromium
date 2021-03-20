@@ -62,6 +62,10 @@ class URLLoaderFactory : public mojom::URLLoaderFactory {
                                 traffic_annotation) override;
   void Clone(mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) override;
 
+  // Called by URLLoaders created by this factory each time before a request is
+  // sent.
+  void OnBeforeURLRequest();
+
   mojom::DevToolsObserver* GetDevToolsObserver() const;
   mojom::CookieAccessObserver* GetCookieAccessObserver() const;
   mojom::URLLoaderNetworkServiceObserver* GetURLLoaderNetworkServiceObserver()
@@ -72,6 +76,20 @@ class URLLoaderFactory : public mojom::URLLoaderFactory {
   static constexpr int kMaxTotalKeepaliveRequestSize = 512 * 1024;
 
  private:
+  // Starts the timer to call
+  // URLLoaderNetworkServiceObserver::OnLoadingStateUpdate(), if
+  // needed.
+  void MaybeStartUpdateLoadInfoTimer();
+
+  // Invoked once the browser has acknowledged receiving the previous LoadInfo.
+  // Sets |waiting_on_load_state_ack_| to false, and calls
+  // MaybeStartUpdateLoadeInfoTimer.
+  void AckUpdateLoadInfo();
+
+  // Finds the most relevant URLLoader that is outstanding and asks it to
+  // send an update.
+  void UpdateLoadInfo();
+
   // The NetworkContext that indirectly owns |this|.
   NetworkContext* const context_;
   mojom::URLLoaderFactoryParamsPtr params_;
@@ -86,6 +104,9 @@ class URLLoaderFactory : public mojom::URLLoaderFactory {
   mojo::Remote<mojom::URLLoaderNetworkServiceObserver>
       url_loader_network_service_observer_;
   mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
+
+  base::OneShotTimer update_load_info_timer_;
+  bool waiting_on_load_state_ack_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(URLLoaderFactory);
 };

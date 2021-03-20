@@ -22,6 +22,7 @@
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/cpp/load_info_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
@@ -35,6 +36,10 @@
 namespace network {
 
 namespace {
+
+// The interval to send load updates.
+constexpr auto kUpdateLoadStatesInterval =
+    base::TimeDelta::FromMilliseconds(250);
 
 // An enum class representing whether / how keepalive requests are blocked. This
 // is used for UMA so do NOT re-assign values.
@@ -310,6 +315,54 @@ URLLoaderFactory::GetURLLoaderNetworkServiceObserver() const {
     return nullptr;
   return context_->network_service()
       ->GetDefaultURLLoaderNetworkServiceObserver();
+}
+
+void URLLoaderFactory::AckUpdateLoadInfo() {
+  DCHECK(waiting_on_load_state_ack_);
+  waiting_on_load_state_ack_ = false;
+  MaybeStartUpdateLoadInfoTimer();
+}
+
+void URLLoaderFactory::MaybeStartUpdateLoadInfoTimer() {
+  if (!params_->provide_loading_state_updates ||
+      !GetURLLoaderNetworkServiceObserver() || waiting_on_load_state_ack_ ||
+      update_load_info_timer_.IsRunning()) {
+    return;
+  }
+  update_load_info_timer_.Start(FROM_HERE, kUpdateLoadStatesInterval, this,
+                                &URLLoaderFactory::UpdateLoadInfo);
+}
+
+void URLLoaderFactory::UpdateLoadInfo() {
+  DCHECK(!waiting_on_load_state_ack_);
+
+  mojom::LoadInfoPtr most_interesting;
+  URLLoader* most_interesting_url_loader = nullptr;
+
+  for (auto* request : *context_->url_request_context()->url_requests()) {
+    auto* loader = URLLoader::ForRequest(*request);
+    if (!loader || loader->url_loader_factory() != this)
+      continue;
+    mojom::LoadInfoPtr load_info = loader->CreateLoadInfo();
+    if (!most_interesting ||
+        LoadInfoIsMoreInteresting(*load_info, *most_interesting)) {
+      most_interesting = std::move(load_info);
+      most_interesting_url_loader = loader;
+    }
+  }
+
+  if (most_interesting_url_loader) {
+    most_interesting_url_loader->GetURLLoaderNetworkServiceObserver()
+        ->OnLoadingStateUpdate(
+            std::move(most_interesting),
+            base::BindOnce(&URLLoaderFactory::AckUpdateLoadInfo,
+                           base::Unretained(this)));
+    waiting_on_load_state_ack_ = true;
+  }
+}
+
+void URLLoaderFactory::OnBeforeURLRequest() {
+  MaybeStartUpdateLoadInfoTimer();
 }
 
 }  // namespace network

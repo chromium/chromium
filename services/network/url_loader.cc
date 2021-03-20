@@ -79,10 +79,6 @@ namespace network {
 
 namespace {
 
-// The interval to send load updates.
-constexpr auto kUpdateLoadStatesInterval =
-    base::TimeDelta::FromMilliseconds(250);
-
 using ConcerningHeaderId = URLLoader::ConcerningHeaderId;
 
 // Cannot use 0, because this means "default" in
@@ -1639,8 +1635,7 @@ int URLLoader::OnHeadersReceived(
   return net::OK;
 }
 
-void URLLoader::UpdateLoadInfo() {
-  DCHECK(!waiting_on_load_state_ack_);
+mojom::LoadInfoPtr URLLoader::CreateLoadInfo() {
   auto load_info = mojom::LoadInfo::New();
   load_info->timestamp = base::TimeTicks::Now();
   load_info->host = url_request_->url().host();
@@ -1650,38 +1645,12 @@ void URLLoader::UpdateLoadInfo() {
   auto upload_progress = url_request_->GetUploadProgress();
   load_info->upload_size = upload_progress.size();
   load_info->upload_position = upload_progress.position();
-
-  waiting_on_load_state_ack_ = true;
-
-  auto* url_loader_network_observer = GetURLLoaderNetworkServiceObserver();
-  // |url_laoder_network_observer| should be non-null here because we've
-  // previously gone through a nullness check in
-  // `MayebStartUpdateLoaderInfoTimer` and `GetURLLoaderNetworkServiceObserver`
-  // should always return the same value.
-  DCHECK(url_loader_network_observer);
-  url_loader_network_observer->OnLoadingStateUpdate(
-      std::move(load_info), base::BindOnce(&URLLoader::AckUpdateLoadInfo,
-                                           weak_ptr_factory_.GetWeakPtr()));
-}
-
-void URLLoader::AckUpdateLoadInfo() {
-  DCHECK(waiting_on_load_state_ack_);
-  waiting_on_load_state_ack_ = false;
-  MaybeStartUpdateLoadInfoTimer();
-}
-
-void URLLoader::MaybeStartUpdateLoadInfoTimer() {
-  if (waiting_on_load_state_ack_ || update_load_info_timer_.IsRunning() ||
-      !GetURLLoaderNetworkServiceObserver()) {
-    return;
-  }
-
-  update_load_info_timer_.Start(FROM_HERE, kUpdateLoadStatesInterval, this,
-                                &URLLoader::UpdateLoadInfo);
+  return load_info;
 }
 
 void URLLoader::OnBeforeURLRequest() {
-  MaybeStartUpdateLoadInfoTimer();
+  if (url_loader_factory_)
+    return url_loader_factory_->OnBeforeURLRequest();
 }
 
 net::LoadState URLLoader::GetLoadStateForTesting() const {

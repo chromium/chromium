@@ -136,8 +136,9 @@ interface URLLoaderNetworkServiceObserver {
 
   // Called periodically to update the client about progress of the current
   // loads. To avoid flooding the client, it has to ack the update before it can
-  // receive the next update.
-  OnLoadingStateUpdate(LoadInfo infos) => ();
+  // receive the next update. This will only be called if the
+  // URLLoaderFactory has requested it in the URLLoaderFactoryParams.
+  OnLoadingStateUpdate(LoadInfo info) => ();
 
   // Called on every request completion to update the network traffic annotation
   // ID, and the total bytes received and sent.
