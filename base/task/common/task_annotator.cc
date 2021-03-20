@@ -15,6 +15,11 @@
 #include "base/sys_byteorder.h"
 #include "base/threading/thread_local.h"
 #include "base/trace_event/base_tracing.h"
+#include "base/tracing_buildflags.h"
+
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_mojo_event_info.pbzero.h"  // nogncheck
+#endif
 
 namespace base {
 
@@ -206,8 +211,14 @@ TaskAnnotator::ScopedSetIpcHash::ScopedSetIpcHash(
 TaskAnnotator::ScopedSetIpcHash::ScopedSetIpcHash(
     uint32_t ipc_hash,
     const char* ipc_interface_name) {
-  TRACE_EVENT_BEGIN2("base", "ScopedSetIpcHash", "ipc_hash", ipc_hash,
-                     "ipc_interface_name", ipc_interface_name);
+  TRACE_EVENT_BEGIN(
+      "base", "ScopedSetIpcHash", [&](perfetto::EventContext ctx) {
+        auto* mojo_event = ctx.event()->set_chrome_mojo_event_info();
+        if (ipc_hash > 0)
+          mojo_event->set_ipc_hash(ipc_hash);
+        if (ipc_interface_name != nullptr)
+          mojo_event->set_mojo_interface_tag(ipc_interface_name);
+      });
   auto* tls_ipc_hash = GetTLSForCurrentScopedIpcHash();
   auto* current_ipc_hash = tls_ipc_hash->Get();
   old_scoped_ipc_hash_ = current_ipc_hash;
@@ -231,7 +242,7 @@ TaskAnnotator::ScopedSetIpcHash::~ScopedSetIpcHash() {
   auto* tls_ipc_hash = GetTLSForCurrentScopedIpcHash();
   DCHECK_EQ(this, tls_ipc_hash->Get());
   tls_ipc_hash->Set(old_scoped_ipc_hash_);
-  TRACE_EVENT_END0("base", "ScopedSetIpcHash");
+  TRACE_EVENT_END("base");
 }
 
 }  // namespace base
