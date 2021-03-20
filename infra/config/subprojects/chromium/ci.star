@@ -954,7 +954,6 @@ ci.android_builder(
 
 ci.android_fyi_builder(
     name = "Android arm64 Builder (dbg) (reclient)",
-    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
         category = "builder|arm",
         short_name = "64",
