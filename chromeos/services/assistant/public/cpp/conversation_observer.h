@@ -6,6 +6,7 @@
 #define CHROMEOS_SERVICES_ASSISTANT_PUBLIC_CPP_CONVERSATION_OBSERVER_H_
 
 #include "base/component_export.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_interaction_metadata.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_suggestion.h"
 #include "chromeos/services/libassistant/public/mojom/conversation_observer.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -19,6 +20,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) ConversationObserver
     : public chromeos::libassistant::mojom::ConversationObserver {
  public:
   // chromeos::libassistant::mojom::ConversationObserver:
+  void OnInteractionStarted(
+      const chromeos::assistant::AssistantInteractionMetadata& metadata)
+      override {}
   void OnInteractionFinished(
       AssistantInteractionResolution resolution) override {}
   void OnTtsStarted(bool due_to_error) override {}

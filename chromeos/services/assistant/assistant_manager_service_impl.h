@@ -223,8 +223,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
                                 const std::string& description,
                                 bool is_user_initiated);
 
-  void MaybeStopPreviousInteraction();
-
   ash::AssistantNotificationController* assistant_notification_controller();
   ash::AssistantScreenContextController* assistant_screen_context_controller();
   ash::AssistantStateBase* assistant_state();
@@ -237,9 +235,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   chromeos::libassistant::mojom::ServiceController& service_controller();
   chromeos::libassistant::mojom::SettingsController& settings_controller();
   base::Thread& background_thread();
-  void set_stop_interaction_delay_for_testing(base::TimeDelta delay) {
-    stop_interaction_delay_ = delay;
-  }
 
   void SetStateAndInformObservers(State new_state);
 
@@ -275,10 +270,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   // Configuration passed to libassistant.
   chromeos::libassistant::mojom::BootupConfigPtr bootup_config_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  base::TimeDelta stop_interaction_delay_ =
-      base::TimeDelta::FromMilliseconds(500);
-  std::unique_ptr<base::CancelableOnceClosure> stop_interaction_closure_;
 
   base::ScopedObservation<DeviceActions,
                           AppListEventSubscriber,

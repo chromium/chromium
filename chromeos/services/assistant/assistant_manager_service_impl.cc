@@ -351,42 +351,17 @@ void AssistantManagerServiceImpl::UpdateInternalMediaPlayerStatus(
 void AssistantManagerServiceImpl::StartVoiceInteraction() {
   DCHECK(assistant_manager());
   DVLOG(1) << __func__;
-  MaybeStopPreviousInteraction();
 
   audio_input_host_->SetMicState(true);
-  assistant_manager()->StartAssistantInteraction();
+  conversation_controller().StartVoiceInteraction();
 }
 
 void AssistantManagerServiceImpl::StopActiveInteraction(
     bool cancel_conversation) {
   DVLOG(1) << __func__;
+
   audio_input_host_->SetMicState(false);
-
-  if (!assistant_manager_internal()) {
-    VLOG(1) << "Stopping interaction without assistant manager.";
-    return;
-  }
-
-  // We do not stop the interaction immediately, but instead we give
-  // Libassistant a bit of time to stop on its own accord. This improves
-  // stability as Libassistant might misbehave when it's forcefully stopped.
-  auto stop_callback = [](base::WeakPtr<AssistantManagerServiceImpl> weak_this,
-                          bool cancel_conversation) {
-    if (!weak_this || !weak_this->assistant_manager_internal()) {
-      return;
-    }
-    VLOG(1) << "Stopping interaction.";
-    weak_this->assistant_manager_internal()->StopAssistantInteractionInternal(
-        cancel_conversation);
-  };
-
-  stop_interaction_closure_ =
-      std::make_unique<base::CancelableOnceClosure>(base::BindOnce(
-          stop_callback, weak_factory_.GetWeakPtr(), cancel_conversation));
-
-  main_task_runner()->PostDelayedTask(FROM_HERE,
-                                      stop_interaction_closure_->callback(),
-                                      stop_interaction_delay_);
+  conversation_controller().StopActiveInteraction(cancel_conversation);
 }
 
 void AssistantManagerServiceImpl::StartEditReminderInteraction(
@@ -426,8 +401,6 @@ void AssistantManagerServiceImpl::StartTextInteraction(
     bool allow_tts) {
   DVLOG(1) << __func__;
 
-  MaybeStopPreviousInteraction();
-
   conversation_controller().SendTextQuery(query, source, allow_tts);
 }
 
@@ -459,15 +432,11 @@ void AssistantManagerServiceImpl::DismissNotification(
 
 void AssistantManagerServiceImpl::OnInteractionStarted(
     const AssistantInteractionMetadata& metadata) {
-  stop_interaction_closure_.reset();
-
   audio_input_host_->OnConversationTurnStarted();
 }
 
 void AssistantManagerServiceImpl::OnInteractionFinished(
     AssistantInteractionResolution resolution) {
-  stop_interaction_closure_.reset();
-
   switch (resolution) {
     case AssistantInteractionResolution::kNormal:
       RecordQueryResponseTypeUMA();
@@ -666,14 +635,6 @@ void AssistantManagerServiceImpl::SendVoicelessInteraction(
 
   assistant_manager_internal()->SendVoicelessInteraction(
       interaction, description, voiceless_options, [](auto) {});
-}
-
-void AssistantManagerServiceImpl::MaybeStopPreviousInteraction() {
-  if (!stop_interaction_closure_ || stop_interaction_closure_->IsCancelled()) {
-    return;
-  }
-
-  stop_interaction_closure_->callback().Run();
 }
 
 void AssistantManagerServiceImpl::RecordQueryResponseTypeUMA() {

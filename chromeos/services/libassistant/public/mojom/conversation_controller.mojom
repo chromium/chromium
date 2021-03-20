@@ -13,11 +13,18 @@ interface ConversationController {
   // Sends the specific text query to Libassistant.
   SendTextQuery(string query, AssistantQuerySource source, bool allow_tts);
 
+  // Initiates a voice interaction.
+  StartVoiceInteraction();
+
   // Starts an interaction to edit the reminder uniquely identified by
   // |client_id|. In response to the request, LibAssistant will initiate
   // a user facing interaction with the context pre-populated with details
   // to edit the specified reminder.
   StartEditReminderInteraction(string client_id);
+
+  // Stops the ongoing interaction with a delay to give buffer time to
+  // Libassistant when being forcefully stopped.
+  StopActiveInteraction(bool cancel_conversation);
 
   // Retrieves a notification. A voiceless interaction will be sent to server to
   // retrieve the notification of |action_index|, which can trigger other

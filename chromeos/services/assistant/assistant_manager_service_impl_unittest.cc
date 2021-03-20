@@ -151,6 +151,10 @@ class AssistantManagerServiceImplTest : public testing::Test {
         .set_assistant_alarm_timer_controller(alarm_timer_controller_.get());
 
     CreateAssistantManagerServiceImpl();
+
+    // Flushes the background thread to let Mojom finish all its work (i.e.
+    // binding controllers) before moving formard.
+    RunUntilIdle();
   }
 
   void TearDown() override {
@@ -652,56 +656,6 @@ class AssistantManagerInternalMock : public FakeAssistantManagerInternal {
 
   MOCK_METHOD(void, StopAssistantInteractionInternal, (bool), (override));
 };
-
-TEST_F(AssistantManagerServiceImplTest, ShouldStopInteractionAfterDelay) {
-  // Start LibAssistant.
-  Start();
-  WaitForState(AssistantManagerService::STARTED);
-
-  auto assistant_manager_internal_mock =
-      std::make_unique<AssistantManagerInternalMock>();
-  auto* mock_ptr = assistant_manager_internal_mock.get();
-  SetAssistantManagerInternal(std::move(assistant_manager_internal_mock));
-
-  EXPECT_CALL(*mock_ptr, StopAssistantInteractionInternal).Times(0);
-
-  assistant_manager_service()->StopActiveInteraction(true);
-  testing::Mock::VerifyAndClearExpectations(mock_ptr);
-
-  WAIT_FOR_CALL(*mock_ptr, StopAssistantInteractionInternal);
-}
-
-TEST_F(AssistantManagerServiceImplTest,
-       ShouldStopInteractionImmediatelyBeforeNewInteraction) {
-  // Start LibAssistant.
-  Start();
-  WaitForState(AssistantManagerService::STARTED);
-
-  auto assistant_manager_mock = std::make_unique<AssistantManagerMock>();
-  auto assistant_manager_internal_mock =
-      std::make_unique<AssistantManagerInternalMock>();
-  auto* assistant_manager_mock_ptr = assistant_manager_mock.get();
-  auto* assistant_manager_internal_mock_ptr =
-      assistant_manager_internal_mock.get();
-
-  assistant_manager_mock->set_assistant_manager_internal(
-      std::move(assistant_manager_internal_mock));
-  SetAssistantManager(std::move(assistant_manager_mock));
-
-  EXPECT_CALL(*assistant_manager_internal_mock_ptr,
-              StopAssistantInteractionInternal)
-      .Times(0);
-
-  assistant_manager_service()->StopActiveInteraction(true);
-  testing::Mock::VerifyAndClearExpectations(
-      assistant_manager_internal_mock_ptr);
-
-  EXPECT_CALL(*assistant_manager_internal_mock_ptr,
-              StopAssistantInteractionInternal)
-      .Times(1);
-  EXPECT_CALL(*assistant_manager_mock_ptr, StartAssistantInteraction).Times(1);
-  assistant_manager_service()->StartVoiceInteraction();
-}
 
 TEST_F(AssistantManagerServiceImplTest,
        ShouldStartSpeakerIdEnrollmentWhenRequested) {

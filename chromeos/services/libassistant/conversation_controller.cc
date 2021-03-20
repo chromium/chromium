@@ -28,6 +28,10 @@ using assistant::AssistantInteractionType;
 using assistant::AssistantQuerySource;
 
 namespace {
+
+constexpr base::TimeDelta kStopInteractionDelayTime =
+    base::TimeDelta::FromMilliseconds(500);
+
 // A macro which ensures we are running on the main thread.
 #define ENSURE_MOJOM_THREAD(method, ...)                                    \
   if (!mojom_task_runner_->RunsTasksInCurrentSequence()) {                  \
@@ -255,6 +259,7 @@ void ConversationController::OnAssistantManagerRunning(
     assistant_client::AssistantManager* assistant_manager,
     assistant_client::AssistantManagerInternal* assistant_manager_internal) {
   // Only when Libassistant is running we can start sending queries.
+  assistant_manager_ = assistant_manager;
   assistant_manager_internal_ = assistant_manager_internal;
   requests_are_allowed_ = true;
 }
@@ -262,6 +267,7 @@ void ConversationController::OnAssistantManagerRunning(
 void ConversationController::OnDestroyingAssistantManager(
     assistant_client::AssistantManager* assistant_manager,
     assistant_client::AssistantManagerInternal* assistant_manager_internal) {
+  assistant_manager_ = nullptr;
   assistant_manager_internal_ = nullptr;
 }
 
@@ -272,6 +278,8 @@ void ConversationController::SendTextQuery(const std::string& query,
       << "Should not receive requests before Libassistant is running";
   if (!assistant_manager_internal_)
     return;
+
+  MaybeStopPreviousInteraction();
 
   // Configs |VoicelessOptions|.
   assistant_client::VoicelessOptions options;
@@ -292,6 +300,19 @@ void ConversationController::SendTextQuery(const std::string& query,
       interaction, /*description=*/"text_query", options, [](auto) {});
 }
 
+void ConversationController::StartVoiceInteraction() {
+  DCHECK(requests_are_allowed_)
+      << "Should not receive requests before Libassistant is running";
+  if (!assistant_manager_) {
+    VLOG(1) << "Starting voice interaction without assistant manager.";
+    return;
+  }
+
+  MaybeStopPreviousInteraction();
+
+  assistant_manager_->StartAssistantInteraction();
+}
+
 void ConversationController::StartEditReminderInteraction(
     const std::string& client_id) {
   DCHECK(requests_are_allowed_)
@@ -302,6 +323,34 @@ void ConversationController::StartEditReminderInteraction(
   SendVoicelessInteraction(assistant::CreateEditReminderInteraction(client_id),
                            /*description=*/std::string(),
                            /*is_user_initiated=*/true);
+}
+
+void ConversationController::StopActiveInteraction(bool cancel_conversation) {
+  if (!assistant_manager_internal_) {
+    VLOG(1) << "Stopping interaction without assistant manager.";
+    return;
+  }
+
+  // We do not stop the interaction immediately, but instead we give
+  // Libassistant a bit of time to stop on its own accord. This improves
+  // stability as Libassistant might misbehave when it's forcefully stopped.
+  auto stop_callback = [](base::WeakPtr<ConversationController> weak_this,
+                          bool cancel_conversation) {
+    if (!weak_this || !weak_this->assistant_manager_internal_) {
+      return;
+    }
+    VLOG(1) << "Stopping Assistant interaction.";
+    weak_this->assistant_manager_internal_->StopAssistantInteractionInternal(
+        cancel_conversation);
+  };
+
+  stop_interaction_closure_ =
+      std::make_unique<base::CancelableOnceClosure>(base::BindOnce(
+          stop_callback, weak_factory_.GetWeakPtr(), cancel_conversation));
+
+  mojom_task_runner_->PostDelayedTask(FROM_HERE,
+                                      stop_interaction_closure_->callback(),
+                                      kStopInteractionDelayTime);
 }
 
 void ConversationController::RetrieveNotification(
@@ -469,6 +518,24 @@ void ConversationController::OnShowNotification(
 
   notification_delegate_->AddOrUpdateNotification(
       ToAssistantNotification(notification));
+}
+
+void ConversationController::OnInteractionStarted(
+    const chromeos::assistant::AssistantInteractionMetadata& metadata) {
+  stop_interaction_closure_.reset();
+}
+
+void ConversationController::OnInteractionFinished(
+    chromeos::assistant::AssistantInteractionResolution resolution) {
+  stop_interaction_closure_.reset();
+}
+
+void ConversationController::MaybeStopPreviousInteraction() {
+  if (!stop_interaction_closure_ || stop_interaction_closure_->IsCancelled()) {
+    return;
+  }
+
+  stop_interaction_closure_->callback().Run();
 }
 
 void ConversationController::SendVoicelessInteraction(

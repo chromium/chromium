@@ -7,10 +7,12 @@
 
 #include <memory>
 
+#include "base/cancelable_callback.h"
 #include "base/component_export.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "chromeos/assistant/internal/action/assistant_action_observer.h"
+#include "chromeos/services/assistant/public/cpp/conversation_observer.h"
 #include "chromeos/services/libassistant/assistant_manager_observer.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
 #include "chromeos/services/libassistant/public/mojom/authentication_state_observer.mojom.h"
@@ -32,7 +34,8 @@ namespace libassistant {
 class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
     : public mojom::ConversationController,
       public AssistantManagerObserver,
-      public ::chromeos::assistant::action::AssistantActionObserver {
+      public ::chromeos::assistant::action::AssistantActionObserver,
+      public chromeos::assistant::ConversationObserver {
  public:
   using AssistantNotification = ::chromeos::assistant::AssistantNotification;
   using AssistantQuerySource = ::chromeos::assistant::AssistantQuerySource;
@@ -71,7 +74,9 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
   void SendTextQuery(const std::string& query,
                      AssistantQuerySource source,
                      bool allow_tts) override;
+  void StartVoiceInteraction() override;
   void StartEditReminderInteraction(const std::string& client_id) override;
+  void StopActiveInteraction(bool cancel_conversation) override;
   void RetrieveNotification(AssistantNotification notification,
                             int32_t action_index) override;
   void DismissNotification(AssistantNotification notification) override;
@@ -94,6 +99,13 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
   void OnShowNotification(
       const assistant::action::Notification& notification) override;
 
+  // chromeos::assistant::ConversationObserver:
+  void OnInteractionStarted(
+      const chromeos::assistant::AssistantInteractionMetadata& metadata)
+      override;
+  void OnInteractionFinished(
+      chromeos::assistant::AssistantInteractionResolution resolution) override;
+
   const mojo::RemoteSet<mojom::ConversationObserver>* conversation_observers() {
     return &observers_;
   }
@@ -105,6 +117,8 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
  private:
   class AssistantManagerDelegateImpl;
 
+  void MaybeStopPreviousInteraction();
+
   void SendVoicelessInteraction(const std::string& interaction,
                                 const std::string& description,
                                 bool is_user_initiated);
@@ -115,6 +129,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
       authentication_state_observers_;
   mojo::Remote<mojom::NotificationDelegate> notification_delegate_;
 
+  assistant_client::AssistantManager* assistant_manager_ = nullptr;
   assistant_client::AssistantManagerInternal* assistant_manager_internal_ =
       nullptr;
   // False until libassistant is running for the first time.
@@ -123,6 +138,8 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
 
   std::unique_ptr<AssistantManagerDelegateImpl> assistant_manager_delegate_;
   std::unique_ptr<assistant::action::CrosActionModule> action_module_;
+
+  std::unique_ptr<base::CancelableOnceClosure> stop_interaction_closure_;
 
   scoped_refptr<base::SequencedTaskRunner> mojom_task_runner_;
   base::WeakPtrFactory<ConversationController> weak_factory_{this};
