@@ -5,7 +5,7 @@
 #ifndef NET_QUIC_PLATFORM_IMPL_QUIC_TEST_OUTPUT_IMPL_H_
 #define NET_QUIC_PLATFORM_IMPL_QUIC_TEST_OUTPUT_IMPL_H_
 
-#include "net/third_party/quiche/src/common/platform/api/quiche_string_piece.h"
+#include "net/third_party/quiche/src/common/platform/api/quiche_string_view.h"
 
 namespace quic {
 

@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "net/third_party/quiche/src/common/platform/api/quiche_string_piece.h"
+#include "net/third_party/quiche/src/common/platform/api/quiche_string_view.h"
 #include "net/third_party/quiche/src/quic/core/crypto/crypto_framer.h"
 
 // Entry point for LibFuzzer.

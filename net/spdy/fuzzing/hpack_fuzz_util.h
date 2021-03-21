@@ -11,7 +11,6 @@
 #include <memory>
 #include <vector>
 
-#include "net/third_party/quiche/src/common/platform/api/quiche_string_piece.h"
 #include "net/third_party/quiche/src/spdy/core/hpack/hpack_decoder_adapter.h"
 #include "net/third_party/quiche/src/spdy/core/hpack/hpack_encoder.h"
 

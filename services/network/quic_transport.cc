@@ -164,7 +164,7 @@ class QuicTransport::Stream final {
   void Init() {
     if (outgoing_) {
       DCHECK(readable_);
-      outgoing_->set_visitor(std::make_unique<StreamVisitor>(this));
+      outgoing_->SetVisitor(std::make_unique<StreamVisitor>(this));
       readable_watcher_.Watch(
           readable_.get(),
           MOJO_HANDLE_SIGNAL_NEW_DATA_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
@@ -176,7 +176,7 @@ class QuicTransport::Stream final {
     if (incoming_) {
       DCHECK(writable_);
       if (incoming_ != outgoing_) {
-        incoming_->set_visitor(std::make_unique<StreamVisitor>(this));
+        incoming_->SetVisitor(std::make_unique<StreamVisitor>(this));
       }
       writable_watcher_.Watch(
           writable_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,

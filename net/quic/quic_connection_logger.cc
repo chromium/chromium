@@ -18,7 +18,6 @@
 #include "net/cert/x509_certificate.h"
 #include "net/quic/address_utils.h"
 #include "net/quic/quic_address_mismatch.h"
-#include "net/third_party/quiche/src/common/platform/api/quiche_string_piece.h"
 #include "net/third_party/quiche/src/quic/core/crypto/crypto_handshake_message.h"
 #include "net/third_party/quiche/src/quic/core/crypto/crypto_protocol.h"
 #include "net/third_party/quiche/src/quic/core/quic_connection_id.h"
