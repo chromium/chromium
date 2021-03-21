@@ -1032,7 +1032,10 @@ MatrixPaintFilter::MatrixPaintFilter(const SkMatrix& matrix,
       filter_quality_(filter_quality),
       input_(std::move(input)) {
   cached_sk_filter_ = SkImageFilters::MatrixTransform(
-      matrix_, filter_quality_, GetSkFilter(input_.get()));
+      matrix_,
+      SkSamplingOptions(filter_quality_,
+                        SkSamplingOptions::kMedium_asMipmapLinear),
+      GetSkFilter(input_.get()));
 }
 
 MatrixPaintFilter::~MatrixPaintFilter() = default;
