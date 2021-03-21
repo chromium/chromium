@@ -3423,7 +3423,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> seleccionado, pulsa Intro para seleccionar los álbumes de <ph name="TOPIC_SOURCE" /></translation>
 <translation id="4848191975108266266">"Ok Google" en el Asistente de Google</translation>
 <translation id="4848518990323155912">Habilitar el bloqueo de la tarjeta SIM (solicitar PIN para usar datos móviles)</translation>
-<translation id="4849286518551984791">Tiempo Universal Coordinado (UTC/GMT)</translation>
+<translation id="4849286518551984791">Tiempo universal coordinado (UTC/GMT)</translation>
 <translation id="4849517651082200438">No instalar</translation>
 <translation id="485053257961878904">No se ha podido configurar la sincronización de notificaciones</translation>
 <translation id="4850886885716139402">Ver</translation>
@@ -3992,7 +3992,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5507756662695126555">Sin rechazo</translation>
 <translation id="5509693895992845810">Guardar &amp;como...</translation>
 <translation id="5509914365760201064">Emisor: <ph name="CERTIFICATE_AUTHORITY" /></translation>
-<translation id="5510775624736435856">Obtener descripciones de imagen de Google</translation>
+<translation id="5510775624736435856">Obtener descripciones de imágenes de Google</translation>
 <translation id="5511379779384092781">Muy pequeño</translation>
 <translation id="5511823366942919280">¿Seguro que quieres configurar este dispositivo como un "Shark"?</translation>
 <translation id="5512653252560939721">El certificado de usuario debe estar respaldado por hardware.</translation>
@@ -6849,7 +6849,7 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <ph name="DOMAIN" /> requiere que mantengas insertada tu tarjeta inteligente.}other{Tu <ph name="DEVICE_TYPE" /> se bloqueará automáticamente dentro de # segundos.
 <ph name="DOMAIN" /> requiere que mantengas insertada tu tarjeta inteligente.}}</translation>
 <translation id="8777628254805677039">contraseña raíz</translation>
-<translation id="8780123805589053431">Obtener descripciones de imagen de Google</translation>
+<translation id="8780123805589053431">Obtener descripciones de imágenes de Google</translation>
 <translation id="8780443667474968681">Se ha desactivado la búsqueda por voz.</translation>
 <translation id="878069093594050299">Este certificado se ha verificado para los siguientes usos:</translation>
 <translation id="8781834595282316166">Nueva pestaña en el grupo</translation>

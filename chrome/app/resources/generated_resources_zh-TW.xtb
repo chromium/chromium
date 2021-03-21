@@ -1856,7 +1856,7 @@
 <translation id="3022978424994383087">無法辨識語音內容。</translation>
 <translation id="3023464535986383522">隨選朗讀</translation>
 <translation id="3024374909719388945">使用 24 小時制時鐘</translation>
-<translation id="3027296729579831126">啟用鄰近分享功能</translation>
+<translation id="3027296729579831126">開啟鄰近分享功能</translation>
 <translation id="3029466929721441205">在檔案櫃中顯示觸控筆工具</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求你在今天內下載更新。當你連上網際網路時，系統會自動下載更新。}other{<ph name="MANAGER" /> 要求你在期限內下載更新。當你連上網際網路時，系統會自動下載更新。}}</translation>
 <translation id="3031417829280473749">特務 X</translation>
@@ -5251,7 +5251,7 @@
 <translation id="6965978654500191972">裝置</translation>
 <translation id="696780070563539690">網站無法使用 Cookie 查看你在各網站的瀏覽活動，也無法提供個人化廣告等服務</translation>
 <translation id="6968288415730398122">如要設定螢幕鎖定，請輸入你的密碼</translation>
-<translation id="6969047215179982698">停用鄰近分享功能</translation>
+<translation id="6969047215179982698">關閉鄰近分享功能</translation>
 <translation id="6970480684834282392">啟動類型</translation>
 <translation id="6970856801391541997">列印特定網頁</translation>
 <translation id="6972180789171089114">音效/影片</translation>

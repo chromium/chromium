@@ -221,7 +221,7 @@
 <translation id="247737702124049222">ఇమేజ్ వివరణలు ఆన్ చేయబడ్డాయి</translation>
 <translation id="2482878487686419369">నోటిఫికేషన్‌లు</translation>
 <translation id="2494974097748878569">Chromeలో Google అసిస్టెంట్</translation>
-<translation id="2496180316473517155">బ్రౌజింగ్ చరిత్ర</translation>
+<translation id="2496180316473517155">బ్రౌజింగ్ హిస్టరీ</translation>
 <translation id="2497852260688568942">సింక్‌ను మీ నిర్వాహకులు నిలిపివేశారు</translation>
 <translation id="250020030759455918">మీరు Chromeలో మీ <ph name="SITE_NAME" /> సైన్ ఇన్ స్టేటస్, బ్రౌజింగ్ డేటా ఇంకా సైట్ డేటాను చూస్తారు</translation>
 <translation id="2512164632052122970">కంటెంట్ భాషలు</translation>
@@ -264,7 +264,7 @@
 <translation id="2781151931089541271">1 సెకను మిగిలి ఉంది</translation>
 <translation id="2801022321632964776">Chrome యొక్క తాజా వెర్షన్‌లో మీ భాషను పొందడానికి అప్‌డేట్ చేయండి</translation>
 <translation id="2810645512293415242">డేటాను సేవ్ చేయడానికి మరియు మరింత వేగంగా లోడ్ చేయడానికి సరళీకరించిన పేజీ.</translation>
-<translation id="281504910091592009">మీ <ph name="BEGIN_LINK" />Google ఖాతా<ph name="END_LINK" />లో సేవ్ చేసిన పాస్‌వర్డ్‌లను చూడండి మరియు నిర్వహించండి</translation>
+<translation id="281504910091592009">మీ <ph name="BEGIN_LINK" />Google ఖాతా<ph name="END_LINK" />లో సేవ్ చేసిన పాస్‌వర్డ్‌లను చూడండి, మేనేజ్ చేయండి</translation>
 <translation id="2818669890320396765">ఇక ఎప్పుడు ఎక్కడ బుక్‌మార్క్‌లను సెట్‌ చేసినా ఆటోమాటిక్‌గా మీ అన్ని పరికరాలలోనూ పొందాలనుకుంటే, సైన్ ఇన్ చేసి, సమకాలీకరణ ఎంపికను ఆన్ చేయండి</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 రోజు క్రితం తనిఖీ చేసింది}other{# రోజుల క్రితం తనిఖీ చేసింది}}</translation>
@@ -634,7 +634,7 @@
 <translation id="5414836363063783498">ధృవీకరిస్తోంది...</translation>
 <translation id="5423934151118863508">మీరు అత్యంత ఎక్కువగా సందర్శించిన పేజీలు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB అందుబాటులో ఉంది</translation>
-<translation id="543338862236136125">పాస్‌వర్డ్‌ను సవరించు</translation>
+<translation id="543338862236136125">పాస్‌వర్డ్‌ను ఎడిట్ చేయండి</translation>
 <translation id="5433691172869980887">వినియోగదారు పేరు కాపీ చేయబడింది</translation>
 <translation id="543509235395288790"><ph name="COUNT" /> ఫైల్‌లను డౌన్‌లోడ్ చేస్తోంది (<ph name="MEGABYTES" />).</translation>
 <translation id="5441466871879044658">ఈ భాషలోకి అనువదించు</translation>
@@ -655,7 +655,7 @@
 <translation id="5527082711130173040">పరికరాల కోసం స్కాన్ చేయడానికి Chromeకు స్థాన యాక్సెస్ అవసరం. <ph name="BEGIN_LINK1" />అనుమతులను అప్‌డేట్ చేయండి<ph name="END_LINK1" />. అలాగే స్థాన యాక్సెస్ <ph name="BEGIN_LINK2" />ఈ పరికరానికి ఆఫ్ చేయబడింది<ph name="END_LINK2" />.</translation>
 <translation id="5530766185686772672">అజ్ఞాత ట్యాబ్‌లను మూసివేయి</translation>
 <translation id="5534640966246046842">సైట్ కాపీ చేయబడింది</translation>
-<translation id="5548606607480005320">భద్రతా తనిఖీ</translation>
+<translation id="5548606607480005320">భద్రతా చెక్-అప్</translation>
 <translation id="5556459405103347317">మళ్లీ లోడ్ చేయి</translation>
 <translation id="5561549206367097665">నెట్‌వర్క్ కోసం వేచి ఉంది…</translation>
 <translation id="55737423895878184">స్థానం మరియు నోటిఫికేషన్‌లు అనుమతించబడతాయి</translation>
@@ -732,7 +732,7 @@
 <translation id="5962718611393537961">కుదించడానికి నొక్కండి</translation>
 <translation id="5964805880140440652">ఈ పేజీని మరొక పరికరానికి షేర్ చేయడానికి, Chrome సెట్టింగ్‌లలో సింక్‌ను ఆన్ చేయండి</translation>
 <translation id="5964869237734432770">ఇమేజ్ వివరణలను ఆపివేయి</translation>
-<translation id="5979084224081478209">పాస్‌వర్డ్‌లను తనిఖీ చేయి</translation>
+<translation id="5979084224081478209">పాస్‌వర్డ్‌లను చెక్ చేయండి</translation>
 <translation id="5982307838673692400">అజ్ఞాత ట్యాబ్‌ను తెరవండి</translation>
 <translation id="6000066717592683814">Googleని ఉంచు</translation>
 <translation id="6005538289190791541">సూచించబడిన పాస్‌వర్డ్‌</translation>

@@ -4,7 +4,7 @@
 <translation id="1018939186200882850">menu-item</translation>
 <translation id="10623998915015855">schakelknop</translation>
 <translation id="1088086359088493902">Seconden</translation>
-<translation id="1142001580032786438">Weekkiezer weergeven</translation>
+<translation id="1142001580032786438">Weekkiezer tonen</translation>
 <translation id="1171774979989969504">Geef een e-mailadres op.</translation>
 <translation id="1178581264944972037">Onderbreken</translation>
 <translation id="1188858454923323853">aanvullend</translation>
@@ -39,7 +39,7 @@
 <translation id="1921819250265091946">dd</translation>
 <translation id="1930711995431081526">status</translation>
 <translation id="1938124657309484470">Waarde moet <ph name="MAXIMUM_DATE_OR_TIME" /> of eerder zijn.</translation>
-<translation id="1946271899482435442">Datumkiezer weergeven</translation>
+<translation id="1946271899482435442">Datumkiezer tonen</translation>
 <translation id="1993104285338243655">Overgeschakeld naar mirroring</translation>
 <translation id="2031987842108996681">Rood kanaal</translation>
 <translation id="2060505056492490888">'<ph name="DOT" />' wordt op een verkeerde positie gebruikt in '<ph name="INVALIDDOMAIN" />'.</translation>
@@ -59,7 +59,7 @@
 <translation id="2507943997699731163">Vul dit veld in.</translation>
 <translation id="2508569020611168319">tabbladlijst</translation>
 <translation id="2530182415807757784">Meerdere selecties mogelijk. Niets geselecteerd.</translation>
-<translation id="2561842179657104141">meer mediabedieningselementen weergeven</translation>
+<translation id="2561842179657104141">meer mediabedieningselementen tonen</translation>
 <translation id="2572483411312390101">afspelen</translation>
 <translation id="2613802280814924224">Geef een geldige waarde op. De dichtstbijzijnde geldige waarde is <ph name="VALID_VALUE" />.</translation>
 <translation id="2634240155926812724">Groen kanaal</translation>
@@ -106,7 +106,7 @@
 <translation id="4151657705144244502">afbeelding</translation>
 <translation id="4160057747563657758">telefoon</translation>
 <translation id="4193965531860883258">voorwoord</translation>
-<translation id="4201051445878709314">Vorige maand weergeven</translation>
+<translation id="4201051445878709314">Vorige maand tonen</translation>
 <translation id="421884353938374759">kleurkiezer</translation>
 <translation id="4248100235867064564">menubalk</translation>
 <translation id="4293574643247337246">koptekst van de pagina</translation>
@@ -131,9 +131,9 @@
 <translation id="4812940957355064477">Voer een getal in.</translation>
 <translation id="4912200001568447310">huidig item</translation>
 <translation id="4912536737030637138">bibliografievermelding</translation>
-<translation id="4915360478455618802">Tijdkiezer weergeven</translation>
+<translation id="4915360478455618802">Tijdkiezer tonen</translation>
 <translation id="492244087561876220">reactie</translation>
-<translation id="4950364064308314478">Kiezer voor lokale datum en tijd weergeven</translation>
+<translation id="4950364064308314478">Kiezer voor lokale datum en tijd tonen</translation>
 <translation id="4971739861736909480"><ph name="ACCNAME" /> geselecteerd</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> geselecteerd</translation>
 <translation id="4992066212339426712">Geluid aanzetten</translation>
@@ -143,7 +143,7 @@
 <translation id="5090250355906949916">scrollbar met tijd van de video</translation>
 <translation id="5093189678851173835">epigraaf</translation>
 <translation id="509897012892853729">Blauw kanaal</translation>
-<translation id="5117590920725113268">Volgende maand weergeven</translation>
+<translation id="5117590920725113268">Volgende maand tonen</translation>
 <translation id="512758898067543763">rijkop</translation>
 <translation id="5143125788380636750">epiloog</translation>
 <translation id="5164977714490026579">Waarde moet groter dan of gelijk zijn aan <ph name="MINIMUM" />.</translation>
@@ -190,9 +190,9 @@
 <translation id="6281588256137006900">Helderheid</translation>
 <translation id="6281763101136022427">url</translation>
 <translation id="6310801910862476708">Scherm-in-scherm afsluiten</translation>
-<translation id="6398862346408813489">Deelvenster voor maandselectie weergeven</translation>
+<translation id="6398862346408813489">Deelvenster voor maandselectie tonen</translation>
 <translation id="6404546809543547843">scrollbar met audiotijd</translation>
-<translation id="6443871981718447451">ondertitelingsmenu weergeven</translation>
+<translation id="6443871981718447451">ondertitelingsmenu tonen</translation>
 <translation id="6453774872122745852">dankwoord</translation>
 <translation id="648732519525291180">tijdkiezer</translation>
 <translation id="6550675742724504774">Opties</translation>
@@ -286,7 +286,7 @@
 <translation id="860475260694818407">inhoudsopgave</translation>
 <translation id="8613126697340063924">afspelen bedienen op afstand</translation>
 <translation id="862370744433916922">ondertitel</translation>
-<translation id="8634971699417195529">Maandkiezer weergeven</translation>
+<translation id="8634971699417195529">Maandkiezer tonen</translation>
 <translation id="8668988909814782445">Regelterugloop</translation>
 <translation id="8711688047404765493">uitvoer</translation>
 <translation id="8750798805984357768">Selecteer een van deze opties.</translation>

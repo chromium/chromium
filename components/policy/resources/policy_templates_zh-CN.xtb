@@ -1116,6 +1116,7 @@
 <translation id="2515699738406900920">在 Chrome 启动时是否显示个人资料选择器</translation>
 <translation id="2517466659416174529">允许系统冻结后台标签页</translation>
 <translation id="2518231489509538392">允许播放视频</translation>
+<translation id="2520551905471951523">对音频进程使用高优先级</translation>
 <translation id="2521581787935130926">在书签栏中显示应用快捷方式</translation>
 <translation id="2522304491589804974">配置扩展程序安装许可名单</translation>
 <translation id="2529880111512635313">配置强制安装的应用和扩展程序的列表</translation>
@@ -1774,6 +1775,12 @@
       如果您不设置此政策，则超时时间为 0 毫秒。
 
       如果 <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> 政策未设置，则此政策不会产生任何效力。</translation>
+<translation id="341285788698114069">此政策用于控制音频进程在 Windows 上的优先级。
+      如果此政策已启用，音频进程将以高于普通优先级的优先级运行。
+      如果此政策已停用，音频进程将以普通优先级运行。
+      如果此政策未设置，系统将会使用音频进程的默认配置。
+      此政策只是一种临时措施，旨在让企业能够以更高的优先级运行音频，从而解决某些与音频捕获有关的性能问题。
+      日后我们会移除此政策。</translation>
 <translation id="3412937883532015092">如果此政策设为一个数字，则意味着在打开备用浏览器之前，<ph name="PRODUCT_NAME" /> 会先按照与该数字等同的毫秒数显示一条消息。
 
       如果此政策未设置或设为 0，当用户要前往指定的网址时，系统会立即在备用浏览器中打开相应网页。</translation>
@@ -2533,6 +2540,7 @@
 <translation id="4534500438517478692">Android 限制名称：</translation>
 <translation id="4541530620466526913">设备本地帐号</translation>
 <translation id="4543502256674577024">设备更新设置</translation>
+<translation id="454585952814397564">对音频进程使用普通优先级</translation>
 <translation id="4548555985107150628">此政策已被弃用。请使用 <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> 控制 Flash 插件的可用性，并使用 <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> 控制是否应使用集成式 PDF 查看器打开 PDF 文件。
 
       指定一系列要在 <ph name="PRODUCT_NAME" /> 中启用的插件，并禁止用户更改此设置。
@@ -3148,6 +3156,7 @@
           如果此政策未设置，系统会默认启用“共享剪贴板”功能。
 
           管理员需负责在他们关注的所有平台中设置相应政策。建议在所有平台中将此政策设为同一个值。</translation>
+<translation id="5389708774452952523">允许音频进程在 Windows 上以高于普通优先级的优先级运行</translation>
 <translation id="5389798680516458665">通过设置此政策，您可以创建一个网址格式列表，从而指定哪些网站可以显示图片。
 
       如果您未设置此政策，那么，倘若 <ph name="DEFAULT_IMAGES_SETTING_ENABLED_POLICY_NAME" /> 已设置，系统便会将它应用于所有网站，否则就会应用用户的个人设置。
@@ -4600,6 +4609,7 @@
 
       系统不再支持自动搜索和安装缺失插件。</translation>
 <translation id="7267809745244694722">媒体键默认为功能键</translation>
+<translation id="7269263983506766969">对音频进程使用默认优先级</translation>
 <translation id="7270001383428188269">此客户端证书的标识符。</translation>
 <translation id="7271085005502526897">首次运行时，从默认浏览器导入主页</translation>
 <translation id="7271181393214180342">如果此政策已启用，HTTP 身份验证机制会遵循 KDC 政策的审批结果。换言之，如果 KDC 政策在服务凭单上设置了 <ph name="OK_AS_DELEGATE" />，<ph name="PRODUCT_NAME" /> 便会向要使用的服务委派用户凭据。请参阅 RFC 5896 ( https://tools.ietf.org/html/rfc5896.html )。<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> 也应允许使用该服务。
