@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL Javascript importing JSON Module should load within the context of a service worker promise_test: Unhandled rejection with value: object "TypeError: Failed to register a ServiceWorker for scope ('https://web-platform.test:8444/html/semantics/scripting-1/the-script-element/json-module/') with script ('https://web-platform.test:8444/html/semantics/scripting-1/the-script-element/json-module/serviceworker.js'): ServiceWorker cannot be started"
+PASS Trying to register a service worker with a top-level JSON Module should fail
+PASS JSON Module dynamic import should not load within the context of a service worker
+Harness: the test ran to completion.
+

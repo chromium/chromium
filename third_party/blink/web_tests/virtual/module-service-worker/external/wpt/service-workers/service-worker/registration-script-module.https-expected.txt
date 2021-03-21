@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+PASS Registering invalid chunked encoding script
+PASS Registering invalid chunked encoding script with flush
+PASS Registering script including parse error
+PASS Registering script including undefined error
+PASS Registering script including uncaught exception
+PASS Registering script with top-level await
+PASS Registering non-existent script
+PASS Registering script including caught exception
+Harness: the test ran to completion.
+

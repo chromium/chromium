@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS different scriptURL
+PASS different updateViaCache
+FAIL different type promise_test: Unhandled rejection with value: object "NotSupportedError: type 'module' in RegistrationOptions is not implemented yet.See https://crbug.com/824647 for details."
+Harness: the test ran to completion.
+

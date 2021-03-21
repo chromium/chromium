@@ -7,7 +7,9 @@
 #include <memory>
 #include <utility>
 
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
@@ -179,7 +181,10 @@ class NotReachedWebServiceWorkerProvider : public WebServiceWorkerProvider {
 
 class ServiceWorkerContainerTest : public PageTestBase {
  protected:
-  void SetUp() override { PageTestBase::SetUp(IntSize()); }
+  void SetUp() override {
+    PageTestBase::SetUp(IntSize());
+    feature_list_.InitAndEnableFeature(features::kModuleServiceWorker);
+  }
 
   ~ServiceWorkerContainerTest() override {
     ThreadState::Current()->CollectAllGarbageForTesting();
@@ -222,6 +227,7 @@ class ServiceWorkerContainerTest : public PageTestBase {
         container->getRegistration(GetScriptState(), document_url);
     ExpectRejected(GetScriptState(), promise, value_test);
   }
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(ServiceWorkerContainerTest, Register_CrossOriginScriptIsRejected) {

@@ -34,6 +34,7 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom-blink.h"
 #include "third_party/blink/public/platform/web_fetch_client_settings_object.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -222,7 +223,7 @@ ScriptPromise ServiceWorkerContainer::registerServiceWorker(
   // TODO(crbug.com/824647): Remove this check after module loading for
   // ServiceWorker is enabled by default.
   if (options->type() == "module" &&
-      !RuntimeEnabledFeatures::ModuleServiceWorkerEnabled()) {
+      !base::FeatureList::IsEnabled(features::kModuleServiceWorker)) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotSupportedError,
         "type 'module' in RegistrationOptions is not implemented yet."

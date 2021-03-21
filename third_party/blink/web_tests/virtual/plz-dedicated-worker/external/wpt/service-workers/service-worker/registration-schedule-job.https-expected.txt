@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS different scriptURL
+PASS different updateViaCache
+PASS different type
+Harness: the test ran to completion.
+

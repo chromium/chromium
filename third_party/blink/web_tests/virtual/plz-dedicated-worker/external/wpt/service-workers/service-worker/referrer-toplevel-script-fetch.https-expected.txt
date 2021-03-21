@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS Referrer of the top-level script fetch should be the document URL
+PASS Referrer of the module script fetch should be the document URL
+Harness: the test ran to completion.
+

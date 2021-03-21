@@ -159,6 +159,11 @@ const base::FeatureParam<Prerender2Implementation>
                                    Prerender2Implementation::kWebContents,
                                    &prerender2_implementation_options};
 
+// Enable importing ES Modules for service workers (ModuleServiceWorker).
+// https://crbug.com/824647.
+const base::Feature kModuleServiceWorker{"ModuleServiceWorker",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsPrerender2Enabled() {
   return base::FeatureList::IsEnabled(blink::features::kPrerender2);
 }

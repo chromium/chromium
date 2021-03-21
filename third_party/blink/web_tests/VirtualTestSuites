@@ -318,7 +318,7 @@
   {
     "prefix": "cors-rfc1918",
     "bases": ["http/tests/security/cors-rfc1918"],
-    "args": ["--enable-blink-features=CorsRFC1918"]
+    "args": ["--enable-blink-features=CorsRFC1918,ModuleServiceWorker"]
   },
   {
     "prefix": "single-renderer-process",
@@ -433,13 +433,19 @@
               "fast/workers",
               "http/tests/origin_trials",
               "http/tests/workers"],
-    "args": ["--enable-features=PlzDedicatedWorker"]
+    "args": ["--enable-features=PlzDedicatedWorker,ModuleServiceWorker"]
   },
   {
     "prefix": "plz-dedicated-worker-cors-rfc1918",
     "bases": ["http/tests/security/cors-rfc1918"],
     "args": ["--enable-features=PlzDedicatedWorker",
              "--enable-blink-features=CorsRFC1918"]
+  },
+  {
+    "prefix": "module-service-worker",
+    "bases": ["external/wpt/service-workers",
+              "external/wpt/workers"],
+    "args": ["--enable-features=ModuleServiceWorker"]
   },
   {
     "prefix": "direct-sockets",
@@ -622,7 +628,7 @@
   {
     "prefix": "json-modules",
     "bases": ["external/wpt/html/semantics/scripting-1/the-script-element/json-module"],
-    "args": ["--enable-features=JSONModules", "--js-flags=--harmony-import-assertions"]
+    "args": ["--enable-features=JSONModules,ModuleServiceWorker", "--js-flags=--harmony-import-assertions"]
   },
   {
     "prefix": "css-modules",
