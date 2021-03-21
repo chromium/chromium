@@ -11,7 +11,7 @@
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h"
-#include "base/allocator/partition_allocator/pcscan.h"
+#include "base/allocator/partition_allocator/starscan/pcscan.h"
 #endif
 
 namespace base {

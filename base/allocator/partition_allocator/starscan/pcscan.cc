@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/pcscan.h"
+#include "base/allocator/partition_allocator/starscan/pcscan.h"
 
 #include <algorithm>
 #include <array>
@@ -16,7 +16,6 @@
 
 #include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
-#include "base/allocator/partition_allocator/object_bitmap.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"

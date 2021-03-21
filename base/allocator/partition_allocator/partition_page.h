@@ -9,7 +9,6 @@
 #include <limits>
 
 #include "base/allocator/partition_allocator/address_pool_manager.h"
-#include "base/allocator/partition_allocator/object_bitmap.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -17,6 +16,7 @@
 #include "base/allocator/partition_allocator/partition_bucket.h"
 #include "base/allocator/partition_allocator/partition_freelist_entry.h"
 #include "base/allocator/partition_allocator/random.h"
+#include "base/allocator/partition_allocator/starscan/object_bitmap.h"
 #include "base/check_op.h"
 #include "base/thread_annotations.h"
 

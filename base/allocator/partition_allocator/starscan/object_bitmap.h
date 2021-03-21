@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_OBJECT_BITMAP_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_OBJECT_BITMAP_H_
+#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_OBJECT_BITMAP_H_
+#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_OBJECT_BITMAP_H_
 
 #include <climits>
 #include <cstddef>
@@ -239,4 +239,4 @@ void ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::Clear() {
 }  // namespace internal
 }  // namespace base
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_OBJECT_BITMAP_H_
+#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_OBJECT_BITMAP_H_

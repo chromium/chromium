@@ -46,7 +46,7 @@
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/allocator/partition_allocator/partition_stats.h"
-#include "base/allocator/partition_allocator/pcscan.h"
+#include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/bits.h"
 #include "base/optional.h"

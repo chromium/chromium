@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PCSCAN_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PCSCAN_H_
+#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_PCSCAN_H_
+#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_PCSCAN_H_
 
 #include <atomic>
 
-#include "base/allocator/partition_allocator/object_bitmap.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
@@ -200,4 +199,4 @@ ALWAYS_INLINE void PCScan::MoveToQuarantine(void* ptr, size_t slot_size) {
 }  // namespace internal
 }  // namespace base
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PCSCAN_H_
+#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_STARSCAN_PCSCAN_H_

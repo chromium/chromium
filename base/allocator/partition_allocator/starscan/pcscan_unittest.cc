@@ -5,7 +5,7 @@
 #include "base/allocator/partition_allocator/partition_root.h"
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
-#include "base/allocator/partition_allocator/pcscan.h"
+#include "base/allocator/partition_allocator/starscan/pcscan.h"
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"

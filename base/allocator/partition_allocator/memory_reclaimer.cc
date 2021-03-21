@@ -6,7 +6,7 @@
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/allocator/partition_allocator/pcscan.h"
+#include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"

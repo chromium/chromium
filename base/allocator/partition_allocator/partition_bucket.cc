@@ -5,7 +5,6 @@
 #include "base/allocator/partition_allocator/partition_bucket.h"
 
 #include "base/allocator/partition_allocator/address_pool_manager.h"
-#include "base/allocator/partition_allocator/object_bitmap.h"
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
@@ -17,6 +16,7 @@
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
 #include "base/allocator/partition_allocator/partition_oom.h"
 #include "base/allocator/partition_allocator/partition_page.h"
+#include "base/allocator/partition_allocator/starscan/object_bitmap.h"
 #include "base/bits.h"
 #include "base/check.h"
 #include "build/build_config.h"
