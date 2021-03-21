@@ -40,12 +40,10 @@ void RecordMetrics(const base::TimeTicks& start,
   base::UmaHistogramPercentage(jank_name + suffix, jank);
   // TODO(crbug.com/1143898): Deprecate this metrics once the login/unlock
   // performance issue is resolved.
-  if (duration_name) {
-    base::UmaHistogramCustomTimes(
-        duration_name + suffix, base::TimeDelta::FromMilliseconds(duration_ms),
-        base::TimeDelta::FromMilliseconds(100), base::TimeDelta::FromSeconds(5),
-        50);
-  }
+  base::UmaHistogramCustomTimes(duration_name + suffix,
+                                base::TimeDelta::FromMilliseconds(duration_ms),
+                                base::TimeDelta::FromMilliseconds(100),
+                                base::TimeDelta::FromSeconds(5), 50);
 }
 
 void ReportLogin(base::TimeTicks start,
@@ -65,7 +63,7 @@ void ReportUnlock(base::TimeTicks start,
     return;
   }
   RecordMetrics(start, data, "Ash.UnlockAnimation.Smoothness.",
-                "Ash.UnlockAnimation.Jank.", nullptr);
+                "Ash.UnlockAnimation.Jank.", "Ash.UnlockAnimation.Duration.");
 }
 
 }  // namespace
