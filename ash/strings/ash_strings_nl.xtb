@@ -495,7 +495,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5136175204352732067">Ander toetsenbord aangesloten</translation>
 <translation id="5155897006997040331">Leesnelheid</translation>
 <translation id="5168181903108465623">Cast-apparaten beschikbaar</translation>
-<translation id="5170568018924773124">Weergeven in map</translation>
+<translation id="5170568018924773124">Tonen in map</translation>
 <translation id="5176318573511391780">Opname van gedeeltelijk scherm maken</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 andere melding}other{# andere meldingen}}</translation>
 <translation id="5207949376430453814">Tekstcursor markeren</translation>
@@ -876,7 +876,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="8427213022735114808">Bij dicteren wordt je stem verzonden naar Google, waardoor spraakgestuurd typen in tekstvelden mogelijk wordt.</translation>
 <translation id="8428213095426709021">Instellingen</translation>
 <translation id="8433186206711564395">Netwerkinstellingen</translation>
-<translation id="8433977262951327081">De sneltoets om de ballon van het menu met invoeropties op de plank weer te geven, is gewijzigd. Gebruik <ph name="NEW_SHORTCUT" /> in plaats van <ph name="OLD_SHORTCUT" />.</translation>
+<translation id="8433977262951327081">De sneltoets waarmee je de ballon van het menu met invoeropties op de plank toont, is gewijzigd. Gebruik <ph name="NEW_SHORTCUT" /> in plaats van <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Bureaublad <ph name="DESK_TITILE" /> geactiveerd</translation>
 <translation id="8452135315243592079">Simkaart ontbreekt</translation>
 <translation id="8454013096329229812">Wifi is ingeschakeld.</translation>

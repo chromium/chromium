@@ -1379,7 +1379,7 @@
 <translation id="2501920221385095727">Կպչուն ստեղներ</translation>
 <translation id="2502441965851148920">Ավտոմատ թարմացումները միացված են: Ձեռքով թարմացումներն անջատված են ձեր ադմինիստրատորի կողմից:</translation>
 <translation id="2502719318159902502">Ամբողջական հասանելիություն</translation>
-<translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Էկրան #}one{Screen #}other{Էկրան #}}</translation>
+<translation id="2505324914378689427">{SCREEN_INDEX,plural, =1{Էկրան #}one{Էկրան #}other{Էկրան #}}</translation>
 <translation id="2505402373176859469"><ph name="RECEIVED_AMOUNT" /> / <ph name="TOTAL_SIZE" /></translation>
 <translation id="250704661983564564">Էկրանի տեղադրություն</translation>
 <translation id="2507253002925770350">Տոմսը հեռացվել է</translation>
@@ -3611,7 +3611,7 @@
 <translation id="5059241099014281248">Սահմանափակ մուտք</translation>
 <translation id="5059526285558225588">Ինչ տվյալներ հասանելի դարձնել</translation>
 <translation id="5060332552815861872">Կա 1 տպիչ, որը կարող եք պահել։</translation>
-<translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Այս պանակը էջանիշ է պարունակում: Ուզո՞ւմ եք ջնջել այն:}one{This folder contains # bookmarks. Are you sure you want to delete it?}other{Այս պանակը # էջանիշ է պարունակում: Ուզո՞ւմ եք ջնջել այն:}}</translation>
+<translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Այս պանակը էջանիշ է պարունակում: Ուզո՞ւմ եք ջնջել այն:}one{Այս պանակը պարունակում է # էջանիշ: Ուզո՞ւմ եք ջնջել այն:}other{Այս պանակը պարունակում է # էջանիշ: Ուզո՞ւմ եք ջնջել այն:}}</translation>
 <translation id="5062930723426326933">Մուտքը չհաջողվեց: Կապակցվեք համացանցին և կրկին փորձեք:</translation>
 <translation id="5063480226653192405">Վիճակագրություն</translation>
 <translation id="5065775832226780415">Smart Lock</translation>

@@ -146,7 +146,7 @@
 <translation id="5186036860380548585">Optie beschikbaar boven aan het scherm</translation>
 <translation id="5197729504361054390">De contacten die je selecteert, worden gedeeld met <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="528192093759286357">Sleep vanaf de bovenkant en tik op de knop Terug om het volledige scherm te sluiten.</translation>
-<translation id="5300589172476337783">Weergeven</translation>
+<translation id="5300589172476337783">Tonen</translation>
 <translation id="5301954838959518834">OK, begrepen</translation>
 <translation id="5313967007315987356">Site toevoegen</translation>
 <translation id="5317780077021120954">Opslaan</translation>
@@ -226,7 +226,7 @@
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 geselecteerd}other{# geselecteerd}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> geselecteerd. Opties beschikbaar bovenaan het scherm.</translation>
 <translation id="7128222689758636196">Toestaan voor huidige zoekmachine</translation>
-<translation id="7141896414559753902">Sites niet toestaan pop-ups weer te geven en omleidingen uit te voeren (aanbevolen)</translation>
+<translation id="7141896414559753902">Sites niet toestaan pop-ups te tonen en omleidingen uit te voeren (aanbevolen)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="723171743924126238">Afbeeldingen selecteren</translation>
 <translation id="7243308994586599757">Opties beschikbaar onder aan het scherm</translation>
@@ -274,7 +274,7 @@
 <translation id="8372893542064058268">Synchronisatie op de achtergrond toestaan voor een specifieke site.</translation>
 <translation id="8376384591331888629">Inclusief cookies van derden op deze site</translation>
 <translation id="83792324527827022">Een site gebruikt de camera en microfoon</translation>
-<translation id="8380167699614421159">Deze site geeft opdringerige of misleidende advertenties weer</translation>
+<translation id="8380167699614421159">Deze site toont opdringerige of misleidende advertenties</translation>
 <translation id="8394832520002899662">Tik hier om terug te gaan naar de site</translation>
 <translation id="8425213833346101688">Wijzigen</translation>
 <translation id="8441146129660941386">Achteruit zoeken</translation>
@@ -311,6 +311,6 @@
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en nog <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Schakel rechten in voor <ph name="APP_NAME" /> via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="930525582205581608">Deze site vergeten?</translation>
-<translation id="965817943346481315">Blokkeren als site opdringerige of misleidende advertenties weergeeft (aanbevolen)</translation>
+<translation id="965817943346481315">Blokkeren als site opdringerige of misleidende advertenties toont (aanbevolen)</translation>
 <translation id="967624055006145463">Opgeslagen gegevens</translation>
 </translationbundle>

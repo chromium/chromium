@@ -188,7 +188,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1594030484168838125">Kiezen</translation>
 <translation id="161042844686301425">Cyaan</translation>
 <translation id="1620510694547887537">Camera</translation>
-<translation id="1623104350909869708">Voorkomen dat deze pagina extra dialoogvensters weergeeft</translation>
+<translation id="1623104350909869708">Voorkomen dat deze pagina extra dialoogvensters toont</translation>
 <translation id="16338877384480380">Architecture-B</translation>
 <translation id="1634828734222219955">Totaal</translation>
 <translation id="1638780421120290329">Kan kaart niet opslaan</translation>
@@ -489,7 +489,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2839501879576190149">Nepsite gedetecteerd</translation>
 <translation id="2850739647070081192">Invite (envelop)</translation>
 <translation id="2856444702002559011">Cybercriminelen proberen mogelijk je gegevens van <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> te stelen (bijvoorbeeld wachtwoorden, berichten of creditcardgegevens). <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie<ph name="END_LEARN_MORE_LINK" /></translation>
-<translation id="2859806420264540918">Site geeft opdringerige of misleidende advertenties weer.</translation>
+<translation id="2859806420264540918">Site toont opdringerige of misleidende advertenties.</translation>
 <translation id="2878197950673342043">Kruisvouw</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2880660355386638022">Vensterplaatsing</translation>
@@ -840,7 +840,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="4214357935346142455">profiel inlogscherm</translation>
 <translation id="4215751373031079683">7x9 (envelop)</translation>
 <translation id="4220128509585149162">Crashes</translation>
-<translation id="422022731706691852">Cybercriminelen op <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> proberen je mogelijk te misleiden om programma's te installeren die schadelijk zijn voor de browserfunctionaliteit (door bijvoorbeeld je homepage te wijzigen of extra advertenties weer te geven op sites die je bezoekt). <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="422022731706691852">Cybercriminelen op <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> proberen je mogelijk over te halen om programma's te installeren die schadelijk zijn voor de browserfunctionaliteit (door bijvoorbeeld je homepage te wijzigen of extra advertenties te tonen op sites die je bezoekt). <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4221630205957821124">&lt;h4&gt;Stap 1: Log in bij de portal&lt;/h4&gt;
     &lt;p&gt;Wifi-netwerken op openbare plekken zoals cafés en luchthavens vereisen dat je inlogt. Ga naar een pagina die &lt;code&gt;http://&lt;/code&gt; gebruikt om de inlogpagina te zien.&lt;/p&gt;
     &lt;ol&gt;
@@ -1140,7 +1140,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="5289384342738547352">Verwerking van meerdere documenten</translation>
 <translation id="5295292838686006428">Je wachtwoord is gelekt bij een gegevenslek op een site of in een app. Chrome raadt je aan je opgeslagen wachtwoorden nu te controleren.</translation>
 <translation id="5299298092464848405">Fout bij het parseren van het beleid</translation>
-<translation id="5300589172476337783">Weergeven</translation>
+<translation id="5300589172476337783">Tonen</translation>
 <translation id="5306593769196050043">Beide bladen</translation>
 <translation id="5307166000025436103">OK</translation>
 <translation id="5308380583665731573">Verbinding maken</translation>
@@ -1299,7 +1299,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="5921185718311485855">Aan</translation>
 <translation id="5921639886840618607">Pas opslaan in Google-account?</translation>
 <translation id="5922853866070715753">Bijna klaar</translation>
-<translation id="5932224571077948991">Site geeft opdringerige of misleidende advertenties weer</translation>
+<translation id="5932224571077948991">Site toont opdringerige of misleidende advertenties</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" /> openen…</translation>
 <translation id="5951495562196540101">Kan consumentenaccount niet inschrijven (verpakte licentie beschikbaar).</translation>
@@ -1735,7 +1735,7 @@ Aanvullende informatie:
 <translation id="7663736086183791259">Certificaat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7667346355482952095">Geretourneerde beleidstoken is leeg of komt niet overeen met huidige token</translation>
 <translation id="7668654391829183341">Onbekend apparaat</translation>
-<translation id="7669271284792375604">Cybercriminelen op deze site proberen je mogelijk over te halen om programma's te installeren die schadelijk zijn voor de browsefunctionaliteit (door bijvoorbeeld je homepage te wijzigen of extra advertenties weer te geven op sites die je bezoekt).</translation>
+<translation id="7669271284792375604">Cybercriminelen op deze site proberen je mogelijk over te halen om programma's te installeren die schadelijk zijn voor de browsefunctionaliteit (door bijvoorbeeld je homepage te wijzigen of extra advertenties te tonen op sites die je bezoekt).</translation>
 <translation id="7673278391011283842">Mailbox 6</translation>
 <translation id="7676643023259824263">Zoeken naar klembordtekst, <ph name="TEXT" /></translation>
 <translation id="7682287625158474539">Verzendadres</translation>
