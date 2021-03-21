@@ -107,6 +107,11 @@ int64_t ComputeThreadTicks() {
     return 0;
   }
 
+  // Calling thread_info is currently unsupported when recording/replaying.
+  if (getenv("RECORD_REPLAY_DRIVER")) {
+    return 0;
+  }
+
   mach_msg_type_number_t thread_info_count = THREAD_BASIC_INFO_COUNT;
   thread_basic_info_data_t thread_info_data;
 

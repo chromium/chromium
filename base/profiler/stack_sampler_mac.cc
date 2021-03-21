@@ -32,6 +32,11 @@ std::unique_ptr<StackSampler> StackSampler::Create(
     RepeatingClosure record_sample_callback,
     StackSamplerTestDelegate* test_delegate) {
   DCHECK(!core_unwinders_factory);
+  if (getenv("RECORD_REPLAY_DRIVER")) {
+    // Stack sampling is disabled when recording/replaying, APIs used to inspect
+    // thread state are not currently supported when replaying.
+    return nullptr;
+  }
   return std::make_unique<StackSamplerImpl>(
       std::make_unique<StackCopierSuspend>(
           std::make_unique<SuspendableThreadDelegateMac>(thread_token)),

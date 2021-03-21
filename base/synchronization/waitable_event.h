@@ -283,6 +283,9 @@ class BASE_EXPORT WaitableEvent {
   // blocked as opposed to idle (and potentially replaced if part of a pool).
   bool waiting_is_blocking_ = true;
 
+  // When recording/replaying, this is used to order wait/signal calls.
+  int record_replay_ordered_lock_id_ = 0;
+
   DISALLOW_COPY_AND_ASSIGN(WaitableEvent);
 };
 

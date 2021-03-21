@@ -24,9 +24,26 @@
 
 namespace base {
 
+extern "C" size_t V8RecordReplayCreateOrderedLock(const char* name);
+extern "C" void V8RecordReplayOrderedLock(int lock);
+extern "C" void V8RecordReplayOrderedUnlock(int lock);
+
+// The record/replay driver does not order mach_msg calls when they are used
+// for inter-thread communication. We use an ordered lock to ensure that
+// threads do not return from event waits until after the event has actually
+// been signaled.
+static inline void RecordReplayEnsureOrdered(int lock_id) {
+  if (lock_id) {
+    V8RecordReplayOrderedLock(lock_id);
+    V8RecordReplayOrderedUnlock(lock_id);
+  }
+}
+
 WaitableEvent::WaitableEvent(ResetPolicy reset_policy,
                              InitialState initial_state)
     : policy_(reset_policy) {
+  record_replay_ordered_lock_id_ = (int)V8RecordReplayCreateOrderedLock("WaitableEvent");
+
   mach_port_options_t options{};
   options.flags = MPO_INSERT_SEND_RIGHT;
   options.mpl.mpl_qlimit = 1;
@@ -50,6 +67,8 @@ void WaitableEvent::Reset() {
 
 // NO_THREAD_SAFETY_ANALYSIS: Runtime dependent locking.
 void WaitableEvent::Signal() NO_THREAD_SAFETY_ANALYSIS {
+  RecordReplayEnsureOrdered(record_replay_ordered_lock_id_);
+
   // If using the slow watch-list, copy the watchers to a local. After
   // mach_msg(), the event object may be deleted by an awoken thread.
   const bool use_slow_path = UseSlowWatchList(policy_);
@@ -111,8 +130,10 @@ void WaitableEvent::Wait() {
 }
 
 bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
-  if (wait_delta <= TimeDelta())
+  if (wait_delta <= TimeDelta()) {
+    RecordReplayEnsureOrdered(record_replay_ordered_lock_id_);
     return IsSignaled();
+  }
 
   // Record the event that this thread is blocking upon (for hang diagnosis) and
   // consider blocked for scheduling purposes. Ignore this for non-blocking
@@ -168,6 +189,8 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
     kr = mach_msg(&msg.header, options, 0, rcv_size, receive_right_->Name(),
                   timeout, MACH_PORT_NULL);
   }
+
+  RecordReplayEnsureOrdered(record_replay_ordered_lock_id_);
 
   if (kr == KERN_SUCCESS) {
     return true;
