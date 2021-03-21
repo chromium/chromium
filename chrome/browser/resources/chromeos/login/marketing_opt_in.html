@@ -134,22 +134,19 @@
           <div id="googleUrl">www.google.com</div>
         </div>
       </div>
-      <div slot="bottom-buttons">
-        <div>
-          <oobe-welcome-secondary-button
-              hidden="[[!isA11ySettingsButtonVisible_]]"
-              id="marketing-opt-in-accessibility-button"
-              on-click="onToggleAccessibilityPage_"
-              icon1x="marketing-opt-in-32:accessibility"
-              icon2x="marketing-opt-in-64:accessibility"
-              text-key="marketingOptInA11yButtonLabel">
-          </oobe-welcome-secondary-button>
-        </div>
-        <oobe-text-button on-click="onGetStarted_" class="focus-on-show"
-            inverse text-key="marketingOptInScreenAllSet"
-            id="marketing-opt-in-next-button">
-        </oobe-text-button>
-      </div>
+      <oobe-welcome-secondary-button slot="bottom-buttons"
+          hidden="[[!isA11ySettingsButtonVisible_]]"
+          id="marketing-opt-in-accessibility-button"
+          on-click="onToggleAccessibilityPage_"
+          icon1x="marketing-opt-in-32:accessibility"
+          icon2x="marketing-opt-in-64:accessibility"
+          text-key="marketingOptInA11yButtonLabel">
+      </oobe-welcome-secondary-button>
+      <oobe-text-button slot="bottom-buttons"
+          on-click="onGetStarted_" class="focus-on-show"
+          inverse text-key="marketingOptInScreenAllSet"
+          id="marketing-opt-in-next-button">
+      </oobe-text-button>
     </oobe-adaptive-dialog>
 
     <oobe-adaptive-dialog id="finalAccessibilityPage" role="dialog"
