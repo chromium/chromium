@@ -31,6 +31,11 @@ std::string BuildTranslationTitleText(const std::string& query_text,
 // &lt; &gt; &amp; &quot; &#39;
 std::string UnescapeStringForHTML(const std::string& string);
 
+// Get the ratio between the two given values (divide the larger value by the
+// smaller one, so the result should be greater or equal to 1), return nullopt
+// if not feasible.
+base::Optional<double> GetRatio(const double value1, const double value2);
+
 }  // namespace quick_answers
 }  // namespace chromeos
 

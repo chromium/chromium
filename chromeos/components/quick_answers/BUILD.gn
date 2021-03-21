@@ -38,6 +38,8 @@ source_set("quick_answers") {
     "utils/quick_answers_metrics.h",
     "utils/quick_answers_utils.cc",
     "utils/quick_answers_utils.h",
+    "utils/unit_converter.cc",
+    "utils/unit_converter.h",
   ]
   deps = [
     "//ash/constants",
