@@ -2615,6 +2615,7 @@ static_library("test_support") {
   public = [
     "public/cpp/holding_space/holding_space_test_api.h",
     "public/cpp/test/accessibility_controller_test_api.h",
+    "public/cpp/test/app_list_test_api.h",
     "public/cpp/test/assistant_test_api.h",
   ]
   sources = [
@@ -2685,7 +2686,6 @@ static_library("test_support") {
     "projector/test/mock_projector_metadata_controller.h",
     "projector/test/mock_projector_ui_controller.cc",
     "projector/test/mock_projector_ui_controller.h",
-    "public/cpp/test/app_list_test_api.h",
     "public/cpp/test/shell_test_api.h",
     "rotator/screen_rotation_animator_test_api.cc",
     "rotator/screen_rotation_animator_test_api.h",

@@ -313,6 +313,7 @@ source_set("web_applications_browser_tests") {
 
   if (is_chromeos_ash) {
     deps += [
+      "//ash:test_support",
       "//chrome/browser/chromeos",
       "//chrome/browser/ui",
     ]
