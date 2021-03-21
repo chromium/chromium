@@ -3753,13 +3753,14 @@ if (is_android) {
     ]
 
     deps = [
-      ":jni_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_collection_collection_java",
       "//third_party/androidx:androidx_core_core_java",
       "//third_party/androidx:androidx_multidex_multidex_java",
     ]
+
+    public_deps = [ ":jni_java" ]
 
     sources = [
       "android/java/src/org/chromium/base/ActivityState.java",

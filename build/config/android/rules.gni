@@ -1411,6 +1411,8 @@ if (enable_java_templates) {
   # Variables
   #   deps: Specifies the dependencies of this target. Java targets in this list
   #     will be added to the javac classpath.
+  #   public_deps: Dependencies that this target exposes as part of its public API.
+  #     public_deps do not need to be listed in both the 'deps' and 'public_deps' lists.
   #   annotation_processor_deps: List of java_annotation_processor targets to
   #     use when compiling.
   #
@@ -1565,6 +1567,7 @@ if (enable_java_templates) {
         requires_android =
             defined(invoker.requires_android) && invoker.requires_android
         possible_config_deps = _deps
+        ignore_dependency_public_deps = _direct_deps_only
         build_config = _build_config
       }
 
@@ -1743,6 +1746,7 @@ if (enable_java_templates) {
       possible_config_deps = _deps
       supports_android = true
       requires_android = true
+      ignore_dependency_public_deps = _direct_deps_only
       build_config = _build_config
     }
 

@@ -242,6 +242,14 @@ the current build.
 This type is used to describe target that wrap Java bytecode, either created
 by compiling sources, or providing them with a prebuilt jar.
 
+* `deps_info['public_deps_configs']`: List of paths to the `.build_config` files
+of *direct* dependencies of the current target which are exposed as part of the
+current target's public API. This should be a subset of
+deps_info['deps_configs'].
+
+* `deps_info['ignore_dependency_public_deps']`: If true, 'public_deps' will not
+be collected from the current target's direct deps.
+
 * `deps_info['unprocessed_jar_path']`:
 Path to the original .jar file for this target, before any kind of processing
 through Proguard or other tools. For most targets this is generated
@@ -717,14 +725,20 @@ class Deps(object):
       return self._direct_deps_configs
     return DepsOfType(wanted_type, self._direct_deps_configs)
 
+  def DirectAndChildPublicDeps(self, wanted_type=None):
+    """Returns direct dependencies and dependencies exported via public_deps of
+       direct dependencies.
+    """
+    dep_paths = set(self._direct_deps_config_paths)
+    for direct_dep in self._direct_deps_configs:
+      dep_paths.update(direct_dep.get('public_deps_configs', []))
+    deps_list = [GetDepConfig(p) for p in dep_paths]
+    if wanted_type is None:
+      return deps_list
+    return DepsOfType(wanted_type, deps_list)
+
   def AllConfigPaths(self):
     return self._all_deps_config_paths
-
-  def RemoveNonDirectDep(self, path):
-    if path in self._direct_deps_config_paths:
-      raise Exception('Cannot remove direct dep.')
-    self._all_deps_config_paths.remove(path)
-    self._all_deps_configs.remove(GetDepConfig(path))
 
   def GradlePrebuiltJarPaths(self):
     ret = []
@@ -971,6 +985,15 @@ def main(argv):
       help='Consider the assets as locale paks in BuildConfig.java')
 
   # java library options
+
+  parser.add_option('--public-deps-configs',
+                    help='GN list of config files of deps which are exposed as '
+                    'part of the target\'s public API.')
+  parser.add_option(
+      '--ignore-dependency-public-deps',
+      action='store_true',
+      help='If true, \'public_deps\' will not be collected from the current '
+      'target\'s direct deps.')
   parser.add_option('--aar-path', help='Path to containing .aar file.')
   parser.add_option('--device-jar-path', help='Path to .jar for dexing.')
   parser.add_option('--host-jar-path', help='Path to .jar for java_binary.')
@@ -1248,7 +1271,6 @@ def main(argv):
 
   direct_deps = deps.Direct()
   system_library_deps = deps.Direct('system_java_library')
-  direct_library_deps = deps.Direct('java_library')
   all_deps = deps.All()
   all_library_deps = deps.All('java_library')
   all_resources_deps = deps.All('android_resources')
@@ -1403,6 +1425,9 @@ def main(argv):
     if options.unprocessed_jar_path:
       deps_info['unprocessed_jar_path'] = options.unprocessed_jar_path
       deps_info['interface_jar_path'] = options.interface_jar_path
+    if options.public_deps_configs:
+      deps_info['public_deps_configs'] = build_utils.ParseGnList(
+          options.public_deps_configs)
     if options.device_jar_path:
       deps_info['device_jar_path'] = options.device_jar_path
     if options.host_jar_path:
@@ -1557,15 +1582,23 @@ def main(argv):
 
 
   if is_java_target:
+    if options.ignore_dependency_public_deps:
+      classpath_direct_deps = deps.Direct()
+      classpath_direct_library_deps = deps.Direct('java_library')
+    else:
+      classpath_direct_deps = deps.DirectAndChildPublicDeps()
+      classpath_direct_library_deps = deps.DirectAndChildPublicDeps(
+          'java_library')
+
     # The classpath used to compile this target when annotation processors are
     # present.
     javac_classpath = set(c['unprocessed_jar_path']
-                          for c in direct_library_deps)
+                          for c in classpath_direct_library_deps)
     # The classpath used to compile this target when annotation processors are
     # not present. These are also always used to know when a target needs to be
     # rebuilt.
     javac_interface_classpath = set(c['interface_jar_path']
-                                    for c in direct_library_deps)
+                                    for c in classpath_direct_library_deps)
 
     # Preserve order of |all_library_deps|. Move low priority libraries to the
     # end of the classpath.
@@ -1591,7 +1624,7 @@ def main(argv):
       javac_interface_classpath.add(
           base_module_build_config['deps_info']['interface_jar_path'])
 
-    for dep in direct_deps:
+    for dep in classpath_direct_deps:
       if 'extra_classpath_jars' in dep:
         javac_classpath.update(dep['extra_classpath_jars'])
         javac_interface_classpath.update(dep['extra_classpath_jars'])

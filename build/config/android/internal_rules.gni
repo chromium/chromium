@@ -196,6 +196,7 @@ template("write_build_config") {
     outputs = [ invoker.build_config ]
 
     _deps_configs = []
+    _public_deps_configs = []
     if (defined(invoker.possible_config_deps)) {
       foreach(_possible_dep, invoker.possible_config_deps) {
         _dep_label = get_label_info(_possible_dep, "label_no_toolchain")
@@ -205,22 +206,38 @@ template("write_build_config") {
           deps += [ "$_dep_label$build_config_target_suffix" ]
           _dep_gen_dir = get_label_info(_possible_dep, "target_gen_dir")
           _dep_name = get_label_info(_possible_dep, "name")
-          _deps_configs += [ "$_dep_gen_dir/$_dep_name.build_config" ]
+          _dep_config = "$_dep_gen_dir/$_dep_name.build_config"
+
+          _deps_configs += [ _dep_config ]
+          if (defined(invoker.possible_config_public_deps)) {
+            if (filter_include([ _possible_dep ],
+                               invoker.possible_config_public_deps) != []) {
+              _public_deps_configs += [ _dep_config ]
+            }
+          }
         }
       }
     }
     _rebased_deps_configs = rebase_path(_deps_configs, root_build_dir)
+    _rebased_public_deps_configs =
+        rebase_path(_public_deps_configs, root_build_dir)
 
     args = [
       "--type=$_type",
       "--depfile",
       rebase_path(depfile, root_build_dir),
       "--deps-configs=$_rebased_deps_configs",
+      "--public-deps-configs=$_rebased_public_deps_configs",
       "--build-config",
       rebase_path(invoker.build_config, root_build_dir),
       "--gn-target",
       _target_label,
     ]
+
+    if (defined(invoker.ignore_dependency_public_deps) &&
+        invoker.ignore_dependency_public_deps) {
+      args += [ "--ignore-dependency-public-deps" ]
+    }
 
     if (defined(invoker.aar_path)) {
       args += [
@@ -3242,6 +3259,8 @@ if (enable_java_templates) {
   #    'java_annotation_processor' target types. Should not be set for other
   #    ones.
   #  deps: Dependencies for this target.
+  #  public_deps: Dependencies that this target exposes as part of its public API.
+  #    public_deps do not need to be listed in both the 'deps' and 'public_deps' lists.
   #  testonly: True iff target should only be used for tests.
   #  chromium_code: Optional. Whether this is Chromium-specific code. If not
   #    provided, this is determined automatically, based on the location of
@@ -3341,6 +3360,19 @@ if (enable_java_templates) {
         defined(invoker.supports_android) && invoker.supports_android
     _requires_android =
         defined(invoker.requires_android) && invoker.requires_android
+
+    _invoker_deps = []
+    if (defined(invoker.deps)) {
+      _invoker_deps += invoker.deps
+    }
+    if (defined(invoker.public_deps)) {
+      foreach(_public_dep, invoker.public_deps) {
+        if (filter_include([ _public_dep ], _invoker_deps) != []) {
+          assert(false, "'public_deps' and 'deps' overlap: $_public_dep")
+        }
+      }
+      _invoker_deps += invoker.public_deps
+    }
 
     _main_target_name = target_name
     if (defined(invoker.main_target_name)) {
@@ -3462,20 +3494,17 @@ if (enable_java_templates) {
       _java_header_deps = []
       _java_impl_deps = []
       _non_java_deps = []
-      if (defined(invoker.deps)) {
-        foreach(_dep, invoker.deps) {
-          _target_label = get_label_info(_dep, "label_no_toolchain")
-          if (filter_exclude([ _target_label ], _java_resource_patterns) ==
-              []) {
-            _java_res_deps += [ _dep ]
-          } else if (filter_exclude([ _target_label ],
-                                    _java_library_patterns) == []) {
-            # This is a java library dep, so it has header and impl targets.
-            _java_header_deps += [ "${_target_label}__header" ]
-            _java_impl_deps += [ "${_target_label}__impl" ]
-          } else {
-            _non_java_deps += [ _dep ]
-          }
+      foreach(_dep, _invoker_deps) {
+        _target_label = get_label_info(_dep, "label_no_toolchain")
+        if (filter_exclude([ _target_label ], _java_resource_patterns) == []) {
+          _java_res_deps += [ _dep ]
+        } else if (filter_exclude([ _target_label ], _java_library_patterns) ==
+                   []) {
+          # This is a java library dep, so it has header and impl targets.
+          _java_header_deps += [ "${_target_label}__header" ]
+          _java_impl_deps += [ "${_target_label}__impl" ]
+        } else {
+          _non_java_deps += [ _dep ]
         }
       }
 
@@ -3606,16 +3635,18 @@ if (enable_java_templates) {
 
       # Specifically avoid passing in invoker.base_module_target as one of the
       # possible_config_deps.
-      possible_config_deps = []
+      possible_config_deps = _invoker_deps
       if (defined(_extra_java_deps)) {
-        possible_config_deps = _extra_java_deps
-      }
-      if (defined(invoker.deps)) {
-        possible_config_deps += invoker.deps
+        possible_config_deps += _extra_java_deps
       }
       if (defined(apk_under_test)) {
         possible_config_deps += [ apk_under_test ]
       }
+
+      if (defined(invoker.public_deps)) {
+        possible_config_public_deps = invoker.public_deps
+      }
+
       supports_android = _supports_android
       requires_android = _requires_android
       bypass_platform_checks = defined(invoker.bypass_platform_checks) &&
@@ -3680,9 +3711,7 @@ if (enable_java_templates) {
         # it does act like one (and other resources patterns need to depend on
         # this before they can read its output R.txt).
         _fake_rjava_target = "${target_name}__rjava_resources"
-        if (defined(invoker.deps)) {
-          _possible_resource_deps = invoker.deps
-        }
+        _possible_resource_deps = _invoker_deps
         generate_r_java(_fake_rjava_target) {
           deps = [ ":$_build_config_target_name" ]
           if (defined(_possible_resource_deps)) {
@@ -3982,13 +4011,10 @@ if (enable_java_templates) {
     }
 
     java_lib_group("${target_name}__assetres") {
-      forward_variables_from(invoker, [ "deps" ])
+      deps = _invoker_deps
       group_name = "assetres"
 
       if (defined(_fake_rjava_target)) {
-        if (!defined(deps)) {
-          deps = []
-        }
         deps += [ ":$_fake_rjava_target" ]
       }
     }
@@ -4000,9 +4026,13 @@ if (enable_java_templates) {
                                "data",
                                "data_deps",
                                "deps",
+                               "public_deps",
                                "visibility",
                              ])
-      public_deps = [ ":${target_name}__impl" ]
+      if (!defined(public_deps)) {
+        public_deps = []
+      }
+      public_deps += [ ":${target_name}__impl" ]
       if (defined(_analysis_public_deps)) {
         if (!defined(data_deps)) {
           data_deps = []
