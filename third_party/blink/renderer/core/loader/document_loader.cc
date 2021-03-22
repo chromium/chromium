@@ -199,18 +199,24 @@ void ApplyOriginPolicy(ContentSecurityPolicy* csp,
       SecurityOrigin::Create(response_url);
 
   for (const auto& policy : origin_policy.content_security_policies) {
-    policy_container.AddContentSecurityPolicies(csp->DidReceiveHeader(
-        policy, *self_origin,
-        network::mojom::ContentSecurityPolicyType::kEnforce,
-        network::mojom::ContentSecurityPolicySource::kOriginPolicy));
+    Vector<network::mojom::blink::ContentSecurityPolicyPtr> parsed_policies =
+        ParseContentSecurityPolicies(
+            policy, network::mojom::ContentSecurityPolicyType::kEnforce,
+            network::mojom::ContentSecurityPolicySource::kOriginPolicy,
+            *self_origin);
+    policy_container.AddContentSecurityPolicies(mojo::Clone(parsed_policies));
+    csp->AddPolicies(std::move(parsed_policies));
   }
 
   for (const auto& policy :
        origin_policy.content_security_policies_report_only) {
-    policy_container.AddContentSecurityPolicies(csp->DidReceiveHeader(
-        policy, *self_origin,
-        network::mojom::ContentSecurityPolicyType::kReport,
-        network::mojom::ContentSecurityPolicySource::kOriginPolicy));
+    Vector<network::mojom::blink::ContentSecurityPolicyPtr> parsed_policies =
+        ParseContentSecurityPolicies(
+            policy, network::mojom::ContentSecurityPolicyType::kReport,
+            network::mojom::ContentSecurityPolicySource::kOriginPolicy,
+            *self_origin);
+    policy_container.AddContentSecurityPolicies(mojo::Clone(parsed_policies));
+    csp->AddPolicies(std::move(parsed_policies));
   }
 }
 
