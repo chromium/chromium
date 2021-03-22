@@ -12029,6 +12029,60 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PublicImageCompressionImageLoad">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records image loading and network data use metrics for https image
+    compression. Recorded when an image request completes with successful
+    compression or fails and fetches original image. The bytes are rounded down
+    to the exponential bucket with factor of 1.3.
+  </summary>
+  <metric name="CompressionPercentage">
+    <summary>
+      The compression percent of this image recorded if the image has been
+      compressed: (1-compressed_bytes/original_bytes)*100%
+    </summary>
+  </metric>
+  <metric name="NavigationToRequestSent">
+    <summary>
+      The duration in milliseconds from time of navigation start to the time the
+      image request was sent to the origin or compression server.
+    </summary>
+  </metric>
+  <metric name="NavigationToRequestStart">
+    <summary>
+      The duration in milliseconds from time of navigation start to the time the
+      image request started.
+    </summary>
+  </metric>
+  <metric name="NavigationToResponseReceived">
+    <summary>
+      The duration in milliseconds from time of navigation start to the time the
+      image response headers were received.
+    </summary>
+  </metric>
+  <metric name="OriginalBytes">
+    <summary>
+      The original size of the image before compression. For compressed images
+      this is the original size retrieved from response headers. For
+      non-compressed images this is the network bytes.
+    </summary>
+  </metric>
+  <metric name="RedirectResult" enum="SubresourceRedirectRedirectResult">
+    <summary>
+      Enumerates the different results possible for subresource redirection,
+      such as redirectable or different reasons of ineligibility.
+    </summary>
+  </metric>
+  <metric name="RobotsRulesFetchLatency">
+    <summary>
+      The duration in milliseconds to fetch the robots rules. Recorded for each
+      image that goes through the robots rules check.
+    </summary>
+  </metric>
+</event>
+
 <event name="PWA.Visit" singular="True">
   <owner>yfriedman@chromium.org</owner>
   <owner>hartmanng@chromium.org</owner>

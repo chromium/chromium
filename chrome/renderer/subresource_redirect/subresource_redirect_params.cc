@@ -53,4 +53,10 @@ int MaxRobotsRulesParsersCacheSize() {
       "max_robots_rules_parsers_cache_size", 20);
 }
 
+bool ShouldRecordLoginRobotsUkmMetrics() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      blink::features::kSubresourceRedirect, "record_login_robots_ukm_metrics",
+      true);
+}
+
 }  // namespace subresource_redirect

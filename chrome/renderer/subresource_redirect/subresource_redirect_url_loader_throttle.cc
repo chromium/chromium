@@ -7,8 +7,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "chrome/renderer/previews/resource_loading_hints_agent.h"
+#include "chrome/renderer/subresource_redirect/login_robots_decider_agent.h"
 #include "chrome/renderer/subresource_redirect/redirect_result.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_params.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_util.h"
@@ -25,6 +27,8 @@
 #include "third_party/blink/public/platform/web_network_state_notifier.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/public/web/web_document.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 
 namespace subresource_redirect {
 
@@ -42,6 +46,18 @@ bool IsCompressionServerOrigin(const GURL& url) {
 PublicResourceDeciderAgent* GetPublicResourceDeciderAgent(int render_frame_id) {
   return PublicResourceDeciderAgent::Get(
       content::RenderFrame::FromRoutingID(render_frame_id));
+}
+
+// Records the per image load metrics.
+void RecordMetricsOnLoadFinished(
+    LoginRobotsCompressionMetrics* login_robots_compression_metrics,
+    RedirectResult redirect_result,
+    uint64_t content_length,
+    base::Optional<float> ofcl) {
+  if (login_robots_compression_metrics) {
+    login_robots_compression_metrics->RecordMetricsOnLoadFinished(
+        redirect_result, content_length, ofcl);
+  }
 }
 
 }  // namespace
@@ -78,6 +94,21 @@ SubresourceRedirectURLLoaderThrottle::SubresourceRedirectURLLoaderThrottle(
   redirect_result_ = allowed_to_redirect
                          ? RedirectResult::kRedirectable
                          : RedirectResult::kIneligibleBlinkDisallowed;
+  if (!ShouldRecordLoginRobotsUkmMetrics())
+    return;
+  if (!ShouldEnableLoginRobotsCheckedCompression())
+    return;
+  content::RenderFrame* render_frame =
+      content::RenderFrame::FromRoutingID(render_frame_id);
+  if (!render_frame || !render_frame->GetWebFrame())
+    return;
+  auto* public_resource_decider_agent =
+      GetPublicResourceDeciderAgent(render_frame_id);
+  if (!public_resource_decider_agent)
+    return;
+  login_robots_compression_metrics_ = LoginRobotsCompressionMetrics(
+      render_frame->GetWebFrame()->GetDocument().GetUkmSourceId(),
+      public_resource_decider_agent->GetNavigationStartTime());
 }
 
 SubresourceRedirectURLLoaderThrottle::~SubresourceRedirectURLLoaderThrottle() =
@@ -98,6 +129,9 @@ void SubresourceRedirectURLLoaderThrottle::WillStartRequest(
 
   if (!ShouldCompressRedirectSubresource())
     return;
+
+  if (login_robots_compression_metrics_)
+    login_robots_compression_metrics_->NotifyRequestStart();
 
   auto* public_resource_decider_agent =
       GetPublicResourceDeciderAgent(render_frame_id_);
@@ -121,6 +155,8 @@ void SubresourceRedirectURLLoaderThrottle::WillStartRequest(
   }
 
   // The decider decision has been made.
+  if (login_robots_compression_metrics_)
+    login_robots_compression_metrics_->NotifyRequestSent();
   *defer = false;
   redirect_result_ = *redirect_result;
   if (redirect_result_ != RedirectResult::kRedirectable) {
@@ -138,6 +174,8 @@ void SubresourceRedirectURLLoaderThrottle::NotifyRedirectDeciderDecision(
     RedirectResult redirect_result) {
   DCHECK_EQ(RedirectState::kRedirectDecisionPending, redirect_state_);
   redirect_result_ = redirect_result;
+  if (login_robots_compression_metrics_)
+    login_robots_compression_metrics_->NotifyRequestSent();
 
   if (redirect_result_ != RedirectResult::kRedirectable) {
     // Restart the fetch to the original URL.
@@ -260,8 +298,12 @@ void SubresourceRedirectURLLoaderThrottle::WillProcessResponse(
         response_url, content_length, redirect_result_);
   }
 
-  if (redirect_state_ != RedirectState::kRedirectAttempted)
+  if (redirect_state_ != RedirectState::kRedirectAttempted) {
+    RecordMetricsOnLoadFinished(
+        base::OptionalOrNullptr(login_robots_compression_metrics_),
+        redirect_result_, content_length, base::nullopt);
     return;
+  }
   DCHECK(ShouldCompressRedirectSubresource());
 
   // Record that the server responded.
@@ -269,23 +311,35 @@ void SubresourceRedirectURLLoaderThrottle::WillProcessResponse(
       "SubresourceRedirect.CompressionAttempt.ServerResponded", true);
 
   // If compression was unsuccessful don't try and record compression percent.
-  if (response_head->headers->response_code() != 200)
+  if (response_head->headers->response_code() != 200) {
+    RecordMetricsOnLoadFinished(
+        base::OptionalOrNullptr(login_robots_compression_metrics_),
+        redirect_result_, content_length, base::nullopt);
     return;
+  }
 
-  float ofcl =
+  int64_t ofcl =
       static_cast<float>(data_reduction_proxy::GetDataReductionProxyOFCL(
           response_head->headers.get()));
 
   // If |ofcl| is missing don't compute compression percent.
-  if (ofcl <= 0.0)
+  if (ofcl <= 0) {
+    RecordMetricsOnLoadFinished(
+        base::OptionalOrNullptr(login_robots_compression_metrics_),
+        redirect_result_, content_length, base::nullopt);
     return;
+  }
 
   UMA_HISTOGRAM_PERCENTAGE(
       "SubresourceRedirect.DidCompress.CompressionPercent",
-      static_cast<int>(100 - ((content_length / ofcl) * 100)));
+      static_cast<int>(100 -
+                       ((content_length / static_cast<float>(ofcl)) * 100)));
 
   UMA_HISTOGRAM_COUNTS_1M("SubresourceRedirect.DidCompress.BytesSaved",
-                          static_cast<int>(ofcl - content_length));
+                          ofcl - content_length);
+  RecordMetricsOnLoadFinished(
+      base::OptionalOrNullptr(login_robots_compression_metrics_),
+      redirect_result_, content_length, ofcl);
 }
 
 void SubresourceRedirectURLLoaderThrottle::WillOnCompleteWithError(

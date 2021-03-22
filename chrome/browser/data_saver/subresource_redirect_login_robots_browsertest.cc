@@ -19,10 +19,13 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/subresource_redirect/subresource_redirect_browser_test_util.h"
 #include "components/subresource_redirect/subresource_redirect_test_util.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
@@ -96,6 +99,25 @@ class SubresourceRedirectLoginRobotsBrowserTest : public InProcessBrowserTest {
     return EvalJs(web_contents, script).ExtractBool();
   }
 
+  void CreateUkmRecorder() {
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+  }
+
+  std::map<uint64_t, size_t> GetImageCompressionUkmMetrics() {
+    base::RunLoop().RunUntilIdle();
+    using ImageCompressionUkm = ukm::builders::PublicImageCompressionImageLoad;
+    std::map<uint64_t, size_t> merged_metrics;
+    // Flatten the metrics from multiple ukm sources.
+    for (const auto* metrics :
+         ukm_recorder_->GetEntriesByName(ImageCompressionUkm::kEntryName)) {
+      for (const auto& metric : metrics->metrics) {
+        if (merged_metrics.find(metric.first) == merged_metrics.end())
+          merged_metrics[metric.first] = metric.second;
+      }
+    }
+    return merged_metrics;
+  }
+
  protected:
   bool enable_lite_mode_;
   bool enable_login_robots_compression_feature_;
@@ -109,6 +131,7 @@ class SubresourceRedirectLoginRobotsBrowserTest : public InProcessBrowserTest {
   net::EmbeddedTestServer https_test_server_;
 
   base::HistogramTester histogram_tester_;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
 // Enable tests for linux since LiteMode is enabled only for Android.
@@ -120,6 +143,7 @@ class SubresourceRedirectLoginRobotsBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
                        DISABLE_ON_WIN_MAC_CHROMEOS(TestImageAllowedByRobots)) {
+  CreateUkmRecorder();
   robots_rules_server_.AddRobotsRules(
       GetHttpsTestURL("/"),
       {{kRuleTypeAllow, "/load_image/image.png"}, {kRuleTypeDisallow, ""}});
@@ -142,18 +166,42 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
   robots_rules_server_.VerifyRequestedOrigins({GetHttpsTestURL("/").spec()});
   image_compression_server_.VerifyRequestedImagePaths(
       {"/load_image/image.png"});
+
+  using ImageCompressionUkm = ukm::builders::PublicImageCompressionImageLoad;
+  auto ukm_metrics = GetImageCompressionUkmMetrics();
+  EXPECT_LT(100U, ukm_metrics[ImageCompressionUkm::kOriginalBytesNameHash]);
+  EXPECT_LT(10U,
+            ukm_metrics[ImageCompressionUkm::kCompressionPercentageNameHash]);
+  EXPECT_THAT(ukm_metrics,
+              testing::Contains(testing::Key(
+                  ImageCompressionUkm::kNavigationToRequestStartNameHash)));
+  EXPECT_THAT(ukm_metrics,
+              testing::Contains(testing::Key(
+                  ImageCompressionUkm::kNavigationToRequestSentNameHash)));
+  EXPECT_THAT(ukm_metrics,
+              testing::Contains(testing::Key(
+                  ImageCompressionUkm::kNavigationToResponseReceivedNameHash)));
+  EXPECT_THAT(ukm_metrics,
+              testing::Contains(testing::Key(
+                  ImageCompressionUkm::kRobotsRulesFetchLatencyNameHash)));
+  // TODO(rajendrant): Verify the RedirectResult enum value is correct. The enum
+  // lives in chrome/renderer and it needs to be moved to
+  // components/subresource_redirect/common to access it here.
+  EXPECT_THAT(ukm_metrics, testing::Contains(testing::Key(
+                               ImageCompressionUkm::kRedirectResultNameHash)));
 }
 
 IN_PROC_BROWSER_TEST_F(
     SubresourceRedirectLoginRobotsBrowserTest,
     DISABLE_ON_WIN_MAC_CHROMEOS(TestImageDisallowedByRobots)) {
+  CreateUkmRecorder();
   robots_rules_server_.AddRobotsRules(GetHttpsTestURL("/"),
                                       {{kRuleTypeDisallow, ""}});
   NavigateAndWaitForLoad(browser(), GetHttpsTestURL("/load_image/image.html"));
 
   // The image will start redirect and pause when robots rules are getting
-  // fetched. But when the fetch timesout, it will reset and fetch the original
-  // URL.
+  // fetched. But when the robots rules disallows the image, it will reset and
+  // fetch the original URL.
   histogram_tester_.ExpectUniqueSample(
       "SubresourceRedirect.CompressionAttempt.ResponseCode",
       net::HTTP_TEMPORARY_REDIRECT, 1);
@@ -168,6 +216,30 @@ IN_PROC_BROWSER_TEST_F(
 
   robots_rules_server_.VerifyRequestedOrigins({GetHttpsTestURL("/").spec()});
   image_compression_server_.VerifyRequestedImagePaths({});
+
+  using ImageCompressionUkm = ukm::builders::PublicImageCompressionImageLoad;
+  auto ukm_metrics = GetImageCompressionUkmMetrics();
+  EXPECT_LT(100U, ukm_metrics[ImageCompressionUkm::kOriginalBytesNameHash]);
+  EXPECT_THAT(ukm_metrics,
+              testing::Not(testing::Contains(testing::Key(
+                  ImageCompressionUkm::kCompressionPercentageNameHash))));
+  EXPECT_THAT(ukm_metrics,
+              testing::Contains(testing::Key(
+                  ImageCompressionUkm::kNavigationToRequestStartNameHash)));
+  EXPECT_THAT(ukm_metrics,
+              testing::Contains(testing::Key(
+                  ImageCompressionUkm::kNavigationToRequestSentNameHash)));
+  EXPECT_THAT(ukm_metrics,
+              testing::Contains(testing::Key(
+                  ImageCompressionUkm::kNavigationToResponseReceivedNameHash)));
+  EXPECT_THAT(ukm_metrics,
+              testing::Contains(testing::Key(
+                  ImageCompressionUkm::kRobotsRulesFetchLatencyNameHash)));
+  // TODO(rajendrant): Verify the RedirectResult enum value is correct. The enum
+  // lives in chrome/renderer and it needs to be moved to
+  // components/subresource_redirect/common to access it here.
+  EXPECT_THAT(ukm_metrics, testing::Contains(testing::Key(
+                               ImageCompressionUkm::kRedirectResultNameHash)));
 }
 
 IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
@@ -222,6 +294,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceRedirectLoginRobotsBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     SubresourceRedirectLoginRobotsBrowserTest,
     DISABLE_ON_WIN_MAC_CHROMEOS(TestRobotsRulesFetchTimeout)) {
+  CreateUkmRecorder();
   robots_rules_server_.set_failure_mode(
       RobotsRulesTestServer::FailureMode::kTimeout);
   robots_rules_server_.AddRobotsRules(GetHttpsTestURL("/"),
@@ -250,6 +323,29 @@ IN_PROC_BROWSER_TEST_F(
 
   robots_rules_server_.VerifyRequestedOrigins({GetHttpsTestURL("/").spec()});
   image_compression_server_.VerifyRequestedImagePaths({});
+
+  using ImageCompressionUkm = ukm::builders::PublicImageCompressionImageLoad;
+  auto ukm_metrics = GetImageCompressionUkmMetrics();
+  EXPECT_LT(100U, ukm_metrics[ImageCompressionUkm::kOriginalBytesNameHash]);
+  EXPECT_THAT(ukm_metrics,
+              testing::Not(testing::Contains(testing::Key(
+                  ImageCompressionUkm::kCompressionPercentageNameHash))));
+  EXPECT_THAT(ukm_metrics,
+              testing::Contains(testing::Key(
+                  ImageCompressionUkm::kNavigationToRequestStartNameHash)));
+  // Verify robots rules fetch took closer to the 1 second timeout.
+  EXPECT_LT(900U,
+            ukm_metrics[ImageCompressionUkm::kRobotsRulesFetchLatencyNameHash]);
+  EXPECT_LT(900U,
+            ukm_metrics[ImageCompressionUkm::kNavigationToRequestSentNameHash]);
+  EXPECT_LT(
+      900U,
+      ukm_metrics[ImageCompressionUkm::kNavigationToResponseReceivedNameHash]);
+  // TODO(rajendrant): Verify the RedirectResult enum value is correct. The enum
+  // lives in chrome/renderer and it needs to be moved to
+  // components/subresource_redirect/common to access it here.
+  EXPECT_THAT(ukm_metrics, testing::Contains(testing::Key(
+                               ImageCompressionUkm::kRedirectResultNameHash)));
 }
 
 IN_PROC_BROWSER_TEST_F(

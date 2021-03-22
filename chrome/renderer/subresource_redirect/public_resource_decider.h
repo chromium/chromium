@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/optional.h"
+#include "base/time/time.h"
 #include "chrome/renderer/subresource_redirect/redirect_result.h"
 #include "url/gurl.h"
 
@@ -38,6 +39,9 @@ class PublicResourceDecider {
   // fetches to compression server should be blocked.
   virtual void NotifyCompressedResourceFetchFailed(
       base::TimeDelta retry_after) = 0;
+
+  // Returns the start time of the current navigation.
+  virtual base::TimeTicks GetNavigationStartTime() const = 0;
 };
 
 }  // namespace subresource_redirect

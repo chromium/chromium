@@ -153,6 +153,7 @@ ImageCompressionTestServer::OnServerRequest(
   if (base::ReadFileToString(
           test_data_directory.AppendASCII(GURL(img_url).path().substr(1)),
           &file_contents)) {
+    response->AddCustomHeader("Chrome-Proxy", "ofcl=10000");
     response->set_content(file_contents);
     response->set_code(net::HTTP_OK);
   }

@@ -96,6 +96,8 @@ static_library("renderer") {
     "plugins/plugin_uma.h",
     "previews/resource_loading_hints_agent.cc",
     "previews/resource_loading_hints_agent.h",
+    "subresource_redirect/login_robots_compression_metrics.cc",
+    "subresource_redirect/login_robots_compression_metrics.h",
     "subresource_redirect/login_robots_decider_agent.cc",
     "subresource_redirect/login_robots_decider_agent.h",
     "subresource_redirect/public_image_hints_decider_agent.cc",

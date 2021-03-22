@@ -72106,6 +72106,25 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="11" label="AbortedBecauseSentinelFileWasPresent"/>
 </enum>
 
+<enum name="SubresourceRedirectRedirectResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Redirectable"/>
+  <int value="2" label="Ineligible due to disallowed by Blink"/>
+  <int value="3" label="Ineligible subframe resource"/>
+  <int value="4" label="Ineligible subresource redirect failed"/>
+  <int value="5" label="Ineligible public image hints unavailable"/>
+  <int value="6"
+      label="Ineligible public image hints unavailable, but found to be
+             redirectable later"/>
+  <int value="7"
+      label="Ineligible public image hints unavailable, and found to be
+             missing in the hints later"/>
+  <int value="8" label="Ineligible missing in the public image hints"/>
+  <int value="9" label="Ineligible due to disallowed by robots rules"/>
+  <int value="10" label="Ineligible due to robots rules fetch timeout"/>
+  <int value="11" label="Ineligible due to logged-in page"/>
+</enum>
+
 <enum name="SubresourceRedirectRobotsRulesReceiveResult">
   <int value="0" label="Success"/>
   <int value="1" label="Timeout"/>

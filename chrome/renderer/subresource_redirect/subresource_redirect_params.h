@@ -31,6 +31,9 @@ base::TimeDelta GetRobotsRulesReceiveTimeout();
 // for reuse by the renderframes in the renderer process.
 int MaxRobotsRulesParsersCacheSize();
 
+// Returns whether image compression ukm metrics should be recorded.
+bool ShouldRecordLoginRobotsUkmMetrics();
+
 }  // namespace subresource_redirect
 
 #endif  // CHROME_RENDERER_SUBRESOURCE_REDIRECT_SUBRESOURCE_REDIRECT_PARAMS_H_

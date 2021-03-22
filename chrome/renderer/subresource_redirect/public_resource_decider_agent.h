@@ -41,10 +41,15 @@ class PublicResourceDeciderAgent
 
   void NotifyCompressedResourceFetchFailed(
       base::TimeDelta retry_after) override;
+  base::TimeTicks GetNavigationStartTime() const override;
 
   mojo::AssociatedRemote<
       subresource_redirect::mojom::SubresourceRedirectService>&
   GetSubresourceRedirectServiceRemote();
+
+  // content::RenderFrameObserver:
+  void ReadyToCommitNavigation(
+      blink::WebDocumentLoader* document_loader) override;
 
  private:
   // content::RenderFrameObserver:
@@ -54,6 +59,9 @@ class PublicResourceDeciderAgent
   void BindHintsReceiver(
       mojo::PendingAssociatedReceiver<mojom::SubresourceRedirectHintsReceiver>
           receiver);
+
+  // Maintains the time the current navigation started.
+  base::TimeTicks navigation_start_;
 
   mojo::AssociatedReceiver<mojom::SubresourceRedirectHintsReceiver>
       subresource_redirect_hints_receiver_{this};
