@@ -96,9 +96,9 @@ vars = {
   # be overridden by gclient variables.
   'checkout_google_benchmark': False,
 
-  # Check out and download nacl by default. This can be disabled e.g. with
-  # custom_vars.
-  'checkout_nacl': True,
+  # Check out and download nacl by default, unless on an arm mac.
+  # This can be disabled e.g. with custom_vars.
+  'checkout_nacl': 'not (host_os == "mac" and host_cpu == "arm64")',
 
   # By default, do not check out src-internal. This can be overridden e.g. with
   # custom_vars.
