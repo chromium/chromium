@@ -5,10 +5,12 @@
 #include "chrome/browser/chromeos/full_restore/app_launch_handler.h"
 
 #include <cstdint>
+#include <map>
 #include <memory>
 
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/autotest_desks_api.h"
+#include "ash/shell.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/test/scoped_feature_list.h"
@@ -18,8 +20,11 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
+#include "chrome/browser/chromeos/arc/arc_util.h"
+#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/launcher/app_service/exo_app_type_resolver.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -27,7 +32,14 @@
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/arc/arc_service_manager.h"
+#include "components/arc/arc_util.h"
+#include "components/arc/mojom/app.mojom.h"
+#include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/test/fake_app_instance.h"
+#include "components/exo/shell_surface_util.h"
 #include "components/full_restore/app_launch_info.h"
+#include "components/full_restore/full_restore_info.h"
 #include "components/full_restore/full_restore_read_handler.h"
 #include "components/full_restore/full_restore_save_handler.h"
 #include "components/full_restore/full_restore_utils.h"
@@ -41,6 +53,19 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
 
+namespace mojo {
+
+template <>
+struct TypeConverter<arc::mojom::ArcPackageInfoPtr,
+                     arc::mojom::ArcPackageInfo> {
+  static arc::mojom::ArcPackageInfoPtr Convert(
+      const arc::mojom::ArcPackageInfo& package_info) {
+    return package_info.Clone();
+  }
+};
+
+}  // namespace mojo
+
 namespace chromeos {
 namespace full_restore {
 
@@ -49,6 +74,12 @@ namespace {
 constexpr char kAppId[] = "mldnpnnoiloahfhddhobgjeophloidmo";
 constexpr int32_t kId = 100;
 
+constexpr char kTestAppName[] = "Test ARC App";
+constexpr char kTestAppName2[] = "Test ARC App 2";
+constexpr char kTestAppPackage[] = "test.arc.app.package";
+constexpr char kTestAppActivity[] = "test.arc.app.package.activity";
+constexpr char kTestAppActivity2[] = "test.arc.app.package.activity2";
+
 // Test values for a test WindowInfo object.
 constexpr int kActivationIndex = 2;
 constexpr int kDeskId = 2;
@@ -56,6 +87,33 @@ constexpr gfx::Rect kRestoreBounds(100, 100);
 constexpr gfx::Rect kCurrentBounds(200, 200);
 constexpr chromeos::WindowStateType kWindowStateType =
     chromeos::WindowStateType::kLeftSnapped;
+
+class TestFullRestoreInfoObserver
+    : public ::full_restore::FullRestoreInfo::Observer {
+ public:
+  // ::full_restore::FullRestoreInfo::Observer:
+  void OnAppLaunched(aura::Window* window) override {
+    ++launched_windows_[window];
+  }
+
+  void OnWindowInitialized(aura::Window* window) override {
+    ++initialized_windows_[window];
+  }
+
+  void Reset() {
+    launched_windows_.clear();
+    initialized_windows_.clear();
+  }
+
+  std::map<aura::Window*, int>& launched_windows() { return launched_windows_; }
+  std::map<aura::Window*, int>& initialized_windows() {
+    return initialized_windows_;
+  }
+
+ private:
+  std::map<aura::Window*, int> launched_windows_;
+  std::map<aura::Window*, int> initialized_windows_;
+};
 
 // Creates a WindowInfo object and then saves it.
 void CreateAndSaveWindowInfo(int desk_id,
@@ -89,6 +147,13 @@ void SaveWindowInfo(aura::Window* window) {
   ::full_restore::SaveWindowInfo(window_info);
 }
 
+void SaveWindowInfo(aura::Window* window, uint32_t activation_index) {
+  ::full_restore::WindowInfo window_info;
+  window_info.window = window;
+  window_info.activation_index = activation_index;
+  ::full_restore::SaveWindowInfo(window_info);
+}
+
 void WaitForAppLaunchInfoSaved() {
   ::full_restore::FullRestoreSaveHandler* save_handler =
       ::full_restore::FullRestoreSaveHandler::GetInstance();
@@ -98,6 +163,56 @@ void WaitForAppLaunchInfoSaved() {
     timer->FireNow();
   }
   content::RunAllTasksUntilIdle();
+}
+
+std::string GetTestApp1Id(const std::string& package_name) {
+  return ArcAppListPrefs::GetAppId(package_name, kTestAppActivity);
+}
+
+std::string GetTestApp2Id(const std::string& package_name) {
+  return ArcAppListPrefs::GetAppId(package_name, kTestAppActivity2);
+}
+
+std::vector<arc::mojom::AppInfoPtr> GetTestAppsList(
+    const std::string& package_name,
+    bool multi_app) {
+  std::vector<arc::mojom::AppInfoPtr> apps;
+
+  arc::mojom::AppInfoPtr app(arc::mojom::AppInfo::New());
+  app->name = kTestAppName;
+  app->package_name = package_name;
+  app->activity = kTestAppActivity;
+  app->sticky = false;
+  apps.push_back(std::move(app));
+
+  if (multi_app) {
+    app = arc::mojom::AppInfo::New();
+    app->name = kTestAppName2;
+    app->package_name = package_name;
+    app->activity = kTestAppActivity2;
+    app->sticky = false;
+    apps.push_back(std::move(app));
+  }
+
+  return apps;
+}
+
+// Creates an exo app window and sets its shell application id.
+views::Widget* CreateExoWindow(const std::string& window_app_id) {
+  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  params.bounds = gfx::Rect(5, 5, 20, 20);
+  params.context = ash::Shell::GetPrimaryRootWindow();
+
+  ExoAppTypeResolver().PopulateProperties(window_app_id, /*startup_id=*/"",
+                                          /*for_creation=*/true,
+                                          params.init_properties_container);
+
+  views::Widget* widget = new views::Widget();
+  widget->Init(std::move(params));
+  exo::SetShellApplicationId(widget->GetNativeWindow(), window_app_id);
+  widget->Show();
+  widget->Activate();
+  return widget;
 }
 
 }  // namespace
@@ -553,6 +668,341 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest,
   // Close the window.
   CloseAppWindow(app_window1);
   CloseAppWindow(app_window2);
+}
+
+class AppLaunchHandlerArcAppBrowserTest : public AppLaunchHandlerBrowserTest {
+ protected:
+  // AppLaunchHandlerBrowserTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    AppLaunchHandlerBrowserTest::SetUpCommandLine(command_line);
+    arc::SetArcAvailableCommandLineForTesting(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    AppLaunchHandlerBrowserTest::SetUpInProcessBrowserTestFixture();
+    arc::ArcSessionManager::SetUiEnabledForTesting(false);
+  }
+
+  void SetUpOnMainThread() override {
+    AppLaunchHandlerBrowserTest::SetUpOnMainThread();
+    arc::SetArcPlayStoreEnabledForProfile(profile(), true);
+
+    // This ensures app_prefs()->GetApp() below never returns nullptr.
+    base::RunLoop run_loop;
+    app_prefs()->SetDefaultAppsReadyCallback(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  void StartInstance() {
+    app_instance_ = std::make_unique<arc::FakeAppInstance>(app_host());
+    arc_brige_service()->app()->SetInstance(app_instance_.get());
+  }
+
+  void StopInstance() {
+    if (app_instance_)
+      arc_brige_service()->app()->CloseInstance(app_instance_.get());
+    arc_session_manager()->Shutdown();
+  }
+
+  void SendPackageAdded(const std::string& package_name) {
+    arc::mojom::ArcPackageInfo package_info;
+    package_info.package_name = package_name;
+    package_info.package_version = 1;
+    package_info.last_backup_android_id = 1;
+    package_info.last_backup_time = 1;
+    package_info.sync = false;
+    package_info.system = false;
+    app_host()->OnPackageAdded(arc::mojom::ArcPackageInfo::From(package_info));
+
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void InstallTestApps(const std::string& package_name, bool multi_app) {
+    StartInstance();
+
+    app_host()->OnAppListRefreshed(GetTestAppsList(package_name, multi_app));
+
+    std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
+        app_prefs()->GetApp(GetTestApp1Id(package_name));
+    ASSERT_TRUE(app_info);
+    EXPECT_TRUE(app_info->ready);
+    if (multi_app) {
+      std::unique_ptr<ArcAppListPrefs::AppInfo> app_info2 =
+          app_prefs()->GetApp(GetTestApp2Id(package_name));
+      ASSERT_TRUE(app_info2);
+      EXPECT_TRUE(app_info2->ready);
+    }
+
+    SendPackageAdded(package_name);
+  }
+
+  void CreateTask(const std::string& app_id,
+                  int32_t task_id,
+                  int32_t session_id) {
+    auto info = app_prefs()->GetApp(app_id);
+    app_host()->OnTaskCreated(task_id, info->package_name, info->activity,
+                              info->name, info->intent_uri, session_id);
+  }
+
+  void SetProfile() {
+    ::full_restore::FullRestoreSaveHandler::GetInstance()
+        ->SetPrimaryProfilePath(profile()->GetPath());
+    ::full_restore::SetActiveProfilePath(profile()->GetPath());
+    test_full_restore_info_observer_.Reset();
+  }
+
+  void SaveAppLaunchInfo(const std::string& app_id, int32_t session_id) {
+    ::full_restore::SaveAppLaunchInfo(
+        profile()->GetPath(), std::make_unique<::full_restore::AppLaunchInfo>(
+                                  app_id, ui::EventFlags::EF_NONE, session_id,
+                                  display::kDefaultDisplayId));
+  }
+
+  void Restore() {
+    test_full_restore_info_observer_.Reset();
+
+    auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
+    app_launch_handler->SetShouldRestore();
+    content::RunAllTasksUntilIdle();
+  }
+
+  void VerifyWindowProperty(aura::Window* window,
+                            int32_t window_id,
+                            int32_t restore_window_id,
+                            bool hidden) {
+    ASSERT_TRUE(window);
+    EXPECT_EQ(window_id, window->GetProperty(::full_restore::kWindowIdKey));
+    EXPECT_EQ(restore_window_id,
+              window->GetProperty(::full_restore::kRestoreWindowIdKey));
+    EXPECT_EQ(hidden,
+              window->GetProperty(::full_restore::kParentToHiddenContainerKey));
+  }
+
+  void VerifyWindowInfo(aura::Window* window, int32_t activation_index) {
+    auto window_info = ::full_restore::GetWindowInfo(window);
+    ASSERT_TRUE(window_info);
+    EXPECT_TRUE(window_info->activation_index.has_value());
+    EXPECT_EQ(activation_index, window_info->activation_index.value());
+  }
+
+  void VerifyObserver(aura::Window* window, int launch_count, int init_count) {
+    auto& launched_windows =
+        test_full_restore_info_observer_.launched_windows();
+    if (launch_count == 0) {
+      EXPECT_TRUE(launched_windows.find(window) == launched_windows.end());
+    } else {
+      EXPECT_EQ(launch_count, launched_windows[window]);
+    }
+
+    auto& initialized_windows =
+        test_full_restore_info_observer_.initialized_windows();
+    if (init_count == 0) {
+      EXPECT_TRUE(initialized_windows.find(window) ==
+                  initialized_windows.end());
+    } else {
+      EXPECT_EQ(init_count, initialized_windows[window]);
+    }
+  }
+
+  std::unique_ptr<::full_restore::WindowInfo> GetWindowInfo(
+      int32_t restore_window_id) {
+    return ::full_restore::FullRestoreReadHandler::GetInstance()->GetWindowInfo(
+        restore_window_id);
+  }
+
+  ArcAppListPrefs* app_prefs() { return ArcAppListPrefs::Get(profile()); }
+
+  arc::mojom::AppHost* app_host() { return app_prefs(); }
+
+  TestFullRestoreInfoObserver* test_full_restore_info_observer() {
+    return &test_full_restore_info_observer_;
+  }
+
+ private:
+  arc::ArcSessionManager* arc_session_manager() {
+    return arc::ArcSessionManager::Get();
+  }
+
+  arc::ArcBridgeService* arc_brige_service() {
+    return arc::ArcServiceManager::Get()->arc_bridge_service();
+  }
+
+  std::unique_ptr<arc::FakeAppInstance> app_instance_;
+  TestFullRestoreInfoObserver test_full_restore_info_observer_;
+};
+
+// Test restoration when the ARC window is created before OnTaskCreated is
+// called.
+IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest, RestoreArcApp) {
+  SetProfile();
+  InstallTestApps(kTestAppPackage, false);
+
+  const std::string app_id = GetTestApp1Id(kTestAppPackage);
+  int32_t session_id1 =
+      ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
+  ::full_restore::FullRestoreInfo::GetInstance()->AddObserver(
+      test_full_restore_info_observer());
+
+  SaveAppLaunchInfo(app_id, session_id1);
+
+  // Create the window for app1. The task id needs to match the |window_app_id|
+  // arg of CreateExoWindow.
+  int32_t kTaskId1 = 100;
+  views::Widget* widget = CreateExoWindow("org.chromium.arc.100");
+  aura::Window* window = widget->GetNativeWindow();
+
+  VerifyObserver(window, /*launch_count=*/0, /*init_count=*/0);
+  VerifyWindowProperty(window, kTaskId1, /*restore_window_id=*/0,
+                       /*hidden=*/false);
+
+  // Simulate creating the task.
+  CreateTask(app_id, kTaskId1, session_id1);
+
+  VerifyObserver(window, /*launch_count=*/1, /*init_count=*/0);
+
+  SaveWindowInfo(window);
+
+  WaitForAppLaunchInfoSaved();
+
+  Restore();
+  widget->CloseNow();
+
+  app_host()->OnTaskDestroyed(kTaskId1);
+
+  int32_t session_id2 =
+      ::full_restore::kArcSessionIdOffsetForRestoredLaunching + 1;
+
+  // Create the window to simulate the restoration for the app. The task id
+  // needs to match the |window_app_id| arg of CreateExoWindow.
+  int32_t kTaskId2 = 200;
+  widget = CreateExoWindow("org.chromium.arc.200");
+  window = widget->GetNativeWindow();
+
+  VerifyObserver(window, /*launch_count=*/0, /*init_count=*/1);
+  VerifyWindowProperty(window, kTaskId2,
+                       ::full_restore::kParentToHiddenContainer,
+                       /*hidden=*/true);
+
+  // Simulate creating the task for the restored window.
+  CreateTask(app_id, kTaskId2, session_id2);
+
+  VerifyObserver(window, /*launch_count=*/1, /*init_count=*/2);
+  VerifyWindowProperty(window, kTaskId2, kTaskId1, /*hidden=*/false);
+  VerifyWindowInfo(window, kActivationIndex);
+
+  // Destroy the task and close the window.
+  app_host()->OnTaskDestroyed(kTaskId2);
+  widget->CloseNow();
+
+  ASSERT_FALSE(GetWindowInfo(kTaskId1));
+
+  ::full_restore::FullRestoreInfo::GetInstance()->RemoveObserver(
+      test_full_restore_info_observer());
+  StopInstance();
+}
+
+// Test restoration with multiple ARC apps, when the ARC windows are created
+// before and after OnTaskCreated is called.
+IN_PROC_BROWSER_TEST_F(AppLaunchHandlerArcAppBrowserTest,
+                       RestoreMultipleArcApps) {
+  SetProfile();
+  InstallTestApps(kTestAppPackage, true);
+
+  const std::string app_id1 = GetTestApp1Id(kTestAppPackage);
+  const std::string app_id2 = GetTestApp2Id(kTestAppPackage);
+  int32_t session_id1 =
+      ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
+  int32_t session_id2 =
+      ::full_restore::FullRestoreSaveHandler::GetInstance()->GetArcSessionId();
+  ::full_restore::FullRestoreInfo::GetInstance()->AddObserver(
+      test_full_restore_info_observer());
+
+  SaveAppLaunchInfo(app_id1, session_id1);
+  SaveAppLaunchInfo(app_id2, session_id2);
+
+  // Simulate creating kTaskId1. The task id needs to match the |window_app_id|
+  // arg of CreateExoWindow.
+  int32_t kTaskId1 = 100;
+  CreateTask(app_id1, kTaskId1, session_id1);
+
+  // Create the window for the app1.
+  views::Widget* widget1 = CreateExoWindow("org.chromium.arc.100");
+  aura::Window* window1 = widget1->GetNativeWindow();
+
+  // Create the window for the app2. The task id needs to match the
+  // |window_app_id| arg of CreateExoWindow.
+  int32_t kTaskId2 = 101;
+  views::Widget* widget2 = CreateExoWindow("org.chromium.arc.101");
+  aura::Window* window2 = widget2->GetNativeWindow();
+
+  // Simulate creating kTaskId2.
+  CreateTask(app_id2, kTaskId2, session_id2);
+  VerifyObserver(window1, /*launch_count=*/1, /*init_count=*/0);
+  VerifyObserver(window2, /*launch_count=*/1, /*init_count=*/0);
+
+  VerifyWindowProperty(window1, kTaskId1, /*restore_window_id*/ 0,
+                       /*hidden=*/false);
+  VerifyWindowProperty(window2, kTaskId2, /*restore_window_id*/ 0,
+                       /*hidden=*/false);
+
+  WaitForAppLaunchInfoSaved();
+
+  int32_t activation_index1 = 11;
+  int32_t activation_index2 = 12;
+  SaveWindowInfo(window1, activation_index1);
+  SaveWindowInfo(window2, activation_index2);
+
+  WaitForAppLaunchInfoSaved();
+
+  Restore();
+  widget1->CloseNow();
+  widget2->CloseNow();
+
+  app_host()->OnTaskDestroyed(kTaskId1);
+  app_host()->OnTaskDestroyed(kTaskId2);
+
+  int32_t session_id3 =
+      ::full_restore::kArcSessionIdOffsetForRestoredLaunching + 1;
+  int32_t session_id4 =
+      ::full_restore::kArcSessionIdOffsetForRestoredLaunching + 2;
+
+  // Create the window to simulate the restoration for the app1. The task id
+  // needs to match the |window_app_id| arg of CreateExoWindow.
+  int32_t kTaskId3 = 201;
+  widget1 = CreateExoWindow("org.chromium.arc.201");
+  window1 = widget1->GetNativeWindow();
+
+  VerifyWindowProperty(window1, kTaskId3,
+                       ::full_restore::kParentToHiddenContainer,
+                       /*hidden=*/true);
+
+  // Simulate creating tasks for apps.
+  CreateTask(app_id1, kTaskId3, session_id3);
+
+  int32_t kTaskId4 = 202;
+  CreateTask(app_id2, kTaskId4, session_id4);
+
+  // Create the window to simulate the restoration for the app2.
+  widget2 = CreateExoWindow("org.chromium.arc.202");
+  window2 = widget2->GetNativeWindow();
+
+  VerifyObserver(window1, /*launch_count=*/1, /*init_count=*/2);
+  VerifyObserver(window2, /*launch_count=*/1, /*init_count=*/1);
+  VerifyWindowProperty(window1, kTaskId3, kTaskId1, /*hidden=*/false);
+  VerifyWindowProperty(window2, kTaskId4, kTaskId2, /*hidden=*/false);
+  VerifyWindowInfo(window1, activation_index1);
+  VerifyWindowInfo(window2, activation_index2);
+
+  // destroy tasks and close windows.
+  widget1->CloseNow();
+  app_host()->OnTaskDestroyed(kTaskId3);
+  app_host()->OnTaskDestroyed(kTaskId4);
+  widget2->CloseNow();
+
+  ASSERT_FALSE(GetWindowInfo(kTaskId1));
+  ASSERT_FALSE(GetWindowInfo(kTaskId2));
+
+  StopInstance();
 }
 
 class AppLaunchHandlerNoBrowserBrowserTest
