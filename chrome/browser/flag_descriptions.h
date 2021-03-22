@@ -2753,12 +2753,6 @@ extern const char kShowTapsDescription[];
 extern const char kShowTouchHudName[];
 extern const char kShowTouchHudDescription[];
 
-extern const char kSmartDimModelV3Name[];
-extern const char kSmartDimModelV3Description[];
-
-extern const char kSmartDimNewMlAgentName[];
-extern const char kSmartDimNewMlAgentDescription[];
-
 extern const char kSmbfsFileSharesName[];
 extern const char kSmbfsFileSharesDescription[];
 

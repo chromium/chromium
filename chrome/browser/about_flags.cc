@@ -5812,15 +5812,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAudioWorkletRealtimeThreadDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kAudioWorkletRealtimeThread)},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"smart-dim-model-v3", flag_descriptions::kSmartDimModelV3Name,
-     flag_descriptions::kSmartDimModelV3Description, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kSmartDimModelV3)},
-    {"smart-dim-new-ml-agent", flag_descriptions::kSmartDimNewMlAgentName,
-     flag_descriptions::kSmartDimNewMlAgentDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kSmartDimNewMlAgent)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
     {"privacy-sandbox-settings", flag_descriptions::kPrivacySandboxSettingsName,
      flag_descriptions::kPrivacySandboxSettingsDescription,
      kOsDesktop | kOsAndroid,

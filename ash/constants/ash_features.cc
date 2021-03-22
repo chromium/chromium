@@ -622,16 +622,6 @@ const base::Feature kShowPlayInDemoMode{"ShowPlayInDemoMode",
 const base::Feature kSmartDimExperimentalComponent{
     "SmartDimExperimentalComponent", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Uses the smart dim component updater to provide smart dim model and
-// preprocessor configuration.
-const base::Feature kSmartDimNewMlAgent{"SmartDimNewMlAgent",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Uses the V3 (~2019-05 era) Smart Dim model instead of the default V2
-// (~2018-11) model.
-const base::Feature kSmartDimModelV3{"SmartDimModelV3",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
-
 // This feature:
 // - Creates a new "Sync your settings" section in Chrome OS settings
 // - Moves app, wallpaper and Wi-Fi sync to OS settings

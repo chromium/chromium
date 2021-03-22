@@ -13,7 +13,6 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
 #include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
@@ -162,10 +161,6 @@ class SmartDimMlAgentTest : public testing::Test {
 TEST_F(SmartDimMlAgentTest, SwitchBetweenWorkers) {
   auto* agent = SmartDimMlAgent::GetInstance();
   agent->ResetForTesting();
-  base::test::ScopedFeatureList feature_list;
-  // Enable kSmartDimModelV3, this makes builtin worker use
-  // k20190521ModelDefaultDimThreshold, a relatively high threshold.
-  feature_list.InitAndEnableFeature(features::kSmartDimModelV3);
 
   // Without LoadDownloadableSmartDimComponent, download_worker_ is not ready.
   EXPECT_FALSE(agent->IsDownloadWorkerReady());

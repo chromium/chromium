@@ -284,10 +284,6 @@ extern const base::Feature kShowPlayInDemoMode;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kSmartDimExperimentalComponent;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kSmartDimNewMlAgent;
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kSmartDimModelV3;
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kSplitSettingsSync;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kSystemLatinPhysicalTyping;

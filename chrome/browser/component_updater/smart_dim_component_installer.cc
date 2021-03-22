@@ -54,7 +54,6 @@ const uint8_t kSmartDimPublicKeySHA256[32] = {
 
 const char kMLSmartDimManifestName[] = "Smart Dim";
 
-
 // Read files from the component to strings, should be called from a blocking
 // task runner.
 base::Optional<ComponentFileContents> ReadComponentFiles(
@@ -187,9 +186,6 @@ SmartDimComponentInstallerPolicy::GetInstallerAttributes() const {
 }
 
 void RegisterSmartDimComponent(ComponentUpdateService* cus) {
-  if (!base::FeatureList::IsEnabled(chromeos::features::kSmartDimNewMlAgent))
-    return;
-
   DVLOG(1) << "Registering smart dim component.";
   const std::string expected_version = kVersion.Get();
 
