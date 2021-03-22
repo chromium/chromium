@@ -1115,9 +1115,8 @@ class SingleClientNigoriSyncTestWithSecurityDomainsServer : public SyncTest {
 // Device registration attempt should be taken upon sign in into primary
 // profile. It should be successful when security domain server allows device
 // registration with constant key.
-// Disabled due to flakiness. See crbug.com/1186919.
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTestWithSecurityDomainsServer,
-                       DISABLED_ShouldRegisterDeviceWithConstantKey) {
+                       ShouldRegisterDeviceWithConstantKey) {
   ASSERT_TRUE(SetupSync());
   // TODO(crbug.com/1113599): consider checking member public key (requires
   // either ability to overload key generator in the test or exposing public key
