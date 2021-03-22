@@ -83,7 +83,6 @@ source_set("common") {
     "custom_handlers/protocol_handler_utils.cc",
     "device_memory/approximated_device_memory.cc",
     "dom_storage/session_storage_namespace_id.cc",
-    "experiments/memory_ablation_experiment.cc",
     "features.cc",
     "fetch/fetch_api_request_body_mojom_traits.cc",
     "frame/frame_policy.cc",
