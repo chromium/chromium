@@ -2802,30 +2802,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_EQ(main_origin, subframe->GetLastCommittedOrigin());
 }
 
-class RenderFrameHostCreatedObserver : public WebContentsObserver {
- public:
-  explicit RenderFrameHostCreatedObserver(WebContents* web_contents)
-      : WebContentsObserver(web_contents) {}
-
-  RenderFrameHost* Wait() {
-    if (!new_frame_)
-      run_loop_.Run();
-
-    return new_frame_;
-  }
-
- private:
-  void RenderFrameCreated(RenderFrameHost* render_frame_host) override {
-    new_frame_ = render_frame_host;
-    run_loop_.Quit();
-  }
-
-  base::RunLoop run_loop_;
-  RenderFrameHost* new_frame_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameHostCreatedObserver);
-};
-
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        OriginOfFreshFrame_SandboxedSubframe) {
   NavigationController& controller = web_contents()->GetController();

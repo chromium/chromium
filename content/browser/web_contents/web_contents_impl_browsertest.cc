@@ -129,30 +129,6 @@ class WebContentsImplBrowserTest : public ContentBrowserTest {
     return web_contents->current_fullscreen_frame_;
   }
 
- protected:
-  // Gets script to create subframe.
-  std::string GetSubframeScript(const GURL& sub_frame) {
-    const char kLoadIframeScript[] = R"(
-        let iframe = document.createElement('iframe');
-        iframe.src = $1;
-        document.body.appendChild(iframe);
-      )";
-    return JsReplace(kLoadIframeScript, sub_frame);
-  }
-
-  // Creates and loads subframe, waits for load to stop, and then returns
-  // subframe from the web contents frame tree.
-  RenderFrameHost* CreateSubframe(const GURL& sub_frame) {
-    EXPECT_TRUE(ExecuteScript(shell(), GetSubframeScript(sub_frame)));
-    EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-
-    return static_cast<WebContentsImpl*>(shell()->web_contents())
-        ->GetFrameTree()
-        ->root()
-        ->child_at(0)
-        ->current_frame_host();
-  }
-
  private:
   DISALLOW_COPY_AND_ASSIGN(WebContentsImplBrowserTest);
 };
@@ -585,24 +561,6 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_TRUE(content::ExecuteScript(shell(), kJSCodeForAppendingFrame));
 }
 
-// Observer class to track the creation of RenderFrameHost objects. It is used
-// in subsequent tests.
-class RenderFrameCreatedObserver : public WebContentsObserver {
- public:
-  explicit RenderFrameCreatedObserver(Shell* shell)
-      : WebContentsObserver(shell->web_contents()), last_rfh_(nullptr) {}
-
-  void RenderFrameCreated(RenderFrameHost* render_frame_host) override {
-    last_rfh_ = render_frame_host;
-  }
-
-  RenderFrameHost* last_rfh() const { return last_rfh_; }
-
- private:
-  RenderFrameHost* last_rfh_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameCreatedObserver);
-};
 
 // Test that creation of new RenderFrameHost objects sends the correct object
 // to the WebContentObservers. See http://crbug.com/347339.
@@ -630,7 +588,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   RenderFrameHost* orig_rfh = shell()->web_contents()->GetMainFrame();
 
   // Install the observer and navigate cross-site.
-  RenderFrameCreatedObserver observer(shell());
+  RenderFrameHostCreatedObserver observer(shell()->web_contents());
   EXPECT_TRUE(NavigateToURL(shell(), cross_site_url));
 
   // The observer should've seen a RenderFrameCreated call for the new frame
@@ -3880,8 +3838,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 
   // |url_with_iframes| contains another iframe inside it. This means that we
   // have 4 iframes inside.
-  auto* rfh =
-      static_cast<RenderFrameHostImpl*>(CreateSubframe(url_with_iframes));
+  auto* rfh = static_cast<RenderFrameHostImpl*>(
+      CreateSubframe(web_contents, "" /* frame_id */, url_with_iframes,
+                     true /* wait_for_navigation */));
 
   EXPECT_EQ(web_contents->max_loaded_frame_count_, 4u);
   ASSERT_NE(rfh, nullptr);
@@ -3912,7 +3871,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_EQ(web_contents->max_loaded_frame_count_, 2u);
 
   GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
-  auto* rfh = static_cast<RenderFrameHostImpl*>(CreateSubframe(url));
+  auto* rfh = static_cast<RenderFrameHostImpl*>(CreateSubframe(
+      web_contents, "" /* frame_id */, url, true /* wait_for_navigation */));
+  ;
   ASSERT_NE(rfh, nullptr);
   EXPECT_EQ(web_contents->max_loaded_frame_count_, 3u);
 

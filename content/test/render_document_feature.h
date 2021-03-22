@@ -25,6 +25,11 @@ void InitAndEnableRenderDocumentFeature(
 // The list of values to test for the "level" parameter.
 std::vector<std::string> RenderDocumentFeatureLevelValues();
 
+// Returns the name for |render_document_level| that's valid for test params
+// (only contains alphanumeric characters or underscores).
+std::string GetRenderDocumentLevelNameForTestParams(
+    std::string render_document_level);
+
 }  // namespace content
 
 #endif  // CONTENT_TEST_RENDER_DOCUMENT_FEATURE_H_

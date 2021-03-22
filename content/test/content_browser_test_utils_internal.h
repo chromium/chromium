@@ -73,6 +73,26 @@ WARN_UNUSED_RESULT bool IsExpectedSubframeErrorTransition(
     SiteInstance* start_site_instance,
     SiteInstance* end_site_instance);
 
+// Creates an iframe with id |frame_id| and src set to |url|, and appends it to
+// the main frame's document, waiting until the RenderFrameHostCreated
+// notification is received by the browser. If |wait_for_navigation| is true,
+// will also wait for the first navigation in the iframe to finish. Returns the
+// RenderFrameHost of the iframe.
+RenderFrameHost* CreateSubframe(WebContentsImpl* web_contents,
+                                std::string frame_id,
+                                const GURL& url,
+                                bool wait_for_navigation);
+
+// Open a new popup passing no URL to window.open, which results in a blank page
+// and no last committed entry. Returns the newly created shell. Also saves the
+// reference to the opened window in the "last_opened_window" variable in JS.
+Shell* OpenBlankWindow(WebContentsImpl* web_contents);
+
+// Pop open a new window that navigates to |url|. Returns the newly created
+// shell. Also saves the reference to the opened window in the
+// "last_opened_window" variable in JS.
+Shell* OpenWindow(WebContentsImpl* web_contents, const GURL& url);
+
 // Creates compact textual representations of the state of the frame tree that
 // is appropriate for use in assertions.
 //
@@ -424,7 +444,7 @@ class FrameNavigateParamsCapturer : public WebContentsObserver {
   }
 
   // Sets |wait_for_load_| to determine whether to stop waiting when we receive
-  // DidFInishNavigation or DidStopLoading.
+  // DidFinishNavigation or DidStopLoading.
   void set_wait_for_load(bool wait_for_load) { wait_for_load_ = wait_for_load; }
 
   // Gets various captured parameters from the last navigation.
@@ -492,6 +512,49 @@ class FrameNavigateParamsCapturer : public WebContentsObserver {
   std::vector<bool> has_user_gestures_;
 
   base::RunLoop loop_;
+};
+
+// This observer keeps track of the number of created RenderFrameHosts.  Tests
+// can use this to ensure that a certain number of child frames has been
+// created after navigating (defaults to 1), and can also supply a callback to
+// run on every RenderFrameCreated call.
+class RenderFrameHostCreatedObserver : public WebContentsObserver {
+ public:
+  using OnRenderFrameHostCreatedCallback =
+      base::RepeatingCallback<void(RenderFrameHost*)>;
+
+  explicit RenderFrameHostCreatedObserver(WebContents* web_contents);
+
+  RenderFrameHostCreatedObserver(WebContents* web_contents,
+                                 int expected_frame_count);
+
+  RenderFrameHostCreatedObserver(
+      WebContents* web_contents,
+      OnRenderFrameHostCreatedCallback on_rfh_created);
+
+  ~RenderFrameHostCreatedObserver() override;
+
+  RenderFrameHost* Wait();
+
+  RenderFrameHost* last_rfh() { return last_rfh_; }
+
+ private:
+  void RenderFrameCreated(RenderFrameHost* render_frame_host) override;
+
+  // The number of RenderFrameHosts to wait for.
+  int expected_frame_count_ = 1;
+
+  // The number of RenderFrameHosts that have been created.
+  int frames_created_ = 0;
+
+  // The RunLoop used to spin the message loop.
+  base::RunLoop run_loop_;
+
+  // The last RenderFrameHost created.
+  RenderFrameHost* last_rfh_ = nullptr;
+
+  // The callback to call when a RenderFrameCreated call is observed.
+  OnRenderFrameHostCreatedCallback on_rfh_created_;
 };
 
 }  // namespace content

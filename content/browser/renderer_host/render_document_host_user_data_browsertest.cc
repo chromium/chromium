@@ -67,27 +67,6 @@ class Data : public RenderDocumentHostUserData<Data> {
 
 RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(Data)
 
-// Observer class to track the creation of RenderFrameHost objects. It is used
-// in subsequent tests.
-class RenderFrameHostCreatedObserver : public WebContentsObserver {
- public:
-  using OnRenderFrameHostCreatedCallback =
-      base::RepeatingCallback<void(RenderFrameHost*)>;
-
-  RenderFrameHostCreatedObserver(
-      WebContents* web_contents,
-      OnRenderFrameHostCreatedCallback on_rfh_created)
-      : WebContentsObserver(web_contents),
-        on_rfh_created_(std::move(on_rfh_created)) {}
-
-  void RenderFrameCreated(RenderFrameHost* render_frame_host) override {
-    on_rfh_created_.Run(std::move(render_frame_host));
-  }
-
- private:
-  OnRenderFrameHostCreatedCallback on_rfh_created_;
-};
-
 // Observer class to track creation of new popups. It is used
 // in subsequent tests.
 class PopupCreatedObserver : public WebContentsDelegate {

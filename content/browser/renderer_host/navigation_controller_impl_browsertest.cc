@@ -106,14 +106,9 @@ const char kAddFrameWithSrcScript[] =
 
 }  // namespace
 
-class NavigationControllerBrowserTest
-    : public ContentBrowserTest,
-      public ::testing::WithParamInterface<std::string> {
+class NavigationControllerBrowserTestBase : public ContentBrowserTest {
  public:
-  NavigationControllerBrowserTest() {
-    InitAndEnableRenderDocumentFeature(&feature_list_for_render_document_,
-                                       GetParam());
-  }
+  NavigationControllerBrowserTestBase() = default;
 
  protected:
   void SetUpOnMainThread() override {
@@ -128,6 +123,27 @@ class NavigationControllerBrowserTest
         switches::kExposeInternalsForTesting);
   }
 
+  WebContentsImpl* contents() const {
+    return static_cast<WebContentsImpl*>(shell()->web_contents());
+  }
+};
+
+class NavigationControllerBrowserTest
+    : public NavigationControllerBrowserTestBase,
+      public ::testing::WithParamInterface<std::string> {
+ public:
+  NavigationControllerBrowserTest() {
+    InitAndEnableRenderDocumentFeature(&feature_list_for_render_document_,
+                                       GetParam());
+  }
+
+  // Provides meaningful param names instead of /0, /1, ...
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    return GetRenderDocumentLevelNameForTestParams(info.param);
+  }
+
+ protected:
   // TODO(bokan): There's one test whose result depends on whether the
   // FractionalScrollOffsets feature is enabled in Blink's
   // RuntimeEnabledFeatures. Since there's just one, we can determine the
@@ -138,10 +154,6 @@ class NavigationControllerBrowserTest
     std::string script =
         "internals.runtimeFlags.fractionalScrollOffsetsEnabled";
     return EvalJs(shell(), script).ExtractBool();
-  }
-
-  WebContentsImpl* contents() const {
-    return static_cast<WebContentsImpl*>(shell()->web_contents());
   }
 
   // Creates a form and submits it to |form_submit_url|. Returns the POST ID of
@@ -1415,24 +1427,13 @@ class LoadCommittedCapturer : public WebContentsObserver {
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, SubframeOnEmptyPage) {
   // Navigate to a page to force the renderer process to start.
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
-  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
 
   // Pop open a new window with no last committed entry.
-  ShellAddedObserver new_shell_observer;
-  {
-    std::string script = "window.open()";
-    EXPECT_TRUE(ExecJs(root, script));
-  }
-  Shell* new_shell = new_shell_observer.GetShell();
-  ASSERT_NE(new_shell->web_contents(), shell()->web_contents());
+  Shell* new_shell = OpenBlankWindow(contents());
   FrameTreeNode* new_root =
       static_cast<WebContentsImpl*>(new_shell->web_contents())
           ->GetFrameTree()
           ->root();
-  EXPECT_FALSE(
-      new_shell->web_contents()->GetController().GetLastCommittedEntry());
 
   // Make a new iframe in it.
   NoNavigationsObserver observer(new_shell->web_contents());
@@ -2369,6 +2370,462 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     capturer.Wait();
     EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
         capturer.transition_type(), ui::PAGE_TRANSITION_AUTO_SUBFRAME));
+  }
+}
+
+// Tests for navigations that happen after initial empty document loads on an
+// iframe/opened window. This class is parameterized by both RenderDocumentHost
+// mode and by whether it would do renderer vs browser initiated navigations.
+class InitialEmptyDocNavigationControllerBrowserTest
+    : public NavigationControllerBrowserTestBase,
+      public testing::WithParamInterface<
+          std::tuple<std::string, bool /* renderer_initiated */>> {
+ public:
+  InitialEmptyDocNavigationControllerBrowserTest() {
+    InitAndEnableRenderDocumentFeature(&feature_list_for_render_document_,
+                                       std::get<0>(GetParam()));
+  }
+
+  // Provides meaningful param names instead of /0, /1, ...
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    std::string render_document_level;
+    bool renderer_initiated;
+    std::tie(render_document_level, renderer_initiated) = info.param;
+    return base::StringPrintf(
+        "%s_%s",
+        GetRenderDocumentLevelNameForTestParams(render_document_level).c_str(),
+        renderer_initiated ? "RendererInitiated" : "BrowserInitiated");
+  }
+
+ protected:
+  bool renderer_initiated() { return std::get<1>(GetParam()); }
+
+  // Navigates |node| to |url| then checks if its navigation type is
+  // |navigation_type| and whether other related properties are consistent with
+  // the type. Whether the navigation is renderer-initiated or not depends on
+  // the renderer vs browser initiated parameter of this test class.
+  void NavigateSubframeAndCheckNavigationType(WebContentsImpl* web_contents,
+                                              FrameTreeNode* node,
+                                              std::string frame_id,
+                                              const GURL& url,
+                                              NavigationType expected_type) {
+    DCHECK(!node->IsMainFrame());
+    FrameNavigateParamsCapturer capturer(node);
+    if (renderer_initiated()) {
+      EXPECT_TRUE(NavigateIframeToURL(web_contents, frame_id, url));
+    } else {
+      EXPECT_TRUE(NavigateFrameToURL(node, url));
+    }
+    capturer.Wait();
+
+    EXPECT_EQ(expected_type, capturer.navigation_type());
+
+    if (expected_type == NAVIGATION_TYPE_AUTO_SUBFRAME) {
+      EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
+          capturer.transition(), ui::PAGE_TRANSITION_AUTO_SUBFRAME));
+      // |did_replace_entry| is true because the history item in the renderer
+      // replaced the initial empty document.
+      EXPECT_TRUE(capturer.did_replace_entry());
+
+    } else {
+      EXPECT_EQ(expected_type, NAVIGATION_TYPE_NEW_SUBFRAME);
+      EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
+          capturer.transition(), ui::PAGE_TRANSITION_MANUAL_SUBFRAME));
+      EXPECT_FALSE(capturer.did_replace_entry());
+    }
+  }
+
+  // Navigates |web_contents| to |url| then checks if its navigation type is
+  // NAVIGATION_TYPE_NEW_ENTRY and whether other related properties are
+  // consistent with the type. Whether the navigation is renderer-initiated or
+  // not depends on the renderer vs browser initiated parameter of this test
+  // class.
+  void NavigateWindowAndCheckNavigationTypeIsNewEntry(
+      WebContentsImpl* web_contents,
+      const GURL& url,
+      bool wait_for_previous_navigations = true) {
+    FrameTreeNode* root = web_contents->GetFrameTree()->root();
+    FrameNavigateParamsCapturer capturer(root);
+    if (renderer_initiated()) {
+      EXPECT_TRUE(NavigateToURLFromRenderer(web_contents, url));
+    } else {
+      // Do a browser-initiated navigation. In cases where there's a previous
+      // navigation that hasn't finished and won't finish (e.g. navigations to
+      // /hung), we can't use NavigateToURL(), because it will wait for the
+      // previous navigation to finish first. So, use LoadURLWithParams()
+      // directly in those cases.
+      if (!wait_for_previous_navigations) {
+        NavigationController::LoadURLParams params(url);
+        params.transition_type = ui::PageTransitionFromInt(
+            ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+        web_contents->GetController().LoadURLWithParams(params);
+      } else {
+        // Otherwise, just use NavigateToURL().
+        EXPECT_TRUE(NavigateToURL(web_contents, url));
+      }
+    }
+    capturer.Wait();
+
+    EXPECT_EQ(NAVIGATION_TYPE_NEW_ENTRY, capturer.navigation_type());
+    EXPECT_FALSE(capturer.did_replace_entry());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_for_render_document_;
+};
+
+// Test various navigation cases on newly-created subframes that have only
+// loaded the initial empty document (but might have done other navigations that
+// stay in the initial empty document), to see if the initial empty documents
+// get replaced/not replaced.
+IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
+                       NavigateNewSubframe) {
+  GURL url_1(embedded_test_server()->GetURL("/title1.html"));
+  GURL url_2(embedded_test_server()->GetURL("/title2.html"));
+  GURL hung_url(embedded_test_server()->GetURL("/hung"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+
+  FrameTreeNode* root =
+      static_cast<WebContentsImpl*>(contents())->GetFrameTree()->root();
+  NavigationControllerImpl& controller =
+      static_cast<NavigationControllerImpl&>(contents()->GetController());
+  EXPECT_EQ(1, controller.GetEntryCount());
+
+  int subframe_index = 0;
+  int expected_entry_count = 1;
+
+  // 1) Navigate to |url_2| on a new subframe that hasn't done any navigation.
+  {
+    // Create the "child1" subframe without navigating it.
+    CreateSubframe(contents(), "child1", GURL(),
+                   false /* wait_for_navigation */);
+
+    // Do a navigation on the "child1" subframe to |url_2|.
+    // The navigation is still classified as "auto", so we didn't append a new
+    // NavigationEntry, and instead updated the current NavigationEntry.
+    NavigateSubframeAndCheckNavigationType(
+        contents(), root->child_at(subframe_index), "child1", url_2,
+        NAVIGATION_TYPE_AUTO_SUBFRAME);
+    EXPECT_EQ(expected_entry_count, controller.GetEntryCount());
+  }
+
+  // 2) Navigate to |url_2| on a new subframe that has done a navigation to
+  // about:blank and a same-document navigation to about:blank#foo.
+  {
+    // Create the "child2" subframe with src set to about:blank, navigating it
+    // there.
+    CreateSubframe(contents(), "child2", GURL("about:blank"),
+                   true /* wait_for_navigation */);
+    subframe_index++;
+    EXPECT_EQ(expected_entry_count, controller.GetEntryCount());
+
+    // Do a navigation on the "child1" subframe to about:blank#foo, creating a
+    // same-document navigation. If it's a renderer-initiated navigation, the
+    // navigation will be classified as "auto", so we won't append a new
+    // NavigationEntry, and instead update the current NavigationEntry. However,
+    // if it's a browser-initiated navigation, the navigation is classified as
+    // "new" and will create a new entry instead.
+    // TODO(rakina): Make the browser-initiated and renderer-initiated
+    // navigation case have the same behavior, once the discussion in
+    // https://github.com/whatwg/html/issues/6491 converges.
+    NavigateSubframeAndCheckNavigationType(
+        contents(), root->child_at(subframe_index), "child2",
+        GURL("about:blank#foo"),
+        renderer_initiated() ? NAVIGATION_TYPE_AUTO_SUBFRAME
+                             : NAVIGATION_TYPE_NEW_SUBFRAME);
+    if (!renderer_initiated())
+      expected_entry_count++;
+    EXPECT_EQ(expected_entry_count, controller.GetEntryCount());
+
+    // Do a navigation on the "child2" subframe to |url_2|.
+    NavigateSubframeAndCheckNavigationType(
+        contents(), root->child_at(subframe_index), "child2", url_2,
+        NAVIGATION_TYPE_AUTO_SUBFRAME);
+    // The navigation is still classified as "auto", so we didn't append a new
+    // NavigationEntry, and instead updated the current NavigationEntry.
+    EXPECT_EQ(expected_entry_count, controller.GetEntryCount());
+  }
+
+  // 3) Navigate to |url_2| on a new subframe that has done a navigation to a
+  // data: URL.
+  {
+    // Create the "child3" subframe with src set to a data: URL, navigating it
+    // there.
+    CreateSubframe(contents(), "child3", GURL("data:text/html,foo"),
+                   true /* wait_for_navigation */);
+    subframe_index++;
+    EXPECT_EQ(expected_entry_count, controller.GetEntryCount());
+
+    // Do a navigation on the "child3" subframe to |url_2|.
+    // The navigation is classified as a new navigation, and appended a new
+    // NavigationEntry.
+    NavigateSubframeAndCheckNavigationType(
+        contents(), root->child_at(subframe_index), "child3", url_2,
+        NAVIGATION_TYPE_NEW_SUBFRAME);
+    expected_entry_count++;
+    EXPECT_EQ(expected_entry_count, controller.GetEntryCount());
+  }
+
+  // 4) Navigate to |url_2| on a new subframe that has started a navigation to
+  // a URL that never committed.
+  {
+    // Create the "child4" subframe with src set to a URL that never commits.
+    CreateSubframe(contents(), "child4", hung_url,
+                   false /* wait_for_navigation */);
+    subframe_index++;
+    EXPECT_EQ(expected_entry_count, controller.GetEntryCount());
+
+    // Do a navigation on the "child4" subframe to |url_2|.
+    // The navigation is still classified as "auto", so we didn't append a new
+    // NavigationEntry, and instead updated the current NavigationEntry.
+    NavigateSubframeAndCheckNavigationType(
+        contents(), root->child_at(subframe_index), "child4", url_2,
+        NAVIGATION_TYPE_AUTO_SUBFRAME);
+    EXPECT_EQ(expected_entry_count, controller.GetEntryCount());
+  }
+
+  // 5) Navigate to |url_2| on a new subframe that has done a document.open().
+  {
+    // Create the "child5" subframe.
+    CreateSubframe(contents(), "child5", GURL(),
+                   false /* wait_for_navigation */);
+    subframe_index++;
+    EXPECT_EQ(expected_entry_count, controller.GetEntryCount());
+    EXPECT_EQ(GURL("about:blank"),
+              root->child_at(subframe_index)->current_url());
+
+    {
+      // Do a document.open() on it, generating a same-document navigation.
+      FrameNavigateParamsCapturer capturer(root->child_at(subframe_index));
+      EXPECT_TRUE(ExecJs(shell(), R"(
+          var iframeDoc = document.getElementById("child5").contentDocument;
+          iframeDoc.open();
+          iframeDoc.write("foo");
+          iframeDoc.close();
+      )"));
+      capturer.Wait();
+
+      // The document.open() created a same-document navigation that changed the
+      // subframe's URL to be the same as the main frame's URL.
+      EXPECT_TRUE(capturer.is_same_document());
+      EXPECT_EQ(url_1, root->child_at(subframe_index)->current_url());
+
+      // The navigation is classified as AUTO_SUBFRAME.
+      EXPECT_EQ(NAVIGATION_TYPE_AUTO_SUBFRAME, capturer.navigation_type());
+      EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
+          capturer.transition(), ui::PAGE_TRANSITION_AUTO_SUBFRAME));
+      // The history item in the renderer replaced the initial empty document's
+      // history entry.
+      EXPECT_TRUE(capturer.did_replace_entry());
+      EXPECT_EQ(expected_entry_count, controller.GetEntryCount());
+    }
+
+    // Do a navigation on the "child5" subframe to |url_2|.
+    // The navigation is classified as a new navigation, and appended a new
+    // NavigationEntry.
+    NavigateSubframeAndCheckNavigationType(
+        contents(), root->child_at(subframe_index), "child5", url_2,
+        NAVIGATION_TYPE_NEW_SUBFRAME);
+    expected_entry_count++;
+    EXPECT_EQ(expected_entry_count, controller.GetEntryCount());
+  }
+
+  // 6) Navigate to |url_2| on a new subframe that has done a navigation to
+  // a javascript: url that replaces the document.
+  {
+    // Create the "child6" subframe and set it to a javascript: URL.
+    CreateSubframe(contents(), "child6", GURL("javascript:'foo'"),
+                   false /* wait_for_navigation */);
+    subframe_index++;
+    EXPECT_EQ(expected_entry_count, controller.GetEntryCount());
+
+    // Do a navigation on the "child6" subframe to |url_2|.
+    // The navigation is still classified as "auto", so we didn't append a new
+    // NavigationEntry, and instead updated the current NavigationEntry.
+    NavigateSubframeAndCheckNavigationType(
+        contents(), root->child_at(subframe_index), "child6", url_2,
+        NAVIGATION_TYPE_AUTO_SUBFRAME);
+    EXPECT_EQ(expected_entry_count, controller.GetEntryCount());
+  }
+}
+
+// Test various navigation cases on newly-created windows that have only loaded
+// the initial empty document (but might have done other navigations that stay
+// in the initial empty document), to see if the initial empty documents get
+// replaced/not replaced.
+IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
+                       NavigateNewWindow) {
+  GURL main_window_url(embedded_test_server()->GetURL("/title1.html"));
+  GURL url_2(embedded_test_server()->GetURL("/title2.html"));
+  GURL hung_url(embedded_test_server()->GetURL("/hung"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_window_url));
+  EXPECT_TRUE(ExecJs(contents(), "var last_opened_window = null;"));
+
+  // 1) Navigate to |url_2| on a new window that hasn't done any navigation.
+  {
+    // Create a new blank window that won't create a NavigationEntry.
+    Shell* new_shell = OpenBlankWindow(contents());
+    WebContentsImpl* new_contents =
+        static_cast<WebContentsImpl*>(new_shell->web_contents());
+    NavigationControllerImpl& controller = new_contents->GetController();
+    EXPECT_EQ(0, controller.GetEntryCount());
+    EXPECT_FALSE(controller.GetLastCommittedEntry());
+
+    // Navigating the window to |url_2| will be classified as NEW_ENTRY and will
+    // add a new entry.
+    NavigateWindowAndCheckNavigationTypeIsNewEntry(new_contents, url_2);
+    EXPECT_EQ(1, controller.GetEntryCount());
+    EXPECT_TRUE(controller.GetLastCommittedEntry());
+  }
+
+  // 2) Navigate to about:blank on a new window that hasn't done any navigation.
+  // This case is not enabled for browser-initiated navigation because the
+  // browser-calculated vs renderer-calculated origin doesn't match, leading to
+  // a crash.
+  // TODO(https://crbug.com/1190088): Enable this for browser-initiated
+  // navigations too once the bug is fixed.
+  if (renderer_initiated()) {
+    // Create a new blank window that won't create a NavigationEntry.
+    Shell* new_shell = OpenBlankWindow(contents());
+    WebContentsImpl* new_contents =
+        static_cast<WebContentsImpl*>(new_shell->web_contents());
+    NavigationControllerImpl& controller = new_contents->GetController();
+    EXPECT_EQ(0, controller.GetEntryCount());
+    EXPECT_FALSE(controller.GetLastCommittedEntry());
+
+    // Navigating the window to about:blank will be classified as NEW_ENTRY
+    // and will add a new entry.
+    NavigateWindowAndCheckNavigationTypeIsNewEntry(new_contents,
+                                                   GURL("about:blank"));
+    EXPECT_EQ(1, controller.GetEntryCount());
+    EXPECT_TRUE(controller.GetLastCommittedEntry());
+  }
+
+  // 3) Navigate to about:blank#foo on a new window that hasn't done any
+  // navigation.
+  {
+    // Create a new blank window that won't create a NavigationEntry.
+    Shell* new_shell = OpenBlankWindow(contents());
+    WebContentsImpl* new_contents =
+        static_cast<WebContentsImpl*>(new_shell->web_contents());
+    NavigationControllerImpl& controller = new_contents->GetController();
+    EXPECT_EQ(0, controller.GetEntryCount());
+    EXPECT_FALSE(controller.GetLastCommittedEntry());
+
+    // Navigating the window to about:blank#foo will be classified as NEW_ENTRY
+    // and will add a new entry.
+    NavigateWindowAndCheckNavigationTypeIsNewEntry(new_contents,
+                                                   GURL("about:blank#foo"));
+    EXPECT_EQ(1, controller.GetEntryCount());
+    EXPECT_TRUE(controller.GetLastCommittedEntry());
+  }
+
+  // 4) Navigate to |url_2| on a new window that initially loaded about:blank
+  // and has done a same-document navigation to about:blank#foo.
+  {
+    // Create a new window with URL set to about:blank, which will create a
+    // NavigationEntry.
+    Shell* new_shell = OpenWindow(contents(), GURL("about:blank"));
+    WebContentsImpl* new_contents =
+        static_cast<WebContentsImpl*>(new_shell->web_contents());
+    NavigationControllerImpl& controller = new_contents->GetController();
+    EXPECT_EQ(1, controller.GetEntryCount());
+    NavigationEntryImpl* last_entry = controller.GetLastCommittedEntry();
+    EXPECT_TRUE(last_entry);
+
+    // Do a navigation on the window to about:blank#foo, creating a
+    // same-document navigation.
+    NavigateWindowAndCheckNavigationTypeIsNewEntry(new_contents,
+                                                   GURL("about:blank#foo"));
+    EXPECT_EQ(2, controller.GetEntryCount());
+    EXPECT_NE(last_entry, controller.GetLastCommittedEntry());
+    // Check that we did a same-document navigation (the DSN stays the same).
+    EXPECT_EQ(last_entry->GetMainFrameDocumentSequenceNumber(),
+              controller.GetLastCommittedEntry()
+                  ->GetMainFrameDocumentSequenceNumber());
+    last_entry = controller.GetLastCommittedEntry();
+
+    // Navigating the window to |url_2| will be classified as NEW_ENTRY and will
+    // add a new entry.
+    NavigateWindowAndCheckNavigationTypeIsNewEntry(new_contents, url_2);
+    EXPECT_EQ(3, controller.GetEntryCount());
+    EXPECT_NE(last_entry, controller.GetLastCommittedEntry());
+  }
+
+  // 5) Navigate to |url_2| on a new window that has started a navigation to
+  // a URL that never committed.
+  {
+    // Create a new window with URL set to a URL that never commits, which will
+    // not create a NavigationEntry.
+    Shell* new_shell = OpenWindow(contents(), hung_url);
+    WebContentsImpl* new_contents =
+        static_cast<WebContentsImpl*>(new_shell->web_contents());
+    NavigationControllerImpl& controller = new_contents->GetController();
+    EXPECT_EQ(0, controller.GetEntryCount());
+    EXPECT_FALSE(controller.GetLastCommittedEntry());
+
+    // Navigate to |url_2|, and ensure that we won't wait for the |hung_url|
+    // navigation to finish.
+    NavigateWindowAndCheckNavigationTypeIsNewEntry(
+        new_contents, url_2, false /* wait_for_previous_navigations */);
+    EXPECT_EQ(1, controller.GetEntryCount());
+    EXPECT_TRUE(controller.GetLastCommittedEntry());
+  }
+
+  // 6) Navigate to |url_2| on a new window that has done a document.open().
+  {
+    // Create a new blank window that won't create a NavigationEntry.
+    Shell* new_shell = OpenBlankWindow(contents());
+    WebContentsImpl* new_contents =
+        static_cast<WebContentsImpl*>(new_shell->web_contents());
+    NavigationControllerImpl& controller = new_contents->GetController();
+    EXPECT_EQ(0, controller.GetEntryCount());
+    EXPECT_FALSE(controller.GetLastCommittedEntry());
+
+    {
+      // Do a document.open() on the blank window, generating a same-document
+      // navigation.
+      TestNavigationObserver nav_observer(new_contents);
+      EXPECT_TRUE(ExecJs(contents(), R"(
+          last_opened_window.document.open();
+          last_opened_window.document.write("foo");
+          last_opened_window.document.close();
+      )"));
+      nav_observer.Wait();
+
+      // The document.open() changed the window's URL to be the same as the main
+      // tab's URL, but didn't add a new entry because the navigation is
+      // ignored (see https://crbug.com/1190111).
+      EXPECT_EQ(main_window_url,
+                new_contents->GetFrameTree()->root()->current_url());
+      EXPECT_EQ(0, controller.GetEntryCount());
+    }
+
+    // Navigating the window to |url_2| will be classified as NEW_ENTRY and will
+    // add a new entry.
+    NavigateWindowAndCheckNavigationTypeIsNewEntry(new_contents, url_2);
+    EXPECT_EQ(1, controller.GetEntryCount());
+    EXPECT_TRUE(controller.GetLastCommittedEntry());
+  }
+
+  // 7) Navigate to |url_2| on a new window that has navigated to a javascript:
+  // URL that replaced the initial empty document.
+  {
+    // Create a new window with URL set to a javascript: URL that replaces the
+    // document, which will not create a NavigationEntry.
+    Shell* new_shell = OpenWindow(contents(), GURL("javascript:'foo'"));
+    WebContentsImpl* new_contents =
+        static_cast<WebContentsImpl*>(new_shell->web_contents());
+    NavigationControllerImpl& controller = new_contents->GetController();
+    EXPECT_EQ(0, controller.GetEntryCount());
+    EXPECT_FALSE(controller.GetLastCommittedEntry());
+
+    // Navigating the window to |url_2| will be classified as NEW_ENTRY and will
+    // add a new entry.
+    NavigateWindowAndCheckNavigationTypeIsNewEntry(new_contents, url_2);
+    EXPECT_EQ(1, controller.GetEntryCount());
+    EXPECT_TRUE(controller.GetLastCommittedEntry());
   }
 }
 
@@ -10239,6 +10696,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   ASSERT_EQ(1U, root->child_count());
   ASSERT_NE(nullptr, root->child_at(0));
 
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  EXPECT_EQ(1, controller.GetEntryCount());
+
   {
     // Iframe initial load.
     LoadCommittedCapturer capturer(root->child_at(0));
@@ -10248,6 +10709,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     capturer.Wait();
     EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
         capturer.transition_type(), ui::PAGE_TRANSITION_AUTO_SUBFRAME));
+    EXPECT_EQ(1, controller.GetEntryCount());
   }
 
   {
@@ -10260,6 +10722,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
         capturer.transition(), ui::PAGE_TRANSITION_MANUAL_SUBFRAME));
     EXPECT_EQ(NAVIGATION_TYPE_NEW_SUBFRAME, capturer.navigation_type());
+    EXPECT_EQ(2, controller.GetEntryCount());
   }
 
   {
@@ -10272,13 +10735,11 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_EQ(NAVIGATION_TYPE_NEW_ENTRY, capturer.navigation_type());
     EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
         capturer.transition(), ui::PAGE_TRANSITION_LINK));
+    EXPECT_EQ(3, controller.GetEntryCount());
   }
 
   {
     // Check the history before going back.
-    NavigationControllerImpl& controller =
-        static_cast<NavigationControllerImpl&>(
-            shell()->web_contents()->GetController());
     EXPECT_EQ(3, controller.GetEntryCount());
     EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
         controller.GetEntryAtIndex(0)->GetTransitionType(),
@@ -10310,9 +10771,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   {
     // Check the history again.
-    NavigationControllerImpl& controller =
-        static_cast<NavigationControllerImpl&>(
-            shell()->web_contents()->GetController());
     EXPECT_EQ(3, controller.GetEntryCount());
     EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
         controller.GetEntryAtIndex(0)->GetTransitionType(),
@@ -14777,33 +15235,49 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadFrame) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          NavigationControllerAlertDialogBrowserTest,
-                         testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+                         testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                         NavigationControllerBrowserTest::DescribeParams);
 INSTANTIATE_TEST_SUITE_P(All,
                          NavigationControllerBrowserTest,
-                         testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+                         testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                         NavigationControllerBrowserTest::DescribeParams);
 INSTANTIATE_TEST_SUITE_P(All,
                          NavigationControllerBrowserTestNoServer,
-                         testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+                         testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                         NavigationControllerBrowserTest::DescribeParams);
 INSTANTIATE_TEST_SUITE_P(All,
                          NavigationControllerDisableHistoryIntervention,
-                         testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+                         testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                         NavigationControllerBrowserTest::DescribeParams);
 INSTANTIATE_TEST_SUITE_P(All,
                          NavigationControllerHistoryInterventionBrowserTest,
-                         testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+                         testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                         NavigationControllerBrowserTest::DescribeParams);
 INSTANTIATE_TEST_SUITE_P(
     All,
     NavigationControllerMainDocumentSequenceNumberBrowserTest,
-    testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+    testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+    NavigationControllerBrowserTest::DescribeParams);
 INSTANTIATE_TEST_SUITE_P(All,
                          RequestMonitoringNavigationBrowserTest,
-                         testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+                         testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                         NavigationControllerBrowserTest::DescribeParams);
 INSTANTIATE_TEST_SUITE_P(All,
                          SandboxedNavigationControllerBrowserTest,
-                         testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+                         testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                         NavigationControllerBrowserTest::DescribeParams);
 INSTANTIATE_TEST_SUITE_P(All,
                          SandboxedNavigationControllerWithBfcacheBrowserTest,
-                         testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+                         testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                         NavigationControllerBrowserTest::DescribeParams);
 INSTANTIATE_TEST_SUITE_P(All,
                          SandboxedNavigationControllerPopupBrowserTest,
-                         testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+                         testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                         NavigationControllerBrowserTest::DescribeParams);
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    InitialEmptyDocNavigationControllerBrowserTest,
+    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                     testing::Bool()),
+    InitialEmptyDocNavigationControllerBrowserTest::DescribeParams);
 }  // namespace content

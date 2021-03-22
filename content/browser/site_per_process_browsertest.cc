@@ -341,54 +341,6 @@ void RedirectNotificationObserver::Observe(
   running_ = false;
 }
 
-// This observer keeps track of the number of created RenderFrameHosts.  Tests
-// can use this to ensure that a certain number of child frames has been
-// created after navigating.
-class RenderFrameHostCreatedObserver : public WebContentsObserver {
- public:
-  RenderFrameHostCreatedObserver(WebContents* web_contents,
-                                 int expected_frame_count)
-      : WebContentsObserver(web_contents),
-        expected_frame_count_(expected_frame_count),
-        frames_created_(0) {}
-
-  ~RenderFrameHostCreatedObserver() override;
-
-  // Runs a nested run loop and blocks until the expected number of
-  // RenderFrameHosts is created.
-  void Wait();
-
- private:
-  // WebContentsObserver
-  void RenderFrameCreated(RenderFrameHost* render_frame_host) override;
-
-  // The number of RenderFrameHosts to wait for.
-  int expected_frame_count_;
-
-  // The number of RenderFrameHosts that have been created.
-  int frames_created_;
-
-  // The RunLoop used to spin the message loop.
-  base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameHostCreatedObserver);
-};
-
-RenderFrameHostCreatedObserver::~RenderFrameHostCreatedObserver() {
-}
-
-void RenderFrameHostCreatedObserver::Wait() {
-  run_loop_.Run();
-}
-
-void RenderFrameHostCreatedObserver::RenderFrameCreated(
-    RenderFrameHost* render_frame_host) {
-  frames_created_++;
-  if (frames_created_ == expected_frame_count_) {
-    run_loop_.Quit();
-  }
-}
-
 // This observer detects when WebContents receives notification of a user
 // gesture having occurred, following a user input event targeted to
 // a RenderWidgetHost under that WebContents.

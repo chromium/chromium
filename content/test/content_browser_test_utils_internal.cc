@@ -128,11 +128,59 @@ bool IsExpectedSubframeErrorTransition(SiteInstance* start_site_instance,
   }
 }
 
-FrameTreeVisualizer::FrameTreeVisualizer() {
+RenderFrameHost* CreateSubframe(WebContentsImpl* web_contents,
+                                std::string frame_id,
+                                const GURL& url,
+                                bool wait_for_navigation) {
+  RenderFrameHostCreatedObserver subframe_created_observer(web_contents);
+  TestNavigationObserver subframe_nav_observer(web_contents);
+  if (url.is_empty()) {
+    EXPECT_TRUE(ExecJs(web_contents, JsReplace(R"(
+          var iframe = document.createElement('iframe');
+          iframe.id = $1;
+          document.body.appendChild(iframe);
+      )",
+                                               frame_id)));
+  } else {
+    EXPECT_TRUE(ExecJs(web_contents, JsReplace(R"(
+          var iframe = document.createElement('iframe');
+          iframe.id = $1;
+          iframe.src = $2;
+          document.body.appendChild(iframe);
+      )",
+                                               frame_id, url)));
+  }
+  subframe_created_observer.Wait();
+  if (wait_for_navigation)
+    subframe_nav_observer.Wait();
+  FrameTreeNode* root = web_contents->GetFrameTree()->root();
+  return root->child_at(root->child_count() - 1)->current_frame_host();
 }
 
-FrameTreeVisualizer::~FrameTreeVisualizer() {
+Shell* OpenBlankWindow(WebContentsImpl* web_contents) {
+  FrameTreeNode* root = web_contents->GetFrameTree()->root();
+  ShellAddedObserver new_shell_observer;
+  EXPECT_TRUE(ExecJs(root, "last_opened_window = window.open()"));
+  Shell* new_shell = new_shell_observer.GetShell();
+  EXPECT_NE(new_shell->web_contents(), web_contents);
+  EXPECT_FALSE(
+      new_shell->web_contents()->GetController().GetLastCommittedEntry());
+  return new_shell;
 }
+
+Shell* OpenWindow(WebContentsImpl* web_contents, const GURL& url) {
+  FrameTreeNode* root = web_contents->GetFrameTree()->root();
+  ShellAddedObserver new_shell_observer;
+  EXPECT_TRUE(
+      ExecJs(root, JsReplace("last_opened_window = window.open($1)", url)));
+  Shell* new_shell = new_shell_observer.GetShell();
+  EXPECT_NE(new_shell->web_contents(), web_contents);
+  return new_shell;
+}
+
+FrameTreeVisualizer::FrameTreeVisualizer() = default;
+
+FrameTreeVisualizer::~FrameTreeVisualizer() = default;
 
 std::string FrameTreeVisualizer::DepictFrameTree(FrameTreeNode* root) {
   // Tracks the sites actually used in this depiction.
@@ -704,6 +752,41 @@ void FrameNavigateParamsCapturer::Wait() {
 void FrameNavigateParamsCapturer::DidStopLoading() {
   if (!navigations_remaining_)
     loop_.Quit();
+}
+
+RenderFrameHostCreatedObserver::RenderFrameHostCreatedObserver(
+    WebContents* web_contents)
+    : WebContentsObserver(web_contents) {}
+
+RenderFrameHostCreatedObserver::RenderFrameHostCreatedObserver(
+    WebContents* web_contents,
+    int expected_frame_count)
+    : WebContentsObserver(web_contents),
+      expected_frame_count_(expected_frame_count) {}
+
+RenderFrameHostCreatedObserver::RenderFrameHostCreatedObserver(
+    WebContents* web_contents,
+    OnRenderFrameHostCreatedCallback on_rfh_created)
+    : WebContentsObserver(web_contents),
+      on_rfh_created_(std::move(on_rfh_created)) {}
+
+RenderFrameHostCreatedObserver::~RenderFrameHostCreatedObserver() = default;
+
+RenderFrameHost* RenderFrameHostCreatedObserver::Wait() {
+  if (frames_created_ < expected_frame_count_)
+    run_loop_.Run();
+
+  return last_rfh_;
+}
+
+void RenderFrameHostCreatedObserver::RenderFrameCreated(
+    RenderFrameHost* render_frame_host) {
+  frames_created_++;
+  last_rfh_ = render_frame_host;
+  if (on_rfh_created_)
+    on_rfh_created_.Run(render_frame_host);
+  if (frames_created_ == expected_frame_count_)
+    run_loop_.Quit();
 }
 
 }  // namespace content
