@@ -36,7 +36,6 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.ProfileDataSource;
 import org.chromium.components.signin.ProfileDataSource.ProfileData;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +44,7 @@ import java.util.Map;
  * Fetches and caches Google Account profile images and full names for the accounts on the device.
  */
 @MainThread
-public class ProfileDataCache implements ProfileDataSource.Observer, IdentityManager.Observer {
+public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfoService.Observer {
     /**
      * Observer to get notifications about changes in profile data.
      */
@@ -103,7 +102,7 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final Map<String, DisplayableProfileData> mCachedProfileData = new HashMap<>();
     private @Nullable ProfileDataSource mProfileDataSource;
-    private final IdentityManager mIdentityManager;
+    private final AccountInfoService mAccountInfoService;
 
     @VisibleForTesting
     ProfileDataCache(Context context, @Px int imageSize, @Nullable BadgeConfig badgeConfig) {
@@ -112,8 +111,9 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
         mBadgeConfig = badgeConfig;
         mPlaceholderImage = getScaledPlaceholderImage(context, imageSize);
         mProfileDataSource = AccountManagerFacadeProvider.getInstance().getProfileDataSource();
-        mIdentityManager = IdentityServicesProvider.get().getIdentityManager(
-                Profile.getLastUsedRegularProfile());
+        mAccountInfoService =
+                AccountInfoService.get(IdentityServicesProvider.get().getIdentityManager(
+                        Profile.getLastUsedRegularProfile()));
     }
 
     /**
@@ -186,7 +186,7 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
             if (mProfileDataSource != null) {
                 mProfileDataSource.addObserver(this);
             }
-            mIdentityManager.addObserver(this);
+            mAccountInfoService.addObserver(this);
             populateCache();
         }
         mObservers.addObserver(observer);
@@ -202,7 +202,7 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
             if (mProfileDataSource != null) {
                 mProfileDataSource.removeObserver(this);
             }
-            mIdentityManager.removeObserver(this);
+            mAccountInfoService.removeObserver(this);
         }
     }
 
@@ -214,8 +214,7 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
                     onProfileDataUpdated(profileData);
                 }
             } else {
-                AccountInfoService.get().startFetchingAccountInfoFor(
-                        accountEmail, this::onExtendedAccountInfoUpdated);
+                mAccountInfoService.startFetchingAccountInfoFor(accountEmail, this);
             }
         };
         AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(accounts -> {
@@ -232,9 +231,7 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
         Bitmap avatar = profileData.getAvatar();
         if (avatar == null) {
             // If the avatar is null, try to fetch the monogram from IdentityManager
-            final AccountInfo accountInfo =
-                    mIdentityManager
-                            .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(email);
+            final AccountInfo accountInfo = mAccountInfoService.getAccountInfoByEmail(email);
             avatar = accountInfo != null ? accountInfo.getAccountImage() : null;
         }
         updateCacheAndNotifyObservers(
@@ -248,10 +245,10 @@ public class ProfileDataCache implements ProfileDataSource.Observer, IdentityMan
     }
 
     /**
-     * Implements {@link IdentityManager.Observer}.
+     * Implements {@link AccountInfoService.Observer}.
      */
     @Override
-    public void onExtendedAccountInfoUpdated(AccountInfo accountInfo) {
+    public void onAccountInfoUpdated(AccountInfo accountInfo) {
         if (accountInfo.getAccountImage() != null) {
             updateCacheAndNotifyObservers(accountInfo.getEmail(), accountInfo.getAccountImage(),
                     accountInfo.getFullName(), accountInfo.getGivenName());
