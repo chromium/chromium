@@ -20,6 +20,10 @@ void LaserPointerControllerTestApi::SetEnabled(bool enabled) {
   instance_->SetEnabled(enabled);
 }
 
+bool LaserPointerControllerTestApi::IsEnabled() const {
+  return instance_->is_enabled();
+}
+
 bool LaserPointerControllerTestApi::IsShowingLaserPointer() const {
   return !!instance_->laser_pointer_view_widget_;
 }

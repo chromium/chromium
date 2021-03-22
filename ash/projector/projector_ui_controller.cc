@@ -38,6 +38,18 @@ void AddExcludedWindowToFastInkController(aura::Window* window) {
   Shell::Get()->laser_pointer_controller()->AddExcludedWindow(window);
 }
 
+void EnableLaserPointer(bool enabled) {
+  auto* laser_pointer_controller = Shell::Get()->laser_pointer_controller();
+  DCHECK(laser_pointer_controller);
+  Shell::Get()->laser_pointer_controller()->SetEnabled(enabled);
+}
+
+void EnableMarker(bool enabled) {
+  auto* marker_controller = MarkerController::Get();
+  DCHECK(marker_controller);
+  MarkerController::Get()->SetEnabled(enabled);
+}
+
 }  // namespace
 
 ProjectorUiController::ProjectorUiController(
@@ -76,8 +88,13 @@ void ProjectorUiController::OnKeyIdeaMarked() {
 void ProjectorUiController::OnLaserPointerPressed() {
   auto* laser_pointer_controller = Shell::Get()->laser_pointer_controller();
   DCHECK(laser_pointer_controller);
+  EnableLaserPointer(!laser_pointer_controller->is_enabled());
+}
 
-  laser_pointer_controller->SetEnabled(!laser_pointer_controller->is_enabled());
+void ProjectorUiController::OnMarkerPressed() {
+  auto* marker_controller = MarkerController::Get();
+  DCHECK(marker_controller);
+  EnableMarker(!marker_controller->is_enabled());
 }
 
 void ProjectorUiController::OnTranscription(const std::string& transcription,
@@ -86,9 +103,9 @@ void ProjectorUiController::OnTranscription(const std::string& transcription,
 // TODO(llin): Refactor this logic into ProjectorTool and ProjectorToolManager.
 void ProjectorUiController::ResetTools() {
   // Reset laser pointer.
-  auto* laser_pointer_controller = Shell::Get()->laser_pointer_controller();
-  if (laser_pointer_controller->is_enabled())
-    Shell::Get()->laser_pointer_controller()->SetEnabled(false);
+  EnableLaserPointer(false);
+  // Reset marker.
+  EnableMarker(false);
 }
 
 bool ProjectorUiController::IsToolbarVisible() const {

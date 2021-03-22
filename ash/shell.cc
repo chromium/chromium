@@ -72,6 +72,7 @@
 #include "ash/magnifier/docked_magnifier_controller_impl.h"
 #include "ash/magnifier/magnification_controller.h"
 #include "ash/magnifier/partial_magnification_controller.h"
+#include "ash/marker/marker_controller.h"
 #include "ash/media/media_controller_impl.h"
 #include "ash/media/media_notification_controller_impl.h"
 #include "ash/metrics/login_unlock_throughput_recorder.h"
@@ -760,6 +761,7 @@ Shell::~Shell() {
   // Alphabetical. TODO(oshima): sort.
   autoclick_controller_.reset();
   magnification_controller_.reset();
+  marker_controller_.reset();
   tooltip_controller_.reset();
   event_client_.reset();
   toplevel_window_event_handler_.reset();
@@ -1284,6 +1286,7 @@ void Shell::Init(
   }
 
   if (chromeos::features::IsProjectorEnabled()) {
+    marker_controller_ = std::make_unique<MarkerController>();
     projector_controller_ = std::make_unique<ProjectorControllerImpl>();
   }
 

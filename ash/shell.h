@@ -139,6 +139,7 @@ class LogoutConfirmationController;
 class LoginScreenController;
 class LoginUnlockThroughputRecorder;
 class MagnificationController;
+class MarkerController;
 class TabletModeController;
 class MediaControllerImpl;
 class MediaNotificationControllerImpl;
@@ -427,6 +428,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   MagnificationController* magnification_controller() {
     return magnification_controller_.get();
   }
+  MarkerController* marker_controller() { return marker_controller_.get(); }
   MediaControllerImpl* media_controller() { return media_controller_.get(); }
   MediaNotificationControllerImpl* media_notification_controller() {
     return media_notification_controller_.get();
@@ -769,6 +771,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<PersistentWindowController> persistent_window_controller_;
   std::unique_ptr<HighContrastController> high_contrast_controller_;
   std::unique_ptr<MagnificationController> magnification_controller_;
+  std::unique_ptr<MarkerController> marker_controller_;
   std::unique_ptr<AutoclickController> autoclick_controller_;
   std::unique_ptr<::wm::FocusController> focus_controller_;
 

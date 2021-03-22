@@ -32,6 +32,8 @@ class ASH_EXPORT ProjectorUiController {
   virtual void OnKeyIdeaMarked();
   // Invoked when laser pointer button is pressed. Virtual for testing.
   virtual void OnLaserPointerPressed();
+  // Invoked when marker button is pressed. Virtual for testing.
+  virtual void OnMarkerPressed();
   // Invoked when transcription is available for rendering. Virtual for testing.
   virtual void OnTranscription(const std::string& transcription, bool is_final);
 

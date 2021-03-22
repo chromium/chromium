@@ -177,6 +177,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "privacy_screen.icon",
     "projector_drag_handle.icon",
     "projector_key_idea.icon",
+    "projector_marker.icon",
     "remove_circle_outline.icon",
     "select_to_speak_next_paragraph.icon",
     "select_to_speak_next_sentence.icon",

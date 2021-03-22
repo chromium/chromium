@@ -78,6 +78,11 @@ void ProjectorControllerImpl::SetCaptionState(bool is_on) {
   is_caption_on_ = is_on;
 }
 
+void ProjectorControllerImpl::MarkKeyIdea() {
+  metadata_controller_->RecordKeyIdea();
+  ui_controller_->OnKeyIdeaMarked();
+}
+
 void ProjectorControllerImpl::OnRecordingStarted() {
   StartSpeechRecognition();
   metadata_controller_->OnRecordingStarted();
@@ -92,6 +97,10 @@ void ProjectorControllerImpl::OnLaserPointerPressed() {
   ui_controller_->OnLaserPointerPressed();
 }
 
+void ProjectorControllerImpl::OnMarkerPressed() {
+  ui_controller_->OnMarkerPressed();
+}
+
 void ProjectorControllerImpl::SetProjectorUiControllerForTest(
     std::unique_ptr<ProjectorUiController> ui_controller) {
   ui_controller_ = std::move(ui_controller);
@@ -100,11 +109,6 @@ void ProjectorControllerImpl::SetProjectorUiControllerForTest(
 void ProjectorControllerImpl::SetProjectorMetadataControllerForTest(
     std::unique_ptr<ProjectorMetadataController> metadata_controller) {
   metadata_controller_ = std::move(metadata_controller);
-}
-
-void ProjectorControllerImpl::MarkKeyIdea() {
-  metadata_controller_->RecordKeyIdea();
-  ui_controller_->OnKeyIdeaMarked();
 }
 
 void ProjectorControllerImpl::StartSpeechRecognition() {

@@ -45,9 +45,15 @@ ProjectorBarView::ProjectorBarView(
     : projector_controller_(projector_controller) {
   InitLayout();
 
+  // TODO(llin): Consider observing marker and laser state changes in
+  // |ProjectorUiController| instead.
   auto* laser_pointer_controller = Shell::Get()->laser_pointer_controller();
   DCHECK(laser_pointer_controller);
   laser_pointer_controller_observation_.Observe(laser_pointer_controller);
+
+  auto* marker_controller = MarkerController::Get();
+  DCHECK(marker_controller);
+  marker_controller_observation_.Observe(marker_controller);
 }
 
 ProjectorBarView::~ProjectorBarView() = default;
@@ -84,6 +90,21 @@ void ProjectorBarView::OnThemeChanged() {
 
 void ProjectorBarView::OnLaserPointerStateChanged(bool enabled) {
   laser_pointer_button_->SetToggled(enabled);
+
+  // Disable marker if laser pointer is enabled;
+  if (enabled)
+    MarkerController::Get()->SetEnabled(false);
+}
+
+void ProjectorBarView::OnMarkerStateChanged(bool enabled) {
+  marker_button_->SetToggled(enabled);
+
+  if (enabled) {
+    // TODO(llin): shows the marker submenu.
+
+    // Disable laser pointer since marker is enabled;
+    Shell::Get()->laser_pointer_controller()->SetEnabled(false);
+  }
 }
 
 void ProjectorBarView::InitLayout() {
@@ -127,6 +148,12 @@ void ProjectorBarView::InitLayout() {
       base::BindRepeating(&ProjectorBarView::OnLaserPointerPressed,
                           base::Unretained(this)),
       kPaletteTrayIconLaserPointerIcon));
+
+  // Add marker button.
+  marker_button_ = AddChildView(std::make_unique<ProjectorImageButton>(
+      base::BindRepeating(&ProjectorBarView::OnMarkerPressed,
+                          base::Unretained(this)),
+      kProjectorMarkerIcon));
 }
 
 void ProjectorBarView::UpdateVectorIcon() {
@@ -160,6 +187,10 @@ void ProjectorBarView::OnKeyIdeaButtonPressed() {
 
 void ProjectorBarView::OnLaserPointerPressed() {
   projector_controller_->OnLaserPointerPressed();
+}
+
+void ProjectorBarView::OnMarkerPressed() {
+  projector_controller_->OnMarkerPressed();
 }
 
 BEGIN_METADATA(ProjectorBarView, views::View)
