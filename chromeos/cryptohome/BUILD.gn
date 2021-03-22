@@ -14,6 +14,7 @@ component("cryptohome") {
     "//chromeos/dbus:common",
     "//chromeos/dbus/cryptohome",
     "//chromeos/dbus/cryptohome:cryptohome_proto",
+    "//chromeos/dbus/userdataauth:userdataauth_proto",
     "//chromeos/login/auth:challenge_response_key",
     "//components/account_id",
     "//components/device_event_log",
@@ -28,6 +29,8 @@ component("cryptohome") {
     "homedir_methods.h",
     "system_salt_getter.cc",
     "system_salt_getter.h",
+    "userdataauth_util.cc",
+    "userdataauth_util.h",
   ]
 }
 
@@ -64,5 +67,6 @@ source_set("unit_tests") {
   sources = [
     "cryptohome_util_unittest.cc",
     "system_salt_getter_unittest.cc",
+    "userdataauth_util_unittest.cc",
   ]
 }
