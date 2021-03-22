@@ -108,12 +108,12 @@
     statements;                   \
   }
 
-using ::testing::Mock;
-using ::testing::Return;
+using media::VideoFrame;
+using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::AtLeast;
-using ::testing::_;
-using media::VideoFrame;
+using ::testing::Mock;
+using ::testing::Return;
 
 using ScrollThread = cc::InputHandler::ScrollThread;
 
@@ -4847,14 +4847,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
   gfx::Point position(295, 195);
   gfx::Vector2dF offset(0, 50);
 
-// TODO(bokan): Unfortunately, Mac currently doesn't support smooth scrolling
-// wheel events. https://crbug.com/574283.
-#if defined(OS_MAC)
-  std::vector<ui::ScrollInputType> types = {ui::ScrollInputType::kScrollbar};
-#else
   std::vector<ui::ScrollInputType> types = {ui::ScrollInputType::kScrollbar,
                                             ui::ScrollInputType::kWheel};
-#endif
   for (auto type : types) {
     auto begin_state = BeginState(position, offset, type);
     begin_state->data()->set_current_native_scrolling_element(
@@ -13141,32 +13135,6 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
   node = GetEffectNode(test_layer);
   EXPECT_EQ(node->surface_contents_scale, gfx::Vector2dF(1, 1));
 }
-
-#if defined(OS_MAC)
-// Ensure Mac wheel scrolling causes instant scrolling. This test can be removed
-// once https://crbug.com/574283 is fixed.
-TEST_P(ScrollUnifiedLayerTreeHostImplTest, MacWheelIsNonAnimated) {
-  const gfx::Size content_size(1000, 1000);
-  const gfx::Size viewport_size(50, 100);
-  SetupViewportLayersOuterScrolls(viewport_size, content_size);
-  LayerImpl* scrolling_layer = OuterViewportScrollLayer();
-
-  host_impl_->set_force_smooth_wheel_scrolling_for_testing(false);
-  ASSERT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD,
-            GetInputHandler()
-                .ScrollBegin(BeginState(gfx::Point(), gfx::Vector2d(0, 50),
-                                        ui::ScrollInputType::kWheel)
-                                 .get(),
-                             ui::ScrollInputType::kWheel)
-                .thread);
-  GetInputHandler().ScrollUpdate(
-      AnimatedUpdateState(gfx::Point(), gfx::Vector2d(0, 50)).get());
-
-  // Ensure the scroll update happens immediately.
-  EXPECT_EQ(CurrentScrollOffset(scrolling_layer).y(), 50);
-  GetInputHandler().ScrollEnd();
-}
-#endif
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, OneScrollForFirstScrollDelay) {
   LayerTreeSettings settings = DefaultSettings();

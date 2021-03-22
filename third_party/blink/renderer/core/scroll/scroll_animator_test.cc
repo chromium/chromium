@@ -29,7 +29,6 @@
 
 #include "base/single_thread_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -253,14 +252,8 @@ TEST(ScrollAnimatorTest, MainThreadEnabled) {
   ScrollAnimator* scroll_animator = MakeGarbageCollected<ScrollAnimator>(
       scrollable_area, task_runner->GetMockTickClock());
 
-#if defined(OS_MAC)
-  // Mac doesn't run animations for kScrollByPixel test case.
-  EXPECT_CALL(*scrollable_area, UpdateScrollOffset(_, _)).Times(8);
-  EXPECT_CALL(*scrollable_area, RegisterForAnimation()).Times(4);
-#else
   EXPECT_CALL(*scrollable_area, UpdateScrollOffset(_, _)).Times(9);
   EXPECT_CALL(*scrollable_area, RegisterForAnimation()).Times(6);
-#endif
   EXPECT_CALL(*scrollable_area, ScheduleAnimation())
       .Times(AtLeast(1))
       .WillRepeatedly(Return(true));
@@ -307,13 +300,6 @@ TEST(ScrollAnimatorTest, MainThreadEnabled) {
   scroll_animator->UserScroll(ScrollGranularity::kScrollByPixel,
                               FloatSize(100, 0),
                               ScrollableArea::ScrollCallback());
-// On Mac, kScrollByPixel also causes instant scroll.
-#if defined(OS_MAC)
-  EXPECT_FALSE(scroll_animator->HasAnimationThatRequiresService());
-  EXPECT_EQ(100, scroll_animator->CurrentOffset().Width());
-  EXPECT_NE(0, scroll_animator->CurrentOffset().Width());
-  EXPECT_EQ(0, scroll_animator->CurrentOffset().Height());
-#else
   EXPECT_TRUE(scroll_animator->HasAnimationThatRequiresService());
 
   task_runner->FastForwardBy(base::TimeDelta::FromMilliseconds(50));
@@ -332,7 +318,6 @@ TEST(ScrollAnimatorTest, MainThreadEnabled) {
   scroll_animator->UpdateCompositorAnimations();
   EXPECT_FALSE(scroll_animator->HasAnimationThatRequiresService());
   EXPECT_EQ(100, scroll_animator->CurrentOffset().Width());
-#endif
 
   Reset(*scroll_animator);
 

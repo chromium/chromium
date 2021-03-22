@@ -108,14 +108,8 @@ ScrollResult ScrollAnimator::UserScroll(
 
   base::ScopedClosureRunner run_on_return(std::move(on_finish));
 
-  bool is_instant_scroll =
-#if defined(OS_MAC)
-      granularity == ScrollGranularity::kScrollByPixel ||
-#endif
-      !scrollable_area_->ScrollAnimatorEnabled() ||
-      granularity == ScrollGranularity::kScrollByPrecisePixel;
-
-  if (is_instant_scroll) {
+  if (!scrollable_area_->ScrollAnimatorEnabled() ||
+      granularity == ScrollGranularity::kScrollByPrecisePixel) {
     // Cancel scroll animation because asked to instant scroll.
     if (HasRunningAnimation())
       CancelAnimation();
