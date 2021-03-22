@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_COMMANDER_OPEN_URL_COMMAND_SOURCE_H_
 
 #include "chrome/browser/ui/commander/command_source.h"
+#include "url/gurl.h"
 
 namespace commander {
 
@@ -22,6 +23,9 @@ class OpenURLCommandSource : public CommandSource {
   // CommandSource overrides
   CommandSource::CommandResults GetCommands(const std::u16string& input,
                                             Browser* browser) const override;
+
+ private:
+  const std::vector<std::pair<std::u16string, GURL>> title_url_map_;
 };
 
 }  // namespace commander

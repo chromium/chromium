@@ -9,39 +9,47 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/commander/fuzzy_finder.h"
-#include "url/gurl.h"
+#include "chrome/grit/locale_settings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace commander {
 
-OpenURLCommandSource::OpenURLCommandSource() = default;
+namespace {
+
+std::vector<std::pair<std::u16string, GURL>> CreateTitleURLMap() {
+  return {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    {u"Chrome Help",
+     GURL("https://support.google.com/chrome/?p=help&ctx=menu#topic=9796470")},
+        // GSuite
+        {u"New Google Doc", GURL("https://docs.new")},
+        {u"New Google Sheet", GURL("https://sheets.new")},
+        {u"New Google Slides", GURL("https://slides.new")},
+        {u"New Google Form", GURL("https://forms.new")},
+        {u"New Google Meet", GURL("https://meet.new")},
+        {u"Open Theme Store",
+         GURL(l10n_util::GetStringUTF8(IDS_THEMES_GALLERY_URL))},
+        {u"Open Extension Store",
+         GURL(l10n_util::GetStringUTF8(IDS_WEBSTORE_URL))},
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  };
+}
+
+}  // namespace
+
+OpenURLCommandSource::OpenURLCommandSource()
+    : title_url_map_(CreateTitleURLMap()) {}
 OpenURLCommandSource::~OpenURLCommandSource() = default;
 
 CommandSource::CommandResults OpenURLCommandSource::GetCommands(
     const std::u16string& input,
     Browser* browser) const {
-  // TODO(lgrey): Strings are temporarily unlocalized since this is
-  // experimental.
-  static constexpr struct {
-    const char* title;
-    const char* url;
-  } command_map[] = {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    {"Chrome Help",
-     "https://support.google.com/chrome/?p=help&ctx=menu#topic=9796470"},
-    // GSuite
-    {"New Google Doc", "https://docs.new"},
-    {"New Google Sheet", "https://sheets.new"},
-    {"New Google Slides", "https://slides.new"},
-    {"New Google Form", "https://forms.new"},
-    {"New Google Meet", "https://meet.new"},
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  };
 
   CommandSource::CommandResults results;
   std::vector<gfx::Range> ranges;
   FuzzyFinder finder(input);
-  for (const auto& command_spec : command_map) {
-    std::u16string title = base::ASCIIToUTF16(command_spec.title);
+  for (const auto& command_spec : title_url_map_) {
+    std::u16string title = command_spec.first;
     double score = finder.Find(title, &ranges);
     if (score == 0)
       continue;
@@ -51,7 +59,7 @@ CommandSource::CommandResults OpenURLCommandSource::GetCommands(
     // closed.
     item->command =
         base::BindOnce(&chrome::AddTabAt, base::Unretained(browser),
-                       GURL(command_spec.url), -1, true, base::nullopt);
+                       command_spec.second, -1, true, base::nullopt);
     results.push_back(std::move(item));
   }
   return results;
