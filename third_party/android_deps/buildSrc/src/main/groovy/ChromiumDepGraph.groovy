@@ -690,6 +690,7 @@ class ChromiumDepGraph {
         try {
             def inStream = new URL(url).openStream()
             if (inStream != null) {
+                inStream.close();
                 logger.debug("Succeeded in resolving url ${url}")
                 return
             }
