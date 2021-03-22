@@ -1647,21 +1647,11 @@ bindings::V8SetReturnValue(
     if return_type.is_dictionary:
         return T("bindings::V8SetReturnValue(${info}, ${return_value});")
 
-    if return_type.is_sequence:
-        return T("bindings::V8SetReturnValue(${info}, ${v8_return_value});")
-
-    if return_type.is_frozen_array:
-        return T("bindings::V8SetReturnValue(${info}, ${v8_return_value});")
-
     if return_type.is_promise:
         return T("bindings::V8SetReturnValue"
                  "(${info}, ${return_value}.V8Value());")
 
-    if return_type.is_nullable:
-        return T("bindings::V8SetReturnValue(${info}, ${v8_return_value});")
-
-    return T("bindings::V8SetReturnValue(${info}, "
-             "ToV8(${return_value}, ${creation_context_object}, ${isolate}));")
+    return T("bindings::V8SetReturnValue(${info}, ${v8_return_value});")
 
 
 def _make_empty_callback_def(cg_context, function_name):
