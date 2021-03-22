@@ -1,9 +1,6 @@
 tommi@chromium.org
 guidou@chromium.org
 
-# For WebRTC desktop capturer related changes only
-braveyao@chromium.org
-
 # For WebRTC browser tests.
 per-file *webrtc*browsertest*=hbos@chromium.org
 
