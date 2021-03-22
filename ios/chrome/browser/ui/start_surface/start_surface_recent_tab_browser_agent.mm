@@ -31,6 +31,9 @@ StartSurfaceRecentTabBrowserAgent::~StartSurfaceRecentTabBrowserAgent() =
 void StartSurfaceRecentTabBrowserAgent::SaveMostRecentTab() {
   most_recent_tab_ = browser_->GetWebStateList()->GetActiveWebState();
   DCHECK(favicon::WebFaviconDriver::FromWebState(most_recent_tab_));
+  if (favicon_driver_observer_.IsObserving()) {
+    favicon_driver_observer_.Reset();
+  }
   favicon_driver_observer_.Observe(
       favicon::WebFaviconDriver::FromWebState(most_recent_tab_));
 }
