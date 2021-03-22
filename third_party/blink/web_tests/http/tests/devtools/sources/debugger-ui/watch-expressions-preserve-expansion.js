@@ -29,8 +29,7 @@
       }());
   `);
 
-  var watchExpressionsPane =
-      self.runtime.sharedInstance(Sources.WatchExpressionsSidebarPane);
+  var watchExpressionsPane = Sources.WatchExpressionsSidebarPane.instance();
   UI.panels.sources._sidebarPaneStack
       .showView(UI.panels.sources._watchSidebarPane)
       .then(() => {
@@ -65,7 +64,7 @@
   }
 
   function dumpWatchExpressions() {
-    var pane = self.runtime.sharedInstance(Sources.WatchExpressionsSidebarPane);
+    var pane = Sources.WatchExpressionsSidebarPane.instance();
 
     for (var i = 0; i < pane._watchExpressions.length; i++) {
       var watch = pane._watchExpressions[i];
@@ -119,7 +118,7 @@
   }
 
   function expandWatchExpression(path, callback) {
-    var pane = self.runtime.sharedInstance(Sources.WatchExpressionsSidebarPane);
+    var pane = Sources.WatchExpressionsSidebarPane.instance();
     var expression = path.shift();
     for (var i = 0; i < pane._watchExpressions.length; i++) {
       var watch = pane._watchExpressions[i];

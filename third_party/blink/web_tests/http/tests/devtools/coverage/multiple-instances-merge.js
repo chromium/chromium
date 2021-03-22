@@ -17,7 +17,7 @@
   await TestRunner.evaluateInPagePromise('performActions(); frames[0].performActionsInFrame()');
   await CoverageTestRunner.stopCoverage();
 
-  const coverageView = self.runtime.sharedInstance(Coverage.CoverageView);
+  const coverageView = Coverage.CoverageView.instance();
   const dataGrid = coverageView._listView._dataGrid;
   for (const child of dataGrid.rootNode().children) {
     const data = child._coverageInfo;

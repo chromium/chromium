@@ -23,7 +23,7 @@
   TestRunner.addResult('After second session');
   CoverageTestRunner.dumpCoverageListView();
 
-  var coverageView = self.runtime.sharedInstance(Coverage.CoverageView);
+  var coverageView = Coverage.CoverageView.instance();
   coverageView._clear();
   await CoverageTestRunner.startCoverage(false);
   await CoverageTestRunner.stopCoverage();

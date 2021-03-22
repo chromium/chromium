@@ -23,7 +23,8 @@
     TestRunner.addResult('Search controller: \'' + panel.searchableView()._searchInputElement.value + '\'');
     var action = new Sources.SearchSourcesView.ActionDelegate();
     await action._showSearch();
-    var searchView = /** @type {!Search.SearchView} */ (self.runtime.sharedInstance(Sources.SearchSourcesView));
+    var searchView = /** @type {!Search.SearchView} */ (
+        Sources.SearchSourcesView.instance());
     TestRunner.addResult('Advanced search controller: \'' + searchView._search.value + '\'');
     TestRunner.completeTest();
   }

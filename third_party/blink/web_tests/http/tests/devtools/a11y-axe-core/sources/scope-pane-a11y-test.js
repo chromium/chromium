@@ -24,7 +24,7 @@
   await SourcesTestRunner.waitUntilPausedPromise();
 
   await TestRunner.addSnifferPromise(Sources.ScopeChainSidebarPane.prototype, '_sidebarPaneUpdatedForTest');
-  const scopePane = self.runtime.sharedInstance(Sources.ScopeChainSidebarPane);
+  const scopePane = Sources.ScopeChainSidebarPane.instance();
   await TestRunner.addSnifferPromise(ObjectUI.ObjectPropertyTreeElement, 'populateWithProperties');
   TestRunner.addResult(`Scope pane content: ${scopePane.contentElement.deepTextContent()}`);
   TestRunner.addResult(`Running the axe-core linter on the scope pane.`);

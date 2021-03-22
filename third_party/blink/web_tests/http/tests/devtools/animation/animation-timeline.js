@@ -62,7 +62,7 @@
   };
 
   await UI.viewManager.showView('animations');
-  var timeline = self.runtime.sharedInstance(Animation.AnimationTimeline);
+  var timeline = Animation.AnimationTimeline.instance();
   TestRunner.evaluateInPage('startAnimationWithDelay()');
   ElementsTestRunner.waitForAnimationAdded(step2);
 

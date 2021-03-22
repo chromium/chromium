@@ -30,7 +30,7 @@
   await CoverageTestRunner.suspendCoverageModel();
   await CoverageTestRunner.resumeCoverageModel();
 
-  var coverageView = self.runtime.sharedInstance(Coverage.CoverageView);
+  var coverageView = Coverage.CoverageView.instance();
   coverageView._clear();
 
   await CoverageTestRunner.startCoverage(true);

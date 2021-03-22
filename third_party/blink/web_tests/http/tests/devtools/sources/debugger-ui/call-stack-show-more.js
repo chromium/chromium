@@ -28,7 +28,7 @@
   dumpCallStackSidebarPane();
 
   TestRunner.addResult('\n---------------\nClicks show more..');
-  const pane = self.runtime.sharedInstance(Sources.CallStackSidebarPane);
+  const pane = Sources.CallStackSidebarPane.instance();
   pane.contentElement.querySelector('.show-more-message > .link').click();
   await TestRunner.addSnifferPromise(
       Sources.CallStackSidebarPane.prototype, '_updatedForTest');
@@ -36,7 +36,7 @@
   SourcesTestRunner.completeDebuggerTest();
 
   function dumpCallStackSidebarPane() {
-    const pane = self.runtime.sharedInstance(Sources.CallStackSidebarPane);
+    const pane = Sources.CallStackSidebarPane.instance();
     for (const element of pane.contentElement.querySelectorAll(
              '.call-frame-item'))
       TestRunner.addResult(element.deepTextContent().replace(/VM\d+/g, 'VM'));

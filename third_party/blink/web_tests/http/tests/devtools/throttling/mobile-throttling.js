@@ -15,7 +15,7 @@
 
   var deviceModeThrottling = deviceModeView._toolbar._throttlingConditionsItem;
   var networkPanelThrottling = UI.panels.network.throttlingSelectForTest();
-  var networkConfigView = self.runtime.sharedInstance(Network.NetworkConfigView);
+  var networkConfigView = Network.NetworkConfigView.instance();
   var networkConditionsDrawerThrottlingSelector =
       networkConfigView.contentElement.querySelector('.network-config-throttling select.chrome-select');
   var performancePanelNetworkThrottling = UI.panels.timeline._networkThrottlingSelect;

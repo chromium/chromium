@@ -32,7 +32,7 @@
 
   function step2() {
     InspectorFrontendHost.copyText = text => TestRunner.addResult(TestRunner.clearSpecificInfoFromStackFrames(text));
-    self.runtime.sharedInstance(Sources.CallStackSidebarPane)._copyStackTrace();
+    Sources.CallStackSidebarPane.instance()._copyStackTrace();
     SourcesTestRunner.completeDebuggerTest();
   }
 })();

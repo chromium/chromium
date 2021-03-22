@@ -40,8 +40,7 @@
   function waitUntilReady() {
     var expectedBreakpointLocations = [[16, 4]];
     var paneElement =
-        self.runtime.sharedInstance(Sources.JavaScriptBreakpointsSidebarPane)
-            .contentElement;
+        Sources.JavaScriptBreakpointsSidebarPane.instance().contentElement;
     var entries = Array.from(paneElement.querySelectorAll('.breakpoint-entry'));
     for (var entry of entries) {
       var uiLocation = Sources.JavaScriptBreakpointsSidebarPane.retrieveLocationForElement(entry);

@@ -10,7 +10,7 @@
   await TestRunner.showPanel('elements');
   await TestRunner.navigatePromise('resources/dom-breakpoints.html');
 
-  var pane = self.runtime.sharedInstance(BrowserDebugger.DOMBreakpointsSidebarPane);
+  var pane = BrowserDebugger.DOMBreakpointsSidebarPane.instance();
   var rootElement;
   var outerElement;
   var authorShadowRoot;

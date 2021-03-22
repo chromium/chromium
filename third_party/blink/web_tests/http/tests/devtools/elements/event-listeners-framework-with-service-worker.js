@@ -27,7 +27,8 @@
   ApplicationTestRunner.waitForServiceWorker(step1);
   ApplicationTestRunner.registerServiceWorker(scriptURL, scope);
 
-  var objectEventListenersPane = self.runtime.sharedInstance(BrowserDebugger.ObjectEventListenersSidebarPane);
+  var objectEventListenersPane =
+      BrowserDebugger.ObjectEventListenersSidebarPane.instance();
 
   function isServiceWorker() {
     var target = UI.context.flavor(SDK.ExecutionContext).target();

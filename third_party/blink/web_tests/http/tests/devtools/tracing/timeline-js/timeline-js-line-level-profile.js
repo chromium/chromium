@@ -50,7 +50,7 @@
     const url = frame.uiSourceCode().url();
     TestRunner.addResult(TestRunner.formatters.formatAsURL(url));
     cpuProfile.nodes.forEach(n => n.callFrame.url = url);
-    const lineProfile = self.runtime.sharedInstance(PerfUI.LineLevelProfile.Performance);
+    const lineProfile = PerfUI.LineLevelProfile.Performance.instance();
     lineProfile.appendCPUProfile(new SDK.CPUProfileDataModel(cpuProfile));
     setTimeout(() => TestRunner.completeTest(), 0);
   }

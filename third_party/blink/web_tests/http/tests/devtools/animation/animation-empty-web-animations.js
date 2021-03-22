@@ -11,7 +11,7 @@
     `);
 
   await UI.viewManager.showView('animations');
-  var timeline = self.runtime.sharedInstance(Animation.AnimationTimeline);
+  var timeline = Animation.AnimationTimeline.instance();
   TestRunner.evaluateInPage('document.getElementById("node").animate([], { duration: 200, delay: 100 })');
   TestRunner.addSniffer(Animation.AnimationModel.prototype, 'animationStarted', animationStarted);
 

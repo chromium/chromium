@@ -24,7 +24,7 @@
   await TestRunner.loadHTML(`
       <div id="node" style="background-color: red; height: 100px"></div>
     `);
-  var timeline = self.runtime.sharedInstance(Animation.AnimationTimeline);
+  var timeline = Animation.AnimationTimeline.instance();
   TestRunner.addSniffer(Animation.AnimationModel.prototype, 'animationStarted',
       () => {
         TestRunner.addResult('SUCCESS (size = ' +

@@ -53,7 +53,7 @@
   ]);
 
   function dumpBreakpointSidebarPane() {
-    var pane = self.runtime.sharedInstance(Sources.JavaScriptBreakpointsSidebarPane);
+    var pane = Sources.JavaScriptBreakpointsSidebarPane.instance();
     if (!pane._emptyElement.classList.contains('hidden'))
       return TestRunner.textContentWithLineBreaks(pane._emptyElement);
     var entries = Array.from(pane.contentElement.querySelectorAll('.breakpoint-entry'));

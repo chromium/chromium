@@ -20,7 +20,7 @@
   `);
 
   await UI.viewManager.showView('animations');
-  var timeline = self.runtime.sharedInstance(Animation.AnimationTimeline);
+  var timeline = Animation.AnimationTimeline.instance();
   TestRunner.evaluateInPage('startAnimationWithKeyframeEffect()');
   ElementsTestRunner.waitForAnimationAdded(step2);
 

@@ -35,7 +35,7 @@
       .then(() => SourcesTestRunner.completeDebuggerTest());
 
   function dumpCallStackSidebarPane() {
-    var pane = self.runtime.sharedInstance(Sources.CallStackSidebarPane);
+    var pane = Sources.CallStackSidebarPane.instance();
     for (var element of pane.contentElement.querySelectorAll(
              '.call-frame-item'))
       TestRunner.addResult(element.deepTextContent()

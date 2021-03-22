@@ -38,7 +38,7 @@
 
   function step3(callFrames, result) {
     TestRunner.addResult('Evaluated script on the top frame: ' + result);
-    var pane = self.runtime.sharedInstance(Sources.CallStackSidebarPane);
+    var pane = Sources.CallStackSidebarPane.instance();
     pane._selectNextCallFrameOnStack();
     TestRunner.deprecatedRunAfterPendingDispatches(step4);
   }

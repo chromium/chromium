@@ -22,7 +22,7 @@
     treeElement._startEditing();
     treeElement._prompt._element.textContent = 'false';
     treeElement._prompt._element.dispatchEvent(TestRunner.createKeyEvent('Enter'));
-    self.runtime.sharedInstance(Accessibility.AccessibilitySidebarView).doUpdate().then(() => {
+    Accessibility.AccessibilitySidebarView.instance().doUpdate().then(() => {
       editRole();
     });
   }
@@ -36,11 +36,9 @@
     treeElement._prompt._element.dispatchEvent(TestRunner.createKeyEvent('Enter'));
     // Give the document lifecycle a chance to run before updating the view.
     window.setTimeout(() => {
-      self.runtime.sharedInstance(Accessibility.AccessibilitySidebarView)
-          .doUpdate()
-          .then(() => {
-            postRoleChange();
-          });
+      Accessibility.AccessibilitySidebarView.instance().doUpdate().then(() => {
+        postRoleChange();
+      });
     }, 0);
   }
 

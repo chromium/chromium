@@ -11,7 +11,7 @@
   await TestRunner.evaluateInPagePromise('performActions()');
   await CoverageTestRunner.stopCoverage();
 
-  var coverageView = self.runtime.sharedInstance(Coverage.CoverageView);
+  var coverageView = Coverage.CoverageView.instance();
   setFilter('devtools');
   CoverageTestRunner.dumpCoverageListView();
   setFilter('CES/COV');

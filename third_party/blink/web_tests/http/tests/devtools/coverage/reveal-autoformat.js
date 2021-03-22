@@ -15,7 +15,7 @@
   await TestRunner.evaluateInPagePromise('performActions()');
   await CoverageTestRunner.stopCoverage();
   var node = CoverageTestRunner.findCoverageNodeForURL('long-mangled.css');
-  var coverageListView = self.runtime.sharedInstance(Coverage.CoverageView)._listView;
+  var coverageListView = Coverage.CoverageView.instance()._listView;
   var decoratePromise = TestRunner.addSnifferPromise(Coverage.CoverageView.LineDecorator.prototype, '_innerDecorate');
   node.select();
   coverageListView._revealSourceForSelectedNode();
