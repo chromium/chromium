@@ -64,6 +64,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -1648,6 +1649,82 @@ TEST_F(DesksTest, NoMiniViewsUpdateOnOverviewEnter) {
 
   desk_1->RemoveObserver(&desk_1_observer);
   desk_2->RemoveObserver(&desk_2_observer);
+}
+
+// Tests that the consecutive daily visits metric is properly recorded.
+TEST_F(DesksTest, ConsecutiveDailyVisitsMetric) {
+  constexpr char kConsecutiveDailyVisitsHistogram[] =
+      "Ash.Desks.ConsecutiveDailyVisits";
+  auto* desks_controller = DesksController::Get();
+  base::HistogramTester histogram_tester;
+  base::SimpleTestClock test_clock;
+
+  auto create_new_desk_with_mocked_time =
+      [](DesksController* desks_controller, base::SimpleTestClock* test_clock) {
+        NewDesk();
+        desks_controller->desks().back()->OverrideClockForTesting(  // IN-TEST
+            test_clock);
+      };
+
+  // Set the time to 00:00:00 local time the next day, override the current
+  // desk's clock and reset its visited metrics.
+  test_clock.SetNow(base::Time::Now().LocalMidnight());
+  test_clock.Advance(base::TimeDelta::FromHours(1));
+  auto* active_desk = desks_controller->active_desk();
+  const_cast<Desk*>(active_desk)
+      ->OverrideClockForTesting(&test_clock);                       // IN-TEST
+  const_cast<Desk*>(active_desk)->ResetVisitedMetricsForTesting();  // IN-TEST
+  EXPECT_EQ(
+      0u,
+      histogram_tester.GetAllSamples(kConsecutiveDailyVisitsHistogram).size());
+
+  // Create a new desk and don't visit it.
+  active_desk = desks_controller->active_desk();
+  create_new_desk_with_mocked_time(desks_controller, &test_clock);
+  ASSERT_EQ(active_desk, desks_controller->active_desk());
+
+  // Fast forward by two days then remove the active desk. This should record an
+  // entry for two days since we stayed on the active desk the whole time.
+  // Additionally, there shouldn't be a record for the desk we switch to since
+  // we haven't visited it yet.
+  test_clock.Advance(base::TimeDelta::FromDays(2));
+  RemoveDesk(active_desk);
+  histogram_tester.ExpectBucketCount(kConsecutiveDailyVisitsHistogram, 3, 1);
+  EXPECT_EQ(
+      1u,
+      histogram_tester.GetAllSamples(kConsecutiveDailyVisitsHistogram).size());
+
+  // Create a new desk and remove the active desk. This should record an entry
+  // for one day since we visited the active desk before removing it.
+  active_desk = desks_controller->active_desk();
+  create_new_desk_with_mocked_time(desks_controller, &test_clock);
+  RemoveDesk(active_desk);
+  histogram_tester.ExpectBucketCount(kConsecutiveDailyVisitsHistogram, 1, 1);
+  EXPECT_EQ(
+      2u,
+      histogram_tester.GetAllSamples(kConsecutiveDailyVisitsHistogram).size());
+
+  // Create a new desk and switch to it. Then fast forward two days and revisit
+  // the previous desk. Since it's been more than one day since the last visit,
+  // a one day entry should be recorded for the previous desk.
+  create_new_desk_with_mocked_time(desks_controller, &test_clock);
+  ActivateDesk(desks_controller->GetNextDesk());
+  test_clock.Advance(base::TimeDelta::FromDays(2));
+  ActivateDesk(desks_controller->GetPreviousDesk());
+  histogram_tester.ExpectBucketCount(kConsecutiveDailyVisitsHistogram, 1, 2);
+  EXPECT_EQ(
+      2u,
+      histogram_tester.GetAllSamples(kConsecutiveDailyVisitsHistogram).size());
+
+  // Go back in time to simulate a user switching timezones and then switch to
+  // the next desk. Since the current time is before the |last_day_visited_|
+  // field of the next desk, its visited fields should be reset.
+  test_clock.Advance(base::TimeDelta::FromDays(-2));
+  ActivateDesk(desks_controller->GetNextDesk());
+  active_desk = desks_controller->active_desk();
+  const int current_date = active_desk->GetDaysFromLocalEpoch();
+  EXPECT_EQ(current_date, active_desk->first_day_visited());
+  EXPECT_EQ(current_date, active_desk->last_day_visited());
 }
 
 // Tests that the new desk button's state and color are as expected.

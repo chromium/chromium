@@ -25,10 +25,16 @@ namespace desks_restore_util {
 
 namespace {
 
-// Keys for the dictionaries stored in |kDesksMetricsList|. The entry is an int
+// A key for the dictionaries stored in |kDesksMetricsList|. The entry is an int
 // which represents the number of minutes for
 // base::Time::FromDeltaSinceWindowsEpoch().
 constexpr char kCreationTimeKey[] = "creation_time";
+
+// Keys for the dictionaries stored in |kDesksMetricsList|. The entries are ints
+// which represent the number of days for
+// base::Time::FromDeltaSinceWindowsEpoch().
+constexpr char kFirstDayVisitedKey[] = "first_day";
+constexpr char kLastDayVisitedKey[] = "last_day";
 
 // While restore is in progress, changes are being made to the desks and their
 // names. Those changes should not trigger an update to the prefs.
@@ -99,18 +105,37 @@ void RestorePrimaryUserDesks() {
                                                  index);
     }
 
+    // Only restore metrics if there is existing data.
     if (index >= desks_metrics_list_size)
       continue;
 
-    // Only restore metrics if there is existing data.
     const auto& desks_metrics_dict = desks_metrics_list[index];
+
+    // Restore creation time.
     const auto& creation_time_entry =
         desks_metrics_dict.FindIntPath(kCreationTimeKey);
     if (creation_time_entry.has_value()) {
       const auto creation_time = base::Time::FromDeltaSinceWindowsEpoch(
           base::TimeDelta::FromMinutes(*creation_time_entry));
       if (!creation_time.is_null() && creation_time < now)
-        desks_controller->RestoreMetricsOfDeskAtIndex(creation_time, index);
+        desks_controller->RestoreCreationTimeOfDeskAtIndex(creation_time,
+                                                           index);
+    }
+
+    // Restore consecutive daily metrics.
+    const auto& first_day_visited_entry =
+        desks_metrics_dict.FindIntPath(kFirstDayVisitedKey);
+    const int first_day_visited = first_day_visited_entry.value_or(-1);
+
+    const auto& last_day_visited_entry =
+        desks_metrics_dict.FindIntPath(kLastDayVisitedKey);
+    const int last_day_visited = last_day_visited_entry.value_or(-1);
+
+    if (first_day_visited <= last_day_visited && first_day_visited != -1 &&
+        last_day_visited != -1) {
+      // Only restore the values if they haven't been corrupted.
+      desks_controller->RestoreVisitedMetricsOfDeskAtIndex(
+          first_day_visited, last_day_visited, index);
     }
   }
 
@@ -175,6 +200,8 @@ void UpdatePrimaryUserDeskMetricsPrefs() {
     metrics_dict.SetInteger(
         kCreationTimeKey,
         desk->creation_time().ToDeltaSinceWindowsEpoch().InMinutes());
+    metrics_dict.SetInteger(kFirstDayVisitedKey, desk->first_day_visited());
+    metrics_dict.SetInteger(kLastDayVisitedKey, desk->last_day_visited());
     metrics_pref_data->Append(std::move(metrics_dict));
   }
 

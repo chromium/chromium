@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/strings/string16.h"
+#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "ui/aura/window_observer.h"
 
@@ -55,13 +56,10 @@ class ASH_EXPORT Desk {
 
   const std::vector<aura::Window*>& windows() const { return windows_; }
 
-  const base::Time& creation_time() const { return creation_time_; }
 
   const base::string16& name() const { return name_; }
 
   bool is_active() const { return is_active_; }
-
-  bool is_desk_being_removed() const { return is_desk_being_removed_; }
 
   bool should_notify_content_changed() const {
     return should_notify_content_changed_;
@@ -69,10 +67,21 @@ class ASH_EXPORT Desk {
 
   bool is_name_set_by_user() const { return is_name_set_by_user_; }
 
-  // Sets the desk's |creation_time_| to |creation_time|. This will overwrite
-  // |creation_time_| so this should only be called when restoring desks.
+  bool is_desk_being_removed() const { return is_desk_being_removed_; }
+
+  const base::Time& creation_time() const { return creation_time_; }
   void set_creation_time(base::Time creation_time) {
     creation_time_ = creation_time;
+  }
+
+  int first_day_visited() const { return first_day_visited_; }
+  void set_first_day_visited(int first_day_visited) {
+    first_day_visited_ = first_day_visited;
+  }
+
+  int last_day_visited() const { return last_day_visited_; }
+  void set_last_day_visited(int last_day_visited) {
+    last_day_visited_ = last_day_visited;
   }
 
   void AddObserver(Observer* observer);
@@ -143,6 +152,29 @@ class ASH_EXPORT Desk {
   // when this desk is removed by the user.
   void RecordLifetimeHistogram();
 
+  // Returns whether the difference between |last_day_visited_| and the current
+  // day is less than or equal to 1 or |last_day_visited_| is not set.
+  bool IsConsecutiveDailyVisit() const;
+
+  // Records the consecutive daily visits for |this| and resets
+  // |last_day_visited_| and |first_day_visited_|. |last_day_visited_| must be
+  // greater than or equal to |first_day_visited_|. If |being_removed| and
+  // |is_active_| is true, then set |last_day_visited_| to the current day. This
+  // accounts for cases where the user removes the active desk.
+  void RecordAndResetConsecutiveDailyVisits(bool being_removed);
+
+  // Returns the time from base::Time::Now() to Jan 1, 2010 in the local
+  // timezeone in days as an int.
+  int GetDaysFromLocalEpoch() const;
+
+  // Overrides the |override_clock_| with |test_clock| for mocking time in
+  // tests.
+  void OverrideClockForTesting(base::Clock* test_clock);
+
+  // Resets |first_day_visited_| and |last_day_visited_| for testing to the
+  // current date.
+  void ResetVisitedMetricsForTesting();
+
  private:
   void MoveWindowToDeskInternal(aura::Window* window,
                                 Desk* target_desk,
@@ -196,6 +228,16 @@ class ASH_EXPORT Desk {
 
   // The time this desk was created at. Used to record desk lifetimes.
   base::Time creation_time_;
+
+  // The first and last day this desk was visited in a string of consecutive
+  // daily visits. These values store the time in days since local epoch as an
+  // integer. They are used to record the number of consecutive daily visits to
+  // |this|. If their values are -1, then |this| has not been visited since
+  // creation.
+  int first_day_visited_ = -1;
+  int last_day_visited_ = -1;
+
+  base::Clock* override_clock_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(Desk);
 };

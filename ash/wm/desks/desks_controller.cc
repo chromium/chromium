@@ -297,6 +297,7 @@ void DesksController::OnNewUserShown() {
 
 void DesksController::Shutdown() {
   animation_.reset();
+  desks_restore_util::UpdatePrimaryUserDeskMetricsPrefs();
 }
 
 void DesksController::AddObserver(Observer* observer) {
@@ -676,12 +677,24 @@ void DesksController::RestoreNameOfDeskAtIndex(base::string16 name,
   desks_[index]->SetName(std::move(name), /*set_by_user=*/true);
 }
 
-void DesksController::RestoreMetricsOfDeskAtIndex(base::Time creation_time,
-                                                  size_t index) {
+void DesksController::RestoreCreationTimeOfDeskAtIndex(base::Time creation_time,
+                                                       size_t index) {
   DCHECK_LT(index, desks_.size());
 
+  desks_[index]->set_creation_time(creation_time);
+}
+
+void DesksController::RestoreVisitedMetricsOfDeskAtIndex(int first_day_visited,
+                                                         int last_day_visited,
+                                                         size_t index) {
+  DCHECK_LT(index, desks_.size());
+  DCHECK_GE(last_day_visited, first_day_visited);
+
   const auto& target_desk = desks_[index];
-  target_desk->set_creation_time(std::move(creation_time));
+  target_desk->set_first_day_visited(first_day_visited);
+  target_desk->set_last_day_visited(last_day_visited);
+  if (!target_desk->IsConsecutiveDailyVisit())
+    target_desk->RecordAndResetConsecutiveDailyVisits(/*being_removed=*/false);
 }
 
 void DesksController::OnRootWindowAdded(aura::Window* root_window) {
@@ -898,7 +911,9 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
   const int removed_desk_number = std::distance(desks_.begin(), iter) + 1;
 
   // Record |desk|'s lifetime before it's removed from |desks_|.
-  const_cast<Desk*>(desk)->RecordLifetimeHistogram();
+  auto* non_const_desk = const_cast<Desk*>(desk);
+  non_const_desk->RecordLifetimeHistogram();
+  non_const_desk->RecordAndResetConsecutiveDailyVisits(/*being_removed=*/true);
 
   // Keep the removed desk alive until the end of this function.
   std::unique_ptr<Desk> removed_desk = std::move(*iter);
