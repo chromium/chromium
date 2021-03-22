@@ -77,6 +77,10 @@ export class EmojiSearch extends PolymerElement {
   onKeyDown(ev) {
     const isUp = ev.key === 'ArrowUp';
     const isDown = ev.key === 'ArrowDown';
+    const isEnter = ev.key === 'Enter';
+    if (isEnter) {
+      this.shadowRoot.querySelector('.result:focus-within').click();
+    }
     if (!isUp && !isDown)
       return;
 
@@ -97,9 +101,8 @@ export class EmojiSearch extends PolymerElement {
     }
 
     const newResult = isDown ? next : prev;
-    const newButton = newResult && newResult.querySelector('emoji-button');
-    if (newButton) {
-      newButton.focusButton();
+    if (newResult) {
+      newResult.focus();
     }
   }
 
@@ -120,13 +123,12 @@ export class EmojiSearch extends PolymerElement {
       ev.stopPropagation();
 
       // focus first item in result list.
-      const firstButton =
-          this.shadowRoot.querySelector('emoji-button').getButton();
+      const firstButton = this.shadowRoot.querySelector('.result');
       firstButton.focus();
 
       // if there is only one result, select it on enter.
       if (isEnter && this.results.length === 1) {
-        firstButton.click();
+        firstButton.querySelector('emoji-button').click();
       }
     }
   }
@@ -174,6 +176,12 @@ export class EmojiSearch extends PolymerElement {
       return [];
     // Add an initial space to force prefix matching only.
     return this.fuse.search(' ' + search);
+  }
+
+  onResultClick(ev) {
+    ev.currentTarget.querySelector('emoji-button')
+        .shadowRoot.querySelector('button')
+        .click();
   }
 }
 

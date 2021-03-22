@@ -21,6 +21,14 @@
   .result {
     display: flex;
   }
+  .result:focus,
+  .result:active {
+    border-color: var(--cr-toggle-color);
+    border-radius: 4px;
+    border-style: solid;
+    border-width: 2px;
+    outline-style: none;
+  }
 
   emoji-button {
     margin-inline-end: 12px;
@@ -49,7 +57,7 @@
       Emoji Search Results
     </div>
     <template is="dom-repeat" items="[[results]]">
-      <div class="result">
+      <div class="result" tabindex="-1" on-click="onResultClick">
         <emoji-button
             emoji="[[item.item.base.string]]"
             variants="[[item.item.alternates]]">
