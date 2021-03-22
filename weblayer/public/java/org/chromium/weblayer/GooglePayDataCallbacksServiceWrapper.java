@@ -7,16 +7,20 @@ package org.chromium.weblayer;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.os.RemoteException;
 
 import androidx.annotation.Nullable;
 
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
+import org.chromium.weblayer_private.interfaces.IWebLayer;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 
 /**
  * A wrapper service of GooglePayDataCallbacksService. The wrapping is necessary because
  * WebLayer's internal parts are not allowed to interact with the external apps directly.
+ *
+ * @since 90
  */
 public class GooglePayDataCallbacksServiceWrapper extends Service {
     @Nullable
@@ -24,22 +28,39 @@ public class GooglePayDataCallbacksServiceWrapper extends Service {
 
     @Override
     public void onCreate() {
+        ThreadCheck.ensureOnUiThread();
+        Service service = createService();
+        if (service == null) {
+            stopSelf();
+            return;
+        }
+        mService = service;
+        mService.onCreate();
+    }
+
+    @Nullable
+    private Service createService() {
+        if (WebLayer.getSupportedMajorVersionInternal() < 90) return null;
+        if (!WebLayer.hasWebLayerInitializationStarted()) return null;
+        WebLayer webLayer = WebLayer.getLoadedWebLayer(this);
+        if (webLayer == null) return null;
+        IWebLayer iWebLayer = webLayer.getImpl();
+        if (iWebLayer == null) return null;
+        IObjectWrapper objectWrapper;
         try {
-            IObjectWrapper objectWrapper =
-                    WebLayer.getIWebLayer(this).createGooglePayDataCallbacksService();
-            if (objectWrapper == null) return;
-            mService = ObjectWrapper.unwrap(objectWrapper, Service.class);
-            mService.onCreate();
-        } catch (Exception e) {
+            objectWrapper = iWebLayer.createGooglePayDataCallbacksService();
+        } catch (RemoteException e) {
             throw new APICallException(e);
         }
+        if (objectWrapper == null) return null;
+        return ObjectWrapper.unwrap(objectWrapper, Service.class);
     }
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+        if (mService == null) return null;
         try {
-            if (mService == null) return null;
             return mService.onBind(intent);
         } catch (Exception e) {
             throw new APICallException(e);
