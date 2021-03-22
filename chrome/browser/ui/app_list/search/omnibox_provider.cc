@@ -28,6 +28,14 @@ bool IsDriveUrl(const GURL& url) {
   return host == "drive.google.com" || host == "docs.google.com";
 }
 
+int ProviderTypes() {
+  // We use all the default providers except for the document provider, which
+  // suggests Drive files on enterprise devices. This is disabled to avoid
+  // duplication with search results from DriveFS.
+  return AutocompleteClassifier::DefaultOmniboxProviders() &
+         ~AutocompleteProvider::TYPE_DOCUMENT;
+}
+
 }  //  namespace
 
 OmniboxProvider::OmniboxProvider(Profile* profile,
@@ -36,7 +44,7 @@ OmniboxProvider::OmniboxProvider(Profile* profile,
       list_controller_(list_controller),
       controller_(std::make_unique<AutocompleteController>(
           std::make_unique<ChromeAutocompleteProviderClient>(profile),
-          AutocompleteClassifier::DefaultOmniboxProviders())) {
+          ProviderTypes())) {
   controller_->AddObserver(this);
   if (base::FeatureList::IsEnabled(
           app_list_features::kEnableLauncherSearchNormalization)) {
