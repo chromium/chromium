@@ -22,7 +22,6 @@
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/allocator/partition_allocator/partition_root.h"
-#include "base/allocator/partition_allocator/test_util.h"
 #include "base/bits.h"
 #include "base/logging.h"
 #include "base/partition_alloc_buildflags.h"
@@ -44,6 +43,55 @@
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 namespace {
+
+bool IsLargeMemoryDevice() {
+  // Treat any device with 2GiB or more of physical memory as a "large memory
+  // device". We check for slightly less than 2GiB so that devices with a small
+  // amount of memory not accessible to the OS still count as "large".
+  return base::SysInfo::AmountOfPhysicalMemory() >= 2040LL * 1024 * 1024;
+}
+
+bool SetAddressSpaceLimit() {
+#if !defined(ARCH_CPU_64_BITS) || !defined(OS_POSIX)
+  // 32 bits => address space is limited already.
+  return true;
+#elif defined(OS_POSIX) && !defined(OS_APPLE)
+  // macOS will accept, but not enforce, |RLIMIT_AS| changes. See
+  // https://crbug.com/435269 and rdar://17576114.
+  //
+  // Note: This number must be not less than 6 GB, because with
+  // sanitizer_coverage_flags=edge, it reserves > 5 GB of address space. See
+  // https://crbug.com/674665.
+  const size_t kAddressSpaceLimit = static_cast<size_t>(6144) * 1024 * 1024;
+  struct rlimit limit;
+  if (getrlimit(RLIMIT_DATA, &limit) != 0)
+    return false;
+  if (limit.rlim_cur == RLIM_INFINITY || limit.rlim_cur > kAddressSpaceLimit) {
+    limit.rlim_cur = kAddressSpaceLimit;
+    if (setrlimit(RLIMIT_DATA, &limit) != 0)
+      return false;
+  }
+  return true;
+#else
+  return false;
+#endif
+}
+
+bool ClearAddressSpaceLimit() {
+#if !defined(ARCH_CPU_64_BITS) || !defined(OS_POSIX)
+  return true;
+#elif defined(OS_POSIX)
+  struct rlimit limit;
+  if (getrlimit(RLIMIT_DATA, &limit) != 0)
+    return false;
+  limit.rlim_cur = limit.rlim_max;
+  if (setrlimit(RLIMIT_DATA, &limit) != 0)
+    return false;
+  return true;
+#else
+  return false;
+#endif
+}
 
 const size_t kTestSizes[] = {
     1,
@@ -238,14 +286,10 @@ class PartitionAllocTest : public testing::Test {
       LOG(FATAL) << "DoReturnNullTest";
     }
 
-    // This needs to be higher than the current amount of memory used, but not
-    // too high, as with DCHECK_IS_ON(), large allocations are *very* slow in
-    // PartitionAlloc (several memset() calls).
-    const size_t total_allocations = 1024 * 1024 * 1024;
-    ASSERT_TRUE(SetDataLimit(total_allocations));
+    ASSERT_TRUE(SetAddressSpaceLimit());
 
     // Work out the number of allocations for 6 GB of memory.
-    const int num_allocations = total_allocations / alloc_size;
+    const int num_allocations = (6 * 1024 * 1024) / (alloc_size / 1024);
 
     void** ptrs = reinterpret_cast<void**>(
         allocator.root()->Alloc(num_allocations * sizeof(void*), type_name));
@@ -299,7 +343,7 @@ class PartitionAllocTest : public testing::Test {
 
     allocator.root()->Free(ptrs);
 
-    EXPECT_TRUE(ClearDataLimit());
+    EXPECT_TRUE(ClearAddressSpaceLimit());
     LOG(FATAL) << "DoReturnNullTest";
   }
 
@@ -1582,15 +1626,25 @@ TEST_F(PartitionAllocTest, LostFreeSlotSpansBug) {
 // Death tests misbehave on Android, http://crbug.com/643760.
 #if defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID)
 
-// Unit tests that check if an allocation fails in "return null" mode, repeating
-// it doesn't crash, and still returns null. The tests need to stress memory
-// subsystem limits to do so, hence they try to allocate 1GiB of memory, each
-// with a different per-allocation block sizes.
+// Unit tests that check if an allocation fails in "return null" mode,
+// repeating it doesn't crash, and still returns null. The tests need to
+// stress memory subsystem limits to do so, hence they try to allocate
+// 6 GB of memory, each with a different per-allocation block sizes.
 //
 // On 64-bit systems we need to restrict the address space to force allocation
 // failure, so these tests run only on POSIX systems that provide setrlimit(),
-// and use it to limit used (not mapped) space to 1GiB.
-#if defined(ARCH_CPU_64_BITS) && (defined(OS_POSIX) && !defined(OS_ANDROID))
+// and use it to limit address space to 6GB.
+//
+// Disable these tests on Android because, due to the allocation-heavy behavior,
+// they tend to get OOM-killed rather than pass.
+// TODO(https://crbug.com/779645): Fuchsia currently sets OS_POSIX, but does
+// not provide a working setrlimit().
+//
+// Disable these test on Windows, since they run slower, so tend to timout and
+// cause flake.
+#if !defined(OS_WIN) &&            \
+    (!defined(ARCH_CPU_64_BITS) || \
+     (defined(OS_POSIX) && !(defined(OS_APPLE) || defined(OS_ANDROID))))
 
 // The following four tests wrap a called function in an expect death statement
 // to perform their test, because they are non-hermetic. Specifically they are
@@ -1640,8 +1694,8 @@ TEST_F(PartitionAllocDeathTest, DISABLED_RepeatedTryReallocReturnNull) {
                "DoReturnNullTest");
 }
 
-#endif  // defined(ARCH_CPU_64_BITS) && (defined(OS_POSIX) &&
-        // !defined(OS_ANDROID))
+#endif  // !defined(ARCH_CPU_64_BITS) || (defined(OS_POSIX) &&
+        // !(defined(OS_APPLE) || defined(OS_ANDROID)))
 
 // Make sure that malloc(-1) dies.
 // In the past, we had an integer overflow that would alias malloc(-1) to
