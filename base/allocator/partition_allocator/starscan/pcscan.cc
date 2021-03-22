@@ -24,6 +24,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_page.h"
+#include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/compiler_specific.h"
 #include "base/cpu.h"
 #include "base/debug/alias.h"
@@ -1331,6 +1332,14 @@ void PCScanTask::SweepQuarantine() {
   }
 
   stats_.IncreaseSweptSize(swept_bytes);
+
+#if defined(PA_THREAD_CACHE_SUPPORTED)
+  // Sweeping potentially frees into the current thread's thread cache. Purge
+  // releases the cache back to the global allocator.
+  auto* current_thread_tcache = ThreadCache::Get();
+  if (ThreadCache::IsValid(current_thread_tcache))
+    current_thread_tcache->Purge();
+#endif  // defined(PA_THREAD_CACHE_SUPPORTED)
 }
 
 void PCScanTask::FinishScanner() {
