@@ -31,7 +31,7 @@ public class RWebContentsAccessibility extends PieWebContentsAccessibility {
         // and will instead revert text to original content and set stateDescription separately.
         if (stateDescription != null && !stateDescription.isEmpty()) {
             CharSequence computedText = computeText(
-                    text, isEditableText, language, suggestionStarts, suggestionEnds, suggestions);
+                    text, annotateAsLink, language, suggestionStarts, suggestionEnds, suggestions);
 
             node.setText(computedText);
             node.setStateDescription(stateDescription);

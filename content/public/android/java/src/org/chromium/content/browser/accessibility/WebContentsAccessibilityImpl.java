@@ -1687,7 +1687,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
             boolean annotateAsLink, boolean isEditableText, String language, int[] suggestionStarts,
             int[] suggestionEnds, String[] suggestions, String stateDescription) {
         CharSequence computedText = computeText(
-                text, isEditableText, language, suggestionStarts, suggestionEnds, suggestions);
+                text, annotateAsLink, language, suggestionStarts, suggestionEnds, suggestions);
 
         // For pre-Android R, we add stateDescription to text for backwards compatibility.
         if (stateDescription != null && !stateDescription.isEmpty()) {
