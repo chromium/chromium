@@ -309,7 +309,7 @@ js_library("cr_tabs_test") {
     "..:chai_assert",
     "..:test_util.m",
     "//third_party/polymer/v3_0/components-chromium/iron-test-helpers:mock-interactions",
-    "//ui/webui/resources/cr_elements/cr_tabs:cr_tabs.m",
+    "//ui/webui/resources/cr_elements/cr_tabs:cr_tabs",
     "//ui/webui/resources/js:util.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]

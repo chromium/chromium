@@ -7,7 +7,7 @@ import 'chrome://resources/cr_components/chromeos/network_health/network_diagnos
 import 'chrome://resources/cr_components/chromeos/network_health/network_health_summary.m.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
-import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.m.js';
+import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-lite.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';

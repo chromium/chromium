@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.m.js';
+import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';

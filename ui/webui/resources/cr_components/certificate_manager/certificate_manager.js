@@ -5,7 +5,7 @@
 /**
  * @fileoverview The 'certificate-manager' component manages SSL certificates.
  */
-import '../../cr_elements/cr_tabs/cr_tabs.m.js';
+import '../../cr_elements/cr_tabs/cr_tabs.js';
 import '../../cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './ca_trust_edit_dialog.js';
