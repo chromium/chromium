@@ -984,8 +984,12 @@ class NearbySharingServiceImplTest : public testing::Test {
     return last_advertising_interval_max_;
   }
 
+  bool IsProcessShutdownTimerRunning() {
+    return service_->process_shutdown_pending_timer_.IsRunning();
+  }
+
   void FireProcessShutdownIfRunning() {
-    if (service_->process_shutdown_pending_timer_.IsRunning())
+    if (IsProcessShutdownTimerRunning())
       service_->process_shutdown_pending_timer_.FireNow();
   }
 
@@ -4193,5 +4197,46 @@ INSTANTIATE_TEST_SUITE_P(
                             1,
                         NearbySharingServiceImpl::
                             kMaxRecentNearbyProcessUnexpectedShutdownCount)));
+
+TEST_F(NearbySharingServiceImplTest, ProcessShutdownTimerDoesNotRestart) {
+  EXPECT_TRUE(IsBoundToProcess());
+  EXPECT_TRUE(IsProcessShutdownTimerRunning());
+
+  // Registering a receive surface should cancel the timer.
+  NiceMock<MockTransferUpdateCallback> callback;
+  SetUpForegroundReceiveSurface(callback);
+  EXPECT_TRUE(IsBoundToProcess());
+  EXPECT_FALSE(IsProcessShutdownTimerRunning());
+
+  // Unregistering the receive surface should start the timer.
+  service_->UnregisterReceiveSurface(&callback);
+  EXPECT_TRUE(IsBoundToProcess());
+  EXPECT_TRUE(IsProcessShutdownTimerRunning());
+
+  // Run the timer down a bit.
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+
+  // Unregister a receive surface again and make sure the timer did not restart.
+  service_->UnregisterReceiveSurface(&callback);
+  EXPECT_TRUE(IsBoundToProcess());
+  EXPECT_TRUE(IsProcessShutdownTimerRunning());
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(10));
+  EXPECT_FALSE(IsBoundToProcess());
+  EXPECT_FALSE(IsProcessShutdownTimerRunning());
+}
+
+TEST_F(NearbySharingServiceImplTest, NoShutdownTimerWithoutProcessRef) {
+  EXPECT_TRUE(IsBoundToProcess());
+  EXPECT_TRUE(IsProcessShutdownTimerRunning());
+  FireProcessShutdownIfRunning();
+  EXPECT_FALSE(IsBoundToProcess());
+  EXPECT_FALSE(IsProcessShutdownTimerRunning());
+
+  // Unregister a receive surface and make sure the timer does not start.
+  NiceMock<MockTransferUpdateCallback> callback;
+  service_->UnregisterReceiveSurface(&callback);
+  EXPECT_FALSE(IsBoundToProcess());
+  EXPECT_FALSE(IsProcessShutdownTimerRunning());
+}
 
 }  // namespace NearbySharingServiceUnitTests
