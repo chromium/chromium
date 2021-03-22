@@ -303,7 +303,8 @@ bool IsWindowOnDesktopOfUser(aura::Window* window,
 void UpdateAppRegistryCache(Profile* profile,
                             const std::string& app_id,
                             bool block,
-                            bool pause) {
+                            bool pause,
+                            apps::mojom::OptionalBool show_in_shelf) {
   std::vector<apps::mojom::AppPtr> apps;
   apps::mojom::AppPtr app = apps::mojom::App::New();
   app->app_type = apps::mojom::AppType::kExtension;
@@ -318,6 +319,9 @@ void UpdateAppRegistryCache(Profile* profile,
     app->paused = apps::mojom::OptionalBool::kTrue;
   else
     app->paused = apps::mojom::OptionalBool::kFalse;
+
+  if (show_in_shelf != apps::mojom::OptionalBool::kUnknown)
+    app->show_in_shelf = show_in_shelf;
 
   apps.push_back(std::move(app));
 
@@ -5137,8 +5141,9 @@ TEST_F(ChromeLauncherControllerTest, VerifyAppStatusForPausedApp) {
   AddExtension(extension1_.get());
 
   // Set the app as paused
-  UpdateAppRegistryCache(profile(), extension1_->id(), false /* block */,
-                         true /* pause */);
+  UpdateAppRegistryCache(
+      profile(), extension1_->id(), false /* block */, true /* pause */,
+      apps::mojom::OptionalBool::kUnknown /* show_in_shelf */);
 
   InitLauncherController();
 
@@ -5147,29 +5152,33 @@ TEST_F(ChromeLauncherControllerTest, VerifyAppStatusForPausedApp) {
   EXPECT_EQ(ash::AppStatus::kPaused, model_->items()[1].app_status);
 
   // Set the app as blocked
-  UpdateAppRegistryCache(profile(), extension1_->id(), true /* block */,
-                         true /* pause */);
+  UpdateAppRegistryCache(
+      profile(), extension1_->id(), true /* block */, true /* pause */,
+      apps::mojom::OptionalBool::kUnknown /* show_in_shelf */);
   EXPECT_EQ(ash::AppStatus::kBlocked, model_->items()[1].app_status);
 
   // Set the app as ready, but still paused;
-  UpdateAppRegistryCache(profile(), extension1_->id(), false /* block */,
-                         true /* pause */);
+  UpdateAppRegistryCache(
+      profile(), extension1_->id(), false /* block */, true /* pause */,
+      apps::mojom::OptionalBool::kUnknown /* show_in_shelf */);
   EXPECT_EQ(ash::AppStatus::kPaused, model_->items()[1].app_status);
 
   // Set the app as ready, and not paused;
-  UpdateAppRegistryCache(profile(), extension1_->id(), false /* block */,
-                         false /* pause */);
+  UpdateAppRegistryCache(
+      profile(), extension1_->id(), false /* block */, false /* pause */,
+      apps::mojom::OptionalBool::kUnknown /* show_in_shelf */);
   EXPECT_EQ(ash::AppStatus::kReady, model_->items()[1].app_status);
 }
 
-// Test the app status when the blocked app is paused, un-blocked, and
-// un-blocked
+// Test the app status when the blocked app is paused, un-paused, hidden,
+// visible and un-blocked
 TEST_F(ChromeLauncherControllerTest, VerifyAppStatusForBlockedApp) {
   AddExtension(extension1_.get());
 
   // Set the app as blocked
-  UpdateAppRegistryCache(profile(), extension1_->id(), true /* block */,
-                         false /* pause */);
+  UpdateAppRegistryCache(
+      profile(), extension1_->id(), true /* block */, false /* pause */,
+      apps::mojom::OptionalBool::kUnknown /* show_in_shelf */);
 
   InitLauncherController();
 
@@ -5178,18 +5187,40 @@ TEST_F(ChromeLauncherControllerTest, VerifyAppStatusForBlockedApp) {
   EXPECT_EQ(ash::AppStatus::kBlocked, model_->items()[1].app_status);
 
   // Set the app as paused
-  UpdateAppRegistryCache(profile(), extension1_->id(), true /* block */,
-                         true /* pause */);
+  UpdateAppRegistryCache(
+      profile(), extension1_->id(), true /* block */, true /* pause */,
+      apps::mojom::OptionalBool::kUnknown /* show_in_shelf */);
   EXPECT_EQ(ash::AppStatus::kBlocked, model_->items()[1].app_status);
 
-  // Set the app as blocked, but un-paused;
-  UpdateAppRegistryCache(profile(), extension1_->id(), true /* block */,
-                         false /* pause */);
+  // Set the app as blocked, but un-paused
+  UpdateAppRegistryCache(
+      profile(), extension1_->id(), true /* block */, false /* pause */,
+      apps::mojom::OptionalBool::kUnknown /* show_in_shelf */);
   EXPECT_EQ(ash::AppStatus::kBlocked, model_->items()[1].app_status);
 
-  // Set the app as ready, and not paused;
-  UpdateAppRegistryCache(profile(), extension1_->id(), false /* block */,
-                         false /* pause */);
+  // Set the app as ready, and not paused
+  UpdateAppRegistryCache(
+      profile(), extension1_->id(), false /* block */, false /* pause */,
+      apps::mojom::OptionalBool::kUnknown /* show_in_shelf */);
+  EXPECT_EQ(ash::AppStatus::kReady, model_->items()[1].app_status);
+
+  // Set the app as blocked and hidden
+  UpdateAppRegistryCache(profile(), extension1_->id(), true /* block */,
+                         false /* pause */,
+                         apps::mojom::OptionalBool::kFalse /* show_in_shelf */);
+  EXPECT_FALSE(launcher_controller_->IsAppPinned(extension1_->id()));
+
+  // Set the app as blocked and visible
+  UpdateAppRegistryCache(profile(), extension1_->id(), true /* block */,
+                         false /* pause */,
+                         apps::mojom::OptionalBool::kTrue /* show_in_shelf */);
+  EXPECT_EQ(ash::AppStatus::kBlocked, model_->items()[1].app_status);
+  EXPECT_TRUE(launcher_controller_->IsAppPinned(extension1_->id()));
+
+  // Set the app as ready
+  UpdateAppRegistryCache(
+      profile(), extension1_->id(), false /* block */, false /* pause */,
+      apps::mojom::OptionalBool::kUnknown /* show_in_shelf */);
   EXPECT_EQ(ash::AppStatus::kReady, model_->items()[1].app_status);
 }
 

@@ -959,8 +959,30 @@ void ChromeLauncherController::OnAppUninstalledPrepared(
   // Some apps may be removed locally. Unpin the item without removing the pin
   // position from profile preferences. When needed, it is automatically deleted
   // on app list model update.
-  if (IsAppPinned(app_id) && profile == this->profile())
-    UnpinShelfItemInternal(shelf_id);
+  if (IsAppPinned(app_id) && profile == this->profile()) {
+    bool show_in_shelf_changed = false;
+    bool is_app_disabled = false;
+    apps::AppServiceProxy* proxy =
+        apps::AppServiceProxyFactory::GetForProfile(this->profile());
+    proxy->AppRegistryCache().ForOneApp(
+        app_id, [&show_in_shelf_changed,
+                 &is_app_disabled](const apps::AppUpdate& update) {
+          show_in_shelf_changed = update.ShowInShelfChanged();
+          is_app_disabled =
+              update.Readiness() == apps::mojom::Readiness::kDisabledByPolicy;
+        });
+    // If the app is hidden and disabled, we need to update the app pin state.
+    // We don't remove the pin position from the preferences, in case we want to
+    // restore the app pinned state when the app state has changed to blocked or
+    // enabled.
+    if (show_in_shelf_changed && is_app_disabled) {
+      ScopedPinSyncDisabler scoped_pin_sync_disabler =
+          GetScopedPinSyncDisabler();
+      UnpinShelfItemInternal(shelf_id);
+    } else {
+      UnpinShelfItemInternal(shelf_id);
+    }
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

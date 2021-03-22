@@ -30,6 +30,7 @@ class LauncherAppServiceAppUpdater : public LauncherAppUpdater,
       apps::AppRegistryCache* cache) override;
 
  private:
+  void OnShowInShelfChanged(const std::string& app_id, bool show_in_shelf);
   std::set<std::string> installed_apps_;
 
   DISALLOW_COPY_AND_ASSIGN(LauncherAppServiceAppUpdater);
