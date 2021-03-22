@@ -50,18 +50,6 @@ static_library("utf") {
     "src/utf/utfutf.c",
   ]
 
-  # third_party/libphonenumber_metadata already contains its own copy of UTF
-  # but only on Android. We do not include these files to avoid double linkage
-  # issues.
-  if (!is_android) {
-    sources += [
-      "src/utf/chartorune.c",
-      "src/utf/fullrune.c",
-      "src/utf/runelen.c",
-      "src/utf/runetochar.c",
-    ]
-  }
-
   public_deps = [ ":utf-headers" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]

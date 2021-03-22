@@ -14,7 +14,7 @@ This is a C89 UTF-8 library, with an API compatible with that of Plan 9's libutf
 Modifications:
 - Add dynamically configured files via awk (patches/0001-adding-awk-built-files.patch)
 - Refactor utftab out of chartorune.c to continue linking it for all platforms.
-  This is a workaround for third_party/libphonenumber containing its own subset of UTF which is only used on Android (patches/0001-utftab-refactor.patch)
+  This is a workaround for third_party/libphonenumber containing its own subset of UTF (patches/0001-utftab-refactor.patch)
 - Add CJK ideographs to the range set for isalpharune. See crbug/1184370 for details (patches/0001-adding-CJK-ideograph-to-isalpha.patch)
 - Add Korean characters to the isalpharune ranges (patches/0001-adding-korean-characters-to-ranges.patch)
  (patched for korean characters)
