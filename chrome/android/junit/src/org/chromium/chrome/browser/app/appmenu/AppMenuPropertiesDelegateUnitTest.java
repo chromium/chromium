@@ -48,6 +48,8 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -110,6 +112,10 @@ public class AppMenuPropertiesDelegateUnitTest {
     private Profile mProfile;
     @Mock
     private PrefService mPrefService;
+    @Mock
+    private TabModelFilterProvider mTabModelFilterProvider;
+    @Mock
+    private TabModelFilter mTabModelFilter;
 
     private OneshotSupplierImpl<OverviewModeBehavior> mOverviewModeSupplier =
             new OneshotSupplierImpl<>();
@@ -131,6 +137,9 @@ public class AppMenuPropertiesDelegateUnitTest {
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         when(mTabModelSelector.getModel(false)).thenReturn((mTabModel));
         when(mTabModelSelector.getModel(true)).thenReturn((mIncognitoTabModel));
+        when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
+        when(mTabModelFilterProvider.getCurrentTabModelFilter()).thenReturn(mTabModelFilter);
+        when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.isIncognito()).thenReturn(false);
         when(mIncognitoTabModel.isIncognito()).thenReturn(true);
 
@@ -375,7 +384,7 @@ public class AppMenuPropertiesDelegateUnitTest {
         mAppMenuPropertiesDelegate.prepareMenu(menu, null);
 
         Integer[] expectedItems = {R.id.new_tab_menu_id, R.id.new_incognito_tab_menu_id,
-                R.id.close_all_tabs_menu_id, R.id.preferences_id};
+                R.id.close_all_tabs_menu_id, R.id.menu_group_tabs, R.id.preferences_id};
         assertMenuItemsAreEqual(menu, expectedItems);
     }
 

@@ -12,6 +12,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -40,6 +41,8 @@ class PriceTrackingDialogCoordinator implements OnCheckedChangeListener {
 
             @Override
             public void onDismiss(PropertyModel model, int dismissalCause) {
+                if (dismissalCause == DialogDismissalCause.ACTIVITY_DESTROYED) return;
+
                 resetHandler.resetWithTabList(
                         tabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter(),
                         false, TabSwitcherMediator.isShowingTabsInMRUOrder());

@@ -1266,7 +1266,10 @@ public class StartSurfaceTest {
         }
 
         /** Verifies the case of start surface -> a tab -> tab switcher -> start surface. */
-        onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.tab_list_view))
+        onViewWaiting(
+                allOf(withId(org.chromium.chrome.tab_ui.R.id.tab_list_view),
+                        withParent(withId(
+                                org.chromium.chrome.tab_ui.R.id.carousel_tab_switcher_container))))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
         assertFalse(bottomSheetTestSupport.hasSuppressionTokens());
 

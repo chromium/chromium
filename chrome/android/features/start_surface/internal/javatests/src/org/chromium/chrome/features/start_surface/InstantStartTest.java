@@ -535,7 +535,8 @@ public class InstantStartTest {
             Assert.fail("Failed to tap 'more tabs' " + e.toString());
         }
 
-        onViewWaiting(withId(R.id.tab_list_view));
+        onViewWaiting(
+                allOf(withParent(withId(R.id.tasks_surface_body)), withId(R.id.tab_list_view)));
         Assert.assertFalse(mActivityTestRule.getActivity().findViewById(R.id.url_bar).isFocused());
     }
 
@@ -1081,8 +1082,9 @@ public class InstantStartTest {
         startAndWaitNativeInitialization();
         waitForTabModel();
         TabUiTestHelper.verifyTabModelTabCount(mActivityTestRule.getActivity(), 1, 0);
-
-        onView(withId(R.id.tab_list_view)).check(matches(isDisplayed()));
+        onView(allOf(withParent(withId(R.id.carousel_tab_switcher_container)),
+                       withId(R.id.tab_list_view)))
+                .check(matches(isDisplayed()));
         RecyclerView tabListView = mActivityTestRule.getActivity().findViewById(R.id.tab_list_view);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> tabListView.getChildAt(0).findViewById(R.id.action_button).performClick());

@@ -65,14 +65,14 @@ public class CachedFeatureFlags {
             put(ChromeFeatureList.PAINT_PREVIEW_DEMO, false);
             put(ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP, false);
             put(ChromeFeatureList.PREFETCH_NOTIFICATION_SCHEDULING_INTEGRATION, false);
-            put(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, false);
-            put(ChromeFeatureList.TAB_GROUPS_ANDROID, false);
+            put(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, true);
+            put(ChromeFeatureList.TAB_GROUPS_ANDROID, true);
             put(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID, false);
             put(ChromeFeatureList.TOOLBAR_USE_HARDWARE_BITMAP_DRAW, false);
             put(ChromeFeatureList.CLOSE_TAB_SUGGESTIONS, false);
             put(ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA, false);
             put(ChromeFeatureList.INSTANT_START, false);
-            put(ChromeFeatureList.TAB_TO_GTS_ANIMATION, false);
+            put(ChromeFeatureList.TAB_TO_GTS_ANIMATION, true);
             put(ChromeFeatureList.TEST_DEFAULT_DISABLED, false);
             put(ChromeFeatureList.TEST_DEFAULT_ENABLED, true);
             put(ChromeFeatureList.INTEREST_FEED_V2, true);

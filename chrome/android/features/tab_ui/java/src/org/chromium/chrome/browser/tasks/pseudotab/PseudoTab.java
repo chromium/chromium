@@ -245,6 +245,11 @@ public class PseudoTab {
     public static void clearForTesting() {
         synchronized (sLock) {
             sAllTabs.clear();
+            sReadStateFile = false;
+            sActiveTabFromStateFile = null;
+            if (sAllTabsFromStateFile != null) {
+                sAllTabsFromStateFile.clear();
+            }
         }
     }
 

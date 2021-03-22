@@ -379,6 +379,7 @@ public class ReturnToChromeTest {
             + "/start_surface_variation/omniboxonly"})
     @DisableIf.Build(sdk_is_less_than = VERSION_CODES.Q, sdk_is_greater_than = VERSION_CODES.O,
             message = "crbug.com/1134361")
+    @DisabledTest(message = "https://crbug.com/1130696")
     public void testTabSwitcherModeTriggeredBeyondThreshold_WarmStart() throws Exception {
         // clang-format on
         testTabSwitcherModeTriggeredBeyondThreshold();

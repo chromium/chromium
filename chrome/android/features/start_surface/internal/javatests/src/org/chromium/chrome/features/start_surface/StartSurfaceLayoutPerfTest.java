@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.features.start_surface;
 
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
+
+import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -19,7 +23,6 @@ import androidx.annotation.Nullable;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.RecyclerViewActions;
-import androidx.test.espresso.matcher.ViewMatchers;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -394,7 +397,9 @@ public class StartSurfaceLayoutPerfTest {
 
             mStartSurfaceLayout.setPerfListenerForTesting(collector);
             Thread.sleep(mWaitingTime);
-            Espresso.onView(ViewMatchers.withId(org.chromium.chrome.tab_ui.R.id.tab_list_view))
+            Espresso.onView(allOf(withParent(withId(
+                                          org.chromium.chrome.tab_ui.R.id.compositor_view_holder)),
+                                    withId(org.chromium.chrome.tab_ui.R.id.tab_list_view)))
                     .perform(RecyclerViewActions.actionOnItemAtPosition(
                             targetIndex, ViewActions.click()));
 

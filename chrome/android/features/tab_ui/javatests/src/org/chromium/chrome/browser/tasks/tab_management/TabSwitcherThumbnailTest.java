@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 
+import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
@@ -121,7 +123,8 @@ public class TabSwitcherThumbnailTest {
         // There is a higher chance for the test to fail with backward counting, because after the
         // view being recycled, its height might have the correct measurement.
         for (int i = tabCounts - 1; i >= 0; i--) {
-            onView(withId(org.chromium.chrome.tab_ui.R.id.tab_list_view))
+            onView(allOf(withParent(withId(org.chromium.chrome.tab_ui.R.id.compositor_view_holder)),
+                           withId(org.chromium.chrome.tab_ui.R.id.tab_list_view)))
                     .perform(scrollToPosition(i))
                     .check(ThumbnailHeightAssertion.notZeroAt(i))
                     .check(ThumbnailAspectRatioAssertion.havingAspectRatioAt(ratio, i));

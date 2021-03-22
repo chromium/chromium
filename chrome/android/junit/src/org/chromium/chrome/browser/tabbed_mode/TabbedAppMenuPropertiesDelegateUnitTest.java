@@ -51,6 +51,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
@@ -122,6 +124,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     private WebFeedBridge mWebFeedBridge;
     @Mock
     private OfflinePageUtils.Internal mOfflinePageUtils;
+    @Mock
+    private TabModelFilterProvider mTabModelFilterProvider;
+    @Mock
+    private TabModelFilter mTabModelFilter;
 
     private OneshotSupplierImpl<OverviewModeBehavior> mOverviewModeSupplier =
             new OneshotSupplierImpl<>();
@@ -141,6 +147,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         when(mTabModelSelector.getModel(false)).thenReturn((mTabModel));
         when(mTabModel.isIncognito()).thenReturn(false);
+        when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
+        when(mTabModelFilterProvider.getCurrentTabModelFilter()).thenReturn(mTabModelFilter);
+        when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);
         jniMocker.mock(ProfileJni.TEST_HOOKS, mProfileJniMock);
         jniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
         when(mProfileJniMock.fromWebContents(any(WebContents.class))).thenReturn(mProfileMock);

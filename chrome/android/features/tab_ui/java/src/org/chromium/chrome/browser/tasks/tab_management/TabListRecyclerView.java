@@ -558,14 +558,22 @@ class TabListRecyclerView
             actions.remove(topAction);
         }
         // Cannot move down if current tab is the last X tab where X is the span count.
-        if (getAdapter().getItemCount() - position <= spanCount) {
+        if (getSwappableItemCount() - position <= spanCount) {
             actions.remove(downAction);
         }
         // Cannot move the last tab to its right.
-        if (position == getAdapter().getItemCount() - 1) {
+        if (position == getSwappableItemCount() - 1) {
             actions.remove(rightAction);
         }
         return actions;
+    }
+
+    private int getSwappableItemCount() {
+        int count = 0;
+        for (int i = 0; i < getAdapter().getItemCount(); i++) {
+            if (getAdapter().getItemViewType(i) == TabProperties.UiType.CLOSABLE) count++;
+        }
+        return count;
     }
 
     @Override
