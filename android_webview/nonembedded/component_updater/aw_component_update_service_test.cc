@@ -22,6 +22,7 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "components/component_updater/component_installer.h"
+#include "components/component_updater/component_updater_paths.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/update_client/network.h"
 #include "components/update_client/update_client.h"
@@ -217,7 +218,13 @@ class AwComponentUpdateServiceTest : public testing::Test {
   AwComponentUpdateServiceTest& operator=(const AwComponentUpdateServiceTest&) =
       delete;
 
-  static void SetUpTestSuite() { RegisterPathProvider(); }
+  static void SetUpTestSuite() {
+    RegisterPathProvider();
+    component_updater::RegisterPathProvider(
+        /*components_system_root_key=*/android_webview::DIR_COMPONENTS_ROOT,
+        /*components_system_root_key_alt=*/android_webview::DIR_COMPONENTS_ROOT,
+        /*components_user_root_key=*/android_webview::DIR_COMPONENTS_ROOT);
+  }
 
   // Override from testing::Test
   void SetUp() override {

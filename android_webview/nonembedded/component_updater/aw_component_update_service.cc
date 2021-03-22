@@ -36,6 +36,13 @@ AwComponentUpdateService* AwComponentUpdateService::GetInstance() {
 void JNI_AwComponentUpdateService_StartComponentUpdateService(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_finished_callback) {
+  // Has to be called after init WebViewApkProcess, should only happen once
+  // during the lifetime of webview_apk process.
+  component_updater::RegisterPathProvider(
+      /*components_system_root_key=*/android_webview::DIR_COMPONENTS_ROOT,
+      /*components_system_root_key_alt=*/android_webview::DIR_COMPONENTS_ROOT,
+      /*components_user_root_key=*/android_webview::DIR_COMPONENTS_ROOT);
+
   AwComponentUpdateService::GetInstance()->StartComponentUpdateService(
       base::BindOnce(
           base::android::RunRunnableAndroid,
@@ -57,13 +64,6 @@ AwComponentUpdateService::~AwComponentUpdateService() = default;
 void AwComponentUpdateService::StartComponentUpdateService(
     base::OnceClosure finished_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // All dirs point to the webview component root dir. Has to be called after
-  // init WebViewApkProcess, should only happen once per during startup.
-  component_updater::RegisterPathProvider(
-      /*components_system_root_key=*/android_webview::DIR_COMPONENTS_ROOT,
-      /*components_system_root_key_alt=*/android_webview::DIR_COMPONENTS_ROOT,
-      /*components_user_root_key=*/android_webview::DIR_COMPONENTS_ROOT);
 
   RegisterComponents(
       base::BindRepeating(&AwComponentUpdateService::RegisterComponent,
