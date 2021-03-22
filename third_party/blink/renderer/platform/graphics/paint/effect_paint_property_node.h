@@ -287,8 +287,8 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
     return state_.compositor_element_id;
   }
 
-  const DocumentTransitionSharedElementId& DocumentTransitionSharedElementId()
-      const {
+  const blink::DocumentTransitionSharedElementId&
+  DocumentTransitionSharedElementId() const {
     return state_.document_transition_shared_element_id;
   }
 
