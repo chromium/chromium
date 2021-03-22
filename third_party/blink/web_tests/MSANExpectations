@@ -169,3 +169,9 @@ crbug.com/1179829 [ Linux ] http/tests/devtools/sources/debugger-pause/pause-on-
 crbug.com/1179829 [ Linux ] http/tests/devtools/console/console-viewport-control.js [ Pass Timeout ]
 crbug.com/1179829 [ Linux ] http/tests/devtools/console/viewport-testing/console-stick-to-bottom-expand-object.js [ Pass Timeout ]
 crbug.com/1179829 [ Linux ] http/tests/devtools/console/console-viewport-selection.js [ Pass Timeout ]
+
+# Sheriff 2021-03-22
+crbug.com/1179829 [ Linux ] http/tests/devtools/console/console-format.js [ Pass Timeout ]
+crbug.com/1179829 [ Linux ] http/tests/devtools/tracing/console-timeline.js [ Pass Timeout ]
+crbug.com/1179829 [ Linux ] http/tests/devtools/console/console-viewport-stick-to-bottom-onload.js [ Pass Timeout ]
+crbug.com/1179829 [ Linux ] http/tests/devtools/isolated-code-cache/stale-revalidation-test.js [ Pass Timeout ]
