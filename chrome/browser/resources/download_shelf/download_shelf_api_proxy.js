@@ -12,9 +12,36 @@ export class DownloadShelfApiProxy {
   getCallbackRouter() {}
 
   /**
-   * @return {!Promise<!Array<!chrome.downloads.DownloadItem>>} callback
+   * @return {!Promise<!Array<!chrome.downloads.DownloadItem>>}
    */
   getDownloads() {}
+
+  /**
+   * @param {number} downloadId
+   * @return {!Promise}
+   */
+  getDownloadById(downloadId) {}
+
+  /**
+   * @param {number} downloadId
+   * @return {!Promise}
+   */
+  getFileIcon(downloadId) {}
+
+  /**
+   * @param {function(!Object)} callback
+   */
+  onCreated(callback) {}
+
+  /**
+   * @param {function(!Object)} callback
+   */
+  onChanged(callback) {}
+
+  /**
+   * @param {function(number)} callback
+   */
+  onErased(callback) {}
 }
 
 /** @implements {DownloadShelfApiProxy} */
@@ -47,6 +74,39 @@ export class DownloadShelfApiProxyImpl {
           },
           resolve);
     });
+  }
+
+  /** @override */
+  getDownloadById(downloadId) {
+    return new Promise(resolve => {
+      chrome.downloads.search(
+          {
+            id: downloadId,
+          },
+          resolve);
+    });
+  }
+
+  /** @override */
+  getFileIcon(downloadId) {
+    return new Promise(resolve => {
+      chrome.downloads.getFileIcon(downloadId, resolve);
+    });
+  }
+
+  /** @override */
+  onCreated(callback) {
+    chrome.downloads.onCreated.addListener(callback);
+  }
+
+  /** @override */
+  onChanged(callback) {
+    chrome.downloads.onChanged.addListener(callback);
+  }
+
+  /** @override */
+  onErased(callback) {
+    chrome.downloads.onErased.addListener(callback);
   }
 }
 

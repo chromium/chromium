@@ -56,6 +56,7 @@ preprocess_if_expr("preprocess_web_components") {
   in_files = [
     "app.js",
     "download_item.js",
+    "download_list.js",
   ]
 }
 
@@ -86,6 +87,7 @@ js_type_check("closure_compile") {
   deps = [
     ":app",
     ":download_item",
+    ":download_list",
     ":download_shelf_api_proxy",
   ]
 }
@@ -99,12 +101,25 @@ js_library("download_shelf_api_proxy") {
 }
 
 js_library("download_item") {
-  deps = [ "//ui/webui/resources/js:custom_element" ]
+  deps = [
+    ":download_shelf_api_proxy",
+    "//ui/webui/resources/js:custom_element",
+  ]
+  externs_list = [ "$externs_path/chrome_extensions.js" ]
+}
+
+js_library("download_list") {
+  deps = [
+    ":download_item",
+    ":download_shelf_api_proxy",
+    "//ui/webui/resources/js:custom_element",
+  ]
 }
 
 js_library("app") {
   deps = [
     ":download_item",
+    ":download_list",
     "//ui/webui/resources/js:custom_element",
   ]
 }
@@ -113,5 +128,6 @@ html_to_js("web_components") {
   js_files = [
     "app.js",
     "download_item.js",
+    "download_list.js",
   ]
 }
