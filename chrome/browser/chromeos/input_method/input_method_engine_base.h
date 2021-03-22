@@ -299,10 +299,6 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
   // Sends the key event to the window tree host.
   virtual bool SendKeyEvent(const ui::KeyEvent& event, std::string* error) = 0;
 
-  // Used to verify that a key event is valid before precessing it in the
-  // current context.
-  virtual bool IsValidKeyEvent(const ui::KeyEvent* ui_event) = 0;
-
   ui::TextInputType current_input_type_;
 
   // ID that is used for the current input context.  False if there is no focus.

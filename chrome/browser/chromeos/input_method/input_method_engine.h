@@ -170,10 +170,6 @@ class InputMethodEngine : public InputMethodEngineBase,
   // Hides the input view window (from API call).
   void HideInputView();
 
-  // Determine if the key event should be processed by the key
-  // event handler.
-  bool IsValidKeyEvent(const ui::KeyEvent* ui_event) override;
-
   // Sets the autocorrect range to be `range`. The `range` is in bytes.
   // TODO(b/171924748): Improve documentation for this function all the way down
   // the stack.

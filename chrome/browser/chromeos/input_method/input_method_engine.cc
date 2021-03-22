@@ -535,12 +535,6 @@ bool InputMethodEngine::SendKeyEvent(const ui::KeyEvent& event,
   return false;
 }
 
-bool InputMethodEngine::IsValidKeyEvent(const ui::KeyEvent* ui_event) {
-  // TODO(CRBUG/1070517): Update this check to verify that this KeyEvent should
-  // be allowed on this page, instead of assuming that it should be allowed.
-  return true;
-}
-
 void InputMethodEngine::EnableInputView() {
   input_method::InputMethodManager::Get()
       ->GetActiveIMEState()
