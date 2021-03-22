@@ -8,6 +8,7 @@ import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
@@ -562,10 +563,7 @@ public class AutofillAssistantPersonalDataManagerTest {
                 allOf(withText(containsString("1111")), isDisplayed()));
         onView(withContentDescription("Continue")).perform(click());
         waitUntilViewMatchesCondition(withId(R.id.card_unmask_input), isCompletelyDisplayed());
-        onView(withId(R.id.card_unmask_input)).perform(typeText("123"));
-        waitUntilViewMatchesCondition(
-                withId(R.id.positive_button), allOf(isDisplayed(), isEnabled()));
-        onView(withId(R.id.positive_button)).perform(click());
+        onView(withId(R.id.card_unmask_input)).perform(typeText("123"), pressImeActionButton());
         waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
         assertThat(getElementValue(getWebContents(), "name"), is("John Doe"));
         assertThat(getElementValue(getWebContents(), "card_number"), is("4111111111111111"));
