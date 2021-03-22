@@ -171,11 +171,6 @@ class ClearKeyProperties : public KeySystemProperties {
     return EmeSessionTypeSupport::NOT_SUPPORTED;
   }
 
-  EmeSessionTypeSupport GetPersistentUsageRecordSessionSupport()
-      const override {
-    return EmeSessionTypeSupport::NOT_SUPPORTED;
-  }
-
   EmeFeatureSupport GetPersistentStateSupport() const override {
     return EmeFeatureSupport::NOT_SUPPORTED;
   }
@@ -272,9 +267,6 @@ class KeySystemsImpl : public KeySystems {
       const std::string& requested_robustness) const override;
 
   EmeSessionTypeSupport GetPersistentLicenseSessionSupport(
-      const std::string& key_system) const override;
-
-  EmeSessionTypeSupport GetPersistentUsageRecordSessionSupport(
       const std::string& key_system) const override;
 
   EmeFeatureSupport GetPersistentStateSupport(
@@ -471,8 +463,6 @@ void KeySystemsImpl::AddSupportedKeySystems(
     DCHECK(!properties->GetKeySystemName().empty());
     DCHECK(properties->GetPersistentLicenseSessionSupport() !=
            EmeSessionTypeSupport::INVALID);
-    DCHECK(properties->GetPersistentUsageRecordSessionSupport() !=
-           EmeSessionTypeSupport::INVALID);
     DCHECK(properties->GetPersistentStateSupport() !=
            EmeFeatureSupport::INVALID);
     DCHECK(properties->GetDistinctiveIdentifierSupport() !=
@@ -491,8 +481,6 @@ void KeySystemsImpl::AddSupportedKeySystems(
         EmeFeatureSupport::NOT_SUPPORTED) {
       DCHECK(properties->GetPersistentLicenseSessionSupport() ==
              EmeSessionTypeSupport::NOT_SUPPORTED);
-      DCHECK(properties->GetPersistentUsageRecordSessionSupport() ==
-             EmeSessionTypeSupport::NOT_SUPPORTED);
     }
 
     // If distinctive identifiers are not supported, then no other features can
@@ -500,8 +488,6 @@ void KeySystemsImpl::AddSupportedKeySystems(
     if (properties->GetDistinctiveIdentifierSupport() ==
         EmeFeatureSupport::NOT_SUPPORTED) {
       DCHECK(properties->GetPersistentLicenseSessionSupport() !=
-             EmeSessionTypeSupport::SUPPORTED_WITH_IDENTIFIER);
-      DCHECK(properties->GetPersistentUsageRecordSessionSupport() !=
              EmeSessionTypeSupport::SUPPORTED_WITH_IDENTIFIER);
     }
 
@@ -747,18 +733,6 @@ EmeSessionTypeSupport KeySystemsImpl::GetPersistentLicenseSessionSupport(
     return EmeSessionTypeSupport::INVALID;
   }
   return key_system_iter->second->GetPersistentLicenseSessionSupport();
-}
-
-EmeSessionTypeSupport KeySystemsImpl::GetPersistentUsageRecordSessionSupport(
-    const std::string& key_system) const {
-  DCHECK(thread_checker_.CalledOnValidThread());
-
-  auto key_system_iter = key_system_properties_map_.find(key_system);
-  if (key_system_iter == key_system_properties_map_.end()) {
-    NOTREACHED();
-    return EmeSessionTypeSupport::INVALID;
-  }
-  return key_system_iter->second->GetPersistentUsageRecordSessionSupport();
 }
 
 EmeFeatureSupport KeySystemsImpl::GetPersistentStateSupport(

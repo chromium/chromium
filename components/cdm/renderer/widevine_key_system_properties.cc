@@ -52,7 +52,6 @@ WidevineKeySystemProperties::WidevineKeySystemProperties(
     Robustness max_audio_robustness,
     Robustness max_video_robustness,
     media::EmeSessionTypeSupport persistent_license_support,
-    media::EmeSessionTypeSupport persistent_release_message_support,
     media::EmeFeatureSupport persistent_state_support,
     media::EmeFeatureSupport distinctive_identifier_support)
     : codecs_(codecs),
@@ -62,7 +61,6 @@ WidevineKeySystemProperties::WidevineKeySystemProperties(
       max_audio_robustness_(max_audio_robustness),
       max_video_robustness_(max_video_robustness),
       persistent_license_support_(persistent_license_support),
-      persistent_release_message_support_(persistent_release_message_support),
       persistent_state_support_(persistent_state_support),
       distinctive_identifier_support_(distinctive_identifier_support) {}
 
@@ -177,11 +175,6 @@ EmeConfigRule WidevineKeySystemProperties::GetRobustnessConfigRule(
 EmeSessionTypeSupport
 WidevineKeySystemProperties::GetPersistentLicenseSessionSupport() const {
   return persistent_license_support_;
-}
-
-EmeSessionTypeSupport
-WidevineKeySystemProperties::GetPersistentUsageRecordSessionSupport() const {
-  return persistent_release_message_support_;
 }
 
 EmeFeatureSupport WidevineKeySystemProperties::GetPersistentStateSupport()

@@ -30,8 +30,6 @@ MF_MEDIAKEYSESSION_TYPE ToMFSessionType(CdmSessionType session_type) {
       return MF_MEDIAKEYSESSION_TYPE_TEMPORARY;
     case CdmSessionType::kPersistentLicense:
       return MF_MEDIAKEYSESSION_TYPE_PERSISTENT_LICENSE;
-    case CdmSessionType::kPersistentUsageRecord:
-      return MF_MEDIAKEYSESSION_TYPE_PERSISTENT_USAGE_RECORD;
   }
 }
 

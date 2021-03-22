@@ -13,8 +13,7 @@ enum class WebEncryptedMediaSessionType {
   kUnknown = 0,
   kTemporary = 1,
   kPersistentLicense = 2,
-  kPersistentUsageRecord = 3,
-  kMaxValue = kPersistentUsageRecord,
+  kMaxValue = kPersistentLicense,
 };
 
 }  // namespace blink

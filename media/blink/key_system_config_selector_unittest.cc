@@ -310,11 +310,6 @@ class FakeKeySystems : public KeySystems {
     return persistent_license;
   }
 
-  EmeSessionTypeSupport GetPersistentUsageRecordSessionSupport(
-      const std::string& key_system) const override {
-    return persistent_usage_record;
-  }
-
   EmeFeatureSupport GetPersistentStateSupport(
       const std::string& key_system) const override {
     return persistent_state;
@@ -331,8 +326,6 @@ class FakeKeySystems : public KeySystems {
 
   // INVALID so that they must be set in any test that needs them.
   EmeSessionTypeSupport persistent_license = EmeSessionTypeSupport::INVALID;
-  EmeSessionTypeSupport persistent_usage_record =
-      EmeSessionTypeSupport::INVALID;
 
   // Every test implicitly requires these, so they must be set. They are set to
   // values that are likely to cause tests to fail if they are accidentally

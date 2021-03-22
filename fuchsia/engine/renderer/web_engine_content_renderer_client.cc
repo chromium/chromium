@@ -78,11 +78,6 @@ class PlayreadyKeySystemProperties : public ::media::KeySystemProperties {
     return media::EmeSessionTypeSupport::NOT_SUPPORTED;
   }
 
-  media::EmeSessionTypeSupport GetPersistentUsageRecordSessionSupport()
-      const override {
-    return media::EmeSessionTypeSupport::NOT_SUPPORTED;
-  }
-
   media::EmeFeatureSupport GetPersistentStateSupport() const override {
     return media::EmeFeatureSupport::ALWAYS_ENABLED;
   }
@@ -220,7 +215,6 @@ void WebEngineContentRendererClient::AddSupportedKeySystems(
         cdm::WidevineKeySystemProperties::Robustness::
             HW_SECURE_ALL,                            // max video robustness
         media::EmeSessionTypeSupport::NOT_SUPPORTED,  // persistent license
-        media::EmeSessionTypeSupport::NOT_SUPPORTED,  // persistent usage record
         media::EmeFeatureSupport::ALWAYS_ENABLED,     // persistent state
         media::EmeFeatureSupport::ALWAYS_ENABLED));   // distinctive identifier
   }

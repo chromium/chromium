@@ -67,9 +67,6 @@ fuchsia::media::drm::LicenseSessionType ToFuchsiaLicenseSessionType(
       return fuchsia::media::drm::LicenseSessionType::TEMPORARY;
     case CdmSessionType::kPersistentLicense:
       return fuchsia::media::drm::LicenseSessionType::PERSISTENT_LICENSE;
-    case CdmSessionType::kPersistentUsageRecord:
-      NOTREACHED();
-      return fuchsia::media::drm::LicenseSessionType::TEMPORARY;
   }
 }
 

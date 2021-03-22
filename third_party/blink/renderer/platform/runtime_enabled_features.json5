@@ -847,10 +847,6 @@
       status: "stable",
     },
     {
-      name: "EncryptedMediaPersistentUsageRecordSession",
-      status: "stable",
-    },
-    {
       name: "EnterKeyHintAttribute",
       status: "stable",
     },

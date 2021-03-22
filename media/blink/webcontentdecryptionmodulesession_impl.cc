@@ -72,8 +72,6 @@ CdmSessionType convertSessionType(
       return CdmSessionType::kTemporary;
     case blink::WebEncryptedMediaSessionType::kPersistentLicense:
       return CdmSessionType::kPersistentLicense;
-    case blink::WebEncryptedMediaSessionType::kPersistentUsageRecord:
-      return CdmSessionType::kPersistentUsageRecord;
     case blink::WebEncryptedMediaSessionType::kUnknown:
       break;
   }
@@ -350,8 +348,7 @@ void WebContentDecryptionModuleSessionImpl::Load(
   DCHECK(!session_id.IsEmpty());
   DCHECK(session_id_.empty());
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(session_type_ == CdmSessionType::kPersistentLicense ||
-         session_type_ == CdmSessionType::kPersistentUsageRecord);
+  DCHECK(session_type_ == CdmSessionType::kPersistentLicense);
 
   // From https://w3c.github.io/encrypted-media/#load.
   // 8.1 Let sanitized session ID be a validated and/or sanitized version of

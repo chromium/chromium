@@ -120,10 +120,7 @@ void ClearKeyPersistentSessionCdm::CreateSessionAndGenerateRequest(
     const std::vector<uint8_t>& init_data,
     std::unique_ptr<NewSessionCdmPromise> promise) {
   std::unique_ptr<NewSessionCdmPromise> new_promise;
-  // TODO(crbug.com/1102976) Add browser test for loading EME
-  // persistent-usage-record session
-  if (session_type == CdmSessionType::kTemporary ||
-      session_type == CdmSessionType::kPersistentUsageRecord) {
+  if (session_type == CdmSessionType::kTemporary) {
     new_promise = std::move(promise);
   } else {
     // Since it's a persistent session, we need to save the session ID after
@@ -301,33 +298,7 @@ void ClearKeyPersistentSessionCdm::RemoveSession(
   auto it = persistent_sessions_.find(session_id);
   if (it == persistent_sessions_.end()) {
     // Not a persistent session, so simply pass the request on.
-
-    // TODO(crbug.com/1102976) Add test for loading PUR session
-    // TODO(crbug.com/1107614) Move session message for persistent-license
-    // session to ClearKeyPersistentSessionCdm Query the record of key usage
-    // before calling remove as RemoveSession will delete the keys. Steps from
-    // https://w3c.github.io/encrypted-media/#remove. 4.4.1.2 Follow the steps
-    // for the value of this object's session type
-    //           "persistent-usage-record"
-    //              Let message be a message containing or reflecting this
-    //              object's record of key usage.
-    KeyIdList key_ids;
-    base::Time first_decryption_time;
-    base::Time latest_decryption_time;
-    bool is_persistent_usage_record_session = cdm_->GetRecordOfKeyUsage(
-        session_id, key_ids, first_decryption_time, latest_decryption_time);
     cdm_->RemoveSession(session_id, std::move(promise));
-
-    // Both times will be null if the session type is not PUR.
-    if (is_persistent_usage_record_session) {
-      std::vector<uint8_t> message = CreateLicenseReleaseMessage(
-          key_ids, first_decryption_time, latest_decryption_time);
-      // EME spec specifies that the message event should be fired before the
-      // promise is resolve but since this is only for testing we can leave this
-      // here.
-      session_message_cb_.Run(session_id, CdmMessageType::LICENSE_RELEASE,
-                              message);
-    }
     return;
   }
 

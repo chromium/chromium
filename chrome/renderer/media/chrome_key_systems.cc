@@ -307,13 +307,6 @@ static void AddWidevine(
   auto persistent_license_support =
       GetPersistentLicenseSupport(cdm_supports_persistent_license);
 
-  // TODO(xhwang): Check more conditions as needed.
-  auto persistent_usage_record_support =
-      base::Contains(capability->session_types,
-                     media::CdmSessionType::kPersistentUsageRecord)
-          ? EmeSessionTypeSupport::SUPPORTED
-          : EmeSessionTypeSupport::NOT_SUPPORTED;
-
   // Others.
   auto persistent_state_support = EmeFeatureSupport::REQUESTABLE;
   auto distinctive_identifier_support = EmeFeatureSupport::NOT_SUPPORTED;
@@ -324,8 +317,8 @@ static void AddWidevine(
   concrete_key_systems->emplace_back(new cdm::WidevineKeySystemProperties(
       codecs, encryption_schemes, hw_secure_codecs,
       hw_secure_encryption_schemes, max_audio_robustness, max_video_robustness,
-      persistent_license_support, persistent_usage_record_support,
-      persistent_state_support, distinctive_identifier_support));
+      persistent_license_support, persistent_state_support,
+      distinctive_identifier_support));
 }
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)

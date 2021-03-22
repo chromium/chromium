@@ -120,14 +120,6 @@ TEST_F(JSONWebKeyTest, GenerateJWKSet) {
       "\"AQIDBA\",\"kid\":\"AQIDBA\",\"kty\":\"oct\"}],\"type\":\"persistent-"
       "license\"}",
       GenerateJWKSet(keys, CdmSessionType::kPersistentLicense));
-  keys.push_back(
-      MakeKeyIdAndKeyPair(data3, base::size(data3), data3, base::size(data3)));
-  EXPECT_EQ(
-      "{\"keys\":[{\"k\":\"AQI\",\"kid\":\"AQI\",\"kty\":\"oct\"},{\"k\":"
-      "\"AQIDBA\",\"kid\":\"AQIDBA\",\"kty\":\"oct\"},{\"k\":"
-      "\"AQIDBAUGBwgJCgsMDQ4PEA\",\"kid\":\"AQIDBAUGBwgJCgsMDQ4PEA\",\"kty\":"
-      "\"oct\"}],\"type\":\"persistent-usage-record\"}",
-      GenerateJWKSet(keys, CdmSessionType::kPersistentUsageRecord));
 }
 
 TEST_F(JSONWebKeyTest, ExtractValidJWKKeys) {
@@ -409,10 +401,6 @@ TEST_F(JSONWebKeyTest, CdmSessionType) {
       true, CdmSessionType::kPersistentLicense);
   ExtractSessionTypeAndExpect(
       "{\"keys\":[{\"k\":\"AQI\",\"kid\":\"AQI\",\"kty\":\"oct\"}],\"type\":"
-      "\"persistent-usage-record\"}",
-      true, CdmSessionType::kPersistentUsageRecord);
-  ExtractSessionTypeAndExpect(
-      "{\"keys\":[{\"k\":\"AQI\",\"kid\":\"AQI\",\"kty\":\"oct\"}],\"type\":"
       "\"unknown\"}",
       false, CdmSessionType::kTemporary);
   ExtractSessionTypeAndExpect(
@@ -431,9 +419,6 @@ TEST_F(JSONWebKeyTest, CreateLicense) {
   CreateLicenseAndExpect(
       data1, base::size(data1), CdmSessionType::kPersistentLicense,
       "{\"kids\":[\"AQI\"],\"type\":\"persistent-license\"}");
-  CreateLicenseAndExpect(
-      data1, base::size(data1), CdmSessionType::kPersistentUsageRecord,
-      "{\"kids\":[\"AQI\"],\"type\":\"persistent-usage-record\"}");
   CreateLicenseAndExpect(data2, base::size(data2), CdmSessionType::kTemporary,
                          "{\"kids\":[\"AQIDBA\"],\"type\":\"temporary\"}");
   CreateLicenseAndExpect(data3, base::size(data3),

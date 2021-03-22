@@ -404,12 +404,12 @@ void AesDecryptor::RemoveSession(const std::string& session_id,
   //           "persistent-license"
   //              Let message be a message containing or reflecting the record
   //              of license destruction.
-  //           "persistent-usage-record"
-  //              Not supported by AesDecryptor.
   std::vector<uint8_t> message;
   if (it->second == CdmSessionType::kPersistentLicense) {
     // The license release message is specified in the spec:
     // https://w3c.github.io/encrypted-media/#clear-key-release-format.
+    // TODO(crbug.com/1107614) Move session message for persistent-license
+    // session from AesDecryptor to ClearKeyPersistentSessionCdm.
     KeyIdList key_ids;
     key_ids.reserve(keys_info.size());
     for (const auto& key_info : keys_info)
@@ -482,12 +482,6 @@ void AesDecryptor::Decrypt(StreamType stream_type,
     std::move(decrypt_cb).Run(kError, nullptr);
     return;
   }
-
-  auto now = base::Time::Now();
-  if (first_decryption_time_.is_null())
-    first_decryption_time_ = now;
-
-  latest_decryption_time_ = now;
 
   DCHECK_EQ(decrypted->timestamp(), encrypted->timestamp());
   DCHECK_EQ(decrypted->duration(), encrypted->duration());
@@ -642,29 +636,6 @@ CdmKeysInfo AesDecryptor::GenerateKeysInfoList(
     }
   }
   return keys_info;
-}
-
-bool AesDecryptor::GetRecordOfKeyUsage(const std::string& session_id,
-                                       KeyIdList& key_ids,
-                                       base::Time& first_decryption_time,
-                                       base::Time& latest_decryption_time) {
-  auto it = open_sessions_.find(session_id);
-  if (it == open_sessions_.end() ||
-      it->second != CdmSessionType::kPersistentUsageRecord) {
-    return false;
-  }
-
-  base::AutoLock auto_lock(key_map_lock_);
-  for (const auto& item : key_map_) {
-    if (item.second->Contains(session_id)) {
-      key_ids.emplace_back(item.first.begin(), item.first.end());
-    }
-  }
-
-  first_decryption_time = first_decryption_time_;
-  latest_decryption_time = latest_decryption_time_;
-
-  return true;
 }
 
 AesDecryptor::DecryptionKey::DecryptionKey(const std::string& secret)

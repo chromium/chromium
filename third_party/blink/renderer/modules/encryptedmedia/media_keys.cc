@@ -228,21 +228,6 @@ MediaKeySession* MediaKeys::createSession(ScriptState* script_state,
     return nullptr;
   }
 
-  // [RuntimeEnabled] does not work with enum values. So we have to check it
-  // here. See https://crbug.com/871867 for details.
-  if (!RuntimeEnabledFeatures::
-          EncryptedMediaPersistentUsageRecordSessionEnabled() &&
-      session_type_string == "persistent-usage-record") {
-    DVLOG(MEDIA_KEYS_LOG_LEVEL)
-        << __func__ << ": 'persistent-usage-record' support not enabled.";
-    // The message here is carefully chosen to be exactly the same as what the
-    // generated bindings would generate for invalid enum values.
-    exception_state.ThrowTypeError(
-        "The provided value 'persistent-usage-record' is not a valid enum "
-        "value of type MediaKeySessionType.");
-    return nullptr;
-  }
-
   // From http://w3c.github.io/encrypted-media/#createSession
 
   // When this method is invoked, the user agent must run the following steps:

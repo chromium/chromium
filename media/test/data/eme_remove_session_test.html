@@ -44,11 +44,6 @@
       event, resolve, reject) {
     var mediaKeySession = event.target;
 
-    if (event.messageType == "license-release" &&
-        testConfig.sessionToLoad == 'PersistentUsageRecord') {
-      Utils.verifyUsageRecord(event.message, /* expectNullTime= */ true);
-    }
-
     Utils.timeLog('Calling update()');
     const jwkSet = Utils.createJWKData(keyId, key);
     mediaKeySession.update(jwkSet).then(resolve, reject);
@@ -78,10 +73,6 @@
     sessionTypes: ['temporary'],
   }];
 
-  if (testConfig.sessionToLoad == "PersistentUsageRecord") {
-    config[0].sessionTypes.push('persistent-usage-record');
-  }
-
   var mediaKeySession;
   navigator.requestMediaKeySystemAccess(testConfig.keySystem, config)
       .then(function(access) {
@@ -92,11 +83,7 @@
       })
       .then(function(mediaKeys) {
         Utils.timeLog('Creating session');
-        if (testConfig.sessionToLoad == "PersistentUsageRecord") {
-          mediaKeySession = mediaKeys.createSession("persistent-usage-record");
-        } else {
-          mediaKeySession = mediaKeys.createSession();
-        }
+        mediaKeySession = mediaKeys.createSession();
 
         // Register for the 'message' event before it happens. Although the
         // event shouldn't be generated until after the generateRequest()
@@ -140,13 +127,6 @@
         // Once remove() is called, another 'keystatuseschange' event will
         // happen.
         promises.push(Utils.waitForEvent(mediaKeySession, 'keystatuseschange'));
-
-        // For persistent-usage-record session, a license-release "message"
-        // event will happen.
-        if (testConfig.sessionToLoad == "PersistentUsageRecord") {
-          promises.push(Utils.waitForEvent(
-            mediaKeySession, 'message', keySystemHelper.onMessage));
-        }
 
         Utils.timeLog('Calling remove()');
         promises.push(mediaKeySession.remove());

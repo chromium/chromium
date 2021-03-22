@@ -81,10 +81,6 @@ class AndroidPlatformKeySystemProperties : public KeySystemProperties {
   EmeSessionTypeSupport GetPersistentLicenseSessionSupport() const override {
     return EmeSessionTypeSupport::NOT_SUPPORTED;
   }
-  EmeSessionTypeSupport GetPersistentUsageRecordSessionSupport()
-      const override {
-    return EmeSessionTypeSupport::NOT_SUPPORTED;
-  }
   EmeFeatureSupport GetPersistentStateSupport() const override {
     return EmeFeatureSupport::ALWAYS_ENABLED;
   }
@@ -154,7 +150,6 @@ void AddAndroidWidevine(
         Robustness::HW_SECURE_CRYPTO,  // Max audio robustness.
         Robustness::HW_SECURE_ALL,     // Max video robustness.
         persistent_license_support,    // persistent-license.
-        EmeSessionTypeSupport::NOT_SUPPORTED,  // persistent-release-message.
         EmeFeatureSupport::ALWAYS_ENABLED,     // Persistent state.
         EmeFeatureSupport::ALWAYS_ENABLED));   // Distinctive identifier.
   } else {
