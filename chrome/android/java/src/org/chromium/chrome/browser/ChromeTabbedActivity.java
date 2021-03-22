@@ -11,29 +11,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.ShortcutManager;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Pair;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.KeyboardShortcutGroup;
 import android.view.Menu;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
-import android.view.View.OnTouchListener;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
 
-import android.widget.FrameLayout;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -41,8 +34,6 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LifecycleRegistry;
 
-import org.chromium.base.ApplicationState;
-import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
@@ -123,7 +114,6 @@ import org.chromium.chrome.browser.native_page.NativePageAssassin;
 import org.chromium.chrome.browser.navigation_predictor.NavigationPredictorBridge;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
-import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorController;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelperSupplier;
@@ -181,7 +171,6 @@ import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
-import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -197,7 +186,6 @@ import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.widget.ChromeImageButton;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.Origin;
 
@@ -605,11 +593,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     if (!isAllTabs) return;
                     NewTabPageUma.recordNTPImpression(NewTabPageUma.NTP_IMPESSION_POTENTIAL_NOTAB);
                 }
-
-                @Override
-                public void didSelectTab(Tab tab, int type, int lastId) {
-                    ((TextViewWithCompoundDrawables)findViewById(R.id.kirby_text)).setText(tab.getUrl().getHost());
-                }
             };
         } finally {
             TraceEvent.end("ChromeTabbedActivity.initializeCompositor");
@@ -850,44 +833,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
     }
 
-    private static class KirbyTouchListener implements View.OnTouchListener, View.OnLongClickListener {
-        private boolean mIsMoving;
-        private final RootUiCoordinator mRootUiCoordinator;
-
-        KirbyTouchListener(RootUiCoordinator rootUiCoordinator) {
-            mRootUiCoordinator = rootUiCoordinator;
-        }
-
-        @Override
-        public boolean onLongClick(View view) {
-            if (mIsMoving) return false;
-            mRootUiCoordinator.getAppMenuCoordinatorForTesting().showAppMenuForKeyboardEvent();
-            return true;
-        }
-
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
-                float eventX = motionEvent.getRawX() - view.getWidth() / 2;
-                float eventY = motionEvent.getRawY() - view.getContext().getResources()
-                    .getDimensionPixelSize(R.dimen.status_indicator_min_height) - view.getHeight();
-                Log.e("Yusuf","X values : "+eventX+":"+view.getX()+":"+motionEvent.getRawX());
-                Log.e("Yusuf","Y values : "+eventY+":"+view.getY()+":"+motionEvent.getRawY());
-                view.setX(motionEvent.getRawX() - view.getWidth() / 2);
-                view.setY(motionEvent.getRawY() - view.getContext().getResources()
-                    .getDimensionPixelSize(R.dimen.status_indicator_min_height) - view.getContext().getResources()
-                    .getDimensionPixelSize(R.dimen.toolbar_identity_disc_size) - view.getHeight()/2);
-                mIsMoving = true;
-                return true;
-            } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                return mIsMoving;
-            } else if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                mIsMoving = false;
-            }
-            return false;
-        }
-    }
-
     @Override
     public void finishNativeInitialization() {
         super.finishNativeInitialization();
@@ -900,16 +845,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         ChromeAccessibilityUtil.get().addObserver(mLayoutManager);
         if (isTablet()) ChromeAccessibilityUtil.get().addObserver(mCompositorViewHolder);
-        mContentContainer.findViewById(R.id.kirby).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getTabCreator(false).launchNTP();
-                view.setVisibility(View.INVISIBLE);
-            }
-        });
-        KirbyTouchListener listener = new KirbyTouchListener(mRootUiCoordinator);
-        mContentContainer.findViewById(R.id.kirby).setOnLongClickListener(listener);
-        mContentContainer.findViewById(R.id.kirby).setOnTouchListener(listener);
     }
 
     @Override
@@ -1761,9 +1696,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     DataReductionPromoInfoBar.maybeLaunchPromoInfoBar(ChromeTabbedActivity.this,
                             tab.getWebContents(), navigation.getUrl(), tab.isShowingErrorPage(),
                             navigation.isFragmentNavigation(), navigation.httpStatusCode());
-                    ((TextViewWithCompoundDrawables)findViewById(R.id.kirby_text)).setText(tab.getUrl().getHost());
                 }
-
             }
         };
         mAppIndexingUtil = new AppIndexingUtil(mTabModelSelectorImpl);

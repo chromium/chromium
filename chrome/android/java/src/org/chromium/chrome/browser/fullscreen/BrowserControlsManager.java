@@ -26,14 +26,11 @@ import org.chromium.base.task.PostTask;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior.OverviewModeObserver;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
@@ -69,7 +66,7 @@ public class BrowserControlsManager
     private static final int CONTROLS_ANIMATION_DURATION_MS = 200;
 
     private final Activity mActivity;
-    private BrowserStateBrowserControlsVisibilityDelegate mBrowserVisibilityDelegate;
+    private final BrowserStateBrowserControlsVisibilityDelegate mBrowserVisibilityDelegate;
     @ControlsPosition
     private final int mControlsPosition;
     private final TokenHolder mHidingTokenHolder = new TokenHolder(this::scheduleVisibilityUpdate);
@@ -113,7 +110,6 @@ public class BrowserControlsManager
      * from animation start till the next offset update from compositor arrives.
      */
     private boolean mOffsetOverridden;
-    private ObservableSupplierImpl<Boolean> mFakeFullscreen = new ObservableSupplierImpl<>();
 
     @IntDef({ControlsPosition.TOP, ControlsPosition.NONE})
     @Retention(RetentionPolicy.SOURCE)
@@ -162,11 +158,10 @@ public class BrowserControlsManager
         mActivity = activity;
         mControlsPosition = controlsPosition;
         mControlsAtMinHeight.set(false);
-        mFakeFullscreen.set(false);
         mHtmlApiHandler =
-            new FullscreenHtmlApiHandler(activity, mControlsAtMinHeight, exitFullscreenOnStop);
+                new FullscreenHtmlApiHandler(activity, mControlsAtMinHeight, exitFullscreenOnStop);
         mBrowserVisibilityDelegate = new BrowserStateBrowserControlsVisibilityDelegate(
-            mFakeFullscreen);
+                mHtmlApiHandler.getPersistentFullscreenModeSupplier());
         mBrowserVisibilityDelegate.addObserver((constraints) -> {
             if (constraints == BrowserControlsState.SHOWN) setPositionsForTabToNonFullscreen();
         });
@@ -244,10 +239,6 @@ public class BrowserControlsManager
         mRendererTopContentOffset = mTopControlContainerHeight;
         updateControlOffset();
         scheduleVisibilityUpdate();
-    }
-
-    public void onFullscreenUpdate(boolean update) {
-        mFakeFullscreen.set(update);
     }
 
     /**
@@ -465,7 +456,7 @@ public class BrowserControlsManager
      * NB: this only affects the Android controls. For controlling composited toolbar visibility,
      * implement {@link BrowserControlsVisibilityDelegate#canShowBrowserControls()}.
      */
-    public int hideAndroidControls() {
+    private int hideAndroidControls() {
         return mHidingTokenHolder.acquireToken();
     }
 

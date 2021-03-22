@@ -74,8 +74,8 @@ public class StartSurfaceToolbarCoordinator {
                                 !StartSurfaceConfiguration
                                          .START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB.getValue())
                         .with(StartSurfaceToolbarProperties.IN_START_SURFACE_MODE, false)
-                        .with(StartSurfaceToolbarProperties.MENU_IS_VISIBLE, false)
-                        .with(StartSurfaceToolbarProperties.IS_VISIBLE, false)
+                        .with(StartSurfaceToolbarProperties.MENU_IS_VISIBLE, true)
+                        .with(StartSurfaceToolbarProperties.IS_VISIBLE, true)
                         .with(StartSurfaceToolbarProperties.GRID_TAB_SWITCHER_ENABLED,
                                 isGridTabSwitcherEnabled)
                         .build();
