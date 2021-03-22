@@ -320,7 +320,8 @@ public class PickerVideoPlayer
     }
 
     private void adjustVideoLayoutParamsToOrientation() {
-        if (mMediaPlayer.getVideoWidth() == 0 || mMediaPlayer.getVideoHeight() == 0) {
+        if (mMediaPlayer == null || mMediaPlayer.getVideoWidth() == 0
+                || mMediaPlayer.getVideoHeight() == 0) {
             return;
         }
         float aspectRatio = (float) mMediaPlayer.getVideoWidth() / mMediaPlayer.getVideoHeight();

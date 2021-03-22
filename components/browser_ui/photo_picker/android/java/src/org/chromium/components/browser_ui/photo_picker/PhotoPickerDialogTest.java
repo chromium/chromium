@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.photo_picker;
 
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.StrictMode;
@@ -610,6 +611,27 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
         } finally {
             TestThreadUtils.runOnUiThreadBlocking(() -> { StrictMode.setThreadPolicy(oldPolicy); });
         }
+    }
+
+    @Test
+    @LargeTest
+    public void testOrientationChanges() throws Throwable {
+        setupTestFiles();
+        createDialog(true, Arrays.asList("image/*")); // Multi-select = true.
+        Assert.assertTrue(mDialog.isShowing());
+
+        // Simulate an early configuration change for the photo grid.
+        Configuration configuration = getActivity().getResources().getConfiguration();
+        PickerCategoryView categoryView = mDialog.getCategoryViewForTesting();
+        categoryView.onConfigurationChanged(configuration);
+
+        waitForDecoder();
+
+        // Simulate an early configuration change for the video player (before showing).
+        PickerVideoPlayer videoPlayer = categoryView.getVideoPlayerForTesting();
+        videoPlayer.onConfigurationChanged(configuration);
+
+        dismissDialog();
     }
 
     @Test
