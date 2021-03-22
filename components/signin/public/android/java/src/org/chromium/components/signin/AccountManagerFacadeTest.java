@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
 
 import java.util.concurrent.CountDownLatch;
@@ -60,6 +61,7 @@ public class AccountManagerFacadeTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1190013")
     public void testRunAfterCacheIsPopulated() throws InterruptedException {
         CountDownLatch firstCounter = new CountDownLatch(1);
         ThreadUtils.runOnUiThreadBlocking(() -> {
