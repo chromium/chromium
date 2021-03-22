@@ -209,7 +209,7 @@ public class TasksViewBinderTest extends DummyUiActivityTestCase {
         // Note that onView(R.id.more_tabs).perform(click()) can not be used since it requires 90
         // percent of the view's area is displayed to the users. However, this view has negative
         // margin which makes the percentage is less than 90.
-        // TODO (crbug.com/1025296): Investigate whether this would be a problem for real users.
+        // TODO (crbug.com/1186752): Investigate whether this would be a problem for real users.
         mTasksView.findViewById(R.id.more_tabs).performClick();
         assertFalse(mViewClicked.get());
         mTasksViewPropertyModel.set(MORE_TABS_CLICK_LISTENER, mViewOnClickListener);

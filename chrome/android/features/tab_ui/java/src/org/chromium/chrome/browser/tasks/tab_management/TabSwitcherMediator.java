@@ -678,6 +678,10 @@ class TabSwitcherMediator
                     mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter(),
                     TabUiFeatureUtilities.isTabToGtsAnimationEnabled(), mShowTabsInMruOrder);
             recordTabCounts();
+            // When |mTabModelSelector.isTabStateInitialized| is false and INSTANT_START is enabled,
+            // the scrolling request is already processed in TabModelObserver#restoreCompleted.
+            // Therefore, we only need to handle the case with isTabStateInitialized() here.
+            setInitialScrollIndexOffset();
         } else if (CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)) {
             List<PseudoTab> allTabs;
             try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
