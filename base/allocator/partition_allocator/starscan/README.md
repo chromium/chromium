@@ -26,7 +26,7 @@ different flavors that offer different performance and security characteristics.
 
 *Probabilistic conservative scan (PCScan)* (`pcscan.{h,cc}`) is one particular
 kind of heap scanning  algorithm implemented on top of
-[PartitionAlloc](./PartitionAlloc.md) with the following properties:
+[PartitionAlloc](../PartitionAlloc.md) with the following properties:
 
 *   Memory blocks are scanned conservatively for pointers.
 *   Scanning and sweeping are generally performed on a separate thread to
@@ -37,7 +37,7 @@ kind of heap scanning  algorithm implemented on top of
 PCScan is currently considered **experimental** - please do not use it in
 production code just yet. It can be enabled in the following configurations via
 `--enable-features` on builds that use PartitionAlloc as the
-[main allocator](../README.md):
+[main allocator](../../README.md):
 
 *   `PartitionAllocPCScan`: All processes and all supporting partitions enable
     PCScan.
