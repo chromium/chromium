@@ -375,6 +375,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 // This function starts up to only what is needed at each stage of the
 // initialization. It is possible to continue initialization later.
 - (void)startUpBrowserToStage:(BrowserInitializationStageType)stage {
+  DCHECK(stage != INITIALIZATION_STAGE_BACKGROUND);
   if (_browserInitializationStage < INITIALIZATION_STAGE_BACKGROUND &&
       stage >= INITIALIZATION_STAGE_BACKGROUND) {
     [self startUpBrowserBackgroundInitialization];
