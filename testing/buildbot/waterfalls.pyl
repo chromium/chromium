@@ -1094,8 +1094,6 @@
         ],
         'additional_compile_targets': [
           'validate_expectations',
-          'monochrome_static_initializers',
-          'weblayer_shell',
         ],
         'test_suites': {
           'gtest_tests': 'android_pie_rel_non_skia_renderer_gtests',
