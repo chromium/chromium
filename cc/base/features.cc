@@ -21,7 +21,8 @@ const base::Feature kAnimatedImageResume = {"AnimatedImageResume",
 
 // Enables impulse-style scroll animations in place of the default ones.
 const base::Feature kImpulseScrollAnimations = {
-    "ImpulseScrollAnimations", base::FEATURE_ENABLED_BY_DEFAULT};
+    "ImpulseScrollAnimations",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Whether the compositor should attempt to sync with the scroll handlers before
 // submitting a frame.
