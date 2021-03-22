@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "components/full_restore/full_restore_info.h"
 #include "components/full_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -85,6 +86,9 @@ void BrowserFrameAsh::OnWidgetInitDone() {
   // like brightness, volume, etc. Otherwise these keys are handled by the
   // Ash window manager.
   window_state->SetCanConsumeSystemKeys(browser->deprecated_is_app());
+
+  full_restore::FullRestoreInfo::GetInstance()->OnWidgetInitialized(
+      GetWidget());
 }
 
 void BrowserFrameAsh::OnWindowTargetVisibilityChanged(bool visible) {

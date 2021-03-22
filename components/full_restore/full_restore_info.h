@@ -17,6 +17,10 @@ namespace aura {
 class Window;
 }
 
+namespace views {
+class Widget;
+}
+
 namespace full_restore {
 
 // FullRestoreInfo is responsible for providing the information for
@@ -51,6 +55,11 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreInfo {
     // to a hidden container based on the property kParentToHiddenContainerKey.
     virtual void OnWindowInitialized(aura::Window* window) {}
 
+    // Called once the widget associated with a full restored window is
+    // initialized. This is called sometime after OnWindowInitialized, and the
+    // ARC task also may not be created yet at this point.
+    virtual void OnWidgetInitialized(views::Widget* widget) {}
+
    protected:
     ~Observer() override = default;
   };
@@ -80,6 +89,9 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreInfo {
 
   // Notifies observers that |window| has been initialized.
   void OnWindowInitialized(aura::Window* window);
+
+  // Notifies observers that |widget| has been initialized.
+  void OnWidgetInitialized(views::Widget* widget);
 
  private:
   base::ObserverList<Observer> observers_;

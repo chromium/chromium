@@ -19,6 +19,7 @@
 #include "components/sessions/core/session_id.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace full_restore {
 
@@ -249,6 +250,16 @@ void FullRestoreReadHandler::ModifyWidgetParams(
     out_params->show_state =
         chromeos::ToWindowShowState(*window_info->window_state_type);
   }
+
+  // Register to track when the widget has initialized. If a delegate is not
+  // set, then the widget creator is responsible for calling
+  // OnWidgetInitialized.
+  views::WidgetDelegate* delegate = out_params->delegate;
+  if (delegate) {
+    delegate->RegisterWidgetInitializedCallback(
+        base::BindOnce(&FullRestoreReadHandler::OnWidgetInitialized,
+                       weak_factory_.GetWeakPtr(), delegate));
+  }
 }
 
 int32_t FullRestoreReadHandler::GetArcSessionId() {
@@ -301,6 +312,11 @@ void FullRestoreReadHandler::RemoveAppRestoreData(int32_t window_id) {
   RemoveAppRestoreData(profile_path, app_id, window_id);
 
   window_id_to_app_restore_info_.erase(it);
+}
+
+void FullRestoreReadHandler::OnWidgetInitialized(
+    views::WidgetDelegate* delegate) {
+  FullRestoreInfo::GetInstance()->OnWidgetInitialized(delegate->GetWidget());
 }
 
 }  // namespace full_restore

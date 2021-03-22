@@ -54,4 +54,9 @@ void FullRestoreInfo::OnWindowInitialized(aura::Window* window) {
     observer.OnWindowInitialized(window);
 }
 
+void FullRestoreInfo::OnWidgetInitialized(views::Widget* widget) {
+  for (auto& observer : observers_)
+    observer.OnWidgetInitialized(widget);
+}
+
 }  // namespace full_restore

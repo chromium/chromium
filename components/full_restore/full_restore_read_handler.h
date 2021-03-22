@@ -134,6 +134,10 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
   // Removes AppRestoreData for |restore_window_id|.
   void RemoveAppRestoreData(int32_t restore_window_id);
 
+  // Callback that is invoked after the widget associated with |delegate| is
+  // initialized.
+  void OnWidgetInitialized(views::WidgetDelegate* delegate);
+
   // The current active user profile path.
   base::FilePath active_profile_path_;
 
