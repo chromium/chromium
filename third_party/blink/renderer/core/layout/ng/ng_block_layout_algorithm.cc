@@ -2329,12 +2329,6 @@ NGBreakStatus NGBlockLayoutAlgorithm::BreakBeforeChildIfNeeded(
   // non-empty child content yet (as that would have resolved the BFC offset).
   DCHECK(container_builder_.BfcBlockOffset());
 
-  // If we already know where to insert the break, we already know that it's not
-  // going to be here, since that's something we check before entering layout of
-  // a child.
-  if (early_break_)
-    return NGBreakStatus::kContinue;
-
   LayoutUnit fragmentainer_block_offset =
       ConstraintSpace().FragmentainerOffsetAtBfc() + bfc_block_offset;
 
