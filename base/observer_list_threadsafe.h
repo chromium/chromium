@@ -116,7 +116,12 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
     DCHECK(!Contains(observers_, observer));
     const scoped_refptr<SequencedTaskRunner> task_runner =
         SequencedTaskRunnerHandle::Get();
-    observers_[observer] = task_runner;
+    // Each observer gets a unique identifier. These unique identifiers are used
+    // to avoid execution of pending posted-tasks over removed or released
+    // observers.
+    const size_t observer_id = ++observer_id_counter_;
+    ObserverTaskRunnerInfo task_info = {task_runner, observer_id};
+    observers_[observer] = std::move(task_info);
 
     // If this is called while a notification is being dispatched on this thread
     // and |policy_| is ALL, |observer| must be notified (if a notification is
@@ -127,12 +132,15 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
       const NotificationDataBase* current_notification =
           tls_current_notification_.Get().Get();
       if (current_notification && current_notification->observer_list == this) {
+        const NotificationData* notification_data =
+            static_cast<const NotificationData*>(current_notification);
         task_runner->PostTask(
             current_notification->from_here,
-            BindOnce(
-                &ObserverListThreadSafe<ObserverType>::NotifyWrapper, this,
-                observer,
-                *static_cast<const NotificationData*>(current_notification)));
+            BindOnce(&ObserverListThreadSafe<ObserverType>::NotifyWrapper, this,
+                     observer,
+                     NotificationData(this, observer_id,
+                                      current_notification->from_here,
+                                      notification_data->method)));
       }
     }
   }
@@ -167,10 +175,12 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
 
     AutoLock lock(lock_);
     for (const auto& observer : observers_) {
-      observer.second->PostTask(
+      observer.second.task_runner->PostTask(
           from_here,
           BindOnce(&ObserverListThreadSafe<ObserverType>::NotifyWrapper, this,
-                   observer.first, NotificationData(this, from_here, method)));
+                   observer.first,
+                   NotificationData(this, observer.second.observer_id,
+                                    from_here, method)));
     }
   }
 
@@ -186,26 +196,34 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
 
     // The observers may make reentrant calls (which can be a problem due to the
     // lock), so we extract a list to call synchronously.
-    std::vector<ObserverType*> current_sequence_observers;
+    struct PendingNotificationData {
+      ObserverType* observer;
+      size_t observer_id;
+    };
+    std::vector<PendingNotificationData> current_sequence_observers;
 
     {
       AutoLock lock(lock_);
       current_sequence_observers.reserve(observers_.size());
       for (const auto& observer : observers_) {
-        if (observer.second->RunsTasksInCurrentSequence()) {
-          current_sequence_observers.push_back(observer.first);
+        if (observer.second.task_runner->RunsTasksInCurrentSequence()) {
+          current_sequence_observers.emplace_back(PendingNotificationData{
+              observer.first, observer.second.observer_id});
         } else {
-          observer.second->PostTask(
+          observer.second.task_runner->PostTask(
               from_here,
               BindOnce(&ObserverListThreadSafe<ObserverType>::NotifyWrapper,
                        this, observer.first,
-                       NotificationData(this, from_here, method)));
+                       NotificationData(this, observer.second.observer_id,
+                                        from_here, method)));
         }
       }
     }
 
-    for (ObserverType* observer : current_sequence_observers) {
-      NotifyWrapper(observer, NotificationData(this, from_here, method));
+    for (const auto& pending_notification : current_sequence_observers) {
+      NotifyWrapper(pending_notification.observer,
+                    NotificationData(this, pending_notification.observer_id,
+                                     from_here, method));
     }
   }
 
@@ -214,12 +232,15 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
 
   struct NotificationData : public NotificationDataBase {
     NotificationData(ObserverListThreadSafe* observer_list_in,
+                     size_t observer_id_in,
                      const Location& from_here_in,
                      const RepeatingCallback<void(ObserverType*)>& method_in)
         : NotificationDataBase(observer_list_in, from_here_in),
-          method(method_in) {}
+          method(method_in),
+          observer_id(observer_id_in) {}
 
     RepeatingCallback<void(ObserverType*)> method;
+    size_t observer_id;
   };
 
   ~ObserverListThreadSafe() override = default;
@@ -230,10 +251,13 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
       AutoLock auto_lock(lock_);
 
       // Check whether the observer still needs a notification.
+      DCHECK_EQ(notification.observer_list, this);
       auto it = observers_.find(observer);
-      if (it == observers_.end())
+      if (it == observers_.end() ||
+          it->second.observer_id != notification.observer_id) {
         return;
-      DCHECK(it->second->RunsTasksInCurrentSequence());
+      }
+      DCHECK(it->second.task_runner->RunsTasksInCurrentSequence());
     }
 
     // Keep track of the notification being dispatched on the current thread.
@@ -259,10 +283,17 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
 
   mutable Lock lock_;
 
+  size_t observer_id_counter_ GUARDED_BY(lock_) = 0;
+
+  struct ObserverTaskRunnerInfo {
+    scoped_refptr<SequencedTaskRunner> task_runner;
+    size_t observer_id = 0;
+  };
+
   // Keys are observers. Values are the SequencedTaskRunners on which they must
   // be notified.
-  std::unordered_map<ObserverType*, scoped_refptr<SequencedTaskRunner>>
-      observers_ GUARDED_BY(lock_);
+  std::unordered_map<ObserverType*, ObserverTaskRunnerInfo> observers_
+      GUARDED_BY(lock_);
 };
 
 }  // namespace base

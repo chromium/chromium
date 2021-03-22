@@ -429,6 +429,47 @@ TEST(ObserverListThreadSafeTest, RemoveWhileNotificationIsRunning) {
   observer.Unblock();
 }
 
+TEST(ObserverListThreadSafeTest, AddRemoveWithPendingNotifications) {
+  test::TaskEnvironment task_environment;
+
+  scoped_refptr<ObserverListThreadSafe<Foo>> observer_list(
+      new ObserverListThreadSafe<Foo>);
+  Adder a(1);
+  Adder b(1);
+
+  observer_list->AddObserver(&a);
+  observer_list->AddObserver(&b);
+
+  // Remove observer `a` while there is a pending notification for observer `a`.
+  observer_list->Notify(FROM_HERE, &Foo::Observe, 10);
+  observer_list->RemoveObserver(&a);
+  RunLoop().RunUntilIdle();
+  observer_list->AddObserver(&a);
+
+  EXPECT_EQ(0, a.total);
+  EXPECT_EQ(10, b.total);
+
+  // Remove and re-adding observer `a` while there is a pending notification for
+  // observer `a`. The notification to `a` must not be executed since it was
+  // sent before the removal of `a`.
+  observer_list->Notify(FROM_HERE, &Foo::Observe, 10);
+  observer_list->RemoveObserver(&a);
+  observer_list->AddObserver(&a);
+  RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(0, a.total);
+  EXPECT_EQ(20, b.total);
+
+  // Observer `a` and `b` are present and should both receive a notification.
+  observer_list->RemoveObserver(&a);
+  observer_list->AddObserver(&a);
+  observer_list->Notify(FROM_HERE, &Foo::Observe, 10);
+  RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(10, a.total);
+  EXPECT_EQ(30, b.total);
+}
+
 // Same as ObserverListTest.Existing, but for ObserverListThreadSafe
 TEST(ObserverListThreadSafeTest, Existing) {
   test::TaskEnvironment task_environment;
