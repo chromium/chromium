@@ -1722,23 +1722,6 @@
             ]
         }
     ],
-    "ContentCaptureConstantStreaming": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "ContentCaptureConstantStreaming",
-                    "enable_features": [
-                        "ContentCaptureConstantStreaming"
-                    ]
-                }
-            ]
-        }
-    ],
     "ContentCaptureExperiment": [
         {
             "platforms": [
