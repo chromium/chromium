@@ -36,4 +36,22 @@ ProfileProtoDBFactory<cart_db::ChromeCartContentProto>*
 ProfileProtoDBFactory<cart_db::ChromeCartContentProto>::GetInstance() {
   return GetChromeCartProfileProtoDBFactory();
 }
+
+#else
+ProfileProtoDBFactory<
+    commerce_subscription_db::CommerceSubscriptionContentProto>*
+GetCommerceSubscriptionProfileProtoDBFactory() {
+  static base::NoDestructor<ProfileProtoDBFactory<
+      commerce_subscription_db::CommerceSubscriptionContentProto>>
+      instance;
+  return instance.get();
+}
+
+template <>
+ProfileProtoDBFactory<
+    commerce_subscription_db::CommerceSubscriptionContentProto>*
+ProfileProtoDBFactory<
+    commerce_subscription_db::CommerceSubscriptionContentProto>::GetInstance() {
+  return GetCommerceSubscriptionProfileProtoDBFactory();
+}
 #endif

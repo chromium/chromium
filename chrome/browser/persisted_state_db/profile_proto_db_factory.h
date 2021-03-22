@@ -14,11 +14,14 @@
 
 #if !defined(OS_ANDROID)
 #include "chrome/browser/cart/cart_db_content.pb.h"
+#else
+#include "chrome/browser/commerce/subscriptions/commerce_subscription_db_content.pb.h"
 #endif
 
 namespace {
 const char kPersistedStateDBFolder[] = "persisted_state_db";
 const char kChromeCartDBFolder[] = "chrome_cart_db";
+const char kCommerceSubscriptionDBFolder[] = "commerce_subscription_db";
 }  // namespace
 
 ProfileProtoDBFactory<persisted_state_db::PersistedStateContentProto>*
@@ -27,6 +30,10 @@ GetPersistedStateProfileProtoDBFactory();
 #if !defined(OS_ANDROID)
 ProfileProtoDBFactory<cart_db::ChromeCartContentProto>*
 GetChromeCartProfileProtoDBFactory();
+#else
+ProfileProtoDBFactory<
+    commerce_subscription_db::CommerceSubscriptionContentProto>*
+GetCommerceSubscriptionProfileProtoDBFactory();
 #endif
 
 // Factory to create a ProtoDB per profile and per proto. Incognito is
@@ -100,6 +107,14 @@ KeyedService* ProfileProtoDBFactory<T>::BuildServiceInstanceFor(
         context, proto_database_provider,
         context->GetPath().AppendASCII(kChromeCartDBFolder),
         leveldb_proto::ProtoDbType::CART_DATABASE);
+#else
+  } else if (std::is_base_of<
+                 commerce_subscription_db::CommerceSubscriptionContentProto,
+                 T>::value) {
+    return new ProfileProtoDB<T>(
+        context, proto_database_provider,
+        context->GetPath().AppendASCII(kCommerceSubscriptionDBFolder),
+        leveldb_proto::ProtoDbType::COMMERCE_SUBSCRIPTION_DATABASE);
 #endif
   } else {
     // Must add in leveldb_proto::ProtoDbType and database directory folder for

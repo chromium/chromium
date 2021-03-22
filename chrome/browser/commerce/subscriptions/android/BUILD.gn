@@ -7,6 +7,7 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscription.java",
+    "java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsStorage.java",
     "java/src/org/chromium/chrome/browser/subscriptions/ImplicitPriceDropSubscriptionsManager.java",
     "java/src/org/chromium/chrome/browser/subscriptions/SubscriptionsManager.java",
     "java/src/org/chromium/chrome/browser/subscriptions/SubscriptionsManagerImpl.java",
@@ -14,11 +15,22 @@ android_library("java") {
 
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//chrome/android:base_module_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//url:gurl_java",
+  ]
+
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscription.java",
+    "java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsStorage.java",
   ]
 }
