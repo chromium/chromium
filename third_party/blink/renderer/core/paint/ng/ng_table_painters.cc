@@ -703,7 +703,7 @@ void NGTableCellPainter::PaintBackgroundForTablePart(
     const LayoutBox& table_part,
     const PhysicalRect& table_part_paint_rect,
     const PhysicalOffset& table_cell_offset) {
-  if (fragment_.Style().Visibility() == EVisibility::kHidden)
+  if (fragment_.Style().Visibility() != EVisibility::kVisible)
     return;
   const LayoutNGTableCell& layout_table_cell =
       *To<LayoutNGTableCell>(fragment_.GetLayoutObject());
