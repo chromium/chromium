@@ -410,6 +410,7 @@ TEST_F(PCScanTest, DoubleFree) {
 }
 #endif
 
+#if !PCSCAN_DISABLE_SAFEPOINTS
 namespace {
 template <typename SourceList, typename ValueList>
 void TestDanglingReferenceWithSafepoint(PCScanTest& test,
@@ -468,6 +469,7 @@ TEST_F(PCScanTest, Safepoint) {
 
   TestDanglingReferenceWithSafepoint(*this, source, value);
 }
+#endif  // PCSCAN_DISABLE_SAFEPOINTS
 
 }  // namespace internal
 }  // namespace base
