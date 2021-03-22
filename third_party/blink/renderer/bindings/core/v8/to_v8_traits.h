@@ -683,7 +683,6 @@ struct ToV8Traits<IDLArray<T>> {
   }
 
   // TODO(crbug.com/1185046): Remove this overload.
-  template <>
   static v8::MaybeLocal<v8::Value> ToV8(
       ScriptState* script_state,
       const Vector<v8::Local<v8::Value>>& value) WARN_UNUSED_RESULT {
