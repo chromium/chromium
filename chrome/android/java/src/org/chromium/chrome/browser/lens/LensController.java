@@ -12,33 +12,12 @@ import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.contextmenu.ChipRenderParams;
 import org.chromium.ui.base.WindowAndroid;
 /**
  * A class which manages communication with the Lens SDK.
  */
 public class LensController {
-    private static LensController sInstance;
-
-    /**
-     * @return The LensController to use during the lifetime of the browser process.
-     */
-    public static LensController getInstance() {
-        if (sInstance == null) {
-            sInstance = AppHooks.get().createLensController();
-        }
-        return sInstance;
-    }
-
-    /**
-     * Set the Lens Controller instance for testing.
-     * @param lensController the instance to be set.
-     */
-    public static void setInstanceForTesting(LensController lensController) {
-        sInstance = lensController;
-    }
-
     /**
      * Whether the Lens SDK is available.
      * @return Whether the Lens SDK is available.

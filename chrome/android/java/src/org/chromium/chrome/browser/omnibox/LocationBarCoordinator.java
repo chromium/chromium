@@ -19,6 +19,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensFeature;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -138,7 +139,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
                 PrivacyPreferencesManagerImpl.getInstance(), overrideUrlLoadingDelegate,
                 LocaleManager.getInstance(), mTemplateUrlServiceSupplier, backKeyBehavior,
                 windowAndroid, isTablet() && isTabletLayout(), searchEngineLogoUtils,
-                LensController.getInstance(), launchAssistanceSettingsAction);
+                AppHooks.get().getLensController(), launchAssistanceSettingsAction);
         mUrlCoordinator =
                 new UrlBarCoordinator((UrlBar) mUrlBar, windowDelegate, actionModeCallback,
                         mCallbackController.makeCancelable(mLocationBarMediator::onUrlFocusChange),

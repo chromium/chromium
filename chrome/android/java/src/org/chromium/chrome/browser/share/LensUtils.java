@@ -13,10 +13,10 @@ import android.text.TextUtils;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.gsa.GSAState;
-import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -390,7 +390,7 @@ public class LensUtils {
     public static void startLensConnectionIfNecessary(boolean isIncognito) {
         // TODO(crbug/1157543): Pass isIncognito through to LensController.
         if (!isIncognito) {
-            LensController.getInstance().startLensConnection();
+            AppHooks.get().getLensController().startLensConnection();
         }
     }
 
@@ -403,7 +403,7 @@ public class LensUtils {
     public static void terminateLensConnectionsIfNecessary(boolean isIncognito) {
         // TODO(crbug/1157543): Pass isIncognito through to LensController.
         if (!isIncognito) {
-            LensController.getInstance().terminateLensConnections();
+            AppHooks.get().getLensController().terminateLensConnections();
         }
     }
 

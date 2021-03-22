@@ -63,6 +63,9 @@ import java.util.List;
 public abstract class AppHooks {
     private static AppHooksImpl sInstance;
 
+    @Nullable
+    private LensController mLensController;
+
     /**
      * Sets a mocked instance for testing.
      */
@@ -166,8 +169,18 @@ public abstract class AppHooks {
         return new InstantAppsHandler();
     }
 
-    public LensController createLensController() {
+    /** Creates a new instance of LensController. */
+    protected LensController createLensController() {
         return new LensController();
+    }
+
+    /**
+     * Return LensController. Create a new one if not available.
+     **/
+    public LensController getLensController() {
+        if (mLensController == null) mLensController = createLensController();
+
+        return mLensController;
     }
 
     /**

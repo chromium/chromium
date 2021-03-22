@@ -16,8 +16,8 @@ import android.view.ViewGroup;
 import androidx.annotation.ColorInt;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 
+import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.gsa.GSAState;
-import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.lens.LensQueryParams;
@@ -186,7 +186,7 @@ class SearchBoxMediator
      */
     void startLens(
             @LensEntryPoint int lensEntryPoint, WindowAndroid windowAndroid, boolean isIncognito) {
-        LensController.getInstance().startLens(
+        AppHooks.get().getLensController().startLens(
                 windowAndroid, new LensIntentParams.Builder(lensEntryPoint, isIncognito).build());
     }
 
@@ -199,7 +199,7 @@ class SearchBoxMediator
      */
     boolean isLensEnabled(
             @LensEntryPoint int lensEntryPoint, boolean isIncognito, boolean isTablet) {
-        return LensController.getInstance().isLensEnabled(
+        return AppHooks.get().getLensController().isLensEnabled(
                 new LensQueryParams.Builder(lensEntryPoint, isIncognito, isTablet).build());
     }
 
