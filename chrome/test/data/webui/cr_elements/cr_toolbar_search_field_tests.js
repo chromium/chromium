@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.m.js';
+import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
