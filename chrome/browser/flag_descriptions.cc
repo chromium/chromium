@@ -1012,6 +1012,12 @@ const char kEnablePixelCanvasRecordingDescription[] =
     "with the pixel and improves text rendering. This should be enabled when a "
     "device is using fractional scale factor.";
 
+const char kReduceHorizontalFlingVelocityName[] =
+    "Reduce horizontal fling velocity";
+const char kReduceHorizontalFlingVelocityDescription[] =
+    "Reduces the velocity of horizontal flings to 20\% of their original"
+    "velocity.";
+
 const char kEnableResamplingInputEventsName[] =
     "Enable resampling input events";
 const char kEnableResamplingInputEventsDescription[] =

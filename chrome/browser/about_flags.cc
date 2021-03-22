@@ -5162,6 +5162,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(app_list_features::kEnableAppReinstallZeroState)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+    {"reduce-horizontal-fling-velocity",
+     flag_descriptions::kReduceHorizontalFlingVelocityName,
+     flag_descriptions::kReduceHorizontalFlingVelocityDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kReduceHorizontalFlingVelocity)},
+
     {"enable-resampling-input-events",
      flag_descriptions::kEnableResamplingInputEventsName,
      flag_descriptions::kEnableResamplingInputEventsDescription, kOsAll,

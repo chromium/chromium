@@ -4340,6 +4340,11 @@
     "expiry_milestone": 82
   },
   {
+    "name": "reduce-horizontal-fling-velocity",
+    "owners": [ "flackr", "input-dev" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "reengagement-notification",
     "owners": [ "dtrainor", "xingliu" ],
     "expiry_milestone": 90

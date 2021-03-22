@@ -604,6 +604,9 @@ extern const char kEnableSRPIsolatedPrerenderProbingDescription[];
 extern const char kEnableSRPIsolatedPrerendersNSPName[];
 extern const char kEnableSRPIsolatedPrerendersNSPDescription[];
 
+extern const char kReduceHorizontalFlingVelocityName[];
+extern const char kReduceHorizontalFlingVelocityDescription[];
+
 extern const char kEnableResamplingInputEventsName[];
 extern const char kEnableResamplingInputEventsDescription[];
 extern const char kEnableResamplingScrollEventsName[];

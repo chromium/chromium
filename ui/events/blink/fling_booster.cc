@@ -5,6 +5,7 @@
 #include "ui/events/blink/fling_booster.h"
 
 #include "base/trace_event/trace_event.h"
+#include "ui/events/blink/blink_features.h"
 
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
@@ -34,6 +35,13 @@ gfx::Vector2dF FlingBooster::GetVelocityForFlingStart(
             fling_start.GetType());
   gfx::Vector2dF velocity(fling_start.data.fling_start.velocity_x,
                           fling_start.data.fling_start.velocity_y);
+
+  static const bool reduce_horizontal_fling_velocity =
+      base::FeatureList::IsEnabled(features::kReduceHorizontalFlingVelocity);
+  if (reduce_horizontal_fling_velocity) {
+    // Reduce the horizontal velocity of flings.
+    velocity.Scale(0.2f, 1.0f);
+  }
   TRACE_EVENT2("input", "FlingBooster::GetVelocityForFlingStart", "vx",
                velocity.x(), "vy", velocity.y());
 
