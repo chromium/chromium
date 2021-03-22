@@ -70,7 +70,7 @@ void SelectOptionAction::InternalProcessAction(ProcessActionCallback callback) {
       return;
   }
 
-  delegate_->ShortWaitForElement(
+  delegate_->ShortWaitForElementWithSlowWarning(
       selector,
       base::BindOnce(&SelectOptionAction::OnWaitForElementTimed,
                      weak_ptr_factory_.GetWeakPtr(),

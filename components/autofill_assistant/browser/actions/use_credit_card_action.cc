@@ -117,7 +117,7 @@ void UseCreditCardAction::FillFormWithData() {
     return;
   }
 
-  delegate_->ShortWaitForElement(
+  delegate_->ShortWaitForElementWithSlowWarning(
       selector_,
       base::BindOnce(&UseCreditCardAction::OnWaitForElementTimed,
                      weak_ptr_factory_.GetWeakPtr(),

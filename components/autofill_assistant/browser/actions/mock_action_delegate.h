@@ -47,6 +47,17 @@ class MockActionDelegate : public ActionDelegate {
       void(const Selector& selector,
            base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>&));
 
+  void ShortWaitForElementWithSlowWarning(
+      const Selector& selector,
+      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback)
+      override {
+    OnShortWaitForElement(selector, callback);
+  }
+  MOCK_METHOD2(
+      OnShortWaitForElementWithSlowWarning,
+      void(const Selector& selector,
+           base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>&));
+
   void WaitForDom(
       base::TimeDelta max_wait_time,
       bool allow_interrupt,
@@ -60,6 +71,26 @@ class MockActionDelegate : public ActionDelegate {
   }
   MOCK_METHOD4(
       OnWaitForDom,
+      void(base::TimeDelta,
+           bool,
+           base::RepeatingCallback<
+               void(BatchElementChecker*,
+                    base::OnceCallback<void(const ClientStatus&)>)>&,
+           base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>&));
+
+  void WaitForDomWithSlowWarning(
+      base::TimeDelta max_wait_time,
+      bool allow_interrupt,
+      WaitForDomObserver* observer,
+      base::RepeatingCallback<
+          void(BatchElementChecker*,
+               base::OnceCallback<void(const ClientStatus&)>)> check_elements,
+      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback)
+      override {
+    OnWaitForDom(max_wait_time, allow_interrupt, check_elements, callback);
+  }
+  MOCK_METHOD4(
+      OnWaitForDomWithSlowWarning,
       void(base::TimeDelta,
            bool,
            base::RepeatingCallback<

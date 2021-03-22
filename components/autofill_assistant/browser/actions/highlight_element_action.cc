@@ -33,7 +33,7 @@ void HighlightElementAction::InternalProcessAction(
     return;
   }
 
-  delegate_->ShortWaitForElement(
+  delegate_->ShortWaitForElementWithSlowWarning(
       selector,
       base::BindOnce(&HighlightElementAction::OnWaitForElementTimed,
                      weak_ptr_factory_.GetWeakPtr(),
