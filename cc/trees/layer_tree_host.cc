@@ -1898,6 +1898,9 @@ void LayerTreeHost::SetSourceURL(ukm::SourceId source_id, const GURL& url) {
   // produced by this host so far.
   clear_caches_on_next_commit_ = true;
   proxy_->SetSourceURL(source_id, url);
+  // If this is not used as a common web page, don't show HUD.
+  if (!url.SchemeIsHTTPOrHTTPS())
+    debug_state_.TurnOffHudInfoDisplay();
 }
 
 base::ReadOnlySharedMemoryRegion
