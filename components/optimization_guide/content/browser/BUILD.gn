@@ -10,8 +10,6 @@ import("//components/optimization_guide/features.gni")
 static_library("browser") {
   sources = [
     "optimization_guide_decider.h",
-    "page_content_annotations.cc",
-    "page_content_annotations.h",
     "page_content_annotations_service.cc",
     "page_content_annotations_service.h",
     "page_content_annotations_web_contents_helper.cc",
@@ -35,6 +33,7 @@ static_library("browser") {
 
   public_deps = [
     "//base",
+    "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//components/optimization_guide/content/mojom:mojo_interfaces",

@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/optimization_guide/content/browser/page_content_annotations.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "url/gurl.h"
 
@@ -60,7 +60,8 @@ class PageContentAnnotationsService : public KeyedService {
   // Callback invoked when |visit| has been annotated.
   void OnPageContentAnnotated(
       const HistoryVisit& visit,
-      const base::Optional<PageContentAnnotations>& page_content_annotations);
+      const base::Optional<history::VisitContentAnnotations>&
+          content_annotations);
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   std::unique_ptr<PageContentAnnotationsModelManager> model_manager_;

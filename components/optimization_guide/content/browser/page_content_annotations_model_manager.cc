@@ -83,12 +83,12 @@ void PageContentAnnotationsModelManager::OnPageTopicsModelExecutionCompleted(
     PageContentAnnotatedCallback callback,
     const proto::PageTopicsModelMetadata& model_metadata,
     const base::Optional<std::vector<tflite::task::core::Category>>& output) {
-  base::Optional<PageContentAnnotations> page_content_annotations;
+  base::Optional<history::VisitContentAnnotations> content_annotations;
   if (output) {
-    page_content_annotations =
-        GetPageContentAnnotationsFromModelOutput(model_metadata, *output);
+    content_annotations =
+        GetContentAnnotationsFromModelOutput(model_metadata, *output);
   }
-  std::move(callback).Run(page_content_annotations);
+  std::move(callback).Run(content_annotations);
 }
 
 base::Optional<int64_t>
@@ -101,8 +101,8 @@ PageContentAnnotationsModelManager::GetPageTopicsModelVersion() const {
   return base::nullopt;
 }
 
-PageContentAnnotations
-PageContentAnnotationsModelManager::GetPageContentAnnotationsFromModelOutput(
+history::VisitContentAnnotations
+PageContentAnnotationsModelManager::GetContentAnnotationsFromModelOutput(
     const proto::PageTopicsModelMetadata& model_metadata,
     const std::vector<tflite::task::core::Category>& model_output) const {
   base::Optional<std::string> floc_protected_category_name;
@@ -136,7 +136,8 @@ PageContentAnnotationsModelManager::GetPageContentAnnotationsFromModelOutput(
   // Postprocess categories.
   if (!model_metadata.output_postprocessing_params().has_category_params()) {
     // No parameters for postprocessing, so just return.
-    return PageContentAnnotations(/*categories=*/{}, floc_protected_score);
+    return history::VisitContentAnnotations(
+        floc_protected_score, /*categories=*/{}, model_metadata.version());
   }
   const proto::PageTopicsCategoryPostprocessingParams category_params =
       model_metadata.output_postprocessing_params().category_params();
@@ -178,13 +179,16 @@ PageContentAnnotationsModelManager::GetPageContentAnnotationsFromModelOutput(
   }
 
   // Prune out none weights.
-  if (total_weight == 0)
-    return PageContentAnnotations(/*categories=*/{}, floc_protected_score);
+  if (total_weight == 0) {
+    return history::VisitContentAnnotations(
+        floc_protected_score, /*categories=*/{}, model_metadata.version());
+  }
   if (none_idx_and_weight) {
     if ((none_idx_and_weight->second / total_weight) >
         category_params.min_none_weight()) {
       // None weight is too strong -
-      return PageContentAnnotations(/*categories=*/{}, floc_protected_score);
+      return history::VisitContentAnnotations(
+          floc_protected_score, /*categories=*/{}, model_metadata.version());
     }
     // None weight doesn't matter, so prune it out.
     categories.erase(categories.begin() + none_idx_and_weight->first);
@@ -202,8 +206,18 @@ PageContentAnnotationsModelManager::GetPageContentAnnotationsFromModelOutput(
           }),
       categories.end());
 
-  DCHECK_LE(categories.size(), max_categories);
-  return PageContentAnnotations(categories, floc_protected_score);
+  std::vector<history::VisitContentAnnotations::Category> final_categories;
+  final_categories.reserve(categories.size());
+  for (const auto& category : categories) {
+    // We expect the weight to be between 0 and 1, so that the normalization
+    // from 0 to 100 makes sense.
+    DCHECK(category.second >= 0.0 && category.second <= 1.0);
+    final_categories.emplace_back(history::VisitContentAnnotations::Category(
+        category.first, static_cast<int>(100 * category.second)));
+  }
+  DCHECK_LE(final_categories.size(), max_categories);
+  return history::VisitContentAnnotations(
+      floc_protected_score, final_categories, model_metadata.version());
 }
 
 }  // namespace optimization_guide

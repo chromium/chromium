@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_MODEL_MANAGER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_MODEL_MANAGER_H_
 
+#include "components/history/core/browser/history_types.h"
 #include "components/optimization_guide/content/browser/bert_model_executor.h"
-#include "components/optimization_guide/content/browser/page_content_annotations.h"
 #include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
 
 namespace optimization_guide {
@@ -14,8 +14,8 @@ namespace optimization_guide {
 class OptimizationGuideDecider;
 
 // Callback to inform the caller that the page content has been annotated.
-using PageContentAnnotatedCallback =
-    base::OnceCallback<void(const base::Optional<PageContentAnnotations>&)>;
+using PageContentAnnotatedCallback = base::OnceCallback<void(
+    const base::Optional<history::VisitContentAnnotations>&)>;
 
 // Manages the loading and execution of models used to annotate page content.
 class PageContentAnnotationsModelManager {
@@ -45,9 +45,8 @@ class PageContentAnnotationsModelManager {
       const proto::PageTopicsModelMetadata& model_metadata,
       const base::Optional<std::vector<tflite::task::core::Category>>& output);
 
-  // Converts |model_output| into PageContentAnnotations based on
-  // |model_metadata|.
-  PageContentAnnotations GetPageContentAnnotationsFromModelOutput(
+  // Converts |model_output| into content annotations based on |model_metadata|.
+  history::VisitContentAnnotations GetContentAnnotationsFromModelOutput(
       const proto::PageTopicsModelMetadata& model_metadata,
       const std::vector<tflite::task::core::Category>& model_output) const;
 
