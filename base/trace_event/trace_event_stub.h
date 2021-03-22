@@ -178,11 +178,18 @@ class BASE_EXPORT MemoryDumpManager {
 }  // namespace trace_event
 }  // namespace base
 
-// Stub implementation for perfetto::TracedValue/TracedDictionary/TracedArray.
+// Stub implementation for
+// perfetto::StaticString/ThreadTrack/TracedValue/TracedDictionary/TracedArray.
 namespace perfetto {
 
 class TracedArray;
 class TracedDictionary;
+
+class StaticString {
+ public:
+  template <typename T>
+  explicit StaticString(T*) {}
+};
 
 class TracedValue {
  public:
