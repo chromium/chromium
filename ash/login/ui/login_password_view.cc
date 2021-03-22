@@ -9,6 +9,7 @@
 #include "ash/login/ui/horizontal_image_sequence_animation_decoder.h"
 #include "ash/login/ui/hover_notifier.h"
 #include "ash/login/ui/lock_screen.h"
+#include "ash/login/ui/non_accessible_view.h"
 #include "ash/public/cpp/login_constants.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -59,7 +60,8 @@ const int kDelayBeforeShowingTooltipMs = 500;
 constexpr const int kBorderForFocusRingDp = 3;
 
 // Spacing between the icons (easy unlock, caps lock, display password) and the
-// borders of the password row.
+// borders of the password row. Note that if there is no icon, the padding will
+// appear to be 8dp since the password textfield has a 2dp margin.
 constexpr const int kInternalHorizontalPaddingPasswordRowDp = 6;
 
 // Spacing between the password row and the submit button.
@@ -79,7 +81,7 @@ constexpr int kLeftPaddingPasswordView =
     kSubmitButtonSizeDp + kSpacingBetweenPasswordRowAndSubmitButtonDp;
 
 // Width of the password row, placed at the center of the password view
-// (which also contains the submit buttonn).
+// (which also contains the submit button).
 constexpr int kPasswordRowWidthDp = 204 + 2 * kBorderForFocusRingDp;
 
 // Total width of the password view (left margin + password row + spacing +
@@ -108,7 +110,20 @@ constexpr const int kIconSizeDp = 20;
 // Horizontal spacing between:
 // -the easy unlock icon and the start of the password textfield
 // -the end of the password textfield and the display password button.
-constexpr const int kHorizontalSpacingBetweenIconsAndTextfieldDp = 8;
+// Note that the password textfield has a 2dp margin so the ending result will
+// be 8dp.
+constexpr const int kHorizontalSpacingBetweenIconsAndTextfieldDp = 6;
+
+// The password textfield has an external margin because we want these specific
+// visual results following in these different cases:
+// icon-textfield-icon: 6dp - icon - 8dp - textfield - 8dp - icon - 6dp
+// textfield-icon:      8dp - textfield - 8dp - icon - 6dp
+// icon-textfield:      6dp - icon - 8dp - textfield - 8dp
+// textfield:           8dp - textfield - 8dp
+// This translates by having a 6dp spacing between children of the paassword
+// row, having a 6dp padding for the password row and having a 2dp margin for
+// the password textfield.
+constexpr const int kPasswordTextfieldMarginDp = 2;
 
 constexpr const int kPasswordRowCornerRadiusDp = 4;
 
@@ -615,6 +630,7 @@ LoginPasswordView::LoginPasswordView(const LoginPalette& palette)
   left_icon_ =
       password_row_->AddChildView(std::make_unique<AlternateIconsView>());
   left_icon_->SetLayoutManager(std::make_unique<views::FillLayout>());
+  left_icon_->SetVisible(false);
 
   easy_unlock_icon_ =
       left_icon_->AddChildView(std::make_unique<EasyUnlockIcon>());
@@ -624,21 +640,28 @@ LoginPasswordView::LoginPasswordView(const LoginPalette& palette)
       left_icon_->AddChildView(std::make_unique<views::ImageView>());
   capslock_icon_->SetVisible(false);
 
+  auto* textfield_container =
+      password_row_->AddChildView(std::make_unique<NonAccessibleView>());
+  textfield_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal,
+      gfx::Insets(0, kPasswordTextfieldMarginDp)));
+
   // Password textfield. We control the textfield size by sizing the parent
   // view, as the textfield will expand to fill it.
-  auto textfield = std::make_unique<LoginTextfield>(
-      palette_,
-      // Highlight on focus. Remove highlight on blur.
-      base::BindRepeating(&LoginPasswordView::SetCapsLockHighlighted,
-                          base::Unretained(this), /*highlight=*/true),
-      base::BindRepeating(&LoginPasswordView::RemoveHighlightFromCapsLockAndRow,
-                          base::Unretained(this)),
-      base::BindRepeating(&LoginPasswordView::SetPasswordRowHighlighted,
-                          base::Unretained(this), /*highlight=*/true));
-  textfield_ = password_row_->AddChildView(std::move(textfield));
+  textfield_ =
+      textfield_container->AddChildView(std::make_unique<LoginTextfield>(
+          palette_,
+          // Highlight on focus. Remove highlight on blur.
+          base::BindRepeating(&LoginPasswordView::SetCapsLockHighlighted,
+                              base::Unretained(this), /*highlight=*/true),
+          base::BindRepeating(
+              &LoginPasswordView::RemoveHighlightFromCapsLockAndRow,
+              base::Unretained(this)),
+          base::BindRepeating(&LoginPasswordView::SetPasswordRowHighlighted,
+                              base::Unretained(this), /*highlight=*/true)));
   textfield_->set_controller(this);
 
-  layout_ptr->SetFlexForView(textfield_, 1);
+  layout_ptr->SetFlexForView(textfield_container, 1);
 
   display_password_button_ =
       password_row_->AddChildView(std::make_unique<DisplayPasswordButton>(
@@ -900,6 +923,8 @@ void LoginPasswordView::HandleLeftIconsVisibilities(bool handling_capslock) {
     std::swap(handled_view, other_view);
     std::swap(handled_should_show, other_should_show);
   }
+
+  left_icon_->SetVisible(handled_should_show || other_should_show);
 
   if (handled_should_show) {
     // If the view that is currently handled should be shown, we immediately
