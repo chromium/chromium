@@ -13,6 +13,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
+#include "chromeos/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "chromeos/components/string_matching/tokenized_string.h"
 #include "components/drive/file_errors.h"
 
@@ -40,7 +41,7 @@ class DriveSearchProvider : public SearchProvider {
 
  private:
   void SetSearchResults(drive::FileError error,
-                        std::vector<base::FilePath> paths);
+                        std::vector<drivefs::mojom::QueryItemPtr> paths);
   std::unique_ptr<FileResult> MakeResult(const base::FilePath& path);
 
   base::TimeTicks query_start_time_;

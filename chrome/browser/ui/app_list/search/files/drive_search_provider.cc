@@ -81,8 +81,9 @@ void DriveSearchProvider::Start(const std::u16string& query) {
                      weak_factory_.GetWeakPtr()));
 }
 
-void DriveSearchProvider::SetSearchResults(drive::FileError error,
-                                           std::vector<base::FilePath> paths) {
+void DriveSearchProvider::SetSearchResults(
+    drive::FileError error,
+    std::vector<drivefs::mojom::QueryItemPtr> items) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (error != drive::FileError::FILE_ERROR_OK) {
@@ -91,8 +92,13 @@ void DriveSearchProvider::SetSearchResults(drive::FileError error,
   }
 
   SearchProvider::Results results;
-  for (const auto& path : paths) {
-    results.emplace_back(MakeResult(path));
+  for (const auto& item : items) {
+    if (item->metadata->type ==
+        drivefs::mojom::FileMetadata::Type::kDirectory) {
+      // Ignore directories in search.
+      continue;
+    }
+    results.emplace_back(MakeResult(item->path));
   }
 
   SwapResults(&results);

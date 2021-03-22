@@ -100,7 +100,8 @@ class DriveIntegrationService : public KeyedService,
   using GetQuickAccessItemsCallback =
       base::OnceCallback<void(drive::FileError, std::vector<QuickAccessItem>)>;
   using SearchDriveByFileNameCallback =
-      base::OnceCallback<void(drive::FileError, std::vector<base::FilePath>)>;
+      base::OnceCallback<void(drive::FileError,
+                              std::vector<drivefs::mojom::QueryItemPtr>)>;
 
   // test_mount_point_name, test_cache_root and
   // test_drivefs_mojo_listener_factory are used by tests to inject customized

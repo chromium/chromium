@@ -141,10 +141,11 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest,
       "ba", 10, drivefs::mojom::QueryParameters::SortField::kLastViewedByMe,
       drivefs::mojom::QueryParameters::SortDirection::kAscending,
       base::BindLambdaForTesting(
-          [=](FileError error, std::vector<base::FilePath> paths) {
-            EXPECT_EQ(2u, paths.size());
-            EXPECT_EQ("baz", paths[0].BaseName().value());
-            EXPECT_EQ("bar", paths[1].BaseName().value());
+          [=](FileError error,
+              std::vector<drivefs::mojom::QueryItemPtr> items) {
+            EXPECT_EQ(2u, items.size());
+            EXPECT_EQ("baz", items[0]->path.BaseName().value());
+            EXPECT_EQ("bar", items[1]->path.BaseName().value());
             quit_closure.Run();
           }));
   run_loop.Run();

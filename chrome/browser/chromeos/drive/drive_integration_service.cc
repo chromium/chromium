@@ -1131,12 +1131,7 @@ void DriveIntegrationService::OnSearchDriveByFileName(
     return;
   }
 
-  std::vector<base::FilePath> result;
-  result.reserve(items->size());
-  for (const auto& item : *items) {
-    result.emplace_back(item->path);
-  }
-  std::move(callback).Run(error, std::move(result));
+  std::move(callback).Run(error, std::move(items.value()));
 }
 
 void DriveIntegrationService::GetMetadata(
