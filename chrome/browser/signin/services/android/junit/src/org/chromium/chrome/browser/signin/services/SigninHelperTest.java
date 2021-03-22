@@ -5,23 +5,39 @@
 package org.chromium.chrome.browser.signin.services;
 
 import android.accounts.Account;
+import android.content.Context;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.test.util.browser.signin.MockChangeEventChecker;
 import org.chromium.components.signin.AccountUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Unit tests for {@link SigninHelper}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SigninHelperTest {
+    private static final class MockChangeEventChecker
+            implements SigninHelper.AccountChangeEventChecker {
+        private final Map<String, String> mEvents = new HashMap<>();
+
+        @Override
+        public String getNewNameOfRenamedAccount(Context context, String accountEmail) {
+            return mEvents.get(accountEmail);
+        }
+
+        void insertRenameEvent(String from, String to) {
+            mEvents.put(from, to);
+        }
+    }
+
     private final MockChangeEventChecker mEventChecker = new MockChangeEventChecker();
 
     @Test
