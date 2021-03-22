@@ -21,11 +21,11 @@ import androidx.core.content.FileProvider;
 
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.chrome.browser.download.DownloadDirectoryProvider.SecondaryStorageInfo;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.List;
 
 /**
  * Provides data access and generate content URI for downloaded files open or shared to other
@@ -36,8 +36,12 @@ import java.util.List;
  * generates URI: content://[package name].DownloadFileProvide/download?file=demo.apk
  * Currently the primary storage downloads still use {@link FileProvider} instead of this.
  *
- * File on external SD card: /storage/724E-59EE/Android/data/[package name]/files/Download/demo.apk"
- * generates URI: content://[package name].DownloadFileProvide/download_external?file=demo.apk
+ * File on external SD card pre R: /storage/724E-59EE/Android/data/[package
+ * name]/files/Download/demo.apk" generates URI: content://[package
+ * name].DownloadFileProvide/download_external?file=demo.apk
+ *
+ * File on external SD card from R: /storage/724E-59EE/Download/demo.apk"
+ *  * generates URI: content://[package name].DownloadFileProvide/external_volume?file=demo.apk
  */
 public class DownloadFileProvider extends FileProvider {
     private static final String[] COLUMNS = new String[] {"_display_name", "_size"};
@@ -49,9 +53,14 @@ public class DownloadFileProvider extends FileProvider {
     private static final String URI_PATH = "download";
 
     /**
-     * The URI path for downloads on external storage.
+     * The URI path for downloads on external storage before Android R.
      */
-    private static final String URI_EXTERNAL_PATH = "download_external";
+    private static final String URI_EXTERNAL_PATH_LEGACY = "download_external";
+
+    /**
+     * The URI path for downloads on external storage from Android R.
+     */
+    private static final String URI_EXTERNAL_PATH = "external_volume";
 
     private static final String URI_QUERY_FILE = "file";
 
@@ -78,6 +87,7 @@ public class DownloadFileProvider extends FileProvider {
         if (ContentUriUtils.isContentUri(filePath)) return Uri.parse(filePath);
         if (TextUtils.isEmpty(filePath)) return Uri.EMPTY;
 
+        // Check whether the download is on primary storage.
         File primaryDir = delegate.getPrimaryDownloadDirectory();
         int index = filePath.indexOf(primaryDir.getAbsolutePath());
         if (index == 0 && filePath.length() > primaryDir.getAbsolutePath().length()) {
@@ -85,15 +95,27 @@ public class DownloadFileProvider extends FileProvider {
                     URI_PATH, filePath.substring(primaryDir.getAbsolutePath().length() + 1));
         }
 
-        List<File> files = delegate.getSecondaryStorageDownloadDirectories();
-        for (File file : files) {
-            if (file == null) continue;
-            if (filePath.startsWith(file.getAbsolutePath())) {
-                return buildUri(
-                        URI_EXTERNAL_PATH, filePath.substring(file.getAbsolutePath().length() + 1));
+        // Check whether the download is in Android R's SD card directory.
+        SecondaryStorageInfo info = delegate.getSecondaryStorageDownloadDirectories();
+        if (info.directories != null) {
+            for (File file : info.directories) {
+                if (file == null) continue;
+                if (filePath.startsWith(file.getAbsolutePath())) {
+                    return buildUri(URI_EXTERNAL_PATH,
+                            filePath.substring(file.getAbsolutePath().length() + 1));
+                }
             }
         }
 
+        // Check whether the download is in legacy SD card directory pre R.
+        if (info.directoriesPreR == null) return Uri.EMPTY;
+        for (File file : info.directoriesPreR) {
+            if (file == null) continue;
+            if (filePath.startsWith(file.getAbsolutePath())) {
+                return buildUri(URI_EXTERNAL_PATH_LEGACY,
+                        filePath.substring(file.getAbsolutePath().length() + 1));
+            }
+        }
         return Uri.EMPTY;
     }
 
@@ -249,8 +271,7 @@ public class DownloadFileProvider extends FileProvider {
      * removable storage.
      * @param uri The content URI to parse.
      * @return The absolute path of the file or null if the file is not in known download directory
-     *         or
-     * the file doesn't exist.
+     *         or null if the file doesn't exist.
      */
     @VisibleForTesting
     public static String getFilePathFromUri(Uri uri, DownloadDirectoryProvider.Delegate delegate) {
@@ -269,12 +290,18 @@ public class DownloadFileProvider extends FileProvider {
             return primaryDir + File.separator + query;
         }
 
-        // Parse download on external SD card.
-        List<File> files = delegate.getSecondaryStorageDownloadDirectories();
-        if (files.isEmpty()) return null;
-        if (path.equals(URI_EXTERNAL_PATH)) {
-            // This only supports one SD card.
-            return files.get(0).getAbsolutePath() + File.separator + query;
+        // Parse download on external SD card on new Android R directory.
+        SecondaryStorageInfo info = delegate.getSecondaryStorageDownloadDirectories();
+        if (path.equals(URI_EXTERNAL_PATH) && !info.directories.isEmpty()) {
+            // Only supports one directory.
+            return info.directories.get(0).getAbsolutePath() + File.separator + query;
+        }
+
+        // Parse download on legacy SD card directory. On R, we also parse this to support existing
+        // downloads before R.
+        if (path.equals(URI_EXTERNAL_PATH_LEGACY) && !info.directoriesPreR.isEmpty()) {
+            // Only supports one directory.
+            return info.directoriesPreR.get(0).getAbsolutePath() + File.separator + query;
         }
         return null;
     }

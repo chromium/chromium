@@ -271,6 +271,8 @@ public class MediaViewerUtils {
     }
 
     private static boolean willExposeFileUri(Uri uri) {
+        assert uri != null && !uri.equals(Uri.EMPTY) : "URI is not successfully generated.";
+
         // On Android N and later, an Exception is thrown if we try to expose a file:// URI.
         return uri.getScheme().equals(ContentResolver.SCHEME_FILE)
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;

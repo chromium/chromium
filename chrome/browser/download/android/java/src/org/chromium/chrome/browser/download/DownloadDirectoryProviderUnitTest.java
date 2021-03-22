@@ -98,12 +98,18 @@ public class DownloadDirectoryProviderUnitTest {
     public void testGetSecondaryDownloadDirectoryOnQ() {
         ShadowPathUtils.setAllPrivateDownloadsDirectories(new String[] {
                 mPrimaryDir.toFile().getAbsolutePath(), mSecondaryDir.toFile().getAbsolutePath()});
-        Assert.assertEquals(
-                1, DownloadDirectoryProvider.getSecondaryStorageDownloadDirectories().size());
+        Assert.assertEquals(1,
+                DownloadDirectoryProvider.getSecondaryStorageDownloadDirectories()
+                        .directoriesPreR.size());
+        Assert.assertNull("Pre R the new SD card directory should be null",
+                DownloadDirectoryProvider.getSecondaryStorageDownloadDirectories().directories);
+
+        // Simulate no SD card on the device.
         ShadowPathUtils.setAllPrivateDownloadsDirectories(
                 new String[] {mPrimaryDir.toFile().getAbsolutePath()});
-        Assert.assertEquals(
-                0, DownloadDirectoryProvider.getSecondaryStorageDownloadDirectories().size());
+        Assert.assertEquals(0,
+                DownloadDirectoryProvider.getSecondaryStorageDownloadDirectories()
+                        .directoriesPreR.size());
     }
 
     @Test
