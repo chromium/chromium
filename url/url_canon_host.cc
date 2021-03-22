@@ -239,6 +239,7 @@ bool DoComplexHost(const char* host, int host_len,
   // input or the unescaped version written to |*output| if necessary.
   const char* utf8_source;
   int utf8_source_len;
+  bool are_all_escaped_valid = true;
   if (has_escaped) {
     // Unescape before converting to UTF-16 for IDN. We write this into the
     // output because it most likely does not require IDNization, and we can
@@ -247,14 +248,16 @@ bool DoComplexHost(const char* host, int host_len,
     // unescaped input requires IDN.
     if (!DoSimpleHost(host, host_len, output, &has_non_ascii)) {
       // Error with some escape sequence. We'll call the current output
-      // complete. DoSimpleHost will have written some "reasonable" output.
-      return false;
+      // complete. DoSimpleHost will have written some "reasonable" output
+      // for the invalid escapes, but the output could be non-ASCII and
+      // needs to go through re-encoding below.
+      are_all_escaped_valid = false;
     }
 
     // Unescaping may have left us with ASCII input, in which case the
     // unescaped version we wrote to output is complete.
     if (!has_non_ascii) {
-      return true;
+      return are_all_escaped_valid;
     }
 
     // Save the pointer into the data was just converted (it may be appended to
@@ -286,7 +289,8 @@ bool DoComplexHost(const char* host, int host_len,
 
   // This will call DoSimpleHost which will do normal ASCII canonicalization
   // and also check for IP addresses in the outpt.
-  return DoIDNHost(utf16.data(), utf16.length(), output);
+  return DoIDNHost(utf16.data(), utf16.length(), output) &&
+         are_all_escaped_valid;
 }
 
 // UTF-16 convert host to its ASCII version. The set up is already ready for
