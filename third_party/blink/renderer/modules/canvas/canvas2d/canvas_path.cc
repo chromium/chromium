@@ -501,5 +501,6 @@ void CanvasPath::roundRect(double double_x,
     case 4:
       path_.AddRoundedRect(rect, r[0], r[1], r[3], r[2]);
   }
+  path_.MoveTo(FloatPoint(x, y));
 }
 }  // namespace blink
