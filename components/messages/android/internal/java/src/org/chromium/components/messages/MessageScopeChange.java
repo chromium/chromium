@@ -21,7 +21,7 @@ public class MessageScopeChange {
 
     public final int scopeTypeId;
     public final @ChangeType int changeType;
-    public final Object scopeInstanceKey;
+    public final ScopeKey scopeInstanceKey;
     public final boolean animateTransition;
 
     /**
@@ -29,7 +29,7 @@ public class MessageScopeChange {
      * @param scopeInstanceKey An identical object as a key of Scope Instance.
      * @param changeType The {@link ChangeType} indicating the type of change.
      */
-    public MessageScopeChange(@MessageScopeType int scopeTypeId, Object scopeInstanceKey,
+    public MessageScopeChange(@MessageScopeType int scopeTypeId, ScopeKey scopeInstanceKey,
             @ChangeType int changeType) {
         this(scopeTypeId, scopeInstanceKey, changeType, true);
     }
@@ -40,7 +40,7 @@ public class MessageScopeChange {
      * @param changeType The {@link ChangeType} indicating the type of change.
      * @param animateTransition Whether animation should be shown to reflect the scope change.
      */
-    public MessageScopeChange(@MessageScopeType int scopeTypeId, Object scopeInstanceKey,
+    public MessageScopeChange(@MessageScopeType int scopeTypeId, ScopeKey scopeInstanceKey,
             @ChangeType int changeType, boolean animateTransition) {
         this.scopeTypeId = scopeTypeId;
         this.scopeInstanceKey = scopeInstanceKey;

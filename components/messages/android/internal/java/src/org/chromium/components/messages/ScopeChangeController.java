@@ -4,152 +4,105 @@
 
 package org.chromium.components.messages;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.components.messages.MessageScopeChange.ChangeType;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.ui.base.PageTransition;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
  * Observe the webContents and notify queue manager of proper scope changes.
  */
 class ScopeChangeController {
-    private final MessageQueueManager mQueueManager;
-    private final Map<Object, WebContents> mMessageToWebContentsMap;
-    private final Map<WebContents, RefCountWebContentsObserver> mRefCountedWebContentsObserverMap;
+    /**
+     * A delegate which can handle the scope change.
+     */
+    public interface Delegate {
+        void onScopeChange(MessageScopeChange change);
+    }
 
-    public ScopeChangeController(MessageQueueManager queueManager) {
-        mQueueManager = queueManager;
-        mMessageToWebContentsMap = new HashMap<>();
-        mRefCountedWebContentsObserverMap = new HashMap<>();
+    private final Delegate mDelegate;
+    private final Map<ScopeKey, WebContentsObserver> mObservers;
+
+    public ScopeChangeController(Delegate delegate) {
+        mDelegate = delegate;
+        mObservers = new HashMap<>();
     }
 
     /**
-     * Observe the given webContents and notify queue manager of proper scope changes.
-     * @param messageKey The Object key to differentiate the messages.
-     * @param webContents The webContents to be observed.
+     * Notify every time a message is enqueued to a scope whose queue was previously empty.
+     * @param scopeKey The scope key of the scope which the first message is enqueued.
      */
-    void observe(Object messageKey, WebContents webContents) {
-        // If one observer has been observing the given webContents, no need to create a new one.
-        RefCountWebContentsObserver webObserver =
-                mRefCountedWebContentsObserverMap.get(webContents);
-        if (webObserver != null) {
-            webObserver.increaseCount();
-        } else {
-            webObserver = createObserver(webContents);
-            mQueueManager.onScopeChange(new MessageScopeChange(MessageScopeType.WEB_CONTENTS,
-                    webContents,
-                    webContents.getVisibility() == Visibility.VISIBLE ? ChangeType.ACTIVE
-                                                                      : ChangeType.INACTIVE));
-            mRefCountedWebContentsObserverMap.put(webContents, webObserver);
-        }
-        mMessageToWebContentsMap.put(messageKey, webContents);
+    void firstMessageEnqueued(ScopeKey scopeKey) {
+        WebContentsObserver observer = createObserver(scopeKey);
+        assert !mObservers.containsKey(scopeKey) : "This scope key has already been observed.";
+        mObservers.put(scopeKey, observer);
+        mDelegate.onScopeChange(new MessageScopeChange(scopeKey.scopeType, scopeKey,
+                scopeKey.webContents.getVisibility() == Visibility.VISIBLE ? ChangeType.ACTIVE
+                                                                           : ChangeType.INACTIVE));
     }
 
-    void stopObservation(Object messageKey) {
-        WebContents webContents = mMessageToWebContentsMap.get(messageKey);
-        if (webContents == null) return;
-        mMessageToWebContentsMap.remove(messageKey);
-        RefCountWebContentsObserver webObserver =
-                mRefCountedWebContentsObserverMap.get(webContents);
-        assert webObserver != null;
-        webObserver.decreaseCount();
+    /**
+     * Called when all Messages for the given {@code scopeKey} have been dismissed or removed.
+     * @param scopeKey The scope key of the scope which the last message is dismissed.
+     */
+    void lastMessageDismissed(ScopeKey scopeKey) {
+        WebContentsObserver observer = mObservers.remove(scopeKey);
+        observer.destroy();
     }
 
-    void stopAllObservation() {
-        // toArray: to avoid ConcurrentModificationException.
-        for (Object messageKey : mMessageToWebContentsMap.keySet().toArray()) {
-            stopObservation(messageKey);
-        }
-    }
-
-    private void removeObservers(WebContents webContents) {
-        mRefCountedWebContentsObserverMap.remove(webContents);
-        for (Iterator<WebContents> it = mMessageToWebContentsMap.values().iterator();
-                it.hasNext();) {
-            if (it.next() == webContents) it.remove();
-        }
-    }
-
-    private RefCountWebContentsObserver createObserver(WebContents webContents) {
-        return new RefCountWebContentsObserver(
-                webContents, () -> { removeObservers(webContents); }) {
+    private WebContentsObserver createObserver(ScopeKey scopeKey) {
+        WebContents webContents = scopeKey.webContents;
+        @MessageScopeType
+        int scopeType = scopeKey.scopeType;
+        return new WebContentsObserver(webContents) {
             @Override
             public void wasShown() {
                 super.wasShown();
-                mQueueManager.onScopeChange(new MessageScopeChange(
-                        MessageScopeType.WEB_CONTENTS, webContents, ChangeType.ACTIVE));
+                mDelegate.onScopeChange(
+                        new MessageScopeChange(scopeType, scopeKey, ChangeType.ACTIVE));
             }
 
             @Override
             public void wasHidden() {
                 super.wasHidden();
-                mQueueManager.onScopeChange(new MessageScopeChange(
-                        MessageScopeType.WEB_CONTENTS, webContents, ChangeType.INACTIVE));
+                mDelegate.onScopeChange(
+                        new MessageScopeChange(scopeType, scopeKey, ChangeType.INACTIVE));
             }
 
-            // TODO(crbug.com/1163290): dismiss message when page is navigated to another site.
+            @Override
+            public void didFinishNavigation(NavigationHandle navigation) {
+                if (scopeType != MessageScopeType.NAVIGATION) {
+                    return;
+                }
+                super.didFinishNavigation(navigation);
+                // TODO(crbug.com/1184084): Investigate more on:
+                // 1. whether entry id should be checked to ensure entry id is not changed
+                // 2. whether to set ingore_next_reload_ like infobars to ignore non-user triggered
+                // reload
+                if (!navigation.hasCommitted() || !navigation.isInMainFrame()
+                        || navigation.isSameDocument()) {
+                    return;
+                }
+
+                int transition = navigation.pageTransition();
+                if ((transition & PageTransition.RELOAD) != PageTransition.RELOAD
+                        && (transition & PageTransition.IS_REDIRECT_MASK) == 0) {
+                    destroy();
+                }
+            }
 
             @Override
             public void destroy() {
                 super.destroy();
                 // #destroy will remove the observers.
-                mQueueManager.onScopeChange(new MessageScopeChange(
-                        MessageScopeType.WEB_CONTENTS, webContents, ChangeType.DESTROY));
+                mDelegate.onScopeChange(
+                        new MessageScopeChange(scopeType, scopeKey, ChangeType.DESTROY));
             }
         };
-    }
-
-    @VisibleForTesting
-    Map<Object, WebContents> getMessageToWebContentsMap() {
-        return mMessageToWebContentsMap;
-    }
-
-    @VisibleForTesting
-    Map<WebContents, RefCountWebContentsObserver> getRefCountedWebContentsObserverMap() {
-        return mRefCountedWebContentsObserverMap;
-    }
-
-    /**
-     * A web contents observer which can count references and call callback when all references
-     * have been cleared or when destroyed. Observer will be destroyed as well when all references
-     * have been cleared.
-     */
-    @VisibleForTesting
-    static class RefCountWebContentsObserver extends WebContentsObserver {
-        public final WebContents webContents;
-        private int mCount;
-        private final Runnable mOnEmpty;
-
-        public RefCountWebContentsObserver(WebContents webContents, Runnable onEmpty) {
-            super(webContents);
-            this.webContents = webContents;
-            mCount = 1;
-            mOnEmpty = onEmpty;
-        }
-
-        public void increaseCount() {
-            mCount++;
-        }
-
-        public void decreaseCount() {
-            mCount--;
-            if (mCount == 0) {
-                // Call super instead of this to avoid notifying MQM about ChangeType.DESTROY.
-                super.destroy();
-                mOnEmpty.run();
-            }
-        }
-
-        @Override
-        public void destroy() {
-            super.destroy();
-            mOnEmpty.run();
-        }
     }
 }

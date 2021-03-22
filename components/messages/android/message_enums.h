@@ -40,10 +40,7 @@ enum class DismissReason {
 // The constants of message scope type.
 //
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.messages
-enum class MessageScopeType {
-  WINDOW = 0,
-  WEB_CONTENTS = 1,
-};
+enum class MessageScopeType { WINDOW = 0, WEB_CONTENTS = 1, NAVIGATION = 2 };
 
 }  // namespace messages
 
