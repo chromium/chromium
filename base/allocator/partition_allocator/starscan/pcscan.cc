@@ -1355,11 +1355,13 @@ void PCScanTask::FinishScanner() {
 }
 
 void PCScanTask::RunFromMutator() {
+#if !PCSCAN_DISABLE_SAFEPOINTS
   // Unfortunately, some functions can still allocate while scanning (e.g. trace
   // scopes). Therefore we have to guard against recursive scanning.
   if (UNLIKELY(ReentrantScannerGuard::is_entered()))
     return;
   ReentrantScannerGuard reentrancy_guard;
+#endif
   StatsCollector::MutatorScope overall_scope(
       stats_, StatsCollector::MutatorId::kOverall);
   {
@@ -1387,11 +1389,13 @@ void PCScanTask::RunFromMutator() {
 }
 
 void PCScanTask::RunFromScanner() {
+#if !PCSCAN_DISABLE_SAFEPOINTS
   // Unfortunately, some functions can still allocate while scanning (e.g. trace
   // scopes). Therefore we have to guard against recursive scanning.
   if (UNLIKELY(ReentrantScannerGuard::is_entered()))
     return;
   ReentrantScannerGuard reentrancy_guard;
+#endif
   {
     StatsCollector::ScannerScope overall_scope(
         stats_, StatsCollector::ScannerId::kOverall);
@@ -1549,12 +1553,14 @@ void PCScan::PerformScanIfNeeded(InvocationMode invocation_mode) {
 }
 
 void PCScan::JoinScan() {
+#if !PCSCAN_DISABLE_SAFEPOINTS
   auto& internal = PCScanInternal::Instance();
   // Current task can be destroyed by the scanner.
   // TODO(bikineev): This should actually be something like
   // std::atomic_shared_ptr.
   if (auto current_task = internal.current_pcscan_task())
     current_task->RunFromMutator();
+#endif
 }
 
 void PCScan::FinishScanForTesting() {
