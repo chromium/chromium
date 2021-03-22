@@ -594,7 +594,6 @@ crbug.com/989014 [ Linux Debug ] external/wpt/cookie-store/serviceworker_cookiec
 crbug.com/991243 [ Linux ] external/wpt/workers/semantics/multiple-workers/003.html [ Slow ]
 crbug.com/999799 [ Mac ] external/wpt/html/rendering/dimension-attributes.html [ Slow ]
 crbug.com/999799 [ Linux ] external/wpt/html/rendering/dimension-attributes.html [ Slow ]
-crbug.com/1013391 http/tests/devtools/a11y-axe-core/settings/shortcuts-a11y-test.js [ Slow ]
 crbug.com/990900 external/wpt/cookie-store/idlharness.tentative.https.any.serviceworker.html [ Slow ]
 crbug.com/1014327 [ Mac ] external/wpt/preload/onerror-event.html [ Slow ]
 crbug.com/1017626 [ Linux ] external/wpt/compat/idlharness.window.html [ Slow ]

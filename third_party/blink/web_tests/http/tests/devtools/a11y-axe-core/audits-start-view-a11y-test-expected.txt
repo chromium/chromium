@@ -1,5 +1,0 @@
-Tests accessibility in the audits start view using the axe-core linter.
-
-aXe violations: []
-
-

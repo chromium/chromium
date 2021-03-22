@@ -82,19 +82,7 @@ crbug.com/934144 [ Linux ] http/tests/devtools/tracing/timeline-misc/timeline-fl
 # Sheriff 2019-08-21
 crbug.com/996235 [ Linux ] media/controls/doubletap-to-jump-backwards-at-start.html [ Pass Failure ]
 
-crbug.com/1000512 [ Linux ] http/tests/devtools/a11y-axe-core/application-panel/app-manifest-view-a11y-test.js [ Failure Pass ]
-crbug.com/1000512 [ Linux ] http/tests/devtools/a11y-axe-core/audits-start-view-a11y-test.js [ Failure Pass ]
-crbug.com/1000512 [ Linux ] http/tests/devtools/a11y-axe-core/basic-a11y-test.js [ Failure Pass ]
 crbug.com/1000512 [ Linux ] http/tests/devtools/a11y-axe-core/console/console-a11y-test.js [ Failure Pass ]
-crbug.com/1000512 [ Linux ] http/tests/devtools/a11y-axe-core/elements/event-listeners-a11y-test.js [ Failure Pass ]
-crbug.com/1000512 [ Linux ] http/tests/devtools/a11y-axe-core/memory/heap-profiler-a11y-test.js [ Failure Pass ]
-crbug.com/1000512 [ Linux ] http/tests/devtools/a11y-axe-core/network/network-condition-a11y-test.js [ Failure Pass ]
-crbug.com/1000512 [ Linux ] http/tests/devtools/a11y-axe-core/security/security-origin-a11y-test.js [ Failure Pass ]
-crbug.com/1046784 [ Linux ] http/tests/devtools/a11y-axe-core/settings/menu-a11y-test.js [ Failure Pass ]
-crbug.com/1046784 [ Linux ] http/tests/devtools/a11y-axe-core/settings/shortcuts-a11y-test.js [ Failure Pass ]
-crbug.com/1000512 [ Linux ] http/tests/devtools/a11y-axe-core/sources/source-navigator-filesystem-a11y-test.js [ Failure Pass ]
-crbug.com/1000512 [ Linux ] http/tests/devtools/a11y-axe-core/sources/source-navigator-network-a11y-test.js [ Failure Pass ]
-crbug.com/1000512 [ Linux ] http/tests/devtools/a11y-axe-core/sources/sources-editor-pane-a11y-test.js [ Failure Pass ]
 
 # Only times out on the leak bots.
 crbug.com/998399 [ Linux ] virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/worker-interception.https.html [ Pass Timeout ]

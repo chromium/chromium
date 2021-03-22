@@ -4722,7 +4722,6 @@ crbug.com/1013779 virtual/scalefactor200/fast/hidpi/static/validation-bubble-app
 crbug.com/1014812 external/wpt/animation-worklet/playback-rate.https.html [ Pass Timeout Failure ]
 
 # Sheriff 2019-10-18
-crbug.com/1015859 [ Linux ] http/tests/devtools/a11y-axe-core/performance/landing-page-a11y-test.js [ Pass Failure ]
 crbug.com/1015975 media/video-currentTime.html [ Pass Failure ]
 
 # Sheriff 2019-10-21
@@ -4940,9 +4939,6 @@ crbug.com/1006759 http/tests/devtools/sources/css-outline-dialog.js [ Skip ]
 crbug.com/1025274 external/wpt/mixed-content/gen/top.meta/unset/audio-tag.https.html [ Failure ]
 crbug.com/1025274 external/wpt/mixed-content/gen/top.meta/unset/video-tag.https.html [ Failure ]
 crbug.com/1025274 http/tests/security/mixedContent/insecure-audio-video-in-main-frame.html [ Failure ]
-
-# DevTools roll
-crbug.com/1052111 http/tests/devtools/a11y-axe-core/audits-start-view-a11y-test.js [ Skip ]
 
 # Sheriff 2020-02-18
 crbug.com/1050893 [ Fuchsia ] virtual/gpu/fast/canvas/feimage-with-foreignobject-taint-canvas-2.html [ Skip ]
@@ -5468,7 +5464,6 @@ crbug.com/1154178 external/wpt/webmessaging/broadcastchannel/basics.html [ Pass 
 # Sheriff 2020-12-11
 # Flaking on Linux Trusty
 crbug.com/1157849 [ Linux Release ] external/wpt/webrtc/RTCPeerConnection-iceConnectionState.https.html [ Pass Timeout ]
-crbug.com/1157861 http/tests/devtools/a11y-axe-core/sources/javascript-breakpoints-a11y-test.js [ Pass Failure ]
 crbug.com/1157861 http/tests/devtools/extensions/extensions-resources.js [ Pass Failure ]
 crbug.com/1157861 http/tests/devtools/console/paintworklet-console-selector.js [ Pass Failure ]
 
@@ -5573,7 +5568,6 @@ crbug.com/1175901 [ Linux ] http/tests/devtools/console/console-search-reveals-m
 crbug.com/1175901 [ Linux ] http/tests/devtools/console/console-viewport-stick-to-bottom.js [ Failure Pass ]
 
 # Timing out on WebKit Linux Leak
-crbug.com/1176286 [ Linux ] http/tests/devtools/a11y-axe-core/settings/blackbox-a11y-test.js [ Failure Pass ]
 crbug.com/1176286 [ Linux ] http/tests/devtools/network/network-serviceworker-timing-view.js [ Failure Pass ]
 crbug.com/1176286 [ Linux ] http/tests/devtools/network/subresource-integrity-number-of-requests-for-stylesheet.js [ Failure Pass ]
 

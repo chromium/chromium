@@ -1,5 +1,0 @@
-Adding XHR breakpoint.
-Running axe on the XHR breakpoints pane.
-aXe violations: []
-
-
