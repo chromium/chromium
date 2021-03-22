@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_RENDERING_CONTEXT_2D_STATE_H_
 
 #include "base/macros.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/clip_list.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector_client.h"
@@ -92,13 +91,11 @@ class CanvasRenderingContext2DState final
 
   void SetFontForFilter(const Font& font) { font_for_filter_ = font; }
 
-  void SetCSSFilter(const CSSValue*);
-  void SetUnparsedCSSFilter(const String& filter_string) {
-    unparsed_css_filter_ = filter_string;
+  void SetFilter(const CSSValue*);
+  void SetUnparsedFilter(const String& filter_string) {
+    unparsed_filter_ = filter_string;
   }
-  const String& UnparsedCSSFilter() const { return unparsed_css_filter_; }
-  void SetCanvasFilter(CanvasFilter* filter_value);
-  CanvasFilter* GetCanvasFilter() const { return canvas_filter_; }
+  const String& UnparsedFilter() const { return unparsed_filter_; }
   sk_sp<PaintFilter> GetFilter(Element*,
                                IntSize canvas_size,
                                CanvasRenderingContext2D*) const;
@@ -267,9 +264,8 @@ class CanvasRenderingContext2DState final
   Font font_;
   Font font_for_filter_;
 
-  Member<CanvasFilter> canvas_filter_;
-  String unparsed_css_filter_;
-  Member<const CSSValue> css_filter_value_;
+  String unparsed_filter_;
+  Member<const CSSValue> filter_value_;
   mutable sk_sp<PaintFilter> resolved_filter_;
 
   // Text state.
