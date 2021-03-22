@@ -16,6 +16,7 @@
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -53,8 +54,11 @@ double CalculateFilenameRelevance(const base::Optional<TokenizedString>& query,
       base::UTF8ToUTF16(StripHostedFileExtensions(path.BaseName().value())),
       TokenizedString::Mode::kWords);
 
-  if (!query || query.value().text().empty() || title.text().empty()) {
-    // TODO(crbug.com/1154513): Log error histogram.
+  const bool use_default_relevance =
+      !query || query.value().text().empty() || title.text().empty();
+  UMA_HISTOGRAM_BOOLEAN("Apps.AppList.FileResult.DefaultRelevanceUsed",
+                        use_default_relevance);
+  if (use_default_relevance) {
     static constexpr double kDefaultRelevance = 0.5;
     return kDefaultRelevance;
   }

@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "chromeos/components/string_matching/tokenized_string.h"
 
@@ -36,6 +37,7 @@ class FileSearchProvider : public SearchProvider {
   void OnSearchComplete(const std::vector<base::FilePath>& paths);
   std::unique_ptr<FileResult> MakeResult(const base::FilePath& path);
 
+  base::TimeTicks query_start_time_;
   base::Optional<chromeos::string_matching::TokenizedString>
       last_tokenized_query_;
 

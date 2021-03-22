@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/bind.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,6 +20,20 @@ using chromeos::string_matching::TokenizedString;
 
 constexpr char kDriveSearchSchema[] = "drive_search://";
 constexpr int kMaxResults = 10;
+
+// Outcome of a call to DriveSearchProvider::Start. These values persist to
+// logs. Entries should not be renumbered and numeric values should never be
+// reused.
+enum class Status {
+  kOk = 0,
+  kDriveUnavailable = 1,
+  kFileError = 2,
+  kMaxValue = kFileError,
+};
+
+void LogStatus(Status status) {
+  UMA_HISTOGRAM_ENUMERATION("Apps.AppList.DriveSearchProvider.Status", status);
+}
 
 }  // namespace
 
@@ -39,6 +54,7 @@ ash::AppListSearchResultType DriveSearchProvider::ResultType() {
 
 void DriveSearchProvider::Start(const std::u16string& query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  query_start_time_ = base::TimeTicks::Now();
 
   // Clear results and cancel any outgoing requests.
   ClearResultsSilently();
@@ -49,7 +65,7 @@ void DriveSearchProvider::Start(const std::u16string& query) {
     return;
 
   if (!drive_service_ || !drive_service_->is_enabled()) {
-    // TODO(crbug.com/1154513): Log error histogram.
+    LogStatus(Status::kDriveUnavailable);
     return;
   }
 
@@ -70,7 +86,7 @@ void DriveSearchProvider::SetSearchResults(drive::FileError error,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (error != drive::FileError::FILE_ERROR_OK) {
-    // TODO(crbug.com/1154513): Log error histogram.
+    LogStatus(Status::kFileError);
     return;
   }
 
@@ -80,7 +96,9 @@ void DriveSearchProvider::SetSearchResults(drive::FileError error,
   }
 
   SwapResults(&results);
-  // TODO(crbug.com/1154513): Log success and latency histograms.
+  LogStatus(Status::kOk);
+  UMA_HISTOGRAM_TIMES("Apps.AppList.DriveSearchProvider.Latency",
+                      base::TimeTicks::Now() - query_start_time_);
 }
 
 std::unique_ptr<FileResult> DriveSearchProvider::MakeResult(

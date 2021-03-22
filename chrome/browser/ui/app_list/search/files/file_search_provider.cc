@@ -7,6 +7,7 @@
 #include <cctype>
 
 #include "base/files/file_enumerator.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
@@ -22,6 +23,7 @@ using chromeos::string_matching::TokenizedString;
 
 constexpr char kFileSearchSchema[] = "file_search://";
 constexpr int kMaxResults = 25;
+constexpr int kSearchTimeoutMs = 100;
 
 // Construct a case-insensitive fnmatch query from |query|. E.g. for abc123, the
 // result would be *[aA][bB][cC]123*.
@@ -53,20 +55,28 @@ std::string CreateFnmatchQuery(const std::string& query) {
 
 std::vector<base::FilePath> SearchFilesByPattern(
     const base::FilePath& root_path,
-    const std::string& query) {
+    const std::string& query,
+    const base::TimeTicks& query_start_time) {
   base::FileEnumerator enumerator(
       root_path,
       /*recursive=*/true, base::FileEnumerator::FILES,
       CreateFnmatchQuery(query), base::FileEnumerator::FolderSearchPolicy::ALL);
+
+  const auto time_limit = base::TimeDelta::FromMilliseconds(kSearchTimeoutMs);
+  bool timed_out = false;
 
   std::vector<base::FilePath> matched_paths;
   for (base::FilePath path = enumerator.Next(); !path.empty();
        path = enumerator.Next()) {
     matched_paths.emplace_back(path);
 
-    if (matched_paths.size() == kMaxResults)
+    if (matched_paths.size() == kMaxResults ||
+        base::TimeTicks::Now() - query_start_time > time_limit) {
+      timed_out = true;
       break;
+    }
   }
+  UMA_HISTOGRAM_BOOLEAN("Apps.AppList.FileSearchProvider.TimedOut", timed_out);
   return matched_paths;
 }
 
@@ -85,6 +95,8 @@ ash::AppListSearchResultType FileSearchProvider::ResultType() {
 
 void FileSearchProvider::Start(const std::u16string& query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  query_start_time_ = base::TimeTicks::Now();
+
   // Clear results and cancel any outgoing requests.
   ClearResultsSilently();
   weak_factory_.InvalidateWeakPtrs();
@@ -99,8 +111,9 @@ void FileSearchProvider::Start(const std::u16string& query) {
       file_manager::util::GetMyFilesFolderForProfile(profile_);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(SearchFilesByPattern, root_path, base::UTF16ToUTF8(query)),
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+      base::BindOnce(SearchFilesByPattern, root_path, base::UTF16ToUTF8(query),
+                     query_start_time_),
       base::BindOnce(&FileSearchProvider::OnSearchComplete,
                      weak_factory_.GetWeakPtr()));
 }
@@ -113,7 +126,9 @@ void FileSearchProvider::OnSearchComplete(
   for (const auto& path : paths)
     results.emplace_back(MakeResult(path));
   SwapResults(&results);
-  // TODO(crbug.com/1154513): Log success and latency histograms.
+
+  UMA_HISTOGRAM_TIMES("Apps.AppList.FileSearchProvider.Latency",
+                      base::TimeTicks::Now() - query_start_time_);
 }
 
 std::unique_ptr<FileResult> FileSearchProvider::MakeResult(

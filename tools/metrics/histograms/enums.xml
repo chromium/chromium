@@ -20870,6 +20870,12 @@ Called by update_document_policy_enum.py.-->
   <int value="5" label="Timeout"/>
 </enum>
 
+<enum name="DriveSearchProviderStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Drive unavailable"/>
+  <int value="2" label="File error"/>
+</enum>
+
 <enum name="DriveUploadProtocol">
   <int value="0" label="Resumable"/>
   <int value="1" label="Multipart"/>
