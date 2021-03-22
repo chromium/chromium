@@ -18,6 +18,7 @@
 
 namespace blink {
 
+class NGEarlyBreak;
 class NGLayoutResult;
 
 // Join two adjacent break values specified on break-before and/or break-
@@ -276,6 +277,17 @@ bool AttemptSoftBreak(const NGConstraintSpace&,
                       LayoutUnit fragmentainer_block_offset,
                       NGBreakAppeal appeal_before,
                       NGBoxFragmentBuilder*);
+
+// If we have an previously found break point, and we're entering an ancestor of
+// the node we're going to break before, return the early break inside. This can
+// then be passed to child layout, so that child layout eventually can tell
+// where to insert the break.
+const NGEarlyBreak* EnterEarlyBreakInChild(const NGBlockNode& child,
+                                           const NGEarlyBreak&);
+
+// Return true if this is the child that we had previously determined to break
+// before.
+bool IsEarlyBreakTarget(const NGBlockNode& child, const NGEarlyBreak&);
 
 // Calculate the constraint space for columns of a multi-column layout.
 NGConstraintSpace CreateConstraintSpaceForColumns(

@@ -77,16 +77,8 @@ inline scoped_refptr<const NGLayoutResult> LayoutBlockChild(
     const NGEarlyBreak* early_break,
     NGBlockNode* node) {
   const NGEarlyBreak* early_break_in_child = nullptr;
-  if (UNLIKELY(early_break && early_break->Type() == NGEarlyBreak::kBlock &&
-               early_break->BlockNode() == *node)) {
-    // We're entering a child that we know that we're going to break inside, and
-    // even where to break. Look inside, and pass the inner breakpoint to
-    // layout.
-    early_break_in_child = early_break->BreakInside();
-    // If there's no break inside, we should already have broken before this
-    // child.
-    DCHECK(early_break_in_child);
-  }
+  if (UNLIKELY(early_break))
+    early_break_in_child = EnterEarlyBreakInChild(*node, *early_break);
   return node->Layout(space, To<NGBlockBreakToken>(break_token),
                       early_break_in_child);
 }
@@ -217,8 +209,7 @@ NGBlockLayoutAlgorithm::NGBlockLayoutAlgorithm(
       ignore_line_clamp_(false),
       is_line_clamp_context_(params.space.IsLineClampContext()),
       lines_until_clamp_(params.space.LinesUntilClamp()),
-      exclusion_space_(params.space.ExclusionSpace()),
-      early_break_(params.early_break) {
+      exclusion_space_(params.space.ExclusionSpace()) {
   child_percentage_size_ = CalculateChildPercentageSize(
       ConstraintSpace(), Node(), ChildAvailableSize());
   replaced_child_percentage_size_ = CalculateReplacedChildPercentageSize(
@@ -425,9 +416,9 @@ scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::Layout() {
   if (UNLIKELY(result->Status() == NGLayoutResult::kNeedsEarlierBreak)) {
     // If we found a good break somewhere inside this block, re-layout and break
     // at that location.
-    DCHECK(!early_break_);
     DCHECK(result->GetEarlyBreak());
-    return RelayoutAndBreakEarlier(*result->GetEarlyBreak());
+    return RelayoutAndBreakEarlier<NGBlockLayoutAlgorithm>(
+        *result->GetEarlyBreak());
   } else if (UNLIKELY(result->Status() ==
                       NGLayoutResult::
                           kNeedsRelayoutWithNoForcedTruncateAtLineClamp)) {
@@ -459,22 +450,6 @@ NGBlockLayoutAlgorithm::LayoutWithItemsBuilder(
   container_builder_.SetItemsBuilder(nullptr);
   context->SetItemsBuilder(nullptr);
   return result;
-}
-
-NOINLINE scoped_refptr<const NGLayoutResult>
-NGBlockLayoutAlgorithm::RelayoutAndBreakEarlier(
-    const NGEarlyBreak& breakpoint) {
-  NGLayoutAlgorithmParams params(Node(),
-                                 container_builder_.InitialFragmentGeometry(),
-                                 ConstraintSpace(), BreakToken(), &breakpoint);
-  NGBlockLayoutAlgorithm algorithm_with_break(params);
-  NGBoxFragmentBuilder& new_builder = algorithm_with_break.container_builder_;
-  new_builder.SetBoxType(container_builder_.BoxType());
-  // We're not going to run out of space in the next layout pass, since we're
-  // breaking earlier, so no space shortage will be detected. Repeat what we
-  // found in this pass.
-  new_builder.PropagateSpaceShortage(container_builder_.MinimalSpaceShortage());
-  return algorithm_with_break.Layout();
 }
 
 NOINLINE scoped_refptr<const NGLayoutResult>

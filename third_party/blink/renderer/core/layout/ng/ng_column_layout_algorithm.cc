@@ -219,7 +219,7 @@ void MulticolPartWalker::MoveToNext() {
 
 NGColumnLayoutAlgorithm::NGColumnLayoutAlgorithm(
     const NGLayoutAlgorithmParams& params)
-    : NGLayoutAlgorithm(params), early_break_(params.early_break) {}
+    : NGLayoutAlgorithm(params) {}
 
 scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::Layout() {
   const LogicalSize border_box_size = container_builder_.InitialBorderBoxSize();
@@ -259,7 +259,8 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::Layout() {
   if (break_status == NGBreakStatus::kNeedsEarlierBreak) {
     // We need to discard this layout and do it again. We found an earlier break
     // point that's more appealing than the one we ran out of space at.
-    return RelayoutAndBreakEarlier();
+    return RelayoutAndBreakEarlier<NGColumnLayoutAlgorithm>(
+        container_builder_.EarlyBreak());
   } else if (break_status == NGBreakStatus::kBrokeBefore) {
     // If we want to break before, make sure that we're actually at the start.
     DCHECK(!IsResumingLayout(BreakToken()));
@@ -414,14 +415,10 @@ NGBreakStatus NGColumnLayoutAlgorithm::LayoutChildren() {
 
     NGBlockNode spanner_node = entry.spanner;
 
-    if (early_break_) {
-      // If this is the child we had previously determined to break before, do
-      // so now and finish layout.
-      DCHECK_EQ(early_break_->Type(), NGEarlyBreak::kBlock);
-      if (early_break_->IsBreakBefore() &&
-          early_break_->BlockNode() == spanner_node)
-        break;
-    }
+    // If this is the child we had previously determined to break before, do so
+    // now and finish layout.
+    if (early_break_ && IsEarlyBreakTarget(spanner_node, *early_break_))
+      break;
 
     NGBreakStatus break_status =
         LayoutSpanner(spanner_node, child_break_token, &margin_strut);
@@ -772,16 +769,8 @@ NGBreakStatus NGColumnLayoutAlgorithm::LayoutSpanner(
       CreateConstraintSpaceForSpanner(spanner_node, block_offset);
 
   const NGEarlyBreak* early_break_in_child = nullptr;
-  if (early_break_ && early_break_->Type() == NGEarlyBreak::kBlock &&
-      early_break_->BlockNode() == spanner_node) {
-    // We're entering a child that we know that we're going to break inside, and
-    // even where to break. Look inside, and pass the inner breakpoint to
-    // layout.
-    early_break_in_child = early_break_->BreakInside();
-    // If there's no break inside, we should already have broken before this
-    // child.
-    DCHECK(early_break_in_child);
-  }
+  if (UNLIKELY(early_break_))
+    early_break_in_child = EnterEarlyBreakInChild(spanner_node, *early_break_);
 
   auto result =
       spanner_node.Layout(spanner_space, break_token, early_break_in_child);
@@ -1070,25 +1059,6 @@ LayoutUnit NGColumnLayoutAlgorithm::ConstrainColumnBlockSize(
   // Constrain and convert the value back to content-box.
   size = std::min(size, max);
   return (size - extra).ClampNegativeToZero();
-}
-
-scoped_refptr<const NGLayoutResult>
-NGColumnLayoutAlgorithm::RelayoutAndBreakEarlier() {
-  // Not allowed to recurse!
-  DCHECK(!early_break_);
-
-  const NGEarlyBreak& breakpoint = container_builder_.EarlyBreak();
-  NGLayoutAlgorithmParams params(Node(),
-                                 container_builder_.InitialFragmentGeometry(),
-                                 ConstraintSpace(), BreakToken(), &breakpoint);
-  NGColumnLayoutAlgorithm algorithm_with_break(params);
-  NGBoxFragmentBuilder& new_builder = algorithm_with_break.container_builder_;
-  new_builder.SetBoxType(container_builder_.BoxType());
-  // We're not going to run out of space in the next layout pass, since we're
-  // breaking earlier, so no space shortage will be detected. Repeat what we
-  // found in this pass.
-  new_builder.PropagateSpaceShortage(container_builder_.MinimalSpaceShortage());
-  return algorithm_with_break.Layout();
 }
 
 NGConstraintSpace NGColumnLayoutAlgorithm::CreateConstraintSpaceForBalancing(

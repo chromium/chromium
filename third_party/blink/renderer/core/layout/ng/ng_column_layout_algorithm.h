@@ -71,12 +71,6 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
     return intrinsic_block_size_ - BorderScrollbarPadding().block_start;
   }
 
-  // Lay out again, this time with a predefined good breakpoint that we
-  // discovered in the first pass. This happens when we run out of space in a
-  // fragmentainer at an less-than-ideal location, due to breaking restrictions,
-  // such as break-before:avoid or break-after:avoid.
-  scoped_refptr<const NGLayoutResult> RelayoutAndBreakEarlier();
-
   // Get the percentage resolution size to use for column content (i.e. not
   // spanners).
   LogicalSize ColumnPercentageResolutionSize() const {
@@ -92,9 +86,6 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
       const NGBlockNode& spanner,
       LayoutUnit block_offset) const;
   NGConstraintSpace CreateConstraintSpaceForMinMax() const;
-
-  // When set, this will specify where to break before or inside.
-  const NGEarlyBreak* early_break_ = nullptr;
 
   int used_column_count_;
   LayoutUnit column_inline_size_;

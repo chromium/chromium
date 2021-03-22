@@ -733,6 +733,28 @@ bool AttemptSoftBreak(const NGConstraintSpace& space,
   return true;
 }
 
+const NGEarlyBreak* EnterEarlyBreakInChild(const NGBlockNode& child,
+                                           const NGEarlyBreak& early_break) {
+  if (early_break.Type() != NGEarlyBreak::kBlock ||
+      early_break.BlockNode() != child)
+    return nullptr;
+
+  // If there's no break inside, we should already have broken before the child.
+  DCHECK(early_break.BreakInside());
+  return early_break.BreakInside();
+}
+
+bool IsEarlyBreakTarget(const NGBlockNode& child,
+                        const NGEarlyBreak& early_break) {
+  // This utility function only support breaks before block nodes. Algorithms
+  // that need other types than that need to detect the break target on their
+  // own. Block container layout for instance also needs to consider lines
+  // (because of orphans and widows) and cannot use this function.
+  DCHECK_EQ(early_break.Type(), NGEarlyBreak::kBlock);
+
+  return early_break.IsBreakBefore() && early_break.BlockNode() == child;
+}
+
 NGConstraintSpace CreateConstraintSpaceForColumns(
     const NGConstraintSpace& parent_space,
     LogicalSize column_size,

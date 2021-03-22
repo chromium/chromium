@@ -24,7 +24,6 @@ namespace blink {
 
 enum class NGBreakStatus;
 class NGConstraintSpace;
-class NGEarlyBreak;
 class NGFragment;
 
 // This struct is used for communicating to a child the position of the previous
@@ -72,13 +71,6 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   NOINLINE scoped_refptr<const NGLayoutResult> LayoutWithItemsBuilder(
       const NGInlineNode& first_child,
       NGInlineChildLayoutContext* context);
-
-  // Lay out again, this time with a predefined good breakpoint that we
-  // discovered in the first pass. This happens when we run out of space in a
-  // fragmentainer at an less-than-ideal location, due to breaking restrictions,
-  // such as orphans, widows, break-before:avoid or break-after:avoid.
-  NOINLINE scoped_refptr<const NGLayoutResult> RelayoutAndBreakEarlier(
-      const NGEarlyBreak&);
 
   NOINLINE scoped_refptr<const NGLayoutResult> RelayoutIgnoringLineClamp();
 
@@ -409,9 +401,6 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   // If set, one of the lines was clamped and this is the intrinsic size at the
   // time of the clamp.
   base::Optional<LayoutUnit> intrinsic_block_size_when_clamped_;
-
-  // When set, this will specify where to break before or inside.
-  const NGEarlyBreak* early_break_ = nullptr;
 };
 
 }  // namespace blink
