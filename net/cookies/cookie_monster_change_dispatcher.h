@@ -29,7 +29,7 @@ class CookieMonster;
 class CookieMonsterChangeDispatcher : public CookieChangeDispatcher {
  public:
   using CookieChangeCallbackList =
-      base::CallbackList<void(const CookieChangeInfo&)>;
+      base::RepeatingCallbackList<void(const CookieChangeInfo&)>;
 
   // Expects |cookie_monster| to outlive this.
   explicit CookieMonsterChangeDispatcher(const CookieMonster* cookie_monster);
