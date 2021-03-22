@@ -1630,7 +1630,6 @@ external/wpt/html/browsers/windows/noreferrer-cross-origin-window-name-manual.su
 external/wpt/html/browsers/windows/opener-cross-origin-manual.sub.html [ Skip ]
 external/wpt/html/browsers/windows/targeting-multiple-cross-origin-manual.sub.html [ Skip ]
 external/wpt/html/dom/elements/global-attributes/title-manual.html [ Skip ]
-external/wpt/html/editing/activation/click-manual.html [ Skip ]
 external/wpt/html/editing/dnd/canvas/cross-domain/001-manual.xhtml [ Skip ]
 external/wpt/html/editing/dnd/cross-document/002-manual.html [ Skip ]
 external/wpt/html/editing/dnd/events/drag-event-div-manual.html [ Skip ]
