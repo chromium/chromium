@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
@@ -39,6 +40,10 @@ void MetricsHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "metricsHandler:recordTime",
       base::BindRepeating(&MetricsHandler::HandleRecordTime,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "metricsHandler:recordMediumTime",
+      base::BindRepeating(&MetricsHandler::HandleRecordMediumTime,
                           base::Unretained(this)));
 }
 
@@ -112,4 +117,18 @@ void MetricsHandler::HandleRecordTime(const base::ListValue* args) {
       base::TimeDelta::FromSeconds(10), 50,
       base::HistogramBase::kUmaTargetedHistogramFlag);
   counter->AddTime(time_value);
+}
+
+void MetricsHandler::HandleRecordMediumTime(const base::ListValue* args) {
+  std::string histogram_name;
+  double value;
+
+  if (!args->GetString(0, &histogram_name) || !args->GetDouble(1, &value) ||
+      value < 0) {
+    NOTREACHED();
+    return;
+  }
+
+  base::UmaHistogramMediumTimes(histogram_name,
+                                base::TimeDelta::FromMilliseconds(value));
 }

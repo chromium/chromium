@@ -516,6 +516,8 @@ Polymer({
   handleNearbySetUpClick_() {
     const params = new URLSearchParams();
     params.set('onboarding', '');
+    // Set by metrics to determine entrypoint for onboarding
+    params.set('entrypoint', 'settings');
     settings.Router.getInstance().navigateTo(
         settings.routes.NEARBY_SHARE, params);
   },

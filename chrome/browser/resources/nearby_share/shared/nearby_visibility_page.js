@@ -42,11 +42,14 @@ Polymer({
         (this.$.contactVisibility);
     contactVisibility.saveVisibilityAndAllowedContacts();
     this.set('settings.enabled', true);
+    processOnboardingCompleteMetrics();
     this.fire('onboarding-complete');
   },
 
   /** @private */
   onClose_() {
+    processOnboardingCancelledMetrics(
+        NearbyShareOnboardingFinalState.VISIBILITY_PAGE);
     this.fire('onboarding-cancelled');
   },
 

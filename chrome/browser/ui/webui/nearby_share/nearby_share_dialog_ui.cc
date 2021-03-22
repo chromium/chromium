@@ -16,6 +16,7 @@
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_impl.h"
 #include "chrome/browser/nearby_sharing/text_attachment.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/nearby_share/shared_resources.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -71,6 +72,8 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
       "nearbyShareContactVisibilityNumUnreachable",
       IDS_NEARBY_CONTACT_VISIBILITY_NUM_UNREACHABLE);
   web_ui->AddMessageHandler(std::move(plural_string_handler));
+  // Add the metrics handler to write uma stats.
+  web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
 
   content::WebUIDataSource::Add(profile, html_source);
 

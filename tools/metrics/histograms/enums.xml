@@ -52836,6 +52836,18 @@ Called by update_use_counter_css.py.-->
   <int value="8" label="Unknown"/>
 </enum>
 
+<enum name="NearbyShareOnboardingEntryPoint">
+  <int value="0" label="Settings"/>
+  <int value="1" label="Tray icon/label"/>
+  <int value="2" label="Share Sheet"/>
+</enum>
+
+<enum name="NearbyShareOnboardingFinalState">
+  <int value="0" label="Cancelled on Device Name Page"/>
+  <int value="1" label="Candelled on Set Visibility Page"/>
+  <int value="2" label="Onboarding Complete"/>
+</enum>
+
 <enum name="NearbyShareServiceStatusCode">
   <int value="0" label="Ok"/>
   <int value="1" label="Error"/>

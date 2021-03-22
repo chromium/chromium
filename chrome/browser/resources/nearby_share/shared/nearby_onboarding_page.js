@@ -40,6 +40,8 @@ Polymer({
 
   /** @private */
   onClose_() {
+    processOnboardingCancelledMetrics(
+        NearbyShareOnboardingFinalState.DEVICE_NAME_PAGE);
     this.fire('onboarding-cancelled');
   },
 
@@ -58,6 +60,7 @@ Polymer({
   /** @private */
   onViewEnterStart_() {
     this.$$('#deviceName').focus();
+    processOnboardingInitiatedMetrics(new URL(document.URL));
   },
 
 

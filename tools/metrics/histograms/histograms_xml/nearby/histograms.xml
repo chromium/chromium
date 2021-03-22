@@ -646,6 +646,41 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Share.Onboarding.Duration" units="ms"
+    expires_after="2021-08-19">
+  <owner>cvandermerwe@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the time that it took the user to successfully complete the
+    onboarding flow. Only emitted on successful completion of onboarding.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Share.Onboarding.EntryPoint"
+    enum="NearbyShareOnboardingEntryPoint" expires_after="2021-08-19">
+  <owner>cvandermerwe@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records how the user entered the onboarding flow. The options are from OS
+    Settings, the tray icon and the share sheet. Emitted as soon as the user
+    embarks on the one-time Nearby Share onboarding flow, regardless of whether
+    or not they successfully finish.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Share.Onboarding.Result"
+    enum="NearbyShareOnboardingFinalState" expires_after="2021-08-19">
+  <owner>cvandermerwe@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records how far the user made it through the onboarding flow. The user has
+    an option to cancel onboarding on the device name page or visibility page.
+    Once the user confirms device visibility onboarding is complete. Emitted
+    when the user cancels onboarding during one of the steps or on successful
+    completion.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Share.Payload.AttachmentType{Variation}"
     enum="NearbyShareAttachmentType" expires_after="2021-08-19">
   <owner>cvandermerwe@google.com</owner>
