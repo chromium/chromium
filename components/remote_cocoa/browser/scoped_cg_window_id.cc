@@ -23,23 +23,45 @@ ScoperMap& GetMap() {
 
 ScopedCGWindowID::ScopedCGWindowID(uint32_t cg_window_id,
                                    const viz::FrameSinkId& frame_sink_id)
-    : cg_window_id_(cg_window_id), frame_sink_id_(frame_sink_id) {
+    : cg_window_id_(cg_window_id),
+      frame_sink_id_(frame_sink_id),
+      weak_factory_(this) {
   DCHECK_EQ(GetMap().count(cg_window_id), 0u);
   GetMap()[cg_window_id] = this;
 }
 
 ScopedCGWindowID::~ScopedCGWindowID() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  weak_factory_.InvalidateWeakPtrs();
+
   auto found = GetMap().find(cg_window_id_);
   DCHECK_EQ(found->second, this);
   GetMap().erase(found);
+
+  for (auto& observer : observer_list_)
+    observer.OnScopedCGWindowIDDestroyed(cg_window_id_);
+  observer_list_.Clear();
+}
+
+void ScopedCGWindowID::AddObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  observer_list_.AddObserver(observer);
+}
+
+void ScopedCGWindowID::RemoveObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  observer_list_.RemoveObserver(observer);
 }
 
 // static
-ScopedCGWindowID* ScopedCGWindowID::Get(uint32_t cg_window_id) {
+base::WeakPtr<ScopedCGWindowID> ScopedCGWindowID::Get(uint32_t cg_window_id) {
   auto found = GetMap().find(cg_window_id);
   if (found == GetMap().end())
     return nullptr;
-  return found->second;
+  DCHECK_CALLED_ON_VALID_THREAD(found->second->thread_checker_);
+
+  return found->second->weak_factory_.GetWeakPtr();
+  return nullptr;
 }
 
 }  // namespace remote_cocoa

@@ -26,6 +26,11 @@ class CONTENT_EXPORT ViewsWidgetVideoCaptureDeviceMac final
 
  private:
   THREAD_CHECKER(thread_checker_);
+  // The UIThreadDelegate is a class that will perform the operations that
+  // ViewsWidgetVideoCaptureDeviceMac needs performed on the UI thread.
+  class UIThreadDelegate;
+  std::unique_ptr<UIThreadDelegate> ui_thread_delegate_;
+
   base::WeakPtrFactory<ViewsWidgetVideoCaptureDeviceMac> weak_factory_;
 };
 
