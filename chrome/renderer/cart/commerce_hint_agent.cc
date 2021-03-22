@@ -206,24 +206,7 @@ const re2::RE2& GetVisitCartPattern() {
 
 // TODO(crbug/1164236): cover more shopping sites.
 const re2::RE2& GetVisitCheckoutPattern() {
-  re2::RE2::Options options;
-  options.set_case_sensitive(false);
-  // clang-format off
-  static base::NoDestructor<re2::RE2> instance(
-      "/("
-      "("
-        "("
-          "(begin|billing|cart|payment|start|review|final|order|secure|new)"
-          "[-_]?"
-        ")?"
-        "(checkout|chkout)(s)?"
-        "([-_]?(begin|billing|cart|payment|start|review))?"
-      ")"
-      "|"
-      "(\\w+(checkout|chkout)(s)?)"
-      ")(/|\\.|$|\\?)",
-      options);
-  // clang-format on
+  static base::NoDestructor<re2::RE2> instance("/checkouts?(/|$)");
   return *instance;
 }
 
@@ -238,26 +221,8 @@ const re2::RE2& GetSkipPattern() {
 
 // TODO(crbug/1164236): need i18n.
 const re2::RE2& GetPurchaseTextPattern() {
-  re2::RE2::Options options;
-  options.set_case_sensitive(false);
-  // clang-format off
   static base::NoDestructor<re2::RE2> instance(
-      "^("
-      "("
-        "(place|submit|complete|confirm|finalize|make)(\\s(an|your|my|this))?"
-        "(\\ssecure)?\\s(order|purchase|checkout|payment)"
-      ")"
-      "|"
-      "((pay|buy)(\\ssecurely)?(\\sUSD)?\\s(it|now|((\\$)?\\d+(\\.\\d+)?)))"
-      "|"
-      "((make|authorise|authorize|secure)\\spayment)"
-      "|"
-      "(confirm\\s(and|&)\\s(buy|purchase|order|pay|checkout))"
-      "|"
-      "((\\W)*(buy|purchase|order|pay|checkout)(\\W)*)"
-      ")$",
-      options);
-  // clang-format on
+      "^(?i)((pay now)|(place order))$");
   return *instance;
 }
 
@@ -346,12 +311,10 @@ bool CommerceHintAgent::IsVisitCart(const GURL& url) {
 
 bool CommerceHintAgent::IsVisitCheckout(const GURL& url) {
   if (url.DomainIs(kAmazonDomain)) {
-    return base::StartsWith(url.path_piece(), "/gp/buy/spc/handlers/display");
+    return base::StartsWith(url.path_piece(),
+                            "/gp/cart/mobile/go-to-checkout.html");
   }
-  if (url.DomainIs(kEbayDomain)) {
-    return url.spec().find("pay.ebay.com/rgxo") != std::string::npos;
-  }
-  return PartialMatch(url.spec().substr(0, kLengthLimit),
+  return PartialMatch(url.path_piece().substr(0, kLengthLimit),
                       GetVisitCheckoutPattern());
 }
 
