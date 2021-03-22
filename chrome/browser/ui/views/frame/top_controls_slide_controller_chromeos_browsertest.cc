@@ -1421,8 +1421,9 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestToggleChromeVox) {
 }
 
 // Regression test for https://crbug.com/1163276.
+// TODO(crbug.com/1190997): Test times out flakily.
 IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
-                       NoCrashOnNewTabWhileScrolling) {
+                       DISABLED_NoCrashOnNewTabWhileScrolling) {
   ToggleTabletMode();
   ASSERT_TRUE(GetTabletModeEnabled());
   EXPECT_TRUE(top_controls_slide_controller()->IsEnabled());
