@@ -10,7 +10,7 @@ class WasmPsPdfKitStory(press_story.PressStory):
   URL = 'https://pspdfkit.com/webassembly-benchmark/'
 
   def ExecuteTest(self, action_runner):
-    action_runner.WaitForElement(text='All done!', timeout_in_seconds=360)
+    action_runner.WaitForElement(text='All done!', timeout_in_seconds=480)
 
   def ParseTestResults(self, action_runner):
     self.AddJavaScriptMeasurement(
