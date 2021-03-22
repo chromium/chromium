@@ -5692,3 +5692,5 @@ crbug.com/1190805 [ Mac10.15 ] external/wpt/html/cross-origin-opener-policy/repo
 
 crbug.com/1191068 [ Mac ] external/wpt/resource-timing/iframe-failed-commit.html [ Pass Failure ]
 crbug.com/1191068 [ Win ] external/wpt/resource-timing/iframe-failed-commit.html [ Pass Failure ]
+
+crbug.com/1176039 [ Mac ] virtual/stable/media/stable/video-object-fit-stable.html [ Pass Failure ]
