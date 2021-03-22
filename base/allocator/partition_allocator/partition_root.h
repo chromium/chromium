@@ -986,7 +986,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
       // immediately. Otherwise, defer the operation and zap the memory to turn
       // potential use-after-free issues into unexploitable crashes.
       if (UNLIKELY(!ref_count->IsAliveWithNoKnownRefs()))
-        memset(ptr, kQuarantinedByte, usable_size);
+        internal::SecureMemset(ptr, kQuarantinedByte, usable_size);
 
       if (UNLIKELY(!(ref_count->ReleaseFromAllocator())))
         return;
@@ -1002,7 +1002,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   // efficiency.
   if (UNLIKELY(internal::RandomPeriod()) &&
       !slot_span->bucket->is_direct_mapped()) {
-    internal::SecureZero(slot_start, utilized_slot_size);
+    internal::SecureMemset(slot_start, 0, utilized_slot_size);
   }
 #endif
 

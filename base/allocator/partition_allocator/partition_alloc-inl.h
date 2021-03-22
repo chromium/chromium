@@ -26,17 +26,19 @@ namespace internal {
 // This is a `memset` that resists being optimized away. Adapted from
 // boringssl/src/crypto/mem.c. (Copying and pasting is bad, but //base can't
 // depend on //third_party, and this is small enough.)
-ALWAYS_INLINE void SecureZero(void* p, size_t size) {
+ALWAYS_INLINE void SecureMemset(void* ptr, uint8_t value, size_t size) {
 #if defined(OS_WIN)
-  SecureZeroMemory(p, size);
-#else
-  memset(p, 0, size);
+  if (value == 0) {
+    SecureZeroMemory(ptr, size);
+    return;
+  }
+#endif  // defined(OS_WIN)
+  memset(ptr, value, size);
 
   // As best as we can tell, this is sufficient to break any optimisations that
   // might try to eliminate "superfluous" memsets. If there's an easy way to
   // detect memset_s, it would be better to use that.
-  __asm__ __volatile__("" : : "r"(p) : "memory");
-#endif
+  __asm__ __volatile__("" : : "r"(ptr) : "memory");
 }
 
 // Returns true if we've hit the end of a random-length period. We don't want to
