@@ -25,6 +25,7 @@
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/switches.h"
 
 namespace autofill_assistant {
 
@@ -43,6 +44,9 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(kSitePerProcess);
+    // Necessary to avoid flakiness or failure due to input arriving
+    // before the first compositor commit.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
   void SetUpOnMainThread() override {

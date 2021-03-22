@@ -91,6 +91,7 @@ namespace autofill {
 namespace {
 
 static const char kTestShippingFormString[] =
+    "An example of a shipping address form."
     "<form action=\"https://www.example.com/\" method=\"POST\">"
     "<label for=\"firstname\">First name:</label>"
     " <input type=\"text\" id=\"firstname\"><br>"
@@ -121,6 +122,7 @@ static const char kTestShippingFormString[] =
     "</form>";
 
 static const char kTestBillingFormString[] =
+    "An example of a billing address form."
     "<form action=\"https://www.example.com/\" method=\"POST\">"
     "<label for=\"firstname_billing\">First name:</label>"
     " <input type=\"text\" id=\"firstname_billing\"><br>"
@@ -171,6 +173,7 @@ static const char kTestEventFormString[] =
     "var selectchange = false;"
     "var selectblur = false;"
     "</script>"
+    "A form for testing events."
     "<form action=\"https://www.example.com/\" method=\"POST\">"
     "<label for=\"firstname\">First name:</label>"
     " <input type=\"text\" id=\"firstname\"><br>"
@@ -211,6 +214,7 @@ static const char kTestEventFormString[] =
     "</form>";
 
 static const char kTestShippingFormWithCompanyString[] =
+    "An example of a shipping address form."
     "<form action=\"https://www.example.com/\" method=\"POST\">"
     "<label for=\"firstname\">First name:</label>"
     " <input type=\"text\" id=\"firstname\"><br>"
@@ -1276,6 +1280,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnDeleteValueAfterAutofill) {
 // background color when choosing an option from the datalist suggestion list.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnSelectOptionFromDatalist) {
   static const char kTestForm[] =
+      "<p>The text is some page content to paint</p>"
       "<form action=\"https://www.example.com/\" method=\"POST\">"
       "  <input list=\"dl\" type=\"search\" id=\"firstname\"><br>"
       "  <datalist id=\"dl\">"
@@ -1313,6 +1318,7 @@ IN_PROC_BROWSER_TEST_F(
     AutofillInteractiveTest,
     OnSelectOptionFromDatalistTurningToPasswordFieldAndBack) {
   static const char kTestForm[] =
+      "<p>The text is some page content to paint</p>"
       "<form action=\"https://www.example.com/\" method=\"POST\">"
       "  <input list=\"dl\" type=\"search\" id=\"firstname\"><br>"
       "  <datalist id=\"dl\">"
@@ -1694,6 +1700,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
 // Test that we can Autofill dynamically generated forms.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, DynamicFormFill) {
   static const char kDynamicForm[] =
+      "<p>Some text to paint</p>"
       "<form id=\"form\" action=\"https://www.example.com/\""
       "      method=\"POST\"></form>"
       "<script>"

@@ -26,6 +26,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/switches.h"
 
 using ::testing::_;
 using ::testing::Invoke;
@@ -97,6 +98,13 @@ class AutofillProviderBrowserTest : public InProcessBrowserTest {
     // Serve both a.com and b.com (and any other domain).
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  // Necessary to avoid flakiness or failure due to input arriving
+  // before the first compositor commit.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
   void CreateContentAutofillDriverFactoryForSubFrame() {

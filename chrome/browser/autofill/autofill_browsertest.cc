@@ -55,6 +55,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -133,6 +134,13 @@ class AutofillTest : public InProcessBrowserTest {
             ->autofill_manager();
     autofill_manager->client()->HideAutofillPopup(PopupHidingReason::kTabGone);
     test::ReenableSystemServices();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    // Slower test bots (chromeos, debug, etc) are flaky
+    // due to slower loading interacting with deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
   PersonalDataManager* personal_data_manager() {
@@ -795,6 +803,13 @@ class FormSubmissionDetectionTest
     SetUpServer();
     NavigateToPage("/form.html");
     Mock();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    // Slower test bots (chromeos, debug, etc) are flaky
+    // due to slower loading interacting with deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
   void TearDownOnMainThread() override {}
