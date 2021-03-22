@@ -67,6 +67,10 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
                const url::Origin&,
                const std::vector<const PasswordForm*>*),
               (override));
+  MOCK_METHOD(bool,
+              IsSavingAndFillingEnabled,
+              (const GURL&),
+              (const, override));
   MOCK_METHOD(bool, IsCommittedMainFrameSecure, (), (const, override));
 };
 
@@ -376,6 +380,34 @@ TEST_F(PasswordFormFillingTest, TouchToFill) {
   EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
 }
 #endif
+
+TEST_F(PasswordFormFillingTest,
+       AccountStorePromoWhenNoCredentialSavedAndSavingAndFillingEnabled) {
+  ON_CALL(client_, IsSavingAndFillingEnabled).WillByDefault(Return(true));
+  ON_CALL(*client_.GetPasswordFeatureManager(), ShouldShowAccountStorageOptIn())
+      .WillByDefault(Return(true));
+
+  std::vector<const PasswordForm*> best_matches;
+  EXPECT_CALL(driver_, InformNoSavedCredentials(
+                           /*should_show_popup_without_passwords=*/true));
+  SendFillInformationToRenderer(
+      &client_, &driver_, observed_form_, best_matches, federated_matches_,
+      nullptr, /*blocked_by_user=*/false, metrics_recorder_.get());
+}
+
+TEST_F(PasswordFormFillingTest,
+       NoAccountStorePromoWhenNoCredentialSavedAndSavingAndFillingDisabled) {
+  ON_CALL(client_, IsSavingAndFillingEnabled).WillByDefault(Return(false));
+  ON_CALL(*client_.GetPasswordFeatureManager(), ShouldShowAccountStorageOptIn())
+      .WillByDefault(Return(true));
+
+  std::vector<const PasswordForm*> best_matches;
+  EXPECT_CALL(driver_, InformNoSavedCredentials(
+                           /*should_show_popup_without_passwords=*/false));
+  SendFillInformationToRenderer(
+      &client_, &driver_, observed_form_, best_matches, federated_matches_,
+      nullptr, /*blocked_by_user=*/false, metrics_recorder_.get());
+}
 
 // Tests that the when there is a single preferred match, and no extra
 // matches, the PasswordFormFillData is filled in correctly.

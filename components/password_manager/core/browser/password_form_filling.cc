@@ -36,6 +36,12 @@ const base::Feature kSuppressAccountStoragePromosForBlockedWebsite{
     "SuppressAccountStoragePromosForBlockedWebsite",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether we should suppress the account storage promos for when the
+// credentials service is disabled.
+const base::Feature kSuppressAccountStoragePromosWhenCredentialServiceDisabled{
+    "SuppressAccountStoragePromosWhenCredentialServiceDisabled",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 bool PreferredRealmIsFromAndroid(const PasswordFormFillData& fill_data) {
   return FacetURI::FromPotentiallyInvalidSpec(fill_data.preferred_realm)
       .IsValidAndroidFacetURI();
@@ -149,11 +155,18 @@ LikelyFormFilling SendFillInformationToRenderer(
   }
 
   if (best_matches.empty()) {
-    bool should_suppres_popup =
+    bool should_suppres_popup_due_to_blocked_website =
         blocked_by_user && base::FeatureList::IsEnabled(
                                kSuppressAccountStoragePromosForBlockedWebsite);
+
+    bool should_suppres_popup_due_to_disabled_saving_and_filling =
+        base::FeatureList::IsEnabled(
+            kSuppressAccountStoragePromosWhenCredentialServiceDisabled) &&
+        !client->IsSavingAndFillingEnabled(observed_form.url);
+
     bool should_show_popup_without_passwords =
-        !should_suppres_popup &&
+        !should_suppres_popup_due_to_blocked_website &&
+        !should_suppres_popup_due_to_disabled_saving_and_filling &&
         (client->GetPasswordFeatureManager()->ShouldShowAccountStorageOptIn() ||
          client->GetPasswordFeatureManager()->ShouldShowAccountStorageReSignin(
              client->GetLastCommittedURL()));
