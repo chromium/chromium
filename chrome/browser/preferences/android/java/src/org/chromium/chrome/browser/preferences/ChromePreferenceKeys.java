@@ -652,6 +652,29 @@ public final class ChromePreferenceKeys {
     public static final String PROMOS_SKIPPED_ON_FIRST_START = "promos_skipped_on_first_start";
 
     /**
+     * The next timestamp to decide whether to show query tiles.
+     */
+    public static final String QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS =
+            "Chrome.Querytiles.NextDecisionTime";
+
+    /**
+     * Recent number of MV tile clicks, before the decision time.
+     */
+    public static final String QUERY_TILES_NUM_RECENT_MV_TILE_CLICKS =
+            "Chrome.Querytiles.RecentMvClicks";
+
+    /**
+     * Recent number of query tile clicks, before the decision time.
+     */
+    public static final String QUERY_TILES_NUM_RECENT_QUERY_TILE_CLICKS =
+            "Chrome.Querytiles.RecentQueryTileClicks";
+
+    /**
+     * Whether query tiles should be shown on NTP. Default value is false.
+     */
+    public static final String QUERY_TILES_SHOW_ON_NTP = "Chrome.Querytiles.ShowOnNTP";
+
+    /**
      * Contains a trial group that was used to determine whether the reached code profiler should be
      * enabled.
      */
@@ -940,6 +963,10 @@ public final class ChromePreferenceKeys {
                 PRICE_TRACKING_TRACK_PRICES_ON_TABS,
                 PROMO_IS_DISMISSED.pattern(),
                 PROMO_TIMES_SEEN.pattern(),
+                QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS,
+                QUERY_TILES_NUM_RECENT_MV_TILE_CLICKS,
+                QUERY_TILES_NUM_RECENT_QUERY_TILE_CLICKS,
+                QUERY_TILES_SHOW_ON_NTP,
                 SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 SETTINGS_SAFETY_CHECK_RUN_COUNTER,
                 SIGNIN_PROMO_IMPRESSIONS_COUNT_NTP,

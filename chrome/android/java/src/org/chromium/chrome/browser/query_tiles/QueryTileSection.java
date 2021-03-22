@@ -130,6 +130,7 @@ public class QueryTileSection {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.QUERY_TILES_LOCAL_ORDERING)) {
             mTileProvider.onTileClicked(queryTile.id);
         }
+        QueryTileUtils.onQueryTileClicked();
 
         // TODO(qinmin): make isLastLevelTile a member variable of ImageTile.
         boolean isLastLevelTile = queryTile.children.isEmpty();

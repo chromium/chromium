@@ -488,6 +488,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/query_tiles/OmniboxQueryTileSuggestionTest.java",
   "javatests/src/org/chromium/chrome/browser/query_tiles/QueryTileSectionTest.java",
   "javatests/src/org/chromium/chrome/browser/query_tiles/QueryTileSectionToOmniboxTest.java",
+  "javatests/src/org/chromium/chrome/browser/query_tiles/QueryTileUtilsTest.java",
   "javatests/src/org/chromium/chrome/browser/query_tiles/TileMatchers.java",
   "javatests/src/org/chromium/chrome/browser/query_tiles/ViewActions.java",
   "javatests/src/org/chromium/chrome/browser/read_later/ReadLaterIphTest.java",
