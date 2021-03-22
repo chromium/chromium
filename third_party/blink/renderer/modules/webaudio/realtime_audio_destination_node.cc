@@ -274,11 +274,9 @@ int RealtimeAudioDestinationHandler::GetFramesPerBuffer() const {
 }
 
 void RealtimeAudioDestinationHandler::CreatePlatformDestination() {
-  // TODO(https://crbug.com/988121) Replace 128 with the appropriate value
-  // specified by the AudioContextRenderSizeHint (or unsigned) value used when
-  // constructing the AudioContext.
   platform_destination_ = AudioDestination::Create(
-      *this, ChannelCount(), latency_hint_, sample_rate_, 128);
+      *this, ChannelCount(), latency_hint_, sample_rate_,
+      Context()->GetDeferredTaskHandler().RenderQuantumFrames());
 }
 
 void RealtimeAudioDestinationHandler::StartPlatformDestination() {

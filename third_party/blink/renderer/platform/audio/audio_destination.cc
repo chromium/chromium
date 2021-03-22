@@ -71,8 +71,9 @@ AudioDestination::AudioDestination(AudioIOCallback& callback,
                                    unsigned render_quantum_frames)
     : render_quantum_frames_(render_quantum_frames),
       number_of_output_channels_(number_of_output_channels),
-      fifo_(
-          std::make_unique<PushPullFIFO>(number_of_output_channels, kFIFOSize)),
+      fifo_(std::make_unique<PushPullFIFO>(number_of_output_channels,
+                                           kFIFOSize,
+                                           render_quantum_frames)),
       output_bus_(AudioBus::Create(number_of_output_channels,
                                    render_quantum_frames,
                                    false)),
