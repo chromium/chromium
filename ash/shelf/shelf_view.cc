@@ -2257,12 +2257,10 @@ void ShelfView::AfterItemSelected(const ShelfItem& item,
       // Show the app menu with 2 or more items, if no window was created. The
       // menu is not shown in case item drag started while the selection request
       // was in progress.
-      ink_drop->AnimateToState(views::InkDropState::ACTIVATED);
-      context_menu_id_ = item.id;
       ShowMenu(std::make_unique<ShelfApplicationMenuModel>(
                    item.title, std::move(menu_items),
                    model_->GetShelfItemDelegate(item.id)),
-               sender, gfx::Point(), /*context_menu=*/false,
+               sender, item.id, gfx::Point(), /*context_menu=*/false,
                ui::GetMenuSourceTypeForEvent(*event));
       shelf_->UpdateVisibilityState();
     } else {
@@ -2278,16 +2276,17 @@ void ShelfView::ShowShelfContextMenu(
     views::View* source,
     ui::MenuSourceType source_type,
     std::unique_ptr<ui::SimpleMenuModel> model) {
-  context_menu_id_ = shelf_id;
   if (!model) {
     const int64_t display_id = GetDisplayIdForView(this);
     model = std::make_unique<ShelfContextMenuModel>(nullptr, display_id);
   }
-  ShowMenu(std::move(model), source, point, /*context_menu=*/true, source_type);
+  ShowMenu(std::move(model), source, shelf_id, point, /*context_menu=*/true,
+           source_type);
 }
 
 void ShelfView::ShowMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model,
                          views::View* source,
+                         const ShelfID& shelf_id,
                          const gfx::Point& click_point,
                          bool context_menu,
                          ui::MenuSourceType source_type) {
@@ -2299,6 +2298,9 @@ void ShelfView::ShowMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model,
   item_awaiting_response_ = ShelfID();
   if (menu_model->GetItemCount() == 0)
     return;
+
+  context_menu_id_ = shelf_id;
+
   menu_owner_ = source;
 
   closing_event_time_ = base::TimeTicks();
@@ -2311,6 +2313,14 @@ void ShelfView::ShowMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model,
   }
 
   const ShelfItem* item = ShelfItemForView(source);
+
+  if ((source_type == ui::MenuSourceType::MENU_SOURCE_MOUSE ||
+       source_type == ui::MenuSourceType::MENU_SOURCE_KEYBOARD) &&
+      item) {
+    static_cast<ShelfAppButton*>(source)->GetInkDrop()->AnimateToState(
+        views::InkDropState::ACTIVATED);
+  }
+
   // Only selected shelf items with context menu opened can be dragged.
   if (context_menu && item && ShelfButtonIsInDrag(item->type, source) &&
       source_type == ui::MenuSourceType::MENU_SOURCE_TOUCH) {

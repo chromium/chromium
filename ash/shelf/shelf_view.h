@@ -494,6 +494,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // The |click_point| is only used for |context_menu|'s.
   void ShowMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model,
                 views::View* source,
+                const ShelfID& shelf_id,
                 const gfx::Point& click_point,
                 bool context_menu,
                 ui::MenuSourceType source_type);

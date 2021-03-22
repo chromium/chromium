@@ -434,11 +434,6 @@ void ShelfAppButton::ShowContextMenu(const gfx::Point& p,
 
   auto weak_this = weak_factory_.GetWeakPtr();
 
-  if (source_type == ui::MenuSourceType::MENU_SOURCE_MOUSE ||
-      source_type == ui::MenuSourceType::MENU_SOURCE_KEYBOARD) {
-    GetInkDrop()->AnimateToState(views::InkDropState::ACTIVATED);
-  }
-
   ShelfButton::ShowContextMenu(p, source_type);
 
   // This object may have been destroyed by ShowContextMenu.
