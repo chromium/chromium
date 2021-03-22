@@ -26,8 +26,7 @@
   // Save time on style updates.
   await UI.viewManager.showView('elements');
 
-  Elements.StylesSidebarPane.prototype.update = function() {};
-  Elements.MetricsSidebarPane.prototype.update = function() {};
+  ElementsTestRunner.ignoreSidebarUpdates();
 
   TestRunner.runTestSuite([
     function testSetUp(next) {

@@ -9,8 +9,7 @@
   await TestRunner.showPanel('elements');
 
   // Save time on style updates.
-  Elements.StylesSidebarPane.prototype.update = function() {};
-  Elements.MetricsSidebarPane.prototype.update = function() {};
+  ElementsTestRunner.ignoreSidebarUpdates();
 
   await TestRunner.navigatePromise('resources/append-predecessor-host.html');
 
