@@ -4,7 +4,7 @@
 
 [
   {
-    "namespace": "json.compiler.test.functions",
+    "namespace": "function_platform_win_linux",
     "description": "",
     "functions": [{
       "name": "test",

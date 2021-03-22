@@ -57,8 +57,20 @@ class ModelTest(unittest.TestCase):
         'path/to/namespace_fakeapi.json')
     self.fakeapi = self.model.namespaces.get('fakeapi')
 
+    self.function_platforms_idl = Load('test/function_platforms.idl')
+    self.model.AddNamespace(self.function_platforms_idl[0],
+      '/path/to/function_platforms.idl')
+    self.function_platforms = self.model.namespaces.get('function_platforms')
+
+    self.function_platform_win_linux_json = CachedLoad(
+        'test/function_platform_win_linux.json')
+    self.model.AddNamespace(self.function_platform_win_linux_json[0],
+        'path/to/function_platform_win_linux.json')
+    self.function_platform_win_linux = self.model.namespaces.get(
+        'function_platform_win_linux')
+
   def testNamespaces(self):
-    self.assertEquals(10, len(self.model.namespaces))
+    self.assertEquals(12, len(self.model.namespaces))
     self.assertTrue(self.permissions)
 
   def testHasFunctions(self):
@@ -171,6 +183,21 @@ class ModelTest(unittest.TestCase):
         self.idl_namespace_all_platforms.platforms)
     self.assertEqual(None,
         self.idl_namespace_non_specific_platforms.platforms)
+
+  def testPlatformsOnFunctionsIDL(self):
+    function_win_linux = self.function_platforms.functions['function_win_linux']
+    self.assertEqual([Platforms.WIN, Platforms.LINUX],
+        function_win_linux.platforms)
+
+    function_all = self.function_platforms.functions['function_all']
+    self.assertIsNone(function_all.platforms)
+
+    function_cros = self.function_platforms.functions['function_cros']
+    self.assertEqual([Platforms.CHROMEOS], function_cros.platforms)
+
+  def testPlatformsOnFunctionsJSON(self):
+    test_function = self.function_platform_win_linux.functions['test']
+    self.assertEqual([Platforms.WIN, Platforms.LINUX], test_function.platforms)
 
   def testHasNoDoc(self):
     fakeapi_NoDocType = self.fakeapi.types['NoDocType']

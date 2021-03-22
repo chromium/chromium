@@ -212,6 +212,9 @@ class Member(object):
     if self.node.GetProperty('OPTIONAL'):
       properties['optional'] = True
 
+    if self.node.GetProperty('platforms'):
+      properties['platforms'] = list(self.node.GetProperty('platforms'))
+
     for option_name, sanitizer in [
         ('maxListeners', int),
         ('supportsFilters', lambda s: s == 'true'),
