@@ -153,6 +153,7 @@ static base::TimeTicks ToTimeOrigin(LocalDOMWindow* window) {
 
 WindowPerformance::WindowPerformance(LocalDOMWindow* window)
     : Performance(ToTimeOrigin(window),
+                  window->CrossOriginIsolatedCapability(),
                   window->GetTaskRunner(TaskType::kPerformanceTimeline),
                   window),
       ExecutionContextClient(window),
@@ -217,7 +218,8 @@ WindowPerformance::CreateNavigationTimingInstance() {
     document_loader->CountUse(WebFeature::kPerformanceServerTiming);
 
   return MakeGarbageCollected<PerformanceNavigationTiming>(
-      DomWindow(), info, time_origin_, std::move(server_timing));
+      DomWindow(), info, time_origin_,
+      DomWindow()->CrossOriginIsolatedCapability(), std::move(server_timing));
 }
 
 void WindowPerformance::BuildJSONValue(V8ObjectBuilder& builder) const {

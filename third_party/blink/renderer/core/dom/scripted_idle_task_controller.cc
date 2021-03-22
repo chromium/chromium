@@ -203,12 +203,16 @@ void ScriptedIdleTaskController::RunCallback(
   probe::UserCallback probe(GetExecutionContext(), "requestIdleCallback",
                             AtomicString(), true);
 
+  bool cross_origin_isolated_capability =
+      GetExecutionContext()
+          ? GetExecutionContext()->CrossOriginIsolatedCapability()
+          : false;
   DEVTOOLS_TIMELINE_TRACE_EVENT(
       "FireIdleCallback", inspector_idle_callback_fire_event::Data,
       GetExecutionContext(), id, allotted_time.InMillisecondsF(),
       callback_type == IdleDeadline::CallbackType::kCalledByTimeout);
-  idle_task->invoke(
-      MakeGarbageCollected<IdleDeadline>(deadline, callback_type));
+  idle_task->invoke(MakeGarbageCollected<IdleDeadline>(
+      deadline, cross_origin_isolated_capability, callback_type));
 
   // Finally there is no need to keep the idle task alive.
   //

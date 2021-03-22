@@ -111,6 +111,7 @@ constexpr size_t kDefaultLongTaskBufferSize = 200;
 
 Performance::Performance(
     base::TimeTicks time_origin,
+    bool cross_origin_isolated_capability,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     ExecutionContext* context)
     : resource_timing_buffer_size_limit_(kDefaultResourceTimingBufferSize),
@@ -119,6 +120,7 @@ Performance::Performance(
       user_timing_(nullptr),
       time_origin_(time_origin),
       tick_clock_(base::DefaultTickClock::GetInstance()),
+      cross_origin_isolated_capability_(cross_origin_isolated_capability),
       observer_filter_options_(PerformanceEntry::kInvalid),
       task_runner_(std::move(task_runner)),
       deliver_observations_timer_(task_runner_,
@@ -566,8 +568,8 @@ void Performance::AddResourceTiming(
         worker_timing_receiver,
     ExecutionContext* context) {
   auto* entry = MakeGarbageCollected<PerformanceResourceTiming>(
-      *info, time_origin_, initiator_type, std::move(worker_timing_receiver),
-      context);
+      *info, time_origin_, cross_origin_isolated_capability_, initiator_type,
+      std::move(worker_timing_receiver), context);
   NotifyObserversOfEntry(*entry);
   // https://w3c.github.io/resource-timing/#dfn-add-a-performanceresourcetiming-entry
   if (CanAddResourceTimingEntry() &&
@@ -980,23 +982,28 @@ void Performance::DeliverObservationsTimerFired(TimerBase*) {
 }
 
 // static
-double Performance::ClampTimeResolution(double time_seconds) {
+double Performance::ClampTimeResolution(double time_seconds,
+                                        bool cross_origin_isolated_capability) {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(TimeClamper, clamper, ());
-  return clamper.ClampTimeResolution(time_seconds);
+  return clamper.ClampTimeResolution(time_seconds,
+                                     cross_origin_isolated_capability);
 }
 
 // static
 DOMHighResTimeStamp Performance::MonotonicTimeToDOMHighResTimeStamp(
     base::TimeTicks time_origin,
     base::TimeTicks monotonic_time,
-    bool allow_negative_value) {
+    bool allow_negative_value,
+    bool cross_origin_isolated_capability) {
   // Avoid exposing raw platform timestamps.
   if (monotonic_time.is_null() || time_origin.is_null())
     return 0.0;
 
   double clamped_time_in_seconds =
-      ClampTimeResolution(monotonic_time.since_origin().InSecondsF()) -
-      ClampTimeResolution(time_origin.since_origin().InSecondsF());
+      ClampTimeResolution(monotonic_time.since_origin().InSecondsF(),
+                          cross_origin_isolated_capability) -
+      ClampTimeResolution(time_origin.since_origin().InSecondsF(),
+                          cross_origin_isolated_capability);
   if (clamped_time_in_seconds < 0 && !allow_negative_value)
     return 0.0;
   return ConvertSecondsToDOMHighResTimeStamp(clamped_time_in_seconds);
@@ -1006,21 +1013,25 @@ DOMHighResTimeStamp Performance::MonotonicTimeToDOMHighResTimeStamp(
 base::TimeDelta Performance::MonotonicTimeToTimeDelta(
     base::TimeTicks time_origin,
     base::TimeTicks monotonic_time,
-    bool allow_negative_value) {
+    bool allow_negative_value,
+    bool cross_origin_isolated_capability) {
   return base::TimeDelta::FromMillisecondsD(MonotonicTimeToDOMHighResTimeStamp(
-      time_origin, monotonic_time, allow_negative_value));
+      time_origin, monotonic_time, allow_negative_value,
+      cross_origin_isolated_capability));
 }
 
 DOMHighResTimeStamp Performance::MonotonicTimeToDOMHighResTimeStamp(
     base::TimeTicks monotonic_time) const {
   return MonotonicTimeToDOMHighResTimeStamp(time_origin_, monotonic_time,
-                                            false /* allow_negative_value */);
+                                            false /* allow_negative_value */,
+                                            cross_origin_isolated_capability_);
 }
 
 base::TimeDelta Performance::MonotonicTimeToTimeDelta(
     base::TimeTicks monotonic_time) const {
   return MonotonicTimeToTimeDelta(time_origin_, monotonic_time,
-                                  false /* allow_negative_value */);
+                                  false /* allow_negative_value */,
+                                  cross_origin_isolated_capability_);
 }
 
 DOMHighResTimeStamp Performance::now() const {

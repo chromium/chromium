@@ -20,7 +20,11 @@ class PerformanceResourceTimingTest : public testing::Test {
         std::make_unique<DummyPageHolder>();
     PerformanceResourceTiming* timing =
         MakeGarbageCollected<PerformanceResourceTiming>(
-            info, base::TimeTicks(), /*initiator_type=*/"",
+            info, base::TimeTicks(),
+            dummy_page_holder->GetDocument()
+                .GetExecutionContext()
+                ->CrossOriginIsolatedCapability(),
+            /*initiator_type=*/"",
             mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>(),
             dummy_page_holder->GetDocument().GetExecutionContext());
     return timing->GetNextHopProtocol(alpn_negotiated_protocol,

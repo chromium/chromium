@@ -56,7 +56,8 @@ class MODULES_EXPORT VideoFrameCallbackRequesterImpl final
 
   // Utility functions to limit the clock resolution of fields, for security
   // reasons.
-  static double GetClampedTimeInMillis(base::TimeDelta time);
+  static double GetClampedTimeInMillis(base::TimeDelta time,
+                                       bool cross_origin_isolated_capability);
   static double GetCoarseClampedTimeInSeconds(base::TimeDelta time);
 
   void ExecuteVideoFrameCallbacks(
@@ -108,6 +109,9 @@ class MODULES_EXPORT VideoFrameCallbackRequesterImpl final
 
   // Indicates if we are currently in an XR session.
   bool in_immersive_session_ = false;
+
+  // Indicates we are cross-origin isolated.
+  bool cross_origin_isolated_capability_ = false;
 
   Member<VideoFrameRequestCallbackCollection> callback_collection_;
 

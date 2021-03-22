@@ -24,7 +24,9 @@ class CORE_EXPORT IdleDeadline : public ScriptWrappable {
     kCalledByTimeout,
   };
 
-  IdleDeadline(base::TimeTicks deadline, CallbackType);
+  IdleDeadline(base::TimeTicks deadline,
+               bool cross_origin_isolated_capability,
+               CallbackType);
 
   double timeRemaining() const;
 
@@ -38,6 +40,7 @@ class CORE_EXPORT IdleDeadline : public ScriptWrappable {
 
  private:
   base::TimeTicks deadline_;
+  bool cross_origin_isolated_capability_;
   CallbackType callback_type_;
   const base::TickClock* clock_;
 };

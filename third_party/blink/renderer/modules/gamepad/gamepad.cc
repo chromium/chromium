@@ -54,7 +54,8 @@ Gamepad::Gamepad(Client* client,
 
 Gamepad::~Gamepad() = default;
 
-void Gamepad::UpdateFromDeviceState(const device::Gamepad& device_gamepad) {
+void Gamepad::UpdateFromDeviceState(const device::Gamepad& device_gamepad,
+                                    bool cross_origin_isolated_capability) {
   bool newly_connected;
   GamepadComparisons::HasGamepadConnectionChanged(
       connected(),                            // Old connected.
@@ -63,7 +64,7 @@ void Gamepad::UpdateFromDeviceState(const device::Gamepad& device_gamepad) {
       &newly_connected, nullptr);
 
   SetConnected(device_gamepad.connected);
-  SetTimestamp(device_gamepad);
+  SetTimestamp(device_gamepad, cross_origin_isolated_capability);
   SetAxes(device_gamepad.axes_length, device_gamepad.axes);
   SetButtons(device_gamepad.buttons_length, device_gamepad.buttons);
   // Always called as gamepads require additional steps to determine haptics
@@ -149,7 +150,8 @@ void Gamepad::SetVibrationActuatorInfo(
 
 // Convert the raw timestamp from the device to a relative one and apply the
 // floor.
-void Gamepad::SetTimestamp(const device::Gamepad& device_gamepad) {
+void Gamepad::SetTimestamp(const device::Gamepad& device_gamepad,
+                           bool cross_origin_isolated_capability) {
   base::TimeTicks last_updated =
       base::TimeTicks() +
       base::TimeDelta::FromMicroseconds(device_gamepad.timestamp);
@@ -157,7 +159,8 @@ void Gamepad::SetTimestamp(const device::Gamepad& device_gamepad) {
     last_updated = time_floor_;
 
   timestamp_ = Performance::MonotonicTimeToDOMHighResTimeStamp(
-      time_origin_, last_updated, false);
+      time_origin_, last_updated, /*allow_negative_value=*/false,
+      cross_origin_isolated_capability);
 
   if (device_gamepad.is_xr) {
     base::TimeTicks now = base::TimeTicks::Now();

@@ -212,6 +212,7 @@ class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
   InteractiveDetector* GetInteractiveDetector() const;
   base::Optional<base::TimeDelta> MonotonicTimeToPseudoWallTime(
       const base::Optional<base::TimeTicks>&) const;
+  bool cross_origin_isolated_capability_;
 };
 
 }  // namespace blink

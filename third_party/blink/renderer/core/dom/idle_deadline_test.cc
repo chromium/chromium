@@ -92,6 +92,7 @@ class IdleDeadlineTest : public testing::Test {
 TEST_F(IdleDeadlineTest, DeadlineInFuture) {
   auto* deadline = MakeGarbageCollected<IdleDeadline>(
       base::TimeTicks() + base::TimeDelta::FromSecondsD(1.25),
+      /*cross_origin_isolated_capability=*/false,
       IdleDeadline::CallbackType::kCalledWhenIdle);
   deadline->SetTickClockForTesting(test_task_runner_->GetMockTickClock());
   test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
@@ -102,6 +103,7 @@ TEST_F(IdleDeadlineTest, DeadlineInFuture) {
 TEST_F(IdleDeadlineTest, DeadlineInPast) {
   auto* deadline = MakeGarbageCollected<IdleDeadline>(
       base::TimeTicks() + base::TimeDelta::FromSecondsD(0.75),
+      /*cross_origin_isolated_capability=*/false,
       IdleDeadline::CallbackType::kCalledWhenIdle);
   deadline->SetTickClockForTesting(test_task_runner_->GetMockTickClock());
   test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
@@ -114,6 +116,7 @@ TEST_F(IdleDeadlineTest, YieldForHighPriorityWork) {
 
   auto* deadline = MakeGarbageCollected<IdleDeadline>(
       base::TimeTicks() + base::TimeDelta::FromSecondsD(1.25),
+      /*cross_origin_isolated_capability=*/false,
       IdleDeadline::CallbackType::kCalledWhenIdle);
   deadline->SetTickClockForTesting(test_task_runner_->GetMockTickClock());
   test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));

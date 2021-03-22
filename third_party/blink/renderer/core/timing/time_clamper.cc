@@ -14,26 +14,32 @@ namespace blink {
 
 TimeClamper::TimeClamper() : secret_(base::RandUint64()) {}
 
-double TimeClamper::ClampTimeResolution(double time_seconds) const {
+double TimeClamper::ClampTimeResolution(
+    double time_seconds,
+    bool cross_origin_isolated_capability) const {
   bool was_negative = false;
+  double resolution = cross_origin_isolated_capability
+                          ? kFineResolutionSeconds
+                          : kCoarseResolutionSeconds;
   if (time_seconds < 0) {
     was_negative = true;
     time_seconds = -time_seconds;
   }
-  double interval = floor(time_seconds / kResolutionSeconds);
-  double clamped_time = interval * kResolutionSeconds;
-  double tick_threshold = ThresholdFor(clamped_time);
+  double interval = floor(time_seconds / resolution);
+  double clamped_time = interval * resolution;
+  double tick_threshold = ThresholdFor(clamped_time, resolution);
 
   if (time_seconds >= tick_threshold)
-    clamped_time = (interval + 1) * kResolutionSeconds;
+    clamped_time = (interval + 1) * resolution;
   if (was_negative)
     clamped_time = -clamped_time;
   return clamped_time;
 }
 
-inline double TimeClamper::ThresholdFor(double clamped_time) const {
+inline double TimeClamper::ThresholdFor(double clamped_time,
+                                        double resolution) const {
   uint64_t time_hash = MurmurHash3(bit_cast<int64_t>(clamped_time) ^ secret_);
-  return clamped_time + kResolutionSeconds * ToDouble(time_hash);
+  return clamped_time + resolution * ToDouble(time_hash);
 }
 
 // static
