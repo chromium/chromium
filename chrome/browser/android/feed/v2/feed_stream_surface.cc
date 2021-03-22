@@ -171,7 +171,8 @@ void FeedStreamSurface::SurfaceClosed(JNIEnv* env,
 bool FeedStreamSurface::IsActivityLoggingEnabled(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
-  return feed_stream_api_ && feed_stream_api_->IsActivityLoggingEnabled();
+  return feed_stream_api_ &&
+         feed_stream_api_->IsActivityLoggingEnabled(GetStreamType());
 }
 
 base::android::ScopedJavaLocalRef<jstring> FeedStreamSurface::GetSessionId(

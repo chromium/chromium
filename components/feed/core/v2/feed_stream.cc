@@ -134,6 +134,7 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
       chrome_info_(chrome_info),
       task_queue_(this),
       request_throttler_(profile_prefs),
+      upload_criteria_(profile_prefs),
       notice_card_tracker_(profile_prefs) {
   static WireResponseTranslator default_translator;
   wire_response_translator_ = &default_translator;
@@ -154,8 +155,6 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
   task_queue_.AddTask(std::make_unique<WaitForStoreInitializeTask>(
       store_,
       base::BindOnce(&FeedStream::InitializeComplete, base::Unretained(this))));
-
-  UpdateCanUploadActionsWithNoticeCard();
 }
 
 FeedStream::~FeedStream() = default;
@@ -217,26 +216,29 @@ void FeedStream::InitializeComplete(WaitForStoreInitializeTask::Result result) {
 
 void FeedStream::InitialStreamLoadComplete(LoadStreamTask::Result result) {
   Stream& stream = GetStream(result.stream_type);
-  PopulateDebugStreamData(result, *profile_prefs_);
+  if (result.update_request) {
+    auto model = std::make_unique<StreamModel>();
+    model->Update(std::move(result.update_request));
+    LoadModel(result.stream_type, std::move(model));
+  }
+
+  if (result.request_schedule)
+    SetRequestSchedule(stream.type, *result.request_schedule);
+
   metrics_reporter_->OnLoadStream(
       result.load_from_store_status, result.final_status,
       result.loaded_new_content_from_network, result.stored_content_age,
       std::move(result.latencies));
+
   UpdateIsActivityLoggingEnabled(result.stream_type);
-  MaybeNotifyHasUnreadContent(result.stream_type);
   stream.model_loading_in_progress = false;
   stream.surface_updater->LoadStreamComplete(stream.model != nullptr,
                                              result.final_status);
 
-  if (result.loaded_new_content_from_network) {
-    if (result.stream_type.IsForYou())
-      UpdateExperiments(result.experiments);
-  }
-  MaybeReportNewSuggestionsAvailable(result);
+  LoadTaskComplete(result);
 }
 
 void FeedStream::OnEnterBackground() {
-  UpdateCanUploadActionsWithNoticeCard();
   metrics_reporter_->OnEnterBackground();
   if (GetFeedConfig().upload_actions_on_enter_background) {
     task_queue_.AddTask(std::make_unique<UploadActionsTask>(
@@ -245,13 +247,14 @@ void FeedStream::OnEnterBackground() {
   }
 }
 
-bool FeedStream::IsActivityLoggingEnabled() const {
-  return is_activity_logging_enabled_ && CanUploadActions();
+bool FeedStream::IsActivityLoggingEnabled(const StreamType& stream_type) const {
+  const Stream* stream = FindStream(stream_type);
+  return stream && stream->is_activity_logging_enabled && CanUploadActions();
 }
 
 void FeedStream::UpdateIsActivityLoggingEnabled(const StreamType& stream_type) {
   Stream& stream = GetStream(stream_type);
-  is_activity_logging_enabled_ =
+  stream.is_activity_logging_enabled =
       stream.model &&
       ((stream.model->signed_in() && stream.model->logging_enabled()) ||
        (!stream.model->signed_in() &&
@@ -297,14 +300,14 @@ void FeedStream::AttachSurface(FeedStreamSurface* surface) {
 
   // Cancel any scheduled model unload task.
   ++stream.unload_on_detach_sequence_number;
-  UpdateCanUploadActionsWithNoticeCard();
+  upload_criteria_.SurfaceOpenedOrClosed();
 }
 
 void FeedStream::DetachSurface(FeedStreamSurface* surface) {
   Stream& stream = GetStream(surface->GetStreamType());
   metrics_reporter_->SurfaceClosed(surface->GetSurfaceId());
   stream.surface_updater->SurfaceRemoved(surface);
-  UpdateCanUploadActionsWithNoticeCard();
+  upload_criteria_.SurfaceOpenedOrClosed();
   ScheduleModelUnloadIfNoSurfacesAttached(surface->GetStreamType());
 }
 
@@ -401,8 +404,14 @@ void FeedStream::LoadMore(const FeedStreamSurface& surface,
 }
 
 void FeedStream::LoadMoreComplete(LoadMoreTask::Result result) {
-  UpdateIsActivityLoggingEnabled(result.stream_type);
   Stream& stream = GetStream(result.stream_type);
+  if (stream.model && result.model_update_request)
+    stream.model->Update(std::move(result.model_update_request));
+
+  if (result.request_schedule)
+    SetRequestSchedule(stream.type, *result.request_schedule);
+
+  UpdateIsActivityLoggingEnabled(stream.type);
   metrics_reporter_->OnLoadMore(result.final_status);
   stream.surface_updater->SetLoadingMore(false);
   std::vector<base::OnceCallback<void(bool)>> moved_callbacks =
@@ -749,9 +758,9 @@ void FeedStream::OnSignedIn() {
   // On sign-in, turn off activity logging. This avoids the possibility that we
   // send logs with the wrong user info attached, but may cause us to lose
   // buffered events.
-  is_activity_logging_enabled_ = false;
-
-  UpdateCanUploadActionsWithNoticeCard();
+  for (auto& item : streams_) {
+    item.second.is_activity_logging_enabled = false;
+  }
 
   ClearAll();
 }
@@ -760,9 +769,9 @@ void FeedStream::OnSignedOut() {
   // On sign-out, turn off activity logging. This avoids the possibility that we
   // send logs with the wrong user info attached, but may cause us to lose
   // buffered events.
-  is_activity_logging_enabled_ = false;
-
-  UpdateCanUploadActionsWithNoticeCard();
+  for (auto& item : streams_) {
+    item.second.is_activity_logging_enabled = false;
+  }
 
   ClearAll();
 }
@@ -794,16 +803,9 @@ void FeedStream::ExecuteRefreshTask(RefreshTaskId task_id) {
 }
 
 void FeedStream::BackgroundRefreshComplete(LoadStreamTask::Result result) {
-  if (!result.last_added_time.is_null())
-    GetStream(result.stream_type).last_updated_time = result.last_added_time;
   metrics_reporter_->OnBackgroundRefresh(result.final_status);
-  if (result.loaded_new_content_from_network) {
-    if (result.stream_type.IsForYou())
-      UpdateExperiments(result.experiments);
-  }
-  MaybeReportNewSuggestionsAvailable(result);
 
-  MaybeNotifyHasUnreadContent(result.stream_type);
+  LoadTaskComplete(result);
 
   // Add prefetch images to task queue without waiting to finish
   // since we treat them as best-effort.
@@ -814,6 +816,24 @@ void FeedStream::BackgroundRefreshComplete(LoadStreamTask::Result result) {
   if (result.stream_type.GetRefreshTaskId(task_id)) {
     refresh_task_scheduler_->RefreshTaskComplete(task_id);
   }
+}
+
+// Performs work that is necessary for both background and foreground load
+// tasks.
+void FeedStream::LoadTaskComplete(const LoadStreamTask::Result& result) {
+  PopulateDebugStreamData(result, *profile_prefs_);
+  if (result.fetched_content_has_notice_card.has_value())
+    feed::prefs::SetLastFetchHadNoticeCard(
+        *profile_prefs_, *result.fetched_content_has_notice_card);
+  if (!result.last_added_time.is_null())
+    GetStream(result.stream_type).last_updated_time = result.last_added_time;
+  if (result.loaded_new_content_from_network) {
+    if (result.stream_type.IsForYou())
+      UpdateExperiments(result.experiments);
+  }
+
+  MaybeNotifyHasUnreadContent(result.stream_type);
+  MaybeReportNewSuggestionsAvailable(result);
 }
 
 void FeedStream::MaybeReportNewSuggestionsAvailable(
@@ -841,6 +861,7 @@ void FeedStream::FinishClearAll() {
   // Clear any experiments stored.
   feed::prefs::SetExperiments({}, *profile_prefs_);
   feed::prefs::ClearClientInstanceId(*profile_prefs_);
+  upload_criteria_.Clear();
   SetMetadata(feedstore::MakeMetadata());
 
   delegate_->ClearAll();
@@ -978,72 +999,19 @@ void FeedStream::ReportSliceViewed(SurfaceId surface_id,
     metrics_reporter_->ContentSliceViewed(stream_type, index);
   }
   if (stream_type.IsForYou()) {
-    UpdateShownSlicesUploadCondition(index);
+    upload_criteria_.OnSliceViewed(stream.model->signed_in(), index);
     notice_card_tracker_.OnSliceViewed(index);
   }
 }
 
 // TODO(crbug/1147237): Rename this method and related members?
 bool FeedStream::CanUploadActions() const {
-  // TODO(crbug/1152592): Determine notice card behavior with web feeds.
-  return can_upload_actions_with_notice_card_ ||
-         !feed::prefs::GetLastFetchHadNoticeCard(*profile_prefs_);
+  return upload_criteria_.CanUploadActions();
 }
-void FeedStream::SetLastStreamLoadHadNoticeCard(bool value) {
-  // TODO(crbug/1152592): Determine notice card behavior with web feeds.
-  feed::prefs::SetLastFetchHadNoticeCard(*profile_prefs_, value);
-}
-bool FeedStream::HasReachedConditionsToUploadActionsWithNoticeCard() {
-  // TODO(crbug/1152592): Determine notice card behavior with web feeds.
-  if (base::FeatureList::IsEnabled(
-          feed::kInterestFeedV2ClicksAndViewsConditionalUpload)) {
-    return feed::prefs::GetHasReachedClickAndViewActionsUploadConditions(
-        *profile_prefs_);
-  }
-  // Consider the conditions as already reached to enable uploads when the
-  // feature is disabled. This will also have the effect of not updating the
-  // related pref.
-  return true;
-}
-void FeedStream::DeclareHasReachedConditionsToUploadActionsWithNoticeCard() {
-  // TODO(crbug/1152592): Determine notice card behavior with web feeds.
-  if (base::FeatureList::IsEnabled(
-          feed::kInterestFeedV2ClicksAndViewsConditionalUpload)) {
-    feed::prefs::SetHasReachedClickAndViewActionsUploadConditions(
-        *profile_prefs_, true);
-  }
-}
-void FeedStream::UpdateShownSlicesUploadCondition(int viewed_slice_index) {
-  constexpr int kShownSlicesThreshold = 2;
 
-  // TODO(crbug/1152592): Determine notice card behavior with web feeds.
-  Stream& stream = GetStream(kForYouStream);
-  if (!stream.model) {
-    DLOG(ERROR) << "Model was unloaded while handling a viewed slice";
-    return;
-  }
-
-  // Don't take shown slices into consideration when the upload conditions has
-  // already been reached.
-  if (HasReachedConditionsToUploadActionsWithNoticeCard()) {
-    return;
-  }
-
-  if (!stream.model->signed_in()) {
-    return;
-  }
-
-  if (viewed_slice_index + 1 >= kShownSlicesThreshold)
-    DeclareHasReachedConditionsToUploadActionsWithNoticeCard();
-}
 bool FeedStream::CanLogViews() const {
   // TODO(crbug/1152592): Determine notice card behavior with web feeds.
   return CanUploadActions();
-}
-void FeedStream::UpdateCanUploadActionsWithNoticeCard() {
-  // TODO(crbug/1152592): Determine notice card behavior with web feeds.
-  can_upload_actions_with_notice_card_ =
-      HasReachedConditionsToUploadActionsWithNoticeCard();
 }
 
 // Notifies observers if 'HasUnreadContent' has changed for `stream_type`.

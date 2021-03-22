@@ -23,6 +23,7 @@
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/request_throttler.h"
 #include "components/feed/core/v2/scheduling.h"
+#include "components/feed/core/v2/stream/upload_criteria.h"
 #include "components/feed/core/v2/stream_model.h"
 #include "components/feed/core/v2/tasks/load_more_task.h"
 #include "components/feed/core/v2/tasks/load_stream_task.h"
@@ -92,7 +93,7 @@ class FeedStream : public FeedApi,
 
   // FeedApi.
 
-  bool IsActivityLoggingEnabled() const override;
+  bool IsActivityLoggingEnabled(const StreamType& stream_type) const override;
   std::string GetSessionId() const override;
   void AttachSurface(FeedStreamSurface*) override;
   void DetachSurface(FeedStreamSurface*) override;
@@ -176,11 +177,6 @@ class FeedStream : public FeedApi,
   void LoadModel(const StreamType& stream_type,
                  std::unique_ptr<StreamModel> model);
 
-  void SetRequestSchedule(const StreamType& stream_type,
-                          RequestSchedule schedule);
-
-  void SetRequestSchedule(RefreshTaskId task_id, RequestSchedule schedule);
-
   // Store/upload an action and update the consistency token. |callback| is
   // called with |true| if the consistency token was written to the store.
   void UploadAction(
@@ -263,7 +259,6 @@ class FeedStream : public FeedApi,
   void SetIdleCallbackForTesting(base::RepeatingClosure idle_callback);
 
   bool CanUploadActions() const;
-  void SetLastStreamLoadHadNoticeCard(bool value);
 
   base::WeakPtr<FeedStream> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -293,9 +288,15 @@ class FeedStream : public FeedApi,
     base::Time last_updated_time;
     std::vector<UnreadContentNotifier> unread_content_notifiers;
     std::vector<base::OnceCallback<void(bool)>> load_more_complete_callbacks;
+    bool is_activity_logging_enabled = false;
   };
 
   void InitializeComplete(WaitForStoreInitializeTask::Result result);
+
+  void SetRequestSchedule(const StreamType& stream_type,
+                          RequestSchedule schedule);
+
+  void SetRequestSchedule(RefreshTaskId task_id, RequestSchedule schedule);
 
   // Re-evaluate whether or not activity logging should currently be enabled.
   void UpdateIsActivityLoggingEnabled(const StreamType& stream_type);
@@ -316,6 +317,7 @@ class FeedStream : public FeedApi,
   void InitialStreamLoadComplete(LoadStreamTask::Result result);
   void LoadMoreComplete(LoadMoreTask::Result result);
   void BackgroundRefreshComplete(LoadStreamTask::Result result);
+  void LoadTaskComplete(const LoadStreamTask::Result& result);
   void UploadActionsComplete(UploadActionsTask::Result result);
   void MaybeReportNewSuggestionsAvailable(const LoadStreamTask::Result& result);
   void MaybeReportNewSuggestionsAvailable(const LoadMoreTask::Result& result);
@@ -325,13 +327,9 @@ class FeedStream : public FeedApi,
   bool IsFeedEnabledByEnterprisePolicy();
 
   bool HasReachedConditionsToUploadActionsWithNoticeCard();
-  void DeclareHasReachedConditionsToUploadActionsWithNoticeCard();
-
-  void UpdateShownSlicesUploadCondition(int index);
 
   bool CanLogViews() const;
 
-  void UpdateCanUploadActionsWithNoticeCard();
   void MaybeNotifyHasUnreadContent(const StreamType& stream_type);
 
   Stream& GetStream(const StreamType& type);
@@ -369,11 +367,6 @@ class FeedStream : public FeedApi,
   feedstore::Metadata metadata_;
   WebFeedIndex web_feed_index_;
 
-  bool is_activity_logging_enabled_ = false;
-  // Whether the feed stream can upload actions with the notice card in the
-  // feed.
-  bool can_upload_actions_with_notice_card_ = false;
-
   base::ObserverList<UnreadContentObserver> unread_content_observers_;
 
   // To allow tests to wait on task queue idle.
@@ -383,6 +376,7 @@ class FeedStream : public FeedApi,
   // internals page for debugging purpose.
   feedui::StreamUpdate forced_stream_update_for_debugging_;
 
+  feed_stream::UploadCriteria upload_criteria_;
   NoticeCardTracker notice_card_tracker_;
 
   base::WeakPtrFactory<FeedStream> weak_ptr_factory_{this};

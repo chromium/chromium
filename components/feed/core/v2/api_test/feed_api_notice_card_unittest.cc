@@ -104,6 +104,7 @@ TEST_F(FeedStreamConditionalActionsUploadTest,
   ASSERT_EQ(1ul, ReadStoredActions(stream_->GetStore()).size());
 
   // Enable the upload bit and trigger the upload of actions.
+  surface.Detach();
   stream_->OnEnterBackground();
   WaitForIdleTaskQueue();
 
@@ -157,6 +158,7 @@ TEST_F(FeedStreamConditionalActionsUploadTest, EnableUploadOnEnterBackground) {
       surface.GetSurfaceId(), surface.GetStreamType(),
       surface.initial_state->updated_slices(1).slice().slice_id());
 
+  surface.Detach();
   stream_->OnEnterBackground();
   WaitForIdleTaskQueue();
 
@@ -182,6 +184,7 @@ TEST_F(FeedStreamConditionalActionsUploadTest,
   WaitForIdleTaskQueue();
 
   // Trigger an upload through a query.
+  surface.Detach();
   stream_->OnEnterBackground();
   WaitForIdleTaskQueue();
 
@@ -191,7 +194,7 @@ TEST_F(FeedStreamConditionalActionsUploadTest,
 }
 
 TEST_F(FeedStreamConditionalActionsUploadTest,
-       ReupdateUploadEnableBitsOnSignIn) {
+       ResetTheUploadEnableBitsOnClearAll) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
@@ -200,32 +203,15 @@ TEST_F(FeedStreamConditionalActionsUploadTest,
   stream_->ReportSliceViewed(
       surface.GetSurfaceId(), surface.GetStreamType(),
       surface.initial_state->updated_slices(1).slice().slice_id());
-
-  // Assert that uploads are not yet enabled.
-  ASSERT_FALSE(stream_->CanUploadActions());
-
-  // Update the upload enable bits which will enable upload because the related
-  // pref is true.
-  stream_->OnSignedIn();
-
-  EXPECT_TRUE(stream_->CanUploadActions());
-}
-
-TEST_F(FeedStreamConditionalActionsUploadTest,
-       ResetTheUploadEnableBitsOnSignOut) {
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  TestForYouSurface surface(stream_.get());
-  WaitForIdleTaskQueue();
-
-  // Reach conditions.
-  stream_->ReportSliceViewed(
-      surface.GetSurfaceId(), surface.GetStreamType(),
-      surface.initial_state->updated_slices(1).slice().slice_id());
-
-  // Update the upload enable bits which will enable upload.
-  stream_->OnSignedOut();
-
+  surface.Detach();
+  stream_->OnEnterBackground();
   ASSERT_TRUE(stream_->CanUploadActions());
+
+  // Trigger a ClearAll, and ensure actions cannot be uploaded until conditions
+  // are reached again.
+  stream_->OnSignedOut();
+  WaitForIdleTaskQueue();
+  ASSERT_FALSE(stream_->CanUploadActions());
 }
 
 TEST_F(FeedApiTest, LoadStreamUpdateNoticeCardFulfillmentHistogram) {

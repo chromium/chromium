@@ -46,6 +46,8 @@ source_set("feed_core_v2") {
     "request_throttler.h",
     "stream/unread_content_notifier.cc",
     "stream/unread_content_notifier.h",
+    "stream/upload_criteria.cc",
+    "stream/upload_criteria.h",
     "stream_model.cc",
     "stream_model.h",
     "stream_model/ephemeral_change.cc",

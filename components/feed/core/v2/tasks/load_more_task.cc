@@ -25,6 +25,11 @@
 
 namespace feed {
 
+LoadMoreTask::Result::~Result() = default;
+LoadMoreTask::Result::Result() = default;
+LoadMoreTask::Result::Result(Result&&) = default;
+LoadMoreTask::Result& LoadMoreTask::Result::operator=(Result&&) = default;
+
 LoadMoreTask::LoadMoreTask(const StreamType& stream_type,
                            FeedStream* stream,
                            base::OnceCallback<void(Result)> done_callback)
@@ -100,7 +105,7 @@ void LoadMoreTask::QueryRequestComplete(
   if (!translated_response.model_update_request)
     return Done(LoadStreamStatus::kProtoTranslationFailed);
 
-  loaded_new_content_from_network_ =
+  result_.loaded_new_content_from_network =
       !translated_response.model_update_request->stream_structures.empty();
 
   base::Optional<feedstore::Metadata> updated_metadata =
@@ -110,21 +115,18 @@ void LoadMoreTask::QueryRequestComplete(
     stream_->SetMetadata(std::move(*updated_metadata));
   }
 
-  model->Update(std::move(translated_response.model_update_request));
+  result_.model_update_request =
+      std::move(translated_response.model_update_request);
 
-  if (translated_response.request_schedule)
-    stream_->SetRequestSchedule(stream_type_,
-                                *translated_response.request_schedule);
+  result_.request_schedule = std::move(translated_response.request_schedule);
 
   Done(LoadStreamStatus::kLoadedFromNetwork);
 }
 
 void LoadMoreTask::Done(LoadStreamStatus status) {
-  Result result;
-  result.stream_type = stream_type_;
-  result.final_status = status;
-  result.loaded_new_content_from_network = loaded_new_content_from_network_;
-  std::move(done_callback_).Run(result);
+  result_.stream_type = stream_type_;
+  result_.final_status = status;
+  std::move(done_callback_).Run(std::move(result_));
   TaskComplete();
 }
 

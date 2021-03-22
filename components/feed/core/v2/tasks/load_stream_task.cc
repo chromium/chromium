@@ -101,9 +101,7 @@ void LoadStreamTask::LoadFromStoreComplete(
 
   if (load_type_ == LoadType::kInitialLoad &&
       result.status == LoadStreamStatus::kLoadedFromStore) {
-    auto model = std::make_unique<StreamModel>();
-    model->Update(std::move(result.update_request));
-    stream_->LoadModel(stream_type_, std::move(model));
+    update_request_ = std::move(result.update_request);
     Done(LoadStreamStatus::kLoadedFromStore);
     return;
   }
@@ -185,10 +183,11 @@ void LoadStreamTask::QueryRequestComplete(
           *response_data.model_update_request),
       base::DoNothing());
 
-  bool isNoticeCardFulfilled = response_data.model_update_request->stream_data
-                                   .privacy_notice_fulfilled();
-  stream_->SetLastStreamLoadHadNoticeCard(isNoticeCardFulfilled);
-  MetricsReporter::NoticeCardFulfilled(isNoticeCardFulfilled);
+  fetched_content_has_notice_card_ =
+      response_data.model_update_request->stream_data
+          .privacy_notice_fulfilled();
+
+  MetricsReporter::NoticeCardFulfilled(*fetched_content_has_notice_card_);
 
   base::Optional<feedstore::Metadata> updated_metadata =
       feedstore::MaybeUpdateSessionId(stream_->GetMetadata(),
@@ -200,13 +199,10 @@ void LoadStreamTask::QueryRequestComplete(
     experiments_ = *response_data.experiments;
 
   if (load_type_ != LoadType::kBackgroundRefresh) {
-    auto model = std::make_unique<StreamModel>();
-    model->Update(std::move(response_data.model_update_request));
-    stream_->LoadModel(stream_type_, std::move(model));
+    update_request_ = std::move(response_data.model_update_request);
   }
 
-  if (response_data.request_schedule)
-    stream_->SetRequestSchedule(stream_type_, *response_data.request_schedule);
+  request_schedule_ = std::move(response_data.request_schedule);
 
   Done(LoadStreamStatus::kLoadedFromNetwork);
 }
@@ -214,10 +210,8 @@ void LoadStreamTask::QueryRequestComplete(
 void LoadStreamTask::Done(LoadStreamStatus status) {
   // If the network load fails, but there is stale content in the store, use
   // that stale content.
-  if (stale_store_state_ && status != LoadStreamStatus::kLoadedFromNetwork) {
-    auto model = std::make_unique<StreamModel>();
-    model->Update(std::move(stale_store_state_));
-    stream_->LoadModel(stream_type_, std::move(model));
+  if (stale_store_state_ && !update_request_) {
+    update_request_ = std::move(stale_store_state_);
     status = LoadStreamStatus::kLoadedStaleDataFromStoreDueToNetworkFailure;
   }
   Result result;
@@ -227,9 +221,12 @@ void LoadStreamTask::Done(LoadStreamStatus status) {
   result.last_added_time = last_added_time_;
   result.final_status = status;
   result.load_type = load_type_;
+  result.update_request = std::move(update_request_);
+  result.request_schedule = std::move(request_schedule_);
   result.network_response_info = network_response_info_;
   result.loaded_new_content_from_network = loaded_new_content_from_network_;
   result.latencies = std::move(latencies_);
+  result.fetched_content_has_notice_card = fetched_content_has_notice_card_;
   result.upload_actions_result = std::move(upload_actions_result_);
   result.experiments = experiments_;
   std::move(done_callback_).Run(std::move(result));
