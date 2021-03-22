@@ -856,7 +856,7 @@ TEST_F(SecurityOriginTest, IsSameOriginWith) {
     EXPECT_FALSE(b->DeriveNewOpaqueOrigin()->IsSameOriginWith(a.get()));
     EXPECT_FALSE(a->DeriveNewOpaqueOrigin()->IsSameOriginWith(b.get()));
     EXPECT_FALSE(b->DeriveNewOpaqueOrigin()->IsSameOriginWith(b.get()));
-    EXPECT_FALSE(b->IsSameOriginWith(a->DeriveNewOpaqueOrigin().get()));
+    EXPECT_FALSE(a->IsSameOriginWith(a->DeriveNewOpaqueOrigin().get()));
     EXPECT_FALSE(b->IsSameOriginWith(a->DeriveNewOpaqueOrigin().get()));
     EXPECT_FALSE(a->IsSameOriginWith(b->DeriveNewOpaqueOrigin().get()));
     EXPECT_FALSE(b->IsSameOriginWith(b->DeriveNewOpaqueOrigin().get()));
@@ -891,7 +891,7 @@ TEST_F(SecurityOriginTest, IsSameOriginWithWithLocalScheme) {
   EXPECT_FALSE(b->DeriveNewOpaqueOrigin()->IsSameOriginWith(a.get()));
   EXPECT_FALSE(a->DeriveNewOpaqueOrigin()->IsSameOriginWith(b.get()));
   EXPECT_FALSE(b->DeriveNewOpaqueOrigin()->IsSameOriginWith(b.get()));
-  EXPECT_FALSE(b->IsSameOriginWith(a->DeriveNewOpaqueOrigin().get()));
+  EXPECT_FALSE(a->IsSameOriginWith(a->DeriveNewOpaqueOrigin().get()));
   EXPECT_FALSE(b->IsSameOriginWith(a->DeriveNewOpaqueOrigin().get()));
   EXPECT_FALSE(a->IsSameOriginWith(b->DeriveNewOpaqueOrigin().get()));
   EXPECT_FALSE(b->IsSameOriginWith(b->DeriveNewOpaqueOrigin().get()));
@@ -988,7 +988,7 @@ TEST_F(SecurityOriginTest, IsSameOriginDomainWith) {
     EXPECT_FALSE(b->DeriveNewOpaqueOrigin()->IsSameOriginDomainWith(a.get()));
     EXPECT_FALSE(a->DeriveNewOpaqueOrigin()->IsSameOriginDomainWith(b.get()));
     EXPECT_FALSE(b->DeriveNewOpaqueOrigin()->IsSameOriginDomainWith(b.get()));
-    EXPECT_FALSE(b->IsSameOriginDomainWith(a->DeriveNewOpaqueOrigin().get()));
+    EXPECT_FALSE(a->IsSameOriginDomainWith(a->DeriveNewOpaqueOrigin().get()));
     EXPECT_FALSE(b->IsSameOriginDomainWith(a->DeriveNewOpaqueOrigin().get()));
     EXPECT_FALSE(a->IsSameOriginDomainWith(b->DeriveNewOpaqueOrigin().get()));
     EXPECT_FALSE(b->IsSameOriginDomainWith(b->DeriveNewOpaqueOrigin().get()));
@@ -1023,7 +1023,7 @@ TEST_F(SecurityOriginTest, IsSameOriginDomainWithWithLocalScheme) {
   EXPECT_FALSE(b->DeriveNewOpaqueOrigin()->IsSameOriginDomainWith(a.get()));
   EXPECT_FALSE(a->DeriveNewOpaqueOrigin()->IsSameOriginDomainWith(b.get()));
   EXPECT_FALSE(b->DeriveNewOpaqueOrigin()->IsSameOriginDomainWith(b.get()));
-  EXPECT_FALSE(b->IsSameOriginDomainWith(a->DeriveNewOpaqueOrigin().get()));
+  EXPECT_FALSE(a->IsSameOriginDomainWith(a->DeriveNewOpaqueOrigin().get()));
   EXPECT_FALSE(b->IsSameOriginDomainWith(a->DeriveNewOpaqueOrigin().get()));
   EXPECT_FALSE(a->IsSameOriginDomainWith(b->DeriveNewOpaqueOrigin().get()));
   EXPECT_FALSE(b->IsSameOriginDomainWith(b->DeriveNewOpaqueOrigin().get()));
@@ -1045,6 +1045,113 @@ TEST_F(SecurityOriginTest, IsSameOriginDomainWithWithLocalScheme) {
   a->GrantUniversalAccess();
   EXPECT_FALSE(a->IsSameOriginDomainWith(b.get()));
   EXPECT_FALSE(b->IsSameOriginDomainWith(a.get()));
+}
+
+TEST_F(SecurityOriginTest, IsSameSiteWith) {
+  struct TestCase {
+    bool same_site;
+    const char* a;
+    const char* b;
+  } tests[] = {
+      // Same tuple origin.
+      {true, "https://a.com", "https://a.com"},
+      // Same registrable domain.
+      {true, "https://a.com", "https://sub.a.com"},
+      {true, "https://sub1.a.com", "https://sub2.a.com"},
+      // Schemes differ.
+      {false, "https://a.com", "http://a.com"},
+      {false, "https://a.com", "wss://a.com"},
+      // Registrable domains differ.
+      {false, "https://a.com", "https://b.com"},
+      {false, "https://sub.a.com", "https://sub.b.com"},
+      {false, "https://a.com", "https://aaaaa.com"},
+      // If there is no registrable domain, the hosts must match.
+      {true, "https://com", "https://com"},
+      {true, "https://123.4.5.6:788", "https://123.4.5.6:789"},
+      // Ports don't matter.
+      {true, "https://a.com:443", "https://a.com:444"},
+      // Opaque vs tuple origins cannot be same site.
+      {false, "data:text/html,whatever", "https://a.com"},
+      // Two different opaque origins cannot be same site.
+      {false, "data:text/html,whatever", "data:text/html,whatever"},
+  };
+
+  for (const auto& test : tests) {
+    SCOPED_TRACE(testing::Message() << "Origin 1: `" << test.a << "` "
+                                    << "Origin 2: `" << test.b << "`\n");
+    scoped_refptr<SecurityOrigin> a = SecurityOrigin::CreateFromString(test.a);
+    scoped_refptr<SecurityOrigin> b = SecurityOrigin::CreateFromString(test.b);
+    EXPECT_EQ(test.same_site, a->IsSameSiteWith(b.get()));
+    EXPECT_EQ(test.same_site, b->IsSameSiteWith(a.get()));
+
+    // Self-comparison
+    EXPECT_TRUE(a->IsSameSiteWith(a.get()));
+    EXPECT_TRUE(b->IsSameSiteWith(b.get()));
+
+    // DeriveNewOpaqueOrigin
+    EXPECT_FALSE(a->DeriveNewOpaqueOrigin()->IsSameSiteWith(a.get()));
+    EXPECT_FALSE(b->DeriveNewOpaqueOrigin()->IsSameSiteWith(a.get()));
+    EXPECT_FALSE(a->DeriveNewOpaqueOrigin()->IsSameSiteWith(b.get()));
+    EXPECT_FALSE(b->DeriveNewOpaqueOrigin()->IsSameSiteWith(b.get()));
+    EXPECT_FALSE(a->IsSameSiteWith(a->DeriveNewOpaqueOrigin().get()));
+    EXPECT_FALSE(b->IsSameSiteWith(a->DeriveNewOpaqueOrigin().get()));
+    EXPECT_FALSE(a->IsSameSiteWith(b->DeriveNewOpaqueOrigin().get()));
+    EXPECT_FALSE(b->IsSameSiteWith(b->DeriveNewOpaqueOrigin().get()));
+    EXPECT_FALSE(a->DeriveNewOpaqueOrigin()->IsSameSiteWith(
+        a->DeriveNewOpaqueOrigin().get()));
+    EXPECT_FALSE(b->DeriveNewOpaqueOrigin()->IsSameSiteWith(
+        b->DeriveNewOpaqueOrigin().get()));
+
+    // UniversalAccess does not change the result.
+    a->GrantUniversalAccess();
+    EXPECT_EQ(test.same_site, a->IsSameSiteWith(b.get()));
+    EXPECT_EQ(test.same_site, b->IsSameSiteWith(a.get()));
+  }
+
+  // Identical opaque origins are same site.
+  scoped_refptr<SecurityOrigin> opaque = SecurityOrigin::CreateUniqueOpaque();
+  scoped_refptr<SecurityOrigin> opaque_copy = opaque->IsolatedCopy();
+  EXPECT_TRUE(opaque->IsSameSiteWith(opaque_copy.get()));
+  EXPECT_TRUE(opaque_copy->IsSameSiteWith(opaque.get()));
+}
+
+TEST_F(SecurityOriginTest, IsSameSiteWithWithLocalScheme) {
+  scoped_refptr<SecurityOrigin> a =
+      SecurityOrigin::CreateFromString("file:///etc/passwd");
+  scoped_refptr<SecurityOrigin> b =
+      SecurityOrigin::CreateFromString("file:///etc/hosts");
+
+  // Self-comparison
+  EXPECT_TRUE(a->IsSameSiteWith(a.get()));
+  EXPECT_TRUE(b->IsSameSiteWith(b.get()));
+
+  // block_local_access_from_local_origin_ defaults to `false`:
+  EXPECT_TRUE(a->IsSameSiteWith(b.get()));
+  EXPECT_TRUE(b->IsSameSiteWith(a.get()));
+
+  // DeriveNewOpaqueOrigin
+  EXPECT_FALSE(a->DeriveNewOpaqueOrigin()->IsSameSiteWith(a.get()));
+  EXPECT_FALSE(b->DeriveNewOpaqueOrigin()->IsSameSiteWith(a.get()));
+  EXPECT_FALSE(a->DeriveNewOpaqueOrigin()->IsSameSiteWith(b.get()));
+  EXPECT_FALSE(b->DeriveNewOpaqueOrigin()->IsSameSiteWith(b.get()));
+  EXPECT_FALSE(a->IsSameSiteWith(a->DeriveNewOpaqueOrigin().get()));
+  EXPECT_FALSE(b->IsSameSiteWith(a->DeriveNewOpaqueOrigin().get()));
+  EXPECT_FALSE(a->IsSameSiteWith(b->DeriveNewOpaqueOrigin().get()));
+  EXPECT_FALSE(b->IsSameSiteWith(b->DeriveNewOpaqueOrigin().get()));
+  EXPECT_FALSE(a->DeriveNewOpaqueOrigin()->IsSameSiteWith(
+      a->DeriveNewOpaqueOrigin().get()));
+  EXPECT_FALSE(b->DeriveNewOpaqueOrigin()->IsSameSiteWith(
+      b->DeriveNewOpaqueOrigin().get()));
+
+  // Set block_local_access_from_local_origin_ to `true`:
+  // They are still same site because the schemes and hosts are the same.
+  a->BlockLocalAccessFromLocalOrigin();
+  EXPECT_TRUE(a->IsSameSiteWith(b.get()));
+  EXPECT_TRUE(b->IsSameSiteWith(a.get()));
+
+  // Self-comparison should still be true.
+  EXPECT_TRUE(a->IsSameSiteWith(a.get()));
+  EXPECT_TRUE(b->IsSameSiteWith(b.get()));
 }
 
 // Non-canonical hosts provided to the string constructor should end up

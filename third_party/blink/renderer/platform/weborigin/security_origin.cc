@@ -683,6 +683,23 @@ bool SecurityOrigin::IsSameOriginDomainWith(
   return can_access;
 }
 
+bool SecurityOrigin::IsSameSiteWith(const SecurityOrigin* other) const {
+  // "A and B are either both opaque origins, or both tuple origins with the
+  // same scheme"
+  if (IsOpaque() != other->IsOpaque())
+    return false;
+  if (!IsOpaque() && Protocol() != other->Protocol())
+    return false;
+
+  // Schemelessly same site check.
+  // https://html.spec.whatwg.org/#schemelessly-same-site
+  if (IsOpaque())
+    return IsSameOriginWith(other);
+  if (RegistrableDomain().IsNull())
+    return Host() == other->Host();
+  return RegistrableDomain() == other->RegistrableDomain();
+}
+
 const KURL& SecurityOrigin::UrlWithUniqueOpaqueOrigin() {
   DCHECK(IsMainThread());
   DEFINE_STATIC_LOCAL(const KURL, url, ("data:,"));

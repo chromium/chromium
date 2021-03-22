@@ -325,6 +325,18 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
   bool IsSameOriginDomainWith(const SecurityOrigin*,
                               AccessResultDomainDetail&) const;
 
+  // This method implements HTML's "same site" check, which is true if the two
+  // origins are schemelessly same site, and either are both opaque or are both
+  // tuple origins with the same scheme.
+  //
+  // Note: Use of "same site" should be avoided when possible, in favor of "same
+  // origin" checks. A "same origin" check is generally more appropriate for
+  // security decisions, as registrable domains cannot be relied upon to provide
+  // a hard security boundary.
+  //
+  // https://html.spec.whatwg.org/#same-site
+  bool IsSameSiteWith(const SecurityOrigin* other) const;
+
   static const KURL& UrlWithUniqueOpaqueOrigin();
 
   // Transfer origin privileges from another security origin.
