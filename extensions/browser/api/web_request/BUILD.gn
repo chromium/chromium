@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//extensions/buildflags/buildflags.gni")
 
@@ -20,6 +21,7 @@ source_set("web_request") {
     "../declarative/rules_registry.h",
     "../declarative/rules_registry_service.cc",
     "../declarative/rules_registry_service.h",
+
     # TODO(ghazale): declarative_content should be moved out of this target.
     "../declarative_content/content_rules_registry.h",
     "../declarative_webrequest/request_stage.cc",
@@ -87,6 +89,13 @@ source_set("web_request") {
 
   if (is_chromeos_ash) {
     deps += [ "//chromeos/login/login_state:login_state" ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
+    ]
   }
 
   public_deps = [ "//extensions/browser:browser_sources" ]

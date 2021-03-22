@@ -16,6 +16,7 @@
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/web_request/permission_helper.h"
 #include "extensions/browser/api/web_request/web_request_api_constants.h"
+#include "extensions/browser/api/web_request/web_request_api_helpers.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
 #include "extensions/browser/extension_registry.h"
@@ -30,10 +31,6 @@
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/login/login_state/login_state.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using extensions::PermissionsData;
 
@@ -96,15 +93,15 @@ PermissionsData::PageAccess CanExtensionAccessURLInternal(
   // Prevent viewing / modifying requests initiated by a host protected by
   // policy.
   if (initiator &&
-      extension->permissions_data()->IsPolicyBlockedHost(initiator->GetURL()))
+      extension->permissions_data()->IsPolicyBlockedHost(initiator->GetURL())) {
     return PermissionsData::PageAccess::kDenied;
+  }
 
-// When restrictions are enabled in Public Session, allow all URLs for
-// webRequests initiated by a regular extension (but don't allow chrome://
-// URLs).
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::LoginState::IsInitialized() &&
-      chromeos::LoginState::Get()->ArePublicSessionRestrictionsEnabled() &&
+  // When restrictions are enabled in Public Session, allow all URLs for
+  // webRequests initiated by a regular extension (but don't allow chrome://
+  // URLs).
+  if (extension_web_request_api_helpers::
+          ArePublicSessionRestrictionsEnabled() &&
       extension->is_extension() && !url.SchemeIs("chrome")) {
     // Make sure that the extension is truly installed by policy (the assumption
     // in Public Session is that all extensions are installed by policy).
@@ -112,7 +109,6 @@ PermissionsData::PageAccess CanExtensionAccessURLInternal(
           extensions::Manifest::IsPolicyLocation(extension->location()));
     return PermissionsData::PageAccess::kAllowed;
   }
-#endif
 
   // Check if this event crosses incognito boundaries when it shouldn't.
   if (crosses_incognito && !permission_helper->CanCrossIncognito(extension))

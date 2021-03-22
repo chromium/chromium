@@ -26,7 +26,6 @@
 #include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -90,10 +89,6 @@
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/login/login_state/login_state.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using content::BrowserThread;
 using extension_web_request_api_helpers::ExtraInfoSpec;
@@ -410,16 +405,6 @@ bool ShouldHideEvent(content::BrowserContext* browser_context,
   return (!browser_context ||
           WebRequestPermissions::HideRequest(
               PermissionHelper::Get(browser_context), request));
-}
-
-// Returns true if we're in a Public Session and restrictions are enabled.
-bool ArePublicSessionRestrictionsEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::LoginState::IsInitialized()) {
-    return chromeos::LoginState::Get()->ArePublicSessionRestrictionsEnabled();
-  }
-#endif
-  return false;
 }
 
 // Returns event details for a given request.
@@ -1586,7 +1571,8 @@ void ExtensionWebRequestEventRouter::DispatchEventToListeners(
     // which are force-installed by policy. Whitelisted extensions are exempt
     // from this filtering.
     WebRequestEventDetails* custom_event_details = event_details.get();
-    if (ArePublicSessionRestrictionsEnabled() &&
+    if (extension_web_request_api_helpers::
+            ArePublicSessionRestrictionsEnabled() &&
         !extensions::IsWhitelistedForPublicSession(listener->id.extension_id)) {
       if (!event_details_filtered_copy) {
         event_details_filtered_copy =
@@ -2613,7 +2599,9 @@ WebRequestInternalAddEventListenerFunction::Run() {
     // developer if they do something obviously wrong.
     // When restrictions are enabled in Public Session, allow all URLs for
     // webRequests initiated by a regular extension.
-    if (!(ArePublicSessionRestrictionsEnabled() && extension->is_extension()) &&
+    if (!(extension_web_request_api_helpers::
+              ArePublicSessionRestrictionsEnabled() &&
+          extension->is_extension()) &&
         extension->permissions_data()
             ->GetEffectiveHostPermissions()
             .is_empty() &&
@@ -2683,12 +2671,12 @@ WebRequestInternalEventHandledFunction::Run() {
 
     // In Public Session we restrict everything but "cancel" (except for
     // whitelisted extensions which have no such restrictions).
-    if (ArePublicSessionRestrictionsEnabled() &&
+    if (extension_web_request_api_helpers::
+            ArePublicSessionRestrictionsEnabled() &&
         !extensions::IsWhitelistedForPublicSession(extension_id_safe()) &&
         (value->HasKey("redirectUrl") ||
          value->HasKey(keys::kAuthCredentialsKey) ||
-         value->HasKey("requestHeaders") ||
-         value->HasKey("responseHeaders"))) {
+         value->HasKey("requestHeaders") || value->HasKey("responseHeaders"))) {
       OnError(event_name, sub_event_name, request_id, render_process_id,
               web_view_instance_id, std::move(response));
       return RespondNow(Error(keys::kInvalidPublicSessionBlockingResponse));
