@@ -87,6 +87,8 @@ void NetworkScreen::ShowImpl() {
 void NetworkScreen::HideImpl() {
   if (view_)
     view_->Hide();
+  connection_timer_.Stop();
+  UnsubscribeNetworkNotification();
 }
 
 void NetworkScreen::OnUserAction(const std::string& action_id) {
@@ -118,6 +120,7 @@ void NetworkScreen::DefaultNetworkChanged(const NetworkState* network) {
 }
 
 void NetworkScreen::Refresh() {
+  continue_pressed_ = false;
   SubscribeNetworkNotification();
   UpdateStatus();
 }
@@ -141,13 +144,6 @@ void NetworkScreen::UnsubscribeNetworkNotification() {
     NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
                                                                    FROM_HERE);
   }
-}
-
-void NetworkScreen::NotifyOnConnection() {
-  // TODO(nkostylev): Check network connectivity.
-  UnsubscribeNetworkNotification();
-  connection_timer_.Stop();
-  exit_callback_.Run(Result::CONNECTED);
 }
 
 void NetworkScreen::OnConnectionTimeout() {
@@ -184,7 +180,6 @@ void NetworkScreen::StopWaitingForConnection(const std::u16string& network_id) {
     return;
   }
 
-  continue_pressed_ = false;
   connection_timer_.Stop();
 
   network_id_ = network_id;
@@ -223,10 +218,10 @@ void NetworkScreen::OnContinueButtonClicked() {
 
   if (network_state_helper_->IsConnected()) {
     NotifyOnConnection();
-  } else {
-    continue_pressed_ = true;
-    WaitForConnection(network_id_);
+    return;
   }
+  continue_pressed_ = true;
+  WaitForConnection(network_id_);
 }
 
 void NetworkScreen::OnHasPreinstalledDemoResources(

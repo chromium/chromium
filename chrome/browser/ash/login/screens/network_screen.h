@@ -85,7 +85,7 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
   void UnsubscribeNetworkNotification();
 
   // Notifies wizard on successful connection.
-  void NotifyOnConnection();
+  inline void NotifyOnConnection() { exit_callback_.Run(Result::CONNECTED); }
 
   // Called by `connection_timer_` when connection to the network timed out.
   void OnConnectionTimeout();
