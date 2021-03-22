@@ -36,6 +36,9 @@ class BrowserDesktopWindowTreeHostPlatform
   int GetMinimizeButtonOffset() const override;
   bool UsesNativeSystemMenu() const override;
 
+  // Overridden from views::DesktopWindowTreeHostPlatform:
+  bool ShouldUseLayerForShapedWindow() const override;
+
   DISALLOW_COPY_AND_ASSIGN(BrowserDesktopWindowTreeHostPlatform);
 };
 

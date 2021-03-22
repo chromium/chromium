@@ -31,6 +31,13 @@ bool BrowserDesktopWindowTreeHostPlatform::UsesNativeSystemMenu() const {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+//// DesktopWindowTreeHostPlatform, private:
+bool BrowserDesktopWindowTreeHostPlatform::ShouldUseLayerForShapedWindow()
+    const {
+  return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // BrowserDesktopWindowTreeHost, public:
 
 // static
