@@ -260,6 +260,25 @@ class SameProcessOriginIsolationOptInHeaderTest
   DISALLOW_COPY_AND_ASSIGN(SameProcessOriginIsolationOptInHeaderTest);
 };
 
+// Force WebSecurity off for tests.
+class SameProcessNoWebSecurityOriginIsolationOptInHeaderTest
+    : public SameProcessOriginIsolationOptInHeaderTest {
+ public:
+  SameProcessNoWebSecurityOriginIsolationOptInHeaderTest() = default;
+  ~SameProcessNoWebSecurityOriginIsolationOptInHeaderTest() override = default;
+
+  // Disallow copy & assign.
+  SameProcessNoWebSecurityOriginIsolationOptInHeaderTest(
+      const SameProcessNoWebSecurityOriginIsolationOptInHeaderTest&) = delete;
+  SameProcessNoWebSecurityOriginIsolationOptInHeaderTest& operator=(
+      const SameProcessNoWebSecurityOriginIsolationOptInHeaderTest&) = delete;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SameProcessOriginIsolationOptInHeaderTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kDisableWebSecurity);
+  }
+};
+
 // Used for a few tests that check non-HTTPS secure context behavior.
 class OriginIsolationOptInHttpServerHeaderTest : public IsolatedOriginTestBase {
  public:
@@ -554,6 +573,37 @@ IN_PROC_BROWSER_TEST_F(SameProcessOriginIsolationOptInHeaderTest,
               static_cast<int>(NavigationRequest::OriginAgentClusterEndResult::
                                    kRequestedAndOriginKeyed),
               1)));
+}
+
+// This test verifies that --disable-web-security overrides same-process
+// OriginAgentCluster (i.e. disables it).
+IN_PROC_BROWSER_TEST_F(SameProcessNoWebSecurityOriginIsolationOptInHeaderTest,
+                       DisableWebSecurityDisablesOriginAgentCluster) {
+  // Make sure we request the header for OriginAgentCluster for the child; the
+  // fact that this test uses --disable-web-security will override the header.
+  SetHeaderValue("?1");
+  GURL main_url(https_server()->GetURL("foo.com",
+                                       "/cross_site_iframe_factory.html?"
+                                       "foo.com(foo.com)"));
+  GURL isolated_suborigin_url(
+      https_server()->GetURL("isolated.foo.com", "/isolate_origin"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  EXPECT_EQ(2u, shell()->web_contents()->GetAllFrames().size());
+
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* child_frame_node = root->child_at(0);
+  EXPECT_TRUE(
+      NavigateToURLFromRenderer(child_frame_node, isolated_suborigin_url));
+
+  // Web security is disabled so everything should be same-origin and
+  // accessible across browsing contexts.
+  EXPECT_EQ(false, EvalJs(child_frame_node, "window.originAgentCluster"));
+  std::string parent_body_content =
+      EvalJs(root, "document.body.textContent").ExtractString();
+  // Make sure that the child frame doesn't think it's isolated.
+  EXPECT_EQ(parent_body_content,
+            EvalJs(child_frame_node, "window.parent.document.body.textContent")
+                .ExtractString());
 }
 
 // In this test the sub-origin isn't isolated because no header is set. It will

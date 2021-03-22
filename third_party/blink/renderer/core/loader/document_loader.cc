@@ -1890,8 +1890,20 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
                              : CalculateOrigin(owner_document);
 
   bool origin_agent_cluster = origin_agent_cluster_;
-  if (ShouldInheritExplicitOriginKeying(Url(), commit_reason_) &&
-      owner_document && owner_document->domWindow()) {
+  // Note: this code must be kept in sync with
+  // WindowAgentFactory::GetAgentForOrigin(), as the two conditions below hand
+  // out universal WindowAgent objects, and thus override OAC.
+  if (security_origin->IsGrantedUniversalAccess() ||
+      security_origin->IsLocal()) {
+    // In this case we either have AllowUniversalAccessFromFileURLs enabled, or
+    // WebSecurity is disabled, or it's a local scheme such as file://; any of
+    // these cases forces us to use a common WindowAgent for all origins, so
+    // don't attempt to use OriginAgentCluster. Note:
+    // AllowUniversalAccessFromFileURLs is deprecated as of Android R, so
+    // eventually this use case will diminish.
+    origin_agent_cluster = false;
+  } else if (ShouldInheritExplicitOriginKeying(Url(), commit_reason_) &&
+             owner_document && owner_document->domWindow()) {
     // Since we're inheriting the owner document's origin, we should also use
     // its OriginAgentCluster (OAC) in determining which WindowAgent to use,
     // overriding the OAC value sent in the commit params. For example, when
@@ -1936,8 +1948,9 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
     // agent. This is subpar. Currently a DCHECK guards against it happening
     // multiple times *with different values*, but ideally we would use a better
     // architecture.
-    if (!ShouldInheritExplicitOriginKeying(Url(), commit_reason_))
-      agent->SetIsExplicitlyOriginKeyed(origin_agent_cluster_);
+    if (!ShouldInheritExplicitOriginKeying(Url(), commit_reason_)) {
+      agent->SetIsExplicitlyOriginKeyed(origin_agent_cluster);
+    }
   } else {
     if (frame_->GetSettings()->GetShouldReuseGlobalForUnownedMainFrame() &&
         frame_->IsMainFrame()) {
