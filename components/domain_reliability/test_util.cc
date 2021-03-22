@@ -110,11 +110,16 @@ int MockUploader::GetDiscardedUploadCount() const {
   return 0;
 }
 
+base::TimeTicks MockTickClock::NowTicks() const {
+  return mock_time_->NowTicks();
+}
+
 MockTime::MockTime()
     : now_(base::Time::Now()),
       now_ticks_(base::TimeTicks::Now()),
       epoch_ticks_(now_ticks_),
-      task_sequence_number_(0) {
+      task_sequence_number_(0),
+      tick_clock_(this) {
   VLOG(1) << "Creating mock time: T=" << elapsed_sec() << "s";
 }
 
@@ -129,6 +134,10 @@ base::TimeTicks MockTime::NowTicks() const {
 
 std::unique_ptr<MockableTime::Timer> MockTime::CreateTimer() {
   return std::unique_ptr<MockableTime::Timer>(new MockTimer(this));
+}
+
+const base::TickClock* MockTime::AsTickClock() const {
+  return &tick_clock_;
 }
 
 void MockTime::Advance(base::TimeDelta delta) {
