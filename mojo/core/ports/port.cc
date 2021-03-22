@@ -4,6 +4,14 @@
 
 #include "mojo/core/ports/port.h"
 
+#ifdef OS_MAC
+extern "C" void V8RecordReplayRegisterPointer(void* ptr);
+extern "C" void V8RecordReplayUnregisterPointer(void* ptr);
+#else
+static void V8RecordReplayRegisterPointer(void* ptr) {}
+static void V8RecordReplayUnregisterPointer(void* ptr) {}
+#endif
+
 namespace mojo {
 namespace core {
 namespace ports {
@@ -19,9 +27,15 @@ Port::Port(uint64_t next_sequence_num_to_send,
       message_queue(next_sequence_num_to_receive),
       remove_proxy_on_last_message(false),
       peer_closed(false),
-      peer_lost_unexpectedly(false) {}
+      peer_lost_unexpectedly(false),
+      lock_("Port.lock_") {
+  // Registering new ports is needed for sorting, see port_locker.cc
+  V8RecordReplayRegisterPointer(this);
+}
 
-Port::~Port() = default;
+Port::~Port() {
+  V8RecordReplayUnregisterPointer(this);
+}
 
 }  // namespace ports
 }  // namespace core

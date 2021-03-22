@@ -25,6 +25,12 @@
 #include "ipc/message_filter_router.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 
+#ifdef OS_MAC
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+#else
+static void V8RecordReplayAssert(const char* format, ...) {}
+#endif
+
 namespace IPC {
 
 //------------------------------------------------------------------------------
@@ -298,10 +304,12 @@ void ChannelProxy::Context::OnRemoveFilter(MessageFilter* filter) {
 
 // Called on the listener's thread
 void ChannelProxy::Context::AddFilter(MessageFilter* filter) {
+  V8RecordReplayAssert("ChannelProxy::Context::AddFilter Start");
   base::AutoLock auto_lock(pending_filters_lock_);
   pending_filters_.push_back(base::WrapRefCounted(filter));
   ipc_task_runner_->PostTask(FROM_HERE,
                              base::BindOnce(&Context::OnAddFilter, this));
+  V8RecordReplayAssert("ChannelProxy::Context::AddFilter Done");
 }
 
 // Called on the listener's thread

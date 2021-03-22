@@ -30,6 +30,12 @@
 #include "base/rand_util.h"
 #endif
 
+#ifdef OS_MAC
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+#else
+static void V8RecordReplayAssert(const char* format, ...) {}
+#endif
+
 namespace mojo {
 namespace core {
 namespace ports {
@@ -103,7 +109,7 @@ void GenerateRandomPortName(PortName* name) {
 }  // namespace
 
 Node::Node(const NodeName& name, NodeDelegate* delegate)
-    : name_(name), delegate_(this, delegate) {}
+    : name_(name), delegate_(this, delegate), ports_lock_("Node.ports_lock_") {}
 
 Node::~Node() {
   if (!ports_.empty())
@@ -429,6 +435,7 @@ int Node::SetAcknowledgeRequestInterval(
 }
 
 int Node::AcceptEvent(ScopedEvent event) {
+  V8RecordReplayAssert("Node::AcceptEvent %d", event->type());
   switch (event->type()) {
     case Event::Type::kUserMessage:
       return OnUserMessage(Event::Cast<UserMessageEvent>(&event));
@@ -598,9 +605,14 @@ int Node::OnUserMessage(std::unique_ptr<UserMessageEvent> message) {
 }
 
 int Node::OnPortAccepted(std::unique_ptr<PortAcceptedEvent> event) {
+  V8RecordReplayAssert("Node::OnPortAccepted Start %lu %lu",
+                       event->port_name().v1, event->port_name().v2);
+
   PortRef port_ref;
-  if (GetPort(event->port_name(), &port_ref) != OK)
+  if (GetPort(event->port_name(), &port_ref) != OK) {
+    V8RecordReplayAssert("Node::OnPortAccepted UnknownPort");
     return ERROR_PORT_UNKNOWN;
+  }
 
 #if DCHECK_IS_ON()
   {
@@ -615,6 +627,8 @@ int Node::OnPortAccepted(std::unique_ptr<PortAcceptedEvent> event) {
 }
 
 int Node::OnObserveProxy(std::unique_ptr<ObserveProxyEvent> event) {
+  V8RecordReplayAssert("Node::OnObserveProxy Start");
+
   if (event->port_name() == kInvalidPortName) {
     // An ObserveProxy with an invalid target port name is a broadcast used to
     // inform ports when their peer (which was itself a proxy) has become
@@ -626,6 +640,7 @@ int Node::OnObserveProxy(std::unique_ptr<ObserveProxyEvent> event) {
     DCHECK_EQ(event->proxy_target_node_name(), kInvalidNodeName);
     DCHECK_EQ(event->proxy_target_port_name(), kInvalidPortName);
     DestroyAllPortsWithPeer(event->proxy_node_name(), event->proxy_port_name());
+    V8RecordReplayAssert("Node::OnObserveProxy #1");
     return OK;
   }
 
@@ -636,6 +651,7 @@ int Node::OnObserveProxy(std::unique_ptr<ObserveProxyEvent> event) {
   if (GetPort(event->port_name(), &port_ref) != OK) {
     DVLOG(1) << "ObserveProxy: " << event->port_name() << "@" << name_
              << " not found";
+    V8RecordReplayAssert("Node::OnObserveProxy #2");
     return OK;
   }
 
@@ -697,8 +713,13 @@ int Node::OnObserveProxy(std::unique_ptr<ObserveProxyEvent> event) {
     }
   }
 
-  if (event_to_forward)
+  V8RecordReplayAssert("Node::OnObserveProxy ForwardEvent #3 %d", !!event_to_forward);
+
+  if (event_to_forward) {
+    V8RecordReplayAssert("Node::OnObserveProxy ForwardEvent #1");
     delegate_->ForwardEvent(event_target_node, std::move(event_to_forward));
+    V8RecordReplayAssert("Node::OnObserveProxy ForwardEvent #2");
+  }
 
   if (peer_changed) {
     // Re-send ack and/or ack requests, as the previous peer proxy may not have
@@ -709,6 +730,7 @@ int Node::OnObserveProxy(std::unique_ptr<ObserveProxyEvent> event) {
     delegate_->PortStatusChanged(port_ref);
   }
 
+  V8RecordReplayAssert("Node::OnObserveProxy Done");
   return OK;
 }
 
@@ -1048,15 +1070,33 @@ int Node::SendUserMessageInternal(const PortRef& port_ref,
 int Node::MergePortsInternal(const PortRef& port0_ref,
                              const PortRef& port1_ref,
                              bool allow_close_on_bad_state) {
+  V8RecordReplayAssert("Node::MergePortsInternal %lu %lu %lu %lu",
+                       port0_ref.name().v1, port0_ref.name().v2,
+                       port1_ref.name().v1, port1_ref.name().v2);
+
   const PortRef* port_refs[2] = {&port0_ref, &port1_ref};
   {
     // Needed to swap peer map entries below.
     PortLocker::AssertNoPortsLockedOnCurrentThread();
     base::ReleasableAutoLock ports_locker(&ports_lock_);
 
+    V8RecordReplayAssert("Node::MergePortsInternal #0.0 %lu %lu",
+                          port_refs[0]->name().v1, port_refs[0]->name().v2);
+
     base::Optional<PortLocker> locker(base::in_place, port_refs, 2);
+
+    V8RecordReplayAssert("Node::MergePortsInternal #0.01 %lu %lu",
+                          port_refs[0]->name().v1, port_refs[0]->name().v2);
+
     auto* port0 = locker->GetPort(port0_ref);
+
+    V8RecordReplayAssert("Node::MergePortsInternal #0.02 %lu %lu",
+                          port_refs[0]->name().v1, port_refs[0]->name().v2);
+
     auto* port1 = locker->GetPort(port1_ref);
+
+    V8RecordReplayAssert("Node::MergePortsInternal #0.03 %lu %lu",
+                          port_refs[0]->name().v1, port_refs[0]->name().v2);
 
     // There are several conditions which must be met before we'll consider
     // merging two ports:
@@ -1073,6 +1113,7 @@ int Node::MergePortsInternal(const PortRef& port0_ref,
          port1->peer_port_name == port0_ref.name()) ||
         port0->next_sequence_num_to_send != kInitialSequenceNum ||
         port1->next_sequence_num_to_send != kInitialSequenceNum) {
+      V8RecordReplayAssert("Node::MergePortsInternal #1");
       // On failure, we only close a port if it was at least properly in the
       // |kReceiving| state. This avoids getting the system in an inconsistent
       // state by e.g. closing a proxy abruptly.
@@ -1091,6 +1132,9 @@ int Node::MergePortsInternal(const PortRef& port0_ref,
       return ERROR_PORT_STATE_UNEXPECTED;
     }
 
+    V8RecordReplayAssert("Node::MergePortsInternal #0.1 %lu %lu",
+                          port_refs[0]->name().v1, port_refs[0]->name().v2);
+
     // Swap the ports' peer information and switch them both to proxying mode.
     SwapPortPeers(port0_ref.name(), port0, port1_ref.name(), port1);
     port0->state = Port::kProxying;
@@ -1099,13 +1143,19 @@ int Node::MergePortsInternal(const PortRef& port0_ref,
       port0->remove_proxy_on_last_message = true;
     if (port1->peer_closed)
       port1->remove_proxy_on_last_message = true;
+
+    V8RecordReplayAssert("Node::MergePortsInternal #0.2 %lu %lu",
+                          port_refs[0]->name().v1, port_refs[0]->name().v2);
   }
 
   // Flush any queued messages from the new proxies and, if successful, complete
   // the merge by initiating proxy removals.
   if (ForwardUserMessagesFromProxy(port0_ref) == OK &&
       ForwardUserMessagesFromProxy(port1_ref) == OK) {
+    V8RecordReplayAssert("Node::MergePortsInternal #2");
     for (size_t i = 0; i < 2; ++i) {
+      V8RecordReplayAssert("Node::MergePortsInternal #2.1 %lu %lu %lu", i,
+                           port_refs[i]->name().v1, port_refs[i]->name().v2);
       bool try_remove_proxy_immediately = false;
       ScopedEvent closure_event;
       NodeName closure_event_target_node;
@@ -1122,6 +1172,7 @@ int Node::MergePortsInternal(const PortRef& port0_ref,
               port->peer_port_name, port->last_sequence_num_to_receive);
         }
       }
+      V8RecordReplayAssert("Node::MergePortsInternal #3 %d", try_remove_proxy_immediately);
       if (try_remove_proxy_immediately)
         TryRemoveProxy(*port_refs[i]);
       else
@@ -1133,6 +1184,7 @@ int Node::MergePortsInternal(const PortRef& port0_ref,
       }
     }
 
+    V8RecordReplayAssert("Node::MergePortsInternal Done");
     return OK;
   }
 
@@ -1153,6 +1205,7 @@ int Node::MergePortsInternal(const PortRef& port0_ref,
     port1->state = Port::kReceiving;
   }
 
+  V8RecordReplayAssert("Node::MergePortsInternal #4");
   ClosePort(port0_ref);
   ClosePort(port1_ref);
   return ERROR_PORT_STATE_UNEXPECTED;
@@ -1368,17 +1421,23 @@ int Node::PrepareToForwardUserMessage(const PortRef& forwarding_port_ref,
 }
 
 int Node::BeginProxying(const PortRef& port_ref) {
+  V8RecordReplayAssert("Node::BeginProxying Start");
+
   {
     SinglePortLocker locker(&port_ref);
     auto* port = locker.port();
-    if (port->state != Port::kBuffering)
+    if (port->state != Port::kBuffering) {
+      V8RecordReplayAssert("Node::BeginProxying OOPS #1");
       return OOPS(ERROR_PORT_STATE_UNEXPECTED);
+    }
     port->state = Port::kProxying;
   }
 
   int rv = ForwardUserMessagesFromProxy(port_ref);
-  if (rv != OK)
+  if (rv != OK) {
+    V8RecordReplayAssert("Node::BeginProxying #1");
     return rv;
+  }
 
   // Forward any pending acknowledge request.
   MaybeForwardAckRequest(port_ref);
@@ -1389,8 +1448,10 @@ int Node::BeginProxying(const PortRef& port_ref) {
   {
     SinglePortLocker locker(&port_ref);
     auto* port = locker.port();
-    if (port->state != Port::kProxying)
+    if (port->state != Port::kProxying) {
+      V8RecordReplayAssert("Node::BeginProxying OOPS #2");
       return OOPS(ERROR_PORT_STATE_UNEXPECTED);
+    }
 
     try_remove_proxy_immediately = port->remove_proxy_on_last_message;
     if (try_remove_proxy_immediately) {
@@ -1408,10 +1469,13 @@ int Node::BeginProxying(const PortRef& port_ref) {
     InitiateProxyRemoval(port_ref);
   }
 
+  V8RecordReplayAssert("Node::BeginProxying Done");
   return OK;
 }
 
 int Node::ForwardUserMessagesFromProxy(const PortRef& port_ref) {
+  V8RecordReplayAssert("Node::ForwardUserMessagesFromProxy Start");
+
   for (;;) {
     // NOTE: We forward messages in sequential order here so that we maintain
     // the message queue's notion of next sequence number. That's useful for the
@@ -1421,6 +1485,7 @@ int Node::ForwardUserMessagesFromProxy(const PortRef& port_ref) {
     {
       SinglePortLocker locker(&port_ref);
       locker.port()->message_queue.GetNextMessage(&message, nullptr);
+      V8RecordReplayAssert("Node::ForwardUserMessagesFromProxy #1 %d", !!message);
       if (!message)
         break;
     }
@@ -1429,15 +1494,21 @@ int Node::ForwardUserMessagesFromProxy(const PortRef& port_ref) {
     int rv = PrepareToForwardUserMessage(port_ref, Port::kProxying,
                                          true /* ignore_closed_peer */,
                                          message.get(), &target_node);
-    if (rv != OK)
+    if (rv != OK) {
+      V8RecordReplayAssert("Node::ForwardUserMessagesFromProxy #2");
       return rv;
+    }
 
     delegate_->ForwardEvent(target_node, std::move(message));
   }
+  V8RecordReplayAssert("Node::ForwardUserMessagesFromProxy Done");
   return OK;
 }
 
 void Node::InitiateProxyRemoval(const PortRef& port_ref) {
+  V8RecordReplayAssert("Node::InitiateProxyRemoval Start %lu %lu",
+                       port_ref.name().v1, port_ref.name().v2);
+
   NodeName peer_node_name;
   PortName peer_port_name;
   {
@@ -1455,6 +1526,8 @@ void Node::InitiateProxyRemoval(const PortRef& port_ref) {
                           std::make_unique<ObserveProxyEvent>(
                               peer_port_name, name_, port_ref.name(),
                               peer_node_name, peer_port_name));
+
+  V8RecordReplayAssert("Node::InitiateProxyRemoval Done");
 }
 
 void Node::TryRemoveProxy(const PortRef& port_ref) {

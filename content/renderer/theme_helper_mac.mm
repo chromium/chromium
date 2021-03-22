@@ -12,11 +12,16 @@ extern "C" {
 bool CGFontRenderingGetFontSmoothingDisabled(void) API_AVAILABLE(macos(10.14));
 }
 
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+
 namespace content {
 
 void SystemColorsDidChange(int aqua_color_variant,
                            const std::string& highlight_text_color,
                            const std::string& highlight_color) {
+  V8RecordReplayAssert("SystemColorsDidChange %s %s",
+                       highlight_text_color.c_str(), highlight_color.c_str());
+
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
 
   // Register the defaults in the NSArgumentDomain, which is considered

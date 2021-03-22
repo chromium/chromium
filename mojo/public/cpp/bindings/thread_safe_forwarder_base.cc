@@ -11,6 +11,8 @@
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "mojo/public/cpp/bindings/sync_event_watcher.h"
 
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+
 namespace mojo {
 
 ThreadSafeForwarderBase::ThreadSafeForwarderBase(
@@ -40,6 +42,7 @@ bool ThreadSafeForwarderBase::PrefersSerializedMessages() {
 }
 
 bool ThreadSafeForwarderBase::Accept(Message* message) {
+  V8RecordReplayAssert("ThreadSafeForwarderBase::Accept Start");
   if (!message->associated_endpoint_handles()->empty()) {
     // If this DCHECK fails, it is likely because:
     // - This is a non-associated interface pointer setup using
@@ -55,6 +58,7 @@ bool ThreadSafeForwarderBase::Accept(Message* message) {
   }
   task_runner_->PostTask(FROM_HERE,
                          base::BindOnce(forward_, std::move(*message)));
+  V8RecordReplayAssert("ThreadSafeForwarderBase::Accept Done");
   return true;
 }
 

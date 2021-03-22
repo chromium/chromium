@@ -31,6 +31,10 @@ kern_return_t fileport_makeport(int fd, mach_port_t*);
 int fileport_makefd(mach_port_t);
 }  // extern "C"
 
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+extern "C" void V8RecordReplayBytes(const char* why, void* buf, size_t size);
+extern "C" int V8IsReplaying();
+
 namespace mojo {
 namespace core {
 
@@ -224,6 +228,11 @@ class ChannelMac : public Channel,
   // soon as the Channel establishes both the send and receive ports.
   bool RequestSendDeadNameNotification() {
     base::mac::ScopedMachSendRight previous;
+
+    V8RecordReplayAssert("RequestSendDeadNameNotification %d %d %d %d",
+                         send_port_.get(), MACH_NOTIFY_DEAD_NAME,
+                         receive_port_.get(), MACH_MSG_TYPE_MAKE_SEND_ONCE);
+
     kern_return_t kr = mach_port_request_notification(
         mach_task_self(), send_port_.get(), MACH_NOTIFY_DEAD_NAME, 0,
         receive_port_.get(), MACH_MSG_TYPE_MAKE_SEND_ONCE,
@@ -624,12 +633,23 @@ class ChannelMac : public Channel,
         return;
       }
 
+      // When replaying the raw address used when recording will be replayed,
+      // which we can't dereference. Allocate a new block of memory and copy
+      // in its contents from the recording.
+      void* address = descriptor->address;
+      if (V8IsReplaying()) {
+        address = nullptr;
+        kr = vm_allocate(mach_task_self(), (vm_address_t*)&address, descriptor->size, true);
+        CHECK(kr == KERN_SUCCESS);
+      }
+      V8RecordReplayBytes("ChannelMac::OnMachMessageReceived", address, descriptor->size);
+
       payload = base::span<const char>(
-          reinterpret_cast<const char*>(descriptor->address), descriptor->size);
+          reinterpret_cast<const char*>(address), descriptor->size);
       // The kernel page-aligns the OOL memory when performing the mach_msg on
       // the send side, but it preserves the original size in the descriptor.
       ool_memory.reset_unaligned(
-          reinterpret_cast<vm_address_t>(descriptor->address),
+          reinterpret_cast<vm_address_t>(address),
           descriptor->size);
     } else {
       auto* data_size_ptr = buffer.Object<uint64_t>();

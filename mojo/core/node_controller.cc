@@ -35,6 +35,12 @@
 #include "crypto/random.h"
 #endif
 
+#ifdef OS_MAC
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+#else
+static void V8RecordReplayAssert(const char* format, ...) {}
+#endif
+
 namespace mojo {
 namespace core {
 
@@ -745,6 +751,12 @@ void NodeController::DropAllPeers() {
 void NodeController::ForwardEvent(const ports::NodeName& node,
                                   ports::ScopedEvent event) {
   DCHECK(event);
+
+  V8RecordReplayAssert("NodeController::ForwardEvent %d %lu %lu %lu %lu",
+                       node == name_,
+                       name_.v1, name_.v2,
+                       node.v1, node.v2);
+
   if (node == name_)
     node_->AcceptEvent(std::move(event));
   else
@@ -1018,6 +1030,8 @@ void NodeController::OnEventMessage(const ports::NodeName& from_node,
                                     Channel::MessagePtr channel_message) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 
+  V8RecordReplayAssert("NodeController::OnEventMessage Start");
+
   auto event = DeserializeEventMessage(from_node, std::move(channel_message));
   if (!event) {
     // We silently ignore unparseable events, as they may come from a process
@@ -1029,6 +1043,8 @@ void NodeController::OnEventMessage(const ports::NodeName& from_node,
   node_->AcceptEvent(std::move(event));
 
   AttemptShutdownIfRequested();
+
+  V8RecordReplayAssert("NodeController::OnEventMessage Done");
 }
 
 void NodeController::OnRequestPortMerge(

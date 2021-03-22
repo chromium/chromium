@@ -18,6 +18,18 @@
 #include "mojo/core/request_context.h"
 #include "mojo/core/user_message_impl.h"
 
+#ifdef OS_MAC
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+extern "C" void V8RecordReplayRegisterPointer(void* ptr);
+extern "C" void V8RecordReplayUnregisterPointer(void* ptr);
+extern "C" int V8RecordReplayPointerId(void* ptr);
+#else
+static void V8RecordReplayAssert(const char* format, ...) {}
+static void V8RecordReplayRegisterPointer(void* ptr) {}
+static void V8RecordReplayUnregisterPointer(void* ptr) {}
+static int V8RecordReplayPointerId(void* ptr) { return 0; }
+#endif
+
 namespace mojo {
 namespace core {
 
@@ -98,9 +110,18 @@ MessagePipeDispatcher::MessagePipeDispatcher(NodeController* node_controller,
 
   node_controller_->SetPortObserver(
       port_, base::MakeRefCounted<PortObserverThunk>(this));
+
+  V8RecordReplayRegisterPointer(this);
+  V8RecordReplayAssert("MessagePipeDispatcher %lu %lu %lu",
+                       V8RecordReplayPointerId(this),
+                       port_.name().v1, port_.name().v2);
 }
 
 bool MessagePipeDispatcher::Fuse(MessagePipeDispatcher* other) {
+  V8RecordReplayAssert("MessagePipeDispatcher::Fuse %lu %lu %lu %lu",
+                       port_.name().v1, port_.name().v2,
+                       other->port_.name().v1, other->port_.name().v2);
+
   node_controller_->SetPortObserver(port_, nullptr);
   node_controller_->SetPortObserver(other->port_, nullptr);
 
@@ -375,7 +396,9 @@ scoped_refptr<Dispatcher> MessagePipeDispatcher::Deserialize(
                                    state->pipe_id, state->endpoint);
 }
 
-MessagePipeDispatcher::~MessagePipeDispatcher() = default;
+MessagePipeDispatcher::~MessagePipeDispatcher() {
+  V8RecordReplayUnregisterPointer(this);
+}
 
 MojoResult MessagePipeDispatcher::CloseNoLock() {
   signal_lock_.AssertAcquired();
