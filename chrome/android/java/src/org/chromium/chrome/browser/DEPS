@@ -220,9 +220,6 @@ specific_include_rules = {
   "PaymentHandlerMediator\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "PaymentHandlerToolbarCoordinator\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  ],
   "SafeBrowsingPasswordReuseDialogBridge\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
