@@ -280,7 +280,7 @@ class StatsCollector final {
   template <Context context>
   class DeferredTraceEventMap final {
    public:
-    using IdType = IdType<context>;
+    using IdType = StatsCollector::IdType<context>;
     using UnderlyingMap = MetadataHashMap<
         PlatformThreadId,
         std::array<DeferredTraceEvent, static_cast<size_t>(IdType::kNumIds)>>;
