@@ -35,7 +35,7 @@ class ChildAccountTypeChangedUserData : public base::SupportsUserData::Data {
 
  private:
   bool value_ = false;
-  base::CallbackList<void(bool)> callback_list_;
+  base::RepeatingCallbackList<void(bool)> callback_list_;
 };
 
 }  // namespace ash

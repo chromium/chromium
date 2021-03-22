@@ -43,8 +43,8 @@ static std::string& GetFakeLicenseKey() {
   return *license_key;
 }
 
-static base::CallbackList<void(void)>& GetFakeLicenceKeyListeners() {
-  static base::NoDestructor<base::CallbackList<void(void)>> instance;
+static base::RepeatingClosureList& GetFakeLicenceKeyListeners() {
+  static base::NoDestructor<base::RepeatingClosureList> instance;
   return *instance;
 }
 

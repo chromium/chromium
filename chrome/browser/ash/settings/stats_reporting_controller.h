@@ -136,7 +136,7 @@ class StatsReportingController
 
   PrefService* local_state_;
   bool value_notified_to_observers_;
-  base::CallbackList<void(void)> callback_list_;
+  base::RepeatingClosureList callback_list_;
   base::CallbackListSubscription setting_subscription_;
 
   // Indicates if the setting value is in the process of being set with the

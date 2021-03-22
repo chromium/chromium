@@ -41,8 +41,8 @@ class DualMediaSinkService {
       base::RepeatingCallback<void(const std::string&,
                                    const std::vector<MediaSinkInternal>&)>;
   using OnSinksDiscoveredProviderCallbackList =
-      base::CallbackList<void(const std::string&,
-                              const std::vector<MediaSinkInternal>&)>;
+      base::RepeatingCallbackList<void(const std::string&,
+                                       const std::vector<MediaSinkInternal>&)>;
 
   // Returns the lazily-created leaky singleton instance.
   static DualMediaSinkService* GetInstance();

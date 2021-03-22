@@ -61,7 +61,7 @@ class AppListLaunchRecorder {
 
   using EventFn = void(const LaunchInfo&);
   using LaunchEventCallback = base::RepeatingCallback<EventFn>;
-  using LaunchEventCallbackList = base::CallbackList<EventFn>;
+  using LaunchEventCallbackList = base::RepeatingCallbackList<EventFn>;
 
   AppListLaunchRecorder();
   ~AppListLaunchRecorder();

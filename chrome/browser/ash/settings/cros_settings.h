@@ -146,7 +146,7 @@ class CrosSettings {
 
   // A map from settings names to a list of observers. Observers get fired in
   // the order they are added.
-  std::map<std::string, std::unique_ptr<base::CallbackList<void(void)>>>
+  std::map<std::string, std::unique_ptr<base::RepeatingClosureList>>
       settings_observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);

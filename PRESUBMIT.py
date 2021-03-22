@@ -378,14 +378,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
 # RepeatingCallback) in order to enable presubmit checks for them and prevent
 # regressions.
 _NOT_CONVERTED_TO_MODERN_CALLBACK_LIST = '|'.join((
-  r'^chrome/browser/android/oom_intervention/near_oom_monitor\.h',
-  r'^chrome/browser/ash/account_manager/child_account_type_changed_user_data\.h', # pylint: disable=line-too-long
-  r'^chrome/browser/browser_switcher/',
-  r'^chrome/browser/chromeos/',
-  r'^chrome/browser/media/router/providers/cast/',
-  r'^chrome/brwoser/sessions/session_restore\.cc',
-  r'^chrome/browser/supervised_user/',
-  r'^chrome/browser/ui/',
   r'^chromecast/external_mojo/external_service_support/',
   r'^components/captive_portal/content/captive_portal_service\.h',
   r'^components/keyed_service/core/keyed_service_shutdown_notifier\.h',

@@ -37,7 +37,7 @@ class RecentlyAudibleHelperTest : public testing::Test {
     RecentlyAudibleHelper::CreateForWebContents(contents_);
     helper_ = RecentlyAudibleHelper::FromWebContents(contents_);
     helper_->SetTickClockForTesting(task_runner_->GetMockTickClock());
-    subscription_ = helper_->RegisterCallback(base::BindRepeating(
+    subscription_ = helper_->RegisterCallbackForTesting(base::BindRepeating(
         &RecentlyAudibleHelperTest::OnRecentlyAudibleCallback,
         base::Unretained(this)));
   }

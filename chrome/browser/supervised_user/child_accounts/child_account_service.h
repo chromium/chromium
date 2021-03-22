@@ -118,7 +118,7 @@ class ChildAccountService : public KeyedService,
 
   signin::IdentityManager* identity_manager_;
 
-  base::CallbackList<void()> google_auth_state_observers_;
+  base::RepeatingClosureList google_auth_state_observers_;
 
   // Callbacks to run when the user status becomes known.
   std::vector<base::OnceClosure> status_received_callback_list_;

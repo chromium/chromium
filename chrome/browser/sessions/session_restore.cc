@@ -952,7 +952,7 @@ void SessionRestore::OnWillRestoreTab(content::WebContents* web_contents) {
 }
 
 // static
-base::CallbackList<void(int)>*
+base::RepeatingCallbackList<void(int)>*
     SessionRestore::on_session_restored_callbacks_ = nullptr;
 
 // static

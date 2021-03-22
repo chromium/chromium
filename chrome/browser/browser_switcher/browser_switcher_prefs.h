@@ -173,7 +173,7 @@ class BrowserSwitcherPrefs : public KeyedService,
   // List of prefs (pref names) that changed since the last policy refresh.
   std::vector<std::string> dirty_prefs_;
 
-  base::CallbackList<PrefsChangedSignature> callback_list_;
+  base::RepeatingCallbackList<PrefsChangedSignature> callback_list_;
 
   base::WeakPtrFactory<BrowserSwitcherPrefs> weak_ptr_factory_{this};
 

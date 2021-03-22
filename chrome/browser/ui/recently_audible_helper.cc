@@ -39,8 +39,8 @@ bool RecentlyAudibleHelper::WasRecentlyAudible() const {
   return tick_clock_->NowTicks() < recently_audible_time_limit;
 }
 
-base::CallbackListSubscription RecentlyAudibleHelper::RegisterCallback(
-    const Callback& callback) {
+base::CallbackListSubscription
+RecentlyAudibleHelper::RegisterCallbackForTesting(const Callback& callback) {
   return callback_list_.Add(callback);
 }
 

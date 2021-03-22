@@ -303,11 +303,10 @@ base::CallbackListSubscription CrosSettings::AddSettingsObserver(
   DCHECK(GetProvider(path));
 
   // Get the callback registry associated with the path.
-  base::CallbackList<void(void)>* registry = nullptr;
+  base::RepeatingClosureList* registry = nullptr;
   auto observer_iterator = settings_observers_.find(path);
   if (observer_iterator == settings_observers_.end()) {
-    settings_observers_[path] =
-        std::make_unique<base::CallbackList<void(void)>>();
+    settings_observers_[path] = std::make_unique<base::RepeatingClosureList>();
     registry = settings_observers_[path].get();
   } else {
     registry = observer_iterator->second.get();

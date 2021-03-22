@@ -59,11 +59,13 @@ class SupervisedUserSettingsService : public KeyedService,
   // inactive, i.e. the user is not supervised.
   using SettingsCallbackType = void(const base::DictionaryValue*);
   using SettingsCallback = base::RepeatingCallback<SettingsCallbackType>;
-  using SettingsCallbackList = base::CallbackList<SettingsCallbackType>;
+  using SettingsCallbackList =
+      base::RepeatingCallbackList<SettingsCallbackType>;
 
   using ShutdownCallbackType = void();
   using ShutdownCallback = base::RepeatingCallback<ShutdownCallbackType>;
-  using ShutdownCallbackList = base::CallbackList<ShutdownCallbackType>;
+  using ShutdownCallbackList =
+      base::RepeatingCallbackList<ShutdownCallbackType>;
 
   SupervisedUserSettingsService();
   ~SupervisedUserSettingsService() override;

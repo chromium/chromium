@@ -43,7 +43,7 @@ class CastAppDiscoveryService {
   using SinkQueryFunc = void(const MediaSource::Id& source_id,
                              const std::vector<MediaSinkInternal>& sinks);
   using SinkQueryCallback = base::RepeatingCallback<SinkQueryFunc>;
-  using SinkQueryCallbackList = base::CallbackList<SinkQueryFunc>;
+  using SinkQueryCallbackList = base::RepeatingCallbackList<SinkQueryFunc>;
 
   virtual ~CastAppDiscoveryService() = default;
 
