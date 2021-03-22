@@ -2035,10 +2035,10 @@
     Sites can ask to send notifications
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_PARTIAL" desc="Label for the partial option of the notifications content setting.">
-    Use quieter messaging (recommended)
+    Use quieter messaging
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_PARTIAL_SUB_LABEL" desc="Sub-label for the partial option of the notifications content setting.">
-    Sites can't interrupt you by asking to send notifications
+    Sites are blocked from interrupting you when they ask to send notifications
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_BLOCKED" desc="Label for the blocked option of the notifications content setting.">
     Don't allow sites to send notifications
@@ -2102,6 +2102,9 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the protected content content setting.">
     Not allowed to play protected content
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PROTOCOL_HANDLERS_DESCRIPTION" desc="Description of the protocol handlers content setting.">
+    Sites can handle special tasks when you click on certain types of links, like creating a new message in your email client or adding new events to your online calendar
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PROTOCOL_HANDLERS_ALLOWED" desc="Label for the enabled option of protocol handlers site setting.">
     Sites can ask to handle protocols

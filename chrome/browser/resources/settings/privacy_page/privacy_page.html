@@ -618,8 +618,9 @@
                   <settings-collapse-radio-button no-collapse class="two-line"
                       name="[[notificationSettingEnum_.QUIETER_MESSAGING]]"
                       pref="[[prefs.generated.notification]]"
-                      label="$i18n{siteSettingsNotificationsAllowed}"
-                      sub-label="$i18n{siteSettingsNotificationsPartial}"
+                      label="$i18n{siteSettingsNotificationsPartial}"
+                      sub-label=
+                          "$i18n{siteSettingsNotificationsPartialSubLabel}"
                       icon="settings:notifications">
                   </settings-collapse-radio-button>
                 </template>
@@ -1320,7 +1321,6 @@
           <settings-subpage page-title="$i18n{fonts}"
               search-label="$i18n{siteSettingsAllSitesSearch}"
               search-term="{{searchFilter_}}">
-              <!-- TODO(1113642): Apply new off icon. -->
               <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
                 <div class="content-settings-header secondary">
                   $i18n{siteSettingsFontsDescription}
@@ -1330,7 +1330,7 @@
                     allow-option-label="$i18n{siteSettingsFontsAllowed}"
                     allow-option-icon="settings:font-access"
                     block-option-label="$i18n{siteSettingsFontsBlocked}"
-                    block-option-icon="settings:font-access">
+                    block-option-icon="settings:font-access-off">
                 </settings-category-default-radio-group>
                 <category-setting-exceptions
                     category="[[ContentSettingsTypes.FONT_ACCESS]]"
