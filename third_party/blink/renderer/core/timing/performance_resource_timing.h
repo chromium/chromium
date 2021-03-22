@@ -60,14 +60,12 @@ class CORE_EXPORT PerformanceResourceTiming
   PerformanceResourceTiming(
       const AtomicString& name,
       base::TimeTicks time_origin,
-      bool cross_origin_isolated_capability,
       bool is_secure_context,
       HeapVector<Member<PerformanceServerTiming>> server_timing,
       ExecutionContext* context);
   PerformanceResourceTiming(
       const mojom::blink::ResourceTimingInfo&,
       base::TimeTicks time_origin,
-      bool cross_origin_isolated_capability,
       const AtomicString& initiator_type,
       mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
           worker_timing_receiver,
@@ -110,9 +108,6 @@ class CORE_EXPORT PerformanceResourceTiming
   virtual AtomicString ConnectionInfo() const;
 
   base::TimeTicks TimeOrigin() const { return time_origin_; }
-  bool CrossOriginIsolatedCapability() const {
-    return cross_origin_isolated_capability_;
-  }
 
  private:
   AtomicString GetNextHopProtocol(const AtomicString& alpn_negotiated_protocol,
@@ -131,7 +126,6 @@ class CORE_EXPORT PerformanceResourceTiming
   AtomicString alpn_negotiated_protocol_;
   AtomicString connection_info_;
   base::TimeTicks time_origin_;
-  bool cross_origin_isolated_capability_;
   scoped_refptr<ResourceLoadTiming> timing_;
   base::TimeTicks last_redirect_end_time_;
   base::TimeTicks response_end_;

@@ -13,19 +13,16 @@
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
-#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
 
 PerformanceMark::PerformanceMark(
     const AtomicString& name,
     double start_time,
-    base::TimeTicks unsafe_time_for_traces,
     scoped_refptr<SerializedScriptValue> serialized_detail,
     ExceptionState& exception_state)
     : PerformanceEntry(name, start_time, start_time),
-      serialized_detail_(std::move(serialized_detail)),
-      unsafe_time_for_traces_(unsafe_time_for_traces) {}
+      serialized_detail_(std::move(serialized_detail)) {}
 
 // static
 PerformanceMark* PerformanceMark::Create(ScriptState* script_state,
@@ -44,7 +41,6 @@ PerformanceMark* PerformanceMark::Create(ScriptState* script_state,
   DCHECK(performance);
 
   DOMHighResTimeStamp start = 0.0;
-  base::TimeTicks unsafe_start_for_traces;
   ScriptValue detail = ScriptValue::CreateNull(script_state->GetIsolate());
   if (mark_options) {
     if (mark_options->hasStartTime()) {
@@ -54,22 +50,14 @@ PerformanceMark* PerformanceMark::Create(ScriptState* script_state,
                                        "' cannot have a negative start time.");
         return nullptr;
       }
-      // |start| is in milliseconds from the start of navigation.
-      // GetTimeOrigin() returns seconds from the monotonic clock's origin..
-      // Trace events timestamps accept seconds (as a double) based on
-      // CurrentTime::monotonicallyIncreasingTime().
-      unsafe_start_for_traces = trace_event::ToTraceTimestamp(
-          performance->GetTimeOrigin() + start / 1000.0);
     } else {
       start = performance->now();
-      unsafe_start_for_traces = base::TimeTicks::Now();
     }
 
     if (mark_options->hasDetail())
       detail = mark_options->detail();
   } else {
     start = performance->now();
-    unsafe_start_for_traces = base::TimeTicks::Now();
   }
 
   if (!is_worker_global_scope &&
@@ -90,8 +78,7 @@ PerformanceMark* PerformanceMark::Create(ScriptState* script_state,
     return nullptr;
 
   return MakeGarbageCollected<PerformanceMark>(
-      mark_name, start, unsafe_start_for_traces, std::move(serialized_detail),
-      exception_state);
+      mark_name, start, std::move(serialized_detail), exception_state);
 }
 
 AtomicString PerformanceMark::entryType() const {

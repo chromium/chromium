@@ -43,8 +43,7 @@ TEST(PerformanceMarkTest, Construction) {
   v8::Isolate* isolate = scope.GetIsolate();
 
   PerformanceMark* pm = MakeGarbageCollected<PerformanceMark>(
-      "mark-name", 0, base::TimeTicks(), SerializedScriptValue::NullValue(),
-      exception_state);
+      "mark-name", 0, SerializedScriptValue::NullValue(), exception_state);
   ASSERT_EQ(pm->entryType(), performance_entry_names::kMark);
   ASSERT_EQ(pm->EntryTypeEnum(), PerformanceEntry::EntryType::kMark);
 
@@ -62,7 +61,7 @@ TEST(PerformanceMarkTest, ConstructionWithDetail) {
       SerializedScriptValue::Create(String("some-payload"));
 
   PerformanceMark* pm = MakeGarbageCollected<PerformanceMark>(
-      "mark-name", 0, base::TimeTicks(), payload_string, exception_state);
+      "mark-name", 0, payload_string, exception_state);
   ASSERT_EQ(pm->entryType(), performance_entry_names::kMark);
   ASSERT_EQ(pm->EntryTypeEnum(), PerformanceEntry::EntryType::kMark);
 

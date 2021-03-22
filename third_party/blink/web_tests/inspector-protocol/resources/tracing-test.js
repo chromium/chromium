@@ -8,8 +8,8 @@
     this._session = session;
   }
 
-  startTracing(categories="-*,disabled-by-default-devtools.timeline,devtools.timeline") {
-    return this.startTracingWithArguments({ "categories": categories, "type": "", "options": "" });
+  startTracing() {
+    return this.startTracingWithArguments({ "categories": "-*,disabled-by-default-devtools.timeline,devtools.timeline", "type": "", "options": "" });
   }
 
   startTracingAndSaveAsStream() {
@@ -27,12 +27,12 @@
     this._testRunner.log("Recording started");
   }
 
-  async stopTracing(filter_re=/devtools.timeline/) {
+  async stopTracing() {
     var devtoolsEvents = [];
 
     function dataCollected(reply) {
       var allEvents = reply.params.value;
-      var filteredEvents = allEvents.filter(e => filter_re.test(e.cat));
+      var filteredEvents = allEvents.filter(e => /devtools.timeline/.test(e.cat));
       devtoolsEvents = devtoolsEvents.concat(filteredEvents);
     };
 

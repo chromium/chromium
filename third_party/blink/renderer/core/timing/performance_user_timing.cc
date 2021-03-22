@@ -27,7 +27,6 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_performance_mark_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/performance_mark.h"
 #include "third_party/blink/renderer/core/timing/performance_measure.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -63,12 +62,6 @@ void ClearPeformanceEntries(PerformanceEntryMap& performance_entry_map,
     performance_entry_map.erase(name);
 }
 
-bool IsTracingEnabled() {
-  bool enabled;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED("blink.user_timing", &enabled);
-  return enabled;
-}
-
 }  // namespace
 
 UserTiming::UserTiming(Performance& performance) : performance_(&performance) {}
@@ -88,23 +81,12 @@ void UserTiming::ClearMarks(const AtomicString& mark_name) {
   ClearPeformanceEntries(marks_map_, mark_name);
 }
 
-const PerformanceMark* UserTiming::FindExistingMark(
-    const AtomicString& mark_name) {
+double UserTiming::FindExistingMarkStartTime(const AtomicString& mark_name,
+                                             ExceptionState& exception_state) {
   PerformanceEntryMap::const_iterator existing_marks =
       marks_map_.find(mark_name);
   if (existing_marks != marks_map_.end()) {
-    PerformanceEntry* entry = existing_marks->value->back().Get();
-    DCHECK(entry->entryType() == performance_entry_names::kMark);
-    return static_cast<PerformanceMark*>(entry);
-  }
-  return nullptr;
-}
-
-double UserTiming::FindExistingMarkStartTime(const AtomicString& mark_name,
-                                             ExceptionState& exception_state) {
-  const PerformanceMark* mark = FindExistingMark(mark_name);
-  if (mark) {
-    return mark->startTime();
+    return existing_marks->value->back()->startTime();
   }
 
   PerformanceTiming::PerformanceTimingGetter timing_function =
@@ -157,27 +139,6 @@ double UserTiming::GetTimeOrFindMarkTime(const AtomicString& measure_name,
   return time;
 }
 
-base::TimeTicks UserTiming::GetPerformanceMarkUnsafeTimeForTraces(
-    double start_time,
-    const base::Optional<StringOrDouble>& maybe_mark_name) {
-  if (maybe_mark_name.has_value() && maybe_mark_name.value().IsString()) {
-    const PerformanceMark* mark =
-        FindExistingMark(AtomicString(maybe_mark_name.value().GetAsString()));
-    if (mark) {
-      return (mark->UnsafeTimeForTraces());
-    }
-  }
-
-  // User timing events are stored as integer milliseconds from the start of
-  // navigation.
-  // GetTimeOrigin() returns seconds from the monotonic clock's origin..
-  // Trace events timestamps accept seconds (as a double) based on
-  // CurrentTime::monotonicallyIncreasingTime().
-  double start_time_in_seconds = start_time / 1000.0;
-  return trace_event::ToTraceTimestamp(performance_->GetTimeOrigin() +
-                                       start_time_in_seconds);
-}
-
 PerformanceMeasure* UserTiming::Measure(
     ScriptState* script_state,
     const AtomicString& measure_name,
@@ -213,22 +174,22 @@ PerformanceMeasure* UserTiming::Measure(
     }
   }
 
-  if (IsTracingEnabled()) {
-    base::TimeTicks unsafe_start_time =
-        GetPerformanceMarkUnsafeTimeForTraces(start_time, start);
-    base::TimeTicks unsafe_end_time =
-        GetPerformanceMarkUnsafeTimeForTraces(end_time, end);
-    unsigned hash = WTF::StringHash::GetHash(measure_name);
-    WTF::AddFloatToHash(hash, start_time);
-    WTF::AddFloatToHash(hash, end_time);
+  // User timing events are stored as integer milliseconds from the start of
+  // navigation, whereas trace events accept double seconds based off of
+  // CurrentTime::monotonicallyIncreasingTime().
+  double start_time_monotonic =
+      performance_->GetTimeOrigin() + start_time / 1000.0;
+  double end_time_monotonic = performance_->GetTimeOrigin() + end_time / 1000.0;
+  unsigned hash = WTF::StringHash::GetHash(measure_name);
+  WTF::AddFloatToHash(hash, start_time);
+  WTF::AddFloatToHash(hash, end_time);
 
-    TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-        "blink.user_timing", measure_name.Utf8().c_str(), hash,
-        unsafe_start_time);
-    TRACE_EVENT_COPY_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        "blink.user_timing", measure_name.Utf8().c_str(), hash,
-        unsafe_end_time);
-  }
+  TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+      "blink.user_timing", measure_name.Utf8().c_str(), hash,
+      trace_event::ToTraceTimestamp(start_time_monotonic));
+  TRACE_EVENT_COPY_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+      "blink.user_timing", measure_name.Utf8().c_str(), hash,
+      trace_event::ToTraceTimestamp(end_time_monotonic));
 
   PerformanceMeasure* measure =
       PerformanceMeasure::Create(script_state, measure_name, start_time,

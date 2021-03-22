@@ -11,11 +11,8 @@
 
 namespace blink {
 
-IdleDeadline::IdleDeadline(base::TimeTicks deadline,
-                           bool cross_origin_isolated_capability,
-                           CallbackType callback_type)
+IdleDeadline::IdleDeadline(base::TimeTicks deadline, CallbackType callback_type)
     : deadline_(deadline),
-      cross_origin_isolated_capability_(cross_origin_isolated_capability),
       callback_type_(callback_type),
       clock_(base::DefaultTickClock::GetInstance()) {}
 
@@ -26,9 +23,7 @@ double IdleDeadline::timeRemaining() const {
     return 0;
   }
 
-  return 1000.0 *
-         Performance::ClampTimeResolution(time_remaining.InSecondsF(),
-                                          cross_origin_isolated_capability_);
+  return 1000.0 * Performance::ClampTimeResolution(time_remaining.InSecondsF());
 }
 
 }  // namespace blink

@@ -49,14 +49,12 @@ PerformanceNavigationTiming::PerformanceNavigationTiming(
     LocalDOMWindow* window,
     ResourceTimingInfo* info,
     base::TimeTicks time_origin,
-    bool cross_origin_isolated_capability,
     HeapVector<Member<PerformanceServerTiming>> server_timing)
     : PerformanceResourceTiming(
           info ? AtomicString(
                      info->FinalResponse().CurrentRequestUrl().GetString())
                : g_empty_atom,
           time_origin,
-          cross_origin_isolated_capability,
           // TODO(crbug.com/1153336) Use network::IsUrlPotentiallyTrustworthy().
           SecurityOrigin::IsSecure(window->Url()),
           std::move(server_timing),
@@ -173,7 +171,7 @@ DOMHighResTimeStamp PerformanceNavigationTiming::unloadEventStart() const {
     return 0;
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
       TimeOrigin(), timing->UnloadEventStart(),
-      false /* allow_negative_value */, CrossOriginIsolatedCapability());
+      false /* allow_negative_value */);
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::unloadEventEnd() const {
@@ -184,8 +182,7 @@ DOMHighResTimeStamp PerformanceNavigationTiming::unloadEventEnd() const {
       !timing->CanRequestFromPreviousDocument())
     return 0;
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->UnloadEventEnd(), false /* allow_negative_value */,
-      CrossOriginIsolatedCapability());
+      TimeOrigin(), timing->UnloadEventEnd(), false /* allow_negative_value */);
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::domInteractive() const {
@@ -193,8 +190,7 @@ DOMHighResTimeStamp PerformanceNavigationTiming::domInteractive() const {
   if (!timing)
     return 0.0;
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->DomInteractive(), false /* allow_negative_value */,
-      CrossOriginIsolatedCapability());
+      TimeOrigin(), timing->DomInteractive(), false /* allow_negative_value */);
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::domContentLoadedEventStart()
@@ -204,7 +200,7 @@ DOMHighResTimeStamp PerformanceNavigationTiming::domContentLoadedEventStart()
     return 0.0;
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
       TimeOrigin(), timing->DomContentLoadedEventStart(),
-      false /* allow_negative_value */, CrossOriginIsolatedCapability());
+      false /* allow_negative_value */);
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::domContentLoadedEventEnd()
@@ -214,7 +210,7 @@ DOMHighResTimeStamp PerformanceNavigationTiming::domContentLoadedEventEnd()
     return 0.0;
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
       TimeOrigin(), timing->DomContentLoadedEventEnd(),
-      false /* allow_negative_value */, CrossOriginIsolatedCapability());
+      false /* allow_negative_value */);
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::domComplete() const {
@@ -222,8 +218,7 @@ DOMHighResTimeStamp PerformanceNavigationTiming::domComplete() const {
   if (!timing)
     return 0.0;
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->DomComplete(), false /* allow_negative_value */,
-      CrossOriginIsolatedCapability());
+      TimeOrigin(), timing->DomComplete(), false /* allow_negative_value */);
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::loadEventStart() const {
@@ -231,8 +226,7 @@ DOMHighResTimeStamp PerformanceNavigationTiming::loadEventStart() const {
   if (!timing)
     return 0.0;
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->LoadEventStart(), false /* allow_negative_value */,
-      CrossOriginIsolatedCapability());
+      TimeOrigin(), timing->LoadEventStart(), false /* allow_negative_value */);
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::loadEventEnd() const {
@@ -240,8 +234,7 @@ DOMHighResTimeStamp PerformanceNavigationTiming::loadEventEnd() const {
   if (!timing)
     return 0.0;
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->LoadEventEnd(), false /* allow_negative_value */,
-      CrossOriginIsolatedCapability());
+      TimeOrigin(), timing->LoadEventEnd(), false /* allow_negative_value */);
 }
 
 AtomicString PerformanceNavigationTiming::type() const {
@@ -266,8 +259,7 @@ DOMHighResTimeStamp PerformanceNavigationTiming::redirectStart() const {
   if (!allow_redirect_details || !timing)
     return 0;
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->RedirectStart(), false /* allow_negative_value */,
-      CrossOriginIsolatedCapability());
+      TimeOrigin(), timing->RedirectStart(), false /* allow_negative_value */);
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::redirectEnd() const {
@@ -276,8 +268,7 @@ DOMHighResTimeStamp PerformanceNavigationTiming::redirectEnd() const {
   if (!allow_redirect_details || !timing)
     return 0;
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->RedirectEnd(), false /* allow_negative_value */,
-      CrossOriginIsolatedCapability());
+      TimeOrigin(), timing->RedirectEnd(), false /* allow_negative_value */);
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::fetchStart() const {
@@ -285,8 +276,7 @@ DOMHighResTimeStamp PerformanceNavigationTiming::fetchStart() const {
   if (!timing)
     return 0.0;
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->FetchStart(), false /* allow_negative_value */,
-      CrossOriginIsolatedCapability());
+      TimeOrigin(), timing->FetchStart(), false /* allow_negative_value */);
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::responseEnd() const {
@@ -294,8 +284,7 @@ DOMHighResTimeStamp PerformanceNavigationTiming::responseEnd() const {
   if (!timing)
     return 0.0;
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
-      TimeOrigin(), timing->ResponseEnd(), false /* allow_negative_value */,
-      CrossOriginIsolatedCapability());
+      TimeOrigin(), timing->ResponseEnd(), false /* allow_negative_value */);
 }
 
 // Overriding PerformanceEntry's attributes.

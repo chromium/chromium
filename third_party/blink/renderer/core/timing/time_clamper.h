@@ -18,8 +18,13 @@ class CORE_EXPORT TimeClamper {
   USING_FAST_MALLOC(TimeClamper);
 
  public:
-  static constexpr double kCoarseResolutionSeconds = 100e-6;
-  static constexpr double kFineResolutionSeconds = 5e-6;
+// As site isolation is enabled on desktop platforms, we can safely provide
+// more timing resolution. Jittering is still enabled everywhere.
+#if defined(OS_ANDROID)
+  static constexpr double kResolutionSeconds = 100e-6;
+#else
+  static constexpr double kResolutionSeconds = 5e-6;
+#endif
 
   TimeClamper();
 
@@ -30,11 +35,10 @@ class CORE_EXPORT TimeClamper {
   // For each clamped time interval, we compute a pseudorandom transition
   // threshold. The returned time will either be the start of that interval or
   // the next one depending on which side of the threshold |time_seconds| is.
-  double ClampTimeResolution(double time_seconds,
-                             bool cross_origin_isolated_capability) const;
+  double ClampTimeResolution(double time_seconds) const;
 
  private:
-  inline double ThresholdFor(double clamped_time, double resolution) const;
+  inline double ThresholdFor(double clamped_time) const;
   static inline double ToDouble(uint64_t value);
   static inline uint64_t MurmurHash3(uint64_t value);
 

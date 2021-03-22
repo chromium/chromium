@@ -53,13 +53,8 @@ void ProfilerTraceBuilder::Trace(Visitor* visitor) const {
 void ProfilerTraceBuilder::AddSample(const v8::CpuProfileNode* node,
                                      base::TimeTicks timestamp) {
   auto* sample = ProfilerSample::Create();
-  // TODO(yoav): This should not use MonotonicTimeToDOMHighResTimeStamp, as
-  // these timestamps are clamped, which makes no sense for traces. Since this
-  // only exposes time to traces, it's fine to define this as statically "cross
-  // origin isolated".
   auto relative_timestamp = Performance::MonotonicTimeToDOMHighResTimeStamp(
-      time_origin_, timestamp, /*allow_negative_value=*/true,
-      /*cross_origin_isolated_capability=*/true);
+      time_origin_, timestamp, true);
 
   sample->setTimestamp(relative_timestamp);
   if (base::Optional<wtf_size_t> stack_id = GetOrInsertStackId(node))

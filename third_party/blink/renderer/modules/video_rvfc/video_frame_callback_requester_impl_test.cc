@@ -163,8 +163,8 @@ class VfcRequesterParameterVerifierCallback
 
   double TicksToClampedMillisecondsF(base::TimeTicks ticks) {
     return Performance::ClampTimeResolution(
-               timing_.MonotonicTimeToZeroBasedDocumentTime(ticks).InSecondsF(),
-               /*cross_origin_isolated_capability_=*/false) *
+               timing_.MonotonicTimeToZeroBasedDocumentTime(ticks)
+                   .InSecondsF()) *
            base::Time::kMillisecondsPerSecond;
   }
 

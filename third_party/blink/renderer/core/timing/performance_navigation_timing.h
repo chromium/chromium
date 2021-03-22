@@ -34,7 +34,6 @@ class CORE_EXPORT PerformanceNavigationTiming final
   PerformanceNavigationTiming(LocalDOMWindow*,
                               ResourceTimingInfo*,
                               base::TimeTicks time_origin,
-                              bool cross_origin_isolated_capability,
                               HeapVector<Member<PerformanceServerTiming>>);
   ~PerformanceNavigationTiming() override;
 

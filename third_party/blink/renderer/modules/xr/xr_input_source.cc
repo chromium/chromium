@@ -233,10 +233,7 @@ void XRInputSource::UpdateGamepad(
                                                base::TimeTicks::Now());
     }
 
-    LocalDOMWindow* window = session_->xr()->DomWindow();
-    bool cross_origin_isolated_capability =
-        window ? window->CrossOriginIsolatedCapability() : false;
-    gamepad_->UpdateFromDeviceState(*gamepad, cross_origin_isolated_capability);
+    gamepad_->UpdateFromDeviceState(*gamepad);
   } else {
     gamepad_ = nullptr;
   }

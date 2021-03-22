@@ -56,7 +56,6 @@ class CORE_EXPORT PerformanceMark final : public PerformanceEntry {
   // This constructor is only public so that MakeGarbageCollected can call it.
   PerformanceMark(const AtomicString& name,
                   double start_time,
-                  base::TimeTicks unsafe_time_for_traces,
                   scoped_refptr<SerializedScriptValue>,
                   ExceptionState& exception_state);
   ~PerformanceMark() override = default;
@@ -70,17 +69,12 @@ class CORE_EXPORT PerformanceMark final : public PerformanceEntry {
 
   void Trace(Visitor*) const override;
 
-  base::TimeTicks UnsafeTimeForTraces() const {
-    return unsafe_time_for_traces_;
-  }
-
  private:
   scoped_refptr<SerializedScriptValue> serialized_detail_;
   // In order to prevent cross-world reference leak, we create a copy of the
   // detail for each world.
   HeapHashMap<WeakMember<ScriptState>, TraceWrapperV8Reference<v8::Value>>
       deserialized_detail_map_;
-  base::TimeTicks unsafe_time_for_traces_;
 };
 
 }  // namespace blink

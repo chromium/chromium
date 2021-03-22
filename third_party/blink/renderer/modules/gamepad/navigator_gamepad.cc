@@ -216,10 +216,7 @@ void NavigatorGamepad::SampleGamepads() {
         gamepad = MakeGarbageCollected<Gamepad>(this, i, navigation_start_,
                                                 gamepads_start_);
       }
-      bool cross_origin_isolated_capability =
-          DomWindow() ? DomWindow()->CrossOriginIsolatedCapability() : false;
-      gamepad->UpdateFromDeviceState(device_gamepad,
-                                     cross_origin_isolated_capability);
+      gamepad->UpdateFromDeviceState(device_gamepad);
       gamepads_back_->Set(i, gamepad);
     } else {
       gamepads_back_->Set(i, nullptr);

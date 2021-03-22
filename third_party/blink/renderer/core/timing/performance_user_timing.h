@@ -64,10 +64,6 @@ class UserTiming final : public GarbageCollected<UserTiming> {
   void Trace(Visitor*) const;
 
  private:
-  const PerformanceMark* FindExistingMark(const AtomicString& mark_name);
-  base::TimeTicks GetPerformanceMarkUnsafeTimeForTraces(
-      double start_time,
-      const base::Optional<StringOrDouble>& maybe_mark_name);
   double FindExistingMarkStartTime(const AtomicString& mark_name,
                                    ExceptionState&);
   double GetTimeOrFindMarkTime(const AtomicString& measure_name,

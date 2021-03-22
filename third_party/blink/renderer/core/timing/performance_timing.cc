@@ -50,21 +50,18 @@
 // Legacy support for NT1(https://www.w3.org/TR/navigation-timing/).
 namespace blink {
 
-static uint64_t ToIntegerMilliseconds(base::TimeDelta duration,
-                                      bool cross_origin_isolated_capability) {
+static uint64_t ToIntegerMilliseconds(base::TimeDelta duration) {
   // TODO(npm): add histograms to understand when/why |duration| is sometimes
   // negative.
   // TODO(crbug.com/1063989): stop clamping when it is not needed (i.e. for
   // methods which do not expose the timestamp to a web perf API).
-  double clamped_seconds = Performance::ClampTimeResolution(
-      duration.InSecondsF(), cross_origin_isolated_capability);
+  double clamped_seconds =
+      Performance::ClampTimeResolution(duration.InSecondsF());
   return static_cast<uint64_t>(clamped_seconds * 1000.0);
 }
 
 PerformanceTiming::PerformanceTiming(ExecutionContext* context)
-    : ExecutionContextClient(context) {
-  cross_origin_isolated_capability_ = context->CrossOriginIsolatedCapability();
-}
+    : ExecutionContextClient(context) {}
 
 uint64_t PerformanceTiming::navigationStart() const {
   DocumentLoadTiming* timing = GetDocumentLoadTiming();
@@ -594,8 +591,7 @@ uint64_t PerformanceTiming::ParseBlockedOnScriptLoadDuration() const {
   if (!timing)
     return 0;
 
-  return ToIntegerMilliseconds(timing->ParserBlockedOnScriptLoadDuration(),
-                               cross_origin_isolated_capability_);
+  return ToIntegerMilliseconds(timing->ParserBlockedOnScriptLoadDuration());
 }
 
 uint64_t PerformanceTiming::ParseBlockedOnScriptLoadFromDocumentWriteDuration()
@@ -605,8 +601,7 @@ uint64_t PerformanceTiming::ParseBlockedOnScriptLoadFromDocumentWriteDuration()
     return 0;
 
   return ToIntegerMilliseconds(
-      timing->ParserBlockedOnScriptLoadFromDocumentWriteDuration(),
-      cross_origin_isolated_capability_);
+      timing->ParserBlockedOnScriptLoadFromDocumentWriteDuration());
 }
 
 uint64_t PerformanceTiming::ParseBlockedOnScriptExecutionDuration() const {
@@ -614,8 +609,8 @@ uint64_t PerformanceTiming::ParseBlockedOnScriptExecutionDuration() const {
   if (!timing)
     return 0;
 
-  return ToIntegerMilliseconds(timing->ParserBlockedOnScriptExecutionDuration(),
-                               cross_origin_isolated_capability_);
+  return ToIntegerMilliseconds(
+      timing->ParserBlockedOnScriptExecutionDuration());
 }
 
 uint64_t
@@ -626,8 +621,7 @@ PerformanceTiming::ParseBlockedOnScriptExecutionFromDocumentWriteDuration()
     return 0;
 
   return ToIntegerMilliseconds(
-      timing->ParserBlockedOnScriptExecutionFromDocumentWriteDuration(),
-      cross_origin_isolated_capability_);
+      timing->ParserBlockedOnScriptExecutionFromDocumentWriteDuration());
 }
 
 base::Optional<base::TimeTicks> PerformanceTiming::LastPortalActivatedPaint()
@@ -784,8 +778,7 @@ uint64_t PerformanceTiming::MonotonicTimeToIntegerMilliseconds(
   if (!timing)
     return 0;
 
-  return ToIntegerMilliseconds(timing->MonotonicTimeToPseudoWallTime(time),
-                               cross_origin_isolated_capability_);
+  return ToIntegerMilliseconds(timing->MonotonicTimeToPseudoWallTime(time));
 }
 
 void PerformanceTiming::Trace(Visitor* visitor) const {
