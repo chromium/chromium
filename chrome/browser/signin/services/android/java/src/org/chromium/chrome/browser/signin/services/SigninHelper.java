@@ -138,12 +138,6 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
                 }
             }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
         });
-
-        if (accountsChanged) {
-            // Account details have changed so inform the token service that credentials
-            // should now be available.
-            mSigninManager.reloadAllAccountsFromSystem();
-        }
     }
 
     /**

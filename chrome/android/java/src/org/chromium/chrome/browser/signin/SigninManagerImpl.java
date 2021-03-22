@@ -127,7 +127,8 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
                 SigninManagerImplJni.get().isSigninAllowedByPolicy(mNativeSigninManagerAndroid);
         mIdentityManager.addObserver(this);
 
-        reloadAllAccountsFromSystem();
+        mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(CoreAccountInfo.getIdFrom(
+                mIdentityManager.getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED)));
 
         maybeRollbackMobileIdentityConsistency();
     }
@@ -570,15 +571,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     @Override
     public String getManagementDomain() {
         return SigninManagerImplJni.get().getManagementDomain(mNativeSigninManagerAndroid);
-    }
-
-    /**
-     * Reloads accounts from system within IdentityManager.
-     */
-    @Override
-    public void reloadAllAccountsFromSystem() {
-        mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(CoreAccountInfo.getIdFrom(
-                mIdentityManager.getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED)));
     }
 
     /**

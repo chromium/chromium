@@ -234,13 +234,6 @@ public interface SigninManager {
     String getManagementDomain();
 
     /**
-     * Reloads accounts from system within IdentityManager.
-     * TODO(crbug.com/1152460): Move the caller of this method to SigninManager and remove this
-     * method.
-     */
-    void reloadAllAccountsFromSystem();
-
-    /**
      * Verifies if the account is managed. Callback may be called either
      * synchronously or asynchronously depending on the availability of the
      * result.
