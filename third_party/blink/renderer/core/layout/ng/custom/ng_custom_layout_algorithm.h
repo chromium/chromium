@@ -20,12 +20,13 @@ class CORE_EXPORT NGCustomLayoutAlgorithm
  public:
   NGCustomLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
 
-  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesInput&) const override;
+  MinMaxSizesResult ComputeMinMaxSizes(
+      const MinMaxSizesFloatInput&) const override;
   scoped_refptr<const NGLayoutResult> Layout() override;
 
  private:
   void AddAnyOutOfFlowPositionedChildren(NGLayoutInputNode* child);
-  MinMaxSizesResult FallbackMinMaxSizes(const MinMaxSizesInput&) const;
+  MinMaxSizesResult FallbackMinMaxSizes(const MinMaxSizesFloatInput&) const;
   scoped_refptr<const NGLayoutResult> FallbackLayout();
 
   const NGLayoutAlgorithmParams& params_;

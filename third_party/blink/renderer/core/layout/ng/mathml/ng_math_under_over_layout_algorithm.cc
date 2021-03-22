@@ -326,7 +326,7 @@ scoped_refptr<const NGLayoutResult> NGMathUnderOverLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult NGMathUnderOverLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput& child_input) const {
+    const MinMaxSizesFloatInput&) const {
   DCHECK(IsValidMathMLScript(Node()));
 
   if (auto result = CalculateMinMaxSizesIgnoringChildren(
@@ -343,7 +343,7 @@ MinMaxSizesResult NGMathUnderOverLayoutAlgorithm::ComputeMinMaxSizes(
     // TODO(crbug.com/1125136): take into account italic correction.
     const auto child_result = ComputeMinAndMaxContentContributionForMathChild(
         Style(), ConstraintSpace(), To<NGBlockNode>(child),
-        child_input.percentage_resolution_block_size);
+        ChildAvailableSize().block_size);
 
     sizes.Encompass(child_result.sizes);
     depends_on_block_constraints |= child_result.depends_on_block_constraints;

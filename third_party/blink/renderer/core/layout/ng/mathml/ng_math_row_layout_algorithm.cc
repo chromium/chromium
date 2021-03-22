@@ -154,7 +154,7 @@ scoped_refptr<const NGLayoutResult> NGMathRowLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult NGMathRowLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput& child_input) const {
+    const MinMaxSizesFloatInput&) const {
   if (auto result = CalculateMinMaxSizesIgnoringChildren(
           Node(), BorderScrollbarPadding()))
     return *result;
@@ -168,7 +168,7 @@ MinMaxSizesResult NGMathRowLayoutAlgorithm::ComputeMinMaxSizes(
       continue;
     const auto child_result = ComputeMinAndMaxContentContributionForMathChild(
         Style(), ConstraintSpace(), To<NGBlockNode>(child),
-        child_input.percentage_resolution_block_size);
+        ChildAvailableSize().block_size);
     sizes += child_result.sizes;
 
     LayoutUnit lspace, rspace;

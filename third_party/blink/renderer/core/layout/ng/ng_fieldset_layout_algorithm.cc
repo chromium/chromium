@@ -383,7 +383,7 @@ bool NGFieldsetLayoutAlgorithm::IsFragmentainerOutOfSpace(
 }
 
 MinMaxSizesResult NGFieldsetLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput& input) const {
+    const MinMaxSizesFloatInput&) const {
   MinMaxSizesResult result;
 
   bool has_inline_size_containment = Node().ShouldApplyInlineSizeContainment();
@@ -395,7 +395,12 @@ MinMaxSizesResult NGFieldsetLayoutAlgorithm::ComputeMinMaxSizes(
       return *result_without_children;
   } else {
     if (NGBlockNode legend = Node().GetRenderedLegend()) {
-      result = ComputeMinAndMaxContentContribution(Style(), legend, input);
+      NGMinMaxConstraintSpaceBuilder builder(ConstraintSpace(), Style(), legend,
+                                             /* is_new_fc */ true);
+      builder.SetAvailableBlockSize(kIndefiniteSize);
+      const auto space = builder.ToConstraintSpace();
+
+      result = ComputeMinAndMaxContentContribution(Style(), legend, space);
       result.sizes += ComputeMinMaxMargins(Style(), legend).InlineSum();
     }
   }
@@ -408,8 +413,14 @@ MinMaxSizesResult NGFieldsetLayoutAlgorithm::ComputeMinMaxSizes(
   // Size containment does not consider the content for sizing.
   if (!has_inline_size_containment) {
     if (NGBlockNode content = Node().GetFieldsetContent()) {
+      NGMinMaxConstraintSpaceBuilder builder(ConstraintSpace(), Style(),
+                                             content,
+                                             /* is_new_fc */ true);
+      builder.SetAvailableBlockSize(kIndefiniteSize);
+      const auto space = builder.ToConstraintSpace();
+
       MinMaxSizesResult content_result =
-          ComputeMinAndMaxContentContribution(Style(), content, input);
+          ComputeMinAndMaxContentContribution(Style(), content, space);
       content_result.sizes +=
           ComputeMinMaxMargins(Style(), content).InlineSum();
       result.sizes.Encompass(content_result.sizes);

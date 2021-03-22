@@ -235,7 +235,7 @@ void NGBlockLayoutAlgorithm::SetBoxType(NGPhysicalFragment::NGBoxType type) {
 }
 
 MinMaxSizesResult NGBlockLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput& input) const {
+    const MinMaxSizesFloatInput& float_input) const {
   if (auto result =
           CalculateMinMaxSizesIgnoringChildren(node_, BorderScrollbarPadding()))
     return *result;
@@ -244,8 +244,8 @@ MinMaxSizesResult NGBlockLayoutAlgorithm::ComputeMinMaxSizes(
   bool depends_on_block_constraints = false;
 
   const TextDirection direction = Style().Direction();
-  LayoutUnit float_left_inline_size = input.float_left_inline_size;
-  LayoutUnit float_right_inline_size = input.float_right_inline_size;
+  LayoutUnit float_left_inline_size = float_input.float_left_inline_size;
+  LayoutUnit float_right_inline_size = float_input.float_right_inline_size;
 
   for (NGLayoutInputNode child = Node().FirstChild(); child;
        child = child.NextSibling()) {
@@ -280,11 +280,19 @@ MinMaxSizesResult NGBlockLayoutAlgorithm::ComputeMinMaxSizes(
         float_right_inline_size = LayoutUnit();
     }
 
-    MinMaxSizesInput child_input(input.percentage_resolution_block_size);
+    MinMaxSizesFloatInput child_float_input;
     if (child.IsInline() || child.IsAnonymousBlock()) {
-      child_input.float_left_inline_size = float_left_inline_size;
-      child_input.float_right_inline_size = float_right_inline_size;
+      child_float_input.float_left_inline_size = float_left_inline_size;
+      child_float_input.float_right_inline_size = float_right_inline_size;
     }
+
+    NGMinMaxConstraintSpaceBuilder builder(ConstraintSpace(), Style(), child,
+                                           child_is_new_fc);
+    builder.SetAvailableBlockSize(ChildAvailableSize().block_size);
+    builder.SetPercentageResolutionBlockSize(child_percentage_size_.block_size);
+    builder.SetReplacedPercentageResolutionBlockSize(
+        replaced_child_percentage_size_.block_size);
+    const auto space = builder.ToConstraintSpace();
 
     MinMaxSizesResult child_result;
     if (child.IsInline()) {
@@ -295,10 +303,10 @@ MinMaxSizesResult NGBlockLayoutAlgorithm::ComputeMinMaxSizes(
       // |NextSibling| returns the next block sibling, or nullptr, skipping all
       // following inline siblings and descendants.
       child_result = To<NGInlineNode>(child).ComputeMinMaxSizes(
-          Style().GetWritingMode(), child_input);
+          Style().GetWritingMode(), space, child_float_input);
     } else {
       child_result = ComputeMinAndMaxContentContribution(
-          Style(), To<NGBlockNode>(child), child_input);
+          Style(), To<NGBlockNode>(child), space, child_float_input);
     }
     DCHECK_LE(child_result.sizes.min_size, child_result.sizes.max_size)
         << child.ToString();

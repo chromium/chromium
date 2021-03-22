@@ -122,7 +122,7 @@ NGTableTypes::CellInlineConstraint NGTableTypes::CreateCellInlineConstraint(
   base::Optional<LayoutUnit> css_max_inline_size;
   base::Optional<float> css_percentage_inline_size;
   const auto& style = node.Style();
-  bool is_parallel =
+  const bool is_parallel =
       IsParallelWritingMode(table_writing_mode, style.GetWritingMode());
 
   // Be lazy when determining the min/max sizes, as in some circumstances we
@@ -147,10 +147,9 @@ NGTableTypes::CellInlineConstraint NGTableTypes::CreateCellInlineConstraint(
       builder.SetAvailableSize({kIndefiniteSize, kIndefiniteSize});
       const auto space = builder.ToConstraintSpace();
 
-      MinMaxSizesInput input(kIndefiniteSize);
       cached_min_max_sizes =
           node.ComputeMinMaxSizes(table_writing_mode,
-                                  MinMaxSizesType::kIntrinsic, input, &space)
+                                  MinMaxSizesType::kIntrinsic, space)
               .sizes;
     }
 

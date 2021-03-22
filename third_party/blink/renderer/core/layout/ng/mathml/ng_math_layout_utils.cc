@@ -19,23 +19,20 @@ namespace blink {
 NGConstraintSpace CreateConstraintSpaceForMathChild(
     const NGBlockNode& parent_node,
     const LogicalSize& child_available_size,
-    const NGConstraintSpace& parent_constraint_space,
+    const NGConstraintSpace& parent_space,
     const NGLayoutInputNode& child) {
   const ComputedStyle& parent_style = parent_node.Style();
   const ComputedStyle& child_style = child.Style();
   DCHECK(child.CreatesNewFormattingContext());
-  NGConstraintSpaceBuilder space_builder(parent_constraint_space,
-                                         child_style.GetWritingDirection(),
-                                         true /* is_new_fc */);
-  SetOrthogonalFallbackInlineSizeIfNeeded(parent_style, child, &space_builder);
-
-  space_builder.SetAvailableSize(child_available_size);
-  space_builder.SetPercentageResolutionSize(child_available_size);
-  space_builder.SetReplacedPercentageResolutionSize(child_available_size);
+  NGConstraintSpaceBuilder builder(
+      parent_space, child_style.GetWritingDirection(), true /* is_new_fc */);
+  SetOrthogonalFallbackInlineSizeIfNeeded(parent_style, child, &builder);
+  builder.SetAvailableSize(child_available_size);
+  builder.SetPercentageResolutionSize(child_available_size);
 
   // TODO(crbug.com/1124301): add target stretch sizes.
   // TODO(crbug.com/1125137): add ink metrics.
-  return space_builder.ToConstraintSpace();
+  return builder.ToConstraintSpace();
 }
 
 MinMaxSizesResult ComputeMinAndMaxContentContributionForMathChild(
@@ -44,9 +41,13 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionForMathChild(
     const NGBlockNode& child,
     LayoutUnit child_available_block_size) {
   DCHECK(child.CreatesNewFormattingContext());
+  NGMinMaxConstraintSpaceBuilder builder(parent_space, parent_style, child,
+                                         true /* is_new_fc */);
+  builder.SetAvailableBlockSize(child_available_block_size);
+  builder.SetPercentageResolutionBlockSize(child_available_block_size);
+  const auto space = builder.ToConstraintSpace();
 
-  MinMaxSizesInput input(child_available_block_size);
-  auto result = ComputeMinAndMaxContentContribution(parent_style, child, input);
+  auto result = ComputeMinAndMaxContentContribution(parent_style, child, space);
 
   // Add margins directly here.
   result.sizes += ComputeMinMaxMargins(parent_style, child).InlineSum();

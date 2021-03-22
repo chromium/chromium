@@ -314,13 +314,14 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult NGColumnLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput& input) const {
+    const MinMaxSizesFloatInput&) const {
   // First calculate the min/max sizes of columns.
   NGConstraintSpace space = CreateConstraintSpaceForMinMax();
   NGFragmentGeometry fragment_geometry =
-      CalculateInitialMinMaxFragmentGeometry(space, Node());
+      CalculateInitialFragmentGeometry(space, Node(), /* is_intrinsic */ true);
   NGBlockLayoutAlgorithm algorithm({Node(), fragment_geometry, space});
-  MinMaxSizesResult result = algorithm.ComputeMinMaxSizes(input);
+  MinMaxSizesResult result =
+      algorithm.ComputeMinMaxSizes(MinMaxSizesFloatInput());
 
   // If column-width is non-auto, pick the larger of that and intrinsic column
   // width.

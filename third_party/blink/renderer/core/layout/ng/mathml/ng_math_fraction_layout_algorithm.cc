@@ -269,7 +269,7 @@ scoped_refptr<const NGLayoutResult> NGMathFractionLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult NGMathFractionLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput& child_input) const {
+    const MinMaxSizesFloatInput&) const {
   if (auto result = CalculateMinMaxSizesIgnoringChildren(
           Node(), BorderScrollbarPadding()))
     return *result;
@@ -284,7 +284,7 @@ MinMaxSizesResult NGMathFractionLayoutAlgorithm::ComputeMinMaxSizes(
 
     const auto child_result = ComputeMinAndMaxContentContributionForMathChild(
         Style(), ConstraintSpace(), To<NGBlockNode>(child),
-        child_input.percentage_resolution_block_size);
+        ChildAvailableSize().block_size);
 
     sizes.Encompass(child_result.sizes);
     depends_on_block_constraints |= child_result.depends_on_block_constraints;

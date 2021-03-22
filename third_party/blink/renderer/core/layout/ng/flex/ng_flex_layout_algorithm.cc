@@ -544,10 +544,9 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
         // We want the child's intrinsic inline sizes in its writing mode, so
         // pass child's writing mode as the first parameter, which is nominally
         // |container_writing_mode|.
-        NGConstraintSpace child_space = BuildSpaceForIntrinsicBlockSize(child);
-        MinMaxSizesInput input(ChildAvailableSize().block_size);
+        const auto child_space = BuildSpaceForIntrinsicBlockSize(child);
         min_max_sizes = child.ComputeMinMaxSizes(child_style.GetWritingMode(),
-                                                 type, input, &child_space);
+                                                 type, child_space);
       }
       return *min_max_sizes;
     };
@@ -837,29 +836,15 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
     // TODO(dgrogan): This should probably apply to column flexboxes also,
     // but that's not what legacy does.
     if (child.IsTable() && !is_column_) {
-      const NGConstraintSpace* ortho_child_space = nullptr;
-      NGConstraintSpace child_space;
-      if (UNLIKELY(!IsParallelWritingMode(ConstraintSpace().GetWritingMode(),
-                                          child_style.GetWritingMode()))) {
-        // BuildSpaceForIntrinsicBlockSize sets an indefinite percentage block
-        // size for column flexboxes, which is maybe not what we want for
-        // calculating the intrinsic min/max content sizes of an orthogonal
-        // item, but because control flow only enters this block for row
-        // flexboxes, it doesn't matter. If/when we fix the proximate above
-        // TODO, this will need closer investigation.
-        child_space = BuildSpaceForIntrinsicBlockSize(child);
-        ortho_child_space = &child_space;
-      }
-      MinMaxSizes table_intrinsic_widths =
+      const auto child_space = BuildSpaceForIntrinsicBlockSize(child);
+      const MinMaxSizes table_intrinsic_sizes =
           child
-              .ComputeMinMaxSizes(
-                  ConstraintSpace().GetWritingMode(), MinMaxSizesType::kContent,
-                  MinMaxSizesInput(child_percentage_size_.block_size),
-                  ortho_child_space)
+              .ComputeMinMaxSizes(ConstraintSpace().GetWritingMode(),
+                                  MinMaxSizesType::kContent, child_space)
               .sizes;
 
       min_max_sizes_in_main_axis_direction.Encompass(
-          table_intrinsic_widths.min_size);
+          table_intrinsic_sizes.min_size);
     }
 
     min_max_sizes_in_main_axis_direction -= main_axis_border_padding;
@@ -1376,7 +1361,7 @@ void NGFlexLayoutAlgorithm::PropagateBaselineFromChild(
 }
 
 MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput& child_input) const {
+    const MinMaxSizesFloatInput&) const {
   if (auto result = CalculateMinMaxSizesIgnoringChildren(
           Node(), BorderScrollbarPadding()))
     return *result;
@@ -1392,8 +1377,18 @@ MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeMinMaxSizes(
       continue;
     number_of_items++;
 
+    NGMinMaxConstraintSpaceBuilder builder(ConstraintSpace(), Style(), child,
+                                           /* is_new_fc */ true);
+    builder.SetAvailableBlockSize(ChildAvailableSize().block_size);
+    builder.SetPercentageResolutionBlockSize(child_percentage_size_.block_size);
+    builder.SetReplacedPercentageResolutionBlockSize(
+        child_percentage_size_.block_size);
+    if (WillChildCrossSizeBeContainerCrossSize(child) && !is_column_)
+      builder.SetStretchBlockSizeIfAuto(true);
+    const auto space = builder.ToConstraintSpace();
+
     MinMaxSizesResult child_result =
-        ComputeMinAndMaxContentContribution(Style(), child, child_input);
+        ComputeMinAndMaxContentContribution(Style(), child, space);
     NGBoxStrut child_margins = ComputeMinMaxMargins(Style(), child);
     child_result.sizes += child_margins.InlineSum();
 

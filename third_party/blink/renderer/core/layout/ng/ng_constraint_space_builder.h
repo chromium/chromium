@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_bfc_offset.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_floats_utils.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_space_utils.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -480,6 +481,49 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
 
   bool to_constraint_space_called_ = false;
 #endif
+};
+
+// This is a helper class for use in |NGLayoutAlgorithm::ComputeMinMaxSizes|.
+// It exposes a subset of the |NGonstraintSpace| builder methods. Additionally
+// it sets the orthogonal fallback inline-size if needed.
+class CORE_EXPORT NGMinMaxConstraintSpaceBuilder final {
+  STACK_ALLOCATED();
+
+ public:
+  NGMinMaxConstraintSpaceBuilder(const NGConstraintSpace& parent_space,
+                                 const ComputedStyle& parent_style,
+                                 const NGLayoutInputNode& child,
+                                 bool is_new_fc)
+      : delegate_(parent_space,
+                  child.Style().GetWritingDirection(),
+                  is_new_fc) {
+    SetOrthogonalFallbackInlineSizeIfNeeded(parent_style, child, &delegate_);
+    delegate_.SetCacheSlot(NGCacheSlot::kMeasure);
+  }
+
+  void SetAvailableBlockSize(LayoutUnit block_size) {
+    delegate_.SetAvailableSize({kIndefiniteSize, block_size});
+  }
+
+  void SetPercentageResolutionBlockSize(LayoutUnit block_size) {
+    delegate_.SetPercentageResolutionSize({kIndefiniteSize, block_size});
+  }
+
+  void SetReplacedPercentageResolutionBlockSize(LayoutUnit block_size) {
+    delegate_.SetReplacedPercentageResolutionSize(
+        {kIndefiniteSize, block_size});
+  }
+
+  void SetStretchBlockSizeIfAuto(bool b) {
+    delegate_.SetStretchBlockSizeIfAuto(b);
+  }
+
+  const NGConstraintSpace ToConstraintSpace() {
+    return delegate_.ToConstraintSpace();
+  }
+
+ private:
+  NGConstraintSpaceBuilder delegate_;
 };
 
 }  // namespace blink

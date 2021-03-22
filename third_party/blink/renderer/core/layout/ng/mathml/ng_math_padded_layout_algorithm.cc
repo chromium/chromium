@@ -115,7 +115,7 @@ scoped_refptr<const NGLayoutResult> NGMathPaddedLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult NGMathPaddedLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput& input) const {
+    const MinMaxSizesFloatInput&) const {
   if (auto result = CalculateMinMaxSizesIgnoringChildren(
           Node(), BorderScrollbarPadding()))
     return *result;
@@ -125,8 +125,7 @@ MinMaxSizesResult NGMathPaddedLayoutAlgorithm::ComputeMinMaxSizes(
   GatherChildren(&content);
 
   const auto content_result = ComputeMinAndMaxContentContributionForMathChild(
-      Style(), ConstraintSpace(), content,
-      input.percentage_resolution_block_size);
+      Style(), ConstraintSpace(), content, ChildAvailableSize().block_size);
 
   bool depends_on_block_constraints =
       content_result.depends_on_block_constraints;

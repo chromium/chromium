@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
 
 namespace blink {
@@ -164,26 +165,6 @@ TEST_F(NGBlockNodeForTest, ChildOofAfterInline) {
   EXPECT_EQ(child2, nullptr);
 }
 
-TEST_F(NGBlockNodeForTest, MinAndMaxContent) {
-  SetBodyInnerHTML(R"HTML(
-    <div id="box" >
-      <div id="first_child" style="width:30px">
-      </div>
-    </div>
-  )HTML");
-  const int kWidth = 30;
-
-  NGBlockNode box(GetLayoutBoxByElementId("box"));
-  MinMaxSizes sizes =
-      box.ComputeMinMaxSizes(
-             WritingMode::kHorizontalTb, MinMaxSizesType::kContent,
-             MinMaxSizesInput(
-                 /* percentage_resolution_block_size */ LayoutUnit()))
-          .sizes;
-  EXPECT_EQ(LayoutUnit(kWidth), sizes.min_size);
-  EXPECT_EQ(LayoutUnit(kWidth), sizes.max_size);
-}
-
 // crbug.com/1107291
 TEST_F(NGBlockNodeForTest, MinContentForControls) {
   SetBodyInnerHTML(R"HTML(
@@ -197,14 +178,18 @@ TEST_F(NGBlockNodeForTest, MinContentForControls) {
   const char* ids[] = {"box1", "box2", "box3"};
   constexpr int kExpectedMinWidth = 4;
 
+  // The space doesn't matter for this test.
+  const auto space = NGConstraintSpaceBuilder(
+                         WritingMode::kHorizontalTb,
+                         {WritingMode::kHorizontalTb, TextDirection::kLtr},
+                         /* is_new_fc */ true)
+                         .ToConstraintSpace();
+
   for (const auto* id : ids) {
     NGBlockNode box(GetLayoutBoxByElementId(id));
-    MinMaxSizes sizes =
-        box.ComputeMinMaxSizes(
-               WritingMode::kHorizontalTb, MinMaxSizesType::kContent,
-               MinMaxSizesInput(
-                   /* percentage_resolution_block_size */ LayoutUnit(-1)))
-            .sizes;
+    MinMaxSizes sizes = box.ComputeMinMaxSizes(WritingMode::kHorizontalTb,
+                                               MinMaxSizesType::kContent, space)
+                            .sizes;
     EXPECT_EQ(LayoutUnit(kExpectedMinWidth), sizes.min_size);
   }
 }

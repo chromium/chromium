@@ -27,7 +27,7 @@ NGCustomLayoutAlgorithm::NGCustomLayoutAlgorithm(
 }
 
 MinMaxSizesResult NGCustomLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput& input) const {
+    const MinMaxSizesFloatInput& input) const {
   if (!Node().IsCustomLayoutLoaded())
     return FallbackMinMaxSizes(input);
 
@@ -56,11 +56,10 @@ MinMaxSizesResult NGCustomLayoutAlgorithm::ComputeMinMaxSizes(
           CalculateDefaultBlockSize(ConstraintSpace(), Node(),
                                     BorderScrollbarPadding()),
           container_builder_.InlineSize())};
-  if (!instance->IntrinsicSizes(ConstraintSpace(), document, Node(),
-                                border_box_size, BorderScrollbarPadding(),
-                                input.percentage_resolution_block_size, &scope,
-                                &intrinsic_sizes_result_options,
-                                &depends_on_block_constraints)) {
+  if (!instance->IntrinsicSizes(
+          ConstraintSpace(), document, Node(), border_box_size,
+          BorderScrollbarPadding(), ChildAvailableSize().block_size, &scope,
+          &intrinsic_sizes_result_options, &depends_on_block_constraints)) {
     // TODO(ikilpatrick): Report this error to the developer.
     return FallbackMinMaxSizes(input);
   }
@@ -198,7 +197,7 @@ void NGCustomLayoutAlgorithm::AddAnyOutOfFlowPositionedChildren(
 }
 
 MinMaxSizesResult NGCustomLayoutAlgorithm::FallbackMinMaxSizes(
-    const MinMaxSizesInput& input) const {
+    const MinMaxSizesFloatInput& input) const {
   return NGBlockLayoutAlgorithm(params_).ComputeMinMaxSizes(input);
 }
 

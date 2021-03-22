@@ -86,8 +86,8 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   MinMaxSizesResult ComputeMinMaxSizes(
       WritingMode container_writing_mode,
       const MinMaxSizesType,
-      const MinMaxSizesInput&,
-      const NGConstraintSpace* = nullptr) const;
+      const NGConstraintSpace&,
+      const MinMaxSizesFloatInput float_input = MinMaxSizesFloatInput()) const;
 
   MinMaxSizes ComputeMinMaxSizesFromLegacy(const MinMaxSizesType,
                                            const NGConstraintSpace&) const;

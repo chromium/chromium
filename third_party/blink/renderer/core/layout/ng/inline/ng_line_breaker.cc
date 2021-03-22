@@ -11,11 +11,13 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_ruby_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_floats_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_positioned_float.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_space_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_unpositioned_float.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
@@ -456,10 +458,9 @@ void NGLineBreaker::PrepareNextLine(NGLineInfo* line_info) {
 }
 
 void NGLineBreaker::NextLine(
-    LayoutUnit percentage_resolution_block_size_for_min_max,
     NGLineInfo* line_info) {
   PrepareNextLine(line_info);
-  BreakLine(percentage_resolution_block_size_for_min_max, line_info);
+  BreakLine(line_info);
   if (UNLIKELY(HasHyphen()))
     FinalizeHyphen(line_info->MutableResults());
   RemoveTrailingCollapsibleSpace(line_info);
@@ -494,7 +495,6 @@ void NGLineBreaker::NextLine(
 }
 
 void NGLineBreaker::BreakLine(
-    LayoutUnit percentage_resolution_block_size_for_min_max,
     NGLineInfo* line_info) {
   DCHECK(!line_info->IsLastLine());
   const Vector<NGInlineItem>& items = Items();
@@ -564,8 +564,7 @@ void NGLineBreaker::BreakLine(
     }
 
     if (item.Type() == NGInlineItem::kAtomicInline) {
-      HandleAtomicInline(item, percentage_resolution_block_size_for_min_max,
-                         line_info);
+      HandleAtomicInline(item, line_info);
       continue;
     }
     if (item.Type() == NGInlineItem::kOutOfFlowPositioned) {
@@ -1518,7 +1517,6 @@ void NGLineBreaker::HandleBidiControlItem(const NGInlineItem& item,
 
 void NGLineBreaker::HandleAtomicInline(
     const NGInlineItem& item,
-    LayoutUnit percentage_resolution_block_size_for_min_max,
     NGLineInfo* line_info) {
   DCHECK_EQ(item.Type(), NGInlineItem::kAtomicInline);
   DCHECK(item.Style());
@@ -1589,9 +1587,18 @@ void NGLineBreaker::HandleAtomicInline(
   } else {
     DCHECK(mode_ == NGLineBreakerMode::kMinContent || !max_size_cache_);
     NGBlockNode child(To<LayoutBox>(item.GetLayoutObject()));
-    MinMaxSizesInput input(percentage_resolution_block_size_for_min_max);
+
+    NGMinMaxConstraintSpaceBuilder builder(constraint_space_, node_.Style(),
+                                           child, /* is_new_fc */ true);
+    builder.SetAvailableBlockSize(constraint_space_.AvailableSize().block_size);
+    builder.SetPercentageResolutionBlockSize(
+        constraint_space_.PercentageResolutionBlockSize());
+    builder.SetReplacedPercentageResolutionBlockSize(
+        constraint_space_.ReplacedPercentageResolutionBlockSize());
+    const auto space = builder.ToConstraintSpace();
+
     MinMaxSizesResult result =
-        ComputeMinAndMaxContentContribution(node_.Style(), child, input);
+        ComputeMinAndMaxContentContribution(node_.Style(), child, space);
     if (mode_ == NGLineBreakerMode::kMinContent) {
       item_result->inline_size = result.sizes.min_size + inline_margins;
       if (depends_on_block_constraints_out_) {

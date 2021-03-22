@@ -50,17 +50,7 @@ class CORE_EXPORT NGLineBreaker {
 
   // Compute the next line break point and produces NGInlineItemResults for
   // the line.
-  inline void NextLine(NGLineInfo* line_info) {
-    NextLine(kIndefiniteSize, line_info);
-  }
-
-  // During the min/max size calculation we need a special percentage
-  // resolution block-size to pass to children/pass to children.
-  // TODO(layout-dev): Split into two methods (NextLine/NextLineForMinMax) or,
-  // better yet, subclass or templetize the line-breaker for Min/Max computation
-  // if we can do that without incurring a performance penalty
-  void NextLine(LayoutUnit percentage_resolution_block_size_for_min_max,
-                NGLineInfo*);
+  void NextLine(NGLineInfo*);
 
   bool IsFinished() const { return item_index_ >= Items().size(); }
 
@@ -110,8 +100,7 @@ class CORE_EXPORT NGLineBreaker {
                               NGLineInfo*);
   NGInlineItemResult* AddItem(const NGInlineItem&, NGLineInfo*);
 
-  void BreakLine(LayoutUnit percentage_resolution_block_size_for_min_max,
-                 NGLineInfo*);
+  void BreakLine(NGLineInfo*);
   void PrepareNextLine(NGLineInfo*);
 
   void ComputeLineLocation(NGLineInfo*) const;
@@ -169,7 +158,6 @@ class CORE_EXPORT NGLineBreaker {
   void HandleBidiControlItem(const NGInlineItem&, NGLineInfo*);
   void HandleAtomicInline(
       const NGInlineItem&,
-      LayoutUnit percentage_resolution_block_size_for_min_max,
       NGLineInfo*);
   bool ShouldForceCanBreakAfter(const NGInlineItemResult& item_result) const;
   void HandleFloat(const NGInlineItem&,

@@ -102,11 +102,15 @@ class NGInlineNodeTest : public NGLayoutTest {
   }
 
   MinMaxSizes ComputeMinMaxSizes(NGInlineNode node) {
+    const auto space =
+        NGConstraintSpaceBuilder(node.Style().GetWritingMode(),
+                                 node.Style().GetWritingDirection(),
+                                 /* is_new_fc */ false)
+            .ToConstraintSpace();
+
     return node
-        .ComputeMinMaxSizes(
-            node.Style().GetWritingMode(),
-            MinMaxSizesInput(
-                /* percentage_resolution_block_size */ LayoutUnit()))
+        .ComputeMinMaxSizes(node.Style().GetWritingMode(), space,
+                            MinMaxSizesFloatInput())
         .sizes;
   }
 

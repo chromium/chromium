@@ -36,7 +36,7 @@ scoped_refptr<const NGLayoutResult> NGReplacedLayoutAlgorithm::Layout() {
 // intrinsic inline size. Move NGFlexLayoutAlgorithm's
 // |ComputeIntrinsicInlineSizeForAspectRatioElement| to here.
 MinMaxSizesResult NGReplacedLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput& child_input) const {
+    const MinMaxSizesFloatInput&) const {
   MinMaxSizes sizes({natural_size_.inline_size, natural_size_.inline_size});
   sizes += BorderScrollbarPadding().InlineSum();
   return {sizes, false};

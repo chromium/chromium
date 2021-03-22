@@ -32,6 +32,7 @@ namespace blink {
 namespace {
 
 NGTableTypes::Caption ComputeCaptionConstraint(
+    const NGConstraintSpace& table_space,
     const ComputedStyle& table_style,
     const NGTableGroupedChildren& grouped_children) {
   // Caption inline size constraints.
@@ -39,13 +40,15 @@ NGTableTypes::Caption ComputeCaptionConstraint(
   for (const NGBlockNode& caption : grouped_children.captions) {
     // Caption %-block-sizes are treated as auto, as there isn't a reasonable
     // block-size to resolve against.
-    NGBoxStrut margins = ComputeMinMaxMargins(table_style, caption);
-    MinMaxSizes min_max_size =
-        ComputeMinAndMaxContentContribution(table_style, caption,
-                                            MinMaxSizesInput(kIndefiniteSize))
-            .sizes;
-    min_max_size += margins.InlineSum();
-    caption_min_max.Encompass(min_max_size);
+    NGMinMaxConstraintSpaceBuilder builder(table_space, table_style, caption,
+                                           /* is_new_fc */ true);
+    builder.SetAvailableBlockSize(kIndefiniteSize);
+    const auto space = builder.ToConstraintSpace();
+
+    MinMaxSizes min_max_sizes =
+        ComputeMinAndMaxContentContribution(table_style, caption, space).sizes;
+    min_max_sizes += ComputeMinMaxMargins(table_style, caption).InlineSum();
+    caption_min_max.Encompass(min_max_sizes);
   }
   return caption_min_max;
 }
@@ -352,7 +355,7 @@ LayoutUnit NGTableLayoutAlgorithm::ComputeTableInlineSize(
       table.GetColumnConstraints(grouped_children, table_border_padding);
 
   const NGTableTypes::Caption caption_constraint =
-      ComputeCaptionConstraint(table.Style(), grouped_children);
+      ComputeCaptionConstraint(space, table.Style(), grouped_children);
 
   const LayoutUnit undistributable_space = ComputeUndistributableTableSpace(
       *column_constraints, table_border_padding.InlineSum(),
@@ -406,7 +409,7 @@ scoped_refptr<const NGLayoutResult> NGTableLayoutAlgorithm::Layout() {
   const scoped_refptr<const NGTableTypes::Columns> column_constraints =
       Node().GetColumnConstraints(grouped_children, border_padding);
   const NGTableTypes::Caption caption_constraint =
-      ComputeCaptionConstraint(Style(), grouped_children);
+      ComputeCaptionConstraint(ConstraintSpace(), Style(), grouped_children);
   // Compute assignable table inline size.
   // Standard: https://www.w3.org/TR/css-tables-3/#width-distribution
   const LayoutUnit undistributable_space = ComputeUndistributableTableSpace(
@@ -497,7 +500,7 @@ scoped_refptr<const NGLayoutResult> NGTableLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult NGTableLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput& input) const {
+    const MinMaxSizesFloatInput&) const {
   const bool is_fixed_layout = Style().IsFixedTableLayout();
   // Tables need autosizer.
   base::Optional<TextAutosizer::TableLayoutScope> text_autosizer;
@@ -513,7 +516,7 @@ MinMaxSizesResult NGTableLayoutAlgorithm::ComputeMinMaxSizes(
   const scoped_refptr<const NGTableTypes::Columns> column_constraints =
       Node().GetColumnConstraints(grouped_children, border_padding);
   const NGTableTypes::Caption caption_constraint =
-      ComputeCaptionConstraint(Style(), grouped_children);
+      ComputeCaptionConstraint(ConstraintSpace(), Style(), grouped_children);
 
   const LayoutUnit undistributable_space = ComputeUndistributableTableSpace(
       *column_constraints, border_padding.InlineSum(),

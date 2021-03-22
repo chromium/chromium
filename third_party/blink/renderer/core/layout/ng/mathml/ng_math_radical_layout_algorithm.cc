@@ -194,7 +194,7 @@ scoped_refptr<const NGLayoutResult> NGMathRadicalLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult NGMathRadicalLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput& input) const {
+    const MinMaxSizesFloatInput&) const {
   DCHECK(IsValidMathMLRadical(Node()));
 
   NGBlockNode base = nullptr;
@@ -208,8 +208,7 @@ MinMaxSizesResult NGMathRadicalLayoutAlgorithm::ComputeMinMaxSizes(
     sizes += horizontal.kern_before_degree.ClampNegativeToZero();
 
     const auto index_result = ComputeMinAndMaxContentContributionForMathChild(
-        Style(), ConstraintSpace(), index,
-        input.percentage_resolution_block_size);
+        Style(), ConstraintSpace(), index, ChildAvailableSize().block_size);
     depends_on_block_constraints |= index_result.depends_on_block_constraints;
     sizes += index_result.sizes;
 
@@ -226,8 +225,7 @@ MinMaxSizesResult NGMathRadicalLayoutAlgorithm::ComputeMinMaxSizes(
                                                          kSquareRootCharacter);
     }
     const auto base_result = ComputeMinAndMaxContentContributionForMathChild(
-        Style(), ConstraintSpace(), base,
-        input.percentage_resolution_block_size);
+        Style(), ConstraintSpace(), base, ChildAvailableSize().block_size);
     depends_on_block_constraints |= base_result.depends_on_block_constraints;
     sizes += base_result.sizes;
   }

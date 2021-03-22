@@ -126,7 +126,7 @@ struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
   LayoutUnit intrinsic_content_logical_height;
   LayoutRectOutsets margin_box_outsets;
   MinMaxSizes intrinsic_logical_widths;
-  LayoutUnit intrinsic_logical_widths_percentage_resolution_block_size;
+  LayoutUnit intrinsic_logical_widths_initial_block_size;
   void* pointers[4];
   Vector<scoped_refptr<const NGLayoutResult>, 1> layout_results;
   Persistent<void*> rare_data;
@@ -422,8 +422,7 @@ void LayoutBoxRareData::Trace(Visitor* visitor) const {
 LayoutBox::LayoutBox(ContainerNode* node)
     : LayoutBoxModelObject(node),
       intrinsic_content_logical_height_(-1),
-      intrinsic_logical_widths_percentage_resolution_block_size_(
-          LayoutUnit::Min()),
+      intrinsic_logical_widths_initial_block_size_(LayoutUnit::Min()),
       inline_box_wrapper_(nullptr) {
   SetIsBox();
   if (blink::IsA<HTMLLegendElement>(node))
@@ -2081,8 +2080,7 @@ void LayoutBox::UpdateCachedIntrinsicLogicalWidthsIfNeeded() {
 #endif
 
   intrinsic_logical_widths_ = ComputeIntrinsicLogicalWidths();
-  intrinsic_logical_widths_percentage_resolution_block_size_ =
-      LayoutUnit::Min();
+  intrinsic_logical_widths_initial_block_size_ = LayoutUnit::Min();
   ClearIntrinsicLogicalWidthsDirty();
 }
 

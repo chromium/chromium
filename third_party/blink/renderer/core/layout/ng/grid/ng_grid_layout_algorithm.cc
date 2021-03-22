@@ -238,7 +238,7 @@ LayoutUnit ComputeTotalTrackSize(
 }  // namespace
 
 MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput& input) const {
+    const MinMaxSizesFloatInput&) const {
   // TODO(janewman): Handle the cases typically done via:
   // CalculateMinMaxSizesIgnoringChildren.
 
@@ -708,24 +708,19 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
       IsParallelWritingMode(Style().GetWritingMode(),
                             item_style.GetWritingMode());
 
-  auto MinMaxContentSizes = [&]() -> MinMaxSizes {
-    DCHECK(is_parallel_with_track_direction);
-    // TODO(ikilpatrick): kIndefiniteSize is incorrect for the %-block-size.
-    // We'll want to determine this using the base or used track-sizes instead.
-    // This should match the %-resolution sizes we use for layout during
-    // measuring.
-    MinMaxSizesInput input(kIndefiniteSize);
-    return ComputeMinAndMaxContentContributionForSelf(node, input).sizes;
-  };
-
   // TODO(ikilpatrick): We'll need to record if any child used an indefinite
   // size for its contribution, such that we can then do the 2nd pass on the
   // track-sizing algorithm.
   LogicalRect unused;
-  const NGConstraintSpace space = CreateConstraintSpace(
-      grid_geometry, grid_item, NGCacheSlot::kMeasure, &unused);
+  const auto space = CreateConstraintSpace(grid_geometry, grid_item,
+                                           NGCacheSlot::kMeasure, &unused);
   const auto margins =
       ComputeMarginsFor(space, node.Style(), ConstraintSpace());
+
+  auto MinMaxContentSizes = [&]() -> MinMaxSizes {
+    DCHECK(is_parallel_with_track_direction);
+    return ComputeMinAndMaxContentContributionForSelf(node, space).sizes;
+  };
 
   // This function will determine the correct block-size of a grid-item.
   // TODO(ikilpatrick): This should try and skip layout when possible. Notes:
@@ -800,11 +795,8 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
             if (is_parallel_with_track_direction) {
               auto MinMaxSizesFunc =
                   [&](MinMaxSizesType type) -> MinMaxSizesResult {
-                // TODO(ikilpatrick): Again, kIndefiniteSize here is incorrect,
-                // and needs to use the base or resolved track sizes.
-                MinMaxSizesInput input(kIndefiniteSize);
                 return node.ComputeMinMaxSizes(item_style.GetWritingMode(),
-                                               type, input, &space);
+                                               type, space);
               };
 
               contribution = ResolveMinInlineLength(

@@ -952,36 +952,45 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
   if (AbsoluteNeedsChildInlineSize(node_info.node) ||
       NeedMinMaxSize(candidate_style) || should_be_considered_as_replaced ||
       compute_inline_from_ar) {
-    MinMaxSizesInput input(kIndefiniteSize);
-    if (is_replaced) {
-      input.percentage_resolution_block_size =
-          container_content_size_in_candidate_writing_mode.block_size;
-    } else if (!offset_info.absolute_needs_child_block_size) {
-      // If we can determine our block-size ahead of time (it doesn't depend on
-      // our content), we use this for our %-block-size.
+    // If we can determine our block-size ahead of time (it doesn't depend on
+    // our content), set this as our fixed block-size for any %-block-size
+    // children to resolve against.
+    if (!offset_info.absolute_needs_child_block_size && !is_replaced) {
       ComputeOutOfFlowBlockDimensions(
           node_info.node, node_info.constraint_space, border_padding,
           node_info.static_position, base::nullopt, base::nullopt,
           container_writing_direction, &offset_info.node_dimensions);
       has_computed_block_dimensions = true;
-      input.percentage_resolution_block_size =
-          offset_info.node_dimensions.size.block_size;
     }
+
+    LogicalSize available_size =
+        container_content_size_in_candidate_writing_mode;
+    if (has_computed_block_dimensions)
+      available_size.block_size = offset_info.node_dimensions.size.block_size;
+
+    NGConstraintSpaceBuilder builder(candidate_style.GetWritingMode(),
+                                     candidate_style.GetWritingDirection(),
+                                     /* is_new_fc */ true);
+    builder.SetAvailableSize(available_size);
+    builder.SetPercentageResolutionSize(
+        container_content_size_in_candidate_writing_mode);
+    if (has_computed_block_dimensions)
+      builder.SetIsFixedBlockSize(true);
+    const auto space = builder.ToConstraintSpace();
+
     if (compute_inline_from_ar &&
         candidate_style.OverflowInlineDirection() == EOverflow::kVisible) {
       minmax_intrinsic_sizes_for_ar =
           node_info.node
               .ComputeMinMaxSizes(candidate_writing_direction.GetWritingMode(),
-                                  MinMaxSizesType::kIntrinsic, input,
-                                  &node_info.constraint_space)
+                                  MinMaxSizesType::kIntrinsic, space)
               .sizes;
     }
 
     min_max_sizes =
         node_info.node
             .ComputeMinMaxSizes(candidate_writing_direction.GetWritingMode(),
-                                MinMaxSizesType::kContent, input,
-                                &node_info.constraint_space)
+                                MinMaxSizesType::kContent, space)
             .sizes;
   }
 

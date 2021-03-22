@@ -64,7 +64,8 @@ class CustomLayoutWorkTask final
   void RunLayoutFragmentTask(const NGConstraintSpace& parent_space,
                              const ComputedStyle& parent_style,
                              NGLayoutInputNode child);
-  void RunIntrinsicSizesTask(const ComputedStyle& parent_style,
+  void RunIntrinsicSizesTask(const NGConstraintSpace& parent_space,
+                             const ComputedStyle& parent_style,
                              const LayoutUnit child_available_block_size,
                              NGLayoutInputNode child,
                              bool* child_depends_on_block_constraints);

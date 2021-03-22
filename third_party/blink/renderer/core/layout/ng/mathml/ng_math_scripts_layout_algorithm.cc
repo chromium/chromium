@@ -408,7 +408,7 @@ scoped_refptr<const NGLayoutResult> NGMathScriptsLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult NGMathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput& child_input) const {
+    const MinMaxSizesFloatInput&) const {
   if (auto result = CalculateMinMaxSizesIgnoringChildren(
           Node(), BorderScrollbarPadding()))
     return *result;
@@ -427,8 +427,7 @@ MinMaxSizesResult NGMathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
   // within ComputeMinMaxSizes, (or setup in an interoperable constraint-space).
   LayoutUnit base_italic_correction;
   const auto base_result = ComputeMinAndMaxContentContributionForMathChild(
-      Style(), ConstraintSpace(), base,
-      child_input.percentage_resolution_block_size);
+      Style(), ConstraintSpace(), base, ChildAvailableSize().block_size);
 
   sizes = base_result.sizes;
   depends_on_block_constraints |= base_result.depends_on_block_constraints;
@@ -445,7 +444,7 @@ MinMaxSizesResult NGMathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
       const auto first_post_script_result =
           ComputeMinAndMaxContentContributionForMathChild(
               Style(), ConstraintSpace(), first_post_script,
-              child_input.percentage_resolution_block_size);
+              ChildAvailableSize().block_size);
 
       sizes += first_post_script_result.sizes;
       if (sub)
@@ -465,8 +464,7 @@ MinMaxSizesResult NGMathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
         if (!sub)
           continue;
         auto sub_result = ComputeMinAndMaxContentContributionForMathChild(
-            Style(), ConstraintSpace(), sub,
-            child_input.percentage_resolution_block_size);
+            Style(), ConstraintSpace(), sub, ChildAvailableSize().block_size);
         sub_result.sizes -= base_italic_correction;
         sub_sup_pair_size.Encompass(sub_result.sizes);
 
@@ -474,8 +472,7 @@ MinMaxSizesResult NGMathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
         if (!sup)
           continue;
         const auto sup_result = ComputeMinAndMaxContentContributionForMathChild(
-            Style(), ConstraintSpace(), sup,
-            child_input.percentage_resolution_block_size);
+            Style(), ConstraintSpace(), sup, ChildAvailableSize().block_size);
         sub_sup_pair_size.Encompass(sup_result.sizes);
 
         sizes += sub_sup_pair_size;

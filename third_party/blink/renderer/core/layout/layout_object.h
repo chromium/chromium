@@ -1577,21 +1577,21 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     return bitfields_.IntrinsicLogicalWidthsDirty();
   }
 
-  bool IntrinsicLogicalWidthsDependsOnPercentageBlockSize() const {
+  bool IntrinsicLogicalWidthsDependsOnBlockConstraints() const {
     NOT_DESTROYED();
-    return bitfields_.IntrinsicLogicalWidthsDependsOnPercentageBlockSize();
+    return bitfields_.IntrinsicLogicalWidthsDependsOnBlockConstraints();
   }
-  void SetIntrinsicLogicalWidthsDependsOnPercentageBlockSize(bool b) {
+  void SetIntrinsicLogicalWidthsDependsOnBlockConstraints(bool b) {
     NOT_DESTROYED();
-    bitfields_.SetIntrinsicLogicalWidthsDependsOnPercentageBlockSize(b);
+    bitfields_.SetIntrinsicLogicalWidthsDependsOnBlockConstraints(b);
   }
-  bool IntrinsicLogicalWidthsChildDependsOnPercentageBlockSize() const {
+  bool IntrinsicLogicalWidthsChildDependsOnBlockConstraints() const {
     NOT_DESTROYED();
-    return bitfields_.IntrinsicLogicalWidthsChildDependsOnPercentageBlockSize();
+    return bitfields_.IntrinsicLogicalWidthsChildDependsOnBlockConstraints();
   }
-  void SetIntrinsicLogicalWidthsChildDependsOnPercentageBlockSize(bool b) {
+  void SetIntrinsicLogicalWidthsChildDependsOnBlockConstraints(bool b) {
     NOT_DESTROYED();
-    bitfields_.SetIntrinsicLogicalWidthsChildDependsOnPercentageBlockSize(b);
+    bitfields_.SetIntrinsicLogicalWidthsChildDependsOnBlockConstraints(b);
   }
 
   bool NeedsLayoutOverflowRecalc() const {
@@ -3767,9 +3767,8 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
           self_needs_layout_overflow_recalc_(false),
           child_needs_layout_overflow_recalc_(false),
           intrinsic_logical_widths_dirty_(false),
-          intrinsic_logical_widths_depends_on_percentage_block_size_(true),
-          intrinsic_logical_widths_child_depends_on_percentage_block_size_(
-              true),
+          intrinsic_logical_widths_depends_on_block_constraints_(true),
+          intrinsic_logical_widths_child_depends_on_block_constraints_(true),
           needs_collect_inlines_(false),
           maybe_has_percent_height_descendant_(false),
           should_check_for_paint_invalidation_(true),
@@ -3898,17 +3897,16 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
                          IntrinsicLogicalWidthsDirty);
 
     // This boolean indicates if the cached intrinsic logical widths may depend
-    // on the input %-block-size given by the parent.
-    ADD_BOOLEAN_BITFIELD(
-        intrinsic_logical_widths_depends_on_percentage_block_size_,
-        IntrinsicLogicalWidthsDependsOnPercentageBlockSize);
+    // on the block constraints given by the parent.
+    ADD_BOOLEAN_BITFIELD(intrinsic_logical_widths_depends_on_block_constraints_,
+                         IntrinsicLogicalWidthsDependsOnBlockConstraints);
 
-    // This boolean indicates if a *child* of this node may depend on the input
-    // %-block-size given by the parent. Must always be true for legacy layout
+    // This boolean indicates if a *child* of this node may depend on the block
+    // constraints given by the parent. Must always be true for legacy layout
     // roots.
     ADD_BOOLEAN_BITFIELD(
-        intrinsic_logical_widths_child_depends_on_percentage_block_size_,
-        IntrinsicLogicalWidthsChildDependsOnPercentageBlockSize);
+        intrinsic_logical_widths_child_depends_on_block_constraints_,
+        IntrinsicLogicalWidthsChildDependsOnBlockConstraints);
 
     // This flag is set on inline container boxes that need to run the
     // Pre-layout phase in LayoutNG. See NGInlineNode::CollectInlines().

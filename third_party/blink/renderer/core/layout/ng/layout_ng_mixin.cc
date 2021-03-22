@@ -176,15 +176,10 @@ MinMaxSizes LayoutNGMixin<Base>::ComputeIntrinsicLogicalWidths() const {
   if (!node.CanUseNewLayout())
     return Base::ComputeIntrinsicLogicalWidths();
 
-  LayoutUnit available_logical_height =
-      LayoutBoxUtils::AvailableLogicalHeight(*this, Base::ContainingBlock());
-
   NGConstraintSpace space = ConstraintSpaceForMinMaxSizes();
-  MinMaxSizes sizes =
-      node.ComputeMinMaxSizes(
-              node.Style().GetWritingMode(), MinMaxSizesType::kContent,
-              MinMaxSizesInput(available_logical_height), &space)
-          .sizes;
+  MinMaxSizes sizes = node.ComputeMinMaxSizes(node.Style().GetWritingMode(),
+                                              MinMaxSizesType::kContent, space)
+                          .sizes;
 
   if (Base::IsTableCell()) {
     // If a table cell, or the column that it belongs to, has a specified fixed
@@ -211,7 +206,8 @@ NGConstraintSpace LayoutNGMixin<Base>::ConstraintSpaceForMinMaxSizes() const {
                                    style.GetWritingDirection(),
                                    /* is_new_fc */ true);
   builder.SetAvailableSize(
-      {Base::ContainingBlockLogicalWidthForContent(), kIndefiniteSize});
+      {Base::ContainingBlockLogicalWidthForContent(),
+       LayoutBoxUtils::AvailableLogicalHeight(*this, Base::ContainingBlock())});
 
   // Table cells borders may be collapsed, we can't calculate these directly
   // from the style.

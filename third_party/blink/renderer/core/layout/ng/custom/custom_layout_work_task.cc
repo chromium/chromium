@@ -55,7 +55,8 @@ void CustomLayoutWorkTask::Run(const NGConstraintSpace& parent_space,
   NGLayoutInputNode child = child_->GetLayoutNode();
 
   if (type_ == CustomLayoutWorkTask::TaskType::kIntrinsicSizes) {
-    RunIntrinsicSizesTask(parent_style, child_available_block_size, child,
+    RunIntrinsicSizesTask(parent_space, parent_style,
+                          child_available_block_size, child,
                           child_depends_on_block_constraints);
   } else {
     DCHECK_EQ(type_, CustomLayoutWorkTask::TaskType::kLayoutFragment);
@@ -145,6 +146,7 @@ void CustomLayoutWorkTask::RunLayoutFragmentTask(
 }
 
 void CustomLayoutWorkTask::RunIntrinsicSizesTask(
+    const NGConstraintSpace& parent_space,
     const ComputedStyle& parent_style,
     const LayoutUnit child_available_block_size,
     NGLayoutInputNode child,
@@ -152,9 +154,13 @@ void CustomLayoutWorkTask::RunIntrinsicSizesTask(
   DCHECK_EQ(type_, CustomLayoutWorkTask::TaskType::kIntrinsicSizes);
   DCHECK(resolver_);
 
-  MinMaxSizesInput input(child_available_block_size);
+  NGMinMaxConstraintSpaceBuilder builder(parent_space, parent_style, child,
+                                         /* is_new_fc */ true);
+  builder.SetAvailableBlockSize(child_available_block_size);
+  const auto space = builder.ToConstraintSpace();
+
   MinMaxSizesResult result = ComputeMinAndMaxContentContribution(
-      parent_style, To<NGBlockNode>(child), input);
+      parent_style, To<NGBlockNode>(child), space);
   resolver_->Resolve(MakeGarbageCollected<CustomIntrinsicSizes>(
       child_, token_, result.sizes.min_size, result.sizes.max_size));
 

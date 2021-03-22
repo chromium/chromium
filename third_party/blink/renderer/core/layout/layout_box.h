@@ -2022,30 +2022,31 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   //
   // Also clears the "dirty" flag for the intrinsic logical widths.
   void SetIntrinsicLogicalWidthsFromNG(
-      LayoutUnit intrinsic_logical_widths_percentage_resolution_block_size,
-      bool depends_on_percentage_block_size,
-      bool child_depends_on_percentage_block_size,
+      LayoutUnit intrinsic_logical_widths_initial_block_size,
+      bool depends_on_block_constraints,
+      bool child_depends_on_block_constraints,
       const MinMaxSizes* sizes) {
     NOT_DESTROYED();
-    intrinsic_logical_widths_percentage_resolution_block_size_ =
-        intrinsic_logical_widths_percentage_resolution_block_size;
-    SetIntrinsicLogicalWidthsDependsOnPercentageBlockSize(
-        depends_on_percentage_block_size);
-    SetIntrinsicLogicalWidthsChildDependsOnPercentageBlockSize(
-        child_depends_on_percentage_block_size);
+    intrinsic_logical_widths_initial_block_size_ =
+        intrinsic_logical_widths_initial_block_size;
+    SetIntrinsicLogicalWidthsDependsOnBlockConstraints(
+        depends_on_block_constraints);
+    SetIntrinsicLogicalWidthsChildDependsOnBlockConstraints(
+        child_depends_on_block_constraints);
     if (sizes)
       intrinsic_logical_widths_ = *sizes;
     ClearIntrinsicLogicalWidthsDirty();
   }
 
-  // Returns what %-resolution-block-size was used in the intrinsic logical
-  // widths phase.
+  // Returns what initial block-size was used in the intrinsic logical widths
+  // phase. This is used for caching purposes when %-block-size children with
+  // aspect-ratios are present.
   //
   // For non-LayoutNG code this is always LayoutUnit::Min(), and should not be
   // used for caching purposes.
-  LayoutUnit IntrinsicLogicalWidthsPercentageResolutionBlockSize() const {
+  LayoutUnit IntrinsicLogicalWidthsInitialBlockSize() const {
     NOT_DESTROYED();
-    return intrinsic_logical_widths_percentage_resolution_block_size_;
+    return intrinsic_logical_widths_initial_block_size_;
   }
 
   // Make it public.
@@ -2333,7 +2334,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
  protected:
   MinMaxSizes intrinsic_logical_widths_;
-  LayoutUnit intrinsic_logical_widths_percentage_resolution_block_size_;
+  LayoutUnit intrinsic_logical_widths_initial_block_size_;
 
   scoped_refptr<const NGLayoutResult> measure_result_;
   NGLayoutResultList layout_results_;

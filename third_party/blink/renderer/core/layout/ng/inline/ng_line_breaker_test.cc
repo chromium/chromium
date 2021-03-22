@@ -90,6 +90,19 @@ class NGLineBreakerTest : public NGLayoutTest {
     return lines;
   }
 
+  MinMaxSizes ComputeMinMaxSizes(NGInlineNode node) {
+    const auto space =
+        NGConstraintSpaceBuilder(node.Style().GetWritingMode(),
+                                 node.Style().GetWritingDirection(),
+                                 /* is_new_fc */ false)
+            .ToConstraintSpace();
+
+    return node
+        .ComputeMinMaxSizes(node.Style().GetWritingMode(), space,
+                            MinMaxSizesFloatInput())
+        .sizes;
+  }
+
   Vector<NGLineBreaker::WhitespaceState> trailing_whitespaces_;
   bool first_should_hang_trailing_space_;
   LayoutUnit first_hang_width_;
@@ -567,11 +580,7 @@ TEST_F(NGLineBreakerTest, MinMaxWithTrailingSpaces) {
     <div id=container>12345 6789 </div>
   )HTML");
 
-  auto sizes = node.ComputeMinMaxSizes(
-                       WritingMode::kHorizontalTb,
-                       MinMaxSizesInput(
-                           /* percentage_resolution_block_size */ LayoutUnit()))
-                   .sizes;
+  const auto sizes = ComputeMinMaxSizes(node);
   EXPECT_EQ(sizes.min_size, LayoutUnit(60));
   EXPECT_EQ(sizes.max_size, LayoutUnit(110));
 }
@@ -653,10 +662,8 @@ TEST_F(NGLineBreakerTest, TableCellWidthCalculationQuirkOutOfFlow) {
   GetDocument().SetCompatibilityMode(Document::kQuirksMode);
   EXPECT_TRUE(node.GetDocument().InQuirksMode());
 
-  node.ComputeMinMaxSizes(
-      WritingMode::kHorizontalTb,
-      MinMaxSizesInput(/* percentage_resolution_block_size */ LayoutUnit()));
-  // Pass if |ComputeMinMaxSize| doesn't hit DCHECK failures.
+  ComputeMinMaxSizes(node);
+  // Pass if |ComputeMinMaxSizes| doesn't hit DCHECK failures.
 }
 
 TEST_F(NGLineBreakerTest, RewindPositionedFloat) {
@@ -693,9 +700,7 @@ B AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 </ruby>
   )HTML");
 
-  node.ComputeMinMaxSizes(
-      WritingMode::kHorizontalTb,
-      MinMaxSizesInput(/* percentage_resolution_block_size */ LayoutUnit()));
+  ComputeMinMaxSizes(node);
   // This test passes if no CHECK failures.
 }
 

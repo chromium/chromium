@@ -29,27 +29,15 @@ struct PhysicalSize;
 // The input to the min/max inline size calculation algorithm for child nodes.
 // Child nodes within the same formatting context need to know which floats are
 // beside them.
-struct MinMaxSizesInput {
-  // The min-max size calculation (un-intuitively) requires a percentage
-  // resolution size!
-  // This occurs when a replaced element has an intrinsic size. E.g.
-  // <div style="float: left; height: 100px">
-  //   <img sr="intrinsic-ratio-1x1.png" style="height: 50%;" />
-  // </div>
-  // In the above example float ends up with a width of 50px.
-  //
-  // As we don't perform any tree walking, we need to pass the percentage
-  // resolution block-size for min/max down the min/max size calculation.
-  explicit MinMaxSizesInput(LayoutUnit percentage_resolution_block_size)
-      : percentage_resolution_block_size(percentage_resolution_block_size) {}
+struct MinMaxSizesFloatInput {
+  explicit MinMaxSizesFloatInput() = default;
   LayoutUnit float_left_inline_size;
   LayoutUnit float_right_inline_size;
-  LayoutUnit percentage_resolution_block_size;
 };
 
 // The output of the min/max inline size calculation algorithm. Contains the
-// min/max sizes, and if this calculation will change if the
-// |MinMaxSizesInput::percentage_resolution_block_size| value changes.
+// min/max sizes, and if this calculation will change if the block constraints
+// change.
 struct MinMaxSizesResult {
   MinMaxSizesResult() = default;
   MinMaxSizesResult(MinMaxSizes sizes, bool depends_on_block_constraints)

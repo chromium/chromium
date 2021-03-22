@@ -2708,20 +2708,18 @@ TEST_F(NGColumnLayoutAlgorithmTest, MinMax) {
       CalculateInitialFragmentGeometry(space, node);
   NGColumnLayoutAlgorithm algorithm({node, fragment_geometry, space});
   base::Optional<MinMaxSizes> sizes;
-  MinMaxSizesInput zero_input(
-      /* percentage_resolution_block_size */ (LayoutUnit()));
 
   // Both column-count and column-width set.
   style->SetColumnCount(3);
   style->SetColumnWidth(80);
-  sizes = algorithm.ComputeMinMaxSizes(zero_input).sizes;
+  sizes = algorithm.ComputeMinMaxSizes(MinMaxSizesFloatInput()).sizes;
   ASSERT_TRUE(sizes.has_value());
   EXPECT_EQ(LayoutUnit(260), sizes->min_size);
   EXPECT_EQ(LayoutUnit(320), sizes->max_size);
 
   // Only column-count set.
   style->SetHasAutoColumnWidth();
-  sizes = algorithm.ComputeMinMaxSizes(zero_input).sizes;
+  sizes = algorithm.ComputeMinMaxSizes(MinMaxSizesFloatInput()).sizes;
   ASSERT_TRUE(sizes.has_value());
   EXPECT_EQ(LayoutUnit(170), sizes->min_size);
   EXPECT_EQ(LayoutUnit(320), sizes->max_size);
@@ -2729,7 +2727,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, MinMax) {
   // Only column-width set.
   style->SetColumnWidth(80);
   style->SetHasAutoColumnCount();
-  sizes = algorithm.ComputeMinMaxSizes(zero_input).sizes;
+  sizes = algorithm.ComputeMinMaxSizes(MinMaxSizesFloatInput()).sizes;
   ASSERT_TRUE(sizes.has_value());
   EXPECT_EQ(LayoutUnit(80), sizes->min_size);
   EXPECT_EQ(LayoutUnit(100), sizes->max_size);
