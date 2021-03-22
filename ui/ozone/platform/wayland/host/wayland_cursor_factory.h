@@ -39,6 +39,7 @@ class WaylandCursorFactory : public BitmapCursorFactoryOzone,
   // CursorFactoryOzone:
   base::Optional<PlatformCursor> GetDefaultCursor(
       mojom::CursorType type) override;
+  void SetDeviceScaleFactor(float scale) override;
 
  protected:
   // Returns the actual wl_cursor record from the currently loaded theme.
@@ -77,6 +78,9 @@ class WaylandCursorFactory : public BitmapCursorFactoryOzone,
   std::string name_;
   // Current size of cursors
   int size_ = 24;
+
+  // The current scale of the mouse cursor icon.
+  float scale_ = 1.0f;
 
   std::unique_ptr<ThemeData> current_theme_;
   // Holds the reference on the unloaded theme until the cursor is released.

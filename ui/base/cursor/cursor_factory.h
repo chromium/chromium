@@ -69,6 +69,10 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR_BASE) CursorFactory {
   // Called after CursorThemeManager is initialized, to be able to track
   // cursor theme and size changes.
   virtual void ObserveThemeChanges();
+
+  // Sets the device scale factor that CursorFactory may use when creating
+  // cursors.
+  virtual void SetDeviceScaleFactor(float scale);
 };
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)

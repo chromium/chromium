@@ -68,6 +68,8 @@ void CursorFactory::ObserveThemeChanges() {
   NOTIMPLEMENTED();
 }
 
+void CursorFactory::SetDeviceScaleFactor(float scale) {}
+
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 // Returns a cursor name compatible with either X11 or the FreeDesktop.org

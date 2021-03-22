@@ -51,6 +51,8 @@ bool CursorLoader::SetDisplayData(display::Display::Rotation rotation,
   rotation_ = rotation;
   scale_ = scale;
   UnloadCursors();
+  if (use_platform_cursors_)
+    factory_->SetDeviceScaleFactor(scale_);
   return true;
 }
 
