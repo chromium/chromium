@@ -12,6 +12,7 @@
       <include src="../oobe_links.css">
       :host {
         --oobe-default-font: {
+            color: var(--oobe-text-color);
             font-family: var(--oobe-default-font-family);
             font-size: var(--oobe-default-font-size);
             font-weight: var(--oobe-default-font-weight);
@@ -23,6 +24,13 @@
             font-size: var(--oobe-header-font-size);
             font-weight: var(--oobe-default-font-weight);
             line-height: var(--oobe-header-line-height);
+        };
+
+        --oobe-subheader-font: {
+            font-family: var(--oobe-subheader-font-family);
+            font-size: var(--oobe-subheader-font-size);
+            font-weight: var(--oobe-subheader-font-weight);
+            line-height: var(--oobe-subheader-line-height);
         };
 
         /* OOBE Modal Dialog */
