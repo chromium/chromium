@@ -19,11 +19,11 @@ PasswordFeatureManagerImpl::PasswordFeatureManagerImpl(
 
 bool PasswordFeatureManagerImpl::IsGenerationEnabled() const {
   switch (password_manager_util::GetPasswordSyncState(sync_service_)) {
-    case NOT_SYNCING:
+    case SyncState::kNotSyncing:
       return ShouldShowAccountStorageOptIn();
-    case SYNCING_WITH_CUSTOM_PASSPHRASE:
-    case SYNCING_NORMAL_ENCRYPTION:
-    case ACCOUNT_PASSWORDS_ACTIVE_NORMAL_ENCRYPTION:
+    case SyncState::kSyncingWithCustomPassphrase:
+    case SyncState::kSyncingNormalEncryption:
+    case SyncState::kAccountPasswordsActiveNormalEncryption:
       return true;
   }
 }

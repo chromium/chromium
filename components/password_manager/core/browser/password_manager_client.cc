@@ -70,7 +70,7 @@ void PasswordManagerClient::TriggerReauthForPrimaryAccount(
 void PasswordManagerClient::TriggerSignIn(signin_metrics::AccessPoint) {}
 
 SyncState PasswordManagerClient::GetPasswordSyncState() const {
-  return NOT_SYNCING;
+  return SyncState::kNotSyncing;
 }
 
 bool PasswordManagerClient::WasLastNavigationHTTPError() const {

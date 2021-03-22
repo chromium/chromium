@@ -111,7 +111,7 @@ void LeakDetectionDelegate::OnShowLeakDetectionNotification(
     CredentialLeakType leak_type =
         CreateLeakType(is_saved, IsReused(false),
                        IsSyncing(client_->GetPasswordSyncState() ==
-                                 SYNCING_NORMAL_ENCRYPTION));
+                                 SyncState::kSyncingNormalEncryption));
     client_->NotifyUserCredentialsWereLeaked(leak_type, saved_sites, url,
                                              username);
     return;
@@ -121,9 +121,10 @@ void LeakDetectionDelegate::OnShowLeakDetectionNotification(
   base::UmaHistogramTimes("PasswordManager.LeakDetection.NotifyIsLeakedTime",
                           std::exchange(is_leaked_timer_, nullptr)->Elapsed());
   helper_.reset();
-  CredentialLeakType leak_type = CreateLeakType(
-      is_saved, is_reused,
-      IsSyncing(client_->GetPasswordSyncState() == SYNCING_NORMAL_ENCRYPTION));
+  CredentialLeakType leak_type =
+      CreateLeakType(is_saved, is_reused,
+                     IsSyncing(client_->GetPasswordSyncState() ==
+                               SyncState::kSyncingNormalEncryption));
   base::UmaHistogramBoolean("PasswordManager.LeakDetection.IsPasswordSaved",
                             IsPasswordSaved(leak_type));
   base::UmaHistogramBoolean("PasswordManager.LeakDetection.IsPasswordReused",

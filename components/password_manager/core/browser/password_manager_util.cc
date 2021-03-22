@@ -70,13 +70,13 @@ password_manager::SyncState GetPasswordSyncState(
     const syncer::SyncService* sync_service) {
   if (!sync_service ||
       !sync_service->GetActiveDataTypes().Has(syncer::PASSWORDS)) {
-    return password_manager::NOT_SYNCING;
+    return password_manager::SyncState::kNotSyncing;
   }
 
   if (sync_service->IsSyncFeatureActive()) {
     return sync_service->GetUserSettings()->IsUsingSecondaryPassphrase()
-               ? password_manager::SYNCING_WITH_CUSTOM_PASSPHRASE
-               : password_manager::SYNCING_NORMAL_ENCRYPTION;
+               ? password_manager::SyncState::kSyncingWithCustomPassphrase
+               : password_manager::SyncState::kSyncingNormalEncryption;
   }
 
   DCHECK(base::FeatureList::IsEnabled(
@@ -84,12 +84,12 @@ password_manager::SyncState GetPasswordSyncState(
   // Account passwords are enabled only for users with normal encryption at
   // the moment. Data types won't become active for non-sync users with custom
   // passphrase.
-  return password_manager::ACCOUNT_PASSWORDS_ACTIVE_NORMAL_ENCRYPTION;
+  return password_manager::SyncState::kAccountPasswordsActiveNormalEncryption;
 }
 
 bool IsSyncingWithNormalEncryption(const syncer::SyncService* sync_service) {
   return GetPasswordSyncState(sync_service) ==
-         password_manager::SYNCING_NORMAL_ENCRYPTION;
+         password_manager::SyncState::kSyncingNormalEncryption;
 }
 
 void TrimUsernameOnlyCredentials(

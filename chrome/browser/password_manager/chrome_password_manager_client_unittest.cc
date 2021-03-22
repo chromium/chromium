@@ -322,24 +322,26 @@ TEST_F(ChromePasswordManagerClientTest, GetPasswordSyncState) {
   ChromePasswordManagerClient* client = GetClient();
 
   // Passwords are syncing and custom passphrase isn't used.
-  EXPECT_EQ(password_manager::SYNCING_NORMAL_ENCRYPTION,
+  EXPECT_EQ(password_manager::SyncState::kSyncingNormalEncryption,
             client->GetPasswordSyncState());
 
   // Again, using a custom passphrase.
   sync_service->SetIsUsingSecondaryPassphrase(true);
 
-  EXPECT_EQ(password_manager::SYNCING_WITH_CUSTOM_PASSPHRASE,
+  EXPECT_EQ(password_manager::SyncState::kSyncingWithCustomPassphrase,
             client->GetPasswordSyncState());
 
   // Report correctly if we aren't syncing passwords.
   sync_service->SetActiveDataTypes(syncer::ModelTypeSet(syncer::BOOKMARKS));
 
-  EXPECT_EQ(password_manager::NOT_SYNCING, client->GetPasswordSyncState());
+  EXPECT_EQ(password_manager::SyncState::kNotSyncing,
+            client->GetPasswordSyncState());
 
   // Again, without a custom passphrase.
   sync_service->SetIsUsingSecondaryPassphrase(false);
 
-  EXPECT_EQ(password_manager::NOT_SYNCING, client->GetPasswordSyncState());
+  EXPECT_EQ(password_manager::SyncState::kNotSyncing,
+            client->GetPasswordSyncState());
 }
 
 TEST_F(ChromePasswordManagerClientTest,

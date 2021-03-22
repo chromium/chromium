@@ -190,7 +190,7 @@ StoreMetricsReporter::StoreMetricsReporter(
           password_manager::sync_util::GetSyncUsernameIfSyncingPasswords(
               sync_service, identity_manager),
           client->GetPasswordSyncState() ==
-              password_manager::SYNCING_WITH_CUSTOM_PASSPHRASE,
+              password_manager::SyncState::kSyncingWithCustomPassphrase,
           client->IsUnderAdvancedProtection());
     }
   }
