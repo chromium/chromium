@@ -49,4 +49,7 @@ void ChromeMediaAppUIDelegate::PopulateLoadTimeData(
   source->AddBoolean("flagsMenu", channel != version_info::Channel::BETA &&
                                       channel != version_info::Channel::STABLE);
   source->AddBoolean("isDevChannel", channel == version_info::Channel::DEV);
+  source->AddBoolean(
+      "videoControls",
+      base::FeatureList::IsEnabled(chromeos::features::kMediaAppVideoControls));
 }

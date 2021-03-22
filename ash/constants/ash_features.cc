@@ -488,6 +488,10 @@ const base::Feature kMediaAppHandlesRaw{"MediaAppHandlesRaw",
 const base::Feature kMediaAppPdfInInk{"MediaAppPdfInInk",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Whether to show the new Video controls UI in the ChromeOS media app.
+const base::Feature kMediaAppVideoControls{"MediaAppVideoControls",
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables support for multilingual assistive typing on Chrome OS.
 const base::Feature kMultilingualTyping{"MultilingualTyping",
                                         base::FEATURE_DISABLED_BY_DEFAULT};

@@ -213,6 +213,8 @@ extern const base::Feature kMediaAppHandlesRaw;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kMediaAppPdfInInk;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kMediaAppVideoControls;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kMinimumChromeVersion;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kMultilingualTyping;
