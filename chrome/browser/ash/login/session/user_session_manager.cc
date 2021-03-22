@@ -67,6 +67,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/owner_flags_storage.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -96,6 +97,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/site_isolation/about_flags.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
@@ -280,36 +282,6 @@ void InitLocaleAndInputMethodsForNewUser(
   prefs->SetBoolean(::prefs::kLanguageShouldMergeInputMethods, true);
 }
 
-// Returns new CommandLine with per-user flags.
-base::CommandLine CreatePerSessionCommandLine(Profile* profile) {
-  base::CommandLine user_flags(base::CommandLine::NO_PROGRAM);
-  flags_ui::PrefServiceFlagsStorage flags_storage(profile->GetPrefs());
-  about_flags::ConvertFlagsToSwitches(&flags_storage, &user_flags,
-                                      flags_ui::kAddSentinels);
-
-  UserSessionManager::ApplyUserPolicyToSwitches(profile->GetPrefs(),
-                                                &user_flags);
-
-  return user_flags;
-}
-
-// Returns true if restart is needed to apply per-session flags.
-bool NeedRestartToApplyPerSessionFlags(
-    const base::CommandLine& user_flags,
-    std::set<base::CommandLine::StringType>* out_command_line_difference) {
-  // Don't restart browser if it is not first profile in session.
-  if (user_manager::UserManager::Get()->GetLoggedInUsers().size() != 1)
-    return false;
-
-  auto* current_command_line = base::CommandLine::ForCurrentProcess();
-  if (about_flags::AreSwitchesIdenticalToCurrentCommandLine(
-          user_flags, *current_command_line, out_command_line_difference)) {
-    return false;
-  }
-
-  return true;
-}
-
 bool CanPerformEarlyRestart() {
   const ExistingUserController* controller =
       ExistingUserController::current_controller();
@@ -331,13 +303,15 @@ bool CanPerformEarlyRestart() {
   return true;
 }
 
-void LogCustomSwitches(const std::set<std::string>& switches) {
-  if (!VLOG_IS_ON(1))
-    return;
-  for (std::set<std::string>::const_iterator it = switches.begin();
-       it != switches.end(); ++it) {
-    VLOG(1) << "Switch leading to restart: '" << *it << "'";
+void LogCustomFeatureFlags(const std::set<std::string>& feature_flags) {
+  if (VLOG_IS_ON(1)) {
+    for (const auto& feature_flag : feature_flags) {
+      VLOG(1) << "Feature flag leading to restart: '" << feature_flag << "'";
+    }
   }
+
+  ash::about_flags::ReadOnlyFlagsStorage flags_storage(feature_flags);
+  ::about_flags::RecordUMAStatistics(&flags_storage, "Login.CustomFlags");
 }
 
 // Calls the real AttemptRestart method. This is used to avoid taking a function
@@ -448,9 +422,8 @@ void UserSessionManager::RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 // static
-void UserSessionManager::ApplyUserPolicyToSwitches(
-    PrefService* user_profile_prefs,
-    base::CommandLine* user_flags) {
+void UserSessionManager::ApplyUserPolicyToFlags(PrefService* user_profile_prefs,
+                                                std::set<std::string>* flags) {
   // Get target value for --site-per-process for the user session according to
   // policy. If it is supposed to be enabled, make sure it can not be disabled
   // using flags-induced command-line switches.
@@ -458,17 +431,8 @@ void UserSessionManager::ApplyUserPolicyToSwitches(
       user_profile_prefs->FindPreference(::prefs::kSitePerProcess);
   if (site_per_process_pref->IsManaged() &&
       site_per_process_pref->GetValue()->GetBool()) {
-    user_flags->RemoveSwitch(::switches::kDisableSiteIsolation);
+    flags->erase(::about_flags::SiteIsolationTrialOptOutChoiceEnabled());
   }
-
-  // Note: If a user policy is introduced again which translates to command-line
-  // switches, make sure to wrap the policy-added command-line switches in
-  // `"--policy-switches-begin"` / `"--policy-switches-end"` sentinels.
-  // This is important, because only command-line switches between the
-  // `"--policy-switches-begin"` / `"--policy-switches-end"` and the
-  // `"--flag-switches-begin"` / `"--flag-switches-end"` sentinels will be
-  // compared when comparing the current command line and the user session
-  // command line in order to decide if chrome should be restarted.
 }
 
 UserSessionManager::UserSessionManager()
@@ -585,19 +549,10 @@ void UserSessionManager::CompleteGuestSessionLogin(const GURL& start_url) {
   // the guest profile session flags will not match the current command line and
   // another restart will be attempted in order to reset the user flags for the
   // guest user.
-  const base::CommandLine user_flags(base::CommandLine::NO_PROGRAM);
-  if (!about_flags::AreSwitchesIdenticalToCurrentCommandLine(
-          user_flags, *base::CommandLine::ForCurrentProcess(), NULL)) {
-    SessionManagerClient::Get()->SetFeatureFlagsForUser(
-        cryptohome::CreateAccountIdentifierFromAccountId(
-            user_manager::GuestAccountId()),
-        {});
-
-    SessionManagerClient::Get()->SetFlagsForUser(
-        cryptohome::CreateAccountIdentifierFromAccountId(
-            user_manager::GuestAccountId()),
-        base::CommandLine::StringVector());
-  }
+  SessionManagerClient::Get()->SetFeatureFlagsForUser(
+      cryptohome::CreateAccountIdentifierFromAccountId(
+          user_manager::GuestAccountId()),
+      {});
 
   RestartChrome(command_line, RestartChromeReason::kGuest);
 }
@@ -921,23 +876,33 @@ bool UserSessionManager::RestartToApplyPerSessionFlagsIfNeed(
   if (user_manager::UserManager::Get()->GetLoggedInUsers().size() > 1)
     return false;
 
-  const base::CommandLine user_flags(CreatePerSessionCommandLine(profile));
-  std::set<base::CommandLine::StringType> command_line_difference;
-  if (!NeedRestartToApplyPerSessionFlags(user_flags, &command_line_difference))
+  // Don't restart browser if it is not the first profile in the session.
+  if (user_manager::UserManager::Get()->GetLoggedInUsers().size() != 1)
     return false;
 
-  LogCustomSwitches(command_line_difference);
+  // Compare feature flags configured for the device vs. user. Restart is only
+  // required when there's a difference.
+  std::set<std::string> designated_flags =
+      flags_ui::PrefServiceFlagsStorage(profile->GetPrefs()).GetFlags();
+  ApplyUserPolicyToFlags(profile->GetPrefs(), &designated_flags);
+  std::set<std::string> actual_flags =
+      ash::about_flags::ParseFlagsFromCommandLine();
+  std::set<std::string> flags_difference;
+  std::set_symmetric_difference(
+      designated_flags.begin(), designated_flags.end(), actual_flags.begin(),
+      actual_flags.end(),
+      std::inserter(flags_difference, flags_difference.begin()));
+  if (flags_difference.empty())
+    return false;
 
-  flags_ui::ReportAboutFlagsHistogram(
-      "Login.CustomFlags", command_line_difference, std::set<std::string>());
-
-  base::CommandLine::StringVector flags;
-  // argv[0] is the program name `base::CommandLine::NO_PROGRAM`.
-  flags.assign(user_flags.argv().begin() + 1, user_flags.argv().end());
+  // Restart is required. Emit metrics and logs and trigger the restart.
+  LogCustomFeatureFlags(flags_difference);
   LOG(WARNING) << "Restarting to apply per-session flags...";
-  SetSwitchesForUser(
-      user_manager::UserManager::Get()->GetActiveUser()->GetAccountId(),
-      CommandLineSwitchesType::kPolicyAndFlagsAndKioskControl, flags);
+
+  auto account_id = cryptohome::CreateAccountIdentifierFromAccountId(
+      user_manager::UserManager::Get()->GetActiveUser()->GetAccountId());
+  SessionManagerClient::Get()->SetFeatureFlagsForUser(
+      account_id, {designated_flags.begin(), designated_flags.end()});
   attempt_restart_closure_.Run();
   return true;
 }
@@ -2299,13 +2264,6 @@ void UserSessionManager::SetSwitchesForUser(
     all_switches.insert(all_switches.end(), pair.second.begin(),
                         pair.second.end());
   }
-
-  // Clear session_manager's feature flag state so it doesn't pass flags on
-  // restart. This is necessary until in-session feature flags have been
-  // converted to use the new way.
-  // TODO(crbug.com/1073940): Remove after conversion is complete.
-  SessionManagerClient::Get()->SetFeatureFlagsForUser(
-      cryptohome::CreateAccountIdentifierFromAccountId(account_id), {});
 
   SessionManagerClient::Get()->SetFlagsForUser(
       cryptohome::CreateAccountIdentifierFromAccountId(account_id),

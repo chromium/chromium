@@ -1656,6 +1656,7 @@ static_library("browser") {
     "signin/signin_promo_util.h",
     "signin/signin_util.cc",
     "signin/signin_util.h",
+    "site_isolation/about_flags.h",
     "site_isolation/prefs_observer.cc",
     "site_isolation/prefs_observer.h",
     "site_isolation/site_details.cc",

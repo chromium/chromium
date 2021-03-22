@@ -160,20 +160,6 @@ class FlagsState {
   // This is exposed only for testing.
   static int GetCurrentPlatform();
 
-  // Compares a set of switches of the two provided command line objects and
-  // returns true if they are the same and false otherwise.
-  // If |out_difference| is not NULL, it's filled with set_symmetric_difference
-  // between sets.
-  // Only switches between --flag-switches-begin and --flag-switches-end are
-  // compared. The embedder may use |extra_flag_sentinel_begin_flag_name| and
-  // |extra_sentinel_end_flag_name| to specify other delimiters, if supported.
-  static bool AreSwitchesIdenticalToCurrentCommandLine(
-      const base::CommandLine& new_cmdline,
-      const base::CommandLine& active_cmdline,
-      std::set<base::CommandLine::StringType>* out_difference,
-      const char* extra_flag_sentinel_begin_flag_name,
-      const char* extra_flag_sentinel_end_flag_name);
-
  private:
   // Keeps track of affected switches for each FeatureEntry, based on which
   // choice is selected for it.

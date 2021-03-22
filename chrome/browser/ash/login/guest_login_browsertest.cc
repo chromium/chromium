@@ -4,14 +4,17 @@
 
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "chrome/browser/about_flags.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "components/flags_ui/feature_entry_macros.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/cros_system_api/switches/chrome_switches.h"
 
 namespace chromeos {
 
@@ -42,15 +45,22 @@ class GuestLoginTest : public MixinBasedInProcessBrowserTest {
 
 class GuestLoginWithLoginSwitchesTest : public GuestLoginTest {
  public:
-  GuestLoginWithLoginSwitchesTest() = default;
+  GuestLoginWithLoginSwitchesTest()
+      : scoped_feature_entries_({{"feature-name", "name-1", "description-1", -1,
+                                  SINGLE_VALUE_TYPE("feature-switch")}}) {}
   ~GuestLoginWithLoginSwitchesTest() override = default;
 
   // GuestLoginTest:
   void SetDefaultLoginSwitches() override {
     login_manager_.SetDefaultLoginSwitches(
-        {std::make_pair("test_switch_1", ""),
+        {std::make_pair(chromeos::switches::kFeatureFlags,
+                        "[\"feature-name\"]"),
+         std::make_pair("test_switch_1", ""),
          std::make_pair("test_switch_2", "test_switch_2_value")});
   }
+
+ private:
+  about_flags::testing::ScopedFeatureEntries scoped_feature_entries_;
 };
 
 IN_PROC_BROWSER_TEST_F(GuestLoginTest, PRE_Login) {
@@ -129,6 +139,8 @@ IN_PROC_BROWSER_TEST_F(GuestLoginWithLoginSwitchesTest, PRE_Login) {
   FakeSessionManagerClient::Get()->set_restart_job_callback(
       restart_job_waiter.QuitClosure());
 
+  EXPECT_TRUE(
+      base::CommandLine::ForCurrentProcess()->HasSwitch("feature-switch"));
   ASSERT_TRUE(ash::LoginScreenTestApi::ClickGuestButton());
 
   restart_job_waiter.Run();
@@ -142,6 +154,8 @@ IN_PROC_BROWSER_TEST_F(GuestLoginWithLoginSwitchesTest, Login) {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   EXPECT_TRUE(user_manager->IsLoggedInAsGuest());
 
+  EXPECT_FALSE(
+      base::CommandLine::ForCurrentProcess()->HasSwitch("feature-switch"));
   EXPECT_FALSE(
       base::CommandLine::ForCurrentProcess()->HasSwitch("test_switch_1"));
   EXPECT_FALSE(

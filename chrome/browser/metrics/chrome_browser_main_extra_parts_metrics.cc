@@ -511,7 +511,7 @@ void ChromeBrowserMainExtraPartsMetrics::PreProfileInit() {
 void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
   flags_ui::PrefServiceFlagsStorage flags_storage(
       g_browser_process->local_state());
-  about_flags::RecordUMAStatistics(&flags_storage);
+  about_flags::RecordUMAStatistics(&flags_storage, "Launch.FlagsAtStartup");
 
   // Log once here at browser start rather than at each renderer launch.
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial("ClangPGO",

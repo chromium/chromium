@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
+#include "chrome/browser/site_isolation/about_flags.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -138,7 +139,8 @@ const Params kTestCases[] = {
         std::string() /* login_screen_isolate_origins */,
         std::string() /* user_policy_isolate_origins */,
         false /* user_policy_site_per_process */,
-        {"site-isolation-trial-opt-out@1"} /* user_flag_internal_names */,
+        /* user_flag_internal_names */
+        {about_flags::SiteIsolationTrialOptOutChoiceEnabled()},
         false /* ephemeral_users */,
         true /* expected_request_restart */,
         {"--disable-site-isolation-trials"} /* expected_switches_for_user */),
@@ -148,7 +150,8 @@ const Params kTestCases[] = {
     Params(std::string() /* login_screen_isolate_origins */,
            std::string() /* user_policy_isolate_origins */,
            true /* user_policy_site_per_process */,
-           {"site-isolation-trial-opt-out@1"} /* user_flag_internal_names */,
+           /* user_flag_internal_names */
+           {about_flags::SiteIsolationTrialOptOutChoiceEnabled()},
            false /* ephemeral_users */,
            false /* expected_request_restart */,
            {} /* expected_switches_for_user */),

@@ -49,15 +49,6 @@ std::vector<std::string> RegisterAllFeatureVariationParameters(
     flags_ui::FlagsStorage* flags_storage,
     base::FeatureList* feature_list);
 
-// Compares a set of switches of the two provided command line objects and
-// returns true if they are the same and false otherwise.
-// If |out_difference| is not NULL, it's filled with set_symmetric_difference
-// between sets.
-bool AreSwitchesIdenticalToCurrentCommandLine(
-    const base::CommandLine& new_cmdline,
-    const base::CommandLine& active_cmdline,
-    std::set<base::CommandLine::StringType>* out_difference);
-
 // Gets the list of feature entries. Entries that are available for the current
 // platform are appended to |supported_entries|; all other entries are appended
 // to |unsupported_entries|.
@@ -107,7 +98,8 @@ void ResetAllFlags(flags_ui::FlagsStorage* flags_storage);
 
 // Sends UMA stats about experimental flag usage. This should be called once per
 // startup.
-void RecordUMAStatistics(flags_ui::FlagsStorage* flags_storage);
+void RecordUMAStatistics(flags_ui::FlagsStorage* flags_storage,
+                         const std::string& histogram_name);
 
 namespace testing {
 
