@@ -198,6 +198,15 @@ FloatPoint FramePointToViewport(const LocalFrameView* view,
       point_in_root_frame);
 }
 
+float PageScaleFromFrameView(const LocalFrameView* frame_view) {
+  return 1.f / frame_view->GetPage()->GetVisualViewport().Scale();
+}
+
+float DeviceScaleFromFrameView(const LocalFrameView* frame_view) {
+  return 1.f / frame_view->GetChromeClient()->WindowToViewportScalar(
+                   &frame_view->GetFrame(), 1.f);
+}
+
 void FrameQuadToViewport(const LocalFrameView* view, FloatQuad& quad) {
   quad.SetP1(FramePointToViewport(view, quad.P1()));
   quad.SetP2(FramePointToViewport(view, quad.P2()));
@@ -1420,10 +1429,8 @@ InspectorHighlightBase::InspectorHighlightBase(Node* node)
     : highlight_paths_(protocol::ListValue::create()), scale_(1.f) {
   DCHECK(!DisplayLockUtilities::NearestLockedExclusiveAncestor(*node));
   LocalFrameView* frame_view = node->GetDocument().View();
-  if (frame_view) {
-    scale_ = 1.f / frame_view->GetChromeClient()->WindowToViewportScalar(
-                       &frame_view->GetFrame(), 1.f);
-  }
+  if (frame_view)
+    scale_ = DeviceScaleFromFrameView(frame_view);
 }
 
 bool InspectorHighlightBase::BuildNodeQuads(Node* node,
@@ -1885,7 +1892,7 @@ bool InspectorHighlight::GetBoxModel(
     AdjustForAbsoluteZoom::AdjustFloatQuad(margin, *layout_object);
   }
 
-  float scale = 1 / view->GetPage()->GetVisualViewport().Scale();
+  float scale = PageScaleFromFrameView(view);
   content.Scale(scale, scale);
   padding.Scale(scale, scale);
   border.Scale(scale, scale);
@@ -1959,7 +1966,7 @@ bool InspectorHighlight::GetContentQuads(
     return false;
   Vector<FloatQuad> quads;
   CollectQuads(node, quads);
-  float scale = 1 / view->GetPage()->GetVisualViewport().Scale();
+  float scale = PageScaleFromFrameView(view);
   for (FloatQuad& quad : quads) {
     AdjustForAbsoluteZoom::AdjustFloatQuad(quad, *layout_object);
     quad.Scale(scale, scale);
@@ -1983,8 +1990,7 @@ std::unique_ptr<protocol::DictionaryValue> InspectorGridHighlight(
   if (!frame_view)
     return nullptr;
 
-  float scale = 1.f / frame_view->GetChromeClient()->WindowToViewportScalar(
-                          &frame_view->GetFrame(), 1.f);
+  float scale = DeviceScaleFromFrameView(frame_view);
   LayoutObject* layout_object = node->GetLayoutObject();
   if (!layout_object || !layout_object->IsLayoutGridIncludingNG())
     return nullptr;
@@ -2006,8 +2012,7 @@ std::unique_ptr<protocol::DictionaryValue> InspectorFlexContainerHighlight(
   if (!frame_view)
     return nullptr;
 
-  float scale = 1.f / frame_view->GetChromeClient()->WindowToViewportScalar(
-                          &frame_view->GetFrame(), 1.f);
+  float scale = DeviceScaleFromFrameView(frame_view);
   LayoutObject* layout_object = node->GetLayoutObject();
   if (!layout_object || !IsLayoutNGFlexibleBox(*layout_object)) {
     return nullptr;
