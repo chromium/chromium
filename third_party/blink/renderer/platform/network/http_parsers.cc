@@ -798,7 +798,7 @@ network::mojom::blink::ParsedHeadersPtr ParseHeaders(const String& raw_headers,
 }
 
 // This function is simply calling network::ParseContentSecurityPolicies and
-// convert from/to blink types.
+// converting from/to blink types.
 Vector<network::mojom::blink::ContentSecurityPolicyPtr>
 ParseContentSecurityPolicies(
     const String& raw_policies,
@@ -807,6 +807,21 @@ ParseContentSecurityPolicies(
     const KURL& base_url) {
   return network::mojom::ConvertToBlink(network::ParseContentSecurityPolicies(
       raw_policies.Utf8(), type, source, base_url));
+}
+
+// This function is simply calling network::ParseContentSecurityPolicies and
+// converting from/to blink types.
+Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+ParseContentSecurityPolicies(
+    const String& raw_policies,
+    network::mojom::blink::ContentSecurityPolicyType type,
+    network::mojom::blink::ContentSecurityPolicySource source,
+    const SecurityOrigin& self_origin) {
+  KURL base_url;
+  base_url.SetProtocol(self_origin.Protocol());
+  base_url.SetHost(self_origin.Host());
+  base_url.SetPort(self_origin.Port());
+  return ParseContentSecurityPolicies(raw_policies, type, source, base_url);
 }
 
 }  // namespace blink

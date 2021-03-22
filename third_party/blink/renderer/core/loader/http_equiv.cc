@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/http_equiv.h"
 
+#include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -100,18 +101,17 @@ void HttpEquiv::ProcessHttpEquivContentSecurityPolicy(
   if (window->GetFrame()->GetSettings()->GetBypassCSP())
     return;
   if (EqualIgnoringASCIICase(equiv, "content-security-policy")) {
-    window->GetPolicyContainer()->AddContentSecurityPolicies(
-        window->GetContentSecurityPolicy()->DidReceiveHeader(
-            content, *(window->GetSecurityOrigin()),
-            network::mojom::ContentSecurityPolicyType::kEnforce,
-            network::mojom::ContentSecurityPolicySource::kMeta));
+    Vector<network::mojom::blink::ContentSecurityPolicyPtr> parsed =
+        ParseContentSecurityPolicies(
+            content, network::mojom::blink::ContentSecurityPolicyType::kEnforce,
+            network::mojom::blink::ContentSecurityPolicySource::kMeta,
+            *(window->GetSecurityOrigin()
+                  ->GetOriginOrPrecursorOriginIfOpaque()));
+    window->GetContentSecurityPolicy()->AddPolicies(mojo::Clone(parsed));
+    window->GetPolicyContainer()->AddContentSecurityPolicies(std::move(parsed));
   } else if (EqualIgnoringASCIICase(equiv,
                                     "content-security-policy-report-only")) {
-    window->GetPolicyContainer()->AddContentSecurityPolicies(
-        window->GetContentSecurityPolicy()->DidReceiveHeader(
-            content, *(window->GetSecurityOrigin()),
-            network::mojom::ContentSecurityPolicyType::kReport,
-            network::mojom::ContentSecurityPolicySource::kMeta));
+    window->GetContentSecurityPolicy()->ReportReportOnlyInMeta(content);
   } else {
     NOTREACHED();
   }

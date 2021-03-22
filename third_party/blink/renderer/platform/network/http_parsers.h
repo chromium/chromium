@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/network/parsed_content_type.h"
 #include "third_party/blink/renderer/platform/network/server_timing_header.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -160,6 +161,16 @@ ParseContentSecurityPolicies(
     network::mojom::blink::ContentSecurityPolicyType type,
     network::mojom::blink::ContentSecurityPolicySource source,
     const KURL& base_url);
+
+// Parses Content Security Policies. This is the same as
+// network::ParseContentSecurityPolicies but using blink types.
+PLATFORM_EXPORT
+Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+ParseContentSecurityPolicies(
+    const String& raw_policies,
+    network::mojom::blink::ContentSecurityPolicyType type,
+    network::mojom::blink::ContentSecurityPolicySource source,
+    const SecurityOrigin& self_origin);
 
 }  // namespace blink
 

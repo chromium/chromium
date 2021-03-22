@@ -1823,6 +1823,94 @@ TEST(ContentSecurityPolicy, InvalidPolicyInReportTreatAsPublicAddress) {
       policy->parsing_errors[0]);
 }
 
+TEST(ContentSecurityPolicy, InvalidPolicyInMetaFrameAncestors) {
+  std::vector<mojom::ContentSecurityPolicyPtr> policies =
+      ParseContentSecurityPolicies(
+          "frame-ancestors https://www.example.org; script-src 'none'",
+          mojom::ContentSecurityPolicyType::kEnforce,
+          mojom::ContentSecurityPolicySource::kMeta,
+          GURL("https://www.example.org"));
+
+  ASSERT_EQ(1u, policies.size());
+  mojom::ContentSecurityPolicyPtr& policy = policies[0];
+  EXPECT_EQ(1u, policy->directives.size());
+
+  auto& script_src = policy->directives[mojom::CSPDirectiveName::ScriptSrc];
+  EXPECT_EQ(script_src->sources.size(), 0U);
+
+  ASSERT_EQ(1u, policy->parsing_errors.size());
+  EXPECT_EQ(
+      "The Content Security Policy directive 'frame-ancestors' is ignored when "
+      "delivered via a <meta> element.",
+      policy->parsing_errors[0]);
+}
+
+TEST(ContentSecurityPolicy, InvalidPolicyInMetaReportUri) {
+  std::vector<mojom::ContentSecurityPolicyPtr> policies =
+      ParseContentSecurityPolicies(
+          "report-uri https://www.example.org; script-src 'none'",
+          mojom::ContentSecurityPolicyType::kEnforce,
+          mojom::ContentSecurityPolicySource::kMeta,
+          GURL("https://www.example.org"));
+
+  ASSERT_EQ(1u, policies.size());
+  mojom::ContentSecurityPolicyPtr& policy = policies[0];
+  EXPECT_EQ(1u, policy->directives.size());
+
+  auto& script_src = policy->directives[mojom::CSPDirectiveName::ScriptSrc];
+  EXPECT_EQ(script_src->sources.size(), 0U);
+
+  ASSERT_EQ(1u, policy->parsing_errors.size());
+  EXPECT_EQ(
+      "The Content Security Policy directive 'report-uri' is ignored when "
+      "delivered via a <meta> element.",
+      policy->parsing_errors[0]);
+}
+
+TEST(ContentSecurityPolicy, InvalidPolicyInMetaSandbox) {
+  std::vector<mojom::ContentSecurityPolicyPtr> policies =
+      ParseContentSecurityPolicies("sandbox; script-src 'none'",
+                                   mojom::ContentSecurityPolicyType::kEnforce,
+                                   mojom::ContentSecurityPolicySource::kMeta,
+                                   GURL("https://www.example.org"));
+
+  ASSERT_EQ(1u, policies.size());
+  mojom::ContentSecurityPolicyPtr& policy = policies[0];
+  EXPECT_EQ(mojom::WebSandboxFlags::kNone, policy->sandbox);
+  EXPECT_EQ(1u, policy->directives.size());
+
+  auto& script_src = policy->directives[mojom::CSPDirectiveName::ScriptSrc];
+  EXPECT_EQ(script_src->sources.size(), 0U);
+
+  ASSERT_EQ(1u, policy->parsing_errors.size());
+  EXPECT_EQ(
+      "The Content Security Policy directive 'sandbox' is ignored when "
+      "delivered via a <meta> element.",
+      policy->parsing_errors[0]);
+}
+
+TEST(ContentSecurityPolicy, InvalidPolicyInMetaTreatAsPublicAddress) {
+  std::vector<mojom::ContentSecurityPolicyPtr> policies =
+      ParseContentSecurityPolicies("treat-as-public-address; script-src 'none'",
+                                   mojom::ContentSecurityPolicyType::kEnforce,
+                                   mojom::ContentSecurityPolicySource::kMeta,
+                                   GURL("https://www.example.org"));
+
+  ASSERT_EQ(1u, policies.size());
+  mojom::ContentSecurityPolicyPtr& policy = policies[0];
+  EXPECT_FALSE(policy->treat_as_public_address);
+  EXPECT_EQ(1u, policy->directives.size());
+
+  auto& script_src = policy->directives[mojom::CSPDirectiveName::ScriptSrc];
+  EXPECT_EQ(script_src->sources.size(), 0U);
+
+  ASSERT_EQ(1u, policy->parsing_errors.size());
+  EXPECT_EQ(
+      "The Content Security Policy directive 'treat-as-public-address' is "
+      "ignored when delivered via a <meta> element.",
+      policy->parsing_errors[0]);
+}
+
 TEST(ContentSecurityPolicy, AllowsBlanketEnforcementOfRequiredCSP) {
   struct TestCase {
     const char* name;

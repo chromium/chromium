@@ -90,6 +90,44 @@ bool SupportedInReportOnly(CSPDirectiveName directive) {
   };
 }
 
+bool SupportedInMeta(CSPDirectiveName directive) {
+  switch (directive) {
+    case CSPDirectiveName::FrameAncestors:
+    case CSPDirectiveName::ReportURI:
+    case CSPDirectiveName::Sandbox:
+    case CSPDirectiveName::TreatAsPublicAddress:
+      return false;
+
+    case CSPDirectiveName::BaseURI:
+    case CSPDirectiveName::BlockAllMixedContent:
+    case CSPDirectiveName::ChildSrc:
+    case CSPDirectiveName::ConnectSrc:
+    case CSPDirectiveName::DefaultSrc:
+    case CSPDirectiveName::FontSrc:
+    case CSPDirectiveName::FormAction:
+    case CSPDirectiveName::FrameSrc:
+    case CSPDirectiveName::ImgSrc:
+    case CSPDirectiveName::ManifestSrc:
+    case CSPDirectiveName::MediaSrc:
+    case CSPDirectiveName::NavigateTo:
+    case CSPDirectiveName::ObjectSrc:
+    case CSPDirectiveName::PrefetchSrc:
+    case CSPDirectiveName::ReportTo:
+    case CSPDirectiveName::RequireTrustedTypesFor:
+    case CSPDirectiveName::ScriptSrc:
+    case CSPDirectiveName::ScriptSrcAttr:
+    case CSPDirectiveName::ScriptSrcElem:
+    case CSPDirectiveName::StyleSrc:
+    case CSPDirectiveName::StyleSrcAttr:
+    case CSPDirectiveName::StyleSrcElem:
+    case CSPDirectiveName::TrustedTypes:
+    case CSPDirectiveName::Unknown:
+    case CSPDirectiveName::UpgradeInsecureRequests:
+    case CSPDirectiveName::WorkerSrc:
+      return true;
+  };
+}
+
 // Return the error message specific to one CSP |directive|.
 // $1: Blocked URL.
 // $2: Blocking policy.
@@ -897,6 +935,15 @@ void AddContentSecurityPolicyFromHeader(
       out->parsing_errors.emplace_back(
           base::StringPrintf("The Content Security Policy directive '%s' is "
                              "ignored when delivered in a report-only policy.",
+                             directive.first.as_string().c_str()));
+      continue;
+    }
+
+    if (source == mojom::ContentSecurityPolicySource::kMeta &&
+        !SupportedInMeta(directive_name)) {
+      out->parsing_errors.emplace_back(
+          base::StringPrintf("The Content Security Policy directive '%s' is "
+                             "ignored when delivered via a <meta> element.",
                              directive.first.as_string().c_str()));
       continue;
     }
