@@ -63,12 +63,6 @@ class DataListIndicatorElement final : public HTMLDivElement {
     return To<HTMLInputElement>(OwnerShadowHost());
   }
 
-  LayoutObject* CreateLayoutObject(const ComputedStyle&,
-                                   LegacyLayout) override {
-    UseCounter::Count(GetDocument(), WebFeature::kLegacyLayoutByDetailsMarker);
-    return new LayoutDetailsMarker(this);
-  }
-
   EventDispatchHandlingState* PreDispatchEventHandler(Event& event) override {
     // Chromium opens autofill popup in a mousedown event listener
     // associated to the document. We don't want to open it in this case
@@ -99,6 +93,11 @@ class DataListIndicatorElement final : public HTMLDivElement {
   DataListIndicatorElement(Document& document) : HTMLDivElement(document) {
     SetShadowPseudoId(AtomicString("-webkit-calendar-picker-indicator"));
     setAttribute(html_names::kIdAttr, shadow_element_names::kIdPickerIndicator);
+    setAttribute(html_names::kStyleAttr,
+                 "display:list-item; list-style:disclosure-open inside; "
+                 "block-size:1em;");
+    // Do not expose list-item role.
+    setAttribute(html_names::kAriaHiddenAttr, "true");
   }
 };
 

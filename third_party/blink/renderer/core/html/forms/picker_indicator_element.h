@@ -73,7 +73,6 @@ class PickerIndicatorElement final : public HTMLDivElement,
   void DidEndChooser() override;
 
  private:
-  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
   void DefaultEventHandler(Event&) override;
   void DetachLayoutTree(bool performing_reattach) override;
   bool IsPickerIndicatorElement() const override;

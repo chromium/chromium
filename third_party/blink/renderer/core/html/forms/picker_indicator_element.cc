@@ -51,20 +51,17 @@ PickerIndicatorElement::PickerIndicatorElement(
       picker_indicator_owner_(&picker_indicator_owner) {
   SetShadowPseudoId(AtomicString("-webkit-calendar-picker-indicator"));
   setAttribute(html_names::kIdAttr, shadow_element_names::kIdPickerIndicator);
+  if (!features::IsFormControlsRefreshEnabled()) {
+    setAttribute(html_names::kStyleAttr,
+                 "display:list-item; list-style:disclosure-open inside; "
+                 "block-size:1em;");
+    // Do not expose list-item role.
+    setAttribute(html_names::kAriaHiddenAttr, "true");
+  }
 }
 
 PickerIndicatorElement::~PickerIndicatorElement() {
   DCHECK(!chooser_);
-}
-
-LayoutObject* PickerIndicatorElement::CreateLayoutObject(
-    const ComputedStyle& style,
-    LegacyLayout legacy) {
-  if (features::IsFormControlsRefreshEnabled())
-    return HTMLDivElement::CreateLayoutObject(style, legacy);
-
-  UseCounter::Count(GetDocument(), WebFeature::kLegacyLayoutByDetailsMarker);
-  return new LayoutDetailsMarker(this);
 }
 
 void PickerIndicatorElement::DefaultEventHandler(Event& event) {
