@@ -665,11 +665,13 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
       case webrtc::RTCStatsMemberInterface::Type::kString:
         return std::make_unique<base::Value>(
             *member.cast_to<webrtc::RTCStatsMember<std::string>>());
+      case webrtc::RTCStatsMemberInterface::Type::kDouble:
+        return std::make_unique<base::Value>(
+            *member.cast_to<webrtc::RTCStatsMember<double>>());
       // Types not supported by base::Value are converted to string.
       case webrtc::RTCStatsMemberInterface::Type::kUint32:
       case webrtc::RTCStatsMemberInterface::Type::kInt64:
       case webrtc::RTCStatsMemberInterface::Type::kUint64:
-      case webrtc::RTCStatsMemberInterface::Type::kDouble:
       case webrtc::RTCStatsMemberInterface::Type::kSequenceBool:
       case webrtc::RTCStatsMemberInterface::Type::kSequenceInt32:
       case webrtc::RTCStatsMemberInterface::Type::kSequenceUint32:
