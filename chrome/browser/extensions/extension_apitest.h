@@ -116,20 +116,6 @@ class ExtensionApiTest : public ExtensionBrowserTest {
                            int browser_test_flags,
                            int api_test_flags) WARN_UNUSED_RESULT;
 
-  // As above but with support for injecting a custom argument into the test
-  // config.
-  bool RunExtensionSubtestWithArg(const std::string& extension_name,
-                                  const std::string& page_url,
-                                  const char* custom_arg) WARN_UNUSED_RESULT;
-
-  // As above but with support for custom flags defined in Flags above.
-  bool RunExtensionSubtestWithArgAndFlags(const std::string& extension_name,
-                                          const std::string& page_url,
-                                          const char* custom_arg,
-                                          int browser_test_flags,
-                                          int api_test_flags)
-      WARN_UNUSED_RESULT;
-
   // Similar to RunExtensionTest, except used for running tests in platform app
   // shell windows.
   bool RunPlatformAppTest(const std::string& extension_name) WARN_UNUSED_RESULT;
