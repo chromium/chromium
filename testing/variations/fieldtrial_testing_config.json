@@ -4179,40 +4179,6 @@
             ]
         }
     ],
-    "NTPPopularSites": [
-        {
-            "platforms": [
-                "android",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UsePopularSitesSuggestions"
-                    ]
-                },
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "UsePopularSitesSuggestions"
-                    ]
-                },
-                {
-                    "name": "EnabledShortNamesHoldbackControl",
-                    "params": {
-                        "version": "5_shortname"
-                    }
-                },
-                {
-                    "name": "EnabledShortNamesHoldback",
-                    "params": {
-                        "version": "5_shortname-control"
-                    }
-                }
-            ]
-        }
-    ],
     "NavigationPredictor": [
         {
             "platforms": [
