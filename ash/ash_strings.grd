@@ -588,6 +588,9 @@ This file contains the strings for ash.
       <message name="IDS_UPDATE_NOTIFICATION_MESSAGE_LACROS" desc="The body of the notification to notify that the user should restart to get an update for the experimental 'Lacros' browser.">
         Device restart is required to apply the update.
       </message>
+      <message name="IDS_LACROS_CANNOT_LAUNCH_MULTI_SIGNIN_MESSAGE" desc="The body of the notification informing the user that the experimental 'Lacros' browser cannot launch.">
+        Lacros is not supported while multiple users are signed in.
+      </message>
 
       <message name="IDS_ASH_FLOATING_ACCESSIBILITY_DETAILED_MENU" desc="The name of the quick settings view of floating accessibility menu.">
         Accessibility settings

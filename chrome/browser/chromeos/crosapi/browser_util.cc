@@ -176,6 +176,10 @@ void SetLacrosEnabledForTest(bool force_enabled) {
   g_lacros_enabled_for_test = force_enabled;
 }
 
+bool IsLacrosAllowedToLaunch() {
+  return user_manager::UserManager::Get()->GetLoggedInUsers().size() <= 1;
+}
+
 bool IsLacrosWindow(const aura::Window* window) {
   const std::string* app_id = exo::GetShellApplicationId(window);
   if (!app_id)

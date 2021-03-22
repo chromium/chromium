@@ -1,4 +1,8 @@
 specific_include_rules = {
+  "browser_manager\.cc": [
+    # Only needed for merge to M90
+    "+ash",
+  ],
   "message_center_ash(\.cc|_unittest\.cc)": [
     # Provides a mojo interface around the message center, but lives in this
     # directory for consistency with other crosapi classes.

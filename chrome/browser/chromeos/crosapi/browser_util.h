@@ -63,6 +63,11 @@ bool IsLacrosEnabled(version_info::Channel channel);
 // Forces IsLacrosEnabled() to return true for testing.
 void SetLacrosEnabledForTest(bool force_enabled);
 
+// Returns true if Lacros is allowed to launch and show a window. This can
+// return false if the user is using multi-signin, which is mutually exclusive
+// with Lacros.
+bool IsLacrosAllowedToLaunch();
+
 // Returns true if |window| is an exo ShellSurface window representing a Lacros
 // browser.
 bool IsLacrosWindow(const aura::Window* window);
