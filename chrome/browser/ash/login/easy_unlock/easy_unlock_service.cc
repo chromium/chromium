@@ -264,7 +264,7 @@ void EasyUnlockService::OnUserEnteredPassword() {
     proximity_auth_system_->CancelConnectionAttempt();
 }
 
-void EasyUnlockService::AttemptAuth(const AccountId& account_id) {
+bool EasyUnlockService::AttemptAuth(const AccountId& account_id) {
   const EasyUnlockAuthAttempt::Type auth_attempt_type =
       GetType() == TYPE_REGULAR ? EasyUnlockAuthAttempt::TYPE_UNLOCK
                                 : EasyUnlockAuthAttempt::TYPE_SIGNIN;
@@ -272,7 +272,7 @@ void EasyUnlockService::AttemptAuth(const AccountId& account_id) {
 
   if (auth_attempt_) {
     PA_LOG(VERBOSE) << "Already attempting auth, skipping this request.";
-    return;
+    return false;
   }
 
   if (!GetAccountId().is_valid()) {
@@ -281,7 +281,7 @@ void EasyUnlockService::AttemptAuth(const AccountId& account_id) {
         auth_attempt_type,
         SmartLockMetricsRecorder::SmartLockAuthResultFailureReason::
             kEmptyUserAccount);
-    return;
+    return false;
   }
 
   if (GetAccountId() != account_id) {
@@ -292,7 +292,7 @@ void EasyUnlockService::AttemptAuth(const AccountId& account_id) {
 
     PA_LOG(ERROR) << "Check failed: " << GetAccountId().Serialize() << " vs "
                   << account_id.Serialize();
-    return;
+    return false;
   }
 
   auth_attempt_.reset(new EasyUnlockAuthAttempt(account_id, auth_attempt_type));
@@ -302,14 +302,19 @@ void EasyUnlockService::AttemptAuth(const AccountId& account_id) {
         SmartLockMetricsRecorder::SmartLockAuthResultFailureReason::
             kAuthAttemptCannotStart);
     auth_attempt_.reset();
-    return;
+    return false;
   }
 
   // TODO(tengs): We notify ProximityAuthSystem whenever unlock attempts are
   // attempted. However, we ideally should refactor the auth attempt logic to
   // the proximity_auth component.
-  if (proximity_auth_system_)
-    proximity_auth_system_->OnAuthAttempted();
+  if (!proximity_auth_system_) {
+    PA_LOG(ERROR) << "No ProximityAuthSystem present.";
+    return false;
+  }
+
+  proximity_auth_system_->OnAuthAttempted();
+  return true;
 }
 
 void EasyUnlockService::FinalizeUnlock(bool success) {
@@ -318,13 +323,13 @@ void EasyUnlockService::FinalizeUnlock(bool success) {
 
   set_will_authenticate_using_easy_unlock(true);
   auth_attempt_->FinalizeUnlock(GetAccountId(), success);
-  auth_attempt_.reset();
-  // TODO(isherman): If observing screen unlock events, is there a race
-  // condition in terms of reading the service's state vs. the app setting the
-  // state?
+
+  // If successful, allow |auth_attempt_| to continue until
+  // UpdateScreenlockState() is called (indicating screen unlock).
 
   // Make sure that the lock screen is updated on failure.
   if (!success) {
+    auth_attempt_.reset();
     RecordEasyUnlockScreenUnlockEvent(EASY_UNLOCK_FAILURE);
     HandleAuthFailure(GetAccountId());
   }
@@ -337,12 +342,15 @@ void EasyUnlockService::FinalizeSignin(const std::string& key) {
   std::string wrapped_secret = GetWrappedSecret();
   if (!wrapped_secret.empty())
     auth_attempt_->FinalizeSignin(GetAccountId(), wrapped_secret, key);
-  auth_attempt_.reset();
+
+  // If successful, allow |auth_attempt_| to continue until
+  // UpdateScreenlockState() is called (indicating sign in).
 
   // Processing empty key is equivalent to auth cancellation. In this case the
   // signin request will not actually be processed by login stack, so the lock
   // screen state should be set from here.
   if (key.empty()) {
+    auth_attempt_.reset();
     HandleAuthFailure(GetAccountId());
     return;
   }
