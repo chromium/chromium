@@ -41,6 +41,8 @@ viz_component("service") {
     "display/display_resource_provider.h",
     "display/display_resource_provider_gl.cc",
     "display/display_resource_provider_gl.h",
+    "display/display_resource_provider_null.cc",
+    "display/display_resource_provider_null.h",
     "display/display_resource_provider_skia.cc",
     "display/display_resource_provider_skia.h",
     "display/display_resource_provider_software.cc",
