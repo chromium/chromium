@@ -123,6 +123,7 @@
 #include "rlz/buildflags/buildflags.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/models/list_selection_model.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "url/gurl.h"
@@ -792,12 +793,17 @@ bool CanDuplicateKeyboardFocusedTab(const Browser* browser) {
 }
 
 bool CanMoveActiveTabToNewWindow(Browser* browser) {
-  return CanMoveTabsToNewWindow(browser,
-                                {browser->tab_strip_model()->active_index()});
+  const ui::ListSelectionModel::SelectedIndices& selection =
+      browser->tab_strip_model()->selection_model().selected_indices();
+  return CanMoveTabsToNewWindow(
+      browser, std::vector<int>(selection.begin(), selection.end()));
 }
 
 void MoveActiveTabToNewWindow(Browser* browser) {
-  MoveTabsToNewWindow(browser, {browser->tab_strip_model()->active_index()});
+  const ui::ListSelectionModel::SelectedIndices& selection =
+      browser->tab_strip_model()->selection_model().selected_indices();
+  MoveTabsToNewWindow(browser,
+                      std::vector<int>(selection.begin(), selection.end()));
 }
 bool CanMoveTabsToNewWindow(Browser* browser,
                             const std::vector<int>& tab_indices) {
