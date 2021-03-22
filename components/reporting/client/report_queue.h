@@ -99,7 +99,7 @@ class ReportQueue {
   // |record| will be converted to a string with SerializeToString(). The
   // handler is responsible for converting the record back to a proto with a
   // ParseFromString() call.
-  void Enqueue(google::protobuf::MessageLite* record,
+  void Enqueue(const google::protobuf::MessageLite* record,
                Priority priority,
                EnqueueCallback callback) const;
 

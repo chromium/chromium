@@ -35,7 +35,8 @@ StatusOr<std::string> ValueToJson(const base::Value& record) {
   return json_record;
 }
 
-StatusOr<std::string> ProtoToString(google::protobuf::MessageLite* record) {
+StatusOr<std::string> ProtoToString(
+    const google::protobuf::MessageLite* record) {
   std::string protobuf_record;
   if (!record->SerializeToString(&protobuf_record)) {
     return Status(error::INVALID_ARGUMENT,
@@ -63,7 +64,7 @@ void ReportQueue::Enqueue(const base::Value& record,
   AddRecord(json_record, priority, std::move(callback));
 }
 
-void ReportQueue::Enqueue(google::protobuf::MessageLite* record,
+void ReportQueue::Enqueue(const google::protobuf::MessageLite* record,
                           Priority priority,
                           ReportQueue::EnqueueCallback callback) const {
   ASSIGN_OR_ONCE_CALLBACK_AND_RETURN(std::string protobuf_record, callback,
