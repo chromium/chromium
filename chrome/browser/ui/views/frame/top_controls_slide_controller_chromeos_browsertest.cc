@@ -1157,8 +1157,9 @@ class IntermediateShownRatioWaiter : public TestControllerObserver {
   DISALLOW_COPY_AND_ASSIGN(IntermediateShownRatioWaiter);
 };
 
+// TODO(crbug.com/1055958): Test is flaky.
 IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
-                       TestIntermediateSliding) {
+                       DISABLED_TestIntermediateSliding) {
   ToggleTabletMode();
   ASSERT_TRUE(GetTabletModeEnabled());
   EXPECT_TRUE(top_controls_slide_controller()->IsEnabled());
