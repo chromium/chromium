@@ -202,9 +202,6 @@ class IncognitoThemeServiceTest : public ThemeServiceTest,
           features::kIncognitoBrandConsistencyForDesktop);
     }
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
