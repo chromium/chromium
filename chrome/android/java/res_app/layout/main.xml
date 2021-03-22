@@ -7,10 +7,33 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+  <FrameLayout
+      xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      android:id="@+id/kirby_toolbar"
+      android:visibility="visible"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:background="@color/default_bg_color">
+
+    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+        android:id="@+id/kirby_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:minHeight="@dimen/status_indicator_min_height"
+        android:drawablePadding="@dimen/status_indicator_icon_padding"
+        android:textAppearance="@style/TextAppearance.TextSmall.Primary"
+        app:drawableWidth="@dimen/status_indicator_icon_size"
+        app:drawableHeight="@dimen/status_indicator_icon_size"/>
+  </FrameLayout>
+
     <org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer
         android:id="@+id/coordinator"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/status_indicator_min_height"
         android:layout_weight="1" >
 
        <include layout="@layout/compositor_view_holder"/>
@@ -126,6 +149,18 @@
             android:layout_height="match_parent"
             android:clipChildren="false" />
 
+      <org.chromium.ui.widget.ChromeImageButton
+          android:id="@+id/kirby"
+          android:layout_height="56dp"
+          android:layout_width="56dp"
+          android:layout_margin="12dp"
+          android:scaleType="fitCenter"
+          app:srcCompat="@drawable/fre_product_logo"
+          android:background="@drawable/circle_white"
+          android:layout_gravity="bottom|end"
+          style="@style/ToolbarButton"
+          android:translationZ="4dp"
+          android:visibility="visible"/>
     </org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer>
 
     <!-- This empty view is used as the anchor for custom menu -->

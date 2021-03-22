@@ -134,7 +134,7 @@ public final class ReturnToChromeExperimentsUtil {
      * @return true if past threshold, false if not past threshold or experiment cannot be loaded.
      */
     public static boolean shouldShowTabSwitcher(final long lastBackgroundedTimeMillis) {
-        int tabSwitcherAfterMillis = TAB_SWITCHER_ON_RETURN_MS.getValue();
+        int tabSwitcherAfterMillis = 0;
 
         if (lastBackgroundedTimeMillis == -1) {
             // No last background timestamp set, use control behavior unless "immediate" was set.
@@ -360,8 +360,7 @@ public final class ReturnToChromeExperimentsUtil {
      * @return Whether Start Surface should be shown as the home page.
      */
     public static boolean shouldShowStartSurfaceAsTheHomePage() {
-        return shouldShowStartSurfaceAsTheHomePageNoTabs()
-                && !StartSurfaceConfiguration.START_SURFACE_OPEN_NTP_INSTEAD_OF_START.getValue();
+        return shouldShowStartSurfaceAsTheHomePageNoTabs();
     }
 
     /**

@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 
@@ -66,6 +67,12 @@ public class SelectableTabGridView extends SelectableItemView<Integer> {
     @Override
     protected void onClick() {
         super.onClick(this);
+    }
+
+    @Override
+    public boolean onLongClick(View view) {
+        ((ChromeTabbedActivity)view.getContext()).getRootUiCoordinatorForTesting().getAppMenuCoordinatorForTesting().showAppMenuForKeyboardEvent();
+        return super.onLongClick(view);
     }
 
     @Override

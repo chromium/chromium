@@ -158,7 +158,7 @@ class StartSurfaceToolbarMediator {
         updateIncognitoToggleTabVisibility();
         updateNewTabButtonVisibility();
         updateHomeButtonVisibility();
-        updateLogoVisibility(mIsGoogleSearchEngine);
+        updateLogoVisibility(false);
         updateIdentityDisc(mIdentityDiscButtonSupplier.get());
         updateTranslationY(mNonIncognitoHomepageTranslationY);
         if (mShouldShowTabSwitcherButtonOnHomepage) {

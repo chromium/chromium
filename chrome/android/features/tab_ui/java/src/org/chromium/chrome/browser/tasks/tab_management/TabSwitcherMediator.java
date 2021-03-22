@@ -810,10 +810,8 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
      *  @return whether tabs should show in MRU order
      */
     static boolean isShowingTabsInMRUOrder() {
-        String feature = StartSurfaceConfiguration.START_SURFACE_VARIATION.getValue();
-        return TextUtils.equals(feature, "twopanes")
-                || StartSurfaceConfiguration.SHOW_TABS_IN_MRU_ORDER.getValue()
-                && TextUtils.equals(feature, "single");
+        // TODO(crbug.com/1076449): Support MRU mode in Instant start.
+        return true;
     }
 
     /**
