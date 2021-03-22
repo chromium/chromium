@@ -9,6 +9,7 @@
 
 #include "base/files/file_util.h"
 #include "base/i18n/time_formatting.h"
+#include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 
@@ -26,6 +27,34 @@ std::string GetCurrentTimeAsString() {
       base::TimeFormatTimeOfDayWithMilliseconds(base::Time::Now()));
 }
 
+std::string getRoutineResultString(mojom::StandardRoutineResult result) {
+  switch (result) {
+    case mojom::StandardRoutineResult::kTestPassed:
+      return "Passed";
+    case mojom::StandardRoutineResult::kTestFailed:
+      return "Failed";
+    case mojom::StandardRoutineResult::kExecutionError:
+      return "Execution error";
+    case mojom::StandardRoutineResult::kUnableToRun:
+      return "Unable to run";
+  }
+}
+
+std::string getRoutineTypeString(mojom::RoutineType type) {
+  std::stringstream s;
+  s << type;
+
+  // RoutineType::kCpuStress -> ["RoutineType",  "CpuStress"]
+  std::vector<std::string> parts = base::SplitStringUsingSubstr(
+    s.str(), "::k", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  DCHECK_EQ(2U, parts.size());
+
+  const std::string routineName = parts[1];
+  DCHECK_GE(routineName.size(), 1U);
+  return routineName;
+}
+
 }  // namespace
 
 RoutineLog::RoutineLog(const base::FilePath& routine_log_file_path)
@@ -39,8 +68,9 @@ void RoutineLog::LogRoutineStarted(mojom::RoutineType type) {
   }
 
   std::stringstream log_line;
-  log_line << GetCurrentTimeAsString() << kSeparator << type << kSeparator
-           << kStartedDescription << kNewline;
+  log_line << GetCurrentTimeAsString() << kSeparator
+           << getRoutineTypeString(type) << kSeparator << kStartedDescription
+           << kNewline;
   AppendToLog(log_line.str());
 }
 
@@ -49,8 +79,9 @@ void RoutineLog::LogRoutineCompleted(mojom::RoutineType type,
   DCHECK(base::PathExists(routine_log_file_path_));
 
   std::stringstream log_line;
-  log_line << GetCurrentTimeAsString() << kSeparator << type << kSeparator
-           << result << kNewline;
+  log_line << GetCurrentTimeAsString() << kSeparator
+           << getRoutineTypeString(type) << kSeparator
+           << getRoutineResultString(result) << kNewline;
   AppendToLog(log_line.str());
 }
 
