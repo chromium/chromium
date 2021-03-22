@@ -134,18 +134,17 @@ class TasksView extends CoordinatorLayoutForPointer {
         TextView moreTabs = (TextView) findViewById(R.id.more_tabs);
         if (FeedFeatures.cachedIsReportingUserActions()) {
             ApiCompatibilityUtils.setTextAppearance(
-                    titleDescription, R.style.TextAppearance_TextSmall_Secondary);
+                    titleDescription, R.style.TextAppearance_TextAccentMediumThick_Secondary);
             ApiCompatibilityUtils.setTextAppearance(
-                    moreTabs, R.style.TextAppearance_TextSmall_Blue);
-            ViewCompat.setPaddingRelative(titleDescription,
-                    mContext.getResources().getDimensionPixelSize(R.dimen.card_padding),
+                    moreTabs, R.style.TextAppearance_Button_Text_Blue);
+            ViewCompat.setPaddingRelative(titleDescription, titleDescription.getPaddingStart(),
                     titleDescription.getPaddingTop(), titleDescription.getPaddingEnd(),
                     titleDescription.getPaddingBottom());
         } else {
             ApiCompatibilityUtils.setTextAppearance(
-                    titleDescription, R.style.TextAppearance_TextMediumThick_Primary);
+                    titleDescription, R.style.TextAppearance_TextAccentMediumThick_Secondary);
             ApiCompatibilityUtils.setTextAppearance(
-                    moreTabs, R.style.TextAppearance_TextMedium_Blue);
+                    moreTabs, R.style.TextAppearance_Button_Text_Blue);
         }
     }
 
