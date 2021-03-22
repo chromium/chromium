@@ -137,6 +137,7 @@ android_resources("java_resources") {
     "java/res/drawable-xxxhdpi/top_round_shadow.9.png",
     "java/res/drawable/checkmark_blue.xml",
     "java/res/drawable/circle_white.xml",
+    "java/res/drawable/ic_add.xml",
     "java/res/drawable/ic_business.xml",
     "java/res/drawable/ic_collections_grey.xml",
     "java/res/drawable/ic_data_viz_grey.xml",
