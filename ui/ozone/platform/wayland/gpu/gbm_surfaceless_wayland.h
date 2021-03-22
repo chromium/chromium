@@ -119,6 +119,12 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
 
   WaylandBufferManagerGpu* const buffer_manager_;
 
+  // |background_buffer_id| is sent to WaylandBufferManagerHost once per
+  // background_buffer allocation. However WaylandBufferManagerHost may commit
+  // this buffer more often b/c buffers needs to be re-attached when wl_surface
+  // is reshown.
+  BufferId background_buffer_id_;
+
   // The native surface. Deleting this is allowed to free the EGLNativeWindow.
   gfx::AcceleratedWidget widget_;
   std::vector<std::unique_ptr<PendingFrame>> unsubmitted_frames_;
