@@ -4,6 +4,7 @@
 
 package org.chromium.android_webview.test.services;
 
+import android.app.job.JobScheduler;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.PathUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.component_updater.IComponentsProviderService;
 
 import java.io.File;
@@ -189,6 +191,21 @@ public class ComponentsProviderServiceTest {
 
             Assert.assertTrue("Service didn't create directory " + sDirectory.getAbsolutePath(),
                     sDirectory.exists());
+        }
+
+        @Test
+        @SmallTest
+        public void testOnCreateSchedulesUpdater() throws Exception {
+            JobScheduler jobScheduler =
+                    (JobScheduler) ContextUtils.getApplicationContext().getSystemService(
+                            Context.JOB_SCHEDULER_SERVICE);
+            jobScheduler.cancelAll();
+
+            mService.onCreate();
+
+            Assert.assertTrue("Service should schedule updater job",
+                    ComponentsProviderService.isJobScheduled(
+                            jobScheduler, TaskIds.WEBVIEW_COMPONENT_UPDATE_JOB_ID));
         }
 
         @Test

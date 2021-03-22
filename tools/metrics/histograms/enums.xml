@@ -6843,6 +6843,7 @@ others/histograms.xml -->
   <int value="23" label="Query Tile task"/>
   <int value="24" label="Feedv2 refresh task"/>
   <int value="25" label="Download later task"/>
+  <int value="27" label="WebView Component Updater schedule task"/>
 </enum>
 
 <enum name="BackgroundTracingState">

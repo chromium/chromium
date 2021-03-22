@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.android_webview.common.services.ServiceNames;
+import org.chromium.android_webview.nonembedded.AwComponentUpdateService;
 import org.chromium.android_webview.services.AwMinidumpUploadJobService;
 import org.chromium.android_webview.services.ComponentsProviderService;
 import org.chromium.android_webview.services.CrashReceiverService;
@@ -44,6 +45,8 @@ public class ServiceNamesTest {
                 ServiceNames.VARIATIONS_SEED_SERVER);
         Assert.assertEquals("Incorrect class name constant",
                 ComponentsProviderService.class.getName(),
-                ServiceNames.AW_COMPONENTS_PROVIDER_SERVICE);
+                ServiceNames.COMPONENTS_PROVIDER_SERVICE);
+        Assert.assertEquals("Incorrect class name constant",
+                AwComponentUpdateService.class.getName(), ServiceNames.AW_COMPONENT_UPDATE_SERVICE);
     }
 }

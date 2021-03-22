@@ -5,7 +5,12 @@
 package org.chromium.android_webview.services;
 
 import android.app.Service;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
@@ -14,11 +19,15 @@ import android.os.ResultReceiver;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.android_webview.common.services.ServiceNames;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
+import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.component_updater.IComponentsProviderService;
 
 import java.io.File;
@@ -29,6 +38,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A Service to fetch Components files in WebView and WebLayer.
@@ -36,6 +46,11 @@ import java.util.concurrent.FutureTask;
 public class ComponentsProviderService extends Service {
     private static final String TAG = "AW_CPS";
     private static final String COMPONENTS_DIRECTORY_PATH = "components/cps";
+
+    // This should be greater than or equal to the native component updater service interval.
+    private static final long UPDATE_INTERVAL_MS = TimeUnit.HOURS.toMillis(5);
+    private static final int JOB_ID = TaskIds.WEBVIEW_COMPONENT_UPDATE_JOB_ID;
+
     public static final int RESULT_OK = 0;
     public static final int RESULT_FAILED = 1;
     public static final String KEY_RESULT = "RESULT";
@@ -65,6 +80,7 @@ public class ComponentsProviderService extends Service {
         }
 
         cleanupOlderFiles();
+        maybeScheduleComponentUpdateService();
     }
 
     private void cleanupOlderFiles() {
@@ -191,5 +207,45 @@ public class ComponentsProviderService extends Service {
         String name = directory.getName();
         int separatorIndex = name.indexOf("_");
         return Integer.parseInt(name.substring(0, separatorIndex));
+    }
+
+    private void maybeScheduleComponentUpdateService() {
+        Context context = ContextUtils.getApplicationContext();
+        JobScheduler jobScheduler =
+                (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+
+        try {
+            if (isJobScheduled(jobScheduler, JOB_ID)) {
+                return;
+            }
+
+            ComponentName componentName =
+                    new ComponentName(context, ServiceNames.AW_COMPONENT_UPDATE_SERVICE);
+
+            JobInfo job = new JobInfo.Builder(JOB_ID, componentName)
+                                  .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+                                  .setPeriodic(UPDATE_INTERVAL_MS)
+                                  .build();
+
+            if (jobScheduler.schedule(job) != JobScheduler.RESULT_SUCCESS) {
+                Log.e(TAG, "Failed to schedule job for AwComponentUpdateService");
+            }
+        } catch (Exception exception) {
+            Log.e(TAG, "Error scheduling job for AwComponentUpdateService", exception);
+        }
+    }
+
+    // Use JobScheduler.getPendingJob() if it's available. Otherwise, fall back to iterating over
+    // all jobs to find the one we want.
+    // TODO(crbug.com/1189126): move this to utils class
+    @VisibleForTesting
+    public static boolean isJobScheduled(JobScheduler scheduler, int jobId) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            for (JobInfo info : scheduler.getAllPendingJobs()) {
+                if (info.getId() == jobId) return true;
+            }
+            return false;
+        }
+        return ApiHelperForN.getPendingJob(scheduler, jobId) != null;
     }
 }
