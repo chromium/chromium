@@ -19,13 +19,8 @@ struct FormData;
 struct FormFieldData;
 
 namespace internal {
-
-using FormSignatureType =
-    ::util::IdType<class FormSignatureMarker, uint64_t, 0>;
-
-using FieldSignatureType =
-    ::util::IdType<class FieldSignatureMarker, uint32_t, 0>;
-
+using FormSignatureType = ::util::IdTypeU64<class FormSignatureMarker>;
+using FieldSignatureType = ::util::IdTypeU32<class FieldSignatureMarker>;
 }  // namespace internal
 
 // The below strong aliases are defined as subclasses instead of typedefs in
@@ -45,8 +40,8 @@ FormSignature CalculateFormSignature(const FormData& form_data);
 
 // Calculates field signature based on |field_name| and |field_type|.
 FieldSignature CalculateFieldSignatureByNameAndType(
-    const std::u16string& field_name,
-    const std::string& field_type);
+    base::StringPiece16 field_name,
+    base::StringPiece field_type);
 
 // Calculates field signature based on |field_data|. This function is a proxy to
 // |CalculateFieldSignatureByNameAndType|.

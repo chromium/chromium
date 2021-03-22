@@ -422,7 +422,7 @@ void EncodeRandomizedValue(const RandomizedEncoder& encoder,
       encoder.Encode(form_signature, field_signature, data_type, data_value));
   if (include_checksum) {
     DCHECK(data_type == RandomizedEncoder::FORM_URL);
-    output->set_checksum(StrToHash32Bit(data_value.data()));
+    output->set_checksum(StrToHash32Bit(data_value));
   }
 }
 
@@ -762,7 +762,7 @@ bool FormStructure::EncodeUploadRequest(
   }
 
   if (is_raw_metadata_uploading_enabled) {
-    upload->set_action_signature(StrToHash64Bit(target_url_.host()));
+    upload->set_action_signature(StrToHash64Bit(target_url_.host_piece()));
     if (!form_name().empty())
       upload->set_form_name(base::UTF16ToUTF8(form_name()));
     for (const ButtonTitleInfo& e : button_titles_) {
