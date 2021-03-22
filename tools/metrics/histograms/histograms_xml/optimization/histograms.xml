@@ -21,6 +21,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="PageTextDumpEvent">
+  <variant name="FinishedLoad" summary="finished load"/>
+  <variant name="FirstLayout" summary="first layout"/>
+</variants>
+
 <histogram base="true" name="OptimizationGuide.ApplyDecision"
     enum="OptimizationGuideOptimizationTypeDecision" expires_after="M94">
   <owner>sophiechang@chromium.org</owner>
@@ -293,6 +298,73 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     pushed to the client. This will be recorded at startup and when a new
     component is received.
   </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PageTextDump.FrameDumpLength.{PageTextDumpEvent}"
+    units="bytes" expires_after="M94">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>robertogden@chromium.org</owner>
+  <summary>
+    The length, in bytes, of every completed frame dump for the
+    {PageTextDumpEvent} event. Note that these values are capped at runtime to
+    an experimentally controlled value.
+  </summary>
+  <token key="PageTextDumpEvent" variants="PageTextDumpEvent">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PageTextDump.OutstandingRequests.DidFinishLoad"
+    units="count" expires_after="M94">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>robertogden@chromium.org</owner>
+  <summary>
+    The number of outstanding page text dump requests at DidFinishLoad.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PageTextDump.TimeUntilFrameDisconnected.{PageTextDumpEvent}"
+    units="ms" expires_after="M94">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>robertogden@chromium.org</owner>
+  <summary>
+    The duration it took for a frame dump request, for the {PageTextDumpEvent}
+    event, from being sent until being canceled. Recorded every time a request
+    is canceled. This normally occurs because the mojo pipe disconnected.
+  </summary>
+  <token key="PageTextDumpEvent" variants="PageTextDumpEvent">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PageTextDump.TimeUntilFrameDumpCompleted.{PageTextDumpEvent}"
+    units="ms" expires_after="M94">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>robertogden@chromium.org</owner>
+  <summary>
+    The duration it took for a frame dump request for the {PageTextDumpEvent}
+    event, to complete successfully. Recorded every time a request completes
+    successfully.
+  </summary>
+  <token key="PageTextDumpEvent" variants="PageTextDumpEvent">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram

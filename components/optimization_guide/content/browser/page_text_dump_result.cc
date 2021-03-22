@@ -110,7 +110,6 @@ FrameTextDumpResult FrameTextDumpResult::Initialize(
 FrameTextDumpResult FrameTextDumpResult::CompleteWithContents(
     const std::u16string& contents) const {
   DCHECK(!IsCompleted());
-  DCHECK(!contents.empty());
 
   FrameTextDumpResult copy = *this;
   copy.contents_ = contents;

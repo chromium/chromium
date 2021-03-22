@@ -12,7 +12,9 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -31,28 +33,47 @@ namespace optimization_guide {
 
 namespace {
 
+const char kTimeUntilDisconnectHistogram[] =
+    "OptimizationGuide.PageTextDump.TimeUntilFrameDisconnected.";
+const char kTimeUntilCompleteHistogram[] =
+    "OptimizationGuide.PageTextDump.TimeUntilFrameDumpCompleted.";
+const char kFrameDumpLengthHistogram[] =
+    "OptimizationGuide.PageTextDump.FrameDumpLength.";
+
+std::string TextDumpEventToString(mojom::TextDumpEvent event) {
+  switch (event) {
+    case mojom::TextDumpEvent::kFirstLayout:
+      return "FirstLayout";
+      break;
+    case mojom::TextDumpEvent::kFinishedLoad:
+      return "FinishedLoad";
+  }
+  NOTREACHED();
+  return std::string();
+}
+
 // PageTextChunkConsumer reads in chunks of page text and passes it all to
 // the given callback, up to the maximum given length (in bytes).
 // When the text reads have been completed (by either OnChunksEnd() or the given
 // max length has been reached), the given callback |on_complete| is run and
 // this class goes into an inactive state. The passed callback may delete |this|
-// in stack.
+// in stack. |on_complete_| will be called with nullopt if the mojo pipe was
+// disconnected before a text dump finished.
 class PageTextChunkConsumer : public mojom::PageTextConsumer {
  public:
   PageTextChunkConsumer(
       mojo::PendingReceiver<mojom::PageTextConsumer> receiver,
       uint32_t max_size,
-      base::OnceCallback<void(const std::u16string&)> on_complete)
+      base::OnceCallback<void(const base::Optional<std::u16string>&)>
+          on_complete)
       : remaining_size_(max_size),
         on_complete_(std::move(on_complete)),
         receiver_(this, std::move(receiver)) {
-    // If any error occurs, just run |on_complete| with whatever text has been
-    // received up to that point.
     receiver_.set_disconnect_handler(base::BindOnce(
         // base::Unretained is safe here since |receiver_| is owned by |this|
         // and mojo guarantees the passed callback won't be called on
         // |receiver_|'s destruction.
-        &PageTextChunkConsumer::OnComplete, base::Unretained(this)));
+        &PageTextChunkConsumer::OnDisconnect, base::Unretained(this)));
   }
   ~PageTextChunkConsumer() override = default;
 
@@ -86,6 +107,12 @@ class PageTextChunkConsumer : public mojom::PageTextConsumer {
     // Don't do anything else. This callback may have destroyed |this|.
   }
 
+  void OnDisconnect() {
+    receiver_.reset();
+    std::move(on_complete_).Run(base::nullopt);
+    // Don't do anything else. This callback may have destroyed |this|.
+  }
+
  private:
   // The maximum length in bytes that will be read from the data pipe.
   uint32_t remaining_size_ = 0;
@@ -93,7 +120,7 @@ class PageTextChunkConsumer : public mojom::PageTextConsumer {
   // While |on_complete_| is non-null, the mojo pipe is also bound. Once the
   // |on_complete_| callback is run, this class is no longer active and can be
   // deleted (in stack with the callback).
-  base::OnceCallback<void(const std::u16string&)> on_complete_;
+  base::OnceCallback<void(const base::Optional<std::u16string>&)> on_complete_;
   mojo::Receiver<mojom::PageTextConsumer> receiver_;
 
   // All chunks that have been read from the data pipe. These will be
@@ -233,6 +260,8 @@ class RequestMediator : public base::RefCounted<RequestMediator> {
       consumers_.emplace(std::move(consumer));
     }
 
+    requests_sent_time_ = base::TimeTicks::Now();
+
     return max_size_by_event_.size();
   }
 
@@ -242,16 +271,28 @@ class RequestMediator : public base::RefCounted<RequestMediator> {
 
   void OnPageTextAsString(scoped_refptr<RequestMediator> self,
                           const FrameTextDumpResult& preliminary_result,
-                          const std::u16string& page_text) {
+                          const base::Optional<std::u16string>& page_text) {
     DCHECK(on_frame_text_dump_complete_);
 
-    if (page_text.empty()) {
+    std::string event_suffix =
+        TextDumpEventToString(preliminary_result.event());
+
+    if (!page_text) {
+      base::UmaHistogramMediumTimes(
+          kTimeUntilDisconnectHistogram + event_suffix,
+          base::TimeTicks::Now() - requests_sent_time_);
       on_frame_text_dump_complete_.Run(base::nullopt);
       return;
     }
 
+    base::UmaHistogramMediumTimes(kTimeUntilCompleteHistogram + event_suffix,
+                                  base::TimeTicks::Now() - requests_sent_time_);
+
+    base::UmaHistogramCounts10000(kFrameDumpLengthHistogram + event_suffix,
+                                  page_text->size());
+
     on_frame_text_dump_complete_.Run(
-        preliminary_result.CompleteWithContents(page_text));
+        preliminary_result.CompleteWithContents(*page_text));
   }
 
   // Called whenever a text dump is completed for an event. This called as many
@@ -264,6 +305,10 @@ class RequestMediator : public base::RefCounted<RequestMediator> {
 
   // The max length, in bytes, to request for each event.
   std::map<mojom::TextDumpEvent, uint32_t> max_size_by_event_;
+
+  // The time at which the mojo requests are sent, set during
+  // |MakeSelfOwnedAndDispatchRequests|.
+  base::TimeTicks requests_sent_time_;
 };
 
 }  // namespace
@@ -372,6 +417,10 @@ void PageTextObserver::OnFrameTextDumpCompleted(
 void PageTextObserver::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
+  base::UmaHistogramCounts100(
+      "OptimizationGuide.PageTextDump.OutstandingRequests.DidFinishLoad",
+      outstanding_requests_);
+
   if (outstanding_requests_ > 0) {
     outstanding_requests_grace_timer_ = std::make_unique<base::OneShotTimer>();
     outstanding_requests_grace_timer_->Start(

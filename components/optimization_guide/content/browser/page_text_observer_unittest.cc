@@ -12,6 +12,7 @@
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/optimization_guide/content/mojom/page_text_service.mojom.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -101,6 +102,14 @@ class FakePageTextService : public mojom::PageTextService {
   void BindPendingReceiver(mojo::ScopedInterfaceEndpointHandle handle) {
     receiver_.Bind(mojo::PendingAssociatedReceiver<mojom::PageTextService>(
         std::move(handle)));
+
+    if (disconnect_all_) {
+      receiver_.reset();
+    }
+  }
+
+  void set_disconnect_all(bool disconnect_all) {
+    disconnect_all_ = disconnect_all;
   }
 
   const std::set<mojom::PageTextDumpRequest>& requests() { return requests_; }
@@ -142,6 +151,8 @@ class FakePageTextService : public mojom::PageTextService {
   mojo::AssociatedReceiver<mojom::PageTextService> receiver_{this};
 
   std::set<mojom::PageTextDumpRequest> requests_;
+
+  bool disconnect_all_ = false;
 
   // For each event, a sequence of responses to send on the next page dump
   // request. If an element has a value, |OnTextDumpChunk| is called with the
@@ -304,6 +315,123 @@ TEST_F(PageTextObserverTest, MojoPlumbingSuccessCase) {
       ::testing::UnorderedElementsAreArray({
           mojom::PageTextDumpRequest(1024U, mojom::TextDumpEvent::kFirstLayout),
       }));
+}
+
+TEST_F(PageTextObserverTest, CompletedFrameDumpMetrics_Empty) {
+  base::HistogramTester histogram_tester;
+  TestConsumer consumer;
+  observer()->AddConsumer(&consumer);
+
+  consumer.PopulateRequest(/*max_size=*/1024,
+                           /*events=*/{mojom::TextDumpEvent::kFirstLayout});
+
+  FakePageTextService fake_renderer_service;
+  fake_renderer_service.SetRemoteResponsesForEvent(
+      mojom::TextDumpEvent::kFirstLayout, {
+                                              base::nullopt,
+                                          });
+
+  blink::AssociatedInterfaceProvider* remote_interfaces =
+      main_rfh()->GetRemoteAssociatedInterfaces();
+  remote_interfaces->OverrideBinderForTesting(
+      mojom::PageTextService::Name_,
+      base::BindRepeating(&FakePageTextService::BindPendingReceiver,
+                          base::Unretained(&fake_renderer_service)));
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://test.com"));
+  ASSERT_TRUE(consumer.was_called());
+  observer()->CallDidFinishLoad();
+  consumer.WaitForPageText();
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageTextDump.FrameDumpLength.FirstLayout", 0, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageTextDump.OutstandingRequests.DidFinishLoad", 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageTextDump.TimeUntilFrameDumpCompleted.FirstLayout",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageTextDump.TimeUntilFrameDisconnected.FirstLayout",
+      0);
+}
+
+TEST_F(PageTextObserverTest, CompletedFrameDumpMetrics_NotEmpty) {
+  base::HistogramTester histogram_tester;
+  TestConsumer consumer;
+  observer()->AddConsumer(&consumer);
+
+  consumer.PopulateRequest(/*max_size=*/1024,
+                           /*events=*/{mojom::TextDumpEvent::kFirstLayout});
+
+  FakePageTextService fake_renderer_service;
+  fake_renderer_service.SetRemoteResponsesForEvent(
+      mojom::TextDumpEvent::kFirstLayout, {
+                                              base::ASCIIToUTF16("a"),
+                                              base::ASCIIToUTF16("b"),
+                                              base::ASCIIToUTF16("c"),
+                                              base::nullopt,
+                                          });
+
+  blink::AssociatedInterfaceProvider* remote_interfaces =
+      main_rfh()->GetRemoteAssociatedInterfaces();
+  remote_interfaces->OverrideBinderForTesting(
+      mojom::PageTextService::Name_,
+      base::BindRepeating(&FakePageTextService::BindPendingReceiver,
+                          base::Unretained(&fake_renderer_service)));
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://test.com"));
+  ASSERT_TRUE(consumer.was_called());
+  observer()->CallDidFinishLoad();
+  consumer.WaitForPageText();
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageTextDump.FrameDumpLength.FirstLayout", 3, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageTextDump.OutstandingRequests.DidFinishLoad", 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageTextDump.TimeUntilFrameDumpCompleted.FirstLayout",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageTextDump.TimeUntilFrameDisconnected.FirstLayout",
+      0);
+}
+
+TEST_F(PageTextObserverTest, DisconnectedFrameDumpMetrics) {
+  base::HistogramTester histogram_tester;
+  TestConsumer consumer;
+  observer()->AddConsumer(&consumer);
+
+  consumer.PopulateRequest(/*max_size=*/1024,
+                           /*events=*/{mojom::TextDumpEvent::kFirstLayout});
+
+  FakePageTextService fake_renderer_service;
+  fake_renderer_service.set_disconnect_all(true);
+
+  blink::AssociatedInterfaceProvider* remote_interfaces =
+      main_rfh()->GetRemoteAssociatedInterfaces();
+  remote_interfaces->OverrideBinderForTesting(
+      mojom::PageTextService::Name_,
+      base::BindRepeating(&FakePageTextService::BindPendingReceiver,
+                          base::Unretained(&fake_renderer_service)));
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://test.com"));
+  ASSERT_TRUE(consumer.was_called());
+  base::RunLoop().RunUntilIdle();
+  observer()->CallDidFinishLoad();
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageTextDump.FrameDumpLength.FirstLayout", 0);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageTextDump.OutstandingRequests.DidFinishLoad", 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageTextDump.TimeUntilFrameDumpCompleted.FirstLayout",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageTextDump.TimeUntilFrameDisconnected.FirstLayout",
+      1);
 }
 
 TEST_F(PageTextObserverTest, MaxLengthOnChunkBorder) {
