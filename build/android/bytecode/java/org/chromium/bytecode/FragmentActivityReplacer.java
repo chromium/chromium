@@ -145,6 +145,10 @@ public class FragmentActivityReplacer extends ByteCodeRewriter {
                         "activityFromContext", "(Landroid/content/Context;)Landroid/app/Activity;",
                         false);
                 baseVisitor.visitInsn(Opcodes.ARETURN);
+                // Since we set COMPUTE_FRAMES, the arguments of visitMaxs are ignored, but calling
+                // it forces ClassWriter to actually recompute the correct stack/local values.
+                // Without this call ClassWriter keeps the original stack=0,locals=1 which is wrong.
+                baseVisitor.visitMaxs(0, 0);
                 return null;
             }
 
