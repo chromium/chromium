@@ -32,7 +32,7 @@ public class AutofillExpirationDateFixFlowPrompt
      */
     public interface AutofillExpirationDateFixFlowPromptDelegate {
         /**
-         * Called when dialog is dismissed.
+         * Called whenever the dialog is dismissed.
          */
         void onPromptDismissed();
 
@@ -43,6 +43,12 @@ public class AutofillExpirationDateFixFlowPrompt
          * @param year expiration date year.
          */
         void onUserAccept(String month, String year);
+
+        /**
+         * Called when the dialog is dismissed neither because the user accepted/confirmed the
+         * prompt or it was dismissed by native code.
+         */
+        void onUserDismiss();
     }
 
     private final AutofillExpirationDateFixFlowPromptDelegate mDelegate;
@@ -143,12 +149,14 @@ public class AutofillExpirationDateFixFlowPrompt
 
     @Override
     public void onDismiss(PropertyModel model, int dismissalCause) {
-        // Do not call dismissed on the delegate if dialog was dismissed either because the user
+        // Do not call onUserDismiss if dialog was dismissed either because the user
         // accepted to save the card or was dismissed by native code.
         if (dismissalCause != DialogDismissalCause.POSITIVE_BUTTON_CLICKED
                 && dismissalCause != DialogDismissalCause.DISMISSED_BY_NATIVE) {
-            mDelegate.onPromptDismissed();
+            mDelegate.onUserDismiss();
         }
+        // Call whenever the dialog is dismissed.
+        mDelegate.onPromptDismissed();
     }
 
     /**

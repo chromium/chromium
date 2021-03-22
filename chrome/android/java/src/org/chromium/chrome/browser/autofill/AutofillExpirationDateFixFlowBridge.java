@@ -61,6 +61,13 @@ final class AutofillExpirationDateFixFlowBridge
                 AutofillExpirationDateFixFlowBridge.this, month, year);
     }
 
+    @Override
+    public void onUserDismiss() {
+        AutofillExpirationDateFixFlowBridgeJni.get().onUserDismiss(
+                mNativeCardExpirationDateFixFlowViewAndroid,
+                AutofillExpirationDateFixFlowBridge.this);
+    }
+
     /**
      * Shows a prompt for expiration date fix flow.
      */
@@ -95,5 +102,7 @@ final class AutofillExpirationDateFixFlowBridge
                 AutofillExpirationDateFixFlowBridge caller);
         void onUserAccept(long nativeCardExpirationDateFixFlowViewAndroid,
                 AutofillExpirationDateFixFlowBridge caller, String month, String year);
+        void onUserDismiss(long nativeCardExpirationDateFixFlowViewAndroid,
+                AutofillExpirationDateFixFlowBridge caller);
     }
 }

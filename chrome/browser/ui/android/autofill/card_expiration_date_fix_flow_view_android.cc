@@ -34,10 +34,15 @@ void CardExpirationDateFixFlowViewAndroid::OnUserAccept(
                           base::android::ConvertJavaStringToUTF16(env, year));
 }
 
-void CardExpirationDateFixFlowViewAndroid::PromptDismissed(
+void CardExpirationDateFixFlowViewAndroid::OnUserDismiss(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
   controller_->OnDismissed();
+}
+
+void CardExpirationDateFixFlowViewAndroid::PromptDismissed(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
   delete this;
 }
 
