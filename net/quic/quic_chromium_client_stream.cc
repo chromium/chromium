@@ -730,6 +730,13 @@ void QuicChromiumClientStream::NotifyHandleOfTrailingHeadersAvailable() {
   if (!handle_)
     return;
 
+  // If trailers aren't decompressed it means that trailers are invalid
+  // (e.g., contain ":status" field). Don't notify to the handle if trailers
+  // aren't decompressed since the stream will be closed and
+  // `headers_delivered_` won't become true.
+  if (!trailers_decompressed())
+    return;
+
   DCHECK(headers_delivered_);
   // Post an async task to notify handle of the FIN flag.
   NotifyHandleOfDataAvailableLater();

@@ -1091,11 +1091,29 @@ TEST_P(QuicChromiumClientStreamTest, EarlyHintsAsync) {
 }
 
 // Tests that Early Hints after the initial headers is treated as an error.
-// TODO(crbug.com/1096414): Add a test similar to this test but doesn't read the
-// initial headers.
 TEST_P(QuicChromiumClientStreamTest, EarlyHintsAfterInitialHeaders) {
   InitializeHeaders();
   ProcessHeadersFull(headers_);
+
+  // Early Hints after the initial headers are treated as trailers, and it
+  // should result in an error because trailers must not contain pseudo-headers
+  // like ":status".
+  EXPECT_CALL(
+      *static_cast<quic::test::MockQuicConnection*>(session_.connection()),
+      CloseConnection(
+          quic::QUIC_INVALID_HEADERS_STREAM_DATA, _,
+          quic::ConnectionCloseBehavior::SEND_CONNECTION_CLOSE_PACKET));
+
+  spdy::Http2HeaderBlock hints_headers;
+  hints_headers[":status"] = "103";
+  ProcessHeaders(hints_headers);
+  base::RunLoop().RunUntilIdle();
+}
+
+// Similar to the above test but don't read the initial headers.
+TEST_P(QuicChromiumClientStreamTest, EarlyHintsAfterInitialHeadersWithoutRead) {
+  InitializeHeaders();
+  ProcessHeaders(headers_);
 
   // Early Hints after the initial headers are treated as trailers, and it
   // should result in an error because trailers must not contain pseudo-headers
