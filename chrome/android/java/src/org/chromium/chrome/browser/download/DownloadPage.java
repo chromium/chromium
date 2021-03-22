@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.download.home.DownloadManagerCoordinator;
 import org.chromium.chrome.browser.download.home.DownloadManagerCoordinatorFactoryHelper;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfigHelper;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
@@ -32,17 +33,17 @@ public class DownloadPage extends BasicNativePage implements DownloadManagerCoor
     /**
      * Create a new instance of the downloads page.
      * @param activity The activity to get context and manage fragments.
+     * @param otrProfileID The {@link OTRProfileID} for the profile, null for regular profile.
      * @param host A NativePageHost to load urls.
      */
-    public DownloadPage(ChromeActivity activity, NativePageHost host) {
+    public DownloadPage(ChromeActivity activity, OTRProfileID otrProfileID, NativePageHost host) {
         super(host);
 
         ThreadUtils.assertOnUiThread();
         DownloadManagerUiConfig config =
                 DownloadManagerUiConfigHelper.fromFlags()
-                        .setIsOffTheRecord(activity.getCurrentTabModel().isIncognito())
-                        .setOTRProfileID(
-                                activity.getCurrentTabModel().getProfile().getOTRProfileID())
+                        .setIsOffTheRecord(otrProfileID != null)
+                        .setOTRProfileID(otrProfileID)
                         .setIsSeparateActivity(false)
                         .setShowPaginationHeaders(DownloadUtils.shouldShowPaginationHeaders())
                         .build();
