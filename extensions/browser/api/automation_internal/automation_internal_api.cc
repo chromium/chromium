@@ -180,7 +180,7 @@ class AutomationWebContentsObserver
 
     // If navigation was canceled, render frame host will not
     // be set and there is no new tree.
-    if (navigation->GetRenderFrameHost())
+    if (navigation->HasCommitted() && navigation->GetRenderFrameHost())
       new_ax_tree = navigation->GetRenderFrameHost()->GetAXTreeID();
 
     if (old_ax_tree == new_ax_tree)
