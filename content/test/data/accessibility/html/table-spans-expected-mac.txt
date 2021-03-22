@@ -8,6 +8,9 @@ AXWebArea AXTitle='Table example with rowspan and colspan'
 ++++AXRow AXIndex=1
 ++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXRowIndexRange={len: 1, loc: 1}
 ++++++++AXStaticText AXValue='EF'
+++++
+++++
+++++
 ++AXTable
 ++++AXRow AXIndex=0
 ++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 2, loc: 0}
@@ -19,3 +22,7 @@ AXWebArea AXTitle='Table example with rowspan and colspan'
 ++++++++AXStaticText AXValue='EF'
 ++++++AXCell AXColumnIndexRange={len: 1, loc: 2} AXRowIndexRange={len: 1, loc: 1}
 ++++++++AXStaticText AXValue='GH'
+++++
+++++
+++++
+++++

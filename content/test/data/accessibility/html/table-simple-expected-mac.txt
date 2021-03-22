@@ -15,3 +15,6 @@ AXWebArea AXTitle='Table example'
 ++++++++AXStaticText AXValue='CD'
 ++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXRowIndexRange={len: 1, loc: 2}
 ++++++++AXStaticText AXValue='D'
+++++
+++++
+++++

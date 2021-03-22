@@ -20,3 +20,6 @@ AXWebArea AXTitle='Table example - thead, tbody, tfoot'
 ++++++++AXStaticText AXValue='12'
 ++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXRowIndexRange={len: 1, loc: 3}
 ++++++++AXStaticText AXValue='3'
+++++
+++++
+++++

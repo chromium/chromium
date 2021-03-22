@@ -104,9 +104,6 @@ class DumpAccessibilityTestBase
   // otherwise we enable it first.
   bool enable_accessibility_after_navigating_;
 
-  // Whether we should enable extra mac nodes when running a test.
-  bool disable_extra_mac_nodes_for_testing_ = false;
-
   base::test::ScopedFeatureList scoped_feature_list_;
 
   bool HasHtmlAttribute(BrowserAccessibility& node,

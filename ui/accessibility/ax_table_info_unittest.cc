@@ -5,6 +5,7 @@
 #include "ui/accessibility/ax_table_info.h"
 
 #include "base/stl_util.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
@@ -160,7 +161,11 @@ TEST_F(AXTableInfoTest, SimpleTable) {
   EXPECT_EQ(2, table_info->row_nodes[0]->data().id);
   EXPECT_EQ(3, table_info->row_nodes[1]->data().id);
 
+#if defined(OS_MAC)
+  EXPECT_EQ(3U, table_info->extra_mac_nodes.size());
+#else
   EXPECT_EQ(0U, table_info->extra_mac_nodes.size());
+#endif
 
   //
   // High-level: Test the helper functions on AXNode.
@@ -492,6 +497,8 @@ TEST_F(AXTableInfoTest, HeadersWithSpans) {
   EXPECT_EQ(4, table_info->row_nodes[2]->data().id);
 }
 
+#if defined(OS_MAC)
+
 TEST_F(AXTableInfoTest, ExtraMacNodes) {
   // Simple 2 x 2 table with 2 column headers in first row, 2 cells in second
   // row.
@@ -510,7 +517,6 @@ TEST_F(AXTableInfoTest, ExtraMacNodes) {
   MakeCell(&initial_state.nodes[6], 7, 1, 1);
   AXTree tree(initial_state);
 
-  tree.SetEnableExtraMacNodes(true);
   AXTableInfo* table_info = GetTableInfo(&tree, tree.root()->children()[0]);
   EXPECT_FALSE(table_info);
 
@@ -569,6 +575,8 @@ TEST_F(AXTableInfoTest, ExtraMacNodes) {
   EXPECT_EQ(4, indirect_child_ids[0]);
   EXPECT_EQ(5, indirect_child_ids[1]);
 }
+
+#endif
 
 TEST_F(AXTableInfoTest, TableWithNoIndices) {
   AXTreeUpdate initial_state;
@@ -937,6 +945,8 @@ TEST_F(AXTableInfoTest, TableChanges) {
   EXPECT_FALSE(table_info);
 }
 
+#if defined(OS_MAC)
+
 TEST_F(AXTableInfoTest, ExtraMacNodesChanges) {
   // Simple 2 x 2 table with 2 column headers in first row, 2 cells in second
   // row.
@@ -955,7 +965,6 @@ TEST_F(AXTableInfoTest, ExtraMacNodesChanges) {
   MakeCell(&initial_state.nodes[6], 7, 1, 1);
   AXTree tree(initial_state);
 
-  tree.SetEnableExtraMacNodes(true);
   AXTableInfo* table_info = GetTableInfo(&tree, tree.root());
   ASSERT_NE(nullptr, table_info);
   // We expect 3 extra Mac nodes: two column nodes, and one header node.
@@ -1077,6 +1086,8 @@ TEST_F(AXTableInfoTest, ExtraMacNodesChanges) {
     EXPECT_EQ(0U, indirect_child_ids.size());
   }
 }
+
+#endif
 
 TEST_F(AXTableInfoTest, RowColumnSpanChanges) {
   // Simple 2 col x 1 row table

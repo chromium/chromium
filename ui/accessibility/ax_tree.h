@@ -166,11 +166,6 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
 
   int size() { return static_cast<int>(id_map_.size()); }
 
-  // Call this to enable support for extra Mac nodes - for each table,
-  // a table column header and a node for each column.
-  void SetEnableExtraMacNodes(bool enabled);
-  bool enable_extra_mac_nodes() const { return enable_extra_mac_nodes_; }
-
   // Return a negative number that's suitable to use for a node ID for
   // internal nodes created automatically by an AXTree, so as not to
   // conflict with positive-numbered node IDs from tree sources.
@@ -361,12 +356,6 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
 
   // The next negative node ID to use for internal nodes.
   AXNodeID next_negative_internal_node_id_ = -1;
-
-  // Whether we should create extra nodes that
-  // are only useful on macOS. Implemented using this flag to allow
-  // this code to be unit-tested on other platforms (for example, more
-  // code sanitizers run on Linux).
-  bool enable_extra_mac_nodes_ = false;
 
   // Contains pos_in_set and set_size data for an AXNode.
   struct NodeSetSizePosInSetInfo {

@@ -6,6 +6,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "ui/accessibility/ax_constants.mojom.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
@@ -134,8 +135,9 @@ bool AXTableInfo::Update() {
 
   // On Mac, we add a few extra nodes to the table - see comment
   // at the top of UpdateExtraMacNodes for details.
-  if (tree_->enable_extra_mac_nodes())
-    UpdateExtraMacNodes();
+#if defined(OS_MAC)
+  UpdateExtraMacNodes();
+#endif
 
   // The table metadata is now valid, any table queries will now be
   // fast. Any time a node in the table is updated, we'll have to

@@ -54,8 +54,6 @@ BrowserAccessibilityManagerMac::BrowserAccessibilityManagerMac(
     BrowserAccessibilityDelegate* delegate)
     : BrowserAccessibilityManager(delegate) {
   Initialize(initial_tree);
-  // Some tests are temporarily allowed disable extra mac nodes.
-  ax_tree()->SetEnableExtraMacNodes(!GetExtraMacNodesDisabled());
 }
 
 BrowserAccessibilityManagerMac::~BrowserAccessibilityManagerMac() {}

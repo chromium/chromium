@@ -1920,19 +1920,6 @@ bool AXTree::CreateNewChildVector(AXNode* node,
   return success;
 }
 
-void AXTree::SetEnableExtraMacNodes(bool enabled) {
-  if (enable_extra_mac_nodes_ == enabled)
-    return;  // No change.
-  if (enable_extra_mac_nodes_ && !enabled) {
-    NOTREACHED()
-        << "We don't support disabling the extra Mac nodes once enabled.";
-    return;
-  }
-
-  DCHECK_EQ(0U, table_info_map_.size());
-  enable_extra_mac_nodes_ = enabled;
-}
-
 AXNodeID AXTree::GetNextNegativeInternalNodeId() {
   AXNodeID return_value = next_negative_internal_node_id_;
   next_negative_internal_node_id_--;
