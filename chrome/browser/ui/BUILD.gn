@@ -4169,6 +4169,8 @@ static_library("ui") {
       "views/tabs/tab_hover_card_bubble_view.h",
       "views/tabs/tab_hover_card_controller.cc",
       "views/tabs/tab_hover_card_controller.h",
+      "views/tabs/tab_hover_card_metrics.cc",
+      "views/tabs/tab_hover_card_metrics.h",
       "views/tabs/tab_hover_card_thumbnail_observer.cc",
       "views/tabs/tab_hover_card_thumbnail_observer.h",
       "views/tabs/tab_icon.cc",

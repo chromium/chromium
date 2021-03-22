@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,20 +17,17 @@
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/metrics_util.h"
-#include "base/optional.h"
-#endif
-
 namespace gfx {
 class ImageSkia;
 }
 
 class TabHoverCardBubbleView;
+class TabHoverCardMetrics;
 class TabHoverCardThumbnailObserver;
 class Tab;
 class TabStrip;
 
+// Controls how hover cards are shown and hidden for tabs.
 class TabHoverCardController : public views::ViewObserver {
  public:
   explicit TabHoverCardController(TabStrip* tab_strip);
@@ -44,12 +41,12 @@ class TabHoverCardController : public views::ViewObserver {
   void UpdateHoverCard(Tab* tab,
                        TabController::HoverCardUpdateType update_type);
   void PreventImmediateReshow();
-  void TabSelectedViaMouse();
+  void TabSelectedViaMouse(Tab* tab);
 
  private:
   friend class TabHoverCardBubbleViewBrowserTest;
   friend class TabHoverCardBubbleViewInteractiveUiTest;
-  class CardCounter;
+  friend class TabHoverCardMetrics;
   class EventSniffer;
 
   static bool UseAnimations();
@@ -61,8 +58,6 @@ class TabHoverCardController : public views::ViewObserver {
   void UpdateCardContent(Tab* tab);
   void MaybeStartThumbnailObservation(Tab* tab, bool is_initial_show);
   void StartThumbnailObservation(Tab* tab);
-
-  void RecordTimeSinceLastSeenMetric(base::TimeDelta elapsed_time);
 
   void UpdateOrShowCard(Tab* tab,
                         TabController::HoverCardUpdateType update_type);
@@ -83,11 +78,7 @@ class TabHoverCardController : public views::ViewObserver {
   void OnPreviewImageAvaialble(TabHoverCardThumbnailObserver* observer,
                                gfx::ImageSkia thumbnail_image);
 
-  int GetCardsSeenCountForTesting() const;
-
-  // Timestamp of the last time a hover card was visible, recorded before it is
-  // hidden. This is used for metrics.
-  base::TimeTicks last_visible_timestamp_;
+  TabHoverCardMetrics* metrics_for_testing() const { return metrics_.get(); }
 
   // Timestamp of the last time the hover card is hidden by the mouse leaving
   // the tab strip. This is used for reshowing the hover card without delay if
@@ -103,9 +94,8 @@ class TabHoverCardController : public views::ViewObserver {
       hover_card_observation_{this};
   std::unique_ptr<EventSniffer> event_sniffer_;
 
-  // Counter used to keep track of the number of tab hover cards seen before a
-  // tab is selected by mouse press.
-  std::unique_ptr<CardCounter> cards_seen_counter_;
+  // Handles metrics around cards being seen by the user.
+  std::unique_ptr<TabHoverCardMetrics> metrics_;
 
   // Fade animations interfere with browser tests so we disable them in tests.
   static bool disable_animations_for_testing_;
@@ -118,9 +108,6 @@ class TabHoverCardController : public views::ViewObserver {
   base::CallbackListSubscription thumbnail_subscription_;
   bool waiting_for_preview_ = false;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::Optional<ui::ThroughputTracker> throughput_tracker_;
-#endif
   base::CallbackListSubscription fade_complete_subscription_;
   base::CallbackListSubscription slide_progressed_subscription_;
   base::CallbackListSubscription slide_complete_subscription_;

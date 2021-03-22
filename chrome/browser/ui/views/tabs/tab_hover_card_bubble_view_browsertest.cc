@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_hover_card_metrics.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -60,7 +61,9 @@ class TabHoverCardBubbleViewBrowserTest : public DialogBrowserTest {
   }
 
   int GetHoverCardsSeenCount() {
-    return tab_strip()->hover_card_controller_->GetCardsSeenCountForTesting();
+    return tab_strip()
+        ->hover_card_controller_->metrics_for_testing()
+        ->cards_seen_count();
   }
 
   void MouseExitTabStrip() {

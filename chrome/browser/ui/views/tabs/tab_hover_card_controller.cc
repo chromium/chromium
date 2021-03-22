@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,17 +7,13 @@
 #include "base/bind.h"
 #include "base/callback_list.h"
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
-#include "chrome/browser/metrics/tab_count_metrics.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
+#include "chrome/browser/ui/views/tabs/tab_hover_card_metrics.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_thumbnail_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "components/tab_count_metrics/tab_count_metrics.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -59,24 +55,6 @@ base::TimeDelta GetPreviewImageCaptureDelay(
   return base::TimeDelta::FromMilliseconds(ms);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// UMA histograms that record animation smoothness for fade-in and fade-out
-// animations of tab hover card.
-constexpr char kHoverCardFadeInSmoothnessHistogramName[] =
-    "Chrome.Tabs.AnimationSmoothness.HoverCard.FadeIn";
-constexpr char kHoverCardFadeOutSmoothnessHistogramName[] =
-    "Chrome.Tabs.AnimationSmoothness.HoverCard.FadeOut";
-
-void RecordFadeInSmoothness(int smoothness) {
-  UMA_HISTOGRAM_PERCENTAGE(kHoverCardFadeInSmoothnessHistogramName, smoothness);
-}
-
-void RecordFadeOutSmoothness(int smoothness) {
-  UMA_HISTOGRAM_PERCENTAGE(kHoverCardFadeOutSmoothnessHistogramName,
-                           smoothness);
-}
-#endif
-
 base::TimeDelta GetShowDelay(int tab_width) {
   // Delay is calculated as a logarithmic scale and bounded by a minimum width
   // based on the width of a pinned tab and a maximum of the standard width.
@@ -112,79 +90,6 @@ base::TimeDelta GetShowDelay(int tab_width) {
 }
 
 }  // anonymous namespace
-
-//-------------------------------------------------------------------
-// TabHoverCardController::CardCounter
-
-// Tracks cards seen from the time the user enters the tabstrip until they
-// select a tab with the mouse.
-class TabHoverCardController::CardCounter {
- public:
-  CardCounter() = default;
-  CardCounter(const CardCounter& other) = delete;
-  ~CardCounter() = default;
-  void operator=(const CardCounter& other) = delete;
-
-  // Resets the counter; called when a selection is finalized.
-  void OnSelectionCommitted() {
-    cards_seen_count_ = 0;
-    last_tab_ = nullptr;
-  }
-
-  // Notes that a card was shown for |tab|.
-  void CardShownForTab(const views::View* tab, bool is_initial) {
-    if (is_initial) {
-      cards_seen_count_ = 1;
-      last_tab_ = tab;
-      return;
-    }
-
-    if (tab == last_tab_)
-      return;
-
-    // Note: actually selecting a tab via keyboard input resets the counter
-    // without tracking metrics, so HoverCardUpdateType::kEvent is processed
-    // here but has no real effect in most cases; however, incrementing the
-    // count here does handle the case where the user user the keyboard to
-    // preview tabs and then uses the mouse or touch to select the tab.
-    last_tab_ = tab;
-    ++cards_seen_count_;
-  }
-
-  // Records the number of cards seen before a mouse selection. Should be called
-  // when the mouse is clicked on a tab, but before the selection is committed.
-  void TabSelectedViaMouse() {
-    const char kHistogramPrefixHoverCardsSeenBeforeSelection[] =
-        "TabHoverCards.TabHoverCardsSeenBeforeTabSelection";
-    const size_t tab_count = tab_count_metrics::TabCount();
-    const size_t bucket = tab_count_metrics::BucketForTabCount(tab_count);
-    constexpr int kMinHoverCardsSeen = 0;
-    constexpr int kMaxHoverCardsSeen = 100;
-    constexpr int kHistogramBucketCount = 50;
-    STATIC_HISTOGRAM_POINTER_GROUP(
-        tab_count_metrics::HistogramName(
-            kHistogramPrefixHoverCardsSeenBeforeSelection,
-            /* live_tabs_only */ false, bucket),
-        static_cast<int>(bucket),
-        static_cast<int>(tab_count_metrics::kNumTabCountBuckets),
-        Add(cards_seen_count_),
-        base::Histogram::FactoryGet(
-            tab_count_metrics::HistogramName(
-                kHistogramPrefixHoverCardsSeenBeforeSelection,
-                /* live_tabs_only */ false, bucket),
-            kMinHoverCardsSeen, kMaxHoverCardsSeen, kHistogramBucketCount,
-            base::HistogramBase::kUmaTargetedHistogramFlag));
-  }
-
-  int cards_seen_count() const { return cards_seen_count_; }
-
- private:
-  int cards_seen_count_ = 0;
-
-  // Keep this as an opaque pointer to avoid the temptation to dereference it;
-  // there's a chance it could be dead.
-  const void* last_tab_ = nullptr;
-};
 
 //-------------------------------------------------------------------
 // TabHoverCardController::EventSniffer
@@ -274,7 +179,7 @@ bool TabHoverCardController::disable_animations_for_testing_ = false;
 
 TabHoverCardController::TabHoverCardController(TabStrip* tab_strip)
     : tab_strip_(tab_strip),
-      cards_seen_counter_(std::make_unique<CardCounter>()) {}
+      metrics_(std::make_unique<TabHoverCardMetrics>(this)) {}
 
 TabHoverCardController::~TabHoverCardController() = default;
 
@@ -310,7 +215,7 @@ void TabHoverCardController::UpdateHoverCard(
 
   switch (update_type) {
     case TabController::HoverCardUpdateType::kSelectionChanged:
-      cards_seen_counter_->OnSelectionCommitted();
+      metrics_->TabSelectionChanged();
       break;
     case TabController::HoverCardUpdateType::kHover:
       if (!tab)
@@ -340,16 +245,13 @@ void TabHoverCardController::PreventImmediateReshow() {
   last_mouse_exit_timestamp_ = base::TimeTicks();
 }
 
-void TabHoverCardController::TabSelectedViaMouse() {
-  cards_seen_counter_->TabSelectedViaMouse();
+void TabHoverCardController::TabSelectedViaMouse(Tab* tab) {
+  metrics_->TabSelectedViaMouse(tab);
 }
 
 void TabHoverCardController::UpdateOrShowCard(
     Tab* tab,
     TabController::HoverCardUpdateType update_type) {
-  RecordTimeSinceLastSeenMetric(base::TimeTicks::Now() -
-                                last_visible_timestamp_);
-
   // Close is asynchronous, so make sure that if we're closing we clear out all
   // of our data *now* rather than waiting for the deletion message.
   if (hover_card_ && hover_card_->GetWidget()->IsClosed())
@@ -366,18 +268,12 @@ void TabHoverCardController::UpdateOrShowCard(
   // Cancel any pending fades.
   if (hover_card_ && fade_animator_->IsFadingOut()) {
     fade_animator_->CancelFadeOut();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (throughput_tracker_.has_value())
-      throughput_tracker_->Cancel();
-#endif
+    metrics_->CardFadeCanceled();
   }
 
   if (hover_card_) {
     // Card should never exist without an anchor.
     DCHECK(hover_card_->GetAnchorView());
-
-    // We may be showing a hover card for a new tab, so notify the counter.
-    cards_seen_counter_->CardShownForTab(tab, false);
 
     // If the card was visible we need to update the card now, before any slide
     // or snap occurs.
@@ -399,6 +295,8 @@ void TabHoverCardController::UpdateOrShowCard(
   // eliminates the show timer, lest the tests have to be significantly more
   // complex and time-consuming.
   const bool is_initial = !ShouldShowImmediately(tab);
+  if (is_initial)
+    metrics_->InitialCardBeingShown();
   if (is_initial && !disable_animations_for_testing_) {
     delayed_show_timer_.Start(
         FROM_HERE, GetShowDelay(tab->width()),
@@ -416,24 +314,17 @@ void TabHoverCardController::ShowHoverCard(bool is_initial) {
   if (hover_card_ || !target_tab_)
     return;
 
-  // We're showing a hover card for a new tab, set or increment the count.
-  cards_seen_counter_->CardShownForTab(target_tab_, is_initial);
-
   CreateHoverCard(target_tab_);
   UpdateCardContent(target_tab_);
   MaybeStartThumbnailObservation(target_tab_, is_initial);
 
   if (!is_initial || !UseAnimations()) {
+    metrics_->CardFullyVisibleOnTab(target_tab_);
     hover_card_->GetWidget()->Show();
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  throughput_tracker_.emplace(
-      hover_card_->GetWidget()->GetCompositor()->RequestNewThroughputTracker());
-  throughput_tracker_->Start(ash::metrics_util::ForSmoothness(
-      base::BindRepeating(&RecordFadeInSmoothness)));
-#endif
+  metrics_->CardFadingIn();
   fade_animator_->FadeIn();
 }
 
@@ -445,8 +336,9 @@ void TabHoverCardController::HideHoverCard() {
     thumbnail_observer_->Observe(nullptr);
     waiting_for_preview_ = false;
   }
+  // This needs to be called whether we're doing a fade or a pop out.
+  metrics_->CardWillBeHidden();
   slide_animator_->StopAnimation();
-  last_visible_timestamp_ = base::TimeTicks::Now();
   if (!UseAnimations()) {
     hover_card_->GetWidget()->Close();
     return;
@@ -454,12 +346,7 @@ void TabHoverCardController::HideHoverCard() {
   if (fade_animator_->IsFadingOut())
     return;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  throughput_tracker_.emplace(
-      hover_card_->GetWidget()->GetCompositor()->RequestNewThroughputTracker());
-  throughput_tracker_->Start(ash::metrics_util::ForSmoothness(
-      base::BindRepeating(&RecordFadeOutSmoothness)));
-#endif
+  metrics_->CardFadingOut();
   fade_animator_->FadeOut();
 }
 
@@ -575,24 +462,6 @@ void TabHoverCardController::StartThumbnailObservation(Tab* tab) {
   thumbnail_observer_->Observe(thumbnail);
 }
 
-void TabHoverCardController::RecordTimeSinceLastSeenMetric(
-    base::TimeDelta elapsed_time) {
-  if (hover_card_ && !fade_animator_->IsFadingOut())
-    return;
-  constexpr base::TimeDelta kMaxHoverCardReshowTimeDelta =
-      base::TimeDelta::FromSeconds(5);
-  if (elapsed_time > kMaxHoverCardReshowTimeDelta)
-    return;
-
-  constexpr base::TimeDelta kMinHoverCardReshowTimeDelta =
-      base::TimeDelta::FromMilliseconds(1);
-  constexpr int kHoverCardHistogramBucketCount = 50;
-  UMA_HISTOGRAM_CUSTOM_TIMES("TabHoverCards.TimeSinceLastVisible", elapsed_time,
-                             kMinHoverCardReshowTimeDelta,
-                             kMaxHoverCardReshowTimeDelta,
-                             kHoverCardHistogramBucketCount);
-}
-
 bool TabHoverCardController::ShouldShowImmediately(const Tab* tab) const {
   // If less than |kShowWithoutDelayTimeBuffer| time has passed since the hover
   // card was last visible then it is shown immediately. This is to account for
@@ -624,10 +493,10 @@ const views::View* TabHoverCardController::GetTargetAnchorView() const {
 void TabHoverCardController::OnFadeAnimationEnded(
     views::WidgetFadeAnimator* animator,
     views::WidgetFadeAnimator::FadeType fade_type) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (throughput_tracker_.has_value())
-    throughput_tracker_->Stop();
-#endif
+  if (fade_type == views::WidgetFadeAnimator::FadeType::kFadeIn)
+    metrics_->CardFullyVisibleOnTab(target_tab_);
+
+  metrics_->CardFadeComplete();
   if (fade_type == views::WidgetFadeAnimator::FadeType::kFadeOut)
     hover_card_->GetWidget()->Close();
 }
@@ -651,16 +520,16 @@ void TabHoverCardController::OnSlideAnimationComplete(
   // computers.
   if (waiting_for_preview_)
     hover_card_->ClearPreviewImage();
+
+  metrics_->CardFullyVisibleOnTab(target_tab_);
 }
 
 void TabHoverCardController::OnPreviewImageAvaialble(
     TabHoverCardThumbnailObserver* observer,
     gfx::ImageSkia thumbnail_image) {
   DCHECK_EQ(thumbnail_observer_.get(), observer);
+  if (waiting_for_preview_)
+    metrics_->ImageLoadedForTab(target_tab_);
   waiting_for_preview_ = false;
   hover_card_->SetPreviewImage(thumbnail_image);
-}
-
-int TabHoverCardController::GetCardsSeenCountForTesting() const {
-  return cards_seen_counter_->cards_seen_count();
 }
