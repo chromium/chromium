@@ -580,6 +580,7 @@ android_library("chrome_java") {
     "//chrome/browser:screenshot_mode_enum",
     "//chrome/browser:sharing_dialog_type_generated_enum",
     "//chrome/browser:sharing_send_message_result_generated_enum",
+    "//chrome/browser:survey_http_client_type_enum",
     "//chrome/browser/notifications/scheduler/public:jni_enums",
     "//chrome/browser/supervised_user/supervised_user_error_page:enums_srcjar",
     "//components/autofill_assistant/browser:autofill_assistant_enums_java",
@@ -2969,11 +2970,11 @@ instrumentation_test_runner("trichrome_chrome_bundle_fake_modules_smoke_test") {
 script_test("chrome_public_wpt") {
   script = "//testing/scripts/run_android_wpt.py"
   args = [
-      "--product=chrome_android",
-      "--chrome-apk=apks/ChromePublic.apk",
-      "--webdriver-binary=clang_x64/chromedriver",
-      "-v",
-    ]
+    "--product=chrome_android",
+    "--chrome-apk=apks/ChromePublic.apk",
+    "--webdriver-binary=clang_x64/chromedriver",
+    "-v",
+  ]
   data_deps = [
     ":chrome_public_apk",
     "//build/android:test_runner_py",

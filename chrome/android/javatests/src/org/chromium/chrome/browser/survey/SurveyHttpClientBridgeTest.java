@@ -60,8 +60,8 @@ public class SurveyHttpClientBridgeTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> mHttpClient =
-                                   new SurveyHttpClientBridge(Profile.getLastUsedRegularProfile()));
+                        -> mHttpClient = new SurveyHttpClientBridge(
+                                   HttpClientType.SURVEY, Profile.getLastUsedRegularProfile()));
     }
 
     @Test

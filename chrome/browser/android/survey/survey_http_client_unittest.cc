@@ -15,6 +15,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -147,8 +148,8 @@ class SurveyHttpClientTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
 
-    survey_http_client_ =
-        std::make_unique<SurveyHttpClient>(shared_url_loader_factory_);
+    survey_http_client_ = std::make_unique<SurveyHttpClient>(
+        TRAFFIC_ANNOTATION_FOR_TESTS, shared_url_loader_factory_);
   }
 
   void DestroyService() { survey_http_client_.reset(); }

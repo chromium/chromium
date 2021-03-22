@@ -18,6 +18,7 @@ class SurveyHttpClient;
 class SurveyHttpClientBridge {
  public:
   explicit SurveyHttpClientBridge(
+      jint j_client_type,
       const base::android::JavaParamRef<jobject>& j_profile);
 
   ~SurveyHttpClientBridge();

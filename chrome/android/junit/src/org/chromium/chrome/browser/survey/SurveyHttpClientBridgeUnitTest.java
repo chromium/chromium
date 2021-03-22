@@ -57,11 +57,12 @@ public class SurveyHttpClientBridgeUnitTest {
     public void setUp() {
         mMocker.mock(SurveyHttpClientBridgeJni.TEST_HOOKS, mNativeMock);
 
-        Mockito.when(mNativeMock.init(mMockProfile)).thenReturn(FAKE_NATIVE_POINTER);
+        Mockito.when(mNativeMock.init(HttpClientType.SURVEY, mMockProfile))
+                .thenReturn(FAKE_NATIVE_POINTER);
 
-        mSurveyHttpClientBridge = new SurveyHttpClientBridge(mMockProfile);
+        mSurveyHttpClientBridge = new SurveyHttpClientBridge(HttpClientType.SURVEY, mMockProfile);
 
-        Mockito.verify(mNativeMock).init(mMockProfile);
+        Mockito.verify(mNativeMock).init(HttpClientType.SURVEY, mMockProfile);
     }
 
     @Test

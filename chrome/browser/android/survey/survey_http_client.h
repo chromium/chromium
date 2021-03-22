@@ -14,6 +14,8 @@
 #include "base/callback.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/scoped_refptr.h"
+#include "chrome/browser/android/survey/http_client_type.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -34,6 +36,7 @@ class SurveyHttpClient {
                               std::vector<std::string> response_header_values)>;
 
   explicit SurveyHttpClient(
+      const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   ~SurveyHttpClient();
@@ -60,6 +63,7 @@ class SurveyHttpClient {
 
   std::set<std::unique_ptr<network::SimpleURLLoader>, base::UniquePtrComparator>
       url_loaders_;
+  const net::NetworkTrafficAnnotationTag network_traffic_annotation_;
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
 };
 

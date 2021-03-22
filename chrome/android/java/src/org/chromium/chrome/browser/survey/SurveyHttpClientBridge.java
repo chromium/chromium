@@ -60,8 +60,8 @@ public class SurveyHttpClientBridge {
         }
     }
 
-    public SurveyHttpClientBridge(Profile profile) {
-        mNativeBridge = SurveyHttpClientBridgeJni.get().init(profile);
+    public SurveyHttpClientBridge(@HttpClientType int clientType, Profile profile) {
+        mNativeBridge = SurveyHttpClientBridgeJni.get().init(clientType, profile);
     }
 
     /**
@@ -131,7 +131,7 @@ public class SurveyHttpClientBridge {
 
     @NativeMethods
     interface Natives {
-        long init(Profile profile);
+        long init(@HttpClientType int clientType, Profile profile);
         void destroy(long nativeSurveyHttpClientBridge);
         void sendNetworkRequest(long nativeSurveyHttpClientBridge, GURL gurl, String requestType,
                 byte[] body, String[] headerKeys, String[] headerValues,
