@@ -9,7 +9,7 @@
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
 // #import {ButtonState} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
-// #import {ESimPageName, ESimSetupFlowResult} from 'chrome://resources/cr_components/chromeos/cellular_setup/esim_flow_ui.m.js';
+// #import {ESimPageName, ESimSetupFlowResult, ESIM_SETUP_RESULT_METRIC_NAME, SUCCESSFUL_ESIM_SETUP_DURATION_METRIC_NAME, FAILED_ESIM_SETUP_DURATION_METRIC_NAME} from 'chrome://resources/cr_components/chromeos/cellular_setup/esim_flow_ui.m.js';
 // #import {assertEquals, assertTrue} from '../../../chai_assert.js';
 // #import {FakeESimManagerRemote} from './fake_esim_manager_remote.m.js';
 // #import {FakeCellularSetupDelegate} from './fake_cellular_setup_delegate.m.js';
@@ -18,31 +18,10 @@
 // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 // #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
 // #import {LoadingPageState} from 'chrome://resources/cr_components/chromeos/cellular_setup/setup_loading_page.m.js';
+// #import {MockMetricsPrivate} from './mock_metrics_private.m.js';
 // clang-format on
 
 suite('CrComponentsEsimFlowUiTest', function() {
-  class MockMetricsPrivate {
-    constructor() {
-      this.cellularSetupResultDict = {};
-    }
-
-    recordEnumerationValue(histogramName, eSimSetupFlowResult, enumSize) {
-      assertEquals(histogramName, 'Network.Cellular.ESim.CellularSetupResult');
-      if (eSimSetupFlowResult in this.cellularSetupResultDict) {
-        this.cellularSetupResultDict[eSimSetupFlowResult]++;
-        return;
-      }
-      this.cellularSetupResultDict[eSimSetupFlowResult] = 1;
-    }
-
-    getSetupResultMetricCount(metricEnum) {
-      if (metricEnum in this.cellularSetupResultDict) {
-        return this.cellularSetupResultDict[metricEnum];
-      }
-      return 0;
-    }
-  }
-
   let eSimPage;
   let eSimManagerRemote;
   let ironPages;
@@ -64,13 +43,32 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
   /** @param {ESimSetupFlowResult} eSimSetupFlowResult */
   function endFlowAndVerifyResult(eSimSetupFlowResult) {
-    const resultCount =
-        chrome.metricsPrivate.getSetupResultMetricCount(eSimSetupFlowResult);
     eSimPage.remove();
     Polymer.dom.flush();
     assertEquals(
-        chrome.metricsPrivate.getSetupResultMetricCount(eSimSetupFlowResult),
-        resultCount + 1);
+        chrome.metricsPrivate.getHistogramEnumValueCount(eSimSetupFlowResult),
+        1);
+
+    if (eSimSetupFlowResult === ESimSetupFlowResult.SUCCESS) {
+      assertEquals(
+          chrome.metricsPrivate.getHistogramCount(
+              FAILED_ESIM_SETUP_DURATION_METRIC_NAME),
+          0);
+      assertEquals(
+          chrome.metricsPrivate.getHistogramCount(
+              SUCCESSFUL_ESIM_SETUP_DURATION_METRIC_NAME),
+          1);
+      return;
+    }
+
+    assertEquals(
+        chrome.metricsPrivate.getHistogramCount(
+            FAILED_ESIM_SETUP_DURATION_METRIC_NAME),
+        1);
+    assertEquals(
+        chrome.metricsPrivate.getHistogramCount(
+            SUCCESSFUL_ESIM_SETUP_DURATION_METRIC_NAME),
+        0);
   }
 
   /** Adds an actively online wifi network and esim network. */

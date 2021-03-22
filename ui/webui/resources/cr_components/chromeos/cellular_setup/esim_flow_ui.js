@@ -43,6 +43,15 @@ cr.define('cellular_setup', function() {
     NO_NETWORK: 7,
   };
 
+  /* #export */ const ESIM_SETUP_RESULT_METRIC_NAME =
+      'Network.Cellular.ESim.CellularSetupResult';
+
+  /* #export */ const SUCCESSFUL_ESIM_SETUP_DURATION_METRIC_NAME =
+      'Network.Cellular.ESim.CellularSetup.Success.Duration';
+
+  /* #export */ const FAILED_ESIM_SETUP_DURATION_METRIC_NAME =
+      'Network.Cellular.ESim.CellularSetup.Failure.Duration';
+
   /**
    * Root element for the eSIM cellular setup flow. This element interacts with
    * the CellularSetup service to carry out the esim activation flow.
@@ -151,6 +160,12 @@ cr.define('cellular_setup', function() {
      */
     isOffline_: false,
 
+    /**
+     * The time at which the ESim flow is attached.
+     * @private {?Date}
+     */
+    timeOnAttached_: null,
+
     listeners: {
       'activation-code-updated': 'onActivationCodeUpdated_',
       'forward-navigation-requested': 'onForwardNavigationRequested_',
@@ -173,6 +188,11 @@ cr.define('cellular_setup', function() {
       networkConfig.getNetworkStateList(filter).then(response => {
         this.onActiveNetworksChanged(response.result);
       });
+    },
+
+    /** @override */
+    attached() {
+      this.timeOnAttached_ = new Date();
     },
 
     /** @override */
@@ -213,8 +233,18 @@ cr.define('cellular_setup', function() {
 
       assert(resultCode !== null);
       chrome.metricsPrivate.recordEnumerationValue(
-          'Network.Cellular.ESim.CellularSetupResult', resultCode,
+          ESIM_SETUP_RESULT_METRIC_NAME, resultCode,
           Object.keys(ESimSetupFlowResult).length);
+
+      const elapsedTimeMs = new Date() - this.timeOnAttached_;
+      if (resultCode === ESimSetupFlowResult.SUCCESS) {
+        chrome.metricsPrivate.recordLongTime(
+            SUCCESSFUL_ESIM_SETUP_DURATION_METRIC_NAME, elapsedTimeMs);
+        return;
+      }
+
+      chrome.metricsPrivate.recordLongTime(
+          FAILED_ESIM_SETUP_DURATION_METRIC_NAME, elapsedTimeMs);
     },
 
     /**

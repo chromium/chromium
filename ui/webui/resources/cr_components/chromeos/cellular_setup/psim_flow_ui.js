@@ -76,6 +76,15 @@ cr.define('cellularSetup', function() {
    */
   const MAX_START_ACTIVATION_ATTEMPTS = 3;
 
+  /* #export */ const PSIM_SETUP_RESULT_METRIC_NAME =
+      'Network.Cellular.PSim.CellularSetupResult';
+
+  /* #export */ const SUCCESSFUL_PSIM_SETUP_DURATION_METRIC_NAME =
+      'Network.Cellular.PSim.CellularSetup.Success.Duration';
+
+  /* #export */ const FAILED_PSIM_SETUP_DURATION_METRIC_NAME =
+      'Network.Cellular.PSim.CellularSetup.Failure.Duration';
+
   /**
    * Root element for the pSIM cellular setup flow. This element interacts with
    * the CellularSetup service to carry out the psim activation flow. It
@@ -209,9 +218,20 @@ cr.define('cellularSetup', function() {
      */
     setTimeoutFunction_: setTimeout.bind(window),
 
+    /**
+     * The time at which the PSim flow is attached.
+     * @private {?Date}
+     */
+    timeOnAttached_: null,
+
     /** @override */
     created() {
       this.cellularSetupRemote_ = cellular_setup.getCellularSetupRemote();
+    },
+
+    /** @override */
+    attached() {
+      this.timeOnAttached_ = new Date();
     },
 
     /** @override */
@@ -255,8 +275,18 @@ cr.define('cellularSetup', function() {
 
       assert(resultCode !== null);
       chrome.metricsPrivate.recordEnumerationValue(
-          'Network.Cellular.PSim.CellularSetupResult', resultCode,
+          PSIM_SETUP_RESULT_METRIC_NAME, resultCode,
           Object.keys(PSimSetupFlowResult).length);
+
+      const elapsedTimeMs = new Date() - this.timeOnAttached_;
+      if (resultCode === PSimSetupFlowResult.SUCCESS) {
+        chrome.metricsPrivate.recordLongTime(
+            SUCCESSFUL_PSIM_SETUP_DURATION_METRIC_NAME, elapsedTimeMs);
+        return;
+      }
+
+      chrome.metricsPrivate.recordLongTime(
+          FAILED_PSIM_SETUP_DURATION_METRIC_NAME, elapsedTimeMs);
     },
 
     /**
