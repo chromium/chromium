@@ -196,6 +196,7 @@ source_set("unit_tests") {
     "android_payment_app_factory_unittest.cc",
     "android_payment_app_unittest.cc",
     "payment_credential_enrollment_model_unittest.cc",
+    "payment_event_response_util_unittest.cc",
     "payment_method_manifest_table_unittest.cc",
     "secure_payment_confirmation_model_unittest.cc",
     "service_worker_payment_app_finder_unittest.cc",

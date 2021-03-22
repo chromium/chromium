@@ -148,6 +148,9 @@ extern const char kPaymentEventTimeout[];
 // malicious content.
 extern const char kPaymentHandlerInsecureNavigation[];
 
+// Payment handler installation has failed.
+extern const char kPaymentHandlerInstallFailed[];
+
 // The payment handler is closed because the Android activity is destroyed.
 extern const char kPaymentHandlerActivityDied[];
 

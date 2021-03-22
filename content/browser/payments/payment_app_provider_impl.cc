@@ -183,7 +183,7 @@ void PaymentAppProviderImpl::InstallAndInvokePaymentApp(
         base::BindOnce(
             std::move(callback),
             PaymentAppProviderUtil::CreateBlankPaymentHandlerResponse(
-                PaymentEventResponseType::PAYMENT_EVENT_BROWSER_ERROR)));
+                PaymentEventResponseType::PAYMENT_HANDLER_INSTALL_FAILED)));
     return;
   }
 
@@ -390,7 +390,7 @@ void PaymentAppProviderImpl::OnInstallPaymentApp(
   } else {
     std::move(callback).Run(
         PaymentAppProviderUtil::CreateBlankPaymentHandlerResponse(
-            PaymentEventResponseType::PAYMENT_EVENT_BROWSER_ERROR));
+            PaymentEventResponseType::PAYMENT_HANDLER_INSTALL_FAILED));
   }
 }
 

@@ -78,6 +78,8 @@ base::StringPiece ConvertPaymentEventResponseTypeToErrorString(
       return errors::kPaymentEventTimeout;
     case mojom::PaymentEventResponseType::PAYMENT_HANDLER_INSECURE_NAVIGATION:
       return errors::kPaymentHandlerInsecureNavigation;
+    case mojom::PaymentEventResponseType::PAYMENT_HANDLER_INSTALL_FAILED:
+      return errors::kPaymentHandlerInstallFailed;
     case mojom::PaymentEventResponseType::PAYMENT_HANDLER_ACTIVITY_DIED:
       return errors::kPaymentHandlerActivityDied;
     case mojom::PaymentEventResponseType::
