@@ -115,6 +115,8 @@ source_set("test_support") {
   ]
 
   sources = [
+    "test/color_utils.cc",
+    "test/color_utils.h",
     "test_native_theme.cc",
     "test_native_theme.h",
   ]
@@ -142,6 +144,7 @@ test("native_theme_unittests") {
   deps = [
     ":native_theme",
     ":native_theme_browser",
+    ":test_support",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//skia",

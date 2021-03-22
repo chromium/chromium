@@ -14,6 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/native_theme/native_theme_color_id.h"
+#include "ui/native_theme/test/color_utils.h"
 
 #if defined(OS_MAC)
 #include "ui/color/mac/system_color_utils.h"
@@ -27,31 +28,6 @@ enum class ContrastMode { kNonHighContrast, kHighContrast };
 
 namespace ui {
 namespace {
-
-constexpr const char* kColorIdStringName[] = {
-#define OP(enum_name) #enum_name
-    NATIVE_THEME_COLOR_IDS
-#undef OP
-};
-
-struct PrintableSkColor {
-  bool operator==(const PrintableSkColor& other) const {
-    return color == other.color;
-  }
-
-  bool operator!=(const PrintableSkColor& other) const {
-    return !operator==(other);
-  }
-
-  const SkColor color;
-};
-
-std::ostream& operator<<(std::ostream& os, PrintableSkColor printable_color) {
-  SkColor color = printable_color.color;
-  return os << base::StringPrintf("SkColorARGB(0x%02x, 0x%02x, 0x%02x, 0x%02x)",
-                                  SkColorGetA(color), SkColorGetR(color),
-                                  SkColorGetG(color), SkColorGetB(color));
-}
 
 class NativeThemeRedirectedEquivalenceTest
     : public testing::TestWithParam<std::tuple<NativeTheme::ColorScheme,
@@ -69,7 +45,7 @@ class NativeThemeRedirectedEquivalenceTest
                std::get<NativeTheme::ColorScheme>(param_tuple)) +
            ContrastModeToString(std::get<ContrastMode>(param_tuple)) +
            "_With_" +
-           ColorIdToString(std::get<NativeTheme::ColorId>(param_tuple));
+           test::ColorIdToString(std::get<NativeTheme::ColorId>(param_tuple));
   }
 
  private:
@@ -99,20 +75,12 @@ class NativeThemeRedirectedEquivalenceTest
         return "InvalidContrastMode";
     }
   }
-
-  static std::string ColorIdToString(NativeTheme::ColorId id) {
-    if (id >= NativeTheme::ColorId::kColorId_NumColors) {
-      NOTREACHED() << "Invalid color value " << id;
-      return "InvalidColorId";
-    }
-    return kColorIdStringName[id];
-  }
 };
 
-std::pair<PrintableSkColor, PrintableSkColor> GetOriginalAndRedirected(
-    NativeTheme::ColorId color_id,
-    NativeTheme::ColorScheme color_scheme,
-    ContrastMode contrast_mode) {
+std::pair<test::PrintableSkColor, test::PrintableSkColor>
+GetOriginalAndRedirected(NativeTheme::ColorId color_id,
+                         NativeTheme::ColorScheme color_scheme,
+                         ContrastMode contrast_mode) {
   NativeTheme* native_theme = NativeTheme::GetInstanceForNativeUi();
 
   if (contrast_mode == ContrastMode::kHighContrast) {
@@ -122,12 +90,12 @@ std::pair<PrintableSkColor, PrintableSkColor> GetOriginalAndRedirected(
     native_theme->set_preferred_contrast(NativeTheme::PreferredContrast::kMore);
   }
 
-  PrintableSkColor original{
+  test::PrintableSkColor original{
       native_theme->GetSystemColor(color_id, color_scheme)};
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kColorProviderRedirection);
-  PrintableSkColor redirected{
+  test::PrintableSkColor redirected{
       native_theme->GetSystemColor(color_id, color_scheme)};
   native_theme->set_preferred_contrast(
       NativeTheme::PreferredContrast::kNoPreference);
