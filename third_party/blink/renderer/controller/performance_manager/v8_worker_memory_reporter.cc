@@ -104,7 +104,8 @@ void WorkerMeasurementDelegate::MeasurementComplete(
       std::make_unique<V8WorkerMemoryReporter::WorkerMemoryUsage>();
   memory_usage->token = worker_global_scope->GetWorkerToken();
   memory_usage->bytes = bytes;
-  if (worker_global_scope->Url().GetString().length() < kMaxReportedUrlLength) {
+  if (worker_global_scope->IsUrlValid() &&
+      worker_global_scope->Url().GetString().length() < kMaxReportedUrlLength) {
     // Copy the URL to send it over to the main thread.
     memory_usage->url = worker_global_scope->Url().Copy();
   }
