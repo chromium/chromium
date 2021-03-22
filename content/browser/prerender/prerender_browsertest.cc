@@ -951,16 +951,10 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, PrerenderIframe) {
   TestHostPrerenderingState(GetUrl("/page_with_iframe.html"));
 }
 
-// crbug.com/1189980
-#if defined(OS_LINUX) && defined(ADDRESS_SANITIZER)
-#define MAYBE_PrerenderBlankIframe DISABLED_PrerenderBlankIframe
-#else
-#define MAYBE_PrerenderBlankIframe PrerenderBlankIframe
-#endif
-
 // Blank <iframe> is a special case. Tests that the blank iframe knows the
 // prerendering state as well.
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, MAYBE_PrerenderBlankIframe) {
+// TODO(https://crbug.com/1185965): This test is disabled for flakiness.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, DISABLED_PrerenderBlankIframe) {
   TestHostPrerenderingState(GetUrl("/page_with_blank_iframe.html"));
 }
 
