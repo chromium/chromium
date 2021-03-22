@@ -50,6 +50,23 @@ void WaitForHeavyAdBlocklistToBeLoaded(content::WebContents* web_contents) {
   run_loop.Run();
 }
 
+#if !defined(OS_ANDROID)
+// Installs a fake database manager so that the safe browsing activation
+// throttle will be created (WebLayer currently has a safe browsing database
+// available in production only on Android).
+void InstallFakeSafeBrowsingDatabaseManagerInWebContents(
+    content::WebContents* web_contents) {
+  scoped_refptr<FakeSafeBrowsingDatabaseManager> database_manager =
+      base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>();
+
+  auto* client_impl = static_cast<SubresourceFilterClientImpl*>(
+      subresource_filter::ContentSubresourceFilterThrottleManager::
+          FromWebContents(web_contents)
+              ->client());
+  client_impl->set_database_manager_for_testing(std::move(database_manager));
+}
+#endif
+
 }  // namespace
 
 SubresourceFilterBrowserTest::SubresourceFilterBrowserTest() {
@@ -73,6 +90,13 @@ void SubresourceFilterBrowserTest::SetUpOnMainThread() {
   // if the blocklist isn't loaded all hosts are treated as blocklisted, which
   // interferes with the operation of those tests.
   WaitForHeavyAdBlocklistToBeLoaded(web_contents());
+
+#if !defined(OS_ANDROID)
+  // Install a fake database manager so that the safe browsing activation
+  // throttle will be created, as that throttle is a core requirement for the
+  // operation of the subresource filter.
+  InstallFakeSafeBrowsingDatabaseManagerInWebContents(web_contents());
+#endif
 
   embedded_test_server()->ServeFilesFromSourceDirectory("components/test/data");
 
@@ -111,23 +135,15 @@ content::WebContents* SubresourceFilterBrowserTest::web_contents() {
   return static_cast<TabImpl*>(shell()->tab())->web_contents();
 }
 
-#if !defined(OS_ANDROID)
-// Installs a fake database manager so that the safe browsing activation
-// throttle will be created (WebLayer currently has a safe browsing database
-// available in production only on Android).
-void SubresourceFilterBrowserTest::
-    InstallFakeSafeBrowsingDatabaseManagerInWebContents(
-        content::WebContents* web_contents) {
-  scoped_refptr<FakeSafeBrowsingDatabaseManager> database_manager =
-      base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>();
-
-  auto* client_impl = static_cast<SubresourceFilterClientImpl*>(
-      subresource_filter::ContentSubresourceFilterThrottleManager::
-          FromWebContents(web_contents)
-              ->client());
-  client_impl->set_database_manager_for_testing(std::move(database_manager));
+bool SubresourceFilterBrowserTest::WasParsedScriptElementLoaded(
+    content::RenderFrameHost* rfh) {
+  DCHECK(rfh);
+  bool script_resource_was_loaded = false;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
+      rfh, "domAutomationController.send(!!document.scriptExecuted)",
+      &script_resource_was_loaded));
+  return script_resource_was_loaded;
 }
-#endif
 
 bool SubresourceFilterBrowserTest::StartEmbeddedTestServerAutomatically() {
   return true;

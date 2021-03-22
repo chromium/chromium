@@ -29,12 +29,6 @@ class AdTaggingBrowserTest : public SubresourceFilterBrowserTest {
   void SetUpOnMainThread() override {
     SubresourceFilterBrowserTest::SetUpOnMainThread();
 
-    // TODO(blundell): Consider hoisting this into
-    // SubresourceFilterBrowserTest::SetUpOnMainThread().
-#if !defined(OS_ANDROID)
-    InstallFakeSafeBrowsingDatabaseManagerInWebContents(web_contents());
-#endif
-
     SetRulesetWithRules(
         {subresource_filter::testing::CreateSuffixRule("ad_script.js"),
          subresource_filter::testing::CreateSuffixRule("ad=true")});

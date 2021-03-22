@@ -46,17 +46,6 @@ const char kTimeSinceAdsInterventionTriggeredHistogram[] =
     "TimeSinceLastActiveAdsIntervention";
 const char kSubresourceFilterActionsHistogram[] = "SubresourceFilter.Actions2";
 
-// Returns whether a script resource that sets document.scriptExecuted to true
-// on load was loaded.
-bool WasParsedScriptElementLoaded(content::RenderFrameHost* rfh) {
-  DCHECK(rfh);
-  bool script_resource_was_loaded = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      rfh, "domAutomationController.send(!!document.scriptExecuted)",
-      &script_resource_was_loaded));
-  return script_resource_was_loaded;
-}
-
 #if defined(OS_ANDROID)
 class TestInfoBarManagerObserver : public infobars::InfoBarManager::Observer {
  public:
@@ -421,10 +410,6 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
                        AdsInterventionEnforced_PageActivated) {
   auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
-#if !defined(OS_ANDROID)
-  InstallFakeSafeBrowsingDatabaseManagerInWebContents(web_contents);
-#endif
-
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   auto* throttle_manager = subresource_filter::
@@ -514,10 +499,6 @@ IN_PROC_BROWSER_TEST_F(
     SubresourceFilterBrowserTest,
     MultipleAdsInterventions_PageActivationClearedAfterFirst) {
   auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
-#if !defined(OS_ANDROID)
-  InstallFakeSafeBrowsingDatabaseManagerInWebContents(web_contents);
-#endif
-
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   auto* throttle_manager = subresource_filter::
@@ -628,10 +609,6 @@ IN_PROC_BROWSER_TEST_F(
     SubresourceFilterBrowserTestWithoutAdsInterventionEnforcement,
     AdsInterventionNotEnforced_NoPageActivation) {
   auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
-#if !defined(OS_ANDROID)
-  InstallFakeSafeBrowsingDatabaseManagerInWebContents(web_contents);
-#endif
-
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   auto* throttle_manager = subresource_filter::

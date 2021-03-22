@@ -27,6 +27,18 @@ source_set("ad_metrics") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "ad_intervention_browser_test_utils.cc",
+    "ad_intervention_browser_test_utils.h",
+  ]
+  deps = [
+    "//components/page_load_metrics/browser:test_support",
+    "//content/test:test_support",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [

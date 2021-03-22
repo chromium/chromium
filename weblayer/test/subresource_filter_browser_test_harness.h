@@ -40,13 +40,9 @@ class SubresourceFilterBrowserTest : public WebLayerBrowserTest {
 
   content::WebContents* web_contents();
 
-#if !defined(OS_ANDROID)
-  // Installs a fake database manager so that the safe browsing activation
-  // throttle will be created (WebLayer currently has a safe browsing database
-  // available in production only on Android).
-  void InstallFakeSafeBrowsingDatabaseManagerInWebContents(
-      content::WebContents* web_contents);
-#endif
+  // Returns whether a script resource that sets document.scriptExecuted to true
+  // on load was loaded.
+  bool WasParsedScriptElementLoaded(content::RenderFrameHost* rfh);
 
   // By default SubresourceFilterBrowsertest starts the embedded test server in
   // SetUpOnMainThread(). Tests that wish to control the starting of the
