@@ -6,8 +6,11 @@
 
 import argparse
 
+import itertools
 from typing import List, Set, Tuple
 
+import chrome_names
+import count_cycles
 import graph
 import serialization
 
@@ -49,6 +52,17 @@ def _edge_str(edge: Tuple[graph.Node, graph.Node]) -> str:
     return f'{edge[0]} -> {edge[1]}'
 
 
+def _print_diff_cycle_list(cycles1: Set[count_cycles.Cycle],
+                           cycles2: Set[count_cycles.Cycle], label: str):
+    before_cycles: Set[str] = set(_cycle_str(cycle) for cycle in cycles1)
+    after_cycles: Set[str] = set(_cycle_str(cycle) for cycle in cycles2)
+    _print_set_diff(before_cycles, after_cycles, label)
+
+
+def _cycle_str(cycle: count_cycles.Cycle) -> str:
+    return ' > '.join(chrome_names.shorten_class(node.name) for node in cycle)
+
+
 def _print_set_diff(before_set: Set[str], after_set: Set[str], label: str):
     all_added: List[str] = sorted(after_set - before_set)
     all_removed: List[str] = sorted(before_set - after_set)
@@ -63,10 +77,17 @@ def _print_set_diff(before_set: Set[str], after_set: Set[str], label: str):
         print(f'- [{i:4}] {removed}')
 
 
+def _cycle_set(graph: graph.Graph,
+               max_cycle_size: int) -> Set[count_cycles.Cycle]:
+    all_cycles_by_size = count_cycles.find_cycles(graph, max_cycle_size)
+    return set(itertools.chain(*all_cycles_by_size))
+
+
 def main():
     arg_parser = argparse.ArgumentParser(
         description='Given two JSON dependency graphs, output the differences '
-        'between them.')
+        'between them. By default, outputs the differences in the sets of '
+        'class and package nodes.')
     required_arg_group = arg_parser.add_argument_group('required arguments')
     required_arg_group.add_argument(
         '-b',
@@ -79,11 +100,14 @@ def main():
         '--after',
         required=True,
         help='Path to the JSON file containing the "after" dependency graph.')
+    arg_parser.add_argument('-e',
+                            '--edges',
+                            action='store_true',
+                            help='Also diff the set of graph edges.')
     arg_parser.add_argument(
-        '-e',
-        '--edges',
-        action='store_true',
-        help='Diff the set of graph edges in addition to the set of nodes')
+        '--package-cycles',
+        type=int,
+        help='Also diff the set of package cycles up to the specified size.')
     arguments = arg_parser.parse_args()
 
     class_graph_before, package_graph_before, _ = \
@@ -103,6 +127,7 @@ def main():
                           'Java packages')
 
     if arguments.edges:
+        print()
         _print_diff_num_edges(class_graph_before, class_graph_after,
                               'Total Java class edge count')
         _print_diff_num_edges(package_graph_before, package_graph_after,
@@ -114,6 +139,22 @@ def main():
         print()
         _print_diff_edge_list(package_graph_before, package_graph_after,
                               'Java package edges')
+
+    if arguments.package_cycles:
+        cycles_before = _cycle_set(package_graph_before,
+                                   arguments.package_cycles)
+        cycles_after = _cycle_set(package_graph_after,
+                                  arguments.package_cycles)
+        print()
+        _print_diff_metric(
+            len(cycles_before), len(cycles_after),
+            'Total Java package cycle count (up to size '
+            f'{arguments.package_cycles})')
+
+        print()
+        _print_diff_cycle_list(
+            cycles_before, cycles_after,
+            f'Java package cycles (up to size {arguments.package_cycles})')
 
 
 if __name__ == '__main__':

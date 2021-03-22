@@ -7,10 +7,13 @@
 import argparse
 import collections
 
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 import serialization
 import graph
+
+
+Cycle = Tuple[graph.Node, ...]
 
 
 def find_cycles_from_node(
@@ -101,7 +104,7 @@ def find_cycles_from_node(
 
 
 def find_cycles(base_graph: graph.Graph,
-                max_cycle_length: int) -> List[List[List[graph.Node]]]:
+                max_cycle_length: int) -> List[List[Cycle]]:
     """Finds all cycles in the graph within a certain length.
 
     The algorithm is as such: Number the nodes arbitrarily. For i from 0 to
@@ -132,7 +135,13 @@ def find_cycles(base_graph: graph.Graph,
                                                   node_to_id)
         for cycle_length, cycle_list in enumerate(start_node_cycles):
             cycles[cycle_length].extend(cycle_list)
-    return cycles
+
+    # Convert cycles to be tuples of nodes, so the cycles are hashable and
+    # immutable.
+    immutable_cycles = []
+    for cycle_list in cycles:
+        immutable_cycles.append([tuple(cycle) for cycle in cycle_list])
+    return immutable_cycles
 
 
 def main():
