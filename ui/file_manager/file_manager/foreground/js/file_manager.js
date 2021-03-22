@@ -1044,7 +1044,8 @@
 
     if (util.isFilesJsModulesEnabled()) {
       ContentMetadataProvider.configure(
-          'foreground/js/metadata_dispatcher.m.js', /*isModule=*/ true);
+          'foreground/js/metadata/metadata_dispatcher.m.js',
+          /*isModule=*/ true);
     } else if (window.isSWA) {
       ContentMetadataProvider.configure(
           'foreground/js/metadata/metadata_dispatcher.js');

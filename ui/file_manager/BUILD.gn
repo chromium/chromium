@@ -79,6 +79,7 @@ preprocess_folder = "$target_gen_dir/preprocessed"
 preprocess_if_expr("preprocess_static") {
   in_folder = "./"
   out_folder = preprocess_folder
+  out_manifest = "$target_gen_dir/manifest_preprocess_static.json"
 
   in_files = [
     "audio_player/js/main.m.js",
@@ -108,6 +109,7 @@ preprocess_if_expr("preprocess_static") {
 preprocess_if_expr("preprocess_generated") {
   in_folder = target_gen_dir
   out_folder = preprocess_folder
+  out_manifest = "$target_gen_dir/manifest_preprocess_generated.json"
 
   in_files = [
     # Audio Player:
@@ -395,60 +397,6 @@ generated_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 generate_grd("build_grd") {
   out_grd = generated_grd
 
-  input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
-  input_files = [
-    "audio_player/js/main.m.rollup.js",
-    "audio_player/js/main_background.m.rollup.js",
-    "audio_player/js/metadata_worker.m.rollup.js",
-
-    "image_loader/background.m.rollup.js",
-
-    # Fix broken images:
-    "file_manager/images/files/ui/arrow_right.svg",
-    "file_manager/images/files/ui/menu_ng.svg",
-
-    # Fix unittests: These files are imported via chrome-extension:// URLs:
-    "file_manager/common/js/app_util.m.js",
-    "file_manager/common/js/file_type.m.js",
-    "file_manager/common/js/files_app_entry_types.m.js",
-    "file_manager/common/js/lru_cache.m.js",
-    "file_manager/common/js/mock_chrome.m.js",
-    "file_manager/common/js/test_error_reporting.m.js",
-    "file_manager/common/js/volume_manager_types.m.js",
-    "file_manager/externs/background/background_base.m.js",
-    "file_manager/externs/entry_location.m.js",
-    "file_manager/externs/files_app_entry_interfaces.m.js",
-    "file_manager/externs/volume_info.m.js",
-    "file_manager/externs/volume_info_list.m.js",
-    "file_manager/externs/volume_manager.m.js",
-    "file_manager/foreground/js/metadata/image_orientation.m.js",
-    "image_loader/image_loader_client.m.js",
-    "image_loader/load_image_request.m.js",
-
-    "file_manager/background/js/main_background.m.rollup.js",
-    "file_manager/foreground/js/deferred_elements.m.rollup.js",
-    "file_manager/foreground/js/main.m.rollup.js",
-    "file_manager/foreground/js/metadata_dispatcher.m.rollup.js",
-    "file_manager/foreground/js/shared.m.rollup.js",
-    "file_manager/main_modules.html",
-
-    "video_player/js/main.m.rollup.js",
-    "video_player/js/main_background.m.rollup.js",
-  ]
-
-  resource_path_rewrites = [
-    "audio_player/js/main.m.rollup.js|audio_player/js/main.m.js",
-    "audio_player/js/main_background.m.rollup.js|audio_player/js/main_background.m.js",
-    "audio_player/js/metadata_worker.m.rollup.js|audio_player/js/metadata_worker.m.js",
-    "image_loader/background.m.rollup.js|image_loader/background.m.js",
-    "file_manager/background/js/main_background.m.rollup.js|file_manager/background/js/main_background.m.js",
-    "file_manager/foreground/js/deferred_elements.m.rollup.js|file_manager/foreground/js/deferred_elements.m.js",
-    "file_manager/foreground/js/main.m.rollup.js|file_manager/foreground/js/main.m.js",
-    "file_manager/foreground/js/metadata_dispatcher.m.rollup.js|file_manager/foreground/js/metadata_dispatcher.m.js",
-    "video_player/js/main.m.rollup.js|video_player/js/main.m.js",
-    "video_player/js/main_background.m.rollup.js|video_player/js/main_background.m.js",
-  ]
-
   grdp_files = [
     "$target_gen_dir/audio_player/static_resources.grdp",
     "$target_gen_dir/file_manager/static_resources.grdp",
@@ -462,13 +410,86 @@ generate_grd("build_grd") {
     "//ui/file_manager/audio_player/js:build_background",
     "//ui/file_manager/audio_player/js:build_worker",
     "//ui/file_manager/file_manager:fix_broken_images",
-    "//ui/file_manager/file_manager/background/js:build",
-    "//ui/file_manager/file_manager/foreground/js:build",
-    "//ui/file_manager/file_manager/foreground/js:build_worker",
     "//ui/file_manager/image_loader:build",
     "//ui/file_manager/video_player/js:build",
     "//ui/file_manager/video_player/js:build_background",
   ]
+
+  input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
+  input_files = [
+    "audio_player/js/main.m.rollup.js",
+    "audio_player/js/main_background.m.rollup.js",
+    "audio_player/js/metadata_worker.m.rollup.js",
+
+    "image_loader/background.m.rollup.js",
+
+    # Fix broken images:
+    "file_manager/images/files/ui/arrow_right.svg",
+    "file_manager/images/files/ui/menu_ng.svg",
+
+    "file_manager/main_modules.html",
+
+    "video_player/js/main.m.rollup.js",
+    "video_player/js/main_background.m.rollup.js",
+  ]
+
+  resource_path_rewrites = [
+    "audio_player/js/main.m.rollup.js|audio_player/js/main.m.js",
+    "audio_player/js/main_background.m.rollup.js|audio_player/js/main_background.m.js",
+    "audio_player/js/metadata_worker.m.rollup.js|audio_player/js/metadata_worker.m.js",
+    "image_loader/background.m.rollup.js|image_loader/background.m.js",
+    "video_player/js/main.m.rollup.js|video_player/js/main.m.js",
+    "video_player/js/main_background.m.rollup.js|video_player/js/main_background.m.js",
+  ]
+
+  if (optimize_webui) {
+    input_files += [
+      # Fix unittestxs: These files are imported via chrome-extension:// URLs:
+      "file_manager/common/js/app_util.m.js",
+      "file_manager/common/js/file_type.m.js",
+      "file_manager/common/js/files_app_entry_types.m.js",
+      "file_manager/common/js/lru_cache.m.js",
+      "file_manager/common/js/mock_chrome.m.js",
+      "file_manager/common/js/test_error_reporting.m.js",
+      "file_manager/common/js/volume_manager_types.m.js",
+      "file_manager/externs/background/background_base.m.js",
+      "file_manager/externs/entry_location.m.js",
+      "file_manager/externs/files_app_entry_interfaces.m.js",
+      "file_manager/externs/volume_info.m.js",
+      "file_manager/externs/volume_info_list.m.js",
+      "file_manager/externs/volume_manager.m.js",
+      "file_manager/foreground/js/metadata/image_orientation.m.js",
+      "image_loader/image_loader_client.m.js",
+      "image_loader/load_image_request.m.js",
+
+      "file_manager/background/js/main_background.m.rollup.js",
+      "file_manager/foreground/js/deferred_elements.m.rollup.js",
+      "file_manager/foreground/js/main.m.rollup.js",
+      "file_manager/foreground/js/metadata_dispatcher.m.rollup.js",
+      "file_manager/foreground/js/shared.m.rollup.js",
+    ]
+
+    resource_path_rewrites += [
+      "file_manager/background/js/main_background.m.rollup.js|file_manager/background/js/main_background.m.js",
+      "file_manager/foreground/js/deferred_elements.m.rollup.js|file_manager/foreground/js/deferred_elements.m.js",
+      "file_manager/foreground/js/main.m.rollup.js|file_manager/foreground/js/main.m.js",
+      "file_manager/foreground/js/metadata_dispatcher.m.rollup.js|file_manager/foreground/js/metadata/metadata_dispatcher.m.js",
+    ]
+
+    deps += [
+      "//ui/file_manager/file_manager/background/js:build",
+      "//ui/file_manager/file_manager/foreground/elements:elements",
+      "//ui/file_manager/file_manager/foreground/js:build",
+      "//ui/file_manager/file_manager/foreground/js:build_worker",
+    ]
+  } else {
+    manifest_files = [
+      "$target_gen_dir/manifest_preprocess_generated.json",
+      "$target_gen_dir/manifest_preprocess_static.json",
+    ]
+
+    deps += [ ":preprocess_static" ]
+  }
 }
 
 # Resources for the JS modules.
