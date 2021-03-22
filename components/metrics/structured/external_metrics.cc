@@ -17,10 +17,50 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/metrics/structured/storage.pb.h"
+#include "components/metrics/structured/structured_metrics_features.h"
 
 namespace metrics {
 namespace structured {
 namespace {
+
+// TODO(b/181724341): Remove this once the bluetooth metrics are fully enabled.
+void MaybeFilterBluetoothEvents(
+    google::protobuf::RepeatedPtrField<metrics::StructuredEventProto>* events) {
+  // Event name hashes of all bluetooth events listed in
+  // src/platform2/metrics/structured/structured.xml.
+  static constexpr uint64_t kBluetoothEventHashes[] = {
+      // BluetoothAdapterStateChanged
+      UINT64_C(959829856916771459),
+      // BluetoothPairingStateChanged
+      UINT64_C(11839023048095184048),
+      // BluetoothAclConnectionStateChanged
+      UINT64_C(1880220404408566268),
+      // BluetoothProfileConnectionStateChanged
+      UINT64_C(7217682640379679663),
+      // BluetoothDeviceInfoReport
+      UINT64_C(1506471670382892394),
+  };
+
+  if (base::FeatureList::IsEnabled(kBluetoothSessionizedMetrics))
+    return;
+
+  for (int i = 0; i < events->size();) {
+    bool is_bluetooth = false;
+    const uint64_t event_hash = events->Get(i).event_name_hash();
+    for (const uint64_t bt_hash : kBluetoothEventHashes) {
+      if (event_hash == bt_hash) {
+        is_bluetooth = true;
+        break;
+      }
+    }
+
+    if (is_bluetooth) {
+      events->erase(events->begin() + i);
+    } else {
+      ++i;
+    }
+  }
+}
 
 EventsProto ReadAndDeleteEvents(const base::FilePath& directory) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -60,6 +100,8 @@ EventsProto ReadAndDeleteEvents(const base::FilePath& directory) {
     result.mutable_non_uma_events()->MergeFrom(proto.non_uma_events());
   }
 
+  MaybeFilterBluetoothEvents(result.mutable_uma_events());
+  MaybeFilterBluetoothEvents(result.mutable_non_uma_events());
   return result;
 }
 

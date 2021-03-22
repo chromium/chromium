@@ -163,6 +163,29 @@ TEST_F(ExternalMetricsTest, HandleCorruptFile) {
   ASSERT_TRUE(base::IsDirectoryEmpty(temp_dir_.GetPath()));
 }
 
+// TODO(b/181724341): Remove this when the bluetooth metrics feature is enabled
+// by default.
+TEST_F(ExternalMetricsTest, FilterBluetoothEvents) {
+  // Event name hash for cros's BluetoothPairingStateChanged event.
+  const uint64_t event_hash = UINT64_C(11839023048095184048);
+
+  Init();
+
+  // Use the profile_event_id as an marker of which event is which, and assign a
+  // bluetooth event hash to ids > 100.
+  EventsProto proto;
+  for (const auto id : {101, 1, 2, 102, 103, 3, 104}) {
+    auto* event = proto.add_uma_events();
+    event->set_profile_event_id(id);
+    if (id > 100)
+      event->set_event_name_hash(event_hash);
+  }
+  WriteToDisk("proto", proto);
+
+  CollectEvents();
+  AssertEqualsTestingProto(proto_.value(), {1, 2, 3});
+}
+
 // TODO(crbug.com/1148168): Add a test for concurrent reading and writing here
 // once we know the specifics of how the lock in cros is performed.
 
