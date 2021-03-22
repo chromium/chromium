@@ -82,7 +82,7 @@ class PrerenderHost::MPArchPageHolder
     frame_tree_->Init(
         SiteInstance::Create(web_contents.GetBrowserContext()).get(),
         /*renderer_initiated_creation=*/false,
-        /*main_frame_name=*/"", /*is_prerendering=*/true);
+        /*main_frame_name=*/"", FrameTree::Type::kPrerender);
 
     // TODO(https://crbug.com/1164280): This should be moved to FrameTree::Init
     web_contents_.NotifySwappedFromRenderManager(

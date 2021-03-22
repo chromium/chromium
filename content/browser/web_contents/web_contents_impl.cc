@@ -2750,8 +2750,10 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params) {
         ->PreventAssociationWithSpareProcess();
   }
 
+  FrameTree::Type type = params.is_prerendering ? FrameTree::Type::kPrerender
+                                                : FrameTree::Type::kPrimary;
   frame_tree_.Init(site_instance.get(), params.renderer_initiated_creation,
-                   params.main_frame_name, params.is_prerendering);
+                   params.main_frame_name, type);
 
   WebContentsViewDelegate* delegate =
       GetContentClient()->browser()->GetWebContentsViewDelegate(this);

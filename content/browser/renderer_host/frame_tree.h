@@ -129,6 +129,18 @@ class CONTENT_EXPORT FrameTree {
             RenderFrameHostManager::Delegate* manager_delegate);
   ~FrameTree();
 
+  // Type of FrameTree instance.
+  enum class Type {
+    // This FrameTree is the primary frame tree for the WebContents, whose main
+    // document URL is shown in the Omnibox.
+    kPrimary,
+
+    // This FrameTree is used to prerender a page in the background which is
+    // invisible to the user.
+    kPrerender
+  };
+  Type type() { return type_; }
+
   // Initializes the main frame for this FrameTree. That is it creates the
   // initial RenderFrameHost in the root node's RenderFrameHostManager. This
   // method will call back into the delegates so it should only be called once
@@ -138,16 +150,17 @@ class CONTENT_EXPORT FrameTree {
   void Init(SiteInstance* main_frame_site_instance,
             bool renderer_initiated_creation,
             const std::string& main_frame_name,
-            bool is_prerendering);
+            Type type);
 
   FrameTreeNode* root() const { return root_; }
 
-  // Sets |is_prerendering_| to false and activates the Prerendered page.
+  // Sets |type_| to FrameTree::Type::kPrimary and activates the Prerendered
+  // page.
   // TODO(https://crbug.com/1154501): Remove once MPArch is enabled, as this is
   // only used in the multiple WebContents implementation of prerendering.
   void ActivatePrerenderedFrameTree();
 
-  bool is_prerendering() const { return is_prerendering_; }
+  bool is_prerendering() const { return type_ == FrameTree::Type::kPrerender; }
 
   Delegate* delegate() { return delegate_; }
 
@@ -417,6 +430,12 @@ class CONTENT_EXPORT FrameTree {
   // unsafe to show the pending URL. Usually false unless another window tries
   // to modify the blank page.  Always false after the first commit.
   bool has_accessed_initial_main_document_ = false;
+
+  // Indicates type of frame tree. The default value is set to kPrimary until
+  // the initialization is moved to the constructor.
+  // TODO(https://crbug.com/1174926): Make FrameTree::Type const once
+  // WebContents-swap-based activation logic is removed.
+  Type type_ = Type::kPrimary;
 
   DISALLOW_COPY_AND_ASSIGN(FrameTree);
 };

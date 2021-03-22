@@ -552,12 +552,12 @@ void FrameTree::RegisterExistingOriginToPreventOptInIsolation(
 void FrameTree::Init(SiteInstance* main_frame_site_instance,
                      bool renderer_initiated_creation,
                      const std::string& main_frame_name,
-                     bool is_prerendering) {
+                     FrameTree::Type type) {
   // blink::FrameTree::SetName always keeps |unique_name| empty in case of a
   // main frame - let's do the same thing here.
   std::string unique_name;
   root_->SetFrameName(main_frame_name, unique_name);
-  is_prerendering_ = is_prerendering;
+  type_ = type;
   root_->render_manager()->InitRoot(main_frame_site_instance,
                                     renderer_initiated_creation);
 }
@@ -569,8 +569,9 @@ void FrameTree::DidAccessInitialMainDocument() {
 }
 
 void FrameTree::ActivatePrerenderedFrameTree() {
-  DCHECK(is_prerendering_ && blink::features::IsPrerender2Enabled());
-  is_prerendering_ = false;
+  DCHECK(is_prerendering());
+  DCHECK(blink::features::IsPrerenderWebContentsEnabled());
+  type_ = FrameTree::Type::kPrimary;
   GetMainFrame()->ActivateForPrerendering();
 }
 

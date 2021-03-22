@@ -329,13 +329,14 @@ class PrerenderBrowserTest
     // Navigate to an initial page.
     ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
-    // The initial page should not be for prerendering.
+    // The initial page should not be in prerendered state.
     RenderFrameHostImpl* initiator_render_frame_host =
         static_cast<RenderFrameHostImpl*>(
             shell()->web_contents()->GetMainFrame());
-    EXPECT_FALSE(initiator_render_frame_host->frame_tree()->is_prerendering());
-    EXPECT_NE(initiator_render_frame_host->lifecycle_state(),
-              LifecycleState::kPrerendering);
+    EXPECT_EQ(initiator_render_frame_host->frame_tree()->type(),
+              FrameTree::Type::kPrimary);
+    EXPECT_EQ(initiator_render_frame_host->lifecycle_state(),
+              LifecycleState::kActive);
 
     // Start a prerender.
     AddPrerender(prerender_url);
@@ -355,7 +356,7 @@ class PrerenderBrowserTest
       // before activation.
       EXPECT_EQ(rfhi->lifecycle_state(),
                 RenderFrameHostImpl::LifecycleState::kPrerendering);
-      EXPECT_TRUE(rfhi->frame_tree()->is_prerendering());
+      EXPECT_EQ(rfhi->frame_tree()->type(), FrameTree::Type::kPrerender);
     }
 
     // Activate the prerendered page.
