@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_VIEW_H_
 
 #include "base/time/time.h"
+#include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -113,7 +114,8 @@ class WebView {
       WebView* opener,
       CrossVariantMojoAssociatedReceiver<mojom::PageBroadcastInterfaceBase>
           page_handle,
-      scheduler::WebAgentGroupScheduler& agent_group_scheduler);
+      scheduler::WebAgentGroupScheduler& agent_group_scheduler,
+      const SessionStorageNamespaceId& session_storage_namespace_id);
 
   // Destroys the WebView.
   virtual void Close() = 0;
@@ -134,6 +136,9 @@ class WebView {
   virtual void DidDetachRemoteMainFrame() = 0;
 
   virtual void SetNoStatePrefetchClient(WebNoStatePrefetchClient*) = 0;
+
+  // Returns the session storage namespace id associated with this WebView.
+  virtual const SessionStorageNamespaceId& GetSessionStorageNamespaceId() = 0;
 
   // Options -------------------------------------------------------------
 

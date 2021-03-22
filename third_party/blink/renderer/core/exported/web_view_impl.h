@@ -118,7 +118,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       bool compositing_enabled,
       WebViewImpl* opener,
       mojo::PendingAssociatedReceiver<mojom::blink::PageBroadcast> page_handle,
-      scheduler::WebAgentGroupScheduler& agent_group_scheduler);
+      scheduler::WebAgentGroupScheduler& agent_group_scheduler,
+      const SessionStorageNamespaceId& session_storage_namespace_id);
 
   // All calls to Create() should be balanced with a call to Close(). This
   // synchronously destroys the WebViewImpl.
@@ -208,6 +209,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void IncreaseHistoryListFromNavigation() override;
   int32_t HistoryBackListCount() override;
   int32_t HistoryForwardListCount() override;
+  const SessionStorageNamespaceId& GetSessionStorageNamespaceId() override;
 
   // Functions to add and remove observers for this object.
   void AddObserver(WebViewObserver* observer);
@@ -615,7 +617,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       bool does_composite,
       WebViewImpl* opener,
       mojo::PendingAssociatedReceiver<mojom::blink::PageBroadcast> page_handle,
-      scheduler::WebAgentGroupScheduler& agent_group_scheduler);
+      scheduler::WebAgentGroupScheduler& agent_group_scheduler,
+      const SessionStorageNamespaceId& session_storage_namespace_id);
   ~WebViewImpl() override;
 
   void ConfigureAutoResizeMode();
@@ -853,6 +856,11 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // keeping WorkerFetchContext in sync.
   mojo::RemoteSet<mojom::blink::RendererPreferenceWatcher>
       renderer_preference_watchers_;
+
+  // The SessionStorage namespace that we're assigned to has an ID, and that ID
+  // is passed to us upon creation.  WebKit asks for this ID upon first use and
+  // uses it whenever asking the browser process to allocate new storage areas.
+  SessionStorageNamespaceId session_storage_namespace_id_;
 
   // All the registered observers.
   base::ObserverList<WebViewObserver> observers_;

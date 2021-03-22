@@ -486,7 +486,8 @@ TEST_F(WebViewTest, SetBaseBackgroundColorBeforeMainFrame) {
                       /*is_inside_portal=*/false,
                       /*compositing_enabled=*/true,
                       /*opener=*/nullptr, mojo::NullAssociatedReceiver(),
-                      web_view_helper_.GetAgentGroupScheduler()));
+                      web_view_helper_.GetAgentGroupScheduler(),
+                      /*session_storage_namespace_id=*/base::EmptyString()));
 
   EXPECT_NE(SK_ColorBLUE, web_view->BackgroundColor());
   // WebView does not have a frame yet, but we should still be able to set the
@@ -2723,8 +2724,8 @@ TEST_F(WebViewTest, ClientTapHandlingNullWebViewClient) {
   WebViewImpl* web_view = static_cast<WebViewImpl*>(WebView::Create(
       /*client=*/nullptr, /*is_hidden=*/false, /*is_inside_portal=*/false,
       /*compositing_enabled=*/false, /*opener=*/nullptr,
-      mojo::NullAssociatedReceiver(),
-      web_view_helper_.GetAgentGroupScheduler()));
+      mojo::NullAssociatedReceiver(), web_view_helper_.GetAgentGroupScheduler(),
+      /*session_storage_namespace_id=*/base::EmptyString()));
   frame_test_helpers::TestWebFrameClient web_frame_client;
   WebLocalFrame* local_frame = WebLocalFrame::CreateMainFrame(
       web_view, &web_frame_client, nullptr, LocalFrameToken(), nullptr);

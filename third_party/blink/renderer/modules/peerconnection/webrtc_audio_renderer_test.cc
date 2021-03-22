@@ -139,13 +139,15 @@ class MAYBE_WebRtcAudioRendererTest : public testing::Test {
         agent_group_scheduler_(
             blink::scheduler::WebThreadScheduler::MainThreadScheduler()
                 ->CreateAgentGroupScheduler()),
-        web_view_(blink::WebView::Create(/*client=*/nullptr,
-                                         /*is_hidden=*/false,
-                                         /*is_inside_portal=*/false,
-                                         /*compositing_enabled=*/false,
-                                         /*opener=*/nullptr,
-                                         mojo::NullAssociatedReceiver(),
-                                         *agent_group_scheduler_)),
+        web_view_(blink::WebView::Create(
+            /*client=*/nullptr,
+            /*is_hidden=*/false,
+            /*is_inside_portal=*/false,
+            /*compositing_enabled=*/false,
+            /*opener=*/nullptr,
+            mojo::NullAssociatedReceiver(),
+            *agent_group_scheduler_,
+            /*session_storage_namespace_id=*/base::EmptyString())),
         web_local_frame_(
             blink::WebLocalFrame::CreateMainFrame(web_view_,
                                                   &web_local_frame_client_,

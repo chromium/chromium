@@ -283,14 +283,15 @@ WebRemotePlaybackClient* ModulesInitializer::CreateWebRemotePlaybackClient(
   return &RemotePlayback::From(html_media_element);
 }
 
-void ModulesInitializer::ProvideModulesToPage(Page& page,
-                                              WebViewClient* client) const {
+void ModulesInitializer::ProvideModulesToPage(
+    Page& page,
+    const SessionStorageNamespaceId& namespace_id) const {
   MediaKeysController::ProvideMediaKeysTo(page);
   ::blink::ProvideContextFeaturesTo(
       page, std::make_unique<ContextFeaturesClientImpl>());
   ::blink::ProvideDatabaseClientTo(page,
                                    MakeGarbageCollected<DatabaseClient>());
-  StorageNamespace::ProvideSessionStorageNamespaceTo(page, client);
+  StorageNamespace::ProvideSessionStorageNamespaceTo(page, namespace_id);
   AudioGraphTracer::ProvideAudioGraphTracerTo(page);
 }
 

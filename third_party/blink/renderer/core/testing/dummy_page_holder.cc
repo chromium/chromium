@@ -104,7 +104,8 @@ DummyPageHolder::DummyPageHolder(
   frame_->View()->GetPage()->GetVisualViewport().SetSize(initial_view_size);
   frame_->Init(/*opener=*/nullptr, /*policy_container=*/nullptr);
 
-  CoreInitializer::GetInstance().ProvideModulesToPage(GetPage(), nullptr);
+  CoreInitializer::GetInstance().ProvideModulesToPage(GetPage(),
+                                                      base::EmptyString());
 }
 
 DummyPageHolder::~DummyPageHolder() {

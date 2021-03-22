@@ -314,13 +314,15 @@ class WebMediaPlayerImplTest
       std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
           agent_group_scheduler)
       : media_thread_("MediaThreadForTest"),
-        web_view_(blink::WebView::Create(/*client=*/nullptr,
-                                         /*is_hidden=*/false,
-                                         /*is_inside_portal=*/false,
-                                         /*compositing_enabled=*/false,
-                                         /*opener=*/nullptr,
-                                         mojo::NullAssociatedReceiver(),
-                                         *agent_group_scheduler)),
+        web_view_(blink::WebView::Create(
+            /*client=*/nullptr,
+            /*is_hidden=*/false,
+            /*is_inside_portal=*/false,
+            /*compositing_enabled=*/false,
+            /*opener=*/nullptr,
+            mojo::NullAssociatedReceiver(),
+            *agent_group_scheduler,
+            /*session_storage_namespace_id=*/base::EmptyString())),
         web_local_frame_(
             blink::WebLocalFrame::CreateMainFrame(web_view_,
                                                   &web_frame_client_,

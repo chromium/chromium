@@ -114,10 +114,7 @@ RenderViewImpl::RenderViewImpl(AgentSchedulingGroup& agent_scheduling_group,
           params.renderer_wide_named_frame_lookup),
       widgets_never_composited_(params.never_composited),
       compositor_deps_(compositor_deps),
-      agent_scheduling_group_(agent_scheduling_group),
-      session_storage_namespace_id_(params.session_storage_namespace_id) {
-  DCHECK(!session_storage_namespace_id_.empty())
-      << "Session storage namespace must be populated.";
+      agent_scheduling_group_(agent_scheduling_group) {
   // Please put all logic in RenderViewImpl::Initialize().
 }
 
@@ -141,7 +138,8 @@ void RenderViewImpl::Initialize(
       /*compositing_enabled=*/true,
       opener_frame ? opener_frame->View() : nullptr,
       std::move(params->blink_page_broadcast),
-      agent_scheduling_group_.agent_group_scheduler());
+      agent_scheduling_group_.agent_group_scheduler(),
+      params->session_storage_namespace_id);
 
   g_view_map.Get().insert(std::make_pair(GetWebView(), this));
   g_routing_id_view_map.Get().insert(std::make_pair(GetRoutingID(), this));
@@ -239,6 +237,8 @@ RenderViewImpl* RenderViewImpl::Create(
     bool was_created_by_renderer,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK(params->view_id != MSG_ROUTING_NONE);
+  DCHECK(!params->session_storage_namespace_id.empty())
+      << "Session storage namespace must be populated.";
 
   RenderViewImpl* render_view =
       new RenderViewImpl(agent_scheduling_group, compositor_deps, *params);
@@ -309,7 +309,7 @@ WebView* RenderViewImpl::CreateView(
       base::FeatureList::IsEnabled(
           blink::features::kCloneSessionStorageForNoOpener)) {
     params->clone_from_session_storage_namespace_id =
-        session_storage_namespace_id_;
+        GetWebView()->GetSessionStorageNamespaceId();
   }
 
   const std::string& frame_name_utf8 = frame_name.Utf8(
@@ -458,11 +458,6 @@ blink::WebPagePopup* RenderViewImpl::CreatePopup(
                                compositor_deps_->GetMainThreadPipeline(),
                                compositor_deps_->GetCompositorThreadPipeline());
   return popup;
-}
-
-base::StringPiece RenderViewImpl::GetSessionStorageNamespaceId() {
-  CHECK(!session_storage_namespace_id_.empty());
-  return session_storage_namespace_id_;
 }
 
 void RenderViewImpl::PrintPage(WebLocalFrame* frame) {

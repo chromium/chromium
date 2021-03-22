@@ -60,7 +60,6 @@ class WebMediaPlayer;
 class WebMediaPlayerClient;
 class WebMediaPlayerSource;
 class WebRemotePlaybackClient;
-class WebViewClient;
 
 class CORE_EXPORT CoreInitializer {
   USING_FAST_MALLOC(CoreInitializer);
@@ -113,7 +112,8 @@ class CORE_EXPORT CoreInitializer {
   virtual WebRemotePlaybackClient* CreateWebRemotePlaybackClient(
       HTMLMediaElement&) const = 0;
 
-  virtual void ProvideModulesToPage(Page&, WebViewClient*) const = 0;
+  virtual void ProvideModulesToPage(Page&,
+                                    const SessionStorageNamespaceId&) const = 0;
   virtual void ForceNextWebGLContextCreationToFail() const = 0;
 
   virtual void CollectAllGarbageForAnimationAndPaintWorkletForTesting()

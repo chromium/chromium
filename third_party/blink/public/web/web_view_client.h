@@ -80,11 +80,6 @@ class WebViewClient {
   // Create a new popup WebWidget.
   virtual WebPagePopup* CreatePopup(WebLocalFrame*) { return nullptr; }
 
-  // Returns the session storage namespace id associated with this WebView.
-  virtual base::StringPiece GetSessionStorageNamespaceId() {
-    return base::StringPiece();
-  }
-
   // Misc ----------------------------------------------------------------
 
   // Called when a region of the WebView needs to be re-painted. This is only

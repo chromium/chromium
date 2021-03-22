@@ -35,7 +35,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
-#include "third_party/blink/public/web/web_view_client.h"
 #include "third_party/blink/renderer/modules/storage/cached_storage_area.h"
 #include "third_party/blink/renderer/modules/storage/inspector_dom_storage_agent.h"
 #include "third_party/blink/renderer/modules/storage/storage_area.h"
@@ -53,19 +52,17 @@ StorageNamespace::StorageNamespace(StorageController* controller,
     : controller_(controller), namespace_id_(namespace_id) {}
 
 // static
-void StorageNamespace::ProvideSessionStorageNamespaceTo(Page& page,
-                                                        WebViewClient* client) {
-  if (client) {
-    if (client->GetSessionStorageNamespaceId().empty())
-      return;
-    auto* ss_namespace =
-        StorageController::GetInstance()->CreateSessionStorageNamespace(
-            String(client->GetSessionStorageNamespaceId().data(),
-                   client->GetSessionStorageNamespaceId().size()));
-    if (!ss_namespace)
-      return;
-    ProvideTo(page, ss_namespace);
-  }
+void StorageNamespace::ProvideSessionStorageNamespaceTo(
+    Page& page,
+    const SessionStorageNamespaceId& namespace_id) {
+  if (namespace_id.empty())
+    return;
+  auto* ss_namespace =
+      StorageController::GetInstance()->CreateSessionStorageNamespace(
+          String(namespace_id.data(), namespace_id.length()));
+  if (!ss_namespace)
+    return;
+  ProvideTo(page, ss_namespace);
 }
 
 scoped_refptr<CachedStorageArea> StorageNamespace::GetCachedArea(

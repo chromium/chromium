@@ -670,7 +670,8 @@ void PrintRenderFrameHelper::PrintHeaderAndFooter(
       /*client=*/nullptr,
       /*is_hidden=*/false, /*is_inside_portal=*/false,
       /*compositing_enabled=*/false, /*opener=*/nullptr,
-      mojo::NullAssociatedReceiver(), *source_frame.GetAgentGroupScheduler());
+      mojo::NullAssociatedReceiver(), *source_frame.GetAgentGroupScheduler(),
+      /*session_storage_namespace_id=*/base::EmptyString());
   web_view->GetSettings()->SetJavaScriptEnabled(true);
 
   class HeaderAndFooterClient final : public blink::WebLocalFrameClient {
@@ -947,7 +948,8 @@ void PrepareFrameAndViewForPrint::CopySelection(
       /*is_inside_portal=*/false,
       /*compositing_enabled=*/false,
       /*opener=*/nullptr, mojo::NullAssociatedReceiver(),
-      agent_group_scheduler_);
+      agent_group_scheduler_,
+      /*session_storage_namespace_id=*/base::EmptyString());
   blink::WebView::ApplyWebPreferences(prefs, web_view);
   blink::WebLocalFrame* main_frame = blink::WebLocalFrame::CreateMainFrame(
       web_view, this, nullptr, blink::LocalFrameToken(), nullptr);

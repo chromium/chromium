@@ -269,7 +269,8 @@ WebViewPlugin::WebViewHelper::WebViewHelper(WebViewPlugin* plugin,
                       /*is_inside_portal=*/false,
                       /*compositing_enabled=*/false,
                       /*opener=*/nullptr, mojo::NullAssociatedReceiver(),
-                      *agent_group_scheduler_);
+                      *agent_group_scheduler_,
+                      /*session_storage_namespace_id=*/base::EmptyString());
   // ApplyWebPreferences before making a WebLocalFrame so that the frame sees a
   // consistent view of our preferences.
   blink::WebView::ApplyWebPreferences(preferences, web_view_);

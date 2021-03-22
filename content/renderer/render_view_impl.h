@@ -161,7 +161,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
       bool& consumed_user_gesture,
       const base::Optional<blink::WebImpression>& impression) override;
   blink::WebPagePopup* CreatePopup(blink::WebLocalFrame* creator) override;
-  base::StringPiece GetSessionStorageNamespaceId() override;
   void PrintPage(blink::WebLocalFrame* frame) override;
   bool AcceptsLoadDrops() override;
   bool CanUpdateLayout() override;
@@ -294,11 +293,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
 #endif
 
   // Misc ----------------------------------------------------------------------
-
-  // The SessionStorage namespace that we're assigned to has an ID, and that ID
-  // is passed to us upon creation.  WebKit asks for this ID upon first use and
-  // uses it whenever asking the browser process to allocate new storage areas.
-  blink::SessionStorageNamespaceId session_storage_namespace_id_;
 
   // All the registered observers.  We expect this list to be small, so vector
   // is fine.

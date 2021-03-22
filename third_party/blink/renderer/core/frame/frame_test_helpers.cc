@@ -619,7 +619,8 @@ void WebViewHelper::InitializeWebView(TestWebViewClient* web_view_client,
                       /*is_inside_portal=*/false,
                       /*compositing_enabled=*/true,
                       /*opener=*/opener, mojo::NullAssociatedReceiver(),
-                      *agent_group_scheduler_));
+                      *agent_group_scheduler_,
+                      /*session_storage_namespace_id=*/base::EmptyString()));
   // This property must be set at initialization time, it is not supported to be
   // changed afterward, and does nothing.
   web_view_->GetSettings()->SetViewportEnabled(viewport_enabled_);
