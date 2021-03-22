@@ -85,7 +85,7 @@ class ExtensionTestNotificationObserver : public content::NotificationObserver,
 
     // Notified any time an Add()ed notification is received.
     // The details of the notification are dropped.
-    base::CallbackList<void()>& callback_list() { return callback_list_; }
+    base::RepeatingClosureList& closure_list() { return closure_list_; }
 
    private:
     class ForwardingWebContentsObserver;
@@ -103,7 +103,7 @@ class ExtensionTestNotificationObserver : public content::NotificationObserver,
     void WebContentsDestroyed(content::WebContents* web_contents);
 
     content::NotificationRegistrar notification_registrar_;
-    base::CallbackList<void()> callback_list_;
+    base::RepeatingClosureList closure_list_;
     ScopedObserver<extensions::ProcessManager,
                    extensions::ProcessManagerObserver>
         process_manager_observer_{this};

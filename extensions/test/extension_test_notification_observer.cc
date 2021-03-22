@@ -80,7 +80,7 @@ void ExtensionTestNotificationObserver::NotificationSet::Observe(
     int type,
     const content::NotificationSource& source,
     const content::NotificationDetails& details) {
-  callback_list_.Notify();
+  closure_list_.Notify();
 }
 
 void ExtensionTestNotificationObserver::NotificationSet::
@@ -98,13 +98,13 @@ void ExtensionTestNotificationObserver::NotificationSet::
 void ExtensionTestNotificationObserver::NotificationSet::
     OnExtensionFrameUnregistered(const std::string& extension_id,
                                  content::RenderFrameHost* render_frame_host) {
-  callback_list_.Notify();
+  closure_list_.Notify();
 }
 
 void ExtensionTestNotificationObserver::NotificationSet::WebContentsDestroyed(
     content::WebContents* web_contents) {
   web_contents_observers_.erase(web_contents);
-  callback_list_.Notify();
+  closure_list_.Notify();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -221,7 +221,7 @@ void ExtensionTestNotificationObserver::WaitForCondition(
 
   base::CallbackListSubscription subscription;
   if (notification_set) {
-    subscription = notification_set->callback_list().Add(base::BindRepeating(
+    subscription = notification_set->closure_list().Add(base::BindRepeating(
         &ExtensionTestNotificationObserver::MaybeQuit, base::Unretained(this)));
   }
   run_loop.Run();
