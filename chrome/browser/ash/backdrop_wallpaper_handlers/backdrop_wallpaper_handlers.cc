@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/backdrop_wallpaper_handlers/backdrop_wallpaper_handlers.h"
+#include "chrome/browser/ash/backdrop_wallpaper_handlers/backdrop_wallpaper_handlers.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -10,8 +10,8 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/ash/backdrop_wallpaper_handlers/backdrop_wallpaper.pb.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/backdrop_wallpaper_handlers/backdrop_wallpaper.pb.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/common/extensions/api/wallpaper_private.h"
 #include "content/public/browser/browser_thread.h"

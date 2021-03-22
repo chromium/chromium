@@ -641,6 +641,8 @@ source_set("chromeos") {
     "../ash/authpolicy/data_pipe_utils.h",
     "../ash/authpolicy/kerberos_files_handler.cc",
     "../ash/authpolicy/kerberos_files_handler.h",
+    "../ash/backdrop_wallpaper_handlers/backdrop_wallpaper_handlers.cc",
+    "../ash/backdrop_wallpaper_handlers/backdrop_wallpaper_handlers.h",
     "../ash/borealis/borealis_app_launcher.cc",
     "../ash/borealis/borealis_app_launcher.h",
     "../ash/borealis/borealis_app_uninstaller.cc",
@@ -1606,8 +1608,6 @@ source_set("chromeos") {
     "arc/video/gpu_arc_video_service_host.h",
     "arc/wallpaper/arc_wallpaper_service.cc",
     "arc/wallpaper/arc_wallpaper_service.h",
-    "backdrop_wallpaper_handlers/backdrop_wallpaper_handlers.cc",
-    "backdrop_wallpaper_handlers/backdrop_wallpaper_handlers.h",
     "base/file_flusher.cc",
     "base/file_flusher.h",
     "base/locale_util.cc",
@@ -4371,7 +4371,7 @@ proto_library("user_activity_event_proto") {
 }
 
 proto_library("backdrop_wallpaper_proto") {
-  sources = [ "backdrop_wallpaper_handlers/backdrop_wallpaper.proto" ]
+  sources = [ "../ash/backdrop_wallpaper_handlers/backdrop_wallpaper.proto" ]
   generate_python = false
 }
 

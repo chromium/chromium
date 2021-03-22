@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/webui/settings/chromeos/wallpaper_handler.h"
 
 #include "base/bind.h"
-#include "chrome/browser/chromeos/backdrop_wallpaper_handlers/backdrop_wallpaper.pb.h"
-#include "chrome/browser/chromeos/backdrop_wallpaper_handlers/backdrop_wallpaper_handlers.h"
+#include "chrome/browser/ash/backdrop_wallpaper_handlers/backdrop_wallpaper.pb.h"
+#include "chrome/browser/ash/backdrop_wallpaper_handlers/backdrop_wallpaper_handlers.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client.h"
 #include "content/public/browser/web_ui.h"
 
