@@ -139,14 +139,8 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 }
 
 // Test that an ad with a different origin as the main page is cross origin.
-// This test is flaky on Win10, see https://crbug.com/1189868.
-#if defined(OS_WIN) || defined(OS_LINUX)
-#define MAYBE_OriginStatusMetricCross DISABLED_OriginStatusMetricCross
-#else
-#define MAYBE_OriginStatusMetricCross OriginStatusMetricCross
-#endif
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       MAYBE_OriginStatusMetricCross) {
+                       OriginStatusMetricCross) {
   // Note: Cannot navigate cross-origin without dynamically generating the URL.
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
@@ -162,9 +156,10 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
                       embedded_test_server()->GetURL(
                           "a.com", "/ads_observer/same_origin_ad.html"));
 
-  // Wait until all resource data updates are sent.
-  waiter->AddPageExpectation(
-      page_load_metrics::PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
+  // Wait until all resource data updates are sent. Note that there is one more
+  // than in the tests above due to the navigation to same_origin_ad.html being
+  // itself made in an iframe.
+  waiter->AddMinimumCompleteResourcesExpectation(4);
   waiter->Wait();
   NavigateAndWaitForCompletion(GURL(url::kAboutBlankURL), shell());
   histogram_tester.ExpectUniqueSample(kCrossOriginHistogramId,

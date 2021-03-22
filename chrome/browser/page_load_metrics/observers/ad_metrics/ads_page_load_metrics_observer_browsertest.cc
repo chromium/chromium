@@ -248,9 +248,10 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
                       embedded_test_server()->GetURL(
                           "a.com", "/ads_observer/same_origin_ad.html"));
 
-  // Wait until all resource data updates are sent.
-  waiter->AddPageExpectation(
-      page_load_metrics::PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
+  // Wait until all resource data updates are sent. Note that there is one more
+  // than in the tests above due to the navigation to same_origin_ad.html being
+  // itself made in an iframe.
+  waiter->AddMinimumCompleteResourcesExpectation(5);
   waiter->Wait();
   ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
   histogram_tester.ExpectUniqueSample(kCrossOriginHistogramId,
