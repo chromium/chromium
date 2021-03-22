@@ -5645,7 +5645,7 @@ crbug.com/1185051 fast/canvas/OffscreenCanvas-Bitmaprenderer-toBlob-worker.html 
 
 # Sheriff 2021-03-09
 crbug.com/1185121 fast/scroll-snap/animate-fling-to-snap-points-1.html [ Pass Failure ]
-crbug.com/1184157 http/tests/serviceworker/window-close-during-registration.html [ Pass Failure ]
+crbug.com/1184157 http/tests/serviceworker/window-close-during-registration.html [ Pass Failure Timeout ]
 
 # Sheriff 2021-03-11
 crbug.com/1184773 [ Mac ] virtual/synchronous_html_parser/svg/dynamic-updates/SVGFEComponentTransferElement-svgdom-intercept-prop.html [ Pass Failure ]
