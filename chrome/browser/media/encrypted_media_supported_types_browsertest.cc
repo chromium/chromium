@@ -469,9 +469,7 @@ class EncryptedMediaSupportedTypesExternalClearKeyNotEnabledTest
 class EncryptedMediaSupportedTypesWidevineTest
     : public EncryptedMediaSupportedTypesTest {
  protected:
-  EncryptedMediaSupportedTypesWidevineTest() {
-    scoped_feature_list_.InitAndEnableFeature(media::kWidevineAv1);
-  }
+  EncryptedMediaSupportedTypesWidevineTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     EncryptedMediaSupportedTypesTest::SetUpCommandLine(command_line);

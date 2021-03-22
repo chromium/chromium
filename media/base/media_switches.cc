@@ -550,19 +550,6 @@ const base::Feature kHardwareSecureDecryption{
 const base::Feature kWakeLockOptimisationHiddenMuted{
     "kWakeLockOptimisationHiddenMuted", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables encrypted AV1 support in EME requestMediaKeySystemAccess() query by
-// Widevine key system if it is also supported by the underlying Widevine CDM.
-// This feature does not affect the actual playback of encrypted AV1 if it's
-// served by the player regardless of the query result.
-const base::Feature kWidevineAv1{"WidevineAv1",
-                                 base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Forces to support encrypted AV1 in EME requestMediaKeySystemAccess() query by
-// Widevine key system even if the underlying Widevine CDM doesn't support it.
-// No effect if "WidevineAv1" feature is disabled.
-const base::Feature kWidevineAv1ForceSupportForTesting{
-    "WidevineAv1ForceSupportForTesting", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables handling of hardware media keys for controlling media.
 const base::Feature kHardwareMediaKeyHandling {
   "HardwareMediaKeyHandling",

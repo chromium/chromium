@@ -194,8 +194,6 @@ MEDIA_EXPORT extern const base::Feature kVaapiVP8Encoder;
 MEDIA_EXPORT extern const base::Feature kVaapiVP9Encoder;
 MEDIA_EXPORT extern const base::Feature kVideoBlitColorAccuracy;
 MEDIA_EXPORT extern const base::Feature kWakeLockOptimisationHiddenMuted;
-MEDIA_EXPORT extern const base::Feature kWidevineAv1;
-MEDIA_EXPORT extern const base::Feature kWidevineAv1ForceSupportForTesting;
 MEDIA_EXPORT extern const base::Feature kResolutionBasedDecoderPriority;
 MEDIA_EXPORT extern const base::Feature kForceHardwareVideoDecoders;
 MEDIA_EXPORT extern const base::Feature kForceHardwareAudioDecoders;
