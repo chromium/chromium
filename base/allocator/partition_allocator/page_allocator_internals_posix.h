@@ -286,6 +286,29 @@ void RecommitSystemPagesInternal(
 #endif
 }
 
+bool TryRecommitSystemPagesInternal(
+    void* address,
+    size_t length,
+    PageAccessibilityConfiguration accessibility,
+    PageAccessibilityDisposition accessibility_disposition) {
+  // On POSIX systems, the caller needs to simply read the memory to recommit
+  // it. However, if decommit changed the permissions, recommit has to change
+  // them back.
+  if (accessibility_disposition == PageUpdatePermissions) {
+    bool ok = TrySetSystemPagesAccess(address, length, accessibility);
+    if (!ok)
+      return false;
+  }
+
+#if defined(OS_APPLE)
+  // On macOS, to update accounting, we need to make another syscall. For more
+  // details, see https://crbug.com/823915.
+  madvise(address, length, MADV_FREE_REUSE);
+#endif
+
+  return true;
+}
+
 void DiscardSystemPagesInternal(void* address, size_t length) {
 #if defined(OS_APPLE)
   int ret = madvise(address, length, MADV_FREE_REUSABLE);
