@@ -25,14 +25,10 @@ class ParkableImageManager;
 class PLATFORM_EXPORT ParkableImage final
     : public ThreadSafeRefCounted<ParkableImage> {
  public:
-  // |initial_capacity| reserves space in the internal buffer, if you know how
-  // much data you'll be appending in advance.
-  explicit ParkableImage(size_t initial_capacity = 0);
-
-  ~ParkableImage();
-
   ParkableImage& operator=(const ParkableImage&) = delete;
   ParkableImage(const ParkableImage&) = delete;
+
+  ~ParkableImage();
 
   // Factory method to construct a ParkableImage.
   static scoped_refptr<ParkableImage> Create(size_t initial_capacity = 0);
@@ -65,8 +61,16 @@ class PLATFORM_EXPORT ParkableImage final
   bool is_frozen() const { return frozen_; }
 
  private:
+  friend class ThreadSafeRefCounted<ParkableImage>;
+  template <typename T, typename... Args>
+  friend scoped_refptr<T> base::MakeRefCounted(Args&&... args);
   friend class ParkableImageManager;
   friend class ParkableImageBaseTest;
+  friend class ParkableImageSegmentReader;
+
+  // |initial_capacity| reserves space in the internal buffer, if you know how
+  // much data you'll be appending in advance.
+  explicit ParkableImage(size_t initial_capacity = 0);
 
   scoped_refptr<SegmentReader> GetSegmentReader() LOCKS_EXCLUDED(lock_);
 

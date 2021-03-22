@@ -133,6 +133,38 @@ struct RWBuffer::BufferHead {
   }
 };
 
+size_t RWBuffer::ROIter::size() const {
+  if (!block_)
+    return 0;
+
+  return std::min(block_->capacity_, remaining_);
+}
+
+RWBuffer::ROIter::ROIter(RWBuffer* rw_buffer, size_t available)
+    : rw_buffer_(rw_buffer), remaining_(available) {
+  DCHECK(rw_buffer_);
+  block_ = &rw_buffer_->head_->block_;
+}
+
+const void* RWBuffer::ROIter::data() const {
+  return remaining_ ? block_->startData() : nullptr;
+}
+
+bool RWBuffer::ROIter::Next() {
+  if (remaining_) {
+    size_t current_size = size();
+    DCHECK_LE(current_size, remaining_);
+    remaining_ -= current_size;
+    if (remaining_ == 0) {
+      block_ = nullptr;
+    } else {
+      block_ = block_->next_;
+      DCHECK(block_);
+    }
+  }
+  return remaining_ != 0;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // The reader can only access block.capacity_ (which never changes), and cannot
 // access block.used_, which may be updated by the writer.

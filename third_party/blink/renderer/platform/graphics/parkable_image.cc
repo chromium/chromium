@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/parkable_image.h"
 
 #include "base/debug/stack_trace.h"
+#include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -87,6 +88,9 @@ void AsanUnpoisonBuffer(RWBuffer* rw_buffer) {
 
 }  // namespace
 
+const base::Feature kUseParkableImageSegmentReader{
+    "UseParkableImageSegmentReader", base::FEATURE_DISABLED_BY_DEFAULT};
+
 void ParkableImage::Append(WTF::SharedBuffer* buffer, size_t offset) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   MutexLocker lock(lock_);
@@ -118,13 +122,23 @@ scoped_refptr<SharedBuffer> ParkableImage::Data() {
 
 scoped_refptr<SegmentReader> ParkableImage::GetSegmentReader() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  MutexLocker lock(lock_);
-  Unpark();
-  DCHECK(rw_buffer_);
-  scoped_refptr<ROBuffer> ro_buffer(rw_buffer_->MakeROBufferSnapshot());
-  scoped_refptr<SegmentReader> segment_reader =
-      SegmentReader::CreateFromROBuffer(std::move(ro_buffer));
-  return segment_reader;
+
+  if (base::FeatureList::IsEnabled(kUseParkableImageSegmentReader)) {
+    return SegmentReader::CreateFromParkableImage(
+        scoped_refptr<ParkableImage>(this));
+  } else {
+    MutexLocker lock(lock_);
+    Unpark();
+    DCHECK(rw_buffer_);
+    // The locking and unlocking here is only needed to make sure ASAN unpoisons
+    // things correctly here.
+    Lock();
+    scoped_refptr<ROBuffer> ro_buffer(rw_buffer_->MakeROBufferSnapshot());
+    scoped_refptr<SegmentReader> segment_reader =
+        SegmentReader::CreateFromROBuffer(std::move(ro_buffer));
+    Unlock();
+    return segment_reader;
+  }
 }
 
 bool ParkableImage::CanParkNow() const {

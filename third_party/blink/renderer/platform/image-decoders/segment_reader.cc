@@ -9,6 +9,7 @@
 #include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/platform/graphics/parkable_image.h"
 #include "third_party/blink/renderer/platform/graphics/rw_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -16,6 +17,46 @@
 #include "third_party/skia/include/core/SkData.h"
 
 namespace blink {
+
+namespace {
+
+// Helpers for ROBufferSegmentReader and ParkableImageSegmentReader
+template <class Iter>
+size_t BufferGetSomeData(Iter& iter,
+                         size_t& position_of_block,
+                         const char*& data,
+                         size_t position) {
+  for (size_t size_of_block = iter.size(); size_of_block != 0;
+       position_of_block += size_of_block, size_of_block = iter.size()) {
+    DCHECK_LE(position_of_block, position);
+
+    if (position_of_block + size_of_block > position) {
+      // |position| is in this block.
+      const size_t position_in_block = position - position_of_block;
+      data = static_cast<const char*>(iter.data()) + position_in_block;
+      return size_of_block - position_in_block;
+    }
+
+    // Move to next block.
+    if (!iter.Next())
+      break;
+  }
+  return 0;
+}
+
+template <class Iter>
+sk_sp<SkData> BufferCopyAsSkData(Iter iter, size_t available) {
+  sk_sp<SkData> data = SkData::MakeUninitialized(available);
+  char* dst = static_cast<char*>(data->writable_data());
+  do {
+    size_t size = iter.size();
+    memcpy(dst, iter.data(), size);
+    dst += size;
+  } while (iter.Next());
+  return data;
+}
+
+}  // namespace
 
 // SharedBufferSegmentReader ---------------------------------------------------
 
@@ -141,27 +182,15 @@ size_t ROBufferSegmentReader::GetSomeData(const char*& data,
     position_of_block_ = 0;
   }
 
-  for (size_t size_of_block = iter_.size(); size_of_block != 0;
-       position_of_block_ += size_of_block, size_of_block = iter_.size()) {
-    DCHECK_LE(position_of_block_, position);
+  size_t size = BufferGetSomeData(iter_, position_of_block_, data, position);
 
-    if (position_of_block_ + size_of_block > position) {
-      // |position| is in this block.
-      const size_t position_in_block = position - position_of_block_;
-      data = static_cast<const char*>(iter_.data()) + position_in_block;
-      return size_of_block - position_in_block;
-    }
-
-    // Move to next block.
-    if (!iter_.Next()) {
-      // Reset to the beginning, so future calls can succeed.
-      iter_.Reset(ro_buffer_.get());
-      position_of_block_ = 0;
-      return 0;
-    }
+  if (!iter_.data()) {
+    // Reset to the beginning, so future calls can succeed.
+    iter_.Reset(ro_buffer_.get());
+    position_of_block_ = 0;
   }
 
-  return 0;
+  return size;
 }
 
 static void UnrefROBuffer(const void* ptr, void* context) {
@@ -184,14 +213,74 @@ sk_sp<SkData> ROBufferSegmentReader::GetAsSkData() const {
                                 ro_buffer_.get());
   }
 
-  sk_sp<SkData> data = SkData::MakeUninitialized(ro_buffer_->size());
-  char* dst = static_cast<char*>(data->writable_data());
-  do {
-    size_t size = iter.size();
-    memcpy(dst, iter.data(), size);
-    dst += size;
-  } while (iter.Next());
-  return data;
+  return BufferCopyAsSkData(iter, ro_buffer_->size());
+}
+
+// ParkableImageSegmentReader
+
+class ParkableImageSegmentReader : public SegmentReader {
+ public:
+  explicit ParkableImageSegmentReader(scoped_refptr<ParkableImage> image);
+  ~ParkableImageSegmentReader() override;
+  size_t size() const override;
+  size_t GetSomeData(const char*& data, size_t position) const override;
+  sk_sp<SkData> GetAsSkData() const override;
+
+ private:
+  scoped_refptr<ParkableImage> parkable_image_;
+  size_t available_;
+};
+
+ParkableImageSegmentReader::ParkableImageSegmentReader(
+    scoped_refptr<ParkableImage> image)
+    : parkable_image_(std::move(image)), available_(parkable_image_->size()) {
+  // TODO(thiabaud): make ParkableImage only be locked when needed.
+  // Currently, we take a conservative approach here and lock for the full
+  // lifetime of the SegmentReader, but most of the time this is not needed
+  // and we can simply lock closer to when we need to read the data from the
+  // ParkableImage.
+  MutexLocker lock(parkable_image_->lock_);
+  parkable_image_->Unpark();
+  DCHECK(parkable_image_->rw_buffer_);
+  parkable_image_->Lock();
+}
+
+ParkableImageSegmentReader::~ParkableImageSegmentReader() {
+  MutexLocker lock(parkable_image_->lock_);
+  parkable_image_->Unlock();
+}
+
+size_t ParkableImageSegmentReader::size() const {
+  return available_;
+}
+
+size_t ParkableImageSegmentReader::GetSomeData(const char*& data,
+                                               size_t position) const {
+  if (!parkable_image_)
+    return 0;
+
+  MutexLocker lock(parkable_image_->lock_);
+  parkable_image_->Unpark();
+
+  RWBuffer::ROIter iter(parkable_image_->rw_buffer_.get(), available_);
+  size_t position_of_block = 0;
+
+  return BufferGetSomeData(iter, position_of_block, data, position);
+}
+
+sk_sp<SkData> ParkableImageSegmentReader::GetAsSkData() const {
+  if (!parkable_image_)
+    return nullptr;
+
+  MutexLocker lock(parkable_image_->lock_);
+  parkable_image_->Unpark();
+
+  RWBuffer::ROIter iter(parkable_image_->rw_buffer_.get(), available_);
+
+  // TODO(thiabaud): It should be possible to do this without the extra copy in
+  // the case that everything is already in a single allocation. Double-check
+  // this and fix it to match ROBufferSegmentReader.
+  return BufferCopyAsSkData(iter, available_);
 }
 
 // SegmentReader ---------------------------------------------------------------
@@ -209,6 +298,11 @@ scoped_refptr<SegmentReader> SegmentReader::CreateFromSkData(
 scoped_refptr<SegmentReader> SegmentReader::CreateFromROBuffer(
     scoped_refptr<ROBuffer> buffer) {
   return base::AdoptRef(new ROBufferSegmentReader(std::move(buffer)));
+}
+
+scoped_refptr<SegmentReader> SegmentReader::CreateFromParkableImage(
+    scoped_refptr<ParkableImage> image) {
+  return base::AdoptRef(new ParkableImageSegmentReader(std::move(image)));
 }
 
 }  // namespace blink
