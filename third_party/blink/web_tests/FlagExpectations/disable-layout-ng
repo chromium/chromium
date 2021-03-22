@@ -959,6 +959,7 @@ crbug.com/591099 external/wpt/css/css-flexbox/abspos/position-absolute-015.html 
 
 ### external/wpt/css/css-grid/
 crbug.com/591099 external/wpt/css/css-grid/grid-items/percentage-size-indefinite-replaced.html [ Failure ]
+crbug.com/667785 external/wpt/css/css-grid/table-grid-item-005.html [ Failure ]
 
 ### external/wpt/css/css-pseudo/
 crbug.com/591099 external/wpt/css/css-pseudo/active-selection-011.html [ Failure ]

@@ -83,7 +83,10 @@ LayoutUnit ComputeEmptyTableInlineSize(
     const NGBoxStrut& table_border_padding,
     const bool has_collapsed_borders) {
   // If table has a css inline size, use that.
-  if (space.IsFixedInlineSize() || !table_style.LogicalWidth().IsAuto() ||
+  if (space.IsFixedInlineSize() ||
+      (space.StretchInlineSizeIfAuto() &&
+       table_style.LogicalWidth().IsAuto()) ||
+      !table_style.LogicalWidth().IsAuto() ||
       !table_style.LogicalMinWidth().IsAuto()) {
     return assignable_table_inline_size + undistributable_space;
   }
