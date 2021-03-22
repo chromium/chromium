@@ -67,9 +67,8 @@ const gfx::VectorIcon& SmsRemoteFetcherUiController::GetVectorIcon() const {
 
 std::u16string
 SmsRemoteFetcherUiController::GetTextForTooltipAndAccessibleName() const {
-  const std::string device_name = GetDevices().front()->client_name();
   return l10n_util::GetStringFUTF16(IDS_OMNIBOX_TOOLTIP_SMS_REMOTE_FETCHER,
-                                    base::UTF8ToUTF16(device_name));
+                                    base::UTF8ToUTF16(last_device_name_));
 }
 
 SharingFeatureName SmsRemoteFetcherUiController::GetFeatureMetricsPrefix()
@@ -121,6 +120,7 @@ void SmsRemoteFetcherUiController::FetchRemoteSms(const url::Origin& origin,
   // Sends to the first device that has the capability enabled. User cannot
   // select device because the site sends out the SMS asynchronously.
   const std::unique_ptr<syncer::DeviceInfo>& device = devices.front();
+  last_device_name_ = device->client_name();
   chrome_browser_sharing::SharingMessage request;
 
   request.mutable_sms_fetch_request()->set_origin(origin.Serialize());

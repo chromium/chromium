@@ -71,6 +71,8 @@ class SmsRemoteFetcherUiController
  private:
   friend class content::WebContentsUserData<SmsRemoteFetcherUiController>;
 
+  std::string last_device_name_;
+
   base::WeakPtrFactory<SmsRemoteFetcherUiController> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
