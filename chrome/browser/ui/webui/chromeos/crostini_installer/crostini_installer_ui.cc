@@ -42,6 +42,7 @@ void AddStringResources(content::WebUIDataSource* source) {
       {"back", IDS_CROSTINI_INSTALLER_BACK_BUTTON},
       {"install", IDS_CROSTINI_INSTALLER_INSTALL_BUTTON},
       {"retry", IDS_CROSTINI_INSTALLER_RETRY_BUTTON},
+      {"settings", IDS_CROSTINI_INSTALLER_SETTINGS_BUTTON},
       {"close", IDS_APP_CLOSE},
       {"cancel", IDS_APP_CANCEL},
       {"learnMore", IDS_LEARN_MORE},
@@ -50,6 +51,7 @@ void AddStringResources(content::WebUIDataSource* source) {
       {"installingTitle", IDS_CROSTINI_INSTALLER_INSTALLING},
       {"cancelingTitle", IDS_CROSTINI_INSTALLER_CANCELING_TITLE},
       {"errorTitle", IDS_CROSTINI_INSTALLER_ERROR_TITLE},
+      {"needUpdateTitle", IDS_CROSTINI_INSTALLER_NEED_UPDATE_TITLE},
 
       {"loadTerminaError", IDS_CROSTINI_INSTALLER_LOAD_TERMINA_ERROR},
       {"createDiskImageError", IDS_CROSTINI_INSTALLER_CREATE_DISK_IMAGE_ERROR},
@@ -104,6 +106,10 @@ void AddStringResources(content::WebUIDataSource* source) {
   source->AddString("learnMoreUrl",
                     std::string{chrome::kLinuxAppsLearnMoreURL} +
                         "&b=" + base::SysInfo::GetLsbReleaseBoard());
+
+  source->AddString("needUpdateError",
+                    l10n_util::GetStringFUTF8(
+                        IDS_CROSTINI_INSTALLER_NEED_UPDATE_ERROR, device_name));
 
   source->AddString(
       "minimumFreeSpaceUnmetError",

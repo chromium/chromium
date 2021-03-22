@@ -127,10 +127,11 @@ void TerminaInstaller::OnInstallDlc(
                        is_initial_install),
         base::TimeDelta::FromSeconds(5));
     return;
-  } else if (result.error == dlcservice::kErrorNeedReboot) {
+  } else if (result.error == dlcservice::kErrorNeedReboot ||
+             result.error == dlcservice::kErrorNoImageFound) {
     LOG(ERROR)
-        << "Failed to install termina-dlc because of a pending OS update";
-    response = InstallResult::NeedReboot;
+        << "Failed to install termina-dlc because the OS must be updated";
+    response = InstallResult::NeedUpdate;
   } else {
     if (content::GetNetworkConnectionTracker()->IsOffline()) {
       LOG(ERROR) << "Failed to install termina-dlc while offline, assuming "

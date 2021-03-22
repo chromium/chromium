@@ -4399,6 +4399,9 @@
   <message name="IDS_CROSTINI_INSTALLER_INSTALL_BUTTON" desc="Label for the button in the Crostini installer dialog to begin installing Linux.">
     Install
   </message>
+  <message name="IDS_CROSTINI_INSTALLER_SETTINGS_BUTTON" desc="Label for the button in the Crostini installer dialog to open the settings app.">
+    Open Settings
+  </message>
   <message name="IDS_CROSTINI_INSTALLER_INSTALLING" desc="Text shown in the Crostini installer dialog while  Linux is installing.">
     Installing Linux...
   </message>
@@ -4458,6 +4461,12 @@
   </message>
   <message name="IDS_CROSTINI_INSTALLER_LOAD_TERMINA_ERROR" desc="Text shown in the Crostini installer dialog when the VM component fails to load">
     Error downloading the virtual machine. Please try again.
+  </message>
+  <message name="IDS_CROSTINI_INSTALLER_NEED_UPDATE_TITLE" desc="Title shown in the Crostini installer dialog when the VM fails to install because the device must be updated">
+    Chrome OS update required
+  </message>
+  <message name="IDS_CROSTINI_INSTALLER_NEED_UPDATE_ERROR" desc="Text shown in the Crostini installer dialog when the VM fails to install because the device must be updated first">
+    Error downloading the virtual machine. Please update your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> and try again.
   </message>
   <message name="IDS_CROSTINI_INSTALLER_START_CONCIERGE_ERROR" desc="Text shown in the Crostini installer dialog when the VM service fails to start">
     Error starting the virtual machine service. Please try again.
