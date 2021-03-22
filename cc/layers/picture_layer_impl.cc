@@ -98,25 +98,10 @@ gfx::Rect SafeIntersectRects(const gfx::Rect& one, const gfx::Rect& two) {
 
 PictureLayerImpl::PictureLayerImpl(LayerTreeImpl* tree_impl, int id)
     : LayerImpl(tree_impl, id, /*will_always_push_properties=*/true),
-      twin_layer_(nullptr),
-      tilings_(CreatePictureLayerTilingSet()),
-      ideal_page_scale_(0.f),
-      ideal_device_scale_(0.f),
-      ideal_source_scale_(0.f),
-      ideal_contents_scale_(0.f),
-      raster_page_scale_(0.f),
-      raster_device_scale_(0.f),
-      raster_source_scale_(0.f),
-      raster_contents_scale_(0.f),
-      low_res_raster_contents_scale_(0.f),
       is_backdrop_filter_mask_(false),
       was_screen_space_transform_animating_(false),
       only_used_low_res_last_append_quads_(false),
-      nearest_neighbor_(false),
-      lcd_text_disallowed_reason_(LCDTextDisallowedReason::kNone),
-      directly_composited_image_size_(base::nullopt),
-      directly_composited_image_initial_raster_scale_(0.f),
-      tile_size_calculator_(this) {
+      nearest_neighbor_(false) {
   layer_tree_impl()->RegisterPictureLayerImpl(this);
 }
 
