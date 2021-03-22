@@ -505,6 +505,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4561979708150884304">Walang koneksyon</translation>
 <translation id="4565377596337484307">Itago ang password</translation>
 <translation id="4572422548854449519">Mag-sign in sa pinamamahalaang account</translation>
+<translation id="4576892426230499203">Sumubok ng ibang opsyon para sa pag-verify</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{# minuto ang nakalipas}one{# minuto ang nakalipas}other{# na minuto ang nakalipas}}</translation>
 <translation id="4587589328781138893">Mga Site</translation>
 <translation id="4594952190837476234">Naka-offline ang page na ito mula noong <ph name="CREATION_TIME" /> at maaaring iba ito sa online na bersyon.</translation>
@@ -777,6 +778,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6316139424528454185">Hindi sinusuportahan ang bersyon ng Android</translation>
 <translation id="6324034347079777476">Naka-disable ang pag-sync ng Android system</translation>
 <translation id="6324977638108296054">Hindi makagawa ng link sa highlight</translation>
+<translation id="6324997754869598316">(Error <ph name="ERROR_CODE" />)</translation>
 <translation id="6333140779060797560">Ibahagi sa pamamagitan ng <ph name="APPLICATION" /></translation>
 <translation id="6337234675334993532">Pag-encrypt</translation>
 <translation id="6341580099087024258">Itanong kung saan magse-save ng mga file</translation>
@@ -793,6 +795,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> sa <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">I-edit ang bookmark</translation>
 <translation id="6406506848690869874">Pag-sync</translation>
+<translation id="6407224748847589805">Hindi makakonekta sa iyong computer. Sumubok ng ibang opsyon para sa pag-verify.</translation>
 <translation id="6410404864818553978">Basic na data ng paggamit</translation>
 <translation id="6410883413783534063">Magbukas ng mga tab para mabisita ang iba't ibang page nang sabay-sabay</translation>
 <translation id="6412673304250309937">Sinusuri ang mga URL sa pamamagitan ng listahan ng mga hindi ligtas na site na naka-store sa Chrome. Kung susubukan ng site na nakawin ang iyong password, o kapag nag-download ka ng mapaminsalang file, posible ring magpadala ang Chrome sa Ligtas na Pag-browse ng mga URL, kabilang ang ilang content ng page</translation>

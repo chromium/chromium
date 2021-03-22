@@ -2499,6 +2499,7 @@
 <translation id="4450222911834151460">このポリシーを設定した場合、指定したすべてのデータタイプが Google Sync とローミング プロファイルの同期から除外されます。これにより、ローミング プロファイルのサイズを抑えたり、Google Sync サーバーにアップロードされるデータのタイプを制限したりできます。
 
       現在、このポリシーで指定できるデータタイプは次のとおりです: "bookmarks"、"readingList"、"preferences"、"passwords"、"autofill"、"themes"、"typedUrls"、"extensions"、"apps"、"tabs"、"wifiConfigurations"。データタイプの名前では大文字と小文字が区別されます。</translation>
+<translation id="4452653762766030431">Chrome OS でネットワーク ファイル共有を使用できるかどうかを管理する</translation>
 <translation id="445270821089253489">レポートを送信するユーザーとデバイスの情報の種類を制御します。</translation>
 <translation id="4453913621209182880">背景のグラフィックありの印刷のみを許可する</translation>
 <translation id="4454820008017317557"><ph name="PRODUCT_NAME" /> ツールバー アイコンを表示する</translation>
@@ -2729,6 +2730,13 @@
       このポリシーを未設定のままにするか、無効な値を指定した場合、システム機能の無効化モードは「blocked」になります。</translation>
 <translation id="4835470005923546373">背景のグラフィックの印刷モードをデフォルトで無効にする</translation>
 <translation id="4835622243021053389">NTLMv2 認証を有効にする。</translation>
+<translation id="4846678215172543001">このポリシーでは、偽 URL の警告を表示しないサイトを指定できます。通常、偽 URL の警告は、ユーザーがよく使用しているサイトになりすましていると <ph name="PRODUCT_NAME" /> で判断したサイトに対して表示されます。
+
+       このポリシーを有効にして、ドメインを 1 つ以上指定した場合、ユーザーがそのドメインのページにアクセスしても、偽 URL の警告ページは表示されません。
+
+       こポリシーを未設定のままにした場合や空白のリストを指定した場合、ユーザーがアクセスする任意のサイトで警告が表示されます。
+
+       警告は、指定したドメインと完全に一致する、または一部が一致するホストについて表示されなくなります。たとえば、リストに「foo.example.com」または「example.com」と指定した場合、「https://foo.example.com/bar」の URL について警告は表示されません。</translation>
 <translation id="485419696366295465"><ph name="BOREALIS_NAME" /> サブシステムに関連するポリシーを制御します。</translation>
 <translation id="4855636880814771207">このポリシーを有効に設定するか未設定のままにした場合、ユーザーは Bluetooth をオンまたはオフにすることができます。
 

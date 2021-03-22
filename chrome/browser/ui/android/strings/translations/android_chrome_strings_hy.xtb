@@ -85,7 +85,7 @@
 <translation id="1571304935088121812">Պատճենել օգտանունը</translation>
 <translation id="1592864538817356322">Սովորական պաշտպանություն՝</translation>
 <translation id="1612196535745283361">Սարքեր գտնելու համար Chrome-ին անհրաժեշտ է տեղադրության հասանելիություն: Տեղադրության հասանելիությունն <ph name="BEGIN_LINK" />այս սարքում անջատված է<ph name="END_LINK" />։</translation>
-<translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Հեռացնել ընտրված 1 տարրը}one{Remove # selected items}other{Հեռացնել ընտրված # տարրերը}}</translation>
+<translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Հեռացնել ընտրված 1 տարրը}one{Հեռացնել ընտրված # տարրը}other{Հեռացնել ընտրված # տարրերը}}</translation>
 <translation id="1641113438599504367">Անվտանգ դիտարկում</translation>
 <translation id="164269334534774161">Դուք դիտում եք տվյալ էջի <ph name="CREATION_TIME" />-ի անցանց պատճենը</translation>
 <translation id="1644574205037202324">Պատմություն</translation>
@@ -931,7 +931,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="7340958967809483333">Discover-ի կարգավորումներ</translation>
 <translation id="7352651011704765696">Ինչ-որ սխալ տեղի ունեցավ</translation>
 <translation id="7352939065658542140">ՏԵՍԱՆՅՈՒԹ</translation>
-<translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Հրապարակել ընտրված 1 տարրը}one{Share # selected items}other{Հրապարակել ընտրված # տարրերը}}</translation>
+<translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Հրապարակել ընտրված 1 տարրը}one{Հրապարակել ընտրված # տարրը}other{Հրապարակել ընտրված # տարրերը}}</translation>
 <translation id="7359002509206457351">Վճարման եղանակների հասանելիություն</translation>
 <translation id="7375125077091615385">Տեսակ`</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" /></translation>
