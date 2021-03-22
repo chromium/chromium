@@ -19,6 +19,10 @@
 
 class GURL;
 
+namespace ui {
+struct AXTreeUpdate;
+}
+
 namespace content {
 
 class WebContentsImpl;
@@ -294,6 +298,10 @@ class CONTENT_EXPORT WebContentsAndroid {
   void SelectWordAroundCaretAck(bool did_select,
                                 int start_adjust,
                                 int end_adjust);
+  // Walks over the AXTreeUpdate and creates a light weight snapshot.
+  void AXTreeSnapshotCallback(
+      const base::android::ScopedJavaGlobalRef<jobject>& callback,
+      const ui::AXTreeUpdate& result);
 
   WebContentsImpl* web_contents_;
 
