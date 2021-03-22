@@ -142,18 +142,33 @@ MessagePumpKqueue::MessagePumpKqueue()
 
 MessagePumpKqueue::~MessagePumpKqueue() {}
 
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+
 void MessagePumpKqueue::Run(Delegate* delegate) {
   AutoReset<bool> reset_keep_running(&keep_running_, true);
+
+  V8RecordReplayAssert("MessagePumpKqueue::Run Start %d", keep_running_);
 
   while (keep_running_) {
     mac::ScopedNSAutoreleasePool pool;
 
+    V8RecordReplayAssert("MessagePumpKqueue::Run #1");
+
     bool do_more_work = DoInternalWork(nullptr);
+
+    V8RecordReplayAssert("MessagePumpKqueue::Run #2 %d %d", do_more_work, keep_running_);
+
     if (!keep_running_)
       break;
 
     Delegate::NextWorkInfo next_work_info = delegate->DoWork();
+
+    V8RecordReplayAssert("MessagePumpKqueue::Run #2.0 %d", next_work_info.is_immediate());
+
     do_more_work |= next_work_info.is_immediate();
+
+    V8RecordReplayAssert("MessagePumpKqueue::Run #2.1 %d %d", do_more_work, keep_running_);
+
     if (!keep_running_)
       break;
 
@@ -161,11 +176,16 @@ void MessagePumpKqueue::Run(Delegate* delegate) {
       continue;
 
     do_more_work |= delegate->DoIdleWork();
+
+    V8RecordReplayAssert("MessagePumpKqueue::Run #2.2 %d %d", do_more_work, keep_running_);
+
     if (!keep_running_)
       break;
 
     if (do_more_work)
       continue;
+
+    V8RecordReplayAssert("MessagePumpKqueue::Run #3");
 
     DoInternalWork(&next_work_info);
   }

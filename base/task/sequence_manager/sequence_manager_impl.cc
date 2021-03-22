@@ -32,6 +32,12 @@
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 
+#ifdef OS_MAC
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+#else
+static void V8RecordReplayAssert(const char* format, ...) {}
+#endif
+
 namespace base {
 namespace sequence_manager {
 namespace {
@@ -591,11 +597,16 @@ void SequenceManagerImpl::LogTaskDebugInfo(
 Task* SequenceManagerImpl::SelectNextTaskImpl(SelectTaskOption option) {
   CHECK(Validate());
 
+  V8RecordReplayAssert("SequenceManagerImpl::SelectNextTaskImpl Start");
+
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("sequence_manager"),
                "SequenceManagerImpl::SelectNextTask");
 
   ReloadEmptyWorkQueues();
+
+  V8RecordReplayAssert("SequenceManagerImpl::SelectNextTaskImpl #1");
+
   LazyNow lazy_now(controller_->GetClock());
   MoveReadyDelayedTasksToWorkQueues(&lazy_now);
 
@@ -607,8 +618,13 @@ Task* SequenceManagerImpl::SelectNextTaskImpl(SelectTaskOption option) {
   }
 
   while (true) {
+    V8RecordReplayAssert("SequenceManagerImpl::SelectNextTaskImpl #2");
+
     internal::WorkQueue* work_queue =
         main_thread_only().selector.SelectWorkQueueToService(option);
+
+    V8RecordReplayAssert("SequenceManagerImpl::SelectNextTaskImpl #3");
+
     TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID(
         TRACE_DISABLED_BY_DEFAULT("sequence_manager.debug"), "SequenceManager",
         this,
@@ -686,13 +702,18 @@ TimeDelta SequenceManagerImpl::DelayTillNextTask(
     SelectTaskOption option) const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
 
+  V8RecordReplayAssert("SequenceManagerImpl::DelayTillNextTask Start");
+
   if (auto priority =
           main_thread_only().selector.GetHighestPendingPriority(option)) {
     // If the selector has non-empty queues we trivially know there is immediate
     // work to be done. However we may want to yield to native work if it is
     // more important.
-    if (UNLIKELY(!ShouldRunTaskOfPriority(*priority)))
+    if (UNLIKELY(!ShouldRunTaskOfPriority(*priority))) {
+      V8RecordReplayAssert("SequenceManagerImpl::DelayTillNextTask #1");
       return GetDelayTillNextDelayedTask(lazy_now, option);
+    }
+    V8RecordReplayAssert("SequenceManagerImpl::DelayTillNextTask #2");
     return TimeDelta();
   }
 
@@ -703,8 +724,11 @@ TimeDelta SequenceManagerImpl::DelayTillNextTask(
 
   if (auto priority =
           main_thread_only().selector.GetHighestPendingPriority(option)) {
-    if (UNLIKELY(!ShouldRunTaskOfPriority(*priority)))
+    if (UNLIKELY(!ShouldRunTaskOfPriority(*priority))) {
+      V8RecordReplayAssert("SequenceManagerImpl::DelayTillNextTask #3");
       return GetDelayTillNextDelayedTask(lazy_now, option);
+    }
+    V8RecordReplayAssert("SequenceManagerImpl::DelayTillNextTask #4");
     return TimeDelta();
   }
 
@@ -712,7 +736,9 @@ TimeDelta SequenceManagerImpl::DelayTillNextTask(
   // call MoveReadyDelayedTasksToWorkQueues because it's assumed
   // DelayTillNextTask will return TimeDelta>() if the delayed task is due to
   // run now.
-  return GetDelayTillNextDelayedTask(lazy_now, option);
+  TimeDelta rv = GetDelayTillNextDelayedTask(lazy_now, option);
+  V8RecordReplayAssert("SequenceManagerImpl::DelayTillNextTask #5 %.2f", rv.InSecondsF());
+  return rv;
 }
 
 TimeDelta SequenceManagerImpl::GetDelayTillNextDelayedTask(

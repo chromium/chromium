@@ -174,6 +174,8 @@ void MessagePumpCFRunLoopBase::ScheduleDelayedWork(
   ScheduleDelayedWorkImpl(delayed_work_time - TimeTicks::Now());
 }
 
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+
 void MessagePumpCFRunLoopBase::ScheduleDelayedWorkImpl(TimeDelta delta) {
   // The tolerance needs to be set before the fire date or it may be ignored.
   if (timer_slack_ == TIMER_SLACK_MAXIMUM) {
@@ -181,6 +183,7 @@ void MessagePumpCFRunLoopBase::ScheduleDelayedWorkImpl(TimeDelta delta) {
   } else {
     CFRunLoopTimerSetTolerance(delayed_work_timer_, 0);
   }
+  V8RecordReplayAssert("ScheduleDelayedWorkImpl %.2f", delta.InSecondsF());
   CFRunLoopTimerSetNextFireDate(
       delayed_work_timer_, CFAbsoluteTimeGetCurrent() + delta.InSecondsF());
 }
@@ -598,12 +601,17 @@ MessagePumpNSRunLoop::~MessagePumpNSRunLoop() {
   CFRelease(quit_source_);
 }
 
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+
 void MessagePumpNSRunLoop::DoRun(Delegate* delegate) {
+  V8RecordReplayAssert("MessagePumpNSRunLoop::DoRun Start");
   while (keep_running()) {
     // NSRunLoop manages autorelease pools itself.
+    V8RecordReplayAssert("MessagePumpNSRunLoop::DoRun #1");
     [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
                              beforeDate:[NSDate distantFuture]];
   }
+  V8RecordReplayAssert("MessagePumpNSRunLoop::Done");
 }
 
 bool MessagePumpNSRunLoop::DoQuit() {

@@ -12,7 +12,7 @@
 
 namespace base {
 
-Lock::Lock() : lock_() {
+Lock::Lock(const char* ordered_name) : lock_(ordered_name) {
 }
 
 Lock::~Lock() {

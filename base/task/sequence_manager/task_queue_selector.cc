@@ -225,25 +225,39 @@ void TaskQueueSelector::SetTaskQueueSelectorObserver(Observer* observer) {
   task_queue_selector_observer_ = observer;
 }
 
+#ifdef OS_MAC
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+#else
+static void V8RecordReplayAssert(const char* format, ...) {}
+#endif
+
 Optional<TaskQueue::QueuePriority> TaskQueueSelector::GetHighestPendingPriority(
     SelectTaskOption option) const {
+  V8RecordReplayAssert("TaskQueueSelector::GetHighestPendingPriority Start %d", option);
+
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  if (!active_priority_tracker_.HasActivePriority())
+  if (!active_priority_tracker_.HasActivePriority()) {
+    V8RecordReplayAssert("TaskQueueSelector::GetHighestPendingPriority #1");
     return nullopt;
+  }
 
   TaskQueue::QueuePriority highest_priority =
       active_priority_tracker_.HighestActivePriority();
-  if (option != SelectTaskOption::kSkipDelayedTask)
+  if (option != SelectTaskOption::kSkipDelayedTask) {
+    V8RecordReplayAssert("TaskQueueSelector::GetHighestPendingPriority #2 %d", highest_priority);
     return highest_priority;
+  }
 
   for (; highest_priority != TaskQueue::kQueuePriorityCount;
        highest_priority = NextPriority(highest_priority)) {
     if (active_priority_tracker_.IsActive(highest_priority) &&
         !immediate_work_queue_sets_.IsSetEmpty(highest_priority)) {
+      V8RecordReplayAssert("TaskQueueSelector::GetHighestPendingPriority #3 %d", highest_priority);
       return highest_priority;
     }
   }
 
+  V8RecordReplayAssert("TaskQueueSelector::GetHighestPendingPriority #4");
   return nullopt;
 }
 
@@ -263,6 +277,8 @@ TaskQueueSelector::ActivePriorityTracker::ActivePriorityTracker() = default;
 void TaskQueueSelector::ActivePriorityTracker::SetActive(
     TaskQueue::QueuePriority priority,
     bool is_active) {
+  V8RecordReplayAssert("ActivePriorityTracker::SetActive %d %d", priority, is_active);
+
   DCHECK_LT(priority, TaskQueue::QueuePriority::kQueuePriorityCount);
   DCHECK_NE(IsActive(priority), is_active);
   if (is_active) {

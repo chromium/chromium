@@ -14,6 +14,10 @@
 #include "base/synchronization/synchronization_buildflags.h"
 #include "build/build_config.h"
 
+#ifdef OS_MAC
+#include <dlfcn.h>
+#endif
+
 namespace base {
 namespace internal {
 
@@ -54,7 +58,31 @@ std::string SystemErrorCodeToString(int error_code) {
 #define PRIORITY_INHERITANCE_LOCKS_POSSIBLE() 1
 #endif
 
-LockImpl::LockImpl() {
+#ifdef OS_MAC
+
+static void (*gAddOrderedPthreadMutexFn)(const char*, pthread_mutex_t*);
+
+static void RecordReplayAddOrderedPthreadMutex(const char* name,
+                                               pthread_mutex_t* mutex) {
+  if (!gAddOrderedPthreadMutexFn) {
+    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayAddOrderedPthreadMutex");
+    if (!fnptr) {
+      return;
+    }
+    gAddOrderedPthreadMutexFn = reinterpret_cast<void(*)(const char*, pthread_mutex_t*)>(fnptr);
+  }
+
+  gAddOrderedPthreadMutexFn(name, mutex);
+}
+
+#else
+
+static void RecordReplayAddOrderedPthreadMutex(const char* name,
+                                               pthread_mutex_t* mutex) {}
+
+#endif
+
+LockImpl::LockImpl(const char* ordered_name) {
   pthread_mutexattr_t mta;
   int rv = pthread_mutexattr_init(&mta);
   DCHECK_EQ(rv, 0) << ". " << SystemErrorCodeToString(rv);
@@ -73,6 +101,10 @@ LockImpl::LockImpl() {
   DCHECK_EQ(rv, 0) << ". " << SystemErrorCodeToString(rv);
   rv = pthread_mutexattr_destroy(&mta);
   DCHECK_EQ(rv, 0) << ". " << SystemErrorCodeToString(rv);
+
+  if (ordered_name) {
+    RecordReplayAddOrderedPthreadMutex(ordered_name, &native_handle_);
+  }
 }
 
 LockImpl::~LockImpl() {

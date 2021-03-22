@@ -255,8 +255,16 @@ void ThreadControllerWithMessagePumpImpl::BeforeWait() {
   main_thread_only().run_level_tracker.OnIdle();
 }
 
+#ifdef OS_MAC
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+#else
+static void V8RecordReplayAssert(const char* format, ...) {}
+#endif
+
 MessagePump::Delegate::NextWorkInfo
 ThreadControllerWithMessagePumpImpl::DoWork() {
+  V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWork Start");
+
   MaybeStartHangWatchScopeEnabled();
 
   work_deduplicator_.OnWorkStarted();
@@ -270,6 +278,7 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
       ShouldScheduleWork::kScheduleImmediate) {
     // Need to run new work immediately, but due to the contract of DoWork
     // we only need to return a null TimeTicks to ensure that happens.
+    V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWork #1");
     return MessagePump::Delegate::NextWorkInfo();
   }
 
@@ -277,6 +286,7 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
   // special-casing here avoids unnecessarily sampling Now() when out of work.
   if (delay_till_next_task.is_max()) {
     main_thread_only().next_delayed_do_work = TimeTicks::Max();
+    V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWork #2");
     return {TimeTicks::Max()};
   }
 
@@ -293,10 +303,13 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
     main_thread_only().next_delayed_do_work =
         main_thread_only().quit_runloop_after;
     // If we've passed |quit_runloop_after| there's no more work to do.
-    if (continuation_lazy_now.Now() >= main_thread_only().quit_runloop_after)
+    if (continuation_lazy_now.Now() >= main_thread_only().quit_runloop_after) {
+      V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWork #3");
       return {TimeTicks::Max()};
+    }
   }
 
+  V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWork #4");
   return {CapAtOneDay(main_thread_only().next_delayed_do_work,
                       &continuation_lazy_now),
           continuation_lazy_now.Now()};
@@ -307,12 +320,17 @@ TimeDelta ThreadControllerWithMessagePumpImpl::DoWorkImpl(
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("sequence_manager"),
                "ThreadControllerImpl::DoWork");
 
+  V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWorkImpl Start");
+
   if (!main_thread_only().task_execution_allowed) {
     // Broadcast in a trace event that application tasks were disallowed. This
     // helps spot nested loops that intentionally starve application tasks.
     TRACE_EVENT0("base", "ThreadController: application tasks disallowed");
-    if (main_thread_only().quit_runloop_after == TimeTicks::Max())
+    if (main_thread_only().quit_runloop_after == TimeTicks::Max()) {
+      V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #1");
       return TimeDelta::Max();
+    }
+    V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #2");
     return main_thread_only().quit_runloop_after - continuation_lazy_now->Now();
   }
 
@@ -363,8 +381,10 @@ TimeDelta ThreadControllerWithMessagePumpImpl::DoWorkImpl(
       break;
   }
 
-  if (main_thread_only().quit_pending)
+  if (main_thread_only().quit_pending) {
+    V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #3");
     return TimeDelta::Max();
+  }
 
   work_deduplicator_.WillCheckForMoreWork();
 
@@ -374,9 +394,16 @@ TimeDelta ThreadControllerWithMessagePumpImpl::DoWorkImpl(
       power_monitor_.IsProcessInPowerSuspendState()
           ? SequencedTaskSource::SelectTaskOption::kSkipDelayedTask
           : SequencedTaskSource::SelectTaskOption::kDefault;
+
+  V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #3.1 %d",
+                       select_task_option);
+
   TimeDelta do_work_delay = main_thread_only().task_source->DelayTillNextTask(
       continuation_lazy_now, select_task_option);
   DCHECK_GE(do_work_delay, TimeDelta());
+
+  V8RecordReplayAssert("ThreadControllerWithMessagePumpImpl::DoWorkImpl #4 %.2f",
+                       do_work_delay.InSecondsF());
   return do_work_delay;
 }
 

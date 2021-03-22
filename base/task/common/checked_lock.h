@@ -79,6 +79,7 @@ class LOCKABLE CheckedLock : public CheckedLockImpl {
 class LOCKABLE CheckedLock : public Lock {
  public:
   CheckedLock() = default;
+  CheckedLock(const char* ordered_name) : Lock(ordered_name) {}
   explicit CheckedLock(const CheckedLock*) {}
   explicit CheckedLock(UniversalPredecessor) {}
   explicit CheckedLock(UniversalSuccessor) {}

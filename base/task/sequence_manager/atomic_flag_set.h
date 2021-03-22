@@ -103,6 +103,7 @@ class BASE_EXPORT AtomicFlagSet {
     std::unique_ptr<Group> next;
     Group* partially_free_list_prev = nullptr;
     Group* partially_free_list_next = nullptr;
+    int ordered_lock_id_ = 0;
 
     bool IsFull() const;
 

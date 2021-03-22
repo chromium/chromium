@@ -120,6 +120,7 @@ TaskQueueImpl::TaskQueueImpl(SequenceManagerImpl* sequence_manager,
                              ? sequence_manager->associated_thread()
                              : AssociatedThreadId::CreateBound()),
       task_poster_(MakeRefCounted<GuardedTaskPoster>(this)),
+      any_thread_lock_(/* ordered */ "TaskQueueImpl::any_thread_lock_"),
       any_thread_(time_domain),
       main_thread_only_(this, time_domain),
       empty_queues_to_reload_handle_(
@@ -455,7 +456,15 @@ void TaskQueueImpl::ScheduleDelayedWorkTask(Task pending_task) {
   TraceQueueSize();
 }
 
+#ifdef OS_MAC
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+#else
+static void V8RecordReplayAssert(const char* format, ...) {}
+#endif
+
 void TaskQueueImpl::ReloadEmptyImmediateWorkQueue() {
+  V8RecordReplayAssert("TaskQueueImpl::ReloadEmptyImmediateWorkQueue");
+
   DCHECK(main_thread_only().immediate_work_queue->Empty());
   main_thread_only().immediate_work_queue->TakeImmediateIncomingQueueTasks();
 

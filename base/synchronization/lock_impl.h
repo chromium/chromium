@@ -47,7 +47,7 @@ class BASE_EXPORT LockImpl {
   using NativeHandle = pthread_mutex_t;
 #endif
 
-  LockImpl();
+  LockImpl(const char* ordered_name = nullptr);
   ~LockImpl();
 
   // If the lock is not held, take it and return true.  If the lock is already

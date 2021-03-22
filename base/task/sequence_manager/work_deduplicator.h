@@ -134,6 +134,7 @@ class BASE_EXPORT WorkDeduplicator {
   };
 
   std::atomic<int> state_{State::kUnbound};
+  int state_ordered_lock_id_ = 0;
 
   scoped_refptr<AssociatedThreadId> associated_thread_;
 };

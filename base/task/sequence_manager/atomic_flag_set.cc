@@ -10,6 +10,24 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 
+#ifdef OS_MAC
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+extern "C" size_t V8RecordReplayCreateOrderedLock(const char* name);
+extern "C" void V8RecordReplayOrderedLock(int lock);
+extern "C" void V8RecordReplayOrderedUnlock(int lock);
+#else
+static void V8RecordReplayAssert(const char* format, ...) {}
+static size_t V8RecordReplayCreateOrderedLock(const char* name) { return 0; }
+static void V8RecordReplayOrderedLock(int lock) {}
+static void V8RecordReplayOrderedUnlock(int lock) {}
+#endif
+
+struct AutoOrderedLock {
+  AutoOrderedLock(int id) : id_(id) { V8RecordReplayOrderedLock(id_); }
+  ~AutoOrderedLock() { V8RecordReplayOrderedUnlock(id_); }
+  int id_;
+};
+
 namespace base {
 namespace sequence_manager {
 namespace internal {
@@ -42,6 +60,7 @@ AtomicFlagSet::AtomicFlag::AtomicFlag(AtomicFlag&& other)
 
 void AtomicFlagSet::AtomicFlag::SetActive(bool active) {
   DCHECK(group_);
+  AutoOrderedLock lock(group_->ordered_lock_id_);
   if (active) {
     // Release semantics are required to ensure that all memory accesses made on
     // this thread happen-before any others done on the thread running the
@@ -107,12 +126,22 @@ AtomicFlagSet::AtomicFlag AtomicFlagSet::AddFlag(RepeatingClosure callback) {
 
 void AtomicFlagSet::RunActiveCallbacks() const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
+
+  V8RecordReplayAssert("AtomicFlagSet::RunActiveCallbacks Start");
+
   for (Group* iter = alloc_list_head_.get(); iter; iter = iter->next.get()) {
     // Acquire semantics are required to guarantee that all memory side-effects
     // made by other threads that were allowed to perform operations are
     // synchronized with this thread before it returns from this method.
-    size_t active_flags = std::atomic_exchange_explicit(
+    size_t active_flags;
+    {
+      AutoOrderedLock lock(iter->ordered_lock_id_);
+      active_flags = std::atomic_exchange_explicit(
         &iter->flags, size_t{0}, std::memory_order_acquire);
+    }
+
+    V8RecordReplayAssert("AtomicFlagSet::RunActiveCallbacks #1 %lu", active_flags);
+
     // This is O(number of bits set).
     while (active_flags) {
       int index = Group::IndexOfFirstFlagSet(active_flags);
@@ -120,10 +149,13 @@ void AtomicFlagSet::RunActiveCallbacks() const {
       active_flags ^= size_t{1} << index;
       iter->flag_callbacks[index].Run();
     }
+
+    V8RecordReplayAssert("AtomicFlagSet::RunActiveCallbacks #2");
   }
 }
 
-AtomicFlagSet::Group::Group() = default;
+AtomicFlagSet::Group::Group()
+  : ordered_lock_id_(V8RecordReplayCreateOrderedLock("AtomicFlagSet::Group")) {}
 
 AtomicFlagSet::Group::~Group() {
   DCHECK_EQ(allocated_flags, 0u);
