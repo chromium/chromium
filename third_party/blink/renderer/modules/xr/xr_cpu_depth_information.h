@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_CPU_DEPTH_INFORMATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_CPU_DEPTH_INFORMATION_H_
 
-#include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/xr/xr_depth_information.h"
 
 namespace gfx {
@@ -27,9 +27,10 @@ class XRCPUDepthInformation final : public XRDepthInformation {
       const gfx::Size& size,
       const gfx::Transform& norm_texture_from_norm_view,
       float raw_value_to_meters,
-      DOMUint16Array* data);
+      device::mojom::XRDepthDataFormat data_format,
+      DOMArrayBuffer* data);
 
-  DOMUint16Array* data(ExceptionState& exception_state) const;
+  DOMArrayBuffer* data(ExceptionState& exception_state) const;
 
   float getDepthInMeters(float x,
                          float y,
@@ -38,7 +39,14 @@ class XRCPUDepthInformation final : public XRDepthInformation {
   void Trace(Visitor* visitor) const override;
 
  private:
-  const Member<DOMUint16Array> data_;
+  const Member<DOMArrayBuffer> data_;
+  const device::mojom::XRDepthDataFormat data_format_;
+  const size_t bytes_per_element_;
+
+  // Helper, returns value at `index` in `data_`. Depending on `data_format_`,
+  // the `data_` will be viewed into via Uint16Array (for luminance-alpha),
+  // or via Float32Array (for float32).
+  float GetItem(size_t index) const;
 };
 
 }  // namespace blink

@@ -7,7 +7,7 @@
 
 #include "base/types/pass_key.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
@@ -57,7 +57,7 @@ class XRDepthManager : public GarbageCollected<XRDepthManager> {
 
   // Cached version of the depth buffer data. If not null, contains the same
   // information as |depth_data_.pixel_data| buffer.
-  Member<DOMUint16Array> data_;
+  Member<DOMArrayBuffer> data_;
 
   void EnsureData();
 };
