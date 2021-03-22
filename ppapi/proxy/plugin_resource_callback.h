@@ -12,10 +12,11 @@
 namespace ppapi {
 namespace proxy {
 
-// |PluginResourceCallback| wraps a |base::Callback| on the plugin side which
-// will be triggered in response to a particular message type being received.
-// |MsgClass| is the reply message type that the callback will be called with
-// and |CallbackType| is the type of the |base::Callback| that will be called.
+// |PluginResourceCallback| wraps a |base::OnceCallback| on the plugin side
+// which will be triggered in response to a particular message type being
+// received. |MsgClass| is the reply message type that the callback will be
+// called with and |CallbackType| is the type of the |base::OnceCallback| that
+// will be called.
 class PluginResourceCallbackBase {
  public:
   virtual ~PluginResourceCallbackBase() = default;

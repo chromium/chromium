@@ -73,10 +73,10 @@ class PPAPI_PROXY_EXPORT PluginResource : public Resource {
   // corresponding to this resource object and does not expect a reply.
   void Post(Destination dest, const IPC::Message& msg);
 
-  // Like Post() but expects a response. |callback| is a |base::Callback| that
-  // will be run when a reply message with a sequence number matching that of
-  // the call is received. |ReplyMsgClass| is the type of the reply message that
-  // is expected. An example of usage:
+  // Like Post() but expects a response. |callback| is a |base::OnceCallback|
+  // that will be run when a reply message with a sequence number matching that
+  // of the call is received. |ReplyMsgClass| is the type of the reply message
+  // that is expected. An example of usage:
   //
   // Call<PpapiPluginMsg_MyResourceType_MyReplyMessage>(
   //     BROWSER,
