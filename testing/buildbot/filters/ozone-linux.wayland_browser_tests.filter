@@ -1,39 +1,37 @@
-# TODO(https://crbug.com/1084469): fix these tests.
-
-# Failed:
+# These tests cannot work on Wayland because the platform does not allow clients
+# to position top level windows, activate them, and set focus.
 -All/PopupBrowserTest.MoveClampedToCurrentDisplay/0
 -All/PopupBrowserTest.MoveClampedToCurrentDisplay/1
--All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideo/0
--All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideoAndAudio/0
 -AutomationManagerAuraBrowserTest.EventFromAction
 -AutomationManagerAuraBrowserTest.TransientFocusChangesAreSuppressed
--BrowserActionApiTest.BrowserActionOpenPopupOnPopup
 -BrowserViewTest.F6CyclesThroughCaptionBubbleToo
 -BrowserViewTest.GetAccessibleTabModalDialogTitle
 -ChromeSitePerProcessTest.PopupWindowFocus
--ClipboardApiTest.Extension
--DesktopCaptureApiTest.ChooseDesktopMedia
--ExtensionDialogTest.TextInputViaKeyEvent
 -ExternalProtocolDialogBrowserTest.TestFocus
 -FolderUploadConfirmationViewTest.InitiallyFocusesCancel
+-PreservedWindowPlacement.Test
+-ProfileHelperTest.OpenNewWindowForProfile
+-TabHoverCardBubbleViewBrowserTest.WidgetNotVisibleOnMousePressAfterTabFocus
+-TabHoverCardBubbleViewBrowserTest.WidgetVisibleOnKeyPressAfterTabFocus
+
+# Screen capture on Wayland is tricky.
+-All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideo/0
+-All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideoAndAudio/0
+-WebRtcDesktopCaptureBrowserTest.RunsScreenshareFromOneTabToAnother
+
+# Fail on the bot, pass locally.
+-DesktopCaptureApiTest.ChooseDesktopMedia
+-IconLoaderBrowserTest.LoadGroup
+
+# TODO(https://crbug.com/1084469): fix these tests.
+
+# Failed:
+-BrowserViewTest.GetAccessibleTabModalDialogTree
 -OmniboxPopupContentsViewTest.ClickOmnibox
 -OmniboxPopupContentsViewTest.PopupMatchesLocationBarBackground
 -PageInfoBubbleViewBrowserTest.FocusDoesNotReturnToContentsOnReloadPrompt
 -PageInfoBubbleViewBrowserTest.FocusReturnsToContentOnClose
--PaymentRequestCreditCardEditorTest.EditingExpiredCard
--PaymentRequestShippingAddressEditorTest.FocusFirstField_Name
--PaymentRequestShippingAddressEditorTest.FocusFirstInvalidField_NotName
--PreservedWindowPlacement.Test
--ProfileHelperTest.OpenNewWindowForProfile
--SessionRestoreTest.RestoreMinimizedWindow
--TabGroupEditorBubbleViewDialogBrowserTest.InvokeUi_default
--TabHoverCardBubbleViewBrowserTest.WidgetNotVisibleOnMousePressAfterTabFocus
--TabHoverCardBubbleViewBrowserTest.WidgetVisibleOnKeyPressAfterTabFocus
--WebRtcDesktopCaptureBrowserTest.RunsScreenshareFromOneTabToAnother
--BrowserViewTest.GetAccessibleTabModalDialogTree
--IconLoaderBrowserTest.LoadGroup
 -PrintBrowserTest.PDFPluginNotKeyboardFocusable
--LocalNTPTest.EmbeddedSearchAPIOnlyAvailableOnNTP
 
 # These tests fail when run either with weston's test-plugin module or with
 # normal Wayland compositor. The reason is that weston with headless backend
