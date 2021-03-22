@@ -5,6 +5,7 @@
 #include "google_apis/gaia/oauth2_access_token_manager.h"
 
 #include "base/memory/ref_counted.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "google_apis/gaia/gaia_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -518,6 +519,24 @@ TEST_F(OAuth2AccessTokenManagerTest, OnAccessTokenFetchedOnRequestCompleted) {
       token_manager_.StartRequest(
           account_id_, OAuth2AccessTokenManager::ScopeSet(), &consumer_));
   SimulateOAuthTokenResponse(GetValidTokenResponse("token", 3600));
+  run_loop.Run();
+}
+
+// Test that canceling requests from OnAccessTokenFetched doesn't crash.
+// Regression test for https://crbug.com/1186630.
+TEST_F(OAuth2AccessTokenManagerTest, OnAccessTokenFetchedCancelsRequests) {
+  base::RunLoop run_loop;
+  GoogleServiceAuthError error(GoogleServiceAuthError::SERVICE_ERROR);
+  delegate_.SetOnAccessTokenFetched(
+      account_id_, error, base::BindLambdaForTesting([&]() {
+        token_manager_.CancelRequestsForAccount(account_id_);
+        run_loop.Quit();
+      }));
+  std::unique_ptr<OAuth2AccessTokenManager::Request> request(
+      token_manager_.StartRequest(
+          account_id_, OAuth2AccessTokenManager::ScopeSet(), &consumer_));
+  SimulateOAuthTokenResponse(GetValidTokenResponse("token", 3600),
+                             net::HTTP_BAD_REQUEST);
   run_loop.Run();
 }
 
