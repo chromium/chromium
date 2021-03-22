@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface.h"
@@ -78,6 +79,8 @@ GLImplementationParts GetRequestedGLImplementation(
 
   // The default implementation is always the first one in list.
   GLImplementationParts impl = GLImplementationParts(allowed_impls[0]);
+  UMA_HISTOGRAM_ENUMERATION("GPU.PreferredGLImplementation", impl.gl);
+
   *fallback_to_software_gl = false;
   if (cmd->HasSwitch(switches::kOverrideUseSoftwareGLForTests)) {
     impl = GetSoftwareGLImplementation();
@@ -94,11 +97,14 @@ GLImplementationParts GetRequestedGLImplementation(
                                       requested_implementation_angle_name);
       if (!base::Contains(allowed_impls, impl.gl)) {
         LOG(ERROR) << "Requested GL implementation is not available.";
+        UMA_HISTOGRAM_ENUMERATION("GPU.RequestedGLImplementation",
+                                  kGLImplementationNone);
         return GLImplementationParts(kGLImplementationNone);
       }
     }
   }
 
+  UMA_HISTOGRAM_ENUMERATION("GPU.RequestedGLImplementation", impl.gl);
   return impl;
 }
 

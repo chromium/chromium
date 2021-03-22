@@ -975,6 +975,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="GPU.PreferredGLImplementation" enum="GLImplementation"
+    expires_after="2021-08-01">
+  <owner>jonahr@google.com</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Records the platform-preferred OpenGL implementation mode. Recorded during
+    GPU process initilization in gl::GetRequestedGLImplementation.
+  </summary>
+</histogram>
+
 <histogram name="GPU.ProcessLifetimeEvents.DisplayCompositor"
     enum="GPUProcessLifetimeEvent" expires_after="M85">
   <owner>vmiura@chromium.org</owner>
@@ -1092,6 +1102,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     <variant name="RGBA16F.HALF_FLOAT" summary="RGBA16F/HALF_FLOAT"/>
     <variant name="RGBA32F.FLOAT" summary="RGBA32F/FLOAT"/>
   </token>
+</histogram>
+
+<histogram name="GPU.RequestedGLImplementation" enum="GLImplementation"
+    expires_after="2021-08-01">
+  <owner>jonahr@google.com</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Records the user-requested OpenGL implementation mode. Recorded during GPU
+    process initilization in gl::GetRequestedGLImplementation.
+  </summary>
 </histogram>
 
 <histogram name="GPU.Sandbox.InitializedSuccessfully" enum="BooleanSuccess"
