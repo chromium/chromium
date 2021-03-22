@@ -17,6 +17,7 @@
 #include "base/stl_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -266,7 +267,13 @@ IN_PROC_BROWSER_TEST_F(MediaFileValidatorTest, UnsupportedExtension) {
   MoveTest("a.txt", std::string(kValidImage, base::size(kValidImage)), false);
 }
 
-IN_PROC_BROWSER_TEST_F(MediaFileValidatorTest, ValidImage) {
+// TODO(crbug.com/1169640): Re-enable. Flaky on Linux.
+#if defined(OS_LINUX)
+#define MAYBE_ValidImage DISABLED_ValidImage
+#else
+#define MAYBE_ValidImage ValidImage
+#endif
+IN_PROC_BROWSER_TEST_F(MediaFileValidatorTest, MAYBE_ValidImage) {
   MoveTest("a.webp", std::string(kValidImage, base::size(kValidImage)), true);
 }
 
