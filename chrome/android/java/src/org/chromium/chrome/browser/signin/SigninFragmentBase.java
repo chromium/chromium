@@ -51,7 +51,6 @@ import org.chromium.components.signin.AccountManagerDelegateException;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountManagerResult;
-import org.chromium.components.signin.AccountTrackerService;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.ChildAccountStatus;
@@ -435,28 +434,16 @@ public abstract class SigninFragmentBase
         // Ensure that the AccountTrackerService has a fully up to date GAIA id <-> email mapping,
         // as this is needed for the previous account check.
         final long seedingStartTime = SystemClock.elapsedRealtime();
-        final AccountTrackerService accountTrackerService =
-                IdentityServicesProvider.get().getAccountTrackerService(
-                        Profile.getLastUsedRegularProfile());
-        if (accountTrackerService.checkAndSeedSystemAccounts()) {
-            recordAccountTrackerServiceSeedingTime(seedingStartTime);
-            runStateMachineAndSignin(settingsClicked);
-            return;
-        }
-
-        AccountTrackerService.OnSystemAccountsSeededListener listener =
-                new AccountTrackerService.OnSystemAccountsSeededListener() {
-                    @Override
-                    public void onSystemAccountsSeedingComplete() {
-                        accountTrackerService.removeSystemAccountsSeededListener(this);
-                        recordAccountTrackerServiceSeedingTime(seedingStartTime);
-
-                        // Don't start sign-in if this fragment has been destroyed.
-                        if (mDestroyed) return;
+        IdentityServicesProvider.get()
+                .getAccountTrackerService(Profile.getLastUsedRegularProfile())
+                .seedAccountsIfNeeded(() -> {
+                    RecordHistogram.recordTimesHistogram(
+                            "Signin.AndroidAccountSigninViewSeedingTime",
+                            SystemClock.elapsedRealtime() - seedingStartTime);
+                    if (isResumed()) {
                         runStateMachineAndSignin(settingsClicked);
                     }
-                };
-        accountTrackerService.addSystemAccountsSeededListener(listener);
+                });
     }
 
     private void runStateMachineAndSignin(boolean settingsClicked) {
@@ -483,11 +470,6 @@ public abstract class SigninFragmentBase
                         mIsSigninInProgress = false;
                     }
                 });
-    }
-
-    private static void recordAccountTrackerServiceSeedingTime(long seedingStartTime) {
-        RecordHistogram.recordTimesHistogram("Signin.AndroidAccountSigninViewSeedingTime",
-                SystemClock.elapsedRealtime() - seedingStartTime);
     }
 
     /**
