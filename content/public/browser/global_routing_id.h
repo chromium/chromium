@@ -15,6 +15,10 @@
 namespace content {
 
 // Uniquely identifies a target that legacy IPCs can be routed to.
+//
+// These IDs can be considered to be unique for the lifetime of the browser
+// process. While they are finite and thus must eventually roll over, this case
+// may be considered sufficiently rare as to be ignorable.
 struct GlobalRoutingID {
   GlobalRoutingID() : child_id(-1), route_id(-1) {}
 
@@ -47,6 +51,10 @@ inline std::ostream& operator<<(std::ostream& os, const GlobalRoutingID& id) {
 
 // Same as GlobalRoutingID except the route_id must be a RenderFrameHost routing
 // id.
+//
+// These IDs can be considered to be unique for the lifetime of the browser
+// process. While they are finite and thus must eventually roll over, this case
+// may be considered sufficiently rare as to be ignorable.
 struct GlobalFrameRoutingId {
   GlobalFrameRoutingId() : child_id(0), frame_routing_id(MSG_ROUTING_NONE) {}
 
