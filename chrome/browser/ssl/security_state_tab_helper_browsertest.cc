@@ -1811,8 +1811,14 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperIncognitoTest, HttpErrorPage) {
 
 // Tests that the security level of an HTTP page remains WARNING regardless of
 // whether a form was edited.
+// TODO(crbug.com/1190339): Test is flaky.
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_CHROMEOS)
+#define MAYBE_MarkHttpAsWarningOnFormEdits DISABLED_MarkHttpAsWarningOnFormEdits
+#else
+#define MAYBE_MarkHttpAsWarningOnFormEdits MarkHttpAsWarningOnFormEdits
+#endif
 IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest,
-                       MarkHttpAsWarningOnFormEdits) {
+                       MAYBE_MarkHttpAsWarningOnFormEdits) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   SecurityStateTabHelper* helper =
