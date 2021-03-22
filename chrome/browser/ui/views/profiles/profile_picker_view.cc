@@ -57,6 +57,7 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -439,6 +440,28 @@ void ProfilePickerForceSigninDialog::HideDialog() {
   ProfilePicker::HideDialog();
 }
 
+// ProfilePickerView::NavigationFinishedObserver ------------------------------
+
+ProfilePickerView::NavigationFinishedObserver::NavigationFinishedObserver(
+    const GURL& url,
+    base::OnceClosure closure,
+    content::WebContents* contents)
+    : content::WebContentsObserver(contents),
+      url_(url),
+      closure_(std::move(closure)) {}
+
+ProfilePickerView::NavigationFinishedObserver::~NavigationFinishedObserver() =
+    default;
+
+void ProfilePickerView::NavigationFinishedObserver::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!closure_ || navigation_handle->GetURL() != url_ ||
+      !navigation_handle->HasCommitted()) {
+    return;
+  }
+  std::move(closure_).Run();
+}
+
 // ProfilePickerView ----------------------------------------------------------
 
 const ui::ThemeProvider*
@@ -732,15 +755,19 @@ void ProfilePickerView::OnProfileForSigninCreated(
 }
 
 void ProfilePickerView::SwitchToSyncConfirmation() {
-  // The sync confirmation screen cannot render in the system profile web
-  // contents and thus `sign_in_->contents` is used for this. As there is no
-  // back button on the confirmation screen, the performance of going back to
-  // the signin screen is no concern any more.
-  ShowScreen(sign_in_->contents.get(),
-             GURL(chrome::kChromeUISyncConfirmationURL),
-             /*show_toolbar=*/false,
-             /*enable_navigating_back=*/false);
+  ShowScreen(
+      sign_in_->contents.get(), GURL(chrome::kChromeUISyncConfirmationURL),
+      /*show_toolbar=*/false,
+      /*enable_navigating_back=*/false,
+      /*navigation_finished_closure=*/
+      base::BindOnce(&ProfilePickerView::SwitchToSyncConfirmationFinished,
+                     // Unretained is enough as the callback is called by a
+                     // member of this class appearing after `sign_in_`.
+                     base::Unretained(this)));
+}
 
+void ProfilePickerView::SwitchToSyncConfirmationFinished() {
+  // Initialize the WebUI page once we know it's committed.
   SyncConfirmationUI* sync_confirmation_ui = static_cast<SyncConfirmationUI*>(
       sign_in_->contents->GetWebUI()->GetController());
   sync_confirmation_ui->InitializeMessageHandlerForCreationFlow(
@@ -936,10 +963,12 @@ void ProfilePickerView::UpdateToolbarColor() {
       GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR)));
 }
 
-void ProfilePickerView::ShowScreen(content::WebContents* contents,
-                                   const GURL& url,
-                                   bool show_toolbar,
-                                   bool enable_navigating_back) {
+void ProfilePickerView::ShowScreen(
+    content::WebContents* contents,
+    const GURL& url,
+    bool show_toolbar,
+    bool enable_navigating_back,
+    base::OnceClosure navigation_finished_closure) {
   web_view_->SetWebContents(contents);
   contents->Focus();
 
@@ -955,7 +984,29 @@ void ProfilePickerView::ShowScreen(content::WebContents* contents,
     contents->GetController().LoadURL(url, content::Referrer(),
                                       ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
                                       std::string());
+    if (navigation_finished_closure) {
+      // Unretained as `this` outlives member `show_screen_finished_observer_`.
+      // TODO(crbug.com/1182206): Consider reusing this technique for all
+      // calls of ShowScreen() and SetWebContents() only in the callback. This
+      // could solve the flicker of switching to the switch profile screen in
+      // the system profile.
+      show_screen_finished_observer_ =
+          std::make_unique<NavigationFinishedObserver>(
+              url,
+              base::BindOnce(&ProfilePickerView::ShowScreenFinished,
+                             base::Unretained(this),
+                             std::move(navigation_finished_closure)),
+              contents);
+    }
   }
+}
+
+void ProfilePickerView::ShowScreenFinished(
+    base::OnceClosure navigation_finished_closure) {
+  DCHECK(navigation_finished_closure);
+  // Stop observing for this navigation.
+  show_screen_finished_observer_.reset();
+  std::move(navigation_finished_closure).Run();
 }
 
 void ProfilePickerView::BackButtonPressed(const ui::Event& event) {

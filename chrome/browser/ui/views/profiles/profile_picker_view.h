@@ -30,6 +30,7 @@ class FilePath;
 
 namespace content {
 struct ContextMenuParams;
+class NavigationHandle;
 class RenderFrameHost;
 class WebContents;
 }  // namespace content
@@ -67,6 +68,25 @@ class ProfilePickerView : public views::WidgetDelegateView,
     kInitializing = 1,
     kReady = 2,
     kFinalizing = 3
+  };
+
+  class NavigationFinishedObserver : public content::WebContentsObserver {
+   public:
+    NavigationFinishedObserver(const GURL& url,
+                               base::OnceClosure closure,
+                               content::WebContents* contents);
+    NavigationFinishedObserver(const NavigationFinishedObserver&) = delete;
+    NavigationFinishedObserver& operator=(const NavigationFinishedObserver&) =
+        delete;
+    ~NavigationFinishedObserver() override;
+
+    // content::WebContentsObserver:
+    void DidFinishNavigation(
+        content::NavigationHandle* navigation_handle) override;
+
+   private:
+    const GURL url_;
+    base::OnceClosure closure_;
   };
 
   // Struct holding the data related to the sign-in profile creation flow. These
@@ -127,6 +147,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
       Profile::CreateStatus status);
   // Switches the layout to the sync confirmation screen.
   void SwitchToSyncConfirmation();
+  void SwitchToSyncConfirmationFinished();
   // Switches the layout to the profile switch screen.
   void SwitchToProfileSwitch(const base::FilePath& profile_path);
 
@@ -180,11 +201,18 @@ class ProfilePickerView : public views::WidgetDelegateView,
   void UpdateToolbarColor();
 
   // Shows a screen with `url` in `contents` and potentially `show_toolbar`. If
-  // `url` is empty, it only shows `contents` with its currently loaded url.
-  void ShowScreen(content::WebContents* contents,
-                  const GURL& url,
-                  bool show_toolbar,
-                  bool enable_navigating_back = true);
+  // `url` is empty, it only shows `contents` with its currently loaded url. If
+  // both `navigation_finished_closure` and `url` is non-empty, the closure is
+  // called when the navigation commits (if it never commits such as when the
+  // navigation is replaced by another navigation, the closure is never called).
+  void ShowScreen(
+      content::WebContents* contents,
+      const GURL& url,
+      bool show_toolbar,
+      bool enable_navigating_back = true,
+      base::OnceClosure navigation_finished_closure = base::OnceClosure());
+  void ShowScreenFinished(
+      base::OnceClosure navigation_finished_closure = base::OnceClosure());
 
   void BackButtonPressed(const ui::Event& event);
   void NavigateBack();
@@ -258,6 +286,11 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // The web contents backed by the system profile. This is used for displaying
   // the WebUI pages.
   std::unique_ptr<content::WebContents> system_profile_contents_;
+
+  // Observer used for implementing screen switching. Non-null only shorty
+  // after switching a screen. Must be below all WebContents instances so that
+  // WebContents outlive this observer.
+  std::unique_ptr<NavigationFinishedObserver> show_screen_finished_observer_;
 
   std::unique_ptr<SignInFlow> sign_in_;
 
