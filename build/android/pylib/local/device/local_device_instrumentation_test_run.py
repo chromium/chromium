@@ -64,14 +64,22 @@ _WPR_GO_LINUX_X86_64_PATH = os.path.join(host_paths.DIR_SOURCE_ROOT,
 _TAG = 'test_runner_py'
 
 TIMEOUT_ANNOTATIONS = [
-  ('Manual', 10 * 60 * 60),
-  ('IntegrationTest', 30 * 60),
-  ('External', 10 * 60),
-  ('EnormousTest', 10 * 60),
-  ('LargeTest', 5 * 60),
-  ('MediumTest', 3 * 60),
-  ('SmallTest', 1 * 60),
+    ('Manual', 10 * 60 * 60),
+    ('IntegrationTest', 10 * 60),
+    ('External', 10 * 60),
+    ('EnormousTest', 5 * 60),
+    ('LargeTest', 2 * 60),
+    ('MediumTest', 30),
+    ('SmallTest', 10),
 ]
+
+# Account for Instrumentation and process init overhead.
+FIXED_TEST_TIMEOUT_OVERHEAD = 60
+
+# 30 minute max timeout for an instrumentation invocation to avoid shard
+# timeouts when tests never finish. The shard timeout is currently 60 minutes,
+# so this needs to be less than that.
+MAX_BATCH_TEST_TIMEOUT = 30 * 60
 
 LOGCAT_FILTERS = ['*:e', 'chromium:v', 'cr_*:v', 'DEBUG:I',
                   'StrictMode:D', '%s:I' % _TAG]
@@ -584,7 +592,8 @@ class LocalDeviceInstrumentationTestRun(
       test_name = instrumentation_test_instance.GetTestName(test[0]) + '_batch'
       extras['class'] = ','.join(test_names)
       test_display_name = test_name
-      timeout = sum(timeouts)
+      timeout = min(MAX_BATCH_TEST_TIMEOUT,
+                    FIXED_TEST_TIMEOUT_OVERHEAD + sum(timeouts))
     else:
       assert test['is_junit4']
       test_name = instrumentation_test_instance.GetTestName(test)
@@ -593,8 +602,8 @@ class LocalDeviceInstrumentationTestRun(
       extras['class'] = test_name
       if 'flags' in test and test['flags']:
         flags_to_add.extend(test['flags'])
-      timeout = self._GetTimeoutFromAnnotations(
-        test['annotations'], test_display_name)
+      timeout = FIXED_TEST_TIMEOUT_OVERHEAD + self._GetTimeoutFromAnnotations(
+          test['annotations'], test_display_name)
 
       test_timeout_scale = self._GetTimeoutScaleFromAnnotations(
           test['annotations'])
