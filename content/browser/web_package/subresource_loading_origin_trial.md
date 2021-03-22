@@ -109,7 +109,7 @@ if ("scopes" in HTMLLinkElement.prototype) {
 A `resources` attribute is always supported if
 `link.relList.supports("webbundle")` is true.
 
-Chrome M89 will show `ExternalProtolaDialog` for a iframe loading with
+Chrome M89 will show `ExternalProtocolDialog` for a iframe loading with
 `urn:uuid` URL. You should check Chrome is M90 or later to avoid that.
 
 # How to try this feature locally
