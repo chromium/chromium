@@ -783,7 +783,8 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     private static AccessibilitySnapshotNode createAccessibilitySnapshotNode(int parentRelativeLeft,
             int parentRelativeTop, int width, int height, boolean isRootNode, String text,
             int color, int bgcolor, float size, boolean bold, boolean italic, boolean underline,
-            boolean lineThrough, String className, String htmlTag) {
+            boolean lineThrough, String className, String htmlTag, String htmlId, String htmlClass,
+            String cssDisplay) {
         AccessibilitySnapshotNode node = new AccessibilitySnapshotNode(text, className);
 
         // if size is smaller than 0, then style information does not exist.
@@ -791,7 +792,7 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
             node.setStyle(color, bgcolor, size, bold, italic, underline, lineThrough);
         }
         node.setLocationInfo(parentRelativeLeft, parentRelativeTop, width, height, isRootNode);
-        node.setHtmlInfo(htmlTag);
+        node.setHtmlInfo(htmlTag, htmlId, htmlClass, cssDisplay);
         return node;
     }
 
