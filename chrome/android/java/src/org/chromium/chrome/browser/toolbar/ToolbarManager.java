@@ -169,9 +169,11 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private final ToolbarControlContainer mControlContainer;
     private final BrowserControlsStateProvider.Observer mBrowserControlsObserver;
     private final FullscreenManager.Observer mFullscreenObserver;
-    private final ObservableSupplierImpl<Boolean> mHomeButtonVisibilitySupplier =
+    private final ObservableSupplierImpl<Boolean> mHomepageEnabledSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mHomepageManagedByPolicySupplier =
+            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mStartSurfaceAsHomepageSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mIdentityDiscStateSupplier =
             new ObservableSupplierImpl<>();
@@ -898,7 +900,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 buttonDataProviders, mLayoutStateProviderSupplier, browsingModeThemeColorProvider,
                 mAppThemeColorProvider, mMenuButtonCoordinator, startSurfaceMenuButtonCoordinator,
                 mMenuButtonCoordinator.getMenuButtonHelperSupplier(), mTabModelSelectorSupplier,
-                mHomeButtonVisibilitySupplier, mHomepageManagedByPolicySupplier,
+                mHomepageEnabledSupplier, mStartSurfaceAsHomepageSupplier,
+                mHomepageManagedByPolicySupplier,
                 mIdentityDiscStateSupplier, (client) -> {
                     if (invalidator != null) {
                         invalidator.invalidate(client);
@@ -911,7 +914,11 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 isTabToGtsAnimationEnabled, isStartSurfaceEnabled);
         // clang-format on
         mHomepageStateListener = () -> {
-            mHomeButtonVisibilitySupplier.set(HomepageManager.isHomepageEnabled());
+            mHomepageEnabledSupplier.set(HomepageManager.isHomepageEnabled());
+            // Whether to show start surface as homepage is affected by whether homepage URI is
+            // customized. So we add a supplier to observe homepage URI change.
+            mStartSurfaceAsHomepageSupplier.set(
+                    ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePage());
             mHomepageManagedByPolicySupplier.set(HomepagePolicyManager.isHomepageManagedByPolicy());
         };
         HomepageManager.getInstance().addListener(mHomepageStateListener);
@@ -924,8 +931,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         }
         HomeButton homeButton = toolbarLayout.getHomeButton();
         if (homeButton != null) {
-            homeButton.init(mHomeButtonVisibilitySupplier,
-                    HomepageManager.getInstance()::onMenuClick, mHomepageManagedByPolicySupplier);
+            homeButton.init(mHomepageEnabledSupplier, HomepageManager.getInstance()::onMenuClick,
+                    mHomepageManagedByPolicySupplier);
         }
         return toolbar;
     }

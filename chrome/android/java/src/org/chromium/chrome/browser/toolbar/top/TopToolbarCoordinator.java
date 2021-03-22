@@ -103,7 +103,9 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param normalThemeColorProvider The {@link ThemeColorProvider} for normal mode.
      * @param overviewThemeColorProvider The {@link ThemeColorProvider} for overview mode.
      * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
-     * @param homeButtonVisibilitySupplier Supplier of the visibility change of Home button.
+     * @param homepageEnabledSupplier Supplier of whether Home button is enabled.
+     * @param startSurfaceAsHomepageSupplier Supplier of whether start surface should be shown as
+     *         homepage.
      * @param homepageManagedByPolicySupplier Supplier of whether the homepage is managed by policy.
      * @param identityDiscStateSupplier Supplier of the state change of identity disc button.
      * @param invalidatorCallback Callback that will be invoked  when the toolbar attempts to
@@ -128,7 +130,8 @@ public class TopToolbarCoordinator implements Toolbar {
             MenuButtonCoordinator overviewModeMenuButtonCoordinator,
             ObservableSupplier<AppMenuButtonHelper> appMenuButtonHelperSupplier,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-            ObservableSupplier<Boolean> homeButtonVisibilitySupplier,
+            ObservableSupplier<Boolean> homepageEnabledSupplier,
+            ObservableSupplier<Boolean> startSurfaceAsHomepageSupplier,
             ObservableSupplier<Boolean> homepageManagedByPolicySupplier,
             ObservableSupplier<Boolean> identityDiscStateSupplier,
             Callback<Runnable> invalidatorCallback, Supplier<ButtonData> identityDiscButtonSupplier,
@@ -157,8 +160,8 @@ public class TopToolbarCoordinator implements Toolbar {
                         userEducationHelper, layoutStateProviderSupplier, identityDiscStateSupplier,
                         overviewThemeColorProvider, overviewModeMenuButtonCoordinator,
                         identityDiscButtonSupplier, isGridTabSwitcherEnabled,
-                        homeButtonVisibilitySupplier, homepageManagedByPolicySupplier,
-                        homeButtonOnClickListener);
+                        homepageEnabledSupplier, startSurfaceAsHomepageSupplier,
+                        homepageManagedByPolicySupplier, homeButtonOnClickListener);
             } else {
                 mTabSwitcherModeCoordinatorPhone = new TabSwitcherModeTTCoordinatorPhone(
                         controlContainer.getRootView().findViewById(R.id.tab_switcher_toolbar_stub),
@@ -174,7 +177,7 @@ public class TopToolbarCoordinator implements Toolbar {
         mToolbarLayout.setThemeColorProvider(normalThemeColorProvider);
         mAppMenuButtonHelperSupplier = appMenuButtonHelperSupplier;
         new OneShotCallback<>(mAppMenuButtonHelperSupplier, this::setAppMenuButtonHelper);
-        homeButtonVisibilitySupplier.addObserver((show) -> mToolbarLayout.onHomeButtonUpdate(show));
+        homepageEnabledSupplier.addObserver((show) -> mToolbarLayout.onHomeButtonUpdate(show));
         mToolbarLayout.setInvalidatorCallback(invalidatorCallback);
     }
 
