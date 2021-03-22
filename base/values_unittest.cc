@@ -96,6 +96,18 @@ TEST(ValuesTest, ConstructBool) {
   EXPECT_FALSE(false_value.GetBool());
 }
 
+TEST(ValuesTest, ConstructFromPtrs) {
+  static_assert(!std::is_constructible<Value, int*>::value, "");
+  static_assert(!std::is_constructible<Value, const int*>::value, "");
+  static_assert(!std::is_constructible<Value, wchar_t*>::value, "");
+  static_assert(!std::is_constructible<Value, const wchar_t*>::value, "");
+
+  static_assert(std::is_constructible<Value, char*>::value, "");
+  static_assert(std::is_constructible<Value, const char*>::value, "");
+  static_assert(std::is_constructible<Value, char16_t*>::value, "");
+  static_assert(std::is_constructible<Value, const char16_t*>::value, "");
+}
+
 TEST(ValuesTest, ConstructInt) {
   Value value(-37);
   EXPECT_EQ(Value::Type::INTEGER, value.type());

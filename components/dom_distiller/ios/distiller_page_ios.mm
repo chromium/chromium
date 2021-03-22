@@ -68,7 +68,7 @@ base::Value ConvertedResultFromScriptResult(const base::Value* value,
     }
     // End of different implementation.
   } else if (value->is_bool()) {
-    result = base::Value(value);
+    result = base::Value(value->GetBool());
     DCHECK_EQ(result.type(), base::Value::Type::BOOLEAN);
   } else if (value->is_dict()) {
     base::Value dictionary(base::Value::Type::DICTIONARY);

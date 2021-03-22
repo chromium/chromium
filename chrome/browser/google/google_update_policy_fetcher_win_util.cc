@@ -69,7 +69,7 @@ std::unique_ptr<policy::PolicyMap::Entry> ConvertPolicyStatusValueToPolicyEntry(
         GetPolicySource(conflict_source.Get()),
         value_override_function
             ? value_override_function.Run(conflict_value.Get())
-            : base::Value(conflict_value.Get()),
+            : base::Value(base::AsStringPiece16(conflict_value.Get())),
         nullptr));
   }
   if (entry->source == policy::POLICY_SOURCE_ENTERPRISE_DEFAULT)

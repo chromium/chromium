@@ -154,6 +154,14 @@ class BASE_EXPORT Value {
   explicit Value(const char16_t* in_string16);
   explicit Value(StringPiece16 in_string16);
 
+  // Disable constructions from other pointers, so that there is no silent
+  // conversion to bool.
+  template <typename T,
+            typename = std::enable_if_t<
+                !std::is_convertible<T*, std::string>::value &&
+                !std::is_convertible<T*, std::u16string>::value>>
+  explicit Value(T* ptr) = delete;
+
   explicit Value(const std::vector<char>& in_blob);
   explicit Value(base::span<const uint8_t> in_blob);
   explicit Value(BlobStorage&& in_blob) noexcept;
@@ -219,10 +227,20 @@ class BASE_EXPORT Value {
   void Append(bool value);
   void Append(int value);
   void Append(double value);
+
   void Append(const char* value);
   void Append(StringPiece value);
   void Append(std::string&& value);
   void Append(const char16_t* value);
+
+  // Disable Append() from other pointers, so that there is no silent
+  // conversion to bool.
+  template <typename T,
+            typename = std::enable_if_t<
+                !std::is_convertible<T*, std::string>::value &&
+                !std::is_convertible<T*, std::u16string>::value>>
+  void Append(T* ptr) = delete;
+
   void Append(StringPiece16 value);
   void Append(Value&& value);
 
