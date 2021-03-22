@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
+import android.app.Activity;
 import android.graphics.Point;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -26,7 +27,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayContentDelegate;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
@@ -73,6 +74,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.contextual_search.mojom.OverlayPosition;
 import org.chromium.net.NetworkChangeNotifier;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.touch_selection.SelectionEventType;
 import org.chromium.url.GURL;
 
@@ -123,7 +125,7 @@ public class ContextualSearchManager
     private final ObserverList<ContextualSearchObserver> mObservers =
             new ObserverList<ContextualSearchObserver>();
 
-    private final ChromeActivity mActivity;
+    private final Activity mActivity;
     private final ContextualSearchTabPromotionDelegate mTabPromotionDelegate;
     private final ViewTreeObserver.OnGlobalFocusChangeListener mOnFocusChangeListener;
     private final FullscreenManager.Observer mFullscreenObserver;
@@ -140,6 +142,21 @@ public class ContextualSearchManager
     private final ContextualSearchIPH mInProductHelp;
 
     private final ScrimCoordinator mScrimCoordinator;
+
+    /** The fullscreen state of the browser. */
+    private final FullscreenManager mFullscreenManager;
+
+    /** The state of the browser controls. */
+    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+
+    /** A window for the creation of the overlay panel. */
+    private final WindowAndroid mWindowAndroid;
+
+    /** A means of observing all the browser's tabs. */
+    private final TabModelSelector mTabModelSelector;
+
+    /** A supplier of the last time the user interacted with the browser. */
+    private final Supplier<Long> mLastUserInteractionTimeSupplier;
 
     private ContextualSearchSelectionController mSelectionController;
     private ContextualSearchNetworkCommunicator mNetworkCommunicator;
@@ -235,14 +252,28 @@ public class ContextualSearchManager
      *        responsible for building tabs from contextual search {@link WebContents}.
      * @param scrimCoordinator A mechanism for showing and hiding the shared scrim.
      * @param tabSupplier Access to the tab that is currently active.
+     * @param fullscreenManager Access to the fullscreen state.
+     * @param browserControlsStateProvider Access to the current state of the browser controls.
+     * @param windowAndroid A window to create the overlay panel with.
+     * @param tabModelSelector A means of observing all tabs in the browser.
+     * @param lastUserInteractionTimeSupplier A supplier of the last time a user interacted with the
+     *                                        browser.
      */
-    public ContextualSearchManager(ChromeActivity activity,
+    public ContextualSearchManager(Activity activity,
             ContextualSearchTabPromotionDelegate tabPromotionDelegate,
-            ScrimCoordinator scrimCoordinator, Supplier<Tab> tabSupplier) {
+            ScrimCoordinator scrimCoordinator, Supplier<Tab> tabSupplier,
+            FullscreenManager fullscreenManager,
+            BrowserControlsStateProvider browserControlsStateProvider, WindowAndroid windowAndroid,
+            TabModelSelector tabModelSelector, Supplier<Long> lastUserInteractionTimeSupplier) {
         mActivity = activity;
         mTabPromotionDelegate = tabPromotionDelegate;
         mScrimCoordinator = scrimCoordinator;
         mTabSupplier = tabSupplier;
+        mFullscreenManager = fullscreenManager;
+        mBrowserControlsStateProvider = browserControlsStateProvider;
+        mWindowAndroid = windowAndroid;
+        mTabModelSelector = tabModelSelector;
+        mLastUserInteractionTimeSupplier = lastUserInteractionTimeSupplier;
 
         final View controlContainer = mActivity.findViewById(R.id.control_container);
         mOnFocusChangeListener = new OnGlobalFocusChangeListener() {
@@ -266,8 +297,9 @@ public class ContextualSearchManager
             }
         };
 
-        mActivity.getFullscreenManager().addObserver(mFullscreenObserver);
-        mSelectionController = new ContextualSearchSelectionController(activity, this);
+        mFullscreenManager.addObserver(mFullscreenObserver);
+        mSelectionController = new ContextualSearchSelectionController(
+                activity, this, mTabSupplier, mBrowserControlsStateProvider);
         mNetworkCommunicator = this;
         mPolicy = new ContextualSearchPolicy(mSelectionController, mNetworkCommunicator);
         mTranslateController = new ContextualSearchTranslationImpl();
@@ -297,8 +329,8 @@ public class ContextualSearchManager
         ContextualSearchPanelInterface panel;
         if (ChromeFeatureList.isEnabled(
                     ChromeFeatureList.CONTEXTUAL_SEARCH_THIN_WEB_VIEW_IMPLEMENTATION)) {
-            panel = new ContextualSearchPanelCoordinator(mActivity, mActivity.getWindowAndroid(),
-                    bottomSheetController, this::getBasePageHeight);
+            panel = new ContextualSearchPanelCoordinator(
+                    mActivity, mWindowAndroid, bottomSheetController, this::getBasePageHeight);
         } else {
             panel = new ContextualSearchPanel(
                     mActivity, mLayoutManager, mLayoutManager.getOverlayPanelManager());
@@ -335,7 +367,7 @@ public class ContextualSearchManager
         if (!mIsInitialized) return;
 
         hideContextualSearch(StateChangeReason.UNKNOWN);
-        mActivity.getFullscreenManager().removeObserver(mFullscreenObserver);
+        mFullscreenManager.removeObserver(mFullscreenObserver);
         mParentView.getViewTreeObserver().removeOnGlobalFocusChangeListener(mOnFocusChangeListener);
         ContextualSearchManagerJni.get().destroy(mNativeContextualSearchManagerPtr, this);
         stopListeningForHideNotifications();
@@ -356,7 +388,7 @@ public class ContextualSearchManager
     }
 
     @Override
-    public ChromeActivity getChromeActivity() {
+    public Activity getActivity() {
         return mActivity;
     }
 
@@ -468,7 +500,7 @@ public class ContextualSearchManager
         assert mSearchPanel != null;
 
         // Dismiss the undo SnackBar if present by committing all tab closures.
-        mActivity.getTabModelSelector().commitAllTabClosures();
+        mTabModelSelector.commitAllTabClosures();
 
         if (!mSearchPanel.isShowing()) {
             // If visible, hide the infobar container before showing the Contextual Search panel.
@@ -530,8 +562,8 @@ public class ContextualSearchManager
         assert mSelectionController.getSelectionType() != SelectionType.UNDETERMINED;
         mWasActivatedByTap = mSelectionController.getSelectionType() == SelectionType.TAP;
 
-        mInProductHelp.onSearchPanelShown(mWasActivatedByTap,
-                Profile.fromWebContents(mActivity.getActivityTab().getWebContents()));
+        mInProductHelp.onSearchPanelShown(
+                mWasActivatedByTap, Profile.fromWebContents(mTabSupplier.get().getWebContents()));
     }
 
     @Override
@@ -552,18 +584,18 @@ public class ContextualSearchManager
 
     /** Accessor for the {@code InfoBarContainer} currently attached to the {@code Tab}. */
     private InfoBarContainer getInfoBarContainer() {
-        Tab tab = mActivity.getActivityTab();
+        Tab tab = mTabSupplier.get();
         return tab == null ? null : InfoBarContainer.get(tab);
     }
 
     /** Listens for notifications that should hide the Contextual Search bar. */
     private void listenForTabModelSelectorNotifications() {
-        TabModelSelector selector = mActivity.getTabModelSelector();
+        TabModelSelector selector = mTabModelSelector;
         mTabModelObserver = new TabModelSelectorTabModelObserver(selector) {
             @Override
             public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
                 if ((!mIsPromotingToTab && tab.getId() != lastId)
-                        || mActivity.getTabModelSelector().isIncognitoSelected()) {
+                        || mTabModelSelector.isIncognitoSelected()) {
                     hideContextualSearch(StateChangeReason.UNKNOWN);
                     mSelectionController.onTabSelected();
                 }
@@ -1094,7 +1126,7 @@ public class ContextualSearchManager
             mRedirectHandler.updateNewUrlLoading(navigationParams.pageTransitionType,
                     navigationParams.isRedirect,
                     navigationParams.hasUserGesture || navigationParams.hasUserGestureCarryover,
-                    mActivity.getLastUserInteractionTime(), RedirectHandler.INVALID_ENTRY_INDEX);
+                    mLastUserInteractionTimeSupplier.get(), RedirectHandler.INVALID_ENTRY_INDEX);
             ExternalNavigationParams params =
                     new ExternalNavigationParams
                             .Builder(navigationParams.url, false, navigationParams.referrer,
@@ -1211,7 +1243,7 @@ public class ContextualSearchManager
     @Override
     public void openResolvedSearchUrlInNewTab() {
         if (mSearchRequest != null && mSearchRequest.getSearchUrlForPromotion() != null) {
-            TabModelSelector tabModelSelector = mActivity.getTabModelSelector();
+            TabModelSelector tabModelSelector = mTabModelSelector;
             tabModelSelector.openNewTab(
                     new LoadUrlParams(mSearchRequest.getSearchUrlForPromotion()),
                     TabLaunchType.FROM_LINK,
@@ -1485,7 +1517,7 @@ public class ContextualSearchManager
         if (!mPolicy.isTapSupported() && mPolicy.canResolveLongpress()) {
             // User tapped when Longpress is needed.  Convert location to screen coordinates, and
             // put up some in-product help.
-            int yOffset = (int) mActivity.getBrowserControlsManager().getTopVisibleContentOffset();
+            int yOffset = (int) mBrowserControlsStateProvider.getTopVisibleContentOffset();
             int parentScreenXy[] = new int[2];
             mParentView.getLocationInWindow(parentScreenXy);
             mInProductHelp.onNonTriggeringTap(Profile.getLastUsedRegularProfile(),

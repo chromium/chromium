@@ -109,7 +109,9 @@ public class ContextualSearchTest {
     private static class ContextualSearchManagerWrapper extends ContextualSearchManager {
         public ContextualSearchManagerWrapper(ChromeActivity activity) {
             super(activity, null, activity.getRootUiCoordinatorForTesting().getScrimCoordinator(),
-                    activity.getActivityTabProvider());
+                    activity.getActivityTabProvider(), activity.getFullscreenManager(),
+                    activity.getBrowserControlsManager(), activity.getWindowAndroid(),
+                    activity.getTabModelSelector(), () -> activity.getLastUserInteractionTime());
             setSelectionController(new MockCSSelectionController(activity, this));
             WebContents webContents = WebContentsFactory.createWebContents(
                     Profile.getLastUsedRegularProfile(), false);
@@ -153,7 +155,8 @@ public class ContextualSearchTest {
 
         public MockCSSelectionController(
                 ChromeActivity activity, ContextualSearchSelectionHandler handler) {
-            super(activity, handler);
+            super(activity, handler, activity.getActivityTabProvider(),
+                    activity.getBrowserControlsManager());
             mPopupController = new StubbedSelectionPopupController();
         }
 

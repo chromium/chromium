@@ -175,7 +175,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         if (mManagementDelegate != delegate) {
             mManagementDelegate = delegate;
             if (delegate != null) {
-                setChromeActivity(mManagementDelegate.getChromeActivity());
+                setChromeActivity(mManagementDelegate.getActivity());
             }
         }
     }

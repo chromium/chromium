@@ -287,10 +287,12 @@ public class OverlayPanel extends OverlayPanelAnimation
     /**
      * @param activity The ChromeActivity associated with the panel.
      */
-    public void setChromeActivity(ChromeActivity activity) {
-        mActivity = activity;
+    public void setChromeActivity(Activity activity) {
+        mActivity = (ChromeActivity) activity;
         if (mActivity != null) {
             ApplicationStatus.registerStateListenerForActivity(this, mActivity);
+        } else {
+            throw new RuntimeException("Activity provided to OverlayPanel cannot be null!");
         }
 
         initializeUiState();

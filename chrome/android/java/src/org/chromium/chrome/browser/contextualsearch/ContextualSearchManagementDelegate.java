@@ -4,7 +4,8 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
-import org.chromium.chrome.browser.app.ChromeActivity;
+import android.app.Activity;
+
 import org.chromium.chrome.browser.compositor.bottombar.OverlayContentDelegate;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
@@ -21,7 +22,7 @@ public interface ContextualSearchManagementDelegate {
     /**
      * @return The ChromeActivity that associated with the manager.
      */
-    ChromeActivity getChromeActivity();
+    Activity getActivity();
 
     /**
      * Promotes the current Content View Core in the Contextual Search Panel to its own Tab.
