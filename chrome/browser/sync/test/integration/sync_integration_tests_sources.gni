@@ -23,6 +23,7 @@ if (!is_android) {
     "../browser/sync/test/integration/single_client_dictionary_sync_test.cc",
     "../browser/sync/test/integration/single_client_extension_apps_sync_test.cc",
     "../browser/sync/test/integration/single_client_extensions_sync_test.cc",
+    "../browser/sync/test/integration/single_client_nigori_sync_test.cc",
     "../browser/sync/test/integration/single_client_passwords_sync_test.cc",
     "../browser/sync/test/integration/single_client_polling_sync_test.cc",
     "../browser/sync/test/integration/single_client_preferences_sync_test.cc",
