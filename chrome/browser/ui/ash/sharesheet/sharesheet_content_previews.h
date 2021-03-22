@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_CONTENT_PREVIEWS_H_
 #define CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_CONTENT_PREVIEWS_H_
 
-#include "chrome/browser/ui/ash/sharesheet/sharesheet_image_decode.h"
+#include "chrome/browser/ui/ash/sharesheet/sharesheet_image_decoder.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/views/view.h"
 

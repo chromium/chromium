@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_IMAGE_DECODE_H_
-#define CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_IMAGE_DECODE_H_
+#ifndef CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_IMAGE_DECODER_H_
+#define CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_IMAGE_DECODER_H_
 
 #include "base/memory/weak_ptr.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -38,4 +38,4 @@ class SharesheetImageDecoder {
   base::WeakPtrFactory<SharesheetImageDecoder> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_IMAGE_DECODE_H_
+#endif  // CHROME_BROWSER_UI_ASH_SHARESHEET_SHARESHEET_IMAGE_DECODER_H_

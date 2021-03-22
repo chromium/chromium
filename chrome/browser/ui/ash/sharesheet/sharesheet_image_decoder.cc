@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/sharesheet/sharesheet_image_decode.h"
+#include "chrome/browser/ui/ash/sharesheet/sharesheet_image_decoder.h"
 
 #include <utility>
 
