@@ -1723,8 +1723,11 @@ public class StartSurfaceTest {
     @LargeTest
     @Feature({"StartSurface"})
     @DisableIf.Build(sdk_is_less_than = M, message = "https://crbug.com/1170553")
+    @DisableIf.Build(sdk_is_less_than = N, supported_abis_includes = "x86",
+            message = "https://crbug.com/1170553")
     @CommandLineFlags.Add({BASE_PARAMS + "/single/omnibox_focused_on_new_tab/true"})
-    public void testOmnibox_FocusedOnNewTabInSingleSurface() {
+    public void
+    testOmnibox_FocusedOnNewTabInSingleSurface() {
         if (!mImmediateReturn) {
             pressHomePageButton();
         }
@@ -1795,6 +1798,7 @@ public class StartSurfaceTest {
     @LargeTest
     @Feature({"StartSurface"})
     @DisableIf.Build(sdk_is_less_than = M, message = "https://crbug.com/1170553")
+    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1170553")
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/single/show_last_active_tab_only/true" +
             "/exclude_mv_tiles/true/omnibox_focused_on_new_tab/true"})
