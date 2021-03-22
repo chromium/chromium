@@ -40,7 +40,7 @@ using testing::_;
 using testing::Invoke;
 using testing::StrictMock;
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 namespace {
 
@@ -174,7 +174,7 @@ class TpmChallengeKeySubtleTestBase : public ::testing::Test {
 
   TestingProfile* CreateUserProfile(bool is_affiliated);
   TestingProfile* GetProfile();
-  chromeos::ScopedCrosSettingsTestHelper* GetCrosSettingsHelper();
+  ScopedCrosSettingsTestHelper* GetCrosSettingsHelper();
   chromeos::StubInstallAttributes* GetInstallAttributes();
 
   // Runs StartPrepareKeyStep and checks that the result is equal to
@@ -300,7 +300,7 @@ TestingProfile* TpmChallengeKeySubtleTestBase::CreateUserProfile(
       AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
   fake_user_manager_.AddUserWithAffiliation(test_account, is_affiliated);
 
-  chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+  ProfileHelper::Get()->SetUserToProfileMappingForTesting(
       fake_user_manager_.GetPrimaryUser(), testing_profile);
 
   return testing_profile;
@@ -310,7 +310,7 @@ TestingProfile* TpmChallengeKeySubtleTestBase::GetProfile() {
   return testing_profile_;
 }
 
-chromeos::ScopedCrosSettingsTestHelper*
+ScopedCrosSettingsTestHelper*
 TpmChallengeKeySubtleTestBase::GetCrosSettingsHelper() {
   return signin_profile_->ScopedCrosSettingsTestHelper();
 }
@@ -436,7 +436,8 @@ TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest,
 }
 
 TEST_F(UnaffiliatedUserTpmChallengeKeySubtleTest, DeviceKeyUserNotManaged) {
-  RunOneStepAndExpect(KEY_DEVICE, /*will_register_key=*/false, kEmptyKeyName,
+  RunOneStepAndExpect(KEY_DEVICE,
+                      /*will_register_key=*/false, kEmptyKeyName,
                       TpmChallengeKeyResult::MakeError(
                           TpmChallengeKeyResultCode::kUserNotManagedError));
 }
@@ -452,7 +453,8 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, UserKeyUserPolicyDisabled) {
   GetProfile()->GetTestingPrefService()->SetManagedPref(
       prefs::kAttestationEnabled, std::make_unique<base::Value>(false));
 
-  RunOneStepAndExpect(KEY_USER, /*will_register_key=*/false, kEmptyKeyName,
+  RunOneStepAndExpect(KEY_USER,
+                      /*will_register_key=*/false, kEmptyKeyName,
                       TpmChallengeKeyResult::MakeError(
                           TpmChallengeKeyResultCode::kUserPolicyDisabledError));
 }
@@ -462,7 +464,8 @@ TEST_F(UnaffiliatedUserTpmChallengeKeySubtleTest, UserKeyUserNotAffiliated) {
   GetProfile()->GetTestingPrefService()->SetManagedPref(
       prefs::kAttestationEnabled, std::make_unique<base::Value>(true));
 
-  RunOneStepAndExpect(KEY_USER, /*will_register_key=*/false, kEmptyKeyName,
+  RunOneStepAndExpect(KEY_USER,
+                      /*will_register_key=*/false, kEmptyKeyName,
                       TpmChallengeKeyResult::MakeError(
                           TpmChallengeKeyResultCode::kUserNotManagedError));
 }
@@ -518,7 +521,8 @@ TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, AttestationNotPrepared) {
       ->GetTestInterface()
       ->ConfigureEnrollmentPreparations(false);
 
-  RunOneStepAndExpect(KEY_DEVICE, /*will_register_key=*/false, kEmptyKeyName,
+  RunOneStepAndExpect(KEY_DEVICE,
+                      /*will_register_key=*/false, kEmptyKeyName,
                       TpmChallengeKeyResult::MakeError(
                           TpmChallengeKeyResultCode::kResetRequiredError));
 }
@@ -759,7 +763,8 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, GetPublicKeyFailed) {
       ->GetMutableKeyInfoReply(/*username=*/"", key_name)
       ->set_status(::attestation::STATUS_INVALID_PARAMETER);
 
-  RunOneStepAndExpect(KEY_DEVICE, /*will_register_key=*/true, key_name,
+  RunOneStepAndExpect(KEY_DEVICE,
+                      /*will_register_key=*/true, key_name,
                       TpmChallengeKeyResult::MakeError(
                           TpmChallengeKeyResultCode::kGetPublicKeyFailedError));
 }
@@ -804,10 +809,11 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, NoCertificateUploaderSuccess) {
 
   EXPECT_CALL(mock_attestation_flow_, GetCertificate(_, _, _, _, key_name, _));
 
-  RunOneStepAndExpect(KEY_USER, /*will_register_key=*/true, key_name,
+  RunOneStepAndExpect(KEY_USER,
+                      /*will_register_key=*/true, key_name,
                       TpmChallengeKeyResult::MakePublicKey(GetPublicKey()));
 }
 
 }  // namespace
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

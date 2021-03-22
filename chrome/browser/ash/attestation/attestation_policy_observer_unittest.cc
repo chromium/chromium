@@ -22,7 +22,7 @@
 using testing::_;
 using testing::StrictMock;
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 class AttestationPolicyObserverTest : public ::testing::Test {
@@ -55,4 +55,4 @@ TEST_F(AttestationPolicyObserverTest, FeatureDisabled) {
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

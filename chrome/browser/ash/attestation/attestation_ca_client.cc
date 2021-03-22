@@ -45,7 +45,7 @@ const char kMimeContentType[] = "application/octet-stream";
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 namespace {
@@ -258,4 +258,4 @@ void AttestationCAClient::CheckIfAnyProxyPresent(
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

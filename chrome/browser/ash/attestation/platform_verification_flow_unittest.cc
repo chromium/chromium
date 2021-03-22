@@ -33,7 +33,7 @@ using testing::SetArgPointee;
 using testing::StrictMock;
 using testing::WithArgs;
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 namespace {
@@ -388,4 +388,4 @@ TEST_F(PlatformVerificationFlowTest, AttestationNotPrepared) {
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/attestation/machine_certificate_uploader.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 class MockMachineCertificateUploader : public MachineCertificateUploader {
@@ -25,6 +25,14 @@ class MockMachineCertificateUploader : public MachineCertificateUploader {
   DISALLOW_COPY_AND_ASSIGN(MockMachineCertificateUploader);
 };
 
+}  // namespace attestation
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+namespace attestation {
+using ::ash::attestation::MockMachineCertificateUploader;
 }  // namespace attestation
 }  // namespace chromeos
 

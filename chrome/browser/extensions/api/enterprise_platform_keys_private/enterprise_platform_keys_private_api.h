@@ -37,7 +37,7 @@ class EPKPChallengeKey {
   // context.
   void Run(chromeos::attestation::AttestationKeyType type,
            scoped_refptr<ExtensionFunction> caller,
-           chromeos::attestation::TpmChallengeKeyCallback callback,
+           ash::attestation::TpmChallengeKeyCallback callback,
            const std::string& challenge,
            bool register_key);
 
@@ -46,7 +46,7 @@ class EPKPChallengeKey {
   bool IsExtensionAllowed(Profile* profile,
                           scoped_refptr<const Extension> extension);
 
-  std::unique_ptr<chromeos::attestation::TpmChallengeKey> impl_;
+  std::unique_ptr<ash::attestation::TpmChallengeKey> impl_;
 };
 
 class EnterprisePlatformKeysPrivateChallengeMachineKeyFunction
@@ -59,8 +59,7 @@ class EnterprisePlatformKeysPrivateChallengeMachineKeyFunction
   ResponseAction Run() override;
 
   // Called when the challenge operation is complete.
-  void OnChallengedKey(
-      const chromeos::attestation::TpmChallengeKeyResult& result);
+  void OnChallengedKey(const ash::attestation::TpmChallengeKeyResult& result);
 
   EPKPChallengeKey impl_;
 
@@ -79,8 +78,7 @@ class EnterprisePlatformKeysPrivateChallengeUserKeyFunction
   ResponseAction Run() override;
 
   // Called when the challenge operation is complete.
-  void OnChallengedKey(
-      const chromeos::attestation::TpmChallengeKeyResult& result);
+  void OnChallengedKey(const ash::attestation::TpmChallengeKeyResult& result);
 
   EPKPChallengeKey impl_;
 

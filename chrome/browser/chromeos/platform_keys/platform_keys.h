@@ -164,4 +164,12 @@ struct ClientCertificateRequest {
 }  // namespace platform_keys
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when
+// //chrome/browser/chromeos/platform_keys moved to ash
+namespace ash {
+namespace platform_keys {
+using ::chromeos::platform_keys::Status;
+}  // namespace platform_keys
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_CHROMEOS_PLATFORM_KEYS_PLATFORM_KEYS_H_

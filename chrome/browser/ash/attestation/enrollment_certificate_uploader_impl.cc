@@ -43,7 +43,7 @@ void DBusPrivacyCACallback(
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 EnrollmentCertificateUploaderImpl::EnrollmentCertificateUploaderImpl(
@@ -174,4 +174,4 @@ void EnrollmentCertificateUploaderImpl::Reschedule() {
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

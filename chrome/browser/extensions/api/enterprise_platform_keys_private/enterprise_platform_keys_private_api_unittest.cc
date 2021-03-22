@@ -46,10 +46,10 @@ class EPKPChallengeKeyTestBase : public BrowserWithTestWindowTest {
   }
 
   void SetMockTpmChallenger() {
-    auto mock_tpm_challenge_key = std::make_unique<
-        NiceMock<chromeos::attestation::MockTpmChallengeKey>>();
+    auto mock_tpm_challenge_key =
+        std::make_unique<NiceMock<ash::attestation::MockTpmChallengeKey>>();
     mock_tpm_challenge_key->EnableFake();
-    chromeos::attestation::TpmChallengeKeyFactory::SetForTesting(
+    ash::attestation::TpmChallengeKeyFactory::SetForTesting(
         std::move(mock_tpm_challenge_key));
   }
 
@@ -95,8 +95,7 @@ TEST_F(EPKPChallengeMachineKeyTest, ExtensionNotAllowlisted) {
   prefs_->Set(prefs::kAttestationExtensionAllowlist, empty_allowlist);
 
   EXPECT_EQ(
-      chromeos::attestation::TpmChallengeKeyResult::
-          kExtensionNotAllowedErrorMsg,
+      ash::attestation::TpmChallengeKeyResult::kExtensionNotAllowedErrorMsg,
       utils::RunFunctionAndReturnError(func_.get(), kFuncArgs, browser()));
 }
 
@@ -135,8 +134,7 @@ TEST_F(EPKPChallengeUserKeyTest, ExtensionNotAllowlisted) {
   prefs_->Set(prefs::kAttestationExtensionAllowlist, empty_allowlist);
 
   EXPECT_EQ(
-      chromeos::attestation::TpmChallengeKeyResult::
-          kExtensionNotAllowedErrorMsg,
+      ash::attestation::TpmChallengeKeyResult::kExtensionNotAllowedErrorMsg,
       utils::RunFunctionAndReturnError(func_.get(), kFuncArgs, browser()));
 }
 

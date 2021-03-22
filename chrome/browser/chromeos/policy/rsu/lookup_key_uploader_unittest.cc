@@ -25,8 +25,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using CertificateStatus =
-    chromeos::attestation::EnrollmentCertificateUploader::Status;
-using chromeos::attestation::MockEnrollmentCertificateUploader;
+    ash::attestation::EnrollmentCertificateUploader::Status;
+using ash::attestation::MockEnrollmentCertificateUploader;
 using testing::_;
 using testing::Invoke;
 

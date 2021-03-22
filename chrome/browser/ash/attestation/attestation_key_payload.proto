@@ -6,7 +6,7 @@ syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
-package chromeos.attestation;
+package ash.attestation;
 
 message AttestationKeyPayload {
   // Whether the key's certificate has been uploaded.  This is used for

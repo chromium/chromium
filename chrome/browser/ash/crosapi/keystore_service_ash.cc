@@ -114,15 +114,14 @@ void KeystoreServiceAsh::ChallengeAttestationOnlyKeystore(
 
   std::string key_name_for_spkac;
   if (migrate && (key_type == chromeos::attestation::KEY_DEVICE)) {
-    key_name_for_spkac = base::StrCat(
-        {chromeos::attestation::kEnterpriseMachineKeyForSpkacPrefix, "lacros-",
-         base::UnguessableToken::Create().ToString()});
+    key_name_for_spkac =
+        base::StrCat({ash::attestation::kEnterpriseMachineKeyForSpkacPrefix,
+                      "lacros-", base::UnguessableToken::Create().ToString()});
   }
 
-  std::unique_ptr<chromeos::attestation::TpmChallengeKey> challenge_key =
-      chromeos::attestation::TpmChallengeKeyFactory::Create();
-  chromeos::attestation::TpmChallengeKey* challenge_key_ptr =
-      challenge_key.get();
+  std::unique_ptr<ash::attestation::TpmChallengeKey> challenge_key =
+      ash::attestation::TpmChallengeKeyFactory::Create();
+  ash::attestation::TpmChallengeKey* challenge_key_ptr = challenge_key.get();
   outstanding_challenges_.push_back(std::move(challenge_key));
   challenge_key_ptr->BuildResponse(
       key_type, profile,
@@ -466,7 +465,7 @@ void KeystoreServiceAsh::OnDidSign(SignCallback callback,
 void KeystoreServiceAsh::DidChallengeAttestationOnlyKeystore(
     ChallengeAttestationOnlyKeystoreCallback callback,
     void* challenge_key_ptr,
-    const chromeos::attestation::TpmChallengeKeyResult& result) {
+    const ash::attestation::TpmChallengeKeyResult& result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   crosapi::mojom::KeystoreStringResultPtr result_ptr =
       mojom::KeystoreStringResult::New();

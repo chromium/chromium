@@ -23,13 +23,13 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using CertStatus = chromeos::attestation::EnrollmentCertificateUploader::Status;
+using CertStatus = ash::attestation::EnrollmentCertificateUploader::Status;
 using testing::_;
 using testing::Invoke;
 using testing::StrictMock;
 using testing::WithArgs;
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 namespace {
@@ -152,4 +152,4 @@ TEST_F(EnrollmentCertificateUploaderTest, UploadsOnlyOnce) {
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

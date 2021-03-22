@@ -75,8 +75,7 @@ class ProtectedMediaIdentifierPermissionContext
       bool user_gesture,
       base::Time dialog_show_time,
       permissions::BrowserPermissionCallback callback,
-      chromeos::attestation::PlatformVerificationDialog::ConsentResponse
-          response);
+      ash::attestation::PlatformVerificationDialog::ConsentResponse response);
 
   // |this| is shared among multiple WebContents, so we could receive multiple
   // permission requests. This map tracks all pending requests. Note that we

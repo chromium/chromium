@@ -34,7 +34,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 // static
@@ -149,4 +149,4 @@ void PlatformVerificationDialog::ButtonPressed() {
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

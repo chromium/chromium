@@ -20,7 +20,7 @@
 class Profile;
 class AttestationFlow;
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 //========================= TpmChallengeKeyFactory =============================
@@ -140,4 +140,4 @@ void TpmChallengeKeyImpl::OnRegisterKeyDone(
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

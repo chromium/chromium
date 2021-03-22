@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 // An abstract class for machine certificate uploaders.
@@ -31,6 +31,6 @@ class MachineCertificateUploader {
 };
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ATTESTATION_MACHINE_CERTIFICATE_UPLOADER_H_

@@ -24,7 +24,7 @@ using testing::_;
 using testing::Invoke;
 using testing::StrictMock;
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 namespace {
@@ -387,4 +387,4 @@ TEST_F(AttestationCAClientAttestationServerTest, CheckProxyMultipleCalls) {
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

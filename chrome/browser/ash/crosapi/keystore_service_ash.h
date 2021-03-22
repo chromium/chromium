@@ -14,12 +14,12 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 class TpmChallengeKey;
 struct TpmChallengeKeyResult;
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash
 
 namespace crosapi {
 
@@ -90,10 +90,10 @@ class KeystoreServiceAsh : public mojom::KeystoreService {
   void DidChallengeAttestationOnlyKeystore(
       ChallengeAttestationOnlyKeystoreCallback callback,
       void* challenge,
-      const chromeos::attestation::TpmChallengeKeyResult& result);
+      const ash::attestation::TpmChallengeKeyResult& result);
 
   // Container to keep outstanding challenges alive.
-  std::vector<std::unique_ptr<chromeos::attestation::TpmChallengeKey>>
+  std::vector<std::unique_ptr<ash::attestation::TpmChallengeKey>>
       outstanding_challenges_;
   mojo::ReceiverSet<mojom::KeystoreService> receivers_;
 

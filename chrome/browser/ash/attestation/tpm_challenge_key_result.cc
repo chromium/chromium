@@ -11,7 +11,7 @@
 #include "base/notreached.h"
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 namespace {
 std::string Base64EncodeStr(const std::string& str) {
@@ -189,4 +189,4 @@ std::ostream& operator<<(std::ostream& os,
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

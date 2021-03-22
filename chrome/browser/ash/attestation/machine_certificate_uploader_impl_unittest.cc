@@ -29,7 +29,7 @@ using testing::Invoke;
 using testing::StrictMock;
 using testing::WithArgs;
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 namespace {
@@ -368,4 +368,4 @@ TEST_F(MachineCertificateUploaderTestNoRefresh, DBusFailureRetry) {
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

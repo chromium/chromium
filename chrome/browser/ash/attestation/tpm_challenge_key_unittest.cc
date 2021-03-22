@@ -20,7 +20,7 @@ using testing::StrictMock;
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 namespace {
 
@@ -237,4 +237,4 @@ TEST_F(TpmChallengeKeyTest, RegisterSuccess) {
 
 }  // namespace
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

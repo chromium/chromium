@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 class MachineCertificateUploader;
@@ -46,6 +46,6 @@ class AttestationPolicyObserver {
 };
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ATTESTATION_ATTESTATION_POLICY_OBSERVER_H_

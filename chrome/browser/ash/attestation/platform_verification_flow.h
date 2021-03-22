@@ -14,6 +14,12 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+// TODO(https://crbug.com/1164001): forward declare AttestatoinFlow
+// after //chromeos/attestation is moved to ash.
+#include "chromeos/attestation/attestation_flow.h"
+// TODO(https://crbug.com/1164001): forward declare AttestatoinClient
+// before ChromeOS source migration.
+#include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "url/gurl.h"
@@ -22,19 +28,15 @@ class AccountId;
 
 namespace content {
 class WebContents;
-}
+}  // namespace content
 
 namespace user_manager {
 class User;
-}
+}  // namespace user_manager
 
-namespace chromeos {
-
-class AttestationClient;
-
+namespace ash {
 namespace attestation {
 
-class AttestationFlow;
 class PlatformVerificationFlowTest;
 
 // This class allows platform verification for the content protection use case.
@@ -247,6 +249,6 @@ class PlatformVerificationFlow
 };
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ATTESTATION_PLATFORM_VERIFICATION_FLOW_H_

@@ -12,7 +12,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 namespace {
@@ -81,4 +81,4 @@ bool GetFakeCertificatePEM(const base::TimeDelta& expiry,
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

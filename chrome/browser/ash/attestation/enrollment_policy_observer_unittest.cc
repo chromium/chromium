@@ -25,14 +25,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using CertificateStatus =
-    chromeos::attestation::EnrollmentCertificateUploader::Status;
+    ash::attestation::EnrollmentCertificateUploader::Status;
 using testing::_;
 using testing::Invoke;
 using testing::Return;
 using testing::StrictMock;
 using testing::WithArgs;
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 namespace {
@@ -236,4 +236,4 @@ TEST_F(EnrollmentPolicyObserverTest, DBusFailureRetryUntilLimit) {
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

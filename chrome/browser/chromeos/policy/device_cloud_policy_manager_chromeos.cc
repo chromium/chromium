@@ -197,9 +197,9 @@ void DeviceCloudPolicyManagerChromeOS::StartConnection(
       g_browser_process->shared_url_loader_factory());
 
   enrollment_certificate_uploader_.reset(
-      new chromeos::attestation::EnrollmentCertificateUploaderImpl(client()));
+      new ash::attestation::EnrollmentCertificateUploaderImpl(client()));
   enrollment_policy_observer_.reset(
-      new chromeos::attestation::EnrollmentPolicyObserver(
+      new ash::attestation::EnrollmentPolicyObserver(
           client(), enrollment_certificate_uploader_.get()));
   lookup_key_uploader_.reset(
       new LookupKeyUploader(device_store(), g_browser_process->local_state(),
@@ -210,9 +210,9 @@ void DeviceCloudPolicyManagerChromeOS::StartConnection(
   if (!(base::CommandLine::ForCurrentProcess()->HasSwitch(
           chromeos::switches::kDisableMachineCertRequest))) {
     machine_certificate_uploader_.reset(
-        new chromeos::attestation::MachineCertificateUploaderImpl(client()));
+        new ash::attestation::MachineCertificateUploaderImpl(client()));
     attestation_policy_observer_.reset(
-        new chromeos::attestation::AttestationPolicyObserver(
+        new ash::attestation::AttestationPolicyObserver(
             machine_certificate_uploader_.get()));
   }
 

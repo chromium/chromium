@@ -35,7 +35,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 using Result = TpmChallengeKeyResult;
@@ -90,7 +90,7 @@ bool TpmChallengeKeySubtleFactory::WillReturnTestingInstance() {
 namespace {
 // Returns true if the device is enterprise managed.
 bool IsEnterpriseDevice() {
-  return InstallAttributes::Get()->IsEnterpriseManaged();
+  return chromeos::InstallAttributes::Get()->IsEnterpriseManaged();
 }
 
 // For personal devices, we don't need to check if remote attestation is
@@ -419,7 +419,7 @@ void TpmChallengeKeySubtleImpl::GetEnrollmentPreparationsCallback(
   }
 
   if (!AttestationClient::IsAttestationPrepared(reply)) {
-    TpmManagerClient::Get()->GetTpmNonsensitiveStatus(
+    chromeos::TpmManagerClient::Get()->GetTpmNonsensitiveStatus(
         ::tpm_manager::GetTpmNonsensitiveStatusRequest(),
         base::BindOnce(
             &TpmChallengeKeySubtleImpl::PrepareKeyErrorHandlerCallback,
@@ -581,7 +581,7 @@ void TpmChallengeKeySubtleImpl::StartSignChallengeStep(
   request.set_key_label(key_name_for_challenge);
   request.set_key_name_for_spkac(key_name_for_spkac);
   request.set_domain(GetEmail());
-  request.set_device_id(InstallAttributes::Get()->GetDeviceId());
+  request.set_device_id(chromeos::InstallAttributes::Get()->GetDeviceId());
   request.set_include_signed_public_key(will_register_key_);
   request.set_challenge(challenge);
   request.set_va_type(AttestationClient::GetVerifiedAccessServerType());
@@ -669,4 +669,4 @@ void TpmChallengeKeySubtleImpl::MarkCorporateKeyCallback(
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

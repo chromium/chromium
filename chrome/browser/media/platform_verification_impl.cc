@@ -88,7 +88,7 @@ void PlatformVerificationImpl::ChallengePlatform(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!platform_verification_flow_)
     platform_verification_flow_ =
-        base::MakeRefCounted<chromeos::attestation::PlatformVerificationFlow>();
+        base::MakeRefCounted<ash::attestation::PlatformVerificationFlow>();
 
   platform_verification_flow_->ChallengePlatformKey(
       content::WebContents::FromRenderFrameHost(render_frame_host()),
@@ -111,7 +111,7 @@ void PlatformVerificationImpl::OnPlatformChallenged(
   DVLOG(2) << __func__ << ": " << result;
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (result != chromeos::attestation::PlatformVerificationFlow::SUCCESS) {
+  if (result != ash::attestation::PlatformVerificationFlow::SUCCESS) {
     DCHECK(signed_data.empty());
     DCHECK(signature.empty());
     DCHECK(platform_key_certificate.empty());

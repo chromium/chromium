@@ -19,22 +19,21 @@
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 
-namespace base {
-class SequencedTaskRunner;
-}
-
-namespace chromeos {
-
-class InstallAttributes;
-
+namespace ash {
 namespace attestation {
-
 class AttestationPolicyObserver;
 class EnrollmentPolicyObserver;
 class EnrollmentCertificateUploader;
 class MachineCertificateUploader;
-
 }  // namespace attestation
+}  // namespace ash
+
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
+
+namespace chromeos {
+class InstallAttributes;
 }  // namespace chromeos
 
 class PrefRegistrySimple;
@@ -136,14 +135,14 @@ class DeviceCloudPolicyManagerChromeOS : public CloudPolicyManager {
 
   // Return a pointer to the enrollment certificate uploader. The callers do
   // not take ownership of that pointer.
-  chromeos::attestation::EnrollmentCertificateUploader*
+  ash::attestation::EnrollmentCertificateUploader*
   GetEnrollmentCertificateUploader() {
     return enrollment_certificate_uploader_.get();
   }
 
   // Return a pointer to the machine certificate uploader. The callers do
   // not take ownership of that pointer.
-  chromeos::attestation::MachineCertificateUploader*
+  ash::attestation::MachineCertificateUploader*
   GetMachineCertificateUploader() {
     return machine_certificate_uploader_.get();
   }
@@ -186,13 +185,13 @@ class DeviceCloudPolicyManagerChromeOS : public CloudPolicyManager {
   // PrefService instance to read the policy refresh rate from.
   PrefService* local_state_;
 
-  std::unique_ptr<chromeos::attestation::EnrollmentCertificateUploader>
+  std::unique_ptr<ash::attestation::EnrollmentCertificateUploader>
       enrollment_certificate_uploader_;
-  std::unique_ptr<chromeos::attestation::EnrollmentPolicyObserver>
+  std::unique_ptr<ash::attestation::EnrollmentPolicyObserver>
       enrollment_policy_observer_;
-  std::unique_ptr<chromeos::attestation::MachineCertificateUploader>
+  std::unique_ptr<ash::attestation::MachineCertificateUploader>
       machine_certificate_uploader_;
-  std::unique_ptr<chromeos::attestation::AttestationPolicyObserver>
+  std::unique_ptr<ash::attestation::AttestationPolicyObserver>
       attestation_policy_observer_;
 
   // Uploader for remote server unlock related lookup keys.

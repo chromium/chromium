@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/attestation/mock_machine_certificate_uploader.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 MockMachineCertificateUploader::MockMachineCertificateUploader() = default;
@@ -12,4 +12,4 @@ MockMachineCertificateUploader::MockMachineCertificateUploader() = default;
 MockMachineCertificateUploader::~MockMachineCertificateUploader() = default;
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

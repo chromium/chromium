@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 // An abstract class for enrollment certificate uploaders.
@@ -32,6 +32,6 @@ class EnrollmentCertificateUploader {
 };
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ATTESTATION_ENROLLMENT_CERTIFICATE_UPLOADER_H_

@@ -295,7 +295,7 @@ EnterprisePlatformKeysChallengeMachineKeyFunction::Run() {
   std::unique_ptr<api_epk::ChallengeMachineKey::Params> params(
       api_epk::ChallengeMachineKey::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
-  chromeos::attestation::TpmChallengeKeyCallback callback = base::BindOnce(
+  ash::attestation::TpmChallengeKeyCallback callback = base::BindOnce(
       &EnterprisePlatformKeysChallengeMachineKeyFunction::OnChallengedKey,
       this);
   // base::Unretained is safe on impl_ since its life-cycle matches |this| and
@@ -310,7 +310,7 @@ EnterprisePlatformKeysChallengeMachineKeyFunction::Run() {
 }
 
 void EnterprisePlatformKeysChallengeMachineKeyFunction::OnChallengedKey(
-    const chromeos::attestation::TpmChallengeKeyResult& result) {
+    const ash::attestation::TpmChallengeKeyResult& result) {
   if (result.IsSuccess()) {
     Respond(ArgumentList(api_epk::ChallengeMachineKey::Results::Create(
         VectorFromString(result.challenge_response))));
@@ -330,7 +330,7 @@ EnterprisePlatformKeysChallengeUserKeyFunction::Run() {
   std::unique_ptr<api_epk::ChallengeUserKey::Params> params(
       api_epk::ChallengeUserKey::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
-  chromeos::attestation::TpmChallengeKeyCallback callback = base::BindOnce(
+  ash::attestation::TpmChallengeKeyCallback callback = base::BindOnce(
       &EnterprisePlatformKeysChallengeUserKeyFunction::OnChallengedKey, this);
   // base::Unretained is safe on impl_ since its life-cycle matches |this| and
   // |callback| holds a reference to |this|.
@@ -344,7 +344,7 @@ EnterprisePlatformKeysChallengeUserKeyFunction::Run() {
 }
 
 void EnterprisePlatformKeysChallengeUserKeyFunction::OnChallengedKey(
-    const chromeos::attestation::TpmChallengeKeyResult& result) {
+    const ash::attestation::TpmChallengeKeyResult& result) {
   if (result.IsSuccess()) {
     Respond(ArgumentList(api_epk::ChallengeUserKey::Results::Create(
         VectorFromString(result.challenge_response))));

@@ -10,7 +10,7 @@
 #include "chrome/browser/ash/attestation/tpm_challenge_key_subtle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 class MockTpmChallengeKeySubtle : public TpmChallengeKeySubtle {
@@ -51,6 +51,6 @@ class MockTpmChallengeKeySubtle : public TpmChallengeKeySubtle {
 };
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ATTESTATION_MOCK_TPM_CHALLENGE_KEY_SUBTLE_H_

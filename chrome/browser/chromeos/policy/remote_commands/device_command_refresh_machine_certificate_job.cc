@@ -20,7 +20,7 @@ namespace policy {
 
 DeviceCommandRefreshMachineCertificateJob::
     DeviceCommandRefreshMachineCertificateJob(
-        chromeos::attestation::MachineCertificateUploader*
+        ash::attestation::MachineCertificateUploader*
             machine_certificate_uploader)
     : machine_certificate_uploader_(machine_certificate_uploader) {}
 

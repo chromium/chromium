@@ -19,11 +19,11 @@ class SimpleURLLoader;
 
 namespace mojom {
 class NetworkContext;
-}
+}  // namespace mojom
 
 }  // namespace network
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 // This class is a ServerProxy implementation for the Chrome OS attestation
@@ -71,6 +71,6 @@ class AttestationCAClient : public ServerProxy {
 };
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ATTESTATION_ATTESTATION_CA_CLIENT_H_

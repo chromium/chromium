@@ -41,7 +41,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-using chromeos::attestation::PlatformVerificationDialog;
+using ash::attestation::PlatformVerificationDialog;
 #endif
 
 ProtectedMediaIdentifierPermissionContext::

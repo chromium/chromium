@@ -41,11 +41,11 @@
 
 namespace em = enterprise_management;
 
+using ash::attestation::MockTpmChallengeKeySubtle;
 using base::TimeDelta;
 using base::test::IsJson;
 using base::test::ParseJson;
 using base::test::RunOnceCallback;
-using chromeos::attestation::MockTpmChallengeKeySubtle;
 using testing::_;
 using testing::AtLeast;
 using testing::Mock;

@@ -8,7 +8,7 @@
 #include <ostream>
 #include <string>
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -89,6 +89,15 @@ struct TpmChallengeKeyResult {
 // For unit tests and debugging.
 std::ostream& operator<<(std::ostream& os, const TpmChallengeKeyResult& result);
 
+}  // namespace attestation
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+namespace attestation {
+using ::ash::attestation::TpmChallengeKeyResult;
+using ::ash::attestation::TpmChallengeKeyResultCode;
 }  // namespace attestation
 }  // namespace chromeos
 

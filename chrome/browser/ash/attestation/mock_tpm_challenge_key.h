@@ -11,7 +11,7 @@
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 class MockTpmChallengeKey : public TpmChallengeKey {
@@ -35,6 +35,6 @@ class MockTpmChallengeKey : public TpmChallengeKey {
 };
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ATTESTATION_MOCK_TPM_CHALLENGE_KEY_H_

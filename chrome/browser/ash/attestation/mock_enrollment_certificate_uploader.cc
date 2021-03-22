@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/attestation/mock_enrollment_certificate_uploader.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 MockEnrollmentCertificateUploader::MockEnrollmentCertificateUploader() =
@@ -14,4 +14,4 @@ MockEnrollmentCertificateUploader::~MockEnrollmentCertificateUploader() =
     default;
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

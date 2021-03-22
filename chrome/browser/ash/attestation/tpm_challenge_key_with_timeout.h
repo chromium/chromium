@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/attestation/tpm_challenge_key.h"
 #include "chrome/browser/profiles/profile.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 // Adds timeout restriction to |TpmChallengeKey| class. Can be safely deleted
@@ -48,6 +48,14 @@ class TpmChallengeKeyWithTimeout final {
   base::WeakPtrFactory<TpmChallengeKeyWithTimeout> weak_factory_{this};
 };
 
+}  // namespace attestation
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+namespace attestation {
+using ::ash::attestation::TpmChallengeKeyWithTimeout;
 }  // namespace attestation
 }  // namespace chromeos
 

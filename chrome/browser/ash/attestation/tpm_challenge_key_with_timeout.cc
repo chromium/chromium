@@ -7,7 +7,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 TpmChallengeKeyWithTimeout::TpmChallengeKeyWithTimeout() = default;
@@ -54,4 +54,4 @@ void TpmChallengeKeyWithTimeout::ResolveCallback(
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

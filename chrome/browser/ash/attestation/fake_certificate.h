@@ -9,7 +9,7 @@
 
 #include "base/time/time.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 // Creates a self-signed |certificate| based on constant key material.  The
@@ -25,6 +25,6 @@ bool GetFakeCertificatePEM(const base::TimeDelta& expiry,
                            std::string* certificate);
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ATTESTATION_FAKE_CERTIFICATE_H_

@@ -60,7 +60,7 @@ void DBusPrivacyCACallback(
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 MachineCertificateUploaderImpl::MachineCertificateUploaderImpl(
@@ -325,4 +325,4 @@ void MachineCertificateUploaderImpl::RunCallbacks(bool status) {
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

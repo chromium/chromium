@@ -292,4 +292,13 @@ class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlow {
 }  // namespace attestation
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when //chromeos/attestation
+// moved to ash
+namespace ash {
+namespace attestation {
+using ::chromeos::attestation::AttestationFlow;
+using ::chromeos::attestation::ServerProxy;
+}  // namespace attestation
+}  // namespace ash
+
 #endif  // CHROMEOS_ATTESTATION_ATTESTATION_FLOW_H_

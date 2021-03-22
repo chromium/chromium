@@ -38,7 +38,7 @@ const int kRetryLimit = 100;
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 EnrollmentPolicyObserver::EnrollmentPolicyObserver(
@@ -191,4 +191,4 @@ void EnrollmentPolicyObserver::OnUploadComplete(
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

@@ -1112,7 +1112,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   chromeos::StartupUtils::RegisterOobeProfilePrefs(registry);
   chromeos::UserImageSyncObserver::RegisterProfilePrefs(registry);
   crostini::prefs::RegisterProfilePrefs(registry);
-  chromeos::attestation::TpmChallengeKey::RegisterProfilePrefs(registry);
+  ash::attestation::TpmChallengeKey::RegisterProfilePrefs(registry);
 #if defined(USE_CUPS)
   extensions::PrintingAPIHandler::RegisterProfilePrefs(registry);
 #endif

@@ -9,7 +9,7 @@
 using ::testing::Invoke;
 using ::testing::WithArgs;
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 MockTpmChallengeKey::MockTpmChallengeKey() = default;
@@ -28,4 +28,4 @@ void MockTpmChallengeKey::FakeBuildResponseSuccess(
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

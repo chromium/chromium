@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/attestation/mock_tpm_challenge_key_subtle.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 MockTpmChallengeKeySubtle::MockTpmChallengeKeySubtle() = default;
 MockTpmChallengeKeySubtle::~MockTpmChallengeKeySubtle() = default;
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

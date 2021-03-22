@@ -20,7 +20,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using chromeos::attestation::PlatformVerificationFlow;
+using ash::attestation::PlatformVerificationFlow;
 
 namespace policy {
 

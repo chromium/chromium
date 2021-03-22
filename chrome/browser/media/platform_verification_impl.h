@@ -46,7 +46,7 @@ class PlatformVerificationImpl final
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   using PlatformVerificationResult =
-      chromeos::attestation::PlatformVerificationFlow::Result;
+      ash::attestation::PlatformVerificationFlow::Result;
 
   void OnPlatformChallenged(ChallengePlatformCallback callback,
                             PlatformVerificationResult result,
@@ -59,7 +59,7 @@ class PlatformVerificationImpl final
                            const std::vector<uint8_t>& storage_id);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  scoped_refptr<chromeos::attestation::PlatformVerificationFlow>
+  scoped_refptr<ash::attestation::PlatformVerificationFlow>
       platform_verification_flow_;
 #endif
 

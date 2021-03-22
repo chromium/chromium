@@ -44,7 +44,7 @@
 
 namespace {
 
-using chromeos::attestation::PlatformVerificationFlow;
+using ash::attestation::PlatformVerificationFlow;
 
 const int kTimeoutInSeconds = 8;
 const char kAttestationResultHistogram[] =
@@ -54,9 +54,8 @@ const char kAttestationAvailableHistogram[] =
 const int kOpportunisticRenewalThresholdInDays = 30;
 
 // A helper to call a ChallengeCallback with an error result.
-void ReportError(
-    PlatformVerificationFlow::ChallengeCallback callback,
-    chromeos::attestation::PlatformVerificationFlow::Result error) {
+void ReportError(PlatformVerificationFlow::ChallengeCallback callback,
+                 PlatformVerificationFlow::Result error) {
   UMA_HISTOGRAM_ENUMERATION(kAttestationResultHistogram, error,
                             PlatformVerificationFlow::RESULT_MAX);
   std::move(callback).Run(error, std::string(), std::string(), std::string());
@@ -64,7 +63,7 @@ void ReportError(
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 // A default implementation of the Delegate interface.
@@ -427,4 +426,4 @@ void PlatformVerificationFlow::RenewCertificateCallback(
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

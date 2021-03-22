@@ -14,16 +14,17 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/enrollment_certificate_uploader.h"
+// TODO(https://crbug.com/1164001): forward declare AttestatoinFlow
+// after //chromeos/attestation is moved to ash.
+#include "chromeos/attestation/attestation_flow.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 
 namespace policy {
 class CloudPolicyClient;
-}
+}  // namespace policy
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
-
-class AttestationFlow;
 
 // A class which uploads enterprise enrollment certificates.
 class EnrollmentCertificateUploaderImpl : public EnrollmentCertificateUploader {
@@ -96,6 +97,6 @@ class EnrollmentCertificateUploaderImpl : public EnrollmentCertificateUploader {
 };
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ATTESTATION_ENROLLMENT_CERTIFICATE_UPLOADER_IMPL_H_

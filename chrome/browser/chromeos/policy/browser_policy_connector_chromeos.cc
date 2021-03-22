@@ -567,7 +567,7 @@ void BrowserPolicyConnectorChromeOS::RestartDeviceCloudPolicyInitializer() {
 std::unique_ptr<chromeos::attestation::AttestationFlow>
 BrowserPolicyConnectorChromeOS::CreateAttestationFlow() {
   return std::make_unique<chromeos::attestation::AttestationFlow>(
-      std::make_unique<chromeos::attestation::AttestationCAClient>());
+      std::make_unique<ash::attestation::AttestationCAClient>());
 }
 
 chromeos::AffiliationIDSet

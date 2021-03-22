@@ -18,9 +18,9 @@
 
 namespace policy {
 class CloudPolicyClient;
-}
+}  // namespace policy
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 // A class which observes policy changes and triggers uploading identification
@@ -102,6 +102,6 @@ class EnrollmentPolicyObserver : public DeviceSettingsService::Observer {
 };
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ATTESTATION_ENROLLMENT_POLICY_OBSERVER_H_

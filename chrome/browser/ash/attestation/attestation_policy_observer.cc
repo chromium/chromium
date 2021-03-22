@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "content/public/browser/browser_thread.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 AttestationPolicyObserver::AttestationPolicyObserver(
@@ -48,4 +48,4 @@ void AttestationPolicyObserver::Start() {
 }
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

@@ -24,7 +24,7 @@ const base::TimeDelta LookupKeyUploader::kRetryFrequency =
 LookupKeyUploader::LookupKeyUploader(
     DeviceCloudPolicyStoreChromeOS* policy_store,
     PrefService* pref_service,
-    chromeos::attestation::EnrollmentCertificateUploader* certificate_uploader)
+    ash::attestation::EnrollmentCertificateUploader* certificate_uploader)
     : policy_store_(policy_store),
       prefs_(pref_service),
       certificate_uploader_(certificate_uploader),
@@ -107,10 +107,10 @@ void LookupKeyUploader::OnRsuDeviceIdReceived(
 
 void LookupKeyUploader::OnEnrollmentCertificateUploaded(
     const std::string& encoded_uploaded_key,
-    chromeos::attestation::EnrollmentCertificateUploader::Status status) {
+    ash::attestation::EnrollmentCertificateUploader::Status status) {
   const bool success =
       status ==
-      chromeos::attestation::EnrollmentCertificateUploader::Status::kSuccess;
+      ash::attestation::EnrollmentCertificateUploader::Status::kSuccess;
   Result(encoded_uploaded_key, success);
 }
 

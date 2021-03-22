@@ -16,9 +16,9 @@
 
 namespace content {
 class WebContents;
-}
+}  // namespace content
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 // A tab-modal dialog UI to ask the user for PlatformVerificationFlow.
@@ -63,6 +63,6 @@ class PlatformVerificationDialog : public views::DialogDelegateView,
 };
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ATTESTATION_PLATFORM_VERIFICATION_DIALOG_H_

@@ -89,4 +89,29 @@ extern const char kContentProtectionKeyPrefix[];
 }  // namespace attestation
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove before finalizing ChromeOS
+// source migration.
+namespace ash {
+namespace attestation {
+using ::chromeos::attestation::ATTESTATION_SERVER_BAD_REQUEST_FAILURE;
+using ::chromeos::attestation::ATTESTATION_SUCCESS;
+using ::chromeos::attestation::ATTESTATION_UNSPECIFIED_FAILURE;
+using ::chromeos::attestation::AttestationCertificateProfile;
+using ::chromeos::attestation::AttestationKeyType;
+using ::chromeos::attestation::AttestationStatus;
+using ::chromeos::attestation::DEFAULT_PCA;
+using ::chromeos::attestation::kContentProtectionKeyPrefix;
+using ::chromeos::attestation::kEnterpriseMachineKey;
+using ::chromeos::attestation::kEnterpriseUserKey;
+using ::chromeos::attestation::KEY_DEVICE;
+using ::chromeos::attestation::KEY_USER;
+using ::chromeos::attestation::PrivacyCAType;
+using ::chromeos::attestation::PROFILE_CONTENT_PROTECTION_CERTIFICATE;
+using ::chromeos::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE;
+using ::chromeos::attestation::PROFILE_ENTERPRISE_MACHINE_CERTIFICATE;
+using ::chromeos::attestation::PROFILE_ENTERPRISE_USER_CERTIFICATE;
+using ::chromeos::attestation::TEST_PCA;
+}  // namespace attestation
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_CONSTANTS_ATTESTATION_CONSTANTS_H_

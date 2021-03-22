@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/attestation/enrollment_certificate_uploader.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 class MockEnrollmentCertificateUploader : public EnrollmentCertificateUploader {
@@ -26,6 +26,6 @@ class MockEnrollmentCertificateUploader : public EnrollmentCertificateUploader {
 };
 
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ATTESTATION_MOCK_ENROLLMENT_CERTIFICATE_UPLOADER_H_

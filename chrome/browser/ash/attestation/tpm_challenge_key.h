@@ -19,9 +19,9 @@ class AttestationFlow;
 
 namespace user_prefs {
 class PrefRegistrySyncable;
-}
+}  // namespace user_prefs
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 // Prefix for naming machine keys used for SignedPublicKeyAndChallenge when
@@ -117,6 +117,15 @@ class TpmChallengeKeyImpl final : public TpmChallengeKey {
   base::WeakPtrFactory<TpmChallengeKeyImpl> weak_factory_{this};
 };
 
+}  // namespace attestation
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+namespace attestation {
+using ::ash::attestation::TpmChallengeKeyFactory;
+using ::ash::attestation::TpmChallengeKeyImpl;
 }  // namespace attestation
 }  // namespace chromeos
 

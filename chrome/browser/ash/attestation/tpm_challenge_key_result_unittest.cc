@@ -6,7 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 namespace {
 
@@ -87,4 +87,4 @@ TEST(TpmChallengeKeyResultTest, OperatorEqual) {
 
 }  // namespace
 }  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash

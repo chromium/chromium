@@ -25,7 +25,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 namespace attestation {
 
 class MachineCertificateUploader;
@@ -243,6 +243,15 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
   base::WeakPtrFactory<TpmChallengeKeySubtleImpl> weak_factory_{this};
 };
 
+}  // namespace attestation
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+namespace attestation {
+using ::ash::attestation::TpmChallengeKeySubtle;
+using ::ash::attestation::TpmChallengeKeySubtleFactory;
 }  // namespace attestation
 }  // namespace chromeos
 
