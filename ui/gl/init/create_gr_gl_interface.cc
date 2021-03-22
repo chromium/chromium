@@ -552,34 +552,6 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   functions->fBlitFramebuffer =
       bind_with_flush_on_mac(gl->glBlitFramebufferFn, version_info.is_angle);
 
-  functions->fMatrixLoadf = gl->glMatrixLoadfEXTFn;
-  functions->fMatrixLoadIdentity = gl->glMatrixLoadIdentityEXTFn;
-  functions->fPathCommands = gl->glPathCommandsNVFn;
-  functions->fPathParameteri = gl->glPathParameteriNVFn;
-  functions->fPathParameterf = gl->glPathParameterfNVFn;
-  functions->fGenPaths = gl->glGenPathsNVFn;
-  functions->fDeletePaths = gl->glDeletePathsNVFn;
-  functions->fIsPath = gl->glIsPathNVFn;
-  functions->fPathStencilFunc = gl->glPathStencilFuncNVFn;
-  functions->fStencilFillPath = gl->glStencilFillPathNVFn;
-  functions->fStencilStrokePath = gl->glStencilStrokePathNVFn;
-  functions->fStencilFillPathInstanced = gl->glStencilFillPathInstancedNVFn;
-  functions->fStencilStrokePathInstanced = gl->glStencilStrokePathInstancedNVFn;
-  functions->fCoverFillPath = gl->glCoverFillPathNVFn;
-  functions->fCoverStrokePath = gl->glCoverStrokePathNVFn;
-  functions->fCoverFillPathInstanced = gl->glCoverFillPathInstancedNVFn;
-  functions->fCoverStrokePathInstanced = gl->glCoverStrokePathInstancedNVFn;
-  functions->fStencilThenCoverFillPath = gl->glStencilThenCoverFillPathNVFn;
-  functions->fStencilThenCoverStrokePath = gl->glStencilThenCoverStrokePathNVFn;
-  functions->fStencilThenCoverFillPathInstanced =
-      gl->glStencilThenCoverFillPathInstancedNVFn;
-  functions->fStencilThenCoverStrokePathInstanced =
-      gl->glStencilThenCoverStrokePathInstancedNVFn;
-  functions->fProgramPathFragmentInputGen =
-      gl->glProgramPathFragmentInputGenNVFn;
-  functions->fBindFragmentInputLocation =
-      gl->glBindFragmentInputLocationCHROMIUMFn;
-
   functions->fCoverageModulation = gl->glCoverageModulationNVFn;
 
   functions->fInsertEventMarker = gl->glInsertEventMarkerEXTFn;
@@ -594,8 +566,6 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
 
   functions->fInvalidateFramebuffer = gl->glInvalidateFramebufferFn;
   functions->fInvalidateSubFramebuffer = gl->glInvalidateSubFramebufferFn;
-
-  functions->fGetProgramResourceLocation = gl->glGetProgramResourceLocationFn;
 
   // GL_NV_bindless_texture
   // functions->fGetTextureHandle = gl->glGetTextureHandleNVFn;
