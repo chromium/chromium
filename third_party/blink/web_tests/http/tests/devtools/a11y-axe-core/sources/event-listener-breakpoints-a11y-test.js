@@ -8,8 +8,7 @@
   await TestRunner.loadLegacyModule('browser_debugger');
 
   await UI.viewManager.showView('sources.eventListenerBreakpoints');
-  const eventListenerWidget = self.runtime.sharedInstance(
-      BrowserDebugger.EventListenerBreakpointsSidebarPane);
+  const eventListenerWidget = BrowserDebugger.EventListenerBreakpointsSidebarPane.instance();
   TestRunner.addResult('Setting event listener breakpoints.');
   const {checkbox, element} = eventListenerWidget._categories.get('Animation');
   element.revealAndSelect();
