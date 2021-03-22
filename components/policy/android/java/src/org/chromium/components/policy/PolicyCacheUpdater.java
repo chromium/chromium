@@ -19,12 +19,14 @@ import java.util.List;
 @JNINamespace("policy::android")
 public class PolicyCacheUpdater {
     // A list of policies that will be cached. Note that policy won't be cached in case of any error
-    // including but limited to one of following situations:
-    //  1) Dangerous policies is ignored on non-fully managed devices.
+    // including but not limited to one of following situations:
+    //  1) Dangerous policy is ignored on non-fully managed devices.
     //  2) Policy is deprecated and overridden by its replacement.
     //  3) Any error set by ConfigurationPolicyHandler.
     static List<Pair<String, PolicyCache.Type>> sPolicies =
-            Arrays.asList(Pair.create("BrowserSignin", PolicyCache.Type.Integer));
+            Arrays.asList(Pair.create("BrowserSignin", PolicyCache.Type.Integer),
+                    Pair.create("URLBlocklist", PolicyCache.Type.List),
+                    Pair.create("URLAllowlist", PolicyCache.Type.List));
 
     @CalledByNative
     public static void cachePolicies(PolicyMap policyMap) {
