@@ -220,6 +220,7 @@ bool ShelfButtonIsInDrag(const ShelfItemType item_type,
     case TYPE_PINNED_APP:
     case TYPE_BROWSER_SHORTCUT:
     case TYPE_APP:
+    case TYPE_UNPINNED_BROWSER_SHORTCUT:
       return static_cast<const ShelfAppButton*>(item_view)->state() &
              ShelfAppButton::STATE_DRAGGING;
     case TYPE_DIALOG:
@@ -741,6 +742,7 @@ void ShelfView::ButtonPressed(views::Button* sender,
     case TYPE_PINNED_APP:
     case TYPE_BROWSER_SHORTCUT:
     case TYPE_APP:
+    case TYPE_UNPINNED_BROWSER_SHORTCUT:
       Shell::Get()->metrics()->RecordUserMetricsAction(
           UMA_LAUNCHER_CLICK_ON_APP);
       break;
@@ -1036,6 +1038,7 @@ views::View* ShelfView::CreateViewForItem(const ShelfItem& item) {
     case TYPE_PINNED_APP:
     case TYPE_BROWSER_SHORTCUT:
     case TYPE_APP:
+    case TYPE_UNPINNED_BROWSER_SHORTCUT:
     case TYPE_DIALOG: {
       ShelfAppButton* button = new ShelfAppButton(
           this, shelf_button_delegate_ ? shelf_button_delegate_ : this);
@@ -1792,7 +1795,8 @@ bool ShelfView::CanDragAcrossSeparator(views::View* drag_view) const {
 
   DCHECK(drag_view);
   // The dragged item is not allowed to be unpinned if |drag_view| is pinned by
-  // policy, dragged from app list, or its item type is TYPE_BROWSER_SHORTCUT.
+  // policy, dragged from app list, or its item type is TYPE_BROWSER_SHORTCUT
+  // or TYPE_UNPINNED_BROWSER_SHORTCUT.
   // Therefore, the |drag_view| can not be dragged across the separator.
   bool can_change_pin_state =
       ShelfItemForView(drag_view)->type == TYPE_PINNED_APP ||
@@ -2128,6 +2132,7 @@ void ShelfView::ShelfItemChanged(int model_index, const ShelfItem& old_item) {
     case TYPE_PINNED_APP:
     case TYPE_BROWSER_SHORTCUT:
     case TYPE_APP:
+    case TYPE_UNPINNED_BROWSER_SHORTCUT:
     case TYPE_DIALOG: {
       CHECK_EQ(ShelfAppButton::kViewClassName, view->GetClassName());
       ShelfAppButton* button = static_cast<ShelfAppButton*>(view);

@@ -15,9 +15,10 @@ namespace autotestPrivate {
 
   // A mapping of ash::ShelfItemType.
   enum ShelfItemType {
-    App,
     PinnedApp,
     BrowserShortcut,
+    App,
+    UnpinnedBrowserShortcut,
     Dialog
   };
 
@@ -107,8 +108,8 @@ namespace autotestPrivate {
   };
 
   enum OverviewStateType {
-   Shown,
-   Hidden
+    Shown,
+    Hidden
   };
 
   enum MouseButton {

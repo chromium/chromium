@@ -281,13 +281,16 @@ std::string GetPrinterType(PrinterClass type) {
 
 api::autotest_private::ShelfItemType GetShelfItemType(ash::ShelfItemType type) {
   switch (type) {
-    case ash::TYPE_APP:
-      return api::autotest_private::ShelfItemType::SHELF_ITEM_TYPE_APP;
     case ash::TYPE_PINNED_APP:
       return api::autotest_private::ShelfItemType::SHELF_ITEM_TYPE_PINNEDAPP;
     case ash::TYPE_BROWSER_SHORTCUT:
       return api::autotest_private::ShelfItemType::
           SHELF_ITEM_TYPE_BROWSERSHORTCUT;
+    case ash::TYPE_APP:
+      return api::autotest_private::ShelfItemType::SHELF_ITEM_TYPE_APP;
+    case ash::TYPE_UNPINNED_BROWSER_SHORTCUT:
+      return api::autotest_private::ShelfItemType::
+          SHELF_ITEM_TYPE_UNPINNEDBROWSERSHORTCUT;
     case ash::TYPE_DIALOG:
       return api::autotest_private::ShelfItemType::SHELF_ITEM_TYPE_DIALOG;
     case ash::TYPE_UNDEFINED:

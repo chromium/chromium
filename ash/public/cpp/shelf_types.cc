@@ -18,8 +18,16 @@ constexpr char kDelimiter[] = "|";
 }  // namespace
 
 bool IsValidShelfItemType(int64_t type) {
-  return type == TYPE_PINNED_APP || type == TYPE_BROWSER_SHORTCUT ||
-         type == TYPE_APP || type == TYPE_DIALOG || type == TYPE_UNDEFINED;
+  switch (type) {
+    case TYPE_PINNED_APP:
+    case TYPE_BROWSER_SHORTCUT:
+    case TYPE_APP:
+    case TYPE_UNPINNED_BROWSER_SHORTCUT:
+    case TYPE_DIALOG:
+    case TYPE_UNDEFINED:
+      return true;
+  }
+  return false;
 }
 
 bool IsPinnedShelfItemType(ShelfItemType type) {
@@ -28,6 +36,7 @@ bool IsPinnedShelfItemType(ShelfItemType type) {
     case TYPE_BROWSER_SHORTCUT:
       return true;
     case TYPE_APP:
+    case TYPE_UNPINNED_BROWSER_SHORTCUT:
     case TYPE_DIALOG:
     case TYPE_UNDEFINED:
       return false;
