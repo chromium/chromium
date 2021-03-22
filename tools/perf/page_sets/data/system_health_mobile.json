@@ -72,6 +72,12 @@
         "browse:media:youtube:2019": {
             "DEFAULT": "system_health_mobile_e3bcdb3230.wprgo"
         },
+        "browse:news:businessinsider:2021": {
+            "DEFAULT": "system_health_mobile_48dc279cfd.wprgo"
+        },
+        "browse:news:businessinsider:loading:2021": {
+            "DEFAULT": "system_health_mobile_48dc279cfd.wprgo"
+        },
         "browse:news:cnn": {
             "DEFAULT": "system_health_mobile_014.wprgo"
         },

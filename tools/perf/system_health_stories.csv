@@ -20,6 +20,7 @@ browse:media:tumblr:2018,,desktop,2018
 browse:media:youtube:2019,Load a typical YouTube video then navigate to a next few videos. Stop and,"desktop,mobile","2019,emerging_market,javascript_heavy"
 browse:media:youtubetv:2019,Load a typical YouTube TV video then navigate to a next few videos. Stop,desktop,2019
 browse:media:youtubetv_watch:2020,Load a typical YouTube TV video then navigate to a next few videos. Stop,desktop,2020
+browse:news:businessinsider:2021,A newsite where we've seen janky performance in bug reports,mobile,"2021,javascript_heavy"
 browse:news:cnn:2021,The second top website in http://www.alexa.com/topsites/category/News,"desktop,mobile","2021,health_check,javascript_heavy"
 browse:news:cricbuzz:2019,,mobile,"2019,emerging_market"
 browse:news:flipboard:2020,,desktop,2020
