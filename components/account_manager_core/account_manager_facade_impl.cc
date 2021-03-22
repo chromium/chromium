@@ -286,7 +286,8 @@ void AccountManagerFacadeImpl::ShowAddAccountDialog(
     const AccountAdditionSource& source,
     base::OnceCallback<
         void(const account_manager::AccountAdditionResult& result)> callback) {
-  if (remote_version_ < kMinVersionWithShowAddAccountDialog) {
+  if (!account_manager_remote_ ||
+      remote_version_ < kMinVersionWithShowAddAccountDialog) {
     LOG(WARNING) << "Found remote at: " << remote_version_
                  << ", expected: " << kMinVersionWithShowAddAccountDialog
                  << " for ShowAddAccountDialog.";
@@ -307,7 +308,8 @@ void AccountManagerFacadeImpl::ShowAddAccountDialog(
 void AccountManagerFacadeImpl::ShowReauthAccountDialog(
     const AccountAdditionSource& source,
     const std::string& email) {
-  if (remote_version_ < kMinVersionWithShowAddAccountDialog) {
+  if (!account_manager_remote_ ||
+      remote_version_ < kMinVersionWithShowAddAccountDialog) {
     LOG(WARNING) << "Found remote at: " << remote_version_
                  << ", expected: " << kMinVersionWithShowAddAccountDialog
                  << " for ShowReauthAccountDialog.";
@@ -320,7 +322,8 @@ void AccountManagerFacadeImpl::ShowReauthAccountDialog(
 }
 
 void AccountManagerFacadeImpl::ShowManageAccountsSettings() {
-  if (remote_version_ < kMinVersionWithManageAccountsSettings) {
+  if (!account_manager_remote_ ||
+      remote_version_ < kMinVersionWithManageAccountsSettings) {
     LOG(WARNING) << "Found remote at: " << remote_version_
                  << ", expected: " << kMinVersionWithManageAccountsSettings
                  << " for ShowManageAccountsSettings.";
