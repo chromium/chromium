@@ -357,6 +357,8 @@ component("base") {
       sources += [
         "accelerators/menu_label_accelerator_util_linux.cc",
         "accelerators/menu_label_accelerator_util_linux.h",
+        "linux/linux_desktop.cc",
+        "linux/linux_desktop.h",
       ]
     }
 

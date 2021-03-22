@@ -951,31 +951,19 @@ void SuspendX11ScreenSaver(bool suspend) {
   x11::Connection::Get()->screensaver().Suspend({suspend});
 }
 
-base::Value GpuExtraInfoAsListValue(x11::VisualId system_visual,
-                                    x11::VisualId rgba_visual) {
-  base::Value result(base::Value::Type::LIST);
-  result.Append(
+void StoreGpuExtraInfoIntoListValue(x11::VisualId system_visual,
+                                    x11::VisualId rgba_visual,
+                                    base::Value& list_value) {
+  list_value.Append(
       NewDescriptionValuePair("Window manager", ui::GuessWindowManagerName()));
-  {
-    std::unique_ptr<base::Environment> env(base::Environment::Create());
-    std::string value;
-    const char kXDGCurrentDesktop[] = "XDG_CURRENT_DESKTOP";
-    if (env->GetVar(kXDGCurrentDesktop, &value))
-      result.Append(NewDescriptionValuePair(kXDGCurrentDesktop, value));
-    const char kGDMSession[] = "GDMSESSION";
-    if (env->GetVar(kGDMSession, &value))
-      result.Append(NewDescriptionValuePair(kGDMSession, value));
-    result.Append(NewDescriptionValuePair(
-        "Compositing manager",
-        ui::IsCompositingManagerPresent() ? "Yes" : "No"));
-  }
-  result.Append(NewDescriptionValuePair(
+  list_value.Append(NewDescriptionValuePair(
+      "Compositing manager", ui::IsCompositingManagerPresent() ? "Yes" : "No"));
+  list_value.Append(NewDescriptionValuePair(
       "System visual ID",
       base::NumberToString(static_cast<uint32_t>(system_visual))));
-  result.Append(NewDescriptionValuePair(
+  list_value.Append(NewDescriptionValuePair(
       "RGBA visual ID",
       base::NumberToString(static_cast<uint32_t>(rgba_visual))));
-  return result;
 }
 
 bool WmSupportsHint(x11::Atom atom) {

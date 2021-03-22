@@ -53,6 +53,8 @@ class VIEWS_EXPORT DesktopScreenX11 : public display::Screen,
   void AddObserver(display::DisplayObserver* observer) override;
   void RemoveObserver(display::DisplayObserver* observer) override;
   std::string GetCurrentWorkspace() override;
+  base::Value GetGpuExtraInfoAsListValue(
+      const gfx::GpuExtraInfo& gpu_extra_info) override;
 
   // x11::EventObserver:
   void OnEvent(const x11::Event& event) override;

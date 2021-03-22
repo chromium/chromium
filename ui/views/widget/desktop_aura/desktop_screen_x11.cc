@@ -14,6 +14,7 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/layout.h"
+#include "ui/base/linux/linux_desktop.h"
 #include "ui/base/x/x11_display_util.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/display/display.h"
@@ -160,6 +161,14 @@ void DesktopScreenX11::RemoveObserver(display::DisplayObserver* observer) {
 
 std::string DesktopScreenX11::GetCurrentWorkspace() {
   return x11_display_manager_->GetCurrentWorkspace();
+}
+
+base::Value DesktopScreenX11::GetGpuExtraInfoAsListValue(
+    const gfx::GpuExtraInfo& gpu_extra_info) {
+  auto result = ui::GetDesktopEnvironmentInfoAsListValue();
+  ui::StoreGpuExtraInfoIntoListValue(gpu_extra_info.system_visual,
+                                     gpu_extra_info.rgba_visual, result);
+  return result;
 }
 
 void DesktopScreenX11::OnEvent(const x11::Event& event) {

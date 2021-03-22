@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/x11/x11_screen_ozone.h"
 
+#include "ui/base/linux/linux_desktop.h"
 #include "ui/base/x/x11_idle_query.h"
 #include "ui/base/x/x11_screensaver_window_finder.h"
 #include "ui/base/x/x11_util.h"
@@ -132,8 +133,11 @@ std::string X11ScreenOzone::GetCurrentWorkspace() {
 
 base::Value X11ScreenOzone::GetGpuExtraInfoAsListValue(
     const gfx::GpuExtraInfo& gpu_extra_info) {
-  return ui::GpuExtraInfoAsListValue(gpu_extra_info.system_visual,
-                                     gpu_extra_info.rgba_visual);
+  auto result = GetDesktopEnvironmentInfoAsListValue();
+  StoreGpuExtraInfoIntoListValue(gpu_extra_info.system_visual,
+                                 gpu_extra_info.rgba_visual, result);
+  StorePlatformNameIntoListValue(result, "x11");
+  return result;
 }
 
 void X11ScreenOzone::SetDeviceScaleFactor(float scale) {

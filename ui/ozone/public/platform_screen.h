@@ -109,6 +109,10 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformScreen {
   // Currently only used by Linux.
   virtual void SetDeviceScaleFactor(float scale);
 
+ protected:
+  void StorePlatformNameIntoListValue(base::Value& list_value,
+                                      const std::string& platform_name);
+
  private:
   DISALLOW_COPY_AND_ASSIGN(PlatformScreen);
 };

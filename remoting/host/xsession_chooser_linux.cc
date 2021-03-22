@@ -29,6 +29,7 @@
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/nix/xdg_util.h"
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -336,7 +337,7 @@ void ExecXSession(base::OnceClosure quit_closure, XSession session) {
   if (!session.desktop_names.empty()) {
     std::unique_ptr<base::Environment> environment =
         base::Environment::Create();
-    environment->SetVar("XDG_CURRENT_DESKTOP",
+    environment->SetVar(base::nix::kXdgCurrentDesktopEnvVar,
                         base::JoinString(session.desktop_names, ":"));
   }
   execl(xsession_script.value().c_str(), xsession_script.value().c_str(),

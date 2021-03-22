@@ -63,11 +63,6 @@
 #include "ui/gfx/win/physical_size.h"
 #endif
 
-#if defined(USE_X11)
-#include "ui/base/x/x11_util.h"       // nogncheck
-#include "ui/gfx/x/x11_atom_cache.h"  // nogncheck
-#endif
-
 #if defined(USE_OZONE)
 #include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -176,21 +171,6 @@ std::string GPUDeviceToString(const gpu::GPUInfo::GPUDevice& gpu) {
   if (gpu.active)
     rt += " *ACTIVE*";
   return rt;
-}
-
-base::Value GpuExtraInfoToListValue(const gfx::GpuExtraInfo& gpu_extra_info) {
-  base::Value gpu_info_lines(base::Value::Type::LIST);
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    return display::Screen::GetScreen()->GetGpuExtraInfoAsListValue(
-        gpu_extra_info);
-  }
-#endif
-#if defined(USE_X11)
-  gpu_info_lines = ui::GpuExtraInfoAsListValue(gpu_extra_info.system_visual,
-                                               gpu_extra_info.rgba_visual);
-#endif
-  return gpu_info_lines;
 }
 
 std::unique_ptr<base::ListValue> BasicGpuInfoAsListValue(
@@ -310,7 +290,8 @@ std::unique_ptr<base::ListValue> BasicGpuInfoAsListValue(
 
   {
     base::Value gpu_extra_info_as_list_value =
-        GpuExtraInfoToListValue(gpu_extra_info);
+        display::Screen::GetScreen()->GetGpuExtraInfoAsListValue(
+            gpu_extra_info);
     DCHECK(gpu_extra_info_as_list_value.is_list());
     {
       auto pairs = gpu_extra_info_as_list_value.TakeList();

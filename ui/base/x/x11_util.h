@@ -38,6 +38,7 @@ class SkPixmap;
 namespace base {
 template <typename T>
 struct DefaultSingletonTraits;
+class Value;
 }
 
 namespace gfx {
@@ -399,8 +400,9 @@ COMPONENT_EXPORT(UI_BASE_X) void SuspendX11ScreenSaver(bool suspend);
 // Returns human readable description of the window manager, desktop, and
 // other system properties related to the compositing.
 COMPONENT_EXPORT(UI_BASE_X)
-base::Value GpuExtraInfoAsListValue(x11::VisualId system_visual,
-                                    x11::VisualId rgba_visual);
+void StoreGpuExtraInfoIntoListValue(x11::VisualId system_visual,
+                                    x11::VisualId rgba_visual,
+                                    base::Value& list_value);
 
 // Returns true if the window manager supports the given hint.
 COMPONENT_EXPORT(UI_BASE_X) bool WmSupportsHint(x11::Atom atom);

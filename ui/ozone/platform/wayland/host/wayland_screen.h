@@ -60,6 +60,8 @@ class WaylandScreen : public PlatformScreen {
       const gfx::Rect& match_rect) const override;
   void AddObserver(display::DisplayObserver* observer) override;
   void RemoveObserver(display::DisplayObserver* observer) override;
+  base::Value GetGpuExtraInfoAsListValue(
+      const gfx::GpuExtraInfo& gpu_extra_info) override;
 
  private:
   void AddOrUpdateDisplay(uint32_t output_id,

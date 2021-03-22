@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/base/linux/linux_desktop.h"
 #include "ui/display/display.h"
 #include "ui/display/display_finder.h"
 #include "ui/display/display_list.h"
@@ -256,6 +257,15 @@ void WaylandScreen::AddObserver(display::DisplayObserver* observer) {
 
 void WaylandScreen::RemoveObserver(display::DisplayObserver* observer) {
   display_list_.RemoveObserver(observer);
+}
+
+base::Value WaylandScreen::GetGpuExtraInfoAsListValue(
+    const gfx::GpuExtraInfo& gpu_extra_info) {
+  // TODO(https://crbug.com/1138740): it'd be good to have the compositor name
+  // in the about://gpu as well.
+  auto list_value = GetDesktopEnvironmentInfoAsListValue();
+  StorePlatformNameIntoListValue(list_value, "wayland");
+  return list_value;
 }
 
 }  // namespace ui

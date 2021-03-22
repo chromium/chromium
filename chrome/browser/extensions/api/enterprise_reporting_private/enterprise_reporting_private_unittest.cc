@@ -23,6 +23,10 @@
 #include "base/test/test_reg_util_win.h"
 #endif
 
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#include "base/nix/xdg_util.h"
+#endif
+
 namespace enterprise_reporting_private =
     ::extensions::api::enterprise_reporting_private;
 
@@ -291,7 +295,7 @@ TEST_F(EnterpriseReportingPrivateGetDeviceInfoTest, GetDeviceInfo) {
   EXPECT_EQ("windows", info.os_name);
 #elif defined(OS_LINUX) || defined(OS_CHROMEOS)
   std::unique_ptr<base::Environment> env(base::Environment::Create());
-  env->SetVar("XDG_CURRENT_DESKTOP", "XFCE");
+  env->SetVar(base::nix::kXdgCurrentDesktopEnvVar, "XFCE");
   EXPECT_EQ("linux", info.os_name);
 #else
   // Verify a stub implementation.
