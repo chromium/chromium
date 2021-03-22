@@ -2808,7 +2808,6 @@ crbug.com/626703 [ Mac10.12 ] external/wpt/WebCryptoAPI/derive_bits_keys/hkdf.ht
 crbug.com/626703 [ Win7 ] external/wpt/content-security-policy/object-src/object-src-no-url-allowed.html [ Timeout ]
 crbug.com/626703 external/wpt/service-workers/service-worker/ready.https.window.html [ Timeout ]
 crbug.com/626703 [ Win7 ] external/wpt/pointerevents/pointerevent_touch-action-pan-x-css_touch.html [ Timeout ]
-crbug.com/1040874 [ Mac ] external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html [ Pass Failure ]
 crbug.com/626703 [ Win7 ] external/wpt/pointerevents/pointerevent_touch-action-pan-left-css_touch.html [ Timeout ]
 crbug.com/626703 [ Mac ] external/wpt/css/css-fonts/standard-font-family.html [ Failure ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/screen-capture/getdisplaymedia.https.html [ Failure Timeout ]
