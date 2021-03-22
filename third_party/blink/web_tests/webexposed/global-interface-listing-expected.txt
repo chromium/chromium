@@ -1850,6 +1850,8 @@ interface CSSStyleDeclaration
     getter shapeOutside
     getter shapeRendering
     getter size
+    getter size-adjust
+    getter sizeAdjust
     getter source
     getter speak
     getter speak-as
@@ -3122,6 +3124,8 @@ interface CSSStyleDeclaration
     setter shapeOutside
     setter shapeRendering
     setter size
+    setter size-adjust
+    setter sizeAdjust
     setter source
     setter speak
     setter speak-as
@@ -5123,6 +5127,7 @@ interface FontFace
     getter featureSettings
     getter lineGapOverride
     getter loaded
+    getter sizeAdjust
     getter status
     getter stretch
     getter style
@@ -5137,6 +5142,7 @@ interface FontFace
     setter family
     setter featureSettings
     setter lineGapOverride
+    setter sizeAdjust
     setter stretch
     setter style
     setter unicodeRange

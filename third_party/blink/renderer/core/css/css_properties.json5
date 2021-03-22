@@ -5633,6 +5633,12 @@
       is_property: false,
       runtime_flag: "CSSAtRuleCounterStyle",
     },
+    {
+      name: "size-adjust",
+      is_descriptor: true,
+      is_property: false,
+      runtime_flag: "CSSFontFaceSizeAdjust",
+    },
 
     // Shorthands
     {

@@ -541,6 +541,12 @@
       depends_on: ["CSSFontMetricsOverride"],
     },
     {
+      // @font-face descriptor size-adjust.
+      // https://drafts.csswg.org/css-fonts-5/#descdef-font-face-size-adjust
+      name: "CSSFontFaceSizeAdjust",
+      status: "test",
+    },
+    {
       // @font-face descriptors ascent-override, descent-override and
       // line-gap-override.
       // https://drafts.csswg.org/css-fonts-4/#font-metrics-override-desc

@@ -500,6 +500,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter featureSettings
 [Worker]     getter lineGapOverride
 [Worker]     getter loaded
+[Worker]     getter sizeAdjust
 [Worker]     getter status
 [Worker]     getter stretch
 [Worker]     getter style
@@ -514,6 +515,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter family
 [Worker]     setter featureSettings
 [Worker]     setter lineGapOverride
+[Worker]     setter sizeAdjust
 [Worker]     setter stretch
 [Worker]     setter style
 [Worker]     setter unicodeRange

@@ -111,6 +111,15 @@ const CSSValue* ConvertFontMetricOverrideValue(const CSSValue* parsed_value) {
   return parsed_value;
 }
 
+const CSSValue* ConvertSizeAdjustValue(const CSSValue* parsed_value) {
+  // We store the initial value 100% as nullptr
+  if (parsed_value &&
+      To<CSSPrimitiveValue>(parsed_value)->GetFloatValue() == 100.0f) {
+    return nullptr;
+  }
+  return parsed_value;
+}
+
 }  // namespace
 
 FontFace* FontFace::Create(ExecutionContext* context,
@@ -210,6 +219,8 @@ FontFace* FontFace::Create(Document* document,
                                       AtRuleDescriptorID::LineGapOverride) &&
       font_face->SetPropertyFromStyle(properties,
                                       AtRuleDescriptorID::AdvanceOverride) &&
+      font_face->SetPropertyFromStyle(properties,
+                                      AtRuleDescriptorID::SizeAdjust) &&
       font_face->GetFontSelectionCapabilities().IsValid() &&
       !font_face->family().IsEmpty()) {
     font_face->InitCSSFontFace(document->GetExecutionContext(), *src);
@@ -291,6 +302,10 @@ String FontFace::lineGapOverride() const {
   return line_gap_override_ ? line_gap_override_->CssText() : "normal";
 }
 
+String FontFace::sizeAdjust() const {
+  return size_adjust_ ? size_adjust_->CssText() : "100%";
+}
+
 void FontFace::setStyle(ExecutionContext* context,
                         const String& s,
                         ExceptionState& exception_state) {
@@ -361,6 +376,13 @@ void FontFace::setLineGapOverride(ExecutionContext* context,
                         &exception_state);
 }
 
+void FontFace::setSizeAdjust(ExecutionContext* context,
+                             const String& s,
+                             ExceptionState& exception_state) {
+  SetPropertyFromString(context, s, AtRuleDescriptorID::SizeAdjust,
+                        &exception_state);
+}
+
 void FontFace::SetPropertyFromString(const ExecutionContext* context,
                                      const String& s,
                                      AtRuleDescriptorID descriptor_id,
@@ -423,6 +445,9 @@ bool FontFace::SetPropertyValue(const CSSValue* value,
       break;
     case AtRuleDescriptorID::AdvanceOverride:
       advance_override_ = ConvertFontMetricOverrideValue(value);
+      break;
+    case AtRuleDescriptorID::SizeAdjust:
+      size_adjust_ = ConvertSizeAdjustValue(value);
       break;
     default:
       NOTREACHED();
@@ -862,6 +887,7 @@ void FontFace::Trace(Visitor* visitor) const {
   visitor->Trace(descent_override_);
   visitor->Trace(line_gap_override_);
   visitor->Trace(advance_override_);
+  visitor->Trace(size_adjust_);
   visitor->Trace(error_);
   visitor->Trace(loaded_property_);
   visitor->Trace(css_font_face_);

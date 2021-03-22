@@ -992,6 +992,8 @@ shapeMargin
 shapeOutside
 shapeRendering
 size
+size-adjust
+sizeAdjust
 source
 speak
 speak-as

@@ -286,6 +286,12 @@ CSSValue* AtRuleDescriptorParser::ParseFontFaceDescriptor(
     case AtRuleDescriptorID::AdvanceOverride:
       parsed_value = ConsumeAdvanceOverride(range, context);
       break;
+    case AtRuleDescriptorID::SizeAdjust:
+      if (RuntimeEnabledFeatures::CSSFontFaceSizeAdjustEnabled()) {
+        parsed_value = css_parsing_utils::ConsumePercent(
+            range, context, kValueRangeNonNegative);
+      }
+      break;
     default:
       break;
   }
