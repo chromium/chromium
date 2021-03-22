@@ -116,14 +116,13 @@ StyleEngine::StyleEngine(Document& document)
       is_html_import_(document.IsHTMLImport()),
       document_style_sheet_collection_(
           MakeGarbageCollected<DocumentStyleSheetCollection>(document)),
+      resolver_(MakeGarbageCollected<StyleResolver>(document)),
       owner_color_scheme_(mojom::blink::ColorScheme::kLight) {
   if (document.GetFrame()) {
     // We don't need to create CSSFontSelector for imported document or
     // HTMLTemplateElement's document, because those documents have no frame.
-    // Likewise for the StyleResolver.
     font_selector_ = CreateCSSFontSelectorFor(document);
     font_selector_->RegisterForInvalidationCallbacks(this);
-    resolver_ = MakeGarbageCollected<StyleResolver>(document);
     if (const auto* owner = document.GetFrame()->Owner())
       owner_color_scheme_ = owner->GetColorScheme();
   }
