@@ -95,8 +95,7 @@ struct IsContiguousIteratorImpl
 // - https://wg21.link/n4284
 template <typename T>
 struct IsContiguousIterator
-    : internal::IsContiguousIteratorImpl<
-          std::remove_cv_t<std::remove_reference_t<T>>> {};
+    : internal::IsContiguousIteratorImpl<remove_cvref_t<T>> {};
 
 }  // namespace base
 

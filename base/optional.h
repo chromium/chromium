@@ -398,10 +398,6 @@ struct IsSwappableImpl {
 template <typename T>
 struct IsSwappable : decltype(swappable_impl::IsSwappableImpl::Check<T&>(0)) {};
 
-// Forward compatibility for C++20.
-template <typename T>
-using RemoveCvRefT = std::remove_cv_t<std::remove_reference_t<T>>;
-
 }  // namespace internal
 
 // On Windows, by default, empty-base class optimization does not work,
@@ -447,9 +443,9 @@ class OPTIONAL_DECLSPEC_EMPTY_BASES Optional
   // Disable some versions of T that are ill-formed.
   // See: https://timsong-cpp.github.io/cppwp/n4659/optional#syn-1
   static_assert(
-      !std::is_same<internal::RemoveCvRefT<T>, in_place_t>::value,
+      !std::is_same<remove_cvref_t<T>, in_place_t>::value,
       "instantiation of base::Optional with in_place_t is ill-formed");
-  static_assert(!std::is_same<internal::RemoveCvRefT<T>, nullopt_t>::value,
+  static_assert(!std::is_same<remove_cvref_t<T>, nullopt_t>::value,
                 "instantiation of base::Optional with nullopt_t is ill-formed");
   static_assert(
       !std::is_reference<T>::value,
@@ -534,25 +530,23 @@ class OPTIONAL_DECLSPEC_EMPTY_BASES Optional
 
   // Forward value constructor. Similar to converting constructors,
   // conditionally explicit.
-  template <
-      typename U = value_type,
-      std::enable_if_t<
-          std::is_constructible<T, U&&>::value &&
-              !std::is_same<internal::RemoveCvRefT<U>, in_place_t>::value &&
-              !std::is_same<internal::RemoveCvRefT<U>, Optional<T>>::value &&
-              std::is_convertible<U&&, T>::value,
-          bool> = false>
+  template <typename U = value_type,
+            std::enable_if_t<
+                std::is_constructible<T, U&&>::value &&
+                    !std::is_same<remove_cvref_t<U>, in_place_t>::value &&
+                    !std::is_same<remove_cvref_t<U>, Optional<T>>::value &&
+                    std::is_convertible<U&&, T>::value,
+                bool> = false>
   constexpr Optional(U&& value)
       : internal::OptionalBase<T>(in_place, std::forward<U>(value)) {}
 
-  template <
-      typename U = value_type,
-      std::enable_if_t<
-          std::is_constructible<T, U&&>::value &&
-              !std::is_same<internal::RemoveCvRefT<U>, in_place_t>::value &&
-              !std::is_same<internal::RemoveCvRefT<U>, Optional<T>>::value &&
-              !std::is_convertible<U&&, T>::value,
-          bool> = false>
+  template <typename U = value_type,
+            std::enable_if_t<
+                std::is_constructible<T, U&&>::value &&
+                    !std::is_same<remove_cvref_t<U>, in_place_t>::value &&
+                    !std::is_same<remove_cvref_t<U>, Optional<T>>::value &&
+                    !std::is_convertible<U&&, T>::value,
+                bool> = false>
   constexpr explicit Optional(U&& value)
       : internal::OptionalBase<T>(in_place, std::forward<U>(value)) {}
 
@@ -571,13 +565,12 @@ class OPTIONAL_DECLSPEC_EMPTY_BASES Optional
 
   // Perfect-forwarded assignment.
   template <typename U>
-  std::enable_if_t<
-      !std::is_same<internal::RemoveCvRefT<U>, Optional<T>>::value &&
-          std::is_constructible<T, U>::value &&
-          std::is_assignable<T&, U>::value &&
-          (!std::is_scalar<T>::value ||
-           !std::is_same<std::decay_t<U>, T>::value),
-      Optional&>
+  std::enable_if_t<!std::is_same<remove_cvref_t<U>, Optional<T>>::value &&
+                       std::is_constructible<T, U>::value &&
+                       std::is_assignable<T&, U>::value &&
+                       (!std::is_scalar<T>::value ||
+                        !std::is_same<std::decay_t<U>, T>::value),
+                   Optional&>
   operator=(U&& value) {
     InitOrAssign(std::forward<U>(value));
     return *this;

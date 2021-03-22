@@ -203,6 +203,7 @@ _CONFIG = [
 
             # //base/template_util.h.
             'base::void_t',
+            'base::remove_cvref_t',
 
             # Debugging helpers from //base/debug are allowed everywhere.
             'base::debug::.+',

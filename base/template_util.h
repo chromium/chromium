@@ -304,6 +304,24 @@ struct IsScopedEnumImpl<T, /*std::is_enum<T>::value=*/true>
 template <typename T>
 struct is_scoped_enum : internal::IsScopedEnumImpl<T> {};
 
+// Implementation of C++20's std::remove_cvref.
+//
+// References:
+// - https://en.cppreference.com/w/cpp/types/remove_cvref
+// - https://wg21.link/meta.trans.other#lib:remove_cvref
+template <typename T>
+struct remove_cvref {
+  using type = std::remove_cv_t<std::remove_reference_t<T>>;
+};
+
+// Implementation of C++20's std::remove_cvref_t.
+//
+// References:
+// - https://en.cppreference.com/w/cpp/types/remove_cvref
+// - https://wg21.link/meta.type.synop#lib:remove_cvref_t
+template <typename T>
+using remove_cvref_t = typename remove_cvref<T>::type;
+
 // Simplified implementation of C++20's std::iter_value_t.
 // As opposed to std::iter_value_t, this implementation does not restrict
 // the type of `Iter` and does not consider specializations of
@@ -311,8 +329,8 @@ struct is_scoped_enum : internal::IsScopedEnumImpl<T> {};
 //
 // Reference: https://wg21.link/readable.traits#2
 template <typename Iter>
-using iter_value_t = typename std::iterator_traits<
-    std::remove_cv_t<std::remove_reference_t<Iter>>>::value_type;
+using iter_value_t =
+    typename std::iterator_traits<remove_cvref_t<Iter>>::value_type;
 
 // Simplified implementation of C++20's std::iter_reference_t.
 // As opposed to std::iter_reference_t, this implementation does not restrict
@@ -341,7 +359,7 @@ template <typename Iter,
           typename Proj,
           typename IndirectResultT = indirect_result_t<Proj, Iter>>
 struct projected {
-  using value_type = std::remove_cv_t<std::remove_reference_t<IndirectResultT>>;
+  using value_type = remove_cvref_t<IndirectResultT>;
 
   IndirectResultT operator*() const;  // not defined
 };

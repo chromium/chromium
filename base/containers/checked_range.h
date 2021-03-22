@@ -12,6 +12,7 @@
 
 #include "base/containers/checked_iterators.h"
 #include "base/stl_util.h"
+#include "base/template_util.h"
 
 namespace base {
 
@@ -77,9 +78,9 @@ class CheckedContiguousRange {
   // copy and move constructors.
   template <int&... ExplicitArgumentBarrier,
             typename Container,
-            typename = std::enable_if_t<std::is_same<
-                std::remove_cv_t<std::remove_reference_t<ContiguousContainer>>,
-                std::remove_cv_t<std::remove_reference_t<Container>>>::value>>
+            typename = std::enable_if_t<
+                std::is_same<remove_cvref_t<ContiguousContainer>,
+                             remove_cvref_t<Container>>::value>>
   constexpr CheckedContiguousRange(Container&& container) noexcept
       : container_(&container) {}
 

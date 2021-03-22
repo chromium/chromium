@@ -5,6 +5,8 @@
 source_set("internal") {
   sources = [ "identifiability_internal_templates.h" ]
 
+  deps = [ "//base" ]
+
   visibility = [
     ":*",
     "//third_party/blink/common/privacy_budget:*",

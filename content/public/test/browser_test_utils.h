@@ -23,6 +23,7 @@
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/template_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_test_utils.h"
@@ -589,7 +590,7 @@ template <typename T, typename... Args>
 void ConvertToBaseValueList(base::Value::ListStorage* list,
                             T&& first,
                             Args&&... rest) {
-  using ValueType = std::remove_cv_t<std::remove_reference_t<T>>;
+  using ValueType = base::remove_cvref_t<T>;
   list->push_back(JsLiteralHelper<ValueType>::Convert(std::forward<T>(first)));
   ConvertToBaseValueList(list, std::forward<Args>(rest)...);
 }

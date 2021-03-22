@@ -263,8 +263,7 @@ union BASE_EXPORT TraceValue {
   // function and arrays into pointers. Only used internally.
   template <typename T>
   struct InnerType {
-    using type = typename std::remove_cv<typename std::remove_reference<
-        typename std::decay<T>::type>::type>::type;
+    using type = std::decay_t<T>;
   };
 
  public:
