@@ -201,8 +201,8 @@ void BindNetworkChangeManagerReceiver(
   GetNetworkService()->GetNetworkChangeManager(std::move(receiver));
 }
 
-base::CallbackList<void()>& GetCrashHandlersList() {
-  static base::NoDestructor<base::CallbackList<void()>> s_list;
+base::RepeatingClosureList& GetCrashHandlersList() {
+  static base::NoDestructor<base::RepeatingClosureList> s_list;
   return *s_list;
 }
 

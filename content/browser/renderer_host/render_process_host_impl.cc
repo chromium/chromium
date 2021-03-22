@@ -761,7 +761,7 @@ class SpareRenderProcessHostManager : public RenderProcessHostObserver {
 
   // The clients who want to know when the spare render process host has
   // changed.
-  base::CallbackList<void(RenderProcessHost*)>
+  base::RepeatingCallbackList<void(RenderProcessHost*)>
       spare_render_process_host_changed_callback_list_;
 
   // This is a bare pointer, because RenderProcessHost manages the lifetime of

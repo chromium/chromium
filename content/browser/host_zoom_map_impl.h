@@ -121,7 +121,7 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
   void SendZoomLevelChange(const std::string& scheme, const std::string& host);
 
   // Callbacks called when zoom level changes.
-  base::CallbackList<void(const ZoomLevelChange&)>
+  base::RepeatingCallbackList<void(const ZoomLevelChange&)>
       zoom_level_changed_callbacks_;
 
   // Copy of the pref data.
