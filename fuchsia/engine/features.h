@@ -10,7 +10,7 @@
 namespace features {
 
 constexpr base::Feature kHandleMemoryPressureInRenderer{
-    "HandleMemoryPressureInRenderer", base::FEATURE_DISABLED_BY_DEFAULT};
+    "HandleMemoryPressureInRenderer", base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace features
 
