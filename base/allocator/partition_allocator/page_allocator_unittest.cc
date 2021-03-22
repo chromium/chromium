@@ -15,6 +15,7 @@
 #include "base/notreached.h"
 
 #include "base/allocator/partition_allocator/address_space_randomization.h"
+#include "base/allocator/partition_allocator/test_util.h"
 #include "build/build_config.h"
 #if defined(OS_ANDROID)
 #include "base/debug/proc_maps_linux.h"
@@ -450,6 +451,44 @@ TEST(PageAllocatorTest, MappedPagesAccounting) {
   FreePages(data, size);
   EXPECT_EQ(mapped_size_before, GetTotalMappedSize());
 }
+
+// Disabled on Android since this is liklely to trigger the OOM killer.
+// TODO(lizeb): Investigate and enable on macOS.
+#if defined(OS_POSIX) && !(defined(OS_ANDROID) || defined(OS_APPLE)) && \
+    defined(GTEST_HAS_DEATH_TEST)
+TEST(PageAllocatorDeathTest, TryRecommitSystemPages) {
+  if (!internal::IsLargeMemoryDevice())
+    GTEST_SKIP() << "Only large memory devices";
+
+  auto test_fn = []() {
+    size_t limit = 1024 * 1024 * 1024;
+    ASSERT_TRUE(internal::SetDataLimit(limit));
+
+    // We can map something larger with PageInaccessible.
+    size_t allocated_size = 2 * limit;
+    void* ptr = AllocPages(nullptr, allocated_size, PageAllocationGranularity(),
+                           PageInaccessible, PageTag::kChromium);
+    ASSERT_TRUE(ptr);
+
+    // Recommit works for small sizes.
+    ASSERT_TRUE(TryRecommitSystemPages(ptr, limit / 4, PageReadWrite,
+                                       PageUpdatePermissions));
+
+    bool ok = TryRecommitSystemPages(ptr, allocated_size, PageReadWrite,
+                                     PageUpdatePermissions);
+    internal::ClearDataLimit();
+
+    // Expected, changing permissions didn't work.
+    if (!ok)
+      LOG(FATAL) << "ExpectedDeath";
+  };
+
+  // setrlimit() may be a bit fragile and may have side-effects, better to do it
+  // inside a death test to make sure the consequences are isolated.
+  EXPECT_DEATH(test_fn(), "ExpectedDeath");
+}
+#endif  // defined(OS_POSIX) && !(defined(OS_ANDROID) || defined(OS_APPLE)) && \
+        // defined(GTEST_HAS_DEATH_TEST)
 
 }  // namespace base
 
