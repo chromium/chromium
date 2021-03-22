@@ -317,13 +317,14 @@ namespace system.display {
     // Requests the information for all attached display devices.
     // |flags|: Options affecting how the information is returned.
     // |callback|: The callback to invoke with the results.
-    static void getInfo(optional GetInfoFlags flags,
-                        DisplayInfoCallback callback);
+    [supportsPromises] static void getInfo(optional GetInfoFlags flags,
+                                           DisplayInfoCallback callback);
 
     // Requests the layout info for all displays.
     // NOTE: This is only available to Chrome OS Kiosk apps and Web UI.
     // |callback|: The callback to invoke with the results.
-    static void getDisplayLayout(DisplayLayoutCallback callback);
+    [supportsPromises] static void getDisplayLayout(
+        DisplayLayoutCallback callback);
 
     // Updates the properties for the display specified by |id|, according to
     // the information provided in |info|. On failure, $(ref:runtime.lastError)
@@ -336,7 +337,7 @@ namespace system.display {
     // |callback|: Empty function called when the function finishes. To find out
     //     whether the function succeeded, $(ref:runtime.lastError) should be
     //     queried.
-    static void setDisplayProperties(
+    [supportsPromises] static void setDisplayProperties(
         DOMString id,
         DisplayProperties info,
         optional SetDisplayUnitInfoCallback callback);
@@ -351,8 +352,9 @@ namespace system.display {
     // |callback|: Empty function called when the function finishes. To find out
     //     whether the function succeeded, $(ref:runtime.lastError) should be
     //     queried.
-    static void setDisplayLayout(DisplayLayout[] layouts,
-                                 optional SetDisplayLayoutCallback callback);
+    [supportsPromises] static void setDisplayLayout(
+        DisplayLayout[] layouts,
+        optional SetDisplayLayoutCallback callback);
 
     // Enables/disables the unified desktop feature. If enabled while mirroring
     // is active, the desktop mode will not change until mirroring is turned
@@ -394,8 +396,9 @@ namespace system.display {
     // |callback|: Optional callback to inform the caller that the touch
     //      calibration has ended. The argument of the callback informs if the
     //      calibration was a success or not.
-    static void showNativeTouchCalibration(
-        DOMString id, optional NativeTouchCalibrationCallback callback);
+    [supportsPromises] static void showNativeTouchCalibration(
+        DOMString id,
+        optional NativeTouchCalibrationCallback callback);
 
     // Starts custom touch calibration for a display. This should be called when
     // using a custom UX for collecting calibration data. If another touch
@@ -429,8 +432,9 @@ namespace system.display {
     // |callback|: Empty function called when the function finishes. To find out
     //     whether the function succeeded, $(ref:runtime.lastError) should be
     //     queried.
-    static void setMirrorMode(MirrorModeInfo info,
-                              optional SetMirrorModeCallback callback);
+    [supportsPromises] static void setMirrorMode(
+        MirrorModeInfo info,
+        optional SetMirrorModeCallback callback);
   };
 
   interface Events {

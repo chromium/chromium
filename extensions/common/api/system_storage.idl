@@ -61,15 +61,17 @@ namespace system.storage {
   interface Functions {
     // Get the storage information from the system. The argument passed to the
     // callback is an array of StorageUnitInfo objects.
-    static void getInfo(StorageInfoCallback callback);
+    [supportsPromises] static void getInfo(StorageInfoCallback callback);
 
     // Ejects a removable storage device.
-    static void ejectDevice(DOMString id, EjectDeviceCallback callback);
+    [supportsPromises] static void ejectDevice(DOMString id,
+                                               EjectDeviceCallback callback);
 
     // Get the available capacity of a specified |id| storage device.
     // The |id| is the transient device ID from StorageUnitInfo.
-    static void getAvailableCapacity(DOMString id,
-                                     GetAvailableCapacityCallback callback);
+    [supportsPromises] static void getAvailableCapacity(
+        DOMString id,
+        GetAvailableCapacityCallback callback);
   };
 
   interface Events {
