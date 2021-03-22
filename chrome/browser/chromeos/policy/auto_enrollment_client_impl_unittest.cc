@@ -1669,9 +1669,7 @@ TEST_P(PsmHelperTest, MembershipRetrievedSuccessfully) {
   VerifyPsmLastRequestJobType();
 }
 
-// TODO(crbug/1113798) Fix the empty RLWE query response processing, once it's
-// already fixed on the library.
-TEST_P(PsmHelperTest, DISABLED_EmptyRlweQueryResponse) {
+TEST_P(PsmHelperTest, EmptyRlweQueryResponse) {
   InSequence sequence;
   ServerWillReplyWithPsmOprfResponse();
   ServerWillReplyWithEmptyPsmResponse();
