@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://new-tab-page/lazy_load.js';
-import {BackgroundSelectionType, BrowserProxy, CustomizeDialogPage} from 'chrome://new-tab-page/new_tab_page.js';
-import {createTestProxy} from 'chrome://test/new_tab_page/test_support.js';
+
+import {BackgroundSelectionType, CustomizeDialogPage, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.m.js';
 
 suite('NewTabPageCustomizeDialogTest', () => {
@@ -12,22 +13,23 @@ suite('NewTabPageCustomizeDialogTest', () => {
   let customizeDialog;
 
   /**
-   * @implements {BrowserProxy}
+   * @implements {newTabPage.mojom.PageHandlerRemote}
    * @extends {TestBrowserProxy}
    */
-  let testProxy;
+  let handler;
 
   setup(() => {
     PolymerTest.clearBody();
 
-    testProxy = createTestProxy();
-    testProxy.handler.setResultFor('getBackgroundCollections', Promise.resolve({
+    handler = TestBrowserProxy.fromClass(newTabPage.mojom.PageHandlerRemote);
+    handler.setResultFor('getBackgroundCollections', Promise.resolve({
       collections: [],
     }));
-    testProxy.handler.setResultFor('getBackgroundImages', Promise.resolve({
+    handler.setResultFor('getBackgroundImages', Promise.resolve({
       images: [],
     }));
-    BrowserProxy.setInstance(testProxy);
+    NewTabPageProxy.setInstance(
+        handler, new newTabPage.mojom.PageCallbackRouter());
 
     customizeDialog = document.createElement('ntp-customize-dialog');
     document.body.appendChild(customizeDialog);
@@ -190,7 +192,7 @@ suite('NewTabPageCustomizeDialogTest', () => {
         };
         done();
         const [attribution1, attribution2, attributionUrl, imageUrl] =
-            await testProxy.handler.whenCalled('setBackgroundImage');
+            await handler.whenCalled('setBackgroundImage');
         assertEquals('1', attribution1);
         assertEquals('2', attribution2);
         assertEquals('https://example.com', attributionUrl.url);
@@ -214,7 +216,7 @@ suite('NewTabPageCustomizeDialogTest', () => {
         done();
         assertEquals(
             'abstract',
-            await testProxy.handler.whenCalled('setDailyRefreshCollectionId'));
+            await handler.whenCalled('setDailyRefreshCollectionId'));
         assertDeepEquals(
             {
               type: BackgroundSelectionType.DAILY_REFRESH,
@@ -227,7 +229,7 @@ suite('NewTabPageCustomizeDialogTest', () => {
         customizeDialog.$.backgrounds.selectedCollection = {id: 'landscape'};
         customizeDialog.$.refreshToggle.click();
         done();
-        await testProxy.handler.whenCalled('setNoBackgroundImage');
+        await handler.whenCalled('setNoBackgroundImage');
       });
 
       test('set no background', async () => {
@@ -235,7 +237,7 @@ suite('NewTabPageCustomizeDialogTest', () => {
           type: BackgroundSelectionType.NO_BACKGROUND,
         };
         done();
-        await testProxy.handler.whenCalled('setNoBackgroundImage');
+        await handler.whenCalled('setNoBackgroundImage');
         assertDeepEquals(
             {type: BackgroundSelectionType.NO_BACKGROUND},
             customizeDialog.backgroundSelection);

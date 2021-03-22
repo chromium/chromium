@@ -4,10 +4,10 @@
 
 import 'chrome://new-tab-page/lazy_load.js';
 
-import {$$, BrowserProxy, ModuleDescriptor, ModuleRegistry} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, ModuleDescriptor, ModuleRegistry, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://test/new_tab_page/metrics_test_support.js';
-import {assertNotStyle, assertStyle, createTestProxy} from 'chrome://test/new_tab_page/test_support.js';
+import {assertNotStyle, assertStyle} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
 
 /**
@@ -21,10 +21,13 @@ function queryAll(host, selector) {
 
 suite('NewTabPageCustomizeModulesTest', () => {
   /**
-   * @implements {BrowserProxy}
+   * @implements {newTabPage.mojom.PageHandlerRemote}
    * @extends {TestBrowserProxy}
    */
-  let testProxy;
+  let handler;
+
+  /** @type {newTabPage.mojom.PageHandlerRemote} */
+  let callbackRouterRemote;
 
   /**
    * @implements {ModuleRegistry}
@@ -47,18 +50,20 @@ suite('NewTabPageCustomizeModulesTest', () => {
             ({id, name}) => new ModuleDescriptor(id, name, 1, () => null)));
     const customizeModules = document.createElement('ntp-customize-modules');
     document.body.appendChild(customizeModules);
-    testProxy.callbackRouterRemote.setDisabledModules(
+    callbackRouterRemote.setDisabledModules(
         allDisabled,
         modules.filter(({disabled}) => disabled).map(({id}) => id));
-    await testProxy.callbackRouterRemote.$.flushForTesting();
+    await callbackRouterRemote.$.flushForTesting();
     return customizeModules;
   }
 
   setup(() => {
     PolymerTest.clearBody();
 
-    testProxy = createTestProxy();
-    BrowserProxy.setInstance(testProxy);
+    handler = TestBrowserProxy.fromClass(newTabPage.mojom.PageHandlerRemote);
+    const callbackRouter = new newTabPage.mojom.PageCallbackRouter();
+    NewTabPageProxy.setInstance(handler, callbackRouter);
+    callbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();
     moduleRegistry = TestBrowserProxy.fromClass(ModuleRegistry);
     ModuleRegistry.setInstance(moduleRegistry);
     metrics = fakeMetricsPrivate();
@@ -109,7 +114,7 @@ suite('NewTabPageCustomizeModulesTest', () => {
       customizeModules.apply();
 
       // Assert.
-      assertEquals(!visible, testProxy.handler.getArgs('setModulesVisible')[0]);
+      assertEquals(!visible, handler.getArgs('setModulesVisible')[0]);
       const toggles = queryAll(customizeModules, 'cr-toggle');
       assertEquals(3, toggles.length);
       assertEquals(visible, toggles[0].disabled);
@@ -168,11 +173,9 @@ suite('NewTabPageCustomizeModulesTest', () => {
 
     // Assert.
     const base = 'NewTabPage.Modules';
-    assertEquals(2, testProxy.handler.getCallCount('setModuleDisabled'));
-    assertDeepEquals(
-        ['foo', true], testProxy.handler.getArgs('setModuleDisabled')[0]);
-    assertDeepEquals(
-        ['baz', false], testProxy.handler.getArgs('setModuleDisabled')[1]);
+    assertEquals(2, handler.getCallCount('setModuleDisabled'));
+    assertDeepEquals(['foo', true], handler.getArgs('setModuleDisabled')[0]);
+    assertDeepEquals(['baz', false], handler.getArgs('setModuleDisabled')[1]);
     assertEquals(1, metrics.count(`${base}.Disabled`));
     assertEquals(1, metrics.count(`${base}.Disabled.Customize`));
     assertEquals(1, metrics.count(`${base}.Disabled`, 'foo'));

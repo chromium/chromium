@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxy} from '../browser_proxy.js';
+import {NewTabPageProxy} from '../new_tab_page_proxy.js';
 import {ModuleDescriptor} from './module_descriptor.js';
 
 /**
@@ -54,13 +54,13 @@ export class ModuleRegistry {
     // Capture updateDisabledModules -> setDisabledModules round trip in a
     // promise for convenience.
     const disabledIds = await new Promise((resolve, _) => {
-      const callbackRouter = BrowserProxy.getInstance().callbackRouter;
+      const callbackRouter = NewTabPageProxy.getInstance().callbackRouter;
       const listenerId =
           callbackRouter.setDisabledModules.addListener((all, ids) => {
             callbackRouter.removeListener(listenerId);
             resolve(all ? this.descriptors_.map(({id}) => id) : ids);
           });
-      BrowserProxy.getInstance().handler.updateDisabledModules();
+      NewTabPageProxy.getInstance().handler.updateDisabledModules();
     });
     await Promise.all(
         this.descriptors_.filter(d => disabledIds.indexOf(d.id) < 0)

@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BackgroundManager, BrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import {createTestProxy} from './test_support.js';
+import {BackgroundManager} from 'chrome://new-tab-page/new_tab_page.js';
 
 class FakeIFrameElement extends HTMLIFrameElement {
   constructor() {
@@ -26,12 +25,6 @@ suite('NewTabPageBackgroundManagerTest', () => {
   let backgroundImage;
 
   /**
-   * @implements {BrowserProxy}
-   * @extends {TestBrowserProxy}
-   */
-  let testProxy;
-
-  /**
    * @param {string} url
    * @return {string}
    */
@@ -42,9 +35,6 @@ suite('NewTabPageBackgroundManagerTest', () => {
 
   setup(() => {
     PolymerTest.clearBody();
-
-    testProxy = createTestProxy();
-    BrowserProxy.setInstance(testProxy);
 
     backgroundImage = new FakeIFrameElement();
     backgroundImage.id = 'backgroundImage';

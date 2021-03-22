@@ -10,8 +10,8 @@ import './iframe.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserProxy} from './browser_proxy.js';
 import {BackgroundSelection, BackgroundSelectionType} from './customize_dialog_types.js';
+import {NewTabPageProxy} from './new_tab_page_proxy.js';
 
 /** Element that lets the user configure the background. */
 class CustomizeBackgroundsElement extends PolymerElement {
@@ -70,7 +70,7 @@ class CustomizeBackgroundsElement extends PolymerElement {
       return;
     }
     /** @private {newTabPage.mojom.PageHandlerRemote} */
-    this.pageHandler_ = BrowserProxy.getInstance().handler;
+    this.pageHandler_ = NewTabPageProxy.getInstance().handler;
     this.pageHandler_.getBackgroundCollections().then(({collections}) => {
       this.collections_ = collections;
     });

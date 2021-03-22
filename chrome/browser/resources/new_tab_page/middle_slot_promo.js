@@ -5,9 +5,11 @@
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {BrowserProxy} from './browser_proxy.js';
+
 import {ImgElement} from './img.js';
+import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {PromoBrowserCommandProxy} from './promo_browser_command_proxy.js';
+import {WindowProxy} from './window_proxy.js';
 
 /**
  * If a promo exists with content and can be shown, an element containing
@@ -16,7 +18,7 @@ import {PromoBrowserCommandProxy} from './promo_browser_command_proxy.js';
  * @return {!Promise<Element>}
  */
 export async function renderPromo() {
-  const browserHandler = BrowserProxy.getInstance().handler;
+  const browserHandler = NewTabPageProxy.getInstance().handler;
   const promoBrowserCommandHandler =
       PromoBrowserCommandProxy.getInstance().handler;
   const {promo} = await browserHandler.getPromo();
@@ -105,7 +107,7 @@ export async function renderPromo() {
           .every(({canShow}) => canShow);
   if (hasContent && canShow) {
     browserHandler.onPromoRendered(
-        BrowserProxy.getInstance().now(), promo.logUrl || null);
+        WindowProxy.getInstance().now(), promo.logUrl || null);
     return container;
   }
   return null;

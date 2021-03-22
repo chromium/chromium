@@ -11,8 +11,8 @@ import("//ui/webui/webui_features.gni")
 
 js_library("module_descriptor") {
   deps = [
-    "..:browser_proxy",
     "..:metrics_utils",
+    "..:window_proxy",
   ]
 }
 
@@ -31,8 +31,8 @@ js_library("modules") {
 js_library("module_wrapper") {
   deps = [
     ":module_descriptor",
-    "..:browser_proxy",
     "..:metrics_utils",
+    "..:window_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
   ]
@@ -48,7 +48,7 @@ js_library("module_header") {
 js_library("module_registry") {
   deps = [
     ":module_descriptor",
-    "..:browser_proxy",
+    "..:new_tab_page_proxy",
   ]
 }
 

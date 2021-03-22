@@ -13,8 +13,8 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserProxy} from './browser_proxy.js';
 import {ModuleRegistry} from './modules/module_registry.js';
+import {NewTabPageProxy} from './new_tab_page_proxy.js';
 
 /** Element that lets the user configure modules settings. */
 class CustomizeModulesElement extends PolymerElement {
@@ -72,7 +72,7 @@ class CustomizeModulesElement extends PolymerElement {
   connectedCallback() {
     super.connectedCallback();
     this.setDisabledModulesListenerId_ =
-        BrowserProxy.getInstance()
+        NewTabPageProxy.getInstance()
             .callbackRouter.setDisabledModules.addListener((all, ids) => {
               this.show_ = !all;
               this.modules_.forEach(({id}, i) => {
@@ -82,13 +82,13 @@ class CustomizeModulesElement extends PolymerElement {
                 this.set(`modules_.${i}.disabled`, ids.includes(id));
               });
             });
-    BrowserProxy.getInstance().handler.updateDisabledModules();
+    NewTabPageProxy.getInstance().handler.updateDisabledModules();
   }
 
   /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
-    BrowserProxy.getInstance().callbackRouter.removeListener(
+    NewTabPageProxy.getInstance().callbackRouter.removeListener(
         assert(this.setDisabledModulesListenerId_));
   }
 
@@ -106,7 +106,7 @@ class CustomizeModulesElement extends PolymerElement {
   }
 
   apply() {
-    const handler = BrowserProxy.getInstance().handler;
+    const handler = NewTabPageProxy.getInstance().handler;
     handler.setModulesVisible(this.show_);
     this.modules_
         .filter(({checked, initiallyChecked}) => checked !== initiallyChecked)

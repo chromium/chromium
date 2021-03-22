@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
 
 /** @type {string} */
 export const NONE_ANIMATION = 'none 0s ease 0s 1 normal none running';
@@ -46,21 +44,6 @@ export function assertNotStyle(element, name, not) {
  */
 export function assertFocus(element) {
   assertEquals(element, getDeepActiveElement());
-}
-
-/**
- * Creates a mocked test proxy.
- * @return {TestBrowserProxy}
- */
-export function createTestProxy() {
-  const testProxy = TestBrowserProxy.fromClass(BrowserProxy);
-  testProxy.callbackRouter = new newTabPage.mojom.PageCallbackRouter();
-  testProxy.callbackRouterRemote =
-      testProxy.callbackRouter.$.bindNewPipeAndPassRemote();
-  testProxy.handler =
-      TestBrowserProxy.fromClass(newTabPage.mojom.PageHandlerRemote);
-  testProxy.setResultFor('createIframeSrc', '');
-  return testProxy;
 }
 
 /** @return {!newTabPage.mojom.Theme} */

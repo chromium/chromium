@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxy} from '../browser_proxy.js';
 import {recordDuration, recordLoadDuration} from '../metrics_utils.js';
+import {WindowProxy} from '../window_proxy.js';
 
 /**
  * @fileoverview Provides the module descriptor. Each module must create a
@@ -63,10 +63,10 @@ export class ModuleDescriptor {
    * @return {!Promise}
    */
   async initialize(timeout) {
-    const loadStartTime = BrowserProxy.getInstance().now();
+    const loadStartTime = WindowProxy.getInstance().now();
     this.element_ = await Promise.race([
       this.initializeCallback_(), new Promise(resolve => {
-        BrowserProxy.getInstance().setTimeout(() => {
+        WindowProxy.getInstance().setTimeout(() => {
           resolve(null);
         }, timeout);
       })
@@ -74,7 +74,7 @@ export class ModuleDescriptor {
     if (!this.element_) {
       return;
     }
-    const loadEndTime = BrowserProxy.getInstance().now();
+    const loadEndTime = WindowProxy.getInstance().now();
     const duration = loadEndTime - loadStartTime;
     recordLoadDuration('NewTabPage.Modules.Loaded', loadEndTime);
     recordLoadDuration(`NewTabPage.Modules.Loaded.${this.id_}`, loadEndTime);

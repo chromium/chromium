@@ -6,8 +6,8 @@ import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
-import {BrowserProxy} from './browser_proxy.js';
 import {strictQuery} from './utils.js';
+import {WindowProxy} from './window_proxy.js';
 
 /**
  * @fileoverview The background manager brokers access to background related
@@ -151,7 +151,7 @@ export class BackgroundManager {
   getBackgroundImageLoadTime() {
     if (!this.loadTimeResolver_) {
       this.loadTimeResolver_ = new LoadTimeResolver(this.backgroundImage_.src);
-      BrowserProxy.getInstance().postMessage(
+      WindowProxy.getInstance().postMessage(
           this.backgroundImage_, 'sendLoadTime',
           'chrome-untrusted://new-tab-page');
     }

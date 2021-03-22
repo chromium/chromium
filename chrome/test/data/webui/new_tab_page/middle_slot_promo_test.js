@@ -3,20 +3,34 @@
 // found in the LICENSE file.
 
 import 'chrome://new-tab-page/lazy_load.js';
-import {$$, BrowserProxy, PromoBrowserCommandProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import {createTestProxy} from 'chrome://test/new_tab_page/test_support.js';
+import {$$, NewTabPageProxy, PromoBrowserCommandProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
 import {eventToPromise, flushTasks} from 'chrome://test/test_util.m.js';
 
 suite('NewTabPageMiddleSlotPromoTest', () => {
+  /**
+   * @implements {newTabPage.mojom.PageHandlerRemote}
+   * @extends {TestBrowserProxy}
+   */
+  let newTabPageHandler;
+
+  /**
+   * @implements {promoBrowserCommand.mojom.CommandHandlerRemote}
+   * @extends {TestBrowserProxy}
+   */
+  let promoBrowserCommandHandler;
 
   setup(() => {
     PolymerTest.clearBody();
-    BrowserProxy.setInstance(createTestProxy());
+    newTabPageHandler =
+        TestBrowserProxy.fromClass(newTabPage.mojom.PageHandlerRemote);
+    NewTabPageProxy.setInstance(
+        newTabPageHandler, new newTabPage.mojom.PageCallbackRouter());
 
-    const promoBrowserCommandTestProxy = PromoBrowserCommandProxy.getInstance();
-    promoBrowserCommandTestProxy.handler = TestBrowserProxy.fromClass(
+    promoBrowserCommandHandler = TestBrowserProxy.fromClass(
         promoBrowserCommand.mojom.CommandHandlerRemote);
+    const promoBrowserCommandTestProxy = PromoBrowserCommandProxy.getInstance();
+    promoBrowserCommandTestProxy.handler = promoBrowserCommandHandler;
   });
 
   /**
@@ -24,8 +38,7 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
    * @return {!Element}
    */
   async function createMiddleSlotPromo(canShowPromo) {
-    const testProxy = BrowserProxy.getInstance();
-    testProxy.handler.setResultFor('getPromo', Promise.resolve({
+    newTabPageHandler.setResultFor('getPromo', Promise.resolve({
       promo: {
         middleSlotParts: [
           {image: {imageUrl: {url: 'https://image'}}},
@@ -60,24 +73,20 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
       },
     }));
 
-    const promoBrowserCommandTestProxy = PromoBrowserCommandProxy.getInstance();
-    promoBrowserCommandTestProxy.handler.setResultFor(
+    promoBrowserCommandHandler.setResultFor(
         'canShowPromoWithCommand', Promise.resolve({canShow: canShowPromo}));
 
     const middleSlotPromo = document.createElement('ntp-middle-slot-promo');
     document.body.appendChild(middleSlotPromo);
     const loaded =
         eventToPromise('ntp-middle-slot-promo-loaded', document.body);
-    await promoBrowserCommandTestProxy.handler.whenCalled(
-        'canShowPromoWithCommand');
+    await promoBrowserCommandHandler.whenCalled('canShowPromoWithCommand');
     assertEquals(
-        2,
-        promoBrowserCommandTestProxy.handler.getCallCount(
-            'canShowPromoWithCommand'));
+        2, promoBrowserCommandHandler.getCallCount('canShowPromoWithCommand'));
     if (canShowPromo) {
-      await testProxy.handler.whenCalled('onPromoRendered');
+      await newTabPageHandler.whenCalled('onPromoRendered');
     } else {
-      assertEquals(0, testProxy.handler.getCallCount('onPromoRendered'));
+      assertEquals(0, newTabPageHandler.getCallCount('onPromoRendered'));
     }
     await loaded;
     return middleSlotPromo;
@@ -130,16 +139,16 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
     const canShowPromo = true;
     const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
     assertHasContent(canShowPromo, middleSlotPromo);
-    const testProxy = PromoBrowserCommandProxy.getInstance();
-    testProxy.handler.setResultFor('executeCommand', Promise.resolve());
+    promoBrowserCommandHandler.setResultFor(
+        'executeCommand', Promise.resolve());
     const imageWithCommand = $$(middleSlotPromo, '#container').children[2];
     const command = $$(middleSlotPromo, '#container').children[5];
     await Promise.all([imageWithCommand, command].map(async el => {
-      testProxy.handler.reset();
+      promoBrowserCommandHandler.reset();
       el.click();
       // Make sure the command and click information are sent to the browser.
       const [expectedCommand, expectedClickInfo] =
-          await testProxy.handler.whenCalled('executeCommand');
+          await promoBrowserCommandHandler.whenCalled('executeCommand');
       // Unsupported commands get resolved to the default command before being
       // sent to the browser.
       assertEquals(
@@ -161,18 +170,14 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
    {middleSlotParts: [{break: {}}]},
   ].forEach((promo, i) => {
     test(`promo remains hidden if there is no data ${i}`, async () => {
-      const promoBrowserCommandTestProxy =
-          PromoBrowserCommandProxy.getInstance();
-      const testProxy = BrowserProxy.getInstance();
-      testProxy.handler.setResultFor('getPromo', Promise.resolve({promo}));
+      newTabPageHandler.setResultFor('getPromo', Promise.resolve({promo}));
       const middleSlotPromo = document.createElement('ntp-middle-slot-promo');
       document.body.appendChild(middleSlotPromo);
       await flushTasks();
       assertEquals(
           0,
-          promoBrowserCommandTestProxy.handler.getCallCount(
-              'canShowPromoWithCommand'));
-      assertEquals(0, testProxy.handler.getCallCount('onPromoRendered'));
+          promoBrowserCommandHandler.getCallCount('canShowPromoWithCommand'));
+      assertEquals(0, newTabPageHandler.getCallCount('onPromoRendered'));
       assertHasContent(false, middleSlotPromo);
     });
   });

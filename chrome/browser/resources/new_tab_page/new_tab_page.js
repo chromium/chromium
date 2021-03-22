@@ -13,7 +13,6 @@
 import './app.js';
 
 export {BackgroundManager} from './background_manager.js';
-export {BrowserProxy} from './browser_proxy.js';
 export {BackgroundSelectionType, CustomizeDialogPage} from './customize_dialog_types.js';
 export {ImgElement} from './img.js';
 export {recordDuration, recordLoadDuration, recordOccurence, recordPerdecage} from './metrics_utils.js';
@@ -30,6 +29,8 @@ export {ModuleHeaderElement} from './modules/module_header.js';
 export {ModuleRegistry} from './modules/module_registry.js';
 export {recipeTasksDescriptor, shoppingTasksDescriptor} from './modules/task_module/module.js';
 export {TaskModuleHandlerProxy} from './modules/task_module/task_module_handler_proxy.js';
+export {NewTabPageProxy} from './new_tab_page_proxy.js';
 export {PromoBrowserCommandProxy} from './promo_browser_command_proxy.js';
 export {RealboxBrowserProxy} from './realbox/realbox_browser_proxy.js';
 export {$$, createScrollBorders, decodeString16, mojoString16} from './utils.js';
+export {WindowProxy} from './window_proxy.js';

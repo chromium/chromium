@@ -2,18 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxy, ModuleDescriptor, ModuleRegistry} from 'chrome://new-tab-page/new_tab_page.js';
+import {ModuleDescriptor, ModuleRegistry, NewTabPageProxy, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://test/new_tab_page/metrics_test_support.js';
-import {createTestProxy} from 'chrome://test/new_tab_page/test_support.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
 import {flushTasks} from 'chrome://test/test_util.m.js';
 
 suite('NewTabPageModulesModuleRegistryTest', () => {
   /**
-   * @implements {BrowserProxy}
+   * @implements {WindowProxy}
    * @extends {TestBrowserProxy}
    */
-  let testProxy;
+  let windowProxy;
+
+  /**
+   * @implements {newTabPage.mojom.PageHandlerRemote}
+   * @extends {TestBrowserProxy}
+   */
+  let handler;
+
+  /** @type {newTabPage.mojom.PageHandlerRemote} */
+  let callbackRouterRemote;
 
   /** @type {MetricsTracker} */
   let metrics;
@@ -24,8 +33,14 @@ suite('NewTabPageModulesModuleRegistryTest', () => {
       navigationStartTime: 0.0,
     });
     metrics = fakeMetricsPrivate();
-    testProxy = createTestProxy();
-    BrowserProxy.setInstance(testProxy);
+
+    windowProxy = TestBrowserProxy.fromClass(WindowProxy);
+    WindowProxy.setInstance(windowProxy);
+
+    handler = TestBrowserProxy.fromClass(newTabPage.mojom.PageHandlerRemote);
+    const callbackRouter = new newTabPage.mojom.PageCallbackRouter();
+    NewTabPageProxy.setInstance(handler, callbackRouter);
+    callbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();
   });
 
   test('instantiates modules', async () => {
@@ -39,21 +54,21 @@ suite('NewTabPageModulesModuleRegistryTest', () => {
       new ModuleDescriptor('baz', 'bla', 300, () => bazModuleResolver.promise),
       new ModuleDescriptor('buz', 'blo', 400, () => Promise.resolve(fooModule)),
     ]);
-    testProxy.setResultFor('now', 5.0);
+    windowProxy.setResultFor('now', 5.0);
 
     // Act.
     const modulesPromise = ModuleRegistry.getInstance().initializeModules(0);
-    testProxy.callbackRouterRemote.setDisabledModules(false, ['buz']);
+    callbackRouterRemote.setDisabledModules(false, ['buz']);
     // Wait for first batch of modules.
     await flushTasks();
     // Move time forward to test metrics.
-    testProxy.setResultFor('now', 123.0);
+    windowProxy.setResultFor('now', 123.0);
     // Delayed promise resolution to test async module instantiation.
     bazModuleResolver.resolve(bazModule);
     const modules = await modulesPromise;
 
     // Assert.
-    assertEquals(1, testProxy.handler.getCallCount('updateDisabledModules'));
+    assertEquals(1, handler.getCallCount('updateDisabledModules'));
     assertEquals(2, modules.length);
     assertEquals('foo', modules[0].id);
     assertEquals(100, modules[0].heightPx);

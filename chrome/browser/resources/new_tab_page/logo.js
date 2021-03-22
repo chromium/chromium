@@ -12,8 +12,9 @@ import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserProxy} from './browser_proxy.js';
+import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {$$} from './utils.js';
+import {WindowProxy} from './window_proxy.js';
 
 /** @type {number} */
 const SHARE_BUTTON_SIZE_PX = 26;
@@ -144,7 +145,7 @@ class LogoElement extends PolymerElement {
     /** @private {!EventTracker} */
     this.eventTracker_ = new EventTracker();
     /** @private {newTabPage.mojom.PageHandlerRemote} */
-    this.pageHandler_ = BrowserProxy.getInstance().handler;
+    this.pageHandler_ = NewTabPageProxy.getInstance().handler;
     this.pageHandler_.getDoodle().then(({doodle}) => {
       this.doodle_ = doodle;
       this.loaded_ = true;
@@ -306,7 +307,7 @@ class LogoElement extends PolymerElement {
         onClickUrl.searchParams.append(param[0], param[1]);
       }
     }
-    BrowserProxy.getInstance().open(onClickUrl.toString());
+    WindowProxy.getInstance().open(onClickUrl.toString());
   }
 
   /** @private */
@@ -325,7 +326,7 @@ class LogoElement extends PolymerElement {
   async logImageRendered_(type, logUrl) {
     const {imageClickParams, interactionLogUrl, shareId} =
         await this.pageHandler_.onDoodleImageRendered(
-            type, BrowserProxy.getInstance().now(), logUrl);
+            type, WindowProxy.getInstance().now(), logUrl);
     this.imageClickParams_ = imageClickParams;
     this.interactionLogUrl_ = interactionLogUrl;
     this.shareId_ = shareId;

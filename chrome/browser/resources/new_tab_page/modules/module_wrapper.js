@@ -5,8 +5,8 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserProxy} from '../browser_proxy.js';
 import {recordLoadDuration, recordOccurence, recordPerdecage} from '../metrics_utils.js';
+import {WindowProxy} from '../window_proxy.js';
 
 import {ModuleDescriptor} from './module_descriptor.js';
 
@@ -52,7 +52,7 @@ class ModuleWrapperElement extends PolymerElement {
     const headerObserver = new IntersectionObserver(([{intersectionRatio}]) => {
       if (intersectionRatio >= 1.0) {
         headerObserver.disconnect();
-        const time = BrowserProxy.getInstance().now();
+        const time = WindowProxy.getInstance().now();
         recordLoadDuration('NewTabPage.Modules.Impression', time);
         recordLoadDuration(
             `NewTabPage.Modules.Impression.${this.descriptor.id}`, time);

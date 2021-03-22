@@ -21,7 +21,8 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {Debouncer, html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserProxy} from './browser_proxy.js';
+import {NewTabPageProxy} from './new_tab_page_proxy.js';
+import {WindowProxy} from './window_proxy.js';
 
 /**
  * @enum {number}
@@ -227,7 +228,7 @@ class MostVisitedElement extends PolymerElement {
     super();
     /** @private {boolean} */
     this.adding_ = false;
-    const {callbackRouter, handler} = BrowserProxy.getInstance();
+    const {callbackRouter, handler} = NewTabPageProxy.getInstance();
     /** @private {!newTabPage.mojom.PageCallbackRouter} */
     this.callbackRouter_ = callbackRouter;
     /** @private {newTabPage.mojom.PageHandlerRemote} */
@@ -296,11 +297,11 @@ class MostVisitedElement extends PolymerElement {
     this.boundOnWidthChange_ = this.updateScreenWidth_.bind(this);
     /** @private {!MediaQueryList} */
     this.mediaListenerWideWidth_ =
-        BrowserProxy.getInstance().matchMedia('(min-width: 672px)');
+        WindowProxy.getInstance().matchMedia('(min-width: 672px)');
     this.mediaListenerWideWidth_.addListener(this.boundOnWidthChange_);
     /** @private {!MediaQueryList} */
     this.mediaListenerMediumWidth_ =
-        BrowserProxy.getInstance().matchMedia('(min-width: 560px)');
+        WindowProxy.getInstance().matchMedia('(min-width: 560px)');
     this.mediaListenerMediumWidth_.addListener(this.boundOnWidthChange_);
     this.updateScreenWidth_();
     /** @private {!function(Event)} */
@@ -920,7 +921,7 @@ class MostVisitedElement extends PolymerElement {
     performance.measure('most-visited-rendered');
     this.pageHandler_.onMostVisitedTilesRendered(
         this.tiles_.slice(0, assert(this.maxVisibleTiles_)),
-        BrowserProxy.getInstance().now());
+        WindowProxy.getInstance().now());
   }
 }
 

@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxy, ModuleDescriptor} from 'chrome://new-tab-page/new_tab_page.js';
+import {ModuleDescriptor, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://test/new_tab_page/metrics_test_support.js';
-import {createTestProxy} from 'chrome://test/new_tab_page/test_support.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
 
 suite('NewTabPageModulesModuleDescriptorTest', () => {
   /**
-   * @implements {BrowserProxy}
+   * @implements {WindowProxy}
    * @extends {TestBrowserProxy}
    */
-  let testProxy;
+  let windowProxy;
 
   /** @type {MetricsTracker} */
   let metrics;
@@ -23,8 +23,8 @@ suite('NewTabPageModulesModuleDescriptorTest', () => {
       navigationStartTime: 0.0,
     });
     metrics = fakeMetricsPrivate();
-    testProxy = createTestProxy();
-    BrowserProxy.setInstance(testProxy);
+    windowProxy = TestBrowserProxy.fromClass(WindowProxy);
+    WindowProxy.setInstance(windowProxy);
   });
 
   test('instantiate module with data', async () => {
@@ -32,10 +32,10 @@ suite('NewTabPageModulesModuleDescriptorTest', () => {
     const element = document.createElement('div');
     const moduleDescriptor = new ModuleDescriptor('foo', 'bar', 100, () => {
       // Move time forward to simulate delay instantiating module.
-      testProxy.setResultFor('now', 128);
+      windowProxy.setResultFor('now', 128);
       return Promise.resolve(element);
     });
-    testProxy.setResultFor('now', 123);
+    windowProxy.setResultFor('now', 123);
 
     // Act.
     await moduleDescriptor.initialize();
@@ -75,7 +75,7 @@ suite('NewTabPageModulesModuleDescriptorTest', () => {
 
     // Act.
     const initializePromise = moduleDescriptor.initialize(123);
-    const [callback, timeout] = await testProxy.whenCalled('setTimeout');
+    const [callback, timeout] = await windowProxy.whenCalled('setTimeout');
     callback();
     await initializePromise;
 
