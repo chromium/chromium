@@ -244,6 +244,15 @@ pseudolocales = [
 locales_without_pseudolocales = locales
 locales_with_pseudolocales = locales + pseudolocales
 
+declare_args() {
+  enable_pseudolocales = false
+}
+
+if (enable_pseudolocales) {
+  # Note that this only packages the locales in, and doesn't add the ui to enable them.
+  locales += pseudolocales
+}
+
 # Same as the locales list but in the format Mac expects for output files:
 # it uses underscores instead of hyphens, and "en" instead of "en-US".
 locales_as_mac_outputs = []
