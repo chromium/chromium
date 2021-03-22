@@ -12,6 +12,7 @@
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/actions/action_delegate_util.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/url_utils.h"
 #include "components/autofill_assistant/browser/user_data_util.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
@@ -104,8 +105,8 @@ void SetFormFieldValueAction::InternalProcessAction(
         }
         if (keypress.keypress_case() ==
             SetFormFieldValueProto_KeyPress::kUseUsername) {
-          field_inputs_.emplace_back(/* value = */ delegate_->GetUserData()
-                                         ->selected_login_->username);
+          field_inputs_.emplace_back(
+              /* password_type= */ PasswordValueType::STORED_USERNAME);
         } else {
           field_inputs_.emplace_back(
               /* password_type = */ PasswordValueType::STORED_PASSWORD);
@@ -212,9 +213,21 @@ void SetFormFieldValueAction::SetFieldValueSequentially(
         fill_strategy == SIMULATE_KEY_PRESSES_FOCUS, *element_,
         std::move(next_field_callback));
   } else if (field_input.password_type != PasswordValueType::NOT_SET) {
+    DCHECK(delegate_->GetUserData()->selected_login_);
+    if (!url_utils::IsSamePublicSuffixDomain(
+            element_->container_frame_host->GetLastCommittedURL(),
+            delegate_->GetUserData()->selected_login_->origin)) {
+      EndAction(ClientStatus(PASSWORD_ORIGIN_MISMATCH));
+      return;
+    }
     switch (field_input.password_type) {
       case PasswordValueType::NOT_SET:
         DCHECK(false);
+        break;
+      case PasswordValueType::STORED_USERNAME:
+        SetFieldValueAndCheckFallback(
+            delegate_->GetUserData()->selected_login_->username,
+            std::move(next_field_callback));
         break;
       case PasswordValueType::STORED_PASSWORD:
         delegate_->GetWebsiteLoginManager()->GetPasswordForLogin(
@@ -225,17 +238,8 @@ void SetFormFieldValueAction::SetFieldValueSequentially(
         break;
     }
   } else {
-    auto fill_strategy = proto_.set_form_value().fill_strategy();
-    action_delegate_util::PerformSetFieldValue(
-        delegate_, field_input.value, fill_strategy, delay_in_millisecond,
-        *element_,
-        IsSimulatingKeyPresses(fill_strategy)
-            ? std::move(next_field_callback)
-            : base::BindOnce(
-                  &SetFormFieldValueAction::OnSetFieldValueAndCheckFallback,
-                  weak_ptr_factory_.GetWeakPtr(),
-                  std::move(next_field_callback),
-                  /* requested_value = */ field_input.value));
+    SetFieldValueAndCheckFallback(field_input.value,
+                                  std::move(next_field_callback));
   }
 }
 
@@ -247,16 +251,22 @@ void SetFormFieldValueAction::OnGetStoredPassword(
     EndAction(ClientStatus(AUTOFILL_INFO_NOT_AVAILABLE));
     return;
   }
+  SetFieldValueAndCheckFallback(password, std::move(next_field_callback));
+}
+
+void SetFormFieldValueAction::SetFieldValueAndCheckFallback(
+    const std::string& value,
+    base::OnceCallback<void(const ClientStatus&)> next_field_callback) {
   auto fill_strategy = proto_.set_form_value().fill_strategy();
   action_delegate_util::PerformSetFieldValue(
-      delegate_, password, fill_strategy,
+      delegate_, value, fill_strategy,
       proto_.set_form_value().delay_in_millisecond(), *element_,
       IsSimulatingKeyPresses(fill_strategy)
           ? std::move(next_field_callback)
           : base::BindOnce(
                 &SetFormFieldValueAction::OnSetFieldValueAndCheckFallback,
                 weak_ptr_factory_.GetWeakPtr(), std::move(next_field_callback),
-                /* requested_value = */ password));
+                /* requested_value = */ value));
 }
 
 void SetFormFieldValueAction::OnSetFieldValueAndCheckFallback(

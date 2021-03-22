@@ -30,9 +30,8 @@ class SetFormFieldValueAction : public Action {
   FRIEND_TEST_ALL_PREFIXES(SetFormFieldValueActionTest,
                            PasswordIsClearedFromMemory);
 
-  // TODO(b/154067717): Remove PasswordValueType enum.
   // Helper enum for |FieldInput| to describe the passwords-related actions.
-  enum class PasswordValueType { NOT_SET, STORED_PASSWORD };
+  enum class PasswordValueType { NOT_SET, STORED_PASSWORD, STORED_USERNAME };
 
   // A field input as extracted from the proto, but already checked for
   // validity.
@@ -64,6 +63,9 @@ class SetFormFieldValueAction : public Action {
       base::OnceCallback<void(const ClientStatus&)> next_field_callback,
       bool success,
       std::string password);
+  void SetFieldValueAndCheckFallback(
+      const std::string& value,
+      base::OnceCallback<void(const ClientStatus&)> next_field_callback);
   void OnSetFieldValueAndCheckFallback(
       base::OnceCallback<void(const ClientStatus&)> next_field_callback,
       const std::string& requested_value,

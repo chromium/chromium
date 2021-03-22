@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -21,6 +22,8 @@
 #include "components/autofill_assistant/browser/mock_website_login_manager.h"
 #include "components/autofill_assistant/browser/string_conversions_util.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
+#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
@@ -42,9 +45,17 @@ using ::testing::Property;
 using ::testing::Return;
 using ::testing::WithArgs;
 
-class SetFormFieldValueActionTest : public testing::Test {
+class SetFormFieldValueActionTest : public content::RenderViewHostTestHarness {
  public:
+  SetFormFieldValueActionTest()
+      : RenderViewHostTestHarness(
+            base::test::TaskEnvironment::MainThreadType::UI,
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  ~SetFormFieldValueActionTest() override {}
+
   void SetUp() override {
+    RenderViewHostTestHarness::SetUp();
+
     ON_CALL(mock_action_delegate_, GetWebController)
         .WillByDefault(Return(&mock_web_controller_));
     set_form_field_proto_ = proto_.mutable_set_form_value();
@@ -56,10 +67,6 @@ class SetFormFieldValueActionTest : public testing::Test {
             RunOnceCallback<0>(&user_data_, /* field_change = */ nullptr));
     ON_CALL(mock_action_delegate_, GetWebsiteLoginManager)
         .WillByDefault(Return(&mock_website_login_manager_));
-    ON_CALL(mock_website_login_manager_, OnGetLoginsForUrl(_, _))
-        .WillByDefault(
-            RunOnceCallback<1>(std::vector<WebsiteLoginManager::Login>{
-                WebsiteLoginManager::Login(GURL(kFakeUrl), kFakeUsername)}));
     ON_CALL(mock_website_login_manager_, OnGetPasswordForLogin(_, _))
         .WillByDefault(RunOnceCallback<1>(true, kFakePassword));
     ON_CALL(mock_action_delegate_, OnShortWaitForElement(_, _))
@@ -85,9 +92,6 @@ class SetFormFieldValueActionTest : public testing::Test {
     ON_CALL(mock_web_controller_, SendKeyboardInput(_, _, _, _))
         .WillByDefault(RunOnceCallback<3>(OkClientStatus()));
 
-    user_data_.selected_login_ =
-        base::make_optional<WebsiteLoginManager::Login>(GURL(kFakeUrl),
-                                                        kFakeUsername);
     fake_selector_ = Selector({kFakeSelector});
   }
 
@@ -127,6 +131,18 @@ TEST_F(SetFormFieldValueActionTest, RequestedPasswordButNoLoginInClientMemory) {
 }
 
 TEST_F(SetFormFieldValueActionTest, RequestedPasswordButPasswordNotAvailable) {
+  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+      GURL(kFakeUrl), kFakeUsername);
+  EXPECT_CALL(mock_action_delegate_, FindElement(fake_selector_, _))
+      .WillOnce(testing::WithArgs<1>([this](auto&& callback) {
+        auto element_result = std::make_unique<ElementFinder::Result>();
+        element_result->dom_object.object_data.object_id = "fake_object_id";
+        content::NavigationSimulator::NavigateAndCommitFromDocument(
+            GURL(kFakeUrl), web_contents()->GetMainFrame());
+        element_result->container_frame_host = web_contents()->GetMainFrame();
+        std::move(callback).Run(OkClientStatus(), std::move(element_result));
+      }));
+
   ON_CALL(mock_website_login_manager_, OnGetPasswordForLogin(_, _))
       .WillByDefault(RunOnceCallback<1>(false, std::string()));
   auto* value = set_form_field_proto_->add_value();
@@ -147,13 +163,20 @@ TEST_F(SetFormFieldValueActionTest, NonAsciiKeycode) {
   action.ProcessAction(callback_.Get());
 }
 
-TEST_F(SetFormFieldValueActionTest, Username) {
-  auto* value = set_form_field_proto_->add_value();
-  value->set_use_username(true);
-  SetFormFieldValueAction action(&mock_action_delegate_, proto_);
-
-  const ElementFinder::Result& expected_element =
-      test_util::MockFindElement(mock_action_delegate_, fake_selector_);
+TEST_F(SetFormFieldValueActionTest, UsernameToFill) {
+  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+      GURL(kFakeUrl), kFakeUsername);
+  EXPECT_CALL(mock_action_delegate_, FindElement(fake_selector_, _))
+      .WillOnce(testing::WithArgs<1>([this](auto&& callback) {
+        auto element_result = std::make_unique<ElementFinder::Result>();
+        element_result->dom_object.object_data.object_id = "fake_object_id";
+        content::NavigationSimulator::NavigateAndCommitFromDocument(
+            GURL(kFakeUrl), web_contents()->GetMainFrame());
+        element_result->container_frame_host = web_contents()->GetMainFrame();
+        std::move(callback).Run(OkClientStatus(), std::move(element_result));
+      }));
+  ElementFinder::Result expected_element;
+  expected_element.dom_object.object_data.object_id = "fake_object_id";
   EXPECT_CALL(
       mock_web_controller_,
       SetValueAttribute(kFakeUsername, EqualsElement(expected_element), _))
@@ -162,19 +185,55 @@ TEST_F(SetFormFieldValueActionTest, Username) {
               GetFieldValue(EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), kFakeUsername));
 
+  auto* value = set_form_field_proto_->add_value();
+  value->set_use_username(true);
+  SetFormFieldValueAction action(&mock_action_delegate_, proto_);
+
   EXPECT_CALL(
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
   action.ProcessAction(callback_.Get());
 }
 
-TEST_F(SetFormFieldValueActionTest, PasswordToFill) {
+TEST_F(SetFormFieldValueActionTest, UsernameFillingFailsForMismatchingOrigin) {
+  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+      GURL("http://www.example.com/"), kFakeUsername);
+  EXPECT_CALL(mock_action_delegate_, FindElement(fake_selector_, _))
+      .WillOnce(testing::WithArgs<1>([this](auto&& callback) {
+        auto element_result = std::make_unique<ElementFinder::Result>();
+        element_result->dom_object.object_data.object_id = "fake_object_id";
+        content::NavigationSimulator::NavigateAndCommitFromDocument(
+            GURL("http://not-real.com/"), web_contents()->GetMainFrame());
+        element_result->container_frame_host = web_contents()->GetMainFrame();
+        std::move(callback).Run(OkClientStatus(), std::move(element_result));
+      }));
+
+  EXPECT_CALL(mock_web_controller_, SetValueAttribute(_, _, _)).Times(0);
+
   auto* value = set_form_field_proto_->add_value();
-  value->set_use_password(true);
+  value->set_use_username(true);
   SetFormFieldValueAction action(&mock_action_delegate_, proto_);
 
-  const ElementFinder::Result& expected_element =
-      test_util::MockFindElement(mock_action_delegate_, fake_selector_);
+  EXPECT_CALL(callback_, Run(Pointee(Property(&ProcessedActionProto::status,
+                                              PASSWORD_ORIGIN_MISMATCH))));
+  action.ProcessAction(callback_.Get());
+}
+
+TEST_F(SetFormFieldValueActionTest, PasswordToFill) {
+  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+      GURL(kFakeUrl), kFakeUsername);
+  EXPECT_CALL(mock_action_delegate_, FindElement(fake_selector_, _))
+      .WillOnce(testing::WithArgs<1>([this](auto&& callback) {
+        auto element_result = std::make_unique<ElementFinder::Result>();
+        element_result->dom_object.object_data.object_id = "fake_object_id";
+        content::NavigationSimulator::NavigateAndCommitFromDocument(
+            GURL(kFakeUrl), web_contents()->GetMainFrame());
+        element_result->container_frame_host = web_contents()->GetMainFrame();
+        std::move(callback).Run(OkClientStatus(), std::move(element_result));
+      }));
+
+  ElementFinder::Result expected_element;
+  expected_element.dom_object.object_data.object_id = "fake_object_id";
   EXPECT_CALL(
       mock_web_controller_,
       SetValueAttribute(kFakePassword, EqualsElement(expected_element), _))
@@ -183,6 +242,67 @@ TEST_F(SetFormFieldValueActionTest, PasswordToFill) {
               GetFieldValue(EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), kFakePassword));
 
+  auto* value = set_form_field_proto_->add_value();
+  value->set_use_password(true);
+  SetFormFieldValueAction action(&mock_action_delegate_, proto_);
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+  action.ProcessAction(callback_.Get());
+}
+
+TEST_F(SetFormFieldValueActionTest, PasswordFillingFailsForMismatchingOrigin) {
+  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+      GURL("http://www.example.com/"), kFakeUsername);
+  EXPECT_CALL(mock_action_delegate_, FindElement(fake_selector_, _))
+      .WillOnce(testing::WithArgs<1>([this](auto&& callback) {
+        auto element_result = std::make_unique<ElementFinder::Result>();
+        element_result->dom_object.object_data.object_id = "fake_object_id";
+        content::NavigationSimulator::NavigateAndCommitFromDocument(
+            GURL("http://not-real.com/"), web_contents()->GetMainFrame());
+        element_result->container_frame_host = web_contents()->GetMainFrame();
+        std::move(callback).Run(OkClientStatus(), std::move(element_result));
+      }));
+
+  EXPECT_CALL(mock_web_controller_, SetValueAttribute(_, _, _)).Times(0);
+
+  auto* value = set_form_field_proto_->add_value();
+  value->set_use_password(true);
+  SetFormFieldValueAction action(&mock_action_delegate_, proto_);
+
+  EXPECT_CALL(callback_, Run(Pointee(Property(&ProcessedActionProto::status,
+                                              PASSWORD_ORIGIN_MISMATCH))));
+  action.ProcessAction(callback_.Get());
+}
+
+TEST_F(SetFormFieldValueActionTest, PasswordFillingSucceedsForSubdomain) {
+  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+      GURL("http://www.example.com/"), kFakeUsername);
+  EXPECT_CALL(mock_action_delegate_, FindElement(fake_selector_, _))
+      .WillOnce(testing::WithArgs<1>([this](auto&& callback) {
+        auto element_result = std::make_unique<ElementFinder::Result>();
+        element_result->dom_object.object_data.object_id = "fake_object_id";
+        content::NavigationSimulator::NavigateAndCommitFromDocument(
+            GURL("http://login.example.com/"), web_contents()->GetMainFrame());
+        element_result->container_frame_host = web_contents()->GetMainFrame();
+        std::move(callback).Run(OkClientStatus(), std::move(element_result));
+      }));
+
+  ElementFinder::Result expected_element;
+  expected_element.dom_object.object_data.object_id = "fake_object_id";
+  EXPECT_CALL(
+      mock_web_controller_,
+      SetValueAttribute(kFakePassword, EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<2>(OkClientStatus()));
+  EXPECT_CALL(mock_web_controller_,
+              GetFieldValue(EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), kFakePassword));
+
+  auto* value = set_form_field_proto_->add_value();
+  value->set_use_password(true);
+  SetFormFieldValueAction action(&mock_action_delegate_, proto_);
+
   EXPECT_CALL(
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
@@ -190,9 +310,22 @@ TEST_F(SetFormFieldValueActionTest, PasswordToFill) {
 }
 
 TEST_F(SetFormFieldValueActionTest, PasswordIsClearedFromMemory) {
+  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+      GURL(kFakeUrl), kFakeUsername);
+  EXPECT_CALL(mock_action_delegate_, FindElement(fake_selector_, _))
+      .WillOnce(testing::WithArgs<1>([this](auto&& callback) {
+        auto element_result = std::make_unique<ElementFinder::Result>();
+        element_result->dom_object.object_data.object_id = "fake_object_id";
+        content::NavigationSimulator::NavigateAndCommitFromDocument(
+            GURL(kFakeUrl), web_contents()->GetMainFrame());
+        element_result->container_frame_host = web_contents()->GetMainFrame();
+        std::move(callback).Run(OkClientStatus(), std::move(element_result));
+      }));
+
   auto* value = set_form_field_proto_->add_value();
   value->set_use_password(true);
   SetFormFieldValueAction action(&mock_action_delegate_, proto_);
+
   ON_CALL(mock_web_controller_, GetFieldValue(_, _))
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(), kFakePassword));
   action.ProcessAction(callback_.Get());
@@ -458,12 +591,20 @@ TEST_F(SetFormFieldValueActionTest, FallbackToSimulateKeystrokes) {
 TEST_F(SetFormFieldValueActionTest, FallbackForPassword) {
   InSequence sequence;
 
-  auto* value = set_form_field_proto_->add_value();
-  value->set_use_password(true);
-  SetFormFieldValueAction action(&mock_action_delegate_, proto_);
+  user_data_.selected_login_ = base::make_optional<WebsiteLoginManager::Login>(
+      GURL(kFakeUrl), kFakeUsername);
+  EXPECT_CALL(mock_action_delegate_, FindElement(fake_selector_, _))
+      .WillOnce(testing::WithArgs<1>([this](auto&& callback) {
+        auto element_result = std::make_unique<ElementFinder::Result>();
+        element_result->dom_object.object_data.object_id = "fake_object_id";
+        content::NavigationSimulator::NavigateAndCommitFromDocument(
+            GURL(kFakeUrl), web_contents()->GetMainFrame());
+        element_result->container_frame_host = web_contents()->GetMainFrame();
+        std::move(callback).Run(OkClientStatus(), std::move(element_result));
+      }));
+  ElementFinder::Result expected_element;
+  expected_element.dom_object.object_data.object_id = "fake_object_id";
 
-  const ElementFinder::Result& expected_element =
-      test_util::MockFindElement(mock_action_delegate_, fake_selector_);
   EXPECT_CALL(
       mock_web_controller_,
       SetValueAttribute(kFakePassword, EqualsElement(expected_element), _))
@@ -479,6 +620,10 @@ TEST_F(SetFormFieldValueActionTest, FallbackForPassword) {
               SendKeyboardInput(UTF8ToUnicode(kFakePassword), _,
                                 EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<3>(OkClientStatus()));
+
+  auto* value = set_form_field_proto_->add_value();
+  value->set_use_password(true);
+  SetFormFieldValueAction action(&mock_action_delegate_, proto_);
 
   EXPECT_CALL(callback_,
               Run(Pointee(AllOf(

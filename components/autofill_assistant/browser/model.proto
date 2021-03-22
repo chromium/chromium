@@ -206,6 +206,10 @@ enum ProcessedActionStatusProto {
   // used.
   CLIENT_ID_RESOLUTION_FAILED = 28;
 
+  // The target element's frame was not in the same domain or subdomain as the
+  // password's origin.
+  PASSWORD_ORIGIN_MISMATCH = 29;
+
   reserved 15, 23, 25;
 }
 

@@ -139,6 +139,9 @@ std::ostream& operator<<(std::ostream& out,
     case ProcessedActionStatusProto::CLIENT_ID_RESOLUTION_FAILED:
       out << "CLIENT_ID_RESOLUTION_FAILED";
       break;
+    case ProcessedActionStatusProto::PASSWORD_ORIGIN_MISMATCH:
+      out << "PASSWORD_ORIGIN_MISMATCH";
+      break;
 
       // Intentionally no default case to make compilation fail if a new value
       // was added to the enum but not to this list.
