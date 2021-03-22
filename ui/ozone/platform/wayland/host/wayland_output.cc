@@ -13,9 +13,13 @@ WaylandOutput::WaylandOutput(uint32_t output_id, wl_output* output)
     : output_id_(output_id),
       output_(output),
       scale_factor_(kDefaultScaleFactor),
-      rect_in_physical_pixels_(gfx::Rect()) {}
+      rect_in_physical_pixels_(gfx::Rect()) {
+  wl_output_set_user_data(output_.get(), this);
+}
 
-WaylandOutput::~WaylandOutput() = default;
+WaylandOutput::~WaylandOutput() {
+  wl_output_set_user_data(output_.get(), nullptr);
+}
 
 void WaylandOutput::Initialize(Delegate* delegate) {
   DCHECK(!delegate_);

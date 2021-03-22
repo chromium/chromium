@@ -563,8 +563,10 @@ void WaylandWindow::AddEnteredOutputId(struct wl_output* output) {
   if (wl::IsMenuType(type()) || type() == ui::PlatformWindowType::kTooltip)
     return;
 
-  const uint32_t entered_output_id =
-      connection_->wayland_output_manager()->GetIdForOutput(output);
+  auto* wayland_output =
+      static_cast<WaylandOutput*>(wl_output_get_user_data(output));
+  DCHECK(wayland_output);
+  const uint32_t entered_output_id = wayland_output->output_id();
   DCHECK_NE(entered_output_id, 0u);
   auto result = entered_outputs_ids_.insert(entered_output_id);
   DCHECK(result.first != entered_outputs_ids_.end());
@@ -579,17 +581,19 @@ void WaylandWindow::RemoveEnteredOutputId(struct wl_output* output) {
   if (wl::IsMenuType(type()))
     return;
 
-  const uint32_t left_output_id =
-      connection_->wayland_output_manager()->GetIdForOutput(output);
-  auto entered_output_id_it = entered_outputs_ids_.find(left_output_id);
+  auto* wayland_output =
+      static_cast<WaylandOutput*>(wl_output_get_user_data(output));
+  DCHECK(wayland_output);
+  const uint32_t left_output_id = wayland_output->output_id();
+  auto entered_output_ids_it = entered_outputs_ids_.find(left_output_id);
   // Workaround: when a user switches physical output between two displays,
   // a window does not necessarily receive enter events immediately or until
   // a user resizes/moves the window. It means that switching output between
   // displays in a single output mode results in leave events, but the surface
   // might not have received enter event before. Thus, remove the id of left
   // output only if it was stored before.
-  if (entered_output_id_it != entered_outputs_ids_.end())
-    entered_outputs_ids_.erase(entered_output_id_it);
+  if (entered_output_ids_it != entered_outputs_ids_.end())
+    entered_outputs_ids_.erase(entered_output_ids_it);
 
   UpdateBufferScale(true);
 }
