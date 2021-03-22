@@ -18,6 +18,7 @@ import android.widget.FrameLayout;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -83,10 +84,10 @@ class ExploreSurfaceViewBinder {
     }
 
     private static void resetScrollPosition(PropertyModel model) {
-        if (model.get(FEED_SURFACE_COORDINATOR) == null) return;
+        FeedSurfaceCoordinator feedLoadingCoordinator = model.get(FEED_SURFACE_COORDINATOR);
+        if (feedLoadingCoordinator == null || feedLoadingCoordinator.getStream() == null) return;
 
-        RecyclerView feedStreamView =
-                (RecyclerView) model.get(FEED_SURFACE_COORDINATOR).getStream().getView();
+        RecyclerView feedStreamView = (RecyclerView) feedLoadingCoordinator.getStream().getView();
         if (feedStreamView != null) {
             feedStreamView.scrollToPosition(0);
         }
