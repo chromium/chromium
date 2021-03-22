@@ -176,6 +176,12 @@ class UserDataAuthClientTest : public testing::Test {
   ::user_data_auth::MountReply expected_mount_reply_;
   ::user_data_auth::RemoveReply expected_remove_reply_;
   ::user_data_auth::RenameReply expected_rename_reply_;
+  ::user_data_auth::GetKeyDataReply expected_get_key_data_reply_;
+  ::user_data_auth::CheckKeyReply expected_check_key_reply_;
+  ::user_data_auth::AddKeyReply expected_add_key_reply_;
+  ::user_data_auth::RemoveKeyReply expected_remove_key_reply_;
+  ::user_data_auth::MassRemoveKeysReply expected_mass_remove_keys_reply_;
+  ::user_data_auth::MigrateKeyReply expected_migrate_key_reply_;
 
   // When it is set `true`, an invalid array of bytes that cannot be parsed will
   // be the response.
@@ -207,6 +213,18 @@ class UserDataAuthClientTest : public testing::Test {
       writer.AppendProtoAsArrayOfBytes(expected_remove_reply_);
     } else if (method_call->GetMember() == ::user_data_auth::kRename) {
       writer.AppendProtoAsArrayOfBytes(expected_rename_reply_);
+    } else if (method_call->GetMember() == ::user_data_auth::kGetKeyData) {
+      writer.AppendProtoAsArrayOfBytes(expected_get_key_data_reply_);
+    } else if (method_call->GetMember() == ::user_data_auth::kCheckKey) {
+      writer.AppendProtoAsArrayOfBytes(expected_check_key_reply_);
+    } else if (method_call->GetMember() == ::user_data_auth::kAddKey) {
+      writer.AppendProtoAsArrayOfBytes(expected_add_key_reply_);
+    } else if (method_call->GetMember() == ::user_data_auth::kRemoveKey) {
+      writer.AppendProtoAsArrayOfBytes(expected_remove_key_reply_);
+    } else if (method_call->GetMember() == ::user_data_auth::kMassRemoveKeys) {
+      writer.AppendProtoAsArrayOfBytes(expected_mass_remove_keys_reply_);
+    } else if (method_call->GetMember() == ::user_data_auth::kMigrateKey) {
+      writer.AppendProtoAsArrayOfBytes(expected_migrate_key_reply_);
     } else {
       ASSERT_FALSE(true) << "Unrecognized member: " << method_call->GetMember();
     }
@@ -305,6 +323,81 @@ TEST_F(UserDataAuthClientTest, Rename) {
   base::RunLoop().RunUntilIdle();
   ASSERT_NE(result_reply, base::nullopt);
   EXPECT_TRUE(ProtobufEquals(result_reply.value(), expected_rename_reply_));
+}
+
+TEST_F(UserDataAuthClientTest, GetKeyData) {
+  expected_get_key_data_reply_.set_error(
+      user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
+  base::Optional<::user_data_auth::GetKeyDataReply> result_reply;
+
+  client_->GetKeyData(::user_data_auth::GetKeyDataRequest(),
+                      CreateCopyCallback(&result_reply));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_NE(result_reply, base::nullopt);
+  EXPECT_TRUE(
+      ProtobufEquals(result_reply.value(), expected_get_key_data_reply_));
+}
+
+TEST_F(UserDataAuthClientTest, CheckKey) {
+  expected_check_key_reply_.set_error(
+      user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
+  base::Optional<::user_data_auth::CheckKeyReply> result_reply;
+
+  client_->CheckKey(::user_data_auth::CheckKeyRequest(),
+                    CreateCopyCallback(&result_reply));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_NE(result_reply, base::nullopt);
+  EXPECT_TRUE(ProtobufEquals(result_reply.value(), expected_check_key_reply_));
+}
+
+TEST_F(UserDataAuthClientTest, AddKey) {
+  expected_add_key_reply_.set_error(
+      user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
+  base::Optional<::user_data_auth::AddKeyReply> result_reply;
+
+  client_->AddKey(::user_data_auth::AddKeyRequest(),
+                  CreateCopyCallback(&result_reply));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_NE(result_reply, base::nullopt);
+  EXPECT_TRUE(ProtobufEquals(result_reply.value(), expected_add_key_reply_));
+}
+
+TEST_F(UserDataAuthClientTest, RemoveKey) {
+  expected_remove_key_reply_.set_error(
+      user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
+  base::Optional<::user_data_auth::RemoveKeyReply> result_reply;
+
+  client_->RemoveKey(::user_data_auth::RemoveKeyRequest(),
+                     CreateCopyCallback(&result_reply));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_NE(result_reply, base::nullopt);
+  EXPECT_TRUE(ProtobufEquals(result_reply.value(), expected_remove_key_reply_));
+}
+
+TEST_F(UserDataAuthClientTest, MassRemoveKeys) {
+  expected_mass_remove_keys_reply_.set_error(
+      user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
+  base::Optional<::user_data_auth::MassRemoveKeysReply> result_reply;
+
+  client_->MassRemoveKeys(::user_data_auth::MassRemoveKeysRequest(),
+                          CreateCopyCallback(&result_reply));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_NE(result_reply, base::nullopt);
+  EXPECT_TRUE(
+      ProtobufEquals(result_reply.value(), expected_mass_remove_keys_reply_));
+}
+
+TEST_F(UserDataAuthClientTest, MigrateKey) {
+  expected_migrate_key_reply_.set_error(
+      user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
+  base::Optional<::user_data_auth::MigrateKeyReply> result_reply;
+
+  client_->MigrateKey(::user_data_auth::MigrateKeyRequest(),
+                      CreateCopyCallback(&result_reply));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_NE(result_reply, base::nullopt);
+  EXPECT_TRUE(
+      ProtobufEquals(result_reply.value(), expected_migrate_key_reply_));
 }
 
 TEST_F(UserDataAuthClientTest, LowDiskSpaceSignal) {

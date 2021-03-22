@@ -129,6 +129,48 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
                     std::move(callback));
   }
 
+  void GetKeyData(const ::user_data_auth::GetKeyDataRequest& request,
+                  GetKeyDataCallback callback) override {
+    CallProtoMethod(::user_data_auth::kGetKeyData,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
+  void CheckKey(const ::user_data_auth::CheckKeyRequest& request,
+                CheckKeyCallback callback) override {
+    CallProtoMethod(::user_data_auth::kCheckKey,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
+  void AddKey(const ::user_data_auth::AddKeyRequest& request,
+              AddKeyCallback callback) override {
+    CallProtoMethod(::user_data_auth::kAddKey,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
+  void RemoveKey(const ::user_data_auth::RemoveKeyRequest& request,
+                 RemoveKeyCallback callback) override {
+    CallProtoMethod(::user_data_auth::kRemoveKey,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
+  void MassRemoveKeys(const ::user_data_auth::MassRemoveKeysRequest& request,
+                      MassRemoveKeysCallback callback) override {
+    CallProtoMethod(::user_data_auth::kMassRemoveKeys,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
+  void MigrateKey(const ::user_data_auth::MigrateKeyRequest& request,
+                  MigrateKeyCallback callback) override {
+    CallProtoMethod(::user_data_auth::kMigrateKey,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
  private:
   // Calls cryptohomed's |method_name| method in |interface_name| interface,
   // passing in |request| as input with |timeout_ms|. Once the (asynchronous)

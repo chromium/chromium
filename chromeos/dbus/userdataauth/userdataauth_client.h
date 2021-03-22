@@ -42,6 +42,16 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   using MountCallback = DBusMethodCallback<::user_data_auth::MountReply>;
   using RemoveCallback = DBusMethodCallback<::user_data_auth::RemoveReply>;
   using RenameCallback = DBusMethodCallback<::user_data_auth::RenameReply>;
+  using GetKeyDataCallback =
+      DBusMethodCallback<::user_data_auth::GetKeyDataReply>;
+  using CheckKeyCallback = DBusMethodCallback<::user_data_auth::CheckKeyReply>;
+  using AddKeyCallback = DBusMethodCallback<::user_data_auth::AddKeyReply>;
+  using RemoveKeyCallback =
+      DBusMethodCallback<::user_data_auth::RemoveKeyReply>;
+  using MassRemoveKeysCallback =
+      DBusMethodCallback<::user_data_auth::MassRemoveKeysReply>;
+  using MigrateKeyCallback =
+      DBusMethodCallback<::user_data_auth::MigrateKeyReply>;
 
   // Not copyable or movable.
   UserDataAuthClient(const UserDataAuthClient&) = delete;
@@ -94,6 +104,31 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   // Renames user's vault.
   virtual void Rename(const ::user_data_auth::RenameRequest& request,
                       RenameCallback callback) = 0;
+
+  // Get key metadata for user's vault.
+  virtual void GetKeyData(const ::user_data_auth::GetKeyDataRequest& request,
+                          GetKeyDataCallback callback) = 0;
+
+  // Try authenticating with key in user's vault.
+  virtual void CheckKey(const ::user_data_auth::CheckKeyRequest& request,
+                        CheckKeyCallback callback) = 0;
+
+  // Add a key to user's vault.
+  virtual void AddKey(const ::user_data_auth::AddKeyRequest& request,
+                      AddKeyCallback callback) = 0;
+
+  // Remove a key from user's vault.
+  virtual void RemoveKey(const ::user_data_auth::RemoveKeyRequest& request,
+                         RemoveKeyCallback callback) = 0;
+
+  // Remove multiple keys from user's vault.
+  virtual void MassRemoveKeys(
+      const ::user_data_auth::MassRemoveKeysRequest& request,
+      MassRemoveKeysCallback callback) = 0;
+
+  // Change the user vault's key's authentication.
+  virtual void MigrateKey(const ::user_data_auth::MigrateKeyRequest& request,
+                          MigrateKeyCallback callback) = 0;
 
  protected:
   // Initialize/Shutdown should be used instead.

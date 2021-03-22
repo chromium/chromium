@@ -46,6 +46,36 @@ void FakeUserDataAuthClient::Rename(
     RenameCallback callback) {
   NOTIMPLEMENTED();
 }
+void FakeUserDataAuthClient::GetKeyData(
+    const ::user_data_auth::GetKeyDataRequest& request,
+    GetKeyDataCallback callback) {
+  NOTIMPLEMENTED();
+}
+void FakeUserDataAuthClient::CheckKey(
+    const ::user_data_auth::CheckKeyRequest& request,
+    CheckKeyCallback callback) {
+  NOTIMPLEMENTED();
+}
+void FakeUserDataAuthClient::AddKey(
+    const ::user_data_auth::AddKeyRequest& request,
+    AddKeyCallback callback) {
+  NOTIMPLEMENTED();
+}
+void FakeUserDataAuthClient::RemoveKey(
+    const ::user_data_auth::RemoveKeyRequest& request,
+    RemoveKeyCallback callback) {
+  NOTIMPLEMENTED();
+}
+void FakeUserDataAuthClient::MassRemoveKeys(
+    const ::user_data_auth::MassRemoveKeysRequest& request,
+    MassRemoveKeysCallback callback) {
+  NOTIMPLEMENTED();
+}
+void FakeUserDataAuthClient::MigrateKey(
+    const ::user_data_auth::MigrateKeyRequest& request,
+    MigrateKeyCallback callback) {
+  NOTIMPLEMENTED();
+}
 void FakeUserDataAuthClient::WaitForServiceToBeAvailable(
     chromeos::WaitForServiceToBeAvailableCallback callback) {
   NOTIMPLEMENTED();
