@@ -22,7 +22,7 @@ base::Optional<Priority> GetPriorityFromSequencingInformationValue(
     const base::Value& sequencing_information) {
   const base::Optional<int> priority_result =
       sequencing_information.FindIntKey("priority");
-  if (priority_result.has_value() ||
+  if (!priority_result.has_value() ||
       !Priority_IsValid(priority_result.value())) {
     return base::nullopt;
   }
@@ -36,8 +36,6 @@ StatusOr<SequencingInformation> SequencingInformationValueToProto(
   const auto priority_result = GetPriorityFromSequencingInformationValue(value);
 
   // If any of the previous values don't exist, or are malformed, return error.
-  int64_t seq_id;
-  int64_t gen_id;
   if (!sequencing_id || generation_id->empty() || !generation_id ||
       generation_id->empty() || !priority_result.has_value() ||
       !Priority_IsValid(priority_result.value())) {
@@ -47,6 +45,8 @@ StatusOr<SequencingInformation> SequencingInformationValueToProto(
                                 value.DebugString()}));
   }
 
+  int64_t seq_id;
+  int64_t gen_id;
   if (!base::StringToInt64(*sequencing_id, &seq_id) ||
       !base::StringToInt64(*generation_id, &gen_id) || gen_id == 0) {
     // For backwards compatibility accept unsigned values if signed are not

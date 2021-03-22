@@ -15,6 +15,7 @@ include_rules = [
   "+components/account_manager_core",
   "+components/full_restore",
   "+components/guest_os",
+  "+components/reporting",
   "+components/services/app_service/public",
   "+cros",
   "+dbus",

@@ -8,7 +8,7 @@ option optimize_for = LITE_RUNTIME;
 
 package reporting;
 
-import "record_constants.proto";
+import "components/reporting/proto/record_constants.proto";
 
 // Record represents the data sent from the Reporting Client.
 message Record {

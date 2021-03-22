@@ -1,0 +1,135 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.  Use
+// of this source code is governed by a BSD-style license that can
+// be found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package reporting;
+
+import "components/reporting/proto/record_constants.proto";
+import "components/reporting/proto/record.proto";
+import "components/reporting/util/status.proto";
+
+// ------------ CLIENT/USER REQUEST AND RESPONSES -----------------
+// EnqueueRecordRequest enqueues records for encryption,
+// storage, and upload.
+message EnqueueRecordRequest {
+  // record_fd holds the file descriptor for serialized Record protos. File
+  // descriptor must point to a block of memory, because the record cannot
+  // be stored to disk prior to encryption.
+  // //chrome/cros/reporting/api/proto/record.proto
+  optional int32 record_fd = 1;
+
+  // pid holds the pid of the sending process.
+  optional int32 pid = 2;
+
+  // Priority from
+  // //chrome/cros/reporting/api/proto/record_constants.proto
+  // indicates what priority queue the record should be included in.
+  optional Priority priority = 3;
+}
+
+// EnqueueRecordResponse indicates the enqueue success or
+// failure.
+message EnqueueRecordResponse {
+  // Indicates success or failure of EnqueueRecordRequest.
+  // Specific error codes indicate if a retry is appropriate.
+  // Expected errors:
+  //   FAILED_PRECONDITION: “The daemon is unable to locate the
+  //     public key for record encryption.” - Not Retryable
+  //   FAILED_PRECONDITION: “The daemon has insufficient permissions
+  //     to read/write from/to disk” - Not Retryable
+  //   FAILED_PRECONDITION: “Policy controlling daemon is either unset
+  //     or off.” - Not Retryable
+  //   UNAVAILABLE: “The daemon is still starting.” - Retryable
+  //   RESOURCE_EXHAUSTED: “The daemon has no available threads for
+  //     processing” - Retryable
+  optional StatusProto status = 1;
+}
+
+// FlushPriorityRequest requests that the indicated priority
+// queue is flushed (records are uploaded to the server).
+message FlushPriorityRequest {
+  // Priority of the desired queue. Defaults to MANUAL_BATCH.
+  optional Priority priority = 1 [default = MANUAL_BATCH];
+}
+
+// FlushPriorityResponse indicates success or failure of
+// processing FlushPriorityRequest.
+message FlushPriorityResponse {
+  // Indicates success or failure of EnqueueRecordRequest.
+  // Specific error codes indicate if a retry is appropriate.
+  // Expected errors:
+  //   FAILED_PRECONDITION: “The daemon is unable to locate the
+  //     public key for record encryption.” - Not Retryable
+  //   FAILED_PRECONDITION: “The daemon has insufficient permissions
+  //     to read/write from/to disk” - Not Retryable
+  //   FAILED_PRECONDITION: “Policy controlling daemon is either unset
+  //     or off.” - Not Retryable
+  //   UNAVAILABLE: “The daemon is still starting.” - Retryable
+  optional StatusProto status = 1;
+}
+
+// --------------- CHROME CALLS AND RESPONSES -------------------
+// Daemon DBus call to Chrome for uploading records. The Daemon sends a
+// batch of records, and the Upload Service accepts as many (but at least
+// one) as it can for upload. Records not sent for upload can be sent again
+// at a later time.
+message UploadEncryptedRecordRequest {
+  // encrypted_record_fd holds the file descriptors for the serialized
+  // EncryptedRecords.
+  optional int32 encrypted_record_fd = 1;
+
+  // pid holds the pid of the sending process.
+  optional int32 pid = 2;
+
+  // If true, server should send the encryption keys with the next response.
+  optional bool need_encryption_keys = 3;
+}
+
+message UploadEncryptedRecordResponse {
+  // Status indicates if the records will be uploaded.
+  // Expected Errors:
+  //    UNAVAILABLE: “No internet connection. Unable to upload records at
+  //      this time.” - Retryable
+  //    FAILED_PRECONDITION: “Policy controlling reporting upload is unset
+  //      or off.” - Not Retryable
+  optional StatusProto status = 1;
+}
+
+// ConfirmRecordUploadRequest is expected to only come from
+// Chrome and indicates the record with the provided
+// SequencingInformation successfully uploaded. It is
+// only sent by Chrome after a successful upload.
+message ConfirmRecordUploadRequest {
+  // SequencingInformation of the successfully uploaded record.
+  // SequencingInformation is part of the UploadEncryptedRecordRequest
+  // sent to Chrome.
+  optional SequencingInformation sequencing_information = 1;
+
+  // If true, daemon should update to the provided sequencing_information
+  // regardless of its current state.
+  optional bool force_confirm = 2;
+}
+
+// ConfirmRecordUploadResponse indicates that the request was
+// successfully resolved. In the event that the daemon is unable
+// to process the ConfirmRecordUploadeRequest it is safe to drop it.
+// On the next upload, the server will ignore all records with
+// SequencingInformation lower than the highest it has processed.
+// The next ConfirmRecordUploadRequest will ensure that they are
+// deleted from disk. Some data transmission will be repeated, but
+// data will not be lost.
+message ConfirmRecordUploadResponse {
+  // Indicates success or failure of EnqueueRecordRequest.
+  // Specific error codes indicate if a retry is appropriate.
+  // Expected errors:
+  //   FAILED_PRECONDITION: “The daemon has insufficient permissions
+  //     to read/write from/to disk”  - Not Retryable
+  //   FAILED_PRECONDITION: “Policy controlling daemon is either unset
+  //     or off.”  - Not Retryable
+  //   UNAVAILABLE: “The daemon is still starting.”  - Retryable
+  optional StatusProto status = 1;
+}
