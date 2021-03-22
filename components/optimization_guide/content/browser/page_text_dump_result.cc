@@ -99,11 +99,13 @@ FrameTextDumpResult::FrameTextDumpResult(const FrameTextDumpResult&) = default;
 FrameTextDumpResult FrameTextDumpResult::Initialize(
     mojom::TextDumpEvent event,
     content::GlobalFrameRoutingId rfh_id,
-    bool amp_frame) {
+    bool amp_frame,
+    int unique_navigation_id) {
   FrameTextDumpResult result;
   result.event_ = event;
   result.rfh_id_ = rfh_id;
   result.amp_frame_ = amp_frame;
+  result.unique_navigation_id_ = unique_navigation_id;
   return result;
 }
 
@@ -129,10 +131,11 @@ base::Optional<std::string> FrameTextDumpResult::utf8_contents() const {
 
 std::ostream& operator<<(std::ostream& os, const FrameTextDumpResult& frame) {
   return os << base::StringPrintf(
-             "event:%s rfh_id:(%d,%d) amp_frame:%s contents:%s",
+             "event:%s rfh_id:(%d,%d) amp_frame:%s unique_navigation_id:%d "
+             "contents:%s",
              TextDumpEventToString(frame.event()).c_str(),
              frame.rfh_id().child_id, frame.rfh_id().frame_routing_id,
-             frame.amp_frame() ? "true" : "false",
+             frame.amp_frame() ? "true" : "false", frame.unique_navigation_id(),
              frame.utf8_contents().value_or("null").c_str());
 }
 

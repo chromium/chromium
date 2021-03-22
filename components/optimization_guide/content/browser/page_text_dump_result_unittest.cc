@@ -12,13 +12,14 @@ namespace optimization_guide {
 
 TEST(FrameTextDumpResultTest, Preliminary) {
   content::GlobalFrameRoutingId id(1, 2);
-  FrameTextDumpResult frame_result =
-      FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFirstLayout, id,
-                                      /*amp_frame=*/false);
+  FrameTextDumpResult frame_result = FrameTextDumpResult::Initialize(
+      mojom::TextDumpEvent::kFirstLayout, id,
+      /*amp_frame=*/false, /*unique_navigation_id=*/1);
 
   EXPECT_FALSE(frame_result.IsCompleted());
   EXPECT_EQ(mojom::TextDumpEvent::kFirstLayout, frame_result.event());
   EXPECT_EQ(id, frame_result.rfh_id());
+  EXPECT_EQ(1, frame_result.unique_navigation_id());
   EXPECT_FALSE(frame_result.amp_frame());
 }
 
@@ -26,36 +27,48 @@ TEST(FrameTextDumpResultTest, Equality) {
   FrameTextDumpResult starting_frame_result =
       FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFirstLayout,
                                       content::GlobalFrameRoutingId(1, 2),
-                                      /*amp_frame=*/false)
+                                      /*amp_frame=*/false,
+                                      /*unique_navigation_id=*/0)
           .CompleteWithContents(base::ASCIIToUTF16("abc"));
 
   FrameTextDumpResult different_event =
       FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFinishedLoad,
                                       content::GlobalFrameRoutingId(1, 2),
-                                      /*amp_frame=*/false)
+                                      /*amp_frame=*/false,
+                                      /*unique_navigation_id=*/0)
           .CompleteWithContents(base::ASCIIToUTF16("abc"));
 
   FrameTextDumpResult different_id =
       FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFirstLayout,
                                       content::GlobalFrameRoutingId(2, 1),
-                                      /*amp_frame=*/false)
+                                      /*amp_frame=*/false,
+                                      /*unique_navigation_id=*/0)
           .CompleteWithContents(base::ASCIIToUTF16("abc"));
 
   FrameTextDumpResult different_amp_frame =
       FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFirstLayout,
                                       content::GlobalFrameRoutingId(1, 2),
-                                      /*amp_frame=*/true)
+                                      /*amp_frame=*/true,
+                                      /*unique_navigation_id=*/0)
           .CompleteWithContents(base::ASCIIToUTF16("abc"));
 
   FrameTextDumpResult different_contents =
       FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFirstLayout,
                                       content::GlobalFrameRoutingId(1, 2),
-                                      /*amp_frame=*/false)
+                                      /*amp_frame=*/false,
+                                      /*unique_navigation_id=*/0)
           .CompleteWithContents(base::ASCIIToUTF16("abcd"));
+
+  FrameTextDumpResult different_nav_id =
+      FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFirstLayout,
+                                      content::GlobalFrameRoutingId(1, 2),
+                                      /*amp_frame=*/false,
+                                      /*unique_navigation_id=*/1)
+          .CompleteWithContents(base::ASCIIToUTF16("abc"));
 
   std::vector<FrameTextDumpResult> all_frame_results = {
       starting_frame_result, different_event,    different_id,
-      different_amp_frame,   different_contents,
+      different_amp_frame,   different_contents, different_nav_id,
   };
   for (size_t lhs = 0; lhs < all_frame_results.size() - 1; lhs++) {
     for (size_t rhs = lhs + 1; rhs < all_frame_results.size(); rhs++) {
@@ -69,31 +82,36 @@ TEST(FrameTextDumpResultTest, Ordering) {
   FrameTextDumpResult starting_frame_result =
       FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFirstLayout,
                                       content::GlobalFrameRoutingId(1, 2),
-                                      /*amp_frame=*/false)
+                                      /*amp_frame=*/false,
+                                      /*unique_navigation_id=*/0)
           .CompleteWithContents(base::ASCIIToUTF16("abc"));
 
   FrameTextDumpResult later_event_frame_result =
       FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFinishedLoad,
                                       content::GlobalFrameRoutingId(1, 2),
-                                      /*amp_frame=*/false)
+                                      /*amp_frame=*/false,
+                                      /*unique_navigation_id=*/0)
           .CompleteWithContents(base::ASCIIToUTF16("abc"));
 
   FrameTextDumpResult longer_frame_result =
       FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFirstLayout,
                                       content::GlobalFrameRoutingId(1, 2),
-                                      /*amp_frame=*/false)
+                                      /*amp_frame=*/false,
+                                      /*unique_navigation_id=*/0)
           .CompleteWithContents(base::ASCIIToUTF16("abcd"));
 
   FrameTextDumpResult amp_frame_result =
       FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFirstLayout,
                                       content::GlobalFrameRoutingId(1, 2),
-                                      /*amp_frame=*/true)
+                                      /*amp_frame=*/true,
+                                      /*unique_navigation_id=*/0)
           .CompleteWithContents(base::ASCIIToUTF16("abc"));
 
   FrameTextDumpResult longer_amp_frame_result =
       FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFirstLayout,
                                       content::GlobalFrameRoutingId(1, 2),
-                                      /*amp_frame=*/true)
+                                      /*amp_frame=*/true,
+                                      /*unique_navigation_id=*/0)
           .CompleteWithContents(base::ASCIIToUTF16("abcd"));
 
   std::set<FrameTextDumpResult> ordered_set{
@@ -121,7 +139,8 @@ TEST(PageTextDumpResultTest, OneAMP) {
   page_result.AddFrameTextDumpResult(
       FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFinishedLoad,
                                       content::GlobalFrameRoutingId(2, 1),
-                                      /*amp_frame=*/true)
+                                      /*amp_frame=*/true,
+                                      /*unique_navigation_id=*/0)
           .CompleteWithContents(base::ASCIIToUTF16("amp frame")));
 
   ASSERT_TRUE(page_result.GetAMPTextContent());
@@ -138,7 +157,8 @@ TEST(PageTextDumpResultTest, OneMainframe) {
   page_result.AddFrameTextDumpResult(
       FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFirstLayout,
                                       content::GlobalFrameRoutingId(1, 2),
-                                      /*amp_frame=*/false)
+                                      /*amp_frame=*/false,
+                                      /*unique_navigation_id=*/0)
           .CompleteWithContents(base::ASCIIToUTF16("mainframe")));
 
   EXPECT_FALSE(page_result.GetAMPTextContent());
@@ -155,13 +175,15 @@ TEST(PageTextDumpResultTest, OneAMPOneMF) {
   page_result.AddFrameTextDumpResult(
       FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFirstLayout,
                                       content::GlobalFrameRoutingId(1, 2),
-                                      /*amp_frame=*/false)
+                                      /*amp_frame=*/false,
+                                      /*unique_navigation_id=*/0)
           .CompleteWithContents(base::ASCIIToUTF16("mainframe")));
 
   page_result.AddFrameTextDumpResult(
       FrameTextDumpResult::Initialize(mojom::TextDumpEvent::kFinishedLoad,
                                       content::GlobalFrameRoutingId(2, 1),
-                                      /*amp_frame=*/true)
+                                      /*amp_frame=*/true,
+                                      /*unique_navigation_id=*/0)
           .CompleteWithContents(base::ASCIIToUTF16("amp frame")));
 
   ASSERT_TRUE(page_result.GetAMPTextContent());

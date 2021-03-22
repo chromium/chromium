@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/optimization_guide/content/mojom/page_text_service.mojom.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/navigation_simulator.h"
@@ -33,8 +34,10 @@ namespace {
 FrameTextDumpResult MakeFrameDump(mojom::TextDumpEvent event,
                                   content::GlobalFrameRoutingId rfh_id,
                                   bool amp_frame,
+                                  int unique_navigation_id,
                                   const std::u16string& contents) {
-  return FrameTextDumpResult::Initialize(event, rfh_id, amp_frame)
+  return FrameTextDumpResult::Initialize(event, rfh_id, amp_frame,
+                                         unique_navigation_id)
       .CompleteWithContents(contents);
 }
 
@@ -124,12 +127,21 @@ class FakePageTextService : public mojom::PageTextService {
     responses_.emplace(event, responses);
   }
 
+  // A single request that matches the given |event| will hang until the class
+  // is destroyed, or another request for the same event is sent.
+  void SetEventToHangForver(mojom::TextDumpEvent event) { hang_event_ = event; }
+
   // mojom::PageTextService:
   void RequestPageTextDump(
       mojom::PageTextDumpRequestPtr request,
       mojo::PendingRemote<mojom::PageTextConsumer> consumer) override {
     auto responses_iter = responses_.find(request->event);
     requests_.emplace(*request);
+
+    if (hang_event_ && hang_event_.value() == request->event) {
+      hung_consumer_remote_.Bind(std::move(consumer));
+      return;
+    }
 
     if (responses_iter == responses_.end()) {
       return;
@@ -153,6 +165,10 @@ class FakePageTextService : public mojom::PageTextService {
   std::set<mojom::PageTextDumpRequest> requests_;
 
   bool disconnect_all_ = false;
+
+  // Used to timeout a request.
+  base::Optional<mojom::TextDumpEvent> hang_event_;
+  mojo::Remote<mojom::PageTextConsumer> hung_consumer_remote_;
 
   // For each event, a sequence of responses to send on the next page dump
   // request. If an element has a value, |OnTextDumpChunk| is called with the
@@ -303,12 +319,16 @@ TEST_F(PageTextObserverTest, MojoPlumbingSuccessCase) {
   consumer.WaitForPageText();
 
   ASSERT_TRUE(consumer.result());
-  EXPECT_THAT(consumer.result()->frame_results(),
-              ::testing::UnorderedElementsAreArray({
-                  MakeFrameDump(mojom::TextDumpEvent::kFirstLayout,
-                                main_rfh()->GetGlobalFrameRoutingId(),
-                                /*amp_frame=*/false, base::ASCIIToUTF16("abc")),
-              }));
+  EXPECT_THAT(
+      consumer.result()->frame_results(),
+      ::testing::UnorderedElementsAreArray({
+          MakeFrameDump(
+              mojom::TextDumpEvent::kFirstLayout,
+              main_rfh()->GetGlobalFrameRoutingId(),
+              /*amp_frame=*/false,
+              web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
+              base::ASCIIToUTF16("abc")),
+      }));
 
   EXPECT_THAT(
       fake_renderer_service.requests(),
@@ -464,12 +484,16 @@ TEST_F(PageTextObserverTest, MaxLengthOnChunkBorder) {
   consumer.WaitForPageText();
 
   ASSERT_TRUE(consumer.result());
-  EXPECT_THAT(consumer.result()->frame_results(),
-              ::testing::UnorderedElementsAreArray({
-                  MakeFrameDump(mojom::TextDumpEvent::kFirstLayout,
-                                main_rfh()->GetGlobalFrameRoutingId(),
-                                /*amp_frame=*/false, base::ASCIIToUTF16("abc")),
-              }));
+  EXPECT_THAT(
+      consumer.result()->frame_results(),
+      ::testing::UnorderedElementsAreArray({
+          MakeFrameDump(
+              mojom::TextDumpEvent::kFirstLayout,
+              main_rfh()->GetGlobalFrameRoutingId(),
+              /*amp_frame=*/false,
+              web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
+              base::ASCIIToUTF16("abc")),
+      }));
 
   EXPECT_THAT(
       fake_renderer_service.requests(),
@@ -511,9 +535,12 @@ TEST_F(PageTextObserverTest, MaxLengthWithinChunk) {
   EXPECT_THAT(
       consumer.result()->frame_results(),
       ::testing::UnorderedElementsAreArray({
-          MakeFrameDump(mojom::TextDumpEvent::kFirstLayout,
-                        main_rfh()->GetGlobalFrameRoutingId(),
-                        /*amp_frame=*/false, base::ASCIIToUTF16("abcd")),
+          MakeFrameDump(
+              mojom::TextDumpEvent::kFirstLayout,
+              main_rfh()->GetGlobalFrameRoutingId(),
+              /*amp_frame=*/false,
+              web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
+              base::ASCIIToUTF16("abcd")),
       }));
 
   EXPECT_THAT(
@@ -555,9 +582,12 @@ TEST_F(PageTextObserverTest, MaxLengthWithoutOnEnd) {
   EXPECT_THAT(
       consumer.result()->frame_results(),
       ::testing::UnorderedElementsAreArray({
-          MakeFrameDump(mojom::TextDumpEvent::kFirstLayout,
-                        main_rfh()->GetGlobalFrameRoutingId(),
-                        /*amp_frame=*/false, base::ASCIIToUTF16("abcd")),
+          MakeFrameDump(
+              mojom::TextDumpEvent::kFirstLayout,
+              main_rfh()->GetGlobalFrameRoutingId(),
+              /*amp_frame=*/false,
+              web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
+              base::ASCIIToUTF16("abcd")),
       }));
 
   EXPECT_THAT(
@@ -604,19 +634,27 @@ TEST_F(PageTextObserverTest, TwoConsumers) {
   consumer2.WaitForPageText();
 
   ASSERT_TRUE(consumer1.result());
-  EXPECT_THAT(consumer1.result()->frame_results(),
-              ::testing::UnorderedElementsAreArray({
-                  MakeFrameDump(mojom::TextDumpEvent::kFirstLayout,
-                                main_rfh()->GetGlobalFrameRoutingId(),
-                                /*amp_frame=*/false, base::ASCIIToUTF16("abc")),
-              }));
+  EXPECT_THAT(
+      consumer1.result()->frame_results(),
+      ::testing::UnorderedElementsAreArray({
+          MakeFrameDump(
+              mojom::TextDumpEvent::kFirstLayout,
+              main_rfh()->GetGlobalFrameRoutingId(),
+              /*amp_frame=*/false,
+              web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
+              base::ASCIIToUTF16("abc")),
+      }));
   ASSERT_TRUE(consumer2.result());
-  EXPECT_THAT(consumer2.result()->frame_results(),
-              ::testing::UnorderedElementsAreArray({
-                  MakeFrameDump(mojom::TextDumpEvent::kFirstLayout,
-                                main_rfh()->GetGlobalFrameRoutingId(),
-                                /*amp_frame=*/false, base::ASCIIToUTF16("abc")),
-              }));
+  EXPECT_THAT(
+      consumer2.result()->frame_results(),
+      ::testing::UnorderedElementsAreArray({
+          MakeFrameDump(
+              mojom::TextDumpEvent::kFirstLayout,
+              main_rfh()->GetGlobalFrameRoutingId(),
+              /*amp_frame=*/false,
+              web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
+              base::ASCIIToUTF16("abc")),
+      }));
 
   EXPECT_THAT(
       fake_renderer_service.requests(),
@@ -662,12 +700,16 @@ TEST_F(PageTextObserverTest, RemoveConsumer) {
   consumer1.WaitForPageText();
 
   ASSERT_TRUE(consumer1.result());
-  EXPECT_THAT(consumer1.result()->frame_results(),
-              ::testing::UnorderedElementsAreArray({
-                  MakeFrameDump(mojom::TextDumpEvent::kFirstLayout,
-                                main_rfh()->GetGlobalFrameRoutingId(),
-                                /*amp_frame=*/false, base::ASCIIToUTF16("abc")),
-              }));
+  EXPECT_THAT(
+      consumer1.result()->frame_results(),
+      ::testing::UnorderedElementsAreArray({
+          MakeFrameDump(
+              mojom::TextDumpEvent::kFirstLayout,
+              main_rfh()->GetGlobalFrameRoutingId(),
+              /*amp_frame=*/false,
+              web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
+              base::ASCIIToUTF16("abc")),
+      }));
   EXPECT_FALSE(consumer2.result());
 
   EXPECT_THAT(
@@ -717,15 +759,22 @@ TEST_F(PageTextObserverTest, TwoEventsRequested) {
   consumer2.WaitForPageText();
 
   ASSERT_TRUE(consumer1.result());
-  EXPECT_THAT(consumer1.result()->frame_results(),
-              ::testing::UnorderedElementsAreArray({
-                  MakeFrameDump(mojom::TextDumpEvent::kFirstLayout,
-                                main_rfh()->GetGlobalFrameRoutingId(),
-                                /*amp_frame=*/false, base::ASCIIToUTF16("abc")),
-                  MakeFrameDump(mojom::TextDumpEvent::kFinishedLoad,
-                                main_rfh()->GetGlobalFrameRoutingId(),
-                                /*amp_frame=*/false, base::ASCIIToUTF16("xyz")),
-              }));
+  EXPECT_THAT(
+      consumer1.result()->frame_results(),
+      ::testing::UnorderedElementsAreArray({
+          MakeFrameDump(
+              mojom::TextDumpEvent::kFirstLayout,
+              main_rfh()->GetGlobalFrameRoutingId(),
+              /*amp_frame=*/false,
+              web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
+              base::ASCIIToUTF16("abc")),
+          MakeFrameDump(
+              mojom::TextDumpEvent::kFinishedLoad,
+              main_rfh()->GetGlobalFrameRoutingId(),
+              /*amp_frame=*/false,
+              web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
+              base::ASCIIToUTF16("xyz")),
+      }));
   EXPECT_EQ(consumer1.result(), consumer2.result());
 
   EXPECT_THAT(
@@ -734,6 +783,67 @@ TEST_F(PageTextObserverTest, TwoEventsRequested) {
           mojom::PageTextDumpRequest(4U, mojom::TextDumpEvent::kFirstLayout),
           mojom::PageTextDumpRequest(4U, mojom::TextDumpEvent::kFinishedLoad),
       }));
+}
+
+TEST_F(PageTextObserverTest, AbandonedRequest) {
+  TestConsumer consumer1;
+  TestConsumer consumer2;
+  observer()->AddConsumer(&consumer1);
+  observer()->AddConsumer(&consumer2);
+
+  consumer1.PopulateRequest(/*max_size=*/4,
+                            /*events=*/{mojom::TextDumpEvent::kFirstLayout});
+  consumer2.PopulateRequest(/*max_size=*/4,
+                            /*events=*/{mojom::TextDumpEvent::kFinishedLoad});
+
+  FakePageTextService fake_renderer_service;
+  fake_renderer_service.SetRemoteResponsesForEvent(
+      mojom::TextDumpEvent::kFirstLayout, {
+                                              base::ASCIIToUTF16("abc"),
+                                              base::nullopt,
+                                          });
+  fake_renderer_service.SetEventToHangForver(
+      mojom::TextDumpEvent::kFinishedLoad);
+
+  blink::AssociatedInterfaceProvider* remote_interfaces =
+      main_rfh()->GetRemoteAssociatedInterfaces();
+  remote_interfaces->OverrideBinderForTesting(
+      mojom::PageTextService::Name_,
+      base::BindRepeating(&FakePageTextService::BindPendingReceiver,
+                          base::Unretained(&fake_renderer_service)));
+
+  base::HistogramTester histogram_tester;
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://test.com"));
+  EXPECT_TRUE(consumer1.was_called());
+  EXPECT_TRUE(consumer2.was_called());
+
+  observer()->CallDidFinishLoad();
+  consumer1.WaitForPageText();
+  consumer2.WaitForPageText();
+
+  ASSERT_TRUE(consumer1.result());
+  EXPECT_THAT(
+      consumer1.result()->frame_results(),
+      ::testing::UnorderedElementsAreArray({
+          MakeFrameDump(
+              mojom::TextDumpEvent::kFirstLayout,
+              main_rfh()->GetGlobalFrameRoutingId(),
+              /*amp_frame=*/false,
+              web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
+              base::ASCIIToUTF16("abc")),
+      }));
+  EXPECT_EQ(consumer1.result(), consumer2.result());
+
+  EXPECT_THAT(
+      fake_renderer_service.requests(),
+      ::testing::UnorderedElementsAreArray({
+          mojom::PageTextDumpRequest(4U, mojom::TextDumpEvent::kFirstLayout),
+          mojom::PageTextDumpRequest(4U, mojom::TextDumpEvent::kFinishedLoad),
+      }));
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageTextDump.AbandonedRequests", 1, 1);
 }
 
 TEST_F(PageTextObserverTest, AMPRequestedOnOOPIF) {
@@ -801,12 +911,18 @@ TEST_F(PageTextObserverTest, AMPRequestedOnOOPIF) {
   EXPECT_THAT(
       consumer.result()->frame_results(),
       ::testing::UnorderedElementsAreArray({
-          MakeFrameDump(mojom::TextDumpEvent::kFinishedLoad,
-                        oopif_subframe->GetGlobalFrameRoutingId(),
-                        /*amp_frame=*/true, base::ASCIIToUTF16("amp")),
-          MakeFrameDump(mojom::TextDumpEvent::kFirstLayout,
-                        main_rfh()->GetGlobalFrameRoutingId(),
-                        /*amp_frame=*/false, base::ASCIIToUTF16("abcdef")),
+          MakeFrameDump(
+              mojom::TextDumpEvent::kFinishedLoad,
+              oopif_subframe->GetGlobalFrameRoutingId(),
+              /*amp_frame=*/true,
+              web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
+              base::ASCIIToUTF16("amp")),
+          MakeFrameDump(
+              mojom::TextDumpEvent::kFirstLayout,
+              main_rfh()->GetGlobalFrameRoutingId(),
+              /*amp_frame=*/false,
+              web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
+              base::ASCIIToUTF16("abcdef")),
       }));
 }
 
@@ -872,9 +988,12 @@ TEST_F(PageTextObserverTest, AMPNotRequestedOnOOPIF) {
   EXPECT_THAT(
       consumer.result()->frame_results(),
       ::testing::UnorderedElementsAreArray({
-          MakeFrameDump(mojom::TextDumpEvent::kFirstLayout,
-                        main_rfh()->GetGlobalFrameRoutingId(),
-                        /*amp_frame=*/false, base::ASCIIToUTF16("abcdef")),
+          MakeFrameDump(
+              mojom::TextDumpEvent::kFirstLayout,
+              main_rfh()->GetGlobalFrameRoutingId(),
+              /*amp_frame=*/false,
+              web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
+              base::ASCIIToUTF16("abcdef")),
       }));
 }
 
@@ -940,9 +1059,12 @@ TEST_F(PageTextObserverTest, AMPRequestedOnNonOOPIF) {
   EXPECT_THAT(
       consumer.result()->frame_results(),
       ::testing::UnorderedElementsAreArray({
-          MakeFrameDump(mojom::TextDumpEvent::kFirstLayout,
-                        main_rfh()->GetGlobalFrameRoutingId(),
-                        /*amp_frame=*/false, base::ASCIIToUTF16("abcdef")),
+          MakeFrameDump(
+              mojom::TextDumpEvent::kFirstLayout,
+              main_rfh()->GetGlobalFrameRoutingId(),
+              /*amp_frame=*/false,
+              web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
+              base::ASCIIToUTF16("abcdef")),
       }));
 }
 

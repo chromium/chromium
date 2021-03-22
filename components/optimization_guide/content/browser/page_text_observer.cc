@@ -20,6 +20,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -223,8 +224,12 @@ class RequestMediator : public base::RefCounted<RequestMediator> {
     mojo::AssociatedRemote<mojom::PageTextService> renderer_text_service;
     rfh->GetRemoteAssociatedInterfaces()->GetInterface(&renderer_text_service);
 
-    bool is_subframe = rfh->GetMainFrame() != rfh;
     auto rfh_id = rfh->GetGlobalFrameRoutingId();
+    bool is_subframe = rfh->GetMainFrame() != rfh;
+    int nav_id = content::WebContents::FromRenderFrameHost(rfh)
+                     ->GetController()
+                     .GetVisibleEntry()
+                     ->GetUniqueID();
 
     for (const auto& event_to_max_size_iter : max_size_by_event_) {
       mojo::PendingRemote<mojom::PageTextConsumer> consumer_remote;
@@ -233,7 +238,7 @@ class RequestMediator : public base::RefCounted<RequestMediator> {
           event_to_max_size_iter.first, rfh_id,
           // Note that subframes only take text dumps iff they are an AMP
           // frame. If that even changes, this won't work anymore.
-          /*amp_frame=*/is_subframe);
+          /*amp_frame=*/is_subframe, nav_id);
 
       std::unique_ptr<PageTextChunkConsumer> consumer =
           std::make_unique<PageTextChunkConsumer>(
@@ -396,6 +401,17 @@ void PageTextObserver::RenderFrameCreated(content::RenderFrameHost* rfh) {
 
 void PageTextObserver::OnFrameTextDumpCompleted(
     base::Optional<FrameTextDumpResult> frame_result) {
+  // Ensure that the generated frame result is not for a previous page load.
+  // This should be done before decrementing |outstanding_requests_| so that
+  // each page load handles its own state.
+  content::NavigationEntry* visible_entry =
+      web_contents() ? web_contents()->GetController().GetVisibleEntry()
+                     : nullptr;
+  if (frame_result && visible_entry &&
+      visible_entry->GetUniqueID() != frame_result->unique_navigation_id()) {
+    return;
+  }
+
   // |frame_result| will be null in the event the RFH dies, in which case we can
   // no longer expect the request to be fulfilled, so it should not be counted
   // as outstanding anymore.
@@ -434,6 +450,10 @@ void PageTextObserver::DidFinishLoad(
 
 void PageTextObserver::DispatchResponses() {
   outstanding_requests_grace_timer_.reset();
+
+  base::UmaHistogramCounts100(
+      "OptimizationGuide.PageTextDump.AbandonedRequests",
+      outstanding_requests_);
 
   if (!page_result_) {
     return;

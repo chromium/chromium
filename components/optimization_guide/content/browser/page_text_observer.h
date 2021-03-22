@@ -86,6 +86,8 @@ class PageTextObserver : public content::WebContentsObserver,
   virtual void AddConsumer(Consumer* consumer);
   virtual void RemoveConsumer(Consumer* consumer);
 
+  size_t outstanding_requests() const { return outstanding_requests_; }
+
   // content::WebContentsObserver:
   void DidStartNavigation(content::NavigationHandle* handle) override;
   void DidFinishNavigation(content::NavigationHandle* handle) override;

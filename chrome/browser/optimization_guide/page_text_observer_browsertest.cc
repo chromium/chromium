@@ -12,12 +12,12 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/optimization_guide/content/mojom/page_text_service.mojom.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -37,8 +37,9 @@ namespace {
 FrameTextDumpResult MakeFrameDump(mojom::TextDumpEvent event,
                                   content::GlobalFrameRoutingId rfh_id,
                                   bool amp_frame,
+                                  int nav_id,
                                   const std::u16string& contents) {
-  return FrameTextDumpResult::Initialize(event, rfh_id, amp_frame)
+  return FrameTextDumpResult::Initialize(event, rfh_id, amp_frame, nav_id)
       .CompleteWithContents(contents);
 }
 
@@ -194,60 +195,89 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, SimpleCaseNoSubframes) {
 
   consumer.WaitForPageText();
   ASSERT_TRUE(consumer.result());
-  EXPECT_THAT(consumer.result()->frame_results(),
-              ::testing::UnorderedElementsAreArray({
-                  MakeFrameDump(
-                      mojom::TextDumpEvent::kFirstLayout,
-                      web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
-                      /*amp_frame=*/false, base::ASCIIToUTF16("hello")),
-              }));
-}
-
-#if defined(OS_CHROMEOS)
-#define MAYBE_FirstLayoutAndOnLoad DISABLED_FirstLayoutAndOnLoad
-#else
-#define MAYBE_FirstLayoutAndOnLoad FirstLayoutAndOnLoad
-#endif
-IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, MAYBE_FirstLayoutAndOnLoad) {
-  PageTextObserver::CreateForWebContents(web_contents());
-  ASSERT_TRUE(observer());
-
-  TestConsumer first_layout_consumer;
-  observer()->AddConsumer(&first_layout_consumer);
-  first_layout_consumer.PopulateRequest(
-      /*max_size=*/1024,
-      /*events=*/{mojom::TextDumpEvent::kFirstLayout});
-
-  TestConsumer on_load_consumer;
-  observer()->AddConsumer(&on_load_consumer);
-  on_load_consumer.PopulateRequest(
-      /*max_size=*/1024,
-      /*events=*/{mojom::TextDumpEvent::kFinishedLoad});
-
-  GURL url(embedded_test_server()->GetURL("a.com", "/hello_world.html"));
-  ui_test_utils::NavigateToURL(browser(), url);
-
-  ASSERT_TRUE(first_layout_consumer.was_called());
-  ASSERT_TRUE(on_load_consumer.was_called());
-
-  first_layout_consumer.WaitForPageText();
-  on_load_consumer.WaitForPageText();
-
-  ASSERT_TRUE(first_layout_consumer.result());
   EXPECT_THAT(
-      first_layout_consumer.result()->frame_results(),
+      consumer.result()->frame_results(),
       ::testing::UnorderedElementsAreArray({
           MakeFrameDump(
               mojom::TextDumpEvent::kFirstLayout,
               web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
-              /*amp_frame=*/false, base::ASCIIToUTF16("hello")),
-          MakeFrameDump(
-              mojom::TextDumpEvent::kFinishedLoad,
-              web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
-              /*amp_frame=*/false, base::ASCIIToUTF16("hello\n\nworld")),
+              /*amp_frame=*/false,
+              web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
+              base::ASCIIToUTF16("hello")),
       }));
+}
 
-  EXPECT_EQ(first_layout_consumer.result(), on_load_consumer.result());
+IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, FirstLayoutAndOnLoad) {
+  PageTextObserver::CreateForWebContents(web_contents());
+  ASSERT_TRUE(observer());
+
+  // This test can be flaky (crbug.com/1187264), and it always seems to be
+  // caused by the renderer never finishing the page load and is thus outside
+  // the control of this feature. Thorough testing shows that this flake does
+  // not repeat itself, so running the test an extra time is sufficient.
+  //
+  // If this test starts timing out or failing the |EXPECT_THAT| check, then
+  // that is indicative of a real issue.
+  for (size_t i = 0; i < 2; i++) {
+    TestConsumer first_layout_consumer;
+    TestConsumer on_load_consumer;
+    observer()->AddConsumer(&first_layout_consumer);
+    observer()->AddConsumer(&on_load_consumer);
+
+    first_layout_consumer.PopulateRequest(
+        /*max_size=*/1024,
+        /*events=*/{mojom::TextDumpEvent::kFirstLayout});
+    on_load_consumer.PopulateRequest(
+        /*max_size=*/1024,
+        /*events=*/{mojom::TextDumpEvent::kFinishedLoad});
+
+    GURL url(embedded_test_server()->GetURL("a.com", "/hello_world.html"));
+    ui_test_utils::NavigateToURL(browser(), url);
+
+    ASSERT_TRUE(first_layout_consumer.was_called());
+    ASSERT_TRUE(on_load_consumer.was_called());
+
+    first_layout_consumer.WaitForPageText();
+    on_load_consumer.WaitForPageText();
+
+    if (observer()->outstanding_requests() > 0) {
+      // This is a flake. Reset for the next attempt.
+      observer()->RemoveConsumer(&first_layout_consumer);
+      observer()->RemoveConsumer(&on_load_consumer);
+      // A new navigation should unblock any missing requests, which are then
+      // discarded.
+      ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+      continue;
+    }
+
+    ASSERT_TRUE(first_layout_consumer.result());
+    EXPECT_THAT(
+        first_layout_consumer.result()->frame_results(),
+        ::testing::UnorderedElementsAreArray({
+            MakeFrameDump(
+                mojom::TextDumpEvent::kFirstLayout,
+                web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
+                /*amp_frame=*/false,
+                web_contents()
+                    ->GetController()
+                    .GetVisibleEntry()
+                    ->GetUniqueID(),
+                base::ASCIIToUTF16("hello")),
+            MakeFrameDump(
+                mojom::TextDumpEvent::kFinishedLoad,
+                web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
+                /*amp_frame=*/false,
+                web_contents()
+                    ->GetController()
+                    .GetVisibleEntry()
+                    ->GetUniqueID(),
+                base::ASCIIToUTF16("hello\n\nworld")),
+        }));
+
+    EXPECT_EQ(first_layout_consumer.result(), on_load_consumer.result());
+    return;
+  }
+  FAIL();
 }
 
 IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, OOPIFAMPSubframe) {
@@ -289,9 +319,14 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, OOPIFAMPSubframe) {
           MakeFrameDump(
               mojom::TextDumpEvent::kFirstLayout,
               web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
-              /*amp_frame=*/false, base::ASCIIToUTF16("mainframe")),
-          MakeFrameDump(mojom::TextDumpEvent::kFinishedLoad, amp_frame_id,
-                        /*amp_frame=*/true, base::ASCIIToUTF16("AMP")),
+              /*amp_frame=*/false,
+              web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
+              base::ASCIIToUTF16("mainframe")),
+          MakeFrameDump(
+              mojom::TextDumpEvent::kFinishedLoad, amp_frame_id,
+              /*amp_frame=*/true,
+              web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
+              base::ASCIIToUTF16("AMP")),
       }));
 }
 
@@ -319,13 +354,16 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverBrowserTest, OOPIFNotAmpSubframe) {
 
   consumer.WaitForPageText();
   ASSERT_TRUE(consumer.result());
-  EXPECT_THAT(consumer.result()->frame_results(),
-              ::testing::UnorderedElementsAreArray({
-                  MakeFrameDump(
-                      mojom::TextDumpEvent::kFirstLayout,
-                      web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
-                      /*amp_frame=*/false, base::ASCIIToUTF16("mainframe")),
-              }));
+  EXPECT_THAT(
+      consumer.result()->frame_results(),
+      ::testing::UnorderedElementsAreArray({
+          MakeFrameDump(
+              mojom::TextDumpEvent::kFirstLayout,
+              web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
+              /*amp_frame=*/false,
+              web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
+              base::ASCIIToUTF16("mainframe")),
+      }));
 }
 
 class PageTextObserverSingleProcessBrowserTest
@@ -375,7 +413,9 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverSingleProcessBrowserTest,
           MakeFrameDump(
               mojom::TextDumpEvent::kFinishedLoad,
               web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
-              /*amp_frame=*/false, base::ASCIIToUTF16("mainframe\n\nhello")),
+              /*amp_frame=*/false,
+              web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
+              base::ASCIIToUTF16("mainframe\n\nhello")),
       }));
 }
 
@@ -404,13 +444,16 @@ IN_PROC_BROWSER_TEST_F(PageTextObserverSingleProcessBrowserTest,
 
   consumer.WaitForPageText();
   ASSERT_TRUE(consumer.result());
-  EXPECT_THAT(consumer.result()->frame_results(),
-              ::testing::UnorderedElementsAreArray({
-                  MakeFrameDump(
-                      mojom::TextDumpEvent::kFirstLayout,
-                      web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
-                      /*amp_frame=*/false, base::ASCIIToUTF16("mainframe")),
-              }));
+  EXPECT_THAT(
+      consumer.result()->frame_results(),
+      ::testing::UnorderedElementsAreArray({
+          MakeFrameDump(
+              mojom::TextDumpEvent::kFirstLayout,
+              web_contents()->GetMainFrame()->GetGlobalFrameRoutingId(),
+              /*amp_frame=*/false,
+              web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
+              base::ASCIIToUTF16("mainframe")),
+      }));
 }
 
 }  // namespace optimization_guide

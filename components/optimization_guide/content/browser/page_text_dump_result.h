@@ -27,7 +27,8 @@ class FrameTextDumpResult {
   // Creates a preliminary instance with the given metadata.
   static FrameTextDumpResult Initialize(mojom::TextDumpEvent event,
                                         content::GlobalFrameRoutingId rfh_id,
-                                        bool amp_frame);
+                                        bool amp_frame,
+                                        int unique_navigation_id);
 
   // Returns a copy of |this| that is completed with |contents|. This is only
   // expected to be called once on Preliminary instances.
@@ -51,6 +52,10 @@ class FrameTextDumpResult {
   // The unique identifier for the content::RenderFrameHost that the text dump
   // was taken in. Set for both preliminary and completed instances.
   content::GlobalFrameRoutingId rfh_id() const { return rfh_id_; }
+
+  // The unique id of the visible navigation for this frame dump, taken from the
+  // visible NavigationEntry.
+  int unique_navigation_id() const { return unique_navigation_id_; }
 
   // Whether the frame the text dump is taken in an AMP frame. Set for both
   // preliminary and completed instances.
@@ -83,13 +88,15 @@ class FrameTextDumpResult {
       return event() > rhs.event();
     }
 
-    return std::tie(rfh_id_, contents_) < std::tie(rhs.rfh_id_, rhs.contents_);
+    return std::tie(rfh_id_, contents_, unique_navigation_id_) <
+           std::tie(rhs.rfh_id_, rhs.contents_, rhs.unique_navigation_id_);
   }
 
   inline bool operator==(const FrameTextDumpResult& other) const {
-    return std::tie(event_, contents_, rfh_id_, amp_frame_) ==
+    return std::tie(event_, contents_, rfh_id_, amp_frame_,
+                    unique_navigation_id_) ==
            std::tie(other.event_, other.contents_, other.rfh_id_,
-                    other.amp_frame_);
+                    other.amp_frame_, other.unique_navigation_id_);
   }
 
  private:
@@ -99,6 +106,7 @@ class FrameTextDumpResult {
   base::Optional<std::u16string> contents_;
   content::GlobalFrameRoutingId rfh_id_;
   bool amp_frame_ = false;
+  int unique_navigation_id_ = -1;
 };
 
 // Contains 0 or more FrameTextDumpResults from the same page load.
