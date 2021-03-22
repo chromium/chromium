@@ -12,6 +12,8 @@
 #include "base/compiler_specific.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/components/web_application_info.h"
 #include "components/sync/model/string_ordinal.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -43,6 +45,10 @@ std::string InstallPlatformApp(Profile* profile, int index);
 // Installs the hosted app for the given index to all profiles (including the
 // verifier), and returns the extension ID of the new app.
 std::string InstallHostedAppForAllProfiles(int index);
+
+// Installs the web app for the given WebApplicationInfo and profile. This does
+// not download icons or run OS integration installs.
+web_app::AppId InstallWebApp(Profile* profile, const WebApplicationInfo& info);
 
 // Uninstalls the app for the given index from |profile|. Assumes that it was
 // previously installed.
@@ -104,6 +110,8 @@ void CopyNTPOrdinals(Profile* source, Profile* destination, int index);
 // Fix any NTP icon collisions that are currently in |profile|.
 void FixNTPOrdinalCollisions(Profile* profile);
 
+// Wait for all the web app install and uninstall tasks to finish.
+void AwaitWebAppQuiescence(std::vector<Profile*> profiles);
 }  // namespace apps_helper
 
 // Checker to block for a set of profiles to have matching extensions lists. If
