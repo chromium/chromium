@@ -1,6 +1,7 @@
 <template>
   <style include="cr-shared-style">
     :host {
+      --profile-card-avatar-icon-size: 74px;
       --text-font-size: 1.16em;
       --scrollbar-width: 4px;
       --scrollbar-background: var(--google-grey-refresh-100);
@@ -79,10 +80,10 @@
     }
 
     .profile-avatar {
-      border-radius: 37px;
+      border-radius: 50%;
       flex-shrink: 0;
-      height: var(--avatar-icon-size);
-      width: var(--avatar-icon-size);
+      height: var(--profile-card-avatar-icon-size);
+      width: var(--profile-card-avatar-icon-size);
     }
 
     @media (prefers-color-scheme: dark) {
