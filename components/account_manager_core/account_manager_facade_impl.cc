@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
+#include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
 #include "components/account_manager_core/account_manager_util.h"
@@ -28,22 +29,11 @@ namespace account_manager {
 
 namespace {
 
+using RemoteMinVersions = crosapi::mojom::AccountManager::MethodMinVersions;
+
 // UMA histogram name.
 const char kAccountAdditionResultStatus[] =
     "AccountManager.AccountAdditionResultStatus";
-
-// Interface versions in //chromeos/crosapi/mojom/account_manager.mojom:
-// MinVersion of crosapi::mojom::AccountManager::GetAccounts
-constexpr uint32_t kMinVersionWithGetAccounts = 2;
-// MinVersion of crosapi::mojom::AccountManager::ShowAddAccountDialog and
-// crosapi::mojom::AccountManager::ShowReauthAccountDialog.
-constexpr uint32_t kMinVersionWithShowAddAccountDialog = 3;
-// MinVersion of crosapi::mojom::AccountManager::ShowManageAccountsSettings.
-constexpr uint32_t kMinVersionWithManageAccountsSettings = 4;
-// MinVersion of crosapi::mojom::AccountManager::GetPersistentErrorForAccount.
-constexpr uint32_t kMinVersionWithGetPersistentErrorForAccount = 5;
-// MinVersion of crosapi::mojom::AccountManager::CreateAccessTokenFetcher.
-constexpr uint32_t kMinVersionWithCreateAccessTokenFetcher = 6;
 
 void UnmarshalAccounts(
     base::OnceCallback<void(const std::vector<Account>&)> callback,
@@ -223,9 +213,9 @@ AccountManagerFacadeImpl::AccountManagerFacadeImpl(
   initialization_callbacks_.emplace_back(std::move(init_finished));
 
   if (!account_manager_remote_ ||
-      remote_version_ < kMinVersionWithGetAccounts) {
+      remote_version_ < RemoteMinVersions::kGetAccountsMinVersion) {
     LOG(WARNING) << "Found remote at: " << remote_version_
-                 << ", expected: " << kMinVersionWithGetAccounts
+                 << ", expected: " << RemoteMinVersions::kGetAccountsMinVersion
                  << ". Account consistency will be disabled";
     FinishInitSequenceIfNotAlreadyFinished();
     return;
@@ -251,7 +241,7 @@ void AccountManagerFacadeImpl::RemoveObserver(Observer* observer) {
 void AccountManagerFacadeImpl::GetAccounts(
     base::OnceCallback<void(const std::vector<Account>&)> callback) {
   if (!account_manager_remote_ ||
-      remote_version_ < kMinVersionWithGetAccounts) {
+      remote_version_ < RemoteMinVersions::kGetAccountsMinVersion) {
     // Remote side doesn't support GetAccounts, return an empty list.
     std::move(callback).Run({});
     return;
@@ -265,7 +255,8 @@ void AccountManagerFacadeImpl::GetPersistentErrorForAccount(
     const AccountKey& account,
     base::OnceCallback<void(const GoogleServiceAuthError&)> callback) {
   if (!account_manager_remote_ ||
-      remote_version_ < kMinVersionWithGetPersistentErrorForAccount) {
+      remote_version_ <
+          RemoteMinVersions::kGetPersistentErrorForAccountMinVersion) {
     // Remote side doesn't support GetPersistentErrorForAccount.
     std::move(callback).Run(GoogleServiceAuthError::AuthErrorNone());
     return;
@@ -287,9 +278,9 @@ void AccountManagerFacadeImpl::ShowAddAccountDialog(
     base::OnceCallback<
         void(const account_manager::AccountAdditionResult& result)> callback) {
   if (!account_manager_remote_ ||
-      remote_version_ < kMinVersionWithShowAddAccountDialog) {
-    LOG(WARNING) << "Found remote at: " << remote_version_
-                 << ", expected: " << kMinVersionWithShowAddAccountDialog
+      remote_version_ < RemoteMinVersions::kShowAddAccountDialogMinVersion) {
+    LOG(WARNING) << "Found remote at: " << remote_version_ << ", expected: "
+                 << RemoteMinVersions::kShowAddAccountDialogMinVersion
                  << " for ShowAddAccountDialog.";
     FinishAddAccount(std::move(callback),
                      account_manager::AccountAdditionResult(
@@ -309,9 +300,9 @@ void AccountManagerFacadeImpl::ShowReauthAccountDialog(
     const AccountAdditionSource& source,
     const std::string& email) {
   if (!account_manager_remote_ ||
-      remote_version_ < kMinVersionWithShowAddAccountDialog) {
-    LOG(WARNING) << "Found remote at: " << remote_version_
-                 << ", expected: " << kMinVersionWithShowAddAccountDialog
+      remote_version_ < RemoteMinVersions::kShowReauthAccountDialogMinVersion) {
+    LOG(WARNING) << "Found remote at: " << remote_version_ << ", expected: "
+                 << RemoteMinVersions::kShowReauthAccountDialogMinVersion
                  << " for ShowReauthAccountDialog.";
     return;
   }
@@ -323,9 +314,10 @@ void AccountManagerFacadeImpl::ShowReauthAccountDialog(
 
 void AccountManagerFacadeImpl::ShowManageAccountsSettings() {
   if (!account_manager_remote_ ||
-      remote_version_ < kMinVersionWithManageAccountsSettings) {
-    LOG(WARNING) << "Found remote at: " << remote_version_
-                 << ", expected: " << kMinVersionWithManageAccountsSettings
+      remote_version_ <
+          RemoteMinVersions::kShowManageAccountsSettingsMinVersion) {
+    LOG(WARNING) << "Found remote at: " << remote_version_ << ", expected: "
+                 << RemoteMinVersions::kShowManageAccountsSettingsMinVersion
                  << " for ShowManageAccountsSettings.";
     return;
   }
@@ -339,9 +331,10 @@ AccountManagerFacadeImpl::CreateAccessTokenFetcher(
     const std::string& oauth_consumer_name,
     OAuth2AccessTokenConsumer* consumer) {
   if (!account_manager_remote_ ||
-      remote_version_ < kMinVersionWithCreateAccessTokenFetcher) {
-    VLOG(1) << "Found remote at: " << remote_version_
-            << ", expected: " << kMinVersionWithCreateAccessTokenFetcher
+      remote_version_ <
+          RemoteMinVersions::kCreateAccessTokenFetcherMinVersion) {
+    VLOG(1) << "Found remote at: " << remote_version_ << ", expected: "
+            << RemoteMinVersions::kCreateAccessTokenFetcherMinVersion
             << " for CreateAccessTokenFetcher";
     return std::make_unique<OAuth2AccessTokenFetcherImmediateError>(
         consumer,
