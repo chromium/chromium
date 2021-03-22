@@ -48,8 +48,7 @@ class PLATFORM_EXPORT ResourceLoadObserver
 
   // Called when the request is about to be sent. This is called on initial and
   // every redirect request.
-  virtual void WillSendRequest(uint64_t identifier,
-                               const ResourceRequest&,
+  virtual void WillSendRequest(const ResourceRequest&,
                                const ResourceResponse& redirect_response,
                                ResourceType,
                                const FetchInitiatorInfo&,

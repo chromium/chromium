@@ -987,19 +987,14 @@ void InspectorNetworkAgent::DidBlockRequest(
     const FetchInitiatorInfo& initiator_info,
     ResourceRequestBlockedReason reason,
     ResourceType resource_type) {
-  uint64_t identifier = request.InspectorId();
-  if (identifier == 0UL) {
-    NOTREACHED();
-    // Defensively create a valid identifier.
-    identifier = CreateUniqueIdentifier();
-  }
   InspectorPageAgent::ResourceType type =
       InspectorPageAgent::ToResourceType(resource_type);
 
-  WillSendRequestInternal(identifier, loader, fetch_context_url, request,
+  WillSendRequestInternal(loader, fetch_context_url, request,
                           ResourceResponse(), initiator_info, type);
 
-  String request_id = IdentifiersFactory::RequestId(loader, identifier);
+  String request_id =
+      IdentifiersFactory::RequestId(loader, request.InspectorId());
 
   // Conversion Measurement API triggers recording of conversions
   // as redirects to a `/.well-known/register-conversion` url.
@@ -1032,16 +1027,15 @@ void InspectorNetworkAgent::DidChangeResourcePriority(
 }
 
 void InspectorNetworkAgent::WillSendRequestInternal(
-    uint64_t identifier,
     DocumentLoader* loader,
     const KURL& fetch_context_url,
     const ResourceRequest& request,
     const ResourceResponse& redirect_response,
     const FetchInitiatorInfo& initiator_info,
     InspectorPageAgent::ResourceType type) {
-  CHECK_EQ(identifier, request.InspectorId());
   String loader_id = IdentifiersFactory::LoaderId(loader);
-  String request_id = IdentifiersFactory::RequestId(loader, identifier);
+  String request_id =
+      IdentifiersFactory::RequestId(loader, request.InspectorId());
   NetworkResourcesData::ResourceData const* data =
       resources_data_->Data(request_id);
   // Support for POST request redirect.
@@ -1219,7 +1213,6 @@ void InspectorNetworkAgent::PrepareRequest(DocumentLoader* loader,
 }
 
 void InspectorNetworkAgent::WillSendRequest(
-    uint64_t identifier,
     DocumentLoader* loader,
     const KURL& fetch_context_url,
     const ResourceRequest& request,
@@ -1234,8 +1227,8 @@ void InspectorNetworkAgent::WillSendRequest(
   InspectorPageAgent::ResourceType type =
       InspectorPageAgent::ToResourceType(resource_type);
 
-  WillSendRequestInternal(identifier, loader, fetch_context_url, request,
-                          redirect_response, initiator_info, type);
+  WillSendRequestInternal(loader, fetch_context_url, request, redirect_response,
+                          initiator_info, type);
 }
 
 void InspectorNetworkAgent::MarkResourceAsCached(DocumentLoader* loader,

@@ -844,9 +844,8 @@ bool ResourceLoader::WillFollowRedirect(
                            unused_virtual_time_pauser, resource_->GetType());
   DCHECK(!new_request->HttpBody());
   if (auto* observer = fetcher_->GetResourceLoadObserver()) {
-    observer->WillSendRequest(resource_->InspectorId(), *new_request,
-                              redirect_response, resource_->GetType(),
-                              options.initiator_info,
+    observer->WillSendRequest(*new_request, redirect_response,
+                              resource_->GetType(), options.initiator_info,
                               initial_request.GetRenderBlockingBehavior());
   }
 

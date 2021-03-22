@@ -146,9 +146,8 @@ class WorkerMainScriptLoaderTest : public testing::Test {
   class MockResourceLoadObserver : public ResourceLoadObserver {
    public:
     MOCK_METHOD2(DidStartRequest, void(const FetchParameters&, ResourceType));
-    MOCK_METHOD6(WillSendRequest,
-                 void(uint64_t identifier,
-                      const ResourceRequest&,
+    MOCK_METHOD5(WillSendRequest,
+                 void(const ResourceRequest&,
                       const ResourceResponse& redirect_response,
                       ResourceType,
                       const FetchInitiatorInfo&,
@@ -265,7 +264,7 @@ TEST_F(WorkerMainScriptLoaderTest, ResponseWithSucessThenOnComplete) {
   MockResourceLoadObserver* mock_observer =
       MakeGarbageCollected<MockResourceLoadObserver>();
   FakeResourceLoadInfoNotifier fake_resource_load_info_notifier;
-  EXPECT_CALL(*mock_observer, WillSendRequest(_, _, _, _, _, _));
+  EXPECT_CALL(*mock_observer, WillSendRequest(_, _, _, _, _));
   EXPECT_CALL(*mock_observer, DidReceiveResponse(_, _, _, _, _));
   EXPECT_CALL(*mock_observer, DidReceiveData(_, _));
   EXPECT_CALL(*mock_observer, DidFinishLoading(_, _, _, _, _));
@@ -296,7 +295,7 @@ TEST_F(WorkerMainScriptLoaderTest, ResponseWithFailureThenOnComplete) {
   MockResourceLoadObserver* mock_observer =
       MakeGarbageCollected<MockResourceLoadObserver>();
   FakeResourceLoadInfoNotifier fake_resource_load_info_notifier;
-  EXPECT_CALL(*mock_observer, WillSendRequest(_, _, _, _, _, _));
+  EXPECT_CALL(*mock_observer, WillSendRequest(_, _, _, _, _));
   EXPECT_CALL(*mock_observer, DidReceiveResponse(_, _, _, _, _));
   EXPECT_CALL(*mock_observer, DidFinishLoading(_, _, _, _, _)).Times(0);
   EXPECT_CALL(*mock_observer, DidFailLoading(_, _, _, _, _));
@@ -320,7 +319,7 @@ TEST_F(WorkerMainScriptLoaderTest, DisconnectBeforeOnComplete) {
   MockResourceLoadObserver* mock_observer =
       MakeGarbageCollected<MockResourceLoadObserver>();
   FakeResourceLoadInfoNotifier fake_resource_load_info_notifier;
-  EXPECT_CALL(*mock_observer, WillSendRequest(_, _, _, _, _, _));
+  EXPECT_CALL(*mock_observer, WillSendRequest(_, _, _, _, _));
   EXPECT_CALL(*mock_observer, DidReceiveResponse(_, _, _, _, _));
   EXPECT_CALL(*mock_observer, DidFinishLoading(_, _, _, _, _)).Times(0);
   EXPECT_CALL(*mock_observer, DidFailLoading(_, _, _, _, _));
@@ -344,7 +343,7 @@ TEST_F(WorkerMainScriptLoaderTest, OnCompleteWithError) {
   MockResourceLoadObserver* mock_observer =
       MakeGarbageCollected<MockResourceLoadObserver>();
   FakeResourceLoadInfoNotifier fake_resource_load_info_notifier;
-  EXPECT_CALL(*mock_observer, WillSendRequest(_, _, _, _, _, _));
+  EXPECT_CALL(*mock_observer, WillSendRequest(_, _, _, _, _));
   EXPECT_CALL(*mock_observer, DidReceiveResponse(_, _, _, _, _));
   EXPECT_CALL(*mock_observer, DidReceiveData(_, _));
   EXPECT_CALL(*mock_observer, DidFinishLoading(_, _, _, _, _)).Times(0);

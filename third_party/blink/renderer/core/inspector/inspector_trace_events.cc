@@ -119,7 +119,6 @@ void SetCallStack(perfetto::TracedDictionary& dict) {
 }
 
 void InspectorTraceEvents::WillSendRequest(
-    uint64_t identifier,
     DocumentLoader* loader,
     const KURL& fetch_context_url,
     const ResourceRequest& request,
@@ -130,7 +129,7 @@ void InspectorTraceEvents::WillSendRequest(
   LocalFrame* frame = loader ? loader->GetFrame() : nullptr;
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
       "ResourceSendRequest", inspector_send_request_event::Data, loader,
-      identifier, frame, request, render_blocking_behavior);
+      request.InspectorId(), frame, request, render_blocking_behavior);
 }
 
 void InspectorTraceEvents::WillSendNavigationRequest(

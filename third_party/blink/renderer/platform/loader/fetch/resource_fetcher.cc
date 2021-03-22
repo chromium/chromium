@@ -603,9 +603,8 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
     return;
 
   resource_load_observer_->WillSendRequest(
-      request.InspectorId(), request, ResourceResponse() /* redirects */,
-      resource->GetType(), resource->Options().initiator_info,
-      render_blocking_behavior);
+      request, ResourceResponse() /* redirects */, resource->GetType(),
+      resource->Options().initiator_info, render_blocking_behavior);
   resource_load_observer_->DidReceiveResponse(
       request.InspectorId(), request, resource->GetResponse(), resource,
       ResourceLoadObserver::ResponseSource::kFromMemoryCache);
@@ -1995,7 +1994,7 @@ bool ResourceFetcher::StartLoad(
       request.SetHttpBody(request_body.FormBody());
       ResourceResponse response;
       resource_load_observer_->WillSendRequest(
-          resource->InspectorId(), request, response, resource->GetType(),
+          request, response, resource->GetType(),
           resource->Options().initiator_info, render_blocking_behavior);
     }
 

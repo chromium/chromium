@@ -87,8 +87,7 @@ class CORE_EXPORT InspectorTraceEvents
  public:
   InspectorTraceEvents() = default;
 
-  void WillSendRequest(uint64_t identifier,
-                       DocumentLoader*,
+  void WillSendRequest(DocumentLoader*,
                        const KURL& fetch_context_url,
                        const ResourceRequest&,
                        const ResourceResponse& redirect_response,
