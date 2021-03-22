@@ -116,6 +116,16 @@ class WebAppIntegrationBrowserTestBase {
       Profile* profile,
       web_app::AppId id);
 
+  // Supported scopes:
+  //  * site_a
+  //  * site_a/foo
+  //  * site_a/bar
+  //  * site_b
+  //  * site_c
+  base::Optional<AppState> GetAppByScope(StateSnapshot* state_snapshot,
+                                         Profile* profile,
+                                         const std::string& scope);
+
   static bool IsInspectionAction(const std::string& action);
   static std::string StripAllWhitespace(std::string line);
   static std::string GetCommandLineTestOverride();
@@ -139,27 +149,28 @@ class WebAppIntegrationBrowserTestBase {
   void ExecuteAction(const std::string& action_string);
 
   // Automated Testing Actions
-  void AddPolicyAppInternal(base::Value default_launch_container);
+  void AddPolicyAppInternal(const std::string& action_param,
+                            base::Value default_launch_container);
   void ClosePWA();
   void InstallCreateShortcut(bool open_in_window);
   void InstallLocally();
   web_app::AppId InstallOmniboxOrMenu();
-  void LaunchInternal();
+  void LaunchInternal(const std::string& action_param);
   void ListAppsInternal();
   void NavigateTabbedBrowserToSite(const GURL& url);
-  void RemovePolicyApp();
-  void SetOpenInTabInternal();
-  void SetOpenInWindowInternal();
+  void RemovePolicyApp(const std::string& action_param);
+  void SetOpenInTabInternal(const std::string& action_param);
+  void SetOpenInWindowInternal(const std::string& action_param);
   void SwitchProfileClients();
   void TurnSyncOff();
   void TurnSyncOn();
   void UninstallFromMenu();
-  void UninstallInternal();
+  void UninstallInternal(const std::string& action_param);
   void UserSigninInternal();
 
   // Assert Actions
   void AssertAppNotLocallyInstalledInternal();
-  void AssertAppNotInList();
+  void AssertAppNotInList(const std::string& action_param);
   void AssertInstallable();
   void AssertInstallIconShown();
   void AssertInstallIconNotShown();
@@ -174,15 +185,23 @@ class WebAppIntegrationBrowserTestBase {
   // Helpers
   std::vector<std::string>& testing_actions() { return testing_actions_; }
   std::vector<AppId> GetAppIdsForProfile(Profile* profile);
-  GURL GetInstallableAppURL();
+
+  // Supported params:
+  //  * site_a
+  //  * site_a/foo
+  //  * site_a/bar
+  //  * site_b
+  //  * site_c
+  GURL GetInstallableAppURL(const std::string& action_param);
   WebAppProvider* GetProviderForProfile(Profile* profile);
 
  private:
   StateSnapshot ConstructStateSnapshot();
   const net::EmbeddedTestServer* embedded_test_server();
   GURL GetNonInstallableAppURL();
-  GURL GetInScopeURL();
-  GURL GetOutOfScopeURL();
+  GURL GetInScopeURL(const std::string& action_param);
+  GURL GetOutOfScopeURL(const std::string& action_param);
+  GURL GetURLForScope(const std::string& action_param);
 
   content::WebContents* GetCurrentTab(Browser* browser);
   WebAppProvider* GetProvider() { return WebAppProvider::Get(profile()); }

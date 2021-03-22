@@ -100,7 +100,7 @@ class TwoClientWebAppsIntegrationSyncTest
     ASSERT_TRUE(embedded_test_server()->Start());
     command_line->AppendSwitchASCII(
         network::switches::kUnsafelyTreatInsecureOriginAsSecure,
-        helper_.GetInstallableAppURL().GetOrigin().spec());
+        helper_.GetInstallableAppURL("site_a").GetOrigin().spec());
     command_line->AppendSwitch("disable-fake-server-failure-output");
   }
 

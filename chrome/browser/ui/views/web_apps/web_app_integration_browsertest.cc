@@ -53,7 +53,19 @@ class WebAppIntegrationBrowserTest
     ASSERT_TRUE(embedded_test_server()->Start());
     command_line->AppendSwitchASCII(
         network::switches::kUnsafelyTreatInsecureOriginAsSecure,
-        helper_.GetInstallableAppURL().GetOrigin().spec());
+        helper_.GetInstallableAppURL("site_a").GetOrigin().spec());
+    command_line->AppendSwitchASCII(
+        network::switches::kUnsafelyTreatInsecureOriginAsSecure,
+        helper_.GetInstallableAppURL("site_b").GetOrigin().spec());
+    command_line->AppendSwitchASCII(
+        network::switches::kUnsafelyTreatInsecureOriginAsSecure,
+        helper_.GetInstallableAppURL("site_c").GetOrigin().spec());
+    command_line->AppendSwitchASCII(
+        network::switches::kUnsafelyTreatInsecureOriginAsSecure,
+        helper_.GetInstallableAppURL("site_a_foo").GetOrigin().spec());
+    command_line->AppendSwitchASCII(
+        network::switches::kUnsafelyTreatInsecureOriginAsSecure,
+        helper_.GetInstallableAppURL("site_a_bar").GetOrigin().spec());
   }
 
   // WebAppIntegrationBrowserTestBase::TestDelegate
