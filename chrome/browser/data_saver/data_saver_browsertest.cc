@@ -551,6 +551,10 @@ IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest,
 
 class DataSaverWithImageServerBrowserTest : public InProcessBrowserTest {
  public:
+  DataSaverWithImageServerBrowserTest() {
+    scoped_feature_list_.InitWithFeatures({blink::features::kSaveDataImgSrcset},
+                                          {});
+  }
   void SetUp() override {
     test_server_.reset(new net::EmbeddedTestServer());
     test_server_->RegisterRequestMonitor(base::BindRepeating(
@@ -560,8 +564,6 @@ class DataSaverWithImageServerBrowserTest : public InProcessBrowserTest {
     LOG(WARNING) << GetChromeTestDataDir();
     ASSERT_TRUE(test_server_->Start());
 
-    scoped_feature_list_.InitWithFeatures({blink::features::kSaveDataImgSrcset},
-                                          {});
 
     InProcessBrowserTest::SetUp();
   }
