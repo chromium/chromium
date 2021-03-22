@@ -122,6 +122,26 @@ gfx::AcceleratedWidget WaylandWindow::GetWidget() const {
   return accelerated_widget_;
 }
 
+uint32_t WaylandWindow::GetPreferredEnteredOutputId() const {
+  // It can be either a window that hasn't entered any outputs yet or a child
+  // window that doesn't store entered outputs. Instead, WaylandScreen takes the
+  // window's parent window and uses its preferred output.
+  if (entered_outputs_.empty())
+    return 0;
+
+  // A window can be located on two or more displays. Thus, return the id of the
+  // output that has the biggest scale factor. Otherwise, use the very first one
+  // that was entered. This way, we can be sure that the contents of the Window
+  // are rendered at correct dpi when a user moves the window between displays.
+  auto* preferred_output = *entered_outputs_.begin();
+  for (WaylandOutput* output : entered_outputs_) {
+    if (output->scale_factor() > preferred_output->scale_factor())
+      preferred_output = output;
+  }
+
+  return preferred_output->output_id();
+}
+
 void WaylandWindow::SetPointerFocus(bool focus) {
   has_pointer_focus_ = focus;
 
@@ -563,13 +583,8 @@ void WaylandWindow::AddEnteredOutputId(struct wl_output* output) {
   if (wl::IsMenuType(type()) || type() == ui::PlatformWindowType::kTooltip)
     return;
 
-  auto* wayland_output =
-      static_cast<WaylandOutput*>(wl_output_get_user_data(output));
-  DCHECK(wayland_output);
-  const uint32_t entered_output_id = wayland_output->output_id();
-  DCHECK_NE(entered_output_id, 0u);
-  auto result = entered_outputs_ids_.insert(entered_output_id);
-  DCHECK(result.first != entered_outputs_ids_.end());
+  entered_outputs_.emplace_back(
+      static_cast<WaylandOutput*>(wl_output_get_user_data(output)));
 
   UpdateBufferScale(true);
 }
@@ -581,19 +596,17 @@ void WaylandWindow::RemoveEnteredOutputId(struct wl_output* output) {
   if (wl::IsMenuType(type()))
     return;
 
-  auto* wayland_output =
-      static_cast<WaylandOutput*>(wl_output_get_user_data(output));
-  DCHECK(wayland_output);
-  const uint32_t left_output_id = wayland_output->output_id();
-  auto entered_output_ids_it = entered_outputs_ids_.find(left_output_id);
+  auto entered_outputs_it_ =
+      std::find(entered_outputs_.begin(), entered_outputs_.end(),
+                static_cast<WaylandOutput*>(wl_output_get_user_data(output)));
   // Workaround: when a user switches physical output between two displays,
   // a window does not necessarily receive enter events immediately or until
   // a user resizes/moves the window. It means that switching output between
   // displays in a single output mode results in leave events, but the surface
   // might not have received enter event before. Thus, remove the id of left
   // output only if it was stored before.
-  if (entered_output_ids_it != entered_outputs_ids_.end())
-    entered_outputs_ids_.erase(entered_output_ids_it);
+  if (entered_outputs_it_ != entered_outputs_.end())
+    entered_outputs_.erase(entered_outputs_it_);
 
   UpdateBufferScale(true);
 }

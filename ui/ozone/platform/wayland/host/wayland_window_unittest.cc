@@ -29,6 +29,7 @@
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection_test_api.h"
+#include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_cursor_shapes.h"
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
@@ -1685,6 +1686,112 @@ TEST_P(WaylandWindowTest, AuxiliaryWindowUpdateBufferScale) {
 
   auxiliary_window->Hide();
   window_->SetPointerFocus(false);
+}
+
+// Tests that a WaylandWindow uses the entered output with largest scale
+// factor as the preferred output. If scale factors are equal, the very first
+// entered display is used.
+TEST_P(WaylandWindowTest, GetPreferredOutput) {
+  VerifyAndClearExpectations();
+
+  // Buffer scale must be 1 when no output has been entered by the window.
+  EXPECT_EQ(1, window_->buffer_scale());
+
+  // Creating an output with scale 1.
+  wl::TestOutput* output1 = server_.CreateAndInitializeOutput();
+  output1->SetRect(gfx::Rect(0, 0, 1920, 1080));
+  Sync();
+
+  // Creating an output with scale 2.
+  wl::TestOutput* output2 = server_.CreateAndInitializeOutput();
+  output2->SetRect(gfx::Rect(1921, 0, 1920, 1080));
+  Sync();
+
+  auto entered_outputs = window_->entered_outputs();
+  EXPECT_EQ(0u, entered_outputs.size());
+
+  // Send the window to |output1|.
+  wl::MockSurface* surface = server_.GetObject<wl::MockSurface>(
+      window_->root_surface()->GetSurfaceId());
+  ASSERT_TRUE(surface);
+  wl_surface_send_enter(surface->resource(), output1->resource());
+  wl_surface_send_enter(surface->resource(), output2->resource());
+  Sync();
+
+  // The window entered two outputs.
+  entered_outputs = window_->entered_outputs();
+  EXPECT_EQ(2u, entered_outputs.size());
+
+  // The window must prefer the output that it entered first.
+  auto* expected_entered_output = *entered_outputs.begin();
+  EXPECT_EQ(expected_entered_output->output_id(),
+            window_->GetPreferredEnteredOutputId());
+
+  // Create the third output and pretend the window entered 3 outputs at the
+  // same time.
+  wl::TestOutput* output3 = server_.CreateAndInitializeOutput();
+  output3->SetRect(gfx::Rect(0, 1081, 1920, 1080));
+  Sync();
+
+  wl_surface_send_enter(surface->resource(), output3->resource());
+  Sync();
+
+  // The window entered three outputs...
+  entered_outputs = window_->entered_outputs();
+  EXPECT_EQ(3u, entered_outputs.size());
+
+  // but it still must prefer the output that it entered first.
+  EXPECT_EQ(expected_entered_output->output_id(),
+            window_->GetPreferredEnteredOutputId());
+
+  // Pretend that the output2 has scale factor equals to 2 now.
+  output2->SetScale(2);
+  output2->Flush();
+  Sync();
+
+  entered_outputs = window_->entered_outputs();
+  EXPECT_EQ(3u, entered_outputs.size());
+
+  // It must be the second entered output now.
+  expected_entered_output = *(++entered_outputs.begin());
+  EXPECT_EQ(2, expected_entered_output->scale_factor());
+
+  // The window_ must return the output with largest scale.
+  EXPECT_EQ(expected_entered_output->output_id(),
+            window_->GetPreferredEnteredOutputId());
+
+  // Now, the output1 changes its scale factor to 2 as well.
+  output1->SetScale(2);
+  output1->Flush();
+  Sync();
+
+  // It must be the very first output now.
+  entered_outputs = window_->entered_outputs();
+  expected_entered_output = *entered_outputs.begin();
+  EXPECT_EQ(expected_entered_output->output_id(),
+            window_->GetPreferredEnteredOutputId());
+
+  // Now, the output1 changes its scale factor back to 1.
+  output1->SetScale(1);
+  output1->Flush();
+  Sync();
+
+  // It must be the very the second output now.
+  entered_outputs = window_->entered_outputs();
+  expected_entered_output = *(++entered_outputs.begin());
+  EXPECT_EQ(expected_entered_output->output_id(),
+            window_->GetPreferredEnteredOutputId());
+
+  // All outputs have scale factor of 1. window_ prefers the output that
+  // it entered first again.
+  output2->SetScale(1);
+  output2->Flush();
+  Sync();
+
+  entered_outputs = window_->entered_outputs();
+  expected_entered_output = *(entered_outputs.begin());
+  EXPECT_EQ(expected_entered_output->output_id(),
+            window_->GetPreferredEnteredOutputId());
 }
 
 // Tests WaylandWindow repositions menu windows to be relative to parent window

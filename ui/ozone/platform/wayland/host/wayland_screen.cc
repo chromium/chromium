@@ -163,7 +163,7 @@ display::Display WaylandScreen::GetDisplayForAcceleratedWidget(
     return GetPrimaryDisplay();
 
   const auto* parent_window = window->parent_window();
-  const auto entered_outputs_ids = window->entered_outputs_ids();
+  const auto entered_output_id = window->GetPreferredEnteredOutputId();
   // Although spec says a surface receives enter/leave surface events on
   // create/move/resize actions, this might be called right after a window is
   // created, but it has not been configured by a Wayland compositor and it
@@ -174,19 +174,15 @@ display::Display WaylandScreen::GetDisplayForAcceleratedWidget(
   // case, it's also safe to return the primary display. A child window will
   // most probably enter the same display than its parent so we return the
   // parent's display if there is a parent.
-  if (entered_outputs_ids.empty()) {
+  if (entered_output_id == 0) {
     if (parent_window)
       return GetDisplayForAcceleratedWidget(parent_window->GetWidget());
     return GetPrimaryDisplay();
   }
 
   DCHECK(!display_list_.displays().empty());
-
-  // A widget can be located on two or more displays. It would be better if
-  // the most in DIP occupied display was returned, but it's impossible to do
-  // so in Wayland. Thus, return the one that was used the earliest.
   for (const auto& display : display_list_.displays()) {
-    if (display.id() == *entered_outputs_ids.begin())
+    if (display.id() == entered_output_id)
       return display;
   }
 
