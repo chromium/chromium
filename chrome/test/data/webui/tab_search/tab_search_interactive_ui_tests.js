@@ -27,7 +27,7 @@ var TabSearchInteractiveUITest = class extends PolymerInteractiveUITest {
   }
 };
 
-GEN('#if defined(OS_MAC)');
+GEN('#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)');
 GEN('#define MAYBE_All DISABLED_All');
 GEN('#else');
 GEN('#define MAYBE_All All');
