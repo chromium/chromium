@@ -1121,7 +1121,6 @@ WebFeature FeatureForWebKitCustomPseudoElement(const AtomicString& name) {
        WebFeature::kCSSSelectorWebkitDatetimeEditWeekField},
       {"-webkit-datetime-edit-year-field",
        WebFeature::kCSSSelectorWebkitDatetimeEditYearField},
-      {"-webkit-details-marker", WebFeature::kCSSSelectorWebkitDetailsMarker},
       {"-webkit-file-upload-button",
        WebFeature::kCSSSelectorWebkitFileUploadButton},
       {"-webkit-inner-spin-button",

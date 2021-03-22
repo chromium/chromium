@@ -385,18 +385,6 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
     return;
   }
 
-  if (IsA<HTMLSummaryElement>(element) &&
-      !RuntimeEnabledFeatures::SummaryListItemEnabled()) {
-    // <summary> should be a list item by default, but currently it's a block
-    // and the disclosure symbol is not a ::marker (bug 590014). If an author
-    // specifies 'display: list-item', the <summary> would seem to have two
-    // markers (the real one and the disclosure symbol). To avoid this, compute
-    // to 'display: block'. This adjustment should go away with bug 590014.
-    if (style.Display() == EDisplay::kListItem)
-      style.SetDisplay(EDisplay::kBlock);
-    return;
-  }
-
   if (style.Display() == EDisplay::kContents) {
     // See https://drafts.csswg.org/css-display/#unbox-html
     // Some of these elements are handled with other adjustments above.

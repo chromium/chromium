@@ -1181,11 +1181,23 @@ summary {
     display: block
 }
 
-summary::-webkit-details-marker {
-    display: inline-block;
-    width: 0.66em;
-    height: 0.66em;
-    margin-inline-end: 0.4em;
+/*
+ * https://html.spec.whatwg.org/C/#the-details-and-summary-elements
+ * The specification doesn't have |details >| and |:first-of-type|.
+ * We add them because:
+ *   - We had provided |summary { display: block }| for a long time,
+ *     there are sites using <summary> without details, and they
+ *     expect that <summary> is not a list-item.
+ *   - Firefox does so.
+ */
+details > summary:first-of-type {
+    display: list-item;
+    counter-increment: list-item 0;
+    list-style: disclosure-closed inside;
+}
+
+details[open] > summary:first-of-type {
+    list-style-type: disclosure-open;
 }
 
 template {

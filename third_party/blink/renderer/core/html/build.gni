@@ -495,8 +495,6 @@ blink_core_sources_html = [
   "portal/portal_post_message_helper.h",
   "rel_list.cc",
   "rel_list.h",
-  "shadow/details_marker_control.cc",
-  "shadow/details_marker_control.h",
   "shadow/progress_shadow_element.cc",
   "shadow/progress_shadow_element.h",
   "shadow/shadow_element_utils.cc",

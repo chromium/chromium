@@ -20,14 +20,8 @@
 
 #include "third_party/blink/renderer/core/html/html_summary_element.h"
 
-#include "third_party/blink/renderer/core/css/style_change_reason.h"
-#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
-#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/html/html_details_element.h"
-#include "third_party/blink/renderer/core/html/html_slot_element.h"
-#include "third_party/blink/renderer/core/html/shadow/details_marker_control.h"
-#include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
@@ -38,10 +32,6 @@ namespace blink {
 
 HTMLSummaryElement::HTMLSummaryElement(Document& document)
     : HTMLElement(html_names::kSummaryTag, document) {
-  if (!RuntimeEnabledFeatures::SummaryListItemEnabled()) {
-    SetHasCustomStyleCallbacks();
-    EnsureUserAgentShadowRoot();
-  }
 }
 
 LayoutObject* HTMLSummaryElement::CreateLayoutObject(const ComputedStyle& style,
@@ -58,27 +48,12 @@ LayoutObject* HTMLSummaryElement::CreateLayoutObject(const ComputedStyle& style,
   return LayoutObjectFactory::CreateBlockFlow(*this, style, legacy);
 }
 
-void HTMLSummaryElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
-  DCHECK(!RuntimeEnabledFeatures::SummaryListItemEnabled());
-  auto* marker_control =
-      MakeGarbageCollected<DetailsMarkerControl>(GetDocument());
-  marker_control->SetIdAttribute(shadow_element_names::kIdDetailsMarker);
-  root.AppendChild(marker_control);
-  root.AppendChild(HTMLSlotElement::CreateUserAgentDefaultSlot(GetDocument()));
-}
-
 HTMLDetailsElement* HTMLSummaryElement::DetailsElement() const {
   if (auto* details = DynamicTo<HTMLDetailsElement>(parentNode()))
     return details;
   if (auto* details = DynamicTo<HTMLDetailsElement>(OwnerShadowHost()))
     return details;
   return nullptr;
-}
-
-Element* HTMLSummaryElement::MarkerControl() {
-  DCHECK(!RuntimeEnabledFeatures::SummaryListItemEnabled());
-  return EnsureUserAgentShadowRoot().getElementById(
-      shadow_element_names::kIdDetailsMarker);
 }
 
 bool HTMLSummaryElement::IsMainSummary() const {
@@ -162,17 +137,6 @@ bool HTMLSummaryElement::HasActivationBehavior() const {
 
 bool HTMLSummaryElement::WillRespondToMouseClickEvents() {
   return IsMainSummary() || HTMLElement::WillRespondToMouseClickEvents();
-}
-
-void HTMLSummaryElement::WillRecalcStyle(const StyleRecalcChange) {
-  DCHECK(!RuntimeEnabledFeatures::SummaryListItemEnabled());
-  if (GetForceReattachLayoutTree() && IsMainSummary()) {
-    if (Element* marker = MarkerControl()) {
-      marker->SetNeedsStyleRecalc(
-          kLocalStyleChange,
-          StyleChangeReasonForTracing::Create(style_change_reason::kControl));
-    }
-  }
 }
 
 }  // namespace blink

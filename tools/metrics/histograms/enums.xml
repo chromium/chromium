@@ -30273,7 +30273,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2293" label="CSSSelectorWebkitDatetimeEditText"/>
   <int value="2294" label="CSSSelectorWebkitDatetimeEditWeekField"/>
   <int value="2295" label="CSSSelectorWebkitDatetimeEditYearField"/>
-  <int value="2296" label="CSSSelectorWebkitDetailsMarker"/>
+  <int value="2296" label="OBSOLETE_CSSSelectorWebkitDetailsMarker"/>
   <int value="2297" label="CSSSelectorWebkitFileUploadButton"/>
   <int value="2298" label="CSSSelectorWebkitInnerSpinButton"/>
   <int value="2299" label="CSSSelectorWebkitInputPlaceholder"/>

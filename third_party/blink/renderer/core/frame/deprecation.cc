@@ -567,15 +567,6 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
           "The \"RtpDataChannels\" constraint is currently ignored, and may "
           "cause an error at a later date."};
 
-    case WebFeature::kCSSSelectorWebkitDetailsMarker:
-      if (!RuntimeEnabledFeatures::SummaryListItemEnabled())
-        return {"NotDeprecated", kUnknown, ""};
-      return {"CSSSeelctorWebKitDetailsMarker", kM89,
-              ReplacedBy("::-webkit-details-marker pseudo element selector",
-                         "::marker") +
-                  " See https://chromestatus.com/feature/6730096436051968 for "
-                  "more details."};
-
     case WebFeature::kRTCPeerConnectionSdpSemanticsPlanB:
       return {"RTCPeerConnectionSdpSemanticsPlanB", kM93,
               "Plan B SDP semantics, which is used when constructing an "

@@ -1951,10 +1951,6 @@
       status: "experimental"
     },
     {
-      name: "SummaryListItem",
-      status: "stable",
-    },
-    {
       name: "SurfaceEmbeddingFeatures",
       status: "stable",
     },

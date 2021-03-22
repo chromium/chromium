@@ -1689,7 +1689,6 @@ enum WebFeature {
   kCSSSelectorWebkitDatetimeEditText = 2293,
   kCSSSelectorWebkitDatetimeEditWeekField = 2294,
   kCSSSelectorWebkitDatetimeEditYearField = 2295,
-  kCSSSelectorWebkitDetailsMarker = 2296,
   kCSSSelectorWebkitFileUploadButton = 2297,
   kCSSSelectorWebkitInnerSpinButton = 2298,
   kCSSSelectorWebkitInputPlaceholder = 2299,

@@ -685,8 +685,6 @@ TEST(CSSSelectorParserTest, UseCountShadowPseudo) {
               WebFeature::kCSSSelectorWebkitDatetimeEditWeekField);
   ExpectCount("::-webkit-datetime-edit-year-field",
               WebFeature::kCSSSelectorWebkitDatetimeEditYearField);
-  ExpectCount("::-webkit-details-marker",
-              WebFeature::kCSSSelectorWebkitDetailsMarker);
   ExpectCount("::-webkit-file-upload-button",
               WebFeature::kCSSSelectorWebkitFileUploadButton);
   ExpectCount("::-webkit-inner-spin-button",
