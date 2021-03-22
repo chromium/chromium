@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/lock_screen_apps/first_app_run_toast_manager.h"
+#include "chrome/browser/ash/lock_screen_apps/first_app_run_toast_manager.h"
 
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/lock_screen_apps/toast_dialog_view.h"
+#include "chrome/browser/ash/lock_screen_apps/toast_dialog_view.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"

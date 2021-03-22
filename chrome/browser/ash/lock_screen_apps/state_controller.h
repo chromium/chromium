@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOCK_SCREEN_APPS_STATE_CONTROLLER_H_
-#define CHROME_BROWSER_CHROMEOS_LOCK_SCREEN_APPS_STATE_CONTROLLER_H_
+#ifndef CHROME_BROWSER_ASH_LOCK_SCREEN_APPS_STATE_CONTROLLER_H_
+#define CHROME_BROWSER_ASH_LOCK_SCREEN_APPS_STATE_CONTROLLER_H_
 
 #include <memory>
 #include <string>
@@ -14,8 +14,8 @@
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/scoped_observer.h"
-#include "chrome/browser/chromeos/lock_screen_apps/app_manager.h"
-#include "chrome/browser/chromeos/lock_screen_apps/state_observer.h"
+#include "chrome/browser/ash/lock_screen_apps/app_manager.h"
+#include "chrome/browser/ash/lock_screen_apps/state_observer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -275,4 +275,4 @@ class StateController : public ash::mojom::TrayActionClient,
 
 }  // namespace lock_screen_apps
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOCK_SCREEN_APPS_STATE_CONTROLLER_H_
+#endif  // CHROME_BROWSER_ASH_LOCK_SCREEN_APPS_STATE_CONTROLLER_H_

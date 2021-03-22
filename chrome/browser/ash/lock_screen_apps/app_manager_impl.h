@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOCK_SCREEN_APPS_APP_MANAGER_IMPL_H_
-#define CHROME_BROWSER_CHROMEOS_LOCK_SCREEN_APPS_APP_MANAGER_IMPL_H_
+#ifndef CHROME_BROWSER_ASH_LOCK_SCREEN_APPS_APP_MANAGER_IMPL_H_
+#define CHROME_BROWSER_ASH_LOCK_SCREEN_APPS_APP_MANAGER_IMPL_H_
 
 #include <string>
 
@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/lock_screen_apps/app_manager.h"
+#include "chrome/browser/ash/lock_screen_apps/app_manager.h"
 #include "chrome/browser/chromeos/note_taking_helper.h"
 #include "extensions/browser/extension_registry_observer.h"
 
@@ -193,4 +193,4 @@ class AppManagerImpl : public AppManager,
 
 }  // namespace lock_screen_apps
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOCK_SCREEN_APPS_APP_MANAGER_IMPL_H_
+#endif  // CHROME_BROWSER_ASH_LOCK_SCREEN_APPS_APP_MANAGER_IMPL_H_

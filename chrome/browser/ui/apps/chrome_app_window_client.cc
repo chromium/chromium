@@ -18,7 +18,7 @@
 #include "extensions/common/features/feature_channel.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/lock_screen_apps/state_controller.h"
+#include "chrome/browser/ash/lock_screen_apps/state_controller.h"
 #endif
 
 // TODO(jamescook): We probably shouldn't compile this class at all on Android.

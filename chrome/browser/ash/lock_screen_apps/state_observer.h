@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_LOCK_SCREEN_APPS_STATE_OBSERVER_H_
-#define CHROME_BROWSER_CHROMEOS_LOCK_SCREEN_APPS_STATE_OBSERVER_H_
+#ifndef CHROME_BROWSER_ASH_LOCK_SCREEN_APPS_STATE_OBSERVER_H_
+#define CHROME_BROWSER_ASH_LOCK_SCREEN_APPS_STATE_OBSERVER_H_
 
 #include "ash/public/mojom/tray_action.mojom.h"
 
@@ -22,4 +22,4 @@ class StateObserver {
 
 }  // namespace lock_screen_apps
 
-#endif  // CHROME_BROWSER_CHROMEOS_LOCK_SCREEN_APPS_STATE_OBSERVER_H_
+#endif  // CHROME_BROWSER_ASH_LOCK_SCREEN_APPS_STATE_OBSERVER_H_

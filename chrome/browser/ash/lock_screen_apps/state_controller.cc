@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/lock_screen_apps/state_controller.h"
+#include "chrome/browser/ash/lock_screen_apps/state_controller.h"
 
 #include <string>
 #include <utility>
@@ -16,13 +16,13 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/time/default_tick_clock.h"
+#include "chrome/browser/ash/lock_screen_apps/app_manager_impl.h"
+#include "chrome/browser/ash/lock_screen_apps/app_window_metrics_tracker.h"
+#include "chrome/browser/ash/lock_screen_apps/first_app_run_toast_manager.h"
+#include "chrome/browser/ash/lock_screen_apps/focus_cycler_delegate.h"
+#include "chrome/browser/ash/lock_screen_apps/lock_screen_profile_creator_impl.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/lock_screen_apps/app_manager_impl.h"
-#include "chrome/browser/chromeos/lock_screen_apps/app_window_metrics_tracker.h"
-#include "chrome/browser/chromeos/lock_screen_apps/first_app_run_toast_manager.h"
-#include "chrome/browser/chromeos/lock_screen_apps/focus_cycler_delegate.h"
-#include "chrome/browser/chromeos/lock_screen_apps/lock_screen_profile_creator_impl.h"
 #include "chrome/browser/chromeos/note_taking_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"

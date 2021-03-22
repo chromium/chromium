@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/lock_screen_apps/state_controller.h"
+#include "chrome/browser/ash/lock_screen_apps/state_controller.h"
 
 #include <memory>
 #include <string>
@@ -20,14 +20,14 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/lock_screen_apps/app_manager.h"
+#include "chrome/browser/ash/lock_screen_apps/fake_lock_screen_profile_creator.h"
+#include "chrome/browser/ash/lock_screen_apps/first_app_run_toast_manager.h"
+#include "chrome/browser/ash/lock_screen_apps/focus_cycler_delegate.h"
+#include "chrome/browser/ash/lock_screen_apps/state_observer.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/chromeos/arc/test/test_arc_session_manager.h"
-#include "chrome/browser/chromeos/lock_screen_apps/app_manager.h"
-#include "chrome/browser/chromeos/lock_screen_apps/fake_lock_screen_profile_creator.h"
-#include "chrome/browser/chromeos/lock_screen_apps/first_app_run_toast_manager.h"
-#include "chrome/browser/chromeos/lock_screen_apps/focus_cycler_delegate.h"
-#include "chrome/browser/chromeos/lock_screen_apps/state_observer.h"
 #include "chrome/browser/chromeos/note_taking_helper.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"

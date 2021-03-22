@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/lock_screen_apps/lock_screen_profile_creator.h"
+#include "chrome/browser/ash/lock_screen_apps/lock_screen_profile_creator.h"
 
 #include <memory>
 #include <utility>

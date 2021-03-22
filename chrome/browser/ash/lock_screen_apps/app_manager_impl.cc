@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/lock_screen_apps/app_manager_impl.h"
+#include "chrome/browser/ash/lock_screen_apps/app_manager_impl.h"
 
 #include <memory>
 #include <string>
@@ -18,8 +18,8 @@
 #include "base/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/tick_clock.h"
+#include "chrome/browser/ash/lock_screen_apps/lock_screen_profile_creator.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/lock_screen_apps/lock_screen_profile_creator.h"
 #include "chrome/browser/chromeos/note_taking_helper.h"
 #include "chrome/browser/extensions/extension_assets_manager.h"
 #include "chrome/browser/extensions/extension_management.h"

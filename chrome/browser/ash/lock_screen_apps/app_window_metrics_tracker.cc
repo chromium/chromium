@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/lock_screen_apps/app_window_metrics_tracker.h"
+#include "chrome/browser/ash/lock_screen_apps/app_window_metrics_tracker.h"
 
 #include "base/metrics/histogram_macros.h"
 #include "base/time/tick_clock.h"

@@ -10,8 +10,8 @@
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/chromeos/lock_screen_apps/lock_screen_profile_creator.h"
-#include "chrome/browser/chromeos/lock_screen_apps/state_controller.h"
+#include "chrome/browser/ash/lock_screen_apps/lock_screen_profile_creator.h"
+#include "chrome/browser/ash/lock_screen_apps/state_controller.h"
 #include "chrome/browser/chromeos/note_taking_helper.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/common/pref_names.h"
@@ -208,7 +208,6 @@ IN_PROC_BROWSER_TEST_F(LockScreenNoteTakingTest, LaunchInNonLockScreenContext) {
   ASSERT_TRUE(app);
   ASSERT_TRUE(EnableLockScreenAppLaunch(app->id()));
 
-
   // Get the lock screen apps state controller to the state where lock screen
   // enabled app window creation is allowed (provided the window is created
   // from a lock screen context).
@@ -276,7 +275,6 @@ IN_PROC_BROWSER_TEST_F(LockScreenNoteTakingTest, AppLaunchActionDataParams) {
       test_data_dir_.AppendASCII("lock_screen_apps/app_launch_action_data"));
   ASSERT_TRUE(app);
   ASSERT_TRUE(EnableLockScreenAppLaunch(app->id()));
-
 
   lock_screen_apps::StateController::Get()->RequestNewLockScreenNote(
       ash::mojom::LockScreenNoteOrigin::kLockScreenButtonTap);
