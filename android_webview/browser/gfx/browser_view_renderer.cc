@@ -146,6 +146,11 @@ void BrowserViewRenderer::SetCurrentCompositorFrameConsumer(
   }
   current_compositor_frame_consumer_ = compositor_frame_consumer;
   if (current_compositor_frame_consumer_) {
+    // Previous renderer will evict CompositorFrame, compositor needs to submit
+    // next frames with new local surface id.
+    if (compositor_)
+      compositor_->WasEvicted();
+
     RootFrameSinkGetter root_sink_getter;
     if (root_frame_sink_proxy_)
       root_sink_getter = root_frame_sink_proxy_->GetRootFrameSinkCallback();

@@ -125,7 +125,7 @@ void SynchronousCompositorProxy::DemandDrawHw(
   if (layer_tree_frame_sink_) {
     layer_tree_frame_sink_->DemandDrawHw(
         params->viewport_size, params->viewport_rect_for_tile_priority,
-        params->transform_for_tile_priority);
+        params->transform_for_tile_priority, params->need_new_local_surface_id);
   }
 
   // Ensure that a response is always sent even if the reply hasn't

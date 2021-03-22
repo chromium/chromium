@@ -442,10 +442,15 @@ void SynchronousLayerTreeFrameSink::Invalidate(bool needs_draw) {
 void SynchronousLayerTreeFrameSink::DemandDrawHw(
     const gfx::Size& viewport_size,
     const gfx::Rect& viewport_rect_for_tile_priority,
-    const gfx::Transform& transform_for_tile_priority) {
+    const gfx::Transform& transform_for_tile_priority,
+    bool need_new_local_surface_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(HasClient());
   DCHECK(context_provider_.get());
+
+  if (need_new_local_surface_id) {
+    child_local_surface_id_ = viz::LocalSurfaceId();
+  }
 
   client_->SetExternalTilePriorityConstraints(viewport_rect_for_tile_priority,
                                               transform_for_tile_priority);

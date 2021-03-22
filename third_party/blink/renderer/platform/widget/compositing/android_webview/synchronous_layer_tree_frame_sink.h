@@ -132,7 +132,8 @@ class SynchronousLayerTreeFrameSink
                         const Vector<viz::ReturnedResource>& resources);
   void DemandDrawHw(const gfx::Size& viewport_size,
                     const gfx::Rect& viewport_rect_for_tile_priority,
-                    const gfx::Transform& transform_for_tile_priority);
+                    const gfx::Transform& transform_for_tile_priority,
+                    bool need_new_local_surface_id);
   void DemandDrawSw(SkCanvas* canvas);
   void DemandDrawSwZeroCopy();
   void WillSkipDraw();

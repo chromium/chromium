@@ -69,6 +69,7 @@ class CONTENT_EXPORT SynchronousCompositorHost
   void OnComputeScroll(base::TimeTicks animation_time) override;
   void SetBeginFrameSource(viz::BeginFrameSource* begin_frame_source) override;
   void DidInvalidate() override;
+  void WasEvicted() override;
 
   ui::ViewAndroid::CopyViewCallback GetCopyViewCallback();
   void DidOverscroll(const ui::DidOverscrollParams& over_scroll_params);
@@ -179,6 +180,9 @@ class CONTENT_EXPORT SynchronousCompositorHost
   float page_scale_factor_ = 0.f;
   float min_page_scale_factor_ = 0.f;
   float max_page_scale_factor_ = 0.f;
+
+  // If the last surface was evicted.
+  bool was_evicted_ = false;
 
   scoped_refptr<SynchronousCompositorSyncCallBridge> bridge_;
 
