@@ -281,6 +281,14 @@
           'shards': 25,
         },
       },
+      'ToTFuchsia x64': {
+        'args': [
+          '--platform=fuchsia',
+        ],
+        'swarming': {
+          'shards': 1,
+        },
+      },
       'V8 Blink Linux Debug': {
         # This builder compiles Chromium in release mode, but V8 in debug.
         # TODO(machenbach): Change name and out directory of this builder to
@@ -1016,6 +1024,8 @@
       'fuchsia-fyi-arm64-rel',  # https://crbug.com/961457
       'fuchsia-fyi-x64-dbg',  # https://crbug.com/961457
       'fuchsia-fyi-x64-rel',  # https://crbug.com/961457
+      'ToTFuchsia x64',  # https://crbug.com/961457
+      'ToTFuchsiaOfficial',  # https://crbug.com/961457
     ],
     'modifications': {
       'Linux ASan LSan Tests (1)': {
