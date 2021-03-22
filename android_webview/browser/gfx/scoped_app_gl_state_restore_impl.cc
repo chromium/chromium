@@ -151,9 +151,7 @@ ScopedAppGLStateRestoreImpl::ScopedAppGLStateRestoreImpl(
     g_use_skia_renderer = features::IsUsingSkiaRenderer();
   }
 
-  if (save_restore_) {
-    SaveHWUIState();
-  }
+  SaveHWUIState(save_restore);
 
   if (mode_ == ScopedAppGLStateRestore::MODE_RESOURCE_MANAGEMENT &&
       ::gl::g_current_gl_driver->fn.glBindRenderbufferEXTFn != nullptr) {
@@ -166,7 +164,27 @@ ScopedAppGLStateRestoreImpl::ScopedAppGLStateRestoreImpl(
   DCHECK(ClearGLErrors(false, NULL));
 }
 
-void ScopedAppGLStateRestoreImpl::SaveHWUIState() {
+void ScopedAppGLStateRestoreImpl::SaveHWUIState(bool save_restore) {
+  if (g_use_skia_renderer) {
+    if (g_supports_arm_shader_framebuffer_fetch)
+      glGetBooleanv(GL_FETCH_PER_SAMPLE_ARM, &fetch_per_sample_arm_enabled_);
+
+    if (g_supports_disable_multisample)
+      glGetBooleanv(GL_MULTISAMPLE, &multisample_enabled_);
+  }
+
+  if (g_use_skia_renderer || save_restore) {
+    vertex_attrib_.resize(g_gl_max_vertex_attribs);
+    for (GLint i = 0; i < g_gl_max_vertex_attribs; ++i) {
+      glGetVertexAttribiv(
+          i, GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING,
+          &vertex_attrib_[i].vertex_attrib_array_buffer_binding);
+    }
+  }
+
+  if (!save_restore)
+    return;
+
   glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &vertex_array_buffer_binding_);
   glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &index_array_buffer_binding_);
 
@@ -233,7 +251,6 @@ void ScopedAppGLStateRestoreImpl::SaveHWUIState() {
     glBindVertexArrayOES(0);
   }
 
-  vertex_attrib_.resize(g_gl_max_vertex_attribs);
   for (GLint i = 0; i < g_gl_max_vertex_attribs; ++i) {
     glGetVertexAttribiv(i, GL_VERTEX_ATTRIB_ARRAY_ENABLED,
                         &vertex_attrib_[i].enabled);
@@ -247,38 +264,67 @@ void ScopedAppGLStateRestoreImpl::SaveHWUIState() {
                         &vertex_attrib_[i].stride);
     glGetVertexAttribPointerv(i, GL_VERTEX_ATTRIB_ARRAY_POINTER,
                               &vertex_attrib_[i].pointer);
-    glGetVertexAttribiv(i, GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING,
-                        &vertex_attrib_[i].vertex_attrib_array_buffer_binding);
     glGetVertexAttribfv(i, GL_CURRENT_VERTEX_ATTRIB,
                         vertex_attrib_[i].current_vertex_attrib);
-  }
-
-  if (g_use_skia_renderer) {
-    if (g_supports_arm_shader_framebuffer_fetch)
-      glGetBooleanv(GL_FETCH_PER_SAMPLE_ARM, &fetch_per_sample_arm_enabled_);
-
-    if (g_supports_disable_multisample)
-      glGetBooleanv(GL_MULTISAMPLE, &multisample_enabled_);
   }
 }
 
 ScopedAppGLStateRestoreImpl::~ScopedAppGLStateRestoreImpl() {
   MakeAppContextCurrent();
-  if (save_restore_) {
-    DCHECK(ClearGLErrors(false, NULL));
-    RestoreHWUIState();
-  }
-
-  // We do restore it even with Skia on the other side because it's new
-  // extension that skia on Android P and Q didn't use.
-  if (g_use_skia_renderer && g_supports_nv_concervative_raster)
-    glDisable(GL_CONSERVATIVE_RASTERIZATION_NV);
+  DCHECK(ClearGLErrors(false, NULL));
+  RestoreHWUIState(save_restore_);
 
   // Do not leak GLError out of chromium.
   ClearGLErrors(true, "Chromium GLError");
 }
 
-void ScopedAppGLStateRestoreImpl::RestoreHWUIState() {
+void ScopedAppGLStateRestoreImpl::RestoreHWUIState(bool save_restore) {
+  // Some state is restored when skia renderer is enabled, even when
+  // `save_restore` is false. This is because newer skia version can modify
+  // newer GL state that older versions of Android were not aware of, so did
+  // not restore automatically. Note some of these are just resetting back
+  // to default state for this reason. This code is currently conservative;
+  // it's likely that not all android versions needs all of these states
+  // restored.
+  if (g_use_skia_renderer) {
+    if (gl::g_current_gl_driver->fn.glWindowRectanglesEXTFn)
+      glWindowRectanglesEXT(GL_EXCLUSIVE_EXT, 0, nullptr);
+
+    if (gl::g_current_gl_driver->fn.glCoverageModulationNVFn)
+      glCoverageModulationNV(GL_NONE);
+
+    if (g_supports_arm_shader_framebuffer_fetch)
+      GLEnableDisable(GL_FETCH_PER_SAMPLE_ARM, fetch_per_sample_arm_enabled_);
+
+    if (g_supports_disable_multisample)
+      GLEnableDisable(GL_MULTISAMPLE, multisample_enabled_);
+
+    // We do restore it even with Skia on the other side because it's new
+    // extension that skia on Android P and Q didn't use.
+    if (g_supports_nv_concervative_raster)
+      glDisable(GL_CONSERVATIVE_RASTERIZATION_NV);
+  }
+
+  if (g_use_skia_renderer && !save_restore) {
+    if (gl::g_current_gl_driver->fn.glVertexAttribDivisorANGLEFn) {
+      for (GLint i = 0; i < g_gl_max_vertex_attribs; ++i) {
+        glBindBuffer(GL_ARRAY_BUFFER,
+                     vertex_attrib_[i].vertex_attrib_array_buffer_binding);
+        glVertexAttribDivisorANGLE(i, 0);
+      }
+    }
+    if (gl::g_current_gl_driver->fn.glBindSamplerFn) {
+      for (int ii = 0; ii < g_gl_max_texture_units; ++ii) {
+        glActiveTexture(GL_TEXTURE0 + ii);
+        glBindSampler(ii, 0);
+      }
+    }
+    return;
+  }
+
+  if (!save_restore)
+    return;
+
   glBindFramebufferEXT(GL_FRAMEBUFFER, framebuffer_binding_ext_);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_array_buffer_binding_);
 
@@ -396,23 +442,6 @@ void ScopedAppGLStateRestoreImpl::RestoreHWUIState() {
   glStencilOpSeparate(GL_BACK, stencil_state_.stencil_back_fail_op,
                       stencil_state_.stencil_back_z_fail_op,
                       stencil_state_.stencil_back_z_pass_op);
-
-  if (g_use_skia_renderer) {
-    // This code is triggered only for older Android version when it didn't use
-    // Skia for compositing. We restore state to default value instead of
-    // querying the value because older HWUI didn't use it.
-    if (gl::g_current_gl_driver->fn.glWindowRectanglesEXTFn)
-      glWindowRectanglesEXT(GL_EXCLUSIVE_EXT, 0, nullptr);
-
-    if (gl::g_current_gl_driver->fn.glCoverageModulationNVFn)
-      glCoverageModulationNV(GL_NONE);
-
-    if (g_supports_arm_shader_framebuffer_fetch)
-      GLEnableDisable(GL_FETCH_PER_SAMPLE_ARM, fetch_per_sample_arm_enabled_);
-
-    if (g_supports_disable_multisample)
-      GLEnableDisable(GL_MULTISAMPLE, multisample_enabled_);
-  }
 }
 
 }  // namespace internal
