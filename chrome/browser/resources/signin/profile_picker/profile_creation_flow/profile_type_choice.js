@@ -46,7 +46,7 @@ Polymer({
     managedDeviceDisclaimer_: {
       type: Boolean,
       value() {
-        return loadTimeData.valueExists('managedDeviceDisclaimer');
+        return loadTimeData.getString('managedDeviceDisclaimer').length > 0;
       },
     },
   },
