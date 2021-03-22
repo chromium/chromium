@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/chromeos/crosapi/fake_browser_manager.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/login/users/multi_profile_user_controller.h"
 #include "chrome/browser/chromeos/policy/policy_cert_service.h"
@@ -99,7 +100,8 @@ class TestChromeUserManager : public FakeChromeUserManager {
 
 class SessionControllerClientImplTest : public testing::Test {
  protected:
-  SessionControllerClientImplTest() {}
+  SessionControllerClientImplTest()
+      : browser_manager_(std::make_unique<crosapi::FakeBrowserManager>()) {}
   ~SessionControllerClientImplTest() override {}
 
   void SetUp() override {
@@ -193,6 +195,9 @@ class SessionControllerClientImplTest : public testing::Test {
   session_manager::SessionManager session_manager_;
   chromeos::SessionTerminationManager session_termination_manager_;
 
+ protected:
+  std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;
+
  private:
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 
@@ -269,6 +274,14 @@ TEST_F(SessionControllerClientImplTest, MultiProfileDisallowedByUserPolicy) {
 
   user_manager()->AddUser(
       AccountId::FromUserEmailGaiaId("bb@b.b", "4444444444"));
+  EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
+            SessionControllerClientImpl::GetAddUserSessionPolicy());
+
+  browser_manager_->set_is_running(true);
+  EXPECT_EQ(ash::AddUserSessionPolicy::ERROR_LACROS_RUNNING,
+            SessionControllerClientImpl::GetAddUserSessionPolicy());
+
+  browser_manager_->set_is_running(false);
   EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
 

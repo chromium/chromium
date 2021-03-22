@@ -31,6 +31,9 @@ enum class AddUserSessionPolicy {
   ERROR_MAXIMUM_USERS_REACHED,
   // Disallowed multi-profile because device is locked to single user.
   ERROR_LOCKED_TO_SINGLE_USER,
+  // Disallowed multi-profile because Lacros is running, launching or
+  // terminating.
+  ERROR_LACROS_RUNNING,
 };
 
 // Defines the cycle direction for |CycleActiveUser|.

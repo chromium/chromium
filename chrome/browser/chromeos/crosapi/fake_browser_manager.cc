@@ -26,6 +26,10 @@ bool FakeBrowserManager::IsRunning() const {
   return is_running_;
 }
 
+bool FakeBrowserManager::IsRunningOrWillRun() const {
+  return is_running_;
+}
+
 void FakeBrowserManager::GetFeedbackData(GetFeedbackDataCallback callback) {
   const base::DictionaryValue* sysinfo_entries;
   feedback_response_.GetAsDictionary(&sysinfo_entries);

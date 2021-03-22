@@ -61,6 +61,14 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Virtual for testing.
   virtual bool IsRunning() const;
 
+  // Return true if Lacros is running, launching or terminating.
+  // We do not want the multi-signin to be available when Lacros is
+  // running; therefore, we also have to exclude other states (e.g. if
+  // Lacros is launched and multi-signin is enabled, we would have
+  // Lacros running and multiple users signed in simultaneously).
+  // Virtual for testing.
+  virtual bool IsRunningOrWillRun() const;
+
   // Sets a callback to be called when the binary download completes. The
   // download may not be successful.
   using LoadCompleteCallback = base::OnceCallback<void(bool success)>;

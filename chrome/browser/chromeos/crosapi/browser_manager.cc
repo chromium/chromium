@@ -216,6 +216,11 @@ bool BrowserManager::IsRunning() const {
   return state_ == State::RUNNING;
 }
 
+bool BrowserManager::IsRunningOrWillRun() const {
+  return state_ == State::RUNNING || state_ == State::STARTING ||
+         state_ == State::CREATING_LOG_FILE || state_ == State::TERMINATING;
+}
+
 void BrowserManager::SetLoadCompleteCallback(LoadCompleteCallback callback) {
   // We only support one client waiting.
   DCHECK(!load_complete_callback_);

@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/chromeos/crosapi/browser_manager.h"
 #include "chrome/browser/chromeos/login/ui/user_adding_screen.h"
 #include "chrome/browser/chromeos/login/users/multi_profile_user_controller.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -260,6 +261,10 @@ void SessionControllerClientImpl::ShowMultiProfileLogin() {
 
   // Launch sign in screen to add another user to current session.
   DCHECK(!UserManager::Get()->GetUsersAllowedForMultiProfile().empty());
+
+  // Lacros and multiprofile are mutually exclusive.
+  DCHECK(!crosapi::BrowserManager::Get()->IsRunningOrWillRun());
+
   // Don't show the dialog if any logged-in user in the multi-profile session
   // dismissed it.
   bool show_intro = true;
@@ -311,6 +316,11 @@ bool SessionControllerClientImpl::IsMultiProfileAvailable() {
     return false;
   if (chromeos::SessionTerminationManager::Get() &&
       chromeos::SessionTerminationManager::Get()->IsLockedToSingleUser()) {
+    return false;
+  }
+  // Multiprofile mode is not allowed when Lacros is running.
+  if (crosapi::BrowserManager::Get() &&
+      crosapi::BrowserManager::Get()->IsRunningOrWillRun()) {
     return false;
   }
   size_t users_logged_in = UserManager::Get()->GetLoggedInUsers().size();
@@ -382,9 +392,19 @@ SessionControllerClientImpl::GetAddUserSessionPolicy() {
     return ash::AddUserSessionPolicy::ERROR_NOT_ALLOWED_PRIMARY_USER;
   }
 
-  if (UserManager::Get()->GetLoggedInUsers().size() >=
+  if (user_manager->GetLoggedInUsers().size() >=
       session_manager::kMaximumNumberOfUserSessions) {
     return ash::AddUserSessionPolicy::ERROR_MAXIMUM_USERS_REACHED;
+  }
+
+  // Multiprofile mode is not allowed when Lacros is running.
+  if (crosapi::BrowserManager::Get()) {
+    if (crosapi::BrowserManager::Get()->IsRunningOrWillRun())
+      return ash::AddUserSessionPolicy::ERROR_LACROS_RUNNING;
+  } else {
+    // If multiprofile is queried while browser manager is not set,
+    // we want to make sure that this is done before any user logs in.
+    DCHECK(user_manager->GetLoggedInUsers().empty());
   }
 
   return ash::AddUserSessionPolicy::ALLOWED;

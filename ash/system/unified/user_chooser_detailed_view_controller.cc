@@ -33,10 +33,6 @@ bool UserChooserDetailedViewController::IsUserChooserEnabled() {
   if (session->IsUserSessionBlocked())
     return false;
 
-  // Don't show if we cannot add or switch users.
-  if (session->GetAddUserPolicy() != AddUserSessionPolicy::ALLOWED &&
-      session->NumberOfLoggedInUsers() <= 1)
-    return false;
   return true;
 }
 
