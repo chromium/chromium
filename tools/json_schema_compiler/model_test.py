@@ -178,8 +178,7 @@ class ModelTest(unittest.TestCase):
     self.assertEqual([Platforms.CHROMEOS],
                      self.idl_namespace_chromeos.platforms)
     self.assertEqual(
-        [Platforms.CHROMEOS, Platforms.CHROMEOS_TOUCH, Platforms.LINUX,
-         Platforms.MAC, Platforms.WIN],
+        [Platforms.CHROMEOS, Platforms.LINUX, Platforms.MAC, Platforms.WIN],
         self.idl_namespace_all_platforms.platforms)
     self.assertEqual(None,
         self.idl_namespace_non_specific_platforms.platforms)
