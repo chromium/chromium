@@ -4601,8 +4601,6 @@ bool RenderFrameHostImpl::IsInactiveAndDisallowActivation() {
           BackForwardCacheMetrics::NotRestoredReason::kIgnoreEventAndEvict);
       return true;
     case LifecycleState::kPrerendering:
-      // TODO(https://crbug.com/1185738): Asynchronously delete PrerenderHost
-      // with CancelPrerendering.
       CancelPrerendering();
       return true;
     case LifecycleState::kSpeculative:
@@ -7915,7 +7913,11 @@ void RenderFrameHostImpl::CancelPrerendering() {
       storage_partition_impl->GetPrerenderHostRegistry();
   DCHECK(prerender_host_registry);
   const int frame_tree_node_id = frame_tree()->root()->frame_tree_node_id();
-  prerender_host_registry->AbandonHost(frame_tree_node_id);
+  // TODO(https://crbug.com/1126305): Pass a FinalStatus to CancelPrerendering()
+  // method when MojoInterface control, or IsInactiveAndDisallowActivation are
+  // called.
+  prerender_host_registry->AbandonHostAsync(
+      frame_tree_node_id, PrerenderHost::FinalStatus::kDestroyed);
 }
 
 void RenderFrameHostImpl::ActivateForPrerendering() {
