@@ -11,172 +11,55 @@
 
 namespace extensions {
 
-class FrameNavigationStateTest : public ChromeRenderViewHostTestHarness {
- public:
-  void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-
-    content::RenderFrameHostTester::For(main_rfh())
-        ->InitializeRenderFrameIfNeeded();
-  }
-
- protected:
-  FrameNavigationStateTest() {}
-  ~FrameNavigationStateTest() override {}
-
-  FrameNavigationState navigation_state_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FrameNavigationStateTest);
-};
-
-// Test that a frame is correctly tracked, and removed once the tab contents
-// goes away.
-TEST_F(FrameNavigationStateTest, TrackFrame) {
-  const GURL url1("http://www.google.com/");
-  const GURL url2("http://mail.google.com/");
-
-  // Create a main frame.
-  EXPECT_FALSE(navigation_state_.CanSendEvents(main_rfh()));
-  EXPECT_FALSE(navigation_state_.IsValidFrame(main_rfh()));
-  navigation_state_.StartTrackingDocumentLoad(main_rfh(), url1, false, false);
-  EXPECT_TRUE(navigation_state_.CanSendEvents(main_rfh()));
-  EXPECT_TRUE(navigation_state_.IsValidFrame(main_rfh()));
-
-  // Add a sub frame.
-  content::RenderFrameHost* sub_frame =
-      content::RenderFrameHostTester::For(main_rfh())->AppendChild("child");
-  EXPECT_FALSE(navigation_state_.CanSendEvents(sub_frame));
-  EXPECT_FALSE(navigation_state_.IsValidFrame(sub_frame));
-  navigation_state_.StartTrackingDocumentLoad(sub_frame, url2, false, false);
-  EXPECT_TRUE(navigation_state_.CanSendEvents(sub_frame));
-  EXPECT_TRUE(navigation_state_.IsValidFrame(sub_frame));
-
-  // Check frame state.
-  EXPECT_EQ(url1, navigation_state_.GetUrl(main_rfh()));
-  EXPECT_EQ(url2, navigation_state_.GetUrl(sub_frame));
-
-  // Drop the frames.
-  navigation_state_.FrameHostDeleted(sub_frame);
-  EXPECT_FALSE(navigation_state_.CanSendEvents(sub_frame));
-  EXPECT_FALSE(navigation_state_.IsValidFrame(sub_frame));
-
-  navigation_state_.FrameHostDeleted(main_rfh());
-  EXPECT_FALSE(navigation_state_.CanSendEvents(main_rfh()));
-  EXPECT_FALSE(navigation_state_.IsValidFrame(main_rfh()));
-}
+class FrameNavigationStateTest : public ChromeRenderViewHostTestHarness {};
 
 // Test that no events can be sent for a frame after an error occurred, but
 // before a new navigation happened in this frame.
 TEST_F(FrameNavigationStateTest, ErrorState) {
   const GURL url("http://www.google.com/");
+  auto* navigation_state =
+      FrameNavigationState::GetOrCreateForCurrentDocument(main_rfh());
 
-  navigation_state_.StartTrackingDocumentLoad(main_rfh(), url, false, false);
-  EXPECT_TRUE(navigation_state_.CanSendEvents(main_rfh()));
-  EXPECT_FALSE(navigation_state_.GetErrorOccurredInFrame(main_rfh()));
-
-  // After an error occurred, no further events should be sent.
-  navigation_state_.SetErrorOccurredInFrame(main_rfh());
-  EXPECT_FALSE(navigation_state_.CanSendEvents(main_rfh()));
-  EXPECT_TRUE(navigation_state_.GetErrorOccurredInFrame(main_rfh()));
-
-  // Navigations to a network error page should be ignored.
-  navigation_state_.StartTrackingDocumentLoad(main_rfh(), GURL(), false, true);
-  EXPECT_FALSE(navigation_state_.CanSendEvents(main_rfh()));
-  EXPECT_TRUE(navigation_state_.GetErrorOccurredInFrame(main_rfh()));
-
-  // However, when the frame navigates again, it should send events again.
-  navigation_state_.StartTrackingDocumentLoad(main_rfh(), url, false, false);
-  EXPECT_TRUE(navigation_state_.CanSendEvents(main_rfh()));
-  EXPECT_FALSE(navigation_state_.GetErrorOccurredInFrame(main_rfh()));
-}
-
-// Tests that for a sub frame, no events are send after an error occurred, but
-// before a new navigation happened in this frame.
-TEST_F(FrameNavigationStateTest, ErrorStateFrame) {
-  const GURL url("http://www.google.com/");
-
-  content::RenderFrameHost* sub_frame =
-      content::RenderFrameHostTester::For(main_rfh())->AppendChild("child");
-  navigation_state_.StartTrackingDocumentLoad(main_rfh(), url, false, false);
-  navigation_state_.StartTrackingDocumentLoad(sub_frame, url, false, false);
-  EXPECT_TRUE(navigation_state_.CanSendEvents(main_rfh()));
-  EXPECT_TRUE(navigation_state_.CanSendEvents(sub_frame));
+  navigation_state->StartTrackingDocumentLoad(url, false, false);
+  EXPECT_TRUE(navigation_state->CanSendEvents());
+  EXPECT_FALSE(navigation_state->GetErrorOccurredInFrame());
 
   // After an error occurred, no further events should be sent.
-  navigation_state_.SetErrorOccurredInFrame(sub_frame);
-  EXPECT_TRUE(navigation_state_.CanSendEvents(main_rfh()));
-  EXPECT_FALSE(navigation_state_.CanSendEvents(sub_frame));
+  navigation_state->SetErrorOccurredInFrame();
+  EXPECT_FALSE(navigation_state->CanSendEvents());
+  EXPECT_TRUE(navigation_state->GetErrorOccurredInFrame());
 
   // Navigations to a network error page should be ignored.
-  navigation_state_.StartTrackingDocumentLoad(sub_frame, GURL(), false, true);
-  EXPECT_TRUE(navigation_state_.CanSendEvents(main_rfh()));
-  EXPECT_FALSE(navigation_state_.CanSendEvents(sub_frame));
+  navigation_state->StartTrackingDocumentLoad(GURL(), false, true);
+  EXPECT_FALSE(navigation_state->CanSendEvents());
+  EXPECT_TRUE(navigation_state->GetErrorOccurredInFrame());
 
   // However, when the frame navigates again, it should send events again.
-  navigation_state_.StartTrackingDocumentLoad(sub_frame, url, false, false);
-  EXPECT_TRUE(navigation_state_.CanSendEvents(main_rfh()));
-  EXPECT_TRUE(navigation_state_.CanSendEvents(sub_frame));
+  navigation_state->StartTrackingDocumentLoad(url, false, false);
+  EXPECT_TRUE(navigation_state->CanSendEvents());
+  EXPECT_FALSE(navigation_state->GetErrorOccurredInFrame());
 }
 
 // Tests that no events are send for a not web-safe scheme.
 TEST_F(FrameNavigationStateTest, WebSafeScheme) {
   const GURL url("unsafe://www.google.com/");
+  auto* navigation_state =
+      FrameNavigationState::GetOrCreateForCurrentDocument(main_rfh());
 
-  navigation_state_.StartTrackingDocumentLoad(main_rfh(), url, false, false);
-  EXPECT_FALSE(navigation_state_.CanSendEvents(main_rfh()));
+  navigation_state->StartTrackingDocumentLoad(url, false, false);
+  EXPECT_FALSE(navigation_state->CanSendEvents());
 }
 
 // Test for <iframe srcdoc=""> frames.
 TEST_F(FrameNavigationStateTest, SrcDoc) {
-  const GURL url("http://www.google.com/");
-  const GURL blank("about:blank");
   const GURL srcdoc("about:srcdoc");
+  auto* navigation_state =
+      FrameNavigationState::GetOrCreateForCurrentDocument(main_rfh());
 
-  content::RenderFrameHost* sub_frame =
-      content::RenderFrameHostTester::For(main_rfh())->AppendChild("child");
-  navigation_state_.StartTrackingDocumentLoad(main_rfh(), url, false, false);
-  navigation_state_.StartTrackingDocumentLoad(sub_frame, srcdoc, false, false);
-
-  EXPECT_TRUE(navigation_state_.CanSendEvents(main_rfh()));
-  EXPECT_TRUE(navigation_state_.CanSendEvents(sub_frame));
-
-  EXPECT_EQ(url, navigation_state_.GetUrl(main_rfh()));
-  EXPECT_EQ(srcdoc, navigation_state_.GetUrl(sub_frame));
-
-  EXPECT_TRUE(navigation_state_.IsValidUrl(srcdoc));
-}
-
-// Test that an individual frame can be detached.
-TEST_F(FrameNavigationStateTest, DetachFrame) {
-  const GURL url1("http://www.google.com/");
-  const GURL url2("http://mail.google.com/");
-
-  // Create a main frame.
-  EXPECT_FALSE(navigation_state_.CanSendEvents(main_rfh()));
-  EXPECT_FALSE(navigation_state_.IsValidFrame(main_rfh()));
-  navigation_state_.StartTrackingDocumentLoad(main_rfh(), url1, false, false);
-  EXPECT_TRUE(navigation_state_.CanSendEvents(main_rfh()));
-  EXPECT_TRUE(navigation_state_.IsValidFrame(main_rfh()));
-
-  // Add a sub frame.
-  content::RenderFrameHost* sub_frame =
-      content::RenderFrameHostTester::For(main_rfh())->AppendChild("child");
-  EXPECT_FALSE(navigation_state_.CanSendEvents(sub_frame));
-  EXPECT_FALSE(navigation_state_.IsValidFrame(sub_frame));
-  navigation_state_.StartTrackingDocumentLoad(sub_frame, url2, false, false);
-  EXPECT_TRUE(navigation_state_.CanSendEvents(sub_frame));
-  EXPECT_TRUE(navigation_state_.IsValidFrame(sub_frame));
-
-  // Check frame state.
-  EXPECT_EQ(url1, navigation_state_.GetUrl(main_rfh()));
-  EXPECT_EQ(url2, navigation_state_.GetUrl(sub_frame));
-
-  // Drop one frame.
-  navigation_state_.FrameHostDeleted(sub_frame);
-  EXPECT_EQ(url1, navigation_state_.GetUrl(main_rfh()));
-  EXPECT_FALSE(navigation_state_.CanSendEvents(sub_frame));
-  EXPECT_FALSE(navigation_state_.IsValidFrame(sub_frame));
+  navigation_state->StartTrackingDocumentLoad(srcdoc, false, false);
+  EXPECT_TRUE(navigation_state->CanSendEvents());
+  EXPECT_EQ(srcdoc, navigation_state->GetUrl());
+  EXPECT_TRUE(FrameNavigationState::IsValidUrl(srcdoc));
 }
 
 }  // namespace extensions

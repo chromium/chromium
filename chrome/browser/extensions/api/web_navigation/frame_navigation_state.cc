@@ -29,19 +29,13 @@ const char* const kValidSchemes[] = {
 
 }  // namespace
 
-FrameNavigationState::FrameState::FrameState() {
-  error_occurred = false;
-  is_loading = false;
-  is_parsing = false;
-}
-
 // static
 bool FrameNavigationState::allow_extension_scheme_ = false;
 
-FrameNavigationState::FrameNavigationState() {
-}
+RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(FrameNavigationState)
 
-FrameNavigationState::~FrameNavigationState() {}
+FrameNavigationState::FrameNavigationState(content::RenderFrameHost*) {}
+FrameNavigationState::~FrameNavigationState() = default;
 
 // static
 bool FrameNavigationState::IsValidUrl(const GURL& url) {
@@ -55,102 +49,47 @@ bool FrameNavigationState::IsValidUrl(const GURL& url) {
   return allow_extension_scheme_ && url.scheme() == kExtensionScheme;
 }
 
-bool FrameNavigationState::CanSendEvents(
-    content::RenderFrameHost* frame_host) const {
-  auto it = frame_host_state_map_.find(frame_host);
-  if (it == frame_host_state_map_.end() || it->second.error_occurred) {
-    return false;
-  }
-  return IsValidUrl(it->second.url);
+bool FrameNavigationState::CanSendEvents() const {
+  return !error_occurred_ && IsValidUrl(url_);
 }
 
-void FrameNavigationState::StartTrackingDocumentLoad(
-    content::RenderFrameHost* frame_host,
-    const GURL& url,
-    bool is_same_document,
-    bool is_error_page) {
-  FrameState& frame_state = frame_host_state_map_[frame_host];
-  frame_state.error_occurred = is_error_page;
-  frame_state.url = url;
+void FrameNavigationState::StartTrackingDocumentLoad(const GURL& url,
+                                                     bool is_same_document,
+                                                     bool is_error_page) {
+  error_occurred_ = is_error_page;
+  url_ = url;
   if (!is_same_document) {
-    frame_state.is_loading = true;
-    frame_state.is_parsing = true;
+    is_loading_ = true;
+    is_parsing_ = true;
   }
 }
 
-void FrameNavigationState::FrameHostCreated(
-    content::RenderFrameHost* frame_host) {
-  frame_hosts_.insert(frame_host);
+GURL FrameNavigationState::GetUrl() const {
+  return url_;
 }
 
-void FrameNavigationState::FrameHostDeleted(
-    content::RenderFrameHost* frame_host) {
-  frame_host_state_map_.erase(frame_host);
-  frame_hosts_.erase(frame_host);
+void FrameNavigationState::SetErrorOccurredInFrame() {
+  error_occurred_ = true;
 }
 
-bool FrameNavigationState::IsValidFrame(
-    content::RenderFrameHost* frame_host) const {
-  return frame_host_state_map_.find(frame_host) != frame_host_state_map_.end();
+bool FrameNavigationState::GetErrorOccurredInFrame() const {
+  return error_occurred_;
 }
 
-GURL FrameNavigationState::GetUrl(content::RenderFrameHost* frame_host) const {
-  auto it = frame_host_state_map_.find(frame_host);
-  if (it == frame_host_state_map_.end())
-    return GURL();
-
-  return it->second.url;
+void FrameNavigationState::SetDocumentLoadCompleted() {
+  is_loading_ = false;
 }
 
-void FrameNavigationState::SetErrorOccurredInFrame(
-    content::RenderFrameHost* frame_host) {
-  auto it = frame_host_state_map_.find(frame_host);
-  if (it == frame_host_state_map_.end()) {
-    NOTREACHED();
-    return;
-  }
-  it->second.error_occurred = true;
+bool FrameNavigationState::GetDocumentLoadCompleted() const {
+  return !is_loading_;
 }
 
-bool FrameNavigationState::GetErrorOccurredInFrame(
-    content::RenderFrameHost* frame_host) const {
-  auto it = frame_host_state_map_.find(frame_host);
-  DCHECK(it != frame_host_state_map_.end());
-  return it == frame_host_state_map_.end() || it->second.error_occurred;
+void FrameNavigationState::SetParsingFinished() {
+  is_parsing_ = false;
 }
 
-void FrameNavigationState::SetDocumentLoadCompleted(
-    content::RenderFrameHost* frame_host) {
-  auto it = frame_host_state_map_.find(frame_host);
-  if (it == frame_host_state_map_.end()) {
-    NOTREACHED();
-    return;
-  }
-  it->second.is_loading = false;
-}
-
-bool FrameNavigationState::GetDocumentLoadCompleted(
-    content::RenderFrameHost* frame_host) const {
-  auto it = frame_host_state_map_.find(frame_host);
-  DCHECK(it != frame_host_state_map_.end());
-  return it == frame_host_state_map_.end() || !it->second.is_loading;
-}
-
-void FrameNavigationState::SetParsingFinished(
-    content::RenderFrameHost* frame_host) {
-  auto it = frame_host_state_map_.find(frame_host);
-  if (it == frame_host_state_map_.end()) {
-    NOTREACHED();
-    return;
-  }
-  it->second.is_parsing = false;
-}
-
-bool FrameNavigationState::GetParsingFinished(
-    content::RenderFrameHost* frame_host) const {
-  auto it = frame_host_state_map_.find(frame_host);
-  DCHECK(it != frame_host_state_map_.end());
-  return it == frame_host_state_map_.end() || !it->second.is_parsing;
+bool FrameNavigationState::GetParsingFinished() const {
+  return !is_parsing_;
 }
 
 }  // namespace extensions
