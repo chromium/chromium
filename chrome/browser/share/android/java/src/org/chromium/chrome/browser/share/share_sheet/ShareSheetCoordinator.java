@@ -327,6 +327,9 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         }
     }
 
+    @Override
+    public void onActivityDestroyed() {}
+
     // ConfigurationChangedObserver
     @Override
     public void onConfigurationChanged(Configuration newConfig) {

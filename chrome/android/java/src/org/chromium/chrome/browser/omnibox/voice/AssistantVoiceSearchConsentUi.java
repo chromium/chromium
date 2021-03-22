@@ -194,6 +194,9 @@ class AssistantVoiceSearchConsentUi
     @Override
     public void onActivityPaused() {}
 
+    @Override
+    public void onActivityDestroyed() {}
+
     // BottomSheetContent implementation.
 
     @Override

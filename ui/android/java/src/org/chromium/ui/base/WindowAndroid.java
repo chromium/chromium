@@ -171,6 +171,11 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
          * Called when the activity goes into resumed state.
          */
         void onActivityResumed();
+
+        /**
+         * Called when the activity goes into destroyed state.
+         */
+        void onActivityDestroyed();
     }
 
     private ObserverList<ActivityStateObserver> mActivityStateObservers = new ObserverList<>();
@@ -567,6 +572,12 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
 
     protected void onActivityResumed() {
         for (ActivityStateObserver observer : mActivityStateObservers) observer.onActivityResumed();
+    }
+
+    protected void onActivityDestroyed() {
+        for (ActivityStateObserver observer : mActivityStateObservers) {
+            observer.onActivityDestroyed();
+        }
     }
 
     /**

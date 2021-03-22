@@ -117,6 +117,8 @@ public class ActivityWindowAndroid
             onActivityPaused();
         } else if (newState == ActivityState.RESUMED) {
             onActivityResumed();
+        } else if (newState == ActivityState.DESTROYED) {
+            onActivityDestroyed();
         }
     }
 
