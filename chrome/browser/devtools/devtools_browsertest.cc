@@ -2304,7 +2304,15 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
   content::WebUIControllerFactory::UnregisterFactoryForTesting(&test_factory);
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsTest, TestRawHeadersWithRedirectAndHSTS) {
+#if defined(MEMORY_SANITIZER)
+// Flaking on MSan runs: crbug.com/1184201
+#define MAYBE_TestRawHeadersWithRedirectAndHSTS \
+  DISABLED_TestRawHeadersWithRedirectAndHSTS
+#else
+#define MAYBE_TestRawHeadersWithRedirectAndHSTS \
+  TestRawHeadersWithRedirectAndHSTS
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestRawHeadersWithRedirectAndHSTS) {
   net::EmbeddedTestServer https_test_server(
       net::EmbeddedTestServer::TYPE_HTTPS);
   https_test_server.SetSSLConfig(
@@ -2390,7 +2398,14 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestOpenInNewTabFilter) {
   CloseDevToolsWindow();
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsTest, LoadNetworkResourceForFrontend) {
+#if defined(MEMORY_SANITIZER)
+// Flaking on MSan runs: crbug.com/1184201
+#define MAYBE_LoadNetworkResourceForFrontend \
+  DISABLED_LoadNetworkResourceForFrontend
+#else
+#define MAYBE_LoadNetworkResourceForFrontend LoadNetworkResourceForFrontend
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_LoadNetworkResourceForFrontend) {
   std::string file_url =
       "file://" + base::PathService::CheckedGet(base::DIR_SOURCE_ROOT)
                       .AppendASCII("content/test/data/devtools/navigation.html")
