@@ -12,9 +12,6 @@ NETWORK_SWITCH(kDisableQuic, "disable-quic")
 // Disables the HTTP/2 protocol.
 NETWORK_SWITCH(kDisableHttp2, "disable-http2")
 
-// Enable Websocket over HTTP/2.
-NETWORK_SWITCH(kEnableWebsocketOverHttp2, "enable-websocket-over-http2")
-
 // Enables Alternate-Protocol when the port is user controlled (> 1024).
 NETWORK_SWITCH(kEnableUserAlternateProtocolPorts,
                "enable-user-controlled-alternate-protocol-ports")
