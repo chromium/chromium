@@ -18,7 +18,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/values.h"
@@ -349,8 +349,9 @@ class WebTestControlHost : public WebContentsObserver,
       test_opened_window_observers_;
 
   // Renderer processes are observed to detect crashes.
-  ScopedObserver<RenderProcessHost, RenderProcessHostObserver>
-      render_process_host_observer_{this};
+  base::ScopedMultiSourceObservation<RenderProcessHost,
+                                     RenderProcessHostObserver>
+      render_process_host_observations_{this};
   std::set<RenderProcessHost*> all_observed_render_process_hosts_;
   std::set<RenderProcessHost*> main_window_render_process_hosts_;
   std::set<RenderViewHost*> main_window_render_view_hosts_;

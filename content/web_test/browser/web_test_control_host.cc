@@ -555,7 +555,7 @@ bool WebTestControlHost::PrepareForWebTest(const TestInfo& test_info) {
   main_window_render_view_hosts_.clear();
   main_window_render_process_hosts_.clear();
   all_observed_render_process_hosts_.clear();
-  render_process_host_observer_.RemoveAll();
+  render_process_host_observations_.RemoveAllObservations();
   frame_to_layout_dump_map_.clear();
 
   ShellBrowserContext* browser_context =
@@ -1094,7 +1094,7 @@ void WebTestControlHost::ReadyToCommitNavigation(
 
 void WebTestControlHost::RenderProcessHostDestroyed(
     RenderProcessHost* render_process_host) {
-  render_process_host_observer_.Remove(render_process_host);
+  render_process_host_observations_.RemoveObservation(render_process_host);
   all_observed_render_process_hosts_.erase(render_process_host);
   web_test_render_thread_map_.erase(render_process_host);
   main_window_render_process_hosts_.erase(render_process_host);
@@ -1217,8 +1217,8 @@ void WebTestControlHost::HandleNewRenderFrameHost(RenderFrameHost* frame) {
   }
 
   // Is this a previously unknown renderer process_host?
-  if (!render_process_host_observer_.IsObserving(process_host)) {
-    render_process_host_observer_.Add(process_host);
+  if (!render_process_host_observations_.IsObservingSource(process_host)) {
+    render_process_host_observations_.AddObservation(process_host);
     all_observed_render_process_hosts_.insert(process_host);
 
     if (!main_window) {

@@ -141,7 +141,7 @@ ServiceWorkerContainerHost::~ServiceWorkerContainerHost() {
     controller_->OnControlleeDestroyed(client_uuid());
 
   // Remove |this| as an observer of ServiceWorkerRegistrations.
-  // TODO(falken): Use ScopedObserver instead of this explicit call.
+  // TODO(falken): Use base::ScopedObservation instead of this explicit call.
   controller_.reset();
   controller_registration_.reset();
 

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
 #include "content/public/browser/frame_service_base.h"
 #include "content/public/browser/hid_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

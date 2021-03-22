@@ -324,7 +324,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   void SetForceUpdateOnPageLoad(bool force_update_on_page_load);
 
   // Different from AddObserver/RemoveObserver(ServiceWorkerContextObserver*).
-  // But we must keep the same name, or else base::ScopedObserver breaks.
+  // But we must keep the same name, or else base::ScopedObservation breaks.
   void AddObserver(ServiceWorkerContextCoreObserver* observer);
   void RemoveObserver(ServiceWorkerContextCoreObserver* observer);
 

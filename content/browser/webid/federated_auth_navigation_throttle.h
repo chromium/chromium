@@ -9,7 +9,6 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
 #include "base/timer/timer.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/navigation_throttle.h"
