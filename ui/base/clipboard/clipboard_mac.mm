@@ -97,7 +97,8 @@ bool ClipboardMac::IsFormatAvailable(
     return false;
   }
 
-  NSArray* types = [GetPasteboard() types];
+  // https://crbug.com/1016740#c21
+  base::scoped_nsobject<NSArray> types([[GetPasteboard() types] retain]);
 
   // Safari only places RTF on the pasteboard, never HTML. We can convert RTF
   // to HTML, so the presence of either indicates success when looking for HTML.
