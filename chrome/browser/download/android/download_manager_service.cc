@@ -394,7 +394,7 @@ void DownloadManagerService::GetAllDownloadsInternal(ProfileKey* profile_key) {
 
   Java_DownloadManagerService_onAllDownloadsRetrieved(
       env, java_ref_, j_download_item_list,
-      ProfileKeyAndroid(profile_key).GetJavaObject());
+      profile_key->GetProfileKeyAndroid()->GetJavaObject());
 }
 
 void DownloadManagerService::CheckForExternallyRemovedDownloads(
