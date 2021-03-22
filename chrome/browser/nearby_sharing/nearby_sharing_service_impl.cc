@@ -70,6 +70,8 @@ constexpr base::TimeDelta kBackgroundAdvertisementRotationDelayMax =
     base::TimeDelta::FromSeconds(870);
 constexpr base::TimeDelta kInvalidateSurfaceStateDelayAfterTransferDone =
     base::TimeDelta::FromMilliseconds(3000);
+constexpr base::TimeDelta kProcessShutdownPendingTimerDelay =
+    base::TimeDelta::FromSeconds(15);
 
 // The maximum number of certificate downloads that can be performed during a
 // discovery session.
@@ -1579,21 +1581,22 @@ bool NearbySharingServiceImpl::HasAvailableConnectionMediums() {
 void NearbySharingServiceImpl::InvalidateSurfaceState() {
   InvalidateSendSurfaceState();
   InvalidateReceiveSurfaceState();
-  if (ShouldStopNearbyProcess()) {
+  if (process_reference_ && ShouldStopNearbyProcess()) {
     // We need to debounce the call to shut down the process in case this state
-    // is temporary (we don't want to the thrash the process). Any advertisment,
-    // scanning or transfering will stop this timer from triggering.
-    // Logging disabled due to test failures; see https://crbug.com/1188613.
-#if 0
-    NS_LOG(INFO) << __func__
-                 << ": Scheduling process shutdown if not needed in 15 seconds";
-#endif
-    // NOTE: Using base::Unretained is safe because if shutdown_pending_timer_
-    // goes out of scope the timer will be canceled.
-    process_shutdown_pending_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromSeconds(15),
-        base::BindOnce(&NearbySharingServiceImpl::OnProcessShutdownTimerFired,
-                       base::Unretained(this)));
+    // is temporary (we don't want to the thrash the process). Any
+    // advertisement, scanning or transferring will stop this timer from
+    // triggering.
+    if (!process_shutdown_pending_timer_.IsRunning()) {
+      NS_LOG(INFO)
+          << __func__
+          << ": Scheduling process shutdown if not needed in 15 seconds";
+      // NOTE: Using base::Unretained is safe because if shutdown_pending_timer_
+      // goes out of scope the timer will be canceled.
+      process_shutdown_pending_timer_.Start(
+          FROM_HERE, kProcessShutdownPendingTimerDelay,
+          base::BindOnce(&NearbySharingServiceImpl::OnProcessShutdownTimerFired,
+                         base::Unretained(this)));
+    }
   } else {
     process_shutdown_pending_timer_.Stop();
   }
