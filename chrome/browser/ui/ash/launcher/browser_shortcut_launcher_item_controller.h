@@ -38,7 +38,7 @@ class BrowserShortcutLauncherItemController : public ash::ShelfItemDelegate,
                                           content::WebContents* web_contents);
 
   // Check if there is any active browsers windows.
-  static bool IsListOfActiveBrowserEmpty();
+  static bool IsListOfActiveBrowserEmpty(const ash::ShelfModel* model);
 
   // ash::ShelfItemDelegate overrides:
   void ItemSelected(std::unique_ptr<ui::Event> event,

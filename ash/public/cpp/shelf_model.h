@@ -156,9 +156,9 @@ class ASH_PUBLIC_EXPORT ShelfModel {
   // applications yet.
   int FirstRunningAppIndex() const;
 
-  // Returns an iterator into items() for the item with the specified id, or
-  // items().end() if there is no item with the specified id.
-  ShelfItems::const_iterator ItemByID(const ShelfID& shelf_id) const;
+  // Returns a pointer of ShelfItem with the given |shelf_id| in this model.
+  // Or, nullptr if not found.
+  const ShelfItem* ItemByID(const ShelfID& shelf_id) const;
 
   // Returns the index of the matching ShelfItem or -1 if the |app_id| doesn't
   // match a ShelfItem.

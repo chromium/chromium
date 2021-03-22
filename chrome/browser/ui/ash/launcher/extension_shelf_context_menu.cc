@@ -79,7 +79,8 @@ void ExtensionShelfContextMenu::GetMenuModel(GetMenuModelCallback callback) {
       AddContextMenuOption(menu_model.get(), ash::MENU_NEW_INCOGNITO_WINDOW,
                            IDS_APP_LIST_NEW_INCOGNITO_WINDOW);
     }
-    if (!BrowserShortcutLauncherItemController::IsListOfActiveBrowserEmpty() ||
+    if (!BrowserShortcutLauncherItemController::IsListOfActiveBrowserEmpty(
+            controller()->shelf_model()) ||
         item().type == ash::TYPE_DIALOG || controller()->IsOpen(item().id)) {
       AddContextMenuOption(menu_model.get(), ash::MENU_CLOSE,
                            IDS_SHELF_CONTEXT_MENU_CLOSE);

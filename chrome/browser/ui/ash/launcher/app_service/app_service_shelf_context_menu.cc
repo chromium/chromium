@@ -420,7 +420,8 @@ void AppServiceShelfContextMenu::BuildCrostiniAppMenu(
 
 void AppServiceShelfContextMenu::BuildChromeAppMenu(
     ui::SimpleMenuModel* menu_model) {
-  if (!BrowserShortcutLauncherItemController::IsListOfActiveBrowserEmpty() ||
+  if (!BrowserShortcutLauncherItemController::IsListOfActiveBrowserEmpty(
+          controller()->shelf_model()) ||
       item().type == ash::TYPE_DIALOG || controller()->IsOpen(item().id)) {
     AddContextMenuOption(menu_model, ash::MENU_CLOSE,
                          IDS_SHELF_CONTEXT_MENU_CLOSE);

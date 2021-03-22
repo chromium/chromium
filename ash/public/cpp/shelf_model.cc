@@ -253,8 +253,11 @@ void ShelfModel::OnItemReturnedFromRipOff(int index) {
 }
 
 int ShelfModel::ItemIndexByID(const ShelfID& shelf_id) const {
-  ShelfItems::const_iterator i = ItemByID(shelf_id);
-  return i == items_.end() ? -1 : static_cast<int>(i - items_.begin());
+  for (size_t i = 0; i < items_.size(); ++i) {
+    if (items_[i].id == shelf_id)
+      return static_cast<int>(i);
+  }
+  return -1;
 }
 
 int ShelfModel::GetItemIndexForType(ShelfItemType type) {
@@ -265,12 +268,9 @@ int ShelfModel::GetItemIndexForType(ShelfItemType type) {
   return -1;
 }
 
-ShelfItems::const_iterator ShelfModel::ItemByID(const ShelfID& shelf_id) const {
-  for (ShelfItems::const_iterator i = items_.begin(); i != items_.end(); ++i) {
-    if (i->id == shelf_id)
-      return i;
-  }
-  return items_.end();
+const ShelfItem* ShelfModel::ItemByID(const ShelfID& shelf_id) const {
+  int index = ItemIndexByID(shelf_id);
+  return index >= 0 ? &items_[index] : nullptr;
 }
 
 int ShelfModel::ItemIndexByAppID(const std::string& app_id) const {

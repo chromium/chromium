@@ -333,10 +333,7 @@ ash::ShelfID ChromeLauncherController::CreateAppLauncherItem(
 
 const ash::ShelfItem* ChromeLauncherController::GetItem(
     const ash::ShelfID& id) const {
-  const int index = model_->ItemIndexByID(id);
-  if (index >= 0 && index < model_->item_count())
-    return &model_->items()[index];
-  return nullptr;
+  return model_->ItemByID(id);
 }
 
 void ChromeLauncherController::SetItemType(const ash::ShelfID& id,
