@@ -2437,7 +2437,19 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
                 net::HttpAuth::AUTH_SCHEME_BASIC, net::NetworkIsolationKey()));
 }
 
-TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearPermissionPromptCounts) {
+class ChromeBrowsingDataRemoverDelegateBlockPromptsTest
+    : public ChromeBrowsingDataRemoverDelegateTest {
+ public:
+  ChromeBrowsingDataRemoverDelegateBlockPromptsTest() {
+    // This needs to be done before SetUp, to avoid tsan flakes due to tasks
+    // running on other threads checking if a feature is enabled.
+    feature_list_.InitWithFeatures(
+        {permissions::features::kBlockPromptsIfDismissedOften}, {});
+  }
+};
+
+TEST_F(ChromeBrowsingDataRemoverDelegateBlockPromptsTest,
+       ClearPermissionPromptCounts) {
   RemovePermissionPromptCountsTest tester(GetProfile());
 
   std::unique_ptr<BrowsingDataFilterBuilder> filter_builder_1(
@@ -2449,9 +2461,6 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearPermissionPromptCounts) {
       BrowsingDataFilterBuilder::Create(
           BrowsingDataFilterBuilder::Mode::kPreserve));
   filter_builder_2->AddRegisterableDomain(kTestRegisterableDomain1);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {permissions::features::kBlockPromptsIfDismissedOften}, {});
 
   {
     // Test REMOVE_HISTORY.
