@@ -38,7 +38,8 @@ var HistoryListFocusTest = class extends HistoryFocusTest {
   }
 };
 
-GEN('#if defined(OS_WIN)');
+// Flaky on Win, Mac and Lacros: crbug.com/1040940
+GEN('#if defined(OS_WIN) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)');
 GEN('#define MAYBE_AllListFocus DISABLED_All');
 GEN('#else');
 GEN('#define MAYBE_AllListFocus All');
