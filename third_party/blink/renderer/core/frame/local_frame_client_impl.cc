@@ -615,17 +615,19 @@ void LocalFrameClientImpl::BeginNavigation(
   navigation_info->frame_policy =
       owner ? owner->GetFramePolicy() : FramePolicy();
 
-  // owner->GetFramePolicy() above only contains the sandbox flags defined by
+  // navigation_info->frame_policy is only used for the synchronous
+  // re-navigation to about:blank. See:
+  // - |RenderFrameImpl::SynchronouslyCommitAboutBlankForBug778318| and
+  // - |WebNavigationParams::CreateFromInfo|
+  //
+  // |owner->GetFramePolicy()| above only contains the sandbox flags defined by
   // the <iframe> element. It doesn't take into account inheritance from the
-  // parent or the opener. This is not a problem in the general case, because
-  // this attribute is simply dropped! It matter only for the "fake" navigation
-  // to the "fake" initial empty document. It is:
-  // RenderFrameImpl::CommitInitialEmptyDocument().
-  // This one doesn't go toward the browser process, it commits synchronously.
-  // The sandbox flags must be defined. They correspond to the one already in
-  // use for the 'real' initial empty document.
-  navigation_info->frame_policy.sandbox_flags =
-      web_frame_->GetFrame()->Loader().PendingEffectiveSandboxFlags();
+  // parent or the opener. The synchronous re-navigation to about:blank and the
+  // initial empty document must both have the same sandbox flags. Make a copy:
+  navigation_info->frame_policy.sandbox_flags = web_frame_->GetFrame()
+                                                    ->DomWindow()
+                                                    ->GetSecurityContext()
+                                                    .GetSandboxFlags();
 
   navigation_info->href_translate = href_translate;
 

@@ -158,6 +158,8 @@ struct BLINK_EXPORT WebNavigationInfo {
 
   // The frame policy specified by the frame owner element.
   // For top-level window with no opener, this is the default lax FramePolicy.
+  // This attribute is used for the synchronous re-navigation to about:blank
+  // only.
   FramePolicy frame_policy;
 
   // The frame token of the initiator Frame.
