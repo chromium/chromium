@@ -1,7 +1,7 @@
 # Code Reviews
 
 Code reviews are a central part of developing high-quality code for Chromium.
-All changes must be reviewed.
+All change lists (CLs) must be reviewed.
 
 The general patch, upload, and land process is covered in more detail in the
 [contributing code](contributing.md) page. To learn about upcoming code review
@@ -12,8 +12,8 @@ and OWNERS policy changes, see
 
 Ideally the reviewer is someone who is familiar with the area of code you are
 touching. Any committer can review code, but an owner must provide a review
-for each directory you are touching. If you have doubts, look at the git blame
-for the file and the `OWNERS` files (see below).
+for each directory you are touching. If you have doubts, look at the `git blame`
+for the file and the `OWNERS` files ([more info](#owners-files)).
 
 To indicate a positive review, the reviewer provides a `Code-Review +1` in
 Gerrit, also known as an LGTM ("Looks Good To Me"). A score of "-1" indicates
@@ -52,10 +52,10 @@ the reviewers in the `//chrome/browser/component_name/OWNERS` file will likely
 be more familiar with code in `//chrome/browser/component_name/sub_component`
 than reviewers in the higher-level `//chrome/OWNERS` file.
 
-More detail on the owners file format is provided in the "More information"
-section below.
+More detail on the owners file format is provided [here](#owners-file-details).
 
-*Tip:* The `git cl owners` command can help find owners.
+*Tip:* The `git cl owners` command can help find owners. Gerrit also provides
+this functionality via the `Find Owners` button on CLs.
 
 While owners must approve all patches, any committer can contribute to the
 review. In some directories the owners can be overloaded or there might be
@@ -169,8 +169,8 @@ per-file *_messages*.h=file://ipc/SECURITY_OWNERS
 ### Owners-Override
 
 Setting the `Owners-Override +1` label will bypass OWNERS enforcement. Active
-sheriffs, Large Scale Changes and Global Approvers (see below) reviewers have
-this capability.
+[sheriffs](sheriffs.md), [Large Scale Changes](#large-scale-changes) and
+[Global Approvers](#global-approvals) reviewers have this capability.
 
 ## Mechanical changes
 
@@ -181,10 +181,10 @@ refactoring, architectural changes, or other repetitive code changes across the
 whole codebase. This is used for work that span many dozen CLs.
 
 ### Global Approvals
-For one-off CLs API owners of base, blink, build, content and url can
-Owners-Override +1 a change to their APIs to avoid waiting for rubberstamp +1s
-from affected directories' owners. This should only be used for mechanical
-updates to the affected directories.
+For one-off CLs, API owners of `base`, `build`, `content`, `third_party/blink`
+and `url` can `Owners-Override +1` a change to their APIs to avoid waiting for
+rubberstamp +1s from affected directories' owners. This should only be used for
+mechanical updates to the affected directories.
 
 ## Documentation updates
 
@@ -201,8 +201,8 @@ activate this automation. It will scan the CL after about 1 minute and reply
 with its verdict. `Bot-Commit` votes are not sticky between patchsets and so
 only add the bot once the CL is finalized.
 
-When combined with the [`Owners-Override`](#owners_override) power discussed
-above, sheriffs can effectively revert and reland on their own.
+When combined with the [`Owners-Override`](#owners_override) power, sheriffs can
+effectively revert and reland on their own.
 
-Changes not supported by Rubber Stamper still need a +1 from another
+Changes not supported by `Rubber Stamper` still need a +1 from another
 committer.
