@@ -74,7 +74,8 @@ class GpuArcVideoDecodeAccelerator
   void ImportBufferForPicture(int32_t picture_buffer_id,
                               mojom::HalPixelFormat format,
                               mojo::ScopedHandle handle,
-                              std::vector<VideoFramePlane> planes) override;
+                              std::vector<VideoFramePlane> planes,
+                              mojom::BufferModifierPtr modifier) override;
   void ReusePictureBuffer(int32_t picture_buffer_id) override;
   void Flush(FlushCallback callback) override;
   void Reset(ResetCallback callback) override;

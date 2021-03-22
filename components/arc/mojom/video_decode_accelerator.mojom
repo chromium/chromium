@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 4
+// Next MinVersion: 5
 
 // This file defines the mojo interface between Android and Chromium for video
 // decoding. Any Mojo callee that returns a value does so by callback.
@@ -47,6 +47,11 @@ struct PictureBufferFormat {
 struct VideoDecodeAcceleratorConfig {
   VideoCodecProfile profile;
   bool secure_mode;
+};
+
+[MinVersion=4]
+struct BufferModifier {
+  uint64 val;
 };
 
 // The interface to access the hardware video decoding accelerator. To use
@@ -114,7 +119,8 @@ interface VideoDecodeAccelerator {
   // gfx::GpuMemoryBufferHandle created from |handle_fd| and |planes|.
   [MinVersion=2]
   ImportBufferForPicture@9(int32 picture_buffer_id, HalPixelFormat format,
-                           handle handle_fd, array<VideoFramePlane> planes);
+                           handle handle_fd, array<VideoFramePlane> planes,
+                           [MinVersion=4] BufferModifier? modifier);
 
   // Returns picture buffer with specified |picture_buffer_id| to be reused by
   // the accelerator.
