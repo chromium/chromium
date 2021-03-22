@@ -46,19 +46,6 @@ enum NGAdjoiningObjectTypeValue {
 };
 typedef int NGAdjoiningObjectTypes;
 
-// Tables have two passes, a "measure" pass (for determining the table row
-// height), and a "layout" pass.
-// See: https://drafts.csswg.org/css-tables-3/#row-layout
-//
-// This enum is used for communicating to *direct* children of table cells,
-// which layout mode the table cell is in.
-enum class NGTableCellChildLayoutMode {
-  kNotTableCellChild,  // The node isn't a table cell child.
-  kMeasure,            // A table cell child, in the "measure" mode.
-  kMeasureRestricted,  // A table cell child, in the "restricted-measure" mode.
-  kLayout              // A table cell child, in the "layout" mode.
-};
-
 // Some layout algorithms (flow, tables) calculate their alignment baseline
 // differently if they are within an atomic-inline context.
 //
@@ -468,6 +455,16 @@ class CORE_EXPORT NGConstraintSpace final {
     return bitfields_.stretch_block_size_if_auto;
   }
 
+  // If this is a child of a table-cell.
+  bool IsTableCellChild() const { return bitfields_.is_table_cell_child; }
+
+  // If we should apply the restricted block-size measuring behaviour. See
+  // where this is set within |NGBlockLayoutAlgorithm| for the conditions when
+  // this applies.
+  bool IsMeasuringRestrictedBlockSizeTableCellChild() const {
+    return bitfields_.is_measuring_restricted_block_size_table_cell_child;
+  }
+
   bool IsPaintedAtomically() const { return bitfields_.is_painted_atomically; }
 
   // If specified a layout should produce a Fragment which fragments at the
@@ -494,13 +491,6 @@ class CORE_EXPORT NGConstraintSpace final {
   // the one established by the nearest ancestor multicol container.
   bool IsInColumnBfc() const {
     return HasRareData() && rare_data_->is_in_column_bfc;
-  }
-
-  // Returns if this node is a table cell child, and which table layout mode
-  // is occurring.
-  NGTableCellChildLayoutMode TableCellChildLayoutMode() const {
-    return static_cast<NGTableCellChildLayoutMode>(
-        bitfields_.table_cell_child_layout_mode);
   }
 
   // Return true if the block size of the table-cell should be considered
@@ -1305,8 +1295,8 @@ class CORE_EXPORT NGConstraintSpace final {
           is_fixed_inline_size(false),
           is_fixed_block_size(false),
           is_fixed_block_size_indefinite(false),
-          table_cell_child_layout_mode(static_cast<unsigned>(
-              NGTableCellChildLayoutMode::kNotTableCellChild)),
+          is_table_cell_child(false),
+          is_measuring_restricted_block_size_table_cell_child(false),
           percentage_inline_storage(kSameAsAvailable),
           percentage_block_storage(kSameAsAvailable),
           replaced_percentage_block_storage(kSameAsAvailable) {}
@@ -1338,7 +1328,9 @@ class CORE_EXPORT NGConstraintSpace final {
              is_fixed_block_size == other.is_fixed_block_size &&
              is_fixed_block_size_indefinite ==
                  other.is_fixed_block_size_indefinite &&
-             table_cell_child_layout_mode == other.table_cell_child_layout_mode;
+             is_table_cell_child == other.is_table_cell_child &&
+             is_measuring_restricted_block_size_table_cell_child ==
+                 other.is_measuring_restricted_block_size_table_cell_child;
     }
 
     unsigned has_rare_data : 1;
@@ -1368,7 +1360,8 @@ class CORE_EXPORT NGConstraintSpace final {
     unsigned is_fixed_inline_size : 1;
     unsigned is_fixed_block_size : 1;
     unsigned is_fixed_block_size_indefinite : 1;
-    unsigned table_cell_child_layout_mode : 2;  // NGTableCellChildLayoutMode
+    unsigned is_table_cell_child : 1;
+    unsigned is_measuring_restricted_block_size_table_cell_child : 1;
 
     unsigned percentage_inline_storage : 2;           // NGPercentageStorage
     unsigned percentage_block_storage : 2;            // NGPercentageStorage

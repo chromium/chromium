@@ -149,7 +149,7 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
 
   LayoutUnit block_size = ComputeBlockSizeForFragment(
       ConstraintSpace(), container_style, BorderPadding(), intrinsic_block_size,
-      border_box_size_.inline_size, Node().ShouldBeConsideredAsReplaced());
+      border_box_size_.inline_size);
 
   // If we had an indefinite available block-size, we now need to re-calculate
   // our grid-gap, and alignment using our new block-size.

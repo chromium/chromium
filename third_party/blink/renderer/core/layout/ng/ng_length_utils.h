@@ -361,7 +361,6 @@ LayoutUnit ComputeInlineSizeFromAspectRatio(
     const NGConstraintSpace&,
     const ComputedStyle&,
     const NGBoxStrut& border_padding,
-    bool should_be_considered_as_replaced,
     LayoutUnit block_size = kIndefiniteSize);
 
 template <typename MinMaxSizesFunc>
@@ -427,7 +426,6 @@ CORE_EXPORT LayoutUnit ComputeBlockSizeForFragment(
     const NGBoxStrut& border_padding,
     LayoutUnit intrinsic_size,
     base::Optional<LayoutUnit> inline_size,
-    bool should_be_considered_as_replaced,
     LayoutUnit available_block_size_adjustment = LayoutUnit());
 
 // Calculates default content size for html and body elements in quirks mode.

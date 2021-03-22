@@ -55,8 +55,7 @@ MinMaxSizesResult NGCustomLayoutAlgorithm::ComputeMinMaxSizes(
           ConstraintSpace(), Style(), BorderPadding(),
           CalculateDefaultBlockSize(ConstraintSpace(), Node(),
                                     BorderScrollbarPadding()),
-          container_builder_.InlineSize(),
-          Node().ShouldBeConsideredAsReplaced())};
+          container_builder_.InlineSize())};
   if (!instance->IntrinsicSizes(ConstraintSpace(), document, Node(),
                                 border_box_size, BorderScrollbarPadding(),
                                 input.percentage_resolution_block_size, &scope,
@@ -109,8 +108,7 @@ scoped_refptr<const NGLayoutResult> NGCustomLayoutAlgorithm::Layout() {
           ConstraintSpace(), Style(), BorderPadding(),
           CalculateDefaultBlockSize(ConstraintSpace(), Node(),
                                     BorderScrollbarPadding()),
-          container_builder_.InlineSize(),
-          Node().ShouldBeConsideredAsReplaced())};
+          container_builder_.InlineSize())};
   if (!instance->Layout(ConstraintSpace(), document, Node(), border_box_size,
                         BorderScrollbarPadding(), &scope,
                         fragment_result_options, &fragment_result_data)) {
@@ -168,8 +166,7 @@ scoped_refptr<const NGLayoutResult> NGCustomLayoutAlgorithm::Layout() {
       LayoutUnit::FromDoubleRound(fragment_result_options->autoBlockSize()));
   LayoutUnit block_size = ComputeBlockSizeForFragment(
       ConstraintSpace(), Style(), BorderPadding(), auto_block_size,
-      container_builder_.InitialBorderBoxSize().inline_size,
-      Node().ShouldBeConsideredAsReplaced());
+      container_builder_.InitialBorderBoxSize().inline_size);
 
   if (fragment_result_options->hasBaseline()) {
     LayoutUnit baseline =

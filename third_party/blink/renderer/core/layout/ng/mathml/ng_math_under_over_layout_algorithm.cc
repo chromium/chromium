@@ -313,9 +313,9 @@ scoped_refptr<const NGLayoutResult> NGMathUnderOverLayoutAlgorithm::Layout() {
 
   block_offset += BorderScrollbarPadding().block_end;
 
-  LayoutUnit block_size = ComputeBlockSizeForFragment(
-      ConstraintSpace(), Style(), BorderPadding(), block_offset,
-      border_box_size.inline_size, Node().ShouldBeConsideredAsReplaced());
+  LayoutUnit block_size =
+      ComputeBlockSizeForFragment(ConstraintSpace(), Style(), BorderPadding(),
+                                  block_offset, border_box_size.inline_size);
 
   container_builder_.SetIntrinsicBlockSize(block_offset);
   container_builder_.SetFragmentsTotalBlockSize(block_size);

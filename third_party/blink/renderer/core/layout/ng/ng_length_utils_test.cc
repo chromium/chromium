@@ -121,8 +121,7 @@ class NGLengthUtilsTestWithNode : public NGLayoutTest {
     NGBoxStrut border_padding = ComputeBordersForTest(*style_) +
                                 ComputePadding(constraint_space, *style_);
     return ::blink::ComputeBlockSizeForFragment(
-        constraint_space, *style_, border_padding, content_size, inline_size,
-        body->ShouldBeConsideredAsReplaced());
+        constraint_space, *style_, border_padding, content_size, inline_size);
   }
 
   scoped_refptr<ComputedStyle> style_;

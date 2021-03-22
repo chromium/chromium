@@ -147,8 +147,7 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
 
   LayoutUnit new_block_size = ComputeBlockSizeForFragment(
       ConstraintSpace(), Style(), BorderPadding(), result.IntrinsicBlockSize(),
-      container_builder_.InitialBorderBoxSize().inline_size,
-      Node().ShouldBeConsideredAsReplaced());
+      container_builder_.InitialBorderBoxSize().inline_size);
 
   // Only block-flow is allowed to change its block-size during "simplified"
   // layout, all other layout types must remain the same size.

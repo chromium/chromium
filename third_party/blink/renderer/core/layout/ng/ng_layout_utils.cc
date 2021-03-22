@@ -81,8 +81,9 @@ bool BlockSizeMayChange(const NGBlockNode& node,
             old_space.IsFixedBlockSizeIndefinite());
   DCHECK_EQ(new_space.StretchBlockSizeIfAuto(),
             old_space.StretchBlockSizeIfAuto());
-  DCHECK_EQ(new_space.TableCellChildLayoutMode(),
-            old_space.TableCellChildLayoutMode());
+  DCHECK_EQ(new_space.IsTableCellChild(), old_space.IsTableCellChild());
+  DCHECK_EQ(new_space.IsMeasuringRestrictedBlockSizeTableCellChild(),
+            old_space.IsMeasuringRestrictedBlockSizeTableCellChild());
 
   if (node.IsQuirkyAndFillsViewport())
     return true;
@@ -260,8 +261,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
 
     block_size = ComputeBlockSizeForFragment(
         new_space, style, fragment_geometry.border + fragment_geometry.padding,
-        intrinsic_block_size, fragment_geometry.border_box_size.inline_size,
-        node.ShouldBeConsideredAsReplaced());
+        intrinsic_block_size, fragment_geometry.border_box_size.inline_size);
 
     if (block_size == kIndefiniteSize)
       return NGLayoutCacheStatus::kNeedsLayout;

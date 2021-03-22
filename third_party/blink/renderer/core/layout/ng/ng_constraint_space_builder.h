@@ -346,10 +346,13 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
     }
   }
 
-  void SetTableCellChildLayoutMode(
-      NGTableCellChildLayoutMode table_cell_child_layout_mode) {
-    space_.bitfields_.table_cell_child_layout_mode =
-        static_cast<unsigned>(table_cell_child_layout_mode);
+  void SetIsTableCellChild(bool b) {
+    space_.bitfields_.is_table_cell_child = b;
+  }
+
+  void SetIsMeasuringRestrictedBlockSizeTableCellChild() {
+    space_.bitfields_.is_measuring_restricted_block_size_table_cell_child =
+        true;
   }
 
   void SetExclusionSpace(const NGExclusionSpace& exclusion_space) {

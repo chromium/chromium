@@ -831,8 +831,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
     const NGBoxStrut border_padding =
         fragment_geometry.border + fragment_geometry.padding;
     LayoutUnit size_from_ar = ComputeInlineSizeFromAspectRatio(
-        *constraint_space, Style(), border_padding,
-        ShouldBeConsideredAsReplaced(), block_size);
+        *constraint_space, Style(), border_padding, block_size);
     if (size_from_ar != kIndefiniteSize) {
       return MinMaxSizesResult(
           {size_from_ar, size_from_ar},

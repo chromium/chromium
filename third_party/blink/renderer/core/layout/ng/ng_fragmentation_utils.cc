@@ -239,8 +239,7 @@ bool IsNodeFullyGrown(NGBlockNode node,
   // constrained. If it doesn't affect the block size, it means that the node
   // cannot grow any further.
   LayoutUnit max_block_size = ComputeBlockSizeForFragment(
-      space, node.Style(), border_padding, LayoutUnit::Max(), inline_size,
-      node.ShouldBeConsideredAsReplaced());
+      space, node.Style(), border_padding, LayoutUnit::Max(), inline_size);
   DCHECK_GE(max_block_size, current_total_block_size);
   return max_block_size == current_total_block_size;
 }

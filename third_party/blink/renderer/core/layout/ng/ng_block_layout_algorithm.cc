@@ -878,7 +878,7 @@ scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::FinishLayout(
   border_box_size.block_size = ComputeBlockSizeForFragment(
       ConstraintSpace(), Style(), BorderPadding(),
       previously_consumed_block_size + intrinsic_block_size_,
-      border_box_size.inline_size, Node().ShouldBeConsideredAsReplaced());
+      border_box_size.inline_size);
   container_builder_.SetFragmentsTotalBlockSize(border_box_size.block_size);
 
   // If our BFC block-offset is still unknown, we check:
@@ -1391,8 +1391,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
         ConstraintSpace(), Node(), BorderScrollbarPadding(), bsp_block_sum);
     block_size = ComputeBlockSizeForFragment(
         ConstraintSpace(), Style(), BorderPadding(), block_size,
-        container_builder_.InitialBorderBoxSize().inline_size,
-        Node().ShouldBeConsideredAsReplaced());
+        container_builder_.InitialBorderBoxSize().inline_size);
     block_size -= bsp_block_sum;
     logical_offset =
         CenterBlockChild(logical_offset, block_size, fragment.BlockSize());
@@ -2575,16 +2574,22 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
   builder.SetReplacedPercentageResolutionSize(replaced_child_percentage_size_);
 
   if (ConstraintSpace().IsTableCell()) {
-    // If we have a fixed block-size we are in the "layout" mode.
-    NGTableCellChildLayoutMode mode;
-    if (ConstraintSpace().IsFixedBlockSize())
-      mode = NGTableCellChildLayoutMode::kLayout;
-    else if (ConstraintSpace().IsRestrictedBlockSizeTableCell())
-      mode = NGTableCellChildLayoutMode::kMeasureRestricted;
-    else
-      mode = NGTableCellChildLayoutMode::kMeasure;
+    builder.SetIsTableCellChild(true);
 
-    builder.SetTableCellChildLayoutMode(mode);
+    // Some scrollable percentage-sized children of table-cells (in the
+    // "measure" phase) use their min-size (instead of sizing normally).
+    //
+    // We only apply this rule if the block size of the containing table cell
+    // is considered to be "restricted", though. Otherwise, especially if this
+    // is the only child of the cell, and that is the only cell in the row,
+    // we'd end up with zero block size.
+    if (ConstraintSpace().IsRestrictedBlockSizeTableCell() &&
+        !ConstraintSpace().IsFixedBlockSize() &&
+        !child.ShouldBeConsideredAsReplaced() &&
+        child_style.LogicalHeight().IsPercentOrCalc() &&
+        (child_style.OverflowBlockDirection() == EOverflow::kAuto ||
+         child_style.OverflowBlockDirection() == EOverflow::kScroll))
+      builder.SetIsMeasuringRestrictedBlockSizeTableCellChild();
   }
 
   bool has_bfc_block_offset = container_builder_.BfcBlockOffset().has_value();
