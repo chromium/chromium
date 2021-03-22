@@ -3284,6 +3284,33 @@ TEST_F(DisplayLockContextRenderingTest, FirstAutoFramePaintsInViewport) {
   EXPECT_FLOAT_EQ(hidden_rect->height(), 200);
 }
 
+TEST_F(DisplayLockContextRenderingTest,
+       HadIntersectionNotificationsResetsWhenConnected) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      .auto { content-visibility: auto; }
+    </style>
+    <div id=target class=auto></div>
+  )HTML");
+
+  auto* element = GetDocument().getElementById("target");
+  auto* context = element->GetDisplayLockContext();
+  ASSERT_TRUE(context);
+  test::RunPendingTasks();
+
+  EXPECT_TRUE(context->HadAnyViewportIntersectionNotifications());
+
+  element->remove();
+  GetDocument().body()->AppendChild(element);
+
+  EXPECT_FALSE(context->HadAnyViewportIntersectionNotifications());
+
+  UpdateAllLifecyclePhasesForTest();
+  test::RunPendingTasks();
+
+  EXPECT_TRUE(context->HadAnyViewportIntersectionNotifications());
+}
+
 class DisplayLockContextLegacyRenderingTest
     : public RenderingTest,
       private ScopedCSSContentVisibilityHiddenMatchableForTest,

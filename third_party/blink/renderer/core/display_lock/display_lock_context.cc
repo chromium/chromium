@@ -242,6 +242,10 @@ void DisplayLockContext::UpdateActivationObservationIfNeeded() {
     return;
   is_observed_ = should_observe;
 
+  // Reset viewport intersection notification state, so that if we're observing
+  // again, the next observation will be synchronous.
+  had_any_viewport_intersection_notifications_ = false;
+
   if (should_observe) {
     document_->GetDisplayLockDocumentState()
         .RegisterDisplayLockActivationObservation(element_);
