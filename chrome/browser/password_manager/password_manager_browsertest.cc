@@ -2858,9 +2858,18 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 // Test whether the change password form having username and password fields
 // with empty names but having |autocomplete='current-password'| gets autofilled
 // correctly.
+// Flaky on Linux, Win, ChromeOS, Lacros crbug.com/1190441
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_CHROMEOS) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_AutofillSuggestionsForChangePwdWithEmptyNamesAndAutocomplete \
+  DISABLED_AutofillSuggestionsForChangePwdWithEmptyNamesAndAutocomplete
+#else
+#define MAYBE_AutofillSuggestionsForChangePwdWithEmptyNamesAndAutocomplete \
+  AutofillSuggestionsForChangePwdWithEmptyNamesAndAutocomplete
+#endif
 IN_PROC_BROWSER_TEST_F(
     PasswordManagerBrowserTest,
-    AutofillSuggestionsForChangePwdWithEmptyNamesAndAutocomplete) {
+    MAYBE_AutofillSuggestionsForChangePwdWithEmptyNamesAndAutocomplete) {
   // At first let us save credentials to the PasswordManager.
   scoped_refptr<password_manager::PasswordStore> password_store =
       PasswordStoreFactory::GetForProfile(browser()->profile(),
@@ -4039,7 +4048,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   WaitForElementValue("username_field", "");
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, FormDynamicallyChanged) {
+// Flaky: see crbug.com/1190441
+IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
+                       DISABLED_FormDynamicallyChanged) {
   scoped_refptr<password_manager::TestPasswordStore> password_store =
       static_cast<password_manager::TestPasswordStore*>(
           PasswordStoreFactory::GetForProfile(
