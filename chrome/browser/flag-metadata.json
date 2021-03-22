@@ -860,7 +860,7 @@
   {
     "name": "debug-packed-apps",
     "owners": [ "benwells", "raymes" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 100
   },
   {
     "name": "decode-jpeg-images-to-yuv",
