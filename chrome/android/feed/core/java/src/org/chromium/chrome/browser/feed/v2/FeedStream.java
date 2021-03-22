@@ -65,7 +65,8 @@ public class FeedStream implements Stream {
         this.mFeedStreamSurface = new FeedStreamSurface(activity, isBackgroundDark, snackbarManager,
                 nativePageNavigationDelegate, bottomSheetController,
                 HelpAndFeedbackLauncherImpl.getInstance(), isPlaceholderShown,
-                new FeedStreamSurface.ShareHelperWrapper(windowAndroid, shareDelegateSupplier));
+                new FeedStreamSurface.ShareHelperWrapper(windowAndroid, shareDelegateSupplier),
+                windowAndroid.getDisplay());
     }
 
     @Override

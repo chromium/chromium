@@ -72,6 +72,8 @@ import org.chromium.content_public.common.Referrer;
 import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.display.DisplayAndroid;
+import org.chromium.ui.display.DisplayAndroid.DisplayAndroidObserver;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
@@ -86,8 +88,10 @@ import java.util.Map;
  *
  * Created once for each StreamSurfaceMediator corresponding to each NTP/start surface.
  */
+
 @JNINamespace("feed")
-public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHandler {
+public class FeedStreamSurface
+        implements SurfaceActionsHandler, FeedActionsHandler, DisplayAndroidObserver {
     private static final String TAG = "FeedStreamSurface";
 
     private static final int SNACKBAR_DURATION_MS_SHORT = 4000;
@@ -133,6 +137,7 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
     private boolean mIsPlaceholderShown;
     // TabSupplier for the current tab to share.
     private final ShareHelperWrapper mShareHelper;
+    private final DisplayAndroid mDisplayAndroid;
 
     private static ProcessScope sXSurfaceProcessScope;
 
@@ -350,7 +355,7 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
             SnackbarManager snackbarManager, NativePageNavigationDelegate pageNavigationDelegate,
             BottomSheetController bottomSheetController,
             HelpAndFeedbackLauncher helpAndFeedbackLauncher, boolean isPlaceholderShown,
-            ShareHelperWrapper shareHelper) {
+            ShareHelperWrapper shareHelper, DisplayAndroid displayAndroid) {
         mNativeFeedStreamSurface = FeedStreamSurfaceJni.get().init(FeedStreamSurface.this);
         mSnackbarManager = snackbarManager;
         mActivity = activity;
@@ -364,6 +369,7 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
 
         mIsPlaceholderShown = isPlaceholderShown;
         mShareHelper = shareHelper;
+        mDisplayAndroid = displayAndroid;
 
         Context context = new ContextThemeWrapper(
                 activity, (isBackgroundDark ? R.style.Dark : R.style.Light));
@@ -392,6 +398,11 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
             mRootView = null;
         }
 
+        // Attach as an observer of window events so we can consume window rotation events.
+        if (mDisplayAndroid != null) {
+            mDisplayAndroid.addObserver(this);
+        }
+
         trackSurface(this);
     }
 
@@ -406,6 +417,9 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
             mSliceViewTracker = null;
         }
         mHybridListRenderer.unbind();
+        if (mDisplayAndroid != null) {
+            mDisplayAndroid.removeObserver(this);
+        }
     }
 
     /**
@@ -1105,6 +1119,15 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
             FeedStreamSurfaceJni.get().reportFeedViewed(
                     mNativeFeedStreamSurface, FeedStreamSurface.this);
         }
+    }
+
+    // DisplayAndroidObserver methods.
+
+    // If the device rotates, we dismiss the bottom sheet to avoid a bad interaction
+    // between the XSurface client and the chrome bottom sheet.
+    @Override
+    public void onRotationChanged(int rotation) {
+        dismissBottomSheet();
     }
 
     @NativeMethods
