@@ -101,6 +101,34 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
                     std::move(callback));
   }
 
+  void Unmount(const ::user_data_auth::UnmountRequest& request,
+               UnmountCallback callback) override {
+    CallProtoMethod(::user_data_auth::kUnmount,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
+  void Mount(const ::user_data_auth::MountRequest& request,
+             MountCallback callback) override {
+    CallProtoMethod(::user_data_auth::kMount,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
+  void Remove(const ::user_data_auth::RemoveRequest& request,
+              RemoveCallback callback) override {
+    CallProtoMethod(::user_data_auth::kRemove,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
+  void Rename(const ::user_data_auth::RenameRequest& request,
+              RenameCallback callback) override {
+    CallProtoMethod(::user_data_auth::kRename,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
  private:
   // Calls cryptohomed's |method_name| method in |interface_name| interface,
   // passing in |request| as input with |timeout_ms|. Once the (asynchronous)

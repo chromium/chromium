@@ -26,6 +26,26 @@ void FakeUserDataAuthClient::IsMounted(
   NOTIMPLEMENTED();
 }
 
+void FakeUserDataAuthClient::Unmount(
+    const ::user_data_auth::UnmountRequest& request,
+    UnmountCallback callback) {
+  NOTIMPLEMENTED();
+}
+void FakeUserDataAuthClient::Mount(
+    const ::user_data_auth::MountRequest& request,
+    MountCallback callback) {
+  NOTIMPLEMENTED();
+}
+void FakeUserDataAuthClient::Remove(
+    const ::user_data_auth::RemoveRequest& request,
+    RemoveCallback callback) {
+  NOTIMPLEMENTED();
+}
+void FakeUserDataAuthClient::Rename(
+    const ::user_data_auth::RenameRequest& request,
+    RenameCallback callback) {
+  NOTIMPLEMENTED();
+}
 void FakeUserDataAuthClient::WaitForServiceToBeAvailable(
     chromeos::WaitForServiceToBeAvailableCallback callback) {
   NOTIMPLEMENTED();

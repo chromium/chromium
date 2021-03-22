@@ -38,6 +38,10 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
 
   using IsMountedCallback =
       DBusMethodCallback<::user_data_auth::IsMountedReply>;
+  using UnmountCallback = DBusMethodCallback<::user_data_auth::UnmountReply>;
+  using MountCallback = DBusMethodCallback<::user_data_auth::MountReply>;
+  using RemoveCallback = DBusMethodCallback<::user_data_auth::RemoveReply>;
+  using RenameCallback = DBusMethodCallback<::user_data_auth::RenameReply>;
 
   // Not copyable or movable.
   UserDataAuthClient(const UserDataAuthClient&) = delete;
@@ -74,6 +78,22 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   // Queries if user's vault is mounted.
   virtual void IsMounted(const ::user_data_auth::IsMountedRequest& request,
                          IsMountedCallback callback) = 0;
+
+  // Unmounts user's vault.
+  virtual void Unmount(const ::user_data_auth::UnmountRequest& request,
+                       UnmountCallback callback) = 0;
+
+  // Mounts user's vault.
+  virtual void Mount(const ::user_data_auth::MountRequest& request,
+                     MountCallback callback) = 0;
+
+  // Removes user's vault.
+  virtual void Remove(const ::user_data_auth::RemoveRequest& request,
+                      RemoveCallback callback) = 0;
+
+  // Renames user's vault.
+  virtual void Rename(const ::user_data_auth::RenameRequest& request,
+                      RenameCallback callback) = 0;
 
  protected:
   // Initialize/Shutdown should be used instead.
