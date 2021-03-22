@@ -191,8 +191,15 @@ void OneShotAccessibilityTreeSearch::SearchByWalkingTree() {
 }
 
 bool OneShotAccessibilityTreeSearch::Matches(BrowserAccessibility* node) {
-  for (size_t i = 0; i < predicates_.size(); ++i) {
-    if (!predicates_[i](start_node_, node))
+  if (!predicates_.empty()) {
+    bool found_predicate_match = false;
+    for (auto predicate : predicates_) {
+      if (predicate(start_node_, node)) {
+        found_predicate_match = true;
+        break;
+      }
+    }
+    if (!found_predicate_match)
       return false;
   }
 
@@ -208,8 +215,8 @@ bool OneShotAccessibilityTreeSearch::Matches(BrowserAccessibility* node) {
     std::vector<std::u16string> node_strings;
     GetNodeStrings(node, &node_strings);
     bool found_text_match = false;
-    for (size_t i = 0; i < node_strings.size(); ++i) {
-      std::u16string node_string_lower = base::i18n::ToLower(node_strings[i]);
+    for (auto node_string : node_strings) {
+      std::u16string node_string_lower = base::i18n::ToLower(node_string);
       if (node_string_lower.find(search_text_lower) != std::u16string::npos) {
         found_text_match = true;
         break;

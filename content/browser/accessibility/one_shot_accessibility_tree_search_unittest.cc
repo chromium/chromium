@@ -320,16 +320,16 @@ TEST_P(OneShotAccessibilityTreeSearchTest, TwoPredicatesTableRowAndCell) {
   OneShotAccessibilityTreeSearch search(tree_->GetRoot());
   search.AddPredicate(
       [](BrowserAccessibility* start, BrowserAccessibility* current) {
-        return (current->GetRole() == ax::mojom::Role::kRow ||
-                current->GetRole() == ax::mojom::Role::kColumnHeader);
+        return (current->GetRole() == ax::mojom::Role::kRow);
       });
   search.AddPredicate(
       [](BrowserAccessibility* start, BrowserAccessibility* current) {
-        return (current->GetId() % 2 == 0);
+        return (current->GetRole() == ax::mojom::Role::kColumnHeader);
       });
-  ASSERT_EQ(2U, search.CountMatches());
+  ASSERT_EQ(3U, search.CountMatches());
   EXPECT_EQ(4, search.GetMatchAtIndex(0)->GetId());
-  EXPECT_EQ(6, search.GetMatchAtIndex(1)->GetId());
+  EXPECT_EQ(5, search.GetMatchAtIndex(1)->GetId());
+  EXPECT_EQ(6, search.GetMatchAtIndex(2)->GetId());
 }
 
 TEST_P(OneShotAccessibilityTreeSearchTest, TwoPredicatesListItem) {
@@ -337,16 +337,16 @@ TEST_P(OneShotAccessibilityTreeSearchTest, TwoPredicatesListItem) {
   OneShotAccessibilityTreeSearch search(tree_->GetRoot());
   search.AddPredicate(
       [](BrowserAccessibility* start, BrowserAccessibility* current) {
-        return (current->GetRole() == ax::mojom::Role::kList ||
-                current->GetRole() == ax::mojom::Role::kListItem);
+        return (current->GetRole() == ax::mojom::Role::kList);
       });
   search.AddPredicate(
       [](BrowserAccessibility* start, BrowserAccessibility* current) {
-        return (current->GetId() % 2 == 1);
+        return (current->GetRole() == ax::mojom::Role::kListItem);
       });
-  ASSERT_EQ(2U, search.CountMatches());
+  ASSERT_EQ(3U, search.CountMatches());
   EXPECT_EQ(7, search.GetMatchAtIndex(0)->GetId());
-  EXPECT_EQ(9, search.GetMatchAtIndex(1)->GetId());
+  EXPECT_EQ(8, search.GetMatchAtIndex(1)->GetId());
+  EXPECT_EQ(9, search.GetMatchAtIndex(2)->GetId());
 }
 
 // These tests prevent other tests from being run. crbug.com/514632

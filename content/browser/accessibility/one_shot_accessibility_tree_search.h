@@ -120,7 +120,8 @@ class CONTENT_EXPORT OneShotAccessibilityTreeSearch {
   // name, description, or value. Case-insensitive.
   void SetSearchText(const std::string& text);
 
-  // Restricts the matches to only those that satisfy all predicates.
+  // Restricts the matches to only those that satisfy at least one of the
+  // predicates.
   void AddPredicate(AccessibilityMatchPredicate predicate);
 
   //
