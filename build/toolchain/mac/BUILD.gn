@@ -2,47 +2,65 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/mac/mac_sdk.gni")
 import("//build/toolchain/apple/toolchain.gni")
 
-apple_toolchain("clang_arm") {
-  toolchain_args = {
-    current_cpu = "arm"
-    current_os = "mac"
-  }
-}
+# Specialisation of the apple_toolchain template to declare the toolchain
+# and its tools to build target for macOS platform.
+template("mac_toolchain") {
+  assert(defined(invoker.toolchain_args),
+         "Toolchains must declare toolchain_args")
 
-apple_toolchain("clang_arm64") {
-  toolchain_args = {
-    current_cpu = "arm64"
-    current_os = "mac"
-  }
-}
+  apple_toolchain(target_name) {
+    forward_variables_from(invoker, "*", [ "toolchain_args" ])
 
-apple_toolchain("clang_x64") {
-  toolchain_args = {
-    current_cpu = "x64"
-    current_os = "mac"
+    bin_path = mac_bin_path
 
-    if (target_os == "ios") {
-      # TODO(crbug.com/753445): the use_sanitizer_coverage arg is currently
-      # not supported by the Chromium mac_clang_x64 toolchain on iOS
-      # distribution.
-      use_sanitizer_coverage = false
+    toolchain_args = {
+      forward_variables_from(invoker.toolchain_args, "*")
+      current_os = "mac"
+
+      if (target_os == "ios") {
+        # TODO(crbug.com/753445): the use_sanitizer_coverage arg is currently
+        # not supported by the Chromium mac_clang_x64 toolchain on iOS
+        # distribution.
+        use_sanitizer_coverage = false
+
+        # Do not use Xcode version of clang when building macOS tools for the
+        # host even if this is the version used to build for the iOS target.
+        use_xcode_clang = false
+      }
     }
   }
 }
 
-apple_toolchain("clang_x86") {
+mac_toolchain("clang_arm") {
   toolchain_args = {
-    current_cpu = "x86"
-    current_os = "mac"
+    current_cpu = "arm"
   }
 }
 
-apple_toolchain("clang_x86_v8_arm") {
+mac_toolchain("clang_arm64") {
+  toolchain_args = {
+    current_cpu = "arm64"
+  }
+}
+
+mac_toolchain("clang_x64") {
+  toolchain_args = {
+    current_cpu = "x64"
+  }
+}
+
+mac_toolchain("clang_x86") {
   toolchain_args = {
     current_cpu = "x86"
-    current_os = "mac"
+  }
+}
+
+mac_toolchain("clang_x86_v8_arm") {
+  toolchain_args = {
+    current_cpu = "x86"
 
     if (defined(v8_current_cpu)) {
       v8_current_cpu = "arm"
@@ -50,10 +68,9 @@ apple_toolchain("clang_x86_v8_arm") {
   }
 }
 
-apple_toolchain("clang_x86_v8_mipsel") {
+mac_toolchain("clang_x86_v8_mipsel") {
   toolchain_args = {
     current_cpu = "x86"
-    current_os = "mac"
 
     if (defined(v8_current_cpu)) {
       v8_current_cpu = "mipsel"
@@ -61,10 +78,9 @@ apple_toolchain("clang_x86_v8_mipsel") {
   }
 }
 
-apple_toolchain("clang_x64_v8_arm64") {
+mac_toolchain("clang_x64_v8_arm64") {
   toolchain_args = {
     current_cpu = "x64"
-    current_os = "mac"
 
     if (defined(v8_current_cpu)) {
       v8_current_cpu = "arm64"
@@ -72,10 +88,9 @@ apple_toolchain("clang_x64_v8_arm64") {
   }
 }
 
-apple_toolchain("clang_x64_v8_mips64el") {
+mac_toolchain("clang_x64_v8_mips64el") {
   toolchain_args = {
     current_cpu = "x64"
-    current_os = "mac"
 
     if (defined(v8_current_cpu)) {
       v8_current_cpu = "mips64el"

@@ -10,16 +10,11 @@ import("//build/config/apple/symbols.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
-import("//build/config/mac/mac_sdk.gni")
 import("//build/toolchain/cc_wrapper.gni")
 import("//build/toolchain/goma.gni")
 import("//build/toolchain/toolchain.gni")
 
-if (is_ios) {
-  import("//build/config/ios/ios_sdk.gni")
-}
-
-assert((is_ios && host_os == "mac") || host_os != "win")
+assert((target_os == "ios" && host_os == "mac") || host_os != "win")
 
 declare_args() {
   # This makes the linker set timestamps in Mach-O files to 0. This isn't
@@ -80,19 +75,6 @@ template("apple_toolchain") {
       host_toolchain = host_toolchain
     }
 
-    # Supports building with the version of clang shipped with Xcode when
-    # targeting iOS by not respecting clang_base_path.
-    if (toolchain_args.current_os == "ios" && use_xcode_clang) {
-      prefix = ""
-    } else {
-      prefix = rebase_path("$clang_base_path/bin/", root_build_dir)
-    }
-
-    _cc = "${prefix}clang"
-    _cxx = "${prefix}clang++"
-
-    swiftmodule_switch = "-Wl,-add_ast_path,"
-
     # When the invoker has explicitly overridden use_goma or cc_wrapper in the
     # toolchain args, use those values, otherwise default to the global one.
     # This works because the only reasonable override that toolchains might
@@ -107,6 +89,24 @@ template("apple_toolchain") {
     } else {
       toolchain_cc_wrapper = cc_wrapper
     }
+    if (defined(toolchain_args.use_xcode_clang)) {
+      toolchain_uses_xcode_clang = toolchain_args.use_xcode_clang
+    } else {
+      toolchain_uses_xcode_clang = use_xcode_clang
+    }
+
+    # Supports building with the version of clang shipped with Xcode when
+    # targeting iOS by not respecting clang_base_path.
+    if (toolchain_uses_xcode_clang) {
+      prefix = invoker.bin_path
+    } else {
+      prefix = rebase_path("$clang_base_path/bin/", root_build_dir)
+    }
+
+    _cc = "${prefix}clang"
+    _cxx = "${prefix}clang++"
+
+    swiftmodule_switch = "-Wl,-add_ast_path,"
 
     # Compute the compiler prefix.
     if (toolchain_uses_goma) {
@@ -125,7 +125,7 @@ template("apple_toolchain") {
 
     # Set the explicit search path for clang++ so it uses the right linker
     # binary.
-    ld += " -B " + mac_bin_path
+    ld += " -B " + invoker.bin_path
 
     if (defined(toolchain_args.coverage_instrumentation_input_file)) {
       toolchain_coverage_instrumentation_input_file =
@@ -151,7 +151,7 @@ template("apple_toolchain") {
         rebase_path("//build/toolchain/apple/linker_driver.py", root_build_dir)
 
     # Specify an explicit path for the strip binary.
-    _strippath = mac_bin_path + "strip"
+    _strippath = invoker.bin_path + "strip"
     linker_driver += " -Wcrl,strippath," + _strippath
 
     if (mac_deterministic_build) {
@@ -162,12 +162,12 @@ template("apple_toolchain") {
     # builds). The correct flags are passed to the linker_driver.py script
     # directly during the lipo call. The test is against the target_os because
     # there is no need to create .dSYMs for targets compiled for the host.
-    if (target_os != "ios") {
-      _enable_dsyms = enable_dsyms
-      _save_unstripped_output = save_unstripped_output
-    } else {
+    if (defined(invoker.strip_with_lipo) && invoker.strip_with_lipo) {
       _enable_dsyms = false
       _save_unstripped_output = false
+    } else {
+      _enable_dsyms = enable_dsyms
+      _save_unstripped_output = save_unstripped_output
     }
 
     # Make these apply to all tools below.
@@ -265,7 +265,7 @@ template("apple_toolchain") {
                              root_build_dir)
 
         # Specify explicit path for libtool.
-        libtool = mac_bin_path + "libtool"
+        libtool = invoker.bin_path + "libtool"
         command = "rm -f {{output}} && TOOL_VERSION=${tool_versions.filter_libtool} $python_path $script $libtool -static -D {{arflags}} -o {{output}} -filelist $rspfile"
         description = "LIBTOOL-STATIC {{output}}"
       } else {
@@ -305,8 +305,8 @@ template("apple_toolchain") {
       # search path in /usr/bin are thin wrappers around xcrun, which requires a
       # full CommandLineTools or Xcode install, and still may not choose the
       # appropriate binary if there are multiple installs.
-      otool = mac_bin_path + "otool"
-      nm = mac_bin_path + "nm"
+      otool = invoker.bin_path + "otool"
+      nm = invoker.bin_path + "nm"
 
       does_reexport_command = "[ ! -e \"$dylib\" -o ! -e \"$tocname\" ] || $otool -l \"$dylib\" | grep -q LC_REEXPORT_DYLIB"
 
@@ -482,8 +482,8 @@ template("apple_toolchain") {
         }
 
         _env_vars = "TOOL_VERSION=${tool_versions.swiftc}"
-        if (is_ios && ios_sdk_developer_dir != "") {
-          _env_vars += " DEVELOPER_DIR=$ios_sdk_developer_dir"
+        if (invoker.sdk_developer_dir != "") {
+          _env_vars += " DEVELOPER_DIR=${toolchain_args.sdk_developer_dir}"
         }
 
         command =
@@ -505,21 +505,14 @@ template("apple_toolchain") {
       tool("compile_xcassets") {
         _tool = rebase_path("//build/toolchain/ios/compile_xcassets.py",
                             root_build_dir)
-        if (is_ios) {
-          _sdk_name = ios_sdk_name
-          _min_deployment_target = ios_deployment_target
-          _compress_pngs = ""
-        } else {
-          _sdk_name = mac_sdk_name
-          _min_deployment_target = mac_deployment_target
-          _compress_pngs = " -c "
-        }
+
         command =
             "rm -f \"{{output}}\" && " +
             "TOOL_VERSION=${tool_versions.compile_xcassets} " +
-            "$python_path $_tool$_compress_pngs -p \"$_sdk_name\" " +
-            "-t \"$_min_deployment_target\" -T \"{{bundle_product_type}}\" " +
-            "-P \"{{bundle_partial_info_plist}}\" -o {{output}} {{inputs}}"
+            "$python_path $_tool -p \"${invoker.sdk_name}\" " +
+            "-t \"${invoker.deployment_target}\" " +
+            "-T \"{{bundle_product_type}}\" " +
+            "-P \"{{bundle_partial_info_plist}}\" " + "-o {{output}} {{inputs}}"
 
         description = "COMPILE_XCASSETS {{output}}"
         pool = "//build/toolchain/apple:bundle_pool($default_toolchain)"

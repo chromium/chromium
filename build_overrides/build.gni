@@ -69,7 +69,7 @@ if (host_os == "mac" || is_apple) {
 
   if (use_system_xcode == "") {
     _result = exec_script("//build/mac/should_use_hermetic_xcode.py",
-                          [ target_os ],
+                          [ current_os ],
                           "value")
 
     assert(_result != 2,
@@ -81,6 +81,7 @@ if (host_os == "mac" || is_apple) {
 
     use_system_xcode = _result != 1
   }
-  assert(host_os != "ios" || use_system_xcode)
+
+  assert(current_os != "ios" || use_system_xcode)
   assert(host_os == "mac" || !use_system_xcode)
 }

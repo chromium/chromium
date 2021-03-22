@@ -9,11 +9,13 @@ import("//build/toolchain/goma.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
 
+assert(current_os == "ios")
 assert(use_system_xcode, "Hermetic xcode doesn't work for ios.")
 
 declare_args() {
   # SDK path to use. When empty this will use the default SDK based on the
   # value of target_environment.
+  ios_bin_path = ""
   ios_sdk_path = ""
   ios_sdk_name = ""
   ios_sdk_version = ""
@@ -145,6 +147,8 @@ if (ios_sdk_path == "") {
   }
   script_name = "//build/config/apple/sdk_info.py"
   _ios_sdk_result = exec_script(script_name, ios_sdk_info_args, "scope")
+  ios_bin_path =
+      rebase_path("${_ios_sdk_result.toolchains_path}/usr/bin/", root_build_dir)
   ios_sdk_path = _ios_sdk_result.sdk_path
   ios_sdk_platform_path = _ios_sdk_result.sdk_platform_path
   ios_sdk_version = _ios_sdk_result.sdk_version
