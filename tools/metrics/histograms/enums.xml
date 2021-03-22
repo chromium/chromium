@@ -9404,6 +9404,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="8" label="Device needs more space to use Borealis DLC"/>
   <int value="9" label="DLC faced an unknown error"/>
   <int value="10" label="Device is offline"/>
+  <int value="11" label="DLC couldn't find an image at the correct version"/>
 </enum>
 
 <enum name="BorealisStartupResult">

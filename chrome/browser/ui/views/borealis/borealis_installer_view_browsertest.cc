@@ -97,9 +97,6 @@ class BorealisInstallerViewBrowserTest : public DialogBrowserTest {
   void ExpectInstallationFailedWithNoRetry() {
     EXPECT_FALSE(HasAcceptButton());
     EXPECT_TRUE(HasCancelButton());
-    EXPECT_EQ(view_->GetPrimaryMessage(),
-              l10n_util::GetStringFUTF16(
-                  IDS_BOREALIS_INSTALLER_NOT_ALLOWED_TITLE, app_name_));
   }
 
   void ExpectInstallationCompletedSucessfully() {
@@ -227,6 +224,29 @@ IN_PROC_BROWSER_TEST_F(BorealisInstallerViewBrowserTest, NotAllowedError) {
 
   view_->OnInstallationEnded(error_type);
   ExpectInstallationFailedWithNoRetry();
+  EXPECT_EQ(view_->GetPrimaryMessage(),
+            l10n_util::GetStringFUTF16(IDS_BOREALIS_INSTALLER_NOT_ALLOWED_TITLE,
+                                       app_name_));
+  EXPECT_EQ(view_->GetSecondaryMessage(),
+            l10n_util::GetStringFUTF16(
+                IDS_BOREALIS_INSTALLER_NOT_ALLOWED_MESSAGE, app_name_,
+                base::NumberToString16(
+                    static_cast<std::underlying_type_t<InstallationResult>>(
+                        error_type))));
+
+  ClickCancel();
+}
+
+IN_PROC_BROWSER_TEST_F(BorealisInstallerViewBrowserTest, DlcUnsupportedError) {
+  InstallationResult error_type = InstallationResult::kDlcUnsupportedError;
+  ShowUi("default");
+  AcceptInstallation();
+
+  view_->OnInstallationEnded(error_type);
+  ExpectInstallationFailedWithNoRetry();
+  EXPECT_EQ(view_->GetPrimaryMessage(),
+            l10n_util::GetStringFUTF16(IDS_BOREALIS_INSTALLER_NOT_ALLOWED_TITLE,
+                                       app_name_));
   EXPECT_EQ(view_->GetSecondaryMessage(),
             l10n_util::GetStringFUTF16(
                 IDS_BOREALIS_INSTALLER_NOT_ALLOWED_MESSAGE, app_name_,
@@ -289,6 +309,22 @@ IN_PROC_BROWSER_TEST_F(BorealisInstallerViewBrowserTest, DlcNeedSpaceError) {
   EXPECT_EQ(
       view_->GetSecondaryMessage(),
       l10n_util::GetStringUTF16(IDS_BOREALIS_INSUFFICIENT_DISK_SPACE_MESSAGE));
+
+  ClickCancel();
+}
+
+IN_PROC_BROWSER_TEST_F(BorealisInstallerViewBrowserTest, DlcNeedUpdateError) {
+  InstallationResult error_type = InstallationResult::kDlcNeedUpdateError;
+  ShowUi("default");
+  AcceptInstallation();
+
+  view_->OnInstallationEnded(error_type);
+  ExpectInstallationFailedWithNoRetry();
+  EXPECT_EQ(view_->GetPrimaryMessage(),
+            l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ERROR_TITLE));
+  EXPECT_EQ(
+      view_->GetSecondaryMessage(),
+      l10n_util::GetStringUTF16(IDS_BOREALIS_DLC_NEED_UPDATE_FAILED_MESSAGE));
 
   ClickCancel();
 }

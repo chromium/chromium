@@ -312,6 +312,10 @@ void BorealisInstallerImpl::OnDlcInstallationCompleted(
   } else if (install_result.error == dlcservice::kErrorAllocation) {
     LOG(ERROR) << "Device needs to free space to use Borealis DLC.";
     result = BorealisInstallResult::kDlcNeedSpaceError;
+  } else if (install_result.error == dlcservice::kErrorNoImageFound) {
+    LOG(ERROR)
+        << "Omaha could not provide an image, device may need to be updated.";
+    result = BorealisInstallResult::kDlcNeedUpdateError;
   } else {
     LOG(ERROR) << "Failed to install Borealis DLC: " << install_result.error;
   }

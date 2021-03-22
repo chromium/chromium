@@ -5492,6 +5492,9 @@
   <message name="IDS_BOREALIS_DLC_NEED_REBOOT_FAILED_MESSAGE" desc="" translateable="false">
     Please restart your device to use <ph name="APP_NAME">$1<ex>BOREALIS</ex></ph>.
   </message>
+  <message name="IDS_BOREALIS_DLC_NEED_UPDATE_FAILED_MESSAGE" desc="" translateable="false">
+    Please ensure that your device is up to date and try again.
+  </message>
   <message name="IDS_BOREALIS_INSUFFICIENT_DISK_SPACE_MESSAGE" desc="" translateable="false">
       Your device is low on storage. To increase free space, delete files from device.
   </message>

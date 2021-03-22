@@ -319,6 +319,9 @@ std::u16string BorealisInstallerView::GetSecondaryMessage() const {
         case ResultEnum::kDlcNeedSpaceError:
           return l10n_util::GetStringUTF16(
               IDS_BOREALIS_INSUFFICIENT_DISK_SPACE_MESSAGE);
+        case ResultEnum::kDlcNeedUpdateError:
+          return l10n_util::GetStringUTF16(
+              IDS_BOREALIS_DLC_NEED_UPDATE_FAILED_MESSAGE);
         case ResultEnum::kDlcUnknownError:
           return l10n_util::GetStringFUTF16(
               IDS_BOREALIS_GENERIC_ERROR_MESSAGE, app_name_,
@@ -344,9 +347,21 @@ int BorealisInstallerView::GetCurrentDialogButtons() const {
       DCHECK(result_);
       switch (*result_) {
         case borealis::BorealisInstallResult::kBorealisNotAllowed:
+        case borealis::BorealisInstallResult::kDlcUnsupportedError:
+        case borealis::BorealisInstallResult::kDlcNeedUpdateError:
           return ui::DIALOG_BUTTON_CANCEL;
-        default:
+        case borealis::BorealisInstallResult::kBorealisInstallInProgress:
+        case borealis::BorealisInstallResult::kDlcInternalError:
+        case borealis::BorealisInstallResult::kDlcBusyError:
+        case borealis::BorealisInstallResult::kDlcNeedRebootError:
+        case borealis::BorealisInstallResult::kDlcNeedSpaceError:
+        case borealis::BorealisInstallResult::kDlcUnknownError:
+        case borealis::BorealisInstallResult::kOffline:
           return ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK;
+        case borealis::BorealisInstallResult::kSuccess:
+        case borealis::BorealisInstallResult::kCancelled:
+          NOTREACHED();
+          return 0;
       }
   }
 }

@@ -321,6 +321,9 @@ INSTANTIATE_TEST_SUITE_P(
                         dlcservice::kErrorAllocation,
                         BorealisInstallResult::kDlcNeedSpaceError),
                     std::pair<std::string, BorealisInstallResult>(
+                        dlcservice::kErrorNoImageFound,
+                        BorealisInstallResult::kDlcNeedUpdateError),
+                    std::pair<std::string, BorealisInstallResult>(
                         "unknown",
                         BorealisInstallResult::kDlcUnknownError)));
 
