@@ -4645,3 +4645,51 @@ IN_PROC_BROWSER_TEST_F(GuestViewExtensionNameCollisionTest,
       ExecuteScriptInBackgroundPage(extension->id(), script);
   EXPECT_EQ("PASSED", test_passed);
 }
+
+class PrivateNetworkAccessWebViewTest : public WebViewTest {
+ public:
+  PrivateNetworkAccessWebViewTest() {
+    features_.InitAndEnableFeature(
+        features::kBlockInsecurePrivateNetworkRequests);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+// Verify that Private Network Access has the correct understanding of the
+// chrome-guest:// scheme, that should only ever be used as a SiteURL, and not
+// interfere with the local/private/public classification.
+// See https://crbug.com/1167698 for details.
+// Note: This test is put in this file for convenience of reusing the entire
+// app testing infrastructure. Other similar tests that do not require that
+// infrastructure live in PrivateNetworkAccessBrowserTest.*
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWebViewTest,
+                       SpecialSchemeChromeGuest) {
+  LoadAppWithGuest("web_view/simple");
+  content::WebContents* guest = GetGuestWebContents();
+  ASSERT_TRUE(guest);
+
+  EXPECT_FALSE(guest->GetLastCommittedURL().SchemeIs(content::kGuestScheme));
+  EXPECT_TRUE(
+      guest->GetSiteInstance()->GetSiteURL().SchemeIs(content::kGuestScheme));
+
+  // We'll try to fetch a local page with Access-Control-Allow-Origin: *, to
+  // avoid having origin issues on top of privateness issues.
+  auto server = std::make_unique<net::EmbeddedTestServer>();
+  server->AddDefaultHandlers(GetChromeTestDataDir());
+  EXPECT_TRUE(server->Start());
+  GURL fetch_url = server->GetURL("/cors-ok.txt");
+
+  // The webview "simple" page is a first navigation to a raw data url. It is
+  // currently considered public (internally
+  // network::mojom::IPAddressSpace::kUnknown). It should not be able to fetch a
+  // local page. This test might have to be modified if the classification of
+  // data URL changes in the future.
+  EXPECT_EQ(
+      false,
+      content::EvalJs(
+          guest, content::JsReplace(
+                     "fetch($1).then(response => true).catch(error => false)",
+                     fetch_url)));
+}

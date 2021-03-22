@@ -746,8 +746,6 @@ url::Origin GetOriginForURLLoaderFactoryUnchecked(
 network::mojom::IPAddressSpace IPAddressSpaceForSpecialScheme(const GURL& url) {
   // This only handles schemes that are known to the content/ layer.
   // List here: content/public/common/url_constants.cc.
-  // TODO(crbug.com/1167698): kGuestCheme looks like a strong candidate to be on
-  // this list. Verify if that makes sense.
   const char* special_content_schemes[] = {
     kChromeDevToolsScheme,
     kChromeUIScheme,
