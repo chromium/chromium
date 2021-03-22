@@ -224,11 +224,11 @@ void AppBannerManagerAndroid::OnInstallEvent(
     const AddToHomescreenParams& a2hs_params) {
   RecordExtraMetricsForInstallEvent(event, a2hs_params);
 
-  // If the install source is a menu install source, user interacted with the
-  // bottom sheet installer UI.
-  if (a2hs_params.install_source == WebappInstallSource::MENU_BROWSER_TAB ||
-      a2hs_params.install_source == WebappInstallSource::MENU_CUSTOM_TAB) {
-    DCHECK_NE(a2hs_params.app_type, AddToHomescreenParams::AppType::NATIVE);
+  // If the app is not native and the install source is a menu install source,
+  // user interacted with the bottom sheet installer UI.
+  if (a2hs_params.app_type != AddToHomescreenParams::AppType::NATIVE &&
+      (a2hs_params.install_source == WebappInstallSource::MENU_BROWSER_TAB ||
+       a2hs_params.install_source == WebappInstallSource::MENU_CUSTOM_TAB)) {
     switch (event) {
       case AddToHomescreenInstaller::Event::INSTALL_STARTED:
         AppBannerSettingsHelper::RecordBannerEvent(
