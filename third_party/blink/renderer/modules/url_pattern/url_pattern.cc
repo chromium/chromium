@@ -410,8 +410,10 @@ String CanonicalizePort(const String& input,
 }
 
 // A callback to be passed to the liburlpattern::Parse() method that performs
-// validation and encoding for the pathname component.
-absl::StatusOr<std::string> PathnameEncodeCallback(absl::string_view input) {
+// validation and encoding for the pathname component using "standard" URL
+// behavior.
+absl::StatusOr<std::string> StandardURLPathnameEncodeCallback(
+    absl::string_view input) {
   if (input.empty())
     return std::string();
 
@@ -430,10 +432,29 @@ absl::StatusOr<std::string> PathnameEncodeCallback(absl::string_view input) {
   return StdStringFromCanonOutput(canon_output, component);
 }
 
+// A callback to be passed to the liburlpattern::Parse() method that performs
+// validation and encoding for the pathname component using "path" URL
+// behavior.  This is like "cannot-be-a-base" URL behavior in the spec.
+absl::StatusOr<std::string> PathURLPathnameEncodeCallback(
+    absl::string_view input) {
+  if (input.empty())
+    return std::string();
+
+  url::RawCanonOutputT<char> canon_output;
+  url::Component component;
+
+  url::CanonicalizePathURLPath(
+      input.data(), url::Component(0, static_cast<int>(input.size())),
+      &canon_output, &component);
+
+  return StdStringFromCanonOutput(canon_output, component);
+}
+
 // Utility function to canonicalize a pathname string.  Throws an exception
 // if the input is invalid.  The canonicalization and/or validation will
 // differ depending on whether |type| is kURL or kPattern.
-String CanonicalizePathname(const String& input,
+String CanonicalizePathname(const String& protocol,
+                            const String& input,
                             ValueType type,
                             ExceptionState& exception_state) {
   if (type == ValueType::kPattern) {
@@ -442,23 +463,53 @@ String CanonicalizePathname(const String& input,
     return input;
   }
 
-  if (!IsAbsolutePathname(input, type)) {
-    exception_state.ThrowTypeError("Cannot resolve absolute pathname for '" +
-                                   input + "'.");
-    return String();
+  // Determine if we are using "standard" or "path" URL canonicalization
+  // for the pathname.  In spec terms the "path" URL behavior corresponds
+  // to "cannot-be-a-base" URLs.  We make this determination based on the
+  // protocol string since we cannot look at the number of slashes between
+  // components like the URL spec.  If this is inadequate the developer
+  // can use the baseURL property to get more strict URL behavior.
+  //
+  // We default to "standard" URL behavior to match how the empty protocol
+  // string in the URLPattern constructor results in the pathname pattern
+  // getting "standard" URL canonicalization.
+  bool standard = false;
+  if (protocol.IsEmpty()) {
+    standard = true;
+  } else if (protocol.Is8Bit()) {
+    StringUTF8Adaptor utf8(protocol);
+    standard = url::IsStandard(utf8.data(), url::Component(0, utf8.size()));
+  } else {
+    standard = url::IsStandard(protocol.Characters16(),
+                               url::Component(0, protocol.length()));
   }
+
+  // Do not enforce absolute pathnames here since we can't enforce it
+  // it consistently in the URLPattern constructor.  This allows us to
+  // produce a match when the exact same fixed pathname string is passed
+  // to both the constructor and test()/exec().  Similarly, we use
+  // url::CanonicalizePartialPath() below instead of url::CanonicalizePath()
+  // to avoid pre-pending a slash at the start of the string.
 
   bool result = false;
   url::RawCanonOutputT<char> canon_output;
   url::Component component;
+
+  const auto canonicalize_path = [&](const auto* data, int length) {
+    if (standard) {
+      return url::CanonicalizePartialPath(data, url::Component(0, length),
+                                          &canon_output, &component);
+    }
+    url::CanonicalizePathURLPath(data, url::Component(0, length), &canon_output,
+                                 &component);
+    return true;
+  };
+
   if (input.Is8Bit()) {
     StringUTF8Adaptor utf8(input);
-    result = url::CanonicalizePath(utf8.data(), url::Component(0, utf8.size()),
-                                   &canon_output, &component);
+    result = canonicalize_path(utf8.data(), utf8.size());
   } else {
-    result = url::CanonicalizePath(input.Characters16(),
-                                   url::Component(0, input.length()),
-                                   &canon_output, &component);
+    result = canonicalize_path(input.Characters16(), input.length());
   }
 
   if (!result) {
@@ -637,7 +688,7 @@ void ApplyInit(const URLPatternInit* init,
         pathname = base_url.GetPath().Substring(0, slash_index + 1) + pathname;
       }
     }
-    pathname = CanonicalizePathname(pathname, type, exception_state);
+    pathname = CanonicalizePathname(protocol, pathname, type, exception_state);
     if (exception_state.HadException())
       return;
   }
@@ -715,9 +766,36 @@ URLPattern* URLPattern::Create(const URLPatternInit* init,
   if (exception_state.HadException())
     return nullptr;
 
+  // Different types of URLs use different canonicalization for pathname.
+  // A "standard" URL flattens `.`/`..` and performs full percent encoding.
+  // A "path" URL does not flatten and uses a more lax percent encoding.
+  // The spec calls "path" URLs as "cannot-be-a-base-URL" URLs:
+  //
+  //  https://url.spec.whatwg.org/#cannot-be-a-base-url-path-state
+  //
+  // We prefer "standard" URL here by checking to see if the protocol
+  // pattern matches any of the known standard protocol strings.  So
+  // an exact pattern of `http` will match, but so will `http{s}?` and
+  // `*`.
+  //
+  // If the protocol pattern does not match any of the known standard URL
+  // protocols then we fall back to the "path" URL behavior.  This will
+  // normally be triggered by `data`, `javascript`, `about`, etc.  It
+  // will also be triggered for custom protocol strings.  We favor "path"
+  // behavior here because its better to under canonicalize since the
+  // developer can always manually canonicalize the pathname for a custom
+  // protocol.
+  //
+  // ShouldTreatAsStandardURL can by a bit expensive, so only do it if we
+  // actually have a pathname pattern to compile.
+  liburlpattern::EncodeCallback pathname_encode = PathURLPathnameEncodeCallback;
+  if (!pathname.IsNull() && ShouldTreatAsStandardURL(protocol_component)) {
+    pathname_encode = StandardURLPathnameEncodeCallback;
+  }
+
   auto* pathname_component =
-      CompilePattern(pathname, "pathname", PathnameEncodeCallback,
-                     PathnameOptions(), exception_state);
+      CompilePattern(pathname, "pathname", pathname_encode, PathnameOptions(),
+                     exception_state);
   if (exception_state.HadException())
     return nullptr;
 
@@ -1025,6 +1103,18 @@ URLPatternComponentResult* URLPattern::MakeComponentResult(
   result->setInput(input);
   result->setGroups(groups);
   return result;
+}
+
+bool URLPattern::ShouldTreatAsStandardURL(Component* protocol) {
+  if (!protocol)
+    return true;
+  const auto protocol_matches = [&](const std::string& scheme) {
+    DCHECK(base::IsStringASCII(scheme));
+    return protocol->Match(
+        StringView(scheme.data(), static_cast<unsigned>(scheme.size())),
+        /*group_list=*/nullptr);
+  };
+  return base::ranges::any_of(url::GetStandardSchemes(), protocol_matches);
 }
 
 }  // namespace blink

@@ -87,6 +87,8 @@ class URLPattern : public ScriptWrappable {
       const String& input,
       const Vector<String>& group_list);
 
+  static bool ShouldTreatAsStandardURL(Component* protocol);
+
   // The compiled patterns for each URL component.  If a Component member is
   // nullptr then it should be treated as a wildcard matching any input.
   Member<Component> protocol_;

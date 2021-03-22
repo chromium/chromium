@@ -62,6 +62,14 @@ COMPONENT_EXPORT(URL) bool AllowNonStandardSchemesForAndroidWebView();
 COMPONENT_EXPORT(URL)
 void AddStandardScheme(const char* new_scheme, SchemeType scheme_type);
 
+// Returns the list of schemes registered for "standard" URLs.  Note, this
+// should not be used if you just need to check if your protocol is standard
+// or not.  Instead use the IsStandard() function above as its much more
+// efficient.  This function should only be used where you need to perform
+// other operations against the standard scheme list.
+COMPONENT_EXPORT(URL)
+std::vector<std::string> GetStandardSchemes();
+
 // Adds an application-defined scheme to the internal list of schemes allowed
 // for referrers.
 COMPONENT_EXPORT(URL)

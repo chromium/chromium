@@ -1982,6 +1982,53 @@ TEST(URLCanonTest, CanonicalizePathURL) {
   }
 }
 
+TEST(URLCanonTest, CanonicalizePathURLPath) {
+  struct PathCase {
+    std::string input;
+    std::wstring input16;
+    std::string expected;
+  } path_cases[] = {
+      {"Foo", L"Foo", "Foo"},
+      {"\":This /is interesting;?#", L"\":This /is interesting;?#",
+       "\":This /is interesting;?#"},
+      {"\uFFFF", L"\uFFFF", "%EF%BF%BD"},
+  };
+
+  for (size_t i = 0; i < base::size(path_cases); i++) {
+    // 8-bit string input
+    std::string out_str;
+    StdStringCanonOutput output(&out_str);
+    url::Component out_component;
+    CanonicalizePathURLPath(path_cases[i].input.data(),
+                            Component(0, path_cases[i].input.size()), &output,
+                            &out_component);
+    output.Complete();
+
+    EXPECT_EQ(path_cases[i].expected, out_str);
+
+    EXPECT_EQ(0, out_component.begin);
+    EXPECT_EQ(path_cases[i].expected.size(),
+              static_cast<size_t>(out_component.len));
+
+    // 16-bit string input
+    std::string out_str16;
+    StdStringCanonOutput output16(&out_str16);
+    url::Component out_component16;
+    std::u16string input16(
+        test_utils::TruncateWStringToUTF16(path_cases[i].input16.data()));
+    CanonicalizePathURLPath(input16.c_str(),
+                            Component(0, path_cases[i].input16.size()),
+                            &output16, &out_component16);
+    output16.Complete();
+
+    EXPECT_EQ(path_cases[i].expected, out_str16);
+
+    EXPECT_EQ(0, out_component16.begin);
+    EXPECT_EQ(path_cases[i].expected.size(),
+              static_cast<size_t>(out_component16.len));
+  }
+}
+
 TEST(URLCanonTest, CanonicalizeMailtoURL) {
   struct URLCase {
     const char* input;

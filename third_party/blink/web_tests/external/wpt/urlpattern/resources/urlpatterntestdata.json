@@ -1399,5 +1399,59 @@
       "input": { "pathname": "/foo(" },
       "pathname": { "input": "/foo(", "groups": {}}
     }
+  },
+  {
+    "pattern": { "protocol": "javascript", "pathname": "var x = 1;" },
+    "input": { "protocol": "javascript", "pathname": "var x = 1;" },
+    "expected_match": {
+      "input": { "protocol": "javascript", "pathname": "var x = 1;" },
+      "protocol": { "input": "javascript", "groups": {}},
+      "pathname": { "input": "var x = 1;", "groups": {}}
+    }
+  },
+  {
+    "pattern": { "pathname": "var x = 1;" },
+    "input": { "protocol": "javascript", "pathname": "var x = 1;" },
+    "expected_obj": {
+      "pathname": "var%20x%20=%201;"
+    },
+    "expected_match": null
+  },
+  {
+    "pattern": { "protocol": "javascript", "pathname": "var x = 1;" },
+    "input": { "baseURL": "javascript:var x = 1;" },
+    "expected_match": {
+      "input": { "baseURL": "javascript:var x = 1;" },
+      "protocol": { "input": "javascript", "groups": {}},
+      "pathname": { "input": "var x = 1;", "groups": {}}
+    }
+  },
+  {
+    "pattern": { "protocol": "(data|javascript)", "pathname": "var x = 1;" },
+    "input": { "protocol": "javascript", "pathname": "var x = 1;" },
+    "expected_match": {
+      "input": { "protocol": "javascript", "pathname": "var x = 1;" },
+      "protocol": { "input": "javascript", "groups": {"0": "javascript"}},
+      "pathname": { "input": "var x = 1;", "groups": {}}
+    }
+  },
+  {
+    "pattern": { "protocol": "(https|javascript)", "pathname": "var x = 1;" },
+    "input": { "protocol": "javascript", "pathname": "var x = 1;" },
+    "expected_obj": {
+      "pathname": "var%20x%20=%201;"
+    },
+    "expected_match": null
+  },
+  {
+    "pattern": { "pathname": "var x = 1;" },
+    "input": { "pathname": "var x = 1;" },
+    "expected_obj": {
+      "pathname": "var%20x%20=%201;"
+    },
+    "expected_match": {
+      "input": { "pathname": "var x = 1;" },
+      "pathname": { "input": "var%20x%20=%201;", "groups": {}}
+    }
   }
 ]

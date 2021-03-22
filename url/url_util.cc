@@ -558,6 +558,15 @@ void AddStandardScheme(const char* new_scheme, SchemeType type) {
                       &GetSchemeRegistryWithoutLocking()->standard_schemes);
 }
 
+std::vector<std::string> GetStandardSchemes() {
+  std::vector<std::string> result;
+  result.reserve(GetSchemeRegistry().standard_schemes.size());
+  for (const auto& entry : GetSchemeRegistry().standard_schemes) {
+    result.push_back(entry.scheme);
+  }
+  return result;
+}
+
 void AddReferrerScheme(const char* new_scheme, SchemeType type) {
   DoAddSchemeWithType(new_scheme, type,
                       &GetSchemeRegistryWithoutLocking()->referrer_schemes);

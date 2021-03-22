@@ -97,6 +97,22 @@ bool CanonicalizePathURL(const char16_t* spec,
       URLComponentSource<char16_t>(spec), parsed, output, new_parsed);
 }
 
+void CanonicalizePathURLPath(const char* source,
+                             const Component& component,
+                             CanonOutput* output,
+                             Component* new_component) {
+  DoCanonicalizePathComponent<char, unsigned char>(source, component, '\0',
+                                                   output, new_component);
+}
+
+void CanonicalizePathURLPath(const char16_t* source,
+                             const Component& component,
+                             CanonOutput* output,
+                             Component* new_component) {
+  DoCanonicalizePathComponent<char16_t, char16_t>(source, component, '\0',
+                                                  output, new_component);
+}
+
 bool ReplacePathURL(const char* base,
                     const Parsed& base_parsed,
                     const Replacements<char>& replacements,

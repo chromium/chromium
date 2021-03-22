@@ -136,6 +136,16 @@ TEST_F(URLUtilTest, GetStandardSchemeType) {
                                      &scheme_type));
 }
 
+TEST_F(URLUtilTest, GetStandardSchemes) {
+  std::vector<std::string> expected = {
+      kHttpsScheme,      kHttpScheme,          kFileScheme,
+      kFtpScheme,        kWssScheme,           kWsScheme,
+      kFileSystemScheme, kQuicTransportScheme, "foo",
+  };
+  AddStandardScheme("foo", url::SCHEME_WITHOUT_AUTHORITY);
+  EXPECT_EQ(expected, GetStandardSchemes());
+}
+
 TEST_F(URLUtilTest, ReplaceComponents) {
   Parsed parsed;
   RawCanonOutputT<char> output;

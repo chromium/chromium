@@ -672,6 +672,19 @@ bool CanonicalizePathURL(const char16_t* spec,
                          CanonOutput* output,
                          Parsed* new_parsed);
 
+// Use to canonicalize just the path component of a "path" URL; e.g. the
+// path of a javascript URL.
+COMPONENT_EXPORT(URL)
+void CanonicalizePathURLPath(const char* source,
+                             const Component& component,
+                             CanonOutput* output,
+                             Component* new_component);
+COMPONENT_EXPORT(URL)
+void CanonicalizePathURLPath(const char16_t* source,
+                             const Component& component,
+                             CanonOutput* output,
+                             Component* new_component);
+
 // Use for mailto URLs. This "canonicalizes" the URL into a path and query
 // component. It does not attempt to merge "to" fields. It uses UTF-8 for
 // the query encoding if there is a query. This is because a mailto URL is
