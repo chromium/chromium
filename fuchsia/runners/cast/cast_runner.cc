@@ -456,6 +456,10 @@ void CastRunner::LaunchPendingComponent(PendingCastComponent* pending_component,
                           std::vector<fuchsia::net::http::Header>());
 
   if (component_owner == main_context_.get()) {
+    // For components in the main Context the cache sentinel file should have
+    // been created as a side-effect of |CastComponent::StartComponent()|.
+    DCHECK(was_cache_sentinel_created_);
+
     const auto& application_config = cast_component->application_config();
 
     // If this component has the microphone permission then use it to route
