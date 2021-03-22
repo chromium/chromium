@@ -3421,6 +3421,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Conversions.ReportRetrySucceed" enum="BooleanSuccess"
+    expires_after="M95">
+  <owner>johnidel@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records whether a particular conversion report was successful. Emitted for
+    all conversion reports which retry.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.ReportStatus" enum="ConversionReportStatus"
     expires_after="2021-08-09">
   <owner>johnidel@chromium.org</owner>

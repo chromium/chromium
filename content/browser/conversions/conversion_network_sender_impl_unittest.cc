@@ -131,28 +131,60 @@ TEST_F(ConversionNetworkSenderTest, ReportRequestHangs_TimesOut) {
 
 TEST_F(ConversionNetworkSenderTest,
        ReportRequesFailsDueToNetworkChange_Retries) {
-  auto report = GetReport(/*conversion_id=*/1);
-  network_sender_->SendReport(&report, GetSentCallback());
-  EXPECT_EQ(1, test_url_loader_factory_.NumPending());
+  // Retry fails
+  {
+    base::HistogramTester histograms;
 
-  // Simulate the request failing due to network change.
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      GURL(GetReportUrl("1")),
-      network::URLLoaderCompletionStatus(net::ERR_NETWORK_CHANGED),
-      network::mojom::URLResponseHead::New(), std::string());
+    auto report = GetReport(/*conversion_id=*/1);
+    network_sender_->SendReport(&report, GetSentCallback());
+    EXPECT_EQ(1, test_url_loader_factory_.NumPending());
 
-  // The sender should automatically retry.
-  EXPECT_EQ(1, test_url_loader_factory_.NumPending());
+    // Simulate the request failing due to network change.
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GURL(GetReportUrl("1")),
+        network::URLLoaderCompletionStatus(net::ERR_NETWORK_CHANGED),
+        network::mojom::URLResponseHead::New(), std::string());
 
-  // Simulate a second request failure due to network change.
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      GURL(GetReportUrl("1")),
-      network::URLLoaderCompletionStatus(net::ERR_NETWORK_CHANGED),
-      network::mojom::URLResponseHead::New(), std::string());
+    // The sender should automatically retry.
+    EXPECT_EQ(1, test_url_loader_factory_.NumPending());
 
-  // We should not retry again. Verify the report sent callback only gets fired once.
-  EXPECT_EQ(0, test_url_loader_factory_.NumPending());
-  EXPECT_EQ(1u, num_reports_sent_);
+    // Simulate a second request failure due to network change.
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GURL(GetReportUrl("1")),
+        network::URLLoaderCompletionStatus(net::ERR_NETWORK_CHANGED),
+        network::mojom::URLResponseHead::New(), std::string());
+
+    // We should not retry again. Verify the report sent callback only gets
+    // fired once.
+    EXPECT_EQ(0, test_url_loader_factory_.NumPending());
+    EXPECT_EQ(1u, num_reports_sent_);
+
+    histograms.ExpectUniqueSample("Conversions.ReportRetrySucceed", false, 1);
+  }
+
+  // Retry succeeds
+  {
+    base::HistogramTester histograms;
+
+    auto report = GetReport(/*conversion_id=*/2);
+    network_sender_->SendReport(&report, GetSentCallback());
+    EXPECT_EQ(1, test_url_loader_factory_.NumPending());
+
+    // Simulate the request failing due to network change.
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GURL(GetReportUrl("2")),
+        network::URLLoaderCompletionStatus(net::ERR_NETWORK_CHANGED),
+        network::mojom::URLResponseHead::New(), std::string());
+
+    // The sender should automatically retry.
+    EXPECT_EQ(1, test_url_loader_factory_.NumPending());
+
+    // Simulate a second request failure due to network change.
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetReportUrl("2"), "");
+
+    histograms.ExpectUniqueSample("Conversions.ReportRetrySucceed", true, 1);
+  }
 }
 
 TEST_F(ConversionNetworkSenderTest, ReportSent_QueryParamsSetCorrectly) {

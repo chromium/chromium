@@ -240,6 +240,7 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
   const GURL& GetFinalURL() const override;
   bool LoadedFromCache() const override;
   int64_t GetContentSize() const override;
+  int GetNumRetries() const override;
 
   // Called by BodyHandler when the BodyHandler body handler is done. If |error|
   // is not net::OK, some error occurred reading or consuming the body. If it is
@@ -349,6 +350,7 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
   int retry_mode_ = RETRY_NEVER;
   uint32_t url_loader_factory_options_ = 0;
   int32_t request_id_ = 0;
+  int num_retries_ = 0;
 
   // The next values contain all the information required to restart the
   // request.
@@ -1411,6 +1413,10 @@ int64_t SimpleURLLoaderImpl::GetContentSize() const {
   return request_state_->received_body_size;
 }
 
+int SimpleURLLoaderImpl::GetNumRetries() const {
+  return num_retries_;
+}
+
 const mojom::URLResponseHead* SimpleURLLoaderImpl::ResponseInfo() const {
   // Should only be called once the request is complete.
   DCHECK(request_state_->finished);
@@ -1568,6 +1574,7 @@ void SimpleURLLoaderImpl::Retry() {
   DCHECK(url_loader_factory_remote_);
   DCHECK_GT(remaining_retries_, 0);
   --remaining_retries_;
+  ++num_retries_;
 
   client_receiver_.reset();
   url_loader_.reset();

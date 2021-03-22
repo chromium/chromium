@@ -185,6 +185,11 @@ void ConversionNetworkSenderImpl::OnReportSent(
           : !internal_ok ? Status::kInternalError : Status::kExternalError;
   base::UmaHistogramEnumeration("Conversions.ReportStatus", status);
 
+  if (loader->GetNumRetries() > 0) {
+    base::UmaHistogramBoolean("Conversions.ReportRetrySucceed",
+                              status == Status::kOk);
+  }
+
   loaders_in_progress_.erase(it);
   std::move(sent_callback).Run();
 }

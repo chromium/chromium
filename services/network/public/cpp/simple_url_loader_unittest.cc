@@ -2785,6 +2785,9 @@ TEST_P(SimpleURLLoaderTest, RetryOn5xx) {
       EXPECT_EQ(test_case.expected_num_requests - 1,
                 test_helper->download_as_stream_retries());
     }
+
+    EXPECT_EQ(test_case.expected_num_requests - 1,
+              test_helper->simple_url_loader()->GetNumRetries());
   }
 }
 
@@ -2877,6 +2880,9 @@ TEST_P(SimpleURLLoaderTest, RetryOnNameNotResolved) {
       EXPECT_EQ(test_case.expected_num_requests - 1,
                 test_helper->download_as_stream_retries());
     }
+
+    EXPECT_EQ(test_case.expected_num_requests - 1,
+              test_helper->simple_url_loader()->GetNumRetries());
   }
 }
 
@@ -3058,6 +3064,9 @@ TEST_P(SimpleURLLoaderTest, RetryOnNetworkChange) {
         EXPECT_EQ(test_case.expected_num_requests - 1,
                   test_helper->download_as_stream_retries());
       }
+
+      EXPECT_EQ(test_case.expected_num_requests - 1,
+                test_helper->simple_url_loader()->GetNumRetries());
     }
   }
 
