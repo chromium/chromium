@@ -31,6 +31,7 @@ goog.require('cursors.Unit');
 goog.require('goog.i18n.MessageFormat');
 
 goog.scope(function() {
+const AriaCurrentState = chrome.automation.AriaCurrentState;
 const AutomationNode = chrome.automation.AutomationNode;
 const DescriptionFromType = chrome.automation.DescriptionFromType;
 const Dir = constants.Dir;
@@ -2016,7 +2017,7 @@ Output = class {
       return;
     }
 
-    const msgs = Output.computeHints_(node);
+    const msgs = Output.computeHints_(node, uniqueAncestors);
     const delayedMsgs =
         Output.computeDelayedHints_(node, uniqueAncestors, type);
     if (delayedMsgs.length > 0) {
@@ -2051,13 +2052,14 @@ Output = class {
   /**
    * Internal helper to |hint_|. Returns a list of message hints.
    * @param {!AutomationNode} node
+   * @param {!Array<AutomationNode>} uniqueAncestors
    * @return {!Array<{text: (string|undefined),
    *           msgId: (string|undefined),
    *           outputFormat: (string|undefined)}>} Note that the above caller
    * expects one and only one key be set.
    * @private
    */
-  static computeHints_(node) {
+  static computeHints_(node, uniqueAncestors) {
     const ret = [];
     if (node.errorMessage) {
       ret.push({outputFormat: '$node(errorMessage)'});
@@ -2080,6 +2082,19 @@ Output = class {
       }
       break;
     }
+
+    let currentNode = node;
+    let ancestorIndex = 0;
+    do {
+      if (currentNode.ariaCurrentState &&
+          Output.ARIA_CURRENT_STATE_INFO_[currentNode.ariaCurrentState]) {
+        ret.push({
+          msgId: Output.ARIA_CURRENT_STATE_INFO_[currentNode.ariaCurrentState]
+        });
+        break;
+      }
+      currentNode = uniqueAncestors[ancestorIndex++];
+    } while (currentNode);
 
     return ret;
   }
@@ -2639,6 +2654,20 @@ Output.STATE_INFO_ = {
   multiselectable: {on: {msgId: 'aria_multiselectable_true'}},
   required: {on: {msgId: 'aria_required_true'}},
   visited: {on: {msgId: 'visited_state'}}
+};
+
+/**
+ * Maps aria-current state types to message IDs.
+ * @const {Object<string>}
+ * @private
+ */
+Output.ARIA_CURRENT_STATE_INFO_ = {
+  [AriaCurrentState.TRUE]: 'aria_current_true',
+  [AriaCurrentState.PAGE]: 'aria_current_page',
+  [AriaCurrentState.STEP]: 'aria_current_step',
+  [AriaCurrentState.LOCATION]: 'aria_current_location',
+  [AriaCurrentState.DATE]: 'aria_current_date',
+  [AriaCurrentState.TIME]: 'aria_current_time'
 };
 
 /**

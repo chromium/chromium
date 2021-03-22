@@ -1295,6 +1295,21 @@ TEST_F('ChromeVoxOutputE2ETest', 'NameOrTextContent', function() {
       });
 });
 
+TEST_F('ChromeVoxOutputE2ETest', 'AriaCurrentHint', function() {
+  const site = `
+      <div aria-current="page">Home</div>
+      <div aria-current="false">About</div>
+      `;
+  this.runWithLoadedTree(site, function(root) {
+    const currentDiv = root.firstChild;
+    assertEquals(
+        chrome.automation.AriaCurrentState.PAGE, currentDiv.ariaCurrentState);
+    const o = new Output().withSpeech(
+        cursors.Range.fromNode(currentDiv), null, 'navigate');
+    assertEquals('Home|Current page', o.speechOutputForTest.string_);
+  });
+});
+
 TEST_F('ChromeVoxOutputE2ETest', 'DelayHintVariants', function() {
   this.runWithLoadedTree(
       `

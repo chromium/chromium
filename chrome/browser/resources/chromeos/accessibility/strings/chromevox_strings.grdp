@@ -1213,6 +1213,24 @@
   <message desc="Describes an element where the checked state is mixed or indeterminate." name="IDS_CHROMEVOX_CHECKED_MIXED">
     Partially checked
   </message>
+  <message desc="Describes an element with the ARIA attribute aria-current=true." name="IDS_CHROMEVOX_ARIA_CURRENT_TRUE">
+    Current
+  </message>
+  <message desc="Describes an element with the ARIA attribute aria-current=page." name="IDS_CHROMEVOX_ARIA_CURRENT_PAGE">
+    Current page
+  </message>
+  <message desc="Describes an element with the ARIA attribute aria-current=step." name="IDS_CHROMEVOX_ARIA_CURRENT_STEP">
+    Current step
+  </message>
+  <message desc="Describes an element with the ARIA attribute aria-current=location." name="IDS_CHROMEVOX_ARIA_CURRENT_LOCATION">
+    Current location
+  </message>
+  <message desc="Describes an element with the ARIA attribute aria-current=date." name="IDS_CHROMEVOX_ARIA_CURRENT_DATE">
+    Current date
+  </message>
+  <message desc="Describes an element with the ARIA attribute aria-current=time." name="IDS_CHROMEVOX_ARIA_CURRENT_TIME">
+    Current time
+  </message>
   <message desc="Describes an element with the ARIA attribute aria-disabled=true." name="IDS_CHROMEVOX_ARIA_DISABLED_TRUE">
     Disabled
   </message>
