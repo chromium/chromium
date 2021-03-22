@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
@@ -276,9 +277,9 @@ void NotificationDisplayServiceImpl::ProfileLoadedCallback(
     const base::Optional<std::u16string>& reply,
     const base::Optional<bool>& by_user,
     Profile* profile) {
+  base::UmaHistogramBoolean("Notifications.LoadProfileResult",
+                            profile != nullptr);
   if (!profile) {
-    // TODO(miguelg): Add UMA for this condition.
-    // Perhaps propagate this through PersistentNotificationStatus.
     LOG(WARNING) << "Profile not loaded correctly";
     return;
   }
