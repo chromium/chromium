@@ -40,6 +40,7 @@ cast_source_set("proxy") {
     "buffer_id_manager.h",
     "cast_runtime_audio_channel_broker.cc",
     "cast_runtime_audio_channel_broker.h",
+    "cast_runtime_audio_channel_endpoint_manager.h",
     "cma_backend_proxy.cc",
     "cma_backend_proxy.h",
     "cma_proxy_handler.h",
@@ -65,5 +66,6 @@ cast_source_set("proxy") {
   if (!enable_chromium_runtime_cast_renderer ||
       chromecast_branding == "public") {
     sources += [ "audio_channel_broker_simple.cc" ]
+    sources += [ "cast_runtime_audio_channel_endpoint_simple.cc" ]
   }
 }
