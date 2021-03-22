@@ -380,6 +380,51 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 }
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
+       RevokeAllCredentialsDuringLoad) {
+  class TokenServiceForceRevokeObserver
+      : public ProfileOAuth2TokenServiceObserver {
+   public:
+    explicit TokenServiceForceRevokeObserver(
+        MutableProfileOAuth2TokenServiceDelegate* delegate)
+        : delegate_(delegate) {}
+
+    void OnRefreshTokenRevoked(const CoreAccountId& account_id) override {
+      revoke_all_credentials_called_ = true;
+      delegate_->RevokeAllCredentials();
+    }
+
+    MutableProfileOAuth2TokenServiceDelegate* delegate_;
+    bool revoke_all_credentials_called_ = false;
+
+    DISALLOW_COPY_AND_ASSIGN(TokenServiceForceRevokeObserver);
+  };
+
+  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
+
+  TokenServiceForceRevokeObserver token_service_observer(
+      oauth2_service_delegate_.get());
+  oauth2_service_delegate_->AddObserver(&token_service_observer);
+
+  CoreAccountId account1("account1");
+  CoreAccountId account2("account2");
+
+  AddAuthTokenManually("AccountId-" + account1.ToString(), "refresh_token");
+  AddAuthTokenManually("AccountId-" + account2.ToString(), "refresh_token");
+  oauth2_service_delegate_->LoadCredentials(CoreAccountId());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1, tokens_loaded_count_);
+  EXPECT_EQ(0, token_available_count_);
+  EXPECT_EQ(2, token_revoked_count_);
+  EXPECT_EQ(1, end_batch_changes_);
+  EXPECT_TRUE(oauth2_service_delegate_->revoke_all_tokens_on_load_);
+  EXPECT_TRUE(token_service_observer.revoke_all_credentials_called_);
+  EXPECT_FALSE(oauth2_service_delegate_->RefreshTokenIsAvailable(account1));
+  EXPECT_FALSE(oauth2_service_delegate_->RefreshTokenIsAvailable(account2));
+  oauth2_service_delegate_->RemoveObserver(&token_service_observer);
+}
+
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        PersistenceLoadCredentials) {
   InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
   const CoreAccountId account_id("account_id");

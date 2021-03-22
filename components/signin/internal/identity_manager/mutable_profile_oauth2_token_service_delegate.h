@@ -106,6 +106,8 @@ class MutableProfileOAuth2TokenServiceDelegate
       MutableProfileOAuth2TokenServiceDelegateTest,
       LoadCredentialsClearsTokenDBWhenNoPrimaryAccount_DiceDisabled);
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
+                           RevokeAllCredentialsDuringLoad);
+  FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
                            PersistenceLoadCredentials);
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
                            RevokeOnUpdate);
@@ -228,7 +230,7 @@ class MutableProfileOAuth2TokenServiceDelegate
   // Revokes all the tokens after loading them. Secondary accounts will be
   // completely removed, and the primary account will be kept in authentication
   // error state.
-  const bool revoke_all_tokens_on_load_;
+  bool revoke_all_tokens_on_load_;
 
   // Callback function that attempts to correct request errors.  Best effort
   // only.  Returns true if the error was fixed and retry should be reattempted.

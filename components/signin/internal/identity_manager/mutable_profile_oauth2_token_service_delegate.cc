@@ -726,12 +726,9 @@ void MutableProfileOAuth2TokenServiceDelegate::RevokeAllCredentials() {
       signin::LoadCredentialsState::LOAD_CREDENTIALS_IN_PROGRESS) {
     VLOG(1) << "MutablePO2TS::RevokeAllCredentials before tokens are loaded.";
     // If |RevokeAllCredentials| is called while credentials are being loaded,
-    // then the load must be cancelled and the load credentials state updated.
-    DCHECK_NE(0, web_data_service_request_);
-    CancelWebTokenFetch();
-    set_load_credentials_state(
-        signin::LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS);
-    FinishLoadingCredentials();
+    // then the tokens should be revoked on load.
+    revoke_all_tokens_on_load_ = true;
+    loading_primary_account_id_ = CoreAccountId();
   }
 
   // Make a temporary copy of the account ids.
