@@ -304,30 +304,6 @@ class IdentityManagerTest : public testing::Test {
         identity_manager()->GetTokenService());
   }
 
-  void UpdateCredentials(const CoreAccountId& account_id,
-                         std::string gaia_id,
-                         std::string email,
-                         std::string token) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    identity_manager()->GetAshAccountManager()->UpsertAccount(
-        ::account_manager::AccountKey{gaia_id,
-                                      account_manager::AccountType::kGaia},
-        email, token);
-#else
-    token_service()->UpdateCredentials(account_id, "refresh_token");
-#endif
-  }
-
-  void RevokeCredentials(const CoreAccountId& account_id, std::string gaia_id) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    identity_manager()->GetAshAccountManager()->RemoveAccount(
-        ::account_manager::AccountKey{gaia_id,
-                                      account_manager::AccountType::kGaia});
-#else
-    token_service()->RevokeCredentials(account_id);
-#endif
-  }
-
   // See RecreateIdentityManager.
   enum class PrimaryAccountManagerSetup {
     kWithAuthenticatedAccout,
@@ -1278,8 +1254,9 @@ TEST_F(IdentityManagerTest, RemoveAccessTokenFromCache) {
                                                                   kTestEmail);
   identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
       primary_account_id());
-  UpdateCredentials(primary_account_id(), kTestGaiaId, kTestEmail,
-                    "refresh_token");
+
+  SetRefreshTokenForAccount(identity_manager(), primary_account_id(),
+                            "refresh_token");
 
   base::RunLoop run_loop;
   token_service()->set_on_access_token_invalidated_info(
@@ -1321,8 +1298,8 @@ TEST_F(IdentityManagerTest,
                                                                   kTestEmail);
   identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
       primary_account_id());
-  UpdateCredentials(primary_account_id(), kTestGaiaId, kTestEmail,
-                    "refresh_token");
+  SetRefreshTokenForAccount(identity_manager(), primary_account_id(),
+                            "refresh_token");
 
   std::set<std::string> scopes{"scope"};
   AccessTokenFetcher::TokenCallback callback = base::BindOnce(
@@ -1372,7 +1349,7 @@ TEST_F(IdentityManagerTest,
   account_tracker()->SeedAccountInfo(kTestGaiaId2, kTestEmail2);
   CoreAccountId account_id2 =
       account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).account_id;
-  UpdateCredentials(account_id2, kTestGaiaId2, kTestEmail2, "refresh_token");
+  SetRefreshTokenForAccount(identity_manager(), account_id2, "refresh_token");
 
   // No changes to the declared scopes, we can reuse it.
   callback = base::BindOnce(
@@ -1414,8 +1391,8 @@ TEST_F(IdentityManagerTest, ObserveAccessTokenFetch) {
                                                                   kTestEmail);
   identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
       primary_account_id());
-  UpdateCredentials(primary_account_id(), kTestGaiaId, kTestEmail,
-                    "refresh_token");
+  SetRefreshTokenForAccount(identity_manager(), primary_account_id(),
+                            "refresh_token");
 
   std::set<std::string> scopes{"scope"};
   AccessTokenFetcher::TokenCallback callback = base::BindOnce(
@@ -1472,8 +1449,8 @@ TEST_F(IdentityManagerTest,
                                                                   kTestEmail);
   identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
       primary_account_id());
-  UpdateCredentials(primary_account_id(), kTestGaiaId, kTestEmail,
-                    "refresh_token");
+  SetRefreshTokenForAccount(identity_manager(), primary_account_id(),
+                            "refresh_token");
   token_service()->set_auto_post_fetch_response_on_message_loop(true);
 
   std::set<std::string> scopes{"scope"};
@@ -1511,7 +1488,7 @@ TEST_F(IdentityManagerTest,
   account_tracker()->SeedAccountInfo(kTestGaiaId2, kTestEmail2);
   CoreAccountId account_id2 =
       account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).account_id;
-  UpdateCredentials(account_id2, kTestGaiaId2, kTestEmail2, "refresh_token");
+  SetRefreshTokenForAccount(identity_manager(), account_id2, "refresh_token");
 
   std::set<std::string> scopes{"scope"};
   AccessTokenFetcher::TokenCallback callback = base::BindOnce(
@@ -1523,7 +1500,7 @@ TEST_F(IdentityManagerTest,
           AccessTokenFetcher::Mode::kImmediate);
 
   // Revoke the refresh token result cancelling access token request.
-  RevokeCredentials(account_id2, kTestGaiaId2);
+  RemoveRefreshTokenForAccount(identity_manager(), account_id2);
 
   run_loop.Run();
 
@@ -2165,8 +2142,8 @@ TEST_F(IdentityManagerTest,
                                                                   kTestEmail);
   identity_manager()->GetPrimaryAccountMutator()->SetPrimaryAccount(
       primary_account_id());
-  UpdateCredentials(primary_account_id(), kTestGaiaId, kTestEmail,
-                    "refresh_token");
+  SetRefreshTokenForAccount(identity_manager(), primary_account_id(),
+                            "refresh_token");
 
   EXPECT_EQ(1ul, identity_manager_observer()->BatchChangeRecords().size());
   EXPECT_EQ(1ul,
