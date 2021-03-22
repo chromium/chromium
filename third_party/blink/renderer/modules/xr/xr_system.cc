@@ -636,6 +636,10 @@ void XRSystem::PendingRequestSessionQuery::ReportRequestSessionResult(
       GetFeatureRequestStatus(XRSessionFeature::DOM_OVERLAY, session);
   auto feature_request_depth_sensing =
       GetFeatureRequestStatus(XRSessionFeature::DEPTH, session);
+  auto feature_request_plane_detection =
+      GetFeatureRequestStatus(XRSessionFeature::PLANE_DETECTION, session);
+  auto feature_request_image_tracking =
+      GetFeatureRequestStatus(XRSessionFeature::IMAGE_TRACKING, session);
 
   ukm::builders::XR_WebXR_SessionRequest(ukm_source_id_)
       .SetMode(static_cast<int64_t>(mode_))
@@ -665,6 +669,22 @@ void XRSystem::PendingRequestSessionQuery::ReportRequestSessionResult(
              << ": depth sensing was requested, logging a UseCounter";
     UseCounter::Count(session->GetExecutionContext(),
                       WebFeature::kXRDepthSensing);
+  }
+
+  if (session && status == SessionRequestStatus::kSuccess &&
+      IsFeatureRequested(feature_request_plane_detection)) {
+    DVLOG(2) << __func__
+             << ": plane detection was requested, logging a UseCounter";
+    UseCounter::Count(session->GetExecutionContext(),
+                      WebFeature::kXRPlaneDetection);
+  }
+
+  if (session && status == SessionRequestStatus::kSuccess &&
+      IsFeatureRequested(feature_request_image_tracking)) {
+    DVLOG(2) << __func__
+             << ": image tracking was requested, logging a UseCounter";
+    UseCounter::Count(session->GetExecutionContext(),
+                      WebFeature::kXRImageTracking);
   }
 
   if (session && metrics_recorder) {

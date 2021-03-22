@@ -79,7 +79,7 @@ enum XRReflectionFormat {
   [RuntimeEnabled=WebXRLightEstimation, CallWith=ScriptState, MeasureAs=XRSessionRequestLightProbe, RaisesException]
   Promise<XRLightProbe> requestLightProbe(optional XRLightProbeInit options = {});
 
-  [RuntimeEnabled=WebXRImageTracking, CallWith=ScriptState, RaisesException]
+  [RuntimeEnabled=WebXRImageTracking, CallWith=ScriptState, MeasureAs=XRSessionGetTrackedImageScores, RaisesException]
   Promise<FrozenArray<XRImageTrackingScore>> getTrackedImageScores();
 
   [RuntimeEnabled=WebXRDepth, RaisesException]

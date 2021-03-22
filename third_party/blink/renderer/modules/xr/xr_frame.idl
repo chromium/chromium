@@ -29,7 +29,7 @@
   [RuntimeEnabled=WebXRDepth, RaisesException, MeasureAs=XRFrameGetDepthInformation]
   XRCPUDepthInformation? getDepthInformation(XRView view);
 
-  [RuntimeEnabled=WebXRImageTracking, RaisesException]
+  [RuntimeEnabled=WebXRImageTracking, RaisesException, MeasureAs=XRFrameGetImageTrackingResults]
   FrozenArray<XRImageTrackingResult> getImageTrackingResults();
 
   [RuntimeEnabled=WebXRHandInput, RaisesException]
@@ -41,6 +41,6 @@
 
   // More details about the real-world understanding APIs can be found here:
   // https://github.com/immersive-web/real-world-geometry/blob/master/plane-detection-explainer.md
-  [RuntimeEnabled=WebXRPlaneDetection, RaisesException]
+  [RuntimeEnabled=WebXRPlaneDetection, RaisesException, MeasureAs=XRFrameDetectedPlanes]
   readonly attribute XRPlaneSet? detectedPlanes;
 };

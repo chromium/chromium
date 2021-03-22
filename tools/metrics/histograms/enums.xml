@@ -31942,6 +31942,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3857" label="V8Navigator_RunAdAuction_Method"/>
   <int value="3858" label="XHRJSONEncodingDetection"/>
   <int value="3859" label="WorkerControlledByServiceWorkerOutOfScope"/>
+  <int value="3860" label="XRPlaneDetection"/>
+  <int value="3861" label="XRFrameDetectedPlanes"/>
+  <int value="3862" label="XRImageTracking"/>
+  <int value="3863" label="XRSessionGetTrackedImageScores"/>
+  <int value="3864" label="XRFrameGetImageTrackingResults"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

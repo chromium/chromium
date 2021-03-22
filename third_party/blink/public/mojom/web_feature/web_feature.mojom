@@ -3166,6 +3166,11 @@ enum WebFeature {
   kV8Navigator_RunAdAuction_Method = 3857,
   kXHRJSONEncodingDetection = 3858,
   kWorkerControlledByServiceWorkerOutOfScope = 3859,
+  kXRPlaneDetection = 3860,
+  kXRFrameDetectedPlanes = 3861,
+  kXRImageTracking = 3862,
+  kXRSessionGetTrackedImageScores = 3863,
+  kXRFrameGetImageTrackingResults = 3864,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
