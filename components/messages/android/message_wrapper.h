@@ -33,9 +33,9 @@ class MessageWrapper {
 
   // Methods to manipulate message properties. On Android the values are
   // propagated to Java and stored in |PropertyModel|.
-  // TODO(pavely): Reevaluate if propagating values to Java immediately is
-  // really necessary. Alternatively we could collect all the values in native
-  // and pass them to Java when enqueueing the message.
+  // TODO(crbug.com/1163325): Reevaluate if propagating values to Java
+  // immediately is really necessary. Alternatively we could collect all the
+  // values in native and pass them to Java when enqueueing the message.
   std::u16string GetTitle();
   void SetTitle(const std::u16string& title);
   std::u16string GetDescription();

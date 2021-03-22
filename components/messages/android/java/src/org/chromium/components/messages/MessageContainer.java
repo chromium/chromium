@@ -36,7 +36,8 @@ public class MessageContainer extends FrameLayout {
         }
         mMessageBannerView = view;
         addView(view);
-        // TODO(sinansahin): clipChildren should be set to false only when the message is in motion.
+        // TODO(crbug.com/1178965): clipChildren should be set to false only when the message is in
+        // motion.
         ViewUtils.setAncestorsShouldClipChildren(this, false);
     }
 

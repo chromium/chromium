@@ -57,17 +57,9 @@ public class MessageBannerProperties {
     static final WritableObjectPropertyKey<OnClickListener> PRIMARY_BUTTON_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    // TODO(pavely): There is no need to maintain two lists of property keys. Remove one and clean
-    // up references.
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {PRIMARY_BUTTON_TEXT,
             PRIMARY_BUTTON_CLICK_LISTENER, TITLE, DESCRIPTION, ICON, ICON_RESOURCE_ID,
             SECONDARY_ICON, SECONDARY_ICON_RESOURCE_ID, SECONDARY_ACTION_TEXT,
             SECONDARY_ICON_CONTENT_DESCRIPTION, TRANSLATION_X, TRANSLATION_Y, ALPHA,
-            ON_TOUCH_RUNNABLE, ON_PRIMARY_ACTION, ON_SECONDARY_ACTION};
-
-    public static final PropertyKey[] SINGLE_ACTION_MESSAGE_KEYS =
-            new PropertyKey[] {PRIMARY_BUTTON_TEXT, PRIMARY_BUTTON_CLICK_LISTENER, TITLE,
-                    DESCRIPTION, ICON, ICON_RESOURCE_ID, SECONDARY_ICON, SECONDARY_ICON_RESOURCE_ID,
-                    SECONDARY_ACTION_TEXT, ON_DISMISSED, TRANSLATION_X, TRANSLATION_Y, ALPHA,
-                    ON_TOUCH_RUNNABLE, ON_PRIMARY_ACTION, ON_SECONDARY_ACTION};
+            ON_TOUCH_RUNNABLE, ON_PRIMARY_ACTION, ON_SECONDARY_ACTION, ON_DISMISSED};
 }

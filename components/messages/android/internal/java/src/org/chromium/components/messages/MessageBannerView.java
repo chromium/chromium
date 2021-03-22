@@ -100,9 +100,9 @@ public class MessageBannerView extends BoundedLinearLayout {
         mSwipeGestureDetector = new MessageSwipeGestureListener(getContext(), handler);
     }
 
-    // TODO(pavely): For the M88 experiment we decided to display single item menu in response to
-    // the tap on secondary button. The code below implements this logic. Past M88 it will be
-    // replaced with modal dialog driven from the feature code.
+    // TODO(crbug.com/1163302): For the M88 experiment we decided to display single item menu in
+    // response to the tap on secondary button. The code below implements this logic. Past M88 it
+    // will be replaced with modal dialog driven from the feature code.
     void displayMenu() {
         final PropertyModel menuItemPropertyModel =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)

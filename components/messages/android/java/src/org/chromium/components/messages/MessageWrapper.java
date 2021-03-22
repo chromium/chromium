@@ -32,7 +32,7 @@ public final class MessageWrapper {
     private MessageWrapper(long nativeMessageWrapper) {
         mNativeMessageWrapper = nativeMessageWrapper;
         mMessageProperties =
-                new PropertyModel.Builder(MessageBannerProperties.SINGLE_ACTION_MESSAGE_KEYS)
+                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                         .with(MessageBannerProperties.ON_PRIMARY_ACTION, this::handleActionClick)
                         .with(MessageBannerProperties.ON_SECONDARY_ACTION,
                                 this::handleSecondaryActionClick)

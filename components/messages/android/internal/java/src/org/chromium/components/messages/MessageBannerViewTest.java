@@ -91,7 +91,7 @@ public class MessageBannerViewTest {
     @MediumTest
     public void testSecondaryActionMenu() {
         PropertyModel propertyModel =
-                new PropertyModel.Builder(MessageBannerProperties.SINGLE_ACTION_MESSAGE_KEYS)
+                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                         .with(MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID,
                                 android.R.drawable.ic_menu_add)
                         .with(MessageBannerProperties.SECONDARY_ACTION_TEXT, SECONDARY_ACTION_TEXT)

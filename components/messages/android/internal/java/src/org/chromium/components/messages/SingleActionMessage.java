@@ -40,8 +40,7 @@ public class SingleActionMessage implements MessageStateHandler {
 
     /**
      * @param container The container holding messages.
-     * @param model The PropertyModel with {@link
-     *         MessageBannerProperties#SINGLE_ACTION_MESSAGE_KEYS}.
+     * @param model The PropertyModel with {@link MessageBannerProperties#ALL_KEYS}.
      * @param dismissHandler The {@link DismissCallback} able to dismiss a message by given property
      *         model.
      * @param autodismissDurationMs A {@link Supplier} providing autodismiss duration for message

@@ -39,7 +39,6 @@ public class MessageContainerCoordinator implements BrowserControlsStateProvider
     private void updateMargins() {
         CoordinatorLayout.LayoutParams params =
                 (CoordinatorLayout.LayoutParams) mContainer.getLayoutParams();
-        // TODO(crbug.com/1123947): Update dimens for PWAs.
         params.topMargin = getContainerTopOffset();
         mContainer.setLayoutParams(params);
     }

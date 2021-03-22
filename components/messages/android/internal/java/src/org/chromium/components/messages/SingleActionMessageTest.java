@@ -144,7 +144,7 @@ public class SingleActionMessageTest {
     }
 
     private PropertyModel createBasicSingleActionMessageModel() {
-        return new PropertyModel.Builder(MessageBannerProperties.SINGLE_ACTION_MESSAGE_KEYS)
+        return new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                 .with(MessageBannerProperties.TITLE, "test")
                 .with(MessageBannerProperties.DESCRIPTION, "Description")
                 .with(MessageBannerProperties.ICON,
