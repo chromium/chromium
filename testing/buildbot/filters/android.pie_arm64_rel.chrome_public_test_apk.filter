@@ -93,5 +93,3 @@
 # crbug.com/1169250
 -org.chromium.chrome.browser.omnibox.LocationBarTest.testFocusLogic_keyboardVisibility
 
-# crbug.com/1183540: Re-enable once the tests do not cause timeout.
--org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.*
