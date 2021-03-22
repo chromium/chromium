@@ -685,7 +685,7 @@
     "messages": [3660],
   },
   "<(SHARED_INTERMEDIATE_DIR)/ui/file_manager/file_manager_gen_resources.grd": {
-    "META": {"sizes": {"includes": [200]}},
+    "META": {"sizes": {"includes": [2000]}},
     "includes": [3670],
   },
   "ui/file_manager/file_manager_resources.grd": {
