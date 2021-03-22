@@ -135,6 +135,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   void UpdateTextSize();
   void UpdateContentSize();
   void Redraw();
+  void Hide();
   std::unique_ptr<views::ImageButton> BuildImageButton(
       views::Button::PressedCallback callback,
       const gfx::VectorIcon& icon,

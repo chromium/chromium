@@ -680,8 +680,7 @@ void CaptionBubble::UpdateBubbleVisibility() {
   DCHECK(GetWidget());
   // If there is no model set, do not show the bubble.
   if (!model_) {
-    if (GetWidget()->IsVisible())
-      GetWidget()->Hide();
+    Hide();
     return;
   }
 
@@ -690,8 +689,7 @@ void CaptionBubble::UpdateBubbleVisibility() {
   // the speech service or user interacting with the bubble through focus,
   // pressing buttons, or dragging.
   if (!can_layout_ || model_->IsClosed() || !HasActivity()) {
-    if (GetWidget()->IsVisible())
-      GetWidget()->Hide();
+    Hide();
     return;
   }
 
@@ -707,8 +705,7 @@ void CaptionBubble::UpdateBubbleVisibility() {
   }
 
   // No text and no error. Hide it.
-  if (GetWidget()->IsVisible())
-    GetWidget()->Hide();
+  Hide();
 }
 
 void CaptionBubble::OnWidgetVisibilityChanged(views::Widget* widget,
@@ -798,10 +795,15 @@ void CaptionBubble::Redraw() {
   SizeToContents();
 }
 
-void CaptionBubble::OnInactivityTimeout() {
-  LogSessionEvent(SessionEvent::kStreamEnded);
-  if (GetWidget()->IsVisible())
+void CaptionBubble::Hide() {
+  if (GetWidget()->IsVisible()) {
     GetWidget()->Hide();
+    LogSessionEvent(SessionEvent::kStreamEnded);
+  }
+}
+
+void CaptionBubble::OnInactivityTimeout() {
+  Hide();
 
   // Clear the partial and final text in the caption bubble model and the label.
   // Does not affect the speech service. The speech service will emit a final
