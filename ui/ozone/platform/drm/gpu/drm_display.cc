@@ -166,6 +166,8 @@ std::unique_ptr<display::DisplaySnapshot> DrmDisplay::Update(
   return params;
 }
 
+// When reading DRM state always check that it's still valid. Any sort of events
+// (such as disconnects) may invalidate the state.
 bool DrmDisplay::GetHDCPState(
     display::HDCPState* state,
     display::ContentProtectionMethod* protection_method) {
@@ -183,6 +185,11 @@ bool DrmDisplay::GetHDCPState(
 
   ScopedDrmObjectPropertyPtr property_values(drm_->GetObjectProperties(
       connector_->connector_id, DRM_MODE_OBJECT_CONNECTOR));
+  if (!property_values) {
+    PLOG(INFO) << "Properties no longer valid for connector "
+               << connector_->connector_id << ".";
+    return false;
+  }
   std::string name =
       GetEnumNameForProperty(property_values.get(), hdcp_property.get());
   size_t i;
