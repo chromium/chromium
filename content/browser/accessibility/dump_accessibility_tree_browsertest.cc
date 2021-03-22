@@ -2859,7 +2859,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, ActivedescendantCrash) {
   RunRegressionTest(FILE_PATH_LITERAL("activedescendant-crash.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AddClickIgnoredChanged) {
+// TODO(crbug.com/1191098): Test is flaky on all platforms.
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       DISABLED_AddClickIgnoredChanged) {
   RunRegressionTest(FILE_PATH_LITERAL("add-click-ignored-changed.html"));
 }
 
