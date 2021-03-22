@@ -569,7 +569,7 @@ std::u16string SafetyCheckHandler::GetStringForParent(ParentStatus status) {
 std::u16string SafetyCheckHandler::GetStringForUpdates(UpdateStatus status) {
   switch (status) {
     case UpdateStatus::kChecking:
-      return base::UTF8ToUTF16("");
+      return u"";
     case UpdateStatus::kUpdated:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       return ui::SubstituteChromeOSDeviceType(IDS_SETTINGS_UPGRADE_UP_TO_DATE);
@@ -605,7 +605,7 @@ std::u16string SafetyCheckHandler::GetStringForUpdates(UpdateStatus status) {
     // This state is only used on Android for recording metrics. This codepath
     // is unreachable.
     case UpdateStatus::kOutdated:
-      return base::UTF8ToUTF16("");
+      return u"";
   }
 }
 
@@ -613,7 +613,7 @@ std::u16string SafetyCheckHandler::GetStringForSafeBrowsing(
     SafeBrowsingStatus status) {
   switch (status) {
     case SafeBrowsingStatus::kChecking:
-      return base::UTF8ToUTF16("");
+      return u"";
     case SafeBrowsingStatus::kEnabled:
     case SafeBrowsingStatus::kEnabledStandard:
       return l10n_util::GetStringUTF16(
@@ -647,7 +647,7 @@ std::u16string SafetyCheckHandler::GetStringForPasswords(
     case PasswordsStatus::kChecking: {
       // Unable to get progress for some reason.
       if (total.value() == 0) {
-        return base::UTF8ToUTF16("");
+        return u"";
       }
       return l10n_util::GetStringFUTF16(IDS_SETTINGS_CHECK_PASSWORDS_PROGRESS,
                                         base::FormatNumber(done.value()),
@@ -709,7 +709,7 @@ std::u16string SafetyCheckHandler::GetStringForExtensions(
     ReenabledAdmin reenabled_admin) {
   switch (status) {
     case ExtensionsStatus::kChecking:
-      return base::UTF8ToUTF16("");
+      return u"";
     case ExtensionsStatus::kError:
       return l10n_util::GetStringUTF16(
           IDS_SETTINGS_SAFETY_CHECK_EXTENSIONS_ERROR);
@@ -748,7 +748,7 @@ std::u16string SafetyCheckHandler::GetStringForChromeCleaner(
   switch (status) {
     case ChromeCleanerStatus::kHidden:
     case ChromeCleanerStatus::kChecking:
-      return base::UTF8ToUTF16("");
+      return u"";
     case ChromeCleanerStatus::kInfected:
       return l10n_util::GetStringUTF16(
           IDS_SETTINGS_SAFETY_CHECK_CHROME_CLEANER_INFECTED);

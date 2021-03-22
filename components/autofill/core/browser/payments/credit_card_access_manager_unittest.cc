@@ -1128,7 +1128,7 @@ TEST_F(CreditCardAccessManagerTest, FetchExpiredServerCardInvokesCvcPrompt) {
   // card.
   CreateServerCard(kTestGUID, kTestNumber);
   CreditCard* card = credit_card_access_manager_->GetCreditCard(kTestGUID);
-  card->SetExpirationYearFromString(base::UTF8ToUTF16("2010"));
+  card->SetExpirationYearFromString(u"2010");
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetUserOptedIn(true);
   payments_client_->AddFidoEligibleCard(card->server_id(), kCredentialId,

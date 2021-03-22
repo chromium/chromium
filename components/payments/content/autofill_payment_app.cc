@@ -227,7 +227,7 @@ void AutofillPaymentApp::GenerateBasicCardResponse() {
     delegate_ = nullptr;
   }
 
-  cvc_ = base::UTF8ToUTF16("");
+  cvc_ = u"";
 }
 
 void AutofillPaymentApp::OnAddressNormalized(

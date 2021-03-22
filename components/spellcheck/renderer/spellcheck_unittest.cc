@@ -1029,19 +1029,19 @@ TEST_F(SpellCheckTest, MisspelledWords) {
 // Make sure SpellCheckParagraph does not crash if the input is empty.
 TEST_F(SpellCheckTest, SpellCheckParagraphEmptyParagraph) {
   std::vector<SpellCheckResult> expected;
-  TestSpellCheckParagraph(base::UTF8ToUTF16(""), expected);
+  TestSpellCheckParagraph(u"", expected);
 }
 
 // A simple test case having no misspellings.
 TEST_F(SpellCheckTest, SpellCheckParagraphNoMisspellings) {
-  const std::u16string text = base::UTF8ToUTF16("apple");
+  const std::u16string text = u"apple";
   std::vector<SpellCheckResult> expected;
   TestSpellCheckParagraph(text, expected);
 }
 
 // A simple test case having one misspelling.
 TEST_F(SpellCheckTest, SpellCheckParagraphSingleMisspellings) {
-  const std::u16string text = base::UTF8ToUTF16("zz");
+  const std::u16string text = u"zz";
   std::vector<SpellCheckResult> expected;
   expected.push_back(SpellCheckResult(
       SpellCheckResult::SPELLING, 0, 2));
@@ -1051,7 +1051,7 @@ TEST_F(SpellCheckTest, SpellCheckParagraphSingleMisspellings) {
 
 // A simple test case having multiple misspellings.
 TEST_F(SpellCheckTest, SpellCheckParagraphMultipleMisspellings) {
-  const std::u16string text = base::UTF8ToUTF16("zz, zz");
+  const std::u16string text = u"zz, zz";
   std::vector<SpellCheckResult> expected;
   expected.push_back(SpellCheckResult(
       SpellCheckResult::SPELLING, 0, 2));
@@ -1283,18 +1283,18 @@ TEST_F(SpellCheckTest, CreateTextCheckingResultsKeepsTypographicalApostrophe) {
   std::vector<SpellCheckResult> spellcheck_results;
 
   // All typewriter apostrophe results.
-  spellcheck_results.push_back(SpellCheckResult(SpellCheckResult::SPELLING, 0,
-                                                5, base::UTF8ToUTF16("I've")));
-  spellcheck_results.push_back(SpellCheckResult(
-      SpellCheckResult::SPELLING, 6, 6, base::UTF8ToUTF16("haven't")));
-  spellcheck_results.push_back(SpellCheckResult(
-      SpellCheckResult::SPELLING, 13, 10, base::UTF8ToUTF16("in'n'out's")));
+  spellcheck_results.push_back(
+      SpellCheckResult(SpellCheckResult::SPELLING, 0, 5, u"I've"));
+  spellcheck_results.push_back(
+      SpellCheckResult(SpellCheckResult::SPELLING, 6, 6, u"haven't"));
+  spellcheck_results.push_back(
+      SpellCheckResult(SpellCheckResult::SPELLING, 13, 10, u"in'n'out's"));
 
   // Replacements that differ only by apostrophe type should be ignored.
-  spellcheck_results.push_back(SpellCheckResult(SpellCheckResult::SPELLING, 24,
-                                                4, base::UTF8ToUTF16("I've")));
-  spellcheck_results.push_back(SpellCheckResult(SpellCheckResult::SPELLING, 29,
-                                                4, base::UTF8ToUTF16("I've")));
+  spellcheck_results.push_back(
+      SpellCheckResult(SpellCheckResult::SPELLING, 24, 4, u"I've"));
+  spellcheck_results.push_back(
+      SpellCheckResult(SpellCheckResult::SPELLING, 29, 4, u"I've"));
 
   // All typographical apostrophe results.
   spellcheck_results.push_back(
@@ -1318,31 +1318,26 @@ TEST_F(SpellCheckTest, CreateTextCheckingResultsKeepsTypographicalApostrophe) {
   // we should ignore this misspelling.
   spellcheck_results.push_back(SpellCheckResult(
       SpellCheckResult::SPELLING, 0, 11,
-      std::vector<std::u16string>(
-          {base::UTF8ToUTF16("Ik've havn'"), u"Ik’ve havn’"})));
+      std::vector<std::u16string>({u"Ik've havn'", u"Ik’ve havn’"})));
 
   // If we have multiple replacements where some only differ by apostrophe type
   // and some don't, we should keep this misspelling, but remove the
   // replacements that only differ by apostrophe type.
   spellcheck_results.push_back(SpellCheckResult(
       SpellCheckResult::SPELLING, 0, 5,
-      std::vector<std::u16string>(
-          {base::UTF8ToUTF16("I've"), base::UTF8ToUTF16("Ive"), u"Ik’ve"})));
+      std::vector<std::u16string>({u"I've", u"Ive", u"Ik’ve"})));
 
   // Similar to the previous case except with the apostrophe changing from
   // typographical to straight instead of the other direction
   spellcheck_results.push_back(SpellCheckResult(
       SpellCheckResult::SPELLING, 6, 6,
-      std::vector<std::u16string>({base::UTF8ToUTF16("havn't"),
-                                   base::UTF8ToUTF16("havnt"),
-                                   base::UTF8ToUTF16("haven't")})));
+      std::vector<std::u16string>({u"havn't", u"havnt", u"haven't"})));
 
   // If we have multiple replacements, none of which differ only by apostrophe
   // type, we should keep this misspelling.
-  spellcheck_results.push_back(SpellCheckResult(
-      SpellCheckResult::SPELLING, 6, 6,
-      std::vector<std::u16string>(
-          {base::UTF8ToUTF16("have"), base::UTF8ToUTF16("haven't")})));
+  spellcheck_results.push_back(
+      SpellCheckResult(SpellCheckResult::SPELLING, 6, 6,
+                       std::vector<std::u16string>({u"have", u"haven't"})));
 
   blink::WebVector<blink::WebTextCheckingResult> textcheck_results;
   spell_check()->CreateTextCheckingResults(SpellCheck::USE_HUNSPELL_FOR_GRAMMAR,

@@ -72,7 +72,7 @@ TEST_F(TabTitleUtilTest, GetTabTitleWithNoDownloadTest) {
   EXPECT_NSEQ(ns_default_title, tab_util::GetTabTitle(&web_state_));
 
   // Title is set on the web state.
-  std::u16string custom_title = base::UTF8ToUTF16("TestTitle");
+  std::u16string custom_title = u"TestTitle";
   NSString* ns_custom_title = base::SysUTF16ToNSString(custom_title);
 
   web_state_.SetTitle(custom_title);

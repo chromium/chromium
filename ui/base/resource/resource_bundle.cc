@@ -492,11 +492,11 @@ std::u16string ResourceBundle::MaybeMangleLocalizedString(
   // For a string S, produce [[ --- S --- ]], where the number of dashes is 1/4
   // of the number of characters in S. This makes S something around 50-75%
   // longer, except for extremely short strings, which get > 100% longer.
-  std::u16string start_marker = base::UTF8ToUTF16("[[");
-  std::u16string end_marker = base::UTF8ToUTF16("]]");
+  std::u16string start_marker = u"[[";
+  std::u16string end_marker = u"]]";
   std::u16string dashes = std::u16string(str.size() / 4, '-');
   return base::JoinString({start_marker, dashes, str, dashes, end_marker},
-                          base::UTF8ToUTF16(" "));
+                          u" ");
 }
 
 std::string ResourceBundle::ReloadLocaleResources(

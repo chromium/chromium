@@ -55,7 +55,7 @@ class PaymentCredentialEnrollmentDialogViewTest
     instrument_icon_ = instrument_icon.get();
     model_.set_instrument_icon(std::move(instrument_icon));
 
-    model_.set_instrument_name(base::UTF8ToUTF16("Visa ••••4444"));
+    model_.set_instrument_name(u"Visa ••••4444");
 
     model_.set_accept_button_label(l10n_util::GetStringUTF16(
         IDS_PAYMENT_CREDENTIAL_ENROLLMENT_ACCEPT_BUTTON_LABEL));
@@ -302,11 +302,11 @@ IN_PROC_BROWSER_TEST_F(PaymentCredentialEnrollmentDialogViewTest,
 
   ExpectViewMatchesModel();
 
-  model_.set_title(base::UTF8ToUTF16("Test Title"));
-  model_.set_description(base::UTF8ToUTF16("Test description"));
-  model_.set_instrument_name(base::UTF8ToUTF16("Test instrument"));
-  model_.set_accept_button_label(base::UTF8ToUTF16("Test accept"));
-  model_.set_cancel_button_label(base::UTF8ToUTF16("Test cancel"));
+  model_.set_title(u"Test Title");
+  model_.set_description(u"Test description");
+  model_.set_instrument_name(u"Test instrument");
+  model_.set_accept_button_label(u"Test accept");
+  model_.set_cancel_button_label(u"Test cancel");
 
   dialog_view_->OnModelUpdated();
 

@@ -152,7 +152,7 @@ AnalysisSettings* NormalDlpAndMalwareSettings() {
 AnalysisSettings* NormalSettingsWithCustomMessage() {
   static base::NoDestructor<AnalysisSettings> settings([]() {
     AnalysisSettings settings = NormalSettingsWithTags({"dlp", "malware"});
-    settings.custom_message_text = base::UTF8ToUTF16("abcèéç");
+    settings.custom_message_text = u"abcèéç";
     return settings;
   }());
   return settings.get();

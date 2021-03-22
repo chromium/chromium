@@ -256,8 +256,7 @@ std::u16string ProfileAttributesEntry::GetName() const {
     case NameForm::kLocalName:
       return GetLocalProfileName();
     case NameForm::kGaiaAndLocalName:
-      return GetGAIANameToDisplay() + base::UTF8ToUTF16(" (") +
-             GetLocalProfileName() + base::UTF8ToUTF16(")");
+      return GetGAIANameToDisplay() + u" (" + GetLocalProfileName() + u")";
   }
 }
 

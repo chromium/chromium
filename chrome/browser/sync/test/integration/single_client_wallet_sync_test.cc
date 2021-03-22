@@ -909,7 +909,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
 
   // Unmask the card (the full card number has to start with "34" to match the
   // type of the masked card which is by default AMEX in the tests).
-  UnmaskServerCard(0, *cards[0], base::UTF8ToUTF16("3404000300020001"));
+  UnmaskServerCard(0, *cards[0], u"3404000300020001");
 
   // Keep the same data (only change the customer data to force the FakeServer
   // to send the full update).

@@ -279,20 +279,15 @@ TEST_F(ExtensionInfoGeneratorUnitTest, BasicInfoTest) {
   ErrorConsole* error_console = ErrorConsole::Get(profile());
   const GURL kContextUrl("http://example.com");
   error_console->ReportError(std::make_unique<RuntimeError>(
-      extension->id(), false, base::UTF8ToUTF16("source"),
-      base::UTF8ToUTF16("message"),
-      StackTrace(1, StackFrame(1, 1, base::UTF8ToUTF16("source"),
-                               base::UTF8ToUTF16("function"))),
-      kContextUrl, logging::LOG_ERROR, 1, 1));
+      extension->id(), false, u"source", u"message",
+      StackTrace(1, StackFrame(1, 1, u"source", u"function")), kContextUrl,
+      logging::LOG_ERROR, 1, 1));
   error_console->ReportError(std::make_unique<ManifestError>(
-      extension->id(), base::UTF8ToUTF16("message"), base::UTF8ToUTF16("key"),
-      std::u16string()));
+      extension->id(), u"message", u"key", std::u16string()));
   error_console->ReportError(std::make_unique<RuntimeError>(
-      extension->id(), false, base::UTF8ToUTF16("source"),
-      base::UTF8ToUTF16("message"),
-      StackTrace(1, StackFrame(1, 1, base::UTF8ToUTF16("source"),
-                               base::UTF8ToUTF16("function"))),
-      kContextUrl, logging::LOG_WARNING, 1, 1));
+      extension->id(), false, u"source", u"message",
+      StackTrace(1, StackFrame(1, 1, u"source", u"function")), kContextUrl,
+      logging::LOG_WARNING, 1, 1));
 
   // It's not feasible to validate every field here, because that would be
   // a duplication of the logic in the method itself. Instead, test a handful

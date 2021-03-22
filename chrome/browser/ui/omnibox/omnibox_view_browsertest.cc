@@ -885,7 +885,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, SearchDisabledDontCrashOnQuestionMark) {
   // instead of keystrokes.
   ASSERT_NO_FATAL_FAILURE({
     omnibox_view->OnBeforePossibleChange();
-    omnibox_view->SetUserText(base::UTF8ToUTF16("?"));
+    omnibox_view->SetUserText(u"?");
     omnibox_view->OnAfterPossibleChange(true);
   });
   ASSERT_FALSE(omnibox_view->model()->is_keyword_hint());

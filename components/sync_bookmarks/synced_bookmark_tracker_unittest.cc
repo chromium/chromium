@@ -368,9 +368,9 @@ TEST(SyncedBookmarkTrackerTest,
   const bookmarks::BookmarkNode* bookmark_bar_node =
       bookmark_model->bookmark_bar_node();
   const bookmarks::BookmarkNode* node0 = bookmark_model->AddFolder(
-      /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16("node0"));
+      /*parent=*/bookmark_bar_node, /*index=*/0, u"node0");
   const bookmarks::BookmarkNode* node1 = bookmark_model->AddFolder(
-      /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16("node1"));
+      /*parent=*/bookmark_bar_node, /*index=*/0, u"node1");
 
   sync_pb::BookmarkModelMetadata initial_model_metadata =
       CreateMetadataForPermanentNodes(bookmark_model.get());
@@ -426,15 +426,15 @@ TEST(SyncedBookmarkTrackerTest,
   const bookmarks::BookmarkNode* bookmark_bar_node =
       bookmark_model->bookmark_bar_node();
   const bookmarks::BookmarkNode* node0 = bookmark_model->AddFolder(
-      /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16("node0"));
+      /*parent=*/bookmark_bar_node, /*index=*/0, u"node0");
   const bookmarks::BookmarkNode* node1 = bookmark_model->AddFolder(
-      /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16("node1"));
+      /*parent=*/bookmark_bar_node, /*index=*/0, u"node1");
   const bookmarks::BookmarkNode* node2 = bookmark_model->AddFolder(
-      /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16("node2"));
+      /*parent=*/bookmark_bar_node, /*index=*/0, u"node2");
   const bookmarks::BookmarkNode* node3 = bookmark_model->AddFolder(
-      /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16("node3"));
+      /*parent=*/bookmark_bar_node, /*index=*/0, u"node3");
   const bookmarks::BookmarkNode* node4 = bookmark_model->AddFolder(
-      /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16("node4"));
+      /*parent=*/bookmark_bar_node, /*index=*/0, u"node4");
 
   sync_pb::BookmarkModelMetadata initial_model_metadata =
       CreateMetadataForPermanentNodes(bookmark_model.get());
@@ -584,11 +584,11 @@ TEST(SyncedBookmarkTrackerTest,
   const bookmarks::BookmarkNode* bookmark_bar_node =
       bookmark_model->bookmark_bar_node();
   const bookmarks::BookmarkNode* node0 = bookmark_model->AddFolder(
-      /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16("node0"));
+      /*parent=*/bookmark_bar_node, /*index=*/0, u"node0");
   const bookmarks::BookmarkNode* node1 = bookmark_model->AddFolder(
-      /*parent=*/node0, /*index=*/0, base::UTF8ToUTF16("node1"));
+      /*parent=*/node0, /*index=*/0, u"node1");
   const bookmarks::BookmarkNode* node2 = bookmark_model->AddFolder(
-      /*parent=*/node1, /*index=*/0, base::UTF8ToUTF16("node2"));
+      /*parent=*/node1, /*index=*/0, u"node2");
 
   // Server ids.
   const std::string kId0 = "id0";
@@ -640,7 +640,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldNotInvalidateMetadata) {
 
   const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
   const bookmarks::BookmarkNode* node = model->AddFolder(
-      /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16("node0"));
+      /*parent=*/bookmark_bar_node, /*index=*/0, u"node0");
 
   sync_pb::BookmarkModelMetadata model_metadata =
       CreateMetadataForPermanentNodes(model.get());
@@ -747,8 +747,7 @@ TEST(SyncedBookmarkTrackerTest,
       CreateMetadataForPermanentNodes(model.get());
 
   const bookmarks::BookmarkNode* node = model->AddFolder(
-      /*parent=*/model->bookmark_bar_node(), /*index=*/0,
-      base::UTF8ToUTF16("node"));
+      /*parent=*/model->bookmark_bar_node(), /*index=*/0, u"node");
   *model_metadata.add_bookmarks_metadata() =
       CreateNodeMetadata(node, /*server_id=*/"serverid");
 
@@ -802,8 +801,7 @@ TEST(SyncedBookmarkTrackerTest,
       CreateMetadataForPermanentNodes(model.get());
 
   const bookmarks::BookmarkNode* node = model->AddFolder(
-      /*parent=*/model->bookmark_bar_node(), /*index=*/0,
-      base::UTF8ToUTF16("node"));
+      /*parent=*/model->bookmark_bar_node(), /*index=*/0, u"node");
   *model_metadata.add_bookmarks_metadata() =
       CreateNodeMetadata(node, /*server_id=*/"serverid");
 
@@ -828,7 +826,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldInvalidateMetadataIfGuidMismatch) {
 
   const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
   const bookmarks::BookmarkNode* node0 = model->AddFolder(
-      /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16("node0"));
+      /*parent=*/bookmark_bar_node, /*index=*/0, u"node0");
 
   sync_pb::BookmarkModelMetadata model_metadata =
       CreateMetadataForPermanentNodes(model.get());
@@ -857,7 +855,7 @@ TEST(SyncedBookmarkTrackerTest,
 
   const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
   const bookmarks::BookmarkNode* node0 = model->AddFolder(
-      /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16("node0"));
+      /*parent=*/bookmark_bar_node, /*index=*/0, u"node0");
 
   sync_pb::BookmarkModelMetadata model_metadata =
       CreateMetadataForPermanentNodes(model.get());
@@ -899,7 +897,7 @@ TEST(SyncedBookmarkTrackerTest,
 
   const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
   const bookmarks::BookmarkNode* node0 = model->AddFolder(
-      /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16("node0"));
+      /*parent=*/bookmark_bar_node, /*index=*/0, u"node0");
 
   sync_pb::BookmarkModelMetadata model_metadata =
       CreateMetadataForPermanentNodes(model.get());
@@ -931,7 +929,7 @@ TEST(SyncedBookmarkTrackerTest,
 
   const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
   const bookmarks::BookmarkNode* node0 = model->AddFolder(
-      /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16("node0"));
+      /*parent=*/bookmark_bar_node, /*index=*/0, u"node0");
 
   sync_pb::BookmarkModelMetadata model_metadata =
       CreateMetadataForPermanentNodes(model.get());

@@ -403,11 +403,11 @@ TEST_F(WebAppShortcutCreatorTest, NormalizeTitle) {
   NiceMock<WebAppShortcutCreatorMock> shortcut_creator(app_data_dir_,
                                                        info_.get());
 
-  info_->title = base::UTF8ToUTF16("../../Evil/");
+  info_->title = u"../../Evil/";
   EXPECT_EQ(destination_dir_.Append(":..:Evil:.app"),
             shortcut_creator.GetApplicationsShortcutPath(false));
 
-  info_->title = base::UTF8ToUTF16("....");
+  info_->title = u"....";
   EXPECT_EQ(destination_dir_.Append(fallback_shim_base_name_),
             shortcut_creator.GetApplicationsShortcutPath(false));
 }

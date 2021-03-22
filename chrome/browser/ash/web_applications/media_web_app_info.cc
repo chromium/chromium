@@ -78,7 +78,7 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForMediaWebApp() {
 
   blink::Manifest::FileHandler file_handler;
   file_handler.action = GURL(chromeos::kChromeUIMediaAppURL);
-  file_handler.name = base::UTF8ToUTF16("Media File");
+  file_handler.name = u"Media File";
   file_handler.accept = MakeHandlerAccept();
   info->file_handlers.push_back(std::move(file_handler));
   return info;

@@ -424,7 +424,7 @@ TEST_F(ESimProfileTest, DisableProfile) {
 }
 
 TEST_F(ESimProfileTest, SetProfileNickName) {
-  const std::u16string test_nickname = base::UTF8ToUTF16("Test nickname");
+  const std::u16string test_nickname = u"Test nickname";
   base::HistogramTester histogram_tester;
 
   HermesEuiccClient::TestInterface* euicc_test =

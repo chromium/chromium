@@ -128,7 +128,7 @@ void NotificationPlatformBridgeMac::Display(
   std::u16string context_message =
       notification.items().empty()
           ? notification.message()
-          : (notification.items().at(0).title + base::UTF8ToUTF16(" - ") +
+          : (notification.items().at(0).title + u" - " +
              notification.items().at(0).message);
 
   [builder setContextMessage:base::SysUTF16ToNSString(context_message)];

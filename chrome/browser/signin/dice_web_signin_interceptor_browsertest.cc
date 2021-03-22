@@ -397,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAndLoad) {
   const base::FilePath profile_path =
       profile_manager->GenerateNextProfileDirectoryPath();
   profile_storage->AddProfile(
-      profile_path, base::UTF8ToUTF16("TestProfileName"), account_info.gaia,
+      profile_path, u"TestProfileName", account_info.gaia,
       base::UTF8ToUTF16(account_info.email),
       /*is_consented_primary_account=*/false, /*icon_index=*/0,
       /*supervised_user_id*/ std::string(), EmptyAccountId());

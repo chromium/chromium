@@ -29,7 +29,7 @@ class CastDialogSinkButtonTest : public ChromeViewsTestBase {
 
 TEST_F(CastDialogSinkButtonTest, SetTitleLabel) {
   UIMediaSink sink;
-  sink.friendly_name = base::UTF8ToUTF16("sink name");
+  sink.friendly_name = u"sink name";
   CastDialogSinkButton button(views::Button::PressedCallback(), sink);
   EXPECT_EQ(sink.friendly_name, button.title()->GetText());
 }
@@ -59,7 +59,7 @@ TEST_F(CastDialogSinkButtonTest, SetStatusLabelForActiveSink) {
             button1.subtitle()->GetText());
 
   sink.state = UIMediaSinkState::CONNECTED;
-  sink.status_text = base::UTF8ToUTF16("status text");
+  sink.status_text = u"status text";
   CastDialogSinkButton button2(views::Button::PressedCallback(), sink);
   EXPECT_EQ(sink.status_text, button2.subtitle()->GetText());
 

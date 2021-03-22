@@ -118,16 +118,16 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCvcUnmaskViewControllerTest,
   views::Textfield* cvc_field =
       static_cast<views::Textfield*>(dialog_view()->GetViewByID(
           static_cast<int>(DialogViewID::CVC_PROMPT_TEXT_FIELD)));
-  cvc_field->SetText(base::UTF8ToUTF16(""));
-  cvc_field->InsertOrReplaceText(base::UTF8ToUTF16("0"));
+  cvc_field->SetText(u"");
+  cvc_field->InsertOrReplaceText(u"0");
   EXPECT_FALSE(done_button->GetEnabled());
 
-  cvc_field->SetText(base::UTF8ToUTF16(""));
-  cvc_field->InsertOrReplaceText(base::UTF8ToUTF16("aaa"));
+  cvc_field->SetText(u"");
+  cvc_field->InsertOrReplaceText(u"aaa");
   EXPECT_FALSE(done_button->GetEnabled());
 
-  cvc_field->SetText(base::UTF8ToUTF16(""));
-  cvc_field->InsertOrReplaceText(base::UTF8ToUTF16("111"));
+  cvc_field->SetText(u"");
+  cvc_field->InsertOrReplaceText(u"111");
   EXPECT_TRUE(done_button->GetEnabled());
 }
 

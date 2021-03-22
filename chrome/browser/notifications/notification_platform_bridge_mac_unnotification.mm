@@ -105,7 +105,7 @@ void NotificationPlatformBridgeMacUNNotification::Display(
   std::u16string context_message =
       notification.items().empty()
           ? notification.message()
-          : (notification.items().at(0).title + base::UTF8ToUTF16(" - ") +
+          : (notification.items().at(0).title + u" - " +
              notification.items().at(0).message);
 
   bool is_alert = IsAlertNotificationMac(notification);

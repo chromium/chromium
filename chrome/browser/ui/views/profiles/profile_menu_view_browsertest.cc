@@ -585,8 +585,7 @@ constexpr ProfileMenuViewBase::ActionableItem
 PROFILE_MENU_CLICK_TEST(
     kActionableItems_SingleProfileWithCustomName,
     DISABLED_ProfileMenuClickTest_SingleProfileWithCustomName) {
-  profiles::UpdateProfileName(browser()->profile(),
-                              base::UTF8ToUTF16("Custom name"));
+  profiles::UpdateProfileName(browser()->profile(), u"Custom name");
   RunTest();
 }
 

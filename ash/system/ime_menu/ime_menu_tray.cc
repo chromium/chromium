@@ -548,7 +548,7 @@ void ImeMenuTray::UpdateTrayLabel() {
       AshColorProvider::ContentLayerType::kIconColorPrimary));
 
   if (current_ime.third_party)
-    label_->SetText(current_ime.short_name + base::UTF8ToUTF16("*"));
+    label_->SetText(current_ime.short_name + u"*");
   else
     label_->SetText(current_ime.short_name);
 }

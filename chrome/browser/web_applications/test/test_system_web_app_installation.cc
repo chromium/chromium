@@ -126,7 +126,7 @@ std::unique_ptr<WebApplicationInfo> GenerateWebApplicationInfoForTestApp() {
   // installation modes.
   info->start_url = GURL("chrome://test-system-app/pwa.html");
   info->scope = GURL("chrome://test-system-app/");
-  info->title = base::UTF8ToUTF16("Test System App");
+  info->title = u"Test System App";
   info->theme_color = 0xFF00FF00;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->open_as_window = true;
@@ -267,7 +267,7 @@ TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation() {
                       info->start_url =
                           GURL("chrome://initiating-app/pwa.html");
                       info->scope = GURL("chrome://initiating-app/");
-                      info->title = base::UTF8ToUTF16("Test System App");
+                      info->title = u"Test System App";
                       info->theme_color = 0xFF00FF00;
                       info->display_mode =
                           blink::mojom::DisplayMode::kStandalone;

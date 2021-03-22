@@ -16,11 +16,11 @@ UserInfoImpl::~UserInfoImpl() {
 }
 
 std::u16string UserInfoImpl::GetDisplayName() const {
-  return base::UTF8ToUTF16("stub-user");
+  return u"stub-user";
 }
 
 std::u16string UserInfoImpl::GetGivenName() const {
-  return base::UTF8ToUTF16("Stub");
+  return u"Stub";
 }
 
 std::string UserInfoImpl::GetDisplayEmail() const {

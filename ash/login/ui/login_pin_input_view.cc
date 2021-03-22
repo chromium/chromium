@@ -266,7 +266,7 @@ bool LoginPinInputView::OnKeyPressed(const ui::KeyEvent& event) {
   // when the last digit is inserted.
   if (event.key_code() == ui::KeyboardCode::VKEY_RETURN && !is_read_only_ &&
       authenticate_with_empty_pin_on_return_key_) {
-    SubmitPin(base::UTF8ToUTF16(""));
+    SubmitPin(u"");
     return true;
   }
 

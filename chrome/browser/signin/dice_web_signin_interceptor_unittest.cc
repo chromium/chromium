@@ -210,7 +210,7 @@ TEST_F(DiceWebSigninInterceptorTest, ShouldShowProfileSwitchBubble) {
   ASSERT_NE(entry, nullptr);
   std::string kOtherGaiaID = "SomeOtherGaiaID";
   ASSERT_NE(kOtherGaiaID, account_info.gaia);
-  entry->SetAuthInfo(kOtherGaiaID, base::UTF8ToUTF16("alice@gmail.com"),
+  entry->SetAuthInfo(kOtherGaiaID, u"alice@gmail.com",
                      /*is_consented_primary_account=*/true);
   EXPECT_FALSE(interceptor()->ShouldShowProfileSwitchBubble(
       email, profile_attributes_storage()));

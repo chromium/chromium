@@ -29,8 +29,7 @@ std::u16string ConcatAncestorsTitles(
              : std::accumulate(std::next(ancestors.rbegin()), ancestors.rend(),
                                std::u16string(*ancestors.rbegin()),
                                [](std::u16string& a, base::StringPiece16& b) {
-                                 return a + base::UTF8ToUTF16("/") +
-                                        std::u16string(b);
+                                 return a + u"/" + std::u16string(b);
                                });
 }
 
@@ -106,11 +105,11 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
   if (base::GetFieldTrialParamByFeatureAsBool(
           omnibox::kBookmarkPaths,
           OmniboxFieldTrial::kBookmarkPathsUiReplaceTitle, false)) {
-    match.description = path + base::UTF8ToUTF16("/") + title;
+    match.description = path + u"/" + title;
   } else if (base::GetFieldTrialParamByFeatureAsBool(
                  omnibox::kBookmarkPaths,
                  OmniboxFieldTrial::kBookmarkPathsUiAppendAfterTitle, false)) {
-    match.description = title + base::UTF8ToUTF16(" : ") + path;
+    match.description = title + u" : " + path;
   } else {
     match.description = title;
   }

@@ -64,19 +64,17 @@ double FuzzyTokenizedStringMatch::TokenSetRatio(
                       query_token.end(), std::back_inserter(text_diff_query));
 
   const std::u16string intersection_string =
-      base::JoinString(intersection, base::UTF8ToUTF16(" "));
+      base::JoinString(intersection, u" ");
   const std::u16string query_rewritten =
       intersection.empty()
-          ? base::JoinString(query_diff_text, base::UTF8ToUTF16(" "))
-          : base::StrCat(
-                {intersection_string, base::UTF8ToUTF16(" "),
-                 base::JoinString(query_diff_text, base::UTF8ToUTF16(" "))});
+          ? base::JoinString(query_diff_text, u" ")
+          : base::StrCat({intersection_string, u" ",
+                          base::JoinString(query_diff_text, u" ")});
   const std::u16string text_rewritten =
       intersection.empty()
-          ? base::JoinString(text_diff_query, base::UTF8ToUTF16(" "))
-          : base::StrCat(
-                {intersection_string, base::UTF8ToUTF16(" "),
-                 base::JoinString(text_diff_query, base::UTF8ToUTF16(" "))});
+          ? base::JoinString(text_diff_query, u" ")
+          : base::StrCat({intersection_string, u" ",
+                          base::JoinString(text_diff_query, u" ")});
 
   if (partial) {
     return std::max({PartialRatio(intersection_string, query_rewritten,
@@ -110,9 +108,9 @@ double FuzzyTokenizedStringMatch::TokenSortRatio(
     bool use_edit_distance,
     double num_matching_blocks_penalty) {
   const std::u16string query_sorted =
-      base::JoinString(ProcessAndSort(query), base::UTF8ToUTF16(" "));
+      base::JoinString(ProcessAndSort(query), u" ");
   const std::u16string text_sorted =
-      base::JoinString(ProcessAndSort(text), base::UTF8ToUTF16(" "));
+      base::JoinString(ProcessAndSort(text), u" ");
 
   if (partial) {
     return PartialRatio(query_sorted, text_sorted, partial_match_penalty_rate,
@@ -155,8 +153,7 @@ double FuzzyTokenizedStringMatch::PartialRatio(
     // Penalizes the match if it is not close to the beginning of a token.
     int current = long_start - 1;
     while (current >= 0 &&
-           !base::EqualsCaseInsensitiveASCII(longer.substr(current, 1),
-                                             base::UTF8ToUTF16(" "))) {
+           !base::EqualsCaseInsensitiveASCII(longer.substr(current, 1), u" ")) {
       current--;
     }
     const double penalty =
@@ -186,10 +183,8 @@ double FuzzyTokenizedStringMatch::WeightedRatio(
   const double unbase_scale = 0.95;
   // Since query.text() and text.text() is not normalized, we use query.tokens()
   // and text.tokens() instead.
-  const std::u16string query_normalized(
-      base::JoinString(query.tokens(), base::UTF8ToUTF16(" ")));
-  const std::u16string text_normalized(
-      base::JoinString(text.tokens(), base::UTF8ToUTF16(" ")));
+  const std::u16string query_normalized(base::JoinString(query.tokens(), u" "));
+  const std::u16string text_normalized(base::JoinString(text.tokens(), u" "));
   double weighted_ratio =
       SequenceMatcher(query_normalized, text_normalized, use_edit_distance,
                       num_matching_blocks_penalty)

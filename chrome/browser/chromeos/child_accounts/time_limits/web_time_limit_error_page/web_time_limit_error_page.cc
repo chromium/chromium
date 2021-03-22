@@ -48,7 +48,7 @@ std::string GetWebTimeLimitErrorPage(
   strings.SetString("blockPageHeader", block_header);
   strings.SetString(
       "blockPageMessage",
-      base::StrCat({block_message, base::UTF8ToUTF16(" "),
+      base::StrCat({block_message, u" ",
                     l10n_util::GetStringFUTF16(
                         IDS_WEB_TIME_LIMIT_ERROR_PAGE_NEXT_ACCESS_TIME,
                         GetTimeLimitMessage(time_limit))}));

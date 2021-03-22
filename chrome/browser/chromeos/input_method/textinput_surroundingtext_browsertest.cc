@@ -35,8 +35,8 @@ IN_PROC_BROWSER_TEST_F(TextInput_SurroundingTextChangedTest,
   helper.WaitForTextInputStateChanged(ui::TEXT_INPUT_TYPE_TEXT_AREA);
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT_AREA, helper.GetTextInputType());
 
-  const std::u16string sample_text1 = base::UTF8ToUTF16("abcde");
-  const std::u16string sample_text2 = base::UTF8ToUTF16("fghij");
+  const std::u16string sample_text1 = u"abcde";
+  const std::u16string sample_text2 = u"fghij";
   const std::u16string surrounding_text2 = sample_text1 + sample_text2;
   gfx::Range expected_range1(5, 5);
   gfx::Range expected_range2(10, 10);
@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(TextInput_SurroundingTextChangedTest,
   helper.WaitForTextInputStateChanged(ui::TEXT_INPUT_TYPE_TEXT_AREA);
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT_AREA, helper.GetTextInputType());
 
-  const std::u16string sample_text = base::UTF8ToUTF16("abcde");
+  const std::u16string sample_text = u"abcde";
   gfx::Range expected_range(5, 5);
 
   ui::CompositionText composition_text;
@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(TextInput_SurroundingTextChangedTest,
 
   // Click textarea containing text, so expecting new surrounding text comes.
   helper.ClickElement("filled_textarea", tab);
-  const std::u16string expected_text = base::UTF8ToUTF16("abcde");
+  const std::u16string expected_text = u"abcde";
   const gfx::Range expected_range(5, 5);
   helper.WaitForSurroundingTextChanged(expected_text, expected_range);
   EXPECT_EQ(expected_text, helper.GetSurroundingText());

@@ -163,7 +163,7 @@ TEST_F(CWVDownloadTaskTest, Properties) {
               cwv_task_.originalURL);
   EXPECT_NSEQ(@"text/plain", cwv_task_.MIMEType);
 
-  fake_internal_task_->SetSuggestedFilename(base::UTF8ToUTF16("foo.txt"));
+  fake_internal_task_->SetSuggestedFilename(u"foo.txt");
   EXPECT_NSEQ(@"foo.txt", cwv_task_.suggestedFileName);
 
   fake_internal_task_->SetTotalBytes(1024);

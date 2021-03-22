@@ -406,7 +406,7 @@ TEST_F(DataOfferTest, SetClipboardDataPlainText) {
   TestDataExchangeDelegate data_exchange_delegate;
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
-    writer.WriteText(base::UTF8ToUTF16("Test data"));
+    writer.WriteText(u"Test data");
   }
 
   auto* window = CreateTestWindowInShellWithBounds(gfx::Rect());
@@ -450,7 +450,7 @@ TEST_F(DataOfferTest, SetClipboardDataHTML) {
   TestDataExchangeDelegate data_exchange_delegate;
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
-    writer.WriteHTML(base::UTF8ToUTF16("Test data"), "");
+    writer.WriteHTML(u"Test data", "");
   }
 
   auto* window = CreateTestWindowInShellWithBounds(gfx::Rect());
@@ -607,7 +607,7 @@ TEST_F(DataOfferTest, SetClipboardDataWithTransferPolicy) {
     ui::ScopedClipboardWriter writer(
         ui::ClipboardBuffer::kCopyPaste,
         std::make_unique<ui::DataTransferEndpoint>(ui::EndpointType::kArc));
-    writer.WriteText(base::UTF8ToUTF16("Test data"));
+    writer.WriteText(u"Test data");
   }
 
   auto* window = CreateTestWindowInShellWithBounds(gfx::Rect());

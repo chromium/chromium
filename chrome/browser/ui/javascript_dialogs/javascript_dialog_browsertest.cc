@@ -45,7 +45,7 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest, ReloadDoesntHang) {
   scoped_refptr<content::MessageLoopRunner> runner =
       new content::MessageLoopRunner;
   js_helper->SetDialogShownCallbackForTesting(runner->QuitClosure());
-  tab->GetMainFrame()->ExecuteJavaScriptForTests(base::UTF8ToUTF16("alert()"),
+  tab->GetMainFrame()->ExecuteJavaScriptForTests(u"alert()",
                                                  base::NullCallback());
   runner->Run();
 
@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   content::WebContentsAddedObserver new_wc_observer;
   tab1->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::UTF8ToUTF16("window.open('about:blank');"), base::NullCallback());
+      u"window.open('about:blank');", base::NullCallback());
   content::WebContents* tab2 = new_wc_observer.GetWebContents();
   ASSERT_NE(tab1, tab2);
   ASSERT_EQ(tab1->GetMainFrame()->GetProcess(),
@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
   javascript_dialogs::TabModalDialogManager* js_helper2 =
       javascript_dialogs::TabModalDialogManager::FromWebContents(tab2);
   js_helper2->SetDialogShownCallbackForTesting(runner->QuitClosure());
-  tab2->GetMainFrame()->ExecuteJavaScriptForTests(base::UTF8ToUTF16("alert()"),
+  tab2->GetMainFrame()->ExecuteJavaScriptForTests(u"alert()",
                                                   base::NullCallback());
   runner->Run();
 

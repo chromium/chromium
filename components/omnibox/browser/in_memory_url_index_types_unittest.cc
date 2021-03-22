@@ -34,20 +34,19 @@ class InMemoryURLIndexTypesTest : public testing::Test {
 
 TEST_F(InMemoryURLIndexTypesTest, StaticFunctions) {
   // Test String16VectorFromString16
-  std::u16string string_a(
-      base::UTF8ToUTF16("http://www.google.com/ frammy  the brammy"));
+  std::u16string string_a(u"http://www.google.com/ frammy  the brammy");
   WordStarts actual_starts_a;
   String16Vector string_vec =
       String16VectorFromString16(string_a, false, &actual_starts_a);
   ASSERT_EQ(7U, string_vec.size());
   // See if we got the words we expected.
-  EXPECT_EQ(UTF8ToUTF16("http"), string_vec[0]);
-  EXPECT_EQ(UTF8ToUTF16("www"), string_vec[1]);
-  EXPECT_EQ(UTF8ToUTF16("google"), string_vec[2]);
-  EXPECT_EQ(UTF8ToUTF16("com"), string_vec[3]);
-  EXPECT_EQ(UTF8ToUTF16("frammy"), string_vec[4]);
-  EXPECT_EQ(UTF8ToUTF16("the"), string_vec[5]);
-  EXPECT_EQ(UTF8ToUTF16("brammy"), string_vec[6]);
+  EXPECT_EQ(u"http", string_vec[0]);
+  EXPECT_EQ(u"www", string_vec[1]);
+  EXPECT_EQ(u"google", string_vec[2]);
+  EXPECT_EQ(u"com", string_vec[3]);
+  EXPECT_EQ(u"frammy", string_vec[4]);
+  EXPECT_EQ(u"the", string_vec[5]);
+  EXPECT_EQ(u"brammy", string_vec[6]);
   // Verify the word starts.
   size_t expected_starts_a[] = {0, 7, 11, 18, 23, 31, 35};
   EXPECT_TRUE(IntArraysEqual(expected_starts_a, base::size(expected_starts_a),
@@ -56,11 +55,11 @@ TEST_F(InMemoryURLIndexTypesTest, StaticFunctions) {
   WordStarts actual_starts_b;
   string_vec = String16VectorFromString16(string_a, true, &actual_starts_b);
   ASSERT_EQ(5U, string_vec.size());
-  EXPECT_EQ(UTF8ToUTF16("http://"), string_vec[0]);
-  EXPECT_EQ(UTF8ToUTF16("www.google.com/"), string_vec[1]);
-  EXPECT_EQ(UTF8ToUTF16("frammy"), string_vec[2]);
-  EXPECT_EQ(UTF8ToUTF16("the"), string_vec[3]);
-  EXPECT_EQ(UTF8ToUTF16("brammy"), string_vec[4]);
+  EXPECT_EQ(u"http://", string_vec[0]);
+  EXPECT_EQ(u"www.google.com/", string_vec[1]);
+  EXPECT_EQ(u"frammy", string_vec[2]);
+  EXPECT_EQ(u"the", string_vec[3]);
+  EXPECT_EQ(u"brammy", string_vec[4]);
   size_t expected_starts_b[] = {0, 7, 23, 31, 35};
   EXPECT_TRUE(IntArraysEqual(expected_starts_b, base::size(expected_starts_b),
                              actual_starts_b));
@@ -75,18 +74,17 @@ TEST_F(InMemoryURLIndexTypesTest, StaticFunctions) {
   EXPECT_TRUE(IntArraysEqual(expected_starts_c, base::size(expected_starts_c),
                              actual_starts_c));
 
-  std::u16string string_d(
-      base::UTF8ToUTF16("http://www.google.com/frammy_the_brammy"));
+  std::u16string string_d(u"http://www.google.com/frammy_the_brammy");
   WordStarts actual_starts_d;
   string_vec = String16VectorFromString16(string_d, false, &actual_starts_d);
   ASSERT_EQ(7U, string_vec.size());
-  EXPECT_EQ(UTF8ToUTF16("http"), string_vec[0]);
-  EXPECT_EQ(UTF8ToUTF16("www"), string_vec[1]);
-  EXPECT_EQ(UTF8ToUTF16("google"), string_vec[2]);
-  EXPECT_EQ(UTF8ToUTF16("com"), string_vec[3]);
-  EXPECT_EQ(UTF8ToUTF16("frammy"), string_vec[4]);
-  EXPECT_EQ(UTF8ToUTF16("the"), string_vec[5]);
-  EXPECT_EQ(UTF8ToUTF16("brammy"), string_vec[6]);
+  EXPECT_EQ(u"http", string_vec[0]);
+  EXPECT_EQ(u"www", string_vec[1]);
+  EXPECT_EQ(u"google", string_vec[2]);
+  EXPECT_EQ(u"com", string_vec[3]);
+  EXPECT_EQ(u"frammy", string_vec[4]);
+  EXPECT_EQ(u"the", string_vec[5]);
+  EXPECT_EQ(u"brammy", string_vec[6]);
   size_t expected_starts_d[] = {0, 7, 11, 18, 22, 29, 33};
   EXPECT_TRUE(IntArraysEqual(expected_starts_d, base::size(expected_starts_d),
                              actual_starts_d));
@@ -98,11 +96,11 @@ TEST_F(InMemoryURLIndexTypesTest, StaticFunctions) {
   String16Set string_set = String16SetFromString16(string_e, &actual_starts_e);
   EXPECT_EQ(5U, string_set.size());
   // See if we got the words we expected.
-  EXPECT_TRUE(string_set.find(UTF8ToUTF16("com")) != string_set.end());
-  EXPECT_TRUE(string_set.find(UTF8ToUTF16("google")) != string_set.end());
-  EXPECT_TRUE(string_set.find(UTF8ToUTF16("http")) != string_set.end());
-  EXPECT_TRUE(string_set.find(UTF8ToUTF16("search")) != string_set.end());
-  EXPECT_TRUE(string_set.find(UTF8ToUTF16("web")) != string_set.end());
+  EXPECT_TRUE(string_set.find(u"com") != string_set.end());
+  EXPECT_TRUE(string_set.find(u"google") != string_set.end());
+  EXPECT_TRUE(string_set.find(u"http") != string_set.end());
+  EXPECT_TRUE(string_set.find(u"search") != string_set.end());
+  EXPECT_TRUE(string_set.find(u"web") != string_set.end());
   size_t expected_starts_e[] = {0, 7, 11, 18, 22, 29, 36, 40};
   EXPECT_TRUE(IntArraysEqual(expected_starts_e, base::size(expected_starts_e),
                              actual_starts_e));
@@ -133,8 +131,8 @@ TEST_F(InMemoryURLIndexTypesTest, StaticFunctions) {
   EXPECT_EQ(6, matches_f[3].term_num);
 
   // Test MatchTermInString
-  TermMatches matches_g = MatchTermInString(
-      UTF8ToUTF16("x"), UTF8ToUTF16("axbxcxdxex fxgx/hxixjx.kx"), 123);
+  TermMatches matches_g =
+      MatchTermInString(u"x", u"axbxcxdxex fxgx/hxixjx.kx", 123);
   const size_t expected_offsets[] = { 1, 3, 5, 7, 9, 12, 14, 17, 19, 21, 24 };
   ASSERT_EQ(base::size(expected_offsets), matches_g.size());
   for (size_t i = 0; i < base::size(expected_offsets); ++i)

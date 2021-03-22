@@ -1788,7 +1788,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                      "  document.title = 'unloaded!';"
                      "});"));
   {
-    std::u16string title_when_loaded = base::UTF8ToUTF16("loaded!");
+    std::u16string title_when_loaded = u"loaded!";
     TitleWatcher title_watcher(web_contents(), title_when_loaded);
     EXPECT_EQ(title_watcher.WaitAndGetTitle(), title_when_loaded);
   }
@@ -1809,7 +1809,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_EQ(rfh_a, current_frame_host());
   EXPECT_TRUE(rfh_b->IsInBackForwardCache());
   {
-    std::u16string title_when_loaded = base::UTF8ToUTF16("loaded!");
+    std::u16string title_when_loaded = u"loaded!";
     TitleWatcher title_watcher(web_contents(), title_when_loaded);
     EXPECT_EQ(title_watcher.WaitAndGetTitle(), title_when_loaded);
   }

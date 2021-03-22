@@ -51,7 +51,7 @@ TEST_F(NavigationItemTest, Dummy) {
 #ifndef NDEBUG
 // Tests that the debug description is as expected.
 TEST_F(NavigationItemTest, Description) {
-  item_->SetTitle(base::UTF8ToUTF16("Title"));
+  item_->SetTitle(u"Title");
   NSString* description = item_->GetDescription();
   EXPECT_TRUE([description containsString:@"url:http://init.test/"]);
   EXPECT_TRUE([description containsString:@"originalurl:http://init.test/"]);

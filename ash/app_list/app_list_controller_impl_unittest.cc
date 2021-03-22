@@ -462,8 +462,7 @@ TEST_F(AppListControllerImplTest, MAYBE_CloseNotificationWithAppListShown) {
   message_center::MessageCenter::Get()->AddNotification(
       std::make_unique<message_center::Notification>(
           message_center::NOTIFICATION_TYPE_BASE_FORMAT, notification_id,
-          base::UTF8ToUTF16(notification_title),
-          base::UTF8ToUTF16("test message"), gfx::Image(),
+          base::UTF8ToUTF16(notification_title), u"test message", gfx::Image(),
           std::u16string() /* display_source */, GURL(),
           message_center::NotifierId(), message_center::RichNotificationData(),
           new message_center::NotificationDelegate()));

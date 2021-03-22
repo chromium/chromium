@@ -44,7 +44,7 @@ TEST_F(GrammarServiceClientTest, ReturnsEmptyResultWhenSpellCheckIsDiabled) {
   base::RunLoop().RunUntilIdle();
 
   client.RequestTextCheck(
-      profile.get(), base::UTF8ToUTF16("cat"),
+      profile.get(), u"cat",
       base::BindOnce(
           [](bool success, const std::vector<SpellCheckResult>& results) {
             EXPECT_FALSE(success);
@@ -86,7 +86,7 @@ TEST_F(GrammarServiceClientTest, ParsesResults) {
   base::RunLoop().RunUntilIdle();
 
   client.RequestTextCheck(
-      profile.get(), base::UTF8ToUTF16("fake input"),
+      profile.get(), u"fake input",
       base::BindOnce(
           [](bool success, const std::vector<SpellCheckResult>& results) {
             EXPECT_TRUE(success);
@@ -95,8 +95,7 @@ TEST_F(GrammarServiceClientTest, ParsesResults) {
             EXPECT_EQ(results[0].location, 3);
             EXPECT_EQ(results[0].length, 5);
             ASSERT_EQ(results[0].replacements.size(), 1U);
-            EXPECT_EQ(results[0].replacements[0],
-                      base::UTF8ToUTF16("fake replacement"));
+            EXPECT_EQ(results[0].replacements[0], u"fake replacement");
           }));
 
   base::RunLoop().RunUntilIdle();

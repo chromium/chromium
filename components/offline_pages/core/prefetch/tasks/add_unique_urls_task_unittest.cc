@@ -33,7 +33,7 @@ const char kTestThumbnailURL[] = "http://thumbnail.com/";
 PrefetchURL PrefetchURL1() {
   return {kClientId1,
           GURL("https://www.url1.com/"),
-          base::UTF8ToUTF16("Title 1"),
+          u"Title 1",
           GURL("https://www.url1.com/thumbnail.png"),
           GURL("https://www.url1.com/favicon.png"),
           "snippet 1",
@@ -42,7 +42,7 @@ PrefetchURL PrefetchURL1() {
 PrefetchURL PrefetchURL2() {
   return {kClientId2,
           GURL("https://www.url2.com/"),
-          base::UTF8ToUTF16("Title 2"),
+          u"Title 2",
           GURL("https://www.url2.com/thumbnail.png"),
           GURL("https://www.url2.com/favicon.png"),
           "snippet 2",
@@ -51,7 +51,7 @@ PrefetchURL PrefetchURL2() {
 PrefetchURL PrefetchURL3() {
   return {kClientId3,
           GURL("https://www.url3.com/"),
-          base::UTF8ToUTF16("Title 3"),
+          u"Title 3",
           GURL("https://www.url3.com/thumbnail.png"),
           GURL("https://www.url3.com/favicon.png"),
           "snippet 3",

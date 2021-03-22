@@ -427,7 +427,7 @@ TEST_F(SeatTest, SetSelection_ClipboardChangedDuringSetSelection) {
 
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
-    writer.WriteText(base::UTF8ToUTF16("New data"));
+    writer.WriteText(u"New data");
   }
 
   RunReadingTask();
@@ -453,7 +453,7 @@ TEST_F(SeatTest, SetSelection_ClipboardChangedAfterSetSelection) {
 
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
-    writer.WriteText(base::UTF8ToUTF16("New data"));
+    writer.WriteText(u"New data");
   }
 
   // The previous source should be cancelled.
@@ -472,7 +472,7 @@ TEST_F(SeatTest, SetSelection_SourceDestroyedDuringSetSelection) {
 
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
-    writer.WriteText(base::UTF8ToUTF16("Original data"));
+    writer.WriteText(u"Original data");
   }
 
   {
@@ -534,7 +534,7 @@ TEST_F(SeatTest, SetSelection_NullSource) {
 
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
-    writer.WriteText(base::UTF8ToUTF16("Golden data"));
+    writer.WriteText(u"Golden data");
   }
 
   // Should not affect the current state of the clipboard.

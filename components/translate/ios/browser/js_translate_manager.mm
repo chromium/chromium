@@ -90,8 +90,7 @@ NSString* GetPageScript(NSString* script_file_name) {
   if (!_injected)
     return;
 
-  _web_state->ExecuteJavaScript(
-      base::UTF8ToUTF16("cr.googleTranslate.revert()"));
+  _web_state->ExecuteJavaScript(u"cr.googleTranslate.revert()");
 }
 
 - (void)handleTranslateResponseWithURL:(const std::string&)URL

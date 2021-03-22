@@ -112,8 +112,7 @@ IN_PROC_BROWSER_TEST_P(TelemetryExtensionWithDirIntegrationTest,
       content::NavigateToURL(web_contents, load_from_disk_resource_gurl));
 
   // Verify that the file loaded from disk has the expected title.
-  EXPECT_EQ(base::UTF8ToUTF16("TelemetryExtension - Loaded From Disk"),
-            web_contents->GetTitle());
+  EXPECT_EQ(u"TelemetryExtension - Loaded From Disk", web_contents->GetTitle());
 }
 
 // Tests that TelemetryExtensionUntrustedSource fails to load non-existing

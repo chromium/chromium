@@ -420,7 +420,7 @@ IN_PROC_BROWSER_TEST_F(SamlTest, IdpRequiresHttpAuth) {
   LoginHandler* handler = *login_prompt_observer.handlers().begin();
   // Note that the actual credentials don't matter because `fake_saml_idp()`
   // doesn't check those (only that something has been provided).
-  handler->SetAuth(base::UTF8ToUTF16("user"), base::UTF8ToUTF16("pwd"));
+  handler->SetAuth(u"user", u"pwd");
 
   // Now the SAML sign-in form should actually load.
   std::string message;

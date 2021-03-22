@@ -383,12 +383,9 @@ TEST(AutofillStructuredName, TestSettingMiddleNameInitial) {
             std::u16string());
 
   EXPECT_TRUE(full_name_with_prefix.SetValueForTypeIfPossible(
-      NAME_MIDDLE_INITIAL, base::UTF8ToUTF16("M"),
-      VerificationStatus::kObserved));
-  EXPECT_EQ(full_name_with_prefix.GetValueForType(NAME_MIDDLE_INITIAL),
-            base::UTF8ToUTF16("M"));
-  EXPECT_EQ(full_name_with_prefix.GetValueForType(NAME_MIDDLE),
-            base::UTF8ToUTF16("M"));
+      NAME_MIDDLE_INITIAL, u"M", VerificationStatus::kObserved));
+  EXPECT_EQ(full_name_with_prefix.GetValueForType(NAME_MIDDLE_INITIAL), u"M");
+  EXPECT_EQ(full_name_with_prefix.GetValueForType(NAME_MIDDLE), u"M");
 }
 
 TEST(AutofillStructuredName, MergePermutatedNames) {

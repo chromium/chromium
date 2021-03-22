@@ -336,7 +336,7 @@ TEST_F(MediaHostTest, ShouldSetTitleWhenCallingSetExternalPlaybackState) {
       .WillOnce([&](MediaStatePtr state) { actual_state = std::move(state); });
 
   media_session::MediaMetadata meta_data;
-  meta_data.title = base::UTF8ToUTF16("the title");
+  meta_data.title = u"the title";
   MediaSessionMetadataChanged(meta_data);
 
   ASSERT_FALSE(actual_state.is_null());
@@ -474,9 +474,9 @@ TEST_F(MediaHostTest, ShouldForwardLibassistantMediaSessionUpdates) {
 
   base::Optional<media_session::MediaMetadata> expected_output =
       media_session::MediaMetadata();
-  expected_output->title = base::UTF8ToUTF16("the title");
-  expected_output->artist = base::UTF8ToUTF16("the artist");
-  expected_output->album = base::UTF8ToUTF16("the album");
+  expected_output->title = u"the title";
+  expected_output->artist = u"the artist";
+  expected_output->album = u"the album";
   EXPECT_CALL(media_session_observer,
               MediaSessionMetadataChanged(expected_output));
 

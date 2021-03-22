@@ -309,8 +309,7 @@ TEST(TitledUrlMatchUtilsTest, PathsInContentsAndDescription) {
   scoped_refptr<FakeAutocompleteProvider> provider =
       new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_BOOKMARK);
   TestSchemeClassifier classifier;
-  std::vector<std::u16string> ancestors = {base::UTF8ToUTF16("parent"),
-                                           base::UTF8ToUTF16("grandparent")};
+  std::vector<std::u16string> ancestors = {u"parent", u"grandparent"};
 
   // Verifies contents and description of the AutocompleteMatch returned from
   // |bookmarks::TitledUrlMatchToAutocompleteMatch()|.

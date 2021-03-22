@@ -41,7 +41,7 @@ std::u16string GetFullProductName(const std::u16string& vendor_name,
   else if (model_name.empty())
     product_name = vendor_name;
   else if (!vendor_name.empty() && !model_name.empty())
-    product_name = vendor_name + base::UTF8ToUTF16(", ") + model_name;
+    product_name = vendor_name + u", " + model_name;
 
   return product_name;
 }

@@ -9887,7 +9887,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadDoesntKeepTitle) {
       "/navigation_controller/simple_page_1.html"));
   GURL intermediate_url(embedded_test_server()->GetURL(
       "/navigation_controller/simple_page_2.html"));
-  std::u16string title = base::UTF8ToUTF16("title");
+  std::u16string title = u"title";
 
   // Reload from the browser side.
   {

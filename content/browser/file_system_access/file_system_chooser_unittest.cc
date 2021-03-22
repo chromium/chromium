@@ -260,7 +260,7 @@ TEST_F(FileSystemChooserTest, DescriptionSanitization) {
   ASSERT_TRUE(dialog_params.file_types);
   ASSERT_EQ(4u,
             dialog_params.file_types->extension_description_overrides.size());
-  EXPECT_EQ(base::UTF8ToUTF16("Description with a lot of spaces"),
+  EXPECT_EQ(u"Description with a lot of spaces",
             dialog_params.file_types->extension_description_overrides[0]);
   EXPECT_EQ(
       base::UTF8ToUTF16(

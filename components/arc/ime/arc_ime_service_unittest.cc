@@ -239,7 +239,7 @@ TEST_F(ArcImeServiceTest, HasCompositionText) {
   instance_->OnWindowFocused(arc_win_.get(), nullptr);
 
   ui::CompositionText composition;
-  composition.text = base::UTF8ToUTF16("nonempty text");
+  composition.text = u"nonempty text";
 
   EXPECT_FALSE(instance_->HasCompositionText());
 
@@ -256,7 +256,7 @@ TEST_F(ArcImeServiceTest, HasCompositionText) {
   instance_->SetCompositionText(composition);
   EXPECT_TRUE(instance_->HasCompositionText());
   instance_->InsertText(
-      base::UTF8ToUTF16("another text"),
+      u"another text",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   EXPECT_FALSE(instance_->HasCompositionText());
 
@@ -284,7 +284,7 @@ TEST_F(ArcImeServiceTest, ConfirmCompositionText) {
   instance_->OnWindowFocused(arc_win_.get(), nullptr);
 
   ui::CompositionText composition;
-  composition.text = base::UTF8ToUTF16("nonempty text");
+  composition.text = u"nonempty text";
   EXPECT_FALSE(instance_->HasCompositionText());
   instance_->SetCompositionText(composition);
   EXPECT_TRUE(instance_->HasCompositionText());

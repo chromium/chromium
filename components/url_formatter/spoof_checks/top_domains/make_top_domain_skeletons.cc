@@ -84,7 +84,7 @@ int GenerateSkeletons(const char* input_file_name,
   // These characters are used to separate labels in a hostname. We generate
   // skeletons of top 500 domains without these separators as well. These
   // skeletons could be used in lookalike heuristics such as Target Embedding.
-  std::u16string kLabelSeparators = base::UTF8ToUTF16(".-");
+  std::u16string kLabelSeparators = u".-";
   std::stringstream input(input_content);
   std::string output =
       R"(# Copyright 2018 The Chromium Authors. All rights reserved.

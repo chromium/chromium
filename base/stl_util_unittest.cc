@@ -545,11 +545,11 @@ TEST(Erase, String) {
 TEST(Erase, String16) {
   std::pair<std::u16string, std::u16string> test_data[] = {
       {std::u16string(), std::u16string()},
-      {UTF8ToUTF16("abc"), UTF8ToUTF16("bc")},
-      {UTF8ToUTF16("abca"), UTF8ToUTF16("bc")},
+      {u"abc", u"bc"},
+      {u"abca", u"bc"},
   };
 
-  const std::u16string letters = UTF8ToUTF16("ab");
+  const std::u16string letters = u"ab";
   for (auto test_case : test_data) {
     Erase(test_case.first, letters[0]);
     EXPECT_EQ(test_case.second, test_case.first);

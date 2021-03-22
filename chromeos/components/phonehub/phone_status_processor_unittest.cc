@@ -187,7 +187,7 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusSnapshotUpdate) {
   EXPECT_EQ(PhoneStatusModel::ChargingState::kChargingAc,
             phone_status_model->charging_state());
   EXPECT_EQ(24u, phone_status_model->battery_percentage());
-  EXPECT_EQ(base::UTF8ToUTF16("google"),
+  EXPECT_EQ(u"google",
             phone_status_model->mobile_connection_metadata()->mobile_provider);
   EXPECT_EQ(PhoneStatusModel::SignalStrength::kFourBars,
             phone_status_model->mobile_connection_metadata()->signal_strength);
@@ -257,7 +257,7 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusUpdate) {
   EXPECT_EQ(PhoneStatusModel::ChargingState::kChargingAc,
             phone_status_model->charging_state());
   EXPECT_EQ(24u, phone_status_model->battery_percentage());
-  EXPECT_EQ(base::UTF8ToUTF16("google"),
+  EXPECT_EQ(u"google",
             phone_status_model->mobile_connection_metadata()->mobile_provider);
   EXPECT_EQ(PhoneStatusModel::SignalStrength::kFourBars,
             phone_status_model->mobile_connection_metadata()->signal_strength);
@@ -288,7 +288,7 @@ TEST_F(PhoneStatusProcessorTest, PhoneStatusUpdate) {
   EXPECT_EQ(PhoneStatusModel::ChargingState::kChargingAc,
             phone_status_model->charging_state());
   EXPECT_EQ(24u, phone_status_model->battery_percentage());
-  EXPECT_EQ(base::UTF8ToUTF16("google"),
+  EXPECT_EQ(u"google",
             phone_status_model->mobile_connection_metadata()->mobile_provider);
   EXPECT_EQ(PhoneStatusModel::SignalStrength::kFourBars,
             phone_status_model->mobile_connection_metadata()->signal_strength);
@@ -332,7 +332,7 @@ TEST_F(PhoneStatusProcessorTest, PhoneName) {
   fake_multidevice_setup_client_->SetHostStatusWithDevice(
       std::make_pair(HostStatus::kHostVerified, kFakePhoneA));
 
-  EXPECT_EQ(base::UTF8ToUTF16("Phone A"), mutable_phone_model_->phone_name());
+  EXPECT_EQ(u"Phone A", mutable_phone_model_->phone_name());
 }
 
 TEST_F(PhoneStatusProcessorTest, NotificationAccess) {

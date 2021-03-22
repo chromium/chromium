@@ -109,7 +109,7 @@ std::u16string GetTitleForButton(ConfirmInfoBarDelegate* delegate,
                                                       linkText.length())],
                           nil];
       // Append the link text to the message.
-      messageText += base::UTF8ToUTF16(" ") + linkText;
+      messageText += u" " + linkText;
     }
     message.messageText = base::SysUTF16ToNSString(messageText);
     [self.infoBarView setMessage:message];

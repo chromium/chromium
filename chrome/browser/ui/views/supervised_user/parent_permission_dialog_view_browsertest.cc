@@ -92,8 +92,8 @@ class ParentPermissionDialogViewTest
       parent_permission_dialog_ =
           ParentPermissionDialog::CreateParentPermissionDialog(
               browser()->profile(), contents->GetTopLevelNativeWindow(),
-              gfx::ImageSkia::CreateFrom1xBitmap(icon),
-              base::UTF8ToUTF16("Test prompt message"), base::DoNothing());
+              gfx::ImageSkia::CreateFrom1xBitmap(icon), u"Test prompt message",
+              base::DoNothing());
     } else if (name == "extension") {
       parent_permission_dialog_ =
           ParentPermissionDialog::CreateParentPermissionDialogForExtension(
@@ -186,8 +186,8 @@ class ParentPermissionDialogViewTest
     parent_permission_dialog_ =
         ParentPermissionDialog::CreateParentPermissionDialog(
             browser()->profile(), contents->GetTopLevelNativeWindow(),
-            gfx::ImageSkia::CreateFrom1xBitmap(icon),
-            base::UTF8ToUTF16("Test prompt message"), std::move(callback));
+            gfx::ImageSkia::CreateFrom1xBitmap(icon), u"Test prompt message",
+            std::move(callback));
     parent_permission_dialog_->ShowDialog();
     run_loop.Run();
   }

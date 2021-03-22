@@ -60,8 +60,7 @@ class ExternalProtocolDialogBrowserTest
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     dialog_ = new ExternalProtocolDialog(
-        web_contents, GURL("telnet://12345"),
-        base::UTF8ToUTF16("/usr/bin/telnet"),
+        web_contents, GURL("telnet://12345"), u"/usr/bin/telnet",
         url::Origin::Create(GURL(initiating_origin)));
   }
 

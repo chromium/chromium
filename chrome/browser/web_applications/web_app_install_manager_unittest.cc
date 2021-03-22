@@ -1267,7 +1267,7 @@ TEST_F(WebAppInstallManagerTest, InstallWebAppFromInfo) {
   auto server_web_app_info = std::make_unique<WebApplicationInfo>();
   server_web_app_info->start_url = url;
   server_web_app_info->scope = url;
-  server_web_app_info->title = base::UTF8ToUTF16("Test web app");
+  server_web_app_info->title = u"Test web app";
 
   InstallResult result = InstallWebAppFromInfo(std::move(server_web_app_info));
   EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);

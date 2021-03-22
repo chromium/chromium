@@ -637,9 +637,8 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, EventDispatchToTab) {
   BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
   bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
-  bookmarks::AddIfNotBookmarked(bookmark_model,
-                                GURL("http://www.google.com"),
-                                base::UTF8ToUTF16("Google"));
+  bookmarks::AddIfNotBookmarked(bookmark_model, GURL("http://www.google.com"),
+                                u"Google");
 
   EXPECT_TRUE(event_page_ready.WaitUntilSatisfied());
 

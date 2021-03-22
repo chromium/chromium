@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangePolicyBrowserTest, BlackList) {
 
   ui_test_utils::NavigateToURL(browser(), url);
 
-  std::u16string blocked_page_title(base::UTF8ToUTF16("test.example.org"));
+  std::u16string blocked_page_title(u"test.example.org");
   EXPECT_EQ(blocked_page_title, contents->GetTitle());
 
   // Verify that the expected error page is being displayed.

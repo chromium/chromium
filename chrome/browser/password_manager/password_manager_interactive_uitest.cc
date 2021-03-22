@@ -110,10 +110,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest, UsernameChanged) {
       password_store->stored_passwords();
   EXPECT_EQ(1u, stored_passwords.size());
   EXPECT_EQ(2u, stored_passwords.begin()->second.size());
-  EXPECT_EQ(base::UTF8ToUTF16("temp"),
-            (stored_passwords.begin()->second)[0].username_value);
-  EXPECT_EQ(base::UTF8ToUTF16("temporary"),
-            (stored_passwords.begin()->second)[1].username_value);
+  EXPECT_EQ(u"temp", (stored_passwords.begin()->second)[0].username_value);
+  EXPECT_EQ(u"temporary", (stored_passwords.begin()->second)[1].username_value);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,

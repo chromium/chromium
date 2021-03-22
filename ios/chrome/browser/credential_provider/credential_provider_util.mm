@@ -17,8 +17,8 @@ using base::UTF8ToUTF16;
 NSString* RecordIdentifierForPasswordForm(
     const password_manager::PasswordForm& form) {
   // These are the UNIQUE keys in the login database.
-  return SysUTF16ToNSString(
-      UTF8ToUTF16(form.url.spec() + "|") + form.username_element +
-      UTF8ToUTF16("|") + form.username_value + UTF8ToUTF16("|") +
-      form.password_element + UTF8ToUTF16("|" + form.signon_realm));
+  return SysUTF16ToNSString(UTF8ToUTF16(form.url.spec() + "|") +
+                            form.username_element + u"|" + form.username_value +
+                            u"|" + form.password_element +
+                            UTF8ToUTF16("|" + form.signon_realm));
 }

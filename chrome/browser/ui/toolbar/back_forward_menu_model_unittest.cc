@@ -484,12 +484,12 @@ TEST_F(BackFwdMenuModelTest, EscapeLabel) {
   NavigationSimulator::NavigateAndCommitFromDocument(GURL("http://www.a.com/1"),
                                                      main_rfh());
   web_contents()->UpdateTitleForEntry(controller().GetLastCommittedEntry(),
-                                      base::UTF8ToUTF16("A & B"));
+                                      u"A & B");
   LoadURLAndUpdateState("http://www.a.com/2", "A && B");
   NavigationSimulator::NavigateAndCommitFromDocument(GURL("http://www.a.com/2"),
                                                      main_rfh());
   web_contents()->UpdateTitleForEntry(controller().GetLastCommittedEntry(),
-                                      base::UTF8ToUTF16("A &&& B"));
+                                      u"A &&& B");
   LoadURLAndUpdateState("http://www.a.com/3", "");
 
   EXPECT_EQ(6, back_model->GetItemCount());

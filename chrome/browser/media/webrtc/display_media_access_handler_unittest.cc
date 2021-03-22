@@ -254,7 +254,7 @@ TEST_F(DisplayMediaAccessHandlerTest, CorrectHostAsksForPermissions) {
   access_handler_->UpdateMediaRequestState(
       render_process_id, render_frame_id, page_request_id, video_stream_type,
       content::MEDIA_REQUEST_STATE_CLOSING);
-  EXPECT_EQ(base::UTF8ToUTF16("http://127.0.0.1:8000"), params.app_name);
+  EXPECT_EQ(u"http://127.0.0.1:8000", params.app_name);
 }
 
 TEST_F(DisplayMediaAccessHandlerTest, CorrectHostAsksForPermissionsNormalURLs) {
@@ -288,7 +288,7 @@ TEST_F(DisplayMediaAccessHandlerTest, CorrectHostAsksForPermissionsNormalURLs) {
   access_handler_->UpdateMediaRequestState(
       render_process_id, render_frame_id, page_request_id, video_stream_type,
       content::MEDIA_REQUEST_STATE_CLOSING);
-  EXPECT_EQ(base::UTF8ToUTF16("www.google.com"), params.app_name);
+  EXPECT_EQ(u"www.google.com", params.app_name);
 }
 
 TEST_F(DisplayMediaAccessHandlerTest, WebContentsDestroyed) {

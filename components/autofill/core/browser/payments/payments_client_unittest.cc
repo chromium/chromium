@@ -268,8 +268,8 @@ class PaymentsClientTest : public testing::Test {
       card1.SetNickname(base::ASCIIToUTF16("grocery"));
     CreditCard card2 = test::GetCreditCard2();
     if (!has_cardholder_name) {
-      card1.SetRawInfo(CREDIT_CARD_NAME_FULL, base::UTF8ToUTF16(""));
-      card2.SetRawInfo(CREDIT_CARD_NAME_FULL, base::UTF8ToUTF16(""));
+      card1.SetRawInfo(CREDIT_CARD_NAME_FULL, u"");
+      card2.SetRawInfo(CREDIT_CARD_NAME_FULL, u"");
     }
     migratable_credit_cards_.push_back(MigratableCreditCard(card1));
     migratable_credit_cards_.push_back(MigratableCreditCard(card2));

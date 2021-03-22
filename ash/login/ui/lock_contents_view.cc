@@ -651,7 +651,7 @@ LockContentsView::LockContentsView(
   detachable_base_error_bubble_->set_persistent(true);
 
   tooltip_bubble_ = AddChildView(std::make_unique<LoginTooltipView>(
-      base::UTF8ToUTF16("") /*message*/, nullptr /*anchor_view*/));
+      u"" /*message*/, nullptr /*anchor_view*/));
   tooltip_bubble_->set_positioning_strategy(
       LoginBaseBubbleView::PositioningStrategy::kTryBeforeThenAfter);
   tooltip_bubble_->SetPadding(kHorizontalPaddingLoginTooltipViewDp,

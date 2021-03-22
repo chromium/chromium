@@ -2022,11 +2022,10 @@ TEST_F(ControllerTest, UserDataFormContactInfo) {
 
   autofill::AutofillProfile contact_profile;
   contact_profile.SetRawInfo(autofill::ServerFieldType::EMAIL_ADDRESS,
-                             base::UTF8ToUTF16("joedoe@example.com"));
-  contact_profile.SetRawInfo(autofill::ServerFieldType::NAME_FULL,
-                             base::UTF8ToUTF16("Joe Doe"));
+                             u"joedoe@example.com");
+  contact_profile.SetRawInfo(autofill::ServerFieldType::NAME_FULL, u"Joe Doe");
   contact_profile.SetRawInfo(autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER,
-                             base::UTF8ToUTF16("+1 23 456 789 01"));
+                             u"+1 23 456 789 01");
   controller_->SetContactInfo(
       std::make_unique<autofill::AutofillProfile>(contact_profile));
   EXPECT_THAT(controller_->GetUserData()
@@ -2115,11 +2114,10 @@ TEST_F(ControllerTest, UserDataChangesByOutOfLoopWrite) {
       .Times(1);
   autofill::AutofillProfile contact_profile;
   contact_profile.SetRawInfo(autofill::ServerFieldType::EMAIL_ADDRESS,
-                             base::UTF8ToUTF16("joedoe@example.com"));
-  contact_profile.SetRawInfo(autofill::ServerFieldType::NAME_FULL,
-                             base::UTF8ToUTF16("Joe Doe"));
+                             u"joedoe@example.com");
+  contact_profile.SetRawInfo(autofill::ServerFieldType::NAME_FULL, u"Joe Doe");
   contact_profile.SetRawInfo(autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER,
-                             base::UTF8ToUTF16("+1 23 456 789 01"));
+                             u"+1 23 456 789 01");
   controller_->SetContactInfo(
       std::make_unique<autofill::AutofillProfile>(contact_profile));
   EXPECT_THAT(controller_->GetUserData()
@@ -2846,9 +2844,9 @@ TEST_F(ControllerTest, RegularScriptShowsDefaultInitialStatusMessage) {
   SetupActionsForScript("script", actions_response);
 
   testing::InSequence seq;
-  EXPECT_CALL(mock_observer_, OnStatusMessageChanged(l10n_util::GetStringFUTF8(
-                                  IDS_AUTOFILL_ASSISTANT_LOADING,
-                                  base::UTF8ToUTF16("a.example.com"))))
+  EXPECT_CALL(mock_observer_,
+              OnStatusMessageChanged(l10n_util::GetStringFUTF8(
+                  IDS_AUTOFILL_ASSISTANT_LOADING, u"a.example.com")))
       .Times(1);
   EXPECT_CALL(mock_observer_, OnStatusMessageChanged("Hello World")).Times(1);
   Start("http://a.example.com/path");
@@ -2912,9 +2910,9 @@ TEST_F(ControllerTest, RuntimeManagerDestroyed) {
 }
 
 TEST_F(ControllerTest, OnGetScriptsFailedWillShutdown) {
-  EXPECT_CALL(mock_observer_, OnStatusMessageChanged(l10n_util::GetStringFUTF8(
-                                  IDS_AUTOFILL_ASSISTANT_LOADING,
-                                  base::UTF8ToUTF16("initialurl.com"))))
+  EXPECT_CALL(mock_observer_,
+              OnStatusMessageChanged(l10n_util::GetStringFUTF8(
+                  IDS_AUTOFILL_ASSISTANT_LOADING, u"initialurl.com")))
       .Times(1);
   EXPECT_CALL(*mock_service_, OnGetScriptsForUrl(_, _, _))
       .WillOnce(RunOnceCallback<2>(net::HTTP_NOT_FOUND, ""));

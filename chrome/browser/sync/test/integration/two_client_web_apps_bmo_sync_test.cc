@@ -218,13 +218,13 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
                        SyncDoubleInstallationDifferentNames) {
   ASSERT_TRUE(SetupClients());
   WebApplicationInfo info;
-  info.title = base::UTF8ToUTF16("Test name");
+  info.title = u"Test name";
   info.start_url = GURL("http://www.chromium.org/path");
 
   // Install web app to both profiles.
   AppId app_id = InstallApp(info, GetProfile(0));
   // The web app has a different title on the second profile.
-  info.title = base::UTF8ToUTF16("Test name 2");
+  info.title = u"Test name 2";
   AppId app_id2 = InstallApp(info, GetProfile(1));
 
   EXPECT_EQ(app_id, app_id2);
@@ -259,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
   ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
 
   WebApplicationInfo info;
-  info.title = base::UTF8ToUTF16("Test name");
+  info.title = u"Test name";
   info.start_url = GURL("http://www.chromium.org/path");
   info.open_as_window = true;
 

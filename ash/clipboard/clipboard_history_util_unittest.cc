@@ -100,7 +100,7 @@ TEST_F(ClipboardHistoryUtilTest, GetFileSystemSources) {
 
   builder.SetFileSystemData({"/path/to/My%20File.txt"});
   EXPECT_EQ(GetFileSystemSources(builder.Build().data()),
-            base::UTF8ToUTF16("/path/to/My%20File.txt"));
+            u"/path/to/My%20File.txt");
 }
 
 TEST_F(ClipboardHistoryUtilTest, GetSplitFileSystemData) {

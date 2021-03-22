@@ -191,7 +191,7 @@ TEST(TextInputTest, HintText) {
   EXPECT_GT(element->get_hint_element()->GetTargetOpacity(), 0);
 
   // When text enters the field, the hint should disappear.
-  EditedText info(base::UTF8ToUTF16("text"));
+  EditedText info(u"text");
   element->UpdateInput(info);
   scene.OnBeginFrame(base::TimeTicks(), kStartHeadPose);
   EXPECT_EQ(element->get_hint_element()->GetTargetOpacity(), 0);
@@ -229,7 +229,7 @@ TEST(TextInputTest, CursorBlinking) {
   EXPECT_TRUE(toggled);
 
   // With a selection, the cursor should not be blinking or visible.
-  EditedText info(base::UTF8ToUTF16("text"));
+  EditedText info(u"text");
   info.current.selection_start = 0;
   info.current.selection_end = info.current.text.size();
   element->UpdateInput(info);
@@ -252,7 +252,7 @@ TEST(TextInputTest, CursorPositionUpdatesOnKeyboardInput) {
   element->set_event_handlers(event_handlers);
   element->SetSize(1, 0);
 
-  EditedText info(base::UTF8ToUTF16("text"));
+  EditedText info(u"text");
   info.current.selection_start = 0;
   info.current.selection_end = 0;
   element->UpdateInput(info);
@@ -276,7 +276,7 @@ TEST(TextInputTest, CursorPositionUpdatesOnClicks) {
   element->set_event_handlers(event_handlers);
   element->SetSize(1, 0);
 
-  EditedText info(base::UTF8ToUTF16("text"));
+  EditedText info(u"text");
   element->UpdateInput(info);
   element->get_text_element()->PrepareToDrawForTest();
 
@@ -311,8 +311,7 @@ TEST(TextInputTest, TextSelectionUpdatesOnTouchMove) {
   element->SetSize(1.0, 0);
 
   EditedText info(TextInputInfo(
-      base::UTF8ToUTF16("this is a long text with the cursor at the beginning"),
-      0, 0));
+      u"this is a long text with the cursor at the beginning", 0, 0));
   element->UpdateInput(info);
   element->get_text_element()->PrepareToDrawForTest();
   EXPECT_EQ(element->edited_text().current.SelectionSize(), 0u);

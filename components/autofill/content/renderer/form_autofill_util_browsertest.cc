@@ -317,17 +317,13 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles) {
       GetButtonTitles(form_target, web_frame->GetDocument(), &cache);
 
   autofill::ButtonTitleList expected = {
-      {base::UTF8ToUTF16("Clear field"),
-       ButtonTitleType::INPUT_ELEMENT_BUTTON_TYPE},
-      {base::UTF8ToUTF16("Show password"),
-       ButtonTitleType::INPUT_ELEMENT_BUTTON_TYPE},
-      {base::UTF8ToUTF16("Sign Up"),
-       ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE},
-      {base::UTF8ToUTF16("Register"),
-       ButtonTitleType::BUTTON_ELEMENT_BUTTON_TYPE},
-      {base::UTF8ToUTF16("Create account"), ButtonTitleType::HYPERLINK},
-      {base::UTF8ToUTF16("Join"), ButtonTitleType::DIV},
-      {base::UTF8ToUTF16("Start"), ButtonTitleType::SPAN}};
+      {u"Clear field", ButtonTitleType::INPUT_ELEMENT_BUTTON_TYPE},
+      {u"Show password", ButtonTitleType::INPUT_ELEMENT_BUTTON_TYPE},
+      {u"Sign Up", ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE},
+      {u"Register", ButtonTitleType::BUTTON_ELEMENT_BUTTON_TYPE},
+      {u"Create account", ButtonTitleType::HYPERLINK},
+      {u"Join", ButtonTitleType::DIV},
+      {u"Start", ButtonTitleType::SPAN}};
   EXPECT_EQ(expected, actual);
 
   VerifyButtonTitleCache(form_target, expected, cache);
@@ -389,12 +385,9 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles_Formless) {
   autofill::ButtonTitleList actual =
       GetButtonTitles(form_target, web_frame->GetDocument(), &cache);
   autofill::ButtonTitleList expected = {
-      {base::UTF8ToUTF16("Show password"),
-       ButtonTitleType::INPUT_ELEMENT_BUTTON_TYPE},
-      {base::UTF8ToUTF16("Sign Up"),
-       ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE},
-      {base::UTF8ToUTF16("Register"),
-       ButtonTitleType::BUTTON_ELEMENT_BUTTON_TYPE}};
+      {u"Show password", ButtonTitleType::INPUT_ELEMENT_BUTTON_TYPE},
+      {u"Sign Up", ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE},
+      {u"Register", ButtonTitleType::BUTTON_ELEMENT_BUTTON_TYPE}};
   EXPECT_EQ(expected, actual);
 
   VerifyButtonTitleCache(form_target, expected, cache);
@@ -537,9 +530,9 @@ TEST_F(FormAutofillUtilsTest, IsFocusable) {
       dummy_fieldsets, control_elements, nullptr, web_frame->GetDocument(),
       nullptr, EXTRACT_NONE, &target, nullptr));
   ASSERT_EQ(2u, target.fields.size());
-  EXPECT_EQ(base::UTF8ToUTF16("name1"), target.fields[0].name);
+  EXPECT_EQ(u"name1", target.fields[0].name);
   EXPECT_TRUE(target.fields[0].is_focusable);
-  EXPECT_EQ(base::UTF8ToUTF16("name2"), target.fields[1].name);
+  EXPECT_EQ(u"name2", target.fields[1].name);
   EXPECT_FALSE(target.fields[1].is_focusable);
 }
 
@@ -634,8 +627,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaLabel) {
 
   WebDocument doc = GetMainFrame()->GetDocument();
   auto element = doc.GetElementById("input").To<WebInputElement>();
-  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element),
-            base::UTF8ToUTF16("the label"));
+  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element), u"the label");
 }
 
 // Tests that aria-labelledby works. Simple case: only one id referenced.
@@ -649,8 +641,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaLabelledBySingle) {
 
   WebDocument doc = GetMainFrame()->GetDocument();
   auto element = doc.GetElementById("input").To<WebInputElement>();
-  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element),
-            base::UTF8ToUTF16("Name"));
+  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element), u"Name");
 }
 
 // Tests that aria-labelledby works: Complex case: multiple ids referenced.
@@ -664,8 +655,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaLabelledByMulti) {
 
   WebDocument doc = GetMainFrame()->GetDocument();
   auto element = doc.GetElementById("input").To<WebInputElement>();
-  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element),
-            base::UTF8ToUTF16("Billing Name"));
+  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element), u"Billing Name");
 }
 
 // Tests that aria-labelledby takes precedence over aria-label
@@ -680,8 +670,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaLabelledByTakesPrecedence) {
 
   WebDocument doc = GetMainFrame()->GetDocument();
   auto element = doc.GetElementById("input").To<WebInputElement>();
-  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element),
-            base::UTF8ToUTF16("Name"));
+  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element), u"Name");
 }
 
 // Tests that an invalid aria-labelledby reference gets ignored (as opposed to
@@ -696,8 +685,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaLabelledByInvalid) {
 
   WebDocument doc = GetMainFrame()->GetDocument();
   auto element = doc.GetElementById("input").To<WebInputElement>();
-  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element),
-            base::UTF8ToUTF16(""));
+  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element), u"");
 }
 
 // Tests that invalid aria-labelledby references fall back to aria-label.
@@ -712,8 +700,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaLabelledByFallback) {
 
   WebDocument doc = GetMainFrame()->GetDocument();
   auto element = doc.GetElementById("input").To<WebInputElement>();
-  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element),
-            base::UTF8ToUTF16("valid"));
+  EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element), u"valid");
 }
 
 // Tests that aria-describedby works: Simple case: a single id referenced.
@@ -725,7 +712,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaDescribedBySingle) {
   WebDocument doc = GetMainFrame()->GetDocument();
   auto element = doc.GetElementById("input").To<WebInputElement>();
   EXPECT_EQ(autofill::form_util::GetAriaDescription(doc, element),
-            base::UTF8ToUTF16("aria description"));
+            u"aria description");
 }
 
 // Tests that aria-describedby works: Complex case: multiple ids referenced.
@@ -738,7 +725,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaDescribedByMulti) {
   WebDocument doc = GetMainFrame()->GetDocument();
   auto element = doc.GetElementById("input").To<WebInputElement>();
   EXPECT_EQ(autofill::form_util::GetAriaDescription(doc, element),
-            base::UTF8ToUTF16("aria description"));
+            u"aria description");
 }
 
 // Tests that invalid aria-describedby returns the empty string.
@@ -747,8 +734,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaDescribedByInvalid) {
 
   WebDocument doc = GetMainFrame()->GetDocument();
   auto element = doc.GetElementById("input").To<WebInputElement>();
-  EXPECT_EQ(autofill::form_util::GetAriaDescription(doc, element),
-            base::UTF8ToUTF16(""));
+  EXPECT_EQ(autofill::form_util::GetAriaDescription(doc, element), u"");
 }
 
 TEST_F(FormAutofillUtilsTest, IsFormVisible) {
@@ -857,10 +843,10 @@ TEST_F(FormAutofillUtilsTest, GetDataListSuggestions) {
   GetDataListSuggestions(web_control, &values, &labels);
   ASSERT_EQ(values.size(), 2u);
   ASSERT_EQ(labels.size(), 2u);
-  EXPECT_EQ(values[0], base::UTF8ToUTF16("1"));
-  EXPECT_EQ(values[1], base::UTF8ToUTF16("2"));
-  EXPECT_EQ(labels[0], base::UTF8ToUTF16(""));
-  EXPECT_EQ(labels[1], base::UTF8ToUTF16(""));
+  EXPECT_EQ(values[0], u"1");
+  EXPECT_EQ(values[1], u"2");
+  EXPECT_EQ(labels[0], u"");
+  EXPECT_EQ(labels[1], u"");
 }
 
 TEST_F(FormAutofillUtilsTest, GetDataListSuggestionsWithLabels) {
@@ -875,10 +861,10 @@ TEST_F(FormAutofillUtilsTest, GetDataListSuggestionsWithLabels) {
   GetDataListSuggestions(web_control, &values, &labels);
   ASSERT_EQ(values.size(), 2u);
   ASSERT_EQ(labels.size(), 2u);
-  EXPECT_EQ(values[0], base::UTF8ToUTF16("1"));
-  EXPECT_EQ(values[1], base::UTF8ToUTF16("2"));
-  EXPECT_EQ(labels[0], base::UTF8ToUTF16("one"));
-  EXPECT_EQ(labels[1], base::UTF8ToUTF16("two"));
+  EXPECT_EQ(values[0], u"1");
+  EXPECT_EQ(values[1], u"2");
+  EXPECT_EQ(labels[0], u"one");
+  EXPECT_EQ(labels[1], u"two");
 }
 
 TEST_F(FormAutofillUtilsTest, ExtractDataList) {
@@ -898,10 +884,10 @@ TEST_F(FormAutofillUtilsTest, ExtractDataList) {
   auto& labels = form_data.fields.back().datalist_labels;
   ASSERT_EQ(values.size(), 2u);
   ASSERT_EQ(labels.size(), 2u);
-  EXPECT_EQ(values[0], base::UTF8ToUTF16("1"));
-  EXPECT_EQ(values[1], base::UTF8ToUTF16("2"));
-  EXPECT_EQ(labels[0], base::UTF8ToUTF16("one"));
-  EXPECT_EQ(labels[1], base::UTF8ToUTF16("two"));
+  EXPECT_EQ(values[0], u"1");
+  EXPECT_EQ(values[1], u"2");
+  EXPECT_EQ(labels[0], u"one");
+  EXPECT_EQ(labels[1], u"two");
   EXPECT_EQ(form_field_data.datalist_values, values);
   EXPECT_EQ(form_field_data.datalist_labels, labels);
 }

@@ -147,7 +147,7 @@ std::u16string GetEnterMirrorModeMessage() {
     for (auto& id :
          GetDisplayManager()->GetMirroringDestinationDisplayIdList()) {
       if (!display_names.empty())
-        display_names.append(base::UTF8ToUTF16(","));
+        display_names.append(u",");
       display_names.append(GetDisplayName(id));
     }
     return l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_MIRRORING,

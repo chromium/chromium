@@ -118,17 +118,15 @@ class PageStateSerializationTest : public testing::Test {
  public:
   void PopulateFrameState(ExplodedFrameState* frame_state) {
     // Invent some data for the various fields.
-    frame_state->url_string = base::UTF8ToUTF16("http://dev.chromium.org/");
-    frame_state->referrer =
-        base::UTF8ToUTF16("https://www.google.com/search?q=dev.chromium.org");
+    frame_state->url_string = u"http://dev.chromium.org/";
+    frame_state->referrer = u"https://www.google.com/search?q=dev.chromium.org";
     frame_state->referrer_policy = network::mojom::ReferrerPolicy::kAlways;
-    frame_state->target = base::UTF8ToUTF16("foo");
+    frame_state->target = u"foo";
     frame_state->state_object = base::nullopt;
-    frame_state->document_state.push_back(base::UTF8ToUTF16("1"));
-    frame_state->document_state.push_back(base::UTF8ToUTF16("q"));
-    frame_state->document_state.push_back(base::UTF8ToUTF16("text"));
-    frame_state->document_state.push_back(
-        base::UTF8ToUTF16("dev.chromium.org"));
+    frame_state->document_state.push_back(u"1");
+    frame_state->document_state.push_back(u"q");
+    frame_state->document_state.push_back(u"text");
+    frame_state->document_state.push_back(u"dev.chromium.org");
     frame_state->scroll_restoration_type =
         mojom::ScrollRestorationType::kManual;
     frame_state->visual_viewport_scroll_offset = gfx::PointF(10, 15);
@@ -136,7 +134,7 @@ class PageStateSerializationTest : public testing::Test {
     frame_state->item_sequence_number = 1;
     frame_state->document_sequence_number = 2;
     frame_state->page_scale_factor = 2.0;
-    frame_state->scroll_anchor_selector = base::UTF8ToUTF16("#selector");
+    frame_state->scroll_anchor_selector = u"#selector";
     frame_state->scroll_anchor_offset = gfx::PointF(2.5, 3.5);
     frame_state->scroll_anchor_simhash = 12345;
   }
@@ -147,7 +145,7 @@ class PageStateSerializationTest : public testing::Test {
     http_body->request_body = new network::ResourceRequestBody();
     http_body->request_body->set_identifier(12345);
     http_body->contains_passwords = false;
-    http_body->http_content_type = base::UTF8ToUTF16("text/foo");
+    http_body->http_content_type = u"text/foo";
 
     std::string test_body("foo");
     http_body->request_body->AppendBytes(test_body.data(), test_body.size());
@@ -183,11 +181,11 @@ class PageStateSerializationTest : public testing::Test {
     // with the |version| where the new field is being introduced (set the
     // |version|-dependent test value above - next to and similarly to how
     // |initiator_origin| is handled).
-    frame_state->url_string = base::UTF8ToUTF16("http://chromium.org/");
-    frame_state->referrer = base::UTF8ToUTF16("http://google.com/");
+    frame_state->url_string = u"http://chromium.org/";
+    frame_state->referrer = u"http://google.com/";
     frame_state->referrer_policy = network::mojom::ReferrerPolicy::kDefault;
     if (!is_child)
-      frame_state->target = base::UTF8ToUTF16("target");
+      frame_state->target = u"target";
     frame_state->scroll_restoration_type = mojom::ScrollRestorationType::kAuto;
     frame_state->visual_viewport_scroll_offset = gfx::PointF(-1, -1);
     frame_state->scroll_offset = gfx::Point(42, -42);
@@ -197,16 +195,16 @@ class PageStateSerializationTest : public testing::Test {
 
     frame_state->document_state.push_back(base::UTF8ToUTF16(
         "\n\r?% WebKit serialized form state version 8 \n\r=&"));
-    frame_state->document_state.push_back(base::UTF8ToUTF16("form key"));
-    frame_state->document_state.push_back(base::UTF8ToUTF16("1"));
-    frame_state->document_state.push_back(base::UTF8ToUTF16("foo"));
-    frame_state->document_state.push_back(base::UTF8ToUTF16("file"));
-    frame_state->document_state.push_back(base::UTF8ToUTF16("2"));
-    frame_state->document_state.push_back(base::UTF8ToUTF16("file.txt"));
-    frame_state->document_state.push_back(base::UTF8ToUTF16("displayName"));
+    frame_state->document_state.push_back(u"form key");
+    frame_state->document_state.push_back(u"1");
+    frame_state->document_state.push_back(u"foo");
+    frame_state->document_state.push_back(u"file");
+    frame_state->document_state.push_back(u"2");
+    frame_state->document_state.push_back(u"file.txt");
+    frame_state->document_state.push_back(u"displayName");
 
     if (!is_child) {
-      frame_state->http_body.http_content_type = base::UTF8ToUTF16("foo/bar");
+      frame_state->http_body.http_content_type = u"foo/bar";
       frame_state->http_body.request_body = new network::ResourceRequestBody();
       frame_state->http_body.request_body->set_identifier(789);
 
@@ -230,7 +228,7 @@ class PageStateSerializationTest : public testing::Test {
 
   void PopulatePageStateForBackwardsCompatTest(ExplodedPageState* page_state,
                                                int version) {
-    page_state->referenced_files.push_back(base::UTF8ToUTF16("file.txt"));
+    page_state->referenced_files.push_back(u"file.txt");
     PopulateFrameStateForBackwardsCompatTest(&page_state->top, false, version);
   }
 
@@ -592,7 +590,7 @@ TEST_F(PageStateSerializationTest, BackwardsCompat_v28) {
 
 TEST_F(PageStateSerializationTest, BackwardsCompat_ReferencedFiles) {
   ExplodedPageState state;
-  state.referenced_files.push_back(base::UTF8ToUTF16("file.txt"));
+  state.referenced_files.push_back(u"file.txt");
 
   ExplodedPageState saved_state;
   ReadBackwardsCompatPageState("referenced_files", 26, &saved_state);
@@ -689,7 +687,7 @@ TEST_F(PageStateSerializationTest, BackwardsCompat_HttpBody) {
   http_body.request_body = new network::ResourceRequestBody();
   http_body.request_body->set_identifier(12345);
   http_body.contains_passwords = false;
-  http_body.http_content_type = base::UTF8ToUTF16("text/foo");
+  http_body.http_content_type = u"text/foo";
 
   std::string test_body("foo");
   http_body.request_body->AppendBytes(test_body.data(), test_body.size());

@@ -86,9 +86,9 @@ class NotificationUIManagerBrowserTest : public InProcessBrowserTest {
     return Notification(
         message_center::NOTIFICATION_TYPE_SIMPLE, id,
         base::ASCIIToUTF16("title"), base::ASCIIToUTF16("message"),
-        gfx::Image(), base::UTF8ToUTF16("chrome-test://testing/"),
-        GURL("chrome-test://testing/"), message_center::NotifierId(),
-        message_center::RichNotificationData(), new_delegate);
+        gfx::Image(), u"chrome-test://testing/", GURL("chrome-test://testing/"),
+        message_center::NotifierId(), message_center::RichNotificationData(),
+        new_delegate);
   }
 
   Notification CreateRichTestNotification(const std::string& id,
@@ -104,8 +104,7 @@ class NotificationUIManagerBrowserTest : public InProcessBrowserTest {
     return Notification(
         message_center::NOTIFICATION_TYPE_BASE_FORMAT, id,
         base::ASCIIToUTF16("title"), base::ASCIIToUTF16("message"),
-        gfx::Image(), base::UTF8ToUTF16("chrome-test://testing/"),
-        GURL("chrome-test://testing/"),
+        gfx::Image(), u"chrome-test://testing/", GURL("chrome-test://testing/"),
         message_center::NotifierId(message_center::NotifierType::APPLICATION,
                                    "extension_id"),
         data, new_delegate);

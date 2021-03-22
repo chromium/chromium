@@ -479,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
   std::u16string result;
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr,
                       &result);
-  EXPECT_EQ(result, base::UTF8ToUTF16("http://example.test/"));
+  EXPECT_EQ(result, u"http://example.test/");
 }
 
 // Paths above the launch url should be out of scope and should be closable from
@@ -567,7 +567,7 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
   SetTitleAndLocation(app_view->GetActiveWebContents(),
                       base::ASCIIToUTF16("FooBar"), navigate_to);
 
-  EXPECT_EQ(base::UTF8ToUTF16("https://xn--lv8h.example"),
+  EXPECT_EQ(u"https://xn--lv8h.example",
             app_view->toolbar()->custom_tab_bar()->location_for_testing());
   EXPECT_EQ(base::ASCIIToUTF16("FooBar"),
             app_view->toolbar()->custom_tab_bar()->title_for_testing());
@@ -589,7 +589,7 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
   SetTitleAndLocation(app_view->GetActiveWebContents(),
                       base::ASCIIToUTF16("FooBar"), navigate_to);
 
-  EXPECT_EQ(base::UTF8ToUTF16("https://ΐ.example"),
+  EXPECT_EQ(u"https://ΐ.example",
             app_view->toolbar()->custom_tab_bar()->location_for_testing());
   EXPECT_EQ(base::ASCIIToUTF16("FooBar"),
             app_view->toolbar()->custom_tab_bar()->title_for_testing());

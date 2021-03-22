@@ -260,7 +260,7 @@ TEST_F(ContentElementInputEditingTest, IndicesUpdated) {
   // given callback is triggered right away.
   SetInput(GetInputInfo("asdf", 4, 4), GetInputInfo("", 0, 0));
   TextInputInfo model_actual;
-  TextInputInfo model_exp(base::UTF8ToUTF16("asdf"));
+  TextInputInfo model_exp(u"asdf");
   content_delegate_->OnWebInputIndicesChanged(
       4, 4, -1, -1,
       base::BindOnce([](TextInputInfo* model,
@@ -278,7 +278,7 @@ TEST_F(ContentElementInputEditingTest, IndicesUpdated) {
                         const TextInputInfo& info) { *model = info; },
                      base::Unretained(&model_actual)));
   EXPECT_TRUE(input_forwarder_->text_state_requested());
-  input_forwarder_->report_text_state(base::UTF8ToUTF16("asdf"));
+  input_forwarder_->report_text_state(u"asdf");
   model_exp.selection_start = 2;
   model_exp.selection_end = 2;
   EXPECT_EQ(model_actual, model_exp);

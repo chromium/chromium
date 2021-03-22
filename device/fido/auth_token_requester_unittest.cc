@@ -402,14 +402,14 @@ TEST_F(AuthTokenRequesterTest, PINTooShort) {
   config.ctap2_versions = {std::begin(kCtap2Versions2_1),
                            std::end(kCtap2Versions2_1)};
   auto state = base::MakeRefCounted<VirtualFidoDevice::State>();
-  RunTestCase(std::move(config), state,
-              TestCase{ClientPinAvailability::kSupportedAndPinSet,
-                       UserVerificationAvailability::kNotSupported,
-                       true,
-                       {{.reason = pin::PINEntryReason::kChallenge,
-                         .pin = base::UTF8ToUTF16("まどか")},
-                        {pin::PINEntryReason::kChallenge,
-                         pin::PINEntryError::kTooShort}}});
+  RunTestCase(
+      std::move(config), state,
+      TestCase{
+          ClientPinAvailability::kSupportedAndPinSet,
+          UserVerificationAvailability::kNotSupported,
+          true,
+          {{.reason = pin::PINEntryReason::kChallenge, .pin = u"まどか"},
+           {pin::PINEntryReason::kChallenge, pin::PINEntryError::kTooShort}}});
 }
 
 TEST_F(AuthTokenRequesterTest, UVLockedPINFallback) {

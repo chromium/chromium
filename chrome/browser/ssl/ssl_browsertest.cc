@@ -851,8 +851,8 @@ class SSLUITestBase : public InProcessBrowserTest,
     auto web_app_info = std::make_unique<WebApplicationInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
-    web_app_info->title = base::UTF8ToUTF16("Test app");
-    web_app_info->description = base::UTF8ToUTF16("Test description");
+    web_app_info->title = u"Test app";
+    web_app_info->description = u"Test description";
 
     Profile* profile = browser()->profile();
 

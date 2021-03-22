@@ -553,7 +553,7 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
                                           ServiceAccessType::EXPLICIT_ACCESS)
           .get();
   password_store->SaveGaiaPasswordHash(
-      user_manager::kStubUserEmail, base::UTF8ToUTF16("password_1"),
+      user_manager::kStubUserEmail, u"password_1",
       /*is_primary_account=*/true,
       password_manager::metrics_util::GaiaPasswordHashChange::
           CHANGED_IN_CONTENT_AREA);
@@ -799,9 +799,9 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
                                           ServiceAccessType::EXPLICIT_ACCESS)
           .get();
   password_store->SaveEnterprisePasswordHash("username@domain.com",
-                                             base::UTF8ToUTF16("password_1"));
+                                             u"password_1");
   password_store->SaveGaiaPasswordHash(
-      user_manager::kStubUserEmail, base::UTF8ToUTF16("password_2"),
+      user_manager::kStubUserEmail, u"password_2",
       /*is_primary_account=*/false,
       password_manager::metrics_util::GaiaPasswordHashChange::
           CHANGED_IN_CONTENT_AREA);

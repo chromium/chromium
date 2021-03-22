@@ -391,14 +391,14 @@ TEST(CompanyTest, CompanyNameSocialTitleCopy) {
   CompanyInfo company_year(&profile);
   CompanyInfo company_social_title(&profile);
 
-  company_google.SetRawInfo(COMPANY_NAME, UTF8ToUTF16("Google"));
-  company_year.SetRawInfo(COMPANY_NAME, UTF8ToUTF16("1987"));
-  company_social_title.SetRawInfo(COMPANY_NAME, UTF8ToUTF16("Dr"));
+  company_google.SetRawInfo(COMPANY_NAME, u"Google");
+  company_year.SetRawInfo(COMPANY_NAME, u"1987");
+  company_social_title.SetRawInfo(COMPANY_NAME, u"Dr");
 
   company_google = company_year;
-  EXPECT_EQ(UTF8ToUTF16(""), company_google.GetRawInfo(COMPANY_NAME));
+  EXPECT_EQ(u"", company_google.GetRawInfo(COMPANY_NAME));
   company_google = company_social_title;
-  EXPECT_EQ(UTF8ToUTF16(""), company_google.GetRawInfo(COMPANY_NAME));
+  EXPECT_EQ(u"", company_google.GetRawInfo(COMPANY_NAME));
 }
 
 TEST(CompanyTest, CompanyNameYearIsEqual) {
@@ -408,8 +408,8 @@ TEST(CompanyTest, CompanyNameYearIsEqual) {
   CompanyInfo company_year(&profile);
   CompanyInfo company_social_title(&profile);
 
-  company_year.SetRawInfo(COMPANY_NAME, UTF8ToUTF16("1987"));
-  company_social_title.SetRawInfo(COMPANY_NAME, UTF8ToUTF16("Dr"));
+  company_year.SetRawInfo(COMPANY_NAME, u"1987");
+  company_social_title.SetRawInfo(COMPANY_NAME, u"Dr");
 
   EXPECT_EQ(company_year, company_social_title);
 }

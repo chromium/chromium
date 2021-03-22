@@ -82,7 +82,7 @@ TEST_F(HistoryTabHelperTest, ShouldUpdateTitleInHistory) {
       web_contents()->GetController().GetLastCommittedEntry();
   ASSERT_NE(nullptr, entry);
 
-  web_contents()->UpdateTitleForEntry(entry, base::UTF8ToUTF16("title1"));
+  web_contents()->UpdateTitleForEntry(entry, u"title1");
   EXPECT_EQ("title1", QueryPageTitleFromHistory(page_url_));
 }
 
@@ -103,7 +103,7 @@ TEST_F(HistoryTabHelperTest, ShouldLimitTitleUpdatesPerPage) {
   ASSERT_EQ("title10", QueryPageTitleFromHistory(page_url_));
 
   // Furhter updates should be ignored.
-  web_contents()->UpdateTitleForEntry(entry, base::UTF8ToUTF16("title11"));
+  web_contents()->UpdateTitleForEntry(entry, u"title11");
   EXPECT_EQ("title10", QueryPageTitleFromHistory(page_url_));
 }
 

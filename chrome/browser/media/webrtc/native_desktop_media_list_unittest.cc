@@ -305,7 +305,7 @@ class NativeDesktopMediaListTest : public ChromeViewsTestBase {
 
     for (size_t i = 0; i < window_count; ++i) {
       EXPECT_EQ(model_->GetSource(i).id.type, DesktopMediaID::TYPE_WINDOW);
-      EXPECT_EQ(model_->GetSource(i).name, base::UTF8ToUTF16("Test window"));
+      EXPECT_EQ(model_->GetSource(i).name, u"Test window");
       int index = has_view_dialog ? i + 1 : i;
       int native_id = window_list_[index].id;
       EXPECT_EQ(model_->GetSource(i).id.id, native_id);

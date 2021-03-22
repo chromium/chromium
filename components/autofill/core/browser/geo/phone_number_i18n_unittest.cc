@@ -42,10 +42,10 @@ TEST(PhoneNumberI18NTest, NormalizePhoneNumber) {
   std::u16string phone3(UTF8ToUTF16("16503334\xef\xbc\x92\x35\xd9\xa5"));
   EXPECT_EQ(NormalizePhoneNumber(phone3, "US"), ASCIIToUTF16("16503334255"));
 
-  std::u16string phone4(UTF8ToUTF16("+1(650)2346789"));
+  std::u16string phone4(u"+1(650)2346789");
   EXPECT_EQ(NormalizePhoneNumber(phone4, "US"), ASCIIToUTF16("16502346789"));
 
-  std::u16string phone5(UTF8ToUTF16("6502346789"));
+  std::u16string phone5(u"6502346789");
   EXPECT_EQ(NormalizePhoneNumber(phone5, "US"), ASCIIToUTF16("6502346789"));
 }
 

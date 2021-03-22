@@ -534,7 +534,7 @@ TEST_F(MediaRouterViewsUITest, RouteCreationTimeoutForPresentation) {
   StartCastingAndExpectTimeout(
       MediaCastMode::PRESENTATION,
       l10n_util::GetStringFUTF8(IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT,
-                                base::UTF8ToUTF16("frameurl.fakeurl")),
+                                u"frameurl.fakeurl"),
       20);
 }
 

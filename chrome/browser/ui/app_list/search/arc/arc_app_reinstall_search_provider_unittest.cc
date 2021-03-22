@@ -230,7 +230,7 @@ TEST_F(ArcAppReinstallSearchProviderTest, TestResultsWithSearchChanged) {
 
   // Test that we set to 0 results when having a query, or when arc is turned
   // off.
-  app_provider_->Start(base::UTF8ToUTF16("non empty query"));
+  app_provider_->Start(u"non empty query");
   EXPECT_EQ(0u, app_provider_->results().size());
   // Verify that all icons are still loaded.
   EXPECT_EQ(2u, app_provider_->icon_urls_.size());
@@ -434,9 +434,9 @@ TEST_F(ArcAppReinstallSearchProviderTest, TestResultListComparison) {
   b.emplace_back(new TestSearchResult);
   EXPECT_TRUE(app_list::ArcAppReinstallSearchProvider::ResultsIdentical(a, b));
   // Different Titles.
-  a[0]->SetTitle(base::UTF8ToUTF16("fake_title"));
+  a[0]->SetTitle(u"fake_title");
   EXPECT_FALSE(app_list::ArcAppReinstallSearchProvider::ResultsIdentical(a, b));
-  b[0]->SetTitle(base::UTF8ToUTF16("fake_title"));
+  b[0]->SetTitle(u"fake_title");
   EXPECT_TRUE(app_list::ArcAppReinstallSearchProvider::ResultsIdentical(a, b));
 
   // Different ID.

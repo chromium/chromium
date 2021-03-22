@@ -2961,21 +2961,16 @@ TEST_F(BrowserAccessibilityWinTest, TestInheritedStringAttributes) {
   ASSERT_NE(nullptr, child2_child2_accessible);
 
   // Test GetInheritedString16Attribute(attribute).
-  EXPECT_EQ(base::UTF8ToUTF16("en-US"),
-            root_accessible->GetInheritedString16Attribute(
-                ax::mojom::StringAttribute::kLanguage));
-  EXPECT_EQ(base::UTF8ToUTF16("en-US"),
-            child1_accessible->GetInheritedString16Attribute(
-                ax::mojom::StringAttribute::kLanguage));
-  EXPECT_EQ(base::UTF8ToUTF16("fr"),
-            child2_accessible->GetInheritedString16Attribute(
-                ax::mojom::StringAttribute::kLanguage));
-  EXPECT_EQ(base::UTF8ToUTF16("fr"),
-            child2_child1_accessible->GetInheritedString16Attribute(
-                ax::mojom::StringAttribute::kLanguage));
-  EXPECT_EQ(base::UTF8ToUTF16("fr"),
-            child2_child2_accessible->GetInheritedString16Attribute(
-                ax::mojom::StringAttribute::kLanguage));
+  EXPECT_EQ(u"en-US", root_accessible->GetInheritedString16Attribute(
+                          ax::mojom::StringAttribute::kLanguage));
+  EXPECT_EQ(u"en-US", child1_accessible->GetInheritedString16Attribute(
+                          ax::mojom::StringAttribute::kLanguage));
+  EXPECT_EQ(u"fr", child2_accessible->GetInheritedString16Attribute(
+                       ax::mojom::StringAttribute::kLanguage));
+  EXPECT_EQ(u"fr", child2_child1_accessible->GetInheritedString16Attribute(
+                       ax::mojom::StringAttribute::kLanguage));
+  EXPECT_EQ(u"fr", child2_child2_accessible->GetInheritedString16Attribute(
+                       ax::mojom::StringAttribute::kLanguage));
 
   // Test GetInheritedStringAttribute(attribute).
   EXPECT_EQ("Helvetica", root_accessible->GetInheritedStringAttribute(

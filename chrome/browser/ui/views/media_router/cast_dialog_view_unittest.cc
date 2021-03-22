@@ -58,7 +58,7 @@ UIMediaSink CreateConnectedSink() {
 
 CastDialogModel CreateModelWithSinks(std::vector<UIMediaSink> sinks) {
   CastDialogModel model;
-  model.set_dialog_header(base::UTF8ToUTF16("Dialog header"));
+  model.set_dialog_header(u"Dialog header");
   model.set_media_sinks(std::move(sinks));
   return model;
 }

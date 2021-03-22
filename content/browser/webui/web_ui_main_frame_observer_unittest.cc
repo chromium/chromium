@@ -251,9 +251,9 @@ TEST_F(WebUIMainFrameObserverTest, NotSentIfFlagDisabled) {
 
 TEST_F(WebUIMainFrameObserverTest, NotSentIfInvalidURL) {
   NavigateToPage();
-  CallOnDidAddMessageToConsole(
-      web_ui_->frame_host(), blink::mojom::ConsoleMessageLevel::kError,
-      kMessage16, 5, base::UTF8ToUTF16("invalid URL"), kStackTrace16);
+  CallOnDidAddMessageToConsole(web_ui_->frame_host(),
+                               blink::mojom::ConsoleMessageLevel::kError,
+                               kMessage16, 5, u"invalid URL", kStackTrace16);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(processor_->error_report_count(), 0);
 }

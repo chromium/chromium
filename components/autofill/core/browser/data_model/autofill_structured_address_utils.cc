@@ -424,7 +424,7 @@ std::vector<AddressToken> TokenizeValue(const std::u16string value) {
   if (HasCjkNameCharacteristics(base::UTF16ToUTF8(value))) {
     tokens.reserve(value.size());
     for (size_t i = 0; i < value.size(); i++) {
-      std::u16string cjk_separators = base::UTF8ToUTF16("・·　 ");
+      std::u16string cjk_separators = u"・·　 ";
       if (cjk_separators.find(value.substr(i, 1)) == std::u16string::npos) {
         tokens.emplace_back(AddressToken{.value = value.substr(i, 1),
                                          .normalized_value = value.substr(i, 1),

@@ -143,7 +143,7 @@ class WebAppShortcutLinuxTest : public WebAppTest {
   std::unique_ptr<ShortcutInfo> GetShortcutInfo() {
     auto shortcut_info = std::make_unique<ShortcutInfo>();
     shortcut_info->extension_id = GetAppId();
-    shortcut_info->title = base::UTF8ToUTF16("app");
+    shortcut_info->title = u"app";
     shortcut_info->profile_path =
         base::FilePath("/a/b/c").Append(GetProfilePath());
     gfx::ImageFamily image_family;

@@ -954,8 +954,7 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest, ExecuteJavaScript) {
   // Execute a script snippet to return the variable's value.
   base::RunLoop run_loop2;
   cast_web_contents_->ExecuteJavaScript(
-      base::UTF8ToUTF16("the_var;"),
-      base::BindLambdaForTesting([&](base::Value result_value) {
+      u"the_var;", base::BindLambdaForTesting([&](base::Value result_value) {
         std::string result_json;
         ASSERT_TRUE(base::JSONWriter::Write(result_value, &result_json));
         EXPECT_EQ(result_json, kSoyMilkJsonStringLiteral);

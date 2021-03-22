@@ -2234,7 +2234,7 @@ TEST_F(TextfieldTest, TextInputClientTest) {
   EXPECT_STR_EQ("0456789", textfield_->GetText());
 
   ui::CompositionText composition;
-  composition.text = UTF8ToUTF16("321");
+  composition.text = u"321";
   // Set composition through input method.
   input_method_->Clear();
   input_method_->SetCompositionTextForNextKey(composition);
@@ -2252,7 +2252,7 @@ TEST_F(TextfieldTest, TextInputClientTest) {
   EXPECT_EQ(1, on_before_user_action_);
   EXPECT_EQ(1, on_after_user_action_);
 
-  input_method_->SetResultTextForNextKey(UTF8ToUTF16("123"));
+  input_method_->SetResultTextForNextKey(u"123");
   on_before_user_action_ = on_after_user_action_ = 0;
   textfield_->clear();
   DispatchMockInputMethodKeyEvent();
@@ -2969,7 +2969,7 @@ TEST_F(TextfieldTest, OverflowInRTLTest) {
 TEST_F(TextfieldTest, CommitComposingTextTest) {
   InitTextfield();
   ui::CompositionText composition;
-  composition.text = UTF8ToUTF16("abc123");
+  composition.text = u"abc123";
   textfield_->SetCompositionText(composition);
   uint32_t composed_text_length =
       textfield_->ConfirmCompositionText(/* keep_selection */ false);
@@ -2980,7 +2980,7 @@ TEST_F(TextfieldTest, CommitComposingTextTest) {
 TEST_F(TextfieldTest, CommitEmptyComposingTextTest) {
   InitTextfield();
   ui::CompositionText composition;
-  composition.text = UTF8ToUTF16("");
+  composition.text = u"";
   textfield_->SetCompositionText(composition);
   uint32_t composed_text_length =
       textfield_->ConfirmCompositionText(/* keep_selection */ false);
@@ -3006,7 +3006,7 @@ TEST_F(TextfieldTest, SetCompositionFromExistingTextTest) {
 TEST_F(TextfieldTest, GetCompositionCharacterBoundsTest) {
   InitTextfield();
   ui::CompositionText composition;
-  composition.text = UTF8ToUTF16("abc123");
+  composition.text = u"abc123";
   const uint32_t char_count = static_cast<uint32_t>(composition.text.length());
 
   // Compare the composition character bounds with surrounding cursor bounds.
@@ -3107,7 +3107,7 @@ TEST_F(TextfieldTest, GetAutocorrectCharacterBoundsTest) {
   InitTextfield();
 
   textfield_->InsertText(
-      UTF8ToUTF16("hello placeholder text"),
+      u"hello placeholder text",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   textfield_->SetAutocorrectRange(gfx::Range(3, 10));
 
@@ -3119,7 +3119,7 @@ TEST_F(TextfieldTest, GetAutocorrectCharacterBoundsTest) {
   textfield_->DeleteRange(gfx::Range(0, 99));
 
   textfield_->InsertText(
-      UTF8ToUTF16("hello placeholder text"),
+      u"hello placeholder text",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   textfield_->SetAutocorrectRange(gfx::Range(3, 8));
 
@@ -3376,7 +3376,7 @@ TEST_F(TextfieldTest, TestLongPressInitiatesDragDrop) {
 
 TEST_F(TextfieldTest, GetTextfieldBaseline_FontFallbackTest) {
   InitTextfield();
-  textfield_->SetText(UTF8ToUTF16("abc"));
+  textfield_->SetText(u"abc");
   const int old_baseline = textfield_->GetBaseline();
 
   // Set text which may fall back to a font which has taller baseline than
@@ -3621,8 +3621,8 @@ TEST_F(TextfieldTest, AccessiblePasswordTest) {
   ui::AXNodeData node_data_protected;
   textfield_->GetAccessibleNodeData(&node_data_protected);
   EXPECT_EQ(ax::mojom::Role::kTextField, node_data_protected.role);
-  EXPECT_EQ(UTF8ToUTF16("••••••••"), node_data_protected.GetString16Attribute(
-                                         ax::mojom::StringAttribute::kValue));
+  EXPECT_EQ(u"••••••••", node_data_protected.GetString16Attribute(
+                             ax::mojom::StringAttribute::kValue));
   EXPECT_TRUE(node_data_protected.HasState(ax::mojom::State::kProtected));
 }
 

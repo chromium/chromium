@@ -289,20 +289,19 @@ TEST_F(CandidateWindowViewTest, DoNotChangeRowHeightWithLabelSwitchTest) {
   ui::CandidateWindow candidate_window;
   ui::CandidateWindow no_shortcut_candidate_window;
 
-  const std::u16string kSampleCandidate1 = base::UTF8ToUTF16("Sample String 1");
+  const std::u16string kSampleCandidate1 = u"Sample String 1";
   const std::u16string kSampleCandidate2 =
       base::UTF8ToUTF16("\xE3\x81\x82");  // multi byte string.
-  const std::u16string kSampleCandidate3 = base::UTF8ToUTF16(".....");
+  const std::u16string kSampleCandidate3 = u".....";
 
-  const std::u16string kSampleShortcut1 = base::UTF8ToUTF16("1");
-  const std::u16string kSampleShortcut2 = base::UTF8ToUTF16("b");
-  const std::u16string kSampleShortcut3 = base::UTF8ToUTF16("C");
+  const std::u16string kSampleShortcut1 = u"1";
+  const std::u16string kSampleShortcut2 = u"b";
+  const std::u16string kSampleShortcut3 = u"C";
 
-  const std::u16string kSampleAnnotation1 =
-      base::UTF8ToUTF16("Sample Annotation 1");
+  const std::u16string kSampleAnnotation1 = u"Sample Annotation 1";
   const std::u16string kSampleAnnotation2 =
       base::UTF8ToUTF16("\xE3\x81\x82");  // multi byte string.
-  const std::u16string kSampleAnnotation3 = base::UTF8ToUTF16("......");
+  const std::u16string kSampleAnnotation3 = u"......";
 
   // Create CandidateWindow object.
   InitCandidateWindow(kPageSize, &candidate_window);

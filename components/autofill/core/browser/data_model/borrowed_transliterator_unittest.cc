@@ -14,7 +14,7 @@ namespace autofill {
 
 TEST(BorrowedTransliterator, RemoveDiacriticsAndConvertToLowerCase) {
   EXPECT_EQ(RemoveDiacriticsAndConvertToLowerCase(
-                base::UTF8ToUTF16("āēaa11.īūčģķļņšžKāäǟḑēīļņōȯȱõȭŗšțūž")),
+                u"āēaa11.īūčģķļņšžKāäǟḑēīļņōȯȱõȭŗšțūž"),
             base::ASCIIToUTF16("aeaa11.iucgklnszkaaadeilnooooorstuz"));
 }
 

@@ -605,7 +605,7 @@ TEST_F(WebContentsViewAuraTest, StartDragging) {
   view->drag_in_progress_ = true;
 
   DropData drop_data;
-  drop_data.text.emplace(base::UTF8ToUTF16("Hello World!"));
+  drop_data.text.emplace(u"Hello World!");
   view->StartDragging(drop_data, blink::DragOperationsMask::kDragOperationNone,
                       gfx::ImageSkia(), gfx::Vector2d(),
                       blink::mojom::DragEventSourceInfo(),

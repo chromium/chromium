@@ -55,7 +55,7 @@ class ManageProfileHandlerTest : public testing::Test {
 
   void SetSignedInProfile() {
     gfx::Image gaia_image(gfx::test::CreateImage(256, 256));
-    entry()->SetAuthInfo("gaia_id", base::UTF8ToUTF16("user@gmail.com"), false);
+    entry()->SetAuthInfo("gaia_id", u"user@gmail.com", false);
     entry()->SetGAIAPicture("GAIA_IMAGE_URL_WITH_SIZE", gaia_image);
     EXPECT_TRUE(entry()->IsUsingDefaultAvatar());
     EXPECT_TRUE(entry()->IsUsingGAIAPicture());

@@ -120,7 +120,7 @@ void SplitHost(const GURL& url,
 
   // Get sub domain.
   const size_t domain_start_index = url_host->find(*url_domain);
-  std::u16string kWwwPrefix = base::UTF8ToUTF16("www.");
+  std::u16string kWwwPrefix = u"www.";
   if (domain_start_index != std::u16string::npos)
     *url_subdomain = url_host->substr(0, domain_start_index);
   if ((*url_subdomain == kWwwPrefix || url_subdomain->empty() ||
@@ -252,7 +252,7 @@ std::u16string ElideUrl(const GURL& url,
   const float kPixelWidthDotsTrailer =
       gfx::GetStringWidthF(std::u16string(gfx::kEllipsisUTF16), font_list);
   if (parsed.query.is_nonempty()) {
-    url_query = base::UTF8ToUTF16("?") + url_string.substr(parsed.query.begin);
+    url_query = u"?" + url_string.substr(parsed.query.begin);
     if (available_pixel_width >=
         (pixel_width_url_subdomain + pixel_width_url_domain +
          pixel_width_url_path - gfx::GetStringWidthF(url_query, font_list))) {

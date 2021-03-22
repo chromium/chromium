@@ -30,7 +30,7 @@ TEST(BreakIteratorTest, BreakWordEmpty) {
 }
 
 TEST(BreakIteratorTest, BreakWord) {
-  std::u16string space(UTF8ToUTF16(" "));
+  std::u16string space(u" ");
   std::u16string str(UTF8ToUTF16(" foo bar! \npouet boom"));
   BreakIterator iter(str, BreakIterator::BREAK_WORD);
   ASSERT_TRUE(iter.Init());
@@ -39,16 +39,16 @@ TEST(BreakIteratorTest, BreakWord) {
   EXPECT_EQ(space, iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("foo"), iter.GetString());
+  EXPECT_EQ(u"foo", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_EQ(space, iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("bar"), iter.GetString());
+  EXPECT_EQ(u"bar", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("!"), iter.GetString());
+  EXPECT_EQ(u"!", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_EQ(space, iter.GetString());
@@ -57,13 +57,13 @@ TEST(BreakIteratorTest, BreakWord) {
   EXPECT_EQ(UTF8ToUTF16("\n"), iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("pouet"), iter.GetString());
+  EXPECT_EQ(u"pouet", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_EQ(space, iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("boom"), iter.GetString());
+  EXPECT_EQ(u"boom", iter.GetString());
   EXPECT_FALSE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_FALSE(iter.Advance());  // Test unexpected advance after end.
@@ -84,7 +84,7 @@ TEST(BreakIteratorTest, BreakWordWide16) {
   EXPECT_EQ(word1, iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16(" "), iter.GetString());
+  EXPECT_EQ(u" ", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.IsWord());
   EXPECT_EQ(word2, iter.GetString());
@@ -108,10 +108,10 @@ TEST(BreakIteratorTest, BreakWordWide32) {
   EXPECT_EQ(very_wide_word, iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16(" "), iter.GetString());
+  EXPECT_EQ(u" ", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("a"), iter.GetString());
+  EXPECT_EQ(u"a", iter.GetString());
   EXPECT_FALSE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_FALSE(iter.Advance());  // Test unexpected advance after end.
@@ -190,7 +190,7 @@ TEST(BreakIteratorTest, BreakWordJapanese) {
 
 TEST(BreakIteratorTest, BreakWordChineseEnglish) {
   // Terms in Simplified Chinese mixed with English and wide punctuations.
-  std::u16string space(UTF8ToUTF16(" "));
+  std::u16string space(u" ");
   const char token1[] = "下载";
   const char token2[] = "Chrome";
   const char token3[] = "（";
@@ -257,19 +257,19 @@ TEST(BreakIteratorTest, BreakSpace) {
   ASSERT_TRUE(iter.Init());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16(" "), iter.GetString());
+  EXPECT_EQ(u" ", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("foo "), iter.GetString());
+  EXPECT_EQ(u"foo ", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_EQ(UTF8ToUTF16("bar! \n"), iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("pouet "), iter.GetString());
+  EXPECT_EQ(u"pouet ", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("boom"), iter.GetString());
+  EXPECT_EQ(u"boom", iter.GetString());
   EXPECT_FALSE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_FALSE(iter.Advance());  // Test unexpected advance after end.
@@ -282,19 +282,19 @@ TEST(BreakIteratorTest, BreakSpaceSP) {
   ASSERT_TRUE(iter.Init());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16(" "), iter.GetString());
+  EXPECT_EQ(u" ", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("foo "), iter.GetString());
+  EXPECT_EQ(u"foo ", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_EQ(UTF8ToUTF16("bar! \n"), iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("pouet "), iter.GetString());
+  EXPECT_EQ(u"pouet ", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("boom "), iter.GetString());
+  EXPECT_EQ(u"boom ", iter.GetString());
   EXPECT_FALSE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_FALSE(iter.Advance());  // Test unexpected advance after end.
@@ -336,7 +336,7 @@ TEST(BreakIteratorTest, BreakSpaceWide32) {
   EXPECT_EQ(very_wide_word, iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("a"), iter.GetString());
+  EXPECT_EQ(u"a", iter.GetString());
   EXPECT_FALSE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_FALSE(iter.Advance());  // Test unexpected advance after end.
@@ -369,7 +369,7 @@ TEST(BreakIteratorTest, BreakLine) {
   EXPECT_EQ(nl, iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("pouet boom"), iter.GetString());
+  EXPECT_EQ(u"pouet boom", iter.GetString());
   EXPECT_FALSE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_FALSE(iter.Advance());   // Test unexpected advance after end.
@@ -399,7 +399,7 @@ TEST(BreakIteratorTest, BreakSentence) {
   EXPECT_EQ(UTF8ToUTF16("\tAnother sentence?"), iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("One more thing"), iter.GetString());
+  EXPECT_EQ(u"One more thing", iter.GetString());
   EXPECT_FALSE(iter.Advance());  // Test unexpected advance after end.
   EXPECT_FALSE(iter.IsWord());
 }
@@ -482,7 +482,7 @@ TEST(BreakIteratorTest, BreakLineWide32) {
   EXPECT_EQ(very_wide_line, iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("a"), iter.GetString());
+  EXPECT_EQ(u"a", iter.GetString());
   EXPECT_FALSE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_FALSE(iter.Advance());   // Test unexpected advance after end.
@@ -570,7 +570,7 @@ TEST(BreakIteratorTest, GetWordBreakStatusBreakLine) {
 
   EXPECT_TRUE(iter.Advance());
   // Finds "foo" and the space.
-  EXPECT_EQ(base::UTF8ToUTF16("foo "), iter.GetString());
+  EXPECT_EQ(u"foo ", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_LINE_OR_CHAR_BREAK);
   EXPECT_TRUE(iter.Advance());
   // Finds the Khmer characters, the next space, and the newline.
@@ -578,7 +578,7 @@ TEST(BreakIteratorTest, GetWordBreakStatusBreakLine) {
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_LINE_OR_CHAR_BREAK);
   EXPECT_TRUE(iter.Advance());
   // Finds "Can" and the space.
-  EXPECT_EQ(base::UTF8ToUTF16("Can "), iter.GetString());
+  EXPECT_EQ(u"Can ", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_LINE_OR_CHAR_BREAK);
   EXPECT_TRUE(iter.Advance());
   // Finds the Russian characters and periods.
@@ -601,42 +601,42 @@ TEST(BreakIteratorTest, GetWordBreakStatusBreakWord) {
 
   EXPECT_TRUE(iter.Advance());
   // Finds "foo".
-  EXPECT_EQ(base::UTF8ToUTF16("foo"), iter.GetString());
+  EXPECT_EQ(u"foo", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_WORD_BREAK);
   EXPECT_TRUE(iter.Advance());
   // Finds the space, and the Khmer characters.
-  EXPECT_EQ(base::UTF8ToUTF16(" "), iter.GetString());
+  EXPECT_EQ(u" ", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
   EXPECT_EQ(u"\x1791\x17C1", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_WORD_BREAK);
   EXPECT_TRUE(iter.Advance());
   // Finds the space and the newline.
-  EXPECT_EQ(base::UTF8ToUTF16(" "), iter.GetString());
+  EXPECT_EQ(u" ", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
   EXPECT_EQ(base::UTF8ToUTF16("\n"), iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
   // Finds "Can".
-  EXPECT_EQ(base::UTF8ToUTF16("Can"), iter.GetString());
+  EXPECT_EQ(u"Can", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_WORD_BREAK);
   EXPECT_TRUE(iter.Advance());
   // Finds the space and the Russian characters.
-  EXPECT_EQ(base::UTF8ToUTF16(" "), iter.GetString());
+  EXPECT_EQ(u" ", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
   EXPECT_EQ(u"\x041C\x0438", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_WORD_BREAK);
   EXPECT_TRUE(iter.Advance());
   // Finds the trailing periods.
-  EXPECT_EQ(base::UTF8ToUTF16("."), iter.GetString());
+  EXPECT_EQ(u".", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(base::UTF8ToUTF16("."), iter.GetString());
+  EXPECT_EQ(u".", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(base::UTF8ToUTF16("."), iter.GetString());
+  EXPECT_EQ(u".", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_FALSE(iter.Advance());
 }

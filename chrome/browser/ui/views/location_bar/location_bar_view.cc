@@ -709,7 +709,7 @@ void LocationBarView::SetOmniboxAdditionalText(const std::u16string& text) {
       text.empty()
           ? text
           // TODO(pkasting): This should use a localizable string constant.
-          : base::UTF8ToUTF16("(") + text + base::UTF8ToUTF16(")");
+          : u"(" + text + u")";
   if (wrapped_text == GetOmniboxAdditionalText())
     return;
   omnibox_additional_text_view_->SetText(wrapped_text);

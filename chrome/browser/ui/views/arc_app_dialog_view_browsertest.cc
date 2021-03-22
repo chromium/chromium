@@ -176,9 +176,9 @@ class ArcAppPermissionDialogViewBrowserTest
 
   // USB flow test related.
   const std::string guid_ = "TestGuidXXXXXX";
-  const std::u16string serial_number_ = base::UTF8ToUTF16("TestSerialNumber");
-  const std::u16string manufacturer_string_ = base::UTF8ToUTF16("Factory");
-  const std::u16string product_string_ = base::UTF8ToUTF16("Product");
+  const std::u16string serial_number_ = u"TestSerialNumber";
+  const std::u16string manufacturer_string_ = u"Factory";
+  const std::u16string product_string_ = u"Product";
   uint16_t vendor_id_ = 123;
   uint16_t product_id_ = 456;
 

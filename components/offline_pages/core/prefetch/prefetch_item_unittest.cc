@@ -130,7 +130,7 @@ TEST_F(PrefetchItemTest, OperatorEqualsCopyConstructorAndToString) {
   item1.error_code = PrefetchItemErrorCode::TOO_MANY_NEW_URLS;
   CheckFieldAndResetItem(item1, "error_code");
 
-  item1.title = base::UTF8ToUTF16("F");
+  item1.title = u"F";
   CheckFieldAndResetItem(item1, "title");
 
   item1.file_path = base::FilePath(FILE_PATH_LITERAL("G"));

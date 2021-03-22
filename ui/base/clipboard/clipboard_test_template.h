@@ -991,9 +991,9 @@ TYPED_TEST(ClipboardTest, HtmlTest) {
 TYPED_TEST(ClipboardTest, WriteEverything) {
   {
     ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
-    writer.WriteText(UTF8ToUTF16("foo"));
-    writer.WriteHTML(UTF8ToUTF16("foo"), "bar");
-    writer.WriteBookmark(UTF8ToUTF16("foo"), "bar");
+    writer.WriteText(u"foo");
+    writer.WriteHTML(u"foo", "bar");
+    writer.WriteBookmark(u"foo", "bar");
     writer.WriteHyperlink(ASCIIToUTF16("foo"), "bar");
     writer.WriteWebSmartPaste();
     // Left out: WriteFile, WriteFiles, WriteBitmapFromPixels, WritePickledData.
@@ -1016,7 +1016,7 @@ TYPED_TEST(ClipboardTest, GetSequenceNumber) {
 
   {
     ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
-    writer.WriteText(UTF8ToUTF16("World"));
+    writer.WriteText(u"World");
   }
 
   // On some platforms, the sequence number is updated by a UI callback so pump
@@ -1079,7 +1079,7 @@ TYPED_TEST(ClipboardTest, WriteImageEmptyParams) {
 // restrict the clipboard data.
 TYPED_TEST(ClipboardTest, PolicyAllowDataRead) {
   auto policy_controller = std::make_unique<MockPolicyController>();
-  const std::u16string kTestText(base::UTF8ToUTF16("World"));
+  const std::u16string kTestText(u"World");
   {
     ScopedClipboardWriter writer(
         ClipboardBuffer::kCopyPaste,
@@ -1099,7 +1099,7 @@ TYPED_TEST(ClipboardTest, PolicyAllowDataRead) {
 // restricted it.
 TYPED_TEST(ClipboardTest, PolicyDisallow_ReadText) {
   auto policy_controller = std::make_unique<MockPolicyController>();
-  const std::u16string kTestText(base::UTF8ToUTF16("World"));
+  const std::u16string kTestText(u"World");
   {
     ScopedClipboardWriter writer(
         ClipboardBuffer::kCopyPaste,

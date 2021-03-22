@@ -13,10 +13,10 @@
 namespace chromeos {
 
 TEST(CellularESimProfileTest, ConvertToAndFromDictionary) {
-  CellularESimProfile profile(
-      CellularESimProfile::State::kPending, dbus::ObjectPath("/test/path/123"),
-      "eid", "iccid", base::UTF8ToUTF16("name"), base::UTF8ToUTF16("nickname"),
-      base::UTF8ToUTF16("serviceProvider"), "activationCode");
+  CellularESimProfile profile(CellularESimProfile::State::kPending,
+                              dbus::ObjectPath("/test/path/123"), "eid",
+                              "iccid", u"name", u"nickname", u"serviceProvider",
+                              "activationCode");
 
   base::Value dictionary = profile.ToDictionaryValue();
   base::Optional<CellularESimProfile> from_dictionary =
@@ -27,10 +27,9 @@ TEST(CellularESimProfileTest, ConvertToAndFromDictionary) {
   EXPECT_EQ(dbus::ObjectPath("/test/path/123"), from_dictionary->path());
   EXPECT_EQ("eid", from_dictionary->eid());
   EXPECT_EQ("iccid", from_dictionary->iccid());
-  EXPECT_EQ(base::UTF8ToUTF16("name"), from_dictionary->name());
-  EXPECT_EQ(base::UTF8ToUTF16("nickname"), from_dictionary->nickname());
-  EXPECT_EQ(base::UTF8ToUTF16("serviceProvider"),
-            from_dictionary->service_provider());
+  EXPECT_EQ(u"name", from_dictionary->name());
+  EXPECT_EQ(u"nickname", from_dictionary->nickname());
+  EXPECT_EQ(u"serviceProvider", from_dictionary->service_provider());
   EXPECT_EQ("activationCode", from_dictionary->activation_code());
 }
 

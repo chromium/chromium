@@ -14,7 +14,7 @@ using WebAppConfirmViewBrowserTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(WebAppConfirmViewBrowserTest, ShowWebAppInstallDialog) {
   auto app_info = std::make_unique<WebApplicationInfo>();
-  app_info->title = base::UTF8ToUTF16("Test app");
+  app_info->title = u"Test app";
   app_info->start_url = GURL("https://example.com");
 
   chrome::SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,

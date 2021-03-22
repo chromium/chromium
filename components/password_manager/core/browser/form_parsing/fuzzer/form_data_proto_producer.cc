@@ -46,9 +46,8 @@ FormData GenerateWithProto(const ::form_data_fuzzer::Form& form_proto) {
     const ::form_data_fuzzer::FormField& form_data_proto = form_proto.fields(i);
     result.fields[i].id_attribute = UTF8ToUTF16(form_data_proto.id());
 #if defined(OS_IOS)
-    result.fields[i].unique_id = result.fields[i].id_attribute +
-                                 base::UTF8ToUTF16("-") +
-                                 base::NumberToString16(i);
+    result.fields[i].unique_id =
+        result.fields[i].id_attribute + u"-" + base::NumberToString16(i);
 #endif
     result.fields[i].name_attribute = UTF8ToUTF16(form_data_proto.name());
     result.fields[i].is_focusable = form_data_proto.is_focusable();

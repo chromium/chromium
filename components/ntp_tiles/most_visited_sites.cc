@@ -91,9 +91,8 @@ std::u16string GenerateShortTitle(const std::u16string& title) {
   // Empty title only happened in the unittests.
   if (title.empty())
     return std::u16string();
-  std::vector<std::u16string> short_title_list =
-      SplitString(title, base::UTF8ToUTF16("-:|;"), base::TRIM_WHITESPACE,
-                  base::SPLIT_WANT_NONEMPTY);
+  std::vector<std::u16string> short_title_list = SplitString(
+      title, u"-:|;", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   // Make sure it doesn't crash when the title only contains spaces.
   if (short_title_list.empty())
     return std::u16string();

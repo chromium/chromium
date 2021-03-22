@@ -361,25 +361,25 @@ TEST(SpellcheckWordIteratorTest, FindSkippableWordsEnglish) {
 
   EXPECT_TRUE(iter.Advance());
   // Finds "foo".
-  EXPECT_EQ(base::UTF8ToUTF16("foo"), iter.GetString());
+  EXPECT_EQ(u"foo", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_WORD_BREAK);
   EXPECT_TRUE(iter.Advance());
   // Finds the space and then the Khmer characters.
-  EXPECT_EQ(base::UTF8ToUTF16(" "), iter.GetString());
+  EXPECT_EQ(u" ", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
   EXPECT_EQ(u"\x1791\x17C1", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
   // Finds the next space and "Can".
-  EXPECT_EQ(base::UTF8ToUTF16(" "), iter.GetString());
+  EXPECT_EQ(u" ", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(base::UTF8ToUTF16("Can"), iter.GetString());
+  EXPECT_EQ(u"Can", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_WORD_BREAK);
   EXPECT_TRUE(iter.Advance());
   // Finds the next space and each Russian character.
-  EXPECT_EQ(base::UTF8ToUTF16(" "), iter.GetString());
+  EXPECT_EQ(u" ", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
   EXPECT_EQ(u"\x041C", iter.GetString());
@@ -389,13 +389,13 @@ TEST(SpellcheckWordIteratorTest, FindSkippableWordsEnglish) {
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
   // Finds the periods at the end.
-  EXPECT_EQ(base::UTF8ToUTF16("."), iter.GetString());
+  EXPECT_EQ(u".", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(base::UTF8ToUTF16("."), iter.GetString());
+  EXPECT_EQ(u".", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(base::UTF8ToUTF16("."), iter.GetString());
+  EXPECT_EQ(u".", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_FALSE(iter.Advance());
 }
@@ -411,10 +411,10 @@ TEST(SpellcheckWordIteratorTest, FindSkippableWordsRussian) {
 
   EXPECT_TRUE(iter.Advance());
   // Finds the period and semicolon.
-  EXPECT_EQ(base::UTF8ToUTF16("."), iter.GetString());
+  EXPECT_EQ(u".", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(base::UTF8ToUTF16(";"), iter.GetString());
+  EXPECT_EQ(u";", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
   // Finds all the Russian characters.
@@ -422,29 +422,29 @@ TEST(SpellcheckWordIteratorTest, FindSkippableWordsRussian) {
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_WORD_BREAK);
   EXPECT_TRUE(iter.Advance());
   // Finds the space and each character in "Can".
-  EXPECT_EQ(base::UTF8ToUTF16(" "), iter.GetString());
+  EXPECT_EQ(u" ", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(base::UTF8ToUTF16("C"), iter.GetString());
+  EXPECT_EQ(u"C", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(base::UTF8ToUTF16("a"), iter.GetString());
+  EXPECT_EQ(u"a", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(base::UTF8ToUTF16("n"), iter.GetString());
+  EXPECT_EQ(u"n", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
   // Finds the next space, the Khmer characters, and the last two spaces.
-  EXPECT_EQ(base::UTF8ToUTF16(" "), iter.GetString());
+  EXPECT_EQ(u" ", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
   EXPECT_EQ(u"\x1791\x17C1", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(base::UTF8ToUTF16(" "), iter.GetString());
+  EXPECT_EQ(u" ", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(base::UTF8ToUTF16(" "), iter.GetString());
+  EXPECT_EQ(u" ", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_FALSE(iter.Advance());
 }
@@ -468,7 +468,7 @@ TEST(SpellcheckWordIteratorTest, FindSkippableWordsKhmer) {
   EXPECT_EQ(u"\x0438", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(base::UTF8ToUTF16(" "), iter.GetString());
+  EXPECT_EQ(u" ", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
   // Finds the first two-character Khmer word.
@@ -483,23 +483,23 @@ TEST(SpellcheckWordIteratorTest, FindSkippableWordsKhmer) {
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_WORD_BREAK);
   EXPECT_TRUE(iter.Advance());
   // Finds each character in "zoo".
-  EXPECT_EQ(base::UTF8ToUTF16("z"), iter.GetString());
+  EXPECT_EQ(u"z", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(base::UTF8ToUTF16("o"), iter.GetString());
+  EXPECT_EQ(u"o", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(base::UTF8ToUTF16("o"), iter.GetString());
+  EXPECT_EQ(u"o", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
   // Finds the period, space, and comma.
-  EXPECT_EQ(base::UTF8ToUTF16("."), iter.GetString());
+  EXPECT_EQ(u".", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(base::UTF8ToUTF16(" "), iter.GetString());
+  EXPECT_EQ(u" ", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(base::UTF8ToUTF16(","), iter.GetString());
+  EXPECT_EQ(u",", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_FALSE(iter.Advance());
 }

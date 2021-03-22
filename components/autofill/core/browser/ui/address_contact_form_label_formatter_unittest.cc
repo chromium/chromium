@@ -347,11 +347,10 @@ TEST(AddressContactFormLabelFormatterTest,
   EXPECT_THAT(
       formatter->GetLabels(),
       ElementsAre(
-          ConstructLabelLine(
-              {base::UTF8ToUTF16("Av. Pedro Álvares Cabral, 1301"),
-               base::ASCIIToUTF16("(11) 2648-0254"),
-               base::ASCIIToUTF16("tarsila@aol.com")}),
-          ConstructLabelLine({base::UTF8ToUTF16("Estr. Dona Castorina, 110"),
+          ConstructLabelLine({u"Av. Pedro Álvares Cabral, 1301",
+                              base::ASCIIToUTF16("(11) 2648-0254"),
+                              base::ASCIIToUTF16("tarsila@aol.com")}),
+          ConstructLabelLine({u"Estr. Dona Castorina, 110",
                               base::ASCIIToUTF16("(21) 98765-0000"),
                               base::ASCIIToUTF16("aavila@uol.com.br")})));
 }
@@ -410,10 +409,9 @@ TEST(AddressContactFormLabelFormatterTest,
   EXPECT_THAT(
       formatter->GetLabels(),
       ElementsAre(
-          ConstructLabelLine(
-              {base::UTF8ToUTF16("Av. Pedro Álvares Cabral, 1301"),
-               base::ASCIIToUTF16("(11) 2648-0254"),
-               base::ASCIIToUTF16("tarsila@aol.com")}),
+          ConstructLabelLine({u"Av. Pedro Álvares Cabral, 1301",
+                              base::ASCIIToUTF16("(11) 2648-0254"),
+                              base::ASCIIToUTF16("tarsila@aol.com")}),
           ConstructLabelLine({base::ASCIIToUTF16("Estr. Dona Castorina, 110"),
                               base::ASCIIToUTF16("(21) 98765-0000"),
                               base::ASCIIToUTF16("aavila@uol.com.br")})));
@@ -441,14 +439,12 @@ TEST(AddressContactFormLabelFormatterTest,
 
   EXPECT_THAT(
       formatter->GetLabels(),
-      ElementsAre(
-          ConstructLabelLine(
-              {base::ASCIIToUTF16("Tarsila do Amaral"),
-               base::UTF8ToUTF16("Av. Pedro Álvares Cabral, 1301"),
-               base::ASCIIToUTF16("(11) 2648-0254")}),
-          ConstructLabelLine({base::ASCIIToUTF16("Artur Avila"),
-                              base::UTF8ToUTF16("Estr. Dona Castorina, 110"),
-                              base::ASCIIToUTF16("(21) 98765-0000")})));
+      ElementsAre(ConstructLabelLine({base::ASCIIToUTF16("Tarsila do Amaral"),
+                                      u"Av. Pedro Álvares Cabral, 1301",
+                                      base::ASCIIToUTF16("(11) 2648-0254")}),
+                  ConstructLabelLine({base::ASCIIToUTF16("Artur Avila"),
+                                      u"Estr. Dona Castorina, 110",
+                                      base::ASCIIToUTF16("(21) 98765-0000")})));
 }
 
 TEST(AddressContactFormLabelFormatterTest,
@@ -474,12 +470,11 @@ TEST(AddressContactFormLabelFormatterTest,
   EXPECT_THAT(
       formatter->GetLabels(),
       ElementsAre(
-          ConstructLabelLine(
-              {base::ASCIIToUTF16("Tarsila do Amaral"),
-               base::UTF8ToUTF16("Av. Pedro Álvares Cabral, 1301"),
-               base::ASCIIToUTF16("tarsila@aol.com")}),
+          ConstructLabelLine({base::ASCIIToUTF16("Tarsila do Amaral"),
+                              u"Av. Pedro Álvares Cabral, 1301",
+                              base::ASCIIToUTF16("tarsila@aol.com")}),
           ConstructLabelLine({base::ASCIIToUTF16("Artur Avila"),
-                              base::UTF8ToUTF16("Estr. Dona Castorina, 110"),
+                              u"Estr. Dona Castorina, 110",
                               base::ASCIIToUTF16("aavila@uol.com.br")})));
 }
 

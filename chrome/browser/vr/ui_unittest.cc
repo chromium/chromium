@@ -155,21 +155,21 @@ TEST_F(UiTest, PlatformToast) {
   auto browser_ui = ui_->GetBrowserUiWeakPtr();
 
   // show and hide toast after a timeout.
-  browser_ui->ShowPlatformToast(base::UTF8ToUTF16("Downloading"));
+  browser_ui->ShowPlatformToast(u"Downloading");
   EXPECT_TRUE(IsVisible(kPlatformToast));
   EXPECT_TRUE(RunForSeconds(kToastTimeoutSeconds + kSmallDelaySeconds));
   EXPECT_FALSE(IsVisible(kPlatformToast));
 
   // toast can be cancelled.
-  browser_ui->ShowPlatformToast(base::UTF8ToUTF16("Downloading"));
+  browser_ui->ShowPlatformToast(u"Downloading");
   EXPECT_TRUE(IsVisible(kPlatformToast));
   browser_ui->CancelPlatformToast();
   EXPECT_FALSE(IsVisible(kPlatformToast));
 
   // toast can refresh visible timeout.
-  browser_ui->ShowPlatformToast(base::UTF8ToUTF16("Downloading"));
+  browser_ui->ShowPlatformToast(u"Downloading");
   EXPECT_TRUE(RunForSeconds(kSmallDelaySeconds));
-  browser_ui->ShowPlatformToast(base::UTF8ToUTF16("Downloading"));
+  browser_ui->ShowPlatformToast(u"Downloading");
   EXPECT_TRUE(RunForSeconds(kToastTimeoutSeconds - kSmallDelaySeconds));
   EXPECT_TRUE(IsVisible(kPlatformToast));
   EXPECT_TRUE(RunForSeconds(kToastTimeoutSeconds + kSmallDelaySeconds));

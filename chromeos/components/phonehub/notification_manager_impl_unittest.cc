@@ -233,7 +233,7 @@ TEST_F(NotificationManagerImplTest, SendInlineReply) {
   EXPECT_EQ(NotificationState::kAdded, GetNotificationState(expected_id1));
 
   // Simulate sending an inline reply to a notification.
-  const std::u16string& expected_reply(base::UTF8ToUTF16("test reply"));
+  const std::u16string& expected_reply(u"test reply");
   manager().SendInlineReply(expected_id1, expected_reply);
   EXPECT_EQ(1u, fake_user_action_recorder_.num_notification_replies());
   EXPECT_EQ(1u, GetNumNotifications());

@@ -652,8 +652,7 @@ TEST_F(RemoteSuggestionsFetcherImplTest,
   ASSERT_THAT(fetched_categories->size(), Eq(1u));
   EXPECT_THAT(fetched_categories->front().info.additional_action(),
               Eq(ContentSuggestionsAdditionalAction::NONE));
-  EXPECT_THAT(fetched_categories->front().info.title(),
-              Eq(base::UTF8ToUTF16("Articles for Me")));
+  EXPECT_THAT(fetched_categories->front().info.title(), Eq(u"Articles for Me"));
 }
 
 TEST_F(RemoteSuggestionsFetcherImplTest, ExclusiveCategoryOnly) {

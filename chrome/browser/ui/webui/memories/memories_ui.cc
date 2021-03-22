@@ -34,9 +34,8 @@ content::WebUIDataSource* CreateAndSetupWebUIDataSource(Profile* profile) {
 
   // TODO(crbug.com/1173908): Replace these with localized strings.
   source->AddString("memoryTitleDescription",
-                    base::UTF8ToUTF16("Based on previous web activity"));
-  source->AddString("topVisitsSectionHeader",
-                    base::UTF8ToUTF16("From Chrome History"));
+                    u"Based on previous web activity");
+  source->AddString("topVisitsSectionHeader", u"From Chrome History");
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kMemoriesResources, kMemoriesResourcesSize),

@@ -230,7 +230,7 @@ class ManagementPolicyMock : public extensions::ManagementPolicy::Provider {
   bool UserMayLoad(const Extension* extension,
                    std::u16string* error) const override {
     if (error)
-      *error = base::UTF8ToUTF16("Dummy error message");
+      *error = u"Dummy error message";
     return false;
   }
 };

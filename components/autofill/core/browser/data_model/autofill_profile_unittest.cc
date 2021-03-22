@@ -372,8 +372,8 @@ TEST_P(AutofillProfileTest, CreateInferredLabelsI18n_KR) {
                        "Gangnam Finance Center", "152 Teheran-ro", "Gangnam-Gu",
                        "Seoul", "135-984", "KR", "+82-2-531-9000");
   profiles.back()->set_language_code("ko_Latn");
-  profiles.back()->SetInfo(ADDRESS_HOME_DEPENDENT_LOCALITY,
-                           UTF8ToUTF16("Yeoksam-Dong"), "en-US");
+  profiles.back()->SetInfo(ADDRESS_HOME_DEPENDENT_LOCALITY, u"Yeoksam-Dong",
+                           "en-US");
   static const char* kExpectedLabels[] = {
       "",
       "Park Jae-sang",
@@ -1527,28 +1527,25 @@ TEST_P(AutofillProfileTest,
   AutofillProfile b = a;
   a.FinalizeAfterImport();
 
-  b.SetRawInfoWithVerificationStatus(NAME_FIRST, UTF8ToUTF16("Märion"),
-                                     kObserved);
-  b.SetRawInfoWithVerificationStatus(NAME_MIDDLE, UTF8ToUTF16("Mitchéll"),
-                                     kObserved);
-  b.SetRawInfoWithVerificationStatus(NAME_LAST, UTF8ToUTF16("Morrison"),
-                                     kObserved);
-  b.SetRawInfoWithVerificationStatus(NAME_FULL, UTF8ToUTF16(""), kObserved);
+  b.SetRawInfoWithVerificationStatus(NAME_FIRST, u"Märion", kObserved);
+  b.SetRawInfoWithVerificationStatus(NAME_MIDDLE, u"Mitchéll", kObserved);
+  b.SetRawInfoWithVerificationStatus(NAME_LAST, u"Morrison", kObserved);
+  b.SetRawInfoWithVerificationStatus(NAME_FULL, u"", kObserved);
   b.FinalizeAfterImport();
 
   EXPECT_TRUE(a.SaveAdditionalInfo(b, "en-US"));
 
   // The first, middle and last names should have their first letter in
   // uppercase and have acquired diacritics.
-  EXPECT_EQ(UTF8ToUTF16("Märion"), a.GetRawInfo(NAME_FIRST));
-  EXPECT_EQ(UTF8ToUTF16("Mitchéll"), a.GetRawInfo(NAME_MIDDLE));
-  EXPECT_EQ(UTF8ToUTF16("Morrison"), a.GetRawInfo(NAME_LAST));
+  EXPECT_EQ(u"Märion", a.GetRawInfo(NAME_FIRST));
+  EXPECT_EQ(u"Mitchéll", a.GetRawInfo(NAME_MIDDLE));
+  EXPECT_EQ(u"Morrison", a.GetRawInfo(NAME_LAST));
   if (!StructuredNames()) {
-    EXPECT_EQ(UTF8ToUTF16("Märion Mitchéll Morrison"), a.GetRawInfo(NAME_FULL));
+    EXPECT_EQ(u"Märion Mitchéll Morrison", a.GetRawInfo(NAME_FULL));
   } else {
     // In the new merging logic the observed lower-case value should remain
     // because the upper-case-diacritic version is only formatted.
-    EXPECT_EQ(UTF8ToUTF16("marion mitchell morrison"), a.GetRawInfo(NAME_FULL));
+    EXPECT_EQ(u"marion mitchell morrison", a.GetRawInfo(NAME_FULL));
   }
 }
 

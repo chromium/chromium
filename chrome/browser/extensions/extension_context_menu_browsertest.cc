@@ -667,15 +667,12 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, TopLevel) {
   ASSERT_TRUE(menu->GetMenuModelAndItemIndex(
       ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0), &model,
       &index));
-  EXPECT_EQ(base::UTF8ToUTF16("An Extension with multiple Context Menus"),
+  EXPECT_EQ(u"An Extension with multiple Context Menus",
             model->GetLabelAt(index++));
-  EXPECT_EQ(base::UTF8ToUTF16("Context Menu #1 - Extension #2"),
-            model->GetLabelAt(index++));
-  EXPECT_EQ(base::UTF8ToUTF16("Context Menu #2 - Extension #3"),
-            model->GetLabelAt(index++));
-  EXPECT_EQ(base::UTF8ToUTF16("Context Menu #3 - Extension #1"),
-            model->GetLabelAt(index++));
-  EXPECT_EQ(base::UTF8ToUTF16("Ze Extension with multiple Context Menus"),
+  EXPECT_EQ(u"Context Menu #1 - Extension #2", model->GetLabelAt(index++));
+  EXPECT_EQ(u"Context Menu #2 - Extension #3", model->GetLabelAt(index++));
+  EXPECT_EQ(u"Context Menu #3 - Extension #1", model->GetLabelAt(index++));
+  EXPECT_EQ(u"Ze Extension with multiple Context Menus",
             model->GetLabelAt(index++));
 }
 
@@ -787,7 +784,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuPersistentTest, Separators) {
       ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0),
       &model,
       &index));
-  EXPECT_EQ(base::UTF8ToUTF16("parent"), model->GetLabelAt(index));
+  EXPECT_EQ(u"parent", model->GetLabelAt(index));
   submenu = model->GetSubmenuModelAt(index);
   ASSERT_TRUE(submenu);
   VerifyMenuForSeparatorsTest(*submenu);

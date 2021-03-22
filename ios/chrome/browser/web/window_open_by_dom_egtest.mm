@@ -33,9 +33,8 @@ const char kTestURL[] = "/window_open.html";
 id<GREYMatcher> PopupBlocker() {
   return grey_allOf(
       grey_accessibilityID(kInfobarBannerViewIdentifier),
-      grey_accessibilityLabel(
-          base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
-              IDS_IOS_POPUPS_BLOCKED_MOBILE, base::UTF8ToUTF16("1")))),
+      grey_accessibilityLabel(base::SysUTF16ToNSString(
+          l10n_util::GetStringFUTF16(IDS_IOS_POPUPS_BLOCKED_MOBILE, u"1"))),
       nil);
 }
 

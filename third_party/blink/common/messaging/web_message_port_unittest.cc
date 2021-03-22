@@ -86,7 +86,7 @@ TEST(WebMessagePortTest, EndToEnd) {
   EXPECT_TRUE(port1.CanPostMessage());
 
   // Send a simple string-only message one way from port 0 to port 1.
-  std::u16string message(base::UTF8ToUTF16("foo"));
+  std::u16string message(u"foo");
   {
     base::RunLoop run_loop;
     EXPECT_CALL(receiver1, OnMessage(_))

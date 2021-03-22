@@ -288,13 +288,13 @@ void VersionUpdaterMac::UpdateStatus(NSDictionary* dictionary) {
 
     if (status == FAILED) {
       if (!message.empty()) {
-        message += base::UTF8ToUTF16("<br/><br/>");
+        message += u"<br/><br/>";
       }
 
       message += l10n_util::GetStringUTF16(IDS_UPGRADE_ERROR_DETAILS);
-      message += base::UTF8ToUTF16("<br/><pre>");
+      message += u"<br/><pre>";
       message += base::UTF8ToUTF16(net::EscapeForHTML(error_messages));
-      message += base::UTF8ToUTF16("</pre>");
+      message += u"</pre>";
     }
   }
 

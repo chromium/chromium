@@ -6067,7 +6067,7 @@ TEST_F(InputMethodResultAuraTest, FinishComposingText) {
 TEST_F(InputMethodResultAuraTest, CommitText) {
   base::RepeatingClosure ime_call = base::BindRepeating(
       &ui::TextInputClient::InsertText, base::Unretained(text_input_client()),
-      base::UTF8ToUTF16("hello"),
+      u"hello",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   for (auto index : active_view_sequence_) {
     ActivateViewForTextInputManager(views_[index], ui::TEXT_INPUT_TYPE_TEXT);
@@ -6083,7 +6083,7 @@ TEST_F(InputMethodResultAuraTest, CommitText) {
 TEST_F(InputMethodResultAuraTest, CommitTextBeforeCursor) {
   base::RepeatingClosure ime_call = base::BindRepeating(
       &ui::TextInputClient::InsertText, base::Unretained(text_input_client()),
-      base::UTF8ToUTF16("hello"),
+      u"hello",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorBeforeText);
   for (auto index : active_view_sequence_) {
     ActivateViewForTextInputManager(views_[index], ui::TEXT_INPUT_TYPE_TEXT);

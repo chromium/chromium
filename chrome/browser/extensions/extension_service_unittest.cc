@@ -5196,8 +5196,8 @@ namespace {
 void CreateDatabase(storage::DatabaseTracker* db_tracker,
                     const std::string& origin_id) {
   DCHECK(db_tracker->task_runner()->RunsTasksInCurrentSequence());
-  std::u16string db_name = base::UTF8ToUTF16("db");
-  std::u16string description = base::UTF8ToUTF16("db_description");
+  std::u16string db_name = u"db";
+  std::u16string description = u"db_description";
   int64_t size;
   db_tracker->DatabaseOpened(origin_id, db_name, description, &size);
   db_tracker->DatabaseClosed(origin_id, db_name);

@@ -75,10 +75,9 @@ class InactiveUserNotificationBlockerTest
     id_with_profile.profile_id = profile_id;
 
     message_center::Notification notification(
-        message_center::NOTIFICATION_TYPE_SIMPLE, "popup-id",
-        UTF8ToUTF16("popup-title"), UTF8ToUTF16("popup-message"), gfx::Image(),
-        UTF8ToUTF16("popup-source"), GURL(), id_with_profile,
-        message_center::RichNotificationData(), nullptr);
+        message_center::NOTIFICATION_TYPE_SIMPLE, "popup-id", u"popup-title",
+        u"popup-message", gfx::Image(), u"popup-source", GURL(),
+        id_with_profile, message_center::RichNotificationData(), nullptr);
 
     if (notifier_id.id == kNotifierSystemPriority)
       notification.set_priority(message_center::SYSTEM_PRIORITY);
@@ -93,9 +92,9 @@ class InactiveUserNotificationBlockerTest
 
     message_center::Notification notification(
         message_center::NOTIFICATION_TYPE_SIMPLE, "notification-id",
-        UTF8ToUTF16("notification-title"), UTF8ToUTF16("notification-message"),
-        gfx::Image(), UTF8ToUTF16("notification-source"), GURL(),
-        id_with_profile, message_center::RichNotificationData(), nullptr);
+        u"notification-title", u"notification-message", gfx::Image(),
+        u"notification-source", GURL(), id_with_profile,
+        message_center::RichNotificationData(), nullptr);
 
     if (notifier_id.id == kNotifierSystemPriority)
       notification.set_priority(message_center::SYSTEM_PRIORITY);

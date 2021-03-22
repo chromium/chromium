@@ -32,7 +32,7 @@ ExternalInstallOptions GetConfigForYouTube() {
   options.only_use_app_info_factory = true;
   options.app_info_factory = base::BindRepeating([]() {
     auto info = std::make_unique<WebApplicationInfo>();
-    info->title = base::UTF8ToUTF16("YouTube");
+    info->title = u"YouTube";
     info->start_url = GURL("https://www.youtube.com/?feature=ytca");
     info->scope = GURL("https://www.youtube.com/");
     info->display_mode = DisplayMode::kMinimalUi;

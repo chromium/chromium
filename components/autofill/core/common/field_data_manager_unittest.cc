@@ -44,14 +44,14 @@ TEST_F(FieldDataManagerTest, UpdateFieldDataMap) {
       FieldPropertiesFlags::kUserTyped);
   const FieldRendererId id(control_elements_[0].unique_renderer_id);
   EXPECT_TRUE(field_data_manager->HasFieldData(id));
-  EXPECT_EQ(UTF8ToUTF16("first"), field_data_manager->GetUserInput(id));
+  EXPECT_EQ(u"first", field_data_manager->GetUserInput(id));
   EXPECT_EQ(FieldPropertiesFlags::kUserTyped,
             field_data_manager->GetFieldPropertiesMask(id));
 
   field_data_manager->UpdateFieldDataMap(
-      control_elements_[0].unique_renderer_id, UTF8ToUTF16("newvalue"),
+      control_elements_[0].unique_renderer_id, u"newvalue",
       FieldPropertiesFlags::kAutofilled);
-  EXPECT_EQ(UTF8ToUTF16("newvalue"), field_data_manager->GetUserInput(id));
+  EXPECT_EQ(u"newvalue", field_data_manager->GetUserInput(id));
   FieldPropertiesMask mask =
       FieldPropertiesFlags::kUserTyped | FieldPropertiesFlags::kAutofilled;
   EXPECT_EQ(mask, field_data_manager->GetFieldPropertiesMask(id));
@@ -90,7 +90,7 @@ TEST_F(FieldDataManagerTest, UpdateFieldDataMapWithNullValue) {
   field_data_manager->UpdateFieldDataMap(
       control_elements_[0].unique_renderer_id, control_elements_[0].value,
       FieldPropertiesFlags::kAutofilled);
-  EXPECT_EQ(UTF8ToUTF16("first"), field_data_manager->GetUserInput(id));
+  EXPECT_EQ(u"first", field_data_manager->GetUserInput(id));
 }
 
 TEST_F(FieldDataManagerTest, FindMachedValue) {
@@ -99,10 +99,8 @@ TEST_F(FieldDataManagerTest, FindMachedValue) {
   field_data_manager->UpdateFieldDataMap(
       control_elements_[0].unique_renderer_id, control_elements_[0].value,
       FieldPropertiesFlags::kUserTyped);
-  EXPECT_TRUE(
-      field_data_manager->FindMachedValue(UTF8ToUTF16("first_element")));
-  EXPECT_FALSE(
-      field_data_manager->FindMachedValue(UTF8ToUTF16("second_element")));
+  EXPECT_TRUE(field_data_manager->FindMachedValue(u"first_element"));
+  EXPECT_FALSE(field_data_manager->FindMachedValue(u"second_element"));
 }
 
 }  // namespace autofill

@@ -105,12 +105,12 @@ std::u16string GetLabelForCustomData(const ui::ClipboardData& data) {
 
   // Strip path information, so all that's left are file names.
   for (auto it = source_list.begin(); it != source_list.end(); ++it)
-    *it = it->substr(it->find_last_of(base::UTF8ToUTF16("/")) + 1);
+    *it = it->substr(it->find_last_of(u"/") + 1);
 
   // Join file names, unescaping encoded character sequences for display. This
   // ensures that "My%20File.txt" will display as "My File.txt".
   return base::UTF8ToUTF16(base::UnescapeURLComponent(
-      base::UTF16ToUTF8(base::JoinString(source_list, base::UTF8ToUTF16(", "))),
+      base::UTF16ToUTF8(base::JoinString(source_list, u", ")),
       base::UnescapeRule::SPACES));
 }
 

@@ -271,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(AssistantTimersBrowserTest,
   EXPECT_EQ(2u, action_buttons.size());
 
   // Tap the "CANCEL" action button in the notification.
-  EXPECT_EQ(base::UTF8ToUTF16("CANCEL"), action_buttons.at(1)->GetText());
+  EXPECT_EQ(u"CANCEL", action_buttons.at(1)->GetText());
   TapOnAndWait(action_buttons.at(1));
 
   ShowAssistantUi();

@@ -1020,7 +1020,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsTest, ContentSettingsBlockDataURLs) {
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_EQ(base::UTF8ToUTF16("Data URL"), web_contents->GetTitle());
+  ASSERT_EQ(u"Data URL", web_contents->GetTitle());
 
   EXPECT_TRUE(
       PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame())

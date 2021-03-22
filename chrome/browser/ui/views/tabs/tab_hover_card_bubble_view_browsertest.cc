@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewBrowserTest,
                        MAYBE_WidgetVisibleOnTabFocusFromKeyboardAccelerator) {
   TabRendererData new_tab_data = TabRendererData();
-  new_tab_data.title = base::UTF8ToUTF16("Test Tab 2");
+  new_tab_data.title = u"Test Tab 2";
   new_tab_data.last_committed_url =
       GURL("http://example.com/this/should/not/be/seen");
   tab_strip()->AddTabAt(1, new_tab_data, false);
@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewBrowserTest,
                        MAYBE_WidgetDataUpdate) {
   TabRendererData new_tab_data = TabRendererData();
-  new_tab_data.title = base::UTF8ToUTF16("Test Tab 2");
+  new_tab_data.title = u"Test Tab 2";
   new_tab_data.last_committed_url =
       GURL("http://example.com/this/should/not/be/seen");
   tab_strip()->AddTabAt(1, new_tab_data, false);

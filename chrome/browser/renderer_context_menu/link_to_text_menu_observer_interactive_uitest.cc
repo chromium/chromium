@@ -94,7 +94,7 @@ LinkToTextMenuObserverTest::~LinkToTextMenuObserverTest() = default;
 IN_PROC_BROWSER_TEST_P(LinkToTextMenuObserverTest, AddsCopyMenuItem) {
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.com/");
-  params.selection_text = base::UTF8ToUTF16("hello world");
+  params.selection_text = u"hello world";
   observer()->OverrideGeneratedSelectorForTesting(std::string());
   InitMenu(params);
   EXPECT_EQ(1u, menu()->GetMenuSize());
@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_P(LinkToTextMenuObserverTest, CopiesLinkToText) {
   content::BrowserTestClipboardScope test_clipboard_scope;
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.com/");
-  params.selection_text = base::UTF8ToUTF16("hello world");
+  params.selection_text = u"hello world";
   observer()->OverrideGeneratedSelectorForTesting("hello%20world");
   InitMenu(params);
   menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
@@ -149,14 +149,14 @@ IN_PROC_BROWSER_TEST_P(LinkToTextMenuObserverTest, CopiesLinkToText) {
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   std::u16string text;
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
-  EXPECT_EQ(base::UTF8ToUTF16("http://foo.com/#:~:text=hello%20world"), text);
+  EXPECT_EQ(u"http://foo.com/#:~:text=hello%20world", text);
 }
 
 IN_PROC_BROWSER_TEST_P(LinkToTextMenuObserverTest, CopiesLinkForEmptySelector) {
   content::BrowserTestClipboardScope test_clipboard_scope;
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.com/");
-  params.selection_text = base::UTF8ToUTF16("hello world");
+  params.selection_text = u"hello world";
   observer()->OverrideGeneratedSelectorForTesting(std::string());
   InitMenu(params);
 
@@ -168,7 +168,7 @@ IN_PROC_BROWSER_TEST_P(LinkToTextMenuObserverTest, CopiesLinkForEmptySelector) {
     ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
     std::u16string text;
     clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
-    EXPECT_EQ(base::UTF8ToUTF16("http://foo.com/"), text);
+    EXPECT_EQ(u"http://foo.com/", text);
   }
 }
 
@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_P(LinkToTextMenuObserverTest, ReplacesRefInURL) {
   content::BrowserTestClipboardScope test_clipboard_scope;
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.com/#:~:text=hello%20world");
-  params.selection_text = base::UTF8ToUTF16("hello world");
+  params.selection_text = u"hello world";
   observer()->OverrideGeneratedSelectorForTesting("hello");
   InitMenu(params);
   menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
@@ -184,7 +184,7 @@ IN_PROC_BROWSER_TEST_P(LinkToTextMenuObserverTest, ReplacesRefInURL) {
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   std::u16string text;
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
-  EXPECT_EQ(base::UTF8ToUTF16("http://foo.com/#:~:text=hello"), text);
+  EXPECT_EQ(u"http://foo.com/#:~:text=hello", text);
 }
 
 // crbug.com/1139864
@@ -206,7 +206,7 @@ IN_PROC_BROWSER_TEST_P(LinkToTextMenuObserverTest, InvalidSelectorForIframe) {
   content::BrowserTestClipboardScope test_clipboard_scope;
   content::ContextMenuParams params;
   params.page_url = main_url;
-  params.selection_text = base::UTF8ToUTF16("hello world");
+  params.selection_text = u"hello world";
   InitMenu(params);
 
   if (ShouldPreemptivelyGenerateLink()) {
@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_P(LinkToTextMenuObserverTest, Blocklist) {
   content::BrowserTestClipboardScope test_clipboard_scope;
   content::ContextMenuParams params;
   params.page_url = GURL("http://facebook.com/my-profile");
-  params.selection_text = base::UTF8ToUTF16("hello world");
+  params.selection_text = u"hello world";
   InitMenu(params);
 
   if (ShouldPreemptivelyGenerateLink()) {
@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_P(LinkToTextMenuObserverTest, Blocklist) {
     ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
     std::u16string text;
     clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
-    EXPECT_EQ(base::UTF8ToUTF16("http://facebook.com/my-profile"), text);
+    EXPECT_EQ(u"http://facebook.com/my-profile", text);
   }
 }
 

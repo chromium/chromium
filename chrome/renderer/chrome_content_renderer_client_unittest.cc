@@ -76,7 +76,7 @@ void AddContentTypeHandler(content::WebPluginInfo* info,
   content::WebPluginMimeType mime_type_info;
   mime_type_info.mime_type = mime_type;
   mime_type_info.additional_params.emplace_back(
-      base::UTF8ToUTF16("nacl"), base::UTF8ToUTF16(manifest_url));
+      u"nacl", base::UTF8ToUTF16(manifest_url));
   info->mime_types.push_back(mime_type_info);
 }
 

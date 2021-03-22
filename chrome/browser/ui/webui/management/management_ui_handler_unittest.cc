@@ -251,7 +251,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
   ManagementUIHandlerTests()
       : TestingBaseClass(),
         handler_(&policy_service_),
-        device_domain_(base::UTF8ToUTF16("devicedomain.com")),
+        device_domain_(u"devicedomain.com"),
         task_runner_(base::MakeRefCounted<base::TestSimpleTaskRunner>()),
         state_keys_broker_(&session_manager_client_) {
     ON_CALL(policy_service_, GetPolicies(_))

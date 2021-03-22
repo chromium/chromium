@@ -456,8 +456,8 @@ TEST_F(SaveUpdateWithAccountStoreBubbleControllerTest, EditCredential) {
   PretendPasswordWaiting();
   EXPECT_CALL(*GetStore(), RemoveSiteStatsImpl(GURL(kSiteOrigin).GetOrigin()));
 
-  const std::u16string kExpectedUsername = base::UTF8ToUTF16("new_username");
-  const std::u16string kExpectedPassword = base::UTF8ToUTF16("new_password");
+  const std::u16string kExpectedUsername = u"new_username";
+  const std::u16string kExpectedPassword = u"new_password";
 
   controller()->OnCredentialEdited(kExpectedUsername, kExpectedPassword);
   EXPECT_EQ(kExpectedUsername, controller()->pending_password().username_value);

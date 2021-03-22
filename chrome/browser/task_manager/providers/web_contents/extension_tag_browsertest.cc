@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTagsTest,
   ASSERT_EQ(1U, task_manager.tasks().size());
   const Task* about_blank_task = task_manager.tasks().back();
   EXPECT_EQ(Task::RENDERER, about_blank_task->GetType());
-  EXPECT_EQ(base::UTF8ToUTF16("Tab: about:blank"), about_blank_task->title());
+  EXPECT_EQ(u"Tab: about:blank", about_blank_task->title());
 
   // Reload the extension, the task manager should show it again.
   ReloadExtension(extension->id());

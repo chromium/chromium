@@ -21,7 +21,7 @@ TEST(JniString, BasicConversionsUTF8) {
 }
 
 TEST(JniString, BasicConversionsUTF16) {
-  const std::u16string kSimpleString = UTF8ToUTF16("SimpleTest16");
+  const std::u16string kSimpleString = u"SimpleTest16";
   JNIEnv* env = AttachCurrentThread();
   std::u16string result =
       ConvertJavaStringToUTF16(ConvertUTF16ToJavaString(env, kSimpleString));

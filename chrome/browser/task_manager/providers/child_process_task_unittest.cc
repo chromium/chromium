@@ -111,7 +111,7 @@ TEST_F(ChildProcessTaskTest, TestAll) {
   EXPECT_TRUE(provided_tasks_.empty());
 
   const int unique_id = 245;
-  const std::u16string name(base::UTF8ToUTF16("Test Task"));
+  const std::u16string name(u"Test Task");
   const std::u16string expected_name(
       l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_PLUGIN_PREFIX, name));
 

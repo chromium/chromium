@@ -18,17 +18,16 @@ class SecurePaymentConfirmationModelTest : public testing::Test {};
 TEST_F(SecurePaymentConfirmationModelTest, SmokeTest) {
   SecurePaymentConfirmationModel model;
 
-  std::u16string title(
-      base::UTF8ToUTF16("Use Touch ID to verify and complete your purchase?"));
-  std::u16string merchant_label(base::UTF8ToUTF16("Store"));
-  std::u16string merchant_value(base::UTF8ToUTF16("merchant.com"));
-  std::u16string instrument_label(base::UTF8ToUTF16("Payment"));
-  std::u16string instrument_value(base::UTF8ToUTF16("Mastercard ****4444"));
+  std::u16string title(u"Use Touch ID to verify and complete your purchase?");
+  std::u16string merchant_label(u"Store");
+  std::u16string merchant_value(u"merchant.com");
+  std::u16string instrument_label(u"Payment");
+  std::u16string instrument_value(u"Mastercard ****4444");
   SkBitmap instrument_icon;
-  std::u16string total_label(base::UTF8ToUTF16("Total"));
-  std::u16string total_value(base::UTF8ToUTF16("$20.00 USD"));
-  std::u16string verify_button_label(base::UTF8ToUTF16("Verify"));
-  std::u16string cancel_button_label(base::UTF8ToUTF16("Cancel"));
+  std::u16string total_label(u"Total");
+  std::u16string total_value(u"$20.00 USD");
+  std::u16string verify_button_label(u"Verify");
+  std::u16string cancel_button_label(u"Cancel");
 
   model.set_title(title);
   EXPECT_EQ(title, model.title());

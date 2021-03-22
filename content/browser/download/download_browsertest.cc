@@ -3742,7 +3742,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
   origin_one.StartAcceptingConnections();
   origin_two.StartAcceptingConnections();
 
-  std::u16string expected_title(base::UTF8ToUTF16("hello"));
+  std::u16string expected_title(u"hello");
   TitleWatcher observer(shell()->web_contents(), expected_title);
   EXPECT_TRUE(
       NavigateToURL(shell(), referrer_url,

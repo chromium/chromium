@@ -412,7 +412,7 @@ TEST_F(LockScreenSanityTest, RemoveUser) {
 TEST_F(LockScreenSanityTest, LockScreenKillsPreventsClipboardPaste) {
   {
     ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
-    writer.WriteText(base::UTF8ToUTF16("password"));
+    writer.WriteText(u"password");
   }
 
   ShowLockScreen();
@@ -430,7 +430,7 @@ TEST_F(LockScreenSanityTest, LockScreenKillsPreventsClipboardPaste) {
   text_input->RequestFocus();
   generator->PressKey(ui::KeyboardCode::VKEY_V, ui::EF_CONTROL_DOWN);
 
-  EXPECT_EQ(base::UTF8ToUTF16("password"), text_input->GetText());
+  EXPECT_EQ(u"password", text_input->GetText());
 }
 
 }  // namespace ash

@@ -68,11 +68,11 @@ TEST(GURLTest, Types) {
 // the parser is already tested and works, so we are mostly interested if the
 // object does the right thing with the results.
 TEST(GURLTest, Components) {
-  GURL empty_url(base::UTF8ToUTF16(""));
+  GURL empty_url(u"");
   EXPECT_TRUE(empty_url.is_empty());
   EXPECT_FALSE(empty_url.is_valid());
 
-  GURL url(base::UTF8ToUTF16("http://user:pass@google.com:99/foo;bar?q=a#ref"));
+  GURL url(u"http://user:pass@google.com:99/foo;bar?q=a#ref");
   EXPECT_FALSE(url.is_empty());
   EXPECT_TRUE(url.is_valid());
   EXPECT_TRUE(url.SchemeIs("http"));

@@ -18,8 +18,8 @@
 
 namespace {
 
-const std::u16string kSharedTabName = base::UTF8ToUTF16("example.com");
-const std::u16string kAppName = base::UTF8ToUTF16("sharing.com");
+const std::u16string kSharedTabName = u"example.com";
+const std::u16string kAppName = u"sharing.com";
 
 class MockTabSharingUIViews : public TabSharingUI {
  public:

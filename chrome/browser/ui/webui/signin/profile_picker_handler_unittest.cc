@@ -136,7 +136,7 @@ TEST_F(ProfilePickerHandlerTest, RenameProfile) {
   web_ui()->ClearTrackedCalls();
 
   // The profile list doesn't get re-ordered after a rename.
-  profile_b->SetLocalProfileName(base::UTF8ToUTF16("X"), false);
+  profile_b->SetLocalProfileName(u"X", false);
   VerifyProfileListWasPushed({profile_a, profile_b, profile_c, profile_d});
   web_ui()->ClearTrackedCalls();
 }

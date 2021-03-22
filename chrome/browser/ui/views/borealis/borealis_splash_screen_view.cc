@@ -66,8 +66,8 @@ BorealisSplashScreenView::BorealisSplashScreenView(Profile* profile) {
   set_close_on_deactivate(false);
 
   // TODO: b/174589567 Make splash screen look like mockups.
-  views::MessageBoxView* message_box = new views::MessageBoxView(
-      base::UTF8ToUTF16("BOREALIS IS STARTING... PLEASE WAIT"));
+  views::MessageBoxView* message_box =
+      new views::MessageBoxView(u"BOREALIS IS STARTING... PLEASE WAIT");
   AddChildView(message_box);
 }
 

@@ -41,7 +41,7 @@ ModalType TestWebDialogDelegate::GetDialogModalType() const {
 }
 
 std::u16string TestWebDialogDelegate::GetDialogTitle() const {
-  return base::UTF8ToUTF16("Test");
+  return u"Test";
 }
 
 GURL TestWebDialogDelegate::GetDialogContentURL() const {

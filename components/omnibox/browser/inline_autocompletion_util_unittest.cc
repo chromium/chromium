@@ -14,64 +14,46 @@ namespace {
 
 TEST(InlineAutocompletionUtilTest, FindAtWordbreak) {
   // Should find the first wordbreak occurrence.
-  EXPECT_EQ(FindAtWordbreak(base::UTF8ToUTF16("prefixmatch wordbreak_match"),
-                            base::UTF8ToUTF16("match")),
-            22u);
+  EXPECT_EQ(FindAtWordbreak(u"prefixmatch wordbreak_match", u"match"), 22u);
 
   // Should return npos when no occurrences exist.
-  EXPECT_EQ(FindAtWordbreak(base::UTF8ToUTF16("prefixmatch"),
-                            base::UTF8ToUTF16("match")),
-            std::string::npos);
+  EXPECT_EQ(FindAtWordbreak(u"prefixmatch", u"match"), std::string::npos);
 
   // Should skip occurrences before |search_start|.
-  EXPECT_EQ(FindAtWordbreak(base::UTF8ToUTF16("match match"),
-                            base::UTF8ToUTF16("match"), 1),
-            6u);
+  EXPECT_EQ(FindAtWordbreak(u"match match", u"match", 1), 6u);
 }
 
 TEST(InlineAutocompletionUtilTest, FindWordsSequentiallyAtWordbreak) {
   using pair = std::pair<size_t, size_t>;
 
   // Occurrences must be sequential.
-  EXPECT_THAT(FindWordsSequentiallyAtWordbreak(base::UTF8ToUTF16("a b c"),
-                                               base::UTF8ToUTF16("a c")),
+  EXPECT_THAT(FindWordsSequentiallyAtWordbreak(u"a b c", u"a c"),
               testing::ElementsAre(pair{0, 1}, pair{1, 2}, pair{4, 5}));
-  EXPECT_THAT(FindWordsSequentiallyAtWordbreak(base::UTF8ToUTF16("c b a"),
-                                               base::UTF8ToUTF16("a b")),
+  EXPECT_THAT(FindWordsSequentiallyAtWordbreak(u"c b a", u"a b"),
               testing::ElementsAre());
-  EXPECT_THAT(FindWordsSequentiallyAtWordbreak(base::UTF8ToUTF16("b a b"),
-                                               base::UTF8ToUTF16("a b")),
+  EXPECT_THAT(FindWordsSequentiallyAtWordbreak(u"b a b", u"a b"),
               testing::ElementsAre(pair{2, 3}, pair{3, 4}, pair{4, 5}));
 
   // Occurrences must be at word breaks.
-  EXPECT_THAT(FindWordsSequentiallyAtWordbreak(base::UTF8ToUTF16("a b-c"),
-                                               base::UTF8ToUTF16("a c")),
+  EXPECT_THAT(FindWordsSequentiallyAtWordbreak(u"a b-c", u"a c"),
               testing::ElementsAre(pair{0, 1}, pair{1, 2}, pair{4, 5}));
-  EXPECT_THAT(FindWordsSequentiallyAtWordbreak(base::UTF8ToUTF16("a bc"),
-                                               base::UTF8ToUTF16("a c")),
+  EXPECT_THAT(FindWordsSequentiallyAtWordbreak(u"a bc", u"a c"),
               testing::ElementsAre());
-  EXPECT_THAT(FindWordsSequentiallyAtWordbreak(base::UTF8ToUTF16("a bc c"),
-                                               base::UTF8ToUTF16("a c")),
+  EXPECT_THAT(FindWordsSequentiallyAtWordbreak(u"a bc c", u"a c"),
               testing::ElementsAre(pair{0, 1}, pair{1, 2}, pair{5, 6}));
 
   // Whitespaces must also match
-  EXPECT_THAT(FindWordsSequentiallyAtWordbreak(base::UTF8ToUTF16("a-c"),
-                                               base::UTF8ToUTF16("a c")),
+  EXPECT_THAT(FindWordsSequentiallyAtWordbreak(u"a-c", u"a c"),
               testing::ElementsAre());
-  EXPECT_THAT(FindWordsSequentiallyAtWordbreak(base::UTF8ToUTF16("a c"),
-                                               base::UTF8ToUTF16("a c ")),
+  EXPECT_THAT(FindWordsSequentiallyAtWordbreak(u"a c", u"a c "),
               testing::ElementsAre());
-  EXPECT_THAT(FindWordsSequentiallyAtWordbreak(base::UTF8ToUTF16("a -c"),
-                                               base::UTF8ToUTF16("a c")),
+  EXPECT_THAT(FindWordsSequentiallyAtWordbreak(u"a -c", u"a c"),
               testing::ElementsAre(pair{0, 1}, pair{1, 2}, pair{3, 4}));
-  EXPECT_THAT(FindWordsSequentiallyAtWordbreak(base::UTF8ToUTF16("a- c"),
-                                               base::UTF8ToUTF16("a c")),
+  EXPECT_THAT(FindWordsSequentiallyAtWordbreak(u"a- c", u"a c"),
               testing::ElementsAre(pair{0, 1}, pair{2, 3}, pair{3, 4}));
-  EXPECT_THAT(FindWordsSequentiallyAtWordbreak(base::UTF8ToUTF16("a c c"),
-                                               base::UTF8ToUTF16("a  c")),
+  EXPECT_THAT(FindWordsSequentiallyAtWordbreak(u"a c c", u"a  c"),
               testing::ElementsAre());
-  EXPECT_THAT(FindWordsSequentiallyAtWordbreak(base::UTF8ToUTF16("a c  c"),
-                                               base::UTF8ToUTF16("a  c")),
+  EXPECT_THAT(FindWordsSequentiallyAtWordbreak(u"a c  c", u"a  c"),
               testing::ElementsAre(pair{0, 1}, pair{3, 5}, pair{5, 6}));
 }
 

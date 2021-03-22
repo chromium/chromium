@@ -155,7 +155,7 @@ void TestProxyAuth(Browser* browser, const GURL& test_page) {
 
   WindowedAuthSuppliedObserver auth_supplied_waiter(controller);
   LoginHandler* handler = observer.handlers().front();
-  handler->SetAuth(base::UTF8ToUTF16("foo"), base::UTF8ToUTF16("bar"));
+  handler->SetAuth(u"foo", u"bar");
   auth_supplied_waiter.Wait();
 
   std::u16string expected_title = base::ASCIIToUTF16("OK");
@@ -318,7 +318,7 @@ const char kNoAuthPage1[] = "/simple.html";
 std::u16string ExpectedTitleFromAuth(const std::u16string& username,
                                      const std::u16string& password) {
   // The TestServer sets the title to username/password on successful login.
-  return username + base::UTF8ToUTF16("/") + password;
+  return username + u"/" + password;
 }
 
 // Confirm that <link rel="prefetch"> targetting an auth required
@@ -1286,7 +1286,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
     load_stop_waiter.Wait();
   }
 
-  std::u16string expected_title(base::UTF8ToUTF16("status=401"));
+  std::u16string expected_title(u"status=401");
 
   EXPECT_EQ(expected_title, contents->GetTitle());
   EXPECT_EQ(0, observer.auth_supplied_count());
@@ -1320,7 +1320,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
     load_stop_waiter.Wait();
   }
 
-  std::u16string expected_title(base::UTF8ToUTF16("status=200"));
+  std::u16string expected_title(u"status=200");
 
   EXPECT_EQ(expected_title, contents->GetTitle());
   EXPECT_EQ(0, observer.auth_supplied_count());
@@ -1383,7 +1383,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   WindowedLoadStopObserver load_stop_waiter(controller, 1);
   load_stop_waiter.Wait();
 
-  std::u16string expected_title(base::UTF8ToUTF16("status=200"));
+  std::u16string expected_title(u"status=200");
 
   EXPECT_EQ(expected_title, contents->GetTitle());
   EXPECT_EQ(2, observer.auth_supplied_count());
@@ -1427,7 +1427,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   WindowedLoadStopObserver load_stop_waiter(controller, 1);
   load_stop_waiter.Wait();
 
-  std::u16string expected_title(base::UTF8ToUTF16("status=401"));
+  std::u16string expected_title(u"status=401");
 
   EXPECT_EQ(expected_title, contents->GetTitle());
   EXPECT_EQ(0, observer.auth_supplied_count());
@@ -2330,8 +2330,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptExtensionBrowserTest, OnAuthRequiredCancels) {
   GURL test_page = embedded_test_server()->GetURL(kAuthBasicPage);
   ui_test_utils::NavigateToURL(browser(), test_page);
 
-  std::u16string expected_title(
-      base::UTF8ToUTF16("Denied: Missing Authorization Header"));
+  std::u16string expected_title(u"Denied: Missing Authorization Header");
   EXPECT_EQ(expected_title, contents->GetTitle());
 }
 

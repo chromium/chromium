@@ -945,7 +945,7 @@ void PasswordSyncBridge::GetAllDataForDebugging(DataCallback callback) {
     PasswordForm form = *pair.second;
     const std::vector<InsecureCredential> insecure_credentials =
         password_store_sync_->ReadSecurityIssues(pair.first);
-    form.password_value = base::UTF8ToUTF16("<redacted>");
+    form.password_value = u"<redacted>";
     batch->Put(base::NumberToString(pair.first.value()),
                CreateEntityData(form, insecure_credentials));
   }

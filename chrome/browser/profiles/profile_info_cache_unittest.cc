@@ -144,9 +144,9 @@ std::u16string ProfileInfoCacheTest::GetConcatenation(
     const std::u16string& gaia_name,
     const std::u16string profile_name) {
   std::u16string name_to_display(gaia_name);
-  name_to_display.append(base::UTF8ToUTF16(" ("));
+  name_to_display.append(u" (");
   name_to_display.append(profile_name);
-  name_to_display.append(base::UTF8ToUTF16(")"));
+  name_to_display.append(u")");
   return name_to_display;
 }
 

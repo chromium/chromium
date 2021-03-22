@@ -155,7 +155,7 @@ blink::mojom::DragDataPtr DropMetaDataToDragData(
       // will contain an empty URL (which means no URL is dragged) if the URL in
       // WebDragData is empty.
       if (base::EqualsASCII(meta_data_item.mime_type, ui::kMimeTypeURIList)) {
-        item->string_data = base::UTF8ToUTF16("about:dragdrop-placeholder");
+        item->string_data = u"about:dragdrop-placeholder";
       }
       items.push_back(blink::mojom::DragItem::NewString(std::move(item)));
       continue;

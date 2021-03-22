@@ -977,10 +977,10 @@ TEST_F(AutofillFieldFillerTest, FillSelectWithCountries) {
   field.set_heuristic_type(ADDRESS_HOME_COUNTRY);
 
   AutofillProfile address = test::GetFullProfile();
-  address.SetRawInfo(ADDRESS_HOME_COUNTRY, UTF8ToUTF16("CA"));
+  address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"CA");
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
   filler.FillFormField(field, &address, &field, /*cvc=*/std::u16string());
-  EXPECT_EQ(UTF8ToUTF16("Canada"), field.value);
+  EXPECT_EQ(u"Canada", field.value);
 }
 
 struct FillWithExpirationMonthTestCase {
@@ -1166,10 +1166,10 @@ TEST_F(AutofillFieldFillerTest,
   card.SetExpirationMonth(8);
   FieldFiller filler(/*app_locale=*/"fr-FR", /*address_normalizer=*/nullptr);
   filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string());
-  EXPECT_EQ(UTF8ToUTF16("08 - AOÛT"), field.value);
+  EXPECT_EQ(u"08 - AOÛT", field.value);
   card.SetExpirationMonth(12);
   filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string());
-  EXPECT_EQ(UTF8ToUTF16("12 - DECEMBRE"), field.value);
+  EXPECT_EQ(u"12 - DECEMBRE", field.value);
 }
 
 TEST_F(AutofillFieldFillerTest, FillSelectControlWithMonthName_French) {
@@ -1183,15 +1183,15 @@ TEST_F(AutofillFieldFillerTest, FillSelectControlWithMonthName_French) {
   card.SetExpirationMonth(2);
   FieldFiller filler(/*app_locale=*/"fr-FR", /*address_normalizer=*/nullptr);
   filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string());
-  EXPECT_EQ(UTF8ToUTF16("FÉVR."), field.value);
+  EXPECT_EQ(u"FÉVR.", field.value);
 
   card.SetExpirationMonth(1);
   filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string());
-  EXPECT_EQ(UTF8ToUTF16("JANV"), field.value);
+  EXPECT_EQ(u"JANV", field.value);
 
   card.SetExpirationMonth(12);
   filler.FillFormField(field, &card, &field, /*cvc=*/std::u16string());
-  EXPECT_EQ(UTF8ToUTF16("décembre"), field.value);
+  EXPECT_EQ(u"décembre", field.value);
 }
 
 TEST_F(AutofillFieldFillerTest,
@@ -1306,7 +1306,7 @@ TEST_F(AutofillFieldFillerTest, FillStreetAddressTextField) {
       "Apt. 42");
   address()->SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), value, "en-US");
   filler.FillFormField(field, address(), &field, /*cvc=*/std::u16string());
-  EXPECT_EQ(UTF8ToUTF16("123 Fake St., Apt. 42"), field.value);
+  EXPECT_EQ(u"123 Fake St., Apt. 42", field.value);
 
   std::u16string ja_value = UTF8ToUTF16(
       "桜丘町26-1\n"
@@ -1315,7 +1315,7 @@ TEST_F(AutofillFieldFillerTest, FillStreetAddressTextField) {
                      "ja-JP");
   address()->set_language_code("ja-JP");
   filler.FillFormField(field, address(), &field, /*cvc=*/std::u16string());
-  EXPECT_EQ(UTF8ToUTF16("桜丘町26-1セルリアンタワー6階"), field.value);
+  EXPECT_EQ(u"桜丘町26-1セルリアンタワー6階", field.value);
 }
 
 TEST_F(AutofillFieldFillerTest, FillCreditCardNumberWithoutSplits) {
@@ -1434,13 +1434,13 @@ TEST_F(AutofillFieldFillerTest, FindShortestSubstringMatchInSelect) {
   EXPECT_EQ(1, ret);
 
   // Case 3: Proper substring
-  ret = FieldFiller::FindShortestSubstringMatchInSelect(UTF8ToUTF16("États"),
-                                                        false, &field);
+  ret =
+      FieldFiller::FindShortestSubstringMatchInSelect(u"États", false, &field);
   EXPECT_EQ(0, ret);
 
   // Case 4: Accent-insensitive
-  ret = FieldFiller::FindShortestSubstringMatchInSelect(
-      UTF8ToUTF16("Etats-Unis"), false, &field);
+  ret = FieldFiller::FindShortestSubstringMatchInSelect(u"Etats-Unis", false,
+                                                        &field);
   EXPECT_EQ(0, ret);
 
   // Case 5: Whitespace-insensitive

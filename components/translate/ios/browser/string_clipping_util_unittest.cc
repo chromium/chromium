@@ -21,7 +21,7 @@ TEST(StringByClippingLastWordTest, ClipLongSentence) {
   // An arbitrary length.
   const size_t kStringLength = 10;
   std::u16string string(kStringLength, 'a');
-  string.append(base::UTF8ToUTF16(" b cdefghijklmnopqrstuvwxyz"));
+  string.append(u" b cdefghijklmnopqrstuvwxyz");
   // The string should be cut at the last whitespace, after the 'b' character.
   std::u16string result =
       GetStringByClippingLastWord(string, kStringLength + 3);

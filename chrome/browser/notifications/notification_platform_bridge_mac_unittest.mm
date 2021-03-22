@@ -108,9 +108,8 @@ class NotificationPlatformBridgeMacTest : public testing::Test {
     auto notification = std::make_unique<Notification>(
         message_center::NOTIFICATION_TYPE_SIMPLE, "id1",
         base::UTF8ToUTF16(title), base::UTF8ToUTF16(subtitle), gfx::Image(),
-        base::UTF8ToUTF16("Notifier's Name"), url,
-        message_center::NotifierId(url), optional_fields,
-        new message_center::NotificationDelegate());
+        u"Notifier's Name", url, message_center::NotifierId(url),
+        optional_fields, new message_center::NotificationDelegate());
     if (require_interaction)
       notification->set_never_timeout(true);
 
@@ -266,8 +265,7 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayProgress) {
   ASSERT_EQ(1u, [displayedAlerts count]);
 
   NSDictionary* deliveredNotification = [displayedAlerts objectAtIndex:0];
-  std::u16string expected =
-      base::FormatPercent(kSamplePercent) + base::UTF8ToUTF16(" - Title");
+  std::u16string expected = base::FormatPercent(kSamplePercent) + u" - Title";
   EXPECT_NSEQ(base::SysUTF16ToNSString(expected),
               [deliveredNotification objectForKey:@"title"]);
 }

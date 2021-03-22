@@ -266,7 +266,7 @@ TEST(AXTextUtils, FindAccessibleTextBoundaryCharacter) {
 }
 
 TEST(AXTextUtils, GetWordOffsetsEmptyTest) {
-  const std::u16string text = base::UTF8ToUTF16("");
+  const std::u16string text = u"";
   std::vector<int> word_starts = GetWordStartOffsets(text);
   std::vector<int> word_ends = GetWordEndOffsets(text);
   EXPECT_EQ(0UL, word_starts.size());
@@ -274,18 +274,18 @@ TEST(AXTextUtils, GetWordOffsetsEmptyTest) {
 }
 
 TEST(AXTextUtils, GetWordStartOffsetsBasicTest) {
-  const std::u16string text = base::UTF8ToUTF16("This is very simple input");
+  const std::u16string text = u"This is very simple input";
   EXPECT_THAT(GetWordStartOffsets(text), testing::ElementsAre(0, 5, 8, 13, 20));
 }
 
 TEST(AXTextUtils, GetWordEndOffsetsBasicTest) {
-  const std::u16string text = base::UTF8ToUTF16("This is very simple input");
+  const std::u16string text = u"This is very simple input";
   EXPECT_THAT(GetWordEndOffsets(text), testing::ElementsAre(4, 7, 12, 19, 25));
 }
 
 TEST(AXTextUtils, GetWordStartOffsetsMalformedInputTest) {
   const std::u16string text =
-      base::UTF8ToUTF16("..we *## should parse $#@$ through bad ,,  input");
+      u"..we *## should parse $#@$ through bad ,,  input";
   EXPECT_THAT(GetWordStartOffsets(text),
               testing::ElementsAre(2, 9, 16, 27, 35, 43));
 }
@@ -303,12 +303,12 @@ TEST(AXTextUtils, GetSentenceEndOffsetsBasicTest) {
 }
 
 TEST(AXTextUtils, GetSentenceStartOffsetsMalformedInputTest) {
-  const std::u16string text = base::UTF8ToUTF16("is the first ... second.");
+  const std::u16string text = u"is the first ... second.";
   EXPECT_THAT(GetSentenceStartOffsets(text), testing::ElementsAre(0));
 }
 
 TEST(AXTextUtils, GetSentenceEndOffsetsMalformedInputTest) {
-  const std::u16string text = base::UTF8ToUTF16("is the first ... second.");
+  const std::u16string text = u"is the first ... second.";
   EXPECT_THAT(GetSentenceEndOffsets(text), testing::ElementsAre(24));
 }
 

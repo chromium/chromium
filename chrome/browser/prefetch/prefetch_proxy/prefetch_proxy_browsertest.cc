@@ -1260,8 +1260,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
   size_t starting_origin_request_count = OriginServerRequestCount();
 
   ui_test_utils::NavigateToURL(browser(), prefetch_url);
-  EXPECT_EQ(base::UTF8ToUTF16("Title Of Awesomeness"),
-            GetWebContents()->GetTitle());
+  EXPECT_EQ(u"Title Of Awesomeness", GetWebContents()->GetTitle());
 
   VerifyOriginRequestsAreIsolated({prefetch_url.path()});
 
@@ -2514,8 +2513,7 @@ IN_PROC_BROWSER_TEST_F(
   // Only the probe should have hit the origin server.
   EXPECT_EQ(starting_origin_request_count + 1, OriginServerRequestCount());
 
-  EXPECT_EQ(base::UTF8ToUTF16("Title Of Awesomeness"),
-            GetWebContents()->GetTitle());
+  EXPECT_EQ(u"Title Of Awesomeness", GetWebContents()->GetTitle());
 
   ASSERT_TRUE(tab_helper->after_srp_metrics());
   ASSERT_TRUE(tab_helper->after_srp_metrics()->prefetch_status_.has_value());
@@ -2586,8 +2584,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ui_test_utils::NavigateToURL(browser(), eligible_link);
 
-  EXPECT_EQ(base::UTF8ToUTF16("Title Of Awesomeness"),
-            GetWebContents()->GetTitle());
+  EXPECT_EQ(u"Title Of Awesomeness", GetWebContents()->GetTitle());
 
   ASSERT_TRUE(tab_helper->after_srp_metrics());
   ASSERT_TRUE(tab_helper->after_srp_metrics()->prefetch_status_.has_value());
@@ -2678,8 +2675,7 @@ class PrefetchProxyBaseProbingBrowserTest : public PrefetchProxyBrowserTest {
     ui_test_utils::NavigateToURL(browser(), eligible_link);
     EXPECT_EQ(expect_successful_tls_probe, 1U == probe_counter.count());
 
-    EXPECT_EQ(base::UTF8ToUTF16("Title Of Awesomeness"),
-              GetWebContents()->GetTitle());
+    EXPECT_EQ(u"Title Of Awesomeness", GetWebContents()->GetTitle());
 
     ASSERT_TRUE(tab_helper->after_srp_metrics());
     ASSERT_TRUE(tab_helper->after_srp_metrics()->prefetch_status_.has_value());

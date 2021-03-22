@@ -499,7 +499,7 @@ void CreditCard::GetMatchingTypes(const std::u16string& text,
 
 void CreditCard::SetInfoForMonthInputType(const std::u16string& value) {
   // Check if |text| is "yyyy-mm" format first, and check normal month format.
-  if (!MatchesPattern(value, base::UTF8ToUTF16("^[0-9]{4}-[0-9]{1,2}$")))
+  if (!MatchesPattern(value, u"^[0-9]{4}-[0-9]{1,2}$"))
     return;
 
   std::vector<base::StringPiece16> year_month = base::SplitStringPiece(
@@ -752,7 +752,7 @@ void CreditCard::SetExpirationDateFromString(const std::u16string& text) {
   // Check that |text| fits the supported patterns: mmyy, mmyyyy, m-yy,
   // mm-yy, m-yyyy and mm-yyyy. Note that myy and myyyy matched by this pattern
   // but are not supported (ambiguous). Separators: -, / and |.
-  if (!MatchesPattern(text, base::UTF8ToUTF16("^[0-9]{1,2}[-/|]?[0-9]{2,4}$")))
+  if (!MatchesPattern(text, u"^[0-9]{1,2}[-/|]?[0-9]{2,4}$"))
     return;
 
   std::u16string month;
@@ -1064,8 +1064,7 @@ std::ostream& operator<<(std::ostream& os, const CreditCard& credit_card) {
 void CreditCard::SetNameOnCardFromSeparateParts() {
   DCHECK(name_on_card_.empty() && !temp_card_first_name_.empty() &&
          !temp_card_last_name_.empty());
-  name_on_card_ =
-      temp_card_first_name_ + base::UTF8ToUTF16(" ") + temp_card_last_name_;
+  name_on_card_ = temp_card_first_name_ + u" " + temp_card_last_name_;
 }
 
 const char kAmericanExpressCard[] = "americanExpressCC";

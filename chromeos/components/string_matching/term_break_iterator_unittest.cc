@@ -19,56 +19,56 @@ TEST(TermBreakIteratorTest, EmptyWord) {
 }
 
 TEST(TermBreakIteratorTest, Simple) {
-  std::u16string word(UTF8ToUTF16("simple"));
+  std::u16string word(u"simple");
   TermBreakIterator iter(word);
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(UTF8ToUTF16("simple"), iter.GetCurrentTerm());
+  EXPECT_EQ(u"simple", iter.GetCurrentTerm());
   EXPECT_FALSE(iter.Advance());  // Test unexpected advance after end.
 }
 
 TEST(TermBreakIteratorTest, CamelCase) {
-  std::u16string word(UTF8ToUTF16("CamelCase"));
+  std::u16string word(u"CamelCase");
   TermBreakIterator iter(word);
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(UTF8ToUTF16("Camel"), iter.GetCurrentTerm());
+  EXPECT_EQ(u"Camel", iter.GetCurrentTerm());
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(UTF8ToUTF16("Case"), iter.GetCurrentTerm());
+  EXPECT_EQ(u"Case", iter.GetCurrentTerm());
   EXPECT_FALSE(iter.Advance());  // Test unexpected advance after end.
 }
 
 TEST(TermBreakIteratorTest, LowerToUpper) {
-  std::u16string word(UTF8ToUTF16("lowerToUpper"));
+  std::u16string word(u"lowerToUpper");
   TermBreakIterator iter(word);
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(UTF8ToUTF16("lower"), iter.GetCurrentTerm());
+  EXPECT_EQ(u"lower", iter.GetCurrentTerm());
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(UTF8ToUTF16("To"), iter.GetCurrentTerm());
+  EXPECT_EQ(u"To", iter.GetCurrentTerm());
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(UTF8ToUTF16("Upper"), iter.GetCurrentTerm());
+  EXPECT_EQ(u"Upper", iter.GetCurrentTerm());
   EXPECT_FALSE(iter.Advance());  // Test unexpected advance after end.
 }
 
 TEST(TermBreakIteratorTest, AlphaNumber) {
-  std::u16string word(UTF8ToUTF16("Chromium26.0.0.0"));
+  std::u16string word(u"Chromium26.0.0.0");
   TermBreakIterator iter(word);
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(UTF8ToUTF16("Chromium"), iter.GetCurrentTerm());
+  EXPECT_EQ(u"Chromium", iter.GetCurrentTerm());
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(UTF8ToUTF16("26.0.0.0"), iter.GetCurrentTerm());
+  EXPECT_EQ(u"26.0.0.0", iter.GetCurrentTerm());
   EXPECT_FALSE(iter.Advance());  // Test unexpected advance after end.
 }
 
 TEST(TermBreakIteratorTest, StartsWithNumber) {
-  std::u16string word(UTF8ToUTF16("123startWithNumber"));
+  std::u16string word(u"123startWithNumber");
   TermBreakIterator iter(word);
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(UTF8ToUTF16("123"), iter.GetCurrentTerm());
+  EXPECT_EQ(u"123", iter.GetCurrentTerm());
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(UTF8ToUTF16("start"), iter.GetCurrentTerm());
+  EXPECT_EQ(u"start", iter.GetCurrentTerm());
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(UTF8ToUTF16("With"), iter.GetCurrentTerm());
+  EXPECT_EQ(u"With", iter.GetCurrentTerm());
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(UTF8ToUTF16("Number"), iter.GetCurrentTerm());
+  EXPECT_EQ(u"Number", iter.GetCurrentTerm());
   EXPECT_FALSE(iter.Advance());  // Test unexpected advance after end.
 }
 
@@ -77,11 +77,11 @@ TEST(TermBreakIteratorTest, CaseAndNoCase) {
   std::u16string word(UTF8ToUTF16("English\xe4\xb8\xad\xe6\x96\x87Word"));
   TermBreakIterator iter(word);
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(UTF8ToUTF16("English"), iter.GetCurrentTerm());
+  EXPECT_EQ(u"English", iter.GetCurrentTerm());
   EXPECT_TRUE(iter.Advance());
   EXPECT_EQ(UTF8ToUTF16("\xe4\xb8\xad\xe6\x96\x87"), iter.GetCurrentTerm());
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(UTF8ToUTF16("Word"), iter.GetCurrentTerm());
+  EXPECT_EQ(u"Word", iter.GetCurrentTerm());
   EXPECT_FALSE(iter.Advance());  // Test unexpected advance after end.
 }
 

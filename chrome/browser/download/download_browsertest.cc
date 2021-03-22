@@ -4543,8 +4543,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, CrossOriginDownloadNavigatesIframe) {
 
   // Clicking the <a download> in the iframe should navigate the iframe,
   // not the main frame.
-  std::u16string expected_title(base::UTF8ToUTF16("Loaded as iframe"));
-  std::u16string failed_title(base::UTF8ToUTF16("Loaded as main frame"));
+  std::u16string expected_title(u"Loaded as iframe");
+  std::u16string failed_title(u"Loaded as main frame");
   content::TitleWatcher title_watcher(web_contents, expected_title);
   title_watcher.AlsoWaitForTitle(failed_title);
   render_frame_host->ExecuteJavaScriptForTests(base::ASCIIToUTF16("runTest();"),

@@ -1614,7 +1614,7 @@ TEST_F(OverviewSessionTest, DragWindowShadow) {
 // Test that a label is created under the window on entering overview mode.
 TEST_F(OverviewSessionTest, CreateLabelUnderWindow) {
   std::unique_ptr<aura::Window> window(CreateTestWindow(gfx::Rect(300, 500)));
-  const std::u16string window_title = base::UTF8ToUTF16("My window");
+  const std::u16string window_title = u"My window";
   window->SetTitle(window_title);
   ToggleOverview();
   OverviewItem* window_item = GetOverviewItemsForRoot(0).back().get();
@@ -1625,7 +1625,7 @@ TEST_F(OverviewSessionTest, CreateLabelUnderWindow) {
   EXPECT_EQ(window_title, label->GetText());
 
   // Update the window title and check that the label is updated, too.
-  const std::u16string updated_title = base::UTF8ToUTF16("Updated title");
+  const std::u16string updated_title = u"Updated title";
   window->SetTitle(updated_title);
   EXPECT_EQ(updated_title, label->GetText());
 

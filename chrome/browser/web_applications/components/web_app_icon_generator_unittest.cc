@@ -152,8 +152,7 @@ void TestIconGeneration(int icon_size,
   SkColor generated_icon_color = SK_ColorTRANSPARENT;
   bool is_generated_icon = true;
   auto size_map = ResizeIconsAndGenerateMissing(
-      downloaded, TestSizesToGenerate(),
-      GenerateIconLetterFromAppName(base::UTF8ToUTF16("Test")),
+      downloaded, TestSizesToGenerate(), GenerateIconLetterFromAppName(u"Test"),
       &generated_icon_color, &is_generated_icon);
   EXPECT_FALSE(is_generated_icon);
 
@@ -240,8 +239,7 @@ TEST_F(WebAppIconGeneratorTest, LinkedAppIconsAreNotChanged) {
   SkColor generated_icon_color = SK_ColorTRANSPARENT;
   bool is_generated_icon = true;
   SizeToBitmap size_map = ResizeIconsAndGenerateMissing(
-      downloaded, sizes,
-      GenerateIconLetterFromAppName(base::UTF8ToUTF16("Test")),
+      downloaded, sizes, GenerateIconLetterFromAppName(u"Test"),
       &generated_icon_color, &is_generated_icon);
   EXPECT_EQ(sizes.size(), size_map.size());
   EXPECT_FALSE(is_generated_icon);
@@ -266,8 +264,7 @@ TEST_F(WebAppIconGeneratorTest, IconsResizedFromOddSizes) {
   SkColor generated_icon_color = SK_ColorTRANSPARENT;
   bool is_generated_icon = true;
   SizeToBitmap size_map = ResizeIconsAndGenerateMissing(
-      downloaded, TestSizesToGenerate(),
-      GenerateIconLetterFromAppName(base::UTF8ToUTF16("Test")),
+      downloaded, TestSizesToGenerate(), GenerateIconLetterFromAppName(u"Test"),
       &generated_icon_color, &is_generated_icon);
   EXPECT_FALSE(is_generated_icon);
 
@@ -288,8 +285,7 @@ TEST_F(WebAppIconGeneratorTest, IconsResizedFromLarger) {
   SkColor generated_icon_color = SK_ColorTRANSPARENT;
   bool is_generated_icon = true;
   SizeToBitmap size_map = ResizeIconsAndGenerateMissing(
-      downloaded, TestSizesToGenerate(),
-      GenerateIconLetterFromAppName(base::UTF8ToUTF16("Test")),
+      downloaded, TestSizesToGenerate(), GenerateIconLetterFromAppName(u"Test"),
       &generated_icon_color, &is_generated_icon);
   EXPECT_FALSE(is_generated_icon);
 
@@ -307,8 +303,7 @@ TEST_F(WebAppIconGeneratorTest, AllIconsGeneratedWhenNotDownloaded) {
   SkColor generated_icon_color = SK_ColorTRANSPARENT;
   bool is_generated_icon = false;
   SizeToBitmap size_map = ResizeIconsAndGenerateMissing(
-      downloaded, TestSizesToGenerate(),
-      GenerateIconLetterFromAppName(base::UTF8ToUTF16("Test")),
+      downloaded, TestSizesToGenerate(), GenerateIconLetterFromAppName(u"Test"),
       &generated_icon_color, &is_generated_icon);
   EXPECT_TRUE(is_generated_icon);
 
@@ -328,8 +323,7 @@ TEST_F(WebAppIconGeneratorTest, IconResizedFromLargerAndSmaller) {
   SkColor generated_icon_color = SK_ColorTRANSPARENT;
   bool is_generated_icon = true;
   SizeToBitmap size_map = ResizeIconsAndGenerateMissing(
-      downloaded, TestSizesToGenerate(),
-      GenerateIconLetterFromAppName(base::UTF8ToUTF16("Test")),
+      downloaded, TestSizesToGenerate(), GenerateIconLetterFromAppName(u"Test"),
       &generated_icon_color, &is_generated_icon);
   EXPECT_FALSE(is_generated_icon);
 

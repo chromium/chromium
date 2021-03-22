@@ -71,12 +71,12 @@ TEST(InputMethodDescriptorTest, GetIndicatorTest) {
   {
     InputMethodDescriptor desc =
         CreateDesc("zh-t-i0-pinyin", "us", {"zh-CN"}, "拼", true);
-    EXPECT_EQ(base::UTF8ToUTF16("拼"), desc.GetIndicator());
+    EXPECT_EQ(u"拼", desc.GetIndicator());
   }
   {
     InputMethodDescriptor desc =
         CreateDesc("zh-hant-t-i0-und", "us", {"zh-TW"}, "注", true);
-    EXPECT_EQ(base::UTF8ToUTF16("注"), desc.GetIndicator());
+    EXPECT_EQ(u"注", desc.GetIndicator());
   }
 }
 

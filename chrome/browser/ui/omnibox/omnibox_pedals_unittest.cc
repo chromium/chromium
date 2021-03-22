@@ -570,15 +570,14 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
     // Instantiating the provider loads concept data from shared ResourceBundle.
     OmniboxPedalProvider provider(client);
 
-    EXPECT_EQ(provider.FindPedalMatch(base::UTF8ToUTF16("")), nullptr);
+    EXPECT_EQ(provider.FindPedalMatch(u""), nullptr);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // TODO(orinj): Get ChromeOS to use the right dataset, but for now make this
     //  a soft failure so as to not block all other platforms. To ensure this
     //  is not going to cause failure in production, still test that English
     //  triggering functions. Data is there; it works; but warn about locale.
     if (!provider.FindPedalMatch(base::UTF8ToUTF16(test_case.triggers[0]))) {
-      EXPECT_NE(provider.FindPedalMatch(base::UTF8ToUTF16("clear history")),
-                nullptr);
+      EXPECT_NE(provider.FindPedalMatch(u"clear history"), nullptr);
       LOG(WARNING) << "ChromeOS using English for locale " << test_case.locale;
       continue;
     }

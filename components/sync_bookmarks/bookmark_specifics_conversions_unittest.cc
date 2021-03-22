@@ -118,7 +118,7 @@ TEST(BookmarkSpecificsConversionsTest,
       bookmarks::TestBookmarkClient::CreateModel();
   const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
   const bookmarks::BookmarkNode* node = model->AddFolder(
-      /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16("Title"));
+      /*parent=*/bookmark_bar_node, /*index=*/0, u"Title");
   ASSERT_THAT(node, NotNull());
 
   sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
@@ -138,7 +138,7 @@ TEST(BookmarkSpecificsConversionsTest,
 
   const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
   const bookmarks::BookmarkNode* node = model->AddURL(
-      /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16("Title"),
+      /*parent=*/bookmark_bar_node, /*index=*/0, u"Title",
       GURL("http://www.url.com"));
   ASSERT_THAT(node, NotNull());
   ASSERT_FALSE(node->is_favicon_loaded());
@@ -159,7 +159,7 @@ TEST(BookmarkSpecificsConversionsTest,
 
   const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
   const bookmarks::BookmarkNode* node = model->AddURL(
-      /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16("Title"),
+      /*parent=*/bookmark_bar_node, /*index=*/0, u"Title",
       GURL("http://www.url.com"));
   ASSERT_THAT(node, NotNull());
   ASSERT_FALSE(node->is_favicon_loaded());

@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_ModalDialog) {
   base::RunLoop dialog_wait;
   js_dialog_manager->SetDialogShownCallbackForTesting(
       dialog_wait.QuitClosure());
-  tab->GetMainFrame()->ExecuteJavaScriptForTests(base::UTF8ToUTF16("alert()"),
+  tab->GetMainFrame()->ExecuteJavaScriptForTests(u"alert()",
                                                  base::NullCallback());
   dialog_wait.Run();
 

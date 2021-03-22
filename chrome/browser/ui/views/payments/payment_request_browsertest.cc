@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestAbortTest,
   AddCreditCard(card);  // Visa.
 
   InvokePaymentRequestUI();
-  OpenCVCPromptWithCVC(base::UTF8ToUTF16("123"));
+  OpenCVCPromptWithCVC(u"123");
 
   ResetEventWaiter(DialogEvent::ABORT_CALLED);
 

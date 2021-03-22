@@ -22,8 +22,7 @@ TEST_F(LoginErrorBubbleTest, PersistentEventHandling) {
   auto* anchor_view = new views::View;
   container->AddChildView(anchor_view);
 
-  auto* label = new views::Label(base::UTF8ToUTF16("A message"),
-                                 views::style::CONTEXT_LABEL,
+  auto* label = new views::Label(u"A message", views::style::CONTEXT_LABEL,
                                  views::style::STYLE_PRIMARY);
 
   auto* bubble = new LoginErrorBubble(label /*content*/, anchor_view);

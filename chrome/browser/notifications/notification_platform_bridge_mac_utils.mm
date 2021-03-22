@@ -77,7 +77,7 @@ std::u16string CreateMacNotificationTitle(
   if (notification.type() == message_center::NOTIFICATION_TYPE_PROGRESS &&
       notification.progress() >= 0 && notification.progress() <= 100) {
     title += base::FormatPercent(notification.progress());
-    title += base::UTF8ToUTF16(" - ");
+    title += u" - ";
   }
   title += notification.title();
   return title;

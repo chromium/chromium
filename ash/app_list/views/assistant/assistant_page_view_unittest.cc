@@ -837,23 +837,23 @@ TEST_F(AssistantPageViewTest, RememberAndShowHistory) {
   EXPECT_TRUE(input_text_field()->GetText().empty());
 
   PressKey(ui::VKEY_UP);
-  EXPECT_EQ(input_text_field()->GetText(), base::UTF8ToUTF16("query 2"));
+  EXPECT_EQ(input_text_field()->GetText(), u"query 2");
 
   PressKey(ui::VKEY_UP);
-  EXPECT_EQ(input_text_field()->GetText(), base::UTF8ToUTF16("query 1"));
+  EXPECT_EQ(input_text_field()->GetText(), u"query 1");
 
   PressKey(ui::VKEY_UP);
-  EXPECT_EQ(input_text_field()->GetText(), base::UTF8ToUTF16("query 1"));
+  EXPECT_EQ(input_text_field()->GetText(), u"query 1");
 
   PressKey(ui::VKEY_DOWN);
-  EXPECT_EQ(input_text_field()->GetText(), base::UTF8ToUTF16("query 2"));
+  EXPECT_EQ(input_text_field()->GetText(), u"query 2");
 
   PressKey(ui::VKEY_DOWN);
   EXPECT_TRUE(input_text_field()->GetText().empty());
 }
 
 TEST_F(AssistantPageViewTest, ShouldNotClearQueryWhenSwitchingToTabletMode) {
-  const std::u16string query_text = base::UTF8ToUTF16("unsubmitted query");
+  const std::u16string query_text = u"unsubmitted query";
   ShowAssistantUiInTextMode();
   input_text_field()->SetText(query_text);
 

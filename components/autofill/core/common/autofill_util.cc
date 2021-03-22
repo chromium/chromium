@@ -89,7 +89,7 @@ bool FieldIsSuggestionSubstringStartingOnTokenBoundary(
 
 bool IsPrefixOfEmailEndingWithAtSign(const std::u16string& full_string,
                                      const std::u16string& prefix) {
-  return base::StartsWith(full_string, prefix + base::UTF8ToUTF16("@"),
+  return base::StartsWith(full_string, prefix + u"@",
                           base::CompareCase::SENSITIVE);
 }
 

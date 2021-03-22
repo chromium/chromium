@@ -424,8 +424,7 @@ TEST_F(AssistantOnboardingViewTest, ShouldHandleSuggestionUpdates) {
   // Verify view state is updated to reflect model state.
   auto suggestion_views = GetOnboardingSuggestionViews();
   ASSERT_EQ(suggestion_views.size(), 1u);
-  EXPECT_EQ(suggestion_views.at(0)->GetText(),
-            base::UTF8ToUTF16("Forced suggestion"));
+  EXPECT_EQ(suggestion_views.at(0)->GetText(), u"Forced suggestion");
 }
 
 TEST_F(AssistantOnboardingViewTest, ShouldHandleLocalIcons) {

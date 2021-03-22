@@ -151,8 +151,7 @@ static const struct GenerateFilenameTestCase {
     {"http://foo.com/@.txt", base::ASCIIToUTF16("foo.com/@.txt"), FPL("@.txt"),
      false},
     // A URL with punycode in the host name, when title matches the URL.
-    {"http://xn--bcher-kva.com", base::UTF8ToUTF16("bücher.com"),
-     FPL("bücher.com"), false},
+    {"http://xn--bcher-kva.com", u"bücher.com", FPL("bücher.com"), false},
     // If the title matches the URL, but there is no "filename" component,
     // use the domain.
     {"http://foo.com", base::ASCIIToUTF16("foo.com"), FPL("foo.com"), false},

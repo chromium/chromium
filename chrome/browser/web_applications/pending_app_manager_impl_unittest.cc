@@ -95,7 +95,7 @@ std::unique_ptr<WebApplicationInfo> GetFooWebApplicationInfo() {
       std::make_unique<WebApplicationInfo>();
   info->start_url = FooWebAppUrl();
   info->scope = FooWebAppUrl().GetWithoutFilename();
-  info->title = base::UTF8ToUTF16("Foo Web App");
+  info->title = u"Foo Web App";
   return info;
 }
 

@@ -205,9 +205,8 @@ class BackgroundModeManagerTest : public testing::Test {
         std::vector<policy::ConfigurationPolicyProvider*>{&policy_provider_});
     profile_manager_ = CreateTestingProfileManager();
     profile_ = profile_manager_->CreateTestingProfile(
-        "p1", nullptr, base::UTF8ToUTF16("p1"), 0, "",
-        TestingProfile::TestingFactories(), base::nullopt,
-        std::move(policy_service));
+        "p1", nullptr, u"p1", 0, "", TestingProfile::TestingFactories(),
+        base::nullopt, std::move(policy_service));
   }
 
  protected:

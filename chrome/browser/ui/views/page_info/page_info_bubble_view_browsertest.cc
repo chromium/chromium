@@ -868,7 +868,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, MalwareAndEvCert) {
   EXPECT_EQ(GetCertificateButtonSubtitle(),
             l10n_util::GetStringFUTF16(
                 IDS_PAGE_INFO_SECURITY_TAB_SECURE_IDENTITY_EV_VERIFIED,
-                base::UTF8ToUTF16("Thawte Inc"), base::UTF8ToUTF16("US")));
+                u"Thawte Inc", u"US"));
 }
 
 namespace {

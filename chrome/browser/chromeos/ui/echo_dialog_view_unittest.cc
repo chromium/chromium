@@ -65,8 +65,8 @@ using EchoDialogViewTest = views::ViewsTestBase;
 TEST_F(EchoDialogViewTest, EnabledHasEnabledText) {
   EchoDialogView::Params params;
   params.echo_enabled = true;
-  params.service_name = base::UTF8ToUTF16("$service");
-  params.origin = base::UTF8ToUTF16("$origin");
+  params.service_name = u"$service";
+  params.origin = u"$origin";
 
   TestEchoDialogListener listener;
   EchoDialogView dialog(&listener, params);
@@ -83,8 +83,8 @@ TEST_F(EchoDialogViewTest, EnabledHasEnabledText) {
 TEST_F(EchoDialogViewTest, DisabledHasDisabledText) {
   EchoDialogView::Params params;
   params.echo_enabled = false;
-  params.service_name = base::UTF8ToUTF16("$service");
-  params.origin = base::UTF8ToUTF16("$origin");
+  params.service_name = u"$service";
+  params.origin = u"$origin";
 
   TestEchoDialogListener listener;
   EchoDialogView dialog(&listener, params);

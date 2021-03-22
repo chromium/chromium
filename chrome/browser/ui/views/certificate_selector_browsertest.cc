@@ -110,23 +110,19 @@ class CertificateSelectorTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(CertificateSelectorTest, GetRowText) {
   ui::TableModel* model = selector_->table_model_for_testing();
-  EXPECT_EQ(base::UTF8ToUTF16("Client Cert A"),
+  EXPECT_EQ(u"Client Cert A",
             model->GetText(0, IDS_CERT_SELECTOR_SUBJECT_COLUMN));
-  EXPECT_EQ(base::UTF8ToUTF16("B CA"),
-            model->GetText(0, IDS_CERT_SELECTOR_ISSUER_COLUMN));
+  EXPECT_EQ(u"B CA", model->GetText(0, IDS_CERT_SELECTOR_ISSUER_COLUMN));
   EXPECT_EQ(std::u16string(),
             model->GetText(0, IDS_CERT_SELECTOR_PROVIDER_COLUMN));
-  EXPECT_EQ(base::UTF8ToUTF16("1000"),
-            model->GetText(0, IDS_CERT_SELECTOR_SERIAL_COLUMN));
+  EXPECT_EQ(u"1000", model->GetText(0, IDS_CERT_SELECTOR_SERIAL_COLUMN));
 
-  EXPECT_EQ(base::UTF8ToUTF16("Client Cert D"),
+  EXPECT_EQ(u"Client Cert D",
             model->GetText(1, IDS_CERT_SELECTOR_SUBJECT_COLUMN));
-  EXPECT_EQ(base::UTF8ToUTF16("E CA"),
-            model->GetText(1, IDS_CERT_SELECTOR_ISSUER_COLUMN));
+  EXPECT_EQ(u"E CA", model->GetText(1, IDS_CERT_SELECTOR_ISSUER_COLUMN));
   EXPECT_EQ(std::u16string(),
             model->GetText(1, IDS_CERT_SELECTOR_PROVIDER_COLUMN));
-  EXPECT_EQ(base::UTF8ToUTF16("1002"),
-            model->GetText(1, IDS_CERT_SELECTOR_SERIAL_COLUMN));
+  EXPECT_EQ(u"1002", model->GetText(1, IDS_CERT_SELECTOR_SERIAL_COLUMN));
 }
 
 IN_PROC_BROWSER_TEST_F(CertificateSelectorTest, GetSelectedCert) {

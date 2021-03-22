@@ -57,11 +57,10 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientEnterpriseTest, TrayEnterprise) {
                                             true /* open_tray */));
   std::u16string expected_text =
       ash::features::IsManagedDeviceUIRedesignEnabled()
-          ? l10n_util::GetStringFUTF16(IDS_ASH_SHORT_MANAGED_BY,
-                                       base::UTF8ToUTF16("example.com"))
+          ? l10n_util::GetStringFUTF16(IDS_ASH_SHORT_MANAGED_BY, u"example.com")
           : l10n_util::GetStringFUTF16(IDS_ASH_ENTERPRISE_DEVICE_MANAGED_BY,
                                        ui::GetChromeOSDeviceName(),
-                                       base::UTF8ToUTF16("example.com"));
+                                       u"example.com");
   EXPECT_EQ(expected_text,
             test_api->GetBubbleViewTooltip(ash::VIEW_ID_TRAY_ENTERPRISE));
 

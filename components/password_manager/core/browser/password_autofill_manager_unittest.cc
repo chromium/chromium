@@ -915,11 +915,9 @@ TEST_F(PasswordAutofillManagerTest, ExtractSuggestions) {
       SuggestionVectorValuesAre(testing::UnorderedElementsAre(
           test_username_, additional.username, GetManagePasswordsTitle())));
   EXPECT_THAT(open_args.suggestions,
-              SuggestionVectorLabelsAre(
-                  testing::Contains(base::UTF8ToUTF16("foo.com"))));
+              SuggestionVectorLabelsAre(testing::Contains(u"foo.com")));
   EXPECT_THAT(open_args.suggestions,
-              SuggestionVectorLabelsAre(
-                  testing::Contains(base::UTF8ToUTF16("foobarrealm.org"))));
+              SuggestionVectorLabelsAre(testing::Contains(u"foobarrealm.org")));
 
   // Now simulate displaying suggestions matching "John".
   EXPECT_CALL(autofill_client, ShowAutofillPopup)

@@ -129,7 +129,7 @@ std::u16string CreateNotificationTitle(
   std::u16string title;
   if (notification.type() == message_center::NOTIFICATION_TYPE_PROGRESS) {
     title += base::FormatPercent(notification.progress());
-    title += base::UTF8ToUTF16(" - ");
+    title += u" - ";
   }
   title += notification.title();
   return title;

@@ -488,10 +488,10 @@ TEST_F(PaymentRequestSpecTest, RetryWithShippingAddressErrors) {
 
   spec()->Retry(std::move(errors));
 
-  EXPECT_EQ(base::UTF8ToUTF16("Invalid city"),
+  EXPECT_EQ(u"Invalid city",
             spec()->GetShippingAddressError(autofill::ADDRESS_HOME_CITY));
   EXPECT_EQ(
-      base::UTF8ToUTF16("Invalid address line"),
+      u"Invalid address line",
       spec()->GetShippingAddressError(autofill::ADDRESS_HOME_STREET_ADDRESS));
 
   EXPECT_TRUE(spec()->has_shipping_address_error());
@@ -518,11 +518,9 @@ TEST_F(PaymentRequestSpecTest, RetryWithPayerErrors) {
 
   spec()->Retry(std::move(errors));
 
-  EXPECT_EQ(base::UTF8ToUTF16("Invalid email"),
-            spec()->GetPayerError(autofill::EMAIL_ADDRESS));
-  EXPECT_EQ(base::UTF8ToUTF16("Invalid name"),
-            spec()->GetPayerError(autofill::NAME_FULL));
-  EXPECT_EQ(base::UTF8ToUTF16("Invalid phone"),
+  EXPECT_EQ(u"Invalid email", spec()->GetPayerError(autofill::EMAIL_ADDRESS));
+  EXPECT_EQ(u"Invalid name", spec()->GetPayerError(autofill::NAME_FULL));
+  EXPECT_EQ(u"Invalid phone",
             spec()->GetPayerError(autofill::PHONE_HOME_WHOLE_NUMBER));
 
   EXPECT_TRUE(spec()->has_payer_error());

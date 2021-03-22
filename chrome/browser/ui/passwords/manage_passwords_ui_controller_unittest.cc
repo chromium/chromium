@@ -528,10 +528,9 @@ TEST_F(ManagePasswordsUIControllerTest, PasswordSavedUKMRecording) {
     controller()->OnPasswordSubmitted(std::move(test_form_manager));
 
     controller()->SavePassword(
-        test.edit_username ? base::UTF8ToUTF16("other_username")
+        test.edit_username ? u"other_username"
                            : submitted_form().username_value,
-        test.change_password ? base::UTF8ToUTF16("other_pwd")
-                             : submitted_form().password_value);
+        test.change_password ? u"other_pwd" : submitted_form().password_value);
     ExpectIconAndControllerStateIs(password_manager::ui::MANAGE_STATE);
 
     // Fake navigation so that the old form manager gets destroyed and

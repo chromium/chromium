@@ -163,8 +163,8 @@ TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
 
   ASSERT_EQ(1u, storage()->GetNumberOfProfiles());
   ProfileAttributesEntry* entry = storage()->GetAllProfilesAttributes().front();
-  EXPECT_EQ(entry->GetGAIAGivenName(), base::UTF8ToUTF16("Pat"));
-  EXPECT_EQ(entry->GetGAIAName(), base::UTF8ToUTF16("Pat Foo"));
+  EXPECT_EQ(entry->GetGAIAGivenName(), u"Pat");
+  EXPECT_EQ(entry->GetGAIAName(), u"Pat Foo");
   EXPECT_EQ(entry->GetHostedDomain(), kNoHostedDomainFound);
 
   gfx::Image gaia_picture = gfx::test::CreateImage(256, 256);
@@ -219,8 +219,8 @@ TEST_F(GAIAInfoUpdateServiceDiceTest, RevokeSyncConsent) {
       signin::ConsentLevel::kNotRequired));
   // Verify that the GAIA name and picture, and picture URL are not cleared
   // as unconsented primary account still exists.
-  EXPECT_EQ(entry->GetGAIAGivenName(), base::UTF8ToUTF16("Pat"));
-  EXPECT_EQ(entry->GetGAIAName(), base::UTF8ToUTF16("Pat Foo"));
+  EXPECT_EQ(entry->GetGAIAGivenName(), u"Pat");
+  EXPECT_EQ(entry->GetGAIAName(), u"Pat Foo");
   EXPECT_EQ(entry->GetHostedDomain(), kNoHostedDomainFound);
   EXPECT_TRUE(gfx::test::AreImagesEqual(gaia_picture, entry->GetAvatarIcon()));
 }
@@ -241,8 +241,8 @@ TEST_F(GAIAInfoUpdateServiceTest, LogInLogOut) {
 
   ASSERT_EQ(1u, storage()->GetNumberOfProfiles());
   ProfileAttributesEntry* entry = storage()->GetAllProfilesAttributes().front();
-  EXPECT_EQ(entry->GetGAIAGivenName(), base::UTF8ToUTF16("Pat"));
-  EXPECT_EQ(entry->GetGAIAName(), base::UTF8ToUTF16("Pat Foo"));
+  EXPECT_EQ(entry->GetGAIAGivenName(), u"Pat");
+  EXPECT_EQ(entry->GetGAIAName(), u"Pat Foo");
   EXPECT_EQ(entry->GetHostedDomain(), kNoHostedDomainFound);
 
   gfx::Image gaia_picture = gfx::test::CreateImage(256, 256);
@@ -390,8 +390,8 @@ TEST_F(GAIAInfoUpdateServiceTest, ClearGaiaInfoOnStartup) {
       signin::ConsentLevel::kNotRequired));
   ASSERT_EQ(1u, storage()->GetNumberOfProfiles());
   ProfileAttributesEntry* entry = storage()->GetAllProfilesAttributes().front();
-  entry->SetGAIAName(base::UTF8ToUTF16("foo"));
-  entry->SetGAIAGivenName(base::UTF8ToUTF16("Pat Foo"));
+  entry->SetGAIAName(u"foo");
+  entry->SetGAIAGivenName(u"Pat Foo");
   gfx::Image gaia_picture = gfx::test::CreateImage(256, 256);
   entry->SetGAIAPicture("GAIA_IMAGE_URL_WITH_SIZE", gaia_picture);
   entry->SetHostedDomain(kNoHostedDomainFound);

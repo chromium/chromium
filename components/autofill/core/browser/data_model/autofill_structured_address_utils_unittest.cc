@@ -238,27 +238,20 @@ TEST(AutofillStructuredAddressUtils, TokenizeValue) {
             expected_tokens);
 
   std::vector<AddressToken> expected_cjk_tokens = {
-      {base::UTF8ToUTF16("영"), base::UTF8ToUTF16("영"), 1},
-      {base::UTF8ToUTF16("이"), base::UTF8ToUTF16("이"), 0},
-      {base::UTF8ToUTF16("호"), base::UTF8ToUTF16("호"), 2}};
+      {u"영", u"영", 1}, {u"이", u"이", 0}, {u"호", u"호", 2}};
 
-  EXPECT_EQ(TokenizeValue(base::UTF8ToUTF16("이영 호")), expected_cjk_tokens);
-  EXPECT_EQ(TokenizeValue(base::UTF8ToUTF16("이・영호")), expected_cjk_tokens);
-  EXPECT_EQ(TokenizeValue(base::UTF8ToUTF16("이영 호")), expected_cjk_tokens);
+  EXPECT_EQ(TokenizeValue(u"이영 호"), expected_cjk_tokens);
+  EXPECT_EQ(TokenizeValue(u"이・영호"), expected_cjk_tokens);
+  EXPECT_EQ(TokenizeValue(u"이영 호"), expected_cjk_tokens);
 }
 
 TEST(AutofillStructuredAddressUtils, NormalizeValue) {
-  EXPECT_EQ(NormalizeValue(base::UTF8ToUTF16(" MÜLLeR   Örber")),
-            base::UTF8ToUTF16("muller orber"));
+  EXPECT_EQ(NormalizeValue(u" MÜLLeR   Örber"), u"muller orber");
 }
 
 TEST(AutofillStructuredAddressUtils, TestGetRewriter) {
-  EXPECT_EQ(RewriterCache::Rewrite(base::UTF8ToUTF16("us"),
-                                   base::UTF8ToUTF16("unit #3")),
-            base::UTF8ToUTF16("unit 3"));
-  EXPECT_EQ(RewriterCache::Rewrite(base::UTF8ToUTF16("us"),
-                                   base::UTF8ToUTF16("california")),
-            base::UTF8ToUTF16("ca"));
+  EXPECT_EQ(RewriterCache::Rewrite(u"us", u"unit #3"), u"unit 3");
+  EXPECT_EQ(RewriterCache::Rewrite(u"us", u"california"), u"ca");
 }
 
 }  // namespace structured_address

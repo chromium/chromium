@@ -22,7 +22,7 @@ CreateWebAppInfoForDiagnosticsSystemWebApp() {
   info->scope = GURL(chromeos::kChromeUIDiagnosticsAppUrl);
 
   // TODO(jimmyxgong): Update the title with finalized i18n copy.
-  info->title = base::UTF8ToUTF16("Diagnostics");
+  info->title = u"Diagnostics";
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url, {{"app_icon_192.png", 192, IDR_DIAGNOSTICS_APP_ICON}},
       *info);

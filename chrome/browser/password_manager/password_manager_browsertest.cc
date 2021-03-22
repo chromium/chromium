@@ -1606,7 +1606,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, NoLastLoadGoodLastLoad) {
   ASSERT_TRUE(handler);
   NavigationObserver nav_observer(WebContents());
   // Any username/password will work.
-  handler->SetAuth(base::UTF8ToUTF16("user"), base::UTF8ToUTF16("pwd"));
+  handler->SetAuth(u"user", u"pwd");
   auth_supplied_observer.Wait();
 
   // The password manager should be working correctly.
@@ -3732,7 +3732,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, CorrectEntryForHttpAuth) {
   LoginHandler* handler = *login_observer.handlers().begin();
   ASSERT_TRUE(handler);
   // Any username/password will work.
-  handler->SetAuth(base::UTF8ToUTF16("user"), base::UTF8ToUTF16("pwd"));
+  handler->SetAuth(u"user", u"pwd");
   auth_supplied_observer.Wait();
 
   // The password manager should be working correctly.
@@ -3803,7 +3803,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
     LoginHandler* handler = *login_observer.handlers().begin();
     ASSERT_TRUE(handler);
     // Any username/password will work.
-    handler->SetAuth(base::UTF8ToUTF16("user"), base::UTF8ToUTF16("pwd"));
+    handler->SetAuth(u"user", u"pwd");
     auth_supplied_observer.Wait();
 
     nav_observer.Wait();

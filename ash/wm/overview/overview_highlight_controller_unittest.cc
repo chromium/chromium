@@ -710,7 +710,7 @@ TEST_F(DesksOverviewHighlightControllerTest, ActivateDeskNameView) {
 
   EXPECT_FALSE(desk_name_view_1->HasFocus());
   EXPECT_EQ(desk_bar_view->mini_views()[1], GetHighlightedView());
-  EXPECT_EQ(base::UTF8ToUTF16("code"), desk_1->name());
+  EXPECT_EQ(u"code", desk_1->name());
   EXPECT_TRUE(desk_1->is_name_set_by_user());
 }
 

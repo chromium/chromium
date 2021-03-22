@@ -100,15 +100,14 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   {
     blink::Manifest::FileHandler handler;
     handler.action = GURL("http://example.com/open-files");
-    handler.accept[base::UTF8ToUTF16("image/png")].push_back(
-        base::UTF8ToUTF16(".png"));
-    handler.name = base::UTF8ToUTF16("Images");
+    handler.accept[u"image/png"].push_back(u".png");
+    handler.name = u"Images";
     manifest.file_handlers.push_back(handler);
   }
 
   {
     blink::Manifest::ProtocolHandler protocol_handler;
-    protocol_handler.protocol = base::UTF8ToUTF16("mailto");
+    protocol_handler.protocol = u"mailto";
     protocol_handler.url = GURL("http://example.com/handle=%s");
     manifest.protocol_handlers.push_back(protocol_handler);
   }
@@ -166,15 +165,14 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   EXPECT_EQ(1u, web_app_info.file_handlers.size());
   auto file_handler = web_app_info.file_handlers;
   EXPECT_EQ(manifest.file_handlers[0].action, file_handler[0].action);
-  ASSERT_EQ(file_handler[0].accept.count(base::UTF8ToUTF16("image/png")), 1u);
-  EXPECT_EQ(file_handler[0].accept[base::UTF8ToUTF16("image/png")][0],
-            base::UTF8ToUTF16(".png"));
-  EXPECT_EQ(file_handler[0].name, base::UTF8ToUTF16("Images"));
+  ASSERT_EQ(file_handler[0].accept.count(u"image/png"), 1u);
+  EXPECT_EQ(file_handler[0].accept[u"image/png"][0], u".png");
+  EXPECT_EQ(file_handler[0].name, u"Images");
 
   // Check protocol handlers were updated
   EXPECT_EQ(1u, web_app_info.protocol_handlers.size());
   auto protocol_handler = web_app_info.protocol_handlers[0];
-  EXPECT_EQ(protocol_handler.protocol, base::UTF8ToUTF16("mailto"));
+  EXPECT_EQ(protocol_handler.protocol, u"mailto");
   EXPECT_EQ(protocol_handler.url, GURL("http://example.com/handle=%s"));
 
   EXPECT_EQ(1u, web_app_info.url_handlers.size());
@@ -345,15 +343,14 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
   {
     blink::Manifest::FileHandler handler;
     handler.action = GURL("http://example.com/open-files");
-    handler.accept[base::UTF8ToUTF16("image/png")].push_back(
-        base::UTF8ToUTF16(".png"));
-    handler.name = base::UTF8ToUTF16("Images");
+    handler.accept[u"image/png"].push_back(u".png");
+    handler.name = u"Images";
     manifest.file_handlers.push_back(handler);
   }
 
   {
     blink::Manifest::ProtocolHandler protocol_handler;
-    protocol_handler.protocol = base::UTF8ToUTF16("mailto");
+    protocol_handler.protocol = u"mailto";
     protocol_handler.url = GURL("http://example.com/handle=%s");
     manifest.protocol_handlers.push_back(protocol_handler);
   }
@@ -446,15 +443,14 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
   EXPECT_EQ(1u, web_app_info.file_handlers.size());
   auto file_handler = web_app_info.file_handlers;
   EXPECT_EQ(manifest.file_handlers[0].action, file_handler[0].action);
-  ASSERT_EQ(file_handler[0].accept.count(base::UTF8ToUTF16("image/png")), 1u);
-  EXPECT_EQ(file_handler[0].accept[base::UTF8ToUTF16("image/png")][0],
-            base::UTF8ToUTF16(".png"));
-  EXPECT_EQ(file_handler[0].name, base::UTF8ToUTF16("Images"));
+  ASSERT_EQ(file_handler[0].accept.count(u"image/png"), 1u);
+  EXPECT_EQ(file_handler[0].accept[u"image/png"][0], u".png");
+  EXPECT_EQ(file_handler[0].name, u"Images");
 
   // Check protocol handlers were updated
   EXPECT_EQ(1u, web_app_info.protocol_handlers.size());
   auto protocol_handler = web_app_info.protocol_handlers[0];
-  EXPECT_EQ(protocol_handler.protocol, base::UTF8ToUTF16("mailto"));
+  EXPECT_EQ(protocol_handler.protocol, u"mailto");
   EXPECT_EQ(protocol_handler.url, GURL("http://example.com/handle=%s"));
 
   // Check URL handlers were updated

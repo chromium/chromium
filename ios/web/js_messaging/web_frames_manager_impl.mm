@@ -42,7 +42,7 @@ void WebFramesManagerImpl::RemoveAllWebFrames() {
 
 void WebFramesManagerImpl::RegisterExistingFrames() {
   delegate_.GetWebState()->ExecuteJavaScript(
-      base::UTF8ToUTF16("__gCrWeb.message.getExistingFrames();"));
+      u"__gCrWeb.message.getExistingFrames();");
 }
 
 void WebFramesManagerImpl::OnWebViewUpdated(

@@ -886,8 +886,7 @@ TEST(BookmarkModelMergerTest, ShouldMergeBookmarkByGUIDAndReparent) {
   const bookmarks::BookmarkNode* bookmark_bar_node =
       bookmark_model->bookmark_bar_node();
   const bookmarks::BookmarkNode* folder = bookmark_model->AddFolder(
-      /*parent=*/bookmark_bar_node, /*index=*/0,
-      base::UTF8ToUTF16("Folder Title"));
+      /*parent=*/bookmark_bar_node, /*index=*/0, u"Folder Title");
   const bookmarks::BookmarkNode* bookmark = bookmark_model->AddURL(
       /*parent=*/folder, /*index=*/0, base::UTF8ToUTF16(kLocalTitle),
       GURL(kUrl), /*meta_info=*/nullptr, base::Time::Now(), kGuid);
@@ -1074,7 +1073,7 @@ TEST(
       /*parent=*/bookmark_bar_node, /*index=*/0,
       base::UTF8ToUTF16(kOriginalTitle), /*meta_info=*/nullptr, kGuid1);
   const bookmarks::BookmarkNode* bookmark = bookmark_model->AddURL(
-      /*parent=*/folder, /*index=*/0, base::UTF8ToUTF16("Bookmark Title"),
+      /*parent=*/folder, /*index=*/0, u"Bookmark Title",
       GURL("http://foo.com/"));
   ASSERT_TRUE(folder);
   ASSERT_TRUE(bookmark);
@@ -1156,7 +1155,7 @@ TEST(BookmarkModelMergerTest,
       /*parent=*/bookmark_bar_node, /*index=*/0,
       base::UTF8ToUTF16(kOriginalTitle), /*meta_info=*/nullptr, kGuid1);
   const bookmarks::BookmarkNode* bookmark = bookmark_model->AddURL(
-      /*parent=*/folder, /*index=*/0, base::UTF8ToUTF16("Bookmark Title"),
+      /*parent=*/folder, /*index=*/0, u"Bookmark Title",
       GURL("http://foo.com/"));
   ASSERT_TRUE(folder);
   ASSERT_TRUE(bookmark);
@@ -1327,11 +1326,11 @@ TEST(BookmarkModelMergerTest,
   const bookmarks::BookmarkNode* bookmark_bar_node =
       bookmark_model->bookmark_bar_node();
   const bookmarks::BookmarkNode* folder = bookmark_model->AddFolder(
-      /*parent=*/bookmark_bar_node, /*index=*/0,
-      base::UTF8ToUTF16("Folder Title"), /*meta_info=*/nullptr, kGuid1);
+      /*parent=*/bookmark_bar_node, /*index=*/0, u"Folder Title",
+      /*meta_info=*/nullptr, kGuid1);
   const bookmarks::BookmarkNode* bookmark = bookmark_model->AddURL(
-      /*parent=*/folder, /*index=*/0, base::UTF8ToUTF16("Foo's title"),
-      GURL("http://foo.com"), /*meta_info=*/nullptr, base::Time::Now(), kGuid2);
+      /*parent=*/folder, /*index=*/0, u"Foo's title", GURL("http://foo.com"),
+      /*meta_info=*/nullptr, base::Time::Now(), kGuid2);
   ASSERT_TRUE(folder);
   ASSERT_TRUE(bookmark);
   ASSERT_THAT(bookmark_bar_node->children(), ElementRawPointersAre(folder));

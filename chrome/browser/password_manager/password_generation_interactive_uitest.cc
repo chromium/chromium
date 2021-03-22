@@ -440,8 +440,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
       password_store->stored_passwords();
   EXPECT_EQ(1u, stored_passwords.size());
   EXPECT_EQ(1u, stored_passwords.begin()->second.size());
-  EXPECT_EQ(base::UTF8ToUTF16("UN"),
-            (stored_passwords.begin()->second)[0].username_value);
+  EXPECT_EQ(u"UN", (stored_passwords.begin()->second)[0].username_value);
 }
 
 // Verify that navigating away closes the popup.

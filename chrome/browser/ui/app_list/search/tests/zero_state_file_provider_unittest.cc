@@ -74,7 +74,7 @@ class ZeroStateFileProviderTest : public testing::Test {
 };
 
 TEST_F(ZeroStateFileProviderTest, NoResultsWithQuery) {
-  provider_->Start(base::UTF8ToUTF16("query"));
+  provider_->Start(u"query");
   Wait();
   EXPECT_TRUE(provider_->results().empty());
 }

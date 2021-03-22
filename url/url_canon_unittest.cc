@@ -2168,12 +2168,12 @@ TEST(URLCanonTest, _itow_s) {
   const char16_t fill_char = 0xffff;
   memset(buf, fill_mem, sizeof(buf));
   EXPECT_EQ(0, _itow_s(12, buf, sizeof(buf) / 2 - 1, 10));
-  EXPECT_EQ(base::UTF8ToUTF16("12"), std::u16string(buf));
+  EXPECT_EQ(u"12", std::u16string(buf));
   EXPECT_EQ(fill_char, buf[3]);
 
   // Test the edge cases - exactly the buffer size and one over
   EXPECT_EQ(0, _itow_s(1234, buf, sizeof(buf) / 2 - 1, 10));
-  EXPECT_EQ(base::UTF8ToUTF16("1234"), std::u16string(buf));
+  EXPECT_EQ(u"1234", std::u16string(buf));
   EXPECT_EQ(fill_char, buf[5]);
 
   memset(buf, fill_mem, sizeof(buf));
@@ -2183,12 +2183,12 @@ TEST(URLCanonTest, _itow_s) {
   // Test the template overload (note that this will see the full buffer)
   memset(buf, fill_mem, sizeof(buf));
   EXPECT_EQ(0, _itow_s(12, buf, 10));
-  EXPECT_EQ(base::UTF8ToUTF16("12"), std::u16string(buf));
+  EXPECT_EQ(u"12", std::u16string(buf));
   EXPECT_EQ(fill_char, buf[3]);
 
   memset(buf, fill_mem, sizeof(buf));
   EXPECT_EQ(0, _itow_s(12345, buf, 10));
-  EXPECT_EQ(base::UTF8ToUTF16("12345"), std::u16string(buf));
+  EXPECT_EQ(u"12345", std::u16string(buf));
 
   EXPECT_EQ(EINVAL, _itow_s(123456, buf, 10));
 }
@@ -2474,41 +2474,41 @@ TEST(URLCanonTest, IDNToASCII) {
   RawCanonOutputW<1024> output;
 
   // Basic ASCII test.
-  std::u16string str = base::UTF8ToUTF16("hello");
+  std::u16string str = u"hello";
   EXPECT_TRUE(IDNToASCII(str.data(), str.length(), &output));
-  EXPECT_EQ(base::UTF8ToUTF16("hello"), std::u16string(output.data()));
+  EXPECT_EQ(u"hello", std::u16string(output.data()));
   output.set_length(0);
 
   // Mixed ASCII/non-ASCII.
-  str = base::UTF8ToUTF16("hellö");
+  str = u"hellö";
   EXPECT_TRUE(IDNToASCII(str.data(), str.length(), &output));
-  EXPECT_EQ(base::UTF8ToUTF16("xn--hell-8qa"), std::u16string(output.data()));
+  EXPECT_EQ(u"xn--hell-8qa", std::u16string(output.data()));
   output.set_length(0);
 
   // All non-ASCII.
-  str = base::UTF8ToUTF16("你好");
+  str = u"你好";
   EXPECT_TRUE(IDNToASCII(str.data(), str.length(), &output));
-  EXPECT_EQ(base::UTF8ToUTF16("xn--6qq79v"), std::u16string(output.data()));
+  EXPECT_EQ(u"xn--6qq79v", std::u16string(output.data()));
   output.set_length(0);
 
   // Characters that need mapping (the resulting Punycode is the encoding for
   // "1⁄4").
-  str = base::UTF8ToUTF16("¼");
+  str = u"¼";
   EXPECT_TRUE(IDNToASCII(str.data(), str.length(), &output));
-  EXPECT_EQ(base::UTF8ToUTF16("xn--14-c6t"), std::u16string(output.data()));
+  EXPECT_EQ(u"xn--14-c6t", std::u16string(output.data()));
   output.set_length(0);
 
   // String to encode already starts with "xn--", and all ASCII. Should not
   // modify the string.
-  str = base::UTF8ToUTF16("xn--hell-8qa");
+  str = u"xn--hell-8qa";
   EXPECT_TRUE(IDNToASCII(str.data(), str.length(), &output));
-  EXPECT_EQ(base::UTF8ToUTF16("xn--hell-8qa"), std::u16string(output.data()));
+  EXPECT_EQ(u"xn--hell-8qa", std::u16string(output.data()));
   output.set_length(0);
 
   // String to encode already starts with "xn--", and mixed ASCII/non-ASCII.
   // Should fail, due to a special case: if the label starts with "xn--", it
   // should be parsed as Punycode, which must be all ASCII.
-  str = base::UTF8ToUTF16("xn--hellö");
+  str = u"xn--hellö";
   EXPECT_FALSE(IDNToASCII(str.data(), str.length(), &output));
   output.set_length(0);
 
@@ -2516,7 +2516,7 @@ TEST(URLCanonTest, IDNToASCII) {
   // This tests that there is still an error for the character '⁄' (U+2044),
   // which would be a valid ASCII character, U+0044, if the high byte were
   // ignored.
-  str = base::UTF8ToUTF16("xn--1⁄4");
+  str = u"xn--1⁄4";
   EXPECT_FALSE(IDNToASCII(str.data(), str.length(), &output));
   output.set_length(0);
 }

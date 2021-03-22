@@ -116,8 +116,8 @@ bool GetRawMachineId(std::u16string* data, int* more_data) {
   std::string serial = base::mac::GetPlatformSerialNumber();
   if (!serial.empty()) {
     if (!data->empty())
-      *data += base::UTF8ToUTF16(" ");
-    *data += base::UTF8ToUTF16("serial:") + base::UTF8ToUTF16(serial);
+      *data += u" ";
+    *data += u"serial:" + base::UTF8ToUTF16(serial);
   }
 
   // On windows, this is set to the volume id. Since it's not scrambled before

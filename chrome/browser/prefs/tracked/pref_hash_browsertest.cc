@@ -1162,16 +1162,16 @@ class PrefHashBrowserTestDefaultSearch : public PrefHashBrowserTestBase {
         static_cast<DefaultSearchManager::Source>(-1);
 
     TemplateURLData user_dse;
-    user_dse.SetKeyword(base::UTF8ToUTF16("userkeyword"));
-    user_dse.SetShortName(base::UTF8ToUTF16("username"));
+    user_dse.SetKeyword(u"userkeyword");
+    user_dse.SetShortName(u"username");
     user_dse.SetURL("http://user_default_engine/search?q=good_user_query");
     default_search_manager.SetUserSelectedDefaultSearchEngine(user_dse);
 
     const TemplateURLData* current_dse =
         default_search_manager.GetDefaultSearchEngine(&dse_source);
     EXPECT_EQ(DefaultSearchManager::FROM_USER, dse_source);
-    EXPECT_EQ(current_dse->keyword(), base::UTF8ToUTF16("userkeyword"));
-    EXPECT_EQ(current_dse->short_name(), base::UTF8ToUTF16("username"));
+    EXPECT_EQ(current_dse->keyword(), u"userkeyword");
+    EXPECT_EQ(current_dse->short_name(), u"username");
     EXPECT_EQ(current_dse->url(),
               "http://user_default_engine/search?q=good_user_query");
   }
@@ -1236,16 +1236,16 @@ class PrefHashBrowserTestDefaultSearch : public PrefHashBrowserTestBase {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
       // Attack is successful.
       EXPECT_EQ(DefaultSearchManager::FROM_USER, dse_source);
-      EXPECT_EQ(current_dse->keyword(), base::UTF8ToUTF16("badkeyword"));
-      EXPECT_EQ(current_dse->short_name(), base::UTF8ToUTF16("badname"));
+      EXPECT_EQ(current_dse->keyword(), u"badkeyword");
+      EXPECT_EQ(current_dse->short_name(), u"badname");
       EXPECT_EQ(current_dse->url(),
                 "http://bad_default_engine/search?q=dirty_user_query");
 #endif
     } else {
       // Attack fails.
       EXPECT_EQ(DefaultSearchManager::FROM_FALLBACK, dse_source);
-      EXPECT_NE(current_dse->keyword(), base::UTF8ToUTF16("badkeyword"));
-      EXPECT_NE(current_dse->short_name(), base::UTF8ToUTF16("badname"));
+      EXPECT_NE(current_dse->keyword(), u"badkeyword");
+      EXPECT_NE(current_dse->short_name(), u"badname");
       EXPECT_NE(current_dse->url(),
                 "http://bad_default_engine/search?q=dirty_user_query");
     }

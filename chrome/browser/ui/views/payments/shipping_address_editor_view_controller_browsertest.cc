@@ -321,8 +321,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   test_region_data_loader_.SendAsynchronousData(regions);
 
   SetCommonFields();
-  SetComboboxValue(base::UTF8ToUTF16("United States"),
-                   autofill::ADDRESS_HOME_COUNTRY);
+  SetComboboxValue(u"United States", autofill::ADDRESS_HOME_COUNTRY);
   SetComboboxValue(base::UTF8ToUTF16(kAnyState), autofill::ADDRESS_HOME_STATE);
 
   std::string country_code(GetSelectedCountryCode());
@@ -695,11 +694,10 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   OpenShippingAddressEditorScreen();
 
   SetCommonFields();
-  SetComboboxValue(base::UTF8ToUTF16("California"),
-                   autofill::ADDRESS_HOME_STATE);
+  SetComboboxValue(u"California", autofill::ADDRESS_HOME_STATE);
 
   // Set an Australian phone number in international format.
-  SetEditorTextfieldValue(base::UTF8ToUTF16("+61 2 9374 4000"),
+  SetEditorTextfieldValue(u"+61 2 9374 4000",
                           autofill::PHONE_HOME_WHOLE_NUMBER);
 
   ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
@@ -720,8 +718,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   // Set an Australian phone number in local format. This is an invalid
   // US number as there is no area code 029, but it can be considered and parsed
   // as a US number.
-  SetEditorTextfieldValue(base::UTF8ToUTF16("02 9374 4000"),
-                          autofill::PHONE_HOME_WHOLE_NUMBER);
+  SetEditorTextfieldValue(u"02 9374 4000", autofill::PHONE_HOME_WHOLE_NUMBER);
 
   EXPECT_FALSE(IsEditorTextfieldInvalid(autofill::PHONE_HOME_WHOLE_NUMBER));
 }
@@ -736,8 +733,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   SetCommonFields();
 
   // Trying to set an impossible number, note it has 11 digits.
-  SetEditorTextfieldValue(base::UTF8ToUTF16("02 9374 40001"),
-                          autofill::PHONE_HOME_WHOLE_NUMBER);
+  SetEditorTextfieldValue(u"02 9374 40001", autofill::PHONE_HOME_WHOLE_NUMBER);
 
   EXPECT_TRUE(IsEditorTextfieldInvalid(autofill::PHONE_HOME_WHOLE_NUMBER));
 }
@@ -816,8 +812,7 @@ IN_PROC_BROWSER_TEST_F(
   // Create a profile in the US and add a valid AU phone number in international
   // format.
   autofill::AutofillProfile california = autofill::test::GetFullProfile();
-  california.SetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER,
-                        base::UTF8ToUTF16("+61 2 9374 4000"));
+  california.SetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER, u"+61 2 9374 4000");
   AddAutofillProfile(california);
 
   InvokePaymentRequestUI();
@@ -839,8 +834,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   // Create a profile in the US and add a valid AU phone number in local format.
   autofill::AutofillProfile california = autofill::test::GetFullProfile();
   california.set_use_count(50U);
-  california.SetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER,
-                        base::UTF8ToUTF16("02 9374 4000"));
+  california.SetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER, u"02 9374 4000");
   AddAutofillProfile(california);
 
   InvokePaymentRequestUI();
@@ -861,8 +855,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   // Create a profile in the US and add a impossible number.
   autofill::AutofillProfile california = autofill::test::GetFullProfile();
   california.set_use_count(50U);
-  california.SetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER,
-                        base::UTF8ToUTF16("02 9374 40001"));
+  california.SetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER, u"02 9374 40001");
   AddAutofillProfile(california);
 
   InvokePaymentRequestUI();
@@ -1392,7 +1385,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestShippingAddressEditorTest,
   NavigateTo("/payment_request_dynamic_shipping_test.html");
 
   autofill::AutofillProfile address = autofill::test::GetFullProfile();
-  address.SetRawInfo(autofill::ADDRESS_HOME_COUNTRY, base::UTF8ToUTF16("KR"));
+  address.SetRawInfo(autofill::ADDRESS_HOME_COUNTRY, u"KR");
   AddAutofillProfile(address);
 
   InvokePaymentRequestUI();

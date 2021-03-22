@@ -528,7 +528,7 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,
   options.app_info_factory = base::BindLambdaForTesting([&]() {
     auto info = std::make_unique<WebApplicationInfo>();
     info->start_url = GetWebAppUrl();
-    info->title = base::UTF8ToUTF16("Test app");
+    info->title = u"Test app";
     return info;
   });
   preinstalled_apps.apps.push_back(std::move(options));

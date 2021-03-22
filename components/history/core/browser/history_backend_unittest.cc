@@ -532,7 +532,7 @@ class InMemoryHistoryBackendTest : public HistoryBackendTestBase {
   static URLRow CreateTestTypedURL() {
     URLRow url_row(GURL("https://www.google.com/"));
     url_row.set_id(10);
-    url_row.set_title(base::UTF8ToUTF16("Google Search"));
+    url_row.set_title(u"Google Search");
     url_row.set_typed_count(1);
     url_row.set_visit_count(1);
     url_row.set_last_visit(base::Time::Now() - base::TimeDelta::FromHours(1));
@@ -542,7 +542,7 @@ class InMemoryHistoryBackendTest : public HistoryBackendTestBase {
   static URLRow CreateAnotherTestTypedURL() {
     URLRow url_row(GURL("https://maps.google.com/"));
     url_row.set_id(20);
-    url_row.set_title(base::UTF8ToUTF16("Google Maps"));
+    url_row.set_title(u"Google Maps");
     url_row.set_typed_count(2);
     url_row.set_visit_count(3);
     url_row.set_last_visit(base::Time::Now() - base::TimeDelta::FromHours(2));
@@ -552,7 +552,7 @@ class InMemoryHistoryBackendTest : public HistoryBackendTestBase {
   static URLRow CreateTestNonTypedURL() {
     URLRow url_row(GURL("https://news.google.com/"));
     url_row.set_id(30);
-    url_row.set_title(base::UTF8ToUTF16("Google News"));
+    url_row.set_title(u"Google News");
     url_row.set_visit_count(5);
     url_row.set_last_visit(base::Time::Now() - base::TimeDelta::FromHours(3));
     return url_row;
@@ -814,7 +814,7 @@ TEST_F(HistoryBackendTest, DeleteAllThenAddData) {
   ASSERT_EQ(0U, all_visits.size());
 
   // Try and set the title.
-  backend_->SetPageTitle(url, base::UTF8ToUTF16("Title"));
+  backend_->SetPageTitle(url, u"Title");
 
   // The row should still be deleted.
   EXPECT_FALSE(backend_->db_->GetRowForURL(url, &outrow));
@@ -1004,8 +1004,8 @@ TEST_F(HistoryBackendTest, ClientRedirect) {
 // Do not update original URL on form submission redirect
 TEST_F(HistoryBackendTest, FormSubmitRedirect) {
   ASSERT_TRUE(backend_.get());
-  const std::u16string page1_title = base::UTF8ToUTF16("Form");
-  const std::u16string page2_title = base::UTF8ToUTF16("New Page");
+  const std::u16string page1_title = u"Form";
+  const std::u16string page2_title = u"New Page";
 
   // User goes to form page.
   GURL url_a("http://www.google.com/a");
@@ -2377,7 +2377,7 @@ TEST_F(HistoryBackendTest, AddPageNoVisitForBookmark) {
   ASSERT_TRUE(backend_.get());
 
   GURL url("http://www.google.com");
-  std::u16string title(base::UTF8ToUTF16("Bookmark title"));
+  std::u16string title(u"Bookmark title");
   backend_->AddPageNoVisitForBookmark(url, title);
 
   URLRow row;
@@ -2520,7 +2520,7 @@ TEST_F(HistoryBackendTest, DeleteMatchingUrlsForKeyword) {
   EXPECT_NE(0, url1_id);
 
   KeywordID keyword_id = 1;
-  std::u16string keyword = base::UTF8ToUTF16("bar");
+  std::u16string keyword = u"bar";
   ASSERT_TRUE(backend_->db()->SetKeywordSearchTermsForURL(
       url1_id, keyword_id, keyword));
 
@@ -2892,7 +2892,7 @@ TEST_F(HistoryBackendTest, FlocAllowedFieldInQueryResult) {
   EXPECT_EQ(results[2].url(), url1);
   EXPECT_FALSE(results[2].floc_allowed());
 
-  text_query = base::UTF8ToUTF16("foo");
+  text_query = u"foo";
   results = backend_->QueryHistory(text_query, options);
   ASSERT_EQ(results.size(), 3u);
   EXPECT_EQ(results[0].url(), url1);

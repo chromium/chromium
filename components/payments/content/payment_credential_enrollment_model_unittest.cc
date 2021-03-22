@@ -14,13 +14,12 @@ namespace payments {
 TEST(PaymentCredentialEnrollmentModelTest, SmokeTest) {
   PaymentCredentialEnrollmentModel model;
 
-  std::u16string title(
-      base::UTF8ToUTF16("Use Touch ID to verify and complete your purchase?"));
+  std::u16string title(u"Use Touch ID to verify and complete your purchase?");
   std::u16string description(base::UTF8ToUTF16(
       "Save payment information to this device and skip bank verification next "
       "time when you use Touch ID to verify your payment with Visa ••••4444."));
-  std::u16string accept_button_label(base::UTF8ToUTF16("Use Touch ID"));
-  std::u16string cancel_button_label(base::UTF8ToUTF16("No thanks"));
+  std::u16string accept_button_label(u"Use Touch ID");
+  std::u16string cancel_button_label(u"No thanks");
 
   model.set_title(title);
   EXPECT_EQ(title, model.title());

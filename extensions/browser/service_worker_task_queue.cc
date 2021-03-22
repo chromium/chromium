@@ -444,7 +444,7 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
 
   if (!success) {
     auto error = std::make_unique<ManifestError>(
-        extension_id, base::UTF8ToUTF16("Service worker registration failed"),
+        extension_id, u"Service worker registration failed",
         base::UTF8ToUTF16(manifest_keys::kBackground),
         base::UTF8ToUTF16(
             BackgroundInfo::GetBackgroundServiceWorkerScript(extension)));

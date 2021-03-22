@@ -178,8 +178,7 @@ IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, UnlockBedtime) {
   LogInChildAndSetupClockWithTime("5 Jan 2018 22:00:00 BRT");
   ScreenLockerTester().Lock();
 
-  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
-      base::UTF8ToUTF16("BRT"));
+  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"BRT");
 
   // Set new policy.
   base::Time last_updated = utils::TimeFromString("1 Jan 2018 0:00 BRT");
@@ -219,8 +218,7 @@ IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, OverrideBedtimeWithDuration) {
   LogInChildAndSetupClockWithTime("5 Jan 2018 20:45:00 PST");
   ScreenLockerTester().Lock();
 
-  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
-      base::UTF8ToUTF16("PST"));
+  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"PST");
 
   // Set new policy.
   base::Time last_updated = utils::TimeFromString("1 Jan 2018 0:00 PST");
@@ -278,8 +276,7 @@ IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest,
   LogInChildAndSetupClockWithTime("1 Jan 2018 10:00:00 BRT");
   ScreenLockerTester().Lock();
 
-  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
-      base::UTF8ToUTF16("BRT"));
+  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"BRT");
 
   // Set new policy.
   base::Time last_updated = utils::TimeFromString("1 Jan 2018 0:00 BRT");
@@ -331,8 +328,7 @@ IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, UnlockBedtimeWithDuration) {
   LogInChildAndSetupClockWithTime("5 Jan 2018 22:00:00 GMT");
   ScreenLockerTester().Lock();
 
-  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
-      base::UTF8ToUTF16("GMT"));
+  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
 
   // Set new policy.
   base::Time last_updated = utils::TimeFromString("1 Jan 2018 0:00 GMT");
@@ -386,8 +382,7 @@ IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, UnlockDailyLimitWithDuration) {
   LogInChildAndSetupClockWithTime("1 Jan 2018 10:00:00 PST");
   ScreenLockerTester().Lock();
 
-  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
-      base::UTF8ToUTF16("PST"));
+  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"PST");
 
   // Set new policy.
   base::Time last_updated = utils::TimeFromString("1 Jan 2018 0:00 PST");
@@ -439,8 +434,7 @@ IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, DefaultBedtime) {
   LogInChildAndSetupClockWithTime("1 Jan 2018 10:00:00 GMT");
   ScreenLockerTester().Lock();
 
-  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
-      base::UTF8ToUTF16("GMT"));
+  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
 
   // Set new policy.
   base::Time last_updated = utils::TimeFromString("1 Jan 2018 0:00 GMT");
@@ -497,8 +491,7 @@ IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, DISABLED_DefaultDailyLimit) {
   LogInChildAndSetupClockWithTime("1 Jan 2018 10:00:00 GMT");
   ScreenLockerTester().Lock();
 
-  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
-      base::UTF8ToUTF16("GMT"));
+  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
 
   // Set new policy.
   base::Time last_updated = utils::TimeFromString("1 Jan 2018 0:00 GMT");
@@ -558,8 +551,7 @@ IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest,
                        DISABLED_ActiveSessionBedtime) {
   LogInChildAndSetupClockWithTime("1 Jan 2018 10:00:00 PST");
 
-  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
-      base::UTF8ToUTF16("PST"));
+  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"PST");
 
   // Set new policy.
   base::Time last_updated = utils::TimeFromString("1 Jan 2018 0:00 PST");
@@ -592,8 +584,7 @@ IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest,
                        DISABLED_ActiveSessionDailyLimit) {
   LogInChildAndSetupClockWithTime("1 Jan 2018 10:00:00 PST");
 
-  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
-      base::UTF8ToUTF16("PST"));
+  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"PST");
 
   // Set new policy.
   base::Time last_updated = utils::TimeFromString("1 Jan 2018 0:00 PST");
@@ -623,8 +614,7 @@ IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, BedtimeOnTimezoneChange) {
   LogInChildAndSetupClockWithTime("3 Jan 2018 10:00:00 GMT-0600");
   ScreenLockerTester().Lock();
 
-  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
-      base::UTF8ToUTF16("GMT-0600"));
+  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT-0600");
 
   // Set new policy.
   base::Time last_updated = utils::TimeFromString("3 Jan 2018 0:00 GMT-0600");
@@ -648,8 +638,7 @@ IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, BedtimeOnTimezoneChange) {
 
   // Change timezone, so that local time goes back to 6 PM and check that auth
   // is enabled since bedtime has not started yet.
-  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
-      base::UTF8ToUTF16("GMT-0700"));
+  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT-0700");
   EXPECT_TRUE(IsAuthEnabled());
 
   // Verify that auth is disabled at 7 PM (start of bedtime).
@@ -658,8 +647,7 @@ IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, BedtimeOnTimezoneChange) {
 
   // Change timezone, so that local time goes forward to 7 AM and check that
   // auth is enabled since bedtime has ended in the new local time.
-  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
-      base::UTF8ToUTF16("GMT+0500"));
+  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT+0500");
   EXPECT_TRUE(IsAuthEnabled());
 }
 
@@ -671,8 +659,7 @@ IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, BedtimeLockScreen24HourClock) {
 
   ScreenLockerTester().Lock();
 
-  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
-      base::UTF8ToUTF16("GMT"));
+  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
 
   // Set new policy.
   base::Time last_updated = utils::TimeFromString("1 Jan 2018 0:00 GMT");
@@ -686,7 +673,7 @@ IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, BedtimeLockScreen24HourClock) {
   // Check that auth is disabled, since the bedtime has already started.
   EXPECT_FALSE(IsAuthEnabled());
 
-  EXPECT_EQ(base::UTF8ToUTF16("Come back at 17:00."),
+  EXPECT_EQ(u"Come back at 17:00.",
             ash::LoginScreenTestApi::GetDisabledAuthMessage(GetAccountId()));
 }
 
@@ -696,8 +683,7 @@ IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest,
   LogInChildAndSetupClockWithTime("3 Jan 2018 8:00:00 GMT+1300");
   ScreenLockerTester().Lock();
 
-  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
-      base::UTF8ToUTF16("GMT+1300"));
+  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT+1300");
 
   // Set new policy.
   base::Time last_updated = utils::TimeFromString("3 Jan 2018 0:00 GMT+1300");
@@ -713,15 +699,13 @@ IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest,
 
   // Change timezone so that local time goes back to 6 AM and check that auth is
   // disable, since the tuesday's bedtime is not over yet.
-  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
-      base::UTF8ToUTF16("GMT+1100"));
+  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT+1100");
   EXPECT_FALSE(IsAuthEnabled());
 
   // Change timezone so that local time goes back to 7 PM on Tuesday and check
   // that auth is enabled, because the bedtime has not started yet in the
   // new local time.
-  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
-      base::UTF8ToUTF16("GMT"));
+  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
   EXPECT_TRUE(IsAuthEnabled());
 
   // Verify that auth is disabled at 8 PM (start of bedtime).
@@ -734,8 +718,7 @@ IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest,
 IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, DISABLED_CallObservers) {
   LogInChildAndSetupClockWithTime("1 Jan 2018 10:00:00 PST");
 
-  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
-      base::UTF8ToUTF16("PST"));
+  system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"PST");
 
   // Set new policy with 3 hours of time usage limit.
   base::Time last_updated = utils::TimeFromString("1 Jan 2018 0:00 PST");

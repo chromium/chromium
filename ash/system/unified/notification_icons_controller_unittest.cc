@@ -68,9 +68,9 @@ class NotificationIconsControllerTest
 
     message_center::MessageCenter::Get()->AddNotification(
         CreateSystemNotification(
-            message_center::NOTIFICATION_TYPE_SIMPLE, id,
-            base::UTF8ToUTF16("test_title"), base::UTF8ToUTF16("test message"),
-            std::u16string() /*display_source */, GURL() /* origin_url */,
+            message_center::NOTIFICATION_TYPE_SIMPLE, id, u"test_title",
+            u"test message", std::u16string() /*display_source */,
+            GURL() /* origin_url */,
             message_center::NotifierId(
                 message_center::NotifierType::SYSTEM_COMPONENT, app_id),
             rich_notification_data, nullptr /* delegate */, gfx::VectorIcon(),

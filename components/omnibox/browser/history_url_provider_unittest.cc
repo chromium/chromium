@@ -1060,9 +1060,8 @@ TEST_F(HistoryURLProviderTest, CullSearchResults) {
   };
   for (size_t i = 0; i < base::size(test_cases); ++i) {
     client_->GetHistoryService()->AddPageWithDetails(
-        GURL(test_cases[i].url), base::UTF8ToUTF16("Title"),
-        test_cases[i].count, test_cases[i].count, Time::Now(), false,
-        history::SOURCE_BROWSED);
+        GURL(test_cases[i].url), u"Title", test_cases[i].count,
+        test_cases[i].count, Time::Now(), false, history::SOURCE_BROWSED);
   }
 
   // We should not see search URLs when typing a previously used query.

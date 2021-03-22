@@ -347,8 +347,7 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResults) {
   // Docs scores are the min of the server and client scores. To avoid client
   // scores coming into play in this test, set the input to match the title
   // similarly enough that the client score will surpass the server score.
-  provider_->input_.UpdateText(base::UTF8ToUTF16("document longer title"), 0,
-                               {});
+  provider_->input_.UpdateText(u"document longer title", 0, {});
   ACMatches matches = provider_->ParseDocumentSearchResults(*response);
   EXPECT_EQ(matches.size(), 3u);
 
@@ -418,7 +417,7 @@ TEST_F(DocumentProviderTest, ProductDescriptionStringsAndAccessibleLabels) {
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->is_dict());
 
-  provider_->input_.UpdateText(base::UTF8ToUTF16("input"), 0, {});
+  provider_->input_.UpdateText(u"input", 0, {});
   ACMatches matches = provider_->ParseDocumentSearchResults(*response);
   EXPECT_EQ(matches.size(), 3u);
 
@@ -513,7 +512,7 @@ TEST_F(DocumentProviderTest, MatchDescriptionString) {
       base::JSONReader::Read(kGoodJSONResponseWithMimeTypes);
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->is_dict());
-  provider_->input_.UpdateText(base::UTF8ToUTF16("input"), 0, {});
+  provider_->input_.UpdateText(u"input", 0, {});
 
   // Verify correct formatting when the DisplayOwner feature param is false.
   {
@@ -614,7 +613,7 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResultsBreakTies) {
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->is_dict());
 
-  provider_->input_.UpdateText(base::UTF8ToUTF16("input"), 0, {});
+  provider_->input_.UpdateText(u"input", 0, {});
   ACMatches matches = provider_->ParseDocumentSearchResults(*response);
   EXPECT_EQ(matches.size(), 3u);
 
@@ -675,7 +674,7 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResultsBreakTiesCascade) {
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->is_dict());
 
-  provider_->input_.UpdateText(base::UTF8ToUTF16("input"), 0, {});
+  provider_->input_.UpdateText(u"input", 0, {});
   ACMatches matches = provider_->ParseDocumentSearchResults(*response);
   EXPECT_EQ(matches.size(), 3u);
 
@@ -738,7 +737,7 @@ TEST_F(DocumentProviderTest, ParseDocumentSearchResultsBreakTiesZeroLimit) {
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->is_dict());
 
-  provider_->input_.UpdateText(base::UTF8ToUTF16("input"), 0, {});
+  provider_->input_.UpdateText(u"input", 0, {});
   ACMatches matches = provider_->ParseDocumentSearchResults(*response);
   EXPECT_EQ(matches.size(), 3u);
 
@@ -1055,41 +1054,41 @@ TEST_F(DocumentProviderTest, CachingForAsyncMatches) {
   auto matches =
       GetTestProviderMatches("input", MakeTestResponse({"0", "1", "2"}, 1150));
   EXPECT_EQ(matches.size(), size_t(3));
-  EXPECT_EQ(matches[0].contents, base::UTF8ToUTF16("Document 0 longer title"));
-  EXPECT_EQ(matches[1].contents, base::UTF8ToUTF16("Document 1 longer title"));
-  EXPECT_EQ(matches[2].contents, base::UTF8ToUTF16("Document 2 longer title"));
+  EXPECT_EQ(matches[0].contents, u"Document 0 longer title");
+  EXPECT_EQ(matches[1].contents, u"Document 1 longer title");
+  EXPECT_EQ(matches[2].contents, u"Document 2 longer title");
 
   // Cache should remove duplicates.
   matches =
       GetTestProviderMatches("input", MakeTestResponse({"1", "2", "3"}, 1150));
   EXPECT_EQ(matches.size(), size_t(4));
-  EXPECT_EQ(matches[0].contents, base::UTF8ToUTF16("Document 1 longer title"));
-  EXPECT_EQ(matches[1].contents, base::UTF8ToUTF16("Document 2 longer title"));
-  EXPECT_EQ(matches[2].contents, base::UTF8ToUTF16("Document 3 longer title"));
-  EXPECT_EQ(matches[3].contents, base::UTF8ToUTF16("Document 0 longer title"));
+  EXPECT_EQ(matches[0].contents, u"Document 1 longer title");
+  EXPECT_EQ(matches[1].contents, u"Document 2 longer title");
+  EXPECT_EQ(matches[2].contents, u"Document 3 longer title");
+  EXPECT_EQ(matches[3].contents, u"Document 0 longer title");
 
   // Cache size (4) should not restrict number of matches from the current
   // response.
   matches =
       GetTestProviderMatches("input", MakeTestResponse({"3", "4", "5"}, 1150));
   EXPECT_EQ(matches.size(), size_t(6));
-  EXPECT_EQ(matches[0].contents, base::UTF8ToUTF16("Document 3 longer title"));
-  EXPECT_EQ(matches[1].contents, base::UTF8ToUTF16("Document 4 longer title"));
-  EXPECT_EQ(matches[2].contents, base::UTF8ToUTF16("Document 5 longer title"));
-  EXPECT_EQ(matches[3].contents, base::UTF8ToUTF16("Document 1 longer title"));
-  EXPECT_EQ(matches[4].contents, base::UTF8ToUTF16("Document 2 longer title"));
-  EXPECT_EQ(matches[5].contents, base::UTF8ToUTF16("Document 0 longer title"));
+  EXPECT_EQ(matches[0].contents, u"Document 3 longer title");
+  EXPECT_EQ(matches[1].contents, u"Document 4 longer title");
+  EXPECT_EQ(matches[2].contents, u"Document 5 longer title");
+  EXPECT_EQ(matches[3].contents, u"Document 1 longer title");
+  EXPECT_EQ(matches[4].contents, u"Document 2 longer title");
+  EXPECT_EQ(matches[5].contents, u"Document 0 longer title");
 
   // Cache size (4) should restrict number of cached matches appended.
   matches =
       GetTestProviderMatches("input", MakeTestResponse({"0", "4", "6"}, 1150));
   EXPECT_EQ(matches.size(), size_t(6));
-  EXPECT_EQ(matches[0].contents, base::UTF8ToUTF16("Document 0 longer title"));
-  EXPECT_EQ(matches[1].contents, base::UTF8ToUTF16("Document 4 longer title"));
-  EXPECT_EQ(matches[2].contents, base::UTF8ToUTF16("Document 6 longer title"));
-  EXPECT_EQ(matches[3].contents, base::UTF8ToUTF16("Document 3 longer title"));
-  EXPECT_EQ(matches[4].contents, base::UTF8ToUTF16("Document 5 longer title"));
-  EXPECT_EQ(matches[5].contents, base::UTF8ToUTF16("Document 1 longer title"));
+  EXPECT_EQ(matches[0].contents, u"Document 0 longer title");
+  EXPECT_EQ(matches[1].contents, u"Document 4 longer title");
+  EXPECT_EQ(matches[2].contents, u"Document 6 longer title");
+  EXPECT_EQ(matches[3].contents, u"Document 3 longer title");
+  EXPECT_EQ(matches[4].contents, u"Document 5 longer title");
+  EXPECT_EQ(matches[5].contents, u"Document 1 longer title");
 
   // Cached results should update match |additional_info|, |relevance|, and
   // |contents_class|.
@@ -1099,7 +1098,7 @@ TEST_F(DocumentProviderTest, CachingForAsyncMatches) {
   matches = GetTestProviderMatches("docum longer title",
                                    MakeTestResponse({"5", "4", "7"}, 1140));
   EXPECT_EQ(matches.size(), size_t(6));
-  EXPECT_EQ(matches[0].contents, base::UTF8ToUTF16("Document 5 longer title"));
+  EXPECT_EQ(matches[0].contents, u"Document 5 longer title");
   EXPECT_EQ(matches[0].GetAdditionalInfo("from cache"), "");
   EXPECT_EQ(matches[0].relevance, 1140);
   EXPECT_THAT(matches[0].contents_class,
@@ -1107,7 +1106,7 @@ TEST_F(DocumentProviderTest, CachingForAsyncMatches) {
                   ACMatchClassification{0, 2}, ACMatchClassification{5, 0},
                   ACMatchClassification{11, 2}, ACMatchClassification{17, 0},
                   ACMatchClassification{18, 2}));
-  EXPECT_EQ(matches[1].contents, base::UTF8ToUTF16("Document 4 longer title"));
+  EXPECT_EQ(matches[1].contents, u"Document 4 longer title");
   EXPECT_EQ(matches[1].GetAdditionalInfo("from cache"), "");
   EXPECT_EQ(matches[1].relevance, 1140);
   EXPECT_THAT(matches[1].contents_class,
@@ -1115,7 +1114,7 @@ TEST_F(DocumentProviderTest, CachingForAsyncMatches) {
                   ACMatchClassification{0, 2}, ACMatchClassification{5, 0},
                   ACMatchClassification{11, 2}, ACMatchClassification{17, 0},
                   ACMatchClassification{18, 2}));
-  EXPECT_EQ(matches[2].contents, base::UTF8ToUTF16("Document 7 longer title"));
+  EXPECT_EQ(matches[2].contents, u"Document 7 longer title");
   EXPECT_EQ(matches[2].GetAdditionalInfo("from cache"), "");
   EXPECT_EQ(matches[2].relevance, 1140);
   EXPECT_THAT(matches[2].contents_class,
@@ -1123,7 +1122,7 @@ TEST_F(DocumentProviderTest, CachingForAsyncMatches) {
                   ACMatchClassification{0, 2}, ACMatchClassification{5, 0},
                   ACMatchClassification{11, 2}, ACMatchClassification{17, 0},
                   ACMatchClassification{18, 2}));
-  EXPECT_EQ(matches[3].contents, base::UTF8ToUTF16("Document 0 longer title"));
+  EXPECT_EQ(matches[3].contents, u"Document 0 longer title");
   EXPECT_EQ(matches[3].GetAdditionalInfo("from cache"), "true");
   EXPECT_EQ(matches[3].relevance, 0);
   EXPECT_THAT(matches[3].contents_class,
@@ -1131,7 +1130,7 @@ TEST_F(DocumentProviderTest, CachingForAsyncMatches) {
                   ACMatchClassification{0, 2}, ACMatchClassification{5, 0},
                   ACMatchClassification{11, 2}, ACMatchClassification{17, 0},
                   ACMatchClassification{18, 2}));
-  EXPECT_EQ(matches[4].contents, base::UTF8ToUTF16("Document 6 longer title"));
+  EXPECT_EQ(matches[4].contents, u"Document 6 longer title");
   EXPECT_EQ(matches[4].GetAdditionalInfo("from cache"), "true");
   EXPECT_EQ(matches[4].relevance, 0);
   EXPECT_THAT(matches[4].contents_class,
@@ -1139,7 +1138,7 @@ TEST_F(DocumentProviderTest, CachingForAsyncMatches) {
                   ACMatchClassification{0, 2}, ACMatchClassification{5, 0},
                   ACMatchClassification{11, 2}, ACMatchClassification{17, 0},
                   ACMatchClassification{18, 2}));
-  EXPECT_EQ(matches[5].contents, base::UTF8ToUTF16("Document 3 longer title"));
+  EXPECT_EQ(matches[5].contents, u"Document 3 longer title");
   EXPECT_EQ(matches[5].GetAdditionalInfo("from cache"), "true");
   EXPECT_EQ(matches[5].relevance, 0);
   EXPECT_THAT(matches[5].contents_class,
@@ -1181,19 +1180,15 @@ TEST_F(DocumentProviderTest, CachingForSyncMatches) {
   provider_->Start(input, false);
   EXPECT_EQ(provider_->matches_.size(), size_t(4));
   // Sync matches from the latest response should have scores.
-  EXPECT_EQ(provider_->matches_[0].contents,
-            base::UTF8ToUTF16("Document 4 longer title"));
+  EXPECT_EQ(provider_->matches_[0].contents, u"Document 4 longer title");
   EXPECT_EQ(provider_->matches_[0].relevance, 600);
-  EXPECT_EQ(provider_->matches_[1].contents,
-            base::UTF8ToUTF16("Document 5 longer title"));
+  EXPECT_EQ(provider_->matches_[1].contents, u"Document 5 longer title");
   EXPECT_EQ(provider_->matches_[1].relevance, 600);
   // Sync matches from previous responses should not have scores.
-  EXPECT_EQ(provider_->matches_[2].contents,
-            base::UTF8ToUTF16("Document 0 longer title"));
+  EXPECT_EQ(provider_->matches_[2].contents, u"Document 0 longer title");
   EXPECT_EQ(provider_->matches_[2].relevance, 0);
   // Sync matches beyond |provider_max_matches_| should have scores set to 0.
-  EXPECT_EQ(provider_->matches_[3].contents,
-            base::UTF8ToUTF16("Document 1 longer title"));
+  EXPECT_EQ(provider_->matches_[3].contents, u"Document 1 longer title");
   EXPECT_EQ(provider_->matches_[3].relevance, 0);
 }
 

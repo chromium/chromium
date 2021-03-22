@@ -26,7 +26,7 @@ size_t CommonPrefixLength(const std::u16string a, const std::u16string b) {
 }  // namespace
 
 TextInputInfo::TextInputInfo()
-    : TextInputInfo(base::UTF8ToUTF16(""),
+    : TextInputInfo(u"",
                     0,
                     0,
                     kDefaultCompositionIndex,
@@ -93,7 +93,7 @@ std::u16string TextInputInfo::CommittedTextBeforeCursor() const {
 
 std::u16string TextInputInfo::ComposingText() const {
   if (composition_start == composition_end)
-    return base::UTF8ToUTF16("");
+    return u"";
   return text.substr(composition_start, CompositionSize());
 }
 
@@ -175,8 +175,8 @@ TextEdits EditedText::GetDiff() const {
         previous.CommittedTextBeforeCursor().size() - common_prefix_length;
     if (to_delete > 0) {
       DCHECK(!had_composition);
-      edits.push_back(TextEditAction(TextEditActionType::DELETE_TEXT,
-                                     base::UTF8ToUTF16(""), -to_delete));
+      edits.push_back(
+          TextEditAction(TextEditActionType::DELETE_TEXT, u"", -to_delete));
     }
   }
 

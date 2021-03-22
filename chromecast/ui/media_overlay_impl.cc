@@ -104,7 +104,7 @@ void MediaOverlayImpl::AddVolumeBar(views::View* container) {
 }
 
 void MediaOverlayImpl::AddToast(views::View* container) {
-  toast_label_ = new views::Label(base::UTF8ToUTF16(""));
+  toast_label_ = new views::Label(u"");
   toast_label_->SetFontList(toast_font_list_);
   toast_label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
 

@@ -105,10 +105,9 @@ String16Vector SplitByColon(const String16Vector& words) {
   return std::accumulate(
       words.begin(), words.end(), String16Vector(),
       [](String16Vector accumulated, const auto& word) {
-        const auto split =
-            base::SplitString(word, base::UTF8ToUTF16(":"),
-                              base::WhitespaceHandling::TRIM_WHITESPACE,
-                              base::SplitResult::SPLIT_WANT_NONEMPTY);
+        const auto split = base::SplitString(
+            word, u":", base::WhitespaceHandling::TRIM_WHITESPACE,
+            base::SplitResult::SPLIT_WANT_NONEMPTY);
         accumulated.insert(accumulated.end(), split.begin(), split.end());
         return accumulated;
       });

@@ -164,7 +164,7 @@ class DataTransferDlpBrowserTest : public LoginPolicyTestBase {
     params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
     widget_->Init(std::move(params));
     textfield_ = widget_->SetContentsView(std::make_unique<views::Textfield>());
-    textfield_->SetAccessibleName(base::UTF8ToUTF16("Textfield"));
+    textfield_->SetAccessibleName(u"Textfield");
     textfield_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 
     // Show the widget.

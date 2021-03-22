@@ -1130,7 +1130,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_Focus_InputMethod) {
   // user input via IME.
   {
     ui::CompositionText composition;
-    composition.text = base::UTF8ToUTF16("InputTest123");
+    composition.text = u"InputTest123";
     text_input_client->SetCompositionText(composition);
     EXPECT_TRUE(content::ExecuteScript(
                     embedder_web_contents,
@@ -1145,7 +1145,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, MAYBE_Focus_InputMethod) {
     next_step_listener.Reset();
 
     ui::CompositionText composition;
-    composition.text = base::UTF8ToUTF16("InputTest456");
+    composition.text = u"InputTest456";
     text_input_client->SetCompositionText(composition);
     text_input_client->ConfirmCompositionText(/* keep_selection */ false);
     EXPECT_TRUE(content::ExecuteScript(
@@ -1526,9 +1526,9 @@ IN_PROC_BROWSER_TEST_F(WebViewImeInteractiveTest,
                                               false);
   content::RenderWidgetHost* target_rwh_for_input =
       target_web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost();
-  content::SendImeCommitTextToWidget(
-      target_rwh_for_input, base::UTF8ToUTF16("C"),
-      std::vector<ui::ImeTextSpan>(), gfx::Range(4, 5), 0);
+  content::SendImeCommitTextToWidget(target_rwh_for_input, u"C",
+                                     std::vector<ui::ImeTextSpan>(),
+                                     gfx::Range(4, 5), 0);
   EXPECT_TRUE(input_listener.WaitUntilSatisfied());
 
   // Get the input value from the guest.
@@ -1593,8 +1593,7 @@ IN_PROC_BROWSER_TEST_F(WebViewImeInteractiveTest, CompositionRangeUpdates) {
   CompositionRangeUpdateObserver observer(embedder_web_contents);
   content::SendImeSetCompositionTextToWidget(
       target_web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost(),
-      base::UTF8ToUTF16("ABC"), std::vector<ui::ImeTextSpan>(),
-      gfx::Range::InvalidRange(), 0, 3);
+      u"ABC", std::vector<ui::ImeTextSpan>(), gfx::Range::InvalidRange(), 0, 3);
   observer.WaitForCompositionRangeLength(3U);
 }
 

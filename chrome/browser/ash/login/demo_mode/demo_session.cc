@@ -196,8 +196,7 @@ std::vector<ash::LocaleInfo> GetSupportedLocales() {
         l10n_util::GetDisplayNameForLocale(locale, locale,
                                            true /* is_for_ui */);
     if (locale_info.display_name != native_display_name) {
-      locale_info.display_name +=
-          base::UTF8ToUTF16(" - ") + native_display_name;
+      locale_info.display_name += u" - " + native_display_name;
     }
     supported_locales.push_back(std::move(locale_info));
   }

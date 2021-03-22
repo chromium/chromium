@@ -1498,8 +1498,7 @@ TEST_P(MostVisitedSitesWithCustomLinksTest,
       .WillRepeatedly(ReturnRef(expected_links));
   EXPECT_CALL(mock_observer_, OnURLsAvailable(_))
       .WillOnce(SaveArg<0>(&sections));
-  most_visited_sites_->AddCustomLink(GURL("test.com"),
-                                     base::UTF8ToUTF16("test"));
+  most_visited_sites_->AddCustomLink(GURL("test.com"), u"test");
   base::RunLoop().RunUntilIdle();
   ASSERT_THAT(
       sections.at(SectionType::PERSONALIZED),
@@ -1555,7 +1554,7 @@ TEST_P(MostVisitedSitesWithCustomLinksTest,
   EXPECT_CALL(mock_observer_, OnURLsAvailable(_))
       .WillOnce(SaveArg<0>(&sections));
   most_visited_sites_->UpdateCustomLink(GURL("test.com"), GURL("test.com"),
-                                        base::UTF8ToUTF16("test"));
+                                        u"test");
   base::RunLoop().RunUntilIdle();
   ASSERT_THAT(
       sections.at(SectionType::PERSONALIZED),
@@ -1611,7 +1610,7 @@ TEST_P(MostVisitedSitesWithCustomLinksTest,
       .WillRepeatedly(Return(false));
   EXPECT_CALL(*mock_custom_links_, Uninitialize());
   EXPECT_CALL(mock_observer_, OnURLsAvailable(_)).Times(0);
-  most_visited_sites_->AddCustomLink(GURL(kTestUrl), base::UTF8ToUTF16("test"));
+  most_visited_sites_->AddCustomLink(GURL(kTestUrl), u"test");
   base::RunLoop().RunUntilIdle();
 
   // Fail to edit a custom link. This should not initialize custom links nor
@@ -1623,7 +1622,7 @@ TEST_P(MostVisitedSitesWithCustomLinksTest,
   EXPECT_CALL(*mock_custom_links_, Uninitialize());
   EXPECT_CALL(mock_observer_, OnURLsAvailable(_)).Times(0);
   most_visited_sites_->UpdateCustomLink(GURL("test.com"), GURL("test2.com"),
-                                        base::UTF8ToUTF16("test"));
+                                        u"test");
   base::RunLoop().RunUntilIdle();
 
   // Fail to reorder a custom link. This should not initialize custom links nor

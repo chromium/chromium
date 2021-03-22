@@ -329,11 +329,10 @@ network::mojom::NetworkService* GetNetworkService() {
         } else {
           if (service_was_bound)
             LOG(ERROR) << "Network service crashed, restarting service.";
-          ServiceProcessHost::Launch(
-              std::move(receiver),
-              ServiceProcessHost::Options()
-                  .WithDisplayName(base::UTF8ToUTF16("Network Service"))
-                  .Pass());
+          ServiceProcessHost::Launch(std::move(receiver),
+                                     ServiceProcessHost::Options()
+                                         .WithDisplayName(u"Network Service")
+                                         .Pass());
         }
       } else {
         // This should only be reached in unit tests.

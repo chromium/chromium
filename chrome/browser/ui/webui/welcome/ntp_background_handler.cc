@@ -136,7 +136,7 @@ void NtpBackgroundHandler::HandleSetBackground(const base::ListValue* args) {
       instant_service->SetCustomBackgroundInfo(
           NtpBackgrounds[backgroundIndex],
           l10n_util::GetStringFUTF8(IDS_WELCOME_NTP_BACKGROUND_PHOTO_BY_LABEL,
-                                    base::UTF8ToUTF16("Ev Tchebotarev")),
+                                    u"Ev Tchebotarev"),
           "",
           GURL("https://500px.com/photo/135751035/"
                "soulseek-by-%E5%B0%A4%E9%87%91%E5%B0%BC-ev-tchebotarev"),
@@ -146,7 +146,7 @@ void NtpBackgroundHandler::HandleSetBackground(const base::ListValue* args) {
       instant_service->SetCustomBackgroundInfo(
           NtpBackgrounds[backgroundIndex],
           l10n_util::GetStringFUTF8(IDS_WELCOME_NTP_BACKGROUND_PHOTO_BY_LABEL,
-                                    base::UTF8ToUTF16("NASA Image Library")),
+                                    u"NASA Image Library"),
           "", GURL("https://www.google.com/sky/"), "");
       break;
     case static_cast<int>(NtpBackgrounds::kGeometricShapes):
@@ -159,7 +159,7 @@ void NtpBackgroundHandler::HandleSetBackground(const base::ListValue* args) {
       instant_service->SetCustomBackgroundInfo(
           NtpBackgrounds[backgroundIndex],
           l10n_util::GetStringFUTF8(IDS_WELCOME_NTP_BACKGROUND_PHOTO_BY_LABEL,
-                                    base::UTF8ToUTF16("Giulio Rosso Chioso")),
+                                    u"Giulio Rosso Chioso"),
           "",
           GURL("https://500px.com/photo/41149196/"
                "le-piscine-sunset-by-giulio-rosso-chioso"),

@@ -148,8 +148,8 @@ TEST_F(SharingDialogViewTest, DevicePressed) {
 }
 
 TEST_F(SharingDialogViewTest, AppPressed) {
-  SharingApp app(&vector_icons::kOpenInNewIcon, gfx::Image(),
-                 base::UTF8ToUTF16("app0"), std::string());
+  SharingApp app(&vector_icons::kOpenInNewIcon, gfx::Image(), u"app0",
+                 std::string());
   EXPECT_CALL(app_callback_, Call(AppEquals(&app)));
 
   auto dialog_data = CreateDialogData(/*devices=*/3, /*apps=*/2);

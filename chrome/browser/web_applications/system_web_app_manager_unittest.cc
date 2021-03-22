@@ -73,7 +73,7 @@ std::unique_ptr<WebApplicationInfo> GetApp1WebApplicationInfo() {
       std::make_unique<WebApplicationInfo>();
   info->start_url = AppUrl1();
   info->scope = AppUrl1().GetWithoutFilename();
-  info->title = base::UTF8ToUTF16("Foo Web App");
+  info->title = u"Foo Web App";
   return info;
 }
 
@@ -88,7 +88,7 @@ std::unique_ptr<WebApplicationInfo> GetApp2WebApplicationInfo() {
       std::make_unique<WebApplicationInfo>();
   info->start_url = AppUrl2();
   info->scope = AppUrl2().GetWithoutFilename();
-  info->title = base::UTF8ToUTF16("Bar Web App");
+  info->title = u"Bar Web App";
   return info;
 }
 
@@ -103,7 +103,7 @@ std::unique_ptr<WebApplicationInfo> GetApp3WebApplicationInfo() {
       std::make_unique<WebApplicationInfo>();
   info->start_url = AppUrl3();
   info->scope = AppUrl3().GetWithoutFilename();
-  info->title = base::UTF8ToUTF16("Bar Web App");
+  info->title = u"Bar Web App";
   return info;
 }
 

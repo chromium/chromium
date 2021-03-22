@@ -148,9 +148,8 @@ autofill::FormData GenerateWithDataAccessor(
     }
 
 #if defined(OS_IOS)
-    result.fields[i].unique_id = result.fields[i].id_attribute +
-                                 base::UTF8ToUTF16("-") +
-                                 base::NumberToString16(i);
+    result.fields[i].unique_id =
+        result.fields[i].id_attribute + u"-" + base::NumberToString16(i);
 #endif
     if (field_params[i].same_value_field &&
         first_field_with_same_value != static_cast<int>(i)) {

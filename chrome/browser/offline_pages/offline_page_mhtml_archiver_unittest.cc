@@ -34,7 +34,7 @@ const char kTestURL[] = "http://example.com/hello.mhtml";
 const char kNonExistentURL[] = "http://example.com/non_existent.mhtml";
 // Size of chrome/test/data/offline_pages/hello.mhtml
 const int64_t kTestFileSize = 471LL;
-const std::u16string kTestTitle = base::UTF8ToUTF16("a title");
+const std::u16string kTestTitle = u"a title";
 // SHA256 Hash of chrome/test/data/offline_pages/hello.mhtml
 const std::string kTestDigest(
     "\x43\x60\x62\x02\x06\x15\x0f\x3e\x77\x99\x3d\xed\xdc\xd4\xe2\x0d\xbe\xbd"

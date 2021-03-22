@@ -1417,7 +1417,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, TitleAfterCrossSiteIframe) {
                             "    function() { document.title = 'loaded'; };"));
   EXPECT_TRUE(
       ExecuteScript(shell()->web_contents(), "document.title = 'not loaded';"));
-  std::u16string expected_title(base::UTF8ToUTF16("loaded"));
+  std::u16string expected_title(u"loaded");
   TitleWatcher title_watcher(shell()->web_contents(), expected_title);
 
   // Navigate the iframe cross-site.
@@ -4980,7 +4980,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, LoadEventForwarding) {
   {
     GURL main_url(
         embedded_test_server()->GetURL("/frame_with_load_event.html"));
-    std::u16string expected_title(base::UTF8ToUTF16("LOADED"));
+    std::u16string expected_title(u"LOADED");
     TitleWatcher title_watcher(shell()->web_contents(), expected_title);
     EXPECT_TRUE(NavigateToURL(shell(), main_url));
     EXPECT_EQ(title_watcher.WaitAndGetTitle(), expected_title);
@@ -4993,7 +4993,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, LoadEventForwarding) {
   // is fired.
   {
     GURL foo_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
-    std::u16string expected_title(base::UTF8ToUTF16("LOADEDLOADED"));
+    std::u16string expected_title(u"LOADEDLOADED");
     TitleWatcher title_watcher(shell()->web_contents(), expected_title);
     TestNavigationObserver observer(shell()->web_contents());
     EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), foo_url));
@@ -7304,7 +7304,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   for (const auto& test : kTestCases) {
     GURL blocked_url = embedded_test_server()->GetURL("b.com", test.url);
     EXPECT_TRUE(ExecuteScript(shell(), "document.title = 'not loaded';"));
-    std::u16string expected_title(base::UTF8ToUTF16("loaded"));
+    std::u16string expected_title(u"loaded");
     TitleWatcher title_watcher(shell()->web_contents(), expected_title);
 
     WebContentsConsoleObserver console_observer(shell()->web_contents());
@@ -7390,7 +7390,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                             "document.querySelector('iframe').onload = "
                             "    function() { document.title = 'loaded'; };"));
   EXPECT_TRUE(ExecuteScript(shell(), "document.title = 'not loaded';"));
-  std::u16string expected_title(base::UTF8ToUTF16("loaded"));
+  std::u16string expected_title(u"loaded");
   TitleWatcher title_watcher(shell()->web_contents(), expected_title);
 
   // Try to navigate the subframe to a blocked URL.
@@ -7464,7 +7464,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                      "document.querySelector('iframe').onload = "
                      "    function() { document.title = 'loaded'; };"));
   EXPECT_TRUE(ExecJs(shell(), "document.title = 'not loaded';"));
-  std::u16string expected_title(base::UTF8ToUTF16("loaded"));
+  std::u16string expected_title(u"loaded");
   TitleWatcher title_watcher(shell()->web_contents(), expected_title);
 
   // Try to navigate the subframe to a blocked URL.
@@ -7536,7 +7536,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
              "document.querySelector('iframe').onload = "
              "    function() { window.top.postMessage('loaded', '*'); };"));
   EXPECT_TRUE(ExecJs(shell(), "document.title = 'not loaded';"));
-  std::u16string expected_title(base::UTF8ToUTF16("loaded"));
+  std::u16string expected_title(u"loaded");
   TitleWatcher title_watcher(shell()->web_contents(), expected_title);
 
   // Try to navigate the subframe to a blocked URL.
@@ -8706,7 +8706,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Send a postMessage from the child to its parent.  This verifies that the
   // parent's proxy in the child's SiteInstance was also restored.
-  std::u16string expected_title(base::UTF8ToUTF16("I am alive!"));
+  std::u16string expected_title(u"I am alive!");
   TitleWatcher title_watcher(shell()->web_contents(), expected_title);
   EXPECT_TRUE(ExecuteScript(child->current_frame_host(),
                             "parent.postMessage('I am alive!', '*');"));
@@ -9058,7 +9058,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // |popup2|. This is allowed since the main tab is |popup2|'s opener.
   EXPECT_TRUE(NavigateToURLFromRenderer(shell(), b_url));
 
-  std::u16string expected_title(base::UTF8ToUTF16("foo"));
+  std::u16string expected_title(u"foo");
   TitleWatcher title_watcher(popup2->web_contents(), expected_title);
   EXPECT_TRUE(ExecuteScript(
       shell(), "window.open('','popup2').postMessage('foo', '*');"));
@@ -16708,7 +16708,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebBundleBrowserTest, SameSiteBundle) {
   GURL main_url(https_server()->GetURL(
       "foo.test", "/web_bundle/frame_parent.html?wbn=" + bundle_url.spec()));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  std::u16string expected_title(base::UTF8ToUTF16("OK"));
+  std::u16string expected_title(u"OK");
   TitleWatcher title_watcher(shell()->web_contents(), expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
@@ -16729,7 +16729,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebBundleBrowserTest, CrossSiteBundle) {
   GURL main_url(https_server()->GetURL(
       "foo.test", "/web_bundle/frame_parent.html?wbn=" + bundle_url.spec()));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
-  std::u16string expected_title(base::UTF8ToUTF16("OK"));
+  std::u16string expected_title(u"OK");
   TitleWatcher title_watcher(shell()->web_contents(), expected_title);
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 

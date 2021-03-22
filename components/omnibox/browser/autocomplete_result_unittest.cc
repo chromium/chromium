@@ -1935,7 +1935,7 @@ TEST_F(AutocompleteResultTest, ConvertsOpenTabsCorrectly) {
   match.destination_url = GURL("http://this-site-matches.com");
   result.matches_.push_back(match);
   match.destination_url = GURL("http://other-site-matches.com");
-  match.description = base::UTF8ToUTF16("Some Other Site");
+  match.description = u"Some Other Site";
   result.matches_.push_back(match);
   match.destination_url = GURL("http://doesnt-match.com");
   match.description = std::u16string();

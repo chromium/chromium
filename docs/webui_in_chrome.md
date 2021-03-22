@@ -287,7 +287,7 @@ ui::ModalType HelloWorldDialog::GetDialogModalType() const {
 }
 
 std::u16string HelloWorldDialog::GetDialogTitle() const {
-  return base::UTF8ToUTF16("Hello world");
+  return u"Hello world";
 }
 
 GURL HelloWorldDialog::GetDialogContentURL() const {

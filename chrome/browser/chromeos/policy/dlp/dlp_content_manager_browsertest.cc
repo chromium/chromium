@@ -296,8 +296,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
       browser()->window()->GetNativeWindow()->GetRootWindow();
   const auto media_id = content::DesktopMediaID::RegisterNativeWindow(
       content::DesktopMediaID::TYPE_SCREEN, root_window);
-  manager->OnScreenCaptureStarted(
-      "label", {media_id}, base::UTF8ToUTF16("example.com"), base::DoNothing());
+  manager->OnScreenCaptureStarted("label", {media_id}, u"example.com",
+                                  base::DoNothing());
 
   EXPECT_FALSE(display_service_tester.GetNotification(
       kScreenCapturePausedNotificationId));

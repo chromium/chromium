@@ -242,14 +242,14 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(
   };
   source->AddLocalizedStrings(kStrings);
 
-  source->AddString("modulesTasksInfo1",
-                    l10n_util::GetStringFUTF16(
-                        IDS_NTP_MODULES_SHOPPING_TASKS_INFO_1,
-                        base::UTF8ToUTF16("https://myactivity.google.com/")));
-  source->AddString("modulesTasksInfo2",
-                    l10n_util::GetStringFUTF16(
-                        IDS_NTP_MODULES_SHOPPING_TASKS_INFO_2,
-                        base::UTF8ToUTF16("https://policies.google.com/")));
+  source->AddString(
+      "modulesTasksInfo1",
+      l10n_util::GetStringFUTF16(IDS_NTP_MODULES_SHOPPING_TASKS_INFO_1,
+                                 u"https://myactivity.google.com/"));
+  source->AddString(
+      "modulesTasksInfo2",
+      l10n_util::GetStringFUTF16(IDS_NTP_MODULES_SHOPPING_TASKS_INFO_2,
+                                 u"https://policies.google.com/"));
 
   // Register images that are purposefully not inlined in the HTML and instead
   // are set in Javascript.

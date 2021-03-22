@@ -1998,8 +1998,8 @@ TEST_F(DesksEditableNamesTest, NamesSetByUsersAreNotOverwritten) {
   // Extra whitespace should be trimmed.
   auto* desk_1 = controller()->desks()[0].get();
   auto* desk_2 = controller()->desks()[1].get();
-  EXPECT_EQ(base::UTF8ToUTF16("code"), desk_1->name());
-  EXPECT_EQ(base::UTF8ToUTF16("Desk 2"), desk_2->name());
+  EXPECT_EQ(u"code", desk_1->name());
+  EXPECT_EQ(u"Desk 2", desk_2->name());
   EXPECT_TRUE(desk_1->is_name_set_by_user());
   EXPECT_FALSE(desk_2->is_name_set_by_user());
 
@@ -2012,7 +2012,7 @@ TEST_F(DesksEditableNamesTest, NamesSetByUsersAreNotOverwritten) {
   // the user-modified desk names.
   NewDesk();
   auto* desk_3 = controller()->desks()[2].get();
-  EXPECT_EQ(base::UTF8ToUTF16("Desk 3"), desk_3->name());
+  EXPECT_EQ(u"Desk 3", desk_3->name());
   EXPECT_TRUE(desk_1->is_name_set_by_user());
   EXPECT_FALSE(desk_2->is_name_set_by_user());
   EXPECT_FALSE(desk_3->is_name_set_by_user());
@@ -2025,7 +2025,7 @@ TEST_F(DesksEditableNamesTest, NamesSetByUsersAreNotOverwritten) {
   EXPECT_TRUE(desk_1->is_name_set_by_user());
   EXPECT_FALSE(desk_3->is_name_set_by_user());
   // Desk 3 will now be renamed to "Desk 2".
-  EXPECT_EQ(base::UTF8ToUTF16("Desk 2"), desk_3->name());
+  EXPECT_EQ(u"Desk 2", desk_3->name());
   VerifyDesksRestoreData(GetPrimaryUserPrefService(),
                          {std::string("code"), std::string()});
 
@@ -2033,8 +2033,8 @@ TEST_F(DesksEditableNamesTest, NamesSetByUsersAreNotOverwritten) {
   overview_controller->StartOverview();
   EXPECT_TRUE(desk_1->is_name_set_by_user());
   EXPECT_FALSE(desk_3->is_name_set_by_user());
-  EXPECT_EQ(base::UTF8ToUTF16("code"), desk_1->name());
-  EXPECT_EQ(base::UTF8ToUTF16("Desk 2"), desk_3->name());
+  EXPECT_EQ(u"code", desk_1->name());
+  EXPECT_EQ(u"Desk 2", desk_3->name());
 }
 
 TEST_F(DesksEditableNamesTest, DontAllowEmptyNames) {
@@ -2055,7 +2055,7 @@ TEST_F(DesksEditableNamesTest, DontAllowEmptyNames) {
   // The name should now revert back to the default value.
   EXPECT_FALSE(desk_1->name().empty());
   EXPECT_FALSE(desk_1->is_name_set_by_user());
-  EXPECT_EQ(base::UTF8ToUTF16("Desk 1"), desk_1->name());
+  EXPECT_EQ(u"Desk 1", desk_1->name());
   VerifyDesksRestoreData(GetPrimaryUserPrefService(),
                          {std::string(), std::string()});
 }
@@ -3360,9 +3360,9 @@ TEST_P(DesksRestoreMultiUserTest, DesksRestoredFromPrimaryUserPrefsOnly) {
   auto verify_desks = [&](const std::string& trace_name) {
     SCOPED_TRACE(trace_name);
     EXPECT_EQ(3u, desks.size());
-    EXPECT_EQ(base::UTF8ToUTF16("Desk 1"), desks[0]->name());
-    EXPECT_EQ(base::UTF8ToUTF16("Desk 2"), desks[1]->name());
-    EXPECT_EQ(base::UTF8ToUTF16("code"), desks[2]->name());
+    EXPECT_EQ(u"Desk 1", desks[0]->name());
+    EXPECT_EQ(u"Desk 2", desks[1]->name());
+    EXPECT_EQ(u"code", desks[2]->name());
     // Restored non-default names should be marked as `set_by_user`.
     EXPECT_FALSE(desks[0]->is_name_set_by_user());
     EXPECT_FALSE(desks[1]->is_name_set_by_user());
@@ -4652,7 +4652,7 @@ TEST_F(DesksBentoTest, ZeroStateDeskButtonText) {
   ASSERT_TRUE(desks_bar_view->IsZeroState());
   // Show the default name "Desk 1" while initializing the desks bar at the
   // first time.
-  EXPECT_EQ(base::UTF8ToUTF16("Desk 1"),
+  EXPECT_EQ(u"Desk 1",
             desks_bar_view->zero_state_default_desk_button()->GetText());
 
   auto* event_generator = GetEventGenerator();
@@ -4672,21 +4672,20 @@ TEST_F(DesksBentoTest, ZeroStateDeskButtonText) {
   desks_bar_view = GetOverviewGridForRoot(root_window)->desks_bar_view();
   EXPECT_TRUE(desks_bar_view->IsZeroState());
   // Should show the desk's current name "test" instead of the default name.
-  EXPECT_EQ(base::UTF8ToUTF16("test"),
+  EXPECT_EQ(u"test",
             desks_bar_view->zero_state_default_desk_button()->GetText());
 
   // Create 'Desk 2'.
   ClickOnView(desks_bar_view->zero_state_new_desk_button(), event_generator);
   EXPECT_FALSE(desks_bar_view->IsZeroState());
   SendKey(ui::VKEY_RETURN);
-  EXPECT_EQ(base::UTF8ToUTF16("Desk 2"),
-            DesksController::Get()->desks()[1].get()->name());
+  EXPECT_EQ(u"Desk 2", DesksController::Get()->desks()[1].get()->name());
 
   // Close desk 'test' should return to zero state and the zero state default
   // desk button should show current desk's name, which is 'Desk 1'.
   CloseDeskFromMiniView(desks_bar_view->mini_views()[0], event_generator);
   EXPECT_TRUE(desks_bar_view->IsZeroState());
-  EXPECT_EQ(base::UTF8ToUTF16("Desk 1"),
+  EXPECT_EQ(u"Desk 1",
             desks_bar_view->zero_state_default_desk_button()->GetText());
 
   // Set a super long desk name.

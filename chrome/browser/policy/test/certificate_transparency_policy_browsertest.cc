@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_F(CertificateTransparencyPolicyTest,
 
   EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
       tab->GetMainFrame(), "proceed-link"));
-  EXPECT_NE(base::UTF8ToUTF16("OK"),
+  EXPECT_NE(u"OK",
             browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
 
   // Now exempt the URL from being blocked by setting policy.
@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(CertificateTransparencyPolicyTest,
 
   // There should be no interstitial after the page loads.
   EXPECT_FALSE(IsShowingInterstitial(tab));
-  EXPECT_EQ(base::UTF8ToUTF16("OK"),
+  EXPECT_EQ(u"OK",
             browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
 
   // Now ensure that this setting still works after a network process crash.
@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(CertificateTransparencyPolicyTest,
 
   // There should be no interstitial after the page loads.
   EXPECT_FALSE(IsShowingInterstitial(tab));
-  EXPECT_EQ(base::UTF8ToUTF16("OK"),
+  EXPECT_EQ(u"OK",
             browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
 }
 
@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(CertificateTransparencyPolicyTest,
   EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
       main_frame, "proceed-link"));
 
-  EXPECT_NE(base::UTF8ToUTF16("OK"),
+  EXPECT_NE(u"OK",
             browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
 
   // Now exempt the leaf SPKI from being blocked by setting policy.
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(CertificateTransparencyPolicyTest,
                                https_server_ok.GetURL("/simple.html"));
 
   // Check we are no longer in the interstitial.
-  EXPECT_EQ(base::UTF8ToUTF16("OK"),
+  EXPECT_EQ(u"OK",
             browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
 }
 

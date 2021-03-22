@@ -138,10 +138,10 @@ TEST_F(SpeechRecognitionEngineTest, SingleDefinitiveResult) {
   results.push_back(blink::mojom::SpeechRecognitionResult::New());
   blink::mojom::SpeechRecognitionResultPtr& result = results.back();
   result->is_provisional = false;
-  result->hypotheses.push_back(blink::mojom::SpeechRecognitionHypothesis::New(
-      base::UTF8ToUTF16("hypothesis 1"), 0.1F));
-  result->hypotheses.push_back(blink::mojom::SpeechRecognitionHypothesis::New(
-      base::UTF8ToUTF16("hypothesis 2"), 0.2F));
+  result->hypotheses.push_back(
+      blink::mojom::SpeechRecognitionHypothesis::New(u"hypothesis 1", 0.1F));
+  result->hypotheses.push_back(
+      blink::mojom::SpeechRecognitionHypothesis::New(u"hypothesis 2", 0.2F));
 
   ProvideMockResultDownstream(result);
   ExpectResultsReceived(results);
@@ -170,7 +170,7 @@ TEST_F(SpeechRecognitionEngineTest, SeveralStreamingResults) {
     result->is_provisional = (i % 2 == 0);  // Alternate result types.
     float confidence = result->is_provisional ? 0.0F : (i * 0.1F);
     result->hypotheses.push_back(blink::mojom::SpeechRecognitionHypothesis::New(
-        base::UTF8ToUTF16("hypothesis"), confidence));
+        u"hypothesis", confidence));
 
     ProvideMockResultDownstream(result);
     ExpectResultsReceived(results);
@@ -188,7 +188,7 @@ TEST_F(SpeechRecognitionEngineTest, SeveralStreamingResults) {
   blink::mojom::SpeechRecognitionResultPtr& result = results.back();
   result->is_provisional = false;
   result->hypotheses.push_back(blink::mojom::SpeechRecognitionHypothesis::New(
-      base::UTF8ToUTF16("The final result"), 1.0F));
+      u"The final result", 1.0F));
   ProvideMockResultDownstream(result);
   ExpectResultsReceived(results);
   ASSERT_TRUE(engine_under_test_->IsRecognitionPending());
@@ -214,8 +214,8 @@ TEST_F(SpeechRecognitionEngineTest, NoFinalResultAfterAudioChunksEnded) {
   std::vector<blink::mojom::SpeechRecognitionResultPtr> results;
   results.push_back(blink::mojom::SpeechRecognitionResult::New());
   blink::mojom::SpeechRecognitionResultPtr& result = results.back();
-  result->hypotheses.push_back(blink::mojom::SpeechRecognitionHypothesis::New(
-      base::UTF8ToUTF16("hypothesis"), 1.0F));
+  result->hypotheses.push_back(
+      blink::mojom::SpeechRecognitionHypothesis::New(u"hypothesis", 1.0F));
   ProvideMockResultDownstream(result);
   ExpectResultsReceived(results);
   ASSERT_TRUE(engine_under_test_->IsRecognitionPending());
@@ -260,8 +260,8 @@ TEST_F(SpeechRecognitionEngineTest, ReRequestData) {
   std::vector<blink::mojom::SpeechRecognitionResultPtr> results;
   results.push_back(blink::mojom::SpeechRecognitionResult::New());
   blink::mojom::SpeechRecognitionResultPtr& result = results.back();
-  result->hypotheses.push_back(blink::mojom::SpeechRecognitionHypothesis::New(
-      base::UTF8ToUTF16("hypothesis"), 1.0F));
+  result->hypotheses.push_back(
+      blink::mojom::SpeechRecognitionHypothesis::New(u"hypothesis", 1.0F));
   ProvideMockResultDownstream(result);
   ExpectResultsReceived(results);
   ASSERT_TRUE(engine_under_test_->IsRecognitionPending());
@@ -312,7 +312,7 @@ TEST_F(SpeechRecognitionEngineTest, NoMatchError) {
   blink::mojom::SpeechRecognitionResultPtr& result = results.back();
   result->is_provisional = true;
   result->hypotheses.push_back(blink::mojom::SpeechRecognitionHypothesis::New(
-      base::UTF8ToUTF16("The final result"), 0.0F));
+      u"The final result", 0.0F));
   ProvideMockResultDownstream(result);
   ExpectResultsReceived(results);
   ASSERT_TRUE(engine_under_test_->IsRecognitionPending());
@@ -390,8 +390,8 @@ TEST_F(SpeechRecognitionEngineTest, Stability) {
   results.push_back(blink::mojom::SpeechRecognitionResult::New());
   blink::mojom::SpeechRecognitionResultPtr& result = results.back();
   result->is_provisional = true;
-  result->hypotheses.push_back(blink::mojom::SpeechRecognitionHypothesis::New(
-      base::UTF8ToUTF16("foo"), 0.5));
+  result->hypotheses.push_back(
+      blink::mojom::SpeechRecognitionHypothesis::New(u"foo", 0.5));
 
   // Check that the protobuf generated the expected result.
   ExpectResultsReceived(results);
@@ -471,8 +471,8 @@ TEST_F(SpeechRecognitionEngineTest, SendPreamble) {
   results.push_back(blink::mojom::SpeechRecognitionResult::New());
   blink::mojom::SpeechRecognitionResultPtr& result = results.back();
   result->is_provisional = false;
-  result->hypotheses.push_back(blink::mojom::SpeechRecognitionHypothesis::New(
-      base::UTF8ToUTF16("hypothesis 1"), 0.1F));
+  result->hypotheses.push_back(
+      blink::mojom::SpeechRecognitionHypothesis::New(u"hypothesis 1", 0.1F));
 
   ProvideMockResultDownstream(result);
   ExpectResultsReceived(results);

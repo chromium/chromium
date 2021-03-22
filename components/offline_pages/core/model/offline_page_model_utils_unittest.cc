@@ -67,7 +67,7 @@ const std::vector<GenerateUniqueFilenameTestCase>& UniqueFilenameCases() {
       {base::ASCIIToUTF16("wikipedia.org"),
        GURL("http://www.wikipedia.org/Main_Page"),
        FILE_PATH_LITERAL("wikipedia.org (1).mhtml")},
-      {base::UTF8ToUTF16("bücher.com"), GURL("http://xn--bcher-kva.com"),
+      {u"bücher.com", GURL("http://xn--bcher-kva.com"),
        FILE_PATH_LITERAL("bücher.com.mhtml")},
       {base::ASCIIToUTF16("http://foo.com/path/title.html"),
        GURL("http://foo.com"),

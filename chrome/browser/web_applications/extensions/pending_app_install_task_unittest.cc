@@ -1006,7 +1006,7 @@ TEST_F(PendingAppInstallTaskTest, InstallWithWebAppInfoSucceeds) {
     auto info = std::make_unique<WebApplicationInfo>();
     info->start_url = WebAppUrl();
     info->scope = WebAppUrl().GetWithoutFilename();
-    info->title = base::UTF8ToUTF16("Foo Web App");
+    info->title = u"Foo Web App";
     return info;
   });
 
@@ -1056,7 +1056,7 @@ TEST_F(PendingAppInstallTaskTest, InstallWithWebAppInfoFails) {
     auto info = std::make_unique<WebApplicationInfo>();
     info->start_url = WebAppUrl();
     info->scope = WebAppUrl().GetWithoutFilename();
-    info->title = base::UTF8ToUTF16("Foo Web App");
+    info->title = u"Foo Web App";
     return info;
   });
 

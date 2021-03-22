@@ -2324,7 +2324,7 @@ TEST_F(RenderViewImplTest, GetCompositionCharacterBoundsTest) {
   widget_input_handler->SetFocus(true);
 
   // ASCII composition
-  const std::u16string ascii_composition = base::UTF8ToUTF16("aiueo");
+  const std::u16string ascii_composition = u"aiueo";
   widget_input_handler->ImeSetComposition(
       ascii_composition, empty_ime_text_span, gfx::Range::InvalidRange(), 0, 0);
   bounds = LastCompositionBounds();
@@ -2367,7 +2367,7 @@ TEST_F(RenderViewImplTest, GetCompositionCharacterBoundsTest) {
   // Mixed string.
   const std::u16string surrogate_pair_mixed_composition =
       surrogate_pair_char + base::UTF8ToUTF16("\xE3\x81\x82") +
-      surrogate_pair_char + base::UTF8ToUTF16("b") + surrogate_pair_char;
+      surrogate_pair_char + u"b" + surrogate_pair_char;
   const size_t utf16_length = 8UL;
   const bool is_surrogate_pair_empty_rect[8] = {false, true,  false, false,
                                                 true,  false, false, true};
@@ -3051,7 +3051,7 @@ TEST_F(RenderViewImplAddMessageToConsoleTest,
   message_mock_frame_host()->SetDidAddMessageToConsoleCallback(
       base::BindOnce(base::BindLambdaForTesting([&](const std::u16string& msg) {
         // Makes sure this happens during the beforeunload handler.
-        EXPECT_EQ(base::UTF8ToUTF16("OnBeforeUnload called"), msg);
+        EXPECT_EQ(u"OnBeforeUnload called", msg);
 
         // Unloads the main frame.
         static_cast<mojom::Frame*>(frame())->Unload(
@@ -3099,7 +3099,7 @@ class RenderViewImplModalDialogTest : public RenderViewImplTest {
 // Test that invoking one of the modal dialogs doesn't crash.
 TEST_F(RenderViewImplModalDialogTest, ModalDialogs) {
   LoadHTML("<body></body>");
-  std::u16string alert_message = base::UTF8ToUTF16("Please don't crash");
+  std::u16string alert_message = u"Please don't crash";
   EXPECT_CALL(*alert_mock_frame_host(),
               RunModalAlertDialog(alert_message, testing::_))
       .WillOnce(base::test::RunOnceCallback<1>());
@@ -3253,7 +3253,7 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
   widget_input_handler->SetFocus(true);
 
   // ASCII composition
-  const std::u16string ascii_composition = base::UTF8ToUTF16("aiueo");
+  const std::u16string ascii_composition = u"aiueo";
   widget_input_handler->ImeSetComposition(
       ascii_composition, empty_ime_text_span, gfx::Range::InvalidRange(), 0, 0);
   bounds_at_1x = LastCompositionBounds();

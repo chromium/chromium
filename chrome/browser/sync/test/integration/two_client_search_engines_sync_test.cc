@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTestWithVerifier, Duplicates) {
   GetServiceForBrowserContext(0)->Add(builder.Build());
   GetVerifierService()->Add(builder.Build());
 
-  builder.data()->SetKeyword(base::UTF8ToUTF16("test1"));
+  builder.data()->SetKeyword(u"test1");
   builder.data()->sync_guid = "newguid";
   GetServiceForBrowserContext(0)->Add(builder.Build());
   GetVerifierService()->Add(builder.Build());
@@ -163,9 +163,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
   // Change the keyword.
   ASSERT_TRUE(SearchEnginesMatchChecker().Wait());
 
-  EditSearchEngine(/*profile_index=*/0, /*keyword=*/"test0",
-                   base::UTF8ToUTF16("test0"), /*new_keyword=*/"newkeyword",
-                   "http://www.test0.com/");
+  EditSearchEngine(/*profile_index=*/0, /*keyword=*/"test0", u"test0",
+                   /*new_keyword=*/"newkeyword", "http://www.test0.com/");
 
   ASSERT_TRUE(SearchEnginesMatchChecker().Wait());
 }
@@ -183,9 +182,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, E2E_ENABLED(UpdateUrl)) {
   ASSERT_TRUE(SearchEnginesMatchChecker().Wait());
 
   // Change the URL.
-  EditSearchEngine(/*profile_index=*/0, /*keyword=*/"test0",
-                   base::UTF8ToUTF16("test0"), /*new_keyword=*/"test0",
-                   "http://www.wikipedia.org/q=%s");
+  EditSearchEngine(/*profile_index=*/0, /*keyword=*/"test0", u"test0",
+                   /*new_keyword=*/"test0", "http://www.wikipedia.org/q=%s");
 
   ASSERT_TRUE(SearchEnginesMatchChecker().Wait());
 }
@@ -204,8 +202,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest,
   ASSERT_TRUE(SearchEnginesMatchChecker().Wait());
 
   // Change the short name.
-  EditSearchEngine(/*profile_index=*/0, "test0", base::UTF8ToUTF16("New Name"),
-                   "test0", "http://www.test0.com/");
+  EditSearchEngine(/*profile_index=*/0, "test0", u"New Name", "test0",
+                   "http://www.test0.com/");
 
   ASSERT_TRUE(SearchEnginesMatchChecker().Wait());
 }
@@ -222,11 +220,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, ConflictKeyword) {
   AddSearchEngine(/*profile_index=*/0, "test0");
   AddSearchEngine(/*profile_index=*/1, "test1");
   TemplateURLService* service = GetServiceForBrowserContext(1);
-  TemplateURL* turl =
-      service->GetTemplateURLForKeyword(base::UTF8ToUTF16("test1"));
+  TemplateURL* turl = service->GetTemplateURLForKeyword(u"test1");
   EXPECT_TRUE(turl);
-  service->ResetTemplateURL(turl, turl->short_name(),
-                            base::UTF8ToUTF16("test0"), turl->url());
+  service->ResetTemplateURL(turl, turl->short_name(), u"test0", turl->url());
 
   ASSERT_TRUE(AwaitQuiescence());
   ASSERT_TRUE(AllServicesMatch());
@@ -251,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSearchEnginesSyncTest, MergeMultiple) {
   AddSearchEngine(/*profile_index=*/1, "test3");
 
   TemplateURLBuilder builder("test0");
-  builder.data()->SetKeyword(base::UTF8ToUTF16("somethingelse.com"));
+  builder.data()->SetKeyword(u"somethingelse.com");
   builder.data()->SetURL("http://www.somethingelse.com/");
   builder.data()->sync_guid = "somethingelse";
   GetServiceForBrowserContext(1)->Add(builder.Build());

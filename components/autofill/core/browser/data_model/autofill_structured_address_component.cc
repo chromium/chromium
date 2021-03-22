@@ -504,9 +504,8 @@ void AddressComponent::ParseValueAndAssignSubcomponentsByFallbackMethod() {
     return;
 
   // Split the string by spaces.
-  std::vector<std::u16string> space_separated_tokens =
-      base::SplitString(GetValue(), base::UTF8ToUTF16(" "),
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<std::u16string> space_separated_tokens = base::SplitString(
+      GetValue(), u" ", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   auto token_iterator = space_separated_tokens.begin();
   auto subcomponent_types = GetSubcomponentTypes();

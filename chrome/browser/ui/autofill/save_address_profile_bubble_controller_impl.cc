@@ -41,7 +41,7 @@ void SaveAddressProfileBubbleControllerImpl::OfferSave(
 std::u16string SaveAddressProfileBubbleControllerImpl::GetWindowTitle() const {
   // TODO(crbug.com/1167060): Use ineternationalized string upon having final
   // strings.
-  return base::UTF8ToUTF16("Save Address?");
+  return u"Save Address?";
 }
 
 const AutofillProfile&

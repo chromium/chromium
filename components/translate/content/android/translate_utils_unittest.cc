@@ -74,12 +74,9 @@ TEST_F(TranslateUtilsTest, GetJavaContentLangaugesEmpty) {
 // names).
 TEST_F(TranslateUtilsTest, GetJavaLangauges) {
   std::vector<std::pair<std::string, std::u16string>> translate_languages = {
-      {"en", base::UTF8ToUTF16("English")},
-      {"de", base::UTF8ToUTF16("German")},
-      {"pl", base::UTF8ToUTF16("Polish")}};
-  std::vector<std::u16string> expectedLanguageNames = {
-      base::UTF8ToUTF16("English"), base::UTF8ToUTF16("German"),
-      base::UTF8ToUTF16("Polish")};
+      {"en", u"English"}, {"de", u"German"}, {"pl", u"Polish"}};
+  std::vector<std::u16string> expectedLanguageNames = {u"English", u"German",
+                                                       u"Polish"};
   std::vector<int> expectedHashCodes = {metrics::MetricsLog::Hash("en"),
                                         metrics::MetricsLog::Hash("de"),
                                         metrics::MetricsLog::Hash("pl")};

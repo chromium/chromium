@@ -1241,7 +1241,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, NoDelay) {
   ASSERT_TRUE(
       ContentAnalysisDelegate::IsEnabled(profile(), url, &data, FILE_ATTACHED));
 
-  data.text.emplace_back(base::UTF8ToUTF16("dlp_text"));
+  data.text.emplace_back(u"dlp_text");
   CreateFilesForTest({FILE_PATH_LITERAL("foo_fail_malware_0.doc"),
                       FILE_PATH_LITERAL("foo_fail_malware_1.doc"),
                       FILE_PATH_LITERAL("foo_fail_malware_2.doc"),

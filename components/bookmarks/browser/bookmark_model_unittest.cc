@@ -789,7 +789,7 @@ TEST_F(BookmarkModelTest, SetFolderTitle) {
   const BookmarkNode* node = model_->AddURL(folder, 0, title, url);
   ClearCounts();
 
-  model_->SetTitle(folder, base::UTF8ToUTF16("golder"));
+  model_->SetTitle(folder, u"golder");
 
   // Should not change the hierarchy.
   EXPECT_EQ(root->children().size(), 1u);

@@ -123,7 +123,7 @@ std::u16string ScreenLayoutObserverTest::GetMirroringDisplayNames() {
   std::u16string display_names;
   for (auto& id : display_manager()->GetMirroringDestinationDisplayIdList()) {
     if (!display_names.empty())
-      display_names.append(base::UTF8ToUTF16(","));
+      display_names.append(u",");
     display_names.append(
         base::UTF8ToUTF16(display_manager()->GetDisplayNameForId(id)));
   }
@@ -377,20 +377,20 @@ TEST_F(ScreenLayoutObserverTest, ZoomingInUnifiedModeNotification) {
   CloseNotification();
   int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
   EXPECT_TRUE(display_manager()->ZoomDisplay(display_id, false /* up */));
-  EXPECT_EQ(l10n_util::GetStringFUTF16(
-                IDS_ASH_STATUS_TRAY_DISPLAY_RESOLUTION_CHANGED,
-                GetUnifiedDisplayName(), base::UTF8ToUTF16("400x200")),
-            GetDisplayNotificationAdditionalText());
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_RESOLUTION_CHANGED,
+                                 GetUnifiedDisplayName(), u"400x200"),
+      GetDisplayNotificationAdditionalText());
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_DISPLAY_RESOLUTION_CHANGED_TITLE),
             GetDisplayNotificationText());
 
   CloseNotification();
   EXPECT_TRUE(display_manager()->ZoomDisplay(display_id, true /* up */));
-  EXPECT_EQ(l10n_util::GetStringFUTF16(
-                IDS_ASH_STATUS_TRAY_DISPLAY_RESOLUTION_CHANGED,
-                GetUnifiedDisplayName(), base::UTF8ToUTF16("800x400")),
-            GetDisplayNotificationAdditionalText());
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_RESOLUTION_CHANGED,
+                                 GetUnifiedDisplayName(), u"800x400"),
+      GetDisplayNotificationAdditionalText());
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_DISPLAY_RESOLUTION_CHANGED_TITLE),
             GetDisplayNotificationText());
@@ -426,8 +426,7 @@ TEST_F(ScreenLayoutObserverTest, DisplayConfigurationChangedTwice) {
   UpdateDisplay("400x400");
   EXPECT_TRUE(base::StartsWith(
       GetDisplayNotificationText(),
-      l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_REMOVED,
-                                 base::UTF8ToUTF16("")),
+      l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_REMOVED, u""),
       base::CompareCase::SENSITIVE));
 }
 
@@ -530,8 +529,7 @@ TEST_F(ScreenLayoutObserverTest, AddingRemovingDisplayExtendedModeMessage) {
   UpdateDisplay("400x400");
   EXPECT_TRUE(base::StartsWith(
       GetDisplayNotificationText(),
-      l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_REMOVED,
-                                 base::UTF8ToUTF16("")),
+      l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_REMOVED, u""),
       base::CompareCase::SENSITIVE));
 }
 

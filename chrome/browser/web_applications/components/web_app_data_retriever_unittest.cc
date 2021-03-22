@@ -243,7 +243,7 @@ TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_TitleAbsentFromRenderer) {
   web_contents_tester()->SetTitle(web_contents_title);
 
   WebApplicationInfo original_web_app_info;
-  original_web_app_info.title = base::UTF8ToUTF16("");
+  original_web_app_info.title = u"";
 
   SetRendererWebApplicationInfo(original_web_app_info);
 
@@ -266,10 +266,10 @@ TEST_F(WebAppDataRetrieverTest,
 
   web_contents_tester()->NavigateAndCommit(FooUrl());
 
-  web_contents_tester()->SetTitle(base::UTF8ToUTF16(""));
+  web_contents_tester()->SetTitle(u"");
 
   WebApplicationInfo original_web_app_info;
-  original_web_app_info.title = base::UTF8ToUTF16("");
+  original_web_app_info.title = u"";
 
   SetRendererWebApplicationInfo(original_web_app_info);
 

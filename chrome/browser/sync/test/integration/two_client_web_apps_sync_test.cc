@@ -69,8 +69,8 @@ class TwoClientWebAppsSyncTest : public SyncTest {
 
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, Basic) {
   WebApplicationInfo info;
-  info.title = base::UTF8ToUTF16("Test name");
-  info.description = base::UTF8ToUTF16("Test description");
+  info.title = u"Test name";
+  info.description = u"Test description";
   info.start_url = GURL("http://www.chromium.org/path");
   info.scope = GURL("http://www.chromium.org/");
   AppId app_id = apps_helper::InstallWebApp(GetProfile(0), info);
@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, Basic) {
 
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, Minimal) {
   WebApplicationInfo info;
-  info.title = base::UTF8ToUTF16("Test name");
+  info.title = u"Test name";
   info.start_url = GURL("http://www.chromium.org/");
   AppId app_id = apps_helper::InstallWebApp(GetProfile(0), info);
 
@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, Minimal) {
 
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, ThemeColor) {
   WebApplicationInfo info;
-  info.title = base::UTF8ToUTF16("Test name");
+  info.title = u"Test name";
   info.start_url = GURL("http://www.chromium.org/");
   info.theme_color = SK_ColorBLUE;
   AppId app_id = apps_helper::InstallWebApp(GetProfile(0), info);
@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, ThemeColor) {
 
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, IsLocallyInstalled) {
   WebApplicationInfo info;
-  info.title = base::UTF8ToUTF16("Test name");
+  info.title = u"Test name";
   info.start_url = GURL("http://www.chromium.org/");
   AppId app_id = apps_helper::InstallWebApp(GetProfile(0), info);
   EXPECT_TRUE(GetRegistrar(GetProfile(0)).IsLocallyInstalled(app_id));
@@ -140,8 +140,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, AppFieldsChangeDoesNotSync) {
   const AppRegistrar& registrar1 = GetRegistrar(GetProfile(1));
 
   WebApplicationInfo info_a;
-  info_a.title = base::UTF8ToUTF16("Test name A");
-  info_a.description = base::UTF8ToUTF16("Description A");
+  info_a.title = u"Test name A";
+  info_a.description = u"Description A";
   info_a.start_url = GURL("http://www.chromium.org/path/to/start_url");
   info_a.scope = GURL("http://www.chromium.org/path/to/");
   info_a.theme_color = SK_ColorBLUE;
@@ -159,8 +159,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, AppFieldsChangeDoesNotSync) {
   // Reinstall same app in Profile 0 with a different metadata aside from the
   // name and start_url.
   WebApplicationInfo info_b;
-  info_b.title = base::UTF8ToUTF16("Test name B");
-  info_b.description = base::UTF8ToUTF16("Description B");
+  info_b.title = u"Test name B";
+  info_b.description = u"Description B";
   info_b.start_url = GURL("http://www.chromium.org/path/to/start_url");
   info_b.scope = GURL("http://www.chromium.org/path/to/");
   info_b.theme_color = SK_ColorRED;
@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, AppFieldsChangeDoesNotSync) {
   // Install a separate app just to have something to await on to ensure the
   // sync has propagated to the other profile.
   WebApplicationInfo infoC;
-  infoC.title = base::UTF8ToUTF16("Different test name");
+  infoC.title = u"Different test name";
   infoC.start_url = GURL("http://www.notchromium.org/");
   AppId app_id_c = apps_helper::InstallWebApp(GetProfile(0), infoC);
   EXPECT_NE(app_id_a, app_id_c);
@@ -243,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingStartUrlFallback) {
 
   // Install app with name.
   WebApplicationInfo info;
-  info.title = base::UTF8ToUTF16("Test app");
+  info.title = u"Test app";
   info.start_url =
       embedded_test_server()->GetURL("/web_apps/different_start_url.html");
   AppId app_id = apps_helper::InstallWebApp(GetProfile(0), info);
@@ -272,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingNameFallback) {
 
   // Install app with name.
   WebApplicationInfo info;
-  info.title = base::UTF8ToUTF16("Correct App Name");
+  info.title = u"Correct App Name";
   info.start_url =
       embedded_test_server()->GetURL("/web_apps/bad_title_only.html");
   AppId app_id = apps_helper::InstallWebApp(GetProfile(0), info);
@@ -298,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncWithoutUsingNameFallback) {
 
   // Install app with name.
   WebApplicationInfo info;
-  info.title = base::UTF8ToUTF16("Incorrect App Name");
+  info.title = u"Incorrect App Name";
   info.start_url = embedded_test_server()->GetURL("/web_apps/basic.html");
   AppId app_id = apps_helper::InstallWebApp(GetProfile(0), info);
   EXPECT_EQ(GetRegistrar(source_profile).GetAppShortName(app_id),
@@ -327,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingIconUrlFallback) {
 
   // Install app with name.
   WebApplicationInfo info;
-  info.title = base::UTF8ToUTF16("Blue icon");
+  info.title = u"Blue icon";
   info.start_url = GURL("https://does-not-exist.org");
   info.theme_color = SK_ColorBLUE;
   info.scope = GURL("https://does-not-exist.org/scope");

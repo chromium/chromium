@@ -490,16 +490,15 @@ TEST_F(OmniboxEditModelTest, ConsumeCtrlKeyOnCtrlAction) {
 
 TEST_F(OmniboxEditModelTest, KeywordModePreservesInlineAutocompleteText) {
   // Set the edit model into an inline autocompletion state.
-  view()->SetUserText(base::UTF8ToUTF16("user"));
-  view()->OnInlineAutocompleteTextMaybeChanged(base::UTF8ToUTF16("user text"),
-                                               {{9, 4}}, 4);
+  view()->SetUserText(u"user");
+  view()->OnInlineAutocompleteTextMaybeChanged(u"user text", {{9, 4}}, 4);
 
   // Entering keyword search mode should preserve the full display text as the
   // user text, and select all.
   model()->EnterKeywordModeForDefaultSearchProvider(
       OmniboxEventProto::KEYBOARD_SHORTCUT);
-  EXPECT_EQ(base::UTF8ToUTF16("user text"), model()->GetUserTextForTesting());
-  EXPECT_EQ(base::UTF8ToUTF16("user text"), view()->GetText());
+  EXPECT_EQ(u"user text", model()->GetUserTextForTesting());
+  EXPECT_EQ(u"user text", view()->GetText());
   EXPECT_TRUE(view()->IsSelectAll());
 
   // Deleting the user text (exiting keyword) mode should clear everything.
@@ -516,11 +515,11 @@ TEST_F(OmniboxEditModelTest, KeywordModePreservesInlineAutocompleteText) {
 
 TEST_F(OmniboxEditModelTest, KeywordModePreservesTemporaryText) {
   // Set the edit model into a temporary text state.
-  view()->SetUserText(base::UTF8ToUTF16("user text"));
+  view()->SetUserText(u"user text");
   GURL destination_url("http://example.com");
 
   // OnPopupDataChanged() is called when the user focuses a suggestion.
-  model()->OnPopupDataChanged(base::UTF8ToUTF16("match text"),
+  model()->OnPopupDataChanged(u"match text",
                               /*is_temporary_text=*/true, std::u16string(),
                               std::u16string(), {}, std::u16string(), false,
                               std::u16string());
@@ -529,17 +528,16 @@ TEST_F(OmniboxEditModelTest, KeywordModePreservesTemporaryText) {
   // text, and select all.
   model()->EnterKeywordModeForDefaultSearchProvider(
       OmniboxEventProto::KEYBOARD_SHORTCUT);
-  EXPECT_EQ(base::UTF8ToUTF16("match text"), model()->GetUserTextForTesting());
-  EXPECT_EQ(base::UTF8ToUTF16("match text"), view()->GetText());
+  EXPECT_EQ(u"match text", model()->GetUserTextForTesting());
+  EXPECT_EQ(u"match text", view()->GetText());
   EXPECT_TRUE(view()->IsSelectAll());
 }
 
 TEST_F(OmniboxEditModelTest, CtrlEnterNavigatesToDesiredTLD) {
   // Set the edit model into an inline autocomplete state.
-  view()->SetUserText(base::UTF8ToUTF16("foo"));
+  view()->SetUserText(u"foo");
   model()->StartAutocomplete(false, false);
-  view()->OnInlineAutocompleteTextMaybeChanged(base::UTF8ToUTF16("foobar"),
-                                               {{6, 3}}, 3);
+  view()->OnInlineAutocompleteTextMaybeChanged(u"foobar", {{6, 3}}, 3);
 
   model()->OnControlKeyChanged(true);
   model()->AcceptInput(WindowOpenDisposition::UNKNOWN);
@@ -550,7 +548,7 @@ TEST_F(OmniboxEditModelTest, CtrlEnterNavigatesToDesiredTLD) {
 
 TEST_F(OmniboxEditModelTest, CtrlEnterNavigatesToDesiredTLDTemporaryText) {
   // But if it's the temporary text, the View text should be used.
-  view()->SetUserText(base::UTF8ToUTF16("foo"));
+  view()->SetUserText(u"foo");
   model()->StartAutocomplete(false, false);
   model()->OnPopupDataChanged(base::ASCIIToUTF16("foobar"),
                               /*is_temporary_text=*/true, std::u16string(),

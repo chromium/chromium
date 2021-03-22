@@ -62,9 +62,8 @@ class UNNotificationPlatformBridgeMacTest : public testing::Test {
     GURL url("https://gmail.com");
 
     Notification notification(
-        message_center::NOTIFICATION_TYPE_SIMPLE, notificationId,
-        base::UTF8ToUTF16("Title"), base::UTF8ToUTF16("Context"), gfx::Image(),
-        base::UTF8ToUTF16("Notifier's Name"), url,
+        message_center::NOTIFICATION_TYPE_SIMPLE, notificationId, u"Title",
+        u"Context", gfx::Image(), u"Notifier's Name", url,
         message_center::NotifierId(url), message_center::RichNotificationData(),
         base::MakeRefCounted<message_center::NotificationDelegate>());
 
@@ -524,8 +523,8 @@ TEST_F(UNNotificationPlatformBridgeMacTest, TestNotificationWithButtons) {
     notification.set_settings_button_handler(
         message_center::SettingsButtonHandler::DELEGATE);
     std::vector<message_center::ButtonInfo> buttons = {
-        message_center::ButtonInfo(base::UTF8ToUTF16("Button 1")),
-        message_center::ButtonInfo(base::UTF8ToUTF16("Button 2"))};
+        message_center::ButtonInfo(u"Button 1"),
+        message_center::ButtonInfo(u"Button 2")};
     notification.set_buttons(buttons);
 
     bridge_->Display(NotificationHandler::Type::WEB_PERSISTENT, profile_,

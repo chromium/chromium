@@ -19,9 +19,9 @@ namespace {
 
 const ClientId kClientId("1234", kSuggestedArticlesNamespace);
 const base::FilePath kFilePath("/");
-const std::u16string kExampleHost = base::UTF8ToUTF16("www.example.com");
-const std::u16string kExampleHost2 = base::UTF8ToUTF16("www.example2.com");
-const std::u16string kExampleHost3 = base::UTF8ToUTF16("www.example3.com");
+const std::u16string kExampleHost = u"www.example.com";
+const std::u16string kExampleHost2 = u"www.example2.com";
+const std::u16string kExampleHost3 = u"www.example3.com";
 
 OfflinePageItem ItemCreatedOn(std::u16string host, base::Time creation_time) {
   static int offline_id = 0;

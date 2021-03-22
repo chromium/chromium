@@ -129,10 +129,10 @@ std::u16string BuildSnippet(const std::string& document,
   for (match = snippet.matches().begin();
        match != snippet.matches().end(); ++match) {
     star_snippet += snippet.text().substr(pos, match->first - pos);
-    star_snippet += base::UTF8ToUTF16("**");
+    star_snippet += u"**";
     star_snippet += snippet.text().substr(match->first,
                                           match->second - match->first);
-    star_snippet += base::UTF8ToUTF16("**");
+    star_snippet += u"**";
     pos = match->second;
   }
   star_snippet += snippet.text().substr(pos);

@@ -38,10 +38,10 @@ class UnifiedMessageCenterBubbleTest : public AshTestBase {
   std::string AddNotification() {
     std::string id = base::NumberToString(id_++);
     MessageCenter::Get()->AddNotification(std::make_unique<Notification>(
-        message_center::NOTIFICATION_TYPE_BASE_FORMAT, id,
-        base::UTF8ToUTF16("test title"), base::UTF8ToUTF16("test message"),
-        gfx::Image(), std::u16string() /* display_source */, GURL(),
-        message_center::NotifierId(), message_center::RichNotificationData(),
+        message_center::NOTIFICATION_TYPE_BASE_FORMAT, id, u"test title",
+        u"test message", gfx::Image(), std::u16string() /* display_source */,
+        GURL(), message_center::NotifierId(),
+        message_center::RichNotificationData(),
         new message_center::NotificationDelegate()));
     return id;
   }

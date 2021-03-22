@@ -119,7 +119,7 @@ void SpellCheckHostChromeImplWinBrowserTest::RunSpellCheckReturnMessageTest() {
   RunUntilResultReceived();
 
   spell_check_host_->RequestTextCheck(
-      base::UTF8ToUTF16("zz."),
+      u"zz.",
       /*route_id=*/123,
       base::BindOnce(
           &SpellCheckHostChromeImplWinBrowserTest::OnSpellcheckResult,

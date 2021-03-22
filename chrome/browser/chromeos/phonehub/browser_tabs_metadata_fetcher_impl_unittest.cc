@@ -178,16 +178,16 @@ class BrowserTabsMetadataFetcherImplTest : public testing::Test {
 };
 
 TEST_F(BrowserTabsMetadataFetcherImplTest, NewFetchDuringOldFetchInProgress) {
-  const std::u16string kTitleA = base::UTF8ToUTF16("A");
+  const std::u16string kTitleA = u"A";
   const GURL kUrlA = GURL("http://a.com");
 
-  const std::u16string kTitleB = base::UTF8ToUTF16("B");
+  const std::u16string kTitleB = u"B";
   const GURL kUrlB = GURL("http://b.com");
 
-  const std::u16string kTitleC = base::UTF8ToUTF16("C");
+  const std::u16string kTitleC = u"C";
   const GURL kUrlC = GURL("http://c.com");
 
-  const std::u16string kTitleD = base::UTF8ToUTF16("D");
+  const std::u16string kTitleD = u"D";
   const GURL kUrlD = GURL("http://d.com");
 
   auto synced_session_window =
@@ -243,10 +243,10 @@ TEST_F(BrowserTabsMetadataFetcherImplTest, NoTabsOpen) {
 }
 
 TEST_F(BrowserTabsMetadataFetcherImplTest, BelowMaximumNumberOfTabs) {
-  const std::u16string kTitleC = base::UTF8ToUTF16("C");
+  const std::u16string kTitleC = u"C";
   const GURL kUrlC = GURL("http://c.com");
 
-  const std::u16string kTitleD = base::UTF8ToUTF16("D");
+  const std::u16string kTitleD = u"D";
   const GURL kUrlD = GURL("http://d.com");
 
   auto synced_session_window =
@@ -267,22 +267,22 @@ TEST_F(BrowserTabsMetadataFetcherImplTest, BelowMaximumNumberOfTabs) {
 }
 
 TEST_F(BrowserTabsMetadataFetcherImplTest, ExceedMaximumNumberOfTabs) {
-  const std::u16string kTitleA = base::UTF8ToUTF16("A");
+  const std::u16string kTitleA = u"A";
   const GURL kUrlA = GURL("http://a.com");
 
-  const std::u16string kTitleB = base::UTF8ToUTF16("B");
+  const std::u16string kTitleB = u"B";
   const GURL kUrlB = GURL("http://b.com");
 
-  const std::u16string kTitleC = base::UTF8ToUTF16("C");
+  const std::u16string kTitleC = u"C";
   const GURL kUrlC = GURL("http://c.com");
 
-  const std::u16string kTitleD = base::UTF8ToUTF16("D");
+  const std::u16string kTitleD = u"D";
   const GURL kUrlD = GURL("http://d.com");
 
-  const std::u16string kTitleE = base::UTF8ToUTF16("E");
+  const std::u16string kTitleE = u"E";
   const GURL kUrlE = GURL(chrome::kChromeUINewTabURL);
 
-  const std::u16string kTitleF = base::UTF8ToUTF16("F");
+  const std::u16string kTitleF = u"F";
   const GURL kUrlF = GURL("content://image.png");
 
   auto synced_session_window =
@@ -311,16 +311,16 @@ TEST_F(BrowserTabsMetadataFetcherImplTest, ExceedMaximumNumberOfTabs) {
 }
 
 TEST_F(BrowserTabsMetadataFetcherImplTest, MultipleWindows) {
-  const std::u16string kTitleB = base::UTF8ToUTF16("B");
+  const std::u16string kTitleB = u"B";
   const GURL kUrlB = GURL("http://b.com");
 
-  const std::u16string kTitleC = base::UTF8ToUTF16("C");
+  const std::u16string kTitleC = u"C";
   const GURL kUrlC = GURL("http://c.com");
 
-  const std::u16string kTitleD = base::UTF8ToUTF16("D");
+  const std::u16string kTitleD = u"D";
   const GURL kUrlD = GURL("http://d.com");
 
-  const std::u16string kTitleE = base::UTF8ToUTF16("E");
+  const std::u16string kTitleE = u"E";
   const GURL kUrlE = GURL("http://e.com");
 
   auto synced_session_window_one =

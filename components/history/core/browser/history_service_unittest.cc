@@ -467,7 +467,7 @@ TEST_F(HistoryServiceTest, SetTitle) {
       existing_url, base::Time::Now(), history::SOURCE_BROWSED);
 
   // Set some title.
-  const std::u16string existing_title = base::UTF8ToUTF16("Google");
+  const std::u16string existing_title = u"Google";
   history_service_->SetPageTitle(existing_url, existing_title);
 
   // Make sure the title got set.
@@ -476,7 +476,7 @@ TEST_F(HistoryServiceTest, SetTitle) {
 
   // set a title on a nonexistent page
   const GURL nonexistent_url("http://news.google.com/");
-  const std::u16string nonexistent_title = base::UTF8ToUTF16("Google News");
+  const std::u16string nonexistent_title = u"Google News";
   history_service_->SetPageTitle(nonexistent_url, nonexistent_title);
 
   // Make sure nothing got written.

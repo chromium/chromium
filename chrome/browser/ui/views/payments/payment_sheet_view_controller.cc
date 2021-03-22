@@ -893,8 +893,8 @@ std::unique_ptr<views::View> PaymentSheetViewController::CreateDataSourceRow() {
   // TODO(pkasting): Remove these BEGIN/END_LINK tags and use a substitution for
   // "Settings", allowing this code to use the offset-returning versions of the
   // l10n getters.
-  std::u16string begin_tag = base::UTF8ToUTF16("BEGIN_LINK");
-  std::u16string end_tag = base::UTF8ToUTF16("END_LINK");
+  std::u16string begin_tag = u"BEGIN_LINK";
+  std::u16string end_tag = u"END_LINK";
   size_t link_begin = data_source.find(begin_tag);
   DCHECK(link_begin != std::u16string::npos);
 

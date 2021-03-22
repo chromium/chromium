@@ -911,11 +911,11 @@ TEST_F(OmniboxViewViewsTest, RevertOnEscape) {
 }
 
 TEST_F(OmniboxViewViewsTest, BackspaceExitsKeywordMode) {
-  omnibox_view()->SetUserText(base::UTF8ToUTF16("user text"));
+  omnibox_view()->SetUserText(u"user text");
   omnibox_view()->model()->EnterKeywordModeForDefaultSearchProvider(
       OmniboxEventProto::KEYBOARD_SHORTCUT);
 
-  ASSERT_EQ(base::UTF8ToUTF16("user text"), omnibox_view()->GetText());
+  ASSERT_EQ(u"user text", omnibox_view()->GetText());
   ASSERT_TRUE(omnibox_view()->IsSelectAll());
   ASSERT_FALSE(omnibox_view()->model()->keyword().empty());
 
@@ -1057,8 +1057,7 @@ TEST_F(OmniboxViewViewsTest, SelectAllDuringMouseDown) {
 
 TEST_F(OmniboxViewViewsTest, SetWindowTextAndCaretPos) {
   // googl|e.com
-  omnibox_view()->SetWindowTextAndCaretPos(base::UTF8ToUTF16("google.com"), 5,
-                                           false, false);
+  omnibox_view()->SetWindowTextAndCaretPos(u"google.com", 5, false, false);
   EXPECT_EQ(base::ASCIIToUTF16("google.com"), omnibox_view()->GetText());
   EXPECT_EQ(omnibox_view()->GetRenderText()->GetAllSelections(),
             (std::vector<Range>{{5, 5}}));
@@ -1066,22 +1065,22 @@ TEST_F(OmniboxViewViewsTest, SetWindowTextAndCaretPos) {
 
 TEST_F(OmniboxViewViewsTest, OnInlineAutocompleteTextMaybeChanged) {
   // No selection, google.com|
-  omnibox_view()->OnInlineAutocompleteTextMaybeChanged(
-      base::UTF8ToUTF16("google.com"), {{10, 10}}, 10);
+  omnibox_view()->OnInlineAutocompleteTextMaybeChanged(u"google.com",
+                                                       {{10, 10}}, 10);
   EXPECT_EQ(base::ASCIIToUTF16("google.com"), omnibox_view()->GetText());
   EXPECT_EQ(omnibox_view()->GetRenderText()->GetAllSelections(),
             (std::vector<Range>{{10, 10}}));
 
   // Single selection, gmai[l.com]
-  omnibox_view()->OnInlineAutocompleteTextMaybeChanged(
-      base::UTF8ToUTF16("gmail.com"), {{9, 4}}, 4);
+  omnibox_view()->OnInlineAutocompleteTextMaybeChanged(u"gmail.com", {{9, 4}},
+                                                       4);
   EXPECT_EQ(base::ASCIIToUTF16("gmail.com"), omnibox_view()->GetText());
   EXPECT_EQ(omnibox_view()->GetRenderText()->GetAllSelections(),
             (std::vector<Range>{{9, 4}}));
 
   // Multiselection, [go]ogl[e.com]
-  omnibox_view()->OnInlineAutocompleteTextMaybeChanged(
-      base::UTF8ToUTF16("google.com"), {{10, 5}, {0, 2}}, 3);
+  omnibox_view()->OnInlineAutocompleteTextMaybeChanged(u"google.com",
+                                                       {{10, 5}, {0, 2}}, 3);
   EXPECT_EQ(base::ASCIIToUTF16("google.com"), omnibox_view()->GetText());
   EXPECT_EQ(omnibox_view()->GetRenderText()->GetAllSelections(),
             (std::vector<Range>{{10, 5}, {0, 2}}));
@@ -1862,17 +1861,14 @@ TEST_P(OmniboxViewViewsRevealOnHoverTest, HoverAndExit) {
 TEST_P(OmniboxViewViewsRevealOnHoverTest, HoverAndExitIDN) {
   // The display URL used in simplified domain display tests.
   const std::u16string kSimplifiedDomainDisplayIDNUrl =
-      base::UTF8ToUTF16("https://テスト.住所の例.test/bar");
+      u"https://テスト.住所の例.test/bar";
   const std::u16string kSimplifiedDomainDisplayIDNUrlHostnameAndScheme =
-      base::UTF8ToUTF16("https://テスト.住所の例.test");
+      u"https://テスト.住所の例.test";
   const std::u16string kSimplifiedDomainDisplayIDNUrlSubdomainAndScheme =
-      base::UTF8ToUTF16("https://テスト.");
-  const std::u16string kSimplifiedDomainDisplayIDNUrlSubdomain =
-      base::UTF8ToUTF16("テスト.");
-  const std::u16string kSimplifiedDomainDisplayIDNUrlPath =
-      base::UTF8ToUTF16("/bar");
-  const std::u16string kSimplifiedDomainDisplayIDNUrlScheme =
-      base::UTF8ToUTF16("https://");
+      u"https://テスト.";
+  const std::u16string kSimplifiedDomainDisplayIDNUrlSubdomain = u"テスト.";
+  const std::u16string kSimplifiedDomainDisplayIDNUrlPath = u"/bar";
+  const std::u16string kSimplifiedDomainDisplayIDNUrlScheme = u"https://";
   UpdateDisplayURL(kSimplifiedDomainDisplayIDNUrl);
   // Call OnThemeChanged() to create the animations.
   omnibox_view()->OnThemeChanged();
@@ -1940,19 +1936,18 @@ TEST_P(OmniboxViewViewsRevealOnHoverTest, PrivateRegistry) {
     return;
 
   const std::u16string kSimplifiedDomainDisplayPrivateRegistryUrl =
-      base::UTF8ToUTF16("https://foo.blogspot.com/bar");
+      u"https://foo.blogspot.com/bar";
   const std::u16string
       kSimplifiedDomainDisplayPrivateRegistryUrlHostnameAndScheme =
-          base::UTF8ToUTF16("https://foo.blogspot.com");
+          u"https://foo.blogspot.com";
   const std::u16string
       kSimplifiedDomainDisplayPrivateRegistryUrlSubdomainAndScheme =
-          base::UTF8ToUTF16("https://foo.");
+          u"https://foo.";
   const std::u16string kSimplifiedDomainDisplayPrivateRegistryUrlSubdomain =
-      base::UTF8ToUTF16("foo.");
-  const std::u16string kSimplifiedDomainDisplayPrivateRegistryUrlPath =
-      base::UTF8ToUTF16("/bar");
+      u"foo.";
+  const std::u16string kSimplifiedDomainDisplayPrivateRegistryUrlPath = u"/bar";
   const std::u16string kSimplifiedDomainDisplayPrivateRegistryUrlScheme =
-      base::UTF8ToUTF16("https://");
+      u"https://";
   UpdateDisplayURL(kSimplifiedDomainDisplayPrivateRegistryUrl);
   // Call OnThemeChanged() to create the animations.
   omnibox_view()->OnThemeChanged();
@@ -1971,17 +1966,15 @@ TEST_P(OmniboxViewViewsRevealOnHoverTest, PrivateRegistry) {
 TEST_P(OmniboxViewViewsRevealOnHoverTest, HoverAndExitDomainInPath) {
   // The display URL used in simplified domain display tests.
   const std::u16string kSimplifiedDomainDisplayRepeatedUrl =
-      base::UTF8ToUTF16("https://ex.example.test/example.test");
+      u"https://ex.example.test/example.test";
   const std::u16string kSimplifiedDomainDisplayRepeatedUrlHostnameAndScheme =
-      base::UTF8ToUTF16("https://ex.example.test");
+      u"https://ex.example.test";
   const std::u16string kSimplifiedDomainDisplayRepeatedUrlSubdomainAndScheme =
-      base::UTF8ToUTF16("https://ex.");
-  const std::u16string kSimplifiedDomainDisplayRepeatedUrlSubdomain =
-      base::UTF8ToUTF16("ex.");
+      u"https://ex.";
+  const std::u16string kSimplifiedDomainDisplayRepeatedUrlSubdomain = u"ex.";
   const std::u16string kSimplifiedDomainDisplayRepeatedUrlPath =
-      base::UTF8ToUTF16("/example.test");
-  const std::u16string kSimplifiedDomainDisplayRepeatedUrlScheme =
-      base::UTF8ToUTF16("https://");
+      u"/example.test";
+  const std::u16string kSimplifiedDomainDisplayRepeatedUrlScheme = u"https://";
   location_bar_model()->set_url(GURL(kSimplifiedDomainDisplayRepeatedUrl));
   location_bar_model()->set_url_for_display(
       kSimplifiedDomainDisplayRepeatedUrl);

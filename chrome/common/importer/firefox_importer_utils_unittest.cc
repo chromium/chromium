@@ -250,9 +250,8 @@ TEST(FirefoxImporterUtilsTest, GetFirefoxProfilePath) {
   one_of_profiles_is_not_ascii_named.SetString("Profile0.Name", "namey");
   one_of_profiles_is_not_ascii_named.SetString("Profile0.IsRelative", "0");
   one_of_profiles_is_not_ascii_named.SetString("Profile1.Path",
-                                               UTF8ToUTF16("second.профиль"));
-  one_of_profiles_is_not_ascii_named.SetString("Profile1.Name",
-                                               UTF8ToUTF16("профиль"));
+                                               u"second.профиль");
+  one_of_profiles_is_not_ascii_named.SetString("Profile1.Name", u"профиль");
   one_of_profiles_is_not_ascii_named.SetString("Profile1.IsRelative", "0");
   std::vector<FirefoxDetail> one_of_profiles_is_not_ascii_named_details =
       GetFirefoxDetailsFromDictionary(one_of_profiles_is_not_ascii_named,
@@ -263,5 +262,5 @@ TEST(FirefoxImporterUtilsTest, GetFirefoxProfilePath) {
                                 ASCIIToUTF16("namey")},
                   FirefoxDetail{base::FilePath(FILE_PATH_LITERAL("second."
                                                                  "профиль")),
-                                UTF8ToUTF16("профиль")}));
+                                u"профиль"}));
 }

@@ -77,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(QuickAnswersMenuObserverTest, FeatureIneligible) {
   observer_->OnEligibilityChanged(false);
 
   content::ContextMenuParams params;
-  params.selection_text = base::UTF8ToUTF16("test");
+  params.selection_text = u"test";
 
   ShowMenu(params);
 
@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(QuickAnswersMenuObserverTest, PasswordField) {
   content::ContextMenuParams params;
   params.input_field_type =
       blink::mojom::ContextMenuDataInputFieldType::kPassword;
-  params.selection_text = base::UTF8ToUTF16("test");
+  params.selection_text = u"test";
 
   ShowMenu(params);
 
@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(QuickAnswersMenuObserverTest, QuickAnswersPending) {
   observer_->OnEligibilityChanged(true);
 
   content::ContextMenuParams params;
-  params.selection_text = base::UTF8ToUTF16("test");
+  params.selection_text = u"test";
   ShowMenu(params);
 
   // Quick Answers UI should be pending.

@@ -80,7 +80,7 @@ class SearchResultListViewTest : public views::test::WidgetTest {
     assistant_result->set_result_type(
         ash::AppListSearchResultType::kAssistantText);
     assistant_result->set_display_type(ash::SearchResultDisplayType::kList);
-    assistant_result->set_title(base::UTF8ToUTF16("assistant result"));
+    assistant_result->set_title(u"assistant result");
     results->Add(std::move(assistant_result));
 
     RunPendingMessages();
@@ -189,7 +189,7 @@ TEST_F(SearchResultListViewTest, HidesAssistantResultWhenTilesVisible) {
   // Assistant result should be set and visible.
   for (const auto* view : GetAssistantResultViews()) {
     EXPECT_TRUE(view->GetVisible());
-    EXPECT_EQ(view->result()->title(), base::UTF8ToUTF16("assistant result"));
+    EXPECT_EQ(view->result()->title(), u"assistant result");
   }
 
   // Add a tile result

@@ -1245,7 +1245,7 @@ TEST(ValuesTest, SetStringPath) {
 
   ASSERT_TRUE(root.SetStringPath("foo.bar", StringPiece("rah rah")));
   ASSERT_TRUE(root.SetStringPath("foo.bar", std::string("temp string")));
-  ASSERT_TRUE(root.SetStringPath("foo.bar", UTF8ToUTF16("temp string")));
+  ASSERT_TRUE(root.SetStringPath("foo.bar", u"temp string"));
 
   // Can't change existing non-dictionary keys.
   ASSERT_FALSE(root.SetStringPath("foo.bar.zoo", "ola mundo"));

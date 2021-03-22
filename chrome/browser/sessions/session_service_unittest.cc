@@ -942,7 +942,7 @@ TEST_F(SessionServiceTest, KeepPostDataWithoutPasswords) {
   std::unique_ptr<content::NavigationEntry> entry1 =
       content::NavigationEntry::Create();
   entry1->SetURL(GURL("http://google.com"));
-  entry1->SetTitle(base::UTF8ToUTF16("title1"));
+  entry1->SetTitle(u"title1");
   entry1->SetHasPostData(true);
   entry1->SetPostData(network::ResourceRequestBody::CreateFromBytes(
       post_data.data(), post_data.size()));
@@ -955,7 +955,7 @@ TEST_F(SessionServiceTest, KeepPostDataWithoutPasswords) {
   std::unique_ptr<content::NavigationEntry> entry2 =
       content::NavigationEntry::Create();
   entry2->SetURL(GURL("http://google.com/nopost"));
-  entry2->SetTitle(base::UTF8ToUTF16("title2"));
+  entry2->SetTitle(u"title2");
   entry2->SetHasPostData(false);
   SerializedNavigationEntry nav2 =
       sessions::ContentSerializedNavigationBuilder::FromNavigationEntry(

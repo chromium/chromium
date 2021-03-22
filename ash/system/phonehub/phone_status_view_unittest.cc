@@ -61,9 +61,9 @@ class PhoneStatusViewTest : public AshTestBase,
 };
 
 TEST_F(PhoneStatusViewTest, PhoneStatusLabelsContent) {
-  std::u16string expected_name_text = base::UTF8ToUTF16("Test Phone Name");
-  std::u16string expected_provider_text = base::UTF8ToUTF16("Test Provider");
-  std::u16string expected_battery_text = base::UTF8ToUTF16("10%");
+  std::u16string expected_name_text = u"Test Phone Name";
+  std::u16string expected_provider_text = u"Test Provider";
+  std::u16string expected_battery_text = u"10%";
 
   phone_model_.SetPhoneName(expected_name_text);
 
@@ -81,9 +81,9 @@ TEST_F(PhoneStatusViewTest, PhoneStatusLabelsContent) {
   EXPECT_EQ(expected_name_text, status_view_->phone_name_label_->GetText());
   EXPECT_EQ(expected_battery_text, status_view_->battery_label_->GetText());
 
-  expected_name_text = base::UTF8ToUTF16("New Phone Name");
-  expected_provider_text = base::UTF8ToUTF16("New Provider");
-  expected_battery_text = base::UTF8ToUTF16("20%");
+  expected_name_text = u"New Phone Name";
+  expected_provider_text = u"New Provider";
+  expected_battery_text = u"20%";
 
   phone_model_.SetPhoneName(expected_name_text);
   metadata.mobile_provider = expected_provider_text;

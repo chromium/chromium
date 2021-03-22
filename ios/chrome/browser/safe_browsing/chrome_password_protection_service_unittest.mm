@@ -486,9 +486,8 @@ TEST_F(ChromePasswordProtectionServiceTest,
   domains.push_back("amazon.com");
   service_->set_saved_passwords_matching_domains(domains);
   warning_text = l10n_util::GetStringFUTF16(
-      IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_3_DOMAIN,
-      base::UTF8ToUTF16("amazon.com"), base::UTF8ToUTF16(domains[0]),
-      base::UTF8ToUTF16(domains[1]));
+      IDS_PAGE_INFO_CHECK_PASSWORD_DETAILS_SAVED_3_DOMAIN, u"amazon.com",
+      base::UTF8ToUTF16(domains[0]), base::UTF8ToUTF16(domains[1]));
   EXPECT_EQ(warning_text, service_->GetWarningDetailText(reused_password_type,
                                                          &placeholder_offsets));
 }
@@ -502,7 +501,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
   service_->set_saved_passwords_matching_domains(domains);
   // Default domains should be prioritzed over other domains.
   std::vector<std::u16string> expected_placeholders{
-      base::UTF8ToUTF16("amazon.com"), base::UTF8ToUTF16(domains[0]),
+      u"amazon.com", base::UTF8ToUTF16(domains[0]),
       base::UTF8ToUTF16(domains[1])};
   EXPECT_EQ(expected_placeholders,
             service_->GetPlaceholdersForSavedPasswordWarningText());

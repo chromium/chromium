@@ -184,44 +184,44 @@ TEST_F(BrowserAccessibilityMacTest, TestComputeTextEdit) {
 
   SetRootValue("text");
   AXTextEdit text_edit = [accessibility_ computeTextEdit];
-  EXPECT_EQ(base::UTF8ToUTF16("text"), text_edit.inserted_text);
+  EXPECT_EQ(u"text", text_edit.inserted_text);
   EXPECT_TRUE(text_edit.deleted_text.empty());
 
   SetRootValue("new text");
   text_edit = [accessibility_ computeTextEdit];
-  EXPECT_EQ(base::UTF8ToUTF16("new "), text_edit.inserted_text);
+  EXPECT_EQ(u"new ", text_edit.inserted_text);
   EXPECT_TRUE(text_edit.deleted_text.empty());
 
   SetRootValue("new text hello");
   text_edit = [accessibility_ computeTextEdit];
-  EXPECT_EQ(base::UTF8ToUTF16(" hello"), text_edit.inserted_text);
+  EXPECT_EQ(u" hello", text_edit.inserted_text);
   EXPECT_TRUE(text_edit.deleted_text.empty());
 
   SetRootValue("newer text hello");
   text_edit = [accessibility_ computeTextEdit];
-  EXPECT_EQ(base::UTF8ToUTF16("er"), text_edit.inserted_text);
+  EXPECT_EQ(u"er", text_edit.inserted_text);
   EXPECT_TRUE(text_edit.deleted_text.empty());
 
   // Deletion but no insertion.
 
   SetRootValue("new text hello");
   text_edit = [accessibility_ computeTextEdit];
-  EXPECT_EQ(base::UTF8ToUTF16("er"), text_edit.deleted_text);
+  EXPECT_EQ(u"er", text_edit.deleted_text);
   EXPECT_TRUE(text_edit.inserted_text.empty());
 
   SetRootValue("new text");
   text_edit = [accessibility_ computeTextEdit];
-  EXPECT_EQ(base::UTF8ToUTF16(" hello"), text_edit.deleted_text);
+  EXPECT_EQ(u" hello", text_edit.deleted_text);
   EXPECT_TRUE(text_edit.inserted_text.empty());
 
   SetRootValue("text");
   text_edit = [accessibility_ computeTextEdit];
-  EXPECT_EQ(base::UTF8ToUTF16("new "), text_edit.deleted_text);
+  EXPECT_EQ(u"new ", text_edit.deleted_text);
   EXPECT_TRUE(text_edit.inserted_text.empty());
 
   SetRootValue("");
   text_edit = [accessibility_ computeTextEdit];
-  EXPECT_EQ(base::UTF8ToUTF16("text"), text_edit.deleted_text);
+  EXPECT_EQ(u"text", text_edit.deleted_text);
   EXPECT_TRUE(text_edit.inserted_text.empty());
 
   // Both insertion and deletion.
@@ -230,18 +230,18 @@ TEST_F(BrowserAccessibilityMacTest, TestComputeTextEdit) {
   text_edit = [accessibility_ computeTextEdit];
   SetRootValue("new word hello");
   text_edit = [accessibility_ computeTextEdit];
-  EXPECT_EQ(base::UTF8ToUTF16("text"), text_edit.deleted_text);
-  EXPECT_EQ(base::UTF8ToUTF16("word"), text_edit.inserted_text);
+  EXPECT_EQ(u"text", text_edit.deleted_text);
+  EXPECT_EQ(u"word", text_edit.inserted_text);
 
   SetRootValue("new word there");
   text_edit = [accessibility_ computeTextEdit];
-  EXPECT_EQ(base::UTF8ToUTF16("hello"), text_edit.deleted_text);
-  EXPECT_EQ(base::UTF8ToUTF16("there"), text_edit.inserted_text);
+  EXPECT_EQ(u"hello", text_edit.deleted_text);
+  EXPECT_EQ(u"there", text_edit.inserted_text);
 
   SetRootValue("old word there");
   text_edit = [accessibility_ computeTextEdit];
-  EXPECT_EQ(base::UTF8ToUTF16("new"), text_edit.deleted_text);
-  EXPECT_EQ(base::UTF8ToUTF16("old"), text_edit.inserted_text);
+  EXPECT_EQ(u"new", text_edit.deleted_text);
+  EXPECT_EQ(u"old", text_edit.inserted_text);
 }
 
 // Test Mac-specific table APIs.

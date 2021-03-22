@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
                        StartServiceWorkerAndDispatchMessage) {
   base::RunLoop run_loop;
   blink::TransferableMessage msg;
-  const std::u16string message_data = base::UTF8ToUTF16("testMessage");
+  const std::u16string message_data = u"testMessage";
 
   WriteFile(FILE_PATH_LITERAL("sw.js"), "self.onfetch = function(e) {};");
   WriteFile(FILE_PATH_LITERAL("test.html"), kInstallAndWaitForActivatedPage);

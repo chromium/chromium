@@ -91,12 +91,12 @@ TEST_F(DisplayUtilTest, RotatedDisplay) {
 
 TEST_F(DisplayUtilTest, ConvertRefreshRateToString16) {
   // Decimal numbers are rounded to two digits.
-  EXPECT_EQ(base::UTF8ToUTF16("65.98"), ConvertRefreshRateToString16(65.98379));
-  EXPECT_EQ(base::UTF8ToUTF16("65.99"), ConvertRefreshRateToString16(65.98779));
+  EXPECT_EQ(u"65.98", ConvertRefreshRateToString16(65.98379));
+  EXPECT_EQ(u"65.99", ConvertRefreshRateToString16(65.98779));
 
   // Mantissa is removed for whole numbers.
-  EXPECT_EQ(base::UTF8ToUTF16("58"), ConvertRefreshRateToString16(58.00000));
-  EXPECT_EQ(base::UTF8ToUTF16("58"), ConvertRefreshRateToString16(57.99999));
+  EXPECT_EQ(u"58", ConvertRefreshRateToString16(58.00000));
+  EXPECT_EQ(u"58", ConvertRefreshRateToString16(57.99999));
 }
 
 }  // namespace ash

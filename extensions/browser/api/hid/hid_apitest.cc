@@ -68,7 +68,7 @@ class TestDevicePermissionsPrompt
     } else {
       for (size_t i = 0; i < prompt()->GetDeviceCount(); ++i) {
         // Always choose the device whose serial number is "A".
-        if (prompt()->GetDeviceSerialNumber(i) == base::UTF8ToUTF16("A")) {
+        if (prompt()->GetDeviceSerialNumber(i) == u"A") {
           prompt()->GrantDevicePermission(i);
           prompt()->Dismissed();
           return;

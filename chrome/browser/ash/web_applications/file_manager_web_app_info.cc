@@ -19,7 +19,7 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForFileManager() {
   info->start_url = GURL(chromeos::file_manager::kChromeUIFileManagerURL);
   info->scope = GURL(chromeos::file_manager::kChromeUIFileManagerURL);
   // TODO(majewski): Fetch from a resource.
-  info->title = base::UTF8ToUTF16("File Manager");
+  info->title = u"File Manager";
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url, {{"icon192.png", 192, IDR_FILE_MANAGER_SWA_ICON_192}},
       *info);

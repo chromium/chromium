@@ -97,8 +97,7 @@ void PasswordManagerSigninInterceptTestHelper::SetupProfilesForInterception(
   const base::FilePath profile_path =
       profile_manager->GenerateNextProfileDirectoryPath();
   profile_storage->AddProfile(
-      profile_path, base::UTF8ToUTF16("TestProfileName"), kGaiaId,
-      base::UTF8ToUTF16(kGaiaEmail),
+      profile_path, u"TestProfileName", kGaiaId, base::UTF8ToUTF16(kGaiaEmail),
       /*is_consented_primary_account=*/false, /*icon_index=*/0,
       /*supervised_user_id=*/std::string(), EmptyAccountId());
 

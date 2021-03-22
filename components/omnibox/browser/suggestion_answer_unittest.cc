@@ -22,7 +22,7 @@ bool ParseAnswer(const std::string& answer_json, SuggestionAnswer* answer) {
 
   // ParseAnswer previously did not change the default answer type of -1, so
   // here we keep the same behavior by explicitly supplying default value.
-  return SuggestionAnswer::ParseAnswer(*value, base::UTF8ToUTF16("-1"), answer);
+  return SuggestionAnswer::ParseAnswer(*value, u"-1", answer);
 }
 
 }  // namespace
@@ -79,7 +79,7 @@ TEST(SuggestionAnswerTest, DifferentValuesAreUnequal) {
   // Same but with different text for one of the text fields.
   answer2 = answer1;
   EXPECT_TRUE(answer1.Equals(answer2));
-  answer2.first_line_.text_fields_[0].text_ = base::UTF8ToUTF16("some text");
+  answer2.first_line_.text_fields_[0].text_ = u"some text";
   EXPECT_FALSE(answer1.Equals(answer2));
 
   // Same but with a new URL on the second line.
@@ -222,9 +222,9 @@ TEST(SuggestionAnswerTest, ValidPropertyValues) {
 
   const SuggestionAnswer::ImageLine& first_line = answer.first_line();
   EXPECT_EQ(2U, first_line.text_fields().size());
-  EXPECT_EQ(base::UTF8ToUTF16("text"), first_line.text_fields()[0].text());
+  EXPECT_EQ(u"text", first_line.text_fields()[0].text());
   EXPECT_EQ(8, first_line.text_fields()[0].type());
-  EXPECT_EQ(base::UTF8ToUTF16("moar text"), first_line.text_fields()[1].text());
+  EXPECT_EQ(u"moar text", first_line.text_fields()[1].text());
   EXPECT_EQ(0, first_line.text_fields()[1].type());
   EXPECT_FALSE(first_line.text_fields()[1].has_num_lines());
   EXPECT_EQ(1, first_line.num_text_lines());
@@ -237,21 +237,18 @@ TEST(SuggestionAnswerTest, ValidPropertyValues) {
 
   const SuggestionAnswer::ImageLine& second_line = answer.second_line();
   EXPECT_EQ(1U, second_line.text_fields().size());
-  EXPECT_EQ(
-      base::UTF8ToUTF16("other text"), second_line.text_fields()[0].text());
+  EXPECT_EQ(u"other text", second_line.text_fields()[0].text());
   EXPECT_EQ(5, second_line.text_fields()[0].type());
   EXPECT_TRUE(second_line.text_fields()[0].has_num_lines());
   EXPECT_EQ(3, second_line.text_fields()[0].num_lines());
   EXPECT_EQ(3, second_line.num_text_lines());
 
   EXPECT_TRUE(second_line.additional_text());
-  EXPECT_EQ(
-      base::UTF8ToUTF16("slatfatf"), second_line.additional_text()->text());
+  EXPECT_EQ(u"slatfatf", second_line.additional_text()->text());
   EXPECT_EQ(42, second_line.additional_text()->type());
 
   EXPECT_TRUE(second_line.status_text());
-  EXPECT_EQ(
-      base::UTF8ToUTF16("oh hi, Mark"), second_line.status_text()->text());
+  EXPECT_EQ(u"oh hi, Mark", second_line.status_text()->text());
   EXPECT_EQ(729347, second_line.status_text()->type());
 
   EXPECT_FALSE(second_line.image_url().is_valid());

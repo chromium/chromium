@@ -3263,7 +3263,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
     EXPECT_EQ(iteration != 0, b_frame_monitor.EventWasReceived());
     b_frame_monitor.ResetEventReceived();
 
-    tooltip_monitor.WaitUntil(base::UTF8ToUTF16("body_tooltip"));
+    tooltip_monitor.WaitUntil(u"body_tooltip");
     tooltip_monitor.Reset();
 
     // Next send a MouseMove to B frame, and A should receive a MouseMove event.

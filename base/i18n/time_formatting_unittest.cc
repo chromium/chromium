@@ -179,7 +179,7 @@ TEST(TimeFormattingTest, TimeFormatTimeOfDayDE) {
   Time time;
   EXPECT_TRUE(Time::FromUTCExploded(kTestDateTimeExploded, &time));
   std::u16string clock24h(ASCIIToUTF16("15:42"));
-  std::u16string clock12h_pm(UTF8ToUTF16("3:42 PM"));
+  std::u16string clock12h_pm(u"3:42 PM");
   std::u16string clock12h(ASCIIToUTF16("3:42"));
 
   // The default is 24h clock.

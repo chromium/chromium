@@ -173,7 +173,7 @@ void OrderSummaryViewController::FillContentView(views::View* content_view) {
   for (size_t i = 0; i < display_items.size(); i++) {
     DialogViewID view_id =
         i < line_items.size() ? line_items[i] : DialogViewID::VIEW_ID_NONE;
-    std::u16string currency = base::UTF8ToUTF16("");
+    std::u16string currency = u"";
     if (is_mixed_currency) {
       currency = base::UTF8ToUTF16((*display_items[i])->amount->currency);
     }

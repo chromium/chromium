@@ -59,16 +59,14 @@ TEST_F(L10nUtilTest, GetString) {
   std::string s = l10n_util::GetStringUTF8(IDS_SIMPLE);
   EXPECT_EQ(std::string("Hello World!"), s);
 
-  s = l10n_util::GetStringFUTF8(IDS_PLACEHOLDERS,
-                                UTF8ToUTF16("chrome"),
-                                UTF8ToUTF16("10"));
+  s = l10n_util::GetStringFUTF8(IDS_PLACEHOLDERS, u"chrome", u"10");
   EXPECT_EQ(std::string("Hello, chrome. Your number is 10."), s);
 
   std::u16string s16 = l10n_util::GetStringFUTF16Int(IDS_PLACEHOLDERS_2, 20);
 
   // Consecutive '$' characters override any placeholder functionality.
   // See //base/strings/string_util.h ReplaceStringPlaceholders().
-  EXPECT_EQ(UTF8ToUTF16("You owe me $$1."), s16);
+  EXPECT_EQ(u"You owe me $$1.", s16);
 }
 
 #if !defined(OS_APPLE) && !defined(OS_ANDROID)
@@ -387,17 +385,17 @@ TEST_F(L10nUtilTest, GetAppLocale) {
 
 TEST_F(L10nUtilTest, SortStringsUsingFunction) {
   std::vector<std::unique_ptr<StringWrapper>> strings;
-  strings.push_back(std::make_unique<StringWrapper>(UTF8ToUTF16("C")));
-  strings.push_back(std::make_unique<StringWrapper>(UTF8ToUTF16("d")));
-  strings.push_back(std::make_unique<StringWrapper>(UTF8ToUTF16("b")));
-  strings.push_back(std::make_unique<StringWrapper>(UTF8ToUTF16("a")));
+  strings.push_back(std::make_unique<StringWrapper>(u"C"));
+  strings.push_back(std::make_unique<StringWrapper>(u"d"));
+  strings.push_back(std::make_unique<StringWrapper>(u"b"));
+  strings.push_back(std::make_unique<StringWrapper>(u"a"));
   l10n_util::SortStringsUsingMethod("en-US",
                                     &strings,
                                     &StringWrapper::string);
-  ASSERT_TRUE(UTF8ToUTF16("a") == strings[0]->string());
-  ASSERT_TRUE(UTF8ToUTF16("b") == strings[1]->string());
-  ASSERT_TRUE(UTF8ToUTF16("C") == strings[2]->string());
-  ASSERT_TRUE(UTF8ToUTF16("d") == strings[3]->string());
+  ASSERT_TRUE(u"a" == strings[0]->string());
+  ASSERT_TRUE(u"b" == strings[1]->string());
+  ASSERT_TRUE(u"C" == strings[2]->string());
+  ASSERT_TRUE(u"d" == strings[3]->string());
 }
 
 /**

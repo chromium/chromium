@@ -197,8 +197,7 @@ std::unique_ptr<Notification> NotificationViewMDTest::CreateSimpleNotification()
 
   std::unique_ptr<Notification> notification = std::make_unique<Notification>(
       NOTIFICATION_TYPE_BASE_FORMAT, std::string(kDefaultNotificationId),
-      base::UTF8ToUTF16("title"), base::UTF8ToUTF16("message"),
-      CreateTestImage(80, 80), base::UTF8ToUTF16("display source"), GURL(),
+      u"title", u"message", CreateTestImage(80, 80), u"display source", GURL(),
       NotifierId(NotifierType::APPLICATION, "extension_id"), data, delegate_);
   notification->set_small_image(CreateTestImage(16, 16));
   notification->set_image(CreateTestImage(320, 240));
@@ -432,7 +431,7 @@ TEST_F(NotificationViewMDTest, UpdateViewsOrderingTest) {
   EXPECT_EQ(0, notification_view()->left_content_->GetIndexOf(
                    notification_view()->message_view_));
 
-  notification->set_title(base::UTF8ToUTF16("title"));
+  notification->set_title(u"title");
 
   notification_view()->CreateOrUpdateViews(*notification);
 
@@ -930,8 +929,7 @@ TEST_F(NotificationViewMDTest, SnoozeButton) {
   rich_data.should_show_snooze_button = true;
   std::unique_ptr<Notification> notification = std::make_unique<Notification>(
       message_center::NOTIFICATION_TYPE_CUSTOM, kDefaultNotificationId,
-      base::UTF8ToUTF16("title"), base::UTF8ToUTF16("message"), gfx::Image(),
-      base::UTF8ToUTF16("display source"), GURL(),
+      u"title", u"message", gfx::Image(), u"display source", GURL(),
       message_center::NotifierId(message_center::NotifierType::ARC_APPLICATION,
                                  "test_app_id"),
       rich_data, nullptr);
@@ -1429,7 +1427,7 @@ TEST_F(NotificationViewMDTest, TestLongTitleAndMessage) {
 }
 
 TEST_F(NotificationViewMDTest, AppNameExtension) {
-  std::u16string app_name = base::UTF8ToUTF16("extension name");
+  std::u16string app_name = u"extension name";
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
   notification->set_context_message(app_name);
 
@@ -1439,14 +1437,13 @@ TEST_F(NotificationViewMDTest, AppNameExtension) {
 }
 
 TEST_F(NotificationViewMDTest, AppNameSystemNotification) {
-  std::u16string app_name = base::UTF8ToUTF16("system notification");
+  std::u16string app_name = u"system notification";
   message_center::MessageCenter::Get()->SetSystemNotificationAppName(app_name);
   RichNotificationData data;
   data.settings_button_handler = SettingsButtonHandler::INLINE;
   auto notification = std::make_unique<Notification>(
       NOTIFICATION_TYPE_BASE_FORMAT, std::string(kDefaultNotificationId),
-      base::UTF8ToUTF16("title"), base::UTF8ToUTF16("message"), gfx::Image(),
-      std::u16string(), GURL(),
+      u"title", u"message", gfx::Image(), std::u16string(), GURL(),
       NotifierId(NotifierType::SYSTEM_COMPONENT, "system"), data, nullptr);
 
   UpdateNotificationViews(*notification);
@@ -1460,7 +1457,7 @@ TEST_F(NotificationViewMDTest, AppNameWebNotification) {
 
   UpdateNotificationViews(*notification);
 
-  EXPECT_EQ(base::UTF8ToUTF16("example.com"),
+  EXPECT_EQ(u"example.com",
             notification_view()->header_row_->app_name_for_testing());
 }
 

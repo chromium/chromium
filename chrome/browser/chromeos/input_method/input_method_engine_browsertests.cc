@@ -235,11 +235,10 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
   // onSurroundingTextChange should be fired if SetSurroundingText is called.
   ExtensionTestMessageListener surrounding_text_listener(
       "onSurroundingTextChanged", false);
-  engine_handler->SetSurroundingText(
-      base::UTF8ToUTF16("text"),  // Surrounding text.
-      0,                          // focused position.
-      1,                          // anchor position.
-      0);                         // offset position.
+  engine_handler->SetSurroundingText(u"text",  // Surrounding text.
+                                     0,        // focused position.
+                                     1,        // anchor position.
+                                     0);       // offset position.
   ASSERT_TRUE(surrounding_text_listener.WaitUntilSatisfied());
   ASSERT_TRUE(surrounding_text_listener.was_satisfied());
 
@@ -625,7 +624,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
 
     const ui::CompositionText& composition_text =
         mock_input_context->last_update_composition_arg().composition_text;
-    EXPECT_EQ(base::UTF8ToUTF16("COMPOSITION_TEXT"), composition_text.text);
+    EXPECT_EQ(u"COMPOSITION_TEXT", composition_text.text);
     const ui::ImeTextSpans ime_text_spans = composition_text.ime_text_spans;
 
     ASSERT_EQ(2U, ime_text_spans.size());
@@ -1063,28 +1062,20 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
 
     ASSERT_EQ(4U, table.candidates().size());
 
-    EXPECT_EQ(base::UTF8ToUTF16("CANDIDATE_1"),
-              table.candidates().at(0).value);
+    EXPECT_EQ(u"CANDIDATE_1", table.candidates().at(0).value);
 
-    EXPECT_EQ(base::UTF8ToUTF16("CANDIDATE_2"),
-              table.candidates().at(1).value);
-    EXPECT_EQ(base::UTF8ToUTF16("LABEL_2"), table.candidates().at(1).label);
+    EXPECT_EQ(u"CANDIDATE_2", table.candidates().at(1).value);
+    EXPECT_EQ(u"LABEL_2", table.candidates().at(1).label);
 
-    EXPECT_EQ(base::UTF8ToUTF16("CANDIDATE_3"),
-              table.candidates().at(2).value);
-    EXPECT_EQ(base::UTF8ToUTF16("LABEL_3"), table.candidates().at(2).label);
-    EXPECT_EQ(base::UTF8ToUTF16("ANNOTACTION_3"),
-              table.candidates().at(2).annotation);
+    EXPECT_EQ(u"CANDIDATE_3", table.candidates().at(2).value);
+    EXPECT_EQ(u"LABEL_3", table.candidates().at(2).label);
+    EXPECT_EQ(u"ANNOTACTION_3", table.candidates().at(2).annotation);
 
-    EXPECT_EQ(base::UTF8ToUTF16("CANDIDATE_4"),
-              table.candidates().at(3).value);
-    EXPECT_EQ(base::UTF8ToUTF16("LABEL_4"), table.candidates().at(3).label);
-    EXPECT_EQ(base::UTF8ToUTF16("ANNOTACTION_4"),
-              table.candidates().at(3).annotation);
-    EXPECT_EQ(base::UTF8ToUTF16("TITLE_4"),
-              table.candidates().at(3).description_title);
-    EXPECT_EQ(base::UTF8ToUTF16("BODY_4"),
-              table.candidates().at(3).description_body);
+    EXPECT_EQ(u"CANDIDATE_4", table.candidates().at(3).value);
+    EXPECT_EQ(u"LABEL_4", table.candidates().at(3).label);
+    EXPECT_EQ(u"ANNOTACTION_4", table.candidates().at(3).annotation);
+    EXPECT_EQ(u"TITLE_4", table.candidates().at(3).description_title);
+    EXPECT_EQ(u"BODY_4", table.candidates().at(3).description_body);
   }
   {
     SCOPED_TRACE("setCursorPosition test");
@@ -1289,7 +1280,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
 
     const ui::CompositionText& composition_text =
         mock_input_context->last_update_composition_arg().composition_text;
-    EXPECT_EQ(base::UTF8ToUTF16("us"), composition_text.text);
+    EXPECT_EQ(u"us", composition_text.text);
     const ui::ImeTextSpans ime_text_spans = composition_text.ime_text_spans;
 
     ASSERT_EQ(1U, ime_text_spans.size());
@@ -1514,7 +1505,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, MojoInteractionTest) {
     ASSERT_TRUE(
         content::ExecuteScript(host->host_contents(), commit_text_test_script));
     tic.WaitUntilCalled();
-    EXPECT_EQ(base::UTF8ToUTF16("COMMIT_TEXT"), tic.inserted_text());
+    EXPECT_EQ(u"COMMIT_TEXT", tic.inserted_text());
   }
 
   {

@@ -1079,16 +1079,14 @@ TEST_F(VolumeManagerTest, MTPPlugAndUnplug) {
   storage_monitor::StorageInfo info(
       storage_monitor::StorageInfo::MakeDeviceId(
           storage_monitor::StorageInfo::MTP_OR_PTP, "dummy-device-id"),
-      FILE_PATH_LITERAL("/dummy/device/location"), base::UTF8ToUTF16("label"),
-      base::UTF8ToUTF16("vendor"), base::UTF8ToUTF16("model"),
-      12345 /* size */);
+      FILE_PATH_LITERAL("/dummy/device/location"), u"label", u"vendor",
+      u"model", 12345 /* size */);
 
   storage_monitor::StorageInfo non_mtp_info(
       storage_monitor::StorageInfo::MakeDeviceId(
           storage_monitor::StorageInfo::FIXED_MASS_STORAGE, "dummy-device-id2"),
-      FILE_PATH_LITERAL("/dummy/device/location2"), base::UTF8ToUTF16("label2"),
-      base::UTF8ToUTF16("vendor2"), base::UTF8ToUTF16("model2"),
-      12345 /* size */);
+      FILE_PATH_LITERAL("/dummy/device/location2"), u"label2", u"vendor2",
+      u"model2", 12345 /* size */);
 
   // Attach
   volume_manager()->OnRemovableStorageAttached(info);

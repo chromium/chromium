@@ -2999,10 +2999,10 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_MobileShowAll) {
                                    {base::ASCIIToUTF16("Hoa"),
                                     base::ASCIIToUTF16("(978) 674-4120")})),
                 testing::Field(&Suggestion::icon, "")),
-          AllOf(testing::Field(&Suggestion::label,
-                               ConstructMobileLabelLine(
-                                   {base::UTF8ToUTF16("María"),
-                                    base::ASCIIToUTF16("(617) 268-6862")})),
+          AllOf(testing::Field(
+                    &Suggestion::label,
+                    ConstructMobileLabelLine(
+                        {u"María", base::ASCIIToUTF16("(617) 268-6862")})),
                 testing::Field(&Suggestion::icon, ""))));
 
   // Tests a form with name, address, phone number, and email address fields.
@@ -3019,12 +3019,12 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_MobileShowAll) {
                                     base::ASCIIToUTF16("401 Merrimack St"),
                                     base::ASCIIToUTF16("(978) 674-4120")})),
                 testing::Field(&Suggestion::icon, "")),
-          AllOf(testing::Field(&Suggestion::label,
-                               ConstructMobileLabelLine(
-                                   {base::UTF8ToUTF16("María"),
-                                    base::ASCIIToUTF16("11 Elkins St"),
-                                    base::ASCIIToUTF16("(617) 268-6862")})),
-                testing::Field(&Suggestion::icon, ""))));
+          AllOf(
+              testing::Field(&Suggestion::label,
+                             ConstructMobileLabelLine(
+                                 {u"María", base::ASCIIToUTF16("11 Elkins St"),
+                                  base::ASCIIToUTF16("(617) 268-6862")})),
+              testing::Field(&Suggestion::icon, ""))));
 }
 #endif  // if defined(OS_ANDROID) || defined(OS_IOS)
 
@@ -3654,7 +3654,7 @@ TEST_F(PersonalDataManagerTest,
                          test::kEmptyOrigin);
   test::SetCreditCardInfo(&credit_card, "John Dillinger", "", "01", "2999",
                           "1");
-  credit_card.SetNickname(base::UTF8ToUTF16("nickname"));
+  credit_card.SetNickname(u"nickname");
   personal_data_->AddCreditCard(credit_card);
 
   // Make sure everything is set up correctly.
@@ -3668,7 +3668,7 @@ TEST_F(PersonalDataManagerTest,
           /*field_contents=*/std::u16string(),
           /*include_server_cards=*/true);
   ASSERT_EQ(1U, suggestions.size());
-  EXPECT_EQ(base::UTF8ToUTF16("nickname"), suggestions[0].label);
+  EXPECT_EQ(u"nickname", suggestions[0].label);
 }
 
 // Tests the suggestions of duplicate local and server credit cards.
@@ -4945,22 +4945,20 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MergedProfileValues) {
   EXPECT_EQ(profile3.guid(), profiles[0]->guid());
   // The address syntax that results from the merge should be the one from the
   // imported profile (highest frecency).
-  EXPECT_EQ(base::UTF8ToUTF16("742. Evergreen Terrace"),
+  EXPECT_EQ(u"742. Evergreen Terrace",
             profiles[0]->GetRawInfo(ADDRESS_HOME_LINE1));
   // The middle name should be full, even if the profile with the higher
   // frecency only had an initial (no loss of information).
-  EXPECT_EQ(base::UTF8ToUTF16("Jay"), profiles[0]->GetRawInfo(NAME_MIDDLE));
+  EXPECT_EQ(u"Jay", profiles[0]->GetRawInfo(NAME_MIDDLE));
   // The specified phone number from profile1 should be kept (no loss of
   // information).
-  EXPECT_EQ(base::UTF8ToUTF16("12345678910"),
-            profiles[0]->GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_EQ(u"12345678910", profiles[0]->GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
   // The specified company name from profile2 should be kept (no loss of
   // information).
-  EXPECT_EQ(base::UTF8ToUTF16("Fox"), profiles[0]->GetRawInfo(COMPANY_NAME));
+  EXPECT_EQ(u"Fox", profiles[0]->GetRawInfo(COMPANY_NAME));
   // The specified country from the imported profile shoudl be kept (no loss of
   // information).
-  EXPECT_EQ(base::UTF8ToUTF16("US"),
-            profiles[0]->GetRawInfo(ADDRESS_HOME_COUNTRY));
+  EXPECT_EQ(u"US", profiles[0]->GetRawInfo(ADDRESS_HOME_COUNTRY));
   // The use count that results from the merge should be the max of all the
   // profiles use counts.
   EXPECT_EQ(10U, profiles[0]->use_count());
@@ -5033,7 +5031,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_VerifiedProfileFirst) {
   // still evolved with future observations. In this case, the "." was added
   // from a later observation.
   profile1.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_STREET_NAME, base::UTF8ToUTF16("Evergreen Terrace"),
+      ADDRESS_HOME_STREET_NAME, u"Evergreen Terrace",
       structured_address::VerificationStatus::kParsed);
   //
   // Only the verified |profile1| with its original data should have been kept.
@@ -5165,7 +5163,7 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleVerifiedProfiles) {
   // still evolved with future observations. In this case, the "." was removed
   // from a later observation.
   profile2.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_STREET_NAME, base::UTF8ToUTF16("Evergreen Terrace"),
+      ADDRESS_HOME_STREET_NAME, u"Evergreen Terrace",
       structured_address::VerificationStatus::kParsed);
 
   // |profile1| should have been discarded because the saved profile with the
@@ -5306,18 +5304,16 @@ TEST_F(PersonalDataManagerTest, ApplyDedupingRoutine_MultipleDedupes) {
   // |Homer3|'s data:
   // The address should be saved with the syntax of |Homer1| since it has the
   // highest frecency score.
-  EXPECT_EQ(base::UTF8ToUTF16("742. Evergreen Terrace"),
+  EXPECT_EQ(u"742. Evergreen Terrace",
             profiles[0]->GetRawInfo(ADDRESS_HOME_LINE1));
   // The middle name should be the full version found in |Homer2|,
-  EXPECT_EQ(base::UTF8ToUTF16("Jay"), profiles[0]->GetRawInfo(NAME_MIDDLE));
+  EXPECT_EQ(u"Jay", profiles[0]->GetRawInfo(NAME_MIDDLE));
   // The phone number from |Homer2| should be kept (no loss of information).
-  EXPECT_EQ(base::UTF8ToUTF16("12345678910"),
-            profiles[0]->GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_EQ(u"12345678910", profiles[0]->GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
   // The company name from |Homer3| should be kept (no loss of information).
-  EXPECT_EQ(base::UTF8ToUTF16("Fox"), profiles[0]->GetRawInfo(COMPANY_NAME));
+  EXPECT_EQ(u"Fox", profiles[0]->GetRawInfo(COMPANY_NAME));
   // The country from |Homer1| profile should be kept (no loss of information).
-  EXPECT_EQ(base::UTF8ToUTF16("US"),
-            profiles[0]->GetRawInfo(ADDRESS_HOME_COUNTRY));
+  EXPECT_EQ(u"US", profiles[0]->GetRawInfo(ADDRESS_HOME_COUNTRY));
   // The use count that results from the merge should be the max of Homer 1, 2
   // and 3's respective use counts.
   EXPECT_EQ(10U, profiles[0]->use_count());
@@ -5486,12 +5482,9 @@ TEST_F(PersonalDataManagerTest,
 
   EXPECT_EQ(3U, personal_data_->GetProfiles().size());
   EXPECT_EQ(2U, personal_data_->GetCreditCards().size());
-  EXPECT_EQ(base::UTF8ToUTF16("Keep"),
-            personal_data_->GetProfiles()[0]->GetRawInfo(NAME_LAST));
-  EXPECT_EQ(base::UTF8ToUTF16("Keep"),
-            personal_data_->GetProfiles()[1]->GetRawInfo(NAME_LAST));
-  EXPECT_EQ(base::UTF8ToUTF16("Keep"),
-            personal_data_->GetProfiles()[2]->GetRawInfo(NAME_LAST));
+  EXPECT_EQ(u"Keep", personal_data_->GetProfiles()[0]->GetRawInfo(NAME_LAST));
+  EXPECT_EQ(u"Keep", personal_data_->GetProfiles()[1]->GetRawInfo(NAME_LAST));
+  EXPECT_EQ(u"Keep", personal_data_->GetProfiles()[2]->GetRawInfo(NAME_LAST));
 }
 
 // Tests that DeleteDisusedCreditCards deletes desired credit cards only.
@@ -5576,9 +5569,7 @@ TEST_F(PersonalDataManagerTest,
 
   EXPECT_EQ(5U, personal_data_->GetCreditCards().size());
   std::unordered_set<std::u16string> expectedToRemain = {
-      base::UTF8ToUTF16("Alice"), base::UTF8ToUTF16("Bob"),
-      base::UTF8ToUTF16("Clyde"), base::UTF8ToUTF16("Emma"),
-      base::UTF8ToUTF16("Frank")};
+      u"Alice", u"Bob", u"Clyde", u"Emma", u"Frank"};
   for (auto* card : personal_data_->GetCreditCards()) {
     EXPECT_NE(expectedToRemain.end(),
               expectedToRemain.find(card->GetRawInfo(CREDIT_CARD_NAME_FULL)));
@@ -5617,8 +5608,7 @@ TEST_F(PersonalDataManagerTest, DeleteLocalCreditCards) {
 
   EXPECT_EQ(1U, personal_data_->GetCreditCards().size());
 
-  std::unordered_set<std::u16string> expectedToRemain = {
-      base::UTF8ToUTF16("Clyde")};
+  std::unordered_set<std::u16string> expectedToRemain = {u"Clyde"};
   for (auto* card : personal_data_->GetCreditCards()) {
     EXPECT_NE(expectedToRemain.end(),
               expectedToRemain.find(card->GetRawInfo(CREDIT_CARD_NAME_FULL)));
@@ -5711,7 +5701,7 @@ TEST_F(PersonalDataManagerTest,
 
   // Make sure that the two profiles have not merged.
   ASSERT_EQ(2U, profiles.size());
-  EXPECT_EQ(base::UTF8ToUTF16("John"), profiles[0]->GetRawInfo(NAME_FIRST));
+  EXPECT_EQ(u"John", profiles[0]->GetRawInfo(NAME_FIRST));
   EXPECT_EQ(local_profile, *profiles[1]);
 
   // Make sure that the billing address id of the two cards now point to the
@@ -5809,11 +5799,9 @@ TEST_F(PersonalDataManagerTest,
   ASSERT_EQ(1U, profiles.size());
 
   // Check that the values were merged.
-  EXPECT_EQ(base::UTF8ToUTF16("john@doe.com"),
-            profiles[0]->GetRawInfo(EMAIL_ADDRESS));
-  EXPECT_EQ(base::UTF8ToUTF16("Fox"), profiles[0]->GetRawInfo(COMPANY_NAME));
-  EXPECT_EQ(base::UTF8ToUTF16("32801"),
-            profiles[0]->GetRawInfo(ADDRESS_HOME_ZIP));
+  EXPECT_EQ(u"john@doe.com", profiles[0]->GetRawInfo(EMAIL_ADDRESS));
+  EXPECT_EQ(u"Fox", profiles[0]->GetRawInfo(COMPANY_NAME));
+  EXPECT_EQ(u"32801", profiles[0]->GetRawInfo(ADDRESS_HOME_ZIP));
 
   // Make sure that the billing address id of the two cards now point to the
   // converted profile.
@@ -5969,13 +5957,12 @@ TEST_F(
   // Make sure that the two Wallet addresses merged together and were added as
   // a new local profile.
   ASSERT_EQ(2U, profiles.size());
-  EXPECT_EQ(base::UTF8ToUTF16("John"), profiles[0]->GetRawInfo(NAME_FIRST));
+  EXPECT_EQ(u"John", profiles[0]->GetRawInfo(NAME_FIRST));
   EXPECT_EQ(local_profile, *profiles[1]);
 
   // Check that the values were merged.
-  EXPECT_EQ(base::UTF8ToUTF16("Fox"), profiles[0]->GetRawInfo(COMPANY_NAME));
-  EXPECT_EQ(base::UTF8ToUTF16("32801"),
-            profiles[0]->GetRawInfo(ADDRESS_HOME_ZIP));
+  EXPECT_EQ(u"Fox", profiles[0]->GetRawInfo(COMPANY_NAME));
+  EXPECT_EQ(u"32801", profiles[0]->GetRawInfo(ADDRESS_HOME_ZIP));
 
   // Make sure that the billing address id of the two cards now point to the
   // converted profile.
@@ -6540,7 +6527,7 @@ TEST_F(PersonalDataManagerTest, CreateDataForTest) {
     auto it = std::find_if(
         addresses.begin(), addresses.end(), [this](const AutofillProfile* p) {
           return p->GetInfo(NAME_FULL, this->personal_data_->app_locale()) ==
-                 base::UTF8ToUTF16("John McTester");
+                 u"John McTester";
         });
     ASSERT_TRUE(it != addresses.end());
     EXPECT_GT((*it)->use_date(), disused_threshold);
@@ -6551,7 +6538,7 @@ TEST_F(PersonalDataManagerTest, CreateDataForTest) {
     auto it = std::find_if(
         addresses.begin(), addresses.end(), [this](const AutofillProfile* p) {
           return p->GetInfo(NAME_FULL, this->personal_data_->app_locale()) ==
-                 base::UTF8ToUTF16("Polly Disused");
+                 u"Polly Disused";
         });
     ASSERT_TRUE(it != addresses.end());
     EXPECT_LT((*it)->use_date(), disused_threshold);
@@ -6562,7 +6549,7 @@ TEST_F(PersonalDataManagerTest, CreateDataForTest) {
     auto it = std::find_if(
         addresses.begin(), addresses.end(), [this](const AutofillProfile* p) {
           return p->GetInfo(NAME_FULL, this->personal_data_->app_locale()) ==
-                 base::UTF8ToUTF16("Polly Deletable");
+                 u"Polly Deletable";
         });
     ASSERT_TRUE(it != addresses.end());
     EXPECT_LT((*it)->use_date(), deletion_threshold);
@@ -6575,7 +6562,7 @@ TEST_F(PersonalDataManagerTest, CreateDataForTest) {
         credit_cards.begin(), credit_cards.end(), [this](const CreditCard* cc) {
           return cc->GetInfo(CREDIT_CARD_NAME_FULL,
                              this->personal_data_->app_locale()) ==
-                 base::UTF8ToUTF16("Alice Testerson");
+                 u"Alice Testerson";
         });
     ASSERT_TRUE(it != credit_cards.end());
     EXPECT_GT((*it)->use_date(), disused_threshold);
@@ -6587,7 +6574,7 @@ TEST_F(PersonalDataManagerTest, CreateDataForTest) {
         credit_cards.begin(), credit_cards.end(), [this](const CreditCard* cc) {
           return cc->GetInfo(CREDIT_CARD_NAME_FULL,
                              this->personal_data_->app_locale()) ==
-                 base::UTF8ToUTF16("Bob Disused");
+                 u"Bob Disused";
         });
     ASSERT_TRUE(it != credit_cards.end());
     EXPECT_LT((*it)->use_date(), disused_threshold);
@@ -6599,7 +6586,7 @@ TEST_F(PersonalDataManagerTest, CreateDataForTest) {
         credit_cards.begin(), credit_cards.end(), [this](const CreditCard* cc) {
           return cc->GetInfo(CREDIT_CARD_NAME_FULL,
                              this->personal_data_->app_locale()) ==
-                 base::UTF8ToUTF16("Charlie Deletable");
+                 u"Charlie Deletable";
         });
     ASSERT_TRUE(it != credit_cards.end());
     EXPECT_LT((*it)->use_date(), deletion_threshold);
@@ -7180,11 +7167,11 @@ TEST_F(PersonalDataManagerMockTest, UpdateClientValidityStates_UpdatedFlag) {
   ASSERT_TRUE(profiles[0]->is_client_validity_states_updated());
   ASSERT_TRUE(profiles[1]->is_client_validity_states_updated());
 
-  profiles[1]->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, base::UTF8ToUTF16(""));
+  profiles[1]->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"");
   ASSERT_TRUE(profiles[0]->is_client_validity_states_updated());
   ASSERT_FALSE(profiles[1]->is_client_validity_states_updated());
 
-  profiles[0]->SetRawInfo(NAME_FULL, base::UTF8ToUTF16("Goli Boli"));
+  profiles[0]->SetRawInfo(NAME_FULL, u"Goli Boli");
   ASSERT_TRUE(profiles[0]->is_client_validity_states_updated());
 }
 
@@ -7199,7 +7186,7 @@ TEST_F(PersonalDataManagerMockTest,
 
   AutofillProfile profile2(test::GetFullValidProfileForCanada());
   profile2.set_guid("00000000-0000-0000-0000-000000002019");
-  profile2.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, base::UTF8ToUTF16(""));
+  profile2.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"");
   profile2.FinalizeAfterImport();
   AddProfileToPersonalDataManager(profile2);
 
@@ -7230,7 +7217,7 @@ TEST_F(PersonalDataManagerMockTest,
 TEST_F(PersonalDataManagerMockTest, UpdateClientValidityStates_AlreadyUpdated) {
   // Create two profiles and add them to personal_data_.
   AutofillProfile profile1(test::GetFullValidProfileForCanada());
-  profile1.SetRawInfo(EMAIL_ADDRESS, base::UTF8ToUTF16("invalid email!"));
+  profile1.SetRawInfo(EMAIL_ADDRESS, u"invalid email!");
   AddProfileToPersonalDataManager(profile1);
 
   auto profiles = personal_data_->GetProfiles();
@@ -7241,7 +7228,7 @@ TEST_F(PersonalDataManagerMockTest, UpdateClientValidityStates_AlreadyUpdated) {
       profiles[0]->GetValidityState(EMAIL_ADDRESS, AutofillProfile::CLIENT));
 
   // Change the email, the validity update would turn false.
-  profiles[0]->SetRawInfo(EMAIL_ADDRESS, base::UTF8ToUTF16("alice@gmail.com"));
+  profiles[0]->SetRawInfo(EMAIL_ADDRESS, u"alice@gmail.com");
   EXPECT_FALSE(profiles[0]->is_client_validity_states_updated());
   // Pretend that the validity states are updated.
   profiles[0]->set_is_client_validity_states_updated(true);
@@ -7273,13 +7260,13 @@ TEST_F(PersonalDataManagerMockTest, UpdateClientValidityStates_Version) {
   // Create two profiles and add them to personal_data_. Set the guids
   // explicitly to preserve the order.
   AutofillProfile profile2(test::GetFullValidProfileForChina());
-  profile2.SetRawInfo(ADDRESS_HOME_STATE, base::UTF8ToUTF16("invalid state!"));
+  profile2.SetRawInfo(ADDRESS_HOME_STATE, u"invalid state!");
   profile2.set_guid("00000000-0000-0000-0000-000000000002");
   profile2.set_use_date(AutofillClock::Now() - base::TimeDelta::FromDays(200));
   AddProfileToPersonalDataManager(profile2);
 
   AutofillProfile profile1(test::GetFullValidProfileForCanada());
-  profile1.SetRawInfo(EMAIL_ADDRESS, base::UTF8ToUTF16("invalid email!"));
+  profile1.SetRawInfo(EMAIL_ADDRESS, u"invalid email!");
   profile1.set_use_date(AutofillClock::Now());
   profile1.set_guid("00000000-0000-0000-0000-000000000001");
   AddProfileToPersonalDataManager(profile1);
@@ -7969,8 +7956,7 @@ TEST_P(PersonalDataManagerTestForSharingNickname,
   EXPECT_EQ(suggestions[0].value,
             (expected_nickname_.empty() ? base::ASCIIToUTF16("Amex")
                                         : expected_nickname_) +
-                base::UTF8ToUTF16("  ") +
-                local_card.ObfuscatedLastFourDigits());
+                u"  " + local_card.ObfuscatedLastFourDigits());
 }
 
 TEST_P(PersonalDataManagerTestForSharingNickname,
@@ -8002,10 +7988,10 @@ TEST_P(PersonalDataManagerTestForSharingNickname,
       testing::UnorderedElementsAre(
           (server_nickname_.empty() ? base::ASCIIToUTF16("Amex")
                                     : server_nickname_) +
-              base::UTF8ToUTF16("  ") + server_card.ObfuscatedLastFourDigits(),
+              u"  " + server_card.ObfuscatedLastFourDigits(),
           (local_nickname_.empty() ? base::ASCIIToUTF16("Amex")
                                    : local_nickname_) +
-              base::UTF8ToUTF16("  ") + local_card.ObfuscatedLastFourDigits()));
+              u"  " + local_card.ObfuscatedLastFourDigits()));
 }
 
 }  // namespace autofill

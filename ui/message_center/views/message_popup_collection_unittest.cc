@@ -240,9 +240,9 @@ class MessagePopupCollectionTest : public views::ViewsTestBase,
                                                    const std::string& title) {
     return std::make_unique<Notification>(
         NOTIFICATION_TYPE_BASE_FORMAT, id, base::UTF8ToUTF16(title),
-        base::UTF8ToUTF16("test message"), gfx::Image(),
-        std::u16string() /* display_source */, GURL(), NotifierId(),
-        RichNotificationData(), new NotificationDelegate());
+        u"test message", gfx::Image(), std::u16string() /* display_source */,
+        GURL(), NotifierId(), RichNotificationData(),
+        new NotificationDelegate());
   }
 
   std::string AddNotification() {

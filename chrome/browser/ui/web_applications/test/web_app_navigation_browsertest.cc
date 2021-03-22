@@ -228,7 +228,7 @@ AppId WebAppNavigationBrowserTest::InstallTestWebApp(
   web_app_info->start_url = https_server_.GetURL(app_host, GetAppUrlPath());
   web_app_info->scope = https_server_.GetURL(app_host, app_scope);
   web_app_info->title = base::UTF8ToUTF16(GetAppName());
-  web_app_info->description = base::UTF8ToUTF16("Test description");
+  web_app_info->description = u"Test description";
   web_app_info->open_as_window = true;
 
   return InstallWebApp(profile(), std::move(web_app_info));

@@ -2648,7 +2648,7 @@ TEST(FormParserTest, FindUsernameInPredictions_SkipPrediction) {
   const autofill::FormFieldData* field_data = FindUsernameInPredictions(
       predictions, processed_fields, Interactability::kCertain);
   ASSERT_TRUE(field_data);
-  EXPECT_EQ(base::UTF8ToUTF16("id"), field_data->name);
+  EXPECT_EQ(u"id", field_data->name);
 }
 
 }  // namespace

@@ -509,7 +509,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, ProgressPercentageAddedToSummary) {
       NotificationBuilder("")
           .SetType(message_center::NOTIFICATION_TYPE_PROGRESS)
           .SetProgress(42)
-          .SetTitle(base::UTF8ToUTF16("The Title"))
+          .SetTitle(u"The Title")
           .GetResult(),
       nullptr);
 }
@@ -529,8 +529,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, NotificationListItemsInBody) {
       NotificationBuilder("")
           .SetType(message_center::NOTIFICATION_TYPE_MULTIPLE)
           .SetItems(std::vector<message_center::NotificationItem>{
-              {base::UTF8ToUTF16("abc"), base::UTF8ToUTF16("123")},
-              {base::UTF8ToUTF16("def"), base::UTF8ToUTF16("456")}})
+              {u"abc", u"123"}, {u"def", u"456"}})
           .GetResult(),
       nullptr);
 }

@@ -290,10 +290,9 @@ bool IsValidForType(const std::u16string& value,
 
     case CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
     case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR: {
-      const std::u16string pattern =
-          type == CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR
-              ? base::UTF8ToUTF16("^[0-9]{1,2}[-/|]?[0-9]{2}$")
-              : base::UTF8ToUTF16("^[0-9]{1,2}[-/|]?[0-9]{4}$");
+      const std::u16string pattern = type == CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR
+                                         ? u"^[0-9]{1,2}[-/|]?[0-9]{2}$"
+                                         : u"^[0-9]{1,2}[-/|]?[0-9]{4}$";
 
       CreditCard temp;
       temp.SetExpirationDateFromString(value);

@@ -95,7 +95,7 @@ class DragTestView : public views::View {
   }
 
   void WriteDragData(const gfx::Point& p, OSExchangeData* data) override {
-    data->SetString(base::UTF8ToUTF16("I am being dragged"));
+    data->SetString(u"I am being dragged");
     gfx::ImageSkiaRep image_rep(gfx::Size(10, 20), 1.0f);
     gfx::ImageSkia image_skia(image_rep);
     data->provider().SetDragImage(image_skia, gfx::Vector2d());
@@ -425,8 +425,7 @@ class DragDropControllerTest : public AshTestBase {
 
   void UpdateDragData() {
     drag_drop_controller_->drag_data_ = std::make_unique<ui::OSExchangeData>();
-    drag_drop_controller_->drag_data_->SetString(
-        base::UTF8ToUTF16("I am being dragged"));
+    drag_drop_controller_->drag_data_->SetString(u"I am being dragged");
   }
 
   aura::Window* GetDragWindow() { return drag_drop_controller_->drag_window_; }
@@ -512,8 +511,7 @@ TEST_F(DragDropControllerTest, DragDropInSingleViewTest) {
   EXPECT_EQ(num_drags - 1 - drag_view->VerticalDragThreshold(),
             drag_drop_controller_->num_drag_updates_);
   EXPECT_TRUE(drag_drop_controller_->drop_received_);
-  EXPECT_EQ(base::UTF8ToUTF16("I am being dragged"),
-            drag_drop_controller_->drag_string_);
+  EXPECT_EQ(u"I am being dragged", drag_drop_controller_->drag_string_);
 
   EXPECT_EQ(1, drag_view->num_drag_enters_);
   EXPECT_EQ(num_drags - 1 - drag_view->VerticalDragThreshold(),
@@ -591,8 +589,7 @@ TEST_F(DragDropControllerTest, DragDropInMultipleViewsSingleWidgetTest) {
   EXPECT_EQ(num_drags - 1 - drag_view1->HorizontalDragThreshold(),
             drag_drop_controller_->num_drag_updates_);
   EXPECT_TRUE(drag_drop_controller_->drop_received_);
-  EXPECT_EQ(base::UTF8ToUTF16("I am being dragged"),
-            drag_drop_controller_->drag_string_);
+  EXPECT_EQ(u"I am being dragged", drag_drop_controller_->drag_string_);
 
   EXPECT_EQ(1, drag_view1->num_drag_enters_);
   int num_expected_updates =
@@ -648,8 +645,7 @@ TEST_F(DragDropControllerTest, DragDropInMultipleViewsMultipleWidgetsTest) {
   EXPECT_EQ(num_drags - 1 - drag_view1->HorizontalDragThreshold(),
             drag_drop_controller_->num_drag_updates_);
   EXPECT_TRUE(drag_drop_controller_->drop_received_);
-  EXPECT_EQ(base::UTF8ToUTF16("I am being dragged"),
-            drag_drop_controller_->drag_string_);
+  EXPECT_EQ(u"I am being dragged", drag_drop_controller_->drag_string_);
 
   EXPECT_EQ(1, drag_view1->num_drag_enters_);
   int num_expected_updates =
@@ -708,8 +704,7 @@ TEST_F(DragDropControllerTest, ViewRemovedWhileInDragDropTest) {
   EXPECT_EQ(num_drags_1 + num_drags_2 - 1 - drag_view->VerticalDragThreshold(),
             drag_drop_controller_->num_drag_updates_);
   EXPECT_TRUE(drag_drop_controller_->drop_received_);
-  EXPECT_EQ(base::UTF8ToUTF16("I am being dragged"),
-            drag_drop_controller_->drag_string_);
+  EXPECT_EQ(u"I am being dragged", drag_drop_controller_->drag_string_);
 
   EXPECT_EQ(1, drag_view->num_drag_enters_);
   EXPECT_EQ(num_drags_1 - 1 - drag_view->VerticalDragThreshold(),
@@ -837,8 +832,7 @@ TEST_F(DragDropControllerTest, SyntheticEventsDuringDragDrop) {
   EXPECT_EQ(num_drags - 1 - drag_view->VerticalDragThreshold(),
             drag_drop_controller_->num_drag_updates_);
   EXPECT_TRUE(drag_drop_controller_->drop_received_);
-  EXPECT_EQ(base::UTF8ToUTF16("I am being dragged"),
-            drag_drop_controller_->drag_string_);
+  EXPECT_EQ(u"I am being dragged", drag_drop_controller_->drag_string_);
 
   EXPECT_EQ(1, drag_view->num_drag_enters_);
   EXPECT_EQ(num_drags - 1 - drag_view->VerticalDragThreshold(),
@@ -877,8 +871,7 @@ TEST_F(DragDropControllerTest, PressingEscapeCancelsDragDrop) {
             drag_drop_controller_->num_drag_updates_);
   EXPECT_FALSE(drag_drop_controller_->drop_received_);
   EXPECT_TRUE(drag_drop_controller_->drag_canceled_);
-  EXPECT_EQ(base::UTF8ToUTF16("I am being dragged"),
-            drag_drop_controller_->drag_string_);
+  EXPECT_EQ(u"I am being dragged", drag_drop_controller_->drag_string_);
 
   EXPECT_EQ(1, drag_view->num_drag_enters_);
   EXPECT_EQ(num_drags - 1 - drag_view->VerticalDragThreshold(),
@@ -923,8 +916,7 @@ TEST_F(DragDropControllerTest, CaptureLostCancelsDragDrop) {
             drag_drop_controller_->num_drag_updates_);
   EXPECT_FALSE(drag_drop_controller_->drop_received_);
   EXPECT_TRUE(drag_drop_controller_->drag_canceled_);
-  EXPECT_EQ(base::UTF8ToUTF16("I am being dragged"),
-            drag_drop_controller_->drag_string_);
+  EXPECT_EQ(u"I am being dragged", drag_drop_controller_->drag_string_);
 
   EXPECT_EQ(1, drag_view->num_drag_enters_);
   EXPECT_EQ(num_drags - 1 - drag_view->VerticalDragThreshold(),
@@ -974,8 +966,7 @@ TEST_F(DragDropControllerTest, TouchDragDropInMultipleWindows) {
   EXPECT_TRUE(drag_drop_controller_->drag_start_received_);
   EXPECT_EQ(num_drags, drag_drop_controller_->num_drag_updates_);
   EXPECT_TRUE(drag_drop_controller_->drop_received_);
-  EXPECT_EQ(base::UTF8ToUTF16("I am being dragged"),
-            drag_drop_controller_->drag_string_);
+  EXPECT_EQ(u"I am being dragged", drag_drop_controller_->drag_string_);
 
   EXPECT_EQ(1, drag_view1->num_drag_enters_);
   int num_expected_updates =
@@ -1011,8 +1002,7 @@ TEST_F(DragDropControllerTest, TouchDragDropCancelsOnLongTap) {
   EXPECT_TRUE(drag_drop_controller_->drag_canceled_);
   EXPECT_EQ(0, drag_drop_controller_->num_drag_updates_);
   EXPECT_FALSE(drag_drop_controller_->drop_received_);
-  EXPECT_EQ(base::UTF8ToUTF16("I am being dragged"),
-            drag_drop_controller_->drag_string_);
+  EXPECT_EQ(u"I am being dragged", drag_drop_controller_->drag_string_);
   EXPECT_EQ(0, drag_view->num_drag_enters_);
   EXPECT_EQ(0, drag_view->num_drops_);
   EXPECT_EQ(0, drag_view->num_drag_exits_);
@@ -1092,8 +1082,7 @@ TEST_F(DragDropControllerTest, DragDropWithChangingIcon) {
   EXPECT_EQ(num_drags - 1 - drag_view1->HorizontalDragThreshold(),
             drag_drop_controller_->num_drag_updates_);
   EXPECT_TRUE(drag_drop_controller_->drop_received_);
-  EXPECT_EQ(base::UTF8ToUTF16("I am being dragged"),
-            drag_drop_controller_->drag_string_);
+  EXPECT_EQ(u"I am being dragged", drag_drop_controller_->drag_string_);
 
   EXPECT_EQ(1, drag_view1->num_drag_enters_);
   int num_expected_updates =
@@ -1142,7 +1131,7 @@ TEST_F(DragDropControllerTest, DragCancelAcrossDisplays) {
 
   {
     auto data(std::make_unique<ui::OSExchangeData>());
-    data->SetString(base::UTF8ToUTF16("I am being dragged"));
+    data->SetString(u"I am being dragged");
     std::unique_ptr<views::Widget> widget = CreateFramelessWidget();
     aura::Window* window = widget->GetNativeWindow();
     drag_drop_controller_->StartDragAndDrop(
@@ -1176,7 +1165,7 @@ TEST_F(DragDropControllerTest, DragCancelAcrossDisplays) {
 
   {
     auto data(std::make_unique<ui::OSExchangeData>());
-    data->SetString(base::UTF8ToUTF16("I am being dragged"));
+    data->SetString(u"I am being dragged");
     std::unique_ptr<views::Widget> widget = CreateFramelessWidget();
     aura::Window* window = widget->GetNativeWindow();
     drag_drop_controller_->StartDragAndDrop(
@@ -1220,7 +1209,7 @@ TEST_F(DragDropControllerTest, DragCancelOnDisplayDisconnect) {
   }
 
   auto data(std::make_unique<ui::OSExchangeData>());
-  data->SetString(base::UTF8ToUTF16("I am being dragged"));
+  data->SetString(u"I am being dragged");
   std::unique_ptr<views::Widget> widget = CreateFramelessWidget();
   aura::Window* window = widget->GetNativeWindow();
   drag_drop_controller_->StartDragAndDrop(
@@ -1290,8 +1279,7 @@ TEST_F(DragDropControllerTest, TouchDragDropCompletesOnFling) {
   EXPECT_FALSE(drag_drop_controller_->drag_canceled_);
   EXPECT_EQ(2, drag_drop_controller_->num_drag_updates_);
   EXPECT_TRUE(drag_drop_controller_->drop_received_);
-  EXPECT_EQ(base::UTF8ToUTF16("I am being dragged"),
-            drag_drop_controller_->drag_string_);
+  EXPECT_EQ(u"I am being dragged", drag_drop_controller_->drag_string_);
   EXPECT_EQ(1, drag_view->num_drag_enters_);
   EXPECT_EQ(2, drag_view->num_drag_updates_);
   EXPECT_EQ(1, drag_view->num_drops_);
@@ -1305,7 +1293,7 @@ TEST_F(DragDropControllerTest, DragObserverEvents) {
 
   {
     auto data(std::make_unique<ui::OSExchangeData>());
-    data->SetString(base::UTF8ToUTF16("I am being dragged"));
+    data->SetString(u"I am being dragged");
     ui::OSExchangeData* data_ptr = data.get();
 
     std::unique_ptr<views::Widget> widget = CreateFramelessWidget();
@@ -1348,7 +1336,7 @@ TEST_F(DragDropControllerTest, SetEnabled) {
 
   // Data for the drag.
   auto data(std::make_unique<ui::OSExchangeData>());
-  data->SetString(base::UTF8ToUTF16("I am being dragged"));
+  data->SetString(u"I am being dragged");
   std::unique_ptr<views::Widget> widget = CreateFramelessWidget();
   aura::Window* window = widget->GetNativeWindow();
 
@@ -1387,7 +1375,7 @@ TEST_F(DragDropControllerTest, EventTarget) {
 
   drag_drop_controller_->set_should_block_during_drag_drop(true);
   auto data(std::make_unique<ui::OSExchangeData>());
-  data->SetString(base::UTF8ToUTF16("I am being dragged"));
+  data->SetString(u"I am being dragged");
   drag_drop_controller_->StartDragAndDrop(
       std::move(data), window->GetRootWindow(), window.get(), gfx::Point(5, 5),
       ui::DragDropTypes::DRAG_MOVE, ui::mojom::DragEventSource::kMouse);
@@ -1543,7 +1531,7 @@ TEST_F(DragDropControllerTest, DlpAllowDragDrop) {
   generator.PressLeftButton();
 
   auto data(std::make_unique<ui::OSExchangeData>());
-  data->SetString(base::UTF8ToUTF16("I am being dragged"));
+  data->SetString(u"I am being dragged");
 
   // Drag update.
   EXPECT_CALL(dlp_contoller, IsDragDropAllowed(_, _, /*is_drop=*/false))
@@ -1581,7 +1569,7 @@ TEST_F(DragDropControllerTest, DlpDisallowDragDrop) {
   generator.PressLeftButton();
 
   auto data(std::make_unique<ui::OSExchangeData>());
-  data->SetString(base::UTF8ToUTF16("I am being dragged"));
+  data->SetString(u"I am being dragged");
 
   // Drag update.
   EXPECT_CALL(dlp_contoller, IsDragDropAllowed(_, _, /*is_drop=*/false))

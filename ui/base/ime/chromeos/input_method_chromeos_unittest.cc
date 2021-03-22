@@ -986,7 +986,7 @@ TEST_F(InputMethodChromeOSTest, ConfirmCompositionText_SetComposition) {
   ime_->OnTextInputTypeChanged(this);
 
   CompositionText composition_text;
-  composition_text.text = base::UTF8ToUTF16("hello");
+  composition_text.text = u"hello";
   SetCompositionText(composition_text);
   ime_->ConfirmCompositionText(/* reset_engine */ true,
                                /* keep_selection */ false);
@@ -1001,7 +1001,7 @@ TEST_F(InputMethodChromeOSTest, ConfirmCompositionText_SetCompositionRange) {
   ime_->OnTextInputTypeChanged(this);
 
   // Place some text.
-  surrounding_text_ = UTF8ToUTF16("abc");
+  surrounding_text_ = u"abc";
   text_range_ = gfx::Range(0, 3);
 
   // "abc" is in composition. Put the two characters in composition.

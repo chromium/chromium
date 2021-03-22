@@ -611,8 +611,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
       std::u16string annotation;
       std::u16string match_contents = suggestion;
       if (match_type == AutocompleteMatchType::CALCULATOR) {
-        const bool has_equals_prefix =
-            !suggestion.compare(0, 2, base::UTF8ToUTF16("= "));
+        const bool has_equals_prefix = !suggestion.compare(0, 2, u"= ");
         if (has_equals_prefix) {
           // Calculator results include a "= " prefix but we don't want to
           // include this in the search terms.

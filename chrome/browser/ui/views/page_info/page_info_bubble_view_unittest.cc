@@ -678,7 +678,7 @@ TEST_F(PageInfoBubbleViewTest, CertificateButtonShowsEvCertDetails) {
   // name and country of incorporation.
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_PAGE_INFO_SECURITY_TAB_SECURE_IDENTITY_EV_VERIFIED,
-                base::UTF8ToUTF16("Test Org"), base::UTF8ToUTF16("US")),
+                u"Test Org", u"US"),
             api_->GetCertificateButtonSubtitleText());
 }
 
@@ -719,6 +719,6 @@ TEST_F(PageInfoBubbleViewTest, EvDetailsShowForCertWithStateButNoLocality) {
   // name and country of incorporation.
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_PAGE_INFO_SECURITY_TAB_SECURE_IDENTITY_EV_VERIFIED,
-                base::UTF8ToUTF16("Test Org"), base::UTF8ToUTF16("US")),
+                u"Test Org", u"US"),
             api_->GetCertificateButtonSubtitleText());
 }

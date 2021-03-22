@@ -678,8 +678,8 @@ TEST_P(AddressTest, TestMergeStructuredAddresses) {
   EXPECT_TRUE(address1.IsStructuredAddressMergeable(address2));
 
   // The two zip codes have a is-substring relation and are mergeable.
-  address1.SetRawInfo(ADDRESS_HOME_ZIP, base::UTF8ToUTF16("12345"));
-  address2.SetRawInfo(ADDRESS_HOME_ZIP, base::UTF8ToUTF16("1234"));
+  address1.SetRawInfo(ADDRESS_HOME_ZIP, u"12345");
+  address2.SetRawInfo(ADDRESS_HOME_ZIP, u"1234");
   EXPECT_TRUE(address2.IsStructuredAddressMergeable(address1));
   EXPECT_TRUE(address1.IsStructuredAddressMergeable(address2));
 
@@ -687,18 +687,18 @@ TEST_P(AddressTest, TestMergeStructuredAddresses) {
   // recently used.
   address1.MergeStructuredAddress(address2,
                                   /*newer_use_more_recently_used=*/false);
-  EXPECT_EQ(address1.GetRawInfo(ADDRESS_HOME_ZIP), base::UTF8ToUTF16("12345"));
+  EXPECT_EQ(address1.GetRawInfo(ADDRESS_HOME_ZIP), u"12345");
 
   // Once it is more recently used, the value from address2 should be copied
   // into address1.
   address1.MergeStructuredAddress(address2,
                                   /*newer_use_more_recently_used=*/true);
-  EXPECT_EQ(address1.GetRawInfo(ADDRESS_HOME_ZIP), base::UTF8ToUTF16("1234"));
+  EXPECT_EQ(address1.GetRawInfo(ADDRESS_HOME_ZIP), u"1234");
 
   // With a second incompatible ZIP code the addresses are not mergeable
   // anymore.
   Address address3;
-  address3.SetRawInfo(ADDRESS_HOME_ZIP, base::UTF8ToUTF16("67890"));
+  address3.SetRawInfo(ADDRESS_HOME_ZIP, u"67890");
   EXPECT_FALSE(address1.IsStructuredAddressMergeable(address3));
 }
 
@@ -710,13 +710,12 @@ TEST_P(AddressTest, TestGettingTheStructuredAddress) {
 
   // Create the address and set a test value.
   Address address1;
-  address1.SetRawInfo(ADDRESS_HOME_ZIP, base::UTF8ToUTF16("12345"));
+  address1.SetRawInfo(ADDRESS_HOME_ZIP, u"12345");
 
   // Get the structured address and verify that it has the same test value set.
   structured_address::Address structured_address =
       address1.GetStructuredAddress();
-  EXPECT_EQ(structured_address.GetValueForType(ADDRESS_HOME_ZIP),
-            base::UTF8ToUTF16("12345"));
+  EXPECT_EQ(structured_address.GetValueForType(ADDRESS_HOME_ZIP), u"12345");
 }
 
 // For structured address, test that the structured information is wiped

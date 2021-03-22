@@ -167,7 +167,7 @@ class TabContentsTagTest : public InProcessBrowserTest {
 
   std::u16string GetAboutBlankExpectedTitle() const {
     return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_TAB_PREFIX,
-                                      base::UTF8ToUTF16("about:blank"));
+                                      u"about:blank");
   }
 
   int tabs_count() const { return browser()->tab_strip_model()->count(); }

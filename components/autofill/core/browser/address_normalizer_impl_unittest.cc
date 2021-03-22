@@ -259,8 +259,7 @@ TEST_F(AddressNormalizerTest, FormatPhone_AddressNormalizedAsync) {
   WaitForAddressValidatorInitialization();
 
   AutofillProfile profile = autofill::test::GetFullProfile();
-  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
-                     base::UTF8ToUTF16("(515) 223-1234"));
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"(515) 223-1234");
   profile.SetRawInfo(ADDRESS_HOME_STATE, base::ASCIIToUTF16("California"));
   const std::string kCountryCode =
       base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY));
@@ -292,8 +291,7 @@ TEST_F(AddressNormalizerTest, FormatInvalidPhone_AddressNormalizedAsync) {
 
   AutofillProfile profile = autofill::test::GetFullProfile();
   // The number below is not a valid US number.
-  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
-                     base::UTF8ToUTF16("(515) 123-1234"));
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"(515) 123-1234");
   profile.SetRawInfo(ADDRESS_HOME_STATE, base::ASCIIToUTF16("California"));
   const std::string kCountryCode =
       base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY));
@@ -324,8 +322,7 @@ TEST_F(AddressNormalizerTest, FormatPhone_AddressNotNormalizedAsync) {
 
   AutofillProfile profile = autofill::test::GetFullProfile();
   profile.SetRawInfo(ADDRESS_HOME_STATE, base::ASCIIToUTF16("California"));
-  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
-                     base::UTF8ToUTF16("515-223-1234"));
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"515-223-1234");
 
   // Make sure the rules will not be loaded in the NormalizeAddressAsync
   // call.
@@ -358,8 +355,7 @@ TEST_F(AddressNormalizerTest, NormalizeAddressSync_RulesNotLoaded) {
 
   AutofillProfile profile = autofill::test::GetFullProfile();
   profile.SetRawInfo(ADDRESS_HOME_STATE, base::ASCIIToUTF16("California"));
-  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
-                     base::UTF8ToUTF16("515-223-1234"));
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"515-223-1234");
 
   // Do the normalization.
   EXPECT_FALSE(normalizer()->NormalizeAddressSync(&profile));
@@ -380,8 +376,7 @@ TEST_F(AddressNormalizerTest, NormalizeAddressSync_RulesLoaded) {
 
   AutofillProfile profile = autofill::test::GetFullProfile();
   profile.SetRawInfo(ADDRESS_HOME_STATE, base::ASCIIToUTF16("California"));
-  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
-                     base::UTF8ToUTF16("515-223-1234"));
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"515-223-1234");
   const std::string kCountryCode =
       base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY));
 
@@ -405,8 +400,7 @@ TEST_F(AddressNormalizerTest, NormalizeAddressSync_RulesLoaded) {
 TEST_F(AddressNormalizerTest, NormalizeAddressSync_UninitializedValidator) {
   AutofillProfile profile = autofill::test::GetFullProfile();
   profile.SetRawInfo(ADDRESS_HOME_STATE, base::ASCIIToUTF16("California"));
-  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
-                     base::UTF8ToUTF16("515-223-1234"));
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"515-223-1234");
   const std::string kCountryCode =
       base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY));
 

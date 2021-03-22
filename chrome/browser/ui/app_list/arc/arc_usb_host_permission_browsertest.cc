@@ -217,8 +217,8 @@ IN_PROC_BROWSER_TEST_F(ArcUsbHostPermissionTest, UsbTemporayPermissionTest) {
   AddArcPackage(kPackageName);
   // Persistent device0.
   const std::string guid0 = "TestGuidXXXXXX0";
-  const std::u16string device_name0 = base::UTF8ToUTF16("TestDevice0");
-  const std::u16string serial_number0 = base::UTF8ToUTF16("TestSerialNumber0");
+  const std::u16string device_name0 = u"TestDevice0";
+  const std::u16string serial_number0 = u"TestSerialNumber0";
   const uint16_t vendor_id0 = 123;
   const uint16_t product_id0 = 456;
 
@@ -240,19 +240,19 @@ IN_PROC_BROWSER_TEST_F(ArcUsbHostPermissionTest, UsbChromePrefsTest) {
 
   // Persistent device0.
   const std::string guid0 = "TestGuidXXXXXX0";
-  const std::u16string device_name0 = base::UTF8ToUTF16("TestDevice0");
-  const std::u16string serial_number0 = base::UTF8ToUTF16("TestSerialNumber0");
+  const std::u16string device_name0 = u"TestDevice0";
+  const std::u16string serial_number0 = u"TestSerialNumber0";
   const uint16_t vendor_id0 = 123;
   const uint16_t product_id0 = 456;
   // Persistent device1.
   const std::string guid1 = "TestGuidXXXXXX1";
-  const std::u16string device_name1 = base::UTF8ToUTF16("TestDevice1");
-  const std::u16string serial_number1 = base::UTF8ToUTF16("TestSerialNumber1");
+  const std::u16string device_name1 = u"TestDevice1";
+  const std::u16string serial_number1 = u"TestSerialNumber1";
   const uint16_t vendor_id1 = 234;
   const uint16_t product_id1 = 567;
   // Non persistent device2.
   const std::string guid2 = "TestGuidXXXXXX2";
-  const std::u16string device_name2 = base::UTF8ToUTF16("TestDevice2");
+  const std::u16string device_name2 = u"TestDevice2";
   const uint16_t vendor_id2 = 345;
   const uint16_t product_id2 = 678;
 
@@ -320,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(ArcUsbHostKioskPermissionTest, UsbKioskPermission) {
   AddArcPackage(kPackageName);
   // Persistent device0.
   const std::string guid = "TestGuidXXXXXX0";
-  const std::u16string serial_number = base::UTF8ToUTF16("TestSerialNumber0");
+  const std::u16string serial_number = u"TestSerialNumber0";
   const uint16_t vendor_id = 123;
   const uint16_t product_id = 456;
 

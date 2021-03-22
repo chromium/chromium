@@ -173,8 +173,8 @@ IN_PROC_BROWSER_TEST_F(TouchLocationBarViewBrowserTest,
     if (child != omnibox_view_views)
       child->SetVisible(false);
   }
-  omnibox_view_views->SetText(base::UTF8ToUTF16("谷"));
-  GetLocationBarView()->SetImeInlineAutocompletion(base::UTF8ToUTF16("歌"));
+  omnibox_view_views->SetText(u"谷");
+  GetLocationBarView()->SetImeInlineAutocompletion(u"歌");
   EXPECT_TRUE(ime_inline_autocomplete_view->GetVisible());
 
   GetLocationBarView()->Layout();

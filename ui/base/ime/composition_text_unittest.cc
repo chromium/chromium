@@ -12,7 +12,7 @@
 namespace ui {
 
 TEST(CompositionTextTest, CopyTest) {
-  const std::u16string kSampleText = base::UTF8ToUTF16("Sample Text");
+  const std::u16string kSampleText = u"Sample Text";
   const ImeTextSpan kSampleUnderline1(
       ImeTextSpan::Type::kComposition, 10, 20, ImeTextSpan::Thickness::kThin,
       ImeTextSpan::UnderlineStyle::kSolid, SK_ColorTRANSPARENT);

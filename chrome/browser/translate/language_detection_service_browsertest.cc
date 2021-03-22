@@ -38,7 +38,7 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionServiceTest,
                        DetermineLanguageUndeterminedUnreliable) {
   mojo::Remote<language_detection::mojom::LanguageDetectionService> service =
       language_detection::LaunchLanguageDetectionService();
-  std::u16string text = base::UTF8ToUTF16("Not enough text for detection");
+  std::u16string text = u"Not enough text for detection";
 
   base::RunLoop run_loop;
   service->DetermineLanguage(

@@ -391,7 +391,7 @@ void ShippingAddressEditorViewController::UpdateCountries(
           std::make_pair(country->country_code(), country->name()));
     } else {
       // Separator, kept to make sure the size of the vector stays the same.
-      countries_.push_back(std::make_pair("", base::UTF8ToUTF16("")));
+      countries_.push_back(std::make_pair("", u""));
     }
   }
   // If there is a profile to edit, make sure to use its country for the initial

@@ -1119,8 +1119,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_AppNameInsteadOfOrigin,
   const AppId app_id = InstallPWA(app_url);
   Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
   EXPECT_TRUE(app_browser->app_controller()->HasTitlebarAppOriginText());
-  EXPECT_EQ(app_browser->app_controller()->GetLaunchFlashText(),
-            base::UTF8ToUTF16("A Web App"));
+  EXPECT_EQ(app_browser->app_controller()->GetLaunchFlashText(), u"A Web App");
 }
 
 // Check that a subframe on a regular web page can navigate to a URL that

@@ -54,7 +54,7 @@ class SpellCheckHostChromeImplMacBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(SpellCheckHostChromeImplMacBrowserTest,
                        SpellCheckReturnMessage) {
   spell_check_host_->RequestTextCheck(
-      base::UTF8ToUTF16("zz."), 123,
+      u"zz.", 123,
       base::BindOnce(&SpellCheckHostChromeImplMacBrowserTest::LogResult,
                      base::Unretained(this)));
   RunUntilResultReceived();

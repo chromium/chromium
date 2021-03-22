@@ -579,9 +579,9 @@ TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAllTerms) {
 
   for (const TestData& test_data : data) {
     SCOPED_TRACE("Query: " + test_data.query);
-    std::vector<std::u16string> terms = base::SplitString(
-        base::UTF8ToUTF16(test_data.query), base::UTF8ToUTF16(" "),
-        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    std::vector<std::u16string> terms =
+        base::SplitString(base::UTF8ToUTF16(test_data.query), u" ",
+                          base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     auto matches = index()->RetrieveNodesMatchingAllTermsForTesting(
         terms, query_parser::MatchingAlgorithm::DEFAULT);
     if (test_data.should_be_retrieved) {
@@ -614,9 +614,9 @@ TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAnyTerms) {
 
   for (const TestData& test_data : data) {
     SCOPED_TRACE("Query: " + test_data.query);
-    std::vector<std::u16string> terms = base::SplitString(
-        base::UTF8ToUTF16(test_data.query), base::UTF8ToUTF16(" "),
-        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    std::vector<std::u16string> terms =
+        base::SplitString(base::UTF8ToUTF16(test_data.query), u" ",
+                          base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     auto matches = index()->RetrieveNodesMatchingAnyTermsForTesting(
         terms, query_parser::MatchingAlgorithm::DEFAULT);
     if (test_data.should_be_retrieved) {

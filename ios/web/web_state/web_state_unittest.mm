@@ -75,12 +75,12 @@ TEST_F(WebStateTest, ScriptExecution) {
   ASSERT_TRUE(LoadHtml("<html></html>"));
 
   // Execute script without callback.
-  web_state()->ExecuteJavaScript(base::UTF8ToUTF16("window.foo = 'bar'"));
+  web_state()->ExecuteJavaScript(u"window.foo = 'bar'");
 
   // Execute script with callback.
   __block std::unique_ptr<base::Value> execution_result;
   __block bool execution_complete = false;
-  web_state()->ExecuteJavaScript(base::UTF8ToUTF16("window.foo"),
+  web_state()->ExecuteJavaScript(u"window.foo",
                                  base::BindOnce(^(const base::Value* value) {
                                    execution_result = value->CreateDeepCopy();
                                    execution_complete = true;

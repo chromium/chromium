@@ -97,7 +97,7 @@ const gfx::VectorIcon& WebAuthnIconView::GetVectorIcon() const {
 
 std::u16string WebAuthnIconView::GetTextForTooltipAndAccessibleName() const {
   // TODO(crbug.com/1179014): go through ux review and i18n this string.
-  return base::UTF8ToUTF16("Sign in with your security key");
+  return u"Sign in with your security key";
 }
 
 void WebAuthnIconView::OnWidgetDestroying(views::Widget* widget) {

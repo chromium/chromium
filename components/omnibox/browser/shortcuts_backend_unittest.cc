@@ -98,8 +98,8 @@ ShortcutsBackendTest::MatchCoreForTesting(const std::string& url,
 void ShortcutsBackendTest::SetSearchProvider() {
   TemplateURLData data;
   data.SetURL("http://foo.com/search?bar={searchTerms}");
-  data.SetShortName(base::UTF8ToUTF16("foo"));
-  data.SetKeyword(base::UTF8ToUTF16("foo"));
+  data.SetShortName(u"foo");
+  data.SetKeyword(u"foo");
 
   TemplateURL* template_url =
       template_url_service_->Add(std::make_unique<TemplateURL>(data));
@@ -227,16 +227,16 @@ TEST_F(ShortcutsBackendTest, SanitizeMatchCore) {
 TEST_F(ShortcutsBackendTest, EntitySuggestionTest) {
   SetSearchProvider();
   AutocompleteMatch match;
-  match.fill_into_edit = base::UTF8ToUTF16("franklin d roosevelt");
+  match.fill_into_edit = u"franklin d roosevelt";
   match.type = AutocompleteMatchType::SEARCH_SUGGEST_ENTITY;
-  match.contents = base::UTF8ToUTF16("roosevelt");
+  match.contents = u"roosevelt";
   match.contents_class =
       AutocompleteMatch::ClassificationsFromString("0,0,5,2");
-  match.description = base::UTF8ToUTF16("Franklin D. Roosevelt");
+  match.description = u"Franklin D. Roosevelt";
   match.description_class = AutocompleteMatch::ClassificationsFromString("0,4");
   match.destination_url =
       GURL("http://www.foo.com/search?bar=franklin+d+roosevelt&gs_ssp=1234");
-  match.keyword = base::UTF8ToUTF16("foo");
+  match.keyword = u"foo";
   match.search_terms_args.reset(
       new TemplateURLRef::SearchTermsArgs(match.fill_into_edit));
 
@@ -257,7 +257,7 @@ TEST_F(ShortcutsBackendTest, MatchCoreDescriptionTest) {
   // match.description.
   {
     AutocompleteMatch match;
-    match.description = base::UTF8ToUTF16("the cat");
+    match.description = u"the cat";
     match.description_class =
         AutocompleteMatch::ClassificationsFromString("0,1");
 
@@ -275,10 +275,10 @@ TEST_F(ShortcutsBackendTest, MatchCoreDescriptionTest) {
   // instead of match.description.
   {
     AutocompleteMatch match;
-    match.description = base::UTF8ToUTF16("the cat");
+    match.description = u"the cat";
     match.description_class =
         AutocompleteMatch::ClassificationsFromString("0,1");
-    match.description_for_shortcuts = base::UTF8ToUTF16("the elephant");
+    match.description_for_shortcuts = u"the elephant";
     match.description_class_for_shortcuts =
         AutocompleteMatch::ClassificationsFromString("0,4");
 

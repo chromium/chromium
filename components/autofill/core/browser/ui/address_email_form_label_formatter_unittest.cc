@@ -209,9 +209,8 @@ TEST(AddressEmailFormLabelFormatterTest, GetLabelsForBRProfilesAndFocusedName) {
   EXPECT_THAT(
       formatter->GetLabels(),
       ElementsAre(
-          ConstructLabelLine(
-              {base::UTF8ToUTF16("Av. Pedro Álvares Cabral, 1301"),
-               base::ASCIIToUTF16("tarsila@aol.com")}),
+          ConstructLabelLine({u"Av. Pedro Álvares Cabral, 1301",
+                              base::ASCIIToUTF16("tarsila@aol.com")}),
           ConstructLabelLine({base::ASCIIToUTF16("Estr. Dona Castorina, 110"),
                               base::ASCIIToUTF16("aavila@uol.com.br")})));
 }
@@ -268,9 +267,8 @@ TEST(AddressEmailFormLabelFormatterTest,
   EXPECT_THAT(
       formatter->GetLabels(),
       ElementsAre(
-          ConstructLabelLine(
-              {base::UTF8ToUTF16("Av. Pedro Álvares Cabral, 1301"),
-               base::ASCIIToUTF16("tarsila@aol.com")}),
+          ConstructLabelLine({u"Av. Pedro Álvares Cabral, 1301",
+                              base::ASCIIToUTF16("tarsila@aol.com")}),
           ConstructLabelLine({base::ASCIIToUTF16("Estr. Dona Castorina, 110"),
                               base::ASCIIToUTF16("aavila@uol.com.br")})));
 }
@@ -297,9 +295,8 @@ TEST(AddressEmailFormLabelFormatterTest,
 
   EXPECT_THAT(
       formatter->GetLabels(),
-      ElementsAre(ConstructLabelLine(
-                      {base::ASCIIToUTF16("Tarsila do Amaral"),
-                       base::UTF8ToUTF16("Av. Pedro Álvares Cabral, 1301")}),
+      ElementsAre(ConstructLabelLine({base::ASCIIToUTF16("Tarsila do Amaral"),
+                                      u"Av. Pedro Álvares Cabral, 1301"}),
                   ConstructLabelLine(
                       {base::ASCIIToUTF16("Artur Avila"),
                        base::ASCIIToUTF16("Estr. Dona Castorina, 110")})));

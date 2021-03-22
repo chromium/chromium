@@ -573,16 +573,14 @@ TEST_F(SuggestionSelectionTest,
 }
 
 TEST_F(SuggestionSelectionTest, PrepareSuggestions_SameStringInValueAndLabel) {
-  std::vector<Suggestion> suggestions{
-      Suggestion(base::UTF8ToUTF16("4 Mañana Road"))};
+  std::vector<Suggestion> suggestions{Suggestion(u"4 Mañana Road")};
 
   const std::vector<std::u16string> labels{ASCIIToUTF16("4 manana road")};
 
   PrepareSuggestions(labels, &suggestions, comparator_);
   EXPECT_THAT(suggestions,
-              ElementsAre(AllOf(
-                  Field(&Suggestion::value, base::UTF8ToUTF16("4 Mañana Road")),
-                  Field(&Suggestion::label, std::u16string()))));
+              ElementsAre(AllOf(Field(&Suggestion::value, u"4 Mañana Road"),
+                                Field(&Suggestion::label, std::u16string()))));
 }
 
 }  // namespace suggestion_selection
