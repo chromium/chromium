@@ -7210,6 +7210,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(metrics::structured::kBluetoothSessionizedMetrics)},
 #endif
 
+#if defined(OS_LINUX) && defined(USE_OZONE)
+    {"use-ozone-platform", flag_descriptions::kUseOzonePlatformName,
+     flag_descriptions::kUseOzonePlatformDescription, kOsLinux,
+     FEATURE_VALUE_TYPE(features::kUseOzonePlatform)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

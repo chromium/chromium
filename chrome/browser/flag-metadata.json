@@ -5075,6 +5075,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "use-ozone-platform",
+    "owners": [ "rjkroege", "thomasanderson", "msisov@igalia.com", "nickdiego@igalia.com", "adunaev@igalia.com" ],
+    "expiry_milestone": 98
+  },
+  {
     "name": "use-search-click-for-right-click",
     "owners": [ "zentaro", "cros-peripherals@google.com" ],
     "expiry_milestone": 95
