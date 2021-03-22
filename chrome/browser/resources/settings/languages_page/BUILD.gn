@@ -28,7 +28,6 @@ js_library("languages_types") {
 
 js_library("add_languages_dialog") {
   deps = [
-    ":languages",
     ":languages_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",

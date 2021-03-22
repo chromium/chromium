@@ -91,6 +91,9 @@ Polymer({
     /** @private */
     showAddLanguagesDialog_: Boolean,
 
+    /** @private {?Array<!chrome.languageSettingsPrivate.Language>} */
+    addLanguagesDialogLanguages_: Array,
+
     /** @private {!Map<string, string>} */
     focusConfig_: {
       type: Object,
@@ -169,13 +172,30 @@ Polymer({
     // </if>
     this.languageSettingsMetricsProxy_.recordPageImpressionMetric(
         LanguageSettingsPageImpressionType.ADD_LANGUAGE);
+
+    this.addLanguagesDialogLanguages_ = this.languages.supported.filter(
+        language => this.languageHelper.canEnableLanguage(language));
     this.showAddLanguagesDialog_ = true;
   },
 
   /** @private */
   onAddLanguagesDialogClose_() {
     this.showAddLanguagesDialog_ = false;
+    this.addLanguagesDialogLanguages_ = null;
     focusWithoutInk(assert(this.$$('#addLanguages')));
+  },
+
+  /**
+   * @param {!CustomEvent<!Array<string>>} e
+   * @private
+   */
+  onLanguagesAdded_(e) {
+    const languagesToAdd = e.detail;
+    languagesToAdd.forEach(languageCode => {
+      this.languageHelper.enableLanguage(languageCode);
+      LanguageSettingsMetricsProxyImpl.getInstance().recordSettingsMetric(
+          LanguageSettingsActionType.LANGUAGE_ADDED);
+    });
   },
 
   /**
