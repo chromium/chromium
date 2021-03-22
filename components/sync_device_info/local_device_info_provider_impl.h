@@ -52,7 +52,7 @@ class LocalDeviceInfoProviderImpl : public MutableLocalDeviceInfoProvider {
   const DeviceInfoSyncClient* const sync_client_;
 
   std::unique_ptr<DeviceInfo> local_device_info_;
-  base::CallbackList<void(void)> callback_list_;
+  base::RepeatingClosureList closure_list_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

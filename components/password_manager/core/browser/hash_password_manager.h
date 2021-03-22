@@ -72,7 +72,8 @@ class HashPasswordManager {
   // Should only be accessed on the UI thread. The callback is only called when
   // the sign-in isn't the first change on the |kPasswordHashDataList| and
   // saving the password hash actually succeeded.
-  base::CallbackList<void(const std::string& username)> state_callback_list_;
+  base::RepeatingCallbackList<void(const std::string& username)>
+      state_callback_list_;
 
   DISALLOW_COPY_AND_ASSIGN(HashPasswordManager);
 };

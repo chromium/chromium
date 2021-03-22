@@ -65,7 +65,7 @@ LocalDeviceInfoProviderImpl::RegisterOnInitializedCallback(
     const base::RepeatingClosure& callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!local_device_info_);
-  return callback_list_.Add(callback);
+  return closure_list_.Add(callback);
 }
 
 void LocalDeviceInfoProviderImpl::Initialize(
@@ -91,7 +91,7 @@ void LocalDeviceInfoProviderImpl::Initialize(
       last_interested_data_types);
 
   // Notify observers.
-  callback_list_.Notify();
+  closure_list_.Notify();
 }
 
 void LocalDeviceInfoProviderImpl::Clear() {

@@ -194,7 +194,7 @@ CustomLinksManagerImpl::FindLinkWithUrl(const GURL& url) {
 base::CallbackListSubscription
 CustomLinksManagerImpl::RegisterCallbackForOnChanged(
     base::RepeatingClosure callback) {
-  return callback_list_.Add(callback);
+  return closure_list_.Add(callback);
 }
 
 // history::HistoryServiceObserver implementation.
@@ -221,7 +221,7 @@ void CustomLinksManagerImpl::OnURLsDeleted(
 
   // Alert MostVisitedSites that some links have been deleted.
   if (initial_size != current_links_.size())
-    callback_list_.Notify();
+    closure_list_.Notify();
 }
 
 void CustomLinksManagerImpl::HistoryServiceBeingDeleted(
@@ -239,7 +239,7 @@ void CustomLinksManagerImpl::OnPreferenceChanged() {
   else
     current_links_.clear();
   previous_links_ = base::nullopt;
-  callback_list_.Notify();
+  closure_list_.Notify();
 }
 
 // static

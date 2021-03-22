@@ -88,8 +88,9 @@ class MediaRouterBase : public MediaRouter {
   // if not found.
   const MediaRoute* GetRoute(const MediaRoute::Id& route_id) const;
 
-  using PresentationConnectionStateChangedCallbacks = base::CallbackList<void(
-      const content::PresentationConnectionStateChangeInfo&)>;
+  using PresentationConnectionStateChangedCallbacks =
+      base::RepeatingCallbackList<void(
+          const content::PresentationConnectionStateChangeInfo&)>;
 
   std::unordered_map<
       MediaRoute::Id,

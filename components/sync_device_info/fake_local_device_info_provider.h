@@ -30,7 +30,7 @@ class FakeLocalDeviceInfoProvider : public LocalDeviceInfoProvider {
  private:
   DeviceInfo device_info_;
   bool ready_ = true;
-  base::CallbackList<void(void)> callback_list_;
+  base::RepeatingClosureList closure_list_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeLocalDeviceInfoProvider);
 };

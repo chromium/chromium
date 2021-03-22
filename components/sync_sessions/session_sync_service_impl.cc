@@ -47,7 +47,7 @@ OpenTabsUIDelegate* SessionSyncServiceImpl::GetOpenTabsUIDelegate() {
 base::CallbackListSubscription
 SessionSyncServiceImpl::SubscribeToForeignSessionsChanged(
     const base::RepeatingClosure& cb) {
-  return foreign_sessions_changed_callback_list_.Add(cb);
+  return foreign_sessions_changed_closure_list_.Add(cb);
 }
 
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
@@ -70,7 +70,7 @@ SessionSyncServiceImpl::GetUnderlyingOpenTabsUIDelegateForTest() {
 }
 
 void SessionSyncServiceImpl::NotifyForeignSessionUpdated() {
-  foreign_sessions_changed_callback_list_.Notify();
+  foreign_sessions_changed_closure_list_.Notify();
 }
 
 }  // namespace sync_sessions

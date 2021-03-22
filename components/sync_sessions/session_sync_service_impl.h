@@ -61,7 +61,7 @@ class SessionSyncServiceImpl : public SessionSyncService {
 
   std::unique_ptr<SessionSyncBridge> bridge_;
 
-  base::CallbackList<void()> foreign_sessions_changed_callback_list_;
+  base::RepeatingClosureList foreign_sessions_changed_closure_list_;
 
   DISALLOW_COPY_AND_ASSIGN(SessionSyncServiceImpl);
 };
