@@ -189,11 +189,9 @@ void SafeBrowsingNavigationObserver::DidStartNavigation(
   // If there was a URL previously committed in the current RenderFrameHost,
   // set it as the source url of this navigation. Otherwise, this is the
   // first url going to commit in this frame.
-  int current_process_id =
-      navigation_handle->GetStartingSiteInstance()->GetProcess()->GetID();
   content::RenderFrameHost* current_frame_host =
-      navigation_handle->GetWebContents()->FindFrameByFrameTreeNodeId(
-          nav_event->frame_id, current_process_id);
+      content::RenderFrameHost::FromID(
+          navigation_handle->GetPreviousRenderFrameHostId());
   // For browser initiated navigation (e.g. from address bar or bookmark), we
   // don't fill the source_url to prevent attributing navigation to the last
   // committed navigation.
