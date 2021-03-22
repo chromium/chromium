@@ -11,12 +11,9 @@
 #include "ash/home_screen/home_screen_presenter.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/overview/overview_session.h"
-#include "ash/wm/splitview/split_view_controller.h"
-#include "ash/wm/splitview/split_view_observer.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/scoped_observation.h"
 
 namespace ui {
 class ThroughputTracker;
@@ -28,14 +25,10 @@ namespace ash {
 // the tablet mode app list.
 // NOTE: This class is being folded into AppListControllerImpl. Its tests live
 // in ash/app_list/app_list_controller_impl_unittest.cc.
-class ASH_EXPORT HomeScreenController : public OverviewObserver,
-                                        public SplitViewObserver {
+class ASH_EXPORT HomeScreenController : public OverviewObserver {
  public:
   HomeScreenController();
   ~HomeScreenController() override;
-
-  // Shows the home screen.
-  void Show();
 
   // Takes the user to the home screen, either by ending Overview Mode/Split
   // View Mode or by minimizing the other windows. Returns false if there was
@@ -45,26 +38,6 @@ class ASH_EXPORT HomeScreenController : public OverviewObserver,
   // Responsible to starting or stopping |smoothness_tracker_|.
   void StartTrackingAnimationSmoothness(int64_t display_id);
   void RecordAnimationSmoothness();
-
-  // Called when the app list view is shown.
-  // Note that IsHomeScreenVisible() might still return false at this point, as
-  // the home screen visibility takes into account whether the app list view is
-  // obscured by an app window, or overview UI. This method gets called when the
-  // app list view widget visibility changes (regardless of whether anything is
-  // stacked above the home screen).
-  // TODO(https://crbug.com/1053316): Make the home screen visibility API, and
-  // relationship between home screen controller and app list controller less
-  // confusing. HomeScreenController logic can probably be folded into
-  // AppListController (as level of abstraction it's providing is no longer
-  // necessary).
-  void OnAppListViewShown();
-
-  // Called when the app list view is hidden.
-  void OnAppListViewClosing();
-
-  // SplitViewObserver:
-  void OnSplitViewStateChanged(SplitViewController::State previous_state,
-                               SplitViewController::State state) override;
 
  private:
   // TODO(jamescook): Remove when the classes have been combined.
@@ -96,9 +69,6 @@ class ASH_EXPORT HomeScreenController : public OverviewObserver,
   // Responsible for recording smoothness related UMA stats for homescreen
   // animations.
   base::Optional<ui::ThroughputTracker> smoothness_tracker_;
-
-  base::ScopedObservation<SplitViewController, SplitViewObserver>
-      split_view_observation_{this};
 
   base::WeakPtrFactory<HomeScreenController> weak_ptr_factory_{this};
 

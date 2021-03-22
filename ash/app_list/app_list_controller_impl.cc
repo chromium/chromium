@@ -550,7 +550,7 @@ void AppListControllerImpl::OnSessionStateChanged(
   // list is not considered shown since the browser window is shown over app
   // list upon login.
   if (!presenter_.GetTargetVisibility())
-    Shell::Get()->home_screen_controller()->Show();
+    ShowHomeScreen();
 
   // Hide app list UI initially to prevent app list from flashing in background
   // while the initial app window is being shown.
@@ -743,6 +743,12 @@ void AppListControllerImpl::OnOverviewModeEnded() {
   OnVisibilityChanged(!GetTopVisibleWindow(), last_visible_display_id_);
 }
 
+void AppListControllerImpl::OnSplitViewStateChanged(
+    SplitViewController::State previous_state,
+    SplitViewController::State state) {
+  UpdateHomeScreenVisibility();
+}
+
 void AppListControllerImpl::OnTabletModeStarted() {
   const AppListView* app_list_view = presenter_.GetView();
   // In tablet mode shelf orientation is always "bottom". Dismiss app list if
@@ -756,7 +762,7 @@ void AppListControllerImpl::OnTabletModeStarted() {
   // Show the app list if the tablet mode starts.
   if (Shell::Get()->session_controller()->GetSessionState() ==
       session_manager::SessionState::ACTIVE) {
-    Shell::Get()->home_screen_controller()->Show();
+    ShowHomeScreen();
   }
   UpdateLauncherContainer();
 
@@ -844,7 +850,7 @@ void AppListControllerImpl::OnDisplayConfigurationChanged() {
   if (!should_be_shown || should_be_shown == presenter_.GetTargetVisibility())
     return;
 
-  Shell::Get()->home_screen_controller()->Show();
+  ShowHomeScreen();
 }
 
 void AppListControllerImpl::OnWindowUntracked(aura::Window* untracked_window) {
@@ -960,18 +966,6 @@ void AppListControllerImpl::OnHomeLauncherPositionChanged(int percent_shown,
       mostly_shown ? HomeLauncherTransitionState::kMostlyShown
                    : HomeLauncherTransitionState::kMostlyHidden;
   OnVisibilityWillChange(mostly_shown, display_id);
-}
-
-void AppListControllerImpl::ShowHomeScreenView() {
-  DCHECK(IsTabletMode());
-
-  // App list is only considered shown for metrics if there are currently no
-  // other visible windows shown over the app list after the tablet transition.
-  base::Optional<AppListShowSource> show_source;
-  if (!GetTopVisibleWindow())
-    show_source = kTabletMode;
-
-  Show(GetDisplayIdToShowAppListOn(), show_source, base::TimeTicks());
 }
 
 aura::Window* AppListControllerImpl::GetHomeScreenWindow() const {
@@ -1160,7 +1154,14 @@ void AppListControllerImpl::ViewShown(int64_t display_id) {
   if (client_)
     client_->ViewShown(display_id);
 
-  Shell::Get()->home_screen_controller()->OnAppListViewShown();
+  // Note that IsHomeScreenVisible() might still return false at this point, as
+  // the home screen visibility takes into account whether the app list view is
+  // obscured by an app window, or overview UI. This method gets called when the
+  // app list view widget visibility changes (regardless of whether anything is
+  // stacked above the home screen).
+  aura::Window* window = GetHomeScreenWindow();
+  split_view_observation_.Observe(SplitViewController::Get(window));
+  UpdateHomeScreenVisibility();
 
   // Ensure search box starts fresh with no ring each time it opens.
   keyboard_traversal_engaged_ = false;
@@ -1186,8 +1187,7 @@ void AppListControllerImpl::ViewClosing() {
   if (client_)
     client_->ViewClosing();
 
-  if (Shell::Get()->home_screen_controller())
-    Shell::Get()->home_screen_controller()->OnAppListViewClosing();
+  split_view_observation_.Reset();
 }
 
 const std::vector<SkColor>&
@@ -1605,6 +1605,26 @@ void AppListControllerImpl::ResetHomeLauncherIfShown() {
 
   // Refresh the suggestion chips with empty query.
   StartSearch(std::u16string());
+}
+
+void AppListControllerImpl::ShowHomeScreen() {
+  DCHECK(Shell::Get()->tablet_mode_controller()->InTabletMode());
+
+  if (!Shell::Get()->session_controller()->IsActiveUserSessionStarted())
+    return;
+
+  // App list is only considered shown for metrics if there are currently no
+  // other visible windows shown over the app list after the tablet transition.
+  base::Optional<AppListShowSource> show_source;
+  if (!GetTopVisibleWindow())
+    show_source = kTabletMode;
+
+  Show(GetDisplayIdToShowAppListOn(), show_source, base::TimeTicks());
+  UpdateHomeScreenVisibility();
+
+  aura::Window* window = GetHomeScreenWindow();
+  if (window)
+    Shelf::ForWindow(window)->MaybeUpdateShelfBackground();
 }
 
 void AppListControllerImpl::UpdateHomeScreenVisibility() {

@@ -111,21 +111,6 @@ HomeScreenController::~HomeScreenController() {
   Shell::Get()->overview_controller()->RemoveObserver(this);
 }
 
-void HomeScreenController::Show() {
-  DCHECK(Shell::Get()->tablet_mode_controller()->InTabletMode());
-
-  if (!Shell::Get()->session_controller()->IsActiveUserSessionStarted())
-    return;
-
-  auto* app_list_controller = Shell::Get()->app_list_controller();
-  app_list_controller->ShowHomeScreenView();
-  UpdateVisibility();
-
-  aura::Window* window = app_list_controller->GetHomeScreenWindow();
-  if (window)
-    Shelf::ForWindow(window)->MaybeUpdateShelfBackground();
-}
-
 bool HomeScreenController::GoHome(int64_t display_id) {
   DCHECK(Shell::Get()->tablet_mode_controller()->InTabletMode());
 
@@ -253,23 +238,6 @@ void HomeScreenController::RecordAnimationSmoothness() {
     return;
   smoothness_tracker_->Stop();
   smoothness_tracker_.reset();
-}
-
-void HomeScreenController::OnAppListViewShown() {
-  aura::Window* window =
-      Shell::Get()->app_list_controller()->GetHomeScreenWindow();
-  split_view_observation_.Observe(SplitViewController::Get(window));
-  UpdateVisibility();
-}
-
-void HomeScreenController::OnAppListViewClosing() {
-  split_view_observation_.Reset();
-}
-
-void HomeScreenController::OnSplitViewStateChanged(
-    SplitViewController::State previous_state,
-    SplitViewController::State state) {
-  UpdateVisibility();
 }
 
 // NOTE: This code runs before AppListControllerImpl::OnOverviewModeStarting.

@@ -32,8 +32,10 @@
 #include "ash/shell_observer.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_observer.h"
+#include "ash/wm/splitview/split_view_observer.h"
 #include "base/callback_helpers.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/sync/model/string_ordinal.h"
 #include "ui/aura/window_observer.h"
@@ -60,6 +62,7 @@ class ASH_EXPORT AppListControllerImpl
       public AppListViewDelegate,
       public ShellObserver,
       public OverviewObserver,
+      public SplitViewObserver,
       public TabletModeObserver,
       public KeyboardControllerObserver,
       public WallpaperControllerObserver,
@@ -235,6 +238,10 @@ class ASH_EXPORT AppListControllerImpl
   void OnOverviewModeEnding(OverviewSession* session) override;
   void OnOverviewModeEnded() override;
 
+  // SplitViewObserver:
+  void OnSplitViewStateChanged(SplitViewController::State previous_state,
+                               SplitViewController::State state) override;
+
   // TabletModeObserver:
   void OnTabletModeStarted() override;
   void OnTabletModeEnded() override;
@@ -273,9 +280,6 @@ class ASH_EXPORT AppListControllerImpl
       AssistantVisibility old_visibility,
       base::Optional<AssistantEntryPoint> entry_point,
       base::Optional<AssistantExitPoint> exit_point) override;
-
-  // Shows the home screen view.
-  void ShowHomeScreenView();
 
   // Gets the home screen window, if available, or null if the home screen
   // window is being hidden for effects (e.g. when dragging windows or
@@ -398,6 +402,8 @@ class ASH_EXPORT AppListControllerImpl
   int64_t GetDisplayIdToShowAppListOn();
 
   void ResetHomeLauncherIfShown();
+
+  void ShowHomeScreen();
 
   // Updates the visibility of the home screen based on e.g. if the device is
   // in overview mode.
@@ -528,6 +534,9 @@ class ASH_EXPORT AppListControllerImpl
 
   // Whether we're currently in a window dragging process.
   bool in_window_dragging_ = false;
+
+  base::ScopedObservation<SplitViewController, SplitViewObserver>
+      split_view_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AppListControllerImpl);
 };
