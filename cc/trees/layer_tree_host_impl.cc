@@ -3248,6 +3248,13 @@ void LayerTreeHostImpl::OnMemoryPressure(
   if (level != base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL)
     return;
 
+    // TODO(crbug.com/1189208): Unlocking decoded-image-tracker images causes
+    // flickering in visible trees if Out-Of-Process rasterization is enabled.
+#if defined(OS_FUCHSIA)
+  if (use_oop_rasterization() && visible())
+    return;
+#endif  // defined(OS_FUCHSIA)
+
   ReleaseTileResources();
   active_tree_->OnPurgeMemory();
   if (pending_tree_)
@@ -3262,6 +3269,7 @@ void LayerTreeHostImpl::OnMemoryPressure(
   }
   if (resource_pool_)
     resource_pool_->OnMemoryPressure(level);
+
   tile_manager_.decoded_image_tracker().UnlockAllImages();
 }
 
