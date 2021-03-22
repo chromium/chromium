@@ -55,7 +55,8 @@ WaylandWindow::WaylandWindow(PlatformWindowDelegate* delegate,
       wayland_overlay_delegation_enabled_(connection->viewporter() &&
                                           IsWaylandOverlayDelegationEnabled()),
       accelerated_widget_(
-          connection->wayland_window_manager()->AllocateAcceleratedWidget()) {
+          connection->wayland_window_manager()->AllocateAcceleratedWidget()),
+      ui_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   // Set a class property key, which allows |this| to be used for drag action.
   SetWmDragHandler(this, this);
 }

@@ -77,7 +77,8 @@ scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateViewGLSurface(
   auto egl_window = CreateWaylandEglWindow(window);
   if (!egl_window)
     return nullptr;
-  return gl::InitializeGLSurface(new GLSurfaceWayland(std::move(egl_window)));
+  return gl::InitializeGLSurface(
+      new GLSurfaceWayland(std::move(egl_window), window));
 }
 
 scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateSurfacelessViewGLSurface(

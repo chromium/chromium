@@ -218,6 +218,10 @@ class WaylandWindow : public PlatformWindow,
   // not support that).
   virtual bool IsActive() const;
 
+  scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner() {
+    return ui_task_runner_;
+  }
+
  protected:
   WaylandWindow(PlatformWindowDelegate* delegate,
                 WaylandConnection* connection);
@@ -342,6 +346,8 @@ class WaylandWindow : public PlatformWindow,
   WmDragHandler::Delegate* drag_handler_delegate_ = nullptr;
 
   base::OnceClosure drag_loop_quit_closure_;
+
+  scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 
   base::WeakPtrFactory<WaylandWindow> weak_ptr_factory_{this};
 
