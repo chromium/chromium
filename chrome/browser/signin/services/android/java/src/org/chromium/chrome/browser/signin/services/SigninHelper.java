@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.signin.services;
 
 import android.accounts.Account;
 import android.content.Context;
-import android.util.Pair;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -56,30 +55,25 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
             implements SigninHelper.AccountChangeEventChecker {
         @Override
         public List<String> getAccountChangeEvents(Context context, int index, String accountName) {
+            final List<String> changedNames = new ArrayList<>();
             try {
                 List<AccountChangeEvent> accountChangeEvents =
                         GoogleAuthUtil.getAccountChangeEvents(context, index, accountName);
-                List<String> changedNames = new ArrayList<>(accountChangeEvents.size());
                 for (AccountChangeEvent event : accountChangeEvents) {
                     if (event.getChangeType() == GoogleAuthUtil.CHANGE_TYPE_ACCOUNT_RENAMED_TO) {
                         changedNames.add(event.getChangeData());
-                    } else {
-                        changedNames.add(null);
                     }
                 }
-                return changedNames;
             } catch (IOException | GoogleAuthException e) {
                 Log.w(TAG, "Failed to get change events", e);
             }
-            return new ArrayList<>(0);
+            return changedNames;
         }
     }
 
     private final SigninManager mSigninManager;
 
     private final AccountTrackerService mAccountTrackerService;
-
-    private final SigninPreferencesManager mPrefsManager;
 
     /**
      * Please use SigninHelperProvider to get SigninHelper instance instead of creating it
@@ -89,11 +83,9 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
      * a signed-in account A is renamed to the account B, the signed-in account will be
      * account B.
      */
-    public SigninHelper(SigninManager signinManager, AccountTrackerService accountTrackerService,
-            SigninPreferencesManager signinPreferencesManager) {
+    public SigninHelper(SigninManager signinManager, AccountTrackerService accountTrackerService) {
         mSigninManager = signinManager;
         mAccountTrackerService = accountTrackerService;
-        mPrefsManager = signinPreferencesManager;
         ApplicationStatus.registerApplicationStateListener(this);
     }
 
@@ -131,7 +123,7 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
                 @Override
                 protected String doInBackground() {
                     return getNewNameOfRenamedAccount(
-                            new SystemAccountChangeEventChecker(), oldAccount.getEmail());
+                            new SystemAccountChangeEventChecker(), oldAccount.getEmail(), accounts);
                 }
 
                 @Override
@@ -179,47 +171,21 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
     }
 
     @VisibleForTesting
-    public static @Nullable String getNewNameOfRenamedAccount(
-            AccountChangeEventChecker checker, String currentAccountName) {
-        final SigninPreferencesManager prefsManager = SigninPreferencesManager.getInstance();
-        final int currentEventIndex = prefsManager.getLastAccountChangedEventIndex();
-        final Pair<Integer, String> newEventIndexAndAccountName =
-                findAccountRenameEvent(checker, currentEventIndex, currentAccountName);
-        if (currentEventIndex != newEventIndexAndAccountName.first) {
-            prefsManager.setLastAccountChangedEventIndex(newEventIndexAndAccountName.first);
-        }
-        return currentAccountName.equals(newEventIndexAndAccountName.second)
-                ? null
-                : newEventIndexAndAccountName.second;
-    }
-
-    /**
-     * Finds the account rename event.
-     * @return A pair including the account change event index and the changed account name.
-     *         When there's no pending rename event, the event index is still updated to the
-     *         last read index to avoid reading the same data again in the future.
-     */
-    private static Pair<Integer, String> findAccountRenameEvent(
-            AccountChangeEventChecker checker, int eventIndex, String accountName) {
-        final List<Account> accounts =
-                AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts();
+    static @Nullable String getNewNameOfRenamedAccount(
+            AccountChangeEventChecker checker, String oldAccountName, List<Account> accounts) {
         final List<String> changedNames = checker.getAccountChangeEvents(
-                ContextUtils.getApplicationContext(), eventIndex, accountName);
-        final int newEventIndex = changedNames.size();
-        for (String changedName : changedNames) {
-            if (changedName != null) {
-                // We have found a rename event of the current account.
-                // We need to check if that account is further renamed.
-                if (AccountUtils.findAccountByName(accounts, changedName) == null) {
-                    // Start from the beginning of the new account if account does not exist on
-                    // device
-                    return findAccountRenameEvent(checker, 0, changedName);
-                } else {
-                    return new Pair<>(newEventIndex, changedName);
+                ContextUtils.getApplicationContext(), 0, oldAccountName);
+        for (String newAccountName : changedNames) {
+            if (newAccountName != null) {
+                if (AccountUtils.findAccountByName(accounts, newAccountName) != null) {
+                    return newAccountName;
                 }
+                // When the new name does not exist on device, check if it is renamed to
+                // another one existing on device
+                return getNewNameOfRenamedAccount(checker, newAccountName, accounts);
             }
         }
-        return new Pair<>(newEventIndex, accountName);
+        return null;
     }
 
     /**

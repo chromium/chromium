@@ -9,7 +9,6 @@ import androidx.annotation.MainThread;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninHelper;
-import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncController;
 import org.chromium.chrome.browser.sync.SyncErrorNotifier;
 
@@ -31,8 +30,7 @@ public class SigninHelperProvider {
             SyncController.get();
             Profile profile = Profile.getLastUsedRegularProfile();
             sInstance = new SigninHelper(IdentityServicesProvider.get().getSigninManager(profile),
-                    IdentityServicesProvider.get().getAccountTrackerService(profile),
-                    SigninPreferencesManager.getInstance());
+                    IdentityServicesProvider.get().getAccountTrackerService(profile));
         }
         return sInstance;
     }

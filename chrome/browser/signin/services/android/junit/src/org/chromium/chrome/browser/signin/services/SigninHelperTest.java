@@ -4,97 +4,91 @@
 
 package org.chromium.chrome.browser.signin.services;
 
-import org.junit.After;
+import android.accounts.Account;
+
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.MockChangeEventChecker;
+import org.chromium.components.signin.AccountUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Unit tests for {@link SigninHelper}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SigninHelperTest {
-    @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
-
     private final MockChangeEventChecker mEventChecker = new MockChangeEventChecker();
 
-    @After
-    public void tearDown() {
-        SigninPreferencesManager.getInstance().clearAccountsStateSharedPrefsForTesting();
-    }
-
     @Test
-    public void testSimpleAccountRename() {
+    public void newNameIsValidWhenTheRenamedAccountIsPresent() {
         mEventChecker.insertRenameEvent("A", "B");
 
-        Assert.assertEquals("B", SigninHelper.getNewNameOfRenamedAccount(mEventChecker, "A"));
-        checkLastAccountChangedEventIndex(0);
+        Assert.assertEquals(
+                "B", SigninHelper.getNewNameOfRenamedAccount(mEventChecker, "A", getAccounts("B")));
     }
 
     @Test
-    public void testNotSignedInAccountRename() {
+    public void newNameIsNullWhenTheOldAccountIsNotRenamed() {
         mEventChecker.insertRenameEvent("B", "C");
 
-        Assert.assertNull(SigninHelper.getNewNameOfRenamedAccount(mEventChecker, "A"));
-        checkLastAccountChangedEventIndex(0);
+        Assert.assertNull(
+                SigninHelper.getNewNameOfRenamedAccount(mEventChecker, "A", getAccounts("D")));
     }
 
     @Test
-    public void testSimpleAccountRenameTwice() {
+    public void newNameIsNullWhenTheRenamedAccountIsNotPresent() {
+        mEventChecker.insertRenameEvent("B", "C");
+
+        Assert.assertNull(
+                SigninHelper.getNewNameOfRenamedAccount(mEventChecker, "B", getAccounts("D")));
+    }
+
+    @Test
+    public void newNameIsValidWhenTheOldAccountIsRenamedTwice() {
         mEventChecker.insertRenameEvent("A", "B");
-
-        Assert.assertEquals("B", SigninHelper.getNewNameOfRenamedAccount(mEventChecker, "A"));
-        checkLastAccountChangedEventIndex(0);
-
         mEventChecker.insertRenameEvent("B", "C");
 
-        Assert.assertEquals("C", SigninHelper.getNewNameOfRenamedAccount(mEventChecker, "B"));
-        checkLastAccountChangedEventIndex(0);
+        Assert.assertEquals(
+                "C", SigninHelper.getNewNameOfRenamedAccount(mEventChecker, "A", getAccounts("C")));
     }
 
     @Test
-    public void testNotSignedInAccountRename2() {
-        mEventChecker.insertRenameEvent("B", "C");
-        mEventChecker.insertRenameEvent("C", "D");
-
-        Assert.assertNull(SigninHelper.getNewNameOfRenamedAccount(mEventChecker, "A"));
-        checkLastAccountChangedEventIndex(0);
-    }
-
-    @Test
-    public void testChainedAccountRename2() {
+    public void newNameIsValidWhenTheOldAccountIsRenamedMultipleTimes() {
+        // A -> B -> C
         mEventChecker.insertRenameEvent("Z", "Y"); // Unrelated.
         mEventChecker.insertRenameEvent("A", "B");
         mEventChecker.insertRenameEvent("Y", "X"); // Unrelated.
         mEventChecker.insertRenameEvent("B", "C");
         mEventChecker.insertRenameEvent("C", "D");
 
-        Assert.assertEquals("D", SigninHelper.getNewNameOfRenamedAccount(mEventChecker, "A"));
-        checkLastAccountChangedEventIndex(0);
+        Assert.assertEquals(
+                "D", SigninHelper.getNewNameOfRenamedAccount(mEventChecker, "A", getAccounts("D")));
     }
 
     @Test
-    public void testLoopedAccountRename() {
+    public void newNameIsValidWhenTheOldAccountIsRenamedInCycle() {
+        // A -> B -> C -> D -> A
         mEventChecker.insertRenameEvent("Z", "Y"); // Unrelated.
         mEventChecker.insertRenameEvent("A", "B");
         mEventChecker.insertRenameEvent("Y", "X"); // Unrelated.
         mEventChecker.insertRenameEvent("B", "C");
         mEventChecker.insertRenameEvent("C", "D");
         mEventChecker.insertRenameEvent("D", "A"); // Looped.
-        mAccountManagerTestRule.addAccount("D");
 
-        Assert.assertEquals("D", SigninHelper.getNewNameOfRenamedAccount(mEventChecker, "A"));
-        checkLastAccountChangedEventIndex(1);
+        Assert.assertEquals("D",
+                SigninHelper.getNewNameOfRenamedAccount(mEventChecker, "A", getAccounts("D", "X")));
     }
 
-    private void checkLastAccountChangedEventIndex(int expectedEventIndex) {
-        Assert.assertEquals(expectedEventIndex,
-                SigninPreferencesManager.getInstance().getLastAccountChangedEventIndex());
+    private List<Account> getAccounts(String... names) {
+        final List<Account> accounts = new ArrayList<>();
+        for (String name : names) {
+            accounts.add(AccountUtils.createAccountFromName(name));
+        }
+        return accounts;
     }
 }

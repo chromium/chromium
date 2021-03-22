@@ -41,23 +41,6 @@ public class SigninPreferencesManager {
     }
 
     /**
-     * Sets the last read index of all the account changed events of the current signed in account.
-     *
-     * @param newIndex the new index to write
-     */
-    public void setLastAccountChangedEventIndex(int newIndex) {
-        mManager.writeInt(ChromePreferenceKeys.SIGNIN_ACCOUNT_RENAME_EVENT_INDEX, newIndex);
-    }
-
-    /**
-     * @return the last read index of all the account changed events of the current signed in
-     *         account.
-     */
-    public int getLastAccountChangedEventIndex() {
-        return mManager.readInt(ChromePreferenceKeys.SIGNIN_ACCOUNT_RENAME_EVENT_INDEX);
-    }
-
-    /**
      * Gets the state of {@link ChromePreferenceKeys#SIGNIN_ACCOUNTS_CHANGED} and clears it.
      *
      * @return the state of {@link ChromePreferenceKeys#SIGNIN_ACCOUNTS_CHANGED} before the call.
@@ -77,7 +60,6 @@ public class SigninPreferencesManager {
      */
     @VisibleForTesting
     public void clearAccountsStateSharedPrefsForTesting() {
-        mManager.removeKey(ChromePreferenceKeys.SIGNIN_ACCOUNT_RENAME_EVENT_INDEX);
         mManager.removeKey(ChromePreferenceKeys.SIGNIN_ACCOUNTS_CHANGED);
     }
 
