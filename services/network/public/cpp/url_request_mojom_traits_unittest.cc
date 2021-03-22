@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/isolation_info.h"
+#include "net/filter/source_stream.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/http_request_headers_mojom_traits.h"
 #include "services/network/public/cpp/network_ipc_param_traits.h"
@@ -106,6 +107,11 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
       base::make_optional(ResourceRequest::WebBundleTokenParams(
           GURL("https://bundle.test/"), base::UnguessableToken::Create(),
           mojo::PendingRemote<network::mojom::WebBundleHandle>()));
+  original.devtools_accepted_stream_types =
+      std::vector<net::SourceStream::SourceType>(
+          {net::SourceStream::SourceType::TYPE_BROTLI,
+           net::SourceStream::SourceType::TYPE_GZIP,
+           net::SourceStream::SourceType::TYPE_DEFLATE});
 
   network::ResourceRequest copied;
   EXPECT_TRUE(

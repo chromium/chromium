@@ -1440,6 +1440,82 @@ TEST_F(URLRequestHttpJobWithBrotliSupportTest, BrotliAdvertisement) {
   EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
 }
 
+TEST_F(URLRequestHttpJobWithBrotliSupportTest, DefaultAcceptEncodingOverriden) {
+  struct {
+    base::flat_set<net::SourceStream::SourceType> accepted_types;
+    const char* expected_request_headers;
+  } kTestCases[] = {{{net::SourceStream::SourceType::TYPE_DEFLATE},
+                     "GET / HTTP/1.1\r\n"
+                     "Host: www.example.com\r\n"
+                     "Connection: keep-alive\r\n"
+                     "User-Agent: \r\n"
+                     "Accept-Encoding: deflate\r\n"
+                     "Accept-Language: en-us,fr\r\n\r\n"},
+                    {{},
+                     "GET / HTTP/1.1\r\n"
+                     "Host: www.example.com\r\n"
+                     "Connection: keep-alive\r\n"
+                     "User-Agent: \r\n"
+                     "Accept-Language: en-us,fr\r\n\r\n"},
+                    {{net::SourceStream::SourceType::TYPE_GZIP},
+                     "GET / HTTP/1.1\r\n"
+                     "Host: www.example.com\r\n"
+                     "Connection: keep-alive\r\n"
+                     "User-Agent: \r\n"
+                     "Accept-Encoding: gzip\r\n"
+                     "Accept-Language: en-us,fr\r\n\r\n"},
+                    {{net::SourceStream::SourceType::TYPE_GZIP,
+                      net::SourceStream::SourceType::TYPE_DEFLATE},
+                     "GET / HTTP/1.1\r\n"
+                     "Host: www.example.com\r\n"
+                     "Connection: keep-alive\r\n"
+                     "User-Agent: \r\n"
+                     "Accept-Encoding: gzip, deflate\r\n"
+                     "Accept-Language: en-us,fr\r\n\r\n"},
+                    {{net::SourceStream::SourceType::TYPE_BROTLI},
+                     "GET / HTTP/1.1\r\n"
+                     "Host: www.example.com\r\n"
+                     "Connection: keep-alive\r\n"
+                     "User-Agent: \r\n"
+                     "Accept-Encoding: br\r\n"
+                     "Accept-Language: en-us,fr\r\n\r\n"},
+                    {{net::SourceStream::SourceType::TYPE_BROTLI,
+                      net::SourceStream::SourceType::TYPE_GZIP,
+                      net::SourceStream::SourceType::TYPE_DEFLATE},
+                     "GET / HTTP/1.1\r\n"
+                     "Host: www.example.com\r\n"
+                     "Connection: keep-alive\r\n"
+                     "User-Agent: \r\n"
+                     "Accept-Encoding: gzip, deflate, br\r\n"
+                     "Accept-Language: en-us,fr\r\n\r\n"}};
+
+  for (auto test : kTestCases) {
+    net::SSLSocketDataProvider ssl_socket_data_provider(net::ASYNC, net::OK);
+    ssl_socket_data_provider.next_proto = kProtoHTTP11;
+    ssl_socket_data_provider.ssl_info.cert =
+        ImportCertFromFile(GetTestCertsDirectory(), "unittest.selfsigned.der");
+    ASSERT_TRUE(ssl_socket_data_provider.ssl_info.cert);
+    socket_factory_.AddSSLSocketDataProvider(&ssl_socket_data_provider);
+
+    MockWrite writes[] = {MockWrite(test.expected_request_headers)};
+    MockRead reads[] = {MockRead("HTTP/1.1 200 OK\r\n"
+                                 "Content-Length: 12\r\n\r\n"),
+                        MockRead("Test Content")};
+    StaticSocketDataProvider socket_data(reads, writes);
+    socket_factory_.AddSocketDataProvider(&socket_data);
+
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> request = context_->CreateRequest(
+        GURL("https://www.example.com"), DEFAULT_PRIORITY, &delegate,
+        TRAFFIC_ANNOTATION_FOR_TESTS);
+    request->set_accepted_stream_types(test.accepted_types);
+    request->Start();
+    delegate.RunUntilComplete();
+    EXPECT_THAT(delegate.request_status(), IsOk());
+    socket_factory_.ResetNextMockIndexes();
+  }
+}
+
 #if defined(OS_ANDROID)
 TEST_F(URLRequestHttpJobTest, AndroidCleartextPermittedTest) {
   context_.set_check_cleartext_permitted(true);

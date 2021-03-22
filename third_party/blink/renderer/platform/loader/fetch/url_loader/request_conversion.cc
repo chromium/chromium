@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/load_flags.h"
 #include "net/base/request_priority.h"
+#include "net/filter/source_stream.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/constants.h"
@@ -266,6 +267,12 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   dest->site_for_cookies = src.SiteForCookies();
   dest->upgrade_if_insecure = src.UpgradeIfInsecure();
   dest->is_revalidating = src.IsRevalidating();
+  if (src.GetDevToolsAcceptedStreamTypes()) {
+    dest->devtools_accepted_stream_types =
+        std::vector<net::SourceStream::SourceType>(
+            src.GetDevToolsAcceptedStreamTypes()->begin(),
+            src.GetDevToolsAcceptedStreamTypes()->end());
+  }
   if (src.RequestorOrigin()->ToString() == "null") {
     // "file:" origin is treated like an opaque unique origin when
     // allow-file-access-from-files is not specified. Such origin is not opaque

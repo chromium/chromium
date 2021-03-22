@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -33,6 +34,7 @@
 #include "net/base/upload_progress.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/filter/source_stream.h"
 #include "net/http/http_raw_request_headers.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
@@ -678,6 +680,27 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
     return traffic_annotation_;
   }
 
+  bool Supports(const net::SourceStream::SourceType& type) const {
+    if (!accepted_stream_types_)
+      return true;
+    return accepted_stream_types_->contains(type);
+  }
+
+  const base::Optional<base::flat_set<net::SourceStream::SourceType>>&
+  accepted_stream_types() const {
+    return accepted_stream_types_;
+  }
+
+  void set_accepted_stream_types(
+      const base::Optional<base::flat_set<net::SourceStream::SourceType>>&
+          types) {
+    if (types) {
+      DCHECK(!types->contains(net::SourceStream::SourceType::TYPE_NONE));
+      DCHECK(!types->contains(net::SourceStream::SourceType::TYPE_UNKNOWN));
+    }
+    accepted_stream_types_ = types;
+  }
+
   // Sets a callback that will be invoked each time the request is about to
   // be actually sent and will receive actual request headers that are about
   // to hit the wire, including SPDY/QUIC internal headers.
@@ -954,6 +977,12 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   // The proxy server used for this request, if any.
   ProxyServer proxy_server_;
+
+  // If not null, the network service will not advertise any stream types
+  // (via Accept-Encoding) that are not listed. Also, it will not attempt
+  // decoding any non-listed stream types.
+  base::Optional<base::flat_set<net::SourceStream::SourceType>>
+      accepted_stream_types_;
 
   const NetworkTrafficAnnotationTag traffic_annotation_;
 

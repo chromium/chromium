@@ -212,6 +212,8 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
          recursive_prefetch_token == request.recursive_prefetch_token &&
          OptionalTrustedParamsEqualsForTesting(trusted_params,
                                                request.trusted_params) &&
+         devtools_accepted_stream_types ==
+             request.devtools_accepted_stream_types &&
          trust_token_params == request.trust_token_params &&
          OptionalWebBundleTokenParamsEqualsForTesting(  // IN-TEST
              web_bundle_token_params, request.web_bundle_token_params);

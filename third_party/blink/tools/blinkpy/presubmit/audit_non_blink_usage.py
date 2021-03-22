@@ -849,6 +849,15 @@ _CONFIG = [
         ],
     },
     {
+        'paths': [
+            'third_party/blink/renderer/core/inspector/inspector_network_agent.cc'
+        ],
+        'allowed': [
+            'net::SourceStream',
+            'base::flat_set',
+        ],
+    },
+    {
         'paths': ['third_party/blink/renderer/core/workers/worker_thread.cc'],
         'allowed': [
             'base::ScopedAllowBaseSyncPrimitives',

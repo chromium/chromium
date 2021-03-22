@@ -57,6 +57,14 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
+    EnumTraits<network::mojom::SourceType, net::SourceStream::SourceType> {
+  static network::mojom::SourceType ToMojom(net::SourceStream::SourceType type);
+  static bool FromMojom(network::mojom::SourceType in,
+                        net::SourceStream::SourceType* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     StructTraits<network::mojom::TrustedUrlRequestParamsDataView,
                  network::ResourceRequest::TrustedParams> {
   static const net::IsolationInfo& isolation_info(
@@ -299,6 +307,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   }
   static bool obey_origin_policy(const network::ResourceRequest& request) {
     return request.obey_origin_policy;
+  }
+  static const base::Optional<std::vector<net::SourceStream::SourceType>>&
+  devtools_accepted_stream_types(const network::ResourceRequest& request) {
+    return request.devtools_accepted_stream_types;
   }
   static const base::Optional<network::ResourceRequest::TrustedParams>&
   trusted_params(const network::ResourceRequest& request) {

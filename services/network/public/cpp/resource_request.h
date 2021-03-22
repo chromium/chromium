@@ -16,6 +16,7 @@
 #include "net/base/isolation_info.h"
 #include "net/base/request_priority.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/filter/source_stream.h"
 #include "net/http/http_request_headers.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/optional_trust_token_params.h"
@@ -163,6 +164,11 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   // more context.
   OptionalTrustTokenParams trust_token_params;
   base::Optional<WebBundleTokenParams> web_bundle_token_params;
+  // If not null, the network service will not advertise any stream types
+  // (via Accept-Encoding) that are not listed. Also, it will not attempt
+  // decoding any non-listed stream types.
+  base::Optional<std::vector<net::SourceStream::SourceType>>
+      devtools_accepted_stream_types;
 };
 
 // This does not accept |kDefault| referrer policy.

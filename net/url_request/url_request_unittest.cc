@@ -8576,6 +8576,31 @@ TEST_F(URLRequestTestHTTP, DefaultAcceptEncoding) {
   EXPECT_TRUE(ContainsString(d.data_received(), "gzip"));
 }
 
+// Check that it's possible to override the default A-E header.
+TEST_F(URLRequestTestHTTP, DefaultAcceptEncodingOverriden) {
+  ASSERT_TRUE(http_test_server()->Start());
+
+  struct {
+    base::flat_set<net::SourceStream::SourceType> accepted_types;
+    const char* expected_accept_encoding;
+  } tests[] = {{{net::SourceStream::SourceType::TYPE_DEFLATE}, "deflate"},
+               {{}, "None"},
+               {{net::SourceStream::SourceType::TYPE_GZIP}, "gzip"},
+               {{net::SourceStream::SourceType::TYPE_GZIP,
+                 net::SourceStream::SourceType::TYPE_DEFLATE},
+                "gzip, deflate"}};
+  for (auto test : tests) {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> req(default_context().CreateRequest(
+        http_test_server()->GetURL("/echoheader?Accept-Encoding"),
+        DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_accepted_stream_types(test.accepted_types);
+    req->Start();
+    d.RunUntilComplete();
+    EXPECT_STRCASEEQ(d.data_received().c_str(), test.expected_accept_encoding);
+  }
+}
+
 // Check that if request overrides the A-E header, the default is not appended.
 // See http://crbug.com/47381
 TEST_F(URLRequestTestHTTP, OverrideAcceptEncoding) {

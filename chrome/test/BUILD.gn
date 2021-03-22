@@ -1175,6 +1175,7 @@ if (!is_android) {
       "../browser/navigation_predictor/navigation_predictor_preconnect_client_browsertest.cc",
       "../browser/navigation_predictor/search_engine_preconnector_browsertest.cc",
       "../browser/net/cert_verify_proc_browsertest.cc",
+      "../browser/net/chrome_accept_encoding_header_browsertest.cc",
       "../browser/net/chrome_accept_header_browsertest.cc",
       "../browser/net/chrome_mojo_proxy_resolver_factory_browsertest.cc",
       "../browser/net/chrome_network_delegate_browsertest.cc",

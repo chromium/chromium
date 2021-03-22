@@ -30,11 +30,13 @@
 
 #include <memory>
 
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/filter/source_stream.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom-blink.h"
 #include "services/network/public/mojom/cors.mojom-blink-forward.h"
@@ -400,6 +402,16 @@ class PLATFORM_EXPORT ResourceRequestHead {
     devtools_token_ = devtools_token;
   }
 
+  const base::Optional<base::flat_set<net::SourceStream::SourceType>>&
+  GetDevToolsAcceptedStreamTypes() const {
+    return devtools_accepted_stream_types_;
+  }
+  void SetDevToolsAcceptedStreamTypes(
+      const base::Optional<base::flat_set<net::SourceStream::SourceType>>&
+          types) {
+    devtools_accepted_stream_types_ = types;
+  }
+
   const base::Optional<String>& GetDevToolsId() const { return devtools_id_; }
   void SetDevToolsId(const base::Optional<String>& devtools_id) {
     devtools_id_ = devtools_id;
@@ -634,6 +646,12 @@ class PLATFORM_EXPORT ResourceRequestHead {
   // reporting for redirects.
   RenderBlockingBehavior render_blocking_behavior_ =
       RenderBlockingBehavior::kUnset;
+
+  // If not null, the network service will not advertise any stream types
+  // (via Accept-Encoding) that are not listed. Also, it will not attempt
+  // decoding any non-listed stream types.
+  base::Optional<base::flat_set<net::SourceStream::SourceType>>
+      devtools_accepted_stream_types_;
 };
 
 class PLATFORM_EXPORT ResourceRequestBody {

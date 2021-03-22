@@ -275,6 +275,10 @@ mojom("url_loader_base") {
           cpp = "::net::ReferrerPolicy"
         },
         {
+          mojom = "network.mojom.SourceType"
+          cpp = "::net::SourceStream::SourceType"
+        },
+        {
           mojom = "network.mojom.RequestPriority"
           cpp = "::net::RequestPriority"
         },

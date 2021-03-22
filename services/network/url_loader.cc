@@ -583,6 +583,8 @@ URLLoader::URLLoader(
 
   url_request_->SetUserData(kUserDataKey,
                             std::make_unique<UnownedPointer>(this));
+  url_request_->set_accepted_stream_types(
+      request.devtools_accepted_stream_types);
 
   if (request.trusted_params) {
     has_user_activation_ = request.trusted_params->has_user_activation;

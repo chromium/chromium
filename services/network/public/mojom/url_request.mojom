@@ -41,6 +41,15 @@ enum RequestPriority {
   kHighest
 };
 
+// This enums corresponds to net::SourceStream::SourceType.
+enum SourceType {
+  kBrotli,
+  kDeflate,
+  kGzip,
+  kNone,
+  kUnknown,
+};
+
 // This enum corresponds to net::ReferrerPolicy. See its comments.
 enum URLRequestReferrerPolicy {
   kClearReferrerOnTransitionFromSecureToInsecure,
@@ -400,6 +409,11 @@ struct URLRequest {
   // Set for WebBundle related requests. See the comment of WebBundleTokenParams
   // for details.
   WebBundleTokenParams? web_bundle_token_params;
+
+  // If not null, the network service will not advertise any stream types
+  // (via Accept-Encoding) that are not listed. Also, it will not attempt
+  // decoding any non-listed stream types.
+  array<SourceType>? devtools_accepted_stream_types;
 };
 
 // URLRequestBody represents body (i.e. upload data) of a HTTP request.

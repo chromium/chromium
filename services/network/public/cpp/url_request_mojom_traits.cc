@@ -148,6 +148,50 @@ bool EnumTraits<network::mojom::URLRequestReferrerPolicy, net::ReferrerPolicy>::
   return false;
 }
 
+network::mojom::SourceType
+EnumTraits<network::mojom::SourceType, net::SourceStream::SourceType>::ToMojom(
+    net::SourceStream::SourceType type) {
+  switch (type) {
+    case net::SourceStream::SourceType::TYPE_BROTLI:
+      return network::mojom::SourceType::kBrotli;
+    case net::SourceStream::SourceType::TYPE_DEFLATE:
+      return network::mojom::SourceType::kDeflate;
+    case net::SourceStream::SourceType::TYPE_GZIP:
+      return network::mojom::SourceType::kGzip;
+    case net::SourceStream::SourceType::TYPE_NONE:
+      return network::mojom::SourceType::kNone;
+    case net::SourceStream::SourceType::TYPE_UNKNOWN:
+      return network::mojom::SourceType::kUnknown;
+  }
+  NOTREACHED();
+  return static_cast<network::mojom::SourceType>(type);
+}
+
+bool EnumTraits<network::mojom::SourceType, net::SourceStream::SourceType>::
+    FromMojom(network::mojom::SourceType in,
+              net::SourceStream::SourceType* out) {
+  switch (in) {
+    case network::mojom::SourceType::kBrotli:
+      *out = net::SourceStream::SourceType::TYPE_BROTLI;
+      return true;
+    case network::mojom::SourceType::kDeflate:
+      *out = net::SourceStream::SourceType::TYPE_DEFLATE;
+      return true;
+    case network::mojom::SourceType::kGzip:
+      *out = net::SourceStream::SourceType::TYPE_GZIP;
+      return true;
+    case network::mojom::SourceType::kNone:
+      *out = net::SourceStream::SourceType::TYPE_NONE;
+      return true;
+    case network::mojom::SourceType::kUnknown:
+      *out = net::SourceStream::SourceType::TYPE_UNKNOWN;
+      return true;
+  }
+
+  NOTREACHED();
+  return false;
+}
+
 bool StructTraits<network::mojom::TrustedUrlRequestParamsDataView,
                   network::ResourceRequest::TrustedParams>::
     Read(network::mojom::TrustedUrlRequestParamsDataView data,
@@ -227,7 +271,9 @@ bool StructTraits<
       !data.ReadDevtoolsRequestId(&out->devtools_request_id) ||
       !data.ReadDevtoolsStackId(&out->devtools_stack_id) ||
       !data.ReadRecursivePrefetchToken(&out->recursive_prefetch_token) ||
-      !data.ReadWebBundleTokenParams(&out->web_bundle_token_params)) {
+      !data.ReadWebBundleTokenParams(&out->web_bundle_token_params) ||
+      !data.ReadDevtoolsAcceptedStreamTypes(
+          &out->devtools_accepted_stream_types)) {
     // Note that data.ReadTrustTokenParams is temporarily handled below.
     return false;
   }
