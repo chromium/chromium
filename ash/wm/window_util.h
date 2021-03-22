@@ -140,6 +140,10 @@ WindowTransientDescendantIteratorRange GetVisibleTransientTreeIterator(
 gfx::RectF GetTransformedBounds(aura::Window* transformed_window,
                                 int top_inset);
 
+// If multi profile is on, check if |window| should be shown for the current
+// user.
+bool ShouldShowForCurrentUser(aura::Window* window);
+
 }  // namespace window_util
 }  // namespace ash
 

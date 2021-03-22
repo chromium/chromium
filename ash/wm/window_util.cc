@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/multi_user/multi_user_window_manager_impl.h"
 #include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -422,6 +423,21 @@ gfx::RectF GetTransformedBounds(aura::Window* transformed_window,
     bounds.Union(window_bounds);
   }
   return bounds;
+}
+
+bool ShouldShowForCurrentUser(aura::Window* window) {
+  MultiUserWindowManager* multi_user_window_manager =
+      MultiUserWindowManagerImpl::Get();
+  if (!multi_user_window_manager)
+    return true;
+
+  const AccountId account_id =
+      multi_user_window_manager->GetUserPresentingWindow(window);
+  // An empty account ID is returned if the window is presented for all users.
+  if (!account_id.is_valid())
+    return true;
+
+  return account_id == multi_user_window_manager->CurrentAccountId();
 }
 
 }  // namespace window_util
