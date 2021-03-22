@@ -249,16 +249,22 @@
 </if> <!-- chromeos -->
       </div>
 <if expr="not is_macosx">
-      <template is="dom-if" route-path="/editDictionary"
-           no-search="[[!prefs.browser.enable_spellchecking.value]]">
-        <settings-subpage
-            associated-control="[[$$('#spellCheckSubpageTrigger')]]"
-            page-title="$i18n{editDictionaryPageTitle}"
-            no-search$="[[!prefs.browser.enable_spellchecking.value]]">
-          <settings-edit-dictionary-page></settings-edit-dictionary-page>
-        </settings-subpage>
+<if expr="chromeos">
+      <template is="dom-if" if="[[!isChromeOSLanguagesSettingsUpdate_]]">
+</if> <!-- chromeos -->
+        <template is="dom-if" route-path="/editDictionary"
+             no-search="[[!prefs.browser.enable_spellchecking.value]]">
+          <settings-subpage
+              associated-control="[[$$('#spellCheckSubpageTrigger')]]"
+              page-title="$i18n{editDictionaryPageTitle}"
+              no-search$="[[!prefs.browser.enable_spellchecking.value]]">
+            <settings-edit-dictionary-page></settings-edit-dictionary-page>
+          </settings-subpage>
+        </template>
+<if expr="chromeos">
       </template>
-</if>
+</if> <!-- chromeos -->
+</if> <!-- not is_macosx -->
 <if expr="not chromeos">
       <template is="dom-if" route-path="/languageSettings"
           no-search="[[!enableDesktopRestructuredLanguageSettings_]]">
