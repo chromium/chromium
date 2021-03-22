@@ -11,6 +11,7 @@
 #include "ash/public/cpp/login_types.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/i18n/number_formatting.h"
 #include "chromeos/components/security_token_pin/error_generator.h"
 #include "ui/base/l10n/l10n_util.h"

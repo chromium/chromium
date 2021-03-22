@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/optional.h"

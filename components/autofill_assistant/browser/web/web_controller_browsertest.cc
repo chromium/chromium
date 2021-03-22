@@ -8,6 +8,7 @@
 #include <thread>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"

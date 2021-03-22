@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 
+#include "base/callback_helpers.h"
 #include "base/one_shot_event.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "components/permissions/prediction_service/prediction_service.h"
 
 PredictionServiceRequest::PredictionServiceRequest(

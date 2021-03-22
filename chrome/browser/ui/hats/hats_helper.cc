@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/hats/hats_helper.h"
 
+#include "base/callback_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/hats/hats_service.h"

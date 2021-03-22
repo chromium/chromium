@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/file_manager/file_tasks.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"

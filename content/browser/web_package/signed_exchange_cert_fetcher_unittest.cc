@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"

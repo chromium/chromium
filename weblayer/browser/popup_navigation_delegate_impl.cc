@@ -4,6 +4,7 @@
 
 #include "weblayer/browser/popup_navigation_delegate_impl.h"
 
+#include "base/callback_helpers.h"
 #include "build/build_config.h"
 #include "content/public/browser/web_contents.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"

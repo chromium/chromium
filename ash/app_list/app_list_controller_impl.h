@@ -32,6 +32,7 @@
 #include "ash/shell_observer.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_observer.h"
+#include "base/callback_helpers.h"
 #include "base/observer_list.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/sync/model/string_ordinal.h"

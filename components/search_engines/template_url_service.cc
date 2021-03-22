@@ -11,6 +11,7 @@
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/format_macros.h"

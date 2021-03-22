@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/fileapi/file_change_service.h"
 
+#include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"

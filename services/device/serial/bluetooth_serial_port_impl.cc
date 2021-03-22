@@ -4,6 +4,7 @@
 
 #include "services/device/serial/bluetooth_serial_port_impl.h"
 
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "net/base/io_buffer.h"
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"

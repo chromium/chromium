@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/passwords/test/test_password_manager_client.h"
 
+#include "base/callback_helpers.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"

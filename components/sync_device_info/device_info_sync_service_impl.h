@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_helpers.h"
 #include "components/sync/invalidations/fcm_registration_token_observer.h"
 #include "components/sync/invalidations/interested_data_types_handler.h"
 #include "components/sync/model/model_type_store.h"

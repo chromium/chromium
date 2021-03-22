@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"

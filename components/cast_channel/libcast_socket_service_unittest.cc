@@ -4,6 +4,7 @@
 
 #include "components/cast_channel/libcast_socket_service.h"
 
+#include "base/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "components/cast_channel/cast_test_util.h"
 #include "components/openscreen_platform/network_util.h"

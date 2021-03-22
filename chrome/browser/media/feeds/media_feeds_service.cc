@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/optional.h"

@@ -16,6 +16,7 @@
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_tray_bubble.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "net/base/mime_util.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"

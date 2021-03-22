@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <array>
 
+#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/notreached.h"
 #include "components/viz/common/gpu/context_provider.h"

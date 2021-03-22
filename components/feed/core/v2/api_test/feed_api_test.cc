@@ -6,6 +6,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"

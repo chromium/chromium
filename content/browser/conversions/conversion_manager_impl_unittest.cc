@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"

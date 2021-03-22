@@ -32,6 +32,7 @@
 
 #include <memory>
 
+#include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/animation/scroll_offset_animation_curve.h"
 #include "cc/layers/picture_layer.h"

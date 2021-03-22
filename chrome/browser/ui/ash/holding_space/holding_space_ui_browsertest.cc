@@ -18,6 +18,7 @@
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
+#include "base/callback_helpers.h"
 #include "base/scoped_observation.h"
 #include "base/scoped_observer.h"
 #include "base/test/bind.h"

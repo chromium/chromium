@@ -5,6 +5,7 @@
 #include "content/browser/browser_interface_binders.h"
 
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/task/thread_pool.h"

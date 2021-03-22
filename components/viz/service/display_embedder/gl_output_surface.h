@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback_helpers.h"
 #include "components/viz/common/display/update_vsync_parameters_callback.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display_embedder/viz_process_context_provider.h"

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_MEDIA_HISTORY_MEDIA_HISTORY_KEYED_SERVICE_H_
 #define CHROME_BROWSER_MEDIA_HISTORY_MEDIA_HISTORY_KEYED_SERVICE_H_
 
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"

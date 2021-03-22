@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/crostini/crostini_recovery_view.h"
 
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"

@@ -4,6 +4,7 @@
 
 #include "chromeos/services/libassistant/settings_controller.h"
 
+#include "base/callback_helpers.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/assistant/public/proto/assistant_device_settings_ui.pb.h"

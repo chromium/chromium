@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/keyvalue_store.pb.h"

@@ -13,6 +13,7 @@
 #include <va/va.h>
 #include <va/va_str.h>
 
+#include "base/callback_helpers.h"
 #include "base/files/file.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"

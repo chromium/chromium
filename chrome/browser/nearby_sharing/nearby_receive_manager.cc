@@ -4,6 +4,7 @@
 
 #include "chrome/browser/nearby_sharing/nearby_receive_manager.h"
 
+#include "base/callback_helpers.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 
 NearbyReceiveManager::NearbyReceiveManager(

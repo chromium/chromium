@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/callback_helpers.h"
 #include "chrome/browser/media/router/mojo/media_router_desktop.h"
 #include "chrome/browser/media/router/providers/test/test_media_route_provider.h"
 #include "chrome/test/media_router/media_router_integration_browsertest.h"

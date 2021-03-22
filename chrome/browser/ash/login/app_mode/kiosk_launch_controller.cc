@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 
+#include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/syslog_logging.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"

@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/containers/stack.h"
 #include "base/json/json_reader.h"
 #include "base/stl_util.h"

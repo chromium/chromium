@@ -6,6 +6,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/optional.h"
 #include "base/test/bind.h"
 #include "base/test/test_mock_time_task_runner.h"

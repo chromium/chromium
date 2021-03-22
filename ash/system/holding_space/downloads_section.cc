@@ -15,6 +15,7 @@
 #include "ash/system/holding_space/holding_space_item_chips_container.h"
 #include "ash/system/holding_space/holding_space_util.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"

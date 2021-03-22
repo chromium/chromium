@@ -8,6 +8,7 @@
 #include <functional>
 #include <utility>
 
+#include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
 #include "base/feature_list.h"
 #include "base/location.h"

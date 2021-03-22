@@ -36,6 +36,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"

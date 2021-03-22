@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chooser_controller/chooser_controller.h"
 #include "chrome/browser/ui/browser_dialogs.h"

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ash/public/cpp/session/session_observer.h"
+#include "base/callback_helpers.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"

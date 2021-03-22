@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/policy_container_host.h"
 
+#include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"

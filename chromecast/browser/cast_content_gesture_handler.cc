@@ -4,6 +4,7 @@
 
 #include "chromecast/browser/cast_content_gesture_handler.h"
 
+#include "base/callback_helpers.h"
 #include "chromecast/base/chromecast_switches.h"
 
 namespace chromecast {

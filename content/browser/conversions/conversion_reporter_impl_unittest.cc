@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/strcat.h"
 #include "base/task/post_task.h"

@@ -4,6 +4,7 @@
 
 #include "services/network/web_bundle_url_loader_factory.h"
 
+#include "base/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/web_package/test_support/web_bundle_builder.h"

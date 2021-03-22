@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "build/build_config.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"

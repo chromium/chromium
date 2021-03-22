@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/policy/bluetooth_policy_handler.h"
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/settings/cros_settings_provider.h"

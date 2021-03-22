@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/containers/span.h"
 #include "base/fuchsia/process_context.h"
 #include "base/macros.h"

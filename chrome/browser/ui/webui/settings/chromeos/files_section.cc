@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/files_section.h"
 
+#include "base/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/chromeos/smb_shares/smb_handler.h"

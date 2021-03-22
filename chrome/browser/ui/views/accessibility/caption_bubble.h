@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_helpers.h"
 #include "chrome/browser/ui/views/accessibility/caption_bubble_model.h"
 #include "ui/native_theme/caption_style.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"

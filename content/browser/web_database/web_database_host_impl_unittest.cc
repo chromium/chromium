@@ -5,6 +5,7 @@
 #include "content/browser/web_database/web_database_host_impl.h"
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/utf_string_conversions.h"

@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <utility>
 
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "content/browser/bad_message.h"

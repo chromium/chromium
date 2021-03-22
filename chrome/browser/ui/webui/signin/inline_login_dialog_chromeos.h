@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/components/account_manager/account_manager.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/optional.h"

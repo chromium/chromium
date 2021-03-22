@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/guid.h"
 #include "base/optional.h"
 #include "base/test/simple_test_clock.h"

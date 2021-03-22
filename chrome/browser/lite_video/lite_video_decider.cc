@@ -4,6 +4,7 @@
 
 #include "chrome/browser/lite_video/lite_video_decider.h"
 
+#include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/optional.h"

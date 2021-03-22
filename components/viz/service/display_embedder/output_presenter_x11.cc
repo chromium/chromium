@@ -11,6 +11,7 @@ extern "C" {
 #include <algorithm>
 #include <utility>
 
+#include "base/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"

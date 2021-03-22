@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media/history/media_history_store.h"
 
+#include "base/callback_helpers.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"

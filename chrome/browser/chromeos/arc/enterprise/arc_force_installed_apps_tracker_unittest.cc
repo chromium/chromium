@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/barrier_closure.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/chromeos/arc/enterprise/arc_force_installed_apps_tracker.h"

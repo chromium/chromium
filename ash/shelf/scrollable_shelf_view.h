@@ -19,6 +19,7 @@
 #include "ash/shelf/shelf_container_view.h"
 #include "ash/shelf/shelf_tooltip_delegate.h"
 #include "ash/shelf/shelf_view.h"
+#include "base/callback_helpers.h"
 #include "base/cancelable_callback.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/animation/ink_drop_host_view.h"

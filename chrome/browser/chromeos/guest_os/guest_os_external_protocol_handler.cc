@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/guest_os/guest_os_external_protocol_handler.h"
 
+#include "base/callback_helpers.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/borealis/borealis_app_launcher.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"

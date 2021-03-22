@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/input_method/native_input_method_engine.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "chrome/browser/chromeos/input_method/stub_input_method_engine_observer.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client_test_helper.h"

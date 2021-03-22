@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"

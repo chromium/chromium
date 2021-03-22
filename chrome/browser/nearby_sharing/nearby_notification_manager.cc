@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/public/cpp/ash_features.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"

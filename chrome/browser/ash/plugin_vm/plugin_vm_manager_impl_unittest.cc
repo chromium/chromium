@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_impl.h"
 
 #include "ash/public/cpp/shelf_model.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"

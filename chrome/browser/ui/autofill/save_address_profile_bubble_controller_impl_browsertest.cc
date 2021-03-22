@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/autofill/save_address_profile_bubble_controller_impl.h"
 
+#include "base/callback_helpers.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"

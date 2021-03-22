@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback_helpers.h"
 #include "base/cancelable_callback.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/optional.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/components/web_app_handler_registration_utils_win.h"
 
+#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"

@@ -8,6 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/base64.h"
+#include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"

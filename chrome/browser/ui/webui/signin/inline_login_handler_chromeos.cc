@@ -11,6 +11,7 @@
 #include "ash/components/account_manager/account_manager_factory.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/base64.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"

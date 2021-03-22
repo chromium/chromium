@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/gpu/av1_picture.h"

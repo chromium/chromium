@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"

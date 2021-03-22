@@ -4,6 +4,7 @@
 
 #include "fuchsia/engine/browser/theme_manager.h"
 
+#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"

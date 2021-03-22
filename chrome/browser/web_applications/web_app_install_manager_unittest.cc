@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/run_loop.h"

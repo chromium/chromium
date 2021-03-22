@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "build/build_config.h"

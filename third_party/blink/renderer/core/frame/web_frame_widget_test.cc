@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"

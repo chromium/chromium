@@ -5,6 +5,7 @@
 #include "chrome/browser/webshare/win/share_operation.h"
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/win/core_winrt_util.h"

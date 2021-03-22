@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/screens/update_required_screen.h"
 
 #include "ash/constants/ash_switches.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/optional.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"

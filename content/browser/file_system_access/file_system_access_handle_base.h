@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bind_post_task.h"
+#include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"

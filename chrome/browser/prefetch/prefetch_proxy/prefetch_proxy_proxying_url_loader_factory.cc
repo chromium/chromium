@@ -6,6 +6,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"

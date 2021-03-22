@@ -7,6 +7,7 @@
 
 #include "chrome/browser/web_applications/components/web_app_protocol_handler_registration.h"
 
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"

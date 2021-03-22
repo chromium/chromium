@@ -5,6 +5,7 @@
 #include "content/browser/scheduler/responsiveness/watcher.h"
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/pending_task.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/task/post_task.h"

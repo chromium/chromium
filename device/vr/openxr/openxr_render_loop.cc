@@ -4,6 +4,7 @@
 
 #include "base/optional.h"
 
+#include "base/callback_helpers.h"
 #include "device/vr/openxr/openxr_render_loop.h"
 
 #include <d3d11_4.h>

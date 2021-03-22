@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
