@@ -406,7 +406,7 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
     // The transaction might fail before interactive mode, thus
     // |cable_authenticator_| may be empty.
     if (cable_authenticator_) {
-      const bool ok = maybe_error.has_value();
+      const bool ok = !maybe_error.has_value();
       Java_CableAuthenticator_onComplete(
           env_, cable_authenticator_, ok,
           ok ? 0 : static_cast<int>(*maybe_error));
