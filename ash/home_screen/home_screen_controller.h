@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/home_screen/home_screen_presenter.h"
-#include "ash/public/cpp/wallpaper_controller_observer.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -30,8 +29,7 @@ namespace ash {
 // NOTE: This class is being folded into AppListControllerImpl. Its tests live
 // in ash/app_list/app_list_controller_impl_unittest.cc.
 class ASH_EXPORT HomeScreenController : public OverviewObserver,
-                                        public SplitViewObserver,
-                                        public WallpaperControllerObserver {
+                                        public SplitViewObserver {
  public:
   HomeScreenController();
   ~HomeScreenController() override;
@@ -43,17 +41,6 @@ class ASH_EXPORT HomeScreenController : public OverviewObserver,
   // View Mode or by minimizing the other windows. Returns false if there was
   // nothing to do because the given display was already "home".
   bool GoHome(int64_t display_id);
-
-  // Called when a window starts/ends dragging. If the home screen is shown, we
-  // should hide it during dragging a window and reshow it when the drag ends.
-  void OnWindowDragStarted();
-
-  // If |animate| is true, scale-in-to-show home screen if home screen should
-  // be shown after drag ends.
-  void OnWindowDragEnded(bool animate);
-
-  // True if home screen is visible.
-  bool IsHomeScreenVisible() const;
 
   // Responsible to starting or stopping |smoothness_tracker_|.
   void StartTrackingAnimationSmoothness(int64_t display_id);
@@ -80,14 +67,13 @@ class ASH_EXPORT HomeScreenController : public OverviewObserver,
                                SplitViewController::State state) override;
 
  private:
+  // TODO(jamescook): Remove when the classes have been combined.
+  friend class AppListControllerImpl;
+
   // OverviewObserver:
   void OnOverviewModeStarting() override;
   void OnOverviewModeEnding(OverviewSession* overview_session) override;
   void OnOverviewModeEndingAnimationComplete(bool canceled) override;
-
-  // WallpaperControllerObserver:
-  void OnWallpaperPreviewStarted() override;
-  void OnWallpaperPreviewEnded() override;
 
   // Updates the visibility of the home screen based on e.g. if the device is
   // in overview mode.
@@ -97,17 +83,6 @@ class ASH_EXPORT HomeScreenController : public OverviewObserver,
   // |shown| - whether the final home state was shown.
   // |display_id| - the home screen display ID.
   void NotifyHomeLauncherTransitionEnded(bool shown, int64_t display_id);
-
-  // Returns true if home screen should be shown based on the current
-  // configuration.
-  bool ShouldShowHomeScreen() const;
-
-  // Whether the wallpaper is being previewed. The home screen should be hidden
-  // during wallpaper preview.
-  bool in_wallpaper_preview_ = false;
-
-  // Whether we're currently in a window dragging process.
-  bool in_window_dragging_ = false;
 
   // Presenter that manages home screen animations.
   HomeScreenPresenter home_screen_presenter_;

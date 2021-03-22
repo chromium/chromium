@@ -795,6 +795,16 @@ void AppListControllerImpl::OnWallpaperColorsChanged() {
     presenter_.GetView()->OnWallpaperColorsChanged();
 }
 
+void AppListControllerImpl::OnWallpaperPreviewStarted() {
+  in_wallpaper_preview_ = true;
+  UpdateHomeScreenVisibility();
+}
+
+void AppListControllerImpl::OnWallpaperPreviewEnded() {
+  in_wallpaper_preview_ = false;
+  UpdateHomeScreenVisibility();
+}
+
 void AppListControllerImpl::OnKeyboardVisibilityChanged(const bool is_visible) {
   onscreen_keyboard_shown_ = is_visible;
   AppListView* app_list_view = presenter_.GetView();
@@ -964,7 +974,7 @@ void AppListControllerImpl::ShowHomeScreenView() {
   Show(GetDisplayIdToShowAppListOn(), show_source, base::TimeTicks());
 }
 
-aura::Window* AppListControllerImpl::GetHomeScreenWindow() {
+aura::Window* AppListControllerImpl::GetHomeScreenWindow() const {
   return presenter_.GetWindow();
 }
 
@@ -1597,6 +1607,37 @@ void AppListControllerImpl::ResetHomeLauncherIfShown() {
   StartSearch(std::u16string());
 }
 
+void AppListControllerImpl::UpdateHomeScreenVisibility() {
+  if (!IsTabletMode())
+    return;
+
+  aura::Window* window = GetHomeScreenWindow();
+  if (!window)
+    return;
+
+  if (ShouldShowHomeScreen())
+    window->Show();
+  else
+    window->Hide();
+}
+
+bool AppListControllerImpl::ShouldShowHomeScreen() const {
+  if (in_window_dragging_ || in_wallpaper_preview_)
+    return false;
+
+  aura::Window* window = GetHomeScreenWindow();
+  if (!window)
+    return false;
+
+  auto* shell = Shell::Get();
+  if (!shell->tablet_mode_controller()->InTabletMode())
+    return false;
+  if (shell->overview_controller()->InOverviewSession())
+    return false;
+
+  return !SplitViewController::Get(window)->InSplitViewMode();
+}
+
 void AppListControllerImpl::UpdateLauncherContainer(
     base::Optional<int64_t> display_id) {
   aura::Window* window = presenter_.GetWindow();
@@ -1676,6 +1717,26 @@ gfx::Rect AppListControllerImpl::GetInitialAppListItemScreenBoundsForWindow(
   std::string* app_id = window->GetProperty(kAppIDKey);
   return presenter_.GetView()->GetItemScreenBoundsInFirstGridPage(
       app_id ? *app_id : std::string());
+}
+
+void AppListControllerImpl::OnWindowDragStarted() {
+  in_window_dragging_ = true;
+  UpdateHomeScreenVisibility();
+
+  // Dismiss Assistant if it's running when a window drag starts.
+  if (IsShowingEmbeddedAssistantUI())
+    presenter_.ShowEmbeddedAssistantUI(false);
+}
+
+void AppListControllerImpl::OnWindowDragEnded(bool animate) {
+  in_window_dragging_ = false;
+  UpdateHomeScreenVisibility();
+  if (ShouldShowHomeScreen()) {
+    Shell::Get()
+        ->home_screen_controller()
+        ->home_screen_presenter_.ScheduleOverviewModeAnimation(
+            HomeScreenPresenter::TransitionType::kScaleHomeIn, animate);
+  }
 }
 
 void AppListControllerImpl::OnAppUpdate(const apps::AppUpdate& update) {

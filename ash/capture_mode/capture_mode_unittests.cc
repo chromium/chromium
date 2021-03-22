@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_button.h"
 #include "ash/capture_mode/capture_mode_constants.h"
@@ -24,7 +25,6 @@
 #include "ash/display/output_protection_delegate.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/display/window_tree_host_manager.h"
-#include "ash/home_screen/home_screen_controller.h"
 #include "ash/magnifier/docked_magnifier_controller_impl.h"
 #include "ash/magnifier/magnifier_glass.h"
 #include "ash/public/cpp/ash_features.h"
@@ -2603,7 +2603,7 @@ TEST_F(CaptureModeTest, TabletTouchCaptureLabelWidgetWindowMode) {
 
   // There are no windows and home screen window is excluded from window capture
   // mode, so capture mode will still remain active.
-  EXPECT_TRUE(Shell::Get()->home_screen_controller()->IsHomeScreenVisible());
+  EXPECT_TRUE(Shell::Get()->app_list_controller()->IsHomeScreenVisible());
   EXPECT_TRUE(controller->IsActive());
 }
 

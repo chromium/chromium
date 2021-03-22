@@ -52,7 +52,7 @@ class AppListControllerObserver;
 
 // Ash's AppListController owns the AppListModel and implements interface
 // functions that allow Chrome to modify and observe the Shelf and AppListModel
-// state.
+// state. It also controls the "home launcher", the tablet mode app list.
 class ASH_EXPORT AppListControllerImpl
     : public AppListController,
       public SessionObserver,
@@ -244,6 +244,8 @@ class ASH_EXPORT AppListControllerImpl
 
   // WallpaperControllerObserver:
   void OnWallpaperColorsChanged() override;
+  void OnWallpaperPreviewStarted() override;
+  void OnWallpaperPreviewEnded() override;
 
   // AssistantStateObserver:
   void OnAssistantStatusChanged(
@@ -278,7 +280,7 @@ class ASH_EXPORT AppListControllerImpl
   // Gets the home screen window, if available, or null if the home screen
   // window is being hidden for effects (e.g. when dragging windows or
   // previewing the wallpaper).
-  aura::Window* GetHomeScreenWindow();
+  aura::Window* GetHomeScreenWindow() const;
 
   // Scales the home launcher view maintaining the view center point, and
   // updates its opacity. If |callback| is non-null, the update should be
@@ -316,6 +318,14 @@ class ASH_EXPORT AppListControllerImpl
   // home screen's apps grid.
   // If the home screen is not yet shown, returns an empty rect.
   gfx::Rect GetInitialAppListItemScreenBoundsForWindow(aura::Window* window);
+
+  // Called when a window starts/ends dragging. If the home screen is shown, we
+  // should hide it during dragging a window and reshow it when the drag ends.
+  void OnWindowDragStarted();
+
+  // If |animate| is true, scale-in-to-show home screen if home screen should
+  // be shown after drag ends.
+  void OnWindowDragEnded(bool animate);
 
   // apps::AppRegistryCache::Observer:
   void OnAppUpdate(const apps::AppUpdate& update) override;
@@ -371,6 +381,9 @@ class ASH_EXPORT AppListControllerImpl
   void RecordAppListState();
 
  private:
+  // TODO(jamescook): Eliminate this once the classes are merged.
+  friend class HomeScreenController;
+
   syncer::StringOrdinal GetOemFolderPos();
   std::unique_ptr<AppListItem> CreateAppListItem(
       std::unique_ptr<AppListItemMetadata> metadata);
@@ -385,6 +398,14 @@ class ASH_EXPORT AppListControllerImpl
   int64_t GetDisplayIdToShowAppListOn();
 
   void ResetHomeLauncherIfShown();
+
+  // Updates the visibility of the home screen based on e.g. if the device is
+  // in overview mode.
+  void UpdateHomeScreenVisibility();
+
+  // Returns true if home screen should be shown based on the current
+  // configuration.
+  bool ShouldShowHomeScreen() const;
 
   // Returns the length of the most recent query.
   int GetLastQueryLength();
@@ -500,6 +521,13 @@ class ASH_EXPORT AppListControllerImpl
 
   // Whether the pref for notification badging is enabled.
   base::Optional<bool> notification_badging_pref_enabled_;
+
+  // Whether the wallpaper is being previewed. The home screen should be hidden
+  // during wallpaper preview.
+  bool in_wallpaper_preview_ = false;
+
+  // Whether we're currently in a window dragging process.
+  bool in_window_dragging_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(AppListControllerImpl);
 };

@@ -6,7 +6,6 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/display/screen_orientation_controller.h"
-#include "ash/home_screen/home_screen_controller.h"
 #include "ash/home_screen/window_scale_animation.h"
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -364,7 +363,7 @@ void DragWindowFromShelfController::OnDragStarted(
   windows_hider_ = std::make_unique<WindowsHider>(window_);
 
   // Hide the home launcher until it's eligible to show it.
-  Shell::Get()->home_screen_controller()->OnWindowDragStarted();
+  Shell::Get()->app_list_controller()->OnWindowDragStarted();
 
   // Use the same dim and blur as in overview during dragging.
   RootWindowController::ForWindow(window_->GetRootWindow())
@@ -420,7 +419,7 @@ void DragWindowFromShelfController::OnDragEnded(
 
   // Scale-in-to-show home screen if home screen should be shown after drag
   // ends.
-  Shell::Get()->home_screen_controller()->OnWindowDragEnded(/*animate=*/true);
+  Shell::Get()->app_list_controller()->OnWindowDragEnded(/*animate=*/true);
 
   // Clear the wallpaper dim and blur if not in overview after drag ends.
   // If in overview, the dim and blur will be cleared after overview ends.

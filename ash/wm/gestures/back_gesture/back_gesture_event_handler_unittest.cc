@@ -5,6 +5,7 @@
 #include "ash/wm/gestures/back_gesture/back_gesture_event_handler.h"
 
 #include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/search_box_view.h"
@@ -218,7 +219,7 @@ TEST_F(BackGestureEventHandlerTestCantGoBack, GoBackInOverviewMode) {
   shell->overview_controller()->StartOverview();
   GenerateBackSequence();
   EXPECT_EQ(2, target_back_release.accelerator_count());
-  EXPECT_TRUE(shell->home_screen_controller()->IsHomeScreenVisible());
+  EXPECT_TRUE(shell->app_list_controller()->IsHomeScreenVisible());
 }
 
 TEST_F(BackGestureEventHandlerTest, GoBackInHomeScreenPage) {
@@ -229,7 +230,7 @@ TEST_F(BackGestureEventHandlerTest, GoBackInHomeScreenPage) {
 
   // Should not go back if it is not in ACTIVE session.
   ASSERT_FALSE(shell->overview_controller()->InOverviewSession());
-  ASSERT_FALSE(shell->home_screen_controller()->IsHomeScreenVisible());
+  ASSERT_FALSE(shell->app_list_controller()->IsHomeScreenVisible());
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOCKED);
   GenerateBackSequence();
@@ -242,7 +243,7 @@ TEST_F(BackGestureEventHandlerTest, GoBackInHomeScreenPage) {
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::ACTIVE);
   shell->home_screen_controller()->GoHome(GetPrimaryDisplay().id());
-  ASSERT_TRUE(shell->home_screen_controller()->IsHomeScreenVisible());
+  ASSERT_TRUE(shell->app_list_controller()->IsHomeScreenVisible());
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
   GenerateBackSequence();
   // Stay in home screen and none back event will be triggered.

@@ -17,7 +17,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
-#include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -106,11 +105,9 @@ class WindowAnimationsCallback : public ui::LayerAnimationObserver {
 
 HomeScreenController::HomeScreenController() {
   Shell::Get()->overview_controller()->AddObserver(this);
-  Shell::Get()->wallpaper_controller()->AddObserver(this);
 }
 
 HomeScreenController::~HomeScreenController() {
-  Shell::Get()->wallpaper_controller()->RemoveObserver(this);
   Shell::Get()->overview_controller()->RemoveObserver(this);
 }
 
@@ -240,30 +237,6 @@ void HomeScreenController::NotifyHomeLauncherTransitionEnded(
     app_list_controller->OnHomeLauncherAnimationComplete(shown, display_id);
 }
 
-void HomeScreenController::OnWindowDragStarted() {
-  in_window_dragging_ = true;
-  UpdateVisibility();
-
-  // Dismiss Assistant if it's running when a window drag starts.
-  if (Shell::Get()->app_list_controller()->IsShowingEmbeddedAssistantUI()) {
-    Shell::Get()->app_list_controller()->presenter()->ShowEmbeddedAssistantUI(
-        false);
-  }
-}
-
-void HomeScreenController::OnWindowDragEnded(bool animate) {
-  in_window_dragging_ = false;
-  UpdateVisibility();
-  if (ShouldShowHomeScreen()) {
-    home_screen_presenter_.ScheduleOverviewModeAnimation(
-        HomeScreenPresenter::TransitionType::kScaleHomeIn, animate);
-  }
-}
-
-bool HomeScreenController::IsHomeScreenVisible() const {
-  return Shell::Get()->app_list_controller()->IsHomeScreenVisible();
-}
-
 void HomeScreenController::StartTrackingAnimationSmoothness(
     int64_t display_id) {
   auto* root_window = Shell::GetRootWindowForDisplayId(display_id);
@@ -299,6 +272,7 @@ void HomeScreenController::OnSplitViewStateChanged(
   UpdateVisibility();
 }
 
+// NOTE: This code runs before AppListControllerImpl::OnOverviewModeStarting.
 void HomeScreenController::OnOverviewModeStarting() {
   const OverviewEnterExitType overview_enter_type =
       Shell::Get()
@@ -307,13 +281,14 @@ void HomeScreenController::OnOverviewModeStarting() {
           ->enter_exit_overview_type();
 
   const bool animate =
-      IsHomeScreenVisible() &&
+      Shell::Get()->app_list_controller()->IsHomeScreenVisible() &&
       overview_enter_type == OverviewEnterExitType::kFadeInEnter;
 
   home_screen_presenter_.ScheduleOverviewModeAnimation(
       HomeScreenPresenter::TransitionType::kScaleHomeOut, animate);
 }
 
+// NOTE: This code runs before AppListControllerImpl::OnOverviewModeEnding.
 void HomeScreenController::OnOverviewModeEnding(
     OverviewSession* overview_session) {
   // The launcher will be shown after overview mode finishes animating, in
@@ -359,46 +334,8 @@ void HomeScreenController::OnOverviewModeEndingAnimationComplete(
   UpdateVisibility();
 }
 
-void HomeScreenController::OnWallpaperPreviewStarted() {
-  in_wallpaper_preview_ = true;
-  UpdateVisibility();
-}
-
-void HomeScreenController::OnWallpaperPreviewEnded() {
-  in_wallpaper_preview_ = false;
-  UpdateVisibility();
-}
-
 void HomeScreenController::UpdateVisibility() {
-  auto* shell = Shell::Get();
-  if (!shell->tablet_mode_controller()->InTabletMode())
-    return;
-
-  aura::Window* window = shell->app_list_controller()->GetHomeScreenWindow();
-  if (!window)
-    return;
-
-  if (ShouldShowHomeScreen())
-    window->Show();
-  else
-    window->Hide();
-}
-
-bool HomeScreenController::ShouldShowHomeScreen() const {
-  if (in_window_dragging_ || in_wallpaper_preview_)
-    return false;
-
-  auto* shell = Shell::Get();
-  aura::Window* window = shell->app_list_controller()->GetHomeScreenWindow();
-  if (!window)
-    return false;
-
-  if (!shell->tablet_mode_controller()->InTabletMode())
-    return false;
-  if (shell->overview_controller()->InOverviewSession())
-    return false;
-
-  return !SplitViewController::Get(window)->InSplitViewMode();
+  Shell::Get()->app_list_controller()->UpdateHomeScreenVisibility();
 }
 
 }  // namespace ash

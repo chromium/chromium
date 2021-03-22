@@ -9,11 +9,11 @@
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/focus_cycler.h"
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/frame_throttler/mock_frame_throttling_observer.h"
-#include "ash/home_screen/home_screen_controller.h"
 #include "ash/multi_user/multi_user_window_manager_impl.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
@@ -741,7 +741,7 @@ TEST_F(WindowCycleControllerTest, SelectingHidesAppList) {
 TEST_F(WindowCycleControllerTest, SelectingDoesNotHideAppListInTabletMode) {
   TabletModeControllerTestApi().EnterTabletMode();
   EXPECT_TRUE(TabletModeControllerTestApi().IsTabletModeStarted());
-  EXPECT_TRUE(Shell::Get()->home_screen_controller()->IsHomeScreenVisible());
+  EXPECT_TRUE(Shell::Get()->app_list_controller()->IsHomeScreenVisible());
 
   std::unique_ptr<aura::Window> window0(CreateTestWindowInShellWithId(0));
   std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(1));
@@ -753,7 +753,7 @@ TEST_F(WindowCycleControllerTest, SelectingDoesNotHideAppListInTabletMode) {
 
   window0->Hide();
   window1->Hide();
-  EXPECT_TRUE(Shell::Get()->home_screen_controller()->IsHomeScreenVisible());
+  EXPECT_TRUE(Shell::Get()->app_list_controller()->IsHomeScreenVisible());
 }
 
 // Tests that cycling through windows doesn't change their minimized state.
