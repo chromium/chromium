@@ -40,11 +40,13 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, FirstInputDelay) {
 
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
 
-  // Check UKM.
-  ExpectUKMPageLoadMetric(PageLoad::kInteractiveTiming_FirstInputDelay4Name,
-                          expected_fid);
+  // Check UKM. We compare the webexposed value to the UKM value. The webexposed
+  // value will be rounded whereas the UKM value will not, so it may be off by 1
+  // given that the comparison is at 1ms granularity.
+  ExpectUKMPageLoadMetricNear(PageLoad::kInteractiveTiming_FirstInputDelay4Name,
+                              expected_fid, 1);
 
-  // Check UMA.
-  histogram_tester().ExpectUniqueSample(
-      "PageLoad.InteractiveTiming.FirstInputDelay4", expected_fid, 1);
+  // Check UMA, which similarly may be off by one.
+  ExpectUniqueUMAPageLoadMetricNear(
+      "PageLoad.InteractiveTiming.FirstInputDelay4", expected_fid);
 }
