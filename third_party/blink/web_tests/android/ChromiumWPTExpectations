@@ -1327,7 +1327,6 @@ crbug.com/1050754 external/wpt/css/css-typed-om/stylevalue-normalization/normali
 crbug.com/1050754 external/wpt/css/css-typed-om/stylevalue-normalization/normalize-tokens.tentative.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/css-typed-om/stylevalue-subclasses/numeric-objects/cssUnitValue.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/css-typed-om/stylevalue-subclasses/numeric-objects/numeric-factory.tentative.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/css/css-typed-om/the-stylepropertymap/computed/get-auto-min-size.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-typed-om/the-stylepropertymap/properties/alignment-baseline.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/css-typed-om/the-stylepropertymap/properties/all.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/css-typed-om/the-stylepropertymap/properties/animation-name.html [ Failure Pass ]

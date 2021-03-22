@@ -609,7 +609,6 @@ crbug.com/1050754 external/wpt/css/css-transforms/transform-percent-009.html [ F
 crbug.com/1050754 external/wpt/css/css-transforms/transform-scale-hittest.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-transforms/transforms-support-calc.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-transitions/transitioncancel-002.html [ Timeout ]
-crbug.com/1050754 external/wpt/css/css-typed-om/the-stylepropertymap/computed/get-auto-min-size.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-typed-om/the-stylepropertymap/properties/overflow.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-typed-om/the-stylepropertymap/properties/scrollbar-width.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-ui/animation/outline-width-interpolation.html [ Failure ]

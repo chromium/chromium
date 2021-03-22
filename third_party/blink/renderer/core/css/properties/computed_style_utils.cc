@@ -2824,6 +2824,18 @@ const CSSValue* ComputedStyleUtils::ComputedPropertyValue(
     case CSSPropertyID::kColor:
       return ComputedStyleUtils::CurrentColorOrValidColor(
           style, style.GetColor(), CSSValuePhase::kComputedValue);
+    case CSSPropertyID::kMinHeight: {
+      if (style.MinHeight().IsAuto())
+        return CSSIdentifierValue::Create(CSSValueID::kAuto);
+      return property.CSSValueFromComputedStyle(
+          style, /*layout_object=*/nullptr, false);
+    }
+    case CSSPropertyID::kMinWidth: {
+      if (style.MinWidth().IsAuto())
+        return CSSIdentifierValue::Create(CSSValueID::kAuto);
+      return property.CSSValueFromComputedStyle(
+          style, /*layout_object=*/nullptr, false);
+    }
     case CSSPropertyID::kOutlineColor:
       return ComputedStyleUtils::CurrentColorOrValidColor(
           style, style.OutlineColor(), CSSValuePhase::kComputedValue);
