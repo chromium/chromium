@@ -102,7 +102,7 @@ void SharesheetService::OnTargetSelected(gfx::NativeWindow native_window,
   if (delegate == nullptr)
     return;
 
-  RecordActionMetrics(target_name);
+  RecordUserActionMetrics(target_name);
   if (type == TargetType::kAction) {
     ShareAction* share_action =
         sharesheet_action_cache_->GetActionFromName(target_name);
@@ -110,7 +110,7 @@ void SharesheetService::OnTargetSelected(gfx::NativeWindow native_window,
       return;
     delegate->OnActionLaunched();
     share_action->LaunchAction(delegate, share_action_view, std::move(intent));
-  } else if (type == TargetType::kApp) {
+  } else if (type == TargetType::kArcApp || type == TargetType::kWebApp) {
     LaunchApp(target_name, std::move(intent));
     delegate->CloseSharesheet();
   }
@@ -169,7 +169,7 @@ void SharesheetService::LoadAppIcons(
     std::vector<apps::IntentLaunchInfo> intent_launch_info,
     std::vector<TargetInfo> targets,
     size_t index,
-    base::OnceCallback<void(std::vector<TargetInfo> targets)> callback) {
+    SharesheetServiceIconLoaderCallback callback) {
   if (index >= intent_launch_info.size()) {
     std::move(callback).Run(std::move(targets));
     return;
@@ -206,13 +206,22 @@ void SharesheetService::OnIconLoaded(
     std::vector<apps::IntentLaunchInfo> intent_launch_info,
     std::vector<TargetInfo> targets,
     size_t index,
-    base::OnceCallback<void(std::vector<TargetInfo> targets)> callback,
+    SharesheetServiceIconLoaderCallback callback,
     apps::mojom::IconValuePtr icon_value) {
   const auto& launch_entry = intent_launch_info[index];
+  const auto& app_type =
+      app_service_proxy_->AppRegistryCache().GetAppType(launch_entry.app_id);
+  auto target_type = TargetType::kUnknown;
+  if (app_type == apps::mojom::AppType::kArc) {
+    target_type = TargetType::kArcApp;
+  } else if (app_type == apps::mojom::AppType::kWeb) {
+    target_type = TargetType::kWebApp;
+  }
+
   app_service_proxy_->AppRegistryCache().ForOneApp(
-      launch_entry.app_id,
-      [&launch_entry, &targets, &icon_value](const apps::AppUpdate& update) {
-        targets.emplace_back(TargetType::kApp, icon_value->uncompressed,
+      launch_entry.app_id, [&launch_entry, &targets, &icon_value,
+                            &target_type](const apps::AppUpdate& update) {
+        targets.emplace_back(target_type, icon_value->uncompressed,
                              base::UTF8ToUTF16(launch_entry.app_id),
                              base::UTF8ToUTF16(update.Name()),
                              base::UTF8ToUTF16(launch_entry.activity_label),
@@ -227,13 +236,16 @@ void SharesheetService::OnAppIconsLoaded(SharesheetServiceDelegate* delegate,
                                          apps::mojom::IntentPtr intent,
                                          CloseCallback close_callback,
                                          std::vector<TargetInfo> targets) {
+  RecordTargetCountMetrics(targets);
+
   // If SetSelectedAppForTesting() has been called, immediately launch the app.
   const base::string16 selected_app = GetSelectedApp();
   if (!selected_app.empty()) {
     SharesheetResult result = SharesheetResult::kCancel;
     auto iter = std::find_if(targets.begin(), targets.end(),
                              [selected_app](const auto& target) {
-                               return target.type == TargetType::kApp &&
+                               return (target.type == TargetType::kArcApp ||
+                                       target.type == TargetType::kWebApp) &&
                                       target.launch_name == selected_app;
                              });
     if (iter != targets.end()) {
@@ -277,7 +289,8 @@ void SharesheetService::ShowBubbleWithDelegate(
                               std::move(intent), std::move(close_callback)));
 }
 
-void SharesheetService::RecordActionMetrics(const base::string16& target_name) {
+void SharesheetService::RecordUserActionMetrics(
+    const base::string16& target_name) {
   if (target_name == l10n_util::GetStringUTF16(IDS_NEARBY_SHARE_FEATURE_NAME)) {
     SharesheetMetrics::RecordSharesheetActionMetrics(
         SharesheetMetrics::UserAction::kNearbyAction);
@@ -311,6 +324,45 @@ void SharesheetService::RecordActionMetrics(const base::string16& target_name) {
       case apps::mojom::AppType::kUnknown:
         NOTREACHED();
     }
+  }
+}
+
+void SharesheetService::RecordTargetCountMetrics(
+    const std::vector<TargetInfo>& targets) {
+  int arc_app_count = 0;
+  int web_app_count = 0;
+  for (const auto& target : targets) {
+    switch (target.type) {
+      case TargetType::kArcApp:
+        ++arc_app_count;
+        break;
+      case TargetType::kWebApp:
+        ++web_app_count;
+        break;
+      case TargetType::kAction:
+        RecordShareActionMetrics(target.launch_name);
+        break;
+      case TargetType::kUnknown:
+        NOTREACHED();
+    }
+  }
+  SharesheetMetrics::RecordSharesheetArcAppCount(arc_app_count);
+  SharesheetMetrics::RecordSharesheetWebAppCount(web_app_count);
+}
+
+void SharesheetService::RecordShareActionMetrics(
+    const base::string16& target_name) {
+  if (target_name == l10n_util::GetStringUTF16(IDS_NEARBY_SHARE_FEATURE_NAME)) {
+    SharesheetMetrics::RecordSharesheetShareAction(
+        SharesheetMetrics::UserAction::kNearbyAction);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  } else if (target_name ==
+             l10n_util::GetStringUTF16(IDS_FILE_BROWSER_SHARE_BUTTON_LABEL)) {
+    SharesheetMetrics::RecordSharesheetShareAction(
+        SharesheetMetrics::UserAction::kDriveAction);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  } else {
+    NOTREACHED();
   }
 }
 

@@ -112,7 +112,9 @@ class SharesheetService : public KeyedService {
                               bool contains_hosted_document,
                               CloseCallback close_callback);
 
-  void RecordActionMetrics(const base::string16& target_name);
+  void RecordUserActionMetrics(const base::string16& target_name);
+  void RecordTargetCountMetrics(const std::vector<TargetInfo>& targets);
+  void RecordShareActionMetrics(const base::string16& target_name);
 
   Profile* profile_;
   std::unique_ptr<SharesheetActionCache> sharesheet_action_cache_;

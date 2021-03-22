@@ -1198,11 +1198,30 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.AppCount" units="apps" expires_after="M95">
+  <obsolete>
+    Replaced with pattern histogram ChromeOS.Sharesheet.AppCount.{AppType}.
+    (2021-03)
+  </obsolete>
   <owner>dominickn@chromium.org</owner>
   <owner>melzhang@chromium.org</owner>
   <summary>
     Records number of apps found for a given intent in the Sharesheet.
   </summary>
+</histogram>
+
+<histogram name="ChromeOS.Sharesheet.AppCount.{AppType}" units="apps"
+    expires_after="M95">
+  <owner>dominickn@chromium.org</owner>
+  <owner>melzhang@chromium.org</owner>
+  <summary>
+    Records number of {AppType} apps found for a given intent in the Sharesheet
+    when the sharesheet is invoked.
+  </summary>
+  <token key="AppType">
+    <variant name="All" summary="all apps"/>
+    <variant name="Arc" summary="arc app"/>
+    <variant name="Web" summary="web app"/>
+  </token>
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.FormFactor"
@@ -1217,6 +1236,15 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>dominickn@chromium.org</owner>
   <owner>melzhang@chromium.org</owner>
   <summary>Records the source from which the Sharesheet is invoked.</summary>
+</histogram>
+
+<histogram name="ChromeOS.Sharesheet.ShareActionCount"
+    enum="ChromeOSSharesheetAction" expires_after="M95">
+  <owner>dominickn@chromium.org</owner>
+  <owner>melzhang@chromium.org</owner>
+  <summary>
+    Records each action found for a given intent when the Sharesheet is invoked.
+  </summary>
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.UserAction"

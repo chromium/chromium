@@ -10693,6 +10693,14 @@ histogram as enum -->
   <int value="3" label="Invoked through WebShare"/>
 </enum>
 
+<enum name="ChromeOSSharesheetShareAction">
+  <summary>
+    The types of share actions present in the sharesheet when it is invoked.
+  </summary>
+  <int value="2" label="Nearby Share Action"/>
+  <int value="5" label="Drive Share Action"/>
+</enum>
+
 <enum name="ChromeOSUICommands">
 <!-- Please put in checks to ensure Command IDs are stable before adding them to this enum. -->
 
