@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 #include "third_party/blink/renderer/core/editing/finder/async_find_buffer.h"
 
-#include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/finder/find_buffer.h"
 
@@ -15,7 +14,7 @@ constexpr base::TimeDelta kFindBufferTaskTimeoutMs =
     base::TimeDelta::FromMilliseconds(100);
 }  // namespace
 
-void AsyncFindBuffer::FindMatchInRange(Range* search_range,
+void AsyncFindBuffer::FindMatchInRange(RangeInFlatTree* search_range,
                                        String search_text,
                                        FindOptions options,
                                        Callback completeCallback) {
@@ -29,20 +28,26 @@ void AsyncFindBuffer::Cancel() {
   pending_find_match_task_.Cancel();
 }
 
-void AsyncFindBuffer::Run(Range* search_range,
+void AsyncFindBuffer::Run(RangeInFlatTree* search_range,
                           String search_text,
                           FindOptions options,
                           Callback completeCallback) {
-  search_range->OwnerDocument().UpdateStyleAndLayout(
+  // If range is not connected we should stop the search.
+  if (search_range->IsNull() || !search_range->IsConnected()) {
+    std::move(completeCallback).Run(EphemeralRangeInFlatTree());
+    return;
+  }
+  search_range->StartPosition().GetDocument()->UpdateStyleAndLayout(
       DocumentUpdateReason::kFindInPage);
+
   EphemeralRangeInFlatTree range = FindBuffer::FindMatchInRange(
-      EphemeralRangeInFlatTree(search_range), search_text, options,
+      search_range->ToEphemeralRange(), search_text, options,
       kFindBufferTaskTimeoutMs);
 
   if (range.IsNotNull() && range.IsCollapsed()) {
     // FindBuffer reached time limit - Start/End of range is last checked
     // position
-    search_range->setStart(ToPositionInDOMTree(range.StartPosition()));
+    search_range->SetStart(range.StartPosition());
     NextIteration(search_range, search_text, options,
                   std::move(completeCallback));
     return;
@@ -57,14 +62,15 @@ void AsyncFindBuffer::Run(Range* search_range,
   std::move(completeCallback).Run(range);
 }
 
-void AsyncFindBuffer::NextIteration(Range* search_range,
+void AsyncFindBuffer::NextIteration(RangeInFlatTree* search_range,
                                     String search_text,
                                     FindOptions options,
                                     Callback completeCallback) {
   iterations_++;
   pending_find_match_task_ = PostCancellableTask(
-      *search_range->OwnerDocument()
-           .GetTaskRunner(TaskType::kInternalFindInPage)
+      *search_range->StartPosition()
+           .GetDocument()
+           ->GetTaskRunner(TaskType::kInternalFindInPage)
            .get(),
       FROM_HERE,
       WTF::Bind(&AsyncFindBuffer::Run, WrapWeakPersistent(this),

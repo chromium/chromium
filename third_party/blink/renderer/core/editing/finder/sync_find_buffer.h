@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/editing/finder/find_buffer_runner.h"
 #include "third_party/blink/renderer/core/editing/finder/find_options.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
+#include "third_party/blink/renderer/core/editing/range_in_flat_tree.h"
 
 namespace blink {
 
@@ -18,7 +19,7 @@ class SyncFindBuffer : public FindBufferRunner {
   explicit SyncFindBuffer() = default;
   ~SyncFindBuffer() = default;
 
-  void FindMatchInRange(Range* search_range,
+  void FindMatchInRange(RangeInFlatTree* search_range,
                         String search_text,
                         FindOptions options,
                         Callback completeCallback) override;
