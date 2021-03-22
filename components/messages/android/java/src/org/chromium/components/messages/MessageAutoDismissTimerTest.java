@@ -32,8 +32,8 @@ public class MessageAutoDismissTimerTest {
     public void testStartTimer() throws Exception {
         CallbackHelper callbackHelper = new CallbackHelper();
         long duration = 1;
-        MessageAutoDismissTimer timer = new MessageAutoDismissTimer(duration);
-        timer.startTimer(callbackHelper::notifyCalled);
+        MessageAutoDismissTimer timer = new MessageAutoDismissTimer();
+        timer.startTimer(duration, callbackHelper::notifyCalled);
         // Not flushing will make the looper blocked.
         Robolectric.flushForegroundThreadScheduler();
         callbackHelper.waitForFirst("Callback should be called by the active timer");
@@ -47,10 +47,10 @@ public class MessageAutoDismissTimerTest {
     public void testCancelTimer() {
         Handler h = Mockito.mock(Handler.class);
         long duration = 1;
-        MessageAutoDismissTimer timer = new MessageAutoDismissTimer(duration);
+        MessageAutoDismissTimer timer = new MessageAutoDismissTimer();
         timer.setHandlerForTesting(h);
         Runnable r = () -> {};
-        timer.startTimer(r);
+        timer.startTimer(duration, r);
         verify(h).postDelayed(r, duration);
         timer.cancelTimer();
         Assert.assertNull("Runnable should be set as null if timer has been cancelled",
@@ -66,10 +66,10 @@ public class MessageAutoDismissTimerTest {
     public void testResetTimer() {
         Handler h = Mockito.mock(Handler.class);
         long duration = 1;
-        MessageAutoDismissTimer timer = new MessageAutoDismissTimer(duration);
+        MessageAutoDismissTimer timer = new MessageAutoDismissTimer();
         timer.setHandlerForTesting(h);
         Runnable r = () -> {};
-        timer.startTimer(r);
+        timer.startTimer(duration, r);
         timer.resetTimer();
         Assert.assertEquals("Runnable should not be null after active timer is reset", r,
                 timer.getRunnableOnTimeUpForTesting());

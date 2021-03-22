@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -432,13 +433,26 @@ public class RootUiCoordinator
     @Override
     @CallSuper
     public void onFinishNativeInitialization() {
+        // TODO(crbug.com/1185887): Move feature flag and parameters into a separate class in
+        // the Messages component.
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE)) {
             MessageContainer container = mActivity.findViewById(R.id.message_container);
             mMessageContainerCoordinator =
                     new MessageContainerCoordinator(container, getBrowserControlsManager());
+            long autodismissDurationMs = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                    ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE,
+                    "autodismiss_duration_ms", 10 * (int) DateUtils.SECOND_IN_MILLIS);
+            long autodismissDurationWithA11yMs = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                    ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE,
+                    "autodismiss_duration_with_a11y_ms", 30 * (int) DateUtils.SECOND_IN_MILLIS);
+            Supplier<Long> autodismissDurationSupplier = () -> {
+                return ChromeAccessibilityUtil.get().isAccessibilityEnabled()
+                        ? autodismissDurationWithA11yMs
+                        : autodismissDurationMs;
+            };
             mMessageDispatcher = MessagesFactory.createMessageDispatcher(container,
                     mMessageContainerCoordinator::getMessageMaxTranslation,
-                    ChromeAccessibilityUtil.get(),
+                    autodismissDurationSupplier,
                     mActivity.getWindowAndroid()::startAnimationOverContent);
             mMessageQueueMediator = new ChromeMessageQueueMediator(
                     mActivity.getBrowserControlsManager(), mMessageContainerCoordinator,

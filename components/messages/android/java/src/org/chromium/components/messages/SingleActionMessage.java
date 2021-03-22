@@ -6,7 +6,6 @@ package org.chromium.components.messages;
 
 import android.animation.Animator;
 import android.annotation.SuppressLint;
-import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -15,15 +14,11 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.util.AccessibilityUtil;
 
 /**
  * Coordinator to show / hide a banner message on given container and delegate events.
  */
 public class SingleActionMessage implements MessageStateHandler {
-    private static final long DURATION = 10 * DateUtils.SECOND_IN_MILLIS;
-    private static final long DURATION_ON_A11Y = 30 * DateUtils.SECOND_IN_MILLIS;
-
     /**
      * The interface that consumers of SingleActionMessage should implement to receive notification
      * that the message was dismissed.
@@ -38,9 +33,9 @@ public class SingleActionMessage implements MessageStateHandler {
     private final MessageContainer mContainer;
     private final PropertyModel mModel;
     private final DismissCallback mDismissHandler;
-    private MessageAutoDismissTimer mAutoDismissTimer;
+    private final Supplier<Long> mAutodismissDurationMs;
+    private final MessageAutoDismissTimer mAutoDismissTimer;
     private final Supplier<Integer> mMaxTranslationSupplier;
-    private final AccessibilityUtil mAccessibilityUtil;
     private final Callback<Animator> mAnimatorStartCallback;
 
     /**
@@ -49,19 +44,20 @@ public class SingleActionMessage implements MessageStateHandler {
      *         MessageBannerProperties#SINGLE_ACTION_MESSAGE_KEYS}.
      * @param dismissHandler The {@link DismissCallback} able to dismiss a message by given property
      *         model.
+     * @param autodismissDurationMs A {@link Supplier} providing autodismiss duration for message
+     *         banner.
      * @param maxTranslationSupplier A {@link Supplier} that supplies the maximum translation Y
-     * @param accessibilityUtil A util to expose information related to system accessibility state.
      * @param animatorStartCallback The {@link Callback} that will be used by the message banner to
      *         delegate starting the animations to the {@link WindowAndroid}.
      */
     public SingleActionMessage(MessageContainer container, PropertyModel model,
             DismissCallback dismissHandler, Supplier<Integer> maxTranslationSupplier,
-            AccessibilityUtil accessibilityUtil, Callback<Animator> animatorStartCallback) {
+            Supplier<Long> autodismissDurationMs, Callback<Animator> animatorStartCallback) {
         mModel = model;
         mContainer = container;
         mDismissHandler = dismissHandler;
-        mAccessibilityUtil = accessibilityUtil;
-        mAutoDismissTimer = new MessageAutoDismissTimer(getAutoDismissDuration());
+        mAutodismissDurationMs = autodismissDurationMs;
+        mAutoDismissTimer = new MessageAutoDismissTimer();
         mMaxTranslationSupplier = maxTranslationSupplier;
         mAnimatorStartCallback = animatorStartCallback;
 
@@ -88,7 +84,7 @@ public class SingleActionMessage implements MessageStateHandler {
         final Runnable showRunnable = () -> mMessageBanner.show(() -> {
             mMessageBanner.setOnTouchRunnable(mAutoDismissTimer::resetTimer);
             mMessageBanner.announceForAccessibility();
-            mAutoDismissTimer.startTimer(
+            mAutoDismissTimer.startTimer(mAutodismissDurationMs.get(),
                     () -> { mDismissHandler.invoke(mModel, DismissReason.TIMER); });
         });
 
@@ -130,7 +126,7 @@ public class SingleActionMessage implements MessageStateHandler {
 
     @VisibleForTesting
     long getAutoDismissDuration() {
-        return mAccessibilityUtil.isAccessibilityEnabled() ? DURATION_ON_A11Y : DURATION;
+        return mAutodismissDurationMs.get();
     }
 
     @VisibleForTesting
