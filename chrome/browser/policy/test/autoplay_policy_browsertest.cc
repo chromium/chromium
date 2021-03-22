@@ -169,7 +169,13 @@ IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, AutoplayWhitelist_Missing) {
   EXPECT_FALSE(TryAutoplay(GetChildFrame()));
 }
 
-IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, AutoplayDeniedByPolicy) {
+// Flaky on Linux. See: crbug.com/1172978.
+#if defined(OS_LINUX)
+#define MAYBE_AutoplayDeniedByPolicy DISABLED_AutoplayDeniedByPolicy
+#else
+#define MAYBE_AutoplayDeniedByPolicy AutoplayDeniedByPolicy
+#endif
+IN_PROC_BROWSER_TEST_F(AutoplayPolicyTest, MAYBE_AutoplayDeniedByPolicy) {
   NavigateToTestPage();
 
   // Check that autoplay was not allowed.
