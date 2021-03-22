@@ -112,7 +112,8 @@ void PermissionPromptImpl::UpdateAnchor() {
       } else {
         // If |browser_| changed, recreate bubble for correct browser.
         if (was_browser_changed) {
-          prompt_bubble_->GetWidget()->RemoveObserver(this);
+          prompt_bubble_->GetWidget()->CloseWithReason(
+              views::Widget::ClosedReason::kUnspecified);
           ShowBubble();
         } else {
           prompt_bubble_->UpdateAnchorPosition();
