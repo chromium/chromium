@@ -213,6 +213,11 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
                    << " not found. Are all data-referenced implementations "
                       "added to provider?";
     }
+    const base::Value* ui_strings =
+        pedal_value.FindDictKey("omnibox_ui_strings");
+    if (ui_strings) {
+      pedal->second->SetLabelStrings(*ui_strings);
+    }
     for (const auto& group_value : pedal_value.FindKey("groups")->GetList()) {
       pedal->second->AddSynonymGroup(LoadSynonymGroup(group_value));
     }

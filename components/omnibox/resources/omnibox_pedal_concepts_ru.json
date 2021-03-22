@@ -1,7 +1,7 @@
 {
   "schema": "pedal_concepts_runtime",
-  "schema_version": 2,
-  "data_version": 15768072,
+  "schema_version": 3,
+  "data_version": 15781096,
   "tokenize_each_character": false,
   "dictionary": [
     "chrome",
@@ -151,7 +151,8 @@
             ]
           ]
         }
-      ]
+      ],
+      "omnibox_ui_strings": null
     },
     {
       "id": 2,
@@ -218,7 +219,8 @@
             ]
           ]
         }
-      ]
+      ],
+      "omnibox_ui_strings": null
     },
     {
       "id": 3,
@@ -313,7 +315,8 @@
             ]
           ]
         }
-      ]
+      ],
+      "omnibox_ui_strings": null
     },
     {
       "id": 4,
@@ -396,7 +399,8 @@
             ]
           ]
         }
-      ]
+      ],
+      "omnibox_ui_strings": null
     },
     {
       "id": 5,
@@ -446,7 +450,8 @@
             ]
           ]
         }
-      ]
+      ],
+      "omnibox_ui_strings": null
     },
     {
       "id": 6,
@@ -483,7 +488,8 @@
             ]
           ]
         }
-      ]
+      ],
+      "omnibox_ui_strings": null
     }
   ],
   "ignore_group": {

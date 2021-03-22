@@ -11,6 +11,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/buildflags.h"
 #include "components/omnibox/browser/omnibox_pedal_concepts.h"
@@ -127,6 +128,10 @@ class OmniboxPedal {
 
   // Provides read access to labels associated with this Pedal.
   const LabelStrings& GetLabelStrings() const;
+
+  // Writes labels associated with this Pedal by taking named
+  //  values from provided dictionary value |ui_strings|.
+  void SetLabelStrings(const base::Value& ui_strings);
 
   // Returns true if this is purely a navigation Pedal with URL.
   bool IsNavigation() const;
