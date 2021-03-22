@@ -257,8 +257,8 @@ public class PasswordSettingsTest {
         }
 
         @Override
-        public void showPasswordEntryEditingView(
-                Context context, SettingsLauncher launcher, int index) {
+        public void showPasswordEntryEditingView(Context context, SettingsLauncher launcher,
+                int index, boolean isBlockedCredential) {
             assert false : "Define this method before starting to use it in tests.";
         }
     }

@@ -9,7 +9,7 @@ import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProp
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.UI_ACTION_HANDLER;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.URL_OR_APP;
 
-import org.chromium.chrome.browser.password_entry_edit.CredentialEditFragmentView.ComponentStateDelegate;
+import org.chromium.chrome.browser.password_entry_edit.CredentialEntryFragmentViewBase.ComponentStateDelegate;
 import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -21,7 +21,7 @@ import java.lang.ref.WeakReference;
  * Creates the credential edit UI and is responsible for managing it.
  */
 class CredentialEditCoordinator implements ComponentStateDelegate {
-    private final CredentialEditFragmentView mFragmentView;
+    private final CredentialEntryFragmentViewBase mFragmentView;
     private final PasswordAccessReauthenticationHelper mReauthenticationHelper;
     private final CredentialEditMediator mMediator;
     private final UiDismissalHandler mDismissalHandler;
@@ -47,15 +47,15 @@ class CredentialEditCoordinator implements ComponentStateDelegate {
         void deleteCredential();
     }
 
-    CredentialEditCoordinator(CredentialEditFragmentView fragmentView,
+    CredentialEditCoordinator(CredentialEntryFragmentViewBase fragmentView,
             UiDismissalHandler dismissalHandler,
             CredentialActionDelegate credentialActionDelegate) {
         mFragmentView = fragmentView;
         mReauthenticationHelper = new PasswordAccessReauthenticationHelper(
-                mFragmentView.getActivity(), mFragmentView.getParentFragmentManager());
+                fragmentView.getActivity(), fragmentView.getParentFragmentManager());
         mMediator = new CredentialEditMediator(mReauthenticationHelper,
                 new ConfirmationDialogHelper(new WeakReference<>(mFragmentView.getContext())),
-                credentialActionDelegate);
+                credentialActionDelegate, fragmentView instanceof BlockedCredentialFragmentView);
         mDismissalHandler = dismissalHandler;
         mFragmentView.setComponentStateDelegate(this);
     }
@@ -94,8 +94,18 @@ class CredentialEditCoordinator implements ComponentStateDelegate {
         mDismissalHandler.onUiDismissed();
     }
 
-    static void setupModelChangeProcessor(PropertyModel model, CredentialEditFragmentView view) {
-        PropertyModelChangeProcessor.create(
-                model, view, CredentialEditViewBinder::bindCredentialEditView);
+    static void setupModelChangeProcessor(
+            PropertyModel model, CredentialEntryFragmentViewBase view) {
+        if (view instanceof CredentialEditFragmentView) {
+            PropertyModelChangeProcessor.create(model, (CredentialEditFragmentView) view,
+                    CredentialEditViewBinder::bindCredentialEditView);
+            return;
+        }
+
+        if (view instanceof BlockedCredentialFragmentView) {
+            PropertyModelChangeProcessor.create(model, (BlockedCredentialFragmentView) view,
+                    BlockedCredentialViewBinder::bindBlockedCredentialView);
+            return;
+        }
     }
 }

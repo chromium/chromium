@@ -94,7 +94,8 @@ public interface PasswordManagerHandler {
      * if no Activity is available.
      * @param settingsLauncher the {@link SettingsLauncher} used to launch the edit UI fragment
      * @param index the index of the password entry to edit
+     * @param isBlockedCredential whether this credential is blocked for saving
      */
-    void showPasswordEntryEditingView(
-            Context context, SettingsLauncher settingsLauncher, int index);
+    void showPasswordEntryEditingView(Context context, SettingsLauncher settingsLauncher, int index,
+            boolean isBlockedCredential);
 }

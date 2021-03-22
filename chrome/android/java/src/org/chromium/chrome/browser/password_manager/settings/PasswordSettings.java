@@ -453,11 +453,13 @@ public class PasswordSettings
             intent.setPackage(getActivity().getPackageName());
             getActivity().startActivity(intent);
         } else if (ChromeFeatureList.isEnabled(ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS)) {
-            // Launch preference activity with a PasswordEntryEditor fragment.
+            boolean isBlockedCredential =
+                    !preference.getExtras().containsKey(PasswordSettings.PASSWORD_LIST_NAME);
             PasswordManagerHandlerProvider.getInstance()
                     .getPasswordManagerHandler()
                     .showPasswordEntryEditingView(getActivity(), new SettingsLauncherImpl(),
-                            preference.getExtras().getInt(PasswordSettings.PASSWORD_LIST_ID));
+                            preference.getExtras().getInt(PasswordSettings.PASSWORD_LIST_ID),
+                            isBlockedCredential);
         } else {
             // Launch preference activity with PasswordEntryViewer fragment with
             // intent extras specifying the object.

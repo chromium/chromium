@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.password_entry_edit;
 
-import org.chromium.chrome.browser.password_entry_edit.CredentialEditFragmentView.UiActionHandler;
+import org.chromium.chrome.browser.password_entry_edit.CredentialEntryFragmentViewBase.UiActionHandler;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 

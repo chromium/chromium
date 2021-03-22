@@ -99,8 +99,13 @@ public final class PasswordUIView implements PasswordManagerHandler {
     }
 
     @Override
-    public void showPasswordEntryEditingView(
-            Context context, SettingsLauncher settingsLauncher, int index) {
+    public void showPasswordEntryEditingView(Context context, SettingsLauncher settingsLauncher,
+            int index, boolean isBlockedCredential) {
+        if (isBlockedCredential) {
+            PasswordUIViewJni.get().handleShowBlockedCredentialView(mNativePasswordUIViewAndroid,
+                    context, settingsLauncher, index, PasswordUIView.this);
+            return;
+        }
         PasswordUIViewJni.get().handleShowPasswordEntryEditingView(mNativePasswordUIViewAndroid,
                 context, settingsLauncher, index, PasswordUIView.this);
     }
@@ -150,6 +155,8 @@ public final class PasswordUIView implements PasswordManagerHandler {
                 String targetPath, IntStringCallback successCallback,
                 Callback<String> errorCallback);
         void handleShowPasswordEntryEditingView(long nativePasswordUIViewAndroid, Context context,
+                SettingsLauncher launcher, int index, PasswordUIView caller);
+        void handleShowBlockedCredentialView(long nativePasswordUIViewAndroid, Context context,
                 SettingsLauncher launcher, int index, PasswordUIView caller);
     }
 }

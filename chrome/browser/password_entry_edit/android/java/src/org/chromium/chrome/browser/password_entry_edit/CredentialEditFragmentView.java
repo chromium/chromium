@@ -4,100 +4,31 @@
 
 package org.chromium.chrome.browser.password_entry_edit;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
-
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
-import androidx.preference.PreferenceFragmentCompat;
-
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageButton;
 
 /**
  * This class is responsible for rendering the edit fragment where users can edit a saved password.
  */
-public class CredentialEditFragmentView extends PreferenceFragmentCompat {
-    private ComponentStateDelegate mComponentStateDelegate;
+public class CredentialEditFragmentView extends CredentialEntryFragmentViewBase {
     private TextInputLayout mUsernameInputLayout;
     private TextInputEditText mUsernameField;
     private TextInputLayout mPasswordInputLayout;
     private TextInputEditText mPasswordField;
     private ButtonCompat mDoneButton;
-
-    private Runnable mDeleteDelegate;
-
-    interface UiActionHandler {
-        /** Called when the user clicks the button to mask/unmask the password */
-        void onMaskOrUnmaskPassword();
-
-        /** Called when the user clicks the button to delete the credential */
-        void onDelete();
-
-        /** Called when the text in the username field changes */
-        void onUsernameTextChanged(String username);
-
-        /** Called when the text in the password field changes */
-        void onPasswordTextChanged(String password);
-
-        /**
-         * Called when the user clicks the button to copy the username
-         *
-         * @param context application context that can be used to get the {@link ClipboardManager}
-         */
-        void onCopyUsername(Context context);
-
-        /**
-         * Called when the user clicks the button to copy the password
-         *
-         * @param context application context that can be used to get the {@link ClipboardManager}
-         */
-        void onCopyPassword(Context context);
-
-        /** Called when the user clicks the button to save the changes to the credential */
-        void onSave();
-    }
-
-    // TODO(crbug.com/1178519): The coordinator should be made a LifecycleObserver instead.
-    interface ComponentStateDelegate {
-        /**
-         * Called when the fragment is started.
-         */
-        void onStartFragment();
-
-        /**
-         * Called when the fragment is resumed.
-         */
-        void onResumeFragment();
-
-        /**
-         * Signals that the component is no longer needed.
-         */
-        void onDestroy();
-    }
-
-    /**
-     * Sets the delegate that handles view events which affect the state of the component
-     *
-     * @param componentStateDelegate The delegate handling the view events.
-     **/
-    void setComponentStateDelegate(ComponentStateDelegate componentStateDelegate) {
-        mComponentStateDelegate = componentStateDelegate;
-    }
 
     @Override
     public void onCreatePreferences(Bundle bundle, String rootKey) {
@@ -112,25 +43,7 @@ public class CredentialEditFragmentView extends PreferenceFragmentCompat {
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.credential_edit_action_bar_menu, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_delete_saved_password) {
-            if (mDeleteDelegate != null) {
-                mDeleteDelegate.run();
-            }
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public void onStart() {
-        super.onStart();
         mUsernameInputLayout = getView().findViewById(R.id.username_text_input_layout);
         mUsernameField = getView().findViewById(R.id.username);
         View usernameIcon = getView().findViewById(R.id.copy_username_button);
@@ -145,28 +58,12 @@ public class CredentialEditFragmentView extends PreferenceFragmentCompat {
 
         getView().findViewById(R.id.button_secondary).setOnClickListener((unusedView) -> dismiss());
 
-        if (mComponentStateDelegate != null) mComponentStateDelegate.onStartFragment();
+        super.onStart();
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        if (mComponentStateDelegate != null) mComponentStateDelegate.onResumeFragment();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (getActivity().isFinishing() && mComponentStateDelegate != null) {
-            mComponentStateDelegate.onDestroy();
-        }
-    }
-
-    void dismiss() {
-        getActivity().finish();
-    }
-
     void setUiActionHandler(UiActionHandler uiActionHandler) {
+        super.setUiActionHandler(uiActionHandler);
         ChromeImageButton usernameCopyButton = getView().findViewById(R.id.copy_username_button);
         usernameCopyButton.setOnClickListener(
                 (unusedView)
@@ -214,8 +111,6 @@ public class CredentialEditFragmentView extends PreferenceFragmentCompat {
             @Override
             public void afterTextChanged(Editable editable) {}
         });
-
-        mDeleteDelegate = uiActionHandler::onDelete;
     }
 
     void setUrlOrApp(String urlOrApp) {

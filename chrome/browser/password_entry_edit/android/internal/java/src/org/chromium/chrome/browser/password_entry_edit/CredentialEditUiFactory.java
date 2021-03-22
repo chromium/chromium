@@ -14,7 +14,7 @@ public class CredentialEditUiFactory {
      * Creates the credential edit UI
      * @param fragmentView the view which will be managed by the coordinator.
      */
-    public static void create(CredentialEditFragmentView fragmentView) {
+    public static void create(CredentialEntryFragmentViewBase fragmentView) {
         CredentialEditBridge bridge = CredentialEditBridge.get();
         if (bridge == null) {
             // There is no backend to talk to, so the UI shouldn't be shown.

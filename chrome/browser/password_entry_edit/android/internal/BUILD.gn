@@ -11,6 +11,7 @@ android_library("java") {
   ]
 
   sources = [
+    "java/src/org/chromium/chrome/browser/password_entry_edit/BlockedCredentialViewBinder.java",
     "java/src/org/chromium/chrome/browser/password_entry_edit/CredentialEditBridge.java",
     "java/src/org/chromium/chrome/browser/password_entry_edit/CredentialEditCoordinator.java",
     "java/src/org/chromium/chrome/browser/password_entry_edit/CredentialEditMediator.java",
@@ -26,6 +27,7 @@ android_library("java") {
     "//chrome/browser/password_manager/android:java",
     "//components/browser_ui/settings/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_preference_preference_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
 

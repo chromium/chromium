@@ -20,7 +20,7 @@ import android.content.res.Resources;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEditCoordinator.CredentialActionDelegate;
-import org.chromium.chrome.browser.password_entry_edit.CredentialEditFragmentView.UiActionHandler;
+import org.chromium.chrome.browser.password_entry_edit.CredentialEntryFragmentViewBase.UiActionHandler;
 import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper.ReauthReason;
@@ -40,16 +40,18 @@ public class CredentialEditMediator implements UiActionHandler {
     private final PasswordAccessReauthenticationHelper mReauthenticationHelper;
     private final ConfirmationDialogHelper mDeleteDialogHelper;
     private final CredentialActionDelegate mCredentialActionDelegate;
+    private final boolean mIsBlockedCredential;
     private PropertyModel mModel;
     private String mOriginalUsername;
     private Set<String> mExistingUsernames;
 
     CredentialEditMediator(PasswordAccessReauthenticationHelper reauthenticationHelper,
             ConfirmationDialogHelper deleteDialogHelper,
-            CredentialActionDelegate credentialActionDelegate) {
+            CredentialActionDelegate credentialActionDelegate, boolean isBlockedCredential) {
         mReauthenticationHelper = reauthenticationHelper;
         mDeleteDialogHelper = deleteDialogHelper;
         mCredentialActionDelegate = credentialActionDelegate;
+        mIsBlockedCredential = isBlockedCredential;
     };
 
     void initialize(PropertyModel model) {
@@ -114,6 +116,10 @@ public class CredentialEditMediator implements UiActionHandler {
 
     @Override
     public void onDelete() {
+        if (mIsBlockedCredential) {
+            mCredentialActionDelegate.deleteCredential();
+            return;
+        }
         Resources resources = mDeleteDialogHelper.getResources();
         if (resources == null) return;
         String title =

@@ -93,6 +93,12 @@ class PasswordUIViewAndroid : public PasswordUIView {
       const base::android::JavaRef<jobject>& settings_launcher,
       int index,
       const base::android::JavaParamRef<jobject>& obj);
+  void HandleShowBlockedCredentialView(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& context,
+      const base::android::JavaRef<jobject>& settings_launcher,
+      int index,
+      const base::android::JavaParamRef<jobject>& obj);
   // Destroy the native implementation.
   void Destroy(JNIEnv*, const base::android::JavaRef<jobject>&);
 

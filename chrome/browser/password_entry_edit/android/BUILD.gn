@@ -15,6 +15,7 @@ source_set("android") {
     ":jni_headers",
     "//base",
     "//chrome/app:generated_resources",
+    "//chrome/browser/ui",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:affiliation",
     "//components/url_formatter",
@@ -27,7 +28,11 @@ generate_jni("jni_headers") {
 }
 
 android_library("java") {
-  sources = [ "//chrome/browser/password_entry_edit/android/java/src/org/chromium/chrome/browser/password_entry_edit/CredentialEditFragmentView.java" ]
+  sources = [
+    "//chrome/browser/password_entry_edit/android/java/src/org/chromium/chrome/browser/password_entry_edit/BlockedCredentialFragmentView.java",
+    "//chrome/browser/password_entry_edit/android/java/src/org/chromium/chrome/browser/password_entry_edit/CredentialEditFragmentView.java",
+    "//chrome/browser/password_entry_edit/android/java/src/org/chromium/chrome/browser/password_entry_edit/CredentialEntryFragmentViewBase.java",
+  ]
 
   deps = [
     ":java_resources",
@@ -43,6 +48,7 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/layout/blocked_credential_view.xml",
     "java/res/layout/credential_edit_view.xml",
     "java/res/menu/credential_edit_action_bar_menu.xml",
     "java/res/values/dimens.xml",
