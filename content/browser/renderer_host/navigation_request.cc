@@ -70,6 +70,7 @@
 #include "content/browser/web_package/web_bundle_utils.h"
 #include "content/common/appcache_interfaces.h"
 #include "content/common/content_constants_internal.h"
+#include "content/common/debug_utils.h"
 #include "content/common/frame_messages.h"
 #include "content/common/navigation_params.h"
 #include "content/common/navigation_params_mojom_traits.h"
@@ -1890,6 +1891,9 @@ void NavigationRequest::ResetForCrossDocumentRestart() {
                             rfh_entry_browsing_instance_id);
 
     base::debug::DumpWithoutCrashing();
+
+    CaptureTraceForNavigationDebugScenario(
+        DebugScenario::kDebugSameDocNavigationDocIdMismatch);
   }
 
   // Reset the NavigationHandle, which is now incorrectly marked as

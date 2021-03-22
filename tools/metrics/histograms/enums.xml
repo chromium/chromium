@@ -17273,6 +17273,16 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="11" label="Failed read by backdrop filters"/>
 </enum>
 
+<enum name="DebugScenario">
+<!-- Generated from content/common/debug_utils.h.
+Called by update_debug_scenarios.py.-->
+
+<!-- For more details about the meaning of each value in this enum,
+     please refer to content/common/debug_utils.h. -->
+
+  <int value="1" label="kDebugSameDocNavigationDocIdMismatch"/>
+</enum>
+
 <enum name="DeclarativeAPIFunctionType">
   <int value="0" label="kDeclarativeContentAddRules"/>
   <int value="1" label="kDeclarativeContentRemoveRules"/>
