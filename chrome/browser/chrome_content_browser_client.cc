@@ -911,6 +911,13 @@ blink::mojom::AutoplayPolicy GetAutoplayPolicyForWebContents(
     result = UnifiedAutoplayConfig::ShouldBlockAutoplay(profile)
                  ? blink::mojom::AutoplayPolicy::kDocumentUserActivationRequired
                  : blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
+  } else if (web_contents->GetMainFrame()->IsFeatureEnabled(
+                 blink::mojom::PermissionsPolicyFeature::kAutoplay) &&
+             IsAutoplayAllowedByPolicy(web_contents->GetOuterWebContents(),
+                                       prefs)) {
+    // If the domain policy allows autoplay and has delegated that to an iframe,
+    // allow autoplay within the iframe. Only allow a nesting of single depth.
+    result = blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
   }
 #endif  // !defined(OS_ANDROID)
   return result;
