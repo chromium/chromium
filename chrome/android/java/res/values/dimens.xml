@@ -442,7 +442,6 @@
     <dimen name="navigation_bubble_text_end_padding">8dp</dimen>
     <dimen name="navigation_sheet_content_top_padding">18dp</dimen>
     <dimen name="navigation_sheet_content_bottom_padding">4dp</dimen>
-    <dimen name="navigation_sheet_content_wrap_padding">12dp</dimen>
     <dimen name="navigation_sheet_peek_height">120dp</dimen>
 
     <!-- RadioButtonWithDescriptionLayout dimensions -->
