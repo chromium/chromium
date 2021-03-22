@@ -128,8 +128,6 @@ const int kMainIntentCheckDelay = 1;
 
   BOOL inBackground =
       [application applicationState] == UIApplicationStateBackground;
-  DCHECK(inBackground);
-
   BOOL requiresHandling =
       [_appState requiresHandlingAfterLaunchWithOptions:launchOptions
                                         stateBackground:inBackground];
