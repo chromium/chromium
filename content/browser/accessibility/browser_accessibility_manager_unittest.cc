@@ -18,7 +18,6 @@
 #endif
 #include "content/browser/accessibility/test_browser_accessibility_delegate.h"
 #include "content/public/browser/ax_event_notification_details.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -57,8 +56,6 @@ class BrowserAccessibilityManagerTest : public testing::Test {
 
  private:
   void SetUp() override;
-
-  content::BrowserTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityManagerTest);
 };

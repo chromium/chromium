@@ -4,10 +4,10 @@
 
 #include "content/browser/accessibility/browser_accessibility.h"
 
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/test_browser_accessibility_delegate.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_node_position.h"
 
@@ -25,7 +25,7 @@ class BrowserAccessibilityTest : public testing::Test {
  private:
   void SetUp() override;
 
-  content::BrowserTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityTest);
 };
 

@@ -17,7 +17,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/common/render_accessibility.mojom.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "ui/accessibility/ax_language_detection.h"
@@ -769,7 +768,6 @@ void BrowserAccessibilityManager::SetFocus(const BrowserAccessibility& node) {
   if (!delegate_->AccessibilityViewHasFocus())
     delegate_->AccessibilityViewSetFocus();
   delegate_->AccessibilityPerformAction(action_data);
-  BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
 }
 
 void BrowserAccessibilityManager::SetSequentialFocusNavigationStartingPoint(
@@ -782,7 +780,6 @@ void BrowserAccessibilityManager::SetSequentialFocusNavigationStartingPoint(
       ax::mojom::Action::kSetSequentialFocusNavigationStartingPoint;
   action_data.target_node_id = node.GetId();
   delegate_->AccessibilityPerformAction(action_data);
-  BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
 }
 
 void BrowserAccessibilityManager::SetFocusLocallyForTesting(
@@ -826,7 +823,6 @@ void BrowserAccessibilityManager::Decrement(const BrowserAccessibility& node) {
   action_data.action = ax::mojom::Action::kDecrement;
   action_data.target_node_id = node.GetId();
   delegate_->AccessibilityPerformAction(action_data);
-  BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
 }
 
 void BrowserAccessibilityManager::DoDefaultAction(
@@ -841,7 +837,6 @@ void BrowserAccessibilityManager::DoDefaultAction(
   action_data.action = ax::mojom::Action::kDoDefault;
   action_data.target_node_id = node.GetId();
   delegate_->AccessibilityPerformAction(action_data);
-  BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
 }
 
 void BrowserAccessibilityManager::GetImageData(const BrowserAccessibility& node,
@@ -854,7 +849,6 @@ void BrowserAccessibilityManager::GetImageData(const BrowserAccessibility& node,
   action_data.target_node_id = node.GetId();
   action_data.target_rect = gfx::Rect(gfx::Point(), max_size);
   delegate_->AccessibilityPerformAction(action_data);
-  BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
 }
 
 void BrowserAccessibilityManager::Increment(const BrowserAccessibility& node) {
@@ -865,7 +859,6 @@ void BrowserAccessibilityManager::Increment(const BrowserAccessibility& node) {
   action_data.action = ax::mojom::Action::kIncrement;
   action_data.target_node_id = node.GetId();
   delegate_->AccessibilityPerformAction(action_data);
-  BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
 }
 
 void BrowserAccessibilityManager::ShowContextMenu(
@@ -877,7 +870,6 @@ void BrowserAccessibilityManager::ShowContextMenu(
   action_data.action = ax::mojom::Action::kShowContextMenu;
   action_data.target_node_id = node.GetId();
   delegate_->AccessibilityPerformAction(action_data);
-  BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
 }
 
 void BrowserAccessibilityManager::SignalEndOfTest() {
@@ -909,7 +901,6 @@ void BrowserAccessibilityManager::ScrollToMakeVisible(
   action_data.vertical_scroll_alignment = vertical_scroll_alignment;
   action_data.scroll_behavior = scroll_behavior;
   delegate_->AccessibilityPerformAction(action_data);
-  BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
 }
 
 void BrowserAccessibilityManager::ScrollToPoint(
@@ -923,7 +914,6 @@ void BrowserAccessibilityManager::ScrollToPoint(
   action_data.action = ax::mojom::Action::kScrollToPoint;
   action_data.target_point = point;
   delegate_->AccessibilityPerformAction(action_data);
-  BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
 }
 
 void BrowserAccessibilityManager::SetScrollOffset(
@@ -937,7 +927,6 @@ void BrowserAccessibilityManager::SetScrollOffset(
   action_data.action = ax::mojom::Action::kSetScrollOffset;
   action_data.target_point = offset;
   delegate_->AccessibilityPerformAction(action_data);
-  BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
 }
 
 void BrowserAccessibilityManager::SetValue(const BrowserAccessibility& node,
@@ -950,7 +939,6 @@ void BrowserAccessibilityManager::SetValue(const BrowserAccessibility& node,
   action_data.action = ax::mojom::Action::kSetValue;
   action_data.value = value;
   delegate_->AccessibilityPerformAction(action_data);
-  BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
 }
 
 void BrowserAccessibilityManager::SetSelection(
@@ -958,7 +946,6 @@ void BrowserAccessibilityManager::SetSelection(
   if (!delegate_)
     return;
   delegate_->AccessibilityPerformAction(action_data);
-  BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
 }
 
 void BrowserAccessibilityManager::SetSelection(
@@ -973,7 +960,6 @@ void BrowserAccessibilityManager::SetSelection(
   action_data.focus_offset = range.focus()->text_offset();
   action_data.action = ax::mojom::Action::kSetSelection;
   delegate_->AccessibilityPerformAction(action_data);
-  BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
 }
 
 void BrowserAccessibilityManager::LoadInlineTextBoxes(
@@ -985,7 +971,6 @@ void BrowserAccessibilityManager::LoadInlineTextBoxes(
   action_data.action = ax::mojom::Action::kLoadInlineTextBoxes;
   action_data.target_node_id = node.GetId();
   delegate_->AccessibilityPerformAction(action_data);
-  BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
 }
 
 void BrowserAccessibilityManager::SetAccessibilityFocus(
@@ -997,7 +982,6 @@ void BrowserAccessibilityManager::SetAccessibilityFocus(
   action_data.action = ax::mojom::Action::kSetAccessibilityFocus;
   action_data.target_node_id = node.GetId();
   delegate_->AccessibilityPerformAction(action_data);
-  BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
 }
 
 void BrowserAccessibilityManager::ClearAccessibilityFocus(
@@ -1009,7 +993,6 @@ void BrowserAccessibilityManager::ClearAccessibilityFocus(
   action_data.action = ax::mojom::Action::kClearAccessibilityFocus;
   action_data.target_node_id = node.GetId();
   delegate_->AccessibilityPerformAction(action_data);
-  BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
 }
 
 void BrowserAccessibilityManager::HitTest(const gfx::Point& frame_point) const {
@@ -1017,7 +1000,6 @@ void BrowserAccessibilityManager::HitTest(const gfx::Point& frame_point) const {
     return;
 
   delegate_->AccessibilityHitTest(frame_point, ax::mojom::Event::kHover, 0, {});
-  BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
 }
 
 gfx::Rect BrowserAccessibilityManager::GetViewBoundsInScreenCoordinates()
