@@ -760,9 +760,12 @@ public class RootUiCoordinator
                 }
 
                 if (layoutType == LayoutType.TAB_SWITCHER) {
+                    mBrowserControlsManager.onFullscreenUpdate(false);
                     // Hide find toolbar and app menu.
                     if (mFindToolbarManager != null) mFindToolbarManager.hideToolbar();
                     hideAppMenu();
+                } else {
+                    mBrowserControlsManager.onFullscreenUpdate(true);
                 }
             }
 
@@ -805,7 +808,7 @@ public class RootUiCoordinator
             mAppMenuCoordinator = AppMenuCoordinatorFactory.createAppMenuCoordinator(mActivity,
                     mActivity.getLifecycleDispatcher(), mToolbarManager, mActivity,
                     mActivity.getWindow().getDecorView(),
-                    mActivity.getWindow().getDecorView().findViewById(R.id.menu_anchor_stub));
+                    mActivity.getWindow().getDecorView().findViewById(R.id.kirby));
 
             mAppMenuCoordinator.registerAppMenuBlocker(this);
             mAppMenuCoordinator.registerAppMenuBlocker(mActivity);
