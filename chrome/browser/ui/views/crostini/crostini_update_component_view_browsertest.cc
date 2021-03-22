@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/views/crostini/crostini_update_component_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,7 +29,12 @@ class CrostiniUpdateComponentViewBrowserTest
     : public CrostiniDialogBrowserTest {
  public:
   CrostiniUpdateComponentViewBrowserTest()
-      : CrostiniDialogBrowserTest(true /*register_termina*/) {}
+      : CrostiniDialogBrowserTest(true /*register_termina*/) {
+    // TODO(crbug/953544) DLC makes this entire feature redundant, so once we're
+    // committed to it delete all of this.
+    scoped_feature_list_.InitAndDisableFeature(
+        chromeos::features::kCrostiniUseDlc);
+  }
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
@@ -63,6 +70,8 @@ class CrostiniUpdateComponentViewBrowserTest
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   DISALLOW_COPY_AND_ASSIGN(CrostiniUpdateComponentViewBrowserTest);
 };
 
