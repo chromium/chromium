@@ -99,6 +99,7 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
       const GURL& url_before_redirects,
       bool had_redirect,
       network::mojom::SourceLocationPtr source_location) override;
+  void ActivateForPrerendering() override;
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);

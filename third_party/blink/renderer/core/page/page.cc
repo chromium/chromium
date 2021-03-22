@@ -1066,26 +1066,6 @@ int32_t Page::AutoplayFlags() const {
   return autoplay_flags_;
 }
 
-// https://jeremyroman.github.io/alternate-loading-modes/#prerendering-browsing-context-activate
-void Page::ActivateForPrerendering() {
-  DCHECK(features::IsPrerender2Enabled());
-
-  // Step 8.2. "Let inclusiveDescendants be successorBC extended with
-  // successorBC's active document's list of the descendant browsing contexts."
-  // Step 8.3. "For each bc of inclusiveDescendants, queue a global task on the
-  // networking task source, given bc's active window, to perform the following
-  // steps:"
-  for (Frame* frame = MainFrame(); frame;
-       frame = frame->Tree().TraverseNext()) {
-    if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
-      local_frame->GetTaskRunner(TaskType::kNetworking)
-          ->PostTask(FROM_HERE,
-                     WTF::Bind(&Document::ActivateForPrerendering,
-                               WrapPersistent(local_frame->GetDocument())));
-    }
-  }
-}
-
 void Page::SetInsidePortal(bool inside_portal) {
   inside_portal_ = inside_portal;
 }

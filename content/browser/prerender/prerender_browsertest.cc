@@ -1464,11 +1464,6 @@ INSTANTIATE_TEST_SUITE_P(All,
 // Tests that the prerendering page cannot access the File System Access API.
 IN_PROC_BROWSER_TEST_P(PrerenderFileSystemAccessBrowserTest,
                        MAYBE_FileSystemAccessError) {
-  // TODO(https://crbug.com/1189017): Currently the MPArch doesn't fire the
-  // prerenderingchange event that is required for running this test.
-  if (IsMPArchActive())
-    return;
-
   base::FilePath temp_file;
   {
     base::ScopedAllowBlockingForTesting allow_blocking;

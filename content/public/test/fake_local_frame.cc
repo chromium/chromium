@@ -129,6 +129,8 @@ void FakeLocalFrame::MixedContentFound(
     bool had_redirect,
     network::mojom::SourceLocationPtr source_location) {}
 
+void FakeLocalFrame::ActivateForPrerendering() {}
+
 void FakeLocalFrame::BindFrameHostReceiver(
     mojo::ScopedInterfaceEndpointHandle handle) {
   receiver_.Bind(mojo::PendingAssociatedReceiver<blink::mojom::LocalFrame>(
