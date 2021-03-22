@@ -108,8 +108,11 @@ class InSessionPasswordSyncManager
   // Create and show lockscreen re-authentication dialog.
   void CreateAndShowDialog();
 
-  // Dismiss lockscreen re-authentication dialog
+  // Dismiss lockscreen re-authentication dialog.
   void DismissDialog();
+
+  // Reset lockscreen re-authentication dialog.
+  void ResetDialog();
 
  private:
   void UpdateOnlineAuth();

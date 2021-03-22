@@ -128,7 +128,7 @@ Polymer({
     this.isPasswordChanged_ = false;
   },
 
-    /**
+  /**
    * Invoked when the authDomain property is changed on the authenticator.
    * @private
    */

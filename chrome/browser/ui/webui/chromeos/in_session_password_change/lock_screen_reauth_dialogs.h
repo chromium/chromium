@@ -40,6 +40,7 @@ class LockScreenStartReauthDialog : public BaseLockDialog {
 
  private:
   void OnProfileCreated(Profile* profile, Profile::CreateStatus status);
+  void OnDialogClosed(const std::string& json_retval) override;
 
   base::WeakPtrFactory<LockScreenStartReauthDialog> weak_factory_{this};
 };

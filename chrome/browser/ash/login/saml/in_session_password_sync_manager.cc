@@ -224,11 +224,9 @@ void InSessionPasswordSyncManager::OnAuthSuccess(
 void InSessionPasswordSyncManager::CreateAndShowDialog() {
   if (!IsLockReauthEnabled())
     NOTREACHED();
-
-  if (!lock_screen_start_reauth_dialog_) {
-    lock_screen_start_reauth_dialog_ =
-        std::make_unique<LockScreenStartReauthDialog>();
-  }
+  DCHECK(!lock_screen_start_reauth_dialog_);
+  lock_screen_start_reauth_dialog_ =
+      std::make_unique<LockScreenStartReauthDialog>();
   lock_screen_start_reauth_dialog_->Show();
 }
 
@@ -236,6 +234,11 @@ void InSessionPasswordSyncManager::DismissDialog() {
   if (lock_screen_start_reauth_dialog_) {
     lock_screen_start_reauth_dialog_->Dismiss();
   }
+}
+
+void InSessionPasswordSyncManager::ResetDialog() {
+  DCHECK(lock_screen_start_reauth_dialog_);
+  lock_screen_start_reauth_dialog_.reset();
 }
 
 }  // namespace chromeos
