@@ -1,8 +1,10 @@
 include_rules = [
+  "+chromeos/crosapi",
+  "+chromeos/lacros",
   "+gpu/command_buffer/client",
   "+media/base",
   "+media/mojo",
   "+media/capture",
-  "+ui/gfx/geometry",
+  "+ui/gfx",
   "+services/viz/public/cpp/gpu",
 ]

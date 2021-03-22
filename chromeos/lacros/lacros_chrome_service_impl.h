@@ -34,6 +34,7 @@
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/crosapi/mojom/url_handler.mojom.h"
+#include "chromeos/crosapi/mojom/video_capture.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -291,6 +292,15 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // OnLacrosStartup method of Crosapi can only be called if this method
   // returns true.
   bool IsOnBrowserStartupAvailable() const;
+
+  // Binds video capture host.
+  void BindVideoCaptureDeviceFactory(
+      mojo::PendingReceiver<crosapi::mojom::VideoCaptureDeviceFactory>
+          pending_receiver);
+
+  // BindVideoCaptureDeviceFactory() can only be used if this method returns
+  // true.
+  bool IsVideoCaptureDeviceFactoryAvailable() const;
 
   // Returns BrowserInitParams which is passed from ash-chrome. On launching
   // lacros-chrome from ash-chrome, ash-chrome creates a memory backed file

@@ -37,6 +37,7 @@
 #include "chromeos/startup/startup_switches.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/fake_user_manager.h"
+#include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/socket_utils_posix.h"
@@ -159,7 +160,7 @@ TEST_F(TestMojoConnectionManagerTest, ConnectMultipleClients) {
 
   // Use IO type to support the FileDescriptorWatcher API on POSIX.
   // TestingProfileManager instantiated below requires a TaskRunner.
-  base::test::TaskEnvironment task_environment{
+  content::BrowserTaskEnvironment task_environment{
       base::test::TaskEnvironment::MainThreadType::IO};
 
   chromeos::LoginState::Initialize();

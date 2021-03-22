@@ -23,6 +23,7 @@ import "chromeos/crosapi/mojom/task_manager.mojom";
 import "chromeos/crosapi/mojom/test_controller.mojom";
 import "chromeos/crosapi/mojom/url_handler.mojom";
 import "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom";
+import "chromeos/crosapi/mojom/video_capture.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/token.mojom";
@@ -51,8 +52,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 20
-// Next method id: 25
+// Next version: 21
+// Next method id: 26
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -179,6 +180,11 @@ interface Crosapi {
   // Binds the url handler service which allows handling of urls by Ash.
   // Added in M90.
   [MinVersion=13] BindUrlHandler@18(pending_receiver<UrlHandler> receiver);
+
+  // Binds the device factory in video capture service.
+  // Added in M90.
+  [MinVersion=20] BindVideoCaptureDeviceFactory@25(
+      pending_receiver<crosapi.mojom.VideoCaptureDeviceFactory> receiver);
 
   // Passes generic browser information such as version, etc into ash in
   // |browser_info| during startup.
