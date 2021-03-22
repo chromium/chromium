@@ -29,6 +29,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.mojom.WindowOpenDisposition;
+import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 import java.util.ArrayList;
@@ -809,7 +810,7 @@ public class TabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public void openNewTab(Tab parent, String url, @Nullable Origin initiatorOrigin,
+    public void openNewTab(Tab parent, GURL url, @Nullable Origin initiatorOrigin,
             String extraHeaders, ResourceRequestBody postData, int disposition,
             boolean persistParentage, boolean isRendererInitiated) {
         if (parent.isClosing()) return;

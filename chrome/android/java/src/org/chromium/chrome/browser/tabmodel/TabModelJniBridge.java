@@ -19,6 +19,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 /**
@@ -137,7 +138,7 @@ public abstract class TabModelJniBridge implements TabModel {
             Tab parent, Profile profile, WebContents webContents);
 
     @CalledByNative
-    protected abstract void openNewTab(Tab parent, String url, @Nullable Origin initiatorOrigin,
+    protected abstract void openNewTab(Tab parent, GURL url, @Nullable Origin initiatorOrigin,
             String extraHeaders, ResourceRequestBody postData, int disposition,
             boolean persistParentage, boolean isRendererInitiated);
 
@@ -146,7 +147,7 @@ public abstract class TabModelJniBridge implements TabModel {
      * @param url URL to show.
      */
     @CalledByNative
-    protected Tab createNewTabForDevTools(String url) {
+    protected Tab createNewTabForDevTools(GURL url) {
         return getTabCreator(/*incognito=*/false)
                 .createNewTab(new LoadUrlParams(url), TabLaunchType.FROM_CHROME_UI, null);
     }
