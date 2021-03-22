@@ -740,11 +740,6 @@ interface LocalFrame {
                     url.mojom.Url url_before_redirects,
                     bool had_redirect,
                     network.mojom.SourceLocation? source_location);
-
-  // Sent to a prerendered frame to inform it that it is being activated.
-  // The document in the frame updates `document.prerendering` and dispatches
-  // the prerenderingchange event.
-  ActivateForPrerendering();
 };
 
 // Also implemented in Blink, this interface defines frame-specific methods

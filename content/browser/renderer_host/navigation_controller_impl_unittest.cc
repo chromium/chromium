@@ -107,6 +107,7 @@ class MockPageBroadcast : public blink::mojom::PageBroadcast {
               (override));
   MOCK_METHOD(void, AudioStateChanged, (bool is_audio_playing), (override));
   MOCK_METHOD(void, SetInsidePortal, (bool is_inside_portal), (override));
+  MOCK_METHOD(void, ActivatePrerender, (), (override));
   MOCK_METHOD(void,
               UpdateWebPreferences,
               (const ::blink::web_pref::WebPreferences& preferences),

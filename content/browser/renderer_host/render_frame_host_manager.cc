@@ -3125,8 +3125,8 @@ void RenderFrameHostManager::CommitPending(
   std::unique_ptr<RenderFrameHostImpl> old_render_frame_host;
   old_render_frame_host = SetRenderFrameHost(std::move(pending_rfh));
 
-  // If a document is being restored from the BackForwardCache or is being
-  // activated from Prerendering, restore all cached state now.
+  // If a document is being restored from the BackForwardCache, restore all
+  // cached state now.
   if (pending_bfcache_entry) {
     RenderFrameProxyHostMap proxy_hosts_to_restore =
         std::move(pending_bfcache_entry->proxy_hosts);
@@ -3148,9 +3148,6 @@ void RenderFrameHostManager::CommitPending(
         rvh->LeaveBackForwardCache(
             pending_bfcache_entry->page_restore_params.Clone());
       }
-    } else {
-      DCHECK_EQ(prev_state, RenderFrameHostImpl::LifecycleState::kPrerendering);
-      current_frame_host()->ActivateForPrerendering();
     }
   }
 

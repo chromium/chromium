@@ -571,7 +571,7 @@ void FrameTree::DidAccessInitialMainDocument() {
 void FrameTree::ActivatePrerenderedFrameTree() {
   DCHECK(is_prerendering_ && blink::features::IsPrerender2Enabled());
   is_prerendering_ = false;
-  GetMainFrame()->ActivateForPrerendering();
+  GetMainFrame()->OnPrerenderedPageActivated();
 }
 
 void FrameTree::DidStartLoadingNode(FrameTreeNode& node,

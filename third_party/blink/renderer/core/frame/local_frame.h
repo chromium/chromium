@@ -688,7 +688,6 @@ class CORE_EXPORT LocalFrame final
       const KURL& url_before_redirects,
       bool had_redirect,
       network::mojom::blink::SourceLocationPtr source_location) final;
-  void ActivateForPrerendering() final;
 
   // blink::mojom::LocalMainFrame overrides:
   void AnimateDoubleTapZoom(const gfx::Point& point,

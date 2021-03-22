@@ -65,6 +65,9 @@ interface PageBroadcast {
   // web contents is adopted as a portal.
   SetInsidePortal(bool is_inside_portal);
 
+  // Notifies the renderer when the prerendering page is activated.
+  ActivatePrerender();
+
   // Notifies the renderer when updating a set of blink preferences.
   UpdateWebPreferences(blink.mojom.WebPreferences preferences);
 

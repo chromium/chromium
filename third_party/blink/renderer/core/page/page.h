@@ -336,6 +336,8 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   int32_t AutoplayFlags() const;
 
+  void ActivateForPrerendering();
+
   void SetInsidePortal(bool inside_portal);
   bool InsidePortal() const;
 

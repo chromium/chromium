@@ -7918,31 +7918,28 @@ void RenderFrameHostImpl::CancelPrerendering() {
   prerender_host_registry->AbandonHost(frame_tree_node_id);
 }
 
-void RenderFrameHostImpl::ActivateForPrerendering() {
+void RenderFrameHostImpl::ReleaseMojoBinderPoliciesForPrerendering() {
+  broker_.ReleaseMojoBinderPolicies();
+}
+
+void RenderFrameHostImpl::OnPrerenderedPageActivated() {
   // TODO(crbug.com/1174506): Temporary until we understand the cause of the
   // crash. Return to DCHECKs after the bug is fixed.
   CHECK(blink::features::IsPrerender2Enabled());
+  CHECK(blink::features::IsPrerenderWebContentsEnabled());
 
-  // RenderFrameHostManager will swap the RenderFrameHostImpl and set the new
-  // one to kActive for the MPArch case.
-  if (blink::features::IsPrerenderWebContentsEnabled()) {
-    // Update the |lifecycle_state_| to kActive on activation.
-    DCHECK_EQ(lifecycle_state_, LifecycleState::kPrerendering);
-    SetLifecycleState(LifecycleState::kActive);
-  }
+  // Update the |lifecycle_state_| to kActive on activation.
+  DCHECK_EQ(lifecycle_state_, LifecycleState::kPrerendering);
+  SetLifecycleState(LifecycleState::kActive);
 
-  // TODO(https://crbug.com/1186796): Loosen the policies of the mojo capability
+  // TODO(https://crbug.com/1183320): Loosen the policies of the mojo capability
   // control during dispatching the prerenderingchange event in the Blink.
 
   DCHECK(!is_notifying_activation_for_prerendering_);
   is_notifying_activation_for_prerendering_ = true;
 
-  // Notify the renderer of activation to update the prerendering state and
-  // dispatch the prerenderingchange event.
-  GetAssociatedLocalFrame()->ActivateForPrerendering();
-
   for (auto& child : children_)
-    child->current_frame_host()->ActivateForPrerendering();
+    child->current_frame_host()->OnPrerenderedPageActivated();
 }
 
 void RenderFrameHostImpl::BindMediaInterfaceFactoryReceiver(
