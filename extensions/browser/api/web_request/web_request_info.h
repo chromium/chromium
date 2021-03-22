@@ -182,6 +182,8 @@ struct WebRequestInfo {
 
   // ID of the RenderFrameHost corresponding to the parent frame. Only valid for
   // document subresource and sub-frame requests.
+  // TODO(karandeepb, mcnee): For subresources, having "parent" in the name is
+  // misleading. This should be renamed to indicate that this is the initiator.
   const content::GlobalFrameRoutingId parent_routing_id;
 
  private:

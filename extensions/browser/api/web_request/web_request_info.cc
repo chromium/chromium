@@ -215,8 +215,8 @@ void WebRequestInfoInitParams::InitializeWebViewAndFrameData(
     }
 
     // For subresource loads we attempt to resolve the FrameData immediately.
-    frame_data = ExtensionApiFrameIdMap::Get()->GetFrameData(render_process_id,
-                                                             frame_id);
+    frame_data = ExtensionApiFrameIdMap::Get()->GetFrameData(
+        content::GlobalFrameRoutingId(render_process_id, frame_id));
 
     parent_routing_id =
         content::GlobalFrameRoutingId(render_process_id, frame_id);
