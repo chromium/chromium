@@ -78,7 +78,7 @@ class PrintPreviewDialogController
   using PrintPreviewDialogMap =
       std::map<content::WebContents*, content::WebContents*>;
 
-  virtual ~PrintPreviewDialogController();
+  ~PrintPreviewDialogController() override;
 
   // WebContentsCollection::Observer:
   // Handles the closing of the RenderProcessHost. This is observed when the

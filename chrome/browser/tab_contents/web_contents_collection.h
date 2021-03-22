@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_TAB_CONTENTS_WEB_CONTENTS_COLLECTION_H_
 #define CHROME_BROWSER_TAB_CONTENTS_WEB_CONTENTS_COLLECTION_H_
 
+#include <memory>
+
 #include "base/containers/flat_map.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -28,6 +30,9 @@ class WebContentsCollection {
     virtual void NavigationEntryCommitted(
         content::WebContents* web_contents,
         const content::LoadCommittedDetails& load_details) {}
+
+   protected:
+    virtual ~Observer() = default;
   };
 
   // `observer` must outlive `this`.
@@ -48,7 +53,7 @@ class WebContentsCollection {
 
   // Observer which will receive callbacks from any of the `WebContentsObserver`
   // in `web_contents_observers_`.
-  Observer* observer_;
+  Observer* const observer_;
 
   // Map of observers for the WebContents part of this collection.
   base::flat_map<content::WebContents*,
