@@ -106,6 +106,7 @@ public class BackgroundTaskSchedulerAlarmManager implements BackgroundTaskSchedu
                     + "AlarmManager.");
         }
 
+        // TODO(crbug.com/1190755): Either remove this or make sure it's compatible with Android S.
         @Override
         public void visit(TaskInfo.ExactInfo exactInfo) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
