@@ -57,6 +57,7 @@ class MEDIA_EXPORT MediaFoundationCdm : public ContentDecryptionModule,
   CdmContext* GetCdmContext() final;
 
   // CdmContext implementation.
+  bool RequiresMediaFoundationRenderer() final;
   bool GetMediaFoundationCdmProxy(
       GetMediaFoundationCdmProxyCB get_mf_cdm_proxy_cb) final;
 

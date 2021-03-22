@@ -388,6 +388,10 @@ CdmContext* MediaFoundationCdm::GetCdmContext() {
   return this;
 }
 
+bool MediaFoundationCdm::RequiresMediaFoundationRenderer() {
+  return true;
+}
+
 bool MediaFoundationCdm::GetMediaFoundationCdmProxy(
     GetMediaFoundationCdmProxyCB get_mf_cdm_proxy_cb) {
   DVLOG_FUNC(1);
