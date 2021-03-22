@@ -3033,22 +3033,17 @@
     "owners": [ "//chrome/browser/ui/hats/OWNERS" ],
     // A debugging and demo flag to allow UI/dev/testing team to always show the UI
     // components for the survey without being limited by the triggering mechanism.
-    "expiry_milestone": 90
-  },
-  {
-    "name": "happiness-tracking-surveys-for-desktop-migration",
-    "owners": [ "msramek", "chrome-friendly-settings@google.com" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 97
   },
   {
     "name": "happiness-tracking-surveys-for-desktop-settings",
     "owners": [ "msramek", "chrome-friendly-settings@google.com" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   },
   {
     "name": "happiness-tracking-surveys-for-desktop-settings-privacy",
     "owners": [ "msramek", "chrome-friendly-settings@google.com" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 93
   },
   {
     "name": "hardware-media-key-handling",

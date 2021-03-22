@@ -2045,9 +2045,6 @@ extern const char kHappinessTrackingSurveysForDesktopSettingsPrivacyName[];
 extern const char
     kHappinessTrackingSurveysForDesktopSettingsPrivacyDescription[];
 
-extern const char kHappinessTrackingSurveysForDesktopMigrationName[];
-extern const char kHappinessTrackingSurveysForDesktopMigrationDescription[];
-
 extern const char kKernelnextVMsName[];
 extern const char kKernelnextVMsDescription[];
 
