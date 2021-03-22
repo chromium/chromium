@@ -132,7 +132,7 @@
           } else if (charCode == 0xE008) {
             eventSenderKeys = "ShiftLeft";
             modifierValue = "shiftKey";
-          } else if (charCode == 0xE006) {
+          } else if (charCode == 0xE006 || charCode == 0xE007) {
             eventSenderKeys = "Enter";
             modifierValue = "enter";
           } else if (charCode >= 0xE000 && charCode <= 0xF8FF) {

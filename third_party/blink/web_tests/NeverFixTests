@@ -2008,7 +2008,6 @@ crbug.com/940797 external/wpt/signed-exchange/appcache/sxg-served-from-appcache.
 external/wpt/html/semantics/forms/the-input-element/event-select-manual.html [ Skip ]
 external/wpt/html/editing/dnd/the-datatransferitem-interface/getAsString-manual.html [ Skip ]
 external/wpt/payment-request/billing-address-changed-manual.https.html [ Skip ]
-external/wpt/html/editing/focus/sequential-focus-navigation-and-the-tabindex-attribute/focus-tabindex-event-manual.html [ Skip ]
 external/wpt/payment-request/payment-response/retry-method-warnings-manual.https.html [ Skip ]
 external/wpt/payment-request/payment-response/payerdetailschange-updateWith-manual.https.html [ Skip ]
 external/wpt/pointerevents/pointerevent_touch-action-inherit_child-pan-x-child-pan-x_touch-manual.html [ Skip ]
