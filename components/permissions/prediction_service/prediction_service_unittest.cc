@@ -74,7 +74,7 @@ permissions::GeneratePredictionsRequest kRequestAllCountsZero;
 permissions::GeneratePredictionsRequest kRequestRoundedCounts;
 // A proto request that has all ratios .25 and total count 100. With user
 // gesture.
-permissions::GeneratePredictionsRequest kRequestEqualCountsTotal100;
+permissions::GeneratePredictionsRequest kRequestEqualCountsTotal20;
 // A proot request that has generic ratios .25 and total count 100 and
 // notifications ratios and counts 0. Without user gesture.
 permissions::GeneratePredictionsRequest kRequestDifferentCounts;
@@ -105,6 +105,7 @@ void InitializeProtoHelperObjects() {
       permissions::GetCurrentPlatformProto());
   kRequestAllCountsZero.mutable_client_features()->set_gesture(
       permissions::ClientFeatures_Gesture_GESTURE);
+  kRequestAllCountsZero.mutable_permission_features()->Clear();
   auto* permission_feature =
       kRequestAllCountsZero.mutable_permission_features()->Add();
   permission_feature->mutable_permission_stats()->set_avg_deny_rate(0);
@@ -116,79 +117,82 @@ void InitializeProtoHelperObjects() {
 
   kRequestRoundedCounts.mutable_client_features()
       ->mutable_client_stats()
-      ->set_avg_deny_rate(0.24);
+      ->set_avg_deny_rate(0.2);
   kRequestRoundedCounts.mutable_client_features()
       ->mutable_client_stats()
-      ->set_avg_dismiss_rate(0.24);
+      ->set_avg_dismiss_rate(0.2);
   kRequestRoundedCounts.mutable_client_features()
       ->mutable_client_stats()
-      ->set_avg_grant_rate(0.29);
+      ->set_avg_grant_rate(0.3);
   kRequestRoundedCounts.mutable_client_features()
       ->mutable_client_stats()
-      ->set_avg_ignore_rate(0.24);
+      ->set_avg_ignore_rate(0.2);
   kRequestRoundedCounts.mutable_client_features()
       ->mutable_client_stats()
-      ->set_prompts_count(21);
+      ->set_prompts_count(20);
   kRequestRoundedCounts.mutable_client_features()->set_platform(
       permissions::GetCurrentPlatformProto());
   kRequestRoundedCounts.mutable_client_features()->set_gesture(
       permissions::ClientFeatures_Gesture_NO_GESTURE);
+  kRequestRoundedCounts.mutable_permission_features()->Clear();
   permission_feature =
       kRequestRoundedCounts.mutable_permission_features()->Add();
-  permission_feature->mutable_permission_stats()->set_avg_deny_rate(0.24);
-  permission_feature->mutable_permission_stats()->set_avg_dismiss_rate(0.24);
-  permission_feature->mutable_permission_stats()->set_avg_grant_rate(0.29);
-  permission_feature->mutable_permission_stats()->set_avg_ignore_rate(0.24);
-  permission_feature->mutable_permission_stats()->set_prompts_count(21);
+  permission_feature->mutable_permission_stats()->set_avg_deny_rate(0.2);
+  permission_feature->mutable_permission_stats()->set_avg_dismiss_rate(0.2);
+  permission_feature->mutable_permission_stats()->set_avg_grant_rate(0.3);
+  permission_feature->mutable_permission_stats()->set_avg_ignore_rate(0.2);
+  permission_feature->mutable_permission_stats()->set_prompts_count(20);
   permission_feature->mutable_notification_permission()->Clear();
 
-  kRequestEqualCountsTotal100.mutable_client_features()
+  kRequestEqualCountsTotal20.mutable_client_features()
       ->mutable_client_stats()
-      ->set_avg_deny_rate(.25);
-  kRequestEqualCountsTotal100.mutable_client_features()
+      ->set_avg_deny_rate(.3);
+  kRequestEqualCountsTotal20.mutable_client_features()
       ->mutable_client_stats()
-      ->set_avg_dismiss_rate(.25);
-  kRequestEqualCountsTotal100.mutable_client_features()
+      ->set_avg_dismiss_rate(.3);
+  kRequestEqualCountsTotal20.mutable_client_features()
       ->mutable_client_stats()
-      ->set_avg_grant_rate(.25);
-  kRequestEqualCountsTotal100.mutable_client_features()
+      ->set_avg_grant_rate(.3);
+  kRequestEqualCountsTotal20.mutable_client_features()
       ->mutable_client_stats()
-      ->set_avg_ignore_rate(.25);
-  kRequestEqualCountsTotal100.mutable_client_features()
+      ->set_avg_ignore_rate(.3);
+  kRequestEqualCountsTotal20.mutable_client_features()
       ->mutable_client_stats()
-      ->set_prompts_count(100);
-  kRequestEqualCountsTotal100.mutable_client_features()->set_platform(
+      ->set_prompts_count(20);
+  kRequestEqualCountsTotal20.mutable_client_features()->set_platform(
       permissions::GetCurrentPlatformProto());
-  kRequestEqualCountsTotal100.mutable_client_features()->set_gesture(
+  kRequestEqualCountsTotal20.mutable_client_features()->set_gesture(
       permissions::ClientFeatures_Gesture_GESTURE);
+  kRequestEqualCountsTotal20.mutable_permission_features()->Clear();
   permission_feature =
-      kRequestEqualCountsTotal100.mutable_permission_features()->Add();
-  permission_feature->mutable_permission_stats()->set_avg_deny_rate(.25);
-  permission_feature->mutable_permission_stats()->set_avg_dismiss_rate(.25);
-  permission_feature->mutable_permission_stats()->set_avg_grant_rate(.25);
-  permission_feature->mutable_permission_stats()->set_avg_ignore_rate(.25);
-  permission_feature->mutable_permission_stats()->set_prompts_count(100);
+      kRequestEqualCountsTotal20.mutable_permission_features()->Add();
+  permission_feature->mutable_permission_stats()->set_avg_deny_rate(.3);
+  permission_feature->mutable_permission_stats()->set_avg_dismiss_rate(.3);
+  permission_feature->mutable_permission_stats()->set_avg_grant_rate(.3);
+  permission_feature->mutable_permission_stats()->set_avg_ignore_rate(.3);
+  permission_feature->mutable_permission_stats()->set_prompts_count(20);
   permission_feature->mutable_notification_permission()->Clear();
 
   kRequestDifferentCounts.mutable_client_features()
       ->mutable_client_stats()
-      ->set_avg_deny_rate(.25);
+      ->set_avg_deny_rate(.3);
   kRequestDifferentCounts.mutable_client_features()
       ->mutable_client_stats()
-      ->set_avg_dismiss_rate(.25);
+      ->set_avg_dismiss_rate(.3);
   kRequestDifferentCounts.mutable_client_features()
       ->mutable_client_stats()
-      ->set_avg_grant_rate(.25);
+      ->set_avg_grant_rate(.3);
   kRequestDifferentCounts.mutable_client_features()
       ->mutable_client_stats()
-      ->set_avg_ignore_rate(.25);
+      ->set_avg_ignore_rate(.3);
   kRequestDifferentCounts.mutable_client_features()
       ->mutable_client_stats()
-      ->set_prompts_count(100);
+      ->set_prompts_count(20);
   kRequestDifferentCounts.mutable_client_features()->set_platform(
       permissions::GetCurrentPlatformProto());
   kRequestDifferentCounts.mutable_client_features()->set_gesture(
       permissions::ClientFeatures_Gesture_NO_GESTURE);
+  kRequestDifferentCounts.mutable_permission_features()->Clear();
   permission_feature =
       kRequestDifferentCounts.mutable_permission_features()->Add();
   permission_feature->mutable_permission_stats()->set_avg_deny_rate(0);
@@ -198,11 +202,13 @@ void InitializeProtoHelperObjects() {
   permission_feature->mutable_permission_stats()->set_prompts_count(0);
   permission_feature->mutable_notification_permission()->Clear();
 
+  kResponseLikely.mutable_prediction()->Clear();
   auto* prediction = kResponseLikely.mutable_prediction()->Add();
   prediction->mutable_grant_likelihood()->set_discretized_likelihood(
       permissions::
           PermissionPrediction_Likelihood_DiscretizedLikelihood_LIKELY);
 
+  kResponseUnlikely.mutable_prediction()->Clear();
   prediction = kResponseUnlikely.mutable_prediction()->Add();
   prediction->mutable_grant_likelihood()->set_discretized_likelihood(
       permissions::
@@ -320,8 +326,8 @@ TEST_F(PredictionServiceTest, BuiltProtoRequestIsCorrect) {
   } kTests[] = {
       {kFeaturesAllCountsZero, kRequestAllCountsZero},
       {kFeaturesCountsNeedingRounding, kRequestRoundedCounts},
-      {kFeaturesEvenCountsOver100, kRequestEqualCountsTotal100},
-      {kFeaturesEvenCountsOver100Alt, kRequestEqualCountsTotal100},
+      {kFeaturesEvenCountsOver100, kRequestEqualCountsTotal20},
+      {kFeaturesEvenCountsOver100Alt, kRequestEqualCountsTotal20},
       {kFeaturesDifferentCounts, kRequestDifferentCounts},
   };
 
@@ -509,7 +515,7 @@ TEST_F(PredictionServiceTest, TestJsonConversions) {
   auto round_counts =
       GeneratePredictionsRequestMessageToJson(kRequestRoundedCounts);
   auto equal_counts =
-      GeneratePredictionsRequestMessageToJson(kRequestEqualCountsTotal100);
+      GeneratePredictionsRequestMessageToJson(kRequestEqualCountsTotal20);
   auto different_counts =
       GeneratePredictionsRequestMessageToJson(kRequestDifferentCounts);
   auto zero_counts =
@@ -520,30 +526,36 @@ TEST_F(PredictionServiceTest, TestJsonConversions) {
 
   std::string expected_round_counts =
       "{\"clientFeatures\":{\"clientStats\":{\"avgDenyRate\":0."
-      "23999999463558197,\"avgDismissRate\":0.23999999463558197,"
-      "\"avgGrantRate\":0.28999999165534973,\"avgIgnoreRate\":0."
-      "23999999463558197,\"promptsCount\":21},\"gesture\":\"NO_GESTURE\","
+      "20000000298023224,\"avgDismissRate\":0.20000000298023224,"
+      "\"avgGrantRate\":0.30000001192092896,\"avgIgnoreRate\":0."
+      "20000000298023224,\"promptsCount\":20},\"gesture\":\"NO_GESTURE\","
       "\"platform\":\"" +
       kPlatformName +
       "\"},\"permissionFeatures\":[{\"notificationPermission\":{},"
-      "\"permissionStats\":{\"avgDenyRate\":0.23999999463558197,"
-      "\"avgDismissRate\":0.23999999463558197,\"avgGrantRate\":0."
-      "28999999165534973,\"avgIgnoreRate\":0.23999999463558197,"
-      "\"promptsCount\":21}}]}";
+      "\"permissionStats\":{\"avgDenyRate\":0.20000000298023224,"
+      "\"avgDismissRate\":0.20000000298023224,\"avgGrantRate\":0."
+      "30000001192092896,\"avgIgnoreRate\":0.20000000298023224,"
+      "\"promptsCount\":20}}]}";
 
   std::string expected_equal_counts =
-      "{\"clientFeatures\":{\"clientStats\":{\"avgDenyRate\":0.25,"
-      "\"avgDismissRate\":0.25,\"avgGrantRate\":0.25,\"avgIgnoreRate\":0.25,"
-      "\"promptsCount\":100},\"gesture\":\"GESTURE\",\"platform\":\"" +
+      "{\"clientFeatures\":{\"clientStats\":{\"avgDenyRate\":0."
+      "30000001192092896,\"avgDismissRate\":0.30000001192092896,"
+      "\"avgGrantRate\":0.30000001192092896,\"avgIgnoreRate\":0."
+      "30000001192092896,\"promptsCount\":20},\"gesture\":\"GESTURE\","
+      "\"platform\":\"" +
       kPlatformName +
       "\"},\"permissionFeatures\":[{\"notificationPermission\":{},"
-      "\"permissionStats\":{\"avgDenyRate\":0.25,\"avgDismissRate\":0.25,"
-      "\"avgGrantRate\":0.25,\"avgIgnoreRate\":0.25,\"promptsCount\":100}}]}";
+      "\"permissionStats\":{\"avgDenyRate\":0.30000001192092896,"
+      "\"avgDismissRate\":0.30000001192092896,\"avgGrantRate\":0."
+      "30000001192092896,\"avgIgnoreRate\":0.30000001192092896,"
+      "\"promptsCount\":20}}]}";
 
   std::string expected_different_counts =
-      "{\"clientFeatures\":{\"clientStats\":{\"avgDenyRate\":0.25,"
-      "\"avgDismissRate\":0.25,\"avgGrantRate\":0.25,\"avgIgnoreRate\":0.25,"
-      "\"promptsCount\":100},\"gesture\":\"NO_GESTURE\",\"platform\":\"" +
+      "{\"clientFeatures\":{\"clientStats\":{\"avgDenyRate\":0."
+      "30000001192092896,\"avgDismissRate\":0.30000001192092896,"
+      "\"avgGrantRate\":0.30000001192092896,\"avgIgnoreRate\":0."
+      "30000001192092896,\"promptsCount\":20},\"gesture\":\"NO_GESTURE\","
+      "\"platform\":\"" +
       kPlatformName +
       "\"},\"permissionFeatures\":[{\"notificationPermission\":{},"
       "\"permissionStats\":{\"avgDenyRate\":0.0,\"avgDismissRate\":0.0,"
@@ -579,6 +591,44 @@ TEST_F(PredictionServiceTest, TestJsonConversions) {
           .grant_likelihood()
           .discretized_likelihood(),
       PermissionPrediction_Likelihood_DiscretizedLikelihood_UNLIKELY);
+}
+
+TEST_F(PredictionServiceTest, PromptCountsAreBucketed) {
+  struct {
+    size_t prompt_count;
+    int expected_bucket;
+  } kTests[] = {{4, 4},   {5, 5},   {6, 6},   {7, 7},    {8, 8},
+                {9, 9},   {10, 10}, {11, 10}, {12, 12},  {14, 12},
+                {15, 15}, {19, 15}, {20, 20}, {100, 20}, {1000, 20}};
+
+  prediction_service_->set_prediction_service_url_for_testing(
+      GURL(kUrl_Likely));
+
+  for (const auto& kTest : kTests) {
+    permissions::PredictionRequestFeatures features = kFeaturesAllCountsZero;
+    features.requested_permission_counts.denies = kTest.prompt_count;
+
+    permissions::GeneratePredictionsRequest expected_request =
+        kRequestAllCountsZero;
+    expected_request.mutable_permission_features()
+        ->at(0)
+        .mutable_permission_stats()
+        ->set_avg_deny_rate(1);
+    expected_request.mutable_permission_features()
+        ->at(0)
+        .mutable_permission_stats()
+        ->set_prompts_count(kTest.expected_bucket);
+
+    base::RunLoop run_loop;
+    StartLookup(features, &run_loop, nullptr /* response_loop */);
+    run_loop.Run();
+
+    EXPECT_EQ(1u, received_requests_.size());
+    EXPECT_EQ(expected_request.SerializeAsString(),
+              received_requests_[0]->SerializeAsString());
+
+    received_requests_.clear();
+  }
 }
 
 }  // namespace permissions

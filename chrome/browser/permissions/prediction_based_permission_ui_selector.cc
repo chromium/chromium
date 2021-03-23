@@ -183,7 +183,7 @@ bool PredictionBasedPermissionUiSelector::IsAllowedToUseAssistedPrompts() {
   // generic safeguard anywhere else in the stack.
   return base::FeatureList::IsEnabled(features::kQuietNotificationPrompts) &&
          base::FeatureList::IsEnabled(features::kPermissionPredictions) &&
-         safe_browsing::IsEnhancedProtectionEnabled(*(profile_->GetPrefs()));
+         safe_browsing::IsSafeBrowsingEnabled(*(profile_->GetPrefs()));
 }
 
 // static
