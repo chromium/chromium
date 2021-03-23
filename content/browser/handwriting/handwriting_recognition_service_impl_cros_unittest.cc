@@ -42,7 +42,8 @@ class HandwritingRecognitionServiceImplCrOSTest
       fake_ml_service_connection_;
 };
 
-TEST_F(HandwritingRecognitionServiceImplCrOSTest, CreateHandwritingRecognizer) {
+TEST_F(HandwritingRecognitionServiceImplCrOSTest,
+       DISABLED_CreateHandwritingRecognizer) {
   mojo::Remote<handwriting::mojom::HandwritingRecognitionService>
       service_remote;
   CrOSHandwritingRecognitionServiceImpl::Create(
@@ -72,7 +73,7 @@ TEST_F(HandwritingRecognitionServiceImplCrOSTest, CreateHandwritingRecognizer) {
 // that `ink_range->end_stroke >= strokes.size()` which can cause crash if this
 // case is not checked.
 TEST_F(HandwritingRecognitionServiceImplCrOSTest,
-       GetPredictionInvalidRecognitionResult) {
+       DISABLED_GetPredictionInvalidRecognitionResult) {
   mojo::Remote<handwriting::mojom::HandwritingRecognitionService>
       service_remote;
   CrOSHandwritingRecognitionServiceImpl::Create(
@@ -148,7 +149,7 @@ TEST_F(HandwritingRecognitionServiceImplCrOSTest,
 // In this test we provide valid input/output to check the conversion code works
 // correctly.
 TEST_F(HandwritingRecognitionServiceImplCrOSTest,
-       GetPredictionCorrectConversion) {
+       DISABLED_GetPredictionCorrectConversion) {
   mojo::Remote<handwriting::mojom::HandwritingRecognitionService>
       service_remote;
   CrOSHandwritingRecognitionServiceImpl::Create(
