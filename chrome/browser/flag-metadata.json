@@ -409,8 +409,8 @@
   },
   {
     "name": "autofill-use-renderer-ids",
-    "owners": [ "kazinova" ],
-    "expiry_milestone": 91
+    "owners": [ "kazinova@google.com" ],
+    "expiry_milestone": 92
   },
   {
     "name": "avatar-toolbar-button",
@@ -939,7 +939,7 @@
   },
   {
     "name": "detect-form-submission-on-form-clear",
-    "owners": [ "kazinova", "jdoerrie"],
+    "owners": [ "kazinova@google.com", "jdoerrie"],
     "expiry_milestone": 93
   },
   {
@@ -1959,7 +1959,7 @@
   },
   {
     "name": "enable-manual-password-generation",
-    "owners": [ "kazinova" ],
+    "owners": [ "kazinova@google.com" ],
     "expiry_milestone": 93
   },
   {
