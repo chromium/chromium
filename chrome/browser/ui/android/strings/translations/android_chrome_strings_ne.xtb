@@ -32,7 +32,7 @@
 <translation id="1197267115302279827">बुकमार्कहरू सार्नुहोस्</translation>
 <translation id="1201402288615127009">अर्को</translation>
 <translation id="1204037785786432551">डाउनलोड लिंक</translation>
-<translation id="1206892813135768548">लिङ्क पाठको प्रतिलिपि बनाउनुहोस्</translation>
+<translation id="1206892813135768548">लिङ्क पाठ कपी गर्नुहोस्</translation>
 <translation id="1208340532756947324">यन्त्रहरूभरि सिंक र वैयक्तीकृत गर्न सिंक गर्ने सुविधा सक्रिय गर्नुहोस्</translation>
 <translation id="1209206284964581585">अहिलेका लागि लुकाउनुहोस्</translation>
 <translation id="1227058898775614466">नेभिगेसनको इतिहास</translation>
@@ -84,7 +84,7 @@
 <translation id="1549000191223877751">अर्को विन्डोमा सार्नुहोस्</translation>
 <translation id="1553358976309200471">Chrome अपडेट गर्नुहोस्</translation>
 <translation id="1569387923882100876">जडित यन्त्र</translation>
-<translation id="1571304935088121812">प्रयोगकर्ता नामको प्रतिलिपि बनाउनुहोस्</translation>
+<translation id="1571304935088121812">प्रयोगकर्ता नामको कपी गर्नुहोस्</translation>
 <translation id="1592864538817356322">मानक सुरक्षा:</translation>
 <translation id="1612196535745283361">यन्त्रहरू स्क्यान गर्न Chrome लाई स्थान माथिको पहुँच चाहिन्छ। यस यन्त्रमा स्थान माथिको पहुँचलाई <ph name="BEGIN_LINK" />निष्क्रिय पारिएको छ<ph name="END_LINK" />।</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{चयन गरिएको १ वस्तु हटाउनुहोस्}other{चयन गरिएका # वस्तुहरू हटाउनुहोस्}}</translation>
@@ -470,7 +470,7 @@
 <translation id="4250229828105606438">स्क्रिसट</translation>
 <translation id="4256782883801055595">स्रोत इजाजतपत्रहरू खोल्नुहोस्</translation>
 <translation id="4263656433980196874">सहायकको प्रयोग गरी भ्वाइस सर्च गर्ने कुराको सहमति लिने UI पूर्ण उचाइमा खोलिएको छ</translation>
-<translation id="4269820728363426813">लिङ्क ठेगानाको प्रतिलिपि बनाउनुहोस्</translation>
+<translation id="4269820728363426813">लिङ्क ठेगाना कपी गर्नुहोस्</translation>
 <translation id="4298388696830689168">लिंक गरिएका साइटहरू</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">आधारभूत</translation>

@@ -36,7 +36,7 @@
 <translation id="1208340532756947324">Schakel synchronisatie in om verschillende apparaten te synchroniseren en te personaliseren</translation>
 <translation id="1209206284964581585">Voorlopig verbergen</translation>
 <translation id="1227058898775614466">Navigatiegeschiedenis</translation>
-<translation id="1231733316453485619">Synchronisatie inschakelen?</translation>
+<translation id="1231733316453485619">Synchronisatie aanzetten?</translation>
 <translation id="123724288017357924">De pagina opnieuw laden, gecachte content negeren</translation>
 <translation id="124678866338384709">Huidig tabblad sluiten</translation>
 <translation id="1258753120186372309">Google-doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
@@ -256,7 +256,7 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="2723001399770238859">audio</translation>
 <translation id="2728754400939377704">Sorteren op site</translation>
 <translation id="2744248271121720757">Tik op een woord om meteen te zoeken of gerelateerde acties te bekijken</translation>
-<translation id="2760989362628427051">Het donkere thema inschakelen wanneer het donkere thema of de batterijbesparing van je apparaat is ingeschakeld</translation>
+<translation id="2760989362628427051">Zet het donkere thema aan als het donkere thema of de batterijbesparing van je apparaat aanstaat</translation>
 <translation id="2762000892062317888">zojuist</translation>
 <translation id="2776236159752647997">Bekijk <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer instellingen over privacy, beveiliging en gegevensverzameling.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> seconden resterend</translation>
@@ -711,8 +711,8 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5854512288214985237">Er worden geen statistieken of crashrapporten naar Google gestuurd</translation>
 <translation id="5854790677617711513">Ouder dan 30 dagen</translation>
 <translation id="5855546874025048181">Verfijnen: <ph name="REFINE_TEXT" /></translation>
-<translation id="5858741533101922242">Chrome kan de Bluetooth-adapter niet inschakelen</translation>
-<translation id="5860491529813859533">Inschakelen</translation>
+<translation id="5858741533101922242">Chrome kan de Bluetooth-adapter niet aanzetten</translation>
+<translation id="5860491529813859533">Aanzetten</translation>
 <translation id="5862731021271217234">Schakel synchronisatie in om de tabbladen van je andere apparaten te bekijken</translation>
 <translation id="5864174910718532887">Details: gesorteerd op sitenaam</translation>
 <translation id="5864419784173784555">Wachten op andere download…</translation>
@@ -876,8 +876,8 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te tonen di
 <translation id="6891726759199484455">Ontgrendelen om je wachtwoord te kopiëren</translation>
 <translation id="6896758677409633944">Kopieer</translation>
 <translation id="6900532703269623216">Geoptimaliseerde beveiliging</translation>
-<translation id="6903907808598579934">Synchronisatie inschakelen</translation>
-<translation id="6929699136511445623">Synchronisatie van Android-systeem inschakelen</translation>
+<translation id="6903907808598579934">Synchronisatie aanzetten</translation>
+<translation id="6929699136511445623">Synchronisatie van Android-systeem aanzetten</translation>
 <translation id="6941901516114974832">Je activiteit in de incognitomodus <ph name="BEGIN_BOLD1" />is mogelijk nog altijd zichtbaar<ph name="END_BOLD1" /> voor websites die je bezoekt, je werkgever of school en je internetprovider.
 
 Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="BEGIN_BOLD2" />alle incognitotabbladen sluit<ph name="END_BOLD2" />.</translation>
@@ -1138,7 +1138,7 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="8636825310635137004">Schakel synchronisatie in om de tabbladen op je andere apparaten te bekijken</translation>
 <translation id="8641930654639604085">Sites met content voor volwassenen proberen te blokkeren</translation>
 <translation id="8655129584991699539">Je kunt de gegevens wissen in de Chrome-instellingen</translation>
-<translation id="8656747343598256512">Log in bij deze site en Chrome met je Google-account. Je kunt synchronisatie later inschakelen.</translation>
+<translation id="8656747343598256512">Log in bij deze site en Chrome met je Google-account. Je kunt de synchronisatie later aanzetten.</translation>
 <translation id="8659579665266920523">Zoeken met Chrome</translation>
 <translation id="8662811608048051533">Hiermee word je uitgelogd van de meeste sites.</translation>
 <translation id="8664979001105139458">Bestandsnaam bestaat al</translation>

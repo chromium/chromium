@@ -375,7 +375,7 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
 
       Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="1509692106376861764">Dit beleid wordt niet meer gebruikt sinds <ph name="PRODUCT_NAME" /> versie 29.</translation>
-<translation id="1514888685242892912"><ph name="PRODUCT_NAME" /> inschakelen</translation>
+<translation id="1514888685242892912"><ph name="PRODUCT_NAME" /> aanzetten</translation>
 <translation id="1515230621229117540">Hiermee wordt het zwevende toegankelijkheidsmenu ingeschakeld</translation>
 <translation id="1515824657887788963">Hiermee wordt toegestaan dat een pagina synchrone XHR-verzoeken verstuurt tijdens de afwijzing van de pagina.</translation>
 <translation id="1516486219683984217">Systeemmeldingen niet toestaan</translation>
@@ -854,7 +854,7 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
       Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als het beleid niet is ingesteld of is ingesteld op False, heeft het geen effect.</translation>
 <translation id="2200698565850397198">Blokkeringslijst voor systeemeigen berichten configureren</translation>
 <translation id="2201555246697292490">Witte lijst voor systeemeigen berichten configureren</translation>
-<translation id="2202787915587511214">NTLMv2 inschakelen</translation>
+<translation id="2202787915587511214">NTLMv2 aanzetten</translation>
 <translation id="2204379573346866896">Verstreken minuten in het huidige uur.</translation>
 <translation id="2204753382813641270">Automatisch verbergen van archief beheren</translation>
 <translation id="2208976000652006649">Parameters voor zoek-URL die POST gebruikt</translation>
@@ -1764,7 +1764,7 @@ en 3 optionele leden:
       <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> kan ook handig zijn voor fijnafstemming van herkomsten. In <ph name="PRODUCT_OS_NAME" /> versie 76 en eerder stel je het apparaatbeleid van <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> in op dezelfde waarde. (Omdat er een vertraging kan optreden als de waarden niet overeenkomen bij het starten van een gebruikerssessie.)
 
       Opmerking: Voor Android gebruik je het beleid <ph name="SITE_PER_PROCESS_ANDROID_POLICY_NAME" />.</translation>
-<translation id="3373381043600809954"><ph name="PRODUCT_NAME" /> inschakelen</translation>
+<translation id="3373381043600809954"><ph name="PRODUCT_NAME" /> aanzetten</translation>
 <translation id="3374587000313305002">Hiermee wordt de directory geconfigureerd die <ph name="PRODUCT_NAME" /> gebruikt voor het opslaan van gebruikersgegevens.
 
       Als je dit beleid instelt, gebruikt <ph name="PRODUCT_NAME" /> deze directory, ongeacht of de gebruiker de markering '--user-data-dir' heeft opgegeven. Als je gegevensverlies of andere onverwachte fouten wilt voorkomen, moet je dit beleid niet instellen op een directory die wordt gebruikt voor andere doeleinden, omdat <ph name="PRODUCT_NAME" /> de content ervan beheert.
@@ -2167,7 +2167,7 @@ Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als o
       Als je dit beleid uitschakelt, kan het SPDY-protocol worden gebruikt.
 
       Als dit beleid niet wordt ingesteld, is het SPDY-protocol beschikbaar.</translation>
-<translation id="3891357445869647828">JavaScript inschakelen</translation>
+<translation id="3891357445869647828">JavaScript aanzetten</translation>
 <translation id="3898345958122666461">NTLMv2 uitschakelen</translation>
 <translation id="3898795800259311780">Screenshots toestaan of weigeren</translation>
 <translation id="3907683835264956726">Schakelt online inloggen van gebruikers op een vergrendelscherm in. Als het beleid wordt ingesteld op True, wordt online opnieuw verifiëren op een vergrendelscherm geactiveerd door <ph name="POLICY" />.
@@ -2679,7 +2679,7 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 
       Als je dit beleid instelt op True, worden de inloggegevens van <ph name="PRODUCT_OS_NAME" /> gebruikt voor netwerkverificatie van een beheerde proxy. Als verificatie met de inloggegevens van <ph name="PRODUCT_OS_NAME" /> mislukt, wordt de gebruiker gevraagd om de eigen inloggegevens op te geven.</translation>
 <translation id="4723829699367336876">Firewallpassage vanaf client voor externe toegang inschakelen</translation>
-<translation id="4725528134735324213">Android Backup Service inschakelen</translation>
+<translation id="4725528134735324213">Android Backup Service aanzetten</translation>
 <translation id="4725801978265372736">Vereisen dat de naam van de lokale gebruiker en de eigenaar van de host voor externe toegang met elkaar overeenkomen</translation>
 <translation id="4733471537137819387">Beleid met betrekking tot geïntegreerde HTTP-authenticatie.</translation>
 <translation id="4735099388031364207">Als je het beleid inschakelt, wordt externe bevestiging voor het apparaat toegestaan. Er wordt automatisch een certificaat gegenereerd en naar de Device Management Server geüpload.
@@ -5842,7 +5842,7 @@ Dit beleid wordt verwijderd in M75.</translation>
 
           Als dit beleid niet is ingesteld, is de functie voor markeren via toetsenbordfocus in eerste instantie uitgeschakeld, maar kan de gebruiker deze op elk gewenst moment inschakelen.</translation>
 <translation id="9035964157729712237">Extensie-ID's die zijn vrijgesteld van de zwarte lijst</translation>
-<translation id="9038839118379817310">Wifi inschakelen</translation>
+<translation id="9038839118379817310">Wifi aanzetten</translation>
 <translation id="9039822628127365650">Als dit beleid is ingesteld, geeft het de periode op waarna een gebruiker automatisch wordt uitgelogd en de sessie wordt beëindigd. De gebruiker wordt geïnformeerd over de resterende tijd door een afteltimer die in het systeemvak wordt getoond.
 
       Als dit beleid niet is ingesteld, wordt de sessieduur niet beperkt.

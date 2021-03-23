@@ -1537,7 +1537,7 @@
 <translation id="2693176596243495071">糟糕！发生了未知错误。请稍后重试；如果问题依然存在，请与您的管理员联系。</translation>
 <translation id="2699911226086014512">PIN 码操作失败，错误代码为 <ph name="RETRIES" />。</translation>
 <translation id="2701737434167469065">登录，<ph name="EMAIL" /></translation>
-<translation id="2702801445560668637">读取列表</translation>
+<translation id="2702801445560668637">阅读清单</translation>
 <translation id="270358213449696159">Google Chrome 操作系统条款内容</translation>
 <translation id="270414148003105978">移动网络</translation>
 <translation id="2704184184447774363">Microsoft 文档签名</translation>
@@ -7019,7 +7019,7 @@
 <translation id="8965037249707889821">输入旧密码</translation>
 <translation id="8966809848145604011">其他个人资料</translation>
 <translation id="8966870118594285808">如果您无意中关闭了某个标签页，可将其重新打开</translation>
-<translation id="8967427617812342790">添加到读取列表</translation>
+<translation id="8967427617812342790">添加到阅读清单</translation>
 <translation id="8967866634928501045">同时按 Alt+Shift+A 即可显示</translation>
 <translation id="8968766641738584599">保存卡片</translation>
 <translation id="89720367119469899">转义</translation>
