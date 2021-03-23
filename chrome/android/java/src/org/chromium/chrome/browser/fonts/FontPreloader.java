@@ -34,6 +34,7 @@ public class FontPreloader {
             "TimeDownloadableFontsRetrievedAfterPostInflationStartup";
     private static final String UMA_FRE = "FirstRunActivity";
     private static final String UMA_TABBED_ACTIVITY = "ChromeTabbedActivity";
+    private static final String UMA_CUSTOM_TAB_ACTIVITY = "CustomTabActivity";
 
     private final ThreadChecker mThreadChecker = new ThreadChecker();
 
@@ -92,6 +93,14 @@ public class FontPreloader {
     public void onPostInflationStartupTabbedActivity() {
         mThreadChecker.assertOnValidThread();
         onPostInflationStartup(UMA_TABBED_ACTIVITY);
+    }
+
+    /**
+     * Should be called from CustomTabActivity to notify this class of post-inflation startup.
+     */
+    public void onPostInflationStartupCustomTabActivity() {
+        mThreadChecker.assertOnValidThread();
+        onPostInflationStartup(UMA_CUSTOM_TAB_ACTIVITY);
     }
 
     private void onPostInflationStartup(String activityName) {

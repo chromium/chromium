@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigatio
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
+import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
@@ -111,6 +112,9 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     @Override
     public void performPostInflationStartup() {
         super.performPostInflationStartup();
+
+        FontPreloader.getInstance().onPostInflationStartupCustomTabActivity();
+
         getStatusBarColorController().updateStatusBarColor();
 
         // Properly attach tab's InfoBarContainer to the view hierarchy if the tab is already

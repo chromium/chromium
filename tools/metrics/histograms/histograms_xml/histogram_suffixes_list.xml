@@ -114,6 +114,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram_suffixes name="ActivityType" separator=".">
   <suffix name="ChromeTabbedActivity" label="ChromeTabbedActivity"/>
+  <suffix name="CustomTabActivity" label="CustomTabActivity"/>
   <suffix name="FirstRunActivity" label="FirstRunActivity"/>
   <affected-histogram
       name="Android.Fonts.TimeDownloadableFontsRetrievedAfterPostInflationStartup"/>

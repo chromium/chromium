@@ -57,6 +57,7 @@ public class FontPreloaderUnitTest {
             "Android.Fonts.TimeDownloadableFontsRetrievedBeforePostInflationStartup";
     private static final String FRE = ".FirstRunActivity";
     private static final String TABBED = ".ChromeTabbedActivity";
+    private static final String CUSTOM_TAB = ".CustomTabActivity";
     private static final int INITIAL_TIME = 1000;
 
     @Mock
@@ -115,6 +116,8 @@ public class FontPreloaderUnitTest {
         assertHistogramNotRecorded(BEFORE_INFLATION + FRE);
         assertHistogramNotRecorded(BEFORE_INFLATION + TABBED);
         assertHistogramNotRecorded(AFTER_INFLATION + TABBED);
+        assertHistogramNotRecorded(BEFORE_INFLATION + CUSTOM_TAB);
+        assertHistogramNotRecorded(AFTER_INFLATION + CUSTOM_TAB);
     }
 
     @Test
@@ -127,6 +130,24 @@ public class FontPreloaderUnitTest {
         assertHistogramRecorded(AFTER_ON_CREATE, 200);
         assertHistogramRecorded(AFTER_INFLATION + TABBED, 100);
         assertHistogramNotRecorded(BEFORE_INFLATION + TABBED);
+        assertHistogramNotRecorded(BEFORE_INFLATION + FRE);
+        assertHistogramNotRecorded(AFTER_INFLATION + FRE);
+        assertHistogramNotRecorded(BEFORE_INFLATION + CUSTOM_TAB);
+        assertHistogramNotRecorded(AFTER_INFLATION + CUSTOM_TAB);
+    }
+
+    @Test
+    public void testAllFontsRetrievedAfterOnPostInflationStartup_CustomTab() {
+        SystemClock.setCurrentTimeMillis(INITIAL_TIME + 100);
+        mFontPreloader.onPostInflationStartupCustomTabActivity();
+        SystemClock.setCurrentTimeMillis(INITIAL_TIME + 150);
+        fakeLoadAllFonts();
+
+        assertHistogramRecorded(AFTER_ON_CREATE, 150);
+        assertHistogramRecorded(AFTER_INFLATION + CUSTOM_TAB, 50);
+        assertHistogramNotRecorded(BEFORE_INFLATION + CUSTOM_TAB);
+        assertHistogramNotRecorded(BEFORE_INFLATION + TABBED);
+        assertHistogramNotRecorded(AFTER_INFLATION + TABBED);
         assertHistogramNotRecorded(BEFORE_INFLATION + FRE);
         assertHistogramNotRecorded(AFTER_INFLATION + FRE);
     }
@@ -143,6 +164,8 @@ public class FontPreloaderUnitTest {
         assertHistogramNotRecorded(BEFORE_INFLATION + TABBED);
         assertHistogramNotRecorded(AFTER_INFLATION + TABBED);
         assertHistogramNotRecorded(AFTER_INFLATION + FRE);
+        assertHistogramNotRecorded(BEFORE_INFLATION + CUSTOM_TAB);
+        assertHistogramNotRecorded(AFTER_INFLATION + CUSTOM_TAB);
     }
 
     @Test
@@ -157,6 +180,24 @@ public class FontPreloaderUnitTest {
         assertHistogramNotRecorded(AFTER_INFLATION + TABBED);
         assertHistogramNotRecorded(BEFORE_INFLATION + FRE);
         assertHistogramNotRecorded(AFTER_INFLATION + FRE);
+        assertHistogramNotRecorded(BEFORE_INFLATION + CUSTOM_TAB);
+        assertHistogramNotRecorded(AFTER_INFLATION + CUSTOM_TAB);
+    }
+
+    @Test
+    public void testAllFontsRetrievedBeforeOnPostInflationStartup_CustomTab() {
+        SystemClock.setCurrentTimeMillis(INITIAL_TIME + 123);
+        fakeLoadAllFonts();
+        SystemClock.setCurrentTimeMillis(INITIAL_TIME + 234);
+        mFontPreloader.onPostInflationStartupCustomTabActivity();
+
+        assertHistogramRecorded(AFTER_ON_CREATE, 123);
+        assertHistogramRecorded(BEFORE_INFLATION + CUSTOM_TAB, 111);
+        assertHistogramNotRecorded(AFTER_INFLATION + CUSTOM_TAB);
+        assertHistogramNotRecorded(BEFORE_INFLATION + FRE);
+        assertHistogramNotRecorded(AFTER_INFLATION + FRE);
+        assertHistogramNotRecorded(BEFORE_INFLATION + TABBED);
+        assertHistogramNotRecorded(AFTER_INFLATION + TABBED);
     }
 
     @Test
@@ -169,6 +210,8 @@ public class FontPreloaderUnitTest {
         assertHistogramNotRecorded(AFTER_INFLATION + TABBED);
         assertHistogramNotRecorded(BEFORE_INFLATION + FRE);
         assertHistogramNotRecorded(AFTER_INFLATION + FRE);
+        assertHistogramNotRecorded(BEFORE_INFLATION + CUSTOM_TAB);
+        assertHistogramNotRecorded(AFTER_INFLATION + CUSTOM_TAB);
 
         SystemClock.setCurrentTimeMillis(INITIAL_TIME + 500);
         ShadowResourcesCompat.loadFont();
@@ -185,8 +228,7 @@ public class FontPreloaderUnitTest {
         SystemClock.setCurrentTimeMillis(INITIAL_TIME + 30);
         mFontPreloader.onPostInflationStartupTabbedActivity();
 
-        assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(BEFORE_INFLATION + FRE, 10));
+        assertHistogramRecorded(BEFORE_INFLATION + FRE, 10);
         assertHistogramNotRecorded(BEFORE_INFLATION + TABBED);
     }
 
@@ -200,6 +242,32 @@ public class FontPreloaderUnitTest {
         mFontPreloader.onPostInflationStartupTabbedActivity();
 
         assertHistogramRecorded(AFTER_INFLATION + FRE, 32);
+        assertHistogramNotRecorded(BEFORE_INFLATION + TABBED);
+    }
+
+    @Test
+    public void testHistogramRecordedForOnlyOneActivity_BeforeCCTInflation() {
+        SystemClock.setCurrentTimeMillis(INITIAL_TIME + 1);
+        fakeLoadAllFonts();
+        SystemClock.setCurrentTimeMillis(INITIAL_TIME + 11);
+        mFontPreloader.onPostInflationStartupCustomTabActivity();
+        SystemClock.setCurrentTimeMillis(INITIAL_TIME + 111);
+        mFontPreloader.onPostInflationStartupTabbedActivity();
+
+        assertHistogramRecorded(BEFORE_INFLATION + CUSTOM_TAB, 10);
+        assertHistogramNotRecorded(BEFORE_INFLATION + TABBED);
+    }
+
+    @Test
+    public void testHistogramRecordedForOnlyOneActivity_AfterCCTInflation() {
+        SystemClock.setCurrentTimeMillis(INITIAL_TIME + 32);
+        mFontPreloader.onPostInflationStartupCustomTabActivity();
+        SystemClock.setCurrentTimeMillis(INITIAL_TIME + 64);
+        fakeLoadAllFonts();
+        SystemClock.setCurrentTimeMillis(INITIAL_TIME + 128);
+        mFontPreloader.onPostInflationStartupTabbedActivity();
+
+        assertHistogramRecorded(AFTER_INFLATION + CUSTOM_TAB, 32);
         assertHistogramNotRecorded(BEFORE_INFLATION + TABBED);
     }
 
