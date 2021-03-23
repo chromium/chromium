@@ -555,7 +555,7 @@
     },
     {
       name: "CSSFontSizeAdjust",
-      status: "experimental",
+      status: "test",
     },
     {
       // This needs to be kept as a runtime flag as long as we need to forcibly
