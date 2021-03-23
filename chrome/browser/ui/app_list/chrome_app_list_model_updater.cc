@@ -96,9 +96,12 @@ void ChromeAppListModelUpdater::RemoveItem(const std::string& id) {
 }
 
 void ChromeAppListModelUpdater::RemoveUninstalledItem(const std::string& id) {
-  RemoveChromeItem(id);
+  // Copy the ID to the stack since it may to be destroyed in
+  // RemoveChromeItem(). See crbug.com/1190347.
+  std::string id_copy = id;
+  RemoveChromeItem(id_copy);
   if (app_list_controller_)
-    app_list_controller_->RemoveUninstalledItem(id);
+    app_list_controller_->RemoveUninstalledItem(id_copy);
 }
 
 void ChromeAppListModelUpdater::MoveItemToFolder(const std::string& id,
