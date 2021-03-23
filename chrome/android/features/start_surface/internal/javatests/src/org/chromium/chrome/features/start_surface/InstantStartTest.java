@@ -1108,8 +1108,6 @@ public class InstantStartTest {
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
     public void renderSingleAsHomepage_Landscape() throws IOException {
         // clang-format on
-        createTabStateFile(new int[] {0, 1, 2});
-
         startMainActivityFromLauncher();
         CriteriaHelper.pollUiThread(
                 () -> mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
