@@ -52,10 +52,6 @@ class BrokerServicesBase final : public BrokerServices,
       std::unique_ptr<PolicyDiagnosticsReceiver> receiver) override;
 
  private:
-  // The routine that the worker thread executes. It is in charge of
-  // notifications and cleanup-related tasks.
-  static DWORD WINAPI TargetEventsThread(PVOID param);
-
   // The completion port used by the job objects to communicate events to
   // the worker thread.
   base::win::ScopedHandle job_port_;
