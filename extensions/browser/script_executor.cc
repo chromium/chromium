@@ -60,7 +60,7 @@ class Handler : public content::WebContentsObserver {
           content::WebContents* web_contents,
           mojom::ExecuteCodeParamsPtr params,
           ScriptExecutor::FrameScope scope,
-          const std::vector<int>& frame_ids,
+          const std::set<int>& frame_ids,
           ScriptExecutor::ScriptFinishedCallback callback)
       : content::WebContentsObserver(web_contents),
         observer_(std::move(observer)),
@@ -90,7 +90,7 @@ class Handler : public content::WebContentsObserver {
     // If there is a single frame specified (and it was valid), we consider it
     // the "root" frame, which is used in result ordering and error collection.
     if (frame_ids.size() == 1 && pending_render_frames_.size() == 1)
-      root_rfh_id_ = frame_ids[0];
+      root_rfh_id_ = *frame_ids.begin();
 
     // If we are to include subframes, iterate over all frames in the
     // WebContents and add them iff they are a child of an included frame.
@@ -284,7 +284,7 @@ void ScriptExecutor::ExecuteScript(const mojom::HostID& host_id,
                                    mojom::ActionType action_type,
                                    const std::string& code,
                                    ScriptExecutor::FrameScope frame_scope,
-                                   const std::vector<int>& frame_ids,
+                                   const std::set<int>& frame_ids,
                                    ScriptExecutor::MatchAboutBlank about_blank,
                                    mojom::RunLocation run_at,
                                    ScriptExecutor::ProcessType process_type,

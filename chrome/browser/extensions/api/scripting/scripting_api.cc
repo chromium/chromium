@@ -119,7 +119,7 @@ bool CanAccessTarget(const PermissionsData& permissions,
                      bool include_incognito_information,
                      ScriptExecutor** script_executor_out,
                      ScriptExecutor::FrameScope* frame_scope_out,
-                     std::vector<int>* frame_ids_out,
+                     std::set<int>* frame_ids_out,
                      std::string* error_out) {
   content::WebContents* tab = nullptr;
   TabHelper* tab_helper = nullptr;
@@ -144,15 +144,11 @@ bool CanAccessTarget(const PermissionsData& permissions,
           ? ScriptExecutor::INCLUDE_SUB_FRAMES
           : ScriptExecutor::SPECIFIED_FRAMES;
 
-  std::vector<int> frame_ids;
+  std::set<int> frame_ids;
   if (target.frame_ids) {
-    // Ensure IDs are unique.
-    frame_ids = *target.frame_ids;
-    std::sort(frame_ids.begin(), frame_ids.end());
-    auto new_end = std::unique(frame_ids.begin(), frame_ids.end());
-    frame_ids.erase(new_end, frame_ids.end());
+    frame_ids.insert(target.frame_ids->begin(), target.frame_ids->end());
   } else {
-    frame_ids.push_back(ExtensionApiFrameIdMap::kTopFrameId);
+    frame_ids.insert(ExtensionApiFrameIdMap::kTopFrameId);
   }
 
   // TODO(devlin): If `allFrames` is true, we error out if the extension
@@ -290,7 +286,7 @@ bool ScriptingExecuteScriptFunction::Execute(std::string code_to_execute,
                                              std::string* error) {
   ScriptExecutor* script_executor = nullptr;
   ScriptExecutor::FrameScope frame_scope = ScriptExecutor::SPECIFIED_FRAMES;
-  std::vector<int> frame_ids;
+  std::set<int> frame_ids;
   if (!CanAccessTarget(*extension()->permissions_data(), injection_.target,
                        browser_context(), include_incognito_information(),
                        &script_executor, &frame_scope, &frame_ids, error)) {
@@ -404,7 +400,7 @@ bool ScriptingInsertCSSFunction::Execute(std::string code_to_execute,
                                          std::string* error) {
   ScriptExecutor* script_executor = nullptr;
   ScriptExecutor::FrameScope frame_scope = ScriptExecutor::SPECIFIED_FRAMES;
-  std::vector<int> frame_ids;
+  std::set<int> frame_ids;
   if (!CanAccessTarget(*extension()->permissions_data(), injection_.target,
                        browser_context(), include_incognito_information(),
                        &script_executor, &frame_scope, &frame_ids, error)) {
@@ -470,7 +466,7 @@ ExtensionFunction::ResponseAction ScriptingRemoveCSSFunction::Run() {
 
   ScriptExecutor* script_executor = nullptr;
   ScriptExecutor::FrameScope frame_scope = ScriptExecutor::SPECIFIED_FRAMES;
-  std::vector<int> frame_ids;
+  std::set<int> frame_ids;
   if (!CanAccessTarget(*extension()->permissions_data(), injection.target,
                        browser_context(), include_incognito_information(),
                        &script_executor, &frame_scope, &frame_ids, &error)) {

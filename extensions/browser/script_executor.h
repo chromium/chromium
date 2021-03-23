@@ -107,12 +107,11 @@ class ScriptExecutor {
   // |callback| will always be called even if the IPC'd renderer is destroyed
   // before a response is received (in this case the callback will be with a
   // failure and appropriate error message).
-  // TODO(devlin): Make |frame_ids| a std::set<> (since they must be unique).
   void ExecuteScript(const mojom::HostID& host_id,
                      mojom::ActionType action_type,
                      const std::string& code,
                      FrameScope frame_scope,
-                     const std::vector<int>& frame_ids,
+                     const std::set<int>& frame_ids,
                      MatchAboutBlank match_about_blank,
                      mojom::RunLocation run_at,
                      ProcessType process_type,
