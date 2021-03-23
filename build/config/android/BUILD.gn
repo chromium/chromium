@@ -99,7 +99,8 @@ config("compiler") {
 # :runtime_library vs. :compiler.
 config("runtime_library") {
   # Let the linker find libgcc.a.
-  ldflags = [ "-B" + rebase_path(android_toolchain_root, root_build_dir) ]
+  ldflags = [ "--gcc-toolchain=" +
+              rebase_path(android_toolchain_root, root_build_dir) ]
 
   libs = []
 
