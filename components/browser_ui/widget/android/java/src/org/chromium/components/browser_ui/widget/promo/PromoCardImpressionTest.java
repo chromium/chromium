@@ -23,6 +23,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
@@ -111,6 +112,7 @@ public class PromoCardImpressionTest {
 
     @Test
     @SmallTest
+    @FlakyTest(message = "https://crbug.com/1181859")
     public void testImpression_Card_Hide() throws TimeoutException {
         int initCount = mPromoSeenCallback.getCallCount();
         setUpPromoCard(false, true);
