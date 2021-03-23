@@ -2131,8 +2131,8 @@ Try to use a unique password for every site.
         Block in Incognito
       </message>
       <message name="IDS_IOS_RETURN_TO_RECENT_TAB_TITLE" desc="Title of the Return to Recent Tab Content Suggestons Tile.">
-          Open Most Recent Tab
-          </message>
+          Return To Recent Tab
+      </message>
       <message name="IDS_IOS_SETTINGS_PASSWORDS_SAVED_HEADING" desc="The title for a list of username/site/password items. These items are already saved by the browser and can be deleted/edited. [Length: one line] [iOS only]">
       Saved Passwords
       </message>

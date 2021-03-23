@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_gesture_commands.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -89,7 +90,8 @@ const CGFloat kIconWidth = 32.0f;
   if (self) {
     self.isAccessibilityElement = YES;
     UIView* contentView = self.contentView;
-    [contentView.layer setBorderColor:UIColor.cr_separatorColor.CGColor];
+    [contentView.layer
+        setBorderColor:[UIColor colorNamed:kTertiaryBackgroundColor].CGColor];
     [contentView.layer setBorderWidth:kContentViewBorderWidth];
     contentView.layer.cornerRadius = kContentViewCornerRadius;
     contentView.layer.masksToBounds = YES;
