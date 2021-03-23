@@ -3,4 +3,5 @@ include_rules = [
   "+components/infobars/core",
   "+components/resources/android",
   "+components/strings",
+  "+components/messages",
 ]

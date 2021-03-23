@@ -7,7 +7,7 @@
 #include <stddef.h>
 #include <utility>
 
-#include "components/blocked_content/popup_blocker_tab_helper.h"
+#include "components/blocked_content/android/popup_blocked_helper.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -76,11 +76,7 @@ PopupBlockedInfoBarDelegate::PopupBlockedInfoBarDelegate(
       url_(url),
       map_(map),
       on_accept_callback_(std::move(on_accept_callback)) {
-  content_settings::SettingInfo setting_info;
-  std::unique_ptr<base::Value> setting = map->GetWebsiteSetting(
-      url, url, ContentSettingsType::POPUPS, &setting_info);
-  can_show_popups_ =
-      setting_info.source != content_settings::SETTING_SOURCE_POLICY;
+  can_show_popups_ = !PopupSettingManagedByPolicy(map, url);
 }
 
 base::string16 PopupBlockedInfoBarDelegate::GetMessageText() const {
@@ -121,17 +117,7 @@ bool PopupBlockedInfoBarDelegate::Accept() {
   // Launch popups.
   content::WebContents* web_contents =
       infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar());
-  blocked_content::PopupBlockerTabHelper* popup_blocker_helper =
-      blocked_content::PopupBlockerTabHelper::FromWebContents(web_contents);
-  DCHECK(popup_blocker_helper);
-  blocked_content::PopupBlockerTabHelper::PopupIdMap blocked_popups =
-      popup_blocker_helper->GetBlockedPopupRequests();
-  for (blocked_content::PopupBlockerTabHelper::PopupIdMap::iterator it =
-           blocked_popups.begin();
-       it != blocked_popups.end(); ++it) {
-    popup_blocker_helper->ShowBlockedPopup(it->first,
-                                           WindowOpenDisposition::CURRENT_TAB);
-  }
+  ShowBlockedPopups(web_contents);
 
   if (on_accept_callback_)
     std::move(on_accept_callback_).Run();

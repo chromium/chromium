@@ -64,6 +64,10 @@ class PopupBlockerTabHelper
   // blocked popup will be opened as it was specified by renderer.
   void ShowBlockedPopup(int32_t popup_id, WindowOpenDisposition disposition);
 
+  // All blocked popups will be opened with the disposition defaulted to
+  // WindowOpenDisposition::CURRENT_TAB. Used only on Android.
+  void ShowAllBlockedPopups();
+
   // Adds a new blocked popup to the UI.
   void AddBlockedPopup(std::unique_ptr<PopupNavigationDelegate> delegate,
                        const blink::mojom::WindowFeatures& window_features,
