@@ -1194,9 +1194,6 @@ extern const char kRestrictGamepadAccessDescription[];
 extern const char kMBIModeName[];
 extern const char kMBIModeDescription[];
 
-extern const char kDelayCompetingLowPriorityRequestsName[];
-extern const char kDelayCompetingLowPriorityRequestsDescription[];
-
 extern const char kIntensiveWakeUpThrottlingName[];
 extern const char kIntensiveWakeUpThrottlingDescription[];
 

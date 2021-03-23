@@ -573,51 +573,6 @@ const FeatureEntry::FeatureVariation kMBIModeVariations[] = {
     {"per site instance", kMBIModeEnabledPerSiteInstance,
      base::size(kMBIModeEnabledPerSiteInstance), nullptr}};
 
-const FeatureEntry::FeatureParam
-    kDelayCompetingLowPriorityRequestsAggressiveFirstPaint[] = {
-        {"until", "first_paint"},
-        {"priority_threshold", "medium"}};
-const FeatureEntry::FeatureParam
-    kDelayCompetingLowPriorityRequestsAggressiveFirstContentfulPaint[] = {
-        {"until", "first_contentful_paint"},
-        {"priority_threshold", "medium"}};
-const FeatureEntry::FeatureParam
-    kDelayCompetingLowPriorityRequestsRelaxedFirstPaint[] = {
-        {"until", "first_paint"},
-        {"priority_threshold", "high"}};
-const FeatureEntry::FeatureParam
-    kDelayCompetingLowPriorityRequestsRelaxedFirstContentfulPaint[] = {
-        {"until", "first_contentful_paint"},
-        {"priority_threshold", "high"}};
-const FeatureEntry::FeatureParam
-    kDelayCompetingLowPriorityRequestsRelaxedAlways[] = {
-        {"until", "always"},
-        {"priority_threshold", "high"}};
-
-const FeatureEntry::FeatureVariation
-    kDelayCompetingLowPriorityRequestsFeatureVariations[] = {
-        {"behind medium priority, until first paint",
-         kDelayCompetingLowPriorityRequestsAggressiveFirstPaint,
-         base::size(kDelayCompetingLowPriorityRequestsAggressiveFirstPaint),
-         nullptr},
-        {"behind medium priority, until first contentful paint",
-         kDelayCompetingLowPriorityRequestsAggressiveFirstContentfulPaint,
-         base::size(
-             kDelayCompetingLowPriorityRequestsAggressiveFirstContentfulPaint),
-         nullptr},
-        {"behind high priority, until first paint",
-         kDelayCompetingLowPriorityRequestsRelaxedFirstPaint,
-         base::size(kDelayCompetingLowPriorityRequestsRelaxedFirstPaint),
-         nullptr},
-        {"behind high priority, until first contentful paint",
-         kDelayCompetingLowPriorityRequestsRelaxedFirstContentfulPaint,
-         base::size(
-             kDelayCompetingLowPriorityRequestsRelaxedFirstContentfulPaint),
-         nullptr},
-        {"behind high priority, always",
-         kDelayCompetingLowPriorityRequestsRelaxedAlways,
-         base::size(kDelayCompetingLowPriorityRequestsRelaxedAlways), nullptr}};
-
 const FeatureEntry::FeatureParam kIntensiveWakeUpThrottlingAfter10Seconds[] = {
     {blink::features::kIntensiveWakeUpThrottling_GracePeriodSeconds_Name,
      "10"}};
@@ -4630,14 +4585,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kMBIMode,
                                     kMBIModeVariations,
                                     "MBIMode")},
-
-    {"delay-competing-low-priority-requests",
-     flag_descriptions::kDelayCompetingLowPriorityRequestsName,
-     flag_descriptions::kDelayCompetingLowPriorityRequestsDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         blink::features::kDelayCompetingLowPriorityRequests,
-         kDelayCompetingLowPriorityRequestsFeatureVariations,
-         "DelayCompetingLowPriorityRequests")},
 
     {"intensive-wake-up-throttling",
      flag_descriptions::kIntensiveWakeUpThrottlingName,

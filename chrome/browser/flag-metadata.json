@@ -898,11 +898,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "delay-competing-low-priority-requests",
-    "owners": [ "dom", "chrome-loading@google.com" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "deprecate-low-usage-codecs",
     "owners": [ "dalecurtis", "sweyn" ],
     "expiry_milestone": 92
