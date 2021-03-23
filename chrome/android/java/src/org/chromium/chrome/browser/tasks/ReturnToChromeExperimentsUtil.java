@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
@@ -392,12 +393,13 @@ public final class ReturnToChromeExperimentsUtil {
      */
     public static boolean shouldShowStartSurfaceAsTheHomePageNoTabs() {
         // When creating initial tab, i.e. cold start without restored tabs, we should only show
-        // StartSurface as the HomePage if Single Pane is enabled, HomePage is not customized,
-        // accessibility is not enabled and not on tablet.
+        // StartSurface as the HomePage if Single Pane is enabled, HomePage is not customized, not
+        // on tablet, accessibility is not enabled or the tab group continuation feature is enabled.
         String homePageUrl = HomepageManager.getHomepageUri();
         return StartSurfaceConfiguration.isStartSurfaceSinglePaneEnabled()
                 && (TextUtils.isEmpty(homePageUrl) || isCanonicalizedNTPUrl(homePageUrl))
-                && !ChromeAccessibilityUtil.get().isAccessibilityEnabled()
+                && (!ChromeAccessibilityUtil.get().isAccessibilityEnabled()
+                        || TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled())
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(
                         ContextUtils.getApplicationContext());
     }

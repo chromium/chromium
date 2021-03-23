@@ -61,7 +61,8 @@ public class StartSurfaceToolbarCoordinator {
             ObservableSupplier<Boolean> homepageEnabledSupplier,
             ObservableSupplier<Boolean> startSurfaceAsHomepageSupplier,
             ObservableSupplier<Boolean> homepageManagedByPolicySupplier,
-            OnClickListener homeButtonOnClickHandler) {
+            OnClickListener homeButtonOnClickHandler,
+            boolean isTabGroupsAndroidContinuationEnabled) {
         mStub = startSurfaceToolbarStub;
 
         layoutStateProviderSupplier.onAvailable(
@@ -93,7 +94,8 @@ public class StartSurfaceToolbarCoordinator {
                 menuButtonCoordinator, identityDiscStateSupplier, identityDiscButtonSupplier,
                 homepageEnabledSupplier, startSurfaceAsHomepageSupplier,
                 homepageManagedByPolicySupplier, homeButtonOnClickHandler,
-                StartSurfaceConfiguration.shouldShowNewSurfaceFromHomeButton());
+                StartSurfaceConfiguration.shouldShowNewSurfaceFromHomeButton(),
+                isTabGroupsAndroidContinuationEnabled);
 
         mThemeColorProvider = provider;
         mMenuButtonCoordinator = menuButtonCoordinator;

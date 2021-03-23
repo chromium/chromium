@@ -470,11 +470,13 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         boolean isGridTabSwitcherEnabled = TabUiFeatureUtilities.isGridTabSwitcherEnabled();
         boolean isTabToGtsAnimationEnabled = TabUiFeatureUtilities.isTabToGtsAnimationEnabled();
         boolean isStartSurfaceEnabled = StartSurfaceConfiguration.isStartSurfaceEnabled();
+        boolean isTabGroupsAndroidContinuationEnabled =
+                TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled();
         mToolbar = createTopToolbarCoordinator(controlContainer, toolbarLayout, buttonDataProviders,
                 browsingModeThemeColorProvider, startSurfaceMenuButtonCoordinator,
                 mCompositorViewHolder.getInvalidator(), identityDiscController,
                 startSurfaceSupplier, isGridTabSwitcherEnabled, isTabToGtsAnimationEnabled,
-                isStartSurfaceEnabled);
+                isStartSurfaceEnabled, isTabGroupsAndroidContinuationEnabled);
         mActionModeController =
                 new ActionModeController(mActivity, mActionBarDelegate, toolbarActionModeCallback);
 
@@ -892,7 +894,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             MenuButtonCoordinator startSurfaceMenuButtonCoordinator, Invalidator invalidator,
             IdentityDiscController identityDiscController,
             OneshotSupplier<StartSurface> startSurfaceSupplier, boolean isGridTabSwitcherEnabled,
-            boolean isTabToGtsAnimationEnabled, boolean isStartSurfaceEnabled) {
+            boolean isTabToGtsAnimationEnabled, boolean isStartSurfaceEnabled,
+            boolean isTabGroupsAndroidContinuationEnabled) {
         // clang-format off
         TopToolbarCoordinator toolbar = new TopToolbarCoordinator(controlContainer, toolbarLayout,
                 mLocationBarModel, mToolbarTabController,
@@ -911,7 +914,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 }, () -> identityDiscController.getForStartSurface(mStartSurfaceState),
                 startSurfaceSupplier, mCompositorViewHolder::getResourceManager,
                 VrModuleProvider.getDelegate()::isInVr, isGridTabSwitcherEnabled,
-                isTabToGtsAnimationEnabled, isStartSurfaceEnabled);
+                isTabToGtsAnimationEnabled, isStartSurfaceEnabled,
+                isTabGroupsAndroidContinuationEnabled);
         // clang-format on
         mHomepageStateListener = () -> {
             mHomepageEnabledSupplier.set(HomepageManager.isHomepageEnabled());
