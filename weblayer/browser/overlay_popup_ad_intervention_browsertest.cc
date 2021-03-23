@@ -6,18 +6,10 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/infobars/infobar_service.h"
-#include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_commands.h"
-#include "chrome/common/chrome_features.h"
-#include "chrome/test/base/chrome_test_utils.h"
-#include "components/infobars/core/infobar.h"
-#include "components/infobars/core/infobar_delegate.h"
-#include "components/infobars/core/infobar_manager.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/ad_intervention_browser_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
+#include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/common/common_features.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
@@ -28,6 +20,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
+#include "weblayer/test/subresource_filter_browser_test_harness.h"
+
+namespace weblayer {
 
 namespace {
 
@@ -36,21 +31,19 @@ const char kAdsInterventionRecordedHistogram[] =
 
 }  // namespace
 
-class OverlayPopupAdViolationBrowserTest
-    : public subresource_filter::SubresourceFilterBrowserTest {
+class OverlayPopupAdViolationBrowserTest : public SubresourceFilterBrowserTest {
  public:
   OverlayPopupAdViolationBrowserTest() = default;
 
   void SetUp() override {
     std::vector<base::Feature> enabled = {
         subresource_filter::kAdTagging,
-        subresource_filter::kAdsInterventionsEnforced,
-        features::kSitePerProcess};
+        subresource_filter::kAdsInterventionsEnforced};
     std::vector<base::Feature> disabled = {
         blink::features::kFrequencyCappingForOverlayPopupDetection};
 
     feature_list_.InitWithFeatures(enabled, disabled);
-    subresource_filter::SubresourceFilterBrowserTest::SetUp();
+    SubresourceFilterBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
@@ -70,16 +63,13 @@ IN_PROC_BROWSER_TEST_F(OverlayPopupAdViolationBrowserTest,
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/ads_observer/large_scrollable_page_with_adiframe_writer.html");
 
-  content::WebContents* web_contents =
-      chrome_test_utils::GetActiveWebContents(this);
-
-  NavigateAndWaitForFirstMeaningfulPaint(web_contents, url);
+  NavigateAndWaitForFirstMeaningfulPaint(web_contents(), url);
 
   // Reload the page. Since we haven't seen any ad violations, expect that the
   // ad script is loaded and that the subresource filter UI doesn't show up.
-  EXPECT_TRUE(content::NavigateToURL(web_contents, url));
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
   histogram_tester.ExpectBucketCount(
       "SubresourceFilter.Actions2",
       subresource_filter::SubresourceFilterAction::kUIShown, 0);
@@ -92,22 +82,19 @@ IN_PROC_BROWSER_TEST_F(OverlayPopupAdViolationBrowserTest,
                        OverlayPopupAd_AdInterventionTriggered) {
   base::HistogramTester histogram_tester;
 
-  content::WebContents* web_contents =
-      chrome_test_utils::GetActiveWebContents(this);
-
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/ads_observer/large_scrollable_page_with_adiframe_writer.html");
 
-  NavigateAndWaitForFirstMeaningfulPaint(web_contents, url);
+  NavigateAndWaitForFirstMeaningfulPaint(web_contents(), url);
 
-  TriggerAndDetectOverlayPopupAd(web_contents);
+  TriggerAndDetectOverlayPopupAd(web_contents());
 
   // Reload the page. Since we are enforcing ad blocking on ads violations,
   // expect that the ad script is not loaded and that the subresource filter UI
   // shows up.
-  EXPECT_TRUE(content::NavigateToURL(web_contents, url));
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
   histogram_tester.ExpectBucketCount(
       "SubresourceFilter.Actions2",
       subresource_filter::SubresourceFilterAction::kUIShown, 1);
@@ -128,7 +115,7 @@ class OverlayPopupAdViolationBrowserTestWithoutEnforcement
         blink::features::kFrequencyCappingForOverlayPopupDetection};
 
     feature_list_.InitWithFeatures(enabled, disabled);
-    subresource_filter::SubresourceFilterBrowserTest::SetUp();
+    SubresourceFilterBrowserTest::SetUp();
   }
 
  private:
@@ -139,23 +126,20 @@ IN_PROC_BROWSER_TEST_F(OverlayPopupAdViolationBrowserTestWithoutEnforcement,
                        OverlayPopupAd_NoAdInterventionTriggered) {
   base::HistogramTester histogram_tester;
 
-  content::WebContents* web_contents =
-      chrome_test_utils::GetActiveWebContents(this);
-
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/ads_observer/large_scrollable_page_with_adiframe_writer.html");
 
-  NavigateAndWaitForFirstMeaningfulPaint(web_contents, url);
+  NavigateAndWaitForFirstMeaningfulPaint(web_contents(), url);
 
-  TriggerAndDetectOverlayPopupAd(web_contents);
+  TriggerAndDetectOverlayPopupAd(web_contents());
 
   // Reload the page. Since we are not enforcing ad blocking on ads violations,
   // expect that the ad script is loaded and that the subresource filter UI
   // doesn't show up. Expect a histogram recording as the intervention is
   // running in dry run mode.
-  EXPECT_TRUE(content::NavigateToURL(web_contents, url));
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
   histogram_tester.ExpectBucketCount(
       "SubresourceFilter.Actions2",
       subresource_filter::SubresourceFilterAction::kUIShown, 0);
@@ -163,3 +147,5 @@ IN_PROC_BROWSER_TEST_F(OverlayPopupAdViolationBrowserTestWithoutEnforcement,
       kAdsInterventionRecordedHistogram,
       subresource_filter::mojom::AdsViolation::kOverlayPopupAd, 1);
 }
+
+}  // namespace weblayer

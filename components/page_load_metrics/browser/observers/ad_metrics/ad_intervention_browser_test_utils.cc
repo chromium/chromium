@@ -24,6 +24,20 @@ gfx::Rect ScaleRectByDeviceScaleFactor(const gfx::Rect& rect,
   return gfx::ScaleToRoundedRect(rect, screen_info.device_scale_factor);
 }
 
+// Navigates to |url| in |web_contents| and waits for |event|.
+void NavigateAndWaitForTimingEvent(
+    content::WebContents* web_contents,
+    const GURL& url,
+    page_load_metrics::PageLoadMetricsTestWaiter::TimingField event) {
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents);
+  waiter->AddPageExpectation(event);
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents, url));
+  waiter->Wait();
+  waiter.reset();
+}
+
 }  // namespace
 
 // Gets the body height of the document embedded in |web_contents|.
@@ -62,14 +76,16 @@ void CreateAndWaitForIframeAtRect(
 // contentful paint.
 void NavigateAndWaitForFirstContentfulPaint(content::WebContents* web_contents,
                                             const GURL& url) {
-  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
-      web_contents);
-  waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
-                                 TimingField::kFirstContentfulPaint);
+  NavigateAndWaitForTimingEvent(web_contents, url,
+                                page_load_metrics::PageLoadMetricsTestWaiter::
+                                    TimingField::kFirstContentfulPaint);
+}
 
-  EXPECT_TRUE(content::NavigateToURL(web_contents, url));
-  waiter->Wait();
-  waiter.reset();
+void NavigateAndWaitForFirstMeaningfulPaint(content::WebContents* web_contents,
+                                            const GURL& url) {
+  NavigateAndWaitForTimingEvent(web_contents, url,
+                                page_load_metrics::PageLoadMetricsTestWaiter::
+                                    TimingField::kFirstMeaningfulPaint);
 }
 
 // Create a large sticky ad in |web_contents| and trigger a series of actions
@@ -90,4 +106,31 @@ void TriggerAndDetectLargeStickyAd(content::WebContents* web_contents) {
   // Force a layout update to capture the final state. At this point the
   // detector should have detected the large-sticky-ad.
   ASSERT_TRUE(EvalJsAfterLifecycleUpdate(web_contents, "", "").error.empty());
+}
+
+void TriggerAndDetectOverlayPopupAd(content::WebContents* web_contents) {
+  // Force a layout update to capture the initial state without the ad. Then
+  // create the overlay-popup-ad.
+  ASSERT_TRUE(EvalJsAfterLifecycleUpdate(
+                  web_contents, "",
+                  "createAdIframeAtRect(window.innerWidth * "
+                  "0.25, window.innerHeight * 0.25, window.innerWidth * 0.5, "
+                  "window.innerHeight * 0.5)",
+                  content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                  .error.empty());
+
+  // Force a layout update to capture the overlay-popup-ad. Then dismiss the
+  // ad.
+  ASSERT_TRUE(
+      EvalJsAfterLifecycleUpdate(web_contents, "",
+                                 "document.getElementsByTagName('iframe')[0]."
+                                 "style.display = 'none';",
+                                 content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+          .error.empty());
+
+  // Force a layout update to capture the state after the dismissal. At this
+  // point the detector should have detected the overlay-popup-ad.
+  ASSERT_TRUE(EvalJsAfterLifecycleUpdate(
+                  web_contents, "", "", content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+                  .error.empty());
 }

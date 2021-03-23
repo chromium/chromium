@@ -41,8 +41,17 @@ void CreateAndWaitForIframeAtRect(
 void NavigateAndWaitForFirstContentfulPaint(content::WebContents* web_contents,
                                             const GURL& url);
 
+// Navigates to |url| in |web_contents| and waits for the first meaningful
+// paint.
+void NavigateAndWaitForFirstMeaningfulPaint(content::WebContents* web_contents,
+                                            const GURL& url);
+
 // Creates a large sticky ad in |web_contents| and triggers a series of actions
 // and layout updates for the ad to be detected by the sticky ad detector.
 void TriggerAndDetectLargeStickyAd(content::WebContents* web_contents);
+
+// Creates an overlay popup ad and trigger a series of actions and layout
+// updates for the ad to be detected by the overlay popup detector.
+void TriggerAndDetectOverlayPopupAd(content::WebContents* web_contents);
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_AD_METRICS_AD_INTERVENTION_BROWSER_TEST_UTILS_H_

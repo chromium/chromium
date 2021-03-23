@@ -175,6 +175,7 @@ test("weblayer_browsertests") {
     "../browser/navigation_error_navigation_throttle_browsertest.cc",
     "../browser/new_tab_delegate_browsertest.cc",
     "../browser/no_state_prefetch/no_state_prefetch_browsertest.cc",
+    "../browser/overlay_popup_ad_intervention_browsertest.cc",
     "../browser/page_load_metrics_browsertest.cc",
     "../browser/permissions/permissions_browsertest.cc",
     "../browser/popup_blocker_browsertest.cc",
