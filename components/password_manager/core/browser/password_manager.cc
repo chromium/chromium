@@ -108,16 +108,6 @@ bool ShouldPromptUserToSavePassword(const PasswordFormManager& manager) {
   return manager.IsNewLogin();
 }
 
-// Checks that |form| has visible password fields. It should be used only for
-// GAIA forms.
-bool IsThereVisiblePasswordField(const FormData& form) {
-  for (const autofill::FormFieldData& field : form.fields) {
-    if (field.form_control_type == "password" && field.is_focusable)
-      return true;
-  }
-  return false;
-}
-
 #if !defined(OS_IOS)
 // Finds the matched form manager with id |form_renderer_id| in
 // |form_managers|.
@@ -447,13 +437,11 @@ void PasswordManager::OnDynamicFormSubmission(
 
   const PasswordForm* submitted_form = submitted_manager->GetSubmittedForm();
 
-  if (gaia::IsGaiaSignonRealm(GURL(submitted_form->signon_realm)) &&
-      !IsThereVisiblePasswordField(submitted_form->form_data)) {
-    // Gaia form without visible password fields is found.
-    // It might happen only when Password Manager autofilled a username
-    // (visible) and a password (invisible) fields. Then the user typed a new
-    // username. A page removed the form. As result a form is inconsistent - the
-    // username from one account, the password from another. Skip such form.
+  if (gaia::IsGaiaSignonRealm(GURL(submitted_form->signon_realm))) {
+    // The GAIA signon realm (i.e. https://accounts.google.com) will always
+    // perform a full page redirect once the user cleared the login flow. Thus
+    // don't respond to other JavaScript based signals that would result in
+    // false positives with regard to successful logins.
     return;
   }
 

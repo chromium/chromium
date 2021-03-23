@@ -1753,6 +1753,28 @@ TEST_P(PasswordManagerTest, SameDocumentNavigation) {
   form_manager_to_save->Save();
 }
 
+// This test ensures that the user does not get prompted for dynamic form
+// submissions on the GAIA signon realm. GAIA will always perform a full
+// redirect once the user clears the login challenge, so that other submission
+// detections will trigger eventually.
+TEST_P(PasswordManagerTest, DynamicFormSubmissionIgnoredForGaia) {
+  // Set-up a GAIA form and simulate the user typing into the form.
+  PasswordForm gaia_form = MakeSimpleGAIAForm();
+  std::vector<FormData> observed = {gaia_form.form_data};
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(gaia_form.url))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*store_, GetLogins)
+      .WillRepeatedly(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed, true);
+  manager()->OnInformAboutUserInput(&driver_, gaia_form.form_data);
+
+  // Trigger a dynamic form submission, ensure that the user does not see a
+  // prompt.
+  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr).Times(0);
+  manager()->OnDynamicFormSubmission(&driver_, gaia_form.submission_event);
+}
+
 TEST_P(PasswordManagerTest, SameDocumentBlockedSite) {
   // Test that observing a newly submitted form on blocked site does notify
   // the embedder on call in page navigation.
