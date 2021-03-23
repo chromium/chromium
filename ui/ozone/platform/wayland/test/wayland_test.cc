@@ -60,8 +60,7 @@ void WaylandTest::SetUp() {
 
   ASSERT_TRUE(server_.Start(GetParam()));
   ASSERT_TRUE(connection_->Initialize());
-  screen_ = connection_->wayland_output_manager()->CreateWaylandScreen(
-      connection_.get());
+  screen_ = connection_->wayland_output_manager()->CreateWaylandScreen();
   EXPECT_CALL(delegate_, OnAcceleratedWidgetAvailable(_))
       .WillOnce(SaveArg<0>(&widget_));
   PlatformWindowInitProperties properties;

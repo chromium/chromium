@@ -10,10 +10,12 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
+#include "ui/ozone/platform/wayland/host/wayland_window.h"
 
 namespace ui {
 
-WaylandOutputManager::WaylandOutputManager() = default;
+WaylandOutputManager::WaylandOutputManager(WaylandConnection* connection)
+    : connection_(connection) {}
 
 WaylandOutputManager::~WaylandOutputManager() = default;
 
@@ -56,9 +58,8 @@ void WaylandOutputManager::RemoveWaylandOutput(uint32_t output_id) {
   output_list_.erase(output_it);
 }
 
-std::unique_ptr<WaylandScreen> WaylandOutputManager::CreateWaylandScreen(
-    WaylandConnection* connection) {
-  auto wayland_screen = std::make_unique<WaylandScreen>(connection);
+std::unique_ptr<WaylandScreen> WaylandOutputManager::CreateWaylandScreen() {
+  auto wayland_screen = std::make_unique<WaylandScreen>(connection_);
   wayland_screen_ = wayland_screen->GetWeakPtr();
 
   // As long as |wl_output| sends geometry and other events asynchronously (that
@@ -86,6 +87,12 @@ WaylandOutput* WaylandOutputManager::GetOutput(uint32_t id) const {
   return output_it->get();
 }
 
+WaylandOutput* WaylandOutputManager::GetPrimaryOutput() const {
+  if (wayland_screen_)
+    return GetOutput(wayland_screen_->GetPrimaryDisplay().id());
+  return nullptr;
+}
+
 void WaylandOutputManager::OnOutputHandleMetrics(uint32_t output_id,
                                                  const gfx::Rect& new_bounds,
                                                  int32_t scale_factor) {
@@ -93,6 +100,9 @@ void WaylandOutputManager::OnOutputHandleMetrics(uint32_t output_id,
     wayland_screen_->OnOutputAddedOrUpdated(output_id, new_bounds,
                                             scale_factor);
   }
+  auto* wayland_window_manager = connection_->wayland_window_manager();
+  for (auto* window : wayland_window_manager->GetWindowsOnOutput(output_id))
+    window->UpdateBufferScale(true);
 }
 
 WaylandOutputManager::OutputList::const_iterator

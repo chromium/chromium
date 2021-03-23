@@ -87,32 +87,37 @@ void WaylandWindow::OnWindowLostCapture() {
 
 void WaylandWindow::UpdateBufferScale(bool update_bounds) {
   DCHECK(connection_->wayland_output_manager());
-  const auto* screen = connection_->wayland_output_manager()->wayland_screen();
 
-  // The client might not create screen at all.
-  if (!screen)
-    return;
-
-  int32_t new_scale = 0;
-  if (parent_window_) {
-    new_scale = parent_window_->buffer_scale();
-    ui_scale_ = parent_window_->ui_scale_;
-  } else {
-    const auto display = screen->GetDisplayForAcceleratedWidget(GetWidget());
-    new_scale = connection_->wayland_output_manager()
-                    ->GetOutput(display.id())
-                    ->scale_factor();
-
-    if (display::Display::HasForceDeviceScaleFactor())
-      ui_scale_ = display::Display::GetForcedDeviceScaleFactor();
-    else
-      ui_scale_ = display.device_scale_factor();
+  auto preferred_outputs_id = GetPreferredEnteredOutputId();
+  if (preferred_outputs_id == 0) {
+    // If non of the output are entered, use primary output. This is what
+    // WaylandScreen returns back to ScreenOzone.
+    auto* primary_output =
+        connection_->wayland_output_manager()->GetPrimaryOutput();
+    // We don't know our primary output - WaylandScreen hasn't been created
+    // yet.
+    if (!primary_output)
+      return;
+    preferred_outputs_id = primary_output->output_id();
   }
+
+  auto* output =
+      connection_->wayland_output_manager()->GetOutput(preferred_outputs_id);
+  // Sanity check. WaylandConnection always waits for at least one output to
+  // become ready. See WaylandConnection::Initialize.
+  DCHECK(output);
+  int32_t new_scale = output->scale_factor();
+  ui_scale_ = output->GetUIScaleFactor();
+
   int32_t old_scale = buffer_scale();
   root_surface_->SetBufferScale(new_scale, update_bounds);
   // We need to keep DIP size of the window the same whenever the scale changes.
   if (update_bounds)
     SetBoundsDip(gfx::ScaleToRoundedRect(bounds_px_, 1.0 / old_scale));
+
+  // Propagate update to the child windows
+  if (child_window_)
+    child_window_->UpdateBufferScale(update_bounds);
 }
 
 gfx::AcceleratedWidget WaylandWindow::GetWidget() const {

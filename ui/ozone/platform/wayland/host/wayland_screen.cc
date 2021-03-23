@@ -129,10 +129,6 @@ void WaylandScreen::AddOrUpdateDisplay(uint32_t output_id,
   }
 
   display_list_.AddOrUpdateDisplay(changed_display, type);
-
-  auto* wayland_window_manager = connection_->wayland_window_manager();
-  for (auto* window : wayland_window_manager->GetWindowsOnOutput(output_id))
-    window->UpdateBufferScale(true);
 }
 
 void WaylandScreen::OnTabletStateChanged(display::TabletState tablet_state) {

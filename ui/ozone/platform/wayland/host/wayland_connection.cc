@@ -382,7 +382,7 @@ void WaylandConnection::Global(void* data,
 
     if (!connection->wayland_output_manager_) {
       connection->wayland_output_manager_ =
-          std::make_unique<WaylandOutputManager>();
+          std::make_unique<WaylandOutputManager>(connection);
     }
     connection->wayland_output_manager_->AddWaylandOutput(name,
                                                           output.release());
