@@ -676,6 +676,8 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 
 // Called when the user tapped on the show/hide button near password.
 - (void)didTapShowHideButton:(UIButton*)buttonView {
+  [self.tableView deselectRowAtIndexPath:self.tableView.indexPathForSelectedRow
+                                animated:NO];
   if (self.isPasswordShown) {
     self.passwordShown = NO;
     self.passwordTextItem.textFieldValue = kMaskedPassword;
