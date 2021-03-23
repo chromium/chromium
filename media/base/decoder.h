@@ -44,15 +44,13 @@ enum class VideoDecoderType : int {
   kMediaCodec = 9,  // MediaCodecVideoDecoder (Android)
   kGav1 = 10,       // Gav1VideoDecoder
   kD3D11 = 11,      // D3D11VideoDecoder
-  kVaapi = 12,      // VaapiVideoDecodeAccelerator
+  kVaapi = 12,      // VaapiVideoDecoder
   kBroker = 13,     // VideoDecoderBroker (Webcodecs)
   kVda = 14,        // VDAVideoDecoder
+  // kChromeOs = 15,  // DEPRECATED, should be kVaapi or kV4L2 instead.
+  kV4L2 = 16,       // V4L2VideoDecoder
 
-  // Chromeos uses VideoDecoderPipeline. This could potentially become more
-  // granulated in the future.
-  kChromeOs = 15,
-
-  kTesting = 16,  // Never send this to UKM, for tests only.
+  kTesting = 17,  // Never send this to UKM, for tests only.
 
   // Keep this at the end and equal to the last entry.
   kMaxValue = kTesting

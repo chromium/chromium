@@ -142,7 +142,12 @@ void VideoDecoderPipeline::DestroyAsync(
 
 VideoDecoderType VideoDecoderPipeline::GetDecoderType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
-  return VideoDecoderType::kChromeOs;
+#if BUILDFLAG(USE_VAAPI)
+  return VideoDecoderType::kVaapi;
+#elif BUILDFLAG(USE_V4L2_CODEC)
+  return VideoDecoderType::kV4L2;
+#endif
+  return VideoDecoderType::kUnknown;
 }
 
 bool VideoDecoderPipeline::IsPlatformDecoder() const {

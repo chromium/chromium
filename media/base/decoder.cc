@@ -43,13 +43,13 @@ std::string GetDecoderName(VideoDecoderType type) {
     case VideoDecoderType::kD3D11:
       return "D3D11VideoDecoder";
     case VideoDecoderType::kVaapi:
-      return "VaapiVideoDecodeAccelerator";
+      return "VaapiVideoDecoder";
     case VideoDecoderType::kBroker:
       return "VideoDecoderBroker";
-    case VideoDecoderType::kChromeOs:
-      return "VideoDecoderPipeline (ChromeOs)";
     case VideoDecoderType::kVda:
-      return "VideoDecodeAccelerator";
+      return "VDAVideoDecoder";
+    case VideoDecoderType::kV4L2:
+      return "V4L2VideoDecoder";
     case VideoDecoderType::kTesting:
       return "Testing or Mock Video decoder";
     default:
