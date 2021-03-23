@@ -52,6 +52,8 @@ source_set("freetype_fuzzer_sources") {
     "$_src/targets/font-drivers/cidtype1-render.h",
     "$_src/targets/font-drivers/cidtype1.cpp",
     "$_src/targets/font-drivers/cidtype1.h",
+    "$_src/targets/font-drivers/colrv1.cpp",
+    "$_src/targets/font-drivers/colrv1.h",
     "$_src/targets/font-drivers/truetype-render-i35.cpp",
     "$_src/targets/font-drivers/truetype-render-i35.h",
     "$_src/targets/font-drivers/truetype-render-i38.cpp",
@@ -82,6 +84,8 @@ source_set("freetype_fuzzer_sources") {
     "$_src/visitors/facevisitor-charcodes.h",
     "$_src/visitors/facevisitor-cid.cpp",
     "$_src/visitors/facevisitor-cid.h",
+    "$_src/visitors/facevisitor-colrv1.cpp",
+    "$_src/visitors/facevisitor-colrv1.h",
     "$_src/visitors/facevisitor-gasp.cpp",
     "$_src/visitors/facevisitor-gasp.h",
     "$_src/visitors/facevisitor-kerning.cpp",
@@ -210,6 +214,12 @@ freetype_fuzzer_test("cidtype1_render") {
   driver_header = "font-drivers/cidtype1-render.h"
   libfuzzer_options = [ "max_len=30000" ]
   dict = "src/fuzzing/settings/oss-fuzz/type1.dict"
+}
+freetype_fuzzer_test("colrv1") {
+  corpus_name = "colrv1"
+  target_class = "freetype::ColrV1FuzzTarget"
+  driver_header = "font-drivers/colrv1.h"
+  libfuzzer_options = [ "max_len=120000" ]
 }
 freetype_fuzzer_test("truetype") {
   corpus_name = "truetype"
