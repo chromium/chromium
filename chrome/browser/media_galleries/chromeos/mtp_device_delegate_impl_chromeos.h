@@ -94,7 +94,7 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
                        CreateDirectorySuccessCallback success_callback,
                        ErrorCallback error_callback) override;
   void ReadDirectory(const base::FilePath& root,
-                     ReadDirectorySuccessCallback success_callback,
+                     const ReadDirectorySuccessCallback& success_callback,
                      ErrorCallback error_callback) override;
   void CreateSnapshotFile(const base::FilePath& device_file_path,
                           const base::FilePath& local_path,
@@ -152,9 +152,10 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
                                const bool exclusive,
                                CreateDirectorySuccessCallback success_callback,
                                ErrorCallback error_callback);
-  void ReadDirectoryInternal(const base::FilePath& root,
-                             ReadDirectorySuccessCallback success_callback,
-                             ErrorCallback error_callback);
+  void ReadDirectoryInternal(
+      const base::FilePath& root,
+      const ReadDirectorySuccessCallback& success_callback,
+      ErrorCallback error_callback);
   void CreateSnapshotFileInternal(
       const base::FilePath& device_file_path,
       const base::FilePath& local_path,
@@ -288,7 +289,7 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   // caller about the file error and process the next pending request.
   void OnDidGetFileInfoToReadDirectory(
       uint32_t dir_id,
-      ReadDirectorySuccessCallback success_callback,
+      const ReadDirectorySuccessCallback& success_callback,
       ErrorCallback error_callback,
       const base::File::Info& file_info);
 
@@ -346,7 +347,7 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   // |file_list| contains the directory file entries with their file ids.
   // |has_more| is true if there are more file entries to read.
   void OnDidReadDirectory(uint32_t dir_id,
-                          ReadDirectorySuccessCallback success_callback,
+                          const ReadDirectorySuccessCallback& success_callback,
                           const MTPDeviceTaskHelper::MTPEntries& mtp_entries,
                           bool has_more);
 

@@ -103,7 +103,7 @@ class MTPDeviceDelegateImplWin : public MTPDeviceAsyncDelegate {
                        CreateDirectorySuccessCallback success_callback,
                        ErrorCallback error_callback) override;
   void ReadDirectory(const base::FilePath& root,
-                     ReadDirectorySuccessCallback success_callback,
+                     const ReadDirectorySuccessCallback& success_callback,
                      ErrorCallback error_callback) override;
   void CreateSnapshotFile(const base::FilePath& device_file_path,
                           const base::FilePath& local_path,
@@ -198,7 +198,7 @@ class MTPDeviceDelegateImplWin : public MTPDeviceAsyncDelegate {
   //
   // If the ReadDirectory() fails, |file_list| is not set and |error_callback|
   // is invoked to notify the caller about the platform file |error|.
-  void OnDidReadDirectory(ReadDirectorySuccessCallback success_callback,
+  void OnDidReadDirectory(const ReadDirectorySuccessCallback& success_callback,
                           ErrorCallback error_callback,
                           storage::AsyncFileUtil::EntryList* file_list,
                           base::File::Error error);

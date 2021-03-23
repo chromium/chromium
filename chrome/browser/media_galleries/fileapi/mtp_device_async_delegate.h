@@ -38,8 +38,8 @@ class MTPDeviceAsyncDelegate {
 
   // A callback to be called when ReadDirectory method call succeeds.
   using ReadDirectorySuccessCallback =
-      base::OnceCallback<void(storage::AsyncFileUtil::EntryList file_list,
-                              bool has_more)>;
+      base::RepeatingCallback<void(storage::AsyncFileUtil::EntryList file_list,
+                                   bool has_more)>;
 
   // A callback to be called when GetFileInfo/ReadDirectory/CreateSnapshot
   // method call fails.
@@ -114,9 +114,10 @@ class MTPDeviceAsyncDelegate {
 
   // Enumerates the |root| directory contents and invokes the appropriate
   // callback asynchronously when complete.
-  virtual void ReadDirectory(const base::FilePath& root,
-                             ReadDirectorySuccessCallback success_callback,
-                             ErrorCallback error_callback) = 0;
+  virtual void ReadDirectory(
+      const base::FilePath& root,
+      const ReadDirectorySuccessCallback& success_callback,
+      ErrorCallback error_callback) = 0;
 
   // Copy the contents of |device_file_path| to |local_path|. Invokes the
   // appropriate callback asynchronously when complete.

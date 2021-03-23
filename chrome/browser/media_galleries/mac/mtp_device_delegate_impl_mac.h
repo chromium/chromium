@@ -47,7 +47,7 @@ class MTPDeviceDelegateImplMac : public MTPDeviceAsyncDelegate {
 
   // Note: passed absolute paths, but expects relative paths in reply.
   void ReadDirectory(const base::FilePath& root,
-                     ReadDirectorySuccessCallback success_callback,
+                     const ReadDirectorySuccessCallback& success_callback,
                      ErrorCallback error_callback) override;
 
   // Note: passed absolute paths.
@@ -123,7 +123,7 @@ class MTPDeviceDelegateImplMac : public MTPDeviceAsyncDelegate {
 
   // Delegate for ReadDirectory, called on the UI thread.
   void ReadDirectoryImpl(const base::FilePath& root,
-                         ReadDirectorySuccessCallback success_callback,
+                         const ReadDirectorySuccessCallback& success_callback,
                          ErrorCallback error_callback);
 
   // Delegate for CreateSnapshotFile, called on the UI thread.
@@ -176,7 +176,7 @@ class MTPDeviceDelegateImplMac : public MTPDeviceAsyncDelegate {
 
   struct ReadDirectoryRequest {
     ReadDirectoryRequest(const base::FilePath& dir,
-                         ReadDirectorySuccessCallback success_cb,
+                         const ReadDirectorySuccessCallback& success_cb,
                          ErrorCallback error_cb);
     ~ReadDirectoryRequest();
 

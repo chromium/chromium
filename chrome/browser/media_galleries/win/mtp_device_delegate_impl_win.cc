@@ -400,7 +400,7 @@ void MTPDeviceDelegateImplWin::CreateDirectory(
 
 void MTPDeviceDelegateImplWin::ReadDirectory(
     const base::FilePath& root,
-    ReadDirectorySuccessCallback success_callback,
+    const ReadDirectorySuccessCallback& success_callback,
     ErrorCallback error_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!root.empty());
@@ -411,9 +411,8 @@ void MTPDeviceDelegateImplWin::ReadDirectory(
       base::BindOnce(&ReadDirectoryOnBlockingPoolThread, storage_device_info_,
                      root, base::Unretained(entries)),
       base::BindOnce(&MTPDeviceDelegateImplWin::OnDidReadDirectory,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(success_callback), std::move(error_callback),
-                     base::Owned(entries))));
+                     weak_ptr_factory_.GetWeakPtr(), success_callback,
+                     std::move(error_callback), base::Owned(entries))));
 }
 
 void MTPDeviceDelegateImplWin::CreateSnapshotFile(
@@ -606,14 +605,14 @@ void MTPDeviceDelegateImplWin::OnGetFileInfo(
 }
 
 void MTPDeviceDelegateImplWin::OnDidReadDirectory(
-    ReadDirectorySuccessCallback success_callback,
+    const ReadDirectorySuccessCallback& success_callback,
     ErrorCallback error_callback,
     storage::AsyncFileUtil::EntryList* file_list,
     base::File::Error error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(file_list);
   if (error == base::File::FILE_OK)
-    std::move(success_callback).Run(*file_list, false /*no more entries*/);
+    success_callback.Run(*file_list, false /*no more entries*/);
   else
     std::move(error_callback).Run(error);
   task_in_progress_ = false;

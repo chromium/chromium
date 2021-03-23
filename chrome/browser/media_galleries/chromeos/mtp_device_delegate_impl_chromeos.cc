@@ -161,14 +161,14 @@ void ReadDirectoryOnUIThread(
     const std::string& storage_name,
     const bool read_only,
     const uint32_t directory_id,
-    MTPDeviceTaskHelper::ReadDirectorySuccessCallback success_callback,
+    const MTPDeviceTaskHelper::ReadDirectorySuccessCallback& success_callback,
     MTPDeviceTaskHelper::ErrorCallback error_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   MTPDeviceTaskHelper* task_helper =
       GetDeviceTaskHelperForStorage(storage_name, read_only);
   if (!task_helper)
     return;
-  task_helper->ReadDirectory(directory_id, std::move(success_callback),
+  task_helper->ReadDirectory(directory_id, success_callback,
                              std::move(error_callback));
 }
 
@@ -616,14 +616,14 @@ void MTPDeviceDelegateImplLinux::GetFileInfo(
 
 void MTPDeviceDelegateImplLinux::ReadDirectory(
     const base::FilePath& root,
-    ReadDirectorySuccessCallback success_callback,
+    const ReadDirectorySuccessCallback& success_callback,
     ErrorCallback error_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!root.empty());
   base::OnceClosure closure =
       base::BindOnce(&MTPDeviceDelegateImplLinux::ReadDirectoryInternal,
-                     weak_ptr_factory_.GetWeakPtr(), root,
-                     std::move(success_callback), std::move(error_callback));
+                     weak_ptr_factory_.GetWeakPtr(), root, success_callback,
+                     std::move(error_callback));
   EnsureInitAndRunTask(PendingTaskInfo(root, content::BrowserThread::IO,
                                        FROM_HERE, std::move(closure)));
 }
@@ -967,7 +967,7 @@ void MTPDeviceDelegateImplLinux::CreateDirectoryInternal(
 
 void MTPDeviceDelegateImplLinux::ReadDirectoryInternal(
     const base::FilePath& root,
-    ReadDirectorySuccessCallback success_callback,
+    const ReadDirectorySuccessCallback& success_callback,
     ErrorCallback error_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(task_in_progress_);
@@ -983,7 +983,7 @@ void MTPDeviceDelegateImplLinux::ReadDirectoryInternal(
 
   GetFileInfoSuccessCallback success_callback_wrapper = base::BindOnce(
       &MTPDeviceDelegateImplLinux::OnDidGetFileInfoToReadDirectory,
-      weak_ptr_factory_.GetWeakPtr(), *dir_id, std::move(success_callback),
+      weak_ptr_factory_.GetWeakPtr(), *dir_id, success_callback,
       repeating_error);
   ErrorCallback error_callback_wrapper =
       base::BindOnce(&MTPDeviceDelegateImplLinux::HandleDeviceFileError,
@@ -1469,7 +1469,7 @@ void MTPDeviceDelegateImplLinux::OnPathDoesNotExistForCreateSingleDirectory(
 
 void MTPDeviceDelegateImplLinux::OnDidGetFileInfoToReadDirectory(
     uint32_t dir_id,
-    ReadDirectorySuccessCallback success_callback,
+    const ReadDirectorySuccessCallback& success_callback,
     ErrorCallback error_callback,
     const base::File::Info& file_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
@@ -1483,7 +1483,7 @@ void MTPDeviceDelegateImplLinux::OnDidGetFileInfoToReadDirectory(
       &ReadDirectoryOnUIThread, storage_name_, read_only_, dir_id,
       base::BindRepeating(&MTPDeviceDelegateImplLinux::OnDidReadDirectory,
                           weak_ptr_factory_.GetWeakPtr(), dir_id,
-                          base::Passed(&success_callback)),
+                          success_callback),
       base::BindOnce(&MTPDeviceDelegateImplLinux::HandleDeviceFileError,
                      weak_ptr_factory_.GetWeakPtr(), std::move(error_callback),
                      dir_id));
@@ -1581,14 +1581,14 @@ void MTPDeviceDelegateImplLinux::OnDidCreateParentDirectoryToCreateDirectory(
   // Calls ReadDirectoryInternal to fill the cache for created directory.
   // Calls ReadDirectoryInternal in this method to call it via
   // EnsureInitAndRunTask.
-  ReadDirectorySuccessCallback success_callback_wrapper = base::BindOnce(
+  ReadDirectorySuccessCallback success_callback_wrapper = base::BindRepeating(
       &MTPDeviceDelegateImplLinux::OnDidReadDirectoryToCreateDirectory,
       weak_ptr_factory_.GetWeakPtr(), components, exclusive,
-      std::move(success_callback), repeating_error);
+      base::Passed(&success_callback), repeating_error);
   base::OnceClosure closure = base::BindOnce(
       &MTPDeviceDelegateImplLinux::ReadDirectoryInternal,
       weak_ptr_factory_.GetWeakPtr(), created_directory.DirName(),
-      std::move(success_callback_wrapper), repeating_error);
+      success_callback_wrapper, repeating_error);
   EnsureInitAndRunTask(PendingTaskInfo(base::FilePath(),
                                        content::BrowserThread::IO, FROM_HERE,
                                        std::move(closure)));
@@ -1604,7 +1604,7 @@ void MTPDeviceDelegateImplLinux::OnCreateParentDirectoryErrorToCreateDirectory(
 
 void MTPDeviceDelegateImplLinux::OnDidReadDirectory(
     uint32_t dir_id,
-    ReadDirectorySuccessCallback success_callback,
+    const ReadDirectorySuccessCallback& success_callback,
     const MTPDeviceTaskHelper::MTPEntries& mtp_entries,
     bool has_more) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
@@ -1641,7 +1641,7 @@ void MTPDeviceDelegateImplLinux::OnDidReadDirectory(
     file_info_cache_[dir_path.Append(entry.name)] = mtp_entry;
   }
 
-  std::move(success_callback).Run(file_list, has_more);
+  success_callback.Run(file_list, has_more);
   if (has_more)
     return;  // Wait to be called again.
 
@@ -1893,8 +1893,8 @@ void MTPDeviceDelegateImplLinux::FillFileCache(
   DCHECK(task_in_progress_);
 
   ReadDirectorySuccessCallback success_callback =
-      base::BindOnce(&MTPDeviceDelegateImplLinux::OnDidFillFileCache,
-                     weak_ptr_factory_.GetWeakPtr(), uncached_path);
+      base::BindRepeating(&MTPDeviceDelegateImplLinux::OnDidFillFileCache,
+                          weak_ptr_factory_.GetWeakPtr(), uncached_path);
   ErrorCallback error_callback =
       base::BindOnce(&MTPDeviceDelegateImplLinux::OnFillFileCacheFailed,
                      weak_ptr_factory_.GetWeakPtr());
