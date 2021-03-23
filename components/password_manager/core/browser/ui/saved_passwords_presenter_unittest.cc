@@ -132,7 +132,7 @@ TEST_F(SavedPasswordsPresenterTest, EditPassword) {
   // set it here too.
   form.in_store = PasswordForm::Store::kProfileStore;
 
-  const std::u16string new_password = base::ASCIIToUTF16("new_password");
+  const std::u16string new_password = u"new_password";
   PasswordForm updated = form;
   updated.password_value = new_password;
 
@@ -146,7 +146,7 @@ TEST_F(SavedPasswordsPresenterTest, EditPassword) {
 
   // Verify that editing a password that does not exist does not triggers
   // notifications.
-  form.username_value = base::ASCIIToUTF16("another_username");
+  form.username_value = u"another_username";
   EXPECT_CALL(observer, OnEdited).Times(0);
   EXPECT_CALL(observer, OnSavedPasswordsChanged).Times(0);
   EXPECT_FALSE(presenter().EditPassword(form, new_password));
@@ -158,8 +158,8 @@ TEST_F(SavedPasswordsPresenterTest, EditPassword) {
 TEST_F(SavedPasswordsPresenterTest, EditOnlyUsername) {
   PasswordForm form;
   form.signon_realm = "https://example.com";
-  form.username_value = base::ASCIIToUTF16("test@gmail.com");
-  form.password_value = base::ASCIIToUTF16("password");
+  form.username_value = u"test@gmail.com";
+  form.password_value = u"password";
   form.in_store = PasswordForm::Store::kProfileStore;
 
   StrictMockSavedPasswordsPresenterObserver observer;
@@ -172,7 +172,7 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyUsername) {
 
   std::vector<PasswordForm> forms = {form};
 
-  const std::u16string new_username = base::ASCIIToUTF16("new_username");
+  const std::u16string new_username = u"new_username";
   PasswordForm updated_username = form;
   updated_username.username_value = new_username;
 
@@ -198,8 +198,8 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyUsername) {
 TEST_F(SavedPasswordsPresenterTest, EditOnlyPassword) {
   PasswordForm form;
   form.signon_realm = "https://example.com";
-  form.username_value = base::ASCIIToUTF16("test@gmail.com");
-  form.password_value = base::ASCIIToUTF16("password");
+  form.username_value = u"test@gmail.com";
+  form.password_value = u"password";
   form.in_store = PasswordForm::Store::kProfileStore;
 
   StrictMockSavedPasswordsPresenterObserver observer;
@@ -212,7 +212,7 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyPassword) {
 
   std::vector<PasswordForm> forms = {form};
 
-  const std::u16string new_password = base::ASCIIToUTF16("new_password");
+  const std::u16string new_password = u"new_password";
   PasswordForm updated_password = form;
   updated_password.password_value = new_password;
 
@@ -236,8 +236,8 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyPassword) {
 TEST_F(SavedPasswordsPresenterTest, EditUsernameAndPassword) {
   PasswordForm form;
   form.signon_realm = "https://example.com";
-  form.username_value = base::ASCIIToUTF16("test@gmail.com");
-  form.password_value = base::ASCIIToUTF16("password");
+  form.username_value = u"test@gmail.com";
+  form.password_value = u"password";
   form.in_store = PasswordForm::Store::kProfileStore;
 
   StrictMockSavedPasswordsPresenterObserver observer;
@@ -250,8 +250,8 @@ TEST_F(SavedPasswordsPresenterTest, EditUsernameAndPassword) {
 
   std::vector<PasswordForm> forms = {form};
 
-  const std::u16string new_username = base::ASCIIToUTF16("new_username");
-  const std::u16string new_password = base::ASCIIToUTF16("new_password");
+  const std::u16string new_username = u"new_username";
+  const std::u16string new_password = u"new_password";
 
   PasswordForm updated_both = form;
   updated_both.username_value = new_username;
@@ -276,14 +276,14 @@ TEST_F(SavedPasswordsPresenterTest, EditUsernameAndPassword) {
 TEST_F(SavedPasswordsPresenterTest, EditPasswordFails) {
   PasswordForm form1;
   form1.signon_realm = "https://example.com";
-  form1.username_value = base::ASCIIToUTF16("test1@gmail.com");
-  form1.password_value = base::ASCIIToUTF16("password");
+  form1.username_value = u"test1@gmail.com";
+  form1.password_value = u"password";
   form1.in_store = PasswordForm::Store::kProfileStore;
 
   PasswordForm form2;
   form2.signon_realm = "https://example.com";
-  form2.username_value = base::ASCIIToUTF16("test2@gmail.com");
-  form2.password_value = base::ASCIIToUTF16("password");
+  form2.username_value = u"test2@gmail.com";
+  form2.password_value = u"password";
   form2.in_store = PasswordForm::Store::kProfileStore;
 
   store().AddLogin(form1);
@@ -295,7 +295,7 @@ TEST_F(SavedPasswordsPresenterTest, EditPasswordFails) {
 
   // Updating the form with the username which is already used for same website
   // fails.
-  const std::u16string new_username = base::ASCIIToUTF16("test2@gmail.com");
+  const std::u16string new_username = u"test2@gmail.com";
   EXPECT_FALSE(presenter().EditSavedPasswords(forms, new_username,
                                               form1.password_value));
   RunUntilIdle();
@@ -313,8 +313,8 @@ TEST_F(SavedPasswordsPresenterTest, EditPasswordFails) {
 TEST_F(SavedPasswordsPresenterTest, EditPasswordWithoutChanges) {
   PasswordForm form;
   form.signon_realm = "https://example.com";
-  form.username_value = base::ASCIIToUTF16("test1@gmail.com");
-  form.password_value = base::ASCIIToUTF16("password");
+  form.username_value = u"test1@gmail.com";
+  form.password_value = u"password";
   form.in_store = PasswordForm::Store::kProfileStore;
 
   store().AddLogin(form);
@@ -422,17 +422,17 @@ class SavedPasswordsPresenterWithTwoStoresTest : public ::testing::Test {
 // observers with credentials in both stores.
 TEST_F(SavedPasswordsPresenterWithTwoStoresTest, AddCredentialsToBothStores) {
   PasswordForm profile_store_form;
-  profile_store_form.username_value = base::ASCIIToUTF16("profile@gmail.com");
-  profile_store_form.password_value = base::ASCIIToUTF16("profile_pass");
+  profile_store_form.username_value = u"profile@gmail.com";
+  profile_store_form.password_value = u"profile_pass";
   profile_store_form.in_store = PasswordForm::Store::kProfileStore;
 
   PasswordForm account_store_form1;
-  account_store_form1.username_value = base::ASCIIToUTF16("account@gmail.com");
-  account_store_form1.password_value = base::ASCIIToUTF16("account_pass");
+  account_store_form1.username_value = u"account@gmail.com";
+  account_store_form1.password_value = u"account_pass";
   account_store_form1.in_store = PasswordForm::Store::kAccountStore;
 
   PasswordForm account_store_form2 = account_store_form1;
-  account_store_form2.username_value = base::ASCIIToUTF16("account2@gmail.com");
+  account_store_form2.username_value = u"account2@gmail.com";
 
   StrictMockSavedPasswordsPresenterObserver observer;
   presenter().AddObserver(&observer);
@@ -472,13 +472,13 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest, AddCredentialsToBothStores) {
 // same domain.
 TEST_F(SavedPasswordsPresenterWithTwoStoresTest, EditUsername) {
   PasswordForm profile_store_form;
-  profile_store_form.username_value = base::ASCIIToUTF16("profile@gmail.com");
-  profile_store_form.password_value = base::ASCIIToUTF16("profile_pass");
+  profile_store_form.username_value = u"profile@gmail.com";
+  profile_store_form.password_value = u"profile_pass";
   profile_store_form.in_store = PasswordForm::Store::kProfileStore;
 
   PasswordForm account_store_form;
-  account_store_form.username_value = base::ASCIIToUTF16("account@gmail.com");
-  account_store_form.password_value = base::ASCIIToUTF16("account_pass");
+  account_store_form.username_value = u"account@gmail.com";
+  account_store_form.password_value = u"account_pass";
   account_store_form.in_store = PasswordForm::Store::kAccountStore;
 
   profile_store().AddLogin(profile_store_form);

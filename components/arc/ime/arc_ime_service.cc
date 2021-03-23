@@ -486,12 +486,12 @@ void ArcImeService::InsertChar(const ui::KeyEvent& event) {
   if (!HasModifier(&event) && !ShouldEnableKeyEventForwarding()) {
     if (event.key_code() ==  ui::VKEY_RETURN) {
       has_composition_text_ = false;
-      ime_bridge_->SendInsertText(base::ASCIIToUTF16("\n"));
+      ime_bridge_->SendInsertText(u"\n");
       return;
     }
     if (event.key_code() ==  ui::VKEY_BACK) {
       has_composition_text_ = false;
-      ime_bridge_->SendInsertText(base::ASCIIToUTF16("\b"));
+      ime_bridge_->SendInsertText(u"\b");
       return;
     }
   }

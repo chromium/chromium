@@ -1083,7 +1083,7 @@ TEST(PasswordFormMetricsRecorder, FillingAssistanceBlocklistedBySmartBubble) {
                   {.value = "password1", .is_password = true}},
        .saved_usernames = {},
        .saved_passwords = {},
-       .interactions_stats = {{.username_value = ASCIIToUTF16("user1"),
+       .interactions_stats = {{.username_value = u"user1",
                                .dismissal_count = 10}},
        .expectation = PasswordFormMetricsRecorder::FillingAssistance::
            kNoSavedCredentialsAndBlocklistedBySmartBubble});

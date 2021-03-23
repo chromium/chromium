@@ -340,7 +340,7 @@ TEST_F(ZeroSuggestProviderTest, TypeOfResultToRunForContextualWeb) {
 TEST_F(ZeroSuggestProviderTest, TestDoesNotReturnMatchesForPrefix) {
   // Use NTP because REMOTE_NO_URL is enabled by default for NTP.
   AutocompleteInput prefix_input(
-      base::ASCIIToUTF16("foobar input"),
+      u"foobar input",
       metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
       TestSchemeClassifier());
 
@@ -436,9 +436,9 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResults) {
   if (base::FeatureList::IsEnabled(omnibox::kOmniboxZeroSuggestCaching)) {
     // Expect that matches get populated synchronously out of the cache.
     ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
-    EXPECT_EQ(base::ASCIIToUTF16("search1"), provider_->matches()[0].contents);
-    EXPECT_EQ(base::ASCIIToUTF16("search2"), provider_->matches()[1].contents);
-    EXPECT_EQ(base::ASCIIToUTF16("search3"), provider_->matches()[2].contents);
+    EXPECT_EQ(u"search1", provider_->matches()[0].contents);
+    EXPECT_EQ(u"search2", provider_->matches()[1].contents);
+    EXPECT_EQ(u"search3", provider_->matches()[2].contents);
   }
 
   GURL suggest_url = GetSuggestURL(
@@ -454,9 +454,9 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResults) {
   if (base::FeatureList::IsEnabled(omnibox::kOmniboxZeroSuggestCaching)) {
     // Expect the same results after the response has been handled.
     ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
-    EXPECT_EQ(base::ASCIIToUTF16("search1"), provider_->matches()[0].contents);
-    EXPECT_EQ(base::ASCIIToUTF16("search2"), provider_->matches()[1].contents);
-    EXPECT_EQ(base::ASCIIToUTF16("search3"), provider_->matches()[2].contents);
+    EXPECT_EQ(u"search1", provider_->matches()[0].contents);
+    EXPECT_EQ(u"search2", provider_->matches()[1].contents);
+    EXPECT_EQ(u"search3", provider_->matches()[2].contents);
 
     // Expect the new results have been stored.
     EXPECT_EQ(json_response2,
@@ -464,9 +464,9 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResults) {
   } else {
     // Expect fresh results after the response has been handled.
     ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
-    EXPECT_EQ(base::ASCIIToUTF16("search4"), provider_->matches()[0].contents);
-    EXPECT_EQ(base::ASCIIToUTF16("search5"), provider_->matches()[1].contents);
-    EXPECT_EQ(base::ASCIIToUTF16("search6"), provider_->matches()[2].contents);
+    EXPECT_EQ(u"search4", provider_->matches()[0].contents);
+    EXPECT_EQ(u"search5", provider_->matches()[1].contents);
+    EXPECT_EQ(u"search6", provider_->matches()[2].contents);
   }
 }
 
@@ -489,9 +489,9 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestReceivedEmptyResults) {
   if (base::FeatureList::IsEnabled(omnibox::kOmniboxZeroSuggestCaching)) {
     // Expect that matches get populated synchronously out of the cache.
     ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
-    EXPECT_EQ(base::ASCIIToUTF16("search1"), provider_->matches()[0].contents);
-    EXPECT_EQ(base::ASCIIToUTF16("search2"), provider_->matches()[1].contents);
-    EXPECT_EQ(base::ASCIIToUTF16("search3"), provider_->matches()[2].contents);
+    EXPECT_EQ(u"search1", provider_->matches()[0].contents);
+    EXPECT_EQ(u"search2", provider_->matches()[1].contents);
+    EXPECT_EQ(u"search3", provider_->matches()[2].contents);
   } else {
     ASSERT_TRUE(provider_->matches().empty());
   }

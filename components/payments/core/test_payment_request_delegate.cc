@@ -53,7 +53,7 @@ void TestPaymentRequestDelegate::DoFullCardRequest(
         result_delegate) {
   if (instantaneous_full_card_request_result_) {
     result_delegate->OnFullCardRequestSucceeded(full_card_request_, credit_card,
-                                                base::ASCIIToUTF16("123"));
+                                                u"123");
     return;
   }
 
@@ -86,7 +86,7 @@ void TestPaymentRequestDelegate::DelayFullCardRequestCompletion() {
 void TestPaymentRequestDelegate::CompleteFullCardRequest() {
   DCHECK(instantaneous_full_card_request_result_ == false);
   full_card_result_delegate_->OnFullCardRequestSucceeded(
-      full_card_request_, full_card_request_card_, base::ASCIIToUTF16("123"));
+      full_card_request_, full_card_request_card_, u"123");
 }
 
 std::string TestPaymentRequestDelegate::GetAuthenticatedEmail() const {

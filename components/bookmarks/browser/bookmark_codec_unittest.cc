@@ -335,10 +335,8 @@ TEST_F(BookmarkCodecTest, ChecksumManualEditIDsTest) {
 
   // add a few extra nodes to bookmark model and make sure IDs are still uniuqe.
   const BookmarkNode* bb_node = decoded_model->bookmark_bar_node();
-  decoded_model->AddURL(
-      bb_node, 0, ASCIIToUTF16("new url1"), GURL("http://newurl1.com"));
-  decoded_model->AddURL(
-      bb_node, 0, ASCIIToUTF16("new url2"), GURL("http://newurl2.com"));
+  decoded_model->AddURL(bb_node, 0, u"new url1", GURL("http://newurl1.com"));
+  decoded_model->AddURL(bb_node, 0, u"new url2", GURL("http://newurl2.com"));
 
   ExpectIDsUnique(decoded_model.get());
 }
@@ -402,24 +400,24 @@ TEST_F(BookmarkCodecTest, CanDecodeModelWithoutMobileBookmarks) {
 
   const BookmarkNode* child = bbn->children().front().get();
   EXPECT_EQ(BookmarkNode::FOLDER, child->type());
-  EXPECT_EQ(ASCIIToUTF16("Folder A"), child->GetTitle());
+  EXPECT_EQ(u"Folder A", child->GetTitle());
   ASSERT_EQ(1u, child->children().size());
 
   child = child->children().front().get();
   EXPECT_EQ(BookmarkNode::URL, child->type());
-  EXPECT_EQ(ASCIIToUTF16("Bookmark Manager"), child->GetTitle());
+  EXPECT_EQ(u"Bookmark Manager", child->GetTitle());
 
   const BookmarkNode* other = decoded_model->other_node();
   ASSERT_EQ(1u, other->children().size());
 
   child = other->children().front().get();
   EXPECT_EQ(BookmarkNode::FOLDER, child->type());
-  EXPECT_EQ(ASCIIToUTF16("Folder B"), child->GetTitle());
+  EXPECT_EQ(u"Folder B", child->GetTitle());
   ASSERT_EQ(1u, child->children().size());
 
   child = child->children().front().get();
   EXPECT_EQ(BookmarkNode::URL, child->type());
-  EXPECT_EQ(ASCIIToUTF16("Get started with Google Chrome"), child->GetTitle());
+  EXPECT_EQ(u"Get started with Google Chrome", child->GetTitle());
 
   ASSERT_TRUE(decoded_model->mobile_node() != nullptr);
 }

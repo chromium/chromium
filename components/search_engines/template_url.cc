@@ -1604,8 +1604,7 @@ GURL TemplateURL::GenerateSearchURL(
   // TODO(jnd): Add additional parameters to get post data when the search URL
   // has post parameters.
   return GURL(url_ref().ReplaceSearchTerms(
-      TemplateURLRef::SearchTermsArgs(
-          base::ASCIIToUTF16("blah.blah.blah.blah.blah")),
+      TemplateURLRef::SearchTermsArgs(u"blah.blah.blah.blah.blah"),
       search_terms_data, nullptr));
 }
 

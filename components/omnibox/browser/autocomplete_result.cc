@@ -323,12 +323,11 @@ void AutocompleteResult::SortAndCull(
   auto* default_match = this->default_match();
   if (default_match && default_match->destination_url.is_valid()) {
     const std::u16string debug_info =
-        base::ASCIIToUTF16("fill_into_edit=") + default_match->fill_into_edit +
-        base::ASCIIToUTF16(", provider=") +
+        u"fill_into_edit=" + default_match->fill_into_edit + u", provider=" +
         ((default_match->provider != nullptr)
              ? base::ASCIIToUTF16(default_match->provider->GetName())
              : std::u16string()) +
-        base::ASCIIToUTF16(", input=") + input.text();
+        u", input=" + input.text();
 
     if (AutocompleteMatch::IsSearchType(default_match->type)) {
       // We shouldn't get query matches for URL inputs.

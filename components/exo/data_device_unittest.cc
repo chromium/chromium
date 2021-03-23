@@ -131,7 +131,7 @@ class DataDeviceTest : public test::ExoTestBase {
     test::ExoTestBase::SetUp();
     seat_ = std::make_unique<TestSeat>();
     device_ = std::make_unique<DataDevice>(&delegate_, seat_.get());
-    data_.SetString(std::u16string(base::ASCIIToUTF16("Test data")));
+    data_.SetString(std::u16string(u"Test data"));
     surface_ = std::make_unique<Surface>();
   }
 

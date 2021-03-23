@@ -111,7 +111,7 @@ blink::Manifest BuildDefaultManifest() {
   manifest.display = kDefaultManifestDisplayMode;
 
   blink::Manifest::ImageResource primary_icon;
-  primary_icon.type = base::ASCIIToUTF16("image/png");
+  primary_icon.type = u"image/png";
   primary_icon.sizes.push_back(gfx::Size(144, 144));
   primary_icon.purpose.push_back(
       blink::mojom::ManifestImageResource_Purpose::ANY);

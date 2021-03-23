@@ -569,12 +569,12 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Deletion) {
           default_search_provider()->id(),
           GetLocalHistoryZeroSuggestAgeThreshold());
   EXPECT_EQ(1U, visits.size());
-  EXPECT_EQ(base::ASCIIToUTF16("not to be deleted"), visits[0].normalized_term);
+  EXPECT_EQ(u"not to be deleted", visits[0].normalized_term);
 
   // Make sure search terms from other search providers that would produce the
   // deleted match are not deleted.
   visits = url_db->GetMostRecentNormalizedKeywordSearchTerms(
       other_search_provider->id(), GetLocalHistoryZeroSuggestAgeThreshold());
   EXPECT_EQ(1U, visits.size());
-  EXPECT_EQ(base::ASCIIToUTF16("hello world"), visits[0].normalized_term);
+  EXPECT_EQ(u"hello world", visits[0].normalized_term);
 }

@@ -26,13 +26,13 @@ class InstallableManagerUnitTest : public testing::Test {
  protected:
   static blink::Manifest GetValidManifest() {
     blink::Manifest manifest;
-    manifest.name = base::ASCIIToUTF16("foo");
-    manifest.short_name = base::ASCIIToUTF16("bar");
+    manifest.name = u"foo";
+    manifest.short_name = u"bar";
     manifest.start_url = GURL("http://example.com");
     manifest.display = blink::mojom::DisplayMode::kStandalone;
 
     blink::Manifest::ImageResource primary_icon;
-    primary_icon.type = base::ASCIIToUTF16("image/png");
+    primary_icon.type = u"image/png";
     primary_icon.sizes.push_back(gfx::Size(144, 144));
     primary_icon.purpose.push_back(IconPurpose::ANY);
     manifest.icons.push_back(primary_icon);
@@ -77,7 +77,7 @@ TEST_F(InstallableManagerUnitTest, ManifestRequiresNameOrShortName) {
   EXPECT_TRUE(IsManifestValid(manifest));
   EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
 
-  manifest.name = base::ASCIIToUTF16("foo");
+  manifest.name = u"foo";
   manifest.short_name = base::nullopt;
   EXPECT_TRUE(IsManifestValid(manifest));
   EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
@@ -94,7 +94,7 @@ TEST_F(InstallableManagerUnitTest, ManifestRequiresNonEmptyNameORShortName) {
   EXPECT_TRUE(IsManifestValid(manifest));
   EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
 
-  manifest.name = base::ASCIIToUTF16("foo");
+  manifest.name = u"foo";
   manifest.short_name = std::u16string();
   EXPECT_TRUE(IsManifestValid(manifest));
   EXPECT_EQ(NO_ERROR_DETECTED, GetErrorCode());
@@ -119,7 +119,7 @@ TEST_F(InstallableManagerUnitTest, ManifestRequiresValidStartURL) {
 TEST_F(InstallableManagerUnitTest, ManifestSupportsImagePNG) {
   blink::Manifest manifest = GetValidManifest();
 
-  manifest.icons[0].type = base::ASCIIToUTF16("image/gif");
+  manifest.icons[0].type = u"image/gif";
   EXPECT_FALSE(IsManifestValid(manifest));
   EXPECT_EQ(MANIFEST_MISSING_SUITABLE_ICON, GetErrorCode());
 
@@ -147,7 +147,7 @@ TEST_F(InstallableManagerUnitTest, ManifestSupportsImageSVG) {
   blink::Manifest manifest = GetValidManifest();
 
   // The correct mimetype is image/svg+xml.
-  manifest.icons[0].type = base::ASCIIToUTF16("image/svg");
+  manifest.icons[0].type = u"image/svg";
   EXPECT_FALSE(IsManifestValid(manifest));
   EXPECT_EQ(MANIFEST_MISSING_SUITABLE_ICON, GetErrorCode());
 
@@ -178,7 +178,7 @@ TEST_F(InstallableManagerUnitTest, ManifestSupportsImageSVG) {
 TEST_F(InstallableManagerUnitTest, ManifestSupportsImageWebP) {
   blink::Manifest manifest = GetValidManifest();
 
-  manifest.icons[0].type = base::ASCIIToUTF16("image/webp");
+  manifest.icons[0].type = u"image/webp";
   manifest.icons[0].src = GURL("http://example.com/");
 // TODO(https://crbug.com/466958): Add WebP support for Android.
 #if defined(OS_ANDROID)

@@ -1123,7 +1123,7 @@ TEST_F(SpellCheckTest, RequestSpellCheckWithEmptyString) {
 TEST_F(SpellCheckTest, RequestSpellCheckWithoutMisspelling) {
   MockTextCheckingResult completion;
 
-  const std::u16string text = base::ASCIIToUTF16("hello");
+  const std::u16string text = u"hello";
   spell_check()->RequestTextChecking(
       text, std::make_unique<MockTextCheckingCompletion>(&completion));
 
@@ -1136,7 +1136,7 @@ TEST_F(SpellCheckTest, RequestSpellCheckWithoutMisspelling) {
 TEST_F(SpellCheckTest, RequestSpellCheckWithSingleMisspelling) {
   MockTextCheckingResult completion;
 
-  const std::u16string text = base::ASCIIToUTF16("apple, zz");
+  const std::u16string text = u"apple, zz";
   spell_check()->RequestTextChecking(
       text, std::make_unique<MockTextCheckingCompletion>(&completion));
 
@@ -1152,7 +1152,7 @@ TEST_F(SpellCheckTest, RequestSpellCheckWithSingleMisspelling) {
 TEST_F(SpellCheckTest, RequestSpellCheckWithMisspellings) {
   MockTextCheckingResult completion;
 
-  const std::u16string text = base::ASCIIToUTF16("apple, zz, orange, zz");
+  const std::u16string text = u"apple, zz, orange, zz";
   spell_check()->RequestTextChecking(
       text, std::make_unique<MockTextCheckingCompletion>(&completion));
 
@@ -1171,9 +1171,7 @@ TEST_F(SpellCheckTest, RequestSpellCheckWithMisspellings) {
 TEST_F(SpellCheckTest, RequestSpellCheckWithMultipleRequests) {
   MockTextCheckingResult completion[3];
 
-  const std::u16string text[3] = {base::ASCIIToUTF16("what, zz"),
-                                  base::ASCIIToUTF16("apple, zz"),
-                                  base::ASCIIToUTF16("orange, zz")};
+  const std::u16string text[3] = {u"what, zz", u"apple, zz", u"orange, zz"};
 
   for (int i = 0; i < 3; ++i)
     spell_check()->RequestTextChecking(
@@ -1195,7 +1193,7 @@ TEST_F(SpellCheckTest, RequestSpellCheckWithoutInitialization) {
   UninitializeSpellCheck();
 
   MockTextCheckingResult completion;
-  const std::u16string text = base::ASCIIToUTF16("zz");
+  const std::u16string text = u"zz";
 
   spell_check()->RequestTextChecking(
       text, std::make_unique<MockTextCheckingCompletion>(&completion));
@@ -1211,9 +1209,7 @@ TEST_F(SpellCheckTest, RequestSpellCheckMultipleTimesWithoutInitialization) {
   UninitializeSpellCheck();
 
   MockTextCheckingResult completion[3];
-  const std::u16string text[3] = {base::ASCIIToUTF16("what, zz"),
-                                  base::ASCIIToUTF16("apple, zz"),
-                                  base::ASCIIToUTF16("orange, zz")};
+  const std::u16string text[3] = {u"what, zz", u"apple, zz", u"orange, zz"};
 
   // Calls RequestTextchecking a few times.
   for (int i = 0; i < 3; ++i)
@@ -1243,7 +1239,7 @@ TEST_F(SpellCheckTest, RequestSpellCheckMultipleTimesWithoutInitialization) {
 // Verify that the SpellCheck class keeps the spelling marker added to a
 // misspelled word "zz".
 TEST_F(SpellCheckTest, CreateTextCheckingResultsKeepsMarkers) {
-  std::u16string text = base::ASCIIToUTF16("zz");
+  std::u16string text = u"zz";
   std::vector<SpellCheckResult> spellcheck_results;
   spellcheck_results.push_back(
       SpellCheckResult(SpellCheckResult::SPELLING, 0, 2, std::u16string()));
@@ -1261,7 +1257,7 @@ TEST_F(SpellCheckTest, CreateTextCheckingResultsKeepsMarkers) {
 // Verify that the SpellCheck class replaces the spelling marker added to a
 // contextually-misspelled word "bean" with a grammar marker.
 TEST_F(SpellCheckTest, CreateTextCheckingResultsAddsGrammarMarkers) {
-  std::u16string text = base::ASCIIToUTF16("I have bean to USA.");
+  std::u16string text = u"I have bean to USA.";
   std::vector<SpellCheckResult> spellcheck_results;
   spellcheck_results.push_back(
       SpellCheckResult(SpellCheckResult::SPELLING, 7, 4, std::u16string()));
@@ -1585,11 +1581,11 @@ TEST_F(SpellCheckTest, FillSuggestions_OneLanguageFewSuggestions) {
   std::vector<std::u16string> suggestion_results;
 
   suggestions_list.resize(1);
-  suggestions_list[0].push_back(base::ASCIIToUTF16("foo"));
+  suggestions_list[0].push_back(u"foo");
 
   FillSuggestions(suggestions_list, &suggestion_results);
   ASSERT_EQ(1U, suggestion_results.size());
-  EXPECT_EQ(base::ASCIIToUTF16("foo"), suggestion_results[0]);
+  EXPECT_EQ(u"foo", suggestion_results[0]);
 }
 
 TEST_F(SpellCheckTest, FillSuggestions_OneLanguageManySuggestions) {
@@ -1614,16 +1610,16 @@ TEST_F(SpellCheckTest, FillSuggestions_RemoveDuplicates) {
 
   suggestions_list.resize(2);
   for (size_t i = 0; i < 2; ++i) {
-    suggestions_list[i].push_back(base::ASCIIToUTF16("foo"));
-    suggestions_list[i].push_back(base::ASCIIToUTF16("bar"));
-    suggestions_list[i].push_back(base::ASCIIToUTF16("baz"));
+    suggestions_list[i].push_back(u"foo");
+    suggestions_list[i].push_back(u"bar");
+    suggestions_list[i].push_back(u"baz");
   }
 
   FillSuggestions(suggestions_list, &suggestion_results);
   ASSERT_EQ(3U, suggestion_results.size());
-  EXPECT_EQ(base::ASCIIToUTF16("foo"), suggestion_results[0]);
-  EXPECT_EQ(base::ASCIIToUTF16("bar"), suggestion_results[1]);
-  EXPECT_EQ(base::ASCIIToUTF16("baz"), suggestion_results[2]);
+  EXPECT_EQ(u"foo", suggestion_results[0]);
+  EXPECT_EQ(u"bar", suggestion_results[1]);
+  EXPECT_EQ(u"baz", suggestion_results[2]);
 }
 
 TEST_F(SpellCheckTest, FillSuggestions_TwoLanguages) {
@@ -1643,11 +1639,11 @@ TEST_F(SpellCheckTest, FillSuggestions_TwoLanguages) {
   ASSERT_EQ(5, spellcheck::kMaxSuggestions);
   FillSuggestions(suggestions_list, &suggestion_results);
   ASSERT_EQ(5U, suggestion_results.size());
-  EXPECT_EQ(base::ASCIIToUTF16("0foo"), suggestion_results[0]);
-  EXPECT_EQ(base::ASCIIToUTF16("1foo"), suggestion_results[1]);
-  EXPECT_EQ(base::ASCIIToUTF16("0bar"), suggestion_results[2]);
-  EXPECT_EQ(base::ASCIIToUTF16("1bar"), suggestion_results[3]);
-  EXPECT_EQ(base::ASCIIToUTF16("0baz"), suggestion_results[4]);
+  EXPECT_EQ(u"0foo", suggestion_results[0]);
+  EXPECT_EQ(u"1foo", suggestion_results[1]);
+  EXPECT_EQ(u"0bar", suggestion_results[2]);
+  EXPECT_EQ(u"1bar", suggestion_results[3]);
+  EXPECT_EQ(u"0baz", suggestion_results[4]);
 }
 
 TEST_F(SpellCheckTest, FillSuggestions_ThreeLanguages) {
@@ -1667,9 +1663,9 @@ TEST_F(SpellCheckTest, FillSuggestions_ThreeLanguages) {
   ASSERT_EQ(5, spellcheck::kMaxSuggestions);
   FillSuggestions(suggestions_list, &suggestion_results);
   ASSERT_EQ(5U, suggestion_results.size());
-  EXPECT_EQ(base::ASCIIToUTF16("0foo"), suggestion_results[0]);
-  EXPECT_EQ(base::ASCIIToUTF16("1foo"), suggestion_results[1]);
-  EXPECT_EQ(base::ASCIIToUTF16("2foo"), suggestion_results[2]);
-  EXPECT_EQ(base::ASCIIToUTF16("0bar"), suggestion_results[3]);
-  EXPECT_EQ(base::ASCIIToUTF16("1bar"), suggestion_results[4]);
+  EXPECT_EQ(u"0foo", suggestion_results[0]);
+  EXPECT_EQ(u"1foo", suggestion_results[1]);
+  EXPECT_EQ(u"2foo", suggestion_results[2]);
+  EXPECT_EQ(u"0bar", suggestion_results[3]);
+  EXPECT_EQ(u"1bar", suggestion_results[4]);
 }

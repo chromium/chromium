@@ -124,8 +124,7 @@ std::u16string JsCommunicationHost::AddWebMessageHostFactory(
 
   for (const auto& js_object : js_objects_) {
     if (js_object->name == js_object_name) {
-      return base::ASCIIToUTF16("jsObjectName ") + js_object->name +
-             base::ASCIIToUTF16(" was already added.");
+      return u"jsObjectName " + js_object->name + u" was already added.";
     }
   }
 

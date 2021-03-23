@@ -90,8 +90,7 @@ TEST_F(InMemoryURLIndexTypesTest, StaticFunctions) {
                              actual_starts_d));
 
   // Test String16SetFromString16
-  std::u16string string_e(
-      base::ASCIIToUTF16("http://web.google.com/search Google Web Search"));
+  std::u16string string_e(u"http://web.google.com/search Google Web Search");
   WordStarts actual_starts_e;
   String16Set string_set = String16SetFromString16(string_e, &actual_starts_e);
   EXPECT_EQ(5U, string_set.size());

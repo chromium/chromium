@@ -388,7 +388,7 @@ bool DocumentProvider::IsDocumentProviderAllowed(
             template_url_service, &keyword_input);
     if (keyword_provider &&
         IsExplicitlyInKeywordMode(input, keyword_provider->keyword()) &&
-        !base::StartsWith(input.text(), base::ASCIIToUTF16("drive.google.com"),
+        !base::StartsWith(input.text(), u"drive.google.com",
                           base::CompareCase::SENSITIVE)) {
       return false;
     }
@@ -423,11 +423,11 @@ bool DocumentProvider::IsInputLikelyURL(const AutocompleteInput& input) {
   // prefixes, but the SchemeClassifier won't have classified them as URLs yet.
   // Note these checks are of the form "(string constant) starts with input."
   if (input.text().length() <= 8) {
-    if (StartsWith(base::ASCIIToUTF16("https://"), input.text(),
+    if (StartsWith(u"https://", input.text(),
                    base::CompareCase::INSENSITIVE_ASCII) ||
-        StartsWith(base::ASCIIToUTF16("http://"), input.text(),
+        StartsWith(u"http://", input.text(),
                    base::CompareCase::INSENSITIVE_ASCII) ||
-        StartsWith(base::ASCIIToUTF16("www."), input.text(),
+        StartsWith(u"www.", input.text(),
                    base::CompareCase::INSENSITIVE_ASCII)) {
       return true;
     }

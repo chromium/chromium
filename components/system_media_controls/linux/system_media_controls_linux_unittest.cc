@@ -320,11 +320,11 @@ TEST_F(SystemMediaControlsLinuxTest, ChangingMetadataEmitsSignal) {
 
   // Setting the title should emit an
   // org.freedesktop.DBus.Properties.PropertiesChanged signal.
-  GetService()->SetTitle(base::ASCIIToUTF16("Foo"));
+  GetService()->SetTitle(u"Foo");
   wait_for_signal.Run();
 
   // Setting the title to the same value as before should not emit a new signal.
-  GetService()->SetTitle(base::ASCIIToUTF16("Foo"));
+  GetService()->SetTitle(u"Foo");
 }
 
 }  // namespace internal

@@ -144,7 +144,7 @@ TEST_F(DataOfferTest, SetTextDropData) {
   source_actions.insert(DndAction::kMove);
 
   ui::OSExchangeData data;
-  data.SetString(std::u16string(base::ASCIIToUTF16("Test data")));
+  data.SetString(std::u16string(u"Test data"));
 
   TestDataOfferDelegate delegate;
   DataOffer data_offer(&delegate);
@@ -248,7 +248,7 @@ TEST_F(DataOfferTest, ReceiveString) {
 
   TestDataExchangeDelegate data_exchange_delegate;
   ui::OSExchangeData data;
-  data.SetString(base::ASCIIToUTF16("Test data"));
+  data.SetString(u"Test data");
   data_offer.SetDropData(&data_exchange_delegate, nullptr, data);
 
   base::ScopedFD read_pipe;
@@ -266,7 +266,7 @@ TEST_F(DataOfferTest, ReceiveString) {
   data_offer.Receive("text/plain;charset=utf-16", std::move(write_pipe_16));
   std::u16string result_16;
   ASSERT_TRUE(ReadString16(std::move(read_pipe_16), &result_16));
-  EXPECT_EQ(base::ASCIIToUTF16("Test data"), result_16);
+  EXPECT_EQ(u"Test data", result_16);
 
   base::ScopedFD read_pipe_8;
   base::ScopedFD write_pipe_8;
@@ -283,7 +283,7 @@ TEST_F(DataOfferTest, ReceiveHTML) {
 
   TestDataExchangeDelegate data_exchange_delegate;
   ui::OSExchangeData data;
-  data.SetHtml(base::ASCIIToUTF16("Test HTML data"), GURL());
+  data.SetHtml(u"Test HTML data", GURL());
   data_offer.SetDropData(&data_exchange_delegate, nullptr, data);
 
   base::ScopedFD read_pipe_16;
@@ -292,7 +292,7 @@ TEST_F(DataOfferTest, ReceiveHTML) {
   data_offer.Receive("text/html;charset=utf-16", std::move(write_pipe_16));
   std::u16string result_16;
   ASSERT_TRUE(ReadString16(std::move(read_pipe_16), &result_16));
-  EXPECT_EQ(base::ASCIIToUTF16("Test HTML data"), result_16);
+  EXPECT_EQ(u"Test HTML data", result_16);
 
   base::ScopedFD read_pipe_8;
   base::ScopedFD write_pipe_8;
@@ -396,7 +396,7 @@ TEST_F(DataOfferTest,
 
   std::u16string result;
   ASSERT_TRUE(ReadString16(std::move(read_pipe), &result));
-  EXPECT_EQ(base::ASCIIToUTF16(""), result);
+  EXPECT_EQ(u"", result);
 }
 
 TEST_F(DataOfferTest, SetClipboardDataPlainText) {

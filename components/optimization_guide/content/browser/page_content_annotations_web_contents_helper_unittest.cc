@@ -140,7 +140,7 @@ TEST_F(PageContentAnnotationsWebContentsHelperTest,
       FrameTextDumpResult::Initialize(
           mojom::TextDumpEvent::kFirstLayout, content::GlobalFrameRoutingId(),
           /*amp_frame=*/false, /*unique_navigation_id=*/1)
-          .CompleteWithContents(base::ASCIIToUTF16("some text"));
+          .CompleteWithContents(u"some text");
   PageTextDumpResult result;
   result.AddFrameTextDumpResult(frame_result);
   std::move(request->callback).Run(std::move(result));

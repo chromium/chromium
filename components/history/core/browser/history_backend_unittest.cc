@@ -3158,18 +3158,15 @@ TEST(FormatUrlForRedirectComparisonTest, TestUrlFormatting) {
   // Tests that the formatter removes HTTPS scheme, port, username/password,
   // and trivial "www." subdomain. Domain and path are left unchanged.
   GURL url1("https://foo:bar@www.baz.com:4443/path1.html");
-  EXPECT_EQ(base::ASCIIToUTF16("baz.com/path1.html"),
-            FormatUrlForRedirectComparison(url1));
+  EXPECT_EQ(u"baz.com/path1.html", FormatUrlForRedirectComparison(url1));
 
   // Tests that the formatter removes the HTTP scheme.
   GURL url2("http://www.baz.com");
-  EXPECT_EQ(base::ASCIIToUTF16("baz.com/"),
-            FormatUrlForRedirectComparison(url2));
+  EXPECT_EQ(u"baz.com/", FormatUrlForRedirectComparison(url2));
 
   // Tests that the formatter only removes the first subdomain.
   GURL url3("http://www.www.baz.com/");
-  EXPECT_EQ(base::ASCIIToUTF16("www.baz.com/"),
-            FormatUrlForRedirectComparison(url3));
+  EXPECT_EQ(u"www.baz.com/", FormatUrlForRedirectComparison(url3));
 }
 
 }  // namespace history

@@ -49,7 +49,7 @@ OmniboxView::State::State(const State& state) = default;
 // static
 std::u16string OmniboxView::StripJavascriptSchemas(const std::u16string& text) {
   const std::u16string kJsPrefix(base::ASCIIToUTF16(url::kJavaScriptScheme) +
-                                 base::ASCIIToUTF16(":"));
+                                 u":");
 
   bool found_JavaScript = false;
   size_t i = 0;
@@ -86,7 +86,7 @@ std::u16string OmniboxView::SanitizeTextForPaste(const std::u16string& text) {
 
   size_t end = text.find_first_not_of(base::kWhitespaceUTF16);
   if (end == std::u16string::npos)
-    return base::ASCIIToUTF16(" ");  // Convert all-whitespace to single space.
+    return u" ";  // Convert all-whitespace to single space.
   // Because |end| points at the first non-whitespace character, the loop
   // below will skip leading whitespace.
 

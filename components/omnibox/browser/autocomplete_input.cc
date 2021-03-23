@@ -49,9 +49,8 @@ void PopulateTermsPrefixedByHttpOrHttps(
   // to split a single term in a hostname (if it seems to think that the
   // hostname is multiple words).  Neither of these behaviors is desirable.
   const std::string separator(url::kStandardSchemeSeparator);
-  for (const auto& term :
-       base::SplitString(text, base::ASCIIToUTF16(" "),
-                         base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
+  for (const auto& term : base::SplitString(text, u" ", base::TRIM_WHITESPACE,
+                                            base::SPLIT_WANT_ALL)) {
     const std::string term_utf8(base::UTF16ToUTF8(term));
     static const char* kSchemes[2] = { url::kHttpScheme, url::kHttpsScheme };
     for (const char* scheme : kSchemes) {
@@ -372,8 +371,7 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
   // just the word "invalid" is not a hostname).
   const std::u16string original_host(
       text.substr(parts->host.begin, parts->host.len));
-  if (text != base::ASCIIToUTF16("invalid") &&
-      (host_info.family == url::CanonHostInfo::NEUTRAL) &&
+  if (text != u"invalid" && (host_info.family == url::CanonHostInfo::NEUTRAL) &&
       (!net::IsCanonicalizedHostCompliant(canonicalized_url->host()) ||
        canonicalized_url->DomainIs("invalid"))) {
     // Invalid hostname.  There are several possible cases:

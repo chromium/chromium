@@ -266,7 +266,7 @@ TEST_F(WindowsSpellCheckerTest, GetPerLanguageSuggestions) {
             spellcheck::WindowsVersionSupportsSpellchecker());
 
   win_spell_checker_->GetPerLanguageSuggestions(
-      base::ASCIIToUTF16("tihs"),
+      u"tihs",
       base::BindOnce(
           &WindowsSpellCheckerTest::PerLanguageSuggestionsCompletionCallback,
           base::Unretained(this)));

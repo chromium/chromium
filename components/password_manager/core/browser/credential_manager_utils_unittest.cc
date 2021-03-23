@@ -37,8 +37,8 @@ TEST_F(CredentialManagerUtilsTest, CreatePasswordFormFederation) {
   CredentialInfo info;
   std::unique_ptr<PasswordForm> form;
 
-  info.id = base::ASCIIToUTF16("id");
-  info.name = base::ASCIIToUTF16("name");
+  info.id = u"id";
+  info.name = u"name";
   info.icon = icon_;
   info.federation = federation_;
   info.type = CredentialType::CREDENTIAL_TYPE_FEDERATED;
@@ -63,10 +63,10 @@ TEST_F(CredentialManagerUtilsTest, CreatePasswordFormLocal) {
   CredentialInfo info;
   std::unique_ptr<PasswordForm> form;
 
-  info.id = base::ASCIIToUTF16("id");
-  info.name = base::ASCIIToUTF16("name");
+  info.id = u"id";
+  info.name = u"name";
   info.icon = icon_;
-  info.password = base::ASCIIToUTF16("password");
+  info.password = u"password";
   info.type = CredentialType::CREDENTIAL_TYPE_PASSWORD;
 
   form = CreatePasswordFormFromCredentialInfo(info, origin_);

@@ -81,10 +81,10 @@ TEST_F(PageTextAgentTest, IncreasesMax) {
       blink::WebMeaningfulLayout::kVisuallyNonEmpty, &other_size));
   EXPECT_EQ(1234U, other_size);
 
-  std::move(callback).Run(base::ASCIIToUTF16("abc"));
+  std::move(callback).Run(u"abc");
   RunUntilIdle();
 
-  EXPECT_EQ(base::ASCIIToUTF16("abc"), consumer.text());
+  EXPECT_EQ(u"abc", consumer.text());
   EXPECT_TRUE(consumer.on_chunks_end_called());
 }
 
@@ -113,10 +113,10 @@ TEST_F(PageTextAgentTest, MaxStaysSame) {
       blink::WebMeaningfulLayout::kVisuallyNonEmpty, &other_size));
   EXPECT_EQ(1234U, other_size);
 
-  std::move(callback).Run(base::ASCIIToUTF16("abc"));
+  std::move(callback).Run(u"abc");
   RunUntilIdle();
 
-  EXPECT_EQ(base::ASCIIToUTF16("abc"), consumer.text());
+  EXPECT_EQ(u"abc", consumer.text());
   EXPECT_TRUE(consumer.on_chunks_end_called());
 }
 
@@ -145,10 +145,10 @@ TEST_F(PageTextAgentTest, FinishedLoading) {
       blink::WebMeaningfulLayout::kVisuallyNonEmpty, &other_size));
   EXPECT_EQ(1234U, other_size);
 
-  std::move(callback).Run(base::ASCIIToUTF16("abc"));
+  std::move(callback).Run(u"abc");
   RunUntilIdle();
 
-  EXPECT_EQ(base::ASCIIToUTF16("abc"), consumer.text());
+  EXPECT_EQ(u"abc", consumer.text());
   EXPECT_TRUE(consumer.on_chunks_end_called());
 }
 

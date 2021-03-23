@@ -112,7 +112,7 @@ class FakePaymentRequestDelegate : public PaymentRequestDelegate {
 
   void CompleteFullCardRequest() {
     full_card_result_delegate_->OnFullCardRequestSucceeded(
-        full_card_request_, full_card_request_card_, base::ASCIIToUTF16("123"));
+        full_card_request_, full_card_request_card_, u"123");
   }
 
   autofill::RegionDataLoader* GetRegionDataLoader() override { return nullptr; }
@@ -179,8 +179,8 @@ TEST_F(AutofillPaymentAppTest, IsCompleteForPayment_Expired) {
 // A local card with no name is not a valid app for payment.
 TEST_F(AutofillPaymentAppTest, IsCompleteForPayment_NoName) {
   autofill::CreditCard& card = local_credit_card();
-  card.SetInfo(autofill::AutofillType(autofill::CREDIT_CARD_NAME_FULL),
-               base::ASCIIToUTF16(""), "en-US");
+  card.SetInfo(autofill::AutofillType(autofill::CREDIT_CARD_NAME_FULL), u"",
+               "en-US");
   std::u16string missing_info;
   AutofillPaymentApp app("visa", card, billing_profiles(), "en-US", nullptr);
   EXPECT_FALSE(app.IsCompleteForPayment());
@@ -191,7 +191,7 @@ TEST_F(AutofillPaymentAppTest, IsCompleteForPayment_NoName) {
 // A local card with no name is not a valid app for payment.
 TEST_F(AutofillPaymentAppTest, IsCompleteForPayment_NoNumber) {
   autofill::CreditCard& card = local_credit_card();
-  card.SetNumber(base::ASCIIToUTF16(""));
+  card.SetNumber(u"");
   std::u16string missing_info;
   AutofillPaymentApp app("visa", card, billing_profiles(), "en-US", nullptr);
   EXPECT_FALSE(app.IsCompleteForPayment());
@@ -246,9 +246,9 @@ TEST_F(AutofillPaymentAppTest, IsCompleteForPayment_IncompleteBillinbAddress) {
 // payment.
 TEST_F(AutofillPaymentAppTest, IsCompleteForPayment_MultipleThingsMissing) {
   autofill::CreditCard& card = local_credit_card();
-  card.SetNumber(base::ASCIIToUTF16(""));
-  card.SetInfo(autofill::AutofillType(autofill::CREDIT_CARD_NAME_FULL),
-               base::ASCIIToUTF16(""), "en-US");
+  card.SetNumber(u"");
+  card.SetInfo(autofill::AutofillType(autofill::CREDIT_CARD_NAME_FULL), u"",
+               "en-US");
   AutofillPaymentApp app("visa", card, billing_profiles(), "en-US", nullptr);
   EXPECT_FALSE(app.IsCompleteForPayment());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PAYMENTS_MORE_INFORMATION_REQUIRED),
@@ -295,8 +295,8 @@ TEST_F(AutofillPaymentAppTest, HasEnrolledInstrument_MaskedCard) {
 // A card with no name is not a valid app for canMakePayment.
 TEST_F(AutofillPaymentAppTest, HasEnrolledInstrument_NoName) {
   autofill::CreditCard& card = local_credit_card();
-  card.SetInfo(autofill::AutofillType(autofill::CREDIT_CARD_NAME_FULL),
-               base::ASCIIToUTF16(""), "en-US");
+  card.SetInfo(autofill::AutofillType(autofill::CREDIT_CARD_NAME_FULL), u"",
+               "en-US");
   AutofillPaymentApp app("visa", card, billing_profiles(), "en-US", nullptr);
   EXPECT_FALSE(app.HasEnrolledInstrument());
 }
@@ -304,7 +304,7 @@ TEST_F(AutofillPaymentAppTest, HasEnrolledInstrument_NoName) {
 // A card with no number is not a valid app for canMakePayment.
 TEST_F(AutofillPaymentAppTest, HasEnrolledInstrument_NoNumber) {
   autofill::CreditCard& card = local_credit_card();
-  card.SetNumber(base::ASCIIToUTF16(""));
+  card.SetNumber(u"");
   AutofillPaymentApp app("visa", card, billing_profiles(), "en-US", nullptr);
   EXPECT_FALSE(app.HasEnrolledInstrument());
 }
@@ -321,7 +321,7 @@ TEST_F(AutofillPaymentAppTest, InvokePaymentApp_NormalizationBeforeUnmask) {
   delegate.test_address_normalizer()->DelayNormalization();
 
   autofill::CreditCard& card = local_credit_card();
-  card.SetNumber(base::ASCIIToUTF16(""));
+  card.SetNumber(u"");
   AutofillPaymentApp app("visa", card, billing_profiles(), "en-US", &delegate);
 
   FakePaymentAppDelegate app_delegate;
@@ -351,7 +351,7 @@ TEST_F(AutofillPaymentAppTest, InvokePaymentApp_UnmaskBeforeNormalization) {
   delegate.test_address_normalizer()->DelayNormalization();
 
   autofill::CreditCard& card = local_credit_card();
-  card.SetNumber(base::ASCIIToUTF16(""));
+  card.SetNumber(u"");
   AutofillPaymentApp app("visa", card, billing_profiles(), "en-US", &delegate);
 
   FakePaymentAppDelegate app_delegate;

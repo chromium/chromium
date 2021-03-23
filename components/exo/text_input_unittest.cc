@@ -263,7 +263,7 @@ TEST_F(TextInputTest, CommitCompositionText) {
 }
 
 TEST_F(TextInputTest, Commit) {
-  std::u16string s = base::ASCIIToUTF16("commit text");
+  std::u16string s = u"commit text";
 
   EXPECT_CALL(*delegate(), Commit(s)).Times(1);
   text_input()->InsertText(

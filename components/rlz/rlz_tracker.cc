@@ -399,7 +399,7 @@ void RLZTracker::PingNowImpl() {
   std::u16string lang;
   delegate_->GetLanguage(&lang);
   if (lang.empty())
-    lang = base::ASCIIToUTF16("en");
+    lang = u"en";
   std::u16string referral;
   delegate_->GetReferral(&referral);
 

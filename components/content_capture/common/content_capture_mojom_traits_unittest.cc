@@ -41,11 +41,11 @@ class ContentCaptureStructTraitsTest : public testing::Test,
 TEST_F(ContentCaptureStructTraitsTest, ContentCaptureData) {
   ContentCaptureData child;
   child.id = 2;
-  child.value = base::ASCIIToUTF16("Hello");
+  child.value = u"Hello";
   child.bounds = gfx::Rect(5, 5, 5, 5);
   ContentCaptureData input;
   input.id = 1;
-  input.value = base::ASCIIToUTF16("http://foo.com/bar");
+  input.value = u"http://foo.com/bar";
   input.bounds = gfx::Rect(10, 10);
   input.children.push_back(child);
 

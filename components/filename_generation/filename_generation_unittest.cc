@@ -136,30 +136,26 @@ static const struct GenerateFilenameTestCase {
   bool ensure_html_extension;
 } kGenerateFilenameCases[] = {
     // Title overrides the URL.
-    {"http://foo.com", base::ASCIIToUTF16("A page title"),
-     FPL("A page title") FPL_HTML_EXTENSION, true},
+    {"http://foo.com", u"A page title", FPL("A page title") FPL_HTML_EXTENSION,
+     true},
     // Extension is preserved.
-    {"http://foo.com", base::ASCIIToUTF16("A page title with.ext"),
-     FPL("A page title with.ext"), false},
+    {"http://foo.com", u"A page title with.ext", FPL("A page title with.ext"),
+     false},
     // If the title matches the URL, use the last component of the URL.
-    {"http://foo.com/bar", base::ASCIIToUTF16("foo.com/bar"), FPL("bar"),
-     false},
+    {"http://foo.com/bar", u"foo.com/bar", FPL("bar"), false},
     // A URL with escaped special characters, when title matches the URL.
-    {"http://foo.com/%40.txt", base::ASCIIToUTF16("foo.com/%40.txt"),
-     FPL("@.txt"), false},
+    {"http://foo.com/%40.txt", u"foo.com/%40.txt", FPL("@.txt"), false},
     // A URL with unescaped special characters, when title matches the URL.
-    {"http://foo.com/@.txt", base::ASCIIToUTF16("foo.com/@.txt"), FPL("@.txt"),
-     false},
+    {"http://foo.com/@.txt", u"foo.com/@.txt", FPL("@.txt"), false},
     // A URL with punycode in the host name, when title matches the URL.
     {"http://xn--bcher-kva.com", u"bücher.com", FPL("bücher.com"), false},
     // If the title matches the URL, but there is no "filename" component,
     // use the domain.
-    {"http://foo.com", base::ASCIIToUTF16("foo.com"), FPL("foo.com"), false},
+    {"http://foo.com", u"foo.com", FPL("foo.com"), false},
     // Make sure fuzzy matching works.
-    {"http://foo.com/bar", base::ASCIIToUTF16("foo.com/bar"), FPL("bar"),
-     false},
+    {"http://foo.com/bar", u"foo.com/bar", FPL("bar"), false},
     // A URL-like title that does not match the title is respected in full.
-    {"http://foo.com", base::ASCIIToUTF16("http://www.foo.com/path/title.txt"),
+    {"http://foo.com", u"http://www.foo.com/path/title.txt",
      FPL("http___www.foo.com_path_title.txt"), false},
 };
 

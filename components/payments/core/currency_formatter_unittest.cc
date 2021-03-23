@@ -39,7 +39,7 @@ TEST_P(PaymentsCurrencyFormatterTest, IsValidCurrencyFormat) {
   std::u16string actual_output = formatter.Format(GetParam().amount);
 
   // Convenience so the test cases can use regular spaces.
-  const std::u16string kSpace(base::ASCIIToUTF16(" "));
+  const std::u16string kSpace(u" ");
   const std::u16string kNonBreakingSpace(base::UTF8ToUTF16(u8"\u00a0"));
   const std::u16string kNarrowNonBreakingSpace(base::UTF8ToUTF16(u8"\u202f"));
   base::ReplaceChars(actual_output, kNonBreakingSpace, kSpace, &actual_output);

@@ -51,8 +51,7 @@ std::u16string GetAccessibleNameFromMetadata(
   if (!session_metadata.album.empty())
     text.push_back(session_metadata.album);
 
-  std::u16string accessible_name =
-      base::JoinString(text, base::ASCIIToUTF16(" - "));
+  std::u16string accessible_name = base::JoinString(text, u" - ");
   return accessible_name;
 }
 

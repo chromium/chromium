@@ -209,7 +209,7 @@ TEST(PasswordStoreImplTest, Notifications) {
   store->AddLogin(*form);
 
   // Change the password.
-  form->password_value = base::ASCIIToUTF16("a different password");
+  form->password_value = u"a different password";
 
   const PasswordStoreChange expected_update_changes[] = {
       PasswordStoreChange(PasswordStoreChange::UPDATE, *form),
@@ -280,7 +280,7 @@ TEST(PasswordStoreImplTest, OperationsOnABadDatabaseSilentlyFail) {
   delegate.FinishAsyncProcessing();
 
   // Change the login.
-  form->password_value = base::ASCIIToUTF16("a different password");
+  form->password_value = u"a different password";
   bad_store->UpdateLogin(*form);
   delegate.FinishAsyncProcessing();
 

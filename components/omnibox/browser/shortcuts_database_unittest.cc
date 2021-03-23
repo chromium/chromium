@@ -209,7 +209,7 @@ TEST_F(ShortcutsDatabaseTest, UpdateShortcut) {
   AddAll();
   ShortcutsDatabase::Shortcut shortcut(
       ShortcutFromTestInfo(shortcut_test_db[1]));
-  shortcut.match_core.contents = ASCIIToUTF16("gro.todhsals");
+  shortcut.match_core.contents = u"gro.todhsals";
   EXPECT_TRUE(db_->UpdateShortcut(shortcut));
   ShortcutsDatabase::GuidToShortcutMap shortcuts;
   db_->LoadShortcuts(&shortcuts);

@@ -179,7 +179,7 @@ TEST_F(PageTextAgentRenderViewTest, AMPSuccessCase) {
   subframe_agent.DidFinishLoad();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(consumer.on_chunks_end_called());
-  EXPECT_EQ(base::ASCIIToUTF16("world"), consumer.text());
+  EXPECT_EQ(u"world", consumer.text());
 }
 
 }  // namespace optimization_guide

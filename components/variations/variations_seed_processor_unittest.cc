@@ -363,7 +363,7 @@ TEST_F(VariationsSeedProcessorTest, OverrideUIStrings) {
 
   EXPECT_EQ(1u, overrides.size());
   auto it = overrides.find(1234);
-  EXPECT_EQ(base::ASCIIToUTF16("test"), it->second);
+  EXPECT_EQ(u"test", it->second);
 }
 
 TEST_F(VariationsSeedProcessorTest, OverrideUIStringsWithForcingFlag) {
@@ -384,7 +384,7 @@ TEST_F(VariationsSeedProcessorTest, OverrideUIStringsWithForcingFlag) {
       override_callback_.overrides();
   EXPECT_EQ(1u, overrides.size());
   auto it = overrides.find(1234);
-  EXPECT_EQ(base::ASCIIToUTF16("test"), it->second);
+  EXPECT_EQ(u"test", it->second);
 }
 
 TEST_F(VariationsSeedProcessorTest, ValidateStudy) {

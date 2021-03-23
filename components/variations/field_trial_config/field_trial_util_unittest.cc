@@ -747,9 +747,9 @@ TEST_F(FieldTrialUtilTest,
       override_callback_.overrides();
   EXPECT_EQ(2u, overrides.size());
   auto it = overrides.find(1234);
-  EXPECT_EQ(base::ASCIIToUTF16("test1"), it->second);
+  EXPECT_EQ(u"test1", it->second);
   it = overrides.find(5678);
-  EXPECT_EQ(base::ASCIIToUTF16("test2"), it->second);
+  EXPECT_EQ(u"test2", it->second);
 }
 
 TEST_F(FieldTrialUtilTest,

@@ -18,11 +18,9 @@ class OmniboxPedalProviderTest : public testing::Test {
 TEST_F(OmniboxPedalProviderTest, QueriesTriggerPedals) {
   MockAutocompleteProviderClient client;
   OmniboxPedalProvider provider(client);
-  EXPECT_EQ(provider.FindPedalMatch(base::ASCIIToUTF16("")), nullptr);
-  EXPECT_EQ(provider.FindPedalMatch(base::ASCIIToUTF16("clear histor")),
-            nullptr);
-  EXPECT_NE(provider.FindPedalMatch(base::ASCIIToUTF16("clear history")),
-            nullptr);
+  EXPECT_EQ(provider.FindPedalMatch(u""), nullptr);
+  EXPECT_EQ(provider.FindPedalMatch(u"clear histor"), nullptr);
+  EXPECT_NE(provider.FindPedalMatch(u"clear history"), nullptr);
 }
 
 TEST_F(OmniboxPedalProviderTest, MemoryUsageIsModerate) {

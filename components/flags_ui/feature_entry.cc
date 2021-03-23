@@ -100,7 +100,7 @@ std::u16string FeatureEntry::DescriptionForOption(int index) const {
       int variation_index = index - 2;
       return base::ASCIIToUTF16(
                  base::StringPiece(kGenericExperimentChoiceEnabled)) +
-             base::ASCIIToUTF16(" ") +
+             u" " +
              base::ASCIIToUTF16(
                  feature.feature_variations[variation_index].description_text);
     } else {

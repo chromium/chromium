@@ -206,7 +206,7 @@ std::u16string PolicyErrorMap::GetErrors(const std::string& policy) {
   std::vector<base::StringPiece16> list;
   for (auto it = range.first; it != range.second; ++it)
     list.push_back(it->second);
-  return base::JoinString(list, base::ASCIIToUTF16("\n"));
+  return base::JoinString(list, u"\n");
 }
 
 bool PolicyErrorMap::empty() const {

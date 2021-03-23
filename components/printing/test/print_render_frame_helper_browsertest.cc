@@ -633,31 +633,31 @@ class PrintRenderFrameHelperTestBase : public content::RenderViewTest {
 
   void ExpectNoBeforeNoAfterPrintEvent() {
     int result;
-    ASSERT_TRUE(ExecuteJavaScriptAndReturnIntValue(
-        base::ASCIIToUTF16("beforePrintCount"), &result));
+    ASSERT_TRUE(
+        ExecuteJavaScriptAndReturnIntValue(u"beforePrintCount", &result));
     EXPECT_EQ(0, result) << "beforeprint event should not be dispatched.";
-    ASSERT_TRUE(ExecuteJavaScriptAndReturnIntValue(
-        base::ASCIIToUTF16("afterPrintCount"), &result));
+    ASSERT_TRUE(
+        ExecuteJavaScriptAndReturnIntValue(u"afterPrintCount", &result));
     EXPECT_EQ(0, result) << "afterprint event should not be dispatched.";
   }
 
   void ExpectOneBeforeNoAfterPrintEvent() {
     int result;
-    ASSERT_TRUE(ExecuteJavaScriptAndReturnIntValue(
-        base::ASCIIToUTF16("beforePrintCount"), &result));
+    ASSERT_TRUE(
+        ExecuteJavaScriptAndReturnIntValue(u"beforePrintCount", &result));
     EXPECT_EQ(1, result) << "beforeprint event should be dispatched once.";
-    ASSERT_TRUE(ExecuteJavaScriptAndReturnIntValue(
-        base::ASCIIToUTF16("afterPrintCount"), &result));
+    ASSERT_TRUE(
+        ExecuteJavaScriptAndReturnIntValue(u"afterPrintCount", &result));
     EXPECT_EQ(0, result) << "afterprint event should not be dispatched.";
   }
 
   void ExpectOneBeforeOneAfterPrintEvent() {
     int result;
-    ASSERT_TRUE(ExecuteJavaScriptAndReturnIntValue(
-        base::ASCIIToUTF16("beforePrintCount"), &result));
+    ASSERT_TRUE(
+        ExecuteJavaScriptAndReturnIntValue(u"beforePrintCount", &result));
     EXPECT_EQ(1, result) << "beforeprint event should be dispatched once.";
-    ASSERT_TRUE(ExecuteJavaScriptAndReturnIntValue(
-        base::ASCIIToUTF16("afterPrintCount"), &result));
+    ASSERT_TRUE(
+        ExecuteJavaScriptAndReturnIntValue(u"afterPrintCount", &result));
     EXPECT_EQ(1, result) << "afterprint event should be dispatched once.";
   }
 

@@ -386,15 +386,13 @@ TEST(TextEliderTest, TestHostEliding) {
   }
 
   // Trying to elide to a really short length will still keep the full TLD+1
-  EXPECT_EQ(
-      base::ASCIIToUTF16("google.com"),
-      url_formatter::ElideHost(GURL("http://google.com"), gfx::FontList(), 2));
+  EXPECT_EQ(u"google.com", url_formatter::ElideHost(GURL("http://google.com"),
+                                                    gfx::FontList(), 2));
   EXPECT_EQ(base::UTF8ToUTF16(kEllipsisStr + ".google.com"),
             url_formatter::ElideHost(GURL("http://subdomain.google.com"),
                                      gfx::FontList(), 2));
-  EXPECT_EQ(
-      base::ASCIIToUTF16("foo.bar"),
-      url_formatter::ElideHost(GURL("http://foo.bar"), gfx::FontList(), 2));
+  EXPECT_EQ(u"foo.bar", url_formatter::ElideHost(GURL("http://foo.bar"),
+                                                 gfx::FontList(), 2));
 }
 
 #endif  // !defined(OS_ANDROID)

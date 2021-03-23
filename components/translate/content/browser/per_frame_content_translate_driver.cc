@@ -83,7 +83,7 @@ void CombineTextNodesAndMakeCallback(PageContentsCallback callback,
                                      const ui::AXTreeUpdate& update) {
   ui::AXTree tree;
   if (!tree.Unserialize(update)) {
-    std::move(callback).Run(base::ASCIIToUTF16(""));
+    std::move(callback).Run(u"");
     return;
   }
 
@@ -92,8 +92,7 @@ void CombineTextNodesAndMakeCallback(PageContentsCallback callback,
 
   AddTextNodesToVector(tree.root(), &text_node_contents);
 
-  std::move(callback).Run(
-      base::JoinString(text_node_contents, base::ASCIIToUTF16("\n")));
+  std::move(callback).Run(base::JoinString(text_node_contents, u"\n"));
 }
 }  // namespace
 

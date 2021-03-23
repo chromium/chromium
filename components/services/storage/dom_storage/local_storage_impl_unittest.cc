@@ -677,9 +677,9 @@ TEST_F(LocalStorageImplTest, DeleteStorageWithPendingWrites) {
 TEST_F(LocalStorageImplTest, Migration) {
   url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
   url::Origin origin2 = url::Origin::Create(GURL("http://example.com"));
-  std::u16string key = base::ASCIIToUTF16("key");
-  std::u16string value = base::ASCIIToUTF16("value");
-  std::u16string key2 = base::ASCIIToUTF16("key2");
+  std::u16string key = u"key";
+  std::u16string value = u"value";
+  std::u16string key2 = u"key2";
   key2.push_back(0xd83d);
   key2.push_back(0xde00);
 
@@ -768,14 +768,10 @@ TEST_F(LocalStorageImplTest, FixUp) {
   // deleted.
   SetDatabaseEntry(std::string("_http://foobar.com") + '\x00' + "\x01key",
                    "value1");
-  SetDatabaseEntry(
-      EncodeKeyAsUTF16("http://foobar.com", base::ASCIIToUTF16("key")),
-      "value2");
+  SetDatabaseEntry(EncodeKeyAsUTF16("http://foobar.com", u"key"), "value2");
   // Also add mock data for the "foo" key, this time only with the incorrec
   // encoding. This should be updated to the correct encoding.
-  SetDatabaseEntry(
-      EncodeKeyAsUTF16("http://foobar.com", base::ASCIIToUTF16("foo")),
-      "value3");
+  SetDatabaseEntry(EncodeKeyAsUTF16("http://foobar.com", u"foo"), "value3");
 
   mojo::Remote<blink::mojom::StorageArea> area;
   mojo::Remote<blink::mojom::StorageArea>

@@ -639,7 +639,7 @@ TEST_P(AffiliatedMatchHelperTest, PrefetchBeforeTrimForPrimaryKeyUpdates) {
 
   PasswordForm old_form(GetTestAndroidCredentials(kTestAndroidRealmAlpha3));
   PasswordForm new_form(old_form);
-  new_form.username_value = base::ASCIIToUTF16("NewUserName");
+  new_form.username_value = u"NewUserName";
   UpdateLoginWithPrimaryKey(new_form, old_form);
 }
 
@@ -657,7 +657,7 @@ TEST_P(AffiliatedMatchHelperTest,
 
   // Store two credentials before initialization.
   PasswordForm android_form2(android_form);
-  android_form2.username_value = base::ASCIIToUTF16("JohnDoe2");
+  android_form2.username_value = u"JohnDoe2";
   AddLogin(android_form2);
 
   match_helper()->Initialize();
@@ -665,14 +665,14 @@ TEST_P(AffiliatedMatchHelperTest,
 
   // Store one credential between initialization and deferred initialization.
   PasswordForm android_form3(android_form);
-  android_form3.username_value = base::ASCIIToUTF16("JohnDoe3");
+  android_form3.username_value = u"JohnDoe3";
   AddLogin(android_form3);
 
   ASSERT_NO_FATAL_FAILURE(RunDeferredInitialization());
 
   // Store one credential after deferred initialization.
   PasswordForm android_form4(android_form);
-  android_form4.username_value = base::ASCIIToUTF16("JohnDoe4");
+  android_form4.username_value = u"JohnDoe4";
   AddLogin(android_form4);
 
   for (size_t i = 0; i < 4; ++i) {

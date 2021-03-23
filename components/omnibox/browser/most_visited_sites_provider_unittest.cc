@@ -196,8 +196,7 @@ TEST_F(MostVisitedSitesProviderTest, TestMostVisitedCallback) {
   input.set_current_url(GURL(current_url));
   input.set_focus_type(OmniboxFocusType::ON_FOCUS);
   history::MostVisitedURLList urls;
-  history::MostVisitedURL url(GURL("http://foo.com/"),
-                              base::ASCIIToUTF16("Foo"));
+  history::MostVisitedURL url(GURL("http://foo.com/"), u"Foo");
   urls.push_back(url);
 
   provider_->Start(input, false);
@@ -216,10 +215,8 @@ TEST_F(MostVisitedSitesProviderTest, TestMostVisitedCallback) {
   EXPECT_TRUE(provider_->matches().empty());
 
   history::MostVisitedURLList urls2;
-  urls2.push_back(history::MostVisitedURL(GURL("http://bar.com/"),
-                                          base::ASCIIToUTF16("Bar")));
-  urls2.push_back(history::MostVisitedURL(GURL("http://zinga.com/"),
-                                          base::ASCIIToUTF16("Zinga")));
+  urls2.push_back(history::MostVisitedURL(GURL("http://bar.com/"), u"Bar"));
+  urls2.push_back(history::MostVisitedURL(GURL("http://zinga.com/"), u"Zinga"));
   provider_->Start(input, false);
   provider_->Stop(false, false);
   provider_->Start(input, false);
@@ -240,8 +237,7 @@ TEST_F(MostVisitedSitesProviderTest, TestMostVisitedNavigateToSearchPage) {
   input.set_current_url(GURL(current_url));
   input.set_focus_type(OmniboxFocusType::ON_FOCUS);
   history::MostVisitedURLList urls;
-  history::MostVisitedURL url(GURL("http://foo.com/"),
-                              base::ASCIIToUTF16("Foo"));
+  history::MostVisitedURL url(GURL("http://foo.com/"), u"Foo");
   urls.push_back(url);
 
   provider_->Start(input, false);

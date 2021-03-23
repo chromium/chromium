@@ -31,8 +31,7 @@ const URLPrefix* BestURLPrefixInternal(
 const URLPrefix* BestURLPrefixWithWWWCase(
     const std::u16string& lower_text,
     const std::u16string& lower_prefix_suffix) {
-  static base::NoDestructor<URLPrefix> www_prefix(base::ASCIIToUTF16("www."),
-                                                  1);
+  static base::NoDestructor<URLPrefix> www_prefix(u"www.", 1);
   const URLPrefix* best_prefix =
       BestURLPrefixInternal(lower_text, lower_prefix_suffix);
   if ((best_prefix == nullptr ||
@@ -57,12 +56,12 @@ const URLPrefixes& URLPrefix::GetURLPrefixes() {
     URLPrefixes prefixes;
 
     // Keep this list in descending number of components.
-    prefixes.push_back(URLPrefix(base::ASCIIToUTF16("http://www."), 2));
-    prefixes.push_back(URLPrefix(base::ASCIIToUTF16("https://www."), 2));
-    prefixes.push_back(URLPrefix(base::ASCIIToUTF16("ftp://www."), 2));
-    prefixes.push_back(URLPrefix(base::ASCIIToUTF16("http://"), 1));
-    prefixes.push_back(URLPrefix(base::ASCIIToUTF16("https://"), 1));
-    prefixes.push_back(URLPrefix(base::ASCIIToUTF16("ftp://"), 1));
+    prefixes.push_back(URLPrefix(u"http://www.", 2));
+    prefixes.push_back(URLPrefix(u"https://www.", 2));
+    prefixes.push_back(URLPrefix(u"ftp://www.", 2));
+    prefixes.push_back(URLPrefix(u"http://", 1));
+    prefixes.push_back(URLPrefix(u"https://", 1));
+    prefixes.push_back(URLPrefix(u"ftp://", 1));
     prefixes.push_back(URLPrefix(std::u16string(), 0));
 
     return prefixes;

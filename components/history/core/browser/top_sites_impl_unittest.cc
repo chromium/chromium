@@ -276,8 +276,8 @@ class MockTopSitesObserver : public TopSitesObserver {
 TEST_F(TopSitesImplTest, DoTitlesDiffer) {
   GURL url_1("http://url1/");
   GURL url_2("http://url2/");
-  std::u16string title_1(base::ASCIIToUTF16("title1"));
-  std::u16string title_2(base::ASCIIToUTF16("title2"));
+  std::u16string title_1(u"title1");
+  std::u16string title_2(u"title2");
 
   MockTopSitesObserver observer;
   top_sites()->AddObserver(&observer);
@@ -381,7 +381,7 @@ TEST_F(TopSitesImplTest, GetMostVisitedWithRedirect) {
   GURL www("https://www.cnn.com/");
   GURL edition("https://edition.cnn.com/");
 
-  AddPageToHistory(edition, base::ASCIIToUTF16("CNN"), base::Time::Now(),
+  AddPageToHistory(edition, u"CNN", base::Time::Now(),
                    history::RedirectList{bare, www, edition});
   AddPageToHistory(edition);
 
@@ -414,11 +414,11 @@ TEST_F(TopSitesImplTest, GetMostVisitedWithRedirect) {
 TEST_F(TopSitesImplTest, SaveToDB) {
   MostVisitedURL url;
   GURL asdf_url("http://asdf.com");
-  std::u16string asdf_title(base::ASCIIToUTF16("ASDF"));
+  std::u16string asdf_title(u"ASDF");
   GURL google_url("http://google.com");
-  std::u16string google_title(base::ASCIIToUTF16("Google"));
+  std::u16string google_title(u"Google");
   GURL news_url("http://news.google.com");
-  std::u16string news_title(base::ASCIIToUTF16("Google News"));
+  std::u16string news_title(u"Google News");
 
   // Add asdf_url to history.
   AddPageToHistory(asdf_url, asdf_title);
@@ -463,13 +463,13 @@ TEST_F(TopSitesImplTest, SaveToDB) {
 TEST_F(TopSitesImplTest, RealDatabase) {
   MostVisitedURL url;
   GURL asdf_url("http://asdf.com");
-  std::u16string asdf_title(base::ASCIIToUTF16("ASDF"));
+  std::u16string asdf_title(u"ASDF");
   GURL google1_url("http://google.com");
   GURL google2_url("http://google.com/redirect");
   GURL google3_url("http://www.google.com");
-  std::u16string google_title(base::ASCIIToUTF16("Google"));
+  std::u16string google_title(u"Google");
   GURL news_url("http://news.google.com");
-  std::u16string news_title(base::ASCIIToUTF16("Google News"));
+  std::u16string news_title(u"Google News");
 
   url.url = asdf_url;
   url.title = asdf_title;
@@ -524,9 +524,9 @@ TEST_F(TopSitesImplTest, DeleteNotifications) {
   GURL google1_url("http://google.com");
   GURL google2_url("http://google.com/redirect");
   GURL google3_url("http://www.google.com");
-  std::u16string google_title(base::ASCIIToUTF16("Google"));
+  std::u16string google_title(u"Google");
   GURL news_url("http://news.google.com");
-  std::u16string news_title(base::ASCIIToUTF16("Google News"));
+  std::u16string news_title(u"Google News");
 
   AddPageToHistory(google1_url, google_title);
   AddPageToHistory(news_url, news_title);

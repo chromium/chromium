@@ -155,8 +155,8 @@ class MediaNotificationViewImplTest : public views::ViewsTestBase {
 
     // Update the metadata.
     media_session::MediaMetadata metadata;
-    metadata.title = base::ASCIIToUTF16("title");
-    metadata.artist = base::ASCIIToUTF16("artist");
+    metadata.title = u"title";
+    metadata.artist = u"artist";
     item_->MediaSessionMetadataChanged(metadata);
 
     // Inject the test media controller into the item.
@@ -603,8 +603,8 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, MetadataIsDisplayed) {
   EXPECT_TRUE(title_label()->GetVisible());
   EXPECT_TRUE(artist_label()->GetVisible());
 
-  EXPECT_EQ(base::ASCIIToUTF16("title"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist"), artist_label()->GetText());
+  EXPECT_EQ(u"title", title_label()->GetText());
+  EXPECT_EQ(u"artist", artist_label()->GetText());
 
   EXPECT_EQ(kMediaTitleArtistRowExpectedHeight, title_artist_row()->height());
 }
@@ -624,9 +624,9 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UpdateMetadata_FromObserver) {
   EXPECT_FALSE(header_row()->summary_text_for_testing()->GetVisible());
 
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("title2");
-  metadata.artist = base::ASCIIToUTF16("artist2");
-  metadata.album = base::ASCIIToUTF16("album");
+  metadata.title = u"title2";
+  metadata.artist = u"artist2";
+  metadata.album = u"album";
 
   EXPECT_CALL(container(), OnMediaSessionMetadataChanged(_));
   GetItem()->MediaSessionMetadataChanged(metadata);
@@ -644,7 +644,7 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UpdateMetadata_FromObserver) {
 
   EXPECT_EQ(kMediaTitleArtistRowExpectedHeight, title_artist_row()->height());
 
-  EXPECT_EQ(base::ASCIIToUTF16("title2 - artist2 - album"), accessible_name());
+  EXPECT_EQ(u"title2 - artist2 - album", accessible_name());
 
   ExpectHistogramMetadataRecorded(MediaNotificationViewImpl::Metadata::kTitle,
                                   2);
@@ -662,8 +662,8 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UpdateMetadata_AppName) {
 
   {
     media_session::MediaMetadata metadata;
-    metadata.title = base::ASCIIToUTF16("title");
-    metadata.artist = base::ASCIIToUTF16("artist");
+    metadata.title = u"title";
+    metadata.artist = u"artist";
     metadata.source_title = base::ASCIIToUTF16(kTestAppName);
     GetItem()->MediaSessionMetadataChanged(metadata);
   }
@@ -673,8 +673,8 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UpdateMetadata_AppName) {
 
   {
     media_session::MediaMetadata metadata;
-    metadata.title = base::ASCIIToUTF16("title");
-    metadata.artist = base::ASCIIToUTF16("artist");
+    metadata.title = u"title";
+    metadata.artist = u"artist";
     GetItem()->MediaSessionMetadataChanged(metadata);
   }
 
@@ -1015,21 +1015,21 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, AccessibleNodeData) {
 
   EXPECT_TRUE(
       data.HasStringAttribute(ax::mojom::StringAttribute::kRoleDescription));
-  EXPECT_EQ(base::ASCIIToUTF16("title - artist"), accessible_name());
+  EXPECT_EQ(u"title - artist", accessible_name());
 }
 
 TEST_F(MAYBE_MediaNotificationViewImplTest, Freezing_DoNotUpdateMetadata) {
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("title2");
-  metadata.artist = base::ASCIIToUTF16("artist2");
-  metadata.album = base::ASCIIToUTF16("album");
+  metadata.title = u"title2";
+  metadata.artist = u"artist2";
+  metadata.album = u"album";
 
   EXPECT_CALL(container(), OnMediaSessionMetadataChanged(_)).Times(0);
   GetItem()->Freeze(base::DoNothing());
   GetItem()->MediaSessionMetadataChanged(metadata);
 
-  EXPECT_EQ(base::ASCIIToUTF16("title"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist"), artist_label()->GetText());
+  EXPECT_EQ(u"title", title_label()->GetText());
+  EXPECT_EQ(u"artist", artist_label()->GetText());
 }
 
 TEST_F(MAYBE_MediaNotificationViewImplTest, Freezing_DoNotUpdateImage) {
@@ -1106,8 +1106,8 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UnfreezingDoesntMissUpdates) {
   EXPECT_TRUE(GetItem()->frozen());
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
   EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(base::ASCIIToUTF16("title"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist"), artist_label()->GetText());
+  EXPECT_EQ(u"title", title_label()->GetText());
+  EXPECT_EQ(u"artist", artist_label()->GetText());
 
   // Bind the item to a new controller that's playing instead of paused.
   auto new_media_controller = std::make_unique<TestMediaController>();
@@ -1127,14 +1127,14 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UnfreezingDoesntMissUpdates) {
   testing::Mock::VerifyAndClearExpectations(&unfrozen_callback);
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
   EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(base::ASCIIToUTF16("title"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist"), artist_label()->GetText());
+  EXPECT_EQ(u"title", title_label()->GetText());
+  EXPECT_EQ(u"artist", artist_label()->GetText());
 
   // Update the metadata.
   EXPECT_CALL(unfrozen_callback, Run);
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("title2");
-  metadata.artist = base::ASCIIToUTF16("artist2");
+  metadata.title = u"title2";
+  metadata.artist = u"artist2";
   GetItem()->MediaSessionMetadataChanged(metadata);
 
   // The item should no longer be frozen, and we should see the updated data.
@@ -1142,8 +1142,8 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UnfreezingDoesntMissUpdates) {
   testing::Mock::VerifyAndClearExpectations(&unfrozen_callback);
   EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPlay));
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(base::ASCIIToUTF16("title2"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist2"), artist_label()->GetText());
+  EXPECT_EQ(u"title2", title_label()->GetText());
+  EXPECT_EQ(u"artist2", artist_label()->GetText());
 }
 
 TEST_F(MAYBE_MediaNotificationViewImplTest, UnfreezingWaitsForArtwork_Timeout) {
@@ -1171,8 +1171,8 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UnfreezingWaitsForArtwork_Timeout) {
   EXPECT_TRUE(GetItem()->frozen());
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
   EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(base::ASCIIToUTF16("title"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist"), artist_label()->GetText());
+  EXPECT_EQ(u"title", title_label()->GetText());
+  EXPECT_EQ(u"artist", artist_label()->GetText());
   EXPECT_FALSE(GetArtworkImage().isNull());
 
   // Bind the item to a new controller that's playing instead of paused.
@@ -1192,14 +1192,14 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UnfreezingWaitsForArtwork_Timeout) {
   EXPECT_TRUE(GetItem()->frozen());
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
   EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(base::ASCIIToUTF16("title"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist"), artist_label()->GetText());
+  EXPECT_EQ(u"title", title_label()->GetText());
+  EXPECT_EQ(u"artist", artist_label()->GetText());
   EXPECT_FALSE(GetArtworkImage().isNull());
 
   // Update the metadata.
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("title2");
-  metadata.artist = base::ASCIIToUTF16("artist2");
+  metadata.title = u"title2";
+  metadata.artist = u"artist2";
   GetItem()->MediaSessionMetadataChanged(metadata);
 
   // The item should still be frozen, and waiting for a new image.
@@ -1207,8 +1207,8 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UnfreezingWaitsForArtwork_Timeout) {
   testing::Mock::VerifyAndClearExpectations(&unfrozen_callback);
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
   EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(base::ASCIIToUTF16("title"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist"), artist_label()->GetText());
+  EXPECT_EQ(u"title", title_label()->GetText());
+  EXPECT_EQ(u"artist", artist_label()->GetText());
   EXPECT_FALSE(GetArtworkImage().isNull());
 
   // Once the freeze timer fires, the item should unfreeze even if there's no
@@ -1220,8 +1220,8 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UnfreezingWaitsForArtwork_Timeout) {
   testing::Mock::VerifyAndClearExpectations(&unfrozen_callback);
   EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPlay));
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(base::ASCIIToUTF16("title2"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist2"), artist_label()->GetText());
+  EXPECT_EQ(u"title2", title_label()->GetText());
+  EXPECT_EQ(u"artist2", artist_label()->GetText());
   EXPECT_TRUE(GetArtworkImage().isNull());
 }
 
@@ -1248,8 +1248,8 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UnfreezingWaitsForActions) {
   EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kNextTrack));
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPreviousTrack));
-  EXPECT_EQ(base::ASCIIToUTF16("title"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist"), artist_label()->GetText());
+  EXPECT_EQ(u"title", title_label()->GetText());
+  EXPECT_EQ(u"artist", artist_label()->GetText());
 
   // Bind the item to a new controller that's playing instead of paused.
   auto new_media_controller = std::make_unique<TestMediaController>();
@@ -1270,13 +1270,13 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UnfreezingWaitsForActions) {
   EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kNextTrack));
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPreviousTrack));
-  EXPECT_EQ(base::ASCIIToUTF16("title"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist"), artist_label()->GetText());
+  EXPECT_EQ(u"title", title_label()->GetText());
+  EXPECT_EQ(u"artist", artist_label()->GetText());
 
   // Update the metadata.
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("title2");
-  metadata.artist = base::ASCIIToUTF16("artist2");
+  metadata.title = u"title2";
+  metadata.artist = u"artist2";
   GetItem()->MediaSessionMetadataChanged(metadata);
 
   // The item should still be frozen, and waiting for new actions.
@@ -1286,8 +1286,8 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UnfreezingWaitsForActions) {
   EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kNextTrack));
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPreviousTrack));
-  EXPECT_EQ(base::ASCIIToUTF16("title"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist"), artist_label()->GetText());
+  EXPECT_EQ(u"title", title_label()->GetText());
+  EXPECT_EQ(u"artist", artist_label()->GetText());
 
   // Once we receive actions, the item should unfreeze.
   EXPECT_CALL(unfrozen_callback, Run);
@@ -1302,8 +1302,8 @@ TEST_F(MAYBE_MediaNotificationViewImplTest, UnfreezingWaitsForActions) {
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPause));
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kSeekForward));
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kSeekBackward));
-  EXPECT_EQ(base::ASCIIToUTF16("title2"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist2"), artist_label()->GetText());
+  EXPECT_EQ(u"title2", title_label()->GetText());
+  EXPECT_EQ(u"artist2", artist_label()->GetText());
 }
 
 TEST_F(MAYBE_MediaNotificationViewImplTest,
@@ -1332,8 +1332,8 @@ TEST_F(MAYBE_MediaNotificationViewImplTest,
   EXPECT_TRUE(GetItem()->frozen());
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
   EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(base::ASCIIToUTF16("title"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist"), artist_label()->GetText());
+  EXPECT_EQ(u"title", title_label()->GetText());
+  EXPECT_EQ(u"artist", artist_label()->GetText());
   EXPECT_FALSE(GetArtworkImage().isNull());
 
   // Bind the item to a new controller that's playing instead of paused.
@@ -1353,14 +1353,14 @@ TEST_F(MAYBE_MediaNotificationViewImplTest,
   EXPECT_TRUE(GetItem()->frozen());
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
   EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(base::ASCIIToUTF16("title"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist"), artist_label()->GetText());
+  EXPECT_EQ(u"title", title_label()->GetText());
+  EXPECT_EQ(u"artist", artist_label()->GetText());
   EXPECT_FALSE(GetArtworkImage().isNull());
 
   // Update the metadata.
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("title2");
-  metadata.artist = base::ASCIIToUTF16("artist2");
+  metadata.title = u"title2";
+  metadata.artist = u"artist2";
   GetItem()->MediaSessionMetadataChanged(metadata);
 
   // The item should still be frozen, and waiting for a new image.
@@ -1368,8 +1368,8 @@ TEST_F(MAYBE_MediaNotificationViewImplTest,
   testing::Mock::VerifyAndClearExpectations(&unfrozen_callback);
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPlay));
   EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(base::ASCIIToUTF16("title"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist"), artist_label()->GetText());
+  EXPECT_EQ(u"title", title_label()->GetText());
+  EXPECT_EQ(u"artist", artist_label()->GetText());
   EXPECT_FALSE(GetArtworkImage().isNull());
 
   // Once we receive artwork, the item should unfreeze.
@@ -1384,8 +1384,8 @@ TEST_F(MAYBE_MediaNotificationViewImplTest,
   testing::Mock::VerifyAndClearExpectations(&unfrozen_callback);
   EXPECT_FALSE(GetButtonForAction(MediaSessionAction::kPlay));
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPause));
-  EXPECT_EQ(base::ASCIIToUTF16("title2"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist2"), artist_label()->GetText());
+  EXPECT_EQ(u"title2", title_label()->GetText());
+  EXPECT_EQ(u"artist2", artist_label()->GetText());
   EXPECT_FALSE(GetArtworkImage().isNull());
 }
 

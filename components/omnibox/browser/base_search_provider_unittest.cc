@@ -100,7 +100,7 @@ TEST_F(BaseSearchProviderTest, PreserveAnswersWhenDeduplicating) {
   auto template_url = std::make_unique<TemplateURL>(data);
 
   TestBaseSearchProvider::MatchMap map;
-  std::u16string query = base::ASCIIToUTF16("weather los angeles");
+  std::u16string query = u"weather los angeles";
   SuggestionAnswer answer;
   answer.set_type(2334);
 
@@ -177,21 +177,20 @@ TEST_F(BaseSearchProviderTest, MatchTailSuggestionProperly) {
   auto template_url = std::make_unique<TemplateURL>(data);
 
   AutocompleteInput autocomplete_input(
-      base::ASCIIToUTF16("weather"), 7, metrics::OmniboxEventProto::BLANK,
-      TestSchemeClassifier());
+      u"weather", 7, metrics::OmniboxEventProto::BLANK, TestSchemeClassifier());
 
   EXPECT_CALL(*provider_, GetInput(_))
       .WillRepeatedly(Return(autocomplete_input));
   EXPECT_CALL(*provider_, GetTemplateURL(_))
       .WillRepeatedly(Return(template_url.get()));
 
-  std::u16string query = base::ASCIIToUTF16("angeles now");
-  std::u16string suggestion = base::ASCIIToUTF16("weather los ") + query;
+  std::u16string query = u"angeles now";
+  std::u16string suggestion = u"weather los " + query;
   SearchSuggestionParser::SuggestResult suggest_result(
       suggestion, AutocompleteMatchType::SEARCH_SUGGEST_TAIL,
       /*subtypes=*/{},
       /*match_contents=*/query,
-      /*match_contents_prefix=*/base::ASCIIToUTF16("..."),
+      /*match_contents_prefix=*/u"...",
       /*annotation=*/std::u16string(),
       /*suggest_query_params=*/std::string(),
       /*deletion_url=*/std::string(),
@@ -224,7 +223,7 @@ TEST_F(BaseSearchProviderTest, DeleteDuplicateMatch) {
   auto template_url = std::make_unique<TemplateURL>(data);
 
   TestBaseSearchProvider::MatchMap map;
-  std::u16string query = base::ASCIIToUTF16("site.com");
+  std::u16string query = u"site.com";
 
   EXPECT_CALL(*provider_, GetInput(_))
       .WillRepeatedly(Return(AutocompleteInput()));

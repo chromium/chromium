@@ -233,7 +233,7 @@ TEST(SyncedSessionTest, SetSessionTabFromSyncData) {
   for (int i = 0; i < 5; ++i) {
     EXPECT_EQ(i, tab.navigations[i].index());
     EXPECT_EQ(GURL("referrer"), tab.navigations[i].referrer_url());
-    EXPECT_EQ(base::ASCIIToUTF16("title"), tab.navigations[i].title());
+    EXPECT_EQ(u"title", tab.navigations[i].title());
     EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
         tab.navigations[i].transition_type(), ui::PAGE_TRANSITION_TYPED));
     EXPECT_EQ(GURL("http://foo/" + base::NumberToString(i)),

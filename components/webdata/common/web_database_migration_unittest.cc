@@ -345,16 +345,16 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion53ToCurrent) {
     ASSERT_TRUE(s_profiles.Step());
     EXPECT_EQ("00000000-0000-0000-0000-000000000001",
               s_profiles.ColumnString(0));
-    EXPECT_EQ(ASCIIToUTF16("Google, Inc."), s_profiles.ColumnString16(1));
+    EXPECT_EQ(u"Google, Inc.", s_profiles.ColumnString16(1));
     EXPECT_EQ(ASCIIToUTF16("1950 Charleston Rd.\n"
                            "(2nd floor)"),
               s_profiles.ColumnString16(2));
     EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(3));
-    EXPECT_EQ(ASCIIToUTF16("Mountain View"), s_profiles.ColumnString16(4));
-    EXPECT_EQ(ASCIIToUTF16("CA"), s_profiles.ColumnString16(5));
-    EXPECT_EQ(ASCIIToUTF16("94043"), s_profiles.ColumnString16(6));
+    EXPECT_EQ(u"Mountain View", s_profiles.ColumnString16(4));
+    EXPECT_EQ(u"CA", s_profiles.ColumnString16(5));
+    EXPECT_EQ(u"94043", s_profiles.ColumnString16(6));
     EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(7));
-    EXPECT_EQ(ASCIIToUTF16("US"), s_profiles.ColumnString16(8));
+    EXPECT_EQ(u"US", s_profiles.ColumnString16(8));
     EXPECT_EQ(1386046731, s_profiles.ColumnInt(9));
     EXPECT_EQ(ASCIIToUTF16(autofill::kSettingsOrigin),
               s_profiles.ColumnString16(10));
@@ -363,15 +363,14 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion53ToCurrent) {
     ASSERT_TRUE(s_profiles.Step());
     EXPECT_EQ("00000000-0000-0000-0000-000000000002",
               s_profiles.ColumnString(0));
-    EXPECT_EQ(ASCIIToUTF16("Google!"), s_profiles.ColumnString16(1));
-    EXPECT_EQ(ASCIIToUTF16("1600 Amphitheatre Pkwy."),
-              s_profiles.ColumnString16(2));
+    EXPECT_EQ(u"Google!", s_profiles.ColumnString16(1));
+    EXPECT_EQ(u"1600 Amphitheatre Pkwy.", s_profiles.ColumnString16(2));
     EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(3));
-    EXPECT_EQ(ASCIIToUTF16("Mtn. View"), s_profiles.ColumnString16(4));
-    EXPECT_EQ(ASCIIToUTF16("California"), s_profiles.ColumnString16(5));
-    EXPECT_EQ(ASCIIToUTF16("94043-1234"), s_profiles.ColumnString16(6));
+    EXPECT_EQ(u"Mtn. View", s_profiles.ColumnString16(4));
+    EXPECT_EQ(u"California", s_profiles.ColumnString16(5));
+    EXPECT_EQ(u"94043-1234", s_profiles.ColumnString16(6));
     EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(7));
-    EXPECT_EQ(ASCIIToUTF16("US"), s_profiles.ColumnString16(8));
+    EXPECT_EQ(u"US", s_profiles.ColumnString16(8));
     EXPECT_EQ(1386046800, s_profiles.ColumnInt(9));
     EXPECT_EQ(ASCIIToUTF16(autofill::kSettingsOrigin),
               s_profiles.ColumnString16(10));
@@ -381,7 +380,7 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion53ToCurrent) {
     EXPECT_EQ("00000000-0000-0000-0000-000000000003",
               s_profiles.ColumnString(0));
     EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(1));
-    EXPECT_EQ(ASCIIToUTF16("\nOnly line 2???"), s_profiles.ColumnString16(2));
+    EXPECT_EQ(u"\nOnly line 2???", s_profiles.ColumnString16(2));
     EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(3));
     EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(4));
     EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(5));
@@ -400,7 +399,7 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion53ToCurrent) {
     EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(2));
     EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(3));
     EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(4));
-    EXPECT_EQ(ASCIIToUTF16("Texas"), s_profiles.ColumnString16(5));
+    EXPECT_EQ(u"Texas", s_profiles.ColumnString16(5));
     EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(6));
     EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(7));
     EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(8));
@@ -417,11 +416,11 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion53ToCurrent) {
 
     ASSERT_TRUE(s_phones.Step());
     EXPECT_EQ("00000000-0000-0000-0000-000000000001", s_phones.ColumnString(0));
-    EXPECT_EQ(ASCIIToUTF16("1.800.555.1234"), s_phones.ColumnString16(1));
+    EXPECT_EQ(u"1.800.555.1234", s_phones.ColumnString16(1));
 
     ASSERT_TRUE(s_phones.Step());
     EXPECT_EQ("00000000-0000-0000-0000-000000000001", s_phones.ColumnString(0));
-    EXPECT_EQ(ASCIIToUTF16("+1 (800) 555-4321"), s_phones.ColumnString16(1));
+    EXPECT_EQ(u"+1 (800) 555-4321", s_phones.ColumnString16(1));
 
     ASSERT_TRUE(s_phones.Step());
     EXPECT_EQ("00000000-0000-0000-0000-000000000002", s_phones.ColumnString(0));
@@ -429,7 +428,7 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion53ToCurrent) {
 
     ASSERT_TRUE(s_phones.Step());
     EXPECT_EQ("00000000-0000-0000-0000-000000000003", s_phones.ColumnString(0));
-    EXPECT_EQ(ASCIIToUTF16("6505557890"), s_phones.ColumnString16(1));
+    EXPECT_EQ(u"6505557890", s_phones.ColumnString16(1));
 
     ASSERT_TRUE(s_phones.Step());
     EXPECT_EQ("00000000-0000-0000-0000-000000000004", s_phones.ColumnString(0));
@@ -462,9 +461,9 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion54ToCurrent) {
 
     // An entry with one timestamp.
     ASSERT_TRUE(s_autofill.Step());
-    EXPECT_EQ(ASCIIToUTF16("Name"), s_autofill.ColumnString16(0));
-    EXPECT_EQ(ASCIIToUTF16("John Doe"), s_autofill.ColumnString16(1));
-    EXPECT_EQ(ASCIIToUTF16("john doe"), s_autofill.ColumnString16(2));
+    EXPECT_EQ(u"Name", s_autofill.ColumnString16(0));
+    EXPECT_EQ(u"John Doe", s_autofill.ColumnString16(1));
+    EXPECT_EQ(u"john doe", s_autofill.ColumnString16(2));
     EXPECT_EQ(10, s_autofill.ColumnInt(3));
     EXPECT_EQ(1, s_autofill.ColumnInt(4));
     ASSERT_TRUE(s_dates.Step());
@@ -474,9 +473,9 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion54ToCurrent) {
     // Another entry with one timestamp, differing from the previous one in case
     // only.
     ASSERT_TRUE(s_autofill.Step());
-    EXPECT_EQ(ASCIIToUTF16("Name"), s_autofill.ColumnString16(0));
-    EXPECT_EQ(ASCIIToUTF16("john doe"), s_autofill.ColumnString16(1));
-    EXPECT_EQ(ASCIIToUTF16("john doe"), s_autofill.ColumnString16(2));
+    EXPECT_EQ(u"Name", s_autofill.ColumnString16(0));
+    EXPECT_EQ(u"john doe", s_autofill.ColumnString16(1));
+    EXPECT_EQ(u"john doe", s_autofill.ColumnString16(2));
     EXPECT_EQ(11, s_autofill.ColumnInt(3));
     EXPECT_EQ(1, s_autofill.ColumnInt(4));
     ASSERT_TRUE(s_dates.Step());
@@ -485,9 +484,9 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion54ToCurrent) {
 
     // An entry with two timestamps (with count > 2; this is realistic).
     ASSERT_TRUE(s_autofill.Step());
-    EXPECT_EQ(ASCIIToUTF16("Email"), s_autofill.ColumnString16(0));
-    EXPECT_EQ(ASCIIToUTF16("jane@example.com"), s_autofill.ColumnString16(1));
-    EXPECT_EQ(ASCIIToUTF16("jane@example.com"), s_autofill.ColumnString16(2));
+    EXPECT_EQ(u"Email", s_autofill.ColumnString16(0));
+    EXPECT_EQ(u"jane@example.com", s_autofill.ColumnString16(1));
+    EXPECT_EQ(u"jane@example.com", s_autofill.ColumnString16(2));
     EXPECT_EQ(20, s_autofill.ColumnInt(3));
     EXPECT_EQ(3, s_autofill.ColumnInt(4));
     ASSERT_TRUE(s_dates.Step());
@@ -499,11 +498,9 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion54ToCurrent) {
 
     // An entry with more than two timestamps, which are stored out of order.
     ASSERT_TRUE(s_autofill.Step());
-    EXPECT_EQ(ASCIIToUTF16("Email"), s_autofill.ColumnString16(0));
-    EXPECT_EQ(ASCIIToUTF16("jane.doe@example.org"),
-              s_autofill.ColumnString16(1));
-    EXPECT_EQ(ASCIIToUTF16("jane.doe@example.org"),
-              s_autofill.ColumnString16(2));
+    EXPECT_EQ(u"Email", s_autofill.ColumnString16(0));
+    EXPECT_EQ(u"jane.doe@example.org", s_autofill.ColumnString16(1));
+    EXPECT_EQ(u"jane.doe@example.org", s_autofill.ColumnString16(2));
     EXPECT_EQ(21, s_autofill.ColumnInt(3));
     EXPECT_EQ(4, s_autofill.ColumnInt(4));
     ASSERT_TRUE(s_dates.Step());
@@ -553,18 +550,18 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion54ToCurrent) {
     // "jane.doe@example.org": Timestamps should be parsed correctly, and only
     // the first and last should be kept.
     ASSERT_TRUE(s.Step());
-    EXPECT_EQ(ASCIIToUTF16("Email"), s.ColumnString16(0));
-    EXPECT_EQ(ASCIIToUTF16("jane.doe@example.org"), s.ColumnString16(1));
-    EXPECT_EQ(ASCIIToUTF16("jane.doe@example.org"), s.ColumnString16(2));
+    EXPECT_EQ(u"Email", s.ColumnString16(0));
+    EXPECT_EQ(u"jane.doe@example.org", s.ColumnString16(1));
+    EXPECT_EQ(u"jane.doe@example.org", s.ColumnString16(2));
     EXPECT_EQ(1384299400, s.ColumnInt64(3));
     EXPECT_EQ(1384299403, s.ColumnInt64(4));
     EXPECT_EQ(4, s.ColumnInt(5));
 
     // "jane@example.com": Timestamps should be parsed correctly.
     ASSERT_TRUE(s.Step());
-    EXPECT_EQ(ASCIIToUTF16("Email"), s.ColumnString16(0));
-    EXPECT_EQ(ASCIIToUTF16("jane@example.com"), s.ColumnString16(1));
-    EXPECT_EQ(ASCIIToUTF16("jane@example.com"), s.ColumnString16(2));
+    EXPECT_EQ(u"Email", s.ColumnString16(0));
+    EXPECT_EQ(u"jane@example.com", s.ColumnString16(1));
+    EXPECT_EQ(u"jane@example.com", s.ColumnString16(2));
     EXPECT_EQ(1384299300, s.ColumnInt64(3));
     EXPECT_EQ(1384299301, s.ColumnInt64(4));
     EXPECT_EQ(3, s.ColumnInt(5));
@@ -572,18 +569,18 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion54ToCurrent) {
     // "John Doe": The single timestamp should be assigned as both the creation
     // and the last use timestamp.
     ASSERT_TRUE(s.Step());
-    EXPECT_EQ(ASCIIToUTF16("Name"), s.ColumnString16(0));
-    EXPECT_EQ(ASCIIToUTF16("John Doe"), s.ColumnString16(1));
-    EXPECT_EQ(ASCIIToUTF16("john doe"), s.ColumnString16(2));
+    EXPECT_EQ(u"Name", s.ColumnString16(0));
+    EXPECT_EQ(u"John Doe", s.ColumnString16(1));
+    EXPECT_EQ(u"john doe", s.ColumnString16(2));
     EXPECT_EQ(1384299100, s.ColumnInt64(3));
     EXPECT_EQ(1384299100, s.ColumnInt64(4));
     EXPECT_EQ(1, s.ColumnInt(5));
 
     // "john doe": Should not be merged with "John Doe" (case-sensitivity).
     ASSERT_TRUE(s.Step());
-    EXPECT_EQ(ASCIIToUTF16("Name"), s.ColumnString16(0));
-    EXPECT_EQ(ASCIIToUTF16("john doe"), s.ColumnString16(1));
-    EXPECT_EQ(ASCIIToUTF16("john doe"), s.ColumnString16(2));
+    EXPECT_EQ(u"Name", s.ColumnString16(0));
+    EXPECT_EQ(u"john doe", s.ColumnString16(1));
+    EXPECT_EQ(u"john doe", s.ColumnString16(2));
     EXPECT_EQ(1384299200, s.ColumnInt64(3));
     EXPECT_EQ(1384299200, s.ColumnInt64(4));
     EXPECT_EQ(1, s.ColumnInt(5));
@@ -637,14 +634,14 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion55ToCurrent) {
     ASSERT_TRUE(s_profiles.Step());
     EXPECT_EQ("00000000-0000-0000-0000-000000000001",
               s_profiles.ColumnString(0));
-    EXPECT_EQ(ASCIIToUTF16("Google Inc"), s_profiles.ColumnString16(1));
-    EXPECT_EQ(ASCIIToUTF16("340 Main St"), s_profiles.ColumnString16(2));
+    EXPECT_EQ(u"Google Inc", s_profiles.ColumnString16(1));
+    EXPECT_EQ(u"340 Main St", s_profiles.ColumnString16(2));
     EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(3));
-    EXPECT_EQ(ASCIIToUTF16("Los Angeles"), s_profiles.ColumnString16(4));
-    EXPECT_EQ(ASCIIToUTF16("CA"), s_profiles.ColumnString16(5));
-    EXPECT_EQ(ASCIIToUTF16("90291"), s_profiles.ColumnString16(6));
+    EXPECT_EQ(u"Los Angeles", s_profiles.ColumnString16(4));
+    EXPECT_EQ(u"CA", s_profiles.ColumnString16(5));
+    EXPECT_EQ(u"90291", s_profiles.ColumnString16(6));
     EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(7));
-    EXPECT_EQ(ASCIIToUTF16("US"), s_profiles.ColumnString16(8));
+    EXPECT_EQ(u"US", s_profiles.ColumnString16(8));
     EXPECT_EQ(1395948829, s_profiles.ColumnInt(9));
     EXPECT_EQ(ASCIIToUTF16(autofill::kSettingsOrigin),
               s_profiles.ColumnString16(10));
@@ -676,9 +673,9 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion56ToCurrent) {
         "FROM autofill_profile_names"));
     ASSERT_TRUE(s_names.Step());
     EXPECT_EQ("B41FE6E0-B13E-2A2A-BF0B-29FCE2C3ADBD", s_names.ColumnString(0));
-    EXPECT_EQ(ASCIIToUTF16("Jon"), s_names.ColumnString16(1));
+    EXPECT_EQ(u"Jon", s_names.ColumnString16(1));
     EXPECT_EQ(std::u16string(), s_names.ColumnString16(2));
-    EXPECT_EQ(ASCIIToUTF16("Smith"), s_names.ColumnString16(3));
+    EXPECT_EQ(u"Smith", s_names.ColumnString16(3));
   }
 
   DoMigration();
@@ -706,9 +703,9 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion56ToCurrent) {
 
     ASSERT_TRUE(s_names.Step());
     EXPECT_EQ("B41FE6E0-B13E-2A2A-BF0B-29FCE2C3ADBD", s_names.ColumnString(0));
-    EXPECT_EQ(ASCIIToUTF16("Jon"), s_names.ColumnString16(1));
+    EXPECT_EQ(u"Jon", s_names.ColumnString16(1));
     EXPECT_EQ(std::u16string(), s_names.ColumnString16(2));
-    EXPECT_EQ(ASCIIToUTF16("Smith"), s_names.ColumnString16(3));
+    EXPECT_EQ(u"Smith", s_names.ColumnString16(3));
     EXPECT_EQ(std::u16string(), s_names.ColumnString16(4));
 
     // No more entries expected.
@@ -1398,14 +1395,14 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion74ToCurrent) {
     ASSERT_TRUE(s_profiles.Step());
     EXPECT_EQ("00000000-0000-0000-0000-000000000001",
               s_profiles.ColumnString(0));
-    EXPECT_EQ(ASCIIToUTF16("Google Inc"), s_profiles.ColumnString16(1));
-    EXPECT_EQ(ASCIIToUTF16("340 Main St"), s_profiles.ColumnString16(2));
+    EXPECT_EQ(u"Google Inc", s_profiles.ColumnString16(1));
+    EXPECT_EQ(u"340 Main St", s_profiles.ColumnString16(2));
     EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(3));
-    EXPECT_EQ(ASCIIToUTF16("Los Angeles"), s_profiles.ColumnString16(4));
-    EXPECT_EQ(ASCIIToUTF16("CA"), s_profiles.ColumnString16(5));
-    EXPECT_EQ(ASCIIToUTF16("90291"), s_profiles.ColumnString16(6));
+    EXPECT_EQ(u"Los Angeles", s_profiles.ColumnString16(4));
+    EXPECT_EQ(u"CA", s_profiles.ColumnString16(5));
+    EXPECT_EQ(u"90291", s_profiles.ColumnString16(6));
     EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(7));
-    EXPECT_EQ(ASCIIToUTF16("US"), s_profiles.ColumnString16(8));
+    EXPECT_EQ(u"US", s_profiles.ColumnString16(8));
     EXPECT_EQ(1395948829, s_profiles.ColumnInt(9));
     EXPECT_EQ(ASCIIToUTF16(autofill::kSettingsOrigin),
               s_profiles.ColumnString16(10));
@@ -1616,14 +1613,14 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion79ToCurrent) {
     ASSERT_TRUE(s_profiles.Step());
     EXPECT_EQ("00000000-0000-0000-0000-000000000001",
               s_profiles.ColumnString(0));
-    EXPECT_EQ(ASCIIToUTF16("Google Inc"), s_profiles.ColumnString16(1));
-    EXPECT_EQ(ASCIIToUTF16("340 Main St"), s_profiles.ColumnString16(2));
+    EXPECT_EQ(u"Google Inc", s_profiles.ColumnString16(1));
+    EXPECT_EQ(u"340 Main St", s_profiles.ColumnString16(2));
     EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(3));
-    EXPECT_EQ(ASCIIToUTF16("Los Angeles"), s_profiles.ColumnString16(4));
-    EXPECT_EQ(ASCIIToUTF16("CA"), s_profiles.ColumnString16(5));
-    EXPECT_EQ(ASCIIToUTF16("90291"), s_profiles.ColumnString16(6));
+    EXPECT_EQ(u"Los Angeles", s_profiles.ColumnString16(4));
+    EXPECT_EQ(u"CA", s_profiles.ColumnString16(5));
+    EXPECT_EQ(u"90291", s_profiles.ColumnString16(6));
     EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(7));
-    EXPECT_EQ(ASCIIToUTF16("US"), s_profiles.ColumnString16(8));
+    EXPECT_EQ(u"US", s_profiles.ColumnString16(8));
     EXPECT_EQ(1395948829, s_profiles.ColumnInt(9));
     EXPECT_EQ(ASCIIToUTF16(autofill::kSettingsOrigin),
               s_profiles.ColumnString16(10));

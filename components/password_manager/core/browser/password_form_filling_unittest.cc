@@ -110,21 +110,21 @@ class PasswordFormFillingTest : public testing::Test {
 
     observed_form_.url = GURL("https://accounts.google.com/a/LoginAuth");
     observed_form_.action = GURL("https://accounts.google.com/a/Login");
-    observed_form_.username_element = ASCIIToUTF16("Email");
+    observed_form_.username_element = u"Email";
     observed_form_.username_element_renderer_id =
         autofill::FieldRendererId(100);
-    observed_form_.password_element = ASCIIToUTF16("Passwd");
+    observed_form_.password_element = u"Passwd";
     observed_form_.password_element_renderer_id =
         autofill::FieldRendererId(101);
-    observed_form_.submit_element = ASCIIToUTF16("signIn");
+    observed_form_.submit_element = u"signIn";
     observed_form_.signon_realm = "https://accounts.google.com";
-    observed_form_.form_data.name = ASCIIToUTF16("the-form-name");
+    observed_form_.form_data.name = u"the-form-name";
 
     saved_match_ = observed_form_;
     saved_match_.url = GURL("https://accounts.google.com/a/ServiceLoginAuth");
     saved_match_.action = GURL("https://accounts.google.com/a/ServiceLogin");
-    saved_match_.username_value = ASCIIToUTF16("test@gmail.com");
-    saved_match_.password_value = ASCIIToUTF16("test1");
+    saved_match_.username_value = u"test@gmail.com";
+    saved_match_.password_value = u"test1";
 
     psl_saved_match_ = saved_match_;
     psl_saved_match_.is_public_suffix_match = true;
@@ -163,8 +163,8 @@ TEST_F(PasswordFormFillingTest, Autofill) {
   std::vector<const PasswordForm*> best_matches;
   best_matches.push_back(&saved_match_);
   PasswordForm another_saved_match = saved_match_;
-  another_saved_match.username_value += ASCIIToUTF16("1");
-  another_saved_match.password_value += ASCIIToUTF16("1");
+  another_saved_match.username_value += u"1";
+  another_saved_match.password_value += u"1";
   best_matches.push_back(&another_saved_match);
 
   EXPECT_CALL(driver_, InformNoSavedCredentials(_)).Times(0);
@@ -231,7 +231,7 @@ TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestion) {
 
     PasswordForm observed_form = observed_form_;
     if (test_case.new_password_present) {
-      observed_form.new_password_element = ASCIIToUTF16("New Passwd");
+      observed_form.new_password_element = u"New Passwd";
       observed_form.new_password_element_renderer_id =
           autofill::FieldRendererId(125);
     }
@@ -307,7 +307,7 @@ TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestionWithPrefill) {
     // Set username to match preferred match
     observed_form.username_value = preferred_match.username_value;
     // Set a different password than saved
-    observed_form.password_value = ASCIIToUTF16("New Passwd");
+    observed_form.password_value = u"New Passwd";
     // Set classification results
     observed_form.server_side_classification_successful =
         test_case.server_side_classification_successful;
@@ -387,8 +387,8 @@ TEST_F(PasswordFormFillingTest, AutofillAffiliatedWebMatch) {
   // Create a match from the database that matches using affiliation.
   PasswordForm affiliated_match;
   affiliated_match.url = GURL("https://fooo.com/");
-  affiliated_match.username_value = ASCIIToUTF16("test@gmail.com");
-  affiliated_match.password_value = ASCIIToUTF16("test1");
+  affiliated_match.username_value = u"test@gmail.com";
+  affiliated_match.password_value = u"test1";
   affiliated_match.signon_realm = "https://fooo.com/";
   affiliated_match.is_affiliation_based_match = true;
 
@@ -455,11 +455,11 @@ TEST(PasswordFormFillDataTest, TestSinglePreferredMatch) {
   PasswordForm form_on_page;
   form_on_page.url = GURL("https://foo.com/");
   form_on_page.action = GURL("https://foo.com/login");
-  form_on_page.username_element = ASCIIToUTF16("username");
+  form_on_page.username_element = u"username";
   form_on_page.username_value = ASCIIToUTF16(kPreferredUsername);
-  form_on_page.password_element = ASCIIToUTF16("password");
+  form_on_page.password_element = u"password";
   form_on_page.password_value = ASCIIToUTF16(kPreferredPassword);
-  form_on_page.submit_element = ASCIIToUTF16("");
+  form_on_page.submit_element = u"";
   form_on_page.signon_realm = "https://foo.com/";
   form_on_page.scheme = PasswordForm::Scheme::kHtml;
 
@@ -467,11 +467,11 @@ TEST(PasswordFormFillDataTest, TestSinglePreferredMatch) {
   PasswordForm preferred_match;
   preferred_match.url = GURL("https://foo.com/");
   preferred_match.action = GURL("https://foo.com/login");
-  preferred_match.username_element = ASCIIToUTF16("username");
+  preferred_match.username_element = u"username";
   preferred_match.username_value = ASCIIToUTF16(kPreferredUsername);
-  preferred_match.password_element = ASCIIToUTF16("password");
+  preferred_match.password_element = u"password";
   preferred_match.password_value = ASCIIToUTF16(kPreferredPassword);
-  preferred_match.submit_element = ASCIIToUTF16("");
+  preferred_match.submit_element = u"";
   preferred_match.signon_realm = "https://foo.com/";
   preferred_match.scheme = PasswordForm::Scheme::kHtml;
 
@@ -504,11 +504,11 @@ TEST(PasswordFormFillDataTest, TestPublicSuffixDomainMatching) {
   PasswordForm form_on_page;
   form_on_page.url = GURL("https://foo.com/");
   form_on_page.action = GURL("https://foo.com/login");
-  form_on_page.username_element = ASCIIToUTF16("username");
+  form_on_page.username_element = u"username";
   form_on_page.username_value = ASCIIToUTF16(kPreferredUsername);
-  form_on_page.password_element = ASCIIToUTF16("password");
+  form_on_page.password_element = u"password";
   form_on_page.password_value = ASCIIToUTF16(kPreferredPassword);
-  form_on_page.submit_element = ASCIIToUTF16("");
+  form_on_page.submit_element = u"";
   form_on_page.signon_realm = "https://foo.com/";
   form_on_page.scheme = PasswordForm::Scheme::kHtml;
 
@@ -516,11 +516,11 @@ TEST(PasswordFormFillDataTest, TestPublicSuffixDomainMatching) {
   PasswordForm preferred_match;
   preferred_match.url = GURL("https://mobile.foo.com/");
   preferred_match.action = GURL("https://mobile.foo.com/login");
-  preferred_match.username_element = ASCIIToUTF16("username");
+  preferred_match.username_element = u"username";
   preferred_match.username_value = ASCIIToUTF16(kPreferredUsername);
-  preferred_match.password_element = ASCIIToUTF16("password");
+  preferred_match.password_element = u"password";
   preferred_match.password_value = ASCIIToUTF16(kPreferredPassword);
-  preferred_match.submit_element = ASCIIToUTF16("");
+  preferred_match.submit_element = u"";
   preferred_match.signon_realm = "https://foo.com/";
   preferred_match.is_public_suffix_match = true;
   preferred_match.scheme = PasswordForm::Scheme::kHtml;
@@ -530,11 +530,11 @@ TEST(PasswordFormFillDataTest, TestPublicSuffixDomainMatching) {
   PasswordForm exact_match;
   exact_match.url = GURL("https://foo.com/");
   exact_match.action = GURL("https://foo.com/login");
-  exact_match.username_element = ASCIIToUTF16("username");
-  exact_match.username_value = ASCIIToUTF16("test1@gmail.com");
-  exact_match.password_element = ASCIIToUTF16("password");
+  exact_match.username_element = u"username";
+  exact_match.username_value = u"test1@gmail.com";
+  exact_match.password_element = u"password";
   exact_match.password_value = ASCIIToUTF16(kPreferredPassword);
-  exact_match.submit_element = ASCIIToUTF16("");
+  exact_match.submit_element = u"";
   exact_match.signon_realm = "https://foo.com/";
   exact_match.scheme = PasswordForm::Scheme::kHtml;
 
@@ -543,11 +543,11 @@ TEST(PasswordFormFillDataTest, TestPublicSuffixDomainMatching) {
   PasswordForm public_suffix_match;
   public_suffix_match.url = GURL("https://foo.com/");
   public_suffix_match.action = GURL("https://foo.com/login");
-  public_suffix_match.username_element = ASCIIToUTF16("username");
-  public_suffix_match.username_value = ASCIIToUTF16("test2@gmail.com");
-  public_suffix_match.password_element = ASCIIToUTF16("password");
+  public_suffix_match.username_element = u"username";
+  public_suffix_match.username_value = u"test2@gmail.com";
+  public_suffix_match.password_element = u"password";
   public_suffix_match.password_value = ASCIIToUTF16(kPreferredPassword);
-  public_suffix_match.submit_element = ASCIIToUTF16("");
+  public_suffix_match.submit_element = u"";
   public_suffix_match.is_public_suffix_match = true;
   public_suffix_match.signon_realm = "https://foo.com/";
   public_suffix_match.scheme = PasswordForm::Scheme::kHtml;
@@ -585,11 +585,11 @@ TEST(PasswordFormFillDataTest, TestAffiliationMatch) {
   PasswordForm form_on_page;
   form_on_page.url = GURL("https://foo.com/");
   form_on_page.action = GURL("https://foo.com/login");
-  form_on_page.username_element = ASCIIToUTF16("username");
+  form_on_page.username_element = u"username";
   form_on_page.username_value = ASCIIToUTF16(kPreferredUsername);
-  form_on_page.password_element = ASCIIToUTF16("password");
+  form_on_page.password_element = u"password";
   form_on_page.password_value = ASCIIToUTF16(kPreferredPassword);
-  form_on_page.submit_element = ASCIIToUTF16("");
+  form_on_page.submit_element = u"";
   form_on_page.signon_realm = "https://foo.com/";
   form_on_page.scheme = PasswordForm::Scheme::kHtml;
 
@@ -606,11 +606,11 @@ TEST(PasswordFormFillDataTest, TestAffiliationMatch) {
   PasswordForm exact_match;
   exact_match.url = GURL("https://foo.com/");
   exact_match.action = GURL("https://foo.com/login");
-  exact_match.username_element = ASCIIToUTF16("username");
-  exact_match.username_value = ASCIIToUTF16("test1@gmail.com");
-  exact_match.password_element = ASCIIToUTF16("password");
+  exact_match.username_element = u"username";
+  exact_match.username_value = u"test1@gmail.com";
+  exact_match.password_element = u"password";
   exact_match.password_value = ASCIIToUTF16(kPreferredPassword);
-  exact_match.submit_element = ASCIIToUTF16("");
+  exact_match.submit_element = u"";
   exact_match.signon_realm = "https://foo.com/";
   exact_match.scheme = PasswordForm::Scheme::kHtml;
 
@@ -618,7 +618,7 @@ TEST(PasswordFormFillDataTest, TestAffiliationMatch) {
   // |is_public_suffix_match| == true.
   PasswordForm affiliated_match;
   affiliated_match.url = GURL("android://hash@foo1.com/");
-  affiliated_match.username_value = ASCIIToUTF16("test2@gmail.com");
+  affiliated_match.username_value = u"test2@gmail.com";
   affiliated_match.password_value = ASCIIToUTF16(kPreferredPassword);
   affiliated_match.is_affiliation_based_match = true;
   affiliated_match.signon_realm = "https://foo1.com/";
@@ -653,8 +653,8 @@ TEST(PasswordFormFillDataTest, RendererIDs) {
   PasswordForm form_on_page;
   form_on_page.url = GURL("https://foo.com/");
   form_on_page.action = GURL("https://foo.com/login");
-  form_on_page.username_element = ASCIIToUTF16("username");
-  form_on_page.password_element = ASCIIToUTF16("password");
+  form_on_page.username_element = u"username";
+  form_on_page.password_element = u"password";
   form_on_page.username_may_use_prefilled_placeholder = true;
   form_on_page.server_side_classification_successful = true;
 
@@ -719,8 +719,8 @@ TEST(PasswordFormFillDataTest, NoPasswordElement) {
 TEST(PasswordFormFillDataTest, DeduplicatesFillData) {
   // Create the current form on the page.
   PasswordForm form;
-  form.username_element = ASCIIToUTF16("username");
-  form.password_element = ASCIIToUTF16("password");
+  form.username_element = u"username";
+  form.password_element = u"password";
 
   // Create an exact match in the database.
   PasswordForm preferred_match = form;
@@ -773,9 +773,9 @@ TEST(PasswordFormFillDataTest, TestAffiliationWithAppName) {
   PasswordForm form_on_page;
   form_on_page.url = GURL("https://foo.com/");
   form_on_page.action = GURL("https://foo.com/login");
-  form_on_page.username_element = ASCIIToUTF16("username");
+  form_on_page.username_element = u"username";
   form_on_page.username_value = ASCIIToUTF16(kPreferredUsername);
-  form_on_page.password_element = ASCIIToUTF16("password");
+  form_on_page.password_element = u"password";
   form_on_page.password_value = ASCIIToUTF16(kPreferredPassword);
   form_on_page.signon_realm = "https://foo.com/";
   form_on_page.scheme = PasswordForm::Scheme::kHtml;
@@ -784,7 +784,7 @@ TEST(PasswordFormFillDataTest, TestAffiliationWithAppName) {
   // |is_affiliation_based_match| == true.
   PasswordForm affiliated_match;
   affiliated_match.url = GURL("android://hash@foo1.com/");
-  affiliated_match.username_value = ASCIIToUTF16("test2@gmail.com");
+  affiliated_match.username_value = u"test2@gmail.com";
   affiliated_match.password_value = ASCIIToUTF16(kPreferredPassword);
   affiliated_match.is_affiliation_based_match = true;
   affiliated_match.app_display_name = "Foo";

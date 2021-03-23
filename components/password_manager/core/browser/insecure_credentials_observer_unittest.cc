@@ -26,7 +26,7 @@ PasswordForm TestForm(base::StringPiece username) {
   form.url = GURL(kSite);
   form.signon_realm = form.url.GetOrigin().spec();
   form.username_value = base::ASCIIToUTF16(username);
-  form.password_value = base::ASCIIToUTF16("12345");
+  form.password_value = u"12345";
   return form;
 }
 
@@ -97,7 +97,7 @@ TEST_F(InsecureCredentialsObserverTest, AddPassword) {
 TEST_F(InsecureCredentialsObserverTest, AddReplacePassword) {
   PasswordForm form = TestForm(kUsername);
   PasswordStoreChange remove(PasswordStoreChange::REMOVE, form);
-  form.password_value = base::ASCIIToUTF16("new_password_12345");
+  form.password_value = u"new_password_12345";
   PasswordStoreChange add(PasswordStoreChange::ADD, form);
   EXPECT_CALL(remove_callback(), Run(form.signon_realm, form.username_value,
                                      RemoveInsecureCredentialsReason::kUpdate));

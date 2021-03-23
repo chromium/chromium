@@ -56,14 +56,14 @@ TEST_F(OSCryptTest, String16EncryptionDecryption) {
   EXPECT_EQ(plaintext, result);
 
   // Test a simple string.
-  plaintext = base::ASCIIToUTF16("hello");
+  plaintext = u"hello";
   EXPECT_TRUE(OSCrypt::EncryptString16(plaintext, &ciphertext));
   EXPECT_TRUE(OSCrypt::DecryptString16(ciphertext, &result));
   EXPECT_EQ(plaintext, result);
 
   // Test a 16-byte aligned string.  This previously hit a boundary error in
   // base::OSCrypt::Crypt() on Mac.
-  plaintext = base::ASCIIToUTF16("1234567890123456");
+  plaintext = u"1234567890123456";
   EXPECT_TRUE(OSCrypt::EncryptString16(plaintext, &ciphertext));
   EXPECT_TRUE(OSCrypt::DecryptString16(ciphertext, &result));
   EXPECT_EQ(plaintext, result);

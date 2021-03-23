@@ -725,7 +725,7 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
     }
 
     if (visible_security_state.cert_status & net::CERT_STATUS_NON_UNIQUE_NAME) {
-      identity_status_description_android_ += ASCIIToUTF16("\n\n");
+      identity_status_description_android_ += u"\n\n";
       identity_status_description_android_ +=
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_SECURITY_TAB_NON_UNIQUE_NAME);
     }
@@ -834,7 +834,7 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
         visible_security_state.connection_status);
     const char* ssl_version_str;
     net::SSLVersionToString(&ssl_version_str, ssl_version);
-    site_connection_details_ += ASCIIToUTF16("\n\n");
+    site_connection_details_ += u"\n\n";
     site_connection_details_ += l10n_util::GetStringFUTF16(
         IDS_PAGE_INFO_SECURITY_TAB_SSL_VERSION, ASCIIToUTF16(ssl_version_str));
 
@@ -843,7 +843,7 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
     net::SSLCipherSuiteToStrings(&key_exchange, &cipher, &mac, &is_aead,
                                  &is_tls13, cipher_suite);
 
-    site_connection_details_ += ASCIIToUTF16("\n\n");
+    site_connection_details_ += u"\n\n";
     if (is_aead) {
       if (is_tls13) {
         // For TLS 1.3 ciphers, report the group (historically, curve) as the

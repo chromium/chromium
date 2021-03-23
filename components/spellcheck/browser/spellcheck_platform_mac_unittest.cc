@@ -389,7 +389,7 @@ TEST_F(SpellcheckPlatformMacTest, SpellCheckSuggestions_EN_US) {
 // the language used in that sentence. Test that it is filtered out from
 // RequestTextCheck results.
 TEST_F(SpellcheckPlatformMacTest, SpellCheckIgnoresOrthography)  {
-  std::u16string test_string(base::ASCIIToUTF16("Icland is awesome."));
+  std::u16string test_string(u"Icland is awesome.");
   spellcheck_platform::RequestTextCheck(nullptr, 0, test_string,
                                         std::move(callback_));
   WaitForCallback();

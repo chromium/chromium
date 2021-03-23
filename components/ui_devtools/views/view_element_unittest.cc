@@ -68,7 +68,7 @@ class NamedTestView : public views::View {
 
   // For custom properties test.
   std::u16string GetTooltipText(const gfx::Point& p) const override {
-    return base::ASCIIToUTF16("This is the tooltip");
+    return u"This is the tooltip";
   }
 
   int GetBoolProperty() const { return bool_property_; }

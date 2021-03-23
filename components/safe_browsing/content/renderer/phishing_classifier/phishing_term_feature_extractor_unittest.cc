@@ -142,7 +142,7 @@ class PhishingTermFeatureExtractorTest : public ::testing::Test {
 };
 
 TEST_F(PhishingTermFeatureExtractorTest, ExtractFeatures) {
-  std::u16string page_text = ASCIIToUTF16("blah");
+  std::u16string page_text = u"blah";
   FeatureMap expected_features;  // initially empty
   std::set<uint32_t> expected_shingle_hashes;
 
@@ -152,7 +152,7 @@ TEST_F(PhishingTermFeatureExtractorTest, ExtractFeatures) {
   ExpectFeatureMapsAreEqual(features, expected_features);
   EXPECT_THAT(expected_shingle_hashes, testing::ContainerEq(shingle_hashes));
 
-  page_text = ASCIIToUTF16("one one");
+  page_text = u"one one";
   expected_features.Clear();
   expected_features.AddBooleanFeature(features::kPageTerm + std::string("one"));
   expected_features.AddBooleanFeature(features::kPageTerm +
@@ -165,7 +165,7 @@ TEST_F(PhishingTermFeatureExtractorTest, ExtractFeatures) {
   ExpectFeatureMapsAreEqual(features, expected_features);
   EXPECT_THAT(expected_shingle_hashes, testing::ContainerEq(shingle_hashes));
 
-  page_text = ASCIIToUTF16("bla bla multi word test bla");
+  page_text = u"bla bla multi word test bla";
   expected_features.Clear();
   expected_features.AddBooleanFeature(features::kPageTerm +
                                       std::string("multi word test"));
@@ -185,7 +185,7 @@ TEST_F(PhishingTermFeatureExtractorTest, ExtractFeatures) {
 
   // This text has all of the words for one of the terms, but they are
   // not in the correct order.
-  page_text = ASCIIToUTF16("bla bla test word multi bla");
+  page_text = u"bla bla test word multi bla";
   expected_features.Clear();
   expected_shingle_hashes.clear();
   expected_shingle_hashes.insert(
@@ -229,7 +229,7 @@ TEST_F(PhishingTermFeatureExtractorTest, ExtractFeatures) {
   EXPECT_THAT(expected_shingle_hashes, testing::ContainerEq(shingle_hashes));
 
   // Test a page with too many words and we should only 3 minimum hashes.
-  page_text = ASCIIToUTF16("This page has way too many words.");
+  page_text = u"This page has way too many words.";
   expected_features.Clear();
   expected_shingle_hashes.clear();
   expected_shingle_hashes.insert(
@@ -295,11 +295,11 @@ TEST_F(PhishingTermFeatureExtractorTest, Continuation) {
 
   // This page has a total of 30 words.  For the features to be computed
   // correctly, the extractor has to process the entire string of text.
-  std::u16string page_text(ASCIIToUTF16("one "));
+  std::u16string page_text(u"one ");
   for (int i = 0; i < 28; ++i) {
     page_text.append(ASCIIToUTF16(base::StringPrintf("%d ", i)));
   }
-  page_text.append(ASCIIToUTF16("two"));
+  page_text.append(u"two");
 
   // Advance the clock 3 ms every 5 words processed, 10 ms between chunks.
   // Note that this assumes kClockCheckGranularity = 5 and
@@ -421,8 +421,7 @@ TEST_F(PhishingTermFeatureExtractorTest, Continuation) {
 }
 
 TEST_F(PhishingTermFeatureExtractorTest, PartialExtractionTest) {
-  std::unique_ptr<std::u16string> page_text(
-      new std::u16string(ASCIIToUTF16("one ")));
+  std::unique_ptr<std::u16string> page_text(new std::u16string(u"one "));
   for (int i = 0; i < 28; ++i) {
     page_text->append(ASCIIToUTF16(base::StringPrintf("%d ", i)));
   }
@@ -450,7 +449,7 @@ TEST_F(PhishingTermFeatureExtractorTest, PartialExtractionTest) {
   for (int i = 30; i < 58; ++i) {
     page_text->append(ASCIIToUTF16(base::StringPrintf("%d ", i)));
   }
-  page_text->append(ASCIIToUTF16("multi word test "));
+  page_text->append(u"multi word test ");
   features.Clear();
   shingle_hashes.clear();
 

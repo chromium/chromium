@@ -80,8 +80,7 @@ class MockAuthenticator : public autofill::InternalAuthenticator {
 class SecurePaymentConfirmationAppTest : public testing::Test,
                                          public PaymentApp::Delegate {
  protected:
-  SecurePaymentConfirmationAppTest()
-      : label_(base::ASCIIToUTF16("test instrument")) {
+  SecurePaymentConfirmationAppTest() : label_(u"test instrument") {
     mojom::PaymentDetailsPtr details = mojom::PaymentDetails::New();
     details->total = mojom::PaymentItem::New();
     details->total->amount = mojom::PaymentCurrencyAmount::New();

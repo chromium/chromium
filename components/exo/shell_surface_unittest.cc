@@ -348,14 +348,13 @@ TEST_F(ShellSurfaceTest, SetTitle) {
   std::unique_ptr<Surface> surface(new Surface);
   std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
 
-  shell_surface->SetTitle(std::u16string(base::ASCIIToUTF16("test")));
+  shell_surface->SetTitle(std::u16string(u"test"));
   surface->Attach(buffer.get());
   surface->Commit();
 
   // NativeWindow's title is used within the overview mode, so it should
   // have the specified title.
-  EXPECT_EQ(base::ASCIIToUTF16("test"),
-            shell_surface->GetWidget()->GetNativeWindow()->GetTitle());
+  EXPECT_EQ(u"test", shell_surface->GetWidget()->GetNativeWindow()->GetTitle());
   // The titlebar shouldn't show the title.
   EXPECT_FALSE(
       shell_surface->GetWidget()->widget_delegate()->ShouldShowWindowTitle());
@@ -1458,7 +1457,7 @@ TEST_F(ShellSurfaceTest, Overlay) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->PressKey(ui::VKEY_X, 0);
   generator->ReleaseKey(ui::VKEY_X, 0);
-  EXPECT_EQ(textfield_ptr->GetText(), base::ASCIIToUTF16(""));
+  EXPECT_EQ(textfield_ptr->GetText(), u"");
 
   generator->MoveMouseToCenterOf(shell_surface->GetWidget()->GetNativeWindow());
   generator->ClickLeftButton();
@@ -1468,15 +1467,15 @@ TEST_F(ShellSurfaceTest, Overlay) {
             textfield_ptr);
   generator->PressKey(ui::VKEY_X, 0);
   generator->ReleaseKey(ui::VKEY_X, 0);
-  EXPECT_EQ(textfield_ptr->GetText(), base::ASCIIToUTF16("x"));
+  EXPECT_EQ(textfield_ptr->GetText(), u"x");
   EXPECT_TRUE(textfield_ptr->GetSelectedText().empty());
 
   // Controls (Select all) should work.
   generator->PressKey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
   generator->ReleaseKey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
 
-  EXPECT_EQ(textfield_ptr->GetText(), base::ASCIIToUTF16("x"));
-  EXPECT_EQ(textfield_ptr->GetSelectedText(), base::ASCIIToUTF16("x"));
+  EXPECT_EQ(textfield_ptr->GetText(), u"x");
+  EXPECT_EQ(textfield_ptr->GetSelectedText(), u"x");
 
   auto* widget = ash::TestWidgetBuilder()
                      .SetBounds(gfx::Rect(200, 200))
@@ -1486,8 +1485,8 @@ TEST_F(ShellSurfaceTest, Overlay) {
   generator->PressKey(ui::VKEY_Y, 0);
   generator->ReleaseKey(ui::VKEY_Y, 0);
 
-  EXPECT_EQ(textfield_ptr->GetText(), base::ASCIIToUTF16("x"));
-  EXPECT_EQ(textfield_ptr->GetSelectedText(), base::ASCIIToUTF16("x"));
+  EXPECT_EQ(textfield_ptr->GetText(), u"x");
+  EXPECT_EQ(textfield_ptr->GetSelectedText(), u"x");
 
   // Re-activate the surface and make sure that the overlay can still handle
   // keys.
@@ -1496,7 +1495,7 @@ TEST_F(ShellSurfaceTest, Overlay) {
   // the text is selected.
   generator->PressKey(ui::VKEY_Y, 0);
   generator->ReleaseKey(ui::VKEY_Y, 0);
-  EXPECT_EQ(textfield_ptr->GetText(), base::ASCIIToUTF16("y"));
+  EXPECT_EQ(textfield_ptr->GetText(), u"y");
   EXPECT_TRUE(textfield_ptr->GetSelectedText().empty());
 }
 

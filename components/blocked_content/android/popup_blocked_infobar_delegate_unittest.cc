@@ -96,7 +96,7 @@ TEST_F(PopupBlockedInfoBarDelegateTest, ReplacesInfobarOnSecondPopup) {
                                   ->delegate()
                                   ->AsConfirmInfoBarDelegate()
                                   ->GetMessageText(),
-                              base::ASCIIToUTF16("2")));
+                              u"2"));
 
   EXPECT_FALSE(PopupBlockedInfoBarDelegate::Create(
       infobar_manager(), 2, settings_map(), base::NullCallback()));
@@ -107,7 +107,7 @@ TEST_F(PopupBlockedInfoBarDelegateTest, ReplacesInfobarOnSecondPopup) {
                                  ->delegate()
                                  ->AsConfirmInfoBarDelegate()
                                  ->GetMessageText(),
-                             base::ASCIIToUTF16("2")));
+                             u"2"));
 }
 
 TEST_F(PopupBlockedInfoBarDelegateTest, ShowsBlockedPopups) {

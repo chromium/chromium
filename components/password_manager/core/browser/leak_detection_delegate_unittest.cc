@@ -42,8 +42,8 @@ using testing::WithArg;
 PasswordForm CreateTestForm() {
   PasswordForm form;
   form.url = GURL("http://www.example.com/a/LoginAuth");
-  form.username_value = ASCIIToUTF16("Adam");
-  form.password_value = ASCIIToUTF16("p4ssword");
+  form.username_value = u"Adam";
+  form.password_value = u"p4ssword";
   form.signon_realm = "http://www.example.com/";
   return form;
 }
@@ -374,8 +374,8 @@ TEST_F(LeakDetectionDelegateTest, CallStartTwice) {
   check_instance = std::make_unique<NiceMock<MockLeakDetectionCheck>>();
   EXPECT_CALL(factory(), TryCreateLeakCheck(&delegate(), _, _))
       .WillOnce(Return(ByMove(std::move(check_instance))));
-  form.username_value = ASCIIToUTF16("username");
-  form.password_value = ASCIIToUTF16("password");
+  form.username_value = u"username";
+  form.password_value = u"password";
   delegate().StartLeakCheck(form);
   ASSERT_TRUE(delegate().leak_check());
 

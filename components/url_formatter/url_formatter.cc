@@ -679,7 +679,7 @@ std::u16string FormatUrlWithAdjustments(
     // files on Windows, we should remove it for URL display when eliding
     // the scheme by offsetting by an additional character.
     if (url.SchemeIs(url::kFileScheme) &&
-        base::StartsWith(url_string, base::ASCIIToUTF16("file:///"),
+        base::StartsWith(url_string, u"file:///",
                          base::CompareCase::INSENSITIVE_ASCII)) {
       ++new_parsed->path.begin;
       ++scheme_size;

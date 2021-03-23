@@ -298,9 +298,9 @@ TEST_F(PageTextObserverTest, MojoPlumbingSuccessCase) {
   FakePageTextService fake_renderer_service;
   fake_renderer_service.SetRemoteResponsesForEvent(
       mojom::TextDumpEvent::kFirstLayout, {
-                                              base::ASCIIToUTF16("a"),
-                                              base::ASCIIToUTF16("b"),
-                                              base::ASCIIToUTF16("c"),
+                                              u"a",
+                                              u"b",
+                                              u"c",
                                               base::nullopt,
                                           });
 
@@ -327,7 +327,7 @@ TEST_F(PageTextObserverTest, MojoPlumbingSuccessCase) {
               main_rfh()->GetGlobalFrameRoutingId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
-              base::ASCIIToUTF16("abc")),
+              u"abc"),
       }));
 
   EXPECT_THAT(
@@ -387,9 +387,9 @@ TEST_F(PageTextObserverTest, CompletedFrameDumpMetrics_NotEmpty) {
   FakePageTextService fake_renderer_service;
   fake_renderer_service.SetRemoteResponsesForEvent(
       mojom::TextDumpEvent::kFirstLayout, {
-                                              base::ASCIIToUTF16("a"),
-                                              base::ASCIIToUTF16("b"),
-                                              base::ASCIIToUTF16("c"),
+                                              u"a",
+                                              u"b",
+                                              u"c",
                                               base::nullopt,
                                           });
 
@@ -464,8 +464,8 @@ TEST_F(PageTextObserverTest, MaxLengthOnChunkBorder) {
   FakePageTextService fake_renderer_service;
   fake_renderer_service.SetRemoteResponsesForEvent(
       mojom::TextDumpEvent::kFirstLayout, {
-                                              base::ASCIIToUTF16("abc"),
-                                              base::ASCIIToUTF16("def"),
+                                              u"abc",
+                                              u"def",
                                               base::nullopt,
                                           });
 
@@ -492,7 +492,7 @@ TEST_F(PageTextObserverTest, MaxLengthOnChunkBorder) {
               main_rfh()->GetGlobalFrameRoutingId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
-              base::ASCIIToUTF16("abc")),
+              u"abc"),
       }));
 
   EXPECT_THAT(
@@ -512,8 +512,8 @@ TEST_F(PageTextObserverTest, MaxLengthWithinChunk) {
   FakePageTextService fake_renderer_service;
   fake_renderer_service.SetRemoteResponsesForEvent(
       mojom::TextDumpEvent::kFirstLayout, {
-                                              base::ASCIIToUTF16("abc"),
-                                              base::ASCIIToUTF16("def"),
+                                              u"abc",
+                                              u"def",
                                               base::nullopt,
                                           });
 
@@ -540,7 +540,7 @@ TEST_F(PageTextObserverTest, MaxLengthWithinChunk) {
               main_rfh()->GetGlobalFrameRoutingId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
-              base::ASCIIToUTF16("abcd")),
+              u"abcd"),
       }));
 
   EXPECT_THAT(
@@ -560,8 +560,8 @@ TEST_F(PageTextObserverTest, MaxLengthWithoutOnEnd) {
   FakePageTextService fake_renderer_service;
   fake_renderer_service.SetRemoteResponsesForEvent(
       mojom::TextDumpEvent::kFirstLayout, {
-                                              base::ASCIIToUTF16("abc"),
-                                              base::ASCIIToUTF16("def"),
+                                              u"abc",
+                                              u"def",
                                           });
 
   blink::AssociatedInterfaceProvider* remote_interfaces =
@@ -587,7 +587,7 @@ TEST_F(PageTextObserverTest, MaxLengthWithoutOnEnd) {
               main_rfh()->GetGlobalFrameRoutingId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
-              base::ASCIIToUTF16("abcd")),
+              u"abcd"),
       }));
 
   EXPECT_THAT(
@@ -611,9 +611,9 @@ TEST_F(PageTextObserverTest, TwoConsumers) {
   FakePageTextService fake_renderer_service;
   fake_renderer_service.SetRemoteResponsesForEvent(
       mojom::TextDumpEvent::kFirstLayout, {
-                                              base::ASCIIToUTF16("a"),
-                                              base::ASCIIToUTF16("b"),
-                                              base::ASCIIToUTF16("c"),
+                                              u"a",
+                                              u"b",
+                                              u"c",
                                               base::nullopt,
                                           });
 
@@ -642,7 +642,7 @@ TEST_F(PageTextObserverTest, TwoConsumers) {
               main_rfh()->GetGlobalFrameRoutingId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
-              base::ASCIIToUTF16("abc")),
+              u"abc"),
       }));
   ASSERT_TRUE(consumer2.result());
   EXPECT_THAT(
@@ -653,7 +653,7 @@ TEST_F(PageTextObserverTest, TwoConsumers) {
               main_rfh()->GetGlobalFrameRoutingId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
-              base::ASCIIToUTF16("abc")),
+              u"abc"),
       }));
 
   EXPECT_THAT(
@@ -678,9 +678,9 @@ TEST_F(PageTextObserverTest, RemoveConsumer) {
   FakePageTextService fake_renderer_service;
   fake_renderer_service.SetRemoteResponsesForEvent(
       mojom::TextDumpEvent::kFirstLayout, {
-                                              base::ASCIIToUTF16("a"),
-                                              base::ASCIIToUTF16("b"),
-                                              base::ASCIIToUTF16("c"),
+                                              u"a",
+                                              u"b",
+                                              u"c",
                                               base::nullopt,
                                           });
 
@@ -708,7 +708,7 @@ TEST_F(PageTextObserverTest, RemoveConsumer) {
               main_rfh()->GetGlobalFrameRoutingId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
-              base::ASCIIToUTF16("abc")),
+              u"abc"),
       }));
   EXPECT_FALSE(consumer2.result());
 
@@ -733,12 +733,12 @@ TEST_F(PageTextObserverTest, TwoEventsRequested) {
   FakePageTextService fake_renderer_service;
   fake_renderer_service.SetRemoteResponsesForEvent(
       mojom::TextDumpEvent::kFirstLayout, {
-                                              base::ASCIIToUTF16("abc"),
+                                              u"abc",
                                               base::nullopt,
                                           });
   fake_renderer_service.SetRemoteResponsesForEvent(
       mojom::TextDumpEvent::kFinishedLoad, {
-                                               base::ASCIIToUTF16("xyz"),
+                                               u"xyz",
                                                base::nullopt,
                                            });
 
@@ -767,13 +767,13 @@ TEST_F(PageTextObserverTest, TwoEventsRequested) {
               main_rfh()->GetGlobalFrameRoutingId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
-              base::ASCIIToUTF16("abc")),
+              u"abc"),
           MakeFrameDump(
               mojom::TextDumpEvent::kFinishedLoad,
               main_rfh()->GetGlobalFrameRoutingId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
-              base::ASCIIToUTF16("xyz")),
+              u"xyz"),
       }));
   EXPECT_EQ(consumer1.result(), consumer2.result());
 
@@ -799,7 +799,7 @@ TEST_F(PageTextObserverTest, AbandonedRequest) {
   FakePageTextService fake_renderer_service;
   fake_renderer_service.SetRemoteResponsesForEvent(
       mojom::TextDumpEvent::kFirstLayout, {
-                                              base::ASCIIToUTF16("abc"),
+                                              u"abc",
                                               base::nullopt,
                                           });
   fake_renderer_service.SetEventToHangForver(
@@ -831,7 +831,7 @@ TEST_F(PageTextObserverTest, AbandonedRequest) {
               main_rfh()->GetGlobalFrameRoutingId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
-              base::ASCIIToUTF16("abc")),
+              u"abc"),
       }));
   EXPECT_EQ(consumer1.result(), consumer2.result());
 
@@ -858,8 +858,8 @@ TEST_F(PageTextObserverTest, AMPRequestedOnOOPIF) {
   FakePageTextService fake_renderer_service;
   fake_renderer_service.SetRemoteResponsesForEvent(
       mojom::TextDumpEvent::kFirstLayout, {
-                                              base::ASCIIToUTF16("abc"),
-                                              base::ASCIIToUTF16("def"),
+                                              u"abc",
+                                              u"def",
                                               base::nullopt,
                                           });
 
@@ -888,7 +888,7 @@ TEST_F(PageTextObserverTest, AMPRequestedOnOOPIF) {
                           base::Unretained(&subframe_fake_renderer_service)));
   subframe_fake_renderer_service.SetRemoteResponsesForEvent(
       mojom::TextDumpEvent::kFinishedLoad, {
-                                               base::ASCIIToUTF16("amp"),
+                                               u"amp",
                                                base::nullopt,
                                            });
 
@@ -916,13 +916,13 @@ TEST_F(PageTextObserverTest, AMPRequestedOnOOPIF) {
               oopif_subframe->GetGlobalFrameRoutingId(),
               /*amp_frame=*/true,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
-              base::ASCIIToUTF16("amp")),
+              u"amp"),
           MakeFrameDump(
               mojom::TextDumpEvent::kFirstLayout,
               main_rfh()->GetGlobalFrameRoutingId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
-              base::ASCIIToUTF16("abcdef")),
+              u"abcdef"),
       }));
 }
 
@@ -938,8 +938,8 @@ TEST_F(PageTextObserverTest, AMPNotRequestedOnOOPIF) {
   FakePageTextService fake_renderer_service;
   fake_renderer_service.SetRemoteResponsesForEvent(
       mojom::TextDumpEvent::kFirstLayout, {
-                                              base::ASCIIToUTF16("abc"),
-                                              base::ASCIIToUTF16("def"),
+                                              u"abc",
+                                              u"def",
                                               base::nullopt,
                                           });
 
@@ -968,8 +968,8 @@ TEST_F(PageTextObserverTest, AMPNotRequestedOnOOPIF) {
                           base::Unretained(&subframe_fake_renderer_service)));
   subframe_fake_renderer_service.SetRemoteResponsesForEvent(
       mojom::TextDumpEvent::kFinishedLoad, {
-                                               base::ASCIIToUTF16("\n"),
-                                               base::ASCIIToUTF16("amp"),
+                                               u"\n",
+                                               u"amp",
                                                base::nullopt,
                                            });
 
@@ -993,7 +993,7 @@ TEST_F(PageTextObserverTest, AMPNotRequestedOnOOPIF) {
               main_rfh()->GetGlobalFrameRoutingId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
-              base::ASCIIToUTF16("abcdef")),
+              u"abcdef"),
       }));
 }
 
@@ -1009,8 +1009,8 @@ TEST_F(PageTextObserverTest, AMPRequestedOnNonOOPIF) {
   FakePageTextService fake_renderer_service;
   fake_renderer_service.SetRemoteResponsesForEvent(
       mojom::TextDumpEvent::kFirstLayout, {
-                                              base::ASCIIToUTF16("abc"),
-                                              base::ASCIIToUTF16("def"),
+                                              u"abc",
+                                              u"def",
                                               base::nullopt,
                                           });
 
@@ -1039,8 +1039,8 @@ TEST_F(PageTextObserverTest, AMPRequestedOnNonOOPIF) {
                           base::Unretained(&subframe_fake_renderer_service)));
   subframe_fake_renderer_service.SetRemoteResponsesForEvent(
       mojom::TextDumpEvent::kFinishedLoad, {
-                                               base::ASCIIToUTF16("\n"),
-                                               base::ASCIIToUTF16("amp"),
+                                               u"\n",
+                                               u"amp",
                                                base::nullopt,
                                            });
 
@@ -1064,7 +1064,7 @@ TEST_F(PageTextObserverTest, AMPRequestedOnNonOOPIF) {
               main_rfh()->GetGlobalFrameRoutingId(),
               /*amp_frame=*/false,
               web_contents()->GetController().GetVisibleEntry()->GetUniqueID(),
-              base::ASCIIToUTF16("abcdef")),
+              u"abcdef"),
       }));
 }
 

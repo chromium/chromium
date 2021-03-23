@@ -1340,7 +1340,7 @@ TEST_F(HistoryBackendDBTest, MigratePresentations) {
   const URLID url_id = 3;
   const GURL url("http://www.foo.com");
   const std::string url_name(VisitSegmentDatabase::ComputeSegmentName(url));
-  const std::u16string title(base::ASCIIToUTF16("Title1"));
+  const std::u16string title(u"Title1");
   const base::Time segment_time(base::Time::Now());
 
   {
@@ -1449,8 +1449,8 @@ TEST_F(HistoryBackendDBTest, MigrateVisitSegmentNames) {
   const GURL url2("http://m.foo.com");
   const std::string legacy_segment_name1("http://foo.com/");
   const std::string legacy_segment_name2("http://m.foo.com/");
-  const std::u16string title1(base::ASCIIToUTF16("Title1"));
-  const std::u16string title2(base::ASCIIToUTF16("Title2"));
+  const std::u16string title1(u"Title1");
+  const std::u16string title2(u"Title2");
   const base::Time segment_time(base::Time::Now());
 
   {
@@ -1771,7 +1771,7 @@ TEST_F(HistoryBackendDBTest, MigrateKeywordSearchTerms) {
 
   const KeywordID keyword_id = 12;
   const URLID url_id = 34;
-  const std::u16string term = base::ASCIIToUTF16("WEEKLY  NEWS  ");
+  const std::u16string term = u"WEEKLY  NEWS  ";
   const std::u16string lower_term = base::i18n::ToLower(term);
   const std::u16string normalized_term =
       base::CollapseWhitespace(lower_term, false);

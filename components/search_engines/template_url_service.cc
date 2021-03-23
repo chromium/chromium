@@ -128,7 +128,7 @@ void LogDuplicatesHistogram(
   std::map<std::u16string, int> duplicates;
   for (auto it = template_urls.begin(); it != template_urls.end(); ++it) {
     std::u16string keyword = (*it)->keyword();
-    base::TrimString(keyword, base::ASCIIToUTF16("_"), &keyword);
+    base::TrimString(keyword, u"_", &keyword);
     duplicates[keyword]++;
   }
 
@@ -1378,7 +1378,7 @@ TemplateURLService::CreateTemplateURLFromTemplateURLAndSyncData(
   bool reset_keyword =
       specifics.autogenerate_keyword() || specifics.keyword().empty();
   if (reset_keyword)
-    keyword = base::ASCIIToUTF16("dummy");  // Will be replaced below.
+    keyword = u"dummy";  // Will be replaced below.
   DCHECK(!keyword.empty());
   data.SetKeyword(keyword);
   data.SetURL(specifics.url());

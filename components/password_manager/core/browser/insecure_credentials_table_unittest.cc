@@ -42,7 +42,7 @@ PasswordForm TestForm() {
   form.signon_realm = kTestDomain;
   form.url = GURL(form.signon_realm);
   form.username_value = base::ASCIIToUTF16(kUsername);
-  form.password_value = base::ASCIIToUTF16("1234");
+  form.password_value = u"1234";
   return form;
 }
 

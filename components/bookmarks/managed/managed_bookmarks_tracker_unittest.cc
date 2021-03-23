@@ -309,12 +309,9 @@ TEST_F(ManagedBookmarksTrackerTest, RemoveAllUserBookmarksDoesntRemoveManaged) {
               BookmarkNodeAdded(model_.get(), model_->bookmark_bar_node(), 0));
   EXPECT_CALL(observer_,
               BookmarkNodeAdded(model_.get(), model_->bookmark_bar_node(), 1));
-  model_->AddURL(model_->bookmark_bar_node(),
-                 0,
-                 base::ASCIIToUTF16("Test"),
+  model_->AddURL(model_->bookmark_bar_node(), 0, u"Test",
                  GURL("http://google.com/"));
-  model_->AddFolder(
-      model_->bookmark_bar_node(), 1, base::ASCIIToUTF16("Test Folder"));
+  model_->AddFolder(model_->bookmark_bar_node(), 1, u"Test Folder");
   EXPECT_EQ(2u, model_->bookmark_bar_node()->children().size());
   Mock::VerifyAndClearExpectations(&observer_);
 

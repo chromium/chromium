@@ -100,21 +100,21 @@ autofill::FormData MakeSimpleFormData() {
   autofill::FormData form_data;
   form_data.url = GURL("http://www.google.com/a/LoginAuth");
   form_data.action = GURL("http://www.google.com/a/Login");
-  form_data.name = base::ASCIIToUTF16("login_form");
+  form_data.name = u"login_form";
 
   autofill::FormFieldData field;
-  field.name = base::ASCIIToUTF16("Username");
+  field.name = u"Username";
   field.id_attribute = field.name;
   field.name_attribute = field.name;
-  field.value = base::ASCIIToUTF16("googleuser");
+  field.value = u"googleuser";
   field.form_control_type = "text";
   field.unique_id = field.id_attribute;
   form_data.fields.push_back(field);
 
-  field.name = base::ASCIIToUTF16("Passwd");
+  field.name = u"Passwd";
   field.id_attribute = field.name;
   field.name_attribute = field.name;
-  field.value = base::ASCIIToUTF16("p4ssword");
+  field.value = u"p4ssword";
   field.form_control_type = "password";
   field.unique_id = field.id_attribute;
   form_data.fields.push_back(field);

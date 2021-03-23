@@ -110,22 +110,22 @@ TEST_F(OmniboxViewTest, SanitizeTextForPaste) {
   } kTestcases[] = {
       // No whitespace: leave unchanged.
       {std::u16string(), std::u16string()},
-      {ASCIIToUTF16("a"), ASCIIToUTF16("a")},
-      {ASCIIToUTF16("abc"), ASCIIToUTF16("abc")},
+      {u"a", u"a"},
+      {u"abc", u"abc"},
 
       // Leading/trailing whitespace: remove.
-      {ASCIIToUTF16(" abc"), ASCIIToUTF16("abc")},
-      {ASCIIToUTF16("  \n  abc"), ASCIIToUTF16("abc")},
-      {ASCIIToUTF16("abc "), ASCIIToUTF16("abc")},
-      {ASCIIToUTF16("abc\t \t"), ASCIIToUTF16("abc")},
-      {ASCIIToUTF16("\nabc\n"), ASCIIToUTF16("abc")},
+      {u" abc", u"abc"},
+      {u"  \n  abc", u"abc"},
+      {u"abc ", u"abc"},
+      {u"abc\t \t", u"abc"},
+      {u"\nabc\n", u"abc"},
 
       // All whitespace: Convert to single space.
-      {ASCIIToUTF16(" "), ASCIIToUTF16(" ")},
-      {ASCIIToUTF16("\n"), ASCIIToUTF16(" ")},
-      {ASCIIToUTF16("   "), ASCIIToUTF16(" ")},
-      {ASCIIToUTF16("\n\n\n"), ASCIIToUTF16(" ")},
-      {ASCIIToUTF16(" \n\t"), ASCIIToUTF16(" ")},
+      {u" ", u" "},
+      {u"\n", u" "},
+      {u"   ", u" "},
+      {u"\n\n\n", u" "},
+      {u" \n\t", u" "},
 
       // Broken URL has newlines stripped.
       {ASCIIToUTF16("http://www.chromium.org/developers/testing/chromium-\n"
@@ -134,22 +134,20 @@ TEST_F(OmniboxViewTest, SanitizeTextForPaste) {
                     "build-infrastructure/tour-of-the-chromium-buildbot")},
 
       // Multi-line address is converted to a single-line address.
-      {ASCIIToUTF16("1600 Amphitheatre Parkway\nMountain View, CA"),
-       ASCIIToUTF16("1600 Amphitheatre Parkway Mountain View, CA")},
+      {u"1600 Amphitheatre Parkway\nMountain View, CA",
+       u"1600 Amphitheatre Parkway Mountain View, CA"},
 
       // Line-breaking the JavaScript scheme with no other whitespace results in
       // a
       // dangerous URL that is sanitized by dropping the scheme.
-      {ASCIIToUTF16("java\x0d\x0ascript:alert(0)"), ASCIIToUTF16("alert(0)")},
+      {u"java\x0d\x0ascript:alert(0)", u"alert(0)"},
 
       // Line-breaking the JavaScript scheme with whitespace elsewhere in the
       // string results in a safe string with a space replacing the line break.
-      {ASCIIToUTF16("java\x0d\x0ascript: alert(0)"),
-       ASCIIToUTF16("java script: alert(0)")},
+      {u"java\x0d\x0ascript: alert(0)", u"java script: alert(0)"},
 
       // Unusual URL with multiple internal spaces is preserved as-is.
-      {ASCIIToUTF16("http://foo.com/a.  b"),
-       ASCIIToUTF16("http://foo.com/a.  b")},
+      {u"http://foo.com/a.  b", u"http://foo.com/a.  b"},
 
       // URL with unicode whitespace is also preserved as-is.
       {u"http://foo.com/a\x3000"
@@ -186,7 +184,7 @@ TEST_F(OmniboxViewTest, GetIcon_BookmarkIcon) {
   model()->SetCurrentMatchForTest(match);
 
   bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), 0,
-                           base::ASCIIToUTF16("a bookmark"), kUrl);
+                           u"a bookmark", kUrl);
 
   ui::ImageModel expected_icon = ui::ImageModel::FromVectorIcon(
       omnibox::kBookmarkIcon, gfx::kPlaceholderColor, gfx::kFaviconSize);

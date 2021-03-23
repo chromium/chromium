@@ -570,7 +570,7 @@ std::u16string KeywordProvider::CleanUserInputKeyword(
     if (template_url_service->GetTemplateURLForKeyword(result) != nullptr)
       return result;
     // Many schemes usually have "//" after them, so strip it too.
-    const std::u16string after_scheme(base::ASCIIToUTF16("//"));
+    const std::u16string after_scheme(u"//");
     if (result.compare(0, after_scheme.length(), after_scheme) == 0)
       result.erase(0, after_scheme.length());
     if (template_url_service->GetTemplateURLForKeyword(result) != nullptr)
@@ -581,7 +581,7 @@ std::u16string KeywordProvider::CleanUserInputKeyword(
   // The 'www.' stripping is done directly here instead of calling
   // url_formatter::StripWWW because we're not assuming that the keyword is a
   // hostname.
-  const std::u16string kWww(base::ASCIIToUTF16("www."));
+  const std::u16string kWww(u"www.");
   constexpr size_t kWwwLength = 4;
   result = base::StartsWith(result, kWww, base::CompareCase::SENSITIVE)
                ? result.substr(kWwwLength)

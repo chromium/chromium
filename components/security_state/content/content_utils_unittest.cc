@@ -701,10 +701,10 @@ TEST(SecurityStateContentUtilsTest, SafetyTipExplanation_Lookalike) {
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_SECURITY_TAB_SAFETY_TIP_TITLE),
             explanations.summary);
   EXPECT_EQ(1u, explanations.insecure_explanations.size());
-  EXPECT_EQ(l10n_util::GetStringFUTF8(
-                IDS_SECURITY_TAB_SAFETY_TIP_LOOKALIKE_DESCRIPTION,
-                base::ASCIIToUTF16("good-site.test")),
-            explanations.insecure_explanations[0].description);
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF8(
+          IDS_SECURITY_TAB_SAFETY_TIP_LOOKALIKE_DESCRIPTION, u"good-site.test"),
+      explanations.insecure_explanations[0].description);
 }
 
 // Tests that a Safebrowsing warning and a bad reputation warning in

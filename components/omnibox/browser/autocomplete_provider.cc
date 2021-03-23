@@ -227,8 +227,7 @@ AutocompleteProvider::FixupReturn AutocompleteProvider::FixupUserInput(
   // trailing slashes (if the scheme is the only thing in the input).  It's not
   // clear that the result of fixup really matters in this case, but there's no
   // harm in making sure.
-  const size_t last_input_nonslash =
-      input_text.find_last_not_of(base::ASCIIToUTF16("/\\"));
+  const size_t last_input_nonslash = input_text.find_last_not_of(u"/\\");
   size_t num_input_slashes =
       (last_input_nonslash == std::u16string::npos)
           ? input_text.length()
@@ -237,8 +236,7 @@ AutocompleteProvider::FixupReturn AutocompleteProvider::FixupUserInput(
   if (output.length() > input_text.length() &&
       base::StartsWith(output, input_text, base::CompareCase::SENSITIVE))
     num_input_slashes = 0;
-  const size_t last_output_nonslash =
-      output.find_last_not_of(base::ASCIIToUTF16("/\\"));
+  const size_t last_output_nonslash = output.find_last_not_of(u"/\\");
   const size_t num_output_slashes =
       (last_output_nonslash == std::u16string::npos)
           ? output.length()

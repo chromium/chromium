@@ -391,7 +391,7 @@ std::u16string AutocompleteMatch::GetWhyThisSuggestionText() const {
           "what you typed.");
 
     case Type::SEARCH_WHAT_YOU_TYPED:
-      return base::ASCIIToUTF16("This search query is exactly what you typed.");
+      return u"This search query is exactly what you typed.";
 
     case Type::SEARCH_HISTORY:
       // TODO(tommycli): We may need to distinguish between matches sourced
@@ -433,13 +433,13 @@ std::u16string AutocompleteMatch::GetWhyThisSuggestionText() const {
     case Type::CLIPBOARD_URL:
     case Type::CLIPBOARD_TEXT:
     case Type::CLIPBOARD_IMAGE:
-      return base::ASCIIToUTF16("This match is from the system clipboard.");
+      return u"This match is from the system clipboard.";
 
     case Type::VOICE_SUGGEST:
-      return base::ASCIIToUTF16("This match is from voice.");
+      return u"This match is from voice.";
 
     case Type::DOCUMENT_SUGGESTION:
-      return base::ASCIIToUTF16("This match is from your documents.");
+      return u"This match is from your documents.";
 
     case Type::PEDAL:
       return base::ASCIIToUTF16(

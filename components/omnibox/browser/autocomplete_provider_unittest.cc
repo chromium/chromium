@@ -147,15 +147,13 @@ void TestProvider::Start(const AutocompleteInput& input, bool minimal_changes) {
 
   // Generate 4 results synchronously, the rest later.
   AddResults(0, 1);
-  AddResultsWithSearchTermsArgs(
-      1, 1, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
-      TemplateURLRef::SearchTermsArgs(base::ASCIIToUTF16("echo")));
-  AddResultsWithSearchTermsArgs(
-      2, 1, AutocompleteMatchType::NAVSUGGEST,
-      TemplateURLRef::SearchTermsArgs(base::ASCIIToUTF16("nav")));
-  AddResultsWithSearchTermsArgs(
-      3, 1, AutocompleteMatchType::SEARCH_SUGGEST,
-      TemplateURLRef::SearchTermsArgs(base::ASCIIToUTF16("query")));
+  AddResultsWithSearchTermsArgs(1, 1,
+                                AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
+                                TemplateURLRef::SearchTermsArgs(u"echo"));
+  AddResultsWithSearchTermsArgs(2, 1, AutocompleteMatchType::NAVSUGGEST,
+                                TemplateURLRef::SearchTermsArgs(u"nav"));
+  AddResultsWithSearchTermsArgs(3, 1, AutocompleteMatchType::SEARCH_SUGGEST,
+                                TemplateURLRef::SearchTermsArgs(u"query"));
 
   if (input.want_asynchronous_matches()) {
     done_ = false;
@@ -405,7 +403,7 @@ void AutocompleteProviderTest::ResetControllerWithTestProviders(
 
   // Construct two new providers, with either the same or different prefixes.
   TestProvider* provider1 =
-      new TestProvider(kResultsPerProvider, base::ASCIIToUTF16("http://a"),
+      new TestProvider(kResultsPerProvider, u"http://a",
                        base::ASCIIToUTF16(kTestTemplateURLKeyword), client_);
   providers.push_back(provider1);
 
@@ -437,8 +435,8 @@ void AutocompleteProviderTest::ResetControllerWithTestProviders(
 void AutocompleteProviderTest::ResetControllerWithKeywordAndSearchProviders() {
   // Reset the default TemplateURL.
   TemplateURLData data;
-  data.SetShortName(base::ASCIIToUTF16("default"));
-  data.SetKeyword(base::ASCIIToUTF16("default"));
+  data.SetShortName(u"default");
+  data.SetKeyword(u"default");
   data.SetURL("http://defaultturl/{searchTerms}");
   TemplateURLService* turl_model = client_->GetTemplateURLService();
   TemplateURL* default_turl =
@@ -449,8 +447,8 @@ void AutocompleteProviderTest::ResetControllerWithKeywordAndSearchProviders() {
 
   // Create another TemplateURL for KeywordProvider.
   TemplateURLData data2;
-  data2.SetShortName(base::ASCIIToUTF16("k"));
-  data2.SetKeyword(base::ASCIIToUTF16("k"));
+  data2.SetShortName(u"k");
+  data2.SetKeyword(u"k");
   data2.SetURL("http://keyword/{searchTerms}");
   TemplateURL* keyword_turl =
       turl_model->Add(std::make_unique<TemplateURL>(data2));
@@ -466,8 +464,8 @@ void AutocompleteProviderTest::ResetControllerWithKeywordProvider() {
 
   // Create a TemplateURL for KeywordProvider.
   TemplateURLData data;
-  data.SetShortName(base::ASCIIToUTF16("foo.com"));
-  data.SetKeyword(base::ASCIIToUTF16("foo.com"));
+  data.SetShortName(u"foo.com");
+  data.SetKeyword(u"foo.com");
   data.SetURL("http://foo.com/{searchTerms}");
   TemplateURL* keyword_turl =
       turl_model->Add(std::make_unique<TemplateURL>(data));
@@ -475,15 +473,15 @@ void AutocompleteProviderTest::ResetControllerWithKeywordProvider() {
 
   // Make a TemplateURL for KeywordProvider that a shorter version of the
   // first.
-  data.SetShortName(base::ASCIIToUTF16("f"));
-  data.SetKeyword(base::ASCIIToUTF16("f"));
+  data.SetShortName(u"f");
+  data.SetKeyword(u"f");
   data.SetURL("http://f.com/{searchTerms}");
   keyword_turl = turl_model->Add(std::make_unique<TemplateURL>(data));
   ASSERT_NE(0, keyword_turl->id());
 
   // Create another TemplateURL for KeywordProvider.
-  data.SetShortName(base::ASCIIToUTF16("bar.com"));
-  data.SetKeyword(base::ASCIIToUTF16("bar.com"));
+  data.SetShortName(u"bar.com");
+  data.SetKeyword(u"bar.com");
   data.SetURL("http://bar.com/{searchTerms}");
   keyword_turl = turl_model->Add(std::make_unique<TemplateURL>(data));
   ASSERT_NE(0, keyword_turl->id());
@@ -709,40 +707,33 @@ TEST_F(AutocompleteProviderTest, RedundantKeywordsIgnoredInResult) {
 
   {
     KeywordTestData duplicate_url[] = {
-        {base::ASCIIToUTF16("fo"), std::u16string(), std::u16string()},
-        {base::ASCIIToUTF16("foo.com"), std::u16string(),
-         base::ASCIIToUTF16("foo.com")},
-        {base::ASCIIToUTF16("foo.com"), std::u16string(), std::u16string()}};
+        {u"fo", std::u16string(), std::u16string()},
+        {u"foo.com", std::u16string(), u"foo.com"},
+        {u"foo.com", std::u16string(), std::u16string()}};
 
     SCOPED_TRACE("Duplicate url");
-    RunKeywordTest(base::ASCIIToUTF16("fo"), duplicate_url,
-                   base::size(duplicate_url));
+    RunKeywordTest(u"fo", duplicate_url, base::size(duplicate_url));
   }
 
   {
     KeywordTestData keyword_match[] = {
-        {base::ASCIIToUTF16("foo.com"), base::ASCIIToUTF16("foo.com"),
-         std::u16string()},
-        {base::ASCIIToUTF16("foo.com"), std::u16string(), std::u16string()}};
+        {u"foo.com", u"foo.com", std::u16string()},
+        {u"foo.com", std::u16string(), std::u16string()}};
 
     SCOPED_TRACE("Duplicate url with keyword match");
-    RunKeywordTest(base::ASCIIToUTF16("fo"), keyword_match,
-                   base::size(keyword_match));
+    RunKeywordTest(u"fo", keyword_match, base::size(keyword_match));
   }
 
   {
     KeywordTestData multiple_keyword[] = {
-        {base::ASCIIToUTF16("fo"), std::u16string(), std::u16string()},
-        {base::ASCIIToUTF16("foo.com"), std::u16string(),
-         base::ASCIIToUTF16("foo.com")},
-        {base::ASCIIToUTF16("foo.com"), std::u16string(), std::u16string()},
-        {base::ASCIIToUTF16("bar.com"), std::u16string(),
-         base::ASCIIToUTF16("bar.com")},
+        {u"fo", std::u16string(), std::u16string()},
+        {u"foo.com", std::u16string(), u"foo.com"},
+        {u"foo.com", std::u16string(), std::u16string()},
+        {u"bar.com", std::u16string(), u"bar.com"},
     };
 
     SCOPED_TRACE("Duplicate url with multiple keywords");
-    RunKeywordTest(base::ASCIIToUTF16("fo"), multiple_keyword,
-                   base::size(multiple_keyword));
+    RunKeywordTest(u"fo", multiple_keyword, base::size(multiple_keyword));
   }
 }
 
@@ -752,13 +743,11 @@ TEST_F(AutocompleteProviderTest, ExactMatchKeywords) {
   ResetControllerWithKeywordProvider();
 
   {
-    KeywordTestData keyword_match[] = {{base::ASCIIToUTF16("foo.com"),
-                                        std::u16string(),
-                                        base::ASCIIToUTF16("foo.com")}};
+    KeywordTestData keyword_match[] = {
+        {u"foo.com", std::u16string(), u"foo.com"}};
 
     SCOPED_TRACE("keyword match as usual");
-    RunKeywordTest(base::ASCIIToUTF16("fo"), keyword_match,
-                   base::size(keyword_match));
+    RunKeywordTest(u"fo", keyword_match, base::size(keyword_match));
   }
 
   // The same result set with an input of "f" (versus "fo") should get
@@ -766,13 +755,10 @@ TEST_F(AutocompleteProviderTest, ExactMatchKeywords) {
   // a keyword and that should trump the keyword normally associated with
   // this match.
   {
-    KeywordTestData keyword_match[] = {{base::ASCIIToUTF16("foo.com"),
-                                        std::u16string(),
-                                        base::ASCIIToUTF16("f")}};
+    KeywordTestData keyword_match[] = {{u"foo.com", std::u16string(), u"f"}};
 
     SCOPED_TRACE("keyword exact match");
-    RunKeywordTest(base::ASCIIToUTF16("f"), keyword_match,
-                   base::size(keyword_match));
+    RunKeywordTest(u"f", keyword_match, base::size(keyword_match));
   }
 }
 
@@ -1054,24 +1040,24 @@ TEST_F(AutocompleteProviderTest, ClassifyAllMatchesInString) {
   using base::ASCIIToUTF16;
   ACMatchClassifications matches =
       AutocompleteMatch::ClassificationsFromString("0,0");
-  ClassifyTest classify_test(ASCIIToUTF16("A man, a plan, a canal Panama"),
+  ClassifyTest classify_test(u"A man, a plan, a canal Panama",
                              /*text_is_query=*/false, matches);
 
   ACMatchClassifications spans;
 
-  spans = classify_test.RunTest(ASCIIToUTF16("man"));
+  spans = classify_test.RunTest(u"man");
   //                           A man, a plan, a canal Panama
   // ACMatch spans should be: '--MMM------------------------'
   EXPECT_EQ("0,0,2,2,5,0", AutocompleteMatch::ClassificationsToString(spans));
 
-  spans = classify_test.RunTest(ASCIIToUTF16("man p"));
+  spans = classify_test.RunTest(u"man p");
   //                           A man, a plan, a canal Panama
   // ACMatch spans should be: '--MMM----M-------------M-----'
   EXPECT_EQ("0,0,2,2,5,0,9,2,10,0,23,2,24,0",
             AutocompleteMatch::ClassificationsToString(spans));
 
   // Comparisons should be case insensitive.
-  spans = classify_test.RunTest(ASCIIToUTF16("mAn pLAn panAMa"));
+  spans = classify_test.RunTest(u"mAn pLAn panAMa");
   //                           A man, a plan, a canal Panama
   // ACMatch spans should be: '--MMM----MMMM----------MMMMMM'
   EXPECT_EQ("0,0,2,2,5,0,9,2,13,0,23,2",
@@ -1079,14 +1065,14 @@ TEST_F(AutocompleteProviderTest, ClassifyAllMatchesInString) {
 
   // When the user input is a prefix of the suggest text, subsequent occurrences
   // of the user words should be matched.
-  spans = classify_test.RunTest(ASCIIToUTF16("a man,"));
+  spans = classify_test.RunTest(u"a man,");
   //                           A man, a plan, a canal Panama
   // ACMatch spans should be: 'MMMMMM-----------------------'
   EXPECT_EQ("0,2,6,0", AutocompleteMatch::ClassificationsToString(spans));
 
   // Matches must begin at word-starts in the suggest text. E.g. 'a' in 'plan'
   // should not match.
-  spans = classify_test.RunTest(ASCIIToUTF16("a man, p"));
+  spans = classify_test.RunTest(u"a man, p");
   //                           A man, a plan, a canal Panama
   // ACMatch spans should be: 'M-MMM--M-M-----M-------M-----'
   EXPECT_EQ("0,2,1,0,2,2,5,0,7,2,8,0,9,2,10,0,15,2,16,0,23,2,24,0",
@@ -1097,41 +1083,41 @@ TEST_F(AutocompleteProviderTest, ClassifyAllMatchesInString) {
                    "Scores, Rumors, Fantasy Games, and more"),
       /*text_is_query=*/false, matches);
 
-  spans = classify_test2.RunTest(ASCIIToUTF16("ne"));
+  spans = classify_test2.RunTest(u"ne");
   // Yahoo! Sports - Sports News, Scores, Rumors, Fantasy Games, and more
   // -----------------------MM-------------------------------------------
   EXPECT_EQ("0,0,23,2,25,0", AutocompleteMatch::ClassificationsToString(spans));
 
-  spans = classify_test2.RunTest(ASCIIToUTF16("neWs R"));
+  spans = classify_test2.RunTest(u"neWs R");
   // Yahoo! Sports - Sports News, Scores, Rumors, Fantasy Games, and more
   // -----------------------MMMM----------M------------------------------
   EXPECT_EQ("0,0,23,2,27,0,37,2,38,0",
             AutocompleteMatch::ClassificationsToString(spans));
 
   matches = AutocompleteMatch::ClassificationsFromString("0,1");
-  ClassifyTest classify_test3(ASCIIToUTF16("livescore.goal.com"),
+  ClassifyTest classify_test3(u"livescore.goal.com",
                               /*text_is_query=*/false, matches);
 
   // Matches should be merged with existing classifications.
   // Matches can begin after symbols in the suggest text.
-  spans = classify_test3.RunTest(ASCIIToUTF16("go"));
+  spans = classify_test3.RunTest(u"go");
   // livescore.goal.com
   // ----------MM------
   // ACMatch spans should match first two letters of the "goal".
   EXPECT_EQ("0,1,10,3,12,1", AutocompleteMatch::ClassificationsToString(spans));
 
   matches = AutocompleteMatch::ClassificationsFromString("0,0,13,1");
-  ClassifyTest classify_test4(ASCIIToUTF16("Email login: mail.somecorp.com"),
+  ClassifyTest classify_test4(u"Email login: mail.somecorp.com",
                               /*text_is_query=*/false, matches);
 
   // Matches must begin at word-starts in the suggest text.
-  spans = classify_test4.RunTest(ASCIIToUTF16("ail"));
+  spans = classify_test4.RunTest(u"ail");
   // Email login: mail.somecorp.com
   // 000000000000011111111111111111
   EXPECT_EQ("0,0,13,1", AutocompleteMatch::ClassificationsToString(spans));
 
   // The longest matches should take precedence (e.g. 'log' instead of 'lo').
-  spans = classify_test4.RunTest(ASCIIToUTF16("lo log mail em"));
+  spans = classify_test4.RunTest(u"lo log mail em");
   // Email login: mail.somecorp.com
   // 220000222000033331111111111111
   EXPECT_EQ("0,2,2,0,6,2,9,0,13,3,17,1",
@@ -1142,12 +1128,12 @@ TEST_F(AutocompleteProviderTest, ClassifyAllMatchesInString) {
   // Extra parens in the next line hack around C++03's "most vexing parse".
   class ClassifyTest classify_test5((std::u16string()), /*text_is_query=*/false,
                                     ACMatchClassifications());
-  spans = classify_test5.RunTest(ASCIIToUTF16("man"));
+  spans = classify_test5.RunTest(u"man");
   ASSERT_EQ(0U, spans.size());
 
   // Matches which end at beginning of classification merge properly.
   matches = AutocompleteMatch::ClassificationsFromString("0,4,9,0");
-  ClassifyTest classify_test6(ASCIIToUTF16("html password example"),
+  ClassifyTest classify_test6(u"html password example",
                               /*text_is_query=*/false, matches);
 
   // Extra space in the next string avoids having the string be a prefix of the
@@ -1156,55 +1142,56 @@ TEST_F(AutocompleteProviderTest, ClassifyAllMatchesInString) {
   // pass" as a match) and one which uses four (which marks the individual words
   // as matches but not the space between them).  This way only the latter is
   // valid.
-  spans = classify_test6.RunTest(ASCIIToUTF16("html  pass"));
+  spans = classify_test6.RunTest(u"html  pass");
   EXPECT_EQ("0,6,4,4,5,6,9,0",
             AutocompleteMatch::ClassificationsToString(spans));
 
   // Multiple matches with both beginning and end at beginning of
   // classifications merge properly.
   matches = AutocompleteMatch::ClassificationsFromString("0,1,11,0");
-  ClassifyTest classify_test7(ASCIIToUTF16("http://a.co is great"),
+  ClassifyTest classify_test7(u"http://a.co is great",
                               /*text_is_query=*/false, matches);
 
-  spans = classify_test7.RunTest(ASCIIToUTF16("ht co"));
+  spans = classify_test7.RunTest(u"ht co");
   EXPECT_EQ("0,3,2,1,9,3,11,0",
             AutocompleteMatch::ClassificationsToString(spans));
 
   // Search queries should be bold non-matches and unbold matches.
   matches = AutocompleteMatch::ClassificationsFromString("0,0");
-  ClassifyTest classify_test8(ASCIIToUTF16("panama canal"),
+  ClassifyTest classify_test8(u"panama canal",
                               /*text_is_query=*/true, matches);
 
-  spans = classify_test8.RunTest(ASCIIToUTF16("pan"));
+  spans = classify_test8.RunTest(u"pan");
   //                           panama canal
   // ACMatch spans should be: "---MMMMMMMMM";
   EXPECT_EQ("0,0,3,2", AutocompleteMatch::ClassificationsToString(spans));
-  spans = classify_test8.RunTest(ASCIIToUTF16("canal"));
+  spans = classify_test8.RunTest(u"canal");
   //                           panama canal
   // ACMatch spans should be: "MMMMMMM-----";
   EXPECT_EQ("0,2,7,0", AutocompleteMatch::ClassificationsToString(spans));
 
   // Search autocomplete suggestion.
-  ClassifyTest classify_test9(ASCIIToUTF16("comcast webmail login"),
+  ClassifyTest classify_test9(u"comcast webmail login",
                               /*text_is_query=*/true, ACMatchClassifications());
 
   // Matches first and first part of middle word and the last word.
-  spans = classify_test9.RunTest(ASCIIToUTF16("comcast web login"));
+  spans = classify_test9.RunTest(u"comcast web login");
   //                           comcast webmail login
   // ACMatch spans should be: "-------M---MMMMM-----";
   EXPECT_EQ("0,0,7,2,8,0,11,2,16,0",
             AutocompleteMatch::ClassificationsToString(spans));
 
   // Matches partial word in the middle of suggestion.
-  spans = classify_test9.RunTest(ASCIIToUTF16("web"));
+  spans = classify_test9.RunTest(u"web");
   //                           comcast webmail login
   // ACMatch spans should be: "MMMMMMMM---MMMMMMMMMM";
   EXPECT_EQ("0,2,8,0,11,2", AutocompleteMatch::ClassificationsToString(spans));
 
-  ClassifyTest classify_test10(ASCIIToUTF16("comcast.net web mail login"),
-                              /*text_is_query=*/true, ACMatchClassifications());
+  ClassifyTest classify_test10(u"comcast.net web mail login",
+                               /*text_is_query=*/true,
+                               ACMatchClassifications());
 
-  spans = classify_test10.RunTest(ASCIIToUTF16("comcast web login"));
+  spans = classify_test10.RunTest(u"comcast web login");
   //                           comcast.net web mail login
   // ACMatch spans should be: "-------MMMMM---MMMMMM-----";
   EXPECT_EQ("0,0,7,2,12,0,15,2,21,0",
@@ -1212,10 +1199,11 @@ TEST_F(AutocompleteProviderTest, ClassifyAllMatchesInString) {
 
   // Same with |classify_test10| except using characters in
   // base::kWhitespaceASCIIAs16 instead of white space.
-  ClassifyTest classify_test11(ASCIIToUTF16("comcast.net\x0aweb\x0dmail login"),
-                              /*text_is_query=*/true, ACMatchClassifications());
+  ClassifyTest classify_test11(u"comcast.net\x0aweb\x0dmail login",
+                               /*text_is_query=*/true,
+                               ACMatchClassifications());
 
-  spans = classify_test11.RunTest(ASCIIToUTF16("comcast web login"));
+  spans = classify_test11.RunTest(u"comcast web login");
   //                           comcast.net web mail login
   // ACMatch spans should be: "-------MMMMM---MMMMMM-----";
   EXPECT_EQ("0,0,7,2,12,0,15,2,21,0",

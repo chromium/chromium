@@ -570,7 +570,7 @@ void ClipboardProvider::ConstructImageMatchCallback(
   AutocompleteMatch match = NewBlankImageMatch();
 
   match.search_terms_args =
-      std::make_unique<TemplateURLRef::SearchTermsArgs>(base::ASCIIToUTF16(""));
+      std::make_unique<TemplateURLRef::SearchTermsArgs>(u"");
   match.search_terms_args->image_thumbnail_content.assign(
       image_bytes->front_as<char>(), image_bytes->size());
   TemplateURLRef::PostContent post_content;

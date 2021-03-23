@@ -563,7 +563,7 @@ TEST(BookmarkSpecificsConversionsTest, ReplaceUrlNodeWithUpdatedGUID) {
       bookmarks::TestBookmarkClient::CreateModel();
   const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
   const base::GUID kGuid = base::GUID::GenerateRandomV4();
-  const std::u16string kTitle = base::ASCIIToUTF16("bar");
+  const std::u16string kTitle = u"bar";
   const GURL kUrl = GURL("http://foo.com");
   const base::Time kCreationTime = base::Time::Now();
 
@@ -597,7 +597,7 @@ TEST(BookmarkSpecificsConversionsTest, ReplaceFolderNodeWithUpdatedGUID) {
       bookmarks::TestBookmarkClient::CreateModel();
   const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
   const base::GUID kGuid = base::GUID::GenerateRandomV4();
-  const std::u16string kTitle = base::ASCIIToUTF16("foobar");
+  const std::u16string kTitle = u"foobar";
 
   auto meta_info_map = std::make_unique<bookmarks::BookmarkNode::MetaInfoMap>();
   const std::string kKey = "key";
@@ -607,10 +607,10 @@ TEST(BookmarkSpecificsConversionsTest, ReplaceFolderNodeWithUpdatedGUID) {
   // Add a folder with child URLs.
   const bookmarks::BookmarkNode* original_folder =
       model->AddFolder(bookmark_bar_node, 0, kTitle, meta_info_map.get());
-  const bookmarks::BookmarkNode* url1 = model->AddURL(
-      original_folder, 0, base::ASCIIToUTF16("bar"), GURL("http://bar.com"));
-  const bookmarks::BookmarkNode* url2 = model->AddURL(
-      original_folder, 1, base::ASCIIToUTF16("foo"), GURL("http://foo.com"));
+  const bookmarks::BookmarkNode* url1 =
+      model->AddURL(original_folder, 0, u"bar", GURL("http://bar.com"));
+  const bookmarks::BookmarkNode* url2 =
+      model->AddURL(original_folder, 1, u"foo", GURL("http://foo.com"));
 
   // Replace folder1.
   const bookmarks::BookmarkNode* new_folder =

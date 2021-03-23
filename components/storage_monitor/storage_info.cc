@@ -25,9 +25,9 @@ const char kMacImageCapturePrefix[] = "ic:";
 std::u16string GetDisplayNameForDevice(uint64_t storage_size_in_bytes,
                                        const std::u16string& name) {
   DCHECK(!name.empty());
-  return (storage_size_in_bytes == 0) ?
-      name :
-      ui::FormatBytes(storage_size_in_bytes) + base::ASCIIToUTF16(" ") + name;
+  return (storage_size_in_bytes == 0)
+             ? name
+             : ui::FormatBytes(storage_size_in_bytes) + u" " + name;
 }
 
 std::u16string GetFullProductName(const std::u16string& vendor_name,
@@ -181,7 +181,7 @@ std::u16string StorageInfo::GetDisplayNameWithOverride(
   if (name.empty())
     name = GetFullProductName(vendor_name_, model_name_);
   if (name.empty())
-    name = base::ASCIIToUTF16("Unlabeled device");
+    name = u"Unlabeled device";
 
   if (with_size)
     name = GetDisplayNameForDevice(total_size_in_bytes_, name);

@@ -113,7 +113,7 @@ autofill::FieldRendererId GetUniqueId() {
 
 // Use to add a number suffix which is unique in the scope of the test.
 std::u16string StampUniqueSuffix(const char* base_str) {
-  return ASCIIToUTF16(base_str) + ASCIIToUTF16("_") +
+  return ASCIIToUTF16(base_str) + u"_" +
          base::NumberToString16(GetUniqueId().value());
 }
 
@@ -1516,12 +1516,12 @@ TEST(FormParserTest, Interactability) {
 
 TEST(FormParserTest, AllPossiblePasswords) {
   const ValueElementVector kPasswords = {
-      {ASCIIToUTF16("a"), ASCIIToUTF16("p1")},
-      {ASCIIToUTF16("b"), ASCIIToUTF16("p3")},
+      {u"a", u"p1"},
+      {u"b", u"p3"},
   };
   const ValueElementVector kUsernames = {
-      {ASCIIToUTF16("b"), ASCIIToUTF16("chosen")},
-      {ASCIIToUTF16("a"), ASCIIToUTF16("first")},
+      {u"b", u"chosen"},
+      {u"a", u"first"},
   };
   CheckTestData({
       {

@@ -102,11 +102,11 @@ void SecurePaymentConfirmationController::
       l10n_util::GetStringUTF16(IDS_SECURE_PAYMENT_CONFIRMATION_TOTAL_LABEL));
   const mojom::PaymentItemPtr& total = request_->spec()->GetTotal(app);
   std::u16string total_value = base::UTF8ToUTF16(total->amount->currency);
-  model_.set_total_value(base::StrCat(
-      {base::UTF8ToUTF16(total->amount->currency), base::ASCIIToUTF16(" "),
-       CurrencyFormatter(total->amount->currency,
-                         request_->state()->GetApplicationLocale())
-           .Format(total->amount->value)}));
+  model_.set_total_value(
+      base::StrCat({base::UTF8ToUTF16(total->amount->currency), u" ",
+                    CurrencyFormatter(total->amount->currency,
+                                      request_->state()->GetApplicationLocale())
+                        .Format(total->amount->value)}));
 
   view_ = SecurePaymentConfirmationView::Create(
       request_->state()->GetPaymentRequestDelegate()->GetPaymentUIObserver());

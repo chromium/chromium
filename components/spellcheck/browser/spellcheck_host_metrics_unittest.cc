@@ -73,7 +73,7 @@ TEST_F(SpellcheckHostMetricsTest, RecordWordCountsDiscardsDuplicates) {
       "SpellCheck.ShownSuggestions"};
 
   // Ensure all histograms exist.
-  metrics()->RecordCheckedWordStats(base::ASCIIToUTF16("test"), false);
+  metrics()->RecordCheckedWordStats(u"test", false);
   RecordWordCountsForTesting();
 
   // Create the tester, taking a snapshot of current histogram samples.

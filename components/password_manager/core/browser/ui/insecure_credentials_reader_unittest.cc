@@ -36,8 +36,8 @@ PasswordForm MakeTestPassword(base::StringPiece username) {
   form.signon_realm = std::string(kTestWebRealm);
   form.url = GURL(kTestWebRealm);
   form.username_value = base::ASCIIToUTF16(username);
-  form.password_value = base::ASCIIToUTF16("password");
-  form.username_element = base::ASCIIToUTF16("username_element");
+  form.password_value = u"password";
+  form.username_element = u"username_element";
   return form;
 }
 
@@ -79,17 +79,17 @@ TEST_F(InsecureCredentialsReaderTest, AddCredentialsToBothStores) {
 
   InsecureCredential profile_cred;
   profile_cred.signon_realm = kTestWebRealm;
-  profile_cred.username = base::ASCIIToUTF16("profile@gmail.com");
+  profile_cred.username = u"profile@gmail.com";
   profile_cred.in_store = PasswordForm::Store::kProfileStore;
 
   InsecureCredential account_cred1;
   account_cred1.signon_realm = kTestWebRealm;
-  account_cred1.username = base::ASCIIToUTF16("account1@gmail.com");
+  account_cred1.username = u"account1@gmail.com";
   account_cred1.in_store = PasswordForm::Store::kAccountStore;
 
   InsecureCredential account_cred2;
   account_cred2.signon_realm = kTestWebRealm;
-  account_cred2.username = base::ASCIIToUTF16("account2@gmail.com");
+  account_cred2.username = u"account2@gmail.com";
   account_cred2.in_store = PasswordForm::Store::kAccountStore;
 
   ::testing::NiceMock<MockInsecureCredentialsReaderObserver> mock_observer;
@@ -128,12 +128,12 @@ TEST_F(InsecureCredentialsReaderTest, AddCredentialsToBothStores) {
 TEST_F(InsecureCredentialsReaderTest, GetAllInsecureCredentials) {
   InsecureCredential profile_cred;
   profile_cred.signon_realm = kTestWebRealm;
-  profile_cred.username = base::ASCIIToUTF16("profile@gmail.com");
+  profile_cred.username = u"profile@gmail.com";
   profile_cred.in_store = PasswordForm::Store::kProfileStore;
 
   InsecureCredential account_cred;
   account_cred.signon_realm = kTestWebRealm;
-  account_cred.username = base::ASCIIToUTF16("account1@gmail.com");
+  account_cred.username = u"account1@gmail.com";
   account_cred.in_store = PasswordForm::Store::kAccountStore;
 
   profile_store().AddInsecureCredential(profile_cred);

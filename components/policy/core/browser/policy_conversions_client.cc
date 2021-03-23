@@ -199,9 +199,8 @@ Value PolicyConversionsClient::GetPolicyValue(
     else if (error_map_errors.empty())
       error = policy_map_errors;
     else
-      error =
-          base::JoinString({policy_map_errors, errors->GetErrors(policy_name)},
-                           base::ASCIIToUTF16("\n"));
+      error = base::JoinString(
+          {policy_map_errors, errors->GetErrors(policy_name)}, u"\n");
   }
   if (!error.empty())
     value.SetKey("error", Value(error));

@@ -171,9 +171,9 @@ TEST_F(SessionStorageImplTest, MigrationV0ToV1) {
   std::string namespace_id2 = base::GenerateGUID();
   url::Origin origin1 = url::Origin::Create(GURL("http://foobar.com"));
   url::Origin origin2 = url::Origin::Create(GURL("http://example.com"));
-  std::u16string key = base::ASCIIToUTF16("key");
-  std::u16string value = base::ASCIIToUTF16("value");
-  std::u16string key2 = base::ASCIIToUTF16("key2");
+  std::u16string key = u"key";
+  std::u16string value = u"value";
+  std::u16string key2 = u"key2";
   key2.push_back(0xd83d);
   key2.push_back(0xde00);
 

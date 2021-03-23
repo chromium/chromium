@@ -142,7 +142,7 @@ bool IsSubdomainOf(base::StringPiece16 hostname,
   DCHECK_NE(hostname, top_domain);
   DCHECK(!hostname.empty());
   DCHECK(!top_domain.empty());
-  return base::EndsWith(hostname, base::ASCIIToUTF16(".") + top_domain,
+  return base::EndsWith(hostname, u"." + top_domain,
                         base::CompareCase::INSENSITIVE_ASCII);
 }
 

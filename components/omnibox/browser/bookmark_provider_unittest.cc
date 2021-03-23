@@ -112,9 +112,9 @@ std::string TestBookmarkPositionsAsString(
 std::u16string MatchesAsString16(const ACMatches& matches) {
   std::u16string matches_string;
   for (auto i = matches.begin(); i != matches.end(); ++i) {
-    matches_string.append(base::ASCIIToUTF16("    '"));
+    matches_string.append(u"    '");
     matches_string.append(i->description);
-    matches_string.append(base::ASCIIToUTF16("'\n"));
+    matches_string.append(u"'\n");
   }
   return matches_string;
 }
@@ -524,8 +524,7 @@ TEST_F(BookmarkProviderTest, StripHttpAndAdjustOffsets) {
 }
 
 TEST_F(BookmarkProviderTest, DoesNotProvideMatchesOnFocus) {
-  AutocompleteInput input(base::ASCIIToUTF16("foo"),
-                          metrics::OmniboxEventProto::OTHER,
+  AutocompleteInput input(u"foo", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
   input.set_focus_type(OmniboxFocusType::ON_FOCUS);
   provider_->Start(input, false);

@@ -142,7 +142,7 @@ TEST_F(OmniboxPopupModelTest, SetSelectedLine) {
   for (size_t i = 0; i < 2; ++i) {
     AutocompleteMatch match(nullptr, 1000, false,
                             AutocompleteMatchType::URL_WHAT_YOU_TYPED);
-    match.keyword = base::ASCIIToUTF16("match");
+    match.keyword = u"match";
     match.allowed_to_be_default_match = true;
     matches.push_back(match);
   }
@@ -165,7 +165,7 @@ TEST_F(OmniboxPopupModelTest, SetSelectedLineWithNoDefaultMatches) {
   for (size_t i = 0; i < 2; ++i) {
     AutocompleteMatch match(nullptr, 1000, false,
                             AutocompleteMatchType::URL_WHAT_YOU_TYPED);
-    match.keyword = base::ASCIIToUTF16("match");
+    match.keyword = u"match";
     matches.push_back(match);
   }
   auto* result = &model()->autocomplete_controller()->result_;
@@ -196,7 +196,7 @@ TEST_F(OmniboxPopupModelTest, PopupPositionChanging) {
   for (size_t i = 0; i < 3; ++i) {
     AutocompleteMatch match(nullptr, 1000, false,
                             AutocompleteMatchType::URL_WHAT_YOU_TYPED);
-    match.keyword = base::ASCIIToUTF16("match");
+    match.keyword = u"match";
     match.allowed_to_be_default_match = true;
     matches.push_back(match);
   }
@@ -224,7 +224,7 @@ TEST_F(OmniboxPopupModelTest, PopupStepSelection) {
   for (size_t i = 0; i < 4; ++i) {
     AutocompleteMatch match(nullptr, 1000, false,
                             AutocompleteMatchType::URL_WHAT_YOU_TYPED);
-    match.keyword = base::ASCIIToUTF16("match");
+    match.keyword = u"match";
     match.allowed_to_be_default_match = true;
     matches.push_back(match);
   }
@@ -309,7 +309,7 @@ TEST_F(OmniboxPopupModelTest, PopupStepSelectionWithHiddenGroupIds) {
   for (size_t i = 0; i < 4; ++i) {
     AutocompleteMatch match(nullptr, 1000, false,
                             AutocompleteMatchType::URL_WHAT_YOU_TYPED);
-    match.keyword = base::ASCIIToUTF16("match");
+    match.keyword = u"match";
     match.allowed_to_be_default_match = true;
     matches.push_back(match);
   }
@@ -381,7 +381,7 @@ TEST_F(OmniboxPopupModelSuggestionButtonRowTest,
   for (size_t i = 0; i < 4; ++i) {
     AutocompleteMatch match(nullptr, 1000, false,
                             AutocompleteMatchType::URL_WHAT_YOU_TYPED);
-    match.keyword = base::ASCIIToUTF16("match");
+    match.keyword = u"match";
     match.allowed_to_be_default_match = true;
     matches.push_back(match);
   }
@@ -474,7 +474,7 @@ TEST_F(OmniboxPopupModelSuggestionButtonRowTest,
   for (size_t i = 0; i < 5; ++i) {
     AutocompleteMatch match(nullptr, 1000, false,
                             AutocompleteMatchType::URL_WHAT_YOU_TYPED);
-    match.keyword = base::ASCIIToUTF16("match");
+    match.keyword = u"match";
     match.allowed_to_be_default_match = true;
     matches.push_back(match);
   }
@@ -790,7 +790,7 @@ TEST_F(OmniboxPopupModelTest, TestFocusFixing) {
   ACMatches matches;
   AutocompleteMatch match(nullptr, 1000, false,
                           AutocompleteMatchType::URL_WHAT_YOU_TYPED);
-  match.contents = base::ASCIIToUTF16("match1.com");
+  match.contents = u"match1.com";
   match.destination_url = GURL("http://match1.com");
   match.allowed_to_be_default_match = true;
   match.has_tab_match = true;
@@ -817,7 +817,7 @@ TEST_F(OmniboxPopupModelTest, TestFocusFixing) {
   // shouldn't change focused state.
   matches[0].relevance = 999;
   // Give it a different name so not deduped.
-  matches[0].contents = base::ASCIIToUTF16("match2.com");
+  matches[0].contents = u"match2.com";
   matches[0].destination_url = GURL("http://match2.com");
   result->AppendMatches(input, matches);
   result->SortAndCull(input, nullptr);
@@ -834,7 +834,7 @@ TEST_F(OmniboxPopupModelTest, TestFocusFixing) {
   popup_model()->SetSelectedLineState(
       OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH);
   matches[0].relevance = 999;
-  matches[0].contents = base::ASCIIToUTF16("match3.com");
+  matches[0].contents = u"match3.com";
   matches[0].destination_url = GURL("http://match3.com");
   result->AppendMatches(input, matches);
   result->SortAndCull(input, nullptr);
@@ -847,7 +847,7 @@ TEST_F(OmniboxPopupModelTest, TestFocusFixing) {
   popup_model()->SetSelectedLineState(
       OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH);
   matches[0].relevance = 1100;
-  matches[0].contents = base::ASCIIToUTF16("match4.com");
+  matches[0].contents = u"match4.com";
   matches[0].destination_url = GURL("http://match4.com");
   result->AppendMatches(input, matches);
   result->SortAndCull(input, nullptr);

@@ -34,8 +34,8 @@ PasswordForm CreateTestForm() {
   form.url = GURL(kTestHttpURL);
   form.signon_realm = form.url.GetOrigin().spec();
   form.action = GURL("https://example.org/action.html");
-  form.username_value = base::ASCIIToUTF16("user");
-  form.password_value = base::ASCIIToUTF16("password");
+  form.username_value = u"user";
+  form.password_value = u"password";
   return form;
 }
 
@@ -45,8 +45,8 @@ PasswordForm CreateTestPSLForm() {
   form.url = GURL(kTestSubdomainHttpURL);
   form.signon_realm = form.url.GetOrigin().spec();
   form.action = GURL(kTestSubdomainHttpURL);
-  form.username_value = base::ASCIIToUTF16("user2");
-  form.password_value = base::ASCIIToUTF16("password2");
+  form.username_value = u"user2";
+  form.password_value = u"password2";
   form.is_public_suffix_match = true;
   return form;
 }
@@ -54,8 +54,8 @@ PasswordForm CreateTestPSLForm() {
 // Creates an Android credential.
 PasswordForm CreateAndroidCredential() {
   PasswordForm form;
-  form.username_value = base::ASCIIToUTF16("user3");
-  form.password_value = base::ASCIIToUTF16("password3");
+  form.username_value = u"user3";
+  form.password_value = u"password3";
   form.signon_realm = "android://hash@com.example.android/";
   form.url = GURL(form.signon_realm);
   form.action = GURL();
@@ -66,7 +66,7 @@ PasswordForm CreateAndroidCredential() {
 // Creates a local federated credential.
 PasswordForm CreateLocalFederatedCredential() {
   PasswordForm form;
-  form.username_value = base::ASCIIToUTF16("user4");
+  form.username_value = u"user4";
   form.signon_realm = "federation://localhost/federation.example.com";
   form.url = GURL("http://localhost/");
   form.action = GURL("http://localhost/");

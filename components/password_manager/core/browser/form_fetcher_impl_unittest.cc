@@ -341,17 +341,17 @@ TEST_P(FormFetcherImplTest, Blocked) {
 TEST_P(FormFetcherImplTest, Mixed) {
   Fetch();
   PasswordForm federated1 = CreateFederated();
-  federated1.username_value = ASCIIToUTF16("user");
+  federated1.username_value = u"user";
   PasswordForm federated2 = CreateFederated();
-  federated2.username_value = ASCIIToUTF16("user_B");
+  federated2.username_value = u"user_B";
   PasswordForm federated3 = CreateAndroidFederated();
-  federated3.username_value = ASCIIToUTF16("user_B");
+  federated3.username_value = u"user_B";
   PasswordForm non_federated1 = CreateNonFederated();
-  non_federated1.username_value = ASCIIToUTF16("user");
+  non_federated1.username_value = u"user";
   PasswordForm non_federated2 = CreateNonFederated();
-  non_federated2.username_value = ASCIIToUTF16("user_C");
+  non_federated2.username_value = u"user_C";
   PasswordForm non_federated3 = CreateNonFederated();
-  non_federated3.username_value = ASCIIToUTF16("user_D");
+  non_federated3.username_value = u"user_D";
   PasswordForm blocked = CreateBlocked();
 
   form_fetcher_->AddConsumer(&consumer_);
@@ -381,11 +381,11 @@ TEST_P(FormFetcherImplTest, Mixed) {
 TEST_P(FormFetcherImplTest, Filtered) {
   Fetch();
   PasswordForm federated = CreateFederated();
-  federated.username_value = ASCIIToUTF16("user");
+  federated.username_value = u"user";
   PasswordForm non_federated1 = CreateNonFederated();
-  non_federated1.username_value = ASCIIToUTF16("user");
+  non_federated1.username_value = u"user";
   PasswordForm non_federated2 = CreateNonFederated();
-  non_federated2.username_value = ASCIIToUTF16("user_C");
+  non_federated2.username_value = u"user_C";
 
   // Set up a filter to remove all credentials with the username "user".
   client_.set_filter(std::make_unique<NameFilter>("user"));
@@ -421,8 +421,8 @@ TEST_P(FormFetcherImplTest, InsecureCredentials) {
   Fetch();
   form_fetcher_->AddConsumer(&consumer_);
   const std::vector<InsecureCredential> credentials = {InsecureCredential(
-      form_digest_.signon_realm, base::ASCIIToUTF16("username_value"),
-      base::Time::FromTimeT(1), InsecureType::kLeaked, IsMuted(false))};
+      form_digest_.signon_realm, u"username_value", base::Time::FromTimeT(1),
+      InsecureType::kLeaked, IsMuted(false))};
   static_cast<InsecureCredentialsConsumer*>(form_fetcher_.get())
       ->OnGetInsecureCredentials(credentials);
   EXPECT_THAT(form_fetcher_->GetInsecureCredentials(),
@@ -443,7 +443,7 @@ TEST_P(FormFetcherImplTest, Update_Reentrance) {
 
   // First response from the store, should be ignored.
   PasswordForm form_a = CreateNonFederated();
-  form_a.username_value = ASCIIToUTF16("a@gmail.com");
+  form_a.username_value = u"a@gmail.com";
   std::vector<std::unique_ptr<PasswordForm>> old_results;
   old_results.push_back(std::make_unique<PasswordForm>(form_a));
   // Because of the pending updates, the old PasswordStore results are not
@@ -457,10 +457,10 @@ TEST_P(FormFetcherImplTest, Update_Reentrance) {
 
   // Second response from the store should not be ignored.
   PasswordForm form_b = CreateNonFederated();
-  form_b.username_value = ASCIIToUTF16("b@gmail.com");
+  form_b.username_value = u"b@gmail.com";
 
   PasswordForm form_c = CreateNonFederated();
-  form_c.username_value = ASCIIToUTF16("c@gmail.com");
+  form_c.username_value = u"c@gmail.com";
 
   EXPECT_CALL(consumer_, OnFetchCompleted);
   std::vector<std::unique_ptr<PasswordForm>> results;
@@ -476,7 +476,7 @@ TEST_P(FormFetcherImplTest, Update_Reentrance) {
 TEST_P(FormFetcherImplTest, FetchStatistics) {
   InteractionsStats stats;
   stats.origin_domain = form_digest_.url.GetOrigin();
-  stats.username_value = ASCIIToUTF16("some username");
+  stats.username_value = u"some username";
   stats.dismissal_count = 5;
   std::vector<InteractionsStats> db_stats = {stats};
   EXPECT_CALL(*mock_store_, GetLogins(form_digest_, form_fetcher_.get()));
@@ -491,8 +491,8 @@ TEST_P(FormFetcherImplTest, FetchStatistics) {
 
 TEST_P(FormFetcherImplTest, FetchInsecure) {
   std::vector<InsecureCredential> list = {InsecureCredential(
-      form_digest_.signon_realm, base::ASCIIToUTF16("username_value"),
-      base::Time::FromTimeT(1), InsecureType::kLeaked, IsMuted(false))};
+      form_digest_.signon_realm, u"username_value", base::Time::FromTimeT(1),
+      InsecureType::kLeaked, IsMuted(false))};
   EXPECT_CALL(*mock_store_,
               GetMatchingInsecureCredentialsImpl(form_digest_.signon_realm))
       .WillOnce(Return(list));
@@ -811,8 +811,8 @@ TEST_P(FormFetcherImplTest, Clone_Insecure) {
   store_consumer()->OnGetPasswordStoreResultsFrom(
       mock_store_.get(), std::vector<std::unique_ptr<PasswordForm>>());
   const std::vector<InsecureCredential> credentials = {InsecureCredential(
-      form_digest_.signon_realm, base::ASCIIToUTF16("username_value"),
-      base::Time::FromTimeT(1), InsecureType::kLeaked, IsMuted(false))};
+      form_digest_.signon_realm, u"username_value", base::Time::FromTimeT(1),
+      InsecureType::kLeaked, IsMuted(false))};
   static_cast<InsecureCredentialsConsumer*>(form_fetcher_.get())
       ->OnGetInsecureCredentials(credentials);
 

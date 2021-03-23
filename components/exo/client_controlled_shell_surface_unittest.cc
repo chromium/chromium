@@ -1583,7 +1583,7 @@ TEST_F(ClientControlledShellSurfaceTest, SetExtraTitle) {
   surface->Commit();
   shell_surface->GetWidget()->Show();
 
-  const std::u16string window_title(base::ASCIIToUTF16("title"));
+  const std::u16string window_title(u"title");
   shell_surface->SetTitle(window_title);
   const aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
   EXPECT_EQ(window_title, window->GetTitle());
@@ -1616,7 +1616,7 @@ TEST_F(ClientControlledShellSurfaceTest, SetExtraTitle) {
 
   // Setting the extra title/debug text won't change the window's title, but it
   // will be drawn by the frame header.
-  shell_surface->SetExtraTitle(base::ASCIIToUTF16("extra"));
+  shell_surface->SetExtraTitle(u"extra");
   surface->Commit();
   EXPECT_EQ(window_title, window->GetTitle());
   EXPECT_TRUE(paint_does_draw_text());

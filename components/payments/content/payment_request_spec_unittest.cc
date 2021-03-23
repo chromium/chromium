@@ -345,8 +345,7 @@ TEST_F(PaymentRequestSpecTest, ShippingOptionsSelection_NoOptionsAtAll) {
 
   // No option selected, but there is an error provided by the mercahnt.
   EXPECT_EQ(nullptr, spec()->selected_shipping_option());
-  EXPECT_EQ(base::ASCIIToUTF16("No can do shipping."),
-            spec()->selected_shipping_option_error());
+  EXPECT_EQ(u"No can do shipping.", spec()->selected_shipping_option_error());
 }
 
 // Test that the last shipping option is selected, even in the case of

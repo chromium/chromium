@@ -79,8 +79,8 @@ std::string ACMatchClassificationsAsString(
 }  // namespace
 
 TEST(TitledUrlMatchUtilsTest, TitledUrlMatchToAutocompleteMatch) {
-  std::u16string input_text(base::ASCIIToUTF16("goo"));
-  std::u16string match_title(base::ASCIIToUTF16("Google Search"));
+  std::u16string input_text(u"goo");
+  std::u16string match_title(u"Google Search");
   GURL match_url("https://www.google.com/");
   AutocompleteMatchType::Type type = AutocompleteMatchType::BOOKMARK_TITLE;
   int relevance = 123;
@@ -109,13 +109,13 @@ TEST(TitledUrlMatchUtilsTest, TitledUrlMatchToAutocompleteMatch) {
   ACMatchClassifications expected_description_class = {
       {0, ACMatchClassification::MATCH}, {3, ACMatchClassification::NONE},
   };
-  std::u16string expected_inline_autocompletion(base::ASCIIToUTF16("gle.com"));
+  std::u16string expected_inline_autocompletion(u"gle.com");
 
   EXPECT_EQ(provider.get(), autocomplete_match.provider);
   EXPECT_EQ(type, autocomplete_match.type);
   EXPECT_EQ(relevance, autocomplete_match.relevance);
   EXPECT_EQ(match_url, autocomplete_match.destination_url);
-  EXPECT_EQ(base::ASCIIToUTF16("google.com"), autocomplete_match.contents);
+  EXPECT_EQ(u"google.com", autocomplete_match.contents);
   EXPECT_TRUE(std::equal(expected_contents_class.begin(),
                          expected_contents_class.end(),
                          autocomplete_match.contents_class.begin()))
@@ -126,8 +126,7 @@ TEST(TitledUrlMatchUtilsTest, TitledUrlMatchToAutocompleteMatch) {
   EXPECT_TRUE(std::equal(expected_description_class.begin(),
                          expected_description_class.end(),
                          autocomplete_match.description_class.begin()));
-  EXPECT_EQ(base::ASCIIToUTF16("https://www.google.com"),
-            autocomplete_match.fill_into_edit);
+  EXPECT_EQ(u"https://www.google.com", autocomplete_match.fill_into_edit);
   EXPECT_TRUE(autocomplete_match.allowed_to_be_default_match);
   EXPECT_EQ(expected_inline_autocompletion,
             autocomplete_match.inline_autocompletion);
@@ -138,7 +137,7 @@ AutocompleteMatch BuildTestAutocompleteMatch(
     const GURL& match_url,
     const bookmarks::TitledUrlMatch::MatchPositions& match_positions) {
   std::u16string input_text(base::ASCIIToUTF16(input_text_s));
-  std::u16string match_title(base::ASCIIToUTF16("The Facebook"));
+  std::u16string match_title(u"The Facebook");
   AutocompleteMatchType::Type type = AutocompleteMatchType::BOOKMARK_TITLE;
   int relevance = 123;
 
@@ -170,7 +169,7 @@ TEST(TitledUrlMatchUtilsTest, DoTrimHttpScheme) {
       {0, ACMatchClassification::URL | ACMatchClassification::MATCH},
       {4, ACMatchClassification::URL},
   };
-  std::u16string expected_contents(base::ASCIIToUTF16("facebook.com"));
+  std::u16string expected_contents(u"facebook.com");
 
   EXPECT_EQ(match_url, autocomplete_match.destination_url);
   EXPECT_EQ(expected_contents, autocomplete_match.contents);
@@ -192,7 +191,7 @@ TEST(TitledUrlMatchUtilsTest, DontTrimHttpSchemeIfInputHasScheme) {
       {0, ACMatchClassification::URL | ACMatchClassification::MATCH},
       {11, ACMatchClassification::URL},
   };
-  std::u16string expected_contents(base::ASCIIToUTF16("http://facebook.com"));
+  std::u16string expected_contents(u"http://facebook.com");
 
   EXPECT_EQ(match_url, autocomplete_match.destination_url);
   EXPECT_EQ(expected_contents, autocomplete_match.contents);
@@ -214,7 +213,7 @@ TEST(TitledUrlMatchUtilsTest, DoTrimHttpsScheme) {
       {0, ACMatchClassification::URL | ACMatchClassification::MATCH},
       {4, ACMatchClassification::URL},
   };
-  std::u16string expected_contents(base::ASCIIToUTF16("facebook.com"));
+  std::u16string expected_contents(u"facebook.com");
 
   EXPECT_EQ(match_url, autocomplete_match.destination_url);
   EXPECT_EQ(expected_contents, autocomplete_match.contents);
@@ -236,7 +235,7 @@ TEST(TitledUrlMatchUtilsTest, DontTrimHttpsSchemeIfInputHasScheme) {
       {0, ACMatchClassification::URL | ACMatchClassification::MATCH},
       {12, ACMatchClassification::URL},
   };
-  std::u16string expected_contents(base::ASCIIToUTF16("https://facebook.com"));
+  std::u16string expected_contents(u"https://facebook.com");
 
   EXPECT_EQ(match_url, autocomplete_match.destination_url);
   EXPECT_EQ(expected_contents, autocomplete_match.contents);
@@ -252,8 +251,8 @@ TEST(TitledUrlMatchUtilsTest, DontTrimHttpsSchemeIfInputHasScheme) {
 TEST(TitledUrlMatchUtilsTest, EmptyInlineAutocompletion) {
   // The search term matches the title but not the URL. Since there is no URL
   // match, the inline autocompletion string will be empty.
-  std::u16string input_text(base::ASCIIToUTF16("goo"));
-  std::u16string match_title(base::ASCIIToUTF16("Email by Google"));
+  std::u16string input_text(u"goo");
+  std::u16string match_title(u"Email by Google");
   GURL match_url("http://www.gmail.com/");
   AutocompleteMatchType::Type type = AutocompleteMatchType::BOOKMARK_TITLE;
   int relevance = 123;
@@ -288,7 +287,7 @@ TEST(TitledUrlMatchUtilsTest, EmptyInlineAutocompletion) {
   EXPECT_EQ(type, autocomplete_match.type);
   EXPECT_EQ(relevance, autocomplete_match.relevance);
   EXPECT_EQ(match_url, autocomplete_match.destination_url);
-  EXPECT_EQ(base::ASCIIToUTF16("gmail.com"), autocomplete_match.contents);
+  EXPECT_EQ(u"gmail.com", autocomplete_match.contents);
   EXPECT_TRUE(std::equal(expected_contents_class.begin(),
                          expected_contents_class.end(),
                          autocomplete_match.contents_class.begin()))
@@ -299,8 +298,7 @@ TEST(TitledUrlMatchUtilsTest, EmptyInlineAutocompletion) {
   EXPECT_TRUE(std::equal(expected_description_class.begin(),
                          expected_description_class.end(),
                          autocomplete_match.description_class.begin()));
-  EXPECT_EQ(base::ASCIIToUTF16("www.gmail.com"),
-            autocomplete_match.fill_into_edit);
+  EXPECT_EQ(u"www.gmail.com", autocomplete_match.fill_into_edit);
   EXPECT_FALSE(autocomplete_match.allowed_to_be_default_match);
   EXPECT_TRUE(autocomplete_match.inline_autocompletion.empty());
 }

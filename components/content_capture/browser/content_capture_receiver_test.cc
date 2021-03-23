@@ -191,7 +191,7 @@ class ContentCaptureReceiverTest : public content::RenderViewHostTestHarness,
     ContentCaptureData child;
     // Have the unique id for text content.
     child.id = 2;
-    child.value = base::ASCIIToUTF16("Hello");
+    child.value = u"Hello";
     child.bounds = gfx::Rect(5, 5, 5, 5);
     // No need to set id in sender.
     test_data_.value = base::ASCIIToUTF16(kMainFrameUrl);
@@ -204,7 +204,7 @@ class ContentCaptureReceiverTest : public content::RenderViewHostTestHarness,
     ContentCaptureData child_change;
     // Same ID with child.
     child_change.id = 2;
-    child_change.value = base::ASCIIToUTF16("Hello World");
+    child_change.value = u"Hello World";
     child_change.bounds = gfx::Rect(5, 5, 5, 5);
     test_data_change_.value = base::ASCIIToUTF16(kMainFrameUrl);
     test_data_change_.bounds = gfx::Rect(10, 10);
@@ -214,7 +214,7 @@ class ContentCaptureReceiverTest : public content::RenderViewHostTestHarness,
     ContentCaptureData child2;
     // Have the unique id for text content.
     child2.id = 3;
-    child2.value = base::ASCIIToUTF16("World");
+    child2.value = u"World";
     child2.bounds = gfx::Rect(5, 10, 5, 5);
     test_data_update_.value = base::ASCIIToUTF16(kMainFrameUrl);
     test_data_update_.bounds = gfx::Rect(10, 10);
@@ -545,14 +545,14 @@ TEST_P(ContentCaptureReceiverTest, TitleUpdateTaskDelay) {
   // Uses TestMockTimeTaskRunner to check the task state.
   receiver->title_update_task_runner_ = task_runner;
 
-  receiver->SetTitle(base::ASCIIToUTF16("title 1"));
+  receiver->SetTitle(u"title 1");
   // No task scheduled because no content has been captured.
   EXPECT_FALSE(receiver->notify_title_update_callback_);
   EXPECT_FALSE(task_runner->HasPendingTask());
 
   // Capture content, then update the title.
   DidCaptureContent(test_data(), /*first_data=*/true);
-  std::u16string title2 = base::ASCIIToUTF16("title 2");
+  std::u16string title2 = u"title 2";
   receiver->SetTitle(title2);
   // A task should be scheduled.
   EXPECT_TRUE(receiver->notify_title_update_callback_);
@@ -571,7 +571,7 @@ TEST_P(ContentCaptureReceiverTest, TitleUpdateTaskDelay) {
   receiver->title_update_task_runner_ = task_runner;
 
   // Change title again and verify the result.
-  receiver->SetTitle(base::ASCIIToUTF16("title 3"));
+  receiver->SetTitle(u"title 3");
   EXPECT_TRUE(receiver->notify_title_update_callback_);
   EXPECT_TRUE(task_runner->HasPendingTask());
   EXPECT_EQ(4u, receiver->exponential_delay_);

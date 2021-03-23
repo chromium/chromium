@@ -69,15 +69,14 @@ void BuiltinProvider::Start(const AutocompleteInput& input,
     // Match input about: or |embedderAbout| URL input against builtin URLs.
     GURL url = url_formatter::FixupURL(base::UTF16ToUTF8(text), std::string());
     const bool text_ends_with_slash =
-        base::EndsWith(text, base::ASCIIToUTF16("/"),
-                       base::CompareCase::SENSITIVE);
+        base::EndsWith(text, u"/", base::CompareCase::SENSITIVE);
     // BuiltinProvider doesn't know how to suggest valid ?query or #fragment
     // extensions to builtin URLs.
     if (url.SchemeIs(client_->GetEmbedderRepresentationOfAboutScheme()) &&
         url.has_host() && !url.has_query() && !url.has_ref()) {
       // Suggest about:blank for substrings, taking URL fixup into account.
       // Chrome does not support trailing slashes or paths for about:blank.
-      const std::u16string blank_host = base::ASCIIToUTF16("blank");
+      const std::u16string blank_host = u"blank";
       const std::u16string host = base::UTF8ToUTF16(url.host());
       if (base::StartsWith(text, base::ASCIIToUTF16(url::kAboutScheme),
                            base::CompareCase::INSENSITIVE_ASCII) &&
@@ -94,7 +93,7 @@ void BuiltinProvider::Start(const AutocompleteInput& input,
 
       // Include the path for sub-pages (e.g. "chrome://settings/browser").
       std::u16string host_and_path = base::UTF8ToUTF16(url.host() + url.path());
-      base::TrimString(host_and_path, base::ASCIIToUTF16("/"), &host_and_path);
+      base::TrimString(host_and_path, u"/", &host_and_path);
       size_t match_length = embedderAbout.length() + host_and_path.length();
       for (Builtins::const_iterator i(builtins_.begin());
            (i != builtins_.end()) && (matches_.size() < provider_max_matches_);
@@ -111,9 +110,9 @@ void BuiltinProvider::Start(const AutocompleteInput& input,
           // trying to add a 'y' to an input like "chrome://histor/".
           std::u16string inline_autocompletion(
               match_string.substr(match_length));
-          if (text_ends_with_slash && !base::StartsWith(
-              match_string.substr(match_length), base::ASCIIToUTF16("/"),
-              base::CompareCase::INSENSITIVE_ASCII))
+          if (text_ends_with_slash &&
+              !base::StartsWith(match_string.substr(match_length), u"/",
+                                base::CompareCase::INSENSITIVE_ASCII))
             inline_autocompletion = std::u16string();
           AddMatch(match_string, inline_autocompletion, styles);
         }

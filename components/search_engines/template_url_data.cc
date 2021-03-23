@@ -44,7 +44,7 @@ TemplateURLData::TemplateURLData()
       usage_count(0),
       prepopulate_id(0),
       sync_guid(base::GenerateGUID()),
-      keyword_(base::ASCIIToUTF16("dummy")),
+      keyword_(u"dummy"),
       url_("x") {}
 
 TemplateURLData::TemplateURLData(const TemplateURLData& other) = default;

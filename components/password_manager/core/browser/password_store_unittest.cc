@@ -440,9 +440,9 @@ TEST_F(PasswordStoreTest, RemoveLoginsCreatedBetweenCallbackIsCalled) {
 // Verify that when a login is removed that the corresponding row is also
 // removed from the insecure credentials table.
 TEST_F(PasswordStoreTest, InsecureCredentialsObserverOnRemoveLogin) {
-  InsecureCredential insecure_credential(
-      kTestWebRealm1, base::ASCIIToUTF16("username_value_1"),
-      base::Time::FromTimeT(1), InsecureType::kLeaked, IsMuted(false));
+  InsecureCredential insecure_credential(kTestWebRealm1, u"username_value_1",
+                                         base::Time::FromTimeT(1),
+                                         InsecureType::kLeaked, IsMuted(false));
 
   scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
@@ -480,9 +480,9 @@ TEST_F(PasswordStoreTest, InsecureCredentialsObserverOnRemoveLogin) {
 // Verify that when a login password is updated that the corresponding row is
 // removed from the insecure credentials table.
 TEST_F(PasswordStoreTest, InsecureCredentialsObserverOnLoginUpdated) {
-  InsecureCredential insecure_credential(
-      kTestWebRealm1, base::ASCIIToUTF16("username_value_1"),
-      base::Time::FromTimeT(1), InsecureType::kLeaked, IsMuted(false));
+  InsecureCredential insecure_credential(kTestWebRealm1, u"username_value_1",
+                                         base::Time::FromTimeT(1),
+                                         InsecureType::kLeaked, IsMuted(false));
   scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
@@ -519,9 +519,9 @@ TEST_F(PasswordStoreTest, InsecureCredentialsObserverOnLoginUpdated) {
 // Verify that when a login password is added with the password changed that the
 // corresponding row is removed from the insecure credentials table.
 TEST_F(PasswordStoreTest, InsecureCredentialsObserverOnLoginAdded) {
-  InsecureCredential insecure_credential(
-      kTestWebRealm1, base::ASCIIToUTF16("username_value_1"),
-      base::Time::FromTimeT(1), InsecureType::kLeaked, IsMuted(false));
+  InsecureCredential insecure_credential(kTestWebRealm1, u"username_value_1",
+                                         base::Time::FromTimeT(1),
+                                         InsecureType::kLeaked, IsMuted(false));
   scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
@@ -569,9 +569,9 @@ TEST_F(PasswordStoreTest, InsecurePasswordObserverOnInsecureCredentialAdded) {
                                                  u"password",
                                                  kTestLastUsageTime,
                                                  1};
-  InsecureCredential insecure_credential(
-      kTestWebRealm1, base::ASCIIToUTF16("username_value_1"),
-      base::Time::FromTimeT(1), InsecureType::kLeaked, IsMuted(false));
+  InsecureCredential insecure_credential(kTestWebRealm1, u"username_value_1",
+                                         base::Time::FromTimeT(1),
+                                         InsecureType::kLeaked, IsMuted(false));
 
   scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
@@ -606,9 +606,9 @@ TEST_F(PasswordStoreTest, InsecurePasswordObserverOnInsecureCredentialRemoved) {
                                                  kTestLastUsageTime,
                                                  1};
 
-  InsecureCredential insecure_credential(
-      kTestWebRealm1, base::ASCIIToUTF16("username_value_1"),
-      base::Time::FromTimeT(1), InsecureType::kLeaked, IsMuted(false));
+  InsecureCredential insecure_credential(kTestWebRealm1, u"username_value_1",
+                                         base::Time::FromTimeT(1),
+                                         InsecureType::kLeaked, IsMuted(false));
 
   scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
@@ -1276,7 +1276,7 @@ TEST_F(PasswordStoreTest, CheckPasswordReuse) {
     MockPasswordReuseDetectorConsumer mock_consumer;
     if (test_data.reused_password_len != 0) {
       const std::vector<MatchingReusedCredential> credentials = {
-          {"https://www.google.com", base::ASCIIToUTF16("username1"),
+          {"https://www.google.com", u"username1",
            PasswordForm::Store::kProfileStore}};
       EXPECT_CALL(mock_consumer,
                   OnReuseCheckDone(true, test_data.reused_password_len,
@@ -1306,8 +1306,8 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
   ASSERT_FALSE(prefs.HasPrefPath(prefs::kSyncPasswordHash));
   store->Init(&prefs);
 
-  const std::u16string sync_password = base::ASCIIToUTF16("password");
-  const std::u16string input = base::ASCIIToUTF16("123password");
+  const std::u16string sync_password = u"password";
+  const std::u16string input = u"123password";
   store->SaveGaiaPasswordHash(
       "sync_username", sync_password,
       /*is_primary_account=*/true,
@@ -1328,7 +1328,7 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
   testing::Mock::VerifyAndClearExpectations(&mock_consumer);
 
   // Save a non-sync Gaia password this time.
-  const std::u16string gaia_password = base::ASCIIToUTF16("3password");
+  const std::u16string gaia_password = u"3password";
   store->SaveGaiaPasswordHash("other_gaia_username", gaia_password,
                               /*is_primary_account=*/false,
                               GaiaPasswordHashChange::NOT_SYNC_PASSWORD_CHANGE);
@@ -1363,7 +1363,7 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
   testing::Mock::VerifyAndClearExpectations(&mock_consumer);
 
   // Save a enterprise password this time.
-  const std::u16string enterprise_password = base::ASCIIToUTF16("23password");
+  const std::u16string enterprise_password = u"23password";
   store->SaveEnterprisePasswordHash("enterprise_username", enterprise_password);
   base::Optional<PasswordHashData> enterprise_password_hash =
       GetPasswordFromPref("enterprise_username", /*is_gaia_password=*/false,
@@ -1388,7 +1388,7 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
   testing::Mock::VerifyAndClearExpectations(&mock_consumer);
 
   // Save a Gmail password this time.
-  const std::u16string gmail_password = base::ASCIIToUTF16("gmailpass");
+  const std::u16string gmail_password = u"gmailpass";
   store->SaveGaiaPasswordHash("username@gmail.com", gmail_password,
                               /*is_primary_account=*/false,
                               GaiaPasswordHashChange::NOT_SYNC_PASSWORD_CHANGE);
@@ -1407,7 +1407,7 @@ TEST_F(PasswordStoreTest, SavingClearingProtectedPassword) {
   testing::Mock::VerifyAndClearExpectations(&mock_consumer);
 
   // Also save another non-sync Gaia password this time.
-  const std::u16string non_sync_gaia_password = base::ASCIIToUTF16("3password");
+  const std::u16string non_sync_gaia_password = u"3password";
   store->SaveGaiaPasswordHash("non_sync_gaia_password@gsuite.com",
                               non_sync_gaia_password,
                               /*is_primary_account=*/false,
@@ -1477,8 +1477,8 @@ TEST_F(PasswordStoreTest, ReportMetricsForAdvancedProtection) {
       name, metrics_util::IsSyncPasswordHashSaved::NOT_SAVED, 1);
 
   // Save password.
-  const std::u16string sync_password = base::ASCIIToUTF16("password");
-  const std::u16string input = base::ASCIIToUTF16("123password");
+  const std::u16string sync_password = u"password";
+  const std::u16string input = u"123password";
   store->SaveGaiaPasswordHash("sync_username", sync_password,
                               /*is_primary_account=*/true,
                               GaiaPasswordHashChange::SAVED_ON_CHROME_SIGNIN);
@@ -1517,8 +1517,8 @@ TEST_F(PasswordStoreTest, ReportMetricsForNonSyncPassword) {
       name, metrics_util::IsSyncPasswordHashSaved::NOT_SAVED, 1);
 
   // Save password.
-  const std::u16string not_sync_password = base::ASCIIToUTF16("password");
-  const std::u16string input = base::ASCIIToUTF16("123password");
+  const std::u16string not_sync_password = u"password";
+  const std::u16string input = u"123password";
   store->SaveGaiaPasswordHash("not_sync_username", not_sync_password,
                               /*is_primary_account=*/false,
                               GaiaPasswordHashChange::NOT_SYNC_PASSWORD_CHANGE);
@@ -1549,12 +1549,12 @@ TEST_F(PasswordStoreTest, GetAllInsecureCredentials) {
 
   for (const auto& data : kTestCredentials)
     store->AddLogin(*FillPasswordFormWithData(data));
-  InsecureCredential insecure_credential(
-      "https://example.com/", base::ASCIIToUTF16("username"),
-      base::Time::FromTimeT(1), InsecureType::kLeaked, IsMuted(false));
+  InsecureCredential insecure_credential("https://example.com/", u"username",
+                                         base::Time::FromTimeT(1),
+                                         InsecureType::kLeaked, IsMuted(false));
   InsecureCredential insecure_credential2(
-      "https://2.example.com/", base::ASCIIToUTF16("username2"),
-      base::Time::FromTimeT(2), InsecureType::kLeaked, IsMuted(false));
+      "https://2.example.com/", u"username2", base::Time::FromTimeT(2),
+      InsecureType::kLeaked, IsMuted(false));
 
   store->AddInsecureCredential(insecure_credential);
   store->AddInsecureCredential(insecure_credential2);
@@ -1590,12 +1590,12 @@ TEST_F(PasswordStoreTest, GetMatchingInsecureWithoutAffiliations) {
   for (const auto& data : kTestCredentials)
     store->AddLogin(*FillPasswordFormWithData(data));
 
-  InsecureCredential credential1(
-      kTestWebRealm1, base::ASCIIToUTF16("username_value"),
-      base::Time::FromTimeT(1), InsecureType::kLeaked, IsMuted(false));
-  InsecureCredential credential2(
-      kTestWebRealm2, base::ASCIIToUTF16("username_value"),
-      base::Time::FromTimeT(2), InsecureType::kLeaked, IsMuted(false));
+  InsecureCredential credential1(kTestWebRealm1, u"username_value",
+                                 base::Time::FromTimeT(1),
+                                 InsecureType::kLeaked, IsMuted(false));
+  InsecureCredential credential2(kTestWebRealm2, u"username_value",
+                                 base::Time::FromTimeT(2),
+                                 InsecureType::kLeaked, IsMuted(false));
   for (const auto& credential : {credential1, credential2})
     store->AddInsecureCredential(credential);
 
@@ -1624,15 +1624,15 @@ TEST_F(PasswordStoreTest, GetMatchingInsecureWithAffiliations) {
   for (const auto& data : kTestCredentials)
     store->AddLogin(*FillPasswordFormWithData(data));
 
-  InsecureCredential credential1(
-      kTestWebRealm1, base::ASCIIToUTF16("username_value"),
-      base::Time::FromTimeT(1), InsecureType::kLeaked, IsMuted(false));
-  InsecureCredential credential2(
-      kTestAndroidRealm1, base::ASCIIToUTF16("username_value_1"),
-      base::Time::FromTimeT(2), InsecureType::kPhished, IsMuted(false));
-  InsecureCredential credential3(
-      kTestWebRealm2, base::ASCIIToUTF16("username_value_2"),
-      base::Time::FromTimeT(3), InsecureType::kLeaked, IsMuted(false));
+  InsecureCredential credential1(kTestWebRealm1, u"username_value",
+                                 base::Time::FromTimeT(1),
+                                 InsecureType::kLeaked, IsMuted(false));
+  InsecureCredential credential2(kTestAndroidRealm1, u"username_value_1",
+                                 base::Time::FromTimeT(2),
+                                 InsecureType::kPhished, IsMuted(false));
+  InsecureCredential credential3(kTestWebRealm2, u"username_value_2",
+                                 base::Time::FromTimeT(3),
+                                 InsecureType::kLeaked, IsMuted(false));
   for (const auto& credentials : {credential1, credential2, credential3})
     store->AddInsecureCredential(credentials);
 
@@ -1659,7 +1659,7 @@ TEST_F(PasswordStoreTest, RemoveInsecureCredentialsSyncOnUpdate) {
   scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
-  InsecureCredential credential(kTestWebRealm1, base::ASCIIToUTF16("username1"),
+  InsecureCredential credential(kTestWebRealm1, u"username1",
                                 base::Time::FromTimeT(100),
                                 InsecureType::kLeaked, IsMuted(false));
   constexpr PasswordFormData kTestCredential = {PasswordForm::Scheme::kHtml,
@@ -1679,7 +1679,7 @@ TEST_F(PasswordStoreTest, RemoveInsecureCredentialsSyncOnUpdate) {
   WaitForPasswordStore();
 
   // Update the password value and immediately get the insecure passwords.
-  form->password_value = base::ASCIIToUTF16("new_password");
+  form->password_value = u"new_password";
   store->UpdateLogin(*form);
   MockInsecureCredentialsConsumer consumer;
   store->GetAllInsecureCredentials(&consumer);
@@ -1695,7 +1695,7 @@ TEST_F(PasswordStoreTest, RemoveInsecureCredentialsSyncOnDelete) {
   scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
   store->Init(nullptr);
 
-  InsecureCredential credential(kTestWebRealm1, base::ASCIIToUTF16("username1"),
+  InsecureCredential credential(kTestWebRealm1, u"username1",
                                 base::Time::FromTimeT(100),
                                 InsecureType::kLeaked, IsMuted(false));
   constexpr PasswordFormData kTestCredential = {PasswordForm::Scheme::kHtml,

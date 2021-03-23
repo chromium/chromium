@@ -1002,8 +1002,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
       .WillRepeatedly(Return(account_info));
 
   InitializeAndStartPasswordEntryRequest(
-      PasswordType::OTHER_GAIA_PASSWORD,
-      {{"gmail.com", ASCIIToUTF16("username")}},
+      PasswordType::OTHER_GAIA_PASSWORD, {{"gmail.com", u"username"}},
       /*match_allowlist=*/false,
       /*timeout_in_ms=*/10000, web_contents.get());
   password_protection_service_->WaitForResponse();
@@ -1189,9 +1188,9 @@ TEST_P(PasswordProtectionServiceBaseTest,
   // Initialize request triggered by saved password reuse.
   InitializeAndStartPasswordEntryRequest(
       PasswordType::SAVED_PASSWORD,
-      {{kSavedDomain, ASCIIToUTF16("username")},
-       {kSavedDomain2, ASCIIToUTF16("username")},
-       {"http://localhost:8080", ASCIIToUTF16("username")}},
+      {{kSavedDomain, u"username"},
+       {kSavedDomain2, u"username"},
+       {"http://localhost:8080", u"username"}},
       false /* match allowlist */, 100000 /* timeout in ms*/,
       web_contents.get());
   password_protection_service_->WaitForResponse();
@@ -1435,8 +1434,7 @@ TEST_P(PasswordProtectionServiceBaseTest, TestPingsForAboutBlank) {
   std::unique_ptr<content::WebContents> web_contents = GetWebContents();
   password_protection_service_->StartRequest(
       web_contents.get(), GURL("about:blank"), GURL(), GURL(), "username",
-      PasswordType::SAVED_PASSWORD,
-      {{"example1.com", ASCIIToUTF16("username")}},
+      PasswordType::SAVED_PASSWORD, {{"example1.com", u"username"}},
       LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE, true);
   base::RunLoop().RunUntilIdle();
   histograms_.ExpectTotalCount(kPasswordOnFocusRequestOutcomeHistogram, 1);
@@ -1457,7 +1455,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
   std::unique_ptr<content::WebContents> web_contents = GetWebContents();
   password_protection_service_->StartRequest(
       web_contents.get(), GURL("about:blank"), GURL(), GURL(), kUserName,
-      PasswordType::SAVED_PASSWORD, {{"example.com", ASCIIToUTF16("username")}},
+      PasswordType::SAVED_PASSWORD, {{"example.com", u"username"}},
       LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE, true);
   base::RunLoop().RunUntilIdle();
 
@@ -1482,7 +1480,7 @@ TEST_P(PasswordProtectionServiceBaseTest, TestDomFeaturesPopulated) {
   std::unique_ptr<content::WebContents> web_contents = GetWebContents();
   password_protection_service_->StartRequest(
       web_contents.get(), GURL("about:blank"), GURL(), GURL(), kUserName,
-      PasswordType::SAVED_PASSWORD, {{"example.com", ASCIIToUTF16("username")}},
+      PasswordType::SAVED_PASSWORD, {{"example.com", u"username"}},
       LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE, true);
   base::RunLoop().RunUntilIdle();
 
@@ -1505,7 +1503,7 @@ TEST_P(PasswordProtectionServiceBaseTest, TestDomFeaturesTimeout) {
   std::unique_ptr<content::WebContents> web_contents = GetWebContents();
   password_protection_service_->StartRequest(
       web_contents.get(), GURL("about:blank"), GURL(), GURL(), kUserName,
-      PasswordType::SAVED_PASSWORD, {{"example.com", ASCIIToUTF16("username")}},
+      PasswordType::SAVED_PASSWORD, {{"example.com", u"username"}},
       LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE, true);
   task_environment_.RunUntilIdle();
 

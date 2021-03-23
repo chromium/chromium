@@ -860,7 +860,7 @@ TEST_F(PasswordAutofillManagerTest,
   new_data.uses_account_store = true;
   autofill::PasswordAndMetadata additional;
   additional.realm = "https://foobarrealm.org";
-  additional.username = base::ASCIIToUTF16("bar.foo@example.com");
+  additional.username = u"bar.foo@example.com";
   new_data.additional_logins.push_back(std::move(additional));
   EXPECT_CALL(autofill_client, GetPopupSuggestions())
       .WillRepeatedly(Return(SetLoading(
@@ -896,7 +896,7 @@ TEST_F(PasswordAutofillManagerTest, ExtractSuggestions) {
 
   autofill::PasswordAndMetadata additional;
   additional.realm = "https://foobarrealm.org";
-  additional.username = base::ASCIIToUTF16("John Foo");
+  additional.username = u"John Foo";
   data.additional_logins.push_back(additional);
 
   password_autofill_manager_->OnAddPasswordFillData(data);
@@ -923,7 +923,7 @@ TEST_F(PasswordAutofillManagerTest, ExtractSuggestions) {
   EXPECT_CALL(autofill_client, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
   password_autofill_manager_->OnShowPasswordSuggestions(
-      base::i18n::RIGHT_TO_LEFT, base::ASCIIToUTF16("John"),
+      base::i18n::RIGHT_TO_LEFT, u"John",
       autofill::ShowPasswordSuggestionsOptions(), element_bounds);
   EXPECT_THAT(open_args.suggestions,
               SuggestionVectorValuesAre(
@@ -933,8 +933,7 @@ TEST_F(PasswordAutofillManagerTest, ExtractSuggestions) {
   EXPECT_CALL(autofill_client, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
   password_autofill_manager_->OnShowPasswordSuggestions(
-      base::i18n::RIGHT_TO_LEFT, base::ASCIIToUTF16("xyz"), autofill::SHOW_ALL,
-      element_bounds);
+      base::i18n::RIGHT_TO_LEFT, u"xyz", autofill::SHOW_ALL, element_bounds);
   EXPECT_THAT(open_args.suggestions, SuggestionVectorValuesAre(ElementsAre(
                                          test_username_, additional.username,
                                          GetManagePasswordsTitle())));
@@ -954,7 +953,7 @@ TEST_F(PasswordAutofillManagerTest, PrettifiedAndroidRealmsAreShownAsLabels) {
 
   autofill::PasswordAndMetadata additional;
   additional.realm = "android://hash@com.example2.android/";
-  additional.username = base::ASCIIToUTF16("John Foo");
+  additional.username = u"John Foo";
   data.additional_logins.push_back(std::move(additional));
 
   password_autofill_manager_->OnAddPasswordFillData(data);
@@ -966,11 +965,11 @@ TEST_F(PasswordAutofillManagerTest, PrettifiedAndroidRealmsAreShownAsLabels) {
       base::i18n::RIGHT_TO_LEFT, std::u16string(),
       autofill::ShowPasswordSuggestionsOptions(), gfx::RectF());
   EXPECT_THAT(open_args.suggestions,
-              SuggestionVectorLabelsAre(testing::Contains(
-                  base::ASCIIToUTF16("android://com.example2.android/"))));
+              SuggestionVectorLabelsAre(
+                  testing::Contains(u"android://com.example2.android/")));
   EXPECT_THAT(open_args.suggestions,
-              SuggestionVectorLabelsAre(testing::Contains(
-                  base::ASCIIToUTF16("android://com.example1.android/"))));
+              SuggestionVectorLabelsAre(
+                  testing::Contains(u"android://com.example1.android/")));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
   EXPECT_EQ(open_args.popup_type, PopupType::kPasswords);
 }
@@ -985,7 +984,7 @@ TEST_F(PasswordAutofillManagerTest, FillSuggestionPasswordField) {
 
   autofill::PasswordAndMetadata additional;
   additional.realm = "https://foobarrealm.org";
-  additional.username = base::ASCIIToUTF16("John Foo");
+  additional.username = u"John Foo";
   data.additional_logins.push_back(std::move(additional));
 
   password_autofill_manager_->OnAddPasswordFillData(data);
@@ -1016,14 +1015,14 @@ TEST_F(PasswordAutofillManagerTest, DisplaySuggestionsWithMatchingTokens) {
 
   gfx::RectF element_bounds;
   autofill::PasswordFormFillData data;
-  std::u16string username = base::ASCIIToUTF16("foo.bar@example.com");
+  std::u16string username = u"foo.bar@example.com";
   data.username_field.value = username;
-  data.password_field.value = base::ASCIIToUTF16("foobar");
+  data.password_field.value = u"foobar";
   data.preferred_realm = "http://foo.com/";
 
   autofill::PasswordAndMetadata additional;
   additional.realm = "https://foobarrealm.org";
-  additional.username = base::ASCIIToUTF16("bar.foo@example.com");
+  additional.username = u"bar.foo@example.com";
   data.additional_logins.push_back(additional);
 
   password_autofill_manager_->OnAddPasswordFillData(data);
@@ -1032,7 +1031,7 @@ TEST_F(PasswordAutofillManagerTest, DisplaySuggestionsWithMatchingTokens) {
   EXPECT_CALL(autofill_client, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
   password_autofill_manager_->OnShowPasswordSuggestions(
-      base::i18n::RIGHT_TO_LEFT, base::ASCIIToUTF16("foo"),
+      base::i18n::RIGHT_TO_LEFT, u"foo",
       autofill::ShowPasswordSuggestionsOptions(), element_bounds);
   EXPECT_THAT(open_args.suggestions,
               SuggestionVectorValuesAre(testing::UnorderedElementsAre(
@@ -1054,21 +1053,21 @@ TEST_F(PasswordAutofillManagerTest, NoSuggestionForNonPrefixTokenMatch) {
 
   gfx::RectF element_bounds;
   autofill::PasswordFormFillData data;
-  std::u16string username = base::ASCIIToUTF16("foo.bar@example.com");
+  std::u16string username = u"foo.bar@example.com";
   data.username_field.value = username;
-  data.password_field.value = base::ASCIIToUTF16("foobar");
+  data.password_field.value = u"foobar";
   data.preferred_realm = "http://foo.com/";
 
   autofill::PasswordAndMetadata additional;
   additional.realm = "https://foobarrealm.org";
-  additional.username = base::ASCIIToUTF16("bar.foo@example.com");
+  additional.username = u"bar.foo@example.com";
   data.additional_logins.push_back(std::move(additional));
 
   password_autofill_manager_->OnAddPasswordFillData(data);
 
   EXPECT_CALL(autofill_client, ShowAutofillPopup).Times(0);
   password_autofill_manager_->OnShowPasswordSuggestions(
-      base::i18n::RIGHT_TO_LEFT, base::ASCIIToUTF16("oo"),
+      base::i18n::RIGHT_TO_LEFT, u"oo",
       autofill::ShowPasswordSuggestionsOptions(), element_bounds);
 }
 
@@ -1087,14 +1086,14 @@ TEST_F(PasswordAutofillManagerTest,
 
   gfx::RectF element_bounds;
   autofill::PasswordFormFillData data;
-  std::u16string username = base::ASCIIToUTF16("foo.bar@example.com");
+  std::u16string username = u"foo.bar@example.com";
   data.username_field.value = username;
-  data.password_field.value = base::ASCIIToUTF16("foobar");
+  data.password_field.value = u"foobar";
   data.preferred_realm = "http://foo.com/";
 
   autofill::PasswordAndMetadata additional;
   additional.realm = "https://foobarrealm.org";
-  additional.username = base::ASCIIToUTF16("bar.foo@example.com");
+  additional.username = u"bar.foo@example.com";
   data.additional_logins.push_back(additional);
 
   password_autofill_manager_->OnAddPasswordFillData(data);
@@ -1103,7 +1102,7 @@ TEST_F(PasswordAutofillManagerTest,
   EXPECT_CALL(autofill_client, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
   password_autofill_manager_->OnShowPasswordSuggestions(
-      base::i18n::RIGHT_TO_LEFT, base::ASCIIToUTF16("foo@exam"),
+      base::i18n::RIGHT_TO_LEFT, u"foo@exam",
       autofill::ShowPasswordSuggestionsOptions(), element_bounds);
   EXPECT_THAT(open_args.suggestions,
               SuggestionVectorValuesAre(
@@ -1127,14 +1126,14 @@ TEST_F(PasswordAutofillManagerTest,
 
   gfx::RectF element_bounds;
   autofill::PasswordFormFillData data;
-  std::u16string username = base::ASCIIToUTF16("foo.bar@example.com");
+  std::u16string username = u"foo.bar@example.com";
   data.username_field.value = username;
-  data.password_field.value = base::ASCIIToUTF16("foobar");
+  data.password_field.value = u"foobar";
   data.preferred_realm = "http://foo.com/";
 
   autofill::PasswordAndMetadata additional;
   additional.realm = "https://foobarrealm.org";
-  additional.username = base::ASCIIToUTF16("bar.foo@example.com");
+  additional.username = u"bar.foo@example.com";
   data.additional_logins.push_back(additional);
 
   password_autofill_manager_->OnAddPasswordFillData(data);
@@ -1143,7 +1142,7 @@ TEST_F(PasswordAutofillManagerTest,
   EXPECT_CALL(autofill_client, ShowAutofillPopup)
       .WillOnce(testing::SaveArg<0>(&open_args));
   password_autofill_manager_->OnShowPasswordSuggestions(
-      base::i18n::RIGHT_TO_LEFT, base::ASCIIToUTF16("foo"),
+      base::i18n::RIGHT_TO_LEFT, u"foo",
       autofill::ShowPasswordSuggestionsOptions(), element_bounds);
   EXPECT_THAT(open_args.suggestions,
               SuggestionVectorValuesAre(ElementsAre(
@@ -1418,7 +1417,7 @@ TEST_F(PasswordAutofillManagerTest, DisplayAccountSuggestionsIndicatorIcon) {
   gfx::RectF element_bounds;
   autofill::PasswordFormFillData data;
   data.username_field.value = test_username_;
-  data.password_field.value = base::ASCIIToUTF16("foobar");
+  data.password_field.value = u"foobar";
   data.uses_account_store = true;
 
   password_autofill_manager_->OnAddPasswordFillData(data);

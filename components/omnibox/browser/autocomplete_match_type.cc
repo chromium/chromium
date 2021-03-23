@@ -147,9 +147,8 @@ std::u16string GetAccessibilityBaseLabel(const AutocompleteMatch& match,
   // TODO(skare) http://crbug.com/951109: format as string in grd so this isn't
   // special-cased.
   if (match.type == AutocompleteMatchType::DOCUMENT_SUGGESTION) {
-    std::u16string doc_string = match.contents + base::ASCIIToUTF16(", ") +
-                                match.description + base::ASCIIToUTF16(", ") +
-                                match_text;
+    std::u16string doc_string =
+        match.contents + u", " + match.description + u", " + match_text;
     return doc_string;
   }
 

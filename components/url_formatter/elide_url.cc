@@ -322,8 +322,7 @@ std::u16string ElideUrl(const GURL& url,
   // A hack to prevent trailing ".../...".
   if (url_path_number_of_elements > 0 &&
       url_elided_domain_width + pixel_width_ellipsis_slash +
-              kPixelWidthDotsTrailer +
-              gfx::GetStringWidthF(base::ASCIIToUTF16("UV"), font_list) <
+              kPixelWidthDotsTrailer + gfx::GetStringWidthF(u"UV", font_list) <
           available_pixel_width) {
     final_elided_url_string += BuildPathFromComponents(
         std::u16string(), url_path_elements, url_filename, 1);
@@ -367,7 +366,7 @@ std::u16string FormatUrlForSecurityDisplay(const GURL& url,
   if (!url.is_valid() || url.is_empty() || !url.IsStandard())
     return url_formatter::FormatUrl(url);
 
-  const std::u16string colon(base::ASCIIToUTF16(":"));
+  const std::u16string colon(u":");
   const std::u16string scheme_separator(
       base::ASCIIToUTF16(url::kStandardSchemeSeparator));
 
@@ -413,7 +412,7 @@ std::u16string FormatOriginForSecurityDisplay(
   if (scheme.empty() && host.empty())
     return std::u16string();
 
-  const std::u16string colon(base::ASCIIToUTF16(":"));
+  const std::u16string colon(u":");
   const std::u16string scheme_separator(
       base::ASCIIToUTF16(url::kStandardSchemeSeparator));
 

@@ -183,7 +183,7 @@ void BookmarkNodeData::WriteToClipboard() {
 #if defined(OS_WIN)
   const std::u16string kEOL(u"\r\n");
 #else
-  const std::u16string kEOL = base::ASCIIToUTF16("\n");
+  const std::u16string kEOL = u"\n";
 #endif
 
   // If there is only one element and it is a URL, write the URL to the
@@ -200,7 +200,7 @@ void BookmarkNodeData::WriteToClipboard() {
     // and folders.
     std::u16string text;
     for (size_t i = 0; i < size(); i++) {
-      text += i == 0 ? base::ASCIIToUTF16("") : kEOL;
+      text += i == 0 ? u"" : kEOL;
       if (!elements[i].is_url) {
         // Then it's a folder. Only copy the name of the folder.
         const std::u16string title = elements[i].title;

@@ -31,8 +31,7 @@ TEST_F(OmniboxPedalImplementationsTest, PedalClearBrowsingDataExecutes) {
   feature_list.InitAndEnableFeature(omnibox::kOmniboxPedalsBatch2);
   MockAutocompleteProviderClient client;
   OmniboxPedalProvider provider(client);
-  const OmniboxPedal* pedal =
-      provider.FindPedalMatch(base::ASCIIToUTF16("clear browser data"));
+  const OmniboxPedal* pedal = provider.FindPedalMatch(u"clear browser data");
   base::TimeTicks match_selection_timestamp;
   OmniboxPedal::ExecutionContext context(
       *omnibox_client_, *omnibox_edit_controller_, match_selection_timestamp);

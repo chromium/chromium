@@ -220,7 +220,7 @@ void Snippet::ComputeSnippet(const MatchPositions& match_positions,
   // The length of snippets we try to produce.
   // We can generate longer snippets but stop once we cross kSnippetMaxLength.
   const size_t kSnippetMaxLength = 200;
-  const std::u16string kEllipsis = base::ASCIIToUTF16(" ... ");
+  const std::u16string kEllipsis = u" ... ";
 
   UText* document_utext = nullptr;
   UErrorCode status = U_ZERO_ERROR;

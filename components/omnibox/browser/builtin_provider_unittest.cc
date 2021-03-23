@@ -70,7 +70,7 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
     urls.push_back(ASCIIToUTF16(kHostMemory));
     urls.push_back(ASCIIToUTF16(kHostSubpage));
 
-    std::u16string prefix = ASCIIToUTF16(kHostSubpage) + ASCIIToUTF16("/");
+    std::u16string prefix = ASCIIToUTF16(kHostSubpage) + u"/";
     urls.push_back(prefix + ASCIIToUTF16(kSubpageOne));
     urls.push_back(prefix + ASCIIToUTF16(kSubpageTwo));
     urls.push_back(prefix + ASCIIToUTF16(kSubpageThree));
@@ -132,8 +132,8 @@ class BuiltinProviderTest : public testing::Test {
 TEST_F(BuiltinProviderTest, TypingScheme) {
   const std::u16string kAbout = ASCIIToUTF16(url::kAboutScheme);
   const std::u16string kEmbedder = ASCIIToUTF16(kEmbedderAboutScheme);
-  const std::u16string kSeparator1 = ASCIIToUTF16(":");
-  const std::u16string kSeparator2 = ASCIIToUTF16(":/");
+  const std::u16string kSeparator1 = u":";
+  const std::u16string kSeparator2 = u":/";
   const std::u16string kSeparator3 =
       ASCIIToUTF16(url::kStandardSchemeSeparator);
 
@@ -143,34 +143,34 @@ TEST_F(BuiltinProviderTest, TypingScheme) {
   const GURL kURL3(kDefaultURL3);
 
   TestData typing_scheme_cases[] = {
-    // Typing an unrelated scheme should give nothing.
-    {ASCIIToUTF16("h"),        {}},
-    {ASCIIToUTF16("http"),     {}},
-    {ASCIIToUTF16("file"),     {}},
-    {ASCIIToUTF16("abouz"),    {}},
-    {ASCIIToUTF16("aboutt"),   {}},
-    {ASCIIToUTF16("aboutt:"),  {}},
-    {ASCIIToUTF16("chroma"),   {}},
-    {ASCIIToUTF16("chromee"),  {}},
-    {ASCIIToUTF16("chromee:"), {}},
+      // Typing an unrelated scheme should give nothing.
+      {u"h", {}},
+      {u"http", {}},
+      {u"file", {}},
+      {u"abouz", {}},
+      {u"aboutt", {}},
+      {u"aboutt:", {}},
+      {u"chroma", {}},
+      {u"chromee", {}},
+      {u"chromee:", {}},
 
-    // Typing a portion of about:// should give the default urls.
-    {kAbout.substr(0, 1),      {kURL1, kURL2, kURL3}},
-    {ASCIIToUTF16("A"),        {kURL1, kURL2, kURL3}},
-    {kAbout,                   {kURL1, kURL2, kURL3}},
-    {kAbout + kSeparator1,     {kURL1, kURL2, kURL3}},
-    {kAbout + kSeparator2,     {kURL1, kURL2, kURL3}},
-    {kAbout + kSeparator3,     {kURL1, kURL2, kURL3}},
-    {ASCIIToUTF16("aBoUT://"), {kURL1, kURL2, kURL3}},
+      // Typing a portion of about:// should give the default urls.
+      {kAbout.substr(0, 1), {kURL1, kURL2, kURL3}},
+      {u"A", {kURL1, kURL2, kURL3}},
+      {kAbout, {kURL1, kURL2, kURL3}},
+      {kAbout + kSeparator1, {kURL1, kURL2, kURL3}},
+      {kAbout + kSeparator2, {kURL1, kURL2, kURL3}},
+      {kAbout + kSeparator3, {kURL1, kURL2, kURL3}},
+      {u"aBoUT://", {kURL1, kURL2, kURL3}},
 
-    // Typing a portion of the embedder scheme should give the default urls.
-    {kEmbedder.substr(0, 1),    {kURL1, kURL2, kURL3}},
-    {ASCIIToUTF16("C"),         {kURL1, kURL2, kURL3}},
-    {kEmbedder,                 {kURL1, kURL2, kURL3}},
-    {kEmbedder + kSeparator1,   {kURL1, kURL2, kURL3}},
-    {kEmbedder + kSeparator2,   {kURL1, kURL2, kURL3}},
-    {kEmbedder + kSeparator3,   {kURL1, kURL2, kURL3}},
-    {ASCIIToUTF16("ChRoMe://"), {kURL1, kURL2, kURL3}},
+      // Typing a portion of the embedder scheme should give the default urls.
+      {kEmbedder.substr(0, 1), {kURL1, kURL2, kURL3}},
+      {u"C", {kURL1, kURL2, kURL3}},
+      {kEmbedder, {kURL1, kURL2, kURL3}},
+      {kEmbedder + kSeparator1, {kURL1, kURL2, kURL3}},
+      {kEmbedder + kSeparator2, {kURL1, kURL2, kURL3}},
+      {kEmbedder + kSeparator3, {kURL1, kURL2, kURL3}},
+      {u"ChRoMe://", {kURL1, kURL2, kURL3}},
   };
 
   RunTest(typing_scheme_cases, base::size(typing_scheme_cases));
@@ -178,17 +178,17 @@ TEST_F(BuiltinProviderTest, TypingScheme) {
 
 TEST_F(BuiltinProviderTest, NonEmbedderURLs) {
   TestData test_cases[] = {
-    // Typing an unrelated scheme should give nothing.
-    {ASCIIToUTF16("g@rb@g3"),                      {}},
-    {ASCIIToUTF16("www.google.com"),               {}},
-    {ASCIIToUTF16("http:www.google.com"),          {}},
-    {ASCIIToUTF16("http://www.google.com"),        {}},
-    {ASCIIToUTF16("file:filename"),                {}},
-    {ASCIIToUTF16("scheme:"),                      {}},
-    {ASCIIToUTF16("scheme://"),                    {}},
-    {ASCIIToUTF16("scheme://host"),                {}},
-    {ASCIIToUTF16("scheme:host/path?query#ref"),   {}},
-    {ASCIIToUTF16("scheme://host/path?query#ref"), {}},
+      // Typing an unrelated scheme should give nothing.
+      {u"g@rb@g3", {}},
+      {u"www.google.com", {}},
+      {u"http:www.google.com", {}},
+      {u"http://www.google.com", {}},
+      {u"file:filename", {}},
+      {u"scheme:", {}},
+      {u"scheme://", {}},
+      {u"scheme://host", {}},
+      {u"scheme:host/path?query#ref", {}},
+      {u"scheme://host/path?query#ref", {}},
   };
 
   RunTest(test_cases, base::size(test_cases));
@@ -197,8 +197,8 @@ TEST_F(BuiltinProviderTest, NonEmbedderURLs) {
 TEST_F(BuiltinProviderTest, EmbedderProvidedURLs) {
   const std::u16string kAbout = ASCIIToUTF16(url::kAboutScheme);
   const std::u16string kEmbedder = ASCIIToUTF16(kEmbedderAboutScheme);
-  const std::u16string kSep1 = ASCIIToUTF16(":");
-  const std::u16string kSep2 = ASCIIToUTF16(":/");
+  const std::u16string kSep1 = u":";
+  const std::u16string kSep2 = u":/";
   const std::u16string kSep3 = ASCIIToUTF16(url::kStandardSchemeSeparator);
 
   // The following hosts are arbitrary, chosen so that they all start with the
@@ -211,33 +211,33 @@ TEST_F(BuiltinProviderTest, EmbedderProvidedURLs) {
   const GURL kURLM3(kEmbedder + kSep3 + kHostM3);
 
   TestData test_cases[] = {
-    // Typing an about URL with an unknown host should give nothing.
-    {kAbout + kSep1 + ASCIIToUTF16("host"), {}},
-    {kAbout + kSep2 + ASCIIToUTF16("host"), {}},
-    {kAbout + kSep3 + ASCIIToUTF16("host"), {}},
+      // Typing an about URL with an unknown host should give nothing.
+      {kAbout + kSep1 + u"host", {}},
+      {kAbout + kSep2 + u"host", {}},
+      {kAbout + kSep3 + u"host", {}},
 
-    // Typing an embedder URL with an unknown host should give nothing.
-    {kEmbedder + kSep1 + ASCIIToUTF16("host"), {}},
-    {kEmbedder + kSep2 + ASCIIToUTF16("host"), {}},
-    {kEmbedder + kSep3 + ASCIIToUTF16("host"), {}},
+      // Typing an embedder URL with an unknown host should give nothing.
+      {kEmbedder + kSep1 + u"host", {}},
+      {kEmbedder + kSep2 + u"host", {}},
+      {kEmbedder + kSep3 + u"host", {}},
 
-    // Typing an about URL should provide matching URLs.
-    {kAbout + kSep1 + kHostM1.substr(0, 1),    {kURLM1, kURLM2, kURLM3}},
-    {kAbout + kSep2 + kHostM1.substr(0, 2),    {kURLM1, kURLM2, kURLM3}},
-    {kAbout + kSep3 + kHostM1.substr(0, 3),    {kURLM1}},
-    {kAbout + kSep3 + kHostM2.substr(0, 3),    {kURLM2, kURLM3}},
-    {kAbout + kSep3 + kHostM1,                 {kURLM1}},
-    {kAbout + kSep2 + kHostM2,                 {kURLM2}},
-    {kAbout + kSep2 + kHostM3,                 {kURLM2, kURLM3}},
+      // Typing an about URL should provide matching URLs.
+      {kAbout + kSep1 + kHostM1.substr(0, 1), {kURLM1, kURLM2, kURLM3}},
+      {kAbout + kSep2 + kHostM1.substr(0, 2), {kURLM1, kURLM2, kURLM3}},
+      {kAbout + kSep3 + kHostM1.substr(0, 3), {kURLM1}},
+      {kAbout + kSep3 + kHostM2.substr(0, 3), {kURLM2, kURLM3}},
+      {kAbout + kSep3 + kHostM1, {kURLM1}},
+      {kAbout + kSep2 + kHostM2, {kURLM2}},
+      {kAbout + kSep2 + kHostM3, {kURLM2, kURLM3}},
 
-    // Typing an embedder URL should provide matching URLs.
-    {kEmbedder + kSep1 + kHostM1.substr(0, 1), {kURLM1, kURLM2, kURLM3}},
-    {kEmbedder + kSep2 + kHostM1.substr(0, 2), {kURLM1, kURLM2, kURLM3}},
-    {kEmbedder + kSep3 + kHostM1.substr(0, 3), {kURLM1}},
-    {kEmbedder + kSep3 + kHostM2.substr(0, 3), {kURLM2, kURLM3}},
-    {kEmbedder + kSep3 + kHostM1,              {kURLM1}},
-    {kEmbedder + kSep2 + kHostM2,              {kURLM2}},
-    {kEmbedder + kSep2 + kHostM3,              {kURLM2, kURLM3}},
+      // Typing an embedder URL should provide matching URLs.
+      {kEmbedder + kSep1 + kHostM1.substr(0, 1), {kURLM1, kURLM2, kURLM3}},
+      {kEmbedder + kSep2 + kHostM1.substr(0, 2), {kURLM1, kURLM2, kURLM3}},
+      {kEmbedder + kSep3 + kHostM1.substr(0, 3), {kURLM1}},
+      {kEmbedder + kSep3 + kHostM2.substr(0, 3), {kURLM2, kURLM3}},
+      {kEmbedder + kSep3 + kHostM1, {kURLM1}},
+      {kEmbedder + kSep2 + kHostM2, {kURLM2}},
+      {kEmbedder + kSep2 + kHostM3, {kURLM2, kURLM3}},
   };
 
   RunTest(test_cases, base::size(test_cases));
@@ -247,60 +247,64 @@ TEST_F(BuiltinProviderTest, AboutBlank) {
   const std::u16string kAbout = ASCIIToUTF16(url::kAboutScheme);
   const std::u16string kEmbedder = ASCIIToUTF16(kEmbedderAboutScheme);
   const std::u16string kAboutBlank = ASCIIToUTF16(url::kAboutBlankURL);
-  const std::u16string kBlank = ASCIIToUTF16("blank");
+  const std::u16string kBlank = u"blank";
   const std::u16string kSeparator1 =
       ASCIIToUTF16(url::kStandardSchemeSeparator);
-  const std::u16string kSeparator2 = ASCIIToUTF16(":///");
-  const std::u16string kSeparator3 = ASCIIToUTF16(";///");
+  const std::u16string kSeparator2 = u":///";
+  const std::u16string kSeparator3 = u";///";
 
   const GURL kURLBar =
       GURL(kEmbedder + kSeparator1 + ASCIIToUTF16(kHostBar));
   const GURL kURLBlank(kAboutBlank);
 
   TestData about_blank_cases[] = {
-    // Typing an about:blank prefix should yield about:blank, among other URLs.
-    {kAboutBlank.substr(0, 7), {kURLBlank, kURLBar}},
-    {kAboutBlank.substr(0, 8), {kURLBlank}},
+      // Typing an about:blank prefix should yield about:blank, among other
+      // URLs.
+      {kAboutBlank.substr(0, 7), {kURLBlank, kURLBar}},
+      {kAboutBlank.substr(0, 8), {kURLBlank}},
 
-    // Using any separator that is supported by fixup should yield about:blank.
-    // For now, BuiltinProvider does not suggest url-what-you-typed matches for
-    // for about:blank; check "about:blan" and "about;blan" substrings instead.
-    {kAbout + kSeparator2.substr(0, 1) + kBlank.substr(0, 4), {kURLBlank}},
-    {kAbout + kSeparator2.substr(0, 2) + kBlank,              {kURLBlank}},
-    {kAbout + kSeparator2.substr(0, 3) + kBlank,              {kURLBlank}},
-    {kAbout + kSeparator2 + kBlank,                           {kURLBlank}},
-    {kAbout + kSeparator3.substr(0, 1) + kBlank.substr(0, 4), {kURLBlank}},
-    {kAbout + kSeparator3.substr(0, 2) + kBlank,              {kURLBlank}},
-    {kAbout + kSeparator3.substr(0, 3) + kBlank,              {kURLBlank}},
-    {kAbout + kSeparator3 + kBlank,                           {kURLBlank}},
+      // Using any separator that is supported by fixup should yield
+      // about:blank.
+      // For now, BuiltinProvider does not suggest url-what-you-typed matches
+      // for
+      // for about:blank; check "about:blan" and "about;blan" substrings
+      // instead.
+      {kAbout + kSeparator2.substr(0, 1) + kBlank.substr(0, 4), {kURLBlank}},
+      {kAbout + kSeparator2.substr(0, 2) + kBlank, {kURLBlank}},
+      {kAbout + kSeparator2.substr(0, 3) + kBlank, {kURLBlank}},
+      {kAbout + kSeparator2 + kBlank, {kURLBlank}},
+      {kAbout + kSeparator3.substr(0, 1) + kBlank.substr(0, 4), {kURLBlank}},
+      {kAbout + kSeparator3.substr(0, 2) + kBlank, {kURLBlank}},
+      {kAbout + kSeparator3.substr(0, 3) + kBlank, {kURLBlank}},
+      {kAbout + kSeparator3 + kBlank, {kURLBlank}},
 
-    // Using the embedder scheme should not yield about:blank.
-    {kEmbedder + kSeparator1.substr(0, 1) + kBlank, {}},
-    {kEmbedder + kSeparator1.substr(0, 2) + kBlank, {}},
-    {kEmbedder + kSeparator1.substr(0, 3) + kBlank, {}},
-    {kEmbedder + kSeparator1 + kBlank,              {}},
+      // Using the embedder scheme should not yield about:blank.
+      {kEmbedder + kSeparator1.substr(0, 1) + kBlank, {}},
+      {kEmbedder + kSeparator1.substr(0, 2) + kBlank, {}},
+      {kEmbedder + kSeparator1.substr(0, 3) + kBlank, {}},
+      {kEmbedder + kSeparator1 + kBlank, {}},
 
-    // Adding trailing text should not yield about:blank.
-    {kAboutBlank + ASCIIToUTF16("/"),  {}},
-    {kAboutBlank + ASCIIToUTF16("/p"), {}},
-    {kAboutBlank + ASCIIToUTF16("x"),  {}},
-    {kAboutBlank + ASCIIToUTF16("?q"), {}},
-    {kAboutBlank + ASCIIToUTF16("#r"), {}},
+      // Adding trailing text should not yield about:blank.
+      {kAboutBlank + u"/", {}},
+      {kAboutBlank + u"/p", {}},
+      {kAboutBlank + u"x", {}},
+      {kAboutBlank + u"?q", {}},
+      {kAboutBlank + u"#r", {}},
 
-    // Interrupting "blank" with conflicting text should not yield about:blank.
-    {kAboutBlank.substr(0, 9) + ASCIIToUTF16("/"),  {}},
-    {kAboutBlank.substr(0, 9) + ASCIIToUTF16("/p"), {}},
-    {kAboutBlank.substr(0, 9) + ASCIIToUTF16("x"),  {}},
-    {kAboutBlank.substr(0, 9) + ASCIIToUTF16("?q"), {}},
-    {kAboutBlank.substr(0, 9) + ASCIIToUTF16("#r"), {}},
+      // Interrupting "blank" with conflicting text should not yield
+      // about:blank.
+      {kAboutBlank.substr(0, 9) + u"/", {}},
+      {kAboutBlank.substr(0, 9) + u"/p", {}},
+      {kAboutBlank.substr(0, 9) + u"x", {}},
+      {kAboutBlank.substr(0, 9) + u"?q", {}},
+      {kAboutBlank.substr(0, 9) + u"#r", {}},
   };
 
   RunTest(about_blank_cases, base::size(about_blank_cases));
 }
 
 TEST_F(BuiltinProviderTest, DoesNotSupportMatchesOnFocus) {
-  AutocompleteInput input(ASCIIToUTF16("chrome://m"),
-                          metrics::OmniboxEventProto::OTHER,
+  AutocompleteInput input(u"chrome://m", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
   input.set_focus_type(OmniboxFocusType::ON_FOCUS);
   provider_->Start(input, false);
@@ -341,9 +345,8 @@ TEST_F(BuiltinProviderTest, Inlining) {
   const std::u16string kHostMem = ASCIIToUTF16(kHostMemory);
   const std::u16string kHostMemInt = ASCIIToUTF16(kHostMemoryInternals);
   const std::u16string kHostSub = ASCIIToUTF16(kHostSubpage);
-  const std::u16string kHostSubTwo = ASCIIToUTF16(kHostSubpage) +
-                                     ASCIIToUTF16("/") +
-                                     ASCIIToUTF16(kSubpageTwo);
+  const std::u16string kHostSubTwo =
+      ASCIIToUTF16(kHostSubpage) + u"/" + ASCIIToUTF16(kSubpageTwo);
 
   struct InliningTestData {
     const std::u16string input;
@@ -422,12 +425,9 @@ TEST_F(BuiltinProviderTest, Inlining) {
 
       // Typing something non-match after an inline autocompletion should stop
       // the inline autocompletion from appearing.
-      {kAbout + kSep + kHostB.substr(0, 2) + ASCIIToUTF16("/"),
-       std::u16string()},
-      {kAbout + kSep + kHostB.substr(0, 2) + ASCIIToUTF16("a"),
-       std::u16string()},
-      {kAbout + kSep + kHostB.substr(0, 2) + ASCIIToUTF16("+"),
-       std::u16string()},
+      {kAbout + kSep + kHostB.substr(0, 2) + u"/", std::u16string()},
+      {kAbout + kSep + kHostB.substr(0, 2) + u"a", std::u16string()},
+      {kAbout + kSep + kHostB.substr(0, 2) + u"+", std::u16string()},
   };
 
   ACMatches matches;

@@ -1102,9 +1102,9 @@ void OmniboxEditModel::ClearKeyword() {
     // typed one.
     std::u16string prefix;
     if (keyword_mode_entry_method_ == OmniboxEventProto::QUESTION_MARK)
-      prefix = base::ASCIIToUTF16("?");
+      prefix = u"?";
     else if (keyword_mode_entry_method_ != OmniboxEventProto::KEYBOARD_SHORTCUT)
-      prefix = keyword_ + base::ASCIIToUTF16(" ");
+      prefix = keyword_ + u" ";
 
     keyword_.clear();
     is_keyword_hint_ = false;

@@ -174,7 +174,7 @@ ScoredHistoryMatches URLIndexPrivateData::HistoryItemsForTerms(
     // case because the searching code below prevents running duplicate
     // searches.
     std::u16string transformed_search_string(original_search_string);
-    transformed_search_string.insert(cursor_position, base::ASCIIToUTF16(" "));
+    transformed_search_string.insert(cursor_position, u" ");
     search_strings.push_back(transformed_search_string);
   }
 

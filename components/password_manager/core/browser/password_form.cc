@@ -87,11 +87,10 @@ std::string ToString(const T& obj) {
 std::u16string ValueElementVectorToString(
     const ValueElementVector& value_element_pairs) {
   std::vector<std::u16string> pairs(value_element_pairs.size());
-  std::transform(value_element_pairs.begin(), value_element_pairs.end(),
-                 pairs.begin(), [](const ValueElementPair& p) {
-                   return p.first + base::ASCIIToUTF16("+") + p.second;
-                 });
-  return base::JoinString(pairs, base::ASCIIToUTF16(", "));
+  std::transform(
+      value_element_pairs.begin(), value_element_pairs.end(), pairs.begin(),
+      [](const ValueElementPair& p) { return p.first + u"+" + p.second; });
+  return base::JoinString(pairs, u", ");
 }
 
 // Serializes a PasswordForm to a JSON object. Used only for logging in tests.

@@ -179,9 +179,9 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
   DCHECK_LT(max_tokens_, size_t{64});
 
   if (concept_data->FindKey("tokenize_each_character")->GetBool()) {
-    tokenize_characters_ = base::ASCIIToUTF16("");
+    tokenize_characters_ = u"";
   } else {
-    tokenize_characters_ = base::ASCIIToUTF16(" -");
+    tokenize_characters_ = u" -";
   }
 
   const auto& dictionary = concept_data->FindKey("dictionary")->GetList();

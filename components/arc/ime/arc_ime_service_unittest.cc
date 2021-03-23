@@ -400,7 +400,7 @@ TEST_F(ArcImeServiceTest, RootWindowChange) {
 TEST_F(ArcImeServiceTest, GetTextFromRange) {
   instance_->OnWindowFocused(arc_win_.get(), nullptr);
 
-  const std::u16string text = base::ASCIIToUTF16("abcdefghijklmn");
+  const std::u16string text = u"abcdefghijklmn";
   // Assume the cursor is between 'c' and 'd'.
   const uint32_t cursor_pos = 3;
   const gfx::Range text_range(cursor_pos - 1, cursor_pos + 1);

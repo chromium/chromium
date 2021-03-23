@@ -116,10 +116,8 @@ void MediaControlsProgressView::UpdateProgress(
     // If |duration| is less than an hour, we don't want to show  "0:" hours on
     // the progress times.
     if (duration < base::TimeDelta::FromHours(1)) {
-      base::ReplaceFirstSubstringAfterOffset(
-          &elapsed_time, 0, base::ASCIIToUTF16("0:"), base::ASCIIToUTF16(""));
-      base::ReplaceFirstSubstringAfterOffset(
-          &total_time, 0, base::ASCIIToUTF16("0:"), base::ASCIIToUTF16(""));
+      base::ReplaceFirstSubstringAfterOffset(&elapsed_time, 0, u"0:", u"");
+      base::ReplaceFirstSubstringAfterOffset(&total_time, 0, u"0:", u"");
     }
 
     SetProgressTime(elapsed_time);

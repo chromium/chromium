@@ -442,14 +442,14 @@ TEST_F(MultiStoreFormFetcherTest, MovingToAccountStoreIsBlocked) {
 TEST_F(MultiStoreFormFetcherTest, InsecureCredentials) {
   Fetch();
   InsecureCredential profile_store_insecure_credentials(
-      form_digest_.signon_realm, base::ASCIIToUTF16("profile_username"),
-      base::Time::FromTimeT(1), InsecureType::kLeaked, IsMuted(false));
+      form_digest_.signon_realm, u"profile_username", base::Time::FromTimeT(1),
+      InsecureType::kLeaked, IsMuted(false));
   profile_store_insecure_credentials.in_store =
       PasswordForm::Store::kProfileStore;
 
   InsecureCredential account_store_insecure_credentials(
-      form_digest_.signon_realm, base::ASCIIToUTF16("account_username"),
-      base::Time::FromTimeT(1), InsecureType::kLeaked, IsMuted(false));
+      form_digest_.signon_realm, u"account_username", base::Time::FromTimeT(1),
+      InsecureType::kLeaked, IsMuted(false));
   account_store_insecure_credentials.in_store =
       PasswordForm::Store::kAccountStore;
 
