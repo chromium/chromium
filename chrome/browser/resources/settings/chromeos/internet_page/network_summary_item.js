@@ -244,7 +244,8 @@ Polymer({
 
   /**
    * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
-   * @return {boolean} True if the device is enabled or if it is a VPN. Note:
+   * @return {boolean} True if the device is enabled or if it is a VPN or if
+   *     we are in the state of inhibited. Note:
    *     This function will always return true for VPNs because VPNs can be
    *     disabled by policy only for built-in VPNs (OpenVPN & L2TP), but always
    *     enabled for other VPN providers. To know whether built-in VPNs are
@@ -254,7 +255,8 @@ Polymer({
   deviceIsEnabled_(deviceState) {
     return !!deviceState &&
         (deviceState.type === mojom.NetworkType.kVPN ||
-         deviceState.deviceState === mojom.DeviceStateType.kEnabled);
+         deviceState.deviceState === mojom.DeviceStateType.kEnabled ||
+         OncMojo.deviceIsInhibited(deviceState));
   },
 
   /**
@@ -426,6 +428,11 @@ Polymer({
 
     if (type === mojom.NetworkType.kCellular) {
       if (this.isUpdatedCellularUiEnabled_) {
+        if (OncMojo.deviceIsInhibited(deviceState)) {
+          // The "Mobile data" subpage should be shown if the device state is
+          // inhibited and the flag is enabled.
+          return true;
+        }
         // When network type is Cellular and |updatedCellularActivationUi| is
         // enabled, always show "Mobile data" subpage, when eSim is available
         // or multiple pSimSlots are available
