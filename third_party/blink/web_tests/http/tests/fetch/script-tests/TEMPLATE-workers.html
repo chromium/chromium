@@ -9,7 +9,7 @@
 </head>
 <body>
 <script>
-var options = get_fetch_test_options(HOSTS);
+var options = get_fetch_test_options();
 function start(t) {
   fetch_tests_from_worker(
     new Worker('../script-tests/TESTNAME.js?OPTIONS'));

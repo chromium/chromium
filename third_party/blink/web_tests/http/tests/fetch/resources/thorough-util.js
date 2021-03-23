@@ -1,8 +1,5 @@
-// |base_host| and |other_host| are custom hostnames for the base/other origin.
-// They default to '127.0.0.1' and 'localhost' respectively.
-// See fetch-test-options.js.
-function get_thorough_test_options(base_host, other_host) {
-  var options = get_fetch_test_options(base_host, other_host);
+function get_thorough_test_options() {
+  var options = get_fetch_test_options();
   var BASE_URL = options['BASE_ORIGIN'] +
       '/serviceworker/resources/fetch-access-control.php?';
   var OTHER_BASE_URL = options['OTHER_ORIGIN'] +

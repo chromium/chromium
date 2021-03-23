@@ -1,12 +1,10 @@
-// |base_host| and |other_host| are custom hostnames for the base/other origin.
-// They default to '127.0.0.1' and 'localhost' respectively.
-function get_fetch_test_options(base_host, other_host) {
+function get_fetch_test_options() {
   const {
     HTTP_ORIGIN: BASE_HTTP_ORIGIN,
     HTTP_REMOTE_ORIGIN: OTHER_HTTP_ORIGIN,
     HTTPS_ORIGIN: BASE_HTTPS_ORIGIN,
     HTTPS_REMOTE_ORIGIN: OTHER_HTTPS_ORIGIN
-  } = get_host_info(base_host, other_host);
+  } = get_host_info();
   var BASE_ORIGIN = BASE_HTTP_ORIGIN;
   var OTHER_ORIGIN = OTHER_HTTP_ORIGIN;
   var TEST_OPTIONS = '';

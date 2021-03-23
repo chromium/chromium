@@ -20,8 +20,6 @@ if (window.testRunner) {
 //
 // How tests starts:
 // 1. http://127.0.0.1:8000/.../X.html is loaded.
-//   1a. Sometimes we use a custom base origin instead of 127.0.0.1, in which
-//       case first we redirect from 127.0.0.1 to that origin.
 // 2. init(): Do initialization.
 //    In thorough/* tests
 //    (see init() in each test category's TEMPLATE file):
@@ -32,16 +30,10 @@ if (window.testRunner) {
 //   3a. start(): Start tests.
 // Otherwise:
 //   3b. Redirect to https://127.0.0.1:8443/.../X.html.
-//       - If we redirected to a different URL in step 1a, this will be the
-//         HTTPS origin with that hostname, instead of 127.0.0.1.
 //   4b. start(): Start tests.
 
 var t = async_test('Startup');
-var start_url = new URL(options["BASE_HTTP_ORIGIN"] + location.pathname);
-if (location.hostname != start_url.hostname) {
-  // Step 1a.
-  location = start_url;
-} else if (location.protocol != 'https:') {
+if (location.protocol != 'https:') {
   init(t)
     .then(function() {
         // Initialization done. In thorough/* tests, login done.
