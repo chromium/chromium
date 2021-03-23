@@ -1577,6 +1577,7 @@ source_set("unit_tests") {
     "scroll/scrollbar_test_suite.h",
     "scroll/scrollbar_theme_overlay_test.cc",
     "speculation_rules/speculation_rule_set_test.cc",
+    "speculation_rules/speculation_rules_origin_trial_test.cc",
     "streams/miscellaneous_operations_test.cc",
     "streams/queue_with_sizes_test.cc",
     "streams/readable_stream_test.cc",

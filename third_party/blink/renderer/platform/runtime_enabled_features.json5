@@ -1915,8 +1915,20 @@
       name: "SkipTouchEventFilter",
       settable_from_internals: true,
     },
+    // An origin trial feature name is required for this, even though it's
+    // actually enabled by the more specific trial. Having these as separate
+    // features will allow Blink to distinguish for which thing the trial
+    // was enabled.
     {
       name: "SpeculationRules",
+      implied_by: ["SpeculationRulesPrefetchProxy"],
+      origin_trial_feature_name: "SpeculationRules__DONOTUSE",
+    },
+    // Origin trial to enable Speculation Rules for access to the prefetch proxy.
+    // https://crbug.com/1190167
+    {
+      name: "SpeculationRulesPrefetchProxy",
+      origin_trial_feature_name: "SpeculationRulesPrefetchProxy",
     },
     {
       name: "SrcsetMaxDensity",

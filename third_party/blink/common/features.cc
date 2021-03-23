@@ -300,6 +300,12 @@ const base::Feature kWebRtcH264WithOpenH264FFmpeg{
 const base::Feature kServiceWorkerUpdateDelay{
     "ServiceWorkerUpdateDelay", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable the use of Speculation Rules in access the private prefetch proxy
+// (chrome/browser/prefetch/prefetch_proxy/).
+// https://crbug.com/1190167
+const base::Feature kSpeculationRulesPrefetchProxy{
+    "SpeculationRulesPrefetchProxy", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Freeze scheduler task queues in background after allowed grace time.
 // "stop" is a legacy name.
 const base::Feature kStopInBackground {

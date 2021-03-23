@@ -90,6 +90,7 @@ BLINK_COMMON_EXPORT extern const base::Feature kWebRtcH264WithOpenH264FFmpeg;
 
 BLINK_COMMON_EXPORT extern const base::Feature kResourceLoadViaDataPipe;
 BLINK_COMMON_EXPORT extern const base::Feature kServiceWorkerUpdateDelay;
+BLINK_COMMON_EXPORT extern const base::Feature kSpeculationRulesPrefetchProxy;
 BLINK_COMMON_EXPORT extern const base::Feature kStopInBackground;
 BLINK_COMMON_EXPORT extern const base::Feature
     kFreezeBackgroundTabOnNetworkIdle;
