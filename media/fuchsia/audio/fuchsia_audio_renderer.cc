@@ -462,7 +462,7 @@ void FuchsiaAudioRenderer::ScheduleReadDemuxerStream() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (!demuxer_stream_ || read_timer_.IsRunning() || is_demuxer_read_pending_ ||
-      GetPlaybackState() == PlaybackState::kEndOfStream ||
+      is_at_end_of_stream_ ||
       num_pending_packets_ >= stream_sink_buffers_.size()) {
     return;
   }
@@ -527,10 +527,7 @@ void FuchsiaAudioRenderer::OnDemuxerStreamReadDone(
   }
 
   if (buffer->end_of_stream()) {
-    {
-      base::AutoLock lock(timeline_lock_);
-      SetPlaybackState(PlaybackState::kEndOfStream);
-    }
+    is_at_end_of_stream_ = true;
     stream_sink_->EndOfStream();
 
     // No more data is going to be buffered. Update buffering state to ensure
@@ -610,13 +607,13 @@ void FuchsiaAudioRenderer::SetBufferState(BufferingState buffer_state) {
 
 void FuchsiaAudioRenderer::FlushInternal() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(GetPlaybackState() == PlaybackState::kStopped ||
-         GetPlaybackState() == PlaybackState::kEndOfStream);
+  DCHECK(GetPlaybackState() == PlaybackState::kStopped || is_at_end_of_stream_);
 
   stream_sink_->DiscardAllPacketsNoReply();
   SetBufferState(BUFFERING_HAVE_NOTHING);
   last_packet_timestamp_ = base::TimeDelta::Min();
   read_timer_.Stop();
+  is_at_end_of_stream_ = false;
 
   if (is_demuxer_read_pending_) {
     drop_next_demuxer_read_result_ = true;
@@ -629,9 +626,7 @@ void FuchsiaAudioRenderer::OnEndOfStream() {
 }
 
 bool FuchsiaAudioRenderer::IsTimeMoving() {
-  return (state_ == PlaybackState::kPlaying ||
-          state_ == PlaybackState::kEndOfStream) &&
-         (media_delta_ > 0);
+  return state_ == PlaybackState::kPlaying && media_delta_ > 0;
 }
 
 void FuchsiaAudioRenderer::UpdateTimelineAfterStop() {
