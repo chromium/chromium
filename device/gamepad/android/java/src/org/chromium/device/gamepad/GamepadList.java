@@ -113,7 +113,14 @@ public class GamepadList {
 
     // ------------------------------------------------------------
 
-    private void onInputDeviceChangedImpl(int deviceId) {}
+    private void onInputDeviceChangedImpl(int deviceId) {
+        InputDevice inputDevice = InputDevice.getDevice(deviceId);
+        if (!isGamepadDevice(inputDevice)) return;
+        synchronized (mLock) {
+            unregisterGamepad(inputDevice.getId());
+            registerGamepad(inputDevice);
+        }
+    }
 
     private void onInputDeviceRemovedImpl(int deviceId) {
         synchronized (mLock) {
