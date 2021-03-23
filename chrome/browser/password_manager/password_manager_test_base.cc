@@ -42,6 +42,7 @@
 #include "net/http/transport_security_state.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/switches.h"
 
 namespace {
 
@@ -460,6 +461,14 @@ void PasswordManagerBrowserTestBase::SetUpOnMainThread() {
 
 void PasswordManagerBrowserTestBase::TearDownOnMainThread() {
   ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+}
+
+void PasswordManagerBrowserTestBase::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  CertVerifierBrowserTest::SetUpCommandLine(command_line);
+  // Some builders are flaky due to slower loading interacting
+  // with deferred commits.
+  command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
 }
 
 // static

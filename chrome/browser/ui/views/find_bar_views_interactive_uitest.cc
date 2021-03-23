@@ -29,6 +29,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/focus/focus_manager.h"
@@ -69,6 +70,13 @@ class FindInPageTest : public InProcessBrowserTest {
  public:
   FindInPageTest() {
     FindBarHost::disable_animations_during_testing_ = true;
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    // Some bots are flaky due to slower loading interacting with
+    // deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
   FindBarHost* GetFindBarHost() {

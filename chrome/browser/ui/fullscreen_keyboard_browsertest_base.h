@@ -27,6 +27,9 @@ class FullscreenKeyboardBrowserTestBase : public InProcessBrowserTest {
   // InProcessBrowserTest override;
   void SetUpOnMainThread() override;
 
+  // BrowserTestBase override
+  void SetUpCommandLine(base::CommandLine* command_line) override;
+
   // Overridable to allow for custom test servers.
   virtual net::EmbeddedTestServer* GetEmbeddedTestServer();
 

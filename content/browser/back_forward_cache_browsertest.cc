@@ -87,6 +87,7 @@
 #include "third_party/blink/public/common/device_memory/approximated_device_memory.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/app_banner/app_banner.mojom.h"
 
 using testing::_;
@@ -171,6 +172,9 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
     command_line->AppendSwitchASCII(
         switches::kAutoplayPolicy,
         switches::autoplay::kNoUserGestureRequiredPolicy);
+    // Unfortunately needed for one test on slow bots, TextInputStateUpdated,
+    // where deferred commits delays input too much.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
     ContentBrowserTest::SetUpCommandLine(command_line);
   }
 

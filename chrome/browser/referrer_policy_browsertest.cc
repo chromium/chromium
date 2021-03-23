@@ -42,6 +42,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -66,6 +67,13 @@ class ReferrerPolicyTest : public InProcessBrowserTest {
     EXPECT_FULL_REFERRER,
     EXPECT_ORIGIN_AS_REFERRER
   };
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    // Some builders are flaky due to slower loading interacting
+    // with deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
+  }
 
  protected:
   // Callback to verify that HTTP requests have the correct headers;

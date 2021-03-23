@@ -2617,6 +2617,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
   const GURL url = embedded_test_server()->GetURL("/pdf/text_large.pdf");
   WebContents* const guest_contents = LoadPdfGetGuestContents(url);
   ASSERT_TRUE(guest_contents);
+  content::WaitForHitTestData(guest_contents);
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "TouchSelectionMenuViews");

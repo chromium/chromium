@@ -37,6 +37,7 @@
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/latency/latency_info.h"
@@ -99,12 +100,15 @@ class RenderWidgetHostBrowserTest : public ContentBrowserTest {
   }
 };
 
-// This test enables --site-per-porcess flag.
+// This test enables --site-per-process flag.
 class RenderWidgetHostSitePerProcessTest : public ContentBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ContentBrowserTest::SetUpCommandLine(command_line);
     IsolateAllSitesForTesting(command_line);
+    // Slow bots are flaky due to slower loading interacting with
+    // deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
   void SetUpOnMainThread() override {

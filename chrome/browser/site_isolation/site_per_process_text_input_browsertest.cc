@@ -34,6 +34,7 @@
 #include "content/public/test/text_input_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/base/ime/ime_text_span.h"
 #include "ui/base/ime/text_edit_commands.h"
 #include "ui/base/ime/text_input_client.h"
@@ -257,6 +258,10 @@ class SitePerProcessTextInputManagerTest : public InProcessBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     content::IsolateAllSitesForTesting(command_line);
+    // Some builders are flaky due to slower loading interacting with
+    // deferred commits, and this test suite sometimes uses content
+    // that paints nothing upon load.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
   void SetUpOnMainThread() override {

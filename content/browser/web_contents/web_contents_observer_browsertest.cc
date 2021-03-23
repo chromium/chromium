@@ -21,6 +21,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/switches.h"
 
 using testing::_;
 using testing::NotNull;
@@ -36,6 +37,13 @@ class WebContentsObserverBrowserTest : public ContentBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  // Some platforms are flaky due to relatively slow loading interacting
+  // with deferred commits.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
   WebContentsImpl* web_contents() const {

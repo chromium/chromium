@@ -25,6 +25,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "third_party/blink/public/common/switches.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/password_manager/password_manager_signin_intercept_test_helper.h"
@@ -60,6 +61,13 @@ class PasswordManagerInteractiveTest
         set_wait_for_server_predictions_for_filling(false);
   }
   ~PasswordManagerInteractiveTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PasswordManagerInteractiveTestBase::SetUpCommandLine(command_line);
+    // Some builders are flaky due to slower loading interacting with
+    // deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest, UsernameChanged) {

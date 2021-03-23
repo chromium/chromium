@@ -18,6 +18,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/ui_base_features.h"
 
 #if defined(OS_MAC)
@@ -127,7 +128,10 @@ void KeyboardLockInteractiveBrowserTest::SetUpCommandLine(
   // It is important to disable system keyboard lock as the low-level test
   // utility functions install a keyboard hook to listen for key events and the
   // keyboard lock hook can interfere with it.
-  scoped_feature_list_.InitWithFeatures({}, {features::kSystemKeyboardLock});
+  // Turn off Paint Holding because the content used in the test does not paint
+  // anything and we do not want to wait for the timeout.
+  scoped_feature_list_.InitWithFeatures(
+      {}, {features::kSystemKeyboardLock, blink::features::kPaintHolding});
 }
 
 void KeyboardLockInteractiveBrowserTest::SetUpOnMainThread() {

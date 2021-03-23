@@ -19,6 +19,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/switches.h"
 #include "url/gurl.h"
 
 // RunUntilInputProcessed will force a Blink lifecycle which is needed
@@ -51,6 +52,9 @@ class TextFragmentAnchorBrowserTest : public ContentBrowserTest {
     ContentBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                     "TextFragmentIdentifiers");
+    // Slow bots are flaky due to slower loading interacting with
+    // deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
   // Simulates a click on the middle of the DOM element with the given |id|.
