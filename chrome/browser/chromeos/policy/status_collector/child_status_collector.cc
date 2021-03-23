@@ -20,6 +20,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -66,8 +67,13 @@ constexpr TimeDelta kMaxStoredPastActivityInterval = TimeDelta::FromDays(30);
 constexpr TimeDelta kMaxStoredFutureActivityInterval = TimeDelta::FromDays(2);
 
 // How often the child's usage time is stored.
-static constexpr base::TimeDelta kUpdateChildActiveTimeInterval =
+constexpr base::TimeDelta kUpdateChildActiveTimeInterval =
     base::TimeDelta::FromSeconds(30);
+
+const char kReportSizeHistogramName[] =
+    "ChromeOS.FamilyLink.ChildStatusReportRequest.Size";
+const char kTimeSinceLastReportHistogramName[] =
+    "ChromeOS.FamilyLink.ChildStatusReportRequest.TimeSinceLastReport";
 
 bool ReadAndroidStatus(
     policy::ChildStatusCollector::AndroidStatusReceiver receiver) {
@@ -180,6 +186,14 @@ TimeDelta ChildStatusCollector::GetActiveChildScreenTime() {
       pref_service_->GetInteger(prefs::kChildScreenTimeMilliseconds));
 }
 
+// static
+const char* ChildStatusCollector::GetReportSizeHistogramNameForTest() {
+  return kReportSizeHistogramName;
+}
+const char* ChildStatusCollector::GetTimeSinceLastReportHistogramNameForTest() {
+  return kTimeSinceLastReportHistogramName;
+}
+
 void ChildStatusCollector::UpdateReportingSettings() {
   // Attempt to fetch the current value of the reporting settings.
   // If trusted values are not available, register this function to be called
@@ -290,6 +304,27 @@ bool ChildStatusCollector::GetAppActivity(
 
   last_report_params_ =
       app_activity_reporting->GenerateAppActivityReport(status);
+  if (last_report_params_->anything_reported) {
+    size_t size_in_bytes = status->ByteSizeLong();
+    // Logging report size for debugging purposes. Reports larger than 10,485 KB
+    // will trigger a hard limit. See CommonJobValidator.java.
+    base::UmaHistogramMemoryKB(kReportSizeHistogramName, size_in_bytes / 1024);
+
+    int64_t last_successful_report_time_int = pref_service_->GetInt64(
+        prefs::kPerAppTimeLimitsLastSuccessfulReportTime);
+    if (last_successful_report_time_int > 0) {
+      base::Time last_successful_report_time =
+          base::Time::FromDeltaSinceWindowsEpoch(
+              base::TimeDelta::FromMicroseconds(
+                  last_successful_report_time_int));
+      DCHECK_LT(last_successful_report_time,
+                last_report_params_->generation_time);
+      base::TimeDelta elapsed_time =
+          last_report_params_->generation_time - last_successful_report_time;
+      base::UmaHistogramCounts100000(kTimeSinceLastReportHistogramName,
+                                     elapsed_time.InMinutes());
+    }
+  }
   return last_report_params_->anything_reported;
 }
 

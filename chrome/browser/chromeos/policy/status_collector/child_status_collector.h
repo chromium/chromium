@@ -75,6 +75,9 @@ class ChildStatusCollector : public StatusCollector,
   // user logged in, it returns 0.
   base::TimeDelta GetActiveChildScreenTime();
 
+  static const char* GetReportSizeHistogramNameForTest();
+  static const char* GetTimeSinceLastReportHistogramNameForTest();
+
  protected:
   // chromeos::UsageTimeStateNotifier::Observer:
   void OnUsageTimeStateChange(

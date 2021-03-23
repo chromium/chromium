@@ -428,6 +428,30 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="ChromeOS.FamilyLink.ChildStatusReportRequest.Size" units="KB"
+    expires_after="2021-09-09">
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Reports the size of the uploaded ChildStatusReportRequest proto in
+    kilobytes. This metric records right before the report uploads. The max
+    bucket value is 500MB.
+  </summary>
+</histogram>
+
+<histogram
+    name="ChromeOS.FamilyLink.ChildStatusReportRequest.TimeSinceLastReport"
+    units="minutes" expires_after="2021-09-09">
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Reports the time in between ChildStatusReportRequest uploads in minutes. The
+    default upload frequency is once every ten minutes. This metric records
+    right before the report uploads. The max bucket value is 100,000 minutes
+    (1667 hours).
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.FamilyLinkUser.LogSegment"
     enum="FamilyLinkUserLogSegment" expires_after="never">
 <!-- expires-never: used internally for filtering -->
