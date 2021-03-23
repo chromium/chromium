@@ -41,6 +41,54 @@ const std::set<std::string> inputControlTypes = {
 
 const std::set<std::string> nontypeableControlTypes = {"color"};
 
+const std::unordered_set<std::string> booleanAttributes = {
+    "allowfullscreen",
+    "allowpaymentrequest",
+    "allowusermedia",
+    "async",
+    "autofocus",
+    "autoplay",
+    "checked",
+    "compact",
+    "complete",
+    "controls",
+    "declare",
+    "default",
+    "defaultchecked",
+    "defaultselected",
+    "defer",
+    "disabled",
+    "ended",
+    "formnovalidate",
+    "hidden",
+    "indeterminate",
+    "iscontenteditable",
+    "ismap",
+    "itemscope",
+    "loop",
+    "multiple",
+    "muted",
+    "nohref",
+    "nomodule",
+    "noresize",
+    "noshade",
+    "novalidate",
+    "nowrap",
+    "open",
+    "paused",
+    "playsinline",
+    "pubdate",
+    "readonly",
+    "required",
+    "reversed",
+    "scoped",
+    "seamless",
+    "seeking",
+    "selected",
+    "truespeed",
+    "typemustmatch",
+    "willvalidate"};
+
 namespace {
 
 Status FocusToElement(
@@ -924,10 +972,22 @@ Status ExecuteGetElementAttribute(Session* session,
                                   const std::string& element_id,
                                   const base::DictionaryValue& params,
                                   std::unique_ptr<base::Value>* value) {
-  std::string name;
-  if (!params.GetString("name", &name))
+  std::string attribute_name;
+  if (!params.GetString("name", &attribute_name))
     return Status(kInvalidArgument, "missing 'name'");
-  return GetElementAttribute(session, web_view, element_id, name, value);
+
+  Status status = CheckElement(element_id);
+  if (status.IsError())
+    return status;
+  base::ListValue args;
+  args.Append(CreateElement(element_id));
+  args.AppendString(attribute_name);
+  return web_view->CallFunction(
+      session->GetCurrentFrameId(),
+      booleanAttributes.count(base::ToLowerASCII(attribute_name))
+          ? "(elem, attribute) => elem.hasAttribute(attribute) ? 'true' : null"
+          : "(elem, attribute) => elem.getAttribute(attribute)",
+      args, value);
 }
 
 Status ExecuteGetElementValueOfCSSProperty(
