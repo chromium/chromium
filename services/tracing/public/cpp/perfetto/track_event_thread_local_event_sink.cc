@@ -16,6 +16,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_log.h"
 #include "base/trace_event/traced_value.h"
+#include "base/tracing/tracing_tls.h"
 #include "build/build_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/perfetto/producer_client.h"
@@ -251,11 +252,9 @@ void TrackEventThreadLocalEventSink::AddLegacyTraceEvent(
 base::trace_event::TrackEventHandle
 TrackEventThreadLocalEventSink::AddTypedTraceEvent(
     base::trace_event::TraceEvent* trace_event) {
-  DCHECK(!TraceEventDataSource::GetInstance()
-              ->GetThreadIsInTraceEventTLS()
-              ->Get());
+  DCHECK(!base::tracing::GetThreadIsInTraceEventTLS()->Get());
   // Cleared in OnTrackEventCompleted().
-  TraceEventDataSource::GetInstance()->GetThreadIsInTraceEventTLS()->Set(true);
+  base::tracing::GetThreadIsInTraceEventTLS()->Set(true);
 
   DCHECK(!pending_trace_packet_);
   UpdateIncrementalStateIfNeeded(trace_event);
@@ -307,18 +306,15 @@ void TrackEventThreadLocalEventSink::OnTrackEventCompleted() {
 
   pending_trace_packet_ = perfetto::TraceWriter::TracePacketHandle();
 
-  DCHECK(
-      TraceEventDataSource::GetInstance()->GetThreadIsInTraceEventTLS()->Get());
-  TraceEventDataSource::GetInstance()->GetThreadIsInTraceEventTLS()->Set(false);
+  DCHECK(base::tracing::GetThreadIsInTraceEventTLS()->Get());
+  base::tracing::GetThreadIsInTraceEventTLS()->Set(false);
 }
 
 base::trace_event::TracePacketHandle
 TrackEventThreadLocalEventSink::AddTracePacket() {
-  DCHECK(!TraceEventDataSource::GetInstance()
-              ->GetThreadIsInTraceEventTLS()
-              ->Get());
+  DCHECK(!base::tracing::GetThreadIsInTraceEventTLS()->Get());
   // Cleared in OnTracePacketCompleted().
-  TraceEventDataSource::GetInstance()->GetThreadIsInTraceEventTLS()->Set(true);
+  base::tracing::GetThreadIsInTraceEventTLS()->Set(true);
 
   DCHECK(!pending_trace_packet_);
 
@@ -332,9 +328,8 @@ TrackEventThreadLocalEventSink::AddTracePacket() {
 }
 
 void TrackEventThreadLocalEventSink::OnTracePacketCompleted() {
-  DCHECK(
-      TraceEventDataSource::GetInstance()->GetThreadIsInTraceEventTLS()->Get());
-  TraceEventDataSource::GetInstance()->GetThreadIsInTraceEventTLS()->Set(false);
+  DCHECK(base::tracing::GetThreadIsInTraceEventTLS()->Get());
+  base::tracing::GetThreadIsInTraceEventTLS()->Set(false);
 }
 
 void TrackEventThreadLocalEventSink::UpdateIncrementalStateIfNeeded(

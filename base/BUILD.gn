@@ -2289,6 +2289,10 @@ component("base") {
       "trace_event/typed_macros_embedder_support.h",
       "trace_event/typed_macros_internal.cc",
       "trace_event/typed_macros_internal.h",
+      "tracing/perfetto_task_runner.cc",
+      "tracing/perfetto_task_runner.h",
+      "tracing/tracing_tls.cc",
+      "tracing/tracing_tls.h",
     ]
 
     public_deps += [ "//third_party/perfetto:libperfetto" ]
@@ -3600,6 +3604,7 @@ if (build_base_unittests) {
         "trace_event/traced_value_support_unittest.cc",
         "trace_event/traced_value_unittest.cc",
         "trace_event/typed_macros_unittest.cc",
+        "tracing/perfetto_task_runner_unittest.cc",
       ]
 
       if (is_android) {

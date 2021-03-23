@@ -50,7 +50,7 @@ class DummyTraceWriter : public perfetto::TraceWriter {
 }  // namespace
 
 TestProducerClient::TestProducerClient(
-    std::unique_ptr<PerfettoTaskRunner> main_thread_task_runner,
+    std::unique_ptr<base::tracing::PerfettoTaskRunner> main_thread_task_runner,
     bool log_only_main_thread)
     : ProducerClient(main_thread_task_runner.get()),
       delegate_(perfetto::base::kPageSize),
@@ -164,7 +164,7 @@ DataSourceTester::DataSourceTester(
     : data_source_(data_source) {
   tracing::PerfettoTracedProcess::ResetTaskRunnerForTesting();
   tracing::PerfettoTracedProcess::GetTaskRunner()->GetOrCreateTaskRunner();
-  auto perfetto_wrapper = std::make_unique<tracing::PerfettoTaskRunner>(
+  auto perfetto_wrapper = std::make_unique<base::tracing::PerfettoTaskRunner>(
       base::ThreadTaskRunnerHandle::Get());
 
   producer_ = std::make_unique<tracing::TestProducerClient>(

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/tracing/public/cpp/perfetto/task_runner.h"
+#include "base/tracing/perfetto_task_runner.h"
 
 #include <memory>
 #include <utility>
@@ -15,8 +15,8 @@
 #include "base/threading/simple_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace base {
 namespace tracing {
-
 namespace {
 
 class TaskDestination {
@@ -140,5 +140,5 @@ TEST_F(PerfettoTaskRunnerTest, SequentialTasks) {
 }
 
 }  // namespace
-
 }  // namespace tracing
+}  // namespace base

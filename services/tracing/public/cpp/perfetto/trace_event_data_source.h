@@ -46,21 +46,6 @@ namespace tracing {
 
 class ThreadLocalEventSink;
 
-class AutoThreadLocalBoolean {
- public:
-  explicit AutoThreadLocalBoolean(
-      base::ThreadLocalBoolean* thread_local_boolean)
-      : thread_local_boolean_(thread_local_boolean) {
-    DCHECK(!thread_local_boolean_->Get());
-    thread_local_boolean_->Set(true);
-  }
-  ~AutoThreadLocalBoolean() { thread_local_boolean_->Set(false); }
-
- private:
-  base::ThreadLocalBoolean* thread_local_boolean_;
-  DISALLOW_COPY_AND_ASSIGN(AutoThreadLocalBoolean);
-};
-
 // This class is a data source that clients can use to provide
 // global metadata in dictionary form, by registering callbacks.
 class COMPONENT_EXPORT(TRACING_CPP) TraceEventMetadataSource
@@ -171,8 +156,6 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventDataSource
 
   // Flushes and deletes the TraceWriter for the current thread, if any.
   static void FlushCurrentThread();
-
-  static base::ThreadLocalBoolean* GetThreadIsInTraceEventTLS();
 
   // Installs TraceLog overrides for tracing during Chrome startup.
   void RegisterStartupHooks();

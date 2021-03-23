@@ -78,8 +78,6 @@ target(tracing_lib_type, "cpp") {
       "perfetto/system_producer.cc",
       "perfetto/system_producer.h",
       "perfetto/system_trace_writer.h",
-      "perfetto/task_runner.cc",
-      "perfetto/task_runner.h",
       "perfetto/trace_event_data_source.cc",
       "perfetto/trace_event_data_source.h",
       "perfetto/trace_packet_tokenizer.cc",

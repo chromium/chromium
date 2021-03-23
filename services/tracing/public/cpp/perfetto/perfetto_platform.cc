@@ -7,7 +7,7 @@
 #include "base/deferred_sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "services/tracing/public/cpp/perfetto/task_runner.h"
+#include "base/tracing/perfetto_task_runner.h"
 
 namespace tracing {
 
@@ -45,7 +45,8 @@ std::unique_ptr<perfetto::base::TaskRunner> PerfettoPlatform::CreateTaskRunner(
   // We can't create a real task runner yet because the ThreadPool may not be
   // initialized. Instead, we point Perfetto to a buffering task runner which
   // will become active as soon as the thread pool is up (see StartTaskRunner).
-  return std::make_unique<PerfettoTaskRunner>(deferred_task_runner_);
+  return std::make_unique<base::tracing::PerfettoTaskRunner>(
+      deferred_task_runner_);
 }
 
 std::string PerfettoPlatform::GetCurrentProcessName() {

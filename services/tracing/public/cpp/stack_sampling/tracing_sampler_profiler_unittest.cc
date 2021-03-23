@@ -77,7 +77,7 @@ class TracingSampleProfilerTest : public TracingUnitTest {
 
     events_stack_received_count_ = 0u;
 
-    auto perfetto_wrapper = std::make_unique<PerfettoTaskRunner>(
+    auto perfetto_wrapper = std::make_unique<base::tracing::PerfettoTaskRunner>(
         base::ThreadTaskRunnerHandle::Get());
     producer_ =
         std::make_unique<TestProducerClient>(std::move(perfetto_wrapper),
@@ -431,7 +431,7 @@ class TracingProfileBuilderTest : public TracingUnitTest {
   void SetUp() override {
     TracingUnitTest::SetUp();
 
-    auto perfetto_wrapper = std::make_unique<PerfettoTaskRunner>(
+    auto perfetto_wrapper = std::make_unique<base::tracing::PerfettoTaskRunner>(
         base::ThreadTaskRunnerHandle::Get());
     producer_client_ = std::make_unique<TestProducerClient>(
         std::move(perfetto_wrapper), /*log_only_main_thread=*/false);

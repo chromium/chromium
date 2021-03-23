@@ -58,8 +58,9 @@ uint32_t IncreaseBackoff(uint32_t current, uint32_t max) {
 
 }  // namespace
 
-PosixSystemProducer::PosixSystemProducer(const char* socket,
-                                         PerfettoTaskRunner* task_runner)
+PosixSystemProducer::PosixSystemProducer(
+    const char* socket,
+    base::tracing::PerfettoTaskRunner* task_runner)
     : SystemProducer(task_runner),
       socket_name_(socket),
       connection_backoff_ms_(kInitialConnectionBackoffMs) {

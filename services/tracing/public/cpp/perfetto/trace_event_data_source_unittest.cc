@@ -79,7 +79,7 @@ class TraceEventDataSourceTest : public TracingUnitTest {
     base::trace_event::TraceLog::GetInstance()->set_process_name(kTestProcess);
 
     PerfettoTracedProcess::GetTaskRunner()->GetOrCreateTaskRunner();
-    auto perfetto_wrapper = std::make_unique<PerfettoTaskRunner>(
+    auto perfetto_wrapper = std::make_unique<base::tracing::PerfettoTaskRunner>(
         base::ThreadTaskRunnerHandle::Get());
     producer_client_ =
         std::make_unique<TestProducerClient>(std::move(perfetto_wrapper));

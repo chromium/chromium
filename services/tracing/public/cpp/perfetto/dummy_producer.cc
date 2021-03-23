@@ -6,7 +6,7 @@
 
 namespace tracing {
 
-DummyProducer::DummyProducer(PerfettoTaskRunner* task_runner)
+DummyProducer::DummyProducer(base::tracing::PerfettoTaskRunner* task_runner)
     : SystemProducer(task_runner) {}
 DummyProducer::~DummyProducer() = default;
 

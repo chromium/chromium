@@ -10,8 +10,9 @@
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/tracing/perfetto_task_runner.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_tracing_backend.h"
-#include "services/tracing/public/cpp/perfetto/task_runner.h"
+#include "services/tracing/public/mojom/perfetto_service.mojom.h"
 
 namespace base {
 namespace trace_event {
@@ -118,7 +119,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
 
   // Returns the task runner used by any Perfetto service. Can be called on any
   // thread.
-  static PerfettoTaskRunner* GetTaskRunner();
+  static base::tracing::PerfettoTaskRunner* GetTaskRunner();
 
   // Add a new data source to the PerfettoTracedProcess; the caller retains
   // ownership and is responsible for making sure the data source outlives the

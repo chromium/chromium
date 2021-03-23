@@ -15,7 +15,8 @@ constexpr size_t PerfettoProducer::kSMBPageSizeBytes;
 // static
 constexpr size_t PerfettoProducer::kSMBSizeBytes;
 
-PerfettoProducer::PerfettoProducer(PerfettoTaskRunner* task_runner)
+PerfettoProducer::PerfettoProducer(
+    base::tracing::PerfettoTaskRunner* task_runner)
     : task_runner_(task_runner) {
   DCHECK(task_runner_);
 }
@@ -141,7 +142,7 @@ void PerfettoProducer::ResetSequenceForTesting() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-PerfettoTaskRunner* PerfettoProducer::task_runner() {
+base::tracing::PerfettoTaskRunner* PerfettoProducer::task_runner() {
   return task_runner_;
 }
 

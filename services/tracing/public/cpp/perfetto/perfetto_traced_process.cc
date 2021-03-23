@@ -43,8 +43,9 @@
 
 namespace tracing {
 namespace {
-std::unique_ptr<SystemProducer> NewSystemProducer(PerfettoTaskRunner* runner,
-                                                  const char* socket_name) {
+std::unique_ptr<SystemProducer> NewSystemProducer(
+    base::tracing::PerfettoTaskRunner* runner,
+    const char* socket_name) {
 #if defined(OS_POSIX)
   DCHECK(socket_name);
   return std::make_unique<PosixSystemProducer>(socket_name, runner);
@@ -177,8 +178,9 @@ void PerfettoTracedProcess::CreateConsumerConnection(
 // of TraceWriters in TLS, which could happen after the PerfettoTracedProcess
 // is deleted.
 // static
-PerfettoTaskRunner* PerfettoTracedProcess::GetTaskRunner() {
-  static base::NoDestructor<PerfettoTaskRunner> task_runner(nullptr);
+base::tracing::PerfettoTaskRunner* PerfettoTracedProcess::GetTaskRunner() {
+  static base::NoDestructor<base::tracing::PerfettoTaskRunner> task_runner(
+      nullptr);
   return task_runner.get();
 }
 

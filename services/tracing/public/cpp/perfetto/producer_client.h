@@ -18,10 +18,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
+#include "base/tracing/perfetto_task_runner.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_producer.h"
-#include "services/tracing/public/cpp/perfetto/task_runner.h"
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/tracing_service.h"
 
@@ -42,13 +42,13 @@ class COMPONENT_EXPORT(TRACING_CPP) ProducerClient
       public perfetto::TracingService::ProducerEndpoint,
       public mojom::ProducerClient {
  public:
-  ProducerClient(PerfettoTaskRunner* task_runner);
+  explicit ProducerClient(base::tracing::PerfettoTaskRunner*);
   ~ProducerClient() override;
 
   void Connect(mojo::PendingRemote<mojom::PerfettoService> perfetto_service);
   void BindInProcessSharedMemoryArbiter(
       perfetto::TracingService::ProducerEndpoint*,
-      PerfettoTaskRunner*);
+      base::tracing::PerfettoTaskRunner*);
 
   // PerfettoProducer implementation.
   void BindStartupTargetBuffer(
@@ -129,7 +129,7 @@ class COMPONENT_EXPORT(TRACING_CPP) ProducerClient
   uint32_t data_sources_tracing_ = 0;
   std::unique_ptr<mojo::Receiver<mojom::ProducerClient>> receiver_;
   mojo::Remote<mojom::ProducerHost> producer_host_;
-  PerfettoTaskRunner* in_process_arbiter_task_runner_ = nullptr;
+  base::tracing::PerfettoTaskRunner* in_process_arbiter_task_runner_ = nullptr;
   // First value is the flush ID, the second is the number of
   // replies we're still waiting for.
   std::pair<uint64_t, size_t> pending_replies_for_latest_flush_;

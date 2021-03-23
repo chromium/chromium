@@ -20,14 +20,14 @@ MockSystemService::MockSystemService(const std::string& consumer_socket,
     : used_tmpdir_(false),
       consumer_(consumer_socket),
       producer_(producer_socket),
-      task_runner_(std::make_unique<PerfettoTaskRunner>(
+      task_runner_(std::make_unique<base::tracing::PerfettoTaskRunner>(
           base::SequencedTaskRunnerHandle::Get())) {
   StartService();
 }
 
 MockSystemService::MockSystemService(const base::ScopedTempDir& tmp_dir)
     : used_tmpdir_(true),
-      task_runner_(std::make_unique<PerfettoTaskRunner>(
+      task_runner_(std::make_unique<base::tracing::PerfettoTaskRunner>(
           base::SequencedTaskRunnerHandle::Get())) {
   // We need to set TMPDIR environment variable because when a new producer
   // connects to the perfetto service it needs to create a memmap'd file for

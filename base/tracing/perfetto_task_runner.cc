@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/tracing/public/cpp/perfetto/task_runner.h"
+#include "base/tracing/perfetto_task_runner.h"
 
 #include <memory>
 #include <utility>
@@ -18,8 +18,9 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_local.h"
 #include "base/threading/thread_local_storage.h"
-#include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
+#include "base/tracing/tracing_tls.h"
 
+namespace base {
 namespace tracing {
 
 PerfettoTaskRunner::PerfettoTaskRunner(
@@ -28,9 +29,9 @@ PerfettoTaskRunner::PerfettoTaskRunner(
 
 PerfettoTaskRunner::~PerfettoTaskRunner() {
   DCHECK(GetOrCreateTaskRunner()->RunsTasksInCurrentSequence());
-#if defined(OS_POSIX)
+#if defined(OS_POSIX) && !defined(OS_NACL)
   fd_controllers_.clear();
-#endif  // defined(OS_POSIX)
+#endif  // defined(OS_POSIX) && !defined(OS_NACL)
 }
 
 void PerfettoTaskRunner::PostTask(std::function<void()> task) {
@@ -54,7 +55,7 @@ void PerfettoTaskRunner::PostDelayedTask(std::function<void()> task,
             // TODO(oysteine): Try to see if we can be more selective
             // about this.
             AutoThreadLocalBoolean thread_is_in_trace_event(
-                TraceEventDataSource::GetThreadIsInTraceEventTLS());
+                GetThreadIsInTraceEventTLS());
             task();
           },
           task),
@@ -70,9 +71,7 @@ bool PerfettoTaskRunner::RunsTasksOnCurrentThread() const {
 void PerfettoTaskRunner::AddFileDescriptorWatch(
     perfetto::base::PlatformHandle fd,
     std::function<void()> callback) {
-#if !defined(OS_POSIX)
-  NOTREACHED();
-#else
+#if defined(OS_POSIX) && !defined(OS_NACL)
   DCHECK(GetOrCreateTaskRunner()->RunsTasksInCurrentSequence());
   DCHECK(!base::Contains(fd_controllers_, fd));
   // Set it up as a nullptr to signal intent to add a watch. We need to PostTask
@@ -102,18 +101,20 @@ void PerfettoTaskRunner::AddFileDescriptorWatch(
                         std::move(callback)));
           },
           base::Unretained(this), fd, std::move(callback)));
-#endif  // !defined(OS_POSIX)
+#else   // defined(OS_POSIX) && !defined(OS_NACL)
+  NOTREACHED();
+#endif  // defined(OS_POSIX) && !defined(OS_NACL)
 }
 
 void PerfettoTaskRunner::RemoveFileDescriptorWatch(
     perfetto::base::PlatformHandle fd) {
-#if !defined(OS_POSIX)
-  NOTREACHED();
-#else
+#if defined(OS_POSIX) && !defined(OS_NACL)
   DCHECK(GetOrCreateTaskRunner()->RunsTasksInCurrentSequence());
   DCHECK(base::Contains(fd_controllers_, fd));
   fd_controllers_.erase(fd);
-#endif  // !defined(OS_POSIX)
+#else   // defined(OS_POSIX) && !defined(OS_NACL)
+  NOTREACHED();
+#endif  // defined(OS_POSIX) && !defined(OS_NACL)
 }
 
 void PerfettoTaskRunner::ResetTaskRunnerForTesting(
@@ -143,3 +144,4 @@ PerfettoTaskRunner::GetOrCreateTaskRunner() {
 }
 
 }  // namespace tracing
+}  // namespace base

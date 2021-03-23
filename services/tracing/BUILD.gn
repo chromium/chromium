@@ -88,7 +88,6 @@ source_set("tests") {
     "perfetto/privacy_filtering_check_unittest.cc",
     "public/cpp/perfetto/producer_test_utils.cc",
     "public/cpp/perfetto/producer_test_utils.h",
-    "public/cpp/perfetto/task_runner_unittest.cc",
     "public/cpp/perfetto/trace_event_data_source_unittest.cc",
     "public/cpp/perfetto/trace_packet_tokenizer_unittest.cc",
     "public/cpp/perfetto/traced_value_proto_writer_unittest.cc",
