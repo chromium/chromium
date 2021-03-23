@@ -32,7 +32,6 @@ import org.chromium.base.test.util.CloseableOnMainThread;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
@@ -1034,7 +1033,6 @@ public class RevampedContextMenuTest implements DownloadTestRule.CustomMainActiv
     @Test
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
-    @DisabledTest(message = "https://crbug.com/947695")
     public void testContextMenuRetrievesVideoOptions() throws TimeoutException {
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
         DOMUtils.clickNode(
