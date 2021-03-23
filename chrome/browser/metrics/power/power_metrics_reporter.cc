@@ -25,6 +25,22 @@ constexpr const char* kBatteryDischargeModeHistogramName =
 constexpr const char* kBatterySamplingDelayHistogramName =
     "Power.BatterySamplingDelay";
 
+// Calculates the UKM bucket |value| falls in and returns it. This uses an
+// exponential bucketing approach with an exponent base of 1.3, resulting in
+// 17 buckets for an interval of 120 seconds.
+int64_t GetBucketForSample(base::TimeDelta value) {
+  const float kBucketSpacing = 1.3;
+  // Put all the abnormal values in an overflow bucket. The default interval
+  // length is 120 seconds, with an exponent base of 1.3 the bucket for this
+  // value includes all values in the [113, 146] range.
+  constexpr int64_t kOverflowBucket = 147;
+  DCHECK_EQ(kOverflowBucket,
+            ukm::GetExponentialBucketMin(kOverflowBucket, kBucketSpacing));
+  return std::min(
+      ukm::GetExponentialBucketMin(value.InSeconds(), kBucketSpacing),
+      kOverflowBucket);
+}
+
 }  // namespace
 
 PowerMetricsReporter::PowerMetricsReporter(
@@ -62,6 +78,11 @@ void PowerMetricsReporter::AwaitFirstSampleForTesting(
   } else {
     on_battery_sampled_for_testing_ = std::move(closure);
   }
+}
+
+int64_t PowerMetricsReporter::GetBucketForSampleForTesting(
+    base::TimeDelta value) {
+  return GetBucketForSample(value);
 }
 
 void PowerMetricsReporter::OnAggregatedMetricsSampled(
@@ -171,9 +192,12 @@ void PowerMetricsReporter::ReportUKMs(
   auto source_id = usage_metrics.source_id_for_longest_visible_origin;
 
   ukm::builders::PowerUsageScenariosIntervalData builder(source_id);
-  builder.SetURLVisibilityTimeSeconds(ukm::GetExponentialBucketMinForUserTiming(
-      usage_metrics.source_id_for_longest_visible_origin_duration.InSeconds()));
+
+  builder.SetURLVisibilityTimeSeconds(GetBucketForSample(
+      usage_metrics.source_id_for_longest_visible_origin_duration));
   builder.SetIntervalDurationSeconds(interval_duration.InSeconds());
+  // An exponential bucket is fine here as this value isn't limited to the
+  // interval duration.
   builder.SetUptimeSeconds(ukm::GetExponentialBucketMinForUserTiming(
       usage_metrics.uptime_at_interval_end.InSeconds()));
   builder.SetBatteryDischargeMode(static_cast<int64_t>(discharge_mode));
@@ -196,28 +220,22 @@ void PowerMetricsReporter::ReportUKMs(
   builder.SetTabClosed(ukm::GetExponentialBucketMinForCounts1000(
       usage_metrics.tabs_closed_during_interval));
   builder.SetTimePlayingVideoInVisibleTab(
-      ukm::GetExponentialBucketMinForUserTiming(
-          usage_metrics.time_playing_video_in_visible_tab.InSeconds()));
+      GetBucketForSample(usage_metrics.time_playing_video_in_visible_tab));
   builder.SetTopLevelNavigationEvents(ukm::GetExponentialBucketMinForCounts1000(
       usage_metrics.top_level_navigation_count));
   builder.SetUserInteractionCount(ukm::GetExponentialBucketMinForCounts1000(
       usage_metrics.user_interaction_count));
-  builder.SetFullscreenVideoSingleMonitorSeconds(
-      ukm::GetExponentialBucketMinForUserTiming(
-          usage_metrics.time_playing_video_full_screen_single_monitor
-              .InSeconds()));
+  builder.SetFullscreenVideoSingleMonitorSeconds(GetBucketForSample(
+      usage_metrics.time_playing_video_full_screen_single_monitor));
   builder.SetTimeWithOpenWebRTCConnectionSeconds(
-      ukm::GetExponentialBucketMinForUserTiming(
-          usage_metrics.time_with_open_webrtc_connection.InSeconds()));
-  builder.SetTimeSinceInteractionWithBrowserSeconds(
-      ukm::GetExponentialBucketMinForUserTiming(
-          usage_metrics.time_since_last_user_interaction_with_browser
-              .InSeconds()));
-  builder.SetVideoCaptureSeconds(ukm::GetExponentialBucketMinForUserTiming(
-      usage_metrics.time_capturing_video.InSeconds()));
+      GetBucketForSample(usage_metrics.time_with_open_webrtc_connection));
+  builder.SetTimeSinceInteractionWithBrowserSeconds(GetBucketForSample(
+      usage_metrics.time_since_last_user_interaction_with_browser));
+  builder.SetVideoCaptureSeconds(
+      GetBucketForSample(usage_metrics.time_capturing_video));
   builder.SetBrowserShuttingDown(browser_shutdown::HasShutdownStarted());
-  builder.SetPlayingAudioSeconds(ukm::GetExponentialBucketMinForUserTiming(
-      usage_metrics.time_playing_audio.InSeconds()));
+  builder.SetPlayingAudioSeconds(
+      GetBucketForSample(usage_metrics.time_playing_audio));
 
   builder.Record(ukm_recorder);
 }
