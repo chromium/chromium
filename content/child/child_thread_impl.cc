@@ -97,6 +97,8 @@
 extern "C" void __llvm_profile_set_file_object(FILE* File, int EnableMerge);
 #endif
 
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+
 namespace content {
 namespace {
 
@@ -537,6 +539,8 @@ void ChildThreadImpl::OnFieldTrialGroupFinalized(
 }
 
 void ChildThreadImpl::Init(const Options& options) {
+  V8RecordReplayAssert("ChildThreadImpl::Init Start");
+
   TRACE_EVENT0("startup", "ChildThreadImpl::Init");
   g_lazy_child_thread_impl_tls.Pointer()->Set(this);
   on_channel_error_called_ = false;
@@ -681,6 +685,8 @@ void ChildThreadImpl::Init(const Options& options) {
     field_trial_syncer_->InitFieldTrialObserving(
         *base::CommandLine::ForCurrentProcess());
   }
+
+  V8RecordReplayAssert("ChildThreadImpl::Init Done");
 }
 
 ChildThreadImpl::~ChildThreadImpl() {

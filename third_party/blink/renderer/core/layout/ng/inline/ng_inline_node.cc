@@ -40,6 +40,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+
 namespace blink {
 
 namespace {
@@ -856,7 +858,9 @@ bool NGInlineNode::SetTextWithOffset(LayoutText* layout_text,
 }
 
 const NGInlineNodeData& NGInlineNode::EnsureData() const {
+  V8RecordReplayAssert("NGInlineNode::EnsureData Start");
   PrepareLayoutIfNeeded();
+  V8RecordReplayAssert("NGInlineNode::EnsureData #1");
   return Data();
 }
 

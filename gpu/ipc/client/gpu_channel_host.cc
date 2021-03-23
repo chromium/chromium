@@ -27,6 +27,8 @@
 #include "mojo/public/cpp/bindings/lib/message_quota_checker.h"
 #include "url/gurl.h"
 
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+
 using base::AutoLock;
 
 namespace gpu {
@@ -146,7 +148,9 @@ uint32_t GpuChannelHost::EnqueueDeferredMessage(
 
 void GpuChannelHost::EnsureFlush(uint32_t deferred_message_id) {
   AutoLock lock(context_lock_);
+  V8RecordReplayAssert("GpuChannelHost::EnsureFlush Start");
   InternalFlush(deferred_message_id);
+  V8RecordReplayAssert("GpuChannelHost::EnsureFlush Done");
 }
 
 void GpuChannelHost::VerifyFlush(uint32_t deferred_message_id) {

@@ -33,6 +33,8 @@
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+
 namespace cc {
 namespace {
 
@@ -1501,6 +1503,8 @@ void TileManager::FlushAndIssueSignals() {
 }
 
 void TileManager::IssueSignals() {
+  V8RecordReplayAssert("TileManager::IssueSignals Start");
+
   // Ready to activate.
   if (signals_.activate_tile_tasks_completed &&
       signals_.activate_gpu_work_completed &&
@@ -1551,6 +1555,8 @@ void TileManager::IssueSignals() {
     checker_image_tracker_.SetMaxDecodePriorityAllowed(
         CheckerImageTracker::DecodeType::kRaster);
   }
+
+  V8RecordReplayAssert("TileManager::IssueSignals Done");
 }
 
 void TileManager::CheckIfMoreTilesNeedToBePrepared() {
