@@ -248,7 +248,12 @@ void WebviewController::DidFirstVisuallyNonEmptyPaint() {
 void WebviewController::SendNavigationEvent(
     WebviewNavigationThrottle* throttle,
     content::NavigationHandle* navigation_handle) {
-  DCHECK(!current_navigation_throttle_);
+  if (current_navigation_throttle_) {
+    current_navigation_throttle_->ProcessNavigationDecision(
+        webview::NavigationDecision::PREVENT);
+    current_navigation_throttle_ = nullptr;
+  }
+
   DCHECK(navigation_handle);
   if (!client_) {
     DLOG(INFO)
