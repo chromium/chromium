@@ -149,8 +149,9 @@ void SubresourceRedirectObserver::DidFinishNavigation(
   if (!IsLiteModeEnabled(web_contents()))
     return;
 
-  // Set to disable compression by default for this navigation.
-  is_mainframe_https_image_compression_applied_ = false;
+  // Set to disable compression by default for the mainframe navigation.
+  if (navigation_handle->IsInMainFrame())
+    is_mainframe_https_image_compression_applied_ = false;
 
   if (!navigation_handle->GetURL().SchemeIsHTTPOrHTTPS())
     return;
