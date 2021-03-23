@@ -78,8 +78,8 @@ constexpr char kHelpMsg[] =
     "        output, md5 hash) only to visible frames.\n"
     "    --loop\n"
     "        Optional. If specified, loops decoding until terminated\n"
-    "        externally or until an error occurs, at which point the current\n"
-    "        pass through the video completes and the binary exits.\n"
+    "        externally or until an error occurs, at which point execution\n"
+    "        will immediately terminate.\n"
     "        If specified with --frames, loops decoding that number of\n"
     "        leading frames. If specified with --out-prefix, loops decoding,\n"
     "        but only saves the first iteration of decoded frames.\n"
@@ -182,7 +182,6 @@ int main(int argc, char** argv) {
   const VaapiDevice va_device;
   const bool loop_decode = cmd->HasSwitch("loop");
   bool first_loop = true;
-  bool errored = false;
 
   do {
     const std::unique_ptr<VideoDecoder> dec =
@@ -201,12 +200,6 @@ int main(int argc, char** argv) {
         break;
       }
 
-      if (res == VideoDecoder::kFailed) {
-        LOG(ERROR) << "Failed to decode.";
-        errored = true;
-        continue;
-      }
-
       if (cmd->HasSwitch("visible") && !dec->LastDecodedFrameVisible())
         continue;
 
@@ -220,11 +213,9 @@ int main(int argc, char** argv) {
     }
 
     first_loop = false;
-  } while (loop_decode && !errored);
+  } while (loop_decode);
 
   LOG(INFO) << "Done reading.";
 
-  if (errored)
-    return EXIT_FAILURE;
   return EXIT_SUCCESS;
 }

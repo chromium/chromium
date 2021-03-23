@@ -31,8 +31,6 @@ class Av1Decoder : public VideoDecoder {
   ~Av1Decoder() override;
 
   // VideoDecoder implementation.
-  // Any errors from DecodeNextFrame() will throw an assertion error.
-  // TODO(clarissagarvey): standardize assertion behavior for VideoDecoder API
   VideoDecoder::Result DecodeNextFrame() override;
   void LastDecodedFrameToPNG(const std::string& path) override;
   std::string LastDecodedFrameMD5Sum() override;

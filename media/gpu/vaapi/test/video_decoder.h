@@ -14,7 +14,6 @@ class VideoDecoder {
  public:
   // Result of decoding the current frame.
   enum Result {
-    kFailed,
     kOk,
     kEOStream,
   };
@@ -24,7 +23,7 @@ class VideoDecoder {
   VideoDecoder& operator=(const VideoDecoder&) = delete;
   virtual ~VideoDecoder() = default;
 
-  // Decodes the next frame in this decoder.
+  // Decodes the next frame in this decoder. Errors are fatal.
   virtual Result DecodeNextFrame() = 0;
 
   // Outputs the last decoded frame to a PNG at the given |path|.

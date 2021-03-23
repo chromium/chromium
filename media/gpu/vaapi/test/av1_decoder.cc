@@ -494,11 +494,8 @@ bool FillAV1SliceParameters(
 // Because we're limited to profile 0, we can have 8 or 10 bits. We do not
 // support monochrome configs, but do support 4:2:0 Chroma subsampling.
 unsigned int GetFormatForColorConfig(libgav1::ColorConfig color_config) {
-  if (color_config.is_monochrome) {
-    LOG_ASSERT(false) << "Monochrome color config is not supported.";
-    // There is no VA_RT_FORMAT_UNSUPPORTED; use a "default" value.
-    return 0u;
-  }
+  LOG_ASSERT(!color_config.is_monochrome)
+      << "Monochrome color config is not supported.";
 
   if (color_config.subsampling_x == 1u && color_config.subsampling_y == 1u) {
     // uses chroma subsampling
@@ -508,13 +505,20 @@ unsigned int GetFormatForColorConfig(libgav1::ColorConfig color_config) {
     } else if (color_config.bitdepth == 10) {
       return VA_RT_FORMAT_YUV420_10;
     } else {
-      LOG_ASSERT(false)
+      // GetFormatForColorConfig() is only called after we know we're dealing
+      // with an
+      // AV1 stream whose profile is 'main' - this profile only supports bit
+      // depths of 8 and 10 and libgav1 should guarantee that
+      // |color_config.bitdepth| meets that requirement at parsing time.
+      NOTREACHED()
           << "Unsupported color config with chroma subsampling of bitdepth %d"
           << color_config.bitdepth;
     }
   }
-  LOG_ASSERT(false) << "Unsupported color config; only profile 0 with 4:2:0 "
-                       "Chroma subsampling is supported.";
+  // If this AV1 stream has profile 'main', then libgav1 ensures that both
+  // |color_config.subsampling_x| and |color_config.subsampling_y| are 1.
+  NOTREACHED() << "Unsupported color config; only profile 0 with 4:2:0 Chroma "
+                  "subsampling is supported.";
   // There is no VA_RT_FORMAT_UNSUPPORTED; use a "default" value.
   return 0u;
 }
@@ -602,11 +606,8 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
   ParsingResult parser_res = ReadNextFrame(current_frame);
 
   if (parser_res != ParsingResult::kOk) {
-    if (parser_res != ParsingResult::kEOStream) {
-      LOG_ASSERT(false) << "Failed to parse next frame, got "
-                        << static_cast<int>(parser_res);
-      return VideoDecoder::kFailed;
-    }
+    LOG_ASSERT(parser_res == ParsingResult::kEOStream)
+        << "Failed to parse next frame, got " << static_cast<int>(parser_res);
     return VideoDecoder::kEOStream;
   }
 
@@ -623,15 +624,12 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
           << "The first frame successive to sequence header OBU must be a "
           << "keyframe with show_frame=1, show_existing_frame=0 and "
           << "temporal_id=0";
-      return VideoDecoder::kFailed;
     }
     current_sequence_header_.emplace(obu_parser_->sequence_header());
     // TODO(clarissagarvey): Support other profiles once Chrome does.
-    if (current_sequence_header_->profile !=
-        libgav1::BitstreamProfile::kProfile0) {
-      LOG_ASSERT(false) << "Unsupported profile.";
-      return VideoDecoder::kFailed;
-    }
+    LOG_ASSERT(current_sequence_header_->profile ==
+               libgav1::BitstreamProfile::kProfile0)
+        << "Unsupported profile.";
     const VAProfile new_profile = VAProfileAV1Profile0;
 
     // (Section 6.4.1):
@@ -646,11 +644,8 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
     //
     // For simplicity, we always select operating point 0 and validate that it
     // doesn't have scalability information.
-    if (current_sequence_header_->operating_point_idc[0] != 0) {
-      LOG_ASSERT(false)
-          << "Either temporal or spatial layer decoding is not supported.";
-      return VideoDecoder::kFailed;
-    }
+    LOG_ASSERT(current_sequence_header_->operating_point_idc[0] == 0)
+        << "Either temporal or spatial layer decoding is not supported.";
 
     if (!va_config_ || va_config_->profile() != new_profile) {
       va_context_.reset();
@@ -677,7 +672,6 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
     if (state_->reference_frame[i] && !ref_frames_[i]) {
       LOG_ASSERT(false) << "The state of the reference frames are different "
                            "between |ref_frames_| and |state_|";
-      return VideoDecoder::kFailed;
     }
     if (!state_->reference_frame[i] && ref_frames_[i]) {
       ref_frames_[i].reset();
@@ -693,10 +687,8 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
     return VideoDecoder::kOk;
   }
 
-  if (!current_sequence_header_) {
-    LOG_ASSERT(false) << "Sequence header missing for decoding.";
-    return VideoDecoder::kFailed;
-  }
+  LOG_ASSERT(current_sequence_header_)
+      << "Sequence header missing for decoding.";
 
   // Create surfaces for decode.
   VASurfaceAttrib attribute;
@@ -798,19 +790,17 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
       base::checked_cast<uint8_t>(current_frame_header.primary_reference_frame);
   pic_parameters.order_hint = current_frame_header.order_hint;
 
-  if (current_frame_header.use_superres) {
-    LOG_ASSERT(false) << "Upscaling (use_superres=1) is not supported";
-    return VideoDecoder::kFailed;
-  }
+  LOG_ASSERT(!current_frame_header.use_superres)
+      << "Upscaling (use_superres=1) is not supported";
 
   FillSegmentInfo(pic_parameters.seg_info, current_frame_header.segmentation);
   FillFilmGrainInfo(pic_parameters.film_grain_info,
                     current_frame_header.film_grain_params);
 
-  if (!FillTileInfo(pic_parameters, current_frame_header.tile_info)) {
-    LOG_ASSERT(false) << "Failed to fill tile info for current frame.";
-    return VideoDecoder::kFailed;
-  }
+  const bool tile_info_success =
+      FillTileInfo(pic_parameters, current_frame_header.tile_info);
+  LOG_ASSERT(tile_info_success)
+      << "Failed to fill tile info for current frame.";
 
   auto& info_fields = pic_parameters.pic_info_fields.bits;
   info_fields.uniform_tile_spacing_flag =
@@ -861,13 +851,12 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
   // The tiles are row-major; we pass in the number of columns for computation
   // of the row and column for a given flattened index.
   const size_t tile_columns = current_frame_header.tile_info.tile_columns;
-  if (!FillAV1SliceParameters(
-          obu_parser_->tile_buffers(), tile_columns,
-          base::make_span(ivf_frame_data_, ivf_frame_header_.frame_size),
-          slice_params)) {
-    LOG_ASSERT(false) << "Failed to fill slice parameters for current frame.";
-    return VideoDecoder::kFailed;
-  }
+  const bool slice_parameters_success = FillAV1SliceParameters(
+      obu_parser_->tile_buffers(), tile_columns,
+      base::make_span(ivf_frame_data_, ivf_frame_header_.frame_size),
+      slice_params);
+  LOG_ASSERT(slice_parameters_success)
+      << "Failed to fill slice parameters for current frame.";
 
   // Set up a buffer for the slice parameters for each slice.
   for (auto& slice_param : slice_params) {

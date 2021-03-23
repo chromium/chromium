@@ -103,10 +103,8 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame() {
   Vp9Parser::Result parser_res = ReadNextFrame(frame_hdr, size);
   if (parser_res == Vp9Parser::kEOStream)
     return VideoDecoder::kEOStream;
-  if (parser_res != Vp9Parser::kOk) {
-    LOG(ERROR) << "Failed to parse next frame, got " << parser_res;
-    return VideoDecoder::kFailed;
-  }
+  LOG_ASSERT(parser_res == Vp9Parser::kOk)
+      << "Failed to parse next frame, got " << parser_res;
 
   VLOG_IF(2, !frame_hdr.show_frame) << "not displaying frame";
   last_decoded_frame_visible_ = frame_hdr.show_frame;
