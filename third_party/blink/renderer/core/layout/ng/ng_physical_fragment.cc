@@ -396,6 +396,10 @@ bool NGPhysicalFragment::IsBlockFlow() const {
   return !IsLineBox() && layout_object_->IsLayoutBlockFlow();
 }
 
+bool NGPhysicalFragment::IsTextControlContainer() const {
+  return blink::IsTextControlContainer(layout_object_->GetNode());
+}
+
 bool NGPhysicalFragment::IsTextControlPlaceholder() const {
   return blink::IsTextControlPlaceholder(layout_object_->GetNode());
 }
