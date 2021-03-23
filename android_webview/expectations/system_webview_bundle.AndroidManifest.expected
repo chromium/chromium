@@ -128,9 +128,10 @@
         tools:ignore="ExportedService">
     </service>  # DIFF-ANCHOR: 5cda9608
     <service  # DIFF-ANCHOR: adce9ea1
-        android:exported="false"
+        android:exported="true"
         android:name="org.chromium.android_webview.services.DeveloperUiService"
-        android:process=":webview_service">
+        android:process=":webview_service"
+        tools:ignore="ExportedService">
     </service>  # DIFF-ANCHOR: adce9ea1
     <service  # DIFF-ANCHOR: eecf2fee
         android:exported="true"

@@ -28,6 +28,7 @@ import org.chromium.android_webview.common.Flag;
 import org.chromium.android_webview.common.FlagOverrideHelper;
 import org.chromium.android_webview.common.ProductionSupportedFlagList;
 import org.chromium.android_webview.common.services.IDeveloperUiService;
+import org.chromium.base.BuildInfo;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -88,7 +89,15 @@ public final class DeveloperUiService extends Service {
                 if (sOverriddenFlags.isEmpty()) {
                     disableDeveloperMode();
                 } else {
-                    enableDeveloperMode();
+                    try {
+                        enableDeveloperMode();
+                    } catch (IllegalStateException e) {
+                        assert BuildInfo.isAtLeastS()
+                            : "Unable enable developer mode, this is only expected on Android S";
+                        String msg = "Unable to create foreground service (client is likely in "
+                                + "background). Continuing as a background service.";
+                        Log.w(TAG, msg);
+                    }
                 }
             }
         }
@@ -251,6 +260,15 @@ public final class DeveloperUiService extends Service {
         startForeground(FLAG_OVERRIDE_NOTIFICATION_ID, notification);
     }
 
+    /**
+     * Enables developer mode. This includes requesting foreground status, toggling
+     * {@code DEVELOPER_MODE_STATE_COMPONENT}'s enabled status, posting the notification, etc.
+     *
+     * @throws IllegalStateException if we're on Android S+ and we're currently running with
+     * background status. In this case, {@code mDeveloperModeEnabled} will be {@code false} and
+     * {@code DEVELOPER_MODE_STATE_COMPONENT} will be unmodified so that we can call try again when
+     * the next client connects.
+     */
     private void enableDeveloperMode() {
         synchronized (sLock) {
             if (mDeveloperModeEnabled) return;
