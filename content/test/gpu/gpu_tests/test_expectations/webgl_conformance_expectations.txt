@@ -352,6 +352,7 @@ crbug.com/1152619 [ win10 amd-0x7340 angle-d3d9 ] conformance/textures/misc/text
 crbug.com/1152619 [ win amd-0x7340 angle-d3d9 ] conformance/textures/misc/texture-npot-video.html [ Failure ]
 crbug.com/1152621 [ win amd-0x7340 angle-vulkan ] conformance/attribs/gl-vertexattribpointer-offsets.html [ Failure ]
 crbug.com/1152623 [ win amd-0x7340 angle-vulkan ] conformance/extensions/webgl-draw-buffers.html [ Failure ]
+crbug.com/1191456 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures/misc/video-rotation.html [ Failure ]
 
 # Win / D3D9 failures
 # Skipping these two tests because they're causing assertion failures.
