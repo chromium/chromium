@@ -74,6 +74,7 @@ void AXTreeSnapshotterImpl::Snapshot(ui::AXMode ax_mode,
   // this was indeed a partial update to the tree (which we don't want).
   DCHECK_EQ(0, response->node_id_to_clear);
   DCHECK_EQ(ax::mojom::EventFrom::kNone, response->event_from);
+  DCHECK_EQ(ax::mojom::Action::kNone, response->event_from_action);
 }
 
 }  // namespace content

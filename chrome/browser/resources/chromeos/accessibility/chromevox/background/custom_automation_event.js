@@ -25,13 +25,16 @@ CustomAutomationEvent = class {
    * @param {chrome.automation.EventType} type The event type.
    * @param {!chrome.automation.AutomationNode} target The event target.
    * @param {string} eventFrom The source of this event.
+   * @param {string} eventFromAction The accessibility action that caused this
+   *     event.
    * @param {!Array<chrome.automation.AutomationIntent>} intents Intents for
    *     this event.
    */
-  constructor(type, target, eventFrom, intents) {
+  constructor(type, target, eventFrom, eventFromAction, intents) {
     this.type = type;
     this.target = target;
     this.eventFrom = eventFrom;
+    this.eventFromAction = eventFromAction;
     this.intents = intents;
   }
 

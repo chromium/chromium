@@ -16,6 +16,7 @@ goog.require('CustomAutomationEvent');
 goog.require('editing.TextEditHandler');
 
 goog.scope(function() {
+const ActionType = chrome.automation.ActionType;
 const AutomationNode = chrome.automation.AutomationNode;
 const Dir = constants.Dir;
 const EventType = chrome.automation.EventType;
@@ -96,7 +97,8 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
       chrome.automation.getFocus((function(focus) {
                                    if (focus) {
                                      const event = new CustomAutomationEvent(
-                                         EventType.FOCUS, focus, 'page', []);
+                                         EventType.FOCUS, focus, 'page',
+                                         ActionType.FOCUS, []);
                                      this.onFocus(event);
                                    }
                                  }).bind(this));
@@ -215,7 +217,8 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
       selectionStart =
           AutomationUtil.getEditableRoot(selectionStart) || selectionStart;
       this.onEditableChanged_(new CustomAutomationEvent(
-          evt.type, selectionStart, evt.eventFrom, evt.intents));
+          evt.type, selectionStart, evt.eventFrom, evt.eventFromAction,
+          evt.intents));
     }
 
     // Non-editable selections are handled in |Background|.
@@ -272,7 +275,7 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     Output.forceModeForNextSpeechUtterance(QueueMode.CATEGORY_FLUSH);
 
     const event = new CustomAutomationEvent(
-        EventType.FOCUS, node, evt.eventFrom, evt.intents);
+        EventType.FOCUS, node, evt.eventFrom, evt.eventFromAction, evt.intents);
     this.onEventDefault(event);
 
     // Refresh the handler, if needed, now that ChromeVox focus is up to date.
@@ -591,8 +594,8 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     // after you close them.
     chrome.automation.getFocus(function(focus) {
       if (focus) {
-        const event =
-            new CustomAutomationEvent(EventType.FOCUS, focus, 'page', []);
+        const event = new CustomAutomationEvent(
+            EventType.FOCUS, focus, 'page', ActionType.FOCUS, []);
         this.onFocus(event);
       }
     }.bind(this));
@@ -759,5 +762,4 @@ DesktopAutomationHandler.announceActions = false;
  * @type {DesktopAutomationHandler}
  */
 DesktopAutomationHandler.instance;
-
 });  // goog.scope

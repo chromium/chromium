@@ -24,6 +24,9 @@ struct StructTraits<ax::mojom::AXEventDataView, ui::AXEvent> {
   static ax::mojom::EventFrom event_from(const ui::AXEvent& p) {
     return p.event_from;
   }
+  static ax::mojom::Action event_from_action(const ui::AXEvent& p) {
+    return p.event_from_action;
+  }
   static std::vector<ui::AXEventIntent> event_intents(const ui::AXEvent& p) {
     return p.event_intents;
   }

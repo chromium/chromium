@@ -91,8 +91,12 @@ bool HasIgnoredChangedState(
 AXEventGenerator::EventParams::EventParams(
     const Event event,
     const ax::mojom::EventFrom event_from,
+    const ax::mojom::Action event_from_action,
     const std::vector<AXEventIntent>& event_intents)
-    : event(event), event_from(event_from), event_intents(event_intents) {}
+    : event(event),
+      event_from(event_from),
+      event_from_action(event_from_action),
+      event_intents(event_intents) {}
 
 AXEventGenerator::EventParams::EventParams(const EventParams& other) = default;
 
@@ -223,7 +227,7 @@ void AXEventGenerator::AddEvent(AXNode* node, AXEventGenerator::Event event) {
 
   std::set<EventParams>& node_events = tree_events_[node];
   node_events.emplace(event, ax::mojom::EventFrom::kNone,
-                      tree_->event_intents());
+                      ax::mojom::Action::kNone, tree_->event_intents());
 }
 
 void AXEventGenerator::OnNodeDataChanged(AXTree* tree,

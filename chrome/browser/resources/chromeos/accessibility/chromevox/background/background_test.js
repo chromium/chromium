@@ -18,6 +18,7 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
     window.simulateHitTestResult = this.simulateHitTestResult;
     window.press = this.press;
     window.Mod = constants.ModifierFlag;
+    window.ActionType = chrome.automation.ActionType;
 
     this.forceContextualLastOutput();
   }
@@ -2062,6 +2063,7 @@ TEST_F('ChromeVoxBackgroundTest', 'EventFromAction', function() {
               assertEquals(RoleType.BUTTON, evt.target.role);
               assertEquals('action', evt.eventFrom);
               assertEquals('cancel', evt.target.name);
+              assertEquals('focus', evt.eventFromAction);
             }));
 
         button.focus();
@@ -2669,12 +2671,14 @@ TEST_F('ChromeVoxBackgroundTest', 'FocusOnUnknown', function() {
           }
         });
 
-        const evt2 = new CustomAutomationEvent(EventType.FOCUS, group2, '', []);
+        const evt2 =
+            new CustomAutomationEvent(EventType.FOCUS, group2, '', '', []);
         const currentRange = ChromeVoxState.instance.currentRange;
         DesktopAutomationHandler.instance.onFocus(evt2);
         assertEquals(currentRange, ChromeVoxState.instance.currentRange);
 
-        const evt1 = new CustomAutomationEvent(EventType.FOCUS, group1, '', []);
+        const evt1 =
+            new CustomAutomationEvent(EventType.FOCUS, group1, '', '', []);
         mockFeedback
             .call(DesktopAutomationHandler.instance.onFocus.bind(
                 DesktopAutomationHandler.instance, evt1))
@@ -2902,7 +2906,7 @@ TEST_F('ChromeVoxBackgroundTest', 'AlertNoAnnouncement', function() {
         }());
         const button = root.find({role: RoleType.BUTTON});
         const alertEvt =
-            new CustomAutomationEvent(EventType.ALERT, button, '', []);
+            new CustomAutomationEvent(EventType.ALERT, button, '', '', []);
         mockFeedback
             .call(DesktopAutomationHandler.instance.onAlert.bind(
                 DesktopAutomationHandler.instance, alertEvt))
@@ -2926,7 +2930,7 @@ TEST_F('ChromeVoxBackgroundTest', 'AlertAnnouncement', function() {
 
         const button = root.find({role: RoleType.BUTTON});
         const alertEvt =
-            new CustomAutomationEvent(EventType.ALERT, button, '', []);
+            new CustomAutomationEvent(EventType.ALERT, button, '', '', []);
         mockFeedback
             .call(DesktopAutomationHandler.instance.onAlert.bind(
                 DesktopAutomationHandler.instance, alertEvt))
@@ -3329,6 +3333,34 @@ TEST_F('ChromeVoxBackgroundTest', 'TouchGesturesProducesEarcons', function() {
         .call(doGesture(chrome.accessibilityPrivate.Gesture.SWIPE_LEFT1))
         .expectSpeech('ok', 'Button')
         .expectEarcon(Earcon.BUTTON)
+        .replay();
+  });
+});
+
+TEST_F('ChromeVoxBackgroundTest', 'FocusAfterClick', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <p>Start</p>
+    <button id="clickMe">Click me</button>
+    <h1 id="focusMe" tabindex=-1>Focus me</h1>
+    <script>
+      document.getElementById('clickMe').addEventListener('click', function() {
+        document.getElementById('focusMe').focus();
+      }, false);
+    </script>
+  `;
+  this.runWithLoadedTree(site, function(root) {
+    DesktopAutomationHandler.announceActions = false;
+    mockFeedback.expectSpeech('Start')
+        .call(doCmd('nextObject'))
+        .expectSpeech('Click me')
+        .call(doCmd('forceClickOnCurrentItem'))
+        .expectSpeech('Focus me')
+        .call(() => {
+          assertEquals(
+              'Focus me',
+              ChromeVoxState.instance.getCurrentRange().start.node.name);
+        })
         .replay();
   });
 });

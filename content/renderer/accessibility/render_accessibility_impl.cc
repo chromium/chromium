@@ -283,9 +283,9 @@ void RenderAccessibilityImpl::HitTest(
     // request. Instead, the mojo reply should be used directly.
     if (event_to_fire != ax::mojom::Event::kNone) {
       const std::vector<ui::AXEventIntent> intents;
-      HandleAXEvent(ui::AXEvent(ax_object.AxID(), event_to_fire,
-                                ax::mojom::EventFrom::kAction, intents,
-                                request_id));
+      HandleAXEvent(ui::AXEvent(
+          ax_object.AxID(), event_to_fire, ax::mojom::EventFrom::kAction,
+          ax::mojom::Action::kHitTest, intents, request_id));
     }
 
     // Reply with the result.
@@ -411,7 +411,8 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
         CreateAXImageAnnotator();
         // Walk the tree to discover images, and mark them dirty so that
         // they get added to the annotator.
-        MarkAllAXObjectsDirty(ax::mojom::Role::kImage);
+        MarkAllAXObjectsDirty(ax::mojom::Role::kImage,
+                              ax::mojom::Action::kAnnotatePageImages);
       }
       break;
     case ax::mojom::Action::kSignalEndOfTest:
@@ -449,11 +450,14 @@ void RenderAccessibilityImpl::HandleWebAccessibilityEvent(
   HandleAXEvent(event);
 }
 
-void RenderAccessibilityImpl::MarkWebAXObjectDirty(const WebAXObject& obj,
-                                                   bool subtree) {
+void RenderAccessibilityImpl::MarkWebAXObjectDirty(
+    const WebAXObject& obj,
+    bool subtree,
+    ax::mojom::Action event_from_action) {
   DirtyObject dirty_object;
   dirty_object.obj = obj;
   dirty_object.event_from = ax::mojom::EventFrom::kAction;
+  dirty_object.event_from_action = event_from_action;
   dirty_objects_.push_back(dirty_object);
 
   if (subtree)
@@ -883,6 +887,7 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
         DirtyObject dirty_object;
         dirty_object.obj = obj;
         dirty_object.event_from = event.event_from;
+        dirty_object.event_from_action = event.event_from_action;
         dirty_object.event_intents = event.event_intents;
         dirty_objects.push_back(dirty_object);
       }
@@ -898,6 +903,7 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
       DirtyObject dirty_object;
       dirty_object.obj = obj;
       dirty_object.event_from = event.event_from;
+      dirty_object.event_from_action = event.event_from_action;
       dirty_object.event_intents = event.event_intents;
       dirty_objects.push_back(dirty_object);
     }
@@ -962,6 +968,7 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
 
     ui::AXTreeUpdate update;
     update.event_from = dirty_objects[i].event_from;
+    update.event_from_action = dirty_objects[i].event_from_action;
     update.event_intents = dirty_objects[i].event_intents;
     // If there's a plugin, force the tree data to be generated in every
     // message so the plugin can merge its own tree data changes.
@@ -1196,7 +1203,9 @@ void RenderAccessibilityImpl::StartOrStopLabelingImages(ui::AXMode old_mode,
   }
 }
 
-void RenderAccessibilityImpl::MarkAllAXObjectsDirty(ax::mojom::Role role) {
+void RenderAccessibilityImpl::MarkAllAXObjectsDirty(
+    ax::mojom::Role role,
+    ax::mojom::Action event_from_action) {
   ScopedFreezeBlinkAXTreeSource freeze(tree_source_.get());
   base::queue<WebAXObject> objs_to_explore;
   objs_to_explore.push(tree_source_->GetRoot());
@@ -1205,7 +1214,7 @@ void RenderAccessibilityImpl::MarkAllAXObjectsDirty(ax::mojom::Role role) {
     objs_to_explore.pop();
 
     if (obj.Role() == role)
-      MarkWebAXObjectDirty(obj, /* subtree */ false);
+      MarkWebAXObjectDirty(obj, /* subtree */ false, event_from_action);
 
     std::vector<blink::WebAXObject> children;
     tree_source_->GetChildren(obj, &children);

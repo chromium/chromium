@@ -133,6 +133,8 @@ bool AutomationAXTreeWrapper::OnAccessibilityEvents(
     ui::AXEvent generated_event;
     generated_event.id = targeted_event.node->id();
     generated_event.event_from = targeted_event.event_params.event_from;
+    generated_event.event_from_action =
+        targeted_event.event_params.event_from_action;
     generated_event.event_intents = targeted_event.event_params.event_intents;
     owner_->SendAutomationEvent(event_bundle.tree_id,
                                 event_bundle.mouse_location, generated_event,

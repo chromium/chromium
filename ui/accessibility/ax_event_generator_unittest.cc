@@ -104,11 +104,14 @@ TEST(AXEventGeneratorTest, IterateThroughEmptyEventSets) {
   // Node3 contains IGNORED_CHANGED, SUBTREE_CREATED, NAME_CHANGED.
   std::set<AXEventGenerator::EventParams> node3_events;
   node3_events.emplace(AXEventGenerator::Event::IGNORED_CHANGED,
-                       ax::mojom::EventFrom::kNone, tree.event_intents());
+                       ax::mojom::EventFrom::kNone, ax::mojom::Action::kNone,
+                       tree.event_intents());
   node3_events.emplace(AXEventGenerator::Event::SUBTREE_CREATED,
-                       ax::mojom::EventFrom::kNone, tree.event_intents());
+                       ax::mojom::EventFrom::kNone, ax::mojom::Action::kNone,
+                       tree.event_intents());
   node3_events.emplace(AXEventGenerator::Event::NAME_CHANGED,
-                       ax::mojom::EventFrom::kNone, tree.event_intents());
+                       ax::mojom::EventFrom::kNone, ax::mojom::Action::kNone,
+                       tree.event_intents());
   // Node4 contains no event.
   std::set<AXEventGenerator::EventParams> node4_events;
   // Node5 contains no event.
@@ -118,7 +121,8 @@ TEST(AXEventGeneratorTest, IterateThroughEmptyEventSets) {
   // Node7 contains IGNORED_CHANGED.
   std::set<AXEventGenerator::EventParams> node7_events;
   node7_events.emplace(AXEventGenerator::Event::IGNORED_CHANGED,
-                       ax::mojom::EventFrom::kNone, tree.event_intents());
+                       ax::mojom::EventFrom::kNone, ax::mojom::Action::kNone,
+                       tree.event_intents());
   // Node8 contains no event.
   std::set<AXEventGenerator::EventParams> node8_events;
   // Node9 contains no event.

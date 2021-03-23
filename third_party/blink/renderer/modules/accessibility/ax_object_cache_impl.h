@@ -290,11 +290,16 @@ class MODULES_EXPORT AXObjectCacheImpl
   WebAXAutofillState GetAutofillState(AXID id) const;
   void SetAutofillState(AXID id, WebAXAutofillState state);
 
-  ax::mojom::blink::EventFrom active_event_from() const {
-    return active_event_from_;
+  std::pair<ax::mojom::blink::EventFrom, ax::mojom::blink::Action>
+  active_event_from_data() const {
+    return std::make_pair(active_event_from_, active_event_from_action_);
   }
-  void set_active_event_from(const ax::mojom::blink::EventFrom event_from) {
+
+  void set_active_event_from_data(
+      const ax::mojom::blink::EventFrom event_from,
+      const ax::mojom::blink::Action event_from_action) {
     active_event_from_ = event_from;
+    active_event_from_action_ = event_from_action;
   }
 
   AXObject* GetActiveAriaModalDialog() const;
@@ -318,6 +323,8 @@ class MODULES_EXPORT AXObjectCacheImpl
       ax::mojom::blink::Event event_type,
       ax::mojom::blink::EventFrom event_from =
           ax::mojom::blink::EventFrom::kNone,
+      ax::mojom::blink::Action event_from_action =
+          ax::mojom::blink::Action::kNone,
       const BlinkAXEventIntentsSet& event_intents = BlinkAXEventIntentsSet());
   void LabelChangedWithCleanLayout(Element*);
 
@@ -352,8 +359,12 @@ class MODULES_EXPORT AXObjectCacheImpl
     AXEventParams(AXObject* target,
                   ax::mojom::blink::Event event_type,
                   ax::mojom::blink::EventFrom event_from,
+                  ax::mojom::blink::Action event_from_action,
                   const BlinkAXEventIntentsSet& intents)
-        : target(target), event_type(event_type), event_from(event_from) {
+        : target(target),
+          event_type(event_type),
+          event_from(event_from),
+          event_from_action(event_from_action) {
       for (const auto& intent : intents) {
         event_intents.insert(intent.key, intent.value);
       }
@@ -361,6 +372,7 @@ class MODULES_EXPORT AXObjectCacheImpl
     Member<AXObject> target;
     ax::mojom::blink::Event event_type;
     ax::mojom::blink::EventFrom event_from;
+    ax::mojom::blink::Action event_from_action;
     BlinkAXEventIntentsSet event_intents;
 
     void Trace(Visitor* visitor) const { visitor->Trace(target); }
@@ -370,11 +382,13 @@ class MODULES_EXPORT AXObjectCacheImpl
     TreeUpdateParams(const Node* node,
                      AXID axid,
                      ax::mojom::blink::EventFrom event_from,
+                     ax::mojom::blink::Action event_from_action,
                      const BlinkAXEventIntentsSet& intents,
                      base::OnceClosure callback)
         : node(node),
           axid(axid),
           event_from(event_from),
+          event_from_action(event_from_action),
           callback(std::move(callback)) {
       for (const auto& intent : intents) {
         event_intents.insert(intent.key, intent.value);
@@ -383,6 +397,7 @@ class MODULES_EXPORT AXObjectCacheImpl
     WeakMember<const Node> node;
     AXID axid;
     ax::mojom::blink::EventFrom event_from;
+    ax::mojom::blink::Action event_from_action;
     BlinkAXEventIntentsSet event_intents;
     base::OnceClosure callback;
 
@@ -526,11 +541,13 @@ class MODULES_EXPORT AXObjectCacheImpl
   void FireTreeUpdatedEventImmediately(
       Document& document,
       ax::mojom::blink::EventFrom event_from,
+      ax::mojom::blink::Action event_from_action,
       const BlinkAXEventIntentsSet& event_intents,
       base::OnceClosure callback);
   void FireAXEventImmediately(AXObject* obj,
                               ax::mojom::blink::Event event_type,
                               ax::mojom::blink::EventFrom event_from,
+                              ax::mojom::blink::Action event_from_action,
                               const BlinkAXEventIntentsSet& event_intents);
 
   void SetMaxPendingUpdatesForTesting(wtf_size_t max_pending_updates) {
@@ -581,6 +598,11 @@ class MODULES_EXPORT AXObjectCacheImpl
   // The source of the event that is currently being handled.
   ax::mojom::blink::EventFrom active_event_from_ =
       ax::mojom::blink::EventFrom::kNone;
+
+  // The accessibility action that caused the event. Will only be valid if
+  // active_event_from_ is set to kAction.
+  ax::mojom::blink::Action active_event_from_action_ =
+      ax::mojom::blink::Action::kNone;
 
   // A set of currently active event intents.
   BlinkAXEventIntentsSet active_event_intents_;
