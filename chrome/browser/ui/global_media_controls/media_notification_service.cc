@@ -403,8 +403,9 @@ void MediaNotificationService::SetDialogDelegate(
         GetNotificationItem(id);
     MediaNotificationContainerImpl* container =
         dialog_delegate_->ShowMediaSession(id, item);
-    if (container)
-      media_session_notification_producer_->ObserveContainer(container, id);
+    auto* notification_producer = GetNotificationProducer(id);
+    if (notification_producer)
+      notification_producer->OnItemShown(id, container);
   }
 
   media_message_center::RecordConcurrentNotificationCount(
@@ -412,7 +413,7 @@ void MediaNotificationService::SetDialogDelegate(
 
   if (cast_notification_producer_) {
     media_message_center::RecordConcurrentCastNotificationCount(
-        cast_notification_producer_->GetItemCount());
+        cast_notification_producer_->GetActiveItemCount());
   }
 }
 
@@ -452,9 +453,9 @@ void MediaNotificationService::SetDialogDelegateForWebContents(
         GetNotificationItem(notification_id);
     MediaNotificationContainerImpl* container =
         dialog_delegate_->ShowMediaSession(notification_id, item);
-    if (container)
-      media_session_notification_producer_->ObserveContainer(container,
-                                                             notification_id);
+    auto* notification_producer = GetNotificationProducer(notification_id);
+    if (notification_producer)
+      notification_producer->OnItemShown(notification_id, container);
     return;
   }
 
@@ -560,8 +561,9 @@ void MediaNotificationService::ShowAndObserveContainer(const std::string& id) {
       GetNotificationItem(id);
   MediaNotificationContainerImpl* container =
       dialog_delegate_->ShowMediaSession(id, item);
-  if (container)
-    media_session_notification_producer_->ObserveContainer(container, id);
+  auto* notification_producer = GetNotificationProducer(id);
+  if (notification_producer)
+    notification_producer->OnItemShown(id, container);
 }
 
 base::WeakPtr<media_message_center::MediaNotificationItem>
@@ -594,4 +596,14 @@ void MediaNotificationService::SetDialogDelegateCommon(
     for (auto& observer : observers_)
       observer.OnMediaDialogClosed();
   }
+}
+
+MediaNotificationProducer* MediaNotificationService::GetNotificationProducer(
+    const std::string& notification_id) {
+  for (auto* notification_producer : notification_producers_) {
+    if (notification_producer->GetNotificationItem(notification_id)) {
+      return notification_producer;
+    }
+  }
+  return nullptr;
 }

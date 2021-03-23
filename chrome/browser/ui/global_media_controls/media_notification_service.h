@@ -300,6 +300,9 @@ class MediaNotificationService
   // the argument, otherwise the argument should be nullptr.
   void OnNotificationChanged(const std::string* changed_notification_id);
 
+  MediaNotificationProducer* GetNotificationProducer(
+      const std::string& notification_id);
+
   // Updates |dialog_delegate_| and notifies |observers_|. Called from
   // SetDialogDelegate() and SetDialogDelegateForPresentationRequest().
   void SetDialogDelegateCommon(MediaDialogDelegate* delegate);

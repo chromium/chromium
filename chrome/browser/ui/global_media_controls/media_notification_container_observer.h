@@ -11,30 +11,29 @@
 class MediaNotificationContainerObserver : public base::CheckedObserver {
  public:
   // Called when the size of the container has changed.
-  virtual void OnContainerSizeChanged() = 0;
+  virtual void OnContainerSizeChanged() {}
 
   // Called when the metadata displayed in the container changes.
-  virtual void OnContainerMetadataChanged() = 0;
+  virtual void OnContainerMetadataChanged() {}
 
   // Called when the action buttons in the container change.
-  virtual void OnContainerActionsChanged() = 0;
+  virtual void OnContainerActionsChanged() {}
 
   // Called when the container is clicked.
-  virtual void OnContainerClicked(const std::string& id) = 0;
+  virtual void OnContainerClicked(const std::string& id) {}
 
   // Called when the container is dismissed from the dialog.
-  virtual void OnContainerDismissed(const std::string& id) = 0;
+  virtual void OnContainerDismissed(const std::string& id) {}
 
   // Called when the container is about to be deleted.
-  virtual void OnContainerDestroyed(const std::string& id) = 0;
+  virtual void OnContainerDestroyed(const std::string& id) {}
 
   // Called when the container has been dragged out of a dialog.
-  virtual void OnContainerDraggedOut(const std::string& id,
-                                     gfx::Rect bounds) = 0;
+  virtual void OnContainerDraggedOut(const std::string& id, gfx::Rect bounds) {}
 
   // Called when the audio output device for the container should change
   virtual void OnAudioSinkChosen(const std::string& id,
-                                 const std::string& sink_id) = 0;
+                                 const std::string& sink_id) {}
 
  protected:
   ~MediaNotificationContainerObserver() override = default;
