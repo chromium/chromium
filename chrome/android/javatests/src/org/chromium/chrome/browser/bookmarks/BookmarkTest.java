@@ -1710,10 +1710,10 @@ public class BookmarkTest {
     @Test
     @SmallTest
     @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
-    @FlakyTest(message = "https://crbug.com/1187267")
     public void testReadingListFolderShownOneUnreadPage() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
         openBookmarkManager();
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mBookmarkModel.addToReadingList("a", new GURL("https://a.com/reading_list_0"));
             mManager.openFolder(mBookmarkModel.getRootFolderId());
@@ -1725,10 +1725,10 @@ public class BookmarkTest {
     @Test
     @SmallTest
     @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
-    @FlakyTest(message = "https://crbug.com/1189666")
     public void testReadingListFolderShownMultipleUnreadPages() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTests(PromoState.PROMO_NONE);
         openBookmarkManager();
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mBookmarkModel.addToReadingList("a", new GURL("https://a.com/reading_list_0"));
             mBookmarkModel.addToReadingList("b", new GURL("https://a.com/reading_list_1"));
