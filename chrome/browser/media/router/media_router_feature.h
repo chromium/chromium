@@ -39,7 +39,6 @@ extern const base::Feature kCastMediaRouteProvider;
 extern const base::Feature kCastAllowAllIPsFeature;
 
 // Determine whether global media controls are used to start and stop casting.
-// Only relevant when media::kGlobalMediaControlsOverlayControls is enabled.
 extern const base::Feature kGlobalMediaControlsCastStartStop;
 
 // If enabled, allows all websites to request to start mirroring via

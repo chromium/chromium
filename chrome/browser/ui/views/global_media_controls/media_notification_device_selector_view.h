@@ -34,7 +34,7 @@ class MediaNotificationDeviceSelectorView
   METADATA_HEADER(MediaNotificationDeviceSelectorView);
   MediaNotificationDeviceSelectorView(
       MediaNotificationDeviceSelectorViewDelegate* delegate,
-      std::unique_ptr<media_router::CastDialogController> controller,
+      std::unique_ptr<media_router::CastDialogController> cast_controller,
       const std::string& current_device_id,
       const SkColor& foreground_color,
       const SkColor& background_color,
@@ -97,6 +97,7 @@ class MediaNotificationDeviceSelectorView
   void StartCastSession(CastDeviceEntryView* entry);
   void RecordStartCastingMetrics();
   DeviceEntryUI* GetDeviceEntryUI(views::View* view) const;
+  void RegisterAudioDeviceCallbacks();
 
   bool has_expand_button_been_shown_ = false;
   bool have_devices_been_shown_ = false;

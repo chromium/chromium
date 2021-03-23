@@ -181,19 +181,19 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
     AddStopCastButton(cast_item);
   }
 
-  if (base::FeatureList::IsEnabled(
-          media::kGlobalMediaControlsSeamlessTransfer) &&
-      is_local_media_session) {
+  if (is_local_media_session &&
+      (base::FeatureList::IsEnabled(
+           media::kGlobalMediaControlsSeamlessTransfer) ||
+       media_router::GlobalMediaControlsCastStartStopEnabled())) {
     auto cast_controller =
         media_router::GlobalMediaControlsCastStartStopEnabled()
             ? service_->CreateCastDialogControllerForSession(id_)
             : nullptr;
-    auto audio_device_selector_view =
+    auto device_selector_view =
         std::make_unique<MediaNotificationDeviceSelectorView>(
             this, std::move(cast_controller), audio_sink_id_, foreground_color_,
             background_color_, entry_point_);
-    audio_device_selector_view_ =
-        AddChildView(std::move(audio_device_selector_view));
+    device_selector_view_ = AddChildView(std::move(device_selector_view));
     view_->UpdateCornerRadius(message_center::kNotificationCornerRadius, 0);
   }
 
@@ -347,8 +347,10 @@ void MediaNotificationContainerImplView::OnMediaSessionInfoChanged(
   if (session_info) {
     audio_sink_id_ = session_info->audio_sink_id.value_or(
         media::AudioDeviceDescription::kDefaultDeviceId);
-    if (audio_device_selector_view_) {
-      audio_device_selector_view_->UpdateCurrentAudioDevice(audio_sink_id_);
+    if (device_selector_view_ &&
+        base::FeatureList::IsEnabled(
+            media::kGlobalMediaControlsSeamlessTransfer)) {
+      device_selector_view_->UpdateCurrentAudioDevice(audio_sink_id_);
     }
   }
 }
@@ -406,8 +408,8 @@ void MediaNotificationContainerImplView::OnColorsChanged(SkColor foreground,
           views::CreateSolidBackground(background_color_));
     }
   }
-  if (audio_device_selector_view_)
-    audio_device_selector_view_->OnColorsChanged(foreground, background);
+  if (device_selector_view_)
+    device_selector_view_->OnColorsChanged(foreground, background);
 }
 
 void MediaNotificationContainerImplView::OnHeaderClicked() {
@@ -619,17 +621,15 @@ void MediaNotificationContainerImplView::OnSizeChanged() {
     new_size = is_expanded_ ? kExpandedSize : kNormalSize;
   }
 
-  // |new_size| does not contain the height for the audio device selector view.
+  // |new_size| does not contain the height for the device selector view.
   // If this view is present, we should query it for its preferred height and
   // include that in |new_size|.
-  if (audio_device_selector_view_) {
-    auto audio_device_selector_view_size =
-        audio_device_selector_view_->GetPreferredSize();
-    DCHECK(audio_device_selector_view_size.width() == kWidth);
-    new_size.set_height(new_size.height() +
-                        audio_device_selector_view_size.height());
+  if (device_selector_view_) {
+    auto device_selector_view_size = device_selector_view_->GetPreferredSize();
+    DCHECK(device_selector_view_size.width() == kWidth);
+    new_size.set_height(new_size.height() + device_selector_view_size.height());
     view_->UpdateDeviceSelectorAvailability(
-        audio_device_selector_view_->GetVisible());
+        device_selector_view_->GetVisible());
   }
 
   if (overlay_)

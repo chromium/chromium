@@ -142,10 +142,7 @@ bool CastMediaRouteProviderEnabled() {
 }
 
 bool GlobalMediaControlsCastStartStopEnabled() {
-  return base::FeatureList::IsEnabled(kGlobalMediaControlsCastStartStop) &&
-         base::FeatureList::IsEnabled(media::kGlobalMediaControlsForCast) &&
-         base::FeatureList::IsEnabled(
-             media::kGlobalMediaControlsOverlayControls);
+  return base::FeatureList::IsEnabled(kGlobalMediaControlsCastStartStop);
 }
 
 #endif  // !defined(OS_ANDROID)

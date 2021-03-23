@@ -13,6 +13,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "media/audio/audio_device_description.h"
+#include "media/base/media_switches.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -81,7 +82,7 @@ void ExpandDeviceSelectorButton::OnColorsChanged() {
 
 MediaNotificationDeviceSelectorView::MediaNotificationDeviceSelectorView(
     MediaNotificationDeviceSelectorViewDelegate* delegate,
-    std::unique_ptr<media_router::CastDialogController> controller,
+    std::unique_ptr<media_router::CastDialogController> cast_controller,
     const std::string& current_device_id,
     const SkColor& foreground_color,
     const SkColor& background_color,
@@ -128,22 +129,13 @@ MediaNotificationDeviceSelectorView::MediaNotificationDeviceSelectorView(
   // This view will become visible when devices are discovered.
   SetVisible(false);
 
-  // Get a list of the connected audio output devices.
-  audio_device_subscription_ =
-      delegate->RegisterAudioOutputDeviceDescriptionsCallback(
-          base::BindRepeating(
-              &MediaNotificationDeviceSelectorView::UpdateAvailableAudioDevices,
-              weak_ptr_factory_.GetWeakPtr()));
+  if (base::FeatureList::IsEnabled(
+          media::kGlobalMediaControlsSeamlessTransfer)) {
+    RegisterAudioDeviceCallbacks();
+  }
 
-  // Get the availability of audio output device switching.
-  is_device_switching_enabled_subscription_ =
-      delegate_->RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
-          base::BindRepeating(&MediaNotificationDeviceSelectorView::
-                                  UpdateIsAudioDeviceSwitchingEnabled,
-                              weak_ptr_factory_.GetWeakPtr()));
-
-  if (controller) {
-    cast_controller_ = std::move(controller);
+  if (cast_controller) {
+    cast_controller_ = std::move(cast_controller);
     cast_controller_->AddObserver(this);
   }
 }
@@ -418,6 +410,22 @@ void MediaNotificationDeviceSelectorView::RecordStartCastingMetrics() {
   base::UmaHistogramEnumeration(
       media_message_center::MediaNotificationItem::kCastStartStopHistogramName,
       action);
+}
+
+void MediaNotificationDeviceSelectorView::RegisterAudioDeviceCallbacks() {
+  // Get a list of the connected audio output devices.
+  audio_device_subscription_ =
+      delegate_->RegisterAudioOutputDeviceDescriptionsCallback(
+          base::BindRepeating(
+              &MediaNotificationDeviceSelectorView::UpdateAvailableAudioDevices,
+              weak_ptr_factory_.GetWeakPtr()));
+
+  // Get the availability of audio output device switching.
+  is_device_switching_enabled_subscription_ =
+      delegate_->RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
+          base::BindRepeating(&MediaNotificationDeviceSelectorView::
+                                  UpdateIsAudioDeviceSwitchingEnabled,
+                              weak_ptr_factory_.GetWeakPtr()));
 }
 
 BEGIN_METADATA(MediaNotificationDeviceSelectorView, views::View)

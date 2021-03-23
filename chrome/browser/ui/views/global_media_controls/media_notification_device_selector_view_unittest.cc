@@ -8,6 +8,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view_delegate.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "media/audio/audio_device_description.h"
+#include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/color_palette.h"
@@ -143,7 +145,11 @@ class MediaNotificationDeviceSelectorViewTest : public ChromeViewsTestBase {
   ~MediaNotificationDeviceSelectorViewTest() override = default;
 
   // ChromeViewsTestBase
-  void SetUp() override { ChromeViewsTestBase::SetUp(); }
+  void SetUp() override {
+    ChromeViewsTestBase::SetUp();
+    feature_list_.InitAndEnableFeature(
+        media::kGlobalMediaControlsSeamlessTransfer);
+  }
 
   void TearDown() override {
     view_.reset();
@@ -190,6 +196,7 @@ class MediaNotificationDeviceSelectorViewTest : public ChromeViewsTestBase {
 
   std::unique_ptr<MediaNotificationDeviceSelectorView> view_;
   base::HistogramTester histogram_tester_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(MediaNotificationDeviceSelectorViewTest, DeviceButtonsCreated) {

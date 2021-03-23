@@ -170,7 +170,7 @@ class MediaNotificationContainerImplView
 
   DismissButton* dismiss_button_ = nullptr;
   media_message_center::MediaNotificationView* view_ = nullptr;
-  MediaNotificationDeviceSelectorView* audio_device_selector_view_ = nullptr;
+  MediaNotificationDeviceSelectorView* device_selector_view_ = nullptr;
 
   // Only shows up for cast notifications.
   views::View* stop_button_strip_ = nullptr;
