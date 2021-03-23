@@ -333,6 +333,13 @@ void AuraSurface::OnWindowOcclusionChanged(Surface* surface) {
                                   window->occluded_region_in_root());
 }
 
+void AuraSurface::OnFrameLockingChanged(Surface* surface, bool lock) {
+  if (lock)
+    zaura_surface_send_lock_frame_normal(resource_);
+  else
+    zaura_surface_send_unlock_frame_normal(resource_);
+}
+
 void AuraSurface::OnWindowActivating(ActivationReason reason,
                                      aura::Window* gaining_active,
                                      aura::Window* losing_active) {

@@ -19,6 +19,10 @@ class SurfaceObserver {
   // changes.
   virtual void OnWindowOcclusionChanged(Surface* surface) {}
 
+  // Called when frame is locked to normal state or unlocked from
+  // previously locked state.
+  virtual void OnFrameLockingChanged(Surface* surface, bool lock) {}
+
   // Called on each commit.
   virtual void OnCommit(Surface* surface) {}
 

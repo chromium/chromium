@@ -3,9 +3,13 @@
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_DESKTOP_WINDOW_TREE_HOST_LACROS_H_
-#define CRHOME_BROWSER_UI_VIEWS_FRAME_BROWSER_DESKTOP_WINDOW_TREE_HOST_LACROS_H_
+#define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_DESKTOP_WINDOW_TREE_HOST_LACROS_H_
 
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host_linux.h"
+
+namespace views {
+class DesktopNativeWidgetAura;
+}
 
 class BrowserDesktopWindowTreeHostLacros
     : public BrowserDesktopWindowTreeHostLinux {
@@ -24,6 +28,9 @@ class BrowserDesktopWindowTreeHostLacros
  private:
   // views::DesktopWindowTreeHostPlatform:
   bool ShouldUseLayerForShapedWindow() const override;
+  void OnSurfaceFrameLockingChanged(bool lock) override;
+
+  views::DesktopNativeWidgetAura* desktop_native_widget_aura_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_DESKTOP_WINDOW_TREE_HOST_LACROS_H_

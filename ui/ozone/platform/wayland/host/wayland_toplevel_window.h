@@ -71,6 +71,11 @@ class WaylandToplevelWindow : public WaylandWindow,
   void UpdateVisualSize(const gfx::Size& size_px) override;
   bool OnInitialize(PlatformWindowInitProperties properties) override;
   bool IsActive() const override;
+
+  // zaura_surface listeners
+  static void LockFrame(void* data, zaura_surface* surface);
+  static void UnlockFrame(void* data, zaura_surface* surface);
+
   // Calls UpdateWindowShape, set_input_region and set_opaque_region
   // for this toplevel window.
   void UpdateWindowMask() override;
@@ -106,6 +111,10 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   // Sets decoration mode for a window.
   void OnDecorationModeChanged();
+
+  // Called when frame is locked to normal state or unlocked from
+  // previously locked state.
+  void OnFrameLockingChanged(bool lock);
 
   // Wrappers around shell surface.
   std::unique_ptr<ShellToplevelWrapper> shell_toplevel_;

@@ -25,4 +25,6 @@ SkPath PlatformWindowDelegate::GetWindowMaskForWindowShapeInPixels() {
   return SkPath();
 }
 
+void PlatformWindowDelegate::OnSurfaceFrameLockingChanged(bool lock) {}
+
 }  // namespace ui

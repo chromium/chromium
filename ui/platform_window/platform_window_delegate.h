@@ -70,6 +70,13 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   // This is used to create the non-rectangular window shape.
   virtual SkPath GetWindowMaskForWindowShapeInPixels();
 
+  // Called while dragging maximized window when SurfaceFrame associated with
+  // this window is locked to normal state or unlocked from previously locked
+  // state. This function is used by chromeos for syncing
+  // `chromeos::kFrameRestoreLookKey` window property
+  // with lacros-chrome.
+  virtual void OnSurfaceFrameLockingChanged(bool lock);
+
   // Called when the location of mouse pointer entered the window.  This is
   // different from ui::ET_MOUSE_ENTERED which may not be generated when mouse
   // is captured either by implicitly or explicitly.

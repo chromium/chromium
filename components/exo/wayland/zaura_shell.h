@@ -52,6 +52,7 @@ class AuraSurface : public SurfaceObserver,
   // Overridden from SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;
   void OnWindowOcclusionChanged(Surface* surface) override;
+  void OnFrameLockingChanged(Surface* surface, bool lock) override;
 
   // Overridden from ActivationChangeObserver:
   void OnWindowActivating(ActivationReason reason,

@@ -310,6 +310,11 @@ class Surface final : public ui::PropertyHandler {
   // Triggers sending an occlusion update to observers.
   void OnWindowOcclusionChanged();
 
+  // Triggers sending a locking status to observers.
+  // true : lock a frame to normal or restore state
+  // false : unlock the previously locked frame
+  void SetFrameLocked(bool lock);
+
   // True if the window for this surface has its occlusion tracked.
   bool IsTrackingOcclusion();
 

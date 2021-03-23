@@ -920,10 +920,14 @@ void ShellSurfaceBase::OnWindowDestroying(aura::Window* window) {
 void ShellSurfaceBase::OnWindowPropertyChanged(aura::Window* window,
                                                const void* key,
                                                intptr_t old_value) {
-  if (widget_ && window == widget_->GetNativeWindow() &&
-      key == aura::client::kSkipImeProcessing) {
-    SetSkipImeProcessingToDescendentSurfaces(
-        window, window->GetProperty(aura::client::kSkipImeProcessing));
+  if (widget_ && window == widget_->GetNativeWindow()) {
+    if (key == aura::client::kSkipImeProcessing) {
+      SetSkipImeProcessingToDescendentSurfaces(
+          window, window->GetProperty(aura::client::kSkipImeProcessing));
+    } else if (key == chromeos::kFrameRestoreLookKey) {
+      root_surface()->SetFrameLocked(
+          window->GetProperty(chromeos::kFrameRestoreLookKey));
+    }
   }
 }
 

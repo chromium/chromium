@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/frame/browser_desktop_window_tree_host_lacros.h"
 
+#include "chromeos/ui/base/window_properties.h"
+#include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
+
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserDesktopWindowTreeHostLacros, public:
 
@@ -15,7 +18,8 @@ BrowserDesktopWindowTreeHostLacros::BrowserDesktopWindowTreeHostLacros(
     : BrowserDesktopWindowTreeHostLinux(native_widget_delegate,
                                         desktop_native_widget_aura,
                                         browser_view,
-                                        browser_frame) {}
+                                        browser_frame),
+      desktop_native_widget_aura_(desktop_native_widget_aura) {}
 
 BrowserDesktopWindowTreeHostLacros::~BrowserDesktopWindowTreeHostLacros() =
     default;
@@ -28,6 +32,13 @@ bool BrowserDesktopWindowTreeHostLacros::ShouldUseLayerForShapedWindow() const {
   // Lacros doesn't need to use layer for shaped window since it is already
   // done in views.
   return false;
+}
+
+void BrowserDesktopWindowTreeHostLacros::OnSurfaceFrameLockingChanged(
+    bool lock) {
+  aura::Window* window = desktop_native_widget_aura_->GetNativeWindow();
+  DCHECK(window);
+  window->SetProperty(chromeos::kFrameRestoreLookKey, lock);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

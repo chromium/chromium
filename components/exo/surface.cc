@@ -1316,6 +1316,11 @@ void Surface::UpdateContentSize() {
   }
 }
 
+void Surface::SetFrameLocked(bool lock) {
+  for (SurfaceObserver& observer : observers_)
+    observer.OnFrameLockingChanged(this, lock);
+}
+
 void Surface::OnWindowOcclusionChanged() {
   if (!state_.basic_state.is_tracking_occlusion)
     return;
