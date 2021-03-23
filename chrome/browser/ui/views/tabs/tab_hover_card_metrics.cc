@@ -6,10 +6,8 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/metrics/tab_count_metrics.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
-#include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
-#include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -87,16 +85,47 @@ void RecordTimeSinceLastSeenMetric(base::TimeTicks last_seen_time) {
   constexpr base::TimeDelta kMinHoverCardReshowTimeDelta =
       base::TimeDelta::FromMilliseconds(1);
   constexpr int kHoverCardHistogramBucketCount = 50;
-  UMA_HISTOGRAM_CUSTOM_TIMES("TabHoverCards.TimeSinceLastVisible", elapsed_time,
-                             kMinHoverCardReshowTimeDelta,
-                             kMaxHoverCardReshowTimeDelta,
-                             kHoverCardHistogramBucketCount);
+  UMA_HISTOGRAM_CUSTOM_TIMES(
+      TabHoverCardMetrics::kHistogramTimeSinceLastVisible, elapsed_time,
+      kMinHoverCardReshowTimeDelta, kMaxHoverCardReshowTimeDelta,
+      kHoverCardHistogramBucketCount);
 }
 
 }  // namespace
 
-TabHoverCardMetrics::TabHoverCardMetrics(TabHoverCardController* controller)
-    : controller_(controller) {}
+TabHoverCardMetrics::Delegate::~Delegate() = default;
+
+// static
+const char TabHoverCardMetrics::kHistogramTimeSinceLastVisible[] =
+    "TabHoverCards.TimeSinceLastVisible";
+
+// static
+const char
+    TabHoverCardMetrics::kHistogramPrefixHoverCardsSeenBeforeSelection[] =
+        "TabHoverCards.TabHoverCardsSeenBeforeTabSelection";
+
+// static
+const char TabHoverCardMetrics::kHistogramPrefixPreviewsSeenBeforeSelection[] =
+    "TabHoverCards.TabPreviewsSeenBeforeTabSelection";
+
+// static
+const char TabHoverCardMetrics::kHistogramPrefixTabHoverCardTime[] =
+    "TabHoverCards.TabHoverCardViewedTime";
+
+// static
+const char TabHoverCardMetrics::kHistogramPrefixTabPreviewTime[] =
+    "TabHoverCards.TabHoverCardPreviewTime";
+
+// static
+const char TabHoverCardMetrics::kHistogramPrefixLastTabHoverCardTime[] =
+    "TabHoverCards.LastTabHoverCardViewedTime";
+
+// static
+const char TabHoverCardMetrics::kHistogramPrefixLastTabPreviewTime[] =
+    "TabHoverCards.LastTabHoverCardPreviewTime";
+
+TabHoverCardMetrics::TabHoverCardMetrics(Delegate* delegate)
+    : delegate_(delegate) {}
 TabHoverCardMetrics::~TabHoverCardMetrics() = default;
 
 void TabHoverCardMetrics::TabSelectionChanged() {
@@ -109,11 +138,14 @@ void TabHoverCardMetrics::InitialCardBeingShown() {
 
 void TabHoverCardMetrics::CardFadingIn() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  throughput_tracker_.emplace(controller_->hover_card_->GetWidget()
-                                  ->GetCompositor()
-                                  ->RequestNewThroughputTracker());
-  throughput_tracker_->Start(ash::metrics_util::ForSmoothness(
-      base::BindRepeating(&RecordFadeInSmoothness)));
+  // This may be null during tests, so we can skip if it is.
+  auto* const widget = delegate_->GetHoverCardWidget();
+  if (widget) {
+    throughput_tracker_.emplace(
+        widget->GetCompositor()->RequestNewThroughputTracker());
+    throughput_tracker_->Start(ash::metrics_util::ForSmoothness(
+        base::BindRepeating(&RecordFadeInSmoothness)));
+  }
 #endif
 }
 
@@ -124,16 +156,19 @@ void TabHoverCardMetrics::CardWillBeHidden() {
   RecordTabTimeMetrics();
   times_for_last_tab_ = last_tab_;
   last_visible_timestamp_ = base::TimeTicks::Now();
-  last_tab_ = nullptr;
+  last_tab_ = TabHandle();
 }
 
 void TabHoverCardMetrics::CardFadingOut() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  throughput_tracker_.emplace(controller_->hover_card_->GetWidget()
-                                  ->GetCompositor()
-                                  ->RequestNewThroughputTracker());
-  throughput_tracker_->Start(ash::metrics_util::ForSmoothness(
-      base::BindRepeating(&RecordFadeOutSmoothness)));
+  // This may be null during tests, so we can skip if it is.
+  auto* const widget = delegate_->GetHoverCardWidget();
+  if (widget) {
+    throughput_tracker_.emplace(
+        widget->GetCompositor()->RequestNewThroughputTracker());
+    throughput_tracker_->Start(ash::metrics_util::ForSmoothness(
+        base::BindRepeating(&RecordFadeOutSmoothness)));
+  }
 #endif
 }
 
@@ -151,7 +186,7 @@ void TabHoverCardMetrics::CardFadeCanceled() {
 #endif
 }
 
-void TabHoverCardMetrics::CardFullyVisibleOnTab(const Tab* tab) {
+void TabHoverCardMetrics::CardFullyVisibleOnTab(TabHandle tab, bool is_active) {
   if (tab == last_tab_)
     return;
 
@@ -166,8 +201,7 @@ void TabHoverCardMetrics::CardFullyVisibleOnTab(const Tab* tab) {
 
   // If the tab isn't active and we're done waiting for a preview image, mark
   // the image as seen now.
-  if (!tab->IsActive() && controller_->thumbnail_observer_ &&
-      !controller_->waiting_for_preview_) {
+  if (!is_active && delegate_->HasPreviewImage()) {
     ImageLoadedForTab(tab);
     last_image_time_ = base::TimeTicks::Now();
   } else {
@@ -175,7 +209,7 @@ void TabHoverCardMetrics::CardFullyVisibleOnTab(const Tab* tab) {
   }
 }
 
-void TabHoverCardMetrics::ImageLoadedForTab(const Tab* tab) {
+void TabHoverCardMetrics::ImageLoadedForTab(TabHandle tab) {
   if (tab != last_tab_)
     return;
 
@@ -183,16 +217,11 @@ void TabHoverCardMetrics::ImageLoadedForTab(const Tab* tab) {
   last_image_time_ = base::TimeTicks::Now();
 }
 
-void TabHoverCardMetrics::TabSelectedViaMouse(Tab* tab) {
-  const size_t tab_count = tab_count_metrics::TabCount();
+void TabHoverCardMetrics::TabSelectedViaMouse(TabHandle tab) {
+  const size_t tab_count = delegate_->GetTabCount();
   const size_t bucket = GetBucketForTabCount(tab_count);
-  static const char kHistogramPrefixHoverCardsSeenBeforeSelection[] =
-      "TabHoverCards.TabHoverCardsSeenBeforeTabSelection";
   RECORD_COUNT_METRIC(kHistogramPrefixHoverCardsSeenBeforeSelection,
                       cards_seen_count_, bucket);
-
-  static const char kHistogramPrefixPreviewsSeenBeforeSelection[] =
-      "TabHoverCards.TabPreviewsSeenBeforeTabSelection";
   RECORD_COUNT_METRIC(kHistogramPrefixPreviewsSeenBeforeSelection,
                       images_seen_count_, bucket);
 
@@ -200,14 +229,9 @@ void TabHoverCardMetrics::TabSelectedViaMouse(Tab* tab) {
   // selection event, so if it's null, use the backup |times_for_last_tab| we
   // stored during the hide event.
   const bool is_last_tab = tab == (last_tab_ ? last_tab_ : times_for_last_tab_);
-  static const char kHistogramPrefixLastTabHoverCardTime[] =
-      "TabHoverCards.LastTabHoverCardViewedTime";
   RECORD_TIME_METRIC(kHistogramPrefixLastTabHoverCardTime,
                      is_last_tab ? last_tab_time_ : base::TimeTicks(), bucket);
-
-  if (controller_->thumbnail_observer_) {
-    static const char kHistogramPrefixLastTabPreviewTime[] =
-        "TabHoverCards.LastTabHoverCardPreviewTime";
+  if (delegate_->ArePreviewsEnabled()) {
     RECORD_TIME_METRIC(kHistogramPrefixLastTabPreviewTime,
                        is_last_tab ? last_image_time_ : base::TimeTicks(),
                        bucket);
@@ -234,26 +258,22 @@ std::string TabHoverCardMetrics::GetBucketHistogramName(
 void TabHoverCardMetrics::Reset() {
   cards_seen_count_ = 0;
   images_seen_count_ = 0;
-  last_tab_ = nullptr;
-  times_for_last_tab_ = nullptr;
+  last_tab_ = TabHandle();
+  times_for_last_tab_ = TabHandle();
   last_tab_time_ = base::TimeTicks();
   last_image_time_ = base::TimeTicks();
 }
 
 void TabHoverCardMetrics::RecordTabTimeMetrics() {
-  const size_t tab_count = tab_count_metrics::TabCount();
+  const size_t tab_count = delegate_->GetTabCount();
   const size_t bucket = GetBucketForTabCount(tab_count);
   if (!last_tab_time_.is_null()) {
-    static const char kHistogramPrefixTabHoverCardTime[] =
-        "TabHoverCards.TabHoverCardViewedTime";
     RECORD_TIME_METRIC(kHistogramPrefixTabHoverCardTime, last_tab_time_,
                        bucket);
   }
 
-  if (controller_->thumbnail_observer_) {
+  if (delegate_->ArePreviewsEnabled()) {
     if (!last_image_time_.is_null()) {
-      static const char kHistogramPrefixTabPreviewTime[] =
-          "TabHoverCards.TabHoverCardPreviewTime";
       RECORD_TIME_METRIC(kHistogramPrefixTabPreviewTime, last_image_time_,
                          bucket);
     }

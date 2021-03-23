@@ -14,14 +14,50 @@
 #include "ui/compositor/throughput_tracker.h"
 #endif
 
-class Tab;
-class TabHoverCardController;
+namespace views {
+class Widget;
+}
 
 // Records metrics around the number and duration of hover cards and hover card
 // images that the user sees.
 class TabHoverCardMetrics {
  public:
-  explicit TabHoverCardMetrics(TabHoverCardController* controller);
+  // Proxy for the hover card controller that can be stubbed out during tests.
+  class Delegate {
+   public:
+    virtual ~Delegate();
+
+    // Returns the number of tabs. Provided by the delegate so we don't need a
+    // live browser to get the tab count in tests.
+    virtual size_t GetTabCount() const = 0;
+
+    // Returns true if preview images are enabled.
+    virtual bool ArePreviewsEnabled() const = 0;
+
+    // Returns true if the current hover card is visible and displaying a valid
+    // preview image.
+    virtual bool HasPreviewImage() const = 0;
+
+    // Returns the hover card widget, or nullptr if none. Can be stubbed to
+    // return nullptr for tests (low-level performance metrics may not be
+    // recorded).
+    virtual views::Widget* GetHoverCardWidget() = 0;
+  };
+
+  // Use an immutable, opaque pointer to tabs because these pointers could
+  // become stale so we should not attempt to dereference them.
+  using TabHandle = const void*;
+
+  // Histogram names:
+  static const char kHistogramPrefixHoverCardsSeenBeforeSelection[];
+  static const char kHistogramPrefixPreviewsSeenBeforeSelection[];
+  static const char kHistogramPrefixTabHoverCardTime[];
+  static const char kHistogramPrefixTabPreviewTime[];
+  static const char kHistogramPrefixLastTabHoverCardTime[];
+  static const char kHistogramPrefixLastTabPreviewTime[];
+  static const char kHistogramTimeSinceLastVisible[];
+
+  explicit TabHoverCardMetrics(Delegate* delegate);
   TabHoverCardMetrics(const TabHoverCardMetrics& other) = delete;
   ~TabHoverCardMetrics();
   void operator=(const TabHoverCardMetrics& other) = delete;
@@ -36,14 +72,14 @@ class TabHoverCardMetrics {
 
   // Notes that a card becomes fully visible or lands on|tab|. Set
   // |has_thumbnail| to true if the thumbnail for the tab is already loaded.
-  void CardFullyVisibleOnTab(const Tab* tab);
+  void CardFullyVisibleOnTab(TabHandle tab, bool is_active);
 
   // Note that an image was shown for |tab|.
-  void ImageLoadedForTab(const Tab* tab);
+  void ImageLoadedForTab(TabHandle tab);
 
   // Records the number of cards seen before a mouse selection. Should be called
   // when the mouse is clicked on a tab, but before the selection is committed.
-  void TabSelectedViaMouse(Tab* tab);
+  void TabSelectedViaMouse(TabHandle tab);
 
   int cards_seen_count() const { return cards_seen_count_; }
   int images_seen_count() const { return images_seen_count_; }
@@ -74,11 +110,11 @@ class TabHoverCardMetrics {
 
   // Keep this as an opaque pointer to avoid the temptation to dereference it;
   // there's a chance it could be dead.
-  const void* last_tab_ = nullptr;
+  TabHandle last_tab_ = TabHandle();
 
   // The last tab we have times for. This helps us know after a fade-out caused
   // by a tab selection which tab |last_tab_time| and |last_image_time| are for.
-  const void* times_for_last_tab_ = nullptr;
+  TabHandle times_for_last_tab_ = TabHandle();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::Optional<ui::ThroughputTracker> throughput_tracker_;
@@ -86,7 +122,7 @@ class TabHoverCardMetrics {
 
   // TOOD(dfried): in future, change this to a delegate object in order to be
   // able to test it in isolation.
-  const TabHoverCardController* const controller_;
+  Delegate* const delegate_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_HOVER_CARD_METRICS_H_

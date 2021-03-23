@@ -11,6 +11,7 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/tabs/tab_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_hover_card_metrics.h"
 #include "ui/events/event.h"
 #include "ui/views/animation/bubble_slide_animator.h"
 #include "ui/views/animation/widget_fade_animator.h"
@@ -22,13 +23,13 @@ class ImageSkia;
 }
 
 class TabHoverCardBubbleView;
-class TabHoverCardMetrics;
 class TabHoverCardThumbnailObserver;
 class Tab;
 class TabStrip;
 
 // Controls how hover cards are shown and hidden for tabs.
-class TabHoverCardController : public views::ViewObserver {
+class TabHoverCardController : public views::ViewObserver,
+                               public TabHoverCardMetrics::Delegate {
  public:
   explicit TabHoverCardController(TabStrip* tab_strip);
   ~TabHoverCardController() override;
@@ -51,8 +52,14 @@ class TabHoverCardController : public views::ViewObserver {
 
   static bool UseAnimations();
 
-  // views::ViewObserver
+  // views::ViewObserver:
   void OnViewIsDeleting(views::View* observed_view) override;
+
+  // TabHoverCardMetrics::Delegate:
+  size_t GetTabCount() const override;
+  bool ArePreviewsEnabled() const override;
+  bool HasPreviewImage() const override;
+  views::Widget* GetHoverCardWidget() override;
 
   void CreateHoverCard(Tab* tab);
   void UpdateCardContent(Tab* tab);

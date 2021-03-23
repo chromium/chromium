@@ -8,10 +8,10 @@
 #include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/metrics/tab_count_metrics.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
-#include "chrome/browser/ui/views/tabs/tab_hover_card_metrics.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_thumbnail_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "ui/views/view.h"
@@ -319,7 +319,7 @@ void TabHoverCardController::ShowHoverCard(bool is_initial) {
   MaybeStartThumbnailObservation(target_tab_, is_initial);
 
   if (!is_initial || !UseAnimations()) {
-    metrics_->CardFullyVisibleOnTab(target_tab_);
+    metrics_->CardFullyVisibleOnTab(target_tab_, target_tab_->IsActive());
     hover_card_->GetWidget()->Show();
     return;
   }
@@ -366,6 +366,22 @@ void TabHoverCardController::OnViewIsDeleting(views::View* observed_view) {
   slide_animator_.reset();
   fade_animator_.reset();
   hover_card_ = nullptr;
+}
+
+size_t TabHoverCardController::GetTabCount() const {
+  return tab_count_metrics::TabCount();
+}
+
+bool TabHoverCardController::ArePreviewsEnabled() const {
+  return static_cast<bool>(thumbnail_observer_);
+}
+
+bool TabHoverCardController::HasPreviewImage() const {
+  return ArePreviewsEnabled() && hover_card_ && !waiting_for_preview_;
+}
+
+views::Widget* TabHoverCardController::GetHoverCardWidget() {
+  return hover_card_ ? hover_card_->GetWidget() : nullptr;
 }
 
 void TabHoverCardController::CreateHoverCard(Tab* tab) {
@@ -494,7 +510,7 @@ void TabHoverCardController::OnFadeAnimationEnded(
     views::WidgetFadeAnimator* animator,
     views::WidgetFadeAnimator::FadeType fade_type) {
   if (fade_type == views::WidgetFadeAnimator::FadeType::kFadeIn)
-    metrics_->CardFullyVisibleOnTab(target_tab_);
+    metrics_->CardFullyVisibleOnTab(target_tab_, target_tab_->IsActive());
 
   metrics_->CardFadeComplete();
   if (fade_type == views::WidgetFadeAnimator::FadeType::kFadeOut)
@@ -521,7 +537,7 @@ void TabHoverCardController::OnSlideAnimationComplete(
   if (waiting_for_preview_)
     hover_card_->ClearPreviewImage();
 
-  metrics_->CardFullyVisibleOnTab(target_tab_);
+  metrics_->CardFullyVisibleOnTab(target_tab_, target_tab_->IsActive());
 }
 
 void TabHoverCardController::OnPreviewImageAvaialble(
